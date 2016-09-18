@@ -1,0 +1,473 @@
+/* main styles */ 
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+body{
+    /* background-color: floralwhite; */
+    font-size:12px;
+    font-family:"Microsoft YaHei";
+}
+
+body.noscroll{
+	overflow:scroll;
+	overflow-y:hidden;
+	overflow-x:hidden;
+}
+
+header{
+    height:73px;    
+    margin: 0px 50px 0px 50px;
+    width:1580px;
+    /*width:95%;*/
+}
+
+#logo{
+    height: 42px;
+    width: 42px;
+    margin: 0px;
+    background:url("../img/pim_logo.jpg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-color: antiquewhite;
+    float: left;
+}
+
+/*header和footer之间的区域  */
+#container {
+	height:auto;
+    margin:0 50px;
+    min-height:700px;
+    width:1580px;
+   /* width:95%;*/
+}
+
+@media screen and (min-width:1366px){
+	#container {width:1266px;}
+	header{width:1266px;}
+}
+
+@media screen and (min-width:1440px){
+	#container {width:1390px;}
+	header{width:1390px;}
+}
+
+@media screen and (min-width:1680px){
+	#container {width:1580px;}
+	header{width:1580px;}
+}
+
+@media screen and (min-width:2736px){
+	#container {width:2636px;}
+	header{width:2636px;}
+}
+
+.clear {
+	clear: both;
+	height: 0;
+}
+
+footer{
+    clear:both;
+    height: 50px; 
+    margin: 0px 50px 0px 50px;
+    border: solid 1px lightseagreen ;
+}
+
+/*左边栏  */
+aside,#main{
+    height:auto;
+    margin: 0px 0px 4px 0px;
+}
+
+aside{    
+    width: 20%;
+    float:left;
+}
+
+.events{
+    border: 1px solid red;
+    border: solid 1px lightseagreen ;
+    margin: 4px 4px 0px 0px;
+    border-radius:3px;
+}
+
+#main{
+    width: 100%;
+    float: right;
+}
+
+#layer_main{
+	width: 99%;
+	margin: 2px auto;
+	border: 2px solid #cccccc;
+}
+
+#search{
+    border: solid 1px lightseagreen ;
+    margin: 4px 0px 0px 1px;
+    border-radius:3px;
+}
+
+.form{
+    border: solid 1px lightseagreen ;
+    margin: 4px 2px 2px 1px;
+    border-radius:3px;
+}
+
+.include{
+	margin:0px 10px 10px 10px; border: solid 1px lightseagreen ;border-radius:3px; padding:5px 0px 0px 0px;
+}
+
+.list{
+    border: 1px solid red;
+    border: solid 1px lightseagreen ;
+    margin: 4px 0px 0px 1px;
+    border-radius:3px;   
+    padding:8px;
+}
+
+table.search{
+    background:#f9f9f9;
+    padding:2px;
+    border: solid 0px lightseagreen ;
+    font:14px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;
+    width:100%;
+    cellspacing:0px;
+}
+
+table.search td{
+    height:28px;
+}
+
+table.form{
+    background:#f9f9f9;
+    padding:5px;
+    font:14px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;
+    cellspacing:0px;
+    border: solid 1px #c0c0c0 ;
+    width:100%;
+}
+
+table.form td{
+    height:25px;
+    border-bottom: solid 0px #e8e8e8 ;
+    font:12px/12px Microsoft YaHei,Arial, Helvetica, sans-serif;    
+}
+
+table.list{
+    width:98%;
+    font:14px/14px Microsoft YaHei,Arial, Helvetica, sans-serif;
+    margin:10px 10px 6px 10px ;
+    border-radius:0px;
+    border-collapse:collapse;
+    width:100%;
+}
+
+td.{
+    padding-top: 10px;
+}
+
+td.label{
+    font:12px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;   
+    text-align:right; 
+    width:100px;
+}
+
+td.title1{
+	text-align:right;
+	width:120px;
+}
+
+td.condition{
+	 font:12px/18px Microsoft YaHei,Arial, Helvetica, sans-serif;
+    width:	200px;
+}
+
+td.condition input, textarea, select {
+	font:12px/18px Microsoft YaHei,Arial, Helvetica, sans-serif;
+	padding:0;
+	}
+
+td.condition200{
+    width:300px;
+}
+
+table.list td {
+    border: solid 1px lightseagreen ;
+    height:20px;
+    padding-left: 4px;
+    padding-right: 4px;
+    
+}
+
+table.list tr.even {
+    height:22px;
+    background-color: mintcream;
+}
+
+table.list tr.dividin {
+    height:22px;
+    background-color: lightseagreen;
+}
+
+table.list th {
+    border: solid 1px lightseagreen ;
+    height: 22px;
+    background-color: #f2f2e6;
+    font-weight:normal;
+}
+
+fieldset{
+    background:#f9f9f9;
+    padding:10px;
+    border:0px solid #fff;
+    border-color:#fff #666661 #666661 #fff;
+    margin-bottom:10px;
+    width:98%;
+}
+
+legend{
+    background: darkcyan; color:#fff;
+    font:12px/20px Microsoft YaHei,Calibri, Arial, Helvetica, sans-serif;
+    padding:0px 10px;
+    margin:-26px 0 0 -10px;
+    /*font-weight:bold;*/
+    border:1px solid #fff;
+    border-color:#e5e5c3 #505014 #505014 #e5e5c3;
+}
+
+fieldset.action {
+    border-color:#e5e5e5 #797c80 #797c80 #e5e5e5;
+    margin-top:-5px;
+    height:30px;
+     padding:5px 10px;
+}
+
+input, textarea, select{
+    font:12px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;
+    padding:0px;   
+    margin:0px 0px 0px 10px; 
+}   
+
+textarea{
+	margin:5px 0px 5px 10px; 
+}
+
+textarea.read-only{
+	margin:0px; 
+	background:transparent;
+	border-style:none;
+}
+
+input.short{width:100px;} 
+
+input.mini{width:50px;} 
+
+input.middle{width:250px;}
+
+input.long{width:450px;}
+
+input.cash{
+	width:60px;
+	padding:0 2px 0 2px; 
+	text-align:left;
+}
+
+/* 只读输入框置灰 */
+input.read-only
+{
+	background-color: #cccccc;
+	border-left:0px;border-top:0px;border-right:0px;border-bottom:1px 
+} 
+
+label {
+    font:12px Microsoft YaHei,Arial, Helvetica, sans-serif;
+    color:#000;
+}
+
+label.opt {
+    font-weight:normal;
+}
+
+dl {
+    clear:both;
+}
+
+dt {
+    float:right;
+}
+
+dd {
+    float:left;
+    line-height:15px;
+    margin:0 0 2px 0;
+}
+
+form{
+    padding:40px 20px 0px 20px;
+}
+
+button{
+	font:12px/12px Microsoft YaHei,Arial, Helvetica, sans-serif;
+	padding:10px 0px;
+}
+
+#submit,#reset,#return,#retrieve,#delete,#create,#modify{
+    margin:0px 10px;
+    float: right;
+    font:12px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;
+}
+
+#retrieve{
+	float: left;
+}
+
+label.error {
+	/* remove the next line when you have trouble in IE6 with labels in list */
+	color: red;
+	font-style: italic;
+}
+
+span.tablename{
+	background: darkcyan; color:#fff;
+    font:12px/20px Microsoft YaHei,Calibri, Arial, Helvetica, sans-serif;
+    padding:0px 10px;  
+    margin:0px 5px;  
+    /*font-weight:bold;*/
+    border:1px solid #fff;
+    border-color:#e5e5c3 #505014 #505014 #e5e5c3;
+}
+
+.a-btn{
+    background:#e54447;
+    padding-left:35px;
+    padding-right:15px;
+    height:30px;
+    display:inline-block;
+    position:relative;
+    
+    float:left;
+    clear:both;
+    margin:5px 10px;
+    overflow:hidden;
+   
+    border:1px solid #dfdfdf;
+    text-decoration: none;
+}
+
+.a-btn-gray{
+    background:#f9f9f9;
+    padding-left:35px;
+    padding-right:15px;
+    height:30px;
+    display:inline-block;
+    position:relative;
+    
+    float:left;
+    clear:both;
+    margin:5px 10px;
+    overflow:hidden;
+   
+    border:1px solid #dfdfdf;
+    text-decoration: none;
+}
+
+.a-btn-green{
+    background:#339999;
+    padding-left:35px;
+    padding-right:15px;
+    height:25px; 
+    display:inline-block;
+    position:relative;
+    
+    float:left;
+    clear:both;
+    margin:5px 10px;
+    overflow:hidden;
+   
+    border:1px solid #dfdfdf;
+    text-decoration: none;
+}
+
+.a-btn img,.a-btn-gray img,.a-btn-green img{
+    position:absolute;
+    left:5px;
+    top:1px;
+    border:none;
+    transition:all 0.3s ease-in-out;
+}
+
+.a-btn-text{
+    padding-top:3px;
+    display:block;
+    font-size:12px;
+    font-weight:bold;
+    color:#fff;
+}
+.a-btn-text small{
+		color: #666666;
+    font-size:13px;
+    letter-spacing:1px;
+    font-weight:normal;
+    text-shadow:0px 0px 0px #80ab5d;
+}
+.a-btn-icon-right{
+    position:absolute;
+    right:0px;
+    top:0px;
+    height:100%;
+    width:80px;
+    border-left:1px solid #80ab5d;
+    -webkit-box-shadow:1px 0px 1px rgba(255,255,255,0.4) inset;
+    -moz-box-shadow:1px 0px 1px rgba(255,255,255,0.4) inset;
+    box-shadow:1px 0px 1px rgba(255,255,255,0.4) inset;
+}
+.a-btn-icon-right span{
+    width:38px;
+    height:38px;
+    opacity:0.7;
+    -webkit-border-radius:20px;
+    -moz-border-radius:20px;
+    border-radius:20px;
+    position:absolute;
+    left:50%;
+    top:50%;
+    margin:-20px 0px 0px -20px;
+    border:1px solid rgba(0,0,0,0.5);
+    background:#4e5c50 url(../images/arrow_down.png) no-repeat center center;
+    -webkit-box-shadow:0px 1px 1px rgba(255,255,255,0.3) inset, 0px 1px 2px rgba(255,255,255,0.5);
+    -moz-box-shadow:0px 1px 1px rgba(255,255,255,0.3) inset, 0px 1px 2px rgba(255,255,255,0.5);
+    box-shadow:0px 1px 1px rgba(255,255,255,0.3) inset, 0px 1px 2px rgba(255,255,255,0.5);
+    -webkit-transition:all 0.3s ease-in-out;
+    -moz-transition:all 0.3s ease-in-out;
+    -o-transition:all 0.3s ease-in-out;
+    transition:all 0.3s ease-in-out;
+}
+.a-btn:hover,.a-btn-gray:hover,.a-btn-green:hover{
+    -webkit-box-shadow:0px 1px 1px rgba(255,255,255,0.8) inset, 1px 1px 5px rgba(0,0,0,0.4);
+    -moz-box-shadow:0px 1px 1px rgba(255,255,255,0.8) inset, 1px 1px 5px rgba(0,0,0,0.4);
+    box-shadow:0px 1px 1px rgba(255,255,255,0.8) inset, 1px 1px 5px rgba(0,0,0,0.4);
+}
+
+.a-btn:hover .a-btn-slide-text,.a-btn-gray:hover .a-btn-slide-text,.a-btn-green:hover .a-btn-slide-text,
+.a-btn:hover .a-btn-icon-right span,.a-btn-gray:hover .a-btn-icon-right span,.a-btn-green:hover .a-btn-icon-right span{
+    opacity:1;
+}
+.a-btn:active,.a-btn-gray:active,.a-btn-green:active{
+    position:relative;
+    top:1px;
+    background:#dfdfdf;
+    -webkit-box-shadow:1px 1px 2px rgba(0,0,0,0.4) inset;
+    -moz-box-shadow:1px 1px 2px rgba(0,0,0,0.4) inset;
+    box-shadow:1px 1px 2px rgba(0,0,0,0.4) inset;
+    border-color:#a9db80;
+}
+.a-btn:active .a-btn-icon-right span,.a-btn-gray:active .a-btn-icon-right span,.a-btn-green:active .a-btn-icon-right span{
+    -webkit-transform:scale(1.4);
+    -moz-transform:scale(1.4);
+    -ms-transform:scale(1.4);
+    -o-transform:scale(1.4);
+    transform:scale(1.4);
+}

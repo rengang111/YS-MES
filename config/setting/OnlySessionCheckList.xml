@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<url>login</url>
+	<url>test123</url>
+	<url>${ctx}/common/*</url>
+	<url>${ctx}/mainframe/*</url>	
+</root>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool>mysql</pool>     
+    <name value="mysql" />
+    <where>
+      <w name="id" des="查询名称"  reqName="formId" dtype="int" oper="&gt;="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="id" alias="" ctype="" />
+      <f name="id" alias="idName" ctype="un" />
+      <f name="name" alias="" ctype="" />
+      <f name="salary" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>tableA</from>
+    <orderby>id,name</orderby>
+    <groupby></groupby>
+    <having></having>
+         
+    <power>
+      <menuid></menuid>
+      <deptfield></deptfield>
+    </power>
+    <!-- 输出text文件 -->
+    <totxt>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </totxt>
+    <!-- 输出excel文件 -->
+    <toexcel>
+        <model>在模板目录中存放的excel模板文件名</model>
+        <firstrow>数据在excel中开始输出的开始行索引</firstrow>
+        <firstcol>数据在excel中开始输出的开始列索引</firstcol>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </toexcel>
+    <!-- 输出pdf文件 -->
+    <topdf>
+        <model>在模板目录中存放的pdf模板文件名,为html格式，此文件作为导出文件的标题</model>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </topdf>
+    <!-- 输出word文件 -->
+    <toword>
+        <model>在模板目录中存放的word模板文件名</model>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </toword>
+    
+    <!-- 页小计 -->
+    <pageCount des='页小计，用于数值型字段的页面合计信息，在每个页后面追加一行数值型数据的当前页合计值'>
+        <isview>T</isview>
+        <dataindex>4 </dataindex>
+    </pageCount>    
+    
+    <!-- 页总计 -->
+    <totalsum  des='在最后行显示汇总数据，此操作解析SQL语句重新生成汇总SQL进行汇总，值为T或F'>
+        <isview>T</isview>
+        <viewindex>4</viewindex>
+        <groupselect>sum(a)</groupselect>
+        <select>salary a</select>
+        <unionselect></unionselect>
+    </totalsum>    
+  </query>
+</root>

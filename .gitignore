@@ -1,2 +1,9 @@
 /build/
 /bin/
+/.settings/
+/.classpath
+/.project
+/.tern-project
+/DesUtil.java
+/manifest.mf
+/structure.txt

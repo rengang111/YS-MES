@@ -1,0 +1,24 @@
+{
+    "decimal":        "",
+    "emptyTable":     "",
+    "info":           "显示 _START_ 到 _END_ 条记录，共 _TOTAL_ 条记录。",
+    "infoEmpty":      "",
+    "infoFiltered":   "(从全部 _MAX_ 条记录中筛选 )",
+    "infoPostFix":    "",
+    "thousands":      ",",
+    "lengthMenu":     "显示  _MENU_ 行",
+    "loadingRecords": "查询中...",
+    "processing":     "处理中...",
+    "search":         "结果内筛选 :",
+    "zeroRecords":    "没有符合条件的记录。",
+    "paginate": {
+        "first":      "首页",
+        "last":       "末页",
+        "next":       "后一页",
+        "previous":   "前一页"
+    },
+    "aria": {
+        "sortAscending":  ": activate to sort column ascending",
+        "sortDescending": ": activate to sort column descending"
+    }
+}

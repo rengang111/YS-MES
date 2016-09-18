@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="dictypequerydefine_search" />
+    <where>
+      <w name="A.DicTypeID" des=""  reqName="dicTypeIdName" dtype="ch" oper="="  lg="OR" bt="(" />
+   	  <w name="A.DicTypeName" des=""  reqName="dicTypeIdName" dtype="ch" oper="like"  lg="" bt=")" />   
+    </where>
+    <select>
+      <f name="A.DicTypeID" alias="" ctype="" />
+      <f name="A.DicTypeName" alias="" ctype="" />
+      <f name="A.DicTypeLevel" alias="" ctype="A5" />
+      <f name="A.DicSelectedFlag" alias="" ctype="A4" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_DicType AS A WHERE A.DeleteFlag = '0' </from>
+    <orderby>A.SORTNO, A.DicTypeName</orderby>
+    <groupby>A.DicTypeID,A.DicTypeName,A.DicTypeLevel,A.DicSelectedFlag</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="dicquerydefine_search" />
+    <where>
+      <w name="A.DicID" des=""  reqName="dicIdName" dtype="ch" oper="="  lg="OR" bt="(" />
+   	  <w name="A.DicName" des=""  reqName="dicIdName" dtype="ch" oper="like"  lg="AND" bt=")" />     
+      <w name="B.DicTypeID" des=""  reqName="dicTypeIdName" dtype="ch" oper="="  lg="OR" bt="(" />
+   	  <w name="B.DicTypeName" des=""  reqName="dicTypeIdName" dtype="ch" oper="like"  lg="" bt=")" />   
+    </where>
+    <select>
+      <f name="B.DicTypeID" alias="" ctype="" />
+      <f name="B.DicTypeName" alias="" ctype="" />
+      <f name="B.DicTypeLevel" alias="" ctype="A5" />
+      <f name="B.DicSelectedFlag" alias="" ctype="A4" />
+      <f name="A.DicID" alias="" ctype="" />
+      <f name="A.DicName" alias="" ctype="" />
+      <f name="C.DicName" alias="parentName" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_Dic AS A LEFT JOIN (SELECT * FROM s_DicType WHERE DeleteFlag = '0' AND EnableFlag = '0') AS B ON B.DicTypeID = A.DicTypeID LEFT JOIN (SELECT DicID, DicName, DicTypeID FROM s_Dic WHERE DeleteFlag = '0' AND EnableFlag = '0') AS C ON C.DicID = A.DicPrarentID AND C.DicTypeID = B.DicTypeID WHERE A.DeleteFlag = '0' </from>
+    <orderby>A.DicTypeID, A.DicPrarentID, A.SORTNO</orderby>
+    <groupby>B.DicTypeID,B.DicTypeName,B.DicTypeLevel,B.DicSelectedFlag,A.DicID,A.DicName,C.DicName</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+ <query>
+    <pool></pool>     
+    <name value="dicquerydefine_searchfordelete" />
+    <where>
+      <w name="a.DicPrarentID" des="" reqName="dicId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="a.DicID" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>S_Dic as a WHERE a.DeleteFlag = '0'  </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>  
+</root>

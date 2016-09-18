@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<url>${ctx}/</url>
+	<url>${ctx}/login/checklogin</url>
+	<url>${ctx}/login/verifyCode</url>
+	<url>${ctx}/jsp/login/login.jsp</url>
+	<url>${ctx}/themes/*</url>
+	<url>${ctx}/css/*</url>
+	<url>${ctx}/js/*</url>
+	<url>${ctx}/js/layer/*</url>
+	<url>${ctx}/img/*</url>
+	<url>${ctx}/test123</url>
+	<url>${ctx}/company</url>
+	<url>${ctx}/ysdemomain</url>
+	<url>${ctx}/yssearch</url>
+	<url>${ctx}/showck</url>
+	<url>${ctx}/saveck</url>
+	<url>${ctx}/jsp/ckeditor</url>
+	<url>${ctx}/jsp/ckeditor/*</url>}
+	<url>${ctx}/uploadckeditorimagefile</url>
+</root>

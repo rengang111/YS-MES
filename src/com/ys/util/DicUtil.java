@@ -1,0 +1,165 @@
+package com.ys.util;
+
+import com.ys.util.basedao.BaseDAO;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import org.dom4j.Element;
+
+public class DicUtil {
+	
+	private static final String DATABUFFERRESOURCE = "/setting/Sys_DataBuffer.xml";
+	
+	public static final String ROLETYPE = "A0";
+	public static final String UNIT = "A1";
+	public static final String ADDRESS = "A2";
+	public static final String DUTIES = "A3";
+	public static final String DICSELECTEDFLAG = "A4";
+	public static final String DICTYPELEVEL = "A5";
+	public static final String SEX = "A6";
+	public static final String UNITPROPERTY = "A7";
+	public static final String UNITTYPE = "A8";
+	public static final String MENUTYPE = "A9";
+
+	
+	//HashMap通过id查找
+	private static HashMap<String,String> dicMapViaId = new HashMap<String, String>();
+	//HashMap通过类型查找
+	private static HashMap<String, ArrayList<ArrayList<String>>> dicMapViaType = new HashMap<String, ArrayList<ArrayList<String>>>();	
+	//HashMap(单位)
+	private static HashMap<String,String> dicMapUnit = new HashMap<String, String>();
+	
+	private int parentCodeIndex = 2;
+	
+	public int getParentCodeIndex() {
+		return this.parentCodeIndex;
+	} 
+	public void setParentCodeIndex(int parentCodeIndex) {
+		this.parentCodeIndex = parentCodeIndex;
+	}
+	
+	//根据code值取得codename
+	public static String getCodeValue(String dicCode) throws Exception {
+		String codeValue = "";
+		
+		if (dicMapViaId.isEmpty()) {
+			getDicValue();
+		}
+		
+		if (dicMapViaId.containsKey(dicCode)) {
+			codeValue = dicMapViaId.get(dicCode);
+		} else {
+			if (dicMapUnit.containsKey(dicCode)) {
+				codeValue = dicMapUnit.get(dicCode);
+			}
+		}
+		return codeValue;
+	}
+	
+	//根据类型取得所有的字典数据
+	public static ArrayList<ArrayList<String>> getGroupValue(String type) throws Exception {
+
+		ArrayList<ArrayList<String>> codeGroupValue = new ArrayList<ArrayList<String>>();
+		if (dicMapViaId.isEmpty()) {
+			getDicValue();
+		}
+
+		if (dicMapViaType.containsKey(type)) {
+			codeGroupValue = dicMapViaType.get(type);
+		}
+		
+		return codeGroupValue;
+	}
+	
+	//根据给定的父code得到该父code所属的全部code
+	public static ArrayList<ArrayList<String>> getSameParentGroupValue(String type, String parentCode, int parentCodeIndex) throws Exception {
+
+		ArrayList<ArrayList<String>> codeGroupValue = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> sameParentIdGroupValue = new ArrayList<ArrayList<String>>();
+		
+		if (dicMapViaId.isEmpty()) {
+			getDicValue();
+		}
+		if (dicMapViaType.containsKey(type)) {
+			codeGroupValue = dicMapViaType.get(type);
+
+			for(ArrayList<String> rowData:codeGroupValue) {
+				String subParentCode = (rowData.get(parentCodeIndex) == null) ? "":rowData.get(parentCodeIndex);
+				if (!subParentCode.equals("")) {
+					if (subParentCode.substring(0, parentCode.length()).equals(parentCode)) {
+						sameParentIdGroupValue.add(rowData);
+					}
+				}
+			}
+		}		
+		
+		return sameParentIdGroupValue;
+	}	
+	
+	//清空字典
+	public static void emptyBuffer(boolean isUn) {
+		if (isUn) {
+			dicMapUnit.clear();
+		} else {
+			dicMapViaId.clear();
+			dicMapViaType.clear();
+		}
+		
+	}
+	
+	//重载字典
+	public static void refresh() throws Exception {
+		getDicValue();
+	}
+	
+	private static void getDicValue() throws Exception {
+		
+		Element element = XmlUtil.getRootElement(DATABUFFERRESOURCE);
+		
+		if (element != null) {
+			Iterator<Element> iter = element.elementIterator();
+			while(iter.hasNext()){
+				ArrayList<ArrayList<String>> dicGroupData = null;
+			    Element el = (Element)iter.next();
+				String sql = el.getText();
+				
+				dicGroupData = BaseDAO.execSQL(sql, "", 0, 0);
+				pushMap(dicGroupData);
+			}
+		}
+			
+	}
+	
+	private static void pushMap(ArrayList<ArrayList<String>> dicGroupData) {
+		String preDicType = "";
+		boolean isFirst = true;
+		ArrayList<ArrayList<String>> groupData = new ArrayList<ArrayList<String>>();
+		
+		for(ArrayList<String> rowData:dicGroupData) {
+			String dicCode = rowData.get(0);
+			String curDicType = rowData.get(2);
+			if (curDicType.equals(UNIT)) {
+				dicMapUnit.put(curDicType + dicCode, rowData.get(1));
+			} else {
+				dicMapViaId.put(curDicType + dicCode, rowData.get(1));
+			}
+			if(isFirst) {
+				preDicType = curDicType;
+				isFirst = false;
+			}
+			
+			if (preDicType.equals(curDicType)) {
+				groupData.add(rowData);
+			} else {
+				dicMapViaType.put(preDicType, groupData);
+				groupData = new ArrayList<ArrayList<String>>();
+				groupData.add(rowData);
+				preDicType = curDicType;
+			}
+		}
+		if (groupData.size() > 0) {
+			dicMapViaType.put(preDicType, groupData);
+		}
+	}
+
+}

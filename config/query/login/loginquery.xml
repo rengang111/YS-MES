@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="getrole" />
+    <where>
+      <w name="a.UserID" des=""  reqName="userId" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="a.UnitID" des=""  reqName="unitId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="b.RoleType" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_Power as a, s_Role as b WHERE b.RoleID = a.RoleID AND a.DeleteFlag = '0' AND b.DeleteFlag = '0'  </from>
+    <orderby>b.RoleType</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="verify" />
+    <where>
+      <w name="a.LoginID" des=""  reqName="loginId" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="a.LoginPwd" des=""  reqName="loginPwd" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="a.UserID" alias="" ctype="" />
+      <f name="a.LockFlag" alias="" ctype="" />
+      <f name="a.EnableStartTime" alias="" ctype="" />
+      <f name="a.EnableEndTime" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_User as a WHERE a.DeleteFlag = '0'  </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+</root>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<beans xmlns="http://www.springframework.org/schema/beans"
+	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	    xmlns:mvc="http://www.springframework.org/schema/mvc"
+	    xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+	    xmlns:context="http://www.springframework.org/schema/context"
+	     xmlns:lang="http://www.springframework.org/schema/lang"
+	     
+	    xsi:schemaLocation="
+	        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+	        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+			http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.2.xsd
+			"
+	    >
+ 
+ 	<mvc:resources mapping="/js/**" location="/WEB-INF/js/" />
+	<mvc:resources mapping="/css/**" location="/css/" />
+	<mvc:resources mapping="/html/**" location="/html/" />
+	<mvc:resources mapping="/img/**" location="/img/" />
+	<mvc:resources mapping="/appstore/**" location="/appstore/" />
+ 	<mvc:resources mapping="/themes/**" location="/themes/" />
+ 	<mvc:resources mapping="/plugins/**" location="/plugins/" />
+ 	<mvc:resources mapping="/images/**" location="/images/" />
+ 	
+ 	<mvc:resources mapping="/jsp/ckeditor/**" location="/WEB-INF/jsp/ckeditor/" />
+ 	
+	<!-- 国际化配置 -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="language" />
+	</bean>
+	<!-- 
+	<bean name="dataSourcejndi" class="org.springframework.jndi.JndiObjectFactoryBean">   
+        <property name="jndiName">  
+            <value>java:jboss/datasources/MySqlDSTest</value>  
+        </property>  
+	</bean>
+	 -->
+	<bean id="test" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		
+		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ys2?useUnicode=true&amp;characterEncoding=UTF-8"/>
+		<property name="user" value="root"/>
+		<property name="password" value="admin"/>
+		<property name="maxPoolSize" value="500"></property>
+		<property name="minPoolSize" value="1"></property>
+		<property name="initialPoolSize" value="1"></property>
+		<property name="autoCommitOnClose" value="false"></property>
+		<property name="checkoutTimeout" value="36000"></property>
+		<property name="acquireIncrement" value="2"></property>
+		<property name="maxIdleTime" value="600"></property>
+		<property name="maxStatements" value="0"></property>
+		<property name="maxStatementsPerConnection" value="0"></property>
+	</bean>
+<!-- 
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="DataSourceA" />
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*"  propagation="REQUIRED"  rollback-for="Exception" />
+		</tx:attributes>
+	</tx:advice>	
+	
+	<aop:config>
+		<aop:pointcut expression="execution(public * com.*.*(..))" id="cpServicePointcut"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="cpServicePointcut"/>
+	</aop:config>
+ -->	
+ </beans>
+

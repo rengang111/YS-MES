@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="operlogquerydefine_search" />
+    <where>
+      <w name="B.UnitID" des=""  reqName="unitIdName" dtype="ch" oper="="  lg="OR" bt="(" />
+   	  <w name="B.UnitName" des=""  reqName="unitIdName" dtype="ch" oper="rlike"  lg="AND" bt=")" />
+      <w name="C.UserID" des=""  reqName="userIdName" dtype="ch" oper="="  lg="OR" bt="(" />
+   	  <w name="C.LoginName" des=""  reqName="userIdName" dtype="ch" oper="rlike"  lg="AND" bt=")" />
+   	  <w name="A.ip" des=""  reqName="ip" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="D.menuId" des=""  reqName="menuIdName" dtype="ch" oper="="  lg="OR" bt="(" />
+   	  <w name="D.menuName" des=""  reqName="menuIdName" dtype="ch" oper="rlike"  lg="AND" bt=")" />
+      <w name="A.CreateTime" des=""  reqName="startTime" dtype="ch" oper="&gt;="  lg="AND" bt="(" />
+   	  <w name="A.CreateTime" des=""  reqName="endTime" dtype="ch" oper="&lt;="  lg="" bt=")" />
+    </where>
+    <select>
+      <f name="B.UnitName" alias="" ctype="" />
+      <f name="C.LoginName" alias="" ctype="" />
+      <f name="A.ip" alias="" ctype="" />
+      <f name="D.MenuType" alias="" ctype="A9" />
+      <f name="D.MenuName" alias="" ctype="" />
+      <f name="A.MenuUrl" alias="" ctype="" />
+      <f name="A.CreateTime" alias="" ctype="" />
+      <f name="A.BrowseName" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_OperLog as A, s_dept as B, s_User as C, s_Menu as D WHERE A.CreateUnitID = B.UnitId AND A.UserId = C.UserId AND A.MenuId = D.MenuId </from>
+    <orderby>B.UnitID, C.LoginName, A.CreateTime</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<item>select CONCAT(s_dictype.dictypeName,dicid), dicname, dicparentid, s_dic.dictypeid, isleaf, jianpin, s_dic.sortno from s_dic, s_dictype where s_dictype.dictypeid=s_dic.dictypeid order by dicid</item>
+	<item></item>
+</root>

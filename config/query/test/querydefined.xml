@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool> </pool>     
+    <name value="query1" />
+    <where>
+      <w name="id" des="this is id"  reqName="formId" dtype="int" oper="&gt;"  lg="and" bt="((" />
+      <w name="name" des="this is name"  reqName="formName" dtype="ch" oper="&gt;="  lg="and" bt=")" />
+      <w name="age" des="this is age"  reqName="formage" dtype="ch" oper="&lt;"  lg="and" bt="" />
+      <w name="birth" des="this is birth"  reqName="formbirth" dtype="date" oper="&lt;="  lg="and" bt=")" />
+      <w name="salary" des="this is salary"  reqName="formsalary" dtype="ch" oper="="  lg="and" bt="(" />
+      <w name="years" des="this is years"  reqName="formworkmates" dtype="ch" oper="like"  lg="and" bt="" />
+      <w name="workmates" des="this is workmates"  reqName="formworkmates" dtype="ch" oper="llike"  lg="or" bt="" />
+      <w name="workmates" des="this is workmates"  reqName="formworkmates" dtype="ch" oper="rlike"  lg="and" bt="" />
+      <w name="workmates" des="this is workmates"  reqName="formcharin" dtype="ch" oper="in"     lg="and" bt=")" />
+      <w name="years" des="this is workmates"  reqName="formyears" dtype="int" oper="in"     lg="" bt="" />
+    </where>
+    <select>
+      <f name="id" alias="描述" ctype="123" />
+      <f name="count(age)" alias="" ctype="" />
+      <f name="salary" alias="salary" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from> tableA, tableB </from>
+    <orderby>id, name</orderby>
+    <groupby>id</groupby>
+    <having>salary > 500</having>
+    
+    <!-- 联合语句查询 -->
+    <union>
+	    <where>
+	      <w name="id" des="this is id"  reqName="formId" dtype="int" oper="&gt;"  lg="and" bt="((" />
+	      <w name="name" des="this is name"  reqName="formName" dtype="ch" oper="&gt;="  lg="and" bt=")" />
+	      <w name="age" des="this is age"  reqName="formName" dtype="ch" oper="&lt;"  lg="and" bt="" />
+	      <w name="birth" des="this is birth"  reqName="formName" dtype="date" oper="&lt;="  lg="and" bt=")" />
+	      <w name="salary" des="this is salary"  reqName="formName" dtype="ch" oper="="  lg="and" bt="(" />
+	      <w name="years" des="this is years"  reqName="formName" dtype="ch" oper="like"  lg="" bt=")" />
+	    </where>
+	    
+	    <select>
+	      <f name="id" alias="描述" ctype="123" />
+	      <f name="count(age)" alias="" ctype="" />
+	      <f name="salary" alias="salary" ctype="" />
+	    </select>
+	    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+	    <from> tableA, tableB where a.id=b.id and deleteflag='F'</from>
+	    <where> tableA, tableB where a.id=b.id and deleteflag='{}F'</where>
+	    <orderby>id, name</orderby>
+	    <groupby>id</groupby>
+	    <having>salary > 600</having>
+    </union>
+                    
+    <power>
+      <menuid>003</menuid>
+      <deptfield>id</deptfield>
+    </power>
+    <!-- 输出excel文件 -->
+    <totxt>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </totxt>
+    <!-- 输出excel文件 -->
+    <toexcel>
+        <model>在模板目录中存放的excel模板文件名</model>
+        <firstrow>数据在excel中开始输出的开始行索引</firstrow>
+        <firstcol>数据在excel中开始输出的开始列索引</firstcol>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </toexcel>
+    <!-- 输出pdf文件 -->
+    <topdf>
+        <model>在模板目录中存放的pdf模板文件名,为html格式，此文件作为导出文件的标题</model>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </topdf>
+    <!-- 输出pdf文件 -->
+    <toword>
+        <model>在模板目录中存放的word模板文件名</model>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </toword>
+    
+    <!-- 页小计 -->
+    <pageCount des='页小计，用于数值型字段的页面合计信息，在每个页后面追加一行数值型数据的当前页合计值'>
+        <isview>是否显示小计 T或F</isview>
+        <dataindex>统计字段的索引，索引间以逗号分隔</dataindex>
+    </pageCount>    
+    
+    <!-- 页总计 -->
+    <totalsum  des='在最后行显示汇总数据，此操作解析SQL语句重新生成汇总SQL进行汇总，值为T或F'>
+        <isview>是否显示总计 T或F</isview>
+        <viewindex>显示位置索引，索引间以逗号分隔</viewindex>
+        <select>对应字段索引的字段,例如: sum(f1),sum(f2),max(f3)</select>
+        <unionselect>对应字段索引的字段,例如: sum(f1),sum(f2),max(f3)</unionselect>
+    </totalsum>    
+  </query>
+  <query>
+    <pool>mysql</pool>     
+    <name value="mysql" />
+    <where>
+      <w name="id" des="查询名称"  reqName="formId" dtype="int" oper=">="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="id" alias="" ctype="" />
+      <f name="name" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>tableA</from>
+    <orderby>id,name</orderby>
+    <groupby></groupby>
+    <having></having>
+         
+    <power>
+      <menuid>该查询对应的功能菜单ID，用于过滤用户数据权限</menuid>
+      <deptfield>该查询中用于过滤组织部门数据权限的字段名称</deptfield>
+    </power>
+    <!-- 输出excel文件 -->
+    <totxt>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </totxt>
+    <!-- 输出excel文件 -->
+    <toexcel>
+        <model>在模板目录中存放的excel模板文件名</model>
+        <firstrow>数据在excel中开始输出的开始行索引</firstrow>
+        <firstcol>数据在excel中开始输出的开始列索引</firstcol>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </toexcel>
+    <!-- 输出pdf文件 -->
+    <topdf>
+        <model>在模板目录中存放的pdf模板文件名,为html格式，此文件作为导出文件的标题</model>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </topdf>
+    <!-- 输出pdf文件 -->
+    <toword>
+        <model>在模板目录中存放的word模板文件名</model>
+        <dataIndex>导出的数据字段索引，索引间以逗号分隔</dataIndex>
+    </toword>
+    
+    <!-- 页小计 -->
+    <pageCount des='页小计，用于数值型字段的页面合计信息，在每个页后面追加一行数值型数据的当前页合计值'>
+        <isview>是否显示小计 T或F</isview>
+        <dataindex>统计字段的索引，索引间以逗号分隔</dataindex>
+    </pageCount>    
+    
+    <!-- 页总计 -->
+    <totalsum  des='在最后行显示汇总数据，此操作解析SQL语句重新生成汇总SQL进行汇总，值为T或F'>
+        <isview>是否显示总计 T或F</isview>
+        <viewindex>显示位置索引，索引间以逗号分隔</viewindex>
+        <select>对应字段索引的字段,例如: sum(f1),sum(f2),max(f3)</select>
+        <unionselect>对应字段索引的字段,例如: sum(f1),sum(f2),max(f3)</unionselect>
+    </totalsum>    
+  </query>
+</root>

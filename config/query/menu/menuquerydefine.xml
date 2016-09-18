@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="menuquerydefine_search" />
+    <where>
+      <w name="a.MenuId" des=""  reqName="menuId" dtype="ch" oper="="  lg="and" bt="" />
+      <w name="a.MenuName" des=""  reqName="menuName" dtype="ch" oper="like"  lg="and" bt="" />
+      <w name="B.MenuId" des=""  reqName="parentMenuIdName" dtype="ch" oper="="  lg="or" bt="(" />
+      <w name="B.MenuName" des=""  reqName="parentMenuIdName" dtype="ch" oper="like"  lg="" bt=")" />
+    </where>
+    <select>
+      <f name="a.MenuID" alias="" ctype="" />
+      <f name="a.MenuName" alias="" ctype="" />
+      <f name="a.MenuParentID" alias="" ctype="" />
+      <f name="b.MenuName" alias="parentMenuName" ctype="" />
+      <f name="a.MenuURL" alias="" ctype="" />
+      <f name="a.SortNo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>S_Menu as a left join (SELECT A.MenuId, A.MenuName FROM s_Menu as A, (SELECT MenuParentID FROM s_Menu WHERE MenuParentID &lt;&gt; '' AND MenuParentID IS NOT NULL AND DeleteFlag = '0') as B WHERE A.MenuId = B.MenuParentID) as b on a.MenuParentId = b.MenuId  WHERE a.DeleteFlag = '0'  </from>
+    <orderby>A.MenuParentID, A.SortNo, A.MenuName</orderby>
+    <groupby>a.MenuID,a.MenuName,a.MenuParentID,b.MenuName,a.MenuURL,a.SortNo</groupby>
+    <having></having>
+  </query>
+ <query>
+    <pool></pool>     
+    <name value="menuquerydefine_searchfordelete" />
+    <where>
+      <w name="a.MenuParentID" des=""  reqName="menuId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="a.MenuID" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>S_Menu as a WHERE a.DeleteFlag = '0'  </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+</root>

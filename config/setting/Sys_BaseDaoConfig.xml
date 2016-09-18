@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<!-- 必须有一个name=default的当开发中不指定连接名时调用缺省的 -->
+	<!-- 调用连接池的例子 -->
+	<con>
+		<!--连接数据库类型：oracle、db2、mssql、mysql、sybase等 -->
+		<databasename>default</databasename>
+		<!--是否是连接池，T或F -->
+		<ispool>T</ispool>
+		<!--连接池名称，在dao.getconn()中的调用参数 -->
+		<!-- <name>java:jboss/datasources/MySqlDS</name> -->
+		<name>test</name>
+		<!-- 连接数据库的驱动串 -->
+		<driver></driver>
+		<!--连接数据库的URL包含IP等信息 -->
+		<url></url>
+		<!--用户名 -->
+		<username>root</username>
+		<!-- 密码 -->
+		<pwd>admin</pwd>
+	</con>
+	
+	<con>
+		<!--连接数据库类型：oracle、db2、mssql、mysql、sybase等 -->
+		<databasename>mysqltest</databasename>
+		<!--是否是连接池，T或F -->
+		<ispool>T</ispool>
+		<!--连接池名称，在dao.getconn()中的调用参数 -->
+		<name>java:jboss/datasources/MySqlDSTest</name>
+		<!-- 连接数据库的驱动串 -->
+		<driver></driver>
+		<!--连接数据库的URL包含IP等信息 -->
+		<url></url>
+		<!--用户名 -->
+		<username></username>
+		<!-- 密码 -->
+		<pwd></pwd>
+	</con>	
+	
+	<!-- 调用JDBC直接连接的例子 -->
+	<con>
+		<!--连接数据库类型：oracle、db2、mssql、mysql、sybase等 -->
+		<databasename>mysql</databasename>
+		<!--是否是连接池，T或F -->
+		<ispool>F</ispool>
+		<!--连接名称，在dao.getconn()中的调用参数 -->
+		<name>conn1</name>
+		<!-- 连接数据库的驱动串 -->
+		<driver>com.mysql.jdbc.Driver</driver>
+		<!--连接数据库的URL包含IP等信息 -->
+		<url>jdbc:mysql://localhost:3306/test</url>
+		<!--用户名 -->
+		<username>root</username>
+		<!-- 密码 -->
+		<pwd></pwd>
+	</con>
+
+</root>

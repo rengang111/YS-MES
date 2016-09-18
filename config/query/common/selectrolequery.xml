@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="selectrolequery_init" />
+    <where>
+    	<w name="A.UnitID" des=""  reqName="userUnitId" dtype="ch" oper="rlike"  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="a.roleid" alias="" ctype="" />
+		<f name="a.RoleName" alias="" ctype="" />
+		<f name="a.RoleType" alias="" ctype="A0" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_role as a WHERE a.DeleteFlag = '0'</from>
+    <orderby>a.SortNo, a.RoleName</orderby>
+    <groupby></groupby>
+    <having></having>  
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="selectrolequery_search" />
+    <where>
+        <w name="a.roleName" des=""  reqName="roleIdName" dtype="ch" oper="like"  lg="" bt="" />
+        <w name="A.UnitID" des=""  reqName="userUnitId" dtype="ch" oper="rlike"  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="a.roleid" alias="" ctype="" />
+		<f name="a.RoleName" alias="" ctype="" />
+		<f name="a.RoleType" alias="" ctype="A0" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_role as a WHERE a.DeleteFlag = '0'</from>
+    <orderby>a.SortNo, a.RoleName</orderby>
+    <groupby></groupby>
+    <having></having> 
+  </query>
+
+</root>

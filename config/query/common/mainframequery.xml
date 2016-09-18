@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getallmenups" />
+    <where>
+    	<w name="MenuNnableFlag" des="" reqName="menunnableflag" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+    	<f name="menuid" alias="" ctype="" />
+		<f name="menuName" alias="" ctype="" />
+		<f name="menuparentid" alias="" ctype="" />
+		<f name="menuUrl" alias="" ctype="" />
+		<f name="sortNo" alias="" ctype="" />
+		<f name="menuDes" alias="" ctype="UN" />
+		<f name="menuIcon1" alias="" ctype="" />
+		<f name="menuIcon2" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_Menu WHERE DeleteFlag = '0' </from>
+    <orderby>menuparentid, sortno, menuname</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getrelationalmenuid" />
+    <where>
+    	<w name="menuId" des="" reqName="menuid" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+    	<f name="RelationalMenuID" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_Menu WHERE MenuNnableFlag = '0' and DeleteFlag = '0' and MenuViewFlag = 'T' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getsysmenucount" />
+    <where>
+    	<w name="MenuURL" des="" reqName="menuurl" dtype="ch" oper="="  lg="AND" bt="" />
+    	<w name="menuType" des="" reqName="menutype" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="count(menuid)" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_Menu WHERE MenuNnableFlag = '0' and DeleteFlag = '0' and MenuViewFlag = 'T' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getroleidcount" />
+    <where>
+    	<w name="a.menuid" des="" reqName="menuid" dtype="ch" oper="="  lg="AND" bt="" />
+    	<w name="b.userId" des="" reqName="userid" dtype="ch" oper="="  lg="AND" bt="" />
+    	<w name="c.MenuType" des="" reqName="menutypelimit" dtype="ch" oper="in"  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="count(a.roleid)" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_rolemenu as a, s_Power as b, s_Menu as c WHERE a.DeleteFlag = '0' and b.roleid = a.roleid and b.DeleteFlag = '0' and c.menuid = a.menuid and c.MenuNnableFlag = '0' and c.MenuViewFlag = 'T' and c.DeleteFlag = '0' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getrelationalroleidcount" />
+    <where>
+    	<w name="a.menuid" des="" reqName="menuid" dtype="ch" oper="in"  lg="AND" bt="" />
+    	<w name="b.userId" des="" reqName="userid" dtype="ch" oper="="  lg="AND" bt="" />
+    	<w name="c.MenuType" des="" reqName="menutypelimit" dtype="ch" oper="in"  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="count(a.roleid)" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_rolemenu as a, s_Power as b, s_Menu as c WHERE a.DeleteFlag = '0' and b.roleid = a.roleid and b.DeleteFlag = '0' and c.menuid = a.menuid and c.MenuNnableFlag = '0' and c.MenuViewFlag = 'T' and c.DeleteFlag = '0' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+  </query> 
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getadminroleidcount" />
+    <where>
+    	<w name="a.UserId" des="" reqName="userid" dtype="ch" oper="="  lg="AND" bt="" />
+    	<w name="b.roletype" des="" reqName="roletype" dtype="ch" oper="in"  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="count(a.RoleID)" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_Power as a, s_Role as b WHERE a.DeleteFlag = '0' AND b.roleid = a.roleid AND b.DeleteFlag = '0'</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getusermenu" />
+    <where>
+    	<w name="a.UserId" des="" reqName="userid" dtype="ch" oper="="  lg="AND" bt="" />
+    	<w name="c.MenuType" des="" reqName="menutypelimit" dtype="ch" oper="in"  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="c.menuid" alias="" ctype="" />
+    	<f name="c.menuname" alias="" ctype="" />
+    	<f name="c.menuparentid" alias="" ctype="" />
+    	<f name="c.menuUrl" alias="" ctype="" />
+    	<f name="c.sortNo" alias="" ctype="" />
+    	<f name="c.menuDes" alias="" ctype="" />
+    	<f name="c.menuIcon1" alias="" ctype="" />
+    	<f name="c.menuIcon2" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_power as a, s_rolemenu as b, s_menu as c where a.deleteflag = '0' and b.roleid = a.roleid and b.deleteFlag = '0' and c.menuid = b.menuid and c.MenuNnableFlag = '0' and c.MenuViewFlag = 'T' and c.DeleteFlag = '0'</from>
+    <orderby>c.menuid, c.menuparentid, c.sortNo</orderby>
+    <groupby>c.menuid,c.menuname,c.menuparentid,c.menuUrl,c.sortNo,c.menuDes,c.menuIcon1,c.menuIcon2</groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getusermenusa" />
+    <where>
+    	<w name="c.MenuType" des="" reqName="menutypelimit" dtype="ch" oper="in"  lg="AND" bt="" />
+    	<w name="c.MenuNnableFlag" des="" reqName="menunnableflag" dtype="ch" oper="="  lg="AND" bt="" />
+    	<w name="c.MenuViewFlag" des="" reqName="menuviewflag" dtype="ch" oper="="  lg="AND" bt="" />   	
+    </where>
+    <select>
+    	<f name="c.menuid" alias="" ctype="" />
+    	<f name="c.menuname" alias="" ctype="" />
+    	<f name="c.menuparentid" alias="" ctype="" />
+    	<f name="c.menuUrl" alias="" ctype="" />
+    	<f name="c.sortNo" alias="" ctype="" />
+    	<f name="c.menuDes" alias="" ctype="" />
+    	<f name="c.menuIcon1" alias="" ctype="" />
+    	<f name="c.menuIcon2" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_menu as c where c.DeleteFlag = '0'</from>
+    <orderby>c.menuid, c.menuparentid, c.sortNo</orderby>
+    <groupby>c.menuid,c.menuname,c.menuparentid,c.menuUrl,c.sortNo,c.menuDes,c.menuIcon1,c.menuIcon2</groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getallmenuinfosa" />
+    <where>
+    	<w name="MenuType" des="" reqName="menutypelimit" dtype="ch" oper="in"  lg="" bt="" /> 	
+    </where>
+    <select>
+    	<f name="DISTINCT MenuId" alias="" ctype="" />
+    	<f name="MenuName" alias="" ctype="" />
+    	<f name="MenuIcon1" alias="" ctype="" />
+    	<f name="MenuParentId" alias="" ctype="" />
+    	<f name="SortNo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_menu where MenuViewFlag = 'T' and MenuNnableFlag = '0' and DeleteFlag = '0'</from>
+    <orderby>menuparentid, sortno, menuname</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query> 
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getallmenuinfo" />
+    <where>
+    	<w name="C.MenuType" des="" reqName="menutypelimit" dtype="ch" oper="in"  lg="AND" bt="" />
+		<w name="A.UserId" des="" reqName="userId" dtype="ch" oper="="  lg="AND" bt="" />
+		<w name="A.UnitID" des="" reqName="userUnitId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="DISTINCT C.MenuId" alias="" ctype="" />
+    	<f name="C.MenuName" alias="" ctype="" />
+    	<f name="C.MenuIcon1" alias="" ctype="" />
+    	<f name="C.MenuParentId" alias="" ctype="" />
+    	<f name="C.SortNo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_Power as A, s_RoleMenu as B, s_Menu as C where A.DeleteFlag = '0' AND B.DeleteFlag = '0' AND C.MenuViewFlag = 'T' and C.MenuNnableFlag = '0' and C.DeleteFlag = '0' AND B.RoleID = A.RoleID AND C.MenuId = B.MenuId</from>
+    <orderby>menuparentid, sortno, menuname</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query> 
+    
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getalldeptps" />
+    <where>
+    	<w name="a.UserID" des="" reqName="userid" dtype="ch" oper="="  lg="AND" bt="" />
+    	<w name="b.roletype" des="" reqName="roletype" dtype="ch" oper="in"  lg="AND" bt="" /> 
+    	<w name="d.menuId" des="" reqName="menuid" dtype="ch" oper="="  lg="" bt="" /> 
+    	<w name="c.parentid" des="" reqName="parentid" dtype="ch" oper="="  lg="" bt="" /> 
+    </where>
+    <select>
+    	<f name="DISTINCT c.UnitID" alias="" ctype="" />
+    	<f name="c.UnitName" alias="" ctype="" />
+    	<f name="c.UnitSimpleDes" alias="" ctype="" />
+    	<f name="c.jianpin" alias="" ctype="" />
+    	<f name="c.ParentID" alias="" ctype="" />
+    	<f name="c.DeptGuid" alias="" ctype="" />
+    	<f name="c.SortNo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from> s_Power as a LEFT JOIN (SELECT roleid, roletype FROM s_Role WHERE deleteFlag = '0') as b ON b.roleid = a.roleid LEFT JOIN (SELECT unitid, unitName, UnitSimpleDes, jianpin, ParentId, DeptGuid, SortNo FROM s_dept WHERE deleteFlag = '0') as c ON c.unitid = a.unitid LEFT JOIN (SELECT roleId, menuId FROM s_RoleMenu WHERE deleteFlag = '0') d ON d.roleId = a.roleId WHERE a.DeleteFlag = '0'</from>
+    <orderby>c.unitid, c.parentid, c.sortno</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query> 
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getalldeptps_admin" />
+    <where>
+    	<w name="A.UnitID" des="" reqName="unitId" dtype="ch" oper="rlike"  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="DISTINCT A.UnitID" alias="" ctype="" />
+    	<f name="A.UnitName" alias="" ctype="" />
+    	<f name="A.UnitSimpleDes" alias="" ctype="" />
+    	<f name="A.jianpin" alias="" ctype="" />
+    	<f name="A.ParentID" alias="" ctype="" />
+    	<f name="A.DeptGuid" alias="" ctype="" />
+    	<f name="A.SortNo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_dept as A WHERE A.DeleteFlag = '0'</from>
+    <orderby>A.unitid, A.parentid, A.sortno</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getleafdept_admin" />
+    <where>
+    	<w name="A.parentid" des="" reqName="parentid" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="DISTINCT A.UnitID" alias="" ctype="" />
+    	<f name="A.UnitName" alias="" ctype="" />
+    	<f name="A.UnitSimpleDes" alias="" ctype="" />
+    	<f name="A.jianpin" alias="" ctype="" />
+    	<f name="A.ParentID" alias="" ctype="" />
+    	<f name="A.DeptGuid" alias="" ctype="" />
+    	<f name="A.SortNo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_dept as A WHERE A.DeleteFlag = '0'</from>
+    <orderby>A.unitid, A.parentid, A.sortno</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>    
+</root>

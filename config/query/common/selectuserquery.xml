@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="selectuserquery_init" />
+    <where>
+    	<w name="a.EnableStartTime" des=""  reqName="startTime" dtype="ch" oper="&lt;="  lg="AND" bt="" />
+    	<w name="a.EnableEndTime" des=""  reqName="endTime" dtype="ch" oper="&gt;"  lg="AND" bt="" />
+    	<w name="A.UnitID" des=""  reqName="userUnitId" dtype="ch" oper="rlike"  lg="" bt="" />
+    </where>
+    <select>
+    	<f name="a.UserID" alias="" ctype="" />
+		<f name="a.loginid" alias="" ctype="" />
+		<f name="a.LoginName" alias="" ctype="" />
+		<f name="a.sex" alias="" ctype="A6" />
+		<f name="a.Duty" alias="" ctype="A3" />
+		<f name="a.UnitId" alias="" ctype="A1" />
+		<f name="a.HandPhone" alias="" ctype="" />
+		<f name="a.jianpin" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_User as a WHERE a.DeleteFlag = '0' AND a.EnableFlag = '0' AND a.lockFlag = '0' </from>
+    <orderby>a.SortNo, a.LoginName</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="selectuserquery_search" />
+    <where>
+        <w name="a.LoginID" des=""  reqName="userIdName" dtype="ch" oper="="  lg="OR" bt="(" />
+    	<w name="a.LoginName" des=""  reqName="userIdName" dtype="ch" oper="like"  lg="AND" bt=")" />
+    	<w name="a.EnableStartTime" des=""  reqName="startTime" dtype="ch" oper="&lt;="  lg="AND" bt="" />
+    	<w name="a.EnableEndTime" des=""  reqName="endTime" dtype="ch" oper="&gt;"  lg="AND" bt="" />
+    	<w name="A.UnitID" des=""  reqName="userUnitId" dtype="ch" oper="rlike"  lg="" bt="" />    	
+    </where>
+    <select>
+    	<f name="a.UserID" alias="" ctype="" />
+		<f name="a.loginid" alias="" ctype="" />
+		<f name="a.LoginName" alias="" ctype="" />
+		<f name="a.sex" alias="" ctype="" />
+		<f name="a.Duty" alias="" ctype="" />
+		<f name="a.UnitId" alias="" ctype="UN" />
+		<f name="a.HandPhone" alias="" ctype="" />
+		<f name="a.jianpin" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>s_User as a WHERE a.DeleteFlag = '0' AND a.EnableFlag = '0' AND a.lockFlag = '0' </from>
+    <orderby>a.SortNo, a.LoginName</orderby>
+    <groupby></groupby>
+    <having></having>   
+  </query>
+
+</root>

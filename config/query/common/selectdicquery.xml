@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="selectdicquery_search" />
+    <where>
+      <w name="a.DicId" des=""  reqName="dicCodeName" dtype="ch" oper="="  lg="OR" bt="(" />
+      <w name="a.DicName" des=""  reqName="dicCodeName" dtype="ch" oper="like"  lg="AND" bt=")" />
+      <w name="B.DicId" des=""  reqName="dicParentCodeName" dtype="ch" oper="="  lg="OR" bt="(" />
+      <w name="B.DicName" des=""  reqName="dicParentCodeName" dtype="ch" oper="like"  lg="AND" bt=")" />
+      <w name="C.DicTypeName" des=""  reqName="dicTypeID" dtype="ch" oper="like"  lg="OR" bt="(" />
+      <w name="C.DicTypeID" des=""  reqName="dicTypeID" dtype="ch" oper="="  lg="" bt=")" />
+    </where>
+    <select>
+      <f name="a.DicID" alias="" ctype="" />
+      <f name="a.DicName" alias="" ctype="" />
+      <f name="a.DicPrarentID" alias="" ctype="" />
+      <f name="a.DicTypeID" alias="" ctype="" />
+      <f name="b.DicName" alias="parentDicName" ctype="" />
+      <f name="a.SortNo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_DIC as a left join (SELECT A.DicID, A.DicName, A.DicTypeId FROM s_DIC as A, (SELECT DicPrarentID FROM s_DIC WHERE DicPrarentID &lt;&gt; '' AND DicPrarentID IS NOT NULL AND DeleteFlag = '0') as B WHERE A.DicID = B.DicPrarentID) as b on a.DicPrarentID = b.DicID and b.dictypeid = a.dictypeid left join s_DICTYPE as c on c.DicTypeId = a.DicTypeId  WHERE a.DeleteFlag = '0'  </from>
+    <orderby>A.DicPrarentID, A.SortNo, A.DicName</orderby>
+    <groupby>a.DicID,a.DicName,a.DicPrarentID,a.DicTypeID,b.DicName,a.SortNo</groupby>
+    <having></having>  
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="selectdicquery_alldatasearch" />
+    <where>
+    	<w name="a.DicTypeId" des=""  reqName="dicTypeId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="a.DicID" alias="" ctype="" />
+      <f name="a.DicName" alias="" ctype="" />
+      <f name="a.DicPrarentID" alias="" ctype="" />
+      <f name="a.SortNo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_DIC as a WHERE a.DeleteFlag = '0'  </from>
+    <orderby>A.DicPrarentID, A.SortNo, A.DicName</orderby>
+    <groupby></groupby>
+    <having></having>  
+  </query>
+</root>
