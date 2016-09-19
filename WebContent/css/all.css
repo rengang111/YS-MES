@@ -37,9 +37,9 @@ header{
 /*header和footer之间的区域  */
 #container {
 	height:auto;
-    margin:0 50px;
+    margin:0 30px;
     min-height:700px;
-    width:1580px;
+    width:1060px;
    /* width:95%;*/
 }
 
