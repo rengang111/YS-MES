@@ -9,7 +9,10 @@
 <script type="text/javascript">
   var ctx = '${ctx}'; 
 </script>
+<script type="text/javascript" src="${ctx}/js/jquery-2.1.3.js"></script>
+<!-- 
 <script type="text/javascript" src="${ctx}/js/jquery-1.11.1.min.js"></script>
+ -->
 <script type="text/javascript" src="${ctx}/js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.form.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.fancybox.js"></script>
@@ -18,14 +21,6 @@
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/css/main.css">
-
-<link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />
-<script type="text/javascript" src="${ctx}/js/jquery-2.1.3.js"></script>
-<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
-
 <script type="text/javascript" src="${ctx}/js/jquery.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/easyui-lang-zh_CN.js"></script>
@@ -33,6 +28,12 @@
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
 <script type="text/javascript" src="${ctx}/js/layer.js"></script>
 
+<link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
+<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />
+
+<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
 
 <Script>
 	function callMenuSelect(menuControl, menuControlView) {
