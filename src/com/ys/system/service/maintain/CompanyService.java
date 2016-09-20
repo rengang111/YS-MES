@@ -114,6 +114,7 @@ public class CompanyService extends BaseService {
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data) {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
 		try {
 			data = URLDecoder.decode(data, "UTF-8");
@@ -131,20 +132,23 @@ public class CompanyService extends BaseService {
 		}
 		
 		String length = getJsonData(data, "iDisplayLength");
-		if (length != null){			
+		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		String key1 = getJsonData(data, "keyword1");
-		String key2 = getJsonData(data, "keyword2");
+		String key1 = getJsonData(data, "keywords1");
+		String key2 = getJsonData(data, "keywords1");
+		userDefinedSearchCase.put("keywords1", key1);
+		userDefinedSearchCase.put("keywords1", key2);
 		
 		BaseModel dataModel = new BaseModel();
 
-		dataModel.setQueryFileName("/yssample/yssamplequerydefine");
-		dataModel.setQueryName("yssamplequerydefine_search");
+		dataModel.setQueryFileName("/organization/orgquerydefine");
+		dataModel.setQueryName("orgquerydefine_search");
 		try {
 			BaseQuery baseQuery = new BaseQuery(request, dataModel);
-			baseQuery.getYsQueryData(iStart, iEnd);	
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			baseQuery.getYsQueryData(iStart, iEnd);	 
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

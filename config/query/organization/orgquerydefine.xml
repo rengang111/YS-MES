@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="orgquerydefine_search1" />
+    <where></where>
+    <select>
+      <f name="A.UserID" alias="" ctype="" />
+      <f name="A.LoginID" alias="" ctype="" />
+      <f name="A.LoginName" alias="" ctype="" />
+      <f name="A.UnitId" alias="" ctype="A1" />
+      <f name="A.Duty" alias="" ctype="A3" />
+      <f name="A.ModifyTime" alias="" ctype="" />
+	  <f name="HEX(A.Photo)" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>S_USER AS A </from>
+    <orderby>B.UnitName, A.SORTNO, A.LoginID, A.LoginName</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="orgquerydefine_search" />
+    <where>
+    	<w name="S.DicName" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.OrgID" alias="" ctype="" />
+      <f name="A.Category" alias="" ctype="" />
+      <f name="A.ShortName" alias="" ctype="" />
+      <f name="A.FullName" alias="" ctype="" />
+      <f name="A.Address" alias="" ctype="" />
+      <f name="S.DicName" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>YW_ORGANIZATION AS A  LEFT JOIN S_DIC AS S   ON   A.Category=S.DicID where S.DicTypeID='JGLB'</from>
+    <orderby>A.Category,A.OrgID</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+</root>

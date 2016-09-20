@@ -1,18 +1,17 @@
-<%@ page language="java" pageEncoding="UTF-8"
-	contentType="text/html; charset=UTF-8"%>
+<%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="form"  uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <!DOCTYPE HTML>
 <html>
 <head>
+<title>公司信息维护</title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 
 <%@ include file="../common/common.jsp"%>
 
-<title>公司信息维护</title>
 <script type="text/javascript">
 
 function doSearch() {
@@ -270,16 +269,16 @@ function initEvent(){
 
 					<table class="form" width="100%">
 						<tr>
-							<td>
+							<td width="80px">
 								<label>机构类别：</label></td>
 							<td colspan="3">								
-									</td></tr>
+									<form:input path="compName" class="short" /></td></tr>
 						<tr>
 							<td>
 								<label>机构简称：</label></td>
 							<td>
 								<form:input path="compName" class="short" /></td>
-							<td>
+							<td width="80px">
 								<label>机构全称：</label></td>
 							<td>								
 								<form:input path="compFullname" class="long" /></td></tr>

@@ -35,15 +35,14 @@ public class CompanyAction extends BaseAction {
 	
 	@Autowired CompanyService companyService;
 	
-	//@RequestMapping(value="company", method = RequestMethod.GET)
-	//public ModelAndView doInit(@RequestBody String data, @ModelAttribute("company")CompanyModel company, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	@RequestMapping(value="doInit", method = RequestMethod.GET)
+	public String doInit(@RequestBody String data, @ModelAttribute("company")CompanyModel company, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
-		//return companyService.doInit(request, data)
-		//return "/maintain/company";
+		return "/maintain/orgShow";
 		
-	//}
+	}
 	
-	@RequestMapping(value = "/company", method = RequestMethod.GET)
+	@RequestMapping(value = "retrieve", method = RequestMethod.GET)
 	public String create(@ModelAttribute("company") CompanyModel company) throws Exception {
 		//ModelAndView mv = new ModelAndView("/maintain/company");
 
@@ -64,13 +63,11 @@ public class CompanyAction extends BaseAction {
 		return "/maintain/company";
 	}
 	
-	@RequestMapping(value="yssearch1")
+	@RequestMapping(value="doSearch")
 	@ResponseBody
 	public HashMap<String, Object> doAdd(@RequestBody String data, @ModelAttribute("company")CompanyModel company, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){ 
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
-		return null;
-		//return ysSampleService.doSearch(request, data);
+		return companyService.doSearch(request, data);
 		
 	}
 

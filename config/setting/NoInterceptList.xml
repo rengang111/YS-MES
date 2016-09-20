@@ -10,6 +10,7 @@
 	<url>${ctx}/js/layer/*</url>
 	<url>${ctx}/img/*</url>
 	<url>${ctx}/test123</url>
+	<url>${ctx}/doInit</url>
 	<url>${ctx}/company</url>
 	<url>${ctx}/ysdemomain</url>
 	<url>${ctx}/yssearch</url>
@@ -17,5 +18,34 @@
 	<url>${ctx}/saveck</url>
 	<url>${ctx}/jsp/ckeditor</url>
 	<url>${ctx}/jsp/ckeditor/*</url>}
-	<url>${ctx}/uploadckeditorimagefile</url>
+	<url>${ctx}/upload/ckeditor/image/file</url>
+	<url>${ctx}/plugins/clockPicker/*</url>
+	<url>${ctx}/plugins/datatables/*</url>
+	<url>${ctx}/plugins/datatables/css/*</url>
+	<url>${ctx}/plugins/datatables/js/*</url>
+	<url>${ctx}/plugins/datatables/images/*</url>
+	<url>${ctx}/plugins/datatablesSelect/*</url>
+	<url>${ctx}/plugins/datatablesTools/swf/*</url>
+	<url>${ctx}/plugins/datatablesTools/css/*</url>
+	<url>${ctx}/plugins/datatablesTools/js/*</url>
+	<url>${ctx}/plugins/datatablesTools/images/*</url>
+	<url>${ctx}/plugins/highcharts/*</url>
+	<url>${ctx}/plugins/jflip/*</url>
+	<url>${ctx}/plugins/jquery-auto-play-image/css/*</url>
+	<url>${ctx}/plugins/jquery-auto-play-image/images/*</url>
+	<url>${ctx}/plugins/jquery-auto-play-image/js/*</url>
+	<url>${ctx}/plugins/layer/*</url>
+	<url>${ctx}/plugins/layer/skin/*</url>
+	<url>${ctx}/plugins/layer/skin/default/*</url>
+	<url>${ctx}/plugins/layer/extend/*</url>
+	<url>${ctx}/plugins/toastMessage/javascript/*</url>
+	<url>${ctx}/plugins/toastMessage/resources/*</url>
+	<url>${ctx}/plugins/toastMessage/resources/css/*</url>
+	<url>${ctx}/plugins/toastMessage/resources/images/*</url>
+	<url>${ctx}/plugins/validate/*</url>
+	<url>${ctx}/plugins/validate/css/*</url>
+	<url>${ctx}/plugins/validate/images/*</url>
+	<url>${ctx}/plugins/validate/localization/*</url>
+	
+	<url>${ctx}/doSearch</url>
 </root>
