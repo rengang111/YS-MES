@@ -5,6 +5,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix='fmt'%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <script type="text/javascript">
   var ctx = '${ctx}'; 
@@ -27,13 +28,15 @@
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
 <script type="text/javascript" src="${ctx}/js/layer.js"></script>
-
+<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"	charset="utf-8"></script>
+<script type="text/javascript" src="${ctx}/js/dataTables.tableTools.js"	charset="utf-8"></script>
+<script type="text/javascript" src="${ctx}/js/dataTables.select.js"></script>
+<script type="text/javascript" src="${ctx}/plugins/validate/jquery.validate.js"	charset="utf8"></script>
+<script type="text/javascript" src="${ctx}/plugins/validate/localization/messages_zh.js" charset="utf8"></script>
 <link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />
-
-<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
 
 <Script>
 	function callMenuSelect(menuControl, menuControlView) {
@@ -55,6 +58,26 @@
 	function callDicTypeSelect(dicTypeControl, dicTypeControlView, type, dicTypeId, treeType) {
 		popupWindow("selectdictype", "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + dicTypeControl + "&dicControlView=" + dicTypeControlView + "&type=" + type + "&dicTypeId=" + dicTypeId + "&treeType=0", 800, 600);
 		
+	}
+	function openLayer(url, width, height) {
+		if (width == "") {
+			width = '900px';
+		} else {
+			width = width + 'px';
+		}
+		if (height == "") {
+			height = '450px'
+		} else {
+			height = height + 'px';
+		}
+		parent.layer.open({
+			type : 2,
+			title : false,
+			area : [ width, height ], 
+			scrollbar : false,
+			title : false,
+			content : url
+		});
 	}
 </Script>
 

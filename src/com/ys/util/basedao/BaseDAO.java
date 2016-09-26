@@ -437,11 +437,11 @@ public class BaseDAO {
 						}
 						if (!cType.equals("")) {
 							String codeValue = DicUtil.getCodeValue(cType + rs.getString(i));
-							rowData.put(md.getColumnName(i), codeValue);
+							rowData.put(md.getColumnLabel(i), codeValue);
 						} else {
-							rowData.put(md.getColumnName(i), rs.getString(i));
+							rowData.put(md.getColumnLabel(i), rs.getString(i));
 						}
-
+						
 						//取得页合计
 						if (pageSumResult != null) {
 							if (dataIndex.contains(i)) {

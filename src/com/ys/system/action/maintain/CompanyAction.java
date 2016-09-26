@@ -21,7 +21,6 @@ import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.maintain.CompanyModel;
 import com.ys.system.service.maintain.CompanyService;
 
-import com.ys.util.basedao.ListOption;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.system.action.model.dic.DicModel;
 //import ys.model.TFactory;

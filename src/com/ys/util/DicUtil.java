@@ -1,5 +1,6 @@
 package com.ys.util;
 
+import com.ys.business.action.model.common.ListOption;
 import com.ys.util.basedao.BaseDAO;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -175,5 +176,18 @@ public class DicUtil {
 			dicMapViaType.put(preDicType, groupData);
 		}
 	}
-
+	
+	public ArrayList<ListOption> getListOption(String type, String parentCode) throws Exception {
+		DicUtil util = new DicUtil();
+		ArrayList<ArrayList<String>> dicList = null;
+		ArrayList<ListOption> rtnData = new ArrayList<ListOption>();
+		
+		dicList = util.getSameParentGroupValue(type, parentCode, false);
+		for(ArrayList<String>rowData:dicList) {
+			ListOption option = new ListOption(rowData.get(0), rowData.get(1));
+			rtnData.add(option);
+		}
+		
+		return rtnData;
+	}
 }

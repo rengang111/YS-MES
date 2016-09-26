@@ -45,8 +45,8 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_SupplierBasicInfo( supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getSupplierid());			statement.setString( 2,beanData.getSuppliersimpledes());			statement.setString( 3,beanData.getSupplierdes());			statement.setString( 4,beanData.getTwolevelid());			statement.setString( 5,beanData.getTwoleveliddes());			statement.setString( 6,beanData.getPaymentterm());			statement.setString( 7,beanData.getCountry());			statement.setString( 8,beanData.getProvince());			statement.setString( 9,beanData.getCity());			statement.setString( 10,beanData.getAddress());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());
+			statement = connection.prepareStatement("INSERT INTO B_SupplierBasicInfo( id,supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getSupplierid());			statement.setString( 3,beanData.getSuppliersimpledes());			statement.setString( 4,beanData.getSupplierdes());			statement.setString( 5,beanData.getTwolevelid());			statement.setString( 6,beanData.getTwoleveliddes());			statement.setString( 7,beanData.getPaymentterm());			statement.setString( 8,beanData.getCountry());			statement.setString( 9,beanData.getProvince());			statement.setString( 10,beanData.getCity());			statement.setString( 11,beanData.getAddress());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -54,7 +54,7 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_SupplierBasicInfo( supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_SupplierBasicInfo( id,supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -72,8 +72,8 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		StringBuffer bufSQL = new StringBuffer();
 		try
 		{
-			bufSQL.append("INSERT INTO B_SupplierBasicInfo( supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(");
-			bufSQL.append("'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("'" + nullString(beanData.getSuppliersimpledes()) + "',");			bufSQL.append("'" + nullString(beanData.getSupplierdes()) + "',");			bufSQL.append("'" + nullString(beanData.getTwolevelid()) + "',");			bufSQL.append("'" + nullString(beanData.getTwoleveliddes()) + "',");			bufSQL.append("'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("'" + nullString(beanData.getProvince()) + "',");			bufSQL.append("'" + nullString(beanData.getCity()) + "',");			bufSQL.append("'" + nullString(beanData.getAddress()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "'");
+			bufSQL.append("INSERT INTO B_SupplierBasicInfo( id,supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(");
+			bufSQL.append("'" + nullString(beanData.getId()) + "',");			bufSQL.append("'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("'" + nullString(beanData.getSuppliersimpledes()) + "',");			bufSQL.append("'" + nullString(beanData.getSupplierdes()) + "',");			bufSQL.append("'" + nullString(beanData.getTwolevelid()) + "',");			bufSQL.append("'" + nullString(beanData.getTwoleveliddes()) + "',");			bufSQL.append("'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("'" + nullString(beanData.getProvince()) + "',");			bufSQL.append("'" + nullString(beanData.getCity()) + "',");			bufSQL.append("'" + nullString(beanData.getAddress()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "'");
 			bufSQL.append(")");
 
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -101,8 +101,8 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_SupplierBasicInfo( supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getSupplierid());			statement.setString( 2,beanData.getSuppliersimpledes());			statement.setString( 3,beanData.getSupplierdes());			statement.setString( 4,beanData.getTwolevelid());			statement.setString( 5,beanData.getTwoleveliddes());			statement.setString( 6,beanData.getPaymentterm());			statement.setString( 7,beanData.getCountry());			statement.setString( 8,beanData.getProvince());			statement.setString( 9,beanData.getCity());			statement.setString( 10,beanData.getAddress());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());
+			statement = connection.prepareStatement("INSERT INTO B_SupplierBasicInfo( id,supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getSupplierid());			statement.setString( 3,beanData.getSuppliersimpledes());			statement.setString( 4,beanData.getSupplierdes());			statement.setString( 5,beanData.getTwolevelid());			statement.setString( 6,beanData.getTwoleveliddes());			statement.setString( 7,beanData.getPaymentterm());			statement.setString( 8,beanData.getCountry());			statement.setString( 9,beanData.getProvince());			statement.setString( 10,beanData.getCity());			statement.setString( 11,beanData.getAddress());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -110,7 +110,7 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_SupplierBasicInfo( supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_SupplierBasicInfo( id,supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -130,8 +130,8 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("DELETE FROM B_SupplierBasicInfo WHERE  supplierid =?");
-			statement.setString( 1,beanData.getSupplierid());
+			statement = connection.prepareStatement("DELETE FROM B_SupplierBasicInfo WHERE  id =?");
+			statement.setString( 1,beanData.getId());
 			if (statement.executeUpdate() < 1)
 				throw new Exception("Error deleting row");
 		}
@@ -156,7 +156,7 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("DELETE FROM B_SupplierBasicInfo WHERE ");
-			bufSQL.append("Supplierid = " + "'" + nullString(beanData.getSupplierid()) + "'");
+			bufSQL.append("Id = " + "'" + nullString(beanData.getId()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
 		}
 		catch(Exception e)
@@ -213,19 +213,19 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_SupplierBasicInfo WHERE  supplierid =?");
-			statement.setString( 1,beanData.getSupplierid());
+			statement = connection.prepareStatement("SELECT id,supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_SupplierBasicInfo WHERE  id =?");
+			statement.setString( 1,beanData.getId());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
 				throw new Exception(" Row Not does;");
 			}
-			returnData.setSupplierid( resultSet.getString( 1));			returnData.setSuppliersimpledes( resultSet.getString( 2));			returnData.setSupplierdes( resultSet.getString( 3));			returnData.setTwolevelid( resultSet.getString( 4));			returnData.setTwoleveliddes( resultSet.getString( 5));			returnData.setPaymentterm( resultSet.getString( 6));			returnData.setCountry( resultSet.getString( 7));			returnData.setProvince( resultSet.getString( 8));			returnData.setCity( resultSet.getString( 9));			returnData.setAddress( resultSet.getString( 10));			returnData.setCreatetime( resultSet.getString( 11));			returnData.setCreateperson( resultSet.getString( 12));			returnData.setCreateunitid( resultSet.getString( 13));			returnData.setModifytime( resultSet.getString( 14));			returnData.setModifyperson( resultSet.getString( 15));			returnData.setDeleteflag( resultSet.getString( 16));
+			returnData.setId( resultSet.getString( 1));			returnData.setSupplierid( resultSet.getString( 2));			returnData.setSuppliersimpledes( resultSet.getString( 3));			returnData.setSupplierdes( resultSet.getString( 4));			returnData.setTwolevelid( resultSet.getString( 5));			returnData.setTwoleveliddes( resultSet.getString( 6));			returnData.setPaymentterm( resultSet.getString( 7));			returnData.setCountry( resultSet.getString( 8));			returnData.setProvince( resultSet.getString( 9));			returnData.setCity( resultSet.getString( 10));			returnData.setAddress( resultSet.getString( 11));			returnData.setCreatetime( resultSet.getString( 12));			returnData.setCreateperson( resultSet.getString( 13));			returnData.setCreateunitid( resultSet.getString( 14));			returnData.setModifytime( resultSet.getString( 15));			returnData.setModifyperson( resultSet.getString( 16));			returnData.setDeleteflag( resultSet.getString( 17));
 			return returnData;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_SupplierBasicInfo  WHERE  "+e.toString());
+			throw new Exception("Error executing SQL SELECT id,supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_SupplierBasicInfo  WHERE  "+e.toString());
 		}
 		finally
 		{
@@ -251,19 +251,19 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 			str_Where=str_Where.trim(); 
 			if(!str_Where.equals(""))
 				str_Where=" WHERE " + str_Where ; 
-			statement = connection.prepareStatement("SELECT supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_SupplierBasicInfo"+str_Where);
+			statement = connection.prepareStatement("SELECT id,supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_SupplierBasicInfo"+str_Where);
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next())
 			{
 				B_SupplierBasicInfoData returnData=new B_SupplierBasicInfoData();
-				returnData.setSupplierid( resultSet.getString( 1));				returnData.setSuppliersimpledes( resultSet.getString( 2));				returnData.setSupplierdes( resultSet.getString( 3));				returnData.setTwolevelid( resultSet.getString( 4));				returnData.setTwoleveliddes( resultSet.getString( 5));				returnData.setPaymentterm( resultSet.getString( 6));				returnData.setCountry( resultSet.getString( 7));				returnData.setProvince( resultSet.getString( 8));				returnData.setCity( resultSet.getString( 9));				returnData.setAddress( resultSet.getString( 10));				returnData.setCreatetime( resultSet.getString( 11));				returnData.setCreateperson( resultSet.getString( 12));				returnData.setCreateunitid( resultSet.getString( 13));				returnData.setModifytime( resultSet.getString( 14));				returnData.setModifyperson( resultSet.getString( 15));				returnData.setDeleteflag( resultSet.getString( 16));
+				returnData.setId( resultSet.getString( 1));				returnData.setSupplierid( resultSet.getString( 2));				returnData.setSuppliersimpledes( resultSet.getString( 3));				returnData.setSupplierdes( resultSet.getString( 4));				returnData.setTwolevelid( resultSet.getString( 5));				returnData.setTwoleveliddes( resultSet.getString( 6));				returnData.setPaymentterm( resultSet.getString( 7));				returnData.setCountry( resultSet.getString( 8));				returnData.setProvince( resultSet.getString( 9));				returnData.setCity( resultSet.getString( 10));				returnData.setAddress( resultSet.getString( 11));				returnData.setCreatetime( resultSet.getString( 12));				returnData.setCreateperson( resultSet.getString( 13));				returnData.setCreateunitid( resultSet.getString( 14));				returnData.setModifytime( resultSet.getString( 15));				returnData.setModifyperson( resultSet.getString( 16));				returnData.setDeleteflag( resultSet.getString( 17));
 				v_1.add(returnData);
 			}
 			return v_1;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_SupplierBasicInfo" + astr_Where +e.toString());
+			throw new Exception("Error executing SQL SELECT id,supplierid,suppliersimpledes,supplierdes,twolevelid,twoleveliddes,paymentterm,country,province,city,address,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_SupplierBasicInfo" + astr_Where +e.toString());
 		}
 		finally
 		{
@@ -282,15 +282,15 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_SupplierBasicInfo SET supplierid= ? , suppliersimpledes= ? , supplierdes= ? , twolevelid= ? , twoleveliddes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  supplierid  = ?");
-			statement.setString( 1,beanData.getSupplierid());			statement.setString( 2,beanData.getSuppliersimpledes());			statement.setString( 3,beanData.getSupplierdes());			statement.setString( 4,beanData.getTwolevelid());			statement.setString( 5,beanData.getTwoleveliddes());			statement.setString( 6,beanData.getPaymentterm());			statement.setString( 7,beanData.getCountry());			statement.setString( 8,beanData.getProvince());			statement.setString( 9,beanData.getCity());			statement.setString( 10,beanData.getAddress());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());
-			statement.setString( 17,beanData.getSupplierid());
+			statement = connection.prepareStatement("UPDATE B_SupplierBasicInfo SET id= ? , supplierid= ? , suppliersimpledes= ? , supplierdes= ? , twolevelid= ? , twoleveliddes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?");
+			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getSupplierid());			statement.setString( 3,beanData.getSuppliersimpledes());			statement.setString( 4,beanData.getSupplierdes());			statement.setString( 5,beanData.getTwolevelid());			statement.setString( 6,beanData.getTwoleveliddes());			statement.setString( 7,beanData.getPaymentterm());			statement.setString( 8,beanData.getCountry());			statement.setString( 9,beanData.getProvince());			statement.setString( 10,beanData.getCity());			statement.setString( 11,beanData.getAddress());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());
+			statement.setString( 18,beanData.getId());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_SupplierBasicInfo SET supplierid= ? , suppliersimpledes= ? , supplierdes= ? , twolevelid= ? , twoleveliddes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  supplierid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_SupplierBasicInfo SET id= ? , supplierid= ? , suppliersimpledes= ? , supplierdes= ? , twolevelid= ? , twoleveliddes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -308,9 +308,9 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("UPDATE B_SupplierBasicInfo SET ");
-			bufSQL.append("Supplierid = " + "'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("Suppliersimpledes = " + "'" + nullString(beanData.getSuppliersimpledes()) + "',");			bufSQL.append("Supplierdes = " + "'" + nullString(beanData.getSupplierdes()) + "',");			bufSQL.append("Twolevelid = " + "'" + nullString(beanData.getTwolevelid()) + "',");			bufSQL.append("Twoleveliddes = " + "'" + nullString(beanData.getTwoleveliddes()) + "',");			bufSQL.append("Paymentterm = " + "'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("Country = " + "'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("Province = " + "'" + nullString(beanData.getProvince()) + "',");			bufSQL.append("City = " + "'" + nullString(beanData.getCity()) + "',");			bufSQL.append("Address = " + "'" + nullString(beanData.getAddress()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "'");
+			bufSQL.append("Id = " + "'" + nullString(beanData.getId()) + "',");			bufSQL.append("Supplierid = " + "'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("Suppliersimpledes = " + "'" + nullString(beanData.getSuppliersimpledes()) + "',");			bufSQL.append("Supplierdes = " + "'" + nullString(beanData.getSupplierdes()) + "',");			bufSQL.append("Twolevelid = " + "'" + nullString(beanData.getTwolevelid()) + "',");			bufSQL.append("Twoleveliddes = " + "'" + nullString(beanData.getTwoleveliddes()) + "',");			bufSQL.append("Paymentterm = " + "'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("Country = " + "'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("Province = " + "'" + nullString(beanData.getProvince()) + "',");			bufSQL.append("City = " + "'" + nullString(beanData.getCity()) + "',");			bufSQL.append("Address = " + "'" + nullString(beanData.getAddress()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "'");
 			bufSQL.append(" WHERE ");
-			bufSQL.append("Supplierid = " + "'" + nullString(beanData.getSupplierid()) + "'");
+			bufSQL.append("Id = " + "'" + nullString(beanData.getId()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
 		}
 		catch(Exception e)
@@ -335,15 +335,15 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_SupplierBasicInfo SET supplierid= ? , suppliersimpledes= ? , supplierdes= ? , twolevelid= ? , twoleveliddes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  supplierid  = ?");
-			statement.setString( 1,beanData.getSupplierid());			statement.setString( 2,beanData.getSuppliersimpledes());			statement.setString( 3,beanData.getSupplierdes());			statement.setString( 4,beanData.getTwolevelid());			statement.setString( 5,beanData.getTwoleveliddes());			statement.setString( 6,beanData.getPaymentterm());			statement.setString( 7,beanData.getCountry());			statement.setString( 8,beanData.getProvince());			statement.setString( 9,beanData.getCity());			statement.setString( 10,beanData.getAddress());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());
-			statement.setString( 17,beanData.getSupplierid());
+			statement = connection.prepareStatement("UPDATE B_SupplierBasicInfo SET id= ? , supplierid= ? , suppliersimpledes= ? , supplierdes= ? , twolevelid= ? , twoleveliddes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?");
+			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getSupplierid());			statement.setString( 3,beanData.getSuppliersimpledes());			statement.setString( 4,beanData.getSupplierdes());			statement.setString( 5,beanData.getTwolevelid());			statement.setString( 6,beanData.getTwoleveliddes());			statement.setString( 7,beanData.getPaymentterm());			statement.setString( 8,beanData.getCountry());			statement.setString( 9,beanData.getProvince());			statement.setString( 10,beanData.getCity());			statement.setString( 11,beanData.getAddress());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());
+			statement.setString( 18,beanData.getId());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_SupplierBasicInfo SET supplierid= ? , suppliersimpledes= ? , supplierdes= ? , twolevelid= ? , twoleveliddes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  supplierid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_SupplierBasicInfo SET id= ? , supplierid= ? , suppliersimpledes= ? , supplierdes= ? , twolevelid= ? , twoleveliddes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -363,8 +363,8 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		{
 		B_SupplierBasicInfoData beanData = (B_SupplierBasicInfoData) beanDataTmp; 
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT  supplierid  FROM B_SupplierBasicInfo WHERE  supplierid =?");
-			statement.setString( 1,beanData.getSupplierid());
+			statement = connection.prepareStatement("SELECT  id  FROM B_SupplierBasicInfo WHERE  id =?");
+			statement.setString( 1,beanData.getId());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
@@ -373,7 +373,7 @@ public class B_SupplierBasicInfoDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL  SELECT  supplierid  FROM B_SupplierBasicInfo WHERE  supplierid =?");
+			throw new Exception("Error executing SQL  SELECT  id  FROM B_SupplierBasicInfo WHERE  id =?");
 		}
 		finally
 		{

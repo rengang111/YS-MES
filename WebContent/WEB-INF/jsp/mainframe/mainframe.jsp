@@ -123,19 +123,7 @@
 	    	popupWindow("resetpassword", "${ctx}/user?methodtype=resetpwdinit", 800, 600);
 	    	
 		}
-	    
-	    function openLayer() {
-	    	
-			layer
-			.open({
-				type : 2,
-				title : false,
-				area : [ '900px', '420px' ], 
-				scrollbar : false,
-				title : false,
-				content : '${pageContext.request.contextPath}/classProduct/createSubClass.html'
-			});
-	    }
+
 	</script>
 </body>
 </html>
