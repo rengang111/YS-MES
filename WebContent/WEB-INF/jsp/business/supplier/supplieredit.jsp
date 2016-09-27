@@ -10,44 +10,52 @@
 <title>供应商基本数据</title>
 <script type="text/javascript">
 var validator;
+var layerHeight = "250";
 
 function ajax() {
 	var table = $('#TContactList').dataTable();
 	if(table) {
 		table.fnDestroy();
 	}
-	
-	var t = $('#TContactList')
-			.DataTable(
-					{
-						"processing" : false,
-						"serverSide" : true,
-						"stateSave" : false,
-						"searching" : true,
-						"pagingType" : "full_numbers",
-						"retrieve":true,
-						"pageLength": 300,
-						
-						"ajax" : {
-								"url" : "${ctx}/business/supplier?methodtype=addinit",
-								"type" : "POST",
-								"data" : function(d) {//d 是原始的发送给服务器的数据，默认很长。
-									//alert(888);
-									var param = {};//因为服务端排序，可以新建一个参数对象
-									param.draw = d.draw;
-									param.start = d.start;//开始的序号
-									param.length = d.length;//要取的数据的
-									param.order = d.order;
-									var formData = $("#condition")
-											.serializeArray();//把form里面的数据序列化成数组/
-									formData.forEach(function(e) {
-										//alert(e.value);
-										param[e.name] = e.value;
-									});
-									return param;//自定义需要传递的参数。
-								},
-								"cache" : false,
-						},
+
+	var t = $('#TContactList').DataTable({
+					"paging": true,
+					"lengthMenu":[25,50,-1],//设置一页展示10条记录
+					"processing" : false,
+					"serverSide" : true,
+					"stateSave" : false,
+					"searching" : false,
+					"pagingType" : "full_numbers",
+					"retrieve" : true,
+					"sAjaxSource" : "${ctx}/business/suppliercontact?methodtype=contactsearch",
+					"fnServerData" : function(sSource, aoData, fnCallback) {
+						var param = {};
+						var formData = $("#supplierBasicInfo").serializeArray();
+						formData.forEach(function(e) {
+							aoData.push({"name":e.name, "value":e.value});
+						});
+
+						$.ajax({
+							"url" : sSource,
+							"datatype": "json", 
+							"contentType": "application/json; charset=utf-8",
+							"type" : "POST",
+							"data" : JSON.stringify(aoData),
+							success: function(data){
+								/*
+								if (data.message != undefined) {
+									alert(data.message);
+								}
+								*/
+								fnCallback(data);
+							},
+							 error:function(XMLHttpRequest, textStatus, errorThrown){
+				                 //alert(XMLHttpRequest.status);
+				                 //alert(XMLHttpRequest.readyState);
+				                 //alert(textStatus);
+				             }
+						})
+					},
 						
 						"language": {
 			        		"url":"${ctx}/plugins/datatables/chinese.json"
@@ -59,55 +67,51 @@ function ajax() {
 							"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
 
 							"aButtons" : [										
-									 {
+									{
 										"sExtends" : "create",
 										"sButtonText" : "新建"
-									},
-									 {
-										"sExtends" : "edit",
-										"sButtonText" : "修改"
-									},									
-									 {
+									},								
+									{
 										"sExtends" : "Delete",
 										"sButtonText" : "删除"
 									},
-									]
+							]
 						},
-
-						"columns" : [ {
-							"className" : 'details-control',
-							"orderable" : false,
-							"data" : null,
-							"defaultContent" : '',
-							"width" : "1px"
-						}, {
-							"data" : "name"
-						}, {
-							"data" : "sex"
-						}, {
-							"data" : "duties"
-						}, {
-							"data" : "mobile"
-						}, {
-							"data" : "telephone"
-						}, {
-							"data" : "fax"
-						}, {
-							"data" : "Email"
-						}, {
-							"data" : "qq"
-						}
+			        	"language": {
+			        		"url":"${ctx}/plugins/datatables/chinese.json"
+			        	},
+						"columns" : [ 
+							{"data": null, "defaultContent" : '', "className" : 'details-control',}, 
+							{"data" : "userName"}, 
+							{"data" : "sex", "defaultContent" : ''},
+							{"data" : "position"}, 
+							{"data" : "mobile"}, 
+							{"data" : "phone"}, 
+							{"data" : "fax"}, 
+							{"data" : "mail"}, 
+							{"data" : "qq"},
+							{"data": null, "defaultContent" : ''}
 						],
+						"columnDefs":[
+				    		{"targets":0,"render":function(data, type, row){
+								return "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+		                    }},
+				    		{"targets":9,"render":function(data, type, row){
+				    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
+		                    }}
+					    ] 						
 					});
 
 	t.on('click', 'tr', function() {
 		$(this).toggleClass('selected');
 	});
 
+	/*
 	t.on('dblclick', 'tr', function() {
 
 		var d = t.row(this).data();
 
+		
 		layer.open({
 			type : 2,
 			title : false,
@@ -118,7 +122,7 @@ function ajax() {
 			content : '${ctx}/business/supplier/contactedit?name=' + d["name"] + '&id=' + $('#supplierID').val()
 		});
 	});
-
+	*/
 	t.on('order.dt search.dt draw.dt', function() {
 		t.column(2, {
 			search : 'applied',
@@ -158,61 +162,15 @@ $.fn.dataTable.TableTools.buttons.create = $
 		$.fn.dataTable.TableTools.buttonBase,
 		{
 			"fnClick" : function(button) {
-				
-				//alert(888899999);
-				
-				layer
-						.open({
-							type : 2,
-							title : false,
-							area : [ '900px', '350px' ], 
-							scrollbar : false,
-							title : false,
-							closeBtn: 0, //不显示关闭按钮
-							content : '${ctx}/business/supplier/create?supplierID=' + $('#supplierID').val(),
-						});
+				var url = "${ctx}/business/suppliercontact?methodtype=addinit";
+				openLayer(url, $(document).width() - 25, layerHeight, false);
 			}
 		});
 		
-$.fn.dataTable.TableTools.buttons.edit = $
-.extend(
-		true,
-		{},
-		$.fn.dataTable.TableTools.buttonBase,
-		{
-			"fnClick" : function(button) {
-				
-				var str = "";
-				var isFirstRow = true;
-				var selectedRowCount = $('#TContactList').DataTable().rows('.selected').data().length;
-				if (selectedRowCount > 1) {
-					alert("提示：选中了多行数据，仅可对第一行被选中数据进行编辑操作。");
-				}
-				$('#TContactList').DataTable().rows('.selected').data()
-						.each(function(data) {
-							if (isFirstRow) {
-								str = data["name"];
-								isFirstRow = false;
-							}
-						});
-
-				if (str != "") {
-					if (confirm("您确认执行该操作吗？") == false) {
-						return;
-					}
-				}
-				layer
-						.open({
-							type : 2,
-							title : false,
-							area : [ '900px', '350px' ], 
-							scrollbar : false,
-							title : false,
-							closeBtn: 0, //不显示关闭按钮
-							content : '${ctx}/business/supplier?methodType=edit&supplierID=' + $('#supplierID').val() + '&name=' + str,
-						});
-			}
-		});	
+function doUpdate(key) {		
+	var url = "${ctx}/business/suppliercontact?methodtype=updateinit&key=" + key;
+	openLayer(url, '', layerHeight, false);
+}
 		
 $.fn.dataTable.TableTools.buttons.Delete = $
 .extend(
@@ -222,40 +180,26 @@ $.fn.dataTable.TableTools.buttons.Delete = $
 		{
 			"fnClick" : function(button) {
 
-				var str_temp = "";
-
-				$('#TContactList').DataTable().rows('.selected').data()
-						.each(function(data) {
-							str_temp += data["contact_id"] + ",";
-						});
-
-				var str = str_temp
-						.substring(0, str_temp.length - 1);
-				
-				//alert(str_temp);
+				var str = '';
+				$("input[name='numCheck']").each(function(){
+					if ($(this).prop('checked')) {
+						str += $(this).val() + ",";
+					}
+				});
 
 				if (str != "") {
 					if (confirm("您确认执行该操作吗？") == false) {
 						return;
 					}
-
 					$.ajax({
-						type : "GET",
-						url : "${ctx}/business/supplier?methodtype=remove&nameList=" + str,
-						data : null,// 要提交的表单
-						success : function(
-								d) {													
-
-							var retValue = d['retValue'];
-							
-							//alert(retValue);
-							
-							if (retValue == "failure") {	
-									//操作中发生错误，请重试或者联系管理员。
-									alert("操作中发生错误，，请重试或者联系管理员。");																		
-								}
-							
-							$('#TContactList').DataTable().ajax.reload();
+						contentType : 'application/json',
+						dataType : 'json',						
+						type : "POST",
+						data : str,// 要提交的表单						
+						url : "${ctx}/business/suppliercontact?methodtype=delete",
+						success : function(d) {													
+							reload();
+							alert(data.message);
 						},
 						error : function(XMLHttpRequest, textStatus, errorThrown) {
 							//alert(XMLHttpRequest.status);
@@ -301,8 +245,14 @@ function initEvent(){
 	*/
 }
 
+function reload() {
+	$('#TContactList').DataTable().ajax.reload(null,false);
+	
+	return true;
+}
+
 $(document).ready(function() {
-	//ajax();
+
 	initEvent();
 	
 	$("#country").change(function() {
@@ -441,13 +391,11 @@ $(document).ready(function() {
 	$("#city").val("${DisplayData.supplierBasicInfoData.city}");
 })
 
-
 function doSave() {
 
 	if (validator.form()) {
 		
 		var message = "${DisplayData.endInfoMap.message}";
-		var keyChanged = false;
 		
 		if ($('#keyBackup').val() == "") {				
 			//新建
@@ -459,9 +407,7 @@ function doSave() {
 		
 		if (confirm(message)) {
 			var actionUrl;			
-			if (keyChanged) {
-				$('#keyBackup').val($('#supplierId').val());
-			}
+
 			//将提交按钮置为【不可用】状态
 			//$("#submit").attr("disabled", true); 
 			$.ajax({
@@ -513,6 +459,9 @@ function doDelete() {
 					$('#keyBackup').val("");
 					clearSupplierBasicInfo();
 				}
+				
+				parent.window.frames["mainFrame"].contentWindow.reload();
+				
 				/*	
 				//不管成功还是失败都刷新父窗口，关闭子窗口
 				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
@@ -648,6 +597,7 @@ function clearSupplierBasicInfo() {
 				<table id="TContactList" class="display" cellspacing="0">
 					<thead>
 						<tr class="selected">
+							<th style="width: 80px;" class="dt-middle">No</th>
 							<th style="width: 80px;" class="dt-middle">姓名</th>
 							<th style="width: 30px;" class="dt-middle">性别</th>
 							<th style="width: 80px;" class="dt-middle">职务</th>
@@ -656,9 +606,12 @@ function clearSupplierBasicInfo() {
 							<th style="width: 80px;" class="dt-middle">传真</th>
 							<th style="width: 80px;" class="dt-middle">邮箱</th>
 							<th style="width: 80px;" class="dt-middle">QQ</th>
+							<th style="width: 80px;" class="dt-middle">操作</th>
 					</thead>
 					<tfoot>
 						<tr>
+							<th></th>
+							<th></th>
 							<th></th>
 							<th></th>
 							<th></th>

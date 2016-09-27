@@ -10,6 +10,8 @@
 <title>供应商基本数据检索</title>
 <script type="text/javascript">
 
+	var layerHeight = '600';
+
 	function doSearch() {
 	
 		ajax();
@@ -18,7 +20,7 @@
 	
 	function doCreate() {
 		var url = "${ctx}/business/supplier?methodtype=addinit";
-		openLayer(url, '', '600');
+		openLayer(url, '', layerHeight, true);
 	}
 	
 	function doUpdate(key) {
@@ -26,7 +28,7 @@
 		var isFirstRow = true;
 		var url = "${ctx}/business/supplier?methodtype=updateinit&key=" + key;
 
-		openLayer(url, '', '');
+		openLayer(url, '', layerHeight, true);
 	}
 	
 	
@@ -226,6 +228,7 @@
 					<div id="clear"></div>
 					<table aria-describedby="TSupplier_info" style="width: 100%;" id="TSupplier" class="display dataTable" cellspacing="0">
 						<thead>
+						
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="编码:" class="dt-middle sorting_disabled">编码</th>
@@ -233,7 +236,7 @@
 								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="名称" class="dt-middle sorting_disabled">名称</th>
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="二级编码" class="dt-middle sorting_disabled">二级编码</th>
 								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="编码解释" class="dt-middle sorting_disabled">编码解释</th>
-								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="付款条件" class="dt-middle sorting_disabled">付款条件</th>
+								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="付款条件" class="dt-middle sorting_disabled">付款条件</th>
 								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="地址" class="dt-middle sorting_disabled">地址</th>
 								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="联系人" class="dt-middle sorting_disabled">联系人</th>
 								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>

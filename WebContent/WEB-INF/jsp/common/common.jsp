@@ -59,7 +59,7 @@
 		popupWindow("selectdictype", "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + dicTypeControl + "&dicControlView=" + dicTypeControlView + "&type=" + type + "&dicTypeId=" + dicTypeId + "&treeType=0", 800, 600);
 		
 	}
-	function openLayer(url, width, height) {
+	function openLayer(url, width, height, isParentOpen) {
 		if (width == "") {
 			width = '900px';
 		} else {
@@ -70,14 +70,52 @@
 		} else {
 			height = height + 'px';
 		}
-		parent.layer.open({
-			type : 2,
-			title : false,
-			area : [ width, height ], 
-			scrollbar : false,
-			title : false,
-			content : url
-		});
+		if (isParentOpen) {
+			parent.layer.open({
+				type : 2,
+				title : false,
+				area : [ width, height ], 
+				scrollbar : false,
+				title : false,
+				content : url
+			});
+		} else {
+			layer.open({
+				type : 2,
+				title : false,
+				area : [ width, height ], 
+				scrollbar : false,
+				title : false,
+				content : url
+			});
+		}
+	}
+	
+	function addValidator() {
+	    jQuery.validator.addMethod("mobile",function(value, element){ 
+	    	var rtnValue = true;
+	    	if (value != '') {
+	    		rtnValue = checkTelphone(value);
+	    	}
+	        return rtnValue;  
+	    }, "手机号码不正确"); 
+	    
+	    jQuery.validator.addMethod("phone",function(value, element){
+	    	var rtnValue = true;
+	    	if (value != '') {
+	    		rtnValue = checkPhoneNumber(value);
+	    	}
+	        return rtnValue;   
+	    }, "电话号码不正确"); 
+	    
+	    jQuery.validator.addMethod("identifycard",function(value, element){  
+	    	var rtnValue = true;
+	    	if (value != '') {
+	    		rtnValue = checkIdcard(value);
+	    	}
+	        return rtnValue;
+	    }, "身份证号码不正确"); 
+	    	    
 	}
 </Script>
 

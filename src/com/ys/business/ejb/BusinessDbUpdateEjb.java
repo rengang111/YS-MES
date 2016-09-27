@@ -20,8 +20,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_SupplierBasicInfoDao;
+import com.ys.business.db.data.B_ContactData;
 import com.ys.business.db.data.B_SupplierBasicInfoData;
+import com.ys.business.service.contact.ContactService;
 import com.ys.business.service.supplier.SupplierService;
 import com.ys.system.action.model.dic.DicModel;
 import com.ys.system.action.model.dic.DicTypeModel;
@@ -102,30 +105,26 @@ public class BusinessDbUpdateEjb  {
 		}
     }
     
-    public void executeRoleMenuUpdate(String roleId, ArrayList<String> menuIdList, UserInfo userInfo) throws Exception {
-    	S_ROLEMENUDao dao = new S_ROLEMENUDao();
-		S_ROLEMENUData data = new S_ROLEMENUData();
-		//UserTransaction ts = context.getUserTransaction();
+    public void executeContactDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_ContactData data = new B_ContactData();
+		int count = 0;
+	
 		ts = new BaseTransaction();
 		
 		try {
 			ts.begin();
-			
-			//删除已有的数据
-			StringBuffer sql = new StringBuffer("UPDATE S_ROLEMENU SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");
-			sql.append(" WHERE RoleID = '" + roleId + "' AND DeleteFlag = '" +  BusinessConstants.DELETEFLG_UNDELETE + "' ");
-			BaseDAO.execUpdate(sql.toString());
-			
-			//追加数据
-			for (String menuId:menuIdList) {
-				data = new S_ROLEMENUData();
-				data.setId(BaseDAO.getGuId());
-				data.setRoleid(roleId);
-				data.setMenuid(menuId);
-				data = RoleMenuService.updateModifyInfo(data, userInfo);
-				dao.Create(data);
-			}				
-
+			String removeData[] = keyData.split(",");
+			for (String key:removeData) {
+				StringBuffer sql = new StringBuffer("");
+				data.setId(key);
+				B_ContactDao dao = new B_ContactDao(data);
+				data = ContactService.updateModifyInfo(dao.beanData, userInfo);			
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				
+				count++;
+				//roleModel.setUpdatedRecordCount(count);
+			}
 			ts.commit();
 		}
 		catch(Exception e) {
