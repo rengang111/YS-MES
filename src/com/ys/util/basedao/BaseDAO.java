@@ -380,6 +380,7 @@ public class BaseDAO {
 		Exception SysException = null;
 		Statement stm = null;
 		ResultSet rs = null;
+		int count = 0;
 		
 		QuerySelectBean querySelect = queryInfo==null?null:queryInfo.getDefinedSelect();
 		QueryPageSumBean queryPageSum = queryInfo==null?null:queryInfo.getPageSum();
@@ -404,8 +405,13 @@ public class BaseDAO {
 			    		rs.absolute(iStart);
 			    	}
 			    	recordFetchCount = iStart;
+			    	
 			    }
-		
+			    if (iStart > 0) {
+			    	count = iStart;
+			    } else {
+			    	count = 1;
+			    }
 			    
 				if (querySelect != null) {
 					subSelect = querySelect.getSelectList();
@@ -450,11 +456,11 @@ public class BaseDAO {
 							}
 						}
 			    	}
-			    	/*
+			 
 					if (appendNoFlg) {
-						rowData.put(0, String.valueOf(count++));
+						rowData.put("rownum", String.valueOf(count++));
 					}
-					*/
+			
 			    	resultList.add(rowData);
 			    	if (iEnd > 0) {
 			    		recordFetchCount++;

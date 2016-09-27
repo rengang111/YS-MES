@@ -272,12 +272,17 @@ public class ContactService extends BaseService {
 		return model;
 	}
 	
-	private SupplierModel getSupplierBaseInfo(String key) throws Exception {
+	private SupplierModel getSupplierBaseInfo(String key) {
 		SupplierModel model = new SupplierModel();
 		B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
 		B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
-		dbData.setId(key);
-		dbData = (B_SupplierBasicInfoData)dao.FindByPrimaryKey(dbData);
+		try {
+			dbData.setId(key);
+			dbData = (B_SupplierBasicInfoData)dao.FindByPrimaryKey(dbData);
+		}
+		catch(Exception e) {
+			
+		}
 		model.setSupplierBasicInfoData(dbData);
 		
 		return model;

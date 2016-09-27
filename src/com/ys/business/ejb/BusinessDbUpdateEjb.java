@@ -83,12 +83,13 @@ public class BusinessDbUpdateEjb  {
 				StringBuffer sql = new StringBuffer("");
 				data.setId(key);
 				B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao(data);
+				data = (B_SupplierBasicInfoData)dao.FindByPrimaryKey(data);
 				data = SupplierService.updateModifyInfo(dao.beanData, userInfo);				
 				
 				sql.append("UPDATE b_Contact SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");
 				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");
 				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");
-				sql.append(" WHERE companyCode = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
+				sql.append(" WHERE companyCode = '" + data.getSupplierid() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
 				BaseDAO.execUpdate(sql.toString());
 				
 				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);

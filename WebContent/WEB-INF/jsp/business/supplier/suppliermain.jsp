@@ -12,6 +12,113 @@
 
 	var layerHeight = '600';
 
+	function ajax() {
+		var table = $('#TSupplier').dataTable();
+		if(table) {
+			table.fnDestroy();
+		}
+	
+		var t = $('#TSupplier').DataTable({
+				"paging": true,
+				"lengthMenu":[5,10,15],//设置一页展示10条记录
+				"processing" : false,
+				"serverSide" : true,
+				"stateSave" : false,
+				"searching" : false,
+				"pagingType" : "full_numbers",
+				"retrieve" : true,
+				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search",
+				"fnServerData" : function(sSource, aoData, fnCallback) {
+					var param = {};
+					var formData = $("#condition").serializeArray();
+					formData.forEach(function(e) {
+						aoData.push({"name":e.name, "value":e.value});
+					});
+
+					$.ajax({
+						"url" : sSource,
+						"datatype": "json", 
+						"contentType": "application/json; charset=utf-8",
+						"type" : "POST",
+						"data" : JSON.stringify(aoData),
+						success: function(data){
+							/*
+							if (data.message != undefined) {
+								alert(data.message);
+							}
+							*/
+							
+							fnCallback(data);
+
+						},
+						 error:function(XMLHttpRequest, textStatus, errorThrown){
+			                 //alert(XMLHttpRequest.status);
+			                 //alert(XMLHttpRequest.readyState);
+			                 //alert(textStatus);
+			             }
+					})
+				},
+	        	"language": {
+	        		"url":"${ctx}/plugins/datatables/chinese.json"
+	        	},
+				"columns": [
+							{"data": null, "defaultContent" : ''},
+							{"data": "supplierID", "defaultContent" : ''},
+							{"data": "supplierSimpleDes", "defaultContent" : ''},
+							{"data": "supplierDes", "defaultContent" : ''},
+							{"data": "twoLevelID", "defaultContent" : ''},
+							{"data": "twoLevelIDDes", "defaultContent" : ''},
+							{"data": "paymentTerm", "defaultContent" : ''},
+							{"data": "fullAddress", "defaultContent" : ''},
+							{"data": "userName", "defaultContent" : ''},
+							{"data": null, "defaultContent" : ''}
+				        ],
+				"columnDefs":[
+					    		{"targets":0,"render":function(data, type, row){
+									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+			                    }},
+					    		{"targets":9,"render":function(data, type, row){
+					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
+			                    }}
+			           
+			         ] 
+			}
+		);
+	}
+
+	
+	function initEvent(){
+
+		doSearch();
+	
+		$('#TSupplier').DataTable().on('click', 'tr', function() {
+			
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	        	$('#TSupplier').DataTable().$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }
+		});
+		
+		/*
+		$('#TSupplier').DataTable().on('dblclick', 'tr', function() {
+
+			var d = $('#TSupplier').DataTable().row(this).data();
+
+			location.href = '${pageContext.request.contextPath}/factory/show/' + d["factory_id"] + '.html';		
+			
+		});
+		*/
+	}
+
+	$(document).ready(function() {
+		//ajax();
+		initEvent();
+		
+	})	
+	
 	function doSearch() {
 	
 		ajax();
@@ -74,113 +181,7 @@
 		return true;
 	}
 
-	function ajax() {
-		var table = $('#TSupplier').dataTable();
-		if(table) {
-			table.fnDestroy();
-		}
-	
-		var t = $('#TSupplier')
-		.DataTable({
-				"paging": true,
-				"lengthMenu":[25,50,-1],//设置一页展示10条记录
-				"processing" : false,
-				"serverSide" : true,
-				"stateSave" : false,
-				"searching" : false,
-				"pagingType" : "full_numbers",
-				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search",
-				"fnServerData" : function(sSource, aoData, fnCallback) {
-					var param = {};
-					var formData = $("#condition").serializeArray();
-					formData.forEach(function(e) {
-						aoData.push({"name":e.name, "value":e.value});
-					});
 
-					$.ajax({
-						"url" : sSource,
-						"datatype": "json", 
-						"contentType": "application/json; charset=utf-8",
-						"type" : "POST",
-						"data" : JSON.stringify(aoData),
-						success: function(data){
-							/*
-							if (data.message != undefined) {
-								alert(data.message);
-							}
-							*/
-							
-							fnCallback(data);
-
-						},
-						 error:function(XMLHttpRequest, textStatus, errorThrown){
-			                 //alert(XMLHttpRequest.status);
-			                 //alert(XMLHttpRequest.readyState);
-			                 //alert(textStatus);
-			             }
-					})
-				},
-	        	"language": {
-	        		"url":"${ctx}/plugins/datatables/chinese.json"
-	        	},
-				"columns": [
-							{"data": null, "defaultContent" : ''},
-							{"data": "supplierID", "defaultContent" : ''},
-							{"data": "supplierSimpleDes", "defaultContent" : ''},
-							{"data": "supplierDes", "defaultContent" : ''},
-							{"data": "twoLevelID", "defaultContent" : ''},
-							{"data": "twoLevelIDDes", "defaultContent" : ''},
-							{"data": "paymentTerm", "defaultContent" : ''},
-							{"data": "fullAddress", "defaultContent" : ''},
-							{"data": "userName", "defaultContent" : ''},
-							{"data": null, "defaultContent" : ''}
-				        ],
-				"columnDefs":[
-					    		{"targets":0,"render":function(data, type, row){
-									return "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
-			                    }},
-					    		{"targets":9,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
-			                    }}
-			           
-			         ] 
-			}
-		);
-	}
-
-	
-	function initEvent(){
-
-		doSearch();
-	
-		$('#TSupplier').DataTable().on('click', 'tr', function() {
-			
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	        	$('#TSupplier').DataTable().$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-		});
-		
-		/*
-		$('#TSupplier').DataTable().on('dblclick', 'tr', function() {
-
-			var d = $('#TSupplier').DataTable().row(this).data();
-
-			location.href = '${pageContext.request.contextPath}/factory/show/' + d["factory_id"] + '.html';		
-			
-		});
-		*/
-	}
-
-	$(document).ready(function() {
-		//ajax();
-		initEvent();
-		
-	})
 	
 </script>
 

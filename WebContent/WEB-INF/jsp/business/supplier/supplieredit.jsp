@@ -20,7 +20,7 @@ function ajax() {
 
 	var t = $('#TContactList').DataTable({
 					"paging": true,
-					"lengthMenu":[25,50,-1],//设置一页展示10条记录
+					"lengthMenu":[5,10],//设置一页展示10条记录
 					"processing" : false,
 					"serverSide" : true,
 					"stateSave" : false,
@@ -57,50 +57,49 @@ function ajax() {
 						})
 					},
 						
-						"language": {
-			        		"url":"${ctx}/plugins/datatables/chinese.json"
-			        	},
-			        	dom : 'T<"clear">rt',
+					"language": {
+		        		"url":"${ctx}/plugins/datatables/chinese.json"
+		        	},
+		        	/*
+		        	dom : 'T<"clear">rt',
 
-						"tableTools" : {
+					"tableTools" : {
 
-							"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
+						"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
 
-							"aButtons" : [										
-									{
-										"sExtends" : "create",
-										"sButtonText" : "新建"
-									},								
-									{
-										"sExtends" : "Delete",
-										"sButtonText" : "删除"
-									},
-							]
-						},
-			        	"language": {
-			        		"url":"${ctx}/plugins/datatables/chinese.json"
-			        	},
-						"columns" : [ 
-							{"data": null, "defaultContent" : '', "className" : 'details-control',}, 
-							{"data" : "userName"}, 
-							{"data" : "sex", "defaultContent" : ''},
-							{"data" : "position"}, 
-							{"data" : "mobile"}, 
-							{"data" : "phone"}, 
-							{"data" : "fax"}, 
-							{"data" : "mail"}, 
-							{"data" : "qq"},
-							{"data": null, "defaultContent" : ''}
-						],
-						"columnDefs":[
-				    		{"targets":0,"render":function(data, type, row){
-								return "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
-		                    }},
-				    		{"targets":9,"render":function(data, type, row){
-				    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
-		                    }}
-					    ] 						
-					});
+						"aButtons" : [										
+								{
+									"sExtends" : "create",
+									"sButtonText" : "新建"
+								},								
+								{
+									"sExtends" : "Delete",
+									"sButtonText" : "删除"
+								},
+						]
+					},
+					*/
+					"columns" : [ 
+						{"data": null, "defaultContent" : '', "className" : 'details-control',}, 
+						{"data" : "userName"}, 
+						{"data" : "sex"},
+						{"data" : "position"}, 
+						{"data" : "mobile"}, 
+						{"data" : "phone"}, 
+						{"data" : "fax"}, 
+						{"data" : "mail"}, 
+						{"data" : "qq"},
+						{"data": null, "defaultContent" : ''}
+					],
+					"columnDefs":[
+			    		{"targets":0,"render":function(data, type, row){
+							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+	                    }},
+			    		{"targets":9,"render":function(data, type, row){
+			    			return "<a href=\"#\" onClick=\"doUpdateContact('" + row["id"] + "')\">编辑</a>"
+	                    }}
+				    ] 						
+				});
 
 	t.on('click', 'tr', function() {
 		$(this).toggleClass('selected');
@@ -123,14 +122,6 @@ function ajax() {
 		});
 	});
 	*/
-	t.on('order.dt search.dt draw.dt', function() {
-		t.column(2, {
-			search : 'applied',
-			order : 'applied'
-		}).nodes().each(function(cell, i) {
-			cell.innerHTML = i + 1;
-		});
-	}).draw();
 	
 	// Add event listener for opening and closing details
 	t.on('click', 'td.details-control', function() {
@@ -162,15 +153,9 @@ $.fn.dataTable.TableTools.buttons.create = $
 		$.fn.dataTable.TableTools.buttonBase,
 		{
 			"fnClick" : function(button) {
-				var url = "${ctx}/business/suppliercontact?methodtype=addinit";
-				openLayer(url, $(document).width() - 25, layerHeight, false);
+
 			}
 		});
-		
-function doUpdate(key) {		
-	var url = "${ctx}/business/suppliercontact?methodtype=updateinit&key=" + key;
-	openLayer(url, '', layerHeight, false);
-}
 		
 $.fn.dataTable.TableTools.buttons.Delete = $
 .extend(
@@ -179,42 +164,6 @@ $.fn.dataTable.TableTools.buttons.Delete = $
 		$.fn.dataTable.TableTools.buttonBase,
 		{
 			"fnClick" : function(button) {
-
-				var str = '';
-				$("input[name='numCheck']").each(function(){
-					if ($(this).prop('checked')) {
-						str += $(this).val() + ",";
-					}
-				});
-
-				if (str != "") {
-					if (confirm("您确认执行该操作吗？") == false) {
-						return;
-					}
-					$.ajax({
-						contentType : 'application/json',
-						dataType : 'json',						
-						type : "POST",
-						data : str,// 要提交的表单						
-						url : "${ctx}/business/suppliercontact?methodtype=delete",
-						success : function(d) {													
-							reload();
-							alert(data.message);
-						},
-						error : function(XMLHttpRequest, textStatus, errorThrown) {
-							//alert(XMLHttpRequest.status);
-							//alert(XMLHttpRequest.readyState);
-							//alert(textStatus);
-							//alert(errorThrown);
-							
-							//发生系统异常，请再试或者联系管理员。
-							alert("发生系统异常，，请再试或者联系管理员。");
-						}
-					});
-					
-				} else {
-					alert("请先选中要删除的记录。");
-				}
 
 			}
 		});
@@ -246,8 +195,9 @@ function initEvent(){
 }
 
 function reload() {
+
 	$('#TContactList').DataTable().ajax.reload(null,false);
-	
+
 	return true;
 }
 
@@ -458,10 +408,9 @@ function doDelete() {
 				} else {
 					$('#keyBackup').val("");
 					clearSupplierBasicInfo();
+					reload();
+					parent.window.frames["mainFrame"].contentWindow.reload();
 				}
-				
-				parent.window.frames["mainFrame"].contentWindow.reload();
-				
 				/*	
 				//不管成功还是失败都刷新父窗口，关闭子窗口
 				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
@@ -478,6 +427,55 @@ function doDelete() {
 			}
 		});
 	}
+}
+
+function doAddContact() {
+	var url = "${ctx}/business/suppliercontact?methodtype=addinit";
+	openLayer(url, $(document).width() - 25, layerHeight, false);	
+}
+
+function doUpdateContact(key) {		
+	var url = "${ctx}/business/suppliercontact?methodtype=updateinit&key=" + key;
+	openLayer(url, '', layerHeight, false);
+}
+
+function doDeleteContact() {
+	var str = '';
+	$("input[name='numCheck']").each(function(){
+		if ($(this).prop('checked')) {
+			str += $(this).val() + ",";
+		}
+	});
+
+	if (str != "") {
+		if (confirm("您确认执行该操作吗？") == false) {
+			return;
+		}
+		$.ajax({
+			contentType : 'application/json',
+			dataType : 'json',						
+			type : "POST",
+			data : str,// 要提交的表单						
+			url : "${ctx}/business/suppliercontact?methodtype=delete",
+			success : function(d) {													
+				reload();
+				alert(data.message);
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				//alert(XMLHttpRequest.status);
+				//alert(XMLHttpRequest.readyState);
+				//alert(textStatus);
+				//alert(errorThrown);
+				
+				//发生系统异常，请再试或者联系管理员。
+				alert("发生系统异常，，请再试或者联系管理员。");
+			}
+		});
+		
+	} else {
+		alert("请先选中要删除的记录。");
+	}
+
 }
 
 function clearSupplierBasicInfo() {
@@ -593,7 +591,10 @@ function clearSupplierBasicInfo() {
 				
 			<div>
 				<legend> 联系人</legend>
-				
+				<button type="button" id="delete" class="DTTT_button" onClick="doDeleteContact();"
+						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
+				<button type="button" id="edit" class="DTTT_button" onClick="doAddContact();"
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
 				<table id="TContactList" class="display" cellspacing="0">
 					<thead>
 						<tr class="selected">
