@@ -1,7 +1,15 @@
 /* main styles */ 
-*{
+{
     margin: 0px;
     padding: 0px;
+
+}
+
+td.td-left {
+	text-align: left;
+}
+td.td-center {
+	text-align: center;
 }
 
 body{

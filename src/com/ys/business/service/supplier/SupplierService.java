@@ -248,36 +248,35 @@ public class SupplierService extends BaseService {
 	}
 
 	private ArrayList<HashMap<String, String>> arrangeUserList(ArrayList<HashMap<String, String>> data) {
-		String userList = "";
+		ArrayList<String> userList = new ArrayList<String>();
 		HashMap<String, String>rowDataBackup = null;
 		HashMap<String, String>rowData = null;
 		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
 		
 		for(int i = 0; i < data.size(); i++) {
 			rowData = data.get(i);
+			String userName = rowData.get("userName");
 			if (rowDataBackup == null) {
 				rowDataBackup = rowData;
 			}
 			if (rowData.get("id").equals(rowDataBackup.get("id"))) {
-				String userName = rowData.get("userName");
-				if (userName != null) {
-					userList += "," + rowData.get("userName");
+				if (userName != null && !userName.equals("")) {
+					userList.add(userName);
 				}
 			} else {
-				if (userList.length() > 1) {
-					userList = userList.substring(1, userList.length());
-				}
-				rowData.put("userName", userList);
+				rowDataBackup.put("userName", getUserList(userList));
 				rtnData.add(rowDataBackup);
 				rowDataBackup = rowData;
+				userList = new ArrayList<String>();
+				if (userName != null && !userName.equals("")) {
+					userList.add(userName);
+				}
+
 			}
 		}
 		
 		if (rowDataBackup != null) {
-			if (userList.length() > 1) {
-				userList = userList.substring(1, userList.length());
-			}
-			rowData.put("userName", userList);
+			rowData.put("userName", getUserList(userList));
 			rtnData.add(rowDataBackup);
 		}
 
@@ -361,5 +360,19 @@ public class SupplierService extends BaseService {
 		}
 		
 		return rtnData;
-	}	
+	}
+	
+	private String getUserList(ArrayList<String>userList) {
+		String viewUserList = "";
+		
+		for(String user:userList) {
+			viewUserList += "," + user;
+		}
+		
+		if (viewUserList.length() > 0) {
+			viewUserList = viewUserList.substring(1, viewUserList.length());
+		}
+		
+		return viewUserList;
+	}
 }

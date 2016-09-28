@@ -14,6 +14,8 @@ var validator;
 
 $(document).ready(function() {
 	
+	controlButtons($('#keyBackup').val());
+	
 	addValidator();
 	
 	validator = $("#contactInfo").validate({
@@ -104,8 +106,10 @@ function doSave() {
 					}
 					//TODO
 					var infoList = d.info.split("|");
-					$('#keyBackup').val(infoList[0]);
-					$('#keyBackup').val(infoList[1]);
+					//$('#keyBackup').val(infoList[0]);
+					//$('#companyCode').val(infoList[1]);
+					
+					controlButtons(infoList);
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
 					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
@@ -140,9 +144,10 @@ function doDelete() {
 					alert(d.message);	
 				} else {
 					parent.reload();
-					$('#keyBackup').val("");
-					$('#companyCode').val("");
-					clearcontactInfo();
+					//$('#keyBackup').val("");
+					//$('#companyCode').val("");
+					controlButtons("");
+					clearContactInfo();
 
 				}
 				/*	
@@ -163,7 +168,7 @@ function doDelete() {
 	}
 }
 
-function clearcontactInfo() {
+function clearContactInfo() {
 	$('#userName').val('');
 	$('#sex').val('');
 	$('#position').val('');
@@ -172,6 +177,21 @@ function clearcontactInfo() {
 	$('#fax').val('');
 	$('#mail').val('');
 	$('#QQ').val('');
+}
+
+function controlButtons(value) {
+	var valueArray = value.split("|");
+	if (valueArray.length > 1) {
+		$('#keyBackup').val(valueArray[0]);
+		$('#companyCode').val(valueArray[1]);
+	} else {
+		$('#keyBackup').val(value);
+	}
+	if (value == '') {
+		$('#delete').attr("disabled",true);
+	} else {
+		$('#delete').attr("disabled",false);
+	}
 }
 </script>
 
@@ -188,7 +208,7 @@ function clearcontactInfo() {
 					
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
+				<button type="button" id="save" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 					
 				<form:form modelAttribute="dataModels" id="contactInfo" style='padding: 0px; margin: 10px;' >

@@ -62,16 +62,16 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : ''},
-							{"data": "supplierID", "defaultContent" : ''},
+							{"data": null, "defaultContent" : '',"className" : 'td-center'},
+							{"data": "supplierID", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "supplierSimpleDes", "defaultContent" : ''},
 							{"data": "supplierDes", "defaultContent" : ''},
-							{"data": "twoLevelID", "defaultContent" : ''},
+							{"data": "twoLevelID", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "twoLevelIDDes", "defaultContent" : ''},
-							{"data": "paymentTerm", "defaultContent" : ''},
+							{"data": "paymentTerm", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "fullAddress", "defaultContent" : ''},
 							{"data": "userName", "defaultContent" : ''},
-							{"data": null, "defaultContent" : ''}
+							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
 					    		{"targets":0,"render":function(data, type, row){
@@ -159,7 +159,7 @@
 					url : "${ctx}/business/supplier?methodtype=delete",
 					success : function(data) {
 						reload();
-						alert(data.message);
+						//alert(data.message);
 						
 					},
 					error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -200,11 +200,11 @@
 					<table>
 						<tr>
 							<td width="10%"></td> 
-							<td class="label">keyword1：</td>
+							<td class="label">关键字1：</td>
 							<td class="condition">
 								<input type="text" id="keyword1" name="keyword1" class="middle"/>
 							</td>
-							<td class="label">keyword2：</td> 
+							<td class="label">关键字2：</td> 
 							<td class="condition">
 								<input type="text" id="keyword2" name="keyword2" class="middle"/>
 							</td>
@@ -235,7 +235,7 @@
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="编码:" class="dt-middle sorting_disabled">编码</th>
 								<th colspan="1" rowspan="1" style="width: 82px;" aria-label="简称:" class="dt-middle sorting_disabled">简称</th>
 								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="名称" class="dt-middle sorting_disabled">名称</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="二级编码" class="dt-middle sorting_disabled">二级编码</th>
+								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="二级编码" class="dt-middle sorting_disabled">二级编码</th>
 								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="编码解释" class="dt-middle sorting_disabled">编码解释</th>
 								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="付款条件" class="dt-middle sorting_disabled">付款条件</th>
 								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="地址" class="dt-middle sorting_disabled">地址</th>

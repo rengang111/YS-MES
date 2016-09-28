@@ -20,7 +20,7 @@ function ajax() {
 
 	var t = $('#TContactList').DataTable({
 					"paging": true,
-					"lengthMenu":[5,10],//设置一页展示10条记录
+					"lengthMenu":[5],//设置一页展示10条记录
 					"processing" : false,
 					"serverSide" : true,
 					"stateSave" : false,
@@ -80,16 +80,16 @@ function ajax() {
 					},
 					*/
 					"columns" : [ 
-						{"data": null, "defaultContent" : '', "className" : 'details-control',}, 
-						{"data" : "userName"}, 
-						{"data" : "sex"},
-						{"data" : "position"}, 
-						{"data" : "mobile"}, 
-						{"data" : "phone"}, 
-						{"data" : "fax"}, 
-						{"data" : "mail"}, 
-						{"data" : "qq"},
-						{"data": null, "defaultContent" : ''}
+						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
+						{"data" : "userName", "className" : 'td-center'}, 
+						{"data" : "sex", "className" : 'td-center'},
+						{"data" : "position", "className" : 'td-center'}, 
+						{"data" : "mobile", "className" : 'td-center'}, 
+						{"data" : "phone", "className" : 'td-center'}, 
+						{"data" : "fax", "className" : 'td-center'}, 
+						{"data" : "mail", "className" : 'td-center'}, 
+						{"data" : "qq", "className" : 'td-center'},
+						{"data": null, "defaultContent" : '', "className" : 'td-center'}
 					],
 					"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row){
@@ -172,6 +172,8 @@ function initEvent(){
 
 	ajax();
 
+	controlButtons($('#keyBackup').val());
+	
 	$('#TContactList').DataTable().on('click', 'tr', function() {
 		
 		if ( $(this).hasClass('selected') ) {
@@ -371,8 +373,7 @@ function doSave() {
 						alert(d.message);	
 					}
 
-					$('#keyBackup').val(d.info);
-					
+					controlButtons(d.info);
 					parent.window.frames["mainFrame"].contentWindow.reload();
 					//不管成功还是失败都刷新父窗口，关闭子窗口
 					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
@@ -406,7 +407,7 @@ function doDelete() {
 				if (d.message != "") {
 					alert(d.message);	
 				} else {
-					$('#keyBackup').val("");
+					controlButtons("");
 					clearSupplierBasicInfo();
 					reload();
 					parent.window.frames["mainFrame"].contentWindow.reload();
@@ -487,6 +488,23 @@ function clearSupplierBasicInfo() {
 	$('#paymentTerm').val('');
 	$('#address').val('');
 	$('#country').val('');
+	$('#province').val('');
+	$('#city').val('');
+	$("#province").find("option").remove();
+	$("#city").find("option").remove();
+}
+
+function controlButtons(value) {
+	$('#keyBackup').val(value);
+	if (value == '') {
+		$('#delete').attr("disabled", true);
+		$('#addcontact').attr("disabled", true);
+		$('#deletecontact').attr("disabled", true);
+		
+	} else {
+		$('#delete').attr("disabled", false);
+		$('#addcontact').attr("disabled", false);
+	}
 }
 </script>
 
@@ -502,7 +520,7 @@ function clearSupplierBasicInfo() {
 				<legend>供应商-综合信息</legend>
 					
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
+						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 					
@@ -591,9 +609,9 @@ function clearSupplierBasicInfo() {
 				
 			<div>
 				<legend> 联系人</legend>
-				<button type="button" id="delete" class="DTTT_button" onClick="doDeleteContact();"
+				<button type="button" id="deletecontact" class="DTTT_button" onClick="doDeleteContact();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="edit" class="DTTT_button" onClick="doAddContact();"
+				<button type="button" id="addcontact" class="DTTT_button" onClick="doAddContact();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
 				<table id="TContactList" class="display" cellspacing="0">
 					<thead>
