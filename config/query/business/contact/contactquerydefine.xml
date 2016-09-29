@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="contactquerydefine_search" />
+    <where>
+      <w name="companyCode" des=""  reqName="keyword" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+      <f name="A.companyCode" alias="" ctype="" />
+      <f name="A.userName" alias="" ctype="" />
+      <f name="A.sex" alias="" ctype="A6" />
+      <f name="A.position" alias="" ctype="" />
+      <f name="A.department" alias="" ctype="" />
+      <f name="A.mobile" alias="" ctype="" />
+      <f name="A.phone" alias="" ctype="" />
+      <f name="A.fax" alias="" ctype="" />
+      <f name="A.mail" alias="" ctype="" />
+      <f name="A.qq" alias="" ctype="" />
+      <f name="A.skype" alias="" ctype="" />
+      <f name="A.mark" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_contact as A WHERE A.DeleteFlag = '0' </from>
+    <orderby>A.department, A.userName</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="contactquerydefine_preCheck" />
+    <where>
+    	<w name="A.companyCode" des=""  reqName="companyCode" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="A.userName" des=""  reqName="userName" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+      <f name="A.companyCode" alias="" ctype="" />
+      <f name="A.userName" alias="" ctype="" />
+
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_contact as A WHERE A.DeleteFlag = '0' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>
