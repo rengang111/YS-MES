@@ -50,6 +50,7 @@ $(document).ready(function() {
 			},
 			skype: {
 				maxlength: 20,
+				number: true,
 			},
 			mark: {
 				maxlength: 1,
@@ -57,7 +58,7 @@ $(document).ready(function() {
 			QQ: {
 				maxlength: 20,
 				number: true,
-			},			
+			}			
 		},
 		errorPlacement: function(error, element) {
 		    if (element.is(":radio"))
@@ -81,11 +82,11 @@ function doSave() {
 		
 		if ($('#keyBackup').val() == "") {				
 			//新建
-			actionUrl = "${ctx}/business/suppliercontact?methodtype=add";
+			actionUrl = "${ctx}/business/contact?methodtype=add";
 			$('#companyCode').val(parent.$('#keyBackup').val());
 		} else {
 			//修正
-			actionUrl = "${ctx}/business/suppliercontact?methodtype=update";
+			actionUrl = "${ctx}/business/contact?methodtype=update";
 		}
 
 		if (confirm(message)) {
@@ -100,16 +101,16 @@ function doSave() {
 				url : actionUrl,
 				data : JSON.stringify($('#contactInfo').serializeArray()),// 要提交的表单
 				success : function(d) {
-					parent.reload();
+					parent.reloadContact();
 					if (d.message != "") {
 						alert(d.message);	
 					}
 					//TODO
-					var infoList = d.info.split("|");
+					//var infoList = d.info.split("|");
 					//$('#keyBackup').val(infoList[0]);
 					//$('#companyCode').val(infoList[1]);
 					
-					controlButtons(infoList);
+					controlButtons(d.info);
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
 					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
@@ -137,13 +138,13 @@ function doDelete() {
 			type : "POST",
 			contentType : 'application/json',
 			dataType : 'json',
-			url : "${ctx}/business/suppliercontact?methodtype=deleteDetail",
+			url : "${ctx}/business/contact?methodtype=deleteDetail",
 			data : $('#keyBackup').val(),// 要提交的表单
 			success : function(d) {
 				if (d.message != "") {
 					alert(d.message);	
 				} else {
-					parent.reload();
+					parent.reloadContact();
 					//$('#keyBackup').val("");
 					//$('#companyCode').val("");
 					controlButtons("");
@@ -177,17 +178,18 @@ function clearContactInfo() {
 	$('#fax').val('');
 	$('#mail').val('');
 	$('#QQ').val('');
+	$('#skype').val('');
 }
 
-function controlButtons(value) {
-	var valueArray = value.split("|");
+function controlButtons(data) {
+	var valueArray = data.split("|");
 	if (valueArray.length > 1) {
 		$('#keyBackup').val(valueArray[0]);
 		$('#companyCode').val(valueArray[1]);
 	} else {
-		$('#keyBackup').val(value);
+		$('#keyBackup').val(data);
 	}
-	if (value == '') {
+	if (data == '') {
 		$('#delete').attr("disabled",true);
 	} else {
 		$('#delete').attr("disabled",false);
@@ -262,6 +264,14 @@ function controlButtons(value) {
 							</td>
 							<td>
 								<input type="text" id="QQ" name="QQ" class="short" value="${DisplayData.contactData.qq}"/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								skype：
+							</td>
+							<td colspan=3>
+								<input type="text" id="skype" name="skype" class="short" value="${DisplayData.contactData.skype}"/>
 							</td>
 						</tr>
 					</table>

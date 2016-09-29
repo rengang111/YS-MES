@@ -11,6 +11,10 @@ import com.ys.util.basequery.BaseQuery;
  *
  */
 public class BaseService {
+	
+	protected final String DUMMYKEY = "-1";
+	protected final String SYSTEMERROR = "-1";
+	
 	/*
 	public BaseTransaction baseTransaction;
 	

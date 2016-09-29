@@ -21,7 +21,11 @@ public class DicUtil {
 	public static final String UNITPROPERTY = "A7";
 	public static final String UNITTYPE = "A8";
 	public static final String MENUTYPE = "A9";
-
+	
+	//TODO
+	public static final String DENOMINATIONCURRENCY = "B1";
+	public static final String SHIPPINGCASE = "B2";
+	public static final String PORT = "B3";
 	
 	//HashMap通过id查找
 	private static HashMap<String,String> dicMapViaId = new HashMap<String, String>();

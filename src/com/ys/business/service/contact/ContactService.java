@@ -38,7 +38,6 @@ public class ContactService extends BaseService {
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		BaseModel dataModel = new BaseModel();
 		int iStart = 0;
@@ -51,9 +50,9 @@ public class ContactService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		key = getJsonData(data, "keyBackup");
-		SupplierModel supplierModel = getSupplierBaseInfo(key);
-		key = supplierModel.getSupplierBasicInfoData().getSupplierid();
-		
+		if (key.equals("")) {
+			key = DUMMYKEY;
+		}
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		
 		if (start != null && !start.equals("")){
@@ -95,13 +94,13 @@ public class ContactService extends BaseService {
 		ContactModel model = new ContactModel();
 
 		try {
-			
+			String key = request.getParameter("key");
 			model.setSexList(doOptionChange(DicUtil.SEX, "").getSexList());
 			model.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			model.setEndInfoMap("-1", "err001", "");
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
 		return model;
@@ -116,11 +115,8 @@ public class ContactService extends BaseService {
 			B_ContactData dbData = new B_ContactData();
 			String companyCodeKey = getJsonData(data, "companyCode");
 			String userName = getJsonData(data, "userName");
-		
-			SupplierModel supplierModel = getSupplierBaseInfo(companyCodeKey);
-			String companyCode = supplierModel.getSupplierBasicInfoData().getSupplierid();
 			
-			ArrayList<ArrayList<String>> preCheckResult = preCheckUserName(request, companyCode, userName);
+			ArrayList<ArrayList<String>> preCheckResult = preCheckUserName(request, companyCodeKey, userName);
 			
 			if (preCheckResult.size() > 0) {
 				//已存在
@@ -128,7 +124,7 @@ public class ContactService extends BaseService {
 			} else {
 				String guid = BaseDAO.getGuId();
 				dbData.setId(guid);
-				dbData.setCompanycode(companyCode);
+				dbData.setCompanycode(companyCodeKey);
 				dbData.setUsername(getJsonData(data, "userName"));
 				dbData.setSex(getJsonData(data, "sex"));
 				dbData.setPosition(getJsonData(data, "position"));
@@ -143,11 +139,11 @@ public class ContactService extends BaseService {
 				
 				dbData = updateModifyInfo(dbData, userInfo);
 				dao.Create(dbData);
-				model.setEndInfoMap("000", "", guid + "|" + companyCode);
+				model.setEndInfoMap("000", "", guid + "|" + companyCodeKey);
 			}
 		}
 		catch(Exception e) {
-			model.setEndInfoMap("-1", "err001", "");
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
 		return model;
@@ -199,7 +195,7 @@ public class ContactService extends BaseService {
 			}
 		}
 		catch(Exception e) {
-			model.setEndInfoMap("-1", "err001", id);
+			model.setEndInfoMap(SYSTEMERROR, "err001", id);
 		}
 		
 		return model;
@@ -218,7 +214,7 @@ public class ContactService extends BaseService {
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			model.setEndInfoMap("-1", "err001", "");
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
 		return model;
@@ -238,22 +234,6 @@ public class ContactService extends BaseService {
 		
 		return data;
 	}
-
-	
-	private boolean isDataExist(B_ContactData dbData) {
-		boolean rtnValue = false;
-		
-		try {
-			B_ContactDao dao = new B_ContactDao();
-			dao.FindByPrimaryKey(dbData);
-			rtnValue = true;
-		}
-		catch(Exception e) {
-			
-		}
-		return rtnValue;
-		
-	}
 	
 	public ContactModel getContactDetailInfo(String key) throws Exception {
 		ContactModel model = new ContactModel();
@@ -272,20 +252,21 @@ public class ContactService extends BaseService {
 		return model;
 	}
 	
-	private SupplierModel getSupplierBaseInfo(String key) {
-		SupplierModel model = new SupplierModel();
+	private String getBaseInfo(String key) {
+		String companyCode = "-1";
+
 		B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
 		B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
 		try {
 			dbData.setId(key);
 			dbData = (B_SupplierBasicInfoData)dao.FindByPrimaryKey(dbData);
+			companyCode = dbData.getSupplierid();
 		}
 		catch(Exception e) {
 			
 		}
-		model.setSupplierBasicInfoData(dbData);
 		
-		return model;
+		return companyCode;
 		
 	}
 	
@@ -331,7 +312,7 @@ public class ContactService extends BaseService {
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			model.setEndInfoMap("-1", "err001", "");
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 			model.setSexList(null);
 		}
 		

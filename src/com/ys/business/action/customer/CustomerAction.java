@@ -1,4 +1,4 @@
-package com.ys.business.action.contact;
+package com.ys.business.action.customer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,26 +20,26 @@ import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.TestModel;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.contact.ContactModel;
+import com.ys.business.action.model.customer.CustomerModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.DicUtil;
 import com.ys.util.basequery.BaseQuery;
-import com.ys.business.service.contact.ContactService;
+import com.ys.business.service.customer.CustomerService;
 
 @Controller
 @RequestMapping("/business")
-public class ContactAction extends BaseAction {
+public class CustomerAction extends BaseAction {
 	
 	@Autowired
-	ContactService contactService;
+	CustomerService customerService;
 	
-	@RequestMapping(value="contact")
-	public String execute(@RequestBody String data, @ModelAttribute("dataModels")ContactModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	@RequestMapping(value="customer")
+	public String execute(@RequestBody String data, @ModelAttribute("dataModels")CustomerModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		String type = request.getParameter("methodtype");
 		String rtnUrl = "";
 		HashMap<String, Object> dataMap = null;
-		ContactModel viewModel = null;
+		CustomerModel viewModel = null;
 		
 		if (type == null) {
 			type = "";
@@ -51,7 +51,11 @@ public class ContactAction extends BaseAction {
 		}
 		
 		switch(type) {
-			case "contactsearch":
+			case "":
+			case "init":
+				rtnUrl = "/business/customer/customermain";
+				break;
+			case "search":
 				dataMap = doSearch(data, session, request, response);
 				printOutJsonObj(response, dataMap);
 				return null;
@@ -87,7 +91,7 @@ public class ContactAction extends BaseAction {
 		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataMap = contactService.doSearch(request, data, userInfo);
+			dataMap = customerService.doSearch(request, data, userInfo);
 			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
@@ -102,28 +106,28 @@ public class ContactAction extends BaseAction {
 	}
 	
 	public String doAddInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		ContactModel ContactModel = contactService.doAddInit(request);
-		model.addAttribute("DisplayData", ContactModel);
+		CustomerModel customerModel = customerService.doAddInit(request);
+		model.addAttribute("DisplayData", customerModel);
 
-		return "/business/contact/contactedit";
+		return "/business/customer/customeredit";
 	}
 	
-	public ContactModel doAdd(String data, HttpSession session, HttpServletRequest request){
+	public CustomerModel doAdd(String data, HttpSession session, HttpServletRequest request){
 		
-		ContactModel model = new ContactModel();
+		CustomerModel model = new CustomerModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = contactService.doAdd(request, data, userInfo);
+		model = customerService.doAdd(request, data, userInfo);
 		
 		return model;
 	}		
 	
 	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
-		ContactModel dataModel = new ContactModel();
+		CustomerModel dataModel = new CustomerModel();
 		String key = request.getParameter("key");
 		try {
-			dataModel = contactService.getContactDetailInfo(key);
+			dataModel = customerService.getCustomerBaseInfo(key);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -131,32 +135,32 @@ public class ContactAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/business/contact/contactedit";
+		return "/business/customer/customeredit";
 	}	
 	
-	public ContactModel doUpdate(String data, HttpSession session, HttpServletRequest request){
+	public CustomerModel doUpdate(String data, HttpSession session, HttpServletRequest request){
 		
-		ContactModel model = new ContactModel();
+		CustomerModel model = new CustomerModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = contactService.doUpdate(request, data, userInfo);
+		model = customerService.doUpdate(request, data, userInfo);
 		
 		return model;
 	}	
 	
-	public ContactModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		ContactModel model = new ContactModel();
+	public CustomerModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		CustomerModel model = new CustomerModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = contactService.doDelete(data, userInfo);
+		model = customerService.doDelete(data, userInfo);
 
 		return model;
 	}
 
-	public ContactModel doDeleteDetail(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		ContactModel model = new ContactModel();
+	public CustomerModel doDeleteDetail(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		CustomerModel model = new CustomerModel();
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = contactService.doDelete(data, userInfo);
+		model = customerService.doDelete(data, userInfo);
 
 		return model;
 	}	

@@ -7,12 +7,142 @@
 
 <%@ include file="../../common/common.jsp"%>
 
-<title>供应商基本数据</title>
+<title>客户基本数据</title>
 <script type="text/javascript">
 var validator;
 var layerHeight = "250";
 
-function ajax() {
+function ajaxCustomerAddr() {
+	var table = $('#TCustomerAddrList').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+
+	var t = $('#TCustomerAddrList').DataTable({
+					"paging": true,
+					"lengthMenu":[5],//设置一页展示10条记录
+					"processing" : false,
+					"serverSide" : true,
+					"stateSave" : false,
+					"searching" : false,
+					"pagingType" : "full_numbers",
+					"retrieve" : true,
+					"sAjaxSource" : "${ctx}/business/customeraddr?methodtype=search",
+					"fnServerData" : function(sSource, aoData, fnCallback) {
+						var param = {};
+						var formData = $("#customerInfo").serializeArray();
+						formData.forEach(function(e) {
+							aoData.push({"name":e.name, "value":e.value});
+						});
+
+						$.ajax({
+							"url" : sSource,
+							"datatype": "json", 
+							"contentType": "application/json; charset=utf-8",
+							"type" : "POST",
+							"data" : JSON.stringify(aoData),
+							success: function(data){
+								/*
+								if (data.message != undefined) {
+									alert(data.message);
+								}
+								*/
+								fnCallback(data);
+							},
+							 error:function(XMLHttpRequest, textStatus, errorThrown){
+				                 //alert(XMLHttpRequest.status);
+				                 //alert(XMLHttpRequest.readyState);
+				                 //alert(textStatus);
+				             }
+						})
+					},
+						
+					"language": {
+		        		"url":"${ctx}/plugins/datatables/chinese.json"
+		        	},
+		        	/*
+		        	dom : 'T<"clear">rt',
+
+					"tableTools" : {
+
+						"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
+
+						"aButtons" : [										
+								{
+									"sExtends" : "create",
+									"sButtonText" : "新建"
+								},								
+								{
+									"sExtends" : "Delete",
+									"sButtonText" : "删除"
+								},
+						]
+					},
+					*/
+					"columns" : [ 
+						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
+						{"data" : "title", "className" : 'td-center'}, 
+						{"data" : "address", "className" : 'td-center'},
+						{"data" : "postcode", "className" : 'td-center'}, 
+						{"data" : "memo", "className" : 'td-center'}, 
+						{"data": null, "defaultContent" : '', "className" : 'td-center'}
+					],
+					"columnDefs":[
+			    		{"targets":0,"render":function(data, type, row){
+							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+	                    }},
+			    		{"targets":5,"render":function(data, type, row){
+			    			return "<a href=\"#\" onClick=\"doUpdateCustomerAddr('" + row["id"] + "')\">编辑</a>"
+	                    }}
+				    ] 						
+				});
+
+	t.on('click', 'tr', function() {
+		$(this).toggleClass('selected');
+	});
+
+	/*
+	t.on('dblclick', 'tr', function() {
+
+		var d = t.row(this).data();
+
+		
+		layer.open({
+			type : 2,
+			title : false,
+			area : [ '900px', '370px' ],
+			scrollbar : false,
+			title : false,
+			closeBtn: 0, //不显示关闭按钮
+			content : '${ctx}/business/customer/contactedit?name=' + d["name"] + '&id=' + $('#customerID').val()
+		});
+	});
+	*/
+	
+	// Add event listener for opening and closing details
+	t.on('click', 'td.details-control', function() {
+
+		//alert(999);
+
+		var tr = $(this).closest('tr');
+		t
+		var row = t.row(tr);
+		t
+
+		if (row.child.isShown()) {
+			// This row is already open - close it
+			row.child.hide();
+			tr.removeClass('shown');
+		} else {
+			// Open this row
+			row.child(format(row.data())).show();
+			tr.addClass('shown');
+		}
+	});
+
+};
+
+function ajaxContact() {
 	var table = $('#TContactList').dataTable();
 	if(table) {
 		table.fnDestroy();
@@ -30,7 +160,7 @@ function ajax() {
 					"sAjaxSource" : "${ctx}/business/contact?methodtype=contactsearch",
 					"fnServerData" : function(sSource, aoData, fnCallback) {
 						var param = {};
-						var formData = $("#supplierBasicInfo").serializeArray();
+						var formData = $("#customerInfo").serializeArray();
 						formData.forEach(function(e) {
 							aoData.push({"name":e.name, "value":e.value});
 						});
@@ -89,13 +219,14 @@ function ajax() {
 						{"data" : "fax", "className" : 'td-center'}, 
 						{"data" : "mail", "className" : 'td-center'}, 
 						{"data" : "qq", "className" : 'td-center'},
+						{"data" : "skype", "className" : 'td-center'},
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}
 					],
 					"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row){
 							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
 	                    }},
-			    		{"targets":9,"render":function(data, type, row){
+			    		{"targets":10,"render":function(data, type, row){
 			    			return "<a href=\"#\" onClick=\"doUpdateContact('" + row["id"] + "')\">编辑</a>"
 	                    }}
 				    ] 						
@@ -118,7 +249,7 @@ function ajax() {
 			scrollbar : false,
 			title : false,
 			closeBtn: 0, //不显示关闭按钮
-			content : '${ctx}/business/supplier/contactedit?name=' + d["name"] + '&id=' + $('#supplierID').val()
+			content : '${ctx}/business/customer/contactedit?name=' + d["name"] + '&id=' + $('#customerID').val()
 		});
 	});
 	*/
@@ -170,7 +301,8 @@ $.fn.dataTable.TableTools.buttons.Delete = $
 		
 function initEvent(){
 
-	ajax();
+	ajaxCustomerAddr();
+	ajaxContact();
 
 	controlButtons($('#keyBackup').val());
 	
@@ -199,7 +331,14 @@ function initEvent(){
 function reloadContact() {
 
 	$('#TContactList').DataTable().ajax.reload(null,false);
-	
+	parent.window.frames["mainFrame"].contentWindow.reload();
+
+	return true;
+}
+
+function reloadCustomerAddr() {
+
+	$('#TCustomerAddrList').DataTable().ajax.reload(null,false);
 	parent.window.frames["mainFrame"].contentWindow.reload();
 
 	return true;
@@ -209,126 +348,25 @@ $(document).ready(function() {
 
 	initEvent();
 	
-	$("#country").change(function() {
-
-		var val = $("#country option:selected").val();
-
-		$.ajax({
-			type : "post",
-			url : "${ctx}/business/supplier?methodtype=optionChange",
-			async : false,
-			data : 'key=' + val,
-			dataType : "json",
-			success : function(data) {
-				var jsonObj = data;
-				
-				$("#province").val("");
-				$("#province").html("");
-				$("#city").val("");
-				$("#city").html("");				
-				
-				for (var i = 0; i < jsonObj.length; i++) {
-					$("#province").append(
-						"<option value="+jsonObj[i].key+">"
-						+ jsonObj[i].value
-						+ "</option>");
-				};
-
-			},
-			error : function(
-					XMLHttpRequest,
-					textStatus,
-					errorThrown) {
-				/*
-				alert(XMLHttpRequest.status);
-				alert(XMLHttpRequest.readyState);
-				alert(textStatus);
-				alert(errorThrown);
-				*/
-				$("#province").val("");
-				$("#province").html("");
-				$("#city").val("");
-				$("#city").html("");
-			}
-		});
-	});
-		
-	$("#province").change(function() {
-
-		var val = $("#province option:selected").val();
-		
-		$("#factoryCode").val("");
-											
-		if (val != "0"){ //
-			$.ajax({
-					type : "post",
-					url : "${ctx}/business/supplier?methodtype=optionChange",
-					async : false,
-					data : 'key=' + val,
-					dataType : "json",
-					success : function(data) {
-						$("#city").val("");	
-						$("#city").html("");	
-						var jsonObj = data;
-						
-						for (var i = 0; i < jsonObj.length; i++) {
-							$("#city").append(
-											"<option value="+jsonObj[i].key+">"
-													+ jsonObj[i].value
-													+ "</option>");
-						};
-
-					},
-					error : function(
-							XMLHttpRequest,
-							textStatus,
-							errorThrown) {
-						//alert(XMLHttpRequest.status);
-						//alert(XMLHttpRequest.readyState);
-						//alert(textStatus);
-						//alert(errorThrown);
-						
-						$("#city").html("");
-					}
-				});
-		}else{
-			//关联项目清空
-			$("#city")
-			.html("");
-			
-			$("#county")
-			.html("");
-			
-			$("#countyCode")
-			.val("");
-		}
-	});	
-	
-	validator = $("#supplierBasicInfo").validate({
+	validator = $("#customerInfo").validate({
 		rules: {
-			supplierId: {
+			customerId: {
 				required: true,
 				minlength: 5 ,
 				maxlength: 8,
 			},
-			supplierSimpleDes: {
-				maxlength: 2,
+			customerSimpleDes: {
+				required: true,				
+				maxlength: 10,
 			},
-			supplierDes: {
-				maxlength: 50,
-			},
-			twoLevelId: {
-				maxlength: 12,
-			},
-			twoLevelIdDes: {
+			customerName: {
+				required: true,								
 				maxlength: 50,
 			},
 			paymentTerm: {
+				required: true,					
 				maxlength: 5,
-			},
-			address: {
-				maxlength: 50,
-			},
+			}
 		},
 		errorPlacement: function(error, element) {
 		    if (element.is(":radio"))
@@ -340,9 +378,11 @@ $(document).ready(function() {
 		}
 	});
 
-	$("#country").val("${DisplayData.supplierBasicInfoData.country}");
-	$("#province").val("${DisplayData.supplierBasicInfoData.province}");
-	$("#city").val("${DisplayData.supplierBasicInfoData.city}");
+	$("#country").val("${DisplayData.customerData.country}");
+	$('#denominationCurrency').val("${DisplayData.customerData.denominationcurrency}");
+	$('#shippingCase').val("${DisplayData.customerData.shippingcase}");
+	$("#loadingPort").val("${DisplayData.customerData.loadingport}");
+	$("#deliveryPort").val("${DisplayData.customerData.deliveryport}");
 })
 
 function doSave() {
@@ -353,10 +393,10 @@ function doSave() {
 		
 		if ($('#keyBackup').val() == "") {				
 			//新建
-			actionUrl = "${ctx}/business/supplier?methodtype=add";				
+			actionUrl = "${ctx}/business/customer?methodtype=add";				
 		} else {
 			//修正
-			actionUrl = "${ctx}/business/supplier?methodtype=update";
+			actionUrl = "${ctx}/business/customer?methodtype=update";
 		}		
 		
 		if (confirm(message)) {
@@ -369,7 +409,7 @@ function doSave() {
 				contentType : 'application/json',
 				dataType : 'json',
 				url : actionUrl,
-				data : JSON.stringify($('#supplierBasicInfo').serializeArray()),// 要提交的表单
+				data : JSON.stringify($('#customerInfo').serializeArray()),// 要提交的表单
 				success : function(d) {
 					if (d.message != "") {
 						alert(d.message);	
@@ -403,15 +443,17 @@ function doDelete() {
 			type : "POST",
 			contentType : 'application/json',
 			dataType : 'json',
-			url : "${ctx}/business/supplier?methodtype=deleteDetail",
+			url : "${ctx}/business/customer?methodtype=deleteDetail",
 			data : $('#keyBackup').val(),// 要提交的表单
 			success : function(d) {
 				if (d.message != "") {
 					alert(d.message);	
 				} else {
 					controlButtons("");
-					clearSupplierBasicInfo();
+					clearCustomerInfo();
 					reloadContact();
+					reloadCustomerAddr();
+					parent.window.frames["mainFrame"].contentWindow.reload();
 				}
 				/*	
 				//不管成功还是失败都刷新父窗口，关闭子窗口
@@ -432,13 +474,14 @@ function doDelete() {
 }
 
 function doAddContact() {
-	var url = "${ctx}/business/contact?methodtype=addinit";
+	var key = $('#keyBackup').val();
+	var url = "${ctx}/business/contact?methodtype=addinit&key=" + key;
 	openLayer(url, $(document).width() - 25, layerHeight, false);	
 }
 
 function doUpdateContact(key) {		
 	var url = "${ctx}/business/contact?methodtype=updateinit&key=" + key;
-	openLayer(url, '', layerHeight, false);
+	openLayer(url, $(document).width() - 25, layerHeight, false);
 }
 
 function doDeleteContact() {
@@ -461,6 +504,7 @@ function doDeleteContact() {
 			url : "${ctx}/business/contact?methodtype=delete",
 			success : function(d) {													
 				reloadContact();
+				reloadCustomerAddr();
 				//alert(data.message);
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -480,19 +524,66 @@ function doDeleteContact() {
 
 }
 
-function clearSupplierBasicInfo() {
-	$('#supplierId').val('');
-	$('#supplierSimpleDes').val('');
-	$('#supplierDes').val('');
-	$('#twoLevelId').val('');
-	$('#twoLevelIdDes').val('');
+function doAddCustomerAddr() {
+	var url = "${ctx}/business/customeraddr?methodtype=addinit";
+	openLayer(url, $(document).width() - 25, layerHeight, false);	
+}
+
+function doUpdateCustomerAddr(key) {		
+	var url = "${ctx}/business/customeraddr?methodtype=updateinit&key=" + key;
+	openLayer(url, '', layerHeight, false);
+}
+
+function doDeleteCustomerAddr() {
+	var str = '';
+	$("input[name='numCheck']").each(function(){
+		if ($(this).prop('checked')) {
+			str += $(this).val() + ",";
+		}
+	});
+
+	if (str != "") {
+		if (confirm("您确认执行该操作吗？") == false) {
+			return;
+		}
+		$.ajax({
+			contentType : 'application/json',
+			dataType : 'json',						
+			type : "POST",
+			data : str,// 要提交的表单						
+			url : "${ctx}/business/customeraddr?methodtype=delete",
+			success : function(d) {													
+				reloadContact();
+				reloadCustomerAddr();
+				//alert(data.message);
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				//alert(XMLHttpRequest.status);
+				//alert(XMLHttpRequest.readyState);
+				//alert(textStatus);
+				//alert(errorThrown);
+				
+				//发生系统异常，请再试或者联系管理员。
+				alert("发生系统异常，，请再试或者联系管理员。");
+			}
+		});
+		
+	} else {
+		alert("请先选中要删除的记录。");
+	}
+
+}
+
+function clearCustomerInfo() {
+	$('#customerId').val('');
+	$('#customerSimpleDes').val('');
+	$('#customerName').val('');
 	$('#paymentTerm').val('');
-	$('#address').val('');
 	$('#country').val('');
-	$('#province').val('');
-	$('#city').val('');
-	$("#province").find("option").remove();
-	$("#city").find("option").remove();
+	$('#denominationCurrency').val('');
+	$('#shippingCase').val('');
+	$("#loadingPort").val('');
+	$("#deliveryPort").val('');
 }
 
 function controlButtons(data) {
@@ -501,10 +592,13 @@ function controlButtons(data) {
 		$('#delete').attr("disabled", true);
 		$('#addcontact').attr("disabled", true);
 		$('#deletecontact').attr("disabled", true);
+		$('#addcustomeraddr').attr("disabled", true);
+		$('#deletecustomeraddr').attr("disabled", true);
 		
 	} else {
 		$('#delete').attr("disabled", false);
 		$('#addcontact').attr("disabled", false);
+		$('#addcustomeraddr').attr("disabled", false);
 	}
 }
 </script>
@@ -515,91 +609,92 @@ function controlButtons(data) {
 <div id="container">
 
 		<div id="main">
-			<div id="supplierBasic">				
+			<div id="customerBasic">				
 				<div  style="height:20px"></div>
 				
-				<legend>供应商-综合信息</legend>
+				<legend>客户-综合信息</legend>
 					
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 					
-				<form:form modelAttribute="dataModels" id="supplierBasicInfo" style='padding: 0px; margin: 10px;' >
+				<form:form modelAttribute="dataModels" id="customerInfo" style='padding: 0px; margin: 10px;' >
 					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 					<table class="form" width="850px">
 						<tr>
-							<td width="60px">编码：</td>
-							<td width="150px">
-								<input type="text" id="supplierId" name="supplierId" class="mini" value="${DisplayData.supplierBasicInfoData.supplierid}"/>
-							</td>
-							<td width="60px">简称：</td> 
+							<td>客户编号：</td>
 							<td colspan=4>
-								<input type="text" id="supplierSimpleDes" name="supplierSimpleDes" class="short" value="${DisplayData.supplierBasicInfoData.suppliersimpledes}"/>
+								<input type="text" id="customerId" name="customerId" class="short" value="${DisplayData.customerData.customerid}"/>
+							</td>
+							<td width="60px">客户简称：</td> 
+							<td colspan=2>
+								<input type="text" id="customerSimpleDes" name="customerSimpleDes" class="short" value="${DisplayData.customerData.customersimpledes}"/>
 							</td>
 						</tr>
 						<tr>
-							<td>名称：</td> 
-							<td colspan=6>
-								<input type="text" id="supplierDes" name="supplierDes" class="middle" value="${DisplayData.supplierBasicInfoData.supplierdes}"/>
-							</td>
-						</tr>
-						<tr>	
-							<td>二级编码：</td> 
-							<td>
-								<input type="text" id="twoLevelId" name="twoLevelId" class="mini" value="${DisplayData.supplierBasicInfoData.twolevelid}"/>
-							</td>
-							<td>编码解释：</td> 
+							<td>客户名称：</td> 
 							<td colspan=4>
-								<input type="text" id="twoLevelIdDes" name="twoLevelIdDes" class="middle" value="${DisplayData.supplierBasicInfoData.twoleveliddes}"/>
+								<input type="text" id="customerName" name="customerName" class="middle" value="${DisplayData.customerData.customername}"/>
 							</td>
-						</tr>
-						<tr>
 							<td>
 								付款条件：
 							</td>
-							<td colspan=6>
-								入库后：
-								<input type="text" id="paymentTerm" name="paymentTerm" class="mini" value="${DisplayData.supplierBasicInfoData.paymentterm}"/>&nbsp;&nbsp;天
+							<td>
+								出运后：
+								<input type="text" id="paymentTerm" name="paymentTerm" class="mini" value="${DisplayData.customerData.paymentterm}"/>&nbsp;&nbsp;天
 							</td>
 						</tr>
 						<tr>
 							<td>
 								国家：
 							</td>
-							<td width="150px">
+							<td>
 								<form:select path="country">
 									<form:options items="${DisplayData.countryList}" itemValue="key"
 										itemLabel="value" />
 								</form:select>
 							</td>
 							<td>
-								省：
+								计价货币：
 							</td>
-							<td width="150px"> 
-								<form:select path="province">
-									<form:options items="${DisplayData.provinceList}" itemValue="key"
+							<td colspan=2> 
+								<form:select path="denominationCurrency">
+									<form:options items="${DisplayData.denominationCurrencyList}" itemValue="key"
 										itemLabel="value" />
 								</form:select>
 							</td>
-							<td width="60px">	
-								市县：
-							</td>
-							<td width="150px"> 
-								<form:select path="city">
-									<form:options items="${DisplayData.cityList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-							<td></td>
+							<td colspan=2></td>
 						</tr>
 						<tr>
-							<td>
-								地址： 
+							<td width="60px">	
+								出运条件：
 							</td>
-							<td colspan=6>
-								<input type="text" id="address" name="address" class="long" value="${DisplayData.supplierBasicInfoData.address}"/>
+							<td width="100px"> 
+								<form:select path="shippingCase">
+									<form:options items="${DisplayData.shippingCaseList}" itemValue="key"
+										itemLabel="value" />
+								</form:select>
 							</td>
+							<td width="60px">
+								出运港： 
+							</td>
+							<td width="100px">
+								<form:select path="loadingPort">
+									<form:options items="${DisplayData.portList}" itemValue="key"
+										itemLabel="value" />
+								</form:select>
+							</td>
+							<td width="60px">
+								目的港： 
+							</td>
+							<td colspan=2>
+								<form:select path="deliveryPort">
+									<form:options items="${DisplayData.portList}" itemValue="key"
+										itemLabel="value" />
+								</form:select>
+							</td>
+									
 						</tr>
 					</table>
 
@@ -609,23 +704,19 @@ function controlButtons(data) {
 			<div  style="height:20px"></div>
 				
 			<div>
-				<legend> 联系人</legend>
-				<button type="button" id="deletecontact" class="DTTT_button" onClick="doDeleteContact();"
+				<legend> 地址</legend>
+				<button type="button" id="deletecustomeraddr" class="DTTT_button" onClick="doDeleteCustomerAddr();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="addcontact" class="DTTT_button" onClick="doAddContact();"
+				<button type="button" id="addcustomeraddr" class="DTTT_button" onClick="doAddCustomerAddr();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="TContactList" class="display" cellspacing="0">
+				<table id="TCustomerAddrList" class="display" cellspacing="0">
 					<thead>
 						<tr class="selected">
 							<th style="width: 80px;" class="dt-middle">No</th>
-							<th style="width: 80px;" class="dt-middle">姓名</th>
-							<th style="width: 30px;" class="dt-middle">性别</th>
-							<th style="width: 80px;" class="dt-middle">职务</th>
-							<th style="width: 80px;" class="dt-middle">手机</th>
-							<th style="width: 80px;" class="dt-middle">电话</th>
-							<th style="width: 80px;" class="dt-middle">传真</th>
-							<th style="width: 80px;" class="dt-middle">邮箱</th>
-							<th style="width: 80px;" class="dt-middle">QQ</th>
+							<th style="width: 80px;" class="dt-middle">抬头</th>
+							<th style="width: 30px;" class="dt-middle">地址</th>
+							<th style="width: 80px;" class="dt-middle">邮编</th>
+							<th style="width: 80px;" class="dt-middle">备注</th>
 							<th style="width: 80px;" class="dt-middle">操作</th>
 					</thead>
 					<tfoot>
@@ -636,14 +727,50 @@ function controlButtons(data) {
 							<th></th>
 							<th></th>
 							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
 						</tr>
 					</tfoot>
 				</table>
-
+		</div>			
+			
+		<div  style="height:20px"></div>
+			
+		<div>
+			<legend> 联系人</legend>
+			<button type="button" id="deletecontact" class="DTTT_button" onClick="doDeleteContact();"
+					style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
+			<button type="button" id="addcontact" class="DTTT_button" onClick="doAddContact();"
+					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
+			<table id="TContactList" class="display" cellspacing="0">
+				<thead>
+					<tr class="selected">
+						<th style="width: 80px;" class="dt-middle">No</th>
+						<th style="width: 80px;" class="dt-middle">姓名</th>
+						<th style="width: 30px;" class="dt-middle">性别</th>
+						<th style="width: 80px;" class="dt-middle">职务</th>
+						<th style="width: 80px;" class="dt-middle">手机</th>
+						<th style="width: 80px;" class="dt-middle">电话</th>
+						<th style="width: 80px;" class="dt-middle">传真</th>
+						<th style="width: 80px;" class="dt-middle">邮箱</th>
+						<th style="width: 80px;" class="dt-middle">QQ</th>
+						<th style="width: 80px;" class="dt-middle">skype</th>
+						<th style="width: 80px;" class="dt-middle">操作</th>
+				</thead>
+				<tfoot>
+					<tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+					</tr>
+				</tfoot>
+			</table>
 		</div>
 	</div>
 </html>

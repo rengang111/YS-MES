@@ -1,4 +1,4 @@
-package com.ys.business.service.supplier;
+package com.ys.business.service.customer;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -8,9 +8,9 @@ import java.util.Vector;
 import org.springframework.stereotype.Service;
 
 import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.supplier.SupplierModel;
-import com.ys.business.db.dao.B_SupplierBasicInfoDao;
-import com.ys.business.db.data.B_SupplierBasicInfoData;
+import com.ys.business.action.model.customer.CustomerModel;
+import com.ys.business.db.dao.B_CustomerDao;
+import com.ys.business.db.data.B_CustomerData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.role.RoleModel;
@@ -30,7 +30,7 @@ import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class SupplierService extends BaseService {
+public class CustomerService extends BaseService {
  
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
@@ -62,15 +62,15 @@ public class SupplierService extends BaseService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		dataModel.setQueryFileName("/business/supplier/supplierquerydefine");
-		dataModel.setQueryName("supplierquerydefine_search");
+		dataModel.setQueryFileName("/business/customer/customerquerydefine");
+		dataModel.setQueryName("customerquerydefine_search");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
 		
-		dataModel.setYsViewData(makeAddress(arrangeUserList(dataModel.getYsViewData())));
+		dataModel.setYsViewData(makeAddress(dataModel.getYsViewData()));
 		
 		if ( iEnd > dataModel.getYsViewData().size()){
 			
@@ -90,12 +90,15 @@ public class SupplierService extends BaseService {
 
 	}
 
-	public SupplierModel doAddInit(HttpServletRequest request) {
+	public CustomerModel doAddInit(HttpServletRequest request) {
 
-		SupplierModel model = new SupplierModel();
+		CustomerModel model = new CustomerModel();
 
 		try {			
 			model.setCountryList(doOptionChange(DicUtil.ADDRESS, "").getUnsureList());
+			model.setDenominationCurrencyList(doOptionChange(DicUtil.DENOMINATIONCURRENCY, "").getUnsureList());
+			model.setShippingCaseList(doOptionChange(DicUtil.SHIPPINGCASE, "").getUnsureList());
+			model.setPortList(doOptionChange(DicUtil.PORT, "").getUnsureList());
 			model.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {
@@ -107,15 +110,15 @@ public class SupplierService extends BaseService {
 	
 	}
 
-	public SupplierModel doAdd(HttpServletRequest request, String data, UserInfo userInfo) {
+	public CustomerModel doAdd(HttpServletRequest request, String data, UserInfo userInfo) {
 
-		SupplierModel model = new SupplierModel();
+		CustomerModel model = new CustomerModel();
 		try {
-			B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
-			B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
-			String supplierid = getJsonData(data, "supplierId");
+			B_CustomerDao dao = new B_CustomerDao();
+			B_CustomerData dbData = new B_CustomerData();
+			String customerid = getJsonData(data, "customerId");
 		
-			ArrayList<ArrayList<String>> preCheckResult = preCheckSupplierId(request, supplierid);
+			ArrayList<ArrayList<String>> preCheckResult = preCheckCustomerId(request, customerid);
 			
 			if (preCheckResult.size() > 0) {
 				//已存在
@@ -123,16 +126,15 @@ public class SupplierService extends BaseService {
 			} else {
 				String guid = BaseDAO.getGuId();
 				dbData.setId(guid);
-				dbData.setSupplierid(getJsonData(data, "supplierId"));
-				dbData.setSuppliersimpledes(getJsonData(data, "supplierSimpleDes"));
-				dbData.setSupplierdes(getJsonData(data, "supplierDes"));
-				dbData.setTwolevelid(getJsonData(data, "twoLevelId"));
-				dbData.setTwoleveliddes(getJsonData(data, "twoLevelIdDes"));
+				dbData.setCustomerid(getJsonData(data, "customerId"));
+				dbData.setCustomersimpledes(getJsonData(data, "customerSimpleDes"));
+				dbData.setCustomername(getJsonData(data, "customerName"));
 				dbData.setPaymentterm(getJsonData(data, "paymentTerm"));
 				dbData.setCountry(getJsonData(data, "country"));
-				dbData.setProvince(getJsonData(data, "province"));
-				dbData.setCity(getJsonData(data, "city"));
-				dbData.setAddress(getJsonData(data, "address"));
+				dbData.setDenominationcurrency(getJsonData(data, "denominationCurrency"));
+				dbData.setShippingcase(getJsonData(data, "shippingCase"));
+				dbData.setLoadingport(getJsonData(data, "loadingPort"));
+				dbData.setDeliveryport(getJsonData(data, "deliveryPort"));
 				
 				dbData = updateModifyInfo(dbData, userInfo);
 				dao.Create(dbData);
@@ -147,9 +149,9 @@ public class SupplierService extends BaseService {
 	}	
 
 	
-	public SupplierModel doOptionChange(String type, String parentCode) {
+	public CustomerModel doOptionChange(String type, String parentCode) {
 		DicUtil util = new DicUtil();
-		SupplierModel model = new SupplierModel();
+		CustomerModel model = new CustomerModel();
 		
 		try {
 			ArrayList<ListOption> optionList = util.getListOption(type, parentCode);
@@ -164,21 +166,21 @@ public class SupplierService extends BaseService {
 		return model;
 	}
 	
-	public SupplierModel doUpdate(HttpServletRequest request, String data, UserInfo userInfo) {
-		SupplierModel model = new SupplierModel();
+	public CustomerModel doUpdate(HttpServletRequest request, String data, UserInfo userInfo) {
+		CustomerModel model = new CustomerModel();
 		String id = getJsonData(data, "keyBackup");
 		
 		try {
-			B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
-			B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
+			B_CustomerDao dao = new B_CustomerDao();
+			B_CustomerData dbData = new B_CustomerData();
 			
-			String supplierid = getJsonData(data, "supplierId");
+			String customerid = getJsonData(data, "customerId");
 			boolean isKeyExist = false;
 			
 			//要更新的记录是否存在
 			isKeyExist = preCheckId(id);
 			if (isKeyExist) {
-				ArrayList<ArrayList<String>> preCheckResult = preCheckSupplierId(request, supplierid);
+				ArrayList<ArrayList<String>> preCheckResult = preCheckCustomerId(request, customerid);
 				
 				//要更新的供应商id是否存在
 				if (preCheckResult.size() != 0 && !preCheckResult.get(0).get(1).equals(id)) {					
@@ -186,16 +188,15 @@ public class SupplierService extends BaseService {
 					model.setEndInfoMap("001", "err007", "");
 				} else {
 					dbData.setId(getJsonData(data, "keyBackup"));
-					dbData.setSupplierid(getJsonData(data, "supplierId"));
-					dbData.setSuppliersimpledes(getJsonData(data, "supplierSimpleDes"));
-					dbData.setSupplierdes(getJsonData(data, "supplierDes"));
-					dbData.setTwolevelid(getJsonData(data, "twoLevelId"));
-					dbData.setTwoleveliddes(getJsonData(data, "twoLevelIdDes"));
+					dbData.setCustomerid(getJsonData(data, "customerId"));
+					dbData.setCustomersimpledes(getJsonData(data, "customerSimpleDes"));
+					dbData.setCustomername(getJsonData(data, "customerName"));
 					dbData.setPaymentterm(getJsonData(data, "paymentTerm"));
 					dbData.setCountry(getJsonData(data, "country"));
-					dbData.setProvince(getJsonData(data, "province"));
-					dbData.setCity(getJsonData(data, "city"));
-					dbData.setAddress(getJsonData(data, "address"));
+					dbData.setDenominationcurrency(getJsonData(data, "denominationCurrency"));
+					dbData.setShippingcase(getJsonData(data, "shippingCase"));
+					dbData.setLoadingport(getJsonData(data, "loadingPort"));
+					dbData.setDeliveryport(getJsonData(data, "deliveryPort"));
 					
 					dbData = updateModifyInfo(dbData, userInfo);
 					dao.Store(dbData);
@@ -213,14 +214,14 @@ public class SupplierService extends BaseService {
 		return model;
 	}
 	
-	public SupplierModel doDelete(String data, UserInfo userInfo){
+	public CustomerModel doDelete(String data, UserInfo userInfo){
 		
-		SupplierModel model = new SupplierModel();
+		CustomerModel model = new CustomerModel();
 		
 		try {
 			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 	        
-	        bean.executeSupplierDelete(data, userInfo);
+	        bean.executeCustomerDelete(data, userInfo);
 	        
 	        model.setEndInfoMap("000", "", "");
 		}
@@ -232,7 +233,7 @@ public class SupplierService extends BaseService {
 		return model;
 	}
 	
-	public static B_SupplierBasicInfoData updateModifyInfo(B_SupplierBasicInfoData data, UserInfo userInfo) {
+	public static B_CustomerData updateModifyInfo(B_CustomerData data, UserInfo userInfo) {
 		String createUserId = data.getCreateperson();
 		if ( createUserId == null || createUserId.equals("")) {
 			data.setCreateperson(userInfo.getUserId());
@@ -297,11 +298,11 @@ public class SupplierService extends BaseService {
 		return rtnData;
 	}
 	
-	private boolean isDataExist(B_SupplierBasicInfoData dbData) {
+	private boolean isDataExist(B_CustomerData dbData) {
 		boolean rtnValue = false;
 		
 		try {
-			B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
+			B_CustomerDao dao = new B_CustomerDao();
 			dao.FindByPrimaryKey(dbData);
 			rtnValue = true;
 		}
@@ -312,17 +313,18 @@ public class SupplierService extends BaseService {
 		
 	}
 	
-	public SupplierModel getSupplierBaseInfo(String key) throws Exception {
-		SupplierModel model = new SupplierModel();
-		B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
-		B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
+	public CustomerModel getCustomerBaseInfo(String key) throws Exception {
+		CustomerModel model = new CustomerModel();
+		B_CustomerDao dao = new B_CustomerDao();
+		B_CustomerData dbData = new B_CustomerData();
 		dbData.setId(key);
-		dbData = (B_SupplierBasicInfoData)dao.FindByPrimaryKey(dbData);
-		model.setSupplierBasicInfoData(dbData);
+		dbData = (B_CustomerData)dao.FindByPrimaryKey(dbData);
+		model.setCustomerData(dbData);
 		
 		model.setCountryList(doOptionChange(DicUtil.ADDRESS, "").getUnsureList());
-		model.setProvinceList(doOptionChange(DicUtil.ADDRESS, dbData.getCountry()).getUnsureList());
-		model.setCityList(doOptionChange(DicUtil.ADDRESS, dbData.getProvince()).getUnsureList());
+		model.setDenominationCurrencyList(doOptionChange(DicUtil.DENOMINATIONCURRENCY, "").getUnsureList());
+		model.setShippingCaseList(doOptionChange(DicUtil.SHIPPINGCASE, "").getUnsureList());
+		model.setPortList(doOptionChange(DicUtil.PORT, "").getUnsureList());
 		
 		model.setEndInfoMap("098", "0001", "");
 		model.setKeyBackup(dbData.getId());
@@ -331,12 +333,12 @@ public class SupplierService extends BaseService {
 		
 	}
 	
-	private ArrayList<ArrayList<String>> preCheckSupplierId(HttpServletRequest request, String key) throws Exception {
+	private ArrayList<ArrayList<String>> preCheckCustomerId(HttpServletRequest request, String key) throws Exception {
 		
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		BaseModel dataModel = new BaseModel();
-		dataModel.setQueryFileName("/business/supplier/supplierquerydefine");
-		dataModel.setQueryName("supplierquerydefine_preCheck");
+		dataModel.setQueryFileName("/business/customer/customerquerydefine");
+		dataModel.setQueryName("customerquerydefine_preCheck");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword", key);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -346,8 +348,8 @@ public class SupplierService extends BaseService {
 	}
 	
 	private boolean preCheckId(String key) throws Exception {
-		B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
-		B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
+		B_CustomerDao dao = new B_CustomerDao();
+		B_CustomerData dbData = new B_CustomerData();
 		boolean rtnData = false;
 		
 		try {

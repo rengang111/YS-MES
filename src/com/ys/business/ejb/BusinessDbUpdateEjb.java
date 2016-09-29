@@ -21,10 +21,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ys.business.db.dao.B_ContactDao;
+import com.ys.business.db.dao.B_CustomerAddrDao;
+import com.ys.business.db.dao.B_CustomerDao;
 import com.ys.business.db.dao.B_SupplierBasicInfoDao;
 import com.ys.business.db.data.B_ContactData;
+import com.ys.business.db.data.B_CustomerAddrData;
+import com.ys.business.db.data.B_CustomerData;
 import com.ys.business.db.data.B_SupplierBasicInfoData;
 import com.ys.business.service.contact.ContactService;
+import com.ys.business.service.customer.CustomerService;
+import com.ys.business.service.customeraddr.CustomerAddrService;
 import com.ys.business.service.supplier.SupplierService;
 import com.ys.system.action.model.dic.DicModel;
 import com.ys.system.action.model.dic.DicTypeModel;
@@ -96,7 +102,6 @@ public class BusinessDbUpdateEjb  {
 				dao.Store(data);
 				
 				count++;
-				//roleModel.setUpdatedRecordCount(count);
 			}
 			ts.commit();
 		}
@@ -124,7 +129,7 @@ public class BusinessDbUpdateEjb  {
 				dao.Store(data);
 				
 				count++;
-				//roleModel.setUpdatedRecordCount(count);
+
 			}
 			ts.commit();
 		}
@@ -134,6 +139,74 @@ public class BusinessDbUpdateEjb  {
 		}
     }
     
+    public void executeCustomerDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_CustomerData data = new B_CustomerData();
+		int count = 0;
+	
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+			String removeData[] = keyData.split(",");
+			for (String key:removeData) {
+				StringBuffer sql = new StringBuffer("");
+				data.setId(key);
+				B_CustomerDao dao = new B_CustomerDao(data);
+				data = CustomerService.updateModifyInfo(dao.beanData, userInfo);
+				
+				sql.append("UPDATE b_Contact SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");
+				sql.append(" WHERE companyCode = '" + data.getId() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
+				BaseDAO.execUpdate(sql.toString());	
+				
+				sql = new StringBuffer("");
+				sql.append("UPDATE b_customerAddr SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");
+				sql.append(" WHERE customerId = '" + data.getId() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
+				BaseDAO.execUpdate(sql.toString());					
+				
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				
+				count++;
 
+			}
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();
+			throw e;
+		}
+    }
+    
+    public void executeCustomerAddrDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_CustomerAddrData data = new B_CustomerAddrData();
+		int count = 0;
+	
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+			String removeData[] = keyData.split(",");
+			for (String key:removeData) {
+				StringBuffer sql = new StringBuffer("");
+				data.setId(key);
+				B_CustomerAddrDao dao = new B_CustomerAddrDao(data);
+				data = CustomerAddrService.updateModifyInfo(dao.beanData, userInfo);			
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				
+				count++;
+
+			}
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();
+			throw e;
+		}
+    }    
 }
 
