@@ -17,7 +17,6 @@
 $.extend($.fn, {
 	// http://jqueryvalidation.org/validate/
 	validate: function( options ) {
-
 		// if nothing is selected, return nothing; can't chain anyway
 		if ( !this.length ) {
 			if ( options && options.debug && window.console ) {
@@ -25,7 +24,6 @@ $.extend($.fn, {
 			}
 			return;
 		}
-
 		// check if a validator for this form was already created
 		var validator = $.data( this[ 0 ], "validator" );
 		if ( validator ) {
@@ -107,7 +105,6 @@ $.extend($.fn, {
 	// http://jqueryvalidation.org/valid/
 	valid: function() {
 		var valid, validator;
-
 		if ( $( this[ 0 ] ).is( "form" ) ) {
 			valid = this.validate().form();
 		} else {
@@ -195,6 +192,7 @@ $.extend($.fn, {
 
 // Custom selectors
 $.extend( $.expr[ ":" ], {
+
 	// http://jqueryvalidation.org/blank-selector/
 	blank: function( a ) {
 		return !$.trim( "" + $( a ).val() );

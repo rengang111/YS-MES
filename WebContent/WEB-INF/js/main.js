@@ -16,7 +16,7 @@ function openTab(selector,title,href,icon){
     if($tabs.tabs('exists',title)){//存在，则打开
         $tabs.tabs('select',title);
     }else{//不存在，新建,新建时判断tab页个数，超出则关闭第一个
-        var content = '<iframe scrolling="auto" frameborder="0" src="'+href+'" style="width:100%;height:99%;"></iframe>';
+        var content = '<iframe scrolling="auto" id="mainFrame" frameborder="0" src="'+href+'" style="width:100%;height:99%;"></iframe>';
         var tabCon = { title:title,  content:content, closable:true, selected:true, iconCls:icon };
         if($('.tabs-inner').length>8){//最多打开8个（不包括首页）
             $.messager.confirm('提示', '菜单页打开过多，是否关闭第一个，并打开“'+title+'”？', function(r){

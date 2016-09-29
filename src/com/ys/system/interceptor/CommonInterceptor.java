@@ -195,10 +195,13 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
         if (isRedirect) {
         	//TODO:
         	//如果需要清空session，在这里清空
-        	request.getRequestDispatcher(exceptionUrl).forward(request, response); 
-        	//request.getRequestDispatcher("/").forward(request, response); 
-            //response.sendRedirect(request.getContextPath() + exceptionUrl);
-            return false;
+        	
+        	//TODO:为了测试方便，将拦截器关闭--begin
+        	//request.getRequestDispatcher(exceptionUrl).forward(request, response); 
+        	////request.getRequestDispatcher("/").forward(request, response); 
+            ////response.sendRedirect(request.getContextPath() + exceptionUrl);
+            //return false;
+        	//TODO:为了测试方便，将拦截器关闭--end
         }
         
         return super.preHandle(request, response, handler);

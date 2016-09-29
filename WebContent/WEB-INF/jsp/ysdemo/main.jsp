@@ -52,9 +52,10 @@ function ajax() {
 				var param = {};
 				var formData = $("#condition").serializeArray();
 				formData.forEach(function(e) {
-					//aoData.push({"name":e.name, "value":e.value});
+					alert(e.name);
+					aoData.push({"name":e.name, "value":e.value});
 				});
-
+				
 				//aoData.push({"name":"keyword1", "value":""}, {"name":"keyword2", "value":""});
 				$.ajax({
 					"url" : sSource,

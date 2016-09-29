@@ -1,5 +1,6 @@
 package com.ys.util;
 
+import com.ys.business.action.model.common.ListOption;
 import com.ys.util.basedao.BaseDAO;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +21,11 @@ public class DicUtil {
 	public static final String UNITPROPERTY = "A7";
 	public static final String UNITTYPE = "A8";
 	public static final String MENUTYPE = "A9";
-
+	
+	//TODO
+	public static final String DENOMINATIONCURRENCY = "B1";
+	public static final String SHIPPINGCASE = "B2";
+	public static final String PORT = "B3";
 	
 	//HashMap通过id查找
 	private static HashMap<String,String> dicMapViaId = new HashMap<String, String>();
@@ -29,7 +34,7 @@ public class DicUtil {
 	//HashMap(单位)
 	private static HashMap<String,String> dicMapUnit = new HashMap<String, String>();
 	
-	private int parentCodeIndex = 2;
+	private static int parentCodeIndex = 3;
 	
 	public int getParentCodeIndex() {
 		return this.parentCodeIndex;
@@ -72,10 +77,18 @@ public class DicUtil {
 	}
 	
 	//根据给定的父code得到该父code所属的全部code
-	public static ArrayList<ArrayList<String>> getSameParentGroupValue(String type, String parentCode, int parentCodeIndex) throws Exception {
+	public ArrayList<ArrayList<String>> getSameParentGroupValue(String type, String parentCode, boolean isCycleGet) throws Exception {
+
+		ArrayList<ArrayList<String>> sameParentIdGroupValue = new ArrayList<ArrayList<String>>();
+		
+		getDicChain(type, parentCode, isCycleGet, sameParentIdGroupValue);
+		
+		return sameParentIdGroupValue;
+	}	
+	
+	private ArrayList<ArrayList<String>> getDicChain(String type, String parentCode, boolean isCycleGet, ArrayList<ArrayList<String>> sameParentIdGroupValue) throws Exception {
 
 		ArrayList<ArrayList<String>> codeGroupValue = new ArrayList<ArrayList<String>>();
-		ArrayList<ArrayList<String>> sameParentIdGroupValue = new ArrayList<ArrayList<String>>();
 		
 		if (dicMapViaId.isEmpty()) {
 			getDicValue();
@@ -84,17 +97,23 @@ public class DicUtil {
 			codeGroupValue = dicMapViaType.get(type);
 
 			for(ArrayList<String> rowData:codeGroupValue) {
-				String subParentCode = (rowData.get(parentCodeIndex) == null) ? "":rowData.get(parentCodeIndex);
-				if (!subParentCode.equals("")) {
-					if (subParentCode.substring(0, parentCode.length()).equals(parentCode)) {
-						sameParentIdGroupValue.add(rowData);
+				if (rowData.get(parentCodeIndex).equals(parentCode)) {
+					sameParentIdGroupValue.add(rowData);
+					if (isCycleGet) {
+						String subParentCode = rowData.get(0);
+						ArrayList<ArrayList<String>> subParentCodeList = getDicChain(type, subParentCode, isCycleGet, sameParentIdGroupValue);
 					}
 				}
+				//if (!subParentCode.equals("")) {
+				//	if (subParentCode.substring(0, parentCode.length()).equals(parentCode)) {
+				//		sameParentIdGroupValue.add(rowData);
+				//	}
+				//}
 			}
 		}		
 		
 		return sameParentIdGroupValue;
-	}	
+	}
 	
 	//清空字典
 	public static void emptyBuffer(boolean isUn) {
@@ -161,5 +180,18 @@ public class DicUtil {
 			dicMapViaType.put(preDicType, groupData);
 		}
 	}
-
+	
+	public ArrayList<ListOption> getListOption(String type, String parentCode) throws Exception {
+		DicUtil util = new DicUtil();
+		ArrayList<ArrayList<String>> dicList = null;
+		ArrayList<ListOption> rtnData = new ArrayList<ListOption>();
+		
+		dicList = util.getSameParentGroupValue(type, parentCode, false);
+		for(ArrayList<String>rowData:dicList) {
+			ListOption option = new ListOption(rowData.get(0), rowData.get(1));
+			rtnData.add(option);
+		}
+		
+		return rtnData;
+	}
 }

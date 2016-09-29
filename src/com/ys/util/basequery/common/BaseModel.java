@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.ys.system.action.common.BaseAction;
+import com.ys.util.CommonUtil;
+
 public class BaseModel implements Serializable {
 	
 	private final static long serialVersionUID = 66661L;
@@ -28,6 +31,7 @@ public class BaseModel implements Serializable {
 	private int recordCount = 0;
 	private boolean success;
 	private String operType = "";
+	private HashMap<String, String> endInfoMap = new HashMap<String, String>();
 	
 	public String getMenuId() {
 		return this.menuId;
@@ -181,11 +185,29 @@ public class BaseModel implements Serializable {
 		this.success = success;
 	}	
 	
-	
 	public String getOperType() {
 		return operType;
 	}
 	public void setOperType(String operType) {
 		this.operType = operType;
 	}
+	
+	public HashMap<String, String> getEndInfoMap() {
+		return endInfoMap;
+	}
+	public void setEndInfoMap(HashMap<String, String> endInfoMap) {
+		this.endInfoMap = endInfoMap;
+	}
+	
+	public void setEndInfoMap(String rtnCd, String messageKey, String info) {
+		this.endInfoMap.put("rtnCd", rtnCd);
+		if (messageKey.equals("")) {
+			this.endInfoMap.put(BaseAction.INFO, "");
+		} else {
+			this.endInfoMap.put(BaseAction.INFO, CommonUtil.getMsg(messageKey));
+		}
+		this.endInfoMap.put("info", info);
+	}
+	
+	
 }
