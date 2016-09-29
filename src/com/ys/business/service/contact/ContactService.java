@@ -196,10 +196,8 @@ public class ContactService extends BaseService {
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(SYSTEMERROR, "err001", id);
-<<<<<<< HEAD
-=======
 			System.out.println(e.getMessage());
->>>>>>> refs/remotes/origin/master
+
 		}
 		
 		return model;
