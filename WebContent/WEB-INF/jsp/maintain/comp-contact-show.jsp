@@ -1,5 +1,6 @@
-<%@ page language="java" pageEncoding="UTF-8" 
-contentType="text/html; charset=UTF-8"%>
+<%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
+	
+	
 	
 <style type="text/css">
 td.details-control {
