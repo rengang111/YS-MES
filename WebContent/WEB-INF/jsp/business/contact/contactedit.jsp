@@ -100,9 +100,10 @@ function doSave() {
 				url : actionUrl,
 				data : JSON.stringify($('#contactInfo').serializeArray()),// 要提交的表单
 				success : function(d) {
-					parent.reloadContact();
-					if (d.message != "") {
+					if (d.rtnCd != "000") {
 						alert(d.message);	
+					} else {
+						parent.reloadContact();
 					}
 					//TODO
 					//var infoList = d.info.split("|");
@@ -140,23 +141,23 @@ function doDelete() {
 			url : "${ctx}/business/contact?methodtype=deleteDetail",
 			data : $('#keyBackup').val(),// 要提交的表单
 			success : function(d) {
-				if (d.message != "") {
+				if (d.rtnCd != "000") {
 					alert(d.message);	
 				} else {
-					parent.reloadContact();
 					//$('#keyBackup').val("");
 					//$('#companyCode').val("");
 					controlButtons("");
 					clearContactInfo();
-
+					parent.reloadContact();
 				}
-				/*	
+				
+					
 				//不管成功还是失败都刷新父窗口，关闭子窗口
 				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 				//parent.$('#events').DataTable().destroy();/
-				parent.reload_contactor();
+				//parent.reload_contactor();
 				parent.layer.close(index); //执行关闭
-				*/
+				
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				//alert(XMLHttpRequest.status);					
@@ -255,7 +256,7 @@ function controlButtons(data) {
 								邮箱：
 							</td>
 							<td>
-								<input type="text" id="mail" name="mail" class="short" value="${DisplayData.contactData.mail}"/>
+								<input type="text" id="mail" name="mail" class="middle" value="${DisplayData.contactData.mail}"/>
 							</td>
 							<td>
 								QQ：
@@ -263,6 +264,14 @@ function controlButtons(data) {
 							<td>
 								<input type="text" id="QQ" name="QQ" class="short" value="${DisplayData.contactData.qq}"/>
 							</td>
+						</tr>
+						<tr>
+							<td>
+								Skype：
+							</td>
+							<td>
+								<input type="text" id="skype" name="skype" class="short" value="${DisplayData.contactData.skype}"/>
+							</td>							
 						</tr>
 					</table>
 

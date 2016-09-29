@@ -14,6 +14,7 @@ public class BaseService {
 	
 	protected final String DUMMYKEY = "-1";
 	protected final String SYSTEMERROR = "-1";
+	protected final String NORMAL = "000";
 	
 	/*
 	public BaseTransaction baseTransaction;

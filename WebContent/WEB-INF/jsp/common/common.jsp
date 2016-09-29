@@ -117,5 +117,16 @@
 	    }, "身份证号码不正确"); 
 	    	    
 	}
+	
+	function reloadTabWindow() {
+		var curTabWin = null;
+		var curTab = parent.$('#_main_center_tabs').tabs('getSelected');
+        if (curTab && curTab.find('iframe').length > 0) {
+            curTabWin = curTab.find('iframe')[0].contentWindow;
+        }
+        curTabWin.reload();
+
+		
+	}
 </Script>
 

@@ -200,7 +200,7 @@ function reloadContact() {
 
 	$('#TContactList').DataTable().ajax.reload(null,false);
 	
-	parent.window.frames["mainFrame"].contentWindow.reload();
+	reloadTabWindow();
 
 	return true;
 }
@@ -376,10 +376,9 @@ function doSave() {
 					}
 
 					controlButtons(d.info);
-					parent.window.frames["mainFrame"].contentWindow.reload();
+
 					//不管成功还是失败都刷新父窗口，关闭子窗口
-					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
-					//parent.$('#events').DataTable().destroy();
+					//var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 					//parent.layer.close(index); //执行关闭
 					
 				},
@@ -411,13 +410,14 @@ function doDelete() {
 				} else {
 					controlButtons("");
 					clearSupplierBasicInfo();
-					reloadContact();
+					
 				}
+				reloadContact();
 				/*	
 				//不管成功还是失败都刷新父窗口，关闭子窗口
 				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 				//parent.$('#events').DataTable().destroy();/
-				parent.reload_contactor();
+				//parent.reload_contactor();
 				parent.layer.close(index); //执行关闭
 				*/
 			},

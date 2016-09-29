@@ -125,7 +125,7 @@ public class CustomerAddrService extends BaseService {
 			
 			dbData = updateModifyInfo(dbData, userInfo);
 			dao.Create(dbData);
-			model.setEndInfoMap("000", "", guid);
+			model.setEndInfoMap(NORMAL, "", guid);
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
@@ -151,7 +151,7 @@ public class CustomerAddrService extends BaseService {
 			
 			dbData = updateModifyInfo(dbData, userInfo);
 			dao.Store(dbData);
-			model.setEndInfoMap("000", "", id);
+			model.setEndInfoMap(NORMAL, "", id);
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(SYSTEMERROR, "err001", id);
@@ -169,7 +169,7 @@ public class CustomerAddrService extends BaseService {
 	        
 	        bean.executeCustomerAddrDelete(data, userInfo);
 	        
-	        model.setEndInfoMap("000", "", "");
+	        model.setEndInfoMap(NORMAL, "", "");
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

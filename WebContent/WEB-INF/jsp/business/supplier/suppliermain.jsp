@@ -126,6 +126,7 @@
 	}
 	
 	function doCreate() {
+		
 		var url = "${ctx}/business/supplier?methodtype=addinit";
 		openLayer(url, '', layerHeight, true);
 	}
@@ -176,6 +177,7 @@
 	}
 
 	function reload() {
+		
 		$('#TSupplier').DataTable().ajax.reload(null,false);
 		
 		return true;

@@ -136,7 +136,7 @@ public class SupplierService extends BaseService {
 				
 				dbData = updateModifyInfo(dbData, userInfo);
 				dao.Create(dbData);
-				model.setEndInfoMap("000", "", guid);
+				model.setEndInfoMap(NORMAL, "", guid);
 			}
 		}
 		catch(Exception e) {
@@ -199,7 +199,7 @@ public class SupplierService extends BaseService {
 					
 					dbData = updateModifyInfo(dbData, userInfo);
 					dao.Store(dbData);
-					model.setEndInfoMap("000", "", id);
+					model.setEndInfoMap(NORMAL, "", id);
 				}
 			} else {
 				//不存在
@@ -222,7 +222,7 @@ public class SupplierService extends BaseService {
 	        
 	        bean.executeSupplierDelete(data, userInfo);
 	        
-	        model.setEndInfoMap("000", "", "");
+	        model.setEndInfoMap(NORMAL, "", "");
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

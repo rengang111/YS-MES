@@ -331,7 +331,7 @@ function initEvent(){
 function reloadContact() {
 
 	$('#TContactList').DataTable().ajax.reload(null,false);
-	parent.window.frames["mainFrame"].contentWindow.reload();
+	reloadTabWindow();
 
 	return true;
 }
@@ -339,7 +339,7 @@ function reloadContact() {
 function reloadCustomerAddr() {
 
 	$('#TCustomerAddrList').DataTable().ajax.reload(null,false);
-	parent.window.frames["mainFrame"].contentWindow.reload();
+	reloadTabWindow();
 
 	return true;
 }
@@ -411,12 +411,13 @@ function doSave() {
 				url : actionUrl,
 				data : JSON.stringify($('#customerInfo').serializeArray()),// 要提交的表单
 				success : function(d) {
-					if (d.message != "") {
+					if (d.rtnCd != "000") {
 						alert(d.message);	
+					} else {
+						parent.window.frames["mainFrame"].contentWindow.reload();
+						controlButtons(d.info);
 					}
-
-					controlButtons(d.info);
-					parent.window.frames["mainFrame"].contentWindow.reload();
+					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
 					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
 					//parent.$('#events').DataTable().destroy();
@@ -446,7 +447,7 @@ function doDelete() {
 			url : "${ctx}/business/customer?methodtype=deleteDetail",
 			data : $('#keyBackup').val(),// 要提交的表单
 			success : function(d) {
-				if (d.message != "") {
+				if (d.rtnCd != "000") {
 					alert(d.message);	
 				} else {
 					controlButtons("");
@@ -502,10 +503,13 @@ function doDeleteContact() {
 			type : "POST",
 			data : str,// 要提交的表单						
 			url : "${ctx}/business/contact?methodtype=delete",
-			success : function(d) {													
-				reloadContact();
-				reloadCustomerAddr();
-				//alert(data.message);
+			success : function(d) {
+				if (d.rtnCd != "000") {
+					alert(d.message);
+				} else {
+					reloadContact();
+					reloadCustomerAddr();
+				}
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				//alert(XMLHttpRequest.status);
@@ -552,10 +556,13 @@ function doDeleteCustomerAddr() {
 			type : "POST",
 			data : str,// 要提交的表单						
 			url : "${ctx}/business/customeraddr?methodtype=delete",
-			success : function(d) {													
-				reloadContact();
-				reloadCustomerAddr();
-				//alert(data.message);
+			success : function(d) {
+				if (d.rtnCd != "000") {
+					alert(d.message);
+				} else {
+					reloadContact();
+					reloadCustomerAddr();
+				}
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				//alert(XMLHttpRequest.status);

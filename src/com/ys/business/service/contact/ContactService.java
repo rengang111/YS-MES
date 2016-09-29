@@ -139,7 +139,7 @@ public class ContactService extends BaseService {
 				
 				dbData = updateModifyInfo(dbData, userInfo);
 				dao.Create(dbData);
-				model.setEndInfoMap("000", "", guid + "|" + companyCodeKey);
+				model.setEndInfoMap(NORMAL, "", guid + "|" + companyCodeKey);
 			}
 		}
 		catch(Exception e) {
@@ -187,7 +187,7 @@ public class ContactService extends BaseService {
 					
 					dbData = updateModifyInfo(dbData, userInfo);
 					dao.Store(dbData);
-					model.setEndInfoMap("000", "", id);
+					model.setEndInfoMap(NORMAL, "", id);
 				}
 			} else {
 				//不存在
@@ -210,7 +210,7 @@ public class ContactService extends BaseService {
 	        
 	        bean.executeContactDelete(data, userInfo);
 	        
-	        model.setEndInfoMap("000", "", "");
+	        model.setEndInfoMap(NORMAL, "", "");
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

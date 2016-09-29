@@ -42,14 +42,7 @@
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
 						success: function(data){
-							/*
-							if (data.message != undefined) {
-								alert(data.message);
-							}
-							*/
-							
 							fnCallback(data);
-
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			                 //alert(XMLHttpRequest.status);
@@ -159,9 +152,12 @@
 					dataType : 'json',
 					data : str,
 					url : "${ctx}/business/customer?methodtype=delete",
-					success : function(data) {
-						reload();
-						//alert(data.message);
+					success : function(d) {
+						if (d.rtnCd != "000") {
+							alert(data.message);
+						} else {
+							reload();
+						}
 						
 					},
 					error:function(XMLHttpRequest, textStatus, errorThrown){
