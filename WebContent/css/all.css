@@ -1,7 +1,15 @@
 /* main styles */ 
-*{
+{
     margin: 0px;
     padding: 0px;
+
+}
+
+td.td-left {
+	text-align: left;
+}
+td.td-center {
+	text-align: center;
 }
 
 body{
@@ -38,13 +46,20 @@ header{
 }
 
 /*header和footer之间的区域  */
-#container {
+
+container {
 	height:auto;
     margin:0 30px;
+<<<<<<< HEAD
     min-height:600px;
     width:1050px;
     word-spacing:0px; 
 	/*letter-spacing: 1px;*/
+=======
+    //min-height:700px;
+    //width:1060px;
+    //width:95%;
+>>>>>>> refs/remotes/origin/master
 }
 
 @media screen and (min-width:1366px){
@@ -148,12 +163,17 @@ table.search td{
 
 table.form{
     background:#f9f9f9;
+<<<<<<< HEAD
     padding:5px;
     font-size:14px;
     line-height:16px;
+=======
+    padding:2px;
+    font:14px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;
+>>>>>>> refs/remotes/origin/master
     cellspacing:0px;
     border: solid 1px #c0c0c0 ;
-    width:100%;
+    //width:100%;
 }
 
 table.form td{
@@ -179,7 +199,7 @@ td.label{
     font-size:12px;
     line-height:16px;  
     text-align:right; 
-    width:100px;
+    #width:100px;
 }
 
 td.title1{
@@ -188,9 +208,14 @@ td.title1{
 }
 
 td.condition{
+<<<<<<< HEAD
     font-size:12px;
     line-height:18px;
     width:	200px;
+=======
+	font:12px/18px Microsoft YaHei,Arial, Helvetica, sans-serif;
+    #width:	200px;
+>>>>>>> refs/remotes/origin/master
 }
 
 td.condition input, textarea, select {
@@ -242,7 +267,7 @@ legend{
     font-size:12px;
     line-height:20px;
     padding:0px 10px;
-    margin:-26px 0 0 -10px;
+    //margin:-26px 0 0 -10px;
     /*font-weight:bold;*/
     border:1px solid #fff;
     border-color:#e5e5c3 #505014 #505014 #e5e5c3;
