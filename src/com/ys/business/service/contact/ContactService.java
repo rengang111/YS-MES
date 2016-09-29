@@ -196,6 +196,7 @@ public class ContactService extends BaseService {
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(SYSTEMERROR, "err001", id);
+			System.out.println(e.getMessage());
 		}
 		
 		return model;
