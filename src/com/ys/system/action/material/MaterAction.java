@@ -27,7 +27,7 @@ public class MaterAction extends BaseAction {
 	@Autowired
 	UnitService unitService;
 	
-	@RequestMapping("/unit")
+	@RequestMapping("/init")
 	public String doInit(@RequestBody String para, @ModelAttribute("dataModels")UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		String type = request.getParameter("methodtype");

@@ -260,10 +260,8 @@ function initEvent(){
 		<div class="form" style="overflow:hidden;zoom:1;">
 		
 			<c:url var="saveUrl" value="/factory/update.html" />
-			<form:form modelAttribute="company" method="POST" id="company" action=""  >
+			<form:form modelAttribute="organ" method="POST" id="company" action=""  >
 			
-				
-				
 				<fieldset>
 					<legend>机构管理-编辑</legend>
 

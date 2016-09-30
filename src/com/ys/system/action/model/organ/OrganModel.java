@@ -1,11 +1,15 @@
-package com.ys.system.action.model.maintain;
+package com.ys.system.action.model.organ;
 
 import java.util.ArrayList;
 
 import com.ys.util.basequery.common.BaseModel;
 
-public class CompanyModel extends BaseModel {
+public class OrganModel extends BaseModel {
 	
+	/**
+	 * author:renang
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<ArrayList<String>> categoryList = new ArrayList<ArrayList<String>>();
 	private String compName;
 	private String compFullname;
