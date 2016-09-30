@@ -55,7 +55,11 @@ public class OrganService extends BaseService {
 		return mv;
 	}*/
 	
+<<<<<<< HEAD
 	public HashMap<String, Object> Init(HttpServletRequest request, String data) {
+=======
+	public HashMap<String, Object> doInit(HttpServletRequest request, String data) {
+>>>>>>> refs/remotes/origin/master
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
