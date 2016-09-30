@@ -1,4 +1,4 @@
-package com.ys.system.service.maintain;
+package com.ys.system.service.organ;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 
 @Service
-public class CompanyService extends BaseService {
+public class OrganService extends BaseService {
  
 	/*@RequestMapping(value = "/create", method = RequestMethod.GET)
 	public ModelAndView create(@ModelAttribute("factory") TFactory factory) throws Exception {

@@ -1,4 +1,4 @@
-package com.ys.system.action.maintain;
+package com.ys.system.action.organ;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.maintain.CompanyModel;
-import com.ys.system.service.maintain.CompanyService;
+import com.ys.system.service.organ.OrganService;
 
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.system.action.model.dic.DicModel;
@@ -30,9 +30,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/")
-public class CompanyAction extends BaseAction {
+public class OrganAction extends BaseAction {
 	
-	@Autowired CompanyService companyService;
+	@Autowired OrganService organService;
 	
 	@RequestMapping(value="doInit", method = RequestMethod.GET)
 	public String doInit(@RequestBody String data, @ModelAttribute("company")CompanyModel company, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
@@ -66,8 +66,7 @@ public class CompanyAction extends BaseAction {
 	@ResponseBody
 	public HashMap<String, Object> doAdd(@RequestBody String data, @ModelAttribute("company")CompanyModel company, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){ 
 		
-		return companyService.doSearch(request, data);
+		return organService.doSearch(request, data);
 		
 	}
-
 }
