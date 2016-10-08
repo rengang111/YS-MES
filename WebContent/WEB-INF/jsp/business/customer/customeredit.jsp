@@ -89,7 +89,7 @@ function ajaxCustomerAddr() {
 					],
 					"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row){
-							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+							return row["rownum"] + "<input type=checkbox name='numCheckAddr' id='numCheckAddr' value='" + row["id"] + "' />"
 	                    }},
 			    		{"targets":5,"render":function(data, type, row){
 			    			return "<a href=\"#\" onClick=\"doUpdateCustomerAddr('" + row["id"] + "')\">编辑</a>"
@@ -224,7 +224,7 @@ function ajaxContact() {
 					],
 					"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row){
-							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+							return row["rownum"] + "<input type=checkbox name='numCheckContact' id='numCheckContact' value='" + row["id"] + "' />"
 	                    }},
 			    		{"targets":10,"render":function(data, type, row){
 			    			return "<a href=\"#\" onClick=\"doUpdateContact('" + row["id"] + "')\">编辑</a>"
@@ -414,7 +414,7 @@ function doSave() {
 					if (d.rtnCd != "000") {
 						alert(d.message);	
 					} else {
-						parent.window.frames["mainFrame"].contentWindow.reload();
+						reloadTabWindow();
 						controlButtons(d.info);
 					}
 					
@@ -454,7 +454,7 @@ function doDelete() {
 					clearCustomerInfo();
 					reloadContact();
 					reloadCustomerAddr();
-					parent.window.frames["mainFrame"].contentWindow.reload();
+					reloadTabWindow();
 				}
 				/*	
 				//不管成功还是失败都刷新父窗口，关闭子窗口
@@ -487,7 +487,7 @@ function doUpdateContact(key) {
 
 function doDeleteContact() {
 	var str = '';
-	$("input[name='numCheck']").each(function(){
+	$("input[name='numCheckContact']").each(function(){
 		if ($(this).prop('checked')) {
 			str += $(this).val() + ",";
 		}
@@ -540,7 +540,7 @@ function doUpdateCustomerAddr(key) {
 
 function doDeleteCustomerAddr() {
 	var str = '';
-	$("input[name='numCheck']").each(function(){
+	$("input[name='numCheckAddr']").each(function(){
 		if ($(this).prop('checked')) {
 			str += $(this).val() + ",";
 		}
