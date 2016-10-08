@@ -1,5 +1,5 @@
 
-/*! DataTables 1.10.10--lxf
+/*! DataTables 1.10.10
  * ©2008-2015 SpryMedia Ltd - datatables.net/license
  */
 
