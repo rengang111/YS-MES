@@ -50,16 +50,14 @@ header{
 container {
 	height:auto;
     margin:0 30px;
-<<<<<<< HEAD
     min-height:600px;
     width:1050px;
     word-spacing:0px; 
 	/*letter-spacing: 1px;*/
-=======
     //min-height:700px;
     //width:1060px;
     //width:95%;
->>>>>>> refs/remotes/origin/master
+
 }
 
 @media screen and (min-width:1366px){
@@ -163,14 +161,11 @@ table.search td{
 
 table.form{
     background:#f9f9f9;
-<<<<<<< HEAD
     padding:5px;
     font-size:14px;
     line-height:16px;
-=======
     padding:2px;
     font:14px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;
->>>>>>> refs/remotes/origin/master
     cellspacing:0px;
     border: solid 1px #c0c0c0 ;
     //width:100%;
@@ -208,14 +203,11 @@ td.title1{
 }
 
 td.condition{
-<<<<<<< HEAD
     font-size:12px;
     line-height:18px;
     width:	200px;
-=======
 	font:12px/18px Microsoft YaHei,Arial, Helvetica, sans-serif;
     #width:	200px;
->>>>>>> refs/remotes/origin/master
 }
 
 td.condition input, textarea, select {

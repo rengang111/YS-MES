@@ -11,54 +11,33 @@
   var ctx = '${ctx}'; 
 </script>
 <script type="text/javascript" src="${ctx}/js/jquery-2.1.3.js"></script>
-<<<<<<< HEAD
 <!-- 
 <script type="text/javascript" src="${ctx}/js/jquery-1.11.1.min.js"></script>
  -->
-=======
->>>>>>> branch 'master' of https://github.com/rengang111/YS-MES.git
 <script type="text/javascript" src="${ctx}/js/jquery-ui.min.js"></script>
-<script type="text/javascript" src="${ctx}/js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.form.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.fancybox.js"></script>
+<script type="text/javascript" src="${ctx}/js/kxbdSuperMarquee.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.similar.msgbox.js"></script>
-<<<<<<< HEAD
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/css/main.css">
 <script type="text/javascript" src="${ctx}/js/jquery.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.easyui.min.js"></script>
-=======
-<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
->>>>>>> branch 'master' of https://github.com/rengang111/YS-MES.git
 <script type="text/javascript" src="${ctx}/js/easyui-lang-zh_CN.js"></script>
-<script type="text/javascript" src="${ctx}/js/kxbdSuperMarquee.js"></script>
-
-<script type="text/javascript" src="${ctx}/js/all.js"></script>
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
 <script type="text/javascript" src="${ctx}/js/layer.js"></script>
-<<<<<<< HEAD
-<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"	charset="utf-8"></script>
-<script type="text/javascript" src="${ctx}/js/dataTables.tableTools.js"	charset="utf-8"></script>
+<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="${ctx}/js/dataTables.tableTools.js"></script>
 <script type="text/javascript" src="${ctx}/js/dataTables.select.js"></script>
-<script type="text/javascript" src="${ctx}/plugins/validate/jquery.validate.js"	charset="utf8"></script>
+<script type="text/javascript" src="${ctx}/plugins/validate/jquery.validate.js"></script>
 <script type="text/javascript" src="${ctx}/plugins/validate/localization/messages_zh.js" charset="utf8"></script>
 <link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />
-=======
 
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
-
-
->>>>>>> branch 'master' of https://github.com/rengang111/YS-MES.git
 
 <Script>
 	function callMenuSelect(menuControl, menuControlView) {
