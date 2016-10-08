@@ -171,6 +171,24 @@ public class BaseQuery {
 
 	}
 	
+	public ArrayList<ArrayList<String>> getYsQueryDataList(int iStart, int iEnd) throws Exception {
+
+		ArrayList<ArrayList<String>> ysViewData = null;
+		
+		getSql();
+		
+		int recordCount = getRecodCount();
+		
+		ysViewData = getTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), iStart, iEnd, true);
+		
+		commonModel.setViewData(ysViewData);
+		commonModel.setRecordCount(recordCount);
+		//commonModel.setTurnPageHtml(this.getTurnPageHtml());
+
+		return ysViewData;
+
+	}
+	
 	public ArrayList<HashMap<String, String>> getYsQueryData(int iStart, int iEnd) throws Exception {
 
 		ArrayList<HashMap<String, String>> ysViewData = null;

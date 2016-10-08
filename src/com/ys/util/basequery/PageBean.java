@@ -195,7 +195,7 @@ public class PageBean implements Serializable
 	        sb.append(" 条记录&nbsp;&nbsp;");
         }
         if (getNaviPageRedirect()) {
-	        sb.append(" 到第 <input type=\"text\" onBlur=\"forEmpty(this);\" onkeyup=\"this.value=((this.value=this.value.replace(/\\D/g,'0'))>"
+	        sb.append(" 到第 <input type=\"text\" style=\"width: 30px;\"onBlur=\"forEmpty(this);\" onkeyup=\"this.value=((this.value=this.value.replace(/\\D/g,'0'))>"
 	                + totalPages
 	                + "?"
 	                + totalPages

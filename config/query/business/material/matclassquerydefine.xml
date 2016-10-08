@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="matclassquerydefine_search" />
+    <where>
+      <w name="A.categoryName" des=""  reqName="categoryName" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.categoryId" des=""  reqName="usercategoryId" dtype="ch" oper="="  lg="" bt="" />   
+    </where>
+    <select>
+      <f name="B.categoryId" alias="" ctype="" />
+      <f name="B.categoryName" alias="" ctype="" />
+      <f name="C.categoryId" alias="parentcategoryId" ctype="" />
+      <f name="C.categoryName" alias="parentcategoryName" ctype="" />
+      <f name="B.recordId" alias="" ctype="" />
+      <f name="B.formatDes" alias="" ctype="" />
+      <f name="B.memo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_materialcategory AS A, b_materialcategory AS B LEFT JOIN (SELECT categoryId, categoryName FROM b_materialcategory where DeleteFlag = '0') AS C ON C.categoryId = B.ParentID WHERE A.DeleteFlag = '0'  AND B.DeleteFlag = '0' AND (B.ParentID = A.categoryId OR B.categoryId = A.categoryId) </from>
+    <orderby></orderby>
+    <groupby>B.categoryId,B.categoryName,C.categoryId,C.categoryName</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="unitquerydefine_confirmcategoryName" />
+    <where>
+      <w name="A.categoryName" des=""  reqName="categoryIdName" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.categoryId" des=""  reqName="usercategoryId" dtype="ch" oper="rlike"  lg="" bt="" />   
+    </where>
+    <select>
+		<f name="distinct A.categoryId" ctype="" alias=""/>
+		<f name="A.categoryName" ctype="" alias=""/>
+		<f name="A.OrgID" ctype="" alias=""/>
+		<f name="B.categoryId" ctype="" alias="parentcategoryId"/>
+		<f name="B.categoryName" ctype="" alias="parentcategoryName"/>
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_materialcategory AS A LEFT JOIN (SELECT categoryId, categoryName FROM b_materialcategory where DeleteFlag = '0') AS B ON B.categoryId = A.ParentID WHERE A.DeleteFlag = '0'  </from>
+    <orderby>A.ParentID</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>  
+  <query>
+    <pool></pool>     
+    <name value="unitquerydefine_getparentdeptguid" />
+    <where>
+      <w name="A.categoryName" des=""  reqName="parentcategoryName" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.categoryId" alias="" ctype="" />
+      <f name="A.childId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_materialcategory AS A WHERE A.DeleteFlag = '0' </from>
+    <groupby>A.categoryId, A.childId</groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="unitquerydefine_getunitchain" />
+    <where>
+      <w name="A.categoryId" des=""  reqName="categoryId" dtype="ch" oper="rlike"  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.categoryId" alias="" ctype="" />
+      <f name="A.categoryName" alias="" ctype="" />
+      <f name="A.ParentID" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_materialcategory AS A WHERE A.DeleteFlag = '0' </from>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="unitquerydefine_getunit" />
+    <where>
+      <w name="B.UserID" des=""  reqName="userId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.categoryId" alias="" ctype="" />
+      <f name="A.categoryName" alias="" ctype="" />
+      <f name="A.ParentID" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_materialcategory AS A, S_USER AS B WHERE A.DeleteFlag = '0' AND A.categoryId = B.categoryId </from>
+    <groupby></groupby>
+    <having></having>
+  </query>  
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getallmaterials" />
+    <where>
+    </where>
+    <select>
+    	<f name="DISTINCT A.categoryId" alias="" ctype="" />
+    	<f name="A.categoryName" alias="" ctype="" />
+    	<f name="A.formatDes" alias="" ctype="" />
+    	<f name="A.parentId" alias="" ctype="" />
+    	<f name="A.childId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>v_materialcategorytree as A </from>
+    <orderby>A.categoryId, A.parentid</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+</root>

@@ -14,7 +14,7 @@ public class BaseModel implements Serializable {
 	private String menuId = "";
 	private int pageIndex = 0;
 	private String flg = "";
-	private int recordPerPage = 5;
+	private int recordPerPage = 20;
 	private int totalPages = 0;
 	private String turnPageHtml = "";
 	private ArrayList<ArrayList<String>> viewData;

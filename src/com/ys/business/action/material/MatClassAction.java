@@ -1,4 +1,4 @@
-package com.ys.system.action.material;
+package com.ys.business.action.material;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,24 +11,25 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.system.action.model.unit.UnitModel;
+import com.ys.business.action.model.material.MatClassModel;
+import com.ys.business.service.material.MatClassService;
 import com.ys.system.common.BusinessConstants;
-import com.ys.util.basequery.common.Constants;
-import com.ys.system.service.unit.UnitService;
 import com.ys.util.DicUtil;
 
 
 @Controller
-
-public class MaterAction extends BaseAction {
+@RequestMapping("/business")
+public class MatClassAction extends BaseAction {
 	
 	@Autowired
-	UnitService unitService;
+	MatClassService matClassService;
 	
-	@RequestMapping("/init")
-	public String doInit(@RequestBody String para, @ModelAttribute("dataModels")UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	@RequestMapping("/material")
+	public String doInit(@ModelAttribute("dataModels")MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		String type = request.getParameter("methodtype");
 		String rtnUrl = "";
@@ -45,27 +46,27 @@ public class MaterAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				rtnUrl = "/unit/unitmanageframe";
+				rtnUrl = "/business/material/matclassframe";
 				break;
 			case "initframe":
-				rtnUrl = "/unit/unitmain";
+				rtnUrl = "/business/material/matclassmain";
 				break;
 			case "search":
 				rtnUrl = doSearch(dataModel, result,  model, session, request, response);
 				break;
-			case "updateinit":
+			case "updateinit"://打开 新建/修改 页面
 				rtnUrl = doUpdateInit(model, session, request, response);
 				break;
-			case "update":
+			case "update"://保存修改内容
 				rtnUrl = doUpdate(dataModel, result, model, session, request, response);
 				break;
-			case "add":
+			case "add"://保存新增内容
 				rtnUrl = doAdd(dataModel, result, model, session, request, response);
 				break;
 			case "delete":
 				rtnUrl = doDelete(dataModel, result, model, session, request, response);
 				break;
-			case "detail":
+			case "detail"://查看
 				rtnUrl = doDetail(model, session, request, response);
 				break;
 		}
@@ -74,11 +75,12 @@ public class MaterAction extends BaseAction {
 		
 	}	
 	
-	public String doSearch(@ModelAttribute("dataModels")UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doSearch(@ModelAttribute("dataModels")MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
+		//dataModel.setRecordPerPage(50);//设置每页的数据条数
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel = unitService.doSearch(request, dataModel, userInfo);
+			dataModel = matClassService.doSearch(request, dataModel, userInfo);
 			if (dataModel.getViewData().size() == 0) {
 				dataModel.setMessage("无符合条件的数据");
 			}
@@ -88,27 +90,28 @@ public class MaterAction extends BaseAction {
 			dataModel.setMessage("检索失败");
 		}
 		model.addAttribute("DisplayData", dataModel);
-		return "/unit/unitmain";
+		return "/business/material/matclassmain";
 	}
 
-	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doUpdateInit(Model model, 
+			HttpSession session, HttpServletRequest request,
+			HttpServletResponse response){
 
-		UnitModel dataModel = new UnitModel();
+		MatClassModel dataModel = new MatClassModel();
 		String operType = request.getParameter("operType");
+		String parentId = request.getParameter("categoryId");
+		String parentName = request.getParameter("parentName")+"";
 		try {
+			parentName = new String(parentName.getBytes("ISO8859-1"), "UTF-8");
 			if (operType.equals("update")) {
-				dataModel = unitService.getDetail(request);
-				dataModel.setParentUnitId(dataModel.getunitData().getParentid());
+				dataModel = matClassService.getDetail(request);
+				dataModel.setParentCategoryId(dataModel.getunitData().getParentid());
+				dataModel.setParentCategoryName(parentName);
 			}
 			if (operType.equals("addsub")) {
-				dataModel = unitService.getParentDeptName(request);
-				//dataModel.setParentUnitId(dataModel.getunitData().getParentid());
-				dataModel.setUnitPropertyList(DicUtil.getGroupValue(DicUtil.UNITPROPERTY));
-				dataModel.setUnitTypeList(DicUtil.getGroupValue(DicUtil.UNITTYPE));
-			}
-			if (operType.equals("add")) {
-				dataModel.setUnitPropertyList(DicUtil.getGroupValue(DicUtil.UNITPROPERTY));
-				dataModel.setUnitTypeList(DicUtil.getGroupValue(DicUtil.UNITTYPE));
+				//dataModel = matClassService.getParentDeptName(request);
+				dataModel.setParentCategoryId(parentId);
+				dataModel.setParentCategoryName(parentName);
 			}
 			dataModel.setOperType(operType);	
 			dataModel.setIsOnlyView("");
@@ -119,21 +122,20 @@ public class MaterAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/unit/unitedit";
+		return "/business/material/matclassedit";
 	}	
 	
-	public String doUpdate(UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doUpdate(MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		try {
 			dataModel.setUpdatedRecordCount(0);
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel.setUnitPropertyList(DicUtil.getGroupValue(DicUtil.UNITPROPERTY));
-			dataModel.setUnitTypeList(DicUtil.getGroupValue(DicUtil.UNITTYPE));
 			
-			int preCheckResult = unitService.preCheck(request, "update", dataModel.getParentUnitId(), userInfo.getUnitId(), userInfo.getUserType());
+			int preCheckResult = 0;
+			//preCheckResult = matClassService.preCheck(request, "update", dataModel.getParentCategoryId(), userInfo.getUnitId(), userInfo.getUserType());
 			switch(preCheckResult) {
 			case 0:
-				unitService.doUpdate(request, dataModel, userInfo);
+				matClassService.update(request, dataModel, userInfo);
 				dataModel.setUpdatedRecordCount(1);
 				dataModel.setOperType("update");
 				dataModel.setMessage("更新成功");
@@ -157,21 +159,19 @@ public class MaterAction extends BaseAction {
 		}
 		
 		model.addAttribute("DisplayData", dataModel);
-		return "/unit/unitedit";
+		return "/business/material/matclassedit";
 	}	
 
-	public String doAdd(UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doAdd(MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		try {
 			dataModel.setUpdatedRecordCount(0);
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel.setUnitPropertyList(DicUtil.getGroupValue(DicUtil.UNITPROPERTY));
-			dataModel.setUnitTypeList(DicUtil.getGroupValue(DicUtil.UNITTYPE));
-			
-			int preCheckResult = unitService.preCheck(request, "add", dataModel.getParentUnitId(), userInfo.getUnitId(), userInfo.getUserType());
+			int preCheckResult = 0;
+			//preCheckResult = matClassService.preCheck(request, "add", dataModel.getParentCategoryId(), userInfo.getUnitId(), userInfo.getUserType());
 			switch(preCheckResult) {
 			case 0:
-				unitService.doAdd(request, dataModel, userInfo);
+				matClassService.insert(request, dataModel, userInfo);
 				dataModel.setUpdatedRecordCount(1);
 				dataModel.setOperType("add");
 				dataModel.setMessage("增加成功");
@@ -197,35 +197,35 @@ public class MaterAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/unit/unitedit";
+		return "/business/material/matclassedit";
 	}	
 	
-	public String doDelete(UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doDelete(MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		try {
 			dataModel.setUpdatedRecordCount(0);
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			unitService.doDelete(dataModel, userInfo);
+			matClassService.delete(dataModel, userInfo);
 			dataModel.setUpdatedRecordCount(1);
 			dataModel.setOperType("delete");
 			dataModel.setMessage("删除成功");
 			DicUtil.emptyBuffer(true);
-			dataModel = unitService.doSearch(request, dataModel, userInfo);
+			dataModel = matClassService.doSearch(request, dataModel, userInfo);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			dataModel.setMessage("删除失败");
 		}
 		model.addAttribute("DisplayData", dataModel);
-		return "/unit/unitmain";
+		return "/business/material/matclassmain";
 	}
 	
 	public String doDetail(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
-		UnitModel dataModel = new UnitModel();
+		MatClassModel dataModel = new MatClassModel();
 		
 		try {
-			dataModel = unitService.getDetail(request);
+			dataModel = matClassService.getDetail(request);
 			dataModel.setIsOnlyView("1");
 		}
 		catch(Exception e) {
@@ -234,6 +234,6 @@ public class MaterAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/unit/unitedit";
+		return "/business/material/matclassedit";
 	}	
 }
