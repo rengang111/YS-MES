@@ -20,6 +20,9 @@ $(document).ready(function() {
 	
 	validator = $("#esRelationFileInfo").validate({
 		rules: {
+			title: {
+				maxlength: 20,
+			},			
 			fileName: {
 				required: true,
 				maxlength: 50,
@@ -72,7 +75,8 @@ function doSave() {
 				url : actionUrl,
 				data : JSON.stringify($('#esRelationFileInfo').serializeArray()),// 要提交的表单
 				success : function(d) {
-					parent.reloadCustomerAddr();
+					parent.reloadTestFileList();
+					parent.reloadMachinePicList();
 					if (d.message != "") {
 						alert(d.message);	
 					}
@@ -82,11 +86,10 @@ function doSave() {
 					//$('#relationFileId').val(infoList[1]);
 					
 					controlButtons(d.info);
-					parent.reloadCustomerAddr();
 					//不管成功还是失败都刷新父窗口，关闭子窗口
-					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+					var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 					//parent.$('#events').DataTable().destroy();
-					//parent.layer.close(index); //执行关闭
+					parent.layer.close(index); //执行关闭
 					
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -115,7 +118,8 @@ function doDelete() {
 				if (d.message != "") {
 					alert(d.message);	
 				} else {
-					parent.reloadCustomerAddr();
+					parent.reloadTestFileList();
+					parent.reloadMachinePicList();
 					//$('#keyBackup').val("");
 					//$('#relationFileId').val("");
 					controlButtons("");
@@ -180,18 +184,25 @@ function controlButtons(data) {
 					
 				<form:form modelAttribute="dataModels" id="esRelationFileInfo" style='padding: 0px; margin: 10px;' >
 					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
-					<input type=hidden id="relationFileId" name="relationFileId" value="${DisplayData.relationFileId}"/>
-					<table class="form" width="850px" border="1px;solid">
+					<input type=hidden id="esId" name="esId" value="${DisplayData.esId}"/>
+					<input type=hidden id="type" name="type" value="${DisplayData.type}"/>
+					<table class="form" width="850px">
+						<tr>
+							<td width="60px">文件标题：</td>
+							<td width="200px">
+								<input type="text" id="title" name="title" class="short" value="${DisplayData.esRelationFileData.title}"/>
+							</td>
+						</tr>					
 						<tr>
 							<td width="60px">文件名：</td>
 							<td width="200px">
-								<input type="text" id="title" name="title" class="short" value="${DisplayData.esRelationFileData.fileName}"/>
+								<input type="text" id="fileName" name="fileName" class="short" value="${DisplayData.esRelationFileData.filename}"/>
 							</td>
 						</tr>
 						<tr>
 							<td width="60px">路径：</td> 
 							<td width="200px">
-								<input type="text" id="address" name="address" class="middle" value="${DisplayData.esRelationFileData.path}"/>
+								<input type="text" id="path" name="path" class="middle" value="${DisplayData.esRelationFileData.path}"/>
 							</td>
 						</tr>
 						<tr>

@@ -64,12 +64,12 @@
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "sampleID", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "sampleVersion", "defaultContent" : ''},
-							{"data": "sampleName", "defaultContent" : ''},
+							{"data": "sampleVersion", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "sampleName", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "brand", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "buyTime", "defaultContent" : ''},
+							{"data": "buyTime", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "currency", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "price", "defaultContent" : ''},
+							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "address", "defaultContent" : ''},
 							{"data": "memo", "defaultContent" : ''},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
@@ -78,7 +78,7 @@
 					    		{"targets":0,"render":function(data, type, row){
 									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
 			                    }},
-					    		{"targets":9,"render":function(data, type, row){
+					    		{"targets":10,"render":function(data, type, row){
 					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
 			                    }}
 			           

@@ -69,4 +69,6 @@ public class BaseService {
 		String fileName = "/setting/messages_zh_CN";
 		return BaseQuery.getContent(fileName, key);
 	}
+	
+
 }

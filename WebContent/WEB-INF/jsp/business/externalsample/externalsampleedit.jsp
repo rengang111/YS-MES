@@ -339,6 +339,15 @@ function reloadTestFileList() {
 
 $(document).ready(function() {
 
+	$("#tabs").tabs();
+	$('#tabs').width('330px');
+	$('#tabs').height('270px');
+	$('#tabs-1').height('300px');
+
+	if ($('#keyBackup').val() != "") {
+		$('#tabs').show();
+	}
+	
 	initEvent();
 	
 	validator = $("#externalSampleInfo").validate({
@@ -375,7 +384,7 @@ $(document).ready(function() {
 		}
 	});
 
-	$("#currency").val("${DisplayData.sampleData.currency}");
+	$("#currency").val("${DisplayData.externalSampleData.currency}");
 })
 
 function doSave() {
@@ -407,6 +416,7 @@ function doSave() {
 					if (d.rtnCd != "000") {
 						alert(d.message);	
 					} else {
+						$('#tabs').show();
 						reloadTabWindow();
 						controlButtons(d.info);
 					}
@@ -443,6 +453,7 @@ function doDelete() {
 				if (d.rtnCd != "000") {
 					alert(d.message);	
 				} else {
+					$('#tabs').hide();
 					controlButtons("");
 					clearExternalSampleInfo();
 					reloadMachinePicList();
@@ -469,12 +480,12 @@ function doDelete() {
 
 function doAddESFileTest() {
 	var key = $('#keyBackup').val();
-	var url = "${ctx}/business/esrelationfile??methodtype=addtestinit&key=" + key;
+	var url = "${ctx}/business/esrelationfile?methodtype=addtestinit&key=" + key;
 	openLayer(url, $(document).width() - 25, layerHeight, false);	
 }
 
 function doUpdateESFileTest(key) {		
-	var url = "${ctx}/business/esrelationfile??methodtype=updatetestinit&key=" + key;
+	var url = "${ctx}/business/esrelationfile?methodtype=updatetestinit&key=" + key;
 	openLayer(url, $(document).width() - 25, layerHeight, false);
 }
 
@@ -495,7 +506,7 @@ function doDeleteESFileTest() {
 			dataType : 'json',						
 			type : "POST",
 			data : str,// 要提交的表单						
-			url : "${ctx}/business/esrelationfile??methodtype=deletetest",
+			url : "${ctx}/business/esrelationfile?methodtype=deletetest",
 			success : function(d) {
 				if (d.rtnCd != "000") {
 					alert(d.message);
@@ -522,12 +533,13 @@ function doDeleteESFileTest() {
 }
 
 function doAddESFileMachine() {
-	var url = "${ctx}/business/esrelationfile??methodtype=addmachineinit";
+	var key = $('#keyBackup').val();
+	var url = "${ctx}/business/esrelationfile?methodtype=addmachineinit&key=" + key;
 	openLayer(url, $(document).width() - 25, layerHeight, false);	
 }
 
 function doUpdateESFileMachine(key) {		
-	var url = "${ctx}/business/esrelationfile??methodtype=updatemachineinit&key=" + key;
+	var url = "${ctx}/business/esrelationfile?methodtype=updatemachineinit&key=" + key;
 	openLayer(url, '', layerHeight, false);
 }
 
@@ -548,7 +560,7 @@ function doDeleteESFileMachine() {
 			dataType : 'json',						
 			type : "POST",
 			data : str,// 要提交的表单						
-			url : "${ctx}/business/esrelationfile??methodtype=deletemachine",
+			url : "${ctx}/business/esrelationfile?methodtype=deletemachine",
 			success : function(d) {
 				if (d.rtnCd != "000") {
 					alert(d.message);
@@ -608,9 +620,15 @@ function controlButtons(data) {
 <body>
 <div id="container">
 
-		<div id="main">
-			<div id="customerBasic">				
-				<div  style="height:20px"></div>
+		<div id="main">	
+				
+			<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+				<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
+					<jsp:include page="../../common/album/album.jsp"></jsp:include>
+				</div>
+			</div>
+			<div style="clear:both;"></div>
+			<div  style="height:20px"></div>
 				
 				<legend>外样记录-综合信息</legend>
 					
@@ -623,23 +641,25 @@ function controlButtons(data) {
 					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 					<table class="form" width="850px">
 						<tr>
-							<td>样品编号：</td>
-							<td colspan=4>
-								<input type="text" id="sampleId" name="sampleId" class="short" value="${DisplayData.sampleData.sampleId}"/>
+							<td width="60px">样品编号：</td>
+							<td width="320px">
+								<input type="text" id="sampleId" name="sampleId" class="short" value="${DisplayData.externalSampleData.sampleid}"/>
 							</td>
 							<td width="60px">样品型号：</td> 
-							<td colspan=2>
-								<input type="text" id="sampleVersion" name="sampleVersion" class="short" value="${DisplayData.sampleData.sampleVersion}"/>
+							<td>
+								<input type="text" id="sampleVersion" name="sampleVersion" class="short" value="${DisplayData.externalSampleData.sampleversion}"/>
 							</td>
 						</tr>
 						<tr>
 							<td>样品名称：</td> 
-							<td colspan=4>
-								<input type="text" id="sampleName" name="sampleName" class="middle" value="${DisplayData.sampleData.sampleName}"/>
+							<td>
+								<input type="text" id="sampleName" name="sampleName" class="short" value="${DisplayData.externalSampleData.samplename}"/>
 							</td>
 							<td>
 								品牌：
-								<input type="text" id="brand" name="brand" class="mini" value="${DisplayData.sampleData.brand}"/>
+							</td>
+							<td>
+								<input type="text" id="brand" name="brand" class="mini" value="${DisplayData.externalSampleData.brand}"/>
 							</td>
 						</tr>
 						<tr>
@@ -647,38 +667,41 @@ function controlButtons(data) {
 								采购时间：
 							</td>
 							<td>
-								<input type="text" id="buyTime" name="brand" class="mini" value="${DisplayData.sampleData."buyTime"}"/>
+								<input type="text" id="buyTime" name="buyTime" class="short" value="${DisplayData.externalSampleData.buytime}"/>
 							</td>
-							<td width="60px">	
+							<td>	
 								采购地点：
 							</td>
-							<td width="100px"> 
-								<input type="text" id="address" name="address" class="mini" value="${DisplayData.sampleData.address}"/>
+							<td> 
+								<input type="text" id="address" name="address" class="middle" value="${DisplayData.externalSampleData.address}"/>
 							</td>
 						</tr>
 						<tr>
 							<td>
 								计价货币：
 							</td>
-							<td colspan=2> 
+							<td> 
 								<form:select path="currency">
-									<form:options items="${DisplayData.denominationCurrencyList}" itemValue="key"
+									<form:options items="${DisplayData.currencyList}" itemValue="key"
 										itemLabel="value" />
 								</form:select>
 							</td>
 							<td>
 								价格：
-								<input type="text" id="price" name="price" class="mini" value="${DisplayData.sampleData.price}"/>
+							</td>
+							<td>
+								<input type="text" id="price" name="price" class="mini" value="${DisplayData.externalSampleData.price}"/>
 							</td>
 						</tr>
 
 						<tr>
-							<td width="60px">
+							<td>
 								产品描述： 
 							</td>
-							<td width="100px">
-								<input type="textarea" id="memo" name="memo" style="resize:none;width=200px;height=50px;" class="mini" value="${DisplayData.sampleData.memo}"/>
+							<td colspan=2>
+								<input type="text" id="memo" name="memo" style="resize:none;width=200px;height=50px;" class="long" value="${DisplayData.externalSampleData.memo}"/>
 							</td>
+							<td colspan=1></td>
 						</tr>
 					</table>
 
@@ -744,5 +767,5 @@ function controlButtons(data) {
 				</tfoot>
 			</table>
 		</div>
-	</div>
+
 </html>

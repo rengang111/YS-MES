@@ -73,6 +73,19 @@ public class B_ESRelationFileData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String title;
+	public String getTitle()
+	{
+		return this.title;
+	}
+	public void setTitle(String title)
+	{
+		this.title=title;
+	}
+
+	/**
+	*
+	*/
 	private String path;
 	public String getPath()
 	{
@@ -215,13 +228,13 @@ public class B_ESRelationFileData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("esid = "+(esid == null ? "null" : esid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("filename = "+(filename == null ? "null" : filename)+"\n");		sb.append("path = "+(path == null ? "null" : path)+"\n");		sb.append("memo = "+(memo == null ? "null" : memo)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("esid = "+(esid == null ? "null" : esid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("filename = "+(filename == null ? "null" : filename)+"\n");		sb.append("title = "+(title == null ? "null" : title)+"\n");		sb.append("path = "+(path == null ? "null" : path)+"\n");		sb.append("memo = "+(memo == null ? "null" : memo)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		id= (id == null ?null : id.trim());		esid= (esid == null ?null : esid.trim());		type= (type == null ?null : type.trim());		filename= (filename == null ?null : filename.trim());		path= (path == null ?null : path.trim());		memo= (memo == null ?null : memo.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		id= (id == null ?null : id.trim());		esid= (esid == null ?null : esid.trim());		type= (type == null ?null : type.trim());		filename= (filename == null ?null : filename.trim());		title= (title == null ?null : title.trim());		path= (path == null ?null : path.trim());		memo= (memo == null ?null : memo.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

@@ -6,7 +6,6 @@ public class BusinessConstants {
 	
 	public static final String SESSION_USERINFO = "userinfo";
 	
-
 	public static final String INTERCEPTORFAILEDURL = "interceptorfailedurl";
 	public static final String ONLYSESSIONCHECKLISTFILENAME = "/setting/OnlySessionCheckList.xml";
 	public static final String NOINTERCEPTLISTFILENAME = "/setting/NoInterceptList.xml";
@@ -18,6 +17,8 @@ public class BusinessConstants {
 	public static final String ENABLEFLG_ENABLED = "0";
 	public static final String ENABLEFLG_DISABLED = "1";
 	public static final String UNITIDLENGTH = "6";
+	public static final String BUSINESSSMALLPHOTOPATH = "/small/";
+	public static final String BUSINESSPHOTOPATH = "/img/businessphoto/";
 	public static final String USERHEADPHOTOPATH = "/img/headphoto/";
 	public static final String USERHEADPHOTOTEMPPATH = "/img/headphototemp/";
 	public static final String JPEGSUFFIX = ".jpg";
