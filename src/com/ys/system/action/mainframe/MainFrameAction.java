@@ -112,6 +112,35 @@ public class MainFrameAction extends BaseAction {
 	}	
 	
 	@ResponseBody
+	@RequestMapping(value="/initMaterial", produces = "text/html;charset=UTF-8")
+	public Object doInitMaterial(@RequestParam("menuId") String menuId, HttpServletRequest request, HttpSession session) {
+		String json = "";
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		String userId = userInfo.getUserId();
+		String userType = userInfo.getUserType();
+		String unitId = userInfo.getUnitId();
+		
+		json = mainFrameService.doInitMaterial(request, userId, menuId, unitId, userType);
+		
+		return json;
+	}		
+	
+	@ResponseBody
+	@RequestMapping(value="/launchMaterial", produces = "text/html;charset=UTF-8")
+    public Object doLaunchMaterial(@RequestBody String idJson, HttpServletRequest request, HttpSession session) {
+		String json = "";
+
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		String userId = userInfo.getUserId();
+		String userType = userInfo.getUserType();
+		
+		json = mainFrameService.doLaunchMaterial(request, userId, userType, idJson);
+		
+		return json;
+	}	
+	
+	@ResponseBody
 	@RequestMapping(value="/quit")
     public String doQuit(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		
