@@ -23,16 +23,22 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_CustomerAddrDao;
 import com.ys.business.db.dao.B_CustomerDao;
+import com.ys.business.db.dao.B_ESRelationFileDao;
+import com.ys.business.db.dao.B_ExternalSampleDao;
 import com.ys.business.db.dao.B_OrganBasicInfoDao;
 import com.ys.business.db.dao.B_SupplierBasicInfoDao;
 import com.ys.business.db.data.B_ContactData;
 import com.ys.business.db.data.B_CustomerAddrData;
 import com.ys.business.db.data.B_CustomerData;
+import com.ys.business.db.data.B_ESRelationFileData;
+import com.ys.business.db.data.B_ExternalSampleData;
 import com.ys.business.db.data.B_OrganBasicInfoData;
 import com.ys.business.db.data.B_SupplierBasicInfoData;
 import com.ys.business.service.contact.ContactService;
 import com.ys.business.service.customer.CustomerService;
 import com.ys.business.service.customeraddr.CustomerAddrService;
+import com.ys.business.service.esrelationfile.EsRelationFileService;
+import com.ys.business.service.externalsample.ExternalSampleService;
 import com.ys.business.service.organ.OrganService;
 import com.ys.business.service.supplier.SupplierService;
 import com.ys.system.action.model.dic.DicModel;
@@ -233,6 +239,77 @@ public class BusinessDbUpdateEjb  {
 				data.setId(key);
 				B_CustomerAddrDao dao = new B_CustomerAddrDao(data);
 				data = CustomerAddrService.updateModifyInfo(dao.beanData, userInfo);			
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				
+				count++;
+
+			}
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();
+			throw e;
+		}
+    }    
+
+    public void executeExternalSampleDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_ExternalSampleData data = new B_ExternalSampleData();
+		int count = 0;
+	
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+			String removeData[] = keyData.split(",");
+			for (String key:removeData) {
+				StringBuffer sql = new StringBuffer("");
+				data.setId(key);
+				B_ExternalSampleDao dao = new B_ExternalSampleDao(data);
+				data = ExternalSampleService.updateModifyInfo(dao.beanData, userInfo);
+				
+				sql.append("UPDATE b_externalsample SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");
+				sql.append(" WHERE id = '" + data.getId() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
+				BaseDAO.execUpdate(sql.toString());	
+				
+				sql = new StringBuffer("");
+				sql.append("UPDATE b_esrelationfile SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");
+				sql.append(" WHERE esId = '" + data.getId() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
+				BaseDAO.execUpdate(sql.toString());					
+				
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				
+				count++;
+
+			}
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();
+			throw e;
+		}
+    }    
+    
+    public void executeESRelationFileDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_ESRelationFileData data = new B_ESRelationFileData();
+		int count = 0;
+	
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+			String removeData[] = keyData.split(",");
+			for (String key:removeData) {
+				StringBuffer sql = new StringBuffer("");
+				data.setId(key);
+				B_ESRelationFileDao dao = new B_ESRelationFileDao(data);
+				data = (B_ESRelationFileData)dao.FindByPrimaryKey(data);
+				data = EsRelationFileService.updateModifyInfo(dao.beanData, userInfo);			
 				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
 				dao.Store(data);
 				
