@@ -437,7 +437,7 @@ public class UploadReceiver extends HttpServlet
 
 		String [] fileNames = getFileNameList(dirSmall);
 		
-		if(fileNames.length == 0) {
+		if(fileNames!= null && fileNames.length == 0) {
 			File f = new File(dirSmall); // ����Ҫɾ����ļ�λ��
 	    	if(f.exists()) {
 	    		f.delete(); 

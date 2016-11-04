@@ -22,13 +22,16 @@
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/css/main.css">
+<!-- 
 <script type="text/javascript" src="${ctx}/js/jquery.min.js"></script>
+ -->
 <script type="text/javascript" src="${ctx}/js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
 <script type="text/javascript" src="${ctx}/js/layer.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="${ctx}/js/jquery.MetaData.js"></script>
 <script type="text/javascript" src="${ctx}/js/dataTables.tableTools.js"></script>
 <script type="text/javascript" src="${ctx}/js/dataTables.select.js"></script>
 <script type="text/javascript" src="${ctx}/plugins/validate/jquery.validate.js"></script>
