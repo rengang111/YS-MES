@@ -16,7 +16,7 @@ function openTab(selector,title,href,icon){
     if($tabs.tabs('exists',title)){//存在，则打开
         $tabs.tabs('select',title);
     }else{//不存在，新建,新建时判断tab页个数，超出则关闭第一个
-        var content = '<iframe scrolling="auto" id="mainFrame" frameborder="0" src="'+href+'" style="width:100%;height:99%;"></iframe>';
+        var content = '<iframe scrolling="no" id="mainFrame" frameborder="0" src="'+href+'" width="100%" height="99%" onload="iFrameHeight();"></iframe>';
         var tabCon = { title:title,  content:content, closable:true, selected:true, iconCls:icon };
         if($('.tabs-inner').length>8){//最多打开8个（不包括首页）
             $.messager.confirm('提示', '菜单页打开过多，是否关闭第一个，并打开“'+title+'”？', function(r){
@@ -144,4 +144,37 @@ function pad(num, n) {
         len++;  
     }  
     return num;  
+}
+
+function today() {
+	var mydate = new Date();
+	var y = format(mydate.getFullYear());
+	var m = format((mydate.getMonth() + 1));
+	var d = format(mydate.getDate());
+	var h = format(mydate.getHours());	
+	var n = format(mydate.getMinutes());	
+	var s = format(mydate.getSeconds());		
+	return y+'-'+m+'-'+d+' '+h+':'+n+':'+s;
+};
+
+function format(s){
+	if(s<10){
+		return '0'+s;
+	}else{
+		return s;
+	}
+}
+
+function iFramAutoSroll(){
+	//重设显示窗口(iframe)高度
+	var bodyHeight = $(document).height(); 
+	//var viewHeight = bodyHeight<700?bodyHeight:700;
+	var viewHeight = bodyHeight;
+	
+    parent.document.getElementById("mainFrame").height = viewHeight+"px";
+}
+
+function iFramNoSroll(){
+	//重设显示窗口(iframe)高度	
+    parent.document.getElementById("mainFrame").height = "99%";
 }

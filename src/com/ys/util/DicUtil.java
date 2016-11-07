@@ -22,6 +22,8 @@ public class DicUtil {
 	public static final String UNITTYPE = "A8";
 	public static final String MENUTYPE = "A9";
 	public static final String ORGANTYPE = "JGLB";
+	public static final String MEASURESTYPE = "JLDW";
+	public static final String CURRENCY = "currency";
 	
 	//TODO
 	public static final String DENOMINATIONCURRENCY = "B1";

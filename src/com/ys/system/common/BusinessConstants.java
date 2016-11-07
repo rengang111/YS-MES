@@ -21,4 +21,10 @@ public class BusinessConstants {
 	public static final String USERHEADPHOTOPATH = "/img/headphoto/";
 	public static final String USERHEADPHOTOTEMPPATH = "/img/headphototemp/";
 	public static final String JPEGSUFFIX = ".jpg";
+	public static final String PRICESOURCE_OTHER = "0";
+	public static final String PRICESOURCE_PLAN = "1";
+	public static final String PRICESOURCE_SUPPLIER = "2";
+	public static final String MATERIAL_SUBCOD_DEF = "00";
+	public static final String MATERIAL_USERD_Y = "0";
+	public static final String MATERIAL_USERD_N = "1";
 }

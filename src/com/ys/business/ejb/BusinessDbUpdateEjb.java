@@ -20,23 +20,23 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ys.business.action.model.common.TableFields;
 import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_CustomerAddrDao;
 import com.ys.business.db.dao.B_CustomerDao;
-import com.ys.business.db.dao.B_MaterialClassDao;
-import com.ys.business.db.dao.B_OrganBasicInfoDao;
+import com.ys.business.db.dao.B_MaterialCategoryDao;
+import com.ys.business.db.dao.B_OrganizationDao;
 import com.ys.business.db.dao.B_SupplierBasicInfoDao;
 import com.ys.business.db.data.B_ContactData;
 import com.ys.business.db.data.B_CustomerAddrData;
 import com.ys.business.db.data.B_CustomerData;
-import com.ys.business.db.data.B_MaterialClassData;
-import com.ys.business.db.data.B_OrganBasicInfoData;
+import com.ys.business.db.data.B_MaterialCategoryData;
+import com.ys.business.db.data.B_OrganizationData;
 import com.ys.business.db.data.B_SupplierBasicInfoData;
+import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.contact.ContactService;
 import com.ys.business.service.customer.CustomerService;
 import com.ys.business.service.customeraddr.CustomerAddrService;
-import com.ys.business.service.material.MatClassService;
-import com.ys.business.service.organ.OrganService;
 import com.ys.business.service.supplier.SupplierService;
 import com.ys.system.action.model.dic.DicModel;
 import com.ys.system.action.model.dic.DicTypeModel;
@@ -119,7 +119,7 @@ public class BusinessDbUpdateEjb  {
     }
     
     public void executeOrganDelete(String keyData, UserInfo userInfo) throws Exception {
-    	B_OrganBasicInfoData data = new B_OrganBasicInfoData();
+    	B_OrganizationData data = new B_OrganizationData();
 
 		ts = new BaseTransaction();
 		
@@ -127,12 +127,15 @@ public class BusinessDbUpdateEjb  {
 			ts.begin();
 			String removeData[] = keyData.split(",");
 			for (String key:removeData) {
-				StringBuffer sql = new StringBuffer("");
-				data.setId(key);
-				B_OrganBasicInfoDao dao = new B_OrganBasicInfoDao(data);
-				data = (B_OrganBasicInfoData)dao.FindByPrimaryKey(data);
-				data = OrganService.updateModifyInfo(dao.beanData, userInfo);				
 
+				data.setRecordid(key);
+				B_OrganizationDao dao = new B_OrganizationDao(data);
+				data = (B_OrganizationData)dao.FindByPrimaryKey(data);
+				
+				TableFields commFields = BusinessService.updateModifyInfo
+						(Constants.ACCESSTYPE_DEL,"OrganDelete", userInfo);
+				data.setUpdFields(commFields);
+				
 				dao.Store(data);
 			}
 			ts.commit();
@@ -144,7 +147,7 @@ public class BusinessDbUpdateEjb  {
     }
     
     public void executeMaterialCategroyDelete(String keyData, UserInfo userInfo) throws Exception {
-    	B_MaterialClassData data = new B_MaterialClassData();
+    	B_MaterialCategoryData data = new B_MaterialCategoryData();
 
 		ts = new BaseTransaction();
 		
@@ -154,12 +157,11 @@ public class BusinessDbUpdateEjb  {
 			for (String key:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				data.setRecordid(key);
-				B_MaterialClassDao dao = new B_MaterialClassDao(data);
-				data = (B_MaterialClassData)dao.FindByPrimaryKey(data);
-				data = MatClassService.updateModifyInfo(dao.beanData, 
-						userInfo,
-						"MaterialCategroyDelete",
-						Constants.ACCESSTYPE_DEL);				
+				B_MaterialCategoryDao dao = new B_MaterialCategoryDao(data);
+				data = (B_MaterialCategoryData)dao.FindByPrimaryKey(data);
+				data.setUpdFields(
+						BusinessService.updateModifyInfo
+						(Constants.ACCESSTYPE_DEL,"MaterialUpdate", userInfo));				
 				
 				dao.Store(data);
 				

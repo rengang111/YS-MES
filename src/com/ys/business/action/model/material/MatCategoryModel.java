@@ -2,10 +2,10 @@ package com.ys.business.action.model.material;
 
 import java.util.ArrayList;
 import com.ys.util.basequery.common.BaseModel;
-import com.ys.business.db.data.B_MaterialClassData;
+import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.system.db.data.S_DEPTData;
 
-public class MatClassModel extends BaseModel {
+public class MatCategoryModel extends BaseModel {
 	private String parentCategoryId = "";
 	private String parentCategoryName = "";
 	private String unitIdName = "";
@@ -20,7 +20,7 @@ public class MatClassModel extends BaseModel {
 	private String categoryIdChid = "";
 	private String memo = "";
 	private String formatDes = "";
-	private B_MaterialClassData unitData = new B_MaterialClassData();
+	private B_MaterialCategoryData unitData = new B_MaterialCategoryData();
 
 	public String getCategoryIdChid() {
 		return this.categoryIdChid;
@@ -113,10 +113,10 @@ public class MatClassModel extends BaseModel {
 		this.numCheck = numCheck;
 	}	
 	
-	public B_MaterialClassData getunitData() {
+	public B_MaterialCategoryData getunitData() {
 		return this.unitData;
 	}
-	public void setunitData(B_MaterialClassData unitData) {
+	public void setunitData(B_MaterialCategoryData unitData) {
 		this.unitData = unitData;
 	}
 	

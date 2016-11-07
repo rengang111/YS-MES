@@ -9,27 +9,31 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.business.action.model.material.MatClassModel;
-import com.ys.business.service.material.MatClassService;
+import com.ys.business.action.model.material.MatCategoryModel;
+import com.ys.business.service.material.MatCategoryService;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.DicUtil;
 
 
 @Controller
 @RequestMapping("/business")
-public class MatClassAction extends BaseAction {
+public class MatCategoryAction extends BaseAction {
 	
 	@Autowired
-	MatClassService matClassService;
+	MatCategoryService matClassService;
 	
-	@RequestMapping("/material")
-	public String doInit(@ModelAttribute("dataModels")MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	@RequestMapping("/matcategory")
+	public String doInit(
+			@ModelAttribute("dataModels")MatCategoryModel dataModel, 
+			BindingResult result,
+			Model model,
+			HttpSession session, 
+			HttpServletRequest request,
+			HttpServletResponse response){
 		
 		String type = request.getParameter("methodtype");
 		String rtnUrl = "";
@@ -75,7 +79,7 @@ public class MatClassAction extends BaseAction {
 		
 	}	
 	
-	public String doSearch(@ModelAttribute("dataModels")MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doSearch(@ModelAttribute("dataModels")MatCategoryModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
 		//dataModel.setRecordPerPage(50);//设置每页的数据条数
 		try {
@@ -97,7 +101,7 @@ public class MatClassAction extends BaseAction {
 			HttpSession session, HttpServletRequest request,
 			HttpServletResponse response){
 
-		MatClassModel dataModel = new MatClassModel();
+		MatCategoryModel dataModel = new MatCategoryModel();
 		String operType = request.getParameter("operType");
 		String parentId = request.getParameter("categoryId");
 		String parentName = request.getParameter("parentName")+"";
@@ -125,7 +129,7 @@ public class MatClassAction extends BaseAction {
 		return "/business/material/matclassedit";
 	}	
 	
-	public String doUpdate(MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doUpdate(MatCategoryModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		try {
 			dataModel.setUpdatedRecordCount(0);
@@ -162,7 +166,7 @@ public class MatClassAction extends BaseAction {
 		return "/business/material/matclassedit";
 	}	
 
-	public String doAdd(MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doAdd(MatCategoryModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		try {
 			dataModel.setUpdatedRecordCount(0);
@@ -200,7 +204,7 @@ public class MatClassAction extends BaseAction {
 		return "/business/material/matclassedit";
 	}	
 	
-	public String doDelete(MatClassModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doDelete(MatCategoryModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		try {
 			dataModel.setUpdatedRecordCount(0);
@@ -222,7 +226,7 @@ public class MatClassAction extends BaseAction {
 	
 	public String doDetail(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
-		MatClassModel dataModel = new MatClassModel();
+		MatCategoryModel dataModel = new MatCategoryModel();
 		
 		try {
 			dataModel = matClassService.getDetail(request);

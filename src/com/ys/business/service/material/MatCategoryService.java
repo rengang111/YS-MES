@@ -6,9 +6,10 @@ import java.util.HashMap;
 import org.springframework.stereotype.Service;
 
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.business.action.model.material.MatClassModel;
-import com.ys.business.db.dao.B_MaterialClassDao;
-import com.ys.business.db.data.B_MaterialClassData;
+import com.ys.business.action.model.common.TableFields;
+import com.ys.business.action.model.material.MatCategoryModel;
+import com.ys.business.db.dao.B_MaterialCategoryDao;
+import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
@@ -24,14 +25,18 @@ import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
+import com.ys.business.service.common.BusinessService;
 
 import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class MatClassService extends BaseService {
+public class MatCategoryService extends BaseService {
+	
 
-	public MatClassModel doSearch(HttpServletRequest request, MatClassModel dataModel, UserInfo userInfo)
+	TableFields commFields=null;
+
+	public MatCategoryModel doSearch(HttpServletRequest request, MatCategoryModel dataModel, UserInfo userInfo)
 			throws Exception {
 
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
@@ -53,48 +58,49 @@ public class MatClassService extends BaseService {
 		return dataModel;
 	}
 
-	public MatClassModel getDetail(HttpServletRequest request) throws Exception {
+	public MatCategoryModel getDetail(HttpServletRequest request) throws Exception {
 		String recordId = request.getParameter("recordId");
-		MatClassModel MatClassModel = new MatClassModel();
+		MatCategoryModel categoryModel = new MatCategoryModel();
 
 
-		B_MaterialClassDao dao = new B_MaterialClassDao();
-		B_MaterialClassData data = new B_MaterialClassData();
+		B_MaterialCategoryDao dao = new B_MaterialCategoryDao();
+		B_MaterialCategoryData data = new B_MaterialCategoryData();
 		data.setRecordid(recordId);
-		data = (B_MaterialClassData) dao.FindByPrimaryKey(data);
+		data = (B_MaterialCategoryData) dao.FindByPrimaryKey(data);
 
-		MatClassModel.setunitData(data);
+		categoryModel.setunitData(data);
 
-		MatClassModel.setIsOnlyView("T");
+		categoryModel.setIsOnlyView("T");
 
-		return MatClassModel;
+		return categoryModel;
 
 	}
 
-	public MatClassModel getParentDeptName(HttpServletRequest request) throws Exception {
+	public MatCategoryModel getParentDeptName(HttpServletRequest request) throws Exception {
 
 		String parentId = request.getParameter("categoryId");
 		String parentName = request.getParameter("categoryName");
 		parentName = new String(parentName.getBytes("ISO8859-1"), "UTF-8");
 
-		MatClassModel MatClassModel = new MatClassModel();
-		MatClassModel.setParentCategoryId(parentId);
-		MatClassModel.setParentCategoryName(parentName);
+		MatCategoryModel MatCategoryModel = new MatCategoryModel();
+		MatCategoryModel.setParentCategoryId(parentId);
+		MatCategoryModel.setParentCategoryName(parentName);
 
-		return MatClassModel;
+		return MatCategoryModel;
 
 	}
 
 	public void insert(HttpServletRequest request, 
-			MatClassModel MatClassModel,
+			MatCategoryModel MatCategoryModel,
 			UserInfo userInfo) throws Exception {
 		
-		B_MaterialClassDao dao = new B_MaterialClassDao();
-		B_MaterialClassData data = eidtChildId(MatClassModel.getunitData());
+		B_MaterialCategoryDao dao = new B_MaterialCategoryDao();
+		B_MaterialCategoryData data = eidtChildId(MatCategoryModel.getunitData());
+
+		commFields = BusinessService.updateModifyInfo
+				(Constants.ACCESSTYPE_INS,"MaterialCategoryInsert", userInfo);
 		
-		data = updateModifyInfo(data,
-				userInfo,"MaterialCategroyAdd",
-				Constants.ACCESSTYPE_INS);
+		data.setInsFields(commFields);
 
 		data.setRecordid(BaseDAO.getGuId());
 		data.setParentid(request.getParameter("parentCategoryId"));
@@ -102,13 +108,13 @@ public class MatClassService extends BaseService {
 		dao.Create(data);
 	}
 	
-	private B_MaterialClassData eidtChildId (B_MaterialClassData data){
+	private B_MaterialCategoryData eidtChildId (B_MaterialCategoryData data){
 		
 		String categroyId = data.getCategoryid()+"";
 		String parentId=data.getParentid()+"";
 		
 		if (parentId.equals(Constants.MATERIALCATEGORY)){
-			data.setChildid(categroyId);
+			//data.setChildid(categroyId);
 		}else{		
 			if(categroyId.length() !=0 && parentId.length() !=0)
 			{
@@ -118,7 +124,7 @@ public class MatClassService extends BaseService {
 					{
 						childid = childid.substring(inChar + 1);
 					}
-					data.setChildid(childid);
+					//data.setChildid(childid);
 					
 				}			
 		}
@@ -126,24 +132,25 @@ public class MatClassService extends BaseService {
 	}
 	
 	public void update(HttpServletRequest request, 
-			MatClassModel MatClassModel, 
+			MatCategoryModel MatCategoryModel, 
 			UserInfo userInfo) throws Exception {
 		
-		B_MaterialClassDao dao = new B_MaterialClassDao();
-		B_MaterialClassData data = eidtChildId(MatClassModel.getunitData());
+		B_MaterialCategoryDao dao = new B_MaterialCategoryDao();
+		B_MaterialCategoryData data = eidtChildId(MatCategoryModel.getunitData());
 		
-		updateModifyInfo(data, 
-				userInfo,"MaterialCategroyUpdate",
-				Constants.ACCESSTYPE_UPD);
+		commFields = BusinessService.updateModifyInfo
+				(Constants.ACCESSTYPE_UPD,"MaterialCategoryUpdate", userInfo);
+		
+		data.setUpdFields(commFields);		
 
 		dao.Store(data);
 	}
 
-	public void delete(MatClassModel MatClassModel, UserInfo userInfo) throws Exception {
+	public void delete(MatCategoryModel MatCategoryModel, UserInfo userInfo) throws Exception {
 
 		BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 
-		bean.executeMaterialCategroyDelete(MatClassModel.getNumCheck(), userInfo);
+		bean.executeMaterialCategroyDelete(MatCategoryModel.getNumCheck(), userInfo);
 
 	}
 
@@ -152,12 +159,12 @@ public class MatClassService extends BaseService {
 
 		int result = 0;
 
-		MatClassModel MatClassModel = new MatClassModel();
+		MatCategoryModel MatCategoryModel = new MatCategoryModel();
 
-		MatClassModel.setQueryFileName("/business/material/matclassquerydefine");
-		MatClassModel.setQueryName("unitquerydefine_getparentdeptguid");
+		MatCategoryModel.setQueryFileName("/business/material/matclassquerydefine");
+		MatCategoryModel.setQueryName("unitquerydefine_getparentdeptguid");
 
-		BaseQuery baseQuery = new BaseQuery(request, MatClassModel);
+		BaseQuery baseQuery = new BaseQuery(request, MatCategoryModel);
 		ArrayList<ArrayList<String>> unitDataList = baseQuery.getQueryData();
 		// 父单位是否存在
 		if (unitDataList.size() == 0) {
@@ -182,9 +189,9 @@ public class MatClassService extends BaseService {
 			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 			userDefinedSearchCase.put("unitIdName", request.getParameter("unitData.unitname"));
 			userDefinedSearchCase.put("userUnitId", userUnitId);
-			MatClassModel.setQueryFileName("/business/material/matclassquerydefine");
-			MatClassModel.setQueryName("unitquerydefine_confirmunitname");
-			baseQuery = new BaseQuery(request, MatClassModel);
+			MatCategoryModel.setQueryFileName("/business/material/matclassquerydefine");
+			MatCategoryModel.setQueryName("unitquerydefine_confirmunitname");
+			baseQuery = new BaseQuery(request, MatCategoryModel);
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 			unitDataList = baseQuery.getQueryData();
 			if (operType.equals("add") || operType.equals("addsub")) {
@@ -209,38 +216,12 @@ public class MatClassService extends BaseService {
 		return result;
 	}
 
-	public static B_MaterialClassData updateModifyInfo(B_MaterialClassData data,
-			UserInfo userInfo,
-			String method,int type) {
-
-		data.setFormid(method);
-		
-		if (type == Constants.ACCESSTYPE_INS) {//insert
-			data.setCreateperson(userInfo.getUserId());
-			data.setCreatetime(CalendarUtil.fmtDate());
-			data.setCreateunitid(userInfo.getUnitId());
-
-		}else{
-			data.setModifyperson(userInfo.getUserId());
-			data.setModifytime(CalendarUtil.fmtDate());
-			
-		}
-		
-		if (type == Constants.ACCESSTYPE_DEL) {//delete
-			data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
-		}else{
-			data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
-			
-		}
-
-		return data;
-	}
 
 	
-	private String getNewUnitId(MatClassModel MatClassModel, UserInfo userInfo) throws Exception {
+	private String getNewUnitId(MatCategoryModel MatCategoryModel, UserInfo userInfo) throws Exception {
 
 		String newDeptId = "";
-		String parentUnitId = MatClassModel.getParentCategoryId();
+		String parentUnitId = MatCategoryModel.getParentCategoryId();
 
 		if (parentUnitId.equals("")) {
 			if (!userInfo.getUserType().equals(Constants.USER_SA)) {
@@ -289,32 +270,8 @@ public class MatClassService extends BaseService {
 		ArrayList<ArrayList<String>> dbResult = new ArrayList<ArrayList<String>>();
 		HashMap<String, DicInfo> deptMap = new HashMap<String, DicInfo>();
 
-		/*
-		 * isFilter = Boolean.parseBoolean(BaseQuery.getContent(Constants.
-		 * SYSTEMPROPERTYFILENAME, Constants.FILTERDEFINE)); String
-		 * adminRoleList =
-		 * BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME,
-		 * Constants.FILTERADMIN);
-		 * 
-		 * int adminRoleidCount = BaseQuery.getAdminRoleidCount(request, userId,
-		 * adminRoleList); if (adminRoleidCount == 0) { adminRoleList =
-		 * Constants.BUSINESSROLE; }
-		 * 
-		 * if (userType.equals(Constants.USER_SA)) { isFilter = false; }
-		 */
-		dbResult = getAllMaterial(request, userId, menuId, unitId, userType);
-		/*for (ArrayList<String> rowData : dbResult) {
-			DicInfo deptInfo = new DicInfo();
-			deptInfo.setId(rowData.get(0));
-			deptInfo.setName(rowData.get(1));
-			deptInfo.setDes(rowData.get(2));
-			deptInfo.setJianpin(rowData.get(3));
-			deptInfo.setParentId(rowData.get(4));
-			deptInfo.setDeptGuid(rowData.get(5));
-			deptInfo.setSortNo(rowData.get(6));
-			deptMap.put(deptInfo.getId(), deptInfo);
-		}
-*/
+			dbResult = getAllMaterial(request, userId, menuId, unitId, userType);
+
 		for (ArrayList<String> rowData : dbResult) {
 			ArrayList<DicInfo> deptSubChain = new ArrayList<DicInfo>();
 
@@ -340,17 +297,11 @@ public class MatClassService extends BaseService {
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		BaseQuery baseQuery;
 		BaseModel baseModel = new BaseModel();
-		//HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-
+	
 		baseModel.setQueryFileName("/business/material/matclassquerydefine");
 		baseModel.setQueryName("mainframequery_getallmaterials");
 		baseQuery = new BaseQuery(request, baseModel);
-		// if (userType.equals(Constants.USER_ADMIN)) {
-		// userDefinedSearchCase.put("unitId", unitId);
-		// }
-
-		//baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-
+	
 		result = baseQuery.getFullData();
 
 		return result;
@@ -361,21 +312,7 @@ public class MatClassService extends BaseService {
 
 		ArrayList<DicInfo> leafDept = new ArrayList<DicInfo>();
 		ArrayList<ArrayList<String>> dbResult = new ArrayList<ArrayList<String>>();
-		String adminRoleList = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, Constants.FILTERADMIN);
-		// 是否需要过滤admin
-		// isFilter =
-		// Boolean.parseBoolean(BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME,
-		// Constants.FILTERDEFINE));
-		//int adminRoleidCount = BaseQuery.getAdminRoleidCount(request, userId, adminRoleList);
-		// if (adminRoleidCount == 0) {
-		// 普通用户
-		// adminRoleList = Constants.BUSINESSROLE;
-		// }
-
-		// if (userType.equals(Constants.USER_SA)) {
-		// isFilter = false;
-		// }
-
+	
 		dbResult = getLeafDept(request);
 
 		for (ArrayList<String> rowData : dbResult) {

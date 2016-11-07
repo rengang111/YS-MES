@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_ContactData;
-import com.ys.business.db.data.B_OrganBasicInfoData;
+import com.ys.business.db.data.B_OrganizationData;
 import com.ys.util.basequery.common.BaseModel;
 
 public class OrganModel extends BaseModel {
@@ -14,12 +14,12 @@ public class OrganModel extends BaseModel {
 	 * 机构管理
 	 */
 	private static final long serialVersionUID = 1L;
-	private ArrayList<ListOption> categoryList = new ArrayList<ListOption>();
-	private B_OrganBasicInfoData organData = new B_OrganBasicInfoData();
-	private String name_short;
-	private String name_full;
+	private ArrayList<ListOption> typeList = new ArrayList<ListOption>();
+	private B_OrganizationData organData = new B_OrganizationData();
+	private String shortName;
+	private String fullName;
 	private String address;
-	private String category;
+	private String type;
 	private String keyBackup = "";
 	
 	public String getKeyBackup() {
@@ -28,36 +28,36 @@ public class OrganModel extends BaseModel {
 	public void setKeyBackup(String keyBackup) {
 		this.keyBackup = keyBackup;
 	}
-	public ArrayList<ListOption> getCategoryList() {
-		return this.categoryList;
+	public ArrayList<ListOption> getTypeList() {
+		return this.typeList;
 	}
-	public void setCategoryList(ArrayList<ListOption> categoryList) {
-		this.categoryList = categoryList;
+	public void setTypeList(ArrayList<ListOption> typeList) {
+		this.typeList = typeList;
 	}
 	
 	
-	public B_OrganBasicInfoData getOrganData() {
+	public B_OrganizationData getOrganData() {
 		return this.organData;
 	}
-	public void setOrganData(B_OrganBasicInfoData organData) {
+	public void setOrganData(B_OrganizationData organData) {
 		this.organData = organData;
 	}
 	
 	
-	public String getName_short() {
-		return this.name_short;
+	public String getShortName() {
+		return this.shortName;
 	}
 	
-	public void setName_short(String name_short) {
-		this.name_short = name_short;
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 	
-	public String getname_full() {
-		return this.name_full;
+	public String getFullName() {
+		return this.fullName;
 	}
 	
-	public void setname_full(String name_full) {
-		this.name_full = name_full;
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 	
 	public String getAddress() {
@@ -67,11 +67,11 @@ public class OrganModel extends BaseModel {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public String getCategory() {
-		return this.category;
+	public String getType() {
+		return this.type;
 	}
 	
-	public void setCategory(String category) {
-		this.category = category;
+	public void setType(String type) {
+		this.type = type;
 	}
 }

@@ -123,6 +123,17 @@
 	    	popupWindow("resetpassword", "${ctx}/user?methodtype=resetpwdinit", 800, 600);
 	    	
 		}
+	    
+		function iFrameHeight() {
+			/*
+	        var ifm = document.getElementById("mainFrame");
+	        var subWeb = document.frames ? document.frames["mainFrame"].document :
+			ifm.contentDocument;
+	        if(ifm != null && subWeb != null) {
+	        	ifm.height = subWeb.body.scrollHeight;
+	        }
+	        */
+		}
 
 	</script>
 </body>

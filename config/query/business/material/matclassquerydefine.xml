@@ -111,7 +111,7 @@
     	<f name="A.childId" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
-    <from>v_materialcategorytree as A </from>
+    <from>v_matcategorytree as A </from>
     <orderby>A.categoryId, A.parentid</orderby>
     <groupby></groupby>
     <having></having>

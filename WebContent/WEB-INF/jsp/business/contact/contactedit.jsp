@@ -198,24 +198,17 @@ function controlButtons(data) {
 
 </head>
 
-<body>
-<div id="container">
+<body class="noscroll">
 
-		<div id="main">
+<div id="layer_main">
+	<form:form modelAttribute="dataModels" id="contactInfo" >
+			
 			<div id="supplierBasic">				
-				<div  style="height:20px"></div>
-				
+				<fieldset>
 				<legend>联系人信息</legend>
-					
-				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="save" class="DTTT_button" onClick="doSave();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-					
-				<form:form modelAttribute="dataModels" id="contactInfo" style='padding: 0px; margin: 10px;' >
 					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 					<input type=hidden id="companyCode" name="companyCode" value="${DisplayData.companyCode}"/>
-					<table class="form" width="850px">
+					<table class="form" width="100%">
 						<tr>
 							<td width="60px">姓名：</td>
 							<td width="200px">
@@ -274,9 +267,14 @@ function controlButtons(data) {
 							</td>							
 						</tr>
 					</table>
-
-				</form:form>
-			</div>
+				</fieldset>
+				<fieldset class="action" style="text-align: right;">
+				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();">删除</button>
+				<button type="button" id="save" class="DTTT_button" onClick="doSave();">保存</button>
+				</fieldset>	
+					</div>
+	</form:form>
+		
 		</div>
-	</div>
+	</body>
 </html>

@@ -20,7 +20,7 @@
 	
 		var t = $('#TOgran').DataTable({
 				"paging": true,
-				"lengthMenu":[2,50,100],//设置一页展示10条记录
+				"lengthMenu":[20,50,100],//设置一页展示10条记录
 				"processing" : false,
 				"serverSide" : true,
 				"stateSave" : false,
@@ -54,17 +54,17 @@
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "DicName", "defaultContent" : ''},
-							{"data": "name_short", "defaultContent" : ''},
-							{"data": "name_full", "defaultContent" : ''},
+							{"data": "shortName", "defaultContent" : ''},
+							{"data": "fullName", "defaultContent" : ''},
 							{"data": "address", "defaultContent" : ''}
 							,{"data": null, "defaultContent" : '',"className" : 'td-center'}
 						],
 				"columnDefs":[
 					    		{"targets":0,"render":function(data, type, row){
-									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 			                    }},
 					    		{"targets":5,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doEdit('" + row["id"] + "')\">编辑</a>"
+					    			return "<a href=\"#\" onClick=\"doEdit('" + row["recordId"] + "')\">编辑</a>"
 			                    }}
 			           
 			         ] 
@@ -100,15 +100,17 @@
 	function doCreate() {
 		
 		var url = "${ctx}/business/organ?methodtype=create";
-		openLayer(url, '', layerHeight, true);
+		location.href = url;
+		//openLayer(url, '', layerHeight, true);
 	}
 	
 	function doEdit(key) {
 		var str = '';
 		var isFirstRow = true;
+		
 		var url = "${ctx}/business/organ?methodtype=edit&key=" + key;
-
-		openLayer(url, '', layerHeight, true);
+		location.href = url;
+		//openLayer(url, '', layerHeight, true);
 	}
 	
 	

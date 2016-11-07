@@ -96,8 +96,11 @@
 </div>
 <script type="text/javascript">
 
+	var layerHeight = '350';
+	var layerWidth = '700';
+
 	$(function(){
-		$('#form').attr("action", "${ctx}/business/material?methodtype=search");
+		$('#form').attr("action", "${ctx}/business/matcategory?methodtype=search");
 
 		var updateRecordCount = parseInt('${DisplayData.updatedRecordCount}');
 		if (updateRecordCount > 0) {
@@ -143,14 +146,14 @@
 
 	function doSearch() {
 		if (inputCheck()) {
-			$('#form').attr("action", "${ctx}/business/material?methodtype=search");
+			$('#form').attr("action", "${ctx}/business/matcategory?methodtype=search");
 			$('#form').submit();
 		}
 	}
 
 	function addUnit() {
 		$('#operType').val("add");
-		popupWindow("UnitDetail", "${pageContext.request.contextPath}/business/material?methodtype=updateinit&operType=add", 800, 500);	
+		popupWindow("UnitDetail", "${pageContext.request.contextPath}/business/matcategory?methodtype=updateinit&operType=add", 800, 500);	
 	}
 	
 	function deleteUnit() {
@@ -168,7 +171,7 @@
 		});
 		if (isAnyOneChecked) {
 			if(confirm("确定要删除数据吗？")) {
-				$('#form').attr("action", "${ctx}/business/material?methodtype=delete");
+				$('#form').attr("action", "${ctx}/business/matcategory?methodtype=delete");
 				$('#form').submit();
 			}
 		} else {
@@ -178,16 +181,19 @@
 
 	function callAddSubUnit(categoryId,parentName) {
 		$('#operType').val("addsub");
-		popupWindow("UnitDetail", "${ctx}/business/material?methodtype=updateinit&operType=addsub&categoryId=" + categoryId + "&parentName=" + encodeURIComponent(parentName), 800, 500);	
+		var url = "${ctx}/business/matcategory?methodtype=updateinit&operType=addsub&categoryId=" + categoryId + "&parentName=" + encodeURIComponent(parentName);
+		openLayer(url, layerWidth, layerHeight, false,'100px');
 	}
 	
 	function dispUnitDetail(recordId) {
-		popupWindow("UnitDetail", "${ctx}/business/material?methodtype=detail&recordId=" + recordId, 800, 500);
+		var url = "${ctx}/business/matcategory?methodtype=detail&recordId=" + recordId
+		openLayer(url, layerWidth, layerHeight, true,'100px');
 	}
 
 	function callUpdateUnit(parentName,recordId) {
 		$('#operType').val("update");
-		popupWindow("UnitDetail", "${ctx}/business/material?methodtype=updateinit&operType=update&recordId=" + recordId+ "&parentName=" + encodeURIComponent(parentName), 800, 500);	
+		var url = "${ctx}/business/matcategory?methodtype=updateinit&operType=update&recordId=" + recordId+ "&parentName=" + encodeURIComponent(parentName);
+		openLayer(url, layerWidth, layerHeight, false,'100px');
 	}
 
 	function mergeUnit(categoryId) {
@@ -207,10 +213,14 @@
 
 $(document).ready( function () {  
 
-      $('#example').DataTable({
+	var scrollHeight = $(window).height() - 207; 
+	
+	var t = $('#example').DataTable({
 			"paging": true,
-			"lengthMenu":[3,55,111],//设置一页展示100条记录
+			"lengthMenu":[20,50,100],//设置一页展示100条记录
 			"searching" : false,
+			"scrollY":scrollHeight,
+			"scrollCollapse":true,
     	  	"language": {"url":"${ctx}/plugins/datatables/chinese.json"},
 
     	  	"columnDefs" : [ 
@@ -222,6 +232,18 @@ $(document).ready( function () {
 						"targets" : [0]
 					} ]
 	});   
+      
+     t.on('click', 'tr', function() {
+    	 
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	            t.$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	            
+	        }
+	});
 });
 </script> 
 </body>

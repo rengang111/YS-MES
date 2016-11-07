@@ -10,7 +10,7 @@
 	$(function(){ 
 		setCheckBoxTrue(false);
 		//setMenuId("001");
-		setMainFrameSrc("${ctx}/business/material?methodtype=initframe");
+		setMainFrameSrc("${ctx}/business/matcategory?methodtype=initframe");
 		//setNaviObj("selCheck");
 		setInitNaviUrl("mainframe/initMaterial");
 		setLaunchNaviUrl("mainframe/launchMaterial");
