@@ -24,6 +24,9 @@ public class DicUtil {
 	public static final String ORGANTYPE = "JGLB";
 	public static final String MEASURESTYPE = "JLDW";
 	public static final String CURRENCY = "currency";
+	public static final String DISPATCH = "dispatch";
+	public static final String LOADINGPORT = "loading";
+	public static final String DELIVERYPORT = "delivery";
 	
 	//TODO
 	public static final String DENOMINATIONCURRENCY = "B1";
