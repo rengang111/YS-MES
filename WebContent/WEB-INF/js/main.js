@@ -178,3 +178,8 @@ function iFramNoSroll(){
 	//重设显示窗口(iframe)高度	
     parent.document.getElementById("mainFrame").height = "99%";
 }
+
+function PrefixInteger(num, length) {
+	 return (Array(length).join('0') + num).slice(-length);
+} 
+	

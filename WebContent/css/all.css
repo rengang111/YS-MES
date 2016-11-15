@@ -4,12 +4,21 @@
     padding: 0px;
 
 }
+td.cash {
+	font-size:12px;
+	text-align: right;
+	padding-right: 30px;
+}
 
 td.td-left {
 	text-align: left;
 }
 td.td-center {
 	text-align: center;
+}
+
+td.td-right {
+	text-align: right;
 }
 
 body{
@@ -281,7 +290,7 @@ input, textarea, select{
     margin:0px 0px 0px 10px; 
 }   
 input[type="text"]{
-	height:18px;
+	height:20px;
 }
 textarea{
 	margin:5px 0px 5px 10px; 
@@ -293,18 +302,18 @@ textarea.read-only{
 	border-style:none;
 }
 
-input.short{width:100px;} 
+input.mini{width:60px;} 
 
-input.mini{width:50px;} 
+input.short{width:100px;} 
 
 input.middle{width:250px;}
 
 input.long{width:450px;}
 
 input.cash{
-	width:60px;
+	/* width:60px; */
 	padding:0 2px 0 2px; 
-	text-align:left;
+	text-align:right;
 }
 
 /* ÷ª∂¡ ‰»ÎøÚ÷√ª“ */
@@ -524,5 +533,20 @@ h2 {
 
 .high {
         color: #F00;
+}
+
+.ui-autocomplete {
+	max-height: 200px;
+	max-width: 800px;
+	width: 400px;
+	overflow-y: anto;
+	scrollHeight:100px;
+	/* prevent horizontal scrollbar */
+	overflow-x: hidden;
+	scroll: true;
+	/* add padding to account for vertical scrollbar */
+	padding-right: 20px;
+	highlight: false;
+	z-index:9999;
 }
 

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="getOrderList" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_orderlist AS A </from>
+    <orderby>A.PIId,A.YSId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getOrderViewByPIId" />
+    <where>
+      <w name="A.PIId" des=""  reqName="keywords1" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.orderRecordId" alias="" ctype="" />
+      <f name="A.detailRecordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.customerSimpleDes" alias="shortName" ctype="" />
+      <f name="A.CustomerName" alias="fullName" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.total" alias="" ctype="" />
+      <f name="A.currency" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.paymentTerm" alias="" ctype="" />
+      <f name="A.currencyName" alias="currency" ctype="" />
+      <f name="A.shippingCaseName" alias="shippingCase" ctype="" />
+      <f name="A.loadingPortName" alias="loadingPort" ctype="" />
+      <f name="A.deliveryPortName" alias="deliveryPort" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_orderviewlist AS A </from>
+    <orderby>A.PIId,A.YSId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="orderDetailExistCheck" />
+    <where>
+    	<w name="A.materialId" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.categoryId" alias="" ctype="" />
+      <f name="A.categoryName" alias="" ctype="" />
+      <f name="A.formatDes" alias="" ctype="" />
+      <f name="A.fullField" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_matcategorylist AS A </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getCustomer" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.id" alias="recordId" ctype="" />
+      <f name="A.customerId" alias="customerId" ctype="" />
+      <f name="A.customerSimpleDes" alias="shortName" ctype="" />
+      <f name="A.customerName" alias="fullName" ctype="" />
+      <f name="A.paymentTerm" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.deliveryPort" alias="" ctype="" />
+      <f name="A.denominationCurrency" alias="currency" ctype="" />
+      <f name="CONCAT_WS(' | ',A.CustomerID,A.CustomerSimpleDes, CustomerName)" alias="viewList" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_customer AS A</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="materialList" /> 
+    <where>
+    <w name="A.full_field" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="AND" bt="" />
+      </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.categoryId" alias="" ctype="" />
+      <f name="A.categoryName" alias="" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.description" alias="" ctype="" />
+      <f name="A.shareModel" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="A.subIdDes" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="" />
+      <f name="A.dicName" alias="" ctype="" />
+   	  <f name="CONCAT_WS(' | ',A.materialId,A.categoryId, materialName)" alias="viewList" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_materiallist AS A  </from>
+    <orderby>A.materialId,A.subId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getOrderSubIdByParentId" />
+    <where>
+       <w name="A.parentId" des=""  reqName="keywords1" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name=" IFNULL(max(subId+0),'0')" alias="MaxSubId" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_order AS A WHERE A.deleteFlag = '0'</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getYSIdByParentId" />
+     <where>
+       <w name="A.parentId" des=""  reqName="keywords1" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name=" IFNULL(max(subId+0),'0')" alias="MaxSubId" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_orderdetail AS A WHERE A.deleteFlag = '0'</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getSupplierList" />
+    <where>
+      <w name="A.fullField" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.supplierID" alias="supplierId" ctype="" />
+      <f name="A.supplierDes" alias="fullName" ctype="" />
+      <f name="A.supplierSimpleDes" alias="shortName" ctype="" />
+      <f name="A.viewList" alias="viewList" ctype="" />
+      <f name="A.twoLevelID" alias="" ctype="" />
+      <f name="A.twoLevelIDDes" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_matsupplierlist AS A </from>
+	    <where> v_matsupplierlist AS A where deleteflag='{}F'</where>
+    <orderby>A.supplierID</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="searchmin_price" />
+    <where>
+      <w name="A.supplierId" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name=" IFNULL(min(A.price+0),'0')" alias="price" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_PriceSupplier AS A WHERE A.deleteFlag = '0'</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="supplierPriceList" />
+    <where>
+    	<w name="A.materialId" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.supplierSimpleDes" alias="shortName" ctype="" />
+      <f name="A.supplierDes" alias="fullName" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.priceUnit" alias="" ctype="" />
+      <f name="A.dicName" alias="currency" ctype="" />
+      <f name="A.priceDate" alias="" ctype="" />
+      <f name="A.lastPrice" alias="" ctype="" />
+      <f name="A.recordId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_supplierprice AS A </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  
+  <query>
+    <pool></pool>     
+    <name value="supplierPriceHistory" />
+    <where>
+    	<w name="A.supplierId" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.supplierSimpleDes" alias="shortName" ctype="" />
+      <f name="A.supplierDes" alias="fullName" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.priceUnit" alias="" ctype="" />
+      <f name="A.dicName" alias="currency" ctype="" />
+      <f name="A.priceDate" alias="" ctype="" />
+      <f name="A.lastPrice" alias="" ctype="" />
+      <f name="A.recordId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_supplierpricehistory AS A </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>

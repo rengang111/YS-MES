@@ -27,4 +27,7 @@ public class BusinessConstants {
 	public static final String MATERIAL_SUBCOD_DEF = "00";
 	public static final String MATERIAL_USERD_Y = "0";
 	public static final String MATERIAL_USERD_N = "1";
+	public static final String SHORTNAME_YS = "YS";
+	public static final String SHORTNAME_YEAR_YY = "yy";
+	public static final String FORMAT_000 = "000";
 }

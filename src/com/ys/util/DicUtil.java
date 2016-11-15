@@ -23,10 +23,9 @@ public class DicUtil {
 	public static final String MENUTYPE = "A9";
 	public static final String ORGANTYPE = "JGLB";
 	public static final String MEASURESTYPE = "JLDW";
-	public static final String CURRENCY = "currency";
-	public static final String DISPATCH = "dispatch";
-	public static final String LOADINGPORT = "loading";
-	public static final String DELIVERYPORT = "delivery";
+	public static final String CURRENCY = "Z4";
+	public static final String LOADINGPORT = "B3";
+	public static final String DELIVERYPORT = "Z6";
 	
 	//TODO
 	public static final String DENOMINATIONCURRENCY = "B1";
