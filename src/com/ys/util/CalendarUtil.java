@@ -188,4 +188,18 @@ public class CalendarUtil {
 		//date1 > date2
 		return 0;
 	}
+	
+	public static int daysBetween(Date smdate,Date bdate) throws ParseException  {
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+	    smdate = sdf.parse(sdf.format(smdate));  
+	    bdate = sdf.parse(sdf.format(bdate));  
+	    Calendar cal = Calendar.getInstance();    
+	    cal.setTime(smdate);    
+	    long time1 = cal.getTimeInMillis();                 
+	    cal.setTime(bdate);
+	    long time2 = cal.getTimeInMillis();         
+	    long between_days=(time2-time1)/(1000*3600*24);
+	    
+	    return Integer.parseInt(String.valueOf(between_days));
+	}
 }
