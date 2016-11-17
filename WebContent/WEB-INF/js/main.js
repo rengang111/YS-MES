@@ -189,7 +189,7 @@ function PrefixInteger(num, length) {
  */
 function currencyToFloat(currency){
 
-	if(currency =="" || currency == "0")
+	if(currency =="" || currency == "0" || currency == null)
 		return 0;
 	
 	if(typeof currency == "number")

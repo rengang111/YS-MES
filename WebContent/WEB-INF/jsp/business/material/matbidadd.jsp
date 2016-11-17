@@ -57,6 +57,12 @@
 		$("#attribute3").attr('readonly', "true");
 		$("#attribute2").attr('readonly', "true");
 
+		
+		$("#price\\.price").blur(function(){
+			
+			$(this).val(floatToCurrency($(this).val()));
+		});
+		
 		$("#return").click(function() {
 
 					//alert(999);
@@ -215,7 +221,7 @@
 				<tr>
 					<td class="label"><label>价格：</label></td>
 
-					<td><form:input path="price.price" class="short required" /></td>
+					<td><form:input path="price.price" class="short required cash" /></td>
 
 					<td class="label"><label>报价单位</label></td>
 					<td><form:input path="price.priceunit"
@@ -241,7 +247,6 @@
 
 		<fieldset class="action" style="margin-bottom: 40px;">
 			<button type="button" id="return" class="DTTT_button">关闭</button>
-			<button type="reset" id="reset" class="DTTT_button">重置</button>
 			<button type="submit" id="submit" class="DTTT_button">保存</button>
 		</fieldset>
 

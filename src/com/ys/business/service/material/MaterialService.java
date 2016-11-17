@@ -42,7 +42,6 @@ public class MaterialService extends BaseService {
 	public HashMap<String, Object> Init(HttpServletRequest request, String data) {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
 		try {
 			data = URLDecoder.decode(data, "UTF-8");
 		}
@@ -62,9 +61,6 @@ public class MaterialService extends BaseService {
 		if (length != null){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
-		
-		String key1 = getJsonData(data, "keyword1");
-		String key2 = getJsonData(data, "keyword2");
 		
 		BaseModel dataModel = new BaseModel();
 
@@ -483,12 +479,14 @@ public class MaterialService extends BaseService {
 			
 			reqData = (B_PriceSupplierData)reqFormBean.getPrice();
 			
-			String recordeId = reqData.getRecordid();
+			String materialId = reqData.getMaterialid();
+			String supplierId = reqData.getSupplierid();
 			String guid = "";
 			TableFields commFields=null;
 			
 			//判断该供应商是否已有报价
-			DBData =prePriceCheck(recordeId);
+			DBData =prePriceCheck(materialId,supplierId);
+			
 			boolean blPrice = DBData ==null?false:true;
 			if(blPrice){
 
@@ -743,15 +741,12 @@ public class MaterialService extends BaseService {
 		String key = request.getParameter("recordId");
 		String categoryName = request.getParameter("categoryName");	
 
-		try{
-			
+		try{			
 			categoryName = new String(categoryName.getBytes("ISO8859-1"), "UTF-8");
 			
 			dbData.setRecordid(key);
 			dbData = (B_MaterialData)dao.FindByPrimaryKey(dbData);
-			Matmodel.setMaterial(dbData);
-			
-			Matmodel.setEndInfoMap("098", "0001", "");
+			Matmodel.setMaterial(dbData);			
 			Matmodel.setMaterialid(dbData.getMaterialid());
 			Matmodel.setRecordId(dbData.getRecordid());
 			Matmodel.setMaterialname(dbData.getMaterialname());
@@ -871,49 +866,25 @@ public class MaterialService extends BaseService {
 		
 		return dbData;
 	}
-	private B_PriceSupplierData prePriceCheck(String key) throws Exception {
+	@SuppressWarnings("unchecked")
+	private B_PriceSupplierData prePriceCheck(
+			String materialId,
+			String supplierId) throws Exception {
 
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();
-		B_PriceSupplierData pricData = new B_PriceSupplierData();
-				
-		try {
-			pricData.setRecordid(key);
-			pricData = (B_PriceSupplierData)dao.FindByPrimaryKey(pricData);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			pricData = null;
-		}
-		
-		return pricData;
-	}
-	
-	private boolean SupplierPriceExistCheck(HttpServletRequest request,
-			String materialId,
-			String supplierId,
-			B_PriceSupplierData oldPriceData) throws Exception {
-			
-		boolean rtnValue = false;
-		
-		//查找历史最低单价
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("SupplierPriceExistCheck");
-		userDefinedSearchCase.put("keywords1", materialId);
-		//userDefinedSearchCase.put("keywords2", supplierId);
-		baseQuery = new BaseQuery(request, dataModel);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0,0);	
-		
-		//查询结果判断
-		//oldPriceData = baseQuery.getys
-		rtnValue =dataModel.getRecordCount()>0?true:false;
-		
-		return rtnValue;
-		
-	}
+		List<B_PriceSupplierData> priceList = null;
+		B_PriceSupplierData pricedt = null;
 
+		String where = " materialId = '" + materialId +
+				"' AND supplierId = '" + supplierId +
+				"' AND deleteFlag = '0' ";		
+
+		priceList = (List<B_PriceSupplierData>)dao.Find(where);
+		
+		if(priceList != null && priceList.size() > 0)
+			pricedt = priceList.get(0);	
+			
+		return pricedt;
+	}
 	
 }

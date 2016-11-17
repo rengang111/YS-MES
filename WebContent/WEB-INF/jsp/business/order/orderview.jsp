@@ -69,7 +69,7 @@
 	    			var rtn = "";
 	    			var space = '&nbsp;';
 	    			rtn= "<a href=\"#\" onClick=\"orderReview2('" + row[1] +"','"+ row[2] + "')\">做单资料</a>";
-	    			rtn = rtn+ space + "<a href=\"#\" onClick=\"orderReview('" + row[1] +"','"+ row[2] + "')\">采购方案</a>";
+	    			rtn = rtn+ space + "<a href=\"#\" onClick=\"AddBomPlan('" + row[1] +"','"+ row[2] + "')\">BOM方案</a>";
 	    			return rtn;
 	    	  }}
 			  ] 	
@@ -124,13 +124,18 @@
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=edit");
 			$('#orderForm').submit();
 		});
-		
 
 		//重设显示窗口(iframe)高度
 		iFramAutoSroll();
 
 	});
 	
+	function AddBomPlan(YSId,materialId) {
+
+		var url = '${ctx}/business/bom?methodtype=create&YSId=' + YSId+'&materialId='+materialId;
+
+		location.href = url;
+	}
 	
 </script>
 

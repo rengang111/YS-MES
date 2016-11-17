@@ -248,7 +248,8 @@ public class BaseDAO {
 				if (stm != null) {
 					stm.close();
 				}
-				connection.close();
+				//connection.close();
+				BaseAbstractDao.closeConnection(connection, null);
 				if (SysException != null) {
 					throw SysException;
 				}
@@ -362,7 +363,8 @@ public class BaseDAO {
 				if (stm != null) {
 					stm.close();
 				}
-				connection.close();
+				//connection.close();
+				BaseAbstractDao.closeConnection(connection, null);
 				if (SysException != null) {
 					throw SysException;
 				}
@@ -485,7 +487,8 @@ public class BaseDAO {
 				if (stm != null) {
 					stm.close();
 				}
-				connection.close();
+				//connection.close();
+				BaseAbstractDao.closeConnection(connection, null);
 				if (SysException != null) {
 					throw SysException;
 				}

@@ -1,4 +1,4 @@
-package com.ys.business.action.order;
+package com.ys.business.action.bom;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,27 +16,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.system.action.common.BaseAction;
+import com.ys.business.action.model.bom.BomPlanModel;
 import com.ys.business.action.model.material.MaterialModel;
-import com.ys.business.action.model.order.OrderModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.business.service.bom.BomService;
 import com.ys.business.service.order.OrderService;
 import com.ys.system.action.model.login.UserInfo;
 
 
 @Controller
 @RequestMapping("/business")
-public class OrderAction extends BaseAction {
+public class BomAction extends BaseAction {
 	
-	@Autowired OrderService orderService;
+	@Autowired BomService bomService;
+	@Autowired HttpServletRequest request;
 	
-	OrderModel orderModel= new OrderModel();
-
 	UserInfo userInfo = new UserInfo();
+	BomPlanModel reqModel = new BomPlanModel();
+	Model model;
 	
-	@RequestMapping(value="/order")
+	@RequestMapping(value="/bom")
 	public String init(
 			@RequestBody String data, 
-			@ModelAttribute("orderForm") OrderModel reqModel, 
+			@ModelAttribute("bomForm") BomPlanModel bom, 
 			BindingResult result,
 			Model model, 
 			HttpSession session, 
@@ -46,6 +48,10 @@ public class OrderAction extends BaseAction {
 		String type = request.getParameter("methodtype");
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
+		
+		bomService = new BomService(model,request,bom,userInfo);
+		reqModel = bom;
+		this.model = model;
 		
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
@@ -62,24 +68,30 @@ public class OrderAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				rtnUrl = "/business/order/ordermain";
+				rtnUrl = "/business/bom/bomplanmain";
 				break;				
 			case "search":
-				dataMap = doSearchOrderList(data, request);
+				dataMap = doSearchBomList(data);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "create":
-				doCreate(request,reqModel,model);
-				rtnUrl = "/business/order/orderadd";
+				doCreate();
+				rtnUrl = "/business/bom/bomplanadd";
 				break;
 			case "insert":
-				doInsert(reqModel,model, request);
-				rtnUrl = "/business/order/orderview";
-				break;				
+				doInsert();
+				rtnUrl = "/business/bom/bomplanview";
+				break;
+							
 			case "detailView":
-				doOrderView(request,model);
-				rtnUrl = "/business/order/orderview";
-				break;				
+				doBomDetailView();
+				rtnUrl = "/business/bom/bomplanview";
+				break;	
+			case "copy":
+				doCopy();
+				rtnUrl = "/business/bom/bomplanadd";
+				break;	
+				/*
 			case "edit":
 				doEdit(reqModel,request,model);
 				rtnUrl = "/business/order/orderedit";
@@ -96,7 +108,12 @@ public class OrderAction extends BaseAction {
 				dataMap = doCustomerOrderMAXId(data, request);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "getMaterialList"://物料最新编号查询
+				*/
+			case "getSupplierPriceList"://供应商编号查询
+				dataMap = doSupplierPriceList(request);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getMaterialPriceList"://物料编号查询
 				dataMap = doMaterialList(request);
 				printOutJsonObj(response, dataMap);
 				break;
@@ -110,7 +127,7 @@ public class OrderAction extends BaseAction {
 	@RequestMapping(value="/orderView")
 	public ModelAndView orderView(
 			@RequestBody String data, 
-			@ModelAttribute("orderForm") OrderModel reqModel, 
+			@ModelAttribute("orderForm") BomModel reqModel, 
 			BindingResult result,
 			Model model, 
 			HttpSession session, 
@@ -133,15 +150,15 @@ public class OrderAction extends BaseAction {
 	}
 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearchOrderList(@RequestBody String data, 
-			HttpServletRequest request){
+	public HashMap<String, Object> doSearchBomList(
+			@RequestBody String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = orderService.getOrderList(request, data);
+			dataMap = bomService.getBomList(data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -156,50 +173,16 @@ public class OrderAction extends BaseAction {
 		return dataMap;
 	}
 
-	public void doOrderView( 
-			HttpServletRequest request,
-			Model model){
-		
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		
-		try {
-			String PIId = request.getParameter("PIId");
-			//dataMap = orderService.getOrderViewByPIId(request,model,PIId);
-			dbData = orderService.getOrderViewByPIId(request,PIId);
-
-			model.addAttribute("order",  dbData.get(0));
-			model.addAttribute("detail", dbData);
-	
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
+	public void doCopy() throws Exception{
+			
+		model = bomService.copyBomPlan();
+			
 	}
 
-	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doCustomerSearch(@RequestBody String data, 
-			HttpServletRequest request){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
-		
-		try {
-			dataMap = orderService.getCustomer(request, data);
+	public void doBomDetailView() throws Exception{
+				
+		model = bomService.getBomDetailView();
 			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -210,7 +193,7 @@ public class OrderAction extends BaseAction {
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = orderService.getOrderSubIdByParentId(request, data);
+			dataMap = bomService.getOrderSubIdByParentId(request, data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -227,8 +210,7 @@ public class OrderAction extends BaseAction {
 	
 	/*
 	 * 
-	 */
-	
+	 */	
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doMaterialList(
 			HttpServletRequest request){
@@ -237,7 +219,32 @@ public class OrderAction extends BaseAction {
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = orderService.getMaterialList(request);
+			dataMap = bomService.getMaterialList(request);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	/*
+	 * doSupplierPriceList
+	 */	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doSupplierPriceList(
+			HttpServletRequest request){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = bomService.getSupplierPriceList(request);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -252,38 +259,31 @@ public class OrderAction extends BaseAction {
 		return dataMap;
 	}
 
-	public void doCreate(
-			HttpServletRequest request,
-			OrderModel reqModel,
-			Model model){
+	public void doCreate() throws Exception{
 		
-		reqModel = orderService.createOrder(request,reqModel);
-		model.addAttribute("orderForm", reqModel);
+		model = bomService.createBomPlan();
 		
 	}
 	
-	public void doInsert(
-			OrderModel reqModel,
-			Model model,
-			HttpServletRequest request) throws Exception {
+	public void doInsert() throws Exception {
 
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
 		
-		model = orderService.insert(reqModel,model, request,userInfo);
+		model = bomService.insert();
 		
 		//返回到明细查看页面
-		String PIId = reqModel.getOrder().getPiid();
-		dbData = orderService.getOrderViewByPIId(request,PIId);
+		//String PIId = reqModel.getOrder().getPiid();
+		//dbData = bomService.getOrderViewByPIId(request,PIId);
 
-		model.addAttribute("order",  dbData.get(0));
-		model.addAttribute("detail", dbData);
+		//model.addAttribute("order",  dbData.get(0));
+		//model.addAttribute("detail", dbData);
 		
 	}		
 	
 	
 	public void doEdit(
-			OrderModel reqModel, 
+			BomPlanModel reqModel, 
 			HttpServletRequest request,
 			Model model){
 
@@ -294,9 +294,9 @@ public class OrderAction extends BaseAction {
 						new ArrayList<HashMap<String, String>>();
 				
 				String PIId = reqModel.getOrder().getPiid();
-				dbData = orderService.getOrderViewByPIId(request,PIId);
+				//dbData = bomService.getOrderViewByPIId(PIId);
 				
-				reqModel = orderService.createOrder(request, reqModel);
+				//reqModel = bomService.createOrder(request, reqModel);
 
 				model.addAttribute("order",  dbData.get(0));
 				model.addAttribute("detail", dbData);
@@ -308,21 +308,21 @@ public class OrderAction extends BaseAction {
 	}	
 	
 	public void doUpdate(
-			OrderModel reqModel,
+			BomPlanModel reqModel,
 			Model model,
 			HttpServletRequest request) throws Exception {
 
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
 		
-		model = orderService.update(reqModel,model, request,userInfo);
+		//model = bomService.update(reqModel,model, request,userInfo);
 		
 		//返回到明细查看页面
 		String PIId = reqModel.getOrder().getPiid();
-		dbData = orderService.getOrderViewByPIId(request,PIId);
+		//dbData = bomService.getOrderViewByYSId(request,PIId);
 
 		model.addAttribute("order",  dbData.get(0));
-		model.addAttribute("detail", dbData);
+		//model.addAttribute("detail", dbData);
 		
 		
 	}	

@@ -2,7 +2,12 @@ package com.ys.business.service.common;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.beanutils.BeanUtils;
 
 import com.ys.business.action.model.common.TableFields;
 import com.ys.system.action.model.login.UserInfo;
@@ -93,5 +98,6 @@ public class BusinessService {
 
 		return rtnCode;
 	}
+	
 				
 }

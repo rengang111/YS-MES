@@ -21,15 +21,16 @@ public class DicUtil {
 	public static final String UNITPROPERTY = "A7";
 	public static final String UNITTYPE = "A8";
 	public static final String MENUTYPE = "A9";
-	public static final String ORGANTYPE = "JGLB";
-	public static final String MEASURESTYPE = "JLDW";
-	public static final String CURRENCY = "Z4";
-	public static final String LOADINGPORT = "B3";
-	public static final String DELIVERYPORT = "Z6";
+	public static final String ORGANTYPE = "机构类别";
+	public static final String MEASURESTYPE = "计量单位";
+	public static final String CURRENCY = "币种";
+	public static final String LOADINGPORT = "出运港";
+	public static final String DELIVERYPORT = "目的港";
+	public static final String MANAGERATE = "经管费率";
 	
 	//TODO
-	public static final String DENOMINATIONCURRENCY = "B1";
-	public static final String SHIPPINGCASE = "B2";
+	public static final String DENOMINATIONCURRENCY = "币种";
+	public static final String SHIPPINGCASE = "出运条件";
 	public static final String PORT = "B3";
 	
 	//HashMap通过id查找

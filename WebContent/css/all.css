@@ -550,3 +550,7 @@ h2 {
 	z-index:9999;
 }
 
+input.error { background-color: red;}
+input.bgnone { background-color: transparent;}
+input.bgwhite { background-color: #fff; }
+input.bsolid { border: 1px solid #dadada; }

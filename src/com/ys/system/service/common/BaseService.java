@@ -1,5 +1,10 @@
 package com.ys.system.service.common;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.beanutils.BeanUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -69,4 +74,46 @@ public class BaseService {
 		String fileName = "/setting/messages_zh_CN";
 		return BaseQuery.getContent(fileName, key);
 	}
+	
+	/*
+	 * mapToBean
+	 * parm:map
+	 */
+	public Object mapToObject(
+			Map<String, Object> map, 
+			Class<?> beanClass)  throws Exception {    
+        
+		if (map == null || beanClass == null) { 
+            return null;  
+		}		
+        Object obj = beanClass.newInstance();  
+  
+        BeanUtils.populate(obj, map);  
+  
+        return obj;  
+	}  
+	
+
+	/*
+	 * mapToBean
+	 * parm:map
+	 */
+	public Object AaaryListMapToObject(
+			ArrayList<HashMap<String, String>> ArrayMap, 
+			Class<?> beanClass)  throws Exception {    
+		
+		ArrayList rtnList = new ArrayList();
+        		
+		if (ArrayMap == null || beanClass == null) { 
+            return null;  
+		}	
+		int i = 0;
+		for(HashMap<String, String> map:ArrayMap){
+			rtnList.add(i,mapToObject((Map) map,beanClass));
+			i++;
+		}
+         
+  
+        return rtnList;  
+	} 
 }

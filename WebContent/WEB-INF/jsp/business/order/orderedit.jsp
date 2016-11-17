@@ -300,10 +300,7 @@
 	function foucsInit(){
 		
 		$("input:text[type='text']")
-		//.not(".cash") 
 		.focus(function(){
-
-			$(this).val($(this).val());
 		    $(this).select();
 		});
 

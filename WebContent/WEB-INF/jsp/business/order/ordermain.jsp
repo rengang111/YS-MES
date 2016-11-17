@@ -98,7 +98,7 @@
 				    		{"targets":10,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';
-				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">查看</a>"+space;
+				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">查看</a>";
 				    			return rtn;
 				    		}}			           
 			         	] 

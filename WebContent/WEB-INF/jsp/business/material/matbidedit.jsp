@@ -69,6 +69,11 @@
 		$("#attribute3").attr('readonly', "true");
 		$("#attribute2").attr('readonly', "true");
 
+		$("#price\\.price").blur(function(){
+			
+			$(this).val(floatToCurrency($(this).val()));
+		});
+		
 		$("#return").click(function() {
 
 					//alert(999);
@@ -219,7 +224,7 @@
 				<tr>
 					<td  width="100px"  class="label"><label>最新报价：</label></td>
 					<td>
-						<form:input path="price.price" class="short required" /></td>
+						<form:input path="price.price" class="short required cash" /></td>
 
 					<td class="label"><label>报价单位</label></td>
 					<td><form:input path="price.priceunit"

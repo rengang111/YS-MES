@@ -8,9 +8,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.cglib.core.ReflectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -99,42 +102,13 @@ public class OrderService extends BaseService {
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		modelMap.put("unitList",doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
+		modelMap.put("unitList",util.getListOption(DicUtil.MEASURESTYPE, ""));
 		
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;
 	}
 	
-/*
-	public HashMap<String, Object> supplierPriceView(HttpServletRequest request, 
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		data = URLDecoder.decode(data, "UTF-8");
-
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("supplierPriceList");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-
-		String materialId  = getJsonData(data, "materialid");
-
-		userDefinedSearchCase.put("keywords1", materialId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
-		
-		//modelMap.put("unitList",doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
-		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
-	}
-*/
 	public ArrayList<HashMap<String, String>> getOrderViewByPIId(
 			HttpServletRequest request,
 			String PIId ) throws Exception {
@@ -154,41 +128,51 @@ public class OrderService extends BaseService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		modelMap = baseQuery.getYsQueryData(0, 0);
 		
-		//model.addAttribute("order", dataModel.getYsViewData().get(0));
-		//model.addAttribute("detail", dataModel.getYsViewData());
-		
-		return modelMap;
-	}
-		
-
-	public HashMap<String, Object> supplierPriceHistory(
-			HttpServletRequest request, 
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		data = URLDecoder.decode(data, "UTF-8");
-
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("supplierPriceHistory");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-
-		String supplierId  = request.getParameter("supplierId");
-
-		userDefinedSearchCase.put("keywords1", supplierId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
-			
-		modelMap.put("data", dataModel.getYsViewData());
-		
 		return modelMap;
 	}
 	
 
+	@SuppressWarnings("unchecked")
+	private List<B_OrderDetailData> getOrderDetailByPIId(String where){
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+		List<B_OrderDetailData> dbList = new ArrayList<B_OrderDetailData>();
+				
+		try {
+
+			dbList = (List<B_OrderDetailData>)dao.Find(where);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dbList = null;
+		}
+		
+		return dbList;
+	}
+	
+	/*
+	public ArrayList<HashMap<String, String>> getOrderDetailByPIId(
+			HttpServletRequest request,
+			String PIId ) throws Exception {
+		
+		ArrayList<HashMap<String, String>> modelMap = null;
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		BaseQuery baseQuery = null;
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderDetailByPIId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+
+		userDefinedSearchCase.put("keywords1", PIId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsQueryData(0, 0);
+		
+		return modelMap;
+	}
+	*/
+	
 	public HashMap<String, Object> getCustomer(HttpServletRequest request, 
 			String data) throws Exception {
 		
@@ -219,34 +203,6 @@ public class OrderService extends BaseService {
 
 		
 		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
-	}
-	
-	
-	public HashMap<String, Object> getSupplierList(
-			HttpServletRequest request, 
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		data = URLDecoder.decode(data, "UTF-8");
-
-
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("getSupplierList");
-		
-		String key ="";
-		baseQuery = new BaseQuery(request, dataModel);
-		String sql = baseQuery.getSql();
-		sql = sql.replace("?", key);
-		baseQuery.getYsQueryData(0,0);	 
-		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		modelMap.put("retValue", "success");
 		
 		return modelMap;
 	}
@@ -292,8 +248,7 @@ public class OrderService extends BaseService {
 	 * 
 	 */
 	public HashMap<String, Object> getMaterialList(
-			HttpServletRequest request, 
-			String data) throws Exception {
+			HttpServletRequest request) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
@@ -320,239 +275,6 @@ public class OrderService extends BaseService {
 		return modelMap;
 	}
 	
-	/*
-	 * 1.显示当前选中物料的基本信息
-	 * 2.显示相关的所有子编码信息(N条数据) 
-	 */	
-	public Model viewPrice(
-			HttpServletRequest request,
-			Model model,
-			String recordId,
-			String parentId) {
-		
-		MaterialModel Matmodel = new MaterialModel();
-
-		String unitName = "";
-		
-		try {
-			
-
-			B_PriceSupplierDao priceDao = new B_PriceSupplierDao();
-			B_PriceSupplierData pricData = new B_PriceSupplierData();
-	
-		
-			pricData.setRecordid(recordId);
-			pricData = (B_PriceSupplierData)priceDao.FindByPrimaryKey(pricData);
-
-			
-			//选择数据明细内容
-			Matmodel.setPrice(pricData);
-			//计量单位
-			Matmodel.setUnitname(unitName);
-			//Matmodel.setUnit(pricData.getUnit());
-			Matmodel.setCurrencyList(util.getListOption(DicUtil.CURRENCY, ""));
-				
-			Matmodel.setEndInfoMap("098", "0001", "");
-			
-		}
-		catch(Exception e) {
-			Matmodel.setEndInfoMap(SYSTEMERROR, "err001", parentId);
-		}
-		
-		model.addAttribute("material", Matmodel);
-		
-		return model;
-		
-	}
-	
-	/*
-	 * 1.显示当前选中物料的基本信息
-	 * 2.显示相关的所有子编码信息(N条数据) 
-	 */
-	
-	public Model view(
-			HttpServletRequest request,
-			Model model,
-			String recordId,
-			String parentId) {
-		MaterialModel Matmodel = new MaterialModel();
-		B_MaterialData FormDetail = new B_MaterialData();
-
-
-		String shareModel = "";
-		String unitName = "";
-		
-		try {
-			
-				
-			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-			BaseModel dataModel = new BaseModel();
-			BaseQuery baseQuery = null;
-
-			dataModel.setQueryFileName("/business/material/materialquerydefine");
-			dataModel.setQueryName("materialList");
-			
-			baseQuery = new BaseQuery(request, dataModel);
-			
-			userDefinedSearchCase.put("keywords1", parentId);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			baseQuery.getYsQueryData(0, 0);	 
-			
-			List<B_MaterialData> list = new ArrayList<B_MaterialData>();
-			
-			if(dataModel!=null & dataModel.getRecordCount() > 0)
-			{				
-				HashMap<String, String> map = 
-						(HashMap<String, String>)dataModel.getYsViewData().get(0);
-
-				for(int i=0;i<dataModel.getRecordCount();i++){
-					
-					map = (HashMap<String, String>)dataModel.getYsViewData().get(i);
-					B_MaterialData db = new B_MaterialData();
-
-					//定位到选择的那条数据
-					if(map.get("recordId").equals(recordId)){
-
-						FormDetail.setRecordid(map.get("recordId"));
-						FormDetail.setMaterialid(map.get("materialId"));
-						FormDetail.setMaterialname(map.get("materialName"));
-						FormDetail.setCategoryid(map.get("categoryId"));
-						FormDetail.setDescription(map.get("description"));
-						FormDetail.setSharemodel(map.get("shareModel"));
-						FormDetail.setUnit(map.get("unit"));
-						Matmodel.setAttribute1(map.get("categoryId"));
-						Matmodel.setAttribute2(map.get("categoryName"));
-						shareModel = map.get("shareModel");
-						unitName = map.get("dicName");
-					}
-					db.setRecordid(map.get("recordId"));
-					db.setSubid(map.get("subId"));
-					db.setSubiddes(map.get("subIdDes"));
-					db.setParentid(map.get("parentId"));
-					list.add(db);
-				}	
-					
-			}
-			//选择数据明细内容
-			Matmodel.setMaterial(FormDetail);
-			//子编号信息
-			Matmodel.setMaterialLines(list);
-
-			//计量单位
-			Matmodel.setUnitname(unitName);
-			Matmodel.setUnit(FormDetail.getUnit());
-			Matmodel.setUnitList(doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
-				
-			Matmodel.setShareModelList(shareModel.split(","));
-			Matmodel.setEndInfoMap("098", "0001", "");
-			
-		}
-		catch(Exception e) {
-			Matmodel.setEndInfoMap(SYSTEMERROR, "err001", parentId);
-		}
-		
-		model.addAttribute("material", Matmodel);
-		
-		return model;
-		
-	}
-	
-	/*
-	 * 1.新增一条物料单价数据,包括供应商信息处理(一条数据)
-	 *//*
-	public Model insertPrice(
-			MaterialModel reqFormBean,
-			Model rtnModel,
-			HttpServletRequest request,
-			UserInfo userInfo) throws Exception  {
-		
-		ts = new BaseTransaction();
-		
-		try {
-			
-			ts.begin();
-			
-			B_PriceSupplierDao priceDao = new B_PriceSupplierDao();
-			B_PriceSupplierData reqData = new B_PriceSupplierData();
-			B_PriceSupplierData DBData = new B_PriceSupplierData();
-			
-			reqData = (B_PriceSupplierData)reqFormBean.getPrice();
-			
-			String recordeId = reqData.getRecordid();
-			String guid = "";
-			TableFields commFields=null;
-			
-			//判断该供应商是否已有报价
-			DBData =prePriceCheck(recordeId);
-			boolean blPrice = DBData ==null?false:true;
-			if(blPrice){
-
-				//更新单价表
-				commFields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_UPD,"MaterialUpdate", userInfo);
-
-				DBData.setUpdFields(commFields);
-				DBData.setPrice(reqData.getPrice());
-				DBData.setCurrency(reqData.getCurrency());
-				DBData.setPriceunit(reqData.getPriceunit());
-				DBData.setPricedate(reqData.getPricedate());
-				DBData.setPricesource(BusinessConstants.PRICESOURCE_OTHER);
-				DBData.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
-				
-				priceDao.Store(DBData);	
-				
-				//插入历史表
-				commFields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_INS,"MaterialUpdate", userInfo);
-				
-				guid = BaseDAO.getGuId();
-				DBData.setRecordid(guid);
-				DBData.setInsFields(commFields);
-				
-				priceDao.CreateHistory(DBData);
-				
-			}else{
-
-				//插入单价表				
-				//新增数据的价格来源设为:其他
-				commFields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_INS,"MaterialInsert", userInfo);
-	
-				guid = BaseDAO.getGuId();
-				reqData.setRecordid(guid);
-				reqData.setInsFields(commFields);
-				reqData.setPricesource(BusinessConstants.PRICESOURCE_OTHER);	
-				reqData.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
-	
-				priceDao.Create(reqData);	
-				
-
-				//插入历史表
-				commFields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_INS,"MaterialInsert", userInfo);
-				
-				guid = BaseDAO.getGuId();
-				reqData.setRecordid(guid);
-				reqData.setInsFields(commFields);
-				
-				priceDao.CreateHistory(reqData);	
-			}
-
-			ts.commit();
-			
-			reqFormBean.setEndInfoMap(NORMAL, "suc001", "");
-		}
-		catch(Exception e) {
-			ts.rollback();
-			System.out.println(e.getMessage());
-			reqFormBean.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
-		
-		rtnModel.addAttribute("material",reqFormBean);
-		
-		return rtnModel;
-	}	
-	*/
 	
 	/*
 	 * 1.物料新增处理(一条数据)
@@ -590,6 +312,8 @@ public class OrderService extends BaseService {
 					data.getMaterialid() != ""){
 
 					insertOrderDetail(data, YSMaxid,piId, userInfo);
+					
+					YSMaxid++;
 								
 				}	
 			
@@ -634,7 +358,7 @@ public class OrderService extends BaseService {
 	/*
 	 * 订单详情插入处理
 	 */
-	public void insertOrderDetail(
+	private void insertOrderDetail(
 			B_OrderDetailData newData,
 			int YSMaxid ,
 			String piId,
@@ -644,30 +368,23 @@ public class OrderService extends BaseService {
 
 		String parentid = BusinessService.getYSCommCode();
 		
-		//
-		if(newData.getMaterialid() != null && 
-		   newData.getMaterialid() != ""){
-
-			String ysid = BusinessService.getYSFormatCode(YSMaxid,true);
-				
-			 fields = BusinessService.updateModifyInfo
-					(Constants.ACCESSTYPE_INS,"OrderDetailInsert", userInfo);
-
-			guid = BaseDAO.getGuId();
-			newData.setRecordid(guid);
-			newData.setInsFields(fields);
-			newData.setParentid(parentid);
-			newData.setSubid(String.valueOf(YSMaxid+1));
-			newData.setPiid(piId);
-			newData.setYsid(ysid);
+		String ysid = BusinessService.getYSFormatCode(YSMaxid,true);
 			
-			dao.Create(newData);
-			
-			YSMaxid++;
-		}	
+		 fields = BusinessService.updateModifyInfo
+				(Constants.ACCESSTYPE_INS,"OrderDetailInsert", userInfo);
+
+		guid = BaseDAO.getGuId();
+		newData.setRecordid(guid);
+		newData.setInsFields(fields);
+		newData.setParentid(parentid);
+		newData.setSubid(String.valueOf(YSMaxid+1));
+		newData.setPiid(piId);
+		newData.setYsid(ysid);
+		
+		dao.Create(newData);
 
 	}	
-
+	
 	/*
 	 * 1.订单基本信息更新处理(1条数据)
 	 * 2.订单详情 新增/更新/删除 处理(N条数据)
@@ -682,9 +399,9 @@ public class OrderService extends BaseService {
 		
 		try {
 			
-			int YSMaxid = getYSIdByParentId(request);
-			
 			ts.begin();
+			
+			int YSMaxid = getYSIdByParentId(request);
 				
 			B_OrderData reqOrder = (B_OrderData)reqForm.getOrder();
 			
@@ -708,29 +425,30 @@ public class OrderService extends BaseService {
 			
 			//根据画面的PiId取得DB中更新前的订单详情 
 			//key:piId
-			ArrayList<HashMap<String, String>> oldDetailList = null;
+			List<B_OrderDetailData> oldDetailList = null;
+
 			String piId = reqOrder.getPiid();
-			
-			oldDetailList = getOrderViewByPIId(request,piId);
+			String where = " piid = '"+piId +"'" + " AND deleteFlag = '0' ";
+			oldDetailList = getOrderDetailByPIId(where);
 						
 			//页面数据的recordId与DB匹配
 			//key存在:update;key不存在:insert;
 			//剩下未处理的DB数据:delete
 			for(B_OrderDetailData newData:newDetailList ){
 
-				String recordid = newData.getRecordid();	
+				String newMaterialid = newData.getMaterialid();	
 
 				boolean insFlag = true;
-				for(HashMap<String, String> old:oldDetailList ){
-					String id = old.get("detailRecordId");
+				for(B_OrderDetailData oldData:oldDetailList ){
+					String id = oldData.getMaterialid();
 					
-					if(recordid.equals(id)){
+					if(newMaterialid.equals(id)){
 						
 						//更新处理
-						updateOrderDetail(newData,userInfo);						
+						updateOrderDetail(newData,oldData,userInfo);						
 						
 						//从old中移除处理过的数据
-						oldDetailList.remove("detailRecordId");
+						oldDetailList.remove(oldData);
 						
 						insFlag = false;
 						
@@ -798,100 +516,60 @@ public class OrderService extends BaseService {
 	}
 
 	/*
-	 * 订单基本信息更新处理
+	 * 订单详情更新处理
 	 */
-	public void updateOrderDetail(B_OrderDetailData detail,UserInfo userInfo) 
+	private void updateOrderDetail(
+			B_OrderDetailData newData,
+			B_OrderDetailData dbData,
+			UserInfo userInfo) 
 			throws Exception{
+		
+		B_OrderDetailDao dao = new B_OrderDetailDao();							
+		
+		fields = BusinessService.updateModifyInfo
+				(Constants.ACCESSTYPE_UPD,"OrderDetailUpdate", userInfo);
 
-		String recordid = detail.getRecordid();		
-		B_OrderDetailDao dao = new B_OrderDetailDao();
+		//处理共通信息
+		dbData.setUpdFields(fields);
+		//获取页面数据
+		dbData.setQuantity(newData.getQuantity());
+		dbData.setPrice(newData.getPrice());;
+		dbData.setTotalprice(newData.getTotalprice());
 		
-		//取得更新前数据		
-		B_OrderDetailData dbData = getOrderDetailByRecordId(recordid);					
-		
-		if(null != dbData){
-			
-			fields = BusinessService.updateModifyInfo
-					(Constants.ACCESSTYPE_UPD,"OrderDetailUpdate", userInfo);
-	
-			//处理共通信息
-			dbData.setUpdFields(fields);
-			//获取页面数据
-			dbData.setQuantity(detail.getQuantity());
-			dbData.setPrice(detail.getPrice());;
-			dbData.setTotalprice(detail.getTotalprice());
-			
-			dao.Store(dbData);
-		}
+		dao.Store(dbData);
+
 	}
 	
 	/*
 	 * 订单详情删除处理
 	 */
-	public void deleteOrderDetail(ArrayList<HashMap<String, String>> detailList,UserInfo userInfo) 
+	public void deleteOrderDetail(List<B_OrderDetailData> oldDetailList,UserInfo userInfo) 
 			throws Exception{
 
 		B_OrderDetailDao dao = new B_OrderDetailDao();
 		
-		for(HashMap<String, String> detail:detailList){
+		for(B_OrderDetailData detail:oldDetailList){
 			
-			String recordid = detail.get("recordid");		
+			//String recordid = detail.getRecordid();		
 			
 			//取得更新前数据		
-			B_OrderDetailData dbData = getOrderDetailByRecordId(recordid);					
+			//B_OrderDetailData dbData = getOrderDetailByRecordId(recordid);	
+			//B_OrderDetailData dbData = detail;					
 			
-			if(null != dbData){
+			if(null != detail){
 				
 				fields = BusinessService.updateModifyInfo
 						(Constants.ACCESSTYPE_DEL,"OrderDetailDelete", userInfo);
 		
 				//处理共通信息
-				dbData.setUpdFields(fields);
+				detail.setUpdFields(fields);
 				
-				dao.Store(dbData);
+				dao.Store(detail);
 			}
 		}
 	}
 	
-	
-	/*
-	 * 1.显示当前选中物料的基本信息
-	 * 2.显示相关的所有子编码信息(N条数据) 
-	 */
-	
-	public Model SelectSupplier(
-			MaterialModel Matmodel,
-			HttpServletRequest request,
-			Model model) {
-		B_MaterialData dbData = new B_MaterialData();
-		B_MaterialDao dao = new B_MaterialDao();
 
-		String key = request.getParameter("recordId");
-		String categoryName = request.getParameter("categoryName");	
-
-		try{
-			
-			categoryName = new String(categoryName.getBytes("ISO8859-1"), "UTF-8");
-			
-			dbData.setRecordid(key);
-			dbData = (B_MaterialData)dao.FindByPrimaryKey(dbData);
-			Matmodel.setMaterial(dbData);
-			
-			Matmodel.setEndInfoMap("098", "0001", "");
-			Matmodel.setMaterialid(dbData.getMaterialid());
-			Matmodel.setRecordId(dbData.getRecordid());
-			Matmodel.setMaterialname(dbData.getMaterialname());
-			Matmodel.setCategoryid(dbData.getCategoryid());
-			Matmodel.setCategoryname(categoryName);
-			Matmodel.setCurrencyList(util.getListOption(DicUtil.CURRENCY, ""));
-			model.addAttribute("material", Matmodel);
-			
-		}catch(Exception e){
-			
-		}
-		return model;
-		
-	}
 	
 	/*
 	 * 新增物料初始处理
@@ -965,76 +643,6 @@ public class OrderService extends BaseService {
 		return code;
 	}
 	
-	public MaterialModel doOptionChange(String type, String parentCode) {
-		MaterialModel model = new MaterialModel();
-		
-		try {
-			ArrayList<ListOption> optionList = util.getListOption(type, parentCode);
-			model.setUnitList(optionList);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-			model.setUnitList(null);
-		}
-		
-		return model;
-	}
-	
-	private ArrayList<HashMap<String, String>> getOrderDetailbyPiId(
-			HttpServletRequest request, 
-			String key) throws Exception {
-			
-			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-			BaseModel dataModel = new BaseModel();
-			dataModel.setQueryFileName("/business/order/orderquerydefine");
-			dataModel.setQueryName("getOrderDetailbyPiId");
-			BaseQuery baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("keyword", key);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			
-			return baseQuery.getYsQueryData(0, 0);
-						
-	}	
-
-	
-	public MaterialModel doDelete(String data, UserInfo userInfo){
-		
-		MaterialModel model = new MaterialModel();
-		
-		try {
-			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
-	        
-	        bean.executeOrganDelete(data, userInfo);
-	        
-	        model.setEndInfoMap(NORMAL, "", "");
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
-		
-		return model;
-	}
-	
-	
-	public ContactModel getContactDetailInfo(String key) throws Exception {
-		ContactModel model = new ContactModel();
-		B_ContactDao dao = new B_ContactDao();
-		B_ContactData dbData = new B_ContactData();
-		dbData.setId(key);
-		dbData = (B_ContactData)dao.FindByPrimaryKey(dbData);
-		model.setContactData(dbData);
-		model.setCompanyCode(dbData.getCompanycode());
-		
-		//model.setSexList(doOptionChange(DicUtil.ORGANTYPE, "").getCategoryList());
-		
-		model.setEndInfoMap("098", "0001", "");
-		model.setKeyBackup(dbData.getId());
-		
-		return model;
-	}
-	
 	
 	private B_OrderData getOrderByRecordId(String key) throws Exception {
 		B_OrderDao dao = new B_OrderDao();
@@ -1068,50 +676,4 @@ public class OrderService extends BaseService {
 		return dbData;
 	}
 	
-	/*
-	private B_PriceSupplierData prePriceCheck(String key) throws Exception {
-
-		B_PriceSupplierDao dao = new B_PriceSupplierDao();
-		B_PriceSupplierData pricData = new B_PriceSupplierData();
-				
-		try {
-			pricData.setRecordid(key);
-			pricData = (B_PriceSupplierData)dao.FindByPrimaryKey(pricData);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			pricData = null;
-		}
-		
-		return pricData;
-	}
-	
-	private boolean orderDetailExistCheck(HttpServletRequest request,
-			String YSId,
-			String supplierId,
-			B_PriceSupplierData oldPriceData) throws Exception {
-			
-		boolean rtnValue = false;
-		
-		//确认该供应商报价是否存在
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-		dataModel.setQueryFileName("/business/orderquerydefine");
-		dataModel.setQueryName("orderDetailExistCheck");
-		userDefinedSearchCase.put("keywords1", YSId);
-		//userDefinedSearchCase.put("keywords2", supplierId);
-		baseQuery = new BaseQuery(request, dataModel);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0,0);	
-		
-		//查询结果判断
-		//oldPriceData = baseQuery.getys
-		rtnValue =dataModel.getRecordCount()>0?true:false;
-		
-		return rtnValue;
-		
-	}
-
-	*/
 }
