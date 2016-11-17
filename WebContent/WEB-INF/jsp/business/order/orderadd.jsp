@@ -101,9 +101,8 @@
 			var t=$('#example').DataTable();
 			
 			rowIndex = t.row('.selected').index();
-			
-			if(rowIndex.length < 1){
-				
+
+			if(typeof rowIndex == "undefined"){				
 				$().toastmessage('showWarningToast', "请选择要删除的数据。");	
 			}else{
 				
@@ -114,8 +113,8 @@
 				t.row('.selected').remove().draw();
 
 				//随时计算该客户的销售总价
-				totalPrice = Number(totalPrice) - Number(amount);			
-				$('#order\\.totalprice').val(totalPrice);
+				totalPrice = currencyToFloat(totalPrice) - currencyToFloat(amount);			
+				$('#order\\.totalprice').val(floatToCurrency(totalPrice));
 			}
 						
 		}
@@ -159,7 +158,6 @@
 					}, {				
 					}, {				
 					}, {"className":"dt-body-right"				
-					}, {
 					}			
 				]
 			
@@ -168,55 +166,31 @@
 		
 		t.on('change', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
 
-			//获取行号
-			var rowIndex = $(this).parent().parent().find("tr").index(
-					$(this).parent()[0]);
-				
-			//var position = $(this).parent().find("td").eq(9).find("input").text();
 			var $td = $(this).parent().find("td");
 
 			var $oQuantity = $td.eq(4).find("input");
 			var $oPrice = $td.eq(5).find("input");
 			var $oAmount = $td.eq(6).find("input");
 			
-			var price = $oPrice.val();
-			var quantity = $oQuantity.val();
-			var totalOld = $oAmount.val();
-			var totalNew = '';
+			var vPrice = floatToCurrency($oPrice.val());	
+			var fPrice = currencyToFloat($oPrice.val());	
+			var vQuantity = floatToCurrency($oQuantity.val());	
+			var fQuantity = currencyToFloat($oQuantity.val());
+			var fTotalOld = currencyToFloat($oAmount.val());
+			var fTotalNew = currencyToFloat(fPrice * fQuantity);
+			var vTotalNew = floatToCurrency(fTotalNew);
 			
-			//alert('p:'+price+'---q:'+quantity);
-			//var price = $("#orderDetailLines" + position + "\\.price").val();
-			//var quantity = $("#orderDetailLines" + position + "\\.quantity").val();
+			//详情列表显示新的价格
+			$oPrice.val(vPrice);					
+			$oQuantity.val(vQuantity);	
+			$oAmount.val(vTotalNew);	
 
-			if (price.length !=0) {
+			//临时计算该客户的销售总价
+			//首先减去旧的价格			
+			totalPrice = currencyToFloat(totalPrice) - fTotalOld + fTotalNew;
+						
+			$('#order\\.totalprice').val(floatToCurrency(totalPrice));	
 				
-				$oPrice.val(Number(price).toFixed(2));				
-			}	
-		
-			if (price.length !=0 &&  quantity.length !=0) {
-
-				totalNew = Number(price * quantity).toFixed(2);
-				
-				//详情列表显示新的价格
-				$oAmount.val(totalNew);
-				
-				//随时计算该客户的销售总价
-				//首先减去旧的价格
-				//alert('pricelOld:'+totalOld)
-				totalPrice = Number(totalPrice) - Number(totalOld);
-				totalPrice = Number(totalPrice) + Number(totalNew);	
-				
-				//alert('total-2:'+totalPrice)
-				
-				$('#order\\.totalprice').val(totalPrice);
-
-				//var t = $('#example').DataTable();
-				//t.cell(rowIndex, 7).data(amount);
-				//$("#orderDetailLines" + position + "\\.amount").val(amount);
-				
-			} else {
-				return;
-			}
 
 		});
 		
@@ -310,6 +284,10 @@
 
 		//重设显示窗口(iframe)高度
 		iFramAutoSroll();
+		
+		$("input:text").focus (function(){
+		    $(this).select();
+		});
 
 	});
 	
@@ -385,18 +363,12 @@
 							<form:options items="${orderForm.deliveryPortList}" 
 							 itemValue="key" itemLabel="value" />
 						</form:select></td>							
-				</tr>			
+				</tr>
 				<tr>
 					<td width="100px" class="label" >
 						<label >客户订单号：</label></td>
 					<td>
-						<form:input path="order.orderid" class="short required" /></td>
-				
-					<td class="label">
-						<label>销售总价：</label></td>
-					<td>
-						<form:input path="order.totalprice" class="short read-only cash" /></td>
-						
+						<form:input path="order.orderid" class="short required" /></td>									
 					<td class="label">
 						<label>下单日期：</label></td>
 					<td>
@@ -406,6 +378,11 @@
 						<label  >订单交期：</label></td>
 					<td>
 						<form:input path="order.deliverydate" class="short required" /></td>
+
+					<td class="label">
+						<label>销售总价：</label></td>
+					<td>
+						<form:input path="order.totalprice" class="short read-only cash" /></td>
 												
 				</tr>							
 			</table>
@@ -427,12 +404,10 @@
 				<th class="dt-left" width="50px">数量</th>
 				<th class="dt-left" width="50px">销售单价</th>
 				<th class="dt-left" width="100px">销售总价</th>
-				<th class="dt-left" width="150px">操作</th>
 			</tr>
 			</thead>
 			<tfoot>
 				<tr>
-					<th></th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -453,8 +428,7 @@
 					<td><form:input path="orderDetailLines[${i}].quantity" class="cash mini" /></td>							
 					<td><form:input path="orderDetailLines[${i}].price" class="cash mini"  /></td>
 					<td><input type="text" name="orderDetailLines[${i}].totalprice" id="orderDetailLines${i}.totalprice" class="read-only cash short" readonly="readonly"/></td>
-					<td></td>
-					
+				
 					<script type="text/javascript">
 						var index = '${i}';
 						YSSwift = parseInt(YSSwift)+ 1;

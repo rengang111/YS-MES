@@ -29,7 +29,7 @@
 				"lengthChange":false,
 				"lengthMenu":[50,100,200],//设置一页展示20条记录
 				"processing" : false,
-				"serverSide" : true,
+				"serverSide" : false,
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
@@ -83,15 +83,25 @@
 				    		{"targets":0,"render":function(data, type, row){
 								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 		                    }},
+				    		{"targets":3,"render":function(data, type, row){
+				    			
+				    			var name = row["materialName"];
+				    			var shortName = "";
+				    			if(name != null && name.length > 10){	
+			        				shortName =  '<div title="' + name + '">' + 
+			        				name.substr(0,10)+ '...</div>';
+			        			}else{	
+			        				shortName = name;
+			        			}
+				    			return shortName;
+				    		}},
 				    		{"targets":10,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';
 				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">查看</a>"+space;
-				    			//rtn = rtn+ "<a href=\"#\" onClick=\"doEdit('" + row["recordId"] +"','"+ row["parentId"] + "')\">编辑</a>";
 				    			return rtn;
-				    		}}
-			           
-			         ] 
+				    		}}			           
+			         	] 
 			}
 		);
 

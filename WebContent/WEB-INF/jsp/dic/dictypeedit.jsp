@@ -122,10 +122,10 @@
 	function inputCheck() {
 		var str = '';
 
-		str = $('#dictypeid').val();
-		if (!inputStrCheck(str, "代码类ID", 10, 8, false, true)) {
-			return false;
-		}
+		//str = $('#dictypeid').val();
+		//if (!inputStrCheck(str, "代码类ID", 10, 8, false, true)) {
+		//	return false;
+		//}
 		str = $('#dictypename').val();
 		if (!inputStrCheck(str, "代码类名称", 60, 7, false, true)) {
 			return false;

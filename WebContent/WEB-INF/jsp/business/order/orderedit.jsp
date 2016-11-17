@@ -19,8 +19,9 @@
 	var counter = 0;
 	var YSParentId = "";
 	var YSSwift = "";
-	var totalPrice = "";
+	var totalPrice = "0";
 	var shortYear = ""; 
+	var matMsg= "请选择产品!";
 
 	YSSwift = '${orderForm.YSMaxId}';
 	YSParentId = '${orderForm.YSParentId}';
@@ -73,8 +74,8 @@
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="cash mini" /></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      id="orderDetailLines'+rowIndex+'.price"      class="cash mini" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="cash short" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      id="orderDetailLines'+rowIndex+'.price"      class="cash short" /></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short read-only" readonly="readonly"/></td>',				
 								
 								]).draw();
@@ -89,6 +90,8 @@
 
 					//重设显示窗口(iframe)高度
 					iFramAutoSroll();
+						
+					foucsInit();
 				}
 			});
 
@@ -100,8 +103,7 @@
 			
 			rowIndex = t.row('.selected').index();
 			
-			if(rowIndex.length < 1){
-				
+			if(typeof rowIndex == "undefined"){				
 				$().toastmessage('showWarningToast', "请选择要删除的数据。");	
 			}else{
 				
@@ -112,8 +114,8 @@
 				t.row('.selected').remove().draw();
 
 				//随时计算该客户的销售总价
-				totalPrice = Number(totalPrice) - Number(amount);			
-				$('#order\\.totalprice').val(totalPrice);
+				totalPrice = currencyToFloat(totalPrice) - currencyToFloat(amount);			
+				$('#order\\.totalprice').val(floatToCurrency(totalPrice));
 			}
 						
 		}
@@ -165,59 +167,39 @@
 		
 		t.on('change', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
 
-			//获取行号
-			var rowIndex = $(this).parent().parent().find("tr").index(
-					$(this).parent()[0]);
-				
-			//var position = $(this).parent().find("td").eq(9).find("input").text();
 			var $td = $(this).parent().find("td");
 
+			var $oMaterial = $td.eq(2).find("input");
 			var $oQuantity = $td.eq(4).find("input");
 			var $oPrice = $td.eq(5).find("input");
 			var $oAmount = $td.eq(6).find("input");
 			
-			var price = $oPrice.val();
-			var quantity = $oQuantity.val();
-			var totalOld = $oAmount.val();
-			var totalNew = '';
+			var material = $oMaterial.val();
+			var vPrice = floatToCurrency($oPrice.val());	
+			var vQuantity = floatToCurrency($oQuantity.val());
+			var fPrice = currencyToFloat($oPrice.val());		
+			var fQuantity = currencyToFloat($oQuantity.val());
+			var fTotalOld = currencyToFloat($oAmount.val());
+			var fTotalNew = currencyToFloat(fPrice * fQuantity);
+			var vTotalNew = floatToCurrency(fTotalNew);
 			
-			//alert('p:'+price+'---q:'+quantity);
-			//var price = $("#orderDetailLines" + position + "\\.price").val();
-			//var quantity = $("#orderDetailLines" + position + "\\.quantity").val();
-
-			if (price.length !=0) {
-				
-				$oPrice.val(Number(price).toFixed(2));				
-			}	
-		
-			if (price.length !=0 &&  quantity.length !=0) {
-
-				totalNew = Number(price * quantity).toFixed(2);
-				
-				//详情列表显示新的价格
-				$oAmount.val(totalNew);
-				
-				//随时计算该客户的销售总价
-				//首先减去旧的价格
-				//alert('pricelOld:'+totalOld)
-				totalPrice = Number(totalPrice) - Number(totalOld);
-				totalPrice = Number(totalPrice) + Number(totalNew);	
-				
-				//alert('total-2:'+totalPrice)
-				
-				$('#order\\.totalprice').val(totalPrice);
-
-				//var t = $('#example').DataTable();
-				//t.cell(rowIndex, 7).data(amount);
-				//$("#orderDetailLines" + position + "\\.amount").val(amount);
-				
-			} else {
-				return;
+			if(material == ""){
+				$oMaterial.css('background-color','red');
 			}
-
-		});
-		
+					
+			//详情列表显示新的价格
+			$oPrice.val(vPrice);					
+			$oQuantity.val(vQuantity);	
+			$oAmount.val(vTotalNew);			
+			
+			//临时计算该客户的销售总价
+			//首先减去旧的价格			
+			totalPrice = currencyToFloat(totalPrice) - fTotalOld + fTotalNew;
 						
+			$('#order\\.totalprice').val(floatToCurrency(totalPrice));		
+
+		});		
+			
 		t.on('click', 'tr', function() {
 			
 			var rowIndex = $(this).context._DT_RowIndex; //行号			
@@ -242,12 +224,12 @@
 			});
 		}).draw();
 
-	};
+	};//ajax()
 
-	
 	$(document).ready(function() {
 
 		//设置光标项目
+		$("#order\\.piid").attr('readonly', "true");
 		$("#attribute1").attr('readonly', "true");
 		$("#attribute2").attr('readonly', "true");
 		$("#attribute3").attr('readonly', "true");
@@ -258,11 +240,8 @@
 		shortYear = String(number).substr(2); 
 		
 		ajax();
-
-		//alert(3333);
-
+		
 		autocomplete();
-		//alert(4444)
 		
 		//$('#example').DataTable().columns.adjust().draw();
 		
@@ -285,7 +264,8 @@
 		
 		$("#return").click(
 				function() {
-					var url = "${ctx}/business/order";
+					var PIId = '${order.PIId }';
+					var url = "${ctx}/business/order?methodtype=detailView&PIId=" + PIId;
 					location.href = url;		
 				});
 		
@@ -299,7 +279,7 @@
 			
 			$('#order\\.orderdate').val(orderdate);
 			$('#order\\.deliverydate').val(deliverydate);
-			//alert($('#order\\.orderdate').val()+'==='+deliverydate)
+			
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=update");
 			$('#orderForm').submit();
 		});
@@ -307,9 +287,35 @@
 
 		//重设显示窗口(iframe)高度
 		iFramAutoSroll();
+		$('#order\\.currency').val('${order.currencyId }');
+		$('#order\\.shippingcase').val('${order.shippingCaseId }');
+		$('#order\\.loadingport').val('${order.loadingPortId }');
+		$('#order\\.deliveryport').val('${order.deliveryPortId }');
+		
+		//input获取焦点初始化处理
+		foucsInit();
 
-	});
+	});	
 	
+	function foucsInit(){
+		
+		$("input:text[type='text']")
+		//.not(".cash") 
+		.focus(function(){
+
+			$(this).val($(this).val());
+		    $(this).select();
+		});
+
+		$(".cash") .focus(function(){
+			$(this).val(currencyToFloat($(this).val()));
+		    $(this).select();
+		});
+		
+		$(".cash") .blur(function(){
+			$(this).val(floatToCurrency($(this).val()));
+		});
+	}
 	
 </script>
 
@@ -355,7 +361,7 @@
 						
 					<td class="label"><label>币种：</label></td>
 					<td>
-						<form:select path="order.currency">
+						<form:select path="order.currency"  >
 							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
 						</form:select></td>
 				</tr>					
@@ -380,7 +386,7 @@
 						</form:select></td>
 
 					<td class="label"><label>目的港：</label></td>
-					<td><form:select path="order.deliveryport">
+					<td><form:select path="order.deliveryport" >
 							<form:options items="${orderForm.deliveryPortList}" 
 							 itemValue="key" itemLabel="value" />
 						</form:select></td>							
@@ -389,23 +395,19 @@
 					<td width="100px" class="label" >
 						<label >客户订单号：</label></td>
 					<td>
-						<form:input path="order.orderid" class="short required"  value="${order.orderId }" /></td>
-				
-					<td class="label">
-						<label>销售总价：</label></td>
-					<td>
-						<form:input path="order.totalprice" class="short read-only cash"  value="${order.total}" /></td>
-						
+						<form:input path="order.orderid" class="short required"  value="${order.orderId }" /></td>				
 					<td class="label">
 						<label>下单日期：</label></td>
 					<td>
-						<form:input path="order.orderdate" class="short required"  value="${order.orderDate }" /></td>
-					
+						<form:input path="order.orderdate" class="short required"  value="${order.orderDate }" /></td>					
 					<td class="label">
 						<label  >订单交期：</label></td>
 					<td>
 						<form:input path="order.deliverydate" class="short required"  value="${order.deliveryDate }" /></td>
-												
+					<td class="label">
+						<label>销售总价：</label></td>
+					<td>
+						<form:input path="order.totalprice" class="short read-only cash"  value="${order.total}" /></td>																	
 				</tr>							
 			</table>
 			
@@ -442,24 +444,36 @@
 		<tbody>
 			<c:forEach var='order' items='${detail}' varStatus='status'>	
 
-				<tr>
+				<tr>				
 					<td></td>
 					<td><input type="text" name="orderDetailLines[${status.index}].ysid" id="orderDetailLines${status.index}.ysid" value="${order.YSId}" style="width:70px;" class="read-only" readonly="readonly"  /></td>
 					<td><input type="text" name="attributeList1" class="attributeList1"  value="${order.materialId}" />
 						<form:hidden path="orderDetailLines[${status.index}].materialid" value="${order.materialId }"/></td>								
-					<td>${order.materialName}</td>
-					<td><form:input path="orderDetailLines[${status.index}].quantity" class="cash mini" value="${order.quantity}"/></td>							
-					<td><form:input path="orderDetailLines[${status.index}].price" class="cash mini"  value="${order.price}"/></td>
+					<td id="shortName${status.index}">${order.materialName}</td>
+					<td><form:input path="orderDetailLines[${status.index}].quantity" class="cash short" value="${order.quantity}"/></td>							
+					<td><form:input path="orderDetailLines[${status.index}].price" class="cash short"  value="${order.price}"/></td>
 					<td><input type="text" name="orderDetailLines[${status.index}].totalprice" id="orderDetailLines${status.index}.totalprice" value="${order.totalPrice}" class="read-only cash short" readonly="readonly"/></td>
 					
 					<form:hidden path="orderDetailLines[${status.index}].recordid" value="${order.detailRecordId }"/>
 					
 					<script type="text/javascript">
 						var tmp = '${order.totalPrice}';
-						totalPrice = Number(totalPrice) + Number(tmp);	
-						//alert(totalPrice)
+						var materialName = '${order.materialName}';
+						var index = '${status.index}';
+						var shortName='';
+						//产品名称			
+						if(materialName.length > 30){	
+							shortName =  '<div title="' + materialName + '">' + 
+							materialName.substr(0,30)+ '...</div>';
+						}else{	
+							shortName = materialName;
+						}
+						$('#shortName'+index).html(shortName);
+						totalPrice = currencyToFloat(totalPrice) + currencyToFloat(tmp);	
+						//alert("total111:"+totalPrice)
 						counter++;
-					</script>
+					</script>					
+					
 				</tr>
 			</c:forEach>
 			
@@ -479,6 +493,10 @@
 </div>
 </div>
 </body>
+<script type="text/javascript">
+
+
+</script>
 
 <script type="text/javascript">
 
@@ -535,10 +553,10 @@ function autocomplete(){
 			var t = $('#example').DataTable();
 			
 			//产品名称			
-			if(ui.item.name.length > 20){	
+			if(ui.item.name.length > 30){	
 				var shortName =  '<div title="' +
 				ui.item.name + '">' + 
-				ui.item.name.substr(0,20)+ '...</div>';
+				ui.item.name.substr(0,30)+ '...</div>';
 			}else{	
 				var shortName = ui.item.name;
 			}
@@ -547,6 +565,9 @@ function autocomplete(){
 
 			//产品编号
 			$(this).parent().find("input:hidden").val(ui.item.materialId);
+			
+
+			$(this).css('background-color','');
 			
 		},
 

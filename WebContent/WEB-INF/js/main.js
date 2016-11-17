@@ -182,4 +182,78 @@ function iFramNoSroll(){
 function PrefixInteger(num, length) {
 	 return (Array(length).join('0') + num).slice(-length);
 } 
+
+/*
+ * 金额转换成可计算的数字
+ * parm0:金额
+ */
+function currencyToFloat(currency){
+
+	if(currency =="" || currency == "0")
+		return 0;
+	
+	if(typeof currency == "number")
+		return currency;
+	
+	//去掉逗号
+	currency = currency.replace(/,/g, "");
+	
+	//验证数字，包括小数
+	//该函数的返回值要参与计算,所以至少返回 '0'
+	var reg = /^[0-9]+.?[0-9]*$/;
+	if(!reg.test(currency))
+		return 0;		
+	
+	return parseFloat(currency);
+	
+}
+
+function floatToCurrency(value){
+
+	var toFloat = '';
+	
+	if(typeof value == 'number'){
+		toFloat = value;
+	}else{
+		toFloat = currencyToFloat(value);
+	}
+	
+	//转换成float出错的情况,返回原值
+	if(toFloat == 0)
+		return value;
+		
+	var numString = toFloat.toFixed(2);
+	var parts = numString.split('.');
+	var outParts = [];
+	var beforeDecimal = '0';
+	var afterDecimal = '00';
+	var currSegment;
+
+	beforeDecimal = parts[0];
+	afterDecimal = parts[1];
+	
+	while (beforeDecimal.length > 3) {
+		
+		currSegment = beforeDecimal.substring(
+				beforeDecimal.length - 3,
+				beforeDecimal.length);
+		
+		beforeDecimal = beforeDecimal.substring(
+				0,
+				beforeDecimal.length -3);
+		outParts.unshift(currSegment);
+	}
+	
+	if(beforeDecimal.length > 0) {
+		
+		outParts.unshift(beforeDecimal);
+	}
+	
+	return outParts.join(',') + '.' + afterDecimal;
+	
+}
+
+
+		
+	
 	

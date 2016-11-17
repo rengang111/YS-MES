@@ -14,16 +14,6 @@
 <title>订单管理-订单查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
-
-	var options = "";//币种可选项
-	var counter = 5;
-	var YSParentId = "";
-	var YSSwift = "";
-	var totalPrice = "";
-	var shortYear = ""; 
-
-	YSSwift = '${orderForm.YSMaxId}';
-	YSParentId = '${orderForm.YSParentId}';
 	
 	//Form序列化后转为AJAX可提交的JSON格式。
 	$.fn.serializeObject = function() {
@@ -59,21 +49,32 @@
 	        "searching"  : false,
 	       	"language": {"url":"${ctx}/plugins/datatables/chinese.json"},
 	       	
-			"columns" : [ 
-			        	{"className":"dt-body-center"
-					}, {
-					}, {								
-					}, {				
-					}, {			
-					}, {				
-					}, {			
-					}			
-				]
+			"columns" : [{"className":"dt-body-center"}, {}, {}, {}, {}, {}, {},
+			             {"className":"dt-body-center"}
+						],
+			
+			"columnDefs":[
+			  { "targets":3,"render":function(data, type, row){
+	    			var fullName = row[3];
+	    			var shortName = '';
+	    			
+	    			if(fullName.length > 20){	
+	    				var shortName =  '<div title="' + fullName + '">' + fullName.substr(0,20)+ '...</div>';
+	    			}else{	
+	    				var shortName = fullName;
+	    			}	    			
+	    			return shortName;
+	    	  }},
+	    	  { "targets":7,"render":function(data, type, row){
+	    			var rtn = "";
+	    			var space = '&nbsp;';
+	    			rtn= "<a href=\"#\" onClick=\"orderReview2('" + row[1] +"','"+ row[2] + "')\">做单资料</a>";
+	    			rtn = rtn+ space + "<a href=\"#\" onClick=\"orderReview('" + row[1] +"','"+ row[2] + "')\">采购方案</a>";
+	    			return rtn;
+	    	  }}
+			  ] 	
 			
 		}).draw();
-
-
-		
 						
 		t.on('click', 'tr', function() {
 			
@@ -108,16 +109,8 @@
 		$("#attribute1").attr('readonly', "true");
 		$("#attribute2").attr('readonly', "true");
 		$("#attribute3").attr('readonly', "true");
-
-		//日期
-		var mydate = new Date();
-		var number = mydate.getFullYear();
-		shortYear = String(number).substr(2); 
 		
 		ajax();
-
-		//alert(3333);
-
 			
 		$("#return").click(
 				function() {
@@ -191,11 +184,7 @@
 					<td width="100px" class="label" >
 						<label >客户订单号：</label></td>
 					<td>${order.orderId}</td>
-				
-					<td class="label">
-						<label>销售总价：</label></td>
-					<td>${order.total}</td>
-						
+
 					<td class="label">
 						<label>下单日期：</label></td>
 					<td>${order.orderDate}</td>
@@ -203,6 +192,10 @@
 					<td class="label">
 						<label  >订单交期：</label></td>
 					<td>${order.deliveryDate}</td>
+					
+					<td class="label">
+						<label>销售总价：</label></td>
+					<td>${order.total}</td>
 												
 				</tr>							
 			</table>
@@ -218,16 +211,18 @@
 			<thead>				
 			<tr>
 				<th width="1px">No</th>
-				<th class="dt-center" width="100px">耀升编号</th>
+				<th class="dt-center" width="80px">耀升编号</th>
 				<th class="dt-center" width="120px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="100px">销售数量</th>
-				<th class="dt-center" width="100px">销售单价</th>
+				<th class="dt-center" width="80px">销售数量</th>
+				<th class="dt-center" width="50px">销售单价</th>
 				<th class="dt-center" width="100px">销售总价</th>
+				<th class="dt-center" width="120px">操作</th>
 			</tr>
 			</thead>
 			<tfoot>
 				<tr>
+					<th></th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -247,9 +242,7 @@
 					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>							
 					<td class="cash" style="padding-right: 20px;">${order.price}</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
-					
-					
-					
+					<td></td>						
 				</tr>
 			</c:forEach>
 			
