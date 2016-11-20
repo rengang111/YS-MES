@@ -9,6 +9,8 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
+import com.ys.util.CalendarUtil;
+
 
 public abstract class BaseAbstractDao 
 {
@@ -20,6 +22,7 @@ public abstract class BaseAbstractDao
 		//Timestamp ts = Timestamp.valueOf(dateS);
 		Date da = Date.valueOf(dateS);
 		Timestamp ts = new Timestamp( da.getTime());
+		
 		return ts;
 	}
 

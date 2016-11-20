@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.ys.business.action.model.common.TableFields;
 import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_CustomerAddrDao;
 import com.ys.business.db.dao.B_CustomerDao;
@@ -33,6 +32,7 @@ import com.ys.business.db.data.B_CustomerData;
 import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_OrganizationData;
 import com.ys.business.db.data.B_SupplierBasicInfoData;
+import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.contact.ContactService;
 import com.ys.business.service.customer.CustomerService;
@@ -77,11 +77,13 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+import com.ys.system.service.common.BaseService;
 
 public class BusinessDbUpdateEjb  {
 	
 	BaseTransaction ts;
-	
+
+	private CommFieldsData commData;
 
     public void executeSupplierDelete(String keyData, UserInfo userInfo) throws Exception {
     	B_SupplierBasicInfoData data = new B_SupplierBasicInfoData();
@@ -131,10 +133,15 @@ public class BusinessDbUpdateEjb  {
 				data.setRecordid(key);
 				B_OrganizationDao dao = new B_OrganizationDao(data);
 				data = (B_OrganizationData)dao.FindByPrimaryKey(data);
+
+				BaseService service = new BaseService();
 				
-				TableFields commFields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_DEL,"OrganDelete", userInfo);
-				data.setUpdFields(commFields);
+				commData = service.commFiledEdit(
+						Constants.ACCESSTYPE_DEL,
+						"OrganDelete",
+						userInfo);
+
+				service.copyProperties(data,commData);
 				
 				dao.Store(data);
 			}
@@ -159,9 +166,15 @@ public class BusinessDbUpdateEjb  {
 				data.setRecordid(key);
 				B_MaterialCategoryDao dao = new B_MaterialCategoryDao(data);
 				data = (B_MaterialCategoryData)dao.FindByPrimaryKey(data);
-				data.setUpdFields(
-						BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_DEL,"MaterialUpdate", userInfo));				
+							
+				//update处理
+				BaseService service = new BaseService();
+				commData = service.commFiledEdit(
+						Constants.ACCESSTYPE_DEL,
+						"MaterialUpdate",
+						userInfo);
+
+				service.copyProperties(data,commData);
 				
 				dao.Store(data);
 				

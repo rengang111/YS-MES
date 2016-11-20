@@ -18,7 +18,7 @@
     </div>
     <div id="main_div" data-options="region:'center',title:''" >
    	    <iframe name="mainFrame" id="mainFrame"  width="100%" height="99%" 
-   	    frameborder="0" border=0 scrolling="no" marginwidth="0" marginheight="0" src="#" 
+   	    frameborder="0" border=0 scrolling="auto" marginwidth="0" marginheight="0" src="#" 
    	    	onload="iFrameHeight();">
    		</iframe>
     </div>

@@ -11,7 +11,7 @@ import java.io.InputStream;
 * @author mengfanchang
 * @version 1.0
 */
-public class B_BomDetailData  extends CommFieldsData
+public class B_BomDetailData implements java.io.Serializable
 {
 
 	public B_BomDetailData()
@@ -60,19 +60,6 @@ public class B_BomDetailData  extends CommFieldsData
 	/**
 	*
 	*/
-	private String quantity;
-	public String getQuantity()
-	{
-		return this.quantity;
-	}
-	public void setQuantity(String quantity)
-	{
-		this.quantity=quantity;
-	}
-
-	/**
-	*
-	*/
 	private String supplierid;
 	public String getSupplierid()
 	{
@@ -81,6 +68,19 @@ public class B_BomDetailData  extends CommFieldsData
 	public void setSupplierid(String supplierid)
 	{
 		this.supplierid=supplierid;
+	}
+
+	/**
+	*
+	*/
+	private String quantity;
+	public String getQuantity()
+	{
+		return this.quantity;
+	}
+	public void setQuantity(String quantity)
+	{
+		this.quantity=quantity;
 	}
 
 	/**
@@ -107,6 +107,19 @@ public class B_BomDetailData  extends CommFieldsData
 	public void setTotalprice(String totalprice)
 	{
 		this.totalprice=totalprice;
+	}
+
+	/**
+	*
+	*/
+	private String sourceprice;
+	public String getSourceprice()
+	{
+		return this.sourceprice;
+	}
+	public void setSourceprice(String sourceprice)
+	{
+		this.sourceprice=sourceprice;
 	}
 
 	/**
@@ -241,13 +254,13 @@ public class B_BomDetailData  extends CommFieldsData
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("bomid = "+(bomid == null ? "null" : bomid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("quantity = "+(quantity == null ? "null" : quantity)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("bomid = "+(bomid == null ? "null" : bomid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("quantity = "+(quantity == null ? "null" : quantity)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("sourceprice = "+(sourceprice == null ? "null" : sourceprice)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		bomid= (bomid == null ?null : bomid.trim());		materialid= (materialid == null ?null : materialid.trim());		quantity= (quantity == null ?null : quantity.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		price= (price == null ?null : price.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		bomid= (bomid == null ?null : bomid.trim());		materialid= (materialid == null ?null : materialid.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		quantity= (quantity == null ?null : quantity.trim());		price= (price == null ?null : price.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		sourceprice= (sourceprice == null ?null : sourceprice.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

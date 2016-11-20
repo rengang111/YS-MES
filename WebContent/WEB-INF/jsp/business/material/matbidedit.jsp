@@ -58,7 +58,7 @@
 		//$("#attribute1").focus();
 		
 		//设置选择项目的选中项
-		var mydate = today();		
+		var mydate = shortToday();		
 		$("#price\\.pricedate").val(mydate);
 		$("#price\\.pricedate").attr('readonly', "true");
 		

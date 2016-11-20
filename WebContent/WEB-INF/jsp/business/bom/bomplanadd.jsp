@@ -10,12 +10,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>BOM方案-编辑</title>
+<title>BOM方案-新建</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
 	var counter = 0;
-	var totalPrice = "0";
+	var productCost = "0";
 	var laborCost = "0"
 	
 	//Form序列化后转为AJAX可提交的JSON格式。
@@ -52,7 +52,7 @@
 							.row
 							.add(
 							  [
-								'<td class="dt-center"></td>',
+								'<td></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="bomDetailLines['+rowIndex+'].materialid" id="bomDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
@@ -61,9 +61,8 @@
 								'<td><input type="text"   name="bomDetailLines['+rowIndex+'].quantity"   id="bomDetailLines'+rowIndex+'.quantity"   class="cash mini" /></td>',
 								'<td><input type="text"   name="bomDetailLines['+rowIndex+'].price"      id="bomDetailLines'+rowIndex+'.price"      class="cash mini" /></td>',
 								'<td><span></span><input type="hidden"   name="bomDetailLines['+rowIndex+'].totalprice" id="bomDetailLines'+rowIndex+'.totalprice"/></td>',				
-								'<td class="dt-center"><span></span></td>',
-								'<td class="dt-center"></td>',
-								'<td class="dt-center"><span></span></td>',	
+								'<td><span></span></td>',
+								'<td><span></span></td>',	
 								]).draw();
 						
 						rowIndex ++;						
@@ -89,6 +88,7 @@
 
 			if(typeof rowIndex == "undefined"){				
 				$().toastmessage('showWarningToast', "请选择要删除的数据。");	
+				
 			}else{
 				
 				var $tds = $('#example tbody tr').eq(rowIndex).find("td");
@@ -115,17 +115,18 @@
 			"retrieve"   : true,
 			"stateSave"  : true,
 			"pagingType" : "full_numbers",
-			"scrollY"    : height,
-	        "scrollCollapse": true,
+			//"scrollY"    : height,
+	        //"scrollCollapse": true,
 	        "paging"    : false,
 	        "pageLength": 50,
 	        "ordering"  : false,
 
-			dom : 'T<"clear">rt',
+			dom : 'T<"clear">lt',
+			 //"dom": 'T<"clear">lfrt',
 
 			"tableTools" : {
 
-				//"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
+				"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
 
 				"aButtons" : [ {
 					"sExtends" : "add_rows",
@@ -134,15 +135,7 @@
 				{
 					"sExtends" : "reset",
 					"sButtonText" : "清空一行"
-				},
-				{
-					"sExtends" : "reset",
-					"sButtonText" : " 保  存 "
-				},
-				{
-					"sExtends" : "reset",
-					"sButtonText" : " 返  回 "
-				}  ],
+				}],
 			},
 			
 			"columns" : [ 
@@ -150,7 +143,6 @@
 					}, {
 					}, {								
 					}, {				
-					}, {"className":"dt-body-right"				
 					}, {"className":"dt-body-right"				
 					}, {"className":"dt-body-right"				
 					}, {"className":"dt-body-right"				
@@ -177,21 +169,20 @@
 			
 		});
 			
+		
+		t.on('blur', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
+			
+           $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
 
+		});
+		
 		t.on('change', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
-
-			//材料成本"bomPlan.materialcost"
-			//经管费率"bomPlan.managerate" "${bomForm.manageRateList}"
-			//经管费"bomPlan.managecost" 
-			//产品成本"bomPlan.productcost"
-			//数量"bomPlan.quantity"
 			
 			/*产品成本 = 各项累计
 			人工成本 = H带头的ERP编号下的累加
 			材料成本 = 产品成本 - 人工成本
 			经管费 = 经管费率 x 产品成本
 			核算成本 = 产品成本 + 经管费*/
-			//alert($tds.eq(5).find("input:text").val());
 			
             var $tds = $(this).parent().find("td");
 			
@@ -250,21 +241,21 @@
 	};//ajax()
 
 	$(document).ready(function() {
-
-
-		var mydate = today();		
-		$("#bomPlan\\.plandate").val(mydate);
+	
+		$("#bomPlan\\.plandate").val(shortToday());
 		$("#bomPlan\\.plandate").datepicker({
 			dateFormat:"yy-mm-dd",
 			changeYear: true,
 			changeMonth: true,
 			selectOtherMonths:true,
 			showOtherMonths:true,
-		});		
-		
+		});	
+				
 		ajax();
 		
 		autocomplete();
+		//设置经管费率默认值:12%
+		$("#bomPlan\\.managementcostrate").val($("#bomPlan\\.managementcostrate option:eq(2)").val());
 		
 		//$('#example').DataTable().columns.adjust().draw();
 		
@@ -283,7 +274,7 @@
 		});
 		
 		//经管费计算
-		$("#bomPlan\\.managerate").change(function() {
+		$("#bomPlan\\.managementcostrate").change(function() {
 			
 			var fproductCost,fmanageCost,faccountCost;
 			var vproductCost;
@@ -297,8 +288,8 @@
 			facountCost = fmanageCost + fproductCost;
 			//alert('fmanageCost:'+fmanageCost+'--facountCost:'+facountCost)
 
-			$('#bomPlan\\.accountcost').val(floatToCurrency(facountCost));
-			$('#bomPlan\\.managecost').val(floatToCurrency(fmanageCost));
+			$('#bomPlan\\.totalcost').val(floatToCurrency(facountCost));
+			$('#bomPlan\\.managementcost').val(floatToCurrency(fmanageCost));
 
 					
 		});
@@ -336,11 +327,13 @@
 			$(this).val(floatToCurrency($(this).val()));
 		});
 		
+		$(".DTTT_container").css('float','left');
+		
 	}
 	
 	function costAcount(materialId,totalNew,totalOld){
-		//alert('totalPrice: '+totalPrice+'--new:'+totalNew+'--old:'+totalOld);
-		//计算该客户的销售总价,首先减去旧的		
+		//alert('productCost: '+productCost+'--new:'+totalNew+'--old:'+totalOld);
+		//计算销售总价	
 		//产品成本=各项累计
 		//人工成本=H带头的ERP编号下的累加
 		//材料成本=产品成本-人工成本
@@ -355,25 +348,23 @@
 		if(costType == 'H')
 			laborCost = laborCost - totalOld +  totalNew;		
 		
-		totalPrice = totalPrice - totalOld +  totalNew;
+		productCost = productCost - totalOld +  totalNew;
 		
-		var rate = $('#bomPlan\\.managerate').val();
+		var rate = $('#bomPlan\\.managementcostrate').val();
 		var fmaterialCost,fmanageCost,facoutCost;
 		
-		fmaterialCost = totalPrice - laborCost;
-		fmanageCost   = totalPrice * rate/100;
-		facoutCost    = totalPrice + fmanageCost;
+		fmaterialCost = productCost - laborCost;
+		fmanageCost   = productCost * rate/100;
+		facoutCost    = productCost + fmanageCost;
 		
-		$('#bomPlan\\.productcost').val(floatToCurrency(totalPrice));
+		$('#bomPlan\\.productcost').val(floatToCurrency(productCost));
 		$('#bomPlan\\.laborcost').val(floatToCurrency(laborCost));
 		$('#bomPlan\\.materialcost').val(floatToCurrency(fmaterialCost));
-		$('#bomPlan\\.managecost').val(floatToCurrency(fmanageCost));
-		$('#bomPlan\\.accountcost').val(floatToCurrency(facoutCost));
+		$('#bomPlan\\.managementcost').val(floatToCurrency(fmanageCost));
+		$('#bomPlan\\.totalcost').val(floatToCurrency(facoutCost));
 		
 	}
-	
-	
-	
+		
 </script>
 
 </head>
@@ -388,7 +379,7 @@
 		<input type="hidden" id="tmpMaterialId" />		
 		
 		<fieldset>
-			<legend> BOM方案</legend>
+			<legend>BOM方案 - 新建</legend>
 			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
 				<tr> 				
 					<td class="label" width="100px"><label>BOM编号：</label></td>					
@@ -396,24 +387,24 @@
 						<form:hidden path="bomPlan.bomid" value="${bomForm.bomPlan.bomid}" /></td>
 						
 					<td class="label" width="100px"><label>耀升名称：</label></td>					
-					<td width="250px">${order.YSId }
-						<form:hidden path="bomPlan.ysid"  value="${order.YSId }"/></td>
+					<td width="250px">${bomPlan.YSId }
+						<form:hidden path="bomPlan.ysid"  value="${bomPlan.YSId }"/></td>
 					<td class="label" width="100px"><label>方案日期：</label></td>					
 					<td>
 						<form:input path="bomPlan.plandate" class="short" /></td>
 				</tr>
 				<tr>
 					<td class="label"><label>产品编号：</label></td>				
-					<td>${order.materialId }
-						<form:hidden path="bomPlan.materialid"  value="${order.materialId }"/>
+					<td>${bomPlan.productId }
+						<form:hidden path="bomPlan.materialid"  value="${bomPlan.productId }"/>
 						<form:hidden path="bomPlan.subid"  value="${bomForm.bomPlan.subid }"/></td>
 
 					<td class="label"><label>产品名称：</label></td>
-					<td>${order.materialName }</td>
+					<td>${bomPlan.productName }</td>
 
 					<td class="label"><label>订单数量：</label></td>
-					<td>${order.quantity }
-						<form:hidden path="bomPlan.quantity"  value="${order.quantity }"/></td>
+					<td>&nbsp;${bomPlan.quantity }
+						<form:hidden path="bomPlan.orderquantity"  value="${bomPlan.quantity }"/></td>
 				</tr>								
 			</table>
 			
@@ -429,22 +420,28 @@
 				</tr>	
 				<tr>			
 					<td class="td-center">
-						<form:input path="bomPlan.materialcost" class="read-only cash short" value="${order.materialCost}"/></td>
+						<form:input path="bomPlan.materialcost" class="read-only cash short" value="${bomPlan.materialCost}"/></td>
 					<td class="td-center">
-						<form:input path="bomPlan.laborcost" class="read-only cash short" value="${order.laborCost}" /></td>
+						<form:input path="bomPlan.laborcost" class="read-only cash short" value="${bomPlan.laborCost}" /></td>
 					<td class="td-center">
-						<form:select path="bomPlan.managerate" style="width: 60px;">
+						<form:select path="bomPlan.managementcostrate" style="width: 60px;" value="${bomPlan.managementCostRate}">
 							<form:options items="${bomForm.manageRateList}" 
 							  itemValue="key" itemLabel="value" /></form:select></td>
 					<td class="td-center">
-						<form:input path="bomPlan.managecost"  class="read-only cash short" value="${order.manageCost}"/></td>
+						<form:input path="bomPlan.managementcost"  class="read-only cash short" value="${bomPlan.managementCost}"/></td>
 					<td class="td-center">
-						<form:input path="bomPlan.productcost" class="read-only cash short" value="${order.productCost}"/></td>
+						<form:input path="bomPlan.productcost" class="read-only cash short" value="${bomPlan.productCost}"/></td>
 					<td class="td-center">
-						<form:input path="bomPlan.accountcost" class="read-only cash short" value="${order.accountCost}"/></td>
+						<form:input path="bomPlan.totalcost" class="read-only cash short" value="${bomPlan.totalCost}"/></td>
 				</tr>								
 			</table>
 	</fieldset>
+	<div style="clear: both"></div>
+	
+	<fieldset class="action" style="text-align: right;">
+		<button type="button" id="return" class="DTTT_button">返回</button>
+		<button type="button" id="insert" class="DTTT_button">保存</button>
+	</fieldset>		
 	
 	<fieldset>
 		<div class="list" style="margin-top: -4px;">
@@ -460,7 +457,6 @@
 				<th class="dt-center" width="50px">本次单价</th>
 				<th class="dt-center" width="80px">总价</th>
 				<th class="dt-center" width="50px">当前价格</th>
-				<th class="dt-center" style="width:50px;font-size:9px">上次BOM<br/>价格</th>
 				<th class="dt-center" width="50px">历史最低</th>
 			</tr>
 			</thead>
@@ -475,13 +471,10 @@
 					<th></th>
 					<th></th>
 					<th></th>
-					<th></th>
 				</tr>
 			</tfoot>
 		<tbody>
-		
-		<c:if test="${fn:length(bomDetail) eq 0}" >
-						
+
 			<c:forEach var="i" begin="0" end="99" step="1">	
 				<tr>				
 					<td></td>
@@ -494,8 +487,7 @@
 					<td><form:input path="bomDetailLines[${i}].price" class="cash mini"  /></td>						
 					<td><span></span>
 						<form:hidden path="bomDetailLines[${i}].totalprice"/></td>					
-					<td><span></span></td>							
-					<td></td>							
+					<td><span></span></td>				
 					<td><span></span></td>						
 				</tr>				
 				<script type="text/javascript">
@@ -503,46 +495,11 @@
 				</script>
 					
 			</c:forEach>
-		</c:if>
 		
-		<c:if test="${fn:length(bomDetail) > 0}" >
-						
-			<c:forEach var="detail" items="${bomDetail}" varStatus='status' >		
-
-				<script type="text/javascript">
-					var cost = '${detail.productcost}';
-					totalPrice = totalPrice + currencyToFloat(cost);	
-					//alert("total111:"+totalPrice)
-					counter++;
-				</script>
-				<tr>
-					<td></td>
-					<td><input type="text" name="attributeList1" class="attributeList1" value="${detail.materialId}"/>
-						<form:hidden path="bomDetailLines[${status.index}].materialid"  value="${detail.materialId}"/></td>								
-					<td></td>
-					<td><input type="text" name="attributeList2" class="attributeList2"  value="${detail.supplierId}" style="width:50px" />
-						<form:hidden path="bomDetailLines[${status.index}].supplierid"  value="${detail.supplierId}" /></td>
-					<td><form:input path="bomDetailLines[${status.index}].quantity" value="${detail.quantity}"  class="cash"  style="width:50px"/></td>							
-					<td><form:input path="bomDetailLines[${status.index}].price"  value="${detail.lastPrice}" class="cash mini"  /></td>						
-					<td><span>${detail.totalPrice}</span>
-						<form:hidden path="bomDetailLines[${status.index}].totalprice"/></td>
-					<td><span>${detail.lastPrice}</span></td>
-					<td>${detail.price}</td>
-					<td><span>${detail.minPrice}</span></td>
-
-				</tr>
-			</c:forEach>
-		</c:if>
 		</tbody>
 	</table>
 	</div>
 	</fieldset>
-	<div style="clear: both"></div>
-	
-	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="return" class="DTTT_button">返回</button>
-		<button type="button" id="insert" class="DTTT_button">保存</button>
-	</fieldset>		
 		
 </form:form>
 
@@ -632,7 +589,7 @@ function autocomplete(){
 			var $oAmount1   = $td.eq(6).find("input:hidden");
 			var $oAmount2   = $td.eq(6).find("span");
 			var $oCurrPrice = $td.eq(7).find("span");
-			var $oMinPrice  = $td.eq(9).find("span");
+			var $oMinPrice  = $td.eq(8).find("span");
 		
 			//开始计算
 			var fPrice    = currencyToFloat(ui.item.price);//计算用单价

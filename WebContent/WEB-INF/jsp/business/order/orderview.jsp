@@ -50,10 +50,15 @@
 	       	"language": {"url":"${ctx}/plugins/datatables/chinese.json"},
 	       	
 			"columns" : [{"className":"dt-body-center"}, {}, {}, {}, {}, {}, {},
-			             {"className":"dt-body-center"}
+			             {"className":"dt-body-center"},
+			             {"className":"dt-body-center"}, {}
 						],
 			
 			"columnDefs":[
+				{
+					"visible" : false,
+					"targets" : [ 9 ]
+				},
 			  { "targets":3,"render":function(data, type, row){
 	    			var fullName = row[3];
 	    			var shortName = '';
@@ -67,9 +72,20 @@
 	    	  }},
 	    	  { "targets":7,"render":function(data, type, row){
 	    			var rtn = "";
-	    			var space = '&nbsp;';
 	    			rtn= "<a href=\"#\" onClick=\"orderReview2('" + row[1] +"','"+ row[2] + "')\">做单资料</a>";
-	    			rtn = rtn+ space + "<a href=\"#\" onClick=\"AddBomPlan('" + row[1] +"','"+ row[2] + "')\">BOM方案</a>";
+	    			return rtn;
+	    	  }},
+	    	  { "targets":8,"render":function(data, type, row){
+	    			var rtn = "";
+	    			var space = '&nbsp;';
+	    			var status = row[9];
+	    			if(status != 1){//1:BOM表已做成
+	    				rtn = rtn+ space + "<a href=\"#\" onClick=\"doCopy('" + row[1] +"','"+ row[2] + "')\">复制</a>";
+		    			rtn = rtn+ space + "<a href=\"#\" onClick=\"AddBomPlan('" + row[1] +"','"+ row[2] + "')\">新建</a>";
+		   				
+	    			}else{
+	    				rtn = "<div title='BOM表已做成'>"+space+space+space+space+"</div>"
+	    			}
 	    			return rtn;
 	    	  }}
 			  ] 	
@@ -111,7 +127,9 @@
 		$("#attribute3").attr('readonly', "true");
 		
 		ajax();
-			
+
+		$('#example').DataTable().columns.adjust().draw();
+		
 		$("#return").click(
 				function() {
 					var url = "${ctx}/business/order";
@@ -136,6 +154,13 @@
 
 		location.href = url;
 	}
+	
+
+	function doCopy(YSId,materialId) {
+		var url = '${ctx}/business/bom?methodtype=chooseSourseBom&YSId=' + YSId+'&materialId='+materialId;
+		location.href = url;
+	};
+	
 	
 </script>
 
@@ -216,17 +241,21 @@
 			<thead>				
 			<tr>
 				<th width="1px">No</th>
-				<th class="dt-center" width="80px">耀升编号</th>
+				<th class="dt-center" width="60px">耀升编号</th>
 				<th class="dt-center" width="120px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
 				<th class="dt-center" width="80px">销售数量</th>
 				<th class="dt-center" width="50px">销售单价</th>
 				<th class="dt-center" width="100px">销售总价</th>
-				<th class="dt-center" width="120px">操作</th>
+				<th class="dt-center" width="60px">操作</th>
+				<th class="dt-center" width="60px">BOM表</th>
+				<th class="dt-center" width="1px"></th>
 			</tr>
 			</thead>
 			<tfoot>
 				<tr>
+					<th></th>
+					<th></th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -247,7 +276,9 @@
 					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>							
 					<td class="cash" style="padding-right: 20px;">${order.price}</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
-					<td></td>						
+					<td></td>
+					<td></td>
+					<td>${order.status}</td>													
 				</tr>
 			</c:forEach>
 			

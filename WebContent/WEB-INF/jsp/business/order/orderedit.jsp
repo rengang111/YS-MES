@@ -102,7 +102,6 @@
 			var t=$('#example').DataTable();
 			
 			rowIndex = t.row('.selected').index();
-			
 			if(typeof rowIndex == "undefined"){				
 				$().toastmessage('showWarningToast', "请选择要删除的数据。");	
 			}else{
@@ -271,14 +270,14 @@
 		
 		$("#insert").click(
 				function() {
-			var orderdate = $('#order\\.orderdate').val();
-			var deliverydate = $('#order\\.deliverydate').val();
+			//var orderdate = $('#order\\.orderdate').val();
+			//var deliverydate = $('#order\\.deliverydate').val();
 			
-			orderdate = orderdate +" 00:00:00";
-			deliverydate = deliverydate +" 00:00:00";
+			//orderdate = orderdate +" 00:00:00";
+			//deliverydate = deliverydate +" 00:00:00";
 			
-			$('#order\\.orderdate').val(orderdate);
-			$('#order\\.deliverydate').val(deliverydate);
+			//$('#order\\.orderdate').val(orderdate);
+			//$('#order\\.deliverydate').val(deliverydate);
 			
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=update");
 			$('#orderForm').submit();
@@ -422,9 +421,9 @@
 				<th class="dt-left" width="80px">耀升编号</th>
 				<th class="dt-left" width="100px">产品编号</th>
 				<th class="dt-left" >产品名称</th>
-				<th class="dt-left" width="50px">数量</th>
-				<th class="dt-left" width="50px">销售单价</th>
-				<th class="dt-left" width="100px">销售总价</th>
+				<th class="dt-left" width="100px">数量</th>
+				<th class="dt-left" width="100px">销售单价</th>
+				<th class="dt-left" width="120px">销售总价</th>
 			</tr>
 			</thead>
 			<tfoot>

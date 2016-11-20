@@ -11,7 +11,7 @@ import java.io.InputStream;
 * @author mengfanchang
 * @version 1.0
 */
-public class B_PriceSupplierHistoryData extends CommFieldsData
+public class B_PriceSupplierHistoryData implements java.io.Serializable
 {
 
 	public B_PriceSupplierHistoryData()

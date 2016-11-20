@@ -46,7 +46,7 @@ public class B_PriceSupplierDao extends BaseAbstractDao
 		{
 			connection = getConnection();
 			statement = connection.prepareStatement("INSERT INTO B_PriceSupplier( recordid,materialid,supplierid,pricedate,currency,priceunit,price,lastprice,usedflag,pricesource,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getSupplierid());			if (beanData.getPricedate()==null || beanData.getPricedate().trim().equals(""))			{				statement.setNull( 4, Types.DATE);			}			else			{				statement.setTimestamp( 4, getDateTimeFromString(beanData.getPricedate()));			}			statement.setString( 5,beanData.getCurrency());			statement.setString( 6,beanData.getPriceunit());			statement.setString( 7,beanData.getPrice());			statement.setString( 8,beanData.getLastprice());			statement.setString( 9,beanData.getUsedflag());			statement.setString( 10,beanData.getPricesource());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getSupplierid());			if (beanData.getPricedate()==null || beanData.getPricedate().trim().equals(""))			{				statement.setNull( 4, Types.DATE);			}			else			{				statement.setString( 4, beanData.getPricedate());			}			statement.setString( 5,beanData.getCurrency());			statement.setString( 6,beanData.getPriceunit());			statement.setString( 7,beanData.getPrice());			statement.setString( 8,beanData.getLastprice());			statement.setString( 9,beanData.getUsedflag());			statement.setString( 10,beanData.getPricesource());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -69,7 +69,7 @@ public class B_PriceSupplierDao extends BaseAbstractDao
 	 */
 	public String CreateHistory(Object beanDataTmp) throws Exception
 	{
-		B_PriceSupplierData beanData = (B_PriceSupplierData) beanDataTmp; 
+		B_PriceSupplierHistoryData beanData = (B_PriceSupplierHistoryData) beanDataTmp; 
 		Connection connection = null;
 		PreparedStatement statement = null;
 		try
@@ -85,7 +85,7 @@ public class B_PriceSupplierDao extends BaseAbstractDao
 			}
 			else
 			{
-				statement.setTimestamp( 4, getDateTimeFromString(beanData.getPricedate()));
+				statement.setString( 4, beanData.getPricedate());
 			}
 			statement.setString( 5,beanData.getCurrency());
 			statement.setString( 6,beanData.getPriceunit());
@@ -116,6 +116,7 @@ public class B_PriceSupplierDao extends BaseAbstractDao
 			closeConnection(connection, statement);
 		}
 	}
+
 
 	/**
 	 *
@@ -156,7 +157,7 @@ public class B_PriceSupplierDao extends BaseAbstractDao
 		{
 			connection = getConnection();
 			statement = connection.prepareStatement("INSERT INTO B_PriceSupplier( recordid,materialid,supplierid,pricedate,currency,priceunit,price,lastprice,usedflag,pricesource,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getSupplierid());			if (beanData.getPricedate()==null || beanData.getPricedate().trim().equals(""))			{				statement.setNull( 4, Types.DATE);			}			else			{				statement.setTimestamp( 4, getDateTimeFromString(beanData.getPricedate()));			}			statement.setString( 5,beanData.getCurrency());			statement.setString( 6,beanData.getPriceunit());			statement.setString( 7,beanData.getPrice());			statement.setString( 8,beanData.getLastprice());			statement.setString( 9,beanData.getUsedflag());			statement.setString( 10,beanData.getPricesource());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getSupplierid());			if (beanData.getPricedate()==null || beanData.getPricedate().trim().equals(""))			{				statement.setNull( 4, Types.DATE);			}			else			{				statement.setString( 4, beanData.getPricedate());			}			statement.setString( 5,beanData.getCurrency());			statement.setString( 6,beanData.getPriceunit());			statement.setString( 7,beanData.getPrice());			statement.setString( 8,beanData.getLastprice());			statement.setString( 9,beanData.getUsedflag());			statement.setString( 10,beanData.getPricesource());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -337,7 +338,7 @@ public class B_PriceSupplierDao extends BaseAbstractDao
 		{
 			connection = getConnection();
 			statement = connection.prepareStatement("UPDATE B_PriceSupplier SET recordid= ? , materialid= ? , supplierid= ? , pricedate= ? , currency= ? , priceunit= ? , price= ? , lastprice= ? , usedflag= ? , pricesource= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getSupplierid());			if (beanData.getPricedate()==null || beanData.getPricedate().trim().equals(""))			{				statement.setNull( 4, Types.DATE);			}			else			{				statement.setTimestamp( 4, getDateTimeFromString(beanData.getPricedate()));			}			statement.setString( 5,beanData.getCurrency());			statement.setString( 6,beanData.getPriceunit());			statement.setString( 7,beanData.getPrice());			statement.setString( 8,beanData.getLastprice());			statement.setString( 9,beanData.getUsedflag());			statement.setString( 10,beanData.getPricesource());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getSupplierid());			if (beanData.getPricedate()==null || beanData.getPricedate().trim().equals(""))			{				statement.setNull( 4, Types.DATE);			}			else			{				statement.setString( 4, beanData.getPricedate());			}			statement.setString( 5,beanData.getCurrency());			statement.setString( 6,beanData.getPriceunit());			statement.setString( 7,beanData.getPrice());			statement.setString( 8,beanData.getLastprice());			statement.setString( 9,beanData.getUsedflag());			statement.setString( 10,beanData.getPricesource());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
 			statement.setString( 19,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
@@ -390,7 +391,7 @@ public class B_PriceSupplierDao extends BaseAbstractDao
 		{
 			connection = getConnection();
 			statement = connection.prepareStatement("UPDATE B_PriceSupplier SET recordid= ? , materialid= ? , supplierid= ? , pricedate= ? , currency= ? , priceunit= ? , price= ? , lastprice= ? , usedflag= ? , pricesource= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getSupplierid());			if (beanData.getPricedate()==null || beanData.getPricedate().trim().equals(""))			{				statement.setNull( 4, Types.DATE);			}			else			{				statement.setTimestamp( 4, getDateTimeFromString(beanData.getPricedate()));			}			statement.setString( 5,beanData.getCurrency());			statement.setString( 6,beanData.getPriceunit());			statement.setString( 7,beanData.getPrice());			statement.setString( 8,beanData.getLastprice());			statement.setString( 9,beanData.getUsedflag());			statement.setString( 10,beanData.getPricesource());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getSupplierid());			if (beanData.getPricedate()==null || beanData.getPricedate().trim().equals(""))			{				statement.setNull( 4, Types.DATE);			}			else			{				statement.setString( 4, beanData.getPricedate());			}			statement.setString( 5,beanData.getCurrency());			statement.setString( 6,beanData.getPriceunit());			statement.setString( 7,beanData.getPrice());			statement.setString( 8,beanData.getLastprice());			statement.setString( 9,beanData.getUsedflag());			statement.setString( 10,beanData.getPricesource());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
 			statement.setString( 19,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");

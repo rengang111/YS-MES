@@ -10,7 +10,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>BOM方案-编辑</title>
+<title>BOM方案-查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -61,6 +61,8 @@
 					}, {"className":"dt-body-right"				
 					}, {"className":"dt-body-right"				
 					}, {"className":"dt-body-right"				
+					}, {"className":"dt-body-right"				
+					}, {"className":"dt-body-right"				
 					}			
 				]
 			
@@ -93,68 +95,26 @@
 	};//ajax()
 
 	$(document).ready(function() {
-
-
-		var mydate = today();		
-		$("#bomPlan\\.plandate").val(mydate);
-		$("#bomPlan\\.plandate").datepicker({
-			dateFormat:"yy-mm-dd",
-			changeYear: true,
-			changeMonth: true,
-			selectOtherMonths:true,
-			showOtherMonths:true,
-		});		
 		
 		ajax();
 	
-		$("#return").click(
-				function() {
-					var url = '${ctx}/business/bom';
-					location.href = url;		
+		$("#goBack").click(function() {
+					history.go(-1);
+					//var url = '${ctx}/business/purchase';
+					//location.href = url;		
 				});
 		
-		$("#insert").click(
-				function() {
-			
-			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=insert");
+		$("#doEdit").click(function() {
+			var bomId = $('#bomid').val();
+			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=edit&bomId="+bomId);
 			$('#bomForm').submit();
 		});
 		
-
 		//重设显示窗口(iframe)高度
-		iFramAutoSroll();
-		
-		//input获取焦点初始化处理
-		//foucsInit();
+		iFramAutoSroll();		
 
 	});	
-	
-	function foucsInit(){
-		
-		$("input:text").not(".read-only").addClass('bgnone');
-		$("#bomPlan\\.plandate").removeClass('bgnone');
-		$(".cash").css('border','0px');
-		$(".attributeList1 ").addClass('bsolid')
-		$(".attributeList2").addClass('bsolid')
-		
-		$("input:text") .not(".read-only") .focus(function(){
-			$(this).removeClass('bgnone').removeClass('error').addClass('bgwhite');
-			$("#bomPlan\\.plandate").removeClass('bgwhite');
-		    $(this).select();
-		});
-		
-		$(".read-only").removeClass('bgwhite');
-		
-		$(".cash") .focus(function(){
-			$(this).val(currencyToFloat($(this).val()));
-		    $(this).select();
-		});
-		
-		$(".cash") .blur(function(){
-			$(this).val(floatToCurrency($(this).val()));
-		});
-		
-	}
+
 	
 </script>
 
@@ -167,10 +127,12 @@
 	<form:form modelAttribute="bomForm" method="POST"
 		id="bomForm" name="bomForm"  autocomplete="off">
 		
-		<input type="hidden" id="tmpMaterialId" />		
+		<input type="hidden" id="tmpMaterialId" />	
+		<input type="hidden" id="bomid" value="${bomPlan.bomId}"/>
+		<input type="hidden" id="materialid" value="${bomPlan.productId}"/>			
 		
 		<fieldset>
-			<legend> BOM方案</legend>
+			<legend> 采购方案</legend>
 			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
 				<tr> 				
 					<td class="label" width="100px"><label>BOM编号：</label></td>					
@@ -183,13 +145,13 @@
 				</tr>
 				<tr>
 					<td class="label"><label>产品编号：</label></td>				
-					<td>${bomPlan.materialId }</td>
+					<td>${bomPlan.productId }</td>
 
 					<td class="label"><label>产品名称：</label></td>
-					<td>${bomPlan.materialName }</td>
+					<td>${bomPlan.productName }</td>
 
 					<td class="label"><label>订单数量：</label></td>
-					<td>${bomPlan.quantity }</td>
+					<td>${bomPlan.productQty }</td>
 				</tr>								
 			</table>
 			
@@ -206,19 +168,59 @@
 				<tr>			
 					<td class="td-center">${bomPlan.materialCost }</td>
 					<td class="td-center">${bomPlan.laborCost }</td>
-					<td class="td-center">${bomPlan.manageRate }</td>
-					<td class="td-center">${bomPlan.manageCost }</td>
+					<td class="td-center">${bomPlan.managementCostRate }</td>
+					<td class="td-center">${bomPlan.managementCost }</td>
 					<td class="td-center">${bomPlan.productCost }</td>
-					<td class="td-center">${bomPlan.accountCost }</td>
+					<td class="td-center">${bomPlan.totalCost }</td>
 				</tr>								
 			</table>
 	
 		<div style="text-align: right;margin-top: 10px;">	
-		<button type="button" id="return" class="DTTT_button">返回</button>
-		<button type="button" id="insert" class="DTTT_button">编辑</button>
-		<button type="button" id="copy" class="DTTT_button">复制</button>
+		<button type="button" id="doEdit" class="DTTT_button">编辑</button>
+		<button type="button" id="doPurchasePlan" class="DTTT_button">确定采购数量</button>
+		<button type="button" id="goBack" class="DTTT_button">返回</button>
 		</div>
-	</fieldset>		
+	</fieldset>	
+		<fieldset>
+		<legend> 相关库存</legend>
+		<div class="list" style="margin-top: -4px;">
+		
+		<table id="example2" class="display" >
+			<thead>				
+			<tr>
+				<th width="1px">No</th>
+				<th class="dt-left" width="80px">耀升编号</th>
+				<th class="dt-left" width="100px">产品编号</th>
+				<th class="dt-left"  width="80px">数量</th>
+				<th class="dt-left" width="200px">产品描述</th>
+				<th class="dt-left" width="200px">其他</th>
+			</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</tfoot>
+		<tbody>	
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					
+				</tr>
+			
+		</tbody>
+	</table>
+	</div>
+	</fieldset>	
 	<fieldset>
 		<legend> BOM详情</legend>
 		<div class="list" style="margin-top: -4px;">
@@ -233,6 +235,8 @@
 				<th class="dt-center" width="60px">用量</th>
 				<th class="dt-center" width="60px">本次单价</th>
 				<th class="dt-center" width="80px">总价</th>
+				<th class="dt-center" width="50px">当前价格</th>
+				<th class="dt-center" style="width:50px;font-size:9px">上次BOM<br/>价格</th>
 				<th class="dt-center" width="60px">历史最低</th>
 			</tr>
 			</thead>
@@ -246,10 +250,12 @@
 					<th></th>
 					<th></th>
 					<th></th>
+					<th></th>
+					<th></th>
 				</tr>
 			</tfoot>
-		<tbody>	
-						
+			
+		<tbody>
 		<c:forEach var="detail" items="${bomDetail}" varStatus='status' >		
 			
 			<tr>				
@@ -259,12 +265,15 @@
 				<td>${detail.supplierId}</td>
 				<td>${detail.quantity}</td>							
 				<td>${detail.price}</td>						
-				<td>${detail.totalPrice}</td>	
-				<td>${detail.lastPrice}</td>	
+				<td>${detail.quantity * detail.price}</td>					
+				<td>${detail.lastPrice}</td>					
+				<td>${detail.sourcePrice}</td>	
+				<td>${detail.minPrice}</td>	
 				
 			</tr>			
 		</c:forEach>
 		</tbody>
+		
 	</table>
 	</div>
 	</fieldset>

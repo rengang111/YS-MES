@@ -150,6 +150,17 @@ public class CalendarUtil {
 		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sd.format(getSystemDate()); 
 	}	
+
+	/**
+	 * ���ڸ�ʽ��
+	 *
+	 * @param	无		systemDate
+	 * @return	String		yyyy-MM-dd
+	 */
+	public static String fmtYmdDate() {
+		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
+		return sd.format(getSystemDate()); 
+	}
 	
 	/**
 	 * �����ж�

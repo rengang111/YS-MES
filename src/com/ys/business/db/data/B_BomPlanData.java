@@ -11,7 +11,7 @@ import java.io.InputStream;
 * @author mengfanchang
 * @version 1.0
 */
-public class B_BomPlanData  extends CommFieldsData
+public class B_BomPlanData implements java.io.Serializable
 {
 
 	public B_BomPlanData()
@@ -86,40 +86,40 @@ public class B_BomPlanData  extends CommFieldsData
 	/**
 	*
 	*/
-	private String quantity;
-	public String getQuantity()
+	private String orderquantity;
+	public String getOrderquantity()
 	{
-		return this.quantity;
+		return this.orderquantity;
 	}
-	public void setQuantity(String quantity)
+	public void setOrderquantity(String orderquantity)
 	{
-		this.quantity=quantity;
-	}
-
-	/**
-	*
-	*/
-	private String managerate;
-	public String getManagerate()
-	{
-		return this.managerate;
-	}
-	public void setManagerate(String managerate)
-	{
-		this.managerate=managerate;
+		this.orderquantity=orderquantity;
 	}
 
 	/**
 	*
 	*/
-	private String managecost;
-	public String getManagecost()
+	private String managementcostrate;
+	public String getManagementcostrate()
 	{
-		return this.managecost;
+		return this.managementcostrate;
 	}
-	public void setManagecost(String managecost)
+	public void setManagementcostrate(String managementcostrate)
 	{
-		this.managecost=managecost;
+		this.managementcostrate=managementcostrate;
+	}
+
+	/**
+	*
+	*/
+	private String managementcost;
+	public String getManagementcost()
+	{
+		return this.managementcost;
+	}
+	public void setManagementcost(String managementcost)
+	{
+		this.managementcost=managementcost;
 	}
 
 	/**
@@ -138,14 +138,14 @@ public class B_BomPlanData  extends CommFieldsData
 	/**
 	*
 	*/
-	private String accountcost;
-	public String getAccountcost()
+	private String totalcost;
+	public String getTotalcost()
 	{
-		return this.accountcost;
+		return this.totalcost;
 	}
-	public void setAccountcost(String accountcost)
+	public void setTotalcost(String totalcost)
 	{
-		this.accountcost=accountcost;
+		this.totalcost=totalcost;
 	}
 
 	/**
@@ -185,6 +185,19 @@ public class B_BomPlanData  extends CommFieldsData
 	public void setPlandate(String plandate)
 	{
 		this.plandate=plandate;
+	}
+
+	/**
+	*
+	*/
+	private String sourcebomid;
+	public String getSourcebomid()
+	{
+		return this.sourcebomid;
+	}
+	public void setSourcebomid(String sourcebomid)
+	{
+		this.sourcebomid=sourcebomid;
 	}
 
 	/**
@@ -319,13 +332,13 @@ public class B_BomPlanData  extends CommFieldsData
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("bomid = "+(bomid == null ? "null" : bomid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("quantity = "+(quantity == null ? "null" : quantity)+"\n");		sb.append("managerate = "+(managerate == null ? "null" : managerate)+"\n");		sb.append("managecost = "+(managecost == null ? "null" : managecost)+"\n");		sb.append("productcost = "+(productcost == null ? "null" : productcost)+"\n");		sb.append("accountcost = "+(accountcost == null ? "null" : accountcost)+"\n");		sb.append("laborcost = "+(laborcost == null ? "null" : laborcost)+"\n");		sb.append("materialcost = "+(materialcost == null ? "null" : materialcost)+"\n");		sb.append("plandate = "+(plandate == null ? "null" : plandate)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("bomid = "+(bomid == null ? "null" : bomid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("orderquantity = "+(orderquantity == null ? "null" : orderquantity)+"\n");		sb.append("managementcostrate = "+(managementcostrate == null ? "null" : managementcostrate)+"\n");		sb.append("managementcost = "+(managementcost == null ? "null" : managementcost)+"\n");		sb.append("productcost = "+(productcost == null ? "null" : productcost)+"\n");		sb.append("totalcost = "+(totalcost == null ? "null" : totalcost)+"\n");		sb.append("laborcost = "+(laborcost == null ? "null" : laborcost)+"\n");		sb.append("materialcost = "+(materialcost == null ? "null" : materialcost)+"\n");		sb.append("plandate = "+(plandate == null ? "null" : plandate)+"\n");		sb.append("sourcebomid = "+(sourcebomid == null ? "null" : sourcebomid)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		bomid= (bomid == null ?null : bomid.trim());		materialid= (materialid == null ?null : materialid.trim());		subid= (subid == null ?null : subid.trim());		quantity= (quantity == null ?null : quantity.trim());		managerate= (managerate == null ?null : managerate.trim());		managecost= (managecost == null ?null : managecost.trim());		productcost= (productcost == null ?null : productcost.trim());		accountcost= (accountcost == null ?null : accountcost.trim());		laborcost= (laborcost == null ?null : laborcost.trim());		materialcost= (materialcost == null ?null : materialcost.trim());		plandate= (plandate == null ?null : plandate.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		bomid= (bomid == null ?null : bomid.trim());		materialid= (materialid == null ?null : materialid.trim());		subid= (subid == null ?null : subid.trim());		orderquantity= (orderquantity == null ?null : orderquantity.trim());		managementcostrate= (managementcostrate == null ?null : managementcostrate.trim());		managementcost= (managementcost == null ?null : managementcost.trim());		productcost= (productcost == null ?null : productcost.trim());		totalcost= (totalcost == null ?null : totalcost.trim());		laborcost= (laborcost == null ?null : laborcost.trim());		materialcost= (materialcost == null ?null : materialcost.trim());		plandate= (plandate == null ?null : plandate.trim());		sourcebomid= (sourcebomid == null ?null : sourcebomid.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
