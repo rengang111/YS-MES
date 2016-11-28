@@ -152,6 +152,16 @@ $(document).ready(function() {
 	});
 	
 	$("#manager").val("${DisplayData.projectTaskData.manager}");
+
+    jQuery.validator.addMethod("verifyDate",function(value, element){ 
+    	var rtnValue = true;
+    	
+    	var beginTime = new Date($('#beginTime').val(''));
+    	var endTime = new Date($('#endTime').val(''));
+    	rtnValue = beginTime < endTime;
+    	
+        return rtnValue;  
+    }, "手机号码不正确"); 
 })
 
 function doSave() {
