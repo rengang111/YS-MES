@@ -177,7 +177,14 @@ public class CalendarUtil {
 	 * @throws ParseException 
 	 */
 	public static int compareDate(String date1, String date2) throws ParseException {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		if (date1.equals("")) {
+			return 1;
+		}
+		if (date2.equals("")) {
+			return 0;
+		}
+		
 		Date d1 = formatter.parse(date1);
 		Date d2 = formatter.parse(date2);
 		if (d1.compareTo(d2) < 0) {
@@ -188,6 +195,16 @@ public class CalendarUtil {
 		//date1 > date2
 		return 0;
 	}
+	
+	public static int compareDate(Date d1, Date d2) throws ParseException {
+		if (d1.compareTo(d2) < 0) {
+			//date1 < date2
+			return 1;
+		}
+
+		//date1 > date2
+		return 0;
+	}	
 	
 	public static int daysBetween(Date smdate,Date bdate) throws ParseException  {
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
