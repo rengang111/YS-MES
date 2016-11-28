@@ -17,17 +17,20 @@ import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
+import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.common.ListOption;
+import com.ys.business.action.model.common.TableFields;
 import com.ys.business.action.model.contact.ContactModel;
 import com.ys.business.action.model.organ.OrganModel;
 import com.ys.business.action.model.supplier.SupplierModel;
 import com.ys.business.db.dao.B_ContactDao;
-import com.ys.business.db.dao.B_OrganBasicInfoDao;
+import com.ys.business.db.dao.B_OrganizationDao;
 import com.ys.business.db.dao.B_SupplierBasicInfoDao;
 import com.ys.business.db.data.B_ContactData;
-import com.ys.business.db.data.B_OrganBasicInfoData;
+import com.ys.business.db.data.B_OrganizationData;
 import com.ys.business.db.data.B_SupplierBasicInfoData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
+import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.contact.ContactService;
 
 @Service
@@ -90,7 +93,7 @@ public class OrganService extends BaseService {
 		return modelMap;
 	}
 
-	public HashMap<String, Object> Search(HttpServletRequest request, String data,UserInfo userInfo) throws Exception {
+	public HashMap<String, Object> search(HttpServletRequest request, String data,UserInfo userInfo) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
@@ -112,8 +115,8 @@ public class OrganService extends BaseService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		String key1 = getJsonData(data, "keyword1");
-		String key2 = getJsonData(data, "keyword2");
+		String key1 = getJsonData(data, "keyword1").toUpperCase();
+		String key2 = getJsonData(data, "keyword2").toUpperCase();
 		
 
 		dataModel.setQueryFileName("/business/organ/orgquerydefine");
@@ -145,32 +148,31 @@ public class OrganService extends BaseService {
 		return modelMap;
 	}
 	
-	public OrganModel Insert(HttpServletRequest request, String data, UserInfo userInfo) {
+	public OrganModel insert(HttpServletRequest request, String data, UserInfo userInfo) {
 
 		OrganModel model = new OrganModel();
 		try {
-			B_OrganBasicInfoDao dao = new B_OrganBasicInfoDao();
-			B_OrganBasicInfoData dbData = new B_OrganBasicInfoData();
-			//String organid = getJsonData(data, "supplierId");
-		
-			//ArrayList<ArrayList<String>> preCheckResult = preCheckSupplierId(request, organid);
+			B_OrganizationDao dao = new B_OrganizationDao();
+			B_OrganizationData dbData = new B_OrganizationData();
+
+			String guid = BaseDAO.getGuId();
+			dbData.setRecordid(guid);
+			dbData.setType(getJsonData(data, "type"));
+			dbData.setShortname(getJsonData(data, "shortName"));
+			dbData.setFullname(getJsonData(data, "fullName"));
+			dbData.setAddress(getJsonData(data, "address"));
+	
 			
-			//if (preCheckResult.size() > 0) {
-				//已存在
-			//	model.setEndInfoMap("001", "err005", "");
-			//} else {
-				String guid = BaseDAO.getGuId();
-				dbData.setId(guid);
-				dbData.setCategory(getJsonData(data, "category"));
-				dbData.setName_short(getJsonData(data, "name_short"));
-				dbData.setName_full(getJsonData(data, "name_full"));
-				dbData.setAddress(getJsonData(data, "address"));
-		
-				
-				dbData = updateModifyInfo(dbData, userInfo);
-				dao.Create(dbData);
-				model.setEndInfoMap(NORMAL, "", guid);
-			//}
+			//插入机构信息表
+			TableFields commFields = BusinessService.updateModifyInfo
+					(Constants.ACCESSTYPE_INS,"OrganInsert", userInfo);
+			
+			dbData.setInsFields(commFields);
+			
+			dao.Create(dbData);
+			
+			model.setEndInfoMap(NORMAL, "suc001", "");
+			
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
@@ -179,12 +181,12 @@ public class OrganService extends BaseService {
 		return model;
 	}	
 	
-	public OrganModel CreateOrgan(HttpServletRequest request) {
+	public OrganModel createOrgan(HttpServletRequest request) {
 
 		OrganModel model = new OrganModel();
 
 		try {			
-			model.setCategoryList(doOptionChange(DicUtil.ORGANTYPE, "").getCategoryList());
+			model.setTypeList(doOptionChange(DicUtil.ORGANTYPE, "").getTypeList());
 			model.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {
@@ -196,26 +198,6 @@ public class OrganService extends BaseService {
 	
 	}
 	
-	public void insert(OrganModel model ,HttpServletRequest request) {
-
-		//OrganModel model = new OrganModel();
-		model.setAddress("北京市");
-		
-		//contactDao.saveOrUpdate(model);
-		
-		/*
-		try {			
-			model.setCategoryList(doOptionChange(DicUtil.ORGANTYPE, "").getCategoryList());
-			model.setEndInfoMap("098", "0001", "");
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
-		*/
-		//return model;
-	
-	}
 	
 	public OrganModel doOptionChange(String type, String parentCode) {
 		DicUtil util = new DicUtil();
@@ -223,45 +205,18 @@ public class OrganService extends BaseService {
 		
 		try {
 			ArrayList<ListOption> optionList = util.getListOption(type, parentCode);
-			model.setCategoryList(optionList);
+			model.setTypeList(optionList);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-			model.setCategoryList(null);
+			model.setTypeList(null);
 		}
 		
 		return model;
 	}
+
 	
-	private ArrayList<ArrayList<String>> preCheckSupplierId(HttpServletRequest request, String key) throws Exception {
-			
-			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-			BaseModel dataModel = new BaseModel();
-			dataModel.setQueryFileName("/business/organ/orgquerydefine");
-			dataModel.setQueryName("organquerydefine_preCheck");
-			BaseQuery baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("keyword", key);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			
-			return baseQuery.getQueryData();
-						
-	}
-	
-	public static B_OrganBasicInfoData updateModifyInfo(B_OrganBasicInfoData data, UserInfo userInfo) {
-		String createUserId = data.getCreateperson();
-		if ( createUserId == null || createUserId.equals("")) {
-			data.setCreateperson(userInfo.getUserId());
-			data.setCreatetime(CalendarUtil.fmtDate());
-			data.setCreateunitid(userInfo.getUnitId());
-			data.setDeptguid(userInfo.getDeptGuid());
-		}
-		data.setModifyperson(userInfo.getUserId());
-		data.setModifytime(CalendarUtil.fmtDate());
-		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
-		
-		return data;
-	}
 	
 	public OrganModel doDelete(String data, UserInfo userInfo){
 		
@@ -292,7 +247,7 @@ public class OrganService extends BaseService {
 		model.setContactData(dbData);
 		model.setCompanyCode(dbData.getCompanycode());
 		
-		model.setSexList(doOptionChange(DicUtil.ORGANTYPE, "").getCategoryList());
+		model.setSexList(doOptionChange(DicUtil.ORGANTYPE, "").getTypeList());
 		
 		model.setEndInfoMap("098", "0001", "");
 		model.setKeyBackup(dbData.getId());
@@ -302,57 +257,47 @@ public class OrganService extends BaseService {
 	
 	public OrganModel getOrganBaseInfo(String key) throws Exception {
 		OrganModel model = new OrganModel();
-		B_OrganBasicInfoDao dao = new B_OrganBasicInfoDao();
-		B_OrganBasicInfoData dbData = new B_OrganBasicInfoData();
-		dbData.setId(key);
-		dbData = (B_OrganBasicInfoData)dao.FindByPrimaryKey(dbData);
+		B_OrganizationDao dao = new B_OrganizationDao();
+		B_OrganizationData dbData = new B_OrganizationData();
+		dbData.setRecordid(key);
+		dbData = (B_OrganizationData)dao.FindByPrimaryKey(dbData);
 		model.setOrganData(dbData);
 		
-		model.setCategoryList(doOptionChange(DicUtil.ORGANTYPE, "").getCategoryList());
+		model.setTypeList(doOptionChange(DicUtil.ORGANTYPE, "").getTypeList());
 		
 		model.setEndInfoMap("098", "0001", "");
-		model.setKeyBackup(dbData.getId());
+		model.setKeyBackup(dbData.getRecordid());
 		
 		return model;
 		
 	}
 	
 
-	public OrganModel doUpdate(HttpServletRequest request, String data, UserInfo userInfo) {
+	public OrganModel update(HttpServletRequest request, String data, UserInfo userInfo) {
 		OrganModel model = new OrganModel();
 		String id = getJsonData(data, "keyBackup");
 		
 		try {
-			B_OrganBasicInfoDao dao = new B_OrganBasicInfoDao();
-			B_OrganBasicInfoData dbData = new B_OrganBasicInfoData();
-			
-			String supplierid = getJsonData(data, "supplierId");
-			boolean isKeyExist = false;
+			B_OrganizationDao dao = new B_OrganizationDao();
+			B_OrganizationData dbData = new B_OrganizationData();
 			
 			//要更新的记录是否存在
-			isKeyExist = preCheckId(id);
-			if (isKeyExist) {
-				//ArrayList<ArrayList<String>> preCheckResult = preCheckSupplierId(request, supplierid);
-				
-				//要更新的供应商id是否存在
-				//if (preCheckResult.size() != 0 && !preCheckResult.get(0).get(1).equals(id)) {					
-					//已存在
-					//model.setEndInfoMap("001", "err007", "");
-				//} else {
-					dbData.setId(getJsonData(data, "keyBackup"));
-					dbData.setCategory(getJsonData(data, "category"));
-					dbData.setName_short(getJsonData(data, "name_short"));
-					dbData.setName_full(getJsonData(data, "name_full"));
-					dbData.setAddress(getJsonData(data, "address"));
-					
-					dbData = updateModifyInfo(dbData, userInfo);
-					dao.Store(dbData);
-					model.setEndInfoMap(NORMAL, "", id);
-				//}
-			} else {
-				//不存在
-				model.setEndInfoMap("002", "err005", id);
-			}
+			dbData = preCheckId(id);
+			
+			dbData.setType(getJsonData(data, "type"));
+			dbData.setShortname(getJsonData(data, "shortName"));
+			dbData.setFullname(getJsonData(data, "fullName"));
+			dbData.setAddress(getJsonData(data, "address"));
+			
+			//更新机构信息表
+			TableFields commFields = BusinessService.updateModifyInfo
+					(Constants.ACCESSTYPE_UPD,"OrganUpdate", userInfo);
+			
+			dbData.setUpdFields(commFields);
+			
+			dao.Store(dbData);
+			model.setEndInfoMap(NORMAL, "suc001", id);
+			
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(SYSTEMERROR, "err001", id);
@@ -361,21 +306,14 @@ public class OrganService extends BaseService {
 		return model;
 	}
 	
-	private boolean preCheckId(String key) throws Exception {
-		B_OrganBasicInfoDao dao = new B_OrganBasicInfoDao();
-		B_OrganBasicInfoData dbData = new B_OrganBasicInfoData();
-		boolean rtnData = false;
+	private B_OrganizationData preCheckId(String key) throws Exception {
+		B_OrganizationDao dao = new B_OrganizationDao();
+		B_OrganizationData dbData = new B_OrganizationData();
 		
-		try {
-			dbData.setId(key);
-			dao.FindByPrimaryKey(dbData);
-			rtnData = true;
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
-		return rtnData;
+		dbData.setRecordid(key);
+		dbData = (B_OrganizationData)dao.FindByPrimaryKey(dbData);
+
+		return dbData;
 	}
 	
 }

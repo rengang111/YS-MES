@@ -1,392 +1,196 @@
-<%@ page language="java" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ page language="java" pageEncoding="UTF-8"
+	contentType="text/html; charset=UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <%@ include file="../../common/common.jsp"%>
-<html>
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 	<title>物料分类维护</title>
+
 </head>
-<body>
-	<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
+<body class="noscroll">
+<div id="layer_main">	
+	<form name="form" id="form" modelAttribute="dataModels" action="" method="post" style="padding-top: 10px;">
 		<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
-		<input type=hidden name="unitData.unitid" id="unitid" value="${DisplayData.unitData.unitid}"/>
-		<table>
+		<fieldset>
+		<table class="form" cellspacing="0" cellpadding="0" style="width: 100%;">
 			<tr>
-				<td>
-					上级分类：
+				<td width="100px">
+					上级分类编码：
 				</td>
-				<td>
-					<input type=text name="parentUnitName" id="parentUnitName" value="${DisplayData.parentUnitName}" readonly/>
-					<input type=hidden name="parentUnitId" id="parentUnitId" value="${DisplayData.parentUnitId}"/>
-					<input type=button name="unitselect" id="unitselect" value="选择" onClick="selectUnit();"/>
-					<input type=button name="unitclear" id="unitclear" value="清空" onClick="clearUnit();"/>
+				<td width="150px"> <label>${DisplayData.parentCategoryId}</label>
+					<input type=hidden name="parentCategoryId" id="parentCategoryId" value="${DisplayData.parentCategoryId}" />
+				</td>
+				<td width="100px">
+					上级分类名称：
+				</td>
+				<td><label>${DisplayData.parentCategoryName}</label>
+					<input type=hidden name="parentCategoryName" id="parentCategoryName" value="${DisplayData.parentCategoryName}" />
 				</td>
 			</tr>
+			
 			<tr>
-				<td>
-					子分类编码：
-				</td>
-				<td>
-					<input type=text name="unitData.orgid" id="orgid" value="${DisplayData.unitData.orgid}"/>
+				<td>子分类编码：</td>
+				<td colSpan="3">
+					<input type="text"   class="required" name="unitData.categoryid" id="categoryid" value="${DisplayData.unitData.categoryid}"/>
+					<input type=hidden name="unitData.recordid" id="recordid" value="${DisplayData.unitData.recordid}"/>
+					<input type=hidden name="unitData.createtime" id="createtime" value="${DisplayData.unitData.createtime}"/>
+					<input type=hidden name="unitData.createperson" id="createperson" value="${DisplayData.unitData.createperson}"/>
+					<input type=hidden name="unitData.createunitid" id="createunitid" value="${DisplayData.unitData.createunitid}"/>
+					<input type=hidden name="unitData.parentid" id="parentid" value="${DisplayData.parentCategoryId}"/>
 				</td>
 			</tr>		
 	
 			<tr>
 				<td>
-					子分类名称<font color="#F00">(*)</font>：
+					子分类名称：
 				</td>
-				<td>
-					<input type=text name="unitData.unitname" id="unitname" value="${DisplayData.unitData.unitname}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					单位简称：
-				</td>
-				<td>
-					<input type=text name="unitData.unitsimpledes" id="unitsimpledes" value="${DisplayData.unitData.unitsimpledes}"/>
-				</td>
-			</tr>			
-			<tr>
-				<td>
-					单位简拼：
-				</td>
-				<td>
-					<input type=text name="unitData.jianpin" id="jianpin" value="${DisplayData.unitData.jianpin}"/>
-				</td>
-			</tr>
-		
-					<tr>
-				<td>
-					单位属性：
-				</td>
-				<td>
-					<select name="unitData.unitproperty" id="unitproperty">
-						<c:forEach items="${DisplayData.unitPropertyList}" var="value" varStatus="status">
-							<option value ="${value[0]}">${value[1]}</option>
-						</c:forEach>
-					</select>
+				<td colspan="3">
+					<input type="text" name="unitData.categoryname" id="categoryname" class="middle required" value="${DisplayData.unitData.categoryname}"/>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					单位性质：		
+					规格描述：
 				</td>
-				<td>
-					<select name="unitData.unittype" id="unittype">
-						<c:forEach items="${DisplayData.unitTypeList}" var="value" varStatus="status">
-							<option value ="${value[0]}">${value[1]}</option>
-						</c:forEach>
-					</select>
+				<td colspan="3">
+					<input type="text" name="unitData.formatdes" id="formatdes"  class="long" value="${DisplayData.unitData.formatdes}"/>
 				</td>
 			</tr>
 			<tr>
-				<td>
-					地址（省市县）：
-				</td>
-				<td>
-					<input type=text name="address" id="address" value="${DisplayData.address}" readonly/>
-					<input type=hidden name="unitData.addresscode" id="addresscode" value="${DisplayData.unitData.addresscode}" readonly/>
-					<input type=button name="addressSelect" id="addressSelect" value="选择地址" onClick="selectAddress();"/>
+				<td>备注：</td>
+				<td colspan="3">
+					<textarea rows="6" cols="60" name="unitData.memo" id="memo" class="long" >${DisplayData.unitData.memo}</textarea>
 				</td>
 			</tr>
-			<tr>
-				<td>
-					地址（街道门牌号码）：
-				</td>
-				<td>
-					<input type=text name="unitData.addressuser" id="addressuser" value="${DisplayData.unitData.addressuser}"/>
-				</td>
-			</tr>			
-			<tr>
-				<td>
-					邮编：
-				</td>
-				<td>
-					<input type=text name="unitData.postcode" id="postcode" value="${DisplayData.unitData.postcode}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					电话：
-				</td>
-				<td>
-					<input type=text name="unitData.telphone" id="telphone" value="${DisplayData.unitData.telphone}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					EMAIL：
-				</td>
-				<td>
-					<input type=text name="unitData.email" id="email" value="${DisplayData.unitData.email}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					负责人：
-				</td>
-				<td>
-					<input type=text name="unitData.mgrperson" id="mgrperson" value="${DisplayData.unitData.mgrperson}"/>
-				</td>
-			</tr>			
-			<tr>
-				<td>
-					科室：
-				</td>
-				<td>
-					<input type=text name="unitData.officeid" id="officeid" value="${DisplayData.unitData.officeid}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					区域码：
-				</td>
-				<td>
-					<input type=text name="unitData.areaid" id="areaid" value="${DisplayData.unitData.areaid}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					序号：
-				</td>
-				<td>
-					<input type=text name="unitData.sortno" id="sortno" value="${DisplayData.unitData.sortno}"/>
-				</td>
-			</tr>			
-			<tr>
-				<td colspan=2>
-					<input type=button name="save" id="save" value="保存" onClick="saveUpdate()"/>
-					<input type=button name="addsub" id="addsub"" value="增加子单位" onClick="addSub('')"/>
-					<input type=button name="close" id="close"" value="关闭" onClick="closeWindow('')"/>
-				</td>
-			</tr>
-
 		</table>
-		<br>
+		</fieldset>					
+		<fieldset class="action" style="text-align: end;">
+			<button type="reset" id="reset" class="DTTT_button">重置</button>
+			<button type="button" id="save"
+					onclick="saveUpdate()" class="DTTT_button" />保存
+		</fieldset>
 	</form>
+	</div>
 
+<script type="text/javascript">
+
+var operType = '';
+var isUpdateSuccessed = false;
+var updatedRecordCount = parseInt('${DisplayData.updatedRecordCount}');
+
+operType = $('#operType').val();
+
+if (updatedRecordCount > 0 ) {
+
+	var strName = '${DisplayData.unitData.categoryname}';
+	var strchild =' ${DisplayData.unitData.childid}';
+	var treeview = strchild+'_'+strName;
+	
+	if (operType == 'add') {	
+		window.parent.addNode('${DisplayData.unitData.parentid}', '${DisplayData.unitData.categoryid}', treeview, '');
+	}
+	if (operType == 'update') {
+		window.parent.updateNode('${DisplayData.unitData.parentid}', '${DisplayData.unitData.categoryid}', treeview, '');
+	}
+}
+
+if (operType == 'addsub') {
+	$('#categoryid').val('${DisplayData.parentCategoryId}');
+}
+
+if ('${DisplayData.message}' != '') {
+	alert('${DisplayData.message}');
+}	
+
+if (updatedRecordCount > 0) {
+	refreshOpenerData();
+}
+
+function noticeNaviChanged(id, name, isLeaf) {
+
+	if (isLeaf) {
+		$('#parentCategoryName').val("");	
+		$('#categoryid').val(id);
+		$('#categoryname').val(name);
+	} else {
+		$('#categoryid').val("");
+		$('#categoryname').val("");
+		$('#parentCategoryName').val(id);	
+	}
+}
+
+function selectAddress() {
+	callDicSelect("addresscode", "address", 'A2', '1' );
+}
+
+function refreshOpenerData() {
+	parent.doSearch();
+	//var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	parent.layer.close(index); //执行关闭
+}
+
+$(document).ready( function () {  
+
+	$("form :input.required").each(function(){
+        var $required = $("<strong class='high'> *</strong>"); //创建元素
+        $(this).parent().append($required); //然后将它追加到文档中
+    });
+	
+	 //文本框失去焦点后
+    $('form :input').blur(function(){
+    	//alert(888)
+         var $parent = $(this).parent();
+         $parent.find(".formtips").remove();
+         //alert(111)
+         //验证用户名
+         if( $(this).is('#categoryid') ){
+                if( this.value==""  ){
+                    var errorMsg = '请输入物料分类编号!';
+                    $parent.append('<label class="formtips error">'+errorMsg+'</label>');
+                }
+         }
+         //验证邮件
+         if( $(this).is('#categoryname') ){
+             if( this.value==""  ){
+                  var errorMsg = '请输入分类名称!';
+                  $parent.append('<label class="formtips error">'+errorMsg+'</label>');
+            }
+         }
+
+    }).keyup(function(){
+       $(this).triggerHandler("blur");
+    }).focus(function(){
+         $(this).triggerHandler("blur");
+    });//end blur
+
+   
+    //提交，最终验证。
+     $('#save').click(function(){
+    	 
+		 $("form :input.required").trigger('blur');
+		 var numError = $('form .error').length;
+		 if(numError){
+		     return false;
+		 } 
+		 
+		if (operType == 'add' || operType == 'addsub') {
+			$('#form').attr("action", "${ctx}/business/matcategory?methodtype=add");
+		} else {
+			$('#form').attr("action", "${ctx}/business/matcategory?methodtype=update");
+		}
+		
+		$('#form').submit();
+		
+     });
+    
+    //重置
+     $('#reset').click(function(){
+           $(".formtips").remove(); 
+     });
+});
+
+</script>
 </body>
 
-<script>
-	var operType = '';
-	var isUpdateSuccessed = false;
-	var updatedRecordCount = parseInt('${DisplayData.updatedRecordCount}');
-	$(function(){
-		operType = $('#operType').val();
-
-		if (updatedRecordCount > 0 ) {
-			if (operType == 'add' || operType == 'addsub') {			
-				window.opener.addNode('${DisplayData.unitData.parentid}', '${DisplayData.unitData.unitid}', '${DisplayData.unitData.unitname}', '');
-			}
-			if (operType == 'update') {
-				window.opener.updateNode('${DisplayData.unitData.parentid}', '${DisplayData.unitData.unitid}', '${DisplayData.unitData.unitname}', '');
-			}
-		}
-			
-		if (operType == 'add' || operType == 'addsub') {
-			$('#save').val("保存增加");
-		}
-		if (operType == 'update') {
-			if (updatedRecordCount > 0 ) {
-				refreshOpenerData();				
-				if ('${DisplayData.message}' != '') {
-					alert('${DisplayData.message}');
-				}
-				closeWindow("1");
-			} else {
-				$('#save').val("保存修正");
-				$('#unitid').attr('readonly', true);
-			}
-		}
-		if (operType == 'addsub') {
-			$('#parentid').val('${DisplayData.unitData.parentid}');
-			$('#parentUnitName').attr("readonly", true);
-		}
-		if ('${DisplayData.isOnlyView}' != '') {
-			setPageReadonly('material');
-		}
-
-		if ('${DisplayData.unitData.unittype}' == '') {
-			$("#unittype option:first").prop("selected", 'selected');
-		} else {
-			$('#unittype').val('${DisplayData.unitData.unittype}');
-		}
-		if ('${DisplayData.unitData.unitproperty}' == '') {
-			$("#unitproperty option:first").prop("selected", 'selected');
-		} else {
-			$('#unitproperty').val('${DisplayData.unitData.unitproperty}');
-		}
-		
-		if (updatedRecordCount > 0) {
-			refreshOpenerData();
-		}
-				
-		if ('${DisplayData.message}' != '') {
-			alert('${DisplayData.message}');
-		}
-		
-	}); 
-
-	function noticeNaviChanged(id, name, isLeaf) {
-
-		if (isLeaf) {
-			$('#parentUnitName').val("");	
-			$('#unitId').val(id);
-			$('#unitName').val(name);
-		} else {
-			$('#unitId').val("");
-			$('#unitName').val("");
-			$('#parentUnitName').val(id);	
-		}
-	}
-
-	function inputCheck() {
-		var str = '';
-/*
-		str = $('#parentUnitIdName').val();
-		if (!inputStrCheck(str, "上级单位", 3, 8, true, true)) {
-			return false;
-		}
-		str = $('#unitname').val();
-		if (!inputStrCheck(str, "单位名称", 100, 7, false, true)) {
-			return false;
-		}
-		str = $('#unitsimpledes').val();
-		if (!inputStrCheck(str, "单位简称", 100, 7, true, true)) {
-			return false;
-		}
-		str = $('#jianpin').val();
-		if (!inputStrCheck(str, "单位简拼", 100, 7, true, true)) {
-			return false;
-		}		
-		str = $('#orgid').val();
-		if (!inputStrCheck(str, "单位编码", 100, 7, true, true)) {
-			return false;
-		}	
-		str = $('#unitproperty').val();
-		if (!inputStrCheck(str, "单位属性", 3, 3,  true, true)) {
-			return false;
-		}
-		str = $('#unittype').val();
-		if (!inputStrCheck(str, "单位性质", 3, 3,  true, true)) {
-			return false;
-		}
-		str = $('#addresscode').val();
-		if (!inputStrCheck(str, "地址（省市县）", 100, 7,  true, true)) {
-			return false;
-		}		
-		str = $('#addressuser').val();
-		if (!inputStrCheck(str, "地址（街道门牌号码）", 100, 7,  true, true)) {
-			return false;
-		}
-		
-		str = $('#postcode').val();
-		if (!inputStrCheck(str, "邮编", 6, 3, true, true)) {
-			return false;
-		}
-		str = $('#telphone').val();
-		if (!inputStrCheck(str, "电话", 20, 5, true, true)) {
-			return false;
-		}
-		str = $('#email').val();
-		if (!inputStrCheck(str, "EMAIL", 50, 6, true, true)) {
-			return false;
-		}
-		str = $('#mgrperson').val();
-		if (!inputStrCheck(str, "负责人", 20, 7, true, true)) {
-			return false;
-		}
-		str = $('#officeid').val();
-		if (!inputStrCheck(str, "科室", 3, 8, true, true)) {
-			return false;
-		}
-		str = $('#areaid').val();
-		if (!inputStrCheck(str, "区域码", 120, 8, true, true)) {
-			return false;
-		}
-		str = $('#sortno').val();
-		if (!inputStrCheck(str, "序号", 120, 3, true, true)) {
-			return false;
-		}
-*/
-		return true;	
-	}
-
-	function saveUpdate() {
-		if (inputCheck()) {
-			if (confirm("确定要保存吗？")) {
-				if (operType == 'add' || operType == 'addsub') {
-					$('#form').attr("action", "${ctx}/business/material?methodtype=add");
-				} else {
-					$('#form').attr("action", "${ctx}/business/material?methodtype=update");
-				}
-				$('#form').submit();
-			}
-		}	
-	}
-
-	function selectUnit() {
-		callUnitSelect("parentUnitId", "parentUnitName", "0");
-	}
-
-	function selectAddress() {
-		callDicSelect("addresscode", "address", 'A2', '1' );
-	}
-	
-	function addSub() {
-		if ($('#parentUnitName').val() == '') {
-			$('#parentUnitName').val($('#unitname').val());
-			$('#parentUnitId').val($('#unitid').val());
-		}
-		
-		$('#unitname').val("");
-		$('#unitsimpledes').val("");
-		$('#jianpin').val("");
-		$('#orgid').val("");
-		//$('#unitproperty').val("");
-		//$('#unittype').val("");
-		$("#unitproperty option:first").prop("selected", 'selected');
-		$("#unittype option:first").prop("selected", 'selected');
-		$('#address').val("");
-		$('#postcode').val("");
-		$('#telphone').val("");
-		$('#email').val("");
-		$('#mgrperson').val("");
-		$('#officeid').val("");
-		$('#areaid').val("");
-		$('#sortno').val("");		
-	}
-	
-	function closeWindow(isNeedConfirm) {
-		if (isNeedConfirm == '') {
-			if (operType == 'add' || operType == 'addsub' || operType == 'update') {
-				if (confirm("确定要离开吗？")) {
-					self.opener = null;
-					self.close();
-				}
-			} else {
-				self.opener = null;
-				self.close();
-			}
-		} else {
-			self.opener = null;
-			self.close();
-		}
-	}
-
-	function refreshOpenerData() {
-		if (operType == 'add' || operType == 'addsub' || operType == 'update') {
-			var goPageIndex = parseInt($(window.opener.document.getElementById('pageIndex')).val()) - 1;
-			window.opener.goToPage('form', goPageIndex, '');
-			
-		}
-		return true;
-	}
-
-	function clearUnit() {
-		$('#parentUnitId').val('');
-		$('#parentUnitName').val('');
-	}
-	
-</script>
 </html>

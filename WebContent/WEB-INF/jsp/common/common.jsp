@@ -11,24 +11,31 @@
   var ctx = '${ctx}'; 
 </script>
 <script type="text/javascript" src="${ctx}/js/jquery-2.1.3.js"></script>
+<!-- 
+<script type="text/javascript" src="${ctx}/js/jquery-1.11.1.min.js"></script>
+ -->
 <script type="text/javascript" src="${ctx}/js/jquery-ui.min.js"></script>
-<script type="text/javascript" src="${ctx}/js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.form.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.fancybox.js"></script>
+<script type="text/javascript" src="${ctx}/js/kxbdSuperMarquee.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.similar.msgbox.js"></script>
+<link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="${ctx}/css/main.css">
+<!-- 
+<script type="text/javascript" src="${ctx}/js/jquery.min.js"></script>
+ -->
+<script type="text/javascript" src="${ctx}/js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
 <script type="text/javascript" src="${ctx}/js/layer.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="${ctx}/js/jquery.MetaData.js"></script>
 <script type="text/javascript" src="${ctx}/js/dataTables.tableTools.js"></script>
 <script type="text/javascript" src="${ctx}/js/dataTables.select.js"></script>
 <script type="text/javascript" src="${ctx}/plugins/validate/jquery.validate.js"></script>
 <script type="text/javascript" src="${ctx}/plugins/validate/localization/messages_zh.js" charset="utf8"></script>
-
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/css/main.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
@@ -56,7 +63,7 @@
 		popupWindow("selectdictype", "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + dicTypeControl + "&dicControlView=" + dicTypeControlView + "&type=" + type + "&dicTypeId=" + dicTypeId + "&treeType=0", 800, 600);
 		
 	}
-	function openLayer(url, width, height, isParentOpen,offsetTop) {
+	function openLayer(url, width, height, isParentOpen) {
 		if (width == "") {
 			width = '900px';
 		} else {
@@ -69,7 +76,6 @@
 		}
 		if (isParentOpen) {
 			parent.layer.open({
-				offset :[offsetTop,''],
 				type : 2,
 				title : false,
 				area : [ width, height ], 
@@ -79,7 +85,6 @@
 			});
 		} else {
 			layer.open({
-				offset :[offsetTop,''],
 				type : 2,
 				title : false,
 				area : [ width, height ], 
@@ -126,6 +131,30 @@
         curTabWin.reload();
 
 		
+	}
+	
+	function getDateDiff(date1, date2) {
+		var newDate1;
+		var newDate2;
+		
+		if (date1 == "") {
+			newDate1 = new Date();
+		} else {
+			newDate1 = new Date(date1);
+		}
+		if (date2 == "") {
+			newDate2 = new Date();
+		} else {
+			newDate2 = new Date(date2);
+		}		
+		
+		var dateDiff = Math.ceil((newDate2 - newDate1) / (24 * 60 * 60 * 1000));
+		
+		if (dateDiff < 0) {
+			dateDiff = 0;
+		}
+		
+		return dateDiff;
 	}
 </Script>
 

@@ -110,9 +110,10 @@ public class OrganAction extends BaseAction {
 		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataMap = organService.Search(request, data, userInfo);
+			dataMap = organService.search(request, data, userInfo);
 			
-			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
 			}
@@ -128,7 +129,7 @@ public class OrganAction extends BaseAction {
 
 	public void doCreate(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
-		organModel = organService.CreateOrgan(request);
+		organModel = organService.createOrgan(request);
 		model.addAttribute("DisplayData", organModel);
 		
 	}
@@ -137,30 +138,15 @@ public class OrganAction extends BaseAction {
 
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 			
-		organModel = organService.Insert(request, data, userInfo);
+		organModel = organService.insert(request, data, userInfo);
 		
 		return organModel;
 	}		
 	
-	public String doUpdateContact(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-
-		String key = request.getParameter("key");
-		try {
-			//dataModel = supplierService.getSupplierBaseInfo(key);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			organModel.setMessage("发生错误，请联系系统管理员");
-		}
-		model.addAttribute("DisplayData", organModel);
-		
-		return "/business/supplier/supplieredit";
-	}	
-	
 	public OrganModel doUpdate(String data, HttpSession session, HttpServletRequest request){
 				
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		organModel = organService.doUpdate(request, data, userInfo);
+		organModel = organService.update(request, data, userInfo);
 		
 		return organModel;
 	}	
@@ -173,13 +159,6 @@ public class OrganAction extends BaseAction {
 		return organModel;
 	}
 
-	public OrganModel doDeleteContact(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-
-		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		//organModel = supplierService.doDelete(data, userInfo);
-
-		return organModel;
-	}	
 	
 	public String doEdit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
@@ -195,14 +174,5 @@ public class OrganAction extends BaseAction {
 		
 		return "/business/organ/organedit";
 	}	
-	
-	public OrganModel doOptionChange(String data){
-		
-		String[] paras = data.split("&");
-		String[] datas = paras[1].split("=");
-		//organModel = supplierService.doOptionChange(DicUtil.ADDRESS, datas[1]);
-
-		return organModel;
-	}
 
 }

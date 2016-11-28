@@ -1,95 +1,108 @@
-<%@ page language="java" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <%@ include file="../../common/common.jsp"%>
-<html>
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 	<title>	物料分类管理</title>
 </head>
-<body>
-	<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
-		<input type=hidden id="operType" name="operType" value='${DisplayData.operType}'>
-		<input type=hidden name="userUnitId" id="userUnitId" value="${DisplayData.userUnitId}"/>
-		<!-- 翻页start -->
-		<input type=hidden name="startIndex" id="startIndex" value=""/>
-		<input type=hidden name="flg" id="flg" value="11111"/>
-		<input type=hidden name="turnPageFlg" id="turnPageFlg" value=""/>
-		<input type=hidden name="sortFieldList" id="sortFieldList" value="${DisplayData.sortFieldList}"/>
-		<input type=hidden name="totalPages" value="${DisplayData.totalPages}"/>
-		<!-- 翻页end -->
+<body class="easyui-layout">
+<div id="container">
+<div id="main">
 
-		<table>
+	<form name="form" id="form" modelAttribute="dataModels" action="" method="post"
+	 style='padding: 0px; margin: 10px;'>
+		<input type="hidden" id="operType" name="operType" value='${DisplayData.operType}'/>
+		<input type="hidden" id="parentCategoryName" name="parentCategoryName" value=''/>
+		<input type="hidden" name="userCategoryId" id="userCategoryId" value="${DisplayData.userCategoryId}"/>
+
+		<div id="search">
+		<table style="height: 50px;">
 			<tr>
-				<td>
-					上级分类名称：
+				<td class="label" width="20%">
+					关键字1：
+				</td>
+				<td class="condition">
+					<input type="text" name="categoryName" id="categoryName" class="middle" value="${DisplayData.categoryName}"/>
 				</td>
 				<td>
-					<input type=text name="unitIdName" id="unitIdName" value="${DisplayData.unitIdName}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<input type=button name="search" id="search" value="查询" onClick="doSearch()"/>
+					<button type="button" id="retrieve"
+						onclick="doSearch()" class="DTTT_button" />查询
 				</td>
 			</tr>
 		</table>
-		<table>
+		</div>
+			<div  style="height:10px"></div>
+		
+			<div class="list">
+		<table width="100%" cellspacing="0" >
 			<tr>
-				<td colspan=6 align=right>
-					<input type=button name="add" id="add" value="新建子分类" onClick="addUnit()"/>
-					<!-- input type=button name="merge" id="merge" value="合并" onClick="mergeUnit()"/ -->>
-					<input type=button name="delete" id="delete" value="撤销" onClick="deleteUnit()"/>
+				<td colspan="6" align="right">
+					<!-- input type=button name="add" id="add" value="新建子分类" onClick="addUnit()"/ -->
+					<!-- input type=button name="merge" id="merge" value="合并" onClick="mergeUnit()"/ -->
+					<button type="button"  id="delete" 
+						onclick="deleteUnit()" class="DTTT_button"/>删除分类
 				</td>
 			</tr>
-			<tr>
-				<td>序号</td>
-				<td>分类编码</td>
-				<td>分类名称</td>
-				<td>上级单位</td>
-				<td>操作</td>
+			</table>
+		<table width="100%"  class="display dataTable" cellspacing="0" id="example" >
+			<thead>
+			<tr class="selected">
+				<td width="1px" style="display:none"></td>
+				<td width="30px">序号</td>
+				<td width="100px">分类编码</td>
+				<td width="160px">分类名称</td>
+				<td width="160px">规格说明</td>
+				<td width="160px">上级单位</td>
+				<td width="160px">操作</td>
 			</tr>
-			<c:set var="userUnitId" value="${DisplayData.userUnitId}" />
+			</thead>
+			<tbody>
 			<c:forEach items="${DisplayData.viewData}" var="value" varStatus="status">
 				<tr>
+					<td style="display:none">
+						<input type="checkbox" name="numCheckNode" id="numCheckNode" value='${value[1]}' />						
+					</td>
 					<td>
-						<c:choose>
-							<c:when test="${value[1] == userUnitId}">
-								${value[0]}
-							</c:when>
-							<c:otherwise>
-								${value[0]}<input type=checkbox name="numCheck" id="numCheck" value='${value[1]}' />
-							</c:otherwise>
-						</c:choose>
-						
+						${value[0]}<input type="checkbox" name="numCheck" id="numCheck" value='${value[5]}'/>						
+					</td>
+					<td>
+						${value[1]}
 					</td>
 					<td>
 						${value[2]}
 					</td>
 					<td>
-						${value[3]}
+						${value[6]}
 					</td>
 					<td>
 						${value[4]}
 					</td>
 					<td>
-						<a href="javascript:void(0);" title="增加子单位" onClick="callAddSubUnit('${value[1]}');">子单位</a>
-						<a href="javascript:void(0);" title="详细信息" onClick="dispUnitDetail('${value[1]}');">详细信息</a>
-						<a href="javascript:void(0);" title="修改" onClick="callUpdateUnit('${value[1]}');">修改</a>
+						<!--  href="javascript:void(0);" title="查看"  onClick="dispUnitDetail('${value[5]}');">查看</a-->
+						<a href="javascript:void(0);" title="修改" 
+							onclick="callUpdateUnit('${value[4]}','${value[5]}');">修改</a>
+						<a href="javascript:void(0);" title="增加子分类" 
+							onclick="callAddSubUnit('${value[1]}','${value[2]}');">增加子分类</a>
 					</td>
 				</tr>
 			</c:forEach>
+			</tbody>
 		</table>
-		<br>
-		${DisplayData.turnPageHtml}
+		</div>
 	</form>
+</div>
+</div>
+<script type="text/javascript">
 
-</body>
+	var layerHeight = '350';
+	var layerWidth = '700';
 
-<script>
 	$(function(){
-		$('#form').attr("action", "${ctx}/business/material?methodtype=search");
+		$('#form').attr("action", "${ctx}/business/matcategory?methodtype=search");
 
 		var updateRecordCount = parseInt('${DisplayData.updatedRecordCount}');
-
 		if (updateRecordCount > 0) {
 			if ($('#operType').val() == 'add') {
 				reloadTree('${DisplayData.unitData.parentid}');
@@ -101,7 +114,7 @@
 				reloadTree('${DisplayData.unitData.parentid}');
 			}
 			if ($('#operType').val() == 'delete') {
-				var dataList = '${DisplayData.numCheck}'.split(",");
+				var dataList = '${DisplayData.numCheckNode}'.split(",");
 				for(i = 0; i < dataList.length; i++) {
 					removeNode(dataList[i]);
 				}
@@ -114,14 +127,16 @@
 		
 	}); 
 	function noticeNaviChanged(id, name, isLeaf) {
-
-		$('#unitIdName').val(name);
-		$('#search').click();
+		var infoList = name.split("_");
+		$('#userCategoryId').val(id);
+		$('#categoryName').val(infoList[1]);
+		
+		$('#retrieve').click();
 
 	}
 
 	function inputCheck() {
-		var str = $('#unitIdName').val();
+		var str = $('#categoryName').val();
 		if (!inputStrCheck(str, "单位名称", 100, 7, true, true)) {
 			return false;
 		}
@@ -130,16 +145,15 @@
 	}
 
 	function doSearch() {
-
 		if (inputCheck()) {
-			$('#form').attr("action", "${ctx}/business/material?methodtype=search");
+			$('#form').attr("action", "${ctx}/business/matcategory?methodtype=search");
 			$('#form').submit();
 		}
 	}
 
 	function addUnit() {
 		$('#operType').val("add");
-		popupWindow("UnitDetail", "${pageContext.request.contextPath}/business/material?methodtype=updateinit&operType=add", 800, 600);	
+		popupWindow("UnitDetail", "${pageContext.request.contextPath}/business/matcategory?methodtype=updateinit&operType=add", 800, 500);	
 	}
 	
 	function deleteUnit() {
@@ -147,14 +161,17 @@
 		$('#operType').val("delete");
 		
 		var isAnyOneChecked = false;
-		$("input[name='numCheck']").each(function(){
+		$("input[name='numCheck']").each(function(index, domEle){
 			if ($(this).prop('checked')) {
 				isAnyOneChecked = true;
+				$("input[name='numCheckNode']").eq(index).attr('checked', 'true');
+				//通过可见的复选框选中后,自动选中隐藏的CategoryID复选框,
+				//以便删除后,目录树可以自动更新;
 			}
 		});
 		if (isAnyOneChecked) {
 			if(confirm("确定要删除数据吗？")) {
-				$('#form').attr("action", "${ctx}/business/material?methodtype=delete");
+				$('#form').attr("action", "${ctx}/business/matcategory?methodtype=delete");
 				$('#form').submit();
 			}
 		} else {
@@ -162,21 +179,24 @@
 		}
 	}
 
-	function callAddSubUnit(unitId) {
+	function callAddSubUnit(categoryId,parentName) {
 		$('#operType').val("addsub");
-		popupWindow("UnitDetail", "${pageContext.request.contextPath}/business/business/material?methodtype=updateinit&operType=addsub&unitId=" + unitId, 800, 600);	
+		var url = "${ctx}/business/matcategory?methodtype=updateinit&operType=addsub&categoryId=" + categoryId + "&parentName=" + encodeURIComponent(parentName);
+		openLayer(url, layerWidth, layerHeight, false,'100px');
 	}
 	
-	function dispUnitDetail(unitId) {
-		popupWindow("UnitDetail", "${pageContext.request.contextPath}/business/material?methodtype=detail&unitId=" + unitId, 800, 600);
+	function dispUnitDetail(recordId) {
+		var url = "${ctx}/business/matcategory?methodtype=detail&recordId=" + recordId
+		openLayer(url, layerWidth, layerHeight, true,'100px');
 	}
 
-	function callUpdateUnit(unitId) {
+	function callUpdateUnit(parentName,recordId) {
 		$('#operType').val("update");
-		popupWindow("UnitDetail", "${pageContext.request.contextPath}/business/material?methodtype=updateinit&operType=update&unitId=" + unitId, 800, 600);	
+		var url = "${ctx}/business/matcategory?methodtype=updateinit&operType=update&recordId=" + recordId+ "&parentName=" + encodeURIComponent(parentName);
+		openLayer(url, layerWidth, layerHeight, false,'100px');
 	}
 
-	function mergeUnit(unitId) {
+	function mergeUnit(categoryId) {
 		alert("等待实装...");
 	}
 
@@ -184,12 +204,47 @@
 		window.parent.removeNode(nodeId);
 	}	
 	function updateNode(parentNodeId, nodeId, text, icon) {
-		//window.parent.updateNode(nodeId, text, icon);
 		window.parent.removeNode(nodeId);
 		window.parent.addNode(parentNodeId, nodeId, text, icon);
 	}
 	function addNode(parentNodeId, id, text, icon) {
 		window.parent.addNode(parentNodeId, id, text, icon);
 	}
-</script>
+
+$(document).ready( function () {  
+
+	var scrollHeight = $(window).height() - 207; 
+	
+	var t = $('#example').DataTable({
+			"paging": true,
+			"lengthMenu":[20,50,100],//设置一页展示100条记录
+			"searching" : false,
+			"scrollY":scrollHeight,
+			"scrollCollapse":true,
+    	  	"language": {"url":"${ctx}/plugins/datatables/chinese.json"},
+
+    	  	"columnDefs" : [ 
+			                 {
+						"orderable" : false,
+						"targets" : [6] 
+					}, {
+						"visible" : true,
+						"targets" : [0]
+					} ]
+	});   
+      
+     t.on('click', 'tr', function() {
+    	 
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	            t.$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	            
+	        }
+	});
+});
+</script> 
+</body>
 </html>

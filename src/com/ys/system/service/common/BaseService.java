@@ -75,8 +75,6 @@ public class BaseService {
 		return BaseQuery.getContent(fileName, key);
 	}
 	
-
-	
 	/*
 	 * mapToBean
 	 * parm:map
