@@ -212,7 +212,7 @@ public class BusinessDbUpdateEjb  {
 												
 				commData = service.commFiledEdit(								
 						Constants.ACCESSTYPE_DEL,						
-						OrganDelete,						
+						"OrganDelete",						
 						userInfo);						
 												
 				service.copyProperties(data,commData);								
@@ -245,7 +245,7 @@ public class BusinessDbUpdateEjb  {
 				BaseService service = new BaseService();								
 				commData = service.commFiledEdit(								
 						Constants.ACCESSTYPE_DEL,						
-						MaterialUpdate,						
+						"MaterialUpdate",						
 						userInfo);						
 												
 				service.copyProperties(data,commData);								
