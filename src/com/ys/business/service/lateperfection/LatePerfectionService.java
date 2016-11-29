@@ -280,9 +280,9 @@ public class LatePerfectionService extends BaseService {
 			
 			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 	        
-			String info = bean.executeLatePerfectionUpdate(data, userInfo);
+			//String info = bean.executeLatePerfectionUpdate(data, userInfo);
 
-			model.setEndInfoMap(NORMAL, "", info);
+			//model.setEndInfoMap(NORMAL, "", info);
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(SYSTEMERROR, "err001", id);
@@ -298,7 +298,7 @@ public class LatePerfectionService extends BaseService {
 		try {
 			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 	        
-	        bean.executeLatePerfectionDelete(data, userInfo);
+	        //bean.executeLatePerfectionDelete(data, userInfo);
 	        
 	        model.setEndInfoMap(NORMAL, "", "");
 	        
@@ -425,10 +425,10 @@ public class LatePerfectionService extends BaseService {
 				calendarUtil = new CalendarUtil(dbData.getCreatedate());
 				dbData.setCreatedate(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
 			}
-			if (dbData.getExpectdate() != null) {
-				calendarUtil = new CalendarUtil(dbData.getExpectdate());
-				dbData.setExpectdate(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
-			}
+			//if (dbData.getExpectdate() != null) {
+			//	calendarUtil = new CalendarUtil(dbData.getExpectdate());
+				//dbData.setExpectdate(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
+			//}
 			if (dbData.getFinishtime() != null) {
 				calendarUtil = new CalendarUtil(dbData.getFinishtime());
 				dbData.setFinishtime(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
@@ -449,14 +449,14 @@ public class LatePerfectionService extends BaseService {
 			for(HashMap<String, String>rowData:expectDataList) {
 				++rowCount;
 				if (rowCount == expectDataList.size()) {
-					model.setLastestExpectDate(rowData.get("expectDate"));
+					//model.setLastestExpectDate(rowData.get("expectDate"));
 				}
 			}
 			if (id != null && !id.equals("")) {
 				if (dbData.getFinishtime() == null || dbData.getFinishtime().equals("")) {
-					model.setExceedTime(getDayBetween(dbData.getExpectdate(), ""));
+					//model.setExceedTime(getDayBetween(dbData.getExpectdate(), ""));
 				} else {
-					model.setExceedTime(getDayBetween(dbData.getExpectdate(), dbData.getFinishtime()));
+					//model.setExceedTime(getDayBetween(dbData.getExpectdate(), dbData.getFinishtime()));
 				}
 			}
 		}
@@ -483,11 +483,11 @@ public class LatePerfectionService extends BaseService {
 			}
 		}
 		
-		model.setLatePerfectionData(dbData);
+		//model.setLatePerfectionData(dbData);
 		
 		model.setKeyBackup(id);
 		model.setProjectId(projectId);
-		model.setType(type);
+		//model.setType(type);
 
 		model.setEndInfoMap("098", "0001", "");
 		
