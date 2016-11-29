@@ -86,27 +86,40 @@ public class B_ZZMaterialPriceData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String unittime;
-	public String getUnittime()
+	private String time;
+	public String getTime()
 	{
-		return this.unittime;
+		return this.time;
 	}
-	public void setUnittime(String unittime)
+	public void setTime(String time)
 	{
-		this.unittime=unittime;
+		this.time=time;
 	}
 
 	/**
 	*
 	*/
-	private String yield;
-	public String getYield()
+	private String houryield;
+	public String getHouryield()
 	{
-		return this.yield;
+		return this.houryield;
 	}
-	public void setYield(String yield)
+	public void setHouryield(String houryield)
 	{
-		this.yield=yield;
+		this.houryield=houryield;
+	}
+
+	/**
+	*
+	*/
+	private String hourprice;
+	public String getHourprice()
+	{
+		return this.hourprice;
+	}
+	public void setHourprice(String hourprice)
+	{
+		this.hourprice=hourprice;
 	}
 
 	/**
@@ -138,14 +151,14 @@ public class B_ZZMaterialPriceData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String unitpower;
-	public String getUnitpower()
+	private String hourpower;
+	public String getHourpower()
 	{
-		return this.unitpower;
+		return this.hourpower;
 	}
-	public void setUnitpower(String unitpower)
+	public void setHourpower(String hourpower)
 	{
-		this.unitpower=unitpower;
+		this.hourpower=hourpower;
 	}
 
 	/**
@@ -319,13 +332,13 @@ public class B_ZZMaterialPriceData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("managementcostrate = "+(managementcostrate == null ? "null" : managementcostrate)+"\n");		sb.append("materialprice = "+(materialprice == null ? "null" : materialprice)+"\n");		sb.append("cavitiesnumber = "+(cavitiesnumber == null ? "null" : cavitiesnumber)+"\n");		sb.append("unittime = "+(unittime == null ? "null" : unittime)+"\n");		sb.append("yield = "+(yield == null ? "null" : yield)+"\n");		sb.append("laborprice = "+(laborprice == null ? "null" : laborprice)+"\n");		sb.append("kilowatt = "+(kilowatt == null ? "null" : kilowatt)+"\n");		sb.append("unitpower = "+(unitpower == null ? "null" : unitpower)+"\n");		sb.append("kwprice = "+(kwprice == null ? "null" : kwprice)+"\n");		sb.append("powerprice = "+(powerprice == null ? "null" : powerprice)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("managementcostrate = "+(managementcostrate == null ? "null" : managementcostrate)+"\n");		sb.append("materialprice = "+(materialprice == null ? "null" : materialprice)+"\n");		sb.append("cavitiesnumber = "+(cavitiesnumber == null ? "null" : cavitiesnumber)+"\n");		sb.append("time = "+(time == null ? "null" : time)+"\n");		sb.append("houryield = "+(houryield == null ? "null" : houryield)+"\n");		sb.append("hourprice = "+(hourprice == null ? "null" : hourprice)+"\n");		sb.append("laborprice = "+(laborprice == null ? "null" : laborprice)+"\n");		sb.append("kilowatt = "+(kilowatt == null ? "null" : kilowatt)+"\n");		sb.append("hourpower = "+(hourpower == null ? "null" : hourpower)+"\n");		sb.append("kwprice = "+(kwprice == null ? "null" : kwprice)+"\n");		sb.append("powerprice = "+(powerprice == null ? "null" : powerprice)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		materialid= (materialid == null ?null : materialid.trim());		managementcostrate= (managementcostrate == null ?null : managementcostrate.trim());		materialprice= (materialprice == null ?null : materialprice.trim());		cavitiesnumber= (cavitiesnumber == null ?null : cavitiesnumber.trim());		unittime= (unittime == null ?null : unittime.trim());		yield= (yield == null ?null : yield.trim());		laborprice= (laborprice == null ?null : laborprice.trim());		kilowatt= (kilowatt == null ?null : kilowatt.trim());		unitpower= (unitpower == null ?null : unitpower.trim());		kwprice= (kwprice == null ?null : kwprice.trim());		powerprice= (powerprice == null ?null : powerprice.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		materialid= (materialid == null ?null : materialid.trim());		managementcostrate= (managementcostrate == null ?null : managementcostrate.trim());		materialprice= (materialprice == null ?null : materialprice.trim());		cavitiesnumber= (cavitiesnumber == null ?null : cavitiesnumber.trim());		time= (time == null ?null : time.trim());		houryield= (houryield == null ?null : houryield.trim());		hourprice= (hourprice == null ?null : hourprice.trim());		laborprice= (laborprice == null ?null : laborprice.trim());		kilowatt= (kilowatt == null ?null : kilowatt.trim());		hourpower= (hourpower == null ?null : hourpower.trim());		kwprice= (kwprice == null ?null : kwprice.trim());		powerprice= (powerprice == null ?null : powerprice.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

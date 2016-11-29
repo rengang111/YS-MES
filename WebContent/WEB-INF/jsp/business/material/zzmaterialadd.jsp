@@ -34,8 +34,8 @@
 								
 			<td class="label" style="width: 100px;"><label>产品名称：</label></td>
 			<td>${material.materialname }</td>	
-			<td class="label" style="width: 100px;"><label>分类编码：</label></td>
-			<td style="width: 300px;">${material.categoryId } | ${material.categoryName }</td>	
+			<td class="label" style="width: 100px;"></td>
+			<td style="width: 300px;"></td>	
 			
 		<tr>										
 			<td class="label"><label>管理费率：</label></td>
@@ -95,18 +95,20 @@
 	
 		<thead>
 		<tr>
-			<td>出模数</td>
-			<td>出模时间(秒)</td>
-			<td>每小时产量</td>
-			<td>工价</td>
+			<td style="width:200px">出模数</td>
+			<td style="width:200px">出模时间(秒)</td>
+			<td style="width:200px">每小时产量</td>
+			<td style="width:200px">每小时工价</td>
+			<td>单位产品工价</td>
 		</tr>
 		</thead>		
 		<tbody>
 			<tr>
-				<td><form:input path="price.cavitiesnumber" class="cash short" /></td>							
-				<td><form:input path="price.unittime" class="cash short"  /></td>
-				<td><form:input path="price.yield" class="read-only cash short" readonly="readonly"/></td>
-				<td><form:input path="price.laborprice" class="read-only cash short" readonly="readonly"/></td>				
+				<td><form:input path="price.cavitiesnumber" class="cash short labor" /></td>							
+				<td><form:input path="price.time" class="cash short labor"  /></td>	
+				<td><span id="houryield"></span><form:hidden path="price.houryield" /></td>				
+				<td><form:input path="price.hourprice" class="cash short labor"  /></td>
+				<td><span id="laborprice"></span><form:hidden path="price.laborprice" /></td>				
 			</tr>			
 		</tbody>
 	</table>
@@ -115,18 +117,18 @@
 	
 		<thead>
 		<tr>
-			<td>机器功率(KW)</td>
-			<td>每小时耗电</td>
-			<td>每度电价</td>
+			<td style="width:200px">机器功率(KW)</td>
+			<td style="width:200px">每小时耗电</td>
+			<td style="width:200px">每度电价</td>
 			<td>单位产品电价</td>
 		</tr>
 		</thead>		
 		<tbody>
 			<tr>
-				<td><form:input path="price.kilowatt" class="cash short" /></td>							
-				<td><form:input path="price.unitpower" class="cash short"  /></td>
-				<td><form:input path="price.kwprice"  class="cash short"/></td>
-				<td><form:input path="price.powerprice"  class="read-only cash short" readonly="readonly"/></td>				
+				<td><form:input path="price.kilowatt" class="cash short power" /></td>							
+				<td><span id="hourpower"></span><form:hidden path="price.hourpower"/></td>
+				<td><form:input path="price.kwprice"  class="cash short power"/></td>
+				<td><span id="powerprice"></span><form:hidden path="price.powerprice"  /></td>				
 			</tr>			
 		</tbody>
 	</table>	
@@ -144,9 +146,15 @@
 
 <script type="text/javascript">
 
-var counter = 5;
-var productCost = "0";
-var laborCost = "0"
+var counter  = 5;
+var GrawCost = '0';
+var Gpwer  = '0';
+var Gprice = '0';
+var Gyield = '0';
+var Glabor = '0';
+var Graw   = '0';
+var Gtotal = '0';
+
 
 //Form序列化后转为AJAX可提交的JSON格式。
 $.fn.serializeObject = function() {
@@ -305,7 +313,7 @@ function ajax() {
 		
 	}).draw();
 
-	
+	/*
 	t.on('blur', 'tr td:nth-child(2),tr td:nth-child(4)',function() {
 		
 		var currValue = $(this).find("input:text").val().trim();
@@ -322,32 +330,31 @@ function ajax() {
 	});
 		
 	
-	t.on('blur', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
+	*/
+	t.on('blur', 'tr td:nth-child(2),tr td:nth-child(4),tr td:nth-child(7)',function() {
 		
        $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
 
 	});
-	
-	t.on('change', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
+	t.on('change', 'tr td:nth-child(4),tr td:nth-child(7)',function() {
 		
-		/*产品成本 = 各项累计
-		人工成本 = H带头的ERP编号下的累加
-		材料成本 = 产品成本 - 人工成本
-		经管费 = 经管费率 x 产品成本
-		核算成本 = 产品成本 + 经管费*/
+		//用料净重量,损耗2%,用料重量=净重量+损耗,每公斤单价, 单位材料价=单价/1000*克重量
 		
         var $tds = $(this).parent().find("td");
 		
-        var $oMaterial  = $tds.eq(1).find("input:text");
-        var $oQuantity  = $tds.eq(4).find("input");
-		var $oThisPrice = $tds.eq(5).find("input");
-		var $oAmount1   = $tds.eq(6).find("input:hidden");
-		var $oAmount2   = $tds.eq(6).find("span");
+        var $onetweight = $tds.eq(3).find("input");//用料净重量
+        var $okgprice   = $tds.eq(6).find("input");//每公斤单价
+		var $owastages  = $tds.eq(4).find("span");//损耗
+		var $owastagei  = $tds.eq(4).find("input:hidden");
+		var $oweights   = $tds.eq(5).find("span");//用料重量
+		var $oweighti   = $tds.eq(5).find("input:hidden");
+		var $omatprices = $tds.eq(7).find("span");//单位材料价
+		var $omatpricei = $tds.eq(7).find("input:hidden");
 		
-		var fPrice = currencyToFloat($oThisPrice.val());		
-		var fQuantity = currencyToFloat($oQuantity.val());			
-		var fTotalOld = currencyToFloat($oAmount1.val());
-		var fTotalNew = currencyToFloat(fPrice * fQuantity);
+		var fnetweight = currencyToFloat($onetweight.val());		
+		var fkgprice = currencyToFloat($okgprice.val());			
+		var fwastage = currencyToFloat($owastages.val());
+		var fweight = currencyToFloat(fPrice * fQuantity);
 
 		var vPrice = floatToCurrency(fPrice);	
 		var vQuantity = floatToCurrency(fQuantity);
@@ -380,7 +387,6 @@ function ajax() {
         }
 		
 	});
-	
 	t.on('order.dt search.dt draw.dt', function() {
 		t.column(0, {
 			search : 'applied',
@@ -431,10 +437,81 @@ $(document).ready(function() {
 				}
 
 		});
+	
+	//计算人工成本
+	$(".labor").change(function() {
+		
+		var vtime   = $("#price\\.time").val();
+		var vnum    = $("#price\\.cavitiesnumber").val();
+		var vhprice = $("#price\\.hourprice").val();//每小时工价
+		var ftime = currencyToFloat(vtime);
+		var fnum  = currencyToFloat(vnum);
+		var fhprice  = currencyToFloat(vhprice);
+		//alert('fnum:'+fnum+'--ftime:'+ftime)
+		
+		//每小时产量 = 3600/出模时间*出模数
+		if(ftime == 0){
+			Gyield = 0;
+		}else{
+			Gyield = 3600 / ftime * fnum;			
+		}
+		var vyield = floatToCurrency(Gyield);
+
+		//alert('Gyield:'+Gyield+'--vyield:'+vyield)
+		
+		//工价 =每小时工价 * 每小时产量
+		Glabor = fhprice * Gyield;
+		var vlabor  = floatToCurrency(Glabor);		
+
+		$('#houryield').html(vyield);
+		$('#laborprice').html(vlabor);	
+		$("#price\\.houryield").val(vyield);
+		$("#price\\.laborprice").val(vlabor);
+
+		//单位产品电价 = 每小时耗电*每度电价/每小时产量
+		acountPowerPrice(Gpwer,Gprice,Gyield);
+		
+	});
+	
+	//计算电耗
+	$(".power").change(function() {
+		
+		var vkwatt = $("#price\\.kilowatt").val();
+		var vprice = $("#price\\.kwprice").val();
+		var fkwatt = currencyToFloat(vkwatt);
+		Gprice = currencyToFloat(vprice);
+				
+		//每小时耗电 = 机器功率(KW) * 1
+		Gpwer = fkwatt * 1;
+		var vpwer = floatToCurrency(Gpwer);
+		$('#hourpower').html(vpwer);
+		
+		//计算单位产品电价
+		acountPowerPrice(Gpwer,Gprice,Gyield);
+		
+	});
 
 	foucsInit();
 });
 
+function costAcount(){
+	
+}
+function acountPowerPrice(fpwer,fprice,fyield){
+
+	//单位产品电价 = 每小时耗电*每度电价/每小时产量
+	if(fyield == 0){
+		var fpowerprice = 0;
+		
+	}else{
+		var fpowerprice = fpwer * fprice / fyield;			
+	}
+	
+	var vpowerprice = float4ToCurrency(fpowerprice);
+
+	$('#powerprice').html(vpowerprice);
+	
+}//计算单位产品电价
 
 function inputCheck(){
 	

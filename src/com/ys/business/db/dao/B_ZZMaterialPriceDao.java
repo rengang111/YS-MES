@@ -45,8 +45,8 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_ZZMateriaPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,unittime,yield,laborprice,kilowatt,unitpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getManagementcostrate());			statement.setString( 4,beanData.getMaterialprice());			statement.setString( 5,beanData.getCavitiesnumber());			statement.setString( 6,beanData.getUnittime());			statement.setString( 7,beanData.getYield());			statement.setString( 8,beanData.getLaborprice());			statement.setString( 9,beanData.getKilowatt());			statement.setString( 10,beanData.getUnitpower());			statement.setString( 11,beanData.getKwprice());			statement.setString( 12,beanData.getPowerprice());			statement.setString( 13,beanData.getTotalprice());			statement.setString( 14,beanData.getDeptguid());			statement.setString( 15,beanData.getCreatetime());			statement.setString( 16,beanData.getCreateperson());			statement.setString( 17,beanData.getCreateunitid());			statement.setString( 18,beanData.getModifytime());			statement.setString( 19,beanData.getModifyperson());			statement.setString( 20,beanData.getDeleteflag());			statement.setString( 21,beanData.getFormid());
+			statement = connection.prepareStatement("INSERT INTO B_ZZMaterialPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,time,houryield,hourprice,laborprice,kilowatt,hourpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getManagementcostrate());			statement.setString( 4,beanData.getMaterialprice());			statement.setString( 5,beanData.getCavitiesnumber());			statement.setString( 6,beanData.getTime());			statement.setString( 7,beanData.getHouryield());			statement.setString( 8,beanData.getHourprice());			statement.setString( 9,beanData.getLaborprice());			statement.setString( 10,beanData.getKilowatt());			statement.setString( 11,beanData.getHourpower());			statement.setString( 12,beanData.getKwprice());			statement.setString( 13,beanData.getPowerprice());			statement.setString( 14,beanData.getTotalprice());			statement.setString( 15,beanData.getDeptguid());			statement.setString( 16,beanData.getCreatetime());			statement.setString( 17,beanData.getCreateperson());			statement.setString( 18,beanData.getCreateunitid());			statement.setString( 19,beanData.getModifytime());			statement.setString( 20,beanData.getModifyperson());			statement.setString( 21,beanData.getDeleteflag());			statement.setString( 22,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -54,7 +54,7 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_ZZMateriaPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,unittime,yield,laborprice,kilowatt,unitpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_ZZMaterialPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,time,houryield,hourprice,laborprice,kilowatt,hourpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -72,8 +72,8 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		StringBuffer bufSQL = new StringBuffer();
 		try
 		{
-			bufSQL.append("INSERT INTO B_ZZMateriaPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,unittime,yield,laborprice,kilowatt,unitpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
-			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getMaterialid()) + "',");			bufSQL.append("'" + nullString(beanData.getManagementcostrate()) + "',");			bufSQL.append("'" + nullString(beanData.getMaterialprice()) + "',");			bufSQL.append("'" + nullString(beanData.getCavitiesnumber()) + "',");			bufSQL.append("'" + nullString(beanData.getUnittime()) + "',");			bufSQL.append("'" + nullString(beanData.getYield()) + "',");			bufSQL.append("'" + nullString(beanData.getLaborprice()) + "',");			bufSQL.append("'" + nullString(beanData.getKilowatt()) + "',");			bufSQL.append("'" + nullString(beanData.getUnitpower()) + "',");			bufSQL.append("'" + nullString(beanData.getKwprice()) + "',");			bufSQL.append("'" + nullString(beanData.getPowerprice()) + "',");			bufSQL.append("'" + nullString(beanData.getTotalprice()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("INSERT INTO B_ZZMaterialPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,time,houryield,hourprice,laborprice,kilowatt,hourpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
+			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getMaterialid()) + "',");			bufSQL.append("'" + nullString(beanData.getManagementcostrate()) + "',");			bufSQL.append("'" + nullString(beanData.getMaterialprice()) + "',");			bufSQL.append("'" + nullString(beanData.getCavitiesnumber()) + "',");			bufSQL.append("'" + nullString(beanData.getTime()) + "',");			bufSQL.append("'" + nullString(beanData.getHouryield()) + "',");			bufSQL.append("'" + nullString(beanData.getHourprice()) + "',");			bufSQL.append("'" + nullString(beanData.getLaborprice()) + "',");			bufSQL.append("'" + nullString(beanData.getKilowatt()) + "',");			bufSQL.append("'" + nullString(beanData.getHourpower()) + "',");			bufSQL.append("'" + nullString(beanData.getKwprice()) + "',");			bufSQL.append("'" + nullString(beanData.getPowerprice()) + "',");			bufSQL.append("'" + nullString(beanData.getTotalprice()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(")");
 
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -101,8 +101,8 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_ZZMateriaPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,unittime,yield,laborprice,kilowatt,unitpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getManagementcostrate());			statement.setString( 4,beanData.getMaterialprice());			statement.setString( 5,beanData.getCavitiesnumber());			statement.setString( 6,beanData.getUnittime());			statement.setString( 7,beanData.getYield());			statement.setString( 8,beanData.getLaborprice());			statement.setString( 9,beanData.getKilowatt());			statement.setString( 10,beanData.getUnitpower());			statement.setString( 11,beanData.getKwprice());			statement.setString( 12,beanData.getPowerprice());			statement.setString( 13,beanData.getTotalprice());			statement.setString( 14,beanData.getDeptguid());			statement.setString( 15,beanData.getCreatetime());			statement.setString( 16,beanData.getCreateperson());			statement.setString( 17,beanData.getCreateunitid());			statement.setString( 18,beanData.getModifytime());			statement.setString( 19,beanData.getModifyperson());			statement.setString( 20,beanData.getDeleteflag());			statement.setString( 21,beanData.getFormid());
+			statement = connection.prepareStatement("INSERT INTO B_ZZMaterialPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,time,houryield,hourprice,laborprice,kilowatt,hourpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getManagementcostrate());			statement.setString( 4,beanData.getMaterialprice());			statement.setString( 5,beanData.getCavitiesnumber());			statement.setString( 6,beanData.getTime());			statement.setString( 7,beanData.getHouryield());			statement.setString( 8,beanData.getHourprice());			statement.setString( 9,beanData.getLaborprice());			statement.setString( 10,beanData.getKilowatt());			statement.setString( 11,beanData.getHourpower());			statement.setString( 12,beanData.getKwprice());			statement.setString( 13,beanData.getPowerprice());			statement.setString( 14,beanData.getTotalprice());			statement.setString( 15,beanData.getDeptguid());			statement.setString( 16,beanData.getCreatetime());			statement.setString( 17,beanData.getCreateperson());			statement.setString( 18,beanData.getCreateunitid());			statement.setString( 19,beanData.getModifytime());			statement.setString( 20,beanData.getModifyperson());			statement.setString( 21,beanData.getDeleteflag());			statement.setString( 22,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -110,7 +110,7 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_ZZMateriaPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,unittime,yield,laborprice,kilowatt,unitpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_ZZMaterialPrice( recordid,materialid,managementcostrate,materialprice,cavitiesnumber,time,houryield,hourprice,laborprice,kilowatt,hourpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -130,14 +130,14 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("DELETE FROM B_ZZMateriaPrice WHERE  recordid =?");
+			statement = connection.prepareStatement("DELETE FROM B_ZZMaterialPrice WHERE  recordid =?");
 			statement.setString( 1,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception("Error deleting row");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL DELETE FROM B_ZZMateriaPrice: "+ e.toString());
+			throw new Exception("Error executing SQL DELETE FROM B_ZZMaterialPrice: "+ e.toString());
 		}
 		finally
 		{
@@ -155,7 +155,7 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		StringBuffer bufSQL = new StringBuffer();
 		try
 		{
-			bufSQL.append("DELETE FROM B_ZZMateriaPrice WHERE ");
+			bufSQL.append("DELETE FROM B_ZZMaterialPrice WHERE ");
 			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
 		}
@@ -186,13 +186,13 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 			str_Where=str_Where.trim(); 
 			if(!str_Where.equals(""))
 				str_Where=" WHERE " + str_Where ; 
-			statement = connection.prepareStatement("DELETE FROM B_ZZMateriaPrice"+ str_Where);
+			statement = connection.prepareStatement("DELETE FROM B_ZZMaterialPrice"+ str_Where);
 			if (statement.executeUpdate() < 1)
 				throw new Exception("Error deleting row");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL DELETE FROM B_ZZMateriaPrice: "+ e.toString());
+			throw new Exception("Error executing SQL DELETE FROM B_ZZMaterialPrice: "+ e.toString());
 		}
 		finally
 		{
@@ -213,19 +213,19 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT recordid,materialid,managementcostrate,materialprice,cavitiesnumber,unittime,yield,laborprice,kilowatt,unitpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_ZZMateriaPrice WHERE  recordid =?");
+			statement = connection.prepareStatement("SELECT recordid,materialid,managementcostrate,materialprice,cavitiesnumber,time,houryield,hourprice,laborprice,kilowatt,hourpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_ZZMaterialPrice WHERE  recordid =?");
 			statement.setString( 1,beanData.getRecordid());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
 				throw new Exception(" Row Not does;");
 			}
-			returnData.setRecordid( resultSet.getString( 1));			returnData.setMaterialid( resultSet.getString( 2));			returnData.setManagementcostrate( resultSet.getString( 3));			returnData.setMaterialprice( resultSet.getString( 4));			returnData.setCavitiesnumber( resultSet.getString( 5));			returnData.setUnittime( resultSet.getString( 6));			returnData.setYield( resultSet.getString( 7));			returnData.setLaborprice( resultSet.getString( 8));			returnData.setKilowatt( resultSet.getString( 9));			returnData.setUnitpower( resultSet.getString( 10));			returnData.setKwprice( resultSet.getString( 11));			returnData.setPowerprice( resultSet.getString( 12));			returnData.setTotalprice( resultSet.getString( 13));			returnData.setDeptguid( resultSet.getString( 14));			returnData.setCreatetime( resultSet.getString( 15));			returnData.setCreateperson( resultSet.getString( 16));			returnData.setCreateunitid( resultSet.getString( 17));			returnData.setModifytime( resultSet.getString( 18));			returnData.setModifyperson( resultSet.getString( 19));			returnData.setDeleteflag( resultSet.getString( 20));			returnData.setFormid( resultSet.getString( 21));
+			returnData.setRecordid( resultSet.getString( 1));			returnData.setMaterialid( resultSet.getString( 2));			returnData.setManagementcostrate( resultSet.getString( 3));			returnData.setMaterialprice( resultSet.getString( 4));			returnData.setCavitiesnumber( resultSet.getString( 5));			returnData.setTime( resultSet.getString( 6));			returnData.setHouryield( resultSet.getString( 7));			returnData.setHourprice( resultSet.getString( 8));			returnData.setLaborprice( resultSet.getString( 9));			returnData.setKilowatt( resultSet.getString( 10));			returnData.setHourpower( resultSet.getString( 11));			returnData.setKwprice( resultSet.getString( 12));			returnData.setPowerprice( resultSet.getString( 13));			returnData.setTotalprice( resultSet.getString( 14));			returnData.setDeptguid( resultSet.getString( 15));			returnData.setCreatetime( resultSet.getString( 16));			returnData.setCreateperson( resultSet.getString( 17));			returnData.setCreateunitid( resultSet.getString( 18));			returnData.setModifytime( resultSet.getString( 19));			returnData.setModifyperson( resultSet.getString( 20));			returnData.setDeleteflag( resultSet.getString( 21));			returnData.setFormid( resultSet.getString( 22));
 			return returnData;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT recordid,materialid,managementcostrate,materialprice,cavitiesnumber,unittime,yield,laborprice,kilowatt,unitpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_ZZMateriaPrice  WHERE  "+e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,materialid,managementcostrate,materialprice,cavitiesnumber,time,houryield,hourprice,laborprice,kilowatt,hourpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_ZZMaterialPrice  WHERE  "+e.toString());
 		}
 		finally
 		{
@@ -251,19 +251,19 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 			str_Where=str_Where.trim(); 
 			if(!str_Where.equals(""))
 				str_Where=" WHERE " + str_Where ; 
-			statement = connection.prepareStatement("SELECT recordid,materialid,managementcostrate,materialprice,cavitiesnumber,unittime,yield,laborprice,kilowatt,unitpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_ZZMateriaPrice"+str_Where);
+			statement = connection.prepareStatement("SELECT recordid,materialid,managementcostrate,materialprice,cavitiesnumber,time,houryield,hourprice,laborprice,kilowatt,hourpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_ZZMaterialPrice"+str_Where);
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next())
 			{
 				B_ZZMaterialPriceData returnData=new B_ZZMaterialPriceData();
-				returnData.setRecordid( resultSet.getString( 1));				returnData.setMaterialid( resultSet.getString( 2));				returnData.setManagementcostrate( resultSet.getString( 3));				returnData.setMaterialprice( resultSet.getString( 4));				returnData.setCavitiesnumber( resultSet.getString( 5));				returnData.setUnittime( resultSet.getString( 6));				returnData.setYield( resultSet.getString( 7));				returnData.setLaborprice( resultSet.getString( 8));				returnData.setKilowatt( resultSet.getString( 9));				returnData.setUnitpower( resultSet.getString( 10));				returnData.setKwprice( resultSet.getString( 11));				returnData.setPowerprice( resultSet.getString( 12));				returnData.setTotalprice( resultSet.getString( 13));				returnData.setDeptguid( resultSet.getString( 14));				returnData.setCreatetime( resultSet.getString( 15));				returnData.setCreateperson( resultSet.getString( 16));				returnData.setCreateunitid( resultSet.getString( 17));				returnData.setModifytime( resultSet.getString( 18));				returnData.setModifyperson( resultSet.getString( 19));				returnData.setDeleteflag( resultSet.getString( 20));				returnData.setFormid( resultSet.getString( 21));
+				returnData.setRecordid( resultSet.getString( 1));				returnData.setMaterialid( resultSet.getString( 2));				returnData.setManagementcostrate( resultSet.getString( 3));				returnData.setMaterialprice( resultSet.getString( 4));				returnData.setCavitiesnumber( resultSet.getString( 5));				returnData.setTime( resultSet.getString( 6));				returnData.setHouryield( resultSet.getString( 7));				returnData.setHourprice( resultSet.getString( 8));				returnData.setLaborprice( resultSet.getString( 9));				returnData.setKilowatt( resultSet.getString( 10));				returnData.setHourpower( resultSet.getString( 11));				returnData.setKwprice( resultSet.getString( 12));				returnData.setPowerprice( resultSet.getString( 13));				returnData.setTotalprice( resultSet.getString( 14));				returnData.setDeptguid( resultSet.getString( 15));				returnData.setCreatetime( resultSet.getString( 16));				returnData.setCreateperson( resultSet.getString( 17));				returnData.setCreateunitid( resultSet.getString( 18));				returnData.setModifytime( resultSet.getString( 19));				returnData.setModifyperson( resultSet.getString( 20));				returnData.setDeleteflag( resultSet.getString( 21));				returnData.setFormid( resultSet.getString( 22));
 				v_1.add(returnData);
 			}
 			return v_1;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT recordid,materialid,managementcostrate,materialprice,cavitiesnumber,unittime,yield,laborprice,kilowatt,unitpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_ZZMateriaPrice" + astr_Where +e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,materialid,managementcostrate,materialprice,cavitiesnumber,time,houryield,hourprice,laborprice,kilowatt,hourpower,kwprice,powerprice,totalprice,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_ZZMaterialPrice" + astr_Where +e.toString());
 		}
 		finally
 		{
@@ -282,15 +282,15 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_ZZMateriaPrice SET recordid= ? , materialid= ? , managementcostrate= ? , materialprice= ? , cavitiesnumber= ? , unittime= ? , yield= ? , laborprice= ? , kilowatt= ? , unitpower= ? , kwprice= ? , powerprice= ? , totalprice= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getManagementcostrate());			statement.setString( 4,beanData.getMaterialprice());			statement.setString( 5,beanData.getCavitiesnumber());			statement.setString( 6,beanData.getUnittime());			statement.setString( 7,beanData.getYield());			statement.setString( 8,beanData.getLaborprice());			statement.setString( 9,beanData.getKilowatt());			statement.setString( 10,beanData.getUnitpower());			statement.setString( 11,beanData.getKwprice());			statement.setString( 12,beanData.getPowerprice());			statement.setString( 13,beanData.getTotalprice());			statement.setString( 14,beanData.getDeptguid());			statement.setString( 15,beanData.getCreatetime());			statement.setString( 16,beanData.getCreateperson());			statement.setString( 17,beanData.getCreateunitid());			statement.setString( 18,beanData.getModifytime());			statement.setString( 19,beanData.getModifyperson());			statement.setString( 20,beanData.getDeleteflag());			statement.setString( 21,beanData.getFormid());
-			statement.setString( 22,beanData.getRecordid());
+			statement = connection.prepareStatement("UPDATE B_ZZMaterialPrice SET recordid= ? , materialid= ? , managementcostrate= ? , materialprice= ? , cavitiesnumber= ? , time= ? , houryield= ? , hourprice= ? , laborprice= ? , kilowatt= ? , hourpower= ? , kwprice= ? , powerprice= ? , totalprice= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getManagementcostrate());			statement.setString( 4,beanData.getMaterialprice());			statement.setString( 5,beanData.getCavitiesnumber());			statement.setString( 6,beanData.getTime());			statement.setString( 7,beanData.getHouryield());			statement.setString( 8,beanData.getHourprice());			statement.setString( 9,beanData.getLaborprice());			statement.setString( 10,beanData.getKilowatt());			statement.setString( 11,beanData.getHourpower());			statement.setString( 12,beanData.getKwprice());			statement.setString( 13,beanData.getPowerprice());			statement.setString( 14,beanData.getTotalprice());			statement.setString( 15,beanData.getDeptguid());			statement.setString( 16,beanData.getCreatetime());			statement.setString( 17,beanData.getCreateperson());			statement.setString( 18,beanData.getCreateunitid());			statement.setString( 19,beanData.getModifytime());			statement.setString( 20,beanData.getModifyperson());			statement.setString( 21,beanData.getDeleteflag());			statement.setString( 22,beanData.getFormid());
+			statement.setString( 23,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_ZZMateriaPrice SET recordid= ? , materialid= ? , managementcostrate= ? , materialprice= ? , cavitiesnumber= ? , unittime= ? , yield= ? , laborprice= ? , kilowatt= ? , unitpower= ? , kwprice= ? , powerprice= ? , totalprice= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_ZZMaterialPrice SET recordid= ? , materialid= ? , managementcostrate= ? , materialprice= ? , cavitiesnumber= ? , time= ? , houryield= ? , hourprice= ? , laborprice= ? , kilowatt= ? , hourpower= ? , kwprice= ? , powerprice= ? , totalprice= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -307,8 +307,8 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		StringBuffer bufSQL = new StringBuffer();
 		try
 		{
-			bufSQL.append("UPDATE B_ZZMateriaPrice SET ");
-			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Materialid = " + "'" + nullString(beanData.getMaterialid()) + "',");			bufSQL.append("Managementcostrate = " + "'" + nullString(beanData.getManagementcostrate()) + "',");			bufSQL.append("Materialprice = " + "'" + nullString(beanData.getMaterialprice()) + "',");			bufSQL.append("Cavitiesnumber = " + "'" + nullString(beanData.getCavitiesnumber()) + "',");			bufSQL.append("Unittime = " + "'" + nullString(beanData.getUnittime()) + "',");			bufSQL.append("Yield = " + "'" + nullString(beanData.getYield()) + "',");			bufSQL.append("Laborprice = " + "'" + nullString(beanData.getLaborprice()) + "',");			bufSQL.append("Kilowatt = " + "'" + nullString(beanData.getKilowatt()) + "',");			bufSQL.append("Unitpower = " + "'" + nullString(beanData.getUnitpower()) + "',");			bufSQL.append("Kwprice = " + "'" + nullString(beanData.getKwprice()) + "',");			bufSQL.append("Powerprice = " + "'" + nullString(beanData.getPowerprice()) + "',");			bufSQL.append("Totalprice = " + "'" + nullString(beanData.getTotalprice()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("UPDATE B_ZZMaterialPrice SET ");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Materialid = " + "'" + nullString(beanData.getMaterialid()) + "',");			bufSQL.append("Managementcostrate = " + "'" + nullString(beanData.getManagementcostrate()) + "',");			bufSQL.append("Materialprice = " + "'" + nullString(beanData.getMaterialprice()) + "',");			bufSQL.append("Cavitiesnumber = " + "'" + nullString(beanData.getCavitiesnumber()) + "',");			bufSQL.append("Time = " + "'" + nullString(beanData.getTime()) + "',");			bufSQL.append("Houryield = " + "'" + nullString(beanData.getHouryield()) + "',");			bufSQL.append("Hourprice = " + "'" + nullString(beanData.getHourprice()) + "',");			bufSQL.append("Laborprice = " + "'" + nullString(beanData.getLaborprice()) + "',");			bufSQL.append("Kilowatt = " + "'" + nullString(beanData.getKilowatt()) + "',");			bufSQL.append("Hourpower = " + "'" + nullString(beanData.getHourpower()) + "',");			bufSQL.append("Kwprice = " + "'" + nullString(beanData.getKwprice()) + "',");			bufSQL.append("Powerprice = " + "'" + nullString(beanData.getPowerprice()) + "',");			bufSQL.append("Totalprice = " + "'" + nullString(beanData.getTotalprice()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(" WHERE ");
 			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -335,15 +335,15 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_ZZMateriaPrice SET recordid= ? , materialid= ? , managementcostrate= ? , materialprice= ? , cavitiesnumber= ? , unittime= ? , yield= ? , laborprice= ? , kilowatt= ? , unitpower= ? , kwprice= ? , powerprice= ? , totalprice= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getManagementcostrate());			statement.setString( 4,beanData.getMaterialprice());			statement.setString( 5,beanData.getCavitiesnumber());			statement.setString( 6,beanData.getUnittime());			statement.setString( 7,beanData.getYield());			statement.setString( 8,beanData.getLaborprice());			statement.setString( 9,beanData.getKilowatt());			statement.setString( 10,beanData.getUnitpower());			statement.setString( 11,beanData.getKwprice());			statement.setString( 12,beanData.getPowerprice());			statement.setString( 13,beanData.getTotalprice());			statement.setString( 14,beanData.getDeptguid());			statement.setString( 15,beanData.getCreatetime());			statement.setString( 16,beanData.getCreateperson());			statement.setString( 17,beanData.getCreateunitid());			statement.setString( 18,beanData.getModifytime());			statement.setString( 19,beanData.getModifyperson());			statement.setString( 20,beanData.getDeleteflag());			statement.setString( 21,beanData.getFormid());
-			statement.setString( 22,beanData.getRecordid());
+			statement = connection.prepareStatement("UPDATE B_ZZMaterialPrice SET recordid= ? , materialid= ? , managementcostrate= ? , materialprice= ? , cavitiesnumber= ? , time= ? , houryield= ? , hourprice= ? , laborprice= ? , kilowatt= ? , hourpower= ? , kwprice= ? , powerprice= ? , totalprice= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getMaterialid());			statement.setString( 3,beanData.getManagementcostrate());			statement.setString( 4,beanData.getMaterialprice());			statement.setString( 5,beanData.getCavitiesnumber());			statement.setString( 6,beanData.getTime());			statement.setString( 7,beanData.getHouryield());			statement.setString( 8,beanData.getHourprice());			statement.setString( 9,beanData.getLaborprice());			statement.setString( 10,beanData.getKilowatt());			statement.setString( 11,beanData.getHourpower());			statement.setString( 12,beanData.getKwprice());			statement.setString( 13,beanData.getPowerprice());			statement.setString( 14,beanData.getTotalprice());			statement.setString( 15,beanData.getDeptguid());			statement.setString( 16,beanData.getCreatetime());			statement.setString( 17,beanData.getCreateperson());			statement.setString( 18,beanData.getCreateunitid());			statement.setString( 19,beanData.getModifytime());			statement.setString( 20,beanData.getModifyperson());			statement.setString( 21,beanData.getDeleteflag());			statement.setString( 22,beanData.getFormid());
+			statement.setString( 23,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_ZZMateriaPrice SET recordid= ? , materialid= ? , managementcostrate= ? , materialprice= ? , cavitiesnumber= ? , unittime= ? , yield= ? , laborprice= ? , kilowatt= ? , unitpower= ? , kwprice= ? , powerprice= ? , totalprice= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_ZZMaterialPrice SET recordid= ? , materialid= ? , managementcostrate= ? , materialprice= ? , cavitiesnumber= ? , time= ? , houryield= ? , hourprice= ? , laborprice= ? , kilowatt= ? , hourpower= ? , kwprice= ? , powerprice= ? , totalprice= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -363,7 +363,7 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		{
 		B_ZZMaterialPriceData beanData = (B_ZZMaterialPriceData) beanDataTmp; 
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT  recordid  FROM B_ZZMateriaPrice WHERE  recordid =?");
+			statement = connection.prepareStatement("SELECT  recordid  FROM B_ZZMaterialPrice WHERE  recordid =?");
 			statement.setString( 1,beanData.getRecordid());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
@@ -373,7 +373,7 @@ public class B_ZZMaterialPriceDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL  SELECT  recordid  FROM B_ZZMateriaPrice WHERE  recordid =?");
+			throw new Exception("Error executing SQL  SELECT  recordid  FROM B_ZZMaterialPrice WHERE  recordid =?");
 		}
 		finally
 		{
