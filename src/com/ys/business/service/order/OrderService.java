@@ -1,24 +1,15 @@
 package com.ys.business.service.order;
 
 import java.net.URLDecoder;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.springframework.cglib.core.ReflectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.system.common.BusinessConstants;
 import com.ys.system.service.common.BaseService;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
@@ -26,24 +17,13 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.common.TableFields;
-import com.ys.business.action.model.contact.ContactModel;
-import com.ys.business.action.model.material.MaterialModel;
 import com.ys.business.action.model.order.OrderModel;
-import com.ys.business.db.dao.B_ContactDao;
-import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
-import com.ys.business.db.dao.B_PriceSupplierDao;
-import com.ys.business.db.data.B_ContactData;
-import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
-import com.ys.business.db.data.B_PriceSupplierData;
-import com.ys.business.ejb.BusinessDbUpdateEjb;
+import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
-import com.ys.util.CalendarUtil;
 
 @Service
 public class OrderService extends BaseService {
@@ -51,9 +31,8 @@ public class OrderService extends BaseService {
 	DicUtil util = new DicUtil();
 
 	BaseTransaction ts;
-
-	TableFields fields;
 	String guid ="";
+	private CommFieldsData commData;
 
 	public HashMap<String, Object> getOrderList(HttpServletRequest request, 
 			String data) throws Exception {
@@ -343,12 +322,12 @@ public class OrderService extends BaseService {
 
 		B_OrderDao dao = new B_OrderDao();	
 		
-		fields = BusinessService.updateModifyInfo
-		(Constants.ACCESSTYPE_INS,"OrderInsert", userInfo);
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"OrderInsert",userInfo);
+
+		copyProperties(data,commData);
 		
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
-		data.setInsFields(fields);
 		
 		dao.Create(data);	
 		
@@ -370,16 +349,16 @@ public class OrderService extends BaseService {
 		
 		String ysid = BusinessService.getYSFormatCode(YSMaxid,true);
 			
-		 fields = BusinessService.updateModifyInfo
-				(Constants.ACCESSTYPE_INS,"OrderDetailInsert", userInfo);
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"OrderDetailInsert",userInfo);
 
+		copyProperties(newData,commData);
 		guid = BaseDAO.getGuId();
 		newData.setRecordid(guid);
-		newData.setInsFields(fields);
 		newData.setParentid(parentid);
 		newData.setSubid(String.valueOf(YSMaxid+1));
 		newData.setPiid(piId);
 		newData.setYsid(ysid);
+		newData.setStatus(Constants.ORDER_STS_0);
 		
 		dao.Create(newData);
 
@@ -495,11 +474,10 @@ public class OrderService extends BaseService {
 		
 		if(null != dbData){
 			
-			fields = BusinessService.updateModifyInfo
-					(Constants.ACCESSTYPE_UPD,"OrderUpdate", userInfo);
-	
 			//处理共通信息
-			dbData.setUpdFields(fields);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"OrderUpdate",userInfo);
+
+			copyProperties(dbData,commData);
 			//获取页面数据
 			dbData.setOrderid(order.getOrderid());
 			dbData.setPaymentterm(order.getPaymentterm());
@@ -526,11 +504,10 @@ public class OrderService extends BaseService {
 		
 		B_OrderDetailDao dao = new B_OrderDetailDao();							
 		
-		fields = BusinessService.updateModifyInfo
-				(Constants.ACCESSTYPE_UPD,"OrderDetailUpdate", userInfo);
-
 		//处理共通信息
-		dbData.setUpdFields(fields);
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"OrderDetailUpdate",userInfo);
+
+		copyProperties(dbData,commData);
 		//获取页面数据
 		dbData.setQuantity(newData.getQuantity());
 		dbData.setPrice(newData.getPrice());;
@@ -550,25 +527,17 @@ public class OrderService extends BaseService {
 		
 		for(B_OrderDetailData detail:oldDetailList){
 			
-			//String recordid = detail.getRecordid();		
-			
-			//取得更新前数据		
-			//B_OrderDetailData dbData = getOrderDetailByRecordId(recordid);	
-			//B_OrderDetailData dbData = detail;					
-			
 			if(null != detail){
 				
-				fields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_DEL,"OrderDetailDelete", userInfo);
-		
 				//处理共通信息
-				detail.setUpdFields(fields);
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,"OrderDetailDelete",userInfo);
+
+				copyProperties(detail,commData);
 				
 				dao.Store(detail);
 			}
 		}
-	}
-	
+	}	
 
 	
 	/*
@@ -660,20 +629,5 @@ public class OrderService extends BaseService {
 		return dbData;
 	}
 	
-	private B_OrderDetailData getOrderDetailByRecordId(String key) throws Exception {
-		B_OrderDetailDao dao = new B_OrderDetailDao();
-		B_OrderDetailData dbData = new B_OrderDetailData();
-				
-		try {
-			dbData.setRecordid(key);
-			dbData = (B_OrderDetailData)dao.FindByPrimaryKey(dbData);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dbData = null;
-		}
-		
-		return dbData;
-	}
 	
 }

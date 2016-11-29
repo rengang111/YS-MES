@@ -130,7 +130,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("DELETE FROM B_Organization WHERE  recordid =?");
+			statement = connection.prepareStatement("DELETE FROM B_Organization WHERE  id =?");
 			
 			if (statement.executeUpdate() < 1)
 				throw new Exception("Error deleting row");
@@ -212,8 +212,8 @@ public class B_OrganizationDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_Organization WHERE  recordid =?");
-			statement.setString( 1,beanData.getRecordid());
+			statement = connection.prepareStatement("SELECT recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_Organization WHERE  id =?");
+			
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
@@ -281,15 +281,15 @@ public class B_OrganizationDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getType());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getFullname());			statement.setString( 5,beanData.getAddress());			statement.setString( 6,beanData.getDeptguid());			statement.setString( 7,beanData.getCreatetime());			statement.setString( 8,beanData.getCreateperson());			statement.setString( 9,beanData.getCreateunitid());			statement.setString( 10,beanData.getModifytime());			statement.setString( 11,beanData.getModifyperson());			statement.setString( 12,beanData.getDeleteflag());			statement.setString( 13,beanData.getFormid());
+			statement = connection.prepareStatement("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  id  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getType());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getFullname());			statement.setString( 5,beanData.getAddress());			statement.setString( 6,beanData.getDeptguid());			statement.setString( 7,beanData.getCreatetime());			statement.setString( 8,beanData.getCreateperson());			statement.setString( 9,beanData.getCreateunitid());			statement.setString( 10,beanData.getModifytime());			statement.setString( 11,beanData.getModifyperson());			statement.setString( 12,beanData.getDeleteflag());			statement.setString( 13,beanData.getFormid());
 			
-			statement.setString( 14,beanData.getRecordid());			if (statement.executeUpdate() < 1)
+			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  id  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -333,15 +333,15 @@ public class B_OrganizationDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement = connection.prepareStatement("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  id  = ?");
 			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getType());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getFullname());			statement.setString( 5,beanData.getAddress());			statement.setString( 6,beanData.getDeptguid());			statement.setString( 7,beanData.getCreatetime());			statement.setString( 8,beanData.getCreateperson());			statement.setString( 9,beanData.getCreateunitid());			statement.setString( 10,beanData.getModifytime());			statement.setString( 11,beanData.getModifyperson());			statement.setString( 12,beanData.getDeleteflag());			statement.setString( 13,beanData.getFormid());
-			statement.setString( 14,beanData.getRecordid());			
+			
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  id  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -361,7 +361,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 		{
 		B_OrganizationData beanData = (B_OrganizationData) beanDataTmp; 
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT  recordid  FROM B_Organization WHERE  recordid =?");
+			statement = connection.prepareStatement("SELECT  id  FROM B_Organization WHERE  id =?");
 			
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
@@ -371,7 +371,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL  SELECT  recordid  FROM B_Organization WHERE  recordid =?");
+			throw new Exception("Error executing SQL  SELECT  id  FROM B_Organization WHERE  id =?");
 		}
 		finally
 		{

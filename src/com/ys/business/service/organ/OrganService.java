@@ -3,44 +3,35 @@ package com.ys.business.service.organ;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
 
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.system.common.BusinessConstants;
 import com.ys.system.service.common.BaseService;
-import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.common.TableFields;
 import com.ys.business.action.model.contact.ContactModel;
 import com.ys.business.action.model.organ.OrganModel;
-import com.ys.business.action.model.supplier.SupplierModel;
 import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_OrganizationDao;
-import com.ys.business.db.dao.B_SupplierBasicInfoDao;
 import com.ys.business.db.data.B_ContactData;
 import com.ys.business.db.data.B_OrganizationData;
-import com.ys.business.db.data.B_SupplierBasicInfoData;
+import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
-import com.ys.business.service.common.BusinessService;
-import com.ys.business.service.contact.ContactService;
 
 @Service
 public class OrganService extends BaseService {
- 	
+
+	private CommFieldsData commData;
 
 	public HashMap<String, Object> Init(HttpServletRequest request, String data) {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
 		try {
 			data = URLDecoder.decode(data, "UTF-8");
 		}
@@ -60,10 +51,7 @@ public class OrganService extends BaseService {
 		if (length != null){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
-		
-		String key1 = getJsonData(data, "keyword1");
-		String key2 = getJsonData(data, "keyword2");
-		
+				
 		BaseModel dataModel = new BaseModel();
 
 		dataModel.setQueryFileName("/yssample/yssamplequerydefine");
@@ -164,10 +152,9 @@ public class OrganService extends BaseService {
 	
 			
 			//插入机构信息表
-			TableFields commFields = BusinessService.updateModifyInfo
-					(Constants.ACCESSTYPE_INS,"OrganInsert", userInfo);
-			
-			dbData.setInsFields(commFields);
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,"OrganInsert",userInfo);
+
+			copyProperties(dbData,commData);
 			
 			dao.Create(dbData);
 			
@@ -290,10 +277,10 @@ public class OrganService extends BaseService {
 			dbData.setAddress(getJsonData(data, "address"));
 			
 			//更新机构信息表
-			TableFields commFields = BusinessService.updateModifyInfo
-					(Constants.ACCESSTYPE_UPD,"OrganUpdate", userInfo);
-			
-			dbData.setUpdFields(commFields);
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"OrganUpdate",userInfo);
+
+			copyProperties(dbData,commData);
 			
 			dao.Store(dbData);
 			model.setEndInfoMap(NORMAL, "suc001", id);

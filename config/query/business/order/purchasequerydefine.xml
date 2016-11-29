@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+<query>
+    <pool></pool>    
+    <name value="getBomList" />
+    <where>
+    	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
+       	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="recordId" alias="" ctype="" />
+      <f name="YSId" alias="" ctype="" />
+      <f name="bomId" alias="" ctype="" />
+      <f name="materialId" alias="" ctype="" />
+      <f name="subId" alias="" ctype="" />
+      <f name="orderQuantity" alias="" ctype="" />
+      <f name="managementCost" alias="" ctype="" />
+      <f name="productCost" alias="" ctype="" />
+      <f name="totalCost" alias="" ctype="" />
+      <f name="laborCost" alias="" ctype="" />
+      <f name="materialCost" alias="" ctype="" />
+      <f name="planDate" alias="" ctype="" />
+      <f name="status" alias="" ctype="" />
+      <f name="fullField" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <!-- 限定显示订单状态为"BOM表已做成,已评审"的数据 -->
+   <from>v_bomplan AS A WHERE A.status ='2' AND A.deleteFlag = '0'</from>
+    <orderby>YSId DESC</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>

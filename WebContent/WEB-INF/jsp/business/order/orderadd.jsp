@@ -73,8 +73,8 @@
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="cash mini" /></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      id="orderDetailLines'+rowIndex+'.price"      class="cash mini" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="cash short" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      id="orderDetailLines'+rowIndex+'.price"      class="cash short" /></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short read-only" readonly="readonly"/></td>',
 								'<td></td>',				
 								
@@ -268,14 +268,14 @@
 		
 		$("#insert").click(
 				function() {
-			var orderdate = $('#order\\.orderdate').val();
-			var deliverydate = $('#order\\.deliverydate').val();
+			//var orderdate = $('#order\\.orderdate').val();
+			//var deliverydate = $('#order\\.deliverydate').val();
 			
-			orderdate = orderdate +" 00:00:00";
-			deliverydate = deliverydate +" 00:00:00";
+			//orderdate = orderdate +" 00:00:00";
+			//deliverydate = deliverydate +" 00:00:00";
 			
-			$('#order\\.orderdate').val(orderdate);
-			$('#order\\.deliverydate').val(deliverydate);
+			//$('#order\\.orderdate').val(orderdate);
+			//$('#order\\.deliverydate').val(deliverydate);
 			//alert($('#order\\.orderdate').val()+'==='+deliverydate)
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=insert");
 			$('#orderForm').submit();
@@ -317,10 +317,10 @@
 				</tr>
 				<tr>
 					<td class="label"><label>客户编号：</label></td>				
-					<td colspan="7">
-					<div class="ui-widget">
-							<form:input path="attribute1" class="short required" /></div>
-							<span style="color: blue">
+					<td>
+						<div class="ui-widget">
+							<form:input path="attribute1" class="short required" /></div></td>
+					<td colspan="6"><span style="color: blue">
 								&nbsp;（查询范围：客户编号、客户简称、客户全称）</span></td>
 				</tr>
 				<tr>
@@ -401,9 +401,9 @@
 				<th class="dt-left" width="80px">耀升编号</th>
 				<th class="dt-left" width="100px">产品编号</th>
 				<th class="dt-left" >产品名称</th>
-				<th class="dt-left" width="50px">数量</th>
-				<th class="dt-left" width="50px">销售单价</th>
-				<th class="dt-left" width="100px">销售总价</th>
+				<th class="dt-left" width="100px">数量</th>
+				<th class="dt-left" width="100px">销售单价</th>
+				<th class="dt-left" width="120px">销售总价</th>
 			</tr>
 			</thead>
 			<tfoot>
@@ -425,8 +425,8 @@
 					<td><input type="text" name="attributeList1" class="attributeList1">
 						<form:hidden path="orderDetailLines[${i}].materialid" /></td>								
 					<td></td>
-					<td><form:input path="orderDetailLines[${i}].quantity" class="cash mini" /></td>							
-					<td><form:input path="orderDetailLines[${i}].price" class="cash mini"  /></td>
+					<td><form:input path="orderDetailLines[${i}].quantity" class="cash short" /></td>							
+					<td><form:input path="orderDetailLines[${i}].price" class="cash short"  /></td>
 					<td><input type="text" name="orderDetailLines[${i}].totalprice" id="orderDetailLines${i}.totalprice" class="read-only cash short" readonly="readonly"/></td>
 				
 					<script type="text/javascript">

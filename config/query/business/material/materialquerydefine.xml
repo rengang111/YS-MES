@@ -175,7 +175,7 @@
       <f name="A.supplierDes" alias="fullName" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="A.priceUnit" alias="" ctype="" />
-      <f name="A.dicName" alias="currency" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
       <f name="A.priceDate" alias="" ctype="" />
       <f name="A.lastPrice" alias="" ctype="" />
       <f name="A.recordId" alias="" ctype="" />

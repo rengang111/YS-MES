@@ -6,36 +6,25 @@ import java.util.HashMap;
 import org.springframework.stereotype.Service;
 
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.business.action.model.common.TableFields;
 import com.ys.business.action.model.material.MatCategoryModel;
 import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.data.B_MaterialCategoryData;
-import com.ys.system.common.BusinessConstants;
+import com.ys.business.db.data.CommFieldsData;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.system.db.dao.S_DEPTDao;
-import com.ys.system.db.data.S_DEPTData;
-import com.ys.system.ejb.DbUpdateEjb;
 import com.ys.system.interceptor.CommonDept;
-import com.ys.system.interceptor.DBAccess;
 import com.ys.system.interceptor.DicInfo;
 import com.ys.system.service.common.BaseService;
-import com.ys.util.CalendarUtil;
-import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
-import com.ys.business.service.common.BusinessService;
-
-import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class MatCategoryService extends BaseService {
 	
-
-	TableFields commFields=null;
-
+	private CommFieldsData commData;
+	
 	public MatCategoryModel doSearch(HttpServletRequest request, MatCategoryModel dataModel, UserInfo userInfo)
 			throws Exception {
 
@@ -97,10 +86,9 @@ public class MatCategoryService extends BaseService {
 		B_MaterialCategoryDao dao = new B_MaterialCategoryDao();
 		B_MaterialCategoryData data = eidtChildId(MatCategoryModel.getunitData());
 
-		commFields = BusinessService.updateModifyInfo
-				(Constants.ACCESSTYPE_INS,"MaterialCategoryInsert", userInfo);
-		
-		data.setInsFields(commFields);
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialCategoryInsert",userInfo);
+
+		copyProperties(data,commData);
 
 		data.setRecordid(BaseDAO.getGuId());
 		data.setParentid(request.getParameter("parentCategoryId"));
@@ -137,12 +125,10 @@ public class MatCategoryService extends BaseService {
 		
 		B_MaterialCategoryDao dao = new B_MaterialCategoryDao();
 		B_MaterialCategoryData data = eidtChildId(MatCategoryModel.getunitData());
-		
-		commFields = BusinessService.updateModifyInfo
-				(Constants.ACCESSTYPE_UPD,"MaterialCategoryUpdate", userInfo);
-		
-		data.setUpdFields(commFields);		
+				
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialCategoryUpdate",userInfo);
 
+		copyProperties(data,commData);
 		dao.Store(data);
 	}
 
@@ -218,43 +204,6 @@ public class MatCategoryService extends BaseService {
 
 
 	
-	private String getNewUnitId(MatCategoryModel MatCategoryModel, UserInfo userInfo) throws Exception {
-
-		String newDeptId = "";
-		String parentUnitId = MatCategoryModel.getParentCategoryId();
-
-		if (parentUnitId.equals("")) {
-			if (!userInfo.getUserType().equals(Constants.USER_SA)) {
-				parentUnitId = userInfo.getUnitId();
-			}
-		}
-
-		StringBuffer sql = new StringBuffer("");
-		sql.append("SELECT CONCAT('" + parentUnitId + "', LPAD(A.numUnit + 1, " + BusinessConstants.UNITIDLENGTH
-				+ ", '0')) as newunitid ");
-		sql.append("FROM ");
-		sql.append("(select unitid, cast(substr(unitid, if(length('" + parentUnitId + "')=0, 1, length('" + parentUnitId
-				+ "') + 1), if(length('" + parentUnitId + "')=0, " + BusinessConstants.UNITIDLENGTH + ", length('"
-				+ parentUnitId + "'))) as SIGNED) as numUnit ");
-		sql.append("from s_dept as a ");
-		sql.append("where a.unitid like '%') as A ");
-		sql.append("where (A.numUnit + 1) NOT IN ");
-		sql.append("(select cast(substr(unitid, if(length('" + parentUnitId + "')=0, 1, length('" + parentUnitId
-				+ "') + 1), if(length('" + parentUnitId + "')=0, " + BusinessConstants.UNITIDLENGTH + ", length('"
-				+ parentUnitId + "'))) as SIGNED) as numUnit ");
-		sql.append("from s_dept as a ");
-		sql.append("where a.unitid like '%') ");
-		sql.append("order by newunitid");
-		ArrayList<ArrayList<String>> result = BaseDAO.execSQL(sql.toString());
-
-		if (result.size() == 0) {
-			newDeptId = String.format("%0" + BusinessConstants.UNITIDLENGTH + "d", 1);
-		} else {
-			newDeptId = result.get(0).get(0);
-		}
-
-		return newDeptId;
-	}
 
 	public ArrayList<DicInfo> getInitMaterial(HttpServletRequest request, String userId, String menuId,
 			String unitId, String userType) throws Exception {
@@ -268,7 +217,6 @@ public class MatCategoryService extends BaseService {
 			String unitId, String userType) throws Exception {
 		ArrayList<ArrayList<DicInfo>> deptChain = new ArrayList<ArrayList<DicInfo>>();
 		ArrayList<ArrayList<String>> dbResult = new ArrayList<ArrayList<String>>();
-		HashMap<String, DicInfo> deptMap = new HashMap<String, DicInfo>();
 
 			dbResult = getAllMaterial(request, userId, menuId, unitId, userType);
 

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="getOrderAndBomByYSId" />
+    <where>
+   	  	<w name="A.YSId" des=""  reqName="keyword1" dtype="ch" oper="="  lg="" bt="" />     
+     </where>
+    <select>
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.bomId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.planDate" alias="" ctype="" />
+      <f name="A.materialCost" alias="" ctype="" />
+      <f name="A.laborCost" alias="" ctype="" />
+      <f name="A.managementCostRate" alias="" ctype="" />
+      <f name="A.managementCost" alias="" ctype="" />
+      <f name="A.productCost" alias="" ctype="" />
+      <f name="A.totalCost" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalPrice" alias="" ctype="" />
+      <f name="A.exchangeRate" alias="" ctype="" />
+      <f name="A.rebateRate" alias="" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
+  
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_orderandbom AS A </from>
+    <orderby>A.YSId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  
+  <query>
+    <pool></pool>     
+    <name value="getReviewAndDetail" />
+    <where>
+     	<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" /> 
+   	  	<w name="A.bomId"     des=""  reqName="keyword3" dtype="ch" oper="="     lg="" bt="" />     
+    </where>
+    <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.bomId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.RMBPrice" alias="" ctype="" />
+      <f name="A.exchangeRate" alias="" ctype="" />
+      <f name="A.salesTax" alias="" ctype="" />
+      <f name="A.rebate" alias="" ctype="" />
+      <f name="A.totalSalesProfit" alias="" ctype="" />
+      <f name="A.totalAdjustProfit" alias="" ctype="" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.planDate" alias="" ctype="" />
+      <f name="A.materialCost" alias="" ctype="" />
+      <f name="A.laborCost" alias="" ctype="" />
+      <f name="A.managementCostRate" alias="" ctype="" />
+      <f name="A.managementCost" alias="" ctype="" />
+      <f name="A.productCost" alias="" ctype="" />
+      <f name="A.totalCost" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalPrice" alias="" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.adjustProfit" alias="" ctype="" />
+      <f name="IFNULL((A.rebateRate+0),'17')" alias="rebateRate" ctype="" />
+      <f name="A.salesProfit" alias="" ctype="" />
+  
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_orderreview AS A </from>
+    <orderby>A.YSId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>

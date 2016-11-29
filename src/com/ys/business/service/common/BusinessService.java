@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.ys.business.action.model.common.TableFields;
+import com.ys.business.db.data.CommFieldsData;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.CalendarUtil;
@@ -17,38 +17,9 @@ import com.ys.util.basequery.common.Constants;
 
 public class BusinessService {
 	
-	//表字段的共通编辑方法
-	public static TableFields updateModifyInfo(
-			int type,
-			String method,
-			UserInfo userInfo) {
-		
-		TableFields data = new  TableFields();
-		data.setFormid(method);
-		
-		if (type == Constants.ACCESSTYPE_INS) {//insert
-			data.setCreateperson(userInfo.getUserId());
-			data.setCreatetime(CalendarUtil.fmtDate());
-			data.setCreateunitid(userInfo.getUnitId());
-
-		}else{//update
-			data.setModifyperson(userInfo.getUserId());
-			data.setModifytime(CalendarUtil.fmtDate());
-			
-		}
-		
-		if (type == Constants.ACCESSTYPE_DEL) {//delete
-			data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
-		}else{
-			data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
-			
-		}
-
-		return data;
-	}
 	
-	/*
-	 * 
+	/**
+	 * @return 2位年份
 	 */
 	public static String getYSCommCode()
 	{
@@ -65,9 +36,10 @@ public class BusinessService {
 	}
 	
 
-	/*
-	 * 3位流水号格式化处理
-	 * blAdd:是否要递增
+	/**
+	 * @param 流水号
+	 * @param blAdd:是否要递增 true:要,false:不要
+	 * @return 3位流水号格式化处理
 	 */
 	public static String getYSFormatCode(int id,boolean blAdd)
 	{
@@ -84,7 +56,7 @@ public class BusinessService {
 	 * 3位流水号格式化处理
 	 * blAdd:是否要递增
 	 */
-	public static String getFormatCode(int code,boolean blAdd)
+	private static String getFormatCode(int code,boolean blAdd)
 	{
 		//流水号递增
 		if(blAdd){

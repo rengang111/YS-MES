@@ -1,5 +1,7 @@
 package com.ys.system.service.common;
 
+import java.lang.reflect.Method;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,8 +10,13 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.ys.business.db.data.CommFieldsData;
+import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.common.BusinessConstants;
+import com.ys.util.CalendarUtil;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
+import com.ys.util.basequery.common.Constants;
 
 /**
  * @author 
@@ -102,7 +109,7 @@ public class BaseService {
 			ArrayList<HashMap<String, String>> ArrayMap, 
 			Class<?> beanClass)  throws Exception {    
 		
-		ArrayList rtnList = new ArrayList();
+		ArrayList<Object> rtnList = new ArrayList<Object>();
         		
 		if (ArrayMap == null || beanClass == null) { 
             return null;  
@@ -116,4 +123,106 @@ public class BaseService {
   
         return rtnList;  
 	} 
+	
+	/**
+	 * @机能 将source中不为空的值复制到target中;<br>
+	 * 1.可以处理相同结构的两个bean,<br>
+	 * 2.可以处理不同机构,但一部分的方法名称相同的两个bean;<br>
+	 * 
+	 */
+	public void copyProperties(Object target, Object source) throws Exception {
+		
+		try{
+	        java.lang.reflect.Field[] field = target.getClass().getDeclaredFields();
+	        
+			//java.lang.reflect.Method[] mm = source.getClass().getDeclaredMethods();
+	        for(int j=0 ; j<field.length ; j++){
+	        	
+	            String name = field[j].getName();    
+	            String type = field[j].getGenericType().toString(); 
+	            
+	            try{
+	            	
+		            if(type.equals("class java.lang.String")){
+		                Method m = target.getClass().getMethod("get"+toUpperCaseFirstOne(name));
+		                Method s = source.getClass().getMethod("get"+toUpperCaseFirstOne(name));
+		              
+		                	String sValue = (String) s.invoke(source);
+		                    if(sValue!=null){
+		                        m = target.getClass().getMethod("set"+toUpperCaseFirstOne(name), String.class);
+		                        m.invoke(target, sValue);
+		                    }
+		              
+		            } else if("Date".equals(type)) {
+		                Method m = target.getClass().getMethod("get"+toUpperCaseFirstOne(name));
+		                //Date value = (Date) m.invoke(target);    
+		                Date value2 = (Date) m.invoke(source);   
+		                if(value2 == null){
+		                    m = target.getClass().getMethod("set"+toUpperCaseFirstOne(name), Integer.class);
+		                    m.invoke(target, value2);
+		                }
+		            }
+	            }catch (Exception e){
+	        		//主要一场由有:找不到字段和取值,依然作为正常流程,过滤后继续处理;
+	            }
+	        }
+		}catch (Exception e){
+			//复制出错的话,返回原值;
+		}
+		
+    }
+	
+	/*
+	 * 首字母大写
+	 */
+	private String toUpperCaseFirstOne(String name){
+		
+		 if(name!= null & name.length()>1){
+			 String firstOne = name.substring(0,1);
+			 String upper = firstOne.toUpperCase();
+			 name = upper +name.substring(1);
+		 }
+		 return name;		 
+	}
+
+	/**表字段的共通编辑方法
+	 * 
+	 * @param type int DB操作方式:0 插入;1 更新;2 删除
+	 * @param method String  FormId
+	 * @param userInfo UserInfo
+	 * @return CommFieldsData
+	 */
+	public CommFieldsData commFiledEdit(
+			int type,
+			String method,
+			UserInfo userInfo) {
+		
+		if(userInfo ==null)
+			return null;
+		
+		CommFieldsData data = new  CommFieldsData();
+		data.setFormid(method);
+		
+		if (type == Constants.ACCESSTYPE_INS) {//insert
+			data.setCreateperson(userInfo.getUserId());
+			data.setCreatetime(CalendarUtil.fmtDate());
+			data.setCreateunitid(userInfo.getUnitId());
+
+		}else{//update
+			data.setModifyperson(userInfo.getUserId());
+			data.setModifytime(CalendarUtil.fmtDate());
+			
+		}
+		
+		if (type == Constants.ACCESSTYPE_DEL) {//delete
+			data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+		}else{
+			data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
+			
+		}
+
+		return data;
+	}
+	
+	
 }

@@ -20,17 +20,15 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.common.TableFields;
-import com.ys.business.action.model.contact.ContactModel;
 import com.ys.business.action.model.material.MaterialModel;
-import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
-import com.ys.business.db.data.B_ContactData;
+import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PriceSupplierData;
+import com.ys.business.db.data.B_PriceSupplierHistoryData;
+import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
-import com.ys.business.service.common.BusinessService;
 
 @Service
 public class MaterialService extends BaseService {
@@ -38,6 +36,7 @@ public class MaterialService extends BaseService {
 	DicUtil util = new DicUtil();
 
 	BaseTransaction ts;
+	private CommFieldsData commData;
 	
 	public HashMap<String, Object> Init(HttpServletRequest request, String data) {
 		
@@ -474,6 +473,8 @@ public class MaterialService extends BaseService {
 			ts.begin();
 			
 			B_PriceSupplierDao priceDao = new B_PriceSupplierDao();
+			B_PriceSupplierHistoryDao historyDao = new B_PriceSupplierHistoryDao();
+			B_PriceSupplierHistoryData historyData = new B_PriceSupplierHistoryData();
 			B_PriceSupplierData reqData = new B_PriceSupplierData();
 			B_PriceSupplierData DBData = new B_PriceSupplierData();
 			
@@ -482,19 +483,18 @@ public class MaterialService extends BaseService {
 			String materialId = reqData.getMaterialid();
 			String supplierId = reqData.getSupplierid();
 			String guid = "";
-			TableFields commFields=null;
 			
 			//判断该供应商是否已有报价
 			DBData =prePriceCheck(materialId,supplierId);
 			
 			boolean blPrice = DBData ==null?false:true;
+			
 			if(blPrice){
 
-				//更新单价表
-				commFields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_UPD,"MaterialUpdate", userInfo);
+				//更新单价表(同时更新createTime)
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialUpdate",userInfo);
 
-				DBData.setUpdFields(commFields);
+				copyProperties(DBData,commData);
 				DBData.setPrice(reqData.getPrice());
 				DBData.setCurrency(reqData.getCurrency());
 				DBData.setPriceunit(reqData.getPriceunit());
@@ -505,40 +505,41 @@ public class MaterialService extends BaseService {
 				priceDao.Store(DBData);	
 				
 				//插入历史表
-				commFields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_INS,"MaterialUpdate", userInfo);
+				copyProperties(historyData,DBData);
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialUpdate",userInfo);
+
+				copyProperties(historyData,commData);
 				
 				guid = BaseDAO.getGuId();
-				DBData.setRecordid(guid);
-				DBData.setInsFields(commFields);
+				historyData.setRecordid(guid);
 				
-				priceDao.CreateHistory(DBData);
+				historyDao.Create(historyData);
 				
 			}else{
 
 				//插入单价表				
 				//新增数据的价格来源设为:其他
-				commFields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_INS,"MaterialInsert", userInfo);
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialUpdate",userInfo);
+
+				copyProperties(reqData,commData);
 	
 				guid = BaseDAO.getGuId();
 				reqData.setRecordid(guid);
-				reqData.setInsFields(commFields);
 				reqData.setPricesource(BusinessConstants.PRICESOURCE_OTHER);	
 				reqData.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
 	
-				priceDao.Create(reqData);	
-				
+				priceDao.Create(reqData);				
 
 				//插入历史表
-				commFields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_INS,"MaterialInsert", userInfo);
+				copyProperties(historyData,reqData);
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
+
+				copyProperties(historyData,commData);
 				
 				guid = BaseDAO.getGuId();
-				reqData.setRecordid(guid);
-				reqData.setInsFields(commFields);
+				historyData.setRecordid(guid);
 				
-				priceDao.CreateHistory(reqData);	
+				historyDao.Create(historyData);	
 			}
 
 			ts.commit();
@@ -600,12 +601,12 @@ public class MaterialService extends BaseService {
 			}
 			for(B_MaterialData data:dbList ){
 									
-				TableFields  fields = BusinessService.updateModifyInfo
-						(Constants.ACCESSTYPE_INS,"MaterialInsert", userInfo);
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
+
+				copyProperties(reqData,commData);
 
 				String guid = BaseDAO.getGuId();
 				reqData.setRecordid(guid);
-				reqData.setInsFields(fields);
 				reqData.setMaterialid(parentId + "." + data.getSubid());
 				reqData.setParentid(parentId);
 				reqData.setSubid(data.getSubid());
@@ -665,18 +666,17 @@ public class MaterialService extends BaseService {
 			//循环处理子编码
 			for(B_MaterialData data:reqDataList ){
 
-				String recordid = data.getRecordid();							
-				TableFields fields;
+				String recordid = data.getRecordid();	
 				
 				//Recorded为空的情况,插入该数据,否则就更新
-				if(recordid =="" || recordid == null){
+				if(recordid =="" || recordid == null){					
 					
-					fields = BusinessService.updateModifyInfo
-							(Constants.ACCESSTYPE_INS,"MaterialInsert", userInfo);
+					commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
+
+					copyProperties(reqData,commData);
 									
 					String guid = BaseDAO.getGuId();
 					reqData.setRecordid(guid);
-					reqData.setInsFields(fields);
 					reqData.setMaterialid(parentId+"."+data.getSubid());
 					reqData.setParentid(parentId);	
 					reqData.setSubid(data.getSubid());
@@ -689,13 +689,12 @@ public class MaterialService extends BaseService {
 				}else if (recordid.equals(selectedRecord)){
 
 					//只更新被选中数据的物料编号,名称,说明,子编码解释等;				
-					B_MaterialData dbData = preMaterialCheck(recordid);					
-					
-					fields = BusinessService.updateModifyInfo
-							(Constants.ACCESSTYPE_UPD,"MaterialUpdate", userInfo);
+					B_MaterialData dbData = preMaterialCheck(recordid);	
 
 					//处理共通信息
-					dbData.setUpdFields(fields);
+					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialUpdate",userInfo);
+					copyProperties(reqData,commData);
+					
 					//获取被选中数据的信息
 					dbData.setMaterialid(reqData.getMaterialid());
 					dbData.setMaterialname(reqData.getMaterialname());
@@ -798,19 +797,6 @@ public class MaterialService extends BaseService {
 		return model;
 	}
 	
-	private ArrayList<ArrayList<String>> preCheckSupplierId(HttpServletRequest request, String key) throws Exception {
-			
-			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-			BaseModel dataModel = new BaseModel();
-			dataModel.setQueryFileName("/business/organ/orgquerydefine");
-			dataModel.setQueryName("organquerydefine_preCheck");
-			BaseQuery baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("keyword", key);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			
-			return baseQuery.getQueryData();
-						
-	}	
 
 	
 	public MaterialModel doDelete(String data, UserInfo userInfo){
@@ -828,24 +814,6 @@ public class MaterialService extends BaseService {
 			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
-		
-		return model;
-	}
-	
-	
-	public ContactModel getContactDetailInfo(String key) throws Exception {
-		ContactModel model = new ContactModel();
-		B_ContactDao dao = new B_ContactDao();
-		B_ContactData dbData = new B_ContactData();
-		dbData.setId(key);
-		dbData = (B_ContactData)dao.FindByPrimaryKey(dbData);
-		model.setContactData(dbData);
-		model.setCompanyCode(dbData.getCompanycode());
-		
-		//model.setSexList(doOptionChange(DicUtil.ORGANTYPE, "").getCategoryList());
-		
-		model.setEndInfoMap("098", "0001", "");
-		model.setKeyBackup(dbData.getId());
 		
 		return model;
 	}

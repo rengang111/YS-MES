@@ -63,28 +63,34 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "YSId", "defaultContent" : ''},
 							{"data": "bomId", "defaultContent" : ''},
-							{"data": "quantity", "className" : 'cash'},
-							{"data": "productCost", "defaultContent" : '',"className" : 'cash'},
+							{"data": "YSId", "defaultContent" : ''},
+							{"data": "orderQuantity", "className" : 'cash'},
 							{"data": "materialCost", "defaultContent" : '',"className" : 'cash'},
 							{"data": "laborCost", "defaultContent" : '',"className" : 'cash'},
-							{"data": "accountCost", "defaultContent" : '',"className" : 'cash'},
-							{"data": "manageCost", "defaultContent" : '',"className" : 'cash'},
+							{"data": "managementCost", "defaultContent" : '',"className" : 'cash'},
+							{"data": "productCost", "defaultContent" : '',"className" : 'cash'},
+							{"data": "totalCost", "defaultContent" : '',"className" : 'cash'},
 							{"data": "planDate", "className" : 'td-center'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
+							{"data": "status"},
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+								return row["rownum"];
 		                    }},
 				    		{"targets":10,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';
-				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["bomId"] + "')\">查看</a>"+space;
-				    			rtn= rtn+"<a href=\"#\" onClick=\"doCopy('" + row["bomId"] + "')\">复制</a>";
+				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["bomId"] + "')\">BOM表</a>";
+				    				rtn= rtn+space+"<a href=\"#\" onClick=\"doReview('"  + 
+				    						row["YSId"] +"','"+ row["bomId"] + "')\">评审1</a>";		
 				    			return rtn;
-				    		}}			           
+				    		}},
+				    		{
+								"visible" : false,
+								"targets" : [ 11 ]
+							} 
 			         	] 
 			}
 		);
@@ -137,8 +143,10 @@
 		location.href = url;
 	}
 
-	function doCopy(bomId) {
-		var url = '${ctx}/business/bom?methodtype=copy&bomId=' + bomId;
+	function doReview(YSId,bomId) {
+		//var url = '${ctx}/business/bom?methodtype=copy&bomId=' + bomId+'&materialId='+materialId;
+		var url = '${ctx}/business/orderreview?methodtype=create&YSId=' + YSId+'&bomId='+bomId;
+		//var url = '${ctx}/business/orderreview?methodtype=detailView&bomId=' + bomId;
 
 		location.href = url;
 	}
@@ -206,7 +214,7 @@
 					</td>
 					<td>
 						<button type="button" id="retrieve" class="DTTT_button" 
-							style="width:50px" value="查询" onclick="doSearch();"/>查询
+							style="width:50px" onclick="doSearch();">查询</button>
 					</td>
 					<td width="10%"></td> 
 				</tr>
@@ -219,27 +227,21 @@
 	<div class="list">
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
-			<div id="DTTT_container" align="right" style="height:40px">
-				<a aria-controls="TMaterial" tabindex="0" id="ToolTables_TSupplier_0" 
-					class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>新建</span></a>
-				<a aria-controls="TMaterial" tabindex="0" id="ToolTables_TSupplier_1" 
-					class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a>
-			</div>
-			<div id="clear"></div>
 			<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
 				<thead>						
 					<tr class="selected">
 						<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">耀升编号</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">BOM编号</th>
-						<th style="width: 50px;" aria-label="物料编号" class="dt-middle ">数量</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">产品成本</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">材料成本</th>
+						<th style="width: 100px;" aria-label="物料编号" class="dt-middle ">BOM编号</th>
+						<th style="width: 55px;" aria-label="物料编号" class="dt-middle ">耀升编号</th>
+						<th style="width: 40px;" aria-label="物料编号" class="dt-middle ">数量</th>
+						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">材料成本</th>
 						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">人工成本</th>
+						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">经管费</th>
+						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">产品成本</th>
 						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">核算成本</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">经管费</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">方案日期</th>
+						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">方案日期</th>
 						<th style="width: 50px;" aria-label="操作" class="dt-middle ">操作</th>
+						<th></th>
 					</tr>
 				</thead>
 			</table>

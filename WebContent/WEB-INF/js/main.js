@@ -16,7 +16,7 @@ function openTab(selector,title,href,icon){
     if($tabs.tabs('exists',title)){//存在，则打开
         $tabs.tabs('select',title);
     }else{//不存在，新建,新建时判断tab页个数，超出则关闭第一个
-        var content = '<iframe scrolling="auto" id="mainFrame" frameborder="0" src="'+href+'" style="width:100%;height:99%;"></iframe>';
+        var content = '<iframe scrolling="auto" id="mainFrame" frameborder="0" src="'+href+'" width="100%" height="99%" onload="iFrameHeight();"></iframe>';
         var tabCon = { title:title,  content:content, closable:true, selected:true, iconCls:icon };
         if($('.tabs-inner').length>8){//最多打开8个（不包括首页）
             $.messager.confirm('提示', '菜单页打开过多，是否关闭第一个，并打开“'+title+'”？', function(r){
@@ -145,3 +145,169 @@ function pad(num, n) {
     }  
     return num;  
 }
+
+function today() {
+	var mydate = new Date();
+	var y = format(mydate.getFullYear());
+	var m = format((mydate.getMonth() + 1));
+	var d = format(mydate.getDate());
+	var h = format(mydate.getHours());	
+	var n = format(mydate.getMinutes());	
+	var s = format(mydate.getSeconds());		
+	return y+'-'+m+'-'+d+' '+h+':'+n+':'+s;
+};
+
+function shortToday() {
+	var mydate = new Date();
+	var y = format(mydate.getFullYear());
+	var m = format((mydate.getMonth() + 1));
+	var d = format(mydate.getDate());	
+	return y+'-'+m+'-'+d;
+};
+
+function format(s){
+	if(s<10){
+		return '0'+s;
+	}else{
+		return s;
+	}
+}
+
+function iFramAutoSroll(){
+	//重设显示窗口(iframe)高度
+	var bodyHeight = $(document).height(); 
+	var viewHeight = bodyHeight<700?700:bodyHeight;
+	//alert(bodyHeight)
+	//var viewHeight = bodyHeight;
+	
+    parent.document.getElementById("mainFrame").height = viewHeight+"px";
+}
+
+function iFramNoSroll(){
+	//重设显示窗口(iframe)高度	
+    parent.document.getElementById("mainFrame").height = "99%";
+}
+
+function PrefixInteger(num, length) {
+	 return (Array(length).join('0') + num).slice(-length);
+} 
+
+/*
+ * 金额转换成可计算的数字
+ * parm0:金额
+ */
+function currencyToFloat(currency){
+
+	if(currency =="" || currency == "0" || currency == null)
+		return 0;
+	
+	if(typeof currency == "number")
+		return currency;
+	
+	//去掉逗号
+	currency = currency.replace(/,/g, "");
+	
+	//验证数字，包括小数
+	//该函数的返回值要参与计算,所以至少返回 '0'
+	var reg = /^[0-9]+.?[0-9]*$/;
+	if(!reg.test(currency))
+		return 0;		
+	
+	return parseFloat(currency);
+	
+}
+
+function floatToCurrency(value){
+
+	var toFloat = '';
+	
+	if(typeof value == 'number'){
+		toFloat = value;
+	}else{
+		toFloat = currencyToFloat(value);
+	}
+	
+	//转换成float出错的情况,返回原值
+	if(toFloat == 0)
+		return value;
+		
+	var numString = toFloat.toFixed(2);
+	var parts = numString.split('.');
+	var outParts = [];
+	var beforeDecimal = '0';
+	var afterDecimal = '00';
+	var currSegment;
+
+	beforeDecimal = parts[0];
+	afterDecimal = parts[1];
+	
+	while (beforeDecimal.length > 3) {
+		
+		currSegment = beforeDecimal.substring(
+				beforeDecimal.length - 3,
+				beforeDecimal.length);
+		
+		beforeDecimal = beforeDecimal.substring(
+				0,
+				beforeDecimal.length -3);
+		outParts.unshift(currSegment);
+	}
+	
+	if(beforeDecimal.length > 0) {
+		
+		outParts.unshift(beforeDecimal);
+	}
+	
+	return outParts.join(',') + '.' + afterDecimal;
+	
+}
+
+
+function float4ToCurrency(value){
+
+	var toFloat = '';
+	
+	if(typeof value == 'number'){
+		toFloat = value;
+	}else{
+		toFloat = currencyToFloat(value);
+	}
+	
+	//转换成float出错的情况,返回原值
+	if(toFloat == 0)
+		return value;
+		
+	var numString = toFloat.toFixed(4);
+	var parts = numString.split('.');
+	var outParts = [];
+	var beforeDecimal = '0';
+	var afterDecimal = '0000';
+	var currSegment;
+
+	beforeDecimal = parts[0];
+	afterDecimal = parts[1];
+	
+	while (beforeDecimal.length > 3) {
+		
+		currSegment = beforeDecimal.substring(
+				beforeDecimal.length - 3,
+				beforeDecimal.length);
+		
+		beforeDecimal = beforeDecimal.substring(
+				0,
+				beforeDecimal.length -3);
+		outParts.unshift(currSegment);
+	}
+	
+	if(beforeDecimal.length > 0) {
+		
+		outParts.unshift(beforeDecimal);
+	}
+	
+	return outParts.join(',') + '.' + afterDecimal;
+	
+}
+
+		
+	
+	
