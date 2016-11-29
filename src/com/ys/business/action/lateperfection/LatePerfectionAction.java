@@ -133,7 +133,7 @@ public class LatePerfectionAction extends BaseAction {
 		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataMap = latePerfectionService.doGetTPFileList(request, data, userInfo);
+			//dataMap = latePerfectionService.doGetTPFileList(request, data, userInfo);
 			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
@@ -152,7 +152,7 @@ public class LatePerfectionAction extends BaseAction {
 		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataMap = latePerfectionService.doGetQuestionList(request, data, userInfo);
+			//dataMap = latePerfectionService.doGetQuestionList(request, data, userInfo);
 			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
@@ -173,7 +173,7 @@ public class LatePerfectionAction extends BaseAction {
 		String key = request.getParameter("key");
 
 		try {
-			dataModel = latePerfectionService.doUpdateTPFileInit(request, projectId, key);
+			//dataModel = latePerfectionService.doUpdateTPFileInit(request, projectId, key);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -188,7 +188,7 @@ public class LatePerfectionAction extends BaseAction {
 		LatePerfectionModel model = new LatePerfectionModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = latePerfectionService.doDeleteTPFile(request, data, userInfo);
+		//model = latePerfectionService.doDeleteTPFile(request, data, userInfo);
 
 		return model;
 	}
@@ -198,7 +198,7 @@ public class LatePerfectionAction extends BaseAction {
 		LatePerfectionModel model = new LatePerfectionModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = externalsampleService.doUpdateTPFile(request, data, userInfo);
+		//model = externalsampleService.doUpdateTPFile(request, data, userInfo);
 		
 		return model;
 	}	
@@ -210,7 +210,7 @@ public class LatePerfectionAction extends BaseAction {
 		String key = request.getParameter("key");
 
 		try {
-			dataModel = latePerfectionService.doUpdateQuestionInit(request, projectId, key);
+			//dataModel = latePerfectionService.doUpdateQuestionInit(request, projectId, key);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -269,7 +269,7 @@ public class LatePerfectionAction extends BaseAction {
 		LatePerfectionModel model = new LatePerfectionModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = latePerfectionService.doDeleteQuestion(request, data, userInfo);
+		//model = latePerfectionService.doDeleteQuestion(request, data, userInfo);
 
 		return model;
 	}
@@ -279,7 +279,7 @@ public class LatePerfectionAction extends BaseAction {
 		LatePerfectionModel model = new LatePerfectionModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = externalsampleService.doUpdateQuestion(request, data, userInfo);
+		//model = externalsampleService.doUpdateQuestion(request, data, userInfo);
 		
 		return model;
 	}
