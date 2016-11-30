@@ -32,7 +32,8 @@ import com.ys.business.db.dao.B_OrganBasicInfoDao;
 import com.ys.business.db.dao.B_ProcessControlDao;												
 import com.ys.business.db.dao.B_ProjectRelationFileDao;												
 import com.ys.business.db.dao.B_ProjectTaskCostDao;												
-import com.ys.business.db.dao.B_ProjectTaskDao;												
+import com.ys.business.db.dao.B_ProjectTaskDao;
+import com.ys.business.db.dao.B_ReformLogDao;
 import com.ys.business.db.dao.B_SupplierBasicInfoDao;												
 import com.ys.business.db.data.B_ContactData;												
 import com.ys.business.db.data.B_CustomerAddrData;												
@@ -45,7 +46,8 @@ import com.ys.business.db.data.B_OrganBasicInfoData;
 import com.ys.business.db.data.B_ProcessControlData;												
 import com.ys.business.db.data.B_ProjectRelationFileData;												
 import com.ys.business.db.data.B_ProjectTaskCostData;												
-import com.ys.business.db.data.B_ProjectTaskData;												
+import com.ys.business.db.data.B_ProjectTaskData;
+import com.ys.business.db.data.B_ReformLogData;
 import com.ys.business.db.data.B_SupplierBasicInfoData;												
 import com.ys.business.service.contact.ContactService;												
 import com.ys.business.service.customer.CustomerService;												
@@ -55,7 +57,8 @@ import com.ys.business.service.externalsample.ExternalSampleService;
 import com.ys.business.service.lateperfection.LatePerfectionService;
 import com.ys.business.service.organ.OrganService;												
 import com.ys.business.service.processcontrol.ProcessControlService;												
-import com.ys.business.service.projecttask.ProjectTaskService;												
+import com.ys.business.service.projecttask.ProjectTaskService;
+import com.ys.business.service.reformlog.ReformLogService;
 import com.ys.business.service.supplier.SupplierService;												
 import com.ys.system.action.model.dic.DicModel;												
 import com.ys.system.action.model.dic.DicTypeModel;												
@@ -874,7 +877,58 @@ public class BusinessDbUpdateEjb  {
 		catch(Exception e) {										
 			ts.rollback();									
 			throw e;									
-		}										
+		}
     }    												
-    	
+
+    public void executeReformLogDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_ReformLogDao dao = new B_ReformLogDao();
+    	B_ReformLogData data = new B_ReformLogData();											
+		int count = 0;					
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				data.setId(key);
+				data = (B_ReformLogData)dao.FindByPrimaryKey(data);
+				data = ReformLogService.updateModifyInfo(data, userInfo);
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				count++;						
+			}									
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}										
+    } 
+    
+    public void executeReformLogDeleteByProjectId(String keyData, UserInfo userInfo) throws Exception {												
+		
+    	BaseService baseService = new BaseService();
+		int count = 0;							
+						
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {
+				StringBuffer sql = new StringBuffer("");
+				sql.append("UPDATE b_ReformLog SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE projectId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());								
+			}
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
 }												
