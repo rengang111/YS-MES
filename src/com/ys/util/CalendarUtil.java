@@ -230,4 +230,35 @@ public class CalendarUtil {
 	    
 	    return Integer.parseInt(String.valueOf(between_days));
 	}
+	
+	public static String getDayBetween(String date1, String date2 ) throws Exception {
+		
+		CalendarUtil calendarUtil = null;
+		Date compareDate1 = null;
+		Date compareDate2 = null;
+		
+		if (date1 == null || date1.equals("")) {
+			compareDate1 = CalendarUtil.getSystemDate();
+		} else {
+			calendarUtil = new CalendarUtil(date1);
+			compareDate1 = calendarUtil.getDate();
+		}
+		
+		if (date2 == null || date2.equals("")) {
+			compareDate2 = CalendarUtil.getSystemDate();
+		} else {
+			calendarUtil = new CalendarUtil(date2);
+			compareDate2 = calendarUtil.getDate();
+		}
+		
+		
+		int dayBetween = 0;
+
+		dayBetween = calendarUtil.daysBetween(compareDate1, compareDate2);
+		if (dayBetween < 0) {
+			dayBetween = 0;
+		}
+		
+		return String.valueOf(dayBetween);
+	}
 }

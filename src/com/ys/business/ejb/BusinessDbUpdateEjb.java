@@ -25,7 +25,9 @@ import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_CustomerAddrDao;												
 import com.ys.business.db.dao.B_CustomerDao;												
 import com.ys.business.db.dao.B_ESRelationFileDao;												
-import com.ys.business.db.dao.B_ExternalSampleDao;												
+import com.ys.business.db.dao.B_ExternalSampleDao;
+import com.ys.business.db.dao.B_LatePerfectionQuestionDao;
+import com.ys.business.db.dao.B_LatePerfectionRelationFileDao;
 import com.ys.business.db.dao.B_OrganBasicInfoDao;												
 import com.ys.business.db.dao.B_ProcessControlDao;												
 import com.ys.business.db.dao.B_ProjectRelationFileDao;												
@@ -36,7 +38,9 @@ import com.ys.business.db.data.B_ContactData;
 import com.ys.business.db.data.B_CustomerAddrData;												
 import com.ys.business.db.data.B_CustomerData;												
 import com.ys.business.db.data.B_ESRelationFileData;												
-import com.ys.business.db.data.B_ExternalSampleData;												
+import com.ys.business.db.data.B_ExternalSampleData;
+import com.ys.business.db.data.B_LatePerfectionQuestionData;
+import com.ys.business.db.data.B_LatePerfectionRelationFileData;
 import com.ys.business.db.data.B_OrganBasicInfoData;												
 import com.ys.business.db.data.B_ProcessControlData;												
 import com.ys.business.db.data.B_ProjectRelationFileData;												
@@ -47,7 +51,8 @@ import com.ys.business.service.contact.ContactService;
 import com.ys.business.service.customer.CustomerService;												
 import com.ys.business.service.customeraddr.CustomerAddrService;												
 import com.ys.business.service.esrelationfile.EsRelationFileService;												
-import com.ys.business.service.externalsample.ExternalSampleService;												
+import com.ys.business.service.externalsample.ExternalSampleService;
+import com.ys.business.service.lateperfection.LatePerfectionService;
 import com.ys.business.service.organ.OrganService;												
 import com.ys.business.service.processcontrol.ProcessControlService;												
 import com.ys.business.service.projecttask.ProjectTaskService;												
@@ -783,5 +788,93 @@ public class BusinessDbUpdateEjb  {
 			throw e;									
 		}										
     }    												
-        												
+        				
+    
+    public void executeLatePerfectionTPFileDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_LatePerfectionRelationFileDao dao = new B_LatePerfectionRelationFileDao();
+    	B_LatePerfectionRelationFileData data = new B_LatePerfectionRelationFileData();											
+		int count = 0;					
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				data.setId(key);
+				data = (B_LatePerfectionRelationFileData)dao.FindByPrimaryKey(data);
+				data = LatePerfectionService.updateTPFileModifyInfo(data, userInfo);
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				count++;						
+			}									
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}										
+    }     
+    
+    public void executeLatePerfectionQuestionDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_LatePerfectionQuestionDao dao = new B_LatePerfectionQuestionDao();
+    	B_LatePerfectionQuestionData data = new B_LatePerfectionQuestionData();											
+		int count = 0;					
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				data.setId(key);
+				data = (B_LatePerfectionQuestionData)dao.FindByPrimaryKey(data);
+				data = LatePerfectionService.updateQuestionModifyInfo(data, userInfo);
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				count++;						
+			}									
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}										
+    }     
+    
+    public void executeLatePerfectionDelete(String keyData, UserInfo userInfo) throws Exception {												
+										
+		int count = 0;										
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				StringBuffer sql = new StringBuffer("");								
+				sql.append("UPDATE b_lateperfectionrelationfile SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE projectId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());								
+							
+				sql = new StringBuffer("");								
+				sql.append("UPDATE b_lateperfectionquestion SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE projectId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
+				
+				count++;								
+												
+			}									
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}										
+    }    												
+    	
 }												

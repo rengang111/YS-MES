@@ -94,10 +94,12 @@ public class ProcessControlService extends BaseService {
 		
 		ArrayList<HashMap<String, String>> dbData = dataModel.getYsViewData();
 		for(HashMap<String, String>rowData:dbData) {
-			if (rowData.get("endTime").equals("0")) {
-				rowData.put("exceedTime", getDayBetween(rowData.get("endTime"), rowData.get("lastFinishTime")));
+			String endTime = rowData.get("endTime");
+			String lastFinishTime = rowData.get("lastFinishTime");
+			if (rowData.get("isEnd").equals("")) {
+				rowData.put("exceedTime", CalendarUtil.getDayBetween(endTime, lastFinishTime));
 			} else {
-				rowData.put("exceedTime", getDayBetween(rowData.get("endTime"), ""));
+				rowData.put("exceedTime", CalendarUtil.getDayBetween(endTime, ""));
 			}
 		}
 		
@@ -143,9 +145,9 @@ public class ProcessControlService extends BaseService {
 			if (tempRowData.get("type").length() == 1) {
 				rowData = dbData.get(i);
 				if (rowData.get("finishTime").equals("")) {
-					rowData.put("exceedTime", getDayBetween(rowData.get("expectDate"), ""));
+					rowData.put("exceedTime", CalendarUtil.getDayBetween(rowData.get("expectDate"), ""));
 				} else {
-					rowData.put("exceedTime", getDayBetween(rowData.get("expectDate"), rowData.get("finishTime")));
+					rowData.put("exceedTime", CalendarUtil.getDayBetween(rowData.get("expectDate"), rowData.get("finishTime")));
 				}
 				rowData.put("lastestExpectDate", "");
 			} else {
@@ -245,9 +247,9 @@ public class ProcessControlService extends BaseService {
 		int rowCount = 0;
 		for(HashMap<String, String>rowData:dbData) {
 			if (rowData.get("finishTime").equals("")) {
-				rowData.put("exceedTime", getDayBetween(rowData.get("baseExpectDate"), ""));
+				rowData.put("exceedTime", CalendarUtil.getDayBetween(rowData.get("baseExpectDate"), ""));
 			} else {
-				rowData.put("exceedTime", getDayBetween(rowData.get("baseExpectDate"), rowData.get("finishTime")));
+				rowData.put("exceedTime", CalendarUtil.getDayBetween(rowData.get("baseExpectDate"), rowData.get("finishTime")));
 			}
 			rowCount++;
 			if (rowCount == dbData.size()) {
@@ -342,7 +344,7 @@ public class ProcessControlService extends BaseService {
 		
 	}
 	
-	public ProcessControlModel getProcessControlBaseInfo(HttpServletRequest request, String key) throws Exception {
+	public ProcessControlModel getProjectBaseInfo(HttpServletRequest request, String key) throws Exception {
 		BaseModel dataModel = new BaseModel();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		ArrayList<ArrayList<String>> finishTimeList = new ArrayList<ArrayList<String>>();
@@ -378,7 +380,7 @@ public class ProcessControlService extends BaseService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		finishTimeList = baseQuery.getFullData();
 		if (finishTimeList.size() == 0) {
-			model.setExceedTime(getDayBetween(taskData.getEndtime(), ""));
+			model.setExceedTime(CalendarUtil.getDayBetween(taskData.getEndtime(), ""));
 		} else {
 			boolean unFinished = false;
 			for(ArrayList<String> finishTime:finishTimeList) {
@@ -392,9 +394,9 @@ public class ProcessControlService extends BaseService {
 				}
 			}
 			if (unFinished) {
-				model.setExceedTime(getDayBetween(taskData.getEndtime(), ""));
+				model.setExceedTime(CalendarUtil.getDayBetween(taskData.getEndtime(), ""));
 			} else {
-				model.setExceedTime(getDayBetween(taskData.getEndtime(), lastestFinishDate));
+				model.setExceedTime(CalendarUtil.getDayBetween(taskData.getEndtime(), lastestFinishDate));
 			}
 		}
 		
@@ -454,9 +456,9 @@ public class ProcessControlService extends BaseService {
 			}
 			if (id != null && !id.equals("")) {
 				if (dbData.getFinishtime() == null || dbData.getFinishtime().equals("")) {
-					model.setExceedTime(getDayBetween(dbData.getExpectdate(), ""));
+					model.setExceedTime(CalendarUtil.getDayBetween(dbData.getExpectdate(), ""));
 				} else {
-					model.setExceedTime(getDayBetween(dbData.getExpectdate(), dbData.getFinishtime()));
+					model.setExceedTime(CalendarUtil.getDayBetween(dbData.getExpectdate(), dbData.getFinishtime()));
 				}
 			}
 		}
@@ -476,9 +478,9 @@ public class ProcessControlService extends BaseService {
 				String baseExpectDate = expectDateList.get(0).get(3);
 				String finishTime = expectDateList.get(0).get(6);
 				if (finishTime.equals("")) {
-					model.setExceedTime(getDayBetween(baseExpectDate, ""));
+					model.setExceedTime(CalendarUtil.getDayBetween(baseExpectDate, ""));
 				} else {
-					model.setExceedTime(getDayBetween(baseExpectDate, finishTime));
+					model.setExceedTime(CalendarUtil.getDayBetween(baseExpectDate, finishTime));
 				}
 			}
 		}
@@ -493,37 +495,6 @@ public class ProcessControlService extends BaseService {
 		
 		return model;
 		
-	}
-	
-	private String getDayBetween(String date1, String date2 ) throws Exception {
-	
-		CalendarUtil calendarUtil = null;
-		Date compareDate1 = null;
-		Date compareDate2 = null;
-		
-		if (date1 == null || date1.equals("")) {
-			compareDate1 = CalendarUtil.getSystemDate();
-		} else {
-			calendarUtil = new CalendarUtil(date1);
-			compareDate1 = calendarUtil.getDate();
-		}
-		
-		if (date2 == null || date2.equals("")) {
-			compareDate2 = CalendarUtil.getSystemDate();
-		} else {
-			calendarUtil = new CalendarUtil(date2);
-			compareDate2 = calendarUtil.getDate();
-		}
-		
-		
-		int dayBetween = 0;
-
-		dayBetween = calendarUtil.daysBetween(compareDate1, compareDate2);
-		if (dayBetween < 0) {
-			dayBetween = 0;
-		}
-		
-		return String.valueOf(dayBetween);
 	}
 	
 }

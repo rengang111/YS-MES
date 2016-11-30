@@ -16,10 +16,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.lateperfection.LatePerfectionModel;
 import com.ys.business.db.dao.B_LatePerfectionQuestionDao;
+import com.ys.business.db.dao.B_LatePerfectionRelationFileDao;
 import com.ys.business.db.dao.B_ProjectTaskDao;
 import com.ys.business.db.data.B_LatePerfectionQuestionData;
+import com.ys.business.db.data.B_LatePerfectionRelationFileData;
 import com.ys.business.db.data.B_ProjectTaskData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
+import com.ys.business.service.supplier.SupplierService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.role.RoleModel;
 import com.ys.util.basequery.common.BaseModel;
@@ -40,6 +43,7 @@ import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.UploadReceiver;
 import com.ys.util.basedao.BaseDAO;
+import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
 import javax.naming.Context;
@@ -47,7 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class LatePerfectionService extends BaseService {
- 
+	/*
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -78,7 +82,7 @@ public class LatePerfectionService extends BaseService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
+		dataModel.setQueryFileName("/business/processcontrol/processcontrolquerydefine");
 		dataModel.setQueryName("projecttaskquerydefine_search");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
@@ -94,11 +98,9 @@ public class LatePerfectionService extends BaseService {
 		
 		ArrayList<HashMap<String, String>> dbData = dataModel.getYsViewData();
 		for(HashMap<String, String>rowData:dbData) {
-			if (rowData.get("endTime").equals("0")) {
-				rowData.put("exceedTime", getDayBetween(rowData.get("endTime"), rowData.get("lastFinishTime")));
-			} else {
-				rowData.put("exceedTime", getDayBetween(rowData.get("endTime"), ""));
-			}
+			String endTime = rowData.get("endTime");
+			String lastFinishTime = rowData.get("lastFinishTime");
+			rowData.put("exceedTime", CalendarUtil.getDayBetween(endTime, lastFinishTime));
 		}
 		
 		modelMap.put("sEcho", sEcho); 
@@ -112,237 +114,8 @@ public class LatePerfectionService extends BaseService {
 		return modelMap;		
 
 	}
-	
-	public HashMap<String, Object> doGetProcessCollect(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		String length = "";
-		String key = "";
-		
-		String[] titleList = {"3D完成", "3D手模", "3D工作样机", "模具确认", "模具完成", "模具调整",
-				"委外加工", "试产", "文档整理"};
-		
-		data = URLDecoder.decode(data, "UTF-8");
-
-		key = getJsonData(data, "keyBackup");
-				
-		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
-		dataModel.setQueryName("lateperfectionquerydefine_searchcollect");
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword", key);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, -1);	
-		
-		ArrayList<HashMap<String, String>> dbData = dataModel.getYsViewData();
-		HashMap<String, String>rowData = null;
-		for(int i = 0; i < dbData.size(); i++) {
-			HashMap<String, String>tempRowData = dbData.get(i);
-			if (tempRowData.get("type").length() == 1) {
-				rowData = dbData.get(i);
-				if (rowData.get("finishTime").equals("")) {
-					rowData.put("exceedTime", getDayBetween(rowData.get("expectDate"), ""));
-				} else {
-					rowData.put("exceedTime", getDayBetween(rowData.get("expectDate"), rowData.get("finishTime")));
-				}
-				rowData.put("lastestExpectDate", "");
-			} else {
-				rowData.put("lastestExpectDate", tempRowData.get("expectDate"));
-				dbData.remove(i--);
-			}
-		}
-		
-		if (dbData.size() == 0) {
-			for(int i = 0; i < 9; i++) {
-				rowData = new HashMap<String, String>();
-				dbData.add(rowData);
-				rowData.put("type", String.valueOf(i));
-				rowData.put("title", titleList[i]);
-				rowData.put("id", "");
-				rowData.put("expectDate", "");
-				rowData.put("exceedTime", "");
-				rowData.put("lastestExpectDate", "");
-				rowData.put("finishTime", "");				
-			}
-		} else {
-		
-			for (int i = 0; i < 9; i++) {
-				int rowIndex;
-				rowData = null;
-				if (i < dbData.size()) {
-					rowData = dbData.get(i);
-					if (rowData.get("type") == null) {
-						rowIndex = i;
-					} else {
-						rowIndex = Integer.parseInt(rowData.get("type"));
-						rowData.put("title", titleList[rowIndex]);
-					}
-					
-					if (rowIndex == i) {
-						rowData.put("type", String.valueOf(i));
-						rowData.put("title", titleList[i]);
-					} else {
-						for(int j = i; j < rowIndex; j++) {
-							rowData = new HashMap<String, String>();
-							rowData.put("type", String.valueOf(j));
-							rowData.put("title", titleList[j]);
-							rowData.put("id", "");
-							rowData.put("expectDate", "");
-							rowData.put("exceedTime", "");
-							rowData.put("lastestExpectDate", "");
-							rowData.put("finishTime", "");
-							dbData.add(j, rowData);
-							i++;
-						}
-					}				
-				} else {
-					rowData = new HashMap<String, String>();
-					dbData.add(rowData);
-					rowData.put("type", String.valueOf(i));
-					rowData.put("title", titleList[i]);
-					rowData.put("id", "");
-					rowData.put("expectDate", "");
-					rowData.put("exceedTime", "");
-					rowData.put("lastestExpectDate", "");
-					rowData.put("finishTime", "");
-				}
-	
-			}
-		}
-		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;		
-
-	}
-	
-	public HashMap<String, Object> doGetProcessDetail(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
-
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-
-		String key1 = "";
-		String key2 = "";
-		
-		data = URLDecoder.decode(data, "UTF-8");
-
-		key1 = getJsonData(data, "keyBackup");
-		key2 = getJsonData(data, "type");	
-		
-		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
-		dataModel.setQueryName("lateperfectionquerydefine_searchbytype");
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, -1);	
-		
-		ArrayList<HashMap<String, String>> dbData = dataModel.getYsViewData();
-		int rowCount = 0;
-		for(HashMap<String, String>rowData:dbData) {
-			if (rowData.get("finishTime").equals("")) {
-				rowData.put("exceedTime", getDayBetween(rowData.get("baseExpectDate"), ""));
-			} else {
-				rowData.put("exceedTime", getDayBetween(rowData.get("baseExpectDate"), rowData.get("finishTime")));
-			}
-			rowCount++;
-			if (rowCount == dbData.size()) {
-				if (rowData.get("finishTime").equals("")) {
-					rowData.put("lastOne", "1");
-				} else {
-					rowData.put("lastOne", "");
-				}
-			} else {
-				rowData.put("lastOne", "");
-			}
-		}
-		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;		
-
-	}	
-	
-	
-	public LatePerfectionModel doUpdate(HttpServletRequest request, String data, UserInfo userInfo) {
-		LatePerfectionModel model = new LatePerfectionModel();
-		String id = getJsonData(data, "keyBackup");
-		
-		try {
-			B_LatePerfectionQuestionDao dao = new B_LatePerfectionQuestionDao();
-			B_LatePerfectionQuestionData dbData = new B_LatePerfectionQuestionData();
-			
-			String projectId = getJsonData(data, "keyBackup");
-			
-			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
-	        
-			//String info = bean.executeLatePerfectionUpdate(data, userInfo);
-
-			//model.setEndInfoMap(NORMAL, "", info);
-		}
-		catch(Exception e) {
-			model.setEndInfoMap(SYSTEMERROR, "err001", id);
-		}
-		
-		return model;
-	}
-	
-	public LatePerfectionModel doDelete(HttpServletRequest request, String data, UserInfo userInfo){
-		
-		LatePerfectionModel model = new LatePerfectionModel();
-		
-		try {
-			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
-	        
-	        //bean.executeLatePerfectionDelete(data, userInfo);
-	        
-	        model.setEndInfoMap(NORMAL, "", "");
-	        
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
-		
-		return model;
-	}
-	
-	public static B_LatePerfectionQuestionData updateModifyInfo(B_LatePerfectionQuestionData data, UserInfo userInfo) {
-		String createUserId = data.getCreateperson();
-		if ( createUserId == null || createUserId.equals("")) {
-			data.setCreateperson(userInfo.getUserId());
-			data.setCreatetime(CalendarUtil.fmtDate());
-			data.setCreateunitid(userInfo.getUnitId());
-			data.setDeptguid(userInfo.getDeptGuid());
-		}
-		data.setModifyperson(userInfo.getUserId());
-		data.setModifytime(CalendarUtil.fmtDate());
-		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
-		
-		return data;
-	}
-	
-	
-	private boolean isDataExist(B_LatePerfectionQuestionData dbData) {
-		boolean rtnValue = false;
-		
-		try {
-			B_LatePerfectionQuestionDao dao = new B_LatePerfectionQuestionDao();
-			dao.FindByPrimaryKey(dbData);
-			rtnValue = true;
-		}
-		catch(Exception e) {
-			
-		}
-		return rtnValue;
-		
-	}
-	
-	public LatePerfectionModel getLatePerfectionBaseInfo(HttpServletRequest request, String key) throws Exception {
+	public LatePerfectionModel getProjectBaseInfo(HttpServletRequest request, String key) throws Exception {
 		BaseModel dataModel = new BaseModel();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		ArrayList<ArrayList<String>> finishTimeList = new ArrayList<ArrayList<String>>();
@@ -371,14 +144,14 @@ public class LatePerfectionService extends BaseService {
 		
 		model.setProjectTaskData(taskData);
 		
-		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
-		dataModel.setQueryName("lateperfectionquerydefine_isFinished");
+		dataModel.setQueryFileName("/business/processcontrol/processcontrolquerydefine");
+		dataModel.setQueryName("processcontrolquerydefine_isFinished");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("projectId", dbData.getProjectid());
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		finishTimeList = baseQuery.getFullData();
 		if (finishTimeList.size() == 0) {
-			model.setExceedTime(getDayBetween(taskData.getEndtime(), ""));
+			model.setExceedTime(CalendarUtil.getDayBetween(taskData.getEndtime(), ""));
 		} else {
 			boolean unFinished = false;
 			for(ArrayList<String> finishTime:finishTimeList) {
@@ -392,9 +165,9 @@ public class LatePerfectionService extends BaseService {
 				}
 			}
 			if (unFinished) {
-				model.setExceedTime(getDayBetween(taskData.getEndtime(), ""));
+				model.setExceedTime(CalendarUtil.getDayBetween(taskData.getEndtime(), ""));
 			} else {
-				model.setExceedTime(getDayBetween(taskData.getEndtime(), lastestFinishDate));
+				model.setExceedTime(CalendarUtil.getDayBetween(taskData.getEndtime(), lastestFinishDate));
 			}
 		}
 		
@@ -405,16 +178,85 @@ public class LatePerfectionService extends BaseService {
 		
 		return model;
 		
+	}	
+*/
+	public HashMap<String, Object> doGetTPFileList(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		String length = "";
+		String projectId = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		projectId = getJsonData(data, "keyBackup");
+				
+		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
+		dataModel.setQueryName("lateperfectionquerydefine_relationfilesearch");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("projectId", projectId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, -1);	
+				
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
 	}
 	
-	public LatePerfectionModel doUpdateLatePerfectionDetailInit(HttpServletRequest request, String projectId, String id, String type) throws Exception {
+	public HashMap<String, Object> doGetQuestionList(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+
+		String projectId = "";		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		projectId = getJsonData(data, "keyBackup");
+		
+		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
+		dataModel.setQueryName("lateperfectionquerydefine_questionsearch");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("projectId", projectId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, -1);	
+				
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
+	}	
+	
+	public LatePerfectionModel doUpdateTPFileInit(HttpServletRequest request, String projectId, String id) throws Exception {
+		LatePerfectionModel model = new LatePerfectionModel();
+		B_LatePerfectionRelationFileDao dao = new B_LatePerfectionRelationFileDao();
+		B_LatePerfectionRelationFileData dbData = new B_LatePerfectionRelationFileData();
+
+		if (id != null && !id.equals("")) {
+			dbData.setId(id);
+			dbData = (B_LatePerfectionRelationFileData)dao.FindByPrimaryKey(dbData);			
+		}
+		
+		model.setRelationFileData(dbData);
+		
+		model.setKeyBackup(id);
+		model.setProjectId(projectId);
+		//model.setType(type);
+
+		model.setEndInfoMap("098", "0001", "");
+		
+		return model;
+		
+	}	
+	
+	public LatePerfectionModel doUpdateQuestionInit(HttpServletRequest request, String projectId, String id) throws Exception {
 		LatePerfectionModel model = new LatePerfectionModel();
 		B_LatePerfectionQuestionDao dao = new B_LatePerfectionQuestionDao();
 		B_LatePerfectionQuestionData dbData = new B_LatePerfectionQuestionData();
-		String subType = "";
-		BaseModel dataModel = new BaseModel();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		ArrayList<ArrayList<String>> expectDateList = new ArrayList<ArrayList<String>>();
 		
 		if (id != null && !id.equals("")) {
 			dbData.setId(id);
@@ -425,105 +267,207 @@ public class LatePerfectionService extends BaseService {
 				calendarUtil = new CalendarUtil(dbData.getCreatedate());
 				dbData.setCreatedate(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
 			}
-			//if (dbData.getExpectdate() != null) {
-			//	calendarUtil = new CalendarUtil(dbData.getExpectdate());
-				//dbData.setExpectdate(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
-			//}
+			if (dbData.getExpectfinishdate() != null) {
+				calendarUtil = new CalendarUtil(dbData.getExpectfinishdate());
+				dbData.setExpectfinishdate(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
+			}
 			if (dbData.getFinishtime() != null) {
 				calendarUtil = new CalendarUtil(dbData.getFinishtime());
 				dbData.setFinishtime(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
 			}
 		}
-		
-		if (type.length() == 1) {
-			dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
-			dataModel.setQueryName("lateperfectionquerydefine_searchbytype");
-			BaseQuery baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("keyword1", projectId);
-			userDefinedSearchCase.put("keyword2", type + "1");
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			baseQuery.getYsQueryData(0, -1);
-			
-			ArrayList<HashMap<String, String>> expectDataList = dataModel.getYsViewData();
-			int rowCount = 0;
-			for(HashMap<String, String>rowData:expectDataList) {
-				++rowCount;
-				if (rowCount == expectDataList.size()) {
-					//model.setLastestExpectDate(rowData.get("expectDate"));
-				}
-			}
-			if (id != null && !id.equals("")) {
-				if (dbData.getFinishtime() == null || dbData.getFinishtime().equals("")) {
-					//model.setExceedTime(getDayBetween(dbData.getExpectdate(), ""));
-				} else {
-					//model.setExceedTime(getDayBetween(dbData.getExpectdate(), dbData.getFinishtime()));
-				}
-			}
-		}
-		
-		if (type.length() == 2) {
-			subType = type.substring(1, 2);
-			if (subType.equals("1")) {
-
 				
-				dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
-				dataModel.setQueryName("lateperfectionquerydefine_searchbytype");
-				BaseQuery baseQuery = new BaseQuery(request, dataModel);
-				userDefinedSearchCase.put("keyword1", projectId);
-				userDefinedSearchCase.put("keyword2", type.substring(0, 1));
-				baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-				expectDateList = baseQuery.getFullData();
-				String baseExpectDate = expectDateList.get(0).get(3);
-				String finishTime = expectDateList.get(0).get(6);
-				if (finishTime.equals("")) {
-					model.setExceedTime(getDayBetween(baseExpectDate, ""));
-				} else {
-					model.setExceedTime(getDayBetween(baseExpectDate, finishTime));
-				}
-			}
-		}
-		
-		//model.setLatePerfectionData(dbData);
+		model.setQuestionData(dbData);
 		
 		model.setKeyBackup(id);
 		model.setProjectId(projectId);
-		//model.setType(type);
 
 		model.setEndInfoMap("098", "0001", "");
 		
 		return model;
 		
-	}
+	}	
 	
-	private String getDayBetween(String date1, String date2 ) throws Exception {
-	
-		CalendarUtil calendarUtil = null;
-		Date compareDate1 = null;
-		Date compareDate2 = null;
-		
-		if (date1 == null || date1.equals("")) {
-			compareDate1 = CalendarUtil.getSystemDate();
-		} else {
-			calendarUtil = new CalendarUtil(date1);
-			compareDate1 = calendarUtil.getDate();
-		}
-		
-		if (date2 == null || date2.equals("")) {
-			compareDate2 = CalendarUtil.getSystemDate();
-		} else {
-			calendarUtil = new CalendarUtil(date2);
-			compareDate2 = calendarUtil.getDate();
-		}
-		
-		
-		int dayBetween = 0;
+	public LatePerfectionModel doUpdateTPFile(HttpServletRequest request, String data, UserInfo userInfo) {
+		LatePerfectionModel model = new LatePerfectionModel();
+    	B_LatePerfectionRelationFileData dbData = new B_LatePerfectionRelationFileData();											
+    	B_LatePerfectionRelationFileDao dao = new B_LatePerfectionRelationFileDao();											
 
-		dayBetween = calendarUtil.daysBetween(compareDate1, compareDate2);
-		if (dayBetween < 0) {
-			dayBetween = 0;
+		String key = getJsonData(data, "keyBackup");
+		String guid = "";
+		
+		try {
+													
+			if (key == null || key.equals("")) {
+				guid = BaseDAO.getGuId();									
+				dbData.setId(guid);									
+				dbData.setProjectid(getJsonData(data, "projectId"));
+				dbData.setTitle(getJsonData(data, "title"));
+				dbData.setFilename(getJsonData(data, "fileName"));
+				dbData.setPath(getJsonData(data, "path"));
+				dbData.setMemo(getJsonData(data, "memo"));
+				dbData = updateTPFileModifyInfo(dbData, userInfo);
+				dao.Create(dbData);
+				key = guid;
+			} else {
+				dbData.setId(key);
+				dbData = (B_LatePerfectionRelationFileData)dao.FindByPrimaryKey(dbData);
+				dbData.setTitle(getJsonData(data, "title"));
+				dbData.setFilename(getJsonData(data, "fileName"));
+				dbData.setPath(getJsonData(data, "path"));
+				dbData.setMemo(getJsonData(data, "memo"));
+				dbData = updateTPFileModifyInfo(dbData, userInfo);
+				dao.Store(dbData);
+			}
+
+			model.setEndInfoMap(NORMAL, "", key);
+		}
+		catch(Exception e) {
+			model.setEndInfoMap(SYSTEMERROR, "err001", key);
 		}
 		
-		return String.valueOf(dayBetween);
+		return model;
+	}		
+	
+	public LatePerfectionModel doUpdateQuestion(HttpServletRequest request, String data, UserInfo userInfo) {
+		LatePerfectionModel model = new LatePerfectionModel();
+    	B_LatePerfectionQuestionData dbData = new B_LatePerfectionQuestionData();											
+    	B_LatePerfectionQuestionDao dao = new B_LatePerfectionQuestionDao();											
+
+		String key = getJsonData(data, "keyBackup");
+		String guid = "";
+		
+		try {
+													
+			if (key == null || key.equals("")) {
+				guid = BaseDAO.getGuId();									
+				dbData.setId(guid);									
+				dbData.setProjectid(getJsonData(data, "projectId"));
+				dbData.setCreatedate(getJsonData(data, "createDate"));
+				dbData.setDescription(getJsonData(data, "description"));
+				dbData.setImprove(getJsonData(data, "improve"));
+				dbData.setExpectfinishdate(getJsonData(data, "expectDate"));
+				dbData.setFinishtime(getJsonData(data, "finishTime"));
+				dbData = updateQuestionModifyInfo(dbData, userInfo);
+				dao.Create(dbData);
+				key = guid;
+			} else {
+				dbData.setId(key);
+				dbData = (B_LatePerfectionQuestionData)dao.FindByPrimaryKey(dbData);
+				dbData.setProjectid(getJsonData(data, "projectId"));
+				dbData.setCreatedate(getJsonData(data, "createDate"));
+				dbData.setDescription(getJsonData(data, "description"));
+				dbData.setImprove(getJsonData(data, "improve"));
+				dbData.setExpectfinishdate(getJsonData(data, "expectDate"));
+				dbData.setFinishtime(getJsonData(data, "finishTime"));
+				dbData = updateQuestionModifyInfo(dbData, userInfo);
+				dao.Store(dbData);
+			}
+
+			model.setEndInfoMap(NORMAL, "", key);
+		}
+		catch(Exception e) {
+			model.setEndInfoMap(SYSTEMERROR, "err001", key);
+		}
+		
+		return model;
 	}
+	
+	public LatePerfectionModel doDelete(HttpServletRequest request, String data, UserInfo userInfo){
+		
+		LatePerfectionModel model = new LatePerfectionModel();
+		
+		try {
+			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
+	        
+	        bean.executeLatePerfectionDelete(data, userInfo);
+	        
+	        model.setEndInfoMap(NORMAL, "", "");
+	        
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		return model;
+	}
+	
+	public LatePerfectionModel doDeleteTPFile(HttpServletRequest request, String data, UserInfo userInfo){
+		
+		LatePerfectionModel model = new LatePerfectionModel();
+    	
+		try {
+			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
+	        
+	        bean.executeLatePerfectionTPFileDelete(data, userInfo);					
+	        
+	        model.setEndInfoMap(NORMAL, "", "");
+	        
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		return model;
+	}
+	
+	public LatePerfectionModel doDeleteQuestion(HttpServletRequest request, String data, UserInfo userInfo){
+		
+		LatePerfectionModel model = new LatePerfectionModel();
+    	
+		try {
+			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
+	        
+	        bean.executeLatePerfectionQuestionDelete(data, userInfo);					
+	        
+	        model.setEndInfoMap(NORMAL, "", "");
+	        
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		return model;
+	}
+	
+	public static B_LatePerfectionRelationFileData updateTPFileModifyInfo(B_LatePerfectionRelationFileData data, UserInfo userInfo) {
+		String createUserId = data.getCreateperson();
+		if ( createUserId == null || createUserId.equals("")) {
+			data.setCreateperson(userInfo.getUserId());
+			data.setCreatetime(CalendarUtil.fmtDate());
+			data.setCreateunitid(userInfo.getUnitId());
+			data.setDeptguid(userInfo.getDeptGuid());
+		}
+		data.setModifyperson(userInfo.getUserId());
+		data.setModifytime(CalendarUtil.fmtDate());
+		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
+		
+		return data;
+	}
+	
+	public static B_LatePerfectionQuestionData updateQuestionModifyInfo(B_LatePerfectionQuestionData data, UserInfo userInfo) {
+		String createUserId = data.getCreateperson();
+		if ( createUserId == null || createUserId.equals("")) {
+			data.setCreateperson(userInfo.getUserId());
+			data.setCreatetime(CalendarUtil.fmtDate());
+			data.setCreateunitid(userInfo.getUnitId());
+			data.setDeptguid(userInfo.getDeptGuid());
+		}
+		data.setModifyperson(userInfo.getUserId());
+		data.setModifytime(CalendarUtil.fmtDate());
+		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
+		
+		return data;
+	}
+
+	
+
+	
+
+	
+
 	
 }

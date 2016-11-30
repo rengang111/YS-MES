@@ -55,7 +55,7 @@ function doSave() {
 		var message = "${DisplayData.endInfoMap.message}";
 		
 		//修正
-		actionUrl = "${ctx}/business/latePerfection?methodtype=updatetpfile";
+		actionUrl = "${ctx}/business/lateperfection?methodtype=updatetpfile";
 
 		if (confirm(message)) {
 			var actionUrl;			
@@ -106,7 +106,7 @@ function doDelete() {
 			type : "POST",
 			contentType : 'application/json',
 			dataType : 'json',
-			url : "${ctx}/business/latePerfection?methodtype=deleteDetail",
+			url : "${ctx}/business/lateperfection?methodtype=deleteDetail",
 			data : $('#keyBackup').val(),// 要提交的表单
 			success : function(d) {
 				if (d.message != "") {

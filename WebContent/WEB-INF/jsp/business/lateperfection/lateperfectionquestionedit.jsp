@@ -19,8 +19,6 @@ $(document).ready(function() {
 		$('#createDate').val(d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate());
 	}
 	
-	addValidator();
-	
 	validator = $("#baseInfo").validate({
 		rules: {
 			createDate: {
@@ -30,10 +28,10 @@ $(document).ready(function() {
 			},
 			description: {
 				required: true,
-				maxlenth:200,
+				maxlength:200,
 			},		
-			prove: {
-				maxlenth:200,
+			improve: {
+				maxlength:200,
 			},	
 			expectDate: {
 				date: true,
@@ -77,7 +75,7 @@ function doSave() {
 				url : actionUrl,
 				data : JSON.stringify($('#baseInfo').serializeArray()),// 要提交的表单
 				success : function(d) {
-					parent.reloadQuestion();
+					parent.reloadQuestionList();
 
 					if (d.message != "") {
 						alert(d.message);	
@@ -120,7 +118,7 @@ function doDelete() {
 				url : actionUrl,
 				data : JSON.stringify($('#baseInfo').serializeArray()),// 要提交的表单
 				success : function(d) {
-					parent.reloadQuestion();
+					parent.reloadQuestionList();
 
 					if (d.message != "") {
 						alert(d.message);	
@@ -178,19 +176,19 @@ function doDelete() {
 						<tr>
 							<td width="60px">改善方案：</td>
 							<td width="80px">
-								<textarea id="prove" name="prove" rows=5 cols=120 class="long">${DisplayData.questionData.prove}</textarea>
+								<textarea id="improve" name="improve" rows=5 cols=120 class="long">${DisplayData.questionData.improve}</textarea>
 							</td>
 						</tr>									
 						<tr>
-							<td width="60px">预期完成时间：</td>
+							<td width="60px">预期完成<br>时间：</td>
 							<td width="80px">
-								<input type="text" id="expectDate" name="expectDate" class="short" value="${DisplayData.questionData.expectdate}"/>
+								<input type="text" id="expectDate" name="expectDate" class="short" value="${DisplayData.questionData.expectfinishdate}"/>
 							</td>
 						</tr>
 						<tr>
 							<td width="60px">完成时间：</td>
 							<td width="80px">
-								<label id="finishTime" name="finishTime" class="short"  style="margin: 0px 0px 0px 10px;">${DisplayData.questionData.finishTime}</label>
+								<input type="text" id="finishTime" name="finishTime" class="short"  style="margin: 0px 0px 0px 10px;" value="${DisplayData.questionData.finishtime}"/>
 							</td>
 						</tr>
 	
