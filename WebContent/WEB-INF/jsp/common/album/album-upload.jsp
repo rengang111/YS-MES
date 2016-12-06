@@ -25,7 +25,7 @@
 </head>
 <body style="overflow:scroll;overflow-y:hidden" onbeforeunload="return beforeunload(event);" >
 
-	<div id="layer_main" style="padding:30px 0px;">
+	<div id="layer_main" style="padding:0px 0px;">
 
 			<div id="container">
 		    <!-- The element where Fine Uploader will exist. -->
@@ -50,7 +50,7 @@
                 <span class="qq-upload-drop-area-text-selector"></span>
             </div>
             <div class="buttons">
-                 <div class="qq-upload-button-selector qq-upload-button" style="margin-right:30px">
+                 <div class="qq-upload-button-selector qq-upload-button" style="margin-right:5px">
                      <div>选择文件</div>
                  </div>
                  <button type="button" id="trigger-upload" class="btn btn-primary qq-upload-button">
@@ -137,7 +137,8 @@
                 endpoint: '${pageContext.request.contextPath}/album/album-upload',
                 params:
                 { 
-                	key: "${DisplayData.key}"                   
+                	key: "${DisplayData.key}",
+                	info: "${DisplayData.info}",
                 },
             },
             validation: {
@@ -163,13 +164,17 @@
         		
         		//alert(999);
         		
-        		var index = parent.layer
-				.getFrameIndex(window.name); //获取当前窗体索引
+        		var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 				//parent.$('#events').DataTable().destroy();/
-				parent.refresh();
-				//alert(parent.location);
-				parent.layer.close(index); //执行关闭	
-				
+				if ('${DisplayData.info}' == '') {
+					parent.refresh();
+					//alert(parent.location);
+					parent.layer.close(index); //执行关闭	
+				} else {
+					var curTab = parent.parent.$('#tabs').tabs('getSelected');
+					parent.refresh();
+					layer.close(index); //执行关闭
+				}
         	}
         	
         });

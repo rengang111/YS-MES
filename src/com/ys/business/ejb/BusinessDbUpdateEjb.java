@@ -1,5 +1,6 @@
 package com.ys.business.ejb;												
 												
+import java.io.File;
 import java.util.ArrayList;												
 import java.util.Calendar;												
 import java.util.HashMap;												
@@ -19,13 +20,16 @@ import javax.transaction.UserTransaction;
 import javax.servlet.http.HttpServletRequest;												
 												
 import org.springframework.web.context.request.RequestContextHolder;												
-import org.springframework.web.context.request.ServletRequestAttributes;												
-												
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.ys.business.action.model.makedocument.MakeDocumentModel;
+import com.ys.business.db.dao.B_BaseTechDocDao;
 import com.ys.business.db.dao.B_ContactDao;												
 import com.ys.business.db.dao.B_CustomerAddrDao;												
 import com.ys.business.db.dao.B_CustomerDao;												
 import com.ys.business.db.dao.B_ESRelationFileDao;												
 import com.ys.business.db.dao.B_ExternalSampleDao;
+import com.ys.business.db.dao.B_FolderDao;
 import com.ys.business.db.dao.B_LatePerfectionQuestionDao;
 import com.ys.business.db.dao.B_LatePerfectionRelationFileDao;
 import com.ys.business.db.dao.B_OrganBasicInfoDao;												
@@ -34,12 +38,15 @@ import com.ys.business.db.dao.B_ProjectRelationFileDao;
 import com.ys.business.db.dao.B_ProjectTaskCostDao;												
 import com.ys.business.db.dao.B_ProjectTaskDao;
 import com.ys.business.db.dao.B_ReformLogDao;
-import com.ys.business.db.dao.B_SupplierBasicInfoDao;												
+import com.ys.business.db.dao.B_SupplierBasicInfoDao;
+import com.ys.business.db.dao.B_WorkingFilesDao;
+import com.ys.business.db.data.B_BaseTechDocData;
 import com.ys.business.db.data.B_ContactData;												
 import com.ys.business.db.data.B_CustomerAddrData;												
 import com.ys.business.db.data.B_CustomerData;												
 import com.ys.business.db.data.B_ESRelationFileData;												
 import com.ys.business.db.data.B_ExternalSampleData;
+import com.ys.business.db.data.B_FolderData;
 import com.ys.business.db.data.B_LatePerfectionQuestionData;
 import com.ys.business.db.data.B_LatePerfectionRelationFileData;
 import com.ys.business.db.data.B_OrganBasicInfoData;												
@@ -48,13 +55,15 @@ import com.ys.business.db.data.B_ProjectRelationFileData;
 import com.ys.business.db.data.B_ProjectTaskCostData;												
 import com.ys.business.db.data.B_ProjectTaskData;
 import com.ys.business.db.data.B_ReformLogData;
-import com.ys.business.db.data.B_SupplierBasicInfoData;												
+import com.ys.business.db.data.B_SupplierBasicInfoData;
+import com.ys.business.db.data.B_WorkingFilesData;
 import com.ys.business.service.contact.ContactService;												
 import com.ys.business.service.customer.CustomerService;												
 import com.ys.business.service.customeraddr.CustomerAddrService;												
 import com.ys.business.service.esrelationfile.EsRelationFileService;												
 import com.ys.business.service.externalsample.ExternalSampleService;
 import com.ys.business.service.lateperfection.LatePerfectionService;
+import com.ys.business.service.makedocument.MakeDocumentService;
 import com.ys.business.service.organ.OrganService;												
 import com.ys.business.service.processcontrol.ProcessControlService;												
 import com.ys.business.service.projecttask.ProjectTaskService;
@@ -94,7 +103,8 @@ import com.ys.system.service.power.PowerService;
 import com.ys.system.service.role.RoleMenuService;												
 import com.ys.system.service.role.RoleService;												
 import com.ys.system.service.user.UserService;												
-import com.ys.util.CalendarUtil;												
+import com.ys.util.CalendarUtil;
+import com.ys.util.UploadReceiver;
 import com.ys.util.basedao.BaseDAO;												
 import com.ys.util.basedao.BaseTransaction;												
 import com.ys.util.basequery.BaseQuery;												
@@ -931,4 +941,151 @@ public class BusinessDbUpdateEjb  {
 			throw e;									
 		}
     }
+
+    public void executeBaseTechDocDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_BaseTechDocDao dao = new B_BaseTechDocDao();
+    	B_BaseTechDocData data = new B_BaseTechDocData();											
+		int count = 0;					
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				data.setId(key);
+				data = (B_BaseTechDocData)dao.FindByPrimaryKey(data);
+				data = MakeDocumentService.updateBaseTechDocModifyInfo(data, userInfo);
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				count++;						
+			}									
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}										
+    }     
+    
+    public void executeWorkingFileDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_WorkingFilesDao dao = new B_WorkingFilesDao();
+    	B_WorkingFilesData data = new B_WorkingFilesData();											
+		int count = 0;					
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				data.setId(key);
+				data = (B_WorkingFilesData)dao.FindByPrimaryKey(data);
+				data = MakeDocumentService.updateWorkingFileModifyInfo(data, userInfo);
+				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(data);
+				count++;						
+			}									
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}										
+    }     
+    
+	public boolean doDeleteFolder(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+		MakeDocumentModel model = new MakeDocumentModel();										
+		BaseService service = new BaseService();	
+		B_FolderDao dao = new B_FolderDao();
+		B_FolderData dbData = new B_FolderData();
+		
+		String key = "";
+		String projectId = service.getJsonData(data, "keyBackup");
+		String folderName = service.getJsonData(data, "tabTitle");
+		
+		boolean isDbOperationSuccess = false;
+		
+		ts = new BaseTransaction();	
+		
+		try {
+			
+			ts.begin();
+			
+			key = MakeDocumentService.getFolderName(request, projectId, folderName);
+			dbData.setId(key);
+			dbData = (B_FolderData)dao.FindByPrimaryKey(dbData);
+			dbData = MakeDocumentService.updateFolderDataModifyInfo(dbData, userInfo);
+			dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+			dao.Store(dbData);
+			
+			StringBuffer sql = new StringBuffer();
+			sql.append("UPDATE b_docfilefolder SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+			sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+			sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+			sql.append(" WHERE projectId = '" + projectId + "' AND folderId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");							
+			BaseDAO.execUpdate(sql.toString());
+			
+			ts.commit();
+			
+			isDbOperationSuccess = true;
+			
+		}
+		catch(Exception e) {
+			ts.rollback();
+			throw e;
+		}
+		
+		return isDbOperationSuccess;
+	}	
+    
+    public void executeMakeDocumentDelete(String keyData, UserInfo userInfo) throws Exception {												
+										
+		int count = 0;										
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				StringBuffer sql = new StringBuffer("");								
+				sql.append("UPDATE b_BaseTechDoc SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE projectId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());								
+							
+				sql = new StringBuffer("");								
+				sql.append("UPDATE b_WorkingFiles SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE projectId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
+				
+				sql = new StringBuffer("");								
+				sql.append("UPDATE b_DocFileFolder SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE projectId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());					
+				
+				sql = new StringBuffer("");								
+				sql.append("UPDATE b_Folder SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE projectId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());		
+				
+				count++;								
+												
+			}									
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
+ 
 }												

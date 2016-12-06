@@ -70,7 +70,9 @@ public class AlbumAction extends BaseAction {
 		AlbumInfo info = new AlbumInfo();
 		ModelAndView mv = new ModelAndView("/common/album/album-upload");
 		String key = request.getParameter("key");
+		String paramInfo = request.getParameter("info");
 		info.setKey(key);
+		info.setInfo(paramInfo);
 		CommonUtil.mvAddMsg(mv);
 		mv.addObject("DisplayData", info);
 		

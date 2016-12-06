@@ -25,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.ys.system.common.BusinessConstants;
+import com.ys.system.service.common.I_BaseService;
+import com.ys.system.service.common.I_MultiAlbumService;
 
 //commented code blocks are only used for CORS environments
 public class UploadReceiver extends HttpServlet	
@@ -82,7 +84,7 @@ public class UploadReceiver extends HttpServlet
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         RequestParser requestParser = null;
-
+        
         boolean isIframe = req.getHeader("X-Requested-With") == null || !req.getHeader("X-Requested-With").equals("XMLHttpRequest");
 
         try
@@ -96,6 +98,19 @@ public class UploadReceiver extends HttpServlet
 //            resp.addHeader("Access-Control-Allow-Origin", "*");            
             
             String dir = req.getParameter("key");
+            
+            String info[] ;
+            String projectId = "";
+            String folderName = "";
+            String className = "";      
+            String baseInfo = req.getParameter("info");
+            if (baseInfo != null && !baseInfo.equals("")) {
+	            info = baseInfo.split(",");
+	            projectId = info[0];
+	            folderName = info[1];
+	            className = info[2];
+	            dir = projectId;
+            }
             //String aid = req.getParameter("aid");
             
             MultipartHttpServletRequest fileRequest = (MultipartHttpServletRequest)req;
@@ -104,7 +119,7 @@ public class UploadReceiver extends HttpServlet
             for (MultipartFile myfile : files)
             { 
                 String path = myfile.getOriginalFilename();
-                System.out.println(path);
+                //System.out.println(path);
                 String fileName = path;
                 InputStream is = myfile.getInputStream();
                 
@@ -116,6 +131,11 @@ public class UploadReceiver extends HttpServlet
                 ImageUtil.scale(ctxPath, fileName,280,210,"small");
                 //path = FileManager.T_MAIL_ATTACHMENT_PATH + folder + File.separator + fileName;
                 //uploadfiles(path, is);// �ϴ��ļ�
+                
+                if (folderName != null && !folderName.equals("")) {
+                	I_MultiAlbumService iMultiAlbumService = (I_MultiAlbumService)Class.forName(className).newInstance();
+                	iMultiAlbumService.addMultiAlbumData(projectId, folderName, fileName);
+                }
             }
             
             return;
