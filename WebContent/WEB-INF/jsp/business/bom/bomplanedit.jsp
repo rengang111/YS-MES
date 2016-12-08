@@ -131,15 +131,7 @@
 				{
 					"sExtends" : "reset",
 					"sButtonText" : "清空一行"
-				},
-				{
-					"sExtends" : "reset",
-					"sButtonText" : " 保  存 "
-				},
-				{
-					"sExtends" : "reset",
-					"sButtonText" : " 返  回 "
-				}  ],
+				}],
 			},
 			
 			"columns" : [ 

@@ -21,6 +21,7 @@
 <script type="text/javascript" src="${ctx}/plugins/validate/localization/messages_zh.js" charset="utf8"></script>
 <script type="text/javascript" src="${ctx}/js/layer.js"></script>
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
+<script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
 
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">

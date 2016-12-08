@@ -76,37 +76,69 @@
 							{"data": "deliveryDate", "className" : 'td-center'},
 							{"data": "quantity", "className" : 'cash'},
 							{"data": "price", "className" : 'cash'},
-							{"data": "totalPrice", "className" : 'cash'},
+							{"data": null, "defaultContent" : '0', "className" : 'cash'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+								return row["rownum"] ;
 		                    }},
-				    		{"targets":3,"render":function(data, type, row){
-				    			
-				    			var name = row["materialName"];
-				    			var shortName = "";
-				    			if(name != null && name.length > 10){	
-			        				shortName =  '<div title="' + name + '">' + 
-			        				name.substr(0,10)+ '...</div>';
-			        			}else{	
-			        				shortName = name;
-			        			}
-				    			return shortName;
-				    		}},
 				    		{"targets":10,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';
 				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">查看</a>";
 				    			return rtn;
-				    		}}			           
+				    		}},
+				    		{"targets":9,"render":function(data, type, row){
+				    			
+				    			var v = row["totalprice"],id = row["YSId"];
+				    			return YSKcheck(v,id);
+				    		}},
+				    		{"targets":8,"render":function(data, type, row){
+				    			
+				    			var v = row["price"],id = row["YSId"];
+				    			return YSKcheck(v,id);
+				    		}},
+				    		{"targets":7,"render":function(data, type, row){
+				    			
+				    			var v = row["quantity"],id = row["YSId"];
+				    			return YSKcheck(v,id);
+				    		}},
+				    		{"targets":3,"render":function(data, type, row){
+				    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
+				    			name = jQuery.fixedWidth(name,20);
+				    			var zzFlag = "";
+				    			if(id != ''){
+				    				zzFlag = id.substr(2,3);
+				    			}
+				    			if(zzFlag == 'YSK') name = '库存订单';//库存订单不显示明细内容
+				    			
+				    			return name;
+				    		}},
+				    		{"targets":2,"render":function(data, type, row){
+				    			
+				    			var v = row["materialId"],id = row["YSId"], zzFlag = "";
+				    			if(id != ''){
+				    				zzFlag = id.substr(2,3);
+				    			}
+				    			if(zzFlag == 'YSK') v = '库存订单';//库存订单不显示明细内容
+				    			return v;
+				    		}}				           
 			         	] 
 			}
 		);
 
 	}
-
+	
+	function YSKcheck(v,id){
+		var zzFlag = "";
+		if(id != ''){
+			zzFlag = id.substr(2,3);
+		}
+		if(zzFlag == 'YSK') v = 0;//库存订单不显示明细内容
+		return v;
+		
+	}
 	
 	function initEvent(){
 
@@ -143,6 +175,18 @@
 	function doCreate() {
 		
 		var url = '${ctx}/business/order?methodtype=create';
+		location.href = url;
+	}
+	
+	function doCreateZZ() {
+		
+		var url = '${ctx}/business/zzorder?methodtype=create';
+		location.href = url;
+	}
+	
+	function doCreateZP() {
+		
+		var url = '${ctx}/business/zporder?methodtype=create';
 		location.href = url;
 	}
 	
@@ -239,10 +283,14 @@
 
 				<div id="TSupplier_wrapper" class="dataTables_wrapper">
 					<div id="DTTT_container" align="right" style="height:40px">
-						<a aria-controls="TMaterial" tabindex="0" id="ToolTables_TSupplier_0" 
-							class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>新建</span></a>
-						<a aria-controls="TMaterial" tabindex="0" id="ToolTables_TSupplier_1" 
-							class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a>
+						<a  title="新建常规订单"
+							class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>常规订单</span></a>
+						<a  title="新建自制品库存订单"
+							class="DTTT_button DTTT_button_text" onclick="doCreateZZ();"><span>自制品库存订单</span></a>
+						<a  title="新建装配品及非完全成品库存订单"
+							class="DTTT_button DTTT_button_text" onclick="doCreateZP();"><span>装配品库存订单</span></a>
+						<!-- a 
+							class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a-->
 					</div>
 					<div id="clear"></div>
 					<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">

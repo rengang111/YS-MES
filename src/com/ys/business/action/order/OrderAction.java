@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.material.MaterialModel;
+import com.ys.business.action.model.order.BomPlanModel;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.business.service.order.BomService;
 import com.ys.business.service.order.OrderService;
 import com.ys.system.action.model.login.UserInfo;
 
@@ -28,15 +30,16 @@ import com.ys.system.action.model.login.UserInfo;
 public class OrderAction extends BaseAction {
 	
 	@Autowired OrderService orderService;
+	@Autowired HttpServletRequest request;
 	
-	OrderModel orderModel= new OrderModel();
-
+	OrderModel reqModel= new OrderModel();
 	UserInfo userInfo = new UserInfo();
+	Model model;
 	
 	@RequestMapping(value="/order")
 	public String init(
 			@RequestBody String data, 
-			@ModelAttribute("orderForm") OrderModel reqModel, 
+			@ModelAttribute("orderForm") OrderModel order, 
 			BindingResult result,
 			Model model, 
 			HttpSession session, 
@@ -46,6 +49,10 @@ public class OrderAction extends BaseAction {
 		String type = request.getParameter("methodtype");
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
+		
+		orderService = new OrderService(model,request,order,userInfo);
+		reqModel = order;
+		this.model = model;
 		
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
@@ -65,7 +72,7 @@ public class OrderAction extends BaseAction {
 				rtnUrl = "/business/order/ordermain";
 				break;				
 			case "search":
-				dataMap = doSearchOrderList(data, request);
+				dataMap = doSearchOrderList(data);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "create":
@@ -77,8 +84,7 @@ public class OrderAction extends BaseAction {
 				rtnUrl = "/business/order/orderview";
 				break;				
 			case "detailView":
-				doOrderView(request,model);
-				rtnUrl = "/business/order/orderview";
+				rtnUrl = doOrderView();
 				break;				
 			case "edit":
 				doEdit(reqModel,request,model);
@@ -99,6 +105,11 @@ public class OrderAction extends BaseAction {
 			case "getMaterialList"://物料最新编号查询
 				dataMap = doMaterialList(request);
 				printOutJsonObj(response, dataMap);
+				break;			
+			case "searchDemand"://查询物料需求表待做成的数据
+				dataMap = doSearchOrderListDemand(data);
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/demand/demandmain";
 				break;
 				
 		}
@@ -133,15 +144,14 @@ public class OrderAction extends BaseAction {
 	}
 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearchOrderList(@RequestBody String data, 
-			HttpServletRequest request){
+	public HashMap<String, Object> doSearchOrderList(@RequestBody String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = orderService.getOrderList(request, data);
+			dataMap = orderService.getOrderList(data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -156,17 +166,59 @@ public class OrderAction extends BaseAction {
 		return dataMap;
 	}
 
-	public void doOrderView( 
-			HttpServletRequest request,
-			Model model){
+
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doSearchOrderListDemand(@RequestBody String data){
 		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = orderService.getOrderListDemand(data);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public String doOrderView(){
+		
+		String rtnUrl = "/business/order/ordermain";
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
 		
 		try {
 			String PIId = request.getParameter("PIId");
-			//dataMap = orderService.getOrderViewByPIId(request,model,PIId);
-			dbData = orderService.getOrderViewByPIId(request,PIId);
+			String yskFlag = "";
+			if(null != PIId && PIId.length() > 3){
+				yskFlag = PIId.substring(PIId.length() - 2,PIId.length());
+				if(yskFlag.equals(BusinessConstants.SHORTNAME_ZZ)){
+					
+					dbData = orderService.getZZOrderDetail(PIId);
+					
+					rtnUrl = "/business/order/zzorderview";	
+					
+				}else if(yskFlag.equals(BusinessConstants.SHORTNAME_ZP)){
+
+					dbData = orderService.getZPOrderDetail(PIId);
+					
+					rtnUrl = "/business/order/zporderview";
+					
+				}else{
+					dbData = orderService.getOrderViewByPIId(PIId);
+					
+					rtnUrl = "/business/order/orderview";
+				}
+			}
 
 			model.addAttribute("order",  dbData.get(0));
 			model.addAttribute("detail", dbData);
@@ -175,6 +227,8 @@ public class OrderAction extends BaseAction {
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
+		
+		return rtnUrl;
 		
 	}
 
@@ -274,7 +328,7 @@ public class OrderAction extends BaseAction {
 		
 		//返回到明细查看页面
 		String PIId = reqModel.getOrder().getPiid();
-		dbData = orderService.getOrderViewByPIId(request,PIId);
+		dbData = orderService.getOrderViewByPIId(PIId);
 
 		model.addAttribute("order",  dbData.get(0));
 		model.addAttribute("detail", dbData);
@@ -294,7 +348,7 @@ public class OrderAction extends BaseAction {
 						new ArrayList<HashMap<String, String>>();
 				
 				String PIId = reqModel.getOrder().getPiid();
-				dbData = orderService.getOrderViewByPIId(request,PIId);
+				dbData = orderService.getOrderViewByPIId(PIId);
 				
 				reqModel = orderService.createOrder(request, reqModel);
 
@@ -319,7 +373,7 @@ public class OrderAction extends BaseAction {
 		
 		//返回到明细查看页面
 		String PIId = reqModel.getOrder().getPiid();
-		dbData = orderService.getOrderViewByPIId(request,PIId);
+		dbData = orderService.getOrderViewByPIId(PIId);
 
 		model.addAttribute("order",  dbData.get(0));
 		model.addAttribute("detail", dbData);

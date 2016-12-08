@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>    
+    <name value="getOrderZZYSKMAXId" />
+     <where>
+       <w name="A.parentId" des=""  reqName="keywords1" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name=" IFNULL(max(subId+0),'0')" alias="MaxSubId" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_orderdetail AS A WHERE A.deleteFlag = '0'</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="zzmaterialList" /> 
+    <where>
+    <w name="A.fullField" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="AND" bt="" />
+      </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.categoryId" alias="" ctype="" />
+      <f name="A.totalPrice" alias="" ctype="" />
+      <f name="A.managementCostRate" alias="" ctype="" />
+      <f name="A.description" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="" />
+      <f name="A.unit" alias="dicName" ctype="计量单位" />
+      <f name="A.fullField" alias="" ctype="" />
+   	  <f name="CONCAT_WS(' | ',A.materialId,A.categoryId,materialName)" alias="viewList" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_zzmaterialprice AS A  </from>
+    <orderby>A.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getZZOrderDetail" />
+    <where>
+      <w name="A.orderId" des=""  reqName="orderId" dtype="ch" oper="="  lg="AND" bt="" />
+      </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.orderRecordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.total" alias="" ctype="" />
+      <f name="A.description" alias="" ctype="" />
+      <f name="A.YSKorderTarget" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.categoryName" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <!-- status = '0' 表示 订单状态为 "新建" -->
+    <from>v_orderlist AS A WHERE A.status = '0' AND  A.deleteFlag = '0'</from>
+    <orderby>A.YSId DESC</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getOrderZZRawList" />
+     <where>
+       <w name="YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      	<f name="recordId" alias="" ctype="" />
+		<f name="YSId" alias="" ctype="" />
+		<f name="PIId" alias="" ctype="" />
+		<f name="parentId" alias="" ctype="" />
+		<f name="subId" alias="" ctype="" />
+		<f name="materialId " alias="ERP" ctype="" />
+		<f name="materialName" alias="ERPname" ctype="" />
+		<f name="createTime" alias="" ctype="" />
+		<f name="quantity" alias="" ctype="" />
+		<f name="`status`" alias="" ctype="" />
+		<f name="rawMaterialId" alias="rawERP" ctype="" />
+		<f name="rawMaterialName" alias="rawERPname" ctype="" />
+		<f name="weight" alias="" ctype="" />
+		<f name="unit" alias="" ctype="计量单位" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_purchaseplan where deleteFlag = '0'</from>
+    <orderby>materialId,rawMaterialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getOrderZZRawSum" />
+    <where>
+       	<w name="a.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  	<select>
+      	<f name="a.recordId" alias="" ctype="" />
+		<f name="a.YSId" alias="" ctype="" />
+		<f name="a.PIId" alias="" ctype="" />
+		<f name="a.parentId" alias="" ctype="" />
+		<f name="a.subId" alias="" ctype="" />
+		<f name="a.materialId " alias="ERP" ctype="" />
+		<f name="a.materialName" alias="ERPame" ctype="" />
+		<f name="a.createTime" alias="" ctype="" />
+		<f name="FORMAT(SUM(REPLACE(IFNULL(a.weight, 0),',','') ) * REPLACE(IFNULL(a.quantity, 0),',','') ,0)" alias="targetQuty" ctype="" />
+		<f name="a.`status`" alias="" ctype="" />
+		<f name="a.rawMaterialId" alias="rawERP" ctype="" />
+		<f name="a.rawMaterialName" alias="rawERPname" ctype="" />
+		<f name="a.unit" alias="" ctype="计量单位" />
+		<f name="a.supplierId" alias="" ctype="" />
+		<f name="a.price" alias="" ctype="" />
+		<f name="b.quantity" alias="" ctype="" />
+		<f name="b.recordId" alias="rawRecordId" ctype="" />
+		<f name="b.totalPrice" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_purchaseplan a LEFT JOIN b_materialrequirment b ON a.rawMaterialId = b.materialId AND a.YSId = b.YSID WHERE a.deleteFlag = '0' </from>
+    <orderby>a.rawMaterialId</orderby>
+    <groupby>a.rawMaterialId</groupby>
+    <having></having>
+	<power></power>    
+  </query>
+</root>

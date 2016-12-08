@@ -5,11 +5,11 @@ import java.util.List;
 import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.util.basequery.common.BaseModel;
 
-public class PurchaseModel extends BaseModel {
+public class PurchasePlanModel extends BaseModel {
 	
 	/**
 	 * author:renang
-	 * 机构管理
+	 * 采购方案
 	 */
 	private static final long serialVersionUID = 1L;
 	private List<B_PurchasePlanData> detail;

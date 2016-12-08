@@ -13,28 +13,22 @@ import org.springframework.ui.Model;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.system.service.common.BaseService;
+import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.material.MaterialModel;
 import com.ys.business.action.model.material.ZZMaterialModel;
-import com.ys.business.action.model.order.BomPlanModel;
-import com.ys.business.db.dao.B_BomDetailDao;
-import com.ys.business.db.dao.B_BomPlanDao;
-import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
-import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
+import com.ys.business.db.dao.B_ZZMaterialPriceDao;
+import com.ys.business.db.dao.B_ZZRawMaterialDao;
 import com.ys.business.db.data.B_BomDetailData;
-import com.ys.business.db.data.B_BomPlanData;
-import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PriceSupplierData;
-import com.ys.business.db.data.B_PriceSupplierHistoryData;
+import com.ys.business.db.data.B_ZZMaterialPriceData;
+import com.ys.business.db.data.B_ZZRawMaterialData;
 import com.ys.business.db.data.CommFieldsData;
-import com.ys.business.ejb.BusinessDbUpdateEjb;
 
 @Service
 public class ZZMaterialService extends BaseService {
@@ -48,10 +42,10 @@ public class ZZMaterialService extends BaseService {
 	
 	private HttpServletRequest request;
 	
-	private B_BomPlanData bomPlanData;
-	private B_BomDetailData bomDetailData;
-	private B_BomPlanDao bomPlanDao;
-	private B_BomDetailDao bomDetailDao;
+	private B_ZZRawMaterialData rawData;
+	private B_ZZMaterialPriceData priceData;
+	private B_ZZRawMaterialDao rawDao;
+	private B_ZZMaterialPriceDao priceDao;
 	private ZZMaterialModel reqModel;
 	private UserInfo userInfo;
 	private BaseModel dataModel;
@@ -69,71 +63,22 @@ public class ZZMaterialService extends BaseService {
 			ZZMaterialModel reqModel,
 			UserInfo userInfo){
 		
-		this.bomPlanDao = new B_BomPlanDao();
-		this.bomPlanData = new B_BomPlanData();
-		this.bomDetailDao = new B_BomDetailDao();
-		this.bomDetailData = new B_BomDetailData();
+		this.rawDao = new B_ZZRawMaterialDao();
+		this.priceDao = new B_ZZMaterialPriceDao();
+		this.rawData = new B_ZZRawMaterialData();
+		this.priceData = new B_ZZMaterialPriceData();
 		this.model = model;
 		this.reqModel = reqModel;
 		this.request = request;
 		this.userInfo = userInfo;
+		
 		userDefinedSearchCase = new HashMap<String, String>();
 		
 	}
 	
-	public HashMap<String, Object> Init(HttpServletRequest request, String data) {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		try {
-			data = URLDecoder.decode(data, "UTF-8");
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
-		int iStart = 0;
-		int iEnd =0;
-		String sEcho = getJsonData(data, "sEcho");	
-		String start = getJsonData(data, "iDisplayStart");		
-		if (start != null && !start.equals("")){
-			iStart = Integer.parseInt(start);			
-		}
-		
-		String length = getJsonData(data, "iDisplayLength");
-		if (length != null){			
-			iEnd = iStart + Integer.parseInt(length);			
-		}		
-		
-		BaseModel dataModel = new BaseModel();
 
-		dataModel.setQueryFileName("/yssample/yssamplequerydefine");
-		dataModel.setQueryName("yssamplequerydefine_search");
-		try {
-			BaseQuery baseQuery = new BaseQuery(request, dataModel);
-			baseQuery.getYsQueryData(iStart, iEnd);	
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();
-			
-		}		
-		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
-	}
 
-	public HashMap<String, Object> search(HttpServletRequest request, 
+	public HashMap<String, Object> search( 
 			String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -160,8 +105,8 @@ public class ZZMaterialService extends BaseService {
 		String key2 = getJsonData(data, "keyword2").toUpperCase();
 		
 
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("materialquerydefine_search");
+		dataModel.setQueryFileName("/business/material/zzmaterialquerydefine");
+		dataModel.setQueryName("getZZMaterialPriceList");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
@@ -180,722 +125,422 @@ public class ZZMaterialService extends BaseService {
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		modelMap.put("unitList",doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
-		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
-	}
-	
-
-	public HashMap<String, Object> supplierPriceView(HttpServletRequest request, 
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		data = URLDecoder.decode(data, "UTF-8");
-
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("supplierPriceList");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-
-		String materialId  = getJsonData(data, "materialid");
-
-		userDefinedSearchCase.put("keywords1", materialId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
-		
-		//modelMap.put("unitList",doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
-		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
-	}
-	
-
-	public HashMap<String, Object> supplierPriceHistory(
-			HttpServletRequest request, 
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		data = URLDecoder.decode(data, "UTF-8");
-
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("supplierPriceHistory");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-
-		String supplierId  = request.getParameter("supplierId");
-
-		userDefinedSearchCase.put("keywords1", supplierId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
 			
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;
 	}
 	
-
-	public HashMap<String, Object> categorySearch(HttpServletRequest request, 
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		data = URLDecoder.decode(data, "UTF-8");
-		
-		String key = request.getParameter("key").toUpperCase();
-		
-		int iStart = 0;
-		int iEnd =0;
-		String sEcho = getJsonData(data, "sEcho");	
-		String start = getJsonData(data, "iDisplayStart");		
-		if (start != null && !start.equals("")){
-			iStart = Integer.parseInt(start);			
-		}
-		
-		String length = getJsonData(data, "iDisplayLength");
-		if (length != null && !length.equals("")){			
-			iEnd = iStart + Integer.parseInt(length);			
-		}		
-
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("categorylist");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("keywords1", key);
-		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
-		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();			
-		}		
-		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-
-		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
-	}
-	
-	
-	public HashMap<String, Object> getSupplierList(
-			HttpServletRequest request, 
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		data = URLDecoder.decode(data, "UTF-8");
-
-
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("getSupplierList");
-		
-		String key ="";
-		baseQuery = new BaseQuery(request, dataModel);
-		String sql = baseQuery.getSql();
-		sql = sql.replace("?", key);
-		baseQuery.getYsQueryData(0,0);	 
-		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		modelMap.put("retValue", "success");
-		
-		return modelMap;
-	}
-	
-	
-	public HashMap<String, Object> getMaterialMAXId(
-			HttpServletRequest request, 
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		
-		String key = request.getParameter("categoryId");
-
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("getMaxMaterialId");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("keywords1", key);
-		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
-
-		modelMap.put("retValue", "success");
-		
-		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("serialNumber"));
-		
-		int categoryId = code + 1;
-		
-		String codeFormat = String.format("%03d", categoryId); 
-		
-		modelMap.put("code",categoryId);	
-		modelMap.put("codeFormat",codeFormat);			
-		
-		return modelMap;
-	}
-
 	
 	/*
-	 * 1.显示当前选中物料的基本信息
-	 * 2.显示相关的所有子编码信息(N条数据) 
-	 */	
-	public Model viewPrice(
-			HttpServletRequest request,
-			Model model,
-			String recordId,
-			String parentId) {
-		
-		MaterialModel Matmodel = new MaterialModel();
-
-		String unitName = "";
-		
-		try {
-			
-
-			B_PriceSupplierDao priceDao = new B_PriceSupplierDao();
-			B_PriceSupplierData pricData = new B_PriceSupplierData();
-	
-		
-			pricData.setRecordid(recordId);
-			pricData = (B_PriceSupplierData)priceDao.FindByPrimaryKey(pricData);
-
-			
-			//选择数据明细内容
-			Matmodel.setPrice(pricData);
-			//计量单位
-			Matmodel.setUnitname(unitName);
-			//Matmodel.setUnit(pricData.getUnit());
-			Matmodel.setCurrencyList(util.getListOption(DicUtil.CURRENCY, ""));
-				
-			Matmodel.setEndInfoMap("098", "0001", "");
-			
-		}
-		catch(Exception e) {
-			Matmodel.setEndInfoMap(SYSTEMERROR, "err001", parentId);
-		}
-		
-		model.addAttribute("material", Matmodel);
-		
-		return model;
-		
-	}
-	
-	/*
-	 * 1.显示当前选中物料的基本信息
-	 * 2.显示相关的所有子编码信息(N条数据) 
+	 * 1.自制品单价新增处理(一条数据)
+	 * 2.自制品原材料新增处理(N条数据)
 	 */
-	
-	public Model view(
-			HttpServletRequest request,
-			Model model,
-			String recordId,
-			String parentId) {
-		MaterialModel Matmodel = new MaterialModel();
-		B_MaterialData FormDetail = new B_MaterialData();
+	private String insert() throws Exception  {
 
-
-		String shareModel = "";
-		String unitName = "";
-		
-		try {
-			
-				
-			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-			BaseModel dataModel = new BaseModel();
-			BaseQuery baseQuery = null;
-
-			dataModel.setQueryFileName("/business/material/materialquerydefine");
-			dataModel.setQueryName("materialList");
-			
-			baseQuery = new BaseQuery(request, dataModel);
-			
-			userDefinedSearchCase.put("keywords1", parentId);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			baseQuery.getYsQueryData(0, 0);	 
-			
-			List<B_MaterialData> list = new ArrayList<B_MaterialData>();
-			
-			if(dataModel!=null & dataModel.getRecordCount() > 0)
-			{				
-				HashMap<String, String> map = 
-						(HashMap<String, String>)dataModel.getYsViewData().get(0);
-
-				for(int i=0;i<dataModel.getRecordCount();i++){
-					
-					map = (HashMap<String, String>)dataModel.getYsViewData().get(i);
-					B_MaterialData db = new B_MaterialData();
-
-					//定位到选择的那条数据
-					if(map.get("recordId").equals(recordId)){
-
-						FormDetail.setRecordid(map.get("recordId"));
-						FormDetail.setMaterialid(map.get("materialId"));
-						FormDetail.setMaterialname(map.get("materialName"));
-						FormDetail.setCategoryid(map.get("categoryId"));
-						FormDetail.setDescription(map.get("description"));
-						FormDetail.setSharemodel(map.get("shareModel"));
-						FormDetail.setUnit(map.get("unit"));
-						Matmodel.setAttribute1(map.get("categoryId"));
-						Matmodel.setAttribute2(map.get("categoryName"));
-						shareModel = map.get("shareModel");
-						unitName = map.get("dicName");
-					}
-					db.setRecordid(map.get("recordId"));
-					db.setSubid(map.get("subId"));
-					db.setSubiddes(map.get("subIdDes"));
-					db.setParentid(map.get("parentId"));
-					list.add(db);
-				}	
-					
-			}
-			//选择数据明细内容
-			Matmodel.setMaterial(FormDetail);
-			//子编号信息
-			Matmodel.setMaterialLines(list);
-
-			//计量单位
-			Matmodel.setUnitname(unitName);
-			Matmodel.setUnit(FormDetail.getUnit());
-			Matmodel.setUnitList(doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
-				
-			Matmodel.setShareModelList(shareModel.split(","));
-			Matmodel.setEndInfoMap("098", "0001", "");
-			
-		}
-		catch(Exception e) {
-			Matmodel.setEndInfoMap(SYSTEMERROR, "err001", parentId);
-		}
-		
-		model.addAttribute("material", Matmodel);
-		
-		return model;
-		
-	}
-	
-	/*
-	 * 1.新增一条物料单价数据,包括供应商信息处理(一条数据)
-	 */
-	public Model insertPrice(
-			MaterialModel reqFormBean,
-			Model rtnModel,
-			HttpServletRequest request,
-			UserInfo userInfo) throws Exception  {
-		
+		String materialId = "";
 		ts = new BaseTransaction();
 		
 		try {
 			
 			ts.begin();
+						
+			priceData = (B_ZZMaterialPriceData)reqModel.getPrice();
+			List<B_ZZRawMaterialData> reqDataList = reqModel.getRawMaterials();
 			
-			B_PriceSupplierDao priceDao = new B_PriceSupplierDao();
-			B_PriceSupplierHistoryDao historyDao = new B_PriceSupplierHistoryDao();
-			B_PriceSupplierHistoryData historyData = new B_PriceSupplierHistoryData();
-			B_PriceSupplierData reqData = new B_PriceSupplierData();
-			B_PriceSupplierData DBData = new B_PriceSupplierData();
+			//自制品单价新增处理
+			insertPrice(priceData);
 			
-			reqData = (B_PriceSupplierData)reqFormBean.getPrice();
+			//自制品产品编码
+			materialId = priceData.getMaterialid();
 			
-			String materialId = reqData.getMaterialid();
-			String supplierId = reqData.getSupplierid();
-			String guid = "";
+			for(B_ZZRawMaterialData data:reqDataList ){
+							
+				String id = data.getRawmaterialid();
+				//过滤被删除和空行数据
+				if(null != id && !("").equals(id)){
+					
+					data.setMaterialid(materialId);
+					insertRawMaterial(data);
+				}
+			}
 			
-			//判断该供应商是否已有报价
-			DBData =prePriceCheck(materialId,supplierId);
+			//耀升自制品的物料单价表更新处理
+			B_PriceSupplierData ys = getPriceSupplierBySupplierId(materialId);
 			
-			boolean blPrice = DBData ==null?false:true;
-			
-			if(blPrice){
-
-				//更新单价表(同时更新createTime)
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialUpdate",userInfo);
-
-				copyProperties(DBData,commData);
-				DBData.setPrice(reqData.getPrice());
-				DBData.setCurrency(reqData.getCurrency());
-				DBData.setPriceunit(reqData.getPriceunit());
-				DBData.setPricedate(reqData.getPricedate());
-				DBData.setPricesource(BusinessConstants.PRICESOURCE_OTHER);
-				DBData.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
+			if(null != ys){
 				
-				priceDao.Store(DBData);	
-				
-				//插入历史表
-				copyProperties(historyData,DBData);
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialUpdate",userInfo);
-
-				copyProperties(historyData,commData);
-				
-				guid = BaseDAO.getGuId();
-				historyData.setRecordid(guid);
-				
-				historyDao.Create(historyData);
+				updateSupplierPrice(ys,priceData);
 				
 			}else{
-
-				//插入单价表				
-				//新增数据的价格来源设为:其他
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialUpdate",userInfo);
-
-				copyProperties(reqData,commData);
-	
-				guid = BaseDAO.getGuId();
-				reqData.setRecordid(guid);
-				reqData.setPricesource(BusinessConstants.PRICESOURCE_OTHER);	
-				reqData.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
-	
-				priceDao.Create(reqData);				
-
-				//插入历史表
-				copyProperties(historyData,reqData);
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
-
-				copyProperties(historyData,commData);
-				
-				guid = BaseDAO.getGuId();
-				historyData.setRecordid(guid);
-				
-				historyDao.Create(historyData);	
-			}
-
-			ts.commit();
-			
-			reqFormBean.setEndInfoMap(NORMAL, "suc001", "");
-		}
-		catch(Exception e) {
-			ts.rollback();
-			System.out.println(e.getMessage());
-			reqFormBean.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
-		
-		rtnModel.addAttribute("material",reqFormBean);
-		
-		return rtnModel;
-	}	
-	
-	/*
-	 * 1.物料新增处理(一条数据)
-	 * 2.子编码新增处理(N条数据)
-	 */
-	public Model insert(
-			MaterialModel reqFormBean,
-			Model rtnModel,
-			HttpServletRequest request,
-			UserInfo userInfo) throws Exception  {
-
-		ts = new BaseTransaction();
-		
-		try {
-			
-			ts.begin();
-			
-			B_MaterialDao dao = new B_MaterialDao();
-			ArrayList<B_MaterialData> dbList = new ArrayList<B_MaterialData>();
-			
-			B_MaterialData reqData = (B_MaterialData)reqFormBean.getMaterial();
-			List<B_MaterialData> reqDataList = reqFormBean.getMaterialLines();
-			
-			//新增加数据时,父级ID等于物料编号
-			String parentId = reqData.getMaterialid();
-			String selectedRecord = "";
-			
-			for(B_MaterialData data:reqDataList ){
-				if(!data.getSubiddes().trim().equals("")){
-					dbList.add(data);
-				}
-			}
-
-			//画面传来的数据过滤到list后,
-			//作清空处理,用来存放查看页面的数据
-			reqDataList.clear();
-			
-			
-			//如果一条数据也没有,默认给当前产品的子编码设为 "00"
-			if (dbList.size()==0){
-				reqData.setSubid(BusinessConstants.MATERIAL_SUBCOD_DEF);
-				dbList.add(reqData);
-			}
-			for(B_MaterialData data:dbList ){
-									
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
-
-				copyProperties(reqData,commData);
-
-				String guid = BaseDAO.getGuId();
-				reqData.setRecordid(guid);
-				reqData.setMaterialid(parentId + "." + data.getSubid());
-				reqData.setParentid(parentId);
-				reqData.setSubid(data.getSubid());
-				reqData.setSubiddes(data.getSubiddes());
-				
-				dao.Create(reqData);	
-				
-				//把子编码为"00"的数据作为默认对象
-				if(data.getSubid().equals(BusinessConstants.MATERIAL_SUBCOD_DEF)){
-					
-					selectedRecord = guid;
-				}
-			}
-			ts.commit();
-			
-			//重新查询
-			rtnModel = view(request,rtnModel,selectedRecord,parentId);
-			
-			reqFormBean.setEndInfoMap(NORMAL, "suc001", "");
-		}
-		catch(Exception e) {
-			ts.rollback();
-			reqFormBean.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
-		
-		return rtnModel;
-	}	
-
-	/*
-	 * 1.物料基本信息更新处理(1条数据)
-	 * 2.子编码新增处理(N条数据)
-	 */
-	public Model update(
-			MaterialModel reqFormBean,
-			Model rtnModel, 
-			HttpServletRequest request,
-			UserInfo userInfo) throws Exception  {
-
-		ts = new BaseTransaction();
-		
-		try {
-			
-			ts.begin();
-			
-			B_MaterialDao dao = new B_MaterialDao();
-			ArrayList<B_MaterialData> viewList = new ArrayList<B_MaterialData>();
-			
-			B_MaterialData reqData = (B_MaterialData)reqFormBean.getMaterial();
-			List<B_MaterialData> reqDataList = reqFormBean.getMaterialLines();
-
-			//物料编码 = parentId +"."+ subid 
-			//例:B01.D019001.00
-			String parentId = reqData.getParentid();
-			//画面被选中的数据
-			String selectedRecord = reqData.getRecordid();
-			
-			//循环处理子编码
-			for(B_MaterialData data:reqDataList ){
-
-				String recordid = data.getRecordid();	
-				
-				//Recorded为空的情况,插入该数据,否则就更新
-				if(recordid =="" || recordid == null){					
-					
-					commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
-
-					copyProperties(reqData,commData);
-									
-					String guid = BaseDAO.getGuId();
-					reqData.setRecordid(guid);
-					reqData.setMaterialid(parentId+"."+data.getSubid());
-					reqData.setParentid(parentId);	
-					reqData.setSubid(data.getSubid());
-					reqData.setSubiddes(data.getSubiddes());
-
-					dao.Create(reqData);
-					
-					viewList.add(reqData);
-					
-				}else if (recordid.equals(selectedRecord)){
-
-					//只更新被选中数据的物料编号,名称,说明,子编码解释等;				
-					B_MaterialData dbData = preMaterialCheck(recordid);	
-
-					//处理共通信息
-					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialUpdate",userInfo);
-					copyProperties(reqData,commData);
-					
-					//获取被选中数据的信息
-					dbData.setMaterialid(reqData.getMaterialid());
-					dbData.setMaterialname(reqData.getMaterialname());
-					dbData.setCategoryid(reqData.getCategoryid());
-					dbData.setSharemodel(reqData.getSharemodel());
-					dbData.setDescription(reqData.getDescription());
-					dbData.setUnit(reqData.getUnit());
-					//获取子编码list中的子编码解释
-					dbData.setSubiddes(data.getSubiddes());
-					
-					dao.Store(dbData);
-										
-				}
+				insertSupplierPrice(priceData);
 				
 			}
 			
 			ts.commit();
 			
-			//重新查询
-			rtnModel = view(request,rtnModel,selectedRecord,parentId);		
-			reqFormBean.setEndInfoMap(NORMAL, "suc001", "");
 		}
 		catch(Exception e) {
 			ts.rollback();
-			reqFormBean.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
-				
-		return rtnModel;
-	}	
-	
-	/*
-	 * 1.显示当前选中物料的基本信息
-	 * 2.显示相关的所有子编码信息(N条数据) 
-	 */
-	
-	public Model SelectSupplier(
-			MaterialModel Matmodel,
-			HttpServletRequest request,
-			Model model) {
-		B_MaterialData dbData = new B_MaterialData();
-		B_MaterialDao dao = new B_MaterialDao();
-
-		String key = request.getParameter("recordId");
-		String categoryName = request.getParameter("categoryName");	
-
-		try{			
-			categoryName = new String(categoryName.getBytes("ISO8859-1"), "UTF-8");
-			
-			dbData.setRecordid(key);
-			dbData = (B_MaterialData)dao.FindByPrimaryKey(dbData);
-			Matmodel.setMaterial(dbData);			
-			Matmodel.setMaterialid(dbData.getMaterialid());
-			Matmodel.setRecordId(dbData.getRecordid());
-			Matmodel.setMaterialname(dbData.getMaterialname());
-			Matmodel.setCategoryid(dbData.getCategoryid());
-			Matmodel.setCategoryname(categoryName);
-			Matmodel.setCurrencyList(util.getListOption(DicUtil.CURRENCY, ""));
-			model.addAttribute("material", Matmodel);
-			
-		}catch(Exception e){
-			
-		}
-		return model;
 		
+		return materialId;
+	}	
+
+
+	/*
+	 * 自制品单价基本信息insert处理
+	 */
+	private void insertPrice(
+			B_ZZMaterialPriceData data) throws Exception{
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"ZZMaterialPriceInsert",userInfo);
+
+		copyProperties(data,commData);
+
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		priceDao.Create(data);	
+
 	}
 	
+	/*
+	 * 自制品原材料insert处理
+	 */
+	private void insertRawMaterial(
+			B_ZZRawMaterialData data) throws Exception{
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"ZZRawMaterialInsert",userInfo);
+
+		copyProperties(data,commData);
+
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		rawDao.Create(data);	
+
+	}	
+	
+	/*
+	 * 供应商单价(耀升YS)insert处理
+	 */
+	private void insertSupplierPrice(
+			B_ZZMaterialPriceData data) throws Exception{
+		
+		B_PriceSupplierDao dao = new B_PriceSupplierDao();
+		B_PriceSupplierData dt = new B_PriceSupplierData();
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"ZZRawMaterialInsert",userInfo);
+		copyProperties(dt,commData);
+		
+		guid = BaseDAO.getGuId();
+		dt.setRecordid(guid);
+		dt.setMaterialid(data.getMaterialid());
+		dt.setSupplierid(Constants.SUPPLIER_YS);//耀升为供应商编号
+		dt.setCurrency(Constants.CURRENCY_RMB);//人民币
+		dt.setPrice(data.getTotalprice());
+		dt.setPriceunit("");
+		dt.setPricedate(CalendarUtil.fmtYmdDate());
+		dt.setPricesource(BusinessConstants.PRICESOURCE_SUPPLIER);
+		dt.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
+		
+		dao.Create(dt);	
+
+	}	
+	
+	
+
+	/*
+	 * 1.自制品单价更新处理(一条数据)
+	 * 2.自制品原材料新增/更新处理(N条数据)
+	 */
+	private String update() throws Exception  {
+
+		String materialId = "";
+		ts = new BaseTransaction();
+		
+		try {
+			
+			ts.begin();
+						
+			priceData = (B_ZZMaterialPriceData)reqModel.getPrice();
+			List<B_ZZRawMaterialData> reqDataList = reqModel.getRawMaterials();
+			List<B_ZZRawMaterialData> delDetailList = new ArrayList<B_ZZRawMaterialData>();
+			
+			//自制品单价新增处理
+			updatePrice(priceData);
+			
+			//过滤页面传来的有效数据
+			for(B_ZZRawMaterialData data:reqDataList ){
+				if(null == data.getRawmaterialid() || ("").equals(data.getRawmaterialid())){
+					delDetailList.add(data);
+				}
+			}
+			
+			reqDataList.removeAll(delDetailList);
+			
+			//根据画面的自制品编号取得DB中更新前的订单详情 
+			List<B_ZZRawMaterialData> oldDetailList = null;
+
+			//自制品产品编码
+			materialId = priceData.getMaterialid();
+			String where = " materialId = '"+materialId +"'" + " AND deleteFlag = '0' ";
+			oldDetailList = getDetailByMaterialId(where);
+			
+			//页面数据的recordId与DB匹配
+			//key存在:update;
+			//key不存在:insert;
+			//剩下未处理的DB数据:delete
+			for(B_ZZRawMaterialData newData:reqDataList ){
+
+				String newId = newData.getRawmaterialid();	
+
+				boolean insFlag = true;
+				for(B_ZZRawMaterialData oldData:oldDetailList ){
+					
+					String oldId = oldData.getRawmaterialid();
+					
+					if(newId.equals(oldId)){
+						
+						//更新处理
+						updateRawMaterial(newData,oldData);					
+						
+						//从old中移除处理过的数据
+						oldDetailList.remove(oldData);
+						
+						insFlag = false;
+						
+						break;
+					}
+				}
+
+				//新增处理
+				if(insFlag){
+					newData.setMaterialid(materialId);
+					insertRawMaterial(newData);
+				}
+				
+			}
+			
+			//删除处理
+			if(oldDetailList.size() > 0){					
+				deleteRawDetail(oldDetailList);
+			}
+			
+			//耀升自制品的物料单价表更新处理
+			B_PriceSupplierData ys = getPriceSupplierBySupplierId(materialId);
+			
+			if(null != ys){
+				
+				updateSupplierPrice(ys,priceData);
+				
+			}else{
+				insertSupplierPrice(priceData);
+				
+			}
+			
+			ts.commit();
+			
+		}
+		catch(Exception e) {
+			ts.rollback();
+			System.out.print(e.toString());
+		}
+		
+		return materialId;
+	}	
+
+	/*
+	 * 自制品单价基本信息update处理
+	 */
+	private void updatePrice(
+			B_ZZMaterialPriceData reqData) throws Exception{
+		
+		B_ZZMaterialPriceData db  = 
+				(B_ZZMaterialPriceData)priceDao.FindByPrimaryKey(reqData);
+
+		copyProperties(db,reqData);
+
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"ZZMaterialPriceUpdate",userInfo);
+
+		copyProperties(db,commData);
+
+		priceDao.Store(db);	
+
+	}
+	
+	/*
+	 * 自制品原材料update处理
+	 */
+	private void updateRawMaterial(
+			B_ZZRawMaterialData req,
+			B_ZZRawMaterialData db) throws Exception{
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"ZZRawMaterialUpdate",userInfo);
+
+		copyProperties(db,commData);
+		copyProperties(db,req);
+
+		rawDao.Store(db);	
+
+	}	
+	
+	/*
+	 * 供应商单价(耀升YS)update处理
+	 */
+	private void updateSupplierPrice(
+			B_PriceSupplierData ys,
+			B_ZZMaterialPriceData dt) throws Exception{
+		
+		B_PriceSupplierDao dao = new B_PriceSupplierDao();
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"ZZRawMaterialInsert",userInfo);
+		copyProperties(dt,commData);
+		
+		ys.setPrice(dt.getTotalprice());
+		ys.setPricedate(CalendarUtil.fmtYmdDate());
+		ys.setPricesource(BusinessConstants.PRICESOURCE_SUPPLIER);
+		ys.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
+		
+		dao.Store(ys);	
+
+	}	
+	
+	/*
+	 * 自制品原材料删除处理
+	 */
+	private void deleteRawDetail(
+			List<B_ZZRawMaterialData> oldDetailList) 
+			throws Exception{
+		
+		for(B_ZZRawMaterialData detail:oldDetailList){
+			
+			if(null != detail){
+						
+				//处理共通信息	
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"ZZRawMaterialDelete",userInfo);
+				copyProperties(detail,commData);
+				
+				rawDao.Store(detail);
+			}
+		}
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	private B_PriceSupplierData getPriceSupplierBySupplierId(String materialId) {
+		
+		B_PriceSupplierDao dao = new B_PriceSupplierDao();
+		B_PriceSupplierData rtnData = null;
+		List<B_PriceSupplierData> dbList = null;
+				
+		try {
+			String where = " supplierId = '"+Constants.SUPPLIER_YS +"'" + 
+					" AND materialId = '"+materialId +"'" + 
+					" AND deleteFlag = '0' ";
+
+			dbList = (List<B_PriceSupplierData>)dao.Find(where);
+			
+			if(null != dbList && dbList.size() > 0)
+				rtnData = dbList.get(0);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			rtnData = null;
+		}
+		
+		return rtnData;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private List<B_ZZRawMaterialData> getDetailByMaterialId(
+			String where ) throws Exception {
+		
+		List<B_ZZRawMaterialData> dbList = null;
+				
+		try {
+
+			dbList = (List<B_ZZRawMaterialData>)rawDao.Find(where);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dbList = null;
+		}
+		
+		return dbList;
+	}
+	
+	private Model getZZPriceDetailView(String materialId) 
+			throws Exception {
+
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/material/zzmaterialquerydefine");
+		dataModel.setQueryName("getZZmaterialpriceByMaterialId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("materialId", materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		modelMap = baseQuery.getYsQueryData(0, 0);
+
+		model.addAttribute("price",  modelMap.get(0));
+		model.addAttribute("detail", modelMap);
+				
+		return model;
+	}
+
 	/*
 	 * 新增物料初始处理
 	 */
-	public MaterialModel createMaterial() {
-
-		MaterialModel model = new MaterialModel();
+	public Model createMaterial() {
 
 		try {			
-			model.setUnitList(doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
-			model.setEndInfoMap("098", "0001", "");
+			reqModel.setManageRateList(util.getListOption(DicUtil.MANAGEMENTRATE, ""));
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
 		return model;
 	
 	}
 
-	public MaterialModel doOptionChange(String type, String parentCode) {
-		MaterialModel model = new MaterialModel();
-		
-		try {
-			ArrayList<ListOption> optionList = util.getListOption(type, parentCode);
-			model.setUnitList(optionList);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-			model.setUnitList(null);
-		}
+	public Model getDetailView() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		getZZPriceDetailView(materialId);
 		
 		return model;
+		
 	}
 	
+	public Model insertAndView() throws Exception {
 
-	
-	public MaterialModel doDelete(String data, UserInfo userInfo){
+		String materialId = insert();
 		
-		MaterialModel model = new MaterialModel();
-		
-		try {
-			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
-	        
-	        bean.executeOrganDelete(data, userInfo);
-	        
-	        model.setEndInfoMap(NORMAL, "", "");
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
+		getZZPriceDetailView(materialId);
 		
 		return model;
-	}
-	
-	
-	private B_MaterialData preMaterialCheck(String key) throws Exception {
-		B_MaterialDao dao = new B_MaterialDao();
-		B_MaterialData dbData = new B_MaterialData();
-				
-		try {
-			dbData.setRecordid(key);
-			dbData = (B_MaterialData)dao.FindByPrimaryKey(dbData);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dbData = null;
-		}
 		
-		return dbData;
 	}
-	@SuppressWarnings("unchecked")
-	private B_PriceSupplierData prePriceCheck(
-			String materialId,
-			String supplierId) throws Exception {
+	public Model updateAndView() throws Exception {
 
-		B_PriceSupplierDao dao = new B_PriceSupplierDao();
-		List<B_PriceSupplierData> priceList = null;
-		B_PriceSupplierData pricedt = null;
-
-		String where = " materialId = '" + materialId +
-				"' AND supplierId = '" + supplierId +
-				"' AND deleteFlag = '0' ";		
-
-		priceList = (List<B_PriceSupplierData>)dao.Find(where);
+		String materialId = update();
 		
-		if(priceList != null && priceList.size() > 0)
-			pricedt = priceList.get(0);	
-			
-		return pricedt;
+		getZZPriceDetailView(materialId);
+		
+		return model;
+		
 	}
 	
 }
