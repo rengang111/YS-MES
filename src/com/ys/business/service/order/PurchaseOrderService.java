@@ -1,5 +1,6 @@
 package com.ys.business.service.order;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,13 +18,20 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.PurchaseOrderModel;
 import com.ys.business.action.model.order.ZZOrderModel;
+import com.ys.business.action.model.organ.OrganModel;
+import com.ys.business.db.dao.B_MaterialRequirmentDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
+import com.ys.business.db.dao.B_PurchaseOrderDao;
+import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
+import com.ys.business.db.data.B_MaterialRequirmentData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
+import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 
@@ -39,8 +47,8 @@ public class PurchaseOrderService extends BaseService {
 	
 	private HttpServletRequest request;
 	
-	private B_OrderDao orderDao;
-	private B_OrderDetailDao detailDao;
+	private B_PurchaseOrderDao orderDao;
+	private B_PurchaseOrderDetailDao detailDao;
 	private PurchaseOrderModel reqModel;
 	private UserInfo userInfo;
 	private BaseModel dataModel;
@@ -58,26 +66,73 @@ public class PurchaseOrderService extends BaseService {
 			PurchaseOrderModel reqModel,
 			UserInfo userInfo){
 		
-		this.orderDao = new B_OrderDao();
-		this.detailDao = new B_OrderDetailDao();
+		this.orderDao = new B_PurchaseOrderDao();
+		this.detailDao = new B_PurchaseOrderDetailDao();
 		this.model = model;
 		this.reqModel = reqModel;
 		this.dataModel = new BaseModel();
 		this.request = request;
 		this.userInfo = userInfo;
 		userDefinedSearchCase = new HashMap<String, String>();
-		dataModel.setQueryFileName("/business/order/purchaseorderquerydefine");
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		
 	}
 
-	public void getZZOrderDetail( 
-			String orderId) throws Exception {
+	public HashMap<String, Object> getContractList(String data) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
-		dataModel.setQueryName("getZZOrderDetail");
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		String key1 = getJsonData(data, "keyword1").toUpperCase();
+		String key2 = getJsonData(data, "keyword2").toUpperCase();
+	
+		dataModel.setQueryName("getContractList");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		userDefinedSearchCase.put("orderId", orderId);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+			
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+	
+	public void getZZOrderDetail( 
+			String YSId) throws Exception {
+
+		dataModel.setQueryName("getRequirementListByYSId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		modelMap = baseQuery.getYsQueryData(0, 0);
 			
@@ -85,17 +140,50 @@ public class PurchaseOrderService extends BaseService {
 		model.addAttribute("detail", dataModel.getYsViewData());
 		
 	}
-	
 
-	
+	public  ArrayList<HashMap<String, String>> getRequirementBySupplierId( 
+			String YSId,String supplierId) throws Exception {
 
+		dataModel.setQueryName("getRequirementBySupplierId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("supplierId", supplierId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+				
+		return baseQuery.getYsQueryData(0, 0);
+		
+				
+	}
+	
+	public ArrayList<HashMap<String, String>> getSupplierList(String YSId) throws Exception {
+		
+		ArrayList<HashMap<String, String>> supplierList = null;
+		
+		dataModel.setQueryName("getContractSupplierList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		supplierList = baseQuery.getYsQueryData(0, 0);
+				
+		//设置供应商下拉框
+		//setOptiont(supplierList);
+		
+		return supplierList;	
+		
+	}
+	
 	@SuppressWarnings("unchecked")
-	private List<B_OrderDetailData> getOrderDetailByPIId(String where){
-		List<B_OrderDetailData> dbList = new ArrayList<B_OrderDetailData>();
+	private List<B_MaterialRequirmentData> getContractDetail(String where){
+		List<B_MaterialRequirmentData> dbList = new ArrayList<B_MaterialRequirmentData>();
+		B_MaterialRequirmentDao dao = new B_MaterialRequirmentDao();
 				
 		try {
 
-			dbList = (List<B_OrderDetailData>)detailDao.Find(where);
+			dbList = (List<B_MaterialRequirmentData>)dao.Find(where);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -109,93 +197,111 @@ public class PurchaseOrderService extends BaseService {
 	/*
 	 * 
 	 */
-	public HashMap<String, Object> getZZMaterialList() throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+	public void getContractBySupplierId(String contractId) throws Exception {
 
-		String key = request.getParameter("key").toUpperCase();
-
-		dataModel.setQueryFileName("/business/order/zzorderquerydefine");
-		dataModel.setQueryName("zzmaterialList");
+		if(null == contractId || ("").equals(contractId))
+			return;
+	
+		dataModel.setQueryName("getContractBySupplierId");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		userDefinedSearchCase.put("keywords1", key);
+		userDefinedSearchCase.put("contractId", contractId);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(0, 0);	 
 
-		modelMap.put("data", dataModel.getYsViewData());
+		model.addAttribute("contract",dataModel.getYsViewData().get(0));		
+		model.addAttribute("detail", dataModel.getYsViewData());
 		
-		modelMap.put("retValue", "success");			
-		
-		return modelMap;
-	}
-	
+	}	
 	
 	/*
 	 * 1.物料新增处理(一条数据)
 	 * 2.子编码新增处理(N条数据)
 	 */
-	@SuppressWarnings("rawtypes")
-	public String insert() throws Exception  {
+	public void insert(String YSId) throws Exception  {
 
 		ts = new BaseTransaction();
-		String orderId = "";
 
 		try {
 			ts.begin();
 
-			List code = getOrderZZYSKMAXId();
+			//以供应商为单位集计
+			ArrayList<HashMap<String, String>> supplierList = getSupplierList(YSId);
 
-			String YSCode  = code.get(0).toString();
-			String YSSubId = code.get(1).toString();	
-			
-		
-			//处理合同详情数据		
-			List<B_PurchaseOrderData> reqList = reqModel.getDetailList();
-			
-			for(B_PurchaseOrderData data:reqList ){
+			for(int i=0;i<supplierList.size();i++){
 				
-				//过滤空行或者被删除的数据
-				insertOrderDetail(data);
+				String supplierId = supplierList.get(i).get("supplierId");
+				String shortName  = supplierList.get(i).get("shortName");
+				String total      = supplierList.get(i).get("total");
 				
+				//取得供应商的合同流水号
+				//父编号:16+供应商简称
+				String parentId = "";
+				if(null != YSId && YSId.length() > 3 )
+					parentId = YSId.substring(0,2);//耀升编号前两位是年份
+				parentId = parentId + shortName;
+				
+				int subId = getContractCode(parentId);
+
+				//3位流水号格式化	
+				//采购合同编号:16YS081-WL002
+				String contractId = BusinessService.getContractCode(YSId, shortName, subId);
+				
+				//新增采购合同
+				insertOrder(YSId,supplierId,contractId,parentId,subId,total);
+				
+				//从物料需求表取得合同详情
+				String where = " YSId = '"+YSId +"'"+ 
+						" AND supplierId = '"+supplierId +"'"+ 
+						" AND deleteFlag = '0' ";
+				List<B_MaterialRequirmentData> detailList = getContractDetail(where);				
+				
+				for(B_MaterialRequirmentData data:detailList){
+														
+					//新增合同详情
+					insertOrderDetail(data,contractId);					
+				}				
 			}
-			
-			//重新查询,回到查看页面
-			//rtnModel = view(request,rtnModel,selectedRecord,parentId);
-			
-			reqModel.setEndInfoMap(NORMAL, "suc001", "");
-			
+						
 			ts.commit();
 		}
 		catch(Exception e) {
 			ts.rollback();
+			System.out.println(e.getMessage());
 			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
-		return orderId;
 	}	
 
 	/*
 	 * 订单详情插入处理
 	 */
-	public void insertOrder(
-			B_OrderData data,
-			String ysCode,
-			String subId) throws Exception{
+	private void insertOrder(
+			String YSId,
+			String supplierId,
+			String contractId,
+			String parentId,
+			int subId,
+			String total) throws Exception{
 		
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"ZZOrderInsert",userInfo);
+		B_PurchaseOrderData data = new B_PurchaseOrderData();
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"PurchaseOrderInsert",userInfo);
 
 		copyProperties(data,commData);
 		
 		guid = BaseDAO.getGuId();
+		
 		data.setRecordid(guid);
-		data.setPiid(ysCode);
-		data.setParentid(BusinessService.getYSKCommCode());
-		data.setSubid(subId);
-		data.setCustomerid(BusinessConstants.SHORTNAME_YS);
-		data.setOrderid(ysCode);
+		data.setYsid(YSId);
+		data.setContractid(contractId);
+		data.setParentid(parentId);
+		data.setSubid(String.valueOf(subId));
+		data.setSupplierid(supplierId);
+		data.setTotal(total);
 		
 		orderDao.Create(data);	
 	}	
@@ -204,156 +310,101 @@ public class PurchaseOrderService extends BaseService {
 	 * 订单详情插入处理
 	 */
 	private void insertOrderDetail(
-			B_PurchaseOrderData newData) throws Exception{
-			
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"ZZOrderDetailInsert",userInfo);
-
-		copyProperties(newData,commData);
-		guid = BaseDAO.getGuId();
-		newData.setRecordid(guid);
+			B_MaterialRequirmentData mData,
+			String contractId) throws Exception{
 		
-		detailDao.Create(newData);
+		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"PurchaseOrderInsert",userInfo);
 
+		copyProperties(data,commData);
+		
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		data.setContractid(contractId);
+		data.setMaterialid(mData.getMaterialid());
+		data.setQuantity(mData.getQuantity());
+		data.setPrice(mData.getPrice());
+		data.setTotalprice(mData.getTotalprice());
+		
+		detailDao.Create(data);	
 	}	
 	
 	/*
 	 * 1.订单基本信息更新处理(1条数据)
 	 * 2.订单详情 新增/更新/删除 处理(N条数据)
 	 */
-	public String update() throws Exception  {
+	public void update() throws Exception  {
 
 		ts = new BaseTransaction();
-		String orderId = "";
-				/*;
+				
 		try {
 			
-			ts.begin();
-
-			B_OrderData reqOrder = (B_OrderData)reqModel.getOrder();
+			ts.begin();	
 			
-			//订单基本信息更新处理
-			updateOrder(reqOrder);
+			//合同基本信息
+			B_PurchaseOrderData orderData = reqModel.getContract();
 			
-			//订单详情 更新/删除/插入 处理			
-			List<B_OrderDetailData> newDetailList = reqModel.getOrderDetailLines();
-			List<B_OrderDetailData> delDetailList = new ArrayList<B_OrderDetailData>();
+			updateOrder(orderData);
 			
-			//过滤页面传来的有效数据
-			for(B_OrderDetailData data:newDetailList ){
-				if(null == data.getMaterialid() || ("").equals(data.getMaterialid())){
-					delDetailList.add(data);
-				}
-			}
-			newDetailList.removeAll(delDetailList);
-			
-			//清空后备用
-			delDetailList.clear();
-			
-			//根据画面的PiId取得DB中更新前的订单详情 
-			//key:piId
-			List<B_OrderDetailData> oldDetailList = null;
-
-			orderId = reqOrder.getOrderid();
-			String YSSubId = reqOrder.getSubid();	
-			//库存订单的PI编号,订单编号,耀升编号相同
-			String where = " PIId = '"+orderId +"'" + " AND deleteFlag = '0' ";
-			oldDetailList = getOrderDetailByPIId(where);
+			//合同详情 更新 处理			
+			List<B_PurchaseOrderDetailData> newDetailList = reqModel.getDetailList();
 						
-			//页面数据的recordId与DB匹配
-			//key存在:update;key不存在:insert;
-			//剩下未处理的DB数据:delete
-			for(B_OrderDetailData newData:newDetailList ){
-
-				String newMaterialid = newData.getMaterialid();	
-
-				boolean insFlag = true;
-				for(B_OrderDetailData oldData:oldDetailList ){
-					String id = oldData.getMaterialid();
+			//页面数据的recordId与DB匹配			
+			for(B_PurchaseOrderDetailData data:newDetailList ){
+				
+				//更新处理
+				updateOrderDetail(data);						
 					
-					if(newMaterialid.equals(id)){
-						
-						//更新处理
-						updateOrderDetail(newData,oldData);						
-						
-						//从old中移除处理过的数据
-						oldDetailList.remove(oldData);
-						
-						insFlag = false;
-						
-						break;
-					}
-				}
-
-				//新增处理
-				if(insFlag){
-
-					insertOrderDetail(newData, YSSubId, orderId);
-				}
-			}
-			
-			//删除处理
-			if(oldDetailList.size() > 0){					
-				deleteOrderDetail(oldDetailList);
 			}
 			
 			ts.commit();
 		}
 		catch(Exception e) {
 			ts.rollback();
+			System.out.println(e.getMessage());
 		}
-			*/	
-		return orderId;
 	}
 	
 	/*
 	 * 订单基本信息更新处理
 	 */
-	public B_OrderData updateOrder(B_OrderData order) 
+	private void updateOrder(B_PurchaseOrderData order) 
 			throws Exception{
 
-		String recordid = order.getRecordid();		
 		
-		//取得更新前数据		
-		B_OrderData dbData = getOrderByRecordId(recordid);					
+		orderDao = new B_PurchaseOrderDao(order);
 		
-		if(null != dbData){
-			
-			//处理共通信息
-			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"ZZOrderUpdate",userInfo);
-			copyProperties(dbData,commData);
-			
-			//获取页面数据
-			copyProperties(dbData,order);
-			
-			orderDao.Store(dbData);
-		}
+		//处理共通信息
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseOrderUpdate",userInfo);
+		copyProperties(orderDao.beanData,commData);
 		
-		return dbData;
+		//获取页面数据
+		copyProperties(orderDao.beanData,order);
+		
+		orderDao.Store(orderDao.beanData);
+	
 	}
 
 	/*
 	 * 订单详情更新处理
 	 */
 	private void updateOrderDetail(
-			B_OrderDetailData newData,
-			B_OrderDetailData dbData) 
-			throws Exception{
+			B_PurchaseOrderDetailData data) throws Exception{
 			
+		detailDao = new B_PurchaseOrderDetailDao(data);
+
 		//处理共通信息
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ZZOrderDetailUpdate",userInfo);
-
-		copyProperties(dbData,commData);
-		//获取页面数据
-		dbData.setQuantity(newData.getQuantity());
-		dbData.setPrice(newData.getPrice());;
-		dbData.setTotalprice(newData.getTotalprice());
-		dbData.setStatus(Constants.ORDER_STS_0);
+				"PurchaseOrderDetailUpdate",userInfo);
+		copyProperties(detailDao.beanData,commData);
 		
-		detailDao.Store(dbData);
-
+		//获取页面数据
+		copyProperties(detailDao.beanData,data);
+		
+		detailDao.Store(detailDao.beanData);
 	}
 	
 	/*
@@ -373,7 +424,7 @@ public class PurchaseOrderService extends BaseService {
 
 			//库存订单的PI编号,订单编号,耀升编号相同
 			String where = " PIId = '"+PIId +"'" + " AND deleteFlag = '0' ";
-			detailList = getOrderDetailByPIId(where);
+			//detailList = getOrderDetailByPIId(where);
 						
 			for(B_OrderDetailData dbData:detailList ){				
 					
@@ -415,112 +466,71 @@ public class PurchaseOrderService extends BaseService {
 				detailDao.Store(detail);
 			}
 		}
-	}	
-
+	}		
 	
+	private int getContractCode(String parentId) throws Exception {
 
-	/*
-	 * 取得耀升编号的流水号
-	 */
-	public int getYSIdByParentId(HttpServletRequest request) 
-			throws Exception {
-		
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-		
-  
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getYSIdByParentId");
+		dataModel.setQueryName("getContractCode");
 		
 		baseQuery = new BaseQuery(request, dataModel);
-
-		//查询条件
-        String paternId = BusinessService.getYSKCommCode();
-        
-		userDefinedSearchCase.put("keywords1", paternId);
+	
+		
+		userDefinedSearchCase.put("parentId", parentId);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(0, 0);	 
 		
-		//取得已有的最大流水号
 		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("MaxSubId"));
 		
 		return code;
+		
 	}
 	
-	
-	private B_OrderData getOrderByRecordId(String key) throws Exception {
-		B_OrderDao dao = new B_OrderDao();
-		B_OrderData dbData = new B_OrderData();
-				
-		try {
-			dbData.setRecordid(key);
-			dbData = (B_OrderData)dao.FindByPrimaryKey(dbData);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dbData = null;
+	private ArrayList<ListOption> getListOption(ArrayList<ArrayList<String>> list) throws Exception {
+
+		ArrayList<ListOption> rtnData = new ArrayList<ListOption>();
+		
+		for(ArrayList<String>rowData:list) {
+			ListOption option = new ListOption(rowData.get(0), rowData.get(0));
+			rtnData.add(option);
 		}
 		
-		return dbData;
+		return rtnData;
 	}
 	
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List getOrderZZYSKMAXId() throws Exception {
+	//生成采购合同--自制品
+	public void creatPurchaseOrderZZ() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		//String supplierId = request.getParameter("supplierId");
+		
+		insert(YSId);
+		
+		//ArrayList<ArrayList<String>> supplierList = null; 
+		
+		//生成采购合同		
+		//if(null == supplierId){
 
-		List rtnArray = new ArrayList();
-	
-		dataModel.setQueryFileName("/business/order/zzorderquerydefine");
-		dataModel.setQueryName("getOrderZZYSKMAXId");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		String key = BusinessService.getYSKCommCode();
-		
-		userDefinedSearchCase.put("keywords1", key);
-		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
-		
-		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("MaxSubId"));
+		//	supplierId = insert(YSId);
 			
-		String ysCode = BusinessService.getYSKFormat2Code(code,true); 
-		ysCode = ysCode + BusinessConstants.SHORTNAME_ZZ;
+		//}else{
+		//	getSupplierList(YSId);//设置供应商下拉框
+		//}
+			
+		//取得本次采购合同在该供应商购买的材料list
+		//String suppShortName = getRequirementBySupplierId(YSId,supplierId);
 		
-		model.addAttribute("ysCode",ysCode);		
-		
-		rtnArray.add(0,ysCode);
-		rtnArray.add(1,	code+1);
-		
-		return rtnArray;
-	}
-	
-	public Model createZZorder() throws Exception{
-		
-		getOrderZZYSKMAXId();
-		
-		//完整的自制品库存订单编号:16YSK+2位流水号+ZZ
-		return model;
-		
-		
-	}
-
-	public void insertAndView() throws Exception {
-		
-		String orderId = insert();
-		getZZOrderDetail(orderId);	
-	}
-
-	public void editZZorder() throws Exception {
-		
-		String orderId = request.getParameter("YSId");
-		getZZOrderDetail(orderId);
+		//getContractCode(YSId,suppShortName);
 	}
 
 	public void updateAndView() throws Exception {
-		String orderId = update();
-		getZZOrderDetail(orderId);	
+		
+		update();
+
+		String contractId = reqModel.getContract().getContractid();
+		
+		getContractBySupplierId(contractId);
 		
 	}
 	

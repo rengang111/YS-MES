@@ -10,7 +10,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>采购合同-编辑</title>
+<title>采购合同-查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -32,7 +32,7 @@
 			        	{"className":"dt-body-center"
 					}, {
 					}, {								
-					}, {"className":"td-center"
+					}, {				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
@@ -42,41 +42,6 @@
 			
 		}).draw();
 		
-		t.on('blur', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
-			
-	           $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
-
-		});
-			
-		t.on('change', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
-			
-            var $tds = $(this).parent().find("td");
-			
-            var $oQuantity  = $tds.eq(4).find("input");
-			var $oThisPrice = $tds.eq(5).find("input");
-			var $oAmounti   = $tds.eq(6).find("input:hidden");
-			var $oAmounts   = $tds.eq(6).find("span");
-			
-			var fPrice    = currencyToFloat($oThisPrice.val());		
-			var fQuantity = currencyToFloat($oQuantity.val());			
-			var fTotalOld = currencyToFloat($oAmounti.val());
-			
-			var fTotalNew = currencyToFloat(fPrice * fQuantity);
-
-			var vPrice = floatToCurrency(fPrice);	
-			var vQuantity = floatToNumber(fQuantity);
-			var vTotalNew = floatToCurrency(fTotalNew);
-					
-			//详情列表显示新的价格
-			$oThisPrice.val(vPrice);					
-			$oQuantity.val(vQuantity);	
-			$oAmounti.val(vTotalNew);	
-			$oAmounts.html(vTotalNew);	
-
-			//列合计
-			weightsum();
-			
-		});
 			
 		t.on('click', 'tr', function() {
 			
@@ -90,7 +55,7 @@
 			
 		});
 		
-		t.on('order.dt search.dt draw.dt', function() {
+		t.on('contract.dt search.dt draw.dt', function() {
 			t.column(0, {
 				search : 'applied',
 				order : 'applied'
@@ -107,88 +72,23 @@
 		
 		$( "#tabs" ).tabs();
 		
-		var deliverydate = '${contract.purchaseDate}';
-		if(deliverydate == "" || deliverydate == null){
-		var date = new Date(shortToday());
-			date.setDate(date.getDate()+20);
-			$("#contract\\.deliverydate").val(date.format("yyyy-MM-dd"));
-			$("#contract\\.purchasedate").val(shortToday());
-		}
-		
-		$("#contract\\.purchasedate").datepicker({
-			dateFormat:"yy-mm-dd",
-			changeYear: true,
-			changeMonth: true,
-			selectOtherMonths:true,
-			showOtherMonths:true,
-		}); 
-
-		$("#contract\\.deliverydate").datepicker({
-			dateFormat:"yy-mm-dd",
-			changeYear: true,
-			changeMonth: true,
-			selectOtherMonths:true,
-			showOtherMonths:true,
-		});
-		
-		
 		$('#example').DataTable().columns.adjust().draw();		
 		
 		$("#goBack").click(
 				function() {
-					history.go(-1);
-					//var url = '${ctx}/business/purchase?methodtype=init';
-					//location.href = url;		
+					//history.go(-1);
+					var url = '${ctx}/business/contract';
+					location.href = url;		
 				});
 		
-		$("#insert").click(
+		$("#doEdit").click(
 				function() {			
-			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=update");
+			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=edit");
 			$('#attrForm').submit();
 		});		
 
-		$("#contract\\.purchasedate").change(function(){
-			
-			var val = $(this).val();
-			var date = new Date(val);
-			date.setDate(date.getDate()+20);
-			$("#contract\\.deliverydate").val(date.format("yyyy-MM-dd"));
-		});	
-		
-		$("#contract\\.supplierid").change(function(){
-			
-			var YSId = '${order.YSId }';
-			var supplierId = $(this).val();
-			var url = '${ctx}/business/contract?methodtype=edit&YSId='+YSId+"&supplierId="+supplierId;
-			location.href = url;	
-		});	
-		
-		//input格式化
-		foucsInit();
-		
-		//列合计
-		weightsum();
-
 	});	
 	
-	//列合计
-	function weightsum(){
-
-		var sum = 0;
-		$('#example tbody tr').each (function (){
-			
-			var vtotal = $(this).find("td").eq(6).find("span").text();
-			var ftotal = currencyToFloat(vtotal);
-			
-			sum = currencyToFloat(sum) + ftotal;
-			
-		})
-		var fsum = floatToCurrency(sum);
-		$('#weightsum').text(fsum);
-		$('#contract\\.total').val(fsum);
-		
-
-	}
 	
 </script>
 
@@ -207,14 +107,13 @@
 				<tr> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
 					<td width="200px">${contract.YSId }
-						<form:hidden path="contract.recordid" value="${contract.productRecordId }"/>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td width="150px">&nbsp;${ contract.productId }</td>
+					<td width="150px">${ contract.productId }</td>
 						
 					<td class="label" width="100px"><label>产品名称：</label></td>
-					<td colspan="3">&nbsp;${ contract.productName } </td>
+					<td colspan="3">${ contract.productName } </td>
 				</tr>	
 				<tr> 		
 					<td class="label"><label>供应商编号：</label></td>					
@@ -222,7 +121,7 @@
 						<form:hidden path="contract.supplierid" value="${contract.supplierId }"/></td>
 									
 					<td class="label"><label>供应商简称：</label></td>					
-					<td>&nbsp;${ contract.shortName }</td>
+					<td>${ contract.shortName }</td>
 						
 					<td class="label"><label>供应商名称：</label></td>
 					<td colspan="3">&nbsp;${ contract.fullName }</td>
@@ -232,11 +131,11 @@
 					<td>${ contract.contractId }
 						<form:hidden path="contract.contractid" value="${contract.contractId }"/></td>
 					<td class="label"><label>下单日期：</label></td>
-					<td>
-						<form:input path="contract.purchasedate" value="${ contract.purchaseDate }"/></td>
+					<td>${ contract.purchaseDate }</td>
 					<td class="label"><label>合同交期：</label></td>
-					<td colspan="3">
-						<form:input path="contract.deliverydate" value="${ contract.deliveryDate }"/></td>
+					<td width="150px">${ contract.deliveryDate }</td>
+					<td class="label" width="100px"><label>合同金额：</label></td>
+					<td>${ contract.total }</td>
 				</tr>									
 			</table>
 			
@@ -245,13 +144,31 @@
 	<div style="clear: both"></div>		
 	<fieldset>
 	<legend> 合同详情</legend>
+	<div id="tabs" style="margin: -6px 0px 0px 5px; float: right; padding: 0px;">
+		<ul>
+			<li><a href="#tabs-1" style="font-size: 11px;">描述</a></li>
+			<li><a href="#tabs-2" style="font-size: 11px;">图片</a></li>
+		</ul>
+
+		<div id="tabs-2" style="padding: 5px;">
+			<img id="productImage"
+				src="${ctx}/css/images/blankDemo.png"
+				style="width: 280px; height: 210px;" />
+		</div>
+
+		<div id="tabs-1" style="padding: 5px;">
+			<div id="productDetail" style="width: 280px; height: 210px;"></div>
+		</div>
+
+	</div>
+	<div id="floatTable" style="width: 70%; float: left; margin: 5px 0px 0px 0px;">
 	
 	<div class="list">
 	<table id="example" class="display" width="100%">	
 		<thead>
 		<tr>
-			<th style="width:30px">No</th>
-			<th style="width:150px">物料ERP编码</th>
+			<th style="width:20px">No</th>
+			<th style="width:80px">物料ERP编码</th>
 			<th>物料名称</th>
 			<th style="width:50px">计量单位</th>
 			<th style="width:80px">数量</th>
@@ -267,11 +184,10 @@
 					<td>${ detail.materialId }<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
 					<td><span id="name${status.index}"></span></td>					
 					<td>${ detail.unit }</td>
-					<td><form:input path="detailList[${status.index}].quantity" value="${detail.quantity}" class="num short"/></td>							
-					<td><form:input  path="detailList[${status.index}].price" value="${detail.price}"  class="cash short" /></td>
-					<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice} "/></td>				
+					<td>${ detail.quantity}   <form:hidden path="detailList[${status.index}].quantity" value="${detail.quantity}"/></td>							
+					<td>${ detail.price }     <form:hidden path="detailList[${status.index}].price" value="${detail.price}" /></td>
+					<td>${ detail.totalPrice }<form:hidden path="detailList[${status.index}].totalprice" value="${detail.totalPrice}" /></td>				
 					<td>					  <form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" /></td>				
-					
 				</tr>	
 								
 				<script type="text/javascript">
@@ -294,20 +210,20 @@
 				<td></td>
 				<td></td>
 				<td></td>
-				<td class="td-right">合计:</td>
-				<td class="td-right" style="padding-right: 2px;"><span id=weightsum></span>
-					<form:hidden path="contract.total"/></td>
+				<td></td>
+				<td></td>
 				<td></td>
 			</tr>
 		</tfoot>
 	</table>
+	</div>
 	</div>
 	</fieldset>
 	<fieldset>
 	<legend> 合同注意事项</legend>
 	<table class="form" >
 		<tr>
-			<td class="td-left"><textarea name="contract.memo" rows="7" cols="100" >${contract.memo}</textarea></td>
+			<td class="td-left"><pre>${contract.memo}</pre></td>
 		</tr>
 	</table>
 	
@@ -315,7 +231,7 @@
 	<div style="clear: both"></div>
 	
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="insert" class="DTTT_button">保存</button>
+		<button type="submit" id="doEdit" class="DTTT_button">编辑</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>		
 		

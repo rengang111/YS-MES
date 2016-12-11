@@ -132,14 +132,15 @@
 		
 		$("#goBack").click(
 				function() {
-					history.go(-1);
+					history.go(-2);
 					//var url = '${ctx}/business/purchase?methodtype=init';
 					//location.href = url;		
 				});
 		
 		$("#doContract").click(
-				function() {			
-					var url = '${ctx}/business/contract?methodtype=edit';
+				function() {	
+					var YSId = '${order.YSId }';
+					var url = '${ctx}/business/contract?methodtype=createZZ&YSId='+YSId;
 					location.href = url;
 		});		
 		
@@ -197,7 +198,7 @@
 			</table>
 		</div>
 	</fieldset>
-	
+	<!-- 
 		<fieldset>
 		<legend> 物料详情</legend>
 		<div class="list" style="margin-top: -4px;">
@@ -268,7 +269,9 @@
 	</table>
 	</div>
 	</fieldset>
+	-->
 	<fieldset>
+
 		<legend>原材料需求表</legend>
 		<div class="list" style="margin-top: -4px;">
 		

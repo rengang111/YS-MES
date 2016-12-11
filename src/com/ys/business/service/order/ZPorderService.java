@@ -406,12 +406,13 @@ public class ZPorderService extends BaseService {
 		
 		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("MaxSubId"));
 		
-		String ysCode = BusinessService.getYSKFormat2Code(code,true); 
-		ysCode = ysCode + BusinessConstants.SHORTNAME_ZP;
+		//String ysCode = BusinessService.getYSKFormat2Code(code,true); 
+		//ysCode = ysCode + BusinessConstants.SHORTNAME_ZP;
+		String zpCode = BusinessService.getOrderIdZP(code, true);
 		
-		model.addAttribute("ysCode",ysCode);		
+		model.addAttribute("ysCode",zpCode);		
 		
-		rtnArray.add(0,ysCode);
+		rtnArray.add(0,zpCode);
 		rtnArray.add(1,code+1);
 		
 		return rtnArray;

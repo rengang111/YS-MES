@@ -67,61 +67,32 @@ public class PurchaseOrderAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				rtnUrl = "/business/requirement/requirementmain";
+				rtnUrl = "/business/purchase/purchaseordermain";
 				break;				
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
-				break;							
-			case "implement":
-				rtnUrl = "/business/bom/purchaseman";
-				break;			
-			case "searchPurchase":
-				dataMap = doSearchPurchase(data);
-				printOutJsonObj(response, dataMap);
 				break;
-			case "create":
-				doCreate();
-				rtnUrl = "/business/order/zzorderadd";
-				break;
-			case "insert":
-				doInsert();
-				rtnUrl = "/business/requirement/requirementview";
-				break;					
-			case "purchasePlanView":
-				//doShowBomDetail();
-				rtnUrl = "/business/bom/bomselectlist";
+			case "createZZ":
+				creatPurchaseOrderZZ();
+				rtnUrl = "/business/purchase/purchaseordermain";
+				break;				
+			case "detailView":
+				doDetailView();
+				rtnUrl = "/business/purchase/purchaseorderview";
 				break;
 			case "edit":
-				//doEdit();
+				editPurchaseOrder();
 				rtnUrl = "/business/purchase/purchaseorderedit";
 				break;				
 			case "update":
 				doUpdate();
-				rtnUrl = "/business/order/zzorderview";
+				rtnUrl = "/business/purchase/purchaseorderview";
 				break;				
 			case "approve":
 				doApprove();
 				rtnUrl = "/business/order/ordermain";
-				break;
-			case "getSupplierPriceList"://供应商编号查询
-				dataMap = doGetSupplierPriceList();
-				printOutJsonObj(response, dataMap);
-				break;
-			case "getMaterialList"://物料编号查询
-				dataMap = doGetMaterialList();
-				printOutJsonObj(response, dataMap);
-				break;	
-			case "chooseSourseBom":
-				//doViewSourseBom();
-				rtnUrl = "/business/bom/bomselectlist";
-				break;
-			case "searchCopyBom":
-				dataMap = doSearchCopyBom(data);
-				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/bom/bomselectlist";
-				break;
-				
+				break;				
 		}
 		
 		return rtnUrl;		
@@ -136,56 +107,7 @@ public class PurchaseOrderAction extends BaseAction {
 				new ArrayList<HashMap<String, String>>();
 		
 		try {
-			//dataMap = zzOrderService.getBomList(data);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-
-	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearchCopyBom(
-			@RequestBody String data){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = zzOrderService.getCopyBomList(data);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearchPurchase(
-			@RequestBody String data){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = zzOrderService.getBomApproveList(data);
+			dataMap = service.getContractList(data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -200,29 +122,29 @@ public class PurchaseOrderAction extends BaseAction {
 		return dataMap;
 	}
 	
-	
+	public void creatPurchaseOrderZZ() throws Exception{
 
-	public void doCreate() throws Exception{
-		
-		//model = service.createZZorder();
-		
-	}
-	
-	public void doInsert() throws Exception {
-
-		service.insertAndView();
-		
-	}		
-	
-	
-	public void doEdit() throws Exception{
-
-		service.editZZorder();
+		service.creatPurchaseOrderZZ();
 	}	
+
+	public void doDetailView() throws Exception{
+
+		String contractId = request.getParameter("contractId");
+
+		service.getContractBySupplierId(contractId);
+	}
 	
 	public void doUpdate() throws Exception {
 		
 		service.updateAndView();			
+		
+	}
+	
+	public void editPurchaseOrder() throws Exception {
+		
+		String contractId = reqModel.getContract().getContractid();
+		
+		service.getContractBySupplierId(contractId);			
 		
 	}
 	
@@ -231,56 +153,4 @@ public class PurchaseOrderAction extends BaseAction {
 		service.approveAndView();			
 		
 	}	
-	
-	/*
-	 * 
-	 */	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doGetMaterialList(){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
-		
-		try {
-			dataMap = service.getZZMaterialList();
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-	
-	/*
-	 * doSupplierPriceList
-	 */	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doGetSupplierPriceList(){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = zzOrderService.getSupplierPriceList();
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-
-	
 }

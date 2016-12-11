@@ -17,7 +17,9 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.RequirementModel;
+import com.ys.business.action.model.organ.OrganModel;
 import com.ys.business.db.dao.B_MaterialRequirmentDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
@@ -346,6 +348,22 @@ public class RequirementService extends BaseService {
 		return dbData;
 	}
 	
+	public OrganModel doOptionChange(String type, String parentCode) {
+		DicUtil util = new DicUtil();
+		OrganModel model = new OrganModel();
+		
+		try {
+			ArrayList<ListOption> optionList = util.getListOption(type, parentCode);
+			model.setTypeList(optionList);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+			model.setTypeList(null);
+		}
+		
+		return model;
+	}
 
 	public void insertAndView() throws Exception {
 

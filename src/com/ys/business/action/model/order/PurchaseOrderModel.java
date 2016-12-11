@@ -1,8 +1,11 @@
 package com.ys.business.action.model.order;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_PurchaseOrderData;
+import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.util.basequery.common.BaseModel;
 
 public class PurchaseOrderModel extends BaseModel {
@@ -12,8 +15,16 @@ public class PurchaseOrderModel extends BaseModel {
 	 * 采购方案
 	 */
 	private static final long serialVersionUID = 1L;
-	private List<B_PurchaseOrderData> detailList;
+	private ArrayList<ListOption> supplierList = new ArrayList<ListOption>();
+	private List<B_PurchaseOrderDetailData> detailList;
 	private B_PurchaseOrderData contract;
+	
+	public ArrayList<ListOption> getSupplierList() {
+		return this.supplierList;
+	}
+	public void setSupplierList(ArrayList<ListOption> supplierList) {
+		this.supplierList = supplierList;
+	}
 	
 	private String YSId;
 	private String bomId;
@@ -31,10 +42,10 @@ public class PurchaseOrderModel extends BaseModel {
 		this.YSId = YSId;
 	}
 	
-	public List<B_PurchaseOrderData> getDetailList() {
+	public List<B_PurchaseOrderDetailData> getDetailList() {
 		return this.detailList;
 	}
-	public void setDetailList(List<B_PurchaseOrderData> detailList) {
+	public void setDetailList(List<B_PurchaseOrderDetailData> detailList) {
 		this.detailList = detailList;
 	}
 	

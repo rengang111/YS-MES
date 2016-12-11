@@ -86,66 +86,40 @@ public class B_PurchaseOrderData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String erp;
-	public String getErp()
+	private String parentid;
+	public String getParentid()
 	{
-		return this.erp;
+		return this.parentid;
 	}
-	public void setErp(String erp)
+	public void setParentid(String parentid)
 	{
-		this.erp=erp;
-	}
-
-	/**
-	*
-	*/
-	private String quantity;
-	public String getQuantity()
-	{
-		return this.quantity;
-	}
-	public void setQuantity(String quantity)
-	{
-		this.quantity=quantity;
+		this.parentid=parentid;
 	}
 
 	/**
 	*
 	*/
-	private String price;
-	public String getPrice()
+	private String subid;
+	public String getSubid()
 	{
-		return this.price;
+		return this.subid;
 	}
-	public void setPrice(String price)
+	public void setSubid(String subid)
 	{
-		this.price=price;
-	}
-
-	/**
-	*
-	*/
-	private String currency;
-	public String getCurrency()
-	{
-		return this.currency;
-	}
-	public void setCurrency(String currency)
-	{
-		this.currency=currency;
+		this.subid=subid;
 	}
 
 	/**
 	*
 	*/
-	private String totalprice;
-	public String getTotalprice()
+	private String total;
+	public String getTotal()
 	{
-		return this.totalprice;
+		return this.total;
 	}
-	public void setTotalprice(String totalprice)
+	public void setTotal(String total)
 	{
-		this.totalprice=totalprice;
+		this.total=total;
 	}
 
 	/**
@@ -172,6 +146,19 @@ public class B_PurchaseOrderData implements java.io.Serializable
 	public void setDeliverydate(String deliverydate)
 	{
 		this.deliverydate=deliverydate;
+	}
+
+	/**
+	*
+	*/
+	private String memo;
+	public String getMemo()
+	{
+		return this.memo;
+	}
+	public void setMemo(String memo)
+	{
+		this.memo=memo;
 	}
 
 	/**
@@ -306,13 +293,13 @@ public class B_PurchaseOrderData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("contractid = "+(contractid == null ? "null" : contractid)+"\n");		sb.append("erp = "+(erp == null ? "null" : erp)+"\n");		sb.append("quantity = "+(quantity == null ? "null" : quantity)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("purchasedate = "+(purchasedate == null ? "null" : purchasedate)+"\n");		sb.append("deliverydate = "+(deliverydate == null ? "null" : deliverydate)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("contractid = "+(contractid == null ? "null" : contractid)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("total = "+(total == null ? "null" : total)+"\n");		sb.append("purchasedate = "+(purchasedate == null ? "null" : purchasedate)+"\n");		sb.append("deliverydate = "+(deliverydate == null ? "null" : deliverydate)+"\n");		sb.append("memo = "+(memo == null ? "null" : memo)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		materialid= (materialid == null ?null : materialid.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		contractid= (contractid == null ?null : contractid.trim());		erp= (erp == null ?null : erp.trim());		quantity= (quantity == null ?null : quantity.trim());		price= (price == null ?null : price.trim());		currency= (currency == null ?null : currency.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		purchasedate= (purchasedate == null ?null : purchasedate.trim());		deliverydate= (deliverydate == null ?null : deliverydate.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		materialid= (materialid == null ?null : materialid.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		contractid= (contractid == null ?null : contractid.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		total= (total == null ?null : total.trim());		purchasedate= (purchasedate == null ?null : purchasedate.trim());		deliverydate= (deliverydate == null ?null : deliverydate.trim());		memo= (memo == null ?null : memo.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

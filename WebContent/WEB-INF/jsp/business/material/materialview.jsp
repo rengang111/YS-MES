@@ -94,7 +94,7 @@
 						<td class="td-center" width='60px'>
 							</td></tr></table></td></tr>		
 		<tr>
-			<td style="vertical-align: text-top;">${material.material.description}</td>
+			<td style="vertical-align: text-top;"><pre>${material.material.description}</pre></td>
 			<td>			
 				<div class="" id="subidDiv" style="overflow: auto;height: 100px;margin-top: -15px;">
 					<table id="subidTab" class="dataTable list" style="width: 95%;">

@@ -397,7 +397,7 @@
 	<div style="clear: both"></div>
 	
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="insert" class="DTTT_button">生成采购合同</button>
+		<button type="button" id="insert" class="DTTT_button">保存</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>		
 		
