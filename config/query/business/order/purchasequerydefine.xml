@@ -33,4 +33,111 @@
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="getContractSupplierList" />
+    <where>
+    	<w name="A.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.YSID" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="" ctype="" />
+      <f name="FORMAT(SUM(REPLACE(IFNULL(a.totalPrice, 0),',','') ) ,2)" alias="total" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <!-- 限定显示订单状态为"BOM表已做成,已评审"的数据 -->
+   <from>v_materialrequirment AS A WHERE A.deleteFlag = '0' </from>
+    <orderby>a.YSID,a.supplierId</orderby>
+    <groupby>a.supplierId</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getContractBySupplierId" />
+    <where>
+    	<w name="a.contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="b.recordId" alias="productRecordId" ctype="" />
+      <f name="b.YSId" alias="" ctype="" />
+      <f name="IFNULL(b.productId,'自制库存订单')" alias="productId" ctype="" />
+      <f name="b.productName" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="c.materialName" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.quantity" alias="" ctype="" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="b.supplierId" alias="" ctype="" />
+      <f name="b.supplierSimpleDes" alias="shortName" ctype="" />
+      <f name="b.supplierDes" alias="fullName" ctype="" />
+      <f name="b.purchaseDate" alias="" ctype="" />
+      <f name="b.deliveryDate" alias="" ctype="" />
+      <f name="b.total" alias="" ctype="" />
+      <f name="b.memo" alias="" ctype="" />
+      <f name="c.unit" alias="" ctype="计量单位" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <!-- 限定显示订单状态为"BOM表已做成,已评审"的数据 -->
+   <from>b_purchaseorderdetail a LEFT JOIN v_parchaseorderlist b ON a.contractId = b.contractId AND b.deleteFlag = '0' LEFT JOIN b_material c ON a.materialId = c.materialId AND c.deleteFlag = '0' </from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getContractCode" />
+    <where>
+      <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+  	<select>
+      <f name=" IFNULL(max(subId+0),'0')" alias="MaxSubId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <!-- 限定显示订单状态为"BOM表已做成,已评审"的数据 -->
+   <from>b_purchaseorder AS A WHERE A.deleteFlag = '0' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getContractList" />
+    <where>
+      <w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="IFNULL(a.productId,'自制库存订单')" alias="productId" ctype="" />
+      <f name="A.productName" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.supplierSimpleDes" alias="shortName" ctype="" />
+      <f name="A.supplierDes" alias="fullName" ctype="" />
+      <f name="A.purchaseDate" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.createTime" alias="" ctype="" />
+      <f name="A.total" alias="" ctype="" />
+      <f name="A.fullField" alias="" ctype="" />
+    </select>
+    <from>v_parchaseorderlist a  WHERE a.deleteFlag = '0' </from>
+    <orderby>a.createTime DESC</orderby>
+    <groupby>a.contractId</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>

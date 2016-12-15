@@ -232,10 +232,10 @@
 					<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
 						<thead>						
 							<tr class="selected">
-								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="物料编号" class="dt-middle sorting_disabled">物料编号</th>
-								<th colspan="1" rowspan="1" style="width: 180px;" aria-label="物料名称" class="dt-middle sorting_disabled">物料名称</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="分类解释" class="dt-middle sorting_disabled">物料分类</th>
+								<th colspan="1" rowspan="1" style="width: 30px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
+								<th colspan="1" rowspan="1" style="width: 100px;" aria-label="物料编号" class="dt-middle sorting_disabled">物料编号</th>
+								<th colspan="1" rowspan="1"  aria-label="物料名称" class="dt-middle sorting_disabled">物料名称</th>
+								<th colspan="1" rowspan="1" style="width: 200px;" aria-label="分类解释" class="dt-middle sorting_disabled">物料分类</th>
 								<th colspan="1" rowspan="1" style="width: 30px;" aria-label="计量单位" class="dt-middle sorting_disabled">单位</th>
 								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
 							</tr>

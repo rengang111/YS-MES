@@ -217,6 +217,20 @@ function currencyToFloat(currency){
 	
 }
 
+function floatToNumber(value){
+
+	//n = n > 0 && n <= 20 ? n : 2;  
+    var s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(0) + "";  
+    var l = s.split(".")[0].split("").reverse();
+    var r = s.split(".")[1];  
+    var t = "";  
+    for (i = 0; i < l.length; i++) {  
+        t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");  
+    }  
+    return t.split("").reverse().join("") + "." + r;  
+	
+}
+
 function floatToCurrency(value){
 
 	var toFloat = '';
@@ -308,6 +322,164 @@ function float4ToCurrency(value){
 	
 }
 
+function floatToNumber(value){
+
+var toFloat = '';
+	
+	if(typeof value == 'number'){
+		toFloat = value;
+	}else{
+		toFloat = currencyToFloat(value);
+	}
+	
+	//转换成float出错的情况,返回原值
+	if(toFloat == 0)
+		return value;
 		
+	var numString = toFloat.toFixed(0);
+	var parts = numString.split('.');
+	var outParts = [];
+	var beforeDecimal = '0';
+	var currSegment;
+
+	beforeDecimal = parts[0];
 	
+	while (beforeDecimal.length > 3) {
+		
+		currSegment = beforeDecimal.substring(
+				beforeDecimal.length - 3,
+				beforeDecimal.length);
+		
+		beforeDecimal = beforeDecimal.substring(
+				0,
+				beforeDecimal.length -3);
+		outParts.unshift(currSegment);
+	}
 	
+	if(beforeDecimal.length > 0) {
+		
+		outParts.unshift(beforeDecimal);
+	}
+	
+	return outParts.join(',');
+	
+}
+
+function inputCheck(){
+	
+	var blcheck = true;
+	$('.required').each(function() {
+    	var val = $(this).val();
+    	if(val == ''){
+    		$(this).removeClass('bgnone').addClass('error');
+    		blcheck = false;
+    	}    		
+  	});
+	
+	return blcheck;
+}		
+	
+(function($){
+	$.extend($,{
+		fixedWidth:function(str,length,char){
+		
+			str = str.toString();
+			if(!char) char='...';
+			var strFull = str;	
+			var num = length - lengthB(str);//获取字符串的字节数与指定长度的差值
+			
+			if(num < 0){
+				//按字节数截取字符串,并附加后缀
+				str = substringB(str,length - lengthB(char)) + char;
+				//添加一个提示信息				
+				str =  '<div title="' + strFull + '">' + str + '</div>';
+				
+			}
+			return str;
+		
+			function substringB(str,length){
+			
+				var num = 0,len = str.length,tenp = "";
+				
+				if( len ){
+					for(var i=0;i<len;i++){
+						if(num> length) break;
+						if(str.charCodeAt(i) > 255){	//双字节字符
+							num  += 2;					//增加两个字节数
+							tenp += str.charAt(i);
+						}else{
+							num++;
+							tenp += str.charAt(i);
+						}
+					}
+				
+					return tenp;
+				}else{
+					return null;
+				}
+				
+			}//substrigB
+			
+			//获取字符串的字节数
+			function lengthB(str){
+			
+				var num = 0,len = str.length;
+				
+				if(len){
+					for(var i=0;i<len;i++){
+						if(str.charCodeAt(i) > 255 ){
+							num+= 2;
+						}else{
+							num++;
+						}
+					}
+					
+					return num;
+				}else{
+					return 0;
+				}
+			}		
+		}
+	})
+})(jQuery);
+
+
+function foucsInit(){
+	
+	$("#example input").addClass('bgnone');
+	$("#example input").addClass('bsolid');
+
+	
+	$("#baseinfo input").focus(function(){
+		$(this).removeClass('bgnone').removeClass('error');
+	});
+	
+	$("#example input").focus(function(){
+		$(this).removeClass('bgnone').removeClass('error').addClass('bgwhite');
+	});
+
+	$(".num") .focus(function(){
+		$(this).val(currencyToFloat($(this).val()));
+	});
+	
+	$(".cash") .focus(function(){
+		$(this).val(currencyToFloat($(this).val()));
+	});
+	
+	$(".num") .blur(function(){
+		$(this).val(floatToNumber($(this).val()));
+	});
+
+		
+	$(".cash") .blur(function(){
+		$(this).val(floatToCurrency($(this).val()));
+	});
+
+	
+	$("input").focus(function(){
+	   	$(this).select();
+	});
+	// $(".DTTT_container").css('float','left');
+	//$(".DTTT_container").css('margin-top',' -24px');
+	
+}

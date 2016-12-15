@@ -34,13 +34,41 @@ public class OrderService extends BaseService {
 	String guid ="";
 	private CommFieldsData commData;
 
-	public HashMap<String, Object> getOrderList(HttpServletRequest request, 
-			String data) throws Exception {
+	private OrderModel reqModel;
+
+	private HttpServletRequest request;
+	private UserInfo userInfo;
+	private BaseModel dataModel;
+	private Model model;
+	private HashMap<String, String> userDefinedSearchCase;
+	private BaseQuery baseQuery;
+	ArrayList<HashMap<String, String>> modelMap = null;	
+	
+	public OrderService(){
+		
+	}
+
+	public OrderService(Model model,
+			HttpServletRequest request,
+			OrderModel reqModel,
+			UserInfo userInfo){
+		
+		//this.bomPlanDao = new B_BomPlanDao();
+		//this.bomPlanData = new B_BomPlanData();
+		//this.bomDetailDao = new B_BomDetailDao();
+		//this.bomDetailData = new B_BomDetailData();
+		this.model = model;
+		this.reqModel = reqModel;
+		this.request = request;
+		this.userInfo = userInfo;
+		this.dataModel = new BaseModel();
+		this.userDefinedSearchCase = new HashMap<String, String>();
+		
+	}
+	
+	public HashMap<String, Object> getOrderList(String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
 
 		data = URLDecoder.decode(data, "UTF-8");
 		
@@ -88,20 +116,63 @@ public class OrderService extends BaseService {
 		return modelMap;
 	}
 	
-	public ArrayList<HashMap<String, String>> getOrderViewByPIId(
-			HttpServletRequest request,
-			String PIId ) throws Exception {
+	public HashMap<String, Object> getOrderListDemand(String data) throws Exception {
 		
-		ArrayList<HashMap<String, String>> modelMap = null;
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		String key1 = getJsonData(data, "keyword1").toUpperCase();
+		String key2 = getJsonData(data, "keyword2").toUpperCase();
+		
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderListDemand");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("unitList",util.getListOption(DicUtil.MEASURESTYPE, ""));
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+	
+	public ArrayList<HashMap<String, String>> getOrderViewByPIId(
+			String PIId ) throws Exception {
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderViewByPIId");
 		
 		baseQuery = new BaseQuery(request, dataModel);
-
 
 		userDefinedSearchCase.put("keywords1", PIId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -110,7 +181,35 @@ public class OrderService extends BaseService {
 		return modelMap;
 	}
 	
+	public ArrayList<HashMap<String, String>> getZZOrderDetail(
+			String PIId ) throws Exception {
 
+		dataModel.setQueryFileName("/business/order/zzorderquerydefine");
+		dataModel.setQueryName("getZZOrderDetail");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("orderId", PIId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsQueryData(0, 0);
+		
+		return modelMap;
+	}
+	public ArrayList<HashMap<String, String>> getZPOrderDetail(
+			String PIId ) throws Exception {
+
+		dataModel.setQueryFileName("/business/order/zzorderquerydefine");
+		dataModel.setQueryName("getZZOrderDetail");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("orderId", PIId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsQueryData(0, 0);
+		
+		return modelMap;
+	}
+	
 	@SuppressWarnings("unchecked")
 	private List<B_OrderDetailData> getOrderDetailByPIId(String where){
 		B_OrderDetailDao dao = new B_OrderDetailDao();
@@ -393,7 +492,7 @@ public class OrderService extends BaseService {
 			
 			//过滤页面传来的有效数据
 			for(B_OrderDetailData data:newDetailList ){
-				if(null == data.getMaterialid()){
+				if(null == data.getMaterialid() || ("").equals(data.getMaterialid())){
 					delDetailList.add(data);
 				}
 			}

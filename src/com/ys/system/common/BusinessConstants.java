@@ -31,6 +31,10 @@ public class BusinessConstants {
 	public static final String MATERIAL_USERD_Y = "0";
 	public static final String MATERIAL_USERD_N = "1";
 	public static final String SHORTNAME_YS = "YS";
+	public static final String SHORTNAME_YSK = "YSK";
+	public static final String SHORTNAME_ZZ = "ZZ";
+	public static final String SHORTNAME_ZP = "ZP";
 	public static final String SHORTNAME_YEAR_YY = "yy";
 	public static final String FORMAT_000 = "000";
+	public static final String FORMAT_00 = "00";
 }

@@ -14,48 +14,25 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
-	//Form序列化后转为AJAX可提交的JSON格式。
-	$.fn.serializeObject = function() {
-		var o = {};
-		var a = this.serializeArray();
-		$.each(a, function() {
-			if (o[this.name] !== undefined) {
-				if (!o[this.name].push) {
-					o[this.name] = [ o[this.name] ];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
-			}
-		});
-		return o;
-	};
-	
-	
 	function ajax() {
-		var height = $(window).height();
-		height = height - 370;
-
+		
 		var t = $('#example').DataTable({
 			
 			"processing" : false,
 			"retrieve"   : true,
 			"stateSave"  : true,
 			"pagingType" : "full_numbers",
-			//"scrollY"    : height,
-	       // "scrollCollapse": true,
 	        "paging"    : false,
 	        "pageLength": 50,
 	        "ordering"  : false,
 
-			//dom : 'T<"clear">rt',
+			dom : '<"clear">rt',
 			
 			"columns" : [ 
 			        	{"className":"dt-body-center"
 					}, {
 					}, {								
 					}, {				
-					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
@@ -82,43 +59,42 @@
 			材料成本 = 产品成本 - 人工成本
 			经管费 = 经管费率 x 产品成本
 			核算成本 = 产品成本 + 经管费*/
-			/*
+			
             var $tds = $(this).parent().find("td");
 			
-            var $oMaterial  = $tds.eq(1).find("input:text");
-            var $oQuantity  = $tds.eq(4).find("input");
-			var $oThisPrice = $tds.eq(5).find("input");
-			var $oAmount1   = $tds.eq(6).find("input:hidden");
-			var $oAmount2   = $tds.eq(6).find("span");
+            var $oQuantity = $tds.eq(4).find("span");
+			var $oOrderQty = $tds.eq(5).find("input");
+			var $oAmount   = $tds.eq(6).find("span");
+			var $oCurStock = $tds.eq(7).find("span");
+			var $oPurchases= $tds.eq(8).find("span");
+			var $oPurchasei= $tds.eq(8).find("input");
 			
-			var fPrice = currencyToFloat($oThisPrice.val());		
-			var fQuantity = currencyToFloat($oQuantity.val());			
-			var fTotalOld = currencyToFloat($oAmount1.val());
-			var fTotalNew = currencyToFloat(fPrice * fQuantity);
+			var fQuantity = currencyToFloat($oQuantity.html());		
+			var fOrderQty = currencyToFloat($oOrderQty.val());	
+			var fCurStock = currencyToFloat($oCurStock.html());
 
-			var vPrice = floatToCurrency(fPrice);	
-			var vQuantity = floatToCurrency(fQuantity);
-			var vTotalNew = floatToCurrency(fTotalNew);
+			var fAmount   = fQuantity * fOrderQty;
+			var fPurchase = fAmount - fCurStock;
+
+			var vQuantity = floatToNumber(fQuantity);	
+			var vOrderQty = floatToNumber(fOrderQty);
+			var vAmount   = floatToNumber(fAmount);
+			var vPurchase = floatToNumber(fPurchase);
 					
 			//详情列表显示新的价格
-			$oThisPrice.val(vPrice);					
-			$oQuantity.val(vQuantity);	
-			$oAmount1.val(vTotalNew);	
-			$oAmount2.html(vTotalNew);	
+			$oQuantity.val(vQuantity);					
+			$oOrderQty.val(vOrderQty);						
+			$oAmount.html(vAmount);
+			$oPurchases.html(vPurchase);	
+			$oPurchasei.val(vPurchase);		
 
-			//临时计算该客户的销售总价
-			//首先减去旧的价格		
-			alert('fTotalNew:'+fTotalNew+"fTotalOld:"+fTotalOld)
-			costAcount($oMaterial.val(),fTotalNew,fTotalOld);
-			*/
+			//alert('fTotalNew:'+fTotalNew+"fTotalOld:"+fTotalOld)
+			
 			
 		});
 			
 		t.on('click', 'tr', function() {
 			
-			var rowIndex = $(this).context._DT_RowIndex; //行号			
-			//alert(rowIndex);
-
 			if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
 	        }
@@ -142,11 +118,9 @@
 
 	$(document).ready(function() {
 	
-		ajax();
+		ajax();		
 		
-		
-		//$('#example').DataTable().columns.adjust().draw();
-		
+		$('#example').DataTable().columns.adjust().draw();		
 		
 		$("#goBack").click(
 				function() {
@@ -154,78 +128,18 @@
 					location.href = url;		
 				});
 		
-		$("#insert").click(
+		$("#reate").click(
 				function() {			
-			$('#purchaseForm').attr("action", "${ctx}/business/bom?methodtype=update");
+			$('#purchaseForm').attr("action", "${ctx}/business/purchase?methodtype=create");
 			$('#purchaseForm').submit();
-		});
+		});		
 		
-
-		//重设显示窗口(iframe)高度
-		//iFramAutoSroll();
+		//iFramAutoSroll();//重设显示窗口(iframe)高度
 		
-		//input获取焦点初始化处理
-		foucsInit();
+		foucsInit();//input获取焦点初始化处理
 
 	});	
 	
-	function foucsInit(){
-		
-		$("input:text").not(".read-only").addClass('bgnone');
-		$(".cash").css('border','0px');
-		
-		$("input:text") .not(".read-only") .focus(function(){
-			$(this).removeClass('bgnone').removeClass('error').addClass('bgwhite');
-		    $(this).select();
-		});
-		
-		$(".read-only").removeClass('bgwhite');
-		
-		$(".cash") .focus(function(){
-			$(this).val(currencyToFloat($(this).val()));
-		    $(this).select();
-		});
-		
-		$(".cash") .blur(function(){
-			$(this).val(floatToCurrency($(this).val()));
-		});
-		
-	}
-	
-	function costAcount(materialId,totalNew,totalOld){
-		//alert('productCost: '+productCost+'--new:'+totalNew+'--old:'+totalOld);
-		//计算该客户的销售总价,首先减去旧的		
-		//产品成本=各项累计
-		//人工成本=H带头的ERP编号下的累加
-		//材料成本=产品成本-人工成本
-		//经管费=经管费率x产品成本
-		//核算成本=产品成本+经管费
-			
-		//判断是否是人工成本
-		/*
-		var costType;
-		if(materialId != '')
-			costType = materialId.substring(0,1);
-		
-		if(costType == 'H')
-			laborCost = laborCost - totalOld +  totalNew;		
-		
-		productCost = productCost - totalOld +  totalNew;
-		
-		var rate = $('#bomPlan\\.managementcostrate').val();
-		var fmaterialCost,fmanageCost,facoutCost;
-		
-		fmaterialCost = productCost - laborCost;
-		fmanageCost   = productCost * rate/100;
-		facoutCost    = productCost + fmanageCost;
-		
-		$('#bomPlan\\.productcost').val(floatToCurrency(productCost));
-		$('#bomPlan\\.laborcost').val(floatToCurrency(laborCost));
-		$('#bomPlan\\.materialcost').val(floatToCurrency(fmaterialCost));
-		$('#bomPlan\\.managementcost').val(floatToCurrency(fmanageCost));
-		$('#bomPlan\\.totalcost').val(floatToCurrency(facoutCost));
-		*/
-	}
 	
 </script>
 
@@ -237,31 +151,28 @@
 
 	<form:form modelAttribute="purchaseForm" method="POST"
 		id="purchaseForm" name="purchaseForm"  autocomplete="off">
-		
-		<input type="hidden" id="tmpMaterialId" />	
-		<form:hidden path="bomPlan.recordid" value="${bomPlan.productRecord}" />		
-		
+			
 		<fieldset>
 			<legend> 订单执行方案</legend>
-			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
+			<table class="form" id="table_form">
 				<tr> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
 					<td width="250px">${bomPlan.YSId }
-						<form:hidden path="ysid"  value="${bomPlan.YSId }"/></td>
+						<form:hidden path="YSId"  value="${bomPlan.YSId }"/></td>
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
 					<td width="150px">${bomPlan.productId}					
-						<form:hidden path="bomid" value="${bomPlan.productId}" /></td>
+						<form:hidden path="bomId" value="${bomPlan.productId}" /></td>
 						
 					<td class="label"><label>产品名称：</label></td>
 					<td>${bomPlan.productName }</td>
 					
 					<td class="label"><label>数量：</label></td>
-					<td>&nbsp;${bomPlan.quantity }</td>
+					<td>&nbsp;${bomPlan.productQty }</td>
 				</tr>								
 			</table>
 			
-		<div class="list" style="margin-top: -4px;">
+		<div class="list">
 			<table class="form" id="table_form2" width="100%" style="margin-top: 6px;">
 				<thead>
 				<tr>
@@ -298,25 +209,40 @@
 				<th class="dt-center" width="50px">订单数量</th>
 				<th class="dt-center" width="80px">总量</th>
 				<th class="dt-center" width="50px">库存数量</th>
-				<th class="dt-center" style="width:80px;font-size:10px">当前需求<br/>数量</th>
-				<th class="dt-center" width="50px">其他</th>
+				<th class="dt-center" style="width:80px">采购数量</th>
+				<th class="dt-center" width="150px">其他</th>
 			</tr>
 		</thead>
 		<tbody>							
 		<c:forEach var="detail" items="${bomDetail}" varStatus='status' >	
+	
+			
 			<tr>
 				<td></td>
-				<td>${detail.materialId}<form:hidden path="detail[${status.index}].materialId" /> </td>								
-				<td>${detail.materialName}</td>
+				<td>${detail.materialId}<form:hidden path="detail[${status.index}].materialid"  value="${detail.materialId}"/> </td>								
+				<td id="materialName${status.index}"></td>
 				<td>${detail.supplierId}</td>
-				<td>${detail.quantity}</td>			
-				<td><form:input path="detail[${status.index}].orderQuantity"  value="${bomPlan.orderQuantity }" class="cash"  style="width:50px"/></td>			
-				<td><span></span>
-					<form:hidden path="detail[${status.index}].materialId" /></td>
-				<td>${detail.currentStock}</td>
-				<td><span></span></td>
-				<td><form:input path="detail[${status.index}].memo" /></td>				
+				<td><span>${detail.quantity}</span></td>			
+				<td><form:input path="detail[${status.index}].orderquantity"  value="${bomPlan.productQty }" class="num mini" /></td>			
+				<td><span id="amount${status.index}"></span></td>
+				<td><span id="currStock${status.index}">0${detail.currentStock}</span></td>
+				<td><span id="purchase${status.index}"></span><form:hidden path="detail[${status.index}].quantity" /></td>
+				<td><form:input path="detail[${status.index}].remark" /></td>				
 			</tr>
+			<script type="text/javascript">
+			 	var index = '${status.index}';
+				var name = '${detail.materialName}';
+				var quantity = '${detail.quantity}';
+				var orderQty = '${bomPlan.productQty }';
+				var currStok = '${detail.currentStock }';
+				var fmt = currencyToFloat(quantity) * currencyToFloat(orderQty); 
+				//alert('fmt'+fmt)
+				var purchase = fmt - Number(currStok);
+				$("#amount"   + index ).html(floatToNumber(fmt));
+				$("#purchase" + index ).html(floatToNumber(purchase));
+				$("#materialName" + index).html(jQuery.fixedWidth(name,15));	
+				$("#detail" + index + "\\.quantity").val(floatToNumber(purchase));							
+			</script>
 		</c:forEach>
 		
 		</tbody>
@@ -340,7 +266,7 @@
 	<div style="clear: both"></div>
 	
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="update" class="DTTT_button">保存</button>
+		<button type="button" id="create" class="DTTT_button">生成物料需求表</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>		
 		

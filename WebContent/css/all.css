@@ -179,10 +179,11 @@ table.form{
     font-size:14px;
     line-height:16px;
     padding:2px;
+    padding-bottom:5px;
     font:12px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;
     cellspacing:0px;
     border: solid 1px #c0c0c0 ;
-    //width:100%;
+    width:100%;
 }
 
 table.form td{
@@ -273,8 +274,8 @@ legend{
     font-size:12px;
     line-height:20px;
     padding:0px 10px;
-    //margin:-26px 0 0 -10px;
-    /*font-weight:bold;*/
+    margin:0px 0 -5px 0px;
+    font-weight:bold;
     border:1px solid #fff;
     border-color:#e5e5c3 #505014 #505014 #e5e5c3;
 }
@@ -289,6 +290,8 @@ fieldset.action {
 input, textarea, select{
     padding:0px;   
     margin:0px 0px 0px 10px; 
+    border: 1px solid;
+    border-color: #abadb3 #dbdfe6 #e3e9ef #e2e3ea;
 }   
 input[type="text"]{
 	height:20px;
@@ -303,7 +306,7 @@ textarea.read-only{
 	border-style:none;
 }
 
-input.mini{width:60px;} 
+input.mini{width:70px;} 
 
 input.short{width:100px;} 
 
@@ -312,6 +315,12 @@ input.middle{width:250px;}
 input.long{width:450px;}
 
 input.cash{
+	/* width:60px; */
+	padding:0 2px 0 2px; 
+	text-align:right;
+}
+
+input.num{
 	/* width:60px; */
 	padding:0 2px 0 2px; 
 	text-align:right;
@@ -551,7 +560,14 @@ h2 {
 	z-index:9999;
 }
 
-input.error { background-color: red;}
+input.error { background-color: rgba(255, 0, 0, 0.28);}
 input.bgnone { background-color: transparent;}
 input.bgwhite { background-color: #fff; }
 input.bsolid { border: 1px solid #dadada; }
+
+.hasDatepicker{
+   /* background:white url(../images/add.png) no-repeat right;*/
+    background:white;
+    border: 1px solid;
+    border-color: #abadb3 #dbdfe6 #e3e9ef #e2e3ea;
+}

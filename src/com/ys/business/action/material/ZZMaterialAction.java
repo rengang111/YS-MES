@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.material.ZZMaterialModel;
-import com.ys.business.action.model.order.BomPlanModel;
 import com.ys.business.service.material.ZZMaterialService;
-import com.ys.business.service.order.BomService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 
@@ -68,7 +66,7 @@ public class ZZMaterialAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				rtnUrl = "/business/material/zzmaterialadd";
+				rtnUrl = "/business/material/zzmaterialmain";
 				break;				
 			case "search":
 				dataMap = doSearch(data);
@@ -83,31 +81,31 @@ public class ZZMaterialAction extends BaseAction {
 				break;
 			case "create":
 				doCreate();
-				rtnUrl = "/business/material/bomplanadd";
+				rtnUrl = "/business/material/zzmaterialadd";
 				break;
 			case "insert":
 				doInsert();
-				rtnUrl = "/business/material/bomplanview";
+				rtnUrl = "/business/material/zzmaterialview";
 				break;							
 			case "detailView":
-				doShowBomDetail();
-				rtnUrl = "/business/material/bomplanview";
+				doShowDetail();
+				rtnUrl = "/business/material/zzmaterialview";
 				break;					
 			case "purchasePlanView":
 				//doShowBomDetail();
 				rtnUrl = "/business/bom/bomselectlist";
 				break;									
 			case "bomCopyDetail":
-				doShowBomDetail();
+				doShowDetail();
 				rtnUrl = "/business/bom/bomcopyview";
 				break;
 			case "edit":
 				doEdit();
-				rtnUrl = "/business/bom/bomplanedit";
+				rtnUrl = "/business/material/zzmaterialedit";
 				break;				
 			case "update":
 				doUpdate();
-				rtnUrl = "/business/bom/bomplanview";
+				rtnUrl = "/business/material/zzmaterialview";
 				break;
 			case "getSupplierPriceList"://供应商编号查询
 				dataMap = doGetSupplierPriceList();
@@ -145,7 +143,7 @@ public class ZZMaterialAction extends BaseAction {
 				new ArrayList<HashMap<String, String>>();
 		
 		try {
-			//dataMap = bomService.getBomList(data);
+			dataMap = ZZService.search(data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -217,31 +215,35 @@ public class ZZMaterialAction extends BaseAction {
 
 	public void doCreate() throws Exception{
 		
-		//model = bomService.createBomPlan();
+		model = ZZService.createMaterial();
 		
 	}
 	
 	public void doInsert() throws Exception {
 
-		//model = bomService.insertAndView();
+		model = ZZService.insertAndView();
 		
 	}		
 	
 	
 	public void doEdit() throws Exception{
 
-		//model = bomService.editBomPlan();
+		ZZService.createMaterial();
+		
+		model = ZZService.getDetailView();
+		
 	}	
 	
 	public void doUpdate() throws Exception {
 		
-		//bomService.updateAndView();			
+		model = ZZService.updateAndView();	
+			
 		
 	}
 
-	public void doShowBomDetail() throws Exception{
+	public void doShowDetail() throws Exception{
 				
-		//model = bomService.showBomDetail();
+		model = ZZService.getDetailView();
 			
 	}
 	

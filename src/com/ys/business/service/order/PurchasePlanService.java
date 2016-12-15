@@ -18,6 +18,7 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.BomPlanModel;
+import com.ys.business.action.model.order.PurchasePlanModel;
 import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
@@ -28,7 +29,7 @@ import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 
 @Service
-public class PurchaseService extends BaseService {
+public class PurchasePlanService extends BaseService {
 
 	DicUtil util = new DicUtil();
 
@@ -42,7 +43,7 @@ public class PurchaseService extends BaseService {
 	private B_PurchasePlanData purchaseData;
 	private B_PurchasePlanDao purchaseDao;
 	private B_BomDetailDao bomDetailDao;
-	private BomPlanModel reqModel;
+	private PurchasePlanModel reqModel;
 	private BaseModel dataModel;
 	private Model model;
 	private UserInfo userInfo;
@@ -51,13 +52,13 @@ public class PurchaseService extends BaseService {
 	private BaseQuery baseQuery;
 	ArrayList<HashMap<String, String>> modelMap = null;	
 
-	public PurchaseService(){
+	public PurchasePlanService(){
 		
 	}
 
-	public PurchaseService(Model model,
+	public PurchasePlanService(Model model,
 			HttpServletRequest request,
-			BomPlanModel reqModel,
+			PurchasePlanModel reqModel,
 			UserInfo userInfo){
 		
 		this.purchaseDao = new B_PurchasePlanDao();
@@ -163,7 +164,6 @@ public class PurchaseService extends BaseService {
 	public Model getBomDetailView(String bomId) 
 			throws Exception {
 		
-
 		dataModel = new BaseModel();		
 		dataModel.setQueryFileName("/business/order/bomquerydefine");
 		dataModel.setQueryName("getBomDetailListByBomId");
@@ -630,8 +630,6 @@ public class PurchaseService extends BaseService {
 
 		String bomId = request.getParameter("bomId");
 
-		reqModel.setManageRateList(
-				util.getListOption(DicUtil.MANAGEMENTRATE, ""));
 		
 		return model;
 		
@@ -642,9 +640,7 @@ public class PurchaseService extends BaseService {
 		String bomId = request.getParameter("bomId");
 		getBomDetailView(bomId);
 
-		reqModel.setManageRateList(
-				util.getListOption(DicUtil.MANAGEMENTRATE, ""));
-		
+			
 		return model;
 		
 	}
@@ -655,9 +651,7 @@ public class PurchaseService extends BaseService {
 		String bomId = request.getParameter("bomId");
 		getBomDetailView(bomId);
 
-		reqModel.setManageRateList(
-				util.getListOption(DicUtil.MANAGEMENTRATE, ""));
-		
+			
 		return model;
 		
 	}

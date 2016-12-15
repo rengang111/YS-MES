@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="getZZmaterialpriceByMaterialId" />
+    <where>
+      <w name="a.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+    	<f name="a.recordId" alias="" ctype="" />
+		<f name="a.rawMaterialId" alias="" ctype="" />
+		<f name="c.materialName" alias="" ctype="" />
+		<f name="a.netWeight" alias="" ctype="" />
+		<f name="a.wastage" alias="" ctype="" />
+		<f name="a.weight" alias="" ctype="" />
+		<f name="a.kgPrice" alias="" ctype="" />
+		<f name="a.materialPrice" alias="" ctype="" />
+		<f name="a.deptGuid" alias="" ctype="" />
+		<f name="a.createTime" alias="" ctype="" />
+		<f name="a.createPerson" alias="" ctype="" />
+		<f name="a.createUnitId" alias="" ctype="" />
+		<f name="a.modifyTime" alias="" ctype="" />
+		<f name="a.modifyPerson" alias="" ctype="" />
+		<f name="a.deleteFlag" alias="" ctype="" />
+      	<f name="b.recordId" alias="zzRecordId" ctype="" />
+		<f name="b.materialId" alias="" ctype="" />
+		<f name="b.managementCostRate" alias="" ctype="经管费率" />
+		<f name="b.materialPrice" alias="zzMaterialPrice" ctype="" />
+		<f name="b.cavitiesNumber" alias="" ctype="" />
+		<f name="b.time" alias="" ctype="" />
+		<f name="b.hourYield" alias="" ctype="" />
+		<f name="b.hourPrice" alias="" ctype="" />
+		<f name="b.laborPrice" alias="" ctype="" />
+		<f name="b.kilowatt" alias="" ctype="" />
+		<f name="b.hourPower" alias="" ctype="" />
+		<f name="b.kwPrice" alias="" ctype="" />
+		<f name="b.powerPrice" alias="" ctype="" />
+		<f name="b.totalPrice" alias="" ctype="" />
+		<f name="c.unit" alias="" ctype="计量单位" />
+
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_zzrawmaterial a LEFT JOIN b_zzmaterialprice b ON a.materialId = b.materialId AND b.deleteFlag = '0' LEFT JOIN b_material c ON c.materialId = a.rawMaterialId AND c.deleteFlag = '0' WHERE a.deleteFlag = '0' </from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getZZMaterialPriceList" />
+    <where>
+     	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
+       	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.categoryId" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.cavitiesNumber" alias="" ctype="" />
+      <f name="A.time" alias="" ctype="" />
+      <f name="A.totalPrice" alias="" ctype="" />
+      <f name="A.kilowatt" alias="" ctype="" />
+      <f name="A.fullField" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_ZZMaterialPrice A WHERE A.deleteFlag='0' </from>
+    <orderby>A.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>	    
+  </query>
+</root>

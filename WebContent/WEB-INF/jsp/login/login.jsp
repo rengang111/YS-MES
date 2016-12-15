@@ -7,7 +7,7 @@
 </head>
 
 <body>
-	<form name="form" id="form" modelAttribute="dataModels" action="${ctx}/login/checklogin" method="post">
+	<form name="form" id="form" modelAttribute="dataModels" action="${ctx}/login/checklogin" method="post"  autocomplete="off">
 
 		<table>
 			<tr>

@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.business.action.model.order.BomPlanModel;
+import com.ys.business.action.model.order.PurchasePlanModel;
 import com.ys.business.action.model.material.MaterialModel;
 import com.ys.business.service.order.BomService;
 import com.ys.business.service.order.OrderService;
-import com.ys.business.service.order.PurchaseService;
+import com.ys.business.service.order.PurchasePlanService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.system.action.common.BaseAction;
@@ -29,17 +30,17 @@ import com.ys.system.action.common.BaseAction;
 @RequestMapping("/business")
 public class PurchaseAction extends BaseAction {
 	
-	@Autowired PurchaseService purchaseService;
+	@Autowired PurchasePlanService purchaseService;
 	@Autowired HttpServletRequest request;
 	
 	UserInfo userInfo = new UserInfo();
-	BomPlanModel reqModel = new BomPlanModel();
+	PurchasePlanModel reqModel = new PurchasePlanModel();
 	Model model;
 	
 	@RequestMapping(value="/purchase")
 	public String init(
 			@RequestBody String data, 
-			@ModelAttribute("purchaseForm") BomPlanModel bom, 
+			@ModelAttribute("purchaseForm") PurchasePlanModel plan, 
 			BindingResult result,
 			Model model, 
 			HttpSession session, 
@@ -50,8 +51,8 @@ public class PurchaseAction extends BaseAction {
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		purchaseService = new PurchaseService(model,request,bom,userInfo);
-		reqModel = bom;
+		purchaseService = new PurchasePlanService(model,request,plan,userInfo);
+		reqModel = plan;
 		this.model = model;
 		
 		String rtnUrl = null;
@@ -75,8 +76,9 @@ public class PurchaseAction extends BaseAction {
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;							
-			case "implement":
-				rtnUrl = "/business/purchase/purchaseman";
+			case "purchasePlan":
+				doShowBomDetail();
+				rtnUrl = "/business/purchase/purchaseplanedit";
 				break;			
 			case "searchPurchase":
 				dataMap = doSearchPurchase(data);

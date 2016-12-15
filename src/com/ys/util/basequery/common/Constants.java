@@ -44,4 +44,15 @@ public class Constants {
 	public static final String ORDER_STS_2 = "2";//已审核
 	public static final String ORDER_STS_3 = "3";//采购方案做成
 	public static final String ORDER_STS_4 = "4";//合同签订
+	
+	/**
+	 * 币种:与字典表关联
+	 */
+	public static final String CURRENCY_RMB = "035";//人民币
+	
+	/**
+	 * 供应商编号:耀升
+	 */
+	public static final String SUPPLIER_YS = "0574YS00";//人民币
+	
 }

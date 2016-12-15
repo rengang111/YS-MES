@@ -47,7 +47,7 @@ public class BomService extends BaseService {
 	private BomPlanModel reqModel;
 	private UserInfo userInfo;
 	private BaseModel dataModel;
-	private  Model model;
+	private Model model;
 	private HashMap<String, String> userDefinedSearchCase;
 	private BaseQuery baseQuery;
 	ArrayList<HashMap<String, String>> modelMap = null;	
@@ -273,44 +273,6 @@ public class BomService extends BaseService {
 		}
 		
 		return dbList;
-	}
-	
-	
-	
-	private HashMap<String, Object> getOrderSubIdByParentId(
-			HttpServletRequest request, 
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		
-		String key = request.getParameter("parentId");
-
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderSubIdByParentId");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("keywords1", key);
-		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
-
-		modelMap.put("retValue", "success");
-		
-		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("MaxSubId"));
-		
-		int newSubid = code + 1;
-		
-		String codeFormat = String.format("%03d", newSubid); 
-		
-		modelMap.put("code",newSubid);	
-		modelMap.put("codeFormat",codeFormat);			
-		
-		return modelMap;
 	}
 	
 	/*
@@ -762,7 +724,7 @@ public class BomService extends BaseService {
  
 		getOrderDetailByYSId();
 
-		String bomId = request.getParameter("bomId");
+		//String bomId = request.getParameter("bomId");
 		String materialId = request.getParameter("materialId");  
 		
 		getBomIdByMaterialId(materialId);

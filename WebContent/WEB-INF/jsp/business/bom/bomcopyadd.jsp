@@ -249,7 +249,7 @@
 			selectOtherMonths:true,
 			showOtherMonths:true,
 		});	
-		alert('${bomPlan.managementCostRate}')
+		//alert('${bomPlan.managementCostRate}')
 		$('#bomPlan\\.managementcostrate').val('${bomPlan.managementCostRate}');
 		
 		ajax();
@@ -257,8 +257,7 @@
 		autocomplete();
 		
 		//$('#example').DataTable().columns.adjust().draw();
-		
-		
+				
 		$("#goBack").click(
 				function() {
 					 history.go(-1) ;

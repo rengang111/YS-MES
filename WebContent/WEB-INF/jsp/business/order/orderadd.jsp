@@ -73,9 +73,9 @@
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="cash short" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num short" /></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      id="orderDetailLines'+rowIndex+'.price"      class="cash short" /></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short read-only" readonly="readonly"/></td>',
+								'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short read-only" readonly="readonly"/></td>',
 								'<td></td>',				
 								
 								]).draw();
@@ -87,10 +87,11 @@
 					}					
 					counter += 1;
 					
-					autocomplete();
-
-					//重设显示窗口(iframe)高度
-					iFramAutoSroll();
+					foucsInit();//设置新增行的基本属性
+					
+					autocomplete();//调用自动填充功能
+					
+					iFramAutoSroll();//重设显示窗口(iframe)高度
 				}
 			});
 
@@ -169,12 +170,13 @@
 			var $td = $(this).parent().find("td");
 
 			var $oQuantity = $td.eq(4).find("input");
-			var $oPrice = $td.eq(5).find("input");
-			var $oAmount = $td.eq(6).find("input");
+			var $oPrice   = $td.eq(5).find("input");
+			var $oAmount  = $td.eq(6).find("input");
+			var $oAmounts = $td.eq(6).find("span");
 			
 			var vPrice = floatToCurrency($oPrice.val());	
 			var fPrice = currencyToFloat($oPrice.val());	
-			var vQuantity = floatToCurrency($oQuantity.val());	
+			var vQuantity = floatToNumber($oQuantity.val());	
 			var fQuantity = currencyToFloat($oQuantity.val());
 			var fTotalOld = currencyToFloat($oAmount.val());
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
@@ -183,7 +185,8 @@
 			//详情列表显示新的价格
 			$oPrice.val(vPrice);					
 			$oQuantity.val(vQuantity);	
-			$oAmount.val(vTotalNew);	
+			$oAmount.val(vTotalNew);
+			$oAmounts.html(vTotalNew);
 
 			//临时计算该客户的销售总价
 			//首先减去旧的价格			
@@ -226,8 +229,7 @@
 
 		//设置光标项目
 		$("#attribute1").focus();
-		$("#attribute3").attr('readonly', "true");
-		$("#attribute2").attr('readonly', "true");
+		$("#order\\.piid").attr('readonly', "true");
 
 		//日期
 		var mydate = new Date();
@@ -285,9 +287,11 @@
 		//重设显示窗口(iframe)高度
 		iFramAutoSroll();
 		
-		$("input:text").focus (function(){
-		    $(this).select();
-		});
+		//$("input:text").focus (function(){
+		//    $(this).select();
+		//});
+		
+		foucsInit();
 
 	});
 	
@@ -300,159 +304,157 @@
 <!--主工作区,编辑页面或查询显示页面-->
 <div id="main">
 
-	<form:form modelAttribute="orderForm" method="POST"
-		id="orderForm" name="orderForm"  autocomplete="off">
-		
-		<form:hidden path="order.customerid" />
-		<form:hidden path="order.parentid" />
-		<form:hidden path="order.subid" />
-		
-		<fieldset>
-			<legend> 订单综合信息</legend>
-			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
-				<tr> 				
-					<td class="label" width="100px"><label>PI编号：</label></td>					
-					<td colspan="7">
-						<form:input path="order.piid" class="middle required read-only" /></td>
-				</tr>
-				<tr>
-					<td class="label"><label>客户编号：</label></td>				
-					<td>
-						<div class="ui-widget">
-							<form:input path="attribute1" class="short required" /></div></td>
-					<td colspan="6"><span style="color: blue">
-								&nbsp;（查询范围：客户编号、客户简称、客户全称）</span></td>
-				</tr>
-				<tr>
-					<td class="label"><label>客户简称：</label></td>
-					<td>
-						<form:input path="attribute2" class="short read-only" /></td>
-
-					<td class="label"><label>客户全称：</label></td>
-					<td colspan="3">
-						<form:input path="attribute3" class="long read-only" /></td>
-						
-					<td class="label"><label>币种：</label></td>
-					<td>
-						<form:select path="order.currency">
-							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
-						</form:select></td>
-				</tr>					
-				<tr> 
-					<td class="label"><label>付款条件：</label></td>
-					<td >&nbsp;出运后
-						<form:input path="order.paymentterm" 
-							style="width: 30px;text-align: center;" class="td-center" />&nbsp;天</td>
-						
-					<td width="100px"  class="label">
-						<label >出运条件：</label></td>
-					<td >
-						<form:select path="order.shippingcase">
-								<form:options items="${orderForm.shippingCaseList}" 
-								  itemValue="key" itemLabel="value" />
-						</form:select></td>
-					
-					<td class="label"><label>出运港：</label></td>
-					<td><form:select path="order.loadingport">
-							<form:options items="${orderForm.loadingPortList}"
-							  itemValue="key" itemLabel="value" />
-						</form:select></td>
-
-					<td class="label"><label>目的港：</label></td>
-					<td><form:select path="order.deliveryport">
-							<form:options items="${orderForm.deliveryPortList}" 
-							 itemValue="key" itemLabel="value" />
-						</form:select></td>							
-				</tr>
-				<tr>
-					<td width="100px" class="label" >
-						<label >客户订单号：</label></td>
-					<td>
-						<form:input path="order.orderid" class="short required" /></td>									
-					<td class="label">
-						<label>下单日期：</label></td>
-					<td>
-						<form:input path="order.orderdate" class="short required" /></td>
-					
-					<td class="label">
-						<label  >订单交期：</label></td>
-					<td>
-						<form:input path="order.deliverydate" class="short required" /></td>
-
-					<td class="label">
-						<label>销售总价：</label></td>
-					<td>
-						<form:input path="order.totalprice" class="short read-only cash" /></td>
-												
-				</tr>							
-			</table>
-			
-
-	</fieldset>
+<form:form modelAttribute="orderForm" method="POST"
+	id="orderForm" name="orderForm"  autocomplete="off">
+	
+	<form:hidden path="order.customerid" />
+	<form:hidden path="order.parentid" />
+	<form:hidden path="order.subid" />
 	
 	<fieldset>
-		<legend> 订单详情</legend>
-		<div class="list" style="margin-top: -4px;">
-		
-		<table id="example" class="display" >
-			<thead>				
-			<tr>
-				<th width="1px">No</th>
-				<th class="dt-left" width="80px">耀升编号</th>
-				<th class="dt-left" width="100px">产品编号</th>
-				<th class="dt-left" >产品名称</th>
-				<th class="dt-left" width="100px">数量</th>
-				<th class="dt-left" width="100px">销售单价</th>
-				<th class="dt-left" width="120px">销售总价</th>
+		<legend> 订单综合信息</legend>
+		<table class="form" id="table_form">
+			<tr> 				
+				<td class="label" width="100px"><label>PI编号：</label></td>					
+				<td colspan="7">
+					<form:input path="order.piid" class="middle required read-only" /></td>
 			</tr>
-			</thead>
-			<tfoot>
-				<tr>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-				</tr>
-			</tfoot>
-		<tbody>
-			<c:forEach var="i" begin="0" end="4" step="1">		
-				<tr>
-					<td></td>
-					<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" style="width:70px;" class="read-only" readonly="readonly"  /></td>
-					<td><input type="text" name="attributeList1" class="attributeList1">
-						<form:hidden path="orderDetailLines[${i}].materialid" /></td>								
-					<td></td>
-					<td><form:input path="orderDetailLines[${i}].quantity" class="cash short" /></td>							
-					<td><form:input path="orderDetailLines[${i}].price" class="cash short"  /></td>
-					<td><input type="text" name="orderDetailLines[${i}].totalprice" id="orderDetailLines${i}.totalprice" class="read-only cash short" readonly="readonly"/></td>
+			<tr>
+				<td class="label"><label>客户编号：</label></td>				
+				<td>
+					<div class="ui-widget">
+						<form:input path="attribute1" class="short required" /></div></td>
+				<td colspan="6"><span style="color: blue">
+							&nbsp;（查询范围：客户编号、客户简称、客户全称）</span></td>
+			</tr>
+			<tr>
+				<td class="label"><label>客户简称：</label></td>
+				<td>&nbsp;<span id="attribute2"></span></td>
+
+				<td class="label"><label>客户全称：</label></td>
+				<td colspan="3"><span id="attribute3"></span></td>
+					
+				<td class="label"><label>币种：</label></td>
+				<td>
+					<form:select path="order.currency">
+						<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
+					</form:select></td>
+			</tr>					
+			<tr> 
+				<td class="label"><label>付款条件：</label></td>
+				<td >&nbsp;出运后
+					<form:input path="order.paymentterm" 
+						style="width: 30px;text-align: center;" class="td-center" />&nbsp;天</td>
+					
+				<td width="100px"  class="label">
+					<label >出运条件：</label></td>
+				<td >
+					<form:select path="order.shippingcase">
+							<form:options items="${orderForm.shippingCaseList}" 
+							  itemValue="key" itemLabel="value" />
+					</form:select></td>
 				
-					<script type="text/javascript">
-						var index = '${i}';
-						YSSwift = parseInt(YSSwift)+ 1;
-						var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
-						$("#orderDetailLines" + index + "\\.ysid").val(fmtId);						
-					</script>
-					
-					<form:hidden path="orderDetailLines[${i}].parentid" />
-					<form:hidden path="orderDetailLines[${i}].subid" />
-					
-				</tr>
-			</c:forEach>
-			
-		</tbody>
-	</table>
-	</div>
-	</fieldset>
-	<div style="clear: both"></div>
-	
-	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="return" class="DTTT_button">返回</button>
-		<button type="button" id="insert" class="DTTT_button">保存</button>
-	</fieldset>		
+				<td class="label"><label>出运港：</label></td>
+				<td><form:select path="order.loadingport">
+						<form:options items="${orderForm.loadingPortList}"
+						  itemValue="key" itemLabel="value" />
+					</form:select></td>
+
+				<td class="label"><label>目的港：</label></td>
+				<td><form:select path="order.deliveryport">
+						<form:options items="${orderForm.deliveryPortList}" 
+						 itemValue="key" itemLabel="value" />
+					</form:select></td>							
+			</tr>
+			<tr>
+				<td width="100px" class="label" >
+					<label >客户订单号：</label></td>
+				<td>
+					<form:input path="order.orderid" class="short required" /></td>									
+				<td class="label">
+					<label>下单日期：</label></td>
+				<td>
+					<form:input path="order.orderdate" class="short required" /></td>
+				
+				<td class="label">
+					<label  >订单交期：</label></td>
+				<td>
+					<form:input path="order.deliverydate" class="short required" /></td>
+
+				<td class="label">
+					<label>销售总价：</label></td>
+				<td>
+					<form:input path="order.totalprice" class="read-only cash" /></td>
+											
+			</tr>							
+		</table>
 		
+
+</fieldset>
+
+<fieldset>
+	<legend> 订单详情</legend>
+	<div class="list">
+	
+	<table id="example" class="display" >
+		<thead>				
+		<tr>
+			<th width="1px">No</th>
+			<th class="dt-left" width="80px">耀升编号</th>
+			<th class="dt-left" width="100px">产品编号</th>
+			<th class="dt-left" >产品名称</th>
+			<th class="dt-left" width="100px">数量</th>
+			<th class="dt-left" width="100px">销售单价</th>
+			<th class="dt-left" width="120px">销售总价</th>
+		</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</tfoot>
+	<tbody>
+		<c:forEach var="i" begin="0" end="4" step="1">		
+			<tr>
+				<td></td>
+				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" style="width:70px;" class="read-only" readonly="readonly"  /></td>
+				<td><input type="text" name="attributeList1" class="attributeList1">
+					<form:hidden path="orderDetailLines[${i}].materialid" /></td>								
+				<td><span></span></td>
+				<td><form:input path="orderDetailLines[${i}].quantity" class="num short" /></td>							
+				<td><form:input path="orderDetailLines[${i}].price" class="cash short"  /></td>
+				<td><span></span><input type="hidden" name="orderDetailLines[${i}].totalprice" id="orderDetailLines${i}.totalprice" class="read-only cash short" readonly="readonly"/></td>
+			
+				<script type="text/javascript">
+					var index = '${i}';
+					YSSwift = parseInt(YSSwift)+ 1;
+					var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
+					$("#orderDetailLines" + index + "\\.ysid").val(fmtId);						
+				</script>
+				
+				<form:hidden path="orderDetailLines[${i}].parentid" />
+				<form:hidden path="orderDetailLines[${i}].subid" />
+				
+			</tr>
+		</c:forEach>
+		
+	</tbody>
+</table>
+</div>
+</fieldset>
+<div style="clear: both"></div>
+
+<fieldset class="action" style="text-align: right;">
+	<button type="button" id="return" class="DTTT_button">返回</button>
+	<button type="button" id="insert" class="DTTT_button">保存</button>
+</fieldset>		
+	
 </form:form>
 
 </div>
@@ -507,8 +509,8 @@ $("#attribute1").autocomplete({
 	select : function(event, ui) {//选择物料分类后,自动添加流水号IPid
 		$("#attribute1").val(ui.item.id);	
 		$("#order\\.customerid").val(ui.item.id);
-		$("#attribute2").val(ui.item.shortName);
-		$("#attribute3").val(ui.item.fullName);
+		$("#attribute2").html(ui.item.shortName);
+		$("#attribute3").html(ui.item.fullName);
 		$("#order\\.paymentterm").val(ui.item.paymentTerm);
 		$("#order\\.shippingcase").val(ui.item.shippingCase);
 		$("#order\\.loadingport").val(ui.item.loadingPort);
@@ -535,7 +537,6 @@ $("#attribute1").autocomplete({
 					if (retValue === "failure") {
 						$().toastmessage('showWarningToast',"请联系系统管理员。");
 					} else {
-
 
 						$("#order\\.parentid").val(parentId);
 						$("#order\\.subid").val(data.codeFormat);	
@@ -604,31 +605,14 @@ function autocomplete(){
 
 		select : function(event, ui) {
 			
-			var rowIndex = $(this).parent().parent().parent()
-					.find("tr").index(
-							$(this).parent().parent()[0]);
-
-			//alert(rowIndex);
-
-			var t = $('#example').DataTable();
-			
-			//产品名称			
-			if(ui.item.name.length > 20){	
-				var shortName =  '<div title="' +
-				ui.item.name + '">' + 
-				ui.item.name.substr(0,20)+ '...</div>';
-			}else{	
-				var shortName = ui.item.name;
-			}
-			
-			t.cell(rowIndex, 3).data(shortName);
+			//产品名称
+			$(this).parent().parent().find("td").eq(3).find("span")
+				.html(jQuery.fixedWidth(ui.item.name,25));
 
 			//产品编号
 			$(this).parent().find("input:hidden").val(ui.item.materialId);
 			
 		},
-
-		
 	});
 }
 

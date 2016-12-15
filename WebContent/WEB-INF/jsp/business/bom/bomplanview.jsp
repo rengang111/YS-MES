@@ -108,6 +108,12 @@
 			var bomId = $('#bomid').val();
 			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=edit&bomId="+bomId);
 			$('#bomForm').submit();
+		});	
+		
+		$("#doPurchasePlan").click(function() {
+			var bomId = $('#bomid').val();
+			$('#bomForm').attr("action", "${ctx}/business/purchase?methodtype=purchasePlan&bomId="+bomId);
+			$('#bomForm').submit();
 		});
 		
 		//重设显示窗口(iframe)高度
@@ -134,12 +140,11 @@
 		<fieldset>
 			<legend> 采购方案</legend>
 			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
-				<tr> 				
+				<tr> 	
+					<td class="label" width="100px"><label>耀升名称：</label></td>					
+					<td width="250px">${bomPlan.YSId }</td>		
 					<td class="label" width="100px"><label>BOM编号：</label></td>					
 					<td width="150px">${bomPlan.bomId}</td>
-						
-					<td class="label" width="100px"><label>耀升名称：</label></td>					
-					<td width="250px">${bomPlan.YSId }</td>
 					<td class="label" width="100px"><label>方案日期：</label></td>					
 					<td>${bomPlan.planDate }</td>
 				</tr>
@@ -177,7 +182,7 @@
 	
 		<div style="text-align: right;margin-top: 10px;">	
 		<button type="button" id="doEdit" class="DTTT_button">编辑</button>
-		<button type="button" id="doPurchasePlan" class="DTTT_button">确定采购数量</button>
+		<button type="button" id="doPurchasePlan" class="DTTT_button">采购方案</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 		</div>
 	</fieldset>	

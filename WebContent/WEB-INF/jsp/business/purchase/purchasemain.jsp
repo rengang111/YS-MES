@@ -63,8 +63,8 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "bomId", "defaultContent" : ''},
 							{"data": "YSId", "defaultContent" : ''},
+							{"data": "bomId", "defaultContent" : ''},
 							{"data": "orderQuantity", "className" : 'cash'},
 							{"data": "materialCost", "defaultContent" : '',"className" : 'cash'},
 							{"data": "laborCost", "defaultContent" : '',"className" : 'cash'},
@@ -184,8 +184,8 @@
 				<thead>						
 					<tr class="selected">
 						<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
-						<th style="width: 100px;" aria-label="物料编号" class="dt-middle ">BOM编号</th>
 						<th style="width: 55px;" aria-label="物料编号" class="dt-middle ">耀升编号</th>
+						<th style="width: 100px;" aria-label="物料编号" class="dt-middle ">BOM编号</th>
 						<th style="width: 40px;" aria-label="物料编号" class="dt-middle ">数量</th>
 						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">材料成本</th>
 						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">人工成本</th>
