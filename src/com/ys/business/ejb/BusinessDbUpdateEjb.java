@@ -64,6 +64,7 @@ import com.ys.business.service.esrelationfile.EsRelationFileService;
 import com.ys.business.service.externalsample.ExternalSampleService;
 import com.ys.business.service.lateperfection.LatePerfectionService;
 import com.ys.business.service.makedocument.MakeDocumentService;
+import com.ys.business.service.mouldcontract.MouldContractService;
 import com.ys.business.service.organ.OrganService;												
 import com.ys.business.service.processcontrol.ProcessControlService;												
 import com.ys.business.service.projecttask.ProjectTaskService;
@@ -112,13 +113,23 @@ import com.ys.util.basequery.common.BaseModel;
 import com.ys.business.db.dao.B_ContactDao;												
 import com.ys.business.db.dao.B_CustomerAddrDao;												
 import com.ys.business.db.dao.B_CustomerDao;												
-import com.ys.business.db.dao.B_MaterialCategoryDao;												
+import com.ys.business.db.dao.B_MaterialCategoryDao;
+import com.ys.business.db.dao.B_MouldAcceptanceDao;
+import com.ys.business.db.dao.B_MouldBaseInfoDao;
+import com.ys.business.db.dao.B_MouldDetailDao;
+import com.ys.business.db.dao.B_MouldPayInfoDao;
+import com.ys.business.db.dao.B_MouldPayListDao;
 import com.ys.business.db.dao.B_OrganizationDao;												
 import com.ys.business.db.dao.B_SupplierBasicInfoDao;												
 import com.ys.business.db.data.B_ContactData;												
 import com.ys.business.db.data.B_CustomerAddrData;												
 import com.ys.business.db.data.B_CustomerData;												
-import com.ys.business.db.data.B_MaterialCategoryData;												
+import com.ys.business.db.data.B_MaterialCategoryData;
+import com.ys.business.db.data.B_MouldAcceptanceData;
+import com.ys.business.db.data.B_MouldBaseInfoData;
+import com.ys.business.db.data.B_MouldDetailData;
+import com.ys.business.db.data.B_MouldPayInfoData;
+import com.ys.business.db.data.B_MouldPayListData;
 import com.ys.business.db.data.B_OrganizationData;												
 import com.ys.business.db.data.B_SupplierBasicInfoData;												
 import com.ys.business.db.data.CommFieldsData;												
@@ -1087,5 +1098,201 @@ public class BusinessDbUpdateEjb  {
 			throw e;									
 		}
     }
- 
+
+    public void executeMouldContractDelete(String keyData, UserInfo userInfo) throws Exception {
+    	B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+    	B_MouldBaseInfoDao dbDao = new B_MouldBaseInfoDao();
+    	B_MouldAcceptanceData dbAcceptanceData = new B_MouldAcceptanceData();
+    	B_MouldAcceptanceDao dbAcceptanceDao = new B_MouldAcceptanceDao();
+    	B_MouldPayInfoData dbPayInfoData = new B_MouldPayInfoData();											
+    	B_MouldPayInfoDao daoPayInfo = new B_MouldPayInfoDao();
+		int count = 0;										
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {
+				StringBuffer sql = new StringBuffer("");
+				
+				dbData.setId(key);
+				dbData = (B_MouldBaseInfoData)dbDao.FindByPrimaryKey(dbData);
+				dbData = MouldContractService.updateMouldBaseInfoModifyInfo(dbData, userInfo);
+				dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dbDao.Store(dbData);
+				
+				sql = new StringBuffer("");								
+				sql.append("UPDATE b_MouldDetail SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldBaseId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
+				
+				dbAcceptanceData.setMouldbaseid(dbData.getId());
+				dbAcceptanceData = (B_MouldAcceptanceData)dbAcceptanceDao.FindByPrimaryKey(dbAcceptanceData);
+				dbAcceptanceData = MouldContractService.updateMouldAcceptanceModifyInfo(dbAcceptanceData, userInfo);
+				dbAcceptanceData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dbAcceptanceDao.Store(dbAcceptanceData);
+				
+				dbPayInfoData.setMouldbaseid(dbData.getId());
+				dbPayInfoData = (B_MouldPayInfoData)daoPayInfo.FindByPrimaryKey(dbPayInfoData);
+				dbPayInfoData = MouldContractService.updateMouldPayInfoModifyInfo(dbPayInfoData, userInfo);
+				dbPayInfoData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				daoPayInfo.Store(dbPayInfoData);
+				
+				sql = new StringBuffer("");								
+				sql.append("UPDATE b_MouldPayList SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldBaseId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());		
+				
+				count++;								
+												
+			}									
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
+    
+    public String updateMouldContractPayList(String data, String confirm, UserInfo userInfo) throws Exception {
+    	B_MouldPayInfoData dbInfoData = new B_MouldPayInfoData();											
+    	B_MouldPayInfoDao daoInfo = new B_MouldPayInfoDao();
+    	B_MouldPayListData dbData = new B_MouldPayListData();											
+    	B_MouldPayListDao dao = new B_MouldPayListDao();											
+
+    	BaseService service = new BaseService();	
+    	
+		String key = "";
+		if (data.indexOf("keyBackup") < 0) {
+			key = data;
+		} else {
+			key = service.getJsonData(data, "keyBackup");
+		}
+		String guid = "";
+		
+		ts = new BaseTransaction();	
+		
+		try {
+			ts.begin();				
+			if (key == null || key.equals("")) {
+				guid = BaseDAO.getGuId();									
+				dbData.setId(guid);									
+				dbData.setMouldbaseid(service.getJsonData(data, "mouldBaseId"));
+				dbData.setPaytime(service.getJsonData(data, "payTime"));
+				dbData.setPay(service.getJsonData(data, "pay"));
+				dbData = MouldContractService.updateMouldPayListModifyInfo(dbData, userInfo);
+				dao.Create(dbData);
+				
+				dbInfoData.setMouldbaseid(service.getJsonData(data, "mouldBaseId"));
+				dbInfoData.setWithhold(service.getJsonData(data, "withhold"));
+				dbInfoData = MouldContractService.updateMouldPayInfoModifyInfo(dbInfoData, userInfo);
+				daoInfo.Create(dbInfoData);
+				key = guid;
+			} else {
+				dbData.setId(key);
+				dbData = (B_MouldPayListData)dao.FindByPrimaryKey(dbData);
+
+				if (confirm.equals("1")) {
+					dbData.setConfirm("1");
+					dbData = MouldContractService.updateMouldPayListModifyInfo(dbData, userInfo);
+					dao.Store(dbData);
+				} else {
+					dbData.setPaytime(service.getJsonData(data, "payTime"));
+					dbData.setPay(service.getJsonData(data, "pay"));
+					dbData = MouldContractService.updateMouldPayListModifyInfo(dbData, userInfo);
+					dao.Store(dbData);
+					
+					dbInfoData.setMouldbaseid(service.getJsonData(data, "mouldBaseId"));
+					dbInfoData = (B_MouldPayInfoData)daoInfo.FindByPrimaryKey(dbInfoData);
+					dbInfoData.setWithhold(service.getJsonData(data, "withhold"));
+					dbInfoData = MouldContractService.updateMouldPayInfoModifyInfo(dbInfoData, userInfo);
+					daoInfo.Store(dbInfoData);
+				}
+			}
+			ts.commit();
+		}
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}										
+												
+		return guid;
+    }
+    
+    public void executeMouldContractMdDelete(String keyData, UserInfo userInfo) throws Exception {												
+    	B_MouldDetailData dbData = new B_MouldDetailData();											
+    	B_MouldDetailDao dao = new B_MouldDetailDao();
+
+		int count = 0;										
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();
+
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				dbData.setId(key);
+				dbData = (B_MouldDetailData)dao.FindByPrimaryKey(dbData);
+				dbData = MouldContractService.updateMdModifyInfo(dbData, userInfo);
+				dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(dbData);
+				count++;												
+			}
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
+    
+    public void executeMouldContractPayListDelete(String keyData, UserInfo userInfo) throws Exception {												
+    	B_MouldPayInfoData dbInfoData = new B_MouldPayInfoData();											
+    	B_MouldPayInfoDao daoInfo = new B_MouldPayInfoDao();
+    	B_MouldPayListData dbData = new B_MouldPayListData();											
+    	B_MouldPayListDao dao = new B_MouldPayListDao();
+		int count = 0;										
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();
+			boolean isFirst = true;
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				StringBuffer sql = new StringBuffer("");								
+				sql.append("UPDATE b_MouldPayList SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE id = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());		
+				/*
+				if (isFirst) {
+					isFirst = false;
+					dbData.setId(key);
+					dbData = (B_MouldPayListData)dao.FindByPrimaryKey(dbData);
+					
+					dbInfoData.setMouldbaseid(dbData.getMouldbaseid());
+					dbInfoData = (B_MouldPayInfoData)daoInfo.FindByPrimaryKey(dbInfoData);
+					dbInfoData = MouldContractService.updateMouldPayInfoModifyInfo(dbInfoData, userInfo);
+					dbInfoData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+					daoInfo.Store(dbInfoData);
+				}
+				*/
+				count++;								
+												
+			}
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
 }												

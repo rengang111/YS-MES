@@ -2,12 +2,12 @@ package com.ys.business.db.dao;
 
 import java.sql.*;
 import java.io.InputStream;
-import com.ys.business.db.data.*;
 import com.ys.util.basedao.BaseAbstractDao;
+import com.ys.business.db.data.*;
 
 /**
 * <p>Title: </p>
-* <p>Description: ï¿½ï¿½Ý±ï¿½  </p>
+* <p>Description: Êý¾Ý±í  </p>
 * <p>Copyright: gentleman</p>
 * <p>Company: gentleman</p>
 * @author mengfanchang
@@ -54,7 +54,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_Organization( recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)ï¿½ï¿½"+ e.toString());
+			throw new Exception("INSERT INTO B_Organization( recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)£º"+ e.toString());
 		}
 		finally
 		{
@@ -110,7 +110,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_Organization( recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)ï¿½ï¿½"+ e.toString());
+			throw new Exception("INSERT INTO B_Organization( recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)£º"+ e.toString());
 		}
 		finally
 		{
@@ -130,8 +130,8 @@ public class B_OrganizationDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("DELETE FROM B_Organization WHERE  id =?");
-			
+			statement = connection.prepareStatement("DELETE FROM B_Organization WHERE  recordid =?");
+			statement.setString( 1,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception("Error deleting row");
 		}
@@ -156,6 +156,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("DELETE FROM B_Organization WHERE ");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
 		}
 		catch(Exception e)
@@ -212,8 +213,8 @@ public class B_OrganizationDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_Organization WHERE  id =?");
-			
+			statement = connection.prepareStatement("SELECT recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_Organization WHERE  recordid =?");
+			statement.setString( 1,beanData.getRecordid());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
@@ -281,15 +282,15 @@ public class B_OrganizationDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  id  = ?");
+			statement = connection.prepareStatement("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
 			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getType());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getFullname());			statement.setString( 5,beanData.getAddress());			statement.setString( 6,beanData.getDeptguid());			statement.setString( 7,beanData.getCreatetime());			statement.setString( 8,beanData.getCreateperson());			statement.setString( 9,beanData.getCreateunitid());			statement.setString( 10,beanData.getModifytime());			statement.setString( 11,beanData.getModifyperson());			statement.setString( 12,beanData.getDeleteflag());			statement.setString( 13,beanData.getFormid());
-			
+			statement.setString( 14,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  id  = ?"+ e.toString());
+			throw new Exception("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -309,6 +310,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 			bufSQL.append("UPDATE B_Organization SET ");
 			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Type = " + "'" + nullString(beanData.getType()) + "',");			bufSQL.append("Shortname = " + "'" + nullString(beanData.getShortname()) + "',");			bufSQL.append("Fullname = " + "'" + nullString(beanData.getFullname()) + "',");			bufSQL.append("Address = " + "'" + nullString(beanData.getAddress()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(" WHERE ");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
 		}
 		catch(Exception e)
@@ -333,15 +335,15 @@ public class B_OrganizationDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  id  = ?");
+			statement = connection.prepareStatement("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
 			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getType());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getFullname());			statement.setString( 5,beanData.getAddress());			statement.setString( 6,beanData.getDeptguid());			statement.setString( 7,beanData.getCreatetime());			statement.setString( 8,beanData.getCreateperson());			statement.setString( 9,beanData.getCreateunitid());			statement.setString( 10,beanData.getModifytime());			statement.setString( 11,beanData.getModifyperson());			statement.setString( 12,beanData.getDeleteflag());			statement.setString( 13,beanData.getFormid());
-			
+			statement.setString( 14,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  id  = ?"+ e.toString());
+			throw new Exception("UPDATE B_Organization SET recordid= ? , type= ? , shortname= ? , fullname= ? , address= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -351,7 +353,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 
 	/**
 	 *
-	 * @param beanData:ï¿½ï¿½ï¿½ï¿½
+	 * @param beanData:Ö÷¼ü
 	 */
 	public void FindPrimaryKey(Object beanDataTmp) throws Exception
 	{
@@ -361,8 +363,8 @@ public class B_OrganizationDao extends BaseAbstractDao
 		{
 		B_OrganizationData beanData = (B_OrganizationData) beanDataTmp; 
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT  id  FROM B_Organization WHERE  id =?");
-			
+			statement = connection.prepareStatement("SELECT  recordid  FROM B_Organization WHERE  recordid =?");
+			statement.setString( 1,beanData.getRecordid());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
@@ -371,7 +373,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL  SELECT  id  FROM B_Organization WHERE  id =?");
+			throw new Exception("Error executing SQL  SELECT  recordid  FROM B_Organization WHERE  recordid =?");
 		}
 		finally
 		{
