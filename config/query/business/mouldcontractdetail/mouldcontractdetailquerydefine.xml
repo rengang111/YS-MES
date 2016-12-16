@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="mouldcontractdetailquerydefine_searchproductmodel" />
+    <where>
+    </where>
+    <select>
+      <f name="CONCAT_WS(' | ', A.dicId, A.dicDes)" alias="viewList" ctype="" />
+      <f name="A.dicId" alias="id" ctype="" />
+      <f name="A.dicDes" alias="des" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_dic as A WHERE A.dictypeid='产品型号' and A.deleteflag='0' and A.enableflag='0' </from>
+    <orderby>sortNo</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldcontractdetailquerydefine_searchfactory" />
+    <where>
+    </where>
+    <select>
+      <f name="A.recordId" alias="id" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_organization as A, v_MouldFactoryType as B WHERE A.DeleteFlag = '0' AND A.type = B.id </from>
+    <orderby>shortName</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldcontractdetailquerydefine_searchmd" />
+    <where>
+      <w name="A.productModelId" des=""  reqName="productModelId" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="D.DIcname" des=""  reqName="productModelName" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="B.type" des=""  reqName="type" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+      <f name="D.dicName" alias="productModelName" ctype="" />
+      <f name="B.no" alias="" ctype="" />
+      <f name="B.name" alias="" ctype="" />
+      <f name="B.size" alias="" ctype="" />
+      <f name="B.materialQuality" alias="" ctype="" />
+      <f name="B.mouldUnloadingNum" alias="" ctype="" />
+      <f name="B.heavy" alias="" ctype="" />
+      <f name="B.price" alias="" ctype="" />
+      <f name="c.shortname" alias="mouldFactory" ctype="" />
+      <f name="ifnull(DATE_FORMAT(F.acceptanceDate, '%Y-%m-%d'), '')" alias="acceptanceDate" ctype="" />
+      <f name="E.dicName" alias="place" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldBaseInfo as A LEFT JOIN (SELECT * FROM b_MouldDetail WHERE DeleteFlag = '0') as B ON B.mouldBaseId = A.id LEFT JOIN (SELECT * FROM b_organization WHERE DeleteFlag = '0') as C ON C.recordid = A.mouldFactoryId LEFT JOIN (SELECT * FROM s_Dic WHERE deleteflag='0' and enableflag = '0' and Dictypeid = '产品型号') as D ON D.dicid = A.productModelId LEFT JOIN (SELECT * FROM s_Dic WHERE deleteflag='0' and enableflag = '0') as E ON E.dicid = B.place LEFT JOIN (Select * from b_MouldAcceptance where DeleteFlag = '0') as F ON F.mouldBaseId = A.id WHERE A.DeleteFlag = '0' </from>
+    <orderby>B.type, B.no</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>
