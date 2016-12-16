@@ -31,7 +31,7 @@ input.middle{width:300px;}
 </style>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 
 		<div id="main">
@@ -320,7 +320,7 @@ $(document).ready(function() {
 								label : item.viewList,
 								value : item.categoryId,
 								id : item.categoryId,
-								categoryName : item.categoryName,
+								categoryName : item.categoryViewName,
 							}
 						}));
 				},//success

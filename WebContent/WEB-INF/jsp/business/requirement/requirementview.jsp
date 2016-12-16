@@ -10,7 +10,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>订单采购方案-原材料-查看</title>
+<title>订单采购方案-查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -32,11 +32,13 @@
 			        	{"className":"dt-body-center"
 					}, {
 					}, {								
-					}, {				
-					}, {				
 					}, {"className":"td-center"				
+					}, {				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
+					}, {"className":"td-right"				
+					}, {"className":"td-right"				
+					}, {"className":"td-center"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}			
@@ -92,6 +94,7 @@
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
+					}, {"className":"td-center"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}			
@@ -140,7 +143,8 @@
 		$("#doContract").click(
 				function() {	
 					var YSId = '${order.YSId }';
-					var url = '${ctx}/business/contract?methodtype=createZZ&YSId='+YSId;
+					var materialId = '${order.productId }';
+					var url = '${ctx}/business/contract?methodtype=createZZ&YSId='+YSId+'&materialId='+materialId;
 					location.href = url;
 		});		
 		
@@ -156,24 +160,26 @@
 <!--主工作区,编辑页面或查询显示页面-->
 <div id="main">
 
-	<form:form modelAttribute="requirmentForm" method="POST"
-		id="requirmentForm" name="requirmentForm"  autocomplete="off">
+	<form:form modelAttribute="attrForm" method="POST"
+		id="attrForm" name="attrForm"  autocomplete="off">
 			
 		<fieldset>
 			<legend> 订单采购方案</legend>
 			<table class="form" id="table_form">
 				<tr> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="250px">${order.YSId }</td>
+					<td width="100px">${order.YSId }
+						<form:hidden path="requirment.ysid" value="${order.YSId }"/></td>
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td width="150px"></td>
+					<td width="150px">${order.productId }</td>
 						
 					<td class="label" width="100px"><label>产品名称：</label></td>
-					<td></td>
+					<td>${order.productName }</td>
 					
 					<td class="label" width="100px"><label>数量：</label></td>
-					<td></td>
+					<td width="150px">${order.quantity }</td>
+					
 				</tr>								
 			</table>
 			
@@ -279,14 +285,15 @@
 			<thead>				
 			<tr>
 				<th width="1px">No</th>
-				<th class="dt-center" width="100px">原材料ERP编号</th>
-				<th class="dt-center" >原材料名称</th>
+				<th class="dt-center" width="100px">ERP编号</th>
+				<th class="dt-center" >产品名称</th>
 				<th class="dt-center" width="30px">计量单位</th>
 				<th class="dt-center" style="width:50px;">供应商</th>
-				<th class="dt-center" style="width:50px;">原材料<br>需求总量</th>
+				<th class="dt-center" style="width:50px;">当前<br>需求数量</th>
 				<th class="dt-center" width="50px">当前虚拟库存</th>
 				<th class="dt-center" width="50px">采购量</th>
 				<th class="dt-center" width="50px">单价</th>
+				<th class="dt-center" width="50px">货币</th>
 				<th class="dt-center" style="width:80px">总价</th>
 				<th class="dt-center" width="1px"></th>
 			</tr>
@@ -296,35 +303,21 @@
 			
 			<tr>
 				<td></td>
-				<td>${detail.rawERP}</td>								
-				<td>${detail.rawERPname}</td>			
+				<td>${detail.materialId}</td>					
+				<td>${detail.materialName}</td>
 				<td>${detail.unit}</td>	
 				<td>${detail.supplierId}</td>
-				<td>${detail.targetQuty}</td>		
+				<td>${detail.total}</td>
 				<td><span>0</span></td>	
 				<td>${detail.quantity}</td>	
 				<td>${detail.price}</td>
+				<td>${detail.currency}</td>
 				<td>${detail.totalPrice}</td>
-				<td><span></span></td>				
+				<td><span></span></td>
 			</tr>
 		</c:forEach>
 		
 		</tbody>
-		<tfoot>
-			<tr>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-			</tr>
-		</tfoot>
 	</table>
 	</div>
 	</fieldset>

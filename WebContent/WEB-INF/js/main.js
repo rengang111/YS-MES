@@ -16,7 +16,7 @@ function openTab(selector,title,href,icon){
     if($tabs.tabs('exists',title)){//存在，则打开
         $tabs.tabs('select',title);
     }else{//不存在，新建,新建时判断tab页个数，超出则关闭第一个
-        var content = '<iframe scrolling="auto" id="mainFrame" frameborder="0" src="'+href+'" width="100%" height="99%" onload="iFrameHeight();"></iframe>';
+        var content = '<iframe scrolling="auto" id="mainFrame" frameborder="0" src="'+href+'" width="100%" height="99%"></iframe>';
         var tabCon = { title:title,  content:content, closable:true, selected:true, iconCls:icon };
         if($('.tabs-inner').length>8){//最多打开8个（不包括首页）
             $.messager.confirm('提示', '菜单页打开过多，是否关闭第一个，并打开“'+title+'”？', function(r){
@@ -174,6 +174,7 @@ function format(s){
 }
 
 function iFramAutoSroll(){
+	/*
 	//重设显示窗口(iframe)高度
 	var bodyHeight = $(document).height(); 
 	var viewHeight = bodyHeight<700?700:bodyHeight;
@@ -181,6 +182,7 @@ function iFramAutoSroll(){
 	//var viewHeight = bodyHeight;
 	
     parent.document.getElementById("mainFrame").height = viewHeight+"px";
+    */
 }
 
 function iFramNoSroll(){
@@ -483,3 +485,9 @@ function foucsInit(){
 	//$(".DTTT_container").css('margin-top',' -24px');
 	
 }
+
+function GetRandomNum(Min,Max){   
+	var Range = Max - Min;   
+	var Rand = Math.random();   
+	return(Min + Math.round(Rand * Range));   
+}   

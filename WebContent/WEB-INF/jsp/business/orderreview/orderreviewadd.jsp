@@ -160,15 +160,15 @@
 			<legend> 订单基本信息</legend>
 			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
 				<tr> 				
-					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td>${bomPlan.YSId}
+					<td class="label" style="width:100px;"><label>耀升编号：</label></td>					
+					<td style="width:150px;">${bomPlan.YSId}
 						<form:hidden path="review.ysid" value="${bomPlan.YSId}"/></td>
 								
-					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td>${bomPlan.materialId}
+					<td class="label" style="width:100px;"><label>产品编号：</label></td>					
+					<td style="width:150px;">${bomPlan.materialId}
 						<form:hidden path="review.materialid" value="${bomPlan.materialId}"/></td>
 				
-					<td class="label"><label>产品名称：</label></td>				
+					<td class="label" style="width:100px;"><label>产品名称：</label></td>				
 					<td>&nbsp;${bomPlan.materialName}</td>
 				</tr>
 				<tr>

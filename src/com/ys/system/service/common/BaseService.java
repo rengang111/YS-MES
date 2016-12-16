@@ -207,6 +207,8 @@ public class BaseService {
 			data.setCreateperson(userInfo.getUserId());
 			data.setCreatetime(CalendarUtil.fmtDate());
 			data.setCreateunitid(userInfo.getUnitId());
+			data.setModifyperson(userInfo.getUserId());
+			data.setModifytime(CalendarUtil.fmtDate());
 
 		}else{//update
 			data.setModifyperson(userInfo.getUserId());

@@ -122,9 +122,7 @@ public class OrderReviewAction extends BaseAction {
 
 		String strUrl = "/business/orderreview/orderreviewadd";
 		
-		model = reviewService.createReview();
-		
-		String url = (String) model.asMap().get("url");
+		String url = reviewService.createReview();
 		
 		if(url != null && url.equals("view")){
 			strUrl = "/business/orderreview/orderreviewview";

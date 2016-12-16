@@ -128,9 +128,9 @@
 					location.href = url;		
 				});
 		
-		$("#reate").click(
+		$("#create").click(
 				function() {			
-			$('#purchaseForm').attr("action", "${ctx}/business/purchase?methodtype=create");
+			$('#purchaseForm').attr("action", "${ctx}/business/purchase?methodtype=insert");
 			$('#purchaseForm').submit();
 		});		
 		
@@ -162,7 +162,7 @@
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
 					<td width="150px">${bomPlan.productId}					
-						<form:hidden path="bomId" value="${bomPlan.productId}" /></td>
+						<form:hidden path="bomId" value="11111" /></td>
 						
 					<td class="label"><label>产品名称：</label></td>
 					<td>${bomPlan.productName }</td>
@@ -215,33 +215,38 @@
 		</thead>
 		<tbody>							
 		<c:forEach var="detail" items="${bomDetail}" varStatus='status' >	
-	
-			
+				
 			<tr>
 				<td></td>
 				<td>${detail.materialId}<form:hidden path="detail[${status.index}].materialid"  value="${detail.materialId}"/> </td>								
 				<td id="materialName${status.index}"></td>
-				<td>${detail.supplierId}</td>
+				<td>${detail.supplierId}<form:hidden path="detail[${status.index}].supplierid"  value="${detail.supplierId}"/></td>
 				<td><span>${detail.quantity}</span></td>			
 				<td><form:input path="detail[${status.index}].orderquantity"  value="${bomPlan.productQty }" class="num mini" /></td>			
 				<td><span id="amount${status.index}"></span></td>
-				<td><span id="currStock${status.index}">0${detail.currentStock}</span></td>
-				<td><span id="purchase${status.index}"></span><form:hidden path="detail[${status.index}].quantity" /></td>
-				<td><form:input path="detail[${status.index}].remark" /></td>				
+				<td><span id="currStock${status.index}">${detail.currentStock}</span></td>
+				<td><span id="quantity${status.index}"></span><form:hidden path="detail[${status.index}].quantity" /></td>
+				<td><form:input path="detail[${status.index}].remark" /></td>
+					
+				<form:hidden path="detail[${status.index}].bomid"  value="${detail.bomId}"/>			
 			</tr>
 			<script type="text/javascript">
 			 	var index = '${status.index}';
 				var name = '${detail.materialName}';
-				var quantity = '${detail.quantity}';
-				var orderQty = '${bomPlan.productQty }';
-				var currStok = '${detail.currentStock }';
-				var fmt = currencyToFloat(quantity) * currencyToFloat(orderQty); 
-				//alert('fmt'+fmt)
-				var purchase = fmt - Number(currStok);
-				$("#amount"   + index ).html(floatToNumber(fmt));
-				$("#purchase" + index ).html(floatToNumber(purchase));
-				$("#materialName" + index).html(jQuery.fixedWidth(name,15));	
-				$("#detail" + index + "\\.quantity").val(floatToNumber(purchase));							
+				var quantity = currencyToFloat('${detail.quantity}');
+				var orderQty = currencyToFloat('${bomPlan.productQty }');
+				var currStok = GetRandomNum(0,100);
+				
+				var fmt1 = quantity * orderQty; 
+				var purchase = floatToNumber( fmt1 - currStok);
+				//alert('currStok:'+currStok+'--fmt:'+fmt1+'--purchase:'+purchase);
+				var fmt = floatToNumber( fmt1); 
+				$("#amount"   + index ).html(fmt);
+				$("#currStock" + index ).html(currStok);
+				$("#materialName" + index).html(jQuery.fixedWidth(name,15));
+				$("#quantity" + index ).html(purchase);
+				$("#detail" + index + "\\.quantity").val(purchase);		
+				
 			</script>
 		</c:forEach>
 		

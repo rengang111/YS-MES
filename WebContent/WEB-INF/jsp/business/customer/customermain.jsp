@@ -20,7 +20,7 @@
 	
 		var t = $('#TCustomer').DataTable({
 				"paging": true,
-				"lengthMenu":[5,10,15],//设置一页展示10条记录
+				"lengthMenu":[50,100,150],//设置一页展示10条记录
 				"processing" : false,
 				"serverSide" : true,
 				"stateSave" : false,
@@ -56,7 +56,7 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "customerId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "customerId", "defaultContent" : ''},
 							{"data": "customerSimpleDes", "defaultContent" : ''},
 							{"data": "customerName", "defaultContent" : ''},
 							{"data": "paymentTerm", "defaultContent" : '',"className" : 'td-center'},
@@ -185,7 +185,7 @@
 
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 
 		<div id="main">
@@ -229,18 +229,18 @@
 						<thead>
 						
 							<tr class="selected">
-								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="编号:" class="dt-middle sorting_disabled">编号</th>
-								<th colspan="1" rowspan="1" style="width: 82px;" aria-label="简称:" class="dt-middle sorting_disabled">简称</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="名称" class="dt-middle sorting_disabled">名称</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="付款条件" class="dt-middle sorting_disabled">付款条件</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="所在国家" class="dt-middle sorting_disabled">所在国家</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="计价货币" class="dt-middle sorting_disabled">计价货币</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="出运条件" class="dt-middle sorting_disabled">出运条件</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="出运港" class="dt-middle sorting_disabled">出运港</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="目的港" class="dt-middle sorting_disabled">目的港</th>
-								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="联系人" class="dt-middle sorting_disabled">联系人</th>
-								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
+								<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
+								<th style="width: 80px;" aria-label="编号:" class="dt-middle ">编号</th>
+								<th style="width: 50px;" aria-label="简称:" class="dt-middle ">简称</th>
+								<th class="dt-middle ">名称</th>
+								<th style="width: 35px;" aria-label="付款条件" class="dt-middle ">付款条件</th>
+								<th style="width: 60px;" aria-label="所在国家" class="dt-middle ">所在国家</th>
+								<th style="width: 60px;" aria-label="计价货币" class="dt-middle ">计价货币</th>
+								<th style="width: 60px;" aria-label="出运条件" class="dt-middle ">出运条件</th>
+								<th style="width: 60px;" aria-label="出运港" class="dt-middle ">出运港</th>
+								<th style="width: 60px;" aria-label="目的港" class="dt-middle ">目的港</th>
+								<th style="width: 50px;" aria-label="联系人" class="dt-middle ">联系人</th>
+								<th style="width: 30px;" aria-label="操作" class="dt-middle ">操作</th>
 							</tr>
 						</thead>
 

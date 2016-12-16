@@ -443,6 +443,18 @@
 	</fieldset>
 	
 	<fieldset>
+	<div id="floatTable" style="width: 70%; float: left; margin: 5px 0px 0px 0px;">
+		<input type="text" id="searchBom" class="middle"/>
+		<button type="button" id="doSearchBom" class="DTTT_button">查询</button>
+	</div>
+	<div id="tabs" style="margin: -6px 0px 0px 5px; float: right; padding: 0px;">	
+		<fieldset class="action" style="text-align: right;">
+			<button type="button" id="return" class="DTTT_button">返回</button>
+			<button type="button" id="update" class="DTTT_button">保存</button>
+		</fieldset>
+	</div>
+	</fieldset>	
+	<fieldset>
 		<div class="list" style="margin-top: -4px;">
 		
 		<table id="example" class="display" width="100%">
@@ -527,14 +539,7 @@
 		</tbody>
 	</table>
 	</div>
-	</fieldset>
-	<div style="clear: both"></div>
-	
-	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="return" class="DTTT_button">返回</button>
-		<button type="button" id="update" class="DTTT_button">保存</button>
 	</fieldset>		
-		
 </form:form>
 
 </div>

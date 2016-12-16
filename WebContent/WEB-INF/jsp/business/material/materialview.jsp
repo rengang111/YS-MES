@@ -29,7 +29,7 @@
 
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 <div id="main" style="margin-top: -15px;">
 	
@@ -66,7 +66,7 @@
 		</tr>
 		<tr>				
 			<td class="label"><label>分类编码：</label></td>
-			<td>${material.attribute2}</td>					
+			<td>${material.material.categoryid} | ${material.attribute2}</td>					
 			<td class="label"><label>计量单位：</label></td>
 			<td style="width: 280px;">${material.unitname}</td>				
 		</tr>

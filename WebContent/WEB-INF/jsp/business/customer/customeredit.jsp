@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
@@ -20,7 +20,7 @@ function ajaxCustomerAddr() {
 
 	var t = $('#TCustomerAddrList').DataTable({
 					"paging": true,
-					"lengthMenu":[5],//设置一页展示10条记录
+					"lengthMenu":[50],//设置一页展示10条记录
 					"processing" : false,
 					"serverSide" : true,
 					"stateSave" : false,
@@ -60,31 +60,14 @@ function ajaxCustomerAddr() {
 					"language": {
 		        		"url":"${ctx}/plugins/datatables/chinese.json"
 		        	},
-		        	/*
-		        	dom : 'T<"clear">rt',
-
-					"tableTools" : {
-
-						"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
-
-						"aButtons" : [										
-								{
-									"sExtends" : "create",
-									"sButtonText" : "新建"
-								},								
-								{
-									"sExtends" : "Delete",
-									"sButtonText" : "删除"
-								},
-						]
-					},
-					*/
+		        	
+		        	dom : '<"clear">rt',
 					"columns" : [ 
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "title", "className" : 'td-center'}, 
-						{"data" : "address", "className" : 'td-center'},
-						{"data" : "postcode", "className" : 'td-center'}, 
-						{"data" : "memo", "className" : 'td-center'}, 
+						{"data" : "title"}, 
+						{"data" : "address" },
+						{"data" : "postcode"}, 
+						{"data" : "memo"}, 
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}
 					],
 					"columnDefs":[
@@ -156,7 +139,7 @@ function ajaxContact() {
 					"stateSave" : false,
 					"searching" : false,
 					"pagingType" : "full_numbers",
-					"retrieve" : true,
+					"retrieve" : false,
 					"sAjaxSource" : "${ctx}/business/contact?methodtype=contactsearch",
 					"fnServerData" : function(sSource, aoData, fnCallback) {
 						var param = {};
@@ -190,36 +173,20 @@ function ajaxContact() {
 					"language": {
 		        		"url":"${ctx}/plugins/datatables/chinese.json"
 		        	},
-		        	/*
-		        	dom : 'T<"clear">rt',
+		        	
+		        	dom : '<"clear">rt',
 
-					"tableTools" : {
-
-						"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
-
-						"aButtons" : [										
-								{
-									"sExtends" : "create",
-									"sButtonText" : "新建"
-								},								
-								{
-									"sExtends" : "Delete",
-									"sButtonText" : "删除"
-								},
-						]
-					},
-					*/
 					"columns" : [ 
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "userName", "className" : 'td-center'}, 
-						{"data" : "sex", "className" : 'td-center'},
-						{"data" : "position", "className" : 'td-center'}, 
-						{"data" : "mobile", "className" : 'td-center'}, 
-						{"data" : "phone", "className" : 'td-center'}, 
-						{"data" : "fax", "className" : 'td-center'}, 
-						{"data" : "mail", "className" : 'td-center'}, 
-						{"data" : "qq", "className" : 'td-center'},
-						{"data" : "skype", "className" : 'td-center'},
+						{"data" : "userName"}, 
+						{"data" : "sex"},
+						{"data" : "position"}, 
+						{"data" : "mobile"}, 
+						{"data" : "phone"}, 
+						{"data" : "fax"}, 
+						{"data" : "mail"}, 
+						{"data" : "qq"},
+						{"data" : "skype"},
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}
 					],
 					"columnDefs":[
@@ -612,13 +579,14 @@ function controlButtons(data) {
 
 </head>
 
-<body>
-<div id="container">
+<body class="noscroll">
 
-		<div id="main">
-			<div id="customerBasic">				
-				<div  style="height:20px"></div>
-				
+<div id="layer_main">
+<div id="main">				
+	<form:form modelAttribute="dataModels" id="customerInfo" style='padding: 0px; margin: 10px;' >
+			
+			<div  style="height:20px"></div>
+			<fieldset>		
 				<legend>客户-综合信息</legend>
 					
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
@@ -626,9 +594,8 @@ function controlButtons(data) {
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 					
-				<form:form modelAttribute="dataModels" id="customerInfo" style='padding: 0px; margin: 10px;' >
-					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
-					<table class="form" width="850px">
+					<input type="hidden" id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
+					<table class="form">
 						<tr>
 							<td>客户编号：</td>
 							<td colspan=4>
@@ -705,26 +672,24 @@ function controlButtons(data) {
 						</tr>
 					</table>
 
-				</form:form>
-			</div>
-			
+			</fieldset>
 			<div  style="height:20px"></div>
 				
-			<div>
+			<fieldset>	
 				<legend> 地址</legend>
 				<button type="button" id="deletecustomeraddr" class="DTTT_button" onClick="doDeleteCustomerAddr();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addcustomeraddr" class="DTTT_button" onClick="doAddCustomerAddr();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="TCustomerAddrList" class="display" cellspacing="0">
+				<table id="TCustomerAddrList" class="display" >
 					<thead>
 						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">No</th>
+							<th style="width: 10px;" class="dt-middle">No</th>
 							<th style="width: 80px;" class="dt-middle">抬头</th>
-							<th style="width: 30px;" class="dt-middle">地址</th>
+							<th class="dt-middle">地址</th>
 							<th style="width: 80px;" class="dt-middle">邮编</th>
-							<th style="width: 80px;" class="dt-middle">备注</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
+							<th style="width: 100px;" class="dt-middle">备注</th>
+							<th style="width: 30px;" class="dt-middle">操作</th>
 					</thead>
 					<tfoot>
 						<tr>
@@ -737,20 +702,20 @@ function controlButtons(data) {
 						</tr>
 					</tfoot>
 				</table>
-		</div>			
+		</fieldset>			
 			
 		<div  style="height:20px"></div>
 			
-		<div>
+		<fieldset>
 			<legend> 联系人</legend>
 			<button type="button" id="deletecontact" class="DTTT_button" onClick="doDeleteContact();"
 					style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 			<button type="button" id="addcontact" class="DTTT_button" onClick="doAddContact();"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-			<table id="TContactList" class="display" cellspacing="0">
+			<table id="TContactList" class="display">
 				<thead>
 					<tr class="selected">
-						<th style="width: 80px;" class="dt-middle">No</th>
+						<th style="width: 10px;" class="dt-middle">No</th>
 						<th style="width: 80px;" class="dt-middle">姓名</th>
 						<th style="width: 30px;" class="dt-middle">性别</th>
 						<th style="width: 80px;" class="dt-middle">职务</th>
@@ -758,9 +723,9 @@ function controlButtons(data) {
 						<th style="width: 80px;" class="dt-middle">电话</th>
 						<th style="width: 80px;" class="dt-middle">传真</th>
 						<th style="width: 80px;" class="dt-middle">邮箱</th>
-						<th style="width: 80px;" class="dt-middle">QQ</th>
+						<th style="width: 50px;" class="dt-middle">QQ</th>
 						<th style="width: 80px;" class="dt-middle">skype</th>
-						<th style="width: 80px;" class="dt-middle">操作</th>
+						<th style="width: 30px;" class="dt-middle">操作</th>
 				</thead>
 				<tfoot>
 					<tr>
@@ -778,6 +743,10 @@ function controlButtons(data) {
 					</tr>
 				</tfoot>
 			</table>
-		</div>
-	</div>
+		</fieldset>
+	</form:form>
+</div>
+</div>
+	
+</body>
 </html>

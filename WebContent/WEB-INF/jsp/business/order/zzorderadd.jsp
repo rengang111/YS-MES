@@ -329,7 +329,7 @@ function doSubmitRefresh(){
 </script>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 <div id="main">
 	
@@ -488,18 +488,6 @@ function autocomplete(){
 		},
 
 		select : function(event, ui) {
-			
-			//var rowIndex = $(this).parent().parent().parent()
-			//		.find("tr").index(
-			//				$(this).parent().parent()[0]);
-
-			//alert(rowIndex);
-
-			//var t = $('#example').DataTable();
-			
-			//产品名称			
-			
-			//t.cell(rowIndex, 2).data();
 			
 			var $tds = $(this).parent().parent().find('td');
 

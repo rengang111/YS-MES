@@ -60,9 +60,9 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <!-- status = '0' 表示 订单状态为 "新建" -->
-    <from>v_orderlist AS A WHERE A.status = '0' AND  A.deleteFlag = '0'</from>
-    <orderby>A.YSId DESC</orderby>
+    <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
+    <from>v_orderlist AS A WHERE A.deleteFlag = '0'</from>
+    <orderby>A.modifyTime DESC</orderby>
     <groupby>A.YSId </groupby>
     <having></having>
 	<power>

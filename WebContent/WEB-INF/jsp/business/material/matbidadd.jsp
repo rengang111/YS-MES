@@ -294,13 +294,10 @@
 			});
 		},
 
-		select : function(event, ui) {
-			//$("#attribute1").val(ui.item.id);		
+		select : function(event, ui) {	
 			$("#price\\.supplierid ").val(ui.item.id);
-			//alert($("#price\\.supplierid ").val());
 			$("#attribute2").val(ui.item.shortName);
 			$("#attribute3").val(ui.item.fullName);
-			//$("#factoryProductCode").focus();
 
 		},
 

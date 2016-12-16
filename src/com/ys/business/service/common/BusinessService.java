@@ -147,11 +147,12 @@ public class BusinessService {
 	public static String getOrderIdZZ(int code,boolean blAdd )
 	{
 		//格式化成2位流水号,并且+1
-		String code1 = BusinessService.getYSKFormat2Code(code,true);
+		String code1 = BusinessService.getYSKFormat2Code(code,blAdd);
 		
 		//自制库存订单编号:16YSK01ZZ
 		return code1 + BusinessConstants.SHORTNAME_ZZ ;
 	}
+	
 	/**
 	 * @return 装配库存订单编号
 	 * 
@@ -159,10 +160,24 @@ public class BusinessService {
 	public static String getOrderIdZP(int code,boolean blAdd )
 	{
 		//格式化成2位流水号,并且+1
-		String code1 = BusinessService.getYSKFormat2Code(code,true);
+		String code1 = BusinessService.getYSKFormat2Code(code,blAdd);
 		
 		//装配库存订单编号:16YSK01ZP
 		return code1 + BusinessConstants.SHORTNAME_ZP ;
 	}
+	
+	/**
+	 * @return BOM编号
+	 * 
+	 */
+	public static String getBOMFormatId(String code1,int code2,boolean blAdd )
+	{
+		//格式化成2位流水号,并且+1
+		String ft = BusinessService.getFormatCode(code2,blAdd);
+		
+		//装配库存订单编号:16YSK01ZP
+		return code1 + "." +  ft;
+	}
+		
 				
 }

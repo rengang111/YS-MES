@@ -70,17 +70,18 @@
 							.add(
 							  [
 								'<td class="dt-center"></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid" style="width:70px;" class="read-only" readonly="readonly" /></td>',
+								'<td><span id="ysid'+rowIndex+'"></span><input type="hidden" name="orderDetailLines['+rowIndex+'].ysid"  id="orderDetailLines'+rowIndex+'.ysid" style="width:70px;"/></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="cash short" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num short" /></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      id="orderDetailLines'+rowIndex+'.price"      class="cash short" /></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short read-only" readonly="readonly"/></td>',				
 								
 								]).draw();
 						
 						$("#orderDetailLines" + rowIndex + "\\.ysid").val(fmtId);
+						$("#ysid" + rowIndex).text(fmtId);
 						
 						rowIndex ++;						
 					}					
@@ -114,7 +115,8 @@
 
 				//随时计算该客户的销售总价
 				totalPrice = currencyToFloat(totalPrice) - currencyToFloat(amount);			
-				$('#order\\.totalprice').val(floatToCurrency(totalPrice));
+				$('#order\\.totalprice').val(floatToCurrency(totalPrice));	
+				$('#total').text(floatToCurrency(totalPrice));
 			}
 						
 		}
@@ -175,7 +177,7 @@
 			
 			var material = $oMaterial.val();
 			var vPrice = floatToCurrency($oPrice.val());	
-			var vQuantity = floatToCurrency($oQuantity.val());
+			var vQuantity = floatToNumber($oQuantity.val());
 			var fPrice = currencyToFloat($oPrice.val());		
 			var fQuantity = currencyToFloat($oQuantity.val());
 			var fTotalOld = currencyToFloat($oAmount.val());
@@ -195,7 +197,8 @@
 			//首先减去旧的价格			
 			totalPrice = currencyToFloat(totalPrice) - fTotalOld + fTotalNew;
 						
-			$('#order\\.totalprice').val(floatToCurrency(totalPrice));		
+			$('#order\\.totalprice').val(floatToCurrency(totalPrice));
+			$('#total').text(floatToCurrency(totalPrice));			
 
 		});		
 			
@@ -226,12 +229,6 @@
 	};//ajax()
 
 	$(document).ready(function() {
-
-		//设置光标项目
-		$("#order\\.piid").attr('readonly', "true");
-		$("#attribute1").attr('readonly', "true");
-		$("#attribute2").attr('readonly', "true");
-		$("#attribute3").attr('readonly', "true");
 
 		//日期
 		var mydate = new Date();
@@ -269,16 +266,7 @@
 				});
 		
 		$("#insert").click(
-				function() {
-			//var orderdate = $('#order\\.orderdate').val();
-			//var deliverydate = $('#order\\.deliverydate').val();
-			
-			//orderdate = orderdate +" 00:00:00";
-			//deliverydate = deliverydate +" 00:00:00";
-			
-			//$('#order\\.orderdate').val(orderdate);
-			//$('#order\\.deliverydate').val(deliverydate);
-			
+				function() {			
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=update");
 			$('#orderForm').submit();
 		});
@@ -334,26 +322,19 @@
 			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
 				<tr> 				
 					<td class="label" width="100px"><label>PI编号：</label></td>					
-					<td colspan="7">
-						<form:input path="order.piid" class="middle required read-only" 
+					<td>${order.PIId }
+						<form:hidden path="order.piid" 
 							value="${order.PIId }" /></td>
-				</tr>
-				<tr>
+							
 					<td class="label"><label>客户编号：</label></td>				
-					<td colspan="7">
-							<form:input path="attribute1" class="short read-only" 
-								value="${order.customerId }"/></td>
+					<td colspan="5">${order.customerId }</td>
 				</tr>
 				<tr>
 					<td class="label"><label>客户简称：</label></td>
-					<td>
-						<form:input path="attribute2" class="short read-only" 
-						value="${order.shortName }"/></td>
+					<td>${order.shortName }</td>
 
 					<td class="label"><label>客户全称：</label></td>
-					<td colspan="3">
-						<form:input path="attribute3" class="long read-only" 
-						value="${order.fullName }" /></td>
+					<td colspan="3">${order.fullName }</td>
 						
 					<td class="label"><label>币种：</label></td>
 					<td>
@@ -402,8 +383,8 @@
 						<form:input path="order.deliverydate" class="short required"  value="${order.deliveryDate }" /></td>
 					<td class="label">
 						<label>销售总价：</label></td>
-					<td>
-						<form:input path="order.totalprice" class="short read-only cash"  value="${order.total}" /></td>																	
+					<td><span id="total">${order.total}</span>
+						<form:hidden path="order.totalprice" value="${order.total}" /></td>																	
 				</tr>							
 			</table>
 			
@@ -442,11 +423,11 @@
 
 				<tr>				
 					<td></td>
-					<td><input type="text" name="orderDetailLines[${status.index}].ysid" id="orderDetailLines${status.index}.ysid" value="${order.YSId}" style="width:70px;" class="read-only" readonly="readonly"  /></td>
+					<td><span>${order.YSId}</span><input type="hidden" name="orderDetailLines[${status.index}].ysid" id="orderDetailLines${status.index}.ysid" value="${order.YSId}" style="width:70px;" class="read-only" readonly="readonly"  /></td>
 					<td><input type="text" name="attributeList1" class="attributeList1"  value="${order.materialId}" />
 						<form:hidden path="orderDetailLines[${status.index}].materialid" value="${order.materialId }"/></td>								
 					<td id="shortName${status.index}">${order.materialName}</td>
-					<td><form:input path="orderDetailLines[${status.index}].quantity" class="cash short" value="${order.quantity}"/></td>							
+					<td><form:input path="orderDetailLines[${status.index}].quantity" class="num short" value="${order.quantity}"/></td>							
 					<td><form:input path="orderDetailLines[${status.index}].price" class="cash short"  value="${order.price}"/></td>
 					<td><input type="text" name="orderDetailLines[${status.index}].totalprice" id="orderDetailLines${status.index}.totalprice" value="${order.totalPrice}" class="read-only cash short" readonly="readonly"/></td>
 					
@@ -489,10 +470,6 @@
 </div>
 </div>
 </body>
-<script type="text/javascript">
-
-
-</script>
 
 <script type="text/javascript">
 

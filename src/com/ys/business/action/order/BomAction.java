@@ -71,6 +71,10 @@ public class BomAction extends BaseAction {
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
+				break;				
+			case "searchBom":
+				dataMap = doSearchBom();
+				printOutJsonObj(response, dataMap);
 				break;							
 			case "implement":
 				rtnUrl = "/business/bom/purchaseman";
@@ -119,10 +123,13 @@ public class BomAction extends BaseAction {
 				//doViewSourseBom();
 				rtnUrl = "/business/bom/bomselectlist";
 				break;
-			case "searchCopyBom":
-				dataMap = doSearchCopyBom(data);
-				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/bom/bomselectlist";
+			case "changeBomAdd":
+				doChangeBomAdd();
+				rtnUrl = "/business/bom/bomplanadd";
+				break;	
+			case "changeBomEdit":
+				doChangeBomEdit();
+				rtnUrl = "/business/bom/bomplanedit";
 				break;	
 			case "copy":
 				doCopy();
@@ -168,7 +175,7 @@ public class BomAction extends BaseAction {
 				new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = bomService.getCopyBomList(data);
+			//dataMap = bomService.getCopyBomList(data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -209,7 +216,8 @@ public class BomAction extends BaseAction {
 	
 	public void doCopy() throws Exception{
 			
-		model = bomService.copyBomPlan();
+		//model = bomService.copyBomPlan();
+		bomService.getCopyBomList();
 			
 	}
 
@@ -226,10 +234,26 @@ public class BomAction extends BaseAction {
 	}		
 	
 	
+	public HashMap<String, Object> doSearchBom() throws Exception{
+
+		return bomService.getBomList();
+		
+	}	
+	
 	public void doEdit() throws Exception{
 
 		model = bomService.editBomPlan();
+	}
+	
+	public void doChangeBomAdd() throws Exception{
+
+		model = bomService.changeBomPlanAdd();
 	}	
+	
+	public void doChangeBomEdit() throws Exception{
+
+		model = bomService.changeBomPlanEdit();
+	}
 	
 	public void doUpdate() throws Exception {
 		
@@ -254,7 +278,7 @@ public class BomAction extends BaseAction {
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = bomService.getMaterialList(request);
+			dataMap = bomService.getMaterialList();
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {

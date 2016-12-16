@@ -44,7 +44,7 @@
     <where>
      	<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" /> 
-   	  	<w name="A.bomId"     des=""  reqName="keyword3" dtype="ch" oper="="     lg="" bt="" />     
+   	  	<w name="A.YSId"      des=""  reqName="keyword3" dtype="ch" oper="="     lg="" bt="" />     
     </where>
     <select>
       <f name="A.YSId" alias="" ctype="" />

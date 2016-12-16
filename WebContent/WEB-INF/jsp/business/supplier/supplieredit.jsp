@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
@@ -19,8 +19,8 @@ function ajax() {
 	}
 
 	var t = $('#TContactList').DataTable({
-					"paging": true,
-					"lengthMenu":[5],//设置一页展示10条记录
+					//"paging": true,
+					//"lengthMenu":[50],//设置一页展示10条记录
 					"processing" : false,
 					"serverSide" : true,
 					"stateSave" : false,
@@ -60,9 +60,9 @@ function ajax() {
 					"language": {
 		        		"url":"${ctx}/plugins/datatables/chinese.json"
 		        	},
+		        	
+		        	dom : '<"clear">rt',
 		        	/*
-		        	dom : 'T<"clear">rt',
-
 					"tableTools" : {
 
 						"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
@@ -309,10 +309,10 @@ $(document).ready(function() {
 			supplierId: {
 				required: true,
 				minlength: 5 ,
-				maxlength: 8,
+				maxlength: 20,
 			},
 			supplierSimpleDes: {
-				maxlength: 2,
+				maxlength: 10,
 			},
 			supplierDes: {
 				maxlength: 50,
@@ -511,113 +511,110 @@ function controlButtons(data) {
 
 </head>
 
-<body>
-<div id="container">
+<body class="noscroll">
 
-		<div id="main">
-			<div id="supplierBasic">				
-				<div  style="height:20px"></div>
+<div id="layer_main">
+	<form:form modelAttribute="dataModels" id="supplierBasicInfo" style='padding: 0px; margin: 10px;' >			
+	<div  style="height:20px"></div>
+	<fieldset>		
+			<legend>供应商-综合信息</legend>
 				
-				<legend>供应商-综合信息</legend>
-					
-				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
-				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-					
-				<form:form modelAttribute="dataModels" id="supplierBasicInfo" style='padding: 0px; margin: 10px;' >
-					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
-					<table class="form" width="850px">
-						<tr>
-							<td width="60px">编码：</td>
-							<td width="150px">
-								<input type="text" id="supplierId" name="supplierId" class="mini" value="${DisplayData.supplierBasicInfoData.supplierid}"/>
-							</td>
-							<td width="60px">简称：</td> 
-							<td colspan=4>
-								<input type="text" id="supplierSimpleDes" name="supplierSimpleDes" class="short" value="${DisplayData.supplierBasicInfoData.suppliersimpledes}"/>
-							</td>
-						</tr>
-						<tr>
-							<td>名称：</td> 
-							<td colspan=6>
-								<input type="text" id="supplierDes" name="supplierDes" class="middle" value="${DisplayData.supplierBasicInfoData.supplierdes}"/>
-							</td>
-						</tr>
-						<tr>	
-							<td>二级编码：</td> 
-							<td>
-								<input type="text" id="twoLevelId" name="twoLevelId" class="mini" value="${DisplayData.supplierBasicInfoData.twolevelid}"/>
-							</td>
-							<td>编码解释：</td> 
-							<td colspan=4>
-								<input type="text" id="twoLevelIdDes" name="twoLevelIdDes" class="middle" value="${DisplayData.supplierBasicInfoData.twoleveliddes}"/>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								付款条件：
-							</td>
-							<td colspan=6>
-								入库后：
-								<input type="text" id="paymentTerm" name="paymentTerm" class="mini" value="${DisplayData.supplierBasicInfoData.paymentterm}"/>&nbsp;&nbsp;天
-							</td>
-						</tr>
-						<tr>
-							<td>
-								国家：
-							</td>
-							<td width="150px">
-								<form:select path="country">
-									<form:options items="${DisplayData.countryList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-							<td>
-								省：
-							</td>
-							<td width="150px"> 
-								<form:select path="province">
-									<form:options items="${DisplayData.provinceList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-							<td width="60px">	
-								市县：
-							</td>
-							<td width="150px"> 
-								<form:select path="city">
-									<form:options items="${DisplayData.cityList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-							<td></td>
-						</tr>
-						<tr>
-							<td>
-								地址： 
-							</td>
-							<td colspan=6>
-								<input type="text" id="address" name="address" class="long" value="${DisplayData.supplierBasicInfoData.address}"/>
-							</td>
-						</tr>
-					</table>
+			<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
+					style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
+			<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
+					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
+				
+			<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
+			<table class="form">
+				<tr>
+					<td width="60px">编码：</td>
+					<td width="150px">
+						<input type="text" id="supplierId" name="supplierId" class="mini" value="${DisplayData.supplierBasicInfoData.supplierid}"/>
+					</td>
+					<td width="60px">简称：</td> 
+					<td colspan=4>
+						<input type="text" id="supplierSimpleDes" name="supplierSimpleDes" class="short" value="${DisplayData.supplierBasicInfoData.suppliersimpledes}"/>
+					</td>
+				</tr>
+				<tr>
+					<td>名称：</td> 
+					<td colspan=6>
+						<input type="text" id="supplierDes" name="supplierDes" class="middle" value="${DisplayData.supplierBasicInfoData.supplierdes}"/>
+					</td>
+				</tr>
+				<tr>	
+					<td>二级编码：</td> 
+					<td>
+						<input type="text" id="twoLevelId" name="twoLevelId" class="mini" value="${DisplayData.supplierBasicInfoData.twolevelid}"/>
+					</td>
+					<td>编码解释：</td> 
+					<td colspan=4>
+						<input type="text" id="twoLevelIdDes" name="twoLevelIdDes" class="middle" value="${DisplayData.supplierBasicInfoData.twoleveliddes}"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						付款条件：
+					</td>
+					<td colspan=6>
+						入库后：
+						<input type="text" id="paymentTerm" name="paymentTerm" class="mini" value="${DisplayData.supplierBasicInfoData.paymentterm}"/>&nbsp;&nbsp;天
+					</td>
+				</tr>
+				<tr>
+					<td>
+						国家：
+					</td>
+					<td width="150px">
+						<form:select path="country">
+							<form:options items="${DisplayData.countryList}" itemValue="key"
+								itemLabel="value" />
+						</form:select>
+					</td>
+					<td>
+						省：
+					</td>
+					<td width="150px"> 
+						<form:select path="province">
+							<form:options items="${DisplayData.provinceList}" itemValue="key"
+								itemLabel="value" />
+						</form:select>
+					</td>
+					<td width="60px">	
+						市县：
+					</td>
+					<td width="150px"> 
+						<form:select path="city">
+							<form:options items="${DisplayData.cityList}" itemValue="key"
+								itemLabel="value" />
+						</form:select>
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>
+						地址： 
+					</td>
+					<td colspan=6>
+						<input type="text" id="address" name="address" class="long" value="${DisplayData.supplierBasicInfoData.address}"/>
+					</td>
+				</tr>
+			</table>
 
-				</form:form>
-			</div>
+		</fieldset>
+		<div  style="height:20px"></div>
+				
 			
-			<div  style="height:20px"></div>
-				
-			<div>
+		<fieldset>		
 				<legend> 联系人</legend>
 				<button type="button" id="deletecontact" class="DTTT_button" onClick="doDeleteContact();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addcontact" class="DTTT_button" onClick="doAddContact();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="TContactList" class="display" cellspacing="0">
+				<table id="TContactList" class="display" >
 					<thead>
 						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">No</th>
+							<th style="width: 10px;" class="dt-middle">No</th>
 							<th style="width: 80px;" class="dt-middle">姓名</th>
 							<th style="width: 30px;" class="dt-middle">性别</th>
 							<th style="width: 80px;" class="dt-middle">职务</th>
@@ -626,7 +623,7 @@ function controlButtons(data) {
 							<th style="width: 80px;" class="dt-middle">传真</th>
 							<th style="width: 80px;" class="dt-middle">邮箱</th>
 							<th style="width: 80px;" class="dt-middle">QQ</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
+							<th style="width: 30px;" class="dt-middle">操作</th>
 					</thead>
 					<tfoot>
 						<tr>
@@ -644,6 +641,7 @@ function controlButtons(data) {
 					</tfoot>
 				</table>
 
-		</div>
+		</fieldset>
+	</form:form>
 	</div>
 </html>

@@ -1,7 +1,7 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <%@ include file="../../common/common.jsp"%>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
@@ -13,15 +13,15 @@
 	<form name="form" id="form" modelAttribute="dataModels" action="" method="post" style="padding-top: 10px;">
 		<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
 		<fieldset>
-		<table class="form" cellspacing="0" cellpadding="0" style="width: 100%;">
-			<tr>
-				<td width="100px">
+		<table class="form" >
+			<tr style="height:40px">
+				<td width="100px" class="label">
 					上级分类编码：
 				</td>
 				<td width="150px"> <label>${DisplayData.parentCategoryId}</label>
 					<input type=hidden name="parentCategoryId" id="parentCategoryId" value="${DisplayData.parentCategoryId}" />
 				</td>
-				<td width="100px">
+				<td width="100px" class="label">
 					上级分类名称：
 				</td>
 				<td><label>${DisplayData.parentCategoryName}</label>
@@ -30,7 +30,7 @@
 			</tr>
 			
 			<tr>
-				<td>子分类编码：</td>
+				<td class="label">子分类编码：</td>
 				<td colSpan="3">
 					<input type="text"   class="required" name="unitData.categoryid" id="categoryid" value="${DisplayData.unitData.categoryid}"/>
 					<input type=hidden name="unitData.recordid" id="recordid" value="${DisplayData.unitData.recordid}"/>
@@ -42,7 +42,7 @@
 			</tr>		
 	
 			<tr>
-				<td>
+				<td class="label">
 					子分类名称：
 				</td>
 				<td colspan="3">
@@ -50,7 +50,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>
+				<td class="label">
 					规格描述：
 				</td>
 				<td colspan="3">
@@ -58,7 +58,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>备注：</td>
+				<td class="label">备注：</td>
 				<td colspan="3">
 					<textarea rows="6" cols="60" name="unitData.memo" id="memo" class="long" >${DisplayData.unitData.memo}</textarea>
 				</td>
@@ -100,7 +100,7 @@ if (operType == 'addsub') {
 }
 
 if ('${DisplayData.message}' != '') {
-	alert('${DisplayData.message}');
+	// alert('${DisplayData.message}');
 }	
 
 if (updatedRecordCount > 0) {

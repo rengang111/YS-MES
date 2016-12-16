@@ -67,7 +67,9 @@ public class OrderReviewService extends BaseService {
 		this.reqModel = reqModel;
 		this.request = request;
 		this.userInfo = userInfo;
-		userDefinedSearchCase = new HashMap<String, String>();
+		this.dataModel = new BaseModel();
+		this.userDefinedSearchCase = new HashMap<String, String>();
+		dataModel.setQueryFileName("/business/order/orderreviewquerydefine");
 		
 	}
 	public HashMap<String, Object> getReviewList( 
@@ -94,8 +96,6 @@ public class OrderReviewService extends BaseService {
 		String key1 = getJsonData(data, "keyword1").toUpperCase();
 		String key2 = getJsonData(data, "keyword2").toUpperCase();
 		
-
-		dataModel.setQueryFileName("/business/order/orderreviewquerydefine");
 		dataModel.setQueryName("getreviewlist");
 		
 		baseQuery = new BaseQuery(request, dataModel);
@@ -118,17 +118,14 @@ public class OrderReviewService extends BaseService {
 		return modelMap;
 	}
 	
-	public Model getReviewDetailView(String bomId) 
+	public Model getReviewDetailView(String YSId) 
 			throws Exception {
-		
-
-		dataModel = new BaseModel();		
-		dataModel.setQueryFileName("/business/order/orderreviewquerydefine");
+				
 		dataModel.setQueryName("getReviewAndDetail");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 
-		userDefinedSearchCase.put("keyword3", bomId);
+		userDefinedSearchCase.put("keyword3", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		modelMap = baseQuery.getYsQueryData(0, 0);
@@ -140,36 +137,29 @@ public class OrderReviewService extends BaseService {
 	}
 	
 
-	private void getOrderAndBomByYSId() throws Exception{
+	private void getOrderAndBomByYSId(String YSId) throws Exception{
 		
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		dataModel.setQueryFileName("/business/order/orderreviewquerydefine");
 		dataModel.setQueryName("getOrderAndBomByYSId");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 
-		String YSId = request.getParameter("YSId");
 		userDefinedSearchCase.put("keyword1", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		baseQuery.getYsQueryData(0, 0);
 		
 		model.addAttribute("bomPlan", dataModel.getYsViewData().get(0));	
-		
-		
+				
 	}
 	
 	
 	@SuppressWarnings("unchecked")
 	private B_OrderReviewData getReviewByBomId(
-			String bomId ) throws Exception {
+			String YSId ) throws Exception {
 		
 		List<B_OrderReviewData> dbList = null;
 		
-		String where = " bomId = '"+bomId +"'" + " AND deleteFlag = '0' ";
+		String where = " YSId = '"+YSId +"'" + " AND deleteFlag = '0' ";
 						
 		dbList = (List<B_OrderReviewData>)dao.Find(where);
 		
@@ -320,14 +310,14 @@ public class OrderReviewService extends BaseService {
 					
 		B_OrderReviewData reqData = (B_OrderReviewData)reqModel.getReview();
 
-		String bomId = reqData.getBomid();
+		String YSId = reqData.getYsid();
 		ts = new BaseTransaction();
 		
 		try{
 			ts.begin();
 			
 			//确认BOM表是否存在
-			B_OrderReviewData dbData = getReviewByBomId(bomId);
+			B_OrderReviewData dbData = getReviewByBomId(YSId);
 			
 			if(dbData != null){
 				
@@ -371,7 +361,7 @@ public class OrderReviewService extends BaseService {
 			ts.rollback();
 		}
 		
-		return bomId;
+		return YSId;
 		
 	}	
 	
@@ -384,39 +374,40 @@ public class OrderReviewService extends BaseService {
 		
 	}
 	
-	public Model createReview() throws Exception {
+	public String createReview() throws Exception {
 		 
-		String bomId = request.getParameter("bomId");
-		B_OrderReviewData db = getReviewByBomId(bomId);
+		String YSId = request.getParameter("YSId");
+		B_OrderReviewData db = getReviewByBomId(YSId);
+		String urlType = "";
 		
 		if(db != null){
 			//评审存在的话,显示查看页面;
-			getReviewDetailView(bomId);
-			model.addAttribute("url","view");
+			getReviewDetailView(YSId);
+			urlType = "view";
 		}else{
 			//没有评审的话,显示新建页面;
-			getOrderAndBomByYSId();
-			model.addAttribute("url","add");			
+			getOrderAndBomByYSId(YSId);
+			urlType = "add";			
 		}
 		
 		reqModel.setCurrencyList(
 				util.getListOption(DicUtil.CURRENCY, ""));
 		
-		return model;
+		return urlType;
 		
 	}
 	
 	public Model editReview() throws Exception {
 		 
-		String bomId = request.getParameter("bomId");
-		B_OrderReviewData db = getReviewByBomId(bomId);
+		String YSId = request.getParameter("YSId");
+		B_OrderReviewData db = getReviewByBomId(YSId);
 		
 		if(db != null){
 			//评审存在的话,显示其内容;
-			getReviewDetailView(bomId);
+			getReviewDetailView(YSId);
 		}else{
 			//没有评审的话,新建评审;
-			getOrderAndBomByYSId();			
+			getOrderAndBomByYSId(YSId);			
 		}
 		
 		reqModel.setCurrencyList(

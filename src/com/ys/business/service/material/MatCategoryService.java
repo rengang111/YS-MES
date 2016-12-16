@@ -72,7 +72,7 @@ public class MatCategoryService extends BaseService {
 		parentName = new String(parentName.getBytes("ISO8859-1"), "UTF-8");
 
 		MatCategoryModel MatCategoryModel = new MatCategoryModel();
-		MatCategoryModel.setParentCategoryId(parentId);
+		MatCategoryModel.setParentCategoryId(parentId.trim());
 		MatCategoryModel.setParentCategoryName(parentName);
 
 		return MatCategoryModel;
@@ -91,6 +91,7 @@ public class MatCategoryService extends BaseService {
 		copyProperties(data,commData);
 
 		data.setRecordid(BaseDAO.getGuId());
+		data.setCategoryid(data.getCategoryid().trim());
 		data.setParentid(request.getParameter("parentCategoryId"));
 
 		dao.Create(data);
@@ -102,19 +103,20 @@ public class MatCategoryService extends BaseService {
 		String parentId=data.getParentid()+"";
 		
 		if (parentId.equals(Constants.MATERIALCATEGORY)){
-			//data.setChildid(categroyId);
+			data.setChildid(categroyId);
 		}else{		
-			if(categroyId.length() !=0 && parentId.length() !=0)
+			if(categroyId.length() !=0 && parentId.trim().length() !=0)
 			{
-				String childid = categroyId.substring(parentId.length());
+				String childid = categroyId.substring(parentId.trim().length());
 				int inChar=childid.indexOf(".");
-					if(inChar > -1)
-					{
-						childid = childid.substring(inChar + 1);
-					}
-					//data.setChildid(childid);
+				if(inChar > -1)
+				{
+					childid = childid.substring(inChar + 1);
+				}
+				data.setChildid(childid);
+				System.out.println("=======================childid================="+childid);
 					
-				}			
+			}			
 		}
 		return data;
 	}

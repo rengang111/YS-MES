@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>mainframe</title>
+</head>
 <%@ include file="../common/common.jsp"%>
 
 <body class="easyui-layout">
@@ -18,27 +21,11 @@
     </div>
     <div id="main_div" data-options="region:'center',title:''" >
    	    <iframe name="mainFrame" id="mainFrame"  width="100%" height="99%" 
-   	    frameborder="0" border=0 scrolling="auto" marginwidth="0" marginheight="0" src="#" 
-   	    	onload="iFrameHeight();">
+   	    frameborder="0" border=0 scrolling="auto" marginwidth="0" marginheight="0" src="#" >
    		</iframe>
     </div>
     </body>
   </html>
- 
-<script type="text/javascript" >
-	
-	function reinitIframe() {  
-		
-	   	var iframe = document.getElementById("mainFrame");                
-		try 
-		{                          
-             var bHeight = iframe.contentWindow.document.body.scrollHeight;                                
-             iframe.height = bHeight; 
-		} catch (ex) { }     
-		
-	}
-	
-</script>
 
 <script type="text/javascript" >
     //树形菜单所需要的基本数据。

@@ -77,14 +77,12 @@
 	    	  }},
 	    	  { "targets":8,"render":function(data, type, row){
 	    			var rtn = "";
-	    			var space = '&nbsp;';
 	    			var status = row[9];
-	    			if(status != 1){//1:BOM表已做成
-	    				rtn = rtn+ space + "<a href=\"#\" onClick=\"doCopy('" + row[1] +"','"+ row[2] + "')\">复制</a>";
-		    			rtn = rtn+ space + "<a href=\"#\" onClick=\"AddBomPlan('" + row[1] +"','"+ row[2] + "')\">新建</a>";
+	    			if(status != 0){//1:BOM表已做成
+	    				rtn = "<a href=\"#\" onClick=\"ShowBomPlan('" + row[1] +"','"+ row[2] + "')\">查看</a>";
 		   				
 	    			}else{
-	    				rtn = "<div title='BOM表已做成'>"+space+space+space+space+"</div>"
+		    			rtn = "<a href=\"#\" onClick=\"AddBomPlan('" + row[1] +"','"+ row[2] + "')\">新建</a>";
 	    			}
 	    			return rtn;
 	    	  }}
@@ -156,8 +154,8 @@
 	}
 	
 
-	function doCopy(YSId,materialId) {
-		var url = '${ctx}/business/bom?methodtype=chooseSourseBom&YSId=' + YSId+'&materialId='+materialId;
+	function ShowBomPlan(YSId,materialId) {
+		var url = '${ctx}/business/bom?methodtype=detailView&YSId=' + YSId+'&materialId='+materialId;
 		location.href = url;
 	};
 	
@@ -180,11 +178,10 @@
 			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
 				<tr> 				
 					<td class="label" width="100px"><label>PI编号：</label></td>					
-					<td colspan="7">${order.PIId}</td>
-				</tr>
-				<tr>
+					<td>${order.PIId}</td>
+
 					<td class="label"><label>客户编号：</label></td>				
-					<td colspan="7">${order.customerId}</td>
+					<td colspan="5">${order.customerId}</td>
 				</tr>
 				<tr>
 					<td class="label"><label>客户简称：</label></td>

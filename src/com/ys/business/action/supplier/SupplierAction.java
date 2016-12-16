@@ -65,6 +65,7 @@ public class SupplierAction extends BaseAction {
 			case "add":
 				viewModel = doAdd(data, session, request);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
+				rtnUrl = "/business/supplier/suppliermain";
 				return null;
 			case "updateinit":
 				rtnUrl = doUpdateInit(model, session, request, response);
@@ -72,6 +73,7 @@ public class SupplierAction extends BaseAction {
 			case "update":
 				viewModel = doUpdate(data, session, request);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
+				rtnUrl = "/business/supplier/suppliermain";
 				return null;
 			case "delete":
 				viewModel = doDelete(data, session, request, response);

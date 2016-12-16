@@ -41,24 +41,27 @@
 
 		$("#return").click(
 				function() {
-					var url = "${ctx}/business/bom";
-					location.href = url;		
+					var YSId ='${bomPlan.YSId}';
+					var materialId = '${bomPlan.materialId}';					
+					var url = '${ctx}/business/bom?methodtype=detailView&YSId=' + YSId+'&materialId='+materialId;
+					location.href = url;
+					//var url = "${ctx}/business/order";
 				});
 		
-		$("#edit").click(
+		$("#doEdit").click(
 				function() {
 					
-			var bomId = $('#review\\.bomid').val();
-			$('#reviewForm').attr("action", "${ctx}/business/orderreview?methodtype=edit&bomId="+bomId);
-			$('#reviewForm').submit();
+					var YSId = $('#review\\.ysid').val();
+					$('#reviewForm').attr("action", "${ctx}/business/orderreview?methodtype=edit&YSId="+YSId);
+					$('#reviewForm').submit();
 		});
 				
 		$("#approve").click(
 				function() {
 					
-			var bomId = $('#review\\.bomid').val();
-			$('#reviewForm').attr("action", "${ctx}/business/orderreview?methodtype=approve&bomId="+bomId);
-			$('#reviewForm').submit();
+					var bomId = $('#review\\.bomid').val();
+					$('#reviewForm').attr("action", "${ctx}/business/orderreview?methodtype=approve&bomId="+bomId);
+					$('#reviewForm').submit();
 		});
 
 	});
@@ -77,16 +80,17 @@
 		
 		<fieldset>
 			<legend> 订单基本信息</legend>
-			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
+			<table class="form" id="table_form" style="margin-top: -4px;">
 				<tr> 				
-					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td>${bomPlan.YSId}
-						<form:hidden path="review.bomid" value="${bomPlan.bomId}"/></td>
+					<td class="label" style="width:100px;"><label>耀升编号：</label></td>					
+					<td style="width:150px;">${bomPlan.YSId}
+						<form:hidden path="review.bomid" value="${bomPlan.bomId}"/>
+						<form:hidden path="review.ysid" value="${bomPlan.YSId}"/></td>
 								
-					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td>${bomPlan.materialId}</td>
+					<td class="label" style="width:100px;"><label>产品编号：</label></td>					
+					<td style="width:150px;">${bomPlan.materialId}</td>
 				
-					<td class="label"><label>产品名称：</label></td>				
+					<td class="label" style="width:100px;"><label>产品名称：</label></td>				
 					<td>${bomPlan.materialName}</td>
 				</tr>
 				<tr>
@@ -205,12 +209,11 @@
 	
 	<fieldset class="action" style="text-align: right;">
 		<button type="button" id="return" class="DTTT_button">返回</button>
-		<c:if test="${ bomPlan.status == ''}" >
-			<button type="button" id="edit" class="DTTT_button">编辑</button>
-		</c:if>
-		<c:if test="${ bomPlan.status == ''}" >
+		
+			<button type="button" id="doEdit" class="DTTT_button">编辑</button>
+		
 			<button type="button" id="approve" class="DTTT_button">审批</button>
-		</c:if>
+		
 	</fieldset>		
 		
 </form:form>

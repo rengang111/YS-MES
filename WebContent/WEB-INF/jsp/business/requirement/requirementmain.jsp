@@ -70,8 +70,6 @@
 							{"data": "YSId", "defaultContent" : ''},
 							{"data": "materialId", "defaultContent" : ''},
 							{"data": "materialName", "defaultContent" : ''},
-							{"data": "PIId", "defaultContent" : ''},
-							{"data": "orderId", "defaultContent" : ''},
 							{"data": "deliveryDate", "className" : 'td-center'},
 							{"data": "quantity", "className" : 'cash'},
 							{"data": "price", "className" : 'cash'},
@@ -82,23 +80,33 @@
 				    		{"targets":0,"render":function(data, type, row){
 								return row["rownum"] ;
 		                    }},
-				    		{"targets":10,"render":function(data, type, row){
-				    			var rtn = "";
-				    			var space = '&nbsp;';
-				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">查看</a>";
-				    			return rtn;
+				    		{"targets":8,"render":function(data, type, row){
+				    			var id = row["YSId"]
+				    			var zzFlag = "",trn = "",space="&nbsp;";
+				    			if(id != ''){
+				    				zzFlag = id.slice(-2);
+				    			}
+		
+		if(zzFlag == 'ZZ'){
+			rtn= "<a href=\"#\" onClick=\"doCreateRawZZ('" + row["YSId"] + "')\">原材料</a>";
+   				
+		}else{
+			rtn= 			 "<a href=\"#\" onClick=\"doCreateRaw('"  + row["YSId"] + "')\">原材料</a>";
+ 			rtn= rtn +space+ "<a href=\"#\" onClick=\"doCreatePart('" + row["YSId"] + "')\">配件</a>";			
+		}
+		return rtn;
 				    		}},
-				    		{"targets":9,"render":function(data, type, row){
+				    		{"targets":7,"render":function(data, type, row){
 				    			
 				    			var v = row["totalprice"],id = row["YSId"];
 				    			return YSKcheck(v,id);
 				    		}},
-				    		{"targets":8,"render":function(data, type, row){
+				    		{"targets":6,"render":function(data, type, row){
 				    			
 				    			var v = row["price"],id = row["YSId"];
 				    			return YSKcheck(v,id);
 				    		}},
-				    		{"targets":7,"render":function(data, type, row){
+				    		{"targets":5,"render":function(data, type, row){
 				    			
 				    			var v = row["quantity"],id = row["YSId"];
 				    			return YSKcheck(v,id);
@@ -162,6 +170,12 @@
 		
 		initEvent();
 		
+		$("#create").click(
+				function() {			
+			$('#purchaseForm').attr("action", "${ctx}/business/purchase?methodtype=insert");
+			$('#purchaseForm').submit();
+		});	
+		
 	})	
 	
 	function doSearch() {	
@@ -170,40 +184,29 @@
 		ajax(scrollHeight);
 
 	}
-	
-	function doCreate() {
-		
-		var url = '${ctx}/business/order?methodtype=create';
-		location.href = url;
-	}
-	
-	function doCreateZZ() {
-		
-		var url = '${ctx}/business/zzorder?methodtype=create';
-		location.href = url;
-	}
-	
-	function doCreateZP() {
-		
-		var url = '${ctx}/business/zporder?methodtype=create';
-		location.href = url;
-	}
-	
-	function doShow(recordId,PIId) {
 
-		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId+'&recordId='+recordId;
+	
+	function doCreateRawZZ(YSId) {
+
+		var url = "${ctx}/business/requirement?methodtype=editZZ&YSId="+YSId;
 
 		location.href = url;
 	}
+	
+	function doCreateRaw(YSId) {
 
-	function doEdit(recordId,parentId) {
-		var str = '';
-		var isFirstRow = true;
-		var url = '${ctx}/business/order?methodtype=edit&parentId=' + parentId+'&recordId='+recordId;
+		var url = "${ctx}/business/requirement?methodtype=editRaw&YSId="+YSId;
 
 		location.href = url;
 	}
 		
+	function doCreatePart(YSId) {
+
+		var url = "${ctx}/business/requirement?methodtype=editPart&YSId="+YSId;
+
+		location.href = url;
+	}
+
 	function doDelete() {
 
 		var str = '';
@@ -246,7 +249,7 @@
 </script>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 
 		<div id="main">
@@ -292,20 +295,18 @@
 							class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a-->
 					</div>
 					<div id="clear"></div>
-					<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
+					<table style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
 						<thead>						
 							<tr class="selected">
-								<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
-								<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">耀升编号</th>
-								<th style="width: 120px;" aria-label="物料编号" class="dt-middle ">产品编号</th>
-								<th style="width: 150px;" aria-label="物料编号" class="dt-middle ">产品名称</th>
-								<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">PI 编号</th>
-								<th style="width: 100px;" aria-label="物料名称" class="dt-middle ">订单号</th>
-								<th style="width: 60px;" aria-label="物料名称" class="dt-middle ">订单交期</th>
-								<th style="width: 50px;" aria-label="物料编号" class="dt-middle ">数量</th>
-								<th style="width: 50px;" aria-label="物料编号" class="dt-middle ">单价</th>
-								<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">销售总价</th>
-								<th style="width: 50px;" aria-label="操作" class="dt-middle ">操作</th>
+								<th style="width: 10px;" class="dt-middle ">No</th>
+								<th style="width: 80px;" class="dt-middle ">耀升编号</th>
+								<th style="width: 120px;" class="dt-middle ">产品编号</th>
+								<th style="width: 150px;" class="dt-middle ">产品名称</th>
+								<th style="width: 60px;" class="dt-middle ">订单交期</th>
+								<th style="width: 50px;"  class="dt-middle ">数量</th>
+								<th style="width: 50px;" class="dt-middle ">单价</th>
+								<th style="width: 80px;" class="dt-middle ">销售总价</th>
+								<th style="width: 100px;" class="dt-middle ">物料需求表</th>
 							</tr>
 						</thead>
 					</table>
