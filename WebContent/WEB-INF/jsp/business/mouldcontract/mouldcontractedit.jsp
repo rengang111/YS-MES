@@ -237,10 +237,35 @@ function ajaxPayList() {
 
 function initEvent(){
 
+    jQuery.validator.addMethod("contractId",function(value, element){ 
+    	var rtnValue = false;
+    	if (value != '') {
+    		var productModelId = $('#productModelId').val();
+    		var mouldFactoryId = $('#mouldFactoryId').find("option:selected").text();
+    		if (value.length == (7 + productModelId.length + mouldFactoryId.length)) {
+  				var year = value.substring(0, 4);
+  				var productModelIdVar = value.substring(4, 4 + productModelId.length);
+  	    		var mouldFactoryIdVar = value.substring(4 + productModelId.length, mouldFactoryId.length + 4 + productModelId.length);
+  	    		var serialNo = value.substring(value.length - 4, value.length);
+    			if (year >= '1950' && year <= '2050') {
+    				if (productModelId == productModelIdVar ) {
+    					if (mouldFactoryId == mouldFactoryIdVar) {
+    						if (checkNum(serialNo)) {
+    							rtnValue = true;
+    						}
+    					}
+    				}
+    			}
+    		}    		 
+    	}
+        return rtnValue;  
+    }, "合同编号不正确(年份+型号+工厂简称+3位流水号)"); 
+	
 	validatorBaseInfo = $("#mouldContractBaseInfo").validate({
 		rules: {
 			contractId: {
 				required: true,
+				contractId: true,
 				minlength: 8,
 				maxlength: 27,
 			},
@@ -321,6 +346,8 @@ function initEvent(){
 	if ('${DisplayData.mouldAcceptanceData.confirm}' == '1') {
 		doConfirm();
 	}
+	
+	autoComplete();
 }
 
 function doConfirm() {
