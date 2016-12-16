@@ -227,6 +227,7 @@ public class PurchaseOrderService extends BaseService {
 		try {
 			ts.begin();
 
+			String materialId = request.getParameter("materialId");
 			//以供应商为单位集计
 			ArrayList<HashMap<String, String>> supplierList = getSupplierList(YSId);
 
@@ -250,7 +251,7 @@ public class PurchaseOrderService extends BaseService {
 				String contractId = BusinessService.getContractCode(YSId, shortName, subId);
 				
 				//新增采购合同
-				insertOrder(YSId,supplierId,contractId,parentId,subId,total);
+				insertOrder(YSId,materialId,supplierId,contractId,parentId,subId,total);
 				
 				//从物料需求表取得合同详情
 				String where = " YSId = '"+YSId +"'"+ 
@@ -280,6 +281,7 @@ public class PurchaseOrderService extends BaseService {
 	 */
 	private void insertOrder(
 			String YSId,
+			String materialId,
 			String supplierId,
 			String contractId,
 			String parentId,
@@ -297,6 +299,7 @@ public class PurchaseOrderService extends BaseService {
 		
 		data.setRecordid(guid);
 		data.setYsid(YSId);
+		data.setMaterialid(materialId);
 		data.setContractid(contractId);
 		data.setParentid(parentId);
 		data.setSubid(String.valueOf(subId));

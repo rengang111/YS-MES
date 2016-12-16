@@ -1,8 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
+<head>
+<title>mainframe</title>
+</head>
 <%@ include file="../common/common.jsp"%>
+<script type="text/javascript">
 
+	$(document).ready(function() {
+	
+		//overflow:hidden
+		$('body').find('div').eq(1).css('overflow','hidden');
+		
+	})	
+</script>
 
 
 <body class="easyui-layout">

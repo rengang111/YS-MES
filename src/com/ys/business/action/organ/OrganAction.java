@@ -43,7 +43,7 @@ public class OrganAction extends BaseAction {
 	OrganModel organModel= new OrganModel();
 	
 	@RequestMapping(value="/organ")
-	public String init(@RequestBody String data, @ModelAttribute("organ") OrganModel TModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String init(@RequestBody String data, @ModelAttribute("organ") OrganModel TModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
 		
@@ -151,7 +151,7 @@ public class OrganAction extends BaseAction {
 		return organModel;
 	}	
 	
-	public OrganModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public OrganModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		organModel = organService.doDelete(data, userInfo);

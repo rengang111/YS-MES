@@ -25,39 +25,55 @@ $(document).ready(function() {
 		function() {
 			url = "${ctx}/business/order";
 			location.href = url;
-		});
+	});
 	
 	$("#submitReturn").click(
-			function() {
-				if(inputCheck()){
-					doSubmitReturn();
-				}else{
-					$().toastmessage('showWarningToast', "请填写完整后,再保存。");
-				}
-				
-
-		});
+		function() {
+			if(inputCheck()){
+				doSubmitReturn();
+			}else{
+				$().toastmessage('showWarningToast', "请填写完整后,再保存。");
+			}
+	});
 	
-	$("#goEdit").click(
-			function() {
-				var YSId = '${order.YSId}';
-				url = "${ctx}/business/zporder?methodtype=edit&YSId="+YSId;
-				location.href = url;
-			});	
+	$("#doEdit").click(
+		function() {
+			var YSId = '${order.YSId}';
+			url = "${ctx}/business/zporder?methodtype=edit&YSId="+YSId;
+			location.href = url;
+	});	
 	
 	$("#doApprove").click(
-			function() {
-				var recordId = '${order.recordId}';
-				var orderId = '${order.orderId}';
-				url = "${ctx}/business/zporder?methodtype=approve&recordId="+recordId+"&orderId="+orderId;
-				location.href = url;
-			});
+		function() {
+			var recordId = '${order.recordId}';
+			var orderId = '${order.orderId}';
+			url = "${ctx}/business/zporder?methodtype=approve&recordId="+recordId+"&orderId="+orderId;
+			location.href = url;
+	});
+	
+	$("#doReview").click(
+		function() {
+			var YSId = '${order.YSId }';
+			var url = '${ctx}/business/orderreview?methodtype=create&YSId=' + YSId;
+
+			location.href = url;
+
+	});
+	
+	$("#doPurchasePlan").click(
+		function() {
+			var YSId = '${order.YSId }';
+			var url = '${ctx}/business/orderreview?methodtype=create&YSId=' + YSId;
+
+			location.href = url;
+
+	});
 });
 
 </script>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 <div id="main">
 <fieldset>
@@ -100,9 +116,10 @@ $(document).ready(function() {
 	</fieldset>
 	
 	<fieldset class="action" style="text-align: right;">	
-		<button type="button" id="goEdit" class="DTTT_button">编辑</button>
+		<button type="button" id="doEdit" class="DTTT_button">编辑</button>
 		<button type="button" id="doApprove" class="DTTT_button">审批</button>	
-		<button type="button" id="goPurchasePlan" class="DTTT_button">生成订单采购方案</button>
+		<button type="button" id="doReview" class="DTTT_button">订单评审</button>
+		<button type="button" id="doPurchasePlan" class="DTTT_button">生成订单采购方案</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>
 </div>

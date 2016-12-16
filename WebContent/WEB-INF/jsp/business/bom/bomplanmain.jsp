@@ -193,7 +193,7 @@
 </script>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 <div id="main">
 

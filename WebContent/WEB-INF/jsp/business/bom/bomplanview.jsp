@@ -1,11 +1,9 @@
-<%@ page language="java" pageEncoding="UTF-8"
-	contentType="text/html; charset=UTF-8"%>
+<%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="sec"  uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fmt"  uri="http://java.sun.com/jsp/jstl/fmt" %> 
 
 <!DOCTYPE HTML>
 <html>
@@ -99,20 +97,31 @@
 		ajax();
 	
 		$("#goBack").click(function() {
-					history.go(-1);
-					//var url = '${ctx}/business/purchase';
-					//location.href = url;		
+					//history.go(-1);
+					var url = '${ctx}/business/order';
+					location.href = url;		
 				});
 		
 		$("#doEdit").click(function() {
+			var YSId = '${bomPlan.YSId }';
 			var bomId = $('#bomid').val();
-			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=edit&bomId="+bomId);
+			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=edit&bomId="+bomId+'&YSId='+YSId);
 			$('#bomForm').submit();
+		});	
+		
+		$("#doOrderReview").click(function() {
+			var YSId = '${bomPlan.YSId }';
+			var bomId = $('#bomid').val();
+			$('#bomForm').attr("action", "${ctx}/business/orderreview?methodtype=create&bomId="+bomId+'&YSId='+YSId);
+			$('#bomForm').submit();	
+			//var url = '${ctx}/business/orderreview?methodtype=create&YSId=' + YSId+'&bomId='+bomId;
+			
 		});	
 		
 		$("#doPurchasePlan").click(function() {
 			var bomId = $('#bomid').val();
-			$('#bomForm').attr("action", "${ctx}/business/purchase?methodtype=purchasePlan&bomId="+bomId);
+			var YSId = '${bomPlan.YSId }';
+			$('#bomForm').attr("action", "${ctx}/business/purchase?methodtype=purchasePlan&YSId="+YSId);
 			$('#bomForm').submit();
 		});
 		
@@ -141,8 +150,8 @@
 			<legend> 采购方案</legend>
 			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
 				<tr> 	
-					<td class="label" width="100px"><label>耀升名称：</label></td>					
-					<td width="250px">${bomPlan.YSId }</td>		
+					<td class="label" width="100px"><label>耀升编号：</label></td>					
+					<td width="150px">${bomPlan.YSId }</td>		
 					<td class="label" width="100px"><label>BOM编号：</label></td>					
 					<td width="150px">${bomPlan.bomId}</td>
 					<td class="label" width="100px"><label>方案日期：</label></td>					
@@ -173,7 +182,7 @@
 				<tr>			
 					<td class="td-center">${bomPlan.materialCost }</td>
 					<td class="td-center">${bomPlan.laborCost }</td>
-					<td class="td-center">${bomPlan.managementCostRate }</td>
+					<td class="td-center"><fmt:formatNumber  value="${bomPlan.managementCostRate/100 }" type="number" pattern="0.##%" /></td>
 					<td class="td-center">${bomPlan.managementCost }</td>
 					<td class="td-center">${bomPlan.productCost }</td>
 					<td class="td-center">${bomPlan.totalCost }</td>
@@ -182,7 +191,8 @@
 	
 		<div style="text-align: right;margin-top: 10px;">	
 		<button type="button" id="doEdit" class="DTTT_button">编辑</button>
-		<button type="button" id="doPurchasePlan" class="DTTT_button">采购方案</button>
+		<button type="button" id="doOrderReview" class="DTTT_button">订单评审</button>
+		<button type="button" id="doPurchasePlan" class="DTTT_button">生成采购方案</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 		</div>
 	</fieldset>	
@@ -236,29 +246,15 @@
 				<th width="1px">No</th>
 				<th class="dt-center" width="100px">ERP编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="120px">供应商</th>
-				<th class="dt-center" width="60px">用量</th>
-				<th class="dt-center" width="60px">本次单价</th>
+				<th class="dt-center" width="80px">供应商</th>
+				<th class="dt-center" width="50px">用量</th>
+				<th class="dt-center" width="50px">本次单价</th>
 				<th class="dt-center" width="80px">总价</th>
 				<th class="dt-center" width="50px">当前价格</th>
 				<th class="dt-center" style="width:50px;font-size:9px">上次BOM<br/>价格</th>
-				<th class="dt-center" width="60px">历史最低</th>
+				<th class="dt-center" width="50px">历史最低</th>
 			</tr>
 			</thead>
-			<tfoot>
-				<tr>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-				</tr>
-			</tfoot>
 			
 		<tbody>
 		<c:forEach var="detail" items="${bomDetail}" varStatus='status' >		
@@ -270,7 +266,7 @@
 				<td>${detail.supplierId}</td>
 				<td>${detail.quantity}</td>							
 				<td>${detail.price}</td>						
-				<td>${detail.quantity * detail.price}</td>					
+				<td>${detail.totalPrice}</td>					
 				<td>${detail.lastPrice}</td>					
 				<td>${detail.sourcePrice}</td>	
 				<td>${detail.minPrice}</td>	
@@ -278,6 +274,20 @@
 			</tr>			
 		</c:forEach>
 		</tbody>
+		<tfoot>
+			<tr>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</tfoot>
 		
 	</table>
 	</div>

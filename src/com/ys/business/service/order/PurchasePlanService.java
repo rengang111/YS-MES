@@ -20,9 +20,11 @@ import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.BomPlanModel;
 import com.ys.business.action.model.order.PurchasePlanModel;
 import com.ys.business.db.dao.B_BomDetailDao;
+import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.data.B_BomDetailData;
+import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.CommFieldsData;
@@ -161,7 +163,7 @@ public class PurchasePlanService extends BaseService {
 		return modelMap;
 	}
 	
-	public Model getBomDetailView(String bomId) 
+	public Model getBomDetailView(String YSId) 
 			throws Exception {
 		
 		dataModel = new BaseModel();		
@@ -170,7 +172,7 @@ public class PurchasePlanService extends BaseService {
 		
 		baseQuery = new BaseQuery(request, dataModel);
 
-		userDefinedSearchCase.put("keywords1", bomId);
+		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		modelMap = baseQuery.getYsQueryData(0, 0);
@@ -262,108 +264,35 @@ public class PurchasePlanService extends BaseService {
 	}
 	
 	/*
-	 * 
-	 */
-	public HashMap<String, Object> getMaterialList(
-			HttpServletRequest request) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-
-		String key = request.getParameter("key").toUpperCase();
-
-		dataModel.setQueryFileName("/business/order/bomquerydefine");
-		dataModel.setQueryName("getMaterialPriceList");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("keywords1", key);
-		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
-
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		modelMap.put("retValue", "success");			
-		
-		return modelMap;
-	}
-	/*
-	 * 
-	 */
-	public HashMap<String, Object> getSupplierPriceList() throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-
-		String key1 = request.getParameter("key1").toUpperCase();
-		String key2 = request.getParameter("key2").toUpperCase();
-
-		dataModel.setQueryFileName("/business/order/bomquerydefine");
-		dataModel.setQueryName("getSupplierPriceList");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("keywords1", key1);
-		userDefinedSearchCase.put("keywords2", key2);
-		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
-
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		modelMap.put("retValue", "success");			
-		
-		return modelMap;
-	}
-	
-	/*
 	 * 1.物料新增处理(一条数据)
 	 * 2.子编码新增处理(N条数据)
-	 */
-	
+	 */	
 	public String insert() throws Exception  {
 
-		String bomid="";
+		String YSId="";
 		ts = new BaseTransaction();
-		/*
+		
 		try {
 			
 			ts.begin();
-					
-			B_PurchasePlanData reqData = (B_PurchasePlanData)reqModel.getBomPlan();
 			
-			//插入BOM基本信息
-			insertBomPlan(reqData);
+			//订单采购方案
+			YSId = reqModel.getYSId();
 			
-			//插入BOM详情		
-			bomid = reqData.getBomid();
-			List<B_BomDetailData> reqDataList = reqModel.getBomDetailLines();
+			//首先删除DB中的BOM详情
+			String where = " YSId = '"+YSId +"'";
+			deletePlanDetail(where);
 			
-			for(B_BomDetailData data:reqDataList ){
-				
-				//过滤空行或者被删除的数据
-				if(data != null && 
-					data.getMaterialid() != null && 
-					data.getMaterialid() != ""){
-					
-					data.setBomid(bomid);
-					insertBomDetail(data);	
-					
-					//供应商单价修改
-					//String supplierId = data.getSupplierid();
-					//String materialId = data.getMaterialid();
-					//String price = data.getPrice();
-					//updatePriceSupplier(materialId,supplierId,price);
-				}	
+			List<B_PurchasePlanData> reqDataList = reqModel.getDetail();
+			
+			for(B_PurchasePlanData data:reqDataList ){
+
+				data.setYsid(YSId);
+				insertPurchasePlan(data);
 			
 			}
+			
+			updateOrderByYSId(YSId);
 			
 			ts.commit();
 		}
@@ -371,19 +300,19 @@ public class PurchasePlanService extends BaseService {
 			ts.rollback();
 			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
-		*/
-		return bomid;
+		
+		return YSId;
 		
 	}	
 
 	/*
 	 * BOM基本信息insert处理
 	 */
-	public void insertBomPlan(
+	public void insertPurchasePlan(
 			B_PurchasePlanData data) throws Exception{
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"BomPlanInsert",userInfo);
+				"PurchasePlanInsert",userInfo);
 
 		copyProperties(data,commData);
 
@@ -394,138 +323,9 @@ public class PurchasePlanService extends BaseService {
 
 	}	
 	
-	/*
-	 * BOM详情插入处理
-	 */
-	private void insertBomDetail(
-			B_BomDetailData detailData) throws Exception{
-			
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BomDetailInsert",userInfo);
-
-		copyProperties(detailData,commData);
-		guid = BaseDAO.getGuId();
-		detailData.setRecordid(guid);
-		
-		bomDetailDao.Create(detailData);
-
-	}	
 	
-	/*
-	 * 1.订单基本信息更新处理(1条数据)
-	 * 2.订单详情 新增/更新/删除 处理(N条数据)
-	 */
-	public String update() throws Exception  {
-		
-		String bomId = "";
-		ts = new BaseTransaction();
-		/*
-		try {
-			
-			ts.begin();
-						
-			B_PurchasePlanData reqBom = (B_PurchasePlanData)reqModel.getBomPlan();
-			
-			//订单基本信息更新处理
-			updateBomPlan(reqBom);
-			
-			//订单详情 更新/删除/插入 处理			
-			List<B_BomDetailData> newDetailList = reqModel.getBomDetailLines();
-			List<B_BomDetailData> delDetailList = new ArrayList<B_BomDetailData>();
-			
-			//过滤页面传来的有效数据
-			for(B_BomDetailData data:newDetailList ){
-				if(null == data.getMaterialid() || ("").equals(data.getMaterialid())){
-					delDetailList.add(data);
-				}
-			}
-			newDetailList.removeAll(delDetailList);
-			
-			//清空后备用
-			delDetailList.clear();
-			
-			//根据画面的PiId取得DB中更新前的订单详情 
-			//key:piId
-			List<B_BomDetailData> oldDetailList = null;
-
-			bomId = reqBom.getBomid();
-			String where = " bomId = '"+bomId +"'" + " AND deleteFlag = '0' ";
-			oldDetailList = getBomDetailByBomId(where);
-						
-			//页面数据的recordId与DB匹配
-			//key存在:update;key不存在:insert;
-			//剩下未处理的DB数据:delete
-			for(B_BomDetailData newData:newDetailList ){
-
-				String newMaterialid = newData.getMaterialid();	
-
-				boolean insFlag = true;
-				for(B_BomDetailData oldData:oldDetailList ){
-					String id = oldData.getMaterialid();
-					
-					if(newMaterialid.equals(id)){
-						
-						//更新处理
-						updateOrderDetail(newData,oldData);					
-						
-						//从old中移除处理过的数据
-						oldDetailList.remove(oldData);
-						
-						insFlag = false;
-						
-						break;
-					}
-				}
-
-				//新增处理
-				if(insFlag){
-					newData.setBomid(bomId);
-					insertBomDetail(newData);
-				}
-				
-				//供应商单价修改
-				//String supplierId = newData.getSupplierid();
-				//String materialId = newData.getMaterialid();
-				//String price = newData.getPrice();
-				//updatePriceSupplier(materialId,supplierId,price);
-			}
-			
-			//删除处理
-			if(oldDetailList.size() > 0){					
-				deleteOrderDetail(oldDetailList);
-			}
-			
-			ts.commit();
-			
-		}
-		catch(Exception e) {
-			ts.rollback();
-		}
-			*/	
-		return bomId;
-	}
 	
-	/*
-	 * BOM基本信息更新处理
-	 */
-	public void updateBomPlan(B_PurchasePlanData reqBom) 
-			throws Exception{
 
-		String recordid = reqBom.getRecordid();
-		
-		//取得更新前数据		
-		purchaseData = getBomByRecordId(recordid);					
-		
-		if(null != purchaseData){
-		
-			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"BomPlanUpdate",userInfo);
-
-			//处理共通信息
-			copyProperties(purchaseData,commData);
-			//获取页面数据
-			
-			purchaseDao.Store(purchaseData);
-		}
-	}
 
 	/*
 	 * 订单详情更新处理
@@ -589,39 +389,53 @@ public class PurchasePlanService extends BaseService {
 	/*
 	 * BOM详情删除处理
 	 */
-	public void deleteOrderDetail(
-			List<B_BomDetailData> oldDetailList) 
+	public void deletePlanDetail(String where) 
 			throws Exception{
 		
-		for(B_BomDetailData detail:oldDetailList){
-			
-			if(null != detail){
-						
-				//处理共通信息	
-				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,"BomDetailDelete",userInfo);
-				copyProperties(detail,commData);
-				
-				bomDetailDao.Store(detail);
-			}
-		}
+		try{
+			purchaseDao.RemoveByWhere(where);
+		}catch(Exception e){
+			//nothing
+		}	
 	}
 
+	/*
+	 * 更新Order表的状态:待评审
+	 */
+	private void updateOrderByYSId(String YSId) throws Exception{
 		
+		//确认Order表是否存在
+		
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+		B_OrderDetailData dbData = getOrderByYSId(dao,YSId);
+		
+		if(dbData != null){				
+			//update处理
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderStatusUpdate",userInfo);
+			
+			copyProperties(dbData,commData);
+			dbData.setStatus(Constants.ORDER_STS_3);
+
+			dao.Store(dbData);				
+		}
+	}	
 	
-	private B_PurchasePlanData getBomByRecordId(String key) throws Exception {
+	@SuppressWarnings("unchecked")
+	public B_OrderDetailData getOrderByYSId(
+			B_OrderDetailDao dao,
+			String YSId ) throws Exception {
 		
-		purchaseData = new B_PurchasePlanData();
-				
-		try {
-			purchaseData.setRecordid(key);
-			purchaseData = (B_PurchasePlanData)purchaseDao.FindByPrimaryKey(purchaseData);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			purchaseData = null;
-		}
+		List<B_OrderDetailData> dbList = null;
 		
-		return purchaseData;
+		String where = " YSId = '"+YSId +"'" + " AND deleteFlag = '0' ";
+						
+		dbList = (List<B_OrderDetailData>)dao.Find(where);
+		
+		if(dbList != null & dbList.size() > 0)
+			return dbList.get(0);		
+		
+		return null;
 	}
 
 	public Model createBomPlan() throws Exception {
@@ -658,8 +472,8 @@ public class PurchasePlanService extends BaseService {
 
 	public Model showBomDetail() throws Exception {
 
-		String bomId = request.getParameter("bomId");
-		getBomDetailView(bomId);
+		String YSId = request.getParameter("YSId");
+		getBomDetailView(YSId);
 		
 		return model;
 		
@@ -667,19 +481,12 @@ public class PurchasePlanService extends BaseService {
 	
 	public Model insertAndView() throws Exception {
 
-		String bomId = insert();
-		getBomDetailView(bomId);
+		String YSId = insert();
+		//getBomDetailView(YSId);
 		
 		return model;
 		
 	}
 	
-	public Model updateAndView() throws Exception {
 
-		String bomId = update();
-		getBomDetailView(bomId);
-		
-		return model;
-		
-	}
 }

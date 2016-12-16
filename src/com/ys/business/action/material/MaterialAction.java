@@ -1,10 +1,7 @@
 package com.ys.business.action.material;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -16,23 +13,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.ys.business.action.model.supplier.SupplierModel;
-import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.material.MaterialModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.business.service.material.MaterialService;
-import com.ys.util.DicUtil;
-import com.ys.util.basequery.common.BaseModel;
-import com.ys.system.action.model.dic.DicModel;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.system.service.common.BaseService;
-
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/business")
@@ -328,20 +314,7 @@ public class MaterialAction extends BaseAction {
 		model = materialService.insertPrice(reqModel,model, request,userInfo);
 		
 	}	
-	public String doUpdateContact(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
-		String key = request.getParameter("key");
-		try {
-			//dataModel = supplierService.getSupplierBaseInfo(key);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			MaterialModel.setMessage("发生错误，请联系系统管理员");
-		}
-		model.addAttribute("DisplayData", MaterialModel);
-		
-		return "/business/supplier/supplieredit";
-	}	
 	
 	public void doUpdate(MaterialModel reqModel,Model model,
 			HttpServletRequest request) throws Exception {
@@ -351,7 +324,7 @@ public class MaterialAction extends BaseAction {
 		
 	}	
 	
-	public MaterialModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public MaterialModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		MaterialModel = materialService.doDelete(data, userInfo);
 
@@ -389,14 +362,5 @@ public class MaterialAction extends BaseAction {
 		model = materialService.viewPrice(request,model,recordId,parentId);
 
 	}	
-	
-	public MaterialModel doOptionChange(String data){
-		
-		String[] paras = data.split("&");
-		String[] datas = paras[1].split("=");
-		//MaterialModel = supplierService.doOptionChange(DicUtil.ADDRESS, datas[1]);
-
-		return MaterialModel;
-	}
 	
 }

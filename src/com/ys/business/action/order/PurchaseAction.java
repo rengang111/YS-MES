@@ -90,7 +90,7 @@ public class PurchaseAction extends BaseAction {
 				break;
 			case "insert":
 				doInsert();
-				rtnUrl = "/business/purchase/bomplanview";
+				rtnUrl = "/business/requirement/requirementmain";
 				break;							
 			case "detail":
 				doShowBomDetail();
@@ -111,14 +111,6 @@ public class PurchaseAction extends BaseAction {
 			case "update":
 				doUpdate();
 				rtnUrl = "/business/purchase/bomplanview";
-				break;
-			case "getSupplierPriceList"://供应商编号查询
-				dataMap = doGetSupplierPriceList();
-				printOutJsonObj(response, dataMap);
-				break;
-			case "getMaterialPriceList"://物料编号查询
-				dataMap = doGetMaterialList();
-				printOutJsonObj(response, dataMap);
 				break;
 				
 		}
@@ -201,7 +193,7 @@ public class PurchaseAction extends BaseAction {
 	
 	public void doUpdate() throws Exception {
 		
-		purchaseService.updateAndView();			
+		//purchaseService.updateAndView();			
 		
 	}
 
@@ -216,56 +208,5 @@ public class PurchaseAction extends BaseAction {
 		model = purchaseService.showBomDetail();
 			
 	}
-	
-	/*
-	 * 
-	 */	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doGetMaterialList(){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
-		
-		try {
-			dataMap = purchaseService.getMaterialList(request);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-	
-	/*
-	 * doSupplierPriceList
-	 */	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doGetSupplierPriceList(){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
-		
-		try {
-			dataMap = purchaseService.getSupplierPriceList();
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-
 	
 }

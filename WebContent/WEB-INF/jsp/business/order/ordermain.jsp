@@ -25,7 +25,7 @@
 			table.fnDestroy();
 		}
 		var t = $('#TMaterial').DataTable({
-				"paging": true,
+				"paging": false,
 				"lengthChange":false,
 				"lengthMenu":[50,100,200],//设置一页展示20条记录
 				"processing" : false,
@@ -34,8 +34,8 @@
 				"ordering "	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",
-				"scrollY":scrollHeight,
-				"scrollCollapse":true,
+				//"scrollY":scrollHeight,
+				//"scrollCollapse":true,
 				"retrieve" : true,
 				"sAjaxSource" : "${ctx}/business/order?methodtype=search",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -247,7 +247,7 @@
 </script>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 
 		<div id="main">

@@ -5,7 +5,7 @@
 <head>
 
 </head>
-<body class="easyui-layout">
+<body class="panel-body">
 	jyyjyyjyy
 	<input type=text name="selCheck" id="selCheck" />
 	<input type=button onclick="dotest();"/><br>

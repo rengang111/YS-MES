@@ -1,13 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE HTML >
+<html>
 <%@ include file="../../common/common.jsp"%>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 	<title>	物料分类管理</title>
 </head>
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 <div id="main">
 
@@ -50,12 +50,12 @@
 			<thead>
 			<tr class="selected">
 				<td width="1px" style="display:none"></td>
-				<td width="30px">序号</td>
+				<td width="50px">序号</td>
 				<td width="100px">分类编码</td>
-				<td width="160px">分类名称</td>
+				<td width="200px">分类名称</td>
 				<td width="160px">规格说明</td>
-				<td width="160px">上级单位</td>
-				<td width="160px">操作</td>
+				<td width="100px">上级单位</td>
+				<td width="100px">操作</td>
 			</tr>
 			</thead>
 			<tbody>
@@ -96,7 +96,7 @@
 </div>
 <script type="text/javascript">
 
-	var layerHeight = '350';
+	var layerHeight = '400';
 	var layerWidth = '700';
 
 	$(function(){
@@ -127,9 +127,9 @@
 		
 	}); 
 	function noticeNaviChanged(id, name, isLeaf) {
-		var infoList = name.split("_");
+		//var infoList = name.split("_");
 		$('#userCategoryId').val(id);
-		$('#categoryName').val(infoList[1]);
+		$('#categoryName').val(name);
 		
 		$('#retrieve').click();
 
@@ -217,10 +217,11 @@ $(document).ready( function () {
 	
 	var t = $('#example').DataTable({
 			"paging": true,
-			"lengthMenu":[20,50,100],//设置一页展示100条记录
+			"lengthMenu":[50,100,200],//设置一页展示100条记录
 			"searching" : false,
-			"scrollY":scrollHeight,
-			"scrollCollapse":true,
+			"lengthChange":false,
+			//"scrollY":scrollHeight,
+			//"scrollCollapse":true,
     	  	"language": {"url":"${ctx}/plugins/datatables/chinese.json"},
 
     	  	"columnDefs" : [ 

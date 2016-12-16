@@ -70,18 +70,7 @@ public class RequirementAction extends BaseAction {
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
-				break;							
-			case "implement":
-				rtnUrl = "/business/bom/purchaseman";
-				break;			
-			case "searchPurchase":
-				dataMap = doSearchPurchase(data);
-				printOutJsonObj(response, dataMap);
-				break;
-			case "create":
-				doCreate();
-				rtnUrl = "/business/order/zzorderadd";
-				break;
+				break;	
 			case "insert":
 				doInsert();
 				rtnUrl = "/business/requirement/requirementview";
@@ -90,34 +79,21 @@ public class RequirementAction extends BaseAction {
 				//doShowBomDetail();
 				rtnUrl = "/business/bom/bomselectlist";
 				break;
-			case "edit":
+			case "editZZ":
+				doEditZZ();
+				rtnUrl = "/business/requirement/rawrequirementedit";
+				break;	
+			case "editRaw":
 				doEdit();
+				rtnUrl = "/business/requirement/rawrequirementedit";
+				break;
+			case "editPart":
+				doEditPart();
 				rtnUrl = "/business/requirement/requirementedit";
-				break;				
-			case "update":
-				doUpdate();
-				rtnUrl = "/business/order/zzorderview";
 				break;				
 			case "approve":
 				doApprove();
 				rtnUrl = "/business/order/ordermain";
-				break;
-			case "getSupplierPriceList"://供应商编号查询
-				dataMap = doGetSupplierPriceList();
-				printOutJsonObj(response, dataMap);
-				break;
-			case "getMaterialList"://物料编号查询
-				dataMap = doGetMaterialList();
-				printOutJsonObj(response, dataMap);
-				break;	
-			case "chooseSourseBom":
-				//doViewSourseBom();
-				rtnUrl = "/business/bom/bomselectlist";
-				break;
-			case "searchCopyBom":
-				dataMap = doSearchCopyBom(data);
-				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/bom/bomselectlist";
 				break;
 				
 		}
@@ -134,7 +110,7 @@ public class RequirementAction extends BaseAction {
 				new ArrayList<HashMap<String, String>>();
 		
 		try {
-			//dataMap = zzOrderService.getBomList(data);
+			//dataMap = service.getBomList(data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -149,62 +125,8 @@ public class RequirementAction extends BaseAction {
 		return dataMap;
 	}
 
-	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearchCopyBom(
-			@RequestBody String data){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = zzOrderService.getCopyBomList(data);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
 
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearchPurchase(
-			@RequestBody String data){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = zzOrderService.getBomApproveList(data);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
 	
-	
-
-	public void doCreate() throws Exception{
-		
-		//model = service.createZZorder();
-		
-	}
 	
 	public void doInsert() throws Exception {
 
@@ -213,72 +135,25 @@ public class RequirementAction extends BaseAction {
 	}		
 	
 	
-	public void doEdit() throws Exception{
+	public void doEditZZ() throws Exception{
 
 		service.editZZorder();
-	}	
-	
-	public void doUpdate() throws Exception {
-		
-		service.updateAndView();			
-		
 	}
+	
+	public void doEdit() throws Exception{
+
+		service.editorder();
+	}
+	
+	public void doEditPart() throws Exception{
+
+		service.editorderPart();
+	}	
 	
 	public void doApprove() throws Exception {
 		
 		service.approveAndView();			
 		
-	}	
-	
-	/*
-	 * 
-	 */	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doGetMaterialList(){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
-		
-		try {
-			dataMap = service.getZZMaterialList();
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
 	}
-	
-	/*
-	 * doSupplierPriceList
-	 */	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doGetSupplierPriceList(){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = zzOrderService.getSupplierPriceList();
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-
 	
 }

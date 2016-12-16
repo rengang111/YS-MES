@@ -116,6 +116,87 @@ public class RequirementService extends BaseService {
 		model.addAttribute("rawGroup", dataModel.getYsViewData());
 		
 	}
+	public void getOrderRawList( 
+			String YSId) throws Exception {
+
+		dataModel.setQueryName("getOrderRawList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsQueryData(0, 0);
+			
+		model.addAttribute("order",dataModel.getYsViewData().get(0));		
+		model.addAttribute("rawDetail", dataModel.getYsViewData());
+		
+	}
+	
+	public void getOrderRawSum( 
+			String YSId) throws Exception {
+
+		dataModel.setQueryName("getOrderRawSum");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsQueryData(0, 0);
+				
+		model.addAttribute("rawGroup", dataModel.getYsViewData());
+		
+	}
+
+	public void getOrderPartList( 
+			String YSId) throws Exception {
+
+		dataModel = new BaseModel();
+		dataModel.setQueryFileName("/business/order/zzorderquerydefine");
+		dataModel.setQueryName("getOrderPartList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsQueryData(0, 0);
+	
+		model.addAttribute("rawGroup", dataModel.getYsViewData());
+		
+	}
+
+	public void getRequirementList( 
+			String YSId) throws Exception {
+
+		dataModel = new BaseModel();
+		dataModel.setQueryFileName("/business/order/zzorderquerydefine");
+		dataModel.setQueryName("getRequirementList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsQueryData(0, 0);
+	
+		model.addAttribute("rawGroup", dataModel.getYsViewData());
+		
+	}
+	
+	public void getOrderDetailByYSId( 
+			String YSId) throws Exception {
+
+		dataModel = new BaseModel();
+		dataModel.setQueryFileName("/business/order/bomquerydefine");
+		dataModel.setQueryName("getOrderDetailByYSId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("keywords1", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsQueryData(0, 0);
+
+		model.addAttribute("order",dataModel.getYsViewData().get(0));
+		
+	}
 	
 	/*
 	 * 
@@ -143,23 +224,6 @@ public class RequirementService extends BaseService {
 		return modelMap;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private List<B_MaterialRequirmentData> getOrderDetailByPIId(
-			String where,
-			List<B_MaterialRequirmentData> dbList){
-	
-		try {
-
-			dbList = (List<B_MaterialRequirmentData>)dao.Find(where);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dbList = null;
-		}
-		
-		return dbList;
-	}
-	
 	/*
 	 * 1.原材料需求表新增处理(N条数据)
 	 */
@@ -169,25 +233,18 @@ public class RequirementService extends BaseService {
 
 		try {
 			ts.begin();
+			
+			//首先删除DB中的BOM详情
+			String where = " YSId = '"+YSId +"'";
+			deleteMaterialRequirement(where);
 						
 			//处理订单详情数据		
 			List<B_MaterialRequirmentData> reqDataList = reqModel.getRequirmentList();
 			
 			for(B_MaterialRequirmentData data:reqDataList ){
 
-				try{
-					dao = new B_MaterialRequirmentDao(data);
-				}catch (Exception e){
-					//查询不到数据就insert,反之update
-					dao.beanData = null;
-				}
-				if(null == dao.beanData){
-					
-					insertRequirment(data);
-				}else{
-					
-					updateRequirment(data);
-				}
+				insertRequirment(data);
+				
 			}
 			
 			ts.commit();
@@ -276,93 +333,19 @@ public class RequirementService extends BaseService {
 			ts.rollback();
 		}
 		
-	}
-	
-	/*
-	 * 订单详情删除处理
-	 */
-	public void deleteOrderDetail(List<B_OrderDetailData> oldDetailList) 
-			throws Exception{
-		
-		for(B_OrderDetailData detail:oldDetailList){
-			
-			if(null != detail){
-				
-				//处理共通信息
-				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-						"ZZOrderDetailDelete",userInfo);
-
-				copyProperties(detail,commData);
-				
-				//detailDao.Store(detail);
-			}
-		}
 	}	
 
-	
-
 	/*
-	 * 取得耀升编号的流水号
+	 * 删除处理
 	 */
-	public int getYSIdByParentId(HttpServletRequest request) 
-			throws Exception {
+	public void deleteMaterialRequirement(String where) 
+			throws Exception{
 		
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-		
-  
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getYSIdByParentId");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-
-		//查询条件
-        String paternId = BusinessService.getYSKCommCode();
-        
-		userDefinedSearchCase.put("keywords1", paternId);
-		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
-		
-		//取得已有的最大流水号
-		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("MaxSubId"));
-		
-		return code;
-	}
-	
-	
-	private B_OrderData getOrderByRecordId(String key) throws Exception {
-		B_OrderDao dao = new B_OrderDao();
-		B_OrderData dbData = new B_OrderData();
-				
-		try {
-			dbData.setRecordid(key);
-			dbData = (B_OrderData)dao.FindByPrimaryKey(dbData);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dbData = null;
-		}
-		
-		return dbData;
-	}
-	
-	public OrganModel doOptionChange(String type, String parentCode) {
-		DicUtil util = new DicUtil();
-		OrganModel model = new OrganModel();
-		
-		try {
-			ArrayList<ListOption> optionList = util.getListOption(type, parentCode);
-			model.setTypeList(optionList);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-			model.setTypeList(null);
-		}
-		
-		return model;
+		try{
+			dao.RemoveByWhere(where);
+		}catch(Exception e){
+			//nothing
+		}	
 	}
 
 	public void insertAndView() throws Exception {
@@ -372,10 +355,21 @@ public class RequirementService extends BaseService {
 		
 		insert(YSId);
 		
+		String sub = YSId.substring(YSId.length()-2);
 		
-		getOrderZZRawList(YSId);
-		
-		getOrderZZRawSum(YSId);	
+		if (sub.equals(BusinessConstants.SHORTNAME_ZZ)){
+			
+			getOrderZZRawList(YSId);
+			
+			getOrderZZRawSum(YSId);	
+			
+		}else{
+
+			getOrderDetailByYSId(YSId);
+			
+			getRequirementList(YSId);
+			
+		}
 	}
 
 	public void editZZorder() throws Exception {
@@ -386,13 +380,24 @@ public class RequirementService extends BaseService {
 		
 		getOrderZZRawSum(YSId);
 	}
-
-	public void updateAndView() throws Exception {
-		//String orderId = update();
-		//getZZOrderDetail(orderId);	
+	
+	public void editorder() throws Exception {
 		
+		String YSId = request.getParameter("YSId");
+		
+		getOrderRawList(YSId);
+		
+		getOrderRawSum(YSId);
 	}
 	
+	public void editorderPart() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+
+		getOrderDetailByYSId(YSId);
+		
+		getOrderPartList(YSId);
+	}
 	public void approveAndView() throws Exception {
 		
 		String YSId = request.getParameter("YSId");

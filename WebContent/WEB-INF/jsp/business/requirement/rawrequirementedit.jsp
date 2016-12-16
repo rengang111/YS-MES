@@ -10,7 +10,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>物料需求表-3配件</title>
+<title>原材料采购数量决定表</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -200,21 +200,18 @@
 		id="attrForm" name="attrForm"  autocomplete="off">
 			
 		<fieldset>
-			<legend>物料需求表-配件</legend>
+			<legend>原材料采购数量决定表</legend>
 			<table class="form" id="table_form">
 				<tr> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="100px">${order.YSId }
+					<td width="250px">${order.YSId }
 						<form:hidden path="requirment.ysid" value="${order.YSId }"/></td>
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td width="150px">${order.productId }</td>
+					<td width="150px">${order.materialId }</td>
 						
 					<td class="label" width="100px"><label>产品名称：</label></td>
-					<td>${order.productName }</td>
-					
-					<td class="label" width="100px"><label>数量：</label></td>
-					<td width="150px">${order.quantity }</td>
+					<td>${order.materialName }</td>
 					
 				</tr>								
 			</table>
@@ -241,6 +238,71 @@
 		</div>
 	</fieldset>
 	
+		<fieldset>
+		<legend> 物料详情</legend>
+		<div class="list" style="margin-top: -4px;">
+		
+		<table id="rawDetail" class="display" width="100%">
+			<thead>				
+			<tr>
+				<th width="1px">No</th>
+				<th class="dt-center" width="80px">ERP编号</th>
+				<th class="dt-center" >物料名称</th>
+				<th class="dt-center" style="width:80px;">原材料ERP</th>
+				<th class="dt-center" style="width:100px;">原材料名称</th>
+				<th class="dt-center" width="30px">计量单位</th>
+				<th class="dt-center" width="30px">用量</th>
+				<th class="dt-center" width="40px">用料重量</th>
+				<th class="dt-center" width="60px">当前<br>需求数量</th>
+				<th class="dt-center" width="60px">总量</th>
+				<th class="dt-center" style="width:60px">原材料<br>需求数量</th>
+				<th class="dt-center" width="1px"></th>
+			</tr>
+		</thead>
+		<tbody>				
+					
+		<c:forEach var="detail" items="${rawDetail}" varStatus='status' >
+			
+			<tr>
+				<td></td>
+				<td>${detail.ERP}</td>		
+				<td><span id="name${status.index}"></span></td>
+				<td><span>${detail.rawERP}</span></td>			
+				<td><span id="rawname${status.index}"></span></td>			
+				<td>${detail.unit}</td>		
+				<td>${detail.useQuantity}</td>
+				<td>${detail.weight}</td>					
+				<td>${detail.quantity}</td>		
+				<td><span id="amount${status.index}"></span></td>
+				<td><span id="requirement${status.index}"></span></td>
+				<td><span></span></td>
+						
+			</tr>
+			<script type="text/javascript">
+			
+			 	var index = '${status.index}';
+				var name = '${detail.ERPname}';
+				var rawname = '${detail.rawERPname}';
+				var useQuantity = currencyToFloat('${detail.useQuantity}');
+				var quantity = currencyToFloat('${detail.quantity}');
+				var weight = currencyToFloat('${detail.weight }');	
+				
+				var amount = useQuantity * quantity; 
+				var requirement = amount * weight; 
+
+				$("#amount"   + index ).html(floatToNumber(amount));
+				$("#requirement"   + index ).html(floatToNumber(requirement));
+				$("#name" + index).html(jQuery.fixedWidth(name,18));
+				$("#rawname" + index).html(jQuery.fixedWidth(rawname,18));	
+				//$("#detail" + index + "\\.quantity").val(floatToNumber(purchase));							
+			
+				</script>
+		</c:forEach>
+		
+		</tbody>
+	</table>
+	</div>
+	</fieldset>
 	<fieldset>
 		<legend>原材料需求表</legend>
 		<div class="list" style="margin-top: -4px;">
@@ -253,7 +315,7 @@
 				<th class="dt-center" >原材料名称</th>
 				<th class="dt-center" width="30px">计量单位</th>
 				<th class="dt-center" style="width:50px;">供应商</th>
-				<th class="dt-center" style="width:50px;">当前<br>需求数量</th>
+				<th class="dt-center" style="width:50px;">原材料<br>需求总量</th>
 				<th class="dt-center" width="50px">当前<br>虚拟库存</th>
 				<th class="dt-center" width="50px">采购量</th>
 				<th class="dt-center" width="50px">单价</th>
@@ -270,8 +332,8 @@
 				<td id="name${status.index}">${detail.rawERPname}</td>			
 				<td>${detail.unit}</td>	
 				<td>${detail.supplierId}<form:hidden path="requirmentList[${status.index}].supplierid"  value="${detail.supplierId}"/></td>
-				<td>${detail.targetQuty}<form:hidden path="requirmentList[${status.index}].total"  value="${detail.targetQuty }" /></td>		
-				<td><span id="currStock${status.index}"></span></td>	
+				<td>${detail.targetQuty}</td>		
+				<td><span>0</span></td>	
 				<td><form:input path="requirmentList[${status.index}].quantity" class="num short" /></td>	
 				<td><span>${detail.price}</span><form:hidden path="requirmentList[${status.index}].price" value="${detail.price}" /></td>
 				<td><span id="totalPrice${status.index}"></span><form:hidden path="requirmentList[${status.index}].totalprice" /></td>
@@ -286,7 +348,7 @@
 				var target = currencyToFloat('${detail.targetQuty}');
 				var price = currencyToFloat('${detail.price}');
 				var quantity = currencyToFloat('${detail.quantity}');
-				var currStok = GetRandomNum(0,100);//'${detail.currentStock }';
+				var currStok = 0;//'${detail.currentStock }';
 				
 				var purchase = 0;
 				if(quantity =="" || quantity =="0"){
@@ -300,7 +362,6 @@
 				
 				$("#name" + index).html(jQuery.fixedWidth(name,15));	
 				$("#totalPrice" + index).html(totalPrice);	
-				$("#currStock" + index ).html(currStok);
 				$("#requirmentList" + index + "\\.totalprice").val(floatToNumber(totalPrice));	
 				$("#requirmentList" + index + "\\.quantity").val(floatToNumber(purchase));	
 

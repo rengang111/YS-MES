@@ -11,6 +11,7 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.service.common.BaseService;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
+import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
@@ -28,6 +29,7 @@ import com.ys.business.ejb.BusinessDbUpdateEjb;
 public class OrganService extends BaseService {
 
 	private CommFieldsData commData;
+	BaseTransaction ts;
 
 	public HashMap<String, Object> Init(HttpServletRequest request, String data) {
 		
@@ -205,20 +207,27 @@ public class OrganService extends BaseService {
 
 	
 	
-	public OrganModel doDelete(String data, UserInfo userInfo){
+	public OrganModel doDelete(String delData, UserInfo userInfo) throws Exception{
 		
 		OrganModel model = new OrganModel();
-		
-		try {
-			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
-	        
-	        bean.executeOrganDelete(data, userInfo);
-	        
-	        model.setEndInfoMap(NORMAL, "", "");
+		B_OrganizationDao dao = new B_OrganizationDao();
+		B_OrganizationData data = new B_OrganizationData();
+
+		try {	
+				
+			ts = new BaseTransaction();										
+			ts.begin();									
+			String removeData[] = delData.split(",");									
+			for (String key:removeData) {									
+												
+				data.setRecordid(key);							
+				dao.Remove(data);								
+			}
+			ts.commit();
 		}
 		catch(Exception e) {
+			ts.rollback();
 			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
 		return model;

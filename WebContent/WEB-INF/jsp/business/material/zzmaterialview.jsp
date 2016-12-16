@@ -15,7 +15,7 @@
 <title>自制品基本数据-查看</title>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 <div id="main">
 	

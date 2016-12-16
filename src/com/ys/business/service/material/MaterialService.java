@@ -28,7 +28,6 @@ import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
 import com.ys.business.db.data.CommFieldsData;
-import com.ys.business.ejb.BusinessDbUpdateEjb;
 
 @Service
 public class MaterialService extends BaseService {
@@ -260,29 +259,26 @@ public class MaterialService extends BaseService {
 			String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		BaseModel dataModel = new BaseModel();
 		BaseQuery baseQuery = null;
 
-		data = URLDecoder.decode(data, "UTF-8");
-
+		String key = request.getParameter("key").toUpperCase();
 
 		dataModel.setQueryFileName("/business/material/materialquerydefine");
 		dataModel.setQueryName("getSupplierList");
 		
-		String key ="";
 		baseQuery = new BaseQuery(request, dataModel);
-		String sql = baseQuery.getSql();
-		sql = sql.replace("?", key);
+		
+		userDefinedSearchCase.put("keywords1", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(0,0);	 
 		
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		modelMap.put("retValue", "success");
+		modelMap.put("data", dataModel.getYsViewData());		
 		
 		return modelMap;
 	}
-	
-	
+		
 	public HashMap<String, Object> getMaterialMAXId(
 			HttpServletRequest request, 
 			String data) throws Exception {
@@ -799,20 +795,27 @@ public class MaterialService extends BaseService {
 	
 
 	
-	public MaterialModel doDelete(String data, UserInfo userInfo){
+	public MaterialModel doDelete(
+			String delData, UserInfo userInfo) throws Exception{
 		
 		MaterialModel model = new MaterialModel();
-		
-		try {
-			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
-	        
-	        bean.executeOrganDelete(data, userInfo);
-	        
-	        model.setEndInfoMap(NORMAL, "", "");
+		B_MaterialData data = new B_MaterialData();	
+		B_MaterialDao dao = new B_MaterialDao();	
+													
+		try {	
+			
+			ts = new BaseTransaction();										
+			ts.begin();									
+			String removeData[] = delData.split(",");									
+			for (String key:removeData) {									
+												
+				data.setRecordid(key);							
+				dao.Remove(data);								
+			}
+			ts.commit();
 		}
 		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+			ts.rollback();
 		}
 		
 		return model;

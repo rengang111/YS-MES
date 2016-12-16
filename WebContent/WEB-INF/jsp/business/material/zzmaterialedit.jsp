@@ -415,7 +415,7 @@ function acountPowerPrice(fpwer,fprice,fyield){
 </script>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 <div id="main">
 	

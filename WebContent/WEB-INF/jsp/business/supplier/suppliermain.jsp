@@ -19,8 +19,8 @@
 		}
 	
 		var t = $('#TSupplier').DataTable({
-				"paging": true,
-				"lengthMenu":[5,10,15],//设置一页展示10条记录
+				//"paging": true,
+				"lengthMenu":[20,50,100],//设置一页展示10条记录
 				"processing" : false,
 				"serverSide" : true,
 				"stateSave" : false,
@@ -63,8 +63,8 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierID", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierSimpleDes", "defaultContent" : ''},
+							{"data": "supplierID", "defaultContent" : ''},
+							{"data": "supplierSimpleDes", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "supplierDes", "defaultContent" : ''},
 							{"data": "twoLevelID", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "twoLevelIDDes", "defaultContent" : ''},
@@ -74,12 +74,22 @@
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
-					    		{"targets":0,"render":function(data, type, row){
-									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
-			                    }},
-					    		{"targets":9,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
-			                    }}
+		    		{"targets":0,"render":function(data, type, row){
+						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+                    }},
+		    		{"targets":7,"render":function(data, type, row){
+		    			var name = row["fullAddress"];
+		    			name = jQuery.fixedWidth(name,20);
+		    			return name;
+                    }},
+		    		{"targets":9,"render":function(data, type, row){
+		    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>";
+                    }},
+		    		{"targets":8,"render":function(data, type, row){
+		    			var name = row["userName"];
+		    			name = jQuery.fixedWidth(name,10);
+		    			return name;
+                    }},
 			           
 			         ] 
 			}
@@ -128,7 +138,8 @@
 	function doCreate() {
 		
 		var url = "${ctx}/business/supplier?methodtype=addinit";
-		openLayer(url, '', layerHeight, true);
+		location.href = url;
+		//openLayer(url, '', layerHeight, true);
 	}
 	
 	function doUpdate(key) {
@@ -189,7 +200,7 @@
 
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 
 		<div id="main">
@@ -224,7 +235,7 @@
 			<div class="list">
 
 				<div id="TSupplier_wrapper" class="dataTables_wrapper">
-					<div id="DTTT_container" align="right" style="height:40px">
+					<div id="DTTT_container" align="right" style="height:40px;margin-bottom: -20px;">
 						<a aria-controls="TSupplier" tabindex="0" id="ToolTables_TSupplier_0" class="DTTT_button DTTT_button_text" onClick="doCreate();"><span>新建</span></a>
 						<a aria-controls="TSupplier" tabindex="0" id="ToolTables_TSupplier_1" class="DTTT_button DTTT_button_text" onClick="doDelete();"><span>删除</span></a>
 					</div>
@@ -234,15 +245,15 @@
 						
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="编码:" class="dt-middle sorting_disabled">编码</th>
-								<th colspan="1" rowspan="1" style="width: 82px;" aria-label="简称:" class="dt-middle sorting_disabled">简称</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="名称" class="dt-middle sorting_disabled">名称</th>
+								<th colspan="1" rowspan="1" style="width: 70px;" aria-label="编码:" class="dt-middle sorting_disabled">编码</th>
+								<th colspan="1" rowspan="1" style="width: 30px;" aria-label="简称:" class="dt-middle sorting_disabled">简称</th>
+								<th colspan="1" rowspan="1" class="dt-middle sorting_disabled">名称</th>
 								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="二级编码" class="dt-middle sorting_disabled">二级编码</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="编码解释" class="dt-middle sorting_disabled">编码解释</th>
+								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="编码解释" class="dt-middle sorting_disabled">编码解释</th>
 								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="付款条件" class="dt-middle sorting_disabled">付款条件</th>
 								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="地址" class="dt-middle sorting_disabled">地址</th>
-								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="联系人" class="dt-middle sorting_disabled">联系人</th>
-								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
+								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="联系人" class="dt-middle sorting_disabled">联系人</th>
+								<th colspan="1" rowspan="1" style="width: 30px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
 							</tr>
 						</thead>
 
@@ -251,4 +262,5 @@
 			</div>
 		</div>
 	</div>
+	</body>
 </html>

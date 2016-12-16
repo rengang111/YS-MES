@@ -4,7 +4,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
@@ -34,8 +34,8 @@
 				"ordering "	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",
-				"scrollY":scrollHeight,
-				"scrollCollapse":true,
+				//"scrollY":scrollHeight,
+				//"scrollCollapse":true,
 				"retrieve" : true,
 				"sAjaxSource" : "${ctx}/business/material?methodtype=search",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -54,10 +54,6 @@
 						success: function(data){							
 							fnCallback(data);
 
-							//重设显示窗口(iframe)高度
-							//resetbodyHeight();
-							//$('#TMaterial').sScrollY = $(window).height() - 300;
-							//alert($('#TMaterial').sScrollY)
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -162,7 +158,7 @@
 					contentType : 'application/json',
 					dataType : 'json',
 					data : str,
-					url : "${ctx}/business/matcategory?methodtype=delete",
+					url : "${ctx}/business/material?methodtype=delete",
 					success : function(data) {
 						reload();						
 					},
@@ -187,7 +183,7 @@
 </script>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 
 		<div id="main">
@@ -209,7 +205,7 @@
 							</td>
 							<td>
 								<button type="button" id="retrieve" class="DTTT_button" 
-									style="width:50px" value="查询" onclick="doSearch();"/>查询
+									style="width:50px" value="查询" onclick="doSearch();">查询</button>
 							</td>
 							<td width="10%"></td> 
 						</tr>

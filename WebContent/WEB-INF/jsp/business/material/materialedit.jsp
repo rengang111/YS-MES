@@ -31,7 +31,7 @@ input.middle{width:300px;}
 </style>
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 
 		<div id="main">
@@ -46,7 +46,7 @@ input.middle{width:300px;}
 	<form:hidden path="categoryname" />
 	
 <fieldset>
-	<legend style='margin: 20px 10px -10px 0px;'>物料基本信息-新建</legend>
+	<legend style='margin: 20px 10px -10px 0px;'>物料基本信息-编辑</legend>
 
 	<table class="form" width="100%">		
 		<tr>
@@ -316,16 +316,6 @@ function autoAddSubid() {
 	$('#subidTab tr:eq('+selectedTR+')').addClass('selected');
 	$('#subidTab tr:eq('+selectedTR+') td').eq(0).html('本条记录');
 	
-
-	/*
-    //获取table最后一行 $("#tab tr:last")
-    //获取table第一行 $("#tab tr").eq(0)
-    //获取table倒数第二行 $("#tab tr").eq(-2)     
-    //    var tds=$('table tr:first td');
-    //    alert(tds.eq(0).html());//第一行第一列	
-	var $td=$('#ShareTab tr:eq(0) td');		
-   var $td=$("#"+tab+" td").eq(index); 
-   */
 }
 
 function doSubDetail(recordid , parentid) {
@@ -335,29 +325,6 @@ function doSubDetail(recordid , parentid) {
 	var url = '${ctx}/business/material?methodtype=edit';
 	url = url + '&parentId=' + parentid+'&recordId='+recordid;
 	location.href = url;
-	/*
-	alert(url)
-	if (str != '') {
-
-			jQuery.ajax({
-				type : 'POST',
-				async: false,
-				//contentType : 'application/json',
-				dataType : 'json',
-				data : $('#material').serialize(),
-				url : url,
-				success : function(data) {
-					reload();						
-				},
-				error:function(XMLHttpRequest, textStatus, errorThrown){
-	             }
-			});
-			
-		}else {
-		alert("请至少选择一条数据");
-	}
-	*/
-	
 	
 }
 

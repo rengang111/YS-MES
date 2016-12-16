@@ -152,12 +152,13 @@
       <f name="materialCost" alias="" ctype="" />
       <f name="planDate" alias="" ctype="" />
       <f name="status" alias="" ctype="" />
+      <f name="CONCAT_WS(' | ',YSId,bomId,materialName)" alias="viewList" ctype="" />
       <f name="fullField" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <!-- 限定显示订单状态为"BOM表已做成,未评审"的数据 -->
-   <from>v_bomplan AS A WHERE A.status ='1' AND A.deleteFlag = '0'</from>
+    <!-- 限定显示订单状态为"BOM表已做成,未评审"的数据 A.status ='1' AND  -->
+   <from>v_bomplan AS A WHERE A.deleteFlag = '0'</from>
     <orderby>YSId DESC</orderby>
     <groupby></groupby>
     <having></having>
@@ -168,7 +169,7 @@
     <pool></pool>    
     <name value="getBomDetailListByBomId" />
      <where>
-       <w name="A.bomId" des=""  reqName="keywords1" dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="" bt="" />
     </where>
   <select>
       <f name="recordId" alias="" ctype="" />
@@ -217,6 +218,7 @@
       <f name="YSId" alias="" ctype="" />
       <f name="bomId" alias="" ctype="" />
       <f name="materialId" alias="" ctype="" />
+      <f name="materialName" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
       <f name="orderQuantity" alias="" ctype="" />
       <f name="managementCost" alias="" ctype="" />
@@ -225,13 +227,14 @@
       <f name="laborCost" alias="" ctype="" />
       <f name="materialCost" alias="" ctype="" />
       <f name="planDate" alias="" ctype="" />
+      <f name="CONCAT_WS(' | ',YSId,bomId,materialName)" alias="viewList" ctype="" />
       <f name="status" alias="" ctype="" />
       <f name="fullField" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <!-- 限定显示订单状态为"BOM表已做成,未评审"的数据 -->
-   <from>v_bomplan AS A WHERE A.status ='4' AND A.deleteFlag = '0'</from>
+    <!-- 限定显示订单状态为"BOM表已做成,未评审"的数据 A.status ='4' AND  -->
+   <from>v_bomplan AS A WHERE  A.deleteFlag = '0'</from>
     <orderby>YSId DESC</orderby>
     <groupby></groupby>
     <having></having>
