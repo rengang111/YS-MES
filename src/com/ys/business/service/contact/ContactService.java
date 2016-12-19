@@ -11,9 +11,9 @@ import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.contact.ContactModel;
 import com.ys.business.action.model.supplier.SupplierModel;
 import com.ys.business.db.dao.B_ContactDao;
-import com.ys.business.db.dao.B_SupplierBasicInfoDao;
+import com.ys.business.db.dao.B_SupplierDao;
 import com.ys.business.db.data.B_ContactData;
-import com.ys.business.db.data.B_SupplierBasicInfoData;
+import com.ys.business.db.data.B_SupplierData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.role.RoleModel;
@@ -257,11 +257,11 @@ public class ContactService extends BaseService {
 	private String getBaseInfo(String key) {
 		String companyCode = "-1";
 
-		B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
-		B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
+		B_SupplierDao dao = new B_SupplierDao();
+		B_SupplierData dbData = new B_SupplierData();
 		try {
-			dbData.setId(key);
-			dbData = (B_SupplierBasicInfoData)dao.FindByPrimaryKey(dbData);
+			dbData.setRecordid(key);
+			dbData = (B_SupplierData)dao.FindByPrimaryKey(dbData);
 			companyCode = dbData.getSupplierid();
 		}
 		catch(Exception e) {

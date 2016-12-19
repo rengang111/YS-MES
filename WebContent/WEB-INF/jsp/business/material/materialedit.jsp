@@ -179,16 +179,14 @@ var strShareMode = "<input type='text' class='mini' maxlength='4' name='sharemod
  function addTr2(){
 	 
 	var i = $("#subidTab tr").length - 1;	
-	var subid = PrefixInteger(i,2);
+	var subid = PrefixInteger(i,3);
 	
 	var trHtml = "";
 	trHtml+="<tr>";	
 	trHtml+="<td width='30px'>";
 	trHtml+="</td>";
-	trHtml+="<td class='td-center'>";		  
-	trHtml+="<label>"+subid+"</a></label>";
-	trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='hidden' value='"+subid+"' />";
-	//trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='mini read-only center' readonly='readonly' />";
+	trHtml+="<td class='td-center'>";
+	trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='small'/>";
 	trHtml+="</td>";
 	trHtml+="<td class='td-center'>";
 	trHtml+="<input name='materialLines["+i+"].subiddes' id='materialLines"+i+".subiddes'type='text' class='middle'/>";
@@ -289,9 +287,8 @@ function autoAddSubid() {
 		trHtml+="<td width='60px'>";
 		trHtml+="</td>";
 		trHtml+="<td class='td-center'>";		  
-		trHtml+="<label>"+subid+"</a></label>";
+		trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='small center' />";
 		trHtml+="<input name='materialLines["+i+"].recordid'    id='materialLines"+i+".recordid'   type='hidden' value='"+recordid+"' />";
-		//trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='mini read-only center' readonly='readonly' />";
 		trHtml+="</td>";
 		trHtml+="<td class='td-center'>";
 		if(recordid == selectedId){

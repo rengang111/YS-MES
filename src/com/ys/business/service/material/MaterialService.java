@@ -523,11 +523,12 @@ public class MaterialService extends BaseService {
 			reqDataList.clear();
 			
 			
-			//如果一条数据也没有,默认给当前产品的子编码设为 "00"
+			//如果一条数据也没有,默认给当前产品的子编码设为 "000"
 			if (dbList.size()==0){
 				reqData.setSubid(BusinessConstants.MATERIAL_SUBCOD_DEF);
 				dbList.add(reqData);
 			}
+			boolean frist = true;
 			for(B_MaterialData data:dbList ){
 									
 				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
@@ -543,10 +544,11 @@ public class MaterialService extends BaseService {
 				
 				dao.Create(reqData);	
 				
-				//把子编码为"00"的数据作为默认对象
-				if(data.getSubid().equals(BusinessConstants.MATERIAL_SUBCOD_DEF)){
+				//把第一条作为为默认对象
+				if(frist){
 					
 					selectedRecord = guid;
+					frist = false;
 				}
 			}
 			ts.commit();

@@ -487,20 +487,7 @@ public class PurchaseOrderService extends BaseService {
 		
 		return code;
 		
-	}
-	
-	private ArrayList<ListOption> getListOption(ArrayList<ArrayList<String>> list) throws Exception {
-
-		ArrayList<ListOption> rtnData = new ArrayList<ListOption>();
-		
-		for(ArrayList<String>rowData:list) {
-			ListOption option = new ListOption(rowData.get(0), rowData.get(0));
-			rtnData.add(option);
-		}
-		
-		return rtnData;
-	}
-	
+	}	
 
 	//生成采购合同--自制品
 	public void creatPurchaseOrderZZ() throws Exception {

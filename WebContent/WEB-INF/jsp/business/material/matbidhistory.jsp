@@ -100,6 +100,7 @@ function supplierPriceView() {
 	}
 
 	var supplierId = $('#price\\.supplierid').val();
+	var materialId = $('#price\\.materialid').val();
 	
 	var t = $('#TSupplier').DataTable({
 		"paging": false,
@@ -113,7 +114,7 @@ function supplierPriceView() {
 		"scrollY":270,
 		"scrollCollapse":true,
 		"retrieve" : true,
-		"sAjaxSource" : "${ctx}/business/material?methodtype=supplierPriceHistory&supplierId="+supplierId,				
+		"sAjaxSource" : "${ctx}/business/material?methodtype=supplierPriceHistory&supplierId="+supplierId+"&materialId="+materialId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 				
 			var param = {};

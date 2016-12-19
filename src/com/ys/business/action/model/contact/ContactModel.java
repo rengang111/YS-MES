@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_ContactData;
-import com.ys.business.db.data.B_SupplierBasicInfoData;
 import com.ys.system.db.data.S_DICData;
 
 public class ContactModel extends BaseModel {

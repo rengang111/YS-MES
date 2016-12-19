@@ -64,34 +64,22 @@
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "supplierID", "defaultContent" : ''},
-							{"data": "supplierSimpleDes", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierDes", "defaultContent" : ''},
-							{"data": "twoLevelID", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "twoLevelIDDes", "defaultContent" : ''},
+							{"data": "shortName", "defaultContent" : ''},
+							{"data": "supplierName", "defaultContent" : ''},
+							{"data": "categoryId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "categoryDes", "defaultContent" : ''},
 							{"data": "paymentTerm", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "fullAddress", "defaultContent" : ''},
-							{"data": "userName", "defaultContent" : ''},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
                     }},
 		    		{"targets":7,"render":function(data, type, row){
-		    			var name = row["fullAddress"];
-		    			name = jQuery.fixedWidth(name,20);
-		    			return name;
-                    }},
-		    		{"targets":9,"render":function(data, type, row){
-		    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>";
-                    }},
-		    		{"targets":8,"render":function(data, type, row){
-		    			var name = row["userName"];
-		    			name = jQuery.fixedWidth(name,10);
-		    			return name;
-                    }},
+		    			return "<a href=\"#\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>";
+                    }}
 			           
-			         ] 
+			     ] 
 			}
 		);
 	}
@@ -111,16 +99,6 @@
 	            $(this).addClass('selected');
 	        }
 		});
-		
-		/*
-		$('#TSupplier').DataTable().on('dblclick', 'tr', function() {
-
-			var d = $('#TSupplier').DataTable().row(this).data();
-
-			location.href = '${pageContext.request.contextPath}/factory/show/' + d["factory_id"] + '.html';		
-			
-		});
-		*/
 	}
 
 	$(document).ready(function() {
@@ -143,14 +121,10 @@
 	}
 	
 	function doUpdate(key) {
-		var str = '';
-		var isFirstRow = true;
-		var url = "${ctx}/business/supplier?methodtype=updateinit&key=" + key;
-
-		openLayer(url, '', layerHeight, true);
+		var url = "${ctx}/business/supplier?methodtype=show&key=" + key;
+		location.href = url;
 	}
-	
-	
+
 	function doDelete() {
 		
 		var str = '';
@@ -200,67 +174,60 @@
 
 </head>
 
-<body class="panel-body">
+<body>
 <div id="container">
+	<div id="search">
 
-		<div id="main">
-		
-			<div id="search">
+		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
-				<form id="condition" 
-					style='padding: 0px; margin: 10px;' >
+			<table>
+				<tr>
+					<td width="10%"></td> 
+					<td class="label">关键字1：</td>
+					<td class="condition">
+						<input type="text" id="keyword1" name="keyword1" class="middle"/>
+					</td>
+					<td class="label">关键字2：</td> 
+					<td class="condition">
+						<input type="text" id="keyword2" name="keyword2" class="middle"/>
+					</td>
+					<td>
+						<button type="button" id="retrieve" class="DTTT_button" style="width:50px" value="查询" onClick="doSearch();"/>查询
+					</td>
+					<td width="10%"></td> 
+				</tr>
+			</table>
 
-					<table>
-						<tr>
-							<td width="10%"></td> 
-							<td class="label">关键字1：</td>
-							<td class="condition">
-								<input type="text" id="keyword1" name="keyword1" class="middle"/>
-							</td>
-							<td class="label">关键字2：</td> 
-							<td class="condition">
-								<input type="text" id="keyword2" name="keyword2" class="middle"/>
-							</td>
-							<td>
-								<button type="button" id="retrieve" class="DTTT_button" style="width:50px" value="查询" onClick="doSearch();"/>查询
-							</td>
-							<td width="10%"></td> 
-						</tr>
-					</table>
+		</form>
+	</div>
+	<div  style="height:10px"></div>
 
-				</form>
+	<div class="list">
+
+		<div id="TSupplier_wrapper" class="dataTables_wrapper">
+			<div id="DTTT_container" align="right" style="height:40px;margin-bottom: -20px;">
+				<a aria-controls="TSupplier" tabindex="0" id="ToolTables_TSupplier_0" class="DTTT_button DTTT_button_text" onClick="doCreate();"><span>新建</span></a>
+				<a aria-controls="TSupplier" tabindex="0" id="ToolTables_TSupplier_1" class="DTTT_button DTTT_button_text" onClick="doDelete();"><span>删除</span></a>
 			</div>
-			<div  style="height:10px"></div>
-		
-			<div class="list">
+			<div id="clear"></div>
+			<table aria-describedby="TSupplier_info" style="width: 100%;" id="TSupplier" class="display dataTable" cellspacing="0">
+				<thead>
+				
+					<tr class="selected">
+						<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
+						<th colspan="1" rowspan="1" style="width: 100px;" aria-label="编码:" class="dt-middle sorting_disabled">供应商编码</th>
+						<th colspan="1" rowspan="1" style="width: 50px;" aria-label="简称:" class="dt-middle sorting_disabled">简称</th>
+						<th colspan="1" rowspan="1" class="dt-middle sorting_disabled">供应商名称</th>
+						<th colspan="1" rowspan="1" style="width: 100px;" aria-label="二级编码" class="dt-middle sorting_disabled">二级编码</th>
+						<th colspan="1" rowspan="1" style="width: 150px;" aria-label="编码解释" class="dt-middle sorting_disabled">编码解释</th>
+						<th colspan="1" rowspan="1" style="width: 50px;" aria-label="付款条件" class="dt-middle sorting_disabled">付款条件</th>
+						<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
+					</tr>
+				</thead>
 
-				<div id="TSupplier_wrapper" class="dataTables_wrapper">
-					<div id="DTTT_container" align="right" style="height:40px;margin-bottom: -20px;">
-						<a aria-controls="TSupplier" tabindex="0" id="ToolTables_TSupplier_0" class="DTTT_button DTTT_button_text" onClick="doCreate();"><span>新建</span></a>
-						<a aria-controls="TSupplier" tabindex="0" id="ToolTables_TSupplier_1" class="DTTT_button DTTT_button_text" onClick="doDelete();"><span>删除</span></a>
-					</div>
-					<div id="clear"></div>
-					<table aria-describedby="TSupplier_info" style="width: 100%;" id="TSupplier" class="display dataTable" cellspacing="0">
-						<thead>
-						
-							<tr class="selected">
-								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-								<th colspan="1" rowspan="1" style="width: 70px;" aria-label="编码:" class="dt-middle sorting_disabled">编码</th>
-								<th colspan="1" rowspan="1" style="width: 30px;" aria-label="简称:" class="dt-middle sorting_disabled">简称</th>
-								<th colspan="1" rowspan="1" class="dt-middle sorting_disabled">名称</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="二级编码" class="dt-middle sorting_disabled">二级编码</th>
-								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="编码解释" class="dt-middle sorting_disabled">编码解释</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="付款条件" class="dt-middle sorting_disabled">付款条件</th>
-								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="地址" class="dt-middle sorting_disabled">地址</th>
-								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="联系人" class="dt-middle sorting_disabled">联系人</th>
-								<th colspan="1" rowspan="1" style="width: 30px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
-							</tr>
-						</thead>
-
-					</table>
-				</div>
-			</div>
+			</table>
 		</div>
 	</div>
-	</body>
+</div>
+</body>
 </html>
