@@ -83,7 +83,7 @@
 	<fieldset style="margin-top: -15px;">
 	<legend style="margin: 10px 0px -10px 0px"> 描述信息</legend>
 
-	<table class="form" width="100%">
+	<table class="form">
 		<tr>
 			<td width="55%">中文描述：</td>
 			<td>
@@ -284,7 +284,7 @@ function supplierPriceView() {
 						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
-		    			var edit = "<a href=\"#\" onClick=\"doUpdate('" + row["recordId"] + "','" + row["shortName"] + "','" + row["fullName"] + "','" + row["supplierId"] + "')\">编辑</a>";
+		    			var edit = "<a href=\"#\" onClick=\"doUpdate('" + row["supplierId"] + "')\">编辑</a>";
 		    			var history = "<a href=\"#\" onClick=\"doShowHistory('" + row["supplierId"] + "')\">历史报价</a>";
 		    			
 		    			return edit+"&nbsp;"+history;
@@ -390,10 +390,8 @@ var layerHeight = '600';
 
 //新增供应商
 function doCreate() {
-	var recordId =$('#material\\.recordid').val();
-	var categoryName =$('#categoryname').val();
-	var url = "${ctx}/business/material?methodtype=addSupplier&recordId=";
-	url = url + recordId+"&categoryName="+categoryName;
+	var materialid ='${material.material.materialid}';
+	var url = "${ctx}/business/material?methodtype=addSupplier&materialid="+materialid;
 	
 	layer.open({
 		offset :[100,''],
@@ -406,12 +404,10 @@ function doCreate() {
 	});
 }
 
-function doUpdate(recordId,s,f,id) {
-	$('#suppliershortname').val(s);
-	$('#supplierfullname').val(f);
-	$('#supplierid').val(id);
+function doUpdate(supplierId) {
+	var materialid ='${material.material.materialid}';
 	
-	var url = "${ctx}/business/material?methodtype=editPrice&recordId=" + recordId;
+	var url = "${ctx}/business/material?methodtype=editPrice&supplierId=" + supplierId+"&materialId="+materialid;
 
 	layer.open({
 		offset :[100,''],
@@ -425,8 +421,9 @@ function doUpdate(recordId,s,f,id) {
 }
 
 function doShowHistory(supplierId) {
-		
-	var url = "${ctx}/business/material?methodtype=supplierPriceHistoryInit&supplierId=" + supplierId;
+	var materialid ='${material.material.materialid}';
+			
+	var url = "${ctx}/business/material?methodtype=supplierPriceHistoryInit&supplierId=" + supplierId+"&materialId="+materialid;
 
 	layer.open({
 		offset :[100,''],

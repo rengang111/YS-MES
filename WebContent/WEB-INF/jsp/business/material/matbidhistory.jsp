@@ -37,6 +37,7 @@
 	id="material" name="material"   autocomplete="off">
 	
 	<form:hidden path="price.supplierid" value="${price.supplierid}"/>
+	<form:hidden path="price.materialid"/>
 
 <fieldset>
 <legend> 供应商报价--历史记录</legend>		

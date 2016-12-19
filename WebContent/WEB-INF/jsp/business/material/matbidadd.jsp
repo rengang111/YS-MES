@@ -28,30 +28,14 @@
 <link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
 
 <script type="text/javascript">
-	//Form序列化后转为AJAX可提交的JSON格式。
-	$.fn.serializeObject = function() {
-		var o = {};
-		var a = this.serializeArray();
-		$.each(a, function() {
-			if (o[this.name] !== undefined) {
-				if (!o[this.name].push) {
-					o[this.name] = [ o[this.name] ];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
-			}
-		});
-		return o;
-	};
+
 	$(document).ready(function() {
 		
 		//设置光标项目
 		$("#attribute1").focus();
 		
-		//设置选择项目的选中项
-		var mydate = shortToday();		
-		$("#price\\.pricedate").val(mydate);
+		//设置选择项目的选中项	
+		$("#price\\.pricedate").val(shortToday());
 		$("#price\\.pricedate").attr('readonly', "true");
 
 		$("#attribute3").attr('readonly', "true");
@@ -60,7 +44,7 @@
 		
 		$("#price\\.price").blur(function(){
 			
-			$(this).val(floatToCurrency($(this).val()));
+			$(this).val(float4ToCurrency($(this).val()));
 		});
 		
 		$("#return").click(function() {
@@ -152,41 +136,39 @@
 		<form:hidden path="material.serialnumber" />
 		<form:hidden path="material.categoryid" />
 		<form:hidden path="categoryname" />
-		<form:hidden path="price.lastprice" />
-		<form:hidden path="price.materialid" value="${material.materialid}" />
+		<form:hidden path="price.priceunit"  value="${product.unit}"  />
+		<form:hidden path="price.materialid" value="${product.materialId}" />
 		<form:hidden path="price.supplierid" />
 
 		<fieldset>
 			<legend> 物料供应商报价-新建</legend>
 
-			<table class="form" cellspacing="0" cellpadding="0" width="100%">
+			<table class="form">
 
 				<tr>
-					<td width="80px" class="label"><label>产品编号：</label></td>
-					<td width="100xp">
-							${material.materialid}
+					<td width="100px" class="label"><label>产品编号：</label></td>
+					<td width="250px">
+							${product.materialId}
 						</td>
 
-					<td class="label"><label>中文品名：</label></td>
-					<td>${material.materialname}</td>
+					<td width="100px" class="label"><label>中文品名：</label></td>
+					<td>${product.materialName}</td>
 				</tr>
 
 				<tr>
 					<td class="label"><label>分类编码：</label></td>
-					<td>${material.categoryid}</td>
+					<td>${product.categoryIdAndName}</td>
 
-
-					<td class="label"><label>分类编码解释：</label></td>
-					<td>${material.categoryname}</td>
+					<td class="label"><label>报价单位：</label></td>
+					<td>${product.dicName}</td>
 				</tr>
 
 			</table>
 
 			<legend Style="margin: 10px 0px 0px 0px"> 供应商信息</legend>
-			<table class="form" cellspacing="0" cellpadding="0" width="100%">
-
+			<table class="form">
 				<tr>
-					<td class="label"><label>选择供应商：</label></td>
+					<td class="label" width="100px" ><label>选择供应商：</label></td>
 					<td colspan="3">
 						<div class="ui-widget">
 							<form:input path="attribute1" class="required middle" />
@@ -196,50 +178,32 @@
 					</td>
 				</tr>
 				<tr>
-					<td class="label"><label>供应商简称：</label></td>
+					<td class="label" width="100px" ><label>供应商简称：</label></td>
 
 					<td width="150px"><form:input path="attribute2"
 							class="read-only" /></td>
-					<td class="label"><label>供应商全称：</label></td>
+					<td class="label" width="100px" >供应商全称：</td>
 
 					<td><form:input path="attribute3" class="long read-only" />
 					</td>
 				</tr>
-				<%-- 
-				<tr>
-					<td class="label"><label>付款条件：</label></td>
-
-					<td colspan="3">入库后
-						<form:input path="paymentTerm" class="short" />&nbsp;天</td>
-				</tr>
-				--%>
-			</table>
+			</table>	
 
 			<legend Style="margin: 10px 0px 0px 0px"> 报价信息</legend>
-			<table class="form" cellspacing="0" cellpadding="0" width="100%">
-
+			<table class="form">
 				<tr>
-					<td class="label"><label>价格：</label></td>
+					<td class="label" width="100px" >供应商单价：</td>
 
-					<td><form:input path="price.price" class="short required cash" /></td>
-
-					<td class="label"><label>报价单位</label></td>
-					<td><form:input path="price.priceunit"
-							class="short required " /></td>
-				</tr>
-
-				<tr>
-
-					<td class="label"><label>报价日：</label></td>
-
-					<td><form:input path="price.pricedate"
-							class="read-only required " /></td>
-
-					<td class="label"><label>币种：</label></td>
+					<td width="150px" ><form:input path="price.price" class="short required cash" /></td>
+					
+					<td class="label" width="100px" ><label>币种：</label></td>
 					<td><form:select path="price.currency">
 							<form:options items="${material.currencyList}" 
-								itemValue="key" itemLabel="value"/>
-						</form:select></td>
+								itemValue="key" itemLabel="value"/></form:select></td>
+		
+					<td class="label" width="100px" ><label>报价日：</label></td>
+
+					<td><form:input path="price.pricedate" class="read-only required " /></td>
 
 				</tr>
 			</table>

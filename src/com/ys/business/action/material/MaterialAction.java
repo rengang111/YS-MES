@@ -23,12 +23,14 @@ import com.ys.system.action.model.login.UserInfo;
 @Controller
 @RequestMapping("/business")
 public class MaterialAction extends BaseAction {
-	
-	@Autowired MaterialService materialService;
-	
+		
 	MaterialModel MaterialModel= new MaterialModel();
 
 	UserInfo userInfo = new UserInfo();
+	@Autowired MaterialService materialService;
+	@Autowired HttpServletRequest request;
+	
+	Model model;
 	
 	@RequestMapping(value="/material")
 	public String init(
@@ -42,6 +44,10 @@ public class MaterialAction extends BaseAction {
 		
 		String type = request.getParameter("methodtype");
 		userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+	
+		materialService = new MaterialService(model,request,reqModel,userInfo);
+		MaterialModel = reqModel;
+		this.model = model;
 		
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
@@ -69,11 +75,11 @@ public class MaterialAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "supplierPriceHistory":
-				dataMap = doSupplierPriceHistory(data, request);
+				dataMap = doSupplierPriceHistory();
 				printOutJsonObj(response, dataMap);
 				break;
 			case "supplierPriceHistoryInit":
-				doSupplierPriceHistoryInit(reqModel,model, request);
+				doSupplierPriceHistoryInit();
 				rtnUrl = "/business/material/matbidhistory";
 				break;
 			case "create":
@@ -81,12 +87,12 @@ public class MaterialAction extends BaseAction {
 				rtnUrl = "/business/material/materialadd";
 				break;
 			case "detailView":
-				doDetailView(reqModel,model, request);
+				doDetailView();
 				//printOutJsonObj(response, dataMap);
 				rtnUrl = "/business/material/materialview";
 				break;
 			case "edit":
-				doEdit(reqModel,model, request);
+				doEdit();
 				//printOutJsonObj(response, dataMap);
 				rtnUrl = "/business/material/materialedit";
 				break;
@@ -95,9 +101,8 @@ public class MaterialAction extends BaseAction {
 				rtnUrl = "/business/material/materialview";
 				break;
 			case "addSupplier":
-				doAddSupplier(reqModel,model, request);
+				doAddSupplier();
 				rtnUrl = "/business/material/matbidadd";
-				//printOutJsonObj(response, MaterialModel.getEndInfoMap());
 				break;
 			case "supplierSearch"://供应商查询
 				dataMap = doSupplierSearch(data, request);
@@ -109,7 +114,7 @@ public class MaterialAction extends BaseAction {
 				printOutJsonObj(response, reqModel.getEndInfoMap());
 				break;
 			case "editPrice":
-				doEditPrice(reqModel,model, request);
+				doEditPrice();
 				printOutJsonObj(response, reqModel.getEndInfoMap());
 				rtnUrl = "/business/material/matbidedit";
 				break;
@@ -118,19 +123,19 @@ public class MaterialAction extends BaseAction {
 				printOutJsonObj(response, MaterialModel.getEndInfoMap());
 				break;
 			case "update":
-				doUpdate(reqModel,model,request);
+				doUpdate();
 				rtnUrl = "/business/material/materialview";
 				break;
 			case "delete":
-				MaterialModel = doDelete(data, session, request, response);
+				MaterialModel = doDelete(data);
 				printOutJsonObj(response, MaterialModel.getEndInfoMap());
 				break;
 			case "categorySearch"://物料分类查询
-				dataMap = doCategorySearch(data, request);
+				dataMap = doCategorySearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "mategoryMAXId"://物料最新编号查询
-				dataMap = doMaterialMAXId(data, request);
+				dataMap = doMaterialMAXId(data);
 				printOutJsonObj(response, dataMap);
 				break;
 		}
@@ -185,15 +190,14 @@ public class MaterialAction extends BaseAction {
 		return dataMap;
 	}
 	
-	public void doSupplierPriceHistoryInit(
-			MaterialModel reqModel,
-			Model model,
-			HttpServletRequest request){	
+	public void doSupplierPriceHistoryInit(){	
 		
 		B_PriceSupplierData price = new B_PriceSupplierData();
 
 		String supplierId = request.getParameter("supplierId");
+		String materialId = request.getParameter("materialId");
 		price.setSupplierid(supplierId);
+		price.setMaterialid(materialId);
 		MaterialModel.setPrice(price); 
 		model.addAttribute("material", MaterialModel);
 		
@@ -201,15 +205,14 @@ public class MaterialAction extends BaseAction {
 
 
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSupplierPriceHistory(@RequestBody String data, 
-			HttpServletRequest request){
+	public HashMap<String, Object> doSupplierPriceHistory(){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = materialService.supplierPriceHistory(request, data);
+			dataMap = materialService.supplierPriceHistory();
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -225,14 +228,13 @@ public class MaterialAction extends BaseAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doCategorySearch(@RequestBody String data, 
-			HttpServletRequest request){
+	public HashMap<String, Object> doCategorySearch(@RequestBody String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = materialService.categorySearch(request, data);
+			dataMap = materialService.categorySearch( data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -248,8 +250,7 @@ public class MaterialAction extends BaseAction {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doMaterialMAXId(@RequestBody String data, 
-			HttpServletRequest request){
+	public HashMap<String, Object> doMaterialMAXId(@RequestBody String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
@@ -303,7 +304,7 @@ public class MaterialAction extends BaseAction {
 			Model model,
 			HttpServletRequest request) throws Exception {
 
-		model = materialService.insert(reqModel,model, request,userInfo);
+		model = materialService.insert();
 		
 	}		
 
@@ -316,50 +317,47 @@ public class MaterialAction extends BaseAction {
 	}	
 
 	
-	public void doUpdate(MaterialModel reqModel,Model model,
-			HttpServletRequest request) throws Exception {
+	public void doUpdate() throws Exception {
 				
-		model = materialService.update(reqModel,model, request,userInfo);
+		model = materialService.update();
 		
 		
 	}	
 	
-	public MaterialModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
+	public MaterialModel doDelete(@RequestBody String data) throws Exception{
 		
 		MaterialModel = materialService.doDelete(data, userInfo);
 
 		return MaterialModel;
 	}
 
-	public void doAddSupplier(
-			MaterialModel reqModel,
-			Model model,
-			HttpServletRequest request) {
+	public void doAddSupplier() {
 
-		model = materialService.SelectSupplier(reqModel,request,model);
+		String materialid = request.getParameter("materialid");
+		model = materialService.SelectSupplier(materialid);
 
 	}	
 	
-	public void doDetailView(MaterialModel reqModel,Model model, HttpServletRequest request){
+	public void doDetailView(){
 
 		String recordId = request.getParameter("recordId");
 		String parentId = request.getParameter("parentId");
-		model = materialService.view(request,model,recordId,parentId);
+		model = materialService.view(recordId,parentId);
 
 	}	
-	public void doEdit(MaterialModel reqModel,Model model, HttpServletRequest request){
+	public void doEdit(){
 
 		String recordId = request.getParameter("recordId");
 		String parentId = request.getParameter("parentId");
-		model = materialService.view(request,model,recordId,parentId);
+		model = materialService.view(recordId,parentId);
 
 	}	
 	
-	public void doEditPrice(MaterialModel reqModel,Model model, HttpServletRequest request){
+	public void doEditPrice(){
 
 		String recordId = request.getParameter("recordId");
-		String parentId = request.getParameter("parentId");
-		model = materialService.viewPrice(request,model,recordId,parentId);
+		String materialId = request.getParameter("materialId");
+		model = materialService.editPrice(recordId,materialId);
 
 	}	
 	
