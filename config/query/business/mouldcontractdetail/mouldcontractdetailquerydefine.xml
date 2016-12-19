@@ -42,7 +42,7 @@
     <name value="mouldcontractdetailquerydefine_searchmd" />
     <where>
       <w name="A.productModelId" des=""  reqName="productModelId" dtype="ch" oper="="  lg="AND" bt="" />
-      <w name="D.DIcname" des=""  reqName="productModelName" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="D.DIcname" des=""  reqName="productModelName" dtype="ch" oper="like"  lg="AND" bt="" />
       <w name="B.type" des=""  reqName="type" dtype="ch" oper="="  lg="" bt="" />
     </where>
     <select>

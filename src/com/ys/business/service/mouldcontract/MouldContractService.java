@@ -439,45 +439,66 @@ public class MouldContractService extends BaseService {
 		MouldContractModel model = new MouldContractModel();
 		B_MouldDetailData dbData = new B_MouldDetailData();											
     	B_MouldDetailDao dao = new B_MouldDetailDao();											
-
+		BaseModel dataModel = new BaseModel();
+		BaseQuery baseQuery = null;
+		
 		String key = getJsonData(data, "keyBackup");
 		String guid = "";
 		
 		try {
-													
-			if (key == null || key.equals("")) {
-				guid = BaseDAO.getGuId();									
-				dbData.setId(guid);	
-				dbData.setMouldbaseid(getJsonData(data, "mouldBaseId"));
-				dbData.setType(getJsonData(data, "type"));
-				dbData.setNo(getJsonData(data, "no"));
-				dbData.setName(getJsonData(data, "name"));
-				dbData.setSize(getJsonData(data, "size"));
-				dbData.setMaterialquality(getJsonData(data, "materialQuality"));
-				dbData.setMouldunloadingnum(getJsonData(data, "mouldUnloadingNum"));
-				dbData.setHeavy(getJsonData(data, "heavy"));
-				dbData.setPrice(getJsonData(data, "price"));
-				dbData.setPlace(getJsonData(data, "place"));
-				dbData = updateMdModifyInfo(dbData, userInfo);
-				dao.Create(dbData);
-				key = guid;
+			boolean checkNoFlg = false;
+			String mouldBaseId = getJsonData(data, "mouldBaseId");
+			dataModel.setQueryFileName("/business/mouldcontract/mouldcontractquerydefine");
+			dataModel.setQueryName("mouldcontractquerydefine_checkContractProductModelId");
+			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+			userDefinedSearchCase.put("no", getJsonData(data, "no"));
+			baseQuery = new BaseQuery(request, dataModel);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			baseQuery.getYsQueryData(0,0);
+			if (dataModel.getYsViewData().size() == 0) {
+				checkNoFlg = true;
 			} else {
-				dbData.setId(key);
-				dbData = (B_MouldDetailData)dao.FindByPrimaryKey(dbData);
-				dbData.setType(getJsonData(data, "type"));
-				dbData.setNo(getJsonData(data, "no"));
-				dbData.setName(getJsonData(data, "name"));
-				dbData.setSize(getJsonData(data, "size"));
-				dbData.setMaterialquality(getJsonData(data, "materialQuality"));
-				dbData.setMouldunloadingnum(getJsonData(data, "mouldUnloadingNum"));
-				dbData.setHeavy(getJsonData(data, "heavy"));
-				dbData.setPrice(getJsonData(data, "price"));
-				dbData.setPlace(getJsonData(data, "place"));
-				dbData = updateMdModifyInfo(dbData, userInfo);
-				dao.Store(dbData);
+				if (!dataModel.getYsViewData().get(0).get("mouldBaseId").equals(mouldBaseId)) {
+					checkNoFlg = true;
+				}
 			}
-
-			model.setEndInfoMap(NORMAL, "", key);
+			if (checkNoFlg) {
+				if (key == null || key.equals("")) {
+					guid = BaseDAO.getGuId();									
+					dbData.setId(guid);	
+					dbData.setMouldbaseid(getJsonData(data, "mouldBaseId"));
+					dbData.setType(getJsonData(data, "type"));
+					dbData.setNo(getJsonData(data, "no"));
+					dbData.setName(getJsonData(data, "name"));
+					dbData.setSize(getJsonData(data, "size"));
+					dbData.setMaterialquality(getJsonData(data, "materialQuality"));
+					dbData.setMouldunloadingnum(getJsonData(data, "mouldUnloadingNum"));
+					dbData.setHeavy(getJsonData(data, "heavy"));
+					dbData.setPrice(getJsonData(data, "price"));
+					dbData.setPlace(getJsonData(data, "place"));
+					dbData = updateMdModifyInfo(dbData, userInfo);
+					dao.Create(dbData);
+					key = guid;
+				} else {
+					dbData.setId(key);
+					dbData = (B_MouldDetailData)dao.FindByPrimaryKey(dbData);
+					dbData.setType(getJsonData(data, "type"));
+					dbData.setNo(getJsonData(data, "no"));
+					dbData.setName(getJsonData(data, "name"));
+					dbData.setSize(getJsonData(data, "size"));
+					dbData.setMaterialquality(getJsonData(data, "materialQuality"));
+					dbData.setMouldunloadingnum(getJsonData(data, "mouldUnloadingNum"));
+					dbData.setHeavy(getJsonData(data, "heavy"));
+					dbData.setPrice(getJsonData(data, "price"));
+					dbData.setPlace(getJsonData(data, "place"));
+					dbData = updateMdModifyInfo(dbData, userInfo);
+					dao.Store(dbData);
+				}
+				model.setEndInfoMap(NORMAL, "", key);
+			} else {
+				model.setEndInfoMap(DUMMYKEY, "err005", key);
+			}
+			
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(SYSTEMERROR, "err001", key);
