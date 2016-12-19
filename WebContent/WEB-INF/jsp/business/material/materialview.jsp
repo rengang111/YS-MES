@@ -274,7 +274,7 @@ function supplierPriceView() {
 					{"data": "fullName", "defaultContent" : ''},
 					{"data": "price", "defaultContent" : '',"className" : 'td-center'},
 					{"data": "currency", "defaultContent" : '',"className" : 'td-center'},
-					{"data": "priceUnit", "defaultContent" : '',"className" : 'td-center'},
+					{"data": "unit", "defaultContent" : '',"className" : 'td-center'},
 					{"data": "priceDate", "defaultContent" : '',"className" : 'td-center'},
 					{"data": null, "defaultContent" : '',"className" : 'td-center'}
 		        ],

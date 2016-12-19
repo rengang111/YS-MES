@@ -1,6 +1,8 @@
 package com.ys.system.service.common;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -226,5 +228,17 @@ public class BaseService {
 		return data;
 	}
 	
+	/**
+	 * 
+	 * @param s
+	 * @return 处理URL传值乱码问题
+	 * @throws UnsupportedEncodingException
+	 */
+	public String convertToUTF8(String s) 
+			throws UnsupportedEncodingException{
+
+		return  URLDecoder.decode(s,"utf-8");
+		
+	}
 	
 }
