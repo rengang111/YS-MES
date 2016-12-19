@@ -5,26 +5,35 @@ import com.ys.util.basequery.common.BaseModel;
 import java.util.ArrayList;
 
 import com.ys.business.action.model.common.ListOption;
-import com.ys.business.db.data.B_SupplierBasicInfoData;
+import com.ys.business.db.data.B_SupplierData;
 import com.ys.system.db.data.S_DICData;
 
 public class SupplierModel extends BaseModel {
 	private String keyBackup = "";
 	private String supplierId = "";
-	private String supplierSimpleDes = "";
-	private String supplierDes = "";
-	private String twoLevelId = "";
-	private String twoLevelIdDes = "";
+	private String shortName = "";
+	private String supplierName = "";
+	private String categoryId = "";
+	private String categoryDes = "";
 	private String paymentTerm = "";
-	private String country = "";
+	private String county = "";
 	private String province = "";
 	private String city = "";
 	private String address = "";
+	private String subId = "";
 	ArrayList<ListOption> countryList = new ArrayList<ListOption>();
 	ArrayList<ListOption> provinceList = new ArrayList<ListOption>();
 	ArrayList<ListOption> cityList = new ArrayList<ListOption>();
 	ArrayList<ListOption> unsureList = new ArrayList<ListOption>();
-	private B_SupplierBasicInfoData supplierBasicInfoData = new B_SupplierBasicInfoData();
+	private B_SupplierData supplierBasicInfoData = new B_SupplierData();
+	private B_SupplierData supplier = new B_SupplierData();
+	
+	public String getSubId() {
+		return this.subId;
+	}
+	public void setSubId(String subId) {
+		this.subId = subId;
+	}
 	
 	public String getKeyBackup() {
 		return this.keyBackup;
@@ -40,32 +49,32 @@ public class SupplierModel extends BaseModel {
 		this.supplierId = supplierId;
 	}
 	
-	public String getSupplierSimpleDes() {
-		return this.supplierSimpleDes;
+	public String getshortName() {
+		return this.shortName;
 	}
-	public void setSupplierSimpleDes(String supplierSimpleDes) {
-		this.supplierSimpleDes = supplierSimpleDes;
+	public void setshortName(String shortName) {
+		this.shortName = shortName;
 	}
 	
-	public String getSupplierDes() {
-		return this.supplierDes;
+	public String getsupplierName() {
+		return this.supplierName;
 	}
-	public void setSupplierDes(String supplierDes) {
-		this.supplierDes = supplierDes;
+	public void setsupplierName(String supplierName) {
+		this.supplierName = supplierName;
 	}	
 	
-	public String getTwoLevelId() {
-		return this.twoLevelId;
+	public String getcategoryId() {
+		return this.categoryId;
 	}
-	public void setTwoLevelID(String twoLevelId) {
-		this.twoLevelId = twoLevelId;
+	public void setcategoryId(String categoryId) {
+		this.categoryId = categoryId;
 	}
 	
-	public String getCountry() {
-		return this.country;
+	public String getCounty() {
+		return this.county;
 	}
-	public void setCountry(String country) {
-		this.country = country;
+	public void setCounty(String country) {
+		this.county = country;
 	}
 	
 	public String getProvince() {
@@ -96,11 +105,11 @@ public class SupplierModel extends BaseModel {
 		this.paymentTerm = paymentTerm;
 	}	
 		
-	public String getTwoLevelIdDes() {
-		return this.twoLevelIdDes;
+	public String getcategoryDes() {
+		return this.categoryDes;
 	}
-	public void setTwoLevelIdDes(String twoLevelIdDes) {
-		this.twoLevelIdDes = twoLevelIdDes;
+	public void setcategoryDes(String categoryDes) {
+		this.categoryDes = categoryDes;
 	}
 	
 	public ArrayList<ListOption> getProvinceList() {
@@ -131,11 +140,17 @@ public class SupplierModel extends BaseModel {
 		this.unsureList = unsureList;
 	}
 	
-	public B_SupplierBasicInfoData getSupplierBasicInfoData() {
+	public B_SupplierData getSupplierBasicInfoData() {
 		return this.supplierBasicInfoData;
 	}
-	public void setSupplierBasicInfoData(B_SupplierBasicInfoData supplierBasicInfoData) {
+	public void setSupplierBasicInfoData(B_SupplierData supplierBasicInfoData) {
 		this.supplierBasicInfoData = supplierBasicInfoData;
 	}
 	
+	public B_SupplierData getSupplier() {
+		return this.supplier;
+	}
+	public void setSupplier(B_SupplierData supplier) {
+		this.supplier = supplier;
+	}
 }

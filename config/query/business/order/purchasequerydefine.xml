@@ -74,8 +74,8 @@
       <f name="a.price" alias="" ctype="" />
       <f name="a.totalPrice" alias="" ctype="" />
       <f name="b.supplierId" alias="" ctype="" />
-      <f name="b.supplierSimpleDes" alias="shortName" ctype="" />
-      <f name="b.supplierDes" alias="fullName" ctype="" />
+      <f name="b.shortName" alias="shortName" ctype="" />
+      <f name="b.supplierName" alias="fullName" ctype="" />
       <f name="b.purchaseDate" alias="" ctype="" />
       <f name="b.deliveryDate" alias="" ctype="" />
       <f name="b.total" alias="" ctype="" />
@@ -125,8 +125,8 @@
       <f name="IFNULL(a.productId,'自制库存订单')" alias="productId" ctype="" />
       <f name="A.productName" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
-      <f name="A.supplierSimpleDes" alias="shortName" ctype="" />
-      <f name="A.supplierDes" alias="fullName" ctype="" />
+      <f name="A.shortName" alias="shortName" ctype="" />
+      <f name="A.supplierName" alias="fullName" ctype="" />
       <f name="A.purchaseDate" alias="" ctype="" />
       <f name="A.deliveryDate" alias="" ctype="" />
       <f name="A.createTime" alias="" ctype="" />

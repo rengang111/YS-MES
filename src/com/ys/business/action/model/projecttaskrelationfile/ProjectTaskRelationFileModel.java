@@ -1,15 +1,7 @@
 package com.ys.business.action.model.projecttaskrelationfile;
 
-import com.ys.util.basequery.common.BaseModel;
-
-import java.util.ArrayList;
-
-import com.ys.business.action.model.common.ListOption;
-import com.ys.business.db.data.B_ContactData;
-import com.ys.business.db.data.B_CustomerAddrData;
 import com.ys.business.db.data.B_ESRelationFileData;
-import com.ys.business.db.data.B_SupplierBasicInfoData;
-import com.ys.system.db.data.S_DICData;
+import com.ys.util.basequery.common.BaseModel;
 
 public class ProjectTaskRelationFileModel extends BaseModel {
 	private String keyBackup = "";

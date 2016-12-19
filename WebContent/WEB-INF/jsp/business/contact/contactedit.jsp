@@ -83,12 +83,12 @@ function doSave() {
 			//新建
 			actionUrl = "${ctx}/business/contact?methodtype=add";
 			$('#companyCode').val(parent.$('#keyBackup').val());
+			
 		} else {
 			//修正
 			actionUrl = "${ctx}/business/contact?methodtype=update";
 		}
 
-		if (confirm(message)) {
 			var actionUrl;			
 			
 			//将提交按钮置为【不可用】状态
@@ -114,8 +114,10 @@ function doSave() {
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
 					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+
+					var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 					//parent.$('#events').DataTable().destroy();
-					//parent.layer.close(index); //执行关闭
+					parent.layer.close(index); //执行关闭
 					
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -125,7 +127,7 @@ function doSave() {
 					//alert(errorThrown);
 				}
 			});
-		}
+		
 	}
 }
 
@@ -203,8 +205,6 @@ function controlButtons(data) {
 
 		<div id="main">
 			<div id="supplierBasic">				
-				<div  style="height:20px"></div>
-				
 				<legend>联系人信息</legend>
 					
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
@@ -279,4 +279,5 @@ function controlButtons(data) {
 			</div>
 		</div>
 	</div>
+	</body>
 </html>

@@ -42,17 +42,9 @@ function ajax() {
 							"type" : "POST",
 							"data" : JSON.stringify(aoData),
 							success: function(data){
-								/*
-								if (data.message != undefined) {
-									alert(data.message);
-								}
-								*/
 								fnCallback(data);
 							},
 							 error:function(XMLHttpRequest, textStatus, errorThrown){
-				                 //alert(XMLHttpRequest.status);
-				                 //alert(XMLHttpRequest.readyState);
-				                 //alert(textStatus);
 				             }
 						})
 					},
@@ -62,23 +54,7 @@ function ajax() {
 		        	},
 		        	
 		        	dom : '<"clear">rt',
-		        	/*
-					"tableTools" : {
-
-						"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
-
-						"aButtons" : [										
-								{
-									"sExtends" : "create",
-									"sButtonText" : "新建"
-								},								
-								{
-									"sExtends" : "Delete",
-									"sButtonText" : "删除"
-								},
-						]
-					},
-					*/
+		        	
 					"columns" : [ 
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
 						{"data" : "userName", "className" : 'td-center'}, 
@@ -105,23 +81,7 @@ function ajax() {
 		$(this).toggleClass('selected');
 	});
 
-	/*
-	t.on('dblclick', 'tr', function() {
-
-		var d = t.row(this).data();
-
-		
-		layer.open({
-			type : 2,
-			title : false,
-			area : [ '900px', '370px' ],
-			scrollbar : false,
-			title : false,
-			closeBtn: 0, //不显示关闭按钮
-			content : '${ctx}/business/supplier/contactedit?name=' + d["name"] + '&id=' + $('#supplierID').val()
-		});
-	});
-	*/
+	
 	
 	// Add event listener for opening and closing details
 	t.on('click', 'td.details-control', function() {
@@ -146,33 +106,10 @@ function ajax() {
 
 };
 
-$.fn.dataTable.TableTools.buttons.create = $
-.extend(
-		true,
-		{},
-		$.fn.dataTable.TableTools.buttonBase,
-		{
-			"fnClick" : function(button) {
-
-			}
-		});
-		
-$.fn.dataTable.TableTools.buttons.Delete = $
-.extend(
-		true,
-		{},
-		$.fn.dataTable.TableTools.buttonBase,
-		{
-			"fnClick" : function(button) {
-
-			}
-		});
 		
 function initEvent(){
 
 	ajax();
-
-	controlButtons($('#keyBackup').val());
 	
 	$('#TContactList').DataTable().on('click', 'tr', function() {
 		
@@ -185,15 +122,6 @@ function initEvent(){
         }
 	});
 	
-	/*
-	$('#TContactList').DataTable().on('dblclick', 'tr', function() {
-
-		var d = $('#TContactList').DataTable().row(this).data();
-
-		location.href = '${pageContext.request.contextPath}/factory/show/' + d["factory_id"] + '.html';		
-		
-	});
-	*/
 }
 
 function reloadContact() {
@@ -311,16 +239,16 @@ $(document).ready(function() {
 				minlength: 5 ,
 				maxlength: 20,
 			},
-			supplierSimpleDes: {
+			shortName: {
 				maxlength: 10,
 			},
-			supplierDes: {
+			supplierName: {
 				maxlength: 50,
 			},
-			twoLevelId: {
+			categoryId: {
 				maxlength: 12,
 			},
-			twoLevelIdDes: {
+			categoryDes: {
 				maxlength: 50,
 			},
 			paymentTerm: {
@@ -345,81 +273,31 @@ $(document).ready(function() {
 	$("#city").val("${DisplayData.supplierBasicInfoData.city}");
 })
 
+function doEdit() {
+	var recodId = '${formModel.supplier.recordid}';
+	var url = "${ctx}/business/supplier?methodtype=edit&key="+recodId;
+	location.href = url;
+}
 function doSave() {
 
 	if (validator.form()) {
 		
-		var message = "${DisplayData.endInfoMap.message}";
-		
-		if ($('#keyBackup').val() == "") {				
-			//新建
-			actionUrl = "${ctx}/business/supplier?methodtype=add";				
-		} else {
-			//修正
-			actionUrl = "${ctx}/business/supplier?methodtype=update";
-		}		
-		
-		if (confirm(message)) {
-			var actionUrl;			
+		var actionUrl = "${ctx}/business/supplier?methodtype=add";				
+			
 
-			//将提交按钮置为【不可用】状态
-			//$("#submit").attr("disabled", true); 
-			$.ajax({
-				type : "POST",
-				contentType : 'application/json',
-				dataType : 'json',
-				url : actionUrl,
-				data : JSON.stringify($('#supplierBasicInfo').serializeArray()),// 要提交的表单
-				success : function(d) {
-					if (d.message != "") {
-						alert(d.message);	
-					}
-
-					controlButtons(d.info);
-
-					//不管成功还是失败都刷新父窗口，关闭子窗口
-					//var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-					//parent.layer.close(index); //执行关闭
-					
-				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					//alert(XMLHttpRequest.status);					
-					//alert(XMLHttpRequest.readyState);					
-					//alert(textStatus);					
-					//alert(errorThrown);
-				}
-			});
-		}
-	}
-}
-
-function doDelete() {
-	
-	if (confirm("${DisplayData.endInfoMap.message}")) {
 		//将提交按钮置为【不可用】状态
 		//$("#submit").attr("disabled", true); 
 		$.ajax({
 			type : "POST",
 			contentType : 'application/json',
-			dataType : 'json',
-			url : "${ctx}/business/supplier?methodtype=deleteDetail",
-			data : $('#keyBackup').val(),// 要提交的表单
+			dataType    : 'json',
+			url  : actionUrl,
+			async: false,
+			data : JSON.stringify($('#supplierBasicInfo').serializeArray()),// 要提交的表单
 			success : function(d) {
 				if (d.message != "") {
 					alert(d.message);	
-				} else {
-					controlButtons("");
-					clearSupplierBasicInfo();
-					
-				}
-				reloadContact();
-				/*	
-				//不管成功还是失败都刷新父窗口，关闭子窗口
-				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-				//parent.$('#events').DataTable().destroy();/
-				//parent.reload_contactor();
-				parent.layer.close(index); //执行关闭
-				*/
+				}	
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				//alert(XMLHttpRequest.status);					
@@ -428,11 +306,18 @@ function doDelete() {
 				//alert(errorThrown);
 			}
 		});
+		
 	}
 }
 
+function doDelete() {
+	var url = "${ctx}/business/supplier";
+	location.href = url;
+}
+
 function doAddContact() {
-	var url = "${ctx}/business/contact?methodtype=addinit";
+	var supplierId = '$(#supplier\\.supplierid).val()';
+	var url = "${ctx}/business/contact?methodtype=addinit&supplierId="+supplierId;
 	openLayer(url, $(document).width() - 25, layerHeight, false);	
 }
 
@@ -482,10 +367,10 @@ function doDeleteContact() {
 
 function clearSupplierBasicInfo() {
 	$('#supplierId').val('');
-	$('#supplierSimpleDes').val('');
-	$('#supplierDes').val('');
-	$('#twoLevelId').val('');
-	$('#twoLevelIdDes').val('');
+	$('#shortName').val('');
+	$('#supplierName').val('');
+	$('#categoryId').val('');
+	$('#categoryDes').val('');
 	$('#paymentTerm').val('');
 	$('#address').val('');
 	$('#country').val('');
@@ -496,121 +381,65 @@ function clearSupplierBasicInfo() {
 }
 
 function controlButtons(data) {
-	$('#keyBackup').val(data);
-	if (data == '') {
-		$('#delete').attr("disabled", true);
-		$('#addcontact').attr("disabled", true);
-		$('#deletecontact').attr("disabled", true);
-		
-	} else {
-		$('#delete').attr("disabled", false);
-		$('#addcontact').attr("disabled", false);
-	}
+	
 }
 </script>
 
 </head>
 
-<body class="noscroll">
+<body>
+<div id="container">
 
-<div id="layer_main">
-	<form:form modelAttribute="dataModels" id="supplierBasicInfo" style='padding: 0px; margin: 10px;' >			
-	<div  style="height:20px"></div>
+	<form:form modelAttribute="formModel" id="supplierBasicInfo" >		
+		<form:hidden path="keyBackup" value="${formModel.supplier.supplierid}" />		
+		<form:hidden path="supplier.recordid" />
 	<fieldset>		
 			<legend>供应商-综合信息</legend>
 				
-			<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-					style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
-			<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
-					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-				
-			<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 			<table class="form">
-				<tr>
-					<td width="60px">编码：</td>
-					<td width="150px">
-						<input type="text" id="supplierId" name="supplierId" class="mini" value="${DisplayData.supplierBasicInfoData.supplierid}"/>
-					</td>
-					<td width="60px">简称：</td> 
-					<td colspan=4>
-						<input type="text" id="supplierSimpleDes" name="supplierSimpleDes" class="short" value="${DisplayData.supplierBasicInfoData.suppliersimpledes}"/>
-					</td>
-				</tr>
-				<tr>
-					<td>名称：</td> 
-					<td colspan=6>
-						<input type="text" id="supplierDes" name="supplierDes" class="middle" value="${DisplayData.supplierBasicInfoData.supplierdes}"/>
-					</td>
-				</tr>
-				<tr>	
-					<td>二级编码：</td> 
-					<td>
-						<input type="text" id="twoLevelId" name="twoLevelId" class="mini" value="${DisplayData.supplierBasicInfoData.twolevelid}"/>
-					</td>
-					<td>编码解释：</td> 
-					<td colspan=4>
-						<input type="text" id="twoLevelIdDes" name="twoLevelIdDes" class="middle" value="${DisplayData.supplierBasicInfoData.twoleveliddes}"/>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						付款条件：
-					</td>
-					<td colspan=6>
-						入库后：
-						<input type="text" id="paymentTerm" name="paymentTerm" class="mini" value="${DisplayData.supplierBasicInfoData.paymentterm}"/>&nbsp;&nbsp;天
-					</td>
-				</tr>
-				<tr>
-					<td>
-						国家：
-					</td>
-					<td width="150px">
-						<form:select path="country">
-							<form:options items="${DisplayData.countryList}" itemValue="key"
-								itemLabel="value" />
-						</form:select>
-					</td>
-					<td>
-						省：
-					</td>
-					<td width="150px"> 
-						<form:select path="province">
-							<form:options items="${DisplayData.provinceList}" itemValue="key"
-								itemLabel="value" />
-						</form:select>
-					</td>
-					<td width="60px">	
-						市县：
-					</td>
-					<td width="150px"> 
-						<form:select path="city">
-							<form:options items="${DisplayData.cityList}" itemValue="key"
-								itemLabel="value" />
-						</form:select>
-					</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>
-						地址： 
-					</td>
-					<td colspan=6>
-						<input type="text" id="address" name="address" class="long" value="${DisplayData.supplierBasicInfoData.address}"/>
-					</td>
-				</tr>
-			</table>
+			<tr>
+				<td class="label" width="100px">供应商编码：</td>
+				<td width="150px">${formModel.supplier.supplierid}</td>
+				<td class="label" width="100px">简称：</td> 
+				<td width="100px">${formModel.supplier.shortname}</td>
 
+				<td class="label" width="100px">名称：</td> 
+				<td>${formModel.supplier.suppliername}</td>
+			</tr>
+			<tr>	
+				<td class="label" width="100px">二级编码：</td> 
+				<td>${formModel.supplier.categoryid}</td>
+				<td class="label" width="100px">编码解释：</td> 
+				<td>${formModel.supplier.categorydes}</td>
+
+				<td class="label" width="100px">付款条件：</td>
+				<td>入库后&nbsp;${formModel.supplier.paymentterm}&nbsp;天</td>
+			</tr>
+			<tr>
+				<td class="label">详细地址： </td>
+				<td colspan=5>${formModel.supplier.address}
+				</td>
+			</tr>
+		</table>
+
+		</fieldset>	
+		<fieldset class="action" style="text-align: right;">
+		<button type="button" class="DTTT_button" onclick="doEdit();">编辑</button>
+		<button type="button" class="DTTT_button" onclick="doDelete();">返回</button>
 		</fieldset>
-		<div  style="height:20px"></div>
 				
 			
 		<fieldset>		
-				<legend> 联系人</legend>
-				<button type="button" id="deletecontact" class="DTTT_button" onClick="doDeleteContact();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="addcontact" class="DTTT_button" onClick="doAddContact();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
+			<legend> 联系人</legend>
+			<div class="list">
+
+			<div id="TSupplier_wrapper" class="dataTables_wrapper">
+				<div id="DTTT_container" style="height:40px;align:right">
+					<button type="button" id="deletecontact" class="DTTT_button" onClick="doDeleteContact();"
+						style="height:25px;" >删除</button>
+					<button type="button" id="addcontact" class="DTTT_button" onClick="doAddContact();"
+						style="height:25px;" >新建</button>
+				</div>
 				<table id="TContactList" class="display" >
 					<thead>
 						<tr class="selected">
@@ -640,8 +469,9 @@ function controlButtons(data) {
 						</tr>
 					</tfoot>
 				</table>
-
+</div></div>
 		</fieldset>
 	</form:form>
 	</div>
+	</body>
 </html>

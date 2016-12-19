@@ -173,14 +173,14 @@ var strShareMode = "<input type='text' class='mini' maxlength='4' name='sharemod
  function addTr2(){
 	 
 	var i = $("#subidTab tr").length - 1;	
-	var subid = PrefixInteger(i,2);
+	var subid = PrefixInteger(i,3);
 	
 	var trHtml = "";
 	trHtml+="<tr>";	
 	trHtml+="<td width='30px'>";
 	trHtml+="</td>";
 	trHtml+="<td class='td-center'>";		  
-	trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='mini read-only center' readonly='readonly' />";
+	trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='small center' />";
 	trHtml+="</td>";
 	trHtml+="<td>";
 	trHtml+="<input name='materialLines["+i+"].subiddes' id='materialLines"+i+".subiddes'type='text' class='middle'/>";
@@ -255,13 +255,13 @@ function autoAddShareModel() {
 
 function autoAddSubid() {
 	for(var i=0; i<5; i++){
-		var subid = PrefixInteger(i,2)
+		var subid = PrefixInteger(i,3)
 		var trHtml = '';
 		trHtml+="<tr>";	
 		trHtml+="<td width='60px'>";
 		trHtml+="</td>";
 		trHtml+="<td class='td-center'>";		  
-		trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='mini read-only center' readonly='readonly' />";
+		trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='small center' />";
 		trHtml+="</td>";
 		trHtml+="<td>";
 		trHtml+="<input name='materialLines["+i+"].subiddes' id='materialLines"+i+".subiddes'type='text' class='middle'/>";

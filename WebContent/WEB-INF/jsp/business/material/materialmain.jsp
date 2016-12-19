@@ -29,7 +29,7 @@
 				"lengthChange":false,
 				"lengthMenu":[50,100,200],//设置一页展示20条记录
 				"processing" : false,
-				"serverSide" : true,
+				"serverSide" : false,
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,

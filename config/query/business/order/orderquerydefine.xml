@@ -292,8 +292,8 @@
     <select>
       <f name="A.materialId" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
-      <f name="A.supplierSimpleDes" alias="shortName" ctype="" />
-      <f name="A.supplierDes" alias="fullName" ctype="" />
+      <f name="A.shortName" alias="shortName" ctype="" />
+      <f name="A.supplierName" alias="fullName" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="A.priceUnit" alias="" ctype="" />
       <f name="A.dicName" alias="currency" ctype="" />
