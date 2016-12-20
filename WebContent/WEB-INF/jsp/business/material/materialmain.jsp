@@ -67,6 +67,7 @@
 							{"data": "materialId", "defaultContent" : ''},
 							{"data": "materialName", "defaultContent" : ''},
 							{"data": "categoryName", "defaultContent" : ''},
+							{"data": "shareModel", "defaultContent" : ''},
 							{"data": "price", "defaultContent" : '',"className" : 'td-right'},
 							{"data": "supplierId", "defaultContent" : ''},
 							{"data": "dicName", "defaultContent" : '',"className" : 'td-center'}
@@ -76,11 +77,23 @@
 				    		{"targets":0,"render":function(data, type, row){
 								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 		                    }},
-				    		{"targets":7,"render":function(data, type, row){
+				    		{"targets":8,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';
 				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">查看</a>";
 				    			return rtn;
+				    		}},
+				    		{"targets":2,"render":function(data, type, row){
+				    			
+				    			var name = row["materialName"];				    			
+				    			name = jQuery.fixedWidth(name,30);				    			
+				    			return name;
+				    		}},
+				    		{"targets":4,"render":function(data, type, row){
+				    			
+				    			var name = row["shareModel"];				    			
+				    			name = jQuery.fixedWidth(name,20);				    			
+				    			return name;
 				    		}}
 			           
 			         ] 
@@ -233,11 +246,12 @@
 								<th style="width: 30px;" aria-label="No:" class="dt-middle ">No</th>
 								<th style="width: 150px;" class="dt-middle ">物料编号</th>
 								<th class="dt-middle">物料名称</th>
-								<th style="width: 150px;" class="dt-middle">物料分类</th>
-								<th style="width: 80px;" class="dt-middle">价格</th>
-								<th style="width: 100px;" class="dt-middle">供应商</th>
+								<th style="width: 100px;" class="dt-middle">物料分类</th>
+								<th style="width: 120px;" class="dt-middle">通用型号</th>
+								<th style="width: 50px;" class="dt-middle">价格</th>
+								<th style="width: 70px;" class="dt-middle">供应商</th>
 								<th style="width: 30px;" class="dt-middle ">单位</th>
-								<th style="width: 50px;" class="dt-middle ">操作</th>
+								<th style="width: 30px;" class="dt-middle ">操作</th>
 							</tr>
 						</thead>
 					</table>

@@ -190,21 +190,21 @@ public class BusinessDbUpdateEjb  {
 			String removeData[] = keyData.split(",");									
 			for (String key:removeData) {									
 				StringBuffer sql = new StringBuffer("");								
-				data.setId(key);								
+				data.setRecordid(key);								
 				B_CustomerDao dao = new B_CustomerDao(data);								
 				data = CustomerService.updateModifyInfo(dao.beanData, userInfo);								
 												
 				sql.append("UPDATE b_Contact SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
 				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
 				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-				sql.append(" WHERE companyCode = '" + data.getId() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				sql.append(" WHERE companyCode = '" + data.getRecordid() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
 				BaseDAO.execUpdate(sql.toString());								
 												
 				sql = new StringBuffer("");								
 				sql.append("UPDATE b_customerAddr SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
 				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
 				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-				sql.append(" WHERE customerId = '" + data.getId() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				sql.append(" WHERE customerId = '" + data.getRecordid() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
 				BaseDAO.execUpdate(sql.toString());								
 												
 				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);								

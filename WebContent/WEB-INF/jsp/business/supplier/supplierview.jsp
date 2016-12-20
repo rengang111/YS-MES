@@ -278,6 +278,7 @@ function doEdit() {
 	var url = "${ctx}/business/supplier?methodtype=edit&key="+recodId;
 	location.href = url;
 }
+
 function doSave() {
 
 	if (validator.form()) {
@@ -407,9 +408,9 @@ function controlButtons(data) {
 				<td>${formModel.supplier.suppliername}</td>
 			</tr>
 			<tr>	
-				<td class="label" width="100px">二级编码：</td> 
+				<td class="label" width="100px">物料分类：</td> 
 				<td>${formModel.supplier.categoryid}</td>
-				<td class="label" width="100px">编码解释：</td> 
+				<td class="label" width="100px">分类解释：</td> 
 				<td>${formModel.supplier.categorydes}</td>
 
 				<td class="label" width="100px">付款条件：</td>
@@ -427,8 +428,7 @@ function controlButtons(data) {
 		<button type="button" class="DTTT_button" onclick="doEdit();">编辑</button>
 		<button type="button" class="DTTT_button" onclick="doDelete();">返回</button>
 		</fieldset>
-				
-			
+							
 		<fieldset>		
 			<legend> 联系人</legend>
 			<div class="list">

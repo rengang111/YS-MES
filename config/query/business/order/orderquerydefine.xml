@@ -146,7 +146,7 @@
       <f name="A.shippingCase" alias="" ctype="" />
       <f name="A.loadingPort" alias="" ctype="" />
       <f name="A.deliveryPort" alias="" ctype="" />
-      <f name="A.denominationCurrency" alias="currency" ctype="" />
+      <f name="A.currency" alias="currency" ctype="" />
       <f name="CONCAT_WS(' | ',A.CustomerID,A.CustomerSimpleDes, CustomerName)" alias="viewList" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
     </select>

@@ -761,6 +761,28 @@ public class MaterialService extends BaseService {
 		
 		return model;
 	}
+
+	public MaterialModel doDeletePrice(
+			String delData, UserInfo userInfo) throws Exception{
+		
+		MaterialModel model = new MaterialModel();
+		B_PriceSupplierData data = new B_PriceSupplierData();	
+		B_PriceSupplierDao dao = new B_PriceSupplierDao();	
+													
+		try {	
+												
+			String recordid = request.getParameter("recordId");									
+			data.setRecordid(recordid);
+
+			dao.Remove(data);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return model;
+	}
 	
 	
 	private B_MaterialData preMaterialCheck(String key) throws Exception {

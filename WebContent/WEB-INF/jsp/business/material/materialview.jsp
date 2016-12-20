@@ -286,8 +286,9 @@ function supplierPriceView() {
 		    		{"targets":8,"render":function(data, type, row){
 		    			var edit = "<a href=\"#\" onClick=\"doUpdate('" + row["supplierId"] + "')\">编辑</a>";
 		    			var history = "<a href=\"#\" onClick=\"doShowHistory('" + row["supplierId"] + "')\">历史报价</a>";
+		    			var delet = "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
 		    			
-		    			return edit+"&nbsp;"+history;
+		    			return edit+"&nbsp;"+history+"&nbsp;"+delet;
                     }}	           
 	         	] 
 		}
@@ -436,6 +437,31 @@ function doShowHistory(supplierId) {
 	});
 }
 
+function doDelete(recordId){
+	
+	
+	if (recordId != ""){ //
+		$.ajax({
+			type : "post",
+			url : "${ctx}/business/material?methodtype=deletePrice&recordId="+recordId,
+			async : false,
+			data : 'key=' + recordId,
+			dataType : "json",
+			success : function(data) {
+				$('#TSupplier').DataTable().ajax.reload(null,false);
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+				
+				
+			}
+		});
+	}else{
+		//
+	}
+}
 
 </script>
 </body>

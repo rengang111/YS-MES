@@ -114,6 +114,10 @@ public class SupplierAction extends BaseAction {
 				doOptionChange3(data);
 				printOutJsonObj(response, modelMap);
 				return null;
+			case "setSupplierId":
+				setSupplierId(data);
+				printOutJsonObj(response, modelMap);
+				return null;
 		}
 		
 		return rtnUrl;
@@ -195,6 +199,7 @@ public class SupplierAction extends BaseAction {
 	}	
 	
 	public SupplierModel doOptionChange(String data) throws Exception{
+		//request.setCharacterEncoding("utf-8"); 
 		SupplierModel model = new SupplierModel();
 		String[] paras = data.split("&");
 		String[] datas = paras[1].split("=");
@@ -216,6 +221,16 @@ public class SupplierAction extends BaseAction {
 	}
 
 	public void doOptionChange3(String data) throws Exception{
+		
+		request.setCharacterEncoding("utf-8"); 
+		String parentId = request.getParameter("parentId");
+		parentId = URLDecoder.decode(parentId,"utf-8");
+
+		modelMap = service.getSupplierId(parentId);
+
+	}
+	
+	public void setSupplierId(String data) throws Exception{
 		
 		request.setCharacterEncoding("utf-8"); 
 		String parentId = request.getParameter("parentId");

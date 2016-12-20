@@ -19,10 +19,10 @@
 		}
 	
 		var t = $('#TCustomer').DataTable({
-				"paging": true,
+				"paging": false,
 				"lengthMenu":[50,100,150],//设置一页展示10条记录
 				"processing" : false,
-				"serverSide" : true,
+				"serverSide" : false,
 				"stateSave" : false,
 				"searching" : false,
 				"pagingType" : "full_numbers",
@@ -55,25 +55,24 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "customerId", "defaultContent" : ''},
-							{"data": "customerSimpleDes", "defaultContent" : ''},
-							{"data": "customerName", "defaultContent" : ''},
-							{"data": "paymentTerm", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "country", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "denominationCurrency", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "shippingCase", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "loadingPort", "defaultContent" : '',"className" : 'td-center'},							
-							{"data": "deliveryPort", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "userName", "defaultContent" : ''},
-							{"data": null, "defaultContent" : '',"className" : 'td-center'}
+							{"data": null,"className" : 'td-center'},
+							{"data": "customerId"},
+							{"data": "shortName"},
+							{"data": "customerName"},
+							{"data": "country","className" : 'td-center'},
+							{"data": "paymentTerm","className" : 'td-right'},
+							{"data": "currency","className" : 'td-center'},
+							{"data": "shippingCondition","className" : 'td-center'},
+							{"data": "shippiingPort","className" : 'td-center'},							
+							{"data": "destinationPort","className" : 'td-center'},
+							{"data": null,"className" : 'td-center'}
 				        ],
 				"columnDefs":[
 					    		{"targets":0,"render":function(data, type, row){
-									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 			                    }},
-					    		{"targets":11,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
+					    		{"targets":10,"render":function(data, type, row){
+					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>"
 			                    }}
 			           
 			         ] 
@@ -122,17 +121,13 @@
 	
 	function doCreate() {
 		var url = "${ctx}/business/customer?methodtype=addinit";
-		openLayer(url, '', layerHeight, true);
+		location.href = url
 	}
 	
 	function doUpdate(key) {
-		var str = '';
-		var isFirstRow = true;
-		var url = "${ctx}/business/customer?methodtype=updateinit&key=" + key;
-
-		openLayer(url, '', layerHeight, true);
+		var url = "${ctx}/business/customer?methodtype=showDetail&key=" + key;
+		location.href = url;
 	}
-	
 	
 	function doDelete() {
 		
@@ -233,13 +228,12 @@
 								<th style="width: 80px;" aria-label="编号:" class="dt-middle ">编号</th>
 								<th style="width: 50px;" aria-label="简称:" class="dt-middle ">简称</th>
 								<th class="dt-middle ">名称</th>
-								<th style="width: 35px;" aria-label="付款条件" class="dt-middle ">付款条件</th>
-								<th style="width: 60px;" aria-label="所在国家" class="dt-middle ">所在国家</th>
+								<th style="width: 60px;" aria-label="所在国家" class="dt-middle ">国家</th>
+								<th style="width: 30px;" aria-label="付款条件" class="dt-middle ">付款条件</th>
 								<th style="width: 60px;" aria-label="计价货币" class="dt-middle ">计价货币</th>
 								<th style="width: 60px;" aria-label="出运条件" class="dt-middle ">出运条件</th>
 								<th style="width: 60px;" aria-label="出运港" class="dt-middle ">出运港</th>
 								<th style="width: 60px;" aria-label="目的港" class="dt-middle ">目的港</th>
-								<th style="width: 50px;" aria-label="联系人" class="dt-middle ">联系人</th>
 								<th style="width: 30px;" aria-label="操作" class="dt-middle ">操作</th>
 							</tr>
 						</thead>

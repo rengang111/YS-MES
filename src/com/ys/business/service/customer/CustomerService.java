@@ -3,35 +3,67 @@ package com.ys.business.service.customer;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
-
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.customer.CustomerModel;
 import com.ys.business.db.dao.B_CustomerDao;
 import com.ys.business.db.data.B_CustomerData;
+import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
+import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.system.action.model.role.RoleModel;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.system.common.BusinessConstants;
-import com.ys.system.db.dao.S_ROLEDao;
-import com.ys.system.db.data.S_ROLEData;
-import com.ys.system.ejb.DbUpdateEjb;
 import com.ys.system.service.common.BaseService;
-import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
+import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
-import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class CustomerService extends BaseService {
  
+	DicUtil util = new DicUtil();
+	BaseTransaction ts;
+
+	String guid ="";
+	private CommFieldsData commData;
+	
+	private HttpServletRequest request;
+	
+	private B_CustomerDao dao;
+	private CustomerModel reqModel;
+	private UserInfo userInfo;
+	private BaseModel dataModel;
+	private  Model model;
+	private HashMap<String, String> userDefinedSearchCase;
+	private BaseQuery baseQuery;
+	HashMap<String, Object> modelMap = null;	
+
+	public CustomerService(){
+		
+	}
+
+	public CustomerService(Model model,
+			HttpServletRequest request,
+			CustomerModel reqModel,
+			UserInfo userInfo){
+		
+		this.dao = new B_CustomerDao();
+		this.model = model;
+		this.reqModel = reqModel;
+		this.request = request;
+		this.userInfo = userInfo;
+		dataModel = new BaseModel();
+		modelMap = new HashMap<String, Object>();
+		userDefinedSearchCase = new HashMap<String, String>();
+		dataModel.setQueryFileName("/business/customer/customerquerydefine");
+		
+	}
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -90,67 +122,44 @@ public class CustomerService extends BaseService {
 
 	}
 
-	public CustomerModel doAddInit(HttpServletRequest request) {
+	public Model doAddInit() {
 
-		CustomerModel model = new CustomerModel();
 
 		try {			
-			model.setCountryList(doOptionChange(DicUtil.ADDRESS, "").getUnsureList());
-			model.setDenominationCurrencyList(doOptionChange(DicUtil.DENOMINATIONCURRENCY, "").getUnsureList());
-			model.setShippingCaseList(doOptionChange(DicUtil.SHIPPINGCASE, "").getUnsureList());
-			model.setPortList(doOptionChange(DicUtil.PORT, "").getUnsureList());
-			model.setEndInfoMap("098", "0001", "");
+			reqModel.setCountryList(util.getListOption(DicUtil.COUNTRY, ""));
+			reqModel.setCurrencyList(util.getListOption(DicUtil.CURRENCY, ""));
+			reqModel.setShippingConditionList(util.getListOption(DicUtil.SHIPPINGCASE, ""));
+			reqModel.setShippiingPortList(util.getListOption(DicUtil.LOADINGPORT, ""));
+			reqModel.setDestinationPortList(util.getListOption(DicUtil.DELIVERYPORT, ""));
+			reqModel.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
 		return model;
 	
 	}
+	
 
-	public CustomerModel doAdd(HttpServletRequest request, String data, UserInfo userInfo) {
-
-		CustomerModel model = new CustomerModel();
-		try {
-			B_CustomerDao dao = new B_CustomerDao();
-			B_CustomerData dbData = new B_CustomerData();
-			String customerid = getJsonData(data, "customerId");
+	private B_CustomerData preCheckId(B_CustomerData  reqData) throws Exception {
+		B_CustomerData dbData = new B_CustomerData();
 		
-			ArrayList<ArrayList<String>> preCheckResult = preCheckCustomerId(request, customerid);
-			
-			if (preCheckResult.size() > 0) {
-				//已存在
-				model.setEndInfoMap("001", "err005", "");
-			} else {
-				String guid = BaseDAO.getGuId();
-				dbData.setId(guid);
-				dbData.setCustomerid(getJsonData(data, "customerId"));
-				dbData.setCustomersimpledes(getJsonData(data, "customerSimpleDes"));
-				dbData.setCustomername(getJsonData(data, "customerName"));
-				dbData.setPaymentterm(getJsonData(data, "paymentTerm"));
-				dbData.setCountry(getJsonData(data, "country"));
-				dbData.setDenominationcurrency(getJsonData(data, "denominationCurrency"));
-				dbData.setShippingcase(getJsonData(data, "shippingCase"));
-				dbData.setLoadingport(getJsonData(data, "loadingPort"));
-				dbData.setDeliveryport(getJsonData(data, "deliveryPort"));
-				
-				dbData = updateModifyInfo(dbData, userInfo);
-				dao.Create(dbData);
-				model.setEndInfoMap(NORMAL, "", guid);
-			}
+		try {
+			dbData = (B_CustomerData)dao.FindByPrimaryKey(reqData);
+
 		}
 		catch(Exception e) {
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+			System.out.println(e.getMessage());
+			dbData = null;
 		}
 		
-		return model;
-	}	
-
+		return dbData;
+	}
 	
 	public CustomerModel doOptionChange(String type, String parentCode) {
-		DicUtil util = new DicUtil();
+		
 		CustomerModel model = new CustomerModel();
 		
 		try {
@@ -161,54 +170,6 @@ public class CustomerService extends BaseService {
 			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 			model.setUnsureList(null);
-		}
-		
-		return model;
-	}
-	
-	public CustomerModel doUpdate(HttpServletRequest request, String data, UserInfo userInfo) {
-		CustomerModel model = new CustomerModel();
-		String id = getJsonData(data, "keyBackup");
-		
-		try {
-			B_CustomerDao dao = new B_CustomerDao();
-			B_CustomerData dbData = new B_CustomerData();
-			
-			String customerid = getJsonData(data, "customerId");
-			boolean isKeyExist = false;
-			
-			//要更新的记录是否存在
-			isKeyExist = preCheckId(id);
-			if (isKeyExist) {
-				ArrayList<ArrayList<String>> preCheckResult = preCheckCustomerId(request, customerid);
-				
-				//要更新的供应商id是否存在
-				if (preCheckResult.size() != 0 && !preCheckResult.get(0).get(1).equals(id)) {					
-					//已存在
-					model.setEndInfoMap("001", "err007", "");
-				} else {
-					dbData.setId(getJsonData(data, "keyBackup"));
-					dbData.setCustomerid(getJsonData(data, "customerId"));
-					dbData.setCustomersimpledes(getJsonData(data, "customerSimpleDes"));
-					dbData.setCustomername(getJsonData(data, "customerName"));
-					dbData.setPaymentterm(getJsonData(data, "paymentTerm"));
-					dbData.setCountry(getJsonData(data, "country"));
-					dbData.setDenominationcurrency(getJsonData(data, "denominationCurrency"));
-					dbData.setShippingcase(getJsonData(data, "shippingCase"));
-					dbData.setLoadingport(getJsonData(data, "loadingPort"));
-					dbData.setDeliveryport(getJsonData(data, "deliveryPort"));
-					
-					dbData = updateModifyInfo(dbData, userInfo);
-					dao.Store(dbData);
-					model.setEndInfoMap(NORMAL, "", id);
-				}
-			} else {
-				//不存在
-				model.setEndInfoMap("002", "err005", id);
-			}
-		}
-		catch(Exception e) {
-			model.setEndInfoMap(SYSTEMERROR, "err001", id);
 		}
 		
 		return model;
@@ -233,21 +194,6 @@ public class CustomerService extends BaseService {
 		return model;
 	}
 	
-	public static B_CustomerData updateModifyInfo(B_CustomerData data, UserInfo userInfo) {
-		String createUserId = data.getCreateperson();
-		if ( createUserId == null || createUserId.equals("")) {
-			data.setCreateperson(userInfo.getUserId());
-			data.setCreatetime(CalendarUtil.fmtDate());
-			data.setCreateunitid(userInfo.getUnitId());
-			//data.setDeptguid(userInfo.getDeptGuid());
-		}
-		data.setModifyperson(userInfo.getUserId());
-		data.setModifytime(CalendarUtil.fmtDate());
-		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
-		
-		return data;
-	}
-
 	private ArrayList<HashMap<String, String>> arrangeUserList(ArrayList<HashMap<String, String>> data) {
 		ArrayList<String> userList = new ArrayList<String>();
 		HashMap<String, String>rowDataBackup = null;
@@ -313,21 +259,39 @@ public class CustomerService extends BaseService {
 		
 	}
 	
-	public CustomerModel getCustomerBaseInfo(String key) throws Exception {
-		CustomerModel model = new CustomerModel();
-		B_CustomerDao dao = new B_CustomerDao();
+	public Model getCustomerByRecordId(String key) throws Exception {
+
+		dataModel.setQueryName("getCustomerByRecordId");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("recordId", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		baseQuery.getYsQueryData(0, 0);		
+
+		model.addAttribute("customer",dataModel.getYsViewData().get(0));
+		
+		reqModel.setKeyBackup(key);
+		
+		return model;
+		
+	}
+	
+	public Model getCustomerDetail(String key) throws Exception {
+		
 		B_CustomerData dbData = new B_CustomerData();
-		dbData.setId(key);
-		dbData = (B_CustomerData)dao.FindByPrimaryKey(dbData);
-		model.setCustomerData(dbData);
 		
-		model.setCountryList(doOptionChange(DicUtil.ADDRESS, "").getUnsureList());
-		model.setDenominationCurrencyList(doOptionChange(DicUtil.DENOMINATIONCURRENCY, "").getUnsureList());
-		model.setShippingCaseList(doOptionChange(DicUtil.SHIPPINGCASE, "").getUnsureList());
-		model.setPortList(doOptionChange(DicUtil.PORT, "").getUnsureList());
+		try {
+			dbData.setRecordid(key);
+			dbData = (B_CustomerData)dao.FindByPrimaryKey(dbData);
+
+			reqModel.setCustomer(dbData);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dbData = null;
+		}
 		
-		model.setEndInfoMap("098", "0001", "");
-		model.setKeyBackup(dbData.getId());
+		reqModel.setKeyBackup(key);
 		
 		return model;
 		
@@ -347,23 +311,6 @@ public class CustomerService extends BaseService {
 					
 	}
 	
-	private boolean preCheckId(String key) throws Exception {
-		B_CustomerDao dao = new B_CustomerDao();
-		B_CustomerData dbData = new B_CustomerData();
-		boolean rtnData = false;
-		
-		try {
-			dbData.setId(key);
-			dao.FindByPrimaryKey(dbData);
-			rtnData = true;
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
-		return rtnData;
-	}
-	
 	private String getUserList(ArrayList<String>userList) {
 		String viewUserList = "";
 		
@@ -376,5 +323,93 @@ public class CustomerService extends BaseService {
 		}
 		
 		return viewUserList;
+	}
+	
+	public HashMap<String, Object> getCustomerId() throws Exception{
+		
+		String parentId = request.getParameter("parentId");
+		parentId = convertToUTF8(parentId);
+		
+		dataModel.setQueryName("getCustomerSubId");
+		userDefinedSearchCase.put("parentId", parentId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, 0);
+		
+		//取得已有的最大流水号
+		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("MaxSubId"));
+				
+		String subid = BusinessService.getFormatCode(code, true);
+		
+		modelMap.put("subId",subid);
+		
+		return modelMap;
+	}
+	
+	public void insertAndView(){
+		
+		String recordId = insertAndUpdate();
+		try {
+			getCustomerByRecordId(recordId);
+			doAddInit();//加载下拉框
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public String insertAndUpdate(){
+		
+		String recordId = "";
+		try {
+			
+			B_CustomerData reqData = reqModel.getCustomer();
+
+			B_CustomerData dbData = preCheckId(reqData);
+			
+			if (dbData != null && dbData.getRecordid() != "") {
+				//更新处理
+				copyProperties(dbData,reqData);
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"CustomerUpdate",userInfo);
+				copyProperties(dbData,commData);
+				
+				dao.Store(dbData);
+				
+			} else {
+				
+				//新增处理
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+						"CustomerInsert",userInfo);
+				copyProperties(reqData,commData);
+
+				guid = BaseDAO.getGuId();
+				reqData.setRecordid(guid);
+				
+				dao.Create(reqData);
+				
+			}
+			reqModel.setCustomer(reqData);
+			
+			recordId = reqData.getRecordid();
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return recordId;
+	}
+	
+	public Model editInit() throws Exception{
+
+		String key = request.getParameter("key");
+		
+		getCustomerDetail(key);
+		
+		doAddInit();//加载下拉框
+		
+		return model;
 	}
 }

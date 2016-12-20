@@ -385,6 +385,7 @@ function inputCheck(){
 	$.extend($,{
 		fixedWidth:function(str,length,char){
 		
+			if(str == null || str == '' ) return str;
 			str = str.toString();
 			if(!char) char='...';
 			var strFull = str;	

@@ -16,18 +16,11 @@ public class CustomerModel extends BaseModel {
 	private String customerName = "";
 	private String paymentTerm = "";
 	private String country = "";
-	private String denominationCurrency = "";
+	private String currency = "";
 	private String shippingCase = "";
 	private String loadingPort = "";	
 	private String deliveryPort = "";
-	private ArrayList<ListOption> countryList = new ArrayList<ListOption>();
-	private ArrayList<ListOption> denominationCurrencyList = new ArrayList<ListOption>();
-	private ArrayList<ListOption> shippingCaseList = new ArrayList<ListOption>();
-	private ArrayList<ListOption> portList = new ArrayList<ListOption>();
-	private ArrayList<ListOption> unsureList = new ArrayList<ListOption>();
-	private B_CustomerData customerData = new B_CustomerData();
-	private B_CustomerAddrData customerAddrData = new B_CustomerAddrData();
-	
+	private B_CustomerData customer = new B_CustomerData();
 	public String getKeyBackup() {
 		return this.keyBackup;
 	}
@@ -70,11 +63,11 @@ public class CustomerModel extends BaseModel {
 		this.country = country;
 	}
 	
-	public String getDenominationCurrency() {
-		return this.denominationCurrency;
+	public String getCurrency() {
+		return this.currency;
 	}
-	public void setDenominationCurrency(String denominationCurrency) {
-		this.denominationCurrency = denominationCurrency;
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 	
 	public String getShippingCase() {
@@ -98,47 +91,13 @@ public class CustomerModel extends BaseModel {
 		this.deliveryPort = deliveryPort;
 	}
 	
-	public ArrayList<ListOption> getCountryList() {
-		return this.countryList;
-	}
-	public void setCountryList(ArrayList<ListOption> countryList) {
-		this.countryList = countryList;
-	}	
+
 	
-	public ArrayList<ListOption> getDenominationCurrencyList() {
-		return this.denominationCurrencyList;
+	public B_CustomerData getCustomer() {
+		return this.customer;
 	}
-	public void setDenominationCurrencyList(ArrayList<ListOption> denominationCurrencyList) {
-		this.denominationCurrencyList = denominationCurrencyList;
-	}
-	
-	public ArrayList<ListOption> getShippingCaseList() {
-		return this.shippingCaseList;
-	}
-	public void setShippingCaseList(ArrayList<ListOption> shippingCaseList) {
-		this.shippingCaseList = shippingCaseList;
-	}
-	
-	public ArrayList<ListOption> getPortList() {
-		return this.portList;
-	}
-	public void setPortList(ArrayList<ListOption> portList) {
-		this.portList = portList;
-	}
-	
-	
-	public ArrayList<ListOption> getUnsureList() {
-		return this.unsureList;
-	}
-	public void setUnsureList(ArrayList<ListOption> unsureList) {
-		this.unsureList = unsureList;
-	}
-	
-	public B_CustomerData getCustomerData() {
-		return this.customerData;
-	}
-	public void setCustomerData(B_CustomerData customerData) {
-		this.customerData = customerData;
+	public void setCustomer(B_CustomerData customerData) {
+		this.customer = customerData;
 	}
 	
 }
