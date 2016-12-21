@@ -28,7 +28,7 @@ public class CalendarUtil {
 		int month;
 		int day;
 		
-		if (date.length() > 0) {
+		if (date != null && date.length() > 0) {
 			if (date.length() == 8) {
 				year = Integer.parseInt(date.substring(0,4));
 				month = Integer.parseInt(date.substring(4,6));
@@ -136,7 +136,11 @@ public class CalendarUtil {
 	 */
 	public static String fmtDate(Date srcDate, String format) {
 		SimpleDateFormat sd = new SimpleDateFormat(format);
-		return sd.format(srcDate); 
+		if (srcDate == null || srcDate.equals("")) {
+			return "";
+		} else {
+			return sd.format(srcDate);
+		}
 	}
 	
 	/**

@@ -185,7 +185,7 @@ function doDelete() {
 										itemLabel="value" />
 								</form:select>
 							</td>
-							<td width="60px">模具编号(自动生成)：</td>
+							<td width="60px">模具编号<p>(自动生成)：</td>
 							<td width="80px">
 								<label id="no" name="no" class="short" >${DisplayData.mouldDetailData.no}</label>
 							</td>
@@ -213,8 +213,6 @@ function doDelete() {
 							<td width="80px">
 								<input type="text" id="heavy" name="heavy" class="short"  style="margin: 0px 0px 0px 10px;" value="${DisplayData.mouldDetailData.heavy}"/>
 							</td>
-						</tr>
-						<tr>
 							<td width="60px">价格：</td>
 							<td width="80px">
 								<input type="text" id="price" name="price" class="short"  style="margin: 0px 0px 0px 10px;" value="${DisplayData.mouldDetailData.price}"/>

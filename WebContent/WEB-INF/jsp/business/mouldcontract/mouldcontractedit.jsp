@@ -237,39 +237,28 @@ function ajaxPayList() {
 
 function initEvent(){
 
-    jQuery.validator.addMethod("contractId",function(value, element){ 
+    jQuery.validator.addMethod("contractYear",function(value, element){ 
     	var rtnValue = false;
     	if (value != '') {
-    		var productModelId = $('#productModelId').val();
-    		var mouldFactoryId = $('#mouldFactoryId').find("option:selected").text();
-    		if (value.length == (7 + productModelId.length + mouldFactoryId.length)) {
-  				var year = value.substring(0, 4);
-  				var productModelIdVar = value.substring(4, 4 + productModelId.length);
-  	    		var mouldFactoryIdVar = value.substring(4 + productModelId.length, mouldFactoryId.length + 4 + productModelId.length);
-  	    		var serialNo = value.substring(value.length - 4, value.length);
-    			if (year >= '1950' && year <= '2050') {
-    				if (productModelId == productModelIdVar ) {
-    					if (mouldFactoryId == mouldFactoryIdVar) {
-    						if (checkNum(serialNo)) {
-    							rtnValue = true;
-    						}
-    					}
-    				}
-    			}
-    		}    		 
+  			if (value >= '1950' && value <= '2050') {
+  				rtnValue = true;
+   			}
+    	} else {
+    		if ($('#contractId').html() != '') {
+    			rtnValue = true;
+    		}
     	}
         return rtnValue;  
-    }, "合同编号不正确(年份+型号+工厂简称+3位流水号)"); 
+    }, "合同年份不正确(1950年-2050年，且必须输入)"); 
 	
 	validatorBaseInfo = $("#mouldContractBaseInfo").validate({
 		rules: {
-			contractId: {
-				required: true,
-				contractId: true,
-				minlength: 8,
-				maxlength: 27,
+			contractYear: {
+				contractYear: true,
+				minlength: 4,
+				maxlength: 4,
 			},
-			productModelId: {
+			productModelIdView: {
 				required: true,				
 				maxlength: 120,
 			},
@@ -338,10 +327,16 @@ function initEvent(){
 	
 	controlButtons($('#keyBackup').val());
 	$("#productModelId").val('${DisplayData.mouldBaseInfoData.productmodelid}');
+	$("#productModelIdView").val('${DisplayData.productModelIdView}');
 	$("#productModelName").val('${DisplayData.productModelName}');
 	
 	$("#mouldFactoryId").val('${DisplayData.mouldBaseInfoData.mouldfactoryid}');
 	$("#result").val('${DisplayData.mouldAcceptanceData.result}');
+	
+	if ($('#keyBackup').val() == '') {
+		var d = new Date();
+		$('#contractYear').val(d.getFullYear());
+	}
 	
 	if ('${DisplayData.mouldAcceptanceData.confirm}' == '1') {
 		doConfirm();
@@ -414,7 +409,10 @@ function doSave() {
 					} else {
 						$('#tabs').show();
 						reloadTabWindow();
-						controlButtons(d.info);
+						var x = new Array();
+						x = d.info.split("|");
+						controlButtons(x[0]);
+						$('#contractId').html(x[1]);
 					}
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
@@ -488,6 +486,7 @@ function controlButtons(data) {
 		$('#withhold').attr("disabled", true);
 		$('#deletepay').attr("disabled", true);
 		$('#addpay').attr("disabled", true);
+		
 	} else {
 		$('#delete').attr("disabled", false);
 		$('#printmd').attr("disabled", false);
@@ -509,6 +508,7 @@ function clearAll() {
 	paid = 0;
 	$('#contractId').val("");
 	$('#productModelId').val("");
+	$('#productModelIdView').val("");
 	$("#productModelName").val("");
 	$('#mouldFactoryId').val("");
 	$('#payCase').val("");
@@ -750,7 +750,7 @@ function resetPayable() {
 </script>
 	<script>
 		function autoComplete() { 
-			$("#productModelId").autocomplete({
+			$("#productModelIdView").autocomplete({
 				source : function(request, response) {
 					$.ajax({
 						type : "POST",
@@ -785,7 +785,8 @@ function resetPayable() {
 				},
 	
 				select : function(event, ui) {
-					$("#productModelId").val(ui.item.name);
+					$("#productModelId").val(ui.item.id);
+					$("#productModelIdView").val(ui.item.name);
 					$("#productModelName").val(ui.item.des);
 					//$("#factoryProductCode").focus();
 	
@@ -805,6 +806,7 @@ function resetPayable() {
 			<div  style="height:20px"></div>
 			<form:form modelAttribute="dataModels" id="mouldContractBaseInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
+				<input type=hidden id="productModelId" name="productModelId" value=""/>
 				<legend>模具合同-基本信息</legend>
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
@@ -812,15 +814,21 @@ function resetPayable() {
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 				<table class="form" width="850px">
 					<tr>
-						<td width="90px">模具合同编号：</td>
+						<td width="90px">模具合同编号<br>(自动编码)：</td>
 						<td colspan=3>
-							<input type=text id="contractId" name="contractId" value="${DisplayData.mouldBaseInfoData.contractid}"></input>
+							<label id="contractId" name="contractId">${DisplayData.mouldBaseInfoData.contractid}</label>
 						</td>
 					</tr>
 					<tr>
+						<td width="90px">模具合同年份：</td>
+						<td colspan=3>
+							<input type="text" id="contractYear" name="contractYear" value='${DisplayData.contractYear}'></>
+						</td>
+					</tr>					
+					<tr>
 						<td width="60px">产品型号：</td> 
 						<td>
-							<form:input path="productModelId" class="required middle" />
+							<form:input path="productModelIdView" class="required middle" />
 						</td>
 						<td width="60px">产品名称：</td> 
 						<td>

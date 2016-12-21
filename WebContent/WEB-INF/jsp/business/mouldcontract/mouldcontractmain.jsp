@@ -64,7 +64,7 @@
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "contractId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "productModelId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "productModelIdView", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "productModelName", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "mouldFactory", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "payCase", "defaultContent" : '',"className" : 'td-center'},

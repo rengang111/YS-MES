@@ -201,7 +201,12 @@ public class MakeDocumentService extends BaseService implements I_BaseService, I
 
 		projectId = getJsonData(data, "keyBackup");
 		type = getJsonData(data, "type");
-				
+		
+		if (projectId.equals("")) {
+			projectId = "-1";
+		}
+		
+		
 		dataModel.setQueryFileName("/business/makedocument/makedocumentquerydefine");
 		dataModel.setQueryName("makedocumentquerydefine_basetechdocsearch");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
@@ -227,6 +232,9 @@ public class MakeDocumentService extends BaseService implements I_BaseService, I
 		data = URLDecoder.decode(data, "UTF-8");
 
 		projectId = getJsonData(data, "keyBackup");
+		if (projectId.equals("")) {
+			projectId = "-1";
+		}
 		
 		dataModel.setQueryFileName("/business/makedocument/makedocumentquerydefine");
 		dataModel.setQueryName("makedocumentquerydefine_workingsearch");

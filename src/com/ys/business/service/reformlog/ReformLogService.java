@@ -190,7 +190,9 @@ public class ReformLogService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		projectId = getJsonData(data, "keyBackup");
-		
+		if (projectId.equals("")) {
+			projectId = "-1";
+		}
 		dataModel.setQueryFileName("/business/reformlog/reformlogquerydefine");
 		dataModel.setQueryName("reformlogquerydefine_search");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);

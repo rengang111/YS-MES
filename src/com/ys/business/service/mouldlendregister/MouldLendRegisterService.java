@@ -244,7 +244,10 @@ public class MouldLendRegisterService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		id = getJsonData(data, "keyBackup");
-				
+		if (id.equals("")) {
+			id = "-1";
+		}
+		
 		dataModel.setQueryFileName("/business/mouldlendregister/mouldlendregisterquerydefine");
 		dataModel.setQueryName("mouldlendregisterquerydefine_searchld");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);

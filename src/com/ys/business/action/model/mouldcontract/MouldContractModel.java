@@ -33,7 +33,9 @@ public class MouldContractModel extends BaseModel {
 
 	private String mouldBaseId = "";
 	private String contractId = "";
+	private String contractYear = "";
 	private String productModelId = "";
+	private String productModelIdView = "";
 	private String productModelName = "";
 	private String mouldFactoryId = "";
 	private String mouldFactory = "";
@@ -115,11 +117,23 @@ public class MouldContractModel extends BaseModel {
 	public void setContractId(String contractId) {
 	    this.contractId = contractId;
 	}
+	public String getContractYear() {
+	    return this.contractId;
+	}
+	public void getContractYear(String contractId) {
+	    this.contractId = contractId;
+	}
 	public String getProductModelId() {
 	    return this.productModelId;
 	}
 	public void setProductModelId(String productModelId) {
 	    this.productModelId = productModelId;
+	}
+	public String getProductModelIdView() {
+	    return this.productModelIdView;
+	}
+	public void setProductModelIdView(String productModelIdView) {
+	    this.productModelIdView = productModelIdView;
 	}
 	public String getProductModelName() {
 	    return this.productModelName;

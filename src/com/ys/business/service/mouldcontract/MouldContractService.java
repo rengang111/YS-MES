@@ -198,6 +198,9 @@ public class MouldContractService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		id = getJsonData(data, "keyBackup");
+		if (id.equals("")) {
+			id = "-1";
+		}
 				
 		dataModel.setQueryFileName("/business/mouldcontract/mouldcontractquerydefine");
 		dataModel.setQueryName("mouldcontractquerydefine_searchmd");
@@ -233,6 +236,9 @@ public class MouldContractService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		mouldBaseId = getJsonData(data, "keyBackup");
+		if (mouldBaseId.equals("")) {
+			mouldBaseId = "-1";
+		}
 		
 		dataModel.setQueryFileName("/business/mouldcontract/mouldcontractquerydefine");
 		dataModel.setQueryName("mouldcontractquerydefine_searchpay");
@@ -485,7 +491,7 @@ public class MouldContractService extends BaseService {
 				dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 				
 				dataModel.setQueryFileName("/business/mouldcontract/mouldcontractquerydefine");
-				dataModel.setQueryName("mouldcontractquerydefine_getserialno");
+				dataModel.setQueryName("mouldcontractquerydefine_getmouldserialno");
 				baseQuery = new BaseQuery(request, dataModel);
 				ArrayList<HashMap<String, String>> serialNoList = baseQuery.getYsQueryData(0, -1);					
 				
@@ -615,55 +621,62 @@ public class MouldContractService extends BaseService {
 		boolean checkContractIdFlg = false;
 		
 		try {
+			String contractId = "";
+			String contractYear = getJsonData(data, "contractYear");
+			String mouldFactoryId = getJsonData(data, "mouldFactoryId");
+			String moudFactoryShortName = "";
 			String finishTime = "";
 			if (getJsonData(data, "finishTime").equals("")) {
 				finishTime = null;
 			} else {
 				finishTime = getJsonData(data, "finishTime"); 
 			}
-			
-			dataModel.setQueryFileName("/business/mouldcontract/mouldcontractquerydefine");
-			dataModel.setQueryName("mouldcontractquerydefine_checkContractId");
-			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-			userDefinedSearchCase.put("contractId", getJsonData(data, "contractId"));
-			baseQuery = new BaseQuery(request, dataModel);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			baseQuery.getYsQueryData(0,0);
-			if (dataModel.getYsViewData().size() == 0) {
-				checkContractIdFlg = true;
-			} else {
-				if (dataModel.getYsViewData().get(0).get("id").equals(key)) {
-					checkContractIdFlg = true;
-				}
-			}
-			if (checkContractIdFlg) {
-				if (key == null || key.equals("")) {
-					guid = BaseDAO.getGuId();									
-					dbData.setId(guid);									
-					dbData.setContractid(getJsonData(data, "contractId"));
-					dbData.setProductmodelid(getJsonData(data, "productModelId"));
-					dbData.setMouldfactoryid(getJsonData(data, "mouldFactoryId"));
-					dbData.setPaycase(getJsonData(data, "payCase"));
+
+			if (!contractYear.equals("")) {
+				B_OrganizationDao orgDao = new B_OrganizationDao();
+				B_OrganizationData orgData = new B_OrganizationData();
+				orgData.setRecordid(mouldFactoryId);
+				orgData = (B_OrganizationData)orgDao.FindByPrimaryKey(orgData);
+				moudFactoryShortName = orgData.getShortname();
+				
+				dataModel.setQueryFileName("/business/mouldcontract/mouldcontractquerydefine");
+				dataModel.setQueryName("mouldcontractquerydefine_getcontractserialno");
+				HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+				userDefinedSearchCase.put("year", contractYear);
+				baseQuery = new BaseQuery(request, dataModel);
+				baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+				baseQuery.getYsQueryData(0,0);
 	
-					dbData.setFinishtime(finishTime);
-					dbData = updateMouldBaseInfoModifyInfo(dbData, userInfo);
-					dao.Create(dbData);
-					key = guid;
-				} else {
-					dbData.setId(key);
-					dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
-					dbData.setContractid(getJsonData(data, "contractId"));
-					dbData.setProductmodelid(getJsonData(data, "productModelId"));
-					dbData.setMouldfactoryid(getJsonData(data, "mouldFactoryId"));
-					dbData.setPaycase(getJsonData(data, "payCase"));
-					dbData.setFinishtime(finishTime);
-					dbData = updateMouldBaseInfoModifyInfo(dbData, userInfo);
-					dao.Store(dbData);
-				}
-				model.setEndInfoMap(NORMAL, "", key);
-			} else {
-				model.setEndInfoMap(DUMMYKEY, "err005", key);
+				contractId = contractYear + getJsonData(data, "productModelIdView") + moudFactoryShortName + String.format("%03d", Integer.parseInt(dataModel.getYsViewData().get(0).get("serialNo")));
 			}
+			if (key == null || key.equals("")) {
+				guid = BaseDAO.getGuId();									
+				dbData.setId(guid);									
+				dbData.setContractid(contractId);
+				dbData.setProductmodelid(getJsonData(data, "productModelId"));
+				dbData.setMouldfactoryid(mouldFactoryId);
+				dbData.setPaycase(getJsonData(data, "payCase"));
+
+				dbData.setFinishtime(finishTime);
+				dbData = updateMouldBaseInfoModifyInfo(dbData, userInfo);
+				dao.Create(dbData);
+				key = guid;
+			} else {
+				dbData.setId(key);
+				dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+				if (contractYear != null && !contractYear.equals("")) {
+					dbData.setContractid(contractId);
+				} else {
+					contractId = dbData.getContractid();
+				}
+				dbData.setProductmodelid(getJsonData(data, "productModelId"));
+				dbData.setMouldfactoryid(getJsonData(data, "mouldFactoryId"));
+				dbData.setPaycase(getJsonData(data, "payCase"));
+				dbData.setFinishtime(finishTime);
+				dbData = updateMouldBaseInfoModifyInfo(dbData, userInfo);
+				dao.Store(dbData);
+			}
+			model.setEndInfoMap(NORMAL, "", key + "|" + contractId);
 			
 		}
 		catch(Exception e) {
@@ -852,6 +865,7 @@ public class MouldContractService extends BaseService {
 		for(HashMap<String, String> rowData:data) {
 			if (rowData.get("id").equals(productModelId)) {
 				model.setProductModelName(rowData.get("des"));
+				model.setProductModelIdView(rowData.get("name"));
 				break;
 			}
 		}

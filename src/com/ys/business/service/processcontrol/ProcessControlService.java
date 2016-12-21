@@ -233,7 +233,10 @@ public class ProcessControlService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		key1 = getJsonData(data, "keyBackup");
-		key2 = getJsonData(data, "type");	
+		key2 = getJsonData(data, "type");
+		if (key1.equals("")) {
+			key1 = "-1";
+		}
 		
 		dataModel.setQueryFileName("/business/processcontrol/processcontrolquerydefine");
 		dataModel.setQueryName("processcontrolquerydefine_searchbytype");
