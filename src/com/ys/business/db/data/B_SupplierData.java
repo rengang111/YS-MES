@@ -305,7 +305,7 @@ public class B_SupplierData implements java.io.Serializable
 	}
 
 	/**
-	*ï¿½ï¿½ï¿½ï¿½Öµ
+	*·µ»ØÖµ
 	*/
 	private String returnvalue;
 	public String getReturnvalue()
@@ -318,7 +318,7 @@ public class B_SupplierData implements java.io.Serializable
 	}
 
 	/**
-	*ï¿½ï¿½ï¿½ï¿½Öµ
+	*·µ»ØÖµ
 	*/
 	private String returnsql;
 	public String getReturnsql()

@@ -2,30 +2,29 @@
 <root>
   <query>
     <pool></pool>     
-    <name value="mouldcontractquerydefine_search" />
+    <name value="mouldlendregisterquerydefine_search" />
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
     </where>
     <select>
       <f name="DISTINCT A.id" alias="" ctype="" />
-      <f name="A.contractId" alias="" ctype="" />
-      <f name="A.productModelId" alias="" ctype="" />
-      <f name="A.productModelId" alias="productModelName" ctype="产品型号" />
-      <f name="A.mouldFactoryId" alias="" ctype="" />
-      <f name="A.shortName" alias="mouldFactory" ctype="" />
-      <f name="A.payCase" alias="" ctype="" />
-      <f name="ifnull(DATE_FORMAT(A.finishTime, '%Y-%m-%d'), '')" alias="finishTime" ctype="" />
-      <f name="ifnull(DATE_FORMAT(A.acceptanceDate, '%Y-%m-%d'), '')" alias="acceptanceDate" ctype="" />
-      <f name="A.result" alias="" ctype="" />
-      <f name="A.confirmresult" alias="" ctype="" />
-      <f name="A.memo" alias="" ctype="" />
-      <f name="A.withhold" alias="" ctype="" />
+      <f name="A.mouldLendNo" alias="" ctype="" />
+      <f name="A.productModel" alias="" ctype="" />
+      <f name="A.productModel" alias="productModelName" ctype="产品型号" />
+      <f name="A.factoryName" alias="" ctype="" />
+      <f name="A.lendTime" alias="" ctype="" />
+      <f name="A.returnTime" alias="" ctype="" />
+      <f name="ifnull(DATE_FORMAT(A.lendTime, '%Y-%m-%d'), '')" alias="lendTime" ctype="" />
+      <f name="ifnull(DATE_FORMAT(A.returnTime, '%Y-%m-%d'), '')" alias="returnTime" ctype="" />
+      <f name="A.proposer" alias="" ctype="" />
+      <f name="A.brokerage" alias="" ctype="" />
+      <f name="A.confirm" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_MouldContract as A WHERE A.DeleteFlag = '0' </from>
-    <orderby>A.contractId</orderby>
+    <from>v_MouldLend as A WHERE A.DeleteFlag = '0' </from>
+    <orderby>A.mouldLendNo</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -33,7 +32,7 @@
   </query>
   <query>
     <pool></pool>     
-    <name value="mouldcontractquerydefine_searchproductmodel" />
+    <name value="mouldlendregisterquerydefine_searchproductmodel" />
     <where>
     </where>
     <select>
@@ -52,7 +51,45 @@
   </query>
   <query>
     <pool></pool>     
-    <name value="mouldcontractquerydefine_searchfactory" />
+    <name value="mouldlendregisterquerydefine_searchuser" />
+    <where>
+    </where>
+    <select>
+      <f name="A.userId" alias="id" ctype="" />
+      <f name="A.loginName" alias="name" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_user as A WHERE A.deleteflag='0'</from>
+    <orderby>A.loginName</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldlendregisterquerydefine_searchmodelno" />
+    <where>
+    </where>
+    <select>
+      <f name="CONCAT_WS(' | ', A.no, A.name)" alias="viewList" ctype="" />
+      <f name="A.id" alias="" ctype="" />
+      <f name="A.no" alias="no" ctype="" />
+      <f name="A.name" alias="name" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldDetail as A LEFT JOIN b_MouldLendDetail as B ON (B.deleteflag='0' AND B.mouldNo = A.id AND B.status='0') WHERE A.deleteflag='0' </from>
+    <orderby>A.no, A.name</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldlendregisterquerydefine_searchfactory" />
     <where>
     </where>
     <select>
@@ -61,7 +98,7 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_organization as A, v_MouldFactoryType as B WHERE A.DeleteFlag = '0' AND A.type = B.id </from>
+    <from>b_Supplier as A WHERE A.DeleteFlag = '0' </from>
     <orderby>shortName</orderby>
     <groupby></groupby>
     <having></having>
@@ -70,48 +107,20 @@
   </query>
   <query>
     <pool></pool>     
-    <name value="mouldcontractquerydefine_searchmd" />
+    <name value="mouldlendregisterquerydefine_searchld" />
     <where>
-      <w name="A.mouldBaseId" des=""  reqName="mouldBaseId" dtype="ch" oper="="  lg="" bt="" />
+      <w name="A.lendId" des=""  reqName="lendId" dtype="ch" oper="="  lg="" bt="" />
     </where>
     <select>
       <f name="A.id" alias="" ctype="" />
-      <f name="D.dicName" alias="type" ctype="" />
-      <f name="A.no" alias="" ctype="" />
-      <f name="A.name" alias="" ctype="" />
-      <f name="A.size" alias="" ctype="" />
-      <f name="A.materialQuality" alias="" ctype="" />
-      <f name="A.mouldUnloadingNum" alias="" ctype="" />
-      <f name="A.heavy" alias="" ctype="" />
-      <f name="A.price" alias="" ctype="" />
-      <f name="c.shortname" alias="mouldFactory" ctype="" />
-      <f name="E.dicName" alias="place" ctype="" />
+      <f name="B.no" alias="" ctype="" />
+      <f name="B.name" alias="" ctype="" />
+      <f name="A.status" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_MouldDetail as A, b_MouldBaseInfo as B, b_organization as C, s_Dic as D, s_Dic as E WHERE A.DeleteFlag = '0' AND B.DeleteFlag = '0' AND B.id = A.mouldBaseId AND C.recordid = B.mouldFactoryId AND D.deleteflag='0' and D.enableflag = '0' and D.dicid=A.type AND E.deleteflag='0' and E.enableflag = '0' and E.dicid=A.type </from>
+    <from>b_MouldLendDetail as A, b_MouldDetail as B WHERE A.DeleteFlag = '0' AND B.DeleteFlag = '0' AND B.id = A.mouldNo </from>
     <orderby>type, no</orderby>
-    <groupby></groupby>
-    <having></having>
-	<power>
-	</power>    
-  </query>
-  <query>
-    <pool></pool>     
-    <name value="mouldcontractquerydefine_searchpay" />
-    <where>
-      <w name="mouldBaseId" des=""  reqName="mouldBaseId" dtype="ch" oper="="  lg="" bt="" />
-    </where>
-    <select>
-      <f name="A.id" alias="" ctype="" />
-      <f name="DATE_FORMAT(A.payTime, '%Y-%m-%d')" alias="payTime" ctype="" />
-      <f name="A.pay" alias="" ctype="" />
-      <f name="A.confirm" alias="" ctype="" />
-    </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_MouldPayList as A WHERE A.DeleteFlag = '0' </from>
-    <orderby>payTime</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -119,16 +128,15 @@
   </query>
    <query>
     <pool></pool>     
-    <name value="mouldcontractquerydefine_checkContractId" />
+    <name value="mouldlendregisterquerydefine_getserialno" />
     <where>
-      <w name="contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="" bt="" />
     </where>
     <select>
-      <f name="A.id" alias="" ctype="" />
+      <f name="IFNULL(min(B.serialNo), 1)" alias="serialNo" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_MouldBaseInfo as A WHERE A.DeleteFlag = '0' </from>
+    <from>(select (CONVERT(substring(mouldLendNo, 6, 3), SIGNED) + 1) as serialNo FROM b_MouldLendRegister WHERE deleteflag='0') as B WHERE NOT EXISTS (select serialNo from (select CONVERT(substring(mouldLendNo, 6, 3), SIGNED) as serialNo FROM b_MouldLendRegister WHERE deleteflag='0') as A WHERE A.serialNo = B.serialNo) </from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>
@@ -137,16 +145,16 @@
   </query>
    <query>
     <pool></pool>     
-    <name value="mouldcontractquerydefine_checkContractProductModelId" />
+    <name value="mouldcontractquerydefine_checkLendNo" />
     <where>
-      <w name="A.no" des=""  reqName="no" dtype="ch" oper="="  lg="" bt="" />
+      <w name="A.mouldLendNo" des=""  reqName="mouldLendNo" dtype="ch" oper="="  lg="" bt="" />
     </where>
     <select>
       <f name="id" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_MouldDetail as A WHERE A.DeleteFlag = '0' </from>
+    <from>b_MouldLendRegister as A WHERE A.DeleteFlag = '0' </from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>

@@ -1,5 +1,8 @@
 package com.ys.business.ejb;												
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /*												
 import javax.ejb.Local;												
 import javax.ejb.Remote;												
@@ -28,6 +31,9 @@ import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MouldAcceptanceDao;
 import com.ys.business.db.dao.B_MouldBaseInfoDao;
 import com.ys.business.db.dao.B_MouldDetailDao;
+import com.ys.business.db.dao.B_MouldLendConfirmDao;
+import com.ys.business.db.dao.B_MouldLendDetailDao;
+import com.ys.business.db.dao.B_MouldLendRegisterDao;
 import com.ys.business.db.dao.B_MouldPayInfoDao;
 import com.ys.business.db.dao.B_MouldPayListDao;
 import com.ys.business.db.dao.B_OrganizationDao;
@@ -51,6 +57,9 @@ import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MouldAcceptanceData;
 import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_MouldDetailData;
+import com.ys.business.db.data.B_MouldLendConfirmData;
+import com.ys.business.db.data.B_MouldLendDetailData;
+import com.ys.business.db.data.B_MouldLendRegisterData;
 import com.ys.business.db.data.B_MouldPayInfoData;
 import com.ys.business.db.data.B_MouldPayListData;
 import com.ys.business.db.data.B_OrganizationData;
@@ -70,6 +79,7 @@ import com.ys.business.service.externalsample.ExternalSampleService;
 import com.ys.business.service.lateperfection.LatePerfectionService;
 import com.ys.business.service.makedocument.MakeDocumentService;
 import com.ys.business.service.mouldcontract.MouldContractService;
+import com.ys.business.service.mouldlendregister.MouldLendRegisterService;
 import com.ys.business.service.processcontrol.ProcessControlService;
 import com.ys.business.service.projecttask.ProjectTaskService;
 import com.ys.business.service.reformlog.ReformLogService;
@@ -80,6 +90,8 @@ import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
+import com.ys.util.basequery.BaseQuery;
+import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;												
 											
 												
@@ -1196,4 +1208,169 @@ public class BusinessDbUpdateEjb  {
 			throw e;									
 		}
     }
+    
+    public String executeMouldLendRegisterUpdate(HttpServletRequest request, String key, String data, String confirm, UserInfo userInfo) throws Exception {
+		B_MouldLendRegisterDao dao = new B_MouldLendRegisterDao();
+		B_MouldLendRegisterData dbData = new B_MouldLendRegisterData();
+		B_MouldLendConfirmDao confirmDao = new B_MouldLendConfirmDao();
+		B_MouldLendConfirmData confirmData = new B_MouldLendConfirmData();
+		
+		MouldLendRegisterService service = new MouldLendRegisterService();
+		String guid = "";
+		boolean isConfirmDataExists = false;
+		String moudLendNo = "1608J";
+		
+		ts = new BaseTransaction();	
+		try {
+			ts.begin();
+			if (key == null || key.equals("")) {
+				guid = BaseDAO.getGuId();									
+				dbData.setId(guid);	
+				
+				BaseModel dataModel = new BaseModel();
+				BaseQuery baseQuery = null;
+				dataModel.setQueryFileName("/business/mouldlendregister/mouldlendregisterquerydefine");
+				dataModel.setQueryName("mouldlendregisterquerydefine_getserialno");
+				baseQuery = new BaseQuery(request, dataModel);
+				ArrayList<HashMap<String, String>> mouldLendNoMap = baseQuery.getYsQueryData(0,0);				
+				if (mouldLendNoMap.size() > 0) {
+					moudLendNo += String.format("%03d", Integer.parseInt(mouldLendNoMap.get(0).get("serialNo")));
+				}
+				
+				dbData.setMouldlendno(moudLendNo);
+				dbData.setProductmodel(service.getJsonData(data, "productModelId"));
+				dbData.setLendfactory(service.getJsonData(data, "mouldFactoryId"));
+				dbData.setLendtime(service.getJsonData(data, "lendTime"));
+				dbData.setReturntime(service.getJsonData(data, "returnTime"));
+				dbData = service.updateMouldLendRegisterModifyInfo(dbData, userInfo);
+				dao.Create(dbData);
+				key = guid;
+			} else {
+				dbData.setId(key);
+				dbData = (B_MouldLendRegisterData)dao.FindByPrimaryKey(dbData);
+				dbData.setProductmodel(service.getJsonData(data, "productModelId"));
+				dbData.setLendfactory(service.getJsonData(data, "mouldFactoryId"));
+				dbData.setLendtime(service.getJsonData(data, "lendTime"));
+				dbData.setReturntime(service.getJsonData(data, "returnTime"));
+				dbData = service.updateMouldLendRegisterModifyInfo(dbData, userInfo);
+				dao.Store(dbData);
+			}
+			
+			if (confirm.equals("1")) {
+				StringBuffer sql = new StringBuffer();
+				sql.append("UPDATE b_MouldLendDetail SET status = '1' ");
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE lendId = '" + service.getJsonData(data, "keyBackup") + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
+				BaseDAO.execUpdate(sql.toString());
+			}
+			
+			try {
+				confirmData.setLendid(dbData.getId());
+				confirmData = (B_MouldLendConfirmData)confirmDao.FindByPrimaryKey(confirmData);
+				isConfirmDataExists = true;
+			}
+			catch(Exception e) {
+				
+			}
+
+			confirmData.setProposer(service.getJsonData(data, "proposer"));
+			confirmData.setBrokerage(service.getJsonData(data, "brokerage"));
+			confirmData.setConfirm(confirm);
+			confirmData = service.updateMouldLendConfirmModifyInfo(confirmData, userInfo);
+			
+			if (isConfirmDataExists) {
+				confirmDao.Store(confirmData);
+			} else {
+				confirmDao.Create(confirmData);
+			}
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();									
+			throw e;	
+		}
+		
+		return key + "|" + moudLendNo;
+    }
+    
+    public void executeMouldLendRegisterDelete(String keyData, UserInfo userInfo) throws Exception {
+		B_MouldLendRegisterDao dao = new B_MouldLendRegisterDao();
+		B_MouldLendRegisterData dbData = new B_MouldLendRegisterData();
+		B_MouldLendConfirmDao confirmDao = new B_MouldLendConfirmDao();
+		B_MouldLendConfirmData confirmData = new B_MouldLendConfirmData();
+		
+		MouldLendRegisterService service = new MouldLendRegisterService();
+		
+		int count = 0;										
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();									
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {
+				StringBuffer sql = new StringBuffer("");
+				
+				dbData.setId(key);
+				dbData = (B_MouldLendRegisterData)dao.FindByPrimaryKey(dbData);
+				dbData = MouldLendRegisterService.updateMouldLendRegisterModifyInfo(dbData, userInfo);
+				dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(dbData);
+				
+				sql = new StringBuffer("");								
+				sql.append("UPDATE b_MouldLendDetail SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE lendId = '" + dbData.getId() + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
+				
+				confirmData.setLendid(dbData.getId());
+				confirmData = (B_MouldLendConfirmData)confirmDao.FindByPrimaryKey(confirmData);
+				confirmData = MouldLendRegisterService.updateMouldLendConfirmModifyInfo(confirmData, userInfo);
+				confirmData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				confirmDao.Store(confirmData);
+				
+				count++;								
+												
+			}									
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
+
+    
+    public void executeMouldLendDetailDelete(String keyData, UserInfo userInfo) throws Exception {												
+    	B_MouldLendDetailData dbData = new B_MouldLendDetailData();											
+    	B_MouldLendDetailDao dao = new B_MouldLendDetailDao();
+
+		int count = 0;										
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();
+
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				dbData.setId(key);
+				dbData = (B_MouldLendDetailData)dao.FindByPrimaryKey(dbData);
+				dbData = MouldLendRegisterService.updateLdModifyInfo(dbData, userInfo);
+				dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(dbData);
+				count++;												
+			}
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
+    
+
 }												

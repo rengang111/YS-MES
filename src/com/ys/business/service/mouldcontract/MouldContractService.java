@@ -427,10 +427,6 @@ public class MouldContractService extends BaseService {
 			baseQuery.getYsQueryData(0,0);
 			if (dataModel.getYsViewData().size() == 0) {
 				checkNoFlg = true;
-			} else {
-				if (dataModel.getYsViewData().get(0).get("id").equals(key)) {
-					checkNoFlg = true;
-				}
 			}
 			if (checkNoFlg) {
 				String message = doCheckNo(request, data);
