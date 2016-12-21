@@ -9,14 +9,17 @@ import org.springframework.ui.Model;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.customer.CustomerModel;
 import com.ys.business.db.dao.B_CustomerDao;
+import com.ys.business.db.data.B_ContactData;
 import com.ys.business.db.data.B_CustomerData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.system.service.common.BaseService;
+import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
@@ -232,6 +235,20 @@ public class CustomerService extends BaseService {
 		
 	}
 	
+	public static B_CustomerData updateModifyInfo(B_CustomerData data, UserInfo userInfo) {
+		String createUserId = data.getCreateperson();
+		if ( createUserId == null || createUserId.equals("")) {
+			data.setCreateperson(userInfo.getUserId());
+			data.setCreatetime(CalendarUtil.fmtDate());
+			data.setCreateunitid(userInfo.getUnitId());
+			//data.setDeptguid(userInfo.getDeptGuid());
+		}
+		data.setModifyperson(userInfo.getUserId());
+		data.setModifytime(CalendarUtil.fmtDate());
+		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
+		
+		return data;
+	}
 	private ArrayList<HashMap<String, String>> makeAddress(ArrayList<HashMap<String, String>> data) {
 
 		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();

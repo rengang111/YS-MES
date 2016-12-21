@@ -99,7 +99,7 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 		ExternalSampleModel model = new ExternalSampleModel();
 
 		try {			
-			model.setCurrencyList(doOptionChange(DicUtil.DENOMINATIONCURRENCY, "").getCurrencyList());
+			model.setCurrencyList(doOptionChange(DicUtil.CURRENCY, "").getCurrencyList());
 			model.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {
@@ -293,7 +293,7 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 		
 		model.setExternalSampleData(dbData);
 
-		model.setCurrencyList(doOptionChange(DicUtil.DENOMINATIONCURRENCY, "").getCurrencyList());
+		model.setCurrencyList(doOptionChange(DicUtil.CURRENCY, "").getCurrencyList());
 		
 		model.setEndInfoMap("098", "0001", "");
 		model.setKeyBackup(dbData.getId());
