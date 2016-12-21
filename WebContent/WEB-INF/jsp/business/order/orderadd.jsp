@@ -283,16 +283,9 @@
 			$('#orderForm').submit();
 		});
 		
-
-		//重设显示窗口(iframe)高度
-		iFramAutoSroll();
-		
-		//$("input:text").focus (function(){
-		//    $(this).select();
-		//});
-		
 		foucsInit();
 
+		$('select').css('width','100px');
 	});
 	
 	
@@ -485,11 +478,11 @@ $("#attribute1").autocomplete({
 							value : item.customerId,
 							id    : item.customerId,
 							shortName    : item.shortName,
-							fullName     : item.fullName,
+							fullName     : item.customerName,
 							paymentTerm  : item.paymentTerm,
-							shippingCase : item.shippingCase,
-							loadingPort  : item.loadingPort,
-							deliveryPort : item.deliveryPort,
+							shippingCase : item.shippingCondition,
+							loadingPort  : item.shippiingPort,
+							deliveryPort : item.destinationPort,
 							currency     : item.currency,
 							
 						}
@@ -556,7 +549,7 @@ $("#attribute1").autocomplete({
 	},//select		
 	
 	
-	minLength : 2,
+	minLength : 0,
 	autoFocus : false,
 });
 
