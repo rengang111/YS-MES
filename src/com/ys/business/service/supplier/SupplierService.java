@@ -300,16 +300,14 @@ public class SupplierService extends BaseService {
 	}
 	
 	public Model getSupplierBaseInfo(String key) throws Exception {
-		B_SupplierDao dao = new B_SupplierDao();
+
 		B_SupplierData dbData = new B_SupplierData();
 		dbData.setRecordid(key);
 		dbData = (B_SupplierData)dao.FindByPrimaryKey(dbData);
 		reqModel.setSupplierBasicInfoData(dbData);
 		reqModel.setSupplier(dbData);
-		
-		reqModel.setCountryList(doOptionChange(DicUtil.ADDRESS, "").getUnsureList());
-		reqModel.setProvinceList(doOptionChange(DicUtil.ADDRESS, dbData.getCountry()).getUnsureList());
-		reqModel.setCityList(doOptionChange(DicUtil.ADDRESS, dbData.getProvince()).getUnsureList());
+	
+		reqModel.setCountryList(getProvinceList());
 		
 		reqModel.setKeyBackup(dbData.getRecordid());
 		

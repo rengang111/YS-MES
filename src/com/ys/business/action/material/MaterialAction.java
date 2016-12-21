@@ -130,6 +130,10 @@ public class MaterialAction extends BaseAction {
 				MaterialModel = doDelete(data);
 				printOutJsonObj(response, MaterialModel.getEndInfoMap());
 				break;
+			case "deletePrice":
+				MaterialModel = doDeletePrice(data);
+				printOutJsonObj(response, MaterialModel.getEndInfoMap());
+				break;
 			case "categorySearch"://物料分类查询
 				dataMap = doCategorySearch(data);
 				printOutJsonObj(response, dataMap);
@@ -330,7 +334,13 @@ public class MaterialAction extends BaseAction {
 
 		return MaterialModel;
 	}
+	
+	public MaterialModel doDeletePrice(@RequestBody String data) throws Exception{
+		
+		MaterialModel = materialService.doDeletePrice(data, userInfo);
 
+		return MaterialModel;
+	}
 	public void doAddSupplier() {
 
 		String materialid = request.getParameter("materialid");

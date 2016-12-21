@@ -1,5 +1,6 @@
 package com.ys.business.action.supplier;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -113,6 +114,10 @@ public class SupplierAction extends BaseAction {
 				doOptionChange3(data);
 				printOutJsonObj(response, modelMap);
 				return null;
+			case "setSupplierId":
+				setSupplierId(data);
+				printOutJsonObj(response, modelMap);
+				return null;
 		}
 		
 		return rtnUrl;
@@ -194,11 +199,13 @@ public class SupplierAction extends BaseAction {
 	}	
 	
 	public SupplierModel doOptionChange(String data) throws Exception{
+		//request.setCharacterEncoding("utf-8"); 
 		SupplierModel model = new SupplierModel();
 		String[] paras = data.split("&");
 		String[] datas = paras[1].split("=");
 		String province = request.getParameter("province");
-		province = new String(province.getBytes("ISO8859-1"), "UTF-8");
+		province = URLDecoder.decode(province,"utf-8");
+		//province = new String(province.getBytes("ISO8859-1"), "UTF-8");
  		model.setUnsureList(service.getCityList(province));
 
 		return model;
@@ -207,7 +214,7 @@ public class SupplierAction extends BaseAction {
 	public SupplierModel doOptionChange2(String data) throws Exception{
 		SupplierModel model = new SupplierModel();
 		String province = request.getParameter("province");
-		province = new String(province.getBytes("ISO8859-1"), "UTF-8");
+		province = URLDecoder.decode(province,"utf-8");
  		model.setUnsureList(service.getCountyList(province));
 
 		return model;
@@ -215,12 +222,22 @@ public class SupplierAction extends BaseAction {
 
 	public void doOptionChange3(String data) throws Exception{
 		
+		request.setCharacterEncoding("utf-8"); 
 		String parentId = request.getParameter("parentId");
-		parentId = new String(parentId.getBytes("ISO8859-1"), "UTF-8");
+		parentId = URLDecoder.decode(parentId,"utf-8");
 
 		modelMap = service.getSupplierId(parentId);
 
 	}
+	
+	public void setSupplierId(String data) throws Exception{
+		
+		request.setCharacterEncoding("utf-8"); 
+		String parentId = request.getParameter("parentId");
+		parentId = URLDecoder.decode(parentId,"utf-8");
 
+		modelMap = service.getSupplierId(parentId);
+
+	}
 
 }

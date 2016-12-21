@@ -140,7 +140,7 @@
 	}
 
 	function doCopy(YSId,materialId) {
-		alert(1111)
+		
 		var url = '${ctx}/business/bom?methodtype=copy&YSId=' + YSId+'&materialId='+materialId;
 
 		location.href = url;

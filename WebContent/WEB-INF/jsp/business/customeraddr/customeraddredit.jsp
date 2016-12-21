@@ -53,8 +53,6 @@ function doSave() {
 
 	if (validator.form()) {
 		
-		var message = "${DisplayData.endInfoMap.message}";
-		
 		if ($('#keyBackup').val() == "") {				
 			//新建
 			actionUrl = "${ctx}/business/customeraddr?methodtype=add";
@@ -64,43 +62,42 @@ function doSave() {
 			actionUrl = "${ctx}/business/customeraddr?methodtype=update";
 		}
 
-		if (confirm(message)) {
-			var actionUrl;			
-			
-			//将提交按钮置为【不可用】状态
-			//$("#submit").attr("disabled", true); 
-			$.ajax({
-				type : "POST",
-				contentType : 'application/json',
-				dataType : 'json',
-				url : actionUrl,
-				data : JSON.stringify($('#customerAddrInfo').serializeArray()),// 要提交的表单
-				success : function(d) {
-					parent.reloadCustomerAddr();
-					if (d.message != "") {
-						alert(d.message);	
-					}
-					//TODO
-					//var infoList = d.info.split("|");
-					//$('#keyBackup').val(infoList[0]);
-					//$('#customerId').val(infoList[1]);
-					
-					controlButtons(d.info);
-					parent.reloadCustomerAddr();
-					//不管成功还是失败都刷新父窗口，关闭子窗口
-					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
-					//parent.$('#events').DataTable().destroy();
-					//parent.layer.close(index); //执行关闭
-					
-				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					//alert(XMLHttpRequest.status);					
-					//alert(XMLHttpRequest.readyState);					
-					//alert(textStatus);					
-					//alert(errorThrown);
+		var actionUrl;			
+		
+		//将提交按钮置为【不可用】状态
+		//$("#submit").attr("disabled", true); 
+		$.ajax({
+			type : "POST",
+			contentType : 'application/json',
+			dataType : 'json',
+			url : actionUrl,
+			data : JSON.stringify($('#customerAddrInfo').serializeArray()),// 要提交的表单
+			success : function(d) {
+				parent.reloadCustomerAddr();
+				if (d.message != "") {
+					alert(d.message);	
 				}
-			});
-		}
+				//TODO
+				//var infoList = d.info.split("|");
+				//$('#keyBackup').val(infoList[0]);
+				//$('#customerId').val(infoList[1]);
+				
+				controlButtons(d.info);
+				parent.reloadCustomerAddr();
+				//不管成功还是失败都刷新父窗口，关闭子窗口
+				//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+				//parent.$('#events').DataTable().destroy();
+				//parent.layer.close(index); //执行关闭
+				
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				//alert(XMLHttpRequest.status);					
+				//alert(XMLHttpRequest.readyState);					
+				//alert(textStatus);					
+				//alert(errorThrown);
+			}
+		});
+		
 	}
 }
 
@@ -169,52 +166,50 @@ function controlButtons(data) {
 
 </head>
 
-<body>
-<div id="container">
+<body class="noscroll">
 
-		<div id="main">
-			<div id="supplierBasic">				
-				<div  style="height:20px"></div>
+<div id="layer_main">			
 				
-				<legend>地址信息</legend>
-					
-				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="save" class="DTTT_button" onClick="doSave();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-					
-				<form:form modelAttribute="dataModels" id="customerAddrInfo" style='padding: 0px; margin: 10px;' >
-					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
-					<input type=hidden id="customerId" name="customerId" value="${DisplayData.customerId}"/>
-					<table class="form" width="850px">
-						<tr>
-							<td width="60px">抬头：</td>
-							<td width="200px">
-								<input type="text" id="title" name="title" class="short" value="${DisplayData.customerAddrData.title}"/>
-							</td>
-						</tr>
-						<tr>
-							<td width="60px">地址：</td> 
-							<td width="200px">
-								<input type="text" id="address" name="address" class="middle" value="${DisplayData.customerAddrData.address}"/>
-							</td>
-						</tr>
-						<tr>
-							<td>邮编：</td> 
-							<td>
-								<input type="text" id="postcode" name="postcode" class="short" value="${DisplayData.customerAddrData.postcode}"/>
-							</td>	
-						</tr>
-						<tr>
-							<td>备注：</td> 
-							<td>
-								<input type="text" id="memo" name="memo" class="middle" value="${DisplayData.customerAddrData.memo}"/>
-							</td>
-						</tr>
-					</table>
-
-				</form:form>
-			</div>
-		</div>
+	<form:form modelAttribute="dataModels" id="customerAddrInfo" style='padding: 0px; margin: 10px;' >
+	
+		<input type="hidden" id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
+		<input type="hidden" id="customerId" name="customerId" value="${DisplayData.customerId}"/>
+		
+		<fieldset>
+			<legend>客户地址信息</legend>
+			
+			<table class="form" width="850px">
+				<tr>
+					<td width="100px" class="label">地址抬头：</td>
+					<td>
+						<input type="text" id="title" name="title" class="short" value="${DisplayData.customerAddrData.title}"/>
+					</td>
+				</tr>
+				<tr>
+					<td width="100px" class="label">详细地址：</td> 
+					<td>
+						<input type="text" id="address" name="address" class="middle" value="${DisplayData.customerAddrData.address}"/>
+					</td>
+				</tr>
+				<tr>
+					<td width="100px" class="label">邮编：</td> 
+					<td>
+						<input type="text" id="postcode" name="postcode" class="short" value="${DisplayData.customerAddrData.postcode}"/>
+					</td>	
+				</tr>
+				<tr>
+					<td width="100px" class="label">备注：</td> 
+					<td>
+						<input type="text" id="memo" name="memo" class="long" value="${DisplayData.customerAddrData.memo}"/>
+					</td>
+				</tr>
+			</table>
+		</fieldset>	
+		<fieldset style="text-align:right">
+			<button type="button" class="DTTT_button"  onclick="doSave()">保存</button>
+		</fieldset>
+		</form:form>
 	</div>
+
+	</body>
 </html>

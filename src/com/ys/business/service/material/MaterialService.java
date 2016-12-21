@@ -619,22 +619,22 @@ public class MaterialService extends BaseService {
 
 					//处理共通信息
 					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialUpdate",userInfo);
-					copyProperties(reqData,commData);
+					copyProperties(dbData,commData);
 					
 					//获取被选中数据的信息
-					dbData.setMaterialid(reqData.getMaterialid());
+					//dbData.setMaterialid(reqData.getMaterialid());
+					dbData.setMaterialid(reqData.getParentid()+"."+data.getSubid());
 					dbData.setMaterialname(reqData.getMaterialname());
 					dbData.setCategoryid(reqData.getCategoryid());
 					dbData.setSharemodel(reqData.getSharemodel());
 					dbData.setDescription(reqData.getDescription());
 					dbData.setUnit(reqData.getUnit());
 					//获取子编码list中的子编码解释
+					dbData.setSubid(data.getSubid());
 					dbData.setSubiddes(data.getSubiddes());
 					
 					dao.Store(dbData);
-										
-				}
-				
+				}				
 			}
 			
 			ts.commit();
@@ -757,6 +757,28 @@ public class MaterialService extends BaseService {
 		}
 		catch(Exception e) {
 			ts.rollback();
+		}
+		
+		return model;
+	}
+
+	public MaterialModel doDeletePrice(
+			String delData, UserInfo userInfo) throws Exception{
+		
+		MaterialModel model = new MaterialModel();
+		B_PriceSupplierData data = new B_PriceSupplierData();	
+		B_PriceSupplierDao dao = new B_PriceSupplierDao();	
+													
+		try {	
+												
+			String recordid = request.getParameter("recordId");									
+			data.setRecordid(recordid);
+
+			dao.Remove(data);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
 		}
 		
 		return model;

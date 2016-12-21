@@ -67,18 +67,33 @@
 							{"data": "materialId", "defaultContent" : ''},
 							{"data": "materialName", "defaultContent" : ''},
 							{"data": "categoryName", "defaultContent" : ''},
-							{"data": "dicName", "defaultContent" : ''}
+							{"data": "shareModel", "defaultContent" : ''},
+							{"data": "price", "defaultContent" : '',"className" : 'td-right'},
+							{"data": "supplierId", "defaultContent" : ''},
+							{"data": "dicName", "defaultContent" : '',"className" : 'td-center'}
 							,{"data": null, "defaultContent" : '',"className" : 'td-center'}
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
 								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 		                    }},
-				    		{"targets":5,"render":function(data, type, row){
+				    		{"targets":8,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';
 				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">查看</a>";
 				    			return rtn;
+				    		}},
+				    		{"targets":2,"render":function(data, type, row){
+				    			
+				    			var name = row["materialName"];				    			
+				    			name = jQuery.fixedWidth(name,30);				    			
+				    			return name;
+				    		}},
+				    		{"targets":4,"render":function(data, type, row){
+				    			
+				    			var name = row["shareModel"];				    			
+				    			name = jQuery.fixedWidth(name,20);				    			
+				    			return name;
 				    		}}
 			           
 			         ] 
@@ -225,15 +240,18 @@
 							class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a>
 					</div>
 					<div id="clear"></div>
-					<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
+					<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable">
 						<thead>						
 							<tr class="selected">
-								<th colspan="1" rowspan="1" style="width: 30px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-								<th colspan="1" rowspan="1" style="width: 100px;" aria-label="物料编号" class="dt-middle sorting_disabled">物料编号</th>
-								<th colspan="1" rowspan="1"  aria-label="物料名称" class="dt-middle sorting_disabled">物料名称</th>
-								<th colspan="1" rowspan="1" style="width: 200px;" aria-label="分类解释" class="dt-middle sorting_disabled">物料分类</th>
-								<th colspan="1" rowspan="1" style="width: 30px;" aria-label="计量单位" class="dt-middle sorting_disabled">单位</th>
-								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
+								<th style="width: 30px;" aria-label="No:" class="dt-middle ">No</th>
+								<th style="width: 150px;" class="dt-middle ">物料编号</th>
+								<th class="dt-middle">物料名称</th>
+								<th style="width: 100px;" class="dt-middle">物料分类</th>
+								<th style="width: 120px;" class="dt-middle">通用型号</th>
+								<th style="width: 50px;" class="dt-middle">价格</th>
+								<th style="width: 70px;" class="dt-middle">供应商</th>
+								<th style="width: 30px;" class="dt-middle ">单位</th>
+								<th style="width: 30px;" class="dt-middle ">操作</th>
 							</tr>
 						</thead>
 					</table>

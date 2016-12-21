@@ -9,330 +9,29 @@
 
 <title>客户基本数据</title>
 <script type="text/javascript">
-var validator;
-var layerHeight = "250";
-
-function ajaxCustomerAddr() {
-	var table = $('#TCustomerAddrList').dataTable();
-	if(table) {
-		table.fnDestroy();
-	}
-
-	var t = $('#TCustomerAddrList').DataTable({
-					"paging": true,
-					"lengthMenu":[50],//设置一页展示10条记录
-					"processing" : false,
-					"serverSide" : true,
-					"stateSave" : false,
-					"searching" : false,
-					"pagingType" : "full_numbers",
-					"retrieve" : true,
-					"sAjaxSource" : "${ctx}/business/customeraddr?methodtype=search",
-					"fnServerData" : function(sSource, aoData, fnCallback) {
-						var param = {};
-						var formData = $("#customerInfo").serializeArray();
-						formData.forEach(function(e) {
-							aoData.push({"name":e.name, "value":e.value});
-						});
-
-						$.ajax({
-							"url" : sSource,
-							"datatype": "json", 
-							"contentType": "application/json; charset=utf-8",
-							"type" : "POST",
-							"data" : JSON.stringify(aoData),
-							success: function(data){
-								/*
-								if (data.message != undefined) {
-									alert(data.message);
-								}
-								*/
-								fnCallback(data);
-							},
-							 error:function(XMLHttpRequest, textStatus, errorThrown){
-				                 //alert(XMLHttpRequest.status);
-				                 //alert(XMLHttpRequest.readyState);
-				                 //alert(textStatus);
-				             }
-						})
-					},
-						
-					"language": {
-		        		"url":"${ctx}/plugins/datatables/chinese.json"
-		        	},
-		        	
-		        	dom : '<"clear">rt',
-					"columns" : [ 
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "title"}, 
-						{"data" : "address" },
-						{"data" : "postcode"}, 
-						{"data" : "memo"}, 
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}
-					],
-					"columnDefs":[
-			    		{"targets":0,"render":function(data, type, row){
-							return row["rownum"] + "<input type=checkbox name='numCheckAddr' id='numCheckAddr' value='" + row["id"] + "' />"
-	                    }},
-			    		{"targets":5,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"doUpdateCustomerAddr('" + row["id"] + "')\">编辑</a>"
-	                    }}
-				    ] 						
-				});
-
-	t.on('click', 'tr', function() {
-		$(this).toggleClass('selected');
-	});
-
-	/*
-	t.on('dblclick', 'tr', function() {
-
-		var d = t.row(this).data();
-
-		
-		layer.open({
-			type : 2,
-			title : false,
-			area : [ '900px', '370px' ],
-			scrollbar : false,
-			title : false,
-			closeBtn: 0, //不显示关闭按钮
-			content : '${ctx}/business/customer/contactedit?name=' + d["name"] + '&id=' + $('#customerID').val()
-		});
-	});
-	*/
-	
-	// Add event listener for opening and closing details
-	t.on('click', 'td.details-control', function() {
-
-		//alert(999);
-
-		var tr = $(this).closest('tr');
-		t
-		var row = t.row(tr);
-		t
-
-		if (row.child.isShown()) {
-			// This row is already open - close it
-			row.child.hide();
-			tr.removeClass('shown');
-		} else {
-			// Open this row
-			row.child(format(row.data())).show();
-			tr.addClass('shown');
-		}
-	});
-
-};
-
-function ajaxContact() {
-	var table = $('#TContactList').dataTable();
-	if(table) {
-		table.fnDestroy();
-	}
-
-	var t = $('#TContactList').DataTable({
-					"paging": true,
-					"lengthMenu":[5],//设置一页展示10条记录
-					"processing" : false,
-					"serverSide" : true,
-					"stateSave" : false,
-					"searching" : false,
-					"pagingType" : "full_numbers",
-					"retrieve" : false,
-					"sAjaxSource" : "${ctx}/business/contact?methodtype=contactsearch",
-					"fnServerData" : function(sSource, aoData, fnCallback) {
-						var param = {};
-						var formData = $("#customerInfo").serializeArray();
-						formData.forEach(function(e) {
-							aoData.push({"name":e.name, "value":e.value});
-						});
-
-						$.ajax({
-							"url" : sSource,
-							"datatype": "json", 
-							"contentType": "application/json; charset=utf-8",
-							"type" : "POST",
-							"data" : JSON.stringify(aoData),
-							success: function(data){
-								/*
-								if (data.message != undefined) {
-									alert(data.message);
-								}
-								*/
-								fnCallback(data);
-							},
-							 error:function(XMLHttpRequest, textStatus, errorThrown){
-				                 //alert(XMLHttpRequest.status);
-				                 //alert(XMLHttpRequest.readyState);
-				                 //alert(textStatus);
-				             }
-						})
-					},
-						
-					"language": {
-		        		"url":"${ctx}/plugins/datatables/chinese.json"
-		        	},
-		        	
-		        	dom : '<"clear">rt',
-
-					"columns" : [ 
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "userName"}, 
-						{"data" : "sex"},
-						{"data" : "position"}, 
-						{"data" : "mobile"}, 
-						{"data" : "phone"}, 
-						{"data" : "fax"}, 
-						{"data" : "mail"}, 
-						{"data" : "qq"},
-						{"data" : "skype"},
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}
-					],
-					"columnDefs":[
-			    		{"targets":0,"render":function(data, type, row){
-							return row["rownum"] + "<input type=checkbox name='numCheckContact' id='numCheckContact' value='" + row["id"] + "' />"
-	                    }},
-			    		{"targets":10,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"doUpdateContact('" + row["id"] + "')\">编辑</a>"
-	                    }}
-				    ] 						
-				});
-
-	t.on('click', 'tr', function() {
-		$(this).toggleClass('selected');
-	});
-
-	/*
-	t.on('dblclick', 'tr', function() {
-
-		var d = t.row(this).data();
-
-		
-		layer.open({
-			type : 2,
-			title : false,
-			area : [ '900px', '370px' ],
-			scrollbar : false,
-			title : false,
-			closeBtn: 0, //不显示关闭按钮
-			content : '${ctx}/business/customer/contactedit?name=' + d["name"] + '&id=' + $('#customerID').val()
-		});
-	});
-	*/
-	
-	// Add event listener for opening and closing details
-	t.on('click', 'td.details-control', function() {
-
-		//alert(999);
-
-		var tr = $(this).closest('tr');
-		t
-		var row = t.row(tr);
-		t
-
-		if (row.child.isShown()) {
-			// This row is already open - close it
-			row.child.hide();
-			tr.removeClass('shown');
-		} else {
-			// Open this row
-			row.child(format(row.data())).show();
-			tr.addClass('shown');
-		}
-	});
-
-};
-
-$.fn.dataTable.TableTools.buttons.create = $
-.extend(
-		true,
-		{},
-		$.fn.dataTable.TableTools.buttonBase,
-		{
-			"fnClick" : function(button) {
-
-			}
-		});
-		
-$.fn.dataTable.TableTools.buttons.Delete = $
-.extend(
-		true,
-		{},
-		$.fn.dataTable.TableTools.buttonBase,
-		{
-			"fnClick" : function(button) {
-
-			}
-		});
-		
-function initEvent(){
-
-	ajaxCustomerAddr();
-	ajaxContact();
-
-	controlButtons($('#keyBackup').val());
-	
-	$('#TContactList').DataTable().on('click', 'tr', function() {
-		
-		if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-        	$('#TContactList').DataTable().$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-	});
-	
-	/*
-	$('#TContactList').DataTable().on('dblclick', 'tr', function() {
-
-		var d = $('#TContactList').DataTable().row(this).data();
-
-		location.href = '${pageContext.request.contextPath}/factory/show/' + d["factory_id"] + '.html';		
-		
-	});
-	*/
-}
-
-function reloadContact() {
-
-	$('#TContactList').DataTable().ajax.reload(null,false);
-	reloadTabWindow();
-
-	return true;
-}
-
-function reloadCustomerAddr() {
-
-	$('#TCustomerAddrList').DataTable().ajax.reload(null,false);
-	reloadTabWindow();
-
-	return true;
-}
 
 $(document).ready(function() {
 
-	initEvent();
+	$('select').css('width','100px');
 	
-	validator = $("#customerInfo").validate({
+	validator = $("#customer").validate({
 		rules: {
 			customerId: {
 				required: true,
 				minlength: 5 ,
-				maxlength: 8,
+				maxlength: 20,
 			},
 			customerSimpleDes: {
 				required: true,				
-				maxlength: 10,
+				maxlength: 20,
 			},
 			customerName: {
 				required: true,								
-				maxlength: 50,
+				maxlength: 100,
 			},
 			paymentTerm: {
 				required: true,					
-				maxlength: 5,
+				maxlength: 15,
 			}
 		},
 		errorPlacement: function(error, element) {
@@ -344,409 +43,144 @@ $(document).ready(function() {
 		    	error.insertAfter(element);
 		}
 	});
+	
+	$("#customer\\.country").change(function() {
 
-	$("#country").val("${DisplayData.customerData.country}");
-	$('#denominationCurrency').val("${DisplayData.customerData.denominationcurrency}");
-	$('#shippingCase').val("${DisplayData.customerData.shippingcase}");
-	$("#loadingPort").val("${DisplayData.customerData.loadingport}");
-	$("#deliveryPort").val("${DisplayData.customerData.deliveryport}");
+		var parentId = $(this).val();
+		//alert(parentId)
+		var url = "${ctx}/business/customer?methodtype=optionChange&parentId="+parentId
+											
+		if (parentId != ""){ 
+			$.ajax({
+				type : "post",
+				url : url,
+				async : false,
+				data : 'key=' + parentId,
+				dataType : "json",
+				success : function(data) {
+	
+					var subId = data["subId"];
+					var customerId = parentId + subId;
+
+					$('#customer\\.parentid').val(parentId);
+					$('#customer\\.subid').val(subId);
+					$('#customer\\.customerId').val(customerId);
+				},
+				error : function(
+						XMLHttpRequest,
+						textStatus,
+						errorThrown) {
+					
+					//alert("supplierId2222:"+textStatus);
+				}
+			});
+		}else{
+			//关联项目清空
+		}
+	});	//国家选择
+
 })
 
 function doSave() {
 
-	if (validator.form()) {
-		
-		var message = "${DisplayData.endInfoMap.message}";
-		
-		if ($('#keyBackup').val() == "") {				
-			//新建
-			actionUrl = "${ctx}/business/customer?methodtype=add";				
-		} else {
-			//修正
-			actionUrl = "${ctx}/business/customer?methodtype=update";
-		}		
-		
-		if (confirm(message)) {
-			var actionUrl;			
-
-			//将提交按钮置为【不可用】状态
-			//$("#submit").attr("disabled", true); 
-			$.ajax({
-				type : "POST",
-				contentType : 'application/json',
-				dataType : 'json',
-				url : actionUrl,
-				data : JSON.stringify($('#customerInfo').serializeArray()),// 要提交的表单
-				success : function(d) {
-					if (d.rtnCd != "000") {
-						alert(d.message);	
-					} else {
-						reloadTabWindow();
-						controlButtons(d.info);
-					}
-					
-					//不管成功还是失败都刷新父窗口，关闭子窗口
-					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
-					//parent.$('#events').DataTable().destroy();
-					//parent.layer.close(index); //执行关闭
-					
-				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					//alert(XMLHttpRequest.status);					
-					//alert(XMLHttpRequest.readyState);					
-					//alert(textStatus);					
-					//alert(errorThrown);
-				}
-			});
-		}
+	if (validator.form()) {					
+		$('#customer').attr("action", "${ctx}/business/customer?methodtype=insert");
+		$('#customer').submit();	
 	}
 }
 
-function doDelete() {
-	
-	if (confirm("${DisplayData.endInfoMap.message}")) {
-		//将提交按钮置为【不可用】状态
-		//$("#submit").attr("disabled", true); 
-		$.ajax({
-			type : "POST",
-			contentType : 'application/json',
-			dataType : 'json',
-			url : "${ctx}/business/customer?methodtype=deleteDetail",
-			data : $('#keyBackup').val(),// 要提交的表单
-			success : function(d) {
-				if (d.rtnCd != "000") {
-					alert(d.message);	
-				} else {
-					controlButtons("");
-					clearCustomerInfo();
-					reloadContact();
-					reloadCustomerAddr();
-					reloadTabWindow();
-				}
-				/*	
-				//不管成功还是失败都刷新父窗口，关闭子窗口
-				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-				//parent.$('#events').DataTable().destroy();/
-				parent.reload_contactor();
-				parent.layer.close(index); //执行关闭
-				*/
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				//alert(XMLHttpRequest.status);					
-				//alert(XMLHttpRequest.readyState);					
-				//alert(textStatus);					
-				//alert(errorThrown);
-			}
-		});
-	}
+function goBack() {
+
+	var url = "${ctx}/business/customer";
+	location.href = url;
 }
 
-function doAddContact() {
-	var key = $('#keyBackup').val();
-	var url = "${ctx}/business/contact?methodtype=addinit&key=" + key;
-	openLayer(url, $(document).width() - 25, layerHeight, false);	
-}
-
-function doUpdateContact(key) {		
-	var url = "${ctx}/business/contact?methodtype=updateinit&key=" + key;
-	openLayer(url, $(document).width() - 25, layerHeight, false);
-}
-
-function doDeleteContact() {
-	var str = '';
-	$("input[name='numCheckContact']").each(function(){
-		if ($(this).prop('checked')) {
-			str += $(this).val() + ",";
-		}
-	});
-
-	if (str != "") {
-		if (confirm("您确认执行该操作吗？") == false) {
-			return;
-		}
-		$.ajax({
-			contentType : 'application/json',
-			dataType : 'json',						
-			type : "POST",
-			data : str,// 要提交的表单						
-			url : "${ctx}/business/contact?methodtype=delete",
-			success : function(d) {
-				if (d.rtnCd != "000") {
-					alert(d.message);
-				} else {
-					reloadContact();
-					reloadCustomerAddr();
-				}
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				//alert(XMLHttpRequest.status);
-				//alert(XMLHttpRequest.readyState);
-				//alert(textStatus);
-				//alert(errorThrown);
-				
-				//发生系统异常，请再试或者联系管理员。
-				alert("发生系统异常，，请再试或者联系管理员。");
-			}
-		});
-		
-	} else {
-		alert("请先选中要删除的记录。");
-	}
-
-}
-
-function doAddCustomerAddr() {
-	var url = "${ctx}/business/customeraddr?methodtype=addinit";
-	openLayer(url, $(document).width() - 25, layerHeight, false);	
-}
-
-function doUpdateCustomerAddr(key) {		
-	var url = "${ctx}/business/customeraddr?methodtype=updateinit&key=" + key;
-	openLayer(url, '', layerHeight, false);
-}
-
-function doDeleteCustomerAddr() {
-	var str = '';
-	$("input[name='numCheckAddr']").each(function(){
-		if ($(this).prop('checked')) {
-			str += $(this).val() + ",";
-		}
-	});
-
-	if (str != "") {
-		if (confirm("您确认执行该操作吗？") == false) {
-			return;
-		}
-		$.ajax({
-			contentType : 'application/json',
-			dataType : 'json',						
-			type : "POST",
-			data : str,// 要提交的表单						
-			url : "${ctx}/business/customeraddr?methodtype=delete",
-			success : function(d) {
-				if (d.rtnCd != "000") {
-					alert(d.message);
-				} else {
-					reloadContact();
-					reloadCustomerAddr();
-				}
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				//alert(XMLHttpRequest.status);
-				//alert(XMLHttpRequest.readyState);
-				//alert(textStatus);
-				//alert(errorThrown);
-				
-				//发生系统异常，请再试或者联系管理员。
-				alert("发生系统异常，，请再试或者联系管理员。");
-			}
-		});
-		
-	} else {
-		alert("请先选中要删除的记录。");
-	}
-
-}
-
-function clearCustomerInfo() {
-	$('#customerId').val('');
-	$('#customerSimpleDes').val('');
-	$('#customerName').val('');
-	$('#paymentTerm').val('');
-	$('#country').val('');
-	$('#denominationCurrency').val('');
-	$('#shippingCase').val('');
-	$("#loadingPort").val('');
-	$("#deliveryPort").val('');
-}
-
-function controlButtons(data) {
-	$('#keyBackup').val(data);
-	if (data == '') {
-		$('#delete').attr("disabled", true);
-		$('#addcontact').attr("disabled", true);
-		$('#deletecontact').attr("disabled", true);
-		$('#addcustomeraddr').attr("disabled", true);
-		$('#deletecustomeraddr').attr("disabled", true);
-		
-	} else {
-		$('#delete').attr("disabled", false);
-		$('#addcontact').attr("disabled", false);
-		$('#addcustomeraddr').attr("disabled", false);
-	}
-}
 </script>
 
 </head>
 
-<body class="noscroll">
-
-<div id="layer_main">
+<body>
+<div id="container">
 <div id="main">				
-	<form:form modelAttribute="dataModels" id="customerInfo" style='padding: 0px; margin: 10px;' >
+	<form:form modelAttribute="formModel" id="customer"  >
+	
+		<form:hidden path="customer.recordid" />
 			
-			<div  style="height:20px"></div>
-			<fieldset>		
-				<legend>客户-综合信息</legend>
-					
-				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
-				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-					
-					<input type="hidden" id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
-					<table class="form">
-						<tr>
-							<td>客户编号：</td>
-							<td colspan=4>
-								<input type="text" id="customerId" name="customerId" class="short" value="${DisplayData.customerData.customerid}"/>
-							</td>
-							<td width="60px">客户简称：</td> 
-							<td colspan=2>
-								<input type="text" id="customerSimpleDes" name="customerSimpleDes" class="short" value="${DisplayData.customerData.customersimpledes}"/>
-							</td>
-						</tr>
-						<tr>
-							<td>客户名称：</td> 
-							<td colspan=4>
-								<input type="text" id="customerName" name="customerName" class="middle" value="${DisplayData.customerData.customername}"/>
-							</td>
-							<td>
-								付款条件：
-							</td>
-							<td>
-								出运后：
-								<input type="text" id="paymentTerm" name="paymentTerm" class="mini" value="${DisplayData.customerData.paymentterm}"/>&nbsp;&nbsp;天
-							</td>
-						</tr>
-						<tr>
-							<td>
-								国家：
-							</td>
-							<td>
-								<form:select path="country">
-									<form:options items="${DisplayData.countryList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-							<td>
-								计价货币：
-							</td>
-							<td colspan=2> 
-								<form:select path="denominationCurrency">
-									<form:options items="${DisplayData.denominationCurrencyList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-							<td colspan=2></td>
-						</tr>
-						<tr>
-							<td width="60px">	
-								出运条件：
-							</td>
-							<td width="100px"> 
-								<form:select path="shippingCase">
-									<form:options items="${DisplayData.shippingCaseList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-							<td width="60px">
-								出运港： 
-							</td>
-							<td width="100px">
-								<form:select path="loadingPort">
-									<form:options items="${DisplayData.portList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-							<td width="60px">
-								目的港： 
-							</td>
-							<td colspan=2>
-								<form:select path="deliveryPort">
-									<form:options items="${DisplayData.portList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-									
-						</tr>
-					</table>
-
-			</fieldset>
-			<div  style="height:20px"></div>
+		<fieldset>		
+			<legend>客户-综合信息</legend>
 				
-			<fieldset>	
-				<legend> 地址</legend>
-				<button type="button" id="deletecustomeraddr" class="DTTT_button" onClick="doDeleteCustomerAddr();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="addcustomeraddr" class="DTTT_button" onClick="doAddCustomerAddr();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="TCustomerAddrList" class="display" >
-					<thead>
-						<tr class="selected">
-							<th style="width: 10px;" class="dt-middle">No</th>
-							<th style="width: 80px;" class="dt-middle">抬头</th>
-							<th class="dt-middle">地址</th>
-							<th style="width: 80px;" class="dt-middle">邮编</th>
-							<th style="width: 100px;" class="dt-middle">备注</th>
-							<th style="width: 30px;" class="dt-middle">操作</th>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-		</fieldset>			
-			
-		<div  style="height:20px"></div>
-			
-		<fieldset>
-			<legend> 联系人</legend>
-			<button type="button" id="deletecontact" class="DTTT_button" onClick="doDeleteContact();"
-					style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-			<button type="button" id="addcontact" class="DTTT_button" onClick="doAddContact();"
-					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-			<table id="TContactList" class="display">
-				<thead>
-					<tr class="selected">
-						<th style="width: 10px;" class="dt-middle">No</th>
-						<th style="width: 80px;" class="dt-middle">姓名</th>
-						<th style="width: 30px;" class="dt-middle">性别</th>
-						<th style="width: 80px;" class="dt-middle">职务</th>
-						<th style="width: 80px;" class="dt-middle">手机</th>
-						<th style="width: 80px;" class="dt-middle">电话</th>
-						<th style="width: 80px;" class="dt-middle">传真</th>
-						<th style="width: 80px;" class="dt-middle">邮箱</th>
-						<th style="width: 50px;" class="dt-middle">QQ</th>
-						<th style="width: 80px;" class="dt-middle">skype</th>
-						<th style="width: 30px;" class="dt-middle">操作</th>
-				</thead>
-				<tfoot>
+				<input type="hidden" id="keyBackup" name="keyBackup" value="${formModel.keyBackup}"/>
+				<table class="form" style="height:120px">
 					<tr>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
+						<td class="label" style="widht:100px">客户编号：</td>
+						<td style="widht:120px">
+							<form:input path="customer.customerid" class="short read-only"/>
+							<form:hidden path="customer.parentid"/>
+							<form:hidden path="customer.subid" />
+						</td>
+						<td class="label" style="widht:100px">客户简称：</td> 
+						<td>
+							<form:input path="customer.shortname" class="short"/>
+						</td>
+					
+						<td class="label" style="widht:100px">客户名称：</td> 
+						<td>
+							<form:input path="customer.customername" class="middle"/>
+						</td>
 					</tr>
-				</tfoot>
-			</table>
+					<tr><td class="label" >国家：</td>
+						<td>
+							<form:select path="customer.country">
+								<form:options items="${formModel.countryList}" itemValue="key"
+									itemLabel="value" />
+							</form:select></td>
+						<td class="label" >
+							计价货币：</td>
+						<td> 
+							<form:select path="customer.currency">
+								<form:options items="${formModel.currencyList}" itemValue="key"
+									itemLabel="value" />
+							</form:select></td>
+						<td class="label" >付款条件：</td>
+						<td>&nbsp;出运后<form:input path="customer.paymentterm" class="small num" />天</td>
+						
+						
+					</tr>
+					<tr>
+						<td class="label" >出运条件：</td>
+						<td> 
+							<form:select path="customer.shippingcondition">
+								<form:options items="${formModel.shippingConditionList}" itemValue="key"
+									itemLabel="value" />
+							</form:select></td>
+						<td  class="label" >
+							出运港：</td>
+						<td width="100px">
+							<form:select path="customer.shippiingport">
+								<form:options items="${formModel.shippiingPortList}" itemValue="key"
+									itemLabel="value" />
+							</form:select></td>
+						<td  class="label" >目的港： </td>
+						<td>
+							<form:select path="customer.destinationport">
+								<form:options items="${formModel.destinationPortList}" itemValue="key"
+									itemLabel="value" />
+							</form:select></td>
+								
+					</tr>
+				</table>
+
 		</fieldset>
+		<div style="clear: both"></div>
+
+		<fieldset class="action" style="text-align: right;">
+			<button type="button" class="DTTT_button" onClick="doSave()">保存</button>
+			<button type="button" class="DTTT_button" onClick="goBack()">返回</button>
+		</fieldset>	
+
 	</form:form>
 </div>
 </div>
 	
 </body>
-</html>
+</html>	

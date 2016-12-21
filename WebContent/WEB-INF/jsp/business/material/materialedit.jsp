@@ -286,19 +286,25 @@ function autoAddSubid() {
 		trHtml+="<tr>";	
 		trHtml+="<td width='60px'>";
 		trHtml+="</td>";
-		trHtml+="<td class='td-center'>";		  
-		trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='small center' />";
-		trHtml+="<input name='materialLines["+i+"].recordid'    id='materialLines"+i+".recordid'   type='hidden' value='"+recordid+"' />";
-		trHtml+="</td>";
-		trHtml+="<td class='td-center'>";
+		trHtml+="<td class='td-center'>";	
 		if(recordid == selectedId){
 			selectedTR = i;
+			trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='small center' />";
+			trHtml+="<input name='materialLines["+i+"].recordid'    id='materialLines"+i+".recordid'   type='hidden' value='"+recordid+"' />";
+			trHtml+="</td>";
+			trHtml+="<td class='td-center'>";
+		
 			//把选中的物料recordid设为当前信息
 			$('#material\\.recordid').val(recordid);
 			$('#material\\.parentid').val(parentid);
 			trHtml+="<input name='materialLines["+i+"].subiddes' id='materialLines"+i+".subiddes'type='text' class='middle' style='text-align: center;' value='"+des+"'/>";
 		
 		}else{
+			trHtml+="<input name='materialLines["+i+"].subid'    id='materialLines"+i+".subid'   type='text' value='"+subid+"' class='small center read-only' readonly='readonly' />";
+			trHtml+="<input name='materialLines["+i+"].recordid'    id='materialLines"+i+".recordid'   type='hidden' value='"+recordid+"' />";
+			trHtml+="</td>";
+			trHtml+="<td class='td-center'>";
+
 			trHtml+="<label><a href=\"#\" onClick=\"doSubDetail('" + recordid +"','"+ parentid + "')\">"+des+"</a></label>";
 			
 		}

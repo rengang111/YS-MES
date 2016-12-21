@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 
-<%@ include file="../../common/common.jsp"%>
+<%@ include file="../../common/common2.jsp"%>
 
 <title>供应商基本数据</title>
 <script type="text/javascript">
@@ -13,15 +13,18 @@ var validator;
 
 $(document).ready(function() {
 
-	//initEvent();
+	$("#supplier\\.shortname").attr('readonly', "true");
+	$("#supplier\\.shortname").addClass('read-only');
 	
 	$("#province").change(function() {
-
-		var val = $(this).val();
+		
+		$('#supplier\\.supplierid').val('');
+		
+		var val =encodeURI( $(this).val());//中文两次转码
 
 		$.ajax({
 			type : "post",
-			url : "${ctx}/business/supplier?methodtype=optionChange&province="+val,
+			url : "${ctx}/business/supplier?methodtype=optionChange&province="+encodeURI(val),
 			async : false,
 			data : 'key=' + val,
 			dataType : "json",
@@ -56,61 +59,42 @@ $(document).ready(function() {
 		
 	$("#city").change(function() {
 
-		var val = $(this).val();
+		var cityCode = $(this).val();
+		var subId = $('#supplier\\.subid').val();
+		var shortName = $('#supplier\\.shortname').val().toUpperCase();
+		var supplierId = $('#supplier\\.supplierid').val();
+		var parentId;		
 		
-											
-		if (val != "0"){ //
-			$.ajax({
-				type : "post",
-				url : "${ctx}/business/supplier?methodtype=optionChange2&province="+val,
-				async : false,
-				data : 'key=' + val,
-				dataType : "json",
-				success : function(data) {
-					$("#county").val("");	
-					$("#county").html("");	
-					var jsonObj = data;
-					
-					for (var i = 0; i < jsonObj.length; i++) {
-						$("#county").append(
-							"<option value="+jsonObj[i].key+">"
-									+ jsonObj[i].value
-									+ "</option>");
-					};
-
-				},
-				error : function(
-						XMLHttpRequest,
-						textStatus,
-						errorThrown) {
-					
-					$("#county").html("");
-				}
-			});
-		}else{
-			//关联项目清空
+		if(shortName != ''){
+			parentId = cityCode + shortName;
+			supplierId = parentId + subId;
 		}
+		$('#supplier\\.parentid').val(parentId);
+		$('#supplier\\.subid').val(subId);
+		$('#supplier\\.supplierid').val(supplierId);
+		
+		$("#supplier\\.shortname").removeAttr('readonly');
+		$("#supplier\\.shortname").removeClass('read-only');
+													
+		
 	});	
 	
-	$("#county").change(function() {
+	$("#supplier\\.shortname").change(function() {
 
-		var county = $(this).val();
-		var province = $("#province").val();
-		var city = $("#city").val();
-		var parentId = city+county;
+		var city =  $("#city").val();
+		var shortName = $(this).val().toUpperCase();
+		var parentId = city+shortName;
 		//alert(parentId)
-		var url = "${ctx}/business/supplier?methodtype=optionChange3&parentId="+parentId
+		var url = "${ctx}/business/supplier?methodtype=setSupplierId&parentId="+parentId
 											
 		if (parentId != ""){ //
 			$.ajax({
 				type : "post",
 				url : url,
 				async : false,
-				data : 'key=' + county,
+				data : 'key=' + parentId,
 				dataType : "json",
 				success : function(data) {
-					
-					
 
 					var subId = data["subId"];
 					var supplierId = parentId + subId;
@@ -132,6 +116,7 @@ $(document).ready(function() {
 		}
 	});	//市县选择
 	
+	
 	validator = $("#supplierBasicInfo").validate({
 		rules: {
 			supplierId: {
@@ -149,7 +134,7 @@ $(document).ready(function() {
 				maxlength: 12,
 			},
 			categoryDes: {
-				maxlength: 50,
+				maxlength: 10,
 			},
 			paymentTerm: {
 				maxlength: 5,
@@ -189,21 +174,6 @@ function doDelete() {
 	location.href = url;
 }
 
-function clearSupplierBasicInfo() {
-	$('#supplierId').val('');
-	$('#shortName').val('');
-	$('#supplierName').val('');
-	$('#categoryId').val('');
-	$('#categoryDes').val('');
-	$('#paymentTerm').val('');
-	$('#address').val('');
-	$('#country').val('');
-	$('#province').val('');
-	$('#city').val('');
-	$("#province").find("option").remove();
-	$("#city").find("option").remove();
-}
-
 </script>
 
 </head>
@@ -223,17 +193,13 @@ function clearSupplierBasicInfo() {
 				<td width="150px">
 					<form:input path="supplier.supplierid" class="read-only" />
 					<form:hidden path="supplier.parentid" />
-					<form:hidden path="supplier.subid" /></td>
-					
-				<td class="label" width="100px">简称：</td> 
-				<td width="100px">
-					<form:input path="supplier.shortname" class="short" /></td>
+					<form:hidden path="supplier.subid" /></td>			
 
-				<td class="label" width="100px">名称：</td> 
-				<td>
+				<td class="label" width="100px">供应商名称：</td> 
+				<td colspan="3">
 					<form:input path="supplier.suppliername" class="middle" /></td>
 			</tr>
-		<c:if test="${empty formModel.supplier.recordid}" >
+		
 			<tr>
 				<td class="label">省份：</td>
 				<td width="150px">
@@ -241,31 +207,28 @@ function clearSupplierBasicInfo() {
 						<form:options items="${formModel.countryList}" itemValue="key"
 							itemLabel="value" />
 					</form:select></td>
-				<td class="label">地级市：</td>
+				<td class="label">城市：</td>
 				<td width="150px"> 
 					<form:select path="city" style="width:100px">
 						<form:options items="${formModel.provinceList}" itemValue="key"
 							itemLabel="value" />
 					</form:select></td>
-				<td class="label" width="60px">	市县：</td>
-				<td width="150px"> 
-					<form:select path="county" style="width:100px">
-						<form:options items="${formModel.cityList}" itemValue="key"
-							itemLabel="value" />
-					</form:select></td>
-		</tr>
-			</c:if>
+				<td class="label" width="100px">供应商简称：</td> 
+				<td width="150px">
+					<form:input path="supplier.shortname" class="short" style="text-transform:uppercase;"/></td>
+			</tr>
+			
 			<tr>	
-				<td class="label" width="100px">二级编码：</td> 
+				<td class="label" width="100px">物料分类：</td> 
 				<td>
-					<form:input path="supplier.categoryid" class="mini" /></td>
-				<td class="label" width="100px">编码解释：</td> 
+					<form:input path="supplier.categoryid"  /></td>
+				<td class="label" width="100px">分类解释：</td> 
 				<td>
-					<form:input path="supplier.categorydes" class="middle" /></td>
+					<form:input path="supplier.categorydes" class="middle read-only" /></td>
 
 				<td class="label" width="100px">付款条件：</td>
 				<td>&nbsp;入库后
-					<form:input path="supplier.paymentterm" class="mini num" />天</td>
+					<form:input path="supplier.paymentterm" class="small num" />天</td>
 			</tr>
 			<tr>
 				<td class="label">详细地址： </td>
@@ -284,5 +247,57 @@ function clearSupplierBasicInfo() {
 		
 	</form:form>
 	</div>
+	
+<script type="text/javascript">
+
+	$("#supplier\\.categoryid").autocomplete({
+		
+		source : function(request, response) {
+			//alert(888);
+			$.ajax({
+				type : "POST",
+				url : "${ctx}/business/material?methodtype=categorySearch",
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					//alert(777);
+					response($.map(
+						data.data,
+						function(item) {
+							//alert(item.viewList)
+							return {
+								label : item.viewList,
+								value : item.categoryId,
+								id : item.categoryId,
+								categoryName : item.categoryViewName,
+								
+							}
+						}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+					alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
+
+		select : function(event, ui) {	
+			//$("#price\\.supplierid ").val(ui.item.id);
+			//$("#attribute2").val(ui.item.shortName);
+			$("#supplier\\.categorydes").val(ui.item.categoryName);
+
+		},
+
+		minLength : 0,
+		autoFocus : false,
+	});
+</script>
+	</body>
 </html>
 
