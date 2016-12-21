@@ -766,8 +766,9 @@ function resetPayable() {
 									//alert(item.viewList)
 									return {
 										label : item.viewList,
-										value : item.id,
+										value : item.name,
 										id : item.id,
+										name: item.name,
 										des : item.des
 									}
 								}));
@@ -784,7 +785,7 @@ function resetPayable() {
 				},
 	
 				select : function(event, ui) {
-					$("#productModelId").val(ui.item.id);
+					$("#productModelId").val(ui.item.name);
 					$("#productModelName").val(ui.item.des);
 					//$("#factoryProductCode").focus();
 	

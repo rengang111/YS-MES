@@ -37,8 +37,9 @@
     <where>
     </where>
     <select>
-      <f name="CONCAT_WS(' | ', A.dicId, A.dicDes)" alias="viewList" ctype="" />
+      <f name="CONCAT_WS(' | ', A.dicName, A.dicDes)" alias="viewList" ctype="" />
       <f name="A.dicId" alias="id" ctype="" />
+      <f name="A.dicName" alias="name" ctype="" />
       <f name="A.dicDes" alias="des" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -147,6 +148,23 @@
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>b_MouldDetail as A WHERE A.DeleteFlag = '0' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+   <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_getserialno" />
+    <where>
+    </where>
+    <select>
+      <f name="IFNULL(min(B.serialNo), 1)" alias="serialNo" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>(select (CONVERT(substring(no, LENGTH(no) - 1, 2), SIGNED) + 1) as serialNo FROM b_MouldDetail WHERE deleteflag='0') as B WHERE NOT EXISTS (select serialNo from (select CONVERT(substring(no, LENGTH(no) - 1, 2), SIGNED) as serialNo FROM b_MouldDetail WHERE deleteflag='0') as A WHERE A.serialNo = B.serialNo) </from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>

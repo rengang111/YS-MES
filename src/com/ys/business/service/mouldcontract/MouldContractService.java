@@ -95,11 +95,6 @@ public class MouldContractService extends BaseService {
 	}
 
 	public MouldContractModel getMouldContractBaseInfo(HttpServletRequest request, String key) throws Exception {
-		BaseModel dataModel = new BaseModel();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		ArrayList<ArrayList<String>> finishTimeList = new ArrayList<ArrayList<String>>();
-		String lastestFinishDate = "";
-		
 		MouldContractModel model = new MouldContractModel();
 		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
 		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
@@ -115,15 +110,7 @@ public class MouldContractService extends BaseService {
 			CalendarUtil calendarUtil = new CalendarUtil(dbData.getFinishtime());
 			dbData.setFinishtime(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
 			
-			HashMap<String, Object> productModel = doProductModelIdSearch(request, "");
-			ArrayList<HashMap<String, String>> data = (ArrayList<HashMap<String, String>>)productModel.get("data");
-			for(HashMap<String, String> rowData:data) {
-				if (rowData.get("id").equals(dbData.getProductmodelid())) {
-					model.setProductModelName(rowData.get("des"));
-					break;
-				}
-			}
-			
+			model = getProductModelName(request, model, dbData.getProductmodelid());
 			
 			try {
 				acceptanceData.setMouldbaseid(dbData.getId());
@@ -185,7 +172,7 @@ public class MouldContractService extends BaseService {
 		BaseModel dataModel = new BaseModel();	
 		BaseQuery baseQuery = null;	
 			
-		String key = request.getParameter("key").toUpperCase();	
+		//String key = request.getParameter("key").toUpperCase();	
 			
 		dataModel.setQueryFileName("/business/mouldcontract/mouldcontractquerydefine");	
 		dataModel.setQueryName("mouldcontractquerydefine_searchproductmodel");	
@@ -407,8 +394,12 @@ public class MouldContractService extends BaseService {
 	
 	public MouldContractModel doUpdateMd(HttpServletRequest request, String data, UserInfo userInfo) {
 		MouldContractModel model = new MouldContractModel();
+		B_MouldBaseInfoData infoData = new B_MouldBaseInfoData();
+		B_MouldBaseInfoDao infoDao = new B_MouldBaseInfoDao();
 		B_MouldDetailData dbData = new B_MouldDetailData();											
-    	B_MouldDetailDao dao = new B_MouldDetailDao();											
+    	B_MouldDetailDao dao = new B_MouldDetailDao();
+    	S_DICDao dicDao = new S_DICDao();
+    	S_DICData dicData = new S_DICData();
 		BaseModel dataModel = new BaseModel();
 		BaseQuery baseQuery = null;
 		
@@ -416,6 +407,7 @@ public class MouldContractService extends BaseService {
 		String guid = "";
 		
 		try {
+			/*
 			boolean checkNoFlg = false;
 			dataModel.setQueryFileName("/business/mouldcontract/mouldcontractquerydefine");
 			dataModel.setQueryName("mouldcontractquerydefine_checkContractProductModelId");
@@ -470,7 +462,63 @@ public class MouldContractService extends BaseService {
 			} else {
 				model.setEndInfoMap(DUMMYKEY, "err005", key);
 			}
+			*/
 			
+			if (key == null || key.equals("")) {
+				guid = BaseDAO.getGuId();									
+				dbData.setId(guid);	
+				dbData.setMouldbaseid(getJsonData(data, "mouldBaseId"));
+				dbData.setType(getJsonData(data, "type"));
+				
+				String no = "";
+				String productModelId = "";
+				infoData.setId(getJsonData(data, "mouldBaseId"));
+				infoData = (B_MouldBaseInfoData)infoDao.FindByPrimaryKey(infoData);
+
+				dicData.setDicid(infoData.getProductmodelid());
+				dicData.setDictypeid(DicUtil.PRODUCTMODEL);
+				dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+				productModelId = dicData.getDicname();
+				
+				dicData.setDicid(dbData.getType());
+				dicData.setDictypeid(DicUtil.MOULDTYPE);
+				dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+				
+				dataModel.setQueryFileName("/business/mouldcontract/mouldcontractquerydefine");
+				dataModel.setQueryName("mouldcontractquerydefine_getserialno");
+				baseQuery = new BaseQuery(request, dataModel);
+				ArrayList<HashMap<String, String>> serialNoList = baseQuery.getYsQueryData(0, -1);					
+				
+				no = productModelId + dicData.getDicdes() + String.format("%02d", Integer.parseInt(serialNoList.get(0).get("serialNo")));
+				
+				dbData.setNo(no);
+				
+				dbData.setName(getJsonData(data, "name"));
+				dbData.setSize(getJsonData(data, "size"));
+				dbData.setMaterialquality(getJsonData(data, "materialQuality"));
+				dbData.setMouldunloadingnum(getJsonData(data, "mouldUnloadingNum"));
+				dbData.setHeavy(getJsonData(data, "heavy"));
+				dbData.setPrice(getJsonData(data, "price"));
+				dbData.setPlace(getJsonData(data, "place"));
+				dbData = updateMdModifyInfo(dbData, userInfo);
+				dao.Create(dbData);
+				key = guid;
+			} else {
+				dbData.setId(key);
+				dbData = (B_MouldDetailData)dao.FindByPrimaryKey(dbData);
+				dbData.setType(getJsonData(data, "type"));
+				//dbData.setNo(getJsonData(data, "no"));
+				dbData.setName(getJsonData(data, "name"));
+				dbData.setSize(getJsonData(data, "size"));
+				dbData.setMaterialquality(getJsonData(data, "materialQuality"));
+				dbData.setMouldunloadingnum(getJsonData(data, "mouldUnloadingNum"));
+				dbData.setHeavy(getJsonData(data, "heavy"));
+				dbData.setPrice(getJsonData(data, "price"));
+				dbData.setPlace(getJsonData(data, "place"));
+				dbData = updateMdModifyInfo(dbData, userInfo);
+				dao.Store(dbData);
+			}
+			model.setEndInfoMap(NORMAL, "", key);
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(SYSTEMERROR, "err001", key);
@@ -798,8 +846,18 @@ public class MouldContractService extends BaseService {
 		return data;
 	}
 
-	
-
+	private MouldContractModel getProductModelName(HttpServletRequest request, MouldContractModel model, String productModelId) throws Exception {
+		HashMap<String, Object> productModel = doProductModelIdSearch(request, "");
+		ArrayList<HashMap<String, String>> data = (ArrayList<HashMap<String, String>>)productModel.get("data");
+		for(HashMap<String, String> rowData:data) {
+			if (rowData.get("id").equals(productModelId)) {
+				model.setProductModelName(rowData.get("des"));
+				break;
+			}
+		}
+		
+		return model;
+	}
 	
 
 	

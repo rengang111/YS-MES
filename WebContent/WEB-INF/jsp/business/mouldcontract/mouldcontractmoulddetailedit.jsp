@@ -176,7 +176,7 @@ function doDelete() {
 				<form:form modelAttribute="dataModels" id="baseInfo" style='padding: 0px; margin: 10px;' >
 					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 					<input type=hidden id="mouldBaseId" name="mouldBaseId" value="${DisplayData.mouldBaseId}"/>
-					<table class="form" width="800px" border="1px;">
+					<table class="form" width="800px">
 						<tr>
 							<td width="60px">类型：</td>
 							<td width="80px">
@@ -185,9 +185,9 @@ function doDelete() {
 										itemLabel="value" />
 								</form:select>
 							</td>
-							<td width="60px">模具编号：</td>
+							<td width="60px">模具编号(自动生成)：</td>
 							<td width="80px">
-								<input type="text" id="no" name="no" class="short" value="${DisplayData.mouldDetailData.no}"/>
+								<label id="no" name="no" class="short" >${DisplayData.mouldDetailData.no}</label>
 							</td>
 							<td width="60px">模具名称：</td>
 							<td width="80px">
