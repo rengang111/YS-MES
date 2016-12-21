@@ -72,7 +72,8 @@
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"];
+								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+								
 		                    }},
 				    		{"targets":2,"render":function(data, type, row){
 				    			
@@ -155,7 +156,7 @@
 					contentType : 'application/json',
 					dataType : 'json',
 					data : str,
-					url : "${ctx}/business/matcategory?methodtype=delete",
+					url : "${ctx}/business/zzmaterial?methodtype=delete",
 					success : function(data) {
 						reload();						
 					},
@@ -168,7 +169,14 @@
 		}
 		
 	}
-	
+
+	function reload() {
+		
+		$('#TMaterial').DataTable().ajax.reload(null,false);
+		
+		return true;
+	}
+
 	
 </script>
 </head>
@@ -207,9 +215,10 @@
 	<div class="list">
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
-			<div id="DTTT_container" align="right" style="margin-bottom: -10px;margin-right: 10px;eight:40px">
-				<a aria-controls="TMaterial" tabindex="0" id="ToolTables_TSupplier_0" 
-					class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>新建</span></a>
+			<div align="right" style="margin-bottom: -10px;margin-right: 10px;eight:40px">
+			<a class="DTTT_button" onclick="doCreate();"><span>新建</span></a>	
+			<a class="DTTT_button" onClick="doDelete();"><span>删除</span></a>
+					
 			</div>
 			<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
 				<thead>						

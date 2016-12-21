@@ -21,10 +21,12 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.material.ZZMaterialModel;
+import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_ZZMaterialPriceDao;
 import com.ys.business.db.dao.B_ZZRawMaterialDao;
 import com.ys.business.db.data.B_BomDetailData;
+import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_ZZMaterialPriceData;
 import com.ys.business.db.data.B_ZZRawMaterialData;
@@ -533,11 +535,35 @@ public class ZZMaterialService extends BaseService {
 		return model;
 		
 	}
+	
 	public Model updateAndView() throws Exception {
 
 		String materialId = update();
 		
 		getZZPriceDetailView(materialId);
+		
+		return model;
+		
+	}
+
+	public Model delete(String delData) throws Exception {
+													
+		try {	
+			
+			ts = new BaseTransaction();										
+			ts.begin();									
+			String removeData[] = delData.split(",");									
+			for (String key:removeData) {									
+												
+				priceData.setRecordid(key);							
+				priceDao.Remove(priceData);								
+			}
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();
+		}
+		
 		
 		return model;
 		

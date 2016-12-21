@@ -148,12 +148,7 @@
 					data : str,
 					url : "${ctx}/business/customer?methodtype=delete",
 					success : function(d) {
-						if (d.rtnCd != "000") {
-							alert(data.message);
-						} else {
-							reload();
-						}
-						
+						reload();						
 					},
 					error:function(XMLHttpRequest, textStatus, errorThrown){
 		                // alert(XMLHttpRequest.status);
@@ -167,8 +162,8 @@
 		}
 		
 	}
-
 	function reload() {
+		
 		$('#TCustomer').DataTable().ajax.reload(null,false);
 		
 		return true;
@@ -230,10 +225,10 @@
 								<th class="dt-middle ">名称</th>
 								<th style="width: 60px;" aria-label="所在国家" class="dt-middle ">国家</th>
 								<th style="width: 30px;" aria-label="付款条件" class="dt-middle ">付款条件</th>
-								<th style="width: 60px;" aria-label="计价货币" class="dt-middle ">计价货币</th>
-								<th style="width: 60px;" aria-label="出运条件" class="dt-middle ">出运条件</th>
+								<th style="width: 30px;" aria-label="计价货币" class="dt-middle ">计价货币</th>
+								<th style="width: 30px;" aria-label="出运条件" class="dt-middle ">出运条件</th>
 								<th style="width: 60px;" aria-label="出运港" class="dt-middle ">出运港</th>
-								<th style="width: 60px;" aria-label="目的港" class="dt-middle ">目的港</th>
+								<th style="width: 100px;" aria-label="目的港" class="dt-middle ">目的港</th>
 								<th style="width: 30px;" aria-label="操作" class="dt-middle ">操作</th>
 							</tr>
 						</thead>
@@ -243,4 +238,5 @@
 			</div>
 		</div>
 	</div>
+	</body>
 </html>

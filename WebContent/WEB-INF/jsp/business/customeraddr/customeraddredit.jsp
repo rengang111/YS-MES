@@ -60,9 +60,7 @@ function doSave() {
 		} else {
 			//修正
 			actionUrl = "${ctx}/business/customeraddr?methodtype=update";
-		}
-
-		var actionUrl;			
+		}	
 		
 		//将提交按钮置为【不可用】状态
 		//$("#submit").attr("disabled", true); 
@@ -73,21 +71,17 @@ function doSave() {
 			url : actionUrl,
 			data : JSON.stringify($('#customerAddrInfo').serializeArray()),// 要提交的表单
 			success : function(d) {
-				parent.reloadCustomerAddr();
-				if (d.message != "") {
-					alert(d.message);	
-				}
-				//TODO
-				//var infoList = d.info.split("|");
-				//$('#keyBackup').val(infoList[0]);
-				//$('#customerId').val(infoList[1]);
 				
-				controlButtons(d.info);
 				parent.reloadCustomerAddr();
 				//不管成功还是失败都刷新父窗口，关闭子窗口
 				//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
 				//parent.$('#events').DataTable().destroy();
 				//parent.layer.close(index); //执行关闭
+				
+
+				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引						
+				//parent.reloadSupplier();
+				parent.layer.close(index); //执行关闭	
 				
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -113,22 +107,14 @@ function doDelete() {
 			url : "${ctx}/business/customeraddr?methodtype=deleteDetail",
 			data : $('#keyBackup').val(),// 要提交的表单
 			success : function(d) {
-				if (d.message != "") {
-					alert(d.message);	
-				} else {
+				
 					parent.reloadCustomerAddr();
-					//$('#keyBackup').val("");
-					//$('#customerId').val("");
-					controlButtons("");
-					clearContactInfo();
-
-				}
 					
 				//不管成功还是失败都刷新父窗口，关闭子窗口
 				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 				//parent.$('#events').DataTable().destroy();/
 				//parent.reload_customeraddror();
-				parent.layer.close(index); //执行关闭
+				parent.parent.layer.close(index); //执行关闭
 				
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -141,12 +127,6 @@ function doDelete() {
 	}
 }
 
-function clearContactInfo() {
-	$('#title').val('');
-	$('#address').val('');
-	$('#postcode').val('');
-	$('#memo').val('');
-}
 
 function controlButtons(data) {
 	var valueArray = data.split("|");

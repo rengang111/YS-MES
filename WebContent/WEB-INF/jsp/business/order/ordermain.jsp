@@ -15,10 +15,6 @@
 <title>订单基本数据一览页面</title>
 <script type="text/javascript">
 
-	var layerHeight = '500';
-	var layerWidth = '700';
-	
-
 	function ajax(scrollHeight) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -81,12 +77,14 @@
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] ;
+				    			return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+				    			 
 		                    }},
 				    		{"targets":10,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';
 				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">查看</a>";
+				    			// rtn= rtn + space + "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] +"','"+ row["PIId"] + "')\">删除</a>";
 				    			return rtn;
 				    		}},
 				    		{"targets":9,"render":function(data, type, row){
@@ -222,7 +220,7 @@
 					contentType : 'application/json',
 					dataType : 'json',
 					data : str,
-					url : "${ctx}/business/matcategory?methodtype=delete",
+					url : "${ctx}/business/order?methodtype=delete",
 					success : function(data) {
 						reload();						
 					},
@@ -284,13 +282,12 @@
 				<div id="TSupplier_wrapper" class="dataTables_wrapper">
 					<div id="DTTT_container" align="right" style="height:40px">
 						<a  title="新建常规订单"
-							class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>常规订单</span></a>
+							class="DTTT_button " onclick="doCreate();"><span>常规订单</span></a>
 						<a  title="新建自制品库存订单"
-							class="DTTT_button DTTT_button_text" onclick="doCreateZZ();"><span>自制品库存订单</span></a>
+							class="DTTT_button " onclick="doCreateZZ();"><span>自制品库存订单</span></a>
 						<a  title="新建装配品及非完全成品库存订单"
-							class="DTTT_button DTTT_button_text" onclick="doCreateZP();"><span>装配品库存订单</span></a>
-						<!-- a 
-							class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a-->
+							class="DTTT_button " onclick="doCreateZP();"><span>装配品库存订单</span></a>
+						<a  class="DTTT_button " onclick="doDelete();"><span>删除</span></a>
 					</div>
 					<div id="clear"></div>
 					<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">

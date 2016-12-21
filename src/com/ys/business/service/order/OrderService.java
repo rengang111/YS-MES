@@ -638,6 +638,35 @@ public class OrderService extends BaseService {
 		}
 	}	
 
+	public Model delete(String delData){
+
+
+		B_OrderDetailDao dao = new B_OrderDetailDao();	
+		B_OrderDetailData data = new B_OrderDetailData();									
+		try {	
+			
+			ts = new BaseTransaction();										
+			ts.begin();									
+			String removeData[] = delData.split(",");									
+			for (String key:removeData) {									
+												
+				data.setRecordid(key);							
+				dao.Remove(data);								
+			}
+			ts.commit();
+		}
+		catch(Exception e) {
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}		
+		
+		return model;
+		
+	}
 	
 	/*
 	 * 新增物料初始处理
