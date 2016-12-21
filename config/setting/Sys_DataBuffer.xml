@@ -5,7 +5,7 @@
 	<buffersql buffertype="缓存信息分类" assembleFlag="按代码类形成集合数组"></buffersql>
 	<!--例子-->
 	<!--缓存基本代码信息 -->
-	<buffersql buffertype="" assembleFlag="F">SELECT dicid,dicname,dictypeid,dicprarentid FROM s_dic WHERE EnableFlag= '0' AND DeleteFlag = '0' ORDER BY DicTypeId, dicId</buffersql>
+	<buffersql buffertype="" assembleFlag="F">SELECT dicid,dicname,dictypeid,dicprarentid FROM s_dic WHERE EnableFlag= '0' AND DeleteFlag = '0' ORDER BY DicTypeId, dicName</buffersql>
 	<!--缓存单位信息 -->
 	<buffersql buffertype="A1" assembleFlag="F">SELECT unitid,unitname,'A1' FROM s_dept WHERE DeleteFlag = '0'</buffersql>
 </root>

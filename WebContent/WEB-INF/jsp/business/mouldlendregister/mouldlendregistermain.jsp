@@ -73,7 +73,11 @@
 				        ],
 				"columnDefs":[
 					    		{"targets":0,"render":function(data, type, row){
-									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+					    			if (row["confirm"] == '1') {
+					    				return row["rownum"]
+					    			} else {
+										return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+					    			}
 			                    }},
 					    		{"targets":7,"render":function(data, type, row){
 					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"

@@ -61,14 +61,14 @@
 			<td style="width: 280px;">
 				<label>${material.material.materialid}</label></td>
 								
-			<td class="label"><label>物料名称：</label></td>
+			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
 			<td>${material.material.materialname}</td>												
 		</tr>
 		<tr>				
-			<td class="label"><label>分类编码：</label></td>
+			<td class="label" style="width: 100px;"><label>分类编码：</label></td>
 			<td>${material.material.categoryid} | ${material.attribute2}</td>					
 			<td class="label"><label>计量单位：</label></td>
-			<td style="width: 280px;">${material.unitname}</td>				
+			<td>${material.unitname}</td>				
 		</tr>
 		<tr>				
 			<td class="label"><label>通用型号：</label></td>

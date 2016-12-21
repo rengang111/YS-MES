@@ -19,6 +19,7 @@ import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.material.MaterialModel;
 import com.ys.business.action.model.order.BomPlanModel;
 import com.ys.business.action.model.order.OrderModel;
+import com.ys.business.action.model.supplier.SupplierModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.business.service.order.BomService;
 import com.ys.business.service.order.OrderService;
@@ -94,6 +95,10 @@ public class OrderAction extends BaseAction {
 				doUpdate(reqModel,model,request);
 				rtnUrl = "/business/order/orderview";
 				break;
+			case "delete":
+				doDelete(data);
+				printOutJsonObj(response, reqModel.getEndInfoMap());
+				return null;
 			case "customerSearch"://客户编号查询
 				dataMap = doCustomerSearch(data, request);
 				printOutJsonObj(response, dataMap);
@@ -381,12 +386,9 @@ public class OrderAction extends BaseAction {
 		
 	}	
 	
-	public MaterialModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		
-		//MaterialModel = materialService.doDelete(data, userInfo);
+	public void doDelete(String data){
+			orderService.delete(data);
 
-		//return MaterialModel;
-		return null;
 	}
 
 	

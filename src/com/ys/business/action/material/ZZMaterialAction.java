@@ -107,6 +107,10 @@ public class ZZMaterialAction extends BaseAction {
 				doUpdate();
 				rtnUrl = "/business/material/zzmaterialview";
 				break;
+			case "delete":
+				doDelete(data);
+				printOutJsonObj(response, reqModel.getEndInfoMap());
+				break;
 			case "getSupplierPriceList"://供应商编号查询
 				dataMap = doGetSupplierPriceList();
 				printOutJsonObj(response, dataMap);
@@ -240,7 +244,13 @@ public class ZZMaterialAction extends BaseAction {
 			
 		
 	}
-
+	
+	public void doDelete(String data) throws Exception {
+		
+		model = ZZService.delete(data);	
+			
+		
+	}
 	public void doShowDetail() throws Exception{
 				
 		model = ZZService.getDetailView();

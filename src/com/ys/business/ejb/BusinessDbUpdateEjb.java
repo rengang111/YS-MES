@@ -36,6 +36,7 @@ import com.ys.business.db.dao.B_MouldLendDetailDao;
 import com.ys.business.db.dao.B_MouldLendRegisterDao;
 import com.ys.business.db.dao.B_MouldPayInfoDao;
 import com.ys.business.db.dao.B_MouldPayListDao;
+import com.ys.business.db.dao.B_MouldReturnRegisterDao;
 import com.ys.business.db.dao.B_OrganizationDao;
 import com.ys.business.db.dao.B_ProcessControlDao;
 import com.ys.business.db.dao.B_ProjectRelationFileDao;
@@ -62,6 +63,7 @@ import com.ys.business.db.data.B_MouldLendDetailData;
 import com.ys.business.db.data.B_MouldLendRegisterData;
 import com.ys.business.db.data.B_MouldPayInfoData;
 import com.ys.business.db.data.B_MouldPayListData;
+import com.ys.business.db.data.B_MouldReturnRegisterData;
 import com.ys.business.db.data.B_OrganizationData;
 import com.ys.business.db.data.B_ProcessControlData;
 import com.ys.business.db.data.B_ProjectRelationFileData;
@@ -80,6 +82,7 @@ import com.ys.business.service.lateperfection.LatePerfectionService;
 import com.ys.business.service.makedocument.MakeDocumentService;
 import com.ys.business.service.mouldcontract.MouldContractService;
 import com.ys.business.service.mouldlendregister.MouldLendRegisterService;
+import com.ys.business.service.mouldreturnregister.MouldReturnRegisterService;
 import com.ys.business.service.processcontrol.ProcessControlService;
 import com.ys.business.service.projecttask.ProjectTaskService;
 import com.ys.business.service.reformlog.ReformLogService;
@@ -1372,5 +1375,32 @@ public class BusinessDbUpdateEjb  {
 		}
     }
     
+    public void executeMouldRegisterDelete(String keyData, UserInfo userInfo) throws Exception {												
+    	B_MouldReturnRegisterData dbData = new B_MouldReturnRegisterData();											
+    	B_MouldReturnRegisterDao dao = new B_MouldReturnRegisterDao();
+
+		int count = 0;										
+												
+		ts = new BaseTransaction();										
+												
+		try {										
+			ts.begin();
+
+			String removeData[] = keyData.split(",");									
+			for (String key:removeData) {									
+				dbData.setId(key);
+				dbData = (B_MouldReturnRegisterData)dao.FindByPrimaryKey(dbData);
+				dbData = MouldReturnRegisterService.updateMouldReturnRegisterModifyInfo(dbData, userInfo);
+				dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(dbData);
+				count++;												
+			}
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
 
 }												

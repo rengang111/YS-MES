@@ -165,7 +165,6 @@ function initEvent(){
 	ajaxCustomerAddr();
 	ajaxContact();
 
-	controlButtons($('#keyBackup').val());
 	
 	$('#TContactList').DataTable().on('click', 'tr', function() {
 		
@@ -182,7 +181,7 @@ function initEvent(){
 function reloadContact() {
 
 	$('#TContactList').DataTable().ajax.reload(null,false);
-	reloadTabWindow();
+	//reloadTabWindow();
 
 	return true;
 }
@@ -190,7 +189,7 @@ function reloadContact() {
 function reloadCustomerAddr() {
 
 	$('#TCustomerAddrList').DataTable().ajax.reload(null,false);
-	reloadTabWindow();
+	// reloadTabWindow();
 
 	return true;
 }
@@ -233,97 +232,20 @@ $(document).ready(function() {
 
 })
 
-function doSave() {
-
-	if (validator.form()) {
-		
-		var message = "${formModel.endInfoMap.message}";
-		
-		if ($('#keyBackup').val() == "") {				
-			//新建
-			actionUrl = "${ctx}/business/customer?methodtype=add";				
-		} else {
-			//修正
-			actionUrl = "${ctx}/business/customer?methodtype=update";
-		}		
-				
-
-		//将提交按钮置为【不可用】状态
-		//$("#submit").attr("disabled", true); 
-		$.ajax({
-			type : "POST",
-			contentType : 'application/json',
-			dataType : 'json',
-			url : actionUrl,
-			data : JSON.stringify($('#customerInfo').serializeArray()),// 要提交的表单
-			success : function(d) {
-				if (d.rtnCd != "000") {
-					alert(d.message);	
-				} else {
-					reloadTabWindow();
-					controlButtons(d.info);
-				}
-				
-				//不管成功还是失败都刷新父窗口，关闭子窗口
-				//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
-				//parent.$('#events').DataTable().destroy();
-				//parent.layer.close(index); //执行关闭
-				
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				//alert(XMLHttpRequest.status);					
-				//alert(XMLHttpRequest.readyState);					
-				//alert(textStatus);					
-				//alert(errorThrown);
-			}
-		});
-	
-	}
-}
-
-function doDelete() {
-	
-	if (confirm("${formModel.endInfoMap.message}")) {
-		//将提交按钮置为【不可用】状态
-		//$("#submit").attr("disabled", true); 
-		$.ajax({
-			type : "POST",
-			contentType : 'application/json',
-			dataType : 'json',
-			url : "${ctx}/business/customer?methodtype=deleteDetail",
-			data : $('#keyBackup').val(),// 要提交的表单
-			success : function(d) {
-				if (d.rtnCd != "000") {
-					alert(d.message);	
-				} else {
-					controlButtons("");
-					clearCustomerInfo();
-					reloadContact();
-					reloadCustomerAddr();
-					reloadTabWindow();
-				}
-				/*	
-				//不管成功还是失败都刷新父窗口，关闭子窗口
-				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-				//parent.$('#events').DataTable().destroy();/
-				parent.reload_contactor();
-				parent.layer.close(index); //执行关闭
-				*/
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				//alert(XMLHttpRequest.status);					
-				//alert(XMLHttpRequest.readyState);					
-				//alert(textStatus);					
-				//alert(errorThrown);
-			}
-		});
-	}
-}
 
 function doAddContact() {
 	var key = $('#keyBackup').val();
 	var url = "${ctx}/business/contact?methodtype=addinit&key=" + key;
-	openLayer(url, $(document).width() - 50, layerHeight, false);	
+	//openLayer(url, $(document).width() - 50, layerHeight, false);	
+	layer.open({
+		offset :[100,''],
+		type : 2,
+		title : false,
+		area : [ '900px', layerHeight ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+	});
 }
 
 function doUpdateContact(key) {		
@@ -376,7 +298,16 @@ function doDeleteContact() {
 
 function doAddCustomerAddr() {
 	var url = "${ctx}/business/customeraddr?methodtype=addinit";
-	openLayer(url,'', layerHeight, false);	
+	//openLayer(url,'', layerHeight, false);	
+	layer.open({
+		offset :[100,''],
+		type : 2,
+		title : false,
+		area : [ '900px', layerHeight ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+	});
 }
 
 function doUpdateCustomerAddr(key) {		

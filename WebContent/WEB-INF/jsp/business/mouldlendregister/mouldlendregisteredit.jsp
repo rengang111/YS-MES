@@ -189,6 +189,7 @@ function doConfirm() {
 	$('#addld').attr("disabled", true);
 	$('#deleteld').attr("disabled", true);
 	$('#edit').attr("disabled", true);
+	$('#delete').attr("disabled", true);
 }
 
 $(window).load(function(){
@@ -301,7 +302,6 @@ function doDelete() {
 function controlButtons(data) {
 	$('#keyBackup').val(data);
 	if (data == '') {
-		$('#delete').attr("disabled", true);
 		//$('#mouldLendNo').attr("disabled", true);
 		//$('#productModelId').attr("disabled", true);
 		//$('#mouldFactoryId').attr("disabled", true);

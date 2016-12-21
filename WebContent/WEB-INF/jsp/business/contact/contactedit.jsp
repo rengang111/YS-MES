@@ -89,44 +89,34 @@ function doSave() {
 			actionUrl = "${ctx}/business/contact?methodtype=update";
 		}
 
-			var actionUrl;			
+		//将提交按钮置为【不可用】状态
+		//$("#submit").attr("disabled", true); 
+		$.ajax({
+			type : "POST",
+			contentType : 'application/json',
+			dataType : 'json',
+			url : actionUrl,
+			data : JSON.stringify($('#contactInfo').serializeArray()),// 要提交的表单
+			success : function(d) {
 			
-			//将提交按钮置为【不可用】状态
-			//$("#submit").attr("disabled", true); 
-			$.ajax({
-				type : "POST",
-				contentType : 'application/json',
-				dataType : 'json',
-				url : actionUrl,
-				data : JSON.stringify($('#contactInfo').serializeArray()),// 要提交的表单
-				success : function(d) {
-					if (d.rtnCd != "000") {
-						alert(d.message);	
-					} else {
-						parent.reloadContact();
-					}
-					//TODO
-					//var infoList = d.info.split("|");
-					//$('#keyBackup').val(infoList[0]);
-					//$('#companyCode').val(infoList[1]);
-					
-					controlButtons(d.info);
-					
-					//不管成功还是失败都刷新父窗口，关闭子窗口
-					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+				parent.reloadContact();
+			
+				
+				//不管成功还是失败都刷新父窗口，关闭子窗口
+				//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
 
-					var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-					//parent.$('#events').DataTable().destroy();
-					parent.layer.close(index); //执行关闭
-					
-				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					//alert(XMLHttpRequest.status);					
-					//alert(XMLHttpRequest.readyState);					
-					//alert(textStatus);					
-					//alert(errorThrown);
-				}
-			});
+				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+				//parent.$('#events').DataTable().destroy();
+				parent.layer.close(index); //执行关闭
+				
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				//alert(XMLHttpRequest.status);					
+				//alert(XMLHttpRequest.readyState);					
+				//alert(textStatus);					
+				//alert(errorThrown);
+			}
+		});
 		
 	}
 }

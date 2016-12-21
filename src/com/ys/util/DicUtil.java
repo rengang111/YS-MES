@@ -34,6 +34,8 @@ public class DicUtil {
 	public static final String POSITION = "存放位置";
 
 	public static final String COUNTRY = "国家";
+	
+	public static final String ACCEPTRESULT = "验收结果";
 
 	//TODO
 	public static final String DENOMINATIONCURRENCY = "币种";

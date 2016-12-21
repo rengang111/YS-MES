@@ -192,10 +192,14 @@ public class LatePerfectionService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		projectId = getJsonData(data, "keyBackup");
+<<<<<<< HEAD
 		if (projectId.equals("")) {
 			projectId = "-1";
 		}
 		
+=======
+				
+>>>>>>> branch '1129ren' of https://github.com/rengang111/YS-MES.git
 		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
 		dataModel.setQueryName("lateperfectionquerydefine_relationfilesearch");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
@@ -220,9 +224,12 @@ public class LatePerfectionService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		projectId = getJsonData(data, "keyBackup");
+<<<<<<< HEAD
 		if (projectId.equals("")) {
 			projectId = "-1";
 		}
+=======
+>>>>>>> branch '1129ren' of https://github.com/rengang111/YS-MES.git
 		
 		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
 		dataModel.setQueryName("lateperfectionquerydefine_questionsearch");

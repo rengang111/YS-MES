@@ -33,10 +33,9 @@ input.middle{width:300px;}
 
 <body class="panel-body">
 <div id="container">
-
-		<div id="main">
+<div id="main">
 	
-<form:form modelAttribute="material" method="POST" style='padding: 0px; margin: 0px 10px;' 
+<form:form modelAttribute="material" method="POST"
 	id="material" name="material"   autocomplete="off">
 		
 	<form:hidden path="material.recordid" />
@@ -46,15 +45,15 @@ input.middle{width:300px;}
 	<form:hidden path="categoryname" />
 	
 <fieldset>
-	<legend style='margin: 20px 10px -10px 0px;'>物料基本信息-新建</legend>
+	<legend>物料基本信息-新建</legend>
 
-	<table class="form" width="100%">		
+	<table class="form">		
 		<tr>
 			<td class="label" style="width: 100px;"><label>物料(ERP)编号：</label></td>
 			<td style="width: 180px;">
 				<form:input path="material.materialid" class="read-only" /></td>
 								
-			<td class="label"><label>物料名称：</label></td>
+			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
 			<td colspan="3">
 				<form:input path="material.materialname" class="long required" /></td>												
 		</tr>
@@ -64,12 +63,12 @@ input.middle{width:300px;}
 				<form:input path="attribute1" class="required" /></td>	
 				
 			<td class="label"><label>编码解释：</label></td>
-			<td style="width: 280px;">
+			<td>
 				<form:input path="attribute2" class="middle read-only" /></td>
 								
-			<td class="label" style="width: 118px;"><label>计量单位：</label></td>
+			<td class="label" style="width: 100px;"><label>计量单位：</label></td>
 			<td>
-				<form:select path="material.unit" style="width: 50px;">							
+				<form:select path="material.unit" style="width: 100px;">							
 					<form:options items="${DisplayData.unitList}" 
 						itemValue="key" itemLabel="value" /></form:select></td>				
 		</tr>
@@ -102,7 +101,7 @@ input.middle{width:300px;}
 	
 	<legend style="margin: 10px 0px 0px 0px"> 物料-关联信息</legend>
 	<div id="autoscroll">
-	<table class="form" width="100%">
+	<table class="form">
 		<tr>
 			<td><label>通用型号：</label>
 				<button type="button"  style = "height:25px" class="DTTT_button"
@@ -430,11 +429,20 @@ function inputCheck(){
          $("#material\\.materialname").css("backgroundColor","rgba(255, 0, 0, 0.28)");
          strValue = false;
     }  	
+     
 	var strModelValue = '';
-		
+	var firstflg = true;	
 	$("#coupon input[type=text]").each(function () {
-		if($.trim($(this).val()) != ''){
-			strModelValue =$(this).val() +","+strModelValue;
+		
+		if(firstflg){
+			if($.trim($(this).val()) != ''){
+				strModelValue =$(this).val();
+			}
+			firstflg = false;
+		}else{
+			if($.trim($(this).val()) != ''){
+				strModelValue =strModelValue +","+ $(this).val();
+			}			
 		}
 	})
 	$("#material\\.sharemodel").val(strModelValue) ;

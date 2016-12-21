@@ -12,7 +12,7 @@
 
 $(document).ready(function() {
 
-	$('select').css('width','100px');
+	$('select').css('width','140px');
 	
 	validator = $("#customer").validate({
 		rules: {
@@ -142,9 +142,7 @@ function goBack() {
 									itemLabel="value" />
 							</form:select></td>
 						<td class="label" >付款条件：</td>
-						<td>&nbsp;出运后<form:input path="customer.paymentterm" class="small num" />天</td>
-						
-						
+						<td>&nbsp;出运后<form:input path="customer.paymentterm" class="small num" />天</td>						
 					</tr>
 					<tr>
 						<td class="label" >出运条件：</td>
@@ -165,8 +163,7 @@ function goBack() {
 							<form:select path="customer.destinationport">
 								<form:options items="${formModel.destinationPortList}" itemValue="key"
 									itemLabel="value" />
-							</form:select></td>
-								
+							</form:select></td>								
 					</tr>
 				</table>
 
@@ -181,6 +178,5 @@ function goBack() {
 	</form:form>
 </div>
 </div>
-	
 </body>
 </html>	
