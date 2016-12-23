@@ -2,6 +2,9 @@ package com.ys.business.action.material;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import javax.mail.Session;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -13,6 +16,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.material.MaterialModel;
@@ -45,7 +50,7 @@ public class MaterialAction extends BaseAction {
 		String type = request.getParameter("methodtype");
 		userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 	
-		materialService = new MaterialService(model,request,reqModel,userInfo);
+		materialService = new MaterialService(model,request,session,reqModel,userInfo);
 		MaterialModel = reqModel;
 		this.model = model;
 		
@@ -64,10 +69,11 @@ public class MaterialAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
+				doInit(session);
 				rtnUrl = "/business/material/materialmain";
 				break;
 			case "search":
-				dataMap = doSearch(data, request);
+				dataMap = doSearch(data, request,session);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "supplierPriceView":
@@ -134,12 +140,23 @@ public class MaterialAction extends BaseAction {
 				MaterialModel = doDeletePrice(data);
 				printOutJsonObj(response, MaterialModel.getEndInfoMap());
 				break;
-			case "categorySearch"://物料分类查询
+			case "categorySearch"://单个物料分类查询
 				dataMap = doCategorySearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "categorySearchMul"://多个物料分类查询
+				List<B_MaterialCategoryData> dd = doCategorySearchMul(data);
+				printOutJsonObj(response, dd.toArray());
+				break;
 			case "mategoryMAXId"://物料最新编号查询
 				dataMap = doMaterialMAXId(data);
+				printOutJsonObj(response, dataMap);
+				break;					
+			case "productInit":
+				rtnUrl = "/business/material/productmain";
+				break;					
+			case "searchProduct":
+				dataMap = dosearchProduct(data);
 				printOutJsonObj(response, dataMap);
 				break;
 		}
@@ -147,12 +164,32 @@ public class MaterialAction extends BaseAction {
 		return rtnUrl;		
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("deprecation")
+	public void doInit(HttpSession session){	
+			
+		String materialId = request.getParameter("materialId");
+		//没有物料编号,说明是初期显示,清空保存的查询条件
+		if(materialId == null || ("").equals(materialId)){
+			session.removeValue("mainSearchKey1");
+			session.removeValue("mainSearchKey2");
+		}
+		
+	}
+
+
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public HashMap<String, Object> doSearch(@RequestBody String data, 
-			HttpServletRequest request){
+			HttpServletRequest request,HttpSession session){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String pageFlg = request.getParameter("pageFlg");
+		if(pageFlg != null && !("").equals(pageFlg)){
+			session.removeValue("mainSearchKey1");
+			session.removeValue("mainSearchKey2");
+			
+		}
 		
 		try {
 			dataMap = materialService.search(request, data);
@@ -236,9 +273,11 @@ public class MaterialAction extends BaseAction {
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+
+		String key = request.getParameter("key").toUpperCase();	
 		
 		try {
-			dataMap = materialService.categorySearch( data);
+			dataMap = materialService.categorySearch(key);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -251,6 +290,49 @@ public class MaterialAction extends BaseAction {
 		}
 		
 		return dataMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<B_MaterialCategoryData> doCategorySearchMul(@RequestBody String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		List<B_MaterialCategoryData> dd = null;
+		String key = request.getParameter("key").toUpperCase();	
+		String strWhere = "";
+		
+		if (key == null || ("").equals(key.trim())) {
+			return null;
+		} 
+		
+		String arry[] = key.split(",");
+
+		boolean firstFlg = true;
+		for(String str:arry){
+			
+			if(firstFlg){
+				strWhere = "'"+str+"'";
+				firstFlg = false;
+			}else{
+				strWhere = strWhere +","+"'"+str+"'";
+			}			
+		}
+
+		
+		try {
+			dd = materialService.categorySearchMul(strWhere);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dd;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -347,6 +429,22 @@ public class MaterialAction extends BaseAction {
 		model = materialService.SelectSupplier(materialid);
 
 	}	
+	
+	public HashMap<String, Object> dosearchProduct(String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			dataMap = materialService.getProductList(data);			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 	
 	public void doDetailView(){
 

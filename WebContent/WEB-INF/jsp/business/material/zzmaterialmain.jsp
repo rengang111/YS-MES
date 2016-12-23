@@ -126,16 +126,28 @@
 
 	}
 	
-	function doCreate() {
+	function doCreateB() {
 		
-		var url = '${ctx}/business/zzmaterial?methodtype=create';
+		var url = '${ctx}/business/zzmaterial?methodtype=createB';
+		location.href = url;
+	}
+	
+	function doCreateH() {
+		
+		var url = '${ctx}/business/zzmaterial?methodtype=createH';
 		location.href = url;
 	}
 	
 	function doShow(materialId) {
-
-		var url = '${ctx}/business/zzmaterial?methodtype=detailView&materialId=' + materialId;
-
+		var type = materialId.substring(0,1);//截取物料大分类
+		alert(type)
+		if(type == 'H'){
+			var url = '${ctx}/business/zzmaterial?methodtype=detailViewH&materialId=' + materialId;
+			
+		}else{
+			var url = '${ctx}/business/zzmaterial?methodtype=detailViewB&materialId=' + materialId;
+			
+		}
 		location.href = url;
 	}
 
@@ -181,13 +193,13 @@
 </script>
 </head>
 
-<body class="panel-body">
+<body>
 <div id="container">
 <div id="main">
 
 	<div id="search">
 
-		<form id="condition"  style='padding: 0px; margin: 10px;' >
+		<form id="condition">
 
 			<table>
 				<tr>
@@ -210,17 +222,18 @@
 
 		</form>
 	</div>
-	<div  style="height:10px"></div>
+	<div style="height:10px"></div>
 
 	<div class="list">
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
-			<div align="right" style="margin-bottom: -10px;margin-right: 10px;eight:40px">
-			<a class="DTTT_button" onclick="doCreate();"><span>新建</span></a>	
+			<div align="right" style="margin-bottom: -10px;margin-right: 10px;height:40px">
+			<a class="DTTT_button" onclick="doCreateB();"><span>新建塑料制品</span></a>	
+			<a class="DTTT_button" onclick="doCreateH();"><span>新建装配品</span></a>	
 			<a class="DTTT_button" onClick="doDelete();"><span>删除</span></a>
 					
 			</div>
-			<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
+			<table id="TMaterial" class="display dataTable" >
 				<thead>						
 					<tr class="selected">
 						<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>

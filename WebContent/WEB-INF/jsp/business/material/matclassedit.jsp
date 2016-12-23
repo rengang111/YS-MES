@@ -88,10 +88,10 @@ if (updatedRecordCount > 0 ) {
 	var treeview = strchild+'_'+strName;
 	
 	if (operType == 'add') {	
-		window.parent.addNode('${DisplayData.unitData.parentid}', '${DisplayData.unitData.categoryid}', treeview, '');
+		window.parent.addNode('${DisplayData.unitData.parentid}', '${DisplayData.unitData.categoryid}', strName, '');
 	}
 	if (operType == 'update') {
-		window.parent.updateNode('${DisplayData.unitData.parentid}', '${DisplayData.unitData.categoryid}', treeview, '');
+		window.parent.updateNode('${DisplayData.unitData.parentid}', '${DisplayData.unitData.categoryid}', strName, '');
 	}
 }
 

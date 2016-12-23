@@ -22,6 +22,7 @@
 <script type="text/javascript" src="${ctx}/js/layer.js"></script>
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
+<script type="text/javascript" src="${ctx}/js/business.js"></script>
 
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">

@@ -21,11 +21,13 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.material.ZZMaterialModel;
+import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_ZZMaterialPriceDao;
 import com.ys.business.db.dao.B_ZZRawMaterialDao;
 import com.ys.business.db.data.B_BomDetailData;
+import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_ZZMaterialPriceData;
@@ -73,7 +75,7 @@ public class ZZMaterialService extends BaseService {
 		this.reqModel = reqModel;
 		this.request = request;
 		this.userInfo = userInfo;
-		
+		dataModel = new BaseModel();
 		userDefinedSearchCase = new HashMap<String, String>();
 		
 	}
@@ -132,63 +134,6 @@ public class ZZMaterialService extends BaseService {
 		
 		return modelMap;
 	}
-	
-	
-	/*
-	 * 1.自制品单价新增处理(一条数据)
-	 * 2.自制品原材料新增处理(N条数据)
-	 */
-	private String insert() throws Exception  {
-
-		String materialId = "";
-		ts = new BaseTransaction();
-		
-		try {
-			
-			ts.begin();
-						
-			priceData = (B_ZZMaterialPriceData)reqModel.getPrice();
-			List<B_ZZRawMaterialData> reqDataList = reqModel.getRawMaterials();
-			
-			//自制品单价新增处理
-			insertPrice(priceData);
-			
-			//自制品产品编码
-			materialId = priceData.getMaterialid();
-			
-			for(B_ZZRawMaterialData data:reqDataList ){
-							
-				String id = data.getRawmaterialid();
-				//过滤被删除和空行数据
-				if(null != id && !("").equals(id)){
-					
-					data.setMaterialid(materialId);
-					insertRawMaterial(data);
-				}
-			}
-			
-			//耀升自制品的物料单价表更新处理
-			B_PriceSupplierData ys = getPriceSupplierBySupplierId(materialId);
-			
-			if(null != ys){
-				
-				updateSupplierPrice(ys,priceData);
-				
-			}else{
-				insertSupplierPrice(priceData);
-				
-			}
-			
-			ts.commit();
-			
-		}
-		catch(Exception e) {
-			ts.rollback();
-		}
-		
-		return materialId;
-	}	
-
 
 	/*
 	 * 自制品单价基本信息insert处理
@@ -271,68 +216,26 @@ public class ZZMaterialService extends BaseService {
 						
 			priceData = (B_ZZMaterialPriceData)reqModel.getPrice();
 			List<B_ZZRawMaterialData> reqDataList = reqModel.getRawMaterials();
-			List<B_ZZRawMaterialData> delDetailList = new ArrayList<B_ZZRawMaterialData>();
 			
 			//自制品单价新增处理
 			updatePrice(priceData);
-			
-			//过滤页面传来的有效数据
-			for(B_ZZRawMaterialData data:reqDataList ){
-				if(null == data.getRawmaterialid() || ("").equals(data.getRawmaterialid())){
-					delDetailList.add(data);
-				}
-			}
-			
-			reqDataList.removeAll(delDetailList);
-			
-			//根据画面的自制品编号取得DB中更新前的订单详情 
-			List<B_ZZRawMaterialData> oldDetailList = null;
 
-			//自制品产品编码
+			//删除旧数据
 			materialId = priceData.getMaterialid();
-			String where = " materialId = '"+materialId +"'" + " AND deleteFlag = '0' ";
-			oldDetailList = getDetailByMaterialId(where);
+			String where = " materialId = '"+materialId +"'" ;
+			deleteRawMaterial(where);
 			
-			//页面数据的recordId与DB匹配
-			//key存在:update;
-			//key不存在:insert;
-			//剩下未处理的DB数据:delete
-			for(B_ZZRawMaterialData newData:reqDataList ){
-
-				String newId = newData.getRawmaterialid();	
-
-				boolean insFlag = true;
-				for(B_ZZRawMaterialData oldData:oldDetailList ){
-					
-					String oldId = oldData.getRawmaterialid();
-					
-					if(newId.equals(oldId)){
+			if(reqDataList != null){
+				//新增原材料
+				for(B_ZZRawMaterialData newData:reqDataList ){
+	
+					if(!("").equals(newData.getRawmaterialid().trim())){
 						
-						//更新处理
-						updateRawMaterial(newData,oldData);					
-						
-						//从old中移除处理过的数据
-						oldDetailList.remove(oldData);
-						
-						insFlag = false;
-						
-						break;
+						newData.setMaterialid(materialId);
+						insertRawMaterial(newData);		
 					}
 				}
-
-				//新增处理
-				if(insFlag){
-					newData.setMaterialid(materialId);
-					insertRawMaterial(newData);
-				}
-				
 			}
-			
-			//删除处理
-			if(oldDetailList.size() > 0){					
-				deleteRawDetail(oldDetailList);
-			}
-			
 			//耀升自制品的物料单价表更新处理
 			B_PriceSupplierData ys = getPriceSupplierBySupplierId(materialId);
 			
@@ -359,82 +262,63 @@ public class ZZMaterialService extends BaseService {
 	/*
 	 * 自制品单价基本信息update处理
 	 */
-	private void updatePrice(
-			B_ZZMaterialPriceData reqData) throws Exception{
+	@SuppressWarnings("unchecked")
+	private void updatePrice(B_ZZMaterialPriceData reqData){
 		
-		B_ZZMaterialPriceData db  = 
-				(B_ZZMaterialPriceData)priceDao.FindByPrimaryKey(reqData);
+		B_ZZMaterialPriceData db = null ;
+		List<B_ZZMaterialPriceData> dbList = null;
+		try{
+			String materialId = reqData.getMaterialid();
+			String astr_Where = 
+					" materialId = '"+materialId +"'" + 
+					" AND deleteFlag = '0' ";
 
-		copyProperties(db,reqData);
+			dbList = (List<B_ZZMaterialPriceData>)priceDao.Find(astr_Where);
+			
+			if(null != dbList && dbList.size() > 0){
+				
+				db = dbList.get(0);
+				copyProperties(db,reqData);
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"ZZMaterialPriceUpdate",userInfo);
 
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ZZMaterialPriceUpdate",userInfo);
+				copyProperties(db,commData);
 
-		copyProperties(db,commData);
-
-		priceDao.Store(db);	
-
+				priceDao.Store(db);
+				
+			}else{
+				//找不到数据,新增处理
+				insertPrice(reqData);
+				
+			}
+		}catch(Exception e){
+			
+		}
 	}
 	
-	/*
-	 * 自制品原材料update处理
-	 */
-	private void updateRawMaterial(
-			B_ZZRawMaterialData req,
-			B_ZZRawMaterialData db) throws Exception{
-		
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ZZRawMaterialUpdate",userInfo);
-
-		copyProperties(db,commData);
-		copyProperties(db,req);
-
-		rawDao.Store(db);	
-
-	}	
 	
 	/*
 	 * 供应商单价(耀升YS)update处理
 	 */
 	private void updateSupplierPrice(
-			B_PriceSupplierData ys,
+			B_PriceSupplierData price,
 			B_ZZMaterialPriceData dt) throws Exception{
 		
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"ZZRawMaterialInsert",userInfo);
-		copyProperties(dt,commData);
+		copyProperties(price,commData);
 		
-		ys.setPrice(dt.getTotalprice());
-		ys.setPricedate(CalendarUtil.fmtYmdDate());
-		ys.setPricesource(BusinessConstants.PRICESOURCE_SUPPLIER);
-		ys.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
+		price.setPrice(dt.getTotalprice());
+		price.setPricedate(CalendarUtil.fmtYmdDate());
+		price.setPricesource(BusinessConstants.PRICESOURCE_SUPPLIER);
+		price.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
 		
-		dao.Store(ys);	
+		dao.Store(price);	
 
 	}	
 	
-	/*
-	 * 自制品原材料删除处理
-	 */
-	private void deleteRawDetail(
-			List<B_ZZRawMaterialData> oldDetailList) 
-			throws Exception{
-		
-		for(B_ZZRawMaterialData detail:oldDetailList){
-			
-			if(null != detail){
-						
-				//处理共通信息	
-				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-						"ZZRawMaterialDelete",userInfo);
-				copyProperties(detail,commData);
-				
-				rawDao.Store(detail);
-			}
-		}
-	}
 
 	
 	@SuppressWarnings("unchecked")
@@ -462,23 +346,20 @@ public class ZZMaterialService extends BaseService {
 		return rtnData;
 	}
 	
-	
-	@SuppressWarnings("unchecked")
-	private List<B_ZZRawMaterialData> getDetailByMaterialId(
-			String where ) throws Exception {
-		
-		List<B_ZZRawMaterialData> dbList = null;
+	/*
+	 * 自制品原材料删除处理
+	 */
+	private void deleteRawMaterial(
+			String where ) {
 				
 		try {
 
-			dbList = (List<B_ZZRawMaterialData>)rawDao.Find(where);
+			rawDao.RemoveByWhere(where);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dbList = null;
 		}
 		
-		return dbList;
 	}
 	
 	private Model getZZPriceDetailView(String materialId) 
@@ -494,20 +375,41 @@ public class ZZMaterialService extends BaseService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		modelMap = baseQuery.getYsQueryData(0, 0);
-
-		model.addAttribute("price",  modelMap.get(0));
-		model.addAttribute("detail", modelMap);
-				
+		
+		if(dataModel.getRecordCount() > 0){
+			model.addAttribute("price",  modelMap.get(0));
+			model.addAttribute("detail", modelMap);
+		}
 		return model;
 	}
 
+	public void getMaterialByMaterialId(String materialId) throws Exception{
+	
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("getMaterialByMaterialId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("materialid", materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsQueryData(0, 0);
+
+		model.addAttribute("material",dataModel.getYsViewData().get(0));
+		
+	}
 	/*
 	 * 新增物料初始处理
 	 */
 	public Model createMaterial() {
 
-		try {			
+		try {		
+			String materialId = request.getParameter("materialId");
+			
+			if(null != materialId && !("").equals(materialId))
+				getMaterialByMaterialId(materialId);
+			
 			reqModel.setManageRateList(util.getListOption(DicUtil.MANAGEMENTRATE, ""));
+			reqModel.setTypeList(util.getListOption(DicUtil.ZZMATERIALTYPE, ""));
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -528,7 +430,7 @@ public class ZZMaterialService extends BaseService {
 	
 	public Model insertAndView() throws Exception {
 
-		String materialId = insert();
+		String materialId = update();
 		
 		getZZPriceDetailView(materialId);
 		
@@ -548,25 +450,26 @@ public class ZZMaterialService extends BaseService {
 
 	public Model delete(String delData) throws Exception {
 													
-		try {	
-			
+		try {				
 			ts = new BaseTransaction();										
 			ts.begin();									
 			String removeData[] = delData.split(",");									
-			for (String key:removeData) {									
-												
-				priceData.setRecordid(key);							
-				priceDao.Remove(priceData);								
+			for (String key:removeData) {	
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"ZZMaterialPriceUpdate",userInfo);
+
+				copyProperties(priceData,commData);
+				priceData.setRecordid(key);	
+				priceDao.Store(priceData);								
 			}
 			ts.commit();
 		}
 		catch(Exception e) {
 			ts.rollback();
-		}
+		}		
 		
-		
-		return model;
-		
+		return model;		
 	}
 	
 }

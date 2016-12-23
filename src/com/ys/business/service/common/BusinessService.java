@@ -172,12 +172,22 @@ public class BusinessService {
 	 */
 	public static String getBOMFormatId(String code1,int code2,boolean blAdd )
 	{
-		//格式化成2位流水号,并且+1
+		//格式化成3位流水号,并且+1
 		String ft = BusinessService.getFormatCode(code2,blAdd);
 		
-		//装配库存订单编号:16YSK01ZP
+		//
 		return code1 + "." +  ft;
 	}
-		
+
+	/**
+	 * @return BaseBOM编号:BM.IW03.WTR001.00-00
+	 * @param I.IW03.WTR001.00
+	 */
+	public static String getBaseBomId(String code1 )
+	{
+		String tmp2 = code1.substring(2);
+		//
+		return BusinessConstants.BASEBOM_BM + "."+tmp2 + "-"+BusinessConstants.FORMAT_00;
+	}	
 				
 }

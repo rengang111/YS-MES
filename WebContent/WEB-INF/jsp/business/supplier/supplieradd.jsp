@@ -102,6 +102,8 @@ $(document).ready(function() {
 					$('#supplier\\.parentid').val(parentId);
 					$('#supplier\\.subid').val(subId);
 					$('#supplier\\.supplierid').val(supplierId);
+					$('#supplier\\.shortname').val(shortName);
+					
 				},
 				error : function(
 						XMLHttpRequest,
@@ -221,10 +223,10 @@ function doDelete() {
 			<tr>	
 				<td class="label" width="100px">物料分类：</td> 
 				<td>
-					<form:input path="supplier.categoryid"  /></td>
+					<form:input path="supplier.categoryid"  style="text-transform:uppercase;" /></td>
 				<td class="label" width="100px">分类解释：</td> 
 				<td>
-					<form:input path="supplier.categorydes" class="middle read-only" /></td>
+					<form:input path="supplier.categorydes" class="long read-only" /></td>
 
 				<td class="label" width="100px">付款条件：</td>
 				<td>&nbsp;入库后
@@ -252,6 +254,48 @@ function doDelete() {
 
 	$("#supplier\\.categoryid").autocomplete({
 		
+		search: function( event, ui ) {
+			
+			var categoryid = $(this).val();
+			if(categoryid.indexOf(",") > 0 ){
+
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/business/material?methodtype=categorySearchMul",
+					dataType : "json",
+					data : {
+						key : categoryid
+					},
+					success : function(data) {						
+						var arrayObj = new Array(); //创建一个数组.toUpperCase()
+						arrayObj = data;
+						var name = '';
+						var firstFlg = true;						
+						$.each(arrayObj, function(i, n){
+							
+							if(firstFlg){
+								name = n["categoryname"];
+								firstFlg = false;
+							}else{
+								name = name + ', ' + n["categoryname"];
+							}									                   
+			            })
+						$('#supplier\\.categorydes').val(name);
+						$("#supplier\\.categoryid").val(categoryid.toUpperCase());						
+					},
+					error : function(XMLHttpRequest,textStatus, errorThrown) {
+						alert(textStatus);
+						alert("系统异常，请再试或和系统管理员联系22。");
+					}
+				});//多项查询
+				
+				return false;
+				
+			}else{
+				//继续单项查询
+			}		
+			
+		},
 		source : function(request, response) {
 			//alert(888);
 			$.ajax({
@@ -288,9 +332,8 @@ function doDelete() {
 		},
 
 		select : function(event, ui) {	
-			//$("#price\\.supplierid ").val(ui.item.id);
-			//$("#attribute2").val(ui.item.shortName);
 			$("#supplier\\.categorydes").val(ui.item.categoryName);
+			$("#supplier\\.categoryid").val(ui.item.id.toUpperCase());
 
 		},
 

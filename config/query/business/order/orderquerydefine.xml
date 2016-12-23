@@ -80,7 +80,7 @@
       <f name="A.materialId" alias="" ctype="" />
       <f name="A.materialName" alias="" ctype="" />
       <f name="A.customerId" alias="" ctype="" />
-      <f name="A.customerSimpleDes" alias="shortName" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
       <f name="A.CustomerName" alias="fullName" ctype="" />
       <f name="A.PIId" alias="" ctype="" />
       <f name="A.total" alias="" ctype="" />
@@ -144,10 +144,10 @@
       <f name="A.customerName" alias="" ctype="" />
       <f name="A.paymentTerm" alias="" ctype="" />
       <f name="A.country" alias="" ctype="" />
-      <f name="A.currency" alias="" ctype="" />
-      <f name="A.shippingCondition" alias="" ctype="" />
-      <f name="A.shippiingPort" alias="" ctype="" />
-      <f name="A.destinationPort" alias="" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.shippingCondition" alias="" ctype="出运条件" />
+      <f name="A.shippiingPort" alias="" ctype="出运港" />
+      <f name="A.destinationPort" alias="" ctype="目的港" />
       <f name="CONCAT_WS(' | ',A.CustomerID,A.shortName, CustomerName)" alias="viewList" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
     </select>

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -241,4 +243,39 @@ public class BaseService {
 		
 	}
 	
+	/**
+	 * 
+	 * @return String 
+	 */
+	public String[] getSearchKey(String data,HttpSession session){
+		
+		String[] rtnAarry = new String[2];
+				
+		String reqkey1 = getJsonData(data, "keyword1").trim().toUpperCase();
+		String reqkey2 = getJsonData(data, "keyword2").trim().toUpperCase();
+
+		String sinkey1 = (String)session.getAttribute("mainSearchKey1");
+		String sinkey2 = (String)session.getAttribute("mainSearchKey2");
+		
+		if (!("").equals(reqkey1) || !("").equals(reqkey2)){
+			
+			rtnAarry[0] = reqkey1;
+			rtnAarry[1] = reqkey2;
+			
+			//作为详细页面返回到一览时的默认查询条件
+			session.setAttribute("mainSearchKey1",reqkey1 );
+			session.setAttribute("mainSearchKey2",reqkey2 );
+			
+		}else{
+			
+			if( (sinkey1 != null && !("").equals(sinkey1)) || 
+				(sinkey2 != null && !("").equals(sinkey2)) ){
+				
+				rtnAarry[0] = sinkey1;
+				rtnAarry[1] = sinkey2;				
+			}
+		}
+		
+		return rtnAarry;
+	}
 }

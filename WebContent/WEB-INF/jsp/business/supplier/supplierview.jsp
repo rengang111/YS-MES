@@ -10,7 +10,7 @@
 <title>供应商基本数据</title>
 <script type="text/javascript">
 var validator;
-var layerHeight = "250";
+var layerHeight = "300";
 
 function ajax() {
 	var table = $('#TContactList').dataTable();
@@ -128,7 +128,7 @@ function reloadContact() {
 
 	$('#TContactList').DataTable().ajax.reload(null,false);
 	
-	reloadTabWindow();
+	//reloadTabWindow();
 
 	return true;
 }
@@ -232,41 +232,7 @@ $(document).ready(function() {
 		}
 	});	
 	
-	validator = $("#supplierBasicInfo").validate({
-		rules: {
-			supplierId: {
-				required: true,
-				minlength: 5 ,
-				maxlength: 20,
-			},
-			shortName: {
-				maxlength: 10,
-			},
-			supplierName: {
-				maxlength: 50,
-			},
-			categoryId: {
-				maxlength: 12,
-			},
-			categoryDes: {
-				maxlength: 50,
-			},
-			paymentTerm: {
-				maxlength: 5,
-			},
-			address: {
-				maxlength: 50,
-			},
-		},
-		errorPlacement: function(error, element) {
-		    if (element.is(":radio"))
-		        error.appendTo(element.parent().next().next());
-		    else if (element.is(":checkbox"))											    	
-		    	error.insertAfter(element.parent().parent());
-		    else
-		    	error.insertAfter(element);
-		}
-	});
+	
 
 	$("#country").val("${DisplayData.supplierBasicInfoData.country}");
 	$("#province").val("${DisplayData.supplierBasicInfoData.province}");
@@ -279,37 +245,7 @@ function doEdit() {
 	location.href = url;
 }
 
-function doSave() {
 
-	if (validator.form()) {
-		
-		var actionUrl = "${ctx}/business/supplier?methodtype=add";				
-			
-
-		//将提交按钮置为【不可用】状态
-		//$("#submit").attr("disabled", true); 
-		$.ajax({
-			type : "POST",
-			contentType : 'application/json',
-			dataType    : 'json',
-			url  : actionUrl,
-			async: false,
-			data : JSON.stringify($('#supplierBasicInfo').serializeArray()),// 要提交的表单
-			success : function(d) {
-				if (d.message != "") {
-					alert(d.message);	
-				}	
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				//alert(XMLHttpRequest.status);					
-				//alert(XMLHttpRequest.readyState);					
-				//alert(textStatus);					
-				//alert(errorThrown);
-			}
-		});
-		
-	}
-}
 
 function doDelete() {
 	var url = "${ctx}/business/supplier";
@@ -319,12 +255,13 @@ function doDelete() {
 function doAddContact() {
 	var supplierId = '$(#supplier\\.supplierid).val()';
 	var url = "${ctx}/business/contact?methodtype=addinit&supplierId="+supplierId;
-	openLayer(url, $(document).width() - 25, layerHeight, false);	
+	openLayer(url, $(document).width() - 300, layerHeight, false);	
+	
 }
 
 function doUpdateContact(key) {		
 	var url = "${ctx}/business/contact?methodtype=updateinit&key=" + key;
-	openLayer(url, '', layerHeight, false);
+	openLayer(url,$(document).width() - 300, layerHeight, false);
 }
 
 function doDeleteContact() {
@@ -366,20 +303,6 @@ function doDeleteContact() {
 
 }
 
-function clearSupplierBasicInfo() {
-	$('#supplierId').val('');
-	$('#shortName').val('');
-	$('#supplierName').val('');
-	$('#categoryId').val('');
-	$('#categoryDes').val('');
-	$('#paymentTerm').val('');
-	$('#address').val('');
-	$('#country').val('');
-	$('#province').val('');
-	$('#city').val('');
-	$("#province").find("option").remove();
-	$("#city").find("option").remove();
-}
 
 function controlButtons(data) {
 	
@@ -402,7 +325,7 @@ function controlButtons(data) {
 				<td class="label" width="100px">供应商编码：</td>
 				<td width="150px">${formModel.supplier.supplierid}</td>
 				<td class="label" width="100px">简称：</td> 
-				<td width="100px">${formModel.supplier.shortname}</td>
+				<td width="250px">${formModel.supplier.shortname}</td>
 
 				<td class="label" width="100px">名称：</td> 
 				<td>${formModel.supplier.suppliername}</td>
@@ -411,15 +334,14 @@ function controlButtons(data) {
 				<td class="label" width="100px">物料分类：</td> 
 				<td>${formModel.supplier.categoryid}</td>
 				<td class="label" width="100px">分类解释：</td> 
-				<td>${formModel.supplier.categorydes}</td>
-
-				<td class="label" width="100px">付款条件：</td>
-				<td>入库后&nbsp;${formModel.supplier.paymentterm}&nbsp;天</td>
+				<td colspan=3>${formModel.supplier.categorydes}</td>				
 			</tr>
 			<tr>
 				<td class="label">详细地址： </td>
-				<td colspan=5>${formModel.supplier.address}
-				</td>
+				<td colspan=3>${formModel.supplier.address}</td>
+
+				<td class="label" width="100px">付款条件：</td>
+				<td>入库后&nbsp;${formModel.supplier.paymentterm}&nbsp;天</td>
 			</tr>
 		</table>
 

@@ -144,7 +144,7 @@
                 //控制上传文件的后缀格式数组
                 allowedExtensions: ['jpeg', 'jpg', 'png'],
              //控制上传文件大小
-                sizeLimit: (1024 * 1024) // 200 kB = 200 * 1024 bytes
+               //  sizeLimit: 204800  //  200 kB = 200 * 1024 bytes
             },
             thumbnails: {
                 placeholders: {
@@ -158,19 +158,40 @@
         
         qq(document.getElementById("trigger-upload")).attach("click", function() {
         	//alert(99);
-        	if (confirm("${msg}")) {
-        		uploader.uploadStoredFiles();
+        	//if (confirm("${msg}")) {
         		
-        		//alert(999);
-        		
-        		var index = parent.layer
-				.getFrameIndex(window.name); //获取当前窗体索引
-				//parent.$('#events').DataTable().destroy();/
+        	//设置缓冲时间,修正Firefox和IE下的不正当提示信息
+        	
+        	/*	
+        	var func1=function(callback){
+    		   
+    		    uploader.uploadStoredFiles();
+    		   
+    		    if(callback && typeof(callback) === "function") 
+					 callback();
+    		    
+    		}
+
+    		func1(func2);
+    		
+    		function func2(){
+   		    	//alert("上传成功!")
+   		    	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 				parent.refresh();
-				//alert(parent.location);
-				parent.layer.close(index); //执行关闭	
+				//parent.layer.close(index); //执行关闭	
+    		    	
+    		}
+        		*/  
+        		uploader.uploadStoredFiles();
+       			setTimeout(function(){
+       				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+    				parent.refresh();
+    				//parent.layer.close(index); //执行关闭	
+   					
+   				},1000);
+           		
 				
-        	}
+        	//}
         	
         });
         

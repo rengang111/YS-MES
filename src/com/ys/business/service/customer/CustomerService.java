@@ -83,8 +83,8 @@ public class CustomerService extends BaseService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
-		key1 = getJsonData(data, "keyword1");
-		key2 = getJsonData(data, "keyword2");
+		key1 = getJsonData(data, "keyword1").toUpperCase();
+		key2 = getJsonData(data, "keyword2").toUpperCase();
 		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		

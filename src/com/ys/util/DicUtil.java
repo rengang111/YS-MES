@@ -28,6 +28,7 @@ public class DicUtil {
 	public static final String DELIVERYPORT = "目的港";
 	public static final String MANAGEMENTRATE = "经管费率";
 	public static final String COUNTRY = "国家";
+	public static final String ZZMATERIALTYPE = "自制类别";
 	
 	//TODO
 	//public static final String DENOMINATIONCURRENCY = "币种";

@@ -71,6 +71,17 @@ public class BomAction extends BaseAction {
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
+				break;						
+			case "baseBomInit":
+				rtnUrl = "/business/bom/basebommain";
+				break;					
+			case "searchBaseBom":
+				dataMap = doSearchBaseBom(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "createBaseBom":
+				doCreateBaseBom();
+				rtnUrl = "/business/bom/basebomadd";
 				break;				
 			case "searchBom":
 				dataMap = doSearchBom();
@@ -166,6 +177,24 @@ public class BomAction extends BaseAction {
 	}
 
 	
+	public HashMap<String, Object> doSearchBaseBom(String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			dataMap = bomService.getBaseBomList(data);
+			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+
+	
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doSearchCopyBom(
 			@RequestBody String data){
@@ -220,7 +249,11 @@ public class BomAction extends BaseAction {
 		bomService.getCopyBomList();
 			
 	}
-
+	public void doCreateBaseBom() throws Exception{
+		
+		model = bomService.createBaseBom();
+		
+	}
 	public void doCreate() throws Exception{
 		
 		model = bomService.createBomPlan();

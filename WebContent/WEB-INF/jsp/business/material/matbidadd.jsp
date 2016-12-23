@@ -209,7 +209,7 @@
 			</table>
 		</fieldset>
 
-		<fieldset class="action" style="margin-bottom: 40px;">
+		<fieldset class="action">
 			<button type="button" id="return" class="DTTT_button">关闭</button>
 			<button type="submit" id="submit" class="DTTT_button">保存</button>
 		</fieldset>

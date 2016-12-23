@@ -21,7 +21,7 @@ $(document).ready(function() {
 				minlength: 5 ,
 				maxlength: 20,
 			},
-			customerSimpleDes: {
+			shortName: {
 				required: true,				
 				maxlength: 20,
 			},

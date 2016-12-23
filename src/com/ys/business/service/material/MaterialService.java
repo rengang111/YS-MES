@@ -22,14 +22,11 @@ import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.material.MaterialModel;
-import com.ys.business.action.model.order.BomPlanModel;
-import com.ys.business.db.dao.B_BomDetailDao;
-import com.ys.business.db.dao.B_BomPlanDao;
+import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
-import com.ys.business.db.data.B_BomDetailData;
-import com.ys.business.db.data.B_BomPlanData;
+import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
@@ -47,10 +44,7 @@ public class MaterialService extends BaseService {
 	
 	private HttpServletRequest request;
 	
-	private B_MaterialData bomPlanData;
-	private B_BomDetailData bomDetailData;
 	private B_MaterialDao dao;
-	private B_BomDetailDao bomDetailDao;
 	private MaterialModel reqModel;
 	private UserInfo userInfo;
 	private BaseModel dataModel;
@@ -66,6 +60,7 @@ public class MaterialService extends BaseService {
 
 	public MaterialService(Model model,
 			HttpServletRequest request,
+			HttpSession session,
 			MaterialModel reqModel,
 			UserInfo userInfo){
 		
@@ -74,6 +69,7 @@ public class MaterialService extends BaseService {
 		this.reqModel = reqModel;
 		this.request = request;
 		this.userInfo = userInfo;
+		this.session = session;
 		this.dataModel = new BaseModel();
 		userDefinedSearchCase = new HashMap<String, String>();
 		dataModel.setQueryFileName("/business/material/materialquerydefine");
@@ -98,14 +94,44 @@ public class MaterialService extends BaseService {
 		String length = getJsonData(data, "iDisplayLength");
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
-		}		
+		}	
+		/*
+		String key1="";
+		String key2="";
+		String sinkey1="";
+		String sinkey2="";
+		String reqkey1 = getJsonData(data, "keyword1").trim().toUpperCase();
+		String reqkey2 = getJsonData(data, "keyword2").trim().toUpperCase();
+
+		sinkey1 = (String)session.getAttribute("key1");
+		sinkey2 = (String)session.getAttribute("key2");
 		
-		String key1 = getJsonData(data, "keyword1").toUpperCase();
-		String key2 = getJsonData(data, "keyword2").toUpperCase();
+		if (!("").equals(reqkey1) || !("").equals(reqkey2)){
+			
+			key1 = reqkey1;
+			key2 = reqkey2;
+			
+			//作为详细页面返回到一览时的默认查询条件
+			session.setAttribute("key1",key1 );
+			session.setAttribute("key2",key2 );
+			
+		}else{
+			
+			if( (sinkey1 != null && !("").equals(sinkey1)) || 
+				(sinkey2 != null && !("").equals(sinkey2)) ){
+				
+				key1 = sinkey1;
+				key2 = sinkey1;				
+			}
+		}	
+*/
 		
 		dataModel.setQueryName("materialquerydefine_search");
 		
 		baseQuery = new BaseQuery(request, dataModel);
+		
+		String key1 = getSearchKey(data,session)[0];
+		String key2 = getSearchKey(data,session)[1];
 		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
@@ -129,6 +155,50 @@ public class MaterialService extends BaseService {
 		return modelMap;
 	}
 	
+	public HashMap<String, Object> getProductList(String data) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		String key1 = getJsonData(data, "keyword1").toUpperCase();
+		String key2 = getJsonData(data, "keyword2").toUpperCase();
+
+		dataModel.setQueryName("getProductList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase = new HashMap<String, String>();
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
 
 	public HashMap<String, Object> supplierPriceView(HttpServletRequest request, 
 			String data) throws Exception {
@@ -179,26 +249,9 @@ public class MaterialService extends BaseService {
 	}
 	
 
-	public HashMap<String, Object> categorySearch( 
-			String data) throws Exception {
+	public HashMap<String, Object> categorySearch(String key) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		data = URLDecoder.decode(data, "UTF-8");
-		
-		String key = request.getParameter("key").toUpperCase();
-		
-		int iStart = 0;
-		int iEnd =0;
-		String sEcho = getJsonData(data, "sEcho");	
-		String start = getJsonData(data, "iDisplayStart");		
-		if (start != null && !start.equals("")){
-			iStart = Integer.parseInt(start);			
-		}
-		
-		String length = getJsonData(data, "iDisplayLength");
-		if (length != null && !length.equals("")){			
-			iEnd = iStart + Integer.parseInt(length);			
-		}		
 
 		dataModel.setQueryFileName("/business/material/materialquerydefine");
 		dataModel.setQueryName("categorylist");
@@ -208,25 +261,27 @@ public class MaterialService extends BaseService {
 		userDefinedSearchCase.put("keywords1", key);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
-		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();			
-		}		
-		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-
+		baseQuery.getYsQueryData(0, 0);	 
 		
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<B_MaterialCategoryData> categorySearchMul(
+			String where) throws Exception {
+				
+		B_MaterialCategoryDao dao = new B_MaterialCategoryDao();
+		List<B_MaterialCategoryData> categoryList;
+		
+		String strWhere = " categoryId in(  " + where + ") " +
+				" AND deleteFlag = '0' ";	
+
+		categoryList = (List<B_MaterialCategoryData>)dao.Find(strWhere);
+				
+		return categoryList;
+	}
 	
 	public HashMap<String, Object> getSupplierList(
 			HttpServletRequest request, 
@@ -542,6 +597,17 @@ public class MaterialService extends BaseService {
 				reqData.setSubid(data.getSubid());
 				reqData.setSubiddes(data.getSubiddes());
 				
+				//编辑产品型号,完整的产品编号:I.IW03.WTR01.00
+				String[] tmp1 = parentId.split("\\.");
+				if(tmp1.length > 2 && ("I").equals(tmp1[0])){
+					reqData.setProductmodel( tmp1[1]);
+					String customerid = tmp1[2].substring(0, 
+							tmp1[2].length()-
+							BusinessConstants.CUSTOMER_MUN.length());
+					//编辑客户编号
+					reqData.setCustomerid(customerid);				
+				}
+				
 				dao.Create(reqData);	
 				
 				//把第一条作为为默认对象
@@ -583,11 +649,27 @@ public class MaterialService extends BaseService {
 			B_MaterialData reqData = (B_MaterialData)reqModel.getMaterial();
 			List<B_MaterialData> reqDataList = reqModel.getMaterialLines();
 
+
 			//物料编码 = parentId +"."+ subid 
 			//例:B01.D019001.00
 			String parentId = reqData.getParentid();
 			//画面被选中的数据
 			String selectedRecord = reqData.getRecordid();
+			
+			/************************/
+			
+			String materialId = reqData.getMaterialid();
+			String[] strArry = materialId.split("\\.");
+			
+			String subId = "";
+			String serialNumber = "";
+			if(strArry.length > 2){
+				serialNumber = (strArry[1]).substring(strArry[1].length()-3);
+				subId = strArry[2];
+				parentId = strArry[0]+"."+strArry[1];
+			}
+				
+			/************************/
 			
 			//循环处理子编码
 			for(B_MaterialData data:reqDataList ){
@@ -622,15 +704,18 @@ public class MaterialService extends BaseService {
 					copyProperties(dbData,commData);
 					
 					//获取被选中数据的信息
-					//dbData.setMaterialid(reqData.getMaterialid());
-					dbData.setMaterialid(reqData.getParentid()+"."+data.getSubid());
+					//dbData.setMaterialid(reqData.getParentid()+"."+data.getSubid());//以后要恢复的
+					dbData.setMaterialid(materialId);//以后要删除的
+					dbData.setParentid(parentId);//以后要删除的
+					dbData.setSubid(subId);//以后要删除的
+					dbData.setSerialnumber(serialNumber);//以后要删除的
 					dbData.setMaterialname(reqData.getMaterialname());
 					dbData.setCategoryid(reqData.getCategoryid());
 					dbData.setSharemodel(reqData.getSharemodel());
 					dbData.setDescription(reqData.getDescription());
 					dbData.setUnit(reqData.getUnit());
 					//获取子编码list中的子编码解释
-					dbData.setSubid(data.getSubid());
+					//dbData.setSubid(data.getSubid());//以后要恢复的
 					dbData.setSubiddes(data.getSubiddes());
 					
 					dao.Store(dbData);

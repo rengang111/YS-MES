@@ -74,22 +74,26 @@ public class ZZMaterialAction extends BaseAction {
 				break;							
 			case "implement":
 				rtnUrl = "/business/material/purchaseman";
-				break;			
-			case "searchPurchase":
-				dataMap = doSearchPurchase(data);
-				printOutJsonObj(response, dataMap);
 				break;
-			case "create":
-				doCreate();
+			case "createB":
+				doCreateB();
 				rtnUrl = "/business/material/zzmaterialadd";
+				break;
+			case "createH":
+				//doCreateH();
+				rtnUrl = "/business/material/zzhmaterialadd";
 				break;
 			case "insert":
 				doInsert();
 				rtnUrl = "/business/material/zzmaterialview";
 				break;							
-			case "detailView":
+			case "detailViewB":
 				doShowDetail();
 				rtnUrl = "/business/material/zzmaterialview";
+				break;								
+			case "detailViewH":
+				doShowDetail();
+				rtnUrl = "/business/material/zzhmaterialview";
 				break;					
 			case "purchasePlanView":
 				//doShowBomDetail();
@@ -99,38 +103,25 @@ public class ZZMaterialAction extends BaseAction {
 				doShowDetail();
 				rtnUrl = "/business/bom/bomcopyview";
 				break;
-			case "edit":
+			case "editB":
 				doEdit();
 				rtnUrl = "/business/material/zzmaterialedit";
+				break;	
+			case "editH":
+				doEdit();
+				rtnUrl = "/business/material/zzhmaterialadd";
 				break;				
-			case "update":
+			case "updateB":
+				doUpdate();
+				rtnUrl = "/business/material/zzmaterialview";
+				break;				
+			case "updateH":
 				doUpdate();
 				rtnUrl = "/business/material/zzmaterialview";
 				break;
 			case "delete":
 				doDelete(data);
 				printOutJsonObj(response, reqModel.getEndInfoMap());
-				break;
-			case "getSupplierPriceList"://供应商编号查询
-				dataMap = doGetSupplierPriceList();
-				printOutJsonObj(response, dataMap);
-				break;
-			case "getMaterialPriceList"://物料编号查询
-				dataMap = doGetMaterialList();
-				printOutJsonObj(response, dataMap);
-				break;	
-			case "chooseSourseBom":
-				//doViewSourseBom();
-				rtnUrl = "/business/bom/bomselectlist";
-				break;
-			case "searchCopyBom":
-				dataMap = doSearchCopyBom(data);
-				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/bom/bomselectlist";
-				break;	
-			case "copy":
-				doCopy();
-				rtnUrl = "/business/bom/bomcopyadd";
 				break;
 				
 		}
@@ -163,66 +154,18 @@ public class ZZMaterialAction extends BaseAction {
 	}
 
 	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearchCopyBom(
-			@RequestBody String data){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = bomService.getCopyBomList(data);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearchPurchase(
-			@RequestBody String data){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = bomService.getBomApproveList(data);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
 	
-	public void doCopy() throws Exception{
-			
-		//model = bomService.copyBomPlan();
-			
-	}
-
-	public void doCreate() throws Exception{
+	public void doCreateB() throws Exception{
 		
 		model = ZZService.createMaterial();
 		
 	}
 	
+	public void doCreateH() throws Exception{
+		
+		model = ZZService.createMaterial();
+		
+	}
 	public void doInsert() throws Exception {
 
 		model = ZZService.insertAndView();
@@ -255,57 +198,6 @@ public class ZZMaterialAction extends BaseAction {
 				
 		model = ZZService.getDetailView();
 			
-	}
-	
-	
-	/*
-	 * 
-	 */	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doGetMaterialList(){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = bomService.getMaterialList(request);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-	
-	/*
-	 * doSupplierPriceList
-	 */	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doGetSupplierPriceList(){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
-		
-		try {
-			//dataMap = bomService.getSupplierPriceList();
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
 	}
 
 	

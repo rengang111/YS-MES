@@ -29,12 +29,11 @@
 
 </head>
 
-<body class="panel-body">
+<body>
 <div id="container">
-<div id="main" style="margin-top: -15px;">
+<div id="main">
 	
 <form:form modelAttribute="material" method="POST" 
-	style='padding: 0px; margin: 0px 0px;' 
 	id="material" name="material"   autocomplete="off">
 	
 	<form:hidden path="material.recordid" />
@@ -52,81 +51,71 @@
 	
 	<input id="handle_status" value="1133" hidden="hidden">
 	
-<fieldset>
-	<legend style='margin: 20px 10px -10px 0px;'>物料基本信息</legend>
+<fieldset style="float: left;width: 65%;">
+	<legend>物料基本信息</legend>
 
-	<table class="form" width="100%">		
+	<table class="form" >		
 		<tr>
 			<td class="label" style="width: 100px;"><label>物料(ERP)编号：</label></td>
-			<td style="width: 280px;">
+			<td style="width: 150px;">
 				<label>${material.material.materialid}</label></td>
 								
 			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
-			<td>${material.material.materialname}</td>												
+			<td colspan="3">${material.material.materialname}</td>												
 		</tr>
 		<tr>				
 			<td class="label" style="width: 100px;"><label>分类编码：</label></td>
-			<td>${material.material.categoryid} | ${material.attribute2}</td>					
-			<td class="label"><label>计量单位：</label></td>
-			<td>${material.unitname}</td>				
+			<td colspan="3">${material.material.categoryid} | ${material.attribute2}</td>				
+								
+			<td class="label" style="width: 100px;"><label>计量单位：</label></td>
+			<td style="width: 50px;text-align: center;">${material.unitname}</td>				
 		</tr>
 		<tr>				
 			<td class="label"><label>通用型号：</label></td>
-			<td colspan="3"><form:hidden path="material.sharemodel" value=""/>	
+			<td colspan="5"><form:hidden path="material.sharemodel" value=""/>	
 				<div class="" id="coupon">
 					<table id="ShareTab"><tr><td></td></tr></table></div></td>							
-		</tr>
-				
-		
+		</tr>	
+		<tr>
+			<td class="label" style="vertical-align: text-top;">中文描述：</td>
+			<td colspan="5" style="vertical-align: text-top;"><pre></pre></td></tr>	
 	</table>
-	</fieldset>
-	<fieldset style="margin-top: -15px;">
-	<legend style="margin: 10px 0px -10px 0px"> 描述信息</legend>
+	<div class="action" style="text-align: right;">			
+		<button type="button" id="return" class="DTTT_button">返回</button>
+		<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
+		<button type="button" id="doCreate" class="DTTT_button" onclick="doCreateBOMZZ()">新建二级BOM</button>
+	</div>
+	</fieldset>	
+		<div id="tabs" style="float:right;margin: 10px 30px 0px 0px;">
+				<div id="tabs-1" title="图片">
+					<jsp:include page="../../common/album/album2.jsp"></jsp:include>
+				</div>
+		</div>
 
-	<table class="form">
+	
+	<table style="width: 66%;">
 		<tr>
-			<td width="55%">中文描述：</td>
 			<td>
-				<table width="100%">
+				<table id="subidTab" class="dataTable list" style="width:98%;margin-bottom: 20px;">
 					<tr>
-						<td class="td-center">子编码</td>
+						<td class="td-center"></td>
+						<td class="td-center" width="60px">子编码</td>
 						<td class="td-center">子编码解释</td>
-						<td class="td-center" width='60px'>
-							</td></tr></table></td></tr>		
-		<tr>
-			<td style="vertical-align: text-top;"><pre>${material.material.description}</pre></td>
-			<td>			
-				<div class="" id="subidDiv" style="overflow: auto;height: 100px;margin-top: -15px;">
-					<table id="subidTab" class="dataTable list" style="width: 95%;">
-						<tr style='display:none'><td></td>
-						<td></td><td></td></tr>
-						
-						
-						</table></div></td>
+					</tr>
+				</table>
+			</td>
 		</tr>
 	</table>		
-</fieldset>
 
 <div style="clear: both"></div>			
-<fieldset class="action" style="text-align: right;">					
-	<button type="button" id="return" class="DTTT_button">返回</button>
-	<!-- button type="reset" id="reset" class="DTTT_button">重置</button -->
-	<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
-</fieldset>
-<div style="clear: both"></div>		
+
 	
-<fieldset style="margin-top: -15px;">
-<legend style="margin: 10px 0px -10px 0px"> 供应商单价信息</legend>		
+
+<span class="tablename" style="margin: -30px 17px -7px 1px;padding: 5px;float: right;"> 供应商单价信息</span>	
+<a class="DTTT_button" onclick="doCreatePrice();" style="float: right;margin: -30px 130px;">新建</a>	
 <div class="list">
 
-<div id="TSupplier_wrapper" class="dataTables_wrapper">
-	<div id="DTTT_container" style="height:40px;align:right">
-		<a aria-controls="TSupplier" tabindex="0" id="ToolTables_TSupplier_0" 
-			class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>新建</span></a>
-		<!-- a aria-controls="TSupplier" tabindex="0" id="ToolTables_TSupplier_1"
-		 	class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a-->
-	</div>
-	<div id="clear"></div>
+	
 	<table id="TSupplier"  aria-describedby="TSupplier_info" style="width: 100%;" id="TOgran" class="display dataTable" cellspacing="0">
 		<thead>				
 		<tr class="selected">
@@ -143,8 +132,7 @@
 		</thead>
 	</table>
 </div>
-</div>
-</fieldset>
+
 </form:form>
 </div>
 </div>
@@ -187,7 +175,8 @@ $(document).ready(function() {
 	
 	$("#return").click(
 		function() {
-			var url = "${ctx}/business/material";
+			var materialId='${material.material.materialid}';
+			var url = "${ctx}/business/material?materialId="+materialId;
 			location.href = url;		
 		});
 
@@ -200,7 +189,16 @@ $(document).ready(function() {
 				location.href = url;			
 
 	});
+	/*
+	$("#doCreate").click(
+			function() {				
+				var materialId = '${material.material.materialid}';
+				//var url = '${ctx}/business/zzmaterial?methodtype=create';
+				var url = '${ctx}/business/zzmaterial?methodtype=create&materialId=' + materialId;
+				location.href = url;			
 
+	});
+*/
 	//供应商单价显示处理
 	supplierPriceView();
 	//供应商列表点击颜色变化
@@ -217,14 +215,14 @@ function supplierPriceView() {
 
 	var t = $('#TSupplier').DataTable({
 		"paging": false,
-		"lengthMenu":[20,50,100],//设置一页展示10条记录
+		//"lengthMenu":[20,50,100],//设置一页展示10条记录
 		"processing" : false,
 		"serverSide" : false,
 		"stateSave" : false,
 		"searching" : false,
 		"pagingType" : "full_numbers",
 		//"bJQueryUI": true,
-		"retrieve" : true,
+		"retrieve" : false,
 		"sAjaxSource" : "${ctx}/business/material?methodtype=supplierPriceView",				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 				
@@ -268,15 +266,15 @@ function supplierPriceView() {
        		"url":"${ctx}/plugins/datatables/chinese.json"
        	},
 		"columns": [
-					{"data": null, "defaultContent" : '',"className" : 'td-center'},
-					{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
-					{"data": "shortName", "defaultContent" : ''},
-					{"data": "fullName", "defaultContent" : ''},
-					{"data": "price", "defaultContent" : '',"className" : 'td-center'},
-					{"data": "currency", "defaultContent" : '',"className" : 'td-center'},
-					{"data": "unit", "defaultContent" : '',"className" : 'td-center'},
-					{"data": "priceDate", "defaultContent" : '',"className" : 'td-center'},
-					{"data": null, "defaultContent" : '',"className" : 'td-center'}
+					{"data": null,"className" : 'td-center'},
+					{"data": "supplierId"},
+					{"data": "shortName"},
+					{"data": "fullName"},
+					{"data": "price","className" : 'td-right'},
+					{"data": "currency","className" : 'td-center'},
+					{"data": "unit","className" : 'td-center'},
+					{"data": "priceDate","className" : 'td-center'},
+					{"data": null,"className" : 'td-center'}
 		        ],
 		"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
@@ -387,10 +385,12 @@ function doSubDetail(recordid , parentid) {
 	
 }
 
-var layerHeight = '600';
+var layerHeight = '360px';
+var layerWidth  = '900px';
+
 
 //新增供应商
-function doCreate() {
+function doCreatePrice() {
 	var materialid ='${material.material.materialid}';
 	var url = "${ctx}/business/material?methodtype=addSupplier&materialid="+materialid;
 	
@@ -398,7 +398,36 @@ function doCreate() {
 		offset :[100,''],
 		type : 2,
 		title : false,
-		area : [ '900px', '400px' ], 
+		area : [ '900px', layerHeight ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+	});
+}
+
+//新建二级BOM
+function doCreateBOMZZ() {
+	var materialId ='${material.material.materialid}';
+	layerWidth  = '1000px';
+	
+	if(materialId.length > 0){
+		var type = materialId.substring(0,1);//截取物料大分类
+		if(type == 'H'){//装配品
+			layerHeight = '300px';
+			var url = '${ctx}/business/zzmaterial?methodtype=createH&materialId=' + materialId;
+		
+		}else{//塑料制品
+			layerHeight = '450px';
+			var url = '${ctx}/business/zzmaterial?methodtype=createB&materialId=' + materialId;
+			
+		}
+	}
+
+	layer.open({
+		offset :[50,''],
+		type : 2,
+		title : false,
+		area : [ layerWidth, layerHeight ], 
 		scrollbar : false,
 		title : false,
 		content : url,
@@ -406,15 +435,31 @@ function doCreate() {
 }
 
 function doUpdate(supplierId) {
-	var materialid ='${material.material.materialid}';
-	
-	var url = "${ctx}/business/material?methodtype=editPrice&supplierId=" + supplierId+"&materialId="+materialid;
+	var materialId ='${material.material.materialid}';
+	var type = materialId.substring(0,1);//截取物料大分类
+	if(supplierId == '0574YS00'){
+		if(type == 'H'){
+			layerWidth  = '1000px';
+			layerHeight = '300px';
+			var url = '${ctx}/business/zzmaterial?methodtype=editH&materialId=' + materialId;
+			
+		}else{
+			layerWidth  = '1000px';
+			layerHeight = '450px';
+			var url = '${ctx}/business/zzmaterial?methodtype=editB&materialId=' + materialId;
+			
+		}
+	}else{
+		layerWidth  = '900px';
+		layerHeight = '360px';
+		var url = "${ctx}/business/material?methodtype=editPrice&supplierId=" + supplierId+"&materialId="+materialId;		
+	}
 
 	layer.open({
-		offset :[100,''],
+		offset :[50,''],
 		type : 2,
 		title : false,
-		area : [ '900px', '400px' ], 
+		area : [ layerWidth, layerHeight ], 
 		scrollbar : false,
 		title : false,
 		content : url,
@@ -422,9 +467,9 @@ function doUpdate(supplierId) {
 }
 
 function doShowHistory(supplierId) {
-	var materialid ='${material.material.materialid}';
+	var materialId ='${material.material.materialid}';
 			
-	var url = "${ctx}/business/material?methodtype=supplierPriceHistoryInit&supplierId=" + supplierId+"&materialId="+materialid;
+	var url = "${ctx}/business/material?methodtype=supplierPriceHistoryInit&supplierId=" + supplierId+"&materialId="+materialId;
 
 	layer.open({
 		offset :[100,''],
