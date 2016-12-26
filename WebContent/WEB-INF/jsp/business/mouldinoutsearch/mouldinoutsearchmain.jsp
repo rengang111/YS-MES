@@ -7,18 +7,18 @@
 
 <%@ include file="../../common/common.jsp"%>
 
-<title>模具出借检索</title>
+<title>模具出入检索</title>
 <script type="text/javascript">
 
 	var layerHeight = '600';
 
 	function ajax() {
-		var table = $('#TMouldLendRegisterList').dataTable();
+		var table = $('#TMouldInoutList').dataTable();
 		if(table) {
 			table.fnDestroy();
 		}
 	
-		var t = $('#TMouldLendRegisterList').DataTable({
+		var t = $('#TMouldInoutList').DataTable({
 				"paging": true,
 				"lengthMenu":[5,10,15],//设置一页展示10条记录
 				"processing" : false,
@@ -27,7 +27,7 @@
 				"searching" : false,
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/mouldlendregister?methodtype=search",
+				"sAjaxSource" : "${ctx}/business/mouldinoutsearch?methodtype=search",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -63,24 +63,16 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "mouldLendNo", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "productModelNo", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "productModelName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "factoryName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "lendTime", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "returnTime", "defaultContent" : '',"className" : 'td-center'},							
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
 					    		{"targets":0,"render":function(data, type, row){
-					    			if (row["confirm"] == '1') {
-					    				return row["rownum"]
-					    			} else {
-										return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
-					    			}
+				    				return row["rownum"]
 			                    }},
-					    		{"targets":7,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
+					    		{"targets":3,"render":function(data, type, row){
+					    			return "<a href=\"#\" onClick=\"doView('" + row["productModel"] + "')\">详细信息</a>"
 			                    }}
 			           
 			         ] 
@@ -93,21 +85,21 @@
 
 		doSearch();
 	
-		$('#TMouldLendRegisterList').DataTable().on('click', 'tr', function() {
+		$('#TMouldInoutList').DataTable().on('click', 'tr', function() {
 			
 			if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
 	        }
 	        else {
-	        	$('#TMouldLendRegisterList').DataTable().$('tr.selected').removeClass('selected');
+	        	$('#TMouldInoutList').DataTable().$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	        }
 		});
 		
 		/*
-		$('#TMouldLendRegisterList').DataTable().on('dblclick', 'tr', function() {
+		$('#TMouldInoutList').DataTable().on('dblclick', 'tr', function() {
 
-			var d = $('#TMouldLendRegisterList').DataTable().row(this).data();
+			var d = $('#TMouldInoutList').DataTable().row(this).data();
 
 			location.href = '${pageContext.request.contextPath}/factory/show/' + d["factory_id"] + '.html';		
 			
@@ -127,68 +119,11 @@
 		//reload();
 	}
 	
-	function doCreate() {
-		
-		var url = "${ctx}/business/mouldlendregister?methodtype=addinit";
-		openLayer(url, '', layerHeight, true);
-	}
-	
-	function doUpdate(key) {
-		var str = '';
-		var isFirstRow = true;
-		var url = "${ctx}/business/mouldlendregister?methodtype=updateinit&key=" + key;
+	function doView(key) {
+		var url = "${ctx}/business/mouldinoutsearch?methodtype=doView&key=" + key;
 
 		openLayer(url, '', layerHeight, true);
 	}
-	
-	
-	function doDelete() {
-		
-		var str = '';
-		$("input[name='numCheck']").each(function(){
-			if ($(this).prop('checked')) {
-				str += $(this).val() + ",";
-			}
-		});
-
-		if (str != '') {
-			if(confirm("确定要删除数据吗？")) {
-				jQuery.ajax({
-					type : 'POST',
-					async: false,
-					contentType : 'application/json',
-					dataType : 'json',
-					data : str,
-					url : "${ctx}/business/mouldlendregister?methodtype=delete",
-					success : function(data) {
-						if (data.rtnCd != '000') {
-							alert(data.message);
-						} else {
-							reload();
-						}						
-					},
-					error:function(XMLHttpRequest, textStatus, errorThrown){
-		                // alert(XMLHttpRequest.status);
-		                //alert(XMLHttpRequest.readyState);
-		                //alert(textStatus);
-		             }
-				});
-			}
-		} else {
-			alert("请至少选择一条数据");
-		}
-		
-	}
-
-	function reload() {
-		
-		$('#TMouldLendRegisterList').DataTable().ajax.reload(null,false);
-		
-		return true;
-	}
-
-
-	
 </script>
 
 </head>
@@ -200,8 +135,7 @@
 		
 			<div id="search">
 
-				<form id="condition" 
-					style='padding: 0px; margin: 10px;' >
+				<form id="condition" style='padding: 0px; margin: 10px;' >
 
 					<table>
 						<tr>
@@ -227,23 +161,18 @@
 		
 			<div class="list">
 
-				<div id="TMouldLendRegisterList_wrapper" class="dataTables_wrapper">
+				<div id="TMouldInoutList_wrapper" class="dataTables_wrapper">
 					<div id="DTTT_container" align="right" style="height:40px">
-						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doCreate();"><span>新建</span></a>
 						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doDelete();"><span>删除</span></a>
 					</div>
 
 					<div id="clear"></div>
-					<table aria-describedby="TMouldLendRegisterList_info" style="width: 100%;" id="TMouldLendRegisterList" class="display dataTable" cellspacing="0">
+					<table aria-describedby="TMouldInoutList_info" style="width: 100%;" id="TMouldInoutList" class="display dataTable" cellspacing="0">
 						<thead>
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具出借编号:" class="dt-middle sorting_disabled">模具出借编号</th>
-								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="产品型号:" class="dt-middle sorting_disabled">产品型号</th>
+								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="产品型号" class="dt-middle sorting_disabled">产品型号</th>
 								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="产品名称" class="dt-middle sorting_disabled">产品名称</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="出借工厂" class="dt-middle sorting_disabled">出借工厂</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="出借时间" class="dt-middle sorting_disabled">出借时间</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="预期归还" class="dt-middle sorting_disabled">预期归还</th>
 								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
 							</tr>
 						</thead>

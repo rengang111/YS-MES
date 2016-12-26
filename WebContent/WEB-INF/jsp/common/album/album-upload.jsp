@@ -145,7 +145,7 @@
                 //控制上传文件的后缀格式数组
                 allowedExtensions: ['jpeg', 'jpg', 'png'],
              //控制上传文件大小
-                sizeLimit: (1024 * 1024) // 200 kB = 200 * 1024 bytes
+                sizeLimit: (100000 * 1024 * 1024) // 200 kB = 200 * 1024 bytes
             },
             thumbnails: {
                 placeholders: {

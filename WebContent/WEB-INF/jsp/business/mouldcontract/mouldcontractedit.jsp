@@ -218,9 +218,8 @@ function ajaxPayList() {
 		//alert(999);
 
 		var tr = $(this).closest('tr');
-		t
+
 		var row = t.row(tr);
-		t
 
 		if (row.child.isShown()) {
 			// This row is already open - close it

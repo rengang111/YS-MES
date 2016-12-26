@@ -10,8 +10,8 @@
     <select>
       <f name="DISTINCT A.id" alias="" ctype="" />
       <f name="A.mouldLendNo" alias="" ctype="" />
-      <f name="A.productModel" alias="" ctype="" />
-      <f name="A.productModel" alias="productModelName" ctype="产品型号" />
+      <f name="A.productModelNo" alias="" ctype="" />
+      <f name="A.productModelName" alias="" ctype="" />
       <f name="A.factoryName" alias="" ctype="" />
       <f name="A.lendTime" alias="" ctype="" />
       <f name="A.returnTime" alias="" ctype="" />
