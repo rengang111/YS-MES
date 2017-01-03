@@ -17,6 +17,7 @@ public class ZZMaterialModel extends BaseModel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private ArrayList<ListOption> manageRateList = new ArrayList<ListOption>();
+	private ArrayList<ListOption> typeList = new ArrayList<ListOption>();
 	private B_ZZMaterialPriceData price = new B_ZZMaterialPriceData();
 	private B_ZZRawMaterialData rawMaterial = new B_ZZRawMaterialData();
 	private B_MaterialData material;
@@ -38,6 +39,12 @@ public class ZZMaterialModel extends BaseModel {
 		this.manageRateList = manageRateList;
 	}
 
+	public ArrayList<ListOption> getTypeList() {
+		return this.typeList;
+	}
+	public void setTypeList(ArrayList<ListOption> typeList) {
+		this.typeList = typeList;
+	}
 	
 	public List<B_ZZRawMaterialData> getRawMaterials() {
 		return this.rawMaterials;

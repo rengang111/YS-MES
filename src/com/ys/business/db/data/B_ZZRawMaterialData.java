@@ -60,6 +60,19 @@ public class B_ZZRawMaterialData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String unit;
+	public String getUnit()
+	{
+		return this.unit;
+	}
+	public void setUnit(String unit)
+	{
+		this.unit=unit;
+	}
+
+	/**
+	*
+	*/
 	private String netweight;
 	public String getNetweight()
 	{
@@ -254,13 +267,13 @@ public class B_ZZRawMaterialData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("rawmaterialid = "+(rawmaterialid == null ? "null" : rawmaterialid)+"\n");		sb.append("netweight = "+(netweight == null ? "null" : netweight)+"\n");		sb.append("wastage = "+(wastage == null ? "null" : wastage)+"\n");		sb.append("weight = "+(weight == null ? "null" : weight)+"\n");		sb.append("kgprice = "+(kgprice == null ? "null" : kgprice)+"\n");		sb.append("materialprice = "+(materialprice == null ? "null" : materialprice)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("rawmaterialid = "+(rawmaterialid == null ? "null" : rawmaterialid)+"\n");		sb.append("unit = "+(unit == null ? "null" : unit)+"\n");		sb.append("netweight = "+(netweight == null ? "null" : netweight)+"\n");		sb.append("wastage = "+(wastage == null ? "null" : wastage)+"\n");		sb.append("weight = "+(weight == null ? "null" : weight)+"\n");		sb.append("kgprice = "+(kgprice == null ? "null" : kgprice)+"\n");		sb.append("materialprice = "+(materialprice == null ? "null" : materialprice)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		materialid= (materialid == null ?null : materialid.trim());		rawmaterialid= (rawmaterialid == null ?null : rawmaterialid.trim());		netweight= (netweight == null ?null : netweight.trim());		wastage= (wastage == null ?null : wastage.trim());		weight= (weight == null ?null : weight.trim());		kgprice= (kgprice == null ?null : kgprice.trim());		materialprice= (materialprice == null ?null : materialprice.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		materialid= (materialid == null ?null : materialid.trim());		rawmaterialid= (rawmaterialid == null ?null : rawmaterialid.trim());		unit= (unit == null ?null : unit.trim());		netweight= (netweight == null ?null : netweight.trim());		wastage= (wastage == null ?null : wastage.trim());		weight= (weight == null ?null : weight.trim());		kgprice= (kgprice == null ?null : kgprice.trim());		materialprice= (materialprice == null ?null : materialprice.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

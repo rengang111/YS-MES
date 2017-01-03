@@ -42,6 +42,13 @@ public class BaseModel implements Serializable {
 	private ArrayList<ListOption> shippingConditionList = new ArrayList<ListOption>();//出运条件
 	private ArrayList<ListOption> unsureList = new ArrayList<ListOption>();//通用
 	
+
+	private String imageFileName = "";
+	private String[] filenames;
+	private String imageKey = "";
+	private String path = "";
+	private String nowUseImage = "";
+	
 	public ArrayList<ListOption> getCountryList() {
 		return this.countryList;
 	}
@@ -261,5 +268,39 @@ public class BaseModel implements Serializable {
 		this.endInfoMap.put("info", info);
 	}
 	
+	public String getImageFileName() {
+		return this.imageFileName;
+	}
+	public void setImageFileName(String imageFileName) {
+		this.imageFileName = imageFileName;
+	}
+	
+	public String[] getFilenames() {
+		return this.filenames;
+	}
+	public void setFilenames(String[] filenames) {
+		this.filenames = filenames;
+	}
+	
+	public String getImageKey() {
+		return this.imageKey;
+	}
+	public void setImageKey(String imageKey) {
+		this.imageKey = imageKey;
+	}
+	
+	public String getPath() {
+		return this.path;
+	}
+	public void setPath(String path) {
+		this.path = path;
+	}
+	
+	public String getNowUseImage() {
+		return this.nowUseImage;
+	}
+	public void setNowUseImage(String nowUseImage) {
+		this.nowUseImage = nowUseImage;
+	}
 	
 }

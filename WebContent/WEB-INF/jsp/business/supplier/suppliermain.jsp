@@ -41,15 +41,8 @@
 						"contentType": "application/json; charset=utf-8",
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
-						success: function(data){
-							/*
-							if (data.message != undefined) {
-								alert(data.message);
-							}
-							*/
-							
+						success: function(data){							
 							fnCallback(data);
-
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			                 //alert(XMLHttpRequest.status);
@@ -62,24 +55,31 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierID", "defaultContent" : ''},
-							{"data": "shortName", "defaultContent" : ''},
-							{"data": "supplierName", "defaultContent" : ''},
-							{"data": "categoryId", "defaultContent" : ''},
-							{"data": "categoryDes", "defaultContent" : ''},
-							{"data": "paymentTerm", "defaultContent" : '',"className" : 'td-center'},
-							{"data": null, "defaultContent" : '',"className" : 'td-center'}
-				        ],
+					{"data": null, "defaultContent" : '',"className" : 'td-center'},
+					{"data": "supplierID", "defaultContent" : ''},
+					{"data": "shortName", "defaultContent" : ''},
+					{"data": "supplierName", "defaultContent" : ''},
+					{"data": "categoryId", "defaultContent" : ''},
+					{"data": "categoryDes", "defaultContent" : ''},
+					{"data": "paymentTerm", "defaultContent" : '',"className" : 'td-center'},
+					{"data": null, "defaultContent" : '',"className" : 'td-center'}
+				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
                     }},
+		    		{"targets":5,"render":function(data, type, row){
+		    			var name = row["categoryDes"];				    			
+		    			return jQuery.fixedWidth(name,25);
+                    }},
 		    		{"targets":7,"render":function(data, type, row){
 		    			return "<a href=\"#\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>";
-                    }}
+                    }},
+                    {"bSortable": false, "aTargets": [ 0 ] 
+                    }
 			           
-			     ] 
+			     ] ,
+			     "aaSorting": [[ 4, "asc" ]]
 			}
 		);
 	}

@@ -158,7 +158,7 @@ $.fn.serializeObject = function() {
       });
   }
 
-var strShareMode = "<input type='text' class='mini' maxlength='4' name='sharemodel";	
+var strShareMode = "<input type='text' class='mini' maxlength='5' name='sharemodel";	
  
  function addTd(){
 
@@ -226,7 +226,7 @@ function autoNextSelect(){
                     });
                 }
             } else {
-                if ($(this).val().length > 3) {
+                if ($(this).val().length > 4) {
                     $(this).next().focus();
                 }
             }

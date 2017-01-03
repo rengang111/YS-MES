@@ -1,11 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <!DOCTYPE HTML>
 <html>
 
@@ -17,11 +11,6 @@
 <script type="text/javascript">
 
 	var counter  = 5;
-	var Gpwer  = '0';
-	var Glabor = '0';
-	var Gtotal = '0';
-	var Graw = '0';
-
 	//Form序列化后转为AJAX可提交的JSON格式。
 	$.fn.serializeObject = function() {
 		var o = {};
@@ -52,21 +41,23 @@
 				for (var i=0;i<1;i++){
 					
 				var rowNode = $('#example')
-						.DataTable()
-						.row
-						.add(
-						  [
-							'<td></td>',
-							'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
-								'<input type="hidden" name="rawMaterials['+rowIndex+'].rawmaterialid" id="rawMaterials'+rowIndex+'.rawmaterialid" /></td>',
-							'<td><span></span></td>',
-							'<td><input type="text"   name="rawMaterials['+rowIndex+'].netweight" id="rawMaterials'+rowIndex+'.netweight" class="cash mini" /></td>',							
-							'<td><span></span><input type="hidden" name="rawMaterials['+rowIndex+'].wastage"   id="rawMaterials'+rowIndex+'.wastage" /></td>',
-							'<td><span></span><input type="hidden"   name="rawMaterials['+rowIndex+'].weight"      id="rawMaterials'+rowIndex+'.weight" /></td>',
-							'<td><input type="text"   name="rawMaterials['+rowIndex+'].kgprice" id="rawMaterials'+rowIndex+'.kgprice" class="cash mini" /></td>',				
-							'<td><span></span><input type="hidden"   name="rawMaterials['+rowIndex+'].materialprice"      id="rawMaterials'+rowIndex+'.materialprice" /></td>',	
-							]).draw();
-					
+					.DataTable()
+					.row
+					.add([
+						'<td></td>',
+						'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
+							'<input type="hidden" name="rawMaterials['+rowIndex+'].rawmaterialid" id="rawMaterials'+rowIndex+'.rawmaterialid" /></td>',
+						'<td><span></span></td>',
+						'<td><input type="text"   name="rawMaterials['+rowIndex+'].netweight"     id="rawMaterials'+rowIndex+'.netweight" class="cash mini" /></td>',
+						'<td><span></span><select name="rawMaterials['+rowIndex+'].unit"          id="rawMaterials'+rowIndex+'.unit" style="display:none;width:60px"></select>'+
+							'<input type="hidden" id="unit'+rowIndex+'"  /></td>',
+						'<td><span></span><input  name="rawMaterials['+rowIndex+'].wastage"       id="rawMaterials'+rowIndex+'.wastage"  type="hidden" /></td>',
+						'<td><span></span><input  name="rawMaterials['+rowIndex+'].weight"        id="rawMaterials'+rowIndex+'.weight"  type="hidden" /></td>',
+						'<td><input type="text"   name="rawMaterials['+rowIndex+'].kgprice"       id="rawMaterials'+rowIndex+'.kgprice" class="cash mini" />'+
+							'<input type="hidden" id="price'+rowIndex+'" /></td>',				
+						'<td><span></span><input  name="rawMaterials['+rowIndex+'].materialprice" id="rawMaterials'+rowIndex+'.materialprice" type="hidden"  /></td>',	
+						]).draw();
+
 					rowIndex ++;						
 				}					
 				counter += 1;
@@ -74,7 +65,7 @@
 				autocomplete();
 
 				//重设显示窗口(iframe)高度
-				iFramAutoSroll();
+				//iFramAutoSroll();
 					
 				foucsInit();
 			}
@@ -93,54 +84,18 @@
 				
 			}else{
 				
-				var $tds = $('#example tbody tr').eq(rowIndex).find("td");
-				
-				var vprice = $tds.eq(7).find("input").val();
-				var fprice = currencyToFloat(vprice);
-				
-				Graw = Graw - fprice;
-				//alert(fprice+':fprice---'+Graw+':Graw')
 				t.row('.selected').remove().draw();
 	
-				//随时计算该客户的销售总价
+				//计算自制品单价
 				costAcount();
 				$().toastmessage('showNoticeToast', "删除成功。");	
-				
-	
+					
 				//重设显示窗口(iframe)高度
 				iFramAutoSroll();
 			}						
 		}
 	});
 	
-function foucsInit(){
-	
-	$("input:text").not(".read-only").addClass('bgnone');
-	$("#price\\.materialid").removeClass('bgnone');
-	$(".cash").css('border','1px solid #dadada');
-	$(".attributeList1 ").addClass('bsolid')
-	
-	$("input:text") .not(".read-only") .focus(function(){
-		$(this).removeClass('bgnone').removeClass('error').addClass('bgwhite');
-		$("#price\\.materialid").removeClass('bgwhite');
-	    $(this).select();
-	});
-	
-	$(".read-only").removeClass('bgwhite');
-	
-	$(".cash") .focus(function(){
-		$(this).val(currencyToFloat($(this).val()));
-	    $(this).select();
-	});
-	
-	$(".cash") .blur(function(){
-		$(this).val(floatToCurrency($(this).val()));
-	});
-	
-	// $(".DTTT_container").css('float','left');
-	$(".DTTT_container").css('margin-top',' -24px');
-	
-}
 function ajax() {
 
 	var t = $('#example').DataTable({
@@ -172,90 +127,100 @@ function ajax() {
 		},
 		
 		"columns" : [ 
-		        	{"className":"dt-body-center"
-				}, {
-				}, {								
-				}, {				
-				}, {"className":"dt-body-right"				
-				}, {"className":"dt-body-right"				
-				}, {"className":"dt-body-right"				
-				}, {"className":"dt-body-right"				
-				}			
-			]
+		       {"className":"dt-body-center"
+			}, {
+			}, {
+			}, {"className":"dt-body-right"
+			}, {"className":"dt-body-center"
+			}, {"className":"dt-body-right"	
+			}, {"className":"dt-body-right"
+			}, {"className":"dt-body-right"
+			}, {"className":"dt-body-right"	
+			}			
+		]
 		
 	})
 
-	/*
-	t.on('blur', 'tr td:nth-child(2),tr td:nth-child(4)',function() {
-		
-		var currValue = $(this).find("input:text").val().trim();
-
-        $(this).find("input:text").removeClass('bgwhite');
-        
-        if(currValue =="" ){
-        	
-        	 $(this).find("input:text").addClass('error');
-        }else{
-        	 $(this).find("input:text").addClass('bgnone');
-        }
-		
-	});
-		
-	
-	*/
-	t.on('blur', 'tr td:nth-child(2),tr td:nth-child(4),tr td:nth-child(7)',function() {
+	t.on('blur', 'tr td:nth-child(2),tr td:nth-child(4),tr td:nth-child(8)',function() {
 		
        $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
 
 	});
 	
-	t.on('change', 'tr td:nth-child(4),tr td:nth-child(7)',function() {
+	t.on('change', 'tr td:nth-child(4),tr td:nth-child(5),tr td:nth-child(8)',function() {
 		
         var $tds = $(this).parent().find("td");
 
         var $onetweight = $tds.eq(3).find("input");//用料净重量
-        var $okgprice   = $tds.eq(6).find("input");//每公斤单价
-        
-		var $owastages  = $tds.eq(4).find("span");//损耗
-		var $owastagei  = $tds.eq(4).find("input:hidden");
-		var $oweights   = $tds.eq(5).find("span");//用料重量
-		var $oweighti   = $tds.eq(5).find("input:hidden");
-		var $omatprices = $tds.eq(7).find("span");//单位材料价
-		var $omatpricei = $tds.eq(7).find("input:hidden");
-		
-		var fnetweight = currencyToFloat($onetweight.val());		
-		var fkgprice = currencyToFloat($okgprice.val());		
-		var fpriceold = currencyToFloat($omatpricei.val());
-		
+
+		var $orawunit   = $tds.eq(4).find("input:hidden");//原计量单位
+		var $ochgunit   = $tds.eq(4).find("select");//换算后的计量单位$("select option:checked").text();
+		var $ounittext  = $tds.eq(4).find("select option:checked");
+		var $owastages  = $tds.eq(5).find("span");//损耗
+		var $owastagei  = $tds.eq(5).find("input:hidden");
+		var $oweights   = $tds.eq(6).find("span");//用料重量
+		var $oweighti   = $tds.eq(6).find("input:hidden");
+        var $okgprice   = $tds.eq(7).find("input:text");//单价,按照计量换算后的单价
+        var $orawprice  = $tds.eq(7).find("input:hidden");//原材料单价,按照原材料的计量单位
+		var $omatprices = $tds.eq(8).find("span");//总价
+		var $omatpricei = $tds.eq(8).find("input:hidden");
+
+		var vunitnew   = "";
+		var vrawunit   = $orawunit.val();
+		var vchgunit   = $ochgunit.val();
+		var unittext   = $ounittext.text();
+		var fnetweight = currencyToFloat($onetweight.val());
+		var frawprice  = currencyToFloat($orawprice.val());
+
+		var farwunit = '1';//初始值
+		//原材料的购买单位
+		for(var i=0;i<unitAaary.length;i++){
+			var val = unitAaary[i][0];//取得计算单位:100,1000...
+			var key = unitAaary[i][1];//取得显示单位:克,吨...
+			if(vrawunit == key){
+				farwunit = val;
+				break;
+			}
+		}
+
+		//自制品的用量单位
+		var fchgunit = '1';//初始值
+		for(var i=0;i<unitAaary.length;i++){
+			var val = unitAaary[i][0];//取得计算单位:100,1000...
+			var key = unitAaary[i][1];//取得显示单位:克,吨...
+			if(unittext == key){
+				fchgunit = val;//只有在需要换算的时候,才设置换算单位
+				break;
+			}
+		}		
+
 		var fwastage = fnetweight * 0.02;//损耗2%
 		var fweight = fnetweight + fwastage;//用料重量=净重量+损耗
-		var aa=fkgprice.length;
-		
-		var	fpricenew = (fkgprice / 1000 * fweight);//单位材料价=单价/1000*克重量		
+		var fkgprice = frawprice * farwunit / fchgunit; //换算后单价=原单价*原单位/新单位
+		var	fpricenew = fkgprice * fnetweight ;//单位材料价=新单价*重量	
+		//alert('frawprice:'+frawprice+'--farwunit:'+farwunit+'--fchgunit:'+fchgunit+'--fpricenew:'+fpricenew);	
 
 		var vwastage = floatToCurrency(fwastage);	
-		var vweight = floatToCurrency(fweight);			
+		var vweight  = floatToCurrency(fweight);		
+		var vkgprice  = float4ToCurrency(fkgprice);
 		var vpricenew = float4ToCurrency(fpricenew);
 		
 		//详情列表显示新的价格
 		$owastages.html(vwastage);					
 		$owastagei.val(vwastage);			
-		$oweights.html(vweight);		
+		$oweights.html(vweight);
 		$oweighti.val(vweight);
+		$okgprice.val(vkgprice);
 		$omatprices.html(vpricenew);	
 		$omatpricei.val(vpricenew);	
 
-		Graw = (Graw) - (fpriceold) + (fpricenew);//原材料单价总计
-		//alert(Graw+':Graw----'+'fpriceold:'+fpriceold+'---fpricenew:'+fpricenew);
-		//$('#Graw').html(Graw);
-		//临时计算该客户的销售总价
-		//首先减去旧的价格		
+		//计算自制品单价
 		costAcount();
 		
 		//判断原材料是否选择
         var $omaterial  = $tds.eq(1).find("input");//原材料
 		var materialid = $omaterial.val();
-		alert(materialid)
+
         if(materialid == "")
         	$omaterial.addClass("required");
 		
@@ -287,7 +252,6 @@ function ajax() {
 
 };//ajax()
 
-
 $(document).ready(function() {
 
 	ajax();
@@ -295,16 +259,13 @@ $(document).ready(function() {
 	autocomplete();
 	
 	//设置光标项目
-	//$("#attribute1").focus();
-	//$("#attribute2").attr('readonly', "true");
 	$("#price\\.totalprice").attr('readonly', "true");
 		
 	//设置经管费率默认值:12%
 	$("#price\\.managementcostrate").val($("#price\\.managementcostrate option:eq(2)").val());
 
 	
-	$("#goBack").click(
-		function() {
+	$("#goBack").click(function() {
 			var url = "${ctx}/business/zzmaterial";
 			location.href = url;		
 		});
@@ -326,37 +287,32 @@ $(document).ready(function() {
 		var ftime = currencyToFloat(vtime);
 		var fnum  = currencyToFloat(vnum);
 		var fhprice  = currencyToFloat(vhprice);
-		//alert('fnum:'+fnum+'--ftime:'+ftime)
 		
 		//每小时产量 = 3600/出模时间*出模数
 		var fyield = '0';
 		if(ftime != '0' && fnum != '0'){
 			fyield = (3600 / ftime * fnum).toFixed(4);			
 		}
-		var vyield = floatToCurrency(fyield);
 		
 		//工价 =每小时工价 / 每小时产量
-		Glabor = 0;
+		var labor = 0;
 		if(fyield != '0'){
-			Glabor = fhprice / fyield;
+			labor = fhprice / fyield;
 		}
-		
-		var vlabor  = float4ToCurrency(Glabor);		
+
+		var vyield = floatToCurrency(fyield);
+		var vlabor = float4ToCurrency(labor);		
 
 		$('#houryield').html(vyield);
 		$("#price\\.houryield").val(vyield);
 		$('#laborprice').html(vlabor);	
 		$("#price\\.laborprice").val(vlabor);
-		
-		var fhourpwer = currencyToFloat($("#price\\.hourpower").val());
-		var fkwprice  = currencyToFloat($("#price\\.kwprice").val());
+
+		//单位产品电价 = 每小时耗电*每度电价/每小时产量
+		acountPowerPrice();
 		
 		//计算该自制品的合计单价
 		costAcount();
-
-		//单位产品电价 = 每小时耗电*每度电价/每小时产量
-		acountPowerPrice(fhourpwer,fkwprice,fyield);
-		
 		
 	});
 	
@@ -375,9 +331,16 @@ $(document).ready(function() {
 		$('#hourpower').html(vhourpwer);
 		$('#price\\.hourpower').val(vhourpwer);
 		
-		//计算单位产品电价 = a每小时耗电*每度电价/每小时产量	
-		var fyield = currencyToFloat($('#houryield').text());
-		acountPowerPrice(fhourpwer,fkwprice,fyield);
+		//单位产品电价 = 每小时耗电*每度电价/每小时产量	
+		acountPowerPrice();
+		
+		//计算该自制品的合计单价
+		costAcount();
+		
+	});
+	
+	//经管费率
+	$("#price\\.managementcostrate").change(function() {
 		
 		//计算该自制品的合计单价
 		costAcount();
@@ -385,33 +348,62 @@ $(document).ready(function() {
 	});
 
 	foucsInit();
+	
+	$(".DTTT_container").css('margin-top',' -24px');
 });
 
 function costAcount(){
 
+	var frate = Number( $('#price\\.managementcostrate').val() );
+	var labor = currencyToFloat($('#laborprice').text());
+	var pwer  = currencyToFloat($('#powerprice').text());
+	
+	//原材料合计
+	var raw = productCostSum();
+	
 	//计算该自制品的合计单价=合计*经管费率
-	var frate = $('#price\\.managementcostrate').val();
-	var ftotalPrice = (Glabor + Gpwer + Graw) * (1 + Number(frate) / 100);
-	var vtotalPrice = floatToCurrency(ftotalPrice);
+	var ftotalPrice = (labor + pwer + raw) * (1 + frate / 100);
+	var vtotalPrice = float4ToCurrency(ftotalPrice);
 	
 	$('#price\\.totalprice').val(vtotalPrice);
-	//alert('Glabor:'+Glabor+"Gpwer:"+Gpwer+"Graw:"+Graw)
 	
+	//$('#raw').text(raw);//测试用	
+	//alert('labor:'+labor+"pwer:"+pwer+"raw:"+raw+"frate:"+frate)	
 }
 
-function acountPowerPrice(fpwer,fprice,fyield){
+//列合计:
+function productCostSum(){
 
+	var sum = 0;
+	$('#example tbody tr').each (function (){
+		
+		var vtotal = $(this).find("td").eq(8).find("span").text();
+		var ftotal = currencyToFloat(vtotal);
+		
+		sum = currencyToFloat(sum) + ftotal;
+		
+	})
+	return sum;
+
+}
+
+function acountPowerPrice(){
+
+	var fhourpwer = currencyToFloat($("#price\\.hourpower").val());
+	var fkwprice  = currencyToFloat($("#price\\.kwprice").val());
+	var fyield    = currencyToFloat($('#houryield').text());
+	
 	//单位产品电价 = 每小时耗电*每度电价/每小时产量
-	if(fyield == 0){
-		Gpwer = 0;		
-	}else{
-		Gpwer = fpwer * fprice / fyield;			
+	var pwer = '0';
+	if(fyield != '0'){
+		pwer = fhourpwer * fkwprice / fyield;			
 	}
-	//alert('fpwer:'+fpwer+'---fprice:'+fprice+'---fyield:'+fyield)
-	var vpowerprice = float4ToCurrency(Gpwer);
+	var vpwer = float4ToCurrency(pwer);
 
-	$('#powerprice').html(vpowerprice);
-	$('#price\\.powerprice').val(vpowerprice);
+	$('#powerprice').html(vpwer);
+	$('#price\\.powerprice').val(vpwer);
+
+	//alert('fpwer:'+fhourpwer+'---fprice:'+fkwprice+'---fyield:'+fyield)
 	
 }//计算单位产品电价
 
@@ -453,57 +445,62 @@ function doSubmitRefresh(){
 </script>
 </head>
 
-<body class="panel-body">
+<body>
 <div id="container">
 <div id="main">
 	
-<form:form modelAttribute="ZZMaterial" method="POST" style='padding: 0px; margin: 0px 10px;' 
+<form:form modelAttribute="ZZMaterial" method="POST" 
 	id="ZZMaterial" name="ZZMaterial"   autocomplete="off">
 		
 	<form:hidden path="price.recordid" value=""/>
 	
-<fieldset style="margin-top: -16px;">
-	<legend style='margin: 20px 10px -10px 0px;'>基本信息</legend>
+<fieldset>
+	<legend>基本信息</legend>
 
-	<table class="form" width="100%">		
+	<table class="form">
 		<tr>
-			<td class="label" style="width: 100px;">产品编码：</td>
-			<td style="width: 120px;">
-				<form:input path="price.materialid" class="required"/></td>
+			<td class="label" style="width: 120px;">产品编号：</td>
+			<td style="width: 150px;">
+				<form:input path="price.materialid" class="required" value="${material.materialId }"/></td>
 								
-			<td class="label" style="width: 100px;"><label>产品名称：</label></td>
-			<td colspan="3"><span id="materialname"></span></td>
-			
+			<td class="label" style="width: 120px;"><label>产品名称：</label></td>
+			<td ><span id="materialname">${material.materialName }</span></td>
+			<td class="label" style="width: 120px;"><label>计量单位：</label></td>
+			<td style="width: 150px;">&nbsp;<span id="unit">${material.dicName }</span></td>	
 		<tr>
-			<td class="label"><label>计量单位：</label></td>
-			<td style="width: 100px;">&nbsp;<span id="unit"></span></td>											
+			<td class="label"><label>自制类别：</label></td>
+			<td>
+				<form:select path="price.type" style="width: 100px;">							
+					<form:options items="${ZZMaterial.typeList}" 
+						itemValue="key" itemLabel="value" /></form:select></td>	
+											
 			<td class="label"><label>管理费率：</label></td>
 			<td>
-				<form:select path="price.managementcostrate" style="width: 50px;">							
+				<form:select path="price.managementcostrate" style="width: 100px;">							
 					<form:options items="${ZZMaterial.manageRateList}" 
 						itemValue="key" itemLabel="value" /></form:select></td>	
 			<td class="label" >自制品单价（合计）：</td>
-			<td><form:input path="price.totalprice" class="read-only cash short" readonly="readonly" />
-			<span id="Graw"></span></td>					
+			<td><form:input path="price.totalprice" class="read-only cash short" readonly="readonly" /></td>					
 		</tr>
 	</table>
 	</fieldset>
 	<div style="clear: both"></div>		
-<fieldset style="margin-top: -14px;">
-	<legend style="margin: 10px 0px -10px 0px"> 原材料</legend>
-
-	<table id="example" class="display" width="100%">
+	<fieldset style="margin-top: -14px;">
+		<legend style="margin: 10px 0px -10px 0px"> 原材料</legend>
+		<div class="list">
+			<table id="example" class="display">
 	
 		<thead>
 		<tr>
-			<th style="width:30px">No</th>
+			<th style="width:10px">No</th>
 			<th style="width:80px">原材料编码</th>
 			<th>原材料名称</th>
-			<th style="width:70px">用料净重量</th>
+			<th style="width:70px">用量</th>
+			<th style="width:50px">计量单位</th>
 			<th style="width:60px">损耗2%</th>
-			<th style="width:60px">用料重量</th>
-			<th style="width:60px">单价/公斤</th>
-			<th style="width:80px">材料价/克</th>
+			<th style="width:60px">用量</th>
+			<th style="width:60px">单价</th>
+			<th style="width:80px">总价</th>
 		</tr>
 		</thead>		
 		<tbody>
@@ -513,23 +510,30 @@ function doSubmitRefresh(){
 					<td><input type="text" name="attributeList1" class="attributeList1">
 						<form:hidden path="rawMaterials[${i}].rawmaterialid" /></td>								
 					<td><span></span></td>
-					<td><form:input path="rawMaterials[${i}].netweight" class="cash mini" /></td>							
+					<td><form:input path="rawMaterials[${i}].netweight" class="cash mini" /></td>
 					<td><span></span>
-						<form:hidden path="rawMaterials[${i}].wastage"   /></td>
+						<select name="rawMaterials[${i}].unit" id="rawMaterials${i}.unit"style="display:none;width:60px"></select>
+						<input type="hidden"  id="unit${i}"/></td>
 					<td><span></span>
-						<form:hidden path="rawMaterials[${i}].weight"  /></td>
-					<td><form:input path="rawMaterials[${i}].kgprice" class="cash mini"  /></td>
+						<form:hidden path="rawMaterials[${i}].wastage" /></td>
+					<td><span></span>
+						<form:hidden path="rawMaterials[${i}].weight" /></td>
+					<td><span></span>
+						<form:input path="rawMaterials[${i}].kgprice" class="cash mini" />
+						<input type="hidden"  name="price${i}"/></td>
 					<td><span></span>
 						<form:hidden path="rawMaterials[${i}].materialprice"  /></td>				
 				</tr>
+				
 			</c:forEach>
 			
 		</tbody>
 	</table>
+	</div>
 	</fieldset>
 	<fieldset style="margin-top: -15px;">
 	<legend style="margin: 10px 0px 0px 0px"> 人工成本</legend>
-	<table class="form" width="100%" style="text-align: center;margin-top: -5px;">
+	<table class="form" style="text-align: center;margin-top: -5px;">
 	
 		<thead>
 		<tr>
@@ -545,13 +549,13 @@ function doSubmitRefresh(){
 				<td><form:input path="price.cavitiesnumber" class="cash short labor" /></td>							
 				<td><form:input path="price.time" class="cash short labor"  /></td>	
 				<td><span id="houryield"></span><form:hidden path="price.houryield" /></td>				
-				<td><form:input path="price.hourprice" class="cash short labor"  /></td>
+				<td><form:input path="price.hourprice" class="cash short labor"  value="12"/></td>
 				<td><span id="laborprice"></span><form:hidden path="price.laborprice" /></td>				
 			</tr>			
 		</tbody>
 	</table>
 	<legend style="margin: 10px 0px 0px 0px"> 电耗</legend>
-	<table class="form" width="100%" style="text-align: center;">
+	<table class="form" style="text-align: center;">
 	
 		<thead>
 		<tr>
@@ -617,10 +621,10 @@ function autocomplete(){
 				},
 				error : function(XMLHttpRequest,
 						textStatus, errorThrown) {
-					alert(XMLHttpRequest.status);
-					alert(XMLHttpRequest.readyState);
-					alert(textStatus);
-					alert(errorThrown);
+					//alert(XMLHttpRequest.status);
+					//alert(XMLHttpRequest.readyState);
+					//alert(textStatus);
+					//alert(errorThrown);
 					alert("系统异常，请再试或和系统管理员联系。");
 				}
 			});
@@ -647,33 +651,36 @@ function autocomplete(){
 			$
 			.ajax({
 				type : "POST",
-				url : "${ctx}/business/order?methodtype=getMaterialList",
+				url : "${ctx}/business/bom?methodtype=getMaterialPriceList",
 				dataType : "json",
 				data : {
 					key : request.term
 				},
 				success : function(data) {
 					//alert(777);
-					response($
-						.map(
-							data.data,
-							function(item) {
+					response($.map(data.data,function(item) {
 
-								return {
-									label : item.viewList,
-									value : item.materialId,
-									id : item.materialId,
-									name : item.materialName,
-									materialId : item.materialId
-								}
-							}));
+						return {
+							label : item.viewList,
+							value : item.materialId,
+							   id : item.materialId,
+							 name : item.materialName,
+							materialId : item.materialId,
+							      unit : item.unit,
+							  unitName : item.dicName,
+							supplierId : item.supplierId,
+							  minPrice : item.minPrice,
+							 lastPrice : item.lastPrice,
+							     price : item.price
+						}
+					}));
 				},
 				error : function(XMLHttpRequest,
 						textStatus, errorThrown) {
-					alert(XMLHttpRequest.status);
-					alert(XMLHttpRequest.readyState);
-					alert(textStatus);
-					alert(errorThrown);
+					//alert(XMLHttpRequest.status);
+					//alert(XMLHttpRequest.readyState);
+					//alert(textStatus);
+					//alert(errorThrown);
 					alert("系统异常，请再试或和系统管理员联系。");
 				}
 			});
@@ -681,34 +688,60 @@ function autocomplete(){
 
 		select : function(event, ui) {
 			
-			var rowIndex = $(this).parent().parent().parent()
-					.find("tr").index(
-							$(this).parent().parent()[0]);
-
-			//alert(rowIndex);
-
-			var t = $('#example').DataTable();
+			var $td = $(this).parent().parent().find('td');	
+			var $oMatName   = $td.eq(2).find("span");
+			var $oUnit      = $td.eq(4).find("span");
+			var $oSelect    = $td.eq(4).find("select");
+			var $oUnithid   = $td.eq(4).find("input:hidden");
+			var $oPricet    = $td.eq(7).find("input:text");
+			var $oPriceh    = $td.eq(7).find("input:hidden");
+			var $oTotals    = $td.eq(8).find("span");
 			
-			//产品名称			
-			if(ui.item.name.length > 20){	
-				var shortName =  '<div title="' +
-				ui.item.name + '">' + 
-				ui.item.name.substr(0,20)+ '...</div>';
-			}else{	
-				var shortName = ui.item.name;
+			var unit     = ui.item.unit;
+			var unitName = ui.item.unitName;
+			//alert('unit:'+unit)
+			switch (unitName){
+			case '克':
+			case '千克':
+			case '吨':
+				$oUnit.html('');//页面不显示
+				$oUnithid.val(unitName);//临时存储
+				$oSelect.html(optionWeight);
+				$oSelect.val(unit);//显示当前的计量单位
+				$oSelect.css("display", "block");				
+				break;
+			case '米':
+			case '厘米':
+				$oUnit.html('');//页面不显示
+				$oUnithid.val(unitName);//临时存储
+				$oSelect.html(optionSize);
+				$oSelect.val(unit);//显示当前的计量单位
+				$oSelect.css("display", "block"); 
+				break;
+			default:
+				$oUnit.html(unitName);//显示到页面
+				$oUnithid.val(unitName);//
+				$oSelect.html('');
+				$oSelect.val('');
+				$oSelect.css("display", "none");//下拉框不显示
 			}
 			
-			t.cell(rowIndex, 2).data(shortName);
-
+			$oMatName.html(jQuery.fixedWidth(ui.item.name,20));
+			$oPricet.val(ui.item.price);
+			$oPriceh.val(ui.item.price);
+			$oTotals .html('');//清空总价
 			//产品编号
 			$(this).parent().find("input:hidden").val(ui.item.materialId);
 			
-		},
-
-		
+		},		
 	});
 }
 
+</script>
+<script type="text/javascript">
+	window.onunload = function(){ 
+	parent.supplierPriceView();//刷新供应商单价信息 
+	} 
 </script>
 </body>
 </html>

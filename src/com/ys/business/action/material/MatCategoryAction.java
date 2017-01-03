@@ -1,5 +1,7 @@
 package com.ys.business.action.material;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -106,7 +108,8 @@ public class MatCategoryAction extends BaseAction {
 		String parentId = request.getParameter("categoryId");
 		String parentName = request.getParameter("parentName")+"";
 		try {
-			parentName = new String(parentName.getBytes("ISO8859-1"), "UTF-8");
+			//parentName = new String(parentName.getBytes("ISO8859-1"), "UTF-8");
+			parentName = URLDecoder.decode(parentName,"utf-8");
 			if (operType.equals("update")) {
 				dataModel = matClassService.getDetail(request);
 				dataModel.setParentCategoryId(dataModel.getunitData().getParentid());

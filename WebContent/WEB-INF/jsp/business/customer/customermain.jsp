@@ -62,16 +62,18 @@
 							{"data": "country","className" : 'td-center'},
 							{"data": "paymentTerm","className" : 'td-right'},
 							{"data": "currency","className" : 'td-center'},
-							{"data": "shippingCondition","className" : 'td-center'},
-							{"data": "shippiingPort","className" : 'td-center'},							
-							{"data": "destinationPort","className" : 'td-center'},
+							{"data": "shippingCondition","className" : 'td-center'},						
+							{"data": null},
 							{"data": null,"className" : 'td-center'}
 				        ],
 				"columnDefs":[
 					    		{"targets":0,"render":function(data, type, row){
 									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 			                    }},
-					    		{"targets":10,"render":function(data, type, row){
+					    		{"targets":8,"render":function(data, type, row){
+					    			return row["shippiingPort"] + "/"+row["destinationPort"] ;
+			                    }},
+					    		{"targets":9,"render":function(data, type, row){
 					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>"
 			                    }}
 			           
@@ -209,32 +211,29 @@
 		
 			<div class="list">
 
-				<div id="TCustomer_wrapper" class="dataTables_wrapper">
-					<div id="DTTT_container" align="right" style="height:40px">
-						<a aria-controls="TCustomer" tabindex="0" id="ToolTables_TCustomer_0" class="DTTT_button DTTT_button_text" onClick="doCreate();"><span>新建</span></a>
-						<a aria-controls="TCustomer" tabindex="0" id="ToolTables_TCustomer_1" class="DTTT_button DTTT_button_text" onClick="doDelete();"><span>删除</span></a>
-					</div>
-					<div id="clear"></div>
-					<table aria-describedby="TCustomer_info" style="width: 100%;" id="TCustomer" class="display dataTable" cellspacing="0">
-						<thead>
-						
-							<tr class="selected">
-								<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
-								<th style="width: 80px;" aria-label="编号:" class="dt-middle ">编号</th>
-								<th style="width: 50px;" aria-label="简称:" class="dt-middle ">简称</th>
-								<th class="dt-middle ">名称</th>
-								<th style="width: 60px;" aria-label="所在国家" class="dt-middle ">国家</th>
-								<th style="width: 30px;" aria-label="付款条件" class="dt-middle ">付款条件</th>
-								<th style="width: 30px;" aria-label="计价货币" class="dt-middle ">计价货币</th>
-								<th style="width: 30px;" aria-label="出运条件" class="dt-middle ">出运条件</th>
-								<th style="width: 60px;" aria-label="出运港" class="dt-middle ">出运港</th>
-								<th style="width: 100px;" aria-label="目的港" class="dt-middle ">目的港</th>
-								<th style="width: 30px;" aria-label="操作" class="dt-middle ">操作</th>
-							</tr>
-						</thead>
-
-					</table>
+				<div id="DTTT_container" align="right" style="height:40px">
+					<a class="DTTT_button" onclick="doCreate();"><span>新建</span></a>
+					<a class="DTTT_button" onclick="doDelete();"><span>删除</span></a>
 				</div>
+				<div id="clear"></div>
+				<table id="TCustomer" class="display dataTable" cellspacing="0">
+					<thead>
+					
+						<tr class="selected">
+							<th style="width: 10px;" class="dt-middle ">No</th>
+							<th style="width: 80px;" class="dt-middle ">客户编号</th>
+							<th style="width: 50px;" class="dt-middle ">简称</th>
+							<th class="dt-middle ">客户名称</th>
+							<th style="width: 80px;" class="dt-middle ">所在国家</th>
+							<th style="width: 30px;" class="dt-middle ">付款条件</th>
+							<th style="width: 30px;" class="dt-middle ">计价货币</th>
+							<th style="width: 30px;" class="dt-middle ">出运条件</th>
+							<th style="width: 140px;" class="dt-middle ">出运港/目的港</th>
+							<th style="width: 30px;"  class="dt-middle ">操作</th>
+						</tr>
+					</thead>
+
+				</table>
 			</div>
 		</div>
 	</div>

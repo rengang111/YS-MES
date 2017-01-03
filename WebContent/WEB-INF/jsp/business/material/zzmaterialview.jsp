@@ -19,25 +19,27 @@
 <div id="container">
 <div id="main">
 	
-<form:form modelAttribute="ZZMaterial" method="POST" style='padding: 0px; margin: 0px 10px;' 
+<form:form modelAttribute="ZZMaterial" method="POST" 
 	id="ZZMaterial" name="ZZMaterial"   autocomplete="off">
 		
 	<form:hidden path="price.materialid" value="${price.materialId}"/>
 	
-<fieldset style="margin-top: -16px;">
-	<legend style='margin: 20px 10px -10px 0px;'>基本信息</legend>
+<fieldset>
+	<legend>基本信息</legend>
 
-	<table class="form" width="100%">		
+	<table class="form">		
 		<tr>
-			<td class="label" style="width: 100px;">产品编码：</td>
-			<td style="width: 120px;">${price.materialId }</td>
+			<td class="label" style="width: 120px;">产品编码：</td>
+			<td style="width: 150px;">${price.materialId }</td>
 								
-			<td class="label" style="width: 100px;"><label>产品名称：</label></td>
-			<td colspan="3">${price.materialId }</td>
+			<td class="label" style="width: 120px;"><label>产品名称：</label></td>
+			<td>${price.materialName }</td>
+			<td class="label" style="width: 120px;"><label>计量单位：</label></td>
+			<td style="width: 150px;">${price.unit }</td>	
 			
 		<tr>
-			<td class="label"><label>计量单位：</label></td>
-			<td style="width: 100px;">${price.unit }</td>											
+			<td class="label"><label>自制类别：</label></td>
+			<td>${price.typeName }</td>											
 			<td class="label"><label>管理费率：</label></td>
 			<td>${price.managementCostRate }</td>	
 			<td class="label" >自制品单价（合计）：</td>
@@ -47,18 +49,19 @@
 	</fieldset>
 <fieldset>
 <div class="list">
-	<table id="example" class="display" width="100%">
+	<table id="example" class="display">
 	
 		<thead>
 		<tr>
 			<th style="width:30px">No</th>
 			<th style="width:80px">原材料编码</th>
 			<th>原材料名称</th>
-			<th style="width:70px">用料净重量</th>
+			<th style="width:70px">用量</th>
+			<th style="width:30px">单位</th>
 			<th style="width:60px">损耗2%</th>
-			<th style="width:60px">用料重量</th>
-			<th style="width:60px">单价/公斤</th>
-			<th style="width:80px">材料价/克 </th>
+			<th style="width:60px">用量</th>
+			<th style="width:60px">单价</th>
+			<th style="width:80px">总价</th>
 		</tr>
 		</thead>		
 		<tbody>
@@ -66,8 +69,9 @@
 				<tr>
 					<td>${status.index }</td>
 					<td>${raw.rawMaterialId }</td>								
-					<td>${raw.materialName }</td>
-					<td>${raw.netWeight }</td>							
+					<td>${raw.rawMaterialName }</td>
+					<td>${raw.netWeight }</td>	
+					<td>${raw.viewUnit }</td>						
 					<td>${raw.wastage }</td>
 					<td>${raw.weight }</td>
 					<td>${raw.kgPrice }</td>
@@ -81,7 +85,7 @@
 	</fieldset>
 	<fieldset style="margin-top: -15px;">
 	<legend style="margin: 10px 0px 0px 0px"> 人工成本</legend>
-	<table class="form" width="100%" style="text-align: center;margin-top: -5px;">
+	<table class="form" style="text-align: center;margin-top: -5px;">
 	
 		<thead>
 		<tr>
@@ -103,7 +107,7 @@
 		</tbody>
 	</table>
 	<legend style="margin: 10px 0px 0px 0px"> 电耗</legend>
-	<table class="form" width="100%" style="text-align: center;">
+	<table class="form" style="text-align: center;">
 	
 		<thead>
 		<tr>
@@ -175,7 +179,8 @@ $(document).ready(function() {
 		        	{"className":"dt-body-center"
 				}, {
 				}, {								
-				}, {				
+				}, {"className":"dt-body-right"
+				}, {"className":"dt-body-center"					
 				}, {"className":"dt-body-right"				
 				}, {"className":"dt-body-right"				
 				}, {"className":"dt-body-right"				

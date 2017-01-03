@@ -1,15 +1,20 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="security"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>基础BOM-核价单</title>
+<title>新建基础BOM</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
 	var counter = 0;
-	//var productCost = currencyToFloat('${bomPlan.productCost}');
-	//var laborCost  = currencyToFloat('${bomPlan.laborCost}');
 	
 	//Form序列化后转为AJAX可提交的JSON格式。
 	$.fn.serializeObject = function() {
@@ -79,23 +84,23 @@
 			var t=$('#example').DataTable();
 			
 			rowIndex = t.row('.selected').index();
-
-			if(typeof rowIndex == "undefined"){				
-				$().toastmessage('showWarningToast', "请选择要删除的数据。");	
+			
+			var str = true;
+			$("input[name='numCheck']").each(function(){
+				if ($(this).prop('checked')) {
+					var n = $(this).parents("tr").index();  // 获取checkbox所在行的顺序
+					$('#example tbody').find("tr:eq("+n+")").remove();
+					str = false;
+				}
+			});
+			
+			if(str){
+				$().toastmessage('showWarningToast', "请选择要删除的数据。");
 			}else{
-				
-				var $tds = $('#example tbody tr').eq(rowIndex).find("td");
-				
-				var materialId = $tds.eq(1).find("input:text").val();
-				var amount = $tds.eq(6).find("input").val();
-				
-				t.row('.selected').remove().draw();
-
-				//随时计算该客户的销售总价
-				//alert('amount:'+amount)
-				costAcount();
 				$().toastmessage('showNoticeToast', "删除成功。");	
-			}						
+				costAcount();				
+			}
+				
 		}
 	});
 	
@@ -124,7 +129,7 @@
 				},
 				{
 					"sExtends" : "reset",
-					"sButtonText" : "清空一行"
+					"sButtonText" : "删除行"
 				}],
 			},
 			
@@ -208,7 +213,7 @@
 		});
 			
 		t.on('click', 'tr', function() {
-			
+			/*
 			var rowIndex = $(this).context._DT_RowIndex; //行号			
 			//alert(rowIndex);
 
@@ -219,7 +224,7 @@
 	            t.$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	        }
-			
+			*/
 		});
 		
 		t.on('order.dt search.dt draw.dt', function() {
@@ -227,22 +232,15 @@
 				search : 'applied',
 				order : 'applied'
 			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
+				var num   = i + 1;
+				var checkBox = "<input type=checkbox name='numCheck' id='numCheck' value='" + num + "' />";
+				cell.innerHTML = num + checkBox;
 			});
 		}).draw();
 
 	};//ajax()
 
 	$(document).ready(function() {
-	
-		$("#bomPlan\\.plandate").val(shortToday());
-		$("#bomPlan\\.plandate").datepicker({
-			dateFormat:"yy-mm-dd",
-			changeYear: true,
-			changeMonth: true,
-			selectOtherMonths:true,
-			showOtherMonths:true,
-		});	
 		
 		$("#bomPlan\\.managementcostrate").val($("#bomPlan\\.managementcostrate option:eq(2)").val());
 		
@@ -251,7 +249,6 @@
 		autocomplete();
 		
 		//$('#example').DataTable().columns.adjust().draw();
-		
 		
 		$("#goBack").click(
 				function() {
@@ -317,16 +314,6 @@
 		//经管费=经管费率x产品成本
 		//核算成本=产品成本+经管费
 			
-		//判断是否是人工成本
-		//var costType;
-		//if(materialId != '')
-		//	costType = materialId.substring(0,1);
-		
-		//if(costType == 'H')
-		//	laborCost = laborCost - totalOld +  totalNew;		
-		
-		//productCost = productCost - totalOld +  totalNew;
-		
 		var laborCost   = laborCostSum();
 		var productCost = productCostSum();
 		
@@ -355,11 +342,9 @@
 			var vtotal = $(this).find("td").eq(6).find("span").text();
 			var ftotal = currencyToFloat(vtotal);
 			
-			sum = currencyToFloat(sum) + ftotal;
-			
+			sum = currencyToFloat(sum) + ftotal;			
 		})
 		return sum;
-
 	}
 	
 	//列合计:人工成本
@@ -371,12 +356,9 @@
 			var vtotal = $(this).find("td").eq(6).find("input:last-child").val();
 			var ftotal = currencyToFloat(vtotal);
 			
-			sum = currencyToFloat(sum) + ftotal;
-			
-		})
-		
+			sum = currencyToFloat(sum) + ftotal;			
+		})		
 		return sum;
-
 	}
 	
 </script>
@@ -393,34 +375,32 @@
 		<input type="hidden" id="tmpMaterialId" />	
 		
 		<fieldset>
-			<legend>新建BOM核价单</legend>
+			<legend>基础BOM</legend>
 			<table class="form" id="table_form" style="margin-top: -4px;">
 				<tr>
-					<td class="label" width="100px"><label>耀升名称：</label></td>			
-					<td width="250px">${order.YSId }
-						<form:hidden path="bomPlan.ysid"  value="${order.YSId }"/></td>
-					<td class="label" width="100px"><label>BOM编号：</label></td>					
+					<td class="label" width="100px">BOM编号：</td>					
 					<td width="150px">${bomForm.bomPlan.bomid}
-						<form:hidden path="bomPlan.bomid" value="${bomForm.bomPlan.bomid}" />
-						<form:hidden path="bomPlan.sourcebomid" value="${selectedBomId }" /></td>
-
-					<td class="label" width="100px"><label>方案日期：</label></td>
-					<td>
-						<form:input path="bomPlan.plandate" class="short" /></td>
+						<form:hidden path="bomPlan.bomid"/></td>
+						
+					<td class="label" width="100px">产品编号：</td>				
+					<td width="150px">${product.materialId}
+						<form:hidden path="bomPlan.materialid" /></td>					
+					
+					<td class="label" width="100px">产品名称：</td>
+					<td>${product.materialName }</td>
 				</tr>
 				<tr>
-					<td class="label"><label>产品编号：</label></td>				
-					<td>${order.productId }
-						<form:hidden path="bomPlan.materialid"  value="${order.productId }"/>
-						<form:hidden path="bomPlan.subid"  value="${bomForm.bomPlan.subid }"/></td>
-
-					<td class="label"><label>产品名称：</label></td>
-					<td>${order.productName }</td>
-
-					<td class="label"><label>订单数量：</label></td>
-					<td>&nbsp;${order.quantity }
-						<form:hidden path="bomPlan.orderquantity"  value="${order.quantity }"/></td>
-				</tr>								
+					<td class="label">机器型号：</td>
+					<td>${product.productModel }</td>
+					
+					<td class="label">客户简称：</td>
+					<td>${product.shortName }</td>
+					
+					<td class="label">客户名称：</td>
+					<td>${product.customerName }</td>						
+					
+				</tr>
+												
 			</table>
 			
 			<table class="form" id="table_form2" style="margin-top: 6px;">
@@ -431,7 +411,7 @@
 					<td class="td-center" width="150px"><label>经管费率<br>C</label></td>
 					<td class="td-center" ><label>经管费<br>D=C＊E</label></td>	
 					<td class="td-center"><label>产品成本<br>E=A＋B</label></td>
-					<td class="td-center"><label>核算成本<br>F=E＋D</label></td>
+					<td class="td-center"><label>核算成本<br>F=E*1.1*1.02</label></td>
 				</tr>	
 				<tr>			
 					<td class="td-center">
@@ -452,30 +432,29 @@
 			</table>
 	</fieldset>
 		
-	<div  style="margin: 0px 0px 0px 0px; float:left; width:70%;padding-left: 15px;" >
-		查找历史BOM：<input type="text" id="searchBom" class="middle" style="height: 25px;padding-left: 10px;" value="${selectedBomId }"/>
-		<span style="color: blue">（查询范围:产品编号,名称,BOM编号等）</span>
+	<div style="margin: 0px 0px 0px 0px; float:left; width:70%;padding-left: 15px;" >
+		查找机器型号：<input type="text" id="productModel" class="short" style="height: 25px;padding-left: 10px;" value="${selectedBomId }"/>
+		<button type="button" id="searchProductModel" class="DTTT_button">查询</button>
 	</div>
 	<div style="margin: -3px 10px 0px 5px;float:right; padding:0px;">	
 			<button type="button" id="update" class="DTTT_button">保存</button>
 			<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</div>
-
-	<dl class="collapse">
-		<dt>BOM详情</dt>
-		<dd>		
+	<fieldset>
+		<div class="list" style="margin-top: -4px;">
+		
 		<table id="example" class="display">
 			<thead>				
 			<tr>
 				<th width="1px">No</th>
-				<th class="dt-center" width="80px">ERP编号</th>
-				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" style="width:50px;font-size:11px">供应商</th>
+				<th class="dt-center" width="80px">物料编码</th>
+				<th class="dt-center" >物料名称</th>
+				<th class="dt-center" style="width:50px;font-size:11px">供应商编号</th>
 				<th class="dt-center" width="50px">用量</th>
 				<th class="dt-center" width="50px">本次单价</th>
 				<th class="dt-center" width="80px">总价</th>
 				<th class="dt-center" width="50px">当前价格</th>
-				<th class="dt-center" style="width:50px;font-size:9px">上次BOM<br/>价格</th>
+				<th class="dt-center" style="width:50px;font-size:9px">上次订单<br/>价格</th>
 				<th class="dt-center" width="50px">历史最低</th>
 			</tr>
 			</thead>
@@ -564,8 +543,8 @@
 		</c:if>
 		</tbody>
 	</table>
-	</dd>
-	</dl>
+	</div>
+	</fieldset>
 		
 </form:form>
 
@@ -575,9 +554,106 @@
 
 <script type="text/javascript">
 
+$("#attribute1").autocomplete({
+
+	source : function(request, response) {
+		//alert(888);
+		$.ajax({
+			type : "POST",
+			url : "${ctx}/business/order?methodtype=customerSearch",
+			dataType : "json",
+			data : {
+				key : request.term
+			},
+			success : function(data) {
+				//alert(777);
+				response($.map(
+					data.data,
+					function(item) {
+						//alert(item.viewList)
+						return {
+							label : item.viewList,
+							value : item.customerId,
+							id    : item.customerId,
+							shortName    : item.shortName,
+							fullName     : item.customerName,
+							paymentTerm  : item.paymentTerm,
+							shippingCase : item.shippingCondition,
+							loadingPort  : item.shippiingPort,
+							deliveryPort : item.destinationPort,
+							currency     : item.currency,
+							
+						}
+					}));
+			},
+			error : function(XMLHttpRequest,
+					textStatus, errorThrown) {
+				alert(XMLHttpRequest.status);
+				alert(XMLHttpRequest.readyState);
+				alert(textStatus);
+				alert(errorThrown);
+				alert("系统异常，请再试或和系统管理员联系。");
+			}
+		});
+	},
+	
+	select : function(event, ui) {//选择物料分类后,自动添加流水号IPid
+		$("#attribute1").val(ui.item.id);	
+		$("#order\\.customerid").val(ui.item.id);
+		$("#attribute2").html(ui.item.shortName);
+		$("#attribute3").html(ui.item.fullName);
+		$("#paymentterm").html(ui.item.paymentTerm);
+		$("#shippingcase").html(ui.item.shippingCase);
+		$("#loadingport").html(ui.item.loadingPort);
+		$("#deliveryport").html(ui.item.deliveryPort);
+		$("#currency").html(ui.item.currency);
+		
+		var shortName = ui.item.shortName;
+		//var parentId = shortYear + shortName;
+		/*
+		if (shortName != "") {//判断所选的编号
+			$
+			.ajax({
+				type : "post",
+				url : "${ctx}/business/order?methodtype=customerOrderMAXId",
+				async : false,
+				data : {
+					parentId : parentId,
+				},
+				dataType : "json",
+				success : function(data) {
+
+					var retValue = data['retValue'];
+
+					if (retValue === "failure") {
+						$().toastmessage('showWarningToast',"请联系系统管理员。");
+					} else {
+
+						$("#order\\.parentid").val(parentId);
+						$("#order\\.subid").val(data.codeFormat);	
+						$("#order\\.piid").val(shortYear + shortName + data.codeFormat);
+						//设置光标项目
+						$("#order\\.orderid").focus();
+					}
+				},
+				error : function(
+						XMLHttpRequest,
+						textStatus,
+						errorThrown) {
+					alert("发生系统异常，请再试或者联系系统管理员."); 	
+				}
+			});
+		} else {}	*/
+	},//select		
+	
+	
+	minLength : 0,
+	autoFocus : false,
+});
+
 function autocomplete(){
-	//BOM方案查询
-	$("#searchBom").autocomplete({
+	//通过型号查询物料
+	$("#searchProductModel").autocomplete({
 		minLength : 1,
 		autoFocus : false,
 		source : function(request, response) {
@@ -585,7 +661,7 @@ function autocomplete(){
 			$
 			.ajax({
 				type : "POST",
-				url : "${ctx}/business/bom?methodtype=searchBom",
+				url : "${ctx}/business/material?methodtype=search",
 				dataType : "json",
 				data : {
 					key : request.term
@@ -618,9 +694,9 @@ function autocomplete(){
 
 		select : function(event, ui) {
 			//所选择的BOM编号里面含有产品编号,所以要锁定原来的产品
-			var orderYSId = '${order.YSId }';
-			var url = '${ctx}/business/bom?methodtype=changeBomAdd&bomId='+ui.item.id+'&YSId='+ui.item.YSId+'&orderYSId='+orderYSId;
-			location.href = url;
+			//var orderYSId = '${order.YSId }';
+			//var url = '${ctx}/business/bom?methodtype=changeBomAdd&bomId='+ui.item.id+'&YSId='+ui.item.YSId+'&orderYSId='+orderYSId;
+			//location.href = url;
 		},
 
 		
@@ -822,28 +898,4 @@ function autocomplete(){
 
 </script>
 	
-<script type="text/javascript">
-$(function(){
-	var t = [];
-	var dt = $("dl.collapse dt");
-	var dd = $("dl.collapse dd");
-	
-	dt.each(function(i){
-		t[i] = false;		//设置折叠初始状态
-		$(dt[i]).click((function(i,dd){
-			
-			return function(){		//返回一个闭包函数,闭包能够存储传递进来的动态参数
-				
-				if(t[i]){					
-					$(dd).show();
-					t[i] = false;
-				}else{
-					$(dd).hide();
-					t[i] = true;
-				}					
-			}
-		})(i,dd[i]))	//向当前执行函数中传递参数
-	})
-})
-</script>
 </html>

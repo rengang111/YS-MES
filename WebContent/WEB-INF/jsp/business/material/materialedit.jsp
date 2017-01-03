@@ -164,7 +164,7 @@ $.fn.serializeObject = function() {
       });
   }
 
-var strShareMode = "<input type='text' class='mini' maxlength='4' name='sharemodel";	
+var strShareMode = "<input type='text' class='mini' maxlength='5' name='sharemodel";	
  
  function addTd(){
 
@@ -232,7 +232,7 @@ function autoNextSelect(){
                     });
                 }
             } else {
-                if ($(this).val().length > 3) {
+                if ($(this).val().length > 4) {
                     $(this).next().focus();
                 }
             }
@@ -346,9 +346,9 @@ $(document).ready(function() {
 
 	//设置光标项目
 	//$("#attribute1").focus();
-	$("#attribute1").attr('readonly', "true");
-	$("#attribute2").attr('readonly', "true");
-	$("#material\\.materialid").attr('readonly', "true");
+	//$("#attribute1").attr('readonly', "true");
+	//$("#attribute2").attr('readonly', "true");
+	//$("#material\\.materialid").attr('readonly', "true");
 
 	$("#attribute1").autocomplete({		
 		source : function(request, response) {

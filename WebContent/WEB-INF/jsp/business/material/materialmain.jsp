@@ -15,19 +15,17 @@
 <title>物料(成品)管理一览页面</title>
 <script type="text/javascript">
 
-	var layerHeight = '500';
-	var layerWidth = '700';
-	
-
-	function ajax(scrollHeight) {
+	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnDestroy();
 		}
+		var url = "${ctx}/business/material?methodtype=search&pageFlg="+pageFlg;
+
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				"lengthChange":false,
-				"lengthMenu":[50,100,200],//设置一页展示20条记录
+				"lengthMenu":[100,150,200],//设置一页展示20条记录
 				"processing" : false,
 				"serverSide" : false,
 				"stateSave" : false,
@@ -37,7 +35,7 @@
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/material?methodtype=search",
+				"sAjaxSource" : url,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -63,15 +61,15 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "materialId", "defaultContent" : ''},
-							{"data": "materialName", "defaultContent" : ''},
-							{"data": "categoryName", "defaultContent" : ''},
-							{"data": "shareModel", "defaultContent" : ''},
-							{"data": "price", "defaultContent" : '',"className" : 'td-right'},
-							{"data": "supplierId", "defaultContent" : ''},
-							{"data": "dicName", "defaultContent" : '',"className" : 'td-center'}
-							,{"data": null, "defaultContent" : '',"className" : 'td-center'}
+							{"data": null,"className" : 'td-center'},
+							{"data": "materialId"},
+							{"data": "materialName"},
+							{"data": "categoryName"},
+							{"data": "shareModel"},
+							{"data": "price","className" : 'td-right'},
+							{"data": "supplierId"},
+							{"data": "dicName","className" : 'td-center'}
+							,{"data": null,"className" : 'td-center'}
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
@@ -103,9 +101,11 @@
 	}
 
 	
-	function initEvent(){
 
-		doSearch();
+
+	$(document).ready(function() {
+		
+		ajax("");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -116,22 +116,13 @@
 	        	$('#TMaterial').DataTable().$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	        }
-		});
-	}
-
-	$(document).ready(function() {
-
-		//重设iframe高度
-		iFramNoSroll()
-		
-		initEvent();
-		
+		});		
 	})	
 	
 	function doSearch() {	
 
-		var scrollHeight = $(document).height() - 197; 
-		ajax(scrollHeight);
+		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
+		ajax("S");
 
 	}
 	
@@ -198,7 +189,7 @@
 </script>
 </head>
 
-<body class="panel-body">
+<body>
 <div id="container">
 
 		<div id="main">
@@ -244,14 +235,14 @@
 						<thead>						
 							<tr class="selected">
 								<th style="width: 30px;" aria-label="No:" class="dt-middle ">No</th>
-								<th style="width: 150px;" class="dt-middle ">物料编号</th>
+								<th style="width: 140px;" class="dt-middle ">物料编号</th>
 								<th class="dt-middle">物料名称</th>
-								<th style="width: 100px;" class="dt-middle">物料分类</th>
-								<th style="width: 120px;" class="dt-middle">通用型号</th>
+								<th style="width: 140px;" class="dt-middle">物料分类</th>
+								<th style="width: 100px;" class="dt-middle">通用型号</th>
 								<th style="width: 50px;" class="dt-middle">价格</th>
 								<th style="width: 70px;" class="dt-middle">供应商</th>
-								<th style="width: 30px;" class="dt-middle ">单位</th>
-								<th style="width: 30px;" class="dt-middle ">操作</th>
+								<th style="width: 25px;" class="dt-middle ">单位</th>
+								<th style="width: 25px;" class="dt-middle ">操作</th>
 							</tr>
 						</thead>
 					</table>

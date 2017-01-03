@@ -108,7 +108,7 @@ public class ExternalSampleModel extends BaseModel {
 		return this.imageFileName;
 	}
 	public void setImageFileName(String imageFileName) {
-		this.memo = imageFileName;
+		this.imageFileName = imageFileName;
 	}
 	
 	public String[] getFilenames() {

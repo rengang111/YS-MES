@@ -34,6 +34,7 @@ public class DicUtil {
 	public static final String POSITION = "存放位置";
 
 	public static final String COUNTRY = "国家";
+	public static final String ZZMATERIALTYPE = "自制类别";
 	
 	public static final String ACCEPTRESULT = "验收结果";
 

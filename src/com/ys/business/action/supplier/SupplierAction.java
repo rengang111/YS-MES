@@ -118,6 +118,10 @@ public class SupplierAction extends BaseAction {
 				setSupplierId(data);
 				printOutJsonObj(response, modelMap);
 				return null;
+			case "picTest":
+				//setSupplierId(data);
+				//printOutJsonObj(response, modelMap);
+				rtnUrl = "/business/supplier/supplieradd2";
 		}
 		
 		return rtnUrl;

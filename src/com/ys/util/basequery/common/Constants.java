@@ -53,6 +53,6 @@ public class Constants {
 	/**
 	 * 供应商编号:耀升
 	 */
-	public static final String SUPPLIER_YS = "0574YS00";//人民币
+	public static final String SUPPLIER_YS = "0574YS00";
 	
 }

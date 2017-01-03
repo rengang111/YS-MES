@@ -44,6 +44,8 @@
       <f name="A.minPrice" alias="" ctype="" />
       <f name="A.lastPrice" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="" />
+      <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.fullField" alias="" ctype="" />
       <f name="A.viewList" alias="" ctype="" />
     </select>
@@ -206,14 +208,14 @@
 	<power>
 	</power>    
   </query>
-   <query>
+  <query>
     <pool></pool>    
     <name value="getCopyBomList" />
      <where>
     	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
        	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
     </where>
-  <select>
+  	<select>
       <f name="recordId" alias="" ctype="" />
       <f name="YSId" alias="" ctype="" />
       <f name="bomId" alias="" ctype="" />
@@ -230,16 +232,71 @@
       <f name="CONCAT_WS(' | ',YSId,bomId,materialName)" alias="viewList" ctype="" />
       <f name="status" alias="" ctype="" />
       <f name="fullField" alias="" ctype="" />
-  </select>
+ 	</select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <!-- 限定显示订单状态为"BOM表已做成,未评审"的数据 A.status ='4' AND  -->
-   <from>v_bomplan AS A WHERE  A.deleteFlag = '0'</from>
+   	<from>v_bomplan AS A WHERE  A.deleteFlag = '0'</from>
     <orderby>YSId DESC</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="getBaseBomList" />
+     <where>
+    	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
+       	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="bomId" alias="" ctype="" />
+      <f name="materialId" alias="" ctype="" />
+      <f name="materialName" alias="" ctype="" />
+      <f name="subId" alias="" ctype="" />
+      <f name="orderQuantity" alias="" ctype="" />
+      <f name="managementCost" alias="" ctype="" />
+      <f name="productCost" alias="" ctype="" />
+      <f name="totalCost" alias="" ctype="" />
+      <f name="laborCost" alias="" ctype="" />
+      <f name="materialCost" alias="" ctype="" />
+      <f name="planDate" alias="" ctype="" />
+  	</select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- 00 表示该产品的基础BOM -->
+    <from>v_bomplan AS A WHERE RIGHT(A.bomId,2) ='00' AND A.deleteFlag = '0'</from>
+    <orderby>bomId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
   
+  <query>
+    <pool></pool>    
+    <name value="getProductById" />
+     <where>
+    	<w name="a.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="b.customerId" alias="" ctype="" />
+      <f name="b.customerName" alias="" ctype="" />
+      <f name="b.shortName" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="" />
+      <f name="a.productModel" alias="" ctype="" />
+      <f name="a.categoryId" alias="" ctype="" />
+      <f name="a.shareModel" alias="" ctype="" />
+  	</select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- 00 表示该产品的基础BOM -->
+    <from>v_materiallist a LEFT JOIN b_customer b ON b.shortName = a.customerId AND b.deleteFlag = '0' WHERE SUBSTR(a.materialId FROM 1 FOR 1) = 'I'</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>

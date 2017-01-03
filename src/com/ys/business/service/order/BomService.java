@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.common.BusinessConstants;
 import com.ys.system.service.common.BaseService;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
@@ -129,6 +130,51 @@ public class BomService extends BaseService {
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+
+	public HashMap<String, Object> getBaseBomList(String data) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		String key1 = getJsonData(data, "keyword1").toUpperCase();
+		String key2 = getJsonData(data, "keyword2").toUpperCase();
+
+		dataModel.setQueryName("getBaseBomList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase = new HashMap<String, String>();
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
 		baseQuery.getYsQueryData(iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){
@@ -346,6 +392,27 @@ public class BomService extends BaseService {
 		
 		return modelMap;
 	}
+
+	/*
+	 * 
+	 */
+	public void getProductById(String materialId) throws Exception {
+
+		dataModel.setQueryName("getProductById");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("materialId", materialId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, 0);	 
+
+		model.addAttribute("product", dataModel.getYsViewData().get(0));
+			
+		
+		//return modelMap;
+	}
+	
 	/*
 	 * 
 	 */
@@ -755,6 +822,29 @@ public class BomService extends BaseService {
 		
 		getOrderDetail(bomId);		
 		getBomIdByMaterialId(materialId);
+		
+		return model;
+		
+	}
+	public Model createBaseBom() throws Exception {
+
+		String materialId = request.getParameter("materialId");	
+	
+		//取得该产品的新BOM编号	
+		//getBomIdByMaterialId(materialId);	
+		String bomId = BusinessService.getBaseBomId(materialId);
+		bomPlanData.setBomid(bomId);
+		bomPlanData.setSubid(BusinessConstants.FORMAT_00);
+		bomPlanData.setMaterialid(materialId);
+		
+		reqModel.setBomPlan(bomPlanData);
+		
+		//取得产品信息
+		getProductById(materialId);
+
+		//设置经管费率下拉框		
+		reqModel.setManageRateList(
+				util.getListOption(DicUtil.MANAGEMENTRATE, ""));
 		
 		return model;
 		

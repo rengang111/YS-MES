@@ -47,6 +47,19 @@ public class B_ZZMaterialPriceData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String type;
+	public String getType()
+	{
+		return this.type;
+	}
+	public void setType(String type)
+	{
+		this.type=type;
+	}
+
+	/**
+	*
+	*/
 	private String managementcostrate;
 	public String getManagementcostrate()
 	{
@@ -68,6 +81,19 @@ public class B_ZZMaterialPriceData implements java.io.Serializable
 	public void setMaterialprice(String materialprice)
 	{
 		this.materialprice=materialprice;
+	}
+
+	/**
+	*
+	*/
+	private String peoplenumber;
+	public String getPeoplenumber()
+	{
+		return this.peoplenumber;
+	}
+	public void setPeoplenumber(String peoplenumber)
+	{
+		this.peoplenumber=peoplenumber;
 	}
 
 	/**
@@ -332,13 +358,13 @@ public class B_ZZMaterialPriceData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("managementcostrate = "+(managementcostrate == null ? "null" : managementcostrate)+"\n");		sb.append("materialprice = "+(materialprice == null ? "null" : materialprice)+"\n");		sb.append("cavitiesnumber = "+(cavitiesnumber == null ? "null" : cavitiesnumber)+"\n");		sb.append("time = "+(time == null ? "null" : time)+"\n");		sb.append("houryield = "+(houryield == null ? "null" : houryield)+"\n");		sb.append("hourprice = "+(hourprice == null ? "null" : hourprice)+"\n");		sb.append("laborprice = "+(laborprice == null ? "null" : laborprice)+"\n");		sb.append("kilowatt = "+(kilowatt == null ? "null" : kilowatt)+"\n");		sb.append("hourpower = "+(hourpower == null ? "null" : hourpower)+"\n");		sb.append("kwprice = "+(kwprice == null ? "null" : kwprice)+"\n");		sb.append("powerprice = "+(powerprice == null ? "null" : powerprice)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("managementcostrate = "+(managementcostrate == null ? "null" : managementcostrate)+"\n");		sb.append("materialprice = "+(materialprice == null ? "null" : materialprice)+"\n");		sb.append("peoplenumber = "+(peoplenumber == null ? "null" : peoplenumber)+"\n");		sb.append("cavitiesnumber = "+(cavitiesnumber == null ? "null" : cavitiesnumber)+"\n");		sb.append("time = "+(time == null ? "null" : time)+"\n");		sb.append("houryield = "+(houryield == null ? "null" : houryield)+"\n");		sb.append("hourprice = "+(hourprice == null ? "null" : hourprice)+"\n");		sb.append("laborprice = "+(laborprice == null ? "null" : laborprice)+"\n");		sb.append("kilowatt = "+(kilowatt == null ? "null" : kilowatt)+"\n");		sb.append("hourpower = "+(hourpower == null ? "null" : hourpower)+"\n");		sb.append("kwprice = "+(kwprice == null ? "null" : kwprice)+"\n");		sb.append("powerprice = "+(powerprice == null ? "null" : powerprice)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		materialid= (materialid == null ?null : materialid.trim());		managementcostrate= (managementcostrate == null ?null : managementcostrate.trim());		materialprice= (materialprice == null ?null : materialprice.trim());		cavitiesnumber= (cavitiesnumber == null ?null : cavitiesnumber.trim());		time= (time == null ?null : time.trim());		houryield= (houryield == null ?null : houryield.trim());		hourprice= (hourprice == null ?null : hourprice.trim());		laborprice= (laborprice == null ?null : laborprice.trim());		kilowatt= (kilowatt == null ?null : kilowatt.trim());		hourpower= (hourpower == null ?null : hourpower.trim());		kwprice= (kwprice == null ?null : kwprice.trim());		powerprice= (powerprice == null ?null : powerprice.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		materialid= (materialid == null ?null : materialid.trim());		type= (type == null ?null : type.trim());		managementcostrate= (managementcostrate == null ?null : managementcostrate.trim());		materialprice= (materialprice == null ?null : materialprice.trim());		peoplenumber= (peoplenumber == null ?null : peoplenumber.trim());		cavitiesnumber= (cavitiesnumber == null ?null : cavitiesnumber.trim());		time= (time == null ?null : time.trim());		houryield= (houryield == null ?null : houryield.trim());		hourprice= (hourprice == null ?null : hourprice.trim());		laborprice= (laborprice == null ?null : laborprice.trim());		kilowatt= (kilowatt == null ?null : kilowatt.trim());		hourpower= (hourpower == null ?null : hourpower.trim());		kwprice= (kwprice == null ?null : kwprice.trim());		powerprice= (powerprice == null ?null : powerprice.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

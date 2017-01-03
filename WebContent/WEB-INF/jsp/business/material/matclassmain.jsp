@@ -53,8 +53,8 @@
 				<td width="50px">序号</td>
 				<td width="100px">分类编码</td>
 				<td width="200px">分类名称</td>
-				<td width="160px">规格说明</td>
 				<td width="100px">上级单位</td>
+				<td width="160px">规格说明</td>
 				<td width="100px">操作</td>
 			</tr>
 			</thead>
@@ -74,10 +74,10 @@
 						${value[2]}
 					</td>
 					<td>
-						${value[6]}
+						${value[4]}
 					</td>
 					<td>
-						${value[4]}
+						${value[6]}
 					</td>
 					<td>
 						<!--  href="javascript:void(0);" title="查看"  onClick="dispUnitDetail('${value[5]}');">查看</a-->
@@ -135,20 +135,9 @@
 
 	}
 
-	function inputCheck() {
-		var str = $('#categoryName').val();
-		if (!inputStrCheck(str, "单位名称", 100, 7, true, true)) {
-			return false;
-		}
-
-		return true;
-	}
-
-	function doSearch() {
-		if (inputCheck()) {
-			$('#form').attr("action", "${ctx}/business/matcategory?methodtype=search");
-			$('#form').submit();
-		}
+	function doSearch() {		
+		$('#form').attr("action", "${ctx}/business/matcategory?methodtype=search");
+		$('#form').submit();
 	}
 
 	function addUnit() {
@@ -192,7 +181,7 @@
 
 	function callUpdateUnit(parentName,recordId) {
 		$('#operType').val("update");
-		var url = "${ctx}/business/matcategory?methodtype=updateinit&operType=update&recordId=" + recordId+ "&parentName=" + encodeURIComponent(parentName);
+		var url = "${ctx}/business/matcategory?methodtype=updateinit&operType=update&recordId=" + recordId+ "&parentName=" + encodeURI(encodeURI(parentName));
 		openLayer(url, layerWidth, layerHeight, false,'100px');
 	}
 
