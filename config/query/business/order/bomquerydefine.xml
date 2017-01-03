@@ -299,4 +299,28 @@
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="getMaterialbyProductModel" />
+     <where>
+    	<w name="a.materialId" des="" reqName="shareModel" dtype="ch" oper="like" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.shareModel" alias="" ctype="" />
+      <f name="b.productModel" alias="" ctype="" />
+      <f name="IFNULL(b.quantity,'1')" alias="quantity" ctype="" />
+      <f name="c.supplierId" alias="" ctype="" />
+      <f name="c.price" alias="" ctype="" />
+  	</select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- 00 表示该产品的基础BOM -->
+    <from>b_material a  LEFT JOIN v_bomdetailgroup b ON a.materialId = b.materialId   AND b.productModel ='#' LEFT JOIN v_bomprice c ON c.materialId = a.materialId </from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>

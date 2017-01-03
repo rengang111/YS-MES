@@ -200,12 +200,14 @@ function ajax() {
 		var	fpricenew = fkgprice * fnetweight ;//单位材料价=新单价*重量	
 		//alert('frawprice:'+frawprice+'--farwunit:'+farwunit+'--fchgunit:'+fchgunit+'--fpricenew:'+fpricenew);	
 
+		var vnetweight = float5ToCurrency(fnetweight);
 		var vwastage = floatToCurrency(fwastage);	
 		var vweight  = floatToCurrency(fweight);		
 		var vkgprice  = float4ToCurrency(fkgprice);
 		var vpricenew = float4ToCurrency(fpricenew);
 		
 		//详情列表显示新的价格
+		$onetweight.val(vnetweight);
 		$owastages.html(vwastage);					
 		$owastagei.val(vwastage);			
 		$oweights.html(vweight);

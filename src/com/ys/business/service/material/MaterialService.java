@@ -592,8 +592,29 @@ public class MaterialService extends BaseService {
 
 				String guid = BaseDAO.getGuId();
 				reqData.setRecordid(guid);
-				reqData.setMaterialid(parentId + "." + data.getSubid());
+				
+				//流水号编辑:由于存在手动改变流水号,所以不能自动增加
+				//String serNo = parentId.substring(0,parentId.length()-3);//3:3位流水号
+				
+				//物料编码 = parentId +"."+ subid 
+				//物料:G01.D018.YAT001001.000
+				//分类:G01.D018.YAT001
+				
+				/************************/
+				
+				String materialId = parentId + "." + data.getSubid();
+				String categoryId = reqData.getCategoryid();
+				
+				//parentId = materialId.substring(0,materialId.length()-4);
+				String serialNumber = parentId.substring( categoryId.length());
+				
+					
+				/************************/
+				
+				
+				reqData.setMaterialid(materialId);
 				reqData.setParentid(parentId);
+				reqData.setSerialnumber(serialNumber);
 				reqData.setSubid(data.getSubid());
 				reqData.setSubiddes(data.getSubiddes());
 				
@@ -651,7 +672,8 @@ public class MaterialService extends BaseService {
 
 
 			//物料编码 = parentId +"."+ subid 
-			//例:B01.D019001.00
+			//物料:G01.D018.YAT001001.000
+			//分类:G01.D018.YAT001
 			String parentId = reqData.getParentid();
 			//画面被选中的数据
 			String selectedRecord = reqData.getRecordid();
@@ -659,15 +681,14 @@ public class MaterialService extends BaseService {
 			/************************/
 			
 			String materialId = reqData.getMaterialid();
-			String[] strArry = materialId.split("\\.");
+			String categoryId = reqData.getCategoryid();
 			
 			String subId = "";
 			String serialNumber = "";
-			if(strArry.length > 2){
-				serialNumber = (strArry[1]).substring(strArry[1].length()-3);
-				subId = strArry[2];
-				parentId = strArry[0]+"."+strArry[1];
-			}
+			subId = materialId.substring(materialId.length()-3);
+			parentId = materialId.substring(0,materialId.length()-4);
+			serialNumber = parentId.substring( categoryId.length());
+			
 				
 			/************************/
 			
@@ -783,6 +804,7 @@ public class MaterialService extends BaseService {
 		model.addAttribute("price", dataModel.getYsViewData().get(0));		
 		
 	}
+	
 	/*
 	 * 新增物料初始处理
 	 */
@@ -819,7 +841,20 @@ public class MaterialService extends BaseService {
 		return model;
 	}
 	
+	/*
+	 * 
+	 */
+	public void getProductDeital() {
 
+		//产品基本信息
+		
+		//基础BOM信息
+		
+		//客户报价信息
+		
+		//订单信息
+	
+	}
 	
 	public MaterialModel doDelete(
 			String delData, UserInfo userInfo) throws Exception{
@@ -853,6 +888,29 @@ public class MaterialService extends BaseService {
 		MaterialModel model = new MaterialModel();
 		B_PriceSupplierData data = new B_PriceSupplierData();	
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();	
+													
+		try {	
+												
+			String recordid = request.getParameter("recordId");									
+			data.setRecordid(recordid);
+
+			dao.Remove(data);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return model;
+	}
+	
+
+	public MaterialModel doDeletePriceHistory(
+			String delData, UserInfo userInfo) throws Exception{
+		
+		MaterialModel model = new MaterialModel();
+		B_PriceSupplierHistoryData data = new B_PriceSupplierHistoryData();	
+		B_PriceSupplierHistoryDao dao = new B_PriceSupplierHistoryDao();	
 													
 		try {	
 												

@@ -146,10 +146,30 @@ public class BomAction extends BaseAction {
 				doCopy();
 				rtnUrl = "/business/bom/bomcopyadd";
 				break;
+			case "searchProductModel":
+				doSearchProductModel();
+				rtnUrl = "/business/bom/basebomadd";
+				break;
+			case "baseBomInsert":
+				doInsertBaseBom();
+				rtnUrl = "/business/bom/basebomadd";
+				break;
 				
 		}
 		
 		return rtnUrl;		
+	}
+	
+	public void doSearchProductModel(){
+		
+		
+		try {
+			bomService.getProductModel();
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -265,7 +285,12 @@ public class BomAction extends BaseAction {
 		model = bomService.insertAndView();
 		
 	}		
-	
+
+	public void doInsertBaseBom() throws Exception {
+
+		model = bomService.insertBaseBomAndView();
+		
+	}
 	
 	public HashMap<String, Object> doSearchBom() throws Exception{
 

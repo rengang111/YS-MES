@@ -116,7 +116,7 @@
 	
 	function doShow(materialId) {
 
-		var url = '${ctx}/business/material?methodtype=detailView&materialId=' + materialId;
+		var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
 
 		location.href = url;
 	}

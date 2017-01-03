@@ -87,6 +87,12 @@
 				    			name = jQuery.fixedWidth(name,30);				    			
 				    			return name;
 				    		}},
+				    		{"targets":3,"render":function(data, type, row){
+				    			
+				    			var name = row["categoryName"];				    			
+				    			name = jQuery.fixedWidth(name,20);				    			
+				    			return name;
+				    		}},
 				    		{"targets":4,"render":function(data, type, row){
 				    			
 				    			var name = row["shareModel"];				    			

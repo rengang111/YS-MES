@@ -140,6 +140,10 @@ public class MaterialAction extends BaseAction {
 				MaterialModel = doDeletePrice(data);
 				printOutJsonObj(response, MaterialModel.getEndInfoMap());
 				break;
+			case "deletePriceHistory":
+				MaterialModel = doDeletePriceHistory(data);
+				printOutJsonObj(response, MaterialModel.getEndInfoMap());
+				break;
 			case "categorySearch"://单个物料分类查询
 				dataMap = doCategorySearch(data);
 				printOutJsonObj(response, dataMap);
@@ -158,6 +162,10 @@ public class MaterialAction extends BaseAction {
 			case "searchProduct":
 				dataMap = dosearchProduct(data);
 				printOutJsonObj(response, dataMap);
+				break;				
+			case "productView":
+				productView();
+				rtnUrl = "/business/material/productview";
 				break;
 		}
 		
@@ -423,6 +431,14 @@ public class MaterialAction extends BaseAction {
 
 		return MaterialModel;
 	}
+	
+	public MaterialModel doDeletePriceHistory(@RequestBody String data) throws Exception{
+		
+		MaterialModel = materialService.doDeletePriceHistory(data, userInfo);
+
+		return MaterialModel;
+	}
+
 	public void doAddSupplier() {
 
 		String materialid = request.getParameter("materialid");
@@ -446,6 +462,18 @@ public class MaterialAction extends BaseAction {
 		return dataMap;
 	}
 	
+	public void productView(){
+		
+		
+		try {
+			materialService.getProductDeital();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
 	public void doDetailView(){
 
 		String recordId = request.getParameter("recordId");

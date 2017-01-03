@@ -30,6 +30,7 @@ import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PriceSupplierData;
+import com.ys.business.db.data.B_PriceSupplierHistoryData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 
@@ -79,6 +80,7 @@ public class BomService extends BaseService {
 		dataModel.setQueryFileName("/business/order/bomquerydefine");
 		
 	}
+	
 	public HashMap<String, Object> getBomList() throws Exception {
 		
 		String key = request.getParameter("key").toUpperCase();
@@ -445,6 +447,25 @@ public class BomService extends BaseService {
 		return modelMap;
 	}
 	
+	public void getMaterialbyProductModel() throws Exception {
+
+		String key1 = request.getParameter("model").toUpperCase();
+
+		dataModel.setQueryName("getMaterialbyProductModel");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("shareModel", key1);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", key1);
+		baseQuery.getYsQueryData(sql);
+		//baseQuery.getYsQueryData(0, 0);	 		
+		
+		model.addAttribute("materialDetail", dataModel.getYsViewData());
+		model.addAttribute("productMode",key1);
+	}
+	
 	/*
 	 * 1.物料新增处理(一条数据)
 	 * 2.子编码新增处理(N条数据)
@@ -503,12 +524,62 @@ public class BomService extends BaseService {
 	}	
 
 	/*
+	 * 1.物料新增处理(一条数据)
+	 * 2.子编码新增处理(N条数据)
+	 */
+	private String insertBaseBom() throws Exception  {
+
+		String bomid="";
+		ts = new BaseTransaction();
+
+		try {
+			
+			ts.begin();
+					
+			B_BomPlanData reqData = (B_BomPlanData)reqModel.getBomPlan();
+			
+			
+			//插入BOM基本信息
+			insertBomPlan(reqData);
+			
+			//插入BOM详情		
+			bomid = reqData.getBomid();
+			List<B_BomDetailData> reqDataList = reqModel.getBomDetailLines();
+			
+			for(B_BomDetailData data:reqDataList ){
+				
+				//过滤空行或者被删除的数据
+				if(data.getMaterialid() != ""){
+					
+					data.setBomid(bomid);
+					insertBomDetail(data);	
+					
+					//供应商单价修改
+					String supplierId = data.getSupplierid();
+					String materialId = data.getMaterialid();
+					String price = data.getPrice();
+					updatePriceSupplier(materialId,supplierId,price);
+				}	
+			
+			}
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();
+			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		return bomid;
+		
+	}	
+	/*
 	 * BOM基本信息insert处理
 	 */
 	private void insertBomPlan(
 			B_BomPlanData data) throws Exception{
 		
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BomPlanInsert",userInfo);
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BaseBomInsert",userInfo);
 
 		copyProperties(data,commData);
 
@@ -685,6 +756,8 @@ public class BomService extends BaseService {
 		List<B_PriceSupplierData> priceList = null;
 		B_PriceSupplierData pricedt = null;
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();
+		B_PriceSupplierHistoryData historyDt = new B_PriceSupplierHistoryData();
+		B_PriceSupplierDao historyDao = new B_PriceSupplierDao();
 
 		String where ="materialId= '" + materialId + "'" + 
 				" AND supplierId = '" + supplierId + "'" + 
@@ -699,12 +772,23 @@ public class BomService extends BaseService {
 			if(!price.equals(pricedt.getPrice())){//价格有变动的话,更新为最新价格
 				
 				//处理共通信息					
-				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"PriceSupplierUpdate",userInfo);
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"BaseBomInsert",userInfo);
 				copyProperties(pricedt,commData);
 				
 				pricedt.setPrice(price);
 				
 				dao.Store(pricedt);
+				
+				//插入历史表
+				//处理共通信息	
+				copyProperties(historyDt,pricedt);
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BaseBomInsert",userInfo);
+				copyProperties(historyDt,commData);
+				
+				guid = BaseDAO.getGuId();
+				historyDt.setRecordid(guid);
+				
+				historyDao.Store(historyDt);
 			}
 		}
 				
@@ -945,6 +1029,16 @@ public class BomService extends BaseService {
 		return model;
 		
 	}
+	public Model getProductModel() throws Exception {
+
+		//产品基本信息
+		createBaseBom();
+		
+		getMaterialbyProductModel();
+		
+		return model;
+		
+	}
 		
 	public Model insertAndView() throws Exception {
 
@@ -955,6 +1049,14 @@ public class BomService extends BaseService {
 		
 	}
 	
+	public Model insertBaseBomAndView() throws Exception {
+	
+		String bomId = insertBaseBom();
+		getBomDetail(bomId);
+		
+		return model;
+		
+	}
 	public Model updateAndView() throws Exception {
 
 		String YSId = update();
