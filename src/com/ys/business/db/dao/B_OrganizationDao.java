@@ -2,12 +2,12 @@ package com.ys.business.db.dao;
 
 import java.sql.*;
 import java.io.InputStream;
-import com.ys.business.db.data.*;
 import com.ys.util.basedao.BaseAbstractDao;
+import com.ys.business.db.data.*;
 
 /**
 * <p>Title: </p>
-* <p>Description: ï¿½ï¿½Ý±ï¿½  </p>
+* <p>Description: Êý¾Ý±í  </p>
 * <p>Copyright: gentleman</p>
 * <p>Company: gentleman</p>
 * @author mengfanchang
@@ -54,7 +54,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_Organization( recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)ï¿½ï¿½"+ e.toString());
+			throw new Exception("INSERT INTO B_Organization( recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)£º"+ e.toString());
 		}
 		finally
 		{
@@ -110,7 +110,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_Organization( recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)ï¿½ï¿½"+ e.toString());
+			throw new Exception("INSERT INTO B_Organization( recordid,type,shortname,fullname,address,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)£º"+ e.toString());
 		}
 		finally
 		{
@@ -353,7 +353,7 @@ public class B_OrganizationDao extends BaseAbstractDao
 
 	/**
 	 *
-	 * @param beanData:ï¿½ï¿½ï¿½ï¿½
+	 * @param beanData:Ö÷¼ü
 	 */
 	public void FindPrimaryKey(Object beanDataTmp) throws Exception
 	{

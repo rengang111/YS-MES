@@ -24,6 +24,7 @@ public class ProcessControlModel extends BaseModel {
 	private String type = "";
 	private String projectId = "";
 	private String lastestExpectDate = "";
+	private String folderNames;
 	
 	public String getClassName() {
 		return this.className;
@@ -76,5 +77,12 @@ public class ProcessControlModel extends BaseModel {
 	}
 	public void setLastestExpectDate(String lastestExpectDate) {
 		this.lastestExpectDate = lastestExpectDate;
+	}
+	
+	public String getFolderNames() {
+		return this.folderNames;
+	}
+	public void setFolderNames(String folderNames) {
+		this.folderNames = folderNames;
 	}
 }

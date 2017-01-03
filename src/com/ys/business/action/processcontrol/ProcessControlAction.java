@@ -159,7 +159,7 @@ public class ProcessControlAction extends BaseAction {
 		ProcessControlModel dataModel = new ProcessControlModel();
 		String key = request.getParameter("key");
 		try {
-			dataModel = processControlService.getProcessControlBaseInfo(request, key);
+			dataModel = processControlService.getProjectBaseInfo(request, key);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

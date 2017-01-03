@@ -17,12 +17,12 @@
       <f name="DATE_FORMAT(A.beginTime, '%Y-%m-%d')" alias="beginTime" ctype="" />
       <f name="DATE_FORMAT(A.endTime, '%Y-%m-%d')" alias="endTime" ctype="" />
       <f name="A.referPrototype" alias="" ctype="" />
-      <f name="B.isEnd" alias="" ctype="" />
-      <f name="C.lastFinishTime" alias="" ctype="" />
+      <f name="ifnull(B.isEnd, '')" alias="isEnd" ctype="" />
+      <f name="ifnull(DATE_FORMAT(C.lastFinishTime, '%Y-%m-%d'), '')" alias="lastFinishTime" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_projecttask as A LEFT JOIN (SELECT projectId, count(projectId) as isEnd FROM b_processControl WHERE finishTime is null AND length(type) = 1 AND DeleteFlag = '0' GROUP BY projectId) as B ON B.projectId = A.ProjectId LEFT JOIN (SELECT projectId, max(finishTime) lastFinishTime FROM b_processControl WHERE length(type) = 1 AND DeleteFlag = '0' GROUP BY projectId) as C ON C.projectId = A.ProjectId WHERE A.DeleteFlag = '0' </from>
+    <from>v_projecttask as A LEFT JOIN (SELECT projectId, count(projectId) as isEnd FROM b_processControl WHERE finishTime is null AND length(type) = 1 AND DeleteFlag = '0' GROUP BY projectId) as B ON B.projectId = A.ProjectId LEFT JOIN (SELECT projectId, max(finishTime) lastFinishTime FROM b_processControl WHERE length(type) = 1 AND DeleteFlag = '0' GROUP BY projectId) as C ON C.projectId = A.id WHERE A.DeleteFlag = '0' </from>
     <orderby>A.projectId, A.projectName</orderby>
     <groupby></groupby>
     <having></having>

@@ -22,10 +22,12 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.externalsample.ExternalSampleModel;
 import com.ys.business.action.model.lateperfection.LatePerfectionModel;
+import com.ys.business.action.model.processcontrol.ProcessControlModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.DicUtil;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.business.service.lateperfection.LatePerfectionService;
+import com.ys.business.service.processcontrol.ProcessControlService;
 
 @Controller
 @RequestMapping("/business")
@@ -33,6 +35,10 @@ public class LatePerfectionAction extends BaseAction {
 	
 	@Autowired
 	LatePerfectionService latePerfectionService;
+	
+	@Autowired
+	ProcessControlService processControlService;
+	
 	
 	@RequestMapping(value="lateperfection")
 	public String execute(@RequestBody String data, @ModelAttribute("dataModels")LatePerfectionModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
@@ -62,7 +68,7 @@ public class LatePerfectionAction extends BaseAction {
 				return null;
 			case "addinit":
 			case "updateinit":
-				rtnUrl = doUpdateInit(model, session, request, response);
+				rtnUrl = doGetProjectBaseInfo(model, session, request, response);
 				break;
 			case "delete":
 				viewModel = doDelete(data, session, request, response);
@@ -114,7 +120,7 @@ public class LatePerfectionAction extends BaseAction {
 		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataMap = latePerfectionService.doSearch(request, data, userInfo);
+			dataMap = processControlService.doSearch(request, data, userInfo);
 			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
@@ -128,12 +134,28 @@ public class LatePerfectionAction extends BaseAction {
 		return dataMap;
 	}	
 	
+	public String doGetProjectBaseInfo(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+
+		ProcessControlModel dataModel = new ProcessControlModel();
+		String key = request.getParameter("key");
+		try {
+			dataModel = processControlService.getProjectBaseInfo(request, key);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataModel.setMessage("发生错误，请联系系统管理员");
+		}
+		model.addAttribute("DisplayData", dataModel);
+		
+		return "/business/lateperfection/lateperfectionedit";
+	}		
+	
 	public HashMap<String, Object> getTPFileList(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			//dataMap = latePerfectionService.doGetTPFileList(request, data, userInfo);
+			dataMap = latePerfectionService.doGetTPFileList(request, data, userInfo);
 			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
@@ -152,7 +174,7 @@ public class LatePerfectionAction extends BaseAction {
 		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			//dataMap = latePerfectionService.doGetQuestionList(request, data, userInfo);
+			dataMap = latePerfectionService.doGetQuestionList(request, data, userInfo);
 			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
@@ -173,7 +195,7 @@ public class LatePerfectionAction extends BaseAction {
 		String key = request.getParameter("key");
 
 		try {
-			//dataModel = latePerfectionService.doUpdateTPFileInit(request, projectId, key);
+			dataModel = latePerfectionService.doUpdateTPFileInit(request, projectId, key);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -181,26 +203,7 @@ public class LatePerfectionAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/business/lateperfection/lateperfectionedit";
-	}	
-	
-	public LatePerfectionModel doDeleteTPFile(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		LatePerfectionModel model = new LatePerfectionModel();
-		
-		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		//model = latePerfectionService.doDeleteTPFile(request, data, userInfo);
-
-		return model;
-	}
-	
-	public LatePerfectionModel doUpdateTPFile(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		
-		LatePerfectionModel model = new LatePerfectionModel();
-		
-		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		//model = externalsampleService.doUpdateTPFile(request, data, userInfo);
-		
-		return model;
+		return "/business/lateperfection/lateperfectionrelationfileedit";
 	}	
 	
 	public String doUpdateQuestionInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
@@ -210,7 +213,7 @@ public class LatePerfectionAction extends BaseAction {
 		String key = request.getParameter("key");
 
 		try {
-			//dataModel = latePerfectionService.doUpdateQuestionInit(request, projectId, key);
+			dataModel = latePerfectionService.doUpdateQuestionInit(request, projectId, key);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -218,33 +221,45 @@ public class LatePerfectionAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/business/lateperfection/lateperfectionedit";
-	}
-	
-	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-
-		LatePerfectionModel dataModel = new LatePerfectionModel();
-		String key = request.getParameter("key");
-		try {
-			dataModel = latePerfectionService.getLatePerfectionBaseInfo(request, key);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("发生错误，请联系系统管理员");
-		}
-		model.addAttribute("DisplayData", dataModel);
-		
-		return "/business/lateperfection/lateperfectionedit";
+		return "/business/lateperfection/lateperfectionquestionedit";
 	}	
 	
 	
-	public LatePerfectionModel doUpdate(String data, HttpSession session, HttpServletRequest request){
+	public LatePerfectionModel doUpdateTPFile(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		LatePerfectionModel model = new LatePerfectionModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = latePerfectionService.doUpdate(request, data, userInfo);
+		model = latePerfectionService.doUpdateTPFile(request, data, userInfo);
 		
+		return model;
+	}		
+	
+	public LatePerfectionModel doUpdateQuestion(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		
+		LatePerfectionModel model = new LatePerfectionModel();
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		model = latePerfectionService.doUpdateQuestion(request, data, userInfo);
+		
+		return model;
+	}	
+	
+	public LatePerfectionModel doDeleteTPFile(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		LatePerfectionModel model = new LatePerfectionModel();
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		model = latePerfectionService.doDeleteTPFile(request, data, userInfo);
+
+		return model;
+	}
+	
+	public LatePerfectionModel doDeleteQuestion(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		LatePerfectionModel model = new LatePerfectionModel();
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		model = latePerfectionService.doDeleteQuestion(request, data, userInfo);
+
 		return model;
 	}	
 	
@@ -263,24 +278,8 @@ public class LatePerfectionAction extends BaseAction {
 		model = latePerfectionService.doDelete(request, data, userInfo);
 
 		return model;
-	}	
-
-	public LatePerfectionModel doDeleteQuestion(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		LatePerfectionModel model = new LatePerfectionModel();
-		
-		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		//model = latePerfectionService.doDeleteQuestion(request, data, userInfo);
-
-		return model;
 	}
 	
-	public LatePerfectionModel doUpdateQuestion(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		
-		LatePerfectionModel model = new LatePerfectionModel();
-		
-		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		//model = externalsampleService.doUpdateQuestion(request, data, userInfo);
-		
-		return model;
-	}
+	
+	
 }

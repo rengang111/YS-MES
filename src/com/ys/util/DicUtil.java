@@ -27,13 +27,21 @@ public class DicUtil {
 	public static final String LOADINGPORT = "出运港";
 	public static final String DELIVERYPORT = "目的港";
 	public static final String MANAGEMENTRATE = "经管费率";
+
+	public static final String PRODUCTMODEL = "产品型号";
+	public static final String CONFIRMRESULT = "确认结果";//合格/不合格
+	public static final String MOULDTYPE = "模具类型";
+	public static final String POSITION = "存放位置";
+
 	public static final String COUNTRY = "国家";
 	public static final String ZZMATERIALTYPE = "自制类别";
 	
+	public static final String ACCEPTRESULT = "验收结果";
+
 	//TODO
-	//public static final String DENOMINATIONCURRENCY = "币种";
+	public static final String DENOMINATIONCURRENCY = "币种";
 	public static final String SHIPPINGCASE = "出运条件";
-	//public static final String PORT = "B3";
+	public static final String PORT = "B3";
 	
 	//HashMap通过id查找
 	private static HashMap<String,String> dicMapViaId = new HashMap<String, String>();

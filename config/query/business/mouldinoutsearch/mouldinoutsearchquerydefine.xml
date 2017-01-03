@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="mouldinoutsearchquerydefine_search" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+    </where>
+    <select>
+      <f name="DISTINCT A.productModel" alias="" ctype="" />
+      <f name="A.productModelNo" alias="" ctype="" />
+      <f name="A.productModelName" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_MouldReturn as A WHERE A.DeleteFlag = '0' </from>
+    <orderby>A.productModelNo, A.productModelName</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldinoutsearchquerydefine_searchld" />
+    <where>
+      <w name="A.productModel" des=""  reqName="productModel" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="DISTINCT ifnull(DATE_FORMAT(A.lendTime, '%Y-%m-%d'), '')" alias="lendTime" ctype="" />
+      <f name="A.factoryName" alias="" ctype="" />
+      <f name="A.productModelNo" alias="" ctype="" />
+      <f name="A.productModelName" alias="" ctype="" />
+      <f name="A.brokerage" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_MouldReturn as A</from>
+    <orderby>A.lendTime, A.factoryName, A.productModelName, A.productModelNo, A.brokerage</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldinoutsearchquerydefine_searchrd" />
+    <where>
+      <w name="A.productModel" des=""  reqName="productModel" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="DISTINCT ifnull(DATE_FORMAT(A.returnTime, '%Y-%m-%d'), '')" alias="returnTime" ctype="" />
+      <f name="A.factoryName" alias="" ctype="" />
+      <f name="A.productModelNo" alias="" ctype="" />
+      <f name="A.productModelName" alias="" ctype="" />
+      <f name="A.result" alias="" ctype="" />
+      <f name="A.accepterName" alias="" ctype="" />
+      <f name="A.memo" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_MouldReturn as A</from>
+    <orderby>A.lendTime, A.factoryName, A.productModelName, A.productModelNo, A.brokerage</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>

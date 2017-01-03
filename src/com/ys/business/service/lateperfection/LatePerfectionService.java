@@ -192,7 +192,12 @@ public class LatePerfectionService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		projectId = getJsonData(data, "keyBackup");
-				
+
+		if (projectId.equals("")) {
+			projectId = "-1";
+		}
+		
+
 		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
 		dataModel.setQueryName("lateperfectionquerydefine_relationfilesearch");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
@@ -217,6 +222,11 @@ public class LatePerfectionService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		projectId = getJsonData(data, "keyBackup");
+
+		if (projectId.equals("")) {
+			projectId = "-1";
+		}
+
 		
 		dataModel.setQueryFileName("/business/lateperfection/lateperfectionquerydefine");
 		dataModel.setQueryName("lateperfectionquerydefine_questionsearch");

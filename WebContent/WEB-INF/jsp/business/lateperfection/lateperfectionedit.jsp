@@ -123,9 +123,9 @@ function ajaxQuestionList() {
 						var param = {};
 						var formData = $("#processControlInfo").serializeArray();
 						formData.forEach(function(e) {
-							//aoData.push({"name":e.name, "value":e.value});
+							aoData.push({"name":e.name, "value":e.value});
 						});
-						aoData.push({"name":"type", "value":index});
+						
 						$.ajax({
 							"url" : sSource,
 							"datatype": "json", 
@@ -155,7 +155,7 @@ function ajaxQuestionList() {
 						{"data": null, "defaultContent" : '', "className" : 'td-center'},
 						{"data" : "createDate", "className" : 'td-center'}, 
 						{"data" : "description", "className" : 'td-center'},
-						{"data" : "prove", "className" : 'td-center'},
+						{"data" : "improve", "className" : 'td-center'},
 						{"data" : "expectDate", "className" : 'td-center'},
 						{"data" : "finishTime", "className" : 'td-center'},
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}
@@ -243,7 +243,7 @@ function doDelete() {
 				} else {
 					controlButtons("");
 					reloadTPFileList();
-					reloadQueestionList();
+					reloadQuestionList();
 					//clearProjectTaskInfo();
 					//reloadTabWindow();
 				}
@@ -287,13 +287,13 @@ function controlButtons(data) {
 
 function doAddTPFile() {
 	var projectId = $('#keyBackup').val();
-	var url = "${ctx}/business/esrelationfile?methodtype=addtpfileinit&projectId=" + projectId;
+	var url = "${ctx}/business/lateperfection?methodtype=addtpfileinit&projectId=" + projectId;
 	openLayer(url, $(document).width() - 25, layerHeight, false);	
 }
 
 function doUpdateTPFile(key) {
 	var projectId = $('#keyBackup').val();
-	var url = "${ctx}/business/esrelationfile?methodtype=updatetpfileinit&projectId=" + projectId + "&key=" + key;
+	var url = "${ctx}/business/lateperfection?methodtype=updatetpfileinit&projectId=" + projectId + "&key=" + key;
 	openLayer(url, $(document).width() - 25, layerHeight, false);
 }
 
@@ -314,7 +314,7 @@ function doDeleteTPFile() {
 			dataType : 'json',						
 			type : "POST",
 			data : str,// 要提交的表单						
-			url : "${ctx}/business/esrelationfile?methodtype=deletetpfile",
+			url : "${ctx}/business/lateperfection?methodtype=deletetpfile",
 			success : function(d) {
 				if (d.rtnCd != "000") {
 					alert(d.message);
@@ -335,13 +335,13 @@ function doDeleteTPFile() {
 
 function doAddQuestion() {
 	var projectId = $('#keyBackup').val();
-	var url = "${ctx}/business/esrelationfile?methodtype=addquestioninit&projectId=" + projectId;
+	var url = "${ctx}/business/lateperfection?methodtype=addquestioninit&projectId=" + projectId;
 	openLayer(url, $(document).width() - 25, layerHeight, false);	
 }
 
 function doUpdateQuestion(key) {
 	var projectId = $('#keyBackup').val();
-	var url = "${ctx}/business/esrelationfile?methodtype=updatequestioninit&projectId=" + projectId + "&key=" + key;
+	var url = "${ctx}/business/lateperfection?methodtype=updatequestioninit&projectId=" + projectId + "&key=" + key;
 	openLayer(url, $(document).width() - 25, layerHeight, false);
 }
 
@@ -362,7 +362,7 @@ function doDeleteQuestion() {
 			dataType : 'json',						
 			type : "POST",
 			data : str,// 要提交的表单						
-			url : "${ctx}/business/esrelationfile?methodtype=deletequestion",
+			url : "${ctx}/business/lateperfection?methodtype=deletequestion",
 			success : function(d) {
 				if (d.rtnCd != "000") {
 					alert(d.message);
@@ -448,7 +448,6 @@ function doDeleteQuestion() {
 
 			<form:form modelAttribute="dataModels" id="processControlInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
-				<input type=hidden id="id" name="id" value=""/>
 				
 				<div  style="height:20px"></div>
 				<legend>试产报告</legend>
@@ -459,10 +458,10 @@ function doDeleteQuestion() {
 				<table id="TPFileList" class="display" cellspacing="0">
 					<thead>
 						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">No</th>
+							<th style="width: 40px;" class="dt-middle">No</th>
 							<th style="width: 80px;" class="dt-middle">文件名</th>
-							<th style="width: 30px;" class="dt-middle">路径</th>
-							<th style="width: 80px;" class="dt-middle">说明</th>
+							<th style="width: 80px;" class="dt-middle">路径</th>
+							<th style="width: 180px;" class="dt-middle">说明</th>
 							<th style="width: 80px;" class="dt-middle">操作</th>
 						</tr>
 					</thead>
@@ -478,7 +477,7 @@ function doDeleteQuestion() {
 				</table>
 
 				<div  style="height:20px"></div>
-				<legend style="display:inline">问题和改善</legend>
+				<legend>问题和改善</legend>
 				<button type="button" id="deletequestion" class="DTTT_button" onClick="doDeleteQuestion();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addquestion" class="DTTT_button" onClick="doAddQuestion();"
@@ -487,16 +486,18 @@ function doDeleteQuestion() {
 					<table id="questionList" class="display" cellspacing="0">
 						<thead>
 							<tr class="selected">
+								<th style="width: 40px;" class="dt-middle">No</th>
 								<th style="width: 40px;" class="dt-middle">新建日期</th>
 								<th style="width: 180px;" class="dt-middle">问题描述</th>
 								<th style="width: 180px;" class="dt-middle">改善方案</th>
 								<th style="width: 40px;" class="dt-middle">预期完成时间</th>
-								<th style="width: 40px;" class="dt-middle">完成时间</th>
+								<th style="width: 50px;" class="dt-middle">完成时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
 						<tfoot>
 							<tr>
+								<th></th>
 								<th></th>
 								<th></th>
 								<th></th>

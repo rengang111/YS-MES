@@ -2,8 +2,8 @@ package com.ys.business.db.dao;
 
 import java.sql.*;
 import java.io.InputStream;
-import com.ys.business.db.data.*;
 import com.ys.util.basedao.BaseAbstractDao;
+import com.ys.business.db.data.*;
 
 /**
 * <p>Title: </p>

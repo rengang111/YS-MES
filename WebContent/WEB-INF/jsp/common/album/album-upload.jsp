@@ -25,7 +25,7 @@
 </head>
 <body style="overflow:scroll;overflow-y:hidden" onbeforeunload="return beforeunload(event);" >
 
-	<div id="layer_main" style="padding:30px 0px;">
+	<div id="layer_main" style="padding:0px 0px;">
 
 			<div id="container">
 		    <!-- The element where Fine Uploader will exist. -->
@@ -50,7 +50,7 @@
                 <span class="qq-upload-drop-area-text-selector"></span>
             </div>
             <div class="buttons">
-                 <div class="qq-upload-button-selector qq-upload-button" style="margin-right:30px">
+                 <div class="qq-upload-button-selector qq-upload-button" style="margin-right:5px">
                      <div>选择文件</div>
                  </div>
                  <button type="button" id="trigger-upload" class="btn btn-primary qq-upload-button">
@@ -137,14 +137,15 @@
                 endpoint: '${pageContext.request.contextPath}/album/album-upload',
                 params:
                 { 
-                	key: "${DisplayData.key}"                   
+                	key: "${DisplayData.key}",
+                	info: "${DisplayData.info}",
                 },
             },
             validation: {
                 //控制上传文件的后缀格式数组
                 allowedExtensions: ['jpeg', 'jpg', 'png'],
              //控制上传文件大小
-               //  sizeLimit: 204800  //  200 kB = 200 * 1024 bytes
+                sizeLimit: (100000 * 1024 * 1024) // 200 kB = 200 * 1024 bytes
             },
             thumbnails: {
                 placeholders: {
@@ -158,40 +159,23 @@
         
         qq(document.getElementById("trigger-upload")).attach("click", function() {
         	//alert(99);
-        	//if (confirm("${msg}")) {
-        		
-        	//设置缓冲时间,修正Firefox和IE下的不正当提示信息
-        	
-        	/*	
-        	var func1=function(callback){
-    		   
-    		    uploader.uploadStoredFiles();
-    		   
-    		    if(callback && typeof(callback) === "function") 
-					 callback();
-    		    
-    		}
-
-    		func1(func2);
-    		
-    		function func2(){
-   		    	//alert("上传成功!")
-   		    	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-				parent.refresh();
-				//parent.layer.close(index); //执行关闭	
-    		    	
-    		}
-        		*/  
+        	if (confirm("${msg}")) {
         		uploader.uploadStoredFiles();
-       			setTimeout(function(){
-       				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-    				parent.refresh();
-    				//parent.layer.close(index); //执行关闭	
-   					
-   				},1000);
-           		
-				
-        	//}
+        		
+        		//alert(999);
+        		
+        		var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+				//parent.$('#events').DataTable().destroy();/
+				if ('${DisplayData.info}' == '') {
+					parent.refresh();
+					//alert(parent.location);
+					parent.layer.close(index); //执行关闭	
+				} else {
+					var curTab = parent.parent.$('#tabs').tabs('getSelected');
+					parent.refresh();
+					layer.close(index); //执行关闭
+				}
+        	}
         	
         });
         

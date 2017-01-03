@@ -10,7 +10,7 @@
 <title>后期完善检索</title>
 <script type="text/javascript">
 
-	var layerHeight = '600';shan
+	var layerHeight = '600';
 
 	function ajax() {
 		var table = $('#TLatePerfection').dataTable();
@@ -27,7 +27,7 @@
 				"searching" : false,
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/processcontrol?methodtype=search",
+				"sAjaxSource" : "${ctx}/business/lateperfection?methodtype=search",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -126,14 +126,14 @@
 	
 	function doCreate() {
 		
-		var url = "${ctx}/business/processcontrol?methodtype=addinit";
+		var url = "${ctx}/business/lateperfection?methodtype=addinit";
 		openLayer(url, '', layerHeight, true);
 	}
 	
 	function doUpdate(key) {
 		var str = '';
 		var isFirstRow = true;
-		var url = "${ctx}/business/processcontrol?methodtype=updateinit&key=" + key;
+		var url = "${ctx}/business/lateperfection?methodtype=updateinit&key=" + key;
 
 		openLayer(url, '', layerHeight, true);
 	}
@@ -156,7 +156,7 @@
 					contentType : 'application/json',
 					dataType : 'json',
 					data : str,
-					url : "${ctx}/business/processcontrol?methodtype=delete",
+					url : "${ctx}/business/lateperfection?methodtype=delete",
 					success : function(data) {
 						reload();
 						//alert(data.message);
