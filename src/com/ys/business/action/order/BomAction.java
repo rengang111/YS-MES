@@ -81,6 +81,7 @@ public class BomAction extends BaseAction {
 				break;
 			case "createBaseBom":
 				doCreateBaseBom();
+				//printOutJsonObj(response, dataMap);
 				rtnUrl = "/business/bom/basebomadd";
 				break;				
 			case "searchBom":
@@ -152,7 +153,12 @@ public class BomAction extends BaseAction {
 				break;
 			case "baseBomInsert":
 				doInsertBaseBom();
-				rtnUrl = "/business/bom/basebomadd";
+				rtnUrl = "/business/material/productview";
+				break;
+			case "getBaseBom":
+				dataMap = doShowBaseBom();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/bom/productview";
 				break;
 				
 		}
@@ -265,13 +271,12 @@ public class BomAction extends BaseAction {
 	
 	public void doCopy() throws Exception{
 			
-		//model = bomService.copyBomPlan();
 		bomService.getCopyBomList();
 			
 	}
 	public void doCreateBaseBom() throws Exception{
 		
-		model = bomService.createBaseBom();
+		bomService.createBaseBom();
 		
 	}
 	public void doCreate() throws Exception{
@@ -322,6 +327,11 @@ public class BomAction extends BaseAction {
 	public void doShowBomDetail() throws Exception{
 				
 		model = bomService.showBomDetail();
+			
+	}
+	public HashMap<String, Object> doShowBaseBom() throws Exception{
+		
+		return  bomService.showBaseBomDetail();
 			
 	}
 	

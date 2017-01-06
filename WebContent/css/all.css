@@ -315,6 +315,8 @@ input.short{width:100px;}
 
 input.middle{width:250px;}
 
+input.attributeList1{width:180px;}
+
 input.long{width:450px;}
 
 input.cash{
@@ -359,7 +361,7 @@ dl {
 	background:#7FECAD url(../images/green.gif) repeat-x;
 	font-size:13px;
 	font-weight:bold;
-	color:#71790C;
+/*	color:#71790C; */
 	border-bottom:solid 1px #efefef;	
 	cursor:pointer;
 }
@@ -551,7 +553,7 @@ h2 {
     text-decoration:none;
 }
 .tree-title{
-    font-size: 14px;
+    font-size: 14px !important;
 }
 
 .high {
@@ -583,4 +585,8 @@ input.bsolid { border: 1px solid #dadada; }
     background:white;
     border: 1px solid;
     border-color: #abadb3 #dbdfe6 #e3e9ef #e2e3ea;
+}
+
+pre{
+	white-space: inherit;
 }

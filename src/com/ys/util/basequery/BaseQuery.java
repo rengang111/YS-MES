@@ -146,16 +146,23 @@ public class BaseQuery {
     	this.viewData = getTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), 0, 0, false);
     	return this.viewData;
     }
+    
     public ArrayList<HashMap<String, String>> getYsFullData() throws Exception {
 		sql = getSql();		
-		return getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), 0, 0, false);
-    	
+		int recordCount = getRecodCount();
+		this.viewYsData =  getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), 0, 0, false);
+		this.commonModel.setYsViewData(viewYsData);
+		this.commonModel.setRecordCount(recordCount);
+		
+		return viewYsData;
     }
+    
     public ArrayList<HashMap<String, String>> getYsFullData(String sql) throws Exception {
 				
 		return getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), 0, 0, false);
     	
     }
+    
     private ArrayList<ArrayList<String>> getTurnPageData() throws Exception {
     	this.viewData = getTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), pageBean.getPageIndex(), pageBean.getRecordsPerPage(), true);
 		pageBean.setViewData(viewData);

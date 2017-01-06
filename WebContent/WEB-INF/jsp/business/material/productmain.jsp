@@ -10,7 +10,7 @@
 <title>基础BOM一览</title>
 <script type="text/javascript">
 
-	function ajax(scrollHeight) {
+	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnDestroy();
@@ -28,7 +28,7 @@
 			//"scrollY":scrollHeight,
 			"scrollCollapse":true,
 			"retrieve" : true,
-			"sAjaxSource" : "${ctx}/business/material?methodtype=searchProduct",
+			"sAjaxSource" : "${ctx}/business/material?methodtype=searchProduct&pageFlg="+pageFlg,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -58,7 +58,8 @@
 						{"data": "materialName"},
 						{"data": "productModel"},
 						{"data": "customerId"},
-						{"data": null, "defaultContent" : '0',"className" : 'td-right'},
+						{"data": "productCost", "defaultContent" : '0',"className" : 'td-right'},
+						{"data": "totalCost", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "dicName","className" : 'td-center'},
 						{"data": null,"className" : 'td-center'}
 			],
@@ -66,11 +67,11 @@
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                    }},
-	    		{"targets":7,"render":function(data, type, row){
+	    		{"targets":8,"render":function(data, type, row){
 	    			var rtn = "";
 	    			var space = '&nbsp;';
 	    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["materialId"] + "')\">查看</a>";
-	    			rtn= rtn+space+"<a href=\"#\" onClick=\"doCreate('" + row["materialId"] + "')\">BOM</a>";		
+	    			//rtn= rtn+space+"<a href=\"#\" onClick=\"doCreate('" + row["materialId"] + "')\">BOM</a>";		
 	    			return rtn;
 	    		}}
          	] 
@@ -78,11 +79,12 @@
 		);
 	}
 
-	
-	function initEvent(){
 
-		doSearch();
-	
+
+	$(document).ready(function() {
+
+		ajax("");
+		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
 			if ( $(this).hasClass('selected') ) {
@@ -93,18 +95,13 @@
 	            $(this).addClass('selected');
 	        }
 		});
-	}
-
-	$(document).ready(function() {
-
-		initEvent();
 		
 	})	
 	
 	function doSearch() {	
 
-		var scrollHeight = $(document).height() - 197; 
-		ajax(scrollHeight);
+		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
+		ajax("S");
 
 	}
 	
@@ -213,9 +210,10 @@
 					<th style="width: 30px;"class="dt-middle ">No</th>
 					<th style="width: 140px;" class="dt-middle ">成品编号</th>
 					<th class="dt-middle">产品名称</th>
-					<th style="width: 60px;" class="dt-middle">型号</th>
-					<th style="width: 60px;" class="dt-middle">客户简称</th>
+					<th style="width: 30px;" class="dt-middle">型号</th>
+					<th style="width: 30px;" class="dt-middle">客户</th>
 					<th style="width: 100px;" class="dt-middle">基础成本</th>
+					<th style="width: 100px;" class="dt-middle">核算成本</th>
 					<th style="width: 25px;" class="dt-middle ">单位</th>
 					<th style="width: 50px;" class="dt-middle ">操作</th>
 				</tr>

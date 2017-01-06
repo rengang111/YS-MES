@@ -174,8 +174,8 @@ public class MaterialService extends BaseService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		String key1 = getJsonData(data, "keyword1").toUpperCase();
-		String key2 = getJsonData(data, "keyword2").toUpperCase();
+		String key1 = getSearchKey(data,session)[0];
+		String key2 = getSearchKey(data,session)[1];
 
 		dataModel.setQueryName("getProductList");
 		
@@ -198,6 +198,20 @@ public class MaterialService extends BaseService {
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;
+	}
+
+	public void getProductDetail(String productId) throws Exception {
+
+		dataModel.setQueryName("getProductList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", productId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		baseQuery.getYsFullData();	 
+		
+		model.addAttribute("product", dataModel.getYsViewData().get(0));
+
 	}
 
 	public HashMap<String, Object> supplierPriceView(HttpServletRequest request, 
@@ -844,16 +858,22 @@ public class MaterialService extends BaseService {
 	/*
 	 * 
 	 */
-	public void getProductDeital() {
+	public void getProductDeital() throws Exception {
 
+		String materialId = request.getParameter("materialId");
+		
 		//产品基本信息
+		getProductDetail(materialId);
 		
 		//基础BOM信息
 		
+		
 		//客户报价信息
 		
+		
 		//订单信息
-	
+		
+
 	}
 	
 	public MaterialModel doDelete(

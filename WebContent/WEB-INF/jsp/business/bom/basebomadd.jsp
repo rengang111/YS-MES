@@ -56,7 +56,7 @@
 								'<td><span></span></td>',
 								'<td><input type="text"   name="attributeList2"  class="attributeList2" style="width:80px"> '+
 									'<input type="hidden" name="bomDetailLines['+rowIndex+'].supplierid" id="bomDetailLines'+rowIndex+'.supplierid" /></td>',
-								'<td><input type="text"   name="bomDetailLines['+rowIndex+'].quantity"   id="bomDetailLines'+rowIndex+'.quantity"   class="cash"  style="width:50px"/></td>',
+								'<td><input type="text"   name="bomDetailLines['+rowIndex+'].quantity"   id="bomDetailLines'+rowIndex+'.quantity"   class="cash"  style="width:70px"/></td>',
 								'<td><input type="text"   name="bomDetailLines['+rowIndex+'].price"      id="bomDetailLines'+rowIndex+'.price"      class="cash mini" /></td>',
 								'<td><span></span><input type="hidden"   name="bomDetailLines['+rowIndex+'].totalprice" id="bomDetailLines'+rowIndex+'.totalprice"/><input type="hidden" id="labor"></td>',
 								]).draw();
@@ -180,7 +180,7 @@
             var $oMaterial  = $tds.eq(1).find("input:text");
             var $oQuantity  = $tds.eq(4).find("input");
 			var $oThisPrice = $tds.eq(5).find("input");
-			//var $oAmount1   = $tds.eq(6).find("input:hidden");
+			var $oAmount1   = $tds.eq(6).find("input:hidden");
 			var $oAmount2   = $tds.eq(6).find("span");
 			var $oAmountd   = $tds.eq(6).find("input:last-child");//人工成本
 			
@@ -191,13 +191,13 @@
 			var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
 
 			var vPrice = float4ToCurrency(fPrice);	
-			var vQuantity = floatToCurrency(fQuantity);
+			var vQuantity = float5ToCurrency(fQuantity);
 			var vTotalNew = float4ToCurrency(fTotalNew);
 					
 			//详情列表显示新的价格
 			$oThisPrice.val(vPrice);					
 			$oQuantity.val(vQuantity);	
-			//$oAmount1.val(vTotalNew);	
+			$oAmount1.val(vTotalNew);	
 			$oAmount2.html(vTotalNew);
 			$oAmountd.val(fAmountd);
 
@@ -246,7 +246,8 @@
 		
 		$("#goBack").click(
 				function() {
-					var url = '${ctx}/business/order';
+					var materialId = '${product.materialId}';
+					var url = '${ctx}/business/material?methodtype=productInit&materialId='+ materialId;
 					location.href = url;		
 				});
 		
@@ -351,6 +352,7 @@
 		id="bomForm" name="bomForm"  autocomplete="off">
 		
 		<input type="hidden" id="tmpMaterialId" />	
+		<form:hidden path="bomPlan.recordid" value="${material.productRecord}"/>
 		
 		<fieldset>
 			<legend>基础BOM</legend>
@@ -358,18 +360,20 @@
 				<tr>
 					<td class="label" width="100px">BOM编号：</td>					
 					<td width="150px">${bomForm.bomPlan.bomid}
-						<form:hidden path="bomPlan.bomid"/></td>
+						<form:hidden path="bomPlan.bomid" value="${bomForm.bomPlan.bomid}"/>
+						<form:hidden path="bomPlan.subid" value="${bomForm.bomPlan.subid}"/></td>
 						
 					<td class="label" width="100px">产品编号：</td>				
 					<td width="150px">${product.materialId}
-						<form:hidden path="bomPlan.materialid" /></td>					
+						<form:hidden path="bomPlan.materialid"  value="${product.materialId}"/></td>					
 					
 					<td class="label" width="100px">产品名称：</td>
 					<td>${product.materialName }</td>
 				</tr>
 				<tr>
 					<td class="label">机器型号：</td>
-					<td>${product.productModel }</td>
+					<td>${product.productModel }
+						<form:hidden path="bomDetail.productmodel"  value="${product.productModel}"/></td>
 					
 					<td class="label">客户简称：</td>
 					<td>${product.shortName }</td>
@@ -385,7 +389,7 @@
 				
 				<tr>
 					<td class="td-center"><label>材料成本<br>A</label></td>	
-					<td class="td-center"><label>人工<br>B</label></td>
+					<td class="td-center"><label>人工成本<br>B</label></td>
 					<td class="td-center"><label>基础成本<br>E=A＋B</label></td>
 					<td class="td-center"><label>核算成本<br>F=E*1.1*1.02</label></td>
 				</tr>	
@@ -418,12 +422,12 @@
 			<thead>				
 			<tr>
 				<th width="1px">No</th>
-				<th class="dt-center" width="80px">物料编码</th>
+				<th class="dt-center" width="200px">物料编码</th>
 				<th class="dt-center" >物料名称</th>
 				<th class="dt-center" width="100px">供应商编号</th>
-				<th class="dt-center" width="80px">用量</th>
-				<th class="dt-center" width="100px">本次单价</th>
-				<th class="dt-center" width="100px">总价</th>
+				<th class="dt-center" width="60px">用量</th>
+				<th class="dt-center" width="80px">本次单价</th>
+				<th class="dt-center" width="80px">总价</th>
 			</tr>
 			</thead>
 			<tfoot>
@@ -449,7 +453,7 @@
 					<td><span></span></td>	
 					<td><input type="text" name="attributeList2" class="attributeList2" style="width:80px"/>
 						<form:hidden path="bomDetailLines[${i}].supplierid"/></td>
-					<td><form:input path="bomDetailLines[${i}].quantity" class="cash"  style="width:50px"/></td>							
+					<td><form:input path="bomDetailLines[${i}].quantity" class="cash"  style="width:70px"/></td>							
 					<td><form:input path="bomDetailLines[${i}].price" class="cash mini"  /></td>						
 					<td><span></span>
 						<form:hidden path="bomDetailLines[${i}].totalprice"/></td>					
@@ -464,23 +468,22 @@
 		<c:if test="${fn:length(materialDetail) > 0}" >
 						
 			<c:forEach var="detail" items="${materialDetail}" varStatus='status' >		
-
 				
-<tr>
-	<td></td>
-	<td><input type="text" name="attributeList1" class="attributeList1" value="${detail.materialId}"/>
-		<form:hidden path="bomDetailLines[${status.index}].materialid"  value="${detail.materialId}"/></td>								
-	<td><span id="name${status.index}">${detail.materialName}</span></td>
-	<td><input type="text" name="attributeList2" class="attributeList2"  value="${detail.supplierId}" style="width:80px" />
-		<form:hidden path="bomDetailLines[${status.index}].supplierid"  value="${detail.supplierId}" /></td>
-	<td><form:input path="bomDetailLines[${status.index}].quantity" value="${detail.quantity}"  class="cash"  style="width:50px"/></td>							
-	<td><form:input path="bomDetailLines[${status.index}].price"  value="${detail.price}" class="cash mini"  /></td>						
-	<td><span id="total${status.index}">${detail.totalPrice}</span>
-		<form:hidden path="bomDetailLines[${status.index}].totalprice"  value="${detail.totalPrice}"/>
-		<input type="hidden" id="labor${status.index}"></td>	
-	
-	<form:hidden path="bomDetailLines[${status.index}].sourceprice"  value="${detail.price}" />	
-</tr>
+				<tr>
+					<td></td>
+					<td><input type="text" name="attributeList1" class="attributeList1" value="${detail.materialId}" />
+						<form:hidden path="bomDetailLines[${status.index}].materialid"  value="${detail.materialId}"/></td>								
+					<td><span id="name${status.index}">${detail.materialName}</span></td>
+					<td><input type="text" name="attributeList2" class="attributeList2"  value="${detail.supplierId}" style="width:100px" />
+						<form:hidden path="bomDetailLines[${status.index}].supplierid"  value="${detail.supplierId}" /></td>
+					<td><form:input path="bomDetailLines[${status.index}].quantity" value="${detail.quantity}"  class="cash"  style="width:70px"/></td>							
+					<td><form:input path="bomDetailLines[${status.index}].price"  value="${detail.price}" class="cash mini"  /></td>						
+					<td><span id="total${status.index}">${detail.totalPrice}</span>
+						<form:hidden path="bomDetailLines[${status.index}].totalprice"  value="${detail.totalPrice}"/>
+						<input type="hidden" id="labor${status.index}"></td>	
+					
+					<form:hidden path="bomDetailLines[${status.index}].sourceprice"  value="${detail.price}" />	
+				</tr>
 
 				<script type="text/javascript">
 					var index = '${status.index}';
@@ -489,12 +492,12 @@
 					var materialName = '${detail.materialName}';
 					var quantity = currencyToFloat('${detail.quantity}');
 					var price =currencyToFloat( '${detail.price}');
-					var totalPrice = quantity * price;
+					var totalPrice = float4ToCurrency(quantity * price);
 					var labor = fnLaborCost( materialId,totalPrice);
 					$('#labor'+index).val(labor);
 					$('#total'+index).html(totalPrice);
 					$('#bomDetailLines'+index+'\\.totalprice').val(totalPrice);
-					$('#name'+index).html(jQuery.fixedWidth(materialName,20));
+					$('#name'+index).html(jQuery.fixedWidth(materialName,40));
 					counter++;
 				</script>
 				
@@ -690,7 +693,7 @@ function autocomplete(){
 			var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
 	
 			//显示到页面	
-			var vPrice = floatToCurrency(fPrice);
+			var vPrice = float5ToCurrency(fPrice);
 			var vTotalNew = floatToCurrency(fTotalNew);
 
 			$oSupplier.val(ui.item.supplierId);

@@ -292,19 +292,26 @@
       <f name="A.recordId" alias="" ctype="" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="A.materialName" alias="" ctype="" />
+      <f name="A.description" alias="" ctype="" />
       <f name="A.categoryId" alias="" ctype="" />
       <f name="A.categoryName" alias="" ctype="" />
       <f name="A.parentId" alias="" ctype="" />
       <f name="A.viewList" alias="" ctype="" />
       <f name="A.shareModel" alias="" ctype="" />
+      <f name="A.productModel" alias="" ctype="" />
+      <f name="A.categoryIdAndName" alias="" ctype="" />
       <f name="A.customerId" alias="" ctype="" />
+      <f name="A.customerName" alias="" ctype="" />
+      <f name="A.customerIdAndName" alias="" ctype="" />
       <f name="A.productModel" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
+      <f name="b.productCost" alias="" ctype="" />
+      <f name="b.totalCost" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- 限定条件:成品 -->
-    <from>v_materiallist AS A WHERE  SUBSTR(a.materialId FROM 1 FOR 1) = 'I' AND a.deleteFlag = '0' </from>
+    <from>v_materiallist AS A LEFT JOIN b_bomplan b ON a.materialId = b.materialId AND b.DeleteFlag = '0' WHERE  SUBSTR(a.materialId FROM 1 FOR 1) = 'I' AND a.deleteFlag = '0' </from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>

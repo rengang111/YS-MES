@@ -80,7 +80,7 @@ public class ZZMaterialAction extends BaseAction {
 				rtnUrl = "/business/material/zzmaterialadd";
 				break;
 			case "createH":
-				//doCreateH();
+				doCreateH();
 				rtnUrl = "/business/material/zzhmaterialadd";
 				break;
 			case "insert":

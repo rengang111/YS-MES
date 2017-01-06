@@ -20,20 +20,7 @@
 <form:form modelAttribute="material" method="POST" 
 	id="material" name="material"   autocomplete="off">
 	
-	<form:hidden path="material.recordid" />
-	<form:hidden path="material.parentid" />
-	<form:hidden path="material.serialnumber" />
-	<form:hidden path="material.categoryid" />
-	<form:hidden path="materialid" value="${material.material.materialid}"/>
-	<form:hidden path="categoryname" value="${material.attribute2}" />
-	<form:hidden path="materialname" value="${material.material.materialname}" />
-	
-	<input type="hidden" id="supplierid" />
-	<input type="hidden" id="suppliershortname" />
-	<input type="hidden" id="supplierfullname" />
-	
-	
-	<input id="handle_status" value="1133" hidden="hidden">
+	<input type="hidden" id="recordsTotal"  >
 	
 <fieldset style="float: left;width: 65%;">
 	<legend>产品信息</legend>
@@ -42,31 +29,38 @@
 		<tr>
 			<td class="label" style="width: 100px;"><label>产品编号：</label></td>
 			<td style="width: 150px;">
-				<label>${material.material.materialid}</label></td>
+				<label>${product.materialId}</label></td>
 								
 			<td class="label" style="width: 100px;"><label>产品名称：</label></td>
-			<td colspan="3">${material.material.materialname}</td>												
+			<td colspan="3">${product.materialName}</td>												
 		</tr>
 		<tr>				
 			<td class="label" style="width: 100px;"><label>分类编码：</label></td>
-			<td colspan="3">${material.material.categoryid} | ${material.attribute2}</td>				
+			<td colspan="3">${product.categoryIdAndName}</td>				
 								
 			<td class="label" style="width: 100px;"><label>计量单位：</label></td>
-			<td style="width: 50px;text-align: center;">${material.unitname}</td>				
+			<td style="width: 50px;text-align: center;">${product.dicName}</td>				
 		</tr>
 		<tr>
 			<td class="label">机器型号：</td>
 			<td>${product.productModel }</td>			
 			<td class="label">客户名称：</td>
-			<td colspan="3">${product.customerName }</td>
+			<td colspan="3">${product.customerIdAndName }</td>
 		</tr>
 		<tr>
 			<td class="label" style="vertical-align: text-top;">中文描述：</td>
-			<td colspan="5" style="vertical-align: text-top;"><pre></pre></td></tr>	
+			<td colspan="5" style="vertical-align: text-top;"><pre>${product.description }</pre></td>
+		</tr>
+		<tr>
+			<td class="label tree-title">基础成本：</td>
+			<td class="tree-title" style="font-weight: bold;"><span id=beseCost></span></td>			
+			<td class="label tree-title">核算成本：</td>
+			<td class="tree-title" style="font-weight: bold;"colspan="3"><span id=totalCost></span></td>
+		</tr>	
 	</table>
 	<div class="action" style="text-align: right;">			
-		<button type="button" id="return" class="DTTT_button">返回</button>
 		<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
+		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</div>
 	</fieldset>	
 		<div id="tabs" style="float:right;margin: 10px 30px 0px 0px;">
@@ -75,62 +69,42 @@
 				</div>
 		</div>
 
-	
-	<table id="example" class="display">
-		<thead>				
-			<tr>
-				<th width="1px">No</th>
-				<th class="dt-center" width="80px">物料编码</th>
-				<th class="dt-center" >物料名称</th>
-				<th class="dt-center" width="100px">供应商编号</th>
-				<th class="dt-center" width="80px">用量</th>
-				<th class="dt-center" width="100px">本次单价</th>
-				<th class="dt-center" width="100px">总价</th>
-			</tr>
-		</thead>
-		<tbody>
-						
-			<c:forEach var="detail" items="${materialDetail}" varStatus='status' >						
+		
+	<dl class="collapse">
+		<dt><span id="bomId">基础BOM</span> <button type="button" class="DTTT_button" onclick="doCreateBaseBom();">编辑</button>
+			（ 单价颜色变化&nbsp;&nbsp; <span style="color:green"> 绿色：下降</span>&nbsp;&nbsp; <span style="color:red">红色：上涨</span> ）</dt>
+		<dd>
+		<table id="baseBomTable" class="display">
+			<thead>				
 				<tr>
-					<td>${status.index+1}</td>
-					<td>${detail.materialId}</td>								
-					<td><span id="name${status.index}"></span></td>
-					<td>${detail.supplierId}</td>
-					<td>${detail.quantity}</td>							
-					<td>${detail.price}</td>						
-					<td><span id="total${status.index}">${detail.totalPrice}</span></td>					
+					<th width="1px">No</th>
+					<th class="dt-center" width="200px">物料编码</th>
+					<th class="dt-center" width="350px">物料名称</th>
+					<th class="dt-center" width="100px">供应商编号</th>
+					<th class="dt-center" width="100px">用量</th>
+					<th class="dt-center" width="150px">单价</th>
+					<th class="dt-center" width="150px">总价</th>
 				</tr>
-
-				<script type="text/javascript">
-					var index = '${status.index}';
-					var materialName = '${detail.materialName}';
-					var quantity = currencyToFloat('${detail.quantity}');
-					var price =currencyToFloat( '${detail.price}');
-					var totalPrice = quantity * price;
-					$('#total'+index).html(totalPrice);
-					$('#name'+index).html(jQuery.fixedWidth(materialName,20));
-					counter++;
-				</script>
-				
-			</c:forEach>
-		</tbody>
-	</table>		
-
+			</thead>
+			
+		</table>
+		</dd>
+	</dl>
 <div style="clear: both"></div>		
 	
-<fieldset>
+<fieldset style="margin-top: 10px;">
 	<legend>客户报价</legend>
-	<a class="DTTT_button" onclick="doCreatePrice();">新建</a>	
 	<div class="list">	
+		<a class="DTTT_button" onclick="doCreatePrice();" style="float: right;">新建</a>	
 		<table id="TSupplier"  class="display dataTable">
 			<thead>				
 				<tr>
-					<th style="width:30px;" class="dt-middle ">No</th>
-					<th style="width:80px;" class="dt-middle ">报价时间</th>
+					<th style="width:50px;" class="dt-middle ">No</th>
+					<th style="width:100px;" class="dt-middle ">报价时间</th>
 					<th style="width:150px;" class="dt-middle ">BOM编号<th>
 					<th style="width:280px;"class="dt-middle ">核算价格</th>
-					<th style="width:50px;" class="dt-middle ">客户币种</th>
-					<th style="width:50px;" class="dt-middle ">客户报价</th>
+					<th style="width:100px;" class="dt-middle ">客户币种</th>
+					<th style="width:150px;" class="dt-middle ">客户报价</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -154,15 +128,16 @@
 	
 <fieldset>
 	<legend>订单详情</legend>
-	<a class="DTTT_button" onclick="doCreateOrder();">新建</a>	
+		
 	<div class="list">	
+	<a class="DTTT_button" onclick="doCreateOrder();" style="float: right;">新建</a>
 		<table id="TSupplier"  class="display dataTable">
 			<thead>				
 				<tr>
-					<th style="width:30px;" class="dt-middle ">No</th>
-					<th style="width:80px;" class="dt-middle ">关联BOM编号</th>
-					<th style="width:150px;" class="dt-middle ">下单时间<th>
-					<th style="width:280px;"class="dt-middle ">耀升编号</th>
+					<th style="width:10px;" class="dt-middle ">No</th>
+					<th style="width:100px;" class="dt-middle ">BOM编号</th>
+					<th style="width:80px;" class="dt-middle ">下单时间<th>
+					<th style="width:80px;"class="dt-middle ">耀升编号</th>
 					<th style="width:50px;" class="dt-middle ">客户订单编号</th>
 					<th style="width:50px;" class="dt-middle ">订单数量</th>
 					<th style="width:50px;" class="dt-middle ">订单交期</th>
@@ -170,7 +145,7 @@
 					<th style="width:50px;" class="dt-middle ">单价</th>
 					<th style="width:50px;" class="dt-middle ">总价</th>
 					<th style="width:50px;" class="dt-middle ">出运条款</th>
-					<th style="width:50px;" class="dt-middle ">出运港/目的港</th>
+					<th style="width:70px;" class="dt-middle ">出运港/目的港</th>
 					<th style="width:50px;" class="dt-middle ">付款条件：出运后</th>
 				</tr>
 			</thead>
@@ -196,50 +171,183 @@
 </div>
 <script type="text/javascript">
 
-
-//Form序列化后转为AJAX可提交的JSON格式。
-$.fn.serializeObject = function() {
-	var o = {};
-	var a = this.serializeArray();
-	$.each(a, function() {
-		if (o[this.name] !== undefined) {
-			if (!o[this.name].push) {
-				o[this.name] = [ o[this.name] ];
-			}
-			o[this.name].push(this.value || '');
-		} else {
-			o[this.name] = this.value || '';
-		}
-	});
-	return o;
-};
-
 $(document).ready(function() {
 		
 	
-	$("#return").click(
+	$("#goBack").click(
 		function() {
-			var materialId='${material.material.materialid}';
-			var url = "${ctx}/business/material?materialId="+materialId;
+			var materialId='${product.materialId}';
+			var url = "${ctx}/business/material?methodtype=productInit&materialId="+materialId;
 			location.href = url;		
 		});
 
 	$("#doEdit").click(
-			function() {				
-				var recordid = $('#material\\.recordid').val();
-				var parentid = $('#material\\.parentid').val();
+			function() {
+				var recordid = '${product.recordId}';
+				var parentid = '${product.parentId}';
 				var url = '${ctx}/business/material?methodtype=edit';
 				url = url + '&parentId=' + parentid+'&recordId='+recordid;
-				location.href = url;			
+				location.href = url;		
 
 	});
 	
-	//供应商单价显示处理
-	supplierPriceView();
-	//供应商列表点击颜色变化
-	selectedColor();
+	
+	supplierPriceView();//供应商单价显示处理
+	
+	baseBomView();//显示基础BOM
+	
+	selectedColor();//供应商列表点击颜色变化
     	
 });
+
+//列合计:总价
+function productCostSum(){
+
+	var sum = 0;
+	$('#baseBomTable tbody tr').each (function (){
+		
+		var vtotal = $(this).find("td").eq(6).text();
+		var ftotal = currencyToFloat(vtotal);
+		
+		sum = currencyToFloat(sum) + ftotal;			
+	})
+	return sum;
+}
+
+//编辑基础BOM
+function doCreateBaseBom() {
+	var materialId ='${product.materialId}';
+	var productModel = '${product.productModel }';
+	var accessFlg = $('#recordsTotal').val();
+	var url = '${ctx}/business/bom?methodtype=createBaseBom&materialId=' + materialId+'&model='+productModel+'&accessFlg='+accessFlg;
+		location.href = url;
+	
+}
+
+function baseBomView() {
+
+	var materialId='${product.materialId}';
+	var table = $('#baseBomTable').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+	var t2 = $('#baseBomTable').DataTable({
+		"paging": false,
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"searching" : false,
+		"pagingType" : "full_numbers",
+		"retrieve" : false,
+		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,				
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : null,
+				success: function(data){
+					fnCallback(data);
+					
+					$('#recordsTotal').val(data['recordsTotal']);
+			
+					var productCost = data['data'][0]['productCost'];
+					
+					var price = productCostSum();
+					var total = price * 1.1 * 1.02;
+
+					var fproductCost = currencyToFloat(productCost);
+					var fprice = currencyToFloat(price).toFixed(2);
+					
+					var vprice = floatToCurrency(price);
+					var vtotal = floatToCurrency(total);
+					
+					//alert('fprice:'+fprice+'fproductCost:'+fproductCost)
+					if(fprice > fproductCost){
+						vprice = '<div style="color:red">' + vprice + '</div>';
+						vtotal = '<div style="color:red">' + vtotal + '</div>';
+					}else if (fprice < fproductCost){
+						vprice = '<div style="color:green">' + vprice + '</div>';
+						vtotal = '<div style="color:green">' + vtotal + '</div>';						
+					}
+					var bomId = data['data'][0]['bomId'];
+					$('#bomId').html(bomId);
+					$('#beseCost').html(vprice);
+					$('#totalCost').html(vtotal);
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+       	"language": {
+       		"url":"${ctx}/plugins/datatables/chinese.json"
+       	},
+		"columns": [
+			{"data": null,"className" : 'td-center'},
+			{"data": "materialId"},
+			{"data": "materialName"},
+			{"data": "supplierId"},
+			{"data": "quantity","className" : 'td-right'},
+			{"data": "price","className" : 'td-right'},
+			{"data": "totalPrice","className" : 'td-right'},
+		 ],
+		"columnDefs":[
+    		{"targets":2,"render":function(data, type, row){
+    			
+    			var name = row["materialName"];				    			
+    			name = jQuery.fixedWidth(name,30);				    			
+    			return name;
+    		}},
+    		{"targets":5,"render":function(data, type, row){
+    			
+    			var price =  row["price"] ;
+    			var fprice = currencyToFloat( price );
+    			var oldPrice = currencyToFloat( row["oldPrice"] );
+
+				if(fprice > oldPrice){
+					price = '<div style="font-weight:bold;color:red">' + price + '</div>';
+				}else if(fprice < oldPrice){
+					price = '<div style="font-weight:bold;color:green">' + price + '</div>';
+					
+				}
+    			return price;
+    		}},
+    		{"targets":6,"render":function(data, type, row){
+    			
+    			var price = currencyToFloat( row["price"] );
+    			var quantity = currencyToFloat( row["quantity"] );				    			
+    			var total = float4ToCurrency( price * quantity );			    			
+    			return total;
+    		}}
+          
+        ] 
+	});
+	
+	t2.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t2.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+		
+	});
+	
+	t2.on('order.dt search.dt draw.dt', function() {
+		t2.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			var num   = i + 1;
+			cell.innerHTML = num ;
+		});
+	}).draw();
+
+	
+}//ajax()供应商信息
 
 function supplierPriceView() {
 
@@ -258,7 +366,7 @@ function supplierPriceView() {
 		"pagingType" : "full_numbers",
 		//"bJQueryUI": true,
 		"retrieve" : false,
-		"sAjaxSource" : "${ctx}/business/material?methodtype=supplierPriceView",				
+		//"sAjaxSource" : "${ctx}/business/material?methodtype=supplierPriceView",				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 				
 			var param = {};
@@ -272,6 +380,7 @@ function supplierPriceView() {
 				"datatype": "json", 
 				"contentType": "application/json; charset=utf-8",
 				"type" : "POST",
+				"async": false,
 				"data" : JSON.stringify(aoData),
 				success: function(data){
 					
@@ -303,11 +412,9 @@ function supplierPriceView() {
 		"columns": [
 					{"data": null,"className" : 'td-center'},
 					{"data": "supplierId"},
-					{"data": "shortName"},
 					{"data": "fullName"},
 					{"data": "price","className" : 'td-right'},
 					{"data": "currency","className" : 'td-center'},
-					{"data": "unit","className" : 'td-center'},
 					{"data": "priceDate","className" : 'td-center'},
 					{"data": null,"className" : 'td-center'}
 		        ],
@@ -316,7 +423,7 @@ function supplierPriceView() {
 		    			
 						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":6,"render":function(data, type, row){
 		    			var edit = "<a href=\"#\" onClick=\"doUpdate('" + row["supplierId"] + "')\">编辑</a>";
 		    			var history = "<a href=\"#\" onClick=\"doShowHistory('" + row["supplierId"] + "')\">历史报价</a>";
 		    			var delet = "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
@@ -350,21 +457,7 @@ var layerHeight = '360px';
 var layerWidth  = '900px';
 
 
-//新增供应商
-function doCreatePrice() {
-	var materialid ='${material.material.materialid}';
-	var url = "${ctx}/business/material?methodtype=addSupplier&materialid="+materialid;
-	
-	layer.open({
-		offset :[100,''],
-		type : 2,
-		title : false,
-		area : [ '900px', layerHeight ], 
-		scrollbar : false,
-		title : false,
-		content : url,
-	});
-}
+
 
 //新建二级BOM
 function doCreateBOMZZ() {
@@ -443,32 +536,31 @@ function doShowHistory(supplierId) {
 	});
 }
 
-function doDelete(recordId){
+</script>
 	
+<script type="text/javascript">
+$(function(){
+	var t = [];
+	var dt = $("dl.collapse dt");
+	var dd = $("dl.collapse dd");
 	
-	if (recordId != ""){ //
-		$.ajax({
-			type : "post",
-			url : "${ctx}/business/material?methodtype=deletePrice&recordId="+recordId,
-			async : false,
-			data : 'key=' + recordId,
-			dataType : "json",
-			success : function(data) {
-				$('#TSupplier').DataTable().ajax.reload(null,false);
-			},
-			error : function(
-					XMLHttpRequest,
-					textStatus,
-					errorThrown) {
+	dt.each(function(i){
+		t[i] = false;		//设置折叠初始状态
+		$(dt[i]).click((function(i,dd){
+			
+			return function(){		//返回一个闭包函数,闭包能够存储传递进来的动态参数
 				
-				
+				if(t[i]){					
+					$(dd).show();
+					t[i] = false;
+				}else{
+					$(dd).hide();
+					t[i] = true;
+				}					
 			}
-		});
-	}else{
-		//
-	}
-}
-
+		})(i,dd[i]))	//向当前执行函数中传递参数
+	})
+})
 </script>
 </body>
 </html>
