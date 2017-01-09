@@ -237,6 +237,8 @@
 	$(document).ready(function() {
 		
 		//$("#bomPlan\\.managementcostrate").val($("#bomPlan\\.managementcostrate option:eq(2)").val());
+		var rate = '${material.managementCostRate}';
+		if(rate =='') $("#bomPlan\\.managementcostrate").val('5');
 		
 		ajax();
 		
@@ -264,8 +266,12 @@
 			location.href = url;
 		});
 		
-
-		//iFramAutoSroll();//重设显示窗口(iframe)高度		
+		//经管费计算
+		$("#bomPlan\\.managementcostrate").change(function() {
+			
+			costAcount();					
+		});
+	
 		
 		foucsInit();//input获取焦点初始化处理
 		
@@ -295,19 +301,21 @@
 		//材料成本=产品成本-人工成本
 		//经管费=经管费率x产品成本
 		//核算成本=产品成本+经管费
-			
-		var laborCost   = laborCostSum();
-		var productCost = productCostSum();
+		var managementCostRate = $('#bomPlan\\.managementcostrate').val();
+		managementCostRate = currencyToFloat(managementCostRate) / 100;//费率百分比转换
 		
-		var fmaterialCost,facoutCost;
+		var laborCost = laborCostSum();
+		var bomCost = productCostSum();
 		
-		fmaterialCost = productCost - laborCost;
-		facoutCost    = productCost * 1.1 * 1.02;
+		var fmaterialCost = bomCost - laborCost;
+		var productCost = bomCost * 1.1;		
+		var ftotalCost = productCost * ( 1 + managementCostRate );
 
+		$('#bomPlan\\.bomcost').val(floatToCurrency(bomCost));
 		$('#bomPlan\\.productcost').val(floatToCurrency(productCost));
 		$('#bomPlan\\.laborcost').val(floatToCurrency(laborCost));
 		$('#bomPlan\\.materialcost').val(floatToCurrency(fmaterialCost));
-		$('#bomPlan\\.totalcost').val(floatToCurrency(facoutCost));
+		$('#bomPlan\\.totalcost').val(floatToCurrency(ftotalCost));
 		//alert('labor:'+laborCost+'--product:'+productCost)
 		
 	}
@@ -390,18 +398,24 @@
 				<tr>
 					<td class="td-center"><label>材料成本<br>A</label></td>	
 					<td class="td-center"><label>人工成本<br>B</label></td>
-					<td class="td-center"><label>基础成本<br>E=A＋B</label></td>
-					<td class="td-center"><label>核算成本<br>F=E*1.1*1.02</label></td>
+					<td class="td-center"><label> BOM成本<br>C=A＋B</label></td>
+					<td class="td-center"><label>基础成本<br>D=C＊1.1</label></td>
+					<td class="td-center"><label>经管费率<br>E</label></td>
+					<td class="td-center"><label>核算成本<br>F=D＊(1+E)</label></td>
 				</tr>	
 				<tr>			
 					<td class="td-center">
 						<form:input path="bomPlan.materialcost" class="read-only cash" /></td>
 					<td class="td-center">
-						<form:input path="bomPlan.laborcost" class="read-only cash" value="${bomPlan.laborCost}" /></td>
+						<form:input path="bomPlan.laborcost" class="read-only cash" value="" /></td>
 					<td class="td-center">
-						<form:input path="bomPlan.productcost" class="read-only cash" value="${bomPlan.productCost}"/></td>
+						<form:input path="bomPlan.bomcost" class="read-only cash" value="${material.bomCost}"/></td>
 					<td class="td-center">
-						<form:input path="bomPlan.totalcost" class="read-only cash" value="${bomPlan.totalCost}"/></td>
+						<form:input path="bomPlan.productcost" class="read-only cash" value="${material.productCost}"/></td>
+					<td class="td-center">
+						<form:input path="bomPlan.managementcostrate" class="num mini" value="${material.managementCostRate}" style="text-align: center;"/>%</td>
+					<td class="td-center">
+						<form:input path="bomPlan.totalcost" class="read-only cash" value="${material.totalCost}"/></td>
 				</tr>								
 			</table>
 	</fieldset>

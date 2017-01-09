@@ -275,7 +275,7 @@ $(document).ready(function() {
 	
 	$("#update").click(function() {
 		if(inputCheck()){
-			$('#ZZMaterial').attr("action", "${ctx}/business/zzmaterial?methodtype=update");
+			$('#ZZMaterial').attr("action", "${ctx}/business/zzmaterial?methodtype=updateB");
 			$('#ZZMaterial').submit();
 		}
 	});
@@ -430,13 +430,13 @@ function acountPowerPrice(){
 	<table class="form">		
 		<tr>
 			<td class="label" style="width: 120px;">产品编号：</td>
-			<td style="width: 150px;">${material.materialId }
-				<form:hidden path="price.materialid" value="${material.materialId }"/></td>
+			<td style="width: 150px;">${price.materialId }
+				<form:hidden path="price.materialid" value="${price.materialId }"/></td>
 								
 			<td class="label" style="width: 120px;"><label>产品名称：</label></td>
-			<td>${material.materialName }</td>
+			<td>${price.materialName }</td>
 			<td class="label" style="width: 120px;"><label>计量单位：</label></td>
-			<td style="width: 150px;">${material.dicName }</td>	
+			<td style="width: 150px;">${price.dicName }</td>	
 			
 		<tr>
 			<td class="label"><label>自制类别：</label></td>

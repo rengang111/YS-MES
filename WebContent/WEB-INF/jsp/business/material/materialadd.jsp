@@ -11,19 +11,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
-<script type="text/javascript">
-  var ctx = '${ctx}'; 
-</script>
-<script type="text/javascript" src="${ctx}/js/jquery-2.1.3.js"></script>
-<script type="text/javascript" src="${ctx}/js/jquery-ui.min.js"></script>
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
-
+<%@ include file="../../common/common2.jsp"%>
 <title>物料基本数据-新建</title>
 <style type="text/css">
 
@@ -78,11 +66,11 @@ input.middle{width:300px;}
 	
 	<legend style="margin: 10px 0px 0px 0px"> 物料-描述信息</legend>
 
-	<table class="form" width="100%">
+	<table class="form">
 		<tr>
 			<td width="55%">中文描述：</td>
 			<td>
-				<table width="100%">
+				<table>
 					<tr>
 						<td class="td-center">子编码</td>
 						<td class="td-center">子编码解释</td>

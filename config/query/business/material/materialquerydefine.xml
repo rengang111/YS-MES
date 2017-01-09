@@ -306,8 +306,13 @@
       <f name="A.productModel" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
+      <f name="b.bomCost" alias="" ctype="" />
       <f name="b.productCost" alias="" ctype="" />
       <f name="b.totalCost" alias="" ctype="" />
+      <f name="b.laborCost" alias="" ctype="" />
+      <f name="b.materialCost" alias="" ctype="" />
+      <f name="b.managementCostRate" alias="" ctype="" />
+      <f name="b.managementCost" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- 限定条件:成品 -->

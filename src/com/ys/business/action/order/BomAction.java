@@ -123,6 +123,10 @@ public class BomAction extends BaseAction {
 				doUpdate();
 				rtnUrl = "/business/bom/bomplanview";
 				break;
+			case "updateBomPlan":
+				doUpdateBomPlan();
+				printOutJsonObj(response, dataMap);
+				break;
 			case "getSupplierPriceList"://供应商编号查询
 				dataMap = doGetSupplierPriceList();
 				printOutJsonObj(response, dataMap);
@@ -324,6 +328,10 @@ public class BomAction extends BaseAction {
 		
 	}
 
+	public void doUpdateBomPlan(){
+		
+		bomService.updateBomPlan();
+	}
 	public void doShowBomDetail() throws Exception{
 				
 		model = bomService.showBomDetail();

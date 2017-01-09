@@ -394,7 +394,7 @@ public class ZZMaterialService extends BaseService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		modelMap = baseQuery.getYsQueryData(0, 0);
 
-		model.addAttribute("material",dataModel.getYsViewData().get(0));
+		model.addAttribute("price",dataModel.getYsViewData().get(0));
 		
 	}
 	/*
@@ -408,8 +408,7 @@ public class ZZMaterialService extends BaseService {
 			if(null != materialId && !("").equals(materialId))
 				getMaterialByMaterialId(materialId);
 			
-			reqModel.setManageRateList(util.getListOption(DicUtil.MANAGEMENTRATE, ""));
-			reqModel.setTypeList(util.getListOption(DicUtil.ZZMATERIALTYPE, ""));
+			getOptionList();
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -418,8 +417,23 @@ public class ZZMaterialService extends BaseService {
 		return model;
 	
 	}
+	public void getOptionList() throws Exception {
+			
+		reqModel.setManageRateList(util.getListOption(DicUtil.MANAGEMENTRATE, ""));
+		reqModel.setTypeList(util.getListOption(DicUtil.ZZMATERIALTYPE, ""));
+	
+	}
 
 	public Model getDetailView() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		getZZPriceDetailView(materialId);
+		
+		return model;
+		
+	}
+	
+	public Model getDetailViewH() throws Exception {
 
 		String materialId = request.getParameter("materialId");
 		getZZPriceDetailView(materialId);

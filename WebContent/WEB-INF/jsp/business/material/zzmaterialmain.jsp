@@ -60,15 +60,15 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "materialId", "defaultContent" : ''},
-							{"data": "materialName", "defaultContent" : ''},
-							{"data": "unit", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "cavitiesNumber", "defaultContent" : '',"className" : 'cash'},
-							{"data": "time", "defaultContent" : '',"className" : 'cash'},
-							{"data": "kilowatt", "defaultContent" : '',"className" : 'cash'},
-							{"data": "totalPrice", "defaultContent" : '',"className" : 'cash'},
-							{"data": null, "defaultContent" : '',"className" : 'td-center'}
+							{"data": null,"className" : 'td-center'},
+							{"data": "materialId"},
+							{"data": "materialName"},
+							{"data": "unit","className" : 'td-center'},
+							{"data": "cavitiesNumber","className" : 'cash'},
+							{"data": "time","className" : 'cash'},
+							{"data": "kilowatt","className" : 'cash'},
+							{"data": "totalPrice","className" : 'cash'},
+							{"data": null,"className" : 'td-center'}
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
@@ -140,7 +140,7 @@
 	
 	function doShow(materialId) {
 		var type = materialId.substring(0,1);//截取物料大分类
-		alert(type)
+		//alert(type)
 		if(type == 'H'){
 			var url = '${ctx}/business/zzmaterial?methodtype=detailViewH&materialId=' + materialId;
 			

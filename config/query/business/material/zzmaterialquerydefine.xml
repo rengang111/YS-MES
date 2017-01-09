@@ -8,45 +8,40 @@
     </where>
     <select>
     	<f name="a.recordId" alias="" ctype="" />
-		<f name="a.rawMaterialId" alias="" ctype="" />
-		<f name="d.materialName" alias="" ctype="" />
-		<f name="c.materialName" alias="rawMaterialName" ctype="" />
-		<f name="a.netWeight" alias="" ctype="" />
-		<f name="a.wastage" alias="" ctype="" />
-		<f name="a.weight" alias="" ctype="" />
-		<f name="a.kgPrice" alias="" ctype="" />
-		<f name="a.materialPrice" alias="" ctype="" />
-		<f name="a.deptGuid" alias="" ctype="" />
-		<f name="a.createTime" alias="" ctype="" />
-		<f name="a.createPerson" alias="" ctype="" />
-		<f name="a.createUnitId" alias="" ctype="" />
-		<f name="a.modifyTime" alias="" ctype="" />
-		<f name="a.modifyPerson" alias="" ctype="" />
+		<f name="a.materialId" alias="" ctype="" />
+		<f name="a.materialName" alias="" ctype="" />
+		<f name="a.cavitiesNumber" alias="" ctype="" />
+		<f name="a.peopleNumber" alias="" ctype="" />
+		<f name="a.time" alias="" ctype="" />
+		<f name="a.hourYield" alias="" ctype="" />
+		<f name="IFNULL(a.hourPrice,11)" alias="hourPrice" ctype="" />
+		<f name="a.laborPrice" alias="" ctype="" />
+		<f name="a.kilowatt" alias="" ctype="" />
+		<f name="a.managementCostRate" alias="" ctype="" />
+		<f name="a.materialPrice" alias="zzMaterialPrice" ctype="" />
 		<f name="a.deleteFlag" alias="" ctype="" />
-      	<f name="b.recordId" alias="zzRecordId" ctype="" />
-		<f name="b.materialId" alias="" ctype="" />
-		<f name="b.type" alias="" ctype="" />
-		<f name="b.type" alias="typeName" ctype="自制类别" />
-		<f name="b.managementCostRate" alias="" ctype="经管费率" />
-		<f name="b.materialPrice" alias="zzMaterialPrice" ctype="" />
-		<f name="b.cavitiesNumber" alias="" ctype="" />
-		<f name="b.time" alias="" ctype="" />
-		<f name="b.hourYield" alias="" ctype="" />
-		<f name="b.hourPrice" alias="" ctype="" />
-		<f name="b.laborPrice" alias="" ctype="" />
-		<f name="b.kilowatt" alias="" ctype="" />
-		<f name="b.hourPower" alias="" ctype="" />
-		<f name="b.kwPrice" alias="" ctype="" />
-		<f name="b.powerPrice" alias="" ctype="" />
-		<f name="b.totalPrice" alias="" ctype="" />
-		<f name="IFNULL(a.unit,c.unit)" alias="viewUnit" ctype="计量单位" />
-		<f name="a.unit" alias="chgUnit" ctype="计量单位" />
-		<f name="c.unit" alias="" ctype="计量单位" />
+		<f name="a.type" alias="" ctype="" />
+		<f name="a.type" alias="typeName" ctype="自制类别" />
+		<f name="a.kwPrice" alias="" ctype="" />
+		<f name="a.hourPower" alias="" ctype="" />
+		<f name="a.powerPrice" alias="" ctype="" />
+		<f name="a.totalPrice" alias="" ctype="" />
+		<f name="b.netWeight" alias="" ctype="" />
+		<f name="b.wastage" alias="" ctype="" />
+		<f name="b.weight" alias="" ctype="" />
+		<f name="b.kgPrice" alias="" ctype="" />
+		<f name="b.materialPrice" alias="" ctype="" />
+		<f name="b.recordId " alias="rawRecordId" ctype="" />
+		<f name="b.rawMaterialId" alias="" ctype="" />
+		<f name="b.rawMaterialName" alias="" ctype="" />
+		<f name="IFNULL(b.zzunit,a.unit)" alias="viewUnit" ctype="计量单位" />
+		<f name="b.zzunit" alias="chgUnit" ctype="计量单位" />
+		<f name="a.unit" alias="dicName" ctype="计量单位" />
 
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_zzrawmaterial a LEFT JOIN b_zzmaterialprice b ON a.materialId = b.materialId AND b.deleteFlag = '0' LEFT JOIN b_material c ON c.materialId = a.rawMaterialId AND c.deleteFlag = '0' LEFT JOIN b_material d ON d.materialId = a.MaterialId AND d.deleteFlag = '0' WHERE a.deleteFlag = '0' </from>
+    <from>v_zzmaterialprice a LEFT JOIN  v_zzrawmaterial b ON a.materialId = b.materialId AND b.deleteFlag = '0' WHERE 	a.deleteFlag = '0' </from>
     <orderby>a.materialId</orderby>
     <groupby></groupby>
     <having></having>

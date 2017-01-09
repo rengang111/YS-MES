@@ -423,23 +423,23 @@ function doCreateBOMZZ() {
 function doUpdate(supplierId) {
 	var materialId ='${material.material.materialid}';
 	var type = materialId.substring(0,1);//截取物料大分类
-	//if(supplierId == '0574YS00'){
-	//	if(type == 'H'){
-	//		layerWidth  = '1000px';
-	//		layerHeight = '300px';
-	//		var url = '${ctx}/business/zzmaterial?methodtype=editH&materialId=' + materialId;
+	if(supplierId == '0574YS00'){
+		if(type == 'H'){
+			layerWidth  = '1000px';
+			layerHeight = '300px';
+			var url = '${ctx}/business/zzmaterial?methodtype=editH&materialId=' + materialId;
 			
-	//	}else{
-	//		layerWidth  = '1000px';
-	//		layerHeight = '450px';
-	//		var url = '${ctx}/business/zzmaterial?methodtype=editB&materialId=' + materialId;
+		}else{
+			layerWidth  = '1000px';
+			layerHeight = '450px';
+			var url = '${ctx}/business/zzmaterial?methodtype=editB&materialId=' + materialId;
 			
-	//	}
-	//}else{
+		}
+	}else{
 		layerWidth  = '900px';
 		layerHeight = '360px';
 		var url = "${ctx}/business/material?methodtype=editPrice&supplierId=" + supplierId+"&materialId="+materialId;		
-	//}
+	}
 
 	layer.open({
 		offset :[50,''],

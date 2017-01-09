@@ -19,7 +19,7 @@ $(document).ready(function() {
 	
 	$("#doEdit").click(function() {	
 		var materialId=$('#price\\.materialid').val();
-		$('#ZZMaterial').attr("action", "${ctx}/business/zzmaterial?methodtype=editH&materialId="+materialId);
+		var url = "${ctx}/business/zzmaterial?methodtype=editH&materialId="+materialId;
 		location.href = url;
 	});
 });
@@ -42,13 +42,13 @@ $(document).ready(function() {
 	<table class="form">
 		<tr>
 			<td class="label" style="width: 120px;">产品编号：</td>
-			<td style="width: 150px;">${material.materialId }
-				<form:hidden path="price.materialid" value="${material.materialId }"/></td>
+			<td style="width: 150px;">${price.materialId }
+				<form:hidden path="price.materialid" value="${price.materialId }"/></td>
 								
 			<td class="label" style="width: 120px;"><label>产品名称：</label></td>
-			<td style="width: 250px;"><span id="materialname">${material.materialName }</span></td>
+			<td style="width: 250px;"><span id="materialname">${price.materialName }</span></td>
 			<td class="label" style="width: 120px;"><label>计量单位：</label></td>
-			<td>&nbsp;<span id="unit">${material.dicName }</span></td>
+			<td>&nbsp;<span id="unit">${price.dicName }</span></td>
 	</table>
 	</fieldset>
 	
@@ -64,10 +64,10 @@ $(document).ready(function() {
 			</thead>		
 			<tbody>
 				<tr>
-					<td>${price.peoplenumber }</td>
-					<td>${price.houryield }</td>				
-					<td>${price.hourprice }</td>
-					<td>${price.laborprice }</td>				
+					<td>${price.peopleNumber }</td>
+					<td>${price.hourYield }</td>				
+					<td>${price.hourPrice }</td>
+					<td>${price.laborPrice }</td>				
 				</tr>			
 			</tbody>
 		</table>

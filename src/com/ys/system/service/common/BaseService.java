@@ -152,7 +152,7 @@ public class BaseService {
 		                Method s = source.getClass().getMethod("get"+toUpperCaseFirstOne(name));
 		              
 		                	String sValue = (String) s.invoke(source);
-		                    if(sValue!=null){
+		                    if(sValue!=null && !("").equals(sValue)){
 		                        m = target.getClass().getMethod("set"+toUpperCaseFirstOne(name), String.class);
 		                        m.invoke(target, sValue);
 		                    }
@@ -161,7 +161,7 @@ public class BaseService {
 		                Method m = target.getClass().getMethod("get"+toUpperCaseFirstOne(name));
 		                //Date value = (Date) m.invoke(target);    
 		                Date value2 = (Date) m.invoke(source);   
-		                if(value2 == null){
+		                if(value2 == null && !("").equals(value2)){
 		                    m = target.getClass().getMethod("set"+toUpperCaseFirstOne(name), Integer.class);
 		                    m.invoke(target, value2);
 		                }

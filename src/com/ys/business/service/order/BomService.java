@@ -708,27 +708,20 @@ public class BomService extends BaseService {
 		bomPlanData = getBomByRecordId(recordid);					
 		
 		if(null != bomPlanData){
-		
+
+			//获取页面数据
+			copyProperties(bomPlanData,reqBom);
+			//处理共通信息
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"BomPlanUpdate",userInfo);
-
-			//处理共通信息
 			copyProperties(bomPlanData,commData);
-			//获取页面数据
-			bomPlanData.setPlandate(reqBom.getPlandate());
-			bomPlanData.setManagementcostrate(reqBom.getManagementcostrate());
-			bomPlanData.setManagementcost(reqBom.getManagementcost());
-			bomPlanData.setLaborcost(reqBom.getLaborcost());
-			bomPlanData.setMaterialcost(reqBom.getMaterialcost());
-			bomPlanData.setTotalcost(reqBom.getTotalcost());
-			bomPlanData.setProductcost(reqBom.getProductcost());
 			
 			bomPlanDao.Store(bomPlanData);
+			
 		}else{
 			
 			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 					"BomPlanInsert",userInfo);
-
 			copyProperties(reqBom,commData);
 
 			guid = BaseDAO.getGuId();
@@ -738,48 +731,7 @@ public class BomService extends BaseService {
 		}
 	}
 
-	/*
-	 * 订单详情更新处理
-	 */
-	private void updateBomDetail(
-			B_BomDetailData newData,
-			B_BomDetailData dbData) 
-			throws Exception{
-								
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"BomDetailUpdate",userInfo);
 
-		//处理共通信息
-		copyProperties(newData,commData);
-		//获取页面数据
-		dbData.setQuantity(newData.getQuantity());
-		dbData.setPrice(newData.getPrice());;
-		dbData.setTotalprice(newData.getTotalprice());
-		dbData.setSupplierid(newData.getSupplierid());
-		
-		bomDetailDao.Store(dbData);
-
-	}
-	/*
-	 * 订单详情更新处理
-	 */
-	private void deleteBomDetail(
-			B_BomDetailData newData,
-			B_BomDetailData dbData) 
-			throws Exception{
-								
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"BomDetailUpdate",userInfo);
-
-		//处理共通信息
-		copyProperties(newData,commData);
-		//获取页面数据
-		dbData.setQuantity(newData.getQuantity());
-		dbData.setPrice(newData.getPrice());;
-		dbData.setTotalprice(newData.getTotalprice());
-		dbData.setSupplierid(newData.getSupplierid());
-		
-		bomDetailDao.Store(dbData);
-
-	}
 	/*
 	 * 更新供应商单价
 	 */
@@ -1141,6 +1093,29 @@ public class BomService extends BaseService {
 		getBomDetail(YSId);
 		
 		return model;
+		
+	}
+	
+	public void updateBomPlan() {
+		
+		try {
+			
+			B_BomPlanData data = new B_BomPlanData();
+			
+			String costRate  = request.getParameter("costRate");
+			String totalCost = request.getParameter("totalCost");
+			String recordId  = request.getParameter("recordId");
+			
+			data.setRecordid(recordId);
+			data.setManagementcostrate(costRate);
+			data.setTotalcost(totalCost);
+
+			updateBomPlan(data);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			
+		}
 		
 	}
 }

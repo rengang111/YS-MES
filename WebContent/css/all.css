@@ -30,9 +30,9 @@ body{
 	letter-spacing: 0px;
 }
 a:link {text-decoration:none;color:blue;}
-a:hover {text-decoration:underline;color:red;}
+a:hover {text-decoration:underline;color:green;}
 a:active{text-decoration:none;color:yellow;}
-a:visited {text-decoration:none;color:green;}
+a:visited {text-decoration:none;color:blue;}
 
 body.noscroll{
 	overflow:scroll;

@@ -643,8 +643,10 @@ public class MaterialService extends BaseService {
 					reqData.setCustomerid(customerid);				
 				}
 				
-				dao.Create(reqData);	
-				
+				if(preMaterialCheckById(materialId)){//物料编号重复check
+					
+					dao.Create(reqData);
+				}
 				//把第一条作为为默认对象
 				if(frist){
 					
@@ -963,6 +965,7 @@ public class MaterialService extends BaseService {
 		
 		return dbData;
 	}
+	
 	@SuppressWarnings("unchecked")
 	private B_PriceSupplierData prePriceCheck(
 			String materialId,
@@ -982,6 +985,24 @@ public class MaterialService extends BaseService {
 			pricedt = priceList.get(0);	
 			
 		return pricedt;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private boolean preMaterialCheckById(
+			String materialId) throws Exception {
+
+		boolean rtn = true;
+		List<B_MaterialData> priceList = null;
+
+		String where = " materialId = '" + materialId +
+				"' AND deleteFlag = '0' ";		
+
+		priceList = (List<B_MaterialData>)dao.Find(where);
+		
+		if(priceList != null && priceList.size() > 0)
+			rtn = false;	
+			
+		return rtn;
 	}
 	
 }

@@ -21,6 +21,7 @@
 	id="material" name="material"   autocomplete="off">
 	
 	<input type="hidden" id="recordsTotal"  >
+	<input type="hidden" id="productRecordId"  >
 	
 <fieldset style="float: left;width: 65%;">
 	<legend>产品信息</legend>
@@ -29,7 +30,7 @@
 		<tr>
 			<td class="label" style="width: 100px;"><label>产品编号：</label></td>
 			<td style="width: 150px;">
-				<label>${product.materialId}</label></td>
+				<label><a href="#" onClick="doEditMaterial('${product.recordId}','${product.parentId}')">${product.materialId}</a></label></td>
 								
 			<td class="label" style="width: 100px;"><label>产品名称：</label></td>
 			<td colspan="3">${product.materialName}</td>												
@@ -50,16 +51,31 @@
 		<tr>
 			<td class="label" style="vertical-align: text-top;">中文描述：</td>
 			<td colspan="5" style="vertical-align: text-top;"><pre>${product.description }</pre></td>
-		</tr>
-		<tr>
-			<td class="label tree-title">基础成本：</td>
-			<td class="tree-title" style="font-weight: bold;"><span id=beseCost></span></td>			
-			<td class="label tree-title">核算成本：</td>
-			<td class="tree-title" style="font-weight: bold;"colspan="3"><span id=totalCost></span></td>
 		</tr>	
 	</table>
+	<table class="form" id="table_form2" style="margin-top: 6px;">
+				
+		<tr>
+			<td class="td-center"><label>材料成本</label></td>	
+			<td class="td-center"><label>人工成本</label></td>
+			<td class="td-center"><label> BOM成本</label></td>
+			<td class="td-center"><label>基础成本</label></td>
+			<td class="td-center" style="width: 100px;"><label>经管费率</label></td>
+			<td class="td-center" style="width: 150px;"><label>核算成本</label></td>
+		</tr>	
+		<tr>			
+			<td class="td-center"><span id=materialCost></span></td>
+			<td class="td-center"><span id=laborCost></span></td>
+			<td class="td-center"><span id=bomCost></span></td>
+			<td class="td-center"><span id=baseCost></span></td>
+			<td class="td-center">
+				<input type="text" id="costRate" class="num mini" value="5" style="text-align: center;"/>%</td>
+			<td class="td-center">
+				<input type="text" id="totalCost"  class="read-only cash short"/></td>
+		</tr>								
+	</table>
 	<div class="action" style="text-align: right;">			
-		<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
+		<button type="button" id="doEdit" class="DTTT_button" >保存</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</div>
 	</fieldset>	
@@ -68,22 +84,22 @@
 					<jsp:include page="../../common/album/album2.jsp"></jsp:include>
 				</div>
 		</div>
-
 		
-	<dl class="collapse">
+	<dl class="collapse" style="width: 98%;margin-left:10px">
 		<dt><span id="bomId">基础BOM</span> <button type="button" class="DTTT_button" onclick="doCreateBaseBom();">编辑</button>
 			（ 单价颜色变化&nbsp;&nbsp; <span style="color:green"> 绿色：下降</span>&nbsp;&nbsp; <span style="color:red">红色：上涨</span> ）</dt>
 		<dd>
-		<table id="baseBomTable" class="display">
+		<table id="baseBomTable" class="display" style="width: 98%;">
 			<thead>				
 				<tr>
 					<th width="1px">No</th>
-					<th class="dt-center" width="200px">物料编码</th>
-					<th class="dt-center" width="350px">物料名称</th>
-					<th class="dt-center" width="100px">供应商编号</th>
-					<th class="dt-center" width="100px">用量</th>
-					<th class="dt-center" width="150px">单价</th>
-					<th class="dt-center" width="150px">总价</th>
+					<th class="dt-center" width="150px">物料编码</th>
+					<th class="dt-center" >物料名称</th>
+					<th class="dt-center" width="30px">单位</th>
+					<th class="dt-center" width="80px">供应商编号</th>
+					<th class="dt-center" width="60px">用量</th>
+					<th class="dt-center" width="80px">单价</th>
+					<th class="dt-center" width="100px">总价</th>
 				</tr>
 			</thead>
 			
@@ -174,20 +190,33 @@
 $(document).ready(function() {
 		
 	
-	$("#goBack").click(
-		function() {
-			var materialId='${product.materialId}';
-			var url = "${ctx}/business/material?methodtype=productInit&materialId="+materialId;
-			location.href = url;		
-		});
+	$("#goBack").click(function() {
+		var materialId='${product.materialId}';
+		var url = "${ctx}/business/material?methodtype=productInit&materialId="+materialId;
+		location.href = url;		
+	});
 
-	$("#doEdit").click(
-			function() {
-				var recordid = '${product.recordId}';
-				var parentid = '${product.parentId}';
-				var url = '${ctx}/business/material?methodtype=edit';
-				url = url + '&parentId=' + parentid+'&recordId='+recordid;
-				location.href = url;		
+	$("#doEdit").click(function() {
+		var costRate  = $('#costRate').val();
+		var totalCost = $('#totalCost').val();
+		var recordId  = $('#productRecordId').val();
+		var url = "${ctx}/business/bom?methodtype=updateBomPlan";
+		url = url + "&costRate="+costRate+"&totalCost="+totalCost+"&recordId="+recordId;
+		$.ajax({
+			type : "post",
+			url : url,
+			//async : false,
+			//data : null,
+			dataType : "text",
+			contentType: "application/x-www-form-urlencoded; charset=utf-8",
+			success : function(data) {			
+
+				$().toastmessage('showNoticeToast', "保存成功。");	
+			},
+			 error:function(XMLHttpRequest, textStatus, errorThrown){
+				//alert(textStatus)
+			}
+		});		
 
 	});
 	
@@ -197,16 +226,31 @@ $(document).ready(function() {
 	baseBomView();//显示基础BOM
 	
 	selectedColor();//供应商列表点击颜色变化
+	
+	//经管费计算
+	$("#costRate").change(function() {
+
+		var rate = $(this).val();
+		var baseCost = $('#baseCost').text();
+		
+		rate = currencyToFloat(rate);
+		baseCost = currencyToFloat(baseCost);
+		
+		var total = floatToCurrency( baseCost * ( 1 + rate / 100) );
+		
+		$('#totalCost').val(total);
+	});
     	
 });
-
+</script>
+<script type="text/javascript">
 //列合计:总价
 function productCostSum(){
 
 	var sum = 0;
 	$('#baseBomTable tbody tr').each (function (){
 		
-		var vtotal = $(this).find("td").eq(6).text();
+		var vtotal = $(this).find("td").eq(7).text();
 		var ftotal = currencyToFloat(vtotal);
 		
 		sum = currencyToFloat(sum) + ftotal;			
@@ -251,30 +295,47 @@ function baseBomView() {
 					fnCallback(data);
 					
 					$('#recordsTotal').val(data['recordsTotal']);
-			
-					var productCost = data['data'][0]['productCost'];
-					
-					var price = productCostSum();
-					var total = price * 1.1 * 1.02;
 
-					var fproductCost = currencyToFloat(productCost);
-					var fprice = currencyToFloat(price).toFixed(2);
+					var mateCost  = data['data'][0]['materialCost'];
+					var laborCost = data['data'][0]['laborCost'];
+					var bomCost   = data['data'][0]['bomCost'];
+					var baseCost  = data['data'][0]['productCost'];
+					var totalCost = data['data'][0]['totalCost'];
+					var costRote  = data['data'][0]['managementCostRate'];
+
+					var recordId = data['data'][0]['productRecord'];
+					//costRote = currencyToFloat(costRote) / 100;
 					
-					var vprice = floatToCurrency(price);
-					var vtotal = floatToCurrency(total);
-					
-					//alert('fprice:'+fprice+'fproductCost:'+fproductCost)
-					if(fprice > fproductCost){
-						vprice = '<div style="color:red">' + vprice + '</div>';
-						vtotal = '<div style="color:red">' + vtotal + '</div>';
-					}else if (fprice < fproductCost){
-						vprice = '<div style="color:green">' + vprice + '</div>';
-						vtotal = '<div style="color:green">' + vtotal + '</div>';						
-					}
+					//var bom = productCostSum();
+					//var fbom = currencyToFloat(bom).toFixed(2);
+					//var fbomCost = currencyToFloat(bomCost);
+					//var baseCost = fbomCost * 1.1;
+					//var total = baseCost * ( 1 + costRote );
+
+					//var vbom   = floatToCurrency(bomCost);
+					//var vbase = floatToCurrency(baseCost);
+					//var vtotal = floatToCurrency(total);
+
+					//alert('fbom:'+fbom+'fbomCost:'+fbomCost)
+					//if(fbom > fbomCost){
+					//	vbom = '<div style="color:red">' + vbom + '</div>';
+					//	vprice = '<div style="color:red">' + vprice + '</div>';
+					//	vtotal = '<div style="color:red">' + vtotal + '</div>';
+					//}else if (fbom < fbomCost){
+					//	vbom = '<div style="color:red">' + vbom + '</div>';
+					//	vprice = '<div style="color:green">' + vprice + '</div>';
+					//	vtotal = '<div style="color:green">' + vtotal + '</div>';						
+					//}
 					var bomId = data['data'][0]['bomId'];
+
 					$('#bomId').html(bomId);
-					$('#beseCost').html(vprice);
-					$('#totalCost').html(vtotal);
+					$('#materialCost').html(mateCost);
+					$('#laborCost').html(laborCost);
+					$('#bomCost').html(bomCost);
+					$('#baseCost').html(baseCost);
+					$('#totalCost').val(totalCost);
+					$('#costRate').val(costRote);
+					$('#productRecordId').val(recordId);
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	             }
@@ -287,6 +348,7 @@ function baseBomView() {
 			{"data": null,"className" : 'td-center'},
 			{"data": "materialId"},
 			{"data": "materialName"},
+			{"data": "unit","className" : 'td-center'},
 			{"data": "supplierId"},
 			{"data": "quantity","className" : 'td-right'},
 			{"data": "price","className" : 'td-right'},
@@ -296,10 +358,20 @@ function baseBomView() {
     		{"targets":2,"render":function(data, type, row){
     			
     			var name = row["materialName"];				    			
-    			name = jQuery.fixedWidth(name,30);				    			
+    			name = jQuery.fixedWidth(name,40);				    			
     			return name;
     		}},
-    		{"targets":5,"render":function(data, type, row){
+    		{"targets":1,"render":function(data, type, row){
+    			var materialId = row["materialId"];
+    			rtn= "<a href=\"#\" onClick=\"doEditMaterial('" + row["rawRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
+    			return rtn;
+    		}},
+    		{"targets":4,"render":function(data, type, row){
+    			var supplierId = row["supplierId"];
+    			rtn= "<a href=\"#\" onClick=\"doShowSupplier('" + row["supplierId"] +"')\">"+supplierId+"</a>";
+    			return rtn;
+    		}},
+    		{"targets":6,"render":function(data, type, row){
     			
     			var price =  row["price"] ;
     			var fprice = currencyToFloat( price );
@@ -313,7 +385,7 @@ function baseBomView() {
 				}
     			return price;
     		}},
-    		{"targets":6,"render":function(data, type, row){
+    		{"targets":7,"render":function(data, type, row){
     			
     			var price = currencyToFloat( row["price"] );
     			var quantity = currencyToFloat( row["quantity"] );				    			
@@ -333,9 +405,8 @@ function baseBomView() {
             t2.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
         }
-		
 	});
-	
+
 	t2.on('order.dt search.dt draw.dt', function() {
 		t2.column(0, {
 			search : 'applied',
@@ -535,6 +606,55 @@ function doShowHistory(supplierId) {
 		content : url,
 	});
 }
+
+function doEditMaterial(recordid,parentid) {
+			
+	var url = '${ctx}/business/material?methodtype=detailView';
+	url = url + '&parentId=' + parentid+'&recordId='+recordid;
+	
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1100px', '520px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		  baseBomView();
+		  return false; 
+		}    
+	});		
+
+};
+
+function doShowSupplier(recordid) {
+
+	var url = "${ctx}/business/supplier?methodtype=showById&key=" + recordid;
+	
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1100px', '500px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		  //baseBomView();
+		  return false; 
+		}    
+	});		
+
+};
 
 </script>
 	

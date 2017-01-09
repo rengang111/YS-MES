@@ -463,12 +463,12 @@ function doSubmitRefresh(){
 		<tr>
 			<td class="label" style="width: 120px;">产品编号：</td>
 			<td style="width: 150px;">
-				<form:input path="price.materialid" class="required" value="${material.materialId }"/></td>
+				<form:input path="price.materialid" class="required" value="${price.materialId }"/></td>
 								
 			<td class="label" style="width: 120px;"><label>产品名称：</label></td>
-			<td ><span id="materialname">${material.materialName }</span></td>
+			<td ><span id="materialname">${price.materialName }</span></td>
 			<td class="label" style="width: 120px;"><label>计量单位：</label></td>
-			<td style="width: 150px;">&nbsp;<span id="unit">${material.dicName }</span></td>	
+			<td style="width: 150px;">&nbsp;<span id="unit">${price.dicName }</span></td>	
 		<tr>
 			<td class="label"><label>自制类别：</label></td>
 			<td>

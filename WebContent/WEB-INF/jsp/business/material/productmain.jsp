@@ -58,6 +58,7 @@
 						{"data": "materialName"},
 						{"data": "productModel"},
 						{"data": "customerId"},
+						{"data": "bomCost", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "productCost", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "totalCost", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "dicName","className" : 'td-center'},
@@ -67,7 +68,7 @@
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                    }},
-	    		{"targets":8,"render":function(data, type, row){
+	    		{"targets":9,"render":function(data, type, row){
 	    			var rtn = "";
 	    			var space = '&nbsp;';
 	    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["materialId"] + "')\">查看</a>";
@@ -212,10 +213,11 @@
 					<th class="dt-middle">产品名称</th>
 					<th style="width: 30px;" class="dt-middle">型号</th>
 					<th style="width: 30px;" class="dt-middle">客户</th>
+					<th style="width: 100px;" class="dt-middle">BOM成本</th>
 					<th style="width: 100px;" class="dt-middle">基础成本</th>
 					<th style="width: 100px;" class="dt-middle">核算成本</th>
 					<th style="width: 25px;" class="dt-middle ">单位</th>
-					<th style="width: 50px;" class="dt-middle ">操作</th>
+					<th style="width: 30px;" class="dt-middle ">操作</th>
 				</tr>
 			</thead>
 		</table>
