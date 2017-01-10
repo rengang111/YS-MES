@@ -33,6 +33,7 @@ public class BaseQuery {
 	private String sqlCount = "";
 	
 	private ArrayList<ArrayList<String>> viewData = new ArrayList<ArrayList<String>>();
+	private ArrayList<HashMap<String,String>> viewYsData = new ArrayList<HashMap<String,String>>();
 	
 	/**基础信息    */
 	private BaseModel commonModel = new BaseModel();
@@ -146,6 +147,22 @@ public class BaseQuery {
     	return this.viewData;
     }
     
+    public ArrayList<HashMap<String, String>> getYsFullData() throws Exception {
+		sql = getSql();		
+		int recordCount = getRecodCount();
+		this.viewYsData =  getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), 0, 0, false);
+		this.commonModel.setYsViewData(viewYsData);
+		this.commonModel.setRecordCount(recordCount);
+		
+		return viewYsData;
+    }
+    
+    public ArrayList<HashMap<String, String>> getYsFullData(String sql) throws Exception {
+				
+		return getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), 0, 0, false);
+    	
+    }
+    
     private ArrayList<ArrayList<String>> getTurnPageData() throws Exception {
     	this.viewData = getTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), pageBean.getPageIndex(), pageBean.getRecordsPerPage(), true);
 		pageBean.setViewData(viewData);
@@ -220,7 +237,15 @@ public class BaseQuery {
 		return viewData;
 
 	}	
+	public ArrayList<HashMap<String,String>> getYsQueryData(String sql) throws Exception {
 		
+		this.viewYsData = getYsFullData(sql);
+		
+		this.commonModel.setYsViewData(viewYsData);
+		
+		return viewYsData;
+
+	}		
 	//���PDF�ļ�
 	//toPdf()	
 	
@@ -337,48 +362,9 @@ public class BaseQuery {
 	private ArrayList<HashMap<String, String>> getYsTurnPageData(String sql, String dataSourceName, int iStart, int iEnd, boolean appendNoFlg) throws Exception {
 		ArrayList<HashMap<String, String>> viewData = null;
 		QueryInfoBean queryInfo = queryInfoMap.get(commonModel.getQueryName());
-		QueryTotalSumBean queryTotalSum = queryInfo==null?null:queryInfo.getTotalSum();
 		
 		viewData = BaseDAO.execYsSQL(sql, dataSourceName, iStart, iEnd, queryInfo, appendNoFlg);
-		/*
-		//取得总计
-		if (queryTotalSum != null && queryTotalSum.getIsView().equals("T")) {
-			StringBuffer groupSelectSql = new StringBuffer("");
-			String groupSelect = queryTotalSum.getGroupSelect();
-			String select = queryTotalSum.getSelect();
-			String unionSelect = queryTotalSum.getUnionSelect();
-			String viewIndex[] = queryTotalSum.getViewindex().split(",");
-			
-			groupSelectSql.append("SELECT ");
-			groupSelectSql.append(groupSelect);
-			groupSelectSql.append(" FROM(");
-			queryInfo.setUserDefinedWhere(commonModel.getUserDefinedWhere());
-			queryInfo.setUserDefinedSelect(select);
-			queryInfo.setUserDefinedUnionSelect(unionSelect);			
-			groupSelectSql.append(queryInfo.getSQL(request, userDefinedSearchCase, this.getMenuId()));
-			groupSelectSql.append(") GROUPSELECT");
-			
-			ArrayList<ArrayList<String>> totalSumResult = new ArrayList<ArrayList<String>>();
-			ArrayList<String> rowData = new ArrayList<String>();
-			totalSumResult = BaseDAO.execSQL(groupSelectSql.toString(), dataSourceName, 0, 0);
-			
-			for(int i = 0; i < viewData.get(0).size(); i++) {
-				rowData.add("");
-			}	
-			
-			if (rowData.size() > 0) {
-				for(int i = 0; i < viewIndex.length; i++) {
-					if (appendNoFlg && viewData.size() > 1) {
-						rowData.set(Integer.parseInt(viewIndex[i]), totalSumResult.get(0).get(i));
-					} else {
-						rowData.set(Integer.parseInt(viewIndex[i]) - 1, totalSumResult.get(0).get(i));
-					}
-				}
-			}
-			
-			viewData.add(rowData);
-		}
-		*/
+		
 		return viewData;
 	}	
 	

@@ -3,6 +3,8 @@ package com.ys.business.service.supplier;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -317,17 +319,27 @@ public class SupplierService extends BaseService {
 		
 	}
 	
-	private HashMap<String, String> preCheckSupplierId(HttpServletRequest request, String key) throws Exception {
+	@SuppressWarnings("unchecked")
+	public Model getSupplierById(String supplierId) throws Exception {
+	
+		B_SupplierData dbData = new B_SupplierData();
+
+		String where = " supplierId='"+supplierId + "' AND deleteFlag='0' ";
+		List<B_SupplierData> listData = dao.Find(where);
+
+		if(listData != null && listData.size() > 0)
+			dbData = listData.get(0);	
 		
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		dataModel.setQueryFileName("/business/supplier/supplierquerydefine");
-		dataModel.setQueryName("supplierquerydefine_preCheck");
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword", key);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		reqModel.setSupplierBasicInfoData(dbData);
+		reqModel.setSupplier(dbData);
+	
+		reqModel.setCountryList(getProvinceList());
 		
-		return baseQuery.getYsQueryData(0, 0).get(0);
+		reqModel.setKeyBackup(dbData.getRecordid());
+		
+		model.addAttribute(reqModel);
+		
+		return  model;
 					
 	}
 	

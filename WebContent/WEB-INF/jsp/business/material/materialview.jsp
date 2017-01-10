@@ -10,22 +10,8 @@
 <head>
 <title>物料基本数据-查看</title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
-<script type="text/javascript">
-  var ctx = '${ctx}'; 
-</script>
-<script type="text/javascript" src="${ctx}/js/jquery-2.1.3.js"></script>
-<script type="text/javascript" src="${ctx}/js/jquery-ui.min.js"></script>
-<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="${ctx}/js/layer.js"></script>
-<script type="text/javascript" src="${ctx}/js/main.js"></script>
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/main.css" />
+
+<%@ include file="../../common/common2.jsp"%>
 
 </head>
 
@@ -78,7 +64,7 @@
 		</tr>	
 		<tr>
 			<td class="label" style="vertical-align: text-top;">中文描述：</td>
-			<td colspan="5" style="vertical-align: text-top;"><pre></pre></td></tr>	
+			<td colspan="5" style="vertical-align: text-top;"><pre>${material.material.description}</pre></td></tr>	
 	</table>
 	<div class="action" style="text-align: right;">			
 		<button type="button" id="return" class="DTTT_button">返回</button>
@@ -402,6 +388,13 @@ function doCreatePrice() {
 		scrollbar : false,
 		title : false,
 		content : url,
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		  supplierPriceView();
+		  return false; 
+		}    
 	});
 }
 
@@ -431,6 +424,13 @@ function doCreateBOMZZ() {
 		scrollbar : false,
 		title : false,
 		content : url,
+		cancel: function(index){ 
+			 // if(confirm('确定要关闭么')){
+			    layer.close(index)
+			 // }
+			    supplierPriceView();
+			  return false; 
+			}    
 	});
 }
 
@@ -463,6 +463,13 @@ function doUpdate(supplierId) {
 		scrollbar : false,
 		title : false,
 		content : url,
+		cancel: function(index){ 
+			 // if(confirm('确定要关闭么')){
+			    layer.close(index)
+			 // }
+			  supplierPriceView();
+			  return false; 
+			}    
 	});
 }
 

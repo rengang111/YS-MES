@@ -55,13 +55,10 @@
 									'<input type="hidden" name="bomDetailLines['+rowIndex+'].materialid" id="bomDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td><span></span></td>',
 								'<td><input type="text"   name="attributeList2"  class="attributeList2" style="width:80px"> '+
-									'<input type="hidden" name="bomDetailLines['+rowIndex+'].supplierid" id="bomDetailLines'+rowIndex+'.supplierid" /></td>',							
-								'<td><input type="text"   name="bomDetailLines['+rowIndex+'].quantity"   id="bomDetailLines'+rowIndex+'.quantity"   class="cash"  style="width:50px"/></td>',
+									'<input type="hidden" name="bomDetailLines['+rowIndex+'].supplierid" id="bomDetailLines'+rowIndex+'.supplierid" /></td>',
+								'<td><input type="text"   name="bomDetailLines['+rowIndex+'].quantity"   id="bomDetailLines'+rowIndex+'.quantity"   class="cash"  style="width:70px"/></td>',
 								'<td><input type="text"   name="bomDetailLines['+rowIndex+'].price"      id="bomDetailLines'+rowIndex+'.price"      class="cash mini" /></td>',
-								'<td><span></span><input type="hidden"   name="bomDetailLines['+rowIndex+'].totalprice" id="bomDetailLines'+rowIndex+'.totalprice"/><input type="hidden" id="labor"></td>',				
-								'<td><span></span></td>',
-								'<td><span></span></td>',
-								'<td><span></span></td>',	
+								'<td><span></span><input type="hidden"   name="bomDetailLines['+rowIndex+'].totalprice" id="bomDetailLines'+rowIndex+'.totalprice"/><input type="hidden" id="labor"></td>',
 								]).draw();
 						
 						rowIndex ++;						
@@ -141,9 +138,6 @@
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
-					}, {"className":"td-right"				
-					}, {"className":"td-right"				
-					}, {"className":"td-right"				
 					}			
 				]
 			
@@ -186,7 +180,7 @@
             var $oMaterial  = $tds.eq(1).find("input:text");
             var $oQuantity  = $tds.eq(4).find("input");
 			var $oThisPrice = $tds.eq(5).find("input");
-			//var $oAmount1   = $tds.eq(6).find("input:hidden");
+			var $oAmount1   = $tds.eq(6).find("input:hidden");
 			var $oAmount2   = $tds.eq(6).find("span");
 			var $oAmountd   = $tds.eq(6).find("input:last-child");//人工成本
 			
@@ -196,14 +190,14 @@
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 			var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
 
-			var vPrice = floatToCurrency(fPrice);	
-			var vQuantity = floatToCurrency(fQuantity);
-			var vTotalNew = floatToCurrency(fTotalNew);
+			var vPrice = float4ToCurrency(fPrice);	
+			var vQuantity = float5ToCurrency(fQuantity);
+			var vTotalNew = float4ToCurrency(fTotalNew);
 					
 			//详情列表显示新的价格
 			$oThisPrice.val(vPrice);					
 			$oQuantity.val(vQuantity);	
-			//$oAmount1.val(vTotalNew);	
+			$oAmount1.val(vTotalNew);	
 			$oAmount2.html(vTotalNew);
 			$oAmountd.val(fAmountd);
 
@@ -213,7 +207,7 @@
 		});
 			
 		t.on('click', 'tr', function() {
-			/*
+			
 			var rowIndex = $(this).context._DT_RowIndex; //行号			
 			//alert(rowIndex);
 
@@ -224,7 +218,7 @@
 	            t.$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	        }
-			*/
+			
 		});
 		
 		t.on('order.dt search.dt draw.dt', function() {
@@ -242,7 +236,8 @@
 
 	$(document).ready(function() {
 		
-		$("#bomPlan\\.managementcostrate").val($("#bomPlan\\.managementcostrate option:eq(2)").val());
+		var rate = '${material.managementCostRate}';
+		if(rate =='') $("#bomPlan\\.managementcostrate").val('5');
 		
 		ajax();
 		
@@ -252,44 +247,42 @@
 		
 		$("#goBack").click(
 				function() {
-					var url = '${ctx}/business/order';
+					var materialId = '${product.materialId}';
+					var url = '${ctx}/business/material?methodtype=productInit&materialId='+ materialId;
 					location.href = url;		
 				});
 		
-		$("#update").click(
-				function() {			
-			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=update");
+		$("#update").click(function() {			
+			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=baseBomInsert");
 			$('#bomForm').submit();
+		});
+		
+
+		$("#searchProductModel").click(function() {		
+			var model = $('#productModel').val();
+			var materialId = '${product.materialId}';
+			var url = "${ctx}/business/bom?methodtype=searchProductModel&model="+model+"&materialId="+materialId;
+			location.href = url;
 		});
 		
 		//经管费计算
 		$("#bomPlan\\.managementcostrate").change(function() {
 			
-			var fproductCost,fmanageCost,faccountCost;
-			var vproductCost;
-			//取得经管费率
-			var selectValue = $(this).val();
-			
-			vproductCost = $('#bomPlan\\.productcost').val();
-			fproductCost = currencyToFloat(vproductCost);
-			
-			fmanageCost = selectValue * fproductCost/100;
-			facountCost = fmanageCost + fproductCost;
-			//alert('fmanageCost:'+fmanageCost+'--facountCost:'+facountCost)
-
-			$('#bomPlan\\.totalcost').val(floatToCurrency(facountCost));
-			$('#bomPlan\\.managementcost').val(floatToCurrency(fmanageCost));
-
-					
+			costAcount();					
 		});
-
-		iFramAutoSroll();//重设显示窗口(iframe)高度		
+	
 		
 		foucsInit();//input获取焦点初始化处理
 		
 		costAcount();//成本核算
 
 		$(".DTTT_container").css('float','left');
+		
+		//Bom信息来源于复制旧的BOM的情况,后续按新增处理
+		var oldBomId = '${material.bomId}';
+		var newBomId = '${bomForm.bomPlan.bomid}';
+		if(oldBomId != newBomId)
+			$('#bomPlan\\.recordid').val('');
 
 	});	
 	
@@ -313,22 +306,21 @@
 		//材料成本=产品成本-人工成本
 		//经管费=经管费率x产品成本
 		//核算成本=产品成本+经管费
-			
-		var laborCost   = laborCostSum();
-		var productCost = productCostSum();
+		var managementCostRate = $('#bomPlan\\.managementcostrate').val();
+		managementCostRate = currencyToFloat(managementCostRate) / 100;//费率百分比转换
 		
-		var rate = $('#bomPlan\\.managementcostrate').val();
-		var fmaterialCost,fmanageCost,facoutCost;
+		var laborCost = laborCostSum();
+		var bomCost = productCostSum();
 		
-		fmaterialCost = productCost - laborCost;
-		fmanageCost   = productCost * rate / 100;
-		facoutCost    = productCost + fmanageCost;
+		var fmaterialCost = bomCost - laborCost;
+		var productCost = bomCost * 1.1;		
+		var ftotalCost = productCost * ( 1 + managementCostRate );
 
+		$('#bomPlan\\.bomcost').val(floatToCurrency(bomCost));
 		$('#bomPlan\\.productcost').val(floatToCurrency(productCost));
 		$('#bomPlan\\.laborcost').val(floatToCurrency(laborCost));
 		$('#bomPlan\\.materialcost').val(floatToCurrency(fmaterialCost));
-		$('#bomPlan\\.managementcost').val(floatToCurrency(fmanageCost));
-		$('#bomPlan\\.totalcost').val(floatToCurrency(facoutCost));
+		$('#bomPlan\\.totalcost').val(floatToCurrency(ftotalCost));
 		//alert('labor:'+laborCost+'--product:'+productCost)
 		
 	}
@@ -373,6 +365,7 @@
 		id="bomForm" name="bomForm"  autocomplete="off">
 		
 		<input type="hidden" id="tmpMaterialId" />	
+		<form:hidden path="bomPlan.recordid" value="${material.productRecord}"/>
 		
 		<fieldset>
 			<legend>基础BOM</legend>
@@ -380,18 +373,20 @@
 				<tr>
 					<td class="label" width="100px">BOM编号：</td>					
 					<td width="150px">${bomForm.bomPlan.bomid}
-						<form:hidden path="bomPlan.bomid"/></td>
+						<form:hidden path="bomPlan.bomid" value="${bomForm.bomPlan.bomid}"/>
+						<form:hidden path="bomPlan.subid" value="${bomForm.bomPlan.subid}"/></td>
 						
 					<td class="label" width="100px">产品编号：</td>				
 					<td width="150px">${product.materialId}
-						<form:hidden path="bomPlan.materialid" /></td>					
+						<form:hidden path="bomPlan.materialid"  value="${product.materialId}"/></td>					
 					
 					<td class="label" width="100px">产品名称：</td>
 					<td>${product.materialName }</td>
 				</tr>
 				<tr>
 					<td class="label">机器型号：</td>
-					<td>${product.productModel }</td>
+					<td>${product.productModel }
+						<form:hidden path="bomDetail.productmodel"  value="${product.productModel}"/></td>
 					
 					<td class="label">客户简称：</td>
 					<td>${product.shortName }</td>
@@ -407,34 +402,34 @@
 				
 				<tr>
 					<td class="td-center"><label>材料成本<br>A</label></td>	
-					<td class="td-center"><label>人工<br>B</label></td>
-					<td class="td-center" width="150px"><label>经管费率<br>C</label></td>
-					<td class="td-center" ><label>经管费<br>D=C＊E</label></td>	
-					<td class="td-center"><label>产品成本<br>E=A＋B</label></td>
-					<td class="td-center"><label>核算成本<br>F=E*1.1*1.02</label></td>
+					<td class="td-center"><label>人工成本<br>B</label></td>
+					<td class="td-center"><label> BOM成本<br>C=A＋B</label></td>
+					<td class="td-center"><label>基础成本<br>D=C＊1.1</label></td>
+					<td class="td-center"><label>经管费率<br>E</label></td>
+					<td class="td-center"><label>核算成本<br>F=D＊(1+E)</label></td>
 				</tr>	
 				<tr>			
 					<td class="td-center">
-						<form:input path="bomPlan.materialcost" class="read-only cash short" /></td>
+						<form:input path="bomPlan.materialcost" class="read-only cash" /></td>
 					<td class="td-center">
-						<form:input path="bomPlan.laborcost" class="read-only cash short" value="${bomPlan.laborCost}" /></td>
+						<form:input path="bomPlan.laborcost" class="read-only cash" value="" /></td>
 					<td class="td-center">
-						<form:select path="bomPlan.managementcostrate" style="width: 60px;" value="${bomPlan.managementCostRate}">
-							<form:options items="${bomForm.manageRateList}" 
-							  itemValue="key" itemLabel="value" /></form:select></td>
+						<form:input path="bomPlan.bomcost" class="read-only cash" value="${material.bomCost}"/></td>
 					<td class="td-center">
-						<form:input path="bomPlan.managementcost"  class="read-only cash short" value="${bomPlan.managementCost}"/></td>
+						<form:input path="bomPlan.productcost" class="read-only cash" value="${material.productCost}"/></td>
 					<td class="td-center">
-						<form:input path="bomPlan.productcost" class="read-only cash short" value="${bomPlan.productCost}"/></td>
+						<form:input path="bomPlan.managementcostrate" class="num mini" value="${material.managementCostRate}" style="text-align: center;"/>%</td>
 					<td class="td-center">
-						<form:input path="bomPlan.totalcost" class="read-only cash short" value="${bomPlan.totalCost}"/></td>
+						<form:input path="bomPlan.totalcost" class="read-only cash" value="${material.totalCost}"/></td>
 				</tr>								
 			</table>
 	</fieldset>
 		
 	<div style="margin: 0px 0px 0px 0px; float:left; width:70%;padding-left: 15px;" >
-		查找机器型号：<input type="text" id="productModel" class="short" style="height: 25px;padding-left: 10px;" value="${selectedBomId }"/>
+		机器型号：
+		<input type="text" id="productModel" class="short" style="height: 25px;padding-left: 10px;" value="${productMode }"/>
 		<button type="button" id="searchProductModel" class="DTTT_button">查询</button>
+		历史BOM：<input type="text" id="searchBom" class="middle" style="height: 25px;padding-left: 10px;" value="${selectedBomId }"/>
 	</div>
 	<div style="margin: -3px 10px 0px 5px;float:right; padding:0px;">	
 			<button type="button" id="update" class="DTTT_button">保存</button>
@@ -447,15 +442,12 @@
 			<thead>				
 			<tr>
 				<th width="1px">No</th>
-				<th class="dt-center" width="80px">物料编码</th>
+				<th class="dt-center" width="200px">物料编码</th>
 				<th class="dt-center" >物料名称</th>
-				<th class="dt-center" style="width:50px;font-size:11px">供应商编号</th>
-				<th class="dt-center" width="50px">用量</th>
-				<th class="dt-center" width="50px">本次单价</th>
+				<th class="dt-center" width="100px">供应商编号</th>
+				<th class="dt-center" width="60px">用量</th>
+				<th class="dt-center" width="80px">本次单价</th>
 				<th class="dt-center" width="80px">总价</th>
-				<th class="dt-center" width="50px">当前价格</th>
-				<th class="dt-center" style="width:50px;font-size:9px">上次订单<br/>价格</th>
-				<th class="dt-center" width="50px">历史最低</th>
 			</tr>
 			</thead>
 			<tfoot>
@@ -467,14 +459,11 @@
 					<th></th>
 					<th></th>
 					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
 				</tr>
 			</tfoot>
 		<tbody>
 		
-		<c:if test="${fn:length(bomDetail) eq 0}" >
+		<c:if test="${fn:length(materialDetail) eq 0}" >
 						
 			<c:forEach var="i" begin="0" end="99" step="1">	
 				<tr>				
@@ -484,13 +473,10 @@
 					<td><span></span></td>	
 					<td><input type="text" name="attributeList2" class="attributeList2" style="width:80px"/>
 						<form:hidden path="bomDetailLines[${i}].supplierid"/></td>
-					<td><form:input path="bomDetailLines[${i}].quantity" class="cash"  style="width:50px"/></td>							
+					<td><form:input path="bomDetailLines[${i}].quantity" class="cash"  style="width:70px"/></td>							
 					<td><form:input path="bomDetailLines[${i}].price" class="cash mini"  /></td>						
 					<td><span></span>
 						<form:hidden path="bomDetailLines[${i}].totalprice"/></td>					
-					<td><span></span></td>				
-					<td><span></span></td>			
-					<td><span></span></td>						
 				</tr>				
 				<script type="text/javascript">
 					counter++;
@@ -499,29 +485,25 @@
 			</c:forEach>
 		</c:if>
 		
-		<c:if test="${fn:length(bomDetail) > 0}" >
+		<c:if test="${fn:length(materialDetail) > 0}" >
 						
-			<c:forEach var="detail" items="${bomDetail}" varStatus='status' >		
-
+			<c:forEach var="detail" items="${materialDetail}" varStatus='status' >		
 				
-<tr>
-	<td></td>
-	<td><input type="text" name="attributeList1" class="attributeList1" value="${detail.materialId}"/>
-		<form:hidden path="bomDetailLines[${status.index}].materialid"  value="${detail.materialId}"/></td>								
-	<td><span id="name${status.index}">${detail.materialName}</span></td>
-	<td><input type="text" name="attributeList2" class="attributeList2"  value="${detail.supplierId}" style="width:80px" />
-		<form:hidden path="bomDetailLines[${status.index}].supplierid"  value="${detail.supplierId}" /></td>
-	<td><form:input path="bomDetailLines[${status.index}].quantity" value="${detail.quantity}"  class="cash"  style="width:50px"/></td>							
-	<td><form:input path="bomDetailLines[${status.index}].price"  value="${detail.price}" class="cash mini"  /></td>						
-	<td><span id="total${status.index}">${detail.totalPrice}</span>
-		<form:hidden path="bomDetailLines[${status.index}].totalprice"  value="${detail.totalPrice}"/>
-		<input type="hidden" id="labor${status.index}"></td>
-	<td><span>${detail.lastPrice}</span></td>					
-	<td><span>${detail.price}</span></td>	
-	<td><span>${detail.minPrice}</span></td>	
-	
-	<form:hidden path="bomDetailLines[${status.index}].sourceprice"  value="${detail.price}" />	
-</tr>
+				<tr>
+					<td></td>
+					<td><input type="text" name="attributeList1" class="attributeList1" value="${detail.materialId}" />
+						<form:hidden path="bomDetailLines[${status.index}].materialid"  value="${detail.materialId}"/></td>								
+					<td><span id="name${status.index}">${detail.materialName}</span></td>
+					<td><input type="text" name="attributeList2" class="attributeList2"  value="${detail.supplierId}" style="width:100px" />
+						<form:hidden path="bomDetailLines[${status.index}].supplierid"  value="${detail.supplierId}" /></td>
+					<td><form:input path="bomDetailLines[${status.index}].quantity" value="${detail.quantity}"  class="cash"  style="width:70px"/></td>							
+					<td><form:input path="bomDetailLines[${status.index}].price"  value="${detail.price}" class="cash mini"  /></td>						
+					<td><span id="total${status.index}">${detail.totalPrice}</span>
+						<form:hidden path="bomDetailLines[${status.index}].totalprice"  value="${detail.totalPrice}"/>
+						<input type="hidden" id="labor${status.index}"></td>	
+					
+					<form:hidden path="bomDetailLines[${status.index}].sourceprice"  value="${detail.price}" />	
+				</tr>
 
 				<script type="text/javascript">
 					var index = '${status.index}';
@@ -530,12 +512,12 @@
 					var materialName = '${detail.materialName}';
 					var quantity = currencyToFloat('${detail.quantity}');
 					var price =currencyToFloat( '${detail.price}');
-					var totalPrice = quantity * price;
+					var totalPrice = float4ToCurrency(quantity * price);
 					var labor = fnLaborCost( materialId,totalPrice);
 					$('#labor'+index).val(labor);
 					$('#total'+index).html(totalPrice);
 					$('#bomDetailLines'+index+'\\.totalprice').val(totalPrice);
-					$('#name'+index).html(jQuery.fixedWidth(materialName,20));
+					$('#name'+index).html(jQuery.fixedWidth(materialName,40));
 					counter++;
 				</script>
 				
@@ -554,106 +536,9 @@
 
 <script type="text/javascript">
 
-$("#attribute1").autocomplete({
-
-	source : function(request, response) {
-		//alert(888);
-		$.ajax({
-			type : "POST",
-			url : "${ctx}/business/order?methodtype=customerSearch",
-			dataType : "json",
-			data : {
-				key : request.term
-			},
-			success : function(data) {
-				//alert(777);
-				response($.map(
-					data.data,
-					function(item) {
-						//alert(item.viewList)
-						return {
-							label : item.viewList,
-							value : item.customerId,
-							id    : item.customerId,
-							shortName    : item.shortName,
-							fullName     : item.customerName,
-							paymentTerm  : item.paymentTerm,
-							shippingCase : item.shippingCondition,
-							loadingPort  : item.shippiingPort,
-							deliveryPort : item.destinationPort,
-							currency     : item.currency,
-							
-						}
-					}));
-			},
-			error : function(XMLHttpRequest,
-					textStatus, errorThrown) {
-				alert(XMLHttpRequest.status);
-				alert(XMLHttpRequest.readyState);
-				alert(textStatus);
-				alert(errorThrown);
-				alert("系统异常，请再试或和系统管理员联系。");
-			}
-		});
-	},
-	
-	select : function(event, ui) {//选择物料分类后,自动添加流水号IPid
-		$("#attribute1").val(ui.item.id);	
-		$("#order\\.customerid").val(ui.item.id);
-		$("#attribute2").html(ui.item.shortName);
-		$("#attribute3").html(ui.item.fullName);
-		$("#paymentterm").html(ui.item.paymentTerm);
-		$("#shippingcase").html(ui.item.shippingCase);
-		$("#loadingport").html(ui.item.loadingPort);
-		$("#deliveryport").html(ui.item.deliveryPort);
-		$("#currency").html(ui.item.currency);
-		
-		var shortName = ui.item.shortName;
-		//var parentId = shortYear + shortName;
-		/*
-		if (shortName != "") {//判断所选的编号
-			$
-			.ajax({
-				type : "post",
-				url : "${ctx}/business/order?methodtype=customerOrderMAXId",
-				async : false,
-				data : {
-					parentId : parentId,
-				},
-				dataType : "json",
-				success : function(data) {
-
-					var retValue = data['retValue'];
-
-					if (retValue === "failure") {
-						$().toastmessage('showWarningToast',"请联系系统管理员。");
-					} else {
-
-						$("#order\\.parentid").val(parentId);
-						$("#order\\.subid").val(data.codeFormat);	
-						$("#order\\.piid").val(shortYear + shortName + data.codeFormat);
-						//设置光标项目
-						$("#order\\.orderid").focus();
-					}
-				},
-				error : function(
-						XMLHttpRequest,
-						textStatus,
-						errorThrown) {
-					alert("发生系统异常，请再试或者联系系统管理员."); 	
-				}
-			});
-		} else {}	*/
-	},//select		
-	
-	
-	minLength : 0,
-	autoFocus : false,
-});
-
 function autocomplete(){
-	//通过型号查询物料
-	$("#searchProductModel").autocomplete({
+	//BOM方案查询
+	$("#searchBom").autocomplete({
 		minLength : 1,
 		autoFocus : false,
 		source : function(request, response) {
@@ -661,7 +546,7 @@ function autocomplete(){
 			$
 			.ajax({
 				type : "POST",
-				url : "${ctx}/business/material?methodtype=search",
+				url : "${ctx}/business/bom?methodtype=searchBom",
 				dataType : "json",
 				data : {
 					key : request.term
@@ -694,9 +579,9 @@ function autocomplete(){
 
 		select : function(event, ui) {
 			//所选择的BOM编号里面含有产品编号,所以要锁定原来的产品
-			//var orderYSId = '${order.YSId }';
-			//var url = '${ctx}/business/bom?methodtype=changeBomAdd&bomId='+ui.item.id+'&YSId='+ui.item.YSId+'&orderYSId='+orderYSId;
-			//location.href = url;
+			var materialId = '${product.materialId}';
+			var url = '${ctx}/business/bom?methodtype=changeBomAdd&bomId='+ui.item.id+'&materialId='+materialId;
+			location.href = url;
 		},
 
 		
@@ -877,7 +762,7 @@ function autocomplete(){
 			var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
 	
 			//显示到页面	
-			var vPrice = floatToCurrency(fPrice);
+			var vPrice = float5ToCurrency(fPrice);
 			var vTotalNew = floatToCurrency(fTotalNew);
 
 			$oSupplier.val(ui.item.supplierId);

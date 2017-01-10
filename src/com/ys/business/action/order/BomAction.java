@@ -81,6 +81,7 @@ public class BomAction extends BaseAction {
 				break;
 			case "createBaseBom":
 				doCreateBaseBom();
+				//printOutJsonObj(response, dataMap);
 				rtnUrl = "/business/bom/basebomadd";
 				break;				
 			case "searchBom":
@@ -122,6 +123,10 @@ public class BomAction extends BaseAction {
 				doUpdate();
 				rtnUrl = "/business/bom/bomplanview";
 				break;
+			case "updateBomPlan":
+				doUpdateBomPlan();
+				printOutJsonObj(response, dataMap);
+				break;
 			case "getSupplierPriceList"://供应商编号查询
 				dataMap = doGetSupplierPriceList();
 				printOutJsonObj(response, dataMap);
@@ -136,7 +141,7 @@ public class BomAction extends BaseAction {
 				break;
 			case "changeBomAdd":
 				doChangeBomAdd();
-				rtnUrl = "/business/bom/bomplanadd";
+				rtnUrl = "/business/bom/basebomadd";
 				break;	
 			case "changeBomEdit":
 				doChangeBomEdit();
@@ -146,10 +151,39 @@ public class BomAction extends BaseAction {
 				doCopy();
 				rtnUrl = "/business/bom/bomcopyadd";
 				break;
+			case "searchProductModel":
+				doSearchProductModel();
+				rtnUrl = "/business/bom/basebomadd";
+				break;
+			case "baseBomInsert":
+				doInsertBaseBom();
+				rtnUrl = "/business/material/productview";
+				break;
+			case "getBaseBom":
+				dataMap = doShowBaseBom();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/bom/productview";
+				break;
+			case "getQuotationBom":
+				dataMap = doShowQuotationBom();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
 		return rtnUrl;		
+	}
+	
+	public void doSearchProductModel(){
+		
+		
+		try {
+			bomService.getProductModel();
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -245,13 +279,12 @@ public class BomAction extends BaseAction {
 	
 	public void doCopy() throws Exception{
 			
-		//model = bomService.copyBomPlan();
 		bomService.getCopyBomList();
 			
 	}
 	public void doCreateBaseBom() throws Exception{
 		
-		model = bomService.createBaseBom();
+		bomService.createBaseBom();
 		
 	}
 	public void doCreate() throws Exception{
@@ -265,7 +298,12 @@ public class BomAction extends BaseAction {
 		model = bomService.insertAndView();
 		
 	}		
-	
+
+	public void doInsertBaseBom() throws Exception {
+
+		model = bomService.insertBaseBomAndView();
+		
+	}
 	
 	public HashMap<String, Object> doSearchBom() throws Exception{
 
@@ -294,12 +332,44 @@ public class BomAction extends BaseAction {
 		
 	}
 
+	public void doUpdateBomPlan(){
+		
+		bomService.updateBomPlan();
+	}
 	public void doShowBomDetail() throws Exception{
 				
 		model = bomService.showBomDetail();
 			
 	}
-	
+	public HashMap<String, Object> doShowBaseBom() throws Exception{
+		
+		return  bomService.showBaseBomDetail();
+			
+	}
+
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doShowQuotationBom() throws Exception{
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap =bomService.showQuotationBomDetail();
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+			
+	}
 	
 	/*
 	 * 

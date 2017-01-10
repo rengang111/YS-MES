@@ -26,7 +26,6 @@
 
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/css/main.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />

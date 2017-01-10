@@ -80,13 +80,17 @@ public class ZZMaterialAction extends BaseAction {
 				rtnUrl = "/business/material/zzmaterialadd";
 				break;
 			case "createH":
-				//doCreateH();
+				doCreateH();
 				rtnUrl = "/business/material/zzhmaterialadd";
 				break;
 			case "insert":
 				doInsert();
 				rtnUrl = "/business/material/zzmaterialview";
-				break;							
+				break;	
+			case "insertH":
+				doInsert();
+				rtnUrl = "/business/material/zzhmaterialview";
+				break;						
 			case "detailViewB":
 				doShowDetail();
 				rtnUrl = "/business/material/zzmaterialview";
@@ -108,7 +112,7 @@ public class ZZMaterialAction extends BaseAction {
 				rtnUrl = "/business/material/zzmaterialedit";
 				break;	
 			case "editH":
-				doEdit();
+				doEditH();
 				rtnUrl = "/business/material/zzhmaterialadd";
 				break;				
 			case "updateB":
@@ -117,7 +121,7 @@ public class ZZMaterialAction extends BaseAction {
 				break;				
 			case "updateH":
 				doUpdate();
-				rtnUrl = "/business/material/zzmaterialview";
+				rtnUrl = "/business/material/zzhmaterialview";
 				break;
 			case "delete":
 				doDelete(data);
@@ -171,13 +175,19 @@ public class ZZMaterialAction extends BaseAction {
 		model = ZZService.insertAndView();
 		
 	}		
-	
-	
+
 	public void doEdit() throws Exception{
 
-		ZZService.createMaterial();
+		ZZService.getOptionList();
 		
 		model = ZZService.getDetailView();
+		
+	}	
+	
+	
+	public void doEditH() throws Exception{
+		
+		model = ZZService.getDetailViewH();
 		
 	}	
 	

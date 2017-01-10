@@ -140,6 +140,10 @@ public class MaterialAction extends BaseAction {
 				MaterialModel = doDeletePrice(data);
 				printOutJsonObj(response, MaterialModel.getEndInfoMap());
 				break;
+			case "deletePriceHistory":
+				MaterialModel = doDeletePriceHistory(data);
+				printOutJsonObj(response, MaterialModel.getEndInfoMap());
+				break;
 			case "categorySearch"://单个物料分类查询
 				dataMap = doCategorySearch(data);
 				printOutJsonObj(response, dataMap);
@@ -153,11 +157,16 @@ public class MaterialAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;					
 			case "productInit":
+				doInit(session);
 				rtnUrl = "/business/material/productmain";
 				break;					
 			case "searchProduct":
-				dataMap = dosearchProduct(data);
+				dataMap = dosearchProduct(session,data);
 				printOutJsonObj(response, dataMap);
+				break;				
+			case "productView":
+				productView();
+				rtnUrl = "/business/material/productview";
 				break;
 		}
 		
@@ -423,6 +432,14 @@ public class MaterialAction extends BaseAction {
 
 		return MaterialModel;
 	}
+	
+	public MaterialModel doDeletePriceHistory(@RequestBody String data) throws Exception{
+		
+		MaterialModel = materialService.doDeletePriceHistory(data, userInfo);
+
+		return MaterialModel;
+	}
+
 	public void doAddSupplier() {
 
 		String materialid = request.getParameter("materialid");
@@ -430,10 +447,18 @@ public class MaterialAction extends BaseAction {
 
 	}	
 	
-	public HashMap<String, Object> dosearchProduct(String data){
+	@SuppressWarnings("deprecation")
+	public HashMap<String, Object> dosearchProduct(HttpSession session,String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
+		//优先执行查询按钮事件,清空session中的查询条件
+				String pageFlg = request.getParameter("pageFlg");
+				if(pageFlg != null && !("").equals(pageFlg)){
+					session.removeValue("mainSearchKey1");
+					session.removeValue("mainSearchKey2");
+					
+				}
 		try {
 			dataMap = materialService.getProductList(data);			
 			
@@ -446,6 +471,18 @@ public class MaterialAction extends BaseAction {
 		return dataMap;
 	}
 	
+	public void productView(){
+		
+		
+		try {
+			materialService.getProductDeital();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
 	public void doDetailView(){
 
 		String recordId = request.getParameter("recordId");

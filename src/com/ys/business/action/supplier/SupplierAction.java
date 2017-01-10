@@ -82,6 +82,10 @@ public class SupplierAction extends BaseAction {
 				doShowDetail();
 				rtnUrl = "/business/supplier/supplierview";
 				break;
+			case "showById":
+				doShowDetailById();
+				rtnUrl = "/business/supplier/supplierview";
+				break;
 			case "edit":
 				doUpdateInit();
 				rtnUrl = "/business/supplier/supplieradd";
@@ -156,7 +160,18 @@ public class SupplierAction extends BaseAction {
 		
 		service.insertAndView();
 		
-	}		
+	}	
+	
+	public void doShowDetailById(){
+
+		String key = request.getParameter("key");
+		try {
+			model = service.getSupplierById(key);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
 	
 	public void doShowDetail(){
 

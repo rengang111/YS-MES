@@ -24,16 +24,15 @@
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
+				 "iDisplayLength" : 100,
 				"lengthChange":false,
-				"lengthMenu":[100,150,200],//设置一页展示20条记录
-				"processing" : false,
-				"serverSide" : false,
-				"stateSave" : false,
+				//"lengthMenu":[10,150,200],//设置一页展示20条记录
+				"processing" : true,
+				"serverSide" : true,
+				"stateSave" : true,
 				"ordering "	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",
-				//"scrollY":scrollHeight,
-				//"scrollCollapse":true,
 				"retrieve" : true,
 				"sAjaxSource" : url,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -85,6 +84,12 @@
 				    			
 				    			var name = row["materialName"];				    			
 				    			name = jQuery.fixedWidth(name,30);				    			
+				    			return name;
+				    		}},
+				    		{"targets":3,"render":function(data, type, row){
+				    			
+				    			var name = row["categoryName"];				    			
+				    			name = jQuery.fixedWidth(name,20);				    			
 				    			return name;
 				    		}},
 				    		{"targets":4,"render":function(data, type, row){

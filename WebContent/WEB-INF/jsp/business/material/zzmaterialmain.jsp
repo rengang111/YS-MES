@@ -60,15 +60,15 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "materialId", "defaultContent" : ''},
-							{"data": "materialName", "defaultContent" : ''},
-							{"data": "unit", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "cavitiesNumber", "defaultContent" : '',"className" : 'cash'},
-							{"data": "time", "defaultContent" : '',"className" : 'cash'},
-							{"data": "kilowatt", "defaultContent" : '',"className" : 'cash'},
-							{"data": "totalPrice", "defaultContent" : '',"className" : 'cash'},
-							{"data": null, "defaultContent" : '',"className" : 'td-center'}
+							{"data": null,"className" : 'td-center'},
+							{"data": "materialId"},
+							{"data": "materialName"},
+							{"data": "unit","className" : 'td-center'},
+							{"data": "cavitiesNumber","className" : 'cash'},
+							{"data": "time","className" : 'cash'},
+							{"data": "kilowatt","className" : 'cash'},
+							{"data": "totalPrice","className" : 'cash'},
+							{"data": null,"className" : 'td-center'}
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
@@ -78,7 +78,7 @@
 				    		{"targets":2,"render":function(data, type, row){
 				    			
 				    			var name = row["materialName"];
-				    			name = jQuery.fixedWidth(name,30);
+				    			name = jQuery.fixedWidth(name,50);
 				    			
 				    			return name;
 				    		}},
@@ -140,7 +140,7 @@
 	
 	function doShow(materialId) {
 		var type = materialId.substring(0,1);//截取物料大分类
-		alert(type)
+		//alert(type)
 		if(type == 'H'){
 			var url = '${ctx}/business/zzmaterial?methodtype=detailViewH&materialId=' + materialId;
 			
@@ -237,7 +237,7 @@
 				<thead>						
 					<tr class="selected">
 						<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
-						<th style="width: 100px;" aria-label="物料编号" class="dt-middle ">自制品编号</th>
+						<th style="width: 120px;" aria-label="物料编号" class="dt-middle ">自制品编号</th>
 						<th aria-label="物料编号" class="dt-middle ">产品名称</th>
 						<th style="width: 40px;" aria-label="物料编号" class="dt-middle ">单位</th>
 						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">出模数</th>

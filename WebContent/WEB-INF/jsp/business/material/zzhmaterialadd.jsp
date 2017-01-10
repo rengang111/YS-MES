@@ -12,6 +12,9 @@
 
 $(document).ready(function() {
 
+	var hourp = $('#price\\.hourprice').val();
+	if(hourp == '') $('#price\\.hourprice').val('11')
+	
 	autocomplete();
 	
 	//设置光标项目		
@@ -63,7 +66,7 @@ $(document).ready(function() {
 
 function doSubmitReturn(){
 		
-	$('#ZZMaterial').attr("action", "${ctx}/business/zzmaterial?methodtype=insert");
+	$('#ZZMaterial').attr("action", "${ctx}/business/zzmaterial?methodtype=insertH");
 	$('#ZZMaterial').submit();
 	
 }
@@ -86,12 +89,12 @@ function doSubmitReturn(){
 		<tr>
 			<td class="label" style="width: 120px;">产品编号：</td>
 			<td style="width: 150px;">
-				<form:input path="price.materialid" class="required" value="${material.materialId }"/></td>
+				<form:input path="price.materialid" class="required" value="${price.materialId }"/></td>
 								
 			<td class="label" style="width: 120px;"><label>产品名称：</label></td>
-			<td style="width: 250px;"><span id="materialname">${material.materialName }</span></td>
+			<td style="width: 250px;"><span id="materialname">${price.materialName }</span></td>
 			<td class="label" style="width: 120px;"><label>计量单位：</label></td>
-			<td>&nbsp;<span id="unit">${material.dicName }</span></td>
+			<td>&nbsp;<span id="unit">${price.dicName }</span></td>
 	</table>
 	</fieldset>
 	
@@ -109,12 +112,12 @@ function doSubmitReturn(){
 		</thead>		
 		<tbody>
 			<tr>
-				<td><form:input path="price.peoplenumber" class="cash short labor" /></td>
-				<td><form:input path="price.houryield"    class="cash short labor"/></td>				
-				<td><form:input path="price.hourprice"    class="cash short labor"  value="11"/></td>
-				<td><span id="laborprice"></span>
-					<form:hidden path="price.laborprice" />
-					<form:hidden path="price.totalprice" /></td>				
+				<td><form:input path="price.peoplenumber" class="cash short labor"  value="${price.peopleNumber }" /></td>
+				<td><form:input path="price.houryield"    class="cash short labor"  value="${price.hourYield }" /></td>				
+				<td><form:input path="price.hourprice"    class="cash short labor"    value="${price.hourPrice }"/></td>
+				<td><span id="laborprice">${price.laborPrice }</span>
+					<form:hidden path="price.laborprice"   value="${price.laborPrice }"/>
+					<form:hidden path="price.totalprice"   value="${price.totalPrice }"/></td>				
 			</tr>			
 		</tbody>
 	</table>
@@ -189,11 +192,6 @@ function autocomplete(){
 
 }
 
-</script>
-<script type="text/javascript">
-	window.onunload = function(){ 
-	parent.supplierPriceView();//刷新供应商单价信息 
-	} 
 </script>
 </body>
 </html>

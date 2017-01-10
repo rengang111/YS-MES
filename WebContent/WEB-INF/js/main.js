@@ -324,6 +324,51 @@ function float4ToCurrency(value){
 	
 }
 
+function float5ToCurrency(value){
+
+	var toFloat = '';
+	
+	if(typeof value == 'number'){
+		toFloat = value;
+	}else{
+		toFloat = currencyToFloat(value);
+	}
+	
+	//转换成float出错的情况,返回原值
+	if(toFloat == 0)
+		return value;
+		
+	var numString = toFloat.toFixed(5);
+	var parts = numString.split('.');
+	var outParts = [];
+	var beforeDecimal = '0';
+	var afterDecimal = '00000';
+	var currSegment;
+
+	beforeDecimal = parts[0];
+	afterDecimal = parts[1];
+	
+	while (beforeDecimal.length > 3) {
+		
+		currSegment = beforeDecimal.substring(
+				beforeDecimal.length - 3,
+				beforeDecimal.length);
+		
+		beforeDecimal = beforeDecimal.substring(
+				0,
+				beforeDecimal.length -3);
+		outParts.unshift(currSegment);
+	}
+	
+	if(beforeDecimal.length > 0) {
+		
+		outParts.unshift(beforeDecimal);
+	}
+	
+	return outParts.join(',') + '.' + afterDecimal;
+	
+}
+
 function floatToNumber(value){
 
 var toFloat = '';
@@ -475,7 +520,7 @@ function foucsInit(){
 
 		
 	$(".cash") .blur(function(){
-		$(this).val(floatToCurrency($(this).val()));
+		//$(this).val(floatToCurrency($(this).val()));
 	});
 
 	

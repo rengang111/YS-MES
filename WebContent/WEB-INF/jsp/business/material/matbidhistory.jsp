@@ -55,6 +55,7 @@
 			<th style="width:30px;" aria-label="币种" class="dt-middle sorting_disabled">币种</th>
 			<th style="width:50px;" aria-label="报价单位" class="dt-middle sorting_disabled">报价单位</th>
 			<th style="width:60px;" aria-label="报价日期" class="dt-middle sorting_disabled">报价日期</th>
+			<th style="width:30px;" aria-label="报价日期" class="dt-middle sorting_disabled"></th>
 		</tr>
 		</thead>
 	</table>
@@ -162,11 +163,17 @@ function supplierPriceView() {
 					{"data": "currency", "defaultContent" : '',"className" : 'td-center'},
 					{"data": "priceUnit", "defaultContent" : '',"className" : 'td-center'},
 					{"data": "priceDate", "defaultContent" : '',"className" : 'td-center'},
+					{"data": null,"className" : 'td-center'},
 		        ],
 		"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){		    			
 						return row["rownum"] 
-		    		}}		    		        
+		    		}},
+		    		{"targets":8,"render":function(data, type, row){
+		    			var delet = "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
+		    			
+		    			return delet;
+                    }}		    		        
 	         	] 
 		}
 	
@@ -189,6 +196,32 @@ function selectedColor(){
 	
 }
 
+
+function doDelete(recordId){
+	
+	
+	if (recordId != ""){ //
+		$.ajax({
+			type : "post",
+			url : "${ctx}/business/material?methodtype=deletePriceHistory&recordId="+recordId,
+			async : false,
+			data : 'key=' + recordId,
+			dataType : "json",
+			success : function(data) {
+				$('#TSupplier').DataTable().ajax.reload(null,false);
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+				
+				
+			}
+		});
+	}else{
+		//
+	}
+}
 </script>
 </body>
 </html>

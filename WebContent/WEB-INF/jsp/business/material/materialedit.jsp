@@ -51,8 +51,8 @@ input.middle{width:300px;}
 	<table class="form">		
 		<tr>
 			<td class="label" style="width: 100px;"><label>物料(ERP)编号：</label></td>
-			<td style="width: 180px;">
-				<form:input path="material.materialid" class="read-only" /></td>
+			<td style="width: 240px;">
+				<form:input path="material.materialid" class="read-only"  style="width: 180px;"/></td>
 								
 			<td class="label"><label>物料名称：</label></td>
 			<td colspan="3">

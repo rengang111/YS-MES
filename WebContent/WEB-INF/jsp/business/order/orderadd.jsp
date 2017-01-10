@@ -235,6 +235,7 @@
 		var mydate = new Date();
 		var number = mydate.getFullYear();
 		shortYear = String(number).substr(2); 
+		$("#order\\.orderdate").val(shortToday());
 		
 		ajax();
 
@@ -500,6 +501,7 @@ $("#attribute1").autocomplete({
 	},
 	
 	select : function(event, ui) {//选择物料分类后,自动添加流水号IPid
+
 		$("#attribute1").val(ui.item.id);	
 		$("#order\\.customerid").val(ui.item.id);
 		$("#attribute2").html(ui.item.shortName);

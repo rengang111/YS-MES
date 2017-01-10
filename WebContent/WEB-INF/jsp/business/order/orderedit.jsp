@@ -271,9 +271,6 @@
 			$('#orderForm').submit();
 		});
 		
-
-		//重设显示窗口(iframe)高度
-		iFramAutoSroll();
 		$('#order\\.currency').val('${order.currencyId }');
 		$('#order\\.shippingcase').val('${order.shippingCaseId }');
 		$('#order\\.loadingport').val('${order.loadingPortId }');
@@ -282,6 +279,7 @@
 		//input获取焦点初始化处理
 		foucsInit();
 
+		$('select').css('width','100px');
 	});	
 	
 	function foucsInit(){

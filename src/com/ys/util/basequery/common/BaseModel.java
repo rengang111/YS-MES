@@ -44,7 +44,6 @@ public class BaseModel implements Serializable {
 	
 
 	private String imageFileName = "";
-	//private String[] filenames;
 	private String imageKey = "";
 	private String path = "";
 	private String nowUseImage = "";
@@ -274,7 +273,6 @@ public class BaseModel implements Serializable {
 	public void setImageFileName(String imageFileName) {
 		this.imageFileName = imageFileName;
 	}
-
 	
 	public String getImageKey() {
 		return this.imageKey;

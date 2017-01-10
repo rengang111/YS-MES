@@ -45,7 +45,7 @@
 					.row
 					.add([
 						'<td></td>',
-						'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
+						'<td><input type="text"   name="attributeList1"  class="attributeList1" style="width: 130px;">'+
 							'<input type="hidden" name="rawMaterials['+rowIndex+'].rawmaterialid" id="rawMaterials'+rowIndex+'.rawmaterialid" /></td>',
 						'<td><span></span></td>',
 						'<td><input type="text"   name="rawMaterials['+rowIndex+'].netweight"     id="rawMaterials'+rowIndex+'.netweight" class="cash mini" /></td>',
@@ -200,12 +200,14 @@ function ajax() {
 		var	fpricenew = fkgprice * fnetweight ;//单位材料价=新单价*重量	
 		//alert('frawprice:'+frawprice+'--farwunit:'+farwunit+'--fchgunit:'+fchgunit+'--fpricenew:'+fpricenew);	
 
+		var vnetweight = float5ToCurrency(fnetweight);
 		var vwastage = floatToCurrency(fwastage);	
 		var vweight  = floatToCurrency(fweight);		
 		var vkgprice  = float4ToCurrency(fkgprice);
 		var vpricenew = float4ToCurrency(fpricenew);
 		
 		//详情列表显示新的价格
+		$onetweight.val(vnetweight);
 		$owastages.html(vwastage);					
 		$owastagei.val(vwastage);			
 		$oweights.html(vweight);
@@ -461,12 +463,12 @@ function doSubmitRefresh(){
 		<tr>
 			<td class="label" style="width: 120px;">产品编号：</td>
 			<td style="width: 150px;">
-				<form:input path="price.materialid" class="required" value="${material.materialId }"/></td>
+				<form:input path="price.materialid" class="required" value="${price.materialId }"/></td>
 								
 			<td class="label" style="width: 120px;"><label>产品名称：</label></td>
-			<td ><span id="materialname">${material.materialName }</span></td>
+			<td ><span id="materialname">${price.materialName }</span></td>
 			<td class="label" style="width: 120px;"><label>计量单位：</label></td>
-			<td style="width: 150px;">&nbsp;<span id="unit">${material.dicName }</span></td>	
+			<td style="width: 150px;">&nbsp;<span id="unit">${price.dicName }</span></td>	
 		<tr>
 			<td class="label"><label>自制类别：</label></td>
 			<td>
@@ -492,22 +494,22 @@ function doSubmitRefresh(){
 	
 		<thead>
 		<tr>
-			<th style="width:10px">No</th>
+			<th style="width:1px">No</th>
 			<th style="width:80px">原材料编码</th>
 			<th>原材料名称</th>
 			<th style="width:70px">用量</th>
-			<th style="width:50px">计量单位</th>
+			<th style="width:30px">单位</th>
 			<th style="width:60px">损耗2%</th>
 			<th style="width:60px">用量</th>
 			<th style="width:60px">单价</th>
-			<th style="width:80px">总价</th>
+			<th style="width:60px">总价</th>
 		</tr>
 		</thead>		
 		<tbody>
 			<c:forEach var="i" begin="0" end="4" step="1">		
 				<tr>
 					<td></td>
-					<td><input type="text" name="attributeList1" class="attributeList1">
+					<td><input type="text" name="attributeList1" class="attributeList1" style="width: 130px;">
 						<form:hidden path="rawMaterials[${i}].rawmaterialid" /></td>								
 					<td><span></span></td>
 					<td><form:input path="rawMaterials[${i}].netweight" class="cash mini" /></td>
@@ -738,10 +740,6 @@ function autocomplete(){
 }
 
 </script>
-<script type="text/javascript">
-	window.onunload = function(){ 
-	parent.supplierPriceView();//刷新供应商单价信息 
-	} 
-</script>
+
 </body>
 </html>

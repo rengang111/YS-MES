@@ -25,11 +25,13 @@ import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
+import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PriceSupplierData;
+import com.ys.business.db.data.B_PriceSupplierHistoryData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 
@@ -79,6 +81,7 @@ public class BomService extends BaseService {
 		dataModel.setQueryFileName("/business/order/bomquerydefine");
 		
 	}
+	
 	public HashMap<String, Object> getBomList() throws Exception {
 		
 		String key = request.getParameter("key").toUpperCase();
@@ -291,7 +294,7 @@ public class BomService extends BaseService {
 		
 		baseQuery = new BaseQuery(request, dataModel);
 
-		userDefinedSearchCase.put("keywords1", YSId);
+		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		modelMap = baseQuery.getYsQueryData(0, 0);
@@ -301,7 +304,53 @@ public class BomService extends BaseService {
 				
 		return model;
 	}
+	public HashMap<String, Object> getBaseBomDetail(String bomId) throws Exception {
+
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/order/bomquerydefine");
+		dataModel.setQueryName("getBaseBomDetailByBomId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("bomId", bomId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		modelMap = baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			HashMap.put("recordsTotal", dataModel.getRecordCount());
+			HashMap.put("data", modelMap);
+			//编辑用
+			model.addAttribute("material",dataModel.getYsViewData().get(0));
+			model.addAttribute("materialDetail",dataModel.getYsViewData());
+		}else{
+			return null;
+		}		
+				
+		return HashMap;
+	}
+
+	public HashMap<String, Object> getQuotationBomDetail(String bomId) throws Exception {
 	
+				
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+	
+
+		dataModel.setQueryName("getQuotationBom");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase = new HashMap<String, String>();
+		userDefinedSearchCase.put("materialId", bomId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();	
+			
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
 	public void getBomInfo(String YSId) throws Exception {
 	
 		dataModel = new BaseModel();		
@@ -445,6 +494,30 @@ public class BomService extends BaseService {
 		return modelMap;
 	}
 	
+	public void getMaterialbyProductModel() throws Exception {
+
+		String key1 = request.getParameter("model");
+
+		if(key1 != null && key1.trim().length() > 1){
+			key1 = key1.toUpperCase();
+		}else{
+			return;
+		}
+		dataModel.setQueryName("getMaterialbyProductModel");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("shareModel", key1);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", key1);
+		baseQuery.getYsQueryData(sql);
+		//baseQuery.getYsQueryData(0, 0);	 		
+		
+		model.addAttribute("materialDetail", dataModel.getYsViewData());
+		model.addAttribute("productMode",key1);
+	}
+	
 	/*
 	 * 1.物料新增处理(一条数据)
 	 * 2.子编码新增处理(N条数据)
@@ -503,18 +576,72 @@ public class BomService extends BaseService {
 	}	
 
 	/*
+	 * 1.物料新增处理(一条数据)
+	 * 2.子编码新增处理(N条数据)
+	 */
+	private String insertBaseBom() throws Exception  {
+
+		String bomid="";
+		ts = new BaseTransaction();
+
+		try {
+			
+			ts.begin();
+					
+			B_BomPlanData reqData = (B_BomPlanData)reqModel.getBomPlan();
+			B_BomDetailData reqDtlDt = (B_BomDetailData)reqModel.getBomDetail();
+			
+			//插入BOM基本信息
+			updateBomPlan(reqData);
+			
+			//插入BOM详情
+			//首先删除DB中的BOM详情
+			bomid = reqData.getBomid();
+			String where = " bomId = '"+bomid +"'";
+			deleteBomDetail(where);
+			
+			List<B_BomDetailData> reqDataList = reqModel.getBomDetailLines();
+			
+			for(B_BomDetailData data:reqDataList ){
+				
+				//过滤空行或者被删除的数据
+				if(data.getMaterialid() != null && !("").equals(data.getMaterialid())){
+					
+					data.setBomid(bomid);
+					data.setProductmodel(reqDtlDt.getProductmodel());
+					insertBomDetail(data);	
+					
+					//供应商单价修改
+					String supplierId = data.getSupplierid();
+					String materialId = data.getMaterialid();
+					String price = data.getPrice();
+					updatePriceSupplier(materialId,supplierId,price);
+				}	
+			
+			}
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();
+			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		return bomid;
+		
+	}	
+	/*
 	 * BOM基本信息insert处理
 	 */
 	private void insertBomPlan(
 			B_BomPlanData data) throws Exception{
 		
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BomPlanInsert",userInfo);
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BaseBomInsert",userInfo);
 
 		copyProperties(data,commData);
 
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
-		
 		bomPlanDao.Create(data);	
 
 	}	
@@ -601,78 +728,31 @@ public class BomService extends BaseService {
 		bomPlanData = getBomByRecordId(recordid);					
 		
 		if(null != bomPlanData){
-		
+
+			//获取页面数据
+			copyProperties(bomPlanData,reqBom);
+			//处理共通信息
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"BomPlanUpdate",userInfo);
-
-			//处理共通信息
 			copyProperties(bomPlanData,commData);
-			//获取页面数据
-			bomPlanData.setPlandate(reqBom.getPlandate());
-			bomPlanData.setManagementcostrate(reqBom.getManagementcostrate());
-			bomPlanData.setManagementcost(reqBom.getManagementcost());
-			bomPlanData.setLaborcost(reqBom.getLaborcost());
-			bomPlanData.setMaterialcost(reqBom.getMaterialcost());
-			bomPlanData.setTotalcost(reqBom.getTotalcost());
-			bomPlanData.setProductcost(reqBom.getProductcost());
 			
 			bomPlanDao.Store(bomPlanData);
+			
 		}else{
 			
 			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 					"BomPlanInsert",userInfo);
-
 			copyProperties(reqBom,commData);
 
 			guid = BaseDAO.getGuId();
 			reqBom.setRecordid(guid);
+			reqBom.setBomtype(Constants.BOMTYPE_B);//BOM类别
 			
 			bomPlanDao.Create(reqBom);	
 		}
 	}
 
-	/*
-	 * 订单详情更新处理
-	 */
-	private void updateBomDetail(
-			B_BomDetailData newData,
-			B_BomDetailData dbData) 
-			throws Exception{
-								
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"BomDetailUpdate",userInfo);
 
-		//处理共通信息
-		copyProperties(newData,commData);
-		//获取页面数据
-		dbData.setQuantity(newData.getQuantity());
-		dbData.setPrice(newData.getPrice());;
-		dbData.setTotalprice(newData.getTotalprice());
-		dbData.setSupplierid(newData.getSupplierid());
-		
-		bomDetailDao.Store(dbData);
-
-	}
-	/*
-	 * 订单详情更新处理
-	 */
-	private void deleteBomDetail(
-			B_BomDetailData newData,
-			B_BomDetailData dbData) 
-			throws Exception{
-								
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"BomDetailUpdate",userInfo);
-
-		//处理共通信息
-		copyProperties(newData,commData);
-		//获取页面数据
-		dbData.setQuantity(newData.getQuantity());
-		dbData.setPrice(newData.getPrice());;
-		dbData.setTotalprice(newData.getTotalprice());
-		dbData.setSupplierid(newData.getSupplierid());
-		
-		bomDetailDao.Store(dbData);
-
-	}
 	/*
 	 * 更新供应商单价
 	 */
@@ -685,6 +765,8 @@ public class BomService extends BaseService {
 		List<B_PriceSupplierData> priceList = null;
 		B_PriceSupplierData pricedt = null;
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();
+		B_PriceSupplierHistoryData historyDt = new B_PriceSupplierHistoryData();
+		B_PriceSupplierHistoryDao historyDao = new B_PriceSupplierHistoryDao();
 
 		String where ="materialId= '" + materialId + "'" + 
 				" AND supplierId = '" + supplierId + "'" + 
@@ -699,12 +781,23 @@ public class BomService extends BaseService {
 			if(!price.equals(pricedt.getPrice())){//价格有变动的话,更新为最新价格
 				
 				//处理共通信息					
-				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"PriceSupplierUpdate",userInfo);
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"BaseBomInsert",userInfo);
 				copyProperties(pricedt,commData);
 				
 				pricedt.setPrice(price);
 				
 				dao.Store(pricedt);
+				
+				//插入历史表
+				//处理共通信息	
+				copyProperties(historyDt,pricedt);
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BaseBomInsert",userInfo);
+				copyProperties(historyDt,commData);
+				
+				guid = BaseDAO.getGuId();
+				historyDt.setRecordid(guid);
+				
+				historyDao.Create(historyDt);
 			}
 		}
 				
@@ -810,6 +903,21 @@ public class BomService extends BaseService {
 		return bomPlanData;
 	}
 	
+	public void getProductDetail(String productId) throws Exception {
+
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", productId);
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("getProductList");
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		baseQuery.getYsFullData();	 
+		
+		model.addAttribute("product", dataModel.getYsViewData().get(0));
+
+	}
+	
 	public Model copyBomPlan() throws Exception {		
 
 		String bomId = request.getParameter("bomId");
@@ -829,27 +937,64 @@ public class BomService extends BaseService {
 	public Model createBaseBom() throws Exception {
 
 		String materialId = request.getParameter("materialId");	
-	
-		//取得该产品的新BOM编号	
-		//getBomIdByMaterialId(materialId);	
+		//取得该产品的新BOM编号
 		String bomId = BusinessService.getBaseBomId(materialId);
+		
+		String accessFlg = request.getParameter("accessFlg");//新建/编辑标识
+		
+		if(accessFlg != null && accessFlg != ""){
+			//编辑
+			//取得产品信息
+			getProductById(materialId);
+
+			getBaseBomDetail(bomId);
+		}
+		
+		//新建
 		bomPlanData.setBomid(bomId);
 		bomPlanData.setSubid(BusinessConstants.FORMAT_00);
-		bomPlanData.setMaterialid(materialId);
-		
+		bomPlanData.setMaterialid(materialId);		
 		reqModel.setBomPlan(bomPlanData);
-		
+
 		//取得产品信息
 		getProductById(materialId);
-
-		//设置经管费率下拉框		
-		reqModel.setManageRateList(
-				util.getListOption(DicUtil.MANAGEMENTRATE, ""));
 		
 		return model;
 		
 	}
+	
+	public Model getProductModel() throws Exception {
 
+		String materialId = request.getParameter("materialId");	
+		//取得产品信息
+		String bomId = BusinessService.getBaseBomId(materialId);
+		bomPlanData.setBomid(bomId);
+		bomPlanData.setSubid(BusinessConstants.FORMAT_00);
+		bomPlanData.setMaterialid(materialId);
+		reqModel.setBomPlan(bomPlanData);
+		
+		getProductById(materialId);		
+
+		getMaterialbyProductModel();
+		
+		return model;
+		
+	}
+	
+	public HashMap<String, Object> showBaseBomDetail() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		String bomId = BusinessService.getBaseBomId(materialId);
+		
+		return getBaseBomDetail(bomId);		
+	}
+	public HashMap<String, Object> showQuotationBomDetail() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		
+		return getQuotationBomDetail(materialId);		
+	}
+		
 	public Model createBomPlan() throws Exception {
 
 		String YSId = request.getParameter("YSId");
@@ -889,26 +1034,26 @@ public class BomService extends BaseService {
 	
 	public Model changeBomPlanAdd() throws Exception {
 
-		String YSId = request.getParameter("YSId");
-		String bomId = request.getParameter("bomId");
-		String orderYSId = request.getParameter("orderYSId");
+		String materialId = request.getParameter("materialId");
+		String oldBomId = request.getParameter("bomId");
 
-		//取得产品基本信息
-		String materialId = getOrderDetailByYSId(orderYSId);
-				
-		//取得BOM编号
-		getBomIdByMaterialId(materialId);
+		//取得该产品的新BOM编号
+		String newBomId = BusinessService.getBaseBomId(materialId);
 		
 		//取得所选BOM的详细信息
-		getBomDetail(YSId);
-		
-		//设置经管费率下拉框		
-		reqModel.setManageRateList(
-				util.getListOption(DicUtil.MANAGEMENTRATE, ""));
+		getBaseBomDetail(oldBomId);
 		
 		//返回给页面刚才选择的BOM编号
-		model.addAttribute("selectedBomId",bomId);
-		
+		model.addAttribute("selectedBomId",oldBomId);
+		//新建
+		bomPlanData.setBomid(newBomId);
+		bomPlanData.setSubid(BusinessConstants.FORMAT_00);
+		bomPlanData.setMaterialid(materialId);		
+		reqModel.setBomPlan(bomPlanData);
+
+		//取得产品信息
+		getProductById(materialId);
+	
 		return model;
 		
 	}
@@ -945,6 +1090,8 @@ public class BomService extends BaseService {
 		return model;
 		
 	}
+	
+
 		
 	public Model insertAndView() throws Exception {
 
@@ -955,12 +1102,47 @@ public class BomService extends BaseService {
 		
 	}
 	
+	public Model insertBaseBomAndView() throws Exception {
+	
+		String bomId = insertBaseBom();
+		String materialId = reqModel.getBomPlan().getMaterialid();
+		
+		//取得产品信息
+		getProductDetail(materialId);
+		//getBaseBomDetail(bomId);
+		
+		return model;
+		
+	}
 	public Model updateAndView() throws Exception {
 
 		String YSId = update();
 		getBomDetail(YSId);
 		
 		return model;
+		
+	}
+	
+	public void updateBomPlan() {
+		
+		try {
+			
+			B_BomPlanData data = new B_BomPlanData();
+			
+			String costRate  = request.getParameter("costRate");
+			String totalCost = request.getParameter("totalCost");
+			String recordId  = request.getParameter("recordId");
+			
+			data.setRecordid(recordId);
+			data.setManagementcostrate(costRate);
+			data.setTotalcost(totalCost);
+
+			updateBomPlan(data);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			
+		}
 		
 	}
 }

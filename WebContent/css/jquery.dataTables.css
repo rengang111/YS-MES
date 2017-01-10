@@ -8,7 +8,7 @@ table.dataTable {
 	clear: both;
 	border-collapse: separate;
 	border-spacing: 0;	
-	font-size:11px;
+	/*font-size:11px;*/
 	color:#000;
 	/*
    * Header and footer styles
@@ -81,7 +81,7 @@ table.dataTable tbody tr.selected {
 	background-color: #b0bed9;
 }
 
-/*行高*/
+/*锟叫革拷*/
 table.dataTable tbody th, table.dataTable tbody td {
 	padding: 4px 2px;
 }
@@ -671,7 +671,7 @@ table.dataTable tbody tr.selected {
 	background-color: #b0bed9;
 }
 
-/*行高*/
+/*锟叫革拷*/
 table.dataTable tbody th, table.dataTable tbody td {
 	padding: 4px 2px;
 }

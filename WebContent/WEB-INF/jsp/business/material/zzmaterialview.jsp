@@ -35,7 +35,7 @@
 			<td class="label" style="width: 120px;"><label>产品名称：</label></td>
 			<td>${price.materialName }</td>
 			<td class="label" style="width: 120px;"><label>计量单位：</label></td>
-			<td style="width: 150px;">${price.unit }</td>	
+			<td style="width: 150px;">${price.dicName }</td>	
 			
 		<tr>
 			<td class="label"><label>自制类别：</label></td>
@@ -77,6 +77,11 @@
 					<td>${raw.kgPrice }</td>
 					<td>${raw.materialPrice }</td>				
 				</tr>
+				<script type="text/javascript" >
+					var index = '${i.index}';			
+					var name = '${raw.rawMaterialName }';
+					$('#rawMaterialName'+index).html(jQuery.fixedWidth(name,30));
+				</script>
 			</c:forEach>
 			
 		</tbody>
@@ -199,7 +204,7 @@ $(document).ready(function() {
 	$("#doEdit").click(
 			function() {	
 				var materialId=$('#price\\.materialid').val();
-				$('#ZZMaterial').attr("action", "${ctx}/business/zzmaterial?methodtype=edit&materialId="+materialId);
+				$('#ZZMaterial').attr("action", "${ctx}/business/zzmaterial?methodtype=editB&materialId="+materialId);
 				$('#ZZMaterial').submit();
 
 		});
