@@ -746,6 +746,7 @@ public class BomService extends BaseService {
 
 			guid = BaseDAO.getGuId();
 			reqBom.setRecordid(guid);
+			reqBom.setBomtype(Constants.BOMTYPE_B);//BOM类别
 			
 			bomPlanDao.Create(reqBom);	
 		}
@@ -1033,26 +1034,26 @@ public class BomService extends BaseService {
 	
 	public Model changeBomPlanAdd() throws Exception {
 
-		String YSId = request.getParameter("YSId");
-		String bomId = request.getParameter("bomId");
-		String orderYSId = request.getParameter("orderYSId");
+		String materialId = request.getParameter("materialId");
+		String oldBomId = request.getParameter("bomId");
 
-		//取得产品基本信息
-		String materialId = getOrderDetailByYSId(orderYSId);
-				
-		//取得BOM编号
-		getBomIdByMaterialId(materialId);
+		//取得该产品的新BOM编号
+		String newBomId = BusinessService.getBaseBomId(materialId);
 		
 		//取得所选BOM的详细信息
-		getBomDetail(YSId);
-		
-		//设置经管费率下拉框		
-		reqModel.setManageRateList(
-				util.getListOption(DicUtil.MANAGEMENTRATE, ""));
+		getBaseBomDetail(oldBomId);
 		
 		//返回给页面刚才选择的BOM编号
-		model.addAttribute("selectedBomId",bomId);
-		
+		model.addAttribute("selectedBomId",oldBomId);
+		//新建
+		bomPlanData.setBomid(newBomId);
+		bomPlanData.setSubid(BusinessConstants.FORMAT_00);
+		bomPlanData.setMaterialid(materialId);		
+		reqModel.setBomPlan(bomPlanData);
+
+		//取得产品信息
+		getProductById(materialId);
+	
 		return model;
 		
 	}

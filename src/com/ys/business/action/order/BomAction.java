@@ -141,7 +141,7 @@ public class BomAction extends BaseAction {
 				break;
 			case "changeBomAdd":
 				doChangeBomAdd();
-				rtnUrl = "/business/bom/bomplanadd";
+				rtnUrl = "/business/bom/basebomadd";
 				break;	
 			case "changeBomEdit":
 				doChangeBomEdit();
@@ -167,7 +167,6 @@ public class BomAction extends BaseAction {
 			case "getQuotationBom":
 				dataMap = doShowQuotationBom();
 				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/bom/productview";
 				break;
 				
 		}

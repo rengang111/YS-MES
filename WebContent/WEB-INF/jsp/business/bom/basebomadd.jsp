@@ -236,7 +236,6 @@
 
 	$(document).ready(function() {
 		
-		//$("#bomPlan\\.managementcostrate").val($("#bomPlan\\.managementcostrate option:eq(2)").val());
 		var rate = '${material.managementCostRate}';
 		if(rate =='') $("#bomPlan\\.managementcostrate").val('5');
 		
@@ -278,6 +277,12 @@
 		costAcount();//成本核算
 
 		$(".DTTT_container").css('float','left');
+		
+		//Bom信息来源于复制旧的BOM的情况,后续按新增处理
+		var oldBomId = '${material.bomId}';
+		var newBomId = '${bomForm.bomPlan.bomid}';
+		if(oldBomId != newBomId)
+			$('#bomPlan\\.recordid').val('');
 
 	});	
 	
@@ -421,9 +426,10 @@
 	</fieldset>
 		
 	<div style="margin: 0px 0px 0px 0px; float:left; width:70%;padding-left: 15px;" >
-		查找机器型号：
+		机器型号：
 		<input type="text" id="productModel" class="short" style="height: 25px;padding-left: 10px;" value="${productMode }"/>
 		<button type="button" id="searchProductModel" class="DTTT_button">查询</button>
+		历史BOM：<input type="text" id="searchBom" class="middle" style="height: 25px;padding-left: 10px;" value="${selectedBomId }"/>
 	</div>
 	<div style="margin: -3px 10px 0px 5px;float:right; padding:0px;">	
 			<button type="button" id="update" class="DTTT_button">保存</button>
@@ -531,6 +537,55 @@
 <script type="text/javascript">
 
 function autocomplete(){
+	//BOM方案查询
+	$("#searchBom").autocomplete({
+		minLength : 1,
+		autoFocus : false,
+		source : function(request, response) {
+			//alert(888);
+			$
+			.ajax({
+				type : "POST",
+				url : "${ctx}/business/bom?methodtype=searchBom",
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					//alert(777);
+					response($
+						.map(
+							data.data,
+							function(item) {
+
+								return {
+									label : item.viewList,
+									value : item.bomId,
+									id : item.bomId,
+									YSId:item.YSId
+								}
+							}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+					alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
+
+		select : function(event, ui) {
+			//所选择的BOM编号里面含有产品编号,所以要锁定原来的产品
+			var materialId = '${product.materialId}';
+			var url = '${ctx}/business/bom?methodtype=changeBomAdd&bomId='+ui.item.id+'&materialId='+materialId;
+			location.href = url;
+		},
+
+		
+	});//BOM方案查询
 	
 	//物料选择
 	$(".attributeList1").autocomplete({
