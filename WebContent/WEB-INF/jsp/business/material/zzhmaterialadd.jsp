@@ -12,6 +12,9 @@
 
 $(document).ready(function() {
 
+	var hourp = $('#price\\.hourprice').val();
+	if(hourp == '') $('#price\\.hourprice').val('11')
+	
 	autocomplete();
 	
 	//设置光标项目		
@@ -189,11 +192,6 @@ function autocomplete(){
 
 }
 
-</script>
-<script type="text/javascript">
-	window.onunload = function(){ 
-	parent.supplierPriceView();//刷新供应商单价信息 
-	} 
 </script>
 </body>
 </html>

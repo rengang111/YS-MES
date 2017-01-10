@@ -164,6 +164,11 @@ public class BomAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/bom/productview";
 				break;
+			case "getQuotationBom":
+				dataMap = doShowQuotationBom();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/bom/productview";
+				break;
 				
 		}
 		
@@ -342,7 +347,30 @@ public class BomAction extends BaseAction {
 		return  bomService.showBaseBomDetail();
 			
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doShowQuotationBom() throws Exception{
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap =bomService.showQuotationBomDetail();
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+			
+	}
 	
 	/*
 	 * 

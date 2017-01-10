@@ -77,6 +77,11 @@
 					<td>${raw.kgPrice }</td>
 					<td>${raw.materialPrice }</td>				
 				</tr>
+				<script type="text/javascript" >
+					var index = '${i.index}';			
+					var name = '${raw.rawMaterialName }';
+					$('#rawMaterialName'+index).html(jQuery.fixedWidth(name,30));
+				</script>
 			</c:forEach>
 			
 		</tbody>

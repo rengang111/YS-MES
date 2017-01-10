@@ -388,6 +388,13 @@ function doCreatePrice() {
 		scrollbar : false,
 		title : false,
 		content : url,
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		  supplierPriceView();
+		  return false; 
+		}    
 	});
 }
 
@@ -417,6 +424,13 @@ function doCreateBOMZZ() {
 		scrollbar : false,
 		title : false,
 		content : url,
+		cancel: function(index){ 
+			 // if(confirm('确定要关闭么')){
+			    layer.close(index)
+			 // }
+			    supplierPriceView();
+			  return false; 
+			}    
 	});
 }
 
@@ -449,6 +463,13 @@ function doUpdate(supplierId) {
 		scrollbar : false,
 		title : false,
 		content : url,
+		cancel: function(index){ 
+			 // if(confirm('确定要关闭么')){
+			    layer.close(index)
+			 // }
+			  supplierPriceView();
+			  return false; 
+			}    
 	});
 }
 

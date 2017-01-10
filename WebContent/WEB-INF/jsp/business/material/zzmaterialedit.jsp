@@ -46,9 +46,9 @@
 					.row
 					.add([
 						'<td></td>',
-						'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
+						'<td><input type="text"   name="attributeList1"  class="attributeList1" style="width: 130px;">'+
 							'<input type="hidden" name="rawMaterials['+rowIndex+'].rawmaterialid" id="rawMaterials'+rowIndex+'.rawmaterialid" /></td>',
-						'<td><span></span></td>',
+						'<td><span  id="rawMaterialName'+rowIndex+'"></span></td>',
 						'<td><input type="text"   name="rawMaterials['+rowIndex+'].netweight"     id="rawMaterials'+rowIndex+'.netweight" class="cash mini" /></td>',
 						'<td><span></span><select name="rawMaterials['+rowIndex+'].unit"          id="rawMaterials'+rowIndex+'.unit" style="display:none;width:60px"></select>'+
 							'<input type="hidden" id="unit'+rowIndex+'"  /></td>',
@@ -154,7 +154,8 @@ function ajax() {
 
         var $onetweight = $tds.eq(3).find("input");//用料净重量
 
-		var $orawunit   = $tds.eq(4).find("input:hidden");//原计量单位
+		//var $orawunit   = $tds.eq(4).find("input:hidden").eq(0);//原计量单位:购买单位
+		var $ousedUnit  = $tds.eq(4).find("input:hidden").eq(1);//现在的使用单位
 		var $ochgunit   = $tds.eq(4).find("select");//换算后的计量单位$("select option:checked").text();
 		var $ounittext  = $tds.eq(4).find("select option:checked");
 		var $owastages  = $tds.eq(5).find("span");//损耗
@@ -166,25 +167,24 @@ function ajax() {
 		var $omatprices = $tds.eq(8).find("span");//总价
 		var $omatpricei = $tds.eq(8).find("input:hidden");
 
-		var vunitnew   = "";
-		var vrawunit   = $orawunit.val();
+		var vusedUnit  = $ousedUnit.val();
+		//var vrawunit   = $orawunit.val();
 		var vchgunit   = $ochgunit.val();
 		var unittext   = $ounittext.text();
 		var fnetweight = currencyToFloat($onetweight.val());
 		var frawprice  = currencyToFloat($orawprice.val());
 
 		var farwunit = '1';//初始值
-		//原材料的购买单位
+		//自制品的使用单位
 		for(var i=0;i<unitAaary.length;i++){
 			var val = unitAaary[i][0];//取得计算单位:100,1000...
 			var key = unitAaary[i][1];//取得显示单位:克,吨...
-			if(vrawunit == key){
+			if(vusedUnit == key){
 				farwunit = val;
 				break;
 			}
 		}
-
-		//自制品的用量单位
+		//自制品改换使用单位
 		var fchgunit = '1';//初始值
 		for(var i=0;i<unitAaary.length;i++){
 			var val = unitAaary[i][0];//取得计算单位:100,1000...
@@ -193,11 +193,14 @@ function ajax() {
 				fchgunit = val;//只有在需要换算的时候,才设置换算单位
 				break;
 			}
-		}		
+		}	
+		//alert('farwunit:'+farwunit+'fchgunit:'+fchgunit)	
 
 		var fwastage = fnetweight * 0.02;//损耗2%
 		var fweight = fnetweight + fwastage;//用料重量=净重量+损耗
-		var fkgprice = frawprice * farwunit / fchgunit; //换算后单价=原单价*原单位/新单位
+
+		var fkgprice = frawprice * farwunit / fchgunit; //换算后单价=原单价*原单位/新单位	
+		
 		var	fpricenew = fkgprice * fnetweight ;//单位材料价=新单价*重量	
 		//alert('frawprice:'+frawprice+'--farwunit:'+farwunit+'--fchgunit:'+fchgunit+'--fpricenew:'+fpricenew);	
 
@@ -463,7 +466,7 @@ function acountPowerPrice(){
 	
 		<thead>
 		<tr>
-			<th style="width:30px">No</th>
+			<th style="width:1px">No</th>
 			<th style="width:80px">原材料编码</th>
 			<th>原材料名称</th>
 			<th style="width:70px">用量</th>
@@ -471,7 +474,7 @@ function acountPowerPrice(){
 			<th style="width:60px">损耗2%</th>
 			<th style="width:60px">用量</th>
 			<th style="width:60px">单价</th>
-			<th style="width:80px">总价</th>
+			<th style="width:60px">总价</th>
 		</tr>
 		</thead>		
 		<tbody>
@@ -479,14 +482,15 @@ function acountPowerPrice(){
 					
 				<tr>
 					<td></td>
-					<td><input type="text" name="attributeList1" class="attributeList1" value="${raw.rawMaterialId }" />
+					<td><input type="text" name="attributeList1" class="attributeList1" value="${raw.rawMaterialId }" style="width: 130px;"/>
 						<form:hidden path="rawMaterials[${i.index}].rawmaterialid" value="${raw.rawMaterialId }" /></td>								
-					<td><span>${raw.materialName }</span></td>
+					<td><span id="rawMaterialName${i.index}"></span></td>
 					<td><form:input path="rawMaterials[${i.index}].netweight" class="cash mini" value="${raw.netWeight }" /></td>							
 				
 					<td><span id="unitSpan${i.index}"></span>
 						<select name="rawMaterials[${i.index}].unit" id="rawMaterials${i.index}.unit" style="display:none;width:60px" ></select>
-						<input type="hidden"  name="unit${i.index}" /></td>
+						<input type="hidden"  id="orgUnit${i.index}" />
+						<input type="hidden"  id="usedUnit${i.index}" /></td>
 				
 					<td><span>${raw.wastage }</span>
 						<form:hidden path="rawMaterials[${i.index}].wastage"  value="${raw.wastage }"  /></td>
@@ -494,7 +498,7 @@ function acountPowerPrice(){
 						<form:hidden path="rawMaterials[${i.index}].weight"  value="${raw.weight }" /></td>
 					<td><span></span>
 						<form:input path="rawMaterials[${i.index}].kgprice" class="cash mini"  value="${raw.kgPrice }" />
-						<input type="hidden"  name="price${i.index}"/></td>
+						<input type="hidden"  name="price${i.index}" value="${raw.kgPrice }"/></td>
 					<td><span>${raw.materialPrice }</span>
 						<form:hidden path="rawMaterials[${i.index}].materialprice"  value="${raw.materialPrice }" /></td>				
 				</tr>
@@ -507,35 +511,41 @@ function acountPowerPrice(){
 					
 					var $oUnit      = $('#unitSpan'+index);
 					var $oSelect    = $('#rawMaterials'+index+'\\.unit');
-					var $oUnithid   = $('#unit'+index);
+					var $oOrgUnit   = $('#orgUnit'+index);
+					var $oUsedUnit  = $('#usedUnit'+index);
 					
-					var unitName = '${raw.chgUnit}';
-					var unit     = '${raw.unit}';
+					var orgUnitName = '${raw.orgUnitName}';//原材料的购买单位名称
+					var unit     = '${raw.viewUnit}';
 					//alert('unit:'+unit+'--unitName:'+unitName)
-					switch (unitName){
+					switch (orgUnitName){
 					case '克':
 					case '千克':
 					case '吨':
 						$oUnit.html('');//页面不显示
-						$oUnithid.val(unitName);//临时存储
+						$oOrgUnit.val(orgUnitName);//临时存储
+						$oUsedUnit.val(unit);//使用量单位,再次计算单价时,作为比较对象,判断所改变的单位是否和该值一致
 						$oSelect.html(optionWeight);
 						//$oSelect.val(unit);//显示当前的计量单位
-						$oSelect.css("display", "block");				
+						$oSelect.css("display", "block");	
 						break;
 					case '米':
 					case '厘米':
 						$oUnit.html('');//页面不显示
-						$oUnithid.val(unitName);//临时存储
+						$oOrgUnit.val(orgUnitName);//临时存储
+						$oUsedUnit.val(unit);
 						$oSelect.html(optionSize);
 						//$oSelect.val(unit);//显示当前的计量单位
 						$oSelect.css("display", "block"); 
 						break;
 					default:
 						$oUnit.html(unit);//显示到页面
-						$oUnithid.val(unit);//
+						$oOrgUnit.val(unit);//
+						$oUsedUnit.val(unit);
 						$oSelect.css("display", "none");//下拉框不显示
 					}
 			
+					var name = '${raw.rawMaterialName }';
+					$('#rawMaterialName'+index).html(jQuery.fixedWidth(name,25));
 				</script>
 				
 			</c:forEach>
@@ -750,11 +760,6 @@ function autocomplete(){
 	});
 }
 
-</script>
-<script type="text/javascript">
-	window.onunload = function(){ 
-	parent.supplierPriceView();//刷新供应商单价信息 
-	} 
 </script>
 </body>
 </html>

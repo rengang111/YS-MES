@@ -331,6 +331,26 @@ public class BomService extends BaseService {
 		return HashMap;
 	}
 
+	public HashMap<String, Object> getQuotationBomDetail(String bomId) throws Exception {
+	
+				
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+	
+
+		dataModel.setQueryName("getQuotationBom");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase = new HashMap<String, String>();
+		userDefinedSearchCase.put("materialId", bomId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();	
+			
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
 	public void getBomInfo(String YSId) throws Exception {
 	
 		dataModel = new BaseModel();		
@@ -967,7 +987,13 @@ public class BomService extends BaseService {
 		
 		return getBaseBomDetail(bomId);		
 	}
-	
+	public HashMap<String, Object> showQuotationBomDetail() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		
+		return getQuotationBomDetail(materialId);		
+	}
+		
 	public Model createBomPlan() throws Exception {
 
 		String YSId = request.getParameter("YSId");

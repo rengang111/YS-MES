@@ -78,7 +78,7 @@
 				    		{"targets":2,"render":function(data, type, row){
 				    			
 				    			var name = row["materialName"];
-				    			name = jQuery.fixedWidth(name,30);
+				    			name = jQuery.fixedWidth(name,50);
 				    			
 				    			return name;
 				    		}},
@@ -237,7 +237,7 @@
 				<thead>						
 					<tr class="selected">
 						<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
-						<th style="width: 100px;" aria-label="物料编号" class="dt-middle ">自制品编号</th>
+						<th style="width: 120px;" aria-label="物料编号" class="dt-middle ">自制品编号</th>
 						<th aria-label="物料编号" class="dt-middle ">产品名称</th>
 						<th style="width: 40px;" aria-label="物料编号" class="dt-middle ">单位</th>
 						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">出模数</th>

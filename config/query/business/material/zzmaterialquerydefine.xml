@@ -34,15 +34,16 @@
 		<f name="b.recordId " alias="rawRecordId" ctype="" />
 		<f name="b.rawMaterialId" alias="" ctype="" />
 		<f name="b.rawMaterialName" alias="" ctype="" />
-		<f name="IFNULL(b.zzunit,a.unit)" alias="viewUnit" ctype="计量单位" />
-		<f name="b.zzunit" alias="chgUnit" ctype="计量单位" />
+		<f name="IFNULL(b.zzunit,b.unit)" alias="viewUnit" ctype="计量单位" />
+		<f name="b.unit" alias="chgUnit" ctype="" />
+		<f name="b.unit" alias="orgUnitName" ctype="计量单位" />
 		<f name="a.unit" alias="dicName" ctype="计量单位" />
 
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>v_zzmaterialprice a LEFT JOIN  v_zzrawmaterial b ON a.materialId = b.materialId AND b.deleteFlag = '0' WHERE 	a.deleteFlag = '0' </from>
-    <orderby>a.materialId</orderby>
+    <orderby>b.rawMaterialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>

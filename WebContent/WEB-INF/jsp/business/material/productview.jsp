@@ -56,6 +56,7 @@
 	<table class="form" id="table_form2" style="margin-top: 6px;">
 				
 		<tr>
+			<td class="td-center"><label></label></td>	
 			<td class="td-center"><label>材料成本</label></td>	
 			<td class="td-center"><label>人工成本</label></td>
 			<td class="td-center"><label> BOM成本</label></td>
@@ -63,19 +64,30 @@
 			<td class="td-center" style="width: 100px;"><label>经管费率</label></td>
 			<td class="td-center" style="width: 150px;"><label>核算成本</label></td>
 		</tr>	
-		<tr>			
+		<tr>
+			<td class="td-center"><label>单价变动前</label></td>	
+			<td class="td-center"><span id=materialCost1></span></td>
+			<td class="td-center"><span id=laborCost1></span></td>
+			<td class="td-center"><span id=bomCost1></span></td>
+			<td class="td-center"><span id=baseCost1></span></td>
+			<td class="td-center"><span id=costRate1>%</span></td>
+			<td class="td-center"><span id=totalSpan1></span></td>
+		</tr>	
+		<tr>
+			<td class="td-center"><label>单价变动后</label></td>	
 			<td class="td-center"><span id=materialCost></span></td>
 			<td class="td-center"><span id=laborCost></span></td>
 			<td class="td-center"><span id=bomCost></span></td>
 			<td class="td-center"><span id=baseCost></span></td>
 			<td class="td-center">
 				<input type="text" id="costRate" class="num mini" value="5" style="text-align: center;"/>%</td>
-			<td class="td-center">
-				<input type="text" id="totalCost"  class="read-only cash short"/></td>
-		</tr>								
+			<td class="td-center"><span id=totalSpan></span>
+				<input type="hidden" id="totalCost"/></td>
+		</tr>									
 	</table>
-	<div class="action" style="text-align: right;">			
-		<button type="button" id="doEdit" class="DTTT_button" >保存</button>
+	<div class="action" style="text-align: right;">
+		<button type="button" id="doEdit" class="DTTT_button" >修改费率</button>
+		<button type="button" id="doSave" class="DTTT_button" >保存</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</div>
 	</fieldset>	
@@ -111,74 +123,22 @@
 <fieldset style="margin-top: 10px;">
 	<legend>客户报价</legend>
 	<div class="list">	
-		<a class="DTTT_button" onclick="doCreatePrice();" style="float: right;">新建</a>	
-		<table id="TSupplier"  class="display dataTable">
+		<a class="DTTT_button" onclick="doCreateQuotation();" style="float: right;">新建</a>	
+		<table id="TQuotation"  class="display dataTable">
 			<thead>				
 				<tr>
-					<th style="width:50px;" class="dt-middle ">No</th>
-					<th style="width:100px;" class="dt-middle ">报价时间</th>
-					<th style="width:150px;" class="dt-middle ">BOM编号<th>
-					<th style="width:280px;"class="dt-middle ">核算价格</th>
-					<th style="width:100px;" class="dt-middle ">客户币种</th>
-					<th style="width:150px;" class="dt-middle ">客户报价</th>
+					<th style="width: 1px;"  class="dt-middle ">No</th>
+					<th style="width: 60px;"  class="dt-middle ">报价时间</th>
+					<th style="width:120px;"  class="dt-middle ">BOM编号</th>
+					<th style="width: 80px;"  class="dt-middle ">材料成本</th>
+					<th style="width: 80px;"  class="dt-middle ">人工成本</th>
+					<th style="width: 80px;"  class="dt-middle ">BOM成本</th>
+					<th style="width: 80px;"  class="dt-middle ">基础成本</th>
+					<th style="width: 60px;"  class="dt-middle ">经管费率</th>
+					<th style="width: 80px;"  class="dt-middle ">核算成本</th>
+					<th style="width:100px;"  class="dt-middle ">客户报价</th>
 				</tr>
 			</thead>
-			<tbody>
-			<c:forEach var="detail" items="${cusBidDetail}" varStatus='status' >						
-				<tr>
-					<td>${status.index+1}</td>
-					<td>${detail.materialId}</td>								
-					<td></td>
-					<td>${detail.supplierId}</td>
-					<td>${detail.quantity}</td>							
-					<td>${detail.price}</td>						
-					<td></td>					
-				</tr>
-				
-			</c:forEach>
-			</tbody>
-		</table>
-	</div>
-</fieldset>
-<div style="clear: both"></div>		
-	
-<fieldset>
-	<legend>订单详情</legend>
-		
-	<div class="list">	
-	<a class="DTTT_button" onclick="doCreateOrder();" style="float: right;">新建</a>
-		<table id="TSupplier"  class="display dataTable">
-			<thead>				
-				<tr>
-					<th style="width:10px;" class="dt-middle ">No</th>
-					<th style="width:100px;" class="dt-middle ">BOM编号</th>
-					<th style="width:80px;" class="dt-middle ">下单时间<th>
-					<th style="width:80px;"class="dt-middle ">耀升编号</th>
-					<th style="width:50px;" class="dt-middle ">客户订单编号</th>
-					<th style="width:50px;" class="dt-middle ">订单数量</th>
-					<th style="width:50px;" class="dt-middle ">订单交期</th>
-					<th style="width:50px;" class="dt-middle ">销售币种</th>
-					<th style="width:50px;" class="dt-middle ">单价</th>
-					<th style="width:50px;" class="dt-middle ">总价</th>
-					<th style="width:50px;" class="dt-middle ">出运条款</th>
-					<th style="width:70px;" class="dt-middle ">出运港/目的港</th>
-					<th style="width:50px;" class="dt-middle ">付款条件：出运后</th>
-				</tr>
-			</thead>
-			<tbody>
-			<c:forEach var="detail" items="${cusBidDetail}" varStatus='status' >						
-				<tr>
-					<td>${status.index+1}</td>
-					<td>${detail.materialId}</td>								
-					<td></td>
-					<td>${detail.supplierId}</td>
-					<td>${detail.quantity}</td>							
-					<td>${detail.price}</td>						
-					<td></td>					
-				</tr>
-				
-			</c:forEach>
-			</tbody>
 		</table>
 	</div>
 </fieldset>
@@ -189,6 +149,16 @@
 
 $(document).ready(function() {
 		
+	$("#costRate").attr('readonly',true);
+	$("#costRate").addClass('read-only');
+	$("#doSave").hide();
+	
+	$("#doEdit").click(function() {
+		$("#costRate").attr('readonly',false);
+		$("#costRate").removeClass('read-only');
+		$("#doSave").show();
+		$("#doEdit").hide();
+	});
 	
 	$("#goBack").click(function() {
 		var materialId='${product.materialId}';
@@ -196,7 +166,7 @@ $(document).ready(function() {
 		location.href = url;		
 	});
 
-	$("#doEdit").click(function() {
+	$("#doSave").click(function() {
 		var costRate  = $('#costRate').val();
 		var totalCost = $('#totalCost').val();
 		var recordId  = $('#productRecordId').val();
@@ -212,6 +182,10 @@ $(document).ready(function() {
 			success : function(data) {			
 
 				$().toastmessage('showNoticeToast', "保存成功。");	
+				$("#costRate").attr('readonly',true);
+				$("#costRate").addClass('read-only');
+				$("#doSave").hide();
+				$("#doEdit").show();
 			},
 			 error:function(XMLHttpRequest, textStatus, errorThrown){
 				//alert(textStatus)
@@ -221,11 +195,11 @@ $(document).ready(function() {
 	});
 	
 	
-	supplierPriceView();//供应商单价显示处理
-	
 	baseBomView();//显示基础BOM
+
+	quotationView();//供应商单价显示处理
 	
-	selectedColor();//供应商列表点击颜色变化
+
 	
 	//经管费计算
 	$("#costRate").change(function() {
@@ -239,6 +213,7 @@ $(document).ready(function() {
 		var total = floatToCurrency( baseCost * ( 1 + rate / 100) );
 		
 		$('#totalCost').val(total);
+		$('#totalSpan').html(total);
 	});
     	
 });
@@ -255,6 +230,26 @@ function productCostSum(){
 		
 		sum = currencyToFloat(sum) + ftotal;			
 	})
+	return sum;
+}
+
+//列合计:人工成本
+function laborCostSum(){
+
+	var sum = 0;
+	$('#baseBomTable tbody tr').each (function (){
+		
+		var materialId = $(this).find("td").eq(1).text();
+		var vtotal = $(this).find("td").eq(7).text();
+
+		//判断是否是人工成本
+		if(materialId != '' && materialId.substring(0,1) == 'H'){
+			var ftotal = currencyToFloat(vtotal);
+			sum = currencyToFloat(sum) + ftotal;	
+		}
+		
+				
+	})		
 	return sum;
 }
 
@@ -283,6 +278,7 @@ function baseBomView() {
 		"searching" : false,
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
+		"async" : false,
 		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
@@ -296,14 +292,19 @@ function baseBomView() {
 					
 					$('#recordsTotal').val(data['recordsTotal']);
 
-					var mateCost  = data['data'][0]['materialCost'];
-					var laborCost = data['data'][0]['laborCost'];
-					var bomCost   = data['data'][0]['bomCost'];
-					var baseCost  = data['data'][0]['productCost'];
-					var totalCost = data['data'][0]['totalCost'];
-					var costRote  = data['data'][0]['managementCostRate'];
+					var mateCost1  = data['data'][0]['materialCost'];
+					var laborCost1 = data['data'][0]['laborCost'];
+					var bomCost1   = data['data'][0]['bomCost'];
+					var baseCost1  = data['data'][0]['productCost'];
+					var totalCost1 = data['data'][0]['totalCost'];
+					var costRote1  = data['data'][0]['managementCostRate'];
 
-					var recordId = data['data'][0]['productRecord'];
+					$('#materialCost1').html(floatToCurrency( mateCost1 ));
+					$('#laborCost1').html(floatToCurrency( laborCost1 ));
+					$('#bomCost1').html(floatToCurrency( bomCost1 ));
+					$('#baseCost1').html(floatToCurrency( baseCost1 ));
+					$('#totalSpan1').html(floatToCurrency( totalCost1 ));
+					$('#costRate1').html(costRote1);
 					//costRote = currencyToFloat(costRote) / 100;
 					
 					//var bom = productCostSum();
@@ -315,27 +316,53 @@ function baseBomView() {
 					//var vbom   = floatToCurrency(bomCost);
 					//var vbase = floatToCurrency(baseCost);
 					//var vtotal = floatToCurrency(total);
+					var recordId  = data['data'][0]['productRecord'];
+					var bomId     = data['data'][0]['bomId'];
+					var costRote  = data['data'][0]['managementCostRate'];
+					
+					var laborCost = laborCostSum();
+					var bomCost   = productCostSum();
+					var mateCost  = bomCost - laborCost;
+					var baseCost  = bomCost * 1.1;
+					var totalCost = baseCost * ( 1 + costRote / 100 );
 
 					//alert('fbom:'+fbom+'fbomCost:'+fbomCost)
-					//if(fbom > fbomCost){
-					//	vbom = '<div style="color:red">' + vbom + '</div>';
-					//	vprice = '<div style="color:red">' + vprice + '</div>';
-					//	vtotal = '<div style="color:red">' + vtotal + '</div>';
-					//}else if (fbom < fbomCost){
-					//	vbom = '<div style="color:red">' + vbom + '</div>';
-					//	vprice = '<div style="color:green">' + vprice + '</div>';
-					//	vtotal = '<div style="color:green">' + vtotal + '</div>';						
-					//}
-					var bomId = data['data'][0]['bomId'];
-
+					
+					mateCost  =  floatToCurrency( mateCost );
+					bomCost   =  floatToCurrency( bomCost ) ;
+					baseCost  =  floatToCurrency( baseCost ) ;
+					totalCost =  floatToCurrency( totalCost );
+					laborCost =  floatToCurrency( laborCost );
+					if(currencyToFloat(mateCost) > currencyToFloat(mateCost1)){
+						mateCost  = '<div style="color:red;font-weight:bold;">' + mateCost + '</div>';
+						bomCost   = '<div style="color:red;font-weight:bold;">' + bomCost + '</div>';
+						baseCost  = '<div style="color:red;font-weight:bold;">' + baseCost + '</div>';
+						totalCost = '<div style="color:red;font-weight:bold;">' + totalCost + '</div>';
+					}else if (currencyToFloat(mateCost) < currencyToFloat(mateCost1)){
+						mateCost  = '<div style="color:green;font-weight:bold;">' + mateCost + '</div>';
+						bomCost   = '<div style="color:green;font-weight:bold;">' + bomCost + '</div>';
+						baseCost  = '<div style="color:green;font-weight:bold;">' + baseCost + '</div>';
+						totalCost = '<div style="color:green;font-weight:bold;">' + totalCost + '</div>';					
+					}
+					
+					if(currencyToFloat(laborCost) > currencyToFloat(laborCost1)){
+						laborCost   = '<div style="color:red;font-weight:bold;">' + laborCost + '</div>';
+												
+					}else if (currencyToFloat(laborCost) < currencyToFloat(laborCost1)){
+						laborCost   = '<div style="color:red;font-weight:bold;">' + laborCost + '</div>';					
+					}
+					
 					$('#bomId').html(bomId);
 					$('#materialCost').html(mateCost);
 					$('#laborCost').html(laborCost);
 					$('#bomCost').html(bomCost);
 					$('#baseCost').html(baseCost);
 					$('#totalCost').val(totalCost);
+					$('#totalSpan').html(totalCost);
 					$('#costRate').val(costRote);
 					$('#productRecordId').val(recordId);
+					
+					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	             }
@@ -420,59 +447,39 @@ function baseBomView() {
 	
 }//ajax()供应商信息
 
-function supplierPriceView() {
+function quotationView() {
 
-	var table = $('#TSupplier').dataTable();
+	var table = $('#TQuotation').dataTable();
 	if(table) {
 		table.fnDestroy();
 	}
+	
+	var materialId='${product.materialId}';
 
-	var t = $('#TSupplier').DataTable({
+	var t = $('#TQuotation').DataTable({
 		"paging": false,
-		//"lengthMenu":[20,50,100],//设置一页展示10条记录
 		"processing" : false,
 		"serverSide" : false,
 		"stateSave" : false,
 		"searching" : false,
 		"pagingType" : "full_numbers",
-		//"bJQueryUI": true,
 		"retrieve" : false,
-		//"sAjaxSource" : "${ctx}/business/material?methodtype=supplierPriceView",				
+		"async" : true,
+		"sAjaxSource" : "${ctx}/business/bom?methodtype=getQuotationBom&materialId="+materialId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 				
-			var param = {};
-			var formData = $("#material").serializeArray();
-			formData.forEach(function(e) {
-				//alert(e.name+"=name"+"value= "+e.value)
-				aoData.push({"name":e.name, "value":e.value});
-			});
 			$.ajax({
 				"url" : sSource,
 				"datatype": "json", 
 				"contentType": "application/json; charset=utf-8",
 				"type" : "POST",
-				"async": false,
-				"data" : JSON.stringify(aoData),
+				"data" : null,
 				success: function(data){
-					
-					if (data.message != undefined) {
-						//alert(data.message);
-					}
-									
-					fnCallback(data);
-					$.each(data, function (n, value) {
-			               $.each(value, function (i, v) {
-				               //alert(i + ' == ' + v["supplierId"]);
-			               });
-			           })
-			           
-					//重设显示窗口(iframe)高度
-					iFramAutoSroll();
-
+						fnCallback(data);
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
-	                 alert(XMLHttpRequest.status);
-	                 alert(XMLHttpRequest.readyState);
+	                 //alert(XMLHttpRequest.status);
+	                 //alert(XMLHttpRequest.readyState);
 	                 alert(textStatus);
 	             }
 			})
@@ -482,46 +489,21 @@ function supplierPriceView() {
        	},
 		"columns": [
 					{"data": null,"className" : 'td-center'},
-					{"data": "supplierId"},
-					{"data": "fullName"},
-					{"data": "price","className" : 'td-right'},
-					{"data": "currency","className" : 'td-center'},
-					{"data": "priceDate","className" : 'td-center'},
-					{"data": null,"className" : 'td-center'}
-		        ],
-		"columnDefs":[
-		    		{"targets":0,"render":function(data, type, row){
-		    			
-						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
-		    		}},
-		    		{"targets":6,"render":function(data, type, row){
-		    			var edit = "<a href=\"#\" onClick=\"doUpdate('" + row["supplierId"] + "')\">编辑</a>";
-		    			var history = "<a href=\"#\" onClick=\"doShowHistory('" + row["supplierId"] + "')\">历史报价</a>";
-		    			var delet = "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
-		    			
-		    			return edit+"&nbsp;"+history+"&nbsp;"+delet;
-                    }}	           
-	         	] 
+					{"data": "planDate"},
+					{"data": "bomId"},
+					{"data": "materialCost","className" : 'td-right'},
+					{"data": "laborCost","className" : 'td-right'},
+					{"data": "bomCost","className" : 'td-right'},
+					{"data": "productCost","className" : 'td-right'},
+					{"data": "managementCostRate","className" : 'td-right'},
+					{"data": "totalCost","className" : 'td-right'},
+					{"data": "customerQuote","className" : 'td-right'},
+		        ]
 		}
 	
 	);
 	
 }//ajax()供应商信息
-
-function selectedColor(){
-
-	$('#TSupplier').DataTable().on('click', 'tr', function() {
-		
-		if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-        	$('#TSupplier').DataTable().$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-	});
-	
-}
 
 
 var layerHeight = '360px';
@@ -656,6 +638,28 @@ function doShowSupplier(recordid) {
 
 };
 
+function doCreateQuotation() {
+	var bomId  = $('#bomId').text();
+	if(bomId =='') return;
+	var url = "${ctx}/business/bom?methodtype=createQuotation";
+	url = url + "&bomId="+bomId;
+	$.ajax({
+		type : "post",
+		url : url,
+		//async : false,
+		//data : null,
+		dataType : "text",
+		contentType: "application/x-www-form-urlencoded; charset=utf-8",
+		success : function(data) {			
+			quotationView();
+			$().toastmessage('showNoticeToast', "报价BOM创建成功。");	
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+			//alert(textStatus)
+		}
+	});		
+
+};
 </script>
 	
 <script type="text/javascript">

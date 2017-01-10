@@ -366,4 +366,33 @@
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="getQuotationBom" />
+     <where>
+    	<w name="a.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.bomId" alias="" ctype="" />
+      <f name="a.managementCostRate" alias="" ctype="" />
+      <f name="a.managementCost" alias="" ctype="" />
+      <f name="a.bomCost" alias="" ctype="" />
+      <f name="a.productCost" alias="" ctype="" />
+      <f name="a.totalCost" alias="" ctype="" />
+      <f name="a.laborCost" alias="" ctype="" />
+      <f name="a.materialCost" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.planDate" alias="" ctype="" />
+      <f name="a.customerQuote" alias="" ctype="" />
+  	</select>
+    <!-- 获取所有报价BOM信息 -->
+    <!-- B:基础BOM Q:报价BOM O:订单BOM -->
+    <from>v_bomplan a WHERE a.bomType='Q'   AND a.deleteFlag ='0'  </from>
+    <orderby>a.planDate DESC</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>
