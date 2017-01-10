@@ -69,13 +69,13 @@
 							.add(
 							  [
 								'<td class="dt-center"></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid" style="width:70px;" class="read-only" readonly="readonly" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid" style="width:70px;" class="read-only" /></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num short" /></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      id="orderDetailLines'+rowIndex+'.price"      class="cash short" /></td>',
-								'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short read-only" readonly="readonly"/></td>',
+								'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice"  readonly="readonly"/></td>',
 								'<td></td>',				
 								
 								]).draw();
@@ -170,21 +170,29 @@
 			var $td = $(this).parent().find("td");
 
 			var $oQuantity = $td.eq(4).find("input");
-			var $oPrice   = $td.eq(5).find("input");
+			var $oPricei  = $td.eq(5).find("input");
+			var $oPriceh  = $td.eq(5).find("hidden");
 			var $oAmount  = $td.eq(6).find("input");
 			var $oAmounts = $td.eq(6).find("span");
 			
-			var vPrice = floatToCurrency($oPrice.val());	
-			var fPrice = currencyToFloat($oPrice.val());	
-			var vQuantity = floatToNumber($oQuantity.val());	
+			var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+
+			var fPrice = currencyToFloat($oPricei.val());	
+
 			var fQuantity = currencyToFloat($oQuantity.val());
 			var fTotalOld = currencyToFloat($oAmount.val());
+
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
-			var vTotalNew = floatToCurrency(fTotalNew);
+
+			var vPricei = floatToSymbol(fPrice,currency);
+			var vPriceh = floatToCurrency(fPrice);
+			var vQuantity = floatToNumber($oQuantity.val());
+			var vTotalNew = floatToSymbol(fTotalNew,currency);
 			
 			//详情列表显示新的价格
-			$oPrice.val(vPrice);					
-			$oQuantity.val(vQuantity);	
+			$oPricei.val(vPricei);
+			$oPriceh.val(vPriceh);
+			$oQuantity.val(vQuantity);
 			$oAmount.val(vTotalNew);
 			$oAmounts.html(vTotalNew);
 
@@ -192,7 +200,7 @@
 			//首先减去旧的价格			
 			totalPrice = currencyToFloat(totalPrice) - fTotalOld + fTotalNew;
 						
-			$('#order\\.totalprice').val(floatToCurrency(totalPrice));	
+			$('#order\\.totalprice').val(floatToSymbol(totalPrice,currency));	
 				
 
 		});
@@ -229,7 +237,7 @@
 
 		//设置光标项目
 		$("#attribute1").focus();
-		$("#order\\.piid").attr('readonly', "true");
+		//$("#order\\.piid").attr('readonly', "true");
 
 		//日期
 		var mydate = new Date();
@@ -239,10 +247,8 @@
 		
 		ajax();
 
-		//alert(3333);
 
 		autocomplete();
-		//alert(4444)
 		
 		//$('#example').DataTable().columns.adjust().draw();
 		
@@ -271,22 +277,21 @@
 		
 		$("#insert").click(
 				function() {
-			//var orderdate = $('#order\\.orderdate').val();
-			//var deliverydate = $('#order\\.deliverydate').val();
-			
-			//orderdate = orderdate +" 00:00:00";
-			//deliverydate = deliverydate +" 00:00:00";
-			
-			//$('#order\\.orderdate').val(orderdate);
-			//$('#order\\.deliverydate').val(deliverydate);
-			//alert($('#order\\.orderdate').val()+'==='+deliverydate)
+
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=insert");
 			$('#orderForm').submit();
 		});
 		
 		foucsInit();
-
+		
+		$(".cash") .blur(function(){
+			
+			var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+			$(this).val(floatToSymbol($(this).val(),currency));
+		});
+		
 		$('select').css('width','100px');
+		$(".DTTT_container").css('float','left');
 	});
 	
 	
@@ -310,45 +315,45 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px"><label>PI编号：</label></td>					
-				<td colspan="7">
-					<form:input path="order.piid" class="middle required read-only" /></td>
-			</tr>
-			<tr>
-				<td class="label"><label>客户编号：</label></td>				
 				<td>
-					<div class="ui-widget">
-						<form:input path="attribute1" class="short required" /></div></td>
-				<td colspan="6"><span style="color: blue">
-							&nbsp;（查询范围：客户编号、客户简称、客户全称）</span></td>
-			</tr>
-			<tr>
-				<td class="label"><label>客户简称：</label></td>
-				<td>&nbsp;<span id="attribute2"></span></td>
-
-				<td class="label"><label>客户全称：</label></td>
-				<td colspan="3"><span id="attribute3"></span></td>
+					<form:input path="order.piid" class="short required read-only" /></td>
 					
-				<td class="label"><label>币种：</label></td>
+				<td width="100px" class="label" >
+					<label >客户订单号：</label></td>
 				<td>
-					<form:select path="order.currency">
-						<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
-					</form:select></td>
+					<form:input path="order.orderid" class="short required" /></td>
+										
+				<td width="100px" class="label">下单日期：</td>
+				<td>
+					<form:input path="order.orderdate" class="short required" /></td>
+				
+				<td width="100px" class="label">订单交期：</td>
+				<td>
+					<form:input path="order.deliverydate" class="short required" /></td>
+			</tr>
+			<tr>
+				<td class="label">客户编号：</td>				
+				<td colspan="3">
+						<form:input path="attribute1" class="short required" />
+						<span style="color: blue">（查询范围：客户编号、客户简称、客户名称）</span></td>
+
+				<td class="label">客户名称：</td>
+				<td colspan="3">&nbsp;<span id="attribute2"></span> | <span id="attribute3"></span></td>				
 			</tr>					
 			<tr> 
-				<td class="label"><label>付款条件：</label></td>
+				<td class="label">付款条件：</td>
 				<td >&nbsp;出运后
 					<form:input path="order.paymentterm" 
 						style="width: 30px;text-align: center;" class="td-center" />&nbsp;天</td>
 					
-				<td width="100px"  class="label">
-					<label >出运条件：</label></td>
+				<td class="label">出运条件：</td>
 				<td >
 					<form:select path="order.shippingcase">
 							<form:options items="${orderForm.shippingCaseList}" 
 							  itemValue="key" itemLabel="value" />
 					</form:select></td>
 				
-				<td class="label"><label>出运港：</label></td>
+				<td class="label">出运港：</td>
 				<td><form:select path="order.loadingport">
 						<form:options items="${orderForm.loadingPortList}"
 						  itemValue="key" itemLabel="value" />
@@ -361,29 +366,18 @@
 					</form:select></td>							
 			</tr>
 			<tr>
-				<td width="100px" class="label" >
-					<label >客户订单号：</label></td>
+				<td class="label">币种：</td>
 				<td>
-					<form:input path="order.orderid" class="short required" /></td>									
-				<td class="label">
-					<label>下单日期：</label></td>
-				<td>
-					<form:input path="order.orderdate" class="short required" /></td>
-				
-				<td class="label">
-					<label  >订单交期：</label></td>
-				<td>
-					<form:input path="order.deliverydate" class="short required" /></td>
+					<form:select path="order.currency">
+						<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
+					</form:select></td>	
 
-				<td class="label">
-					<label>销售总价：</label></td>
-				<td>
+				<td class="label">销售总价：</td>
+				<td colspan="5">
 					<form:input path="order.totalprice" class="read-only cash" /></td>
 											
 			</tr>							
 		</table>
-		
-
 </fieldset>
 
 <fieldset>
@@ -417,15 +411,16 @@
 		<c:forEach var="i" begin="0" end="4" step="1">		
 			<tr>
 				<td></td>
-				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" style="width:70px;" class="read-only" readonly="readonly"  /></td>
+				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" style="width:70px;" class="read-only"  /></td>
 				<td><input type="text" name="attributeList1" class="attributeList1">
 					<form:hidden path="orderDetailLines[${i}].materialid" /></td>								
 				<td><span></span></td>
 				<td><form:input path="orderDetailLines[${i}].quantity" class="num short" /></td>							
-				<td><form:input path="orderDetailLines[${i}].price" class="cash short"  /></td>
-				<td><span></span><input type="hidden" name="orderDetailLines[${i}].totalprice" id="orderDetailLines${i}.totalprice" class="read-only cash short" readonly="readonly"/></td>
+				<td><input id="price${i}" class="cash short"  />
+					<form:hidden path="orderDetailLines[${i}].price" /></td>
+				<td><span></span><input type="hidden" name="orderDetailLines[${i}].totalprice" id="orderDetailLines${i}.totalprice"  readonly="readonly"/></td>
 			
-				<script type="text/javascript">
+				<script type="text/javascript" >
 					var index = '${i}';
 					YSSwift = parseInt(YSSwift)+ 1;
 					var fmtId = YSParentId + PrefixInteger(YSSwift,3); 

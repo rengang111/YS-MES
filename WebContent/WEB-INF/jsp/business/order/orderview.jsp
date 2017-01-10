@@ -78,12 +78,12 @@
 	    	  { "targets":8,"render":function(data, type, row){
 	    			var rtn = "";
 	    			var status = row[9];
-	    			if(status != 0){//1:BOM表已做成
-	    				rtn = "<a href=\"#\" onClick=\"ShowBomPlan('" + row[1] +"','"+ row[2] + "')\">查看</a>";
-		   				
-	    			}else{
-		    			rtn = "<a href=\"#\" onClick=\"AddBomPlan('" + row[1] +"','"+ row[2] + "')\">新建</a>";
-	    			}
+	    			//if(status != 0){//1:BOM表已做成
+	    				rtn = "<a href=\"#\" onClick=\"ShowBomPlan('" + row[1] +"','"+ row[2] + "')\">订单详情</a>";
+		   			//	
+	    			//}else{
+		    		//	rtn = "<a href=\"#\" onClick=\"AddBomPlan('" + row[1] +"','"+ row[2] + "')\">新建</a>";
+	    			//}
 	    			return rtn;
 	    	  }}
 			  ] 	
@@ -141,21 +141,19 @@
 			$('#orderForm').submit();
 		});
 
-		//重设显示窗口(iframe)高度
-		iFramAutoSroll();
 
 	});
 	
 	function AddBomPlan(YSId,materialId) {
 
-		var url = '${ctx}/business/bom?methodtype=create&YSId=' + YSId+'&materialId='+materialId;
+		var url = '${ctx}/business/bom?methodtype=createBomOrder&YSId=' + YSId+'&materialId='+materialId;
 
 		location.href = url;
 	}
 	
 
 	function ShowBomPlan(YSId,materialId) {
-		var url = '${ctx}/business/bom?methodtype=detailView&YSId=' + YSId+'&materialId='+materialId;
+		var url = '${ctx}/business/bom?methodtype=orderDetail&YSId=' + YSId+'&materialId='+materialId;
 		location.href = url;
 	};
 	
@@ -175,53 +173,43 @@
 		
 		<fieldset>
 			<legend> 订单综合信息</legend>
-			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
+			<table class="form" id="table_form">
 				<tr> 				
-					<td class="label" width="100px"><label>PI编号：</label></td>					
+					<td class="label" width="100px">PI编号：</td>					
 					<td>${order.PIId}</td>
 
-					<td class="label"><label>客户编号：</label></td>				
-					<td colspan="5">${order.customerId}</td>
-				</tr>
-				<tr>
-					<td class="label"><label>客户简称：</label></td>
-					<td>${order.shortName}</td>
-
-					<td class="label"><label>客户全称：</label></td>
-					<td colspan="3">${order.fullName}</td>
+					<td width="100px" class="label" >客户订单号：</td>
+					<td>${order.orderId}</td>
+					
+					<td class="label">客户名称：</td>				
+					<td colspan="5">${order.customerId} | ${order.shortName} | ${order.fullName}</td>
 						
-					<td class="label"><label>币种：</label></td>
-					<td>${order.currency}</td>
+
 				</tr>					
 				<tr> 
-					<td class="label"><label>付款条件：</label></td>
+					<td class="label">付款条件：</td>
 					<td >出运后&nbsp;${order.paymentTerm}&nbsp;天</td>
 						
-					<td width="100px"  class="label">
-						<label >出运条件：</label></td>
+					<td class="label">出运条件：</td>
 					<td >${order.shippingCase}</td>
 					
-					<td class="label"><label>出运港：</label></td>
+					<td class="label">出运港：</td>
 					<td>${order.loadingPort}</td>
 
-					<td class="label"><label>目的港：</label></td>
+					<td class="label">目的港：</td>
 					<td>${order.deliveryPort}</td>							
 				</tr>			
-				<tr>
-					<td width="100px" class="label" >
-						<label >客户订单号：</label></td>
-					<td>${order.orderId}</td>
+				<tr>					
+					<td class="label">币种：</td>
+					<td>${order.currency}</td>
 
-					<td class="label">
-						<label>下单日期：</label></td>
+					<td class="label">下单日期：</td>
 					<td>${order.orderDate}</td>
 					
-					<td class="label">
-						<label  >订单交期：</label></td>
+					<td class="label">订单交期：</td>
 					<td>${order.deliveryDate}</td>
 					
-					<td class="label">
-						<label>销售总价：</label></td>
+					<td class="label">销售总价：</td>
 					<td>${order.total}</td>
 												
 				</tr>							
@@ -245,7 +233,7 @@
 				<th class="dt-center" width="50px">销售单价</th>
 				<th class="dt-center" width="100px">销售总价</th>
 				<th class="dt-center" width="60px">操作</th>
-				<th class="dt-center" width="60px">BOM表</th>
+				<th class="dt-center" width="60px"></th>
 				<th class="dt-center" width="1px"></th>
 			</tr>
 			</thead>

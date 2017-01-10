@@ -41,7 +41,7 @@
 			<td class="label"><label>自制类别：</label></td>
 			<td>${price.typeName }</td>											
 			<td class="label"><label>管理费率：</label></td>
-			<td>${price.managementCostRate }</td>	
+			<td>${price.managementCostRate /100 * 100 }%</td>	
 			<td class="label" >自制品单价（合计）：</td>
 			<td>${price.totalPrice }</td>					
 		</tr>
@@ -58,7 +58,8 @@
 			<th>原材料名称</th>
 			<th style="width:70px">用量</th>
 			<th style="width:30px">单位</th>
-			<th style="width:60px">损耗2%</th>
+			<th style="width:50px">损耗比</th>
+			<th style="width:50px">损耗</th>
 			<th style="width:60px">用量</th>
 			<th style="width:60px">单价</th>
 			<th style="width:80px">总价</th>
@@ -67,20 +68,25 @@
 		<tbody>
 			<c:forEach var="raw" items="${detail}" varStatus="status">		
 				<tr>
-					<td>${status.index }</td>
+					<td>${status.index + 1 }</td>
 					<td>${raw.rawMaterialId }</td>								
-					<td>${raw.rawMaterialName }</td>
+					<td><span id="rawMaterialName${status.index}"></span></td>
 					<td>${raw.netWeight }</td>	
 					<td>${raw.viewUnit }</td>						
+					<td>${raw.wastageRate }%</td>					
 					<td>${raw.wastage }</td>
 					<td>${raw.weight }</td>
-					<td>${raw.kgPrice }</td>
+					<td><span id="price${status.index}"></span></td>
 					<td>${raw.materialPrice }</td>				
 				</tr>
 				<script type="text/javascript" >
-					var index = '${i.index}';			
+					var index = '${status.index}';			
 					var name = '${raw.rawMaterialName }';
-					$('#rawMaterialName'+index).html(jQuery.fixedWidth(name,30));
+					var price  = currencyToFloat( '${raw.price }' );
+					var convet = currencyToFloat( '${raw.convertUnit }' );
+					var vprice = float4ToCurrency(price / convet);
+					$('#rawMaterialName'+index).html(jQuery.fixedWidth(name,25));
+					$('#price'+index).html(vprice);
 				</script>
 			</c:forEach>
 			
@@ -91,7 +97,7 @@
 	<fieldset style="margin-top: -15px;">
 	<legend style="margin: 10px 0px 0px 0px"> 人工成本</legend>
 	<table class="form" style="text-align: center;margin-top: -5px;">
-	
+
 		<thead>
 		<tr>
 			<td style="width:200px">出模数</td>
@@ -100,15 +106,15 @@
 			<td style="width:200px">每小时工价</td>
 			<td>单位产品工价</td>
 		</tr>
-		</thead>		
+		</thead>
 		<tbody>
 			<tr>
-				<td>${price.cavitiesNumber }</td>							
+				<td>${price.cavitiesNumber }</td>
 				<td>${price.time }</td>	
-				<td>${price.hourYield }</td>				
+				<td>${price.hourYield }</td>
 				<td>${price.hourPrice }</td>
-				<td>${price.laborPrice }</td>				
-			</tr>			
+				<td>${price.laborPrice }</td>
+			</tr>
 		</tbody>
 	</table>
 	<legend style="margin: 10px 0px 0px 0px"> 电耗</legend>
@@ -185,7 +191,8 @@ $(document).ready(function() {
 				}, {
 				}, {								
 				}, {"className":"dt-body-right"
-				}, {"className":"dt-body-center"					
+				}, {"className":"dt-body-center"				
+				}, {"className":"dt-body-right"							
 				}, {"className":"dt-body-right"				
 				}, {"className":"dt-body-right"				
 				}, {"className":"dt-body-right"				

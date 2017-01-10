@@ -26,15 +26,19 @@
 		<f name="a.hourPower" alias="" ctype="" />
 		<f name="a.powerPrice" alias="" ctype="" />
 		<f name="a.totalPrice" alias="" ctype="" />
+		<f name="b.supplierId" alias="" ctype="" />
 		<f name="b.netWeight" alias="" ctype="" />
 		<f name="b.wastage" alias="" ctype="" />
+		<f name="b.wastageRate" alias="" ctype="" />
 		<f name="b.weight" alias="" ctype="" />
-		<f name="b.kgPrice" alias="" ctype="" />
+		<f name="b.price" alias="" ctype="" />
+		<f name="b.convertUnit" alias="" ctype="" />
 		<f name="b.materialPrice" alias="" ctype="" />
 		<f name="b.recordId " alias="rawRecordId" ctype="" />
 		<f name="b.rawMaterialId" alias="" ctype="" />
 		<f name="b.rawMaterialName" alias="" ctype="" />
 		<f name="IFNULL(b.zzunit,b.unit)" alias="viewUnit" ctype="计量单位" />
+		<f name="b.zzunit" alias="" ctype="" />
 		<f name="b.unit" alias="chgUnit" ctype="" />
 		<f name="b.unit" alias="orgUnitName" ctype="计量单位" />
 		<f name="a.unit" alias="dicName" ctype="计量单位" />

@@ -17,7 +17,6 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.business.action.model.order.BomPlanModel;
 import com.ys.business.action.model.order.PurchasePlanModel;
 import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_OrderDetailDao;

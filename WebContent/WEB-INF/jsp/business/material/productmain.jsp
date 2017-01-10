@@ -7,7 +7,7 @@
 
 <%@ include file="../../common/common.jsp"%>
 
-<title>基础BOM一览</title>
+<title>成品一览</title>
 <script type="text/javascript">
 
 	function ajax(pageFlg) {
@@ -58,22 +58,46 @@
 						{"data": "materialName"},
 						{"data": "productModel"},
 						{"data": "customerId"},
-						{"data": "bomCost", "defaultContent" : '0',"className" : 'td-right'},
-						{"data": "productCost", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "totalCost", "defaultContent" : '0',"className" : 'td-right'},
-						{"data": "dicName","className" : 'td-center'},
+						{"data": "exchangePrice", "defaultContent" : '0',"className" : 'td-right'},
+						{"data": "currency", "defaultContent" : '0',"className" : 'td-center'},
+						{"data": null,"className" : 'td-center'},
 						{"data": null,"className" : 'td-center'}
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
-                   }},
+                }},
 	    		{"targets":9,"render":function(data, type, row){
 	    			var rtn = "";
 	    			var space = '&nbsp;';
 	    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["materialId"] + "')\">查看</a>";
 	    			//rtn= rtn+space+"<a href=\"#\" onClick=\"doCreate('" + row["materialId"] + "')\">BOM</a>";		
 	    			return rtn;
+	    		}},
+	    		{"targets":2,"render":function(data, type, row){
+	    			
+	    			var name = row["materialName"];				    			
+	    			name = jQuery.fixedWidth(name,30);				    			
+	    			return name;
+	    		}},
+	    		{"targets":6,"render":function(data, type, row){
+	    			var rate = row["exchangePrice"];
+	    			var c = row["currency"];
+	    			if(rate == null || rate == ""){
+		    			return "0";
+	    			}else{
+	    				return floatToSymbol(rate,c);
+		    			 //return row["profitRate"] + "%";	    				
+	    			}	    				
+	    		}},
+	    		{"targets":8,"render":function(data, type, row){
+	    			var rate = row["profitRate"];
+	    			if(rate == null || rate == ""){
+		    			return "0";
+	    			}else{
+		    			return row["profitRate"] + "%";	    				
+	    			}	    				
 	    		}}
          	] 
 			}
@@ -201,22 +225,18 @@
 	<div  style="height:10px"></div>
 
 	<div class="list">
-		<div align="right" style="height:40px">
-			<a class="DTTT_button" onclick="doDelete();">删除</a>
-		</div>
-
 		<table id="TMaterial" class="display dataTable" >
 			<thead>						
 				<tr>
 					<th style="width: 30px;"class="dt-middle ">No</th>
-					<th style="width: 140px;" class="dt-middle ">成品编号</th>
+					<th style="width: 120px;" class="dt-middle ">成品编号</th>
 					<th class="dt-middle">产品名称</th>
 					<th style="width: 30px;" class="dt-middle">型号</th>
 					<th style="width: 30px;" class="dt-middle">客户</th>
-					<th style="width: 100px;" class="dt-middle">BOM成本</th>
-					<th style="width: 100px;" class="dt-middle">基础成本</th>
-					<th style="width: 100px;" class="dt-middle">核算成本</th>
-					<th style="width: 25px;" class="dt-middle ">单位</th>
+					<th style="width: 80px;" class="dt-middle">核算成本</th>
+					<th style="width: 80px;" class="dt-middle">客户报价</th>
+					<th style="width: 60px;" class="dt-middle">币种</th>
+					<th style="width: 80px;" class="dt-middle ">利润率</th>
 					<th style="width: 30px;" class="dt-middle ">操作</th>
 				</tr>
 			</thead>

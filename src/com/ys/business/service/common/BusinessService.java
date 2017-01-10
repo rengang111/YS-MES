@@ -69,6 +69,7 @@ public class BusinessService {
 		return ysfullcode;
 	}
 	
+	
 	/**
 	 * 3位流水号格式化处理
 	 * blAdd:是否要递增
@@ -183,11 +184,46 @@ public class BusinessService {
 	 * @return BaseBOM编号:BM.IW03.WTR001.00-00
 	 * @param I.IW03.WTR001.00
 	 */
-	public static String getBaseBomId(String code1 )
+	public static String[] getBaseBomId(String code1 )
 	{
+		String[] rtn = new String[2];
 		String tmp2 = code1.substring(2);
 		//
-		return BusinessConstants.BASEBOM_BM + "."+tmp2 + "-"+BusinessConstants.FORMAT_00;
+		rtn[0] = BusinessConstants.BASEBOM_BM + "."+tmp2;
+		rtn[1] = BusinessConstants.BASEBOM_BM + "."+tmp2 + "-"+BusinessConstants.FORMAT_00;
+		return rtn;
 	}	
-				
+	
+	
+	/**
+	 * @return 报价BOM编号
+	 * 
+	 */
+	public static String getBidBOMFormatId(String code1,int code2,boolean blAdd )
+	{
+		//格式化成2位流水号,并且+1
+		String ft = BusinessService.getFormat2Code(code2,blAdd);
+		
+		String tmp2 = code1.substring(3);
+		//
+		return BusinessConstants.BASEBOM_BM + "."+tmp2 + "-"+ft;
+	}
+
+	/**
+	 * @return 订单BOM编号
+	 * 
+	 */
+	public static String[] getOrderBOMFormatId(String code1,int code2,boolean blAdd )
+	{
+		String[] rtn = new String[2];
+		//格式化成3位流水号,并且+1
+		String ft = BusinessService.getFormat2Code(code2,blAdd);
+		
+		String tmp2 = code1.substring(2);
+		//
+		rtn[0] = BusinessConstants.ORDERBOM_BD + "."+tmp2 ;
+		rtn[1] = BusinessConstants.ORDERBOM_BD + "."+tmp2 + "-"+ft;
+		
+		return rtn;
+	}
 }

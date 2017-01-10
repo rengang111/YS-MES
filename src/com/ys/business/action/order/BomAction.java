@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.system.action.common.BaseAction;
-import com.ys.business.action.model.order.BomPlanModel;
+import com.ys.business.action.model.order.BomModel;
 import com.ys.business.service.order.BomService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
@@ -30,13 +30,13 @@ public class BomAction extends BaseAction {
 	@Autowired HttpServletRequest request;
 	
 	UserInfo userInfo = new UserInfo();
-	BomPlanModel reqModel = new BomPlanModel();
+	BomModel reqModel = new BomModel();
 	Model model;
 	
 	@RequestMapping(value="/bom")
 	public String init(
 			@RequestBody String data, 
-			@ModelAttribute("bomForm") BomPlanModel bom, 
+			@ModelAttribute("bomForm") BomModel bom, 
 			BindingResult result,
 			Model model, 
 			HttpSession session, 
@@ -83,6 +83,11 @@ public class BomAction extends BaseAction {
 				doCreateBaseBom();
 				//printOutJsonObj(response, dataMap);
 				rtnUrl = "/business/bom/basebomadd";
+				break;	
+			case "editBaseBom":
+				doEditBaseBom();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/bom/basebomadd";
 				break;				
 			case "searchBom":
 				dataMap = doSearchBom();
@@ -95,26 +100,26 @@ public class BomAction extends BaseAction {
 				dataMap = doSearchPurchase(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "create":
-				doCreate();
-				rtnUrl = "/business/bom/bomplanadd";
+			case "createBomOrder":
+				//doCreateBomOrder();
+				//rtnUrl = "/business/bom/bomorderadd";
 				break;
 			case "insert":
 				doInsert();
 				rtnUrl = "/business/bom/bomplanview";
 				break;							
-			case "detailView":
-				doShowBomDetail();
-				rtnUrl = "/business/bom/bomplanview";
+			case "orderDetail":
+				doShowOrderDetail();
+				rtnUrl = "/business/order/orderreviewadd";
 				break;					
 			case "purchasePlanView":
 				//doShowBomDetail();
 				rtnUrl = "/business/bom/bomselectlist";
 				break;									
-			case "bomCopyDetail":
-				doShowBomDetail();
-				rtnUrl = "/business/bom/bomcopyview";
-				break;
+			//case "bomCopyDetail":
+				//doShowBomDetail();
+				//rtnUrl = "/business/bom/bomcopyview";
+			//	break;
 			case "edit":
 				doEdit();
 				rtnUrl = "/business/bom/bomplanedit";
@@ -141,7 +146,7 @@ public class BomAction extends BaseAction {
 				break;
 			case "changeBomAdd":
 				doChangeBomAdd();
-				rtnUrl = "/business/bom/bomplanadd";
+				rtnUrl = "/business/bom/basebomadd";
 				break;	
 			case "changeBomEdit":
 				doChangeBomEdit();
@@ -164,10 +169,25 @@ public class BomAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/bom/productview";
 				break;
+			case "createQuotation":
+				createQuotation();
+				rtnUrl = "/business/bom/bombidadd";
+				break;
+			case "editQuotation":
+				editQuotation();
+				rtnUrl = "/business/bom/bombidadd";
+				break;
+			case "insertQuotation":
+				insertQuotation();
+				rtnUrl = "/business/material/productview";
+				break;
+			case "deleteQuotation":
+				deleteQuotation();
+				//rtnUrl = "/business/material/productview";
+				break;
 			case "getQuotationBom":
 				dataMap = doShowQuotationBom();
 				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/bom/productview";
 				break;
 				
 		}
@@ -288,9 +308,14 @@ public class BomAction extends BaseAction {
 		bomService.createBaseBom();
 		
 	}
-	public void doCreate() throws Exception{
+	public void doEditBaseBom() throws Exception{
 		
-		model = bomService.createBomPlan();
+		bomService.editBaseBom();
+		
+	}
+	public void doCreateBomOrder() throws Exception{
+		
+		//model = bomService.createBomPlan();
 		
 	}
 	
@@ -303,6 +328,27 @@ public class BomAction extends BaseAction {
 	public void doInsertBaseBom() throws Exception {
 
 		model = bomService.insertBaseBomAndView();
+		
+	}
+	public void createQuotation() throws Exception {
+
+		model = bomService.createQuotation();
+		
+	}
+	public void editQuotation() throws Exception {
+
+		model = bomService.editQuotation();
+		
+	}
+	public void insertQuotation() throws Exception {
+
+		model = bomService.insertQuotation();
+		
+	}
+
+	public void deleteQuotation() throws Exception {
+
+		 bomService.deleteQuotation();
 		
 	}
 	
@@ -337,9 +383,9 @@ public class BomAction extends BaseAction {
 		
 		bomService.updateBomPlan();
 	}
-	public void doShowBomDetail() throws Exception{
+	public void doShowOrderDetail() throws Exception{
 				
-		model = bomService.showBomDetail();
+		model = bomService.getOrderDetail();
 			
 	}
 	public HashMap<String, Object> doShowBaseBom() throws Exception{

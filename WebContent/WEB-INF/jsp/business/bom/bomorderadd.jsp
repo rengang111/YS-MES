@@ -10,7 +10,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>新建基础BOM</title>
+<title>新建订单BOM</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -236,6 +236,15 @@
 
 	$(document).ready(function() {
 		
+		$("#bomPlan\\.plandate").val(shortToday());
+		$("#bomPlan\\.plandate").datepicker({
+			dateFormat:"yy-mm-dd",
+			changeYear: true,
+			changeMonth: true,
+			selectOtherMonths:true,
+			showOtherMonths:true,
+		});	
+		
 		var rate = '${material.managementCostRate}';
 		if(rate =='') $("#bomPlan\\.managementcostrate").val('5');
 		
@@ -257,13 +266,6 @@
 			$('#bomForm').submit();
 		});
 		
-
-		$("#searchProductModel").click(function() {		
-			var model = $('#productModel').val();
-			var materialId = '${product.materialId}';
-			var url = "${ctx}/business/bom?methodtype=searchProductModel&model="+model+"&materialId="+materialId;
-			location.href = url;
-		});
 		
 		//经管费计算
 		$("#bomPlan\\.managementcostrate").change(function() {
@@ -364,39 +366,37 @@
 	<form:form modelAttribute="bomForm" method="POST"
 		id="bomForm" name="bomForm"  autocomplete="off">
 		
-		<input type="hidden" id="tmpMaterialId" />
+		<input type="hidden" id="tmpMaterialId" />	
 		<form:hidden path="bomPlan.recordid" value="${material.productRecord}"/>
 		
 		<fieldset>
-			<legend>基础BOM</legend>
-			<table class="form" id="table_form">
+			<legend>订单BOM</legend>
+			<table class="form" id="table_form" style="margin-top: -4px;">
 				<tr>
-					<td class="label" width="100px">BOM编号：</td>
+					<td class="label" width="100px"><label>耀升名称：</label></td>			
+					<td width="250px">${order.YSId }
+						<form:hidden path="bomPlan.ysid"  value="${order.YSId }"/></td>
+					<td class="label"><label>产品编号：</label></td>				
+					<td>${order.productId }
+						<form:hidden path="bomPlan.materialid"  value="${order.productId }"/>
+						<form:hidden path="bomPlan.subid"  value="${bomForm.bomPlan.subid }"/></td>
+
+					<td class="label" width="100px"><label>方案日期：</label></td>
+					<td>
+						<form:input path="bomPlan.plandate" class="short"  value="${order.planDate }" /></td>
+				</tr>
+				<tr>
+					<td class="label" width="100px"><label>BOM编号：</label></td>					
 					<td width="150px">${bomForm.bomPlan.bomid}
-						<form:hidden path="bomPlan.bomid"    value="${bomForm.bomPlan.bomid}"/>
-						<form:hidden path="bomPlan.parentid" value="${bomForm.bomPlan.parentid}"/>
-						<form:hidden path="bomPlan.subid"    value="${bomForm.bomPlan.subid}"/></td>
-						
-					<td class="label" width="100px">产品编号：</td>
-					<td width="150px">${product.materialId}
-						<form:hidden path="bomPlan.materialid"  value="${product.materialId}"/></td>
-					
-					<td class="label" width="100px">产品名称：</td>
-					<td>${product.materialName }</td>
-				</tr>
-				<tr>
-					<td class="label">机器型号：</td>
-					<td>${product.productModel }
-						<form:hidden path="bomDetail.productmodel"  value="${product.productModel}"/></td>
-					
-					<td class="label">客户简称：</td>
-					<td>${product.shortName }</td>
-					
-					<td class="label">客户名称：</td>
-					<td>${product.customerName }</td>						
-					
-				</tr>
-												
+						<form:hidden path="bomPlan.bomid" value="${bomForm.bomPlan.bomid}" />
+
+					<td class="label"><label>产品名称：</label></td>
+					<td>${order.productName }</td>
+
+					<td class="label"><label>订单数量：</label></td>
+					<td>&nbsp;${order.quantity }
+						<form:hidden path="bomPlan.orderquantity"  value="${order.quantity }"/></td>
+				</tr>								
 			</table>
 			
 			<table class="form" id="table_form2" style="margin-top: 6px;">
@@ -426,12 +426,6 @@
 			</table>
 	</fieldset>
 		
-	<div style="margin: 0px 0px 0px 0px; float:left; width:70%;padding-left: 15px;" >
-		机器型号：
-		<input type="text" id="productModel" class="short" style="height: 25px;padding-left: 10px;" value="${productMode }"/>
-		<button type="button" id="searchProductModel" class="DTTT_button">查询</button>
-		历史BOM：<input type="text" id="searchBom" class="middle" style="height: 25px;padding-left: 10px;" value="${selectedBomId }"/>
-	</div>
 	<div style="margin: -3px 10px 0px 5px;float:right; padding:0px;">	
 			<button type="button" id="update" class="DTTT_button">保存</button>
 			<button type="button" id="goBack" class="DTTT_button">返回</button>
@@ -463,28 +457,6 @@
 				</tr>
 			</tfoot>
 		<tbody>
-		
-		<c:if test="${fn:length(materialDetail) eq 0}" >
-						
-			<c:forEach var="i" begin="0" end="99" step="1">	
-				<tr>				
-					<td></td>
-					<td><input type="text" name="attributeList1" class="attributeList1" />
-						<form:hidden path="bomDetailLines[${i}].materialid"/></td>								
-					<td><span></span></td>	
-					<td><input type="text" name="attributeList2" class="attributeList2" style="width:80px"/>
-						<form:hidden path="bomDetailLines[${i}].supplierid"/></td>
-					<td><span></span></td>							
-					<td><span></span></td>						
-					<td><span></span>
-						<form:hidden path="bomDetailLines[${i}].totalprice"/></td>					
-				</tr>				
-				<script type="text/javascript">
-					counter++;
-				</script>
-					
-			</c:forEach>
-		</c:if>
 		
 		<c:if test="${fn:length(materialDetail) > 0}" >
 						

@@ -39,4 +39,5 @@ public class BusinessConstants {
 	public static final String FORMAT_00 = "00";
 	public static final String CUSTOMER_MUN = "000";
 	public static final String BASEBOM_BM = "BM";
+	public static final String ORDERBOM_BD = "BD";
 }

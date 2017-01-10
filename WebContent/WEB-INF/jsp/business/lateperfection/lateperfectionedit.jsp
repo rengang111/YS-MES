@@ -487,7 +487,7 @@ function doDeleteQuestion() {
 						<thead>
 							<tr class="selected">
 								<th style="width: 40px;" class="dt-middle">No</th>
-								<th style="width: 40px;" class="dt-middle">新建日期</th>
+								<th style="width: 50px;" class="dt-middle">新建日期</th>
 								<th style="width: 180px;" class="dt-middle">问题描述</th>
 								<th style="width: 180px;" class="dt-middle">改善方案</th>
 								<th style="width: 40px;" class="dt-middle">预期完成时间</th>

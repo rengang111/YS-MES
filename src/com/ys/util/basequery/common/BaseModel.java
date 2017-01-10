@@ -274,13 +274,6 @@ public class BaseModel implements Serializable {
 		this.imageFileName = imageFileName;
 	}
 	
-	//public ArrayList<String> getFilenames() {
-	//	return this.filenames;
-	//}
-	//public void setFilenames(ArrayList<String> filenames) {
-	//	this.filenames = filenames;
-	//}
-	
 	public String getImageKey() {
 		return this.imageKey;
 	}

@@ -19,13 +19,12 @@ function ajaxTestFile() {
 	}
 
 	var t = $('#TESTestFileList').DataTable({
-					"paging": true,
+					"paging": false,
 					"lengthMenu":[5],//设置一页展示10条记录
 					"processing" : false,
 					"serverSide" : true,
 					"stateSave" : false,
 					"searching" : false,
-					"pagingType" : "full_numbers",
 					"retrieve" : true,
 					"sAjaxSource" : "${ctx}/business/esrelationfile?methodtype=searchtestfile",
 					"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -148,13 +147,12 @@ function ajaxMachinePic() {
 	}
 
 	var t = $('#TESMachinePicList').DataTable({
-					"paging": true,
+					"paging": false,
 					"lengthMenu":[5],//设置一页展示10条记录
 					"processing" : false,
 					"serverSide" : true,
 					"stateSave" : false,
 					"searching" : false,
-					"pagingType" : "full_numbers",
 					"retrieve" : true,
 					"sAjaxSource" : "${ctx}/business/esrelationfile?methodtype=searchmachinefile",
 					"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -422,9 +420,9 @@ function doSave() {
 					}
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
-					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+					var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
 					//parent.$('#events').DataTable().destroy();
-					//parent.layer.close(index); //执行关闭
+					parent.layer.close(index); //执行关闭
 					
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -460,13 +458,13 @@ function doDelete() {
 					reloadTestFileList();
 					reloadTabWindow();
 				}
-				/*	
+					
 				//不管成功还是失败都刷新父窗口，关闭子窗口
 				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 				//parent.$('#events').DataTable().destroy();/
 				parent.reload_contactor();
 				parent.layer.close(index); //执行关闭
-				*/
+				
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				//alert(XMLHttpRequest.status);					

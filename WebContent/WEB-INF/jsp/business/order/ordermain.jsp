@@ -64,12 +64,12 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "YSId", "defaultContent" : ''},
-							{"data": "materialId", "defaultContent" : ''},
-							{"data": "materialName", "defaultContent" : ''},
 							{"data": "PIId", "defaultContent" : ''},
 							{"data": "orderId", "defaultContent" : ''},
+							{"data": "YSId", "defaultContent" : ''},
 							{"data": "deliveryDate", "className" : 'td-center'},
+							{"data": "materialId", "defaultContent" : ''},
+							{"data": "materialName", "defaultContent" : ''},
 							{"data": "quantity", "className" : 'cash'},
 							{"data": "price", "className" : 'cash'},
 							{"data": null, "defaultContent" : '0', "className" : 'cash'},
@@ -102,7 +102,7 @@
 				    			var v = row["quantity"],id = row["YSId"];
 				    			return YSKcheck(v,id);
 				    		}},
-				    		{"targets":3,"render":function(data, type, row){
+				    		{"targets":6,"render":function(data, type, row){
 				    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
 				    			name = jQuery.fixedWidth(name,20);
 				    			var zzFlag = "";
@@ -113,7 +113,7 @@
 				    			
 				    			return name;
 				    		}},
-				    		{"targets":2,"render":function(data, type, row){
+				    		{"targets":5,"render":function(data, type, row){
 				    			
 				    			var v = row["materialId"],id = row["YSId"], zzFlag = "";
 				    			if(id != ''){
@@ -290,20 +290,20 @@
 						<a  class="DTTT_button " onclick="doDelete();"><span>删除</span></a>
 					</div>
 					<div id="clear"></div>
-					<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
+					<table id="TMaterial" class="display dataTable" cellspacing="0">
 						<thead>						
-							<tr class="selected">
-								<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
-								<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">耀升编号</th>
-								<th style="width: 120px;" aria-label="物料编号" class="dt-middle ">产品编号</th>
-								<th style="width: 150px;" aria-label="物料编号" class="dt-middle ">产品名称</th>
-								<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">PI 编号</th>
-								<th style="width: 100px;" aria-label="物料名称" class="dt-middle ">订单号</th>
-								<th style="width: 60px;" aria-label="物料名称" class="dt-middle ">订单交期</th>
-								<th style="width: 50px;" aria-label="物料编号" class="dt-middle ">数量</th>
-								<th style="width: 50px;" aria-label="物料编号" class="dt-middle ">单价</th>
-								<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">销售总价</th>
-								<th style="width: 50px;" aria-label="操作" class="dt-middle ">操作</th>
+							<tr>
+								<th style="width: 10px;" class="dt-middle ">No</th>
+								<th style="width: 80px;" class="dt-middle ">PI编号</th>
+								<th style="width: 100px;" class="dt-middle ">订单号</th>
+								<th style="width: 80px;" class="dt-middle ">耀升编号</th>
+								<th style="width: 60px;" class="dt-middle ">订单交期</th>
+								<th style="width: 120px;" class="dt-middle ">产品编号</th>
+								<th style="width: 150px;" class="dt-middle ">产品名称</th>
+								<th style="width: 50px;" class="dt-middle ">数量</th>
+								<th style="width: 50px;" class="dt-middle ">单价</th>
+								<th style="width: 80px;" class="dt-middle ">销售总价</th>
+								<th style="width: 50px;" class="dt-middle ">操作</th>
 							</tr>
 						</thead>
 					</table>

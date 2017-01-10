@@ -166,7 +166,9 @@ public class ZZMaterialService extends BaseService {
 
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
-		
+		String unit = data.getUnit();
+		if(unit ==null || unit.trim() == "")
+			data.setUnit(null);
 		rawDao.Create(data);	
 
 	}	

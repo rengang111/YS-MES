@@ -70,7 +70,7 @@
 							.add(
 							  [
 								'<td class="dt-center"></td>',
-								'<td><span id="ysid'+rowIndex+'"></span><input type="hidden" name="orderDetailLines['+rowIndex+'].ysid"  id="orderDetailLines'+rowIndex+'.ysid" style="width:70px;"/></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"  id="orderDetailLines'+rowIndex+'.ysid" style="width:70px;"  class="read-only" /></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
@@ -81,7 +81,7 @@
 								]).draw();
 						
 						$("#orderDetailLines" + rowIndex + "\\.ysid").val(fmtId);
-						$("#ysid" + rowIndex).text(fmtId);
+						//$("#ysid" + rowIndex).text(fmtId);
 						
 						rowIndex ++;						
 					}					
@@ -170,35 +170,39 @@
 
 			var $td = $(this).parent().find("td");
 
-			var $oMaterial = $td.eq(2).find("input");
 			var $oQuantity = $td.eq(4).find("input");
-			var $oPrice = $td.eq(5).find("input");
-			var $oAmount = $td.eq(6).find("input");
+			var $oPricei  = $td.eq(5).find("input");
+			var $oPriceh  = $td.eq(5).find("hidden");
+			var $oAmount  = $td.eq(6).find("input");
+			var $oAmounts = $td.eq(6).find("span");
 			
-			var material = $oMaterial.val();
-			var vPrice = floatToCurrency($oPrice.val());	
-			var vQuantity = floatToNumber($oQuantity.val());
-			var fPrice = currencyToFloat($oPrice.val());		
+			var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+
+			var fPrice = currencyToFloat($oPricei.val());	
+
 			var fQuantity = currencyToFloat($oQuantity.val());
 			var fTotalOld = currencyToFloat($oAmount.val());
+
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
-			var vTotalNew = floatToCurrency(fTotalNew);
+
+			var vPricei = floatToSymbol(fPrice,currency);
+			var vPriceh = floatToCurrency(fPrice);
+			var vQuantity = floatToNumber($oQuantity.val());
+			var vTotalNew = floatToSymbol(fTotalNew,currency);
 			
-			if(material == ""){
-				$oMaterial.css('background-color','red');
-			}
-					
 			//详情列表显示新的价格
-			$oPrice.val(vPrice);					
-			$oQuantity.val(vQuantity);	
-			$oAmount.val(vTotalNew);			
-			
+			$oPricei.val(vPricei);
+			$oPriceh.val(vPriceh);
+			$oQuantity.val(vQuantity);
+			$oAmount.val(vTotalNew);
+			$oAmounts.html(vTotalNew);
+
 			//临时计算该客户的销售总价
 			//首先减去旧的价格			
-			totalPrice = currencyToFloat(totalPrice) - fTotalOld + fTotalNew;
+			totalPrice = floatToSymbol(currencyToFloat(totalPrice) - fTotalOld + fTotalNew,currency);
 						
-			$('#order\\.totalprice').val(floatToCurrency(totalPrice));
-			$('#total').text(floatToCurrency(totalPrice));			
+			$('#order\\.totalprice').val(totalPrice);
+			$('#total').text(totalPrice);			
 
 		});		
 			
@@ -278,8 +282,15 @@
 		
 		//input获取焦点初始化处理
 		foucsInit();
-
+		
+		$(".cash") .blur(function(){
+			
+			var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+			$(this).val(floatToSymbol($(this).val(),currency));
+		});
+		
 		$('select').css('width','100px');
+		$(".DTTT_container").css('float','left');
 	});	
 	
 	function foucsInit(){
@@ -317,28 +328,20 @@
 		
 		<fieldset>
 			<legend> 订单综合信息</legend>
-			<table class="form" id="table_form" width="100%" style="margin-top: -4px;">
+			<table class="form" id="table_form">
 				<tr> 				
 					<td class="label" width="100px"><label>PI编号：</label></td>					
-					<td>${order.PIId }
-						<form:hidden path="order.piid" 
+					<td><form:input path="order.piid" 
+							value="${order.PIId }" class="read-only" />
+						<form:hidden path="keyBackup" 
 							value="${order.PIId }" /></td>
-							
-					<td class="label"><label>客户编号：</label></td>				
-					<td colspan="5">${order.customerId }</td>
-				</tr>
-				<tr>
-					<td class="label"><label>客户简称：</label></td>
-					<td>${order.shortName }</td>
-
-					<td class="label"><label>客户全称：</label></td>
-					<td colspan="3">${order.fullName }</td>
-						
-					<td class="label"><label>币种：</label></td>
+					<td width="100px" class="label" >
+						<label >客户订单号：</label></td>
 					<td>
-						<form:select path="order.currency"  >
-							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
-						</form:select></td>
+						<form:input path="order.orderid" class="short required"  value="${order.orderId }" /></td>
+								
+					<td class="label"><label>客户编号：</label></td>				
+					<td colspan="3">${order.customerId } | ${order.shortName } | ${order.fullName }</td>
 				</tr>					
 				<tr> 
 					<td class="label"><label>付款条件：</label></td>
@@ -367,10 +370,11 @@
 						</form:select></td>							
 				</tr>			
 				<tr>
-					<td width="100px" class="label" >
-						<label >客户订单号：</label></td>
+					<td class="label">币种：</td>
 					<td>
-						<form:input path="order.orderid" class="short required"  value="${order.orderId }" /></td>				
+						<form:select path="order.currency"  >
+							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
+						</form:select></td>			
 					<td class="label">
 						<label>下单日期：</label></td>
 					<td>
@@ -421,7 +425,7 @@
 
 				<tr>				
 					<td></td>
-					<td><span>${order.YSId}</span><input type="hidden" name="orderDetailLines[${status.index}].ysid" id="orderDetailLines${status.index}.ysid" value="${order.YSId}" style="width:70px;" class="read-only" readonly="readonly"  /></td>
+					<td><input type="text" name="orderDetailLines[${status.index}].ysid" id="orderDetailLines${status.index}.ysid" value="${order.YSId}" style="width:70px;" class="read-only"  /></td>
 					<td><input type="text" name="attributeList1" class="attributeList1"  value="${order.materialId}" />
 						<form:hidden path="orderDetailLines[${status.index}].materialid" value="${order.materialId }"/></td>								
 					<td id="shortName${status.index}">${order.materialName}</td>

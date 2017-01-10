@@ -427,7 +427,11 @@ public class OrderService extends BaseService {
 		
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
-		
+		//重新编辑PI的流水号
+		String PI = data.getPiid();
+		String parentId = data.getParentid();
+		String subId = PI.substring(parentId.length());
+		data.setSubid(subId);
 		dao.Create(data);	
 		
 
@@ -453,10 +457,12 @@ public class OrderService extends BaseService {
 		copyProperties(newData,commData);
 		guid = BaseDAO.getGuId();
 		newData.setRecordid(guid);
-		newData.setParentid(parentid);
-		newData.setSubid(String.valueOf(YSMaxid+1));
+		newData.setParentid(newData.getYsid().substring(0, 4));//临时设置
+		newData.setSubid(newData.getYsid().substring(4));//临时设置
+		//newData.setParentid(parentid);
+		//newData.setSubid(String.valueOf(YSMaxid+1));
 		newData.setPiid(piId);
-		newData.setYsid(ysid);
+		//newData.setYsid(ysid);
 		newData.setStatus(Constants.ORDER_STS_0);
 		
 		dao.Create(newData);
@@ -488,67 +494,29 @@ public class OrderService extends BaseService {
 			
 			//订单详情 更新/删除/插入 处理			
 			List<B_OrderDetailData> newDetailList = reqForm.getOrderDetailLines();
-			List<B_OrderDetailData> delDetailList = new ArrayList<B_OrderDetailData>();
 			
-			//过滤页面传来的有效数据
-			for(B_OrderDetailData data:newDetailList ){
-				if(null == data.getMaterialid() || ("").equals(data.getMaterialid())){
-					delDetailList.add(data);
-				}
-			}
-			newDetailList.removeAll(delDetailList);
-			
-			//清空后备用
-			delDetailList.clear();
-			
-			//根据画面的PiId取得DB中更新前的订单详情 
-			//key:piId
-			List<B_OrderDetailData> oldDetailList = null;
-
+			//订单详情更新处理
+			//首先删除DB中的订单详情
 			String piId = reqOrder.getPiid();
-			String where = " piid = '"+piId +"'" + " AND deleteFlag = '0' ";
-			oldDetailList = getOrderDetailByPIId(where);
-						
-			//页面数据的recordId与DB匹配
-			//key存在:update;key不存在:insert;
-			//剩下未处理的DB数据:delete
+			String oldPiId = reqModel.getKeyBackup();
+			String where = " piid = '"+oldPiId +"'" ;
+			deleteOrderDetail(where);
+			
+			//订单详情 
 			for(B_OrderDetailData newData:newDetailList ){
 
-				String newMaterialid = newData.getMaterialid();	
-
-				boolean insFlag = true;
-				for(B_OrderDetailData oldData:oldDetailList ){
-					String id = oldData.getMaterialid();
+				String mateId = newData.getMaterialid();	
 					
-					if(newMaterialid.equals(id)){
-						
-						//更新处理
-						updateOrderDetail(newData,oldData,userInfo);						
-						
-						//从old中移除处理过的数据
-						oldDetailList.remove(oldData);
-						
-						insFlag = false;
-						
-						break;
-					}
+				if(mateId != null && mateId.trim() != ""){
+					
+					//更新处理
+					insertOrderDetail(newData, YSMaxid, piId, userInfo);						
+					
 				}
-
-				//新增处理
-				if(insFlag){
-					insertOrderDetail(newData, YSMaxid, piId, userInfo);
-				}
-			}
-			
-			//删除处理
-			if(oldDetailList.size() > 0){					
-				deleteOrderDetail(oldDetailList,userInfo);
 			}
 			
 			ts.commit();
-			
-			//重新查询
-			//rtnModel = view(request,rtnModel,selectedRecord,parentId);		
+					
 			reqForm.setEndInfoMap(NORMAL, "", "");
 		}
 		catch(Exception e) {
@@ -578,6 +546,10 @@ public class OrderService extends BaseService {
 
 			copyProperties(dbData,commData);
 			//获取页面数据
+			String piid = order.getPiid();
+			dbData.setPiid(piid);
+			dbData.setParentid(piid.substring(0,piid.length() -3));
+			dbData.setSubid(piid.substring(piid.length() -3));
 			dbData.setOrderid(order.getOrderid());
 			dbData.setPaymentterm(order.getPaymentterm());
 			dbData.setCurrency(order.getCurrency());;
@@ -636,8 +608,20 @@ public class OrderService extends BaseService {
 				dao.Store(detail);
 			}
 		}
-	}	
+	}
+	
+	/*
+	 * BOM详情删除处理
+	 */
+	private void deleteOrderDetail(String where) {
 
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+		try{
+			dao.RemoveByWhere(where);
+		}catch(Exception e){
+			//nothing
+		}		
+	}
 	public Model delete(String delData){
 
 

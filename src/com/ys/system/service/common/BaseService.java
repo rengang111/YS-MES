@@ -239,7 +239,7 @@ public class BaseService {
 	public String convertToUTF8(String s) 
 			throws UnsupportedEncodingException{
 
-		return  URLDecoder.decode(s,"utf-8");
+		return  URLDecoder.decode(java.net.URLEncoder.encode(s,"UTF-8"), "UTF-8");
 		
 	}
 	

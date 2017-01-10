@@ -205,10 +205,10 @@ function currencyToFloat(currency){
 	
 	if(typeof currency == "number")
 		return currency;
-	
-	//去掉逗号
-	currency = currency.replace(/,/g, "");
-	
+
+	currency = currency.replace(/,/g, "");//去掉逗号
+	currency = currency.replace(/[^\d.]*/g, "");//保留数字和小数点
+
 	//验证数字，包括小数
 	//该函数的返回值要参与计算,所以至少返回 '0'
 	var reg = /^[0-9]+.?[0-9]*$/;
@@ -536,4 +536,34 @@ function GetRandomNum(Min,Max){
 	var Range = Max - Min;   
 	var Rand = Math.random();   
 	return(Min + Math.round(Rand * Range));   
-}   
+}
+
+function floatToSymbol(v,s){
+	var curr = floatToCurrency(v);
+	var symbol = getCurrencySymbol(s);
+	
+	return symbol + '  ' + curr;
+}
+
+var currencyAarry = [
+	['$','美元'],
+	['€','欧元'],
+	['£','英镑'],
+	['¥','人民币'],
+	['￥','日元'],
+	['$','新加坡']
+	
+];
+
+function getCurrencySymbol(curr){
+	var rtn = '￥';//默认单位:人民币
+	for(var i=0;i<currencyAarry.length;i++){
+		var val = currencyAarry[i][0];//取得货币符号:$,€...
+		var key = currencyAarry[i][1];//取得货币名称:美元,欧元...
+		if(curr == key){
+			rtn = val;//匹配货币符号
+			break;
+		}
+	}
+	return rtn;
+}

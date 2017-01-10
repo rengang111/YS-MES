@@ -281,7 +281,7 @@ public class ProcessControlService extends BaseService {
 			B_ProcessControlDao dao = new B_ProcessControlDao();
 			B_ProcessControlData dbData = new B_ProcessControlData();
 			
-			String projectId = getJsonData(data, "keyBackup");
+			//String projectId = getJsonData(data, "keyBackup");
 			
 			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 	        
@@ -478,12 +478,14 @@ public class ProcessControlService extends BaseService {
 				userDefinedSearchCase.put("keyword2", type.substring(0, 1));
 				baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 				expectDateList = baseQuery.getFullData();
-				String baseExpectDate = expectDateList.get(0).get(3);
-				String finishTime = expectDateList.get(0).get(6);
-				if (finishTime.equals("")) {
-					model.setExceedTime(CalendarUtil.getDayBetween(baseExpectDate, ""));
-				} else {
-					model.setExceedTime(CalendarUtil.getDayBetween(baseExpectDate, finishTime));
+				if (expectDateList.size() > 0) {
+					String baseExpectDate = expectDateList.get(0).get(3);
+					String finishTime = expectDateList.get(0).get(6);
+					if (finishTime.equals("")) {
+						model.setExceedTime(CalendarUtil.getDayBetween(baseExpectDate, ""));
+					} else {
+						model.setExceedTime(CalendarUtil.getDayBetween(baseExpectDate, finishTime));
+					}
 				}
 			}
 		}

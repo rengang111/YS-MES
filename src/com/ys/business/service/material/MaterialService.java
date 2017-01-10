@@ -219,7 +219,8 @@ public class MaterialService extends BaseService {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
-		data = URLDecoder.decode(data, "UTF-8");
+		//data = URLDecoder.decode(data, "UTF-8");
+		data = convertToUTF8(data);
 
 		dataModel.setQueryFileName("/business/material/materialquerydefine");
 		dataModel.setQueryName("supplierPriceList");

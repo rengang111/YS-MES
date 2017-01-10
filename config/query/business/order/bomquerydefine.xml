@@ -84,9 +84,9 @@
   </query>
   <query>
     <pool></pool>    
-    <name value="getBomIdByMaterialId" />
+    <name value="getBomIdByParentId" />
      <where>
-       <w name="A.materialId" des=""  reqName="keywords1" dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="A.parentId" des=""  reqName="keywords1" dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   <select>
       <f name=" IFNULL(max(subId+0),'0')" alias="MaxSubId" ctype="" />
@@ -113,7 +113,6 @@
       <f name="bomId" alias="" ctype="" />
       <f name="materialId" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
-      <f name="orderQuantity" alias="" ctype="" />
       <f name="managementCost" alias="" ctype="" />
       <f name="productCost" alias="" ctype="" />
       <f name="totalCost" alias="" ctype="" />
@@ -146,7 +145,6 @@
       <f name="bomId" alias="" ctype="" />
       <f name="materialId" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
-      <f name="orderQuantity" alias="" ctype="" />
       <f name="managementCost" alias="" ctype="" />
       <f name="productCost" alias="" ctype="" />
       <f name="totalCost" alias="" ctype="" />
@@ -161,7 +159,7 @@
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <!-- 限定显示订单状态为"BOM表已做成,未评审"的数据 A.status ='1' AND  -->
    <from>v_bomplan AS A WHERE A.deleteFlag = '0'</from>
-    <orderby>YSId DESC</orderby>
+    <orderby>bomId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -181,7 +179,6 @@
       <f name="materialName" alias="" ctype="" />
       <f name="productId" alias="" ctype="" />
       <f name="productName" alias="" ctype="" />
-      <f name="productQty" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
       <f name="supplierId" alias="" ctype="" />
       <f name="productRecord" alias="" ctype="" />
@@ -221,13 +218,12 @@
       <f name="materialName" alias="" ctype="" />
       <f name="productId" alias="" ctype="" />
       <f name="productName" alias="" ctype="" />
-      <f name="productQty" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
       <f name="supplierId" alias="" ctype="" />
       <f name="productRecord" alias="" ctype="" />
       <f name="quantity" alias="" ctype="" />
       <f name="price" alias="" ctype="" />
-      <f name="oldPrice" alias="" ctype="" />
+      <f name="IFNULL(oldPrice,price)" alias="oldPrice" ctype="" />
       <f name="totalPrice" alias="" ctype="" />
       <f name="IFNULL(managementCostRate,5)" alias="managementCostRate" ctype="" />
       <f name="managementCost" alias="" ctype="" />
@@ -236,8 +232,17 @@
       <f name="totalCost" alias="" ctype="" />
       <f name="laborCost" alias="" ctype="" />
       <f name="materialCost" alias="" ctype="" />
+      <f name="currency" alias="" ctype="" />
+      <f name="exchangeRate" alias="" ctype="" />
+      <f name="exchangePrice" alias="" ctype="" />
+      <f name="RMBPrice" alias="" ctype="" />
+      <f name="profit" alias="" ctype="" />
+      <f name="profitRate" alias="" ctype="" />
+      <f name="IFNULL(rebateRate,17)" alias="rebateRate" ctype="" />
+      <f name="rebate" alias="" ctype="" />
       <f name="planDate" alias="" ctype="" />
       <f name="parentId" alias="" ctype="" />
+      <f name="productParentId" alias="" ctype="" />
       <f name="rawRecordId" alias="" ctype="" />
       <f name="unit" alias="" ctype="计量单位" />
       <f name="supplierRecordId" alias="" ctype="" />
@@ -265,7 +270,6 @@
       <f name="materialId" alias="" ctype="" />
       <f name="materialName" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
-      <f name="orderQuantity" alias="" ctype="" />
       <f name="managementCost" alias="" ctype="" />
       <f name="productCost" alias="" ctype="" />
       <f name="totalCost" alias="" ctype="" />
@@ -298,7 +302,6 @@
       <f name="materialId" alias="" ctype="" />
       <f name="materialName" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
-      <f name="orderQuantity" alias="" ctype="" />
       <f name="managementCost" alias="" ctype="" />
       <f name="productCost" alias="" ctype="" />
       <f name="totalCost" alias="" ctype="" />
@@ -376,6 +379,8 @@
       <f name="a.bomId" alias="" ctype="" />
       <f name="a.managementCostRate" alias="" ctype="" />
       <f name="a.managementCost" alias="" ctype="" />
+      <f name="a.rebateRate" alias="" ctype="" />
+      <f name="a.rebate" alias="" ctype="" />
       <f name="a.bomCost" alias="" ctype="" />
       <f name="a.productCost" alias="" ctype="" />
       <f name="a.totalCost" alias="" ctype="" />
@@ -383,13 +388,19 @@
       <f name="a.materialCost" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
+      <f name="a.subId" alias="" ctype="" />
       <f name="a.planDate" alias="" ctype="" />
-      <f name="a.customerQuote" alias="" ctype="" />
+      <f name="a.currency" alias="" ctype="币种" />
+      <f name="a.exchangeRate" alias="" ctype="" />
+      <f name="a.exchangePrice" alias="" ctype="" />
+      <f name="a.RMBPrice" alias="" ctype="" />
+      <f name="a.profitRate" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
   	</select>
     <!-- 获取所有报价BOM信息 -->
     <!-- B:基础BOM Q:报价BOM O:订单BOM -->
     <from>v_bomplan a WHERE a.bomType='Q'   AND a.deleteFlag ='0'  </from>
-    <orderby>a.planDate DESC</orderby>
+    <orderby>a.planDate DESC,bomId DESC</orderby>
     <groupby></groupby>
     <having></having>
 	<power>

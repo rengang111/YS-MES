@@ -10,8 +10,13 @@
 <title>进程控制检索</title>
 <script type="text/javascript">
 
-	var layerHeight = '600';shan
+	var layerHeight = '600';
 
+	$(document).ready(function() {
+		initEvent();
+		
+	})	
+	
 	function ajax() {
 		var table = $('#TProcessControl').dataTable();
 		if(table) {
@@ -89,7 +94,7 @@
 	function initEvent(){
 
 		doSearch();
-	
+
 		$('#TProcessControl').DataTable().on('click', 'tr', function() {
 			
 			if ( $(this).hasClass('selected') ) {
@@ -111,15 +116,8 @@
 		});
 		*/
 	}
-
-	$(document).ready(function() {
-		//ajax();
-		initEvent();
-		
-	})	
 	
 	function doSearch() {
-	
 		ajax();
 		//reload();
 	}

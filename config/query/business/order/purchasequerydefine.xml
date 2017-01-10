@@ -13,7 +13,6 @@
       <f name="bomId" alias="" ctype="" />
       <f name="materialId" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
-      <f name="orderQuantity" alias="" ctype="" />
       <f name="managementCost" alias="" ctype="" />
       <f name="productCost" alias="" ctype="" />
       <f name="totalCost" alias="" ctype="" />

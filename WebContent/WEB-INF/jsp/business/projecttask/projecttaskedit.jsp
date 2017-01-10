@@ -200,9 +200,9 @@ function doSave() {
 					}
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
-					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+					var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
 					//parent.$('#events').DataTable().destroy();
-					//parent.layer.close(index); //执行关闭
+					parent.layer.close(index); //执行关闭
 					
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -236,13 +236,13 @@ function doDelete() {
 					clearProjectTaskInfo();
 					reloadTabWindow();
 				}
-				/*	
+					
 				//不管成功还是失败都刷新父窗口，关闭子窗口
 				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 				//parent.$('#events').DataTable().destroy();/
-				parent.reload_contactor();
+				//parent.reload_contactor();
 				parent.layer.close(index); //执行关闭
-				*/
+				
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				//alert(XMLHttpRequest.status);					
@@ -554,6 +554,7 @@ function getSum() {
 					
 					<div  style="height:20px"></div>
 					<legend>费用预估</legend>
+					<div  style="height:10px"></div>
 					<div>
 						1.机器磨具
 						<button type="button" class="DTTT_button" id="addMachine" onClick="addNew(0);">新建</button>
@@ -755,6 +756,7 @@ function getSum() {
 						</tr>
 					</table>
 					<legend>市场预期</legend>
+					<div  style="height:10px"></div>
 					<table class='display' cellspacing="0">
 						<tr>
 							<td align="center">
@@ -776,6 +778,7 @@ function getSum() {
 					
 					<div  style="height:20px"></div>
 					<legend>失败模式</legend>
+					<div  style="height:10px"></div>
 					<textarea id="failMode" name="failMode" rows=5 cols=120>${DisplayData.projectTaskData.failmode}</textarea>
 				</form:form>
 			</div>

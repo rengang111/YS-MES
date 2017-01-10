@@ -47,14 +47,17 @@
 						'<td></td>',
 						'<td><input type="text"   name="attributeList1"  class="attributeList1" style="width: 130px;">'+
 							'<input type="hidden" name="rawMaterials['+rowIndex+'].rawmaterialid" id="rawMaterials'+rowIndex+'.rawmaterialid" /></td>',
-						'<td><span></span></td>',
+						'<td><span></span>'+
+							'<input type="hidden" name="rawMaterials['+rowIndex+'].supplierid"    id="rawMaterials'+rowIndex+'.supplierid" /></td>',
 						'<td><input type="text"   name="rawMaterials['+rowIndex+'].netweight"     id="rawMaterials'+rowIndex+'.netweight" class="cash mini" /></td>',
 						'<td><span></span><select name="rawMaterials['+rowIndex+'].unit"          id="rawMaterials'+rowIndex+'.unit" style="display:none;width:60px"></select>'+
 							'<input type="hidden" id="unit'+rowIndex+'"  /></td>',
+						'<td><input type="text"   name="rawMaterials['+rowIndex+'].wastagerate"   id="rawMaterials'+rowIndex+'.wastagerate" class="num small" />%</td>',
 						'<td><span></span><input  name="rawMaterials['+rowIndex+'].wastage"       id="rawMaterials'+rowIndex+'.wastage"  type="hidden" /></td>',
 						'<td><span></span><input  name="rawMaterials['+rowIndex+'].weight"        id="rawMaterials'+rowIndex+'.weight"  type="hidden" /></td>',
-						'<td><input type="text"   name="rawMaterials['+rowIndex+'].kgprice"       id="rawMaterials'+rowIndex+'.kgprice" class="cash mini" />'+
-							'<input type="hidden" id="price'+rowIndex+'" /></td>',				
+						'<td><span></span>'+
+										 '<input  id="rawPrice'+rowIndex+'" type="hidden" />'+
+										 '<input  name="rawMaterials['+rowIndex+'].convertunit"       id="rawMaterials'+rowIndex+'.convertunit" type="hidden" /></td>',				
 						'<td><span></span><input  name="rawMaterials['+rowIndex+'].materialprice" id="rawMaterials'+rowIndex+'.materialprice" type="hidden"  /></td>',	
 						]).draw();
 
@@ -132,6 +135,7 @@ function ajax() {
 			}, {
 			}, {"className":"dt-body-right"
 			}, {"className":"dt-body-center"
+			}, {"className":"dt-body-center"	
 			}, {"className":"dt-body-right"	
 			}, {"className":"dt-body-right"
 			}, {"className":"dt-body-right"
@@ -141,13 +145,13 @@ function ajax() {
 		
 	})
 
-	t.on('blur', 'tr td:nth-child(2),tr td:nth-child(4),tr td:nth-child(8)',function() {
+	t.on('blur', 'tr td:nth-child(2),tr td:nth-child(4),tr td:nth-child(6),tr td:nth-child(9)',function() {
 		
        $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
 
 	});
 	
-	t.on('change', 'tr td:nth-child(4),tr td:nth-child(5),tr td:nth-child(8)',function() {
+	t.on('change', 'tr td:nth-child(4),tr td:nth-child(5),tr td:nth-child(6),tr td:nth-child(9)',function() {
 		
         var $tds = $(this).parent().find("td");
 
@@ -156,18 +160,21 @@ function ajax() {
 		var $orawunit   = $tds.eq(4).find("input:hidden");//原计量单位
 		var $ochgunit   = $tds.eq(4).find("select");//换算后的计量单位$("select option:checked").text();
 		var $ounittext  = $tds.eq(4).find("select option:checked");
-		var $owastages  = $tds.eq(5).find("span");//损耗
-		var $owastagei  = $tds.eq(5).find("input:hidden");
-		var $oweights   = $tds.eq(6).find("span");//用料重量
-		var $oweighti   = $tds.eq(6).find("input:hidden");
-        var $okgprice   = $tds.eq(7).find("input:text");//单价,按照计量换算后的单价
-        var $orawprice  = $tds.eq(7).find("input:hidden");//原材料单价,按照原材料的计量单位
-		var $omatprices = $tds.eq(8).find("span");//总价
-		var $omatpricei = $tds.eq(8).find("input:hidden");
+		var $owastRate  = $tds.eq(5).find("input");//损耗比
+		var $owastages  = $tds.eq(6).find("span");//损耗
+		var $owastagei  = $tds.eq(6).find("input:hidden");
+		var $oweights   = $tds.eq(7).find("span");//用料重量
+		var $oweighti   = $tds.eq(7).find("input:hidden");
+        var $okgprice   = $tds.eq(8).find("span");//使用单位(只写)
+        var $orawprice  = $tds.eq(8).find("input:hidden").eq(0);//购买单位(只读)
+        var $oconvunit  = $tds.eq(8).find("input:hidden").eq(1);//换算单位(只写)
+		var $omatprices = $tds.eq(9).find("span");//总价
+		var $omatpricei = $tds.eq(9).find("input:hidden");
 
 		var vunitnew   = "";
 		var vrawunit   = $orawunit.val();
 		var vchgunit   = $ochgunit.val();
+		var vwastRate  = $owastRate.val();
 		var unittext   = $ounittext.text();
 		var fnetweight = currencyToFloat($onetweight.val());
 		var frawprice  = currencyToFloat($orawprice.val());
@@ -193,16 +200,16 @@ function ajax() {
 				break;
 			}
 		}		
-
-		var fwastage = fnetweight * 0.02;//损耗2%
-		var fweight = fnetweight + fwastage;//用料重量=净重量+损耗
-		var fkgprice = frawprice * farwunit / fchgunit; //换算后单价=原单价*原单位/新单位
-		var	fpricenew = fkgprice * fnetweight ;//单位材料价=新单价*重量	
+		var fwastRate = currencyToFloat(vwastRate);//损耗比
+		var fwastage  = fnetweight * fwastRate / 100;//损耗
+		var fweight   = fnetweight + fwastage;//总用量=净用量量+损耗
+		var fkgprice  = frawprice * farwunit / fchgunit; //换算后单价=原单价*原单位/新单位
+		var fpricenew = fkgprice * fweight ;//单位材料价=新单价*总用量	
 		//alert('frawprice:'+frawprice+'--farwunit:'+farwunit+'--fchgunit:'+fchgunit+'--fpricenew:'+fpricenew);	
 
 		var vnetweight = float5ToCurrency(fnetweight);
-		var vwastage = floatToCurrency(fwastage);	
-		var vweight  = floatToCurrency(fweight);		
+		var vwastage = float5ToCurrency(fwastage);	
+		var vweight  = float5ToCurrency(fweight);		
 		var vkgprice  = float4ToCurrency(fkgprice);
 		var vpricenew = float4ToCurrency(fpricenew);
 		
@@ -212,7 +219,8 @@ function ajax() {
 		$owastagei.val(vwastage);			
 		$oweights.html(vweight);
 		$oweighti.val(vweight);
-		$okgprice.val(vkgprice);
+		$okgprice.html(vkgprice);
+		$oconvunit.val(fchgunit);
 		$omatprices.html(vpricenew);	
 		$omatpricei.val(vpricenew);	
 
@@ -379,7 +387,7 @@ function productCostSum(){
 	var sum = 0;
 	$('#example tbody tr').each (function (){
 		
-		var vtotal = $(this).find("td").eq(8).find("span").text();
+		var vtotal = $(this).find("td").eq(9).find("span").text();
 		var ftotal = currencyToFloat(vtotal);
 		
 		sum = currencyToFloat(sum) + ftotal;
@@ -497,10 +505,11 @@ function doSubmitRefresh(){
 			<th style="width:1px">No</th>
 			<th style="width:80px">原材料编码</th>
 			<th>原材料名称</th>
-			<th style="width:70px">用量</th>
+			<th style="width:70px">净用量</th>
 			<th style="width:30px">单位</th>
-			<th style="width:60px">损耗2%</th>
-			<th style="width:60px">用量</th>
+			<th style="width:50px">损耗比</th>
+			<th style="width:50px">损耗</th>
+			<th style="width:60px">总用量</th>
 			<th style="width:60px">单价</th>
 			<th style="width:60px">总价</th>
 		</tr>
@@ -511,18 +520,20 @@ function doSubmitRefresh(){
 					<td></td>
 					<td><input type="text" name="attributeList1" class="attributeList1" style="width: 130px;">
 						<form:hidden path="rawMaterials[${i}].rawmaterialid" /></td>								
-					<td><span></span></td>
+					<td><span></span>
+						<form:hidden path="rawMaterials[${i}].supplierid" /></td>
 					<td><form:input path="rawMaterials[${i}].netweight" class="cash mini" /></td>
 					<td><span></span>
 						<select name="rawMaterials[${i}].unit" id="rawMaterials${i}.unit"style="display:none;width:60px"></select>
 						<input type="hidden"  id="unit${i}"/></td>
+					<td><form:input path="rawMaterials[${i}].wastagerate" class="num small" />%</td>
 					<td><span></span>
 						<form:hidden path="rawMaterials[${i}].wastage" /></td>
 					<td><span></span>
 						<form:hidden path="rawMaterials[${i}].weight" /></td>
 					<td><span></span>
-						<form:input path="rawMaterials[${i}].kgprice" class="cash mini" />
-						<input type="hidden"  name="price${i}"/></td>
+						<input type="hidden"  id="rawPrice${i }"/>
+						<form:hidden path="rawMaterials[${i}].convertunit"  /></td>	
 					<td><span></span>
 						<form:hidden path="rawMaterials[${i}].materialprice"  /></td>				
 				</tr>
@@ -692,12 +703,14 @@ function autocomplete(){
 			
 			var $td = $(this).parent().parent().find('td');	
 			var $oMatName   = $td.eq(2).find("span");
+			var $oSupplier  = $td.eq(2).find("input:hidden");
 			var $oUnit      = $td.eq(4).find("span");
 			var $oSelect    = $td.eq(4).find("select");
 			var $oUnithid   = $td.eq(4).find("input:hidden");
-			var $oPricet    = $td.eq(7).find("input:text");
-			var $oPriceh    = $td.eq(7).find("input:hidden");
-			var $oTotals    = $td.eq(8).find("span");
+			var $oWestRate  = $td.eq(5).find("input");//损耗比
+			var $oPricet    = $td.eq(8).find("span");
+			var $oPriceh1   = $td.eq(8).find("input:hidden").eq(0);
+			var $oTotals    = $td.eq(9).find("span");
 			
 			var unit     = ui.item.unit;
 			var unitName = ui.item.unitName;
@@ -729,11 +742,13 @@ function autocomplete(){
 			}
 			
 			$oMatName.html(jQuery.fixedWidth(ui.item.name,20));
-			$oPricet.val(ui.item.price);
-			$oPriceh.val(ui.item.price);
+			$oPricet.html(ui.item.price);
+			$oPriceh1.val(ui.item.price);
 			$oTotals .html('');//清空总价
 			//产品编号
 			$(this).parent().find("input:hidden").val(ui.item.materialId);
+			$oWestRate.val('2');//损耗比默认值:2%
+			$oSupplier.val(ui.item.supplierId);
 			
 		},		
 	});

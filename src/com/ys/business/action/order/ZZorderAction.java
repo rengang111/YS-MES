@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.system.action.common.BaseAction;
-import com.ys.business.action.model.order.BomPlanModel;
 import com.ys.business.action.model.order.ZZOrderModel;
 import com.ys.business.service.order.BomService;
 import com.ys.business.service.order.ZZorderService;

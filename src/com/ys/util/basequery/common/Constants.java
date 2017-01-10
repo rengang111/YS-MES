@@ -54,5 +54,22 @@ public class Constants {
 	 * 供应商编号:耀升
 	 */
 	public static final String SUPPLIER_YS = "0574YS00";
-	
+	/**
+	 * BOM种类
+	 */
+	public static final String BOMTYPE_B = "B";//基础BOM
+	public static final String BOMTYPE_Q = "Q";//报价BOM
+	public static final String BOMTYPE_O = "O";//订单BOM
+	/**
+	 * BOM种类
+	 */
+	public static final String BOMTYPE_B = "B";//基础BOM
+	public static final String BOMTYPE_Q = "Q";//报价BOM
+	public static final String BOMTYPE_O = "O";//订单BOM
+
+	/**
+	 * 页面访问标识
+	 */
+	public static final String ACCESSFLG_0 = "";//新建标识
+	public static final String ACCESSFLG_1 = "1";//编辑标识
 }

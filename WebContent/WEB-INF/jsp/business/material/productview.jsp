@@ -22,6 +22,7 @@
 	
 	<input type="hidden" id="recordsTotal"  >
 	<input type="hidden" id="productRecordId"  >
+	<input type="hidden" id="parentId"  >
 	
 <fieldset style="float: left;width: 65%;">
 	<legend>产品信息</legend>
@@ -65,16 +66,16 @@
 			<td class="td-center" style="width: 150px;"><label>核算成本</label></td>
 		</tr>	
 		<tr>
-			<td class="td-center"><label>单价变动前</label></td>	
+			<td class="td-center"><label>最近报价</label></td>	
 			<td class="td-center"><span id=materialCost1></span></td>
 			<td class="td-center"><span id=laborCost1></span></td>
 			<td class="td-center"><span id=bomCost1></span></td>
 			<td class="td-center"><span id=baseCost1></span></td>
-			<td class="td-center"><span id=costRate1>%</span></td>
+			<td class="td-center"><span id=costRate1></span></td>
 			<td class="td-center"><span id=totalSpan1></span></td>
 		</tr>	
 		<tr>
-			<td class="td-center"><label>单价变动后</label></td>	
+			<td class="td-center"><label>当前价格</label></td>	
 			<td class="td-center"><span id=materialCost></span></td>
 			<td class="td-center"><span id=laborCost></span></td>
 			<td class="td-center"><span id=bomCost></span></td>
@@ -99,7 +100,7 @@
 		
 	<dl class="collapse" style="width: 98%;margin-left:10px">
 		<dt><span id="bomId">基础BOM</span> <button type="button" class="DTTT_button" onclick="doCreateBaseBom();">编辑</button>
-			（ 单价颜色变化&nbsp;&nbsp; <span style="color:green"> 绿色：下降</span>&nbsp;&nbsp; <span style="color:red">红色：上涨</span> ）</dt>
+			</dt>
 		<dd>
 		<table id="baseBomTable" class="display" style="width: 98%;">
 			<thead>				
@@ -123,20 +124,23 @@
 <fieldset style="margin-top: 10px;">
 	<legend>客户报价</legend>
 	<div class="list">	
-		<a class="DTTT_button" onclick="doCreateQuotation();" style="float: right;">新建</a>	
+		<a class="DTTT_button" onclick="doCreateQuotation();" >新建</a>	
 		<table id="TQuotation"  class="display dataTable">
 			<thead>				
 				<tr>
 					<th style="width: 1px;"  class="dt-middle ">No</th>
-					<th style="width: 60px;"  class="dt-middle ">报价时间</th>
+					<th style="width: 80px;"  class="dt-middle ">报价时间</th>
 					<th style="width:120px;"  class="dt-middle ">BOM编号</th>
 					<th style="width: 80px;"  class="dt-middle ">材料成本</th>
-					<th style="width: 80px;"  class="dt-middle ">人工成本</th>
-					<th style="width: 80px;"  class="dt-middle ">BOM成本</th>
-					<th style="width: 80px;"  class="dt-middle ">基础成本</th>
-					<th style="width: 60px;"  class="dt-middle ">经管费率</th>
 					<th style="width: 80px;"  class="dt-middle ">核算成本</th>
-					<th style="width:100px;"  class="dt-middle ">客户报价</th>
+					<th style="width: 50px;"  class="dt-middle ">退税率</th>
+					<th style="width: 80px;"  class="dt-middle ">退税额</th>
+					<th style="width: 60px;"  class="dt-middle ">币种</th>
+					<th style="width: 80px;"  class="dt-middle ">报价</th>
+					<th style="width: 60px;"  class="dt-middle ">换汇</th>
+					<th style="width:90px;"  class="dt-middle ">原币价格</th>
+					<th style="width:60px;"  class="dt-middle ">利润率</th>
+					<th style="width:10px;"  class="dt-middle "></th>
 				</tr>
 			</thead>
 		</table>
@@ -169,9 +173,10 @@ $(document).ready(function() {
 	$("#doSave").click(function() {
 		var costRate  = $('#costRate').val();
 		var totalCost = $('#totalCost').val();
-		var recordId  = $('#productRecordId').val();
+		var bomId  = $('#bomId').text();
 		var url = "${ctx}/business/bom?methodtype=updateBomPlan";
-		url = url + "&costRate="+costRate+"&totalCost="+totalCost+"&recordId="+recordId;
+		url = url + "&costRate="+costRate+"&totalCost="+totalCost+"&bomId="+bomId;
+
 		$.ajax({
 			type : "post",
 			url : url,
@@ -258,8 +263,13 @@ function doCreateBaseBom() {
 	var materialId ='${product.materialId}';
 	var productModel = '${product.productModel }';
 	var accessFlg = $('#recordsTotal').val();
-	var url = '${ctx}/business/bom?methodtype=createBaseBom&materialId=' + materialId+'&model='+productModel+'&accessFlg='+accessFlg;
-		location.href = url;
+	if(accessFlg > 0){
+		var url = '${ctx}/business/bom?methodtype=editBaseBom&materialId=' + materialId+'&model='+productModel;
+
+	}else{
+		var url = '${ctx}/business/bom?methodtype=createBaseBom&materialId=' + materialId+'&model='+productModel;	
+	}
+	location.href = url;
 	
 }
 
@@ -292,32 +302,9 @@ function baseBomView() {
 					
 					$('#recordsTotal').val(data['recordsTotal']);
 
-					var mateCost1  = data['data'][0]['materialCost'];
-					var laborCost1 = data['data'][0]['laborCost'];
-					var bomCost1   = data['data'][0]['bomCost'];
-					var baseCost1  = data['data'][0]['productCost'];
-					var totalCost1 = data['data'][0]['totalCost'];
-					var costRote1  = data['data'][0]['managementCostRate'];
-
-					$('#materialCost1').html(floatToCurrency( mateCost1 ));
-					$('#laborCost1').html(floatToCurrency( laborCost1 ));
-					$('#bomCost1').html(floatToCurrency( bomCost1 ));
-					$('#baseCost1').html(floatToCurrency( baseCost1 ));
-					$('#totalSpan1').html(floatToCurrency( totalCost1 ));
-					$('#costRate1').html(costRote1);
-					//costRote = currencyToFloat(costRote) / 100;
-					
-					//var bom = productCostSum();
-					//var fbom = currencyToFloat(bom).toFixed(2);
-					//var fbomCost = currencyToFloat(bomCost);
-					//var baseCost = fbomCost * 1.1;
-					//var total = baseCost * ( 1 + costRote );
-
-					//var vbom   = floatToCurrency(bomCost);
-					//var vbase = floatToCurrency(baseCost);
-					//var vtotal = floatToCurrency(total);
 					var recordId  = data['data'][0]['productRecord'];
 					var bomId     = data['data'][0]['bomId'];
+					var parentId  = data['data'][0]['productParentId'];
 					var costRote  = data['data'][0]['managementCostRate'];
 					
 					var laborCost = laborCostSum();
@@ -326,32 +313,13 @@ function baseBomView() {
 					var baseCost  = bomCost * 1.1;
 					var totalCost = baseCost * ( 1 + costRote / 100 );
 
-					//alert('fbom:'+fbom+'fbomCost:'+fbomCost)
-					
 					mateCost  =  floatToCurrency( mateCost );
 					bomCost   =  floatToCurrency( bomCost ) ;
 					baseCost  =  floatToCurrency( baseCost ) ;
 					totalCost =  floatToCurrency( totalCost );
 					laborCost =  floatToCurrency( laborCost );
-					if(currencyToFloat(mateCost) > currencyToFloat(mateCost1)){
-						mateCost  = '<div style="color:red;font-weight:bold;">' + mateCost + '</div>';
-						bomCost   = '<div style="color:red;font-weight:bold;">' + bomCost + '</div>';
-						baseCost  = '<div style="color:red;font-weight:bold;">' + baseCost + '</div>';
-						totalCost = '<div style="color:red;font-weight:bold;">' + totalCost + '</div>';
-					}else if (currencyToFloat(mateCost) < currencyToFloat(mateCost1)){
-						mateCost  = '<div style="color:green;font-weight:bold;">' + mateCost + '</div>';
-						bomCost   = '<div style="color:green;font-weight:bold;">' + bomCost + '</div>';
-						baseCost  = '<div style="color:green;font-weight:bold;">' + baseCost + '</div>';
-						totalCost = '<div style="color:green;font-weight:bold;">' + totalCost + '</div>';					
-					}
-					
-					if(currencyToFloat(laborCost) > currencyToFloat(laborCost1)){
-						laborCost   = '<div style="color:red;font-weight:bold;">' + laborCost + '</div>';
-												
-					}else if (currencyToFloat(laborCost) < currencyToFloat(laborCost1)){
-						laborCost   = '<div style="color:red;font-weight:bold;">' + laborCost + '</div>';					
-					}
-					
+
+					$('#parentId').val(parentId);
 					$('#bomId').html(bomId);
 					$('#materialCost').html(mateCost);
 					$('#laborCost').html(laborCost);
@@ -476,6 +444,20 @@ function quotationView() {
 				"data" : null,
 				success: function(data){
 						fnCallback(data);
+						
+						var mateCost1  = data['data'][0]['materialCost'];
+						var laborCost1 = data['data'][0]['laborCost'];
+						var bomCost1   = data['data'][0]['bomCost'];
+						var baseCost1  = data['data'][0]['productCost'];
+						var totalCost1 = data['data'][0]['totalCost'];
+						var costRote1  = data['data'][0]['managementCostRate'];
+
+						$('#materialCost1').html(floatToCurrency( mateCost1 ));
+						$('#laborCost1').html(floatToCurrency( laborCost1 ));
+						$('#bomCost1').html(floatToCurrency( bomCost1 ));
+						$('#baseCost1').html(floatToCurrency( baseCost1 ));
+						$('#totalSpan1').html(floatToCurrency( totalCost1 ));
+						$('#costRate1').html(costRote1);
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	                 //alert(XMLHttpRequest.status);
@@ -488,29 +470,66 @@ function quotationView() {
        		"url":"${ctx}/plugins/datatables/chinese.json"
        	},
 		"columns": [
-					{"data": null,"className" : 'td-center'},
-					{"data": "planDate"},
-					{"data": "bomId"},
-					{"data": "materialCost","className" : 'td-right'},
-					{"data": "laborCost","className" : 'td-right'},
-					{"data": "bomCost","className" : 'td-right'},
-					{"data": "productCost","className" : 'td-right'},
-					{"data": "managementCostRate","className" : 'td-right'},
-					{"data": "totalCost","className" : 'td-right'},
-					{"data": "customerQuote","className" : 'td-right'},
-		        ]
-		}
-	
-	);
+			{"data": null,"className" : 'td-center'},
+			{"data": "planDate"},
+			{"data": "bomId"},
+			{"data": "materialCost","className" : 'td-right'},
+			{"data": "totalCost","className" : 'td-right'},
+			{"data": "rebateRate","className" : 'td-center'},
+			{"data": "rebate","className" : 'td-right'},
+			{"data": "currency","className" : 'td-center'},
+			{"data": "exchangePrice","className" : 'td-right'},
+			{"data": "exchangeRate","className" : 'td-right'},
+			{"data": "RMBPrice","className" : 'td-right'},
+			{"data": "profitRate","className" : 'td-right'},
+			{"data": null,"className" : 'td-center'},
+        ],
+		"columnDefs":[
+      		{"targets":2,"render":function(data, type, row){
+      			var bomId = row["bomId"];
+      			var materialId = row["materialId"];
+      			var accessFlg = row["recordId"];
+      			rtn= "<a href=\"#\" onClick=\"doEditQuotation('" + row["bomId"] +"','"+ row["materialId"] + "','"+ row["subId"] + "')\">"+bomId+"</a>";
+      			return rtn;
+      		}},
+      		{"targets":8,"render":function(data, type, row){
+      			var price = row["exchangePrice"];
+      			var curry = row["currency"];
+      			
+      			return floatToSymbol(price,curry);
+      		}},
+      		{"targets":5,"render":function(data, type, row){
+      			var rate = row["rebateRate"];
+      			
+      			return rate + "%";
+      		}},
+      		{"targets":11,"render":function(data, type, row){
+      			var rate = row["profitRate"];
+      			
+      			return rate + "%";
+      		}},
+      		{"targets":12,"render":function(data, type, row){
+      			rtn= "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
+	    		
+      			return rtn;
+      		}}
+        ] 
+	});
+
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			var num   = i + 1;
+			cell.innerHTML = num ;
+		});
+	}).draw();
 	
 }//ajax()供应商信息
 
-
 var layerHeight = '360px';
 var layerWidth  = '900px';
-
-
-
 
 //新建二级BOM
 function doCreateBOMZZ() {
@@ -640,26 +659,46 @@ function doShowSupplier(recordid) {
 
 function doCreateQuotation() {
 	var bomId  = $('#bomId').text();
+	var parentId  = $('#parentId').val();
+	var materialId ='${product.materialId}'; 
 	if(bomId =='') return;
 	var url = "${ctx}/business/bom?methodtype=createQuotation";
-	url = url + "&bomId="+bomId;
-	$.ajax({
-		type : "post",
-		url : url,
-		//async : false,
-		//data : null,
-		dataType : "text",
-		contentType: "application/x-www-form-urlencoded; charset=utf-8",
-		success : function(data) {			
-			quotationView();
-			$().toastmessage('showNoticeToast', "报价BOM创建成功。");	
-		},
-		 error:function(XMLHttpRequest, textStatus, errorThrown){
-			//alert(textStatus)
-		}
-	});		
+	url = url + "&bomId="+bomId +"&materialId="+materialId+"&parentId="+parentId;
+	location.href = url;
 
 };
+function doEditQuotation(bomId,materialId,subId) {
+	if(bomId =='') return;
+	var url = "${ctx}/business/bom?methodtype=editQuotation";
+	url = url + "&bomId="+bomId +"&materialId="+materialId+"&subId="+subId;//
+	location.href = url;
+
+};
+function doDelete(recordId){
+	
+	
+	if (recordId != ""){ //
+		$.ajax({
+			type : "post",
+			url : "${ctx}/business/bom?methodtype=deleteQuotation&recordId="+recordId,
+			async : false,
+			data : 'key=' + recordId,
+			dataType : "text",
+			success : function(data) {
+				$('#TQuotation').DataTable().ajax.reload(null,false);
+				$().toastmessage('showNoticeToast', "删除成功。");	
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {				
+			}
+		});
+	}else{
+		//
+	}
+}
+
 </script>
 	
 <script type="text/javascript">

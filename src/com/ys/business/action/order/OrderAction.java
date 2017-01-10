@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.material.MaterialModel;
-import com.ys.business.action.model.order.BomPlanModel;
+import com.ys.business.action.model.order.BomModel;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.business.action.model.supplier.SupplierModel;
 import com.ys.system.common.BusinessConstants;
