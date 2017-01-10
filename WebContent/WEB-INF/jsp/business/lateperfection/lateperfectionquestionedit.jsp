@@ -162,32 +162,32 @@ function doDelete() {
 					<input type=hidden id="projectId" name="projectId" value="${DisplayData.projectId}"/>
 					<table class="form" width="850px">
 						<tr>
-							<td width="60px">新建日期：</td>
-							<td width="80px">
+							<td width="80px">新建日期：</td>
+							<td >
 								<input type="text" id="createDate" name="createDate" class="short" value="${DisplayData.questionData.createdate}"/>
 							</td>
 						</tr>
 						<tr>
 							<td width="60px">问题描述：</td>
-							<td width="80px">
-								<textarea id="description" name="description" rows=5 cols=120 class="long">${DisplayData.questionData.description}</textarea>
+							<td >
+								<textarea id="description" name="description" rows=5 cols=100 class="long">${DisplayData.questionData.description}</textarea>
 							</td>
 						</tr>
 						<tr>
 							<td width="60px">改善方案：</td>
-							<td width="80px">
-								<textarea id="improve" name="improve" rows=5 cols=120 class="long">${DisplayData.questionData.improve}</textarea>
+							<td >
+								<textarea id="improve" name="improve" rows=5 cols=100 class="long">${DisplayData.questionData.improve}</textarea>
 							</td>
 						</tr>									
 						<tr>
 							<td width="60px">预期完成<br>时间：</td>
-							<td width="80px">
+							<td >
 								<input type="text" id="expectDate" name="expectDate" class="short" value="${DisplayData.questionData.expectfinishdate}"/>
 							</td>
 						</tr>
 						<tr>
 							<td width="60px">完成时间：</td>
-							<td width="80px">
+							<td>
 								<input type="text" id="finishTime" name="finishTime" class="short"  style="margin: 0px 0px 0px 10px;" value="${DisplayData.questionData.finishtime}"/>
 							</td>
 						</tr>

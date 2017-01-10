@@ -128,7 +128,7 @@ function ajaxTable0(index) {
 						var param = {};
 						var formData = $("#processControlInfo").serializeArray();
 						formData.forEach(function(e) {
-							//aoData.push({"name":e.name, "value":e.value});
+							aoData.push({"name":e.name, "value":e.value});
 						});
 						aoData.push({"name":"type", "value":index});
 						$.ajax({
@@ -221,7 +221,7 @@ function ajaxTable1(index) {
 						var param = {};
 						var formData = $("#processControlInfo").serializeArray();
 						formData.forEach(function(e) {
-							//aoData.push({"name":e.name, "value":e.value});
+							aoData.push({"name":e.name, "value":e.value});
 						});
 						aoData.push({"name":"type", "value":index});
 						$.ajax({
@@ -461,7 +461,6 @@ function setExpectDate(type, value1, value2, value3) {
 			<form:form modelAttribute="dataModels" id="processControlInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id="id" name="id" value=""/>
-				<input type=hidden id="type" name="type" value=""/>
 				
 				<div  style="height:20px"></div>
 				<legend>进程详情</legend>
