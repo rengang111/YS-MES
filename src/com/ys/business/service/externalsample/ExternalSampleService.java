@@ -131,7 +131,12 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 				dbData.setSampleversion(getJsonData(data, "sampleVersion"));
 				dbData.setSamplename(getJsonData(data, "sampleName"));
 				dbData.setBrand(getJsonData(data, "brand"));
-				dbData.setBuytime(getJsonData(data, "buyTime"));
+				String buyTime = getJsonData(data, "buyTime");
+				if (buyTime == null || buyTime.equals("")) {
+					dbData.setBuytime(null);
+				} else {
+					dbData.setBuytime(buyTime);
+				}
 				dbData.setCurrency(getJsonData(data, "currency"));
 				dbData.setPrice(getJsonData(data, "price"));
 				dbData.setAddress(getJsonData(data, "address"));
@@ -193,7 +198,12 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 					dbData.setSampleversion(getJsonData(data, "sampleVersion"));
 					dbData.setSamplename(getJsonData(data, "sampleName"));
 					dbData.setBrand(getJsonData(data, "brand"));
-					dbData.setBuytime(getJsonData(data, "buyTime"));
+					String buyTime = getJsonData(data, "buyTime");
+					if (buyTime == null || buyTime.equals("")) {
+						dbData.setBuytime(null);
+					} else {
+						dbData.setBuytime(buyTime);
+					}
 					dbData.setCurrency(getJsonData(data, "currency"));
 					dbData.setPrice(getJsonData(data, "price"));
 					dbData.setAddress(getJsonData(data, "address"));
