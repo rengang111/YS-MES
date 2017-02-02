@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
+
+import com.ys.business.service.material.MatCategoryService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.util.basequery.common.Constants;
 import com.ys.system.common.BusinessConstants;
@@ -17,6 +19,7 @@ import com.ys.system.interceptor.DicInfo;
 import com.ys.system.interceptor.MenuInfo;
 import com.ys.system.service.common.MakeTreeStyleData;
 import com.ys.system.service.role.RoleMenuService;
+import com.ys.business.service.material.MatCategoryService;
 
 @Service
 public class MainFrameService {
@@ -159,6 +162,37 @@ public class MainFrameService {
 		try {
 			ArrayList<String> ownerId = MakeTreeStyleData.getId(idJson);
 			ArrayList<DicInfo> DeptChain = CommonDept.launchDept(request, userId, ownerId.get(1), ownerId.get(0), userType);
+			json = MakeTreeStyleData.convertDeptChainToJson(DeptChain);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return json;
+	}	
+    
+    public String doInitMaterial(HttpServletRequest request, String userId, String menuId, String unitId, String userType) {
+		String json = "";
+		MatCategoryService matClassServer = new MatCategoryService();
+
+		try {
+
+			ArrayList<DicInfo> deptChain = matClassServer.getInitMaterial(request, userId, menuId, unitId, userType);
+			json = MakeTreeStyleData.convertDeptChainToJson(deptChain);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return json;
+	}		
+	
+    public String doLaunchMaterial(HttpServletRequest request, String userId, String userType, String idJson) {
+		String json = "";
+
+		MatCategoryService matClassServer = new MatCategoryService();
+		try {
+			ArrayList<String> ownerId = MakeTreeStyleData.getId(idJson);
+			ArrayList<DicInfo> DeptChain = matClassServer.launchMaterial(request, userId, ownerId.get(1), ownerId.get(0), userType);
 			json = MakeTreeStyleData.convertDeptChainToJson(DeptChain);
 			
 		}

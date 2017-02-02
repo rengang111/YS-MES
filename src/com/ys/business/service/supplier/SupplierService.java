@@ -3,35 +3,73 @@ package com.ys.business.service.supplier;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.supplier.SupplierModel;
-import com.ys.business.db.dao.B_SupplierBasicInfoDao;
-import com.ys.business.db.data.B_SupplierBasicInfoData;
+import com.ys.business.db.dao.B_SupplierDao;
+import com.ys.business.db.data.B_SupplierData;
+import com.ys.business.db.data.B_ZZMaterialPriceData;
+import com.ys.business.db.data.B_ZZRawMaterialData;
+import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
+import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.system.action.model.role.RoleModel;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.system.common.BusinessConstants;
-import com.ys.system.db.dao.S_ROLEDao;
-import com.ys.system.db.data.S_ROLEData;
-import com.ys.system.ejb.DbUpdateEjb;
 import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
+import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
-import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class SupplierService extends BaseService {
- 
+	DicUtil util = new DicUtil();
+
+	BaseTransaction ts;
+
+	String guid ="";
+	private CommFieldsData commData;
+	
+	private HttpServletRequest request;
+	
+	private B_SupplierDao dao;
+	private SupplierModel reqModel;
+	private UserInfo userInfo;
+	private BaseModel dataModel;
+	private  Model model;
+	private HashMap<String, String> userDefinedSearchCase;
+	private BaseQuery baseQuery;
+	HashMap<String, Object> modelMap = null;	
+
+	public SupplierService(){
+		
+	}
+
+	public SupplierService(Model model,
+			HttpServletRequest request,
+			SupplierModel reqModel,
+			UserInfo userInfo){
+		
+		this.dao = new B_SupplierDao();
+		this.model = model;
+		this.reqModel = reqModel;
+		this.request = request;
+		this.userInfo = userInfo;
+		dataModel = new BaseModel();
+		modelMap = new HashMap<String, Object>();
+		userDefinedSearchCase = new HashMap<String, String>();
+		dataModel.setQueryFileName("/business/supplier/supplierquerydefine");
+		
+	}
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -48,8 +86,8 @@ public class SupplierService extends BaseService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
-		key1 = getJsonData(data, "keyword1");
-		key2 = getJsonData(data, "keyword2");
+		key1 = getJsonData(data, "keyword1").toUpperCase();
+		key2 = getJsonData(data, "keyword2").toUpperCase();
 		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		
@@ -70,7 +108,6 @@ public class SupplierService extends BaseService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
 		
-		dataModel.setYsViewData(makeAddress(arrangeUserList(dataModel.getYsViewData())));
 		
 		if ( iEnd > dataModel.getYsViewData().size()){
 			
@@ -90,60 +127,61 @@ public class SupplierService extends BaseService {
 
 	}
 
-	public SupplierModel doAddInit(HttpServletRequest request) {
+	public Model doAddInit() {
 
-		SupplierModel model = new SupplierModel();
 
 		try {			
-			model.setCountryList(doOptionChange(DicUtil.ADDRESS, "").getUnsureList());
-			model.setEndInfoMap("098", "0001", "");
+			reqModel.setCountryList(getProvinceList());
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
 		return model;
 	
 	}
 
-	public SupplierModel doAdd(HttpServletRequest request, String data, UserInfo userInfo) {
-
-		SupplierModel model = new SupplierModel();
-		try {
-			B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
-			B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
-			String supplierid = getJsonData(data, "supplierId");
+	public void insertAndView() {
 		
-			ArrayList<ArrayList<String>> preCheckResult = preCheckSupplierId(request, supplierid);
+		insertSupplier();
+		
+	}
+	public void insertSupplier() {
+
+		try {
 			
-			if (preCheckResult.size() > 0) {
-				//已存在
-				model.setEndInfoMap("001", "err005", "");
-			} else {
-				String guid = BaseDAO.getGuId();
-				dbData.setId(guid);
-				dbData.setSupplierid(getJsonData(data, "supplierId"));
-				dbData.setSuppliersimpledes(getJsonData(data, "supplierSimpleDes"));
-				dbData.setSupplierdes(getJsonData(data, "supplierDes"));
-				dbData.setTwolevelid(getJsonData(data, "twoLevelId"));
-				dbData.setTwoleveliddes(getJsonData(data, "twoLevelIdDes"));
-				dbData.setPaymentterm(getJsonData(data, "paymentTerm"));
-				dbData.setCountry(getJsonData(data, "country"));
-				dbData.setProvince(getJsonData(data, "province"));
-				dbData.setCity(getJsonData(data, "city"));
-				dbData.setAddress(getJsonData(data, "address"));
+			B_SupplierData reqData = reqModel.getSupplier();
+
+			B_SupplierData dbData = preCheckId(reqData);
+			
+			if (dbData != null && dbData.getRecordid() != "") {
+				//更新处理
+				copyProperties(dbData,reqData);
 				
-				dbData = updateModifyInfo(dbData, userInfo);
-				dao.Create(dbData);
-				model.setEndInfoMap(NORMAL, "", guid);
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"SupeperUpdate",userInfo);
+				copyProperties(dbData,commData);
+				
+				dao.Store(dbData);
+				
+			} else {
+				
+				//新增处理
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+						"SupeperInsert",userInfo);
+				copyProperties(reqData,commData);
+
+				guid = BaseDAO.getGuId();
+				reqData.setRecordid(guid);
+				
+				dao.Create(reqData);
+				
 			}
+			reqModel.setSupplier(reqData);
 		}
 		catch(Exception e) {
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+			System.out.println(e.getMessage());
 		}
-		
-		return model;
 	}	
 
 	
@@ -159,55 +197,6 @@ public class SupplierService extends BaseService {
 			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 			model.setUnsureList(null);
-		}
-		
-		return model;
-	}
-	
-	public SupplierModel doUpdate(HttpServletRequest request, String data, UserInfo userInfo) {
-		SupplierModel model = new SupplierModel();
-		String id = getJsonData(data, "keyBackup");
-		
-		try {
-			B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
-			B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
-			
-			String supplierid = getJsonData(data, "supplierId");
-			boolean isKeyExist = false;
-			
-			//要更新的记录是否存在
-			isKeyExist = preCheckId(id);
-			if (isKeyExist) {
-				ArrayList<ArrayList<String>> preCheckResult = preCheckSupplierId(request, supplierid);
-				
-				//要更新的供应商id是否存在
-				if (preCheckResult.size() != 0 && !preCheckResult.get(0).get(1).equals(id)) {					
-					//已存在
-					model.setEndInfoMap("001", "err007", "");
-				} else {
-					dbData.setId(getJsonData(data, "keyBackup"));
-					dbData.setSupplierid(getJsonData(data, "supplierId"));
-					dbData.setSuppliersimpledes(getJsonData(data, "supplierSimpleDes"));
-					dbData.setSupplierdes(getJsonData(data, "supplierDes"));
-					dbData.setTwolevelid(getJsonData(data, "twoLevelId"));
-					dbData.setTwoleveliddes(getJsonData(data, "twoLevelIdDes"));
-					dbData.setPaymentterm(getJsonData(data, "paymentTerm"));
-					dbData.setCountry(getJsonData(data, "country"));
-					dbData.setProvince(getJsonData(data, "province"));
-					dbData.setCity(getJsonData(data, "city"));
-					dbData.setAddress(getJsonData(data, "address"));
-					
-					dbData = updateModifyInfo(dbData, userInfo);
-					dao.Store(dbData);
-					model.setEndInfoMap(NORMAL, "", id);
-				}
-			} else {
-				//不存在
-				model.setEndInfoMap("002", "err005", id);
-			}
-		}
-		catch(Exception e) {
-			model.setEndInfoMap(SYSTEMERROR, "err001", id);
 		}
 		
 		return model;
@@ -232,7 +221,7 @@ public class SupplierService extends BaseService {
 		return model;
 	}
 	
-	public static B_SupplierBasicInfoData updateModifyInfo(B_SupplierBasicInfoData data, UserInfo userInfo) {
+	public static B_SupplierData updateModifyInfo(B_SupplierData data, UserInfo userInfo) {
 		String createUserId = data.getCreateperson();
 		if ( createUserId == null || createUserId.equals("")) {
 			data.setCreateperson(userInfo.getUserId());
@@ -297,11 +286,11 @@ public class SupplierService extends BaseService {
 		return rtnData;
 	}
 	
-	private boolean isDataExist(B_SupplierBasicInfoData dbData) {
+	private boolean isDataExist(B_SupplierData dbData) {
 		boolean rtnValue = false;
 		
 		try {
-			B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
+			B_SupplierDao dao = new B_SupplierDao();
 			dao.FindByPrimaryKey(dbData);
 			rtnValue = true;
 		}
@@ -312,54 +301,62 @@ public class SupplierService extends BaseService {
 		
 	}
 	
-	public SupplierModel getSupplierBaseInfo(String key) throws Exception {
-		SupplierModel model = new SupplierModel();
-		B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
-		B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
-		dbData.setId(key);
-		dbData = (B_SupplierBasicInfoData)dao.FindByPrimaryKey(dbData);
-		model.setSupplierBasicInfoData(dbData);
+	public Model getSupplierBaseInfo(String key) throws Exception {
+
+		B_SupplierData dbData = new B_SupplierData();
+		dbData.setRecordid(key);
+		dbData = (B_SupplierData)dao.FindByPrimaryKey(dbData);
+		reqModel.setSupplierBasicInfoData(dbData);
+		reqModel.setSupplier(dbData);
+	
+		reqModel.setCountryList(getProvinceList());
 		
-		model.setCountryList(doOptionChange(DicUtil.ADDRESS, "").getUnsureList());
-		model.setProvinceList(doOptionChange(DicUtil.ADDRESS, dbData.getCountry()).getUnsureList());
-		model.setCityList(doOptionChange(DicUtil.ADDRESS, dbData.getProvince()).getUnsureList());
+		reqModel.setKeyBackup(dbData.getRecordid());
 		
-		model.setEndInfoMap("098", "0001", "");
-		model.setKeyBackup(dbData.getId());
+		model.addAttribute(reqModel);
 		
 		return model;
 		
 	}
 	
-	private ArrayList<ArrayList<String>> preCheckSupplierId(HttpServletRequest request, String key) throws Exception {
+	@SuppressWarnings("unchecked")
+	public Model getSupplierById(String supplierId) throws Exception {
+	
+		B_SupplierData dbData = new B_SupplierData();
+
+		String where = " supplierId='"+supplierId + "' AND deleteFlag='0' ";
+		List<B_SupplierData> listData = dao.Find(where);
+
+		if(listData != null && listData.size() > 0)
+			dbData = listData.get(0);	
 		
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		dataModel.setQueryFileName("/business/supplier/supplierquerydefine");
-		dataModel.setQueryName("supplierquerydefine_preCheck");
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword", key);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		reqModel.setSupplierBasicInfoData(dbData);
+		reqModel.setSupplier(dbData);
+	
+		reqModel.setCountryList(getProvinceList());
 		
-		return baseQuery.getQueryData();
+		reqModel.setKeyBackup(dbData.getRecordid());
+		
+		model.addAttribute(reqModel);
+		
+		return  model;
 					
 	}
 	
-	private boolean preCheckId(String key) throws Exception {
-		B_SupplierBasicInfoDao dao = new B_SupplierBasicInfoDao();
-		B_SupplierBasicInfoData dbData = new B_SupplierBasicInfoData();
-		boolean rtnData = false;
+	
+	private B_SupplierData preCheckId(B_SupplierData  reqData) throws Exception {
+		B_SupplierData dbData = new B_SupplierData();
 		
 		try {
-			dbData.setId(key);
-			dao.FindByPrimaryKey(dbData);
-			rtnData = true;
+			dbData = (B_SupplierData)dao.FindByPrimaryKey(reqData);
+
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
+			dbData = null;
 		}
 		
-		return rtnData;
+		return dbData;
 	}
 	
 	private String getUserList(ArrayList<String>userList) {
@@ -374,5 +371,82 @@ public class SupplierService extends BaseService {
 		}
 		
 		return viewUserList;
+	}
+	
+	public ArrayList<ListOption> getProvinceList() throws Exception{
+		
+		dataModel.setQueryName("getProvinceListOption");
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		return getProvinceOption(baseQuery.getFullData(),1,1);
+	}
+	
+	public ArrayList<ListOption> getCityList(String province) throws Exception{
+		
+		dataModel.setQueryName("getCityListOption");
+		userDefinedSearchCase.put("province", province);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		return getProvinceOption(baseQuery.getFullData(),3,2);
+		/*
+		 <f name="A.recordId" alias="" ctype="" />
+	      <f name="A.province" alias="" ctype="" />
+	      <f name="A.city" alias="" ctype="" />
+	      <f name="A.cityCode" alias="" ctype="" />
+	      <f name="A.county" alias="" ctype="" />
+	      <f name="A.countyCode" alias="" ctype="" />
+	      */
+	}
+	public ArrayList<ListOption> getCountyList(String city) throws Exception{
+
+		dataModel.setQueryName("getCountyListOption");
+		userDefinedSearchCase.put("cityCode", city);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		return getProvinceOption(baseQuery.getFullData(),5,4);
+		
+	}
+	public ArrayList<ListOption> getProvinceOption(
+			ArrayList<ArrayList<String>> list,
+			int pos1,int pos2) throws Exception {
+
+		ArrayList<ListOption> rtnData = new ArrayList<ListOption>();
+		
+		ListOption option = new ListOption("", "");
+		rtnData.add(option);
+		
+		for(ArrayList<String>rowData:list) {
+			option = new ListOption(rowData.get(pos1), rowData.get(pos2));
+			rtnData.add(option);
+		}
+		
+		return rtnData;
+	}
+	
+	public String getSupplierSubId(String id) throws Exception{
+		
+		dataModel.setQueryName("getSupplierSubId");
+		userDefinedSearchCase.put("parentId", id);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, 0);
+		
+		//取得已有的最大流水号
+		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("MaxSubId"));
+				
+		String subid = BusinessService.getFormat2Code(code, true);
+
+		return subid;
+	}
+	
+	public HashMap<String, Object> getSupplierId(String parentId) throws Exception{
+		
+		String subId = getSupplierSubId(parentId);
+		
+		modelMap.put("subId",subId);
+		
+		return modelMap;
 	}
 }

@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 /*! DataTables 1.10.10
  * ©2008-2015 SpryMedia Ltd - datatables.net/license
  */
@@ -15211,7 +15211,7 @@
 
 	return $.fn.dataTable;
 }));
-=======
+
 /*! DataTables 1.10.10
  * ©2008-2015 SpryMedia Ltd - datatables.net/license
  */
@@ -30424,4 +30424,4 @@
 
 	return $.fn.dataTable;
 }));
->>>>>>> refs/remotes/origin/master
+

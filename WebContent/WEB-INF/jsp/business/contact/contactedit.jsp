@@ -83,49 +83,41 @@ function doSave() {
 			//新建
 			actionUrl = "${ctx}/business/contact?methodtype=add";
 			$('#companyCode').val(parent.$('#keyBackup').val());
+			
 		} else {
 			//修正
 			actionUrl = "${ctx}/business/contact?methodtype=update";
 		}
 
-		if (confirm(message)) {
-			var actionUrl;			
+		//将提交按钮置为【不可用】状态
+		//$("#submit").attr("disabled", true); 
+		$.ajax({
+			type : "POST",
+			contentType : 'application/json',
+			dataType : 'json',
+			url : actionUrl,
+			data : JSON.stringify($('#contactInfo').serializeArray()),// 要提交的表单
+			success : function(d) {
 			
-			//将提交按钮置为【不可用】状态
-			//$("#submit").attr("disabled", true); 
-			$.ajax({
-				type : "POST",
-				contentType : 'application/json',
-				dataType : 'json',
-				url : actionUrl,
-				data : JSON.stringify($('#contactInfo').serializeArray()),// 要提交的表单
-				success : function(d) {
-					if (d.rtnCd != "000") {
-						alert(d.message);	
-					} else {
-						parent.reloadContact();
-					}
-					//TODO
-					//var infoList = d.info.split("|");
-					//$('#keyBackup').val(infoList[0]);
-					//$('#companyCode').val(infoList[1]);
-					
-					controlButtons(d.info);
-					
-					//不管成功还是失败都刷新父窗口，关闭子窗口
-					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
-					//parent.$('#events').DataTable().destroy();
-					//parent.layer.close(index); //执行关闭
-					
-				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					//alert(XMLHttpRequest.status);					
-					//alert(XMLHttpRequest.readyState);					
-					//alert(textStatus);					
-					//alert(errorThrown);
-				}
-			});
-		}
+				parent.reloadContact();
+			
+				
+				//不管成功还是失败都刷新父窗口，关闭子窗口
+				//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+
+				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+				//parent.$('#events').DataTable().destroy();
+				parent.layer.close(index); //执行关闭
+				
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				//alert(XMLHttpRequest.status);					
+				//alert(XMLHttpRequest.readyState);					
+				//alert(textStatus);					
+				//alert(errorThrown);
+			}
+		});
+		
 	}
 }
 
@@ -198,85 +190,82 @@ function controlButtons(data) {
 
 </head>
 
-<body>
-<div id="container">
+<body class="noscroll">
 
-		<div id="main">
-			<div id="supplierBasic">				
-				<div  style="height:20px"></div>
+<div id="layer_main">	
+
+	<form:form modelAttribute="dataModels" id="contactInfo" style='padding: 0px; margin: 10px;' >
+	
+		<input type="hidden" id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
+		<input type="hidden" id="companyCode" name="companyCode" value="${DisplayData.companyCode}"/>
 				
-				<legend>联系人信息</legend>
-					
-				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="save" class="DTTT_button" onClick="doSave();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-					
-				<form:form modelAttribute="dataModels" id="contactInfo" style='padding: 0px; margin: 10px;' >
-					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
-					<input type=hidden id="companyCode" name="companyCode" value="${DisplayData.companyCode}"/>
-					<table class="form" width="850px">
-						<tr>
-							<td width="60px">姓名：</td>
-							<td width="200px">
-								<input type="text" id="userName" name="userName" class="short" value="${DisplayData.contactData.username}"/>
-							</td>
-							<td width="60px">性别：</td> 
-							<td width="200px">
-								<form:select path="sex">
-									<form:options items="${DisplayData.sexList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
-							</td>
-						</tr>
-						<tr>
-							<td>职务：</td> 
-							<td>
-								<input type="text" id="position" name="position" class="short" value="${DisplayData.contactData.position}"/>
-							</td>	
-							<td>手机：</td> 
-							<td>
-								<input type="text" id="mobile" name="mobile" class="short" value="${DisplayData.contactData.mobile}"/>
-							</td>
-						</tr>
-						<tr>
-							<td>电话：</td> 
-							<td>
-								<input type="text" id="phone" name="phone" class="short" value="${DisplayData.contactData.phone}"/>
-							</td>
-							<td>
-								传真：
-							</td>
-							<td>
-								<input type="text" id="fax" name="fax" class="short" value="${DisplayData.contactData.fax}"/>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								邮箱：
-							</td>
-							<td>
-								<input type="text" id="mail" name="mail" class="middle" value="${DisplayData.contactData.mail}"/>
-							</td>
-							<td>
-								QQ：
-							</td>
-							<td>
-								<input type="text" id="QQ" name="QQ" class="short" value="${DisplayData.contactData.qq}"/>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								Skype：
-							</td>
-							<td>
-								<input type="text" id="skype" name="skype" class="short" value="${DisplayData.contactData.skype}"/>
-							</td>							
-						</tr>
-					</table>
-
-				</form:form>
-			</div>
-		</div>
-	</div>
+		<fieldset>
+			<legend>联系人信息</legend>
+				
+				<table class="form">
+					<tr>
+						<td width="100px" class="label">姓名：</td>
+						<td width="200px">
+							<input type="text" id="userName" name="userName" class="short" value="${DisplayData.contactData.username}"/>
+						</td>
+						<td width="100px" class="label">性别：</td> 
+						<td width="200px">
+							<form:select path="sex">
+								<form:options items="${DisplayData.sexList}" itemValue="key"
+									itemLabel="value" />
+							</form:select>
+						</td>
+					</tr>
+					<tr>
+						<td width="100px" class="label">职务：</td> 
+						<td>
+							<input type="text" id="position" name="position" class="short" value="${DisplayData.contactData.position}"/>
+						</td>	
+						<td width="100px" class="label">手机：</td> 
+						<td>
+							<input type="text" id="mobile" name="mobile" class="short" value="${DisplayData.contactData.mobile}"/>
+						</td>
+					</tr>
+					<tr>
+						<td width="100px" class="label">电话：</td> 
+						<td>
+							<input type="text" id="phone" name="phone" class="short" value="${DisplayData.contactData.phone}"/>
+						</td>
+						<td width="100px" class="label">
+							传真：
+						</td>
+						<td>
+							<input type="text" id="fax" name="fax" class="short" value="${DisplayData.contactData.fax}"/>
+						</td>
+					</tr>
+					<tr>
+						<td width="100px" class="label">
+							邮箱：
+						</td>
+						<td>
+							<input type="text" id="mail" name="mail" class="middle" value="${DisplayData.contactData.mail}"/>
+						</td>
+						<td width="100px" class="label">
+							QQ：
+						</td>
+						<td>
+							<input type="text" id="QQ" name="QQ" class="short" value="${DisplayData.contactData.qq}"/>
+						</td>
+					</tr>
+					<tr>
+						<td width="100px" class="label">
+							Skype：
+						</td>
+						<td>
+							<input type="text" id="skype" name="skype" class="short" value="${DisplayData.contactData.skype}"/>
+						</td>							
+					</tr>
+				</table>
+		</fieldset>
+		<fieldset  style="text-align:right">
+			<button type="button" class="DTTT_button" onclick="doSave()">保存</button>
+		</fieldset>
+	</form:form>
+</div>
+</body>
 </html>

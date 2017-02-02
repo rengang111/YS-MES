@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="orgquerydefine_search" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.type" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.fullName" alias="" ctype="" />
+      <f name="A.address" alias="" ctype="" />
+      <f name="A.type" alias="" ctype="发起机构" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_organlist AS A  WHERE A.DeleteFlag = '0' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="orgquerydefine_init" />
+    <where>
+    	<w name="S.DicName" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.idID" alias="" ctype="" />
+      <f name="A.Category" alias="" ctype="" />
+      <f name="A.ShortName" alias="" ctype="" />
+      <f name="A.FullName" alias="" ctype="" />
+      <f name="A.Address" alias="" ctype="" />
+      <f name="S.DicName" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>YW_ORGANIZATION AS A  LEFT JOIN S_DIC AS S   ON   A.Category=S.DicID where S.DicTypeID='JGLB'</from>
+    <orderby>A.Category,A.idID</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+</root>

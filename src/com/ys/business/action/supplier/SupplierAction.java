@@ -1,5 +1,6 @@
 package com.ys.business.action.supplier;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,16 +15,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.ys.system.action.common.BaseAction;
-import com.ys.system.action.model.TestModel;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.supplier.SupplierModel;
 import com.ys.system.common.BusinessConstants;
-import com.ys.util.DicUtil;
-import com.ys.util.basequery.BaseQuery;
 import com.ys.business.service.supplier.SupplierService;
 
 @Controller
@@ -31,15 +26,30 @@ import com.ys.business.service.supplier.SupplierService;
 public class SupplierAction extends BaseAction {
 	
 	@Autowired
-	SupplierService supplierService;
+	SupplierService service;
+	@Autowired HttpServletRequest request;
 	
+	UserInfo userInfo = new UserInfo();
+	SupplierModel reqModel = new SupplierModel();
+	HashMap<String, Object> modelMap = new HashMap<String, Object>();
+	Model model;
+	HttpServletResponse response;
 	@RequestMapping(value="supplier")
-	public String execute(@RequestBody String data, @ModelAttribute("dataModels")SupplierModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String execute(@RequestBody String data, @ModelAttribute("formModel")SupplierModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
-		String rtnUrl = "";
 		HashMap<String, Object> dataMap = null;
 		SupplierModel viewModel = null;
+		
+		userInfo = (UserInfo)session.getAttribute(
+				BusinessConstants.SESSION_USERINFO);
+		
+		service = new SupplierService(model,request,dataModel,userInfo);
+		reqModel = dataModel;
+		this.model = model;
+		this.response = response;
+		
+		String rtnUrl = null;
 		
 		if (type == null) {
 			type = "";
@@ -49,6 +59,7 @@ public class SupplierAction extends BaseAction {
 				type = type.substring(0, q);
 			}
 		}
+		
 		
 		switch(type) {
 			case "":
@@ -60,19 +71,25 @@ public class SupplierAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "addinit":
-				rtnUrl = doAddInit(model, session, request, response);
+				rtnUrl = doAddInit();
 				break;
-			case "add":
-				viewModel = doAdd(data, session, request);
-				printOutJsonObj(response, viewModel.getEndInfoMap());
-				return null;
-			case "updateinit":
-				rtnUrl = doUpdateInit(model, session, request, response);
+			case "insert":
+				doInsert();
+				//printOutJsonObj(response, viewModel.getEndInfoMap());
+				rtnUrl = "/business/supplier/supplierview";
 				break;
-			case "update":
-				viewModel = doUpdate(data, session, request);
-				printOutJsonObj(response, viewModel.getEndInfoMap());
-				return null;
+			case "show":
+				doShowDetail();
+				rtnUrl = "/business/supplier/supplierview";
+				break;
+			case "showById":
+				doShowDetailById();
+				rtnUrl = "/business/supplier/supplierview";
+				break;
+			case "edit":
+				doUpdateInit();
+				rtnUrl = "/business/supplier/supplieradd";
+				break;
 			case "delete":
 				viewModel = doDelete(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
@@ -89,6 +106,26 @@ public class SupplierAction extends BaseAction {
 					printOutJsonObj(response, viewModel.getEndInfoMap());
 				}
 				return null;
+			case "optionChange2":
+				viewModel = doOptionChange2(data);
+				if (viewModel.getUnsureList() != null) {
+					printOutJsonObj(response, viewModel.getUnsureList());
+				} else {
+					printOutJsonObj(response, viewModel.getEndInfoMap());
+				}
+				return null;
+			case "optionChange3":
+				doOptionChange3(data);
+				printOutJsonObj(response, modelMap);
+				return null;
+			case "setSupplierId":
+				setSupplierId(data);
+				printOutJsonObj(response, modelMap);
+				return null;
+			case "picTest":
+				//setSupplierId(data);
+				//printOutJsonObj(response, modelMap);
+				rtnUrl = "/business/supplier/supplieradd2";
 		}
 		
 		return rtnUrl;
@@ -99,7 +136,7 @@ public class SupplierAction extends BaseAction {
 		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataMap = supplierService.doSearch(request, data, userInfo);
+			dataMap = service.doSearch(request, data, userInfo);
 			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
@@ -113,54 +150,61 @@ public class SupplierAction extends BaseAction {
 		return dataMap;
 	}
 	
-	public String doAddInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		SupplierModel supplierModel = supplierService.doAddInit(request);
-		model.addAttribute("DisplayData", supplierModel);
+	public String doAddInit(){
+		model = service.doAddInit();
 
-		return "/business/supplier/supplieredit";
+		return "/business/supplier/supplieradd";
 	}
 	
-	public SupplierModel doAdd(String data, HttpSession session, HttpServletRequest request){
+	public void doInsert(){
 		
-		SupplierModel model = new SupplierModel();
+		service.insertAndView();
 		
-		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = supplierService.doAdd(request, data, userInfo);
-		
-		return model;
-	}		
+	}	
 	
-	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public void doShowDetailById(){
+
+		String key = request.getParameter("key");
+		try {
+			model = service.getSupplierById(key);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void doShowDetail(){
 
 		SupplierModel dataModel = new SupplierModel();
 		String key = request.getParameter("key");
 		try {
-			dataModel = supplierService.getSupplierBaseInfo(key);
+			model = service.getSupplierBaseInfo(key);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			dataModel.setMessage("发生错误，请联系系统管理员");
 		}
-		model.addAttribute("DisplayData", dataModel);
-		
-		return "/business/supplier/supplieredit";
+		//model.addAttribute("DisplayData", dataModel);
 	}	
 	
-	public SupplierModel doUpdate(String data, HttpSession session, HttpServletRequest request){
-		
-		SupplierModel model = new SupplierModel();
-		
-		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = supplierService.doUpdate(request, data, userInfo);
-		
-		return model;
-	}	
-	
+	public void doUpdateInit(){
+
+		SupplierModel dataModel = new SupplierModel();
+		String key = request.getParameter("key");
+		try {
+			model = service.getSupplierBaseInfo(key);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataModel.setMessage("发生错误，请联系系统管理员");
+		}
+		//model.addAttribute("DisplayData", dataModel);
+	}
 	public SupplierModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		SupplierModel model = new SupplierModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = supplierService.doDelete(data, userInfo);
+		model = service.doDelete(data, userInfo);
 
 		return model;
 	}
@@ -168,20 +212,51 @@ public class SupplierAction extends BaseAction {
 	public SupplierModel doDeleteDetail(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		SupplierModel model = new SupplierModel();
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = supplierService.doDelete(data, userInfo);
+		model = service.doDelete(data, userInfo);
 
 		return model;
 	}	
 	
-	public SupplierModel doOptionChange(String data){
-		
-		SupplierModel model = null;
-		
+	public SupplierModel doOptionChange(String data) throws Exception{
+		//request.setCharacterEncoding("utf-8"); 
+		SupplierModel model = new SupplierModel();
 		String[] paras = data.split("&");
 		String[] datas = paras[1].split("=");
-		model = supplierService.doOptionChange(DicUtil.ADDRESS, datas[1]);
+		String province = request.getParameter("province");
+		province = URLDecoder.decode(province,"utf-8");
+		//province = new String(province.getBytes("ISO8859-1"), "UTF-8");
+ 		model.setUnsureList(service.getCityList(province));
 
 		return model;
+	}
+	
+	public SupplierModel doOptionChange2(String data) throws Exception{
+		SupplierModel model = new SupplierModel();
+		String province = request.getParameter("province");
+		province = URLDecoder.decode(province,"utf-8");
+ 		model.setUnsureList(service.getCountyList(province));
+
+		return model;
+	}
+
+	public void doOptionChange3(String data) throws Exception{
+		
+		request.setCharacterEncoding("utf-8"); 
+		String parentId = request.getParameter("parentId");
+		parentId = URLDecoder.decode(parentId,"utf-8");
+
+		modelMap = service.getSupplierId(parentId);
+
+	}
+	
+	public void setSupplierId(String data) throws Exception{
+		
+		request.setCharacterEncoding("utf-8"); 
+		String parentId = request.getParameter("parentId");
+		parentId = URLDecoder.decode(parentId,"utf-8");
+
+		modelMap = service.getSupplierId(parentId);
+
 	}
 
 }

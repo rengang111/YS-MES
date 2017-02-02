@@ -46,4 +46,23 @@
     <groupby></groupby>
     <having></having>
   </query>
+  <query>
+    <pool></pool>     
+    <name value="userquerydefine_searchbyduty" />
+    <where>
+      <w name="A.Duty" des="" reqName="Duty" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.UserID" alias="" ctype="" />
+      <f name="A.LoginName" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>S_USER AS A where DeleteFlag = '0'</from>
+    <orderby>A.SORTNO, A.LoginID, A.LoginName</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>

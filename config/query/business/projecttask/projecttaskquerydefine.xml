@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="projecttaskquerydefine_search" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+    </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+      <f name="A.projectId" alias="" ctype="" />
+      <f name="A.projectName" alias="" ctype="" />
+      <f name="A.tempVersion" alias="" ctype="" />
+      <f name="A.manager" alias="manager" ctype="" />
+      <f name="A.loginName" alias="" ctype="" />
+      <f name="DATE_FORMAT(A.beginTime, '%Y-%m-%d')" alias="beginTime" ctype="" />
+      <f name="DATE_FORMAT(A.endTime, '%Y-%m-%d')" alias="endTime" ctype="" />
+      <f name="A.referPrototype" alias="" ctype="" />
+      <f name="A.image_filename" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_projecttask as A WHERE A.DeleteFlag = '0' </from>
+    <orderby>A.projectId, A.projectName</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="projecttaskquerydefine_preCheck" />
+    <where>
+      <w name="A.projectId" des=""  reqName="keyword" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+      <f name="A.projectId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_projecttask as A WHERE A.DeleteFlag = '0' </from>
+    <orderby>A.projectId, A.projectName</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="projecttaskquerydefine_searchcost" />
+    <where>
+      <w name="projectId" des=""  reqName="keyword" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="type" alias="" ctype="" />
+      <f name="name" alias="" ctype="" />
+      <f name="cost" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_projecttaskcost WHERE DeleteFlag = '0' </from>
+    <orderby>type, sortNo</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>  
+</root>

@@ -1,13 +1,20 @@
 package com.ys.system.service.test;
 
+import java.util.HashMap;
+
 import javax.naming.Context;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ys.system.db.dao.S_DICDao;
 import com.ys.system.db.data.S_DICData;
 import com.ys.system.service.common.BaseService;
 import com.ys.util.basedao.BaseTransaction;
+import com.ys.util.basequery.BaseQuery;
+import com.ys.util.basequery.common.BaseModel;
 
 
 @Service
@@ -41,9 +48,16 @@ public class TestService extends BaseService {
 			//dicData.setJianpin(data2);
 			dicDao.Store(dicData);
 			
-			for(int i = 0; i < 1000000; i++) {
-				System.out.println(i);
-			}
+			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+			BaseModel dataModel = new BaseModel();
+			dataModel.setQueryFileName("/business/projecttask/projecttaskquerydefine");
+			dataModel.setQueryName("projecttaskquerydefine_preCheck");
+			HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+			BaseQuery baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("keyword", "123");
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			
+			baseQuery.getQueryData();			
 			
 			xT.commit();
 			System.out.println("test123 is over");

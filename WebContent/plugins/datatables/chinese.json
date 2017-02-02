@@ -3,7 +3,7 @@
     "emptyTable":     "",
     "info":           "显示 _START_ 到 _END_ 条记录，共 _TOTAL_ 条记录。",
     "infoEmpty":      "",
-    "infoFiltered":   "(从全部 _MAX_ 条记录中筛选 )",
+    "infoFiltered":   "",
     "infoPostFix":    "",
     "thousands":      ",",
     "lengthMenu":     "显示  _MENU_ 行",

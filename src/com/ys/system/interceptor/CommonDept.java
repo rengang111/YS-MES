@@ -126,7 +126,7 @@ public class CommonDept {
 	}
 	*/
 	
-	private static ArrayList<DicInfo> sortDept(ArrayList<ArrayList<DicInfo>> deptChain) {
+	public static ArrayList<DicInfo> sortDept(ArrayList<ArrayList<DicInfo>> deptChain) {
 		
 		HashMap<String, String> initDeptMap = new HashMap<String, String>();
 		ArrayList<DicInfo> deptList = new ArrayList<DicInfo>();

@@ -19,10 +19,10 @@
 		}
 	
 		var t = $('#TCustomer').DataTable({
-				"paging": true,
-				"lengthMenu":[5,10,15],//设置一页展示10条记录
+				"paging": false,
+				"lengthMenu":[50,100,150],//设置一页展示10条记录
 				"processing" : false,
-				"serverSide" : true,
+				"serverSide" : false,
 				"stateSave" : false,
 				"searching" : false,
 				"pagingType" : "full_numbers",
@@ -55,25 +55,26 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "customerId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "customerSimpleDes", "defaultContent" : ''},
-							{"data": "customerName", "defaultContent" : ''},
-							{"data": "paymentTerm", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "country", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "denominationCurrency", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "shippingCase", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "loadingPort", "defaultContent" : '',"className" : 'td-center'},							
-							{"data": "deliveryPort", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "userName", "defaultContent" : ''},
-							{"data": null, "defaultContent" : '',"className" : 'td-center'}
+							{"data": null,"className" : 'td-center'},
+							{"data": "customerId"},
+							{"data": "shortName"},
+							{"data": "customerName"},
+							{"data": "country","className" : 'td-center'},
+							{"data": "paymentTerm","className" : 'td-right'},
+							{"data": "currency","className" : 'td-center'},
+							{"data": "shippingCondition","className" : 'td-center'},						
+							{"data": null},
+							{"data": null,"className" : 'td-center'}
 				        ],
 				"columnDefs":[
 					    		{"targets":0,"render":function(data, type, row){
-									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 			                    }},
-					    		{"targets":11,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
+					    		{"targets":8,"render":function(data, type, row){
+					    			return row["shippiingPort"] + "/"+row["destinationPort"] ;
+			                    }},
+					    		{"targets":9,"render":function(data, type, row){
+					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>"
 			                    }}
 			           
 			         ] 
@@ -122,17 +123,13 @@
 	
 	function doCreate() {
 		var url = "${ctx}/business/customer?methodtype=addinit";
-		openLayer(url, '', layerHeight, true);
+		location.href = url
 	}
 	
 	function doUpdate(key) {
-		var str = '';
-		var isFirstRow = true;
-		var url = "${ctx}/business/customer?methodtype=updateinit&key=" + key;
-
-		openLayer(url, '', layerHeight, true);
+		var url = "${ctx}/business/customer?methodtype=showDetail&key=" + key;
+		location.href = url;
 	}
-	
 	
 	function doDelete() {
 		
@@ -153,12 +150,7 @@
 					data : str,
 					url : "${ctx}/business/customer?methodtype=delete",
 					success : function(d) {
-						if (d.rtnCd != "000") {
-							alert(data.message);
-						} else {
-							reload();
-						}
-						
+						reload();						
 					},
 					error:function(XMLHttpRequest, textStatus, errorThrown){
 		                // alert(XMLHttpRequest.status);
@@ -172,8 +164,8 @@
 		}
 		
 	}
-
 	function reload() {
+		
 		$('#TCustomer').DataTable().ajax.reload(null,false);
 		
 		return true;
@@ -185,7 +177,7 @@
 
 </head>
 
-<body class="easyui-layout">
+<body class="panel-body">
 <div id="container">
 
 		<div id="main">
@@ -219,34 +211,31 @@
 		
 			<div class="list">
 
-				<div id="TCustomer_wrapper" class="dataTables_wrapper">
-					<div id="DTTT_container" align="right" style="height:40px">
-						<a aria-controls="TCustomer" tabindex="0" id="ToolTables_TCustomer_0" class="DTTT_button DTTT_button_text" onClick="doCreate();"><span>新建</span></a>
-						<a aria-controls="TCustomer" tabindex="0" id="ToolTables_TCustomer_1" class="DTTT_button DTTT_button_text" onClick="doDelete();"><span>删除</span></a>
-					</div>
-					<div id="clear"></div>
-					<table aria-describedby="TCustomer_info" style="width: 100%;" id="TCustomer" class="display dataTable" cellspacing="0">
-						<thead>
-						
-							<tr class="selected">
-								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="编号:" class="dt-middle sorting_disabled">编号</th>
-								<th colspan="1" rowspan="1" style="width: 82px;" aria-label="简称:" class="dt-middle sorting_disabled">简称</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="名称" class="dt-middle sorting_disabled">名称</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="付款条件" class="dt-middle sorting_disabled">付款条件</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="所在国家" class="dt-middle sorting_disabled">所在国家</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="计价货币" class="dt-middle sorting_disabled">计价货币</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="出运条件" class="dt-middle sorting_disabled">出运条件</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="出运港" class="dt-middle sorting_disabled">出运港</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="目的港" class="dt-middle sorting_disabled">目的港</th>
-								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="联系人" class="dt-middle sorting_disabled">联系人</th>
-								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
-							</tr>
-						</thead>
-
-					</table>
+				<div id="DTTT_container" align="right" style="height:40px">
+					<a class="DTTT_button" onclick="doCreate();"><span>新建</span></a>
+					<a class="DTTT_button" onclick="doDelete();"><span>删除</span></a>
 				</div>
+				<div id="clear"></div>
+				<table id="TCustomer" class="display dataTable" cellspacing="0">
+					<thead>
+					
+						<tr class="selected">
+							<th style="width: 10px;" class="dt-middle ">No</th>
+							<th style="width: 80px;" class="dt-middle ">客户编号</th>
+							<th style="width: 50px;" class="dt-middle ">简称</th>
+							<th class="dt-middle ">客户名称</th>
+							<th style="width: 80px;" class="dt-middle ">所在国家</th>
+							<th style="width: 30px;" class="dt-middle ">付款条件</th>
+							<th style="width: 30px;" class="dt-middle ">计价货币</th>
+							<th style="width: 30px;" class="dt-middle ">出运条件</th>
+							<th style="width: 140px;" class="dt-middle ">出运港/目的港</th>
+							<th style="width: 30px;"  class="dt-middle ">操作</th>
+						</tr>
+					</thead>
+
+				</table>
 			</div>
 		</div>
 	</div>
+	</body>
 </html>

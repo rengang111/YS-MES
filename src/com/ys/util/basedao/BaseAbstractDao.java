@@ -1,12 +1,15 @@
 package com.ys.util.basedao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.Statement;
 import java.sql.Timestamp;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.datasource.DataSourceUtils;
+
+import com.ys.util.CalendarUtil;
 
 
 public abstract class BaseAbstractDao 
@@ -16,7 +19,9 @@ public abstract class BaseAbstractDao
 	{
 		//SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		//dateS = df.format(dateS);
-		Timestamp ts = Timestamp.valueOf(dateS);
+		//Timestamp ts = Timestamp.valueOf(dateS);
+		Date da = Date.valueOf(dateS);
+		Timestamp ts = new Timestamp( da.getTime());
 		
 		return ts;
 	}

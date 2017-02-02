@@ -11,6 +11,8 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.ys.business.action.model.common.ListOption;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.user.UserModel;
 import com.ys.system.common.BusinessConstants;
@@ -328,6 +330,31 @@ public class UserService {
 	
 		return rtnValue;
 	}
+	
+	public ArrayList<ListOption> getUserListByDuty(HttpServletRequest request, String duty) {
+		ArrayList<ListOption> optionList = new ArrayList<ListOption>();
+		ArrayList<ArrayList<String>> userDataList;
+		UserModel dataModel = new UserModel();
+		try {
+			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+			dataModel.setQueryFileName("/user/userquerydefine");
+			dataModel.setQueryName("userquerydefine_searchbyduty");
+			userDefinedSearchCase.put("Duty", duty);
+			BaseQuery baseQuery = new BaseQuery(request, dataModel);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			userDataList = baseQuery.getQueryData();
+			
+			for(ArrayList<String>rowData:userDataList) {
+				ListOption option = new ListOption(rowData.get(1), rowData.get(2));
+				optionList.add(option);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return optionList;
+	}
+	
 	
 	private S_USERData setDeptGuid(HttpServletRequest request, UserModel userModel, S_USERData data) throws Exception {
 		S_DEPTDao dao = new S_DEPTDao();

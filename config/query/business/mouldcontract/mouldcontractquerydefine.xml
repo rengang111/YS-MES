@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_search" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+    </where>
+    <select>
+      <f name="DISTINCT A.id" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.productModelId" alias="" ctype="" />
+      <f name="A.productModelName" alias="" ctype="" />
+      <f name="A.mouldFactoryId" alias="" ctype="" />
+      <f name="A.productModelIdView" alias="" ctype="" />
+      <f name="A.shortName" alias="mouldFactory" ctype="" />
+      <f name="A.payCase" alias="" ctype="" />
+      <f name="ifnull(DATE_FORMAT(A.finishTime, '%Y-%m-%d'), '')" alias="finishTime" ctype="" />
+      <f name="ifnull(DATE_FORMAT(A.acceptanceDate, '%Y-%m-%d'), '')" alias="acceptanceDate" ctype="" />
+      <f name="A.result" alias="" ctype="" />
+      <f name="A.confirmresult" alias="" ctype="" />
+      <f name="A.memo" alias="" ctype="" />
+      <f name="A.withhold" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_MouldContract as A WHERE A.DeleteFlag = '0' </from>
+    <orderby>A.contractId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_searchproductmodel" />
+    <where>
+    </where>
+    <select>
+      <f name="CONCAT_WS(' | ', A.dicName, A.dicDes)" alias="viewList" ctype="" />
+      <f name="A.dicId" alias="id" ctype="" />
+      <f name="A.dicName" alias="name" ctype="" />
+      <f name="A.dicDes" alias="des" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>s_dic as A WHERE A.dictypeid='产品型号' and A.deleteflag='0' and A.enableflag='0' </from>
+    <orderby>sortNo</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_searchfactory" />
+    <where>
+    </where>
+    <select>
+      <f name="A.recordId" alias="id" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_organization as A, v_MouldFactoryType as B WHERE A.DeleteFlag = '0' AND A.type = B.id </from>
+    <orderby>shortName</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_searchmd" />
+    <where>
+      <w name="A.mouldBaseId" des=""  reqName="mouldBaseId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+      <f name="D.dicName" alias="type" ctype="" />
+      <f name="A.no" alias="" ctype="" />
+      <f name="A.name" alias="" ctype="" />
+      <f name="A.size" alias="" ctype="" />
+      <f name="A.materialQuality" alias="" ctype="" />
+      <f name="A.mouldUnloadingNum" alias="" ctype="" />
+      <f name="A.heavy" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="c.shortname" alias="mouldFactory" ctype="" />
+      <f name="E.dicName" alias="place" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldDetail as A, b_MouldBaseInfo as B, b_organization as C, s_Dic as D, s_Dic as E WHERE A.DeleteFlag = '0' AND B.DeleteFlag = '0' AND B.id = A.mouldBaseId AND C.recordid = B.mouldFactoryId AND D.deleteflag='0' and D.enableflag = '0' and D.dicid=A.type AND E.deleteflag='0' and E.enableflag = '0' and E.dicid=A.type </from>
+    <orderby>type, no</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_searchpay" />
+    <where>
+      <w name="mouldBaseId" des=""  reqName="mouldBaseId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+      <f name="DATE_FORMAT(A.payTime, '%Y-%m-%d')" alias="payTime" ctype="" />
+      <f name="A.pay" alias="" ctype="" />
+      <f name="A.confirm" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldPayList as A WHERE A.DeleteFlag = '0' </from>
+    <orderby>payTime</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+   <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_checkContractId" />
+    <where>
+      <w name="contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldBaseInfo as A WHERE A.DeleteFlag = '0' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+   <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_checkContractProductModelId" />
+    <where>
+      <w name="A.no" des=""  reqName="no" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="id" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldDetail as A WHERE A.DeleteFlag = '0' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+   <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_getcontractserialno" />
+    <where>
+    <w name="substring(B.contractId, 1, 4)" des=""  reqName="year" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="IFNULL(min(B.serialNo), 1)" alias="serialNo" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>(select contractId, (CONVERT(substring(contractId, char_length(contractId) - 2, 3), SIGNED) + 1) as serialNo FROM b_MouldBaseInfo WHERE deleteflag='0') as B WHERE NOT EXISTS (select serialNo from (select contractId, CONVERT(substring(contractId, char_length(contractId) - 2, 3), SIGNED) as serialNo FROM b_MouldBaseInfo WHERE deleteflag='0') as A WHERE A.serialNo = B.serialNo) </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+   <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_getmouldserialno" />
+    <where>
+    </where>
+    <select>
+      <f name="IFNULL(min(B.serialNo), 1)" alias="serialNo" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>(select (CONVERT(substring(no, char_length(no) - 1, 2), SIGNED) + 1) as serialNo FROM b_MouldDetail WHERE deleteflag='0') as B WHERE NOT EXISTS (select serialNo from (select CONVERT(substring(no, char_length(no) - 1, 2), SIGNED) as serialNo FROM b_MouldDetail WHERE deleteflag='0') as A WHERE A.serialNo = B.serialNo) </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>

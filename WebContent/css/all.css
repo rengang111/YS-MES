@@ -1,8 +1,13 @@
 /* main styles */ 
-{
+*{
     margin: 0px;
     padding: 0px;
 
+}
+td.cash {
+	font-size:12px;
+	text-align: right;
+	padding-right: 10px;
 }
 
 td.td-left {
@@ -12,6 +17,11 @@ td.td-center {
 	text-align: center;
 }
 
+td.td-right {
+	text-align: right !important;
+	padding-right: 20px !important;
+}
+
 body{
     /* background-color: floralwhite; */
     font-size:12px;
@@ -19,10 +29,14 @@ body{
     word-spacing:5px; 
 	letter-spacing: 0px;
 }
+a:link {text-decoration:none;color:blue;}
+a:hover {text-decoration:underline;color:green;}
+a:active{text-decoration:none;color:yellow;}
+a:visited {text-decoration:none;color:blue;}
 
 body.noscroll{
 	overflow:scroll;
-	overflow-y:hidden;
+	overflow-y:scroll;
 	overflow-x:hidden;
 }
 
@@ -45,21 +59,19 @@ header{
     float: left;
 }
 
-/*headerºÍfooterÖ®¼äµÄÇøÓò  */
+/*headerï¿½ï¿½footerÖ®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  */
 
 container {
 	height:auto;
     margin:0 30px;
-<<<<<<< HEAD
     min-height:600px;
     width:1050px;
     word-spacing:0px; 
 	/*letter-spacing: 1px;*/
-=======
     //min-height:700px;
     //width:1060px;
     //width:95%;
->>>>>>> refs/remotes/origin/master
+
 }
 
 @media screen and (min-width:1366px){
@@ -94,7 +106,7 @@ footer{
     border: solid 1px lightseagreen ;
 }
 
-/*×ó±ßÀ¸  */
+/*ï¿½ï¿½ï¿½ï¿½ï¿½  */
 aside,#main{
     height:auto;
     margin: 0px 0px 4px 0px;
@@ -163,17 +175,15 @@ table.search td{
 
 table.form{
     background:#f9f9f9;
-<<<<<<< HEAD
     padding:5px;
     font-size:14px;
     line-height:16px;
-=======
     padding:2px;
-    font:14px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;
->>>>>>> refs/remotes/origin/master
+    padding-bottom:5px;
+    font:12px/16px Microsoft YaHei,Arial, Helvetica, sans-serif;
     cellspacing:0px;
     border: solid 1px #c0c0c0 ;
-    //width:100%;
+    width:100%;
 }
 
 table.form td{
@@ -208,14 +218,11 @@ td.title1{
 }
 
 td.condition{
-<<<<<<< HEAD
     font-size:12px;
     line-height:18px;
     width:	200px;
-=======
 	font:12px/18px Microsoft YaHei,Arial, Helvetica, sans-serif;
     #width:	200px;
->>>>>>> refs/remotes/origin/master
 }
 
 td.condition input, textarea, select {
@@ -267,8 +274,8 @@ legend{
     font-size:12px;
     line-height:20px;
     padding:0px 10px;
-    //margin:-26px 0 0 -10px;
-    /*font-weight:bold;*/
+    margin:0px 0 -5px 0px;
+    font-weight:bold;
     border:1px solid #fff;
     border-color:#e5e5c3 #505014 #505014 #e5e5c3;
 }
@@ -282,10 +289,13 @@ fieldset.action {
 
 input, textarea, select{
     padding:0px;   
+    padding-left: 5px;
     margin:0px 0px 0px 10px; 
+    border: 1px solid;
+    border-color: #abadb3 #dbdfe6 #e3e9ef #e2e3ea;
 }   
 input[type="text"]{
-	height:18px;
+	height:20px;
 }
 textarea{
 	margin:5px 0px 5px 10px; 
@@ -297,21 +307,31 @@ textarea.read-only{
 	border-style:none;
 }
 
+input.small{width:40px;} 
+
+input.mini{width:70px;} 
+
 input.short{width:100px;} 
 
-input.mini{width:50px;} 
-
 input.middle{width:250px;}
+
+input.attributeList1{width:180px;}
 
 input.long{width:450px;}
 
 input.cash{
-	width:60px;
+	/* width:60px; */
 	padding:0 2px 0 2px; 
-	text-align:left;
+	text-align:right;
 }
 
-/* Ö»¶ÁÊäÈë¿òÖÃ»Ò */
+input.num{
+	/* width:60px; */
+	padding:0 2px 0 2px; 
+	text-align:right;
+}
+
+/* Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ */
 input.read-only
 {
 	background-color: #cccccc;
@@ -330,18 +350,28 @@ dl {
     clear:both;
 }
 
-dt {
-    float:right;
+.collapse {
+	width:100%;
+	border:solid 1px  #ccc;
+	margin:2px;
+	float:left;
 }
-
-dd {
-    float:left;
-    line-height:15px;
-    margin:0 0 2px 0;
+.collapse  dt {
+	padding:8px 8px;
+	background:#7FECAD url(../images/green.gif) repeat-x;
+	font-size:13px;
+	font-weight:bold;
+/*	color:#71790C; */
+	border-bottom:solid 1px #efefef;	
+	cursor:pointer;
+}
+.collapse dd {
+	margin:0;
+	padding:6px;
 }
 
 form{
-    padding:40px 20px 0px 20px;
+    padding:5px 5px 0px 5px;
 }
 
 button{
@@ -523,5 +553,40 @@ h2 {
     text-decoration:none;
 }
 .tree-title{
-    font-size: 14px;
+    font-size: 14px !important;
+}
+
+.high {
+        color: #F00;
+}
+
+.ui-autocomplete {
+	max-height: 200px;
+	max-width: 800px;
+	width: 400px;
+	overflow-y: anto;
+	scrollHeight:100px;
+	/* prevent horizontal scrollbar */
+	overflow-x: hidden;
+	scroll: true;
+	/* add padding to account for vertical scrollbar */
+	padding-right: 20px;
+	highlight: false;
+	z-index:9999;
+}
+
+input.error { background-color: rgba(255, 0, 0, 0.28);}
+input.bgnone { background-color: transparent;}
+input.bgwhite { background-color: #fff; }
+input.bsolid { border: 1px solid #dadada; }
+
+.hasDatepicker{
+   /* background:white url(../images/add.png) no-repeat right;*/
+    background:white;
+    border: 1px solid;
+    border-color: #abadb3 #dbdfe6 #e3e9ef #e2e3ea;
+}
+
+pre{
+	white-space: inherit;
 }

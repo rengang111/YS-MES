@@ -28,7 +28,7 @@ public class CalendarUtil {
 		int month;
 		int day;
 		
-		if (date.length() > 0) {
+		if (date != null && date.length() > 0) {
 			if (date.length() == 8) {
 				year = Integer.parseInt(date.substring(0,4));
 				month = Integer.parseInt(date.substring(4,6));
@@ -136,7 +136,11 @@ public class CalendarUtil {
 	 */
 	public static String fmtDate(Date srcDate, String format) {
 		SimpleDateFormat sd = new SimpleDateFormat(format);
-		return sd.format(srcDate); 
+		if (srcDate == null || srcDate.equals("")) {
+			return "";
+		} else {
+			return sd.format(srcDate);
+		}
 	}
 	
 	/**
@@ -150,6 +154,17 @@ public class CalendarUtil {
 		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sd.format(getSystemDate()); 
 	}	
+
+	/**
+	 * ���ڸ�ʽ��
+	 *
+	 * @param	无		systemDate
+	 * @return	String		yyyy-MM-dd
+	 */
+	public static String fmtYmdDate() {
+		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
+		return sd.format(getSystemDate()); 
+	}
 	
 	/**
 	 * �����ж�
@@ -177,7 +192,14 @@ public class CalendarUtil {
 	 * @throws ParseException 
 	 */
 	public static int compareDate(String date1, String date2) throws ParseException {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		if (date1.equals("")) {
+			return 1;
+		}
+		if (date2.equals("")) {
+			return 0;
+		}
+		
 		Date d1 = formatter.parse(date1);
 		Date d2 = formatter.parse(date2);
 		if (d1.compareTo(d2) < 0) {
@@ -187,5 +209,60 @@ public class CalendarUtil {
 
 		//date1 > date2
 		return 0;
+	}
+	
+	public static int compareDate(Date d1, Date d2) throws ParseException {
+		if (d1.compareTo(d2) < 0) {
+			//date1 < date2
+			return 1;
+		}
+
+		//date1 > date2
+		return 0;
+	}	
+	
+	public static int daysBetween(Date smdate,Date bdate) throws ParseException  {
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");  
+	    smdate = sdf.parse(sdf.format(smdate));  
+	    bdate = sdf.parse(sdf.format(bdate));  
+	    Calendar cal = Calendar.getInstance();    
+	    cal.setTime(smdate);    
+	    long time1 = cal.getTimeInMillis();                 
+	    cal.setTime(bdate);
+	    long time2 = cal.getTimeInMillis();         
+	    long between_days=(time2-time1)/(1000*3600*24);
+	    
+	    return Integer.parseInt(String.valueOf(between_days));
+	}
+	
+	public static String getDayBetween(String date1, String date2 ) throws Exception {
+		
+		CalendarUtil calendarUtil = null;
+		Date compareDate1 = null;
+		Date compareDate2 = null;
+		
+		if (date1 == null || date1.equals("")) {
+			compareDate1 = CalendarUtil.getSystemDate();
+		} else {
+			calendarUtil = new CalendarUtil(date1);
+			compareDate1 = calendarUtil.getDate();
+		}
+		
+		if (date2 == null || date2.equals("")) {
+			compareDate2 = CalendarUtil.getSystemDate();
+		} else {
+			calendarUtil = new CalendarUtil(date2);
+			compareDate2 = calendarUtil.getDate();
+		}
+		
+		
+		int dayBetween = 0;
+
+		dayBetween = calendarUtil.daysBetween(compareDate1, compareDate2);
+		if (dayBetween < 0) {
+			dayBetween = 0;
+		}
+		
+		return String.valueOf(dayBetween);
 	}
 }

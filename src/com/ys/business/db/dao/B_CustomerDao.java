@@ -2,8 +2,8 @@ package com.ys.business.db.dao;
 
 import java.sql.*;
 import java.io.InputStream;
-import com.ys.util.basedao.BaseAbstractDao;
 import com.ys.business.db.data.*;
+import com.ys.util.basedao.BaseAbstractDao;
 
 /**
 * <p>Title: </p>
@@ -45,8 +45,8 @@ public class B_CustomerDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_Customer( id,customerid,customersimpledes,customername,paymentterm,country,denominationcurrency,shippingcase,loadingport,deliveryport,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getCustomerid());			statement.setString( 3,beanData.getCustomersimpledes());			statement.setString( 4,beanData.getCustomername());			statement.setString( 5,beanData.getPaymentterm());			statement.setString( 6,beanData.getCountry());			statement.setString( 7,beanData.getDenominationcurrency());			statement.setString( 8,beanData.getShippingcase());			statement.setString( 9,beanData.getLoadingport());			statement.setString( 10,beanData.getDeliveryport());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());
+			statement = connection.prepareStatement("INSERT INTO B_Customer( recordid,customerid,shortname,customername,parentid,subid,paymentterm,country,currency,shippingcondition,shippiingport,destinationport,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCustomerid());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getCustomername());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getPaymentterm());			statement.setString( 8,beanData.getCountry());			statement.setString( 9,beanData.getCurrency());			statement.setString( 10,beanData.getShippingcondition());			statement.setString( 11,beanData.getShippiingport());			statement.setString( 12,beanData.getDestinationport());			statement.setString( 13,beanData.getDeptguid());			statement.setString( 14,beanData.getCreatetime());			statement.setString( 15,beanData.getCreateperson());			statement.setString( 16,beanData.getCreateunitid());			statement.setString( 17,beanData.getModifytime());			statement.setString( 18,beanData.getModifyperson());			statement.setString( 19,beanData.getDeleteflag());			statement.setString( 20,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -54,7 +54,7 @@ public class B_CustomerDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_Customer( id,customerid,customersimpledes,customername,paymentterm,country,denominationcurrency,shippingcase,loadingport,deliveryport,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_Customer( recordid,customerid,shortname,customername,parentid,subid,paymentterm,country,currency,shippingcondition,shippiingport,destinationport,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -72,8 +72,8 @@ public class B_CustomerDao extends BaseAbstractDao
 		StringBuffer bufSQL = new StringBuffer();
 		try
 		{
-			bufSQL.append("INSERT INTO B_Customer( id,customerid,customersimpledes,customername,paymentterm,country,denominationcurrency,shippingcase,loadingport,deliveryport,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(");
-			bufSQL.append("'" + nullString(beanData.getId()) + "',");			bufSQL.append("'" + nullString(beanData.getCustomerid()) + "',");			bufSQL.append("'" + nullString(beanData.getCustomersimpledes()) + "',");			bufSQL.append("'" + nullString(beanData.getCustomername()) + "',");			bufSQL.append("'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("'" + nullString(beanData.getDenominationcurrency()) + "',");			bufSQL.append("'" + nullString(beanData.getShippingcase()) + "',");			bufSQL.append("'" + nullString(beanData.getLoadingport()) + "',");			bufSQL.append("'" + nullString(beanData.getDeliveryport()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "'");
+			bufSQL.append("INSERT INTO B_Customer( recordid,customerid,shortname,customername,parentid,subid,paymentterm,country,currency,shippingcondition,shippiingport,destinationport,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
+			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getCustomerid()) + "',");			bufSQL.append("'" + nullString(beanData.getShortname()) + "',");			bufSQL.append("'" + nullString(beanData.getCustomername()) + "',");			bufSQL.append("'" + nullString(beanData.getParentid()) + "',");			bufSQL.append("'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("'" + nullString(beanData.getCurrency()) + "',");			bufSQL.append("'" + nullString(beanData.getShippingcondition()) + "',");			bufSQL.append("'" + nullString(beanData.getShippiingport()) + "',");			bufSQL.append("'" + nullString(beanData.getDestinationport()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(")");
 
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -101,8 +101,8 @@ public class B_CustomerDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_Customer( id,customerid,customersimpledes,customername,paymentterm,country,denominationcurrency,shippingcase,loadingport,deliveryport,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getCustomerid());			statement.setString( 3,beanData.getCustomersimpledes());			statement.setString( 4,beanData.getCustomername());			statement.setString( 5,beanData.getPaymentterm());			statement.setString( 6,beanData.getCountry());			statement.setString( 7,beanData.getDenominationcurrency());			statement.setString( 8,beanData.getShippingcase());			statement.setString( 9,beanData.getLoadingport());			statement.setString( 10,beanData.getDeliveryport());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());
+			statement = connection.prepareStatement("INSERT INTO B_Customer( recordid,customerid,shortname,customername,parentid,subid,paymentterm,country,currency,shippingcondition,shippiingport,destinationport,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCustomerid());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getCustomername());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getPaymentterm());			statement.setString( 8,beanData.getCountry());			statement.setString( 9,beanData.getCurrency());			statement.setString( 10,beanData.getShippingcondition());			statement.setString( 11,beanData.getShippiingport());			statement.setString( 12,beanData.getDestinationport());			statement.setString( 13,beanData.getDeptguid());			statement.setString( 14,beanData.getCreatetime());			statement.setString( 15,beanData.getCreateperson());			statement.setString( 16,beanData.getCreateunitid());			statement.setString( 17,beanData.getModifytime());			statement.setString( 18,beanData.getModifyperson());			statement.setString( 19,beanData.getDeleteflag());			statement.setString( 20,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -110,7 +110,7 @@ public class B_CustomerDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_Customer( id,customerid,customersimpledes,customername,paymentterm,country,denominationcurrency,shippingcase,loadingport,deliveryport,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_Customer( recordid,customerid,shortname,customername,parentid,subid,paymentterm,country,currency,shippingcondition,shippiingport,destinationport,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -130,8 +130,8 @@ public class B_CustomerDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("DELETE FROM B_Customer WHERE  id =?");
-			statement.setString( 1,beanData.getId());
+			statement = connection.prepareStatement("DELETE FROM B_Customer WHERE  recordid =?");
+			statement.setString( 1,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception("Error deleting row");
 		}
@@ -156,7 +156,7 @@ public class B_CustomerDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("DELETE FROM B_Customer WHERE ");
-			bufSQL.append("Id = " + "'" + nullString(beanData.getId()) + "'");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
 		}
 		catch(Exception e)
@@ -213,19 +213,19 @@ public class B_CustomerDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT id,customerid,customersimpledes,customername,paymentterm,country,denominationcurrency,shippingcase,loadingport,deliveryport,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_Customer WHERE  id =?");
-			statement.setString( 1,beanData.getId());
+			statement = connection.prepareStatement("SELECT recordid,customerid,shortname,customername,parentid,subid,paymentterm,country,currency,shippingcondition,shippiingport,destinationport,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_Customer WHERE  recordid =?");
+			statement.setString( 1,beanData.getRecordid());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
 				throw new Exception(" Row Not does;");
 			}
-			returnData.setId( resultSet.getString( 1));			returnData.setCustomerid( resultSet.getString( 2));			returnData.setCustomersimpledes( resultSet.getString( 3));			returnData.setCustomername( resultSet.getString( 4));			returnData.setPaymentterm( resultSet.getString( 5));			returnData.setCountry( resultSet.getString( 6));			returnData.setDenominationcurrency( resultSet.getString( 7));			returnData.setShippingcase( resultSet.getString( 8));			returnData.setLoadingport( resultSet.getString( 9));			returnData.setDeliveryport( resultSet.getString( 10));			returnData.setCreatetime( resultSet.getString( 11));			returnData.setCreateperson( resultSet.getString( 12));			returnData.setCreateunitid( resultSet.getString( 13));			returnData.setModifytime( resultSet.getString( 14));			returnData.setModifyperson( resultSet.getString( 15));			returnData.setDeleteflag( resultSet.getString( 16));
+			returnData.setRecordid( resultSet.getString( 1));			returnData.setCustomerid( resultSet.getString( 2));			returnData.setShortname( resultSet.getString( 3));			returnData.setCustomername( resultSet.getString( 4));			returnData.setParentid( resultSet.getString( 5));			returnData.setSubid( resultSet.getString( 6));			returnData.setPaymentterm( resultSet.getString( 7));			returnData.setCountry( resultSet.getString( 8));			returnData.setCurrency( resultSet.getString( 9));			returnData.setShippingcondition( resultSet.getString( 10));			returnData.setShippiingport( resultSet.getString( 11));			returnData.setDestinationport( resultSet.getString( 12));			returnData.setDeptguid( resultSet.getString( 13));			returnData.setCreatetime( resultSet.getString( 14));			returnData.setCreateperson( resultSet.getString( 15));			returnData.setCreateunitid( resultSet.getString( 16));			returnData.setModifytime( resultSet.getString( 17));			returnData.setModifyperson( resultSet.getString( 18));			returnData.setDeleteflag( resultSet.getString( 19));			returnData.setFormid( resultSet.getString( 20));
 			return returnData;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT id,customerid,customersimpledes,customername,paymentterm,country,denominationcurrency,shippingcase,loadingport,deliveryport,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_Customer  WHERE  "+e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,customerid,shortname,customername,parentid,subid,paymentterm,country,currency,shippingcondition,shippiingport,destinationport,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_Customer  WHERE  "+e.toString());
 		}
 		finally
 		{
@@ -251,19 +251,19 @@ public class B_CustomerDao extends BaseAbstractDao
 			str_Where=str_Where.trim(); 
 			if(!str_Where.equals(""))
 				str_Where=" WHERE " + str_Where ; 
-			statement = connection.prepareStatement("SELECT id,customerid,customersimpledes,customername,paymentterm,country,denominationcurrency,shippingcase,loadingport,deliveryport,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_Customer"+str_Where);
+			statement = connection.prepareStatement("SELECT recordid,customerid,shortname,customername,parentid,subid,paymentterm,country,currency,shippingcondition,shippiingport,destinationport,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_Customer"+str_Where);
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next())
 			{
 				B_CustomerData returnData=new B_CustomerData();
-				returnData.setId( resultSet.getString( 1));				returnData.setCustomerid( resultSet.getString( 2));				returnData.setCustomersimpledes( resultSet.getString( 3));				returnData.setCustomername( resultSet.getString( 4));				returnData.setPaymentterm( resultSet.getString( 5));				returnData.setCountry( resultSet.getString( 6));				returnData.setDenominationcurrency( resultSet.getString( 7));				returnData.setShippingcase( resultSet.getString( 8));				returnData.setLoadingport( resultSet.getString( 9));				returnData.setDeliveryport( resultSet.getString( 10));				returnData.setCreatetime( resultSet.getString( 11));				returnData.setCreateperson( resultSet.getString( 12));				returnData.setCreateunitid( resultSet.getString( 13));				returnData.setModifytime( resultSet.getString( 14));				returnData.setModifyperson( resultSet.getString( 15));				returnData.setDeleteflag( resultSet.getString( 16));
+				returnData.setRecordid( resultSet.getString( 1));				returnData.setCustomerid( resultSet.getString( 2));				returnData.setShortname( resultSet.getString( 3));				returnData.setCustomername( resultSet.getString( 4));				returnData.setParentid( resultSet.getString( 5));				returnData.setSubid( resultSet.getString( 6));				returnData.setPaymentterm( resultSet.getString( 7));				returnData.setCountry( resultSet.getString( 8));				returnData.setCurrency( resultSet.getString( 9));				returnData.setShippingcondition( resultSet.getString( 10));				returnData.setShippiingport( resultSet.getString( 11));				returnData.setDestinationport( resultSet.getString( 12));				returnData.setDeptguid( resultSet.getString( 13));				returnData.setCreatetime( resultSet.getString( 14));				returnData.setCreateperson( resultSet.getString( 15));				returnData.setCreateunitid( resultSet.getString( 16));				returnData.setModifytime( resultSet.getString( 17));				returnData.setModifyperson( resultSet.getString( 18));				returnData.setDeleteflag( resultSet.getString( 19));				returnData.setFormid( resultSet.getString( 20));
 				v_1.add(returnData);
 			}
 			return v_1;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT id,customerid,customersimpledes,customername,paymentterm,country,denominationcurrency,shippingcase,loadingport,deliveryport,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_Customer" + astr_Where +e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,customerid,shortname,customername,parentid,subid,paymentterm,country,currency,shippingcondition,shippiingport,destinationport,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_Customer" + astr_Where +e.toString());
 		}
 		finally
 		{
@@ -282,15 +282,15 @@ public class B_CustomerDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_Customer SET id= ? , customerid= ? , customersimpledes= ? , customername= ? , paymentterm= ? , country= ? , denominationcurrency= ? , shippingcase= ? , loadingport= ? , deliveryport= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?");
-			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getCustomerid());			statement.setString( 3,beanData.getCustomersimpledes());			statement.setString( 4,beanData.getCustomername());			statement.setString( 5,beanData.getPaymentterm());			statement.setString( 6,beanData.getCountry());			statement.setString( 7,beanData.getDenominationcurrency());			statement.setString( 8,beanData.getShippingcase());			statement.setString( 9,beanData.getLoadingport());			statement.setString( 10,beanData.getDeliveryport());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());
-			statement.setString( 17,beanData.getId());
+			statement = connection.prepareStatement("UPDATE B_Customer SET recordid= ? , customerid= ? , shortname= ? , customername= ? , parentid= ? , subid= ? , paymentterm= ? , country= ? , currency= ? , shippingcondition= ? , shippiingport= ? , destinationport= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCustomerid());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getCustomername());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getPaymentterm());			statement.setString( 8,beanData.getCountry());			statement.setString( 9,beanData.getCurrency());			statement.setString( 10,beanData.getShippingcondition());			statement.setString( 11,beanData.getShippiingport());			statement.setString( 12,beanData.getDestinationport());			statement.setString( 13,beanData.getDeptguid());			statement.setString( 14,beanData.getCreatetime());			statement.setString( 15,beanData.getCreateperson());			statement.setString( 16,beanData.getCreateunitid());			statement.setString( 17,beanData.getModifytime());			statement.setString( 18,beanData.getModifyperson());			statement.setString( 19,beanData.getDeleteflag());			statement.setString( 20,beanData.getFormid());
+			statement.setString( 21,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_Customer SET id= ? , customerid= ? , customersimpledes= ? , customername= ? , paymentterm= ? , country= ? , denominationcurrency= ? , shippingcase= ? , loadingport= ? , deliveryport= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?"+ e.toString());
+			throw new Exception("UPDATE B_Customer SET recordid= ? , customerid= ? , shortname= ? , customername= ? , parentid= ? , subid= ? , paymentterm= ? , country= ? , currency= ? , shippingcondition= ? , shippiingport= ? , destinationport= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -308,9 +308,9 @@ public class B_CustomerDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("UPDATE B_Customer SET ");
-			bufSQL.append("Id = " + "'" + nullString(beanData.getId()) + "',");			bufSQL.append("Customerid = " + "'" + nullString(beanData.getCustomerid()) + "',");			bufSQL.append("Customersimpledes = " + "'" + nullString(beanData.getCustomersimpledes()) + "',");			bufSQL.append("Customername = " + "'" + nullString(beanData.getCustomername()) + "',");			bufSQL.append("Paymentterm = " + "'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("Country = " + "'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("Denominationcurrency = " + "'" + nullString(beanData.getDenominationcurrency()) + "',");			bufSQL.append("Shippingcase = " + "'" + nullString(beanData.getShippingcase()) + "',");			bufSQL.append("Loadingport = " + "'" + nullString(beanData.getLoadingport()) + "',");			bufSQL.append("Deliveryport = " + "'" + nullString(beanData.getDeliveryport()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "'");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Customerid = " + "'" + nullString(beanData.getCustomerid()) + "',");			bufSQL.append("Shortname = " + "'" + nullString(beanData.getShortname()) + "',");			bufSQL.append("Customername = " + "'" + nullString(beanData.getCustomername()) + "',");			bufSQL.append("Parentid = " + "'" + nullString(beanData.getParentid()) + "',");			bufSQL.append("Subid = " + "'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("Paymentterm = " + "'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("Country = " + "'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("Currency = " + "'" + nullString(beanData.getCurrency()) + "',");			bufSQL.append("Shippingcondition = " + "'" + nullString(beanData.getShippingcondition()) + "',");			bufSQL.append("Shippiingport = " + "'" + nullString(beanData.getShippiingport()) + "',");			bufSQL.append("Destinationport = " + "'" + nullString(beanData.getDestinationport()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(" WHERE ");
-			bufSQL.append("Id = " + "'" + nullString(beanData.getId()) + "'");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
 		}
 		catch(Exception e)
@@ -335,15 +335,15 @@ public class B_CustomerDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_Customer SET id= ? , customerid= ? , customersimpledes= ? , customername= ? , paymentterm= ? , country= ? , denominationcurrency= ? , shippingcase= ? , loadingport= ? , deliveryport= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?");
-			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getCustomerid());			statement.setString( 3,beanData.getCustomersimpledes());			statement.setString( 4,beanData.getCustomername());			statement.setString( 5,beanData.getPaymentterm());			statement.setString( 6,beanData.getCountry());			statement.setString( 7,beanData.getDenominationcurrency());			statement.setString( 8,beanData.getShippingcase());			statement.setString( 9,beanData.getLoadingport());			statement.setString( 10,beanData.getDeliveryport());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());
-			statement.setString( 17,beanData.getId());
+			statement = connection.prepareStatement("UPDATE B_Customer SET recordid= ? , customerid= ? , shortname= ? , customername= ? , parentid= ? , subid= ? , paymentterm= ? , country= ? , currency= ? , shippingcondition= ? , shippiingport= ? , destinationport= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCustomerid());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getCustomername());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getPaymentterm());			statement.setString( 8,beanData.getCountry());			statement.setString( 9,beanData.getCurrency());			statement.setString( 10,beanData.getShippingcondition());			statement.setString( 11,beanData.getShippiingport());			statement.setString( 12,beanData.getDestinationport());			statement.setString( 13,beanData.getDeptguid());			statement.setString( 14,beanData.getCreatetime());			statement.setString( 15,beanData.getCreateperson());			statement.setString( 16,beanData.getCreateunitid());			statement.setString( 17,beanData.getModifytime());			statement.setString( 18,beanData.getModifyperson());			statement.setString( 19,beanData.getDeleteflag());			statement.setString( 20,beanData.getFormid());
+			statement.setString( 21,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_Customer SET id= ? , customerid= ? , customersimpledes= ? , customername= ? , paymentterm= ? , country= ? , denominationcurrency= ? , shippingcase= ? , loadingport= ? , deliveryport= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?"+ e.toString());
+			throw new Exception("UPDATE B_Customer SET recordid= ? , customerid= ? , shortname= ? , customername= ? , parentid= ? , subid= ? , paymentterm= ? , country= ? , currency= ? , shippingcondition= ? , shippiingport= ? , destinationport= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -363,8 +363,8 @@ public class B_CustomerDao extends BaseAbstractDao
 		{
 		B_CustomerData beanData = (B_CustomerData) beanDataTmp; 
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT  id  FROM B_Customer WHERE  id =?");
-			statement.setString( 1,beanData.getId());
+			statement = connection.prepareStatement("SELECT  recordid  FROM B_Customer WHERE  recordid =?");
+			statement.setString( 1,beanData.getRecordid());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
@@ -373,7 +373,7 @@ public class B_CustomerDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL  SELECT  id  FROM B_Customer WHERE  id =?");
+			throw new Exception("Error executing SQL  SELECT  recordid  FROM B_Customer WHERE  recordid =?");
 		}
 		finally
 		{

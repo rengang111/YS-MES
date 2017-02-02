@@ -21,14 +21,14 @@ public class B_CustomerData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String id;
-	public String getId()
+	private String recordid;
+	public String getRecordid()
 	{
-		return this.id;
+		return this.recordid;
 	}
-	public void setId(String id)
+	public void setRecordid(String recordid)
 	{
-		this.id=id;
+		this.recordid=recordid;
 	}
 
 	/**
@@ -47,14 +47,14 @@ public class B_CustomerData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String customersimpledes;
-	public String getCustomersimpledes()
+	private String shortname;
+	public String getShortname()
 	{
-		return this.customersimpledes;
+		return this.shortname;
 	}
-	public void setCustomersimpledes(String customersimpledes)
+	public void setShortname(String shortname)
 	{
-		this.customersimpledes=customersimpledes;
+		this.shortname=shortname;
 	}
 
 	/**
@@ -68,6 +68,32 @@ public class B_CustomerData implements java.io.Serializable
 	public void setCustomername(String customername)
 	{
 		this.customername=customername;
+	}
+
+	/**
+	*
+	*/
+	private String parentid;
+	public String getParentid()
+	{
+		return this.parentid;
+	}
+	public void setParentid(String parentid)
+	{
+		this.parentid=parentid;
+	}
+
+	/**
+	*
+	*/
+	private String subid;
+	public String getSubid()
+	{
+		return this.subid;
+	}
+	public void setSubid(String subid)
+	{
+		this.subid=subid;
 	}
 
 	/**
@@ -99,53 +125,66 @@ public class B_CustomerData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String denominationcurrency;
-	public String getDenominationcurrency()
+	private String currency;
+	public String getCurrency()
 	{
-		return this.denominationcurrency;
+		return this.currency;
 	}
-	public void setDenominationcurrency(String denominationcurrency)
+	public void setCurrency(String currency)
 	{
-		this.denominationcurrency=denominationcurrency;
-	}
-
-	/**
-	*
-	*/
-	private String shippingcase;
-	public String getShippingcase()
-	{
-		return this.shippingcase;
-	}
-	public void setShippingcase(String shippingcase)
-	{
-		this.shippingcase=shippingcase;
+		this.currency=currency;
 	}
 
 	/**
 	*
 	*/
-	private String loadingport;
-	public String getLoadingport()
+	private String shippingcondition;
+	public String getShippingcondition()
 	{
-		return this.loadingport;
+		return this.shippingcondition;
 	}
-	public void setLoadingport(String loadingport)
+	public void setShippingcondition(String shippingcondition)
 	{
-		this.loadingport=loadingport;
+		this.shippingcondition=shippingcondition;
 	}
 
 	/**
 	*
 	*/
-	private String deliveryport;
-	public String getDeliveryport()
+	private String shippiingport;
+	public String getShippiingport()
 	{
-		return this.deliveryport;
+		return this.shippiingport;
 	}
-	public void setDeliveryport(String deliveryport)
+	public void setShippiingport(String shippiingport)
 	{
-		this.deliveryport=deliveryport;
+		this.shippiingport=shippiingport;
+	}
+
+	/**
+	*
+	*/
+	private String destinationport;
+	public String getDestinationport()
+	{
+		return this.destinationport;
+	}
+	public void setDestinationport(String destinationport)
+	{
+		this.destinationport=destinationport;
+	}
+
+	/**
+	*
+	*/
+	private String deptguid;
+	public String getDeptguid()
+	{
+		return this.deptguid;
+	}
+	public void setDeptguid(String deptguid)
+	{
+		this.deptguid=deptguid;
 	}
 
 	/**
@@ -227,7 +266,20 @@ public class B_CustomerData implements java.io.Serializable
 	}
 
 	/**
-	*·µ»ØÖµ
+	*
+	*/
+	private String formid;
+	public String getFormid()
+	{
+		return this.formid;
+	}
+	public void setFormid(String formid)
+	{
+		this.formid=formid;
+	}
+
+	/**
+	*ï¿½ï¿½ï¿½ï¿½Öµ
 	*/
 	private String returnvalue;
 	public String getReturnvalue()
@@ -240,7 +292,7 @@ public class B_CustomerData implements java.io.Serializable
 	}
 
 	/**
-	*·µ»ØÖµ
+	*ï¿½ï¿½ï¿½ï¿½Öµ
 	*/
 	private String returnsql;
 	public String getReturnsql()
@@ -254,13 +306,13 @@ public class B_CustomerData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("customerid = "+(customerid == null ? "null" : customerid)+"\n");		sb.append("customersimpledes = "+(customersimpledes == null ? "null" : customersimpledes)+"\n");		sb.append("customername = "+(customername == null ? "null" : customername)+"\n");		sb.append("paymentterm = "+(paymentterm == null ? "null" : paymentterm)+"\n");		sb.append("country = "+(country == null ? "null" : country)+"\n");		sb.append("denominationcurrency = "+(denominationcurrency == null ? "null" : denominationcurrency)+"\n");		sb.append("shippingcase = "+(shippingcase == null ? "null" : shippingcase)+"\n");		sb.append("loadingport = "+(loadingport == null ? "null" : loadingport)+"\n");		sb.append("deliveryport = "+(deliveryport == null ? "null" : deliveryport)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("customerid = "+(customerid == null ? "null" : customerid)+"\n");		sb.append("shortname = "+(shortname == null ? "null" : shortname)+"\n");		sb.append("customername = "+(customername == null ? "null" : customername)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("paymentterm = "+(paymentterm == null ? "null" : paymentterm)+"\n");		sb.append("country = "+(country == null ? "null" : country)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("shippingcondition = "+(shippingcondition == null ? "null" : shippingcondition)+"\n");		sb.append("shippiingport = "+(shippiingport == null ? "null" : shippiingport)+"\n");		sb.append("destinationport = "+(destinationport == null ? "null" : destinationport)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		id= (id == null ?null : id.trim());		customerid= (customerid == null ?null : customerid.trim());		customersimpledes= (customersimpledes == null ?null : customersimpledes.trim());		customername= (customername == null ?null : customername.trim());		paymentterm= (paymentterm == null ?null : paymentterm.trim());		country= (country == null ?null : country.trim());		denominationcurrency= (denominationcurrency == null ?null : denominationcurrency.trim());		shippingcase= (shippingcase == null ?null : shippingcase.trim());		loadingport= (loadingport == null ?null : loadingport.trim());		deliveryport= (deliveryport == null ?null : deliveryport.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		customerid= (customerid == null ?null : customerid.trim());		shortname= (shortname == null ?null : shortname.trim());		customername= (customername == null ?null : customername.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		paymentterm= (paymentterm == null ?null : paymentterm.trim());		country= (country == null ?null : country.trim());		currency= (currency == null ?null : currency.trim());		shippingcondition= (shippingcondition == null ?null : shippingcondition.trim());		shippiingport= (shippiingport == null ?null : shippiingport.trim());		destinationport= (destinationport == null ?null : destinationport.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

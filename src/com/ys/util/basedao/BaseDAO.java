@@ -248,7 +248,11 @@ public class BaseDAO {
 				if (stm != null) {
 					stm.close();
 				}
-				connection.close();
+				//connection.close();
+				if (connection != null) {
+					DataSource dataSource = BaseDAO.getDataSource(null);
+					DataSourceUtils.releaseConnection(connection, dataSource);
+				}
 				if (SysException != null) {
 					throw SysException;
 				}
@@ -362,7 +366,11 @@ public class BaseDAO {
 				if (stm != null) {
 					stm.close();
 				}
-				connection.close();
+				//connection.close();
+				if (connection != null) {
+					DataSource dataSource = BaseDAO.getDataSource(null);
+					DataSourceUtils.releaseConnection(connection, dataSource);
+				}
 				if (SysException != null) {
 					throw SysException;
 				}
@@ -485,7 +493,11 @@ public class BaseDAO {
 				if (stm != null) {
 					stm.close();
 				}
-				connection.close();
+				//connection.close();
+				if (connection != null) {
+					DataSource dataSource = BaseDAO.getDataSource(null);
+					DataSourceUtils.releaseConnection(connection, dataSource);
+				}
 				if (SysException != null) {
 					throw SysException;
 				}
