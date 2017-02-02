@@ -150,6 +150,7 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 			}
 		}
 		catch(Exception e) {
+			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
@@ -221,6 +222,7 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 			}
 		}
 		catch(Exception e) {
+			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", id);
 		}
 		
@@ -287,7 +289,7 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 			rtnValue = true;
 		}
 		catch(Exception e) {
-			
+			System.out.println(e.getMessage());
 		}
 		return rtnValue;
 		
