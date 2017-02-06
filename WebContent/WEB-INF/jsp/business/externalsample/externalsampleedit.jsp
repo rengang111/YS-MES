@@ -651,7 +651,7 @@ function controlButtons(data) {
 						<tr>
 							<td>样品名称：</td> 
 							<td>
-								<input type="text" id="sampleName" name="sampleName" class="short" value="${DisplayData.externalSampleData.samplename}"/>
+								<input type="text" id="sampleName" name="sampleName" class="middlelong" value="${DisplayData.externalSampleData.samplename}"/>
 							</td>
 							<td>
 								品牌：
