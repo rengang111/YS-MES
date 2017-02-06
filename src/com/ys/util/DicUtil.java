@@ -11,6 +11,9 @@ public class DicUtil {
 	
 	private static final String DATABUFFERRESOURCE = "/setting/Sys_DataBuffer.xml";
 	
+	public static final String NAME = "name";
+	public static final String VALUE = "value";
+	
 	public static final String ROLETYPE = "A0";
 	public static final String UNIT = "A1";
 	public static final String ADDRESS = "A2";
@@ -45,6 +48,7 @@ public class DicUtil {
 	
 	//HashMap通过id查找
 	private static HashMap<String,String> dicMapViaId = new HashMap<String, String>();
+	private static HashMap<String, HashMap<String, String>> dicMapViaId_Des = new HashMap<String, HashMap<String, String>>();
 	//HashMap通过类型查找
 	private static HashMap<String, ArrayList<ArrayList<String>>> dicMapViaType = new HashMap<String, ArrayList<ArrayList<String>>>();	
 	//HashMap(单位)
@@ -76,6 +80,24 @@ public class DicUtil {
 		}
 		return codeValue;
 	}
+	
+	public static HashMap<String, String> getCodeNameValue(String dicCode) throws Exception {
+		HashMap<String, String> codeValue = new HashMap<String, String>();
+		
+		if (dicMapViaId_Des.isEmpty()) {
+			getDicValue();
+		}
+		
+		if (dicMapViaId_Des.containsKey(dicCode)) {
+			codeValue = dicMapViaId_Des.get(dicCode);
+		} else {
+			if (dicMapUnit.containsKey(dicCode)) {
+				//codeValue = dicMapUnit.get(dicCode);
+			}
+		}
+		return codeValue;
+	}
+	
 	
 	//根据类型取得所有的字典数据
 	public static ArrayList<ArrayList<String>> getGroupValue(String type) throws Exception {
@@ -177,6 +199,10 @@ public class DicUtil {
 				dicMapUnit.put(curDicType + dicCode, rowData.get(1));
 			} else {
 				dicMapViaId.put(curDicType + dicCode, rowData.get(1));
+				HashMap<String, String> dicDesMap = new HashMap<String, String>();
+				dicDesMap.put(NAME, rowData.get(1));
+				dicDesMap.put(VALUE, rowData.get(4));
+				dicMapViaId_Des.put(curDicType + dicCode, dicDesMap);
 			}
 			if(isFirst) {
 				preDicType = curDicType;
