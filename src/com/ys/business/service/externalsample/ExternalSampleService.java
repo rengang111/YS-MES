@@ -267,6 +267,7 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 	
 	public static B_ExternalSampleData updateModifyInfo(B_ExternalSampleData data, UserInfo userInfo) {
 		String createUserId = data.getCreateperson();
+		
 		if ( createUserId == null || createUserId.equals("")) {
 			data.setCreateperson(userInfo.getUserId());
 			data.setCreatetime(CalendarUtil.fmtDate());
