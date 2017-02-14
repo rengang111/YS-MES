@@ -542,29 +542,31 @@ function doConfirmLend() {
 				<button type="button" id="addld" class="DTTT_button" onClick="doAddLD();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
 				</div>
-				<table id="MouldLendRegisterList" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 40px;" class="dt-middle">No</th>
-							<th style="width: 80px;" class="dt-middle">模具编号</th>
-							<th style="width: 80px;" class="dt-middle">模具名称</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="MouldLendRegisterList" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 40px;" class="dt-middle">No</th>
+								<th style="width: 80px;" class="dt-middle">模具编号</th>
+								<th style="width: 80px;" class="dt-middle">模具名称</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<div  style="height:20px"></div>
 				<legend>出借申请</legend>
 				<div style="height:20px"></div>
-				<div>
+				<div class="list" style="width: 50%;">
 					<table>
 						<tr>
 							<td>

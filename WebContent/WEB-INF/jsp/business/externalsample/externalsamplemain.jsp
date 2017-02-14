@@ -137,7 +137,9 @@
 		var isFirstRow = true;
 		var url = "${ctx}/business/externalsample?methodtype=updateinit&key=" + key;
 
-		openLayer(url, '', layerHeight, true);
+		//openLayer(url, '', layerHeight, true);
+		
+		location.href = url;
 	}
 	
 	

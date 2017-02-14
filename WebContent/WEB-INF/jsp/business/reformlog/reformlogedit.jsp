@@ -242,7 +242,7 @@ function doDeleteReformLog() {
 		<div id="main">					
 			<div  style="height:20px"></div>
 				
-			<legend>后期完善-基本信息</legend>
+			<legend>变更日志-基本信息</legend>
 			<table class="form" width="850px">
 				<tr>
 					<td width="60px">项目编号：</td>
@@ -300,12 +300,13 @@ function doDeleteReformLog() {
 				
 
 				<div  style="height:20px"></div>
-				<legend>变革日志</legend>
+				<legend>变更日志</legend>
 				<button type="button" id="deleteReformLog" class="DTTT_button" onClick="doDeleteReformLog();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addFormLog" class="DTTT_button" onClick="doAddReformLog();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<div>
+				<div style="height:10px"></div>
+				<div class="list">
 					<table id="reformLog" class="display" cellspacing="0">
 						<thead>
 							<tr class="selected">

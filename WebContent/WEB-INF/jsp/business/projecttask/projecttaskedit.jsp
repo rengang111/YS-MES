@@ -559,228 +559,249 @@ function getSum() {
 						1.机器磨具
 						<button type="button" class="DTTT_button" id="addMachine" onClick="addNew(0);">新建</button>
 					</div>
-					<table id='machinePattern' class="editableTable">
-						<tr height=30>
-							<td align="center">机身模具</td>
-							<td align="center">齿轮箱模具</td>
-							<td align="center">电池包模具</td>
-							<td align="center">充电器模具</td>
-							<td align="center">压铸件模具</td>
-							<td align="center">五金件模具</td>
-							<td align="center">合计</td>
-						</tr>
-						<tr height=30>
-							<td id="td-machine-1" align="center" width=60><input type="text" id="machine-1" name="machine-1" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-machine-2" align="center" width=60><input type="text" id="machine-2" name="machine-2" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-machine-3" align="center" width=60><input type="text" id="machine-3" name="machine-3" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-machine-4" align="center" width=60><input type="text" id="machine-4" name="machine-4" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-machine-5" align="center" width=60><input type="text" id="machine-5" name="machine-5" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-machine-6" align="center" width=60><input type="text" id="machine-6" name="machine-6" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-machine-sum" align="center" width=60><label id="machine-sum" class="short"></label></td>
-						</tr>
-						<tr height=30>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</table>
-					
+					<div class="list">
+						<table id='machinePattern' class="editableTable">
+							<tr height=30>
+								<td align="center">机身模具</td>
+								<td align="center">齿轮箱模具</td>
+								<td align="center">电池包模具</td>
+								<td align="center">充电器模具</td>
+								<td align="center">压铸件模具</td>
+								<td align="center">五金件模具</td>
+								<td align="center">合计</td>
+							</tr>
+							<tr height=30>
+								<td id="td-machine-1" align="center" width=60><input type="text" id="machine-1" name="machine-1" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-machine-2" align="center" width=60><input type="text" id="machine-2" name="machine-2" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-machine-3" align="center" width=60><input type="text" id="machine-3" name="machine-3" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-machine-4" align="center" width=60><input type="text" id="machine-4" name="machine-4" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-machine-5" align="center" width=60><input type="text" id="machine-5" name="machine-5" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-machine-6" align="center" width=60><input type="text" id="machine-6" name="machine-6" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-machine-sum" align="center" width=60><label id="machine-sum" class="short"></label></td>
+							</tr>
+							<tr height=30>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+					<div style="height:10px;"></div>
 					<div>
 						2.包装模具
 						<button type="button" class="DTTT_button" id="addPacking" onClick="addNew(1);">新建</button>
 					</div>
-					<table id='packingPattern' class="editableTable">
-						<tr height=30>
-							<td align="center">吹塑包装模具</td>
-							<td align="center">注塑包装模具</td>
-							<td align="center">泡壳模具</td>
-							<td align="center">合计</td>
-						</tr>
-						<tr height=30>
-							<td id="td-packing-1" align="center" ><input type="text" id="packing-1" name="packing-1" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-packing-2" align="center" ><input type="text" id="packing-2" name="packing-2" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-packing-3" align="center" ><input type="text" id="packing-3" name="packing-3" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-packing-sum" align="center" ><label id="packing-sum" name="packing-sum" style="width:60px;"></label></td>
-						</tr>
-						<tr height=30>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</table>
-					
+					<div class="list">
+						<table id='packingPattern' class="editableTable">
+							<tr height=30>
+								<td align="center">吹塑包装模具</td>
+								<td align="center">注塑包装模具</td>
+								<td align="center">泡壳模具</td>
+								<td align="center">合计</td>
+							</tr>
+							<tr height=30>
+								<td id="td-packing-1" align="center" ><input type="text" id="packing-1" name="packing-1" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-packing-2" align="center" ><input type="text" id="packing-2" name="packing-2" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-packing-3" align="center" ><input type="text" id="packing-3" name="packing-3" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-packing-sum" align="center" ><label id="packing-sum" name="packing-sum" style="width:60px;"></label></td>
+							</tr>
+							<tr height=30>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+					<div style="height:10px;"></div>			
 					<div>
 						3.3D制作
 						<button type="button" class="DTTT_button" id="add3D" onClick="addNew(2);">新建</button>
 					</div>
-					<table id='3D' class="editableTable">
-						<tr height=30>
-							<td align="center">手模</td>
-							<td align="center">工作样机</td>
-							<td align="center">合计</td>
-						</tr>
-						<tr height=30>
-							<td id="td-3D-1" align="center" ><input type="text" id="3D-1" name="3D-1" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-3D-2" align="center" ><input type="text" id="3D-2" name="3D-2" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-3D-sum" align="center" ><label id="3D-sum" name="3D-sum" style="width:60px;"></label></td>
-						</tr>
-						<tr height=30>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</table>
-					
+					<div class="list">
+						<table id='3D' class="editableTable">
+							<tr height=30>
+								<td align="center">手模</td>
+								<td align="center">工作样机</td>
+								<td align="center">合计</td>
+							</tr>
+							<tr height=30>
+								<td id="td-3D-1" align="center" ><input type="text" id="3D-1" name="3D-1" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-3D-2" align="center" ><input type="text" id="3D-2" name="3D-2" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-3D-sum" align="center" ><label id="3D-sum" name="3D-sum" style="width:60px;"></label></td>
+							</tr>
+							<tr height=30>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+					<div style="height:10px;"></div>
 					<div>
 						4.认证费用
 						<button type="button" class="DTTT_button" id="addAuthentication" onClick="addNew(3);">新建</button>
 					</div>
-					<table id='auth' class="editableTable">
-						<tr height=30>
-							<td align="center">认证项目1</td>
-							<td align="center">认证项目2</td>
-							<td align="center">认证项目3</td>
-							<td align="center">合计</td>
-						</tr>
-						<tr height=30>
-							<td id="td-auth-1" align="center" ><input type="text" id="auth-1" name="auth-1" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-auth-2" align="center" ><input type="text" id="auth-2" name="auth-2" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-auth-3" align="center" ><input type="text" id="auth-3" name="auth-3" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-auth-sum" align="center" ><label id="auth-sum" name="auth-sum" style="width:60px;"></label></td>							
-						</tr>
-						<tr height=30>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</table>
-
+					<div class="list">
+						<table id='auth' class="editableTable">
+							<tr height=30>
+								<td align="center">认证项目1</td>
+								<td align="center">认证项目2</td>
+								<td align="center">认证项目3</td>
+								<td align="center">合计</td>
+							</tr>
+							<tr height=30>
+								<td id="td-auth-1" align="center" ><input type="text" id="auth-1" name="auth-1" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-auth-2" align="center" ><input type="text" id="auth-2" name="auth-2" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-auth-3" align="center" ><input type="text" id="auth-3" name="auth-3" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-auth-sum" align="center" ><label id="auth-sum" name="auth-sum" style="width:60px;"></label></td>							
+							</tr>
+							<tr height=30>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+					<div style="height:10px;"></div>
 					<div>					
 						5.专利费用
 						<button type="button" class="DTTT_button" id="addPatentCost" onClick="addNew(4);">新建</button>
 					</div>
-					<table id='patentCost' class="editableTable">
-						<tr height=30>
-							<td align="center">外观</td>
-							<td align="center">实用性</td>
-							<td align="center">发明</td>
-							<td align="center">合计</td>
-						</tr>
-						<tr height=30>
-							<td id="td-patentCost-1" align="center" ><input type="text" id="patentCost-1" name="patentCost-1" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-patentCost-2" align="center" ><input type="text" id="patentCost-2" name="patentCost-2" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-patentCost-3" align="center" ><input type="text" id="patentCost-3" name="patentCost-3" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-patentCost-sum" align="center" ><label id="patentCost-sum" name="patentCost-sum" style="width:60px;"></label></td>							
-						</tr>
-						<tr height=30>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</table>
-					
+					<div class="list">
+						<table id='patentCost' class="editableTable">
+							<tr height=30>
+								<td align="center">外观</td>
+								<td align="center">实用性</td>
+								<td align="center">发明</td>
+								<td align="center">合计</td>
+							</tr>
+							<tr height=30>
+								<td id="td-patentCost-1" align="center" ><input type="text" id="patentCost-1" name="patentCost-1" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-patentCost-2" align="center" ><input type="text" id="patentCost-2" name="patentCost-2" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-patentCost-3" align="center" ><input type="text" id="patentCost-3" name="patentCost-3" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-patentCost-sum" align="center" ><label id="patentCost-sum" name="patentCost-sum" style="width:60px;"></label></td>							
+							</tr>
+							<tr height=30>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+					<div style="height:10px;"></div>
 					<div>
 						6.专利查询
 						<button type="button" class="DTTT_button" id="addPatentQuery" onClick="addNew(5);">新建</button>
 					</div>
-					<table id='patentQuery' class="editableTable">
-						<tr height=30>
-							<td align="center">查询项目1</td>
-							<td align="center">查询项目2</td>
-							<td align="center">查询项目3</td>
-							<td align="center">合计</td>
-						</tr>
-						<tr height=30>
-							<td id="td-patentQuery-1" align="center" ><input type="text" id="patentQuery-1" name="patentQuery-1" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-patentQuery-2" align="center" ><input type="text" id="patentQuery-2" name="patentQuery-2" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-patentQuery-3" align="center" ><input type="text" id="patentQuery-3" name="patentQuery-3" style="width:60px;" oninput="getSum();"></input></td>	
-							<td id="td-patentQuery-sum" align="center" ><label id="patentQuery-sum" name="patentQuery-sum" style="width:60px;"></label></td>							
-						</tr>
-						<tr height=30>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</table>
-					
+					<div class="list">
+						<table id='patentQuery' class="editableTable">
+							<tr height=30>
+								<td align="center">查询项目1</td>
+								<td align="center">查询项目2</td>
+								<td align="center">查询项目3</td>
+								<td align="center">合计</td>
+							</tr>
+							<tr height=30>
+								<td id="td-patentQuery-1" align="center" ><input type="text" id="patentQuery-1" name="patentQuery-1" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-patentQuery-2" align="center" ><input type="text" id="patentQuery-2" name="patentQuery-2" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-patentQuery-3" align="center" ><input type="text" id="patentQuery-3" name="patentQuery-3" style="width:60px;" oninput="getSum();"></input></td>	
+								<td id="td-patentQuery-sum" align="center" ><label id="patentQuery-sum" name="patentQuery-sum" style="width:60px;"></label></td>							
+							</tr>
+							<tr height=30>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+					<div style="height:10px;"></div>
 					<div>
 						7.委托设计
 						<button type="button" class="DTTT_button" id="addDesign" onClick="addNew(6);">新建</button>
 					</div>
-					<table id='design' class="editableTable">
-
-						<tr height=30>
-							<td align="center">设计项目1</td>
-							<td align="center">设计项目2</td>
-							<td align="center">合计</td>
-						</tr>
-						<tr height=30>
-							<td id="td-design-1" align="center" ><input type="text" id="design-1" name="design-1" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-design-2" align="center" ><input type="text" id="design-2" name="design-2" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-design-sum" align="center" ><label id="design-sum" name="design-sum" style="width:60px;"></label></td>							
-						</tr>
-						<tr height=30>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</table>
-
+					<div class="list">
+						<table id='design' class="editableTable">
+	
+							<tr height=30>
+								<td align="center">设计项目1</td>
+								<td align="center">设计项目2</td>
+								<td align="center">合计</td>
+							</tr>
+							<tr height=30>
+								<td id="td-design-1" align="center" ><input type="text" id="design-1" name="design-1" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-design-2" align="center" ><input type="text" id="design-2" name="design-2" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-design-sum" align="center" ><label id="design-sum" name="design-sum" style="width:60px;"></label></td>							
+							</tr>
+							<tr height=30>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+					<div style="height:10px;"></div>
 					<div>			
 						8.试产费用
 						<button type="button" class="DTTT_button" id="addTrialProduce" onClick="addNew(7);">新建</button>
 					</div>
-					<table id='trialProduce' class="editableTable">
-						<tr height=30>
-							<td align="center">试产数量</td>
-							<td align="center">试产费用</td>
-							<td align="center">合计</td>
-						</tr>
-						<tr height=30>
-							<td id="td-trialProduce-1" align="center" ><input type="text" id="trialProduce-1" name="trialProduce-1" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-trialProduce-2" align="center" ><input type="text" id="trialProduce-2" name="trialProduce-2" style="width:60px;" oninput="getSum();"></input></td>
-							<td id="td-trialProduce-sum" align="center" ><label id="trialProduce-sum" name="trialProduce-sum" style="width:60px;"></label></td>							
-						</tr>
-						<tr height=30>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</table>
+					<div class="list">
+						<table id='trialProduce' class="editableTable">
+							<tr height=30>
+								<td align="center">试产数量</td>
+								<td align="center">试产费用</td>
+								<td align="center">合计</td>
+							</tr>
+							<tr height=30>
+								<td id="td-trialProduce-1" align="center" ><input type="text" id="trialProduce-1" name="trialProduce-1" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-trialProduce-2" align="center" ><input type="text" id="trialProduce-2" name="trialProduce-2" style="width:60px;" oninput="getSum();"></input></td>
+								<td id="td-trialProduce-sum" align="center" ><label id="trialProduce-sum" name="trialProduce-sum" style="width:60px;"></label></td>							
+							</tr>
+							<tr height=30>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+					<div style="height:10px;"></div>
 					<legend>市场预期</legend>
 					<div  style="height:10px"></div>
-					<table class='display' cellspacing="0">
-						<tr>
-							<td align="center">
-								平均销售价格
-							</td>
-							<td align="center">
-								年预期销量
-							</td>
-							<td align="center">
-								回本数量
-							</td>
-						</tr>
-						<tr>
-							<td><input type="text" id="salePrice" name="salePrice" value="${DisplayData.projectTaskData.saleprice}"></input></td>
-							<td><input type="text" id="sales" name="sales" value="${DisplayData.projectTaskData.sales}"></input></td>
-							<td><input type="text" id="recoveryNum" name="recoveryNum" value="${DisplayData.projectTaskData.recoverynum}"></input></td>
-						</tr>
-					</table>
-					
-					<div  style="height:20px"></div>
+					<div class="list">
+						<table class='display' cellspacing="0">
+							<tr>
+								<td align="center">
+									平均销售价格
+								</td>
+								<td align="center">
+									年预期销量
+								</td>
+								<td align="center">
+									回本数量
+								</td>
+							</tr>
+							<tr>
+								<td><input type="text" id="salePrice" name="salePrice" value="${DisplayData.projectTaskData.saleprice}"></input></td>
+								<td><input type="text" id="sales" name="sales" value="${DisplayData.projectTaskData.sales}"></input></td>
+								<td><input type="text" id="recoveryNum" name="recoveryNum" value="${DisplayData.projectTaskData.recoverynum}"></input></td>
+							</tr>
+						</table>
+					</div>
+					<div  style="height:10px"></div>
 					<legend>失败模式</legend>
 					<div  style="height:10px"></div>
-					<textarea id="failMode" name="failMode" rows=5 cols=120>${DisplayData.projectTaskData.failmode}</textarea>
+					<div class="list">
+						<textarea id="failMode" name="failMode" rows=5 cols=120>${DisplayData.projectTaskData.failmode}</textarea>
+					</div>
 				</form:form>
+				
 			</div>
 			
 			

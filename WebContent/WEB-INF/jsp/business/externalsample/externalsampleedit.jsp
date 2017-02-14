@@ -714,7 +714,42 @@ function controlButtons(data) {
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addesfiletest" class="DTTT_button" onClick="doAddESFileTest();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="TESTestFileList" class="display" cellspacing="0">
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="TESTestFileList" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">No</th>
+								<th style="width: 80px;" class="dt-middle">文件名</th>
+								<th style="width: 30px;" class="dt-middle">路径</th>
+								<th style="width: 80px;" class="dt-middle">说明</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+		</div>			
+			
+		<div  style="height:20px"></div>
+			
+		<div>
+			<legend>机器详情</legend>
+			<button type="button" id="deleteesfilemachine" class="DTTT_button" onClick="doDeleteESFileMachine();"
+					style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
+			<button type="button" id="addesfilemachine" class="DTTT_button" onClick="doAddESFileMachine();"
+					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
+			<div style="height:10px"></div>
+			<div class="list">
+				<table id="TESMachinePicList" class="display" cellspacing="0">
 					<thead>
 						<tr class="selected">
 							<th style="width: 80px;" class="dt-middle">No</th>
@@ -734,36 +769,7 @@ function controlButtons(data) {
 						</tr>
 					</tfoot>
 				</table>
-		</div>			
-			
-		<div  style="height:20px"></div>
-			
-		<div>
-			<legend>机器详情</legend>
-			<button type="button" id="deleteesfilemachine" class="DTTT_button" onClick="doDeleteESFileMachine();"
-					style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-			<button type="button" id="addesfilemachine" class="DTTT_button" onClick="doAddESFileMachine();"
-					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-			<table id="TESMachinePicList" class="display" cellspacing="0">
-				<thead>
-					<tr class="selected">
-						<th style="width: 80px;" class="dt-middle">No</th>
-						<th style="width: 80px;" class="dt-middle">文件名</th>
-						<th style="width: 30px;" class="dt-middle">路径</th>
-						<th style="width: 80px;" class="dt-middle">说明</th>
-						<th style="width: 80px;" class="dt-middle">操作</th>
-					</tr>
-				</thead>
-				<tfoot>
-					<tr>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-					</tr>
-				</tfoot>
-			</table>
+			</div>
 		</div>
 
 </html>

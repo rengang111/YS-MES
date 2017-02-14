@@ -128,7 +128,9 @@
         if (curTab && curTab.find('iframe').length > 0) {
             curTabWin = curTab.find('iframe')[0].contentWindow;
         }
-        curTabWin.reload();
+        if ($.isFunction(curTabWin.reload)) {
+        	curTabWin.reload();
+        }
 
 		
 	}
