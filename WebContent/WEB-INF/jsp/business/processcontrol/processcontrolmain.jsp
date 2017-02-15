@@ -125,7 +125,7 @@
 	function doCreate() {
 		
 		var url = "${ctx}/business/processcontrol?methodtype=addinit";
-		openLayer(url, '', layerHeight, true);
+		openLayer(url, '', layerHeight, false);
 	}
 	
 	function doUpdate(key) {
@@ -133,7 +133,7 @@
 		var isFirstRow = true;
 		var url = "${ctx}/business/processcontrol?methodtype=updateinit&key=" + key;
 
-		openLayer(url, '', layerHeight, true);
+		openLayer(url, '', layerHeight, false);
 	}
 	
 	

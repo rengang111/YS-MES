@@ -389,7 +389,15 @@ function setExpectDate(type, value1, value2, value3) {
 	$('#finishDate-' + type).html(value3);
 
 }
-
+function doReturn() {
+	//var url = "${ctx}/business/externalsample";
+	//location.href = url;	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
 </script>
 
 </head>
@@ -401,7 +409,7 @@ function setExpectDate(type, value1, value2, value3) {
 			<div  style="height:20px"></div>
 				
 			<legend>进程控制-基本信息</legend>
-
+			<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 			<!-- 
 			<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 					style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>

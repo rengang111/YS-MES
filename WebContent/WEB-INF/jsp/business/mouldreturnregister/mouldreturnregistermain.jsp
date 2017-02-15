@@ -142,7 +142,7 @@
 		
 		var url = "${ctx}/business/mouldreturnregister?methodtype=updateinit&key=" + key + "&lendId=" + lendId;
 
-		openLayer(url, '', layerHeight, true);
+		openLayer(url, '', layerHeight, false);
 	}
 	
 	
