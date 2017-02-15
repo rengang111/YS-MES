@@ -515,7 +515,7 @@ function foucsInit(){
 	});
 	
 	$(".num") .blur(function(){
-		$(this).val(floatToNumber($(this).val()));
+		//$(this).val(floatToNumber($(this).val()));
 	});
 
 		
@@ -567,3 +567,26 @@ function getCurrencySymbol(curr){
 	}
 	return rtn;
 }
+
+$(function(){
+	var t = [];
+	var dt = $("dl.collapse dt");
+	var dd = $("dl.collapse dd");
+	
+	dt.each(function(i){
+		t[i] = false;		//设置折叠初始状态
+		$(dt[i]).click((function(i,dd){
+			
+			return function(){		//返回一个闭包函数,闭包能够存储传递进来的动态参数
+				
+				if(t[i]){					
+					$(dd).show();
+					t[i] = false;
+				}else{
+					$(dd).hide();
+					t[i] = true;
+				}					
+			}
+		})(i,dd[i]))	//向当前执行函数中传递参数
+	})
+})

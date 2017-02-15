@@ -54,13 +54,6 @@ public class Constants {
 	 * 供应商编号:耀升
 	 */
 	public static final String SUPPLIER_YS = "0574YS00";
-	
-	/**
-	 * BOM种类
-	 */
-	//public static final String BOMTYPE_B = "B";//基础BOM
-	//public static final String BOMTYPE_Q = "Q";//报价BOM
-	//public static final String BOMTYPE_O = "O";//订单BOM
 	/**
 	 * BOM种类
 	 */
@@ -73,4 +66,18 @@ public class Constants {
 	 */
 	public static final String ACCESSFLG_0 = "";//新建标识
 	public static final String ACCESSFLG_1 = "1";//编辑标识
+
+	/**
+	 * 订单费用类别
+	 */
+	public static final String ORDEREXPENSE_D = "D";//跟单费用
+	public static final String ORDEREXPENSE_C = "C";//客户增减
+	public static final String ORDEREXPENSE_S = "S";//供应商增减
+	public static final String ORDEREXPENSE_W = "W";//车间增减
+	
+	/**
+	 * 订单过程费用标识
+	 */
+	public static final String ORDEREXPENSE_0 = "0";//新建
+	public static final String ORDEREXPENSE_1 = "1";//已确认
 }
