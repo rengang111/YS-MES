@@ -122,7 +122,7 @@
 	function doView(key) {
 		var url = "${ctx}/business/mouldinoutsearch?methodtype=doView&key=" + key;
 
-		openLayer(url, '', layerHeight, false);
+		openLayer(url, '', $(document).height(), false);
 	}
 </script>
 

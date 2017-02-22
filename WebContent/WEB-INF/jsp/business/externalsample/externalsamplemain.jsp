@@ -130,7 +130,7 @@
 		
 		var url = "${ctx}/business/externalsample?methodtype=addinit";
 		
-		openLayer(url, '', layerHeight, false);
+		openLayer(url, '', $(document).height(), false);
 		//location.href = url;
 	}
 	
@@ -139,7 +139,7 @@
 		var isFirstRow = true;
 		var url = "${ctx}/business/externalsample?methodtype=updateinit&key=" + key;
 
-		openLayer(url, '', layerHeight, false);
+		openLayer(url, '', $(document).height(), false);
 		
 		//location.href = url;
 	}

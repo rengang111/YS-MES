@@ -127,7 +127,7 @@
 	function doCreate() {
 		
 		var url = "${ctx}/business/reformlog?methodtype=addinit";
-		openLayer(url, '', layerHeight, false);
+		openLayer(url, '', $(document).height(), false);
 	}
 	
 	function doUpdate(key) {
@@ -135,7 +135,7 @@
 		var isFirstRow = true;
 		var url = "${ctx}/business/reformlog?methodtype=updateinit&key=" + key;
 
-		openLayer(url, '', layerHeight, false);
+		openLayer(url, '', $(document).height(), false);
 	}
 	
 	

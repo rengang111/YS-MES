@@ -190,7 +190,7 @@ public class test extends BaseAction {
 			connection.close();
 			connection1.close();
 			*/	
-			
+			/*
 			S_DICDao dicDao = new S_DICDao();
 			S_DICData dicData = new S_DICData();
 
@@ -208,7 +208,8 @@ public class test extends BaseAction {
 			dicDao.Store(dicData);
 			*/
 	        
-	        testService.test(dataModel.getMenuId(), dataModel.getFormDisp());
+	        //testService.test(dataModel.getMenuId(), dataModel.getFormDisp());
+	        
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -261,6 +262,14 @@ public class test extends BaseAction {
 		return "/ckeditor/myckeditor";
 		
 	}
+	
+	@RequestMapping(value="showfinder",produces="text/HTML")  
+	public String showFinder(@RequestBody String data, @ModelAttribute("dataModels")TestModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+
+		//saveHtml(request, "test.html", HtmlUtils.htmlUnescape(data));
+		//return "/ckeditor/myckeditor";
+		return "/test/testCKFinder";
+	}	
 	
 	@RequestMapping(value="uploadckeditorimagefile")
 	public void uploadCkeditorImageFile(HttpServletRequest request, HttpServletResponse response) {
