@@ -65,7 +65,8 @@
 	}
 	function openLayer(url, width, height, isParentOpen) {
 		if (width == "") {
-			width = '900px';
+			//width = '900px';
+			width = $(document).width() + 'px';
 		} else {
 			width = width + 'px';
 		}
