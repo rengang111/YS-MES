@@ -12,7 +12,7 @@
 
 var validator;
 var layerHeight = "250";
-
+var counter = 0;
 
 function ajaxReformLog() {
 	var table = $('#reformLog').dataTable();
@@ -21,14 +21,16 @@ function ajaxReformLog() {
 	}
 
 	var t = $('#reformLog').DataTable({
-					"paging": false,
-					"lengthMenu":[5],//设置一页展示10条记录
 					"processing" : false,
-					"serverSide" : true,
-					"stateSave" : false,
-					"searching" : false,
-					"serverSide" : true,
-					"retrieve" : true,
+					"retrieve"   : true,
+					"stateSave"  : true,
+					"pagingType" : "full_numbers",
+					//"scrollY"    : "160px",
+			        "scrollCollapse": false,
+			        "paging"    : false,
+			        "pageLength": 50,
+			        "ordering"  : false,
+					/*
 					"sAjaxSource" : "${ctx}/business/reformlog?methodtype=getReformLogList",
 					"fnServerData" : function(sSource, aoData, fnCallback) {
 						var param = {};
@@ -44,11 +46,6 @@ function ajaxReformLog() {
 							"type" : "POST",
 							"data" : JSON.stringify(aoData),
 							success: function(data){
-								/*
-								if (data.message != undefined) {
-									alert(data.message);
-								}
-								*/
 								fnCallback(data);
 							},
 							 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -58,51 +55,130 @@ function ajaxReformLog() {
 				             }
 						})
 					},
-						
+					*/	
 					"language": {
 		        		"url":"${ctx}/plugins/datatables/chinese.json"
 		        	},
+		        	dom : 'T<"clear">rt',
+
+					"tableTools" : {
+
+						"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
+
+						"aButtons" : [										
+								{
+									"sExtends" : "add_rows",
+									"sButtonText" : "追加新行"
+								},								
+								{
+									"sExtends" : "reset",
+									"sButtonText" : "清空一行"
+								},
+						]
+					},
 					"columns" : [ 
 						{"data": null, "defaultContent" : '', "className" : 'td-center'},
-						{"data" : "createDate", "className" : 'td-center'}, 
-						{"data" : "oldFileNo", "className" : 'td-center'},
-						{"data" : "newFileNo", "className" : 'td-center'},
-						{"data" : "content", "className" : 'td-center'},
-						{"data" : "reason", "className" : 'td-center'},
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}
+						{}, 
+						{},
+						{},
+						{},
+						{}
 					],
 					"columnDefs":[
-			    		{"targets":0,"render":function(data, type, row){
-							return row["rownum"] + "<input type=checkbox name='numCheckReformLog' id='numCheckReformLog' value='" + row["id"] + "' />"
-	                    }},
-			    		{"targets":6,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"doUpdateReformLog('" + row["id"] + "')\">编辑</a>"
-	                    }}
+
 				    ] 						
 				});
 
 	t.on('click', 'tr', function() {
-		$(this).toggleClass('selected');
+		
+		var rowIndex = $(this).context._DT_RowIndex; //行号			
+		//alert(rowIndex);
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+		
 	});
 	
-	// Add event listener for opening and closing details
-	t.on('click', 'td.details-control', function() {
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			cell.innerHTML = i + 1;
+		});
+	}).draw();
 
-		//alert(999);
+	
+	//Form序列化后转为AJAX可提交的JSON格式。
+	$.fn.serializeObject = function() {
+		var o = {};
+		var a = this.serializeArray();
+		$.each(a, function() {
+			if (o[this.name] !== undefined) {
+				if (!o[this.name].push) {
+					o[this.name] = [ o[this.name] ];
+				}
+				o[this.name].push(this.value || '');
+			} else {
+				o[this.name] = this.value || '';
+			}
+		});
+		return o;
+	};
+	
+	$.fn.dataTable.TableTools.buttons.add_rows = $
+	.extend(
+			true,
+			{},
+			$.fn.dataTable.TableTools.buttonBase,
+			{
+				"fnClick" : function(button) {
 
-		var tr = $(this).closest('tr');
-		t
-		var row = t.row(tr);
-		t
+					var rowIndex = counter++;
 
-		if (row.child.isShown()) {
-			// This row is already open - close it
-			row.child.hide();
-			tr.removeClass('shown');
-		} else {
-			// Open this row
-			row.child(format(row.data())).show();
-			tr.addClass('shown');
+					var rowNode = $('#reformLog').DataTable().row.add([
+           					'<td class="dt-center"></td>',
+        					'<td><input type="text" id="detailLines[' + rowIndex + '].createdate" name="detailLines[' + rowIndex + '].createdate" class="short" /></td>',
+        					'<td><input type="text" id="detailLines[' + rowIndex + '].oldfileno" name="detailLines[' + rowIndex + '].oldfileno" class="short"/></td>',
+        					'<td><input type="text" id="detailLines[' + rowIndex + '].newfileno" name="detailLines[' + rowIndex + '].newfileno" class="short"/></td>',
+        					'<td class="dt-center"><textarea id="detailLines[' + rowIndex + '].content" name="detailLines[' + rowIndex + '].content" class="short" row=5 cols=30 ></textarea></td>',
+        					'<td class="dt-center"><textarea id="detailLines[' + rowIndex + '].reason" name="detailLines[' + rowIndex + '].reason" class="short" row=5 cols=30></textarea></td>',
+					]).draw();
+					
+					addRules(rowIndex);					
+					//foucsInit();//设置新增行的基本属性
+					
+					//autocomplete();//调用自动填充功能
+					
+					//iFramAutoSroll();//重设显示窗口(iframe)高度
+				}
+			});
+
+	$.fn.dataTable.TableTools.buttons.reset = $.extend(true, {},
+		$.fn.dataTable.TableTools.buttonBase, {
+		"fnClick" : function(button) {
+
+			var t=$('#reformLog').DataTable();
+			
+			rowIndex = t.row('.selected').index();
+
+			if(typeof rowIndex == "undefined"){				
+				$().toastmessage('showWarningToast', "请选择要删除的数据。");	
+			}else{
+				
+				var amount = $('#reformLog tbody tr').eq(rowIndex).find("td").eq(6).find("input").val();
+				//alert('['+amount+']:amount '+'---- totalPrice:'+totalPrice)
+				
+				//$().toastmessage('showWarningToast', "删除后,[ PI编号 ]可能会发生变化。");	
+				t.row('.selected').remove().draw();
+
+			}
+						
 		}
 	});
 
@@ -120,8 +196,34 @@ $(window).load(function(){
 
 $(document).ready(function() {
 
+	validator = $("#processControlInfo").validate({
+		rules: {			
+		},
+		errorPlacement: function(error, element) {
+		    if (element.is(":radio"))
+		        error.appendTo(element.parent().next().next());
+		    else if (element.is(":checkbox"))											    	
+		    	error.insertAfter(element.parent().parent());
+		    else
+		    	error.insertAfter(element);
+		}
+	});	
+	
 	ajaxReformLog();
+
+	counter = parseInt("${detailCount}");
+	for(var i = 0; i < counter; i++) {
+		addRules(i);
+	}
 })
+
+function addRules(index) {
+	$('#detailLines\\[' + index + '\\]\\.createdate').rules('add', { date: true, required: true, maxlength: 10 });
+	$('#detailLines\\[' + index + '\\]\\.oldfileno').rules('add', { required: true, maxlength:50 });
+	$('#detailLines\\[' + index + '\\]\\.newfileno').rules('add', { required: true, maxlength:50 });
+	$('#detailLines\\[' + index + '\\]\\.content').rules('add', {  required: true, maxlength:20 });
+	$('#detailLines\\[' + index + '\\]\\.reason').rules('add', { maxlength: 20 });
+}
 
 function reloadTable() {
 
@@ -129,46 +231,6 @@ function reloadTable() {
 	
 	//reloadTabWindow();
 }
-
-function doDelete() {
-	
-	if (confirm("${DisplayData.endInfoMap.message}")) {
-		//将提交按钮置为【不可用】状态
-		//$("#submit").attr("disabled", true); 
-		$.ajax({
-			type : "POST",
-			contentType : 'application/json',
-			dataType : 'json',
-			url : "${ctx}/business/reformlog?methodtype=deleteDetail",
-			data : $('#keyBackup').val(),// 要提交的表单
-			success : function(d) {
-				if (d.rtnCd != "000") {
-					alert(d.message);	
-				} else {
-					controlButtons("");
-					reloadTable();
-					//clearProjectTaskInfo();
-					//reloadTabWindow();
-				}
-				/*	
-				//不管成功还是失败都刷新父窗口，关闭子窗口
-				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-				//parent.$('#events').DataTable().destroy();/
-				parent.reload_contactor();
-				parent.layer.close(index); //执行关闭
-				*/
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				//alert(XMLHttpRequest.status);					
-				//alert(XMLHttpRequest.readyState);					
-				//alert(textStatus);					
-				//alert(errorThrown);
-			}
-		});
-	}
-}
-
-
 
 function controlButtons(data) {
 	function controlButtons(data) {
@@ -191,45 +253,34 @@ function doAddReformLog() {
 	openLayer(url, $(document).width() - 25, layerHeight, false);	
 }
 
-function doUpdateReformLog(key) {
-	var projectId = $('#keyBackup').val();
-	var url = "${ctx}/business/reformlog?methodtype=updatereformloginit&projectId=" + projectId + "&key=" + key;
-	openLayer(url, $(document).width() - 25, layerHeight, false);
-}
+function doUpdateReformLog() {
 
-function doDeleteReformLog() {
-	var str = '';
-	$("input[name='numCheckReformLog']").each(function(){
-		if ($(this).prop('checked')) {
-			str += $(this).val() + ",";
-		}
-	});
-
-	if (str != "") {
+	if (validator.form()) {
 		if (confirm("您确认执行该操作吗？") == false) {
 			return;
 		}
-		$.ajax({
-			contentType : 'application/json',
-			dataType : 'json',						
-			type : "POST",
-			data : str,// 要提交的表单						
-			url : "${ctx}/business/reformlog?methodtype=deletereformlog",
-			success : function(d) {
-				if (d.rtnCd != "000") {
-					alert(d.message);
-				} else {
-					reloadTable();
-				}
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				alert("发生系统异常，，请再试或者联系管理员。");
-			}
-		});
-		
-	} else {
-		alert("请先选中要删除的记录。");
+		$('#processControlInfo').attr("action", "${ctx}/business/reformlog?methodtype=updatereformlog");
+		$('#processControlInfo').submit();
 	}
+	/*
+	$.ajax({
+		contentType : 'application/json',
+		dataType : 'json',
+		type : "POST",
+		data : str,// 要提交的表单						
+		url : "${ctx}/business/reformlog?methodtype=deletereformlog",
+		success : function(d) {
+			if (d.rtnCd != "000") {
+				alert(d.message);
+			} else {
+				reloadTable();
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("发生系统异常，，请再试或者联系管理员。");
+		}
+	});
+	*/
 
 }
 
@@ -312,10 +363,9 @@ function doReturn() {
 
 				<div  style="height:20px"></div>
 				<legend>变更日志</legend>
-				<button type="button" id="deleteReformLog" class="DTTT_button" onClick="doDeleteReformLog();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="addFormLog" class="DTTT_button" onClick="doAddReformLog();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
+
+				<button type="button" id="addFormLog" class="DTTT_button" onClick="doUpdateReformLog();"
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 				<div style="height:10px"></div>
 				<div class="list">
 					<table id="reformLog" class="display" cellspacing="0">
@@ -327,7 +377,6 @@ function doReturn() {
 								<th style="width: 80px;" class="dt-middle">新文件编号</th>
 								<th style="width: 180px;" class="dt-middle">文件内容</th>
 								<th style="width: 180px;" class="dt-middle">变更原因</th>
-								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
 						<tfoot>
@@ -338,9 +387,20 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
-								<th></th>
 							</tr>
 						</tfoot>
+						<tbody>
+							<c:forEach var='reformlogData' items='${detail.data}' varStatus='status'>
+								<tr>				
+									<td></td>
+									<td><input type="text" id="detailLines[${status.index}].createdate" name="detailLines[${status.index}].createdate" class="short" value='${reformlogData.createDate}'/></td>
+									<td><input type="text" id="detailLines[${status.index}].oldfileno" name="detailLines[${status.index}].oldfileno" class="short" value='${reformlogData.oldFileNo}'/></td>
+									<td><input type="text" id="detailLines[${status.index}].newfileno" name="detailLines[${status.index}].newfileno" class="short" value='${reformlogData.newFileNo}'/></td>
+									<td><textarea id="detailLines[${status.index}].content" name="detailLines[${status.index}].content" class="short" row=5 cols=30 >${reformlogData.content}</textarea></td>
+									<td><textarea id="detailLines[${status.index}].reason" name="detailLines[${status.index}].reason" class="short" row=5 cols=30>${reformlogData.reason}</textarea></td>									
+								</tr>
+							</c:forEach>
+						</tbody>
 					</table>
 				</div>
 

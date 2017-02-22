@@ -190,6 +190,10 @@ public class ReformLogService extends BaseService {
 		data = URLDecoder.decode(data, "UTF-8");
 
 		projectId = getJsonData(data, "keyBackup");
+		if (projectId.equals("") && !data.equals("")) {
+			projectId = data;
+		}
+		
 		if (projectId.equals("")) {
 			projectId = "-1";
 		}
@@ -233,16 +237,14 @@ public class ReformLogService extends BaseService {
 		
 	}		
 	
-	public ReformLogModel doUpdateReformLog(HttpServletRequest request, String data, UserInfo userInfo) {
-		ReformLogModel model = new ReformLogModel();
-    	B_ReformLogData dbData = new B_ReformLogData();											
-    	B_ReformLogDao dao = new B_ReformLogDao();											
+	public ReformLogModel doUpdateReformLog(HttpServletRequest request, ReformLogModel dataModel, UserInfo userInfo) {
+		ReformLogModel model = new ReformLogModel();										
 
-		String key = getJsonData(data, "keyBackup");
+		//String key = getJsonData(data, "keyBackup");
 		String guid = "";
 		
 		try {
-													
+			/*							
 			if (key == null || key.equals("")) {
 				guid = BaseDAO.getGuId();									
 				dbData.setId(guid);									
@@ -266,12 +268,20 @@ public class ReformLogService extends BaseService {
 				dbData.setReason(getJsonData(data, "reason"));
 				dbData = updateModifyInfo(dbData, userInfo);
 				dao.Store(dbData);
+				
 			}
-
-			model.setEndInfoMap(NORMAL, "", key);
+			*/
+			//model.setEndInfoMap(NORMAL, "", key);
+			
+			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
+	        
+	        bean.executeReformLogUpdateByProjectId(dataModel, userInfo);
+	        
+	        model.setEndInfoMap(NORMAL, "", dataModel.getKeyBackup());
 		}
 		catch(Exception e) {
-			model.setEndInfoMap(SYSTEMERROR, "err001", key);
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(SYSTEMERROR, "err001", dataModel.getKeyBackup());
 		}
 		
 		return model;

@@ -84,16 +84,19 @@ public class ReformLogAction extends BaseAction {
 				return null;
 			case "addreformloginit":
 			case "updatereformloginit":
-				rtnUrl = doUpdateReformLogInit(model, session, request, response);
+				//rtnUrl = doUpdateReformLogInit(model, session, request, response);
+				rtnUrl = doGetProjectBaseInfo(model, session, request, response);
+				rtnUrl = "/business/reformlog/reformlogedit";
 				break;	
 			case "deletereformlog":
 				viewModel = doDeleteReformLog(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;	
 			case "updatereformlog":
-				viewModel = doUpdateReformLog(data, session, request, response);
-				printOutJsonObj(response, viewModel.getEndInfoMap());
-				return null;	
+				rtnUrl = doUpdateReformLog(dataModel, session, request, response, model);
+				return rtnUrl;
+				//printOutJsonObj(response, viewModel.getEndInfoMap());
+				//return null;	
 		}
 		
 		return rtnUrl;
@@ -130,12 +133,15 @@ public class ReformLogAction extends BaseAction {
 			dataModel.setMessage("发生错误，请联系系统管理员");
 		}
 		model.addAttribute("DisplayData", dataModel);
+		HashMap<String, Object> detailData = getReformLogList(key, session, request, response);
+		model.addAttribute("detail", detailData);
+		model.addAttribute("detailCount", ((ArrayList<HashMap<String, String>>)detailData.get("data")).size());
 		
-		return "/business/reformlog/reformlogedit";
+		return "/business/reformlog/reformlogview";
 	}		
 	
 	
-	public HashMap<String, Object> getReformLogList(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public HashMap<String, Object> getReformLogList(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
 		try {
@@ -169,17 +175,32 @@ public class ReformLogAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/business/reformlog/reformloglogedit";
+		return "/business/reformlog/reformlogedit";
 	}		
 	
-	public ReformLogModel doUpdateReformLog(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doUpdateReformLog(ReformLogModel dataModel, HttpSession session, HttpServletRequest request, HttpServletResponse response, Model model){
 		
-		ReformLogModel model = new ReformLogModel();
-		
+		ReformLogModel modelView = new ReformLogModel();
+		ProcessControlModel baseModel = null;
+
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = reformLogService.doUpdateReformLog(request, data, userInfo);
+		modelView = reformLogService.doUpdateReformLog(request, dataModel, userInfo);
 		
-		return model;
+		try {
+			baseModel = processControlService.getProjectBaseInfo(request, dataModel.getKeyBackup());
+			baseModel.setEndInfoMap(modelView.getEndInfoMap());
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			baseModel.setMessage("发生错误，请联系系统管理员");
+		}
+		
+		model.addAttribute("DisplayData", baseModel);
+		HashMap<String, Object> detailData = getReformLogList(dataModel.getKeyBackup(), session, request, response);
+		model.addAttribute("detail", detailData);
+		model.addAttribute("detailCount", ((ArrayList<HashMap<String, String>>)detailData.get("data")).size());
+		
+		return "/business/reformlog/reformlogview";
 	}	
 	
 	public ReformLogModel doDeleteReformLog(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
