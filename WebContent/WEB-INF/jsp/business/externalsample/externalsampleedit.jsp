@@ -491,7 +491,7 @@ function doDocumentManageTest() {
 	var key = $('#keyBackup').val();
 	var tabTitle = getTabTitle();
 	var url = "${ctx}/business/externalsample?methodtype=openfilebrowser&key=" + key + "&tabTitle=" + tabTitle;
-	openLayer(url, $(document).width(), $(document).height(), false);
+	openLayer(url, '', $(document).height() - 400, false);
 }
 
 function doAddESFileTest() {
