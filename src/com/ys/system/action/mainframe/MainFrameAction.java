@@ -149,4 +149,23 @@ public class MainFrameAction extends BaseAction {
 		return "";
 
 	}	
+
+	@ResponseBody
+	@RequestMapping(value="/resetbaseurl")
+    public void doResetBaseurl(@RequestBody String data, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		Object tabUrl = null;
+		String userUrl = "";
+		
+		tabUrl = session.getAttribute(BusinessConstants.FILESYSTEMBROWSERBASEFOLDER + data);
+		if (tabUrl != null) {
+			userUrl = String.valueOf(tabUrl);
+
+			session.setAttribute(BusinessConstants.FILESYSTEMBROWSERBASEFOLDER, userUrl);
+		}
+		
+
+	}	
+	
+	
 }

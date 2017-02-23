@@ -26,7 +26,8 @@
  	<mvc:resources mapping="/plugins/**" location="/plugins/" />
  	<mvc:resources mapping="/images/**" location="/images/" />
  	
- 	<mvc:resources mapping="/jsp/ckeditor/**" location="/WEB-INF/jsp/ckeditor/" />
+ 	<mvc:resources mapping="/jsp/ckeditor/**" location="/WEB-INF/jsp/ckeditor/" /> 
+ 	<mvc:resources mapping="/jsp/ckfinder/**" location="/WEB-INF/jsp/ckfinder/" />
  	
 	<!-- 国际化配置 -->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">

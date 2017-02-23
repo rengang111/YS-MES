@@ -41,21 +41,12 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
-  <servlet>
-    <servlet-name>dispatcher</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/</url-pattern>
-  </servlet-mapping>
-<servlet> 
+  <servlet> 
     <servlet-name>ConnectorServlet</servlet-name> 
     <servlet-class>com.ckfinder.connector.ConnectorServlet</servlet-class>
     <init-param> 
         <param-name>XMLConfig</param-name> 
-        <param-value>/WEB-INF/ckfinder.xml</param-value> 
+        <param-value>WEB-INF/ckfinder.xml</param-value> 
     </init-param> 
     <init-param> 
         <param-name>debug</param-name> 
@@ -65,8 +56,17 @@
 </servlet> 
 <servlet-mapping>
     <servlet-name>ConnectorServlet</servlet-name> 
-    <url-pattern> /ckfinder/core/connector/java/connector.java </url-pattern> 
+    <url-pattern>/jsp/ckfinder/core/connector/java/connector.java</url-pattern> 
 </servlet-mapping>
+  <servlet>
+    <servlet-name>dispatcher</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>dispatcher</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
   <session-config>
     <session-timeout>1440</session-timeout>
   </session-config>

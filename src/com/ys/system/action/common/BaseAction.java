@@ -5,11 +5,13 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
+import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.BaseQuery;
 
 import net.sf.json.JSONArray;
@@ -71,6 +73,15 @@ public class BaseAction {
 		}
 		
 		return result;
+	}
+	
+	protected String openFileBrowser(HttpServletRequest request, HttpSession session) {
+		String key = request.getParameter("key");
+		String tabTitle = request.getParameter("tabTitle");
+		session.setAttribute(BusinessConstants.FILESYSTEMBROWSERBASEFOLDER + tabTitle, key);
+		session.setAttribute(BusinessConstants.FILESYSTEMBROWSERBASEFOLDER, key);
+		
+		return "/common/filebrowser";
 	}
 	
 }

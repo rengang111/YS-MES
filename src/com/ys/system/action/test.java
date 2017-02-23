@@ -268,6 +268,8 @@ public class test extends BaseAction {
 
 		//saveHtml(request, "test.html", HtmlUtils.htmlUnescape(data));
 		//return "/ckeditor/myckeditor";
+		request.setAttribute("basepath", "321");
+		
 		return "/test/testCKFinder";
 	}	
 	

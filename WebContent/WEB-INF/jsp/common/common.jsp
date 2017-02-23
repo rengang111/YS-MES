@@ -145,6 +145,10 @@
 
 	}
 	
+	function getTabTitle() {
+		return top.$('#_main_center_tabs').tabs('getSelected').panel('options').title;
+	}
+	
 	function getDateDiff(date1, date2) {
 		var newDate1;
 		var newDate2;

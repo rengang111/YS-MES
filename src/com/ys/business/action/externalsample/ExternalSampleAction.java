@@ -81,6 +81,8 @@ public class ExternalSampleAction extends BaseAction {
 				viewModel = doDeleteDetail(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
+			case "openfilebrowser":
+				return super.openFileBrowser(request, session);
 		}
 		
 		return rtnUrl;

@@ -70,6 +70,20 @@
 	</div>
 	<script type="text/javascript" >
 		var isClicked = 0;
+		
+		$('#_main_center_tabs').tabs({
+			onSelect:function(title,index){
+		    	//alert(title + ' is selected');
+			    $.ajax({     
+			        type:"POST",     
+			        url:"${ctx}/mainframe/resetbaseurl",     
+			        data:title,
+					success : function(d) {
+					}
+			    });
+		    }
+		});
+		
 	    $(function() {
 	        $(document).ready(function() {
 	        	$('#menuTree').tree({

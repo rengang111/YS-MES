@@ -487,6 +487,13 @@ function doReturn() {
 	
 }
 
+function doDocumentManageTest() {
+	var key = $('#keyBackup').val();
+	var tabTitle = getTabTitle();
+	var url = "${ctx}/business/externalsample?methodtype=openfilebrowser&key=" + key + "&tabTitle=" + tabTitle;
+	openLayer(url, $(document).width(), $(document).height(), false);
+}
+
 function doAddESFileTest() {
 	var key = $('#keyBackup').val();
 	var url = "${ctx}/business/esrelationfile?methodtype=addtestinit&key=" + key;
@@ -615,11 +622,13 @@ function controlButtons(data) {
 		$('#deleteesfilemachine').attr("disabled", true);
 		$('#addesfiletest').attr("disabled", true);
 		$('#deleteesfiletest').attr("disabled", true);
+		$('#managedoctest').attr("disabled", true);
 		
 	} else {
 		$('#delete').attr("disabled", false);
 		$('#addesfilemachine').attr("disabled", false);
 		$('#addesfiletest').attr("disabled", false);
+		$('#managedoctest').attr("disabled", false);
 	}
 }
 </script>
@@ -721,6 +730,8 @@ function controlButtons(data) {
 				
 			<div>
 				<legend>测试报告</legend>
+				<button type="button" id="managedoctest" class="DTTT_button" onClick="doDocumentManageTest();"
+						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >文档管理</button>
 				<button type="button" id="deleteesfiletest" class="DTTT_button" onClick="doDeleteESFileTest();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addesfiletest" class="DTTT_button" onClick="doAddESFileTest();"

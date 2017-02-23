@@ -16,6 +16,7 @@
 	<url>${ctx}/yssearch</url>
 	<url>${ctx}/showck</url>
 	<url>${ctx}/saveck</url>
+	<url>${ctx}/jsp/ckfinder/core/connector/java/connector.java?command=Init</url>
 	<url>${ctx}/jsp/ckeditor</url>
 	<url>${ctx}/jsp/ckeditor/*</url>
 	<url>${ctx}/showfinder</url>
