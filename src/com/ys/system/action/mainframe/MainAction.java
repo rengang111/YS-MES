@@ -32,4 +32,11 @@ public class MainAction extends BaseAction {
 	public String execute(@RequestBody String para, @ModelAttribute("dataModels")MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		return "/login/login";
 	}
+	
+	@RequestMapping("/imageview")
+	public String executeimageview(@RequestBody String para, @ModelAttribute("dataModels")MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		model.addAttribute("imagePath", request.getParameter("path"));
+		return "/common/viewer";
+	}
+	
 }

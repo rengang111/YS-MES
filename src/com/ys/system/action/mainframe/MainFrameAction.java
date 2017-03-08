@@ -164,7 +164,12 @@ public class MainFrameAction extends BaseAction {
 			session.setAttribute(BusinessConstants.FILESYSTEMBROWSERBASEFOLDER, userUrl);
 		}
 		
+		tabUrl = session.getAttribute(BusinessConstants.FILESYSTEMBROWSERUSERFOLDER + data);
+		if (tabUrl != null) {
+			userUrl = String.valueOf(tabUrl);
 
+			session.setAttribute(BusinessConstants.FILESYSTEMBROWSERUSERFOLDER, userUrl);
+		}
 	}	
 	
 	

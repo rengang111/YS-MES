@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
 import com.ckfinder.connector.configuration.Constants;
@@ -29,7 +30,10 @@ import com.ckfinder.connector.utils.AccessControlUtil;
 import com.ckfinder.connector.utils.FileUtils;
 import com.ckfinder.connector.utils.ImageUtils;
 import com.ckfinder.connector.utils.NaturalOrderComparator;
-
+import com.opensymphony.xwork2.ActionContext;
+import com.ys.system.common.BusinessConstants;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 /**
  * Class to handle
  * <code>GetFiles</code> command.
@@ -84,6 +88,15 @@ public class GetFilesCommand extends XMLCommand {
 	 * @return 0 if ok, otherwise error code
 	 */
 	protected int getDataForXml() {
+		
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+		Object tempURL = request.getSession().getAttribute(BusinessConstants.FILESYSTEMBROWSERUSERFOLDER);
+		
+		if (tempURL != null) {
+			String userURL = String.valueOf(tempURL);
+			this.currentFolder = userURL;
+			request.getSession().removeAttribute(BusinessConstants.FILESYSTEMBROWSERUSERFOLDER);
+		}
 
 		this.fullCurrentPath = configuration.getTypes().get(this.type).getPath()
 				+ this.currentFolder;

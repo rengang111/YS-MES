@@ -41,6 +41,11 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+<listener>    
+    <listener-class>    
+        org.springframework.web.context.request.RequestContextListener
+    </listener-class>    
+</listener>
   <servlet> 
     <servlet-name>ConnectorServlet</servlet-name> 
     <servlet-class>com.ckfinder.connector.ConnectorServlet</servlet-class>
@@ -73,4 +78,5 @@
   <welcome-file-list>
     <welcome-file>/mainframe/welcome</welcome-file>
   </welcome-file-list>
+  
 </web-app>

@@ -11,6 +11,8 @@
  */
 package com.ckfinder.connector.configuration;
 
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.ckfinder.connector.utils.PathUtils;
@@ -33,8 +35,17 @@ public class ConfigurationPathBuilder extends DefaultPathBuilder {
 		String baseURL = null;
 		try {
 			IConfiguration conf = ConfigurationFactory.getInstace().getConfiguration();
-			Object tempURL = request.getSession().getAttribute(BusinessConstants.FILESYSTEMBROWSERBASEFOLDER);
+			//TODO
+			//可以通过id传递一些信息
+			String id = request.getParameter("id");
+			if (id == null) {
+				id = "";
+			} else {
+				id = id.split("-")[1];
+			}
 			String userURL = "";
+			Object tempURL = request.getSession().getAttribute(BusinessConstants.FILESYSTEMBROWSERBASEFOLDER + id);
+			
 			if (tempURL != null) {
 				userURL = String.valueOf(tempURL);
 			}

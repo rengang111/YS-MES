@@ -5,14 +5,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.dom4j.Element;
 
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.CalendarUtil;
+import com.ys.util.XmlUtil;
 import com.ys.util.basequery.common.Constants;
 
 public class BusinessService {
@@ -226,4 +229,5 @@ public class BusinessService {
 		
 		return rtn;
 	}
+
 }

@@ -41,5 +41,6 @@ public class BusinessConstants {
 	public static final String BASEBOM_BM = "BM";
 	public static final String ORDERBOM_BD = "BD";
 	
-	public static final String FILESYSTEMBROWSERBASEFOLDER = "CKFinderBaseFolder";
+	public static final String FILESYSTEMBROWSERBASEFOLDER = "CKFinderBaseFolder-";
+	public static final String FILESYSTEMBROWSERUSERFOLDER = "CKFinderUserFolder-";
 }

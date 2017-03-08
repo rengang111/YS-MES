@@ -61,13 +61,16 @@ public class ExternalSampleAction extends BaseAction {
 				return null;
 			case "addinit":
 				rtnUrl = doAddInit(model, session, request, response);
+				//super.openFileBrowser(request, session, model);
 				break;
 			case "add":
 				viewModel = doAdd(data, session, request);
+				
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
 			case "updateinit":
 				rtnUrl = doUpdateInit(model, session, request, response);
+				super.openFileBrowser(request, session, model);
 				break;
 			case "update":
 				viewModel = doUpdate(data, session, request);
@@ -82,7 +85,11 @@ public class ExternalSampleAction extends BaseAction {
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
 			case "openfilebrowser":
-				return super.openFileBrowser(request, session);
+				super.openFileBrowser(request, session, model);
+				return null;
+			case "getfilelist":
+				printOutJsonObj(response, super.getFolderList(request, session));
+				return null;
 		}
 		
 		return rtnUrl;
@@ -116,12 +123,12 @@ public class ExternalSampleAction extends BaseAction {
 	
 	public ExternalSampleModel doAdd(String data, HttpSession session, HttpServletRequest request){
 		
-		ExternalSampleModel model = new ExternalSampleModel();
+		ExternalSampleModel extModel = new ExternalSampleModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = externalsampleService.doAdd(request, data, userInfo);
+		extModel = externalsampleService.doAdd(request, data, userInfo);
 		
-		return model;
+		return extModel;
 	}		
 	
 	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){

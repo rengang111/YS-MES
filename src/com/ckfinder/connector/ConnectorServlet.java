@@ -12,6 +12,7 @@
 package com.ckfinder.connector;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -112,6 +113,7 @@ public class ConnectorServlet extends HttpServlet {
 			throw new ServletException(startException);
 		}
 		String command = request.getParameter("command");
+		
 		IConfiguration configuration = null;
 		try {
 			configuration = ConfigurationFactory.getInstace().getConfiguration(request);

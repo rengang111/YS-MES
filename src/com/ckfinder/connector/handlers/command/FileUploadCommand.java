@@ -345,14 +345,22 @@ public class FileUploadCommand extends Command implements IPostCommand {
 	 */
 	private String getFinalFileName(final String path, final String name) {
 		File file = new File(path, name);
+		File oldFile = null;
 		int number = 0;
 
 		String nameWithoutExtension = FileUtils.getFileNameWithoutExtension(name, false);
 		Pattern p = Pattern.compile("^(AUX|COM\\d|CLOCK\\$|CON|NUL|PRN|LPT\\d)$", Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(nameWithoutExtension);
 		boolean protectedName = m.find() ? true : false;
-
+		boolean isFileExists = false;
+		
+		if (file.exists()) {
+			isFileExists = true;
+			oldFile = new File(path, name);
+		}
+		
 		while (true) {
+			//if (file.exists() || protectedName) {
 			if (file.exists() || protectedName) {
 				number++;
 				StringBuilder sb = new StringBuilder();
@@ -360,9 +368,18 @@ public class FileUploadCommand extends Command implements IPostCommand {
 				sb.append("(" + number + ").");
 				sb.append(FileUtils.getFileExtension(name, false));
 				this.newFileName = sb.toString();
+				if (!isFileExists) {
+					this.errorCode =
+							Constants.Errors.CKFINDER_CONNECTOR_ERROR_UPLOADED_FILE_RENAMED;
+				}
 				file = new File(path, this.newFileName);
-				this.errorCode =
-						Constants.Errors.CKFINDER_CONNECTOR_ERROR_UPLOADED_FILE_RENAMED;
+				if (isFileExists) {
+					if (!file.exists()) {
+						oldFile.renameTo(file);
+						this.newFileName = name;
+						return name;
+					}
+				}
 				protectedName = false;
 			} else {
 				return this.newFileName;
