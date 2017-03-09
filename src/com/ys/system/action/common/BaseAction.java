@@ -96,7 +96,9 @@ public class BaseAction {
 		String contextPath = request.getContextPath();
 		String reuqestUrl = request.getRequestURL().toString();
 		int iIndex = reuqestUrl.indexOf(contextPath);
-		reuqestUrl = reuqestUrl.subSequence(0, iIndex) + contextPath; 
+		reuqestUrl = reuqestUrl.subSequence(0, iIndex) + contextPath;
+		String configURL[] = getBaseUrl();
+		reuqestUrl += configURL[2];
 		/*
 		try {
             realPath = java.net.URLEncoder.encode(request.getSession().getServletContext().getRealPath("/"), "UTF-8");
@@ -170,7 +172,7 @@ public class BaseAction {
 	}
 	
 	private String[] getBaseUrl() {
-		String baseURL[] = {"", ""};
+		String baseURL[] = {"", "", ""};
 		String xmlFileName = "/setting/ckfinder.xml";
 		int breakCount = 0;
 		Element element = XmlUtil.getRootElement(xmlFileName);
@@ -179,6 +181,10 @@ public class BaseAction {
 			Iterator<Element> iter = element.elementIterator();
 			while(iter.hasNext()){
 			    Element el = (Element)iter.next();
+			    if (el.getName().equals("webdav")) { 
+			    	baseURL[2] = (String)el.getData();
+			    	breakCount++;
+			    }
 			    if (el.getName().equals("baseURL")) { 
 			    	baseURL[0] = (String)el.getData();
 			    	breakCount++;
@@ -204,11 +210,11 @@ public class BaseAction {
 								}
 							}
 						}
-						if (breakCount == 2) {
+						if (breakCount == baseURL.length) {
 							break;
 						}
 					}
-					if (breakCount == 2) {
+					if (breakCount == baseURL.length) {
 						break;
 					}
 			    }

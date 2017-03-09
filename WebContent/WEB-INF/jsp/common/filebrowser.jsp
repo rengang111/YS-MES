@@ -96,7 +96,7 @@
 		var openDocObj;
 		var realPath = decodeURIComponent('${realPath}');
 		var filePath = realPath + fileName;
-		
+
 		var fileExtension = new Array();
 		var tempExtension = "";
 		fileExtension = fileName.split(".");
@@ -110,14 +110,21 @@
 			openLayer(url, $(window).width(), $(window).height(), false);	
 
 		} else {
-			
-			try {
-				openDocObj = new ActiveXObject("SharePoint.OpenDocuments.3");
-				//openDocObj.EditDocument("http://localhost:8080/YS-MES/userfiles/c30209c4-a551-4468-9a8c-61bfd6fa385c/TestReport/files/QA2_0.xlsx", true);
+			var isCreated = false;
+			for(var i = 1; i <= 5; i++) {
+				try {
+					openDocObj = new ActiveXObject("SharePoint.OpenDocuments." + i);
+					isCreated = true;
+				}
+				catch(err) {
+				}
+			}			
+			if (isCreated) {
+				//openDocObj.EditDocument("http://localhost:8080/YS-MES/webdav.java/userfiles/c30209c4-a551-4468-9a8c-61bfd6fa385c/TestReport/files/QA2_0.xlsx", true);
 				openDocObj.EditDocument(filePath, true);
-			}
-			catch(err) {
-				msg = "无法在线查看文档，请下载到客户端进行查看。";
+				//openDocObj.EditDocument("http://localhost:8080/YS-MES/webdav.java/userfiles/c30209c4-a551-4468-9a8c-61bfd6fa385c/TestReport/files/QA2_0.xlsx", true);
+			} else {
+				var msg = "无法在线查看文档，请下载到客户端进行查看。";
 				if (
 				CKFinder.env.safari ||
 				CKFinder.env.opera ||
@@ -127,6 +134,7 @@
 				}
 				
 				alert(msg);
+
 			}
 		}		
 		//openDocObj.EditDocument("http://localhost:8080/YS-MES/userfiles/c30209c4-a551-4468-9a8c-61bfd6fa385c/TestReport/files/QA2_0.xlsx", true);

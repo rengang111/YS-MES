@@ -12,6 +12,7 @@
 	some kind of session validation.
 	http://docs.cksource.com/CKFinder_2.x/Developers_Guide/Java/Configuration/Extending
 	-->
+	<webdav>/webdav.java/</webdav>
 	<enabled>true</enabled>
 	<!--
 	Configure the location of uploaded files. See the following article for more details:
