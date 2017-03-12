@@ -94,11 +94,11 @@ public class BaseAction {
 		}
 		
 		String contextPath = request.getContextPath();
-		String reuqestUrl = request.getRequestURL().toString();
-		int iIndex = reuqestUrl.indexOf(contextPath);
-		reuqestUrl = reuqestUrl.subSequence(0, iIndex) + contextPath;
+		String requestUrl = request.getRequestURL().toString();
+		int iIndex = requestUrl.indexOf(contextPath);
+		requestUrl = requestUrl.subSequence(0, iIndex) + contextPath;
 		String configURL[] = getBaseUrl();
-		reuqestUrl += configURL[2];
+		requestUrl += configURL[2];
 		/*
 		try {
             realPath = java.net.URLEncoder.encode(request.getSession().getServletContext().getRealPath("/"), "UTF-8");
@@ -109,7 +109,7 @@ public class BaseAction {
 			realPath = "//";
 		}
 		*/
-		model.addAttribute("realPath", reuqestUrl);
+		model.addAttribute("realPath", requestUrl);
 		
 		if (folderName != null && !folderName.equals("")) {
 			folderName = "/" + folderName + "/"; 

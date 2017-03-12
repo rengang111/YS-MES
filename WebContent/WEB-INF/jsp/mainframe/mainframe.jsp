@@ -51,8 +51,11 @@
 			<div title="首页" data-options ="iconCls:'icon-home_nav',fit:true">
 				<div style="padding: 10px  30px">
 					通知信息：
-					<input type=button onClick="openLayer();"/>
 				</div>
+				<div style="padding: 10px  30px">
+					文档在线编辑用：<a href="${SystemUrl}">OWSSUPP</a>
+				</div>
+
 			</div>
 		</div>
 	</div>	
