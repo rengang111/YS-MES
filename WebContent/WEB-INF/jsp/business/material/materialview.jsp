@@ -33,6 +33,7 @@
 	<input type="hidden" id="supplierid" />
 	<input type="hidden" id="suppliershortname" />
 	<input type="hidden" id="supplierfullname" />
+	<input type="hidden" id="keyBackup" value="${keyBackup }"/>
 	
 	
 	<input id="handle_status" value="1133" hidden="hidden">
@@ -102,7 +103,7 @@
 <div class="list">
 
 	
-	<table id="TSupplier"  aria-describedby="TSupplier_info" style="width: 100%;" id="TOgran" class="display dataTable" cellspacing="0">
+	<table id="TSupplier" style="width: 100%;" id="TOgran" class="display dataTable" >
 		<thead>				
 		<tr class="selected">
 			<th style="width:10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
@@ -175,6 +176,11 @@ $(document).ready(function() {
 				location.href = url;			
 
 	});
+	
+	var keyBackup = $('#keyBackup').val();
+	if(keyBackup != ''){
+		$('#return').css('display', 'none');//弹窗方式下,不显示返回按钮
+	}
 	/*
 	$("#doCreate").click(
 			function() {				
@@ -189,6 +195,8 @@ $(document).ready(function() {
 	supplierPriceView();
 	//供应商列表点击颜色变化
 	selectedColor();
+	
+	
     	
 });
 

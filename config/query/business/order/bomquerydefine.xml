@@ -406,4 +406,32 @@
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="getDocumentary" />
+     <where>
+    	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.type" des="" reqName="type" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.type" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.costName" alias="" ctype="" />
+      <f name="a.cost" alias="" ctype="" />
+      <f name="a.person" alias="" ctype="" />
+      <f name="a.quotationDate" alias="" ctype="" />
+      <f name="a.status" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
+  	</select>
+    <!-- 获取所有报价BOM信息 -->
+    <!-- B:基础BOM Q:报价BOM O:订单BOM -->
+    <from>b_OrderExpense a WHERE  a.deleteFlag ='0'  </from>
+    <orderby>a.status DESC,a.costName,a.quotationDate</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>

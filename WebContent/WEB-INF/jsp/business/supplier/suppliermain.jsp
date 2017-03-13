@@ -19,13 +19,18 @@
 		}
 	
 		var t = $('#TSupplier').DataTable({
-				"paging": false,
-				"lengthMenu":[50,100,200],//设置一页展示10条记录
+				"paging": true,
+				"lengthChange":false,
+				 "iDisplayLength" : 100,
+				//"lengthMenu":[50,100,200],//设置一页展示20条记录
 				"processing" : false,
 				"serverSide" : false,
 				"stateSave" : false,
+				"ordering "	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",
+				//"scrollY":scrollHeight,
+				"scrollCollapse":true,
 				"retrieve" : true,
 				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -210,10 +215,9 @@
 				<a class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a>
 			</div>
 			<div id="clear"></div>
-			<table style="width: 100%;" id="TSupplier" class="display dataTable" cellspacing="0">
+			<table id="TSupplier" class="display dataTable" >
 				<thead>
-				
-					<tr class="selected">
+					<tr>
 						<th style="width:30px;" class="dt-middle">No</th>
 						<th style="width:120px;" class="dt-middle">供应商编码</th>
 						<th style="width:60px;"  class="dt-middle">简称</th>

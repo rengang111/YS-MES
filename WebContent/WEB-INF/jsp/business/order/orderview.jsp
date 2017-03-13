@@ -143,14 +143,6 @@
 
 
 	});
-	
-	function AddBomPlan(YSId,materialId) {
-
-		var url = '${ctx}/business/bom?methodtype=createBomOrder&YSId=' + YSId+'&materialId='+materialId;
-
-		location.href = url;
-	}
-	
 
 	function ShowBomPlan(YSId,materialId) {
 		var url = '${ctx}/business/bom?methodtype=orderDetail&YSId=' + YSId+'&materialId='+materialId;

@@ -56,7 +56,9 @@
 							'<td><input type="text"   name="rawMaterials['+rowIndex+'].wastagerate"   id="rawMaterials'+rowIndex+'.wastagerate" class="num small" />%</td>',
 							'<td><span></span><input  name="rawMaterials['+rowIndex+'].wastage"       id="rawMaterials'+rowIndex+'.wastage"  type="hidden" /></td>',
 							'<td><span></span><input  name="rawMaterials['+rowIndex+'].weight"        id="rawMaterials'+rowIndex+'.weight"  type="hidden" /></td>',
-							'<td><span></span><input  name="rawMaterials['+rowIndex+'].convertunit"       id="rawMaterials'+rowIndex+'.convertunit" type="hidden" /></td>',				
+							'<td><span></span>'+
+											 '<input  id="rawPrice'+rowIndex+'" type="hidden" />'+
+											 '<input  name="rawMaterials['+rowIndex+'].convertunit"       id="rawMaterials'+rowIndex+'.convertunit" type="hidden" /></td>',					
 							'<td><span></span><input  name="rawMaterials['+rowIndex+'].materialprice" id="rawMaterials'+rowIndex+'.materialprice" type="hidden"  /></td>',	
 							]).draw();
 					
@@ -151,9 +153,10 @@ function ajax() {
 
         var $onetweight = $tds.eq(3).find("input");//用料净重量
 
-		var $orawunit   = $tds.eq(4).find("input:hidden");//原计量单位
+		var $orawunit   = $tds.eq(4).find("input:hidden").eq(0);//原计量单位
 		var $ochgunit   = $tds.eq(4).find("select");//换算后的计量单位$("select option:checked").text();
 		var $ounittext  = $tds.eq(4).find("select option:checked");
+		var $ounittexts = $tds.eq(4).find("span");
 		var $owastRate  = $tds.eq(5).find("input");//损耗比
 		var $owastages  = $tds.eq(6).find("span");//损耗
 		var $owastagei  = $tds.eq(6).find("input:hidden");
@@ -170,9 +173,11 @@ function ajax() {
 		var vchgunit   = $ochgunit.val();
 		var vwastRate  = $owastRate.val();
 		var unittext   = $ounittext.text();
+		var unittexts  = $ounittexts.text();
 		var fnetweight = currencyToFloat($onetweight.val());
 		var frawprice  = currencyToFloat($orawprice.val());
-
+		
+		//alert('unittext['+unittext+']'+'unittexts['+unittexts+']')
 		var farwunit = '1';//初始值
 		//原材料的购买单位
 		for(var i=0;i<unitAaary.length;i++){
@@ -180,17 +185,22 @@ function ajax() {
 			var key = unitAaary[i][1];//取得显示单位:克,吨...
 			if(vrawunit == key){
 				farwunit = val;
+				//alert('原材料的购买单位'+farwunit)
 				break;
 			}
 		}
 
 		//自制品的用量单位
 		var fchgunit = '1';//初始值
+		if( unittext == '' )
+			unittext = unittexts;	//没有下拉框,即为修改已有数据的情况
+			
 		for(var i=0;i<unitAaary.length;i++){
 			var val = unitAaary[i][0];//取得计算单位:100,1000...
 			var key = unitAaary[i][1];//取得显示单位:克,吨...
 			if(unittext == key){
 				fchgunit = val;//只有在需要换算的时候,才设置换算单位
+				//alert('自制品的用量单位'+fchgunit)
 				break;
 			}
 		}		
@@ -200,9 +210,10 @@ function ajax() {
 		
 		var fkgprice = currencyToFloat( $okgprice.text() );
 		if((vchgunit)){									//没有重新选择原材料,没有修改使用单位
-			fkgprice = frawprice * farwunit / fchgunit; //换算后单价=原单价*原单位/新单位		
-			$oconvunit.val(fchgunit);	
+			fkgprice = frawprice * farwunit / fchgunit; //换算后单价=原单价*原单位/新单位	
+			
 		}
+		var vconvunit = fchgunit / farwunit;	//换算单位	
 		var fpricenew = fkgprice * fweight ;//单位材料价=新单价*总用量	
 		//alert('frawprice:'+frawprice+'--farwunit:'+farwunit+'--fchgunit:'+fchgunit+'--fpricenew:'+fpricenew);	
 
@@ -220,7 +231,8 @@ function ajax() {
 		$oweighti.val(vweight);
 		$okgprice.html(vkgprice);
 		$omatprices.html(vpricenew);	
-		$omatpricei.val(vpricenew);	
+		$omatpricei.val(vpricenew);
+		$oconvunit.val(vconvunit);	//换算单位
 
 		//计算自制品单价
 		costAcount();
@@ -495,7 +507,7 @@ function acountPowerPrice(){
 					<td><form:input path="rawMaterials[${i.index}].netweight" class="cash mini" value="${raw.netWeight }" /></td>							
 				
 					<td><span id="unitSpan${i.index}">${raw.viewUnit}</span>
-						<input type="hidden"  id="orgUnit${i.index}" />
+						<input type="hidden"  id="orgUnit${i.index}" value="${raw.orgUnitName }"/>
 						<input type="hidden"  name="rawMaterials[${i.index}].unit" id="rawMaterials${i.index}.unit" value="${raw.zzunit }"/></td>
 					<td><form:input path="rawMaterials[${i.index}].wastagerate" value="${raw.wastageRate }" class="num small"  />%</td>											
 					<td><span>${raw.wastage }</span>

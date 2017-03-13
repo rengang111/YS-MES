@@ -13,8 +13,8 @@
 <script type="text/javascript" src="${ctx}/js/jquery-2.1.3.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.form.min.js"></script>
-<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="${ctx}/js/dataTables.tableTools.js"></script>
+<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js" ></script>
+<script type="text/javascript" src="${ctx}/js/dataTables.tableTools.js"  charset="utf8"></script>
 <script type="text/javascript" src="${ctx}/js/dataTables.select.js"></script>
 <script type="text/javascript" src="${ctx}/plugins/toastMessage/javascript/jquery.toastmessage.js"></script>
 <script type="text/javascript" src="${ctx}/plugins/validate/jquery.validate.js"></script>

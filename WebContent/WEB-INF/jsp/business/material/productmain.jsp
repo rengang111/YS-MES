@@ -24,7 +24,7 @@
 			"stateSave" : false,
 			"ordering "	:true,
 			"searching" : false,
-			//"pagingType" : "full_numbers",
+			"pagingType" : "full_numbers",
 			//"scrollY":scrollHeight,
 			"scrollCollapse":true,
 			"retrieve" : true,

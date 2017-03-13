@@ -41,7 +41,7 @@
 			{
 				"fnClick" : function(button) {
 					
-					var rowIndex = counter;
+					// var rowIndex = counter;
 					
 					for (var i=0;i<10;i++){
 						
@@ -52,18 +52,18 @@
 							  [
 								'<td></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
-									'<input type="hidden" name="bomDetailLines['+rowIndex+'].materialid" id="bomDetailLines'+rowIndex+'.materialid" /></td>',
+									'<input type="hidden" name="bomDetailLines['+counter+'].materialid" id="bomDetailLines'+counter+'.materialid" /></td>',
 								'<td><span></span></td>',
 								'<td><input type="text"   name="attributeList2"  class="attributeList2" style="width:80px"> '+
-									'<input type="hidden" name="bomDetailLines['+rowIndex+'].supplierid" id="bomDetailLines'+rowIndex+'.supplierid" /></td>',
-								'<td><input type="text"   name="bomDetailLines['+rowIndex+'].quantity"   id="bomDetailLines'+rowIndex+'.quantity"   class="cash"  style="width:70px"/></td>',
-								'<td><span></span><input type="hidden"   name="bomDetailLines['+rowIndex+'].price"      id="bomDetailLines'+rowIndex+'.price" /></td>',
-								'<td><span></span><input type="hidden"   name="bomDetailLines['+rowIndex+'].totalprice" id="bomDetailLines'+rowIndex+'.totalprice"/><input type="hidden" id="labor"></td>',
+									'<input type="hidden" name="bomDetailLines['+counter+'].supplierid" id="bomDetailLines'+counter+'.supplierid" /></td>',
+								'<td><input type="text"   name="bomDetailLines['+counter+'].quantity"   id="bomDetailLines'+counter+'.quantity"   class="cash"  style="width:70px"/></td>',
+								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].price"      id="bomDetailLines'+counter+'.price" /></td>',
+								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].totalprice" id="bomDetailLines'+counter+'.totalprice"/><input type="hidden" id="labor"></td>',
 								]).draw();
 						
-						rowIndex ++;						
+						counter ++;						
 					}					
-					counter += 1;
+					//counter += 1;
 					
 					autocomplete();
 
@@ -102,8 +102,6 @@
 	});
 	
 	function ajax() {
-		var height = $(window).height();
-		height = height - 370;
 
 		var t = $('#example').DataTable({
 			

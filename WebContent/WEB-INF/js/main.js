@@ -207,13 +207,16 @@ function currencyToFloat(currency){
 		return currency;
 
 	currency = currency.replace(/,/g, "");//去掉逗号
-	currency = currency.replace(/[^\d.]*/g, "");//保留数字和小数点
+	//currency = currency.replace(/[^\d.]*/g, "");//保留数字和小数点
+	currency = currency.replace(/[^\- \d.]/g, "");//保留数字和小数点
+	//value.replace(/[^\- \d.]/g,'')
 
 	//验证数字，包括小数
 	//该函数的返回值要参与计算,所以至少返回 '0'
-	var reg = /^[0-9]+.?[0-9]*$/;
-	if(!reg.test(currency))
-		return 0;		
+	//var reg = /^[0-9]+.?[0-9]*$/;
+	//var reg = /^[\+\-]?\d+(\.\d*)?$/;
+	//if(!reg.test(currency))
+		//return 0;		
 	
 	return parseFloat(currency);
 	
@@ -253,10 +256,22 @@ function floatToCurrency(value){
 	var beforeDecimal = '0';
 	var afterDecimal = '00';
 	var currSegment;
+	var sybolFlg = false;
 
 	beforeDecimal = parts[0];
 	afterDecimal = parts[1];
 	
+	//负号判断
+	var sybol = beforeDecimal.substring(
+				0,
+				1);		
+	if(sybol == '-'){
+	
+		beforeDecimal = beforeDecimal.substring(
+				1,
+				beforeDecimal.length);
+		sybolFlg = true;	
+	}
 	while (beforeDecimal.length > 3) {
 		
 		currSegment = beforeDecimal.substring(
@@ -274,7 +289,12 @@ function floatToCurrency(value){
 		outParts.unshift(beforeDecimal);
 	}
 	
-	return outParts.join(',') + '.' + afterDecimal;
+	if(sybolFlg){		
+		return sybol + outParts.join(',') + '.' + afterDecimal;
+	}else{
+		return outParts.join(',') + '.' + afterDecimal;
+		
+	}	
 	
 }
 
@@ -507,15 +527,17 @@ function foucsInit(){
 	});
 
 	$(".num") .focus(function(){
-		$(this).val(currencyToFloat($(this).val()));
+		//$(this).val(currencyToFloat($(this).val()));
+		$(this).select();
 	});
 	
 	$(".cash") .focus(function(){
-		$(this).val(currencyToFloat($(this).val()));
+		//$(this).val(currencyToFloat($(this).val()));
+		$(this).select();
 	});
 	
 	$(".num") .blur(function(){
-		$(this).val(floatToNumber($(this).val()));
+		//$(this).val(floatToNumber($(this).val()));
 	});
 
 		
@@ -567,3 +589,50 @@ function getCurrencySymbol(curr){
 	}
 	return rtn;
 }
+
+$(function(){
+	var t = [];
+	var dt = $("dl.collapse dt");
+	var dd = $("dl.collapse dd");
+	
+	dt.each(function(i){
+		t[i] = false;		//设置折叠初始状态
+		$(dt[i]).click((function(i,dd){
+			
+			return function(){		//返回一个闭包函数,闭包能够存储传递进来的动态参数
+				
+				if(t[i]){					
+					$(dd).show();
+					t[i] = false;
+				}else{
+					$(dd).hide();
+					t[i] = true;
+				}					
+			}
+		})(i,dd[i]))	//向当前执行函数中传递参数
+	})
+})
+
+function fomatToColor(value){
+	
+	if (currencyToFloat(value) < 0 ){
+		return "<span style='color: red'>" +floatToCurrency( value ) + "</span>";
+	}else{
+		return floatToCurrency(value);
+	}
+	
+}
+
+function stringPadAfter(value,len){   
+	var str='';
+	if(value.length<len){
+		
+	    for(var i=0;i<(len-value.length);i++){
+	        str+="&nbsp;";
+	    }
+	    
+	}
+	return value+str;
+}
+
+

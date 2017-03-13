@@ -47,7 +47,7 @@
 			<td class="label">机器型号：</td>
 			<td>${product.productModel }</td>			
 			<td class="label">客户名称：</td>
-			<td colspan="3">${product.customerIdAndName }</td>
+			<td colspan="3">${product.customerId }</td>
 		</tr>
 		<tr>
 			<td class="label" style="vertical-align: text-top;">中文描述：</td>
@@ -81,7 +81,7 @@
 			<td class="td-center"><span id=bomCost></span></td>
 			<td class="td-center"><span id=baseCost></span></td>
 			<td class="td-center">
-				<input type="text" id="costRate" class="num mini" value="5" style="text-align: center;"/>%</td>
+				<input type="text" id="costRate" class="num mini" value="" style="text-align: center;"/>%</td>
 			<td class="td-center"><span id=totalSpan></span>
 				<input type="hidden" id="totalCost"/></td>
 		</tr>									
@@ -306,6 +306,8 @@ function baseBomView() {
 					var bomId     = data['data'][0]['bomId'];
 					var parentId  = data['data'][0]['productParentId'];
 					var costRote  = data['data'][0]['managementCostRate'];
+					if(costRote == null || costRote =='')
+						costRote = '5';//默认值设定
 					
 					var laborCost = laborCostSum();
 					var bomCost   = productCostSum();
@@ -609,9 +611,9 @@ function doShowHistory(supplierId) {
 }
 
 function doEditMaterial(recordid,parentid) {
-			
+	//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
 	var url = '${ctx}/business/material?methodtype=detailView';
-	url = url + '&parentId=' + parentid+'&recordId='+recordid;
+	url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
 	
 	layer.open({
 		offset :[10,''],
@@ -685,7 +687,8 @@ function doDelete(recordId){
 			data : 'key=' + recordId,
 			dataType : "text",
 			success : function(data) {
-				$('#TQuotation').DataTable().ajax.reload(null,false);
+				//$('#TQuotation').DataTable().ajax.reload(null,true);
+				quotationView();
 				$().toastmessage('showNoticeToast', "删除成功。");	
 			},
 			error : function(

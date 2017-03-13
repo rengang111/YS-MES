@@ -25,16 +25,17 @@
 			table.fnDestroy();
 		}
 		var t = $('#TMaterial').DataTable({
-				"paging": true,
-				"lengthChange":false,
-				"lengthMenu":[50,100,200],//设置一页展示20条记录
-				"processing" : false,
-				"serverSide" : false,
-				"stateSave" : false,
-				"ordering "	:true,
-				"searching" : false,
-				"pagingType" : "full_numbers",
-				"retrieve" : true,
+			"paging": true,
+			 "iDisplayLength" : 100,
+			"lengthChange":false,
+			//"lengthMenu":[10,150,200],//设置一页展示20条记录
+			"processing" : true,
+			"serverSide" : true,
+			"stateSave" : true,
+			"ordering "	:true,
+			"searching" : false,
+			"pagingType" : "full_numbers",
+			"retrieve" : true,
 				"sAjaxSource" : "${ctx}/business/zzmaterial?methodtype=search",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};

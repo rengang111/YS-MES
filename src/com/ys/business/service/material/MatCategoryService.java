@@ -2,6 +2,7 @@ package com.ys.business.service.material;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.business.action.model.material.MatCategoryModel;
 import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.data.B_MaterialCategoryData;
+import com.ys.business.db.data.B_ZZMaterialPriceData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
@@ -79,22 +81,39 @@ public class MatCategoryService extends BaseService {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void insert(HttpServletRequest request, 
 			MatCategoryModel MatCategoryModel,
 			UserInfo userInfo) throws Exception {
 		
 		B_MaterialCategoryDao dao = new B_MaterialCategoryDao();
 		B_MaterialCategoryData data = eidtChildId(MatCategoryModel.getunitData());
+		List<B_MaterialCategoryData> list = null;
 
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialCategoryInsert",userInfo);
+		//物料编码存在check
+		String categoryId = data.getCategoryid();
+		String astr_Where = " categoryid = '" + categoryId + "' ";
+		list = (List<B_MaterialCategoryData>)dao.Find(astr_Where);
+		
+		if(list.size() > 0){
+			//编码重复时,更新处理
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialCategoryUpdate",userInfo);
+			copyProperties(data,commData);
+			data.setRecordid(list.get(0).getRecordid());//key保留既存数据的,其他内容从页面重新赋值
+			
+			dao.Store(data);
+			
+		}else{
+			//正常情况,追加处理
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialCategoryInsert",userInfo);
+			copyProperties(data,commData);
 
-		copyProperties(data,commData);
+			data.setRecordid(BaseDAO.getGuId());
+			data.setCategoryid(data.getCategoryid().trim());
+			data.setParentid(request.getParameter("parentCategoryId"));
 
-		data.setRecordid(BaseDAO.getGuId());
-		data.setCategoryid(data.getCategoryid().trim());
-		data.setParentid(request.getParameter("parentCategoryId"));
-
-		dao.Create(data);
+			dao.Create(data);			
+		}
 	}
 	
 	private B_MaterialCategoryData eidtChildId (B_MaterialCategoryData data){

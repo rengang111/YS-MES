@@ -6,24 +6,16 @@
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
 <!DOCTYPE HTML>
 <html>
 
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <title>订单详情-录入</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
-	var GsalesTax = '0';//销售税
-	var Grebate =currencyToFloat('${bomPlan.rebateRate}');//退税率
-	var GexRate = currencyToFloat('${bomPlan.exchangeRate}');//汇率
-	var GproductCost = currencyToFloat('${bomPlan.productCost}');//产品成本
-	var Gprice = currencyToFloat('${bomPlan.price}');//销售单价
-	var GmanageCost = currencyToFloat('${bomPlan.managementCost}');//经管费
-	var GmaterialCost = currencyToFloat('${bomPlan.materialCost}');//材料成本
-	var Gquantity = currencyToFloat('${bomPlan.quantity}');//销售数量
-
+	var counter  = 0;
 	//Form序列化后转为AJAX可提交的JSON格式。
 	$.fn.serializeObject = function() {
 		var o = {};
@@ -39,87 +31,13 @@
 			}
 		});
 		return o;
-	};
-
-	function documentaryShow() {
-		var table = $('#documentary').dataTable();
-		if(table) {
-			table.fnDestroy();
-		}
-
-		var t = $('#documentary').DataTable({
-			"paging": false,
-			"processing" : false,
-			"serverSide" : false,
-			"stateSave" : false,
-			"searching" : false,
-			"pagingType" : "full_numbers",
-			"retrieve" : false,
-			"async" : false,
-			//"sAjaxSource" : "${ctx}/business/order?methodtype=documentarySearch",
-			"fnServerData" : function(sSource, aoData, fnCallback) {
-				var param = {};
-				var formData = $("#supplierBasicInfo").serializeArray();
-				formData.forEach(function(e) {
-					aoData.push({"name":e.name, "value":e.value});
-				});
-
-				$.ajax({
-					"url" : sSource,
-					"datatype": "json", 
-					"contentType": "application/json; charset=utf-8",
-					"type" : "POST",
-					"data" : JSON.stringify(aoData),
-					success: function(data){
-						fnCallback(data);
-						netAdjustAccout();
-					},
-					 error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				})
-			},
-				
-			"language": {
-        		"url":"${ctx}/plugins/datatables/chinese.json"
-        	},
-        	
-        	dom : '<"clear">rt',
-        	
-			"columns" : [ 
-				{"data" : null, "defaultContent" : '', "className" : 'td-center'}, 
-				{"data" : "costName"}, 
-				{"data" : "cost", "className" : 'td-right'},
-				{"data" : "person"}, 
-				{"data" : "quotationDate", "className" : 'td-center'}, 
-				{"data" : null, "defaultContent" : '', "className" : 'td-center'}
-			],
-			"columnDefs":[
-	    		{"targets":0,"render":function(data, type, row){
-					return row["rownum"];
-                }},
-	    		{"targets":5,"render":function(data, type, row){
-	    			return	"<a href=\"#\" onClick=\"showDocumentary('" + row["id"] + "')\">查看</a>" + "&nbsp;" +
-	    					"<a href=\"#\" onClick=\"deleteDocumentary('" + row["id"] + "')\">删除</a>"
-                }}
-		    ] 						
-		});
-
-		t.on('click', 'tr', function() {
-			
-			if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-	        }
-	        else {
-	        	t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-		});
-
-	};
+	};	
+	
 
 	
+	
 	$(document).ready(function() {
-		
+
 		$("#bomPlan\\.plandate").val(shortToday());
 		$("#bomPlan\\.plandate").datepicker({
 			dateFormat:"yy-mm-dd",
@@ -129,7 +47,12 @@
 			showOtherMonths:true,
 		});	
 		
-
+		documentaryAjax();//
+		documentaryAjax2();
+		documentaryAjax3();
+		documentaryAjax4();
+		
+		
 		baseBomView();//显示基础BOM
 		
 		$('#bomPlan\\.rebaterate').val('17');//初始值
@@ -137,41 +60,7 @@
 		//外汇报价换算
 		$(".exchange").change(function() {
 			
-			var exchang  = currencyToFloat($('#bomPlan\\.exchangerate').val());
-			var exRebate  = currencyToFloat($('#bomPlan\\.rebaterate').val());
-			var exprice  = currencyToFloat($('#orderPrice').text());
-			var mateCost = currencyToFloat($('#materialCost').text());
-			var baseCost = currencyToFloat($('#baseCost').text());
-			//原币价格=汇率*报价，利润率=（原币价格+退税-基础成本）/基础成本
-			var rmb = exchang * exprice;
-			var rebate = exRebate * mateCost / 1.17 / 100;	//退税
-			var profit = rmb + rebate - baseCost ;			//利润
-			var profitRate = profit / baseCost * 100;		//利润率
-			//销售税=（销售单价(原币)-材料成本）*17%
-			var salesTax = ( rmb - mateCost ) * exRebate / 100;
-			
-			var costRate =  currencyToFloat($('#costRate').text());
-			var quantity = currencyToFloat($('#quantity').text());
-			
-			//单位销售毛利=销售单价（原币）-产品成本-销售税+退税
-			//单位核算毛利=销售单价（原币）-产品成本-销售税+退税-经管费=单位销售毛利-经管费
-			var unitSale = rmb - baseCost - salesTax + rebate;
-			var unitAdjust = unitSale - baseCost * costRate / 100;
-			var sale = unitSale * quantity;
-			var adjust = unitAdjust * quantity;
-			//alert('p='+(rmb - baseCost)+'profit='+profit)
-			$('#bomPlan\\.salestax').val(floatToCurrency(salesTax));
-			$('#bomPlan\\.rebate').val(floatToCurrency(rebate));
-			$('#bomPlan\\.rmbprice').val(floatToCurrency(rmb));
-			$('#bomPlan\\.profit').val(floatToCurrency(profit));
-			$('#bomPlan\\.profitrate').val(floatToCurrency(profitRate));
-
-			$('#unitSale').text(floatToCurrency(unitSale));
-			$('#unitAdjust').text(floatToCurrency(unitAdjust));
-			$('#sale').text(floatToCurrency(sale));
-			$('#adjust').text(floatToCurrency(adjust));
-			
-			netAdjustAccout();//贸易净利
+			costAcount();
 		});
 
 		$("#goBack").click(
@@ -183,20 +72,200 @@
 		$("#insert").click(
 				function() {
 					
-			$('#bomForm').attr("action", "${ctx}/business/orderreview?methodtype=insert");
+			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=insertOrderBom");
 			$('#bomForm').submit();
 		});
-				
+		
+		$("#requirement").click(
+				function() {
+			var YSId = '${order.YSId}';
+			var materialId='${order.materialId}';
+			var order = currencyToFloat( '${order.quantity}' );
+			$('#bomForm').attr("action", "${ctx}/business/requirement?methodtype=create&YSId="+YSId+"&materialId="+materialId+"&order="+order);
+			$('#bomForm').submit();
+		});
+					
 		
 		$("input:text").focus (function(){
 		    $(this).select();
 		});
 
-		documentaryShow();//跟单费用
+		$(".DTTT_container").css('float','left');
+
+		$( "#tabs" ).tabs();
 	});
 
 </script>
+<script type="text/javascript">
 
+function documentaryAjax() {
+
+	var t = $('#expense1').DataTable({
+		
+		"processing" : false,
+		"retrieve"   : true,
+		"stateSave"  : true,
+		"pagingType" : "full_numbers",
+        "paging"    : false,
+        "pageLength": 50,
+		"async"		: false,
+        "ordering"  : false,
+		//"sAjaxSource" : actionUrl,
+		"dom"		: '<"clear">lt',
+		"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},
+	     "columns" : [
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-right'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			],
+		
+	})
+		
+	t.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+		
+	});
+
+};//ajax()
+</script>
+<script type="text/javascript">
+function documentaryAjax2() {
+
+	var t = $('#expense2').DataTable({
+		
+		"processing" : false,
+		"retrieve"   : true,
+		"stateSave"  : true,
+		"pagingType" : "full_numbers",
+        "paging"    : false,
+        "pageLength": 50,
+		"async"		: false,
+        "ordering"  : false,
+		"dom"		: '<"clear">lt',
+		"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},
+	     "columns" : [
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-right'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			],
+		
+	})
+		
+	t.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+		
+	});
+
+};//ajax()
+</script>
+<script type="text/javascript">
+function documentaryAjax3() {
+
+	var t = $('#expense3').DataTable({
+		
+		"processing" : false,
+		"retrieve"   : true,
+		"stateSave"  : true,
+		"pagingType" : "full_numbers",
+        "paging"    : false,
+        "pageLength": 50,
+		"async"		: false,
+        "ordering"  : false,
+		"dom"		: '<"clear">lt',
+		"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},
+	     "columns" : [
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-right'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			],
+		
+	})
+		
+	t.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+		
+	});
+
+};//ajax()
+</script>
+<script type="text/javascript">
+function documentaryAjax4() {
+
+	var t = $('#expense4').DataTable({
+		
+		"processing" : false,
+		"retrieve"   : true,
+		"stateSave"  : true,
+		"pagingType" : "full_numbers",
+        "paging"    : false,
+        "pageLength": 50,
+		"async"		: false,
+        "ordering"  : false,
+		"dom"		: '<"clear">lt',
+		"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},
+	     "columns" : [
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-right'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			    {"className" : 'td-center'},
+	  			],
+		
+	})
+		
+	t.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+		
+	});
+
+};//ajax()
+</script>
 </head>
 <body>
 <div id="container">
@@ -248,7 +317,9 @@
 				</tr>
 				<tr>
 					<td class="td-center"><span id="bomId">${bomForm.bomPlan.bomid }</span>
-						<form:hidden path="bomPlan.bomid"  /></td>
+						<form:hidden path="bomPlan.bomid"  />
+						<form:hidden path="bomPlan.parentid"  />
+						<form:hidden path="bomPlan.subid"  /></td>
 					<td class="td-center"><span id="materialCost"></span></td>
 					<td class="td-center"><span id="laborCost"></span></td>
 					<td class="td-center"><span id="bomCost"></span></td>
@@ -317,42 +388,229 @@
 		</fieldset>	
 		
 		<fieldset class="action" style="text-align: right;">
+			<!-- button type="button" id="insert" class="DTTT_button">保存</button> -->
+			<button type="button" id="requirement" class="DTTT_button">订单采购需求</button>
 			<button type="button" id="goBack" class="DTTT_button">返回</button>
-			<button type="button" id="insert" class="DTTT_button">保存</button>
 		</fieldset>	
 	
 		<fieldset>
-			<legend> 跟单费用</legend>
-			<div class="list">
-				<div id="DTTT_container" style="height:40px;align:right">
-					<button type="button" id="addcontact" class="DTTT_button" 
-						onClick="doAddContact();" style="height:25px;" >新建</button>
-					<button type="button" id="deletecontact" class="DTTT_button" 
-						onClick="doDeleteContact();" style="height:25px;" >删除</button>
-				</div>
-				<table id="documentary" class="display" >
-					<thead>				
-					<tr>
-						<th width="60px">No</th>
-						<th class="dt-center" width="250px">费用名称</th>
-						<th class="dt-center" width="150px">金额</th>
-						<th class="dt-center" width="150px">报销人</th>
-						<th class="dt-center" width="150px">报销日期</th>
-						<th>操作</th>
-					</tr>
-					</thead>
-					<tfoot>
+			<div id="tabs" style="padding: 0px;">
+				<ul>
+					<li><a href="#tabs-1">跟单费用</a></li>
+					<li><a href="#tabs-2">客户增减</a></li>
+					<li><a href="#tabs-3">工厂增减</a></li>
+					<li><a href="#tabs-4">车间增减</a></li>
+				</ul>
+
+				<div id="tabs-1" style="padding: 5px;">
+					<table id="expense1" class="display" style="width:100%">
+						<thead>				
 						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
+							<th style="width:60px">No</th>
+							<th class="dt-center" style="width:200px">费用名称</th>
+							<th class="dt-center" style="width:150px">金额</th>
+							<th class="dt-center" style="width:100px">报销人</th>
+							<th class="dt-center" style="width:100px">报销日期</th>
+							<th class="dt-center" style="width:100px">状态</th>
 						</tr>
-					</tfoot>
-				</table>
+						</thead>
+						<tbody>
+			<c:set var="index" value="0" />
+			<c:forEach var="detail" items="${orderExpense}" varStatus='stat' >	
+				<c:if test="${detail.type eq 'D'}" >				
+				<tr>
+					<td>${index +1}</td>
+					<td>${detail.costName }</td>
+					<td id="d${index}"></td>
+					<td>${detail.person }</td>
+					<td>${detail.quotationDate }</td>
+					<td>
+					<c:if test="${detail.status eq '1'}" >
+						已确认
+					</c:if>
+					<c:if test="${detail.status ne '1'}" >
+						<a href="###" id="check1" onclick="doCheck1(1,'${index }','${detail.recordId }');">待确认</a>
+					</c:if>
+					</td>
+					<script type="text/javascript">
+						var index = '${index}';	
+						$('#d'+index).html(fomatToColor('${detail.cost }'));
+					</script>
+					<c:set var="index" value="${index+1}" />
+				</tr>		
+						</c:if>	
+			</c:forEach>
+						</tbody>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th class="dt-right">合计</th>
+								<th class="dt-right"><span id="doctCost1"></span></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+					<div class="action" style="text-align: right;">
+						
+					</div>	
+				</div>
+	
+				<div id="tabs-2" style="padding: 5px;">
+					<table id="expense2" class="display" style="width:100%">
+						<thead>				
+						<tr>
+							<th style="width:60px">No</th>
+							<th class="dt-center" style="width:200px">费用名称</th>
+							<th class="dt-center" style="width:150px">金额</th>
+							<th class="dt-center" style="width:100px">报销人</th>
+							<th class="dt-center" style="width:100px">报销日期</th>
+							<th class="dt-center" style="width:100px">状态</th>
+						</tr>
+						</thead>
+
+			<c:set var="index" value="0" />
+			<c:forEach var="detail" items="${orderExpense}" varStatus='stat' >	
+				<c:if test="${detail.type eq 'C'}" >		
+					<tr>
+						<td>${index+1 }</td>
+						<td>${detail.costName }</td>
+						<td id="c${index}"></td>
+						<td>${detail.person }</td>
+						<td>${detail.quotationDate }</td>
+						<td>
+						<c:if test="${detail.status eq '1'}" >
+							已确认
+						</c:if>
+						<c:if test="${detail.status ne '1'}" >
+							<a href="###" id="check1" onclick="doCheck1(2,'${index }','${detail.recordId }');">待确认</a>
+						</c:if>
+						</td>
+					</tr>
+					<script type="text/javascript">
+						var index = '${index}';	
+						$('#c'+index).html(fomatToColor('${detail.cost }'));
+					</script>
+					<c:set var="index" value="${index+1}" />
+				</c:if>			
+			</c:forEach>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th class="dt-right">合计</th>
+								<th class="dt-right"><span id="doctCost2"></span></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>		
+				<div id="tabs-3" style="padding: 5px;">
+					<table id="expense3" class="display" style="width:100%">
+						<thead>				
+						<tr>
+							<th style="width:60px">No</th>
+							<th class="dt-center" style="width:200px">费用名称</th>
+							<th class="dt-center" style="width:150px">金额</th>
+							<th class="dt-center" style="width:100px">报销人</th>
+							<th class="dt-center" style="width:100px">报销日期</th>
+							<th class="dt-center" style="width:100px">状态</th>
+						</tr>
+						</thead>
+
+			<c:set var="index" value="0" />
+			<c:forEach var="detail" items="${orderExpense}" varStatus='stat' >	
+				<c:if test="${detail.type eq 'S'}" >		
+					<tr>
+						<td>${index +1}</td>
+						<td>${detail.costName }</td>
+						<td id="s${index}"></td>
+						<td>${detail.person }</td>
+						<td>${detail.quotationDate }</td>
+						<td>
+						<c:if test="${detail.status eq '1'}" >
+							已确认
+						</c:if>
+						<c:if test="${detail.status ne '1'}" >
+							<a href="###" id="check1" onclick="doCheck1(3,'${index }','${detail.recordId }');">待确认</a>
+						</c:if>
+						</td>
+					</tr>
+					<script type="text/javascript">
+						var index = '${index}';	
+						$('#s'+index).html(fomatToColor('${detail.cost }'));
+					</script>
+					<c:set var="index" value="${index+1}" />
+				</c:if>			
+			</c:forEach>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th class="dt-right">合计</th>
+								<th class="dt-right"><span id="doctCost3"></span></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>		
+				<div id="tabs-4" style="padding: 5px;">
+					<table id="expense4" class="display" style="width:100%">
+						<thead>				
+						<tr>
+							<th style="width:60px">No</th>
+							<th class="dt-center" style="width:200px">增减内容</th>
+							<th class="dt-center" style="width:150px">金额</th>
+							<th class="dt-center" style="width:100px">报销人</th>
+							<th class="dt-center" style="width:100px">报销日期</th>
+							<th class="dt-center" style="width:100px">状态</th>
+						</tr>
+						</thead>
+
+			<c:set var="index" value="0" />
+			<c:forEach var="detail" items="${orderExpense}" varStatus='stat' >	
+				<c:if test="${detail.type eq 'W'}" >			
+					<tr>
+						<td>${index+1 }</td>
+						<td>${detail.costName }</td>
+						<td id="w${index}"></td>
+						<td>${detail.person }</td>
+						<td>${detail.quotationDate }</td>
+						<td>
+						<c:if test="${detail.status eq '1'}" >
+							已确认
+						</c:if>
+						<c:if test="${detail.status ne '1'}" >
+							<a href="###" id="check1" onclick="doCheck1(4,'${index }','${detail.recordId }');">待确认</a>
+						</c:if>
+						</td>
+					</tr>
+					<script type="text/javascript">
+						var index = '${index}';	
+						$('#w'+index).html(fomatToColor('${detail.cost }'));
+					</script>
+					
+					<c:set var="index" value="${index+1}" />
+				</c:if>			
+			</c:forEach>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th class="dt-right">合计</th>
+								<th class="dt-right"><span id="doctCost4"></span></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+
 			</div>
+			
 		</fieldset>	
 		
 		<dl class="collapse" style="width: 98%;margin-left:10px">
@@ -417,11 +675,12 @@ function laborCostSum(){
 }
 
 //列合计:跟单费用
-function docCostSum(){
+function docCostSum1(){
 
 	var sum = 0;
-	$('#documentary tbody tr').each (function (){
+	$('#expense1 tbody tr').each (function (){
 		
+		//var vtotal = $(this).find("td").eq(2).find("input").val();
 		var vtotal = $(this).find("td").eq(2).text();
 		var ftotal = currencyToFloat(vtotal);
 		
@@ -430,28 +689,104 @@ function docCostSum(){
 	return sum;
 }
 
+function docCostSum2(){
+
+	var sum = 0;
+	$('#expense2 tbody tr').each (function (){
+		
+		//var vtotal = $(this).find("td").eq(2).find("input").val();
+		var vtotal = $(this).find("td").eq(2).text();
+		var ftotal = currencyToFloat(vtotal);
+		
+		sum = currencyToFloat(sum) + ftotal;			
+	})
+	return sum;
+}
+
+function docCostSum3(){
+
+	var sum = 0;
+	$('#expense3 tbody tr').each (function (){
+		
+		//var vtotal = $(this).find("td").eq(2).find("input").val();
+		var vtotal = $(this).find("td").eq(2).text();
+		var ftotal = currencyToFloat(vtotal);
+		
+		sum = currencyToFloat(sum) + ftotal;			
+	})
+	return sum;
+}
+
+function docCostSum4(){
+
+	var sum = 0;
+	$('#expense4 tbody tr').each (function (){
+		
+		//var vtotal = $(this).find("td").eq(2).find("input").val();
+		var vtotal = $(this).find("td").eq(2).text();
+		var ftotal = currencyToFloat(vtotal);
+		
+		sum = currencyToFloat(sum) + ftotal;			
+	})
+	return sum;
+}
 function netAdjustAccout(){
-	var docCost = docCostSum();
+	var docCost1 = docCostSum1();
+	var docCost2 = docCostSum2();
+	var docCost3 = docCostSum3();
+	var docCost4 = docCostSum4();
 	var adjust = currencyToFloat( $('#adjust').text() );
 	//alert('docCost:'+docCost+'--adjust:'+adjust)
-	var netAdjust = adjust - docCost ;
-	$('#netAdjust').text(floatToCurrency(netAdjust));
-}
-//编辑基础BOM
-function doCreateBaseBom() {
-	var materialId ='${product.materialId}';
-	var productModel = '${product.productModel }';
-	var accessFlg = $('#recordsTotal').val();
-	if(accessFlg > 0){
-		var url = '${ctx}/business/bom?methodtype=editBaseBom&materialId=' + materialId+'&model='+productModel;
-
-	}else{
-		var url = '${ctx}/business/bom?methodtype=createBaseBom&materialId=' + materialId+'&model='+productModel;	
-	}
-	location.href = url;
+	var netAdjust = adjust - docCost1 - docCost2 - docCost3 - docCost4 ;
+	$('#doctCost1').html(fomatToColor(docCost1));
+	$('#doctCost2').html(fomatToColor(docCost2));
+	$('#doctCost3').html(fomatToColor(docCost3));
+	$('#doctCost4').html(fomatToColor(docCost4));
+	$('#netAdjust').html(fomatToColor(netAdjust));
 	
 }
+//销售利润计算
+function costAcount(){
+	var exchang  = currencyToFloat($('#bomPlan\\.exchangerate').val());
+	var exRebate = currencyToFloat($('#bomPlan\\.rebaterate').val());
+	var exprice  = currencyToFloat($('#orderPrice').text());
+	var mateCost = currencyToFloat($('#materialCost').text());
+	var baseCost = currencyToFloat($('#baseCost').text());
+	//原币价格=汇率*报价，利润率=（原币价格+退税-基础成本）/基础成本
+	var rmb = exchang * exprice;
+	var rebate = exRebate * mateCost / 1.17 / 100;	//退税
+	var profit = rmb + rebate - baseCost ;			//利润
+	var profitRate = profit / baseCost * 100;		//利润率
+	//销售税=（销售单价(原币)-材料成本）*17%
+	var salesTax = ( rmb - mateCost ) * exRebate / 100;
+	
+	var costRate =  currencyToFloat($('#costRate').text());
+	var quantity = currencyToFloat($('#quantity').text());
+	
+	//单位销售毛利=销售单价（原币）-产品成本-销售税+退税
+	//单位核算毛利=销售单价（原币）-产品成本-销售税+退税-经管费=单位销售毛利-经管费
+	var unitSale = rmb - baseCost - salesTax + rebate;
+	var unitAdjust = unitSale - baseCost * costRate / 100;
+	var sale = unitSale * quantity;
+	var adjust = unitAdjust * quantity;
+	//alert('p='+(rmb - baseCost)+'profit='+profit)
+	$('#bomPlan\\.salestax').val(floatToCurrency(salesTax));
+	$('#bomPlan\\.rebate').val(floatToCurrency(rebate));
+	$('#bomPlan\\.rmbprice').val(floatToCurrency(rmb));
+	$('#bomPlan\\.profit').val(floatToCurrency(profit));
+	$('#bomPlan\\.profitrate').val(floatToCurrency(profitRate));
 
+	$('#unitSale').text(floatToCurrency(unitSale));
+	$('#unitAdjust').text(floatToCurrency(unitAdjust));
+	$('#sale').text(floatToCurrency(sale));
+	$('#adjust').text(floatToCurrency(adjust));
+	
+	netAdjustAccout();//贸易净利	
+}
+
+</script>
+
+<script  type="text/javascript">
 function baseBomView() {
 
 	var materialId='${order.materialId}';
@@ -508,7 +843,8 @@ function baseBomView() {
 					$('#totalCost').html(totalCost);
 					$('#costRate').html(costRote);
 					$('#productRecordId').val(recordId);
-					//alert('costRote:'+costRote)
+					
+					costAcount();//销售利润
 					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -619,30 +955,55 @@ function doEditMaterial(recordid,parentid) {
 
 };
 
-</script>
-<script type="text/javascript">
-$(function(){
-	var t = [];
-	var dt = $("dl.collapse dt");
-	var dd = $("dl.collapse dd");
+function doEditDocumentary() {
 	
-	dt.each(function(i){
-		t[i] = false;		//设置折叠初始状态
-		$(dt[i]).click((function(i,dd){
+	var url = '${ctx}/business/order?methodtype=documentaryEdit';
+	var YSId = '${order.YSId}';
+	url = url + '&YSId=' + YSId;
+	
+	layer.open({
+		offset :[100,''],
+		type : 2,
+		title : false,
+		area : [ '800px', '300px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		  documentaryShow();
+		  return false; 
+		}    
+	});		
+
+};
+</script>
+
+<script type="text/javascript">
+function doCheck1(tableid,index,recordid) {
+	
+	var actionUrl = "${ctx}/business/bom?methodtype=CheckOrderCost1";
+
+	$.ajax({
+		type : 'POST',
+		async: false,
+		contentType : 'application/json',
+		dataType : 'text',
+		data : recordid,
+		url : actionUrl,
+		success : function(data) {
+			$('#expense'+tableid+  ' tbody tr').eq(index).find("td").eq(5).html("已确认");
 			
-			return function(){		//返回一个闭包函数,闭包能够存储传递进来的动态参数
-				
-				if(t[i]){					
-					$(dd).show();
-					t[i] = false;
-				}else{
-					$(dd).hide();
-					t[i] = true;
-				}					
-			}
-		})(i,dd[i]))	//向当前执行函数中传递参数
-	})
-})
+			$().toastmessage('showNoticeToast', "确认完毕!");	
+		},
+		error:function(XMLHttpRequest, textStatus, errorThrown){
+			alert(textStatus)
+        }
+	});
+}
 </script>
 </body>
 	

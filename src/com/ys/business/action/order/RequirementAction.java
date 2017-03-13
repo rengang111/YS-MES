@@ -70,7 +70,10 @@ public class RequirementAction extends BaseAction {
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
-				break;	
+				break;
+			case "create"://订单采购需求
+				rtnUrl = doCreate();
+				break;		
 			case "insert":
 				doInsert();
 				rtnUrl = "/business/requirement/requirementview";
@@ -78,6 +81,10 @@ public class RequirementAction extends BaseAction {
 			case "purchasePlanView":
 				//doShowBomDetail();
 				rtnUrl = "/business/bom/bomselectlist";
+				break;
+			case "editRequirement":
+				doEditRequirement();
+				rtnUrl = "/business/requirement/requirementedit";
 				break;
 			case "editZZ":
 				doEditZZ();
@@ -92,8 +99,26 @@ public class RequirementAction extends BaseAction {
 				rtnUrl = "/business/requirement/requirementedit";
 				break;				
 			case "approve":
-				doApprove();
+				//doApprove();
 				rtnUrl = "/business/order/ordermain";
+				break;
+			case "getzzMaterial"://订单中的自制品原材料合并数据
+				dataMap = getzzMaterial();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/requirement/requirementedit";
+				break;				
+			case "insertProcurement":
+				doInsertProcurement();
+				rtnUrl = "/business/requirement/requirementview";
+				break;				
+			case "updateProcurement":
+				doUpdateProcurement();
+				rtnUrl = "/business/requirement/requirementview";
+				break;				
+			case "getOrderBom":
+				dataMap = doShowOrderBom();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/requirement/requirementview";
 				break;
 				
 		}
@@ -126,7 +151,23 @@ public class RequirementAction extends BaseAction {
 	}
 
 
+	public String doCreate() throws Exception {
+		
+		String rtnUrl= "/business/requirement/requirementadd";
+		boolean flg = service.createOrView();
+		
+		if(flg){
+			rtnUrl = "/business/requirement/requirementview";
+		}
+		
+		return rtnUrl;
+	}		
 	
+	
+	public void doEditRequirement() throws Exception{
+
+		service.editRequirement();
+	}
 	
 	public void doInsert() throws Exception {
 
@@ -150,10 +191,28 @@ public class RequirementAction extends BaseAction {
 		service.editorderPart();
 	}	
 	
-	public void doApprove() throws Exception {
+	public void doInsertProcurement() throws Exception {
 		
-		service.approveAndView();			
+		service.insertProcurement();			
 		
 	}
-	
+
+	public void doUpdateProcurement() throws Exception {
+		
+		service.updateProcurement();			
+		
+	}
+	public HashMap<String, Object> getzzMaterial() throws Exception {
+
+		//HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		return service.getZZMaterial();	
+			
+		
+	}
+
+	public HashMap<String, Object> doShowOrderBom() throws Exception{
+		
+		return  service.showOrderBomDetail();
+			
+	}
 }

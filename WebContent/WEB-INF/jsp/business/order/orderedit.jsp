@@ -293,23 +293,6 @@
 		$(".DTTT_container").css('float','left');
 	});	
 	
-	function foucsInit(){
-		
-		$("input:text[type='text']")
-		.focus(function(){
-		    $(this).select();
-		});
-
-		$(".cash") .focus(function(){
-			$(this).val(currencyToFloat($(this).val()));
-		    $(this).select();
-		});
-		
-		$(".cash") .blur(function(){
-			$(this).val(floatToCurrency($(this).val()));
-		});
-	}
-	
 </script>
 
 </head>

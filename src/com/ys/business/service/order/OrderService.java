@@ -741,4 +741,47 @@ public class OrderService extends BaseService {
 		return dbData;
 	}
 	
+	public HashMap<String, Object> getDocumenterayName() throws Exception{
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		 String key1 = this.request.getParameter("key").toUpperCase();
+		
+		 this.dataModel.setQueryFileName("/business/order/orderquerydefine");
+		 this.dataModel.setQueryName("getDocumenterayName");
+		
+		 this.baseQuery = new BaseQuery(this.request, this.dataModel);
+		
+		 this.userDefinedSearchCase.put("costName", key1);
+		
+		 this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
+		 this.baseQuery.getYsFullData();
+		
+		 modelMap.put("data", this.dataModel.getYsViewData());
+		
+		 modelMap.put("retValue", "success");
+		
+		 return modelMap;
+	}
+
+	public void documentaryEdit() throws Exception{
+		
+		String YSId = this.request.getParameter("YSId");
+		getOrderDetail(YSId);
+	}
+	
+	public void getOrderDetail(String YSId) throws Exception{
+		
+	  this.dataModel.setQueryFileName("/business/order/orderquerydefine");
+	  this.dataModel.setQueryName("getOrderList");
+	
+	  this.baseQuery = new BaseQuery(this.request, this.dataModel);
+	
+	  this.userDefinedSearchCase.put("keywords1", YSId);
+	  this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
+	  this.baseQuery.getYsFullData();
+	
+	  this.model.addAttribute("order", this.dataModel.getYsViewData().get(0));
+	}
+	
 }

@@ -210,20 +210,59 @@ public class BusinessService {
 	}
 
 	/**
-	 * @return 订单BOM编号
+	 * @return 首次创建订单BOM编号
 	 * 
 	 */
-	public static String[] getOrderBOMFormatId(String code1,int code2,boolean blAdd )
+	public static String getOrderBOMParentId(String code1)
 	{
-		String[] rtn = new String[2];
+		String rtn = "";
+		
+		String tmp2 = code1.substring(2);
+		//
+		rtn = BusinessConstants.ORDERBOM_BD +tmp2 ;
+		
+		return rtn;
+	}
+	
+
+	/**
+	 * @return 取得订单BOM编号(流水号)
+	 * 
+	 */
+	public static String getOrderBOMFormatId(String code1,int code2,boolean blAdd )
+	{
+		String rtn = "";
 		//格式化成3位流水号,并且+1
 		String ft = BusinessService.getFormat2Code(code2,blAdd);
 		
 		String tmp2 = code1.substring(2);
 		//
-		rtn[0] = BusinessConstants.ORDERBOM_BD + "."+tmp2 ;
-		rtn[1] = BusinessConstants.ORDERBOM_BD + "."+tmp2 + "-"+ft;
+		rtn = BusinessConstants.ORDERBOM_BD + "."+tmp2 + "-"+ft;
 		
 		return rtn;
 	}
+
+	/**
+	 * @return 取得订单BOM编号(流水号)
+	 * 
+	 */
+	public static String getOrderBOMParentId(String code1,int code2 )
+	{
+		String rtn = "";
+		
+		String tmp2 = code1.substring(2);
+		//
+		rtn = BusinessConstants.ORDERBOM_BD + "."+tmp2 ;
+		
+		return rtn;
+	}
+	/**
+	 * 
+	 */
+	 public static String format2Decimal(float value) {
+		 return String.valueOf(value);
+         //DecimalFormat df = new DecimalFormat("#.00");
+		//return df.format(value);
+	 }
+	 
 }

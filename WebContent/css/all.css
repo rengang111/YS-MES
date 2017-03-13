@@ -17,6 +17,9 @@ td.td-center {
 	text-align: center;
 }
 
+td.bold {
+	font-weight:bold;
+}
 td.td-right {
 	text-align: right !important;
 	padding-right: 20px !important;
@@ -25,7 +28,8 @@ td.td-right {
 body{
     /* background-color: floralwhite; */
     font-size:12px;
-    font-family:"Microsoft YaHei,Arial, Helvetica, sans-serif";
+   /* font-family:"Microsoft YaHei,Arial, Helvetica, sans-serif";*/
+    font-family:"Arial","Microsoft YaHei","黑体","宋体",sans-serif;
     word-spacing:5px; 
 	letter-spacing: 0px;
 }
@@ -579,6 +583,8 @@ input.error { background-color: rgba(255, 0, 0, 0.28);}
 input.bgnone { background-color: transparent;}
 input.bgwhite { background-color: #fff; }
 input.bsolid { border: 1px solid #dadada; }
+input.rise { color: red !important; }
+input.decline { color: green !important; }
 
 .hasDatepicker{
    /* background:white url(../images/add.png) no-repeat right;*/

@@ -186,6 +186,7 @@ function ajax() {
 			var key = unitAaary[i][1];//取得显示单位:克,吨...
 			if(vrawunit == key){
 				farwunit = val;
+				//alert('原材料的购买单位'+farwunit)
 				break;
 			}
 		}
@@ -197,14 +198,16 @@ function ajax() {
 			var key = unitAaary[i][1];//取得显示单位:克,吨...
 			if(unittext == key){
 				fchgunit = val;//只有在需要换算的时候,才设置换算单位
+				//alert('自制品的用量单位'+fchgunit)
 				break;
 			}
 		}		
-		var fwastRate = currencyToFloat(vwastRate);//损耗比
-		var fwastage  = fnetweight * fwastRate / 100;//损耗
-		var fweight   = fnetweight + fwastage;//总用量=净用量量+损耗
-		var fkgprice  = frawprice * farwunit / fchgunit; //换算后单价=原单价*原单位/新单位
-		var fpricenew = fkgprice * fweight ;//单位材料价=新单价*总用量	
+		var fwastRate = currencyToFloat(vwastRate);			//损耗比
+		var fwastage  = fnetweight * fwastRate / 100;		//损耗
+		var fweight   = fnetweight + fwastage;				//总用量=净用量量+损耗
+		var fkgprice  = frawprice * farwunit / fchgunit; 	//换算后单价=原单价*原单位/新单位
+		var fpricenew = fkgprice * fweight ;				//单位材料价=新单价*总用量	
+		var fconvunit = fchgunit / farwunit;				//换算单位
 		//alert('frawprice:'+frawprice+'--farwunit:'+farwunit+'--fchgunit:'+fchgunit+'--fpricenew:'+fpricenew);	
 
 		var vnetweight = float5ToCurrency(fnetweight);
@@ -220,7 +223,7 @@ function ajax() {
 		$oweights.html(vweight);
 		$oweighti.val(vweight);
 		$okgprice.html(vkgprice);
-		$oconvunit.val(fchgunit);
+		$oconvunit.val(fconvunit);
 		$omatprices.html(vpricenew);	
 		$omatpricei.val(vpricenew);	
 

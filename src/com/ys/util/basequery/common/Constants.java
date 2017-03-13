@@ -63,9 +63,9 @@ public class Constants {
 	/**
 	 * BOM种类
 	 */
-	public static final String BOMTYPE_B = "B";//基础BOM
-	public static final String BOMTYPE_Q = "Q";//报价BOM
-	public static final String BOMTYPE_O = "O";//订单BOM
+	//public static final String BOMTYPE_B = "B";//基础BOM
+	//public static final String BOMTYPE_Q = "Q";//报价BOM
+	//public static final String BOMTYPE_O = "O";//订单BOM
 
 	/**
 	 * 页面访问标识

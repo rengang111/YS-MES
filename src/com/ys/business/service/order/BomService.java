@@ -25,12 +25,14 @@ import com.ys.business.db.dao.B_BomDao;
 import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
+import com.ys.business.db.dao.B_OrderExpenseDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
 import com.ys.business.db.data.B_BomData;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_OrderExpenseData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
 import com.ys.business.db.data.CommFieldsData;
@@ -282,6 +284,39 @@ public class BomService extends BaseService {
 		}	
 	}
 	
+	public HashMap<String, Object> getDocumentary(String YSId)
+			  throws Exception
+			{
+			  HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+			  this.dataModel.setQueryName("getDocumentary");
+
+			  this.baseQuery = new BaseQuery(this.request, this.dataModel);
+			  this.userDefinedSearchCase.put("YSId", YSId);
+			  this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
+			  this.baseQuery.getYsFullData();
+
+			  modelMap.put("recordsTotal", Integer.valueOf(this.dataModel.getRecordCount()));
+			  modelMap.put("recordsFiltered", Integer.valueOf(this.dataModel.getRecordCount()));
+			  modelMap.put("data", this.dataModel.getYsViewData());
+
+			  return modelMap;
+			}
+
+	public void getOrderExpense(String YSId)throws Exception{
+		
+	  this.dataModel.setQueryFileName("/business/order/bomquerydefine");
+	  this.dataModel.setQueryName("getDocumentary");
+
+	  this.baseQuery = new BaseQuery(this.request, this.dataModel);
+	  this.userDefinedSearchCase.put("YSId", YSId);
+	  this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
+	  this.baseQuery.getYsFullData();
+
+	  this.model.addAttribute("orderExpense", this.dataModel.getYsViewData());
+	}
+
+
 	public Model getBomDetail(String YSId) throws Exception {
 	
 		dataModel = new BaseModel();		
@@ -416,6 +451,54 @@ public class BomService extends BaseService {
 		return bomPlanData;
 	}
 	
+	private B_BomPlanData BomPlanExistCheck2(String ysid)
+			  throws Exception
+			{
+			  List dbList = null;
+			  this.bomPlanData = null;
+			  try {
+			    String where = "ysid = '" + ysid + 
+			      "' AND  deleteFlag = '0' ";
+			    dbList = this.bomPlanDao.Find(where);
+			    if ((dbList == null) || (dbList.size() > 0))
+			      this.bomPlanData = ((B_BomPlanData)dbList.get(0));
+			  }
+			  catch (Exception e) {
+			    System.out.println(e.getMessage());
+			  }
+
+			  return this.bomPlanData;
+			}
+	
+	private B_OrderExpenseData OrderExpenseExistCheck(String recordid) throws Exception
+	{
+	  B_OrderExpenseData dt = new B_OrderExpenseData();
+	  dt.setRecordid(recordid);
+
+	  B_OrderExpenseDao dao = new B_OrderExpenseDao(dt);
+	  return dao.beanData;
+	}
+
+	private String insertOrderBom()
+			  throws Exception
+			{
+			  String bomid = "";
+			  try
+			  {
+			    B_BomPlanData reqData = this.reqModel.getBomPlan();
+			    B_BomDetailData reqDtlDt = this.reqModel.getBomDetail();
+
+			    reqData.setBomtype("O");
+			    updateBomPlan(reqData);
+			  }
+			  catch (Exception e)
+			  {
+			    this.reqModel.setEndInfoMap("-1", "err001", "");
+			  }
+
+			  return bomid;
+			}
+
 	@SuppressWarnings("unchecked")
 	private B_BomData BomExistCheck(String bomId) throws Exception {
 		
@@ -1009,8 +1092,8 @@ public class BomService extends BaseService {
 			bomId = BusinessService.getBidBOMFormatId(parentId,code, true);
 			
 		}else{
-			newParentId = BusinessService.getOrderBOMFormatId(parentId,code, true)[0];
-			bomId = BusinessService.getOrderBOMFormatId(parentId,code, true)[1];
+			newParentId = BusinessService.getOrderBOMParentId(parentId);
+			bomId = BusinessService.getOrderBOMFormatId(parentId,code, true);
 			
 		}
 		

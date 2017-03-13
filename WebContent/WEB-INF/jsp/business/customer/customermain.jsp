@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 
-<%@ include file="../../common/common.jsp"%>
+<%@ include file="../../common/common2.jsp"%>
 
 <title>客户基本数据检索</title>
 <script type="text/javascript">
@@ -20,7 +20,8 @@
 	
 		var t = $('#TCustomer').DataTable({
 				"paging": false,
-				"lengthMenu":[50,100,150],//设置一页展示10条记录
+				 "iDisplayLength" : 100,
+				//"lengthMenu":[50,100,150],//设置一页展示10条记录
 				"processing" : false,
 				"serverSide" : false,
 				"stateSave" : false,
@@ -70,6 +71,12 @@
 					    		{"targets":0,"render":function(data, type, row){
 									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 			                    }},
+					    		{"targets":3,"render":function(data, type, row){
+					    			
+					    			var name = row["customerName"];				    			
+					    			name = jQuery.fixedWidth(name,30);				    			
+					    			return name;
+					    		}},
 					    		{"targets":8,"render":function(data, type, row){
 					    			return row["shippiingPort"] + "/"+row["destinationPort"] ;
 			                    }},
