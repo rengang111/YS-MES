@@ -96,6 +96,11 @@
 <!-- 这个url-pattern在setting下的ckfinder.xml中需要定义 -->
 </servlet-mapping>  
   
+<servlet-mapping>  
+  <servlet-name>default</servlet-name>  
+  <url-pattern>*.cab</url-pattern>  
+</servlet-mapping>   
+  
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/</url-pattern>
