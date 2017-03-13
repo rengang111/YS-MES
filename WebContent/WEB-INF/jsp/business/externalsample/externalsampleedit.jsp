@@ -12,327 +12,10 @@
 var validator;
 var layerHeight = "250";
 
-function ajaxTestFile() {
-	var table = $('#TESTestFileList').dataTable();
-	if(table) {
-		table.fnDestroy();
-	}
-
-	var t = $('#TESTestFileList').DataTable({
-					"paging": false,
-					"lengthMenu":[5],//设置一页展示10条记录
-					"processing" : false,
-					"serverSide" : true,
-					"stateSave" : false,
-					"searching" : false,
-					"retrieve" : true,
-					"sAjaxSource" : "${ctx}/business/esrelationfile?methodtype=searchtestfile",
-					"fnServerData" : function(sSource, aoData, fnCallback) {
-						var param = {};
-						var formData = $("#externalSampleInfo").serializeArray();
-						formData.forEach(function(e) {
-							aoData.push({"name":e.name, "value":e.value});
-						});
-
-						$.ajax({
-							"url" : sSource,
-							"datatype": "json", 
-							"contentType": "application/json; charset=utf-8",
-							"type" : "POST",
-							"data" : JSON.stringify(aoData),
-							success: function(data){
-								/*
-								if (data.message != undefined) {
-									alert(data.message);
-								}
-								*/
-								fnCallback(data);
-							},
-							 error:function(XMLHttpRequest, textStatus, errorThrown){
-				                 //alert(XMLHttpRequest.status);
-				                 //alert(XMLHttpRequest.readyState);
-				                 //alert(textStatus);
-				             }
-						})
-					},
-						
-					"language": {
-		        		"url":"${ctx}/plugins/datatables/chinese.json"
-		        	},
-		        	/*
-		        	dom : 'T<"clear">rt',
-
-					"tableTools" : {
-
-						"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
-
-						"aButtons" : [										
-								{
-									"sExtends" : "create",
-									"sButtonText" : "新建"
-								},								
-								{
-									"sExtends" : "Delete",
-									"sButtonText" : "删除"
-								},
-						]
-					},
-					*/
-					"columns" : [ 
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "filename", "className" : 'td-center'}, 
-						{"data" : "path", "className" : 'td-center'},
-						{"data" : "memo", "className" : 'td-center'}, 
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}
-					],
-					"columnDefs":[
-			    		{"targets":0,"render":function(data, type, row){
-							return row["rownum"] + "<input type=checkbox name='numCheckTest' id='numCheckTest' value='" + row["id"] + "' />"
-	                    }},
-			    		{"targets":4,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"doUpdateESFileTest('" + row["id"] + "')\">编辑</a>"
-	                    }}
-				    ] 						
-				});
-
-	t.on('click', 'tr', function() {
-		$(this).toggleClass('selected');
-	});
-
-	/*
-	t.on('dblclick', 'tr', function() {
-
-		var d = t.row(this).data();
-
-		
-		layer.open({
-			type : 2,
-			title : false,
-			area : [ '900px', '370px' ],
-			scrollbar : false,
-			title : false,
-			closeBtn: 0, //不显示关闭按钮
-			content : '${ctx}/business/customer/contactedit?name=' + d["name"] + '&id=' + $('#customerID').val()
-		});
-	});
-	*/
-	
-	// Add event listener for opening and closing details
-	t.on('click', 'td.details-control', function() {
-
-		//alert(999);
-
-		var tr = $(this).closest('tr');
-		t
-		var row = t.row(tr);
-		t
-
-		if (row.child.isShown()) {
-			// This row is already open - close it
-			row.child.hide();
-			tr.removeClass('shown');
-		} else {
-			// Open this row
-			row.child(format(row.data())).show();
-			tr.addClass('shown');
-		}
-	});
-
-};
-
-function ajaxMachinePic() {
-	var table = $('#TESMachinePicList').dataTable();
-	if(table) {
-		table.fnDestroy();
-	}
-
-	var t = $('#TESMachinePicList').DataTable({
-					"paging": false,
-					"lengthMenu":[5],//设置一页展示10条记录
-					"processing" : false,
-					"serverSide" : true,
-					"stateSave" : false,
-					"searching" : false,
-					"retrieve" : true,
-					"sAjaxSource" : "${ctx}/business/esrelationfile?methodtype=searchmachinefile",
-					"fnServerData" : function(sSource, aoData, fnCallback) {
-						var param = {};
-						var formData = $("#externalSampleInfo").serializeArray();
-						formData.forEach(function(e) {
-							aoData.push({"name":e.name, "value":e.value});
-						});
-
-						$.ajax({
-							"url" : sSource,
-							"datatype": "json", 
-							"contentType": "application/json; charset=utf-8",
-							"type" : "POST",
-							"data" : JSON.stringify(aoData),
-							success: function(data){
-								/*
-								if (data.message != undefined) {
-									alert(data.message);
-								}
-								*/
-								fnCallback(data);
-							},
-							 error:function(XMLHttpRequest, textStatus, errorThrown){
-				                 //alert(XMLHttpRequest.status);
-				                 //alert(XMLHttpRequest.readyState);
-				                 //alert(textStatus);
-				             }
-						})
-					},
-						
-					"language": {
-		        		"url":"${ctx}/plugins/datatables/chinese.json"
-		        	},
-		        	/*
-		        	dom : 'T<"clear">rt',
-
-					"tableTools" : {
-
-						"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
-
-						"aButtons" : [										
-								{
-									"sExtends" : "create",
-									"sButtonText" : "新建"
-								},								
-								{
-									"sExtends" : "Delete",
-									"sButtonText" : "删除"
-								},
-						]
-					},
-					*/
-					"columns" : [ 
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "filename", "className" : 'td-center'}, 
-						{"data" : "path", "className" : 'td-center'},
-						{"data" : "memo", "className" : 'td-center'}, 
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}
-					],
-					"columnDefs":[
-			    		{"targets":0,"render":function(data, type, row){
-							return row["rownum"] + "<input type=checkbox name='numCheckMachine' id='numCheckMachine' value='" + row["id"] + "' />"
-	                    }},
-			    		{"targets":4,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"doUpdateESFileMachine('" + row["id"] + "')\">编辑</a>"
-	                    }}
-				    ] 						
-				});
-
-	t.on('click', 'tr', function() {
-		$(this).toggleClass('selected');
-	});
-
-	/*
-	t.on('dblclick', 'tr', function() {
-
-		var d = t.row(this).data();
-
-		
-		layer.open({
-			type : 2,
-			title : false,
-			area : [ '900px', '370px' ],
-			scrollbar : false,
-			title : false,
-			closeBtn: 0, //不显示关闭按钮
-			content : '${ctx}/business/customer/contactedit?name=' + d["name"] + '&id=' + $('#customerID').val()
-		});
-	});
-	*/
-	
-	// Add event listener for opening and closing details
-	t.on('click', 'td.details-control', function() {
-
-		//alert(999);
-
-		var tr = $(this).closest('tr');
-		t
-		var row = t.row(tr);
-		t
-
-		if (row.child.isShown()) {
-			// This row is already open - close it
-			row.child.hide();
-			tr.removeClass('shown');
-		} else {
-			// Open this row
-			row.child(format(row.data())).show();
-			tr.addClass('shown');
-		}
-	});
-
-};
-
-$.fn.dataTable.TableTools.buttons.create = $
-.extend(
-		true,
-		{},
-		$.fn.dataTable.TableTools.buttonBase,
-		{
-			"fnClick" : function(button) {
-
-			}
-		});
-		
-$.fn.dataTable.TableTools.buttons.Delete = $
-.extend(
-		true,
-		{},
-		$.fn.dataTable.TableTools.buttonBase,
-		{
-			"fnClick" : function(button) {
-
-			}
-		});
-		
 function initEvent(){
-
-	ajaxTestFile();
-	ajaxMachinePic();
 
 	controlButtons($('#keyBackup').val());
 	
-	$('#TESMachinePicList').DataTable().on('click', 'tr', function() {
-		
-		if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-        	$('#TESMachinePicList').DataTable().$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-	});
-	
-	/*
-	$('#TESMachinePicList').DataTable().on('dblclick', 'tr', function() {
-
-		var d = $('#TESMachinePicList').DataTable().row(this).data();
-
-		location.href = '${pageContext.request.contextPath}/factory/show/' + d["factory_id"] + '.html';		
-		
-	});
-	*/
-}
-
-function reloadMachinePicList() {
-
-	$('#TESMachinePicList').DataTable().ajax.reload(null,false);
-	reloadTabWindow();
-
-	return true;
-}
-
-function reloadTestFileList() {
-
-	$('#TESTestFileList').DataTable().ajax.reload(null,false);
-	reloadTabWindow();
-
-	return true;
 }
 
 $(document).ready(function() {
@@ -342,8 +25,12 @@ $(document).ready(function() {
 	$('#tabs').height('270px');
 	$('#tabs-1').height('300px');
 
+	resetFinder(0, 2);
+	
 	if ($('#keyBackup').val() != "") {
 		$('#tabs').show();
+		refreshFileBrowser(0);
+		refreshFileBrowser(1);
 	}
 	
 	initEvent();
@@ -383,7 +70,67 @@ $(document).ready(function() {
 	});
 
 	$("#currency").val("${DisplayData.externalSampleData.currency}");
+	
+	//refreshTestFileList();
+
 })
+
+function refreshTestFileList() {
+	
+	var key = $('#keyBackup').val();
+	var tabTitle = getTabTitle();
+	var url = "${ctx}/business/externalsample?methodtype=getfilelist&key=" + key + "&tabTitle=" + tabTitle;
+	
+	$.ajax({
+		contentType : 'application/json',
+		dataType : 'json',						
+		type : "POST",
+		data : '',// 要提交的表单						
+		url : url,
+		success : function(d) {
+			
+			$('#TESTFileList').empty();
+			
+			var tr = '';
+			var rdPerRow = 10;
+			var dArray = d.toString().split(",");
+			for(var i = 0; i < dArray.length; i++) {
+				if (i % rdPerRow == 0) {
+					tr = '	<tr>';
+				}
+				tr += '		<td width=100>';
+				tr += '			<div style="color:#6d6d6d;text-align:left;font-size:15px;font-weight:bold" onclick="openFolder(\'' + dArray[i] + '\');">';
+				tr += '			<img id="folderImg-' + i + '" name="folderImg-' + i + '" src="${ctx}/images/folder.ico" style="vertical-align:bottom;width:30px;height:30px;"/></div>';
+				tr += '         <div>' + dArray[i] + '</div>'
+				tr += '		</td>';
+				if ((i + 1) % rdPerRow == 0) {
+					tr += '	</tr>';
+				} else {
+					if (i == dArray.length - 1) {
+						tr += '	</tr>';
+					}
+				}
+			}
+			$('#TESTFileList').append(tr);
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			//alert(XMLHttpRequest.status);
+			//alert(XMLHttpRequest.readyState);
+			//alert(textStatus);
+			//alert(errorThrown);
+			
+			//发生系统异常，请再试或者联系管理员。
+			alert("发生系统异常，，请再试或者联系管理员。");
+		}
+	});
+}
+
+function openFolder(folderName) {
+	var key = $('#keyBackup').val();
+	var tabTitle = getTabTitle();
+	var url = "${ctx}/business/externalsample?methodtype=openfilebrowser&key=" + key + "&tabTitle=" + tabTitle + "&folderName=" + folderName;
+	//openLayer(url, '', $(window).height(), false);	
+}
 
 function doSave() {
 
@@ -414,15 +161,19 @@ function doSave() {
 					if (d.rtnCd != "000") {
 						alert(d.message);	
 					} else {
+						$('#keyBackup').val(d.info);
 						$('#tabs').show();
+						refreshFileBrowser(0);
+						refreshFileBrowser(1);
 						reloadTabWindow();
 						controlButtons(d.info);
 					}
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
-					var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+					//var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 					//parent.$('#events').DataTable().destroy();
-					parent.layer.close(index); //执行关闭
+					//parent.layer.close(index); //执行关闭
 					
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -452,17 +203,16 @@ function doDelete() {
 					alert(d.message);	
 				} else {
 					$('#tabs').hide();
+					$('#TESTFileArea').hide();
 					controlButtons("");
 					clearExternalSampleInfo();
-					reloadMachinePicList();
-					reloadTestFileList();
 					reloadTabWindow();
 				}
 					
 				//不管成功还是失败都刷新父窗口，关闭子窗口
 				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 				//parent.$('#events').DataTable().destroy();/
-				parent.reload_contactor();
+				//parent.reload_contactor();
 				parent.layer.close(index); //执行关闭
 				
 			},
@@ -476,112 +226,41 @@ function doDelete() {
 	}
 }
 
-function doAddESFileTest() {
+function doReturn() {
+	//var url = "${ctx}/business/externalsample";
+	//location.href = url;	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
+
+function doDocumentManageTest() {
 	var key = $('#keyBackup').val();
-	var url = "${ctx}/business/esrelationfile?methodtype=addtestinit&key=" + key;
-	openLayer(url, $(document).width() - 25, layerHeight, false);	
+	var tabTitle = getTabTitle();
+	var url = "${ctx}/business/externalsample?methodtype=openfilebrowser&key=" + key + "&tabTitle=" + tabTitle;
+	//openLayer(url, '', $(window).height(), false);
 }
 
-function doUpdateESFileTest(key) {		
-	var url = "${ctx}/business/esrelationfile?methodtype=updatetestinit&key=" + key;
-	openLayer(url, $(document).width() - 25, layerHeight, false);
-}
+function refreshFileBrowser(id) {
 
-function doDeleteESFileTest() {
-	var str = '';
-	$("input[name='numCheckTest']").each(function(){
-		if ($(this).prop('checked')) {
-			str += $(this).val() + ",";
-		}
-	});
-
-	if (str != "") {
-		if (confirm("您确认执行该操作吗？") == false) {
-			return;
-		}
-		$.ajax({
-			contentType : 'application/json',
-			dataType : 'json',						
-			type : "POST",
-			data : str,// 要提交的表单						
-			url : "${ctx}/business/esrelationfile?methodtype=deletetest",
-			success : function(d) {
-				if (d.rtnCd != "000") {
-					alert(d.message);
-				} else {
-					reloadMachinePicList();
-					reloadTestFileList();
-				}
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				//alert(XMLHttpRequest.status);
-				//alert(XMLHttpRequest.readyState);
-				//alert(textStatus);
-				//alert(errorThrown);
-				
-				//发生系统异常，请再试或者联系管理员。
-				alert("发生系统异常，，请再试或者联系管理员。");
-			}
-		});
-		
-	} else {
-		alert("请先选中要删除的记录。");
+	//var key = $('#keyBackup').val();
+	//var tabTitle = getTabTitle();
+	//var url = "${ctx}/business/externalsample?methodtype=openfilebrowser&key=" + key + "&tabTitle=" + tabTitle;
+	//var url = "${ctx}/jsp/common/filebrowser.jsp";
+	//$("#TESTFileArea").load(url);
+	if (id == 0) {
+		$("#TESTFileArea").html("");
+		$("#TESTFileArea").show();
+		doRefreshFileBrowser("TESTFileArea", id, "TestReport");
 	}
-
-}
-
-function doAddESFileMachine() {
-	var key = $('#keyBackup').val();
-	var url = "${ctx}/business/esrelationfile?methodtype=addmachineinit&key=" + key;
-	openLayer(url, $(document).width() - 25, layerHeight, false);	
-}
-
-function doUpdateESFileMachine(key) {		
-	var url = "${ctx}/business/esrelationfile?methodtype=updatemachineinit&key=" + key;
-	openLayer(url, '', layerHeight, false);
-}
-
-function doDeleteESFileMachine() {
-	var str = '';
-	$("input[name='numCheckMachine']").each(function(){
-		if ($(this).prop('checked')) {
-			str += $(this).val() + ",";
-		}
-	});
-
-	if (str != "") {
-		if (confirm("您确认执行该操作吗？") == false) {
-			return;
-		}
-		$.ajax({
-			contentType : 'application/json',
-			dataType : 'json',						
-			type : "POST",
-			data : str,// 要提交的表单						
-			url : "${ctx}/business/esrelationfile?methodtype=deletemachine",
-			success : function(d) {
-				if (d.rtnCd != "000") {
-					alert(d.message);
-				} else {
-					reloadMachinePicList();
-					reloadTestFileList();
-				}
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				//alert(XMLHttpRequest.status);
-				//alert(XMLHttpRequest.readyState);
-				//alert(textStatus);
-				//alert(errorThrown);
-				
-				//发生系统异常，请再试或者联系管理员。
-				alert("发生系统异常，，请再试或者联系管理员。");
-			}
-		});
-		
-	} else {
-		alert("请先选中要删除的记录。");
+	if (id == 1) {
+		$("#TESTMachineArea").html("");
+		$("#TESTMachineArea").show();
+		doRefreshFileBrowser("TESTMachineArea", id, "MachineInfo");
 	}
-
+	
 }
 
 function clearExternalSampleInfo() {
@@ -604,11 +283,12 @@ function controlButtons(data) {
 		$('#deleteesfilemachine').attr("disabled", true);
 		$('#addesfiletest').attr("disabled", true);
 		$('#deleteesfiletest').attr("disabled", true);
-		
+		$('#managedoctest').attr("disabled", true);
 	} else {
 		$('#delete').attr("disabled", false);
 		$('#addesfilemachine').attr("disabled", false);
 		$('#addesfiletest').attr("disabled", false);
+		$('#managedoctest').attr("disabled", false);
 	}
 }
 </script>
@@ -634,9 +314,9 @@ function controlButtons(data) {
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-					
+				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 				<form:form modelAttribute="dataModels" id="externalSampleInfo" style='padding: 0px; margin: 10px;' >
-					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
+					<input type="hidden" id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 					<table class="form" width="850px">
 						<tr>
 							<td width="60px">样品编号：</td>
@@ -651,7 +331,7 @@ function controlButtons(data) {
 						<tr>
 							<td>样品名称：</td> 
 							<td>
-								<input type="text" id="sampleName" name="sampleName" class="short" value="${DisplayData.externalSampleData.samplename}"/>
+								<input type="text" id="sampleName" name="sampleName" class="middlelong" value="${DisplayData.externalSampleData.samplename}"/>
 							</td>
 							<td>
 								品牌：
@@ -699,7 +379,7 @@ function controlButtons(data) {
 							<td colspan=2>
 								<input type="text" id="memo" name="memo" style="resize:none;width=200px;height=50px;" class="long" value="${DisplayData.externalSampleData.memo}"/>
 							</td>
-							<td colspan=1></td>
+							<td></td>
 						</tr>
 					</table>
 
@@ -710,60 +390,31 @@ function controlButtons(data) {
 				
 			<div>
 				<legend>测试报告</legend>
-				<button type="button" id="deleteesfiletest" class="DTTT_button" onClick="doDeleteESFileTest();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-				<button type="button" id="addesfiletest" class="DTTT_button" onClick="doAddESFileTest();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="TESTestFileList" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">No</th>
-							<th style="width: 80px;" class="dt-middle">文件名</th>
-							<th style="width: 30px;" class="dt-middle">路径</th>
-							<th style="width: 80px;" class="dt-middle">说明</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-		</div>			
-			
-		<div  style="height:20px"></div>
-			
-		<div>
-			<legend>机器详情</legend>
-			<button type="button" id="deleteesfilemachine" class="DTTT_button" onClick="doDeleteESFileMachine();"
-					style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
-			<button type="button" id="addesfilemachine" class="DTTT_button" onClick="doAddESFileMachine();"
-					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-			<table id="TESMachinePicList" class="display" cellspacing="0">
-				<thead>
-					<tr class="selected">
-						<th style="width: 80px;" class="dt-middle">No</th>
-						<th style="width: 80px;" class="dt-middle">文件名</th>
-						<th style="width: 30px;" class="dt-middle">路径</th>
-						<th style="width: 80px;" class="dt-middle">说明</th>
-						<th style="width: 80px;" class="dt-middle">操作</th>
-					</tr>
-				</thead>
-				<tfoot>
-					<tr>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-						<th></th>
-					</tr>
-				</tfoot>
-			</table>
+				<div class="list" style="height:440">
+					<div id="TESTFileArea" style="display:none;">
+						<!-- 
+						<table id="TESTFileList" class="display" cellspacing="0">
+						</table>
+						 -->
+						 <%@ include file="../../common/filebrowser.jsp"%>
+					</div>
+				</div>
+			</div>
+	
+			<div  style="height:20px"></div>
+				
+			<div>
+				<legend>机器详情</legend>
+				<div class="list">
+					<div id="TESTMachineArea" class="list" style="display:none;">
+						<!-- 
+						<table id="TESTMachinePicList" class="display" cellspacing="0">
+						</table>
+						-->
+						<%@ include file="../../common/filebrowser.jsp"%>
+					</div>
+				</div>
+			</div>
 		</div>
-
+	</body>
 </html>

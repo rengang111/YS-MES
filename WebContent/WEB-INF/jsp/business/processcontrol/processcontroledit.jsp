@@ -389,7 +389,15 @@ function setExpectDate(type, value1, value2, value3) {
 	$('#finishDate-' + type).html(value3);
 
 }
-
+function doReturn() {
+	//var url = "${ctx}/business/externalsample";
+	//location.href = url;	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
 </script>
 
 </head>
@@ -401,7 +409,7 @@ function setExpectDate(type, value1, value2, value3) {
 			<div  style="height:20px"></div>
 				
 			<legend>进程控制-基本信息</legend>
-
+			<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 			<!-- 
 			<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 					style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
@@ -464,30 +472,31 @@ function setExpectDate(type, value1, value2, value3) {
 				
 				<div  style="height:20px"></div>
 				<legend>进程详情</legend>
-
-				<table id="processDetail" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle"></th>
-							<th style="width: 80px;" class="dt-middle">预期完成</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 80px;" class="dt-middle">最新预期</th>
-							<th style="width: 80px;" class="dt-middle">完成日期</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="processDetail" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle"></th>
+								<th style="width: 80px;" class="dt-middle">预期完成</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 80px;" class="dt-middle">最新预期</th>
+								<th style="width: 80px;" class="dt-middle">完成日期</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<div  style="height:20px"></div>
 				<legend style="display:inline">3D完成</legend>
 				<div style="float:right;">
@@ -505,48 +514,52 @@ function setExpectDate(type, value1, value2, value3) {
 					<button type="button" id="addNew0" class="DTTT_button" onClick="addNewExpect('', '01');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
-				<div  style="height:20px"></div>
-				<table id="table-01" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 80px;" class="dt-middle">新建预期</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 180px;" class="dt-middle">原因</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>	
+				<div  style="height:10px"></div>
+				<div class="list">
+					<table id="table-01" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 80px;" class="dt-middle">新建预期</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 180px;" class="dt-middle">原因</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<div style="height:10px">
 				</div>				
 				<button type="button" id="addCheckPoint0" class="DTTT_button" onClick="addNewCheckPoint('', '02');"
-				style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建卡点</button>
-				<table id="table-02" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 350px;" class="dt-middle">卡点描述</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-
+				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				<div style="height:30px"></div>
+				<div class="list">
+					<table id="table-02" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<div  style="height:20px"></div>
 				<legend style="display:inline">3D手模</legend>
 				<div style="float:right;">
@@ -565,47 +578,52 @@ function setExpectDate(type, value1, value2, value3) {
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
 				<div  style="height:10px"></div>
-				<table id="table-11" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 80px;" class="dt-middle">新建预期</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 180px;" class="dt-middle">原因</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>	
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="table-11" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 80px;" class="dt-middle">新建预期</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 180px;" class="dt-middle">原因</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>	
+				</div>
 				<div style="height:10px">
 				</div>				
 				<button type="button" id="addCheckPoint1" class="DTTT_button" onClick="addNewCheckPoint('', '12');"
-				style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建卡点</button>
-				<table id="table-12" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 350px;" class="dt-middle">卡点描述</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-				
+				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				<div style="height:30px"></div>
+				<div class="list">
+					<table id="table-12" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>				
 				<div  style="height:20px"></div>
 				<legend style="display:inline">3D工作样机</legend>
 				<div style="float:right;">
@@ -624,48 +642,52 @@ function setExpectDate(type, value1, value2, value3) {
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
 				<div  style="height:10px"></div>
-					
-				<table id="table-21" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 80px;" class="dt-middle">新建预期</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 180px;" class="dt-middle">原因</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>	
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="table-21" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 80px;" class="dt-middle">新建预期</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 180px;" class="dt-middle">原因</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>	
+				</div>
 				<div style="height:10px">
 				</div>				
 				<button type="button" id="addCheckPoint2" class="DTTT_button" onClick="addNewCheckPoint('', '22');"
-				style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建卡点</button>
-				<table id="table-22" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 350px;" class="dt-middle">卡点描述</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-				
+				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				<div style="height:30px"></div>
+				<div class="list">
+					<table id="table-22" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>				
 				<div  style="height:20px"></div>
 				<legend style="display:inline">模具确认</legend>
 				<div style="float:right;">
@@ -684,48 +706,52 @@ function setExpectDate(type, value1, value2, value3) {
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
 				<div  style="height:10px"></div>
-				
-				<table id="table-31" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 80px;" class="dt-middle">新建预期</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 180px;" class="dt-middle">原因</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>	
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="table-31" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 80px;" class="dt-middle">新建预期</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 180px;" class="dt-middle">原因</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>	
+				</div>
 				<div style="height:10px">
 				</div>				
 				<button type="button" id="addCheckPoint3" class="DTTT_button" onClick="addNewCheckPoint('', '32');"
-				style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建卡点</button>
-				<table id="table-32" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 350px;" class="dt-middle">卡点描述</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-				
+				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				<div style="height:30px"></div>
+				<div class="list">
+					<table id="table-32" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>				
 				<div  style="height:20px"></div>
 				<legend style="display:inline">模具完成</legend>
 				<div style="float:right;">
@@ -744,48 +770,52 @@ function setExpectDate(type, value1, value2, value3) {
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
 				<div  style="height:10px"></div>
-				
-				<table id="table-41" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 80px;" class="dt-middle">新建预期</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 180px;" class="dt-middle">原因</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>	
+				<div style="height:10px"></div>
+				<div class="list">				
+					<table id="table-41" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 80px;" class="dt-middle">新建预期</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 180px;" class="dt-middle">原因</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>	
+				</div>
 				<div style="height:10px">
 				</div>				
 				<button type="button" id="addCheckPoint4" class="DTTT_button" onClick="addNewCheckPoint('', '42');"
-				style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建卡点</button>
-				<table id="table-42" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 350px;" class="dt-middle">卡点描述</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-				
+				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				<div style="height:30px"></div>
+				<div class="list">
+					<table id="table-42" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<div  style="height:20px"></div>
 				<legend style="display:inline">模具调整</legend>
 				<div style="float:right;">
@@ -804,48 +834,52 @@ function setExpectDate(type, value1, value2, value3) {
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
 				<div  style="height:10px"></div>
-			
-				<table id="table-51" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 80px;" class="dt-middle">新建预期</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 180px;" class="dt-middle">原因</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>	
+				<div style="height:10px"></div>
+				<div class="list">			
+					<table id="table-51" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 80px;" class="dt-middle">新建预期</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 180px;" class="dt-middle">原因</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>	
+				</div>
 				<div style="height:10px">
 				</div>				
 				<button type="button" id="addCheckPoint5" class="DTTT_button" onClick="addNewCheckPoint('', '52');"
-				style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建卡点</button>
-				<table id="table-52" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 350px;" class="dt-middle">卡点描述</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-				
+				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				<div style="height:30px"></div>
+				<div class="list">
+					<table id="table-52" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>				
 				<div  style="height:20px"></div>
 				<legend style="display:inline">委外加工</legend>
 				<div style="float:right;">
@@ -864,48 +898,52 @@ function setExpectDate(type, value1, value2, value3) {
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
 				<div  style="height:10px"></div>
-
-				<table id="table-61" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 80px;" class="dt-middle">新建预期</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 180px;" class="dt-middle">原因</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>	
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="table-61" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 80px;" class="dt-middle">新建预期</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 180px;" class="dt-middle">原因</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>	
+				</div>
 				<div style="height:10px">
 				</div>				
 				<button type="button" id="addCheckPoint6" class="DTTT_button" onClick="addNewCheckPoint('', '62');"
-				style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建卡点</button>
-				<table id="table-62" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 350px;" class="dt-middle">卡点描述</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-				
+				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				<div style="height:30px"></div>
+				<div class="list">
+					<table id="table-62" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>				
 				<div  style="height:20px"></div>
 				<legend style="display:inline">试产</legend>
 				<div style="float:right;">
@@ -924,48 +962,52 @@ function setExpectDate(type, value1, value2, value3) {
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
 				<div  style="height:10px"></div>
-
-				<table id="table-71" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 80px;" class="dt-middle">新建预期</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 180px;" class="dt-middle">原因</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>	
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="table-71" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 80px;" class="dt-middle">新建预期</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 180px;" class="dt-middle">原因</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>	
+				</div>
 				<div style="height:10px">
 				</div>				
 				<button type="button" id="addCheckPoint7" class="DTTT_button" onClick="addNewCheckPoint('', '72');"
-				style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建卡点</button>
-				<table id="table-72" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 350px;" class="dt-middle">卡点描述</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-				
+				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				<div style="height:30px"></div>
+				<div class="list">				
+					<table id="table-72" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>				
 				<div  style="height:20px"></div>
 				<legend style="display:inline">文档整理</legend>
 				<div style="float:right;">
@@ -984,48 +1026,52 @@ function setExpectDate(type, value1, value2, value3) {
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
 				<div  style="height:10px"></div>
-
-				<table id="table-81" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 80px;" class="dt-middle">新建预期</th>
-							<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
-							<th style="width: 180px;" class="dt-middle">原因</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>	
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="table-81" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 80px;" class="dt-middle">新建预期</th>
+								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
+								<th style="width: 180px;" class="dt-middle">原因</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>	
+				</div>
 				<div style="height:10px">
 				</div>				
 				<button type="button" id="addCheckPoint8" class="DTTT_button" onClick="addNewCheckPoint('', '82');"
-				style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建卡点</button>
-				<table id="table-82" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">新建日期</th>
-							<th style="width: 350px;" class="dt-middle">卡点描述</th>
-							<th style="width: 40px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-
+				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				<div style="height:30px"></div>
+				<div class="list">
+					<table id="table-82" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">新建日期</th>
+								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 			</form:form>
 		</div>
 </html>

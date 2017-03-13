@@ -153,6 +153,14 @@ public class LoginAction extends BaseAction {
 	        	UserInfo userInfo = loginService.setUserInfo(request, dataModel.getData());
 	        	dataModel.setData(null);
 	        	session.setAttribute(BusinessConstants.SESSION_USERINFO, userInfo);
+	        	
+	    		String contextPath = request.getContextPath();
+	    		String requestUrl = request.getRequestURL().toString();
+	    		int iIndex = requestUrl.indexOf(contextPath);
+	    		requestUrl = requestUrl.subSequence(0, iIndex) + contextPath;
+	    		requestUrl += "/install/OWSSUPP.cab";
+	        	model.addAttribute("SystemUrl", requestUrl);
+	        	
 	        	returnUrl = "/mainframe/mainframe";
         	}
         	catch(Exception e) {

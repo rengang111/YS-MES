@@ -16,8 +16,13 @@
 	<url>${ctx}/yssearch</url>
 	<url>${ctx}/showck</url>
 	<url>${ctx}/saveck</url>
+	<url>${ctx}/jsp/ckfinder/core/connector/java/connector.java?command=Init</url>
 	<url>${ctx}/jsp/ckeditor</url>
-	<url>${ctx}/jsp/ckeditor/*</url>}
+	<url>${ctx}/jsp/ckeditor/*</url>
+	<url>${ctx}/showfinder</url>
+	<url>${ctx}/jsp/ckfinder</url>
+	<url>${ctx}/jsp/ckfinder/*</url>
+	<url>${ctx}/jsp/common/filebrowser.jsp</url>
 	<url>${ctx}/upload/ckeditor/image/file</url>
 	<url>${ctx}/plugins/clockPicker/*</url>
 	<url>${ctx}/plugins/datatables/*</url>

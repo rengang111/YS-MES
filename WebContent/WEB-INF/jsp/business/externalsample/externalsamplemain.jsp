@@ -129,7 +129,9 @@
 	function doCreate() {
 		
 		var url = "${ctx}/business/externalsample?methodtype=addinit";
-		openLayer(url, '', layerHeight, true);
+		
+		openLayer(url, '', $(document).height(), false);
+		//location.href = url;
 	}
 	
 	function doUpdate(key) {
@@ -137,7 +139,9 @@
 		var isFirstRow = true;
 		var url = "${ctx}/business/externalsample?methodtype=updateinit&key=" + key;
 
-		openLayer(url, '', layerHeight, true);
+		openLayer(url, '', $(document).height(), false);
+		
+		//location.href = url;
 	}
 	
 	

@@ -515,6 +515,16 @@ function closeAllTabs() {
 
 	}
 }
+
+function doReturn() {
+	//var url = "${ctx}/business/externalsample";
+	//location.href = url;	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
 </script>
 
 </head>
@@ -529,6 +539,7 @@ function closeAllTabs() {
 
 			<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 					style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
+			<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 			<table class="form" width="850px">
 				<tr>
 					<td width="60px">项目编号：</td>
@@ -587,99 +598,107 @@ function closeAllTabs() {
 				
 				<div  style="height:20px"></div>
 				<legend>基础技术档案</legend>
-				<legend style="margin:0px 0px 0px 35px;">3D结构</legend>
+				<div  style="height:10px"></div>
+				<legend style="margin:0px 0px 0px 0px;">3D结构</legend>
 				<button type="button" id="deleteBaseTechDoc-1" class="DTTT_button" onClick="doDeleteBaseTechDoc(1);"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addBaseTechDoc-1" class="DTTT_button" onClick="doAddBaseTechDoc(1);"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="BaseTechDoc-1" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 40px;" class="dt-middle">No</th>
-							<th style="width: 80px;" class="dt-middle">标题</th>
-							<th style="width: 80px;" class="dt-middle">文件名</th>
-							<th style="width: 80px;" class="dt-middle">路径</th>
-							<th style="width: 180px;" class="dt-middle">说明</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="BaseTechDoc-1" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 40px;" class="dt-middle">No</th>
+								<th style="width: 80px;" class="dt-middle">标题</th>
+								<th style="width: 80px;" class="dt-middle">文件名</th>
+								<th style="width: 80px;" class="dt-middle">路径</th>
+								<th style="width: 180px;" class="dt-middle">说明</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<div  style="height:20px"></div>
-				<legend style="margin:0px 0px 0px 35px;">爆炸图</legend>
+				<legend style="margin:0px 0px 0px 0px;">爆炸图</legend>
 				<button type="button" id="deleteBaseTechDoc-2" class="DTTT_button" onClick="doDeleteBaseTechDoc(2);"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addBaseTechDoc-2" class="DTTT_button" onClick="doAddBaseTechDoc(2);"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="BaseTechDoc-2" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 40px;" class="dt-middle">No</th>
-							<th style="width: 80px;" class="dt-middle">标题</th>
-							<th style="width: 80px;" class="dt-middle">文件名</th>
-							<th style="width: 80px;" class="dt-middle">路径</th>
-							<th style="width: 180px;" class="dt-middle">说明</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-				
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="BaseTechDoc-2" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 40px;" class="dt-middle">No</th>
+								<th style="width: 80px;" class="dt-middle">标题</th>
+								<th style="width: 80px;" class="dt-middle">文件名</th>
+								<th style="width: 80px;" class="dt-middle">路径</th>
+								<th style="width: 180px;" class="dt-middle">说明</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>				
 				<div  style="height:20px"></div>
-				<legend style="margin:0px 0px 0px 35px;">BOM表</legend>
+				<legend style="margin:0px 0px 0px 0px;">BOM表</legend>
 				<button type="button" id="deleteBaseTechDoc-3" class="DTTT_button" onClick="doDeleteBaseTechDoc(3);"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addBaseTechDoc-3" class="DTTT_button" onClick="doAddBaseTechDoc(3);"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="BaseTechDoc-3" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 40px;" class="dt-middle">No</th>
-							<th style="width: 80px;" class="dt-middle">标题</th>
-							<th style="width: 80px;" class="dt-middle">文件名</th>
-							<th style="width: 80px;" class="dt-middle">路径</th>
-							<th style="width: 180px;" class="dt-middle">说明</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="BaseTechDoc-3" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 40px;" class="dt-middle">No</th>
+								<th style="width: 80px;" class="dt-middle">标题</th>
+								<th style="width: 80px;" class="dt-middle">文件名</th>
+								<th style="width: 80px;" class="dt-middle">路径</th>
+								<th style="width: 180px;" class="dt-middle">说明</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<div  style="height:20px"></div>
 				<legend>加工文件</legend>
 				<button type="button" id="deleteWorkingFile" class="DTTT_button" onClick="doDeleteWorkingFile();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addWorkingFile" class="DTTT_button" onClick="doAddWorkingFile();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<div>
+				<div style="height:10px"></div>
+				<div class="list">
 					<table id="workingFileList" class="display" cellspacing="0">
 						<thead>
 							<tr class="selected">
@@ -714,8 +733,10 @@ function closeAllTabs() {
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >修改</button>
 				<button type="button" id="addFolder" class="DTTT_button" onClick="openTabEdit(1);"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
+				<div style="height:10px"></div>
+				<div class="list">
 				<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="height:320px;margin:10px 0px 0px 15px;padding:0px;display:none;">
-
+				</div>
 				</div>
 			</form:form>
 		</div>

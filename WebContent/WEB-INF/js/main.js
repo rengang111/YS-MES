@@ -8,6 +8,7 @@
  * icon：新tab页图标（可选参数）
  */
 function openTab(selector,title,href,icon){
+
     var $tabs = $(selector);
     //如果请求路径不存在，则跳转到error.html界面
     if(!(href!=""&&href!="null"&&href!=null&&href!=undefined)){
@@ -612,6 +613,7 @@ $(function(){
 		})(i,dd[i]))	//向当前执行函数中传递参数
 	})
 })
+<<<<<<< HEAD
 
 function fomatToColor(value){
 	
@@ -636,3 +638,5 @@ function stringPadAfter(value,len){
 }
 
 
+=======
+>>>>>>> refs/remotes/origin/master

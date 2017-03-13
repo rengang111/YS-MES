@@ -416,7 +416,7 @@ public class BaseDAO {
 			    	
 			    }
 			    if (iStart > 0) {
-			    	count = iStart;
+			    	count = iStart + 1;
 			    } else {
 			    	count = 1;
 			    }

@@ -256,10 +256,14 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 			String dirSmall = dir + BusinessConstants.BUSINESSSMALLPHOTOPATH; 			
 			
 			String[] fileNames = uploadReceiver.getFileNameList(dirSmall);
-			for(String fileName:fileNames) {
-				uploadReceiver.deleteFile(request, data, fileName);
+			if (fileNames != null) {
+				for(String fileName:fileNames) {
+					uploadReceiver.deleteFile(request, data, fileName);
+				}
 			}
 			uploadReceiver.deleteFolder(request, data);
+			
+			deleteUploadFiles(request, data);
 		}
 		
 		return model;
@@ -267,6 +271,7 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 	
 	public static B_ExternalSampleData updateModifyInfo(B_ExternalSampleData data, UserInfo userInfo) {
 		String createUserId = data.getCreateperson();
+		
 		if ( createUserId == null || createUserId.equals("")) {
 			data.setCreateperson(userInfo.getUserId());
 			data.setCreatetime(CalendarUtil.fmtDate());
