@@ -380,6 +380,16 @@ function doDeleteQuestion() {
 	}
 
 }
+
+function doReturn() {
+	//var url = "${ctx}/business/externalsample";
+	//location.href = url;	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
 </script>
 
 </head>
@@ -394,6 +404,7 @@ function doDeleteQuestion() {
 
 			<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 					style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
+			<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 			<table class="form" width="850px">
 				<tr>
 					<td width="60px">项目编号：</td>
@@ -455,34 +466,38 @@ function doDeleteQuestion() {
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addtpfile" class="DTTT_button" onClick="doAddTPFile();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<table id="TPFileList" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 40px;" class="dt-middle">No</th>
-							<th style="width: 80px;" class="dt-middle">文件名</th>
-							<th style="width: 80px;" class="dt-middle">路径</th>
-							<th style="width: 180px;" class="dt-middle">说明</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="TPFileList" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 40px;" class="dt-middle">No</th>
+								<th style="width: 80px;" class="dt-middle">文件名</th>
+								<th style="width: 80px;" class="dt-middle">路径</th>
+								<th style="width: 180px;" class="dt-middle">说明</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+				
 				<div  style="height:20px"></div>
 				<legend>问题和改善</legend>
 				<button type="button" id="deletequestion" class="DTTT_button" onClick="doDeleteQuestion();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addquestion" class="DTTT_button" onClick="doAddQuestion();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<div>
+				<div style="height:10px"></div>
+				<div class="list">
 					<table id="questionList" class="display" cellspacing="0">
 						<thead>
 							<tr class="selected">

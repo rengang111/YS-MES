@@ -41,11 +41,66 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+<listener>    
+    <listener-class>    
+        org.springframework.web.context.request.RequestContextListener
+    </listener-class>    
+</listener>
+  <servlet> 
+    <servlet-name>ConnectorServlet</servlet-name> 
+    <servlet-class>com.ckfinder.connector.ConnectorServlet</servlet-class>
+    <init-param> 
+        <param-name>XMLConfig</param-name> 
+        <param-value>WEB-INF/ckfinder.xml</param-value> 
+    </init-param> 
+    <init-param> 
+        <param-name>debug</param-name> 
+        <param-value>false</param-value> 
+    </init-param> 
+    <load-on-startup>1</load-on-startup> 
+</servlet> 
+<servlet-mapping>
+    <servlet-name>ConnectorServlet</servlet-name> 
+    <url-pattern>/jsp/ckfinder/core/connector/java/connector.java</url-pattern> 
+</servlet-mapping>
   <servlet>
     <servlet-name>dispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
+  
+<servlet>  
+<servlet-name>webdav</servlet-name>  
+<servlet-class>org.apache.catalina.servlets.WebdavServlet</servlet-class>  
+<init-param>  
+    <param-name>debug</param-name>  
+    <param-value>0</param-value>  
+</init-param>  
+<init-param>  
+    <param-name>listings</param-name>  
+    <param-value>true</param-value>  
+</init-param>  
+<init-param>  
+    <param-name>readonly</param-name>  
+    <param-value>false</param-value>  
+</init-param>
+<init-param>  
+  <param-name>allowSpecialPaths</param-name>  
+  <param-value>true</param-value>  
+</init-param>  
+<!--load-on-startup>1</load-on-startup-->  
+</servlet>  
+<servlet-mapping>
+<servlet-name>webdav</servlet-name>  
+<url-pattern>/webdav.java/*</url-pattern>
+<!-- 这个url-pattern在setting下的ckfinder.xml中需要定义 -->
+</servlet-mapping>  
+  
+<servlet-mapping>  
+  <servlet-name>default</servlet-name>  
+  <url-pattern>*.cab</url-pattern>  
+</servlet-mapping>   
+  
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/</url-pattern>
@@ -56,4 +111,5 @@
   <welcome-file-list>
     <welcome-file>/mainframe/welcome</welcome-file>
   </welcome-file-list>
+  
 </web-app>

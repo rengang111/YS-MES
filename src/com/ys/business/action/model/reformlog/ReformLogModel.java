@@ -5,6 +5,7 @@ import com.ys.util.basequery.common.BaseModel;
 import net.sf.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_CustomerAddrData;
@@ -12,6 +13,7 @@ import com.ys.business.db.data.B_CustomerData;
 import com.ys.business.db.data.B_ExternalSampleData;
 import com.ys.business.db.data.B_LatePerfectionQuestionData;
 import com.ys.business.db.data.B_LatePerfectionRelationFileData;
+import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_ProcessControlData;
 import com.ys.business.db.data.B_ProjectTaskCostData;
 import com.ys.business.db.data.B_ProjectTaskData;
@@ -25,6 +27,7 @@ public class ReformLogModel extends BaseModel {
 	private B_ReformLogData reformlogData = new B_ReformLogData();
 	private String exceedTime = "";
 	private String projectId = "";
+	private List<B_ReformLogData> detailLines;
 	
 	public String getClassName() {
 		return this.className;
@@ -65,4 +68,10 @@ public class ReformLogModel extends BaseModel {
 		this.projectId = projectId;
 	}
 
+	public List<B_ReformLogData> getDetailLines() {
+		return this.detailLines;
+	}
+	public void setDetailLines(List<B_ReformLogData> detailLines) {
+		this.detailLines = detailLines;
+	}
 }

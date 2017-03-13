@@ -213,7 +213,15 @@ $(document).ready(function() {
 	
 })
 
-
+function doReturn() {
+	//var url = "${ctx}/business/externalsample";
+	//location.href = url;	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
 </script>
 
 </head>
@@ -227,6 +235,7 @@ $(document).ready(function() {
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<legend>模具出入-基本信息</legend>
 				<div style="height:10px;"></div>
+				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 				<table class="form" width="850px">
 					<tr>
 						<td width="90px">产品型号：</td> 

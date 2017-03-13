@@ -1,16 +1,20 @@
 package com.ys.system.service.common;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.dom4j.Element;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,6 +22,7 @@ import com.ys.business.db.data.CommFieldsData;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.CalendarUtil;
+import com.ys.util.XmlUtil;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.Constants;
@@ -278,4 +283,50 @@ public class BaseService {
 		
 		return rtnAarry;
 	}
+	
+	protected void deleteUploadFiles(HttpServletRequest request, String data) {
+	
+		String uploadFilePath = getBaseUrl();
+		
+		String removeDatas[] = data.split(",");
+		
+		for (String key:removeDatas) {
+			String deletePath = request.getSession().getServletContext().getRealPath("/") + uploadFilePath + "/" + key;
+
+			deleteDir(new File(deletePath));
+		}
+	}
+	
+	protected String getBaseUrl() {
+		String baseURL = "";
+		String xmlFileName = "/setting/ckfinder.xml";
+		Element element = XmlUtil.getRootElement(xmlFileName);
+		
+		if (element != null) {
+			Iterator<Element> iter = element.elementIterator();
+			while(iter.hasNext()){
+			    Element el = (Element)iter.next();
+			    if (el.getName().equals("baseURL")) { 
+			    	baseURL = (String)el.getData();
+			    	break;
+			    }
+			}
+		}
+		return baseURL;
+	}
+    
+    private boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            //递归删除目录中的子目录下
+            for (int i=0; i<children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        // 目录此时为空，可以删除
+        return dir.delete();
+    }
 }

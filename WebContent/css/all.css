@@ -63,7 +63,7 @@ header{
     float: left;
 }
 
-/*header��footer֮�������  */
+/*header锟斤拷footer之锟斤拷锟斤拷锟斤拷锟�  */
 
 container {
 	height:auto;
@@ -110,7 +110,7 @@ footer{
     border: solid 1px lightseagreen ;
 }
 
-/*�����  */
+/*锟斤拷锟斤拷锟�  */
 aside,#main{
     height:auto;
     margin: 0px 0px 4px 0px;
@@ -319,6 +319,8 @@ input.short{width:100px;}
 
 input.middle{width:250px;}
 
+input.middlelong{width:300px;}
+
 input.attributeList1{width:180px;}
 
 input.long{width:450px;}
@@ -335,7 +337,7 @@ input.num{
 	text-align:right;
 }
 
-/* ֻ��������û� */
+/* 只锟斤拷锟斤拷锟斤拷锟斤拷没锟� */
 input.read-only
 {
 	background-color: #cccccc;

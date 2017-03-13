@@ -18,6 +18,7 @@ import javax.transaction.UserTransaction;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ys.business.action.model.makedocument.MakeDocumentModel;
+import com.ys.business.action.model.reformlog.ReformLogModel;
 import com.ys.business.db.dao.B_BaseTechDocDao;
 import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_CustomerAddrDao;
@@ -817,6 +818,47 @@ public class BusinessDbUpdateEjb  {
 		}
     }    												
 
+    public void executeReformLogUpdateByProjectId(ReformLogModel dataModel, UserInfo userInfo) throws Exception {
+		ReformLogModel model = new ReformLogModel();
+    	B_ReformLogData dbData = new B_ReformLogData();											
+    	B_ReformLogDao dao = new B_ReformLogDao();
+    	
+		String guid = "";
+		String where = " projectId = '" + dataModel.getKeyBackup() +"'" ;
+		
+		ts = new BaseTransaction();
+		
+		try {										
+			ts.begin();
+			try {
+				dao.RemoveByWhere(where);
+			}
+			catch(Exception e) {
+				
+			}
+			
+			for(B_ReformLogData data:dataModel.getDetailLines()) {
+				if (!(data.getCreatedate() == null) && !data.getCreatedate().equals("")) {
+					guid = BaseDAO.getGuId();									
+					dbData.setId(guid);									
+					dbData.setProjectid(dataModel.getKeyBackup());
+					dbData.setCreatedate(data.getCreatedate());
+					dbData.setNewfileno(data.getNewfileno());
+					dbData.setOldfileno(data.getOldfileno());
+					dbData.setContent(data.getContent());
+					dbData.setReason(data.getReason());
+					dbData = ReformLogService.updateModifyInfo(dbData, userInfo);
+					dao.Create(dbData);
+				}
+			}
+			ts.commit();									
+		}										
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
+    
     public void executeReformLogDelete(String keyData, UserInfo userInfo) throws Exception {
     	B_ReformLogDao dao = new B_ReformLogDao();
     	B_ReformLogData data = new B_ReformLogData();											

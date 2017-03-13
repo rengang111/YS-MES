@@ -51,8 +51,15 @@
 			<div title="首页" data-options ="iconCls:'icon-home_nav',fit:true">
 				<div style="padding: 10px  30px">
 					通知信息：
-					<input type=button onClick="openLayer();"/>
 				</div>
+				<div style="padding: 10px  30px">
+					文档在线编辑用：OWSSUPP
+					<object id="test" classid="clsid:BDEADEF0-C265-11D0-BCED-00A0C90AB50F"  
+					  width="0px" height="0px"
+					  codebase="${SystemUrl}#version=12,0,4518,1014"
+					  >
+				</div>
+
 			</div>
 		</div>
 	</div>	
@@ -70,6 +77,20 @@
 	</div>
 	<script type="text/javascript" >
 		var isClicked = 0;
+		
+		$('#_main_center_tabs').tabs({
+			onSelect:function(title,index){
+		    	//alert(title + ' is selected');
+			    $.ajax({     
+			        type:"POST",     
+			        url:"${ctx}/mainframe/resetbaseurl",     
+			        data:title,
+					success : function(d) {
+					}
+			    });
+		    }
+		});
+		
 	    $(function() {
 	        $(document).ready(function() {
 	        	$('#menuTree').tree({

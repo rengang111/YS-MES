@@ -315,7 +315,15 @@ function doConfirmReturn() {
 	}
 	
 }
-
+function doReturn() {
+	//var url = "${ctx}/business/externalsample";
+	//location.href = url;	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
 </script>
 
 </head>
@@ -333,6 +341,8 @@ function doConfirmReturn() {
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
+				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
+				<div style="height:10px"></div>
 				<table class="form" width="850px">
 					<tr>
 						<td width="90px">模具归还编号：</td>
@@ -384,25 +394,27 @@ function doConfirmReturn() {
 				<div  style="height:20px"></div>
 				<legend>归还详情</legend>
 				<div  style="height:10px"></div>
-				<table id="MouldReturnRegisterList" class="display" cellspacing="0" width="200px" style="float:left;">
-					<thead>
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">模具编号</th>
-							<th style="width: 80px;" class="dt-middle">模具名称</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
-
+				<div class="list" style="width:40%;">
+					<table id="MouldReturnRegisterList" class="display" cellspacing="0" width="200px" style="float:left;">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">模具编号</th>
+								<th style="width: 80px;" class="dt-middle">模具名称</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<div  style="height:20px"></div>
 				<legend>归还验收</legend>
 				<div style="height:20px"></div>
-				<div>
+				<div style="height:10px"></div>
+				<div class="list">
 					<table>
 						<tr>
 							<td>

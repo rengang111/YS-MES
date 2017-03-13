@@ -71,7 +71,10 @@ public class OrderAction extends BaseAction {
 			case "":
 			case "init":
 				rtnUrl = "/business/order/ordermain";
-				break;				
+				break;
+			case "expenseInit":
+				rtnUrl = "/business/order/orderexpensemain";
+				break;
 			case "search":
 				dataMap = doSearchOrderList(data);
 				printOutJsonObj(response, dataMap);
@@ -83,7 +86,7 @@ public class OrderAction extends BaseAction {
 			case "insert":
 				doInsert(reqModel,model, request);
 				rtnUrl = "/business/order/orderview";
-				break;				
+				break;
 			case "detailView":
 				rtnUrl = doOrderView();
 				break;				
@@ -113,6 +116,16 @@ public class OrderAction extends BaseAction {
 				break;			
 			case "searchDemand"://查询物料需求表待做成的数据
 				dataMap = doSearchOrderListDemand(data);
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/demand/demandmain";
+				break;			
+			case "searchDemand1"://
+				documentaryEdit();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/order/documentaryedit";
+				break;			
+			case "documenterayNameSearch"://
+				dataMap = documenterayNameSearch();
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/demand/demandmain";
 				break;
@@ -387,10 +400,42 @@ public class OrderAction extends BaseAction {
 	}	
 	
 	public void doDelete(String data){
-			orderService.delete(data);
+		
+		orderService.delete(data);
 
 	}
+	public void documentaryEdit()
+	{
+	  try {
+	    this.orderService.documentaryEdit();
+	  }
+	  catch (Exception e) {
+	    System.out.println(e.getMessage());
+	  }
+	}
 
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> documenterayNameSearch()
+	{
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+	  try
+	  {
+	    dataMap = this.orderService.getDocumenterayName();
+
+	    dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+	    if (dbData.size() == 0)
+	      dataMap.put("message", "无符合条件的数据");
+	  }
+	  catch (Exception e)
+	  {
+	    System.out.println(e.getMessage());
+	    dataMap.put("message", "操作失败，请再次尝试或联系管理员");
+	  }
+
+	  return dataMap;
+	}
 	
 	
 }

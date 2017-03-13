@@ -8,6 +8,7 @@
  * icon：新tab页图标（可选参数）
  */
 function openTab(selector,title,href,icon){
+
     var $tabs = $(selector);
     //如果请求路径不存在，则跳转到error.html界面
     if(!(href!=""&&href!="null"&&href!=null&&href!=undefined)){
@@ -613,6 +614,7 @@ $(function(){
 	})
 })
 
+
 function fomatToColor(value){
 	
 	if (currencyToFloat(value) < 0 ){
@@ -634,5 +636,4 @@ function stringPadAfter(value,len){
 	}
 	return value+str;
 }
-
 

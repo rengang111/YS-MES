@@ -25,9 +25,11 @@
  	<mvc:resources mapping="/themes/**" location="/themes/" />
  	<mvc:resources mapping="/plugins/**" location="/plugins/" />
  	<mvc:resources mapping="/images/**" location="/images/" />
- 	
- 	<mvc:resources mapping="/jsp/ckeditor/**" location="/WEB-INF/jsp/ckeditor/" />
- 	
+ 	<mvc:resources mapping="/jsp/**" location="/WEB-INF/jsp/" />
+ 	<mvc:resources mapping="/jsp/ckeditor/**" location="/WEB-INF/jsp/ckeditor/" /> 
+ 	<mvc:resources mapping="/jsp/ckfinder/**" location="/WEB-INF/jsp/ckfinder/" />
+ 	<mvc:resources mapping="/userfiles/**" location="/userfiles/" />
+ 	<mvc:resources mapping="/install/**" location="/install/" />
 	<!-- 国际化配置 -->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="language" />

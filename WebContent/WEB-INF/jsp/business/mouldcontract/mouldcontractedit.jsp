@@ -795,6 +795,16 @@ function resetPayable() {
 				width: 200,
 			});	
 		}
+		
+		function doReturn() {
+			//var url = "${ctx}/business/externalsample";
+			//location.href = url;	
+			var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+			//parent.$('#events').DataTable().destroy();/
+			//parent.reload_contactor();
+			parent.layer.close(index); //执行关闭
+			
+		}
 	</script>
 </head>
 
@@ -807,10 +817,12 @@ function resetPayable() {
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id="productModelId" name="productModelId" value=""/>
 				<legend>模具合同-基本信息</legend>
+				<div style="height:10px"></div>
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
+				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 				<table class="form" width="850px">
 					<tr>
 						<td width="90px">模具合同编号<br>(自动编码)：</td>
@@ -873,40 +885,43 @@ function resetPayable() {
 				<button type="button" id="addmd" class="DTTT_button" onClick="doAddMD();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
 				</div>
-				<table id="MouldDetailList" class="display" cellspacing="0">
-					<thead>
-						<tr class="selected">
-							<th style="width: 40px;" class="dt-middle">No</th>
-							<th style="width: 40px;" class="dt-middle">类型</th>
-							<th style="width: 80px;" class="dt-middle">模具<br>编号</th>
-							<th style="width: 80px;" class="dt-middle">模具<br>名称</th>
-							<th style="width: 80px;" class="dt-middle">模架<br>尺寸</th>
-							<th style="width: 80px;" class="dt-middle">材质</th>
-							<th style="width: 80px;" class="dt-middle">出模数</th>
-							<th style="width: 80px;" class="dt-middle">重量</th>
-							<th style="width: 80px;" class="dt-middle">价格</th>
-							<th style="width: 80px;" class="dt-middle">模具<br>工厂</th>
-							<th style="width: 40px;" class="dt-middle">存放<br>位置</th>
-							<th style="width: 80px;" class="dt-middle">操作</th>
-						</tr>
-					</thead>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-						</tr>
-					</tfoot>
-				</table>
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="MouldDetailList" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 40px;" class="dt-middle">No</th>
+								<th style="width: 40px;" class="dt-middle">类型</th>
+								<th style="width: 80px;" class="dt-middle">模具<br>编号</th>
+								<th style="width: 80px;" class="dt-middle">模具<br>名称</th>
+								<th style="width: 80px;" class="dt-middle">模架<br>尺寸</th>
+								<th style="width: 80px;" class="dt-middle">材质</th>
+								<th style="width: 80px;" class="dt-middle">出模数</th>
+								<th style="width: 80px;" class="dt-middle">重量</th>
+								<th style="width: 80px;" class="dt-middle">价格</th>
+								<th style="width: 80px;" class="dt-middle">模具<br>工厂</th>
+								<th style="width: 40px;" class="dt-middle">存放<br>位置</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				<table class="display" cellspacing="0" style='margin: -10px;'>
 					<tr>
 							<td style="width: 520px;" class="dt-middle">&nbsp;</td>
@@ -919,44 +934,49 @@ function resetPayable() {
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<div  style="height:20px"></div>
 				<legend>模具验收</legend>
-				<table>
-					<tr>
-						<td>
-							验收日期
-						</td>
-						<td>
-							<input type=text id="acceptanceDate" name="acceptanceDate" value="${DisplayData.mouldAcceptanceData.acceptancedate}"/>
-						</td>
-						<td>
-							验收结果
-						</td>
-						<td>
-							<form:select path="result">
-								<form:options items="${DisplayData.resultList}" itemValue="key"
-									itemLabel="value" />
-							</form:select>
-							<button type="button" id="updateacceptance" class="DTTT_button" onClick="doUpdateAcceptance();"
-							style="height:25px;margin:-20px 0px 0px 0px;" >确认入库</button>
-						</td>
-					</tr>
-					<tr>
-						<td colspan=4>
-							<textarea id="memo" name="memo" cols=100 rows=10>${DisplayData.mouldAcceptanceData.memo}</textarea>
-						</td>
-					</tr>
-					<tr>
-						<td colspan=4>
-							<button type="button" id="confirmacceptance" class="DTTT_button" onClick="doConfirmAcceptance();"
-							style="height:25px;" >总经理确认</button>
-						</td>
-					</tr>
-				</table>
+				<div style="height:10px"></div>
+				<div class="list">
+					<table>
+						<tr>
+							<td>
+								验收日期
+							</td>
+							<td>
+								<input type=text id="acceptanceDate" name="acceptanceDate" value="${DisplayData.mouldAcceptanceData.acceptancedate}"/>
+							</td>
+							<td>
+								验收结果
+							</td>
+							<td>
+								<form:select path="result">
+									<form:options items="${DisplayData.resultList}" itemValue="key"
+										itemLabel="value" />
+								</form:select>
+								<button type="button" id="updateacceptance" class="DTTT_button" onClick="doUpdateAcceptance();"
+								style="height:25px;margin:-20px 0px 0px 0px;" >确认入库</button>
+							</td>
+						</tr>
+						<tr>
+							<td colspan=4>
+								<textarea id="memo" name="memo" cols=100 rows=10>${DisplayData.mouldAcceptanceData.memo}</textarea>
+							</td>
+						</tr>
+						<tr>
+							<td colspan=4>
+								<button type="button" id="confirmacceptance" class="DTTT_button" onClick="doConfirmAcceptance();"
+								style="height:25px;" >总经理确认</button>
+							</td>
+						</tr>
+					</table>
+				</div>
 			</form:form>
 			<div  style="height:20px"></div>
 			
 			<legend>付款申请</legend>
 			<form:form modelAttribute="dataModels" id="payInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
+				<div style="height:10px"></div>
+				<div class="list">
 				<table>
 					<tr>
 						<td>
@@ -978,12 +998,13 @@ function resetPayable() {
 							<label id="paid"></label>
 						</td>
 					</tr>				
-				
+				</table>
 				<button type="button" id="deletepay" class="DTTT_button" onClick="doDeletePay();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;" >删除</button>
 				<button type="button" id="addpay" class="DTTT_button" onClick="doAddPay();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
-				<div>
+				<div style="height:10px"></div>
+				<div class="list">
 					<table id="payList" class="display" cellspacing="0">
 						<thead>
 							<tr class="selected">

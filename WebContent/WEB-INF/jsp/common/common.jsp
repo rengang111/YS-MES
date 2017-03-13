@@ -65,7 +65,8 @@
 	}
 	function openLayer(url, width, height, isParentOpen) {
 		if (width == "") {
-			width = '900px';
+			//width = '900px';
+			width = $(document).width() + 'px';
 		} else {
 			width = width + 'px';
 		}
@@ -124,13 +125,28 @@
 	
 	function reloadTabWindow() {
 		var curTabWin = null;
+		/*
 		var curTab = parent.$('#_main_center_tabs').tabs('getSelected');
         if (curTab && curTab.find('iframe').length > 0) {
             curTabWin = curTab.find('iframe')[0].contentWindow;
         }
-        curTabWin.reload();
-
+        if ($.isFunction(curTabWin.reload)) {
+        	curTabWin.reload();
+        }
+		*/
 		
+		var curTab = parent.parent.$('#_main_center_tabs').tabs('getSelected');
+        if (curTab && curTab.find('iframe').length > 0) {
+            curTabWin = curTab.find('iframe')[0].contentWindow;
+        }
+        if ($.isFunction(curTabWin.reload)) {
+        	curTabWin.reload();
+        }
+
+	}
+	
+	function getTabTitle() {
+		return top.$('#_main_center_tabs').tabs('getSelected').panel('options').title;
 	}
 	
 	function getDateDiff(date1, date2) {

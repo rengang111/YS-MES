@@ -487,7 +487,9 @@ public class MaterialAction extends BaseAction {
 
 		String recordId = request.getParameter("recordId");
 		String parentId = request.getParameter("parentId");
+		String keyBackup = this.request.getParameter("keyBackup");
 		model = materialService.view(recordId,parentId);
+		this.model.addAttribute("keyBackup", keyBackup);
 
 	}	
 	public void doEdit(){

@@ -60,16 +60,25 @@ public class Constants {
 	public static final String BOMTYPE_B = "B";//基础BOM
 	public static final String BOMTYPE_Q = "Q";//报价BOM
 	public static final String BOMTYPE_O = "O";//订单BOM
-	/**
-	 * BOM种类
-	 */
-	//public static final String BOMTYPE_B = "B";//基础BOM
-	//public static final String BOMTYPE_Q = "Q";//报价BOM
-	//public static final String BOMTYPE_O = "O";//订单BOM
 
 	/**
 	 * 页面访问标识
 	 */
 	public static final String ACCESSFLG_0 = "";//新建标识
 	public static final String ACCESSFLG_1 = "1";//编辑标识
+	
+	/**
+	 * 订单费用种类
+	 */
+	public static final String ORDEREXPENSE_D = "D";//跟单费用
+	public static final String ORDEREXPENSE_C = "C";//客户
+	public static final String ORDEREXPENSE_S = "S";//供应商
+	public static final String ORDEREXPENSE_W = "W";//车间
+	
+	/**
+	 * 订单确认状态
+	 */
+	public static final String ORDEREXPENSE_0 = "0";//未确认
+	public static final String ORDEREXPENSE_1 = "1";//已确认
+
 }
