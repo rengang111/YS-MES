@@ -172,5 +172,15 @@ public class MainFrameAction extends BaseAction {
 		}
 	}	
 	
-	
+	@RequestMapping("/register")
+	public String callRegister(@RequestBody String para, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		String contextPath = request.getContextPath();
+		String requestUrl = request.getRequestURL().toString();
+		int iIndex = requestUrl.indexOf(contextPath);
+		requestUrl = requestUrl.subSequence(0, iIndex) + contextPath;
+		requestUrl += "/install/OWSSUPP.cab";
+    	model.addAttribute("SystemUrl", requestUrl);
+		
+		return "/common/register";
+	}
 }
