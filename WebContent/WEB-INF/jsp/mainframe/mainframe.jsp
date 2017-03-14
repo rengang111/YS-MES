@@ -53,11 +53,8 @@
 					通知信息：
 				</div>
 				<div style="padding: 10px  30px">
-					文档在线编辑用：OWSSUPP
-					<object id="test" classid="clsid:BDEADEF0-C265-11D0-BCED-00A0C90AB50F"  
-					  width="0px" height="0px"
-					  codebase="${SystemUrl}#version=12,0,4518,1014"
-					  >
+					文档在线编辑用：<a href="#" onclick="callRegister();">OWSSUPP注册</a>
+					
 				</div>
 
 			</div>
@@ -155,7 +152,13 @@
 	    	popupWindow("resetpassword", "${ctx}/user?methodtype=resetpwdinit", 800, 600);
 	    	
 		}
+		
+	    function callRegister() {
+			var url = "${ctx}/mainframe/register";
+			
+			openLayer(url, 100, 100, false);
 
+	    }
 	</script>
 </body>
 </html>
