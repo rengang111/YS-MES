@@ -64,9 +64,9 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "PIId", "defaultContent" : ''},
-							{"data": "orderId", "defaultContent" : ''},
 							{"data": "YSId", "defaultContent" : ''},
+							{"data": "orderId", "defaultContent" : ''},
+							{"data": "PIId", "defaultContent" : ''},
 							{"data": "deliveryDate", "className" : 'td-center'},
 							{"data": "materialId", "defaultContent" : ''},
 							{"data": "materialName", "defaultContent" : ''},
@@ -294,9 +294,9 @@
 						<thead>						
 							<tr>
 								<th style="width: 10px;" class="dt-middle ">No</th>
-								<th style="width: 80px;" class="dt-middle ">PI编号</th>
-								<th style="width: 100px;" class="dt-middle ">订单号</th>
 								<th style="width: 80px;" class="dt-middle ">耀升编号</th>
+								<th style="width: 100px;" class="dt-middle ">订单号</th>
+								<th style="width: 80px;" class="dt-middle ">PI编号</th>
 								<th style="width: 60px;" class="dt-middle ">订单交期</th>
 								<th style="width: 120px;" class="dt-middle ">产品编号</th>
 								<th style="width: 150px;" class="dt-middle ">产品名称</th>

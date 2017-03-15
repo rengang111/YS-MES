@@ -1265,6 +1265,8 @@ public class BomService extends BaseService {
 		//取得产品信息
 		getProductById(materialId);
 		
+		model.addAttribute("accessFlg","1");//accessFlg:1 编辑
+		
 		return model;
 		
 	}
@@ -1425,6 +1427,15 @@ public class BomService extends BaseService {
 		getProductById(materialId);
 	
 		return model;
+		
+	}
+	
+	public HashMap<String, Object> multipleBomAdd() throws Exception {
+
+		String bomId = request.getParameter("bomId");
+		
+		//取得所选BOM的详细信息
+		return getBaseBomDetail(bomId,true);	
 		
 	}
 	
