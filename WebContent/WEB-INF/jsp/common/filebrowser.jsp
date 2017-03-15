@@ -80,7 +80,7 @@
 			}
 		});
 		
-		//finder[id] = new CKFinder();
+		finder[id] = new CKFinder();
 		customFolder[id] = customFolder;
 		resetFinder(id);
 		if (elementId == null || elementId == "") {

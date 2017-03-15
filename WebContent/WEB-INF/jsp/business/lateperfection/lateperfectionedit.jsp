@@ -120,6 +120,7 @@ $(window).load(function(){
 $(document).ready(function() {
 	resetFinder(0, 2);
 	if ($('#keyBackup').val() != "") {
+		alert(123);
 		refreshFileBrowser(0);
 	}
 	

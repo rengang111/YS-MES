@@ -32,12 +32,18 @@ $(document).ready(function() {
         height: "270"  
     });
 
+    $('#tabs3').tabs({
+        width: $("#tabs3").parent().width(),  
+        height: "270"  
+    });
+
     
 	resetFinder(0, 2);
 	
 	if ($('#keyBackup').val() != "") {
 		$('#tabs').show();
 		$('#tabs2').show();
+		$('#tabs3').show();
 		refreshFileBrowser(0);
 		refreshFileBrowser(1);
 	}
@@ -309,17 +315,27 @@ function controlButtons(data) {
 <div id="container">
 
 		<div id="main">	
-			<div style="width:330px;height:270px;display:inline;">
-				<div id="tabs" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
-					3333333
+			<div style="width:330px;height:270px;display:inline-block;">
+				<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
+						<jsp:include page="../../common/album/album.jsp"></jsp:include>
+					</div>
 				</div>
-
 			</div>
-			<div style="width:330px;height:270px;display:inline;">
-				<div id="tabs2" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
-					11112222
+			<div style="width:330px;height:270px;display:inline-block;">
+				<div id="tabs2" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					<div id="tabs-2" title="图片" style="padding:5px;height:300px;">
+						<jsp:include page="../../common/album/album.jsp"></jsp:include>
+					</div>
 				</div>
-			</div>			
+			</div>	
+			<div style="width:330px;height:270px;display:inline-block;">
+				<div id="tabs3" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					<div id="tabs-3" title="图片" style="padding:5px;height:300px;">
+						<jsp:include page="../../common/album/album.jsp"></jsp:include>
+					</div>
+				</div>
+			</div>	
 			
 			<div  style="height:20px"></div>
 				
