@@ -230,12 +230,14 @@ public class ZZMaterialService extends BaseService {
 			if(reqDataList != null){
 				//新增原材料
 				for(B_ZZRawMaterialData newData:reqDataList ){
-	
-					if(!("").equals(newData.getRawmaterialid().trim())){
-						
-						newData.setMaterialid(materialId);
-						insertRawMaterial(newData);		
-					}
+					String raw = newData.getRawmaterialid();
+					
+					if(raw == null || ("").equals(raw.trim()))	
+						continue;
+					
+					newData.setMaterialid(materialId);
+					insertRawMaterial(newData);		
+					
 				}
 			}
 			//耀升自制品的物料单价表更新处理

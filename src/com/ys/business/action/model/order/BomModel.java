@@ -8,6 +8,7 @@ import com.ys.business.db.data.B_BaseBomData;
 import com.ys.business.db.data.B_BomData;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
+import com.ys.business.db.data.B_OrderExpenseData;
 import com.ys.util.basequery.common.BaseModel;
 
 public class BomModel extends BaseModel {
@@ -27,13 +28,87 @@ public class BomModel extends BaseModel {
 	private List<B_BomDetailData> bomDetailLines;
 	private String accessFlg;
 	
-	public String getAccessFlg(){
-		return this.accessFlg;
+	private String counter;
+	private String counter1;
+	private String counter2;
+	private String counter3;
+	private String counter4;
+	private List<B_OrderExpenseData> documentaryLines1;
+	private List<B_OrderExpenseData> documentaryLines2;
+	private List<B_OrderExpenseData> documentaryLines3;
+	private List<B_OrderExpenseData> documentaryLines4;
+
+	public List<B_OrderExpenseData> getDocumentaryLines1()
+	{
+	  return this.documentaryLines1; }
+
+	public void setDocumentaryLines1(List<B_OrderExpenseData> documentaryLines) {
+	  this.documentaryLines1 = documentaryLines; }
+
+	public List<B_OrderExpenseData> getDocumentaryLines2() {
+	  return this.documentaryLines2; }
+
+	public void setDocumentaryLines2(List<B_OrderExpenseData> documentaryLines) {
+	  this.documentaryLines2 = documentaryLines; }
+
+	public List<B_OrderExpenseData> getDocumentaryLines3() {
+	  return this.documentaryLines3; }
+
+	public void setDocumentaryLines3(List<B_OrderExpenseData> documentaryLines) {
+	  this.documentaryLines3 = documentaryLines; }
+
+	public List<B_OrderExpenseData> getDocumentaryLines4() {
+	  return this.documentaryLines4; }
+
+	public void setDocumentaryLines4(List<B_OrderExpenseData> documentaryLines) {
+	  this.documentaryLines4 = documentaryLines;
 	}
 
-	public void setAccessFlg(String accessFlg){
-		this.accessFlg = accessFlg;
+	public String getAccessFlg() {
+	  return this.accessFlg; }
+
+	public void setAccessFlg(String accessFlg) {
+	  this.accessFlg = accessFlg; }
+
+	public String getCounter() {
+	  return this.counter;
 	}
+
+	public void setCounter(String counter) {
+	  this.counter = counter;
+	}
+
+	public String getCounter1() {
+	  return this.counter1;
+	}
+
+	public void setCounter1(String counter1) {
+	  this.counter1 = counter1;
+	}
+
+	public String getCounter2() {
+	  return this.counter2;
+	}
+
+	public void setCounter2(String counter2) {
+	  this.counter2 = counter2; }
+
+	public String getCounter3() {
+	  return this.counter3;
+	}
+
+	public void setCounter3(String counter3) {
+	  this.counter3 = counter3; }
+
+	public String getCounter4() {
+	  return this.counter4;
+	}
+
+	public void setCounter4(String counter4) {
+	  this.counter4 = counter4; }
+
+
+
 
 	public ArrayList<ListOption> getCurrencyList() {
 		return this.currencyList;

@@ -12,7 +12,7 @@
 
 <%@ include file="../../common/common.jsp"%>
 
-<title>订单基本数据一览页面</title>
+<title>订单基本数据一览页面(订单过程)</title>
 <script type="text/javascript">
 
 	function ajax(scrollHeight) {
@@ -64,9 +64,9 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "YSId", "defaultContent" : ''},
-							{"data": "orderId", "defaultContent" : ''},
 							{"data": "PIId", "defaultContent" : ''},
+							{"data": "orderId", "defaultContent" : ''},
+							{"data": "YSId", "defaultContent" : ''},
 							{"data": "deliveryDate", "className" : 'td-center'},
 							{"data": "materialId", "defaultContent" : ''},
 							{"data": "materialName", "defaultContent" : ''},
@@ -77,30 +77,30 @@
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-				    			return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
-				    			 
+				    			return row["rownum"];			    			 
 		                    }},
 				    		{"targets":10,"render":function(data, type, row){
 				    			var rtn = "";
-				    			var space = '&nbsp;';
-				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">查看</a>";
-				    			// rtn= rtn + space + "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] +"','"+ row["PIId"] + "')\">删除</a>";
+				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["YSId"] +"','"+ row["materialId"] + "')\">费用</a>";
 				    			return rtn;
 				    		}},
 				    		{"targets":9,"render":function(data, type, row){
 				    			
 				    			var v = row["totalprice"],id = row["YSId"];
-				    			return YSKcheck(v,id);
+				    			//return YSKcheck(v,id);
+				    			return '******';
 				    		}},
 				    		{"targets":8,"render":function(data, type, row){
 				    			
 				    			var v = row["price"],id = row["YSId"];
-				    			return YSKcheck(v,id);
+				    			//return YSKcheck(v,id);
+				    			return '******';
 				    		}},
 				    		{"targets":7,"render":function(data, type, row){
 				    			
 				    			var v = row["quantity"],id = row["YSId"];
-				    			return YSKcheck(v,id);
+				    			//return YSKcheck(v,id);
+				    			return '******';
 				    		}},
 				    		{"targets":6,"render":function(data, type, row){
 				    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
@@ -155,9 +155,6 @@
 	}
 
 	$(document).ready(function() {
-
-		//重设iframe高度
-		iFramNoSroll()
 		
 		initEvent();
 		
@@ -170,69 +167,13 @@
 
 	}
 	
-	function doCreate() {
-		
-		var url = '${ctx}/business/order?methodtype=create';
-		location.href = url;
-	}
-	
-	function doCreateZZ() {
-		
-		var url = '${ctx}/business/zzorder?methodtype=create';
-		location.href = url;
-	}
-	
-	function doCreateZP() {
-		
-		var url = '${ctx}/business/zporder?methodtype=create';
-		location.href = url;
-	}
-	
-	function doShow(recordId,PIId) {
+	function doShow(YSId,materialId) {
 
-		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId+'&recordId='+recordId;
+		var url = '${ctx}/business/bom?methodtype=orderexpenseadd&YSId=' + YSId+'&materialId='+materialId;
 
 		location.href = url;
 	}
 
-	function doEdit(recordId,parentId) {
-		var str = '';
-		var isFirstRow = true;
-		var url = '${ctx}/business/order?methodtype=edit&parentId=' + parentId+'&recordId='+recordId;
-
-		location.href = url;
-	}
-		
-	function doDelete() {
-
-		var str = '';
-		$("input[name='numCheck']").each(function(){
-			if ($(this).prop('checked')) {
-				str += $(this).val() + ",";
-			}
-		});
-
-		if (str != '') {
-			if(confirm("确定要删除数据吗？")) {
-				jQuery.ajax({
-					type : 'POST',
-					async: false,
-					contentType : 'application/json',
-					dataType : 'json',
-					data : str,
-					url : "${ctx}/business/order?methodtype=delete",
-					success : function(data) {
-						reload();						
-					},
-					error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				});
-			}
-		} else {
-			alert("请至少选择一条数据");
-		}
-		
-	}
 
 	function reload() {
 		
@@ -245,7 +186,7 @@
 </script>
 </head>
 
-<body class="panel-body">
+<body>
 <div id="container">
 
 		<div id="main">
@@ -280,23 +221,13 @@
 			<div class="list">
 
 				<div id="TSupplier_wrapper" class="dataTables_wrapper">
-					<div id="DTTT_container" align="right" style="height:40px">
-						<a  title="新建常规订单"
-							class="DTTT_button " onclick="doCreate();"><span>常规订单</span></a>
-						<a  title="新建自制品库存订单"
-							class="DTTT_button " onclick="doCreateZZ();"><span>自制品库存订单</span></a>
-						<a  title="新建装配品及非完全成品库存订单"
-							class="DTTT_button " onclick="doCreateZP();"><span>装配品库存订单</span></a>
-						<a  class="DTTT_button " onclick="doDelete();"><span>删除</span></a>
-					</div>
-					<div id="clear"></div>
 					<table id="TMaterial" class="display dataTable" cellspacing="0">
 						<thead>						
 							<tr>
 								<th style="width: 10px;" class="dt-middle ">No</th>
-								<th style="width: 80px;" class="dt-middle ">耀升编号</th>
-								<th style="width: 100px;" class="dt-middle ">订单号</th>
 								<th style="width: 80px;" class="dt-middle ">PI编号</th>
+								<th style="width: 100px;" class="dt-middle ">订单号</th>
+								<th style="width: 80px;" class="dt-middle ">耀升编号</th>
 								<th style="width: 60px;" class="dt-middle ">订单交期</th>
 								<th style="width: 120px;" class="dt-middle ">产品编号</th>
 								<th style="width: 150px;" class="dt-middle ">产品名称</th>

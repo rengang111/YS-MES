@@ -144,10 +144,14 @@ public class BomAction extends BaseAction {
 				//doViewSourseBom();
 				rtnUrl = "/business/bom/bomselectlist";
 				break;
+			case "MultipleBomAdd":
+				dataMap = doMultipleBomAdd();
+				printOutJsonObj(response, dataMap);
+				break;	
 			case "changeBomAdd":
 				doChangeBomAdd();
 				rtnUrl = "/business/bom/basebomadd";
-				break;	
+				break;
 			case "changeBomEdit":
 				doChangeBomEdit();
 				rtnUrl = "/business/bom/bomplanedit";
@@ -187,6 +191,22 @@ public class BomAction extends BaseAction {
 				break;
 			case "getQuotationBom":
 				dataMap = doShowQuotationBom();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getDocumentary":
+				dataMap = getDocumentary();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "orderexpenseadd":
+				doShowOrder();
+				rtnUrl = "/business/order/orderexpenseadd";
+				break;
+			case "CheckOrderCost1":
+				CheckOrderCost1(data);;
+				printOutJsonObj(response, dataMap);
+				break;
+			case "insertOrderCost1":
+				insertOrderCost1(data);
 				printOutJsonObj(response, dataMap);
 				break;
 				
@@ -363,11 +383,15 @@ public class BomAction extends BaseAction {
 		model = bomService.editBomPlan();
 	}
 	
+	public HashMap<String, Object> doMultipleBomAdd() throws Exception{
+
+		return bomService.multipleBomAdd();
+	}
+	
 	public void doChangeBomAdd() throws Exception{
 
 		model = bomService.changeBomPlanAdd();
 	}	
-	
 	public void doChangeBomEdit() throws Exception{
 
 		model = bomService.changeBomPlanEdit();
@@ -466,6 +490,43 @@ public class BomAction extends BaseAction {
 		}
 		
 		return dataMap;
+	}
+	
+	public void insertOrderCost1(String data) throws Exception
+	{
+	  this.bomService.insertOrderCost1(data);
+	}
+
+	public void CheckOrderCost1(String data) throws Exception
+	{
+	  this.bomService.CheckOrderCost1(data);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> getDocumentary()
+	{
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+	  try
+	  {
+	    dataMap = this.bomService.getDocumentary();
+
+	    dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+	    if (dbData.size() == 0)
+	      dataMap.put("message", "无符合条件的数据");
+	  }
+	  catch (Exception e)
+	  {
+	    System.out.println(e.getMessage());
+	    dataMap.put("message", "操作失败，请再次尝试或联系管理员");
+	  }
+
+	  return dataMap;
+	}
+
+	public void doShowOrder() throws Exception {
+	  this.model = this.bomService.getOrderInfo();
 	}
 
 	

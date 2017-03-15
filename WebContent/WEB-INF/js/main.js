@@ -613,7 +613,7 @@ $(function(){
 		})(i,dd[i]))	//向当前执行函数中传递参数
 	})
 })
-<<<<<<< HEAD
+
 
 function fomatToColor(value){
 	
@@ -637,6 +637,3 @@ function stringPadAfter(value,len){
 	return value+str;
 }
 
-
-=======
->>>>>>> refs/remotes/origin/master

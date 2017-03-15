@@ -284,24 +284,23 @@ public class BomService extends BaseService {
 		}	
 	}
 	
-	public HashMap<String, Object> getDocumentary(String YSId)
-			  throws Exception
-			{
-			  HashMap<String, Object> modelMap = new HashMap<String, Object>();
-
-			  this.dataModel.setQueryName("getDocumentary");
-
-			  this.baseQuery = new BaseQuery(this.request, this.dataModel);
-			  this.userDefinedSearchCase.put("YSId", YSId);
-			  this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
-			  this.baseQuery.getYsFullData();
-
-			  modelMap.put("recordsTotal", Integer.valueOf(this.dataModel.getRecordCount()));
-			  modelMap.put("recordsFiltered", Integer.valueOf(this.dataModel.getRecordCount()));
-			  modelMap.put("data", this.dataModel.getYsViewData());
-
-			  return modelMap;
-			}
+	public HashMap<String, Object> getDocumentary() throws Exception{
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String YSId = request.getParameter("YSId");
+		this.dataModel.setQueryName("getDocumentary");		
+		this.baseQuery = new BaseQuery(request, dataModel);
+		
+		this.userDefinedSearchCase.put("YSId", YSId);
+		this.baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		this.baseQuery.getYsFullData();
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
 
 	public void getOrderExpense(String YSId)throws Exception{
 		
@@ -451,24 +450,133 @@ public class BomService extends BaseService {
 		return bomPlanData;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private B_BomPlanData BomPlanExistCheck2(String ysid)
 			  throws Exception
 			{
-			  List dbList = null;
-			  this.bomPlanData = null;
-			  try {
-			    String where = "ysid = '" + ysid + 
-			      "' AND  deleteFlag = '0' ";
-			    dbList = this.bomPlanDao.Find(where);
-			    if ((dbList == null) || (dbList.size() > 0))
-			      this.bomPlanData = ((B_BomPlanData)dbList.get(0));
-			  }
-			  catch (Exception e) {
-			    System.out.println(e.getMessage());
-			  }
+		List<B_BomPlanData> dbList = null;
+		bomPlanData = null;
+		try {
+			String where = "ysid = '" + ysid + 
+					"' AND  deleteFlag = '0' ";
+	    dbList = (List<B_BomPlanData>)bomPlanDao.Find(where);
+	    if ((dbList != null) && (dbList.size() > 0))
+	      bomPlanData = ((B_BomPlanData)dbList.get(0));
+	  }
+	  catch (Exception e) {
+	    System.out.println(e.getMessage());
+	  }
 
-			  return this.bomPlanData;
-			}
+	  return this.bomPlanData;
+	}
+
+	private String insertOrder1(String data, int index, String counter, String type)
+			  throws Exception
+	{
+	  if ((data == null) || (data.trim() == "")) return null;
+
+	  String ysid = "";
+	  String materialId = "";
+	  this.ts = new BaseTransaction();
+	  try
+	  {
+	    this.ts.begin();
+
+	    B_OrderExpenseData order = new B_OrderExpenseData();
+
+	    ysid = getJsonData(data, "bomPlan.ysid");
+	    materialId = getJsonData(data, "bomPlan.materialid");
+	    String where = " ysid = '" + ysid + 
+	      "' AND type = '" + type + 
+	      "' AND status = " + "0";
+	    deleteDocumentary(where);
+
+	    int counterInt = 0;
+	    if ((counter != null) && (counter.trim() != "")) {
+	      counterInt = Integer.parseInt(counter);
+	    }
+	    for (int i = 0; i < counterInt; ++i) {
+
+	    	String name = getJsonData(data, "documentaryLines" + index + "[" + i + "].costname");
+	    	String contr = getJsonData(data, "documentaryLines" + index + "[" + i + "].contractid");
+		    String cost = getJsonData(data, "documentaryLines" + index + "[" + i + "].cost");
+		    String person = getJsonData(data, "documentaryLines" + index + "[" + i + "].person");
+		    String date = getJsonData(data, "documentaryLines" + index + "[" + i + "].quotationdate");
+
+		    if ((name == null) || ("".equals(name)))
+		    	continue;
+	      
+		      order.setYsid(ysid);
+		      order.setMaterialid(materialId);
+		      order.setContractid(contr);
+		      order.setCostname(name);
+		      order.setCost(cost);
+		      order.setPerson(person);
+		      order.setQuotationdate(date);
+		      order.setType(type);
+		      order.setStatus("0");
+		      insertDocumentary(order);
+	    }
+
+	    this.ts.commit();
+	  }
+	  catch (Exception e) {
+	    this.ts.rollback();
+	    this.reqModel.setEndInfoMap("-1", "err001", "");
+	  }
+
+	  return ysid;
+	}
+
+
+	private void insertDocumentary(B_OrderExpenseData detailData)
+	  throws Exception
+	{
+	  B_OrderExpenseDao dao = new B_OrderExpenseDao();
+	  this.commData = commFiledEdit(0, 
+	    "DocumentaryInsert", this.userInfo);
+
+	  copyProperties(detailData, this.commData);
+	  this.guid = BaseDAO.getGuId();
+	  detailData.setRecordid(this.guid);
+
+	  dao.Create(detailData);
+	}
+		
+	private void deleteDocumentary(String where){
+	  B_OrderExpenseDao dao = new B_OrderExpenseDao();
+	  try {
+	    dao.RemoveByWhere(where);
+	  }catch (Exception e){
+		  System.out.println(e.getMessage());
+	  }
+	}
+	private void updateOrderStatus(String data)
+			  throws Exception {
+		  B_OrderExpenseDao dao = new B_OrderExpenseDao();
+		  B_OrderExpenseData dbData = new B_OrderExpenseData();
+		  try
+		  {
+		    this.ts = new BaseTransaction();
+		    this.ts.begin();
+		    String[] removeData = data.split(",");
+		    for (String key : removeData)
+		    {
+		      dbData = OrderExpenseExistCheck(key);
+
+		      this.commData = commFiledEdit(1, 
+		        "OrderExpenseUpdate", this.userInfo);
+
+		      copyProperties(dbData, this.commData);
+		      dbData.setStatus("1");
+		      dao.Store(dbData);
+		    }
+		    this.ts.commit();
+		  }
+		  catch (Exception e) {
+		    this.ts.rollback();
+		  }
+	}
 	
 	private B_OrderExpenseData OrderExpenseExistCheck(String recordid) throws Exception
 	{
@@ -479,25 +587,6 @@ public class BomService extends BaseService {
 	  return dao.beanData;
 	}
 
-	private String insertOrderBom()
-			  throws Exception
-			{
-			  String bomid = "";
-			  try
-			  {
-			    B_BomPlanData reqData = this.reqModel.getBomPlan();
-			    B_BomDetailData reqDtlDt = this.reqModel.getBomDetail();
-
-			    reqData.setBomtype("O");
-			    updateBomPlan(reqData);
-			  }
-			  catch (Exception e)
-			  {
-			    this.reqModel.setEndInfoMap("-1", "err001", "");
-			  }
-
-			  return bomid;
-			}
 
 	@SuppressWarnings("unchecked")
 	private B_BomData BomExistCheck(String bomId) throws Exception {
@@ -518,6 +607,7 @@ public class BomService extends BaseService {
 		
 		return bomData;
 	}	
+	
 	/*
 	 * 
 	 */
@@ -1175,6 +1265,8 @@ public class BomService extends BaseService {
 		//取得产品信息
 		getProductById(materialId);
 		
+		model.addAttribute("accessFlg","1");//accessFlg:1 编辑
+		
 		return model;
 		
 	}
@@ -1338,6 +1430,15 @@ public class BomService extends BaseService {
 		
 	}
 	
+	public HashMap<String, Object> multipleBomAdd() throws Exception {
+
+		String bomId = request.getParameter("bomId");
+		
+		//取得所选BOM的详细信息
+		return getBaseBomDetail(bomId,true);	
+		
+	}
+	
 	public Model changeBomPlanEdit() throws Exception {
 
 		String YSId = request.getParameter("YSId");
@@ -1361,20 +1462,81 @@ public class BomService extends BaseService {
 		return model;
 		
 	}
-	public Model getOrderDetail() throws Exception {
-
-		String YSId = request.getParameter("YSId");
-		String materialId = request.getParameter("materialId");
-		getBomIdByParentId(materialId,false);
-		String baseBomId = BusinessService.getBaseBomId(materialId)[1];
-		getOrderDetail(YSId);
-		//getBaseBomDetail(baseBomId,false);
-		
-		return model;
-		
-	}
 	
+	
+	public Model getOrderDetail() throws Exception
+	{
+	  String YSId = this.request.getParameter("YSId");
+	  String materialId = this.request.getParameter("materialId");
+	  String parentId = null;
+	 // String bomId = null;
+	  this.bomPlanData = BomPlanExistCheck2(YSId);
+	  if (this.bomPlanData == null)
+	  {
+	    this.bomPlanData = new B_BomPlanData();
+	    parentId = BusinessService.getOrderBOMParentId(materialId);
+	    bomPlanData = getBomIdByParentId(parentId, false);
+	  }
+	  else
+	  {
+	    this.reqModel.setBomPlan(this.bomPlanData);
+	  }
 
+	  getOrderDetail(YSId);
+
+	  getOrderExpense(YSId);
+
+	  return this.model;
+	}
+
+
+	public Model insertOrderBom(String data)
+			  throws Exception{
+		  //insertOrderBom();
+		  String YSId = this.reqModel.getBomPlan().getYsid();
+		  getOrderDetail(YSId);
+	
+		  return this.model;
+	}
+
+	public Model insertOrderCost1(String data) throws Exception
+	{
+	  String type = this.request.getParameter("type");
+	  String counter1 = getJsonData(data, "counter1");
+	  String counter2 = getJsonData(data, "counter2");
+	  String counter3 = getJsonData(data, "counter3");
+	  String counter4 = getJsonData(data, "counter4");
+
+	  switch (type){
+		  case "D":
+			  insertOrder1(data, 1, counter1, type); break;
+		  case "C":
+			  insertOrder1(data, 2, counter2, type); break;
+		  case "S":
+			  insertOrder1(data, 3, counter3, type); break;
+		  case "W":
+			  insertOrder1(data, 4, counter4, type); break;
+	  }
+
+	  	return this.model;
+	}
+
+	public Model CheckOrderCost1(String data)
+	  throws Exception
+	{
+	  updateOrderStatus(data);
+
+	  return this.model;
+	}
+			
+	public Model getOrderInfo()
+	  throws Exception
+	{
+	  String YSId = this.request.getParameter("YSId");
+	  getOrderDetail(YSId);
+
+	  return this.model;
+	}
 		
 	public Model insertAndView() throws Exception {
 
@@ -1387,7 +1549,8 @@ public class BomService extends BaseService {
 	
 	public Model insertBaseBomAndView() throws Exception {
 	
-		String bomId = insertBaseBom();
+		insertBaseBom();
+		
 		String materialId = reqModel.getBomPlan().getMaterialid();
 		
 		//取得产品信息

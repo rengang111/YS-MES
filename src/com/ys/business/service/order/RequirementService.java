@@ -644,7 +644,8 @@ public class RequirementService extends BaseService {
 				
 				String materialId = map.get("materialId");//一级级物料名称
 				//String bomsupplier = map.get("supplierId")+"";//一级物料供应商
-				
+
+				String typeH = materialId.substring(0,1);//H类判定用
 				String type = materialId.substring(0, 3);
 
 				String lastPrice = map.get("lastPrice");//原材料 最新单价
@@ -665,6 +666,9 @@ public class RequirementService extends BaseService {
 				
 				if (supplierId.trim().equals("0574YS00")){
 
+					if(typeH.equals("H"))
+						continue;
+					
 					String rawmater = map.get("rawMaterialId")+"";//二级物料名称(原材料)
 					
 					String zzq = map.get("weight");//原材料的使用量

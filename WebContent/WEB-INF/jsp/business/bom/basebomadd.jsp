@@ -66,9 +66,6 @@
 					//counter += 1;
 					
 					autocomplete();
-
-					//重设显示窗口(iframe)高度
-					iFramAutoSroll();
 						
 					foucsInit();
 				}
@@ -238,9 +235,7 @@
 		if(rate =='') $("#bomPlan\\.managementcostrate").val('5');
 		
 		ajax();
-		
 		autocomplete();
-		
 		//$('#example').DataTable().columns.adjust().draw();
 		
 		$("#goBack").click(
@@ -424,23 +419,23 @@
 			</table>
 	</fieldset>
 		
-	<div style="margin: 0px 0px 0px 0px; float:left; width:70%;padding-left: 15px;" >
+	<div style="margin: 0px 0px 0px 0px; float:left; width:80%;padding-left: 15px;" >
 		机器型号：
-		<input type="text" id="productModel" class="short" style="height: 25px;padding-left: 10px;" value="${productMode }"/>
+		<input type="text" id="productModel" class="short" style="width:80px;height: 25px;padding-left: 10px;" value="${productMode }"/>
 		<button type="button" id="searchProductModel" class="DTTT_button">查询</button>
-		历史BOM：<input type="text" id="searchBom" class="middle" style="height: 25px;padding-left: 10px;" value="${selectedBomId }"/>
+		历史BOM：<input type="text" id="searchBom" style="width:180px;height: 25px;padding-left: 10px;" value="${selectedBomId }"/>
+		追加BOM：<input type="text" id="searchBom2" style="width:180px;height: 25px;padding-left: 10px;" value=""/>
 	</div>
 	<div style="margin: -3px 10px 0px 5px;float:right; padding:0px;">	
-			<button type="button" id="update" class="DTTT_button">保存</button>
-			<button type="button" id="goBack" class="DTTT_button">返回</button>
+		<button type="button" id="update" class="DTTT_button">保存</button>
+		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</div>
 	<fieldset>
 		<div class="list" style="margin-top: -4px;">
-		
 		<table id="example" class="display">
 			<thead>				
 			<tr>
-				<th width="1px">No</th>
+				<th width="20px">No</th>
 				<th class="dt-center" width="200px">物料编码</th>
 				<th class="dt-center" >物料名称</th>
 				<th class="dt-center" width="100px">供应商编号</th>
@@ -502,9 +497,11 @@
 						<input type="hidden" id="labor${status.index}"></td>	
 					
 					<form:hidden path="bomDetailLines[${status.index}].sourceprice"  value="${detail.price}" />	
+					<form:hidden path="bomDetailLines[${status.index}].subbomid"  value="" />
 				</tr>
 
 				<script type="text/javascript">
+					var accessFlg = '${accessFlg}';
 					var index = '${status.index}';
 					var cost = '${detail.productcost}';
 					var materialId = '${detail.materialId}';
@@ -513,9 +510,17 @@
 					var price =currencyToFloat( '${detail.price}');
 					var totalPrice = float4ToCurrency(quantity * price);
 					var labor = fnLaborCost( materialId,totalPrice);
+					
+					var bomid = '${detail.bomId}';
+					if(accessFlg == '1'){
+						bomid = '${detail.subBomId}';
+					}
+					//alert('accessFlg'+accessFlg+"bomid:"+bomid)
 					$('#labor'+index).val(labor);
 					$('#total'+index).html(totalPrice);
+					$('#bomDetailLines'+index+'\\.quantity').val(float5ToCurrency(quantity));
 					$('#bomDetailLines'+index+'\\.totalprice').val(totalPrice);
+					$('#bomDetailLines'+index+'\\.subbomid').val(bomid);
 					$('#name'+index).html(jQuery.fixedWidth(materialName,40));
 					counter++;
 				</script>
@@ -585,6 +590,156 @@ function autocomplete(){
 
 		
 	});//BOM方案查询
+	
+	//BOM方案查询
+	$("#searchBom2").autocomplete({
+		minLength : 1,
+		autoFocus : false,
+		source : function(request, response) {
+			//alert(888);
+			$
+			.ajax({
+				type : "POST",
+				url : "${ctx}/business/bom?methodtype=searchBom",
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					//alert(777);
+					response($
+						.map(
+							data.data,
+							function(item) {
+
+								return {
+									label : item.viewList,
+									value : item.bomId,
+									id : item.bomId,
+									YSId:item.YSId
+								}
+							}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+					alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
+
+		select : function(event, ui) {
+			//所选择的BOM编号里面含有产品编号,所以要锁定原来的产品
+			var materialId = '${product.materialId}';
+			var bomId = ui.item.id;
+			var actionUrl = '${ctx}/business/bom?methodtype=MultipleBomAdd&bomId='+ui.item.id+'&materialId='+materialId;
+			//location.href = url;
+			$.ajax({
+				type : "post",
+				url : actionUrl,
+				async : false,
+				data : '',
+				dataType : "json",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
+				success : function(data) {
+					var jsonObj = data;
+					var count = counter;
+					var recordCont = data["recordsTotal"];
+					var dataList = data["data"];
+					//alert(recordCont)
+					for (var i = 0; i < recordCont; i++) {						
+
+						var recordId  = data['data'][i]['productRecord'];
+						var bomId     = data['data'][i]['bomId'];
+						var materialId  = data['data'][i]['materialId'];
+						var materialName  = data['data'][i]['materialName'];
+						var supplierid  = data['data'][i]['supplierId'];
+						var quantity  = data['data'][i]['quantity'];
+						var price  = data['data'][i]['price'];
+						//alert('bomId'+bomId);
+						var rowNum = count+1;
+						var trhtml = "";
+
+						var rowNode = $('#example')
+						.DataTable()
+						.row
+						.add(
+						  [
+							'<td></td>',
+							'<td><input type="text" name="attributeList1" class="attributeList1" value="'+materialId+'" />'+
+							'    <input type="hidden" name="bomDetailLines['+count+'].materialid"   id="bomDetailLines'+count+'.materialid"  value="'+materialId+'"/></td>	',							
+							'<td><span id="name'+count+'"></span><input type="hidden" name="bomDetailLines['+count+'].subbomid"   id="bomDetailLines'+count+'.subbomid" value="" /></td>',
+							'<td><input type="text" name="attributeList2" class="attributeList2"  value="'+supplierid+'" style="width:100px" />'+
+							'    <input type="hidden" name="bomDetailLines['+count+'].supplierid" id="bomDetailLines'+count+'.materialid" value="'+supplierid+'" /></td>',
+							'<td><input type="text"   name="bomDetailLines['+count+'].quantity"   id="bomDetailLines'+count+'.quantity"   value="'+quantity+'"  class="cash"  style="width:70px"/></td>	',					
+							'<td class="td-right"><span id="price'+count+'"></span><input type="hidden"   name="bomDetailLines['+count+'].price"      id="bomDetailLines'+count+'.price"      value="'+price+'"  /></td>	',					
+							'<td class="td-right"><span id="total'+count+'"></span>'+
+							'    <input type="hidden" name="bomDetailLines['+count+'].totalprice" id="bomDetailLines'+count+'.totalprice" value=""/>'+
+							'    <input type="hidden" id="labor'+count+'"></td>',
+							
+						   ]).draw();
+						   
+						   
+						/*   
+						   
+						trhtml += '<tr>';
+						trhtml +='<td>'+rowNum+'<input type=checkbox name="numCheck" id="numCheck" value="' + count + '" /></td>';
+						trhtml +='<td><input type="text" name="attributeList1" class="attributeList1" value="'+materialId+'" />';
+						trhtml +='    <input type="hidden" name="bomDetailLines['+count+'].materialid"   id="bomDetailLines'+count+'.materialid"  value="'+materialId+'"/></td>	';							
+						trhtml +='<td><span id="name'+count+'"></span></td>';
+						trhtml +='<td><input type="text" name="attributeList2" class="attributeList2"  value="'+supplierid+'" style="width:100px" />';
+						trhtml +='    <input type="hidden" name="bomDetailLines['+count+'].supplierid" id="bomDetailLines'+count+'.materialid" value="'+supplierid+'" /></td>';
+						trhtml +='<td><input type="text"   name="bomDetailLines['+count+'].quantity"   id="bomDetailLines'+count+'.quantity"   value="'+quantity+'"  class="cash"  style="width:70px"/></td>	';					
+						trhtml +='<td class="td-right"><span id="price'+count+'"></span><input type="hidden"   name="bomDetailLines['+count+'].price"      id="bomDetailLines'+count+'.price"      value="'+price+'"  /></td>	';					
+						trhtml +='<td class="td-right"><span id="total'+count+'">${detail.totalPrice}</span>';
+						trhtml +='    <input type="hidden" name="bomDetailLines['+count+'].totalprice" id="bomDetailLines'+count+'.totalprice" value="${detail.totalPrice}"/>';
+						trhtml +='    <input type="hidden" id="labor'+count+'"></td>';	
+						
+						trhtml +='<input type="hidden" name="bomDetailLines['+count+'].sourceprice" id="bomDetailLines'+count+'.sourceprice" value="${detail.price}" />	';
+						trhtml +='</tr>';
+
+						$("#example tbody tr:last").after(trhtml);
+						*/
+						price = currencyToFloat(price);
+						quantity = currencyToFloat(quantity);
+						
+						var totalPrice = float4ToCurrency(quantity * price);
+						var labor = fnLaborCost( materialId,totalPrice);
+						$('#price'+count).html(float4ToCurrency(price));
+						$('#total'+count).html(totalPrice);
+						$('#bomDetailLines'+count+'\\.price').val(price);
+						$('#bomDetailLines'+count+'\\.quantity').val(float5ToCurrency(quantity));
+						$('#bomDetailLines'+count+'\\.totalprice').val(totalPrice);
+						$('#bomDetailLines'+count+'\\.subbomid').val(bomId);
+						$('#name'+count).html(jQuery.fixedWidth(materialName,40));
+						//alert($('#bomDetailLines'+count+'\\.subbomid').val()+':::'+bomId)
+
+						count++;
+							
+					};
+
+					$().toastmessage('showNoticeToast', "从第 "+counter+" 行开始追加成功。");
+					
+					counter = count;
+					
+					foucsInit();//input获取焦点初始化处理
+
+					autocomplete();
+
+				},
+				error : function(
+						XMLHttpRequest,
+						textStatus,
+						errorThrown) {
+				}
+			});
+		},//select
+
+		
+	});//BOM方案查询2
 	
 	//物料选择
 	$(".attributeList1").autocomplete({
