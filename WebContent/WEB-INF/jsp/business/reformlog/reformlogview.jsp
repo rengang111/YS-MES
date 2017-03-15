@@ -306,7 +306,7 @@ function doDeleteReformLog() {
 				<div  style="height:20px"></div>
 				<legend>变革日志</legend>
 				<button type="button" id="addFormLog" class="DTTT_button" onClick="doAddReformLog();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >编辑</button>
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >查看</button>
 				<div>
 					<table id="reformLog" class="display" cellspacing="0">
 						<thead>

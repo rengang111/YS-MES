@@ -20,15 +20,24 @@ function initEvent(){
 
 $(document).ready(function() {
 
-	$("#tabs").tabs();
-	$('#tabs').width('330px');
-	$('#tabs').height('270px');
-	$('#tabs-1').height('300px');
+	//$("#tabs").tabs();
+	
+    $('#tabs').tabs({
+        width: $("#tabs").parent().width(),  
+        height: "270"  
+    });   
+	
+    $('#tabs2').tabs({
+        width: $("#tabs2").parent().width(),  
+        height: "270"  
+    });
 
+    
 	resetFinder(0, 2);
 	
 	if ($('#keyBackup').val() != "") {
 		$('#tabs').show();
+		$('#tabs2').show();
 		refreshFileBrowser(0);
 		refreshFileBrowser(1);
 	}
@@ -204,6 +213,7 @@ function doDelete() {
 				} else {
 					$('#tabs').hide();
 					$('#TESTFileArea').hide();
+					$('#TESTMachineArea').hide();
 					controlButtons("");
 					clearExternalSampleInfo();
 					reloadTabWindow();
@@ -299,13 +309,18 @@ function controlButtons(data) {
 <div id="container">
 
 		<div id="main">	
-				
-			<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
-				<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
-					<jsp:include page="../../common/album/album.jsp"></jsp:include>
+			<div style="width:330px;height:270px;display:inline;">
+				<div id="tabs" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					3333333
 				</div>
+
 			</div>
-			<div style="clear:both;"></div>
+			<div style="width:330px;height:270px;display:inline;">
+				<div id="tabs2" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					11112222
+				</div>
+			</div>			
+			
 			<div  style="height:20px"></div>
 				
 				<legend>外样记录-综合信息</legend>
@@ -406,7 +421,7 @@ function controlButtons(data) {
 			<div>
 				<legend>机器详情</legend>
 				<div class="list">
-					<div id="TESTMachineArea" class="list" style="display:none;">
+					<div id="TESTMachineArea" style="display:none;">
 						<!-- 
 						<table id="TESTMachinePicList" class="display" cellspacing="0">
 						</table>

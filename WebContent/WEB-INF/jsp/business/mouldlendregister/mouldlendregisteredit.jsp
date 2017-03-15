@@ -78,7 +78,7 @@ function ajaxMouldLendRegisterList() {
 			    			if(row["status"] == '1') {
 			    				return "";
 			    			} else {
-			    				return "<a href=\"#\" onClick=\"doUpdateLD('" + row["id"] + "')\">编辑</a>"
+			    				return "<a href=\"#\" onClick=\"doUpdateLD('" + row["id"] + "')\">查看</a>"
 			    			}
 	                    }}
 				    ] 						

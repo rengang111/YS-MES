@@ -76,7 +76,7 @@ function ajaxProcessDetail() {
 			    				$('#' + "addNew" + row["type"]).attr('disabled',"true");
 			    				$('#' + "addCheckPoint" + row["type"]).attr('disabled',"true");
 			    			}
-			    			return "<a href=\"#\" onClick=\"doUpdateProcessDetail('" + row["id"] + "', '" + row["type"] + "')\">编辑</a>"
+			    			return "<a href=\"#\" onClick=\"doUpdateProcessDetail('" + row["id"] + "', '" + row["type"] + "')\">查看</a>"
 	                    }}
 				    ] 						
 				});
@@ -166,7 +166,7 @@ function ajaxTable0(index) {
 					"columnDefs":[
 			    		{"targets":4,"render":function(data, type, row){
 			    			if (row["lastOne"] == '1') {
-			    				return "<a href=\"#\" onClick=\"addNewExpect('" + row["id"] + "', '" + index + "')\">编辑</a>"
+			    				return "<a href=\"#\" onClick=\"addNewExpect('" + row["id"] + "', '" + index + "')\">查看</a>"
 			    			}
 	                    }}
 				    ] 						
@@ -256,7 +256,7 @@ function ajaxTable1(index) {
 					],
 					"columnDefs":[
 			    		{"targets":2,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"addNewCheckPoint('" + row["id"] + "', '" + index + "', '" + index + "')\">编辑</a>"
+			    			return "<a href=\"#\" onClick=\"addNewCheckPoint('" + row["id"] + "', '" + index + "', '" + index + "')\">查看</a>"
 	                    }}
 				    ] 						
 				});

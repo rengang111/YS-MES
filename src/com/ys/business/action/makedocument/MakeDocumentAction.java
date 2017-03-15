@@ -124,6 +124,9 @@ public class MakeDocumentAction extends BaseAction {
 				viewModel = doDeleteFolder(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
+			case "openfilebrowser":
+				super.openFileBrowser(request, session, model);
+				return null;
 		}
 		
 		return rtnUrl;

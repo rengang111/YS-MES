@@ -109,7 +109,10 @@ public class LatePerfectionAction extends BaseAction {
 			case "updatequestion":
 				viewModel = doUpdateQuestion(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
-				return null;	
+				return null;
+			case "openfilebrowser":
+				super.openFileBrowser(request, session, model);
+				return null;
 		}
 		
 		return rtnUrl;

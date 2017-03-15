@@ -390,6 +390,8 @@ public class UserService {
 			data.setPhotoStream(fis);
 			//data. = file.length();
 			//fis.close();
+		} else {
+			data.setPhotoStream(null);
 		}
 		
 		
