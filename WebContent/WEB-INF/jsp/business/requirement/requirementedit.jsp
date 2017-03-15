@@ -137,6 +137,7 @@
 		$(".DTTT_container").css('float','left');
 
 		$( "#tabs" ).tabs();
+		$( "#tabs" ).tabs( "option", "active", 2 );//设置默认显示内容
 		/*
 		$(".tabs1").click( function() {
 			$('#baseBomTable thead tr').each (function (){
@@ -164,6 +165,26 @@
 			})
 		});
 		*/
+		
+		$('#example').DataTable().on('click', 'tr', function() {
+
+			var rowIndex = $(this).context._DT_RowIndex; //行号		
+			//alert(rowIndex)			
+			
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	        	$('#example').DataTable().$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	            
+	        }
+			
+			//$('.DTFC_Cloned').find('tr').removeClass('selected');
+			//$('.DTFC_Cloned').find('tr').eq(rowIndex).addClass('selected');
+			
+		});
+		
 		foucsInit();//input获取焦点初始化处理
 	
 	});
@@ -302,14 +323,13 @@
 				
 				<tr>
 					<td></td>
-					<td>${detail.materialId}
-						<form:hidden path="purchaseList[${status.index}].materialid"  value="${detail.materialId}" /></td>									
+					<td>${detail.materialId}</td>									
 					<td><span id="name${status.index}"></span></td>
 					<td>${detail.unit}</td>
 					<td>${detail.orderQuantity}
 						<form:hidden path="purchaseList[${status.index}].orderquantity"  value="${detail.orderQuantity}" /></td>
 					<td>0</td>
-					<td><form:input path="purchaseList[${status.index}].quantity" value="${detail.quantity}" class="num"  style="width:100px" /></td>			
+					<td><form:input path="purchaseList[${status.index}].quantity" value="${detail.quantity}" class="mini num" /></td>			
 					<td><form:input  path="purchaseList[${status.index}].price"  value="${detail.price}"  class="cash" style="width:100px" /></td>				
 					<td><span id="total${status.index}"></span>
 						<form:hidden path="purchaseList[${status.index}].totalprice" /></td>					
@@ -318,6 +338,8 @@
 					<td><span id="last${status.index}"></span>
 						<input type="hidden" id="lastPrice${status.index}"></td>
 					<td><span id="min${status.index}"></span></td>
+					
+						<form:hidden path="purchaseList[${status.index}].materialid"  value="${detail.materialId}" />
 					
 				</tr>
 
@@ -655,6 +677,8 @@ function ZZmaterialView() {
 
 function requirementAjax() {
 
+	var scrollHeight = $(window).height() - 250;
+	
 	var t3 = $('#example').DataTable({
 
 		"paging": false,
@@ -665,9 +689,11 @@ function requirementAjax() {
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
 		"async" : false,
+        "sScrollY": scrollHeight,
         "sScrollX": true,
-       // "sScrollXInner": "110%",
-       // "bScrollCollapse": true,
+        "fixedColumns":   {
+            leftColumns: 3
+        },
 		"dom" : '<"clear">rt',
 
 		"columns" : [ 
@@ -753,21 +779,6 @@ function requirementAjax() {
 		}
 
 		//alert("fPrice:"+fPrice+"::fLastPrice:"+fLastPrice)
-		
-	});
-		
-	t3.on('click', 'tr', function() {
-		
-		var rowIndex = $(this).context._DT_RowIndex; //行号			
-		//alert(rowIndex);
-
-		if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-            t3.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
 		
 	});
 	

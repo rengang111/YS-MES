@@ -45,7 +45,7 @@
 		destroy-method="close">
 		
 		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
-		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ys-mes?useUnicode=true&amp;characterEncoding=UTF-8"/>
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ys2?useUnicode=true&amp;characterEncoding=UTF-8"/>
 		<property name="user" value="root"/>
 		<property name="password" value="admin"/>
 		<property name="maxPoolSize" value="500"></property>

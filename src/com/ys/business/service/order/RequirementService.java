@@ -402,6 +402,7 @@ public class RequirementService extends BaseService {
 						data.setPrice(purchase.getPrice());
 						data.setSupplierid(purchase.getSupplierid());
 						data.setTotalprice(purchase.getTotalprice());
+						//data.setSubbomid(purchase.getSubbomid());
 						
 						flg = false;
 						break;
@@ -634,123 +635,154 @@ public class RequirementService extends BaseService {
 		//baseQuery.getSql();
 		//baseQuery.getFullData();
 		
-		if (dataModel.getRecordCount() > 0 ){
-			model.addAttribute("requirement", dataModel.getYsViewData());
+		if (dataModel.getRecordCount() <= 0 )
+			return;
 			
-			boolean repeat = true;
-			String materialId2 = "";
-			int index = 0;
-			for(HashMap<String, String> map:dataModel.getYsViewData()){
+		boolean repeat = true;
+		String materialId2 = "";
+		int index = 0;
+		
+		String subBomIdBefore = "";
+		String subBomIdAfter  = "";
+		boolean firstFlg = true;
+		
+		for(HashMap<String, String> map:dataModel.getYsViewData()){
+			
+			String materialId = map.get("materialId");//一级级物料名称
+			String subBomId = map.get("subBomId")+"";//组套BOM中的BOM编号
+
+			String typeH = materialId.substring(0,1);//H类判定用
+			String type = materialId.substring(0, 3);
+
+			String lastPrice = map.get("lastPrice");//原材料 最新单价
+			String lastSupplierId = map.get("lastSupplierId");//原材料 最新供应商
+			//String matLastPrice = map.get("matLastPrice");//配件 最新单价
+			//String matLastSupplierId = map.get("matLastSupplierId");//配件 最新供应商
+			String minPrice = map.get("minPrice");//原材料最低单价
+			String minSupplierId = map.get("minSupplierId");//原材料最低供应商
+			String matMinPrice = map.get("matMinPrice");//配件最低单价
+			String matMinSupplierId = map.get("matMinSupplierId");//配件最低供应商
+			String price = map.get("price");//配件当前单价
+			String supplierId = map.get("supplierId");//一级物料供应商
+			String bomq = map.get("quantity");//自制品的用量
+			String stock = map.get("stock");//自制品的库存
+			stock = "0";//******************临时对应************************
+			float ibomq = Float.parseFloat(bomq);//自制品的用量
+			float istock = Float.parseFloat(stock);//自制品的库存
 				
-				String materialId = map.get("materialId");//一级级物料名称
-				//String bomsupplier = map.get("supplierId")+"";//一级物料供应商
+			subBomIdBefore = subBomId;//第一次不设置				
+
+			if (supplierId.trim().equals("0574YS00")){
+
+				if(typeH.equals("H"))
+					continue;
 				
-				String type = materialId.substring(0, 3);
-
-				String lastPrice = map.get("lastPrice");//原材料 最新单价
-				String lastSupplierId = map.get("lastSupplierId");//原材料 最新供应商
-				//String matLastPrice = map.get("matLastPrice");//配件 最新单价
-				//String matLastSupplierId = map.get("matLastSupplierId");//配件 最新供应商
-				String minPrice = map.get("minPrice");//原材料最低单价
-				String minSupplierId = map.get("minSupplierId");//原材料最低供应商
-				String matMinPrice = map.get("matMinPrice");//配件最低单价
-				String matMinSupplierId = map.get("matMinSupplierId");//配件最低供应商
-				String price = map.get("price");//配件当前单价
-				String supplierId = map.get("supplierId");//配件当前单价
-				String bomq = map.get("quantity");//自制品的用量
-				String stock = map.get("stock");//自制品的库存
-				stock = "0";//******************临时对应************************
-				float ibomq = Float.parseFloat(bomq);//自制品的用量
-				float istock = Float.parseFloat(stock);//自制品的库存
+				String rawmater = map.get("rawMaterialId")+"";//二级物料名称(原材料)
 				
-				if (supplierId.trim().equals("0574YS00")){
+				String zzq = map.get("weight");//原材料的使用量
+				String zzconvert = map.get("convertUnit");//原材料的使用单位与采购单位的比例
 
-					String rawmater = map.get("rawMaterialId")+"";//二级物料名称(原材料)
-					
-					String zzq = map.get("weight");//原材料的使用量
-					String zzconvert = map.get("convertUnit");//原材料的使用单位与采购单位的比例
+				float iconvert = Float.parseFloat(zzconvert);//原材料的使用单位与采购单位的比例
+				float izzq = Float.parseFloat(zzq);//原材料的使用量
+				
+				float value = ibomq * izzq * (orderNum - istock) / iconvert;//原材料的需求量="建议采购量"
 
-					float iconvert = Float.parseFloat(zzconvert);//原材料的使用单位与采购单位的比例
-					float izzq = Float.parseFloat(zzq);//原材料的使用量
+				map.put("advice", BusinessService.format2Decimal(value));
+				map.put("gradedFlg", "1");//标识为二级物料
+				map.put("price",lastPrice );
+				map.put("matSupplierId",lastSupplierId );
+				map.put("minPrice",minPrice );
+				map.put("minSupplierId",minSupplierId );
+				map.put("lastPrice",lastPrice );
+				map.put("lastSupplierId",lastSupplierId );
+				
+				//自制品
+				repeat = true;
+				for(HashMap<String, String> map2:list){
 					
-					float value = ibomq * izzq * (orderNum - istock) / iconvert;//原材料的需求量="建议采购量"
-
-					map.put("advice", BusinessService.format2Decimal(value));
-					map.put("gradedFlg", "1");//标识为二级物料
-					map.put("price",lastPrice );
-					map.put("matSupplierId",lastSupplierId );
-					map.put("minPrice",minPrice );
-					map.put("minSupplierId",minSupplierId );
-					map.put("lastPrice",lastPrice );
-					map.put("lastSupplierId",lastSupplierId );
+					materialId2 = map2.get("materialId");//一级级物料名称
+					String bomsupplier2 = (map2.get("supplierId")+"").trim();//一级物料供应商
+					String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
+					subBomIdAfter = map2.get("subBomId");//已存储到采购方案里的子BOM编号
 					
-					//自制品
-					repeat = true;
+					if(rawmater.equals(rawmater2) 
+							&& bomsupplier2.equals("0574YS00")){
+							//&& subBomIdBefore.equals(subBomIdAfter)){
+						//合并重复的原材料
+						float value2 = Float.parseFloat(map2.get("advice"));
+						float cnt = value + value2;
+						map2.put("advice", BusinessService.format2Decimal(cnt));
+						
+						repeat = false;//找到重复项
+						break;							
+					}						
+				}
+				
+				if(repeat){
+					list.add(map);//没有重复项时,新加一条	
+					index++;
+				}					
+				
+				
+			}else{
+				
+				boolean skip = true;
+				if(type.equals("B01") || type.equals("F01") || 
+				   type.equals("F02") || type.equals("F03") || 
+				   type.equals("F04")){							
+				
+					//配件
+					if(list.size() >0){
+						materialId2 = list.get(index-1).get("materialId");//一级级物料名称
+						subBomIdAfter = list.get(index-1).get("subBomId");//已存储到采购方案里的子BOM编号
+				
+						if(materialId.equals(materialId2)){
+								//&& subBomIdBefore.equals(subBomIdAfter)){
+							//该自制品虽然是多个原材料构成,但由于需要外采整个自制品,所以过滤掉重复的数据
+							skip = false;
+						}
+					}
+				}
+				
+				if(skip){
+					//配件
+					float value = ibomq * orderNum - istock;//配件需求量=用量*订单数量-库存
+					map.put("advice", String.valueOf(value));
+					map.put("price",price );
+					map.put("matSupplierId",supplierId );
+					map.put("minPrice",matMinPrice );
+					map.put("minSupplierId",matMinSupplierId );
+					map.put("lastPrice",price );
+					map.put("lastSupplierId",supplierId );
+					
+					repeat=true;					
 					for(HashMap<String, String> map2:list){
-						
+
 						materialId2 = map2.get("materialId");//一级级物料名称
-						String bomsupplier2 = (map2.get("supplierId")+"").trim();//一级物料供应商
-						String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
 						
-						if(rawmater.equals(rawmater2) && bomsupplier2.equals("0574YS00")){
-							//合并重复的原材料
+						if(materialId.equals(materialId2)){
 							float value2 = Float.parseFloat(map2.get("advice"));
 							float cnt = value + value2;
 							map2.put("advice", BusinessService.format2Decimal(cnt));
 							
 							repeat = false;//找到重复项
-							break;							
-						}						
+							break;
+						}
 					}
 					
 					if(repeat){
-						//HashMap<String, String> map3 = map;
-						//map3.put("advice", String.valueOf(value));
-						list.add(map);//没有重复项时,新加一条	
-						index++;
-					}					
-					
-					
-				}else{
-					
-					boolean skip = true;
-					if(type.equals("B01") || type.equals("F01") || 
-					   type.equals("F02") || type.equals("F03") || type.equals("F04")){							
-					
-						//配件
-						if(list.size() >0)
-							materialId2 = list.get(index-1).get("materialId");//一级级物料名称
-					
-						if(materialId.equals(materialId2)){
-							//该自制品虽然是多个原材料构成,但由于需要外采整个自制品,所以过滤掉重复的数据
-							skip = false;
-						}//else{
-							//list.add(map);
-							//index++;
-						//}
-					
-					}
-					if(skip){
-						//配件
-						float value = ibomq * orderNum - istock;//配件需求量=用量*订单数量-库存
-						map.put("advice", String.valueOf(value));
-						map.put("price",price );
-						map.put("matSupplierId",supplierId );
-						map.put("minPrice",matMinPrice );
-						map.put("minSupplierId",matMinSupplierId );
-						map.put("lastPrice",price );
-						map.put("lastSupplierId",supplierId );
 						list.add(map);
-						index++;
+						index++;	
 						
-					}
-
+					}				
 				}
-			}	
-			
-			model.addAttribute("requirement", list);
-			
+
+			}
 		}	
+		
+		model.addAttribute("requirement", list);
+			
+			
 	}
 	
 	public HashMap<String, Object> getOrderBomDetail(
@@ -932,6 +964,17 @@ public class RequirementService extends BaseService {
 		String YSId = insertProcurementPlan(false);	
 		
 		getPurchaseDetail(YSId);
+		
+		getOrderDetail(YSId);		
+	}
+
+	public void printProcurement() throws Exception {
+		
+		String YSId = request.getParameter("YSId");	
+		String bomId = request.getParameter("bomId");	
+		
+		//getPurchaseDetail(YSId);
+		model.addAttribute("bomId",bomId);
 		
 		getOrderDetail(YSId);		
 	}

@@ -119,6 +119,11 @@ public class RequirementAction extends BaseAction {
 				dataMap = doShowOrderBom();
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/requirement/requirementview";
+				break;				
+			case "printRequirement":
+				orderBomPrint();
+				printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/requirement/requirementprint";
 				break;
 				
 		}
@@ -202,6 +207,13 @@ public class RequirementAction extends BaseAction {
 		service.updateProcurement();			
 		
 	}
+
+	public void orderBomPrint() throws Exception {
+		
+		service.printProcurement();			
+		
+	}
+	
 	public HashMap<String, Object> getzzMaterial() throws Exception {
 
 		//HashMap<String, Object> dataMap = new HashMap<String, Object>();

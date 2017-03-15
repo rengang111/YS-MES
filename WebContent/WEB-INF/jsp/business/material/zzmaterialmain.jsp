@@ -86,7 +86,7 @@
 				    		{"targets":8,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';
-				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["materialId"] + "')\">查看</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["materialId"] + "')\">查看</a>";
 				    			return rtn;
 				    		}}
 			         	] 
@@ -237,7 +237,7 @@
 			<table id="TMaterial" class="display dataTable" >
 				<thead>						
 					<tr class="selected">
-						<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
+						<th style="width: 30px;" aria-label="No:" class="dt-middle ">No</th>
 						<th style="width: 120px;" aria-label="物料编号" class="dt-middle ">自制品编号</th>
 						<th aria-label="物料编号" class="dt-middle ">产品名称</th>
 						<th style="width: 40px;" aria-label="物料编号" class="dt-middle ">单位</th>

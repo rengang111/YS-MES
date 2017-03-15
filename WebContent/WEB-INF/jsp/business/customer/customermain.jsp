@@ -19,12 +19,14 @@
 		}
 	
 		var t = $('#TCustomer').DataTable({
-				"paging": false,
+				"paging": true,
 				 "iDisplayLength" : 100,
-				//"lengthMenu":[50,100,150],//设置一页展示10条记录
-				"processing" : false,
-				"serverSide" : false,
-				"stateSave" : false,
+				"lengthChange":false,
+				//"lengthMenu":[10,150,200],//设置一页展示20条记录
+				"processing" : true,
+				"serverSide" : true,
+				"stateSave" : true,
+				"ordering "	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
@@ -81,7 +83,7 @@
 					    			return row["shippiingPort"] + "/"+row["destinationPort"] ;
 			                    }},
 					    		{"targets":9,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>"
+					    			return "<a href=\"###\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>"
 			                    }}
 			           
 			         ] 

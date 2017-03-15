@@ -13,6 +13,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <title>订单采购方案--新建</title>
 <%@ include file="../../common/common2.jsp"%>
+ <style>
+ 	 th, td { white-space: nowrap; }
+    div.dataTables_wrapper {
+       // width: 800px;
+        margin: 0 auto;
+    }
+ 	</style>
+  	
 <script type="text/javascript">
 
 	var counter  = 0;
@@ -161,6 +169,25 @@
 			})
 		});
 		
+		$('#example').DataTable().on('click', 'tr', function() {
+
+			var rowIndex = $(this).context._DT_RowIndex; //行号		
+			//alert(rowIndex)			
+			
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	        	$('#example').DataTable().$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	            
+	        }
+			
+			//$('.DTFC_Cloned').find('tr').removeClass('selected');
+			//$('.DTFC_Cloned').find('tr').eq(rowIndex).addClass('selected');
+			
+		});
+		
 		foucsInit();//input获取焦点初始化处理
 	
 	});
@@ -180,7 +207,7 @@
 		<input type="hidden" id="tmpMaterialId" />
 		<form:hidden path="bomPlan.plandate" />
 		<fieldset>
-			<legend> 产品信息</legend>
+			<legend> 产品信息1</legend>
 			<table class="form" id="table_form">
 				<tr> 				
 					<td class="label" style="width:100px;"><label>耀升编号：</label></td>					
@@ -328,6 +355,7 @@
 						<th class="dt-center" width="60px">供应商</th>						
 						<th class="dt-center" width="100px">当前价格</th>	
 						<th class="dt-center" style="width:100px">历史最低</th>	
+						<th style="width:1px"></th>	
 					</tr>
 				</thead>
 				<tbody>
@@ -338,11 +366,9 @@
 					<td>
 						<c:if test="${detail.gradedFlg eq '1'}">
 							${detail.rawMaterialId}
-							<form:hidden path="purchaseList[${status.index}].materialid"   value="${detail.rawMaterialId}" />
 						</c:if>
 						<c:if test="${detail.gradedFlg ne '1'}">
 							${detail.materialId}
-							<form:hidden path="purchaseList[${status.index}].materialid"   value="${detail.materialId}" />
 						</c:if>
 					</td>								
 					<td><span id="name${status.index}"></span></td>
@@ -350,7 +376,7 @@
 					<td><span id="advice${status.index}"></span>
 						<form:hidden path="purchaseList[${status.index}].orderquantity" /></td>
 					<td>0</td>
-					<td><form:input path="purchaseList[${status.index}].quantity" class="num"  style="width:100px" /></td>			
+					<td><form:input path="purchaseList[${status.index}].quantity" class="mini num"  /></td>			
 					<td><form:input path="purchaseList[${status.index}].price"  value="${detail. price}"  class="cash" style="width:100px" /></td>				
 					<td><span id="total${status.index}"></span>
 						<form:hidden path="purchaseList[${status.index}].totalprice" /></td>					
@@ -360,7 +386,15 @@
 					<td><span id="last${status.index}"></span>
 						<input type="hidden" id="lastPrice${status.index}"></td>
 					<td><span id="min${status.index}"></span></td>
-					
+					<td></td>
+						<form:hidden path="purchaseList[${status.index}].subbomid"  value="${detail.subBomId }" />
+						
+						<c:if test="${detail.gradedFlg eq '1'}">
+							<form:hidden path="purchaseList[${status.index}].materialid"   value="${detail.rawMaterialId}" />
+						</c:if>
+						<c:if test="${detail.gradedFlg ne '1'}">
+							<form:hidden path="purchaseList[${status.index}].materialid"   value="${detail.materialId}" />
+						</c:if>
 				</tr>
 
 				<script type="text/javascript">
@@ -474,9 +508,11 @@ function baseBomView() {
     		}},
     		{"targets":1,"render":function(data, type, row){
     			var materialId = row["materialId"];
+    			var subBomId = row["subBomId"];
     			var rownum = row["rownum"]-1;
     			rtn= "<a href=\"###\" onClick=\"doEditMaterial('" + row["rawRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
     			rtn=rtn+ "<input type=\"hidden\" id=\"bomDetailList"+rownum+".materialid\" name=\"bomDetailList["+rownum+"].materialid\" value=\""+materialId+"\">";
+    			rtn=rtn+ "<input type=\"hidden\" id=\"bomDetailList"+rownum+".subbomid\"   name=\"bomDetailList["+rownum+"].subbomid\" value=\""+subBomId+"\">";
     			return rtn;
     		}},
     		{"targets":3,"render":function(data, type, row){
@@ -672,7 +708,7 @@ function ZZmaterialView() {
           
         ] ,
         */
-	     "aaSorting": [[ 1, "asc" ]]
+	   //  "aaSorting": [[ 1, "asc" ]]
 	});
 	
 	t2.on('blur', 'tr td:nth-child(7),tr td:nth-child(8),tr td:nth-child(9)',function() {
@@ -710,6 +746,7 @@ function ZZmaterialView() {
 
 function requirementAjax() {
 
+	var scrollHeight = $(window).height() - 250;
 	var t3 = $('#example').DataTable({
 
 		"paging": false,
@@ -720,9 +757,11 @@ function requirementAjax() {
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
 		"async" : false,
+        "sScrollY": scrollHeight,
         "sScrollX": true,
-       // "sScrollXInner": "110%",
-       // "bScrollCollapse": true,
+       "fixedColumns":   { leftColumns: 3 },
+       //  "sScrollXInner": "110%",
+        "bScrollCollapse": true,
 		"dom" : '<"clear">rt',
 
 		"columns" : [ 
@@ -738,9 +777,15 @@ function requirementAjax() {
 				}, {"className":"td-right"			
 				}, {"className":"td-right"
 				}, {"className":"td-right"
-				}			
+				}, {
+				}
 			],
-		     "aaSorting": [[ 1, "asc" ]]
+		"aaSorting": [[ 1, "asc" ]],    
+   	    "columnDefs": [{    
+                    "targets": [ 12 ], //隐藏第1列，从第0列开始   
+                    "visible": false    
+   	     }],
+		     
 		
 	}).draw();
 
@@ -810,7 +855,7 @@ function requirementAjax() {
 		//alert("fPrice:"+fPrice+"::fLastPrice:"+fLastPrice)
 		
 	});
-		
+	/*
 	t3.on('click', 'tr', function() {
 		
 		var rowIndex = $(this).context._DT_RowIndex; //行号			
@@ -825,6 +870,7 @@ function requirementAjax() {
         }
 		
 	});
+	*/
 	
 	t3.on('order.dt search.dt draw.dt', function() {
 		t3.column(0, {
@@ -836,6 +882,8 @@ function requirementAjax() {
 			cell.innerHTML = num;
 		});
 	}).draw();
+
+	// new $.fn.dataTable.FixedColumns( t3 ,{leftColumns: 1,leftColumns: 2,leftColumns: 3});
 
 };//ajax()
 

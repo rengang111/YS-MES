@@ -144,10 +144,14 @@ public class BomAction extends BaseAction {
 				//doViewSourseBom();
 				rtnUrl = "/business/bom/bomselectlist";
 				break;
+			case "MultipleBomAdd":
+				dataMap = doMultipleBomAdd();
+				printOutJsonObj(response, dataMap);
+				break;	
 			case "changeBomAdd":
 				doChangeBomAdd();
 				rtnUrl = "/business/bom/basebomadd";
-				break;	
+				break;
 			case "changeBomEdit":
 				doChangeBomEdit();
 				rtnUrl = "/business/bom/bomplanedit";
@@ -379,11 +383,15 @@ public class BomAction extends BaseAction {
 		model = bomService.editBomPlan();
 	}
 	
+	public HashMap<String, Object> doMultipleBomAdd() throws Exception{
+
+		return bomService.multipleBomAdd();
+	}
+	
 	public void doChangeBomAdd() throws Exception{
 
 		model = bomService.changeBomPlanAdd();
 	}	
-	
 	public void doChangeBomEdit() throws Exception{
 
 		model = bomService.changeBomPlanEdit();

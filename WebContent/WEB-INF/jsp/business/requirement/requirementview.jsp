@@ -57,6 +57,13 @@
 			location.href = url;		
 		});
 		
+		$("#print").click(function() {
+			var YSId = '${order.YSId}';
+			var bomId=$('#bomId').text();
+			var url = "${ctx}/business/requirement?methodtype=printRequirement&YSId="+YSId+"&bomId="+bomId;
+			location.href = url;
+		});
+		
 		$("input:text").focus (function(){
 		    $(this).select();
 		});
@@ -64,6 +71,8 @@
 		$(".DTTT_container").css('float','left');
 
 		$( "#tabs" ).tabs();
+		$( "#tabs" ).tabs( "option", "active", 2 );//设置默认显示内容
+		
 		$(".tabs1").click( function() {
 			$('#orderBomTable thead tr').each (function (){
 				$(this).find("th").eq(0).css('width','30px ');
@@ -91,6 +100,25 @@
 		});
 		
 		
+		$('#example').DataTable().on('click', 'tr', function() {
+
+			var rowIndex = $(this).context._DT_RowIndex; //行号		
+			//alert(rowIndex)			
+			
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	        	$('#example').DataTable().$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	            
+	        }
+			
+			//$('.DTFC_Cloned').find('tr').removeClass('selected');
+			//$('.DTFC_Cloned').find('tr').eq(rowIndex).addClass('selected');
+			
+		});
+		
 		//foucsInit();//input获取焦点初始化处理
 	
 	});
@@ -99,6 +127,7 @@
 
 </head>
 <body>
+
 <div id="container">
 <!--主工作区,编辑页面或查询显示页面-->
 <div id="main">
@@ -134,6 +163,7 @@
 			</table>
 		</fieldset>
 			<button type="button" id="goBack" class="DTTT_button goBack" style="float: right;margin: -15px 20px 0px 0px;">返回</button>
+			<button type="button" id="print1" onClick="openPrint();" class="DTTT_button" style="float: right;margin: -15px 20px 0px 0px;">打印</button>
 		<fieldset>
 			<legend> 订单核算</legend>
 			<table class="form" id="table_form2">
@@ -287,6 +317,7 @@
 		<fieldset class="action" style="text-align: right;margin-top: 10px;">
 			<button type="button" id="doEdit" class="DTTT_button">编辑</button>
 			<button type="button" id="doReport" class="DTTT_button">提交</button>
+			<button type="button" id="doContract" class="DTTT_button">生成采购合同</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 	
@@ -533,7 +564,7 @@ function ZZmaterialView() {
 			{"defaultContent" : '0',"className" : 'td-right'},
 		 ],
 		
-	     "aaSorting": [[ 1, "asc" ]]
+	    // "aaSorting": [[ 1, "asc" ]]
 	});
 	
 	t2.on('blur', 'tr td:nth-child(7),tr td:nth-child(8),tr td:nth-child(9)',function() {
@@ -571,6 +602,7 @@ function ZZmaterialView() {
 
 function requirementAjax() {
 
+	var scrollHeight = $(window).height() - 250;
 	var t3 = $('#example').DataTable({
 
 		"paging": false,
@@ -581,9 +613,11 @@ function requirementAjax() {
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
 		"async" : false,
+        "sScrollY": scrollHeight,
         "sScrollX": true,
-       // "sScrollXInner": "110%",
-       // "bScrollCollapse": true,
+        "fixedColumns":   {
+            leftColumns: 3
+        },
 		"dom" : '<"clear">rt',
 
 		"columns" : [ 
@@ -601,10 +635,12 @@ function requirementAjax() {
 				}, {"className":"td-right"
 				}			
 			],
-		     "aaSorting": [[ 1, "asc" ]]
+		    // "aaSorting": [[ 1, "asc" ]]
 		
 	}).draw();
 
+
+// new $.fn.dataTable.FixedColumns( t3 ,{leftColumns: 1,leftColumns: 2,leftColumns: 3});
 	
 	t3.on('blur', 'tr td:nth-child(7),tr td:nth-child(8),tr td:nth-child(10)',function() {
 		
@@ -671,21 +707,6 @@ function requirementAjax() {
 		//alert("fPrice:"+fPrice+"::fLastPrice:"+fLastPrice)
 		//合计成本
 		costAcount();
-		
-	});
-		
-	t3.on('click', 'tr', function() {
-		
-		var rowIndex = $(this).context._DT_RowIndex; //行号			
-		//alert(rowIndex);
-
-		if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-            t3.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
 		
 	});
 	
@@ -776,6 +797,84 @@ function costAcount(){
 	$('#bomPlan\\.totalcost').val(floatToCurrency(ftotalCost));
 	//alert('labor:'+laborCost+'--product:'+productCost)
 
+}
+
+function printPage(preview)
+{
+	try {
+		var content=window.document.body.innerHTML;
+		var oricontent=content;
+		while(content.indexOf("{$printhide}")>=0) 
+			content=content.replace("{$printhide}","style='display:none'");
+		if(content.indexOf("ID=\"PrintControl\"")<0) 
+			content=content+"<OBJECT ID=\"PrintControl\" WIDTH=0 HEIGHT=0 CLASSID=\"CLSID:8856F961-340A-11D0-A96B-00C04FD705A2\"></OBJECT>";
+		window.document.body.innerHTML=content;
+		//PrintControl.ExecWB(7,1)打印预览，(1,1)打开，(4,1)另存为，(17,1)全选，(10,1)属性，(6,1)打印，(6,6)直接打印，(8,1)页面设置
+		if(preview==null||preview==false) 
+			PrintControl.ExecWB(6,1);
+		else 
+			PrintControl.ExecWB(7,1); //OLECMDID_PRINT=7; OLECMDEXECOPT_DONTPROMPTUSER=6/OLECMDEXECOPT_PROMPTUSER=1
+		window.document.body.innerHTML=oricontent;
+	}
+	catch(ex){
+		alert("执行Javascript脚本出错。"); 
+	}
+}
+
+function printConten(preview, html){
+	
+	//try{
+		var content=html;
+		var oricontent=window.document.body.innerHTML;
+		while(content.indexOf("{$printhide}")>=0) {
+			content=content.replace("{$printhide}","style='display:none'");
+		}
+		//if(content.indexOf("ID=\"PrintControl\"")<0) 
+		content=content+"<OBJECT ID=\"PrintControl\" WIDTH=0 HEIGHT=0 CLASSID=\"CLSID:8856F961-340A-11D0-A96B-00C04FD705A2\"></OBJECT>";
+		window.document.body.innerHTML=content;
+		PrintControl.ExecWB(8,1);// 打印预览，(1,1)打开，(4,1)另存为，(17,1)全选，(10,1)属性，(6,1)打印，(6,6)直接打印，(8,1)页面设置
+		
+		if(preview==null || preview==false) {
+			//PrintControl.ExecWB(6,1);
+		}else {
+
+			//alert(11)
+			
+			//PrintControl.ExecWB(7,1); //OLECMDID_PRINT=7; OLECMDEXECOPT_DONTPROMPTUSER=6/OLECMDEXECOPT_PROMPTUSER=1
+		}
+		//window.document.body.innerHTML=oricontent;
+	//}
+	//catch(ex){ 
+	//	alert("执行Javascript脚本出错。"); 
+	//}
+	
+}
+
+
+function openPrint() {
+	
+	var url = '${ctx}/business/requirement?methodtype=printRequirement';
+	var YSId = '${order.YSId}';
+	var bomId = '${attrForm.bomPlan.bomid }';
+	url = url + '&YSId=' + YSId+ '&bomId=' + bomId;
+
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1000px','500px' ], 
+		scrollbar : true,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		 // documentaryShow();
+		  return false; 
+		}    
+	});		
 }
 
 </script>
