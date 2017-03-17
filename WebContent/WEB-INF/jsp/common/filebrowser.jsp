@@ -126,7 +126,7 @@
 					isCreated = true;
 				}
 				catch(err) {
-					alert(err);
+
 				}
 			}			
 			if (isCreated) {
