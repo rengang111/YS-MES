@@ -80,7 +80,7 @@
 			}
 		});
 		
-		finder[id] = new CKFinder();
+		//finder[id] = new CKFinder();
 		customFolder[id] = customFolder;
 		resetFinder(id);
 		if (elementId == null || elementId == "") {
@@ -93,6 +93,8 @@
 
 <script type="text/javascript">
 	function openFileEditor(fileName, index) {
+
+		var isTypeConfimed = false;
 		var openDocObj;
 		var realPath = decodeURIComponent('${realPath}');
 		var filePath = realPath + fileName;
@@ -108,8 +110,15 @@
 		if (tempExtension.toLowerCase() == "jpeg" || tempExtension.toLowerCase() == "jpg" || tempExtension.toLowerCase() == "bmp" || tempExtension.toLowerCase() == "png") {
 			var url = "${ctx}/imageview?path=" + fileName;
 			openLayer(url, $(window).width(), $(window).height(), false);	
-
-		} else {
+			isTypeConfimed = true;	
+		} 
+		
+		if (tempExtension.toLowerCase() == 'pdf') {
+			var url = "${ctx}/pdfview?path=" + fileName;
+			openLayer(url, $(window).width(), $(window).height(), false);			
+			isTypeConfimed = true;
+		}
+		if (!isTypeConfimed) {
 			var isCreated = false;
 			for(var i = 1; i <= 5; i++) {
 				try {
@@ -117,6 +126,7 @@
 					isCreated = true;
 				}
 				catch(err) {
+					alert(err);
 				}
 			}			
 			if (isCreated) {

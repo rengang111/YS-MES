@@ -34,9 +34,14 @@ public class MainAction extends BaseAction {
 	}
 	
 	@RequestMapping("/imageview")
-	public String executeimageview(@RequestBody String para, @ModelAttribute("dataModels")MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String executeImageView(@RequestBody String para, @ModelAttribute("dataModels")MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		model.addAttribute("imagePath", request.getParameter("path"));
 		return "/common/viewer";
 	}
-	
+
+	@RequestMapping("/pdfview")
+	public String executePdfView(@RequestBody String para, @ModelAttribute("dataModels")MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		model.addAttribute("pdfPath", request.getParameter("path"));
+		return "/common/pdfviewer";
+	}
 }
