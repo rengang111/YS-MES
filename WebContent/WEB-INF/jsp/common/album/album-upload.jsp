@@ -158,13 +158,14 @@
         });
         
         qq(document.getElementById("trigger-upload")).attach("click", function() {
-        	//alert(99);
+
         	if (confirm("${msg}")) {
         		uploader.uploadStoredFiles();
         		
-        		//alert(999);
-        		
         		var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+        		
+        		parent.layer.close(index);
+        		/*
 				//parent.$('#events').DataTable().destroy();/
 				if ('${DisplayData.info}' == '') {
 					parent.refresh();
@@ -175,6 +176,7 @@
 					parent.refresh();
 					layer.close(index); //执行关闭
 				}
+				*/
         	}
         	
         });

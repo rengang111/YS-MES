@@ -11,6 +11,7 @@
 <script type="text/javascript">
 
 	var layerHeight = '600';
+	var albumCount = 3;
 
 	function ajax() {
 		var table = $('#TExternalSample').dataTable();
@@ -137,7 +138,7 @@
 	function doUpdate(key) {
 		var str = '';
 		var isFirstRow = true;
-		var url = "${ctx}/business/externalsample?methodtype=updateinit&key=" + key;
+		var url = "${ctx}/business/externalsample?methodtype=updateinit&key=" + key + "&albumcount=" + albumCount;
 
 		openLayer(url, '', $(document).height(), false);
 		

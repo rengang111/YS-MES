@@ -23,10 +23,11 @@ public class ExternalSampleModel extends BaseModel {
 	private String address = "";	
 	private String memo = "";
 	private String imageFileName = "";
-	private String[] filenames;
+	private String[][] filenames;
 	private String imageKey = "";
 	private String path = "";
-	private String nowUseImage = "";
+	private String[] nowUseImageList;
+	private int index = 0;
 	private ArrayList<ListOption> currencyList = new ArrayList<ListOption>();
 	private B_ExternalSampleData externalsampleData = new B_ExternalSampleData();
 	
@@ -111,10 +112,10 @@ public class ExternalSampleModel extends BaseModel {
 		this.imageFileName = imageFileName;
 	}
 	
-	public String[] getFilenames() {
+	public String[][] getFilenames() {
 		return this.filenames;
 	}
-	public void setFilenames(String[] filenames) {
+	public void setFilenames(String[][] filenames) {
 		this.filenames = filenames;
 	}
 	
@@ -132,12 +133,20 @@ public class ExternalSampleModel extends BaseModel {
 		this.path = path;
 	}
 	
-	public String getNowUseImage() {
-		return this.nowUseImage;
+	public String[] getNowUseImageList() {
+		return this.nowUseImageList;
 	}
-	public void setNowUseImage(String nowUseImage) {
-		this.nowUseImage = nowUseImage;
+	public void setNowUseImageList(String[] nowUseImageList) {
+		this.nowUseImageList = nowUseImageList;
 	}
+	
+	public int getIndex() {
+		return this.index;
+	}
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	
 	
 	public ArrayList<ListOption> getCurrencyList() {
 		return this.currencyList;

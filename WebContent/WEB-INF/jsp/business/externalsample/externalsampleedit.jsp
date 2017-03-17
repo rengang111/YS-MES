@@ -24,26 +24,24 @@ $(document).ready(function() {
 	
     $('#tabs').tabs({
         width: $("#tabs").parent().width(),  
-        height: "270"  
+        height: "300"  
     });   
 	
     $('#tabs2').tabs({
         width: $("#tabs2").parent().width(),  
-        height: "270"  
+        height: "300"  
     });
 
     $('#tabs3').tabs({
         width: $("#tabs3").parent().width(),  
-        height: "270"  
+        height: "300"  
     });
 
     
 	resetFinder(0, 2);
 	
 	if ($('#keyBackup').val() != "") {
-		$('#tabs').show();
-		$('#tabs2').show();
-		$('#tabs3').show();
+		showImageTabs();
 		refreshFileBrowser(0);
 		refreshFileBrowser(1);
 	}
@@ -89,6 +87,15 @@ $(document).ready(function() {
 	//refreshTestFileList();
 
 })
+
+function showImageTabs() {
+	$('#tabs').show();
+	$('#tabs2').show();
+	$('#tabs3').show();
+	$('#tabsContainer1').css('display','inline-block'); 
+	$('#tabsContainer2').css('display','inline-block');
+	$('#tabsContainer3').css('display','inline-block');
+}
 
 function refreshTestFileList() {
 	
@@ -177,7 +184,7 @@ function doSave() {
 						alert(d.message);	
 					} else {
 						$('#keyBackup').val(d.info);
-						$('#tabs').show();
+						showImageTabs();
 						refreshFileBrowser(0);
 						refreshFileBrowser(1);
 						reloadTabWindow();
@@ -315,24 +322,34 @@ function controlButtons(data) {
 <div id="container">
 
 		<div id="main">	
-			<div style="width:330px;height:270px;display:inline-block;">
+			<div id="tabsContainer1" style="width:330px;height:300px;display:none;">
 				<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
 					<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
-						<jsp:include page="../../common/album/album.jsp"></jsp:include>
+						<jsp:include page="../../common/album/multialbum.jsp">
+							<jsp:param value="1" name="index"/>
+							<jsp:param value="3" name="albumCount"/>
+						</jsp:include>
 					</div>
 				</div>
 			</div>
-			<div style="width:330px;height:270px;display:inline-block;">
+			<div id="tabsContainer2" style="width:330px;height:300px;display:none;">
 				<div id="tabs2" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
 					<div id="tabs-2" title="图片" style="padding:5px;height:300px;">
-						<jsp:include page="../../common/album/album.jsp"></jsp:include>
+						<jsp:include page="../../common/album/multialbum.jsp">
+							<jsp:param value="2" name="index"/>
+							<jsp:param value="3" name="albumCount"/>
+						</jsp:include>
 					</div>
 				</div>
 			</div>	
-			<div style="width:330px;height:270px;display:inline-block;">
+			<div  id="tabsContainer3" style="width:330px;height:300px;display:none;">
 				<div id="tabs3" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
 					<div id="tabs-3" title="图片" style="padding:5px;height:300px;">
-						<jsp:include page="../../common/album/album.jsp"></jsp:include>
+						<jsp:include page="../../common/album/multialbum.jsp">
+							<jsp:param value="3" name="index"/>
+							<jsp:param value="3" name="albumCount"/>
+						</jsp:include>
+
 					</div>
 				</div>
 			</div>	

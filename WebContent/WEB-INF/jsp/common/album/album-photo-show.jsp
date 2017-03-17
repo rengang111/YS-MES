@@ -55,7 +55,7 @@ top: -30px; left: 0; bottom: 0; right: 0;
 		.ajax({
 			type : "POST",
 			url : "${pageContext.request.contextPath}/album/setNowUseImage",
-			data : {key:"${key}", fileName:"${fileName}", className:"${className}"},// 要提交的表单
+			data : {key:"${key}", fileName:"${fileName}", className:"${className}", index:"${index}", albumCount:"${albumCount}"},// 要提交的表单
 			success : function(d) {
 
 				var retValue = d['retValue'];
@@ -135,7 +135,7 @@ top: -30px; left: 0; bottom: 0; right: 0;
 			$.ajax({
 				type : "GET",
 				url : url,
-				data : {key:"${key}", fileName:"${fileName}", className:"${className}"},// 要提交的表单
+				data : {key:"${key}", fileName:"${fileName}", className:"${className}", index:"${index}", albumCount:"${albumCount}"},// 要提交的表单
 				success : function(d) {													
 
 					var retValue = d['retValue'];
@@ -177,7 +177,7 @@ top: -30px; left: 0; bottom: 0; right: 0;
 <body>	
 
 	<div id="layer_main" style="padding:20px;height:480px;width:640px;">
-		<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${fileName}" style="max-height:480px;max-width:640px;" class="aligncenter" >
+		<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" style="max-height:480px;max-width:640px;" class="aligncenter" >
 	</div>
 	
 	<div style="float:right;">
