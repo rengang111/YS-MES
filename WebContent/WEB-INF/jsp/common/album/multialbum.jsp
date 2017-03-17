@@ -107,7 +107,7 @@
 		layer.open({
 			type : 2,
 			title : false,
-			area : [ '1000px', '600px' ],
+			area : [ '1000px', '550px' ],
 			scrollbar : false,
 			title : false,
 			content : '${pageContext.request.contextPath}/album/album-upload-init?key=' + '${DisplayData.keyBackup}' + '&index=' + index
