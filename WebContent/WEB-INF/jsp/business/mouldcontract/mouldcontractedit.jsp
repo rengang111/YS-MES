@@ -254,7 +254,7 @@ function initEvent(){
 		rules: {
 			contractYear: {
 				contractYear: true,
-				minlength: 4,
+				minlength: 1,
 				maxlength: 4,
 			},
 			productModelIdView: {
@@ -289,7 +289,7 @@ function initEvent(){
 			acceptanceDate: {
 				required: true,
 				date: true,
-				minlength: 10,
+				minlength: 1,
 				maxlength: 10,
 			},
 			memo: {			

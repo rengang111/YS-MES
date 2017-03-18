@@ -63,7 +63,7 @@ $(document).ready(function() {
 		rules: {
 			sampleId: {
 				required: true,
-				minlength: 6,
+				minlength: 1,
 				maxlength: 20,
 			},
 			sampleVersion: {

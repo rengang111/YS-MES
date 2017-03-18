@@ -16,20 +16,22 @@ var colCount = new Array();
 minCols[0] = 6;
 minCols[1] = 3;
 minCols[2] = 2;
-minCols[3] = 3;
+minCols[3] = 0;
 minCols[4] = 3;
-minCols[5] = 3;
-minCols[6] = 2;
+minCols[5] = 0;
+minCols[6] = 0;
 minCols[7] = 2;
+minCols[8] = 0;
 
 colCount[0] = 6;
 colCount[1] = 3;
 colCount[2] = 2;
-colCount[3] = 3;
+colCount[3] = 0;
 colCount[4] = 3;
-colCount[5] = 3;
-colCount[6] = 2;
+colCount[5] = 0;
+colCount[6] = 0;
 colCount[7] = 2;
+colCount[8] = 0;
 
 colNames[0] = "machine";
 colNames[1] = "packing";
@@ -39,6 +41,7 @@ colNames[4] = "patentCost";
 colNames[5] = "patentQuery";
 colNames[6] = "design";
 colNames[7] = "trialProduce";
+colNames[8] = "other";
 
 function initEvent(){
 
@@ -82,13 +85,27 @@ $(window).load(function(){
 
 $(document).ready(function() {
 
-	$("#tabs").tabs();
-	$('#tabs').width('330px');
-	$('#tabs').height('270px');
-	$('#tabs-1').height('300px');
+    $('#tabs').tabs({
+        width: $("#tabs").parent().width(),  
+        height: "300"  
+    });   
+	
+    $('#tabs2').tabs({
+        width: $("#tabs2").parent().width(),  
+        height: "300"  
+    });
 
+    $('#tabs3').tabs({
+        width: $("#tabs3").parent().width(),  
+        height: "300"  
+    });
+    
 	if ($('#keyBackup').val() != "") {
-		$('#tabs').show();
+		showImageTabs();
+	} else {
+		addNew(2);
+		addNew(4);
+		addNew(5);
 	}
 
 	$("#beginTime").datepicker({
@@ -118,7 +135,7 @@ $(document).ready(function() {
 		rules: {
 			projectId: {
 				required: true,
-				minlength: 9,
+				minlength: 1,
 				maxlength: 9,
 			},
 			projectName: {
@@ -160,7 +177,14 @@ $(document).ready(function() {
 			},
 			failMode: {
 				maxlength: 500,
-			},			
+			},
+			currency: {
+				required: true,
+			},
+			exchangeRate: {
+				required: true,
+				maxlength: 10,
+			},
 		},
 		errorPlacement: function(error, element) {
 		    if (element.is(":radio"))
@@ -179,10 +203,10 @@ $(document).ready(function() {
     	
     	var beginTime = new Date($('#beginTime').val(''));
     	var endTime = new Date($('#endTime').val(''));
-    	rtnValue = beginTime < endTime;
+    	rtnValue = beginTime <= endTime;
     	
         return rtnValue;  
-    }, "手机号码不正确"); 
+    }, "起始日期应在预计完成日期之前"); 
 })
 
 function doSave() {
@@ -215,7 +239,7 @@ function doSave() {
 					if (d.rtnCd != "000") {
 						alert(d.message);	
 					} else {
-						$('#tabs').show();
+						showImageTabs();
 						reloadTabWindow();
 						controlButtons(d.info);
 					}
@@ -235,6 +259,15 @@ function doSave() {
 			});
 		}
 	}
+}
+
+function showImageTabs() {
+	$('#tabs').show();
+	$('#tabs2').show();
+	$('#tabs3').show();
+	$('#tabsContainer1').css('display','inline-block'); 
+	$('#tabsContainer2').css('display','inline-block');
+	$('#tabsContainer3').css('display','inline-block');
 }
 
 function doDelete() {
@@ -339,6 +372,9 @@ function addNew(tableIndex) {
 	case 7:
 		table = $('#trialProduce');
 		break;
+	case 8:
+		table = $('#other');
+		break;
 	}
 	
 	activeMinCols = minCols[tableIndex];
@@ -423,6 +459,9 @@ function removeCol(tableIndex, colIndex) {
 	case 7:
 		table = $('#trialProduce');
 		break;
+	case 8:
+		table = $('#other');
+		break;
 	}
 
 	colName = colHeaderPrefix + colNames[tableIndex] + "-" + colIndex;
@@ -482,12 +521,38 @@ function doReturn() {
 
 		<div id="main">	
 				
-			<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
-				<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
-					<jsp:include page="../../common/album/album.jsp"></jsp:include>
+			<div id="tabsContainer1" style="width:330px;height:300px;display:none;">
+				<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
+						<jsp:include page="../../common/album/multialbum.jsp">
+							<jsp:param value="1" name="index"/>
+							<jsp:param value="3" name="albumCount"/>
+						</jsp:include>
+					</div>
 				</div>
 			</div>
-			<div style="clear:both;"></div>
+			<div id="tabsContainer2" style="width:330px;height:300px;display:none;">
+				<div id="tabs2" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					<div id="tabs-2" title="图片" style="padding:5px;height:300px;">
+						<jsp:include page="../../common/album/multialbum.jsp">
+							<jsp:param value="2" name="index"/>
+							<jsp:param value="3" name="albumCount"/>
+						</jsp:include>
+					</div>
+				</div>
+			</div>	
+			<div  id="tabsContainer3" style="width:330px;height:300px;display:none;">
+				<div id="tabs3" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					<div id="tabs-3" title="图片" style="padding:5px;height:300px;">
+						<jsp:include page="../../common/album/multialbum.jsp">
+							<jsp:param value="3" name="index"/>
+							<jsp:param value="3" name="albumCount"/>
+						</jsp:include>
+
+					</div>
+				</div>
+			</div>
+			
 			<div  style="height:20px"></div>
 				
 				<legend>项目任务书-基本信息</legend>
@@ -504,24 +569,22 @@ function doReturn() {
 					<input type=hidden id="colNames" name="colNames" value=""/>
 					<table class="form" width="850px">
 						<tr>
-							<td width="60px">项目编号：</td>
+							<td width="100px">项目编号：</td>
 							<td width="240px">
 								<input type="text" id="projectId" name="projectId" class="short" value="${DisplayData.projectTaskData.projectid}"/>
 							</td>
-							<td width="60px">项目名称：</td> 
-							<td>
+							<td width="80px">项目名称：</td> 
+							<td width="240px">
 								<input type="text" id="projectName" name="projectName" class="short" value="${DisplayData.projectTaskData.projectname}"/>
 							</td>
-						</tr>
-						<tr>
-							<td>暂定型号：</td> 
-							<td>
+							<td width="80px">暂定型号：</td> 
+							<td width="240px">
 								<input type="text" id="tempVersion" name="tempVersion" class="short" value="${DisplayData.projectTaskData.tempversion}"/>
-							</td>
-							<td>
+							</td>							
+							<td width="80px">
 								项目经理：
 							</td>
-							<td>
+							<td width="240px">
 								<form:select path="manager">
 									<form:options items="${DisplayData.managerList}" itemValue="key"
 										itemLabel="value" />
@@ -535,8 +598,6 @@ function doReturn() {
 							<td>
 								<input type="text" id="referPrototype" name="referPrototype" class="short" value="${DisplayData.projectTaskData.referprototype}"/>
 							</td>
-						</tr>
-						<tr>
 							<td>	
 								起始时间：
 							</td>
@@ -544,17 +605,19 @@ function doReturn() {
 								<input type="text" id="beginTime" name="beginTime" class="short" value="${DisplayData.projectTaskData.begintime}"/>
 							</td>
 							<td>	
-								预计完成时间：
+								预计完成<p>时间：
 							</td>
 							<td> 
 								<input type="text" id="endTime" name="endTime" class="short" value="${DisplayData.projectTaskData.endtime}"/>
-							</td>							
+							</td>		
+							<td colspan=5>
+							</td>					
 						</tr>
 						<tr>
 							<td>
 								设计性能：
 							</td>
-							<td colspan=3> 
+							<td colspan=7> 
 								<textarea id="designCapability" name="designCapability" rows=5 cols=120 class="long">${DisplayData.projectTaskData.designcapability}</textarea>
 							</td>
 						</tr>
@@ -563,7 +626,7 @@ function doReturn() {
 							<td>
 								包装描述： 
 							</td>
-							<td colspan=3>
+							<td colspan=7>
 								<textarea id="packing" name="packing" rows=5 cols=120 class="long">${DisplayData.projectTaskData.packing}</textarea>
 							</td>
 						</tr>
@@ -577,7 +640,7 @@ function doReturn() {
 							<td>
 								预估成本： 
 							</td>
-							<td>
+							<td colspan=5>
 								<input type="text" id="estimateCost" name="estimateCost" style="resize:none;width=200px;height=50px;" class="middle" value="${DisplayData.projectTaskData.estimatecost}"/>
 							</td>
 						</tr>
@@ -680,15 +743,9 @@ function doReturn() {
 					<div class="list">
 						<table id='auth' class="editableTable">
 							<tr height=30>
-								<td align="center">认证项目1</td>
-								<td align="center">认证项目2</td>
-								<td align="center">认证项目3</td>
 								<td align="center">合计</td>
 							</tr>
 							<tr height=30>
-								<td id="td-auth-1" align="center" ><input type="text" id="auth-1" name="auth-1" style="width:60px;" oninput="getSum();"></input></td>
-								<td id="td-auth-2" align="center" ><input type="text" id="auth-2" name="auth-2" style="width:60px;" oninput="getSum();"></input></td>
-								<td id="td-auth-3" align="center" ><input type="text" id="auth-3" name="auth-3" style="width:60px;" oninput="getSum();"></input></td>
 								<td id="td-auth-sum" align="center" ><label id="auth-sum" name="auth-sum" style="width:60px;"></label></td>							
 							</tr>
 							<tr height=30>
@@ -734,21 +791,12 @@ function doReturn() {
 					<div class="list">
 						<table id='patentQuery' class="editableTable">
 							<tr height=30>
-								<td align="center">查询项目1</td>
-								<td align="center">查询项目2</td>
-								<td align="center">查询项目3</td>
 								<td align="center">合计</td>
 							</tr>
 							<tr height=30>
-								<td id="td-patentQuery-1" align="center" ><input type="text" id="patentQuery-1" name="patentQuery-1" style="width:60px;" oninput="getSum();"></input></td>
-								<td id="td-patentQuery-2" align="center" ><input type="text" id="patentQuery-2" name="patentQuery-2" style="width:60px;" oninput="getSum();"></input></td>
-								<td id="td-patentQuery-3" align="center" ><input type="text" id="patentQuery-3" name="patentQuery-3" style="width:60px;" oninput="getSum();"></input></td>	
 								<td id="td-patentQuery-sum" align="center" ><label id="patentQuery-sum" name="patentQuery-sum" style="width:60px;"></label></td>							
 							</tr>
 							<tr height=30>
-								<td></td>
-								<td></td>
-								<td></td>
 								<td></td>
 							</tr>
 						</table>
@@ -762,18 +810,12 @@ function doReturn() {
 						<table id='design' class="editableTable">
 	
 							<tr height=30>
-								<td align="center">设计项目1</td>
-								<td align="center">设计项目2</td>
 								<td align="center">合计</td>
 							</tr>
 							<tr height=30>
-								<td id="td-design-1" align="center" ><input type="text" id="design-1" name="design-1" style="width:60px;" oninput="getSum();"></input></td>
-								<td id="td-design-2" align="center" ><input type="text" id="design-2" name="design-2" style="width:60px;" oninput="getSum();"></input></td>
 								<td id="td-design-sum" align="center" ><label id="design-sum" name="design-sum" style="width:60px;"></label></td>							
 							</tr>
 							<tr height=30>
-								<td></td>
-								<td></td>
 								<td></td>
 							</tr>
 						</table>
@@ -803,11 +845,37 @@ function doReturn() {
 						</table>
 					</div>
 					<div style="height:10px;"></div>
+					<div>			
+						9.其他
+						<button type="button" class="DTTT_button" id="addOther" onClick="addNew(8);">新建</button>
+					</div>
+					<div class="list">
+						<table id='other' class="editableTable">
+							<tr height=30>
+								<td align="center">合计</td>
+							</tr>
+							<tr height=30>
+								<td id="td-trialProduce-sum" align="center" ><label id="trialProduce-sum" name="trialProduce-sum" style="width:60px;"></label></td>							
+							</tr>
+							<tr height=30>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+
+					<div style="height:10px;"></div>
 					<legend>市场预期</legend>
 					<div  style="height:10px"></div>
 					<div class="list">
 						<table class='display' cellspacing="0">
 							<tr>
+								<td align="center">
+									币种
+								</td>
+								<td align="center">
+									汇率
+								</td>
+								</td>
 								<td align="center">
 									平均销售价格
 								</td>
@@ -819,9 +887,18 @@ function doReturn() {
 								</td>
 							</tr>
 							<tr>
+								<td>
+									<form:select path="currency">
+										<form:options items="${DisplayData.currencyList}" itemValue="key"
+											itemLabel="value" />
+									</form:select>
+								</td>
+								<td>
+									<input type="text" id="exchangeRate" name="exchangeRate" value="${DisplayData.projectTaskData.exchangerate}"></input>
+								</td>
 								<td><input type="text" id="salePrice" name="salePrice" value="${DisplayData.projectTaskData.saleprice}"></input></td>
 								<td><input type="text" id="sales" name="sales" value="${DisplayData.projectTaskData.sales}"></input></td>
-								<td><input type="text" id="recoveryNum" name="recoveryNum" value="${DisplayData.projectTaskData.recoverynum}"></input></td>
+								<td><input type="text" id="recoveryNum" name="recoveryNum" value="${DisplayData.projectTaskData.recoverynum}" disabled></input></td>
 							</tr>
 						</table>
 					</div>

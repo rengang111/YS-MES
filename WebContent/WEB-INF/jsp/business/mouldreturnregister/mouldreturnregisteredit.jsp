@@ -101,7 +101,7 @@ function initEvent(){
 			factReturnTime: {
 				required: true,
 				date: true,
-				minlength: 8,
+				minlength: 1,
 				maxlength: 10,
 			},
 			acceptResult: {

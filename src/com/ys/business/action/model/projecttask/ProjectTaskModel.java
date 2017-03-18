@@ -32,11 +32,14 @@ public class ProjectTaskModel extends BaseModel {
 	private String recoveryNum = "";
 	private String failMode = "";
 	private String imageFileName = "";
-	private String[] filenames;
+	private String[][] filenames;
 	private String imageKey = "";
 	private String path = "";
-	private String nowUseImage = "";
+	private String[] nowUseImageList;
 	private ArrayList<ListOption> managerList = new ArrayList<ListOption>();
+	private ArrayList<ListOption> currencyList = new ArrayList<ListOption>();
+	private String currency = "";
+	private String exchangeRate = "";
 	private B_ProjectTaskData projectTaskData = new B_ProjectTaskData();
 	private JSONArray costDataList = new JSONArray();
 	private JSONArray costDataTypeCount = new JSONArray();
@@ -157,10 +160,10 @@ public class ProjectTaskModel extends BaseModel {
 		this.imageFileName = imageFileName;
 	}
 	
-	public String[] getFilenames() {
+	public String[][] getFilenames() {
 		return this.filenames;
 	}
-	public void setFilenames(String[] filenames) {
+	public void setFilenames(String[][] filenames) {
 		this.filenames = filenames;
 	}
 	
@@ -178,11 +181,11 @@ public class ProjectTaskModel extends BaseModel {
 		this.path = path;
 	}
 	
-	public String getNowUseImage() {
-		return this.nowUseImage;
+	public String[] getNowUseImageList() {
+		return this.nowUseImageList;
 	}
-	public void setNowUseImage(String nowUseImage) {
-		this.nowUseImage = nowUseImage;
+	public void setNowUseImageList(String[] nowUseImageList) {
+		this.nowUseImageList = nowUseImageList;
 	}
 	
 	public ArrayList<ListOption> getManagerList() {
@@ -191,6 +194,27 @@ public class ProjectTaskModel extends BaseModel {
 	public void setManagerList(ArrayList<ListOption> managerList) {
 		this.managerList = managerList;
 	}	
+	
+	public ArrayList<ListOption> getCurrencyList() {
+		return this.currencyList;
+	}
+	public void setCurrencyList(ArrayList<ListOption> currencyList) {
+		this.currencyList = currencyList;
+	}
+	
+	public String getCurrency() {
+		return this.currency;
+	}
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+	
+	public String getExchangeRate() {
+		return this.exchangeRate;
+	}
+	public void setExchangeRate(String exchangeRate) {
+		this.exchangeRate = exchangeRate;
+	}
 	
 	public B_ProjectTaskData getProjectTaskData() {
 		return this.projectTaskData;

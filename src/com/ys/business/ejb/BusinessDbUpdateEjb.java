@@ -407,7 +407,9 @@ public class BusinessDbUpdateEjb  {
 			dbData.setSaleprice(service.getJsonData(data, "salePrice"));									
 			dbData.setSales(service.getJsonData(data, "sales"));									
 			dbData.setRecoverynum(service.getJsonData(data, "recoveryNum"));									
-			dbData.setFailmode(service.getJsonData(data, "failMode"));									
+			dbData.setFailmode(service.getJsonData(data, "failMode"));
+			dbData.setCurrency(service.getJsonData(data, "currency"));
+			dbData.setExchangerate(service.getJsonData(data, "exchangeRate"));
 			dbData = ProjectTaskService.updateModifyInfo(dbData, userInfo);									
 			dao.Create(dbData);									
 												
@@ -453,7 +455,9 @@ public class BusinessDbUpdateEjb  {
 			dbData.setSaleprice(service.getJsonData(data, "salePrice"));									
 			dbData.setSales(service.getJsonData(data, "sales"));									
 			dbData.setRecoverynum(service.getJsonData(data, "recoveryNum"));									
-			dbData.setFailmode(service.getJsonData(data, "failMode"));									
+			dbData.setFailmode(service.getJsonData(data, "failMode"));
+			dbData.setCurrency(service.getJsonData(data, "currency"));
+			dbData.setExchangerate(service.getJsonData(data, "exchangeRate"));
 			dbData = ProjectTaskService.updateModifyInfo(dbData, userInfo);									
 			dao.Store(dbData);									
 												

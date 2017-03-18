@@ -128,7 +128,7 @@ function initEvent(){
 		rules: {
 			mouldLendNo: {
 				mouldLendNo: true,
-				minlength: 8,
+				minlength: 1,
 				maxlength: 8,
 			},
 			productModelId: {
@@ -142,13 +142,13 @@ function initEvent(){
 			lendTime: {
 				required: true,
 				date: true,
-				minlength: 8,
+				minlength: 1,
 				maxlength: 10,
 			},
 			returnTime: {		
 				required: true,
 				date: true,
-				minlength: 8,
+				minlength: 1,
 				maxlength: 10,
 			},
 		},
