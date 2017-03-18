@@ -38,6 +38,17 @@ $(document).ready(function() {
     });
 
     
+	$("#buyTime").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+	});
+	if ($("#buyTime").val() == "") {
+		$("#buyTime").datepicker( 'setDate' , new Date() );
+	}
+    
 	resetFinder(0, 2);
 	
 	if ($('#keyBackup').val() != "") {

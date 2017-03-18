@@ -223,6 +223,18 @@ function addRules(index) {
 	$('#detailLines\\[' + index + '\\]\\.newfileno').rules('add', { required: true, maxlength:50 });
 	$('#detailLines\\[' + index + '\\]\\.content').rules('add', {  required: true, maxlength:20 });
 	$('#detailLines\\[' + index + '\\]\\.reason').rules('add', { maxlength: 20 });
+	
+	$("#detailLines\\[' + index + '\\]\\.createdate").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+		defaultDate : new Date(),
+	}); 
+	if ($("#detailLines\\[' + index + '\\]\\.createdate").val() == "") {
+		$("#detailLines\\[' + index + '\\]\\.createdate").datepicker( 'setDate' , new Date() );
+	}
 }
 
 function reloadTable() {

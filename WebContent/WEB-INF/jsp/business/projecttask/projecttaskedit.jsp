@@ -91,7 +91,28 @@ $(document).ready(function() {
 		$('#tabs').show();
 	}
 
-	
+	$("#beginTime").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+	});
+	if ($("#beginTime").val() == "") {
+		$("#beginTime").datepicker( 'setDate' , new Date() );
+	}
+
+	$("#endTime").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+		defaultDate : new Date(),
+	});
+	if ($("#endTime").val() == "") {
+		$("#endTime").datepicker( 'setDate' , new Date() );
+	}
 	
 	validator = $("#projectTaskInfo").validate({
 		rules: {
