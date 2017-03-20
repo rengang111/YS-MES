@@ -85,53 +85,6 @@ $(window).load(function(){
 
 $(document).ready(function() {
 
-    $('#tabs').tabs({
-        width: $("#tabs").parent().width(),  
-        height: "300"  
-    });   
-	
-    $('#tabs2').tabs({
-        width: $("#tabs2").parent().width(),  
-        height: "300"  
-    });
-
-    $('#tabs3').tabs({
-        width: $("#tabs3").parent().width(),  
-        height: "300"  
-    });
-    
-	if ($('#keyBackup').val() != "") {
-		showImageTabs();
-
-	} else {
-		//addNew(2);
-		//addNew(4);
-		//addNew(5);
-	}
-
-	$("#beginTime").datepicker({
-		dateFormat:"yy-mm-dd",
-		changeYear: true,
-		changeMonth: true,
-		selectOtherMonths:true,
-		showOtherMonths:true,
-	});
-	if ($("#beginTime").val() == "") {
-		$("#beginTime").datepicker( 'setDate' , new Date() );
-	}
-
-	$("#endTime").datepicker({
-		dateFormat:"yy-mm-dd",
-		changeYear: true,
-		changeMonth: true,
-		selectOtherMonths:true,
-		showOtherMonths:true,
-		defaultDate : new Date(),
-	});
-	if ($("#endTime").val() == "") {
-		$("#endTime").datepicker( 'setDate' , new Date() );
-	}
-	
 	validator = $("#projectTaskInfo").validate({
 		rules: {
 			projectId: {
@@ -201,9 +154,78 @@ $(document).ready(function() {
 		}
 	});
 	
+    $('#tabs').tabs({
+        width: $("#tabs").parent().width(),  
+        height: "300"  
+    });   
+	
+    $('#tabs2').tabs({
+        width: $("#tabs2").parent().width(),  
+        height: "300"  
+    });
+
+    $('#tabs3').tabs({
+        width: $("#tabs3").parent().width(),  
+        height: "300"  
+    });
+    
+	if ($('#keyBackup').val() != "") {
+		showImageTabs();
+	} else {
+		addNew(3);
+		addNew(5);
+		addNew(6);
+		addNew(7);
+		addNew(8);
+	}
+	
+	$("#beginTime").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+	});
+	if ($("#beginTime").val() == "") {
+		$("#beginTime").datepicker( 'setDate' , new Date() );
+	}
+	
+	$("#endTime").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+		defaultDate : new Date(),
+	});
+	if ($("#endTime").val() == "") {
+		$("#endTime").datepicker( 'setDate' , new Date() );
+	}
+	
 	addRules(0, true);
 	addRules(1, true);
 	addRules(2, true);
+	
+	for(var i = 0; i < 9; i++) {
+		$("#expectDate-" + i).datepicker({
+			dateFormat:"yy-mm-dd",
+			changeYear: true,
+			changeMonth: true,
+			selectOtherMonths:true,
+			showOtherMonths:true,
+		});
+		
+		if ($("#expectDate-" + i).val() == "") {
+			$("#expectDate-" + i).datepicker( 'setDate' , new Date() );
+			if ($('#keyBackup').val() != "") {
+				$("#expectDate-" + i).val("***");
+				$('#noUse-' + i).attr("checked",'true');
+			}
+			setNoUse(i);
+		}
+		$("#expectDate-" + i).rules('add', { required: true, date: true});
+		
+	}
 	
 	$("#manager").val("${DisplayData.projectTaskData.manager}");
 	$("#currency").val("${DisplayData.projectTaskData.currency}");
@@ -218,6 +240,18 @@ $(document).ready(function() {
         return rtnValue;  
     }, "起始日期应在预计完成日期之前"); 
 })
+
+function setNoUse(index) {
+	if ($('#noUse-' + index).prop('checked')) {
+		$('#expectDate-' + index).val("***");
+		$('#expectDate-' + index).attr("disabled", true); 
+	} else {
+		if ($('#expectDate-' + index).val() == "***") {
+			$('#expectDate-' + index).datepicker( 'setDate' , new Date() );
+		}
+		$('#expectDate-' + index).attr("disabled", false);
+	}
+}
 
 function doSave() {
 
@@ -445,6 +479,7 @@ function addRules(tableIndex, init) {
 			$('#' + colName + "-" + (i + 1)).rules('add', { number: true, maxlength: 10});
 		}
 	} else {
+		
 		$('#' + colName + "-" + colCount[tableIndex]).rules('add', { number: true, maxlength: 10});
 	}
 }
@@ -942,6 +977,63 @@ function doReturn() {
 					<div class="list">
 						<textarea id="failMode" name="failMode" rows=5 cols=120>${DisplayData.projectTaskData.failmode}</textarea>
 					</div>
+					<div  style="height:10px"></div>
+					<legend>进程预期</legend>
+					<div class="list" style="width:400px;">
+						<table id="processDetail" class="display" cellspacing="0">
+							<tr class="selected">
+								<td style="width: 80px;" class="dt-middle"></td>
+								<td style="width: 240px;" class="dt-middle" align="center">预期完成</td>
+								<td style="width: 80px;" class="dt-middle" align="center">未使用</td>
+							</tr>
+							<tr>
+								<td align="left" class="dt-middle">3D完成</td>
+								<td align="center"><input type="text" id="expectDate-0" name="expectDate-0" value="${DisplayData.expectDateList[0]}"></input></td>
+								<td align="center"><input type="checkbox" id="noUse-0" name="noUse-0" onClick="setNoUse(0)"></input></td>
+							</tr>
+							<tr>
+								<td align="left" class="dt-middle">3D手模</td>
+								<td align="center"><input type="text" id="expectDate-1" name="expectDate-1" value="${DisplayData.expectDateList[1]}"></input></td>
+								<td align="center"><input type="checkbox" id="noUse-1" name="noUse-1" onClick="setNoUse(1)"></input></td>
+							</tr>
+							<tr>
+								<td align="left" class="dt-middle">3D工作样机</td>
+								<td align="center"><input type="text" id="expectDate-2" name="expectDate-2" value="${DisplayData.expectDateList[2]}"></input></td>
+								<td align="center"><input type="checkbox" id="noUse-2" name="noUse-2" onClick="setNoUse(2)"></input></td>
+							</tr>
+							<tr>
+								<td align="left" class="dt-middle">模具确认</td>
+								<td align="center"><input type="text" id="expectDate-3" name="expectDate-3" value="${DisplayData.expectDateList[3]}"></input></td>
+								<td align="center"><input type="checkbox" id="noUse-3" name="noUse-3" onClick="setNoUse(3)"></input></td>
+							</tr>
+							<tr>
+								<td align="left" class="dt-middle">模具完成</td>
+								<td align="center"><input type="text" id="expectDate-4" name="expectDate-4" value="${DisplayData.expectDateList[4]}"></input></td>
+								<td align="center"><input type="checkbox" id="noUse-4" name="noUse-4" onClick="setNoUse(4)"></input></td>
+							</tr>
+							<tr>
+								<td align="left" class="dt-middle">模具调整</td>
+								<td align="center"><input type="text" id="expectDate-5" name="expectDate-5" value="${DisplayData.expectDateList[5]}"></input></td>
+								<td align="center"><input type="checkbox" id="noUse-5" name="noUse-5" onClick="setNoUse(5)"></input></td>
+							</tr>
+							<tr>
+								<td align="left" class="dt-middle">委外加工</td>
+								<td align="center"><input type="text" id="expectDate-6" name="expectDate-6" value="${DisplayData.expectDateList[6]}"></input></td>
+								<td align="center"><input type="checkbox" id="noUse-6" name="noUse-6" onClick="setNoUse(6)"></input></td>
+							</tr>
+							<tr>
+								<td align="left" class="dt-middle">试产</td>
+								<td align="center"><input type="text" id="expectDate-7" name="expectDate-7" value="${DisplayData.expectDateList[7]}"></input></td>
+								<td align="center"><input type="checkbox" id="noUse-7" name="noUse-7" onClick="setNoUse(7)"></input></td>
+							</tr>
+							<tr>
+								<td align="left" class="dt-middle">文档整理</td>
+								<td align="center"><input type="text" id="expectDate-8" name="expectDate-8" value="${DisplayData.expectDateList[8]}"></input></td>
+								<td align="center"><input type="checkbox" id="noUse-8" name="noUse-8" onClick="setNoUse(8)"></input></td>
+							</tr>
+						</table>					
+					</div>
+					
 				</form:form>
 				
 			</div>

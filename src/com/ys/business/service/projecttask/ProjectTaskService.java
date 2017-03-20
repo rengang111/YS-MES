@@ -223,7 +223,7 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 				} else {
 					BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 			        
-			        bean.executeProjectTaskUpdate(data, userInfo);
+			        bean.executeProjectTaskUpdate(request, data, userInfo);
 					model.setEndInfoMap(NORMAL, "", id);
 				}
 			} else {
@@ -350,9 +350,30 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 		userDefinedSearchCase.put("keyword", key);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		ArrayList<ArrayList<String>> costDataTypeCountList = baseQuery.getFullData();
-		
 		jsonObject = JSONArray.fromObject(costDataTypeCountList);
 		model.setCostDataTypeCount(jsonObject);
+		
+		model.setQueryFileName("/business/processcontrol/processcontrolquerydefine");
+		model.setQueryName("processcontrolquerydefine_searchcollect");
+		baseQuery = new BaseQuery(request, model);
+		userDefinedSearchCase.put("keyword", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, -1);	
+		ArrayList<HashMap<String, String>> dbExpectDateList = model.getYsViewData();
+		ArrayList<String> expectDateList = new ArrayList<String>();
+		HashMap<String, String>rowData = null;
+		for(int i = 0; i < 9; i++) {
+			expectDateList.add("");
+		}
+		for(int i = 0; i < dbExpectDateList.size(); i++) {
+			HashMap<String, String>tempRowData = dbExpectDateList.get(i);
+			if (tempRowData.get("type").length() == 1) {
+				rowData = dbExpectDateList.get(i);
+				expectDateList.add(Integer.parseInt(tempRowData.get("type")), rowData.get("expectDate"));
+			}
+		}
+		
+		model.setExpectDateList(expectDateList);
 		
 		model.setEndInfoMap("098", "0001", "");
 		model.setKeyBackup(dbData.getId());

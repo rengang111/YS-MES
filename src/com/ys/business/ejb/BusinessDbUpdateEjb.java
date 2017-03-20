@@ -410,13 +410,18 @@ public class BusinessDbUpdateEjb  {
 			dbData.setFailmode(service.getJsonData(data, "failMode"));
 			dbData.setCurrency(service.getJsonData(data, "currency"));
 			dbData.setExchangerate(service.getJsonData(data, "exchangeRate"));
-			dbData = ProjectTaskService.updateModifyInfo(dbData, userInfo);									
+			dbData = ProjectTaskService.updateModifyInfo(dbData, userInfo);
 			dao.Create(dbData);									
 												
 			//TODO									
-			executeUpdateProjectTaskCost(guid, data, userInfo);									
-												
-			count++;									
+			executeUpdateProjectTaskCost(guid, data, userInfo);
+			
+			for(int i = 0; i < 9; i++) {
+				String expectDate = service.getJsonData(data, "expectDate-" + String.valueOf(i));
+				executeProjectProcessControlUpdate("", guid, String.valueOf(i), expectDate, userInfo);
+			}
+			
+			count++;
 												
 			ts.commit();									
 		}										
@@ -428,7 +433,7 @@ public class BusinessDbUpdateEjb  {
 		return guid;										
     }    												
     												
-    public String executeProjectTaskUpdate(String data, UserInfo userInfo) throws Exception {												
+    public String executeProjectTaskUpdate(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {												
     	B_ProjectTaskData dbData = new B_ProjectTaskData();											
     	B_ProjectTaskDao dao = new B_ProjectTaskDao();											
     												
@@ -467,7 +472,27 @@ public class BusinessDbUpdateEjb  {
 			BaseDAO.execUpdate(sql.toString());									
 												
 			executeUpdateProjectTaskCost(id, data, userInfo);									
-												
+			
+			for(int i = 0; i < 9; i++) {
+				String expectDate = service.getJsonData(data, "expectDate-" + String.valueOf(i));
+				HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+				BaseModel dataModel = new BaseModel();
+				
+				dataModel.setQueryFileName("/business/processcontrol/processcontrolquerydefine");
+				dataModel.setQueryName("processcontrolquerydefine_searchbytype");
+				BaseQuery baseQuery = new BaseQuery(request, dataModel);
+				userDefinedSearchCase.put("keyword1", id);
+				userDefinedSearchCase.put("keyword2", String.valueOf(i));
+				baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+				ArrayList<ArrayList<String>> dataList = baseQuery.getFullData();
+				if (dataList.size() > 0) {
+					executeProjectProcessControlUpdate(dataList.get(0).get(0), id, String.valueOf(i), expectDate, userInfo);
+				} else {
+					executeProjectProcessControlUpdate("", id, String.valueOf(i), expectDate, userInfo);
+				}
+			}
+
+			
 			count++;									
 												
 			ts.commit();									
@@ -583,8 +608,57 @@ public class BusinessDbUpdateEjb  {
 			throw e;									
 		}										
     }												
+    
+    public String executeProjectProcessControlUpdate(String id, String projectId, String type, String expectDate, UserInfo userInfo) throws Exception {
+    	B_ProcessControlData dbData = new B_ProcessControlData();											
+    	B_ProcessControlDao dao = new B_ProcessControlDao();											
     												
-    public String executeProcessControlUpdate(String data, UserInfo userInfo) throws Exception {												
+    	BaseService service = new BaseService();											
+		int count = 0;										
+		String info = "";										
+												
+		try {										
+			if (id.equals("")) {									
+				//doAdd								
+				dbData = new B_ProcessControlData();								
+				dbData.setProjectid(projectId);								
+				dbData.setType(type);															
+				dbData.setCreatedate(null);
+				if (expectDate.equals("***") || expectDate.equals("")) {
+					dbData.setExpectdate(null);
+				} else {
+					dbData.setExpectdate(expectDate);
+				}
+				dbData.setFinishtime(null);
+				dbData.setConfirm("0");								
+				dbData = ProcessControlService.updateModifyInfo(dbData, userInfo);								
+												
+				String guid = BaseDAO.getGuId();								
+				dbData.setId(guid);								
+				dao.Create(dbData);								
+			} else {									
+				//doUpdate or doDelete								
+				dbData.setId(id);								
+				dbData = (B_ProcessControlData)dao.FindByPrimaryKey(dbData);								
+				if (expectDate.equals("") || expectDate.equals("***")) {							
+					dbData.setExpectdate(null);						
+				} else {							
+					dbData.setExpectdate(expectDate);						
+				}							
+				dao.Store(dbData);								
+			}									
+												
+			count++;									
+									
+		}										
+		catch(Exception e) {										
+			throw e;									
+		}										
+												
+		return info;										
+    }	
+    
+    public String executeProcessControlUpdate(String data, UserInfo userInfo) throws Exception {
     	B_ProcessControlData dbData = new B_ProcessControlData();											
     	B_ProcessControlDao dao = new B_ProcessControlDao();											
     												
@@ -689,12 +763,12 @@ public class BusinessDbUpdateEjb  {
 			}									
 												
 			count++;									
-												
+									
 			info += type;									
 			info += "," + expectDate;									
 			info += "," + exceedDate;									
 			info += "," + finishTime;									
-												
+											
 			ts.commit();									
 		}										
 		catch(Exception e) {										
@@ -703,8 +777,7 @@ public class BusinessDbUpdateEjb  {
 		}										
 												
 		return info;										
-    }												
-												
+    }
     												
     public void executeProcessControlDelete(String keyData, UserInfo userInfo) throws Exception {												
     	B_ProjectTaskData data = new B_ProjectTaskData();											

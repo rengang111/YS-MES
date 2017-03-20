@@ -7,8 +7,12 @@
 	>
 	</object>
 </html>
-<B>注册中...</B>
+<div style="position:absolute; top:50%;margin-top:-10px;margin-left:20px;">
+<button type="button" id="return" class="DTTT_button" onClick="doReturn();"	style="height:25px;">关闭</button>
+</div>
 <script>
-	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-	parent.layer.close(index); //执行关闭
+	function doReturn() {
+		var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+		parent.layer.close(index); //执行关闭
+	}
 </script>

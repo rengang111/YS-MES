@@ -43,6 +43,7 @@ public class ProjectTaskModel extends BaseModel {
 	private B_ProjectTaskData projectTaskData = new B_ProjectTaskData();
 	private JSONArray costDataList = new JSONArray();
 	private JSONArray costDataTypeCount = new JSONArray();
+	private ArrayList<String> expectDateList = new ArrayList<String>();
 	
 	public String getClassName() {
 		return this.className;
@@ -236,5 +237,11 @@ public class ProjectTaskModel extends BaseModel {
 	public void setCostDataTypeCount(JSONArray costDataTypeCount) {
 		this.costDataTypeCount = costDataTypeCount;
 	}
-	
+
+	public ArrayList<String> getExpectDateList() {
+		return this.expectDateList;
+	}
+	public void setExpectDateList(ArrayList<String> expectDateList) {
+		this.expectDateList = expectDateList;
+	}
 }
