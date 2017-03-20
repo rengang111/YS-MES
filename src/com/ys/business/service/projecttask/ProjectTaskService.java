@@ -55,7 +55,8 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 			{"外观", "实用性", "发明"},
 			{},
 			{},
-			{"试产数量", "试产费用"}
+			{"", ""},
+			{}
 	};	
 	
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
@@ -121,11 +122,15 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 		try {
 			//TODO
 			model.setManagerList(doOptionChange(request).getManagerList());
+			model.setCurrencyList(doCurrencyOptionChange(request).getCurrencyList());
 			model.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+			model.setManagerList(null);
+			model.setCurrencyList(null);
+
 		}
 		
 		return model;
@@ -166,11 +171,13 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 			//TODO
 			ArrayList<ListOption> optionList = userService.getUserListByDuty(request, BusinessConstants.DUTY_PJMANAGER);
 			model.setManagerList(optionList);
+			model.setCurrencyList(doCurrencyOptionChange(request).getCurrencyList());
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 			model.setManagerList(null);
+			model.setCurrencyList(null);
 		}
 		
 		return model;
@@ -335,11 +342,14 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 		ArrayList<ArrayList<String>> costDataList = baseQuery.getFullData();
 		JSONArray jsonObject = JSONArray.fromObject(costDataList);
 		model.setCostDataList(jsonObject);
-		ArrayList<ArrayList<String>> costDataTypeCount = BaseDAO.execSQL("select count(*) from b_projecttaskcost group by type");
-		ArrayList<String> costDataTypeCountList = new ArrayList<String>();
-		for(ArrayList<String> data:costDataTypeCount) {
-			costDataTypeCountList.add(data.get(0));
-		}
+		
+		userDefinedSearchCase = new HashMap<String, String>();
+		model.setQueryFileName("/business/projecttask/projecttaskquerydefine");
+		model.setQueryName("projecttaskquerydefine_getcosttype");
+		baseQuery = new BaseQuery(request, model);
+		userDefinedSearchCase.put("keyword", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		ArrayList<ArrayList<String>> costDataTypeCountList = baseQuery.getFullData();
 		
 		jsonObject = JSONArray.fromObject(costDataTypeCountList);
 		model.setCostDataTypeCount(jsonObject);

@@ -20,7 +20,7 @@ minCols[3] = 0;
 minCols[4] = 3;
 minCols[5] = 0;
 minCols[6] = 0;
-minCols[7] = 2;
+minCols[7] = 0;
 minCols[8] = 0;
 
 colCount[0] = 6;
@@ -30,7 +30,7 @@ colCount[3] = 0;
 colCount[4] = 3;
 colCount[5] = 0;
 colCount[6] = 0;
-colCount[7] = 2;
+colCount[7] = 0;
 colCount[8] = 0;
 
 colNames[0] = "machine";
@@ -102,10 +102,11 @@ $(document).ready(function() {
     
 	if ($('#keyBackup').val() != "") {
 		showImageTabs();
+
 	} else {
-		addNew(2);
-		addNew(4);
-		addNew(5);
+		//addNew(2);
+		//addNew(4);
+		//addNew(5);
 	}
 
 	$("#beginTime").datepicker({
@@ -167,21 +168,25 @@ $(document).ready(function() {
 				maxlength: 10,
 			},
 			salePrice: {
+				number: true,
 				maxlength: 10,
 			},
 			sales: {
 				maxlength: 10,
 			},
 			recoveryNum: {
+				number: true,
 				maxlength: 10,
 			},
 			failMode: {
 				maxlength: 500,
 			},
 			currency: {
+				
 				required: true,
 			},
 			exchangeRate: {
+				number: true,
 				required: true,
 				maxlength: 10,
 			},
@@ -196,7 +201,12 @@ $(document).ready(function() {
 		}
 	});
 	
+	addRules(0, true);
+	addRules(1, true);
+	addRules(2, true);
+	
 	$("#manager").val("${DisplayData.projectTaskData.manager}");
+	$("#currency").val("${DisplayData.projectTaskData.currency}");
 
     jQuery.validator.addMethod("verifyDate",function(value, element){ 
     	var rtnValue = true;
@@ -245,9 +255,9 @@ function doSave() {
 					}
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
-					var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+					//var index = parent.layer.getFrameIndex(window.name);
 					//parent.$('#events').DataTable().destroy();
-					parent.layer.close(index); //执行关闭
+					//parent.layer.close(index); //执行关闭
 					
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -421,17 +431,29 @@ function addNew(tableIndex) {
 	td +="</td>";
 	$(table).find("tr").eq(2).append(td);
 
-	$('#' + colName + "-" + colCount[tableIndex]).rules('add', { digits: true, maxlength: 10});
+	//$('#' + colName + "-" + colCount[tableIndex]).rules('add', { number: true, maxlength: 10});
+	addRules(tableIndex, false);
 
 	getSum();
 
+}
+
+function addRules(tableIndex, init) {
+	colName = colNames[tableIndex];
+	if (init) {
+		for (var i = 0; i < colCount[tableIndex]; i++) {
+			$('#' + colName + "-" + (i + 1)).rules('add', { number: true, maxlength: 10});
+		}
+	} else {
+		$('#' + colName + "-" + colCount[tableIndex]).rules('add', { number: true, maxlength: 10});
+	}
 }
 
 function removeCol(tableIndex, colIndex) {
 	var table;
 	var colName;
 	var col = -1;
-	var colCount = 0;
+	var removeColCount = 0;
 	var colHeaderPrefix = "td-";
 
 	switch(tableIndex) {
@@ -467,9 +489,9 @@ function removeCol(tableIndex, colIndex) {
 	colName = colHeaderPrefix + colNames[tableIndex] + "-" + colIndex;
 	
 	$(table).find("td").each(function(){
-		colCount++;
+		removeColCount++;
 		if ($(this).attr('id') == colName) {
-			col = colCount;
+			col = removeColCount;
 		}
 	});
 
@@ -481,6 +503,8 @@ function removeCol(tableIndex, colIndex) {
 	removeCol.eq(col - 1).remove();
 	removeCol = $(table).find("tr").eq(2).children();
 	removeCol.eq(col - 1).remove();
+	
+	colCount[tableIndex]--;
 }
 
 function getSum() {
@@ -490,8 +514,10 @@ function getSum() {
 		for (var j = 0; j < colCount[i]; j++) {
 			var txtName = colNames[i] + "-" + (j + 1);
 			if ($('#' + txtName).length > 0) {
-				if ($('#' + txtName).val() != '') {
-					sum += parseFloat($('#' + txtName).val());
+				if (isFinite($('#' + txtName).val())) {
+					if ($('#' + txtName).val() != '') {
+						sum += parseFloat($('#' + txtName).val());
+					}
 				}
 			}
 		}
@@ -501,6 +527,19 @@ function getSum() {
 	}
 	
 	$('#totalInput').html(totalSum);
+	
+	if ($('#salePrice').val() != '' && $('#exchangeRate').val() != '') {
+		if (isFinite($('#salePrice').val()) && isFinite($('#exchangeRate').val())) {
+			$('#originalPrice').val((parseFloat($('#salePrice').val()) * parseFloat($('#exchangeRate').val())).toFixed(2));
+		}
+	}
+	
+	if ($('#totalInput').html() != '' && $('#originalPrice').val() != '') {
+		if (isFinite($('#totalInput').val()) && isFinite($('#estimateCost').val())) {
+			$('#recoveryNum').val((parseFloat($('#totalInput').html()) / (parseFloat($('#originalPrice').val()) - parseFloat($('#estimateCost').val()))).toFixed(2));
+		}
+	}
+		
 }
 
 function doReturn() {
@@ -641,7 +680,7 @@ function doReturn() {
 								预估成本： 
 							</td>
 							<td colspan=5>
-								<input type="text" id="estimateCost" name="estimateCost" style="resize:none;width=200px;height=50px;" class="middle" value="${DisplayData.projectTaskData.estimatecost}"/>
+								<input type="text" id="estimateCost" name="estimateCost" style="resize:none;width=200px;height=50px;" class="middle" value="${DisplayData.projectTaskData.estimatecost}" oninput='getSum();'/>
 							</td>
 						</tr>
 					</table>
@@ -750,9 +789,6 @@ function doReturn() {
 							</tr>
 							<tr height=30>
 								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
 							</tr>
 						</table>
 					</div>
@@ -828,18 +864,12 @@ function doReturn() {
 					<div class="list">
 						<table id='trialProduce' class="editableTable">
 							<tr height=30>
-								<td align="center">试产数量</td>
-								<td align="center">试产费用</td>
 								<td align="center">合计</td>
 							</tr>
 							<tr height=30>
-								<td id="td-trialProduce-1" align="center" ><input type="text" id="trialProduce-1" name="trialProduce-1" style="width:60px;" oninput="getSum();"></input></td>
-								<td id="td-trialProduce-2" align="center" ><input type="text" id="trialProduce-2" name="trialProduce-2" style="width:60px;" oninput="getSum();"></input></td>
 								<td id="td-trialProduce-sum" align="center" ><label id="trialProduce-sum" name="trialProduce-sum" style="width:60px;"></label></td>							
 							</tr>
 							<tr height=30>
-								<td></td>
-								<td></td>
 								<td></td>
 							</tr>
 						</table>
@@ -880,6 +910,9 @@ function doReturn() {
 									平均销售价格
 								</td>
 								<td align="center">
+									原币价格
+								</td>								
+								<td align="center">
 									年预期销量
 								</td>
 								<td align="center">
@@ -894,9 +927,10 @@ function doReturn() {
 									</form:select>
 								</td>
 								<td>
-									<input type="text" id="exchangeRate" name="exchangeRate" value="${DisplayData.projectTaskData.exchangerate}"></input>
+									<input type="text" id="exchangeRate" name="exchangeRate" value="${DisplayData.projectTaskData.exchangerate}" oninput='getSum();'></input>
 								</td>
-								<td><input type="text" id="salePrice" name="salePrice" value="${DisplayData.projectTaskData.saleprice}"></input></td>
+								<td width="60px"><input type="text" id="salePrice" name="salePrice" value="${DisplayData.projectTaskData.saleprice}" oninput='getSum();'></input></td>
+								<td width="60px"><input type="text" id="originalPrice" name="originalPrice" disabled></input></td>
 								<td><input type="text" id="sales" name="sales" value="${DisplayData.projectTaskData.sales}"></input></td>
 								<td><input type="text" id="recoveryNum" name="recoveryNum" value="${DisplayData.projectTaskData.recoverynum}" disabled></input></td>
 							</tr>
