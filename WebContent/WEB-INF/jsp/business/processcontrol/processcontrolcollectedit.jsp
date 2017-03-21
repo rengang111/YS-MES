@@ -18,11 +18,6 @@ $(document).ready(function() {
 	
 	validator = $("#baseInfo").validate({
 		rules: {
-			expectDate: {
-				required: true,
-				date: true,
-				maxlength: 10,
-			},
 			finishDate: {
 				date: true,
 				maxlength: 10,
@@ -38,17 +33,6 @@ $(document).ready(function() {
 		}
 	});
 
-	$("#expectDate").datepicker({
-		dateFormat:"yy-mm-dd",
-		changeYear: true,
-		changeMonth: true,
-		selectOtherMonths:true,
-		showOtherMonths:true,
-		defaultDate : new Date(),
-	}); 
-	if ($("#expectDate").val() == "") {
-		$("#expectDate").datepicker( 'setDate' , new Date() );
-	}
 	
 	$("#finishTime").datepicker({
 		dateFormat:"yy-mm-dd",
@@ -88,7 +72,7 @@ function doSave() {
 					info = d.info.split(",");
 					parent.reloadTable(info[0]);
 
-					parent.setExpectDate(info[0], info[1], info[2], info[3]);
+					//parent.setExpectDate(info[0], info[1], info[2], info[3]);
 
 					if (d.message != "") {
 						alert(d.message);	
@@ -146,7 +130,7 @@ function onFinishDateInput() {
 						<tr>
 							<td width="60px">预期完成：</td>
 							<td width="80px" align="left">
-								<input type="text" id="expectDate" name="expectDate" class="short" value="${DisplayData.processControlData.expectdate}" onInput="onExpectDateInput();"/>
+								<label id="expectDate" name="expectDate" class="short">${DisplayData.processControlData.expectdate}</label>
 							</td>
 						</tr>
 						<tr>

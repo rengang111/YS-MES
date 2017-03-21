@@ -26,6 +26,18 @@ $(document).ready(function() {
 		$("#createDate").datepicker( 'setDate' , new Date() );
 	}
 	
+	$("#expectDate").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+		defaultDate : new Date(),
+	}); 
+	if ($("#expectDate").val() == "") {
+		$("#expectDate").datepicker( 'setDate' , new Date() );
+	}
+	
 	addValidator();
 	
 	validator = $("#baseInfo").validate({
@@ -35,10 +47,19 @@ $(document).ready(function() {
 				required: true,
 				maxlength: 10,
 			},			
+			description: {
+				required: true,
+				maxlength: 200,
+			},
 			reason: {
 				required: true,
 				maxlength: 200,
-			}
+			},
+			expectDate: {
+				date: true,
+				required: true,
+				maxlength: 10,
+			},
 		},
 		errorPlacement: function(error, element) {
 		    if (element.is(":radio"))
@@ -50,8 +71,19 @@ $(document).ready(function() {
 		}
 	});
 
+	if ('${DisplayData.isOnlyView}' == '1') {
+		$('#save').attr('disabled', true);
+	}
 })
 
+function doReturn() {
+	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
 
 function doSave() {
 
@@ -111,22 +143,36 @@ function doSave() {
 				<legend>文件信息</legend>
 				<button type="button" id="save" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-					
+				<button type="button" id="return" class="DTTT_button" onClick="doReturn();"
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >返回</button>
+						
 				<form:form modelAttribute="dataModels" id="baseInfo" style='padding: 0px; margin: 10px;' >
 					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 					<input type=hidden id="type" name="type" value="${DisplayData.type}"/>
 					<input type=hidden id="projectId" name="projectId" value="${DisplayData.projectId}"/>
 					<table class="form" width="850px">
 						<tr>
-							<td width="60px">新建日期：</td>
+							<td width="60px">发生时间：</td>
 							<td width="80px">
 								<input type="text" id="createDate" name="createDate" class="short" value="${DisplayData.processControlData.createdate}"/>
 							</td>
-						</tr>					
+						</tr>
 						<tr>
-							<td width="60px">卡点描述：</td>
+							<td width="60px">问题描述：</td>
 							<td width="200px">
-								<input type="text" id="reason" name="reason" class="short" value="${DisplayData.processControlData.reason}"/>
+								<textarea id="description" name="description" cols=50 rows=4>${DisplayData.processControlData.description}</textarea>
+							</td>
+						</tr>
+						<tr>
+							<td width="60px">解决方案：</td>
+							<td width="200px">
+								<textarea id="reason" name="reason" cols=50 rows=4>${DisplayData.processControlData.reason}</textarea>
+							</td>
+						</tr>
+						<tr>
+							<td width="60px">预期解决时间：</td>
+							<td width="80px">
+								<input type="text" id="expectDate" name="expectDate" class="short" value="${DisplayData.processControlData.expectdate}"/>
 							</td>
 						</tr>
 					</table>

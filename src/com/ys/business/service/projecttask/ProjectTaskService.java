@@ -354,7 +354,7 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 		model.setCostDataTypeCount(jsonObject);
 		
 		model.setQueryFileName("/business/processcontrol/processcontrolquerydefine");
-		model.setQueryName("processcontrolquerydefine_searchcollect");
+		model.setQueryName("processcontrolquerydefine_searchexpectcollect");
 		baseQuery = new BaseQuery(request, model);
 		userDefinedSearchCase.put("keyword", key);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

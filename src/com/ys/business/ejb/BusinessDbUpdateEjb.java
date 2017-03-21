@@ -667,16 +667,17 @@ public class BusinessDbUpdateEjb  {
 		String info = "";										
 												
 		ts = new BaseTransaction();										
-												
+
 		try {										
 			ts.begin();									
 			String id = service.getJsonData(data, "keyBackup");									
 			String projectId = service.getJsonData(data, "projectId");									
-			String type = service.getJsonData(data, "type");									
+			String type = service.getJsonData(data, "type");
 			String createDate = service.getJsonData(data, "createDate");									
 			String expectDate = service.getJsonData(data, "expectDate");									
 			String finishTime = service.getJsonData(data, "finishTime");									
-			String reason = service.getJsonData(data, "reason");									
+			String reason = service.getJsonData(data, "reason");
+			String desc = service.getJsonData(data, "description");
 			String exceedDate = service.getJsonData(data, "exceedDate2View");									
 												
 			if (id.equals("")) {									
@@ -699,7 +700,8 @@ public class BusinessDbUpdateEjb  {
 					dbData.setFinishtime(null);							
 				} else {								
 					dbData.setFinishtime(finishTime);							
-				}								
+				}
+				dbData.setDescription(desc);
 				dbData.setConfirm("0");								
 				dbData = ProcessControlService.updateModifyInfo(dbData, userInfo);								
 												
@@ -733,15 +735,21 @@ public class BusinessDbUpdateEjb  {
 							dbData.setExpectdate(null);					
 						} else {						
 							dbData.setExpectdate(expectDate);					
-						}						
+						}
 						dbData.setReason(reason);						
 					} else {							
 						if (createDate.equals("")) {						
 							dbData.setCreatedate(null);					
 						} else {						
 							dbData.setCreatedate(createDate);					
-						}						
-						dbData.setReason(reason);						
+						}
+						if (expectDate.equals("")) {						
+							dbData.setExpectdate(null);					
+						} else {						
+							dbData.setExpectdate(expectDate);					
+						}
+						dbData.setReason(reason);
+						dbData.setDescription(desc);
 					}							
 				}								
 				/*								
@@ -772,7 +780,7 @@ public class BusinessDbUpdateEjb  {
 			ts.commit();									
 		}										
 		catch(Exception e) {										
-			ts.rollback();									
+			ts.rollback();
 			throw e;									
 		}										
 												

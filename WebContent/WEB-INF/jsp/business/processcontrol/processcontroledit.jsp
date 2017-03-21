@@ -13,13 +13,13 @@
 var validator;
 var layerHeight = "250";
 
-function ajaxProcessDetail() {
-	var table = $('#processDetail').dataTable();
+function ajaxprocessDetailExpect() {
+	var table = $('#processDetailExpect').dataTable();
 	if(table) {
 		table.fnDestroy();
 	}
 
-	var t = $('#processDetail').DataTable({
+	var t = $('#processDetailExpect').DataTable({
 					"paging": false,
 					"lengthMenu":[5],//设置一页展示10条记录
 					"processing" : false,
@@ -28,7 +28,7 @@ function ajaxProcessDetail() {
 					"searching" : false,
 					"serverSide" : true,
 					"retrieve" : true,
-					"sAjaxSource" : "${ctx}/business/processcontrol?methodtype=getProcessCollect",
+					"sAjaxSource" : "${ctx}/business/processcontrol?methodtype=getProcessExpectCollect",
 					"fnServerData" : function(sSource, aoData, fnCallback) {
 						var param = {};
 						var formData = $("#processControlInfo").serializeArray();
@@ -70,15 +70,150 @@ function ajaxProcessDetail() {
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}
 					],
 					"columnDefs":[
+			    		{"targets":1,"render":function(data, type, row){
+			    			if (row["expectDate"] == '') {
+			    				return "-";
+			    			} else {
+			    				return row["expectDate"];
+			    			}
+			    			
+	                    }},
+			    		{"targets":2,"render":function(data, type, row){
+			    			if (row["expectDate"] == '') {
+			    				return '';
+			    			} else {
+			    				return row["exceedTime"];
+			    			}
+			    			
+	                    }},
+
 			    		{"targets":5,"render":function(data, type, row){
-			    			setExpectDate(row["type"], row["expectDate"], row["exceedTime"], row["finishTime"])
 			    			if (row["finishTime"] != "") {
 			    				$('#' + "addNew" + row["type"]).attr('disabled',"true");
 			    				$('#' + "addCheckPoint" + row["type"]).attr('disabled',"true");
 			    			}
-			    			return "<a href=\"#\" onClick=\"doUpdateProcessDetail('" + row["id"] + "', '" + row["type"] + "')\">查看</a>"
-	                    }}
-				    ] 						
+			    			if (row["expectDate"] != '') {
+			    				setExpectDate(row["type"], row["expectDate"], row["exceedTime"], row["finishTime"])
+			    				$('#addNew' + row["type"]).attr("disabled", false);
+			    				$('#addCheckPoint' + row["type"]).attr("disabled", false);
+			    				return "<a href=\"#\" onClick=\"doUpdateProcessDetail('" + row["id"] + "', '" + row["type"] + "')\">输入完成日期</a>"
+			    			} else {
+			    				$('#addNew' + row["type"]).attr("disabled", true);
+			    				$('#addCheckPoint' + row["type"]).attr("disabled", true);
+			    				return ""
+			    			}
+	                    }},
+				    ]
+				});
+
+	t.on('click', 'tr', function() {
+		$(this).toggleClass('selected');
+	});
+
+	// Add event listener for opening and closing details
+	t.on('click', 'td.details-control', function() {
+
+		var tr = $(this).closest('tr');
+		t
+		var row = t.row(tr);
+		t
+
+		if (row.child.isShown()) {
+			// This row is already open - close it
+			row.child.hide();
+			tr.removeClass('shown');
+		} else {
+			// Open this row
+			row.child(format(row.data())).show();
+			tr.addClass('shown');
+		}
+	});
+
+};
+
+function ajaxProcessDetailCheckPoint() {
+	
+	var table = $('#processDetailCheckPoint').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+
+	var t = $('#processDetailCheckPoint').DataTable({
+					"paging": false,
+					"lengthMenu":[5],//设置一页展示10条记录
+					"processing" : false,
+					"serverSide" : true,
+					"stateSave" : false,
+					"searching" : false,
+					"serverSide" : true,
+					"retrieve" : true,
+					"sAjaxSource" : "${ctx}/business/processcontrol?methodtype=getProcessCheckPointCollect",
+					"fnServerData" : function(sSource, aoData, fnCallback) {
+						var param = {};
+						var formData = $("#processControlInfo").serializeArray();
+						formData.forEach(function(e) {
+							aoData.push({"name":e.name, "value":e.value});
+						});
+
+						$.ajax({
+							"url" : sSource,
+							"datatype": "json", 
+							"contentType": "application/json; charset=utf-8",
+							"type" : "POST",
+							"data" : JSON.stringify(aoData),
+							success: function(data){
+								/*
+								if (data.message != undefined) {
+									alert(data.message);
+								}
+								*/
+								fnCallback(data);
+							},
+							 error:function(XMLHttpRequest, textStatus, errorThrown){
+				                 //alert(XMLHttpRequest.status);
+				                 //alert(XMLHttpRequest.readyState);
+				                 //alert(textStatus);
+				             }
+						})
+					},
+					"language": {
+		        		"url":"${ctx}/plugins/datatables/chinese.json"
+		        	},
+					"columns" : [ 
+						{"data" : "title", "className" : 'td-center'}, 
+						{"data" : "createDate", "className" : 'td-center'}, 
+						{"data" : "description", "className" : 'td-center'},
+						{"data" : "reason", "className" : 'td-center'},
+						{"data" : "expectDate", "className" : 'td-center'}, 
+						{"data" : "confirm", "className" : 'td-center'},
+						{"data": null, "defaultContent" : '', "className" : 'td-center'}
+					],
+					"columnDefs":[
+						{"targets": 2, "createdCell": function (td, cellData, rowData, row, col) {
+					        $(td).attr('title', cellData);
+						}},
+						{"targets": 3, "createdCell": function (td, cellData, rowData, row, col) {
+					        $(td).attr('title', cellData);
+						}},
+			    		{"targets":5,"render":function(data, type, row){
+			    			if (row["confirm"] == '0') {
+			    				return "未解除";
+			    			} else {
+			    				if (row["id"] != "") {
+			    					return "已解除";
+			    				} else {
+			    					return "";
+			    				}
+			    			}
+	                    }},
+			    		{"targets":6,"render":function(data, type, row){
+			    			if (row["id"] != "") {
+			    				return "<a href=\"#\" onClick=\"doViewProcessCheckPointDetail('" + row["id"] + "', '" + row["type"] + "')\">查看</a>"
+			    			} else {
+			    				return "";
+			    			}
+	                    }},
+				    ]
 				});
 
 	t.on('click', 'tr', function() {
@@ -250,13 +385,33 @@ function ajaxTable1(index) {
 		        		"url":"${ctx}/plugins/datatables/chinese.json"
 		        	},
 					"columns" : [ 
-						{"data" : "createDate", "className" : 'td-center'}, 
+						{"data" : "confirm", "className" : 'td-center'},
+						{"data" : "createDate", "className" : 'td-center'},
+						{"data" : "description", "className" : 'td-center'},
 						{"data" : "reason", "className" : 'td-center'},
+						{"data" : "expectDate", "className" : 'td-center'},
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}
 					],
 					"columnDefs":[
-			    		{"targets":2,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"addNewCheckPoint('" + row["id"] + "', '" + index + "', '" + index + "')\">查看</a>"
+			    		{"targets":0,"render":function(data, type, row){
+			    			if (row["confirm"] == "1") {
+			    				return "已解除"
+			    			} else {
+			    				return "未解除"
+			    			}
+	                    }},
+						{"targets": 2, "createdCell": function (td, cellData, rowData, row, col) {
+					        $(td).attr('title', cellData);
+						}},
+						{"targets": 3, "createdCell": function (td, cellData, rowData, row, col) {
+					        $(td).attr('title', cellData);
+						}},
+			    		{"targets":5,"render":function(data, type, row){
+			    			if (row["confirm"] == "1") {
+			    				return ""
+			    			} else {
+			    				return "<a href=\"#\" onClick=\"addNewCheckPoint('" + row["id"] + "', '" + index + "', '" + index + "')\">查看</a>" + "&nbsp;&nbsp;" + "<a href=\"#\" onClick=\"clearCheckPoint('" + row["id"] + "', '" + index + "', '" + index + "')\">解除</a>"
+			    			}
 	                    }}
 				    ] 						
 				});
@@ -300,7 +455,10 @@ $(window).load(function(){
 
 $(document).ready(function() {
 
-	ajaxProcessDetail();
+	ajaxprocessDetailExpect();
+	
+	ajaxProcessDetailCheckPoint();
+	
 	for(var i = 0; i < 9; i++) {
 		ajaxTable0(i + '1');
 		ajaxTable1(i + '2');
@@ -308,13 +466,21 @@ $(document).ready(function() {
 })
 
 function reloadTable(type) {
-	$('#processDetail').DataTable().ajax.reload(null,false);
+	$('#processDetailExpect').DataTable().ajax.reload(null,false);
+	$('#processDetailCheckPoint').DataTable().ajax.reload(null,false);
+	//ajaxprocessDetailExpect();
 	
 	if (type.length > 1) {
 		$('#table-' + type).DataTable().ajax.reload(null,false);
 	}
 	
 	reloadTabWindow();
+}
+
+function doViewProcessCheckPointDetail(id, type) {
+	var key = $('#keyBackup').val();
+	var url = "${ctx}/business/processcontrol?methodtype=addnewexpectinit&key=" + key + "&type=" + type + "&id=" + id + "&viewOnly=1";
+	openLayer(url, $(document).width() - 25, layerHeight, false);
 }
 
 function doDelete() {
@@ -374,8 +540,39 @@ function addNewExpect(id, type) {
 function addNewCheckPoint(id, type) {
 	var key = $('#keyBackup').val();
 	var url = "${ctx}/business/processcontrol?methodtype=addnewcheckpointinit&key=" + key + "&type=" + type + "&id=" + id;
-	openLayer(url, $(document).width() - 25, layerHeight, false);	
+	openLayer(url, $(document).width() - 25, 350, false);	
 }
+
+function doViewProcessCheckPointDetail(id, type) {
+	var key = $('#keyBackup').val();
+	var url = "${ctx}/business/processcontrol?methodtype=addnewcheckpointinit&key=" + key + "&type=" + type + "&id=" + id + "&view=1";
+	openLayer(url, $(document).width() - 25, 350, false);	
+}
+
+function clearCheckPoint(id, type) {
+	var key = $('#keyBackup').val();
+	var url = "${ctx}/business/processcontrol?methodtype=clearcheckpoint&key=" + key + "&type=" + type + "&id=" + id;
+	
+	$.ajax({
+		type : "POST",
+		contentType : 'application/json',
+		dataType : 'json',
+		url : url,
+		data : $('#keyBackup').val(),// 要提交的表单
+		success : function(d) {
+			if (d.rtnCd != "000") {
+				alert(d.message);	
+			} else {
+				reloadTable(type);
+				
+				//clearProjectTaskInfo();
+				//reloadTabWindow();
+			}
+		}
+	});
+	
+}
+
 
 function doUpdateProcessDetail(id, type) {
 	var key = $('#keyBackup').val();
@@ -472,10 +669,10 @@ function doReturn() {
 				<legend>进程详情</legend>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="processDetail" class="display" cellspacing="0">
+					<table id="processDetailExpect" class="display" cellspacing="0">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle"></th>
+								<th style="width: 80px;" class="dt-middle">预期</th>
 								<th style="width: 80px;" class="dt-middle">预期完成</th>
 								<th style="width: 30px;" class="dt-middle">当前超期<br>天数</th>
 								<th style="width: 80px;" class="dt-middle">最新预期</th>
@@ -495,20 +692,54 @@ function doReturn() {
 						</tfoot>
 					</table>
 				</div>
-				<div  style="height:20px"></div>
-				<legend style="display:inline">3D完成</legend>
-				<div style="float:right;">
-					<table id='table-0' class='editableTable'>
-						<tr>
-							<td align="center" width="80px">预期完成</td>
-							<td align="center" width="80px"><label id='expectFinish-0'></label></td>
-							<td align="center" width="80px">超期天数</td>
-							<td align="center" width="80px"><label id='exceedDates-0' name='exceedDates-0'></label></td>
-							<td align="center" width="80px">完成日期</td>
-							<td align="center" width="80px"><label id='finishDate-0'></label></td>
-							<td align="center" width="240px"></td>
-						</tr>
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="processDetailCheckPoint" class="display" cellspacing="0" style="table-layout:fixed;">
+						<thead>
+							<tr class="selected">
+								<th style="width: 80px;" class="dt-middle">卡点</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 30px;" class="dt-middle">问题描述</th>
+								<th style="width: 80px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决时间</th>
+								<th style="width: 80px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
 					</table>
+				</div>
+				<div  style="height:20px"></div>
+				<div class="list">
+				<legend style="display:inline">3D完成</legend>
+				<div style="display:inline-block;margin:0px 0px -5px;">
+					<div>
+						<table id='table-0' class='editableTable'>
+							<tr>
+								<td align="center" width="80px">预期完成</td>
+								<td align="center" width="80px"><label id='expectFinish-0'></label></td>
+								<td align="center" width="80px">超期天数</td>
+								<td align="center" width="80px"><label id='exceedDates-0' name='exceedDates-0'></label></td>
+								<td align="center" width="80px">完成日期</td>
+								<td align="center" width="80px"><label id='finishDate-0'></label></td>
+								<td align="center" width="80px"></td>
+								
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div style="height:5px"></div>
+				<div  style="float:right;display:inline">
 					<button type="button" id="addNew0" class="DTTT_button" onClick="addNewExpect('', '01');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
@@ -539,13 +770,17 @@ function doReturn() {
 				</div>				
 				<button type="button" id="addCheckPoint0" class="DTTT_button" onClick="addNewCheckPoint('', '02');"
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
+				
 				<div style="height:30px"></div>
 				<div class="list">
-					<table id="table-02" class="display" cellspacing="0">
+					<table id="table-02" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle">新建日期</th>
-								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 80px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 200px;" class="dt-middle">描述</th>
+								<th style="width: 200px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决<p>时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
@@ -554,24 +789,34 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 							</tr>
 						</tfoot>
 					</table>
 				</div>
+				</div>
 				<div  style="height:20px"></div>
+				<div class="list">
 				<legend style="display:inline">3D手模</legend>
-				<div style="float:right;">
-					<table id='table-1' class='editableTable'>
-						<tr>
-							<td align="center" width="80px">预期完成</td>
-							<td align="center" width="80px"><label id='expectFinish-1'></label></td>
-							<td align="center" width="80px">超期天数</td>
-							<td align="center" width="80px"><label id='exceedDates-1' name='exceedDates-1'></label></td>
-							<td align="center" width="80px">完成日期</td>
-							<td align="center" width="80px"><label id='finishDate-1'></label></td>
-							<td align="center" width="240px"></td>
-						</tr>
-					</table>
+				<div style="display:inline-block;margin:0px 0px -5px;">
+					<div>
+						<table id='table-1' class='editableTable'>
+							<tr>
+								<td align="center" width="80px">预期完成</td>
+								<td align="center" width="80px"><label id='expectFinish-1'></label></td>
+								<td align="center" width="80px">超期天数</td>
+								<td align="center" width="80px"><label id='exceedDates-1' name='exceedDates-1'></label></td>
+								<td align="center" width="80px">完成日期</td>
+								<td align="center" width="80px"><label id='finishDate-1'></label></td>
+								<td align="center" width="240px"></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div style="height:5px"></div>
+				<div  style="float:right;display:inline">
 					<button type="button" id="addNew1" class="DTTT_button" onClick="addNewExpect('', '11');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
@@ -605,11 +850,14 @@ function doReturn() {
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
 				<div style="height:30px"></div>
 				<div class="list">
-					<table id="table-12" class="display" cellspacing="0">
+					<table id="table-12" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle">新建日期</th>
-								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 80px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 200px;" class="dt-middle">描述</th>
+								<th style="width: 200px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决<p>时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
@@ -618,24 +866,34 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 							</tr>
 						</tfoot>
 					</table>
-				</div>				
+				</div>
+				</div>		
 				<div  style="height:20px"></div>
+				<div class="list">
 				<legend style="display:inline">3D工作样机</legend>
-				<div style="float:right;">
-					<table id='table-2' class='editableTable'>
-						<tr>
-							<td align="center" width="80px">预期完成</td>
-							<td align="center" width="80px"><label id='expectFinish-2'></label></td>
-							<td align="center" width="80px">超期天数</td>
-							<td align="center" width="80px"><label id='exceedDates-2' name='exceedDates-2'></label></td>
-							<td align="center" width="80px">完成日期</td>
-							<td align="center" width="80px"><label id='finishDate-2'></label></td>
-							<td align="center" width="240px"></td>
-						</tr>
-					</table>
+				<div style="display:inline-block;margin:0px 0px -5px;">
+					<div>
+						<table id='table-2' class='editableTable'>
+							<tr>
+								<td align="center" width="80px">预期完成</td>
+								<td align="center" width="80px"><label id='expectFinish-2'></label></td>
+								<td align="center" width="80px">超期天数</td>
+								<td align="center" width="80px"><label id='exceedDates-2' name='exceedDates-2'></label></td>
+								<td align="center" width="80px">完成日期</td>
+								<td align="center" width="80px"><label id='finishDate-2'></label></td>
+								<td align="center" width="240px"></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div style="height:5px"></div>
+				<div  style="float:right;display:inline">
 					<button type="button" id="addNew2" class="DTTT_button" onClick="addNewExpect('', '21');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
@@ -669,11 +927,14 @@ function doReturn() {
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
 				<div style="height:30px"></div>
 				<div class="list">
-					<table id="table-22" class="display" cellspacing="0">
+					<table id="table-22" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle">新建日期</th>
-								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 80px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 200px;" class="dt-middle">描述</th>
+								<th style="width: 200px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决<p>时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
@@ -682,24 +943,34 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 							</tr>
 						</tfoot>
 					</table>
-				</div>				
+				</div>
+				</div>
 				<div  style="height:20px"></div>
+				<div class="list">
 				<legend style="display:inline">模具确认</legend>
-				<div style="float:right;">
-					<table id='table-3' class='editableTable'>
-						<tr>
-							<td align="center" width="80px">预期完成</td>
-							<td align="center" width="80px"><label id='expectFinish-3'></label></td>
-							<td align="center" width="80px">超期天数</td>
-							<td align="center" width="80px"><label id='exceedDates-3' name='exceedDates-3'></label></td>
-							<td align="center" width="80px">完成日期</td>
-							<td align="center" width="80px"><label id='finishDate-3'></label></td>
-							<td align="center" width="240px"></td>
-						</tr>
-					</table>
+				<div style="display:inline-block;margin:0px 0px -5px;">
+					<div>
+						<table id='table-3' class='editableTable'>
+							<tr>
+								<td align="center" width="80px">预期完成</td>
+								<td align="center" width="80px"><label id='expectFinish-3'></label></td>
+								<td align="center" width="80px">超期天数</td>
+								<td align="center" width="80px"><label id='exceedDates-3' name='exceedDates-3'></label></td>
+								<td align="center" width="80px">完成日期</td>
+								<td align="center" width="80px"><label id='finishDate-3'></label></td>
+								<td align="center" width="240px"></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div style="height:5px"></div>
+				<div  style="float:right;display:inline">
 					<button type="button" id="addNew3" class="DTTT_button" onClick="addNewExpect('', '31');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
@@ -733,11 +1004,14 @@ function doReturn() {
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
 				<div style="height:30px"></div>
 				<div class="list">
-					<table id="table-32" class="display" cellspacing="0">
+					<table id="table-32" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle">新建日期</th>
-								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 80px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 200px;" class="dt-middle">描述</th>
+								<th style="width: 200px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决<p>时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
@@ -746,24 +1020,34 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 							</tr>
 						</tfoot>
 					</table>
-				</div>				
+				</div>
+				</div>
 				<div  style="height:20px"></div>
+				<div class="list">
 				<legend style="display:inline">模具完成</legend>
-				<div style="float:right;">
-					<table id='table-4' class='editableTable'>
-						<tr>
-							<td align="center" width="80px">预期完成</td>
-							<td align="center" width="80px"><label id='expectFinish-4'></label></td>
-							<td align="center" width="80px">超期天数</td>
-							<td align="center" width="80px"><label id='exceedDates-4' name='exceedDates-4'></label></td>
-							<td align="center" width="80px">完成日期</td>
-							<td align="center" width="80px"><label id='finishDate-4'></label></td>
-							<td align="center" width="240px"></td>
-						</tr>
-					</table>
+				<div style="display:inline-block;margin:0px 0px -5px;">
+					<div>
+						<table id='table-4' class='editableTable'>
+							<tr>
+								<td align="center" width="80px">预期完成</td>
+								<td align="center" width="80px"><label id='expectFinish-4'></label></td>
+								<td align="center" width="80px">超期天数</td>
+								<td align="center" width="80px"><label id='exceedDates-4' name='exceedDates-4'></label></td>
+								<td align="center" width="80px">完成日期</td>
+								<td align="center" width="80px"><label id='finishDate-4'></label></td>
+								<td align="center" width="240px"></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div style="height:5px"></div>
+				<div  style="float:right;display:inline">				
 					<button type="button" id="addNew4" class="DTTT_button" onClick="addNewExpect('', '41');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
@@ -797,11 +1081,14 @@ function doReturn() {
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
 				<div style="height:30px"></div>
 				<div class="list">
-					<table id="table-42" class="display" cellspacing="0">
+					<table id="table-42" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle">新建日期</th>
-								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 80px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 200px;" class="dt-middle">描述</th>
+								<th style="width: 200px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决<p>时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
@@ -810,24 +1097,34 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 							</tr>
 						</tfoot>
 					</table>
 				</div>
+				</div>
 				<div  style="height:20px"></div>
+				<div class="list">
 				<legend style="display:inline">模具调整</legend>
-				<div style="float:right;">
-					<table id='table-5' class='editableTable'>
-						<tr>
-							<td align="center" width="80px">预期完成</td>
-							<td align="center" width="80px"><label id='expectFinish-5'></label></td>
-							<td align="center" width="80px">超期天数</td>
-							<td align="center" width="80px"><label id='exceedDates-5' name='exceedDates-5'></label></td>
-							<td align="center" width="80px">完成日期</td>
-							<td align="center" width="80px"><label id='finishDate-5'></label></td>
-							<td align="center" width="240px"></td>
-						</tr>
-					</table>
+				<div style="display:inline-block;margin:0px 0px -5px;">
+					<div>
+						<table id='table-5' class='editableTable'>
+							<tr>
+								<td align="center" width="80px">预期完成</td>
+								<td align="center" width="80px"><label id='expectFinish-5'></label></td>
+								<td align="center" width="80px">超期天数</td>
+								<td align="center" width="80px"><label id='exceedDates-5' name='exceedDates-5'></label></td>
+								<td align="center" width="80px">完成日期</td>
+								<td align="center" width="80px"><label id='finishDate-5'></label></td>
+								<td align="center" width="240px"></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div style="height:5px"></div>
+				<div  style="float:right;display:inline">
 					<button type="button" id="addNew5" class="DTTT_button" onClick="addNewExpect('', '51');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
@@ -861,11 +1158,14 @@ function doReturn() {
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
 				<div style="height:30px"></div>
 				<div class="list">
-					<table id="table-52" class="display" cellspacing="0">
+					<table id="table-52" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle">新建日期</th>
-								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 80px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 200px;" class="dt-middle">描述</th>
+								<th style="width: 200px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决<p>时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
@@ -874,24 +1174,34 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 							</tr>
 						</tfoot>
 					</table>
-				</div>				
+				</div>
+				</div>
 				<div  style="height:20px"></div>
+				<div class="list">
 				<legend style="display:inline">委外加工</legend>
-				<div style="float:right;">
-					<table id='table-6' class='editableTable'>
-						<tr>
-							<td align="center" width="80px">预期完成</td>
-							<td align="center" width="80px"><label id='expectFinish-6'></label></td>
-							<td align="center" width="80px">超期天数</td>
-							<td align="center" width="80px"><label id='exceedDates-6' name='exceedDates-6'></label></td>
-							<td align="center" width="80px">完成日期</td>
-							<td align="center" width="80px"><label id='finishDate-6'></label></td>
-							<td align="center" width="240px"></td>
-						</tr>
-					</table>
+				<div style="display:inline-block;margin:0px 0px -5px;">
+					<div>
+						<table id='table-6' class='editableTable'>
+							<tr>
+								<td align="center" width="80px">预期完成</td>
+								<td align="center" width="80px"><label id='expectFinish-6'></label></td>
+								<td align="center" width="80px">超期天数</td>
+								<td align="center" width="80px"><label id='exceedDates-6' name='exceedDates-6'></label></td>
+								<td align="center" width="80px">完成日期</td>
+								<td align="center" width="80px"><label id='finishDate-6'></label></td>
+								<td align="center" width="240px"></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div style="height:5px"></div>
+				<div  style="float:right;display:inline">
 					<button type="button" id="addNew6" class="DTTT_button" onClick="addNewExpect('', '61');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
@@ -925,11 +1235,14 @@ function doReturn() {
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
 				<div style="height:30px"></div>
 				<div class="list">
-					<table id="table-62" class="display" cellspacing="0">
+					<table id="table-62" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle">新建日期</th>
-								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 80px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 200px;" class="dt-middle">描述</th>
+								<th style="width: 200px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决<p>时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
@@ -938,24 +1251,34 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 							</tr>
 						</tfoot>
 					</table>
-				</div>				
+				</div>
+				</div>
 				<div  style="height:20px"></div>
+				<div class="list">
 				<legend style="display:inline">试产</legend>
-				<div style="float:right;">
-					<table id='table-7' class='editableTable'>
-						<tr>
-							<td align="center" width="80px">预期完成</td>
-							<td align="center" width="80px"><label id='expectFinish-7'></label></td>
-							<td align="center" width="80px">超期天数</td>
-							<td align="center" width="80px"><label id='exceedDates-7' name='exceedDates-7'></label></td>
-							<td align="center" width="80px">完成日期</td>
-							<td align="center" width="80px"><label id='finishDate-7'></label></td>
-							<td align="center" width="240px"></td>
-						</tr>
-					</table>
+				<div style="display:inline-block;margin:0px 0px -5px;">
+					<div>
+						<table id='table-7' class='editableTable'>
+							<tr>
+								<td align="center" width="80px">预期完成</td>
+								<td align="center" width="80px"><label id='expectFinish-7'></label></td>
+								<td align="center" width="80px">超期天数</td>
+								<td align="center" width="80px"><label id='exceedDates-7' name='exceedDates-7'></label></td>
+								<td align="center" width="80px">完成日期</td>
+								<td align="center" width="80px"><label id='finishDate-7'></label></td>
+								<td align="center" width="240px"></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div style="height:5px"></div>
+				<div  style="float:right;display:inline">
 					<button type="button" id="addNew7" class="DTTT_button" onClick="addNewExpect('', '71');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
@@ -989,11 +1312,14 @@ function doReturn() {
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
 				<div style="height:30px"></div>
 				<div class="list">				
-					<table id="table-72" class="display" cellspacing="0">
+					<table id="table-72" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle">新建日期</th>
-								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 80px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 200px;" class="dt-middle">描述</th>
+								<th style="width: 200px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决<p>时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
@@ -1002,24 +1328,34 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 							</tr>
 						</tfoot>
 					</table>
-				</div>				
+				</div>
+				</div>
 				<div  style="height:20px"></div>
+				<div class="list">
 				<legend style="display:inline">文档整理</legend>
-				<div style="float:right;">
-					<table id='table-8' class='editableTable'>
-						<tr>
-							<td align="center" width="80px">预期完成</td>
-							<td align="center" width="80px"><label id='expectFinish-8'></label></td>
-							<td align="center" width="80px">超期天数</td>
-							<td align="center" width="80px"><label id='exceedDates-8' name='exceedDates-8'></label></td>
-							<td align="center" width="80px">完成日期</td>
-							<td align="center" width="80px"><label id='finishDate-8'></label></td>
-							<td align="center" width="240px"></td>
-						</tr>
-					</table>
+				<div style="display:inline-block;margin:0px 0px -5px;">
+					<div>
+						<table id='table-8' class='editableTable'>
+							<tr>
+								<td align="center" width="80px">预期完成</td>
+								<td align="center" width="80px"><label id='expectFinish-8'></label></td>
+								<td align="center" width="80px">超期天数</td>
+								<td align="center" width="80px"><label id='exceedDates-8' name='exceedDates-8'></label></td>
+								<td align="center" width="80px">完成日期</td>
+								<td align="center" width="80px"><label id='finishDate-8'></label></td>
+								<td align="center" width="240px"></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div style="height:5px"></div>
+				<div  style="float:right;display:inline">
 					<button type="button" id="addNew8" class="DTTT_button" onClick="addNewExpect('', '81');"
 					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建预期</button>
 				</div>
@@ -1053,11 +1389,14 @@ function doReturn() {
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
 				<div style="height:30px"></div>
 				<div class="list">
-					<table id="table-82" class="display" cellspacing="0">
+					<table id="table-82" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
-								<th style="width: 80px;" class="dt-middle">新建日期</th>
-								<th style="width: 350px;" class="dt-middle">卡点描述</th>
+								<th style="width: 40px;" class="dt-middle">状态</th>
+								<th style="width: 80px;" class="dt-middle">发生时间</th>
+								<th style="width: 200px;" class="dt-middle">描述</th>
+								<th style="width: 200px;" class="dt-middle">解决方案</th>
+								<th style="width: 80px;" class="dt-middle">预期解决<p>时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
@@ -1066,9 +1405,14 @@ function doReturn() {
 								<th></th>
 								<th></th>
 								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
 							</tr>
 						</tfoot>
+						</tfoot>
 					</table>
+				</div>
 				</div>
 			</form:form>
 		</div>

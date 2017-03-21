@@ -14,7 +14,7 @@ var validator;
 
 $(document).ready(function() {
 	
-	$("#createDate").datepicker({
+	$("#createDateView").datepicker({
 		dateFormat:"yy-mm-dd",
 		changeYear: true,
 		changeMonth: true,
@@ -22,8 +22,22 @@ $(document).ready(function() {
 		showOtherMonths:true,
 		defaultDate : new Date(),
 	}); 
-	if ($("#createDate").val() == "") {
-		$("#createDate").datepicker( 'setDate' , new Date() );
+	if ($("#createDateView").val() == "") {
+		$("#createDateView").datepicker( 'setDate' , new Date() );
+		$("#createDate").val($("#createDateView").val());
+		
+	}
+	
+	$("#expectDate").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+		defaultDate : new Date(),
+	}); 
+	if ($("#expectDate").val() == "") {
+		$("#expectDate").datepicker( 'setDate' , new Date() );
 	}
 	
 	addValidator();
@@ -57,6 +71,14 @@ $(document).ready(function() {
 
 })
 
+function doReturn() {
+	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
 
 function doSave() {
 
@@ -117,16 +139,19 @@ function doSave() {
 				<legend>预期信息</legend>
 				<button type="button" id="save" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-					
+				<button type="button" id="return" class="DTTT_button" onClick="doReturn();"
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >返回</button>
+						
 				<form:form modelAttribute="dataModels" id="baseInfo" style='padding: 0px; margin: 10px;' >
 					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 					<input type=hidden id="type" name="type" value="${DisplayData.type}"/>
 					<input type=hidden id="projectId" name="projectId" value="${DisplayData.projectId}"/>
+					<input type=hidden id="createDate" name="createDate" value="${DisplayData.processControlData.createdate}" />
 					<table class="form" width="850px">
 						<tr>
 							<td width="60px">新建日期：</td>
 							<td width="80px">
-								<input type="text" id="createDate" name="createDate" class="short" value="${DisplayData.processControlData.createdate}"/>
+								<input type="text" id="createDateView" name="createDateView" class="short" value="${DisplayData.processControlData.createdate}" disabled/>
 							</td>
 						</tr>					
 						<tr>
@@ -144,7 +169,7 @@ function doSave() {
 						<tr>
 							<td width="60px">原因：</td>
 							<td width="200px">
-								<input type="text" id="reason" name="reason" class="short" value="${DisplayData.processControlData.reason}"/>
+								<textarea id="reason" name="reason" cols=50 rows=4 >${DisplayData.processControlData.reason}</textarea>
 							</td>
 						</tr>						
 					</table>

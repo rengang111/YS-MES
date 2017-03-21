@@ -11,7 +11,7 @@ import java.io.InputStream;
 * @author mengfanchang
 * @version 1.0
 */
-public class B_ProcessControlData implements java.io.Serializable
+public class B_ProcessControlData 
 {
 
 	public B_ProcessControlData()
@@ -81,6 +81,19 @@ public class B_ProcessControlData implements java.io.Serializable
 	public void setExpectdate(String expectdate)
 	{
 		this.expectdate=expectdate;
+	}
+
+	/**
+	*
+	*/
+	private String description;
+	public String getDescription()
+	{
+		return this.description;
+	}
+	public void setDescription(String description)
+	{
+		this.description=description;
 	}
 
 	/**
@@ -241,13 +254,13 @@ public class B_ProcessControlData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("projectid = "+(projectid == null ? "null" : projectid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("createdate = "+(createdate == null ? "null" : createdate)+"\n");		sb.append("expectdate = "+(expectdate == null ? "null" : expectdate)+"\n");		sb.append("reason = "+(reason == null ? "null" : reason)+"\n");		sb.append("finishtime = "+(finishtime == null ? "null" : finishtime)+"\n");		sb.append("confirm = "+(confirm == null ? "null" : confirm)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("projectid = "+(projectid == null ? "null" : projectid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("createdate = "+(createdate == null ? "null" : createdate)+"\n");		sb.append("expectdate = "+(expectdate == null ? "null" : expectdate)+"\n");		sb.append("description = "+(description == null ? "null" : description)+"\n");		sb.append("reason = "+(reason == null ? "null" : reason)+"\n");		sb.append("finishtime = "+(finishtime == null ? "null" : finishtime)+"\n");		sb.append("confirm = "+(confirm == null ? "null" : confirm)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		id= (id == null ?null : id.trim());		projectid= (projectid == null ?null : projectid.trim());		type= (type == null ?null : type.trim());		createdate= (createdate == null ?null : createdate.trim());		expectdate= (expectdate == null ?null : expectdate.trim());		reason= (reason == null ?null : reason.trim());		finishtime= (finishtime == null ?null : finishtime.trim());		confirm= (confirm == null ?null : confirm.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		id= (id == null ?null : id.trim());		projectid= (projectid == null ?null : projectid.trim());		type= (type == null ?null : type.trim());		createdate= (createdate == null ?null : createdate.trim());		expectdate= (expectdate == null ?null : expectdate.trim());		description= (description == null ?null : description.trim());		reason= (reason == null ?null : reason.trim());		finishtime= (finishtime == null ?null : finishtime.trim());		confirm= (confirm == null ?null : confirm.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
