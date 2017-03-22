@@ -25,6 +25,30 @@ $(document).ready(function() {
 	if ($("#createDate").val() == "") {
 		$("#createDate").datepicker( 'setDate' , new Date() );
 	}
+
+	$("#expectDate").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+		defaultDate : new Date(),
+	}); 
+	if ($("#expectDate").val() == "") {
+		$("#expectDate").datepicker( 'setDate' , new Date() );
+	}
+	
+	$("#finishTime").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+		defaultDate : new Date(),
+	}); 
+	if ($("#finishTime").val() == "") {
+		$("#finishTime").datepicker( 'setDate' , new Date() );
+	}
 	
 	validator = $("#baseInfo").validate({
 		rules: {

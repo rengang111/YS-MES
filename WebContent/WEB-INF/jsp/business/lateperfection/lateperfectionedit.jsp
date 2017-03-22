@@ -11,7 +11,7 @@
 <script type="text/javascript">
 
 var validator;
-var layerHeight = "250";
+var layerHeight = "400";
 
 function ajaxQuestionList() {
 	var table = $('#questionList').dataTable();
@@ -74,6 +74,12 @@ function ajaxQuestionList() {
 			    		{"targets":0,"render":function(data, type, row){
 							return row["rownum"] + "<input type=checkbox name='numCheckQuestion' id='numCheckQuestion' value='" + row["id"] + "' />"
 	                    }},
+						{"targets": 2, "createdCell": function (td, cellData, rowData, row, col) {
+					        $(td).attr('title', cellData);
+						}},
+						{"targets": 3, "createdCell": function (td, cellData, rowData, row, col) {
+					        $(td).attr('title', cellData);
+						}},
 			    		{"targets":6,"render":function(data, type, row){
 			    			return "<a href=\"#\" onClick=\"doUpdateQuestion('" + row["id"] + "')\">查看</a>"
 	                    }}
@@ -120,7 +126,6 @@ $(window).load(function(){
 $(document).ready(function() {
 	resetFinder(0, 2);
 	if ($('#keyBackup').val() != "") {
-		alert(123);
 		refreshFileBrowser(0);
 	}
 	
@@ -279,7 +284,7 @@ function doReturn() {
 			<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 					style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
 			<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
-			<table class="form" width="850px">
+			<table class="form" width="850px" >
 				<tr>
 					<td width="80px">项目编号：</td>
 					<td width="240px">
@@ -348,14 +353,14 @@ function doReturn() {
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="questionList" class="display" cellspacing="0">
+					<table id="questionList" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 40px;" class="dt-middle">No</th>
 								<th style="width: 50px;" class="dt-middle">新建日期</th>
 								<th style="width: 180px;" class="dt-middle">问题描述</th>
 								<th style="width: 180px;" class="dt-middle">改善方案</th>
-								<th style="width: 40px;" class="dt-middle">预期完成时间</th>
+								<th style="width: 40px;" class="dt-middle">预期完成<p>时间</th>
 								<th style="width: 50px;" class="dt-middle">完成时间</th>
 								<th style="width: 40px;" class="dt-middle">操作</th>
 							</tr>

@@ -75,6 +75,12 @@ function ajaxWorkingFileList() {
 			    		{"targets":0,"render":function(data, type, row){
 							return row["rownum"] + "<input type=checkbox name='numCheckWorkingFile' id='numCheckWorkingFile' value='" + row["id"] + "' />"
 	                    }},
+						{"targets": 4, "createdCell": function (td, cellData, rowData, row, col) {
+					        $(td).attr('title', cellData);
+						}},
+						{"targets": 5, "createdCell": function (td, cellData, rowData, row, col) {
+					        $(td).attr('title', cellData);
+						}},
 			    		{"targets":6,"render":function(data, type, row){
 			    			return "<a href=\"#\" onClick=\"doUpdateWorkingFile('" + row["id"] + "')\">查看</a>"
 	                    }}
@@ -281,7 +287,7 @@ function doReturn() {
 		<div id="main">					
 			<div  style="height:20px"></div>
 				
-			<legend>后期完善-基本信息</legend>
+			<legend>档案制作-基本信息</legend>
 
 			<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 					style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
@@ -358,7 +364,7 @@ function doReturn() {
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="workingFileList" class="display" cellspacing="0">
+					<table id="workingFileList" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 40px;" class="dt-middle">No</th>
