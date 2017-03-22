@@ -369,9 +369,11 @@ public class ProcessControlService extends BaseService {
 		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		BaseModel dataModel = new BaseModel();
-
+		ArrayList<HashMap<String, String>> dbData = null;
 		String key1 = "";
 		String key2 = "";
+		String searchType = "";
+		boolean isFinished = false;
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
@@ -381,15 +383,32 @@ public class ProcessControlService extends BaseService {
 			key1 = "-1";
 		}
 		
+		if (key2.length() == 2) {
+			searchType = key2.substring(0, 1);
+		}
+		dataModel.setQueryFileName("/business/processcontrol/processcontrolquerydefine");
+		dataModel.setQueryName("processcontrolquerydefine_getexpectdate");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", searchType);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, -1);	
+		dbData = dataModel.getYsViewData();
+		if (dbData.size() > 0) {
+			if (!dbData.get(0).get("finishTime").equals("")) {
+				isFinished = true;
+			}
+		}
+		
 		dataModel.setQueryFileName("/business/processcontrol/processcontrolquerydefine");
 		dataModel.setQueryName("processcontrolquerydefine_searchbytype");
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(0, -1);	
 		
-		ArrayList<HashMap<String, String>> dbData = dataModel.getYsViewData();
+		dbData = dataModel.getYsViewData();
 		int rowCount = 0;
 		for(HashMap<String, String>rowData:dbData) {
 			if (rowData.get("finishTime").equals("")) {
@@ -406,6 +425,11 @@ public class ProcessControlService extends BaseService {
 				}
 			} else {
 				rowData.put("lastOne", "");
+			}
+			if (isFinished) {
+				rowData.put("isFinished", "1");
+			} else {
+				rowData.put("isFinished", "0");
 			}
 		}
 		
@@ -646,7 +670,7 @@ public class ProcessControlService extends BaseService {
 				if (expectDateList.size() > 0) {
 					String baseExpectDate = expectDateList.get(0).get(3);
 					String finishTime = expectDateList.get(0).get(6);
-					if (finishTime.equals("")) {
+					if (finishTime == null || finishTime.equals("")) {
 						model.setExceedTime(CalendarUtil.getDayBetween(baseExpectDate, ""));
 					} else {
 						model.setExceedTime(CalendarUtil.getDayBetween(baseExpectDate, finishTime));

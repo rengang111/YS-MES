@@ -88,18 +88,17 @@ function ajaxprocessDetailExpect() {
 	                    }},
 
 			    		{"targets":5,"render":function(data, type, row){
-			    			if (row["finishTime"] != "") {
-			    				$('#' + "addNew" + row["type"]).attr('disabled',"true");
-			    				$('#' + "addCheckPoint" + row["type"]).attr('disabled',"true");
+			    			if (row["finishTime"] == "" && row["expectDate"] != '') {
+			    				$('#' + "addNew" + row["type"]).attr('disabled', false);
+			    				$('#' + "addCheckPoint" + row["type"]).attr('disabled', false);
+			    			} else {
+			    				$('#' + "addNew" + row["type"]).attr('disabled', true);
+			    				$('#' + "addCheckPoint" + row["type"]).attr('disabled', true);
 			    			}
 			    			if (row["expectDate"] != '') {
 			    				setExpectDate(row["type"], row["expectDate"], row["exceedTime"], row["finishTime"])
-			    				$('#addNew' + row["type"]).attr("disabled", false);
-			    				$('#addCheckPoint' + row["type"]).attr("disabled", false);
 			    				return "<a href=\"#\" onClick=\"doUpdateProcessDetail('" + row["id"] + "', '" + row["type"] + "')\">输入完成日期</a>"
 			    			} else {
-			    				$('#addNew' + row["type"]).attr("disabled", true);
-			    				$('#addCheckPoint' + row["type"]).attr("disabled", true);
 			    				return ""
 			    			}
 	                    }},
@@ -299,9 +298,14 @@ function ajaxTable0(index) {
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}
 					],
 					"columnDefs":[
+						{"targets": 3, "createdCell": function (td, cellData, rowData, row, col) {
+					        $(td).attr('title', cellData);
+						}},
 			    		{"targets":4,"render":function(data, type, row){
 			    			if (row["lastOne"] == '1') {
-			    				return "<a href=\"#\" onClick=\"addNewExpect('" + row["id"] + "', '" + index + "')\">查看</a>"
+			    				if (row["isFinished"] == '0') {
+			    					return "<a href=\"#\" onClick=\"addNewExpect('" + row["id"] + "', '" + index + "')\">查看</a>"
+			    				}
 			    			}
 	                    }}
 				    ] 						
@@ -410,7 +414,11 @@ function ajaxTable1(index) {
 			    			if (row["confirm"] == "1") {
 			    				return ""
 			    			} else {
-			    				return "<a href=\"#\" onClick=\"addNewCheckPoint('" + row["id"] + "', '" + index + "', '" + index + "')\">查看</a>" + "&nbsp;&nbsp;" + "<a href=\"#\" onClick=\"clearCheckPoint('" + row["id"] + "', '" + index + "', '" + index + "')\">解除</a>"
+			    				if (row["isFinished"] == '0') {
+			    					return "<a href=\"#\" onClick=\"addNewCheckPoint('" + row["id"] + "', '" + index + "', '" + index + "')\">查看</a>" + "&nbsp;&nbsp;" + "<a href=\"#\" onClick=\"clearCheckPoint('" + row["id"] + "', '" + index + "', '" + index + "')\">解除</a>"
+			    				} else {
+			    					return ""
+			    				}
 			    			}
 	                    }}
 				    ] 						
@@ -472,6 +480,9 @@ function reloadTable(type) {
 	
 	if (type.length > 1) {
 		$('#table-' + type).DataTable().ajax.reload(null,false);
+	} else {
+		$('#table-' + type + '1').DataTable().ajax.reload(null,false);
+		$('#table-' + type + '2').DataTable().ajax.reload(null,false);
 	}
 	
 	reloadTabWindow();
@@ -669,7 +680,7 @@ function doReturn() {
 				<legend>进程详情</legend>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="processDetailExpect" class="display" cellspacing="0">
+					<table id="processDetailExpect" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">预期</th>
@@ -745,7 +756,7 @@ function doReturn() {
 				</div>
 				<div  style="height:10px"></div>
 				<div class="list">
-					<table id="table-01" class="display" cellspacing="0">
+					<table id="table-01" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">新建日期</th>
@@ -823,7 +834,7 @@ function doReturn() {
 				<div  style="height:10px"></div>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="table-11" class="display" cellspacing="0">
+					<table id="table-11" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">新建日期</th>
@@ -846,7 +857,7 @@ function doReturn() {
 				</div>
 				<div style="height:10px">
 				</div>				
-				<button type="button" id="addCheckPoint1" class="DTTT_button" onClick="addNewCheckPoint('', '12');"
+				<button type="button" id="addCheckPoint1" name="addCheckPoint1" class="DTTT_button" onClick="addNewCheckPoint('', '12');"
 				style="height:25px;margin:0px 5px 0px 0px;float:right;" >新建卡点</button>
 				<div style="height:30px"></div>
 				<div class="list">
@@ -900,7 +911,7 @@ function doReturn() {
 				<div  style="height:10px"></div>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="table-21" class="display" cellspacing="0">
+					<table id="table-21" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">新建日期</th>
@@ -977,7 +988,7 @@ function doReturn() {
 				<div  style="height:10px"></div>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="table-31" class="display" cellspacing="0">
+					<table id="table-31" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">新建日期</th>
@@ -1054,7 +1065,7 @@ function doReturn() {
 				<div  style="height:10px"></div>
 				<div style="height:10px"></div>
 				<div class="list">				
-					<table id="table-41" class="display" cellspacing="0">
+					<table id="table-41" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">新建日期</th>
@@ -1131,7 +1142,7 @@ function doReturn() {
 				<div  style="height:10px"></div>
 				<div style="height:10px"></div>
 				<div class="list">			
-					<table id="table-51" class="display" cellspacing="0">
+					<table id="table-51" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">新建日期</th>
@@ -1208,7 +1219,7 @@ function doReturn() {
 				<div  style="height:10px"></div>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="table-61" class="display" cellspacing="0">
+					<table id="table-61" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">新建日期</th>
@@ -1285,7 +1296,7 @@ function doReturn() {
 				<div  style="height:10px"></div>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="table-71" class="display" cellspacing="0">
+					<table id="table-71" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">新建日期</th>
@@ -1362,7 +1373,7 @@ function doReturn() {
 				<div  style="height:10px"></div>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="table-81" class="display" cellspacing="0">
+					<table id="table-81" class="display" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th style="width: 80px;" class="dt-middle">新建日期</th>

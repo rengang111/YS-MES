@@ -128,11 +128,12 @@
     <pool></pool>     
     <name value="processcontrolquerydefine_getexpectdate" />
     <where>
-      <w name="projectId" des=""  reqName="keyword1" dtype="ch" oper="="  lg="" bt="" />
+      <w name="projectId" des=""  reqName="keyword1" dtype="ch" oper="="  lg="AND" bt="" />
       <w name="type" des=""  reqName="keyword2" dtype="ch" oper="="  lg="" bt="" />
     </where>
     <select>
       <f name="id" alias="" ctype="" />
+      <f name="ifnull(DATE_FORMAT(finishTime, '%Y-%m-%d'), '')" alias="finishTime" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->

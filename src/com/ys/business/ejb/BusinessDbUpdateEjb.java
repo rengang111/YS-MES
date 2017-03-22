@@ -666,7 +666,7 @@ public class BusinessDbUpdateEjb  {
 		int count = 0;										
 		String info = "";										
 												
-		ts = new BaseTransaction();										
+		ts = new BaseTransaction();
 
 		try {										
 			ts.begin();									
@@ -712,19 +712,20 @@ public class BusinessDbUpdateEjb  {
 				//doUpdate or doDelete								
 				dbData.setId(id);								
 				dbData = (B_ProcessControlData)dao.FindByPrimaryKey(dbData);								
-				if (type.length() == 1) {								
-					if (expectDate.equals("")) {							
-						dbData.setExpectdate(null);						
-					} else {							
-						dbData.setExpectdate(expectDate);						
-					}							
-												
+				if (type.length() == 1) {
 					if (finishTime.equals("")) {							
-						dbData.setFinishtime(null);						
-					} else {							
+						dbData.setFinishtime(null);
+						/*
+						if (expectDate.equals("")) {
+							dbData.setExpectdate(null);						
+						} else {							
+							dbData.setExpectdate(expectDate);						
+						}
+						*/
+					} else {
 						dbData.setFinishtime(finishTime);						
-					}							
-				} else {								
+					}
+				} else {
 					if (type.substring(1, 2).equals("1")) {							
 						if (createDate.equals("")) {						
 							dbData.setCreatedate(null);					
@@ -752,7 +753,7 @@ public class BusinessDbUpdateEjb  {
 						dbData.setDescription(desc);
 					}							
 				}								
-				/*								
+				/*						
  				if (type.length() == 1) {								
 					StringBuffer sql = new StringBuffer();							
 					if (finishTime.equals("")) {							
@@ -766,7 +767,7 @@ public class BusinessDbUpdateEjb  {
 												
 												
  				}								
- 				*/								
+ 				*/							
 				dao.Store(dbData);								
 			}									
 												

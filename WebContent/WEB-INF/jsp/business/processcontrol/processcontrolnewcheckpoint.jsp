@@ -141,10 +141,11 @@ function doSave() {
 				<div  style="height:20px"></div>
 				
 				<legend>文件信息</legend>
-				<button type="button" id="save" class="DTTT_button" onClick="doSave();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 				<button type="button" id="return" class="DTTT_button" onClick="doReturn();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >返回</button>
+				<button type="button" id="save" class="DTTT_button" onClick="doSave();"
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
+
 						
 				<form:form modelAttribute="dataModels" id="baseInfo" style='padding: 0px; margin: 10px;' >
 					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
