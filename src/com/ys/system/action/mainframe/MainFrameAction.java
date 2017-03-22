@@ -172,5 +172,8 @@ public class MainFrameAction extends BaseAction {
 		}
 	}	
 	
-	
+	@RequestMapping("/register")
+	public String executeRegister(@RequestBody String para, @ModelAttribute("dataModels")MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		return "/common/register";
+	}
 }

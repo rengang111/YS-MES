@@ -20,15 +20,39 @@ function initEvent(){
 
 $(document).ready(function() {
 
-	$("#tabs").tabs();
-	$('#tabs').width('330px');
-	$('#tabs').height('270px');
-	$('#tabs-1').height('300px');
+	//$("#tabs").tabs();
+	
+    $('#tabs').tabs({
+        width: $("#tabs").parent().width(),  
+        height: "300"  
+    });   
+	
+    $('#tabs2').tabs({
+        width: $("#tabs2").parent().width(),  
+        height: "300"  
+    });
 
+    $('#tabs3').tabs({
+        width: $("#tabs3").parent().width(),  
+        height: "300"  
+    });
+
+    
+	$("#buyTime").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+	});
+	if ($("#buyTime").val() == "") {
+		$("#buyTime").datepicker( 'setDate' , new Date() );
+	}
+    
 	resetFinder(0, 2);
 	
 	if ($('#keyBackup').val() != "") {
-		$('#tabs').show();
+		showImageTabs();
 		refreshFileBrowser(0);
 		refreshFileBrowser(1);
 	}
@@ -39,7 +63,7 @@ $(document).ready(function() {
 		rules: {
 			sampleId: {
 				required: true,
-				minlength: 6,
+				minlength: 1,
 				maxlength: 20,
 			},
 			sampleVersion: {
@@ -74,6 +98,15 @@ $(document).ready(function() {
 	//refreshTestFileList();
 
 })
+
+function showImageTabs() {
+	$('#tabs').show();
+	$('#tabs2').show();
+	$('#tabs3').show();
+	$('#tabsContainer1').css('display','inline-block'); 
+	$('#tabsContainer2').css('display','inline-block');
+	$('#tabsContainer3').css('display','inline-block');
+}
 
 function refreshTestFileList() {
 	
@@ -162,7 +195,7 @@ function doSave() {
 						alert(d.message);	
 					} else {
 						$('#keyBackup').val(d.info);
-						$('#tabs').show();
+						showImageTabs();
 						refreshFileBrowser(0);
 						refreshFileBrowser(1);
 						reloadTabWindow();
@@ -204,6 +237,7 @@ function doDelete() {
 				} else {
 					$('#tabs').hide();
 					$('#TESTFileArea').hide();
+					$('#TESTMachineArea').hide();
 					controlButtons("");
 					clearExternalSampleInfo();
 					reloadTabWindow();
@@ -299,13 +333,38 @@ function controlButtons(data) {
 <div id="container">
 
 		<div id="main">	
-				
-			<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
-				<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
-					<jsp:include page="../../common/album/album.jsp"></jsp:include>
+			<div id="tabsContainer1" style="width:330px;height:300px;display:none;">
+				<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
+						<jsp:include page="../../common/album/multialbum.jsp">
+							<jsp:param value="1" name="index"/>
+							<jsp:param value="3" name="albumCount"/>
+						</jsp:include>
+					</div>
 				</div>
 			</div>
-			<div style="clear:both;"></div>
+			<div id="tabsContainer2" style="width:330px;height:300px;display:none;">
+				<div id="tabs2" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					<div id="tabs-2" title="图片" style="padding:5px;height:300px;">
+						<jsp:include page="../../common/album/multialbum.jsp">
+							<jsp:param value="2" name="index"/>
+							<jsp:param value="3" name="albumCount"/>
+						</jsp:include>
+					</div>
+				</div>
+			</div>	
+			<div  id="tabsContainer3" style="width:330px;height:300px;display:none;">
+				<div id="tabs3" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+					<div id="tabs-3" title="图片" style="padding:5px;height:300px;">
+						<jsp:include page="../../common/album/multialbum.jsp">
+							<jsp:param value="3" name="index"/>
+							<jsp:param value="3" name="albumCount"/>
+						</jsp:include>
+
+					</div>
+				</div>
+			</div>	
+			
 			<div  style="height:20px"></div>
 				
 				<legend>外样记录-综合信息</legend>
@@ -406,7 +465,7 @@ function controlButtons(data) {
 			<div>
 				<legend>机器详情</legend>
 				<div class="list">
-					<div id="TESTMachineArea" class="list" style="display:none;">
+					<div id="TESTMachineArea" style="display:none;">
 						<!-- 
 						<table id="TESTMachinePicList" class="display" cellspacing="0">
 						</table>

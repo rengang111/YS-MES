@@ -3,6 +3,7 @@
  */
 package com.ys.business.action.album;
 
+import java.io.File;
 import java.net.BindException;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -42,6 +43,7 @@ import com.ys.business.action.model.contact.ContactModel;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.common.BusinessConstants;
 import com.ys.system.service.common.I_BaseService;
+import com.ys.system.service.common.I_MultiAlbumService;
 import com.ys.util.CommonUtil;
 import com.ys.util.UploadReceiver;
 import com.ys.business.service.externalsample.ExternalSampleService;
@@ -70,9 +72,9 @@ public class AlbumAction extends BaseAction {
 		AlbumInfo info = new AlbumInfo();
 		ModelAndView mv = new ModelAndView("/common/album/album-upload");
 		String key = request.getParameter("key");
-		String paramInfo = request.getParameter("info");
+		String index = request.getParameter("index");
 		info.setKey(key);
-		info.setInfo(paramInfo);
+		info.setInfo(index);
 		CommonUtil.mvAddMsg(mv);
 		mv.addObject("DisplayData", info);
 		
@@ -147,6 +149,8 @@ public class AlbumAction extends BaseAction {
 		String className = request.getParameter("className");
 		String fileName = request.getParameter("fileName");
 		String key = request.getParameter("key");
+		String index = request.getParameter("index");
+		String albumCount = request.getParameter("albumCount");
 		
 		mv.addObject("fileName", fileName);
 		
@@ -155,6 +159,10 @@ public class AlbumAction extends BaseAction {
 		mv.addObject("key", key);
 		
 		mv.addObject("className", className);
+		
+		mv.addObject("albumCount", albumCount);
+		
+		mv.addObject("index", index);
 		
 		CommonUtil.mvAddMsg(mv);
 			
@@ -181,10 +189,17 @@ public class AlbumAction extends BaseAction {
 			String key = request.getParameter("key");
 			String fileName = request.getParameter("fileName");
 			String className = request.getParameter("className");
+			String index = request.getParameter("index");
+			String albumCount = request.getParameter("albumCount");
 			
-			I_BaseService iBaseService = (I_BaseService)Class.forName(className).newInstance();
-			
-			iBaseService.setNowUseImage(key, fileName);
+			if (index != null && !index.equals("")) {
+				I_MultiAlbumService mBaseService = (I_MultiAlbumService)Class.forName(className).newInstance();
+				mBaseService.setNowUseImage(key, Integer.parseInt(albumCount), Integer.parseInt(index), fileName);
+			} else {
+				I_BaseService iBaseService = (I_BaseService)Class.forName(className).newInstance();
+				iBaseService.setNowUseImage(key, fileName);
+			}
+		
 						
 		}catch(Exception e){
 			
@@ -283,18 +298,27 @@ public class AlbumAction extends BaseAction {
 		String key = request.getParameter("key");
 		String fileName = request.getParameter("fileName");
 		String className = request.getParameter("className");
+		String index = request.getParameter("index");
+		String albumCount = request.getParameter("albumCount");
+		String nowImage = "";
 		
-		uploadReceiver.deleteFile(request, key, fileName);	
-		
-		I_BaseService iBaseService = (I_BaseService)Class.forName(className).newInstance();
-		
-		String nowImage = iBaseService.getNowUseImage(key);
-		
-		if (fileName.equals(nowImage)){
-			iBaseService.setNowUseImage(key, "");
+		if (albumCount != null && !albumCount.equals("")) {
+			uploadReceiver.deleteFile(request, key + File.separator + index, fileName);
+			I_MultiAlbumService mBaseService = (I_MultiAlbumService)Class.forName(className).newInstance();
+			nowImage = mBaseService.getNowUseImage(key, Integer.parseInt(index));
+			if (fileName.equals(nowImage)){
+				mBaseService.setNowUseImage(key, Integer.parseInt(albumCount), Integer.parseInt(index), "");
+			}			
+		} else {
+			uploadReceiver.deleteFile(request, key, fileName);
+			I_BaseService iBaseService = (I_BaseService)Class.forName(className).newInstance();
+			nowImage = iBaseService.getNowUseImage(key);
+			if (fileName.equals(nowImage)){
+				iBaseService.setNowUseImage(key, "");
+			}
 		}
-		
-		uploadReceiver.deleteFolder(request, key);
+
+		//uploadReceiver.deleteFolder(request, key);
 	}
 	
 	/**

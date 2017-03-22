@@ -11,7 +11,7 @@ import java.io.InputStream;
 * @author mengfanchang
 * @version 1.0
 */
-public class B_ProjectTaskData implements java.io.Serializable
+public class B_ProjectTaskData 
 {
 
 	public B_ProjectTaskData()
@@ -159,6 +159,32 @@ public class B_ProjectTaskData implements java.io.Serializable
 	public void setEstimatecost(String estimatecost)
 	{
 		this.estimatecost=estimatecost;
+	}
+
+	/**
+	*
+	*/
+	private String currency;
+	public String getCurrency()
+	{
+		return this.currency;
+	}
+	public void setCurrency(String currency)
+	{
+		this.currency=currency;
+	}
+
+	/**
+	*
+	*/
+	private String exchangerate;
+	public String getExchangerate()
+	{
+		return this.exchangerate;
+	}
+	public void setExchangerate(String exchangerate)
+	{
+		this.exchangerate=exchangerate;
 	}
 
 	/**
@@ -345,13 +371,13 @@ public class B_ProjectTaskData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("projectid = "+(projectid == null ? "null" : projectid)+"\n");		sb.append("projectname = "+(projectname == null ? "null" : projectname)+"\n");		sb.append("tempversion = "+(tempversion == null ? "null" : tempversion)+"\n");		sb.append("manager = "+(manager == null ? "null" : manager)+"\n");		sb.append("referprototype = "+(referprototype == null ? "null" : referprototype)+"\n");		sb.append("designcapability = "+(designcapability == null ? "null" : designcapability)+"\n");		sb.append("begintime = "+(begintime == null ? "null" : begintime)+"\n");		sb.append("endtime = "+(endtime == null ? "null" : endtime)+"\n");		sb.append("packing = "+(packing == null ? "null" : packing)+"\n");		sb.append("estimatecost = "+(estimatecost == null ? "null" : estimatecost)+"\n");		sb.append("saleprice = "+(saleprice == null ? "null" : saleprice)+"\n");		sb.append("sales = "+(sales == null ? "null" : sales)+"\n");		sb.append("recoverynum = "+(recoverynum == null ? "null" : recoverynum)+"\n");		sb.append("failmode = "+(failmode == null ? "null" : failmode)+"\n");		sb.append("image_filename = "+(image_filename == null ? "null" : image_filename)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("projectid = "+(projectid == null ? "null" : projectid)+"\n");		sb.append("projectname = "+(projectname == null ? "null" : projectname)+"\n");		sb.append("tempversion = "+(tempversion == null ? "null" : tempversion)+"\n");		sb.append("manager = "+(manager == null ? "null" : manager)+"\n");		sb.append("referprototype = "+(referprototype == null ? "null" : referprototype)+"\n");		sb.append("designcapability = "+(designcapability == null ? "null" : designcapability)+"\n");		sb.append("begintime = "+(begintime == null ? "null" : begintime)+"\n");		sb.append("endtime = "+(endtime == null ? "null" : endtime)+"\n");		sb.append("packing = "+(packing == null ? "null" : packing)+"\n");		sb.append("estimatecost = "+(estimatecost == null ? "null" : estimatecost)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("exchangerate = "+(exchangerate == null ? "null" : exchangerate)+"\n");		sb.append("saleprice = "+(saleprice == null ? "null" : saleprice)+"\n");		sb.append("sales = "+(sales == null ? "null" : sales)+"\n");		sb.append("recoverynum = "+(recoverynum == null ? "null" : recoverynum)+"\n");		sb.append("failmode = "+(failmode == null ? "null" : failmode)+"\n");		sb.append("image_filename = "+(image_filename == null ? "null" : image_filename)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		id= (id == null ?null : id.trim());		projectid= (projectid == null ?null : projectid.trim());		projectname= (projectname == null ?null : projectname.trim());		tempversion= (tempversion == null ?null : tempversion.trim());		manager= (manager == null ?null : manager.trim());		referprototype= (referprototype == null ?null : referprototype.trim());		designcapability= (designcapability == null ?null : designcapability.trim());		begintime= (begintime == null ?null : begintime.trim());		endtime= (endtime == null ?null : endtime.trim());		packing= (packing == null ?null : packing.trim());		estimatecost= (estimatecost == null ?null : estimatecost.trim());		saleprice= (saleprice == null ?null : saleprice.trim());		sales= (sales == null ?null : sales.trim());		recoverynum= (recoverynum == null ?null : recoverynum.trim());		failmode= (failmode == null ?null : failmode.trim());		image_filename= (image_filename == null ?null : image_filename.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		id= (id == null ?null : id.trim());		projectid= (projectid == null ?null : projectid.trim());		projectname= (projectname == null ?null : projectname.trim());		tempversion= (tempversion == null ?null : tempversion.trim());		manager= (manager == null ?null : manager.trim());		referprototype= (referprototype == null ?null : referprototype.trim());		designcapability= (designcapability == null ?null : designcapability.trim());		begintime= (begintime == null ?null : begintime.trim());		endtime= (endtime == null ?null : endtime.trim());		packing= (packing == null ?null : packing.trim());		estimatecost= (estimatecost == null ?null : estimatecost.trim());		currency= (currency == null ?null : currency.trim());		exchangerate= (exchangerate == null ?null : exchangerate.trim());		saleprice= (saleprice == null ?null : saleprice.trim());		sales= (sales == null ?null : sales.trim());		recoverynum= (recoverynum == null ?null : recoverynum.trim());		failmode= (failmode == null ?null : failmode.trim());		image_filename= (image_filename == null ?null : image_filename.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

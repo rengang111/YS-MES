@@ -1,5 +1,6 @@
 package com.ys.business.service.externalsample;
 
+import java.io.File;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ckfinder.connector.utils.FileUtils;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.externalsample.ExternalSampleModel;
 import com.ys.business.db.dao.B_ExternalSampleDao;
@@ -26,6 +28,7 @@ import com.ys.system.db.data.S_ROLEData;
 import com.ys.system.ejb.DbUpdateEjb;
 import com.ys.system.service.common.BaseService;
 import com.ys.system.service.common.I_BaseService;
+import com.ys.system.service.common.I_MultiAlbumService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.UploadReceiver;
@@ -36,7 +39,7 @@ import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class ExternalSampleService extends BaseService implements I_BaseService {
+public class ExternalSampleService extends BaseService implements I_MultiAlbumService {
  
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
@@ -253,17 +256,9 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 			UploadReceiver uploadReceiver = new UploadReceiver();
 			String dir = request.getSession().getServletContext().getRealPath("/")
 					+ BusinessConstants.BUSINESSPHOTOPATH + data; 			
-			String dirSmall = dir + BusinessConstants.BUSINESSSMALLPHOTOPATH; 			
+			//String dirSmall = dir + BusinessConstants.BUSINESSSMALLPHOTOPATH; 			
 			
-			String[] fileNames = uploadReceiver.getFileNameList(dirSmall);
-			if (fileNames != null) {
-				for(String fileName:fileNames) {
-					uploadReceiver.deleteFile(request, data, fileName);
-				}
-			}
-			uploadReceiver.deleteFolder(request, data);
-			
-			deleteUploadFiles(request, data);
+			FileUtils.delete(new File(dir));
 		}
 		
 		return model;
@@ -323,47 +318,82 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 	
 	public ExternalSampleModel getFileList(HttpServletRequest request, ExternalSampleModel model) {
 		UploadReceiver uploadReceiver = new UploadReceiver();
-		
+		int arraySize = 0;
 		String dir = request.getSession().getServletContext().getRealPath("/")
-				+ BusinessConstants.BUSINESSPHOTOPATH + model.getExternalSampleData().getId() + BusinessConstants.BUSINESSSMALLPHOTOPATH; 
+				+ BusinessConstants.BUSINESSPHOTOPATH + model.getExternalSampleData().getId() ; 
+		String albumCount = request.getParameter("albumcount");
+		String nowUseImage[];
 		
-		String [] filenames = uploadReceiver.getFileNameList(dir);
-		
-		String nowUseImage = model.getExternalSampleData().getImage_filename();
-		
-		if (null != filenames && filenames.length > 0){
-			
-			//将当前图片放到最前
-			if (!(null == nowUseImage||nowUseImage.equals(""))){	
-				
-				ArrayList<String> list_image = new ArrayList<>(Arrays.asList(filenames));
-				
-				for(String fileName:list_image) {
-					if(fileName.equals(nowUseImage)) {
-						list_image.remove(nowUseImage);
-						break;
-					}
-				}
-				
-				list_image.add(0, nowUseImage);		
-				
-				filenames = new String[list_image.size()];
-				int index = 0;
-				for(Object fileName:list_image) {
-					filenames[index++] = String.valueOf(fileName);
-				}
-			}			
+		String nowUseImageList = model.getExternalSampleData().getImage_filename();
+		if (nowUseImageList == null || nowUseImageList.equals("")) {
+			nowUseImageList = "";
+			nowUseImage = new String[Integer.parseInt(albumCount)];
+		} else {
+			nowUseImage = nowUseImageList.split(";");
+			if (nowUseImage.length < Integer.parseInt(albumCount)) {
+				nowUseImage = new String[Integer.parseInt(albumCount)];
+			}
 		}
 		
-		model.setFilenames(filenames);
-		model.setImageKey(model.getExternalSampleData().getId());
-		model.setPath(BusinessConstants.BUSINESSPHOTOPATH);
-		model.setNowUseImage(nowUseImage);
+		
+		ArrayList<ArrayList<String>> fileList = new ArrayList<ArrayList<String>>();
+		
+		for(int i = 0; i < Integer.parseInt(albumCount); i++) {
+			String[] filenames = uploadReceiver.getFileNameList(dir + File.separator + (i + 1) + File.separator + BusinessConstants.BUSINESSSMALLPHOTOPATH);
+			ArrayList<String> list_image = new ArrayList<String>();
+			if (null != filenames && filenames.length > 0){
+				
+				list_image = new ArrayList<>(Arrays.asList(filenames));
+				
+				//将当前图片放到最前
+				if (!(null == nowUseImage[i]||nowUseImage[i].equals(""))){	
+					
+					
+					if (list_image.size() > arraySize) {
+						arraySize = list_image.size();
+					}
+					for(String fileName:list_image) {
+						if(fileName.equals(nowUseImage[i])) {
+							list_image.remove(nowUseImage);
+							break;
+						}
+					}
+					
+					list_image.add(0, nowUseImage[i]);
+					
+					fileList.add(list_image);
+					/*
+					filenames = new String[list_image.size()];
+					int index = 0;
+					for(Object fileName:list_image) {
+						filenames[index++] = String.valueOf(fileName);
+					}
+					*/
+				} else {
+					fileList.add(list_image);
+				}
+			} else {
+				fileList.add(list_image);
+			}
+
+			model.setImageKey(model.getExternalSampleData().getId());
+			model.setPath(BusinessConstants.BUSINESSPHOTOPATH);
+		}
+		
+		String fileNames[][] = new String[Integer.parseInt(albumCount)][arraySize];
+
+		for(int i = 0; i < fileList.size(); i++) {
+			ArrayList tempArray= (ArrayList)fileList.get(i);
+			fileNames[i]=(String[])tempArray.toArray(new String[0]); 
+		}
+		
+		model.setFilenames(fileNames);
+		model.setNowUseImageList(nowUseImage);
 		
 		return model;
 	}
 	
-	public void setNowUseImage(String key, String src) throws Exception {
+	public void setNowUseImage(String key, int albumCount, int index, String src) throws Exception {
 		B_ExternalSampleDao dao = new B_ExternalSampleDao();
 		B_ExternalSampleData dbData = new B_ExternalSampleData();
 		
@@ -374,12 +404,37 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 		UserInfo userInfo = (UserInfo)request.getSession().getAttribute(BusinessConstants.SESSION_USERINFO);
 		
 		dbData = updateModifyInfo(dbData, userInfo);
-		dbData.setImage_filename(src);
+		
+		String imageFileName = dbData.getImage_filename();
+		if (imageFileName != null && !imageFileName.equals("")) {
+			String tempImageFileName[] = imageFileName.split(";");
+			tempImageFileName[index - 1] = src;
+			imageFileName = "";
+			for(int i = 0; i < tempImageFileName.length; i++) {
+				if (i == 0) {
+					imageFileName += tempImageFileName[i];
+				} else {
+					imageFileName += ";" + tempImageFileName[i];
+				}
+			}
+		} else {
+			imageFileName = "";
+			for(int i = 0; i < albumCount; i++) {
+				if (i != (index - 1)) {
+					imageFileName += ";";
+				} else {
+					imageFileName += src;
+				}
+			}
+		}
+		
+		dbData.setImage_filename(imageFileName);
+		
 		dao.Store(dbData);
 		
 	}
 	
-	public String getNowUseImage(String key) {
+	public String getNowUseImage(String key, int index) {
 		B_ExternalSampleDao dao = new B_ExternalSampleDao();
 		B_ExternalSampleData dbData = new B_ExternalSampleData();
 		
@@ -389,6 +444,7 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 			dbData.setId(key);
 			dbData = (B_ExternalSampleData)dao.FindByPrimaryKey(dbData);
 			nowUseImage = dbData.getImage_filename();
+			nowUseImage = nowUseImage.split(";")[index - 1]; 
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -397,7 +453,6 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 		return nowUseImage;
 		
 	}	
-	
 	
 	private ArrayList<ArrayList<String>> preCheckExternalSampleId(HttpServletRequest request, String key) throws Exception {
 		
@@ -430,4 +485,6 @@ public class ExternalSampleService extends BaseService implements I_BaseService 
 		return rtnData;
 	}
 
+	
+	
 }

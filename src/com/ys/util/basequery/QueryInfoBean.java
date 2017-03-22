@@ -200,12 +200,14 @@ public class QueryInfoBean {
 		sqlCount.append(" ");
 		sql.append(definedFromSql);
 		sqlCount.append(definedFromSql);
-		sql.append(" ");
-		sqlCount.append(" ");
 
+		
 		String tempSql = sql.toString().trim();
 		if (tempSql.substring(tempSql.length() - 1, tempSql.length()).equals("$")) {
-			sql.replace(tempSql.length() - 1, tempSql.length(), "");
+			String[] splitTempSql = (sql.toString()).split("\\$");
+			sql = new StringBuffer(splitTempSql[0]);
+			splitTempSql = (sqlCount.toString()).split("\\$");
+			sqlCount = new StringBuffer(splitTempSql[0]);
 			if (!definedQueryWhereSql.equals("") || !userDefinedWhere.equals("")) {
 				sql.append(" WHERE ");
 				sqlCount.append(" WHERE ");

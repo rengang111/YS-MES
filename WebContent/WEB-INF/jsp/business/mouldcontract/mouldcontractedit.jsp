@@ -91,7 +91,7 @@ function ajaxMouldDetailList() {
 							return row["rownum"] + "<input type=checkbox name='numCheckMD' id='numCheckMD' value='" + row["id"] + "' />"
 	                    }},
 			    		{"targets":11,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"doUpdateMD('" + row["id"] + "')\">编辑</a>"
+			    			return "<a href=\"#\" onClick=\"doUpdateMD('" + row["id"] + "')\">查看</a>"
 	                    }}
 				    ] 						
 				});
@@ -202,7 +202,7 @@ function ajaxPayList() {
 			    			if (row["confirm"] == '1') {
 			    				return "";
 			    			} else {
-			    				return "<a href=\"#\" onClick=\"doUpdatePay('" + row["id"] + "')\">编辑</a>"
+			    				return "<a href=\"#\" onClick=\"doUpdatePay('" + row["id"] + "')\">查看</a>"
 			    			}
 	                    }}
 				    ] 						
@@ -254,7 +254,7 @@ function initEvent(){
 		rules: {
 			contractYear: {
 				contractYear: true,
-				minlength: 4,
+				minlength: 1,
 				maxlength: 4,
 			},
 			productModelIdView: {
@@ -289,7 +289,7 @@ function initEvent(){
 			acceptanceDate: {
 				required: true,
 				date: true,
-				minlength: 10,
+				minlength: 1,
 				maxlength: 10,
 			},
 			memo: {			

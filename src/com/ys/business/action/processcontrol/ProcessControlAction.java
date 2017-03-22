@@ -59,8 +59,12 @@ public class ProcessControlAction extends BaseAction {
 				dataMap = doSearch(data, session, request, response);
 				printOutJsonObj(response, dataMap);
 				return null;
-			case "getProcessCollect":
-				dataMap = doGetProcessCollect(data, session, request, response);
+			case "getProcessExpectCollect":
+				dataMap = doGetProcessExpectCollect(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "getProcessCheckPointCollect":
+				dataMap = doGetProcessCheckPointCollect(data, session, request, response);
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "getProcessDetail":
@@ -91,7 +95,10 @@ public class ProcessControlAction extends BaseAction {
 			case "addnewcheckpointinit":
 				rtnUrl = doUpdateProcessControlDetailInit(model, session, request, response, 2);
 				break;
-			
+			case "clearcheckpoint":
+				viewModel = doClearCheckPoint(data, session, request, response);
+				printOutJsonObj(response, viewModel.getEndInfoMap());				
+				return null;
 		}
 		
 		return rtnUrl;
@@ -116,12 +123,12 @@ public class ProcessControlAction extends BaseAction {
 		return dataMap;
 	}	
 	
-	public HashMap<String, Object> doGetProcessCollect(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public HashMap<String, Object> doGetProcessExpectCollect(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataMap = processControlService.doGetProcessCollect(request, data, userInfo);
+			dataMap = processControlService.doGetProcessExpectCollect(request, data, userInfo);
 			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
@@ -134,6 +141,26 @@ public class ProcessControlAction extends BaseAction {
 		
 		return dataMap;
 	}	
+	
+	public HashMap<String, Object> doGetProcessCheckPointCollect(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			dataMap = processControlService.doGetProcessCheckPointCollect(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}	
+	
 	
 	public HashMap<String, Object> doGetProcessDetail(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -227,5 +254,13 @@ public class ProcessControlAction extends BaseAction {
 		model.addAttribute("DisplayData", dataModel);
 		
 		return rtnUrl;
+	}
+	
+	public ProcessControlModel doClearCheckPoint(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		ProcessControlModel model = new ProcessControlModel();
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		model = processControlService.doClearCheckPoint(request, data, userInfo);
+
+		return model;
 	}	
 }

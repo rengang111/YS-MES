@@ -236,6 +236,17 @@ function doDeleteReformLog() {
 	}
 
 }
+
+function doReturn() {
+	//var url = "${ctx}/business/externalsample";
+	//location.href = url;	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
+
 </script>
 
 </head>
@@ -247,36 +258,35 @@ function doDeleteReformLog() {
 			<div  style="height:20px"></div>
 				
 			<legend>后期完善-基本信息</legend>
+			<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 			<table class="form" width="850px">
 				<tr>
 					<td width="60px">项目编号：</td>
 					<td width="240px">
 						${DisplayData.projectTaskData.projectid}
 					</td>
-					<td width="100px">项目名称：</td> 
-					<td>
+					<td width="60px">项目名称：</td> 
+					<td width="240px">
 						${DisplayData.projectTaskData.projectname}
 					</td>
 					<td width="60px">暂定型号：</td> 
-					<td>
+					<td width="240px">
 						${DisplayData.projectTaskData.tempversion}
 					</td>
-				</tr>
-				<tr>
-					<td>
+					<td width="60px">
 						项目经理：
-					</td>
+					</td width="240px">
 					<td>
 						${DisplayData.projectTaskData.manager}
 					</td>
+				</tr>
+				<tr>
 					<td>
 						参考原型：
 					</td>
-					<td colspan=4>
+					<td>
 						${DisplayData.projectTaskData.referprototype}
 					</td>
-				</tr>
-				<tr>
 					<td>	
 						起始时间：
 					</td>
@@ -284,7 +294,7 @@ function doDeleteReformLog() {
 						${DisplayData.projectTaskData.begintime}
 					</td>
 					<td>	
-						预计完成时间：
+						预计完成<p>时间：
 					</td>
 					<td> 
 						<label id="projectEndTime">${DisplayData.projectTaskData.endtime}</label>
@@ -306,7 +316,7 @@ function doDeleteReformLog() {
 				<div  style="height:20px"></div>
 				<legend>变革日志</legend>
 				<button type="button" id="addFormLog" class="DTTT_button" onClick="doAddReformLog();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >编辑</button>
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >查看</button>
 				<div>
 					<table id="reformLog" class="display" cellspacing="0">
 						<thead>

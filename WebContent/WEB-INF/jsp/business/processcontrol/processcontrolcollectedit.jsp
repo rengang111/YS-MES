@@ -18,11 +18,6 @@ $(document).ready(function() {
 	
 	validator = $("#baseInfo").validate({
 		rules: {
-			expectDate: {
-				required: true,
-				date: true,
-				maxlength: 10,
-			},
 			finishDate: {
 				date: true,
 				maxlength: 10,
@@ -38,8 +33,29 @@ $(document).ready(function() {
 		}
 	});
 
+	
+	$("#finishTime").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+		defaultDate : new Date(),
+	}); 
+	if ($("#finishTime").val() == "") {
+		$("#finishTime").datepicker( 'setDate' , new Date() );
+	}
 })
 
+function doReturn() {
+	//var url = "${ctx}/business/externalsample";
+	//location.href = url;	
+	var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	//parent.$('#events').DataTable().destroy();/
+	//parent.reload_contactor();
+	parent.layer.close(index); //执行关闭
+	
+}
 
 function doSave() {
 
@@ -65,7 +81,7 @@ function doSave() {
 					info = d.info.split(",");
 					parent.reloadTable(info[0]);
 
-					parent.setExpectDate(info[0], info[1], info[2], info[3]);
+					//parent.setExpectDate(info[0], info[1], info[2], info[3]);
 
 					if (d.message != "") {
 						alert(d.message);	
@@ -111,9 +127,11 @@ function onFinishDateInput() {
 				<div  style="height:20px"></div>
 				
 				<legend>文件信息</legend>
+				<button type="button" id="return" class="DTTT_button" onClick="doReturn();"
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >返回</button>
 				<button type="button" id="save" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-					
+
 				<form:form modelAttribute="dataModels" id="baseInfo" style='padding: 0px; margin: 10px;' >
 					<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 					<input type=hidden id="type" name="type" value="${DisplayData.type}"/>
@@ -121,28 +139,32 @@ function onFinishDateInput() {
 					<input type=hidden id="exceedDate2View" name="exceedDate2View" value=""/>
 					<table class="form" width="850px">					
 						<tr>
-							<td width="60px">预期完成：</td>
-							<td width="80px" align="left">
-								<input type="text" id="expectDate" name="expectDate" class="short" value="${DisplayData.processControlData.expectdate}" onInput="onExpectDateInput();"/>
+							<td width="80px">预期完成：</td>
+							<td width="120px" align="left">
+								<label id="expectDate" name="expectDate" class="short" style="margin: 0px 0px 0px 10px;">${DisplayData.processControlData.expectdate}</label>
 							</td>
+							<td></td>
 						</tr>
 						<tr>
-							<td width="60px">当前超期天数：</td>
-							<td width="80px" align="left">
+							<td width="80px">当前超期天数：</td>
+							<td width="120px" align="left">
 								<label id="exceedDate" name="exceedDate" class="short" style="margin: 0px 0px 0px 10px;">${DisplayData.exceedTime}</label>
 							</td>
+							<td></td>
 						</tr>
 						<tr>
-							<td width="60px">最新预期：</td>
-							<td width="80px" align="left">
+							<td width="80px">最新预期：</td>
+							<td width="120px" align="left">
 								<label id="lastestExpectDate" name="lastestExpectDate" class="short" style="margin: 0px 0px 0px 10px;">${DisplayData.lastestExpectDate}</label>
 							</td>
+							<td></td>
 						</tr>						
 						<tr>
-							<td width="60px">完成日期：</td>
-							<td width="80px" align="left">
+							<td width="80px">完成日期：</td>
+							<td width="120px" align="left">
 								<input type="text" id="finishTime" name="finishTime" class="short" value="${DisplayData.processControlData.finishtime}" onInput="onFinishDateInput();"/>
 							</td>
+							<td></td>
 						</tr>					
 					</table>
 

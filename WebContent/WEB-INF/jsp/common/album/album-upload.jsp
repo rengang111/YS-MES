@@ -128,7 +128,9 @@
     </style>
 
     <script>
-    
+    	var totalAttachmentsCount = 0;
+    	var uploadedAttachmentsCount = 0;
+    	
         var uploader = new qq.FineUploader({
             element: document.getElementById('fine-uploader-manual-trigger'),
             template: 'qq-template-manual-trigger',
@@ -155,16 +157,30 @@
             },
             autoUpload: false,
             debug: true,
+            callbacks:
+            {
+                onComplete: function (id, fileName, responseJSON) {
+                	
+                	uploadedAttachmentsCount++;
+                	
+                	if (totalAttachmentsCount == uploadedAttachmentsCount) {
+                		parent.refresh();
+	            		var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+	            		
+	            		parent.layer.close(index);
+                	}
+                }
+            }
         });
         
         qq(document.getElementById("trigger-upload")).attach("click", function() {
-        	//alert(99);
+
         	if (confirm("${msg}")) {
+        		totalAttachmentsCount = uploader._storedIds.length;
         		uploader.uploadStoredFiles();
         		
-        		//alert(999);
-        		
-        		var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+
+        		/*
 				//parent.$('#events').DataTable().destroy();/
 				if ('${DisplayData.info}' == '') {
 					parent.refresh();
@@ -175,6 +191,7 @@
 					parent.refresh();
 					layer.close(index); //执行关闭
 				}
+				*/
         	}
         	
         });

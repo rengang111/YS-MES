@@ -7,26 +7,24 @@
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/plugins/jquery-auto-play-image/js/koala.min.1.5.js"></script>
 
-<%@ include file="../../common/common.jsp"%>
-
 <!-- 代码 开始 -->
-<div id="fsD-${DisplayData.folderName}" class="focus" style="margin:0px 0px 6px 0px;">  
+<div id="fsD${param.index}" class="focus" style="margin:0px 0px 6px 0px;">  
 	
-    <div id="D1pic-${DisplayData.folderName}" class="fPic">  
+    <div id="D1pic${param.index}" class="fPic">  
     
-    	<c:if test="${empty DisplayData.filenames}">
+    	<c:if test="${empty DisplayData.filenames[param.index - 1]}">	
+    				
 			<div class="fcon" style="display: none;">
 	            <a  href="#"><img src="${pageContext.request.contextPath}/images/blankDemo.png" /></a>
 	            <a  href="#"></a>
 	        </div>
-	        
 		</c:if>	
 		
-		<c:forEach var="filename" items="${DisplayData.filenames}">
+		<c:forEach var="filename" items="${DisplayData.filenames[param.index - 1]}">
 		
 			<div class="fcon" style="display: none;">
-	            <a  href="#"><img src="${pageContext.request.contextPath}/${DisplayData.path}${DisplayData.imageKey}/small/${filename}" 
-	            			onclick = "showRealPhoto('${DisplayData.imageKey}', '${filename}');" />
+	            <a  href="#"><img src="${pageContext.request.contextPath}/${DisplayData.path}${DisplayData.imageKey}/${param.index}/small/${filename}" 
+	            			onclick = "showRealPhoto('${DisplayData.imageKey}', '${param.index}', '${filename}');" />
 	            			<span style="position: absolute; top: 3; left: 3;">
 	            				<c:if test="${filename eq DisplayData.nowUseImage}">
 									<img src="${pageContext.request.contextPath}/images/now_use.jpg"/></span> 
@@ -39,7 +37,7 @@
 		
     </div>
     <div class="fbg">  
-    <div class="D1fBt" id="D1fBt-${DisplayData.folderName}">  
+    <div class="D1fBt" id="D1fBt${param.index}">  
     
     	<c:if test="${empty DisplayData.filenames}">	
     				
@@ -62,15 +60,15 @@
     
 </div>  
 
- <div id="l1-${DisplayData.folderName}" style="height:210px;">					
-	<div style="position:absolute;top:215px;left:175px;"> 
-		<a href="javascript:void(0);" class="a-btn-green" style="height:25px;" onclick="return showLayer();">
+ <div id="l${param.index}" style="position:relative;">					
+	<div style="float:right;"> 
+		<a href="#" class="a-btn-green" style="height:25px;" onclick="return showLayer('${param.index}')">
 			<img src="${pageContext.request.contextPath}/images/action_add.png" height="16px" style="top:5px;"/>
 			<span class="a-btn-text" >图片上传</span> 
 		</a>
 	</div>
 				
-</div>  
+</div> 
 
 <!-- 代码 结束 -->
 
@@ -79,10 +77,10 @@
 <script type="text/javascript">
 	
 	function refresh(){		
-		location.reload();
+		location.reload();		
 	}
 	
-	function showRealPhoto(key, fileName){
+	function showRealPhoto(key, index, fileName){
 		
 		//alert(src);
 		
@@ -90,30 +88,29 @@
 		
 		//alert(src.indexOf('blankDemo'));
 		
-		if (fileName.indexOf('blankDemo')>0)
+		if (fileName.indexOf('blankDemo') > 0)
 			return;
-		
-		var content = '${pageContext.request.contextPath}/album/album-photo-show?className=' + '${DisplayData.className}' + '&key=' + key + '&fileName=' + fileName;
 		
 		layer.open({
 			type : 2,
 			title : false,
 			area : [ '690px', '560px' ],
 			scrollbar : false,
-			content : content
+			content : '${pageContext.request.contextPath}/album/album-photo-show?className=' + '${DisplayData.className}' + '&key=' + key + '&index=' + index + '&fileName=' + fileName + "&albumCount=" + '${param.albumCount}'
 		});
 		
 	}
 	
-	function showLayer(){
+	function showLayer(index){
 		
+		//alert('${product.product_id}');
 		layer.open({
 			type : 2,
 			title : false,
-			area : [ '770px', '210px' ],
+			area : [ '1000px', '550px' ],
 			scrollbar : false,
 			title : false,
-			content : '${pageContext.request.contextPath}/album/album-upload-init?key=' + '${DisplayData.keyBackup}' + '&info=' + '${DisplayData.projectId},${DisplayData.folderName},${DisplayData.className}'
+			content : '${pageContext.request.contextPath}/album/album-upload-init?key=' + '${DisplayData.keyBackup}' + '&index=' + index
 		});
 		
 	}	
@@ -121,9 +118,9 @@
 	Qfast.add('widgets', { path: "${pageContext.request.contextPath}/plugins/jquery-auto-play-image/js/terminator2.2.min.js", type: "js", requires: ['fx'] });  
 	Qfast(false, 'widgets', function () {
 		K.tabs({
-			id: 'fsD-${DisplayData.folderName}',   //焦点图包裹id  
-			conId: "D1pic-${DisplayData.folderName}",  //** 大图域包裹id  
-			tabId:"D1fBt-${DisplayData.folderName}",  
+			id: 'fsD${param.index}',   //焦点图包裹id  
+			conId: "D1pic${param.index}",  //** 大图域包裹id  
+			tabId:"D1fBt${param.index}",  
 			tabTn:"a",
 			conCn: '.fcon', //** 大图域配置class       
 			auto: 0,   //自动播放 1或0

@@ -82,7 +82,7 @@
 									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
 			                    }},
 					    		{"targets":8,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
+					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">查看</a>"
 			                    }}
 			           
 			         ] 

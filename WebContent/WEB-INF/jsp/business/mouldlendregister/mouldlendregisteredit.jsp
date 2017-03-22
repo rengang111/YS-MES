@@ -78,7 +78,7 @@ function ajaxMouldLendRegisterList() {
 			    			if(row["status"] == '1') {
 			    				return "";
 			    			} else {
-			    				return "<a href=\"#\" onClick=\"doUpdateLD('" + row["id"] + "')\">编辑</a>"
+			    				return "<a href=\"#\" onClick=\"doUpdateLD('" + row["id"] + "')\">查看</a>"
 			    			}
 	                    }}
 				    ] 						
@@ -128,7 +128,7 @@ function initEvent(){
 		rules: {
 			mouldLendNo: {
 				mouldLendNo: true,
-				minlength: 8,
+				minlength: 1,
 				maxlength: 8,
 			},
 			productModelId: {
@@ -142,13 +142,13 @@ function initEvent(){
 			lendTime: {
 				required: true,
 				date: true,
-				minlength: 8,
+				minlength: 1,
 				maxlength: 10,
 			},
 			returnTime: {		
 				required: true,
 				date: true,
-				minlength: 8,
+				minlength: 1,
 				maxlength: 10,
 			},
 		},

@@ -106,11 +106,16 @@ public class UploadReceiver extends HttpServlet
             String baseInfo = req.getParameter("info");
             if (baseInfo != null && !baseInfo.equals("")) {
 	            info = baseInfo.split(",");
-	            projectId = info[0];
-	            folderName = info[1];
-	            className = info[2];
-	            dir = projectId;
+	            if (info.length > 1) {
+		            projectId = info[0];
+		            folderName = info[1];
+		            className = info[2];
+		            dir = projectId + File.separator + folderName;
+	            } else {
+	            	dir += File.separator + info[0];
+	            }
             }
+            	
             //String aid = req.getParameter("aid");
             
             MultipartHttpServletRequest fileRequest = (MultipartHttpServletRequest)req;
@@ -124,17 +129,16 @@ public class UploadReceiver extends HttpServlet
                 InputStream is = myfile.getInputStream();
                 
                 String ctxPath = req.getSession().getServletContext().getRealPath("/")
-        				+ BusinessConstants.BUSINESSPHOTOPATH + "/" + dir + "/";  
+        				+ BusinessConstants.BUSINESSPHOTOPATH + File.separator + dir + File.separator;  
                 
                 writeFile(is, new File(ctxPath, fileName), null);
-                
-                ImageUtil.scale(ctxPath, fileName,280,210,"small");
+                ImageUtil.scale(ctxPath, fileName, 280, 210, "small");
                 //path = FileManager.T_MAIL_ATTACHMENT_PATH + folder + File.separator + fileName;
                 //uploadfiles(path, is);// �ϴ��ļ�
                 
                 if (folderName != null && !folderName.equals("")) {
-                	I_MultiAlbumService iMultiAlbumService = (I_MultiAlbumService)Class.forName(className).newInstance();
-                	iMultiAlbumService.addMultiAlbumData(projectId, folderName, fileName);
+                	//I_MultiAlbumService iMultiAlbumService = (I_MultiAlbumService)Class.forName(className).newInstance();
+                	//iMultiAlbumService.addMultiAlbumData(projectId, folderName, fileName);
                 }
             }
             

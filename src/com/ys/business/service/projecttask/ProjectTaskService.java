@@ -1,5 +1,6 @@
 package com.ys.business.service.projecttask;
 
+import java.io.File;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ckfinder.connector.utils.FileUtils;
 import com.ys.business.action.model.common.ListOption;
+import com.ys.business.action.model.externalsample.ExternalSampleModel;
 import com.ys.business.action.model.projecttask.ProjectTaskModel;
 import com.ys.business.db.dao.B_ProjectTaskDao;
 import com.ys.business.db.data.B_ProjectTaskCostData;
@@ -30,6 +33,7 @@ import com.ys.system.db.data.S_ROLEData;
 import com.ys.system.ejb.DbUpdateEjb;
 import com.ys.system.service.common.BaseService;
 import com.ys.system.service.common.I_BaseService;
+import com.ys.system.service.common.I_MultiAlbumService;
 import com.ys.system.service.user.UserService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
@@ -41,17 +45,18 @@ import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class ProjectTaskService extends BaseService implements I_BaseService {
+public class ProjectTaskService extends BaseService implements I_MultiAlbumService {
  
 	public static String staticColName[][] = {
 			{"机身模具", "齿轮箱模具", "电池包模具", "充电器模具", "压铸件模具", "五金件模具"},
 			{"吹塑包装模具", "注塑包装模具",	"泡壳模具"},
 			{"手模", "工作样机"},
-			{"认证项目1", "认证项目2", "认证项目3"},
+			{},
 			{"外观", "实用性", "发明"},
-			{"查询项目1", "查询项目2", "查询项目3"},
-			{"设计项目1", "设计项目2"},
-			{"试产数量", "试产费用"}
+			{},
+			{},
+			{"", ""},
+			{}
 	};	
 	
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
@@ -117,11 +122,15 @@ public class ProjectTaskService extends BaseService implements I_BaseService {
 		try {
 			//TODO
 			model.setManagerList(doOptionChange(request).getManagerList());
+			model.setCurrencyList(doCurrencyOptionChange(request).getCurrencyList());
 			model.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+			model.setManagerList(null);
+			model.setCurrencyList(null);
+
 		}
 		
 		return model;
@@ -162,11 +171,30 @@ public class ProjectTaskService extends BaseService implements I_BaseService {
 			//TODO
 			ArrayList<ListOption> optionList = userService.getUserListByDuty(request, BusinessConstants.DUTY_PJMANAGER);
 			model.setManagerList(optionList);
+			model.setCurrencyList(doCurrencyOptionChange(request).getCurrencyList());
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 			model.setManagerList(null);
+			model.setCurrencyList(null);
+		}
+		
+		return model;
+	}
+	
+	public ExternalSampleModel doCurrencyOptionChange(HttpServletRequest request) {
+		DicUtil util = new DicUtil();
+		ExternalSampleModel model = new ExternalSampleModel();
+		
+		try {
+			ArrayList<ListOption> optionList = util.getListOption(DicUtil.CURRENCY, "");
+			model.setCurrencyList(optionList);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+			model.setCurrencyList(null);
 		}
 		
 		return model;
@@ -195,7 +223,7 @@ public class ProjectTaskService extends BaseService implements I_BaseService {
 				} else {
 					BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 			        
-			        bean.executeProjectTaskUpdate(data, userInfo);
+			        bean.executeProjectTaskUpdate(request, data, userInfo);
 					model.setEndInfoMap(NORMAL, "", id);
 				}
 			} else {
@@ -234,15 +262,9 @@ public class ProjectTaskService extends BaseService implements I_BaseService {
 			UploadReceiver uploadReceiver = new UploadReceiver();
 			String dir = request.getSession().getServletContext().getRealPath("/")
 					+ BusinessConstants.BUSINESSPHOTOPATH + data; 			
-			String dirSmall = dir + BusinessConstants.BUSINESSSMALLPHOTOPATH; 			
+			//String dirSmall = dir + BusinessConstants.BUSINESSSMALLPHOTOPATH; 			
 			
-			String[] fileNames = uploadReceiver.getFileNameList(dirSmall);
-			if (fileNames != null) {
-				for(String fileName:fileNames) {
-					uploadReceiver.deleteFile(request, data, fileName);
-				}
-			}
-			uploadReceiver.deleteFolder(request, data);
+			FileUtils.delete(new File(dir));
 		}
 		
 		return model;
@@ -309,6 +331,8 @@ public class ProjectTaskService extends BaseService implements I_BaseService {
 
 		model.setManagerList(doOptionChange(request).getManagerList());
 
+		model.setCurrencyList(doCurrencyOptionChange(request).getCurrencyList());
+		
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		model.setQueryFileName("/business/projecttask/projecttaskquerydefine");
 		model.setQueryName("projecttaskquerydefine_searchcost");
@@ -318,14 +342,38 @@ public class ProjectTaskService extends BaseService implements I_BaseService {
 		ArrayList<ArrayList<String>> costDataList = baseQuery.getFullData();
 		JSONArray jsonObject = JSONArray.fromObject(costDataList);
 		model.setCostDataList(jsonObject);
-		ArrayList<ArrayList<String>> costDataTypeCount = BaseDAO.execSQL("select count(*) from b_projecttaskcost group by type");
-		ArrayList<String> costDataTypeCountList = new ArrayList<String>();
-		for(ArrayList<String> data:costDataTypeCount) {
-			costDataTypeCountList.add(data.get(0));
-		}
 		
+		userDefinedSearchCase = new HashMap<String, String>();
+		model.setQueryFileName("/business/projecttask/projecttaskquerydefine");
+		model.setQueryName("projecttaskquerydefine_getcosttype");
+		baseQuery = new BaseQuery(request, model);
+		userDefinedSearchCase.put("keyword", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		ArrayList<ArrayList<String>> costDataTypeCountList = baseQuery.getFullData();
 		jsonObject = JSONArray.fromObject(costDataTypeCountList);
 		model.setCostDataTypeCount(jsonObject);
+		
+		model.setQueryFileName("/business/processcontrol/processcontrolquerydefine");
+		model.setQueryName("processcontrolquerydefine_searchexpectcollect");
+		baseQuery = new BaseQuery(request, model);
+		userDefinedSearchCase.put("keyword", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, -1);	
+		ArrayList<HashMap<String, String>> dbExpectDateList = model.getYsViewData();
+		ArrayList<String> expectDateList = new ArrayList<String>();
+		HashMap<String, String>rowData = null;
+		for(int i = 0; i < 9; i++) {
+			expectDateList.add("");
+		}
+		for(int i = 0; i < dbExpectDateList.size(); i++) {
+			HashMap<String, String>tempRowData = dbExpectDateList.get(i);
+			if (tempRowData.get("type").length() == 1) {
+				rowData = dbExpectDateList.get(i);
+				expectDateList.add(Integer.parseInt(tempRowData.get("type")), rowData.get("expectDate"));
+			}
+		}
+		
+		model.setExpectDateList(expectDateList);
 		
 		model.setEndInfoMap("098", "0001", "");
 		model.setKeyBackup(dbData.getId());
@@ -336,47 +384,82 @@ public class ProjectTaskService extends BaseService implements I_BaseService {
 	
 	public ProjectTaskModel getFileList(HttpServletRequest request, ProjectTaskModel model) {
 		UploadReceiver uploadReceiver = new UploadReceiver();
-		
+		int arraySize = 0;
 		String dir = request.getSession().getServletContext().getRealPath("/")
-				+ BusinessConstants.BUSINESSPHOTOPATH + model.getProjectTaskData().getId() + BusinessConstants.BUSINESSSMALLPHOTOPATH; 
+				+ BusinessConstants.BUSINESSPHOTOPATH + model.getProjectTaskData().getId() ; 
+		String albumCount = request.getParameter("albumCount");
+		String nowUseImage[];
 		
-		String [] filenames = uploadReceiver.getFileNameList(dir);
-		
-		String nowUseImage = model.getProjectTaskData().getImage_filename();
-		
-		if (null != filenames && filenames.length > 0){
-			
-			//将当前图片放到最前
-			if (!(null == nowUseImage||nowUseImage.equals(""))){	
-				
-				ArrayList<String> list_image = new ArrayList<>(Arrays.asList(filenames));
-				
-				for(String fileName:list_image) {
-					if(fileName.equals(nowUseImage)) {
-						list_image.remove(nowUseImage);
-						break;
-					}
-				}
-				
-				list_image.add(0, nowUseImage);		
-				
-				filenames = new String[list_image.size()];
-				int index = 0;
-				for(Object fileName:list_image) {
-					filenames[index++] = String.valueOf(fileName);
-				}
-			}			
+		String nowUseImageList = model.getProjectTaskData().getImage_filename();
+		if (nowUseImageList == null || nowUseImageList.equals("")) {
+			nowUseImageList = "";
+			nowUseImage = new String[Integer.parseInt(albumCount)];
+		} else {
+			nowUseImage = nowUseImageList.split(";");
+			if (nowUseImage.length < Integer.parseInt(albumCount)) {
+				nowUseImage = new String[Integer.parseInt(albumCount)];
+			}
 		}
 		
-		model.setFilenames(filenames);
-		model.setImageKey(model.getProjectTaskData().getId());
-		model.setPath(BusinessConstants.BUSINESSPHOTOPATH);
-		model.setNowUseImage(nowUseImage);
+		
+		ArrayList<ArrayList<String>> fileList = new ArrayList<ArrayList<String>>();
+		
+		for(int i = 0; i < Integer.parseInt(albumCount); i++) {
+			String[] filenames = uploadReceiver.getFileNameList(dir + File.separator + (i + 1) + File.separator + BusinessConstants.BUSINESSSMALLPHOTOPATH);
+			ArrayList<String> list_image = new ArrayList<String>();
+			if (null != filenames && filenames.length > 0){
+				
+				list_image = new ArrayList<>(Arrays.asList(filenames));
+				
+				//将当前图片放到最前
+				if (!(null == nowUseImage[i]||nowUseImage[i].equals(""))){	
+					
+					
+					if (list_image.size() > arraySize) {
+						arraySize = list_image.size();
+					}
+					for(String fileName:list_image) {
+						if(fileName.equals(nowUseImage[i])) {
+							list_image.remove(nowUseImage);
+							break;
+						}
+					}
+					
+					list_image.add(0, nowUseImage[i]);
+					
+					fileList.add(list_image);
+					/*
+					filenames = new String[list_image.size()];
+					int index = 0;
+					for(Object fileName:list_image) {
+						filenames[index++] = String.valueOf(fileName);
+					}
+					*/
+				} else {
+					fileList.add(list_image);
+				}
+			} else {
+				fileList.add(list_image);
+			}
+
+			model.setImageKey(model.getProjectTaskData().getId());
+			model.setPath(BusinessConstants.BUSINESSPHOTOPATH);
+		}
+		
+		String fileNames[][] = new String[Integer.parseInt(albumCount)][arraySize];
+
+		for(int i = 0; i < fileList.size(); i++) {
+			ArrayList tempArray= (ArrayList)fileList.get(i);
+			fileNames[i]=(String[])tempArray.toArray(new String[0]); 
+		}
+		
+		model.setFilenames(fileNames);
+		model.setNowUseImageList(nowUseImage);
 		
 		return model;
 	}
 	
-	public void setNowUseImage(String key, String src) throws Exception {
+	public void setNowUseImage(String key, int albumCount, int index, String src) throws Exception {
 		B_ProjectTaskDao dao = new B_ProjectTaskDao();
 		B_ProjectTaskData dbData = new B_ProjectTaskData();
 		
@@ -387,12 +470,35 @@ public class ProjectTaskService extends BaseService implements I_BaseService {
 		UserInfo userInfo = (UserInfo)request.getSession().getAttribute(BusinessConstants.SESSION_USERINFO);
 		
 		dbData = updateModifyInfo(dbData, userInfo);
-		dbData.setImage_filename(src);
-		dao.Store(dbData);
+		
+		String imageFileName = dbData.getImage_filename();
+		if (imageFileName != null && !imageFileName.equals("")) {
+			String tempImageFileName[] = imageFileName.split(";");
+			tempImageFileName[index - 1] = src;
+			imageFileName = "";
+			for(int i = 0; i < tempImageFileName.length; i++) {
+				if (i == 0) {
+					imageFileName += tempImageFileName[i];
+				} else {
+					imageFileName += ";" + tempImageFileName[i];
+				}
+			}
+		} else {
+			imageFileName = "";
+			for(int i = 0; i < albumCount; i++) {
+				if (i != (index - 1)) {
+					imageFileName += ";";
+				} else {
+					imageFileName += src;
+				}
+			}
+		}
+		
+		dbData.setImage_filename(imageFileName);
 		
 	}
 	
-	public String getNowUseImage(String key) {
+	public String getNowUseImage(String key, int index) {
 		B_ProjectTaskDao dao = new B_ProjectTaskDao();
 		B_ProjectTaskData dbData = new B_ProjectTaskData();
 		
@@ -402,6 +508,7 @@ public class ProjectTaskService extends BaseService implements I_BaseService {
 			dbData.setId(key);
 			dbData = (B_ProjectTaskData)dao.FindByPrimaryKey(dbData);
 			nowUseImage = dbData.getImage_filename();
+			nowUseImage = nowUseImage.split(";")[index - 1]; 
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

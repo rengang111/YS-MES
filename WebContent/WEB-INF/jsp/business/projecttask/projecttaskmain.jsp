@@ -77,7 +77,7 @@
 									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
 			                    }},
 					    		{"targets":8,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">编辑</a>"
+					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">查看</a>"
 			                    }}
 			           
 			         ] 
@@ -126,14 +126,14 @@
 	
 	function doCreate() {
 		
-		var url = "${ctx}/business/projecttask?methodtype=addinit";
+		var url = "${ctx}/business/projecttask?methodtype=addinit&albumCount=3";
 		openLayer(url, '', $(document).height(), false);
 	}
 	
 	function doUpdate(key) {
 		var str = '';
 		var isFirstRow = true;
-		var url = "${ctx}/business/projecttask?methodtype=updateinit&key=" + key;
+		var url = "${ctx}/business/projecttask?methodtype=updateinit&albumCount=3&key=" + key;
 
 		openLayer(url, '', $(document).height(), false);
 	}

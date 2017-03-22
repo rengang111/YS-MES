@@ -402,7 +402,6 @@ public class RequirementService extends BaseService {
 						data.setPrice(purchase.getPrice());
 						data.setSupplierid(purchase.getSupplierid());
 						data.setTotalprice(purchase.getTotalprice());
-						//data.setSubbomid(purchase.getSubbomid());
 						
 						flg = false;
 						break;
@@ -678,7 +677,7 @@ public class RequirementService extends BaseService {
 					continue;
 				
 				String rawmater = map.get("rawMaterialId")+"";//二级物料名称(原材料)
-				
+
 				String zzq = map.get("weight");//原材料的使用量
 				String zzconvert = map.get("convertUnit");//原材料的使用单位与采购单位的比例
 
@@ -687,6 +686,7 @@ public class RequirementService extends BaseService {
 				
 				float value = ibomq * izzq * (orderNum - istock) / iconvert;//原材料的需求量="建议采购量"
 
+					
 				map.put("advice", BusinessService.format2Decimal(value));
 				map.put("gradedFlg", "1");//标识为二级物料
 				map.put("price",lastPrice );
@@ -784,6 +784,7 @@ public class RequirementService extends BaseService {
 			
 			
 	}
+	
 	
 	public HashMap<String, Object> getOrderBomDetail(
 			String bomId) throws Exception {

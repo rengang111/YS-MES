@@ -176,13 +176,13 @@ function doDelete() {
 						<tr>
 							<td width="60px">材质要求</td>
 							<td width="80px">
-								<textarea id="material" name="material" class="long">${DisplayData.workingFilesData.material}</textarea>
+								<textarea id="material" name="material" cols=50 rows=2>${DisplayData.workingFilesData.material}</textarea>
 							</td>
 						</tr>
 						<tr>
 							<td width="60px">加工要求：</td>
 							<td width="80px">
-								<textarea id="working" name="working" class="long">${DisplayData.workingFilesData.working}</textarea>
+								<textarea id="working" name="working" cols=50 rows=2>${DisplayData.workingFilesData.working}</textarea>
 							</td>
 						</tr>
 	

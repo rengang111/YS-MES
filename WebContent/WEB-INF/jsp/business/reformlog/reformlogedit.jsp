@@ -223,6 +223,18 @@ function addRules(index) {
 	$('#detailLines\\[' + index + '\\]\\.newfileno').rules('add', { required: true, maxlength:50 });
 	$('#detailLines\\[' + index + '\\]\\.content').rules('add', {  required: true, maxlength:20 });
 	$('#detailLines\\[' + index + '\\]\\.reason').rules('add', { maxlength: 20 });
+	
+	$("#detailLines\\[' + index + '\\]\\.createdate").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+		defaultDate : new Date(),
+	}); 
+	if ($("#detailLines\\[' + index + '\\]\\.createdate").val() == "") {
+		$("#detailLines\\[' + index + '\\]\\.createdate").datepicker( 'setDate' , new Date() );
+	}
 }
 
 function reloadTable() {
@@ -307,34 +319,32 @@ function doReturn() {
 			<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 			<table class="form" width="850px">
 				<tr>
-					<td width="60px">项目编号：</td>
+					<td width="80px">项目编号：</td>
 					<td width="240px">
 						${DisplayData.projectTaskData.projectid}
 					</td>
-					<td width="100px">项目名称：</td> 
-					<td>
+					<td width="80px">项目名称：</td> 
+					<td width="240px">
 						${DisplayData.projectTaskData.projectname}
 					</td>
-					<td width="60px">暂定型号：</td> 
-					<td>
+					<td width="80px">暂定型号：</td> 
+					<td width="240px">
 						${DisplayData.projectTaskData.tempversion}
+					</td>
+					<td width="80px">
+						项目经理：
+					</td>
+					<td width="240px">
+						${DisplayData.projectTaskData.manager}
 					</td>
 				</tr>
 				<tr>
-					<td>
-						项目经理：
-					</td>
-					<td>
-						${DisplayData.projectTaskData.manager}
-					</td>
 					<td>
 						参考原型：
 					</td>
-					<td colspan=4>
+					<td>
 						${DisplayData.projectTaskData.referprototype}
 					</td>
-				</tr>
-				<tr>
 					<td>	
 						起始时间：
 					</td>
@@ -342,7 +352,7 @@ function doReturn() {
 						${DisplayData.projectTaskData.begintime}
 					</td>
 					<td>	
-						预计完成时间：
+						预计完成<p>时间：
 					</td>
 					<td> 
 						<label id="projectEndTime">${DisplayData.projectTaskData.endtime}</label>

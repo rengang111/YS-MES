@@ -58,7 +58,7 @@ import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class MakeDocumentService extends BaseService implements I_BaseService, I_MultiAlbumService {
+public class MakeDocumentService extends BaseService implements I_BaseService {
 	/*
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
@@ -800,6 +800,7 @@ public class MakeDocumentService extends BaseService implements I_BaseService, I
 		
 		return data;
 	}
+	
 	public static String getFolderName(HttpServletRequest request, String projectId, String folderName) throws Exception {
 		String folderId = "";
 		BaseModel dataModel = new BaseModel();
