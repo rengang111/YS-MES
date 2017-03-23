@@ -59,7 +59,7 @@
 		</tr>
 		<tr>				
 			<td class="label"><label>通用型号：</label></td>
-			<td colspan="5" style="word-break:break-all;><form:hidden path="material.sharemodel" value=""/>	
+			<td colspan="5" style="word-break:break-all;"><form:hidden path="material.sharemodel" value=""/>	
 				<div class="" id="coupon">
 					<table id="ShareTab"><tr><td></td></tr></table></div></td>							
 		</tr>	

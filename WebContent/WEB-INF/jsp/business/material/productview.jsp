@@ -99,8 +99,9 @@
 		</div>
 		
 	<dl class="collapse" style="width: 98%;margin-left:10px">
-		<dt><span id="bomId">基础BOM</span> <button type="button" class="DTTT_button" onclick="doCreateBaseBom();">编辑</button>
-			</dt>
+		<dt style="width: 80%;"><span id="bomId">基础BOM</span></dt>
+		<button type="button" class="DTTT_button" onclick="openPrint();" style="float: right;margin-top: -27px;">打印</button>
+		<button type="button" class="DTTT_button" onclick="doCreateBaseBom();" style="float: right;margin-top: -27px;">编辑</button>
 		<dd>
 		<table id="baseBomTable" class="display" style="width: 98%;">
 			<thead>				
@@ -705,28 +706,33 @@ function doDelete(recordId){
 </script>
 	
 <script type="text/javascript">
-$(function(){
-	var t = [];
-	var dt = $("dl.collapse dt");
-	var dd = $("dl.collapse dd");
+
+function openPrint() {
 	
-	dt.each(function(i){
-		t[i] = false;		//设置折叠初始状态
-		$(dt[i]).click((function(i,dd){
-			
-			return function(){		//返回一个闭包函数,闭包能够存储传递进来的动态参数
-				
-				if(t[i]){					
-					$(dd).show();
-					t[i] = false;
-				}else{
-					$(dd).hide();
-					t[i] = true;
-				}					
-			}
-		})(i,dd[i]))	//向当前执行函数中传递参数
-	})
-})
+	var url = '${ctx}/business/requirement?methodtype=printRequirement';
+	var YSId = '${order.YSId}';
+	var bomId =  $('#bomId').text();
+	url = url + '&YSId=' + YSId+ '&bomId=' + bomId;
+
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1000px','500px' ], 
+		scrollbar : true,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		 // documentaryShow();
+		  return false; 
+		}    
+	});		
+}
+
 </script>
 </body>
 </html>

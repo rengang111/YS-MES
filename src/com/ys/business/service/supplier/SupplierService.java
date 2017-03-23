@@ -122,7 +122,7 @@ public class SupplierService extends BaseService {
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
 		
 		modelMap.put("data", dataModel.getYsViewData());
-		
+				
 		return modelMap;		
 
 	}
@@ -132,6 +132,8 @@ public class SupplierService extends BaseService {
 
 		try {			
 			reqModel.setCountryList(getProvinceList());
+			reqModel.setTypeList(util.getListOption(DicUtil.SUPPLIER_TYPE, ""));	
+
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

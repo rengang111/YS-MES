@@ -203,6 +203,19 @@ public class B_SupplierData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String type;
+	public String getType()
+	{
+		return this.type;
+	}
+	public void setType(String type)
+	{
+		this.type=type;
+	}
+
+	/**
+	*
+	*/
 	private String deptguid;
 	public String getDeptguid()
 	{
@@ -305,7 +318,7 @@ public class B_SupplierData implements java.io.Serializable
 	}
 
 	/**
-	*·µ»ØÖµ
+	*ï¿½ï¿½ï¿½ï¿½Öµ
 	*/
 	private String returnvalue;
 	public String getReturnvalue()
@@ -318,7 +331,7 @@ public class B_SupplierData implements java.io.Serializable
 	}
 
 	/**
-	*·µ»ØÖµ
+	*ï¿½ï¿½ï¿½ï¿½Öµ
 	*/
 	private String returnsql;
 	public String getReturnsql()
@@ -332,13 +345,13 @@ public class B_SupplierData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("shortname = "+(shortname == null ? "null" : shortname)+"\n");		sb.append("suppliername = "+(suppliername == null ? "null" : suppliername)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("categoryid = "+(categoryid == null ? "null" : categoryid)+"\n");		sb.append("categorydes = "+(categorydes == null ? "null" : categorydes)+"\n");		sb.append("paymentterm = "+(paymentterm == null ? "null" : paymentterm)+"\n");		sb.append("country = "+(country == null ? "null" : country)+"\n");		sb.append("province = "+(province == null ? "null" : province)+"\n");		sb.append("city = "+(city == null ? "null" : city)+"\n");		sb.append("address = "+(address == null ? "null" : address)+"\n");		sb.append("zipcode = "+(zipcode == null ? "null" : zipcode)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("shortname = "+(shortname == null ? "null" : shortname)+"\n");		sb.append("suppliername = "+(suppliername == null ? "null" : suppliername)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("categoryid = "+(categoryid == null ? "null" : categoryid)+"\n");		sb.append("categorydes = "+(categorydes == null ? "null" : categorydes)+"\n");		sb.append("paymentterm = "+(paymentterm == null ? "null" : paymentterm)+"\n");		sb.append("country = "+(country == null ? "null" : country)+"\n");		sb.append("province = "+(province == null ? "null" : province)+"\n");		sb.append("city = "+(city == null ? "null" : city)+"\n");		sb.append("address = "+(address == null ? "null" : address)+"\n");		sb.append("zipcode = "+(zipcode == null ? "null" : zipcode)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		shortname= (shortname == null ?null : shortname.trim());		suppliername= (suppliername == null ?null : suppliername.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		categoryid= (categoryid == null ?null : categoryid.trim());		categorydes= (categorydes == null ?null : categorydes.trim());		paymentterm= (paymentterm == null ?null : paymentterm.trim());		country= (country == null ?null : country.trim());		province= (province == null ?null : province.trim());		city= (city == null ?null : city.trim());		address= (address == null ?null : address.trim());		zipcode= (zipcode == null ?null : zipcode.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		shortname= (shortname == null ?null : shortname.trim());		suppliername= (suppliername == null ?null : suppliername.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		categoryid= (categoryid == null ?null : categoryid.trim());		categorydes= (categorydes == null ?null : categorydes.trim());		paymentterm= (paymentterm == null ?null : paymentterm.trim());		country= (country == null ?null : country.trim());		province= (province == null ?null : province.trim());		city= (city == null ?null : city.trim());		address= (address == null ?null : address.trim());		zipcode= (zipcode == null ?null : zipcode.trim());		type= (type == null ?null : type.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
