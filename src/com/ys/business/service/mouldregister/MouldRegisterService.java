@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ckfinder.connector.utils.FileUtils;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.externalsample.ExternalSampleModel;
 import com.ys.business.action.model.mouldregister.MouldRegisterModel;
@@ -254,18 +255,20 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 			
 		model = bean.executeMouldRegisterUpdate(request, data, userInfo);
-
+		
 		return model;
 	}
 	
 	public MouldRegisterModel doDelete(HttpServletRequest request, String data, UserInfo userInfo){
 		
 		MouldRegisterModel model = new MouldRegisterModel();
-		
+		boolean isDBOperationSuccessed = false;
 		try {
 			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 	        
 	        bean.executeMouldRegisterDelete(data, userInfo);
+	        
+	        isDBOperationSuccessed = true;
 	        
 	        model.setEndInfoMap(NORMAL, "", "");
 	        
@@ -273,6 +276,17 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		if (isDBOperationSuccessed) {
+			String removeData[] = data.split(",");			
+			for (String key:removeData) {	
+				String dir = request.getSession().getServletContext().getRealPath("/")
+						+ BusinessConstants.BUSINESSPHOTOPATH + key; 			
+				//String dirSmall = dir + BusinessConstants.BUSINESSSMALLPHOTOPATH; 			
+				
+				FileUtils.delete(new File(dir));
+			}
 		}
 		
 		return model;

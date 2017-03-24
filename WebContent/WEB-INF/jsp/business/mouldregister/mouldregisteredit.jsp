@@ -377,17 +377,15 @@
 					} else {
 						controlButtons("");
 						clearAll();
-						reloadMouldDetailList();
-						reloadPayList();
-						reloadTabWindow();
+						parent.reload();
 					}
-					/*	
+						
 					//不管成功还是失败都刷新父窗口，关闭子窗口
 					var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
 					//parent.$('#events').DataTable().destroy();/
-					parent.reload_contactor();
+					//parent.reload_contactor();
 					parent.layer.close(index); //执行关闭
-					*/
+					
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
 					//alert(XMLHttpRequest.status);					

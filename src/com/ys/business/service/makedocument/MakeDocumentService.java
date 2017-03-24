@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.ckfinder.connector.utils.FileUtils;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.externalsample.ExternalSampleModel;
 import com.ys.business.action.model.makedocument.MakeDocumentModel;
@@ -643,14 +644,15 @@ public class MakeDocumentService extends BaseService implements I_BaseService {
 			
 		if (isDBOperationSuccessed) {
 
-			String projectId = getJsonData(data, "keyBackup");
-			String folderName = getJsonData(data, "tabTitle");
-			
-			removeFiles(request, model, projectId, folderName);
-			
-			model.setFilenames(new ArrayList<String>());
-			model.setEndInfoMap(NORMAL, "", folderName);
-		
+			UploadReceiver uploadReceiver = new UploadReceiver();
+			String removeData[] = data.split(",");									
+			for (String key:removeData) {	
+				String dir = request.getSession().getServletContext().getRealPath("/")
+						+ BusinessConstants.BUSINESSPHOTOPATH + key; 			
+				//String dirSmall = dir + BusinessConstants.BUSINESSSMALLPHOTOPATH; 			
+				
+				FileUtils.delete(new File(dir));
+			}
 		}
 
 		return model;
