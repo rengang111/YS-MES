@@ -92,7 +92,7 @@ public class MatCategoryService extends BaseService {
 
 		//物料编码存在check
 		String categoryId = data.getCategoryid();
-		String astr_Where = " categoryid = '" + categoryId + "' ";
+		String astr_Where = " categoryid = '" + categoryId + "' AND deleteFlag='0' ";
 		list = (List<B_MaterialCategoryData>)dao.Find(astr_Where);
 		
 		if(list.size() > 0){

@@ -74,6 +74,7 @@
       <f name="a.materialRecordId" alias="" ctype="" />
       <f name="a.materialParentId" alias="" ctype="" />
       <f name="a.bomId" alias="" ctype="" />
+      <f name="IFNULL(a.subBomId,'')" alias="subBomId" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.rawMaterialId" alias="" ctype="" />

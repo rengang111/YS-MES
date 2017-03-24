@@ -795,7 +795,7 @@ public class BomService extends BaseService {
 			deleteBomDetail(where);
 			
 			List<B_BomDetailData> reqDataList = reqModel.getBomDetailLines();
-			
+			String subBomId1 = "";
 			for(B_BomDetailData data:reqDataList ){
 				
 				//过滤空行或者被删除的数据
@@ -803,6 +803,13 @@ public class BomService extends BaseService {
 					
 					data.setBomid(bomid);
 					data.setProductmodel(reqDtlDt.getProductmodel());
+					String subBomId2 = data.getSubbomid();
+					if(subBomId2 == null || subBomId2.equals("")){
+						subBomId2 =subBomId1;//基础BOM从历史BOM查新建后,又新增行时,没有subbomid;
+					}else{
+						subBomId1 = data.getSubbomid();
+					}
+					data.setSubbomid(subBomId2);
 					insertBomDetail(data,true);	
 
 					updateBom(data);//BOM结构

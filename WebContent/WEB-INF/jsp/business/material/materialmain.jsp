@@ -77,7 +77,7 @@
 				    		{"targets":8,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';
-				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">查看</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">查看</a>";
 				    			return rtn;
 				    		}},
 				    		{"targets":2,"render":function(data, type, row){

@@ -14,6 +14,8 @@
 <script type="text/javascript" src="${ctx}/js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.form.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/jquery.dataTables.js" ></script>
+<script type="text/javascript" src="${ctx}/js/jquery.jqprint.js"></script>
+<script type="text/javascript" src="${ctx}/js/dataTables.fixedColumns.min.js"></script>
 <script type="text/javascript" src="${ctx}/js/dataTables.tableTools.js"  charset="utf8"></script>
 <script type="text/javascript" src="${ctx}/js/dataTables.select.js"></script>
 <script type="text/javascript" src="${ctx}/plugins/toastMessage/javascript/jquery.toastmessage.js"></script>
@@ -23,11 +25,13 @@
 <script type="text/javascript" src="${ctx}/js/business.js"></script>
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
+<script type="text/javascript" src="${ctx}/js/browser.js"></script>
 
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
+<link rel="stylesheet" type="text/css" href="${ctx}/css/fixedColumns.dataTables.min.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/plugins/toastMessage/resources/css/jquery.toastmessage.css" />
 
