@@ -160,6 +160,9 @@ $(document).ready(function() {
 			name_short: {
 				maxlength: 20,
 			},
+			no: {
+				maxlength: 20,
+			},
 			name_full: {
 				maxlength: 50,
 			},
@@ -331,9 +334,15 @@ function controlButtons(data) {
 					<tr>
 						<td width="80px">
 							<label>机构类别：</label></td>
-						<td colspan="3">	
+						<td colspan="2">	
 							<form:select path="type">							
 								<form:options items="${DisplayData.typeList}" itemValue="key" itemLabel="value" /></form:select></td></tr>
+						<td width="80px">
+							机构编码
+						</td>
+						<td>
+						<form:input path="no" class="short" value="${DisplayData.organData.no}"/>
+						</td>
 					<tr>
 						<td>
 							<label>机构简称：</label></td>

@@ -16,6 +16,7 @@ public class OrganModel extends BaseModel {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<ListOption> typeList = new ArrayList<ListOption>();
 	private B_OrganizationData organData = new B_OrganizationData();
+	private String no;
 	private String shortName;
 	private String fullName;
 	private String address;
@@ -43,6 +44,13 @@ public class OrganModel extends BaseModel {
 		this.organData = organData;
 	}
 	
+	public String getNo() {
+		return this.no;
+	}
+	
+	public void setNo(String no) {
+		this.no = no;
+	}
 	
 	public String getShortName() {
 		return this.shortName;

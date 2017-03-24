@@ -53,17 +53,18 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "DicName", "defaultContent" : ''},
-							{"data": "shortName", "defaultContent" : ''},
-							{"data": "fullName", "defaultContent" : ''},
-							{"data": "address", "defaultContent" : ''}
+							{"data": "DicName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "no", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "shortName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "fullName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "address", "defaultContent" : '',"className" : 'td-center'}
 							,{"data": null, "defaultContent" : '',"className" : 'td-center'}
 						],
 				"columnDefs":[
 					    		{"targets":0,"render":function(data, type, row){
 									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 			                    }},
-					    		{"targets":5,"render":function(data, type, row){
+					    		{"targets":6,"render":function(data, type, row){
 					    			return "<a href=\"#\" onClick=\"doEdit('" + row["recordId"] + "')\">编辑</a>"
 			                    }}
 			           
@@ -200,6 +201,7 @@
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
 								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="机构类型" class="dt-middle sorting_disabled">机构类型</th>
+								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="机构编码" class="dt-middle sorting_disabled">机构编码</th>
 								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="机构简称" class="dt-middle sorting_disabled">机构简称</th>
 								<th colspan="1" rowspan="1" style="width: 200px;" aria-label="机构全称" class="dt-middle sorting_disabled">机构全称</th>
 								<th colspan="1" rowspan="1" style="width: 350px;" aria-label="详细地址" class="dt-middle sorting_disabled">详细地址</th>
