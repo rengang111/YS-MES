@@ -13,9 +13,7 @@
       <f name="A.type" alias="" ctype="" />
       <f name="A.productModelId" alias="" ctype="" />
       <f name="A.productModelName" alias="" ctype="" />
-      <f name="A.mouldFactoryId" alias="" ctype="" />
       <f name="A.productModelIdView" alias="" ctype="" />
-      <f name="A.shortName" alias="mouldFactory" ctype="" />
       <f name="A.name" alias="" ctype="" />
       <f name="A.materialQuality" alias="" ctype="" />
       <f name="A.size" alias="" ctype="" />

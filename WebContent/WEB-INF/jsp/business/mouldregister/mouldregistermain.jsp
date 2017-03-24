@@ -64,10 +64,10 @@
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "mouldId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "mouldName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "name", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "productModelName", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "size", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "material", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "materialQuality", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "weight", "defaultContent" : '',"className" : 'td-center'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],

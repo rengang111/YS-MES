@@ -228,7 +228,7 @@
 		
 	})
 	
-	function doSave() {
+	function doSave(isContinue) {
 
 		if (validatorBaseInfo.form()) {
 			
@@ -257,17 +257,35 @@
 						if (d.rtnCd != "000") {
 							alert(d.message);	
 						} else {
-							$('#tabs').show();
-							var x = new Array();
-							x = d.info.split("|");
-							controlButtons(x[0]);
-							$('#mouldId').html(x[1]);
+							parent.reload();
+							if (isContinue == 0) {
+								//不管成功还是失败都刷新父窗口，关闭子窗口
+								//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+								//parent.$('#events').DataTable().destroy();
+								//parent.layer.close(index); //执行关闭
+								$('#tabs').show();
+								var x = new Array();
+								x = d.info.split("|");
+								controlButtons(x[0]);
+								$('#mouldId').html(x[1]);
+							} else {
+								$('#keyBackup').val("");
+								getMouldId();
+								rowCount = $("#subidTab tr").length;
+								for(var i = 1; i < rowCount; i++) {
+									$("#subidTab").find("tr").eq(i).remove();
+								}
+								$('#subCodeCount').val(0);
+								
+								rowCount = $("#factoryTable tr").length;
+								for(var i = 1; i < rowCount; i++) {
+									$("#factoryTable").find("tr").eq(i).remove();
+								}
+								addFactoryTr();
+								
+							}							
+							
 						}
-						
-						//不管成功还是失败都刷新父窗口，关闭子窗口
-						//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
-						//parent.$('#events').DataTable().destroy();
-						//parent.layer.close(index); //执行关闭
 						
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -463,14 +481,12 @@
 <div id="container">
 
 		<div id="main">
-			<div id="tabsContainer1" style="width:330px;height:300px;display:none;">
-				<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
-					<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
-						<jsp:include page="../../common/album/album.jsp"></jsp:include>
-					</div>
+			<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+				<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
+					<jsp:include page="../../common/album/album.jsp"></jsp:include>
 				</div>
-			</div>	
-			<div  style="height:20px"></div>
+			</div>
+			
 			<form:form modelAttribute="dataModels" id="mouldBaseInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id='productModelId' name='productModelId'/>
@@ -480,7 +496,9 @@
 				<div style="height:10px"></div>
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
-				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
+				<button type="button" id="edit" class="DTTT_button" onClick="doSave(1);"
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存(连续登记)</button>
+				<button type="button" id="edit" class="DTTT_button" onClick="doSave(0);"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 				<div style="height:10px"></div>

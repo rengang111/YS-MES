@@ -1627,10 +1627,10 @@ public class BusinessDbUpdateEjb  {
 						if (!subCode.equals("") && !name.equals("")) {
 							mouldSubData.setId(BaseDAO.getGuId());
 							mouldSubData.setMouldid(key);
-							mouldSubData.setSubcode(subCodeName);
+							mouldSubData.setSubcode(subCode);
 							mouldSubData.setName(subCodeName);
 							mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
-							mouldSubDao.Store(mouldSubData);
+							mouldSubDao.Create(mouldSubData);
 						}
 					}
 				}
@@ -1656,7 +1656,7 @@ public class BusinessDbUpdateEjb  {
 							mouldFactoryData.setMouldfactoryid(mouldFactoryId);
 							mouldFactoryData.setPrice(price);
 							mouldFactoryData = service.updateMouldFactoryModifyInfo(mouldFactoryData, userInfo);
-							mouldFactoryDao.Store(mouldFactoryData);
+							mouldFactoryDao.Create(mouldFactoryData);
 						}
 					}
 				}
