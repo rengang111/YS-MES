@@ -1513,23 +1513,38 @@ public class BusinessDbUpdateEjb  {
     }
     
     public void executeMouldRegisterDelete(String keyData, UserInfo userInfo) throws Exception {												
-    	B_MouldReturnRegisterData dbData = new B_MouldReturnRegisterData();											
-    	B_MouldReturnRegisterDao dao = new B_MouldReturnRegisterDao();
+    	B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();											
+    	B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
 
-		int count = 0;										
+		int count = 0;
 												
-		ts = new BaseTransaction();										
-												
+		ts = new BaseTransaction();
+
 		try {										
 			ts.begin();
 
 			String removeData[] = keyData.split(",");									
 			for (String key:removeData) {									
 				dbData.setId(key);
-				dbData = (B_MouldReturnRegisterData)dao.FindByPrimaryKey(dbData);
-				dbData = MouldReturnRegisterService.updateMouldReturnRegisterModifyInfo(dbData, userInfo);
+				dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+				dbData = MouldRegisterService.updateMouldBaseInfoModifyInfo(dbData, userInfo);
 				dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
 				dao.Store(dbData);
+
+				StringBuffer sql = new StringBuffer("");
+				sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
+				
+				sql = new StringBuffer("");
+				sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
+
 				count++;												
 			}
 			ts.commit();									

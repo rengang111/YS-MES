@@ -70,25 +70,6 @@
 	<power>
 	</power>    
   </query>
-
-   <query>
-    <pool></pool>     
-    <name value="mouldregisterquerydefine_checkContractId" />
-    <where>
-      <w name="mouldId" des=""  reqName="mouldId" dtype="ch" oper="="  lg="" bt="" />
-    </where>
-    <select>
-      <f name="A.id" alias="" ctype="" />
-    </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_MouldBaseInfo as A WHERE A.DeleteFlag = '0' </from>
-    <orderby></orderby>
-    <groupby></groupby>
-    <having></having>
-	<power>
-	</power>    
-  </query>
    <query>
     <pool></pool>     
     <name value="mouldregisterquerydefine_getmouldserialno" />
@@ -119,6 +100,64 @@
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>(select (CONVERT(substring(mouldId, char_length(mouldId) - 1, 2), SIGNED) + 1) as serialNo FROM b_MouldBaseInfo WHERE deleteflag='0') as B WHERE NOT EXISTS (select serialNo from (select CONVERT(substring(mouldId, char_length(mouldId) - 1, 2), SIGNED) as serialNo FROM b_MouldBaseInfo WHERE deleteflag='0') as A WHERE A.serialNo = B.serialNo) </from>
     <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+   <query>
+    <pool></pool>     
+    <name value="mouldregisterquerydefine_getsubids" />
+    <where>
+    	<w name="mouldId" des=""  reqName="mouldId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="subCode" alias="" ctype="" />
+      <f name="name" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldSub WHERE deleteflag='0'</from>
+    <orderby>subCode</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+   <query>
+    <pool></pool>     
+    <name value="mouldregisterquerydefine_getfactorys" />
+    <where>
+    	<w name="mouldId" des=""  reqName="mouldId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.mouldFactoryId" alias="" ctype="" />
+      <f name="B.no" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="B.fullname" alias="factoryName" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldFactory as A, b_organization as B WHERE A.deleteflag='0' AND b.recordid = A.mouldFactoryId</from>
+    <orderby>A.mouldFactoryId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+   <query>
+    <pool></pool>     
+    <name value="mouldregisterquerydefine_rotate" />
+    <where>
+    	<w name="substring(mouldId, 1, char_length(mouldId) - 2)" des=""  reqName="mouldId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="id" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldBaseInfo WHERE deleteflag='0'</from>
+    <orderby>mouldId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>

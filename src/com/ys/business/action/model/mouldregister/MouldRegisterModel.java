@@ -72,7 +72,7 @@ public class MouldRegisterModel extends BaseModel {
 	public ArrayList<HashMap<String, String>> getMouldSubDatas() {
 		return this.mouldSubDatas;
 	}
-	public void setMouldSubDatas(ArrayList<HashMap<String, String>> mouldSubData) {
+	public void setMouldSubDatas(ArrayList<HashMap<String, String>> mouldSubDatas) {
 		this.mouldSubDatas = mouldSubDatas;
 	}	
 	

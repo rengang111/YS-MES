@@ -18,6 +18,48 @@
 		 return (Array(length).join('0') + num).slice(-length);
 	} 
 	
+	function doRotate(direct) {
+		
+		$('#rotateDirect').val(direct);
+		var actionUrl = "${ctx}/business/mouldregister?methodtype=rotate";
+		
+		$.ajax({
+			type : "POST",
+			contentType : 'application/json',
+			dataType : 'json',
+			url : actionUrl,
+			data : JSON.stringify($('#mouldBaseInfo').serializeArray()),// 要提交的表单
+			success : function(d) {
+				if (d.rtnCd != "000") {
+					alert(d.message);	
+				} else {
+					if (d.info == $('#keyBackup').val()) {
+						if (direct == 0) {
+							alert("当前已经是第一条数据了");
+						} else {
+							alert("当前已经是最后一条数据了");
+						}
+					} else {
+						var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + d.info;
+						$(window.location).attr('href', url);
+					}
+				}
+				
+				//不管成功还是失败都刷新父窗口，关闭子窗口
+				//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+				//parent.$('#events').DataTable().destroy();
+				//parent.layer.close(index); //执行关闭
+				
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				//alert(XMLHttpRequest.status);					
+				//alert(XMLHttpRequest.readyState);					
+				//alert(textStatus);					
+				//alert(errorThrown);
+			}
+		});
+	}
+	
 	function getMouldId() {
 		var actionUrl = "${ctx}/business/mouldregister?methodtype=getMouldId";
 		
@@ -169,8 +211,6 @@
 					if (element.id != ("mouldSubs[" + i + "].subcode")) {
 						if (value == $('#mouldSubs\\[' + i + '\\]\\.subcode').val()) {
 							rtnValue = false;
-							//console.debug(element.id + "--" + "mouldSubs[" + i + "].subcode");
-							//console.debug(value + "--" + $('#mouldSubs\\[' + i + '\\]\\.subcode').val());
 							break;
 						}
 					}	
@@ -202,11 +242,31 @@
 		$("#productModelId").val('${DisplayData.mouldBaseInfoData.productmodelid}');
 		$("#productModelIdView").val('${DisplayData.productModelIdView}');
 		$("#productModelName").val('${DisplayData.productModelName}');
+		$('#type').val('${DisplayData.mouldBaseInfoData.type}');
 		
 		if ($('#keyBackup').val() == '') {
 			addFactoryTr();
 		} else {
+			<c:forEach items="${DisplayData.mouldSubDatas}" var="item">
+				addSubCodeTr();
+				var index = $('#subCodeCount').val();
+				index--;
+				$('#mouldSubs\\[' + index + '\\]\\.subcode').val('${item.subCode}');
+				$('#mouldSubs\\[' + index + '\\]\\.name').val('${item.name}');
+			</c:forEach>
+			<c:forEach items="${DisplayData.mouldFactoryDatas}" var="item">
+				addFactoryTr();
+				var index = $('#factoryCount').val();
+				index--;
+				$('#detailLines\\[' + index + '\\]\\.mouldfactoryid').val('${item.mouldFactoryId}');
+				$('#detailLines1\\[' + index + '\\]\\.code').val('${item.no}');
+				$('#detailLines1\\[' + index + '\\]\\.name').val('${item.factoryName}');
+				$('#detailLines\\[' + index + '\\]\\.price').val('${item.price}');
+			</c:forEach>
 			
+			//$('#tabs').show();
+			$('#tabs').css('display','inline-block');
+			$('#rotateArea').css('display','inline-block');
 		}
 	}
 
@@ -263,7 +323,8 @@
 								//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
 								//parent.$('#events').DataTable().destroy();
 								//parent.layer.close(index); //执行关闭
-								$('#tabs').show();
+								$('#tabs').css('display','inline-block');
+								$('#rotateArea').css('display','inline-block');
 								var x = new Array();
 								x = d.info.split("|");
 								controlButtons(x[0]);
@@ -486,12 +547,21 @@
 					<jsp:include page="../../common/album/album.jsp"></jsp:include>
 				</div>
 			</div>
-			
+			<div id="rotateArea" style="display:none;width:200px;margin:-60px 0px 0px 30px">
+				<div style="height:40px">
+					<button type="button" id="delete" class="DTTT_button" onClick="doRotate(1);"
+						style="height:25px;margin:-20px 30px 0px 0px;float:right;">&gt;&gt;</button>
+					<button type="button" id="delete" class="DTTT_button" onClick="doRotate(0);"
+						style="height:25px;margin:-20px 30px 0px 0px;float:right;">&lt;&lt;</button>
+
+				</div>
+			</div>
 			<form:form modelAttribute="dataModels" id="mouldBaseInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id='productModelId' name='productModelId'/>
 				<input type=hidden id="subCodeCount" name="subCodeCount" value=""/>
 				<input type=hidden id="factoryCount" name="factoryCount" value=""/>
+				<input type=hidden id="rotateDirect" name="rotateDirect" value=""/>
 				<legend>模具-基本信息</legend>
 				<div style="height:10px"></div>
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"

@@ -1,13 +1,21 @@
 package com.ys.business.service.mouldregister;
 
+import java.io.File;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import com.ys.business.action.model.common.ListOption;
+import com.ys.business.action.model.externalsample.ExternalSampleModel;
 import com.ys.business.action.model.mouldregister.MouldRegisterModel;
+import com.ys.business.db.dao.B_ExternalSampleDao;
 import com.ys.business.db.dao.B_MouldBaseInfoDao;
+import com.ys.business.db.data.B_ExternalSampleData;
 import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_MouldFactoryData;
 import com.ys.business.db.data.B_MouldSubData;
@@ -17,13 +25,16 @@ import com.ys.system.common.BusinessConstants;
 import com.ys.system.db.dao.S_DICDao;
 import com.ys.system.db.data.S_DICData;
 import com.ys.system.service.common.BaseService;
+import com.ys.system.service.common.I_BaseService;
+import com.ys.system.service.common.I_MultiAlbumService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
+import com.ys.util.UploadReceiver;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 
 @Service
-public class MouldRegisterService extends BaseService {
+public class MouldRegisterService extends BaseService implements I_BaseService {
 
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
@@ -90,7 +101,7 @@ public class MouldRegisterService extends BaseService {
 		
 	}
 	
-	public MouldRegisterModel updateInit(HttpServletRequest request, String key) throws Exception {
+	public MouldRegisterModel doUpdateInit(HttpServletRequest request, String key) throws Exception {
 		MouldRegisterModel model = new MouldRegisterModel();
 		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
 		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
@@ -98,15 +109,38 @@ public class MouldRegisterService extends BaseService {
 		if (key != null && !key.equals("")) {
 			dbData.setId(key);
 			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+			model.setMouldBaseInfoData(dbData);
 			
-			model = getProductModelName(request, model, dbData.getProductmodelid());
+			S_DICDao dicDao = new S_DICDao();
+			S_DICData dicData = new S_DICData();
+			dicData.setDicid(dbData.getProductmodelid());
+			dicData.setDictypeid(DicUtil.PRODUCTMODEL);
+			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+			model.setProductModelIdView(dicData.getDicname());
+			model.setProductModelName(dicData.getDicdes());
 			
+			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+			BaseModel dataModel = new BaseModel();
+			BaseQuery baseQuery = null;
+			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+			dataModel.setQueryName("mouldregisterquerydefine_getsubids");
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("mouldId", key);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			model.setMouldSubDatas(baseQuery.getYsQueryData(0,0));
 			
+			userDefinedSearchCase = new HashMap<String, String>();
+			dataModel = new BaseModel();
+			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+			dataModel.setQueryName("mouldregisterquerydefine_getfactorys");
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("mouldId", key);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			model.setMouldFactoryDatas(baseQuery.getYsQueryData(0,0));
 			
 		}
 		model.setTypeList(doOptionChange(DicUtil.MOULDTYPE, ""));
 		model.setMouldFactoryList(doGetMouldFactoryList(request));
-		model.setMouldBaseInfoData(dbData);
 		
 		model.setKeyBackup(key);
 		
@@ -231,7 +265,7 @@ public class MouldRegisterService extends BaseService {
 		try {
 			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 	        
-	        bean.executeMouldContractDelete(data, userInfo);
+	        bean.executeMouldRegisterDelete(data, userInfo);
 	        
 	        model.setEndInfoMap(NORMAL, "", "");
 	        
@@ -311,6 +345,94 @@ public class MouldRegisterService extends BaseService {
 		return mouldId;
 	}
 	
+	public String doRotate(HttpServletRequest request, String data) throws Exception {
+		S_DICDao dicDao = new S_DICDao(); 
+		S_DICData dicData = new S_DICData();
+		
+		String mouldId = "";
+
+		String keyBackup = getJsonData(data, "keyBackup");
+		String type = getJsonData(data, "type");
+		String productModelIdView = getJsonData(data, "productModelIdView");
+		String rotateDirect = getJsonData(data, "rotateDirect");
+		
+		dicData.setDictypeid(DicUtil.MOULDTYPE);
+		dicData.setDicid(type);
+		dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+		String typeMark = dicData.getDicdes();
+		mouldId = productModelIdView + typeMark;
+		
+		BaseModel dataModel = new BaseModel();
+		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+		dataModel.setQueryName("mouldregisterquerydefine_rotate");
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		userDefinedSearchCase.put("mouldId", mouldId);
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		ArrayList<HashMap<String, String>> mouldIdMap = baseQuery.getYsQueryData(0,0);
+		if (mouldIdMap.size() > 0) {
+			int index = -1;
+			for(HashMap<String, String> rowData:mouldIdMap) {
+				String id = rowData.get("id");
+				index++;
+				if (id.equals(keyBackup)) {
+					if (index == 0) {
+						if (rotateDirect.equals("0")) {
+							mouldId = id;
+							break;
+						} else {
+							//next one
+							if ((index + 1) >= mouldIdMap.size()) {
+								mouldId = id;
+								break;
+							} else {
+								mouldId = mouldIdMap.get(index + 1).get("id");
+								break;
+							}
+								
+						}
+					} else {
+						if (index == mouldIdMap.size() - 1) {
+							if (rotateDirect.equals("1")) {
+								mouldId = id;
+							} else {
+								if ((index - 1) < 0) {
+									mouldId = id;
+									break;
+								} else {
+									mouldId = mouldIdMap.get(index - 1).get("id");
+									break;
+								}
+							}
+						} else {
+							if (rotateDirect.equals("1")) {
+								if ((index + 1) >= mouldIdMap.size()) {
+									mouldId = id;
+									break;
+								} else {
+									mouldId = mouldIdMap.get(index + 1).get("id");
+									break;
+								}
+							} else {
+								//pre one
+								if ((index - 1) < 0) {
+									mouldId = id;
+									break;
+								} else {
+									mouldId = mouldIdMap.get(index - 1).get("id");
+									break;
+								}
+							}							
+						}
+					}
+					
+				}
+			}
+		}
+
+		return mouldId;
+	}
+	
 	public static B_MouldBaseInfoData updateMouldBaseInfoModifyInfo(B_MouldBaseInfoData data, UserInfo userInfo) {
 		String createUserId = data.getCreateperson();
 		if ( createUserId == null || createUserId.equals("")) {
@@ -384,6 +506,84 @@ public class MouldRegisterService extends BaseService {
 		return model;
 	}
 	
-
+	public MouldRegisterModel getFileList(HttpServletRequest request, MouldRegisterModel model) {
+		UploadReceiver uploadReceiver = new UploadReceiver();
+		int arraySize = 0;
+		String dir = request.getSession().getServletContext().getRealPath("/")
+				+ BusinessConstants.BUSINESSPHOTOPATH + model.getMouldBaseInfoData().getId() ; 
+		
+		String nowUseImage = model.getMouldBaseInfoData().getImage_filename();
+		
+		ArrayList<ArrayList<String>> fileList = new ArrayList<ArrayList<String>>();
+		
+		String[] filenames = uploadReceiver.getFileNameList(dir + File.separator + BusinessConstants.BUSINESSSMALLPHOTOPATH);
+		if (null != filenames && filenames.length > 0){
+			
+			//将当前图片放到最前
+			if (!(null == nowUseImage||nowUseImage.equals(""))){	
+				
+				ArrayList<String> list_image = new ArrayList<>(Arrays.asList(filenames));
+				
+				for(String fileName:list_image) {
+					if(fileName.equals(nowUseImage)) {
+						list_image.remove(nowUseImage);
+						break;
+					}
+				}
+				
+				list_image.add(0, nowUseImage);		
+				
+				filenames = new String[list_image.size()];
+				int index = 0;
+				for(Object fileName:list_image) {
+					filenames[index++] = String.valueOf(fileName);
+				}
+			}			
+		}
+				
+		model.setFilenames(filenames);
+		model.setImageKey(model.getMouldBaseInfoData().getId());
+		model.setPath(BusinessConstants.BUSINESSPHOTOPATH);
+		model.setNowUseImage(nowUseImage);
+		
+		return model;
+	}
+	
+	public void setNowUseImage(String key, String src) throws Exception {
+		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		
+		dbData.setId(key);
+		dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+		
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+		UserInfo userInfo = (UserInfo)request.getSession().getAttribute(BusinessConstants.SESSION_USERINFO);
+		
+		dbData = updateMouldBaseInfoModifyInfo(dbData, userInfo);
+		
+		dbData.setImage_filename(src);
+		
+		dao.Store(dbData);
+		
+	}
+	
+	public String getNowUseImage(String key) {
+		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		
+		String nowUseImage = "";
+		
+		try {
+			dbData.setId(key);
+			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+			nowUseImage = dbData.getImage_filename();
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return nowUseImage;
+		
+	}	
 	
 }

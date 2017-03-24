@@ -86,7 +86,10 @@ public class MouldRegisterAction extends BaseAction {
 				viewModel = doGetMouldId(data, request);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
-				
+			case "rotate":
+				viewModel = doRotate(data, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;				
 		}
 		
 		return rtnUrl;
@@ -132,7 +135,8 @@ public class MouldRegisterAction extends BaseAction {
 		MouldRegisterModel dataModel = new MouldRegisterModel();
 		String key = request.getParameter("key");
 		try {
-			//dataModel = mouldRegisterService.doUpdateInit(request, key);
+			dataModel = mouldRegisterService.doUpdateInit(request, key);
+			dataModel = mouldRegisterService.getFileList(request, dataModel);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -193,6 +197,27 @@ public class MouldRegisterAction extends BaseAction {
 		
 		try {
 			String mouldId = mouldRegisterService.getMouldId(request, data);
+			model.setEndInfoMap(BaseService.NORMAL, "", mouldId);	
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");	
+		}
+		
+		return model;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public MouldRegisterModel doRotate(@RequestBody String data, HttpServletRequest request){
+		
+		MouldRegisterModel model = new MouldRegisterModel();
+		
+		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			String mouldId = mouldRegisterService.doRotate(request, data);
 			model.setEndInfoMap(BaseService.NORMAL, "", mouldId);	
 			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 

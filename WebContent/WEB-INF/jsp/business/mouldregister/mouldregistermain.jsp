@@ -118,8 +118,7 @@
 	}
 	
 	function doUpdate(key) {
-		var str = '';
-		var isFirstRow = true;
+
 		var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + key;
 
 		openLayer(url, '', $(document).height(), false);
