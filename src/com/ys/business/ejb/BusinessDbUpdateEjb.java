@@ -18,6 +18,7 @@ import javax.transaction.UserTransaction;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ys.business.action.model.makedocument.MakeDocumentModel;
+import com.ys.business.action.model.mouldregister.MouldRegisterModel;
 import com.ys.business.action.model.reformlog.ReformLogModel;
 import com.ys.business.db.dao.B_BaseTechDocDao;
 import com.ys.business.db.dao.B_ContactDao;
@@ -32,12 +33,14 @@ import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MouldAcceptanceDao;
 import com.ys.business.db.dao.B_MouldBaseInfoDao;
 import com.ys.business.db.dao.B_MouldDetailDao;
+import com.ys.business.db.dao.B_MouldFactoryDao;
 import com.ys.business.db.dao.B_MouldLendConfirmDao;
 import com.ys.business.db.dao.B_MouldLendDetailDao;
 import com.ys.business.db.dao.B_MouldLendRegisterDao;
 import com.ys.business.db.dao.B_MouldPayInfoDao;
 import com.ys.business.db.dao.B_MouldPayListDao;
 import com.ys.business.db.dao.B_MouldReturnRegisterDao;
+import com.ys.business.db.dao.B_MouldSubDao;
 import com.ys.business.db.dao.B_OrganizationDao;
 import com.ys.business.db.dao.B_ProcessControlDao;
 import com.ys.business.db.dao.B_ProjectRelationFileDao;
@@ -59,12 +62,14 @@ import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MouldAcceptanceData;
 import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_MouldDetailData;
+import com.ys.business.db.data.B_MouldFactoryData;
 import com.ys.business.db.data.B_MouldLendConfirmData;
 import com.ys.business.db.data.B_MouldLendDetailData;
 import com.ys.business.db.data.B_MouldLendRegisterData;
 import com.ys.business.db.data.B_MouldPayInfoData;
 import com.ys.business.db.data.B_MouldPayListData;
 import com.ys.business.db.data.B_MouldReturnRegisterData;
+import com.ys.business.db.data.B_MouldSubData;
 import com.ys.business.db.data.B_OrganizationData;
 import com.ys.business.db.data.B_ProcessControlData;
 import com.ys.business.db.data.B_ProjectRelationFileData;
@@ -83,6 +88,7 @@ import com.ys.business.service.lateperfection.LatePerfectionService;
 import com.ys.business.service.makedocument.MakeDocumentService;
 import com.ys.business.service.mouldcontract.MouldContractService;
 import com.ys.business.service.mouldlendregister.MouldLendRegisterService;
+import com.ys.business.service.mouldregister.MouldRegisterService;
 import com.ys.business.service.mouldreturnregister.MouldReturnRegisterService;
 import com.ys.business.service.processcontrol.ProcessControlService;
 import com.ys.business.service.projecttask.ProjectTaskService;
@@ -90,8 +96,11 @@ import com.ys.business.service.reformlog.ReformLogService;
 import com.ys.business.service.supplier.SupplierService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.system.db.dao.S_DICDao;
+import com.ys.system.db.data.S_DICData;
 import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
+import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
@@ -1530,5 +1539,137 @@ public class BusinessDbUpdateEjb  {
 			throw e;									
 		}
     }
+    
+    public MouldRegisterModel executeMouldRegisterUpdate(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+    	
+    	MouldRegisterService service = new MouldRegisterService();
+    	MouldRegisterModel model = new MouldRegisterModel();
+    	B_MouldBaseInfoDao mouldBaseInfoDao = new B_MouldBaseInfoDao();  
+    	B_MouldBaseInfoData mouldBaseInfoData = new B_MouldBaseInfoData(); 
+    	B_MouldSubDao mouldSubDao = new B_MouldSubDao();
+    	B_MouldSubData mouldSubData = new B_MouldSubData();
+    	B_MouldFactoryDao mouldFactoryDao = new B_MouldFactoryDao();
+    	B_MouldFactoryData mouldFactoryData = new B_MouldFactoryData();
 
+    	String key = "";
+    	
+    	ts = new BaseTransaction();	
+    	
+		try {
+			
+			ts.begin();
+			
+			String keyBackup = service.getJsonData(data, "keyBackup");
+			String productModelId = service.getJsonData(data, "productModelId");
+			String productModelIdView = service.getJsonData(data, "productModelIdView");
+			String type = service.getJsonData(data, "type");
+			String name = service.getJsonData(data, "name");
+			String materialQuality = service.getJsonData(data, "materialQuality");
+			String size = service.getJsonData(data, "size");
+			String weight = service.getJsonData(data, "weight");
+			String unloadingNum = service.getJsonData(data, "unloadingNum");
+			String subCodeCount = service.getJsonData(data, "subCodeCount");
+			String factoryCount = service.getJsonData(data, "factoryCount");
+			String mouldId = "";
+			String oldMouldId = "";
+			
+			if (keyBackup == null || keyBackup.equals("")) {
+				key = BaseDAO.getGuId();									
+				mouldBaseInfoData.setId(key);
+				mouldId = service.getMouldId(request, data);
+				mouldBaseInfoData.setMouldid(mouldId);
+				mouldBaseInfoData.setType(type);
+				mouldBaseInfoData.setProductmodelid(productModelId);
+				mouldBaseInfoData.setName(name);
+				mouldBaseInfoData.setMaterialquality(materialQuality);
+				mouldBaseInfoData.setSize(size);
+				mouldBaseInfoData.setWeight(weight);
+				mouldBaseInfoData.setUnloadingnum(unloadingNum);
+				mouldBaseInfoData = service.updateMouldBaseInfoModifyInfo(mouldBaseInfoData, userInfo);
+				mouldBaseInfoDao.Create(mouldBaseInfoData);
+
+			} else {
+				key = keyBackup;
+				mouldBaseInfoData.setId(key);
+				mouldBaseInfoData = (B_MouldBaseInfoData)mouldBaseInfoDao.FindByPrimaryKey(mouldBaseInfoData);
+				
+				if (!mouldBaseInfoData.getType().equals(type) || !mouldBaseInfoData.getProductmodelid().equals(productModelId)) {
+					mouldId = service.getMouldId(request, data);
+					mouldBaseInfoData.setMouldid(mouldId);
+				}
+				
+				mouldBaseInfoData.setType(type);
+				mouldBaseInfoData.setProductmodelid(productModelId);
+				mouldBaseInfoData.setName(name);
+				mouldBaseInfoData.setMaterialquality(materialQuality);
+				mouldBaseInfoData.setSize(size);
+				mouldBaseInfoData.setWeight(weight);
+				mouldBaseInfoData.setUnloadingnum(unloadingNum);
+				mouldBaseInfoData = service.updateMouldBaseInfoModifyInfo(mouldBaseInfoData, userInfo);
+				mouldBaseInfoDao.Store(mouldBaseInfoData);
+			}
+			
+			if (!subCodeCount.equals("")) {
+				int iCount = Integer.parseInt(subCodeCount);
+				
+				if (iCount > 0) {
+					if (!keyBackup.equals("")) {
+						StringBuffer sql = new StringBuffer("");
+						sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+						sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+						sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+						sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+						BaseDAO.execUpdate(sql.toString());	
+					}
+					for (int i = 0; i < iCount; i++) {
+						String subCode = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].subcode");
+						String subCodeName = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].name");
+						if (!subCode.equals("") && !name.equals("")) {
+							mouldSubData.setId(BaseDAO.getGuId());
+							mouldSubData.setMouldid(key);
+							mouldSubData.setSubcode(subCodeName);
+							mouldSubData.setName(subCodeName);
+							mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+							mouldSubDao.Store(mouldSubData);
+						}
+					}
+				}
+			}
+			if (!factoryCount.equals("")) {
+				int iCount = Integer.parseInt(factoryCount);
+				
+				if (iCount > 0) {
+					if (!keyBackup.equals("")) {
+						StringBuffer sql = new StringBuffer("");
+						sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+						sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+						sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+						sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+						BaseDAO.execUpdate(sql.toString());	
+					}
+					for (int i = 0; i < iCount; i++) {
+						String mouldFactoryId = service.getJsonData(data, "detailLines[" + String.valueOf(i) + "].mouldfactoryid");
+						String price = service.getJsonData(data, "detailLines[" + String.valueOf(i) + "].price");
+						if (!mouldFactoryId.equals("") && !price.equals("")) {
+							mouldFactoryData.setId(BaseDAO.getGuId());
+							mouldFactoryData.setMouldid(key);
+							mouldFactoryData.setMouldfactoryid(mouldFactoryId);
+							mouldFactoryData.setPrice(price);
+							mouldFactoryData = service.updateMouldFactoryModifyInfo(mouldFactoryData, userInfo);
+							mouldFactoryDao.Store(mouldFactoryData);
+						}
+					}
+				}
+			}
+
+			ts.commit();
+			model.setEndInfoMap(BaseService.NORMAL, "", key + "|" + mouldId);
+		}
+		catch(Exception e) {
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "err001", key);
+			ts.rollback();
+		}
+		
+		return model;
+    }
 }												

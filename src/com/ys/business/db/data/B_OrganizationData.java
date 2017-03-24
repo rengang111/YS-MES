@@ -11,7 +11,7 @@ import java.io.InputStream;
 * @author mengfanchang
 * @version 1.0
 */
-public class B_OrganizationData implements java.io.Serializable
+public class B_OrganizationData 
 {
 
 	public B_OrganizationData()
@@ -42,6 +42,19 @@ public class B_OrganizationData implements java.io.Serializable
 	public void setType(String type)
 	{
 		this.type=type;
+	}
+
+	/**
+	*
+	*/
+	private String no;
+	public String getNo()
+	{
+		return this.no;
+	}
+	public void setNo(String no)
+	{
+		this.no=no;
 	}
 
 	/**
@@ -215,13 +228,13 @@ public class B_OrganizationData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("shortname = "+(shortname == null ? "null" : shortname)+"\n");		sb.append("fullname = "+(fullname == null ? "null" : fullname)+"\n");		sb.append("address = "+(address == null ? "null" : address)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("no = "+(no == null ? "null" : no)+"\n");		sb.append("shortname = "+(shortname == null ? "null" : shortname)+"\n");		sb.append("fullname = "+(fullname == null ? "null" : fullname)+"\n");		sb.append("address = "+(address == null ? "null" : address)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		type= (type == null ?null : type.trim());		shortname= (shortname == null ?null : shortname.trim());		fullname= (fullname == null ?null : fullname.trim());		address= (address == null ?null : address.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		type= (type == null ?null : type.trim());		no= (no == null ?null : no.trim());		shortname= (shortname == null ?null : shortname.trim());		fullname= (fullname == null ?null : fullname.trim());		address= (address == null ?null : address.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
