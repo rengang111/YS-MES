@@ -340,7 +340,8 @@ input.num{
 input.read-only
 {
 	background-color: #cccccc;
-	border-left:0px;border-top:0px;border-right:0px;border-bottom:1px 
+	border-left:0px;border-top:0px;border-right:0px;border-bottom:1px;
+	readonly:"readonly";
 } 
 
 label {

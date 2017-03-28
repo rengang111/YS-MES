@@ -242,7 +242,11 @@
 		$("#productModelId").val('${DisplayData.mouldBaseInfoData.productmodelid}');
 		$("#productModelIdView").val('${DisplayData.productModelIdView}');
 		$("#productModelName").val('${DisplayData.productModelName}');
-		$('#type').val('${DisplayData.mouldBaseInfoData.type}');
+		if ('${DisplayData.mouldBaseInfoData.type}' != '') {
+			$('#type').val('${DisplayData.mouldBaseInfoData.type}');
+		} else {
+			$("#type option:first").prop("selected", 'selected');
+		}
 		
 		if ($('#keyBackup').val() == '') {
 			addFactoryTr();
@@ -540,20 +544,6 @@
 <div id="container">
 
 		<div id="main">
-			<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
-				<div id="tabs-1" title="图片" style="padding:5px;height:300px;">
-					<jsp:include page="../../common/album/album.jsp"></jsp:include>
-				</div>
-			</div>
-			<div id="rotateArea" style="display:none;width:200px;margin:-60px 0px 0px 30px">
-				<div style="height:40px">
-					<button type="button" id="delete" class="DTTT_button" onClick="doRotate(1);"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;">&gt;&gt;</button>
-					<button type="button" id="delete" class="DTTT_button" onClick="doRotate(0);"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;">&lt;&lt;</button>
-
-				</div>
-			</div>
 			<form:form modelAttribute="dataModels" id="mouldBaseInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id='productModelId' name='productModelId'/>
@@ -570,32 +560,37 @@
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 				<div style="height:10px"></div>
-				<table class="form" width="850px">
+				<table class="form" width="1100px" cellspacing="0" style="table-layout:fixed">
 					<tr>
-						<td width="90px">模具编号<br>(自动编号)：</td>
-						<td width="150px">
-							
+						<td width="60px">编号：</td>
+						<td width="130px">
 							<label id="mouldId" name="mouldId" style="margin:0px 10px">${DisplayData.mouldBaseInfoData.mouldid}</label>
 						</td>
-						<td width="60px">产品型号：</td> 
-						<td>
-							<form:input path="productModelIdView" class="required middle" onblur="getMouldId();"/>
+						<td width="60px">产品型号：</td>
+						<td width="130px">
+							<form:input path="productModelIdView" class="required mini" onblur="getMouldId();"/>
 						</td>
-						<td width="60px">产品名称：</td> 
-						<td colspan=2>
-							<form:input path="productModelName"	class="read-only" />
+						<td width="60px">产品名称：</td>
+						<td width="130px">
+							<form:input path="productModelName"	class="read-only short" />
 						</td>
-					</tr>
-					<tr>
-						<td width="90px">模具类型：</td>
-						<td>
+						<td width="60px">模具类型：</td>
+						<td width="130px">
 							<form:select path="type" onChange="getMouldId();">
 								<form:options items="${DisplayData.typeList}" itemValue="key"
 									itemLabel="value" />
 							</form:select>
 						</td>
+						<td width="50px">
+							出模数：
+						</td>
+						<td width="100px">
+							<input type="text" id="unloadingNum" name="unloadingNum" class="mini" value="${DisplayData.mouldBaseInfoData.unloadingnum}"></input>
+						</td>
+					</tr>
+					<tr>
 						<td>
-							模具名称
+							模具名称：
 						</td>
 						<td>
 							<input type="text" id="name" name="name" class="short" value="${DisplayData.mouldBaseInfoData.name}"></input>
@@ -606,32 +601,24 @@
 						<td>
 							<input type="text" id="materialQuality" name="materialQuality" class="short" value="${DisplayData.mouldBaseInfoData.materialquality}"></input>
 						</td>
-					</tr>
-					<tr>
 						<td>
 							尺寸：
 						</td>
 						<td>
-							<input type="text" id="size" name="size" class="short" value="${DisplayData.mouldBaseInfoData.size}"></input>
+							<input type="text" id="size" name="size" class="mini" value="${DisplayData.mouldBaseInfoData.size}"></input>
 						</td>
 						<td>
 							重量：
 						</td>
-						<td>
-							<input type="text" id="weight" name="weight" class="short" value="${DisplayData.mouldBaseInfoData.weight}"></input>
-						</td>
-						<td>
-							出模数：
-						</td>
-						<td>
-							<input type="text" id="unloadingNum" name="unloadingNum" class="short" value="${DisplayData.mouldBaseInfoData.unloadingnum}"></input>
+						<td colspan=2>
+							<input type="text" id="weight" name="weight" class="mini" value="${DisplayData.mouldBaseInfoData.weight}"></input>
 						</td>
 					</tr>
 					<tr>
 						<td align=center>
 							子编码
 						</td>
-						<td colspan=2>
+						<td colspan=3>
 							<table class="form">
 								<tr>
 									<td>
@@ -640,7 +627,7 @@
 												<td class="td-center" width='150px'>子编码</td>
 												<td class="td-center" width='150px'>子编码解释</td>
 												<td class="td-center">
-													<button type="button"  style = "height:25px;" 
+													<button type="button"  style = "height:20px;" 
 													id="createSubid" class="DTTT_button" onClick="addSubCodeTr();">新建</button>
 												</td>
 											</tr>
@@ -660,7 +647,36 @@
 										</div>
 									</td>
 								</tr>
+							</table>
+						</td>
+						<td colspan=3>	
+							<table>
+								<tr>
+									<td>
+										<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+											<div id="tabs-1" title="图片" style="padding:5px;height:200px;">
+												<jsp:include page="../../common/album/album.jsp"></jsp:include>
+											</div>
+										</div>
+									</td>
+								</tr>
 							</table>						
+						</td>
+						<td colspan=3 align=center>
+							<div id="rotateArea" style="display:none;margin:0px 0px 0px 50px">
+								<div style="height:40px">
+									<button type="button" id="delete" class="DTTT_button" onClick="doRotate(1);"
+										style="height:25px;margin:-20px 30px 0px 0px;float:right;">&gt;&gt;</button>
+									<button type="button" id="delete" class="DTTT_button" onClick="doRotate(0);"
+										style="height:25px;margin:-20px 30px 0px 0px;float:left;">&lt;&lt;</button>
+								</div>
+								<div style="height:40px">
+									<label 
+										style="height:25px;margin:-20px 10px 0px 0px;float:right;">下一个模具</label>
+									<label
+										style="height:25px;margin:-20px 30px 0px -10px;float:left;">前一个模具</label>
+								</div>
+							</div>						
 						</td>
 					</tr>
 				</table>			

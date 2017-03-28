@@ -18,6 +18,7 @@ import javax.transaction.UserTransaction;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ys.business.action.model.makedocument.MakeDocumentModel;
+import com.ys.business.action.model.mouldcontract.MouldContractModel;
 import com.ys.business.action.model.mouldregister.MouldRegisterModel;
 import com.ys.business.action.model.reformlog.ReformLogModel;
 import com.ys.business.db.dao.B_BaseTechDocDao;
@@ -32,6 +33,7 @@ import com.ys.business.db.dao.B_LatePerfectionRelationFileDao;
 import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MouldAcceptanceDao;
 import com.ys.business.db.dao.B_MouldBaseInfoDao;
+import com.ys.business.db.dao.B_MouldContractBaseInfoDao;
 import com.ys.business.db.dao.B_MouldDetailDao;
 import com.ys.business.db.dao.B_MouldFactoryDao;
 import com.ys.business.db.dao.B_MouldLendConfirmDao;
@@ -61,6 +63,7 @@ import com.ys.business.db.data.B_LatePerfectionRelationFileData;
 import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MouldAcceptanceData;
 import com.ys.business.db.data.B_MouldBaseInfoData;
+import com.ys.business.db.data.B_MouldContractBaseInfoData;
 import com.ys.business.db.data.B_MouldDetailData;
 import com.ys.business.db.data.B_MouldFactoryData;
 import com.ys.business.db.data.B_MouldLendConfirmData;
@@ -1107,7 +1110,7 @@ public class BusinessDbUpdateEjb  {
 										
 		int count = 0;										
 												
-		ts = new BaseTransaction();										
+		ts = new BaseTransaction();
 												
 		try {										
 			ts.begin();									
@@ -1152,9 +1155,89 @@ public class BusinessDbUpdateEjb  {
 		}
     }
 
+    public MouldContractModel executeMouldContractUpdate(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+		MouldContractModel model = new MouldContractModel();
+		MouldContractService service = new MouldContractService();
+		B_MouldContractBaseInfoDao dao = new B_MouldContractBaseInfoDao();
+		B_MouldContractBaseInfoData dbData = new B_MouldContractBaseInfoData();
+		BaseModel dataModel = new BaseModel();
+		BaseQuery baseQuery = null;
+
+		String key = service.getJsonData(data, "keyBackup");
+		String guid = "";
+		boolean checkContractIdFlg = false;
+		
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+			String contractId = "";
+			String contractYear = service.getJsonData(data, "contractYear");
+			String mouldFactoryId = service.getJsonData(data, "mouldFactoryId");
+			String productModelId = service.getJsonData(data, "productModelId");
+			String payCase = service.getJsonData(data, "payCase");
+			String moudFactoryShortName = "";
+			String finishTime = "";
+			if (service.getJsonData(data, "finishTime").equals("")) {
+				finishTime = null;
+			} else {
+				finishTime = service.getJsonData(data, "finishTime"); 
+			}
+
+			if (key == null || key.equals("")) {
+				guid = BaseDAO.getGuId();									
+				dbData.setId(guid);
+				contractId = service.getMouldContractId(request, contractYear, mouldFactoryId, productModelId);
+				dbData.setContractid(contractId);
+				dbData.setYear(contractYear);
+				dbData.setProductmodelid(productModelId);
+				dbData.setMouldfactoryid(mouldFactoryId);
+				dbData.setPaycase(payCase);
+
+				dbData.setFinishtime(finishTime);
+				dbData = service.updateMouldContractBaseInfoModifyInfo(dbData, userInfo);
+				dao.Create(dbData);
+				key = guid;
+			} else {
+				dbData.setId(key);
+				dbData = (B_MouldContractBaseInfoData)dao.FindByPrimaryKey(dbData);
+				if (!(dbData.getYear().equals(contractYear) && dbData.getProductmodelid().equals(productModelId) && dbData.getMouldfactoryid().equals(mouldFactoryId))) {
+					contractId = service.getMouldContractId(request, contractYear, mouldFactoryId, productModelId);
+					dbData.setContractid(contractId);
+					
+					StringBuffer sql = new StringBuffer();
+					sql.append("UPDATE b_MouldDetail SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+					sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+					sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+					sql.append(" WHERE mouldContractBaseId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+					BaseDAO.execUpdate(sql.toString());								
+
+				}
+				dbData.setYear(contractYear);
+				dbData.setProductmodelid(productModelId);
+				dbData.setMouldfactoryid(mouldFactoryId);
+				dbData.setPaycase(payCase);
+				dbData.setFinishtime(finishTime);
+				dbData = service.updateMouldContractBaseInfoModifyInfo(dbData, userInfo);
+				dao.Store(dbData);
+			}
+			model.setEndInfoMap(service.NORMAL, "", key + "|" + contractId);
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			model.setEndInfoMap(service.SYSTEMERROR, "err001", key);
+			ts.rollback();
+		}
+		
+		return model;
+
+    }
+
+    
     public void executeMouldContractDelete(String keyData, UserInfo userInfo) throws Exception {
-    	B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
-    	B_MouldBaseInfoDao dbDao = new B_MouldBaseInfoDao();
+    	B_MouldContractBaseInfoData dbData = new B_MouldContractBaseInfoData();
+    	B_MouldContractBaseInfoDao dbDao = new B_MouldContractBaseInfoDao();
     	B_MouldAcceptanceData dbAcceptanceData = new B_MouldAcceptanceData();
     	B_MouldAcceptanceDao dbAcceptanceDao = new B_MouldAcceptanceDao();
     	B_MouldPayInfoData dbPayInfoData = new B_MouldPayInfoData();											
@@ -1170,8 +1253,8 @@ public class BusinessDbUpdateEjb  {
 				StringBuffer sql = new StringBuffer("");
 				
 				dbData.setId(key);
-				dbData = (B_MouldBaseInfoData)dbDao.FindByPrimaryKey(dbData);
-				dbData = MouldContractService.updateMouldBaseInfoModifyInfo(dbData, userInfo);
+				dbData = (B_MouldContractBaseInfoData)dbDao.FindByPrimaryKey(dbData);
+				dbData = MouldContractService.updateMouldContractBaseInfoModifyInfo(dbData, userInfo);
 				dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
 				dbDao.Store(dbData);
 				
@@ -1277,6 +1360,35 @@ public class BusinessDbUpdateEjb  {
 		return guid;
     }
     
+    public void executeMouldContractMdUpdate(String keyData, UserInfo userInfo) throws Exception {												
+    	B_MouldDetailData dbData = new B_MouldDetailData();											
+    	B_MouldDetailDao dao = new B_MouldDetailDao();
+    	
+		int count = 0;										
+												
+		ts = new BaseTransaction();										
+
+		try {										
+			ts.begin();
+
+			String removeData[] = keyData.split(",");							
+			for (String key:removeData) {									
+				String guid = BaseDAO.getGuId();									
+				dbData.setId(guid);	
+				dbData.setMouldcontractbaseid(removeData[removeData.length - 1]);
+				dbData.setBaseinfoid(key);
+				dbData = MouldContractService.updateMdModifyInfo(dbData, userInfo);
+				dao.Create(dbData);
+				count++;												
+			}
+			ts.commit();
+		}										
+		catch(Exception e) {
+			ts.rollback();
+			throw e;									
+		}
+    }    
+    
     public void executeMouldContractMdDelete(String keyData, UserInfo userInfo) throws Exception {												
     	B_MouldDetailData dbData = new B_MouldDetailData();											
     	B_MouldDetailDao dao = new B_MouldDetailDao();
@@ -1284,7 +1396,7 @@ public class BusinessDbUpdateEjb  {
 		int count = 0;										
 												
 		ts = new BaseTransaction();										
-												
+
 		try {										
 			ts.begin();
 
