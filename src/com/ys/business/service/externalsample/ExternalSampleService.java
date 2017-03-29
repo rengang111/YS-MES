@@ -254,11 +254,14 @@ public class ExternalSampleService extends BaseService implements I_MultiAlbumSe
 		
 		if (isDBOperationSuccessed) {
 			UploadReceiver uploadReceiver = new UploadReceiver();
-			String dir = request.getSession().getServletContext().getRealPath("/")
-					+ BusinessConstants.BUSINESSPHOTOPATH + data; 			
-			//String dirSmall = dir + BusinessConstants.BUSINESSSMALLPHOTOPATH; 			
-			
-			FileUtils.delete(new File(dir));
+			String removeData[] = data.split(",");									
+			for (String key:removeData) {	
+				String dir = request.getSession().getServletContext().getRealPath("/")
+						+ BusinessConstants.BUSINESSPHOTOPATH + key; 			
+				//String dirSmall = dir + BusinessConstants.BUSINESSSMALLPHOTOPATH; 			
+				
+				FileUtils.delete(new File(dir));
+			}
 		}
 		
 		return model;

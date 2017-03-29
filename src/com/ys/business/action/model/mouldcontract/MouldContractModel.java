@@ -13,7 +13,7 @@ import com.ys.business.db.data.B_ExternalSampleData;
 import com.ys.business.db.data.B_LatePerfectionQuestionData;
 import com.ys.business.db.data.B_LatePerfectionRelationFileData;
 import com.ys.business.db.data.B_MouldAcceptanceData;
-import com.ys.business.db.data.B_MouldBaseInfoData;
+import com.ys.business.db.data.B_MouldContractBaseInfoData;
 import com.ys.business.db.data.B_MouldDetailData;
 import com.ys.business.db.data.B_MouldPayInfoData;
 import com.ys.business.db.data.B_MouldPayListData;
@@ -25,7 +25,7 @@ import com.ys.system.db.data.S_DICData;
 public class MouldContractModel extends BaseModel {
 	private final String className = "com.ys.business.service.mouldcontract.MouldContractService";
 	private String keyBackup = "";
-	private B_MouldBaseInfoData mouldBaseInfoData = new B_MouldBaseInfoData();
+	private B_MouldContractBaseInfoData mouldContractBaseInfoData = new B_MouldContractBaseInfoData();
 	private B_MouldDetailData mouldDetailData = new B_MouldDetailData();
 	private B_MouldAcceptanceData mouldAcceptanceData = new B_MouldAcceptanceData();
 	private B_MouldPayInfoData mouldPayInfoData = new B_MouldPayInfoData();
@@ -70,11 +70,11 @@ public class MouldContractModel extends BaseModel {
 		this.keyBackup = keyBackup;
 	}
 	
-	public B_MouldBaseInfoData getMouldBaseInfoData() {
-		return this.mouldBaseInfoData;
+	public B_MouldContractBaseInfoData getMouldContractBaseInfoData() {
+		return this.mouldContractBaseInfoData;
 	}
-	public void setMouldBaseInfoData(B_MouldBaseInfoData mouldBaseInfoData) {
-		this.mouldBaseInfoData = mouldBaseInfoData;
+	public void setMouldContractBaseInfoData(B_MouldContractBaseInfoData mouldContractBaseInfoData) {
+		this.mouldContractBaseInfoData = mouldContractBaseInfoData;
 	}
 
 	public B_MouldDetailData getMouldDetailData() {

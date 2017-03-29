@@ -148,6 +148,7 @@ public class OrganService extends BaseService {
 			String guid = BaseDAO.getGuId();
 			dbData.setRecordid(guid);
 			dbData.setType(getJsonData(data, "type"));
+			dbData.setNo(getJsonData(data, "no"));
 			dbData.setShortname(getJsonData(data, "shortName"));
 			dbData.setFullname(getJsonData(data, "fullName"));
 			dbData.setAddress(getJsonData(data, "address"));
@@ -281,6 +282,7 @@ public class OrganService extends BaseService {
 			dbData = preCheckId(id);
 			
 			dbData.setType(getJsonData(data, "type"));
+			dbData.setNo(getJsonData(data, "no"));
 			dbData.setShortname(getJsonData(data, "shortName"));
 			dbData.setFullname(getJsonData(data, "fullName"));
 			dbData.setAddress(getJsonData(data, "address"));

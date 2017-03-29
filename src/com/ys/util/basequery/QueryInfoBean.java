@@ -176,7 +176,8 @@ public class QueryInfoBean {
 		StringBuffer sqlCount = new StringBuffer("");
 		
 		String selectSql = "";
-		String selectSqlCount = "SELECT COUNT(COUNTNUM) FROM (SELECT 1 AS COUNTNUM ";
+		//String selectSqlCount = "SELECT COUNT(COUNTNUM) FROM (SELECT 1 AS COUNTNUM ";
+		String selectSqlCount = "SELECT COUNT(*) FROM ( ";
 		
 		String powerSql = definedPower.getSql(request, menuId);
 		
@@ -192,10 +193,10 @@ public class QueryInfoBean {
 		} else {
 			sql.append("SELECT ");
 			selectSql = userDefinedSelect;
-			
 		}
 		sql.append(selectSql);
 		sqlCount.append(selectSqlCount);
+		sqlCount.append(selectSql);
 		sql.append(" ");
 		sqlCount.append(" ");
 		sql.append(definedFromSql);

@@ -64,12 +64,12 @@
 </div>  
 
  <div id="l1" style="">					
-	<div style="position:absolute;top:260px;left:190px;"> 
-		<a href="#" class="a-btn-green" style="height:25px;" onclick="return showLayer()">
+	<!-- <div style="position:absolute;top:260px;left:190px;"> --> 
+		<a href="#" class="a-btn-green" style="height:25px;float:right;" onclick="return showLayer()">
 			<img src="${pageContext.request.contextPath}/images/action_add.png" height="16px" style="top:5px;"/>
 			<span class="a-btn-text" >图片上传</span> 
 		</a>
-	</div>
+	<!-- </div> -->
 				
 </div>  
 

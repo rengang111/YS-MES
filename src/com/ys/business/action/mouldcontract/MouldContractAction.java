@@ -22,10 +22,13 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.externalsample.ExternalSampleModel;
 import com.ys.business.action.model.mouldcontract.MouldContractModel;
+import com.ys.business.action.model.mouldregister.MouldRegisterModel;
 import com.ys.business.action.model.processcontrol.ProcessControlModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.system.service.common.BaseService;
 import com.ys.util.DicUtil;
 import com.ys.util.basequery.BaseQuery;
+import com.ys.util.basequery.common.BaseModel;
 import com.ys.business.service.mouldcontract.MouldContractService;
 
 @Controller
@@ -128,6 +131,19 @@ public class MouldContractAction extends BaseAction {
 				viewModel = doConfirmPay(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
+			case "getMouldBaseInfoList":
+				dataMap = getMouldBaseInfoList(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "getMouldContractId":
+				viewModel = getMouldContractId(data, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
+			case "getMouldFactoryList":
+				dataMap = getMouldFactoryList(data, request);
+				printOutJsonObj(response, dataMap.get("factoryList"));
+				return null;
+				
 		}
 		
 		return rtnUrl;
@@ -187,6 +203,27 @@ public class MouldContractAction extends BaseAction {
 		
 		return dataMap;
 	}
+
+	@SuppressWarnings("unchecked")
+	public MouldContractModel getMouldContractId(@RequestBody String data, HttpServletRequest request){
+		
+		MouldContractModel model = new MouldContractModel();
+		
+		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			String mouldContractId = mouldContractService.doGetMouldContractId(request, data);
+			model.setEndInfoMap(BaseService.NORMAL, "", mouldContractId);	
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");	
+		}
+		
+		return model;
+	}
 	
 	public HashMap<String, Object> getMouldDetailList(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -225,6 +262,40 @@ public class MouldContractAction extends BaseAction {
 		
 		return dataMap;
 	}	
+	
+	public HashMap<String, Object> getMouldBaseInfoList(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			dataMap = mouldContractService.doGetMouldBaseInfoList(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> getMouldFactoryList(@RequestBody String data, HttpServletRequest request){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			ArrayList<ListOption> datas = mouldContractService.getMouldFactoryList(request, data);
+			dataMap.put("factoryList", datas);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 	
 	public String doUpdateMdInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 

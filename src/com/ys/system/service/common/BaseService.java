@@ -33,9 +33,9 @@ import com.ys.util.basequery.common.Constants;
  */
 public class BaseService {
 	
-	protected final String DUMMYKEY = "-1";
-	protected final String SYSTEMERROR = "-1";
-	protected final String NORMAL = "000";
+	public static final String DUMMYKEY = "-1";
+	public static final String SYSTEMERROR = "-1";
+	public static final String NORMAL = "000";
 	
 	/*
 	public BaseTransaction baseTransaction;
