@@ -1,10 +1,12 @@
 package com.ys.business.db.dao;
-
+
+
 import java.sql.*;
 import java.io.InputStream;
 import com.ys.util.basedao.BaseAbstractDao;
 import com.ys.business.db.data.*;
-
+
+
 /**
 * <p>Title: </p>
 * <p>Description: ��ݱ�  </p>
@@ -46,7 +48,29 @@ public class B_SupplierDao extends BaseAbstractDao
 		{
 			connection = getConnection();
 			statement = connection.prepareStatement("INSERT INTO B_Supplier( recordid,supplierid,shortname,suppliername,parentid,subid,categoryid,categorydes,paymentterm,country,province,city,address,zipcode,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getSupplierid());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getSuppliername());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getCategoryid());			statement.setString( 8,beanData.getCategorydes());			statement.setString( 9,beanData.getPaymentterm());			statement.setString( 10,beanData.getCountry());			statement.setString( 11,beanData.getProvince());			statement.setString( 12,beanData.getCity());			statement.setString( 13,beanData.getAddress());			statement.setString( 14,beanData.getZipcode());			statement.setString( 15,beanData.getDeptguid());			statement.setString( 16,beanData.getCreatetime());			statement.setString( 17,beanData.getCreateperson());			statement.setString( 18,beanData.getCreateunitid());			statement.setString( 19,beanData.getModifytime());			statement.setString( 20,beanData.getModifyperson());			statement.setString( 21,beanData.getDeleteflag());			statement.setString( 22,beanData.getFormid());
+			statement.setString( 1,beanData.getRecordid());
+			statement.setString( 2,beanData.getSupplierid());
+			statement.setString( 3,beanData.getShortname());
+			statement.setString( 4,beanData.getSuppliername());
+			statement.setString( 5,beanData.getParentid());
+			statement.setString( 6,beanData.getSubid());
+			statement.setString( 7,beanData.getCategoryid());
+			statement.setString( 8,beanData.getCategorydes());
+			statement.setString( 9,beanData.getPaymentterm());
+			statement.setString( 10,beanData.getCountry());
+			statement.setString( 11,beanData.getProvince());
+			statement.setString( 12,beanData.getCity());
+			statement.setString( 13,beanData.getAddress());
+			statement.setString( 14,beanData.getZipcode());
+			statement.setString( 15,beanData.getDeptguid());
+			statement.setString( 16,beanData.getCreatetime());
+			statement.setString( 17,beanData.getCreateperson());
+			statement.setString( 18,beanData.getCreateunitid());
+			statement.setString( 19,beanData.getModifytime());
+			statement.setString( 20,beanData.getModifyperson());
+			statement.setString( 21,beanData.getDeleteflag());
+			statement.setString( 22,beanData.getFormid());
+
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -73,7 +97,29 @@ public class B_SupplierDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("INSERT INTO B_Supplier( recordid,supplierid,shortname,suppliername,parentid,subid,categoryid,categorydes,paymentterm,country,province,city,address,zipcode,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
-			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("'" + nullString(beanData.getShortname()) + "',");			bufSQL.append("'" + nullString(beanData.getSuppliername()) + "',");			bufSQL.append("'" + nullString(beanData.getParentid()) + "',");			bufSQL.append("'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("'" + nullString(beanData.getCategoryid()) + "',");			bufSQL.append("'" + nullString(beanData.getCategorydes()) + "',");			bufSQL.append("'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("'" + nullString(beanData.getProvince()) + "',");			bufSQL.append("'" + nullString(beanData.getCity()) + "',");			bufSQL.append("'" + nullString(beanData.getAddress()) + "',");			bufSQL.append("'" + nullString(beanData.getZipcode()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");
+			bufSQL.append("'" + nullString(beanData.getSupplierid()) + "',");
+			bufSQL.append("'" + nullString(beanData.getShortname()) + "',");
+			bufSQL.append("'" + nullString(beanData.getSuppliername()) + "',");
+			bufSQL.append("'" + nullString(beanData.getParentid()) + "',");
+			bufSQL.append("'" + nullString(beanData.getSubid()) + "',");
+			bufSQL.append("'" + nullString(beanData.getCategoryid()) + "',");
+			bufSQL.append("'" + nullString(beanData.getCategorydes()) + "',");
+			bufSQL.append("'" + nullString(beanData.getPaymentterm()) + "',");
+			bufSQL.append("'" + nullString(beanData.getCountry()) + "',");
+			bufSQL.append("'" + nullString(beanData.getProvince()) + "',");
+			bufSQL.append("'" + nullString(beanData.getCity()) + "',");
+			bufSQL.append("'" + nullString(beanData.getAddress()) + "',");
+			bufSQL.append("'" + nullString(beanData.getZipcode()) + "',");
+			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");
+			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");
+			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");
+			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");
+			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");
+			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");
+			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");
+			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
+
 			bufSQL.append(")");
 
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -102,7 +148,29 @@ public class B_SupplierDao extends BaseAbstractDao
 		{
 			connection = getConnection();
 			statement = connection.prepareStatement("INSERT INTO B_Supplier( recordid,supplierid,shortname,suppliername,parentid,subid,categoryid,categorydes,paymentterm,country,province,city,address,zipcode,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getSupplierid());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getSuppliername());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getCategoryid());			statement.setString( 8,beanData.getCategorydes());			statement.setString( 9,beanData.getPaymentterm());			statement.setString( 10,beanData.getCountry());			statement.setString( 11,beanData.getProvince());			statement.setString( 12,beanData.getCity());			statement.setString( 13,beanData.getAddress());			statement.setString( 14,beanData.getZipcode());			statement.setString( 15,beanData.getDeptguid());			statement.setString( 16,beanData.getCreatetime());			statement.setString( 17,beanData.getCreateperson());			statement.setString( 18,beanData.getCreateunitid());			statement.setString( 19,beanData.getModifytime());			statement.setString( 20,beanData.getModifyperson());			statement.setString( 21,beanData.getDeleteflag());			statement.setString( 22,beanData.getFormid());
+			statement.setString( 1,beanData.getRecordid());
+			statement.setString( 2,beanData.getSupplierid());
+			statement.setString( 3,beanData.getShortname());
+			statement.setString( 4,beanData.getSuppliername());
+			statement.setString( 5,beanData.getParentid());
+			statement.setString( 6,beanData.getSubid());
+			statement.setString( 7,beanData.getCategoryid());
+			statement.setString( 8,beanData.getCategorydes());
+			statement.setString( 9,beanData.getPaymentterm());
+			statement.setString( 10,beanData.getCountry());
+			statement.setString( 11,beanData.getProvince());
+			statement.setString( 12,beanData.getCity());
+			statement.setString( 13,beanData.getAddress());
+			statement.setString( 14,beanData.getZipcode());
+			statement.setString( 15,beanData.getDeptguid());
+			statement.setString( 16,beanData.getCreatetime());
+			statement.setString( 17,beanData.getCreateperson());
+			statement.setString( 18,beanData.getCreateunitid());
+			statement.setString( 19,beanData.getModifytime());
+			statement.setString( 20,beanData.getModifyperson());
+			statement.setString( 21,beanData.getDeleteflag());
+			statement.setString( 22,beanData.getFormid());
+
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -220,7 +288,29 @@ public class B_SupplierDao extends BaseAbstractDao
 			{
 				throw new Exception(" Row Not does;");
 			}
-			returnData.setRecordid( resultSet.getString( 1));			returnData.setSupplierid( resultSet.getString( 2));			returnData.setShortname( resultSet.getString( 3));			returnData.setSuppliername( resultSet.getString( 4));			returnData.setParentid( resultSet.getString( 5));			returnData.setSubid( resultSet.getString( 6));			returnData.setCategoryid( resultSet.getString( 7));			returnData.setCategorydes( resultSet.getString( 8));			returnData.setPaymentterm( resultSet.getString( 9));			returnData.setCountry( resultSet.getString( 10));			returnData.setProvince( resultSet.getString( 11));			returnData.setCity( resultSet.getString( 12));			returnData.setAddress( resultSet.getString( 13));			returnData.setZipcode( resultSet.getString( 14));			returnData.setDeptguid( resultSet.getString( 15));			returnData.setCreatetime( resultSet.getString( 16));			returnData.setCreateperson( resultSet.getString( 17));			returnData.setCreateunitid( resultSet.getString( 18));			returnData.setModifytime( resultSet.getString( 19));			returnData.setModifyperson( resultSet.getString( 20));			returnData.setDeleteflag( resultSet.getString( 21));			returnData.setFormid( resultSet.getString( 22));
+			returnData.setRecordid( resultSet.getString( 1));
+			returnData.setSupplierid( resultSet.getString( 2));
+			returnData.setShortname( resultSet.getString( 3));
+			returnData.setSuppliername( resultSet.getString( 4));
+			returnData.setParentid( resultSet.getString( 5));
+			returnData.setSubid( resultSet.getString( 6));
+			returnData.setCategoryid( resultSet.getString( 7));
+			returnData.setCategorydes( resultSet.getString( 8));
+			returnData.setPaymentterm( resultSet.getString( 9));
+			returnData.setCountry( resultSet.getString( 10));
+			returnData.setProvince( resultSet.getString( 11));
+			returnData.setCity( resultSet.getString( 12));
+			returnData.setAddress( resultSet.getString( 13));
+			returnData.setZipcode( resultSet.getString( 14));
+			returnData.setDeptguid( resultSet.getString( 15));
+			returnData.setCreatetime( resultSet.getString( 16));
+			returnData.setCreateperson( resultSet.getString( 17));
+			returnData.setCreateunitid( resultSet.getString( 18));
+			returnData.setModifytime( resultSet.getString( 19));
+			returnData.setModifyperson( resultSet.getString( 20));
+			returnData.setDeleteflag( resultSet.getString( 21));
+			returnData.setFormid( resultSet.getString( 22));
+
 			return returnData;
 		}
 		catch(Exception e)
@@ -256,7 +346,29 @@ public class B_SupplierDao extends BaseAbstractDao
 			while (resultSet.next())
 			{
 				B_SupplierData returnData=new B_SupplierData();
-				returnData.setRecordid( resultSet.getString( 1));				returnData.setSupplierid( resultSet.getString( 2));				returnData.setShortname( resultSet.getString( 3));				returnData.setSuppliername( resultSet.getString( 4));				returnData.setParentid( resultSet.getString( 5));				returnData.setSubid( resultSet.getString( 6));				returnData.setCategoryid( resultSet.getString( 7));				returnData.setCategorydes( resultSet.getString( 8));				returnData.setPaymentterm( resultSet.getString( 9));				returnData.setCountry( resultSet.getString( 10));				returnData.setProvince( resultSet.getString( 11));				returnData.setCity( resultSet.getString( 12));				returnData.setAddress( resultSet.getString( 13));				returnData.setZipcode( resultSet.getString( 14));				returnData.setDeptguid( resultSet.getString( 15));				returnData.setCreatetime( resultSet.getString( 16));				returnData.setCreateperson( resultSet.getString( 17));				returnData.setCreateunitid( resultSet.getString( 18));				returnData.setModifytime( resultSet.getString( 19));				returnData.setModifyperson( resultSet.getString( 20));				returnData.setDeleteflag( resultSet.getString( 21));				returnData.setFormid( resultSet.getString( 22));
+				returnData.setRecordid( resultSet.getString( 1));
+				returnData.setSupplierid( resultSet.getString( 2));
+				returnData.setShortname( resultSet.getString( 3));
+				returnData.setSuppliername( resultSet.getString( 4));
+				returnData.setParentid( resultSet.getString( 5));
+				returnData.setSubid( resultSet.getString( 6));
+				returnData.setCategoryid( resultSet.getString( 7));
+				returnData.setCategorydes( resultSet.getString( 8));
+				returnData.setPaymentterm( resultSet.getString( 9));
+				returnData.setCountry( resultSet.getString( 10));
+				returnData.setProvince( resultSet.getString( 11));
+				returnData.setCity( resultSet.getString( 12));
+				returnData.setAddress( resultSet.getString( 13));
+				returnData.setZipcode( resultSet.getString( 14));
+				returnData.setDeptguid( resultSet.getString( 15));
+				returnData.setCreatetime( resultSet.getString( 16));
+				returnData.setCreateperson( resultSet.getString( 17));
+				returnData.setCreateunitid( resultSet.getString( 18));
+				returnData.setModifytime( resultSet.getString( 19));
+				returnData.setModifyperson( resultSet.getString( 20));
+				returnData.setDeleteflag( resultSet.getString( 21));
+				returnData.setFormid( resultSet.getString( 22));
+
 				v_1.add(returnData);
 			}
 			return v_1;
@@ -283,7 +395,29 @@ public class B_SupplierDao extends BaseAbstractDao
 		{
 			connection = getConnection();
 			statement = connection.prepareStatement("UPDATE B_Supplier SET recordid= ? , supplierid= ? , shortname= ? , suppliername= ? , parentid= ? , subid= ? , categoryid= ? , categorydes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , zipcode= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getSupplierid());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getSuppliername());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getCategoryid());			statement.setString( 8,beanData.getCategorydes());			statement.setString( 9,beanData.getPaymentterm());			statement.setString( 10,beanData.getCountry());			statement.setString( 11,beanData.getProvince());			statement.setString( 12,beanData.getCity());			statement.setString( 13,beanData.getAddress());			statement.setString( 14,beanData.getZipcode());			statement.setString( 15,beanData.getDeptguid());			statement.setString( 16,beanData.getCreatetime());			statement.setString( 17,beanData.getCreateperson());			statement.setString( 18,beanData.getCreateunitid());			statement.setString( 19,beanData.getModifytime());			statement.setString( 20,beanData.getModifyperson());			statement.setString( 21,beanData.getDeleteflag());			statement.setString( 22,beanData.getFormid());
+			statement.setString( 1,beanData.getRecordid());
+			statement.setString( 2,beanData.getSupplierid());
+			statement.setString( 3,beanData.getShortname());
+			statement.setString( 4,beanData.getSuppliername());
+			statement.setString( 5,beanData.getParentid());
+			statement.setString( 6,beanData.getSubid());
+			statement.setString( 7,beanData.getCategoryid());
+			statement.setString( 8,beanData.getCategorydes());
+			statement.setString( 9,beanData.getPaymentterm());
+			statement.setString( 10,beanData.getCountry());
+			statement.setString( 11,beanData.getProvince());
+			statement.setString( 12,beanData.getCity());
+			statement.setString( 13,beanData.getAddress());
+			statement.setString( 14,beanData.getZipcode());
+			statement.setString( 15,beanData.getDeptguid());
+			statement.setString( 16,beanData.getCreatetime());
+			statement.setString( 17,beanData.getCreateperson());
+			statement.setString( 18,beanData.getCreateunitid());
+			statement.setString( 19,beanData.getModifytime());
+			statement.setString( 20,beanData.getModifyperson());
+			statement.setString( 21,beanData.getDeleteflag());
+			statement.setString( 22,beanData.getFormid());
+
 			statement.setString( 23,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
@@ -308,7 +442,29 @@ public class B_SupplierDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("UPDATE B_Supplier SET ");
-			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Supplierid = " + "'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("Shortname = " + "'" + nullString(beanData.getShortname()) + "',");			bufSQL.append("Suppliername = " + "'" + nullString(beanData.getSuppliername()) + "',");			bufSQL.append("Parentid = " + "'" + nullString(beanData.getParentid()) + "',");			bufSQL.append("Subid = " + "'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("Categoryid = " + "'" + nullString(beanData.getCategoryid()) + "',");			bufSQL.append("Categorydes = " + "'" + nullString(beanData.getCategorydes()) + "',");			bufSQL.append("Paymentterm = " + "'" + nullString(beanData.getPaymentterm()) + "',");			bufSQL.append("Country = " + "'" + nullString(beanData.getCountry()) + "',");			bufSQL.append("Province = " + "'" + nullString(beanData.getProvince()) + "',");			bufSQL.append("City = " + "'" + nullString(beanData.getCity()) + "',");			bufSQL.append("Address = " + "'" + nullString(beanData.getAddress()) + "',");			bufSQL.append("Zipcode = " + "'" + nullString(beanData.getZipcode()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");
+			bufSQL.append("Supplierid = " + "'" + nullString(beanData.getSupplierid()) + "',");
+			bufSQL.append("Shortname = " + "'" + nullString(beanData.getShortname()) + "',");
+			bufSQL.append("Suppliername = " + "'" + nullString(beanData.getSuppliername()) + "',");
+			bufSQL.append("Parentid = " + "'" + nullString(beanData.getParentid()) + "',");
+			bufSQL.append("Subid = " + "'" + nullString(beanData.getSubid()) + "',");
+			bufSQL.append("Categoryid = " + "'" + nullString(beanData.getCategoryid()) + "',");
+			bufSQL.append("Categorydes = " + "'" + nullString(beanData.getCategorydes()) + "',");
+			bufSQL.append("Paymentterm = " + "'" + nullString(beanData.getPaymentterm()) + "',");
+			bufSQL.append("Country = " + "'" + nullString(beanData.getCountry()) + "',");
+			bufSQL.append("Province = " + "'" + nullString(beanData.getProvince()) + "',");
+			bufSQL.append("City = " + "'" + nullString(beanData.getCity()) + "',");
+			bufSQL.append("Address = " + "'" + nullString(beanData.getAddress()) + "',");
+			bufSQL.append("Zipcode = " + "'" + nullString(beanData.getZipcode()) + "',");
+			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");
+			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");
+			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");
+			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");
+			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");
+			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");
+			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");
+			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
+
 			bufSQL.append(" WHERE ");
 			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -336,7 +492,29 @@ public class B_SupplierDao extends BaseAbstractDao
 		{
 			connection = getConnection();
 			statement = connection.prepareStatement("UPDATE B_Supplier SET recordid= ? , supplierid= ? , shortname= ? , suppliername= ? , parentid= ? , subid= ? , categoryid= ? , categorydes= ? , paymentterm= ? , country= ? , province= ? , city= ? , address= ? , zipcode= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getSupplierid());			statement.setString( 3,beanData.getShortname());			statement.setString( 4,beanData.getSuppliername());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getCategoryid());			statement.setString( 8,beanData.getCategorydes());			statement.setString( 9,beanData.getPaymentterm());			statement.setString( 10,beanData.getCountry());			statement.setString( 11,beanData.getProvince());			statement.setString( 12,beanData.getCity());			statement.setString( 13,beanData.getAddress());			statement.setString( 14,beanData.getZipcode());			statement.setString( 15,beanData.getDeptguid());			statement.setString( 16,beanData.getCreatetime());			statement.setString( 17,beanData.getCreateperson());			statement.setString( 18,beanData.getCreateunitid());			statement.setString( 19,beanData.getModifytime());			statement.setString( 20,beanData.getModifyperson());			statement.setString( 21,beanData.getDeleteflag());			statement.setString( 22,beanData.getFormid());
+			statement.setString( 1,beanData.getRecordid());
+			statement.setString( 2,beanData.getSupplierid());
+			statement.setString( 3,beanData.getShortname());
+			statement.setString( 4,beanData.getSuppliername());
+			statement.setString( 5,beanData.getParentid());
+			statement.setString( 6,beanData.getSubid());
+			statement.setString( 7,beanData.getCategoryid());
+			statement.setString( 8,beanData.getCategorydes());
+			statement.setString( 9,beanData.getPaymentterm());
+			statement.setString( 10,beanData.getCountry());
+			statement.setString( 11,beanData.getProvince());
+			statement.setString( 12,beanData.getCity());
+			statement.setString( 13,beanData.getAddress());
+			statement.setString( 14,beanData.getZipcode());
+			statement.setString( 15,beanData.getDeptguid());
+			statement.setString( 16,beanData.getCreatetime());
+			statement.setString( 17,beanData.getCreateperson());
+			statement.setString( 18,beanData.getCreateunitid());
+			statement.setString( 19,beanData.getModifytime());
+			statement.setString( 20,beanData.getModifyperson());
+			statement.setString( 21,beanData.getDeleteflag());
+			statement.setString( 22,beanData.getFormid());
+
 			statement.setString( 23,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");

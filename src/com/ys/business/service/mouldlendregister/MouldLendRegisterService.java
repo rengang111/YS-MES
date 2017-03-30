@@ -273,11 +273,11 @@ public class MouldLendRegisterService extends BaseService {
 			lendData = (B_MouldLendDetailData)lendDao.FindByPrimaryKey(lendData);
 			data.setId(lendData.getMouldno());
 			data = (B_MouldDetailData)dao.FindByPrimaryKey(data);
-			model.setName(data.getName());
+			//model.setName(data.getName());
 		}
 		
 		model.setMouldLendDetailData(lendData);
-		model.setNo(data.getNo());
+		//model.setNo(data.getNo());
 		model.setKeyBackup(id);
 		model.setMouldLendNo(mouldLendNo);
 		//model.setType(type);
