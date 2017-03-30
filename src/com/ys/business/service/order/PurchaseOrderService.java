@@ -238,7 +238,7 @@ public class PurchaseOrderService extends BaseService {
 				String total      = supplierList.get(i).get("total");
 				
 				//取得供应商的合同流水号
-				//父编号:16+供应商简称
+				//父编号:年份+供应商简称
 				String parentId = "";
 				if(null != YSId && YSId.length() > 3 )
 					parentId = YSId.substring(0,2);//耀升编号前两位是年份

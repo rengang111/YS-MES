@@ -687,8 +687,8 @@
 				<div id="autoscroll">
 					<table class="form" id="factoryTable" name="factoryTable">
 						<tr>
-							<td align="center" width='200px'>工厂编号</td>
-							<td align="center" width='200px'>工厂名称</td>
+							<td align="center" width='200px'>供应商编码</td>
+							<td align="center" width='200px'>供应商名称</td>
 							<td align="center" width='200px'>价格
 								&nbsp;&nbsp;&nbsp;
 								<button type="button"  style = "height:25px;" class="DTTT_button"

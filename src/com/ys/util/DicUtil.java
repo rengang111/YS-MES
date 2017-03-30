@@ -42,6 +42,7 @@ public class DicUtil {
 	public static final String DENOMINATIONCURRENCY = "币种";
 	public static final String SHIPPINGCASE = "出运条件";
 	public static final String PORT = "B3";
+	public static final String SUPPLIER_TYPE = "供应商类型";
 	
 	//HashMap通过id查找
 	private static HashMap<String,String> dicMapViaId = new HashMap<String, String>();

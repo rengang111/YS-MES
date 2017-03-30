@@ -59,7 +59,7 @@
 		</tr>
 		<tr>				
 			<td class="label"><label>通用型号：</label></td>
-			<td colspan="5" style="word-break:break-all;><form:hidden path="material.sharemodel" value=""/>	
+			<td colspan="5" style="word-break:break-all;"><form:hidden path="material.sharemodel" value=""/>	
 				<div class="" id="coupon">
 					<table id="ShareTab"><tr><td></td></tr></table></div></td>							
 		</tr>	
@@ -124,16 +124,12 @@
 </div>
 </div>
 <script type="text/javascript">
-
 function reloadSupplier() {
-
 	//$('#TSupplier').DataTable().supplierPriceView.reload(null,false);
 	//alert(4444)
 	//reloadTabWindow();
-
 	return true;
 }
-
 //Form序列化后转为AJAX可提交的JSON格式。
 $.fn.serializeObject = function() {
 	var o = {};
@@ -150,12 +146,10 @@ $.fn.serializeObject = function() {
 	});
 	return o;
 };
-
 $(document).ready(function() {
 	
 	//通用型号 初始化时,5 个输入框,注意:编号从 0 开始
 	autoAddShareModel();
-
 	//子编码 初始化时,5 个输入框,注意:编号从 0 开始
 	autoAddSubid();
 		
@@ -166,7 +160,6 @@ $(document).ready(function() {
 			var url = "${ctx}/business/material?materialId="+materialId;
 			location.href = url;		
 		});
-
 	$("#doEdit").click(
 			function() {				
 				var recordid = $('#material\\.recordid').val();
@@ -174,7 +167,6 @@ $(document).ready(function() {
 				var url = '${ctx}/business/material?methodtype=edit';
 				url = url + '&parentId=' + parentid+'&recordId='+recordid;
 				location.href = url;			
-
 	});
 	
 	var keyBackup = $('#keyBackup').val();
@@ -188,7 +180,6 @@ $(document).ready(function() {
 				//var url = '${ctx}/business/zzmaterial?methodtype=create';
 				var url = '${ctx}/business/zzmaterial?methodtype=create&materialId=' + materialId;
 				location.href = url;			
-
 	});
 */
 	//供应商单价显示处理
@@ -199,14 +190,11 @@ $(document).ready(function() {
 	
     	
 });
-
 function supplierPriceView() {
-
 	var table = $('#TSupplier').dataTable();
 	if(table) {
 		table.fnDestroy();
 	}
-
 	var t = $('#TSupplier').DataTable({
 		"paging": false,
 		//"lengthMenu":[20,50,100],//设置一页展示10条记录
@@ -247,7 +235,6 @@ function supplierPriceView() {
 			           
 					//重设显示窗口(iframe)高度
 					iFramAutoSroll();
-
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	                 alert(XMLHttpRequest.status);
@@ -288,9 +275,7 @@ function supplierPriceView() {
 	);
 	
 }//ajax()供应商信息
-
 function selectedColor(){
-
 	$('#TSupplier').DataTable().on('click', 'tr', function() {
 		
 		if ( $(this).hasClass('selected') ) {
@@ -303,30 +288,24 @@ function selectedColor(){
 	});
 	
 }
-
 function autoAddShareModel() {
-
 	var firstFlg = true;
 	<c:forEach var='model' items='${material.shareModelList}' varStatus='status'>
-
 		var modelSize = '${material.shareModelList}.size()'
 		var model = '${model}';
 		var i = '${status.index}';
 		var tdHtml = '';
 		var space = '&nbsp;';
-
 		tdHtml = model + space; 
 	
 		$('#ShareTab tr td').append(tdHtml);	
 		
 	</c:forEach>
 } 
-
 function autoAddSubid() {
 	
 	var selectedTR = 0;
 	var selectedId = $('#material\\.recordid').val();
-
 	<c:forEach var="sub" items="${material.materialLines}" varStatus="status">
 	
 		var recordid = '${sub.recordid}';
@@ -367,22 +346,15 @@ function autoAddSubid() {
 	$('#subidTab tr:eq('+selectedTR+')').addClass('selected');
 	$('#subidTab tr:eq('+selectedTR+') td').eq(0).html('本条记录');
 }
-
-
 function doSubDetail(recordid , parentid) {
-
 	var str = recordid + parentid;
-
 	var url = '${ctx}/business/material?methodtype=detailView';
 	url = url + '&parentId=' + parentid+'&recordId='+recordid;
 	location.href = url;
 	
 }
-
 var layerHeight = '360px';
 var layerWidth  = '900px';
-
-
 //新增供应商
 function doCreatePrice() {
 	var materialid ='${material.material.materialid}';
@@ -405,7 +377,6 @@ function doCreatePrice() {
 		}    
 	});
 }
-
 //新建二级BOM
 function doCreateBOMZZ() {
 	var materialId ='${material.material.materialid}';
@@ -423,7 +394,6 @@ function doCreateBOMZZ() {
 			
 		}
 	}
-
 	layer.open({
 		offset :[50,''],
 		type : 2,
@@ -441,7 +411,6 @@ function doCreateBOMZZ() {
 			}    
 	});
 }
-
 function doUpdate(supplierId) {
 	var materialId ='${material.material.materialid}';
 	var type = materialId.substring(0,1);//截取物料大分类
@@ -462,7 +431,6 @@ function doUpdate(supplierId) {
 		layerHeight = '360px';
 		var url = "${ctx}/business/material?methodtype=editPrice&supplierId=" + supplierId+"&materialId="+materialId;		
 	}
-
 	layer.open({
 		offset :[50,''],
 		type : 2,
@@ -480,12 +448,10 @@ function doUpdate(supplierId) {
 			}    
 	});
 }
-
 function doShowHistory(supplierId) {
 	var materialId ='${material.material.materialid}';
 			
 	var url = "${ctx}/business/material?methodtype=supplierPriceHistoryInit&supplierId=" + supplierId+"&materialId="+materialId;
-
 	layer.open({
 		offset :[100,''],
 		type : 2,
@@ -496,7 +462,6 @@ function doShowHistory(supplierId) {
 		content : url,
 	});
 }
-
 function doDelete(recordId){
 	
 	
@@ -522,7 +487,6 @@ function doDelete(recordId){
 		//
 	}
 }
-
 </script>
 </body>
 </html>

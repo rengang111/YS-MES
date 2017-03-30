@@ -25,6 +25,7 @@ public class SupplierModel extends BaseModel {
 	ArrayList<ListOption> provinceList = new ArrayList<ListOption>();
 	ArrayList<ListOption> cityList = new ArrayList<ListOption>();
 	ArrayList<ListOption> unsureList = new ArrayList<ListOption>();
+	ArrayList<ListOption> typeList = new ArrayList<ListOption>();
 	private B_SupplierData supplierBasicInfoData = new B_SupplierData();
 	private B_SupplierData supplier = new B_SupplierData();
 	
@@ -112,6 +113,13 @@ public class SupplierModel extends BaseModel {
 		this.categoryDes = categoryDes;
 	}
 	
+	public ArrayList<ListOption> getTypeList() {
+		return this.typeList;
+	}
+	public void setTypeList(ArrayList<ListOption> typeList) {
+		this.typeList = typeList;
+	}
+
 	public ArrayList<ListOption> getProvinceList() {
 		return this.provinceList;
 	}

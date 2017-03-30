@@ -11,7 +11,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<title>订单采购方案--打印</title>
+<title>BOM方案--打印</title>
 <%@ include file="../../common/common2.jsp"%>
 <link rel="stylesheet" type="text/css" href="${ctx}/css/print.css" />
 <script type="text/javascript">

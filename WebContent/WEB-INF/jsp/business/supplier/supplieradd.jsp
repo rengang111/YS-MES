@@ -234,9 +234,14 @@ function doDelete() {
 			</tr>
 			<tr>
 				<td class="label">详细地址： </td>
-				<td colspan=5>
-					<form:input path="supplier.address" class="long" />
-				</td>
+				<td colspan="3">
+					<form:input path="supplier.address" class="long" /></td>
+				<td class="label" width="100px">供应商类别：</td>
+				<td>
+					<form:select path="supplier.type" style="width:100px">
+						<form:options items="${formModel.typeList}" itemValue="key"
+							itemLabel="value" />
+					</form:select></td>
 			</tr>
 		</table>
 
