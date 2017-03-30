@@ -86,7 +86,13 @@ public class OrderReviewAction extends BaseAction {
 			case "approve":
 				doApprove();//审批
 				rtnUrl = "/business/orderreview/orderreviewview";
-				break;						
+				break;	
+			case "updateExchangeRate":
+				updateExchangeRate();//更新汇率
+				break;		
+			case "getExchangeRate":
+				getExchangeRate();//取得汇率
+				break;					
 				
 		}
 		
@@ -140,8 +146,19 @@ public class OrderReviewAction extends BaseAction {
 
 		model = reviewService.approvAndView();
 		
-	}		
+	}
 	
+	public void updateExchangeRate() throws Exception {
+
+		reviewService.updateExchangeRate();
+		
+	}		
+
+	public void getExchangeRate() throws Exception {
+
+		reviewService.getExchangeRate();
+		
+	}	
 	
 	public void doEdit() throws Exception{
 

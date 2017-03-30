@@ -163,6 +163,36 @@
 			$('#bomForm').submit();
 		});
 	
+		$("#bomPlan\\.currency").change(function(){
+			//alert($(this).val())
+			var currencyId = $(this).val();
+			//var currencyId = '${order.currencyId}';
+			//alert(currencyId)
+			//return;
+
+			var url = "${ctx}/business/orderreview?methodtype=getExchangeRate";
+			url = url + "&currencyId="+currencyId;
+
+			$.ajax({
+				type : "post",
+				url : url,
+				//async : false,
+				//data : null,
+				dataType : "json",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
+				success : function(data) {			
+alert(data["sysValue"])
+					//$().toastmessage('showNoticeToast', "保存成功。");	
+					//$("#costRate").attr('readonly',true);
+					//$("#costRate").addClass('read-only');
+					//$("#doSave").hide();
+					//$("#doEdit").show();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					//alert(textStatus)
+				}
+			});	
+		});
 		
 		foucsInit();//input获取焦点初始化处理
 		

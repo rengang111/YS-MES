@@ -58,6 +58,8 @@
       <f name="A.status" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="计量单位" />
       <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.sysValue" alias="" ctype="" />
       <f name="A.customerFullName" alias="" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
     </select>

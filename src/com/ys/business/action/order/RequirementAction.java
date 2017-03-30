@@ -124,6 +124,16 @@ public class RequirementAction extends BaseAction {
 				orderBomPrint();
 				printOutJsonObj(response, dataMap);
 				rtnUrl = "/business/requirement/requirementprint";
+				break;				
+			case "contractPrint":
+				getRequriementBySupplier();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/requirement/contractprint";
+				break;				
+			case "getRequriementBySupplier":
+				getRequriementBySupplier();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/requirement/contractprint";
 				break;
 				
 		}
@@ -218,6 +228,12 @@ public class RequirementAction extends BaseAction {
 
 		//HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		return service.getZZMaterial();	
+			
+		
+	}
+	public HashMap<String, Object> getRequriementBySupplier() throws Exception {
+
+		return service.getRequriementBySupplier();	
 			
 		
 	}

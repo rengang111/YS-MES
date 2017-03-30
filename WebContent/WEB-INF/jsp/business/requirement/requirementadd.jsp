@@ -385,16 +385,19 @@
 						<form:hidden path="purchaseList[${status.index}].supplierid"  value="${detail.matSupplierId}" /></td>
 					<td><span id="last${status.index}"></span>
 						<input type="hidden" id="lastPrice${status.index}"></td>
-					<td><span id="min${status.index}"></span></td>
-					<td></td>
-						<form:hidden path="purchaseList[${status.index}].subbomid"  value="${detail.subBomId }" />
-						
+					<td><span id="min${status.index}"></span>
+					
 						<c:if test="${detail.gradedFlg eq '1'}">
 							<form:hidden path="purchaseList[${status.index}].materialid"   value="${detail.rawMaterialId}" />
 						</c:if>
 						<c:if test="${detail.gradedFlg ne '1'}">
 							<form:hidden path="purchaseList[${status.index}].materialid"   value="${detail.materialId}" />
 						</c:if>
+					</td>
+					<td></td>
+						<form:hidden path="purchaseList[${status.index}].subbomid"  value="${detail.subBomId }" />
+						
+
 				</tr>
 
 				<script type="text/javascript">
@@ -904,7 +907,7 @@ function autocomplete(){
 		search: function( event, ui ) {
 			
 			var $tds = $(this).parent().parent().find('td');
-			var material = $tds.eq(1).find("input").val();
+			var material = $tds.eq(11).find('input').val();
 			$('#tmpMaterialId').val(material);
 
 			 if(material==""){

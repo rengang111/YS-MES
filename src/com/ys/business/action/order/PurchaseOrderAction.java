@@ -73,10 +73,22 @@ public class PurchaseOrderAction extends BaseAction {
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "creatPurchaseOrder":
+				creatPurchaseOrder();
+				printOutJsonObj(response, dataMap);
+				break;					
+			case "getContract":
+				dataMap = getContract();
+				printOutJsonObj(response, dataMap);
+				break;					
+			case "getContractDetail":
+				dataMap = getContractDetail();
+				printOutJsonObj(response, dataMap);
+				break;
 			case "createZZ":
 				creatPurchaseOrderZZ();
 				rtnUrl = "/business/purchase/purchaseordermain";
-				break;				
+				break;					
 			case "detailView":
 				doDetailView();
 				rtnUrl = "/business/purchase/purchaseorderview";
@@ -125,6 +137,19 @@ public class PurchaseOrderAction extends BaseAction {
 	public void creatPurchaseOrderZZ() throws Exception{
 
 		service.creatPurchaseOrderZZ();
+	}
+	
+	public HashMap<String, Object> getContract() throws Exception{
+
+		return service.getContractList();
+	}
+	public HashMap<String, Object> getContractDetail() throws Exception{
+
+		return service.getContractDetail();
+	}
+	public void creatPurchaseOrder() throws Exception{
+
+		service.creatPurchaseOrder();
 	}	
 
 	public void doDetailView() throws Exception{

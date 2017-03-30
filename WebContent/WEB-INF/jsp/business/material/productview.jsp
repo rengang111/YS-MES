@@ -710,9 +710,9 @@ function doDelete(recordId){
 function openPrint() {
 	
 	var url = '${ctx}/business/requirement?methodtype=printRequirement';
-	var YSId = '${order.YSId}';
+	var materialId = '${product.materialId}';
 	var bomId =  $('#bomId').text();
-	url = url + '&YSId=' + YSId+ '&bomId=' + bomId;
+	url = url + '&materialId=' + materialId+ '&bomId=' + bomId;
 
 	layer.open({
 		offset :[10,''],

@@ -439,4 +439,76 @@ public class OrderReviewService extends BaseService {
 		return model;
 		
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void updateExchangeRate() {
+ 		
+		try {
+
+			String currencyId = request.getParameter("currencyId");
+			String exRate = request.getParameter("rate");
+			
+			S_systemConfigDao dao = new S_systemConfigDao();
+			S_systemConfigData dbData = new S_systemConfigData();
+			List<S_systemConfigData> dbList = null;
+			String where = null;
+			
+			//更新汇率
+			if(exRate != null && !("").equals(exRate)){
+				where = "sysKey='"+currencyId+"'";
+				dbList = (List<S_systemConfigData>)dao.Find(where);
+				
+				if(dbList!=null && dbList.size() >0){
+
+					dbData = dbList.get(0);
+					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+							"SystemConfigUpdate",userInfo);	
+					copyProperties(dbData,commData);
+					dbData.setSysvalue(exRate);
+
+					dao.Store(dbData);	
+				}else{		
+					commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+							"SystemConfigInsert",userInfo);	
+					copyProperties(dbData,commData);	
+					dbData.setSyskey(currencyId);
+					dbData.setSysvalue(exRate);
+					dao.Create(dbData);
+				}
+				dbList.clear();
+			}
+			
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void getExchangeRate() {
+ 		
+		try {
+
+			String currencyId = request.getParameter("currencyId");
+			String exRate = "";
+			
+			S_systemConfigDao dao = new S_systemConfigDao();
+			S_systemConfigData dbData = new S_systemConfigData();
+			List<S_systemConfigData> dbList = null;
+			String where = null;
+			
+			//汇率
+				where = "sysKey='"+currencyId+"'";
+				dbList = (List<S_systemConfigData>)dao.Find(where);
+				
+				if(dbList!=null && dbList.size() >0){
+					
+					exRate = dbList.get(0).getSysvalue();
+				}
+				dbList.clear();
+			
+			
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}		
+	}
 }

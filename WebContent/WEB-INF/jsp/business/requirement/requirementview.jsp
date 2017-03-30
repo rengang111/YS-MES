@@ -33,6 +33,44 @@
 		return o;
 	};	
 	
+	function initEvent(){
+		
+		$('#contractTable').DataTable().on('click', 'tr', function() {
+			
+			//$(this).toggleClass('selected');
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	        	
+	        	$('#contractTable').DataTable().$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	            
+	            var d = $('#contractTable').DataTable().row(this).data();
+				//alert(d["bid_id"]);
+				
+				$('#contractDetail').DataTable().destroy();
+				//$('#set_lines').DataTable().ajax.reload();
+				//ajax_factory_bid_set_lines(d["bid_id"]);
+				//var d = $('#contractTable').DataTable().row(this).data();
+				//alert(d["YSId"])
+				contractDetailView(d["YSId"],d["supplierId"]);
+					            
+	        }
+			
+		});
+		/*
+		var t = $('#contractTable').DataTable();
+		
+		t.row(':eq(0)', { page: 'current' }).select();
+		
+		var d = t.row(':eq(0)').data();
+		
+		contractDetailView(d["supplierId"]);
+		
+		$('#contractDetail').DataTable().cloumns.adjust().draw();
+		*/
+	}
 	
 	$(document).ready(function() {
 		
@@ -43,6 +81,9 @@
 		
 		ZZmaterialView();//合并数量
 
+		contractTableView();//采购合同
+		
+		initEvent();
 		
 		$(".goBack").click(
 				function() {
@@ -55,6 +96,35 @@
 			var bomId=$('#bomId').text();
 			var url = "${ctx}/business/requirement?methodtype=editRequirement&YSId="+YSId+"&bomId="+bomId;
 			location.href = url;		
+		});
+		
+		$("#doContract").click(function() {
+			var YSId = '${order.YSId}';
+			var materialId='${order.materialId}';
+			var url = "${ctx}/business/contract?methodtype=creatPurchaseOrder&YSId="+YSId+"&materialId="+materialId;
+			//location.href = url;
+			$.ajax({
+				type : "post",
+				url : url,
+				//async : false,
+				//data : null,
+				dataType : "text",
+				"contentType": "application/json; charset=utf-8",
+				success : function(data) {			
+
+					$().toastmessage('showNoticeToast', "保存成功。");	
+					$('#contractTable').DataTable().destroy();
+					contractTableView();//
+					
+					//$("#costRate").attr('readonly',true);
+					//$("#costRate").addClass('read-only');
+					//$("#doSave").hide();
+					//$("#doEdit").show();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					alert(textStatus)
+				}
+			});	
 		});
 		
 		$("#print").click(function() {
@@ -71,7 +141,10 @@
 		$(".DTTT_container").css('float','left');
 
 		$( "#tabs" ).tabs();
+
 		$( "#tabs" ).tabs( "option", "active", 2 );//设置默认显示内容
+	    //tab_option = $('#tabs').tabs('getTab',"采购合同").panel('options').tab;  
+	    //tab_option.hide();  
 		
 		$(".tabs1").click( function() {
 			$('#orderBomTable thead tr').each (function (){
@@ -194,6 +267,7 @@
 			<li><a href="#tabs-1" class="tabs1">一级BOM</a></li>
 			<li><a href="#tabs-2" class="tabs2">二级BOM</a></li>
 			<li><a href="#tabs-3" class="tabs3">采购方案</a></li>
+			<li><a href="#tabs-4" class="tabs4">采购合同</a></li>
 		</ul>
 
 		<div id="tabs-1" style="padding: 5px;">
@@ -322,7 +396,53 @@
 		</fieldset>	
 	
 		</div>
-
+		<div id="tabs-4" style="padding: 5px;">
+		
+			<table id="contractTable" class="display" style="width:98%">
+				<thead>				
+					<tr>
+						<th width="1px">No</th>
+						<th class="dt-center" style="width:120px">合同编号</th>
+						<th class="dt-center" style="width:100px">供应商简称</th>
+						<th class="dt-center" >供应商名称</th>
+						<th class="dt-center" style="width:80px">下单日期</th>
+						<th class="dt-center" width="80px">交货日期</th>
+						<th class="dt-center" width="100px">合同金额</th>
+						<th class="dt-center" width="30px"></th>
+					</tr>
+				</thead>			
+			</table>
+			<br/>
+			<fieldset style="min-height: 300px;">
+			<legend>合同明细</legend>
+			<div class="list">
+			<table id="contractDetail" class="display">	
+				<thead>
+				<tr>
+					<th style="width:30px">No</th>
+					<th style="width:150px">ERP编码</th>
+					<th>物料名称</th>
+					<th style="width:80px">数量</th>
+					<th style="width:60px">单价</th>
+					<th style="width:50px">单位</th>
+					<th style="width:80px">金额</th>
+				</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>
+			</div>
+			</fieldset>
+		</div>
 	</div>
 		
 <div style="clear: both"></div>		
@@ -876,6 +996,210 @@ function openPrint() {
 		}    
 	});		
 }
+
+function contractTableView() {
+
+	var YSId='${order.YSId}';
+	var table = $('#contractTable').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+	var t2 = $('#contractTable').DataTable({
+		"paging": false,
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"searching" : false,
+		"pagingType" : "full_numbers",
+        "sScrollY": 250,
+		"retrieve" : false,
+		"async" : false,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/contract?methodtype=getContract&YSId="+YSId,				
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : null,
+				success: function(data){
+
+					var record = data["recordsTotal"];
+					//alert(record);
+					if(record > 0)
+						$( "#tabs" ).tabs( "option", "active", 3 );//设置默认显示内容
+					
+					fnCallback(data);
+
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+       	"language": {
+       		"url":"${ctx}/plugins/datatables/chinese.json"
+       	},
+		"columns": [
+			{"data": null,"className" : 'td-center'},
+			{"data": "contractId"},
+			{"data": "supplierId"},
+			{"data": "supplierName"},
+			{"data": "purchaseDate","className" : 'td-center'},
+			{"data": "deliveryDate","className" : 'td-center'},
+			{"data": "total","className" : 'td-right'},
+			{"data": null,"className" : 'td-right'}
+        ] ,
+		"columnDefs":[
+    		{"targets":7,"render":function(data, type, row){
+    			var contractId = row["contractId"];
+    			//rtn = "<button type=\"button\" id=\"doReport\" class=\"DTTT_button\">提交</button>";
+    			rtn= "<a href=\"###\" onClick=\"showContract('" + row["supplierId"] +"','"+ row["YSId"] + "')\">"+"打印"+"</a>";
+    			return rtn;
+    		}},
+      		{"targets":6,"render":function(data, type, row){
+      			var total = currencyToFloat( row["total"] );			    			
+      			totalPrice = floatToCurrency(total);			    			
+      			return totalPrice;
+      		}}
+            
+          ] 
+       	
+	});
+	
+	/*
+	t2.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t2.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+
+        var d = $('#contractTable').DataTable().row(this).data();
+		contractDetailView(d["supplierId"]);
+		//alert(d["supplierId"]);
+		
+	});
+*/
+	t2.on('order.dt search.dt draw.dt', function() {
+		t2.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			var num   = i + 1;
+			cell.innerHTML = num ;
+		});
+	}).draw();
+
+	
+}//ajax()供应商信息
+
+
+function contractDetailView(YSId,supplierId) {
+
+	//var YSId='${order.YSId}';
+	var table = $('#contractDetail').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+	var t2 = $('#contractDetail').DataTable({
+		"paging": false,
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"searching" : false,
+		"pagingType" : "full_numbers",
+		"retrieve" : false,
+		"async" : false,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/contract?methodtype=getContractDetail&YSId="+YSId+"+&supplierId="+supplierId,				
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : null,
+				success: function(data){
+
+					
+					fnCallback(data);
+
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+       	"language": {
+       		"url":"${ctx}/plugins/datatables/chinese.json"
+       	},
+		"columns": [
+			{"data": null,"className" : 'td-center'},
+			{"data": "materialId"},
+			{"data": "materialName"},
+			{"data": "quantity","className" : 'td-right'},
+			{"data": "price","className" : 'td-right'},
+			{"data": "unit","className" : 'td-center'},
+			{"data": "totalPrice","className" : 'td-right'}
+        ] 
+		
+       	
+	});
+	
+	t2.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t2.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+		
+	});
+
+	t2.on('order.dt search.dt draw.dt', function() {
+		t2.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			var num   = i + 1;
+			cell.innerHTML = num ;
+		});
+	}).draw();
+
+	
+} // ajax()供应商信息
+
+function showContract(supplierId,YSId) {
+	//accessFlg:1 标识新窗口打开
+	var url = '${ctx}/business/requirement?methodtype=contractPrint';
+	url = url + '&YSId=' + YSId+'&supplierId='+supplierId;
+	//alert(YSId)
+	//"sAjaxSource" : "${ctx}/business/contract?methodtype=getContractDetail&supplierId="+supplierId,	
+	
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1100px', '520px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		  baseBomView();
+		  return false; 
+		}    
+	});		
+
+};
 
 </script>
 

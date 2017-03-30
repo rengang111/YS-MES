@@ -23,12 +23,14 @@ import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.material.ZZMaterialModel;
 import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MaterialDao;
+import com.ys.business.db.dao.B_PriceReferenceDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_ZZMaterialPriceDao;
 import com.ys.business.db.dao.B_ZZRawMaterialDao;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_ZZMaterialPriceData;
 import com.ys.business.db.data.B_ZZRawMaterialData;
@@ -251,6 +253,9 @@ public class ZZMaterialService extends BaseService {
 				insertSupplierPrice(priceData);
 				
 			}
+
+			//更新物料单价信息:最新,最低
+			updatePriceInfo(materialId);
 			
 			ts.commit();
 			
@@ -294,7 +299,8 @@ public class ZZMaterialService extends BaseService {
 				//找不到数据,新增处理
 				insertPrice(reqData);
 				
-			}
+			}			
+			
 		}catch(Exception e){
 			
 		}
@@ -323,7 +329,91 @@ public class ZZMaterialService extends BaseService {
 
 	}	
 	
+	public void updatePriceInfo(String materialId) throws Exception{
+		
+		B_PriceReferenceDao dao = new B_PriceReferenceDao();
+		B_PriceReferenceData dt = new B_PriceReferenceData();
 
+
+		//删除历史数据
+		String astr_Where = "materialId = '"+materialId+"'";
+		try{
+			dao.RemoveByWhere(astr_Where);
+		}catch (Exception e){
+			//continue
+		}
+		
+		//设置物料编码
+		dt.setMaterialid(materialId);
+		
+		//编辑最新价格
+		dt = getLastPriceInfo(dt,materialId);
+		//dt.setLastprice(last.getPrice());
+		//dt.setLastsupplierid(last.getSupplierid());
+		//dt.setLastdate(last.getPricedate());
+		
+		//编辑最低价格
+		dt = getMixPriceInfo(dt,materialId);
+		
+		
+		//更新物料单价参考信息表
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"PriceReferenceInsert",userInfo);
+		copyProperties(dt,commData);
+						
+		String guid = BaseDAO.getGuId();
+		dt.setRecordid(guid);
+		
+		dao.Create(dt);
+		
+	}
+	
+	/*
+	 * 1.显示当前选中物料的基本信息
+	 * 2.显示相关的所有子编码信息(N条数据) 
+	 */
+	private B_PriceReferenceData getMixPriceInfo(
+			B_PriceReferenceData dt,
+			String materialid) throws Exception{
+
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("getMinPriceByMaterialId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("materialid", materialid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			dt.setMinprice(dataModel.getYsViewData().get(0).get("price"));
+			dt.setMinsupplierid(dataModel.getYsViewData().get(0).get("supplierId"));
+			dt.setMindate(dataModel.getYsViewData().get(0).get("priceDate"));
+		}
+		return dt;
+	}
+	
+
+	private B_PriceReferenceData getLastPriceInfo(
+			B_PriceReferenceData dt,
+			String materialid) throws Exception{
+
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("getLastPriceByMaterialId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("materialid", materialid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			dt.setLastprice(dataModel.getYsViewData().get(0).get("price"));
+			dt.setLastsupplierid(dataModel.getYsViewData().get(0).get("supplierId"));
+			dt.setLastdate(dataModel.getYsViewData().get(0).get("priceDate"));
+		}
+		return dt;
+	}
 	
 	@SuppressWarnings("unchecked")
 	private B_PriceSupplierData getPriceSupplierBySupplierId(String materialId) {

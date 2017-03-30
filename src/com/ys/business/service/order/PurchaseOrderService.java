@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.system.service.common.BaseService;
+import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
@@ -169,12 +170,16 @@ public class PurchaseOrderService extends BaseService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		supplierList = baseQuery.getYsQueryData(0, 0);
 				
-		//设置供应商下拉框
-		//setOptiont(supplierList);
-		
 		return supplierList;	
 		
 	}
+	
+	public List<B_PurchaseOrderData> getSupplierContrct(String YSId) throws Exception {
+			
+		String astr_Where = "YSId = '"+YSId+"'";
+		return (List<B_PurchaseOrderData>)orderDao.Find(astr_Where);
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	private List<B_MaterialRequirmentData> getContractDetail(String where){
@@ -220,7 +225,7 @@ public class PurchaseOrderService extends BaseService {
 	 * 1.物料新增处理(一条数据)
 	 * 2.子编码新增处理(N条数据)
 	 */
-	public void insert(String YSId) throws Exception  {
+	public void insert(String YSId) throws Exception {
 
 		ts = new BaseTransaction();
 
@@ -228,8 +233,18 @@ public class PurchaseOrderService extends BaseService {
 			ts.begin();
 
 			String materialId = request.getParameter("materialId");
-			//以供应商为单位集计
+			
+			//以采购方案里的供应商为单位集计
 			ArrayList<HashMap<String, String>> supplierList = getSupplierList(YSId);
+					
+			if(supplierList == null || supplierList.size() <= 0)
+				return;
+				
+			//合同里的供应商
+			List<B_PurchaseOrderData> supplierContrct = getSupplierContrct(YSId);
+			
+			ArrayList<HashMap<String, String>> supplierdelete = 
+					new ArrayList<HashMap<String, String>>();
 
 			for(int i=0;i<supplierList.size();i++){
 				
@@ -237,34 +252,56 @@ public class PurchaseOrderService extends BaseService {
 				String shortName  = supplierList.get(i).get("shortName");
 				String total      = supplierList.get(i).get("total");
 				
-				//取得供应商的合同流水号
-				//父编号:年份+供应商简称
-				String parentId = "";
-				if(null != YSId && YSId.length() > 3 )
-					parentId = YSId.substring(0,2);//耀升编号前两位是年份
-				parentId = parentId + shortName;
+				if(supplierId == null || supplierId.equals(""))
+					continue;
 				
-				int subId = getContractCode(parentId);
+				boolean suppFlg = true;
+				for(B_PurchaseOrderData order:supplierContrct){
+					
+					String supplierIdOrder = order.getSupplierid();
+					
+					if(supplierIdOrder == null || supplierIdOrder.equals(""))
+						continue;
+					
+					if(supplierIdOrder.equals(supplierId)){
+						suppFlg = false;
+						supplierContrct.remove(order);
+						break;
+					}
+				}
+				
+				if(suppFlg){
+					
+					//取得供应商的合同流水号
+					//父编号:年份+供应商简称
+					String parentId = "";
+					if(null != YSId && YSId.length() > 3 )
+						parentId = YSId.substring(0,2);//耀升编号前两位是年份
+					parentId = parentId + shortName;
+					
+					int subId = getContractCode(parentId);
 
-				//3位流水号格式化	
-				//采购合同编号:16YS081-WL002
-				String contractId = BusinessService.getContractCode(YSId, shortName, subId);
-				
-				//新增采购合同
-				insertOrder(YSId,materialId,supplierId,contractId,parentId,subId,total);
-				
-				//从物料需求表取得合同详情
-				String where = " YSId = '"+YSId +"'"+ 
-						" AND supplierId = '"+supplierId +"'"+ 
-						" AND deleteFlag = '0' ";
-				List<B_MaterialRequirmentData> detailList = getContractDetail(where);				
-				
-				for(B_MaterialRequirmentData data:detailList){
-														
-					//新增合同详情
-					insertOrderDetail(data,contractId);					
+					//3位流水号格式化	
+					//采购合同编号:16YS081-WL002
+					String contractId = BusinessService.getContractCode(YSId, shortName, subId);
+					
+					//新增采购合同
+					insertOrder(YSId,materialId,supplierId,contractId,parentId,subId,total);
+					
+					//从物料需求表取得合同详情
+					String where = " YSId = '"+YSId +"'"+ 
+							" AND supplierId = '"+supplierId +"'"+ 
+							" AND deleteFlag = '0' ";	
 				}				
 			}
+			
+			if(supplierContrct.size() > 0){
+				//删除处理
+				for(B_PurchaseOrderData dt:supplierContrct){
+					orderDao.Remove(dt);
+				}
+			}
+
 						
 			ts.commit();
 		}
@@ -305,6 +342,8 @@ public class PurchaseOrderService extends BaseService {
 		data.setSubid(String.valueOf(subId));
 		data.setSupplierid(supplierId);
 		data.setTotal(total);
+		data.setPurchasedate(CalendarUtil.fmtYmdDate());
+		data.setDeliverydate(CalendarUtil.dateAddToString(data.getPurchasedate(),20));
 		
 		orderDao.Create(data);	
 	}	
@@ -513,7 +552,61 @@ public class PurchaseOrderService extends BaseService {
 		
 		//getContractCode(YSId,suppShortName);
 	}
+	
+	//生成采购合同--订单采购
+	public void creatPurchaseOrder() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		//String supplierId = request.getParameter("supplierId");
+		
+		insert(YSId);
+		
+	}
+	//生成采购合同--自制品
+	public HashMap<String, Object> getContractList() throws Exception {
 
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		String YSId = request.getParameter("YSId");
+	
+		dataModel.setQueryName("getContractList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+	
+		userDefinedSearchCase.put("YSId", YSId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+
+	//
+	public HashMap<String, Object> getContractDetail() throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		String YSId = request.getParameter("YSId");
+		String supplierId = request.getParameter("supplierId");
+	
+		dataModel.setQueryName("getContractDetail");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("supplierId", supplierId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
 	public void updateAndView() throws Exception {
 		
 		update();

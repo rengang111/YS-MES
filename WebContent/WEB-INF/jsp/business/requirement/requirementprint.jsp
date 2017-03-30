@@ -29,7 +29,7 @@
 </script>
 </head>
 <body>
-<button type="button" id="print" onclick="doPrint();"class="DTTT_button " style="float: right;margin: 15px 20px -50px 0px;height: 40px;width: 70px;">打印</button>
+<button type="button" id="print" onclick="doPrint();"class="DTTT_button " style="float: right;margin: 15px 20px -54px 0px;height: 40px;width: 70px;">打印</button>
 
 <div id="container">
 <!--主工作区,编辑页面或查询显示页面-->
@@ -40,28 +40,16 @@
 		
 		
 		<input type="hidden" id="tmpMaterialId" />
-		<table class="form" id="table_form" style="border: 1px solid #c0c0c0;">
-			<tr> 				
-				<td class="label" style="width:100px;"><label>耀升编号：</label></td>					
-				<td style="width:120px;">${order.YSId}</td>
-							
+		<table class="form" id="table_form" style="height:50px;border: 1px solid #c0c0c0;">
+			<tr> 							
 				<td class="label" style="width:100px;"><label>产品编号：</label></td>					
-				<td style="width:120px;">${order.materialId}</td>
+				<td style="width:120px;">${product.materialId}</td>
 			
 				<td class="label" style="width:100px;"><label>产品名称：</label></td>				
-				<td>&nbsp;${order.materialName}</td>
-			</tr>
-			<tr>
-				<td class="label"><label>交货日期：</label></td>
-				<td>${order.orderDate}</td>
-
-				<td class="label"><label>订单数量：</label></td>
-				<td><span id="quantity">${order.quantity}</span>（${order.unit}）</td>
-					
-				<td class="label"><label>客户名称：</label></td>
-				<td>${order.customerFullName}</td>
-			</tr>							
-		</table>	
+				<td>&nbsp;${product.materialName}</td>
+			</tr>						
+		</table>
+		<!--  
 		<table class="form" id="table_form2">
 			<tr>
 				<td class="td-center" width="180px"><label>BOM编号</label></td>
@@ -82,7 +70,7 @@
 				<td class="td-center"><span id="totalCost"></span></td>
 			</tr>								
 		</table>
-
+		-->
 		<div class="list">	
 			<table id="orderBomTable" class="display" >
 				<thead>				
@@ -192,39 +180,11 @@ function printPage(preview)
 	}
 }
 
-function printConten(preview, html){
-	
-	//try{
-		var content=html;
-		var oricontent=window.document.body.innerHTML;
-		while(content.indexOf("{$printhide}")>=0) {
-			content=content.replace("{$printhide}","style='display:none'");
-		}
-		//if(content.indexOf("ID=\"PrintControl\"")<0) 
-		content=content+"<OBJECT ID=\"PrintControl\" WIDTH=0 HEIGHT=0 CLASSID=\"CLSID:8856F961-340A-11D0-A96B-00C04FD705A2\"></OBJECT>";
-		window.document.body.innerHTML=content;
-		PrintControl.ExecWB(8,1);// 打印预览，(1,1)打开，(4,1)另存为，(17,1)全选，(10,1)属性，(6,1)打印，(6,6)直接打印，(8,1)页面设置
-		
-		if(preview==null || preview==false) {
-			//PrintControl.ExecWB(6,1);
-		}else {
-
-			//alert(11)
-			
-			//PrintControl.ExecWB(7,1); //OLECMDID_PRINT=7; OLECMDEXECOPT_DONTPROMPTUSER=6/OLECMDEXECOPT_PROMPTUSER=1
-		}
-		//window.document.body.innerHTML=oricontent;
-	//}
-	//catch(ex){ 
-	//	alert("执行Javascript脚本出错。"); 
-	//}
-}
-
 
 function baseBomView() {
 
-	var bomId=$('#bomId').text();
-
+	var bomId='${bomId }';
+	
 	var t2 = $('#orderBomTable').DataTable({
 		"paging": false,
 		"processing" : false,

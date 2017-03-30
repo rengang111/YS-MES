@@ -24,10 +24,12 @@ import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.material.MaterialModel;
 import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MaterialDao;
+import com.ys.business.db.dao.B_PriceReferenceDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
 import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
 import com.ys.business.db.data.CommFieldsData;
@@ -508,6 +510,8 @@ public class MaterialService extends BaseService {
 				
 				priceDao.Store(DBData);	
 				
+				updatePriceInfo(DBData.getMaterialid());
+				
 				//插入历史表
 				copyProperties(historyData,DBData);
 				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialUpdate",userInfo);
@@ -532,7 +536,9 @@ public class MaterialService extends BaseService {
 				reqData.setPricesource(BusinessConstants.PRICESOURCE_OTHER);	
 				reqData.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
 	
-				priceDao.Create(reqData);				
+				priceDao.Create(reqData);	
+
+				updatePriceInfo(reqData.getMaterialid());//
 
 				//插入历史表
 				copyProperties(historyData,reqData);
@@ -546,6 +552,7 @@ public class MaterialService extends BaseService {
 				historyDao.Create(historyData);	
 			}
 
+			
 			ts.commit();
 			
 			reqFormBean.setEndInfoMap(NORMAL, "suc001", "");
@@ -644,14 +651,18 @@ public class MaterialService extends BaseService {
 					reqData.setCustomerid(customerid);				
 				}
 				
-				if(preMaterialCheckById(materialId)){//物料编号重复check
+				String record = preMaterialCheckById(materialId);
+				if(record ==null || record.equals("")){//物料编号重复check
 					
 					dao.Create(reqData);
 				}
 				//把第一条作为为默认对象
 				if(frist){
-					
-					selectedRecord = guid;
+					if(record ==null || record.equals("")){
+						selectedRecord = guid;	
+					}else{	
+						selectedRecord = record;				
+					}
 					frist = false;
 				}
 			}
@@ -756,7 +767,16 @@ public class MaterialService extends BaseService {
 					//dbData.setSubid(data.getSubid());//以后要恢复的
 					dbData.setSubiddes(data.getSubiddes());
 					
-					dao.Store(dbData);
+					String record = preMaterialCheckById(materialId);
+					
+					if(record == null || record.equals("")){
+
+						dao.Store(dbData);
+					}else{
+						//返回画面,提示重复
+						selectedRecord = record;
+					}
+					
 				}				
 			}
 			
@@ -770,12 +790,91 @@ public class MaterialService extends BaseService {
 		}
 				
 		return model;
-	}	
+	}
+	
+	public void updatePriceInfo(String materialId) throws Exception{
+		
+		B_PriceReferenceDao dao = new B_PriceReferenceDao();
+		B_PriceReferenceData dt = new B_PriceReferenceData();
+
+
+		//删除历史数据
+		String astr_Where = "materialId = '"+materialId+"'";
+		try{
+			dao.RemoveByWhere(astr_Where);
+		}catch (Exception e){
+			//continue
+		}
+		
+		//设置物料编码
+		dt.setMaterialid(materialId);
+		
+		//编辑最新价格
+		dt = getLastPriceInfo(dt,materialId);
+		//dt.setLastprice(last.getPrice());
+		//dt.setLastsupplierid(last.getSupplierid());
+		//dt.setLastdate(last.getPricedate());
+		
+		//编辑最低价格
+		dt = getMixPriceInfo(dt,materialId);
+		
+		
+		//更新物料单价参考信息表
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"PriceReferenceInsert",userInfo);
+		copyProperties(dt,commData);
+						
+		String guid = BaseDAO.getGuId();
+		dt.setRecordid(guid);
+		
+		dao.Create(dt);
+		
+	}
 	
 	/*
 	 * 1.显示当前选中物料的基本信息
 	 * 2.显示相关的所有子编码信息(N条数据) 
 	 */
+	private B_PriceReferenceData getMixPriceInfo(
+			B_PriceReferenceData dt,
+			String materialid) throws Exception{
+		
+		dataModel.setQueryName("getMinPriceByMaterialId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("materialid", materialid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			dt.setMinprice(dataModel.getYsViewData().get(0).get("price"));
+			dt.setMinsupplierid(dataModel.getYsViewData().get(0).get("supplierId"));
+			dt.setMindate(dataModel.getYsViewData().get(0).get("priceDate"));
+		}
+		return dt;
+	}
+	
+
+	private B_PriceReferenceData getLastPriceInfo(
+			B_PriceReferenceData dt,
+			String materialid) throws Exception{
+		
+		dataModel.setQueryName("getLastPriceByMaterialId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("materialid", materialid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			dt.setLastprice(dataModel.getYsViewData().get(0).get("price"));
+			dt.setLastsupplierid(dataModel.getYsViewData().get(0).get("supplierId"));
+			dt.setLastdate(dataModel.getYsViewData().get(0).get("priceDate"));
+		}
+		return dt;
+	}
 	
 	public Model SelectSupplier(String materialid) {
 
@@ -885,7 +984,7 @@ public class MaterialService extends BaseService {
 		MaterialModel model = new MaterialModel();
 		B_MaterialData data = new B_MaterialData();	
 		B_MaterialDao dao = new B_MaterialDao();	
-													
+															
 		try {	
 			
 			ts = new BaseTransaction();										
@@ -894,8 +993,10 @@ public class MaterialService extends BaseService {
 			for (String key:removeData) {									
 												
 				data.setRecordid(key);							
-				dao.Remove(data);								
+				dao.Remove(data);	
+				
 			}
+			
 			ts.commit();
 		}
 		catch(Exception e) {
@@ -911,13 +1012,19 @@ public class MaterialService extends BaseService {
 		MaterialModel model = new MaterialModel();
 		B_PriceSupplierData data = new B_PriceSupplierData();	
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();	
-													
+
+		String materialid = request.getParameter("key");	
+		
 		try {	
 												
 			String recordid = request.getParameter("recordId");									
 			data.setRecordid(recordid);
 
 			dao.Remove(data);
+			
+
+			//更新该物料的最新价格,最低价格
+			updatePriceInfo(materialid);
 			
 		}
 		catch(Exception e) {
@@ -989,10 +1096,10 @@ public class MaterialService extends BaseService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private boolean preMaterialCheckById(
+	private String preMaterialCheckById(
 			String materialId) throws Exception {
 
-		boolean rtn = true;
+		String rtn = "";
 		List<B_MaterialData> priceList = null;
 
 		String where = " materialId = '" + materialId +
@@ -1001,7 +1108,7 @@ public class MaterialService extends BaseService {
 		priceList = (List<B_MaterialData>)dao.Find(where);
 		
 		if(priceList != null && priceList.size() > 0)
-			rtn = false;	
+			rtn = priceList.get(0).getRecordid();	
 			
 		return rtn;
 	}

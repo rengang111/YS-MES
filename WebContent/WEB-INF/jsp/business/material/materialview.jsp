@@ -463,14 +463,14 @@ function doShowHistory(supplierId) {
 	});
 }
 function doDelete(recordId){
-	
+	var materialId= '${material.material.materialid}';
 	
 	if (recordId != ""){ //
 		$.ajax({
 			type : "post",
 			url : "${ctx}/business/material?methodtype=deletePrice&recordId="+recordId,
 			async : false,
-			data : 'key=' + recordId,
+			data : 'key=' + materialId,
 			dataType : "json",
 			success : function(data) {
 				$('#TSupplier').DataTable().ajax.reload(null,false);

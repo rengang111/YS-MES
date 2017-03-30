@@ -233,6 +233,29 @@ public class RequirementService extends BaseService {
 		return modelMap;
 	}
 	
+	public void getMaterialInfo(String materialid) {
+
+		try{
+
+			dataModel.setQueryFileName("/business/material/materialquerydefine");
+			dataModel.setQueryName("getMaterialByMaterialId");
+			
+			baseQuery = new BaseQuery(request, dataModel);
+
+			userDefinedSearchCase.put("materialid", materialid);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			modelMap = baseQuery.getYsFullData();
+
+			model.addAttribute("product",dataModel.getYsViewData().get(0));
+
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+		
+	}
+	
 	/*
 	 * 1.原材料需求表新增处理(N条数据)
 	 */
@@ -971,13 +994,13 @@ public class RequirementService extends BaseService {
 
 	public void printProcurement() throws Exception {
 		
-		String YSId = request.getParameter("YSId");	
+		String materialId = request.getParameter("materialId");	
 		String bomId = request.getParameter("bomId");	
 		
 		//getPurchaseDetail(YSId);
 		model.addAttribute("bomId",bomId);
 		
-		getOrderDetail(YSId);		
+		getMaterialInfo(materialId);		
 	}
 
 	public HashMap<String, Object> getZZMaterial() throws Exception {
@@ -1009,5 +1032,32 @@ public class RequirementService extends BaseService {
 		String bomId = request.getParameter("bomId");
 		
 		return getOrderBomDetail(bomId);		
+	}
+	
+	public HashMap<String, Object> getRequriementBySupplier() throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		String YSId = request.getParameter("YSId");
+		String supplierId = request.getParameter("supplierId");
+
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getRequriementBySupplier");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("supplierId", supplierId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		model.addAttribute("contractList",dataModel.getYsViewData());
+		model.addAttribute("contract",dataModel.getYsViewData().get(0));
+		
+		modelMap.put("retValue", "success");	
+		
+		return modelMap;
+			
 	}
 }

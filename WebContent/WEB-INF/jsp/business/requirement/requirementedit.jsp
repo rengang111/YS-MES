@@ -316,6 +316,7 @@
 						<th class="dt-center" width="60px">供应商</th>						
 						<th class="dt-center" width="100px">当前价格</th>	
 						<th class="dt-center" style="width:100px">历史最低</th>	
+						<th class="dt-center" style="width:1px"></th>	
 					</tr>
 				</thead>
 				<tbody>
@@ -333,13 +334,14 @@
 					<td><form:input  path="purchaseList[${status.index}].price"  value="${detail.price}"  class="cash" style="width:100px" /></td>				
 					<td><span id="total${status.index}"></span>
 						<form:hidden path="purchaseList[${status.index}].totalprice" /></td>					
-					<td><input type="text" name="attributeList2" class="attributeList2"  value="${detail.supplierId}" style="width:100px" />
-						<form:hidden path="purchaseList[${status.index}].supplierid"  value="${detail.supplierId}" /></td>
+					<td><form:input path="purchaseList[${status.index}].supplierid"  class="attributeList2"  value="${detail.supplierId}" style="width:100px" /></td>
 					<td><span id="last${status.index}"></span>
 						<input type="hidden" id="lastPrice${status.index}"></td>
-					<td><span id="min${status.index}"></span></td>
+					<td><span id="min${status.index}"></span>
+						<form:hidden path="purchaseList[${status.index}].materialid"  value="${detail.materialId}" /></td>
+					<td></td>
 					
-						<form:hidden path="purchaseList[${status.index}].materialid"  value="${detail.materialId}" />
+						
 					
 				</tr>
 
@@ -709,9 +711,16 @@ function requirementAjax() {
 				}, {"className":"td-right"			
 				}, {"className":"td-right"
 				}, {"className":"td-right"
+				}, {"className":"td-right"
 				}			
 			],
-		     "aaSorting": [[ 1, "asc" ]]
+		    "aaSorting": [[ 1, "asc" ]],
+			"columnDefs":[
+	    		{
+					"visible" : false,
+					"targets" : [ 12 ]
+				} 
+			] 
 		
 	}).draw();
 
@@ -812,7 +821,7 @@ function autocomplete(){
 		search: function( event, ui ) {
 			
 			var $tds = $(this).parent().parent().find('td');
-			var material = $tds.eq(1).find("input").val();
+			var material = $tds.eq(11).find('input').val();
 			$('#tmpMaterialId').val(material);
 
 			 if(material==""){

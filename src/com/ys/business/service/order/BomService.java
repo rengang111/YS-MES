@@ -1189,14 +1189,14 @@ public class BomService extends BaseService {
 			bomId = BusinessService.getBidBOMFormatId(parentId,code, true);
 			
 		}else{
-			newParentId = BusinessService.getOrderBOMParentId(parentId);
+			parentId = BusinessService.getOrderBOMParentId(parentId);
 			bomId = BusinessService.getOrderBOMFormatId(parentId,code, true);
 			
 		}
 		
 		bomPlanData.setBomid(bomId);
 		bomPlanData.setSubid(String.valueOf( code+1 ));
-		bomPlanData.setParentid(newParentId);
+		bomPlanData.setParentid(parentId);
 		
 		reqModel.setBomPlan(bomPlanData);
 

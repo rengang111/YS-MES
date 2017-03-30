@@ -167,6 +167,28 @@ public class CalendarUtil {
 	}
 	
 	/**
+	 * ���ڸ�ʽ��
+	 *
+	 * @param	无		systemDate
+	 * @return	String		yyyy-MM-dd
+	 * @throws ParseException 
+	 */
+	public static String dateAddToString(String date,int days) throws ParseException {
+		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
+		Date d = sd.parse(date);
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		c.add(Calendar.DAY_OF_MONTH, days);
+		return CalendarUtil.fmtDate(c.getTime(), "yyyy-MM-dd");	
+		/*
+		 date=new   date();//取时间 
+	     Calendar   calendar   =   new   GregorianCalendar(); 
+	     calendar.setTime(date); 
+	     calendar.add(calendar.DATE,1);//把日期往后增加一天.整数往后推,负数往前移动 
+	     date=calendar.getTime();   //这个时间就是日期往后推一天的结果
+	     */
+	}	
+	/**
 	 * �����ж�
 	 *
 	 * @param	date		�����������

@@ -84,7 +84,36 @@
 			$('#bomForm').attr("action", "${ctx}/business/requirement?methodtype=create&YSId="+YSId+"&materialId="+materialId+"&order="+order);
 			$('#bomForm').submit();
 		});
-					
+		
+		$("#bomPlan\\.exchangerate").blur(function() {
+			var rate = $(this).val();
+			var currencyId = '${order.currencyId}';
+			//alert(currencyId)
+			//return;
+
+			var url = "${ctx}/business/orderreview?methodtype=updateExchangeRate";
+			url = url + "&currencyId="+currencyId+"&rate="+rate;
+
+			$.ajax({
+				type : "post",
+				url : url,
+				//async : false,
+				//data : null,
+				dataType : "text",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
+				success : function(data) {			
+
+					//$().toastmessage('showNoticeToast', "保存成功。");	
+					//$("#costRate").attr('readonly',true);
+					//$("#costRate").addClass('read-only');
+					//$("#doSave").hide();
+					//$("#doEdit").show();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					//alert(textStatus)
+				}
+			});	
+		});
 		
 		$("input:text").focus (function(){
 		    $(this).select();
@@ -350,7 +379,7 @@ function documentaryAjax4() {
 					<td class="td-center"><span id="orderPrice">${order.price}</span></td>
 					<!-- <td class="td-center">${order.currency}</td> -->
 					<td class="td-center">
-						<form:input path="bomPlan.exchangerate" class="cash exchange mini"  value="${bomPlan.exchangerate}"/></td>
+						<form:input path="bomPlan.exchangerate" class="cash exchange mini"  value="${order.sysValue}"/></td>
 					<td class="td-center">
 						<form:input path="bomPlan.rmbprice" class="read-only cash short" /></td>
 					<td class="td-center">
