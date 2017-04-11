@@ -56,8 +56,9 @@
 		$("#attribute2").attr('readonly', "true");
 
 		$('#currency').val("${DisplayData.mouldFactoryData.currency}");
-		if ($('#currency').val() == "") {
-		    $("#currency option").each(function(){  
+	
+		if ($('#currency').val() == null) {
+		    $("#currency option").each(function(){
 		        if($(this).text() == "人民币"){  
 		            $(this).attr("selected","selected");  
 		        }  
