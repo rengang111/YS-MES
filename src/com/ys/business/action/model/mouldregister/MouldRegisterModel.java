@@ -23,26 +23,38 @@ import com.ys.business.db.data.B_ProcessControlData;
 import com.ys.business.db.data.B_ProjectTaskCostData;
 import com.ys.business.db.data.B_ProjectTaskData;
 import com.ys.business.db.data.B_ReformLogData;
+import com.ys.business.db.data.B_SupplierData;
 import com.ys.system.db.data.S_DICData;
 
 public class MouldRegisterModel extends BaseModel {
 	private final String className = "com.ys.business.service.mouldcontract.MouldRegisterService";
 	private String keyBackup = "";
 	private B_MouldBaseInfoData mouldBaseInfoData = new B_MouldBaseInfoData();
+	private B_MouldFactoryData mouldFactoryData = new B_MouldFactoryData();
+	private B_SupplierData supplierData = new B_SupplierData();
 	private ArrayList<HashMap<String, String>> mouldSubDatas = new ArrayList<HashMap<String, String>>();
 	private ArrayList<HashMap<String, String>> mouldFactoryDatas = new ArrayList<HashMap<String, String>>();
 
 	private List<B_MouldFactoryData> detailLines;
-	
+
+	private String operType = "";
+	private String activeSubCode = "";
+	private String subCode = "";
 	private String productModelId = "";
 	private String productModelIdView = "";
 	private String productModelName = "";
 	private String mouldFactoryId = "";
 	private String mouldFactoryName = "";
 	private String type = "";
+	private String unit = "";
+	private String priceTime = "";
+	private String supplierid = "";
+	private String currency = "";
 	
 	private ArrayList<ListOption> typeList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> mouldFactoryList = new ArrayList<ListOption>();
+	private ArrayList<ListOption> unitList = new ArrayList<ListOption>();
+	private ArrayList<ListOption> currencyList = new ArrayList<ListOption>();
 	
 	private String imageFileName = "";
 	private String[] filenames;
@@ -69,6 +81,19 @@ public class MouldRegisterModel extends BaseModel {
 		this.mouldBaseInfoData = mouldBaseInfoData;
 	}
 
+	public B_MouldFactoryData getMouldFactoryData() {
+		return this.mouldFactoryData;
+	}
+	public void setMouldFactoryData(B_MouldFactoryData mouldFactoryData) {
+		this.mouldFactoryData = mouldFactoryData;
+	}
+	public B_SupplierData getSupplierData() {
+		return this.supplierData;
+	}
+	public void setSupplierData(B_SupplierData supplierData) {
+		this.supplierData = supplierData;
+	}
+	
 	public ArrayList<HashMap<String, String>> getMouldSubDatas() {
 		return this.mouldSubDatas;
 	}
@@ -118,6 +143,38 @@ public class MouldRegisterModel extends BaseModel {
 	public void setType(String type) {
 	    this.type = type;
 	}
+	public String getUnit() {
+	    return this.unit;
+	}
+	public void setUnit(String unit) {
+	    this.unit = unit;
+	}
+	public String getPriceTime() {
+	    return this.priceTime;
+	}
+	public void setPriceTime(String priceTime) {
+	    this.priceTime = priceTime;
+	}
+	public String getSupplierid() {
+	    return this.supplierid;
+	}
+	public void setSupplierid(String supplierid) {
+	    this.supplierid = supplierid;
+	}
+	public String getCurrency() {
+	    return this.currency;
+	}
+	public void setCurrency(String currency) {
+	    this.currency = currency;
+	}
+
+	public String getOperType() {
+	    return this.operType;
+	}
+	public void setOperType(String operType) {
+	    this.operType = operType;
+	}
+
 	public ArrayList<ListOption> getTypeList() {
 		return this.typeList;
 	}
@@ -129,6 +186,18 @@ public class MouldRegisterModel extends BaseModel {
 	}
 	public void setMouldFactoryList(ArrayList<ListOption> mouldFactoryList) {
 		this.mouldFactoryList = mouldFactoryList;
+	}
+	public ArrayList<ListOption> getUnitList() {
+		return this.unitList;
+	}
+	public void setUnitList(ArrayList<ListOption> unitList) {
+		this.unitList = unitList;
+	}
+	public ArrayList<ListOption> getCurrencyList() {
+		return this.currencyList;
+	}
+	public void setCurrencyList(ArrayList<ListOption> currencyList) {
+		this.currencyList = currencyList;
 	}
 	
 	public List<B_MouldFactoryData> getDetailLines() {
@@ -172,4 +241,18 @@ public class MouldRegisterModel extends BaseModel {
 	public void setNowUseImage(String nowUseImage) {
 		this.nowUseImage = nowUseImage;
 	}
+	
+	public String getActiveSubCode() {
+		return this.activeSubCode;
+	}
+	public void setActiveSubCode(String activeSubCode) {
+		this.activeSubCode = activeSubCode;
+	}
+	public String getSubCode() {
+		return this.subCode;
+	}
+	public void setSubCode(String subCode) {
+		this.subCode = subCode;
+	}
+
 }

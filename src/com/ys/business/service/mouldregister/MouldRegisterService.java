@@ -2,8 +2,10 @@ package com.ys.business.service.mouldregister;
 
 import java.io.File;
 import java.net.URLDecoder;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
@@ -16,10 +18,18 @@ import com.ys.business.action.model.externalsample.ExternalSampleModel;
 import com.ys.business.action.model.mouldregister.MouldRegisterModel;
 import com.ys.business.db.dao.B_ExternalSampleDao;
 import com.ys.business.db.dao.B_MouldBaseInfoDao;
+import com.ys.business.db.dao.B_MouldFactoryDao;
+import com.ys.business.db.dao.B_MouldHistoryPriceDao;
+import com.ys.business.db.dao.B_MouldLastestPriceDao;
+import com.ys.business.db.dao.B_MouldSubDao;
+import com.ys.business.db.dao.B_SupplierDao;
 import com.ys.business.db.data.B_ExternalSampleData;
 import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_MouldFactoryData;
+import com.ys.business.db.data.B_MouldHistoryPriceData;
+import com.ys.business.db.data.B_MouldLastestPriceData;
 import com.ys.business.db.data.B_MouldSubData;
+import com.ys.business.db.data.B_SupplierData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
@@ -31,6 +41,8 @@ import com.ys.system.service.common.I_MultiAlbumService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.UploadReceiver;
+import com.ys.util.basedao.BaseDAO;
+import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 
@@ -95,6 +107,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 		model.setTypeList(doOptionChange(DicUtil.MOULDTYPE, ""));
 		model.setMouldFactoryList(doGetMouldFactoryList(request));
+		model.setUnitList(doOptionChange(DicUtil.MEASURESTYPE, ""));
 		model.setKeyBackup("");
 		model.setEndInfoMap("098", "0001", "");
 		
@@ -102,16 +115,22 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 	}
 	
-	public MouldRegisterModel doUpdateInit(HttpServletRequest request, String key) throws Exception {
+	public MouldRegisterModel doUpdateInit(HttpServletRequest request, String key, String activeSubCode) throws Exception {
 		MouldRegisterModel model = new MouldRegisterModel();
 		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
 		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		B_MouldSubDao subDao = new B_MouldSubDao();
+		B_MouldSubData subData = new B_MouldSubData();
 
 		if (key != null && !key.equals("")) {
 			dbData.setId(key);
 			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
 			model.setMouldBaseInfoData(dbData);
 			
+			subData.setId(activeSubCode);
+			subData = (B_MouldSubData)subDao.FindByPrimaryKey(subData);
+			model.setSubCode(subData.getSubcode());
+			/*
 			S_DICDao dicDao = new S_DICDao();
 			S_DICData dicData = new S_DICData();
 			dicData.setDicid(dbData.getProductmodelid());
@@ -119,6 +138,10 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 			model.setProductModelIdView(dicData.getDicname());
 			model.setProductModelName(dicData.getDicdes());
+			*/
+			model.setProductModelIdView(dbData.getProductmodelid());
+			model.setProductModelName(dbData.getProductmodelname());
+
 			
 			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 			BaseModel dataModel = new BaseModel();
@@ -133,20 +156,150 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			userDefinedSearchCase = new HashMap<String, String>();
 			dataModel = new BaseModel();
 			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
-			dataModel.setQueryName("mouldregisterquerydefine_getfactorys");
+			dataModel.setQueryName("mouldregisterquerydefine_getfactorylist");
 			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("mouldId", key);
+			userDefinedSearchCase.put("activeSubCode", activeSubCode);
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 			model.setMouldFactoryDatas(baseQuery.getYsQueryData(0,0));
 			
 		}
 		model.setTypeList(doOptionChange(DicUtil.MOULDTYPE, ""));
 		model.setMouldFactoryList(doGetMouldFactoryList(request));
+		model.setUnitList(doOptionChange(DicUtil.MEASURESTYPE, ""));
 		
 		model.setKeyBackup(key);
 		
+		model.setActiveSubCode(activeSubCode);
+		
 		model.setEndInfoMap("098", "0001", "");
 		
+		return model;
+		
+	}
+	
+	public MouldRegisterModel doAddFactoryInit(HttpServletRequest request) throws Exception {
+		MouldRegisterModel model = new MouldRegisterModel();
+		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		B_MouldSubDao subDao = new B_MouldSubDao();
+		B_MouldSubData subData = new B_MouldSubData();
+		S_DICDao dicDao = new S_DICDao();
+		S_DICData dicData = new S_DICData();
+		
+		String activeSubCode = request.getParameter("activeSubCode");
+		
+		if (activeSubCode != null && !activeSubCode.equals("")) {
+			subData.setId(activeSubCode);
+			subData = (B_MouldSubData)subDao.FindByPrimaryKey(subData);
+			model.setSubCode(subData.getSubcode());
+			
+			dbData.setId(subData.getMouldid());
+			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+			model.setMouldBaseInfoData(dbData);
+			/*
+
+			dicData.setDicid(dbData.getProductmodelid());
+			dicData.setDictypeid(DicUtil.PRODUCTMODEL);
+			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+			model.setProductModelIdView(dicData.getDicname());
+			model.setProductModelName(dicData.getDicdes());
+			*/
+			model.setProductModelIdView(dbData.getProductmodelid());
+			model.setProductModelName(dbData.getProductmodelname());
+			
+			dicData.setDicid(dbData.getUnit());
+			dicData.setDictypeid(DicUtil.MEASURESTYPE);
+			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+			model.setUnit(dicData.getDicname());
+
+			dicData.setDicid(dbData.getType());
+			dicData.setDictypeid(DicUtil.MOULDTYPE);
+			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+			model.setType(dicData.getDicname());
+		}
+		
+		model.setCurrencyList(doOptionChange(DicUtil.CURRENCY, ""));
+		model.setKeyBackup("");
+		model.setActiveSubCode(activeSubCode);
+		model.setEndInfoMap("098", "0001", "");
+		
+		return model;
+		
+	}
+	
+	public MouldRegisterModel doUpdateFactoryInit(HttpServletRequest request, String key, String activeSubCode) throws Exception {
+		MouldRegisterModel model = new MouldRegisterModel();
+		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		B_MouldSubDao subDao = new B_MouldSubDao();
+		B_MouldSubData subData = new B_MouldSubData();
+		B_MouldFactoryDao factoryDao = new B_MouldFactoryDao();
+		B_MouldFactoryData factoryData = new B_MouldFactoryData();
+		B_SupplierDao supplierDao = new B_SupplierDao();
+		B_SupplierData supplierData = new B_SupplierData();
+		S_DICDao dicDao = new S_DICDao();
+		S_DICData dicData = new S_DICData();
+
+		if (key != null && !key.equals("")) {
+			subData.setId(activeSubCode);
+			subData = (B_MouldSubData)subDao.FindByPrimaryKey(subData);
+			model.setSubCode(subData.getSubcode());
+			
+			dbData.setId(subData.getMouldid());
+			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+			model.setMouldBaseInfoData(dbData);
+			
+			factoryData.setId(key);
+			factoryData = (B_MouldFactoryData)factoryDao.FindByPrimaryKey(factoryData);
+			model.setMouldFactoryData(factoryData);
+			model.setPriceTime(factoryData.getPricetime());
+
+			supplierData.setRecordid(factoryData.getMouldfactoryid());
+			supplierData = (B_SupplierData)supplierDao.FindByPrimaryKey(supplierData);
+			model.setSupplierData(supplierData);
+			/*
+			dicData.setDicid(dbData.getProductmodelid());
+			dicData.setDictypeid(DicUtil.PRODUCTMODEL);
+			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+			model.setProductModelIdView(dicData.getDicname());
+			model.setProductModelName(dicData.getDicdes());
+			*/
+			model.setProductModelIdView(dbData.getProductmodelid());
+			model.setProductModelName(dbData.getProductmodelname());
+			
+			
+			dicData.setDicid(dbData.getUnit());
+			dicData.setDictypeid(DicUtil.MEASURESTYPE);
+			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+			model.setUnit(dicData.getDicname());
+
+			dicData.setDicid(dbData.getType());
+			dicData.setDictypeid(DicUtil.MOULDTYPE);
+			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+			model.setType(dicData.getDicname());
+
+		}
+
+		model.setCurrencyList(doOptionChange(DicUtil.CURRENCY, ""));
+		
+		model.setKeyBackup(key);
+		//model.setSupplierid(supplierid);
+		
+		model.setActiveSubCode(activeSubCode);
+		
+		model.setEndInfoMap("098", "0001", "");
+		
+		
+		return model;
+		
+	}
+	
+	public MouldRegisterModel doViewHistoryPriceInit(HttpServletRequest request) throws Exception {
+		MouldRegisterModel model = new MouldRegisterModel();
+		
+		model.setActiveSubCode(request.getParameter("activeSubCode"));
+		model.setMouldFactoryId(request.getParameter("mouldFactoryId"));
+		model.setEndInfoMap("098", "0001", "");
 		
 		return model;
 		
@@ -179,6 +332,30 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			
 		baseQuery = new BaseQuery(request, dataModel);	
 			
+		baseQuery.getYsQueryData(0,0);	
+			
+		modelMap.put("data", dataModel.getYsViewData());	
+			
+		return modelMap;	
+	}
+
+	public HashMap<String, Object> doSupplierSearch(HttpServletRequest request) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();	
+		BaseModel dataModel = new BaseModel();	
+		BaseQuery baseQuery = null;	
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		String key = request.getParameter("key");	
+			
+		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");	
+		dataModel.setQueryName("mouldregisterquerydefine_supplierSearch");	
+		baseQuery = new BaseQuery(request, dataModel);	
+		
+		userDefinedSearchCase.put("keywords1", key);
+		userDefinedSearchCase.put("keywords2", key);
+		userDefinedSearchCase.put("keywords3", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
 		baseQuery.getYsQueryData(0,0);	
 			
 		modelMap.put("data", dataModel.getYsViewData());	
@@ -259,6 +436,108 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		return model;
 	}
 	
+	public MouldRegisterModel doUpdateFactory(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+		MouldRegisterModel model = new MouldRegisterModel();
+
+		String key = getJsonData(data, "keyBackup");
+		String activeSubCode = getJsonData(data, "activeSubCode");
+		
+		B_MouldFactoryDao dao = new B_MouldFactoryDao();
+		B_MouldFactoryData dbData = new B_MouldFactoryData();
+		B_MouldHistoryPriceDao historyDao = new B_MouldHistoryPriceDao();
+		B_MouldHistoryPriceData historyData = new B_MouldHistoryPriceData();
+		B_MouldLastestPriceDao lastestPriceDao = new B_MouldLastestPriceDao();
+		B_MouldLastestPriceData lastestPriceData = new B_MouldLastestPriceData();
+		String supplierid = getJsonData(data, "supplierid");
+		String price = getJsonData(data, "price");
+		String currency = getJsonData(data, "currency");
+		String priceTime = getJsonData(data, "priceTime");
+		String unit = getJsonData(data, "unit");
+		
+		BaseTransaction ts = new BaseTransaction();
+		try {
+			ts.begin();
+
+			if (!key.equals("")) {
+				dbData.setId(key);
+				dbData = (B_MouldFactoryData)dao.FindByPrimaryKey(dbData);
+				
+				historyData.setId(BaseDAO.getGuId());
+				historyData.setSubcode(dbData.getSubcode());
+				historyData.setMouldfactoryid(dbData.getMouldfactoryid());
+				historyData.setPrice(dbData.getPrice());
+				historyData.setCurrency(dbData.getCurrency());
+				historyData.setPricetime(dbData.getPricetime());
+				historyData.setPriceunit(unit);
+				historyData = updateMouldHistoryPriceModifyInfo(historyData, userInfo);
+				historyDao.Create(historyData);
+				
+				lastestPriceData.setId(activeSubCode);
+				lastestPriceData = (B_MouldLastestPriceData)lastestPriceDao.FindByPrimaryKey(lastestPriceData);
+				lastestPriceData.setMouldfactoryid(supplierid);
+				lastestPriceData.setPrice(price);
+				lastestPriceData.setPricetime(dbData.getPricetime());
+				lastestPriceData = updateMouldLastestPriceModifyInfo(lastestPriceData, userInfo);
+				lastestPriceDao.Store(lastestPriceData);
+				
+				dbData.setMouldfactoryid(supplierid);
+				dbData.setPrice(price);
+				dbData.setPricetime(priceTime);
+				dbData.setCurrency(currency);
+				dbData.setPriceunit(unit);
+				dbData = updateMouldFactoryModifyInfo(dbData, userInfo);
+				dao.Store(dbData);
+				
+			} else {
+				dbData.setId(BaseDAO.getGuId());
+				dbData.setSubcode(activeSubCode);
+				dbData.setMouldfactoryid(supplierid);
+				dbData.setPrice(price);
+				dbData.setPricetime(priceTime);
+				dbData.setCurrency(currency);
+				dbData.setPriceunit(unit);			
+				dbData = updateMouldFactoryModifyInfo(dbData, userInfo);
+				dao.Create(dbData);
+				try {
+					lastestPriceData.setId(activeSubCode);
+					lastestPriceData = (B_MouldLastestPriceData)lastestPriceDao.FindByPrimaryKey(lastestPriceData);
+					lastestPriceData.setMouldfactoryid(supplierid);
+					lastestPriceData.setPrice(price);
+					lastestPriceData.setPricetime(dbData.getPricetime());
+					lastestPriceData = updateMouldLastestPriceModifyInfo(lastestPriceData, userInfo);
+					lastestPriceDao.Store(lastestPriceData);
+				}
+				catch(Exception e) {
+					//lastestPriceData.setId(activeSubCode);
+					lastestPriceData.setMouldfactoryid(supplierid);
+					lastestPriceData.setPrice(price);
+					lastestPriceData.setPricetime(priceTime);
+					lastestPriceData = updateMouldLastestPriceModifyInfo(lastestPriceData, userInfo);
+					lastestPriceDao.Create(lastestPriceData);
+				}
+				
+				historyData.setId(BaseDAO.getGuId());
+				historyData.setSubcode(dbData.getSubcode());
+				historyData.setMouldfactoryid(dbData.getMouldfactoryid());
+				historyData.setPrice(dbData.getPrice());
+				historyData.setCurrency(dbData.getCurrency());
+				historyData.setPricetime(dbData.getPricetime());
+				historyData.setPriceunit(unit);
+				historyData = updateMouldHistoryPriceModifyInfo(historyData, userInfo);
+				historyDao.Create(historyData);
+	
+			}
+			ts.commit();
+			model.setEndInfoMap(BaseService.NORMAL, "", model.getKeyBackup() + "|" + model.getActiveSubCode());
+		}
+		catch(Exception e) {
+			ts.rollback();
+			throw e;
+		}
+		
+		return model;
+	}
+	
 	public MouldRegisterModel doDelete(HttpServletRequest request, String data, UserInfo userInfo){
 		
 		MouldRegisterModel model = new MouldRegisterModel();
@@ -266,7 +545,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		try {
 			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 	        
-	        bean.executeMouldRegisterDelete(data, userInfo);
+	        bean.executeMouldRegisterDelete(request, data, userInfo);
 	        
 	        isDBOperationSuccessed = true;
 	        
@@ -342,7 +621,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		dicData.setDicid(type);
 		dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 		String typeMark = dicData.getDicdes();
-		mouldId = productModelIdView + typeMark;
+		mouldId = typeMark + "." + productModelIdView + "." ;
 		
 		BaseModel dataModel = new BaseModel();
 		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
@@ -492,6 +771,36 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		return data;
 	}
 	
+	public static B_MouldLastestPriceData updateMouldLastestPriceModifyInfo(B_MouldLastestPriceData data, UserInfo userInfo) {
+		String createUserId = data.getCreateperson();
+		if ( createUserId == null || createUserId.equals("")) {
+			data.setCreateperson(userInfo.getUserId());
+			data.setCreatetime(CalendarUtil.fmtDate());
+			data.setCreateunitid(userInfo.getUnitId());
+			data.setDeptguid(userInfo.getDeptGuid());
+		}
+		data.setModifyperson(userInfo.getUserId());
+		data.setModifytime(CalendarUtil.fmtDate());
+		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
+		
+		return data;
+	}
+	
+	public static B_MouldHistoryPriceData updateMouldHistoryPriceModifyInfo(B_MouldHistoryPriceData data, UserInfo userInfo) {
+		String createUserId = data.getCreateperson();
+		if ( createUserId == null || createUserId.equals("")) {
+			data.setCreateperson(userInfo.getUserId());
+			data.setCreatetime(CalendarUtil.fmtDate());
+			data.setCreateunitid(userInfo.getUnitId());
+			data.setDeptguid(userInfo.getDeptGuid());
+		}
+		data.setModifyperson(userInfo.getUserId());
+		data.setModifytime(CalendarUtil.fmtDate());
+		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
+		
+		return data;
+	}
+	
 	private MouldRegisterModel getProductModelName(HttpServletRequest request, MouldRegisterModel model, String productModelId) throws Exception {
 		HashMap<String, Object> productModel = doProductModelIdSearch(request);
 		ArrayList<HashMap<String, String>> data = (ArrayList<HashMap<String, String>>)productModel.get("data");
@@ -600,4 +909,200 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 	}	
 	
+	public HashMap<String, Object> doGetFactoryPriceHistory(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+	
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		String activeSubCode = "";
+		String mouldFactoryId = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+	
+		activeSubCode = request.getParameter("activeSubCode");
+		mouldFactoryId = request.getParameter("mouldFactoryId");
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+		dataModel.setQueryName("mouldregisterquerydefine_getsupplierpricehistory");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("subCode", activeSubCode);
+		userDefinedSearchCase.put("mouldFactoryId", mouldFactoryId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+	
+	}
+	
+	public HashMap<String, Object> doGetSubCodeFactoryList(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		String key = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		key = getJsonData(data, "activeSubCode");
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+		dataModel.setQueryName("mouldregisterquerydefine_getfactorylist");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("activeSubCode", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
+	}
+
+	public MouldRegisterModel doDeleteFactory(HttpServletRequest request, String data, UserInfo userInfo) throws Exception{
+		
+		MouldRegisterModel model = new MouldRegisterModel();
+		B_MouldFactoryDao dao = new B_MouldFactoryDao();
+		B_MouldFactoryData dbData = new B_MouldFactoryData();
+		
+		BaseTransaction ts = new BaseTransaction();
+		String activeSubCode = request.getParameter("activeSubCode");
+		String key = request.getParameter("key");
+		
+		try {
+				
+			ts.begin();
+			
+			StringBuffer sql = new StringBuffer("");
+			sql.append("UPDATE b_MouldHistoryPrice SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+			sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+			sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+			sql.append(" WHERE mouldFactoryId = '" + request.getParameter("key") + "' ");
+			sql.append(" AND subCode = '" + activeSubCode + "' ");
+			sql.append(" AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+			BaseDAO.execUpdate(sql.toString());	
+			
+			dbData.setId(key);
+			dbData = (B_MouldFactoryData)dao.FindByPrimaryKey(dbData);
+			dbData = MouldRegisterService.updateMouldFactoryModifyInfo(dbData, userInfo);
+			dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+			dao.Store(dbData);
+
+			B_MouldLastestPriceDao lastestPriceDao = new B_MouldLastestPriceDao();
+			B_MouldLastestPriceData lastestPriceData = new B_MouldLastestPriceData();
+			lastestPriceData.setId(activeSubCode);
+			lastestPriceData = (B_MouldLastestPriceData)lastestPriceDao.FindByPrimaryKey(lastestPriceData);
+
+			BaseModel dataModel = new BaseModel();
+			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+			BaseQuery baseQuery = null;
+			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+			dataModel.setQueryName("mouldregisterquerydefine_getnewlastestprice");
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("subCode", activeSubCode);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			ArrayList<HashMap<String, String>> newLastestPrice = baseQuery.getYsQueryData(0,1);
+			if (newLastestPrice.size() > 0) {
+				lastestPriceData.setMouldfactoryid(newLastestPrice.get(0).get("mouldFactoryId"));
+				lastestPriceData.setPrice(newLastestPrice.get(0).get("price"));
+				lastestPriceData.setPricetime(newLastestPrice.get(0).get("priceTime"));
+				lastestPriceData = updateMouldLastestPriceModifyInfo(lastestPriceData, userInfo);
+				lastestPriceDao.Store(lastestPriceData);
+			} else {
+				lastestPriceData = updateMouldLastestPriceModifyInfo(lastestPriceData, userInfo);
+				lastestPriceData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				lastestPriceDao.Store(lastestPriceData);
+			}
+			
+			ts.commit();
+			
+	        model.setEndInfoMap(NORMAL, "", "");
+	        
+		}
+		catch(Exception e) {
+			ts.rollback();
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		
+		return model;
+	}
+	
+	public MouldRegisterModel doDeleteFactoryPriceHistory(HttpServletRequest request, String data, UserInfo userInfo){
+		
+		MouldRegisterModel model = new MouldRegisterModel();
+		B_MouldHistoryPriceDao dao = new B_MouldHistoryPriceDao();
+		B_MouldHistoryPriceData dbData = new B_MouldHistoryPriceData();
+		
+		try {
+			dbData.setId(request.getParameter("id"));
+			dbData = (B_MouldHistoryPriceData)dao.FindByPrimaryKey(dbData);
+			dbData = MouldRegisterService.updateMouldHistoryPriceModifyInfo(dbData, userInfo);
+			dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+			dao.Store(dbData);
+	        model.setEndInfoMap(NORMAL, "", "");
+	        
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		
+		return model;
+	}
 }

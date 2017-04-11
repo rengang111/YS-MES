@@ -9,9 +9,9 @@
     </where>
     <select>
       <f name="DISTINCT A.id" alias="" ctype="" />
+      <f name="CONCAT_WS('.', A.mouldId, A.subcode)" alias="fullmouldId" ctype="" />
       <f name="A.mouldId" alias="" ctype="" />
       <f name="A.type" alias="" ctype="" />
-      <f name="A.productModelId" alias="" ctype="" />
       <f name="A.productModelName" alias="" ctype="" />
       <f name="A.productModelIdView" alias="" ctype="" />
       <f name="A.name" alias="" ctype="" />
@@ -19,11 +19,17 @@
       <f name="A.size" alias="" ctype="" />
       <f name="A.weight" alias="" ctype="" />
       <f name="A.unloadingNum" alias="" ctype="" />
+      <f name="A.subcodeid" alias="" ctype="" />
+      <f name="A.subcode" alias="" ctype="" />
+      <f name="A.typename" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.unitName" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>v_MouldRegister as A WHERE A.DeleteFlag = '0' </from>
-    <orderby>A.mouldId</orderby>
+    <orderby>A.mouldId, A.subcode desc</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -77,7 +83,7 @@
     <w name="substring(B.mouldId, 1, char_length(mouldId) - 2)" des=""  reqName="mouldNo" dtype="ch" oper="="  lg="" bt="" />
     </where>
     <select>
-      <f name="IFNULL(max(B.serialNo), 1)" alias="serialNo" ctype="" />
+      <f name="IFNULL(max(B.serialNo), 0)" alias="serialNo" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
@@ -112,6 +118,7 @@
     	<w name="mouldId" des=""  reqName="mouldId" dtype="ch" oper="="  lg="" bt="" />
     </where>
     <select>
+      <f name="id" alias="" ctype="" />
       <f name="subCode" alias="" ctype="" />
       <f name="name" alias="" ctype="" />
     </select>
@@ -132,6 +139,7 @@
     </where>
     <select>
       <f name="A.mouldFactoryId" alias="" ctype="" />
+      <f name="A.subCode" alias="" ctype="" />
       <f name="B.supplierId" alias="no" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="B.supplierName" alias="factoryName" ctype="" />
@@ -158,6 +166,123 @@
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>b_MouldBaseInfo WHERE deleteflag='0'</from>
     <orderby>mouldId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldregisterquerydefine_getfactorylist" />
+    <where>
+      <w name="A.subCode" des=""  reqName="activeSubCode" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+      <f name="A.subCode" alias="" ctype="" />
+      <f name="A.mouldFactoryId" alias="" ctype="" />
+      <f name="B.supplierId" alias="" ctype="" />
+      <f name="B.shortName" alias="" ctype="" />
+      <f name="B.supplierName" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.priceUnit" alias="" ctype="计量单位" />
+      <f name="A.priceUnit" alias="priceUnitId" ctype="" />
+      <f name="DATE_FORMAT(A.priceTime, '%Y-%m-%d')" alias="priceTime" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldFactory as A left join (select * from b_supplier where deleteFlag = '0') as B ON B.recordId = A.mouldFactoryId WHERE A.DeleteFlag = '0'</from>
+    <orderby>A.CREATETIME</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldregisterquerydefine_supplierSearch" />
+    <where>
+      <w name="A.supplierId" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="OR" bt="" />
+      <w name="A.supplierName" des=""  reqName="keywords2" dtype="ch" oper="like"  lg="OR" bt="" />
+      <w name="A.shortName" des=""  reqName="keywords3" dtype="ch" oper="like"  lg="" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.supplierId" alias="supplierId" ctype="" />
+      <f name="A.supplierName" alias="fullName" ctype="" />
+      <f name="A.shortName" alias="shortName" ctype="" />
+      <f name="CONCAT_WS(' | ', A.supplierId, A.supplierName)" alias="viewList" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_supplier AS A, s_DIC as B where A.deleteflag='0' AND B.EnableFlag = '0' AND B.DicName='模具供应商' AND B.DicTypeID='供应商类型' AND A.type=B.dicId</from>
+    <orderby>A.supplierID</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldregisterquerydefine_getsupplierpricehistory" />
+    <where>
+      <w name="d.subCode" des=""  reqName="subCode" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="d.mouldFactoryId" des=""  reqName="mouldFactoryId" dtype="ch" oper="="  lg="" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.supplierId" alias="supplierId" ctype="" />
+      <f name="A.supplierName" alias="fullName" ctype="" />
+      <f name="A.shortName" alias="shortName" ctype="" />
+	  <f name="c.dicName" alias="currency" ctype="" />
+	  <f name="d.price" alias="" ctype="" />
+	  <f name="d.priceTime" alias="" ctype="" />
+	  <f name="d.id" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_supplier AS A, s_DIC as C, b_MouldHistoryPrice as D where A.deleteflag='0' AND C.EnableFlag = '0' AND C.DicTypeID='币种' AND C.dicId = D.currency AND D.deleteFlag = '0' AND A.recordid = D.mouldfactoryid</from>
+    <orderby>D.priceTime, d.CREATETIME desc</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldregisterquerydefine_getmouldsubcode" />
+    <where>
+      <w name="mouldid" des=""  reqName="subCode" dtype="ch" oper="="  lg="" bt="" />
+     </where>
+    <select>
+      <f name="A.id" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldSub WHERE deleteflag = '0'</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldregisterquerydefine_getnewlastestprice" />
+    <where>
+      <w name="subcode" des=""  reqName="subCode" dtype="ch" oper="="  lg="" bt="" />
+     </where>
+    <select>
+      <f name="A.mouldFactoryId" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.priceTime" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldFactory as A WHERE deleteflag = '0'</from>
+    <orderby>pricetime desc, createtime desc</orderby>
     <groupby></groupby>
     <having></having>
 	<power>

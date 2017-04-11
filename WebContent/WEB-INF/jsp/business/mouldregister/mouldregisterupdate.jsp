@@ -10,7 +10,7 @@
 <title>模具单元管理</title>
 <script type="text/javascript">
 	var validatorBaseInfo;
-	var layerHeight = "250";
+	var layerHeight = "350";
 	var sumPrice = 0.0;
 	var paid = 0.0;    
 	
@@ -25,7 +25,7 @@
 		if(table) {
 			table.fnDestroy();
 		}
-	
+
 		var t = $('#TFactory').DataTable({
 				"paging": true,
 				"lengthMenu":[5,10,15],//设置一页展示10条记录
@@ -38,11 +38,10 @@
 				"sAjaxSource" : "${ctx}/business/mouldregister?methodtype=getSubCodeFactoryList",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
-					var formData = $("#condition").serializeArray();
+					var formData = $("#mouldBaseInfo").serializeArray();
 					formData.forEach(function(e) {
 						aoData.push({"name":e.name, "value":e.value});
 					});
-
 					$.ajax({
 						"url" : sSource,
 						"datatype": "json", 
@@ -55,7 +54,6 @@
 								alert(data.message);
 							}
 							*/
-							
 							fnCallback(data);
 
 						},
@@ -73,46 +71,72 @@
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "shortName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "fullName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "supplierName", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "currency", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "priceUnit", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "priceDate", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "priceTime", "defaultContent" : '',"className" : 'td-center'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+								//return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+								return row["rownum"];
 		                    }},
 							{"targets": 3, "createdCell": function (td, cellData, rowData, row, col) {
 						        $(td).attr('title', cellData);
 							}},
-				    		{"targets":7,"render":function(data, type, row){
-				    			return "<a href=\"#\" onClick=\"doUpdateFactory('" + row["id"] + "')\">编辑</a>" + "<a href=\"#\" onClick=\"viewHistoryPrice('" + row["id"] + "')\">历史报价</a>" + "<a href=\"#\" onClick=\"doDeleteFactory('" + row["id"] + "')\">删除</a>"
+				    		{"targets":8,"render":function(data, type, row){
+				    			return "<a href=\"#\" onClick=\"doUpdateFactory('" + row["id"] + "','" + row["subCode"] + "')\">编辑</a>&nbsp;" + "<a href=\"#\" onClick=\"viewHistoryPrice('" + row["mouldFactoryId"] + "')\">历史报价</a>&nbsp;" + "<a href=\"#\" onClick=\"doDeleteFactory('" + row["id"] + "')\">删除</a>"
 		                    }}
 			         ] 
 			}
 		);
 	}
 	
-	function createSubCodeFactory(id) {
-		var key = $('#keyBackup').val();
-		var url = "${ctx}/business/mouldregister?methodtype=updateSubCodeFactoryInit&key=" + key + "&isCreate=1";
+	function doCreateFactory() {
+		var key = $('#activeSubCode').val();
+		var url = "${ctx}/business/mouldregister?methodtype=addSubCodeFactoryInit&activeSubCode=" + key;
 		openLayer(url, $(document).width() - 25, layerHeight, false);	
 	}
-	function doUpdateFactory(id) {
-		var key = $('#keyBackup').val();
-		var url = "${ctx}/business/mouldregister?methodtype=updateSubCodeFactoryInit&key=" + key;
+	function doUpdateFactory(id, subCode) {
+		var url = "${ctx}/business/mouldregister?methodtype=updateSubCodeFactoryInit&key=" + id + "&activeSubCode=" + $('#activeSubCode').val();
 		openLayer(url, $(document).width() - 25, layerHeight, false);	
 	}
 	function doDeleteFactory(id) {
-		var key = $('#keyBackup').val();
-		var url = "${ctx}/business/mouldregister?methodtype=deleteFactory&key=" + key;
-		openLayer(url, $(document).width() - 25, layerHeight, false);	
+		var actionUrl = "${ctx}/business/mouldregister?methodtype=deleteFactory&key=" + id + "&activeSubCode=" + $('#activeSubCode').val();
+		if (confirm("${DisplayData.endInfoMap.message}")) {
+			$.ajax({
+				type : "POST",
+				contentType : 'application/json',
+				dataType : 'json',
+				url : actionUrl,
+				data : JSON.stringify($('#mouldBaseInfo').serializeArray()),// 要提交的表单
+				success : function(d) {
+					if (d.rtnCd != "000") {
+						alert(d.message);	
+					} else {
+						parent.reload();
+						reloadFatory();
+					}
+					
+					//不管成功还是失败都刷新父窗口，关闭子窗口
+					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+					//parent.$('#events').DataTable().destroy();
+					//parent.layer.close(index); //执行关闭
+					
+				},
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					//alert(XMLHttpRequest.status);					
+					//alert(XMLHttpRequest.readyState);					
+					//alert(textStatus);					
+					//alert(errorThrown);
+				}
+			});
+		}
 	}
 	function viewHistoryPrice(id) {
-		var key = $('#keyBackup').val();
-		var url = "${ctx}/business/mouldregister?methodtype=viewHistoryPrice&key=" + key;
+		var url = "${ctx}/business/mouldregister?methodtype=viewHistoryPrice&mouldFactoryId=" + id + "&activeSubCode=" + $('#activeSubCode').val();
 		openLayer(url, $(document).width() - 25, layerHeight, false);	
 	}
 	
@@ -138,8 +162,9 @@
 							alert("当前已经是最后一条数据了");
 						}
 					} else {
-						var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + d.info;
+						var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + d.info + "&activeSubCode=" + id;
 						$(window.location).attr('href', url);
+
 					}
 				}
 				
@@ -205,24 +230,32 @@
 		var i = $("#subidTab tr").length - 1;	
 		var subid = PrefixInteger(i, 3);
 		var trHtml = "";
-		
+
 		if (activeSubCode == subCode) {
 			if (activeSubCode != '') {
 				trHtml += "<tr class='selected'>";
-				trHtml += "<td>";
-				trHtml += "当前记录";
+				trHtml += "<td width='50px'>";
+				trHtml += "本条记录";
 				trHtml += "</td>";
 			} else {
 				trHtml += "<tr>";
+				trHtml += "<td width='50px'>";
+				trHtml += "</td>";				
 			}
-
-			trHtml += "<td class='td-center ' width='200px'>";
-			trHtml += "<input name='mouldSubs[" + i + "].subcode' id='mouldSubs[" + i + "].subcode' type='text' value='" + subid + "' class='mini' value='" + subCode + "'/>";
+			if (activeSubCode != '') {
+				trHtml += "<td class='td-center' width='100px'>";
+			} else {
+				trHtml += "<td class='td-center' width='100px'>";
+			}
+			if (subCode == "") {
+				subCode = subid;
+			}
+			trHtml += "<input name='mouldSubs[" + i + "].subcode' id='mouldSubs[" + i + "].subcode' type='text' class='mini' value='" + subCode + "'/>";
 			trHtml += "</td>";
 			if (activeSubCode != '') {
-				trHtml += "<td class='td-center'>";
+				trHtml += "<td class='td-left' colspan=2>";
 			} else {
-				trHtml += "<td class='td-center' colspan=2>";
+				trHtml += "<td class='td-left' colspan=2>";
 			}
 			trHtml += "<input name='mouldSubs[" + i + "].name' id='mouldSubs[" + i + "].name' type='text' class='middle' value='" + subName + "'/>";
 			trHtml += "</td>";
@@ -234,11 +267,13 @@
 			$('#mouldSubs\\[' + i + '\\]\\.name').rules('add', { maxlength: 50 });
 		} else {
 			trHtml += "<tr>";
-			trHtml += "<td class='td-center' width='150px'>";
-			trHtml += "<a href=\"#\" onClick=\"changeSubCode('" + id +")\" class=\"mini\">" + subCode + "</>";
+			trHtml += "<td width='50px'>";
 			trHtml += "</td>";
-			trHtml += "<td class='td-center' colspan=2>";
-			trHtml += "<label class='middle'>" + subName + "</label>";
+			trHtml += "<td class='td-left' width='100px'>";
+			trHtml += "<a href=\"#\" style='padding-left: 20px' onClick=\"changeSubCode('" + id +"')\">" + subCode + "</></label>";
+			trHtml += "</td>";
+			trHtml += "<td class='td-left'  colspan=2>";
+			trHtml += "<a href=\"#\" style='padding-left: 10px' onClick=\"changeSubCode('" + id +"')\">" + subName + "</>";
 			trHtml += "</td>";
 			trHtml += "</tr>";
 			$('#subidTab tr:last').after(trHtml);
@@ -246,7 +281,7 @@
 		}
 		$('#subCodeCount').val($("#subidTab tr").length - 1);
 	}
-
+	
 	function initEvent(){
 		
 		$('#factoryTable').width(750);
@@ -261,6 +296,10 @@
 					maxlength: 4,
 				},
 				productModelIdView: {
+					required: true,				
+					maxlength: 120,
+				},
+				productModelIdName: {
 					required: true,				
 					maxlength: 120,
 				},
@@ -332,9 +371,9 @@
 		}
 
 		if ('${DisplayData.mouldBaseInfoData.unit}' != '') {
-			//$('#unit').val('${DisplayData.mouldBaseInfoData.unit}');
+			$('#unit').val('${DisplayData.mouldBaseInfoData.unit}');
 		} else {
-			//$("#unit option:first").prop("selected", 'selected');
+			$("#unit option:first").prop("selected", 'selected');
 		}
 
 		if ($('#keyBackup').val() == '') {
@@ -347,13 +386,13 @@
 				addSubCodeTr('${DisplayData.subCode}', '${item.subCode}', '${item.name}', '${item.id}');
 				var index = $('#subCodeCount').val();
 				index--;
-				if ('${DisplayData.subCode}' != '${item.subCode}') {
+				if ('${DisplayData.subCode}' == '${item.subCode}') {
 					$('#activeSubCodeIndex').val(index);
 				}
 			</c:forEach>
 			
 			$('#tabs').css('display','inline-block');
-			$('#rotateArea').css('display','inline-block');
+			//$('#rotateArea').css('display','inline-block');
 			$('#factoryArea').show();
 			ajax();
 		}
@@ -378,11 +417,7 @@
 			setViewOnly();
 		}
 		
-	    $("#unit option").each(function(){  
-	        if($(this).text() == "副"){  
-	            $(this).attr("selected","selected");  
-	        }  
-	    });
+		
 	})
 	
 	function doSave(isContinue) {
@@ -400,7 +435,8 @@
 				} else {
 					//修正
 					actionUrl = "${ctx}/business/mouldregister?methodtype=update";
-				}
+				}		
+
 				//将提交按钮置为【不可用】状态
 				//$("#submit").attr("disabled", true); 
 				$.ajax({
@@ -414,26 +450,19 @@
 							alert(d.message);	
 						} else {
 							parent.reload();
-							if ($('#keyBackup').val() == "") {
-								var x = new Array();
-								x = d.info.split("|");
-								actionUrl = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + x[0] + "&activeSubCode=" + x[1];
-								location.href = actionUrl;
-							}
 							//不管成功还是失败都刷新父窗口，关闭子窗口
 							//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
 							//parent.$('#events').DataTable().destroy();
 							//parent.layer.close(index); //执行关闭
-							/*
 							$('#tabs').css('display','inline-block');
-							$('#rotateArea').css('display','inline-block');
+							//$('#rotateArea').css('display','inline-block');
 							$('#factoryArea').show();
 
 							var x = new Array();
 							x = d.info.split("|");
 							controlButtons(x[0]);
 							$('#mouldId').html(x[1]);
-							*/
+							
 						}
 						
 					},
@@ -444,7 +473,6 @@
 						//alert(errorThrown);
 					}
 				});
-
 			}
 		}
 	}
@@ -661,6 +689,15 @@
 		parent.layer.close(index); //执行关闭
 		
 	}
+	
+	function reloadFatory() {
+		$('#TFactory').DataTable().ajax.reload(null,false);
+	}
+	
+	function changeSubCode(id) {
+		var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + $('#keyBackup').val() + "&activeSubCode=" + id;
+		$(window.location).attr('href', url);
+	}
 </script>
 </head>
 
@@ -678,19 +715,16 @@
 				<legend>模具单元-基本信息</legend>
 				<div style="height:10px"></div>
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;display:none;">删除</button>
-				<button type="button" id="edit" class="DTTT_button" onClick="doSave(1);"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;display:none;" >保存(连续登记)</button>
-				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
+						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave(0);"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-
+				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 				<div style="height:10px"></div>
 				<table class="form" width="1100px" cellspacing="0" style="table-layout:fixed">
 					<tr>
 						<td width="60px">编号：</td>
 						<td width="130px">
-							<label id="mouldId" name="mouldId" style="margin:0px 10px">${DisplayData.mouldBaseInfoData.mouldid}</label>
+							<label id="mouldId" name="mouldId" style="margin:0px 10px">${DisplayData.mouldBaseInfoData.mouldid}.${DisplayData.subCode}</label>
 						</td>
 						<td width="60px">产品型号：</td>
 						<td width="130px">
@@ -702,7 +736,7 @@
 						</td>
 						<td width="60px">模具类型：</td>
 						<td width="130px">
-							<form:select path="type" onChange="getMouldId();"  onblur="getMouldId();">
+							<form:select path="type" onChange="getMouldId();">
 								<form:options items="${DisplayData.typeList}" itemValue="key"
 									itemLabel="value" />
 							</form:select>
@@ -760,6 +794,7 @@
 									<td>
 										<table width='450px'>
 											<tr>
+												<td width="50px"></td>
 												<td class="td-center" width='150px'>子编码</td>
 												<td class="td-center" width='150px'>子编码解释</td>
 												<td class="td-center">
@@ -773,10 +808,10 @@
 								<tr>
 									<td>			
 										<div class="" id="subidDiv" style="overflow: auto;height: 150px;">
-											<table id="subidTab" class="dataTable" width='350px'>
+											<table id="subidTab" class="dataTable" style="table-layout:fixed;" width='350px'>
 												<tr style='display:none'>
-													<td width='150px'></td>
-													<td width='150px'></td>
+													<td></td>
+													<td></td>
 													<td></td>
 												</tr>
 											</table>
@@ -789,7 +824,7 @@
 							<table>
 								<tr>
 									<td>
-										<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
+										<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 110px;padding:0px;display:none;">
 											<div id="tabs-1" title="图片" style="padding:5px;height:200px;">
 												<jsp:include page="../../common/album/album.jsp"></jsp:include>
 											</div>
@@ -823,13 +858,13 @@
 				<div id="factoryArea" style="display:none;">
 					<legend>供应商单价信息</legend>
 					<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doCreateFactory();">新建</button>
-					<table aria-describedby="TFactory" style="width: 100%;" id="TMould" class="display dataTable" cellspacing="0"  style="table-layout:fixed">
+					<table aria-describedby="TFactory" style="width: 100%;" id="TFactory" class="display dataTable" cellspacing="0"  style="table-layout:fixed">
 						<thead>
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
 								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="供应商编码:" class="dt-middle sorting_disabled">供应商编码</th>
-								<th colspan="1" rowspan="1" style="width: 100px;" aria-label="供应商简称:" class="dt-middle sorting_disabled">供应商简称</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="供应商全称" class="dt-middle sorting_disabled">供应商全称</th>
+								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="供应商简称:" class="dt-middle sorting_disabled">供应商简称</th>
+								<th colspan="1" rowspan="1" style="width: 100px;" aria-label="供应商全称" class="dt-middle sorting_disabled">供应商全称</th>
 								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="采购单价" class="dt-middle sorting_disabled">采购单价</th>
 								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="币种" class="dt-middle sorting_disabled">币种</th>
 								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="报价单位" class="dt-middle sorting_disabled">报价单位</th>

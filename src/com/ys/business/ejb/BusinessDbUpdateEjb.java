@@ -36,6 +36,7 @@ import com.ys.business.db.dao.B_MouldBaseInfoDao;
 import com.ys.business.db.dao.B_MouldContractBaseInfoDao;
 import com.ys.business.db.dao.B_MouldDetailDao;
 import com.ys.business.db.dao.B_MouldFactoryDao;
+import com.ys.business.db.dao.B_MouldLastestPriceDao;
 import com.ys.business.db.dao.B_MouldLendConfirmDao;
 import com.ys.business.db.dao.B_MouldLendDetailDao;
 import com.ys.business.db.dao.B_MouldLendRegisterDao;
@@ -66,6 +67,7 @@ import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_MouldContractBaseInfoData;
 import com.ys.business.db.data.B_MouldDetailData;
 import com.ys.business.db.data.B_MouldFactoryData;
+import com.ys.business.db.data.B_MouldLastestPriceData;
 import com.ys.business.db.data.B_MouldLendConfirmData;
 import com.ys.business.db.data.B_MouldLendDetailData;
 import com.ys.business.db.data.B_MouldLendRegisterData;
@@ -400,7 +402,7 @@ public class BusinessDbUpdateEjb  {
 		String guid = "";										
 												
 		ts = new BaseTransaction();										
-												
+						
 		try {										
 			ts.begin();									
 												
@@ -437,7 +439,8 @@ public class BusinessDbUpdateEjb  {
 												
 			ts.commit();									
 		}										
-		catch(Exception e) {										
+		catch(Exception e) {
+			System.out.println(e.getMessage());
 			ts.rollback();									
 			throw e;									
 		}										
@@ -1624,9 +1627,13 @@ public class BusinessDbUpdateEjb  {
 		}
     }
     
-    public void executeMouldRegisterDelete(String keyData, UserInfo userInfo) throws Exception {												
+    public void executeMouldRegisterDelete(HttpServletRequest request, String keyData, UserInfo userInfo) throws Exception {												
     	B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();											
     	B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+    	B_MouldSubDao mouldSubDao = new B_MouldSubDao();
+    	B_MouldSubData mouldSubData = new B_MouldSubData();
+		B_MouldLastestPriceDao lastestPriceDao = new B_MouldLastestPriceDao();
+		B_MouldLastestPriceData lastestPriceData = new B_MouldLastestPriceData();
 
 		int count = 0;
 												
@@ -1636,31 +1643,86 @@ public class BusinessDbUpdateEjb  {
 			ts.begin();
 
 			String removeData[] = keyData.split(",");									
-			for (String key:removeData) {									
-				dbData.setId(key);
-				dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
-				dbData = MouldRegisterService.updateMouldBaseInfoModifyInfo(dbData, userInfo);
-				dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
-				dao.Store(dbData);
-
-				StringBuffer sql = new StringBuffer("");
-				sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-				BaseDAO.execUpdate(sql.toString());	
+			for (String keyValue:removeData) {
 				
-				sql = new StringBuffer("");
-				sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-				BaseDAO.execUpdate(sql.toString());	
+				String key = "";
+				String subCodeId = "";
+				
+				if (keyValue.indexOf("|") >= 0) {
+					key = keyValue.split("\\|")[0];
+					subCodeId = keyValue.split("\\|")[1];
+					mouldSubData.setId(subCodeId);
+					mouldSubData = (B_MouldSubData)mouldSubDao.FindByPrimaryKey(mouldSubData);
+					mouldSubData = MouldRegisterService.updateMouldSubModifyInfo(mouldSubData, userInfo);
+					mouldSubData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+					mouldSubDao.Store(mouldSubData);
+
+					try {
+
+						lastestPriceData.setId(subCodeId);
+						lastestPriceData = (B_MouldLastestPriceData)lastestPriceDao.FindByPrimaryKey(lastestPriceData);
+						lastestPriceData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+						lastestPriceData = MouldRegisterService.updateMouldLastestPriceModifyInfo(lastestPriceData, userInfo);
+						lastestPriceDao.Store(lastestPriceData);
+					}
+					catch(Exception e) {
+						
+					}
+					StringBuffer sql = new StringBuffer("");
+					sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+					sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+					sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+					sql.append(" WHERE subCode = '" + subCodeId + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+					BaseDAO.execUpdate(sql.toString());	
+
+				} else {
+					key = keyValue;
+					
+					dbData.setId(key);
+					dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+					dbData = MouldRegisterService.updateMouldBaseInfoModifyInfo(dbData, userInfo);
+					dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+					dao.Store(dbData);
+					
+					BaseModel dataModel = new BaseModel();
+					HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+					dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+					dataModel.setQueryName("mouldregisterquerydefine_getmouldsubcode");
+					BaseQuery baseQuery = new BaseQuery(request, dataModel);
+					userDefinedSearchCase.put("mouldId", key);
+					baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+					ArrayList<HashMap<String, String>> subCodes = baseQuery.getYsQueryData(0,0);
+					 
+					for(HashMap<String, String> subCodeMap:subCodes) {
+						String id = subCodeMap.get("id");
+						StringBuffer sql = new StringBuffer("");
+						sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+						sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+						sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+						sql.append(" WHERE subCode = '" + id + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+						BaseDAO.execUpdate(sql.toString());	
+						
+						sql.append("UPDATE b_MouldLastestPrice SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+						sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+						sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+						sql.append(" WHERE id = '" + id + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+						BaseDAO.execUpdate(sql.toString());	
+					}
+					
+					StringBuffer sql = new StringBuffer("");
+					sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+					sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+					sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+					sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+					BaseDAO.execUpdate(sql.toString());	
+					
+				}
+		    	
 
 				count++;												
 			}
 			ts.commit();									
-		}										
+		}
 		catch(Exception e) {										
 			ts.rollback();									
 			throw e;									
@@ -1689,14 +1751,18 @@ public class BusinessDbUpdateEjb  {
 			String keyBackup = service.getJsonData(data, "keyBackup");
 			String productModelId = service.getJsonData(data, "productModelId");
 			String productModelIdView = service.getJsonData(data, "productModelIdView");
+			String productModelName = service.getJsonData(data, "productModelName");
 			String type = service.getJsonData(data, "type");
 			String name = service.getJsonData(data, "name");
 			String materialQuality = service.getJsonData(data, "materialQuality");
 			String size = service.getJsonData(data, "size");
 			String weight = service.getJsonData(data, "weight");
+			String unit = service.getJsonData(data, "unit");
 			String unloadingNum = service.getJsonData(data, "unloadingNum");
 			String subCodeCount = service.getJsonData(data, "subCodeCount");
-			String factoryCount = service.getJsonData(data, "factoryCount");
+			String activeSubCode = service.getJsonData(data, "activeSubCode");
+			String activeSubCodeIndex = service.getJsonData(data, "activeSubCodeIndex");
+			
 			String mouldId = "";
 			String oldMouldId = "";
 			
@@ -1706,15 +1772,18 @@ public class BusinessDbUpdateEjb  {
 				mouldId = service.getMouldId(request, data);
 				mouldBaseInfoData.setMouldid(mouldId);
 				mouldBaseInfoData.setType(type);
-				mouldBaseInfoData.setProductmodelid(productModelId);
+				mouldBaseInfoData.setProductmodelid(productModelIdView);
+				mouldBaseInfoData.setProductmodelname(productModelName);
 				mouldBaseInfoData.setName(name);
 				mouldBaseInfoData.setMaterialquality(materialQuality);
 				mouldBaseInfoData.setSize(size);
 				mouldBaseInfoData.setWeight(weight);
 				mouldBaseInfoData.setUnloadingnum(unloadingNum);
+				mouldBaseInfoData.setUnit(unit);
 				mouldBaseInfoData = service.updateMouldBaseInfoModifyInfo(mouldBaseInfoData, userInfo);
 				mouldBaseInfoDao.Create(mouldBaseInfoData);
-
+				
+				model.setKeyBackup(key);
 			} else {
 				key = keyBackup;
 				mouldBaseInfoData.setId(key);
@@ -1726,12 +1795,14 @@ public class BusinessDbUpdateEjb  {
 				}
 				
 				mouldBaseInfoData.setType(type);
-				mouldBaseInfoData.setProductmodelid(productModelId);
+				mouldBaseInfoData.setProductmodelid(productModelIdView);
+				mouldBaseInfoData.setProductmodelname(productModelName);
 				mouldBaseInfoData.setName(name);
 				mouldBaseInfoData.setMaterialquality(materialQuality);
 				mouldBaseInfoData.setSize(size);
 				mouldBaseInfoData.setWeight(weight);
 				mouldBaseInfoData.setUnloadingnum(unloadingNum);
+				mouldBaseInfoData.setUnit(unit);
 				mouldBaseInfoData = service.updateMouldBaseInfoModifyInfo(mouldBaseInfoData, userInfo);
 				mouldBaseInfoDao.Store(mouldBaseInfoData);
 			}
@@ -1741,56 +1812,115 @@ public class BusinessDbUpdateEjb  {
 				
 				if (iCount > 0) {
 					if (!keyBackup.equals("")) {
-						StringBuffer sql = new StringBuffer("");
-						sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-						sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-						sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-						sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-						BaseDAO.execUpdate(sql.toString());	
-					}
-					for (int i = 0; i < iCount; i++) {
-						String subCode = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].subcode");
-						String subCodeName = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].name");
-						if (!subCode.equals("") && !name.equals("")) {
-							mouldSubData.setId(BaseDAO.getGuId());
-							mouldSubData.setMouldid(key);
+						
+						mouldSubData.setId(activeSubCode);
+						mouldSubData = (B_MouldSubData)mouldSubDao.FindByPrimaryKey(mouldSubData);
+						
+						String subCode = service.getJsonData(data, "mouldSubs[" + activeSubCodeIndex + "].subcode");
+						String subCodeName = service.getJsonData(data, "mouldSubs[" + activeSubCodeIndex + "].name");
+						
+						if (!subCode.equals("")) {
 							mouldSubData.setSubcode(subCode);
+						}
+						mouldSubData.setName(subCodeName);
+						mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+						mouldSubDao.Store(mouldSubData);
+
+						/*
+						if (mouldSubData.getSubcode().equals("000")) {
+							if (!subCode.equals("")) {
+								mouldSubData.setSubcode(subCode);
+							}
 							mouldSubData.setName(subCodeName);
 							mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
-							mouldSubDao.Create(mouldSubData);
+							mouldSubDao.Store(mouldSubData);
+						} else {
+							if (subCodeName.equals("")) {
+								
+								StringBuffer sql = new StringBuffer("");
+								sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+								sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+								sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+								sql.append(" WHERE id = '" + activeSubCode + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+								BaseDAO.execUpdate(sql.toString());	
+
+								sql = new StringBuffer("");
+								sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+								sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+								sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+								sql.append(" WHERE subCode = '" + activeSubCode + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+								BaseDAO.execUpdate(sql.toString());
+									
+							} else {
+								if (!subCode.equals("")) {
+									mouldSubData.setSubcode(subCode);
+								}
+								mouldSubData.setName(subCodeName);
+								mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+								mouldSubDao.Store(mouldSubData);								
+							}
 						}
-					}
-				}
-			}
-			if (!factoryCount.equals("")) {
-				int iCount = Integer.parseInt(factoryCount);
-				
-				if (iCount > 0) {
-					if (!keyBackup.equals("")) {
-						StringBuffer sql = new StringBuffer("");
-						sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-						sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-						sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-						sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-						BaseDAO.execUpdate(sql.toString());	
-					}
-					for (int i = 0; i < iCount; i++) {
-						String mouldFactoryId = service.getJsonData(data, "detailLines[" + String.valueOf(i) + "].mouldfactoryid");
-						String price = service.getJsonData(data, "detailLines[" + String.valueOf(i) + "].price");
-						if (!mouldFactoryId.equals("") && !price.equals("")) {
-							mouldFactoryData.setId(BaseDAO.getGuId());
-							mouldFactoryData.setMouldid(key);
-							mouldFactoryData.setMouldfactoryid(mouldFactoryId);
-							mouldFactoryData.setPrice(price);
-							mouldFactoryData = service.updateMouldFactoryModifyInfo(mouldFactoryData, userInfo);
-							mouldFactoryDao.Create(mouldFactoryData);
+						*/
+						//TODO
+						for (int i = 0; i < iCount; i++) {
+							subCode = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].subcode");
+							subCodeName = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].name");
+							if ((!subCode.equals("") && !subCodeName.equals(""))) {
+								if (!activeSubCodeIndex.equals(String.valueOf(i))) {
+									String newSubCode = BaseDAO.getGuId();
+									mouldSubData.setId(newSubCode);
+									mouldSubData.setMouldid(key);
+									mouldSubData.setSubcode(subCode);
+									mouldSubData.setName(subCodeName);
+									mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+									mouldSubDao.Create(mouldSubData);
+								} else {
+									model.setSubCode(subCode);
+								}
+							}
+						}
+					} else {
+						for (int i = 0; i < iCount; i++) {
+							String subCode = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].subcode");
+							String subCodeName = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].name");
+							if (!subCode.equals("") && !subCodeName.equals("")) {
+								String newSubCode = BaseDAO.getGuId();
+								mouldSubData.setId(newSubCode);
+								mouldSubData.setMouldid(key);
+								mouldSubData.setSubcode(subCode);
+								mouldSubData.setName(subCodeName);
+								mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+								mouldSubDao.Create(mouldSubData);
+								if (model.getActiveSubCode().equals("")) {
+									model.setActiveSubCode(newSubCode);
+									model.setSubCode(subCode);
+								}
+							}
+						}
+						if (model.getActiveSubCode().equals("")) {
+							String newSubCode = BaseDAO.getGuId();
+							mouldSubData.setId(newSubCode);
+							mouldSubData.setMouldid(key);
+							mouldSubData.setSubcode("000");
+							mouldSubData.setName("");
+							mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+							mouldSubDao.Create(mouldSubData);
+							
+							model.setActiveSubCode(newSubCode);
+							model.setSubCode(mouldSubData.getSubcode());
 						}
 					}
 				}
 			}
 
 			ts.commit();
-			model.setEndInfoMap(BaseService.NORMAL, "", key + "|" + mouldId);
+			
+			
+			if (keyBackup.equals("")) {
+				model.setEndInfoMap(BaseService.NORMAL, "", model.getKeyBackup() + "|" + model.getActiveSubCode());
+			} else {
+				model.setEndInfoMap(BaseService.NORMAL, "", model.getKeyBackup() + "|" + mouldBaseInfoData.getMouldid() + "." + model.getSubCode());
+			}
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(BaseService.SYSTEMERROR, "err001", key);

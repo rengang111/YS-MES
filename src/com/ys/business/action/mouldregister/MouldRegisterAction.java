@@ -1,3 +1,4 @@
+
 package com.ys.business.action.mouldregister;
 
 import java.util.ArrayList;
@@ -64,8 +65,13 @@ public class MouldRegisterAction extends BaseAction {
 			case "add":
 			case "update":
 				viewModel = doUpdate(data, session, request);
+				if (viewModel.getOperType().equals("2")) {
+					request.setAttribute("key", viewModel.getKeyBackup());
+					request.setAttribute("activeSubCode", viewModel.getActiveSubCode());
+				}
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
+
 			case "delete":
 				viewModel = doDelete(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
@@ -89,7 +95,40 @@ public class MouldRegisterAction extends BaseAction {
 			case "rotate":
 				viewModel = doRotate(data, request);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
-				return null;				
+				return null;
+			case "getSubCodeFactoryList":
+				dataMap = doGetSubCodeFactoryList(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "addSubCodeFactoryInit":
+				rtnUrl = doAddSubCodeFactoryInit(model, session, request, response);
+				break;
+			case "updateSubCodeFactoryInit":
+				rtnUrl = doUpdateSubCodeFactoryInit(model, session, request, response);
+				break;
+			case "supplierSearch":
+				dataMap = doSupplierSearch(data, request);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "updateFactory":
+				viewModel = doUpdateFactory(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
+			case "deleteFactory":
+				viewModel = doDeleteFactory(data, session, request, response);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
+			case "viewHistoryPrice":
+				rtnUrl = doViewHistoryPriceInit(model, session, request, response);
+				break;
+			case "getFactoryPriceHistory":
+				dataMap = doGetSupplierPriceHistory(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "deletePriceHistory":
+				viewModel = doDeleteFactoryPriceHistory(data, session, request, response);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 		}
 		
 		return rtnUrl;
@@ -134,8 +173,9 @@ public class MouldRegisterAction extends BaseAction {
 
 		MouldRegisterModel dataModel = new MouldRegisterModel();
 		String key = request.getParameter("key");
+		String activeSubCode = request.getParameter("activeSubCode");
 		try {
-			dataModel = mouldRegisterService.doUpdateInit(request, key);
+			dataModel = mouldRegisterService.doUpdateInit(request, key, activeSubCode);
 			dataModel = mouldRegisterService.getFileList(request, dataModel);
 		}
 		catch(Exception e) {
@@ -144,8 +184,57 @@ public class MouldRegisterAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/business/mouldregister/mouldregisteredit";
+		return "/business/mouldregister/mouldregisterupdate";
 	}		
+	
+	public String doAddSubCodeFactoryInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+
+		MouldRegisterModel dataModel = new MouldRegisterModel();
+
+		try {
+			dataModel = mouldRegisterService.doAddFactoryInit(request);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataModel.setMessage("发生错误，请联系系统管理员");
+		}
+		model.addAttribute("DisplayData", dataModel);
+		
+		return "/business/mouldregister/mouldregisterfactoryedit";
+	}
+	
+	public String doUpdateSubCodeFactoryInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+
+		MouldRegisterModel dataModel = new MouldRegisterModel();
+		String key = request.getParameter("key");
+		String activeSubCode = request.getParameter("activeSubCode");
+		try {
+			dataModel = mouldRegisterService.doUpdateFactoryInit(request, key, activeSubCode);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataModel.setMessage("发生错误，请联系系统管理员");
+		}
+		model.addAttribute("DisplayData", dataModel);
+		
+		return "/business/mouldregister/mouldregisterfactoryedit";
+	}
+	
+	public String doViewHistoryPriceInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+
+		MouldRegisterModel dataModel = new MouldRegisterModel();
+
+		try {
+			dataModel = mouldRegisterService.doViewHistoryPriceInit(request);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataModel.setMessage("发生错误，请联系系统管理员");
+		}
+		model.addAttribute("DisplayData", dataModel);
+		
+		return "/business/mouldregister/mouldpricehistory";
+	}
 	
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doProductModelIdSearch(@RequestBody String data, HttpServletRequest request){
@@ -167,6 +256,25 @@ public class MouldRegisterAction extends BaseAction {
 		return dataMap;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doSupplierSearch(@RequestBody String data, HttpServletRequest request){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = mouldRegisterService.doSupplierSearch(request);
+			
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			//dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 	
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doFactoryIdSearch(@RequestBody String data, HttpServletRequest request){
@@ -236,13 +344,33 @@ public class MouldRegisterAction extends BaseAction {
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		try {
+			String key = mouldRegisterService.getJsonData(data, "keyBackup");
 			model = mouldRegisterService.doUpdate(request, data, userInfo);
+			if (key != null && !key.equals("")) {
+				model.setOperType("");
+			} else {
+				model.setOperType("2");
+			}
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
 		return model;
 	}	
+	
+	public MouldRegisterModel doUpdateFactory(String data, HttpSession session, HttpServletRequest request){
+		
+		MouldRegisterModel model = new MouldRegisterModel();
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		try {
+			model = mouldRegisterService.doUpdateFactory(request, data, userInfo);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return model;
+	}
 	
 	public MouldRegisterModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		MouldRegisterModel model = new MouldRegisterModel();
@@ -260,4 +388,65 @@ public class MouldRegisterAction extends BaseAction {
 		
 		return model;
 	}
+
+	public MouldRegisterModel doDeleteFactory(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		MouldRegisterModel model = new MouldRegisterModel();
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		try {
+			model = mouldRegisterService.doDeleteFactory(request, data, userInfo);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");	
+		}
+		
+		return model;
+	}
+	
+	public MouldRegisterModel doDeleteFactoryPriceHistory(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		MouldRegisterModel model = new MouldRegisterModel();
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		model = mouldRegisterService.doDeleteFactoryPriceHistory(request, data, userInfo);
+		
+		return model;
+	}
+	
+	public HashMap<String, Object> doGetSubCodeFactoryList(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			dataMap = mouldRegisterService.doGetSubCodeFactoryList(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> doGetSupplierPriceHistory(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			dataMap = mouldRegisterService.doGetFactoryPriceHistory(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}	
+	
 }

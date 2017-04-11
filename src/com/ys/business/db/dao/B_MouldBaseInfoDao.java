@@ -45,8 +45,8 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,name,materialquality,size,weight,unloadingnum,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getMouldid());			statement.setString( 3,beanData.getType());			statement.setString( 4,beanData.getProductmodelid());			statement.setString( 5,beanData.getName());			statement.setString( 6,beanData.getMaterialquality());			statement.setString( 7,beanData.getSize());			statement.setString( 8,beanData.getWeight());			statement.setString( 9,beanData.getUnloadingnum());			statement.setString( 10,beanData.getImage_filename());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());
+			statement = connection.prepareStatement("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,productmodelname,name,materialquality,size,weight,unloadingnum,unit,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getMouldid());			statement.setString( 3,beanData.getType());			statement.setString( 4,beanData.getProductmodelid());			statement.setString( 5,beanData.getProductmodelname());			statement.setString( 6,beanData.getName());			statement.setString( 7,beanData.getMaterialquality());			statement.setString( 8,beanData.getSize());			statement.setString( 9,beanData.getWeight());			statement.setString( 10,beanData.getUnloadingnum());			statement.setString( 11,beanData.getUnit());			statement.setString( 12,beanData.getImage_filename());			statement.setString( 13,beanData.getDeptguid());			statement.setString( 14,beanData.getCreatetime());			statement.setString( 15,beanData.getCreateperson());			statement.setString( 16,beanData.getCreateunitid());			statement.setString( 17,beanData.getModifytime());			statement.setString( 18,beanData.getModifyperson());			statement.setString( 19,beanData.getDeleteflag());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -54,7 +54,7 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,name,materialquality,size,weight,unloadingnum,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)£º"+ e.toString());
+			throw new Exception("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,productmodelname,name,materialquality,size,weight,unloadingnum,unit,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)£º"+ e.toString());
 		}
 		finally
 		{
@@ -72,8 +72,8 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 		StringBuffer bufSQL = new StringBuffer();
 		try
 		{
-			bufSQL.append("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,name,materialquality,size,weight,unloadingnum,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(");
-			bufSQL.append("'" + nullString(beanData.getId()) + "',");			bufSQL.append("'" + nullString(beanData.getMouldid()) + "',");			bufSQL.append("'" + nullString(beanData.getType()) + "',");			bufSQL.append("'" + nullString(beanData.getProductmodelid()) + "',");			bufSQL.append("'" + nullString(beanData.getName()) + "',");			bufSQL.append("'" + nullString(beanData.getMaterialquality()) + "',");			bufSQL.append("'" + nullString(beanData.getSize()) + "',");			bufSQL.append("'" + nullString(beanData.getWeight()) + "',");			bufSQL.append("'" + nullString(beanData.getUnloadingnum()) + "',");			bufSQL.append("'" + nullString(beanData.getImage_filename()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "'");
+			bufSQL.append("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,productmodelname,name,materialquality,size,weight,unloadingnum,unit,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(");
+			bufSQL.append("'" + nullString(beanData.getId()) + "',");			bufSQL.append("'" + nullString(beanData.getMouldid()) + "',");			bufSQL.append("'" + nullString(beanData.getType()) + "',");			bufSQL.append("'" + nullString(beanData.getProductmodelid()) + "',");			bufSQL.append("'" + nullString(beanData.getProductmodelname()) + "',");			bufSQL.append("'" + nullString(beanData.getName()) + "',");			bufSQL.append("'" + nullString(beanData.getMaterialquality()) + "',");			bufSQL.append("'" + nullString(beanData.getSize()) + "',");			bufSQL.append("'" + nullString(beanData.getWeight()) + "',");			bufSQL.append("'" + nullString(beanData.getUnloadingnum()) + "',");			bufSQL.append("'" + nullString(beanData.getUnit()) + "',");			bufSQL.append("'" + nullString(beanData.getImage_filename()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "'");
 			bufSQL.append(")");
 
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -101,8 +101,8 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,name,materialquality,size,weight,unloadingnum,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getMouldid());			statement.setString( 3,beanData.getType());			statement.setString( 4,beanData.getProductmodelid());			statement.setString( 5,beanData.getName());			statement.setString( 6,beanData.getMaterialquality());			statement.setString( 7,beanData.getSize());			statement.setString( 8,beanData.getWeight());			statement.setString( 9,beanData.getUnloadingnum());			statement.setString( 10,beanData.getImage_filename());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());
+			statement = connection.prepareStatement("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,productmodelname,name,materialquality,size,weight,unloadingnum,unit,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getMouldid());			statement.setString( 3,beanData.getType());			statement.setString( 4,beanData.getProductmodelid());			statement.setString( 5,beanData.getProductmodelname());			statement.setString( 6,beanData.getName());			statement.setString( 7,beanData.getMaterialquality());			statement.setString( 8,beanData.getSize());			statement.setString( 9,beanData.getWeight());			statement.setString( 10,beanData.getUnloadingnum());			statement.setString( 11,beanData.getUnit());			statement.setString( 12,beanData.getImage_filename());			statement.setString( 13,beanData.getDeptguid());			statement.setString( 14,beanData.getCreatetime());			statement.setString( 15,beanData.getCreateperson());			statement.setString( 16,beanData.getCreateunitid());			statement.setString( 17,beanData.getModifytime());			statement.setString( 18,beanData.getModifyperson());			statement.setString( 19,beanData.getDeleteflag());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -110,7 +110,7 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,name,materialquality,size,weight,unloadingnum,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)£º"+ e.toString());
+			throw new Exception("INSERT INTO B_MouldBaseInfo( id,mouldid,type,productmodelid,productmodelname,name,materialquality,size,weight,unloadingnum,unit,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)£º"+ e.toString());
 		}
 		finally
 		{
@@ -213,19 +213,19 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT id,mouldid,type,productmodelid,name,materialquality,size,weight,unloadingnum,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_MouldBaseInfo WHERE  id =?");
+			statement = connection.prepareStatement("SELECT id,mouldid,type,productmodelid,productmodelname,name,materialquality,size,weight,unloadingnum,unit,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_MouldBaseInfo WHERE  id =?");
 			statement.setString( 1,beanData.getId());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
 				throw new Exception(" Row Not does;");
 			}
-			returnData.setId( resultSet.getString( 1));			returnData.setMouldid( resultSet.getString( 2));			returnData.setType( resultSet.getString( 3));			returnData.setProductmodelid( resultSet.getString( 4));			returnData.setName( resultSet.getString( 5));			returnData.setMaterialquality( resultSet.getString( 6));			returnData.setSize( resultSet.getString( 7));			returnData.setWeight( resultSet.getString( 8));			returnData.setUnloadingnum( resultSet.getString( 9));			returnData.setImage_filename( resultSet.getString( 10));			returnData.setDeptguid( resultSet.getString( 11));			returnData.setCreatetime( resultSet.getString( 12));			returnData.setCreateperson( resultSet.getString( 13));			returnData.setCreateunitid( resultSet.getString( 14));			returnData.setModifytime( resultSet.getString( 15));			returnData.setModifyperson( resultSet.getString( 16));			returnData.setDeleteflag( resultSet.getString( 17));
+			returnData.setId( resultSet.getString( 1));			returnData.setMouldid( resultSet.getString( 2));			returnData.setType( resultSet.getString( 3));			returnData.setProductmodelid( resultSet.getString( 4));			returnData.setProductmodelname( resultSet.getString( 5));			returnData.setName( resultSet.getString( 6));			returnData.setMaterialquality( resultSet.getString( 7));			returnData.setSize( resultSet.getString( 8));			returnData.setWeight( resultSet.getString( 9));			returnData.setUnloadingnum( resultSet.getString( 10));			returnData.setUnit( resultSet.getString( 11));			returnData.setImage_filename( resultSet.getString( 12));			returnData.setDeptguid( resultSet.getString( 13));			returnData.setCreatetime( resultSet.getString( 14));			returnData.setCreateperson( resultSet.getString( 15));			returnData.setCreateunitid( resultSet.getString( 16));			returnData.setModifytime( resultSet.getString( 17));			returnData.setModifyperson( resultSet.getString( 18));			returnData.setDeleteflag( resultSet.getString( 19));
 			return returnData;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT id,mouldid,type,productmodelid,name,materialquality,size,weight,unloadingnum,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_MouldBaseInfo  WHERE  "+e.toString());
+			throw new Exception("Error executing SQL SELECT id,mouldid,type,productmodelid,productmodelname,name,materialquality,size,weight,unloadingnum,unit,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_MouldBaseInfo  WHERE  "+e.toString());
 		}
 		finally
 		{
@@ -251,19 +251,19 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 			str_Where=str_Where.trim(); 
 			if(!str_Where.equals(""))
 				str_Where=" WHERE " + str_Where ; 
-			statement = connection.prepareStatement("SELECT id,mouldid,type,productmodelid,name,materialquality,size,weight,unloadingnum,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_MouldBaseInfo"+str_Where);
+			statement = connection.prepareStatement("SELECT id,mouldid,type,productmodelid,productmodelname,name,materialquality,size,weight,unloadingnum,unit,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_MouldBaseInfo"+str_Where);
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next())
 			{
 				B_MouldBaseInfoData returnData=new B_MouldBaseInfoData();
-				returnData.setId( resultSet.getString( 1));				returnData.setMouldid( resultSet.getString( 2));				returnData.setType( resultSet.getString( 3));				returnData.setProductmodelid( resultSet.getString( 4));				returnData.setName( resultSet.getString( 5));				returnData.setMaterialquality( resultSet.getString( 6));				returnData.setSize( resultSet.getString( 7));				returnData.setWeight( resultSet.getString( 8));				returnData.setUnloadingnum( resultSet.getString( 9));				returnData.setImage_filename( resultSet.getString( 10));				returnData.setDeptguid( resultSet.getString( 11));				returnData.setCreatetime( resultSet.getString( 12));				returnData.setCreateperson( resultSet.getString( 13));				returnData.setCreateunitid( resultSet.getString( 14));				returnData.setModifytime( resultSet.getString( 15));				returnData.setModifyperson( resultSet.getString( 16));				returnData.setDeleteflag( resultSet.getString( 17));
+				returnData.setId( resultSet.getString( 1));				returnData.setMouldid( resultSet.getString( 2));				returnData.setType( resultSet.getString( 3));				returnData.setProductmodelid( resultSet.getString( 4));				returnData.setProductmodelname( resultSet.getString( 5));				returnData.setName( resultSet.getString( 6));				returnData.setMaterialquality( resultSet.getString( 7));				returnData.setSize( resultSet.getString( 8));				returnData.setWeight( resultSet.getString( 9));				returnData.setUnloadingnum( resultSet.getString( 10));				returnData.setUnit( resultSet.getString( 11));				returnData.setImage_filename( resultSet.getString( 12));				returnData.setDeptguid( resultSet.getString( 13));				returnData.setCreatetime( resultSet.getString( 14));				returnData.setCreateperson( resultSet.getString( 15));				returnData.setCreateunitid( resultSet.getString( 16));				returnData.setModifytime( resultSet.getString( 17));				returnData.setModifyperson( resultSet.getString( 18));				returnData.setDeleteflag( resultSet.getString( 19));
 				v_1.add(returnData);
 			}
 			return v_1;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT id,mouldid,type,productmodelid,name,materialquality,size,weight,unloadingnum,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_MouldBaseInfo" + astr_Where +e.toString());
+			throw new Exception("Error executing SQL SELECT id,mouldid,type,productmodelid,productmodelname,name,materialquality,size,weight,unloadingnum,unit,image_filename,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag FROM B_MouldBaseInfo" + astr_Where +e.toString());
 		}
 		finally
 		{
@@ -282,15 +282,15 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_MouldBaseInfo SET id= ? , mouldid= ? , type= ? , productmodelid= ? , name= ? , materialquality= ? , size= ? , weight= ? , unloadingnum= ? , image_filename= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?");
-			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getMouldid());			statement.setString( 3,beanData.getType());			statement.setString( 4,beanData.getProductmodelid());			statement.setString( 5,beanData.getName());			statement.setString( 6,beanData.getMaterialquality());			statement.setString( 7,beanData.getSize());			statement.setString( 8,beanData.getWeight());			statement.setString( 9,beanData.getUnloadingnum());			statement.setString( 10,beanData.getImage_filename());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());
-			statement.setString( 18,beanData.getId());
+			statement = connection.prepareStatement("UPDATE B_MouldBaseInfo SET id= ? , mouldid= ? , type= ? , productmodelid= ? , productmodelname= ? , name= ? , materialquality= ? , size= ? , weight= ? , unloadingnum= ? , unit= ? , image_filename= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?");
+			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getMouldid());			statement.setString( 3,beanData.getType());			statement.setString( 4,beanData.getProductmodelid());			statement.setString( 5,beanData.getProductmodelname());			statement.setString( 6,beanData.getName());			statement.setString( 7,beanData.getMaterialquality());			statement.setString( 8,beanData.getSize());			statement.setString( 9,beanData.getWeight());			statement.setString( 10,beanData.getUnloadingnum());			statement.setString( 11,beanData.getUnit());			statement.setString( 12,beanData.getImage_filename());			statement.setString( 13,beanData.getDeptguid());			statement.setString( 14,beanData.getCreatetime());			statement.setString( 15,beanData.getCreateperson());			statement.setString( 16,beanData.getCreateunitid());			statement.setString( 17,beanData.getModifytime());			statement.setString( 18,beanData.getModifyperson());			statement.setString( 19,beanData.getDeleteflag());
+			statement.setString( 20,beanData.getId());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_MouldBaseInfo SET id= ? , mouldid= ? , type= ? , productmodelid= ? , name= ? , materialquality= ? , size= ? , weight= ? , unloadingnum= ? , image_filename= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?"+ e.toString());
+			throw new Exception("UPDATE B_MouldBaseInfo SET id= ? , mouldid= ? , type= ? , productmodelid= ? , productmodelname= ? , name= ? , materialquality= ? , size= ? , weight= ? , unloadingnum= ? , unit= ? , image_filename= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -308,7 +308,7 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("UPDATE B_MouldBaseInfo SET ");
-			bufSQL.append("Id = " + "'" + nullString(beanData.getId()) + "',");			bufSQL.append("Mouldid = " + "'" + nullString(beanData.getMouldid()) + "',");			bufSQL.append("Type = " + "'" + nullString(beanData.getType()) + "',");			bufSQL.append("Productmodelid = " + "'" + nullString(beanData.getProductmodelid()) + "',");			bufSQL.append("Name = " + "'" + nullString(beanData.getName()) + "',");			bufSQL.append("Materialquality = " + "'" + nullString(beanData.getMaterialquality()) + "',");			bufSQL.append("Size = " + "'" + nullString(beanData.getSize()) + "',");			bufSQL.append("Weight = " + "'" + nullString(beanData.getWeight()) + "',");			bufSQL.append("Unloadingnum = " + "'" + nullString(beanData.getUnloadingnum()) + "',");			bufSQL.append("Image_filename = " + "'" + nullString(beanData.getImage_filename()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "'");
+			bufSQL.append("Id = " + "'" + nullString(beanData.getId()) + "',");			bufSQL.append("Mouldid = " + "'" + nullString(beanData.getMouldid()) + "',");			bufSQL.append("Type = " + "'" + nullString(beanData.getType()) + "',");			bufSQL.append("Productmodelid = " + "'" + nullString(beanData.getProductmodelid()) + "',");			bufSQL.append("Productmodelname = " + "'" + nullString(beanData.getProductmodelname()) + "',");			bufSQL.append("Name = " + "'" + nullString(beanData.getName()) + "',");			bufSQL.append("Materialquality = " + "'" + nullString(beanData.getMaterialquality()) + "',");			bufSQL.append("Size = " + "'" + nullString(beanData.getSize()) + "',");			bufSQL.append("Weight = " + "'" + nullString(beanData.getWeight()) + "',");			bufSQL.append("Unloadingnum = " + "'" + nullString(beanData.getUnloadingnum()) + "',");			bufSQL.append("Unit = " + "'" + nullString(beanData.getUnit()) + "',");			bufSQL.append("Image_filename = " + "'" + nullString(beanData.getImage_filename()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "'");
 			bufSQL.append(" WHERE ");
 			bufSQL.append("Id = " + "'" + nullString(beanData.getId()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -335,15 +335,15 @@ public class B_MouldBaseInfoDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_MouldBaseInfo SET id= ? , mouldid= ? , type= ? , productmodelid= ? , name= ? , materialquality= ? , size= ? , weight= ? , unloadingnum= ? , image_filename= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?");
-			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getMouldid());			statement.setString( 3,beanData.getType());			statement.setString( 4,beanData.getProductmodelid());			statement.setString( 5,beanData.getName());			statement.setString( 6,beanData.getMaterialquality());			statement.setString( 7,beanData.getSize());			statement.setString( 8,beanData.getWeight());			statement.setString( 9,beanData.getUnloadingnum());			statement.setString( 10,beanData.getImage_filename());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());
-			statement.setString( 18,beanData.getId());
+			statement = connection.prepareStatement("UPDATE B_MouldBaseInfo SET id= ? , mouldid= ? , type= ? , productmodelid= ? , productmodelname= ? , name= ? , materialquality= ? , size= ? , weight= ? , unloadingnum= ? , unit= ? , image_filename= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?");
+			statement.setString( 1,beanData.getId());			statement.setString( 2,beanData.getMouldid());			statement.setString( 3,beanData.getType());			statement.setString( 4,beanData.getProductmodelid());			statement.setString( 5,beanData.getProductmodelname());			statement.setString( 6,beanData.getName());			statement.setString( 7,beanData.getMaterialquality());			statement.setString( 8,beanData.getSize());			statement.setString( 9,beanData.getWeight());			statement.setString( 10,beanData.getUnloadingnum());			statement.setString( 11,beanData.getUnit());			statement.setString( 12,beanData.getImage_filename());			statement.setString( 13,beanData.getDeptguid());			statement.setString( 14,beanData.getCreatetime());			statement.setString( 15,beanData.getCreateperson());			statement.setString( 16,beanData.getCreateunitid());			statement.setString( 17,beanData.getModifytime());			statement.setString( 18,beanData.getModifyperson());			statement.setString( 19,beanData.getDeleteflag());
+			statement.setString( 20,beanData.getId());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_MouldBaseInfo SET id= ? , mouldid= ? , type= ? , productmodelid= ? , name= ? , materialquality= ? , size= ? , weight= ? , unloadingnum= ? , image_filename= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?"+ e.toString());
+			throw new Exception("UPDATE B_MouldBaseInfo SET id= ? , mouldid= ? , type= ? , productmodelid= ? , productmodelname= ? , name= ? , materialquality= ? , size= ? , weight= ? , unloadingnum= ? , unit= ? , image_filename= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag=? WHERE  id  = ?"+ e.toString());
 		}
 		finally
 		{

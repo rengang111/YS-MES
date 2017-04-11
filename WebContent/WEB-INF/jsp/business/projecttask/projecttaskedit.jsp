@@ -101,7 +101,8 @@ $(document).ready(function() {
 				maxlength: 4,
 			},
 			manager: {
-				required: true
+				required: true,
+				maxlength: 20,
 			},
 			designCapability: {
 				maxlength: 500,
@@ -227,7 +228,7 @@ $(document).ready(function() {
 		
 	}
 	
-	$("#manager").val("${DisplayData.projectTaskData.manager}");
+	//$("#manager").val("${DisplayData.projectTaskData.manager}");
 	$("#currency").val("${DisplayData.projectTaskData.currency}");
 
     jQuery.validator.addMethod("verifyDate",function(value, element){ 
@@ -659,10 +660,7 @@ function doReturn() {
 								项目经理：
 							</td>
 							<td width="240px">
-								<form:select path="manager">
-									<form:options items="${DisplayData.managerList}" itemValue="key"
-										itemLabel="value" />
-								</form:select>
+								<input type="text" id="manager" name="manager" class="short" value="${DisplayData.projectTaskData.manager}"/>
 							</td>
 						</tr>
 						<tr>

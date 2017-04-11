@@ -121,7 +121,7 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 
 		try {
 			//TODO
-			model.setManagerList(doOptionChange(request).getManagerList());
+			//model.setManagerList(doOptionChange(request).getManagerList());
 			model.setCurrencyList(doCurrencyOptionChange(request).getCurrencyList());
 			model.setEndInfoMap("098", "0001", "");
 		}
@@ -143,9 +143,7 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 		try {
 
 			String projecttaskid = getJsonData(data, "projectId");
-		
 			ArrayList<ArrayList<String>> preCheckResult = preCheckProjectTaskId(request, projecttaskid);
-			
 			if (preCheckResult.size() > 0) {
 				//已存在
 				model.setEndInfoMap("001", "err005", "");
@@ -156,6 +154,7 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 			}
 		}
 		catch(Exception e) {
+			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
@@ -232,6 +231,7 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 			}
 		}
 		catch(Exception e) {
+			System.out.println(e.getMessage());
 			model.setEndInfoMap(SYSTEMERROR, "err001", id);
 		}
 		
@@ -333,7 +333,7 @@ public class ProjectTaskService extends BaseService implements I_MultiAlbumServi
 		
 		model.setProjectTaskData(dbData);
 
-		model.setManagerList(doOptionChange(request).getManagerList());
+		//model.setManagerList(doOptionChange(request).getManagerList());
 
 		model.setCurrencyList(doCurrencyOptionChange(request).getCurrencyList());
 		

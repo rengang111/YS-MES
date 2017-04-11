@@ -11,10 +11,10 @@ import java.io.InputStream;
 * @author mengfanchang
 * @version 1.0
 */
-public class B_MouldFactoryData 
+public class B_MouldHistoryPriceData 
 {
 
-	public B_MouldFactoryData()
+	public B_MouldHistoryPriceData()
 	{
 	}
 

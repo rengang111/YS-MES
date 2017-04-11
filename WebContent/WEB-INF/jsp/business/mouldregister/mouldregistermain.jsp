@@ -63,20 +63,21 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "mouldId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "fullmouldId", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "name", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "productModelName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "size", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "materialQuality", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "weight", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "typename", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "unitName", "defaultContent" : '',"className" : 'td-center'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "|" + row["subCodeId"] + "' />"
 		                    }},
-				    		{"targets":7,"render":function(data, type, row){
-				    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">查看</a>"
+				    		{"targets":8,"render":function(data, type, row){
+				    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "', '" + row["subCodeId"] + "')\">查看</a>"
 		                    }}
 			         ] 
 			}
@@ -117,9 +118,9 @@
 		openLayer(url, '', $(document).height(), false);
 	}
 	
-	function doUpdate(key) {
+	function doUpdate(key, subcodeid) {
 
-		var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + key;
+		var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + key + "&activeSubCode=" + subcodeid;
 
 		openLayer(url, '', $(document).height(), false);
 	}
@@ -222,9 +223,10 @@
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具编号:" class="dt-middle sorting_disabled">模具编号</th>
 								<th colspan="1" rowspan="1" style="width: 82px;" aria-label="模具名称:" class="dt-middle sorting_disabled">模具名称</th>
 								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="产品名称" class="dt-middle sorting_disabled">产品名称</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="尺寸" class="dt-middle sorting_disabled">尺寸</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="材质" class="dt-middle sorting_disabled">材质</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="重量" class="dt-middle sorting_disabled">重量</th>
+								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="类型" class="dt-middle sorting_disabled">类型</th>
+								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="报价" class="dt-middle sorting_disabled">报价</th>
+								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="供应商编码" class="dt-middle sorting_disabled">供应商编码</th>
+								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="单位" class="dt-middle sorting_disabled">单位</th>
 								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
 							</tr>
 						</thead>
