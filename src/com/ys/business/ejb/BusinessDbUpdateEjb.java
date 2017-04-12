@@ -1752,7 +1752,6 @@ public class BusinessDbUpdateEjb  {
 			String productModelIdView = service.getJsonData(data, "productModelIdView");
 			String productModelName = service.getJsonData(data, "productModelName");
 			String type = service.getJsonData(data, "type");
-			String typeDes = service.getJsonData(data, "selectedTypeDesc");
 			String name = service.getJsonData(data, "name");
 			String materialQuality = service.getJsonData(data, "materialQuality");
 			String size = service.getJsonData(data, "size");
@@ -1772,7 +1771,6 @@ public class BusinessDbUpdateEjb  {
 				mouldId = service.getMouldId(request, data);
 				mouldBaseInfoData.setMouldid(mouldId);
 				mouldBaseInfoData.setType(type);
-				mouldBaseInfoData.setTypedesc(typeDes);
 				mouldBaseInfoData.setProductmodelid(productModelIdView);
 				mouldBaseInfoData.setProductmodelname(productModelName);
 				mouldBaseInfoData.setName(name);
@@ -1796,7 +1794,6 @@ public class BusinessDbUpdateEjb  {
 				}
 				
 				mouldBaseInfoData.setType(type);
-				mouldBaseInfoData.setTypedesc(typeDes);
 				mouldBaseInfoData.setProductmodelid(productModelIdView);
 				mouldBaseInfoData.setProductmodelname(productModelName);
 				mouldBaseInfoData.setName(name);
@@ -1827,7 +1824,7 @@ public class BusinessDbUpdateEjb  {
 						mouldSubData.setName(subCodeName);
 						mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
 						mouldSubDao.Store(mouldSubData);
-
+						model.setSubCode(mouldSubData.getSubcode());
 						/*
 						if (mouldSubData.getSubcode().equals("000")) {
 							if (!subCode.equals("")) {
@@ -1903,7 +1900,7 @@ public class BusinessDbUpdateEjb  {
 							String newSubCode = BaseDAO.getGuId();
 							mouldSubData.setId(newSubCode);
 							mouldSubData.setMouldid(key);
-							mouldSubData.setSubcode("000");
+							mouldSubData.setSubcode("00");
 							mouldSubData.setName("");
 							mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
 							mouldSubDao.Create(mouldSubData);

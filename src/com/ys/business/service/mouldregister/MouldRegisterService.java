@@ -142,7 +142,6 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			model.setProductModelIdView(dbData.getProductmodelid());
 			model.setProductModelName(dbData.getProductmodelname());
 
-			
 			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 			BaseModel dataModel = new BaseModel();
 			BaseQuery baseQuery = null;
@@ -152,6 +151,19 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			userDefinedSearchCase.put("mouldId", key);
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 			model.setMouldSubDatas(baseQuery.getYsQueryData(0,0));
+			
+			userDefinedSearchCase = new HashMap<String, String>();
+			dataModel = new BaseModel();
+			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+			dataModel.setQueryName("getParentName");
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("keywords1", dbData.getType());
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			ArrayList<HashMap<String, String>> tmpData = baseQuery.getYsQueryData(0,0);
+			if (tmpData.size() > 0) {
+				model.setTypeDesc(tmpData.get(0).get("name"));
+				model.setMouldType(tmpData.get(0).get("id"));
+			}
 			
 			userDefinedSearchCase = new HashMap<String, String>();
 			dataModel = new BaseModel();
@@ -216,7 +228,21 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			//dicData.setDictypeid(DicUtil.MOULDTYPE);
 			//dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 			//model.setType(dicData.getDicname());
-			model.setType(dbData.getTypedesc());
+			model.setType(dbData.getType());
+			
+			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+			BaseModel dataModel = new BaseModel();
+			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+			dataModel.setQueryName("getParentName");
+			BaseQuery baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("keywords1", dbData.getType());
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			ArrayList<HashMap<String, String>> tmpData = baseQuery.getYsQueryData(0,0);
+			if (tmpData.size() > 0) {
+				model.setTypeDesc(tmpData.get(0).get("name"));
+				model.setMouldType(tmpData.get(0).get("id"));
+			}
+
 		}
 		
 		model.setCurrencyList(doOptionChange(DicUtil.CURRENCY, ""));
@@ -278,7 +304,20 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			//dicData.setDictypeid(DicUtil.MOULDTYPE);
 			//dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 			//model.setType(dicData.getDicname());
-			model.setType(dbData.getTypedesc());
+			model.setType(dbData.getType());
+			
+			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+			BaseModel dataModel = new BaseModel();
+			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+			dataModel.setQueryName("getParentName");
+			BaseQuery baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("keywords1", dbData.getType());
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			ArrayList<HashMap<String, String>> tmpData = baseQuery.getYsQueryData(0,0);
+			if (tmpData.size() > 0) {
+				model.setTypeDesc(tmpData.get(0).get("name"));
+				model.setMouldType(tmpData.get(0).get("id"));
+			}
 		}
 
 		model.setCurrencyList(doOptionChange(DicUtil.CURRENCY, ""));

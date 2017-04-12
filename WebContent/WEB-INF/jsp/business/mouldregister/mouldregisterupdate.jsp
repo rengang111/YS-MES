@@ -186,7 +186,7 @@
 	function getMouldId() {
 		var actionUrl = "${ctx}/business/mouldregister?methodtype=getMouldId";
 		
-		if ($('#productModelIdView').val() != "") {
+		if ($('#type').val() != "" && $('#type').val().substr(0, 1) == 'M') {
 		
 			$.ajax({
 				type : "POST",
@@ -218,6 +218,8 @@
 			});
 		} else {
 			$('#mouldId').html("");
+			$('#mouldType').html("");
+			$('#typeDesc').html("");
 		}
 	}
 	
@@ -230,7 +232,7 @@
 	function addSubCodeTr(activeSubCode, subCode, subName, id){
 		 
 		var i = $("#subidTab tr").length - 1;	
-		var subid = PrefixInteger(i, 3);
+		var subid = PrefixInteger(i, 2);
 		var trHtml = "";
 
 		if (activeSubCode == subCode) {
@@ -294,6 +296,7 @@
 			rules: {
 				type: {
 					required: true,
+					mouldType: true,
 					maxlength: 100,
 				},
 				productModelIdView: {
@@ -358,6 +361,17 @@
 
 	        return rtnValue;   
 	    }, "子编码重复");
+	    
+	    jQuery.validator.addMethod("mouldType",function(value, element){
+	    	var rtnValue = true;
+
+	    	if (value != "") {
+	    		if (value.substr(0, 1) != 'M') {
+	    			rtnValue = false;
+	    		}
+	    	}
+	        return rtnValue;   
+	    }, "M*");
 	    
 		controlButtons($('#keyBackup').val());
 		
@@ -598,21 +612,11 @@
             change: function(event, ui) {
                 // provide must match checking if what is in the input
                 // is in the list of results. HACK!
-                var inputSource = $(this).val();
-                var found = $('.ui-autocomplete li').text().search(inputSource);
-                console.debug('found:' + found);
-                if(found < 0) {
-                    $(this).val('');
-                } else {
-                	var matcher = new RegExp("^" + $(this).val());
-                	for(var i = 0; i < datas.length; i++){//用javascript的for/in循环遍历对象的属性
-                		if (matcher.test(datas[i].name)) {
-            				$("#productModelId").val(datas[i].id);
-            				$("#productModelIdView").val(datas[i].name);
-            				$("#productModelName").val(datas[i].des);                			
-            				break;
-                		}
-                	}
+                if (ui.item == null) {
+                	$("#mouldId").html('');
+    				$("#type").val('');
+    				$("#mouldType").html('');
+    				$("#typeDesc").html('');
                 }
             },
 			
@@ -636,12 +640,13 @@
 						response($.map(
 							data.data,
 							function(item) {
-								console.log(item);
 								return {
 									label : item.viewList,
 									value : item.id,
 									id : item.id,
 									name: item.categoryViewName,
+									parentId: item.parentcategoryId,
+									parentName: item.parentName,
 								}
 							}));
 						datas = data.data;
@@ -653,11 +658,12 @@
 			},
 
 			select : function(event, ui) {
+
 				$("#type").val(ui.item.id);
-				$("#typeDesc").html(ui.item.name);
-				$("#selectedTypeDesc").val(ui.item.name);
-				
+				$("#mouldType").html(ui.item.parentId);
+				$("#typeDesc").html(ui.item.parentName);
 				getMouldId();
+				//$("#factoryProductCode").focus();
 			},
 
             change: function(event, ui) {
@@ -668,16 +674,17 @@
                 console.debug('found:' + found);
                 if(found < 0) {
                     $(this).val('');
-                    $("#typeDesc").html('');
-                    $("#selectedTypeDesc").val('');
-                    
+    				$("#mouldType").html('');
+    				$("#typeDesc").html('');
+                    $('#mouldId').html('');
                 } else {
                 	var matcher = new RegExp("^" + $(this).val());
                 	for(var i = 0; i < datas.length; i++){//用javascript的for/in循环遍历对象的属性
                 		if (matcher.test(datas[i].name)) {
             				$("#type").val(datas[i].id);
-            				$("#typeDesc").html(datas[i].name);
-            				$("#selectedTypeDesc").val(datas[i].name);
+            				$("#mouldType").html(datas[i].parentId);
+            				$("#typeDesc").html(datas[i].parentcategoryId);
+            				getMouldId();
             				break;
                 		}
                 	}
@@ -777,7 +784,6 @@
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id='productModelId' name='productModelId'/>
 				<input type=hidden id="subCodeCount" name="subCodeCount" value=""/>
-				<input type=hidden id="selectedTypeDesc" name="selectedTypeDesc" value="${DisplayData.mouldBaseInfoData.typedesc}"/>
 				<input type=hidden id="activeSubCode" name="activeSubCode" value="${DisplayData.activeSubCode}"/>
 				<input type=hidden id="activeSubCodeIndex" name="activeSubCodeIndex" value=""/>
 				<input type=hidden id="rotateDirect" name="rotateDirect" value=""/>
@@ -797,6 +803,26 @@
 						<td width="130px">
 							<label id="mouldId" name="mouldId" style="margin:0px 10px">${DisplayData.mouldBaseInfoData.mouldid}.${DisplayData.subCode}</label>
 						</td>
+						<td width="60px">分类编码：	</td>
+						<td width="150px">
+							<form:input path="type"	class="short" onBlur="getMouldId();"/>
+						</td>
+						<td width="60px">模具类型：</td>
+						<td width="130px">
+							<label name="mouldType" id="mouldType" >${DisplayData.mouldType}</label>
+						</td>
+						<td width="60px">类型解释：</td>
+						<td width="150px">
+							<label name="typeDesc" id="typeDesc" class="short" class="read-only short">${DisplayData.typeDesc}</label>
+						</td>
+						<td width="60px">
+							模具名称：
+						</td>
+						<td>
+							<input type="text" id="name" name="name" class="short" value="${DisplayData.mouldBaseInfoData.name}"></input>
+						</td>
+					</tr>
+					<tr>
 						<td width="60px">产品型号：</td>
 						<td width="130px">
 							<form:input path="productModelIdView" class="required mini"/>
@@ -805,27 +831,11 @@
 						<td width="130px">
 							<form:input path="productModelName"	class="short" />
 						</td>
-						<td width="60px">模具类型：</td>
-						<td width="130px">
-							<input type="text" name="type" id="type" class="short" onblur="getMouldId();" value="${DisplayData.mouldBaseInfoData.type}">
-						</td>
-						<td width="60px">类型解释：</td>
-						<td width="130px">
-							<label name="typeDesc" id="typeDesc" class="short" class="read-only short">${DisplayData.mouldBaseInfoData.typedesc}</label>
-						</td>
-					</tr>
-					<tr>
 						<td width="50px">
 							出模数：
 						</td>
-						<td width="100px">
+						<td>
 							<input type="text" id="unloadingNum" name="unloadingNum" class="mini" value="${DisplayData.mouldBaseInfoData.unloadingnum}"></input>
-						</td>
-						<td>
-							模具名称：
-						</td>
-						<td>
-							<input type="text" id="name" name="name" class="short" value="${DisplayData.mouldBaseInfoData.name}"></input>
 						</td>
 						<td>
 							材质：
@@ -839,14 +849,14 @@
 						<td>
 							<input type="text" id="size" name="size" class="short" value="${DisplayData.mouldBaseInfoData.size}"></input>
 						</td>
+					</tr>
+					<tr>
 						<td>
 							重量：
 						</td>
 						<td>
 							<input type="text" id="weight" name="weight" class="mini" value="${DisplayData.mouldBaseInfoData.weight}"></input>
 						</td>
-					</tr>
-					<tr>
 						<td>
 							单位：
 						</td>
@@ -897,7 +907,7 @@
 							<table>
 								<tr>
 									<td>
-										<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 110px;padding:0px;display:none;">
+										<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 150px;padding:0px;display:none;">
 											<div id="tabs-1" title="图片" style="padding:5px;height:200px;">
 												<jsp:include page="../../common/album/album.jsp"></jsp:include>
 											</div>

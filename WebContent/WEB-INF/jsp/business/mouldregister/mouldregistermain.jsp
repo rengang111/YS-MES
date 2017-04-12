@@ -66,7 +66,7 @@
 							{"data": "fullmouldId", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "name", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "productModelName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "typeDesc", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "parentId", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "unitName", "defaultContent" : '',"className" : 'td-center'},

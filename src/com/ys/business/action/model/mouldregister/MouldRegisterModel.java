@@ -50,6 +50,8 @@ public class MouldRegisterModel extends BaseModel {
 	private String priceTime = "";
 	private String supplierid = "";
 	private String currency = "";
+	private String mouldType = "";
+	private String typeDesc = "";
 	
 	private ArrayList<ListOption> typeList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> mouldFactoryList = new ArrayList<ListOption>();
@@ -167,7 +169,18 @@ public class MouldRegisterModel extends BaseModel {
 	public void setCurrency(String currency) {
 	    this.currency = currency;
 	}
-
+	public String getMouldType() {
+	    return this.mouldType;
+	}
+	public void setMouldType(String mouldType) {
+	    this.mouldType = mouldType;
+	}
+	public String getTypeDesc() {
+	    return this.typeDesc;
+	}
+	public void setTypeDesc(String typeDesc) {
+	    this.typeDesc = typeDesc;
+	}
 	public String getOperType() {
 	    return this.operType;
 	}

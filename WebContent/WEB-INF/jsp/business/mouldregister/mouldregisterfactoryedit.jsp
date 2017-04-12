@@ -145,14 +145,17 @@
 							${DisplayData.productModelIdView}
 					</td>
 
-					<td width="100px" class="label"><label>中文品名：</label></td>
+					<td width="100px" class="label"><label>产品名称：</label></td>
 					<td>${DisplayData.productModelName}</td>
 				</tr>
 
 				<tr>
 					<td class="label"><label>模具类型：</label></td>
-					<td>${DisplayData.type}</td>
-
+					<td>${DisplayData.mouldType}</td>
+					
+					<td class="label"><label>类型解释：</label></td>
+					<td>${DisplayData.typeDesc}</td>
+					
 					<td class="label" ><label>报价单位：</label></td>
 					<td colspan=3>${DisplayData.unit}</td>
 				</tr>

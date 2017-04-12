@@ -60,19 +60,6 @@ public class B_MouldBaseInfoData
 	/**
 	*
 	*/
-	private String typedesc;
-	public String getTypedesc()
-	{
-		return this.typedesc;
-	}
-	public void setTypedesc(String typedesc)
-	{
-		this.typedesc=typedesc;
-	}
-
-	/**
-	*
-	*/
 	private String productmodelid;
 	public String getProductmodelid()
 	{
@@ -306,13 +293,13 @@ public class B_MouldBaseInfoData
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("mouldid = "+(mouldid == null ? "null" : mouldid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("typedesc = "+(typedesc == null ? "null" : typedesc)+"\n");		sb.append("productmodelid = "+(productmodelid == null ? "null" : productmodelid)+"\n");		sb.append("productmodelname = "+(productmodelname == null ? "null" : productmodelname)+"\n");		sb.append("name = "+(name == null ? "null" : name)+"\n");		sb.append("materialquality = "+(materialquality == null ? "null" : materialquality)+"\n");		sb.append("size = "+(size == null ? "null" : size)+"\n");		sb.append("weight = "+(weight == null ? "null" : weight)+"\n");		sb.append("unloadingnum = "+(unloadingnum == null ? "null" : unloadingnum)+"\n");		sb.append("unit = "+(unit == null ? "null" : unit)+"\n");		sb.append("image_filename = "+(image_filename == null ? "null" : image_filename)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("mouldid = "+(mouldid == null ? "null" : mouldid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("productmodelid = "+(productmodelid == null ? "null" : productmodelid)+"\n");		sb.append("productmodelname = "+(productmodelname == null ? "null" : productmodelname)+"\n");		sb.append("name = "+(name == null ? "null" : name)+"\n");		sb.append("materialquality = "+(materialquality == null ? "null" : materialquality)+"\n");		sb.append("size = "+(size == null ? "null" : size)+"\n");		sb.append("weight = "+(weight == null ? "null" : weight)+"\n");		sb.append("unloadingnum = "+(unloadingnum == null ? "null" : unloadingnum)+"\n");		sb.append("unit = "+(unit == null ? "null" : unit)+"\n");		sb.append("image_filename = "+(image_filename == null ? "null" : image_filename)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		id= (id == null ?null : id.trim());		mouldid= (mouldid == null ?null : mouldid.trim());		type= (type == null ?null : type.trim());		typedesc= (typedesc == null ?null : typedesc.trim());		productmodelid= (productmodelid == null ?null : productmodelid.trim());		productmodelname= (productmodelname == null ?null : productmodelname.trim());		name= (name == null ?null : name.trim());		materialquality= (materialquality == null ?null : materialquality.trim());		size= (size == null ?null : size.trim());		weight= (weight == null ?null : weight.trim());		unloadingnum= (unloadingnum == null ?null : unloadingnum.trim());		unit= (unit == null ?null : unit.trim());		image_filename= (image_filename == null ?null : image_filename.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		id= (id == null ?null : id.trim());		mouldid= (mouldid == null ?null : mouldid.trim());		type= (type == null ?null : type.trim());		productmodelid= (productmodelid == null ?null : productmodelid.trim());		productmodelname= (productmodelname == null ?null : productmodelname.trim());		name= (name == null ?null : name.trim());		materialquality= (materialquality == null ?null : materialquality.trim());		size= (size == null ?null : size.trim());		weight= (weight == null ?null : weight.trim());		unloadingnum= (unloadingnum == null ?null : unloadingnum.trim());		unit= (unit == null ?null : unit.trim());		image_filename= (image_filename == null ?null : image_filename.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
