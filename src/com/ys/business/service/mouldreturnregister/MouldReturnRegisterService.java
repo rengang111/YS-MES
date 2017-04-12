@@ -322,7 +322,7 @@ public class MouldReturnRegisterService extends BaseService {
 		try {
 			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
 	        
-	        bean.executeMouldRegisterDelete(data, userInfo);
+	        //bean.executeMouldRegisterDelete(data, userInfo);
 	        
 	        model.setEndInfoMap(NORMAL, "", "");
 	        

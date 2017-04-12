@@ -64,11 +64,11 @@
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "contractId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "productModelIdView", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "productModelName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "mouldFactory", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "payCase", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "finishTime", "defaultContent" : '',"className" : 'td-center'},							
+							{"data": "productModelId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "typeName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "supplierName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "contractDate", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "deliverDate", "defaultContent" : '',"className" : 'td-center'},							
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
@@ -233,11 +233,11 @@
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具合同编号:" class="dt-middle sorting_disabled">模具合同编号</th>
-								<th colspan="1" rowspan="1" style="width: 82px;" aria-label="产品型号:" class="dt-middle sorting_disabled">产品型号</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="产品名称" class="dt-middle sorting_disabled">产品名称</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="模具工厂" class="dt-middle sorting_disabled">模具工厂</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="付款条件(交付后/天)" class="dt-middle sorting_disabled">付款条件<br>(交付后/天)</th>
-								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="完成时间" class="dt-middle sorting_disabled">完成时间</th>
+								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="机器型号:" class="dt-middle sorting_disabled">机器型号</th>
+								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具类型" class="dt-middle sorting_disabled">模具类型</th>
+								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="模具供应商" class="dt-middle sorting_disabled">模具供应商</th>
+								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="合同日期" class="dt-middle sorting_disabled">合同日期</th>
+								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="合同交期" class="dt-middle sorting_disabled">合同交期</th>
 								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
 							</tr>
 						</thead>

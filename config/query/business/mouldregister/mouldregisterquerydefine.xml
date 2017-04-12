@@ -12,6 +12,7 @@
       <f name="CONCAT_WS('.', A.mouldId, A.subcode)" alias="fullmouldId" ctype="" />
       <f name="A.mouldId" alias="" ctype="" />
       <f name="A.type" alias="" ctype="" />
+      <f name="A.typeDesc" alias="" ctype="" />
       <f name="A.productModelName" alias="" ctype="" />
       <f name="A.productModelIdView" alias="" ctype="" />
       <f name="A.name" alias="" ctype="" />
@@ -204,9 +205,9 @@
     <pool></pool>     
     <name value="mouldregisterquerydefine_supplierSearch" />
     <where>
-      <w name="A.supplierId" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="OR" bt="" />
+      <w name="A.supplierId" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="OR" bt="(" />
       <w name="A.supplierName" des=""  reqName="keywords2" dtype="ch" oper="like"  lg="OR" bt="" />
-      <w name="A.shortName" des=""  reqName="keywords3" dtype="ch" oper="like"  lg="" bt="" />
+      <w name="A.shortName" des=""  reqName="keywords3" dtype="ch" oper="like"  lg="" bt=")" />
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -217,7 +218,7 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_supplier AS A, s_DIC as B where A.deleteflag='0' AND B.EnableFlag = '0' AND B.DicName='模具供应商' AND B.DicTypeID='供应商类型' AND A.type=B.dicId</from>
+    <from>b_supplier AS A, s_DIC as B where (A.deleteflag='0' AND B.EnableFlag = '0' AND B.DicName='模具供应商' AND B.DicTypeID='供应商类型' AND A.type=B.dicId)</from>
     <orderby>A.supplierID</orderby>
     <groupby></groupby>
     <having></having>
@@ -283,6 +284,32 @@
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>b_MouldFactory as A WHERE deleteflag = '0'</from>
     <orderby>pricetime desc, createtime desc</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="categorylist" />
+    <where>
+      <w name="A.categoryId" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="OR" bt="" />
+      <w name="A.categoryName" des=""  reqName="keywords2" dtype="ch" oper="like"  lg="OR" bt="" />
+      <w name="A.ViewList" des=""  reqName="keywords3" dtype="ch" oper="like"  lg="" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.categoryId" alias="id" ctype="" />
+      <f name="A.categoryName" alias="name" ctype="" />
+      <f name="A.categoryViewName" alias="" ctype="" />
+      <f name="A.formatDes" alias="" ctype="" />
+      <f name="A.viewList" alias="" ctype="" />
+      <f name="A.fullField" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_matcategorylist AS A WHERE A.categoryId</from>
+    <orderby></orderby>
     <groupby></groupby>
     <having></having>
 	<power>

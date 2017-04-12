@@ -198,7 +198,9 @@
 					if (d.rtnCd != "000") {
 						alert(d.message);	
 					} else {
-						$('#mouldId').html('<font color="red">' + d.info + '</font>');
+						if (d.info != "nochange") {
+							$('#mouldId').html('<font color="red">' + d.info + '</font>');
+						}
 					}
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
@@ -286,14 +288,13 @@
 		
 		$('#factoryTable').width(750);
 		
-		//autoComplete();
+		autoCompleteType();
 		
 		validatorBaseInfo = $("#mouldBaseInfo").validate({
 			rules: {
 				type: {
 					required: true,
-					minlength: 1,
-					maxlength: 4,
+					maxlength: 100,
 				},
 				productModelIdView: {
 					required: true,				
@@ -621,7 +622,74 @@
 			mustMatch:true,
 		});
 	}
-	
+	function autoCompleteType() { 
+		$("#type").autocomplete({
+			source : function(request, response) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/business/mouldregister?methodtype=typeSearch",
+					dataType : "json",
+					data : {
+						key : request.term
+					},
+					success : function(data) {
+						response($.map(
+							data.data,
+							function(item) {
+								console.log(item);
+								return {
+									label : item.viewList,
+									value : item.id,
+									id : item.id,
+									name: item.categoryViewName,
+								}
+							}));
+						datas = data.data;
+					},
+					error : function(XMLHttpRequest,
+							textStatus, errorThrown) {
+					}
+				});
+			},
+
+			select : function(event, ui) {
+				$("#type").val(ui.item.id);
+				$("#typeDesc").html(ui.item.name);
+				$("#selectedTypeDesc").val(ui.item.name);
+				
+				getMouldId();
+			},
+
+            change: function(event, ui) {
+                // provide must match checking if what is in the input
+                // is in the list of results. HACK!
+                var inputSource = $(this).val();
+                var found = $('.ui-autocomplete li').text().search(inputSource);
+                console.debug('found:' + found);
+                if(found < 0) {
+                    $(this).val('');
+                    $("#typeDesc").html('');
+                    $("#selectedTypeDesc").val('');
+                    
+                } else {
+                	var matcher = new RegExp("^" + $(this).val());
+                	for(var i = 0; i < datas.length; i++){//用javascript的for/in循环遍历对象的属性
+                		if (matcher.test(datas[i].name)) {
+            				$("#type").val(datas[i].id);
+            				$("#typeDesc").html(datas[i].name);
+            				$("#selectedTypeDesc").val(datas[i].name);
+            				break;
+                		}
+                	}
+                }
+            },
+			
+			minLength : 1,
+			autoFocus : false,
+			width: 200,
+			mustMatch:true,
+		});
+	}
 	
 	function autoCompleteFactory(index) { 
 		$("#detailLines1\\[" + index + "\\]\\.code").autocomplete({
@@ -709,13 +777,16 @@
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id='productModelId' name='productModelId'/>
 				<input type=hidden id="subCodeCount" name="subCodeCount" value=""/>
+				<input type=hidden id="selectedTypeDesc" name="selectedTypeDesc" value="${DisplayData.mouldBaseInfoData.typedesc}"/>
 				<input type=hidden id="activeSubCode" name="activeSubCode" value="${DisplayData.activeSubCode}"/>
 				<input type=hidden id="activeSubCodeIndex" name="activeSubCodeIndex" value=""/>
 				<input type=hidden id="rotateDirect" name="rotateDirect" value=""/>
 				<legend>模具单元-基本信息</legend>
 				<div style="height:10px"></div>
+				<!-- 
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
 						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
+				 -->
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave(0);"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
@@ -728,7 +799,7 @@
 						</td>
 						<td width="60px">产品型号：</td>
 						<td width="130px">
-							<form:input path="productModelIdView" class="required mini" onblur="getMouldId();"/>
+							<form:input path="productModelIdView" class="required mini"/>
 						</td>
 						<td width="60px">产品名称：</td>
 						<td width="130px">
@@ -736,19 +807,20 @@
 						</td>
 						<td width="60px">模具类型：</td>
 						<td width="130px">
-							<form:select path="type" onChange="getMouldId();">
-								<form:options items="${DisplayData.typeList}" itemValue="key"
-									itemLabel="value" />
-							</form:select>
+							<input type="text" name="type" id="type" class="short" onblur="getMouldId();" value="${DisplayData.mouldBaseInfoData.type}">
 						</td>
+						<td width="60px">类型解释：</td>
+						<td width="130px">
+							<label name="typeDesc" id="typeDesc" class="short" class="read-only short">${DisplayData.mouldBaseInfoData.typedesc}</label>
+						</td>
+					</tr>
+					<tr>
 						<td width="50px">
 							出模数：
 						</td>
 						<td width="100px">
 							<input type="text" id="unloadingNum" name="unloadingNum" class="mini" value="${DisplayData.mouldBaseInfoData.unloadingnum}"></input>
 						</td>
-					</tr>
-					<tr>
 						<td>
 							模具名称：
 						</td>
@@ -773,6 +845,8 @@
 						<td>
 							<input type="text" id="weight" name="weight" class="mini" value="${DisplayData.mouldBaseInfoData.weight}"></input>
 						</td>
+					</tr>
+					<tr>
 						<td>
 							单位：
 						</td>
@@ -782,7 +856,6 @@
 									itemLabel="value" />
 							</form:select>
 						</td>
-
 					</tr>
 					<tr>
 						<td align=center>

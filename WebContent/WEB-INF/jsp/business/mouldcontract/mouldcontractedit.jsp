@@ -14,14 +14,14 @@ var validatorBaseInfo;
 var layerHeight = "250";
 //var sumPrice = 0.0;
 
-function ajaxMouldDetailList() {
-	var table = $('#MouldDetailList').dataTable();
+function ajaxMouldContractRegulationList() {
+	var table = $('#MouldContractRegulationList').dataTable();
 	
 	if(table) {
 		table.fnDestroy();
 	}
 
-	var t = $('#MouldDetailList').DataTable({
+	var t = $('#MouldContractRegulationList').DataTable({
 					"paging": false,
 					"lengthMenu":[5],//设置一页展示10条记录
 					"processing" : false,
@@ -30,7 +30,7 @@ function ajaxMouldDetailList() {
 					"searching" : false,
 					"serverSide" : true,
 					"retrieve" : true,
-					"sAjaxSource" : "${ctx}/business/mouldcontract?methodtype=getMouldDetailList",
+					"sAjaxSource" : "${ctx}/business/mouldcontract?methodtype=getMouldRegulationList",
 					"fnServerData" : function(sSource, aoData, fnCallback) {
 						var param = {};
 						var formData = $("#mouldContractBaseInfo").serializeArray();
@@ -58,26 +58,88 @@ function ajaxMouldDetailList() {
 		        	},
 					"columns" : [ 
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "type", "className" : 'td-center'},
-						{"data" : "no", "className" : 'td-center'}, 
-						{"data" : "name", "className" : 'td-center'},
-						{"data" : "size", "className" : 'td-center'}, 
-						{"data" : "materialQuality", "className" : 'td-center'},
-						{"data" : "unloadingNum", "className" : 'td-center'},
-						{"data" : "weight", "className" : 'td-center'},
-						{"data" : "price", "className" : 'td-center'},
-						{"data" : "mouldFactory", "className" : 'td-center'},
+						{"data" : "name", "className" : 'td-center'}, 
+						{"data" : "money", "className" : 'td-center'},
 					],
 					"columnDefs":[
-			    		{"targets":0,"render":function(data, type, row){
+				    ] 						
+				});
+	
+	t.on('click', 'tr', function() {
+		$(this).toggleClass('selected');
+	});
+
+	// Add event listener for opening and closing details
+	t.on('click', 'td.details-control', function() {
+
+		var tr = $(this).closest('tr');
+		
+		var row = t.row(tr);
+
+		if (row.child.isShown()) {
+			// This row is already open - close it
+			row.child.hide();
+			tr.removeClass('shown');
+		} else {
+			// Open this row
+			row.child(format(row.data())).show();
+			tr.addClass('shown');
+		}
+	});
+};
+
+function ajaxMouldContractDetailList() {
+	var table = $('#MouldContractDetailList').dataTable();
+	
+	if(table) {
+		table.fnDestroy();
+	}
+
+	var t = $('#MouldContractDetailList').DataTable({
+					"paging": false,
+					"lengthMenu":[5],//设置一页展示10条记录
+					"processing" : false,
+					"serverSide" : true,
+					"stateSave" : false,
+					"searching" : false,
+					"serverSide" : true,
+					"retrieve" : true,
+					"sAjaxSource" : "${ctx}/business/mouldcontract?methodtype=getMouldContractDetailList",
+					"fnServerData" : function(sSource, aoData, fnCallback) {
+						var param = {};
+						var formData = $("#mouldContractBaseInfo").serializeArray();
+						formData.forEach(function(e) {
+							aoData.push({"name":e.name, "value":e.value});
+						});
+
+						$.ajax({
+							"url" : sSource,
+							"datatype": "json", 
+							"contentType": "application/json; charset=utf-8",
+							"type" : "POST",
+							"data" : JSON.stringify(aoData),
+							success: function(data){
+								fnCallback(data);
+
+							},
+							 error:function(XMLHttpRequest, textStatus, errorThrown){
+				             }
+						})
+					},
+						
+					"language": {
+		        		"url":"${ctx}/plugins/datatables/chinese.json"
+		        	},
+					"columns" : [ 
+						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
+						{"data" : "name", "className" : 'td-center'}, 
+						{"data" : "money", "className" : 'td-center'},
+						{"data" : null, "className" : 'td-center'},
+					],
+					"columnDefs":[
+			    		{"targets":7,"render":function(data, type, row){
 			    			if (row["id"] == "") {
 			    				return "合计"
-			    			} else {
-			    				if (row["selected"] == '0') {
-									return row["rownum"] + "<input type=checkbox name='numCheckMD' id='numCheckMD' value='" + row["id"] + "' onChange='getSumPrice();' />"
-			    				} else {
-			    					return row["rownum"] + "<input type=checkbox name='numCheckMD' id='numCheckMD' value='" + row["id"] + "' onChange='getSumPrice();' checked/>"
-			    				}
 			    			}
 	                    }}
 				    ] 						
@@ -108,39 +170,38 @@ function ajaxMouldDetailList() {
 
 
 function initEvent(){
-
-    jQuery.validator.addMethod("contractYear",function(value, element){ 
-    	var rtnValue = false;
-    	if (value != '') {
-  			if (value >= '1950' && value <= '2050') {
-  				rtnValue = true;
-   			}
-    	} else {
-    		if ($('#contractId').html() != '') {
-    			rtnValue = true;
-    		}
-    	}
-        return rtnValue;  
-    }, "合同年份不正确(1950年-2050年，且必须输入)"); 
 	
 	validatorBaseInfo = $("#mouldContractBaseInfo").validate({
 		rules: {
-			contractYear: {
-				contractYear: true,
+			productModelId: {
+				required: true,
 				minlength: 1,
-				maxlength: 4,
-			},
-			productModelIdView: {
-				required: true,				
 				maxlength: 120,
 			},
-			payCase: {
+			type: {
 				required: true,
-				digits: true,
-				maxlength: 50,
 			},
-			finishTime: {				
+			supplierId: {
+				required: true,
+			},
+			contractDate: {
+				required: true,
 				date: true,
+			},
+			deliverDate: {
+				required: true,
+				date: true,
+			},
+			belong: {
+				required: true,
+			},
+			oursidePay: {
+				digits: true,
+				maxLength: 20,
+			},
+			providerPay: {
+				digits: true,
+				maxLength: 20,
 			},
 		},
 		errorPlacement: function(error, element) {
@@ -155,53 +216,92 @@ function initEvent(){
 	
 	controlButtons($('#keyBackup').val());
 	
-	if ($('#keyBackup').val() == '') {
-		var d = new Date();
-		$('#contractYear').val(d.getFullYear());
-	}
-	
-	autoComplete();
-}
-
-$(window).load(function(){
-	initEvent();
-});
-
-$(document).ready(function() {
-
-	ajaxMouldDetailList();
-	
-	$("#finishTime").datepicker({
+	$("#contractDate").datepicker({
 		dateFormat:"yy-mm-dd",
 		changeYear: true,
 		changeMonth: true,
 		selectOtherMonths:true,
 		showOtherMonths:true,
 	});
-	if ($("#finishTime").val() == "") {
-		$("#finishTime").datepicker( 'setDate' , new Date() );
+	if ($("#contractDate").val() == "") {
+		$("#contractDate").datepicker( 'setDate' , new Date() );
 	}
+	$("#deliverDate").datepicker({
+		dateFormat:"yy-mm-dd",
+		changeYear: true,
+		changeMonth: true,
+		selectOtherMonths:true,
+		showOtherMonths:true,
+	});
+	if ($("#deliverDate").val() == "") {
+		$("#deliverDate").datepicker( 'setDate' , new Date() );
+	}
+	
+	autoComplete();
+}
 
+$(window).load(function(){
+	
+});
+
+$(document).ready(function() {
+
+	initEvent();
+	
+	ajaxMouldContractDetailList();
+	ajaxMouldContractRegulationList();
+	
 })
 
 function getSumPrice() {
-	var length = $("#MouldDetailList tr").length;
+	var length = $("#MouldContractDetailList tr").length;
 	var sumPrice = 0.0;
 	
 	for (var i = 2; i < (length - 1); i++) {
-		var tr = $("#MouldDetailList tr").eq(i);
+		var tr = $("#MouldContractDetailList tr").eq(i);
 		if ($(tr).find("td").eq(0).find("input").prop('checked')) {
 			sumPrice += parseFloat($(tr).find("td").eq(8).html());//收入类别
 		}
    	}
 	
-	var tr = $("#MouldDetailList tr").eq(length - 1);
+	var tr = $("#MouldContractDetailList tr").eq(length - 1);
 	$(tr).find("td").eq(8).html(sumPrice);
 }
 
-function reloadMouldDetailList() {
-	$('#MouldDetailList').DataTable().ajax.reload(null,false);
+function getMouldContractId() {
+	var actionUrl = "${ctx}/business/mouldcontract?methodtype=getContractId";
+	
+	if ($('#supplierIdView').val() != "") {
+	
+		$.ajax({
+			type : "POST",
+			contentType : 'application/json',
+			dataType : 'json',
+			url : actionUrl,
+			data : JSON.stringify($('#mouldContractBaseInfo').serializeArray()),// 要提交的表单
+			success : function(d) {
+				if (d.rtnCd != "000") {
+					alert(d.message);	
+				} else {
+					$('#contractId').html('<font color="red">' + d.info + '</font>');
+				}
+				
+				//不管成功还是失败都刷新父窗口，关闭子窗口
+				//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+				//parent.$('#events').DataTable().destroy();
+				//parent.layer.close(index); //执行关闭
+				
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+
+			}
+		});
+	} else {
+		$('#contractId').html("");
+	}
 }
+
+
 
 function doSave() {
 
@@ -232,7 +332,7 @@ function doSave() {
 					if (d.rtnCd != "000") {
 						alert(d.message);	
 					} else {
-						//reloadMouldDetailList();
+						//reloadMouldContractDetailList();
 						reloadTabWindow();
 					}
 					
@@ -266,7 +366,7 @@ function doDelete() {
 				} else {
 					controlButtons("");
 					clearAll();
-					reloadMouldDetailList();
+					reloadMouldContractDetailList();
 					reloadTabWindow();
 				}
 				/*	
@@ -307,7 +407,7 @@ function clearAll() {
 
 function autoComplete() { 
 
-	$("#productModelIdView").autocomplete({
+	$("#supplierIdView").autocomplete({
 		source : function(request, response) {
 			$.ajax({
 				type : "POST",
@@ -342,7 +442,7 @@ function autoComplete() {
 			$("#productModelIdView").val(ui.item.name);
 			$("#productModelName").val(ui.item.des);
 			if (oldProductModelId != $("#productModelId").val()) {
-				reloadMouldDetailList();
+				reloadMouldContractDetailList();
 			}
 		},
 		minLength : 1,
@@ -352,6 +452,14 @@ function autoComplete() {
 		autoFill:true,
 		selectFirst:true,
 	});	
+}
+
+function reloadMouldContractDetailList() {
+	$('#MouldContractDetailList').DataTable().ajax.reload(null,false);
+}
+
+function reloadMouldContractRegulationList() {
+	$('#MouldContractRegulationList').DataTable().ajax.reload(null,false);
 }
 
 function doReturn() {
@@ -370,7 +478,7 @@ function doReturn() {
 			<div  style="height:20px"></div>
 			<form:form modelAttribute="dataModels" id="mouldContractBaseInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
-				<input type=hidden id="productModelId" name="productModelId" value=""/>
+				<input type=hidden id="supplierId" name="supplierId" value="${DisplayData.mouldContractBaseInfoData.supplierid}"/>
 				<legend>模具合同-基本信息</legend>
 				<div style="height:10px"></div>
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
@@ -378,38 +486,106 @@ function doReturn() {
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
-				<table class="form" width="850px">
+				<table class="form" width="1100px" cellspacing="0" style="table-layout:fixed">
 					<tr>
-						<td width="90px">模具合同年份：</td>
-						<td >
-							<input type="text" id="contractYear" name="contractYear" class="small" value='${DisplayData.mouldContractBaseInfoData.year}'></>
+						<td width="60px">编号：</td>
+						<td width="130px">
+							<label id="mouldId" name="mouldId" style="margin:0px 10px">${DisplayData.mouldBaseInfoData.mouldid}</label>
 						</td>
-						<td width="60px">产品型号：</td> 
-						<td>
-							<form:input path="productModelIdView" class="required short"/>
+						<td width="60px">机器型号：</td>
+						<td width="130px">
+							<input type=text name="productModelId" id="productModelId" class="required mini" />
 						</td>
-						<td width="60px">产品名称：</td> 
-						<td>
-							<input type=text id="productModelName" name="productModelName" class="read-only" readonly="readonly"/>
+						<td width="60px">模具类型：</td>
+						<td width="130px">
+							<form:select path="type" onChange="getContractId();"  onblur="getContractId();">
+								<form:options items="${DisplayData.typeList}" itemValue="key"
+									itemLabel="value" />
+							</form:select>
+						</td>
+						<td width="50px">
+							供应商ID：
+						</td>
+						<td width="100px">
+							<input type="text" id="supplierIdView" name="supplierIdView" class="short readonly" readonly="readonly" value="${DisplayData.supplierIdView}"></input>
+						</td>
+						<td width="50px">
+							供应商名称：
+						</td>
+						<td width="100px">
+							<input type="text" id="supplierName" name="supplierName" class="short" value="${DisplayData.supplierName}"></input>
 						</td>
 					</tr>
 					<tr>
 						<td>
-							付款条件：
+							合同日期：
 						</td>
 						<td>
-							交付后
-							<input type="text" id="payCase" name="payCase" class="small" value="${DisplayData.mouldContractBaseInfoData.paycase}"></input>
-							天
+							<input type="text" id="contractDate" name="contractDate" class="short" value="${DisplayData.mouldContractBaseInfoData.contractDate}"></input>
 						</td>
-						<td>	
-							完成时间：
+						<td>
+							合同交期：
 						</td>
-						<td colspan=3> 
-							<input type="text" id="finishTime" name="finishTime" class="short" value="${DisplayData.mouldContractBaseInfoData.finishtime}"></input>
+						<td>
+							<input type="text" id="deliverDate" name="deliverDate" class="short" value="${DisplayData.mouldContractBaseInfoData.deliverDate}"></input>
+						</td>
+						<td>
+							模具归属：
+						</td>
+						<td>
+							<form:select path="belong"">
+								<form:options items="${DisplayData.belongList}" itemValue="key"
+									itemLabel="value" />
+							</form:select>
+						</td>
+						<td>
+							我方费用：
+						</td>
+						<td>
+							<input type="text" id="oursidePay" name="oursidePay" class="mini" value="${DisplayData.mouldContractBaseInfoData.oursidepay}"></input>
+						</td>
+						<td>
+							供方费用：
+						</td>
+						<td>
+							<input type="text" id="providerPay" name="providerPay" class="mini" value="${DisplayData.mouldContractBaseInfoData.providerpay}"></input>
+						</td>
+						<td>
+							供方返还条件：
+						</td>
+						<td>
+							<textarea id="returnCase" name="returnCase" cols=10 rows=3>${DisplayData.mouldContractBaseInfoData.returnCase}</textarea>
 						</td>
 					</tr>
-				</table>			
+				</table>
+				
+				<div  style="height:20px"></div>
+				<legend>合同增减项</legend>
+				<div>
+				<button type="button" id="printmd" class="DTTT_button" onClick="doCreateContract();"
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>				
+				</div>
+				<div style="height:10px"></div>
+				<div class="list">
+					<table id="MouldContractRegulationList" class="display" cellspacing="0">
+						<thead>
+							<tr class="selected">
+								<th style="width: 40px;" class="dt-middle">No</th>
+								<th style="width: 60px;" class="dt-middle">名称</th>
+								<th style="width: 60px;" class="dt-middle">急呢</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 				
 				<div  style="height:20px"></div>
 				<legend>模具详情</legend>
@@ -419,19 +595,20 @@ function doReturn() {
 				</div>
 				<div style="height:10px"></div>
 				<div class="list">
-					<table id="MouldDetailList" class="display" cellspacing="0">
+					<table id="MouldContractDetailList" class="display" cellspacing="0">
 						<thead>
 							<tr class="selected">
 								<th style="width: 40px;" class="dt-middle">No</th>
-								<th style="width: 40px;" class="dt-middle">类型</th>
-								<th style="width: 80px;" class="dt-middle">模具<br>编号</th>
-								<th style="width: 80px;" class="dt-middle">模具<br>名称</th>
-								<th style="width: 80px;" class="dt-middle">模架<br>尺寸</th>
+								<th style="width: 80px;" class="dt-middle">编号</th>
+								<th style="width: 80px;" class="dt-middle">名称</th>
+								<th style="width: 80px;" class="dt-middle">尺寸</th>
+								<th style="width: 80px;" class="dt-middle">重量</th>
 								<th style="width: 80px;" class="dt-middle">材质</th>
 								<th style="width: 80px;" class="dt-middle">出模数</th>
-								<th style="width: 80px;" class="dt-middle">重量</th>
-								<th style="width: 80px;" class="dt-middle">价格</th>
-								<th style="width: 80px;" class="dt-middle">模具<br>工厂</th>
+								<th style="width: 80px;" class="dt-middle">单价</th>
+								<th style="width: 80px;" class="dt-middle">数量</th>
+								<th style="width: 80px;" class="dt-middle">总价</th>
+								<th style="width: 80px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
 						<tfoot>

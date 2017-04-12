@@ -220,7 +220,6 @@ public class BusinessDbUpdateEjb  {
 			throw e;									
 		}										
     }												
-												
     												
     public void executeContactDelete(String keyData, UserInfo userInfo) throws Exception {												
     	B_ContactData data = new B_ContactData();											
@@ -1192,19 +1191,19 @@ public class BusinessDbUpdateEjb  {
 				dbData.setId(guid);
 				contractId = service.getMouldContractId(request, contractYear, mouldFactoryId, productModelId);
 				dbData.setContractid(contractId);
-				dbData.setYear(contractYear);
+				//dbData.setYear(contractYear);
 				dbData.setProductmodelid(productModelId);
-				dbData.setMouldfactoryid(mouldFactoryId);
-				dbData.setPaycase(payCase);
+				//dbData.setMouldfactoryid(mouldFactoryId);
+				//dbData.setPaycase(payCase);
 
-				dbData.setFinishtime(finishTime);
+				//dbData.setFinishtime(finishTime);
 				dbData = service.updateMouldContractBaseInfoModifyInfo(dbData, userInfo);
 				dao.Create(dbData);
 				key = guid;
 			} else {
 				dbData.setId(key);
 				dbData = (B_MouldContractBaseInfoData)dao.FindByPrimaryKey(dbData);
-				if (!(dbData.getYear().equals(contractYear) && dbData.getProductmodelid().equals(productModelId) && dbData.getMouldfactoryid().equals(mouldFactoryId))) {
+				//if (!(dbData.getYear().equals(contractYear) && dbData.getProductmodelid().equals(productModelId) && dbData.getMouldfactoryid().equals(mouldFactoryId))) {
 					contractId = service.getMouldContractId(request, contractYear, mouldFactoryId, productModelId);
 					dbData.setContractid(contractId);
 					
@@ -1216,14 +1215,14 @@ public class BusinessDbUpdateEjb  {
 					BaseDAO.execUpdate(sql.toString());								
 
 				}
-				dbData.setYear(contractYear);
+				//dbData.setYear(contractYear);
 				dbData.setProductmodelid(productModelId);
-				dbData.setMouldfactoryid(mouldFactoryId);
-				dbData.setPaycase(payCase);
-				dbData.setFinishtime(finishTime);
+				//dbData.setMouldfactoryid(mouldFactoryId);
+				//dbData.setPaycase(payCase);
+				//dbData.setFinishtime(finishTime);
 				dbData = service.updateMouldContractBaseInfoModifyInfo(dbData, userInfo);
 				dao.Store(dbData);
-			}
+			//}
 			model.setEndInfoMap(service.NORMAL, "", key + "|" + contractId);
 			
 			ts.commit();
@@ -1753,6 +1752,7 @@ public class BusinessDbUpdateEjb  {
 			String productModelIdView = service.getJsonData(data, "productModelIdView");
 			String productModelName = service.getJsonData(data, "productModelName");
 			String type = service.getJsonData(data, "type");
+			String typeDes = service.getJsonData(data, "selectedTypeDesc");
 			String name = service.getJsonData(data, "name");
 			String materialQuality = service.getJsonData(data, "materialQuality");
 			String size = service.getJsonData(data, "size");
@@ -1772,6 +1772,7 @@ public class BusinessDbUpdateEjb  {
 				mouldId = service.getMouldId(request, data);
 				mouldBaseInfoData.setMouldid(mouldId);
 				mouldBaseInfoData.setType(type);
+				mouldBaseInfoData.setTypedesc(typeDes);
 				mouldBaseInfoData.setProductmodelid(productModelIdView);
 				mouldBaseInfoData.setProductmodelname(productModelName);
 				mouldBaseInfoData.setName(name);
@@ -1795,6 +1796,7 @@ public class BusinessDbUpdateEjb  {
 				}
 				
 				mouldBaseInfoData.setType(type);
+				mouldBaseInfoData.setTypedesc(typeDes);
 				mouldBaseInfoData.setProductmodelid(productModelIdView);
 				mouldBaseInfoData.setProductmodelname(productModelName);
 				mouldBaseInfoData.setName(name);

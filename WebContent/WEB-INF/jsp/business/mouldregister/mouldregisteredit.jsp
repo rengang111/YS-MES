@@ -152,7 +152,7 @@
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				//alert(XMLHttpRequest.status);					
 				//alert(XMLHttpRequest.readyState);					
-				//alert(textStatus);					
+				//alert(textStatus);
 				//alert(errorThrown);
 			}
 		});
@@ -251,14 +251,13 @@
 		
 		$('#factoryTable').width(750);
 		
-		//autoComplete();
+		autoCompleteType();
 		
 		validatorBaseInfo = $("#mouldBaseInfo").validate({
 			rules: {
 				type: {
 					required: true,
-					minlength: 1,
-					maxlength: 4,
+					maxlength: 100,
 				},
 				productModelIdView: {
 					required: true,				
@@ -324,18 +323,6 @@
 		$("#productModelId").val('${DisplayData.mouldBaseInfoData.productmodelid}');
 		$("#productModelIdView").val('${DisplayData.productModelIdView}');
 		$("#productModelName").val('${DisplayData.productModelName}');
-
-		if ('${DisplayData.mouldBaseInfoData.type}' != '') {
-			$('#type').val('${DisplayData.mouldBaseInfoData.type}');
-		} else {
-			$("#type option:first").prop("selected", 'selected');
-		}
-
-		if ('${DisplayData.mouldBaseInfoData.unit}' != '') {
-			//$('#unit').val('${DisplayData.mouldBaseInfoData.unit}');
-		} else {
-			//$("#unit option:first").prop("selected", 'selected');
-		}
 
 		if ($('#keyBackup').val() == '') {
 			addSubCodeTr("", "", "", "");
@@ -528,12 +515,12 @@
 		$('#mouldFactoryId').val("");
 	
 	}
-	function autoComplete() { 
-		$("#productModelIdView").autocomplete({
+	function autoCompleteType() { 
+		$("#type").autocomplete({
 			source : function(request, response) {
 				$.ajax({
 					type : "POST",
-					url : "${ctx}/business/mouldregister?methodtype=productModelIdSearch",
+					url : "${ctx}/business/mouldregister?methodtype=typeSearch",
 					dataType : "json",
 					data : {
 						key : request.term
@@ -542,13 +529,12 @@
 						response($.map(
 							data.data,
 							function(item) {
-								//alert(item.viewList)
+								console.log(item);
 								return {
 									label : item.viewList,
-									value : item.name,
+									value : item.id,
 									id : item.id,
-									name: item.name,
-									des : item.des
+									name: item.categoryViewName,
 								}
 							}));
 						datas = data.data;
@@ -560,9 +546,9 @@
 			},
 
 			select : function(event, ui) {
-				$("#productModelId").val(ui.item.id);
-				$("#productModelIdView").val(ui.item.name);
-				$("#productModelName").val(ui.item.des);
+				$("#type").val(ui.item.id);
+				$("#typeDesc").html(ui.item.name);
+				$("#selectedTypeDesc").val(ui.item.name);
 				//$("#factoryProductCode").focus();
 			},
 
@@ -574,13 +560,16 @@
                 console.debug('found:' + found);
                 if(found < 0) {
                     $(this).val('');
+                    $("#typeDesc").html('');
+                    $("#selectedTypeDesc").val('');
+                    
                 } else {
                 	var matcher = new RegExp("^" + $(this).val());
                 	for(var i = 0; i < datas.length; i++){//用javascript的for/in循环遍历对象的属性
                 		if (matcher.test(datas[i].name)) {
-            				$("#productModelId").val(datas[i].id);
-            				$("#productModelIdView").val(datas[i].name);
-            				$("#productModelName").val(datas[i].des);                			
+            				$("#type").val(datas[i].id);
+            				$("#typeDesc").html(datas[i].name);
+            				$("#selectedTypeDesc").val(datas[i].name);
             				break;
                 		}
                 	}
@@ -672,6 +661,7 @@
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id='productModelId' name='productModelId'/>
 				<input type=hidden id="subCodeCount" name="subCodeCount" value=""/>
+				<input type=hidden id="selectedTypeDesc" name="selectedTypeDesc" value="${DisplayData.mouldBaseInfoData.typedesc}"/>
 				<input type=hidden id="activeSubCode" name="activeSubCode" value="${DisplayData.activeSubCode}"/>
 				<input type=hidden id="activeSubCodeIndex" name="activeSubCodeIndex" value=""/>
 				<input type=hidden id="rotateDirect" name="rotateDirect" value=""/>
@@ -694,7 +684,7 @@
 						</td>
 						<td width="60px">产品型号：</td>
 						<td width="130px">
-							<form:input path="productModelIdView" class="required mini" onblur="getMouldId();"/>
+							<form:input path="productModelIdView" class="required mini"/>
 						</td>
 						<td width="60px">产品名称：</td>
 						<td width="130px">
@@ -702,19 +692,20 @@
 						</td>
 						<td width="60px">模具类型：</td>
 						<td width="130px">
-							<form:select path="type" onChange="getMouldId();"  onblur="getMouldId();">
-								<form:options items="${DisplayData.typeList}" itemValue="key"
-									itemLabel="value" />
-							</form:select>
+							<input type="text" name="type" id="type" class="short" onblur="getMouldId();" value="${DisplayData.mouldBaseInfoData.type}">
 						</td>
+						<td width="60px">类型解释：</td>
+						<td width="130px">
+							<label name="typeDesc" id="typeDesc" class="short" class="read-only short">${DisplayData.mouldBaseInfoData.typedesc}</label>
+						</td>
+					</tr>
+					<tr>
 						<td width="50px">
 							出模数：
 						</td>
 						<td width="100px">
 							<input type="text" id="unloadingNum" name="unloadingNum" class="mini" value="${DisplayData.mouldBaseInfoData.unloadingnum}"></input>
 						</td>
-					</tr>
-					<tr>
 						<td>
 							模具名称：
 						</td>
@@ -739,6 +730,8 @@
 						<td>
 							<input type="text" id="weight" name="weight" class="mini" value="${DisplayData.mouldBaseInfoData.weight}"></input>
 						</td>
+					</tr>
+					<tr>
 						<td>
 							单位：
 						</td>
