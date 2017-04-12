@@ -30,7 +30,6 @@ import com.ys.business.db.data.B_ExternalSampleData;
 import com.ys.business.db.data.B_FolderData;
 import com.ys.business.db.data.B_WorkingFilesData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
-import com.ys.business.service.supplier.SupplierService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.role.RoleModel;
 import com.ys.util.basequery.common.BaseModel;

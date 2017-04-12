@@ -141,8 +141,8 @@
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="a.price" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
-      <f name="IFNULL(d.price, 0)" alias="lastPrice" ctype="" />
-      <f name="d.supplierId" alias="lastSupplierId" ctype="" />
+      <f name="IFNULL(b.lastPrice, 0)" alias="lastPrice" ctype="" />
+      <f name="b.lastSupplierId" alias="" ctype="" />
       <f name="IFNULL(b.minPrice, 0)" alias="minPrice" ctype="" />
       <f name="b.minSupplierId" alias="" ctype="" />
       <f name="a.orderQuantity" alias="" ctype="" />

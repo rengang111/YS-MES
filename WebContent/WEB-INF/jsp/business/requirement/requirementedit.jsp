@@ -331,10 +331,10 @@
 						<form:hidden path="purchaseList[${status.index}].orderquantity"  value="${detail.orderQuantity}" /></td>
 					<td>0</td>
 					<td><form:input path="purchaseList[${status.index}].quantity" value="${detail.quantity}" class="mini num" /></td>			
-					<td><form:input  path="purchaseList[${status.index}].price"  value="${detail.price}"  class="cash" style="width:100px" /></td>				
+					<td><form:input  path="purchaseList[${status.index}].price"  value="${detail.lastPrice}"  class="cash" style="width:100px" /></td>				
 					<td><span id="total${status.index}"></span>
 						<form:hidden path="purchaseList[${status.index}].totalprice" /></td>					
-					<td><form:input path="purchaseList[${status.index}].supplierid"  class="attributeList2"  value="${detail.supplierId}" style="width:100px" /></td>
+					<td><form:input path="purchaseList[${status.index}].supplierid"  class="attributeList2"  value="${detail.lastSupplierId}" style="width:100px" /></td>
 					<td><span id="last${status.index}"></span>
 						<input type="hidden" id="lastPrice${status.index}"></td>
 					<td><span id="min${status.index}"></span>
@@ -352,7 +352,7 @@
 					var minPrice = float4ToCurrency( '${detail.minPrice}' );
 					var minSupplierId = '${detail.minSupplierId}';
 					var materialName = '${detail.materialName}';
-					var price =currencyToFloat( '${detail.price}');
+					var price =currencyToFloat( '${detail.lastPrice}');
 					var quantity = currencyToFloat('${detail.quantity}');	
 					
 					var total = floatToCurrency( price * quantity );

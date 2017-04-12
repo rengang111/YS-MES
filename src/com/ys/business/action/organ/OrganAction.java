@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ys.business.action.model.supplier.SupplierModel;
 import com.ys.business.db.dao.B_ContactDao;
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.organ.OrganModel;
