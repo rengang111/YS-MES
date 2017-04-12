@@ -107,16 +107,16 @@ public class MouldContractService extends BaseService {
 			dbData.setId(key);
 			dbData = (B_MouldContractBaseInfoData)dao.FindByPrimaryKey(dbData);
 			
-			CalendarUtil calendarUtil = new CalendarUtil(dbData.getFinishtime());
-			dbData.setFinishtime(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
+			//CalendarUtil calendarUtil = new CalendarUtil(dbData.getFinishtime());
+			//dbData.setFinishtime(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
 			
 			model = getProductModelName(request, model, dbData.getProductmodelid());
 			
 			try {
 				acceptanceData.setMouldbaseid(dbData.getId());
 				acceptanceData = (B_MouldAcceptanceData)acceptanceDao.FindByPrimaryKey(acceptanceData);
-				calendarUtil = new CalendarUtil(acceptanceData.getAcceptancedate());
-				acceptanceData.setAcceptancedate(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
+				//calendarUtil = new CalendarUtil(acceptanceData.getAcceptancedate());
+				//acceptanceData.setAcceptancedate(CalendarUtil.fmtDate(calendarUtil.getDate(), "yyyy/MM/dd"));
 			}
 			catch(Exception e) {
 				

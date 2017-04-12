@@ -344,6 +344,13 @@ input.read-only
 	readonly:"readonly";
 } 
 
+read-only
+{
+	background-color: #cccccc;
+	border-left:0px;border-top:0px;border-right:0px;border-bottom:1px;
+	readonly:"readonly";
+} 
+
 label {
     color:#000;
 }

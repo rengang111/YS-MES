@@ -1,45 +1,40 @@
 package com.ys.business.service.order;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
-import com.ys.system.service.common.BaseService;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.RequirementModel;
-import com.ys.business.action.model.organ.OrganModel;
+import com.ys.business.db.dao.B_BaseBomDao;
 import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_MaterialRequirmentDao;
-import com.ys.business.db.dao.B_OrderDao;
-import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
-import com.ys.business.db.dao.B_ZZRawMaterialDao;
+import com.ys.business.db.data.B_BaseBomData;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_MaterialRequirmentData;
-import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
-import com.ys.business.db.data.B_ZZRawMaterialData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
+import com.ys.business.service.material.CommonService;
 
 @Service
-public class RequirementService extends BaseService {
+public class RequirementService extends CommonService {
 
 	DicUtil util = new DicUtil();
 
@@ -58,6 +53,7 @@ public class RequirementService extends BaseService {
 	private HashMap<String, String> userDefinedSearchCase;
 	private BaseQuery baseQuery;
 	ArrayList<HashMap<String, String>> modelMap = null;	
+	HttpSession session;
 
 	public RequirementService(){
 		
@@ -76,6 +72,9 @@ public class RequirementService extends BaseService {
 		this.userInfo = userInfo;
 		userDefinedSearchCase = new HashMap<String, String>();
 		dataModel.setQueryFileName("/business/order/zzorderquerydefine");
+		super.request = request;
+		super.userInfo = userInfo;
+		super.session = session;
 		
 	}
 
@@ -383,6 +382,73 @@ public class RequirementService extends BaseService {
 		try {
 			ts.begin();
 			
+			//更新基础BOM
+			B_BomPlanData reqBom = reqModel.getBomPlan();
+			YSId = reqBom.getYsid();
+			String materialId = reqBom.getMaterialid();
+
+			String bomId = BusinessService.getBaseBomId(materialId)[1];
+			
+			
+			//BOM详情
+			List<B_BomDetailData> reqBomList = reqModel.getBomDetailList();
+			//采购方案详情		
+			List<B_PurchasePlanData> reqDataList = reqModel.getPurchaseList();
+			
+			//首先删除旧数据
+			//String where = " bomId = '"+bomId +"'";
+			//deleteBomDetail(where);
+			
+			for(B_PurchasePlanData data:reqDataList ){
+
+				//data.setBomid(bomId);
+				String baseMaterialId=data.getMaterialid();
+				String supplierId = data.getSupplierid();
+				String price = data.getPrice();
+				
+				//更新供应商
+				updateBaseBom(bomId,baseMaterialId,supplierId);				
+				
+				//更新单价
+				updatePriceSupplier(baseMaterialId,supplierId,price);
+				//更新最新,最低单价
+				updatePriceInfo(baseMaterialId);
+			}
+			
+			//采购方案做成
+			//首先删除旧数据
+			String where = " YSId = '"+YSId +"'";
+			deleteProcurement(where);
+			
+			for(B_PurchasePlanData data:reqDataList ){
+
+				data.setPurchaseid(YSId+"000");
+				data.setYsid(YSId);
+				insertPurchasePlan(data);				
+			}
+			
+			ts.commit();
+			
+		}
+		catch(Exception e) {
+			ts.rollback();
+			System.out.println(e.getMessage());
+			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		return YSId;
+		
+	}
+	
+	/*
+	public String insertProcurementPlan(boolean accessFlg) throws Exception  {
+
+		ts = new BaseTransaction();
+
+		String YSId = "";
+		try {
+			ts.begin();
+			
 			//订单BOM做成
 			//BOM方案
 			B_BomPlanData reqBom = reqModel.getBomPlan();
@@ -473,7 +539,7 @@ public class RequirementService extends BaseService {
 		return YSId;
 		
 	}
-	
+	*/
 	public ArrayList<HashMap<String, String>> getZZRawMaterial(
 			String materialId) throws Exception{
 		
@@ -581,6 +647,34 @@ public class RequirementService extends BaseService {
 			ts.rollback();
 		}
 		
+	}
+	
+	public void updateBaseBom(
+			String bomId,String material,String supplier) throws Exception{
+
+		B_BomDetailDao dao = new B_BomDetailDao();
+		B_BomDetailData bom = supplierCheck(bomId,material);
+		
+		
+		if(bom == null){
+			return;
+		}
+		
+		if(bom.getSupplierid().equals(supplier)){
+			//供应商没变化,则不更新
+			return;
+		}
+		
+		//处理共通信息
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"SupplierUpdate",userInfo);
+		copyProperties(bom,commData);
+
+		//设置新的供应商
+		bom.setSupplierid(supplier);
+		
+		dao.Store(bom);
+
 	}
 	
 	public void deleteBomDetail(String where) 
@@ -868,6 +962,27 @@ public class RequirementService extends BaseService {
 		
 		if(list.size() > 0){
 			rtn = true;	
+		}
+		
+		return rtn;
+				
+	}
+	@SuppressWarnings("unchecked")
+	public B_BomDetailData supplierCheck(
+			String bomId,String materialId) throws Exception {
+
+		B_BomDetailData rtn = null;
+		B_BomDetailDao dao = new B_BomDetailDao();
+		String where =" bomId= '" + bomId  +"'" +
+					  " AND materialId= '" + materialId  +"'"+
+				      " AND deleteFlag = '0' ";
+		
+		List<B_BomDetailData> list = dao.Find(where);
+		
+		
+		
+		if(list.size() > 0){
+			rtn = list.get(0);	
 		}
 		
 		return rtn;

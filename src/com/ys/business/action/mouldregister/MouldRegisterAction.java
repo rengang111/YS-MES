@@ -129,6 +129,10 @@ public class MouldRegisterAction extends BaseAction {
 				viewModel = doDeleteFactoryPriceHistory(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
+			case "typeSearch":
+				dataMap = doTypeSearch(data, request);
+				printOutJsonObj(response, dataMap);
+				return null;
 		}
 		
 		return rtnUrl;
@@ -264,6 +268,26 @@ public class MouldRegisterAction extends BaseAction {
 		
 		try {
 			dataMap = mouldRegisterService.doSupplierSearch(request);
+			
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			//dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doTypeSearch(@RequestBody String data, HttpServletRequest request){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = mouldRegisterService.doTypeSearch(request);
 			
 			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 

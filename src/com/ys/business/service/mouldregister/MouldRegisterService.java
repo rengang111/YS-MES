@@ -105,7 +105,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 	public MouldRegisterModel doAddInit(HttpServletRequest request) throws Exception {
 		MouldRegisterModel model = new MouldRegisterModel();
 		
-		model.setTypeList(doOptionChange(DicUtil.MOULDTYPE, ""));
+		//model.setTypeList(doOptionChange(DicUtil.MOULDTYPE, ""));
 		model.setMouldFactoryList(doGetMouldFactoryList(request));
 		model.setUnitList(doOptionChange(DicUtil.MEASURESTYPE, ""));
 		model.setKeyBackup("");
@@ -163,7 +163,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			model.setMouldFactoryDatas(baseQuery.getYsQueryData(0,0));
 			
 		}
-		model.setTypeList(doOptionChange(DicUtil.MOULDTYPE, ""));
+		//model.setTypeList(doOptionChange(DicUtil.MOULDTYPE, ""));
 		model.setMouldFactoryList(doGetMouldFactoryList(request));
 		model.setUnitList(doOptionChange(DicUtil.MEASURESTYPE, ""));
 		
@@ -212,10 +212,11 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 			model.setUnit(dicData.getDicname());
 
-			dicData.setDicid(dbData.getType());
-			dicData.setDictypeid(DicUtil.MOULDTYPE);
-			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
-			model.setType(dicData.getDicname());
+			//dicData.setDicid(dbData.getType());
+			//dicData.setDictypeid(DicUtil.MOULDTYPE);
+			//dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+			//model.setType(dicData.getDicname());
+			model.setType(dbData.getTypedesc());
 		}
 		
 		model.setCurrencyList(doOptionChange(DicUtil.CURRENCY, ""));
@@ -273,11 +274,11 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 			model.setUnit(dicData.getDicname());
 
-			dicData.setDicid(dbData.getType());
-			dicData.setDictypeid(DicUtil.MOULDTYPE);
-			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
-			model.setType(dicData.getDicname());
-
+			//dicData.setDicid(dbData.getType());
+			//dicData.setDictypeid(DicUtil.MOULDTYPE);
+			//dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+			//model.setType(dicData.getDicname());
+			model.setType(dbData.getTypedesc());
 		}
 
 		model.setCurrencyList(doOptionChange(DicUtil.CURRENCY, ""));
@@ -363,6 +364,33 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		return modelMap;	
 	}
 	
+	public HashMap<String, Object> doTypeSearch(HttpServletRequest request) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();	
+		BaseModel dataModel = new BaseModel();	
+		BaseQuery baseQuery = null;	
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		String key = request.getParameter("key");	
+			
+		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");	
+		dataModel.setQueryName("categorylist");	
+		baseQuery = new BaseQuery(request, dataModel);	
+		
+		//TODO:
+		//如果强制M开头就在这里做动作
+		userDefinedSearchCase.put("keywords1", key);
+		userDefinedSearchCase.put("keywords2", key);
+		userDefinedSearchCase.put("keywords3", key);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		baseQuery.getYsQueryData(0,0);	
+			
+		modelMap.put("data", dataModel.getYsViewData());	
+			
+		return modelMap;	
+	}
+	
 	public HashMap<String, Object> doFactoryIdSearch(HttpServletRequest request) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();	
@@ -392,13 +420,13 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 		try {
 			String no = getJsonData(data, "no");
-			
+			/*
 			String type = getJsonData(data, "type");
 			dicData.setDicid(type);
 			dicData.setDictypeid(DicUtil.MOULDTYPE);
 			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 			type = dicData.getDicdes();
-			
+			*/
 			String mouldBaseId = getJsonData(data, "mouldBaseId");
 			infoData.setId(mouldBaseId);
 			infoData = (B_MouldBaseInfoData)infoDao.FindByPrimaryKey(infoData);
@@ -408,11 +436,13 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			String productModelName = infoData.getProductmodelid();
 			
 			message = "err008";
-			if (no.length() == (productModelName.length() + type.length() + 2)) {
+			/*
+			if (no.length() == (productModelName.length() + 2)) {
 				if (no.substring(0, no.length() - 2).equals(productModelName + type)) {
 					message = "";
 				}
 			}
+			*/
 		}
 		catch(Exception e) {
 			message = "err001";
@@ -612,29 +642,57 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		S_DICDao dicDao = new S_DICDao(); 
 		S_DICData dicData = new S_DICData();
 		
+		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+		B_MouldSubData subData = new B_MouldSubData();
+		B_MouldSubDao subDao = new B_MouldSubDao();
+		
 		String mouldId = "";
 
-		String productModelIdView = getJsonData(data, "productModelIdView");
 		String type = getJsonData(data, "type");
-	
-		dicData.setDictypeid(DicUtil.MOULDTYPE);
-		dicData.setDicid(type);
-		dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
-		String typeMark = dicData.getDicdes();
-		mouldId = typeMark + "." + productModelIdView + "." ;
-		
-		BaseModel dataModel = new BaseModel();
-		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
-		dataModel.setQueryName("mouldregisterquerydefine_getmouldserialno");
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		userDefinedSearchCase.put("mouldNo", mouldId);
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		ArrayList<HashMap<String, String>> mouldIdMap = baseQuery.getYsQueryData(0,0);
-		if (mouldIdMap.size() > 0) {
-			mouldId += String.format("%02d", Integer.parseInt(mouldIdMap.get(0).get("serialNo")));
+		String activeSubCode = getJsonData(data, "activeSubCode");
+		boolean isTypeChanged = false;
+		try {
+			if (!activeSubCode.equals("")) {
+				subData.setId(activeSubCode);
+				subData = (B_MouldSubData)subDao.FindByPrimaryKey(subData);
+				dbData.setId(subData.getMouldid());
+				dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+				if (!dbData.getType().equals(type)) {
+					isTypeChanged = true;
+				}
+			} else {
+				isTypeChanged = true;
+			}
+			if(isTypeChanged) {
+				/*
+				dicData.setDictypeid(DicUtil.MOULDTYPE);
+				dicData.setDicid(type);
+				dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
+				String typeMark = dicData.getDicdes();
+				mouldId = typeMark + "." + productModelIdView + "." ;
+				*/
+				mouldId = type;
+				
+				BaseModel dataModel = new BaseModel();
+				dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+				dataModel.setQueryName("mouldregisterquerydefine_getmouldserialno");
+				HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+				userDefinedSearchCase.put("mouldNo", mouldId);
+				BaseQuery baseQuery = new BaseQuery(request, dataModel);
+				baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+				ArrayList<HashMap<String, String>> mouldIdMap = baseQuery.getYsQueryData(0,0);
+				if (mouldIdMap.size() > 0) {
+					mouldId += "." + String.format("%02d", Integer.parseInt(mouldIdMap.get(0).get("serialNo")));
+				}
+			} else {
+				mouldId = "nochange";
+			}
 		}
-
+		catch(Exception e) {
+			
+		}
+		
 		return mouldId;
 	}
 	
@@ -648,13 +706,13 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		String type = getJsonData(data, "type");
 		String productModelIdView = getJsonData(data, "productModelIdView");
 		String rotateDirect = getJsonData(data, "rotateDirect");
-		
+		/*
 		dicData.setDictypeid(DicUtil.MOULDTYPE);
 		dicData.setDicid(type);
 		dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 		String typeMark = dicData.getDicdes();
 		mouldId = productModelIdView + typeMark;
-		
+		*/
 		BaseModel dataModel = new BaseModel();
 		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
 		dataModel.setQueryName("mouldregisterquerydefine_rotate");

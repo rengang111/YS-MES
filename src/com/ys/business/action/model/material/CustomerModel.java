@@ -1,4 +1,4 @@
-package com.ys.business.action.model.customer;
+package com.ys.business.action.model.material;
 
 import com.ys.util.basequery.common.BaseModel;
 

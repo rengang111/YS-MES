@@ -1,4 +1,4 @@
-package com.ys.business.action.customer;
+package com.ys.business.action.material;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -15,11 +15,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ys.business.action.model.material.CustomerModel;
+import com.ys.business.service.material.CustomerService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.business.action.model.customer.CustomerModel;
 import com.ys.system.common.BusinessConstants;
-import com.ys.business.service.customer.CustomerService;
 
 @Controller
 @RequestMapping("/business")

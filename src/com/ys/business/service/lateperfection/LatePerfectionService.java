@@ -22,7 +22,6 @@ import com.ys.business.db.data.B_LatePerfectionQuestionData;
 import com.ys.business.db.data.B_LatePerfectionRelationFileData;
 import com.ys.business.db.data.B_ProjectTaskData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
-import com.ys.business.service.supplier.SupplierService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.role.RoleModel;
 import com.ys.util.basequery.common.BaseModel;

@@ -382,6 +382,7 @@
 						<form:hidden path="purchaseList[${status.index}].totalprice" /></td>					
 					
 					<td><input type="text" name="attributeList2" class="attributeList2"  value="${detail.matSupplierId}" style="width:100px" />
+						
 						<form:hidden path="purchaseList[${status.index}].supplierid"  value="${detail.matSupplierId}" /></td>
 					<td><span id="last${status.index}"></span>
 						<input type="hidden" id="lastPrice${status.index}"></td>
@@ -777,7 +778,7 @@ function requirementAjax() {
 				}, {"className":"td-right"
 				}, {"className":"td-right"
 				}, {"className":"td-right bold"	
-				}, {"className":"td-right"			
+				}, {"className":"td-left"			
 				}, {"className":"td-right"
 				}, {"className":"td-right"
 				}, {

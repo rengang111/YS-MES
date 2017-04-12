@@ -1059,55 +1059,6 @@ public class BomService extends BaseService {
 	}
 
 
-	/*
-	 * 更新供应商单价
-	 */
-	@SuppressWarnings("unchecked")
-	private void updatePriceSupplier(
-			String materialId,
-			String supplierId,
-			String price ) throws Exception {
-		
-		List<B_PriceSupplierData> priceList = null;
-		B_PriceSupplierData pricedt = null;
-		B_PriceSupplierDao dao = new B_PriceSupplierDao();
-		B_PriceSupplierHistoryData historyDt = new B_PriceSupplierHistoryData();
-		B_PriceSupplierHistoryDao historyDao = new B_PriceSupplierHistoryDao();
-
-		String where ="materialId= '" + materialId + "'" + 
-				" AND supplierId = '" + supplierId + "'" + 
-				" AND deleteFlag = '0' ";		
-
-		priceList = (List<B_PriceSupplierData>)dao.Find(where);
-		
-		if(priceList != null && priceList.size() > 0){
-			
-			pricedt = priceList.get(0);	
-
-			if(!price.equals(pricedt.getPrice())){//价格有变动的话,更新为最新价格
-				
-				//处理共通信息					
-				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"BaseBomInsert",userInfo);
-				copyProperties(pricedt,commData);
-				
-				pricedt.setPrice(price);
-				
-				dao.Store(pricedt);
-				
-				//插入历史表
-				//处理共通信息	
-				copyProperties(historyDt,pricedt);
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BaseBomInsert",userInfo);
-				copyProperties(historyDt,commData);
-				
-				guid = BaseDAO.getGuId();
-				historyDt.setRecordid(guid);
-				
-				historyDao.Create(historyDt);
-			}
-		}
-				
-	}
 	
 	/*
 	 * BOM详情删除处理

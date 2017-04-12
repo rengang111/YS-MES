@@ -1,13 +1,15 @@
-package com.ys.business.service.customer;
+package com.ys.business.service.material;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.customer.CustomerModel;
+import com.ys.business.action.model.material.CustomerModel;
 import com.ys.business.db.dao.B_CustomerDao;
 import com.ys.business.db.data.B_ContactData;
 import com.ys.business.db.data.B_CustomerData;
@@ -146,19 +148,27 @@ public class CustomerService extends BaseService {
 	}
 	
 
-	private B_CustomerData preCheckId(B_CustomerData  reqData) throws Exception {
-		B_CustomerData dbData = new B_CustomerData();
+	@SuppressWarnings("unchecked")
+	private B_CustomerData preCheckId(B_CustomerData  reqData) 
+			throws Exception {
+		List<B_CustomerData> dbData = null;
+		B_CustomerData dt = null;
+		String customerId = reqData.getCustomerid();
+		String where = " customerId = '" + customerId +"' AND deleteFlag = '0' ";
 		
 		try {
-			dbData = (B_CustomerData)dao.FindByPrimaryKey(reqData);
+			dbData = (List<B_CustomerData>)dao.Find(where);
+			
+			if(dbData.size() > 0)
+				dt = dbData.get(0);
 
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dbData = null;
+			dt = null;
 		}
 		
-		return dbData;
+		return dt;
 	}
 	
 	public CustomerModel doOptionChange(String type, String parentCode) {

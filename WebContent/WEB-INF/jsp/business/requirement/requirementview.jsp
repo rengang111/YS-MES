@@ -359,9 +359,9 @@
 					<td>${detail.orderQuantity}</td>
 					<td>0</td>
 					<td>${detail.quantity}</td>			
-					<td><span id="price${status.index}" ></span> ${detail.price}</td>				
+					<td><span id="price${status.index}" ></span> ${detail.lastPrice}</td>				
 					<td><span id="total${status.index}"></span></td>					
-					<td>${detail.supplierId}</td>
+					<td>${detail.lastSupplierId}</td>
 					<td><span id="last${status.index}"></span></td>
 					<td><span id="min${status.index}"></span></td>
 				</tr>
@@ -373,7 +373,7 @@
 					var lastSupplierId = '${detail.lastSupplierId}';
 					var minPrice = float4ToCurrency( '${detail.minPrice}' );
 					var minSupplierId = '${detail.minSupplierId}';
-					var price =currencyToFloat( '${detail.price}');
+					var price =currencyToFloat( '${detail.lastPrice}');
 					var quantity = currencyToFloat('${detail.quantity}');
 					var total = floatToCurrency( price * quantity );
 						
@@ -756,6 +756,10 @@ function requirementAjax() {
 				}			
 			],
 		    // "aaSorting": [[ 1, "asc" ]]
+			 "columnDefs": [{    
+                 "targets": [ 10 ], //隐藏第1列，从第0列开始   
+                 "visible": false    
+	     	}],
 		
 	}).draw();
 
