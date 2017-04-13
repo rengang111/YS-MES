@@ -613,10 +613,9 @@
                 // provide must match checking if what is in the input
                 // is in the list of results. HACK!
                 if (ui.item == null) {
-                	$("#mouldId").html('');
-    				$("#type").val('');
-    				$("#mouldType").html('');
-    				$("#typeDesc").html('');
+                	$("#productModelId").val('');
+    				$("#productModelIdView").val('');
+    				$("#productModelName").val('');
                 }
             },
 			
@@ -669,11 +668,11 @@
             change: function(event, ui) {
                 // provide must match checking if what is in the input
                 // is in the list of results. HACK!
-                if (ui.item == null) {
-                	$("#mouldId").html('');
-    				$("#type").val('');
+                if(ui.item == null) {
+                    $(this).val('');
     				$("#mouldType").html('');
     				$("#typeDesc").html('');
+                    $('#mouldId').html('');
                 }
             },
 			
