@@ -669,25 +669,11 @@
             change: function(event, ui) {
                 // provide must match checking if what is in the input
                 // is in the list of results. HACK!
-                var inputSource = $(this).val();
-                var found = $('.ui-autocomplete li').text().search(inputSource);
-                console.debug('found:' + found);
-                if(found < 0) {
-                    $(this).val('');
+                if (ui.item == null) {
+                	$("#mouldId").html('');
+    				$("#type").val('');
     				$("#mouldType").html('');
     				$("#typeDesc").html('');
-                    $('#mouldId').html('');
-                } else {
-                	var matcher = new RegExp("^" + $(this).val());
-                	for(var i = 0; i < datas.length; i++){//用javascript的for/in循环遍历对象的属性
-                		if (matcher.test(datas[i].name)) {
-            				$("#type").val(datas[i].id);
-            				$("#mouldType").html(datas[i].parentId);
-            				$("#typeDesc").html(datas[i].parentcategoryId);
-            				getMouldId();
-            				break;
-                		}
-                	}
                 }
             },
 			
