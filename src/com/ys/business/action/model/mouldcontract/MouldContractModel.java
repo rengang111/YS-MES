@@ -5,6 +5,7 @@ import com.ys.util.basequery.common.BaseModel;
 import net.sf.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_CustomerAddrData;
@@ -49,14 +50,21 @@ public class MouldContractModel extends BaseModel {
 	private String place = "";
 	private String type = "";
 	private String sumPrice = "";
+	private String belong = "";
+	private String mouldType = "";
+	private String typeDesc = "";
+	private String supplierIdView = "";
+	private String supplierName = "";
+	private String contractDate = "";
+	private String deliverDate = "";
 	
 	private ArrayList<ListOption> productModelIdList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> mouldFactoryList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> resultList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> placeList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> typeList = new ArrayList<ListOption>();
-	
-	
+	private ArrayList<ListOption> belongList = new ArrayList<ListOption>();
+	private ArrayList<HashMap<String, String>> regulations = new ArrayList<HashMap<String, String>>(); 
 	
 	public String getClassName() {
 		return this.className;
@@ -213,6 +221,49 @@ public class MouldContractModel extends BaseModel {
 	public void setSumPrice(String sumPrice) {
 	    this.sumPrice = sumPrice;
 	}
+	public String getBelong() {
+	    return this.belong;
+	}
+	public void setBelong(String belong) {
+	    this.belong = belong;
+	}
+	public String getMouldType() {
+	    return this.mouldType;
+	}
+	public void setMouldType(String mouldType) {
+	    this.mouldType = mouldType;
+	}
+	public void setSupplierIdView(String supplierIdView) {
+	    this.supplierIdView = supplierIdView;
+	}
+	public String getSupplierIdView() {
+	    return this.supplierIdView;
+	}
+	public void setSupplierName(String supplierName) {
+	    this.supplierName = supplierName;
+	}
+	public String getSupplierName() {
+	    return this.supplierName;
+	}
+	public void setTypeDesc(String typeDesc) {
+	    this.typeDesc = typeDesc;
+	}
+	public String getTypeDesc() {
+	    return this.typeDesc;
+	}
+	public void setContractDate(String contractDate) {
+	    this.contractDate = contractDate;
+	}
+	public String getContractDate() {
+	    return this.contractDate;
+	}
+	
+	public void setDeliverDate(String deliverDate) {
+	    this.deliverDate = deliverDate;
+	}
+	public String getDeliverDate() {
+	    return this.deliverDate;
+	}
 	
 	public ArrayList<ListOption> getProductModelIdList() {
 		return this.productModelIdList;
@@ -248,4 +299,19 @@ public class MouldContractModel extends BaseModel {
 	public void setTypeList(ArrayList<ListOption> typeList) {
 		this.typeList = typeList;
 	}
+	
+	public ArrayList<ListOption> getBelongList() {
+		return this.belongList;
+	}
+	public void setBelongList(ArrayList<ListOption> belongList) {
+		this.belongList = belongList;
+	}
+	
+	public ArrayList<HashMap<String, String>> getRegulations() {
+		return this.regulations;
+	}
+	public void setRegulations(ArrayList<HashMap<String, String>> regulations) {
+		this.regulations = regulations;
+	}
+	
 }

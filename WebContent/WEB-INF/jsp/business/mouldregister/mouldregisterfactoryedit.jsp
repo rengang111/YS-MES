@@ -45,6 +45,12 @@
 			}
 		});
 		
+		if ("${DisplayData.subCode}" != "") {
+			$('#mouldId').html("${DisplayData.mouldBaseInfoData.mouldid}.${DisplayData.subCode}");
+		} else {
+			$('#mouldId').html("${DisplayData.mouldBaseInfoData.mouldid}");
+		}
+		
 		//设置光标项目
 		$("#attribute1").focus();
 		
@@ -124,7 +130,7 @@
 	 id="mould" name="mould"  autocomplete="off">
 
 		<input type=hidden name="keyBackup" id="keyBackup" value="${DisplayData.keyBackup}" />
-		<input type=hidden name="activeSubCode" id="activeSubCode" value="${DisplayData.activeSubCode}" />
+		<input type=hidden name="mouldId" id="activeSubCode" value="${DisplayData.mouldId}" />
 		<input type=hidden name="unit" id="unit" value="${DisplayData.mouldBaseInfoData.unit}" />
 		<input type=hidden name="supplierid" id="supplierid" value="${DisplayData.mouldFactoryData.mouldfactoryid}" />
 		
@@ -132,31 +138,24 @@
 		<fieldset>
 			<legend> 模具供应商报价-新建</legend>
 
-			<table class="form">
+			<table class="form" width="600px" style="table-layout:fixed;">
 
 				<tr>
 					<td width="100px" class="label"><label>模具单元编号：</label></td>
 					<td width="150px">
-						${DisplayData.mouldBaseInfoData.mouldid}.${DisplayData.subCode}
+						<label id="mouldId"></label>
 					</td>
 					
-					<td width="100px" class="label"><label>产品编号：</label></td>
-					<td width="150px">
-							${DisplayData.productModelIdView}
+					<td width="100px" class="label"><label>模具单元名称：</label></td>
+					<td width="200px">
+						${DisplayData.mouldBaseInfoData.name}
 					</td>
-
-					<td width="100px" class="label"><label>产品名称：</label></td>
-					<td>${DisplayData.productModelName}</td>
 				</tr>
 
 				<tr>
 					<td class="label"><label>模具类型：</label></td>
-					<td>${DisplayData.mouldType}</td>
-					
-					<td class="label"><label>类型解释：</label></td>
-					<td>${DisplayData.typeDesc}</td>
-					
-					<td class="label" ><label>报价单位：</label></td>
+					<td>${DisplayData.mouldType}&nbsp;${DisplayData.typeDesc}</td>
+					<td class="label" width="80px"><label>报价单位：</label></td>
 					<td colspan=3>${DisplayData.unit}</td>
 				</tr>
 

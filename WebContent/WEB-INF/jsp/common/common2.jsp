@@ -25,8 +25,9 @@
 <script type="text/javascript" src="${ctx}/js/business.js"></script>
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
+<!-- 
 <script type="text/javascript" src="${ctx}/js/browser.js"></script>
-
+ -->
 <link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
@@ -119,14 +120,26 @@
 	}
 	
 	function reloadTabWindow() {
-		var curTabWin = null;
-		var curTab = parent.$('#_main_center_tabs').tabs('getSelected');
-        if (curTab && curTab.find('iframe').length > 0) {
-            curTabWin = curTab.find('iframe')[0].contentWindow;
-        }
-        curTabWin.reload();
-
-		
+		function reloadTabWindow() {
+			var curTabWin = null;
+			/*
+			var curTab = parent.$('#_main_center_tabs').tabs('getSelected');
+	        if (curTab && curTab.find('iframe').length > 0) {
+	            curTabWin = curTab.find('iframe')[0].contentWindow;
+	        }
+	        if ($.isFunction(curTabWin.reload)) {
+	        	curTabWin.reload();
+	        }
+			*/
+			
+			var curTab = parent.parent.$('#_main_center_tabs').tabs('getSelected');
+	        if (curTab && curTab.find('iframe').length > 0) {
+	            curTabWin = curTab.find('iframe')[0].contentWindow;
+	        }
+	        if ($.isFunction(curTabWin.reload)) {
+	        	curTabWin.reload();
+	        }
+		}
 	}
 </Script>
 

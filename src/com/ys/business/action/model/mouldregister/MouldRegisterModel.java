@@ -34,11 +34,10 @@ public class MouldRegisterModel extends BaseModel {
 	private B_SupplierData supplierData = new B_SupplierData();
 	private ArrayList<HashMap<String, String>> mouldSubDatas = new ArrayList<HashMap<String, String>>();
 	private ArrayList<HashMap<String, String>> mouldFactoryDatas = new ArrayList<HashMap<String, String>>();
-
+	
 	private List<B_MouldFactoryData> detailLines;
 
-	private String operType = "";
-	private String activeSubCode = "";
+	private String mouldId = "";
 	private String subCode = "";
 	private String productModelId = "";
 	private String productModelIdView = "";
@@ -52,7 +51,7 @@ public class MouldRegisterModel extends BaseModel {
 	private String currency = "";
 	private String mouldType = "";
 	private String typeDesc = "";
-	
+	private String activeSubCode = "";
 	private ArrayList<ListOption> typeList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> mouldFactoryList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> unitList = new ArrayList<ListOption>();
@@ -181,12 +180,13 @@ public class MouldRegisterModel extends BaseModel {
 	public void setTypeDesc(String typeDesc) {
 	    this.typeDesc = typeDesc;
 	}
-	public String getOperType() {
-	    return this.operType;
+	public String getActiveSubCode() {
+	    return this.activeSubCode;
 	}
-	public void setOperType(String operType) {
-	    this.operType = operType;
+	public void setActiveSubCode(String activeSubCode) {
+	    this.activeSubCode = activeSubCode;
 	}
+
 
 	public ArrayList<ListOption> getTypeList() {
 		return this.typeList;
@@ -255,11 +255,11 @@ public class MouldRegisterModel extends BaseModel {
 		this.nowUseImage = nowUseImage;
 	}
 	
-	public String getActiveSubCode() {
-		return this.activeSubCode;
+	public String getMouldId() {
+		return this.mouldId;
 	}
-	public void setActiveSubCode(String activeSubCode) {
-		this.activeSubCode = activeSubCode;
+	public void setMouldId(String mouldId) {
+		this.mouldId = mouldId;
 	}
 	public String getSubCode() {
 		return this.subCode;

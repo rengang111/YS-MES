@@ -34,6 +34,7 @@ import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MouldAcceptanceDao;
 import com.ys.business.db.dao.B_MouldBaseInfoDao;
 import com.ys.business.db.dao.B_MouldContractBaseInfoDao;
+import com.ys.business.db.dao.B_MouldContractRegulationDao;
 import com.ys.business.db.dao.B_MouldDetailDao;
 import com.ys.business.db.dao.B_MouldFactoryDao;
 import com.ys.business.db.dao.B_MouldLastestPriceDao;
@@ -65,6 +66,7 @@ import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MouldAcceptanceData;
 import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_MouldContractBaseInfoData;
+import com.ys.business.db.data.B_MouldContractRegulationData;
 import com.ys.business.db.data.B_MouldDetailData;
 import com.ys.business.db.data.B_MouldFactoryData;
 import com.ys.business.db.data.B_MouldLastestPriceData;
@@ -1161,10 +1163,12 @@ public class BusinessDbUpdateEjb  {
 		MouldContractService service = new MouldContractService();
 		B_MouldContractBaseInfoDao dao = new B_MouldContractBaseInfoDao();
 		B_MouldContractBaseInfoData dbData = new B_MouldContractBaseInfoData();
+		B_MouldContractRegulationDao regDao = new B_MouldContractRegulationDao();
+		B_MouldContractRegulationData regData = new B_MouldContractRegulationData();
 		BaseModel dataModel = new BaseModel();
 		BaseQuery baseQuery = null;
 
-		String key = service.getJsonData(data, "keyBackup");
+		String key = "";
 		String guid = "";
 		boolean checkContractIdFlg = false;
 		
@@ -1173,55 +1177,98 @@ public class BusinessDbUpdateEjb  {
 		try {
 			ts.begin();
 			String contractId = "";
+			String keyBackup = service.getJsonData(data, "keyBackup");
 			String contractYear = service.getJsonData(data, "contractYear");
-			String mouldFactoryId = service.getJsonData(data, "mouldFactoryId");
+			String type = service.getJsonData(data, "type");
 			String productModelId = service.getJsonData(data, "productModelId");
-			String payCase = service.getJsonData(data, "payCase");
-			String moudFactoryShortName = "";
-			String finishTime = "";
-			if (service.getJsonData(data, "finishTime").equals("")) {
-				finishTime = null;
-			} else {
-				finishTime = service.getJsonData(data, "finishTime"); 
-			}
-
-			if (key == null || key.equals("")) {
+			String supplierId = service.getJsonData(data, "supplierId");
+			String contractDate = service.getJsonData(data, "contractDate");
+			String deliverDate = service.getJsonData(data, "deliverDate");
+			String belong = service.getJsonData(data, "belong");
+			String oursidePay = service.getJsonData(data, "oursidePay");
+			String providerPay = service.getJsonData(data, "providerPay");
+			String returnCase = service.getJsonData(data, "returnCase");
+			String regulationCount = service.getJsonData(data, "regulationCount");
+			
+			if (keyBackup == null || keyBackup.equals("")) {
 				guid = BaseDAO.getGuId();									
 				dbData.setId(guid);
-				contractId = service.getMouldContractId(request, contractYear, mouldFactoryId, productModelId);
+				contractId = service.getMouldContractId(request, contractYear, type);
 				dbData.setContractid(contractId);
-				//dbData.setYear(contractYear);
+				dbData.setContractyear(contractYear);
 				dbData.setProductmodelid(productModelId);
-				//dbData.setMouldfactoryid(mouldFactoryId);
-				//dbData.setPaycase(payCase);
-
-				//dbData.setFinishtime(finishTime);
+				dbData.setType(type);
+				dbData.setSupplierid(supplierId);
+				dbData.setContractdate(contractDate);
+				dbData.setDeliverdate(deliverDate);
+				dbData.setBelong(belong);
+				dbData.setOursidepay(oursidePay);
+				dbData.setProviderpay(providerPay);
+				dbData.setReturncase(returnCase);
 				dbData = service.updateMouldContractBaseInfoModifyInfo(dbData, userInfo);
 				dao.Create(dbData);
 				key = guid;
 			} else {
-				dbData.setId(key);
+				key = keyBackup;
+				dbData.setId(keyBackup);
 				dbData = (B_MouldContractBaseInfoData)dao.FindByPrimaryKey(dbData);
-				//if (!(dbData.getYear().equals(contractYear) && dbData.getProductmodelid().equals(productModelId) && dbData.getMouldfactoryid().equals(mouldFactoryId))) {
-					contractId = service.getMouldContractId(request, contractYear, mouldFactoryId, productModelId);
-					dbData.setContractid(contractId);
-					
+				if (!(dbData.getContractyear().equals(contractYear) && dbData.getType().equals(type))) {
+					if (!type.equals("")) {
+						contractId = service.getMouldContractId(request, contractYear, type);
+						dbData.setContractid(contractId);
+					}
+				}
+				if (!(dbData.getType().equals(type) && dbData.getSupplierid().equals(supplierId))) {
+					/*
 					StringBuffer sql = new StringBuffer();
-					sql.append("UPDATE b_MouldDetail SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+					sql.append("UPDATE b_MouldContractRegulation SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
 					sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
 					sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
 					sql.append(" WHERE mouldContractBaseId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
 					BaseDAO.execUpdate(sql.toString());								
-
+					*/
 				}
-				//dbData.setYear(contractYear);
+				
 				dbData.setProductmodelid(productModelId);
-				//dbData.setMouldfactoryid(mouldFactoryId);
-				//dbData.setPaycase(payCase);
-				//dbData.setFinishtime(finishTime);
+				dbData.setContractyear(contractYear);
+				dbData.setProductmodelid(productModelId);
+				if (!type.equals("")) {
+					dbData.setType(type);
+				}
+				dbData.setSupplierid(supplierId);
+				dbData.setContractdate(contractDate);
+				dbData.setDeliverdate(deliverDate);
+				dbData.setBelong(belong);
+				dbData.setOursidepay(oursidePay);
+				dbData.setProviderpay(providerPay);
+				dbData.setReturncase(returnCase);
+
 				dbData = service.updateMouldContractBaseInfoModifyInfo(dbData, userInfo);
 				dao.Store(dbData);
-			//}
+			}
+			if (keyBackup == null || keyBackup.equals("")) {
+				
+			} else {
+				StringBuffer sql = new StringBuffer();
+				sql.append("UPDATE b_MouldContractRegulation SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldContractBaseId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());								
+			}
+			for(int i = 0; i < Integer.parseInt(regulationCount); i++) {
+				String name = service.getJsonData(data, "regulations[" + String.valueOf(i) + "].name");
+				String money = service.getJsonData(data, "regulations[" + String.valueOf(i) + "].money");
+				if(!name.equals("") || !money.equals("")) {
+					regData.setId(BaseDAO.getGuId());
+					regData.setMouldcontractbaseid(key);
+					regData.setName(name);
+					regData.setMoney(money);
+					regData = service.updateMouldContractRegulationModifyInfo(regData, userInfo);
+					regDao.Create(regData);
+				}
+			}
+
 			model.setEndInfoMap(service.NORMAL, "", key + "|" + contractId);
 			
 			ts.commit();
@@ -1260,12 +1307,12 @@ public class BusinessDbUpdateEjb  {
 				dbDao.Store(dbData);
 				
 				sql = new StringBuffer("");								
-				sql.append("UPDATE b_MouldDetail SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append("UPDATE b_MouldContractRegulation SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
 				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
 				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-				sql.append(" WHERE mouldBaseId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				sql.append(" WHERE mouldContractBaseId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
 				BaseDAO.execUpdate(sql.toString());	
-				
+				/*
 				dbAcceptanceData.setMouldbaseid(dbData.getId());
 				dbAcceptanceData = (B_MouldAcceptanceData)dbAcceptanceDao.FindByPrimaryKey(dbAcceptanceData);
 				dbAcceptanceData = MouldContractService.updateMouldAcceptanceModifyInfo(dbAcceptanceData, userInfo);
@@ -1284,7 +1331,7 @@ public class BusinessDbUpdateEjb  {
 				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
 				sql.append(" WHERE mouldBaseId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
 				BaseDAO.execUpdate(sql.toString());		
-				
+				*/
 				count++;								
 												
 			}									
@@ -1727,6 +1774,50 @@ public class BusinessDbUpdateEjb  {
 		}
     }
     
+    public void executeMouldRegisterEquipmentDelete(HttpServletRequest request, String keyData, UserInfo userInfo) throws Exception {												
+    	B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();											
+    	B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+    	B_MouldSubDao mouldSubDao = new B_MouldSubDao();
+    	B_MouldSubData mouldSubData = new B_MouldSubData();
+		B_MouldLastestPriceDao lastestPriceDao = new B_MouldLastestPriceDao();
+		B_MouldLastestPriceData lastestPriceData = new B_MouldLastestPriceData();
+
+		int count = 0;
+												
+		ts = new BaseTransaction();
+
+		try {										
+			ts.begin();
+
+			String removeData[] = keyData.split(",");									
+			for (String keyValue:removeData) {
+				String key = keyValue.split("\\|")[0];
+				String subCodeId = keyValue.split("\\|")[1];
+				if (!subCodeId.equals("")) {
+					mouldSubData.setId(subCodeId);
+					mouldSubData = (B_MouldSubData)mouldSubDao.FindByPrimaryKey(mouldSubData);
+					mouldSubData = MouldRegisterService.updateMouldSubModifyInfo(mouldSubData, userInfo);
+					mouldSubData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+					mouldSubDao.Store(mouldSubData);
+				
+					count++;
+				} else {
+					StringBuffer sql = new StringBuffer("");
+					sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+					sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+					sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+					sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+					BaseDAO.execUpdate(sql.toString());	
+				}
+			}
+			ts.commit();									
+		}
+		catch(Exception e) {										
+			ts.rollback();									
+			throw e;									
+		}
+    }
+    
     public MouldRegisterModel executeMouldRegisterUpdate(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
     	
     	MouldRegisterService service = new MouldRegisterService();
@@ -1757,6 +1848,7 @@ public class BusinessDbUpdateEjb  {
 			String weight = service.getJsonData(data, "weight");
 			String unit = service.getJsonData(data, "unit");
 			String unloadingNum = service.getJsonData(data, "unloadingNum");
+			String comment = service.getJsonData(data, "comment");
 			String subCodeCount = service.getJsonData(data, "subCodeCount");
 			String activeSubCode = service.getJsonData(data, "activeSubCode");
 			String activeSubCodeIndex = service.getJsonData(data, "activeSubCodeIndex");
@@ -1778,6 +1870,7 @@ public class BusinessDbUpdateEjb  {
 				mouldBaseInfoData.setWeight(weight);
 				mouldBaseInfoData.setUnloadingnum(unloadingNum);
 				mouldBaseInfoData.setUnit(unit);
+				mouldBaseInfoData.setComment(comment);
 				mouldBaseInfoData = service.updateMouldBaseInfoModifyInfo(mouldBaseInfoData, userInfo);
 				mouldBaseInfoDao.Create(mouldBaseInfoData);
 				
@@ -1801,124 +1894,124 @@ public class BusinessDbUpdateEjb  {
 				mouldBaseInfoData.setWeight(weight);
 				mouldBaseInfoData.setUnloadingnum(unloadingNum);
 				mouldBaseInfoData.setUnit(unit);
+				mouldBaseInfoData.setComment(comment);
 				mouldBaseInfoData = service.updateMouldBaseInfoModifyInfo(mouldBaseInfoData, userInfo);
 				mouldBaseInfoDao.Store(mouldBaseInfoData);
 			}
+			/*
+			if (!subCodeCount.equals("")) {
+				int iCount = Integer.parseInt(subCodeCount);
+				
+				if (iCount > 0) {
+					for(int i = 0; i < iCount; i++) {
+						String subCodeId = service.getJsonData(data, "mouldSubs[" + activeSubCodeIndex + "].id");
+						String subCode = service.getJsonData(data, "mouldSubs[" + activeSubCodeIndex + "].subcode");
+						String subCodeName = service.getJsonData(data, "mouldSubs[" + activeSubCodeIndex + "].name");
+
+						if (!subCodeId.equals("")) {
+							mouldSubData.setId(subCodeId);
+							mouldSubData = (B_MouldSubData)mouldSubDao.FindByPrimaryKey(mouldSubData);
+													
+							if (!subCode.equals("")) {
+								mouldSubData.setSubcode(subCode);
+								mouldSubData.setName(subCodeName);
+								mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+								mouldSubDao.Store(mouldSubData);
+							} else {
+								mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+								mouldSubData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+								mouldSubDao.Store(mouldSubData);
+							}
+						} else {
+							mouldSubData.setSubcode(subCode);
+							mouldSubData.setName(subCodeName);
+							mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+							mouldSubDao.Create(mouldSubData);							
+						}
+					}
+				}
+			}
+			*/
+			ts.commit();
+			
+			if (keyBackup.equals("")) {
+				model.setEndInfoMap(BaseService.NORMAL, "", model.getKeyBackup() + "|" + mouldBaseInfoData.getMouldid());
+			} else {
+				model.setEndInfoMap(BaseService.NORMAL, "", keyBackup + "|" + mouldBaseInfoData.getMouldid() + "." + model.getSubCode());
+			}
+		}
+		catch(Exception e) {
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "err001", key);
+			ts.rollback();
+		}
+		
+		return model;
+    }
+    
+    public MouldRegisterModel executeMouldRegisterEquipmentUpdate(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+    	
+    	MouldRegisterService service = new MouldRegisterService();
+    	MouldRegisterModel model = new MouldRegisterModel();
+    	B_MouldBaseInfoDao mouldBaseInfoDao = new B_MouldBaseInfoDao();  
+    	B_MouldBaseInfoData mouldBaseInfoData = new B_MouldBaseInfoData(); 
+    	B_MouldSubDao mouldSubDao = new B_MouldSubDao();
+    	B_MouldSubData mouldSubData = new B_MouldSubData();
+    	B_MouldFactoryDao mouldFactoryDao = new B_MouldFactoryDao();
+    	B_MouldFactoryData mouldFactoryData = new B_MouldFactoryData();
+
+    	String key = "";
+    	
+    	ts = new BaseTransaction();	
+    	
+		try {
+			
+			ts.begin();
+			
+			String keyBackup = service.getJsonData(data, "keyBackup");
+			String subCodeCount = service.getJsonData(data, "subCodeCount");
+			
+			String mouldId = "";
+			String oldMouldId = "";
 			
 			if (!subCodeCount.equals("")) {
 				int iCount = Integer.parseInt(subCodeCount);
 				
 				if (iCount > 0) {
-					if (!keyBackup.equals("")) {
-						
-						mouldSubData.setId(activeSubCode);
-						mouldSubData = (B_MouldSubData)mouldSubDao.FindByPrimaryKey(mouldSubData);
-						
-						String subCode = service.getJsonData(data, "mouldSubs[" + activeSubCodeIndex + "].subcode");
-						String subCodeName = service.getJsonData(data, "mouldSubs[" + activeSubCodeIndex + "].name");
-						
-						if (!subCode.equals("")) {
-							mouldSubData.setSubcode(subCode);
-						}
-						mouldSubData.setName(subCodeName);
-						mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
-						mouldSubDao.Store(mouldSubData);
-						model.setSubCode(mouldSubData.getSubcode());
-						/*
-						if (mouldSubData.getSubcode().equals("000")) {
+					for(int i = 0; i < iCount; i++) {
+						String subCodeId = service.getJsonData(data, "mouldSubs[" + i + "].subcodeid");
+						String subCode = service.getJsonData(data, "mouldSubs[" + i + "].subcode");
+						String subCodeName = service.getJsonData(data, "mouldSubs[" + i + "].name");
+
+						if (!subCodeId.equals("")) {
+							mouldSubData.setId(subCodeId);
+							mouldSubData = (B_MouldSubData)mouldSubDao.FindByPrimaryKey(mouldSubData);
+													
 							if (!subCode.equals("")) {
 								mouldSubData.setSubcode(subCode);
-							}
-							mouldSubData.setName(subCodeName);
-							mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
-							mouldSubDao.Store(mouldSubData);
-						} else {
-							if (subCodeName.equals("")) {
-								
-								StringBuffer sql = new StringBuffer("");
-								sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-								sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-								sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-								sql.append(" WHERE id = '" + activeSubCode + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-								BaseDAO.execUpdate(sql.toString());	
-
-								sql = new StringBuffer("");
-								sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-								sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-								sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-								sql.append(" WHERE subCode = '" + activeSubCode + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-								BaseDAO.execUpdate(sql.toString());
-									
-							} else {
-								if (!subCode.equals("")) {
-									mouldSubData.setSubcode(subCode);
-								}
 								mouldSubData.setName(subCodeName);
 								mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
-								mouldSubDao.Store(mouldSubData);								
+								mouldSubDao.Store(mouldSubData);
+							} else {
+								mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
+								mouldSubData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+								mouldSubDao.Store(mouldSubData);
 							}
-						}
-						*/
-						//TODO
-						for (int i = 0; i < iCount; i++) {
-							subCode = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].subcode");
-							subCodeName = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].name");
-							if ((!subCode.equals("") && !subCodeName.equals(""))) {
-								if (!activeSubCodeIndex.equals(String.valueOf(i))) {
-									String newSubCode = BaseDAO.getGuId();
-									mouldSubData.setId(newSubCode);
-									mouldSubData.setMouldid(key);
-									mouldSubData.setSubcode(subCode);
-									mouldSubData.setName(subCodeName);
-									mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
-									mouldSubDao.Create(mouldSubData);
-								} else {
-									model.setSubCode(subCode);
-								}
-							}
-						}
-					} else {
-						for (int i = 0; i < iCount; i++) {
-							String subCode = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].subcode");
-							String subCodeName = service.getJsonData(data, "mouldSubs[" + String.valueOf(i) + "].name");
-							if (!subCode.equals("") && !subCodeName.equals("")) {
-								String newSubCode = BaseDAO.getGuId();
-								mouldSubData.setId(newSubCode);
-								mouldSubData.setMouldid(key);
+						} else {
+							if (!subCode.equals("")) {
+								mouldSubData.setId(BaseDAO.getGuId());
+								mouldSubData.setMouldid(keyBackup);
 								mouldSubData.setSubcode(subCode);
 								mouldSubData.setName(subCodeName);
 								mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
 								mouldSubDao.Create(mouldSubData);
-								if (model.getActiveSubCode().equals("")) {
-									model.setActiveSubCode(newSubCode);
-									model.setSubCode(subCode);
-								}
 							}
-						}
-						if (model.getActiveSubCode().equals("")) {
-							String newSubCode = BaseDAO.getGuId();
-							mouldSubData.setId(newSubCode);
-							mouldSubData.setMouldid(key);
-							mouldSubData.setSubcode("00");
-							mouldSubData.setName("");
-							mouldSubData = service.updateMouldSubModifyInfo(mouldSubData, userInfo);
-							mouldSubDao.Create(mouldSubData);
-							
-							model.setActiveSubCode(newSubCode);
-							model.setSubCode(mouldSubData.getSubcode());
 						}
 					}
 				}
 			}
 
 			ts.commit();
-			
-			
-			if (keyBackup.equals("")) {
-				model.setEndInfoMap(BaseService.NORMAL, "", model.getKeyBackup() + "|" + model.getActiveSubCode());
-			} else {
-				model.setEndInfoMap(BaseService.NORMAL, "", model.getKeyBackup() + "|" + mouldBaseInfoData.getMouldid() + "." + model.getSubCode());
-			}
+			model.setEndInfoMap(BaseService.NORMAL, "", "");
 		}
 		catch(Exception e) {
 			model.setEndInfoMap(BaseService.SYSTEMERROR, "err001", key);

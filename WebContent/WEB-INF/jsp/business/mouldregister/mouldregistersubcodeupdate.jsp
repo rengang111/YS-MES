@@ -808,14 +808,6 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="60px">产品型号：</td>
-						<td width="130px">
-							<form:input path="productModelIdView" class="required mini"/>
-						</td>
-						<td width="60px">产品名称：</td>
-						<td width="130px">
-							<form:input path="productModelName"	class="short" />
-						</td>
 						<td width="50px">
 							出模数：
 						</td>

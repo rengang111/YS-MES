@@ -123,8 +123,8 @@ public class MouldContractAction extends BaseAction {
 				viewModel = doUpdatePay(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
-			case "productModelIdSearch"://供应商查询
-				dataMap = doProductModelIdSearch(data, request);
+			case "supplierSearch"://供应商查询
+				dataMap = doSupplierSearch(data, request);
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "confirmpay":
@@ -143,7 +143,10 @@ public class MouldContractAction extends BaseAction {
 				dataMap = getMouldFactoryList(data, request);
 				printOutJsonObj(response, dataMap.get("factoryList"));
 				return null;
-				
+			case "typeSearch":
+				dataMap = doTypeSearch(data, request);
+				printOutJsonObj(response, dataMap);
+				return null;
 		}
 		
 		return rtnUrl;
@@ -185,13 +188,13 @@ public class MouldContractAction extends BaseAction {
 	}		
 	
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doProductModelIdSearch(@RequestBody String data, HttpServletRequest request){
+	public HashMap<String, Object> doSupplierSearch(@RequestBody String data, HttpServletRequest request){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = mouldContractService.doProductModelIdSearch(request, data);
+			dataMap = mouldContractService.doSupplierSearch(request, data);
 			
 			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 
@@ -203,7 +206,7 @@ public class MouldContractAction extends BaseAction {
 		
 		return dataMap;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public MouldContractModel getMouldContractId(@RequestBody String data, HttpServletRequest request){
 		
@@ -426,6 +429,25 @@ public class MouldContractAction extends BaseAction {
 		model = mouldContractService.doConfirmPay(request, data, userInfo);
 		
 		return model;
-	}	
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doTypeSearch(@RequestBody String data, HttpServletRequest request){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = mouldContractService.doTypeSearch(request);
+			
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			//dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 }

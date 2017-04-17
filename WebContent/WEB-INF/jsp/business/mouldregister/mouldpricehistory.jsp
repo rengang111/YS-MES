@@ -36,7 +36,7 @@
 <form:form modelAttribute="dataModels" method="POST" 
 	id="mould" name="mould"   autocomplete="off">
 	
-	<form:hidden path="activeSubCode" value = "${DisplayData.activeSubCode}"/>
+	<form:hidden path="mouldId" value = "${DisplayData.mouldId}"/>
 	<form:hidden path="mouldFactoryId" value = "${DisplayData.mouldFactoryId}"/>
 
 <fieldset>
@@ -100,7 +100,7 @@ function supplierPriceView() {
 	}
 
 	var mouldFactoryId = $('#mouldFactoryId').val();
-	var activeSubCode = $('#activeSubCode').val();
+	var mouldId = $('#mouldId').val();
 	
 	var t = $('#TSupplier').DataTable({
 		"paging": false,
@@ -114,7 +114,7 @@ function supplierPriceView() {
 		"scrollY":270,
 		"scrollCollapse":true,
 		"retrieve" : true,
-		"sAjaxSource" : "${ctx}/business/mouldregister?methodtype=getFactoryPriceHistory&mouldFactoryId=" + mouldFactoryId + "&activeSubCode=" + activeSubCode,				
+		"sAjaxSource" : "${ctx}/business/mouldregister?methodtype=getFactoryPriceHistory&mouldFactoryId=" + mouldFactoryId + "&mouldId=" + mouldId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 				
 			var param = {};

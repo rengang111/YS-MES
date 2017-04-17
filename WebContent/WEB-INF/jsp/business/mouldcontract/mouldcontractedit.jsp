@@ -178,10 +178,14 @@ function initEvent(){
 				minlength: 1,
 				maxlength: 120,
 			},
+			contractYear: {
+				required: true,
+				digits: true,
+			},
 			type: {
 				required: true,
 			},
-			supplierId: {
+			supplierIdView: {
 				required: true,
 			},
 			contractDate: {
@@ -196,12 +200,13 @@ function initEvent(){
 				required: true,
 			},
 			oursidePay: {
-				digits: true,
-				maxLength: 20,
+				maxlength: 20,
 			},
 			providerPay: {
-				digits: true,
-				maxLength: 20,
+				maxlength: 20,
+			},
+			returnCase: {
+				maxlength: 100,
 			},
 		},
 		errorPlacement: function(error, element) {
@@ -213,6 +218,17 @@ function initEvent(){
 		    	error.insertAfter(element);
 		}
 	});
+	
+    jQuery.validator.addMethod("isYear",function(value, element){
+    	var rtnValue = true;
+
+    	if (value != "") {
+			if (parseInt(value) < 1949 && parseInt(value) > 2100) {
+				rtnValue = false;
+			}
+    	}
+        return rtnValue;   
+    }, "年份");
 	
 	controlButtons($('#keyBackup').val());
 	
@@ -238,6 +254,7 @@ function initEvent(){
 	}
 	
 	autoComplete();
+	autoCompleteType();
 }
 
 $(window).load(function(){
@@ -249,7 +266,31 @@ $(document).ready(function() {
 	initEvent();
 	
 	ajaxMouldContractDetailList();
-	ajaxMouldContractRegulationList();
+	//ajaxMouldContractRegulationList();
+	
+	if ($('#contractYear').val() == '') {
+		var nowDate = new Date();
+		$('#contractYear').val(nowDate.getFullYear());
+	}
+	
+	$('#belong').val("${DisplayData.mouldContractBaseInfoData.belong}");
+	
+	if ($('#keyBackup').val() != '') {
+		$('#type').attr('disabled', true);
+		$('#supplierIdView').attr('disabled', true);
+		
+		<c:forEach items="${DisplayData.regulations}" var="item">
+			addRegulationTr('${item.name}', '${item.money}');
+		</c:forEach>
+
+		<c:forEach items="${DisplayData.mouldDetails}" var="item">
+			addMouldContractDetailTr('${item.id}', '${item.mouldId}', '${item.name}', '${item.size}', '${item.weight}', '${item.materialQuality}', '${item.unloadingNum}', '${item.unloadingNum}', '${item.price}', '${item.number}');
+		</c:forEach>
+
+	} else {
+		addRegulationTr('', '');
+		$('#type').focus();
+	}
 	
 })
 
@@ -269,9 +310,9 @@ function getSumPrice() {
 }
 
 function getMouldContractId() {
-	var actionUrl = "${ctx}/business/mouldcontract?methodtype=getContractId";
+	var actionUrl = "${ctx}/business/mouldcontract?methodtype=getMouldContractId";
 	
-	if ($('#supplierIdView').val() != "") {
+	if ($('#type').val() != "" && $('#type').val().substr(0, 1) == 'M') {
 	
 		$.ajax({
 			type : "POST",
@@ -284,6 +325,7 @@ function getMouldContractId() {
 					alert(d.message);	
 				} else {
 					$('#contractId').html('<font color="red">' + d.info + '</font>');
+					$('#supplierIdView').attr("disabled", false);
 				}
 				
 				//不管成功还是失败都刷新父窗口，关闭子窗口
@@ -298,13 +340,117 @@ function getMouldContractId() {
 		});
 	} else {
 		$('#contractId').html("");
+		$('#mouldType').html("");
+		$('#typeDesc').html("");
+		$('#supplierIdView').attr("disabled", true);
 	}
 }
 
 
+function changeWorkingMode(operType, index) {
+	var isChangeConfirmed = false;
+	if ($('#keyBackup').val() != '') {
+		if ($("#MouldContractDetailList tr").length > 0) {
+			if (index == 0) {
+				if ($('#operType').val() != $('#oldoperType').val()) {
+					msg = "修改分类编码有可能使模具详情发生变化。如果确认此变更，需先保存后才可以操作模具详情.确认本次变更吗？";
+					if (operType == 0) {
+						if (confirm(msg)) {
+							isChangeConfirmed = true;
+						} else {
+							$('#operType').val($('#oldoperType').val());
+						}
+					} else {
+						isChangeConfirmed = true;
+					}
+				}	
+			} else {
+				if ($('#supplierId').val() != $('#oldSupplierId').val()) {
+					msg = "修改供应商有可能使模具详情发生变化。如果确认此变更，需先保存后才可以操作模具详情。确认本次变更吗？";
+					if (operType == 0) {
+						if (confirm(msg)) {
+							isChangeConfirmed = true;
+						} else {
+							$('#supplierIdView').val($('#oldSupplierId').val());
+						}
+					} else {
+						isChangeConfirmed = true;
+					}
+				}
+			}
+		}
+	}
+	
+	return isChangeConfirmed;
+}
+
+function addRegulationTr(name, money){
+	 
+	var i = $("#MouldContractRegulationList tr").length - 1;	
+	var trHtml = "";
+	
+	trHtml += "<tr>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<input name='regulations[" + i + "].name' id='regulations[" + i + "].name' type='text' class='mini' value='" + name + "'/>";
+	trHtml += "</td>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<input name='regulations[" + i + "].money' id='regulations[" + i + "].money' type='text' class='mini' value='" + money + "'/>";
+	trHtml += "</td>";
+	trHtml += "</tr>";			
+	$('#MouldContractRegulationList tr:last').after(trHtml);
+
+	$('#regulations\\[' + i + '\\]\\.name').rules('add', { maxlength: 20 });
+	$('#regulations\\[' + i + '\\]\\.money').rules('add', { maxlength: 20, digits: true });
+	
+	$('#regulationCount').val(i + 1);
+}
+
+function addMouldContractDetailTr(id, mouldId, name, size, weight, materialQuality, unloadingNum, price, number, totalPrice) {
+	 
+	var i = $("#MouldContractDetailList tr").length - 1;	
+	var trHtml = "";
+	
+	trHtml += "<tr>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<input name='mouldContractDetail[" + i + "].mouldIdView' id='mouldContractDetail[" + i + "].mouldIdView' type='text' class='short' value='" + id + "'/>";
+	trHtml += "<input name='mouldContractDetail[" + i + "].mouldId' id='mouldContractDetail[" + i + "].mouldId' type='hidden' value='" + mouldId + "'/>";
+	trHtml += "</td>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<label>" + name + "</label>"
+	trHtml += "</td>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<label>" + size + "</label>"
+	trHtml += "</td>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<label>" + weight + "</label>"
+	trHtml += "</td>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<label>" + materialQuality + "</label>"
+	trHtml += "</td>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<label>" + unloadingNum + "</label>"
+	trHtml += "</td>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<label>" + price + "</label>"
+	trHtml += "</td>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<label>" + number + "</label>"
+	trHtml += "</td>";
+	trHtml += "<td class='td-center'>";
+	trHtml += "<label>" + totalPrice + "</label>"
+	trHtml += "</td>";
+	
+	trHtml += "</tr>";			
+	$('#MouldContractDetailList tr:last').after(trHtml);
+
+	$('#mouldContractDetail\\[' + i + '\\]\\.name').rules('add', { maxlength: 20 });
+	$('#mouldContractDetail\\[' + i + '\\]\\.money').rules('add', { maxlength: 20, digits: true });
+	
+	$('#mouldContractDetailCount').val(i + 1);
+}
 
 function doSave() {
-
+	
 	if (validatorBaseInfo.form()) {
 		
 		var message = "${DisplayData.endInfoMap.message}";
@@ -333,7 +479,11 @@ function doSave() {
 						alert(d.message);	
 					} else {
 						//reloadMouldContractDetailList();
-						reloadTabWindow();
+						$('oldContractYear').val($('contractYear').val());
+						$('oldType').val($('type').val());
+						$('oldSupplierIdView').val($('oldSupplierIdView').val());
+						parent.reload();
+						//reloadTabWindow();
 					}
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
@@ -365,7 +515,6 @@ function doDelete() {
 					alert(d.message);	
 				} else {
 					controlButtons("");
-					clearAll();
 					reloadMouldContractDetailList();
 					reloadTabWindow();
 				}
@@ -395,26 +544,17 @@ function controlButtons(data) {
 	}
 }
 
-function clearAll() {
-	sumPrice = 0;
-	$('#contractId').val("");
-	$('#productModelId').val("");
-	$('#productModelIdView').val("");
-	$("#productModelName").val("");
-	$('#payCase').val("");
-	$('#finishTime').val("");
-}
-
 function autoComplete() { 
 
 	$("#supplierIdView").autocomplete({
 		source : function(request, response) {
 			$.ajax({
 				type : "POST",
-				url : "${ctx}/business/mouldcontract?methodtype=productModelIdSearch",
+				url : "${ctx}/business/mouldcontract?methodtype=supplierSearch",
 				dataType : "json",
 				data : {
-					key : $('#mouldFactoryId').val()
+					key : request.term,
+					type : $('#type').val()
 				},
 				success : function(data) {
 					response($.map(
@@ -423,10 +563,10 @@ function autoComplete() {
 							//alert(item.viewList)
 							return {
 								label : item.viewList,
-								value : item.name,
+								value : item.id,
 								id : item.id,
 								name: item.name,
-								des : item.des
+								key: item.keyId
 							}
 						}));
 				},
@@ -437,14 +577,19 @@ function autoComplete() {
 		},
 
 		select : function(event, ui) {
-			var oldProductModelId = $("#productModelId").val();
-			$("#productModelId").val(ui.item.id);
-			$("#productModelIdView").val(ui.item.name);
-			$("#productModelName").val(ui.item.des);
-			if (oldProductModelId != $("#productModelId").val()) {
-				reloadMouldContractDetailList();
+			$("#supplierId").val(ui.item.key);
+			$("#supplierIdView").val(ui.item.id);
+			$("#supplierName").html(ui.item.name);
+		},
+		
+		change : function(event, ui) {
+			if (ui.item == null) {
+				//$("#supplierId").val("");
+				$("#supplierIdView").val("");
+				$("#supplierName").html("");
 			}
 		},
+		
 		minLength : 1,
 		autoFocus : false,
 		width: 200,
@@ -452,6 +597,64 @@ function autoComplete() {
 		autoFill:true,
 		selectFirst:true,
 	});	
+}
+
+function autoCompleteType() { 
+	$("#type").autocomplete({
+		source : function(request, response) {
+			$.ajax({
+				type : "POST",
+				url : "${ctx}/business/mouldcontract?methodtype=typeSearch",
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					response($.map(
+						data.data,
+						function(item) {
+							return {
+								label : item.viewList,
+								value : item.id,
+								id : item.id,
+								name: item.categoryViewName,
+								parentId: item.parentcategoryId,
+								parentName: item.parentName,
+							}
+						}));
+					datas = data.data;
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+				}
+			});
+		},
+
+		select : function(event, ui) {
+
+			$("#type").val(ui.item.id);
+			$("#mouldType").html(ui.item.parentId);
+			$("#typeDesc").html(ui.item.parentName);
+			getMouldContractId();
+			//$("#factoryProductCode").focus();
+		},
+
+        change: function(event, ui) {
+            // provide must match checking if what is in the input
+            // is in the list of results. HACK!
+            if(ui.item == null) {
+                $(this).val('');
+				$("#mouldType").html('');
+				$("#typeDesc").html('');
+                $('#mouldId').html('');
+            }
+        },
+		
+		minLength : 1,
+		autoFocus : false,
+		width: 200,
+		mustMatch:true,
+	});
 }
 
 function reloadMouldContractDetailList() {
@@ -479,6 +682,12 @@ function doReturn() {
 			<form:form modelAttribute="dataModels" id="mouldContractBaseInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id="supplierId" name="supplierId" value="${DisplayData.mouldContractBaseInfoData.supplierid}"/>
+				<input type=hidden id="oldType" name="oldType" value="${DisplayData.mouldContractBaseInfoData.type}"/>
+				<input type=hidden id="oldContractYear" name="oldContractYear" value="${DisplayData.mouldContractBaseInfoData.contractyear}"/>
+				<input type=hidden id="oldSupplierId" name="oldSupplierId" value="${DisplayData.supplierIdView}"/>
+				<input type=hidden id="regulationCount" name="regulationCount" value="0"/>
+				<input type=hidden id="mouldContractDetailCount" name="regulationCount" value="0"/>
+				
 				<legend>模具合同-基本信息</legend>
 				<div style="height:10px"></div>
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
@@ -486,54 +695,66 @@ function doReturn() {
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
 						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
 				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
+				<div  style="height:20px"></div>
 				<table class="form" width="1100px" cellspacing="0" style="table-layout:fixed">
 					<tr>
 						<td width="60px">编号：</td>
 						<td width="130px">
-							<label id="mouldId" name="mouldId" style="margin:0px 10px">${DisplayData.mouldBaseInfoData.mouldid}</label>
+							<label id="contractId" name="contractId" style="margin:0px 10px">${DisplayData.mouldContractBaseInfoData.contractid}</label>
 						</td>
-						<td width="60px">机器型号：</td>
+						<td width="60px">年份：</td>
 						<td width="130px">
-							<input type=text name="productModelId" id="productModelId" class="required mini" />
+							<input type="text" name="contractYear" id="contractYear" class="mini" value="${DisplayData.mouldContractBaseInfoData.contractyear}"></input>
+						</td>
+						<td width="80px">分类编码：	</td>
+						<td width="150px">
+							<form:input path="type"	class="short" onBlur="changeWorkingMode();" value="${DisplayData.mouldContractBaseInfoData.type}"/>
 						</td>
 						<td width="60px">模具类型：</td>
+						<td width="140px">
+							<label name="mouldType" id="mouldType" >${DisplayData.mouldType}</label>
+						</td>
+						<td width="60px">类型解释：</td>
+						<td width="140px">
+							<label name="typeDesc" id="typeDesc" class="short" class="read-only short">${DisplayData.typeDesc}</label>
+						</td>
+					</tr>
+					<tr>
+						<td width="60px">机器型号：</td>
 						<td width="130px">
-							<form:select path="type" onChange="getContractId();"  onblur="getContractId();">
-								<form:options items="${DisplayData.typeList}" itemValue="key"
-									itemLabel="value" />
-							</form:select>
+							<input type=text name="productModelId" id="productModelId" class="required mini" value="${DisplayData.mouldContractBaseInfoData.productmodelid}"/>
 						</td>
 						<td width="50px">
 							供应商ID：
 						</td>
-						<td width="100px">
-							<input type="text" id="supplierIdView" name="supplierIdView" class="short readonly" readonly="readonly" value="${DisplayData.supplierIdView}"></input>
+						<td width="100px" title="输入**查询同一模具类型的供应商">
+							<input type="text" id="supplierIdView" name="supplierIdView" class="short" value="${DisplayData.supplierIdView}" disabled></input>
 						</td>
 						<td width="50px">
 							供应商名称：
 						</td>
 						<td width="100px">
-							<input type="text" id="supplierName" name="supplierName" class="short" value="${DisplayData.supplierName}"></input>
+							<label id="supplierName" name="supplierName" >${DisplayData.supplierName}</label>
 						</td>
-					</tr>
-					<tr>
 						<td>
 							合同日期：
 						</td>
 						<td>
-							<input type="text" id="contractDate" name="contractDate" class="short" value="${DisplayData.mouldContractBaseInfoData.contractDate}"></input>
+							<input type="text" id="contractDate" name="contractDate" class="short" value="${DisplayData.contractDate}"></input>
 						</td>
 						<td>
 							合同交期：
 						</td>
 						<td>
-							<input type="text" id="deliverDate" name="deliverDate" class="short" value="${DisplayData.mouldContractBaseInfoData.deliverDate}"></input>
+							<input type="text" id="deliverDate" name="deliverDate" class="short" value="${DisplayData.deliverDate}"></input>
 						</td>
+					</tr>
+					<tr>
 						<td>
 							模具归属：
 						</td>
 						<td>
-							<form:select path="belong"">
+							<form:select path="belong">
 								<form:options items="${DisplayData.belongList}" itemValue="key"
 									itemLabel="value" />
 							</form:select>
@@ -550,11 +771,13 @@ function doReturn() {
 						<td>
 							<input type="text" id="providerPay" name="providerPay" class="mini" value="${DisplayData.mouldContractBaseInfoData.providerpay}"></input>
 						</td>
+					</tr>
+					<tr>
 						<td>
-							供方返还条件：
+							返还条件：
 						</td>
-						<td>
-							<textarea id="returnCase" name="returnCase" cols=10 rows=3>${DisplayData.mouldContractBaseInfoData.returnCase}</textarea>
+						<td colspan=9>
+							<textarea id="returnCase" name="returnCase" cols=50 rows=2>${DisplayData.mouldContractBaseInfoData.returncase}</textarea>
 						</td>
 					</tr>
 				</table>
@@ -562,28 +785,16 @@ function doReturn() {
 				<div  style="height:20px"></div>
 				<legend>合同增减项</legend>
 				<div>
-				<button type="button" id="printmd" class="DTTT_button" onClick="doCreateContract();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>				
+				<button type="button" id="printmd" class="DTTT_button" onClick="addRegulationTr('', '');"
+						style="height:25px;margin:-20px 920px 0px 0px;float:right;" >新建</button>				
 				</div>
 				<div style="height:10px"></div>
-				<div class="list">
-					<table id="MouldContractRegulationList" class="display" cellspacing="0">
-						<thead>
-							<tr class="selected">
-								<th style="width: 40px;" class="dt-middle">No</th>
-								<th style="width: 60px;" class="dt-middle">名称</th>
-								<th style="width: 60px;" class="dt-middle">急呢</th>
-								<th style="width: 80px;" class="dt-middle">操作</th>
-							</tr>
-						</thead>
-						<tfoot>
-							<tr>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-							</tr>
-						</tfoot>
+				<div class="list" style="width:160px">
+					<table id="MouldContractRegulationList" class="display" cellspacing="0" width="160px" style="table-layout:fixed">
+						<tr class="selected">
+							<th style="width: 80px;" class="dt-middle">名称</th>
+							<th style="width: 80px;" class="dt-middle">金额</th>
+						</tr>
 					</table>
 				</div>
 				
@@ -591,7 +802,9 @@ function doReturn() {
 				<legend>模具详情</legend>
 				<div>
 				<button type="button" id="printmd" class="DTTT_button" onClick="doPrintContract();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >打印模具合同</button>				
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >打印模具合同</button>
+				<button type="button" id="printmd" class="DTTT_button" onClick="doCreateContract();"
+						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>				
 				</div>
 				<div style="height:10px"></div>
 				<div class="list">
@@ -611,20 +824,6 @@ function doReturn() {
 								<th style="width: 80px;" class="dt-middle">操作</th>
 							</tr>
 						</thead>
-						<tfoot>
-							<tr>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
-							</tr>
-						</tfoot>
 					</table>
 				</div>
 			</form:form>

@@ -34,14 +34,14 @@ public class B_MouldFactoryData
 	/**
 	*
 	*/
-	private String subcode;
-	public String getSubcode()
+	private String mouldid;
+	public String getMouldid()
 	{
-		return this.subcode;
+		return this.mouldid;
 	}
-	public void setSubcode(String subcode)
+	public void setMouldid(String mouldid)
 	{
-		this.subcode=subcode;
+		this.mouldid=mouldid;
 	}
 
 	/**
@@ -228,13 +228,13 @@ public class B_MouldFactoryData
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("subcode = "+(subcode == null ? "null" : subcode)+"\n");		sb.append("mouldfactoryid = "+(mouldfactoryid == null ? "null" : mouldfactoryid)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("priceunit = "+(priceunit == null ? "null" : priceunit)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("pricetime = "+(pricetime == null ? "null" : pricetime)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("mouldid = "+(mouldid == null ? "null" : mouldid)+"\n");		sb.append("mouldfactoryid = "+(mouldfactoryid == null ? "null" : mouldfactoryid)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("priceunit = "+(priceunit == null ? "null" : priceunit)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("pricetime = "+(pricetime == null ? "null" : pricetime)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		id= (id == null ?null : id.trim());		subcode= (subcode == null ?null : subcode.trim());		mouldfactoryid= (mouldfactoryid == null ?null : mouldfactoryid.trim());		price= (price == null ?null : price.trim());		priceunit= (priceunit == null ?null : priceunit.trim());		currency= (currency == null ?null : currency.trim());		pricetime= (pricetime == null ?null : pricetime.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		id= (id == null ?null : id.trim());		mouldid= (mouldid == null ?null : mouldid.trim());		mouldfactoryid= (mouldfactoryid == null ?null : mouldfactoryid.trim());		price= (price == null ?null : price.trim());		priceunit= (priceunit == null ?null : priceunit.trim());		currency= (currency == null ?null : currency.trim());		pricetime= (pricetime == null ?null : pricetime.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

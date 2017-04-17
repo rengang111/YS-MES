@@ -7,18 +7,18 @@
 
 <%@ include file="../../common/common.jsp"%>
 
-<title>模具合同检索</title>
+<title>模具检索</title>
 <script type="text/javascript">
 
 	var layerHeight = '600';
 
 	function ajax() {
-		var table = $('#TMouldContract').dataTable();
+		var table = $('#TMould').dataTable();
 		if(table) {
 			table.fnDestroy();
 		}
 	
-		var t = $('#TMouldContract').DataTable({
+		var t = $('#TMould').DataTable({
 				"paging": true,
 				"lengthMenu":[5,10,15],//设置一页展示10条记录
 				"processing" : false,
@@ -27,7 +27,7 @@
 				"searching" : false,
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/mouldcontract?methodtype=search",
+				"sAjaxSource" : "${ctx}/business/mouldregister?methodtype=search&type=1",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -63,23 +63,32 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "contractId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "productModelId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "parentName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "type", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "contractDate", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "deliverDate", "defaultContent" : '',"className" : 'td-center'},							
+							{"data": "mouldId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "name", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "subname", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "parentId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "unitName", "defaultContent" : '',"className" : 'td-center'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
-					    		{"targets":0,"render":function(data, type, row){
-									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
-			                    }},
-					    		{"targets":8,"render":function(data, type, row){
-					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">查看</a>"
-			                    }}
-			           
+				    		{"targets":0,"render":function(data, type, row){
+								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "|" + row["subCodeId"] + "' />"
+		                    }},
+				    		{"targets":1,"render":function(data, type, row){
+				    			if (row["subcode"] == '') {
+				    				return row["mouldId"]
+				    			} else {
+									return row["mouldId"] + "." + row["subcode"]
+				    			}
+		                    }},
+							{"targets": 3, "createdCell": function (td, cellData, rowData, row, col) {
+						        $(td).attr('title', cellData);
+							}},
+				    		{"targets":8,"render":function(data, type, row){
+				    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "', '" + row["subcodeid"] + "')\">查看</a>"
+		                    }}
 			         ] 
 			}
 		);
@@ -90,30 +99,20 @@
 
 		doSearch();
 	
-		$('#TMouldContract').DataTable().on('click', 'tr', function() {
+		$('#TMould').DataTable().on('click', 'tr', function() {
 			
 			if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
 	        }
 	        else {
-	        	$('#TMouldContract').DataTable().$('tr.selected').removeClass('selected');
+	        	$('#TMould').DataTable().$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	        }
 		});
-		
-		/*
-		$('#TMouldContract').DataTable().on('dblclick', 'tr', function() {
 
-			var d = $('#TMouldContract').DataTable().row(this).data();
-
-			location.href = '${pageContext.request.contextPath}/factory/show/' + d["factory_id"] + '.html';		
-			
-		});
-		*/
 	}
 
 	$(document).ready(function() {
-		//ajax();
 		initEvent();
 		
 	})	
@@ -121,19 +120,17 @@
 	function doSearch() {
 	
 		ajax();
-		//reload();
 	}
 	
 	function doCreate() {
 		
-		var url = "${ctx}/business/mouldcontract?methodtype=addinit";
+		var url = "${ctx}/business/mouldregister?methodtype=addinit";
 		openLayer(url, '', $(document).height(), false);
 	}
 	
-	function doUpdate(key) {
-		var str = '';
-		var isFirstRow = true;
-		var url = "${ctx}/business/mouldcontract?methodtype=updateinit&key=" + key;
+	function doUpdate(key, subCodeId) {
+
+		var url = "${ctx}/business/mouldregisterequipment?methodtype=updateinit&key=" + key + "&activeSubCode=" + subCodeId + "&type=" + 0;
 
 		openLayer(url, '', $(document).height(), false);
 	}
@@ -156,7 +153,7 @@
 					contentType : 'application/json',
 					dataType : 'json',
 					data : str,
-					url : "${ctx}/business/mouldcontract?methodtype=delete",
+					url : "${ctx}/business/mouldregisterequipment?methodtype=delete",
 					success : function(data) {
 						reload();
 						//alert(data.message);
@@ -177,7 +174,7 @@
 
 	function reload() {
 		
-		$('#TMouldContract').DataTable().ajax.reload(null,false);
+		$('#TMould').DataTable().ajax.reload(null,false);
 		
 		return true;
 	}
@@ -222,24 +219,23 @@
 		
 			<div class="list">
 
-				<div id="TMouldContract_wrapper" class="dataTables_wrapper">
+				<div id="TMould_wrapper" class="dataTables_wrapper">
 					<div id="DTTT_container" align="right" style="height:40px">
-						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doCreate();"><span>新建</span></a>
 						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doDelete();"><span>删除</span></a>
 					</div>
 
 					<div id="clear"></div>
-					<table aria-describedby="TMouldContract_info" style="width: 100%;" id="TMouldContract" class="display dataTable" cellspacing="0">
+					<table aria-describedby="TMould_info" style="width: 100%;" id="TMould" class="display dataTable" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具合同编号:" class="dt-middle sorting_disabled">模具合同编号</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="机器型号:" class="dt-middle sorting_disabled">机器型号</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="类型分类" class="dt-middle sorting_disabled">类型分类</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具类型" class="dt-middle sorting_disabled">模具类型</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="模具供应商" class="dt-middle sorting_disabled">模具供应商</th>
-								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="合同日期" class="dt-middle sorting_disabled">合同日期</th>
-								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="合同交期" class="dt-middle sorting_disabled">合同交期</th>
+								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具编号:" class="dt-middle sorting_disabled">模具编号</th>
+								<th colspan="1" rowspan="1" style="width: 82px;" aria-label="模具名称:" class="dt-middle sorting_disabled">模具名称</th>
+								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="编码解释:" class="dt-middle sorting_disabled">编码解释</th>
+								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="类型" class="dt-middle sorting_disabled">类型</th>
+								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="报价" class="dt-middle sorting_disabled">报价</th>
+								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="供应商编码" class="dt-middle sorting_disabled">供应商编码</th>
+								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="单位" class="dt-middle sorting_disabled">单位</th>
 								<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
 							</tr>
 						</thead>

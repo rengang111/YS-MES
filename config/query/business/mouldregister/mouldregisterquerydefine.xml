@@ -9,7 +9,6 @@
     </where>
     <select>
       <f name="DISTINCT A.id" alias="" ctype="" />
-      <f name="CONCAT_WS('.', A.mouldId, A.subcode)" alias="fullmouldId" ctype="" />
       <f name="A.mouldId" alias="" ctype="" />
       <f name="A.type" alias="" ctype="" />
       <f name="A.parentId" alias="" ctype="" />
@@ -21,22 +20,60 @@
       <f name="A.size" alias="" ctype="" />
       <f name="A.weight" alias="" ctype="" />
       <f name="A.unloadingNum" alias="" ctype="" />
-      <f name="A.subcodeid" alias="" ctype="" />
-      <f name="A.subcode" alias="" ctype="" />
       <f name="A.typename" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.unitName" alias="" ctype="" />
+      <f name="A.comment" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_MouldRegister as A WHERE A.DeleteFlag = '0' </from>
+    <from>v_MouldRegister as A WHERE A.DeleteFlag = '0'</from>
     <orderby>A.mouldId, A.subcode desc</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="mouldregisterquerydefine_equipmentsearch" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+    </where>
+    <select>
+      <f name="DISTINCT A.id" alias="" ctype="" />
+      <f name="IFNULL(A.subcode, '')" alias="subcode" ctype="" />
+      <f name="A.mouldId" alias="" ctype="" />
+      <f name="A.type" alias="" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.parentName" alias="" ctype="" />
+      <f name="A.productModelName" alias="" ctype="" />
+      <f name="A.productModelIdView" alias="" ctype="" />
+      <f name="A.name" alias="" ctype="" />
+      <f name="A.materialQuality" alias="" ctype="" />
+      <f name="A.size" alias="" ctype="" />
+      <f name="A.weight" alias="" ctype="" />
+      <f name="A.unloadingNum" alias="" ctype="" />
+      <f name="IFNULL(A.subcodeid, '')" alias="subcodeid" ctype="" />
+      <f name="IFNULL(A.subname, '')" alias="subname" ctype="" />
+      <f name="A.typename" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.unitName" alias="" ctype="" />
+      <f name="A.comment" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_MouldRegister as A WHERE A.DeleteFlag = '0'</from>
+    <orderby>A.mouldId, A.subcode</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+ 
   <query>
     <pool></pool>     
     <name value="mouldregisterquerydefine_searchproductmodel" />
@@ -177,11 +214,11 @@
     <pool></pool>     
     <name value="mouldregisterquerydefine_getfactorylist" />
     <where>
-      <w name="A.subCode" des=""  reqName="activeSubCode" dtype="ch" oper="="  lg="" bt="" />
+      <w name="A.mouldId" des=""  reqName="mouldId" dtype="ch" oper="="  lg="" bt="" />
     </where>
     <select>
       <f name="A.id" alias="" ctype="" />
-      <f name="A.subCode" alias="" ctype="" />
+      <f name="A.mouldId" alias="" ctype="" />
       <f name="A.mouldFactoryId" alias="" ctype="" />
       <f name="B.supplierId" alias="" ctype="" />
       <f name="B.shortName" alias="" ctype="" />
@@ -230,7 +267,7 @@
     <pool></pool>     
     <name value="mouldregisterquerydefine_getsupplierpricehistory" />
     <where>
-      <w name="d.subCode" des=""  reqName="subCode" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="d.mouldId" des=""  reqName="mouldId" dtype="ch" oper="="  lg="AND" bt="" />
       <w name="d.mouldFactoryId" des=""  reqName="mouldFactoryId" dtype="ch" oper="="  lg="" bt="" />
      </where>
     <select>
@@ -274,7 +311,7 @@
     <pool></pool>     
     <name value="mouldregisterquerydefine_getnewlastestprice" />
     <where>
-      <w name="subcode" des=""  reqName="subCode" dtype="ch" oper="="  lg="" bt="" />
+      <w name="mouldId" des=""  reqName="mouldId" dtype="ch" oper="="  lg="" bt="" />
      </where>
     <select>
       <f name="A.mouldFactoryId" alias="" ctype="" />

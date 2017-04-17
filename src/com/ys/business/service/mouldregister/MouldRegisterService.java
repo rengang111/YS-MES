@@ -61,9 +61,10 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		String length = "";
 		String key1 = "";
 		String key2 = "";
-		
+		String type = "";
 		data = URLDecoder.decode(data, "UTF-8");
 
+		type = request.getParameter("type");
 		key1 = getJsonData(data, "keyword1");
 		key2 = getJsonData(data, "keyword2");
 		
@@ -79,7 +80,11 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		}		
 		
 		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
-		dataModel.setQueryName("mouldregisterquerydefine_search");
+		if (type.equals("0")) {
+			dataModel.setQueryName("mouldregisterquerydefine_search");
+		} else {
+			dataModel.setQueryName("mouldregisterquerydefine_equipmentsearch");
+		}
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
@@ -115,21 +120,25 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 	}
 	
-	public MouldRegisterModel doUpdateInit(HttpServletRequest request, String key, String activeSubCode) throws Exception {
+	public MouldRegisterModel doUpdateInit(HttpServletRequest request, String key, String activeSubCode, boolean isSubCode) throws Exception {
 		MouldRegisterModel model = new MouldRegisterModel();
 		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
 		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
 		B_MouldSubDao subDao = new B_MouldSubDao();
 		B_MouldSubData subData = new B_MouldSubData();
-
+		HashMap<String, String> userDefinedSearchCase = null;
+		BaseModel dataModel = new BaseModel();
+		BaseQuery baseQuery = null;
+		
 		if (key != null && !key.equals("")) {
 			dbData.setId(key);
 			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
 			model.setMouldBaseInfoData(dbData);
-			
-			subData.setId(activeSubCode);
-			subData = (B_MouldSubData)subDao.FindByPrimaryKey(subData);
-			model.setSubCode(subData.getSubcode());
+			if (activeSubCode != null && !activeSubCode.equals("")) {
+				subData.setId(activeSubCode);
+				subData = (B_MouldSubData)subDao.FindByPrimaryKey(subData);
+				model.setSubCode(subData.getSubcode());
+			}
 			/*
 			S_DICDao dicDao = new S_DICDao();
 			S_DICData dicData = new S_DICData();
@@ -138,20 +147,18 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			dicData = (S_DICData)dicDao.FindByPrimaryKey(dicData);
 			model.setProductModelIdView(dicData.getDicname());
 			model.setProductModelName(dicData.getDicdes());
-			*/
 			model.setProductModelIdView(dbData.getProductmodelid());
 			model.setProductModelName(dbData.getProductmodelname());
-
-			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-			BaseModel dataModel = new BaseModel();
-			BaseQuery baseQuery = null;
-			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
-			dataModel.setQueryName("mouldregisterquerydefine_getsubids");
-			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("mouldId", key);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			model.setMouldSubDatas(baseQuery.getYsQueryData(0,0));
-			
+			*/
+			if (isSubCode) {
+				userDefinedSearchCase = new HashMap<String, String>();
+				dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+				dataModel.setQueryName("mouldregisterquerydefine_getsubids");
+				baseQuery = new BaseQuery(request, dataModel);
+				userDefinedSearchCase.put("mouldId", key);
+				baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+				model.setMouldSubDatas(baseQuery.getYsQueryData(0,0));
+			}
 			userDefinedSearchCase = new HashMap<String, String>();
 			dataModel = new BaseModel();
 			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
@@ -170,7 +177,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
 			dataModel.setQueryName("mouldregisterquerydefine_getfactorylist");
 			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("activeSubCode", activeSubCode);
+			userDefinedSearchCase.put("mouldId", key);
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 			model.setMouldFactoryDatas(baseQuery.getYsQueryData(0,0));
 			
@@ -189,23 +196,50 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 	}
 	
-	public MouldRegisterModel doAddFactoryInit(HttpServletRequest request) throws Exception {
-		MouldRegisterModel model = new MouldRegisterModel();
+	public MouldRegisterModel doUpdateEquipmentInit(HttpServletRequest request, MouldRegisterModel model) throws Exception {
 		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
 		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
 		B_MouldSubDao subDao = new B_MouldSubDao();
 		B_MouldSubData subData = new B_MouldSubData();
-		S_DICDao dicDao = new S_DICDao();
-		S_DICData dicData = new S_DICData();
+		HashMap<String, String> userDefinedSearchCase = null;
+		BaseModel dataModel = new BaseModel();
+		BaseQuery baseQuery = null;
 		
+		String key = model.getKeyBackup();
 		String activeSubCode = request.getParameter("activeSubCode");
+		
+		if (key != null && !key.equals("")) {
+			userDefinedSearchCase = new HashMap<String, String>();
+			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+			dataModel.setQueryName("mouldregisterquerydefine_getsubids");
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("mouldId", key);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			model.setMouldSubDatas(baseQuery.getYsQueryData(0,0));			
+		}
 		
 		if (activeSubCode != null && !activeSubCode.equals("")) {
 			subData.setId(activeSubCode);
 			subData = (B_MouldSubData)subDao.FindByPrimaryKey(subData);
 			model.setSubCode(subData.getSubcode());
-			
-			dbData.setId(subData.getMouldid());
+			model.setActiveSubCode(activeSubCode);
+		}
+		
+		return model;
+		
+	}
+	
+	public MouldRegisterModel doAddFactoryInit(HttpServletRequest request) throws Exception {
+		MouldRegisterModel model = new MouldRegisterModel();
+		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		S_DICDao dicDao = new S_DICDao();
+		S_DICData dicData = new S_DICData();
+		
+		String key = request.getParameter("key");
+		
+		if (key != null && !key.equals("")) {
+			dbData.setId(key);
 			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
 			model.setMouldBaseInfoData(dbData);
 			/*
@@ -247,14 +281,14 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 		model.setCurrencyList(doOptionChange(DicUtil.CURRENCY, ""));
 		model.setKeyBackup("");
-		model.setActiveSubCode(activeSubCode);
+		model.setMouldId(key);
 		model.setEndInfoMap("098", "0001", "");
 		
 		return model;
 		
 	}
 	
-	public MouldRegisterModel doUpdateFactoryInit(HttpServletRequest request, String key, String activeSubCode) throws Exception {
+	public MouldRegisterModel doUpdateFactoryInit(HttpServletRequest request, String key, String mouldId) throws Exception {
 		MouldRegisterModel model = new MouldRegisterModel();
 		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
 		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
@@ -268,11 +302,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		S_DICData dicData = new S_DICData();
 
 		if (key != null && !key.equals("")) {
-			subData.setId(activeSubCode);
-			subData = (B_MouldSubData)subDao.FindByPrimaryKey(subData);
-			model.setSubCode(subData.getSubcode());
-			
-			dbData.setId(subData.getMouldid());
+			dbData.setId(mouldId);
 			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
 			model.setMouldBaseInfoData(dbData);
 			
@@ -325,7 +355,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		model.setKeyBackup(key);
 		//model.setSupplierid(supplierid);
 		
-		model.setActiveSubCode(activeSubCode);
+		model.setMouldId(mouldId);
 		
 		model.setEndInfoMap("098", "0001", "");
 		
@@ -337,7 +367,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 	public MouldRegisterModel doViewHistoryPriceInit(HttpServletRequest request) throws Exception {
 		MouldRegisterModel model = new MouldRegisterModel();
 		
-		model.setActiveSubCode(request.getParameter("activeSubCode"));
+		model.setMouldId(request.getParameter("mouldId"));
 		model.setMouldFactoryId(request.getParameter("mouldFactoryId"));
 		model.setEndInfoMap("098", "0001", "");
 		
@@ -509,7 +539,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		MouldRegisterModel model = new MouldRegisterModel();
 
 		String key = getJsonData(data, "keyBackup");
-		String activeSubCode = getJsonData(data, "activeSubCode");
+		String mouldId = getJsonData(data, "mouldId");
 		
 		B_MouldFactoryDao dao = new B_MouldFactoryDao();
 		B_MouldFactoryData dbData = new B_MouldFactoryData();
@@ -532,16 +562,16 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 				dbData = (B_MouldFactoryData)dao.FindByPrimaryKey(dbData);
 				
 				historyData.setId(BaseDAO.getGuId());
-				historyData.setSubcode(dbData.getSubcode());
+				historyData.setMouldid(dbData.getMouldid());
 				historyData.setMouldfactoryid(dbData.getMouldfactoryid());
-				historyData.setPrice(dbData.getPrice());
+				historyData.setPrice(price);
 				historyData.setCurrency(dbData.getCurrency());
 				historyData.setPricetime(dbData.getPricetime());
 				historyData.setPriceunit(unit);
 				historyData = updateMouldHistoryPriceModifyInfo(historyData, userInfo);
 				historyDao.Create(historyData);
 				
-				lastestPriceData.setId(activeSubCode);
+				lastestPriceData.setId(mouldId);
 				lastestPriceData = (B_MouldLastestPriceData)lastestPriceDao.FindByPrimaryKey(lastestPriceData);
 				lastestPriceData.setMouldfactoryid(supplierid);
 				lastestPriceData.setPrice(price);
@@ -559,7 +589,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 				
 			} else {
 				dbData.setId(BaseDAO.getGuId());
-				dbData.setSubcode(activeSubCode);
+				dbData.setMouldid(mouldId);
 				dbData.setMouldfactoryid(supplierid);
 				dbData.setPrice(price);
 				dbData.setPricetime(priceTime);
@@ -568,7 +598,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 				dbData = updateMouldFactoryModifyInfo(dbData, userInfo);
 				dao.Create(dbData);
 				try {
-					lastestPriceData.setId(activeSubCode);
+					lastestPriceData.setId(mouldId);
 					lastestPriceData = (B_MouldLastestPriceData)lastestPriceDao.FindByPrimaryKey(lastestPriceData);
 					lastestPriceData.setMouldfactoryid(supplierid);
 					lastestPriceData.setPrice(price);
@@ -577,7 +607,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 					lastestPriceDao.Store(lastestPriceData);
 				}
 				catch(Exception e) {
-					//lastestPriceData.setId(activeSubCode);
+					lastestPriceData.setId(mouldId);
 					lastestPriceData.setMouldfactoryid(supplierid);
 					lastestPriceData.setPrice(price);
 					lastestPriceData.setPricetime(priceTime);
@@ -586,7 +616,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 				}
 				
 				historyData.setId(BaseDAO.getGuId());
-				historyData.setSubcode(dbData.getSubcode());
+				historyData.setMouldid(dbData.getMouldid());
 				historyData.setMouldfactoryid(dbData.getMouldfactoryid());
 				historyData.setPrice(dbData.getPrice());
 				historyData.setCurrency(dbData.getCurrency());
@@ -597,12 +627,27 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 	
 			}
 			ts.commit();
-			model.setEndInfoMap(BaseService.NORMAL, "", model.getKeyBackup() + "|" + model.getActiveSubCode());
+			model.setEndInfoMap(BaseService.NORMAL, "", model.getKeyBackup() + "|" + model.getMouldId());
 		}
 		catch(Exception e) {
 			ts.rollback();
 			throw e;
 		}
+		
+		return model;
+	}
+	
+	public MouldRegisterModel doUpdateEquipment(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+		MouldRegisterModel model = new MouldRegisterModel();
+
+		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		BaseModel dataModel = new BaseModel();
+		BaseQuery baseQuery = null;
+
+		BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
+			
+		model = bean.executeMouldRegisterEquipmentUpdate(request, data, userInfo);
 		
 		return model;
 	}
@@ -640,6 +685,26 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		return model;
 	}
 
+	public MouldRegisterModel doDeleteEquipment(HttpServletRequest request, String data, UserInfo userInfo){
+		
+		MouldRegisterModel model = new MouldRegisterModel();
+		boolean isDBOperationSuccessed = false;
+		try {
+			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
+	        
+	        bean.executeMouldRegisterEquipmentDelete(request, data, userInfo);
+	        
+	        model.setEndInfoMap(NORMAL, "", "");
+	        
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		return model;
+	}
+	
 	public ArrayList<ListOption> doOptionChange(String type, String parentCode) {
 		DicUtil util = new DicUtil();
 		ArrayList<ListOption> optionList = null;
@@ -1016,12 +1081,12 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		String sEcho = "";
 		String start = "";
 		String length = "";
-		String activeSubCode = "";
+		String mouldId = "";
 		String mouldFactoryId = "";
 		
 		data = URLDecoder.decode(data, "UTF-8");
 	
-		activeSubCode = request.getParameter("activeSubCode");
+		mouldId = request.getParameter("mouldId");
 		mouldFactoryId = request.getParameter("mouldFactoryId");
 		
 		sEcho = getJsonData(data, "sEcho");	
@@ -1038,7 +1103,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
 		dataModel.setQueryName("mouldregisterquerydefine_getsupplierpricehistory");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("subCode", activeSubCode);
+		userDefinedSearchCase.put("mouldId", mouldId);
 		userDefinedSearchCase.put("mouldFactoryId", mouldFactoryId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
@@ -1073,7 +1138,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
-		key = getJsonData(data, "activeSubCode");
+		key = getJsonData(data, "keyBackup");
 		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		
@@ -1089,7 +1154,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
 		dataModel.setQueryName("mouldregisterquerydefine_getfactorylist");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("activeSubCode", key);
+		userDefinedSearchCase.put("mouldId", key);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
 		
@@ -1116,7 +1181,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		B_MouldFactoryData dbData = new B_MouldFactoryData();
 		
 		BaseTransaction ts = new BaseTransaction();
-		String activeSubCode = request.getParameter("activeSubCode");
+		String mouldId = request.getParameter("mouldId");
 		String key = request.getParameter("key");
 		
 		try {
@@ -1128,7 +1193,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
 			sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
 			sql.append(" WHERE mouldFactoryId = '" + request.getParameter("key") + "' ");
-			sql.append(" AND subCode = '" + activeSubCode + "' ");
+			sql.append(" AND mouldId = '" + mouldId + "' ");
 			sql.append(" AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
 			BaseDAO.execUpdate(sql.toString());	
 			
@@ -1140,7 +1205,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 
 			B_MouldLastestPriceDao lastestPriceDao = new B_MouldLastestPriceDao();
 			B_MouldLastestPriceData lastestPriceData = new B_MouldLastestPriceData();
-			lastestPriceData.setId(activeSubCode);
+			lastestPriceData.setId(mouldId);
 			lastestPriceData = (B_MouldLastestPriceData)lastestPriceDao.FindByPrimaryKey(lastestPriceData);
 
 			BaseModel dataModel = new BaseModel();
@@ -1149,7 +1214,7 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
 			dataModel.setQueryName("mouldregisterquerydefine_getnewlastestprice");
 			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("subCode", activeSubCode);
+			userDefinedSearchCase.put("mouldId", mouldId);
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 			ArrayList<HashMap<String, String>> newLastestPrice = baseQuery.getYsQueryData(0,1);
 			if (newLastestPrice.size() > 0) {

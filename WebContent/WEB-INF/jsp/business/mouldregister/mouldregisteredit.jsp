@@ -7,12 +7,14 @@
 
 <%@ include file="../../common/common2.jsp"%>
 <!-- <script type="text/javascript" src="${ctx}/js/jquery-ui.js"></script> -->
-<title>模具单元管理</title>
+<title>模具单元基本信息管理</title>
 <script type="text/javascript">
 	var validatorBaseInfo;
-	var layerHeight = "250";
+	var layerHeight = "350";
 	var sumPrice = 0.0;
 	var paid = 0.0;    
+	
+	var datas = new Array();
 	
 	function PrefixInteger(num, length) {
 		 return (Array(length).join('0') + num).slice(-length);
@@ -23,7 +25,7 @@
 		if(table) {
 			table.fnDestroy();
 		}
-	
+
 		var t = $('#TFactory').DataTable({
 				"paging": true,
 				"lengthMenu":[5,10,15],//设置一页展示10条记录
@@ -36,11 +38,10 @@
 				"sAjaxSource" : "${ctx}/business/mouldregister?methodtype=getSubCodeFactoryList",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
-					var formData = $("#condition").serializeArray();
+					var formData = $("#mouldBaseInfo").serializeArray();
 					formData.forEach(function(e) {
 						aoData.push({"name":e.name, "value":e.value});
 					});
-
 					$.ajax({
 						"url" : sSource,
 						"datatype": "json", 
@@ -53,7 +54,6 @@
 								alert(data.message);
 							}
 							*/
-							
 							fnCallback(data);
 
 						},
@@ -71,46 +71,72 @@
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "shortName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "fullName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "supplierName", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "currency", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "priceUnit", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "priceDate", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "priceTime", "defaultContent" : '',"className" : 'td-center'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+								//return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+								return row["rownum"];
 		                    }},
 							{"targets": 3, "createdCell": function (td, cellData, rowData, row, col) {
 						        $(td).attr('title', cellData);
 							}},
-				    		{"targets":7,"render":function(data, type, row){
-				    			return "<a href=\"#\" onClick=\"doUpdateFactory('" + row["id"] + "')\">编辑</a>" + "<a href=\"#\" onClick=\"viewHistoryPrice('" + row["id"] + "')\">历史报价</a>" + "<a href=\"#\" onClick=\"doDeleteFactory('" + row["id"] + "')\">删除</a>"
+				    		{"targets":8,"render":function(data, type, row){
+				    			return "<a href=\"#\" onClick=\"doUpdateFactory('" + row["id"] + "','" + row["subCode"] + "')\">编辑</a>&nbsp;" + "<a href=\"#\" onClick=\"viewHistoryPrice('" + row["mouldFactoryId"] + "')\">历史报价</a>&nbsp;" + "<a href=\"#\" onClick=\"doDeleteFactory('" + row["id"] + "')\">删除</a>"
 		                    }}
 			         ] 
 			}
 		);
 	}
 	
-	function createSubCodeFactory(id) {
+	function doCreateFactory() {
 		var key = $('#keyBackup').val();
-		var url = "${ctx}/business/mouldregister?methodtype=updateSubCodeFactoryInit&key=" + key + "&isCreate=1";
+		var url = "${ctx}/business/mouldregister?methodtype=addFactoryInit&mouldId=" + key;
 		openLayer(url, $(document).width() - 25, layerHeight, false);	
 	}
-	function doUpdateFactory(id) {
-		var key = $('#keyBackup').val();
-		var url = "${ctx}/business/mouldregister?methodtype=updateSubCodeFactoryInit&key=" + key;
+	function doUpdateFactory(id, subCode) {
+		var url = "${ctx}/business/mouldregister?methodtype=updateFactoryInit&key=" + id + "&mouldId=" + $('#keyBackup').val();
 		openLayer(url, $(document).width() - 25, layerHeight, false);	
 	}
 	function doDeleteFactory(id) {
-		var key = $('#keyBackup').val();
-		var url = "${ctx}/business/mouldregister?methodtype=deleteFactory&key=" + key;
-		openLayer(url, $(document).width() - 25, layerHeight, false);	
+		var actionUrl = "${ctx}/business/mouldregister?methodtype=deleteFactory&key=" + id + "&mouldId=" + $('#keyBackup').val();
+		if (confirm("${DisplayData.endInfoMap.message}")) {
+			$.ajax({
+				type : "POST",
+				contentType : 'application/json',
+				dataType : 'json',
+				url : actionUrl,
+				data : JSON.stringify($('#mouldBaseInfo').serializeArray()),// 要提交的表单
+				success : function(d) {
+					if (d.rtnCd != "000") {
+						alert(d.message);	
+					} else {
+						parent.reload();
+						reloadFatory();
+					}
+					
+					//不管成功还是失败都刷新父窗口，关闭子窗口
+					//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
+					//parent.$('#events').DataTable().destroy();
+					//parent.layer.close(index); //执行关闭
+					
+				},
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					//alert(XMLHttpRequest.status);					
+					//alert(XMLHttpRequest.readyState);					
+					//alert(textStatus);					
+					//alert(errorThrown);
+				}
+			});
+		}
 	}
 	function viewHistoryPrice(id) {
-		var key = $('#keyBackup').val();
-		var url = "${ctx}/business/mouldregister?methodtype=viewHistoryPrice&key=" + key;
+		var url = "${ctx}/business/mouldregister?methodtype=viewHistoryPrice&mouldFactoryId=" + id + "&mouldId=" + $('#keyBackup').val();
 		openLayer(url, $(document).width() - 25, layerHeight, false);	
 	}
 	
@@ -136,8 +162,9 @@
 							alert("当前已经是最后一条数据了");
 						}
 					} else {
-						var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + d.info;
+						var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + d.info + "&activeSubCode=" + id;
 						$(window.location).attr('href', url);
+
 					}
 				}
 				
@@ -150,7 +177,7 @@
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				//alert(XMLHttpRequest.status);					
 				//alert(XMLHttpRequest.readyState);					
-				//alert(textStatus);
+				//alert(textStatus);					
 				//alert(errorThrown);
 			}
 		});
@@ -160,7 +187,7 @@
 		var actionUrl = "${ctx}/business/mouldregister?methodtype=getMouldId";
 		
 		if ($('#type').val() != "" && $('#type').val().substr(0, 1) == 'M') {
-			
+		
 			$.ajax({
 				type : "POST",
 				contentType : 'application/json',
@@ -171,7 +198,9 @@
 					if (d.rtnCd != "000") {
 						alert(d.message);	
 					} else {
-						$('#mouldId').html('<font color="red">' + d.info + '</font>');
+						if (d.info != "nochange") {
+							$('#mouldId').html('<font color="red">' + d.info + '</font>');
+						}
 					}
 					
 					//不管成功还是失败都刷新父窗口，关闭子窗口
@@ -189,9 +218,8 @@
 			});
 		} else {
 			$('#mouldId').html("");
-			$('#mouldType').html("");
+			$('#mouldType').val("");
 			$('#typeDesc').html("");
-
 		}
 	}
 	
@@ -201,53 +229,6 @@
 	    });
 	}
 	
-	function addSubCodeTr(activeSubCode, subCode, subName, id){
-		 
-		var i = $("#subidTab tr").length - 1;	
-		var subid = PrefixInteger(i, 2);
-		var trHtml = "";
-		
-		if (activeSubCode == subCode) {
-			if (activeSubCode != '') {
-				trHtml += "<tr class='selected'>";
-				trHtml += "<td>";
-				trHtml += "当前记录";
-				trHtml += "</td>";
-			} else {
-				trHtml += "<tr>";
-			}
-
-			trHtml += "<td class='td-center ' width='200px'>";
-			trHtml += "<input name='mouldSubs[" + i + "].subcode' id='mouldSubs[" + i + "].subcode' type='text' value='" + subid + "' class='mini' value='" + subCode + "'/>";
-			trHtml += "</td>";
-			if (activeSubCode != '') {
-				trHtml += "<td class='td-center'>";
-			} else {
-				trHtml += "<td class='td-center' colspan=2>";
-			}
-			trHtml += "<input name='mouldSubs[" + i + "].name' id='mouldSubs[" + i + "].name' type='text' class='middle' value='" + subName + "'/>";
-			trHtml += "</td>";
-			trHtml += "</tr>";			
-			$('#subidTab tr:last').after(trHtml);
-
-			$('#mouldSubs\\[' + i + '\\]\\.subcode').rules('add', { noDuplicateSubcode: true});
-			$('#mouldSubs\\[' + i + '\\]\\.subcode').rules('add', { maxlength: 3 });
-			$('#mouldSubs\\[' + i + '\\]\\.name').rules('add', { maxlength: 50 });
-		} else {
-			trHtml += "<tr>";
-			trHtml += "<td class='td-center' width='150px'>";
-			trHtml += "<a href=\"#\" onClick=\"changeSubCode('" + id +")\" class=\"mini\">" + subCode + "</>";
-			trHtml += "</td>";
-			trHtml += "<td class='td-center' colspan=2>";
-			trHtml += "<label class='middle'>" + subName + "</label>";
-			trHtml += "</td>";
-			trHtml += "</tr>";
-			$('#subidTab tr:last').after(trHtml);
-
-		}
-		$('#subCodeCount').val($("#subidTab tr").length - 1);
-	}
-
 	function initEvent(){
 		
 		$('#factoryTable').width(750);
@@ -260,10 +241,6 @@
 					required: true,
 					mouldType: true,
 					maxlength: 100,
-				},
-				productModelIdView: {
-					required: true,				
-					maxlength: 120,
 				},
 				mouldFactoryId: {
 					required: true,								
@@ -291,7 +268,10 @@
 				},
 				unit: {
 					required: true,
-				},				
+				},
+				comment: {
+					maxlength: 120,
+				}
 			},
 			errorPlacement: function(error, element) {
 			    if (element.is(":radio"))
@@ -337,54 +317,42 @@
 		$("#productModelIdView").val('${DisplayData.productModelIdView}');
 		$("#productModelName").val('${DisplayData.productModelName}');
 
-		if ($('#keyBackup').val() == '') {
-			addSubCodeTr("", "", "", "");
-			addSubCodeTr("", "", "", "");
-			addSubCodeTr("", "", "", "");
-			addSubCodeTr("", "", "", "");
+		if ('${DisplayData.mouldBaseInfoData.type}' != '') {
+			$('#type').val('${DisplayData.mouldBaseInfoData.type}');
 		} else {
-			<c:forEach items="${DisplayData.mouldSubDatas}" var="item">
-				addSubCodeTr('${DisplayData.subCode}', '${item.subCode}', '${item.name}', '${item.id}');
-				var index = $('#subCodeCount').val();
-				index--;
-				if ('${DisplayData.subCode}' != '${item.subCode}') {
-					$('#activeSubCodeIndex').val(index);
-				}
-			</c:forEach>
-			
-			$('#tabs').css('display','inline-block');
-			$('#rotateArea').css('display','inline-block');
-			$('#factoryArea').show();
-			ajax();
+			$("#type option:first").prop("selected", 'selected');
 		}
+
+		$('#unit').val('${DisplayData.mouldBaseInfoData.unit}');
+		if ($('#unit').val() == null) {
+		    $("#unit option").each(function(){
+		        if($(this).text() == "副"){  
+		            $(this).attr("selected","selected");  
+		        }  
+		    });
+		}
+
+		if ($('#keyBackup').val() == '') {
+
+		} else {
+			if ("${DisplayData.subCode}" != "") {
+				$('#mouldId').html("${DisplayData.mouldBaseInfoData.mouldid}.${DisplayData.subCode}");
+			} else {
+				$('#mouldId').html("${DisplayData.mouldBaseInfoData.mouldid}");
+			}
+			//$('#tabs').css('display','inline-block');
+			//$('#rotateArea').css('display','inline-block');
+			//$('#factoryArea').show();
+			//ajax();
+		}
+		
+		$('#type').focus();
 	}
 
 	$(document).ready(function() {
 		
 		initEvent();
 
-		//create mode
-		if ('${DisplayData.operType}' == '1') {
-			$('#factoryArea').hide();
-		}
-
-		//edit mode
-		if ('${DisplayData.operType}' == '2') {
-			//setViewOnly();
-		}
-		
-		//viewOnly mode
-		if ('${DisplayData.operType}' == '3') {
-			setViewOnly();
-		}
-		
-	    $("#unit option").each(function(){  
-	        if($(this).text() == "副"){  
-	            $(this).attr("selected","selected");  
-	        }  
-	    });
-	    
-	    $('#type').focus();
 	})
 	
 	function doSave(isContinue) {
@@ -402,7 +370,8 @@
 				} else {
 					//修正
 					actionUrl = "${ctx}/business/mouldregister?methodtype=update";
-				}
+				}		
+
 				//将提交按钮置为【不可用】状态
 				//$("#submit").attr("disabled", true); 
 				$.ajax({
@@ -416,26 +385,14 @@
 							alert(d.message);	
 						} else {
 							parent.reload();
-							if ($('#keyBackup').val() == "") {
-								var x = new Array();
-								x = d.info.split("|");
-								actionUrl = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + x[0] + "&activeSubCode=" + x[1];
-								location.href = actionUrl;
-							}
-							//不管成功还是失败都刷新父窗口，关闭子窗口
-							//var index = parent.layer.getFrameIndex(wind$("#mainfrm")[0].contentWindow.ow.name); //获取当前窗体索引
-							//parent.$('#events').DataTable().destroy();
-							//parent.layer.close(index); //执行关闭
-							/*
-							$('#tabs').css('display','inline-block');
-							$('#rotateArea').css('display','inline-block');
-							$('#factoryArea').show();
-
+							
 							var x = new Array();
 							x = d.info.split("|");
 							controlButtons(x[0]);
 							$('#mouldId').html(x[1]);
-							*/
+							
+							var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + $('#keyBackup').val();
+							location.href = url;	
 						}
 						
 					},
@@ -446,7 +403,6 @@
 						//alert(errorThrown);
 					}
 				});
-
 			}
 		}
 	}
@@ -530,6 +486,60 @@
 		$('#mouldFactoryId').val("");
 	
 	}
+	function autoComplete() { 
+		$("#productModelIdView").autocomplete({
+			source : function(request, response) {
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/business/mouldregister?methodtype=productModelIdSearch",
+					dataType : "json",
+					data : {
+						key : request.term
+					},
+					success : function(data) {
+						response($.map(
+							data.data,
+							function(item) {
+								//alert(item.viewList)
+								return {
+									label : item.viewList,
+									value : item.name,
+									id : item.id,
+									name: item.name,
+									des : item.des
+								}
+							}));
+						datas = data.data;
+					},
+					error : function(XMLHttpRequest,
+							textStatus, errorThrown) {
+					}
+				});
+			},
+
+			select : function(event, ui) {
+				$("#productModelId").val(ui.item.id);
+				$("#productModelIdView").val(ui.item.name);
+				$("#productModelName").val(ui.item.des);
+				//$("#factoryProductCode").focus();
+			},
+
+            change: function(event, ui) {
+                // provide must match checking if what is in the input
+                // is in the list of results. HACK!
+                if (ui.item == null) {
+                	$("#productModelId").val('');
+    				$("#productModelIdView").val('');
+    				$("#productModelName").val('');
+                }
+            },
+			
+			minLength : 1,
+			autoFocus : false,
+			width: 200,
+			mustMatch:true,
+		});
+	}
 	function autoCompleteType() { 
 		$("#type").autocomplete({
 			source : function(request, response) {
@@ -553,6 +563,7 @@
 									parentName: item.parentName,
 								}
 							}));
+						datas = data.data;
 					},
 					error : function(XMLHttpRequest,
 							textStatus, errorThrown) {
@@ -563,8 +574,7 @@
 			select : function(event, ui) {
 
 				$("#type").val(ui.item.id);
-				$("#mouldType").html(ui.item.parentId);
-				$("#typeDesc").html(ui.item.parentName);
+				$("#mouldType").val(ui.item.parentId + " " + ui.item.parentName);
 				getMouldId();
 				//$("#factoryProductCode").focus();
 			},
@@ -572,11 +582,10 @@
             change: function(event, ui) {
                 // provide must match checking if what is in the input
                 // is in the list of results. HACK!
-                if (ui.item == null) {
-                	$("#mouldId").html('');
-    				$("#type").val('');
-    				$("#mouldType").html('');
-    				$("#typeDesc").html('');
+                if(ui.item == null) {
+                    $(this).val('');
+    				$("#mouldType").val('');
+                    $('#mouldId').html('');
                 }
             },
 			
@@ -586,7 +595,6 @@
 			mustMatch:true,
 		});
 	}
-	
 	
 	function autoCompleteFactory(index) { 
 		$("#detailLines1\\[" + index + "\\]\\.code").autocomplete({
@@ -654,6 +662,15 @@
 		parent.layer.close(index); //执行关闭
 		
 	}
+	
+	function reloadFatory() {
+		$('#TFactory').DataTable().ajax.reload(null,false);
+	}
+	
+	function changeSubCode(id) {
+		var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + $('#keyBackup').val() + "&activeSubCode=" + id;
+		$(window.location).attr('href', url);
+	}
 </script>
 </head>
 
@@ -665,60 +682,40 @@
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id='productModelId' name='productModelId'/>
 				<input type=hidden id="subCodeCount" name="subCodeCount" value=""/>
-				<input type=hidden id="activeSubCode" name="activeSubCode" value="${DisplayData.activeSubCode}"/>
 				<input type=hidden id="activeSubCodeIndex" name="activeSubCodeIndex" value=""/>
 				<input type=hidden id="rotateDirect" name="rotateDirect" value=""/>
 				<legend>模具单元-基本信息</legend>
 				<div style="height:10px"></div>
-				<!--  
+				<!-- 
 				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;display:none;">删除</button>
-				<button type="button" id="edit" class="DTTT_button" onClick="doSave(1);"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;display:none;" >保存(连续登记)</button>
-				-->
-				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
-				<button type="button" id="edit" class="DTTT_button" onClick="doSave(0);"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
+						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
+				 -->
 
-				<div style="height:10px"></div>
-				<table class="form" width="1100px" cellspacing="0" style="table-layout:fixed">
+				<table class="form" width="1100px" cellspacing="0">
 					<tr>
-						<td width="60px">编号：</td>
-						<td width="130px">
-							<label id="mouldId" name="mouldId" style="margin:0px 10px">${DisplayData.mouldBaseInfoData.mouldid}</label>
+						<td width="80px">编号：</td>
+						<td width="150px">
+							<label id="mouldId" name="mouldId" style="margin:0px 10px"></label>
 						</td>
 						<td width="60px">分类编码：	</td>
 						<td width="150px">
-							<form:input path="type"	class="short"/>
+							<form:input path="type"	onBlur="getMouldId();" class="short"/>
 						</td>
-						<td width="60px">模具类型：</td>
-						<td width="130px">
-							<label name="mouldType" id="mouldType" >${DisplayData.mouldType}</label>
-						</td>
-						<td width="60px">类型解释：</td>
+						<td width="60px">编码解释：</td>
 						<td width="150px">
-							<label name="typeDesc" id="typeDesc" class="short" class="read-only short">${DisplayData.typeDesc}</label>
+							<input type=text name="mouldType" id="mouldType" class="read-only" readonly="readonly" value="${DisplayData.mouldType} ${DisplayData.typeDesc}"/>
 						</td>
+					</tr>
 						<td width="60px">
 							模具名称：
 						</td>
 						<td>
-							<input type="text" id="name" name="name" class="short" value="${DisplayData.mouldBaseInfoData.name}"></input>
-						</td>
-					</tr>
-					<tr>
-						<td width="60px">产品型号：</td>
-						<td width="130px">
-							<form:input path="productModelIdView" class="required mini"/>
-						</td>
-						<td width="60px">产品名称：</td>
-						<td width="130px">
-							<form:input path="productModelName"	class="short" />
+							<input type="text" id="name" name="name" class="middle" value="${DisplayData.mouldBaseInfoData.name}"></input>
 						</td>
 						<td width="50px">
-							出模数：
-						</td>
-						<td width="100px">
+							出模数-一出：
+						</td>					
+						<td>
 							<input type="text" id="unloadingNum" name="unloadingNum" class="mini" value="${DisplayData.mouldBaseInfoData.unloadingnum}"></input>
 						</td>
 						<td>
@@ -727,21 +724,22 @@
 						<td>
 							<input type="text" id="materialQuality" name="materialQuality" class="short" value="${DisplayData.mouldBaseInfoData.materialquality}"></input>
 						</td>
+					</tr>
+					<tr>
+					
 						<td>
 							尺寸：
 						</td>
 						<td>
-							<input type="text" id="size" name="size" class="short" value="${DisplayData.mouldBaseInfoData.size}"></input>
+							<input type="text" id="size" name="size" class="middle" value="${DisplayData.mouldBaseInfoData.size}"></input>
 						</td>
-					</tr>
-					<tr>
 						<td>
 							重量：
 						</td>
-						<td>
+						<td width="100px">
 							<input type="text" id="weight" name="weight" class="mini" value="${DisplayData.mouldBaseInfoData.weight}"></input>
 						</td>
-						<td>
+						<td width="40px">
 							单位：
 						</td>
 						<td>
@@ -750,75 +748,19 @@
 									itemLabel="value" />
 							</form:select>
 						</td>
-
 					</tr>
-
 					<tr>
-						<td align=center>
-							子编码
+						<td rowspan=2>
+							中文描述：
 						</td>
-						<td colspan=3>
-							<table class="form">
-								<tr>
-									<td>
-										<table width='450px'>
-											<tr>
-												<td class="td-center" width='150px'>子编码</td>
-												<td class="td-center" width='150px'>子编码解释</td>
-												<td class="td-center">
-													<button type="button"  style = "height:20px;" 
-													id="createSubid" class="DTTT_button" onClick="addSubCodeTr('', '', '', '');">新建</button>
-												</td>
-											</tr>
-										</table>
-									</td>
-								</tr>		
-								<tr>
-									<td>			
-										<div class="" id="subidDiv" style="overflow: auto;height: 150px;">
-											<table id="subidTab" class="dataTable" width='350px'>
-												<tr style='display:none'>
-													<td width='150px'></td>
-													<td width='150px'></td>
-													<td></td>
-												</tr>
-											</table>
-										</div>
-									</td>
-								</tr>
-							</table>
-						</td>
-						<td colspan=3>	
-							<table>
-								<tr>
-									<td>
-										<div id="tabs" class="easyui-tabs" data-options="tabPosition:'top',fit:true,border:false,plain:true" style="margin:10px 0px 0px 15px;padding:0px;display:none;">
-											<div id="tabs-1" title="图片" style="padding:5px;height:200px;">
-												<jsp:include page="../../common/album/album.jsp"></jsp:include>
-											</div>
-										</div>
-									</td>
-								</tr>
-							</table>						
-						</td>
-						<td colspan=3 align=center>
-							<div id="rotateArea" style="display:none;margin:0px 0px 0px 50px">
-								<div style="height:40px">
-									<button type="button" id="delete" class="DTTT_button" onClick="doRotate(1);"
-										style="height:25px;margin:-20px 30px 0px 0px;float:right;">&gt;&gt;</button>
-									<button type="button" id="delete" class="DTTT_button" onClick="doRotate(0);"
-										style="height:25px;margin:-20px 30px 0px 0px;float:left;">&lt;&lt;</button>
-								</div>
-								<div style="height:40px">
-									<label 
-										style="height:25px;margin:-20px 10px 0px 0px;float:right;">下一个模具</label>
-									<label
-										style="height:25px;margin:-20px 30px 0px -10px;float:left;">前一个模具</label>
-								</div>
-							</div>						
+						<td rowspan=2 colspan=2>
+							<textarea id="comment" name="comment" cols=50 rows=10>${DisplayData.mouldBaseInfoData.comment}</textarea>
 						</td>
 					</tr>
 				</table>			
+				<button type="button" id="edit" class="DTTT_button" onClick="doSave(0);"
+						style="height:25px;margin:10px 5px 0px 0px;float:right;" >保存</button>
+				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:10px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 				
 				<div  style="height:20px"></div>
 				
@@ -826,13 +768,13 @@
 				<div id="factoryArea" style="display:none;">
 					<legend>供应商单价信息</legend>
 					<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doCreateFactory();">新建</button>
-					<table aria-describedby="TFactory" style="width: 100%;" id="TMould" class="display dataTable" cellspacing="0"  style="table-layout:fixed">
+					<table aria-describedby="TFactory" style="width: 100%;" id="TFactory" class="display dataTable" cellspacing="0"  style="table-layout:fixed">
 						<thead>
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
 								<th colspan="1" rowspan="1" style="width: 80px;" aria-label="供应商编码:" class="dt-middle sorting_disabled">供应商编码</th>
-								<th colspan="1" rowspan="1" style="width: 100px;" aria-label="供应商简称:" class="dt-middle sorting_disabled">供应商简称</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="供应商全称" class="dt-middle sorting_disabled">供应商全称</th>
+								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="供应商简称:" class="dt-middle sorting_disabled">供应商简称</th>
+								<th colspan="1" rowspan="1" style="width: 100px;" aria-label="供应商全称" class="dt-middle sorting_disabled">供应商全称</th>
 								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="采购单价" class="dt-middle sorting_disabled">采购单价</th>
 								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="币种" class="dt-middle sorting_disabled">币种</th>
 								<th colspan="1" rowspan="1" style="width: 40px;" aria-label="报价单位" class="dt-middle sorting_disabled">报价单位</th>

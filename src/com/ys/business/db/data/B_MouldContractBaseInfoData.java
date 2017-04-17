@@ -47,6 +47,19 @@ public class B_MouldContractBaseInfoData
 	/**
 	*
 	*/
+	private String contractyear;
+	public String getContractyear()
+	{
+		return this.contractyear;
+	}
+	public void setContractyear(String contractyear)
+	{
+		this.contractyear=contractyear;
+	}
+
+	/**
+	*
+	*/
 	private String productmodelid;
 	public String getProductmodelid()
 	{
@@ -280,13 +293,13 @@ public class B_MouldContractBaseInfoData
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("contractid = "+(contractid == null ? "null" : contractid)+"\n");		sb.append("productmodelid = "+(productmodelid == null ? "null" : productmodelid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("contractdate = "+(contractdate == null ? "null" : contractdate)+"\n");		sb.append("deliverdate = "+(deliverdate == null ? "null" : deliverdate)+"\n");		sb.append("belong = "+(belong == null ? "null" : belong)+"\n");		sb.append("oursidepay = "+(oursidepay == null ? "null" : oursidepay)+"\n");		sb.append("providerpay = "+(providerpay == null ? "null" : providerpay)+"\n");		sb.append("returncase = "+(returncase == null ? "null" : returncase)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("id = "+(id == null ? "null" : id)+"\n");		sb.append("contractid = "+(contractid == null ? "null" : contractid)+"\n");		sb.append("contractyear = "+(contractyear == null ? "null" : contractyear)+"\n");		sb.append("productmodelid = "+(productmodelid == null ? "null" : productmodelid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("contractdate = "+(contractdate == null ? "null" : contractdate)+"\n");		sb.append("deliverdate = "+(deliverdate == null ? "null" : deliverdate)+"\n");		sb.append("belong = "+(belong == null ? "null" : belong)+"\n");		sb.append("oursidepay = "+(oursidepay == null ? "null" : oursidepay)+"\n");		sb.append("providerpay = "+(providerpay == null ? "null" : providerpay)+"\n");		sb.append("returncase = "+(returncase == null ? "null" : returncase)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		id= (id == null ?null : id.trim());		contractid= (contractid == null ?null : contractid.trim());		productmodelid= (productmodelid == null ?null : productmodelid.trim());		type= (type == null ?null : type.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		contractdate= (contractdate == null ?null : contractdate.trim());		deliverdate= (deliverdate == null ?null : deliverdate.trim());		belong= (belong == null ?null : belong.trim());		oursidepay= (oursidepay == null ?null : oursidepay.trim());		providerpay= (providerpay == null ?null : providerpay.trim());		returncase= (returncase == null ?null : returncase.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		id= (id == null ?null : id.trim());		contractid= (contractid == null ?null : contractid.trim());		contractyear= (contractyear == null ?null : contractyear.trim());		productmodelid= (productmodelid == null ?null : productmodelid.trim());		type= (type == null ?null : type.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		contractdate= (contractdate == null ?null : contractdate.trim());		deliverdate= (deliverdate == null ?null : deliverdate.trim());		belong= (belong == null ?null : belong.trim());		oursidepay= (oursidepay == null ?null : oursidepay.trim());		providerpay= (providerpay == null ?null : providerpay.trim());		returncase= (returncase == null ?null : returncase.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

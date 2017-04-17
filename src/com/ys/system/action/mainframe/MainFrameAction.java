@@ -138,7 +138,7 @@ public class MainFrameAction extends BaseAction {
 		json = mainFrameService.doLaunchMaterial(request, userId, userType, idJson);
 		
 		return json;
-	}	
+	}
 	
 	@ResponseBody
 	@RequestMapping(value="/quit")

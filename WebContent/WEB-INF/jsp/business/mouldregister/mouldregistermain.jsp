@@ -27,7 +27,7 @@
 				"searching" : false,
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/mouldregister?methodtype=search",
+				"sAjaxSource" : "${ctx}/business/mouldregister?methodtype=search&type=0",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -63,9 +63,9 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "fullmouldId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "mouldId", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "name", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "productModelName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "comment", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "parentId", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
@@ -76,6 +76,10 @@
 				    		{"targets":0,"render":function(data, type, row){
 								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "|" + row["subCodeId"] + "' />"
 		                    }},
+							{"targets": 3, "createdCell": function (td, cellData, rowData, row, col) {
+						        $(td).attr('title', cellData);
+							}},
+
 				    		{"targets":8,"render":function(data, type, row){
 				    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "', '" + row["subCodeId"] + "')\">查看</a>"
 		                    }}
@@ -120,7 +124,7 @@
 	
 	function doUpdate(key, subcodeid) {
 
-		var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + key + "&activeSubCode=" + subcodeid;
+		var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + key + "&type=" + 0;
 
 		openLayer(url, '', $(document).height(), false);
 	}
@@ -216,13 +220,13 @@
 					</div>
 
 					<div id="clear"></div>
-					<table aria-describedby="TMould_info" style="width: 100%;" id="TMould" class="display dataTable" cellspacing="0">
+					<table aria-describedby="TMould_info" style="width: 100%;" id="TMould" class="display dataTable" cellspacing="0" style="table-layout:fixed;">
 						<thead>
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具编号:" class="dt-middle sorting_disabled">模具编号</th>
 								<th colspan="1" rowspan="1" style="width: 82px;" aria-label="模具名称:" class="dt-middle sorting_disabled">模具名称</th>
-								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="产品名称" class="dt-middle sorting_disabled">产品名称</th>
+								<th colspan="1" rowspan="1" style="width: 150px;" aria-label="模具解释:" class="dt-middle sorting_disabled">模具解释</th>
 								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="类型" class="dt-middle sorting_disabled">类型</th>
 								<th colspan="1" rowspan="1" style="width: 35px;" aria-label="报价" class="dt-middle sorting_disabled">报价</th>
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="供应商编码" class="dt-middle sorting_disabled">供应商编码</th>

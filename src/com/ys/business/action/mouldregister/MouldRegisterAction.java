@@ -1,4 +1,3 @@
-
 package com.ys.business.action.mouldregister;
 
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ public class MouldRegisterAction extends BaseAction {
 	@Autowired
 	MouldRegisterService mouldRegisterService;
 	
+
 	@RequestMapping(value="mouldregister")
 	public String execute(@RequestBody String data, @ModelAttribute("dataModels")MouldRegisterModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
@@ -60,15 +60,11 @@ public class MouldRegisterAction extends BaseAction {
 				rtnUrl = doAddInit(model, session, request, response);
 				break;				
 			case "updateinit":
-				rtnUrl = doUpdateInit(model, session, request, response);
+				rtnUrl = doUpdateInit(model, session, request, response, false);
 				break;
 			case "add":
 			case "update":
 				viewModel = doUpdate(data, session, request);
-				if (viewModel.getOperType().equals("2")) {
-					request.setAttribute("key", viewModel.getKeyBackup());
-					request.setAttribute("activeSubCode", viewModel.getActiveSubCode());
-				}
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
 
@@ -100,11 +96,11 @@ public class MouldRegisterAction extends BaseAction {
 				dataMap = doGetSubCodeFactoryList(data, session, request, response);
 				printOutJsonObj(response, dataMap);
 				return null;
-			case "addSubCodeFactoryInit":
-				rtnUrl = doAddSubCodeFactoryInit(model, session, request, response);
+			case "addFactoryInit":
+				rtnUrl = doAddFactoryInit(model, session, request, response);
 				break;
-			case "updateSubCodeFactoryInit":
-				rtnUrl = doUpdateSubCodeFactoryInit(model, session, request, response);
+			case "updateFactoryInit":
+				rtnUrl = doUpdateFactoryInit(model, session, request, response);
 				break;
 			case "supplierSearch":
 				dataMap = doSupplierSearch(data, request);
@@ -133,10 +129,61 @@ public class MouldRegisterAction extends BaseAction {
 				dataMap = doTypeSearch(data, request);
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "mouldregisteredit":
+				rtnUrl = doUpdateInit(model, session, request, response, false);
+				rtnUrl = "/business/mouldregister/mouldregisteredit";
+				break;
+
 		}
 		
 		return rtnUrl;
 	}	
+	
+	@RequestMapping(value="mouldregisterequipment")
+	public String executeEquipment(@RequestBody String data, @ModelAttribute("dataModels")MouldRegisterModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		
+		String type = request.getParameter("methodtype");
+		String rtnUrl = "";
+		HashMap<String, Object> dataMap = null;
+		MouldRegisterModel viewModel = null;
+		
+		if (type == null) {
+			type = "";
+		} else {
+			int q = type.indexOf("?");
+			if (q >= 0) {
+				type = type.substring(0, q);
+			}
+		}
+		
+		switch(type) {
+			case "":
+			case "init":
+				rtnUrl = "/business/mouldregister/mouldregisterequipmentmain";
+				break;
+			case "search":
+				dataMap = doSearch(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "updateinit":
+				rtnUrl = doUpdateInit(model, session, request, response, true);
+				break;
+			case "mouldregisterequipmentedit":
+				rtnUrl = doUpdateInit(model, session, request, response, true);
+				rtnUrl = "/business/mouldregister/mouldregisterequipmentedit";
+				break;
+			case "updateequipment":
+				viewModel = doUpdateEquipment(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
+			case "delete":
+				viewModel = doDeleteEquipment(data, session, request, response);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
+		}
+		
+		return rtnUrl;
+	}
 	
 	public HashMap<String, Object> doSearch(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -173,14 +220,29 @@ public class MouldRegisterAction extends BaseAction {
 		return "/business/mouldregister/mouldregisteredit";
 	}
 	
-	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response, boolean isSubCode){
 
 		MouldRegisterModel dataModel = new MouldRegisterModel();
 		String key = request.getParameter("key");
+
 		String activeSubCode = request.getParameter("activeSubCode");
+		String rtnUrl = "";
 		try {
-			dataModel = mouldRegisterService.doUpdateInit(request, key, activeSubCode);
+			if (isSubCode) {
+				rtnUrl = "/business/mouldregister/mouldregisterequipmentview";
+			} else {
+				rtnUrl = "/business/mouldregister/mouldregisteredit2";
+			}
+			
+			dataModel = mouldRegisterService.doUpdateInit(request, key, activeSubCode, isSubCode);
 			dataModel = mouldRegisterService.getFileList(request, dataModel);
+			
+			if (isSubCode) {
+				if (dataModel.getMouldSubDatas().size() == 0) {					
+					rtnUrl = "/business/mouldregister/mouldregisterequipmentedit";
+				}
+			}
+			
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -188,10 +250,10 @@ public class MouldRegisterAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/business/mouldregister/mouldregisterupdate";
+		return rtnUrl;
 	}		
 	
-	public String doAddSubCodeFactoryInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doAddFactoryInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
 		MouldRegisterModel dataModel = new MouldRegisterModel();
 
@@ -207,13 +269,13 @@ public class MouldRegisterAction extends BaseAction {
 		return "/business/mouldregister/mouldregisterfactoryedit";
 	}
 	
-	public String doUpdateSubCodeFactoryInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doUpdateFactoryInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
 		MouldRegisterModel dataModel = new MouldRegisterModel();
 		String key = request.getParameter("key");
-		String activeSubCode = request.getParameter("activeSubCode");
+		String mouldId = request.getParameter("mouldId");
 		try {
-			dataModel = mouldRegisterService.doUpdateFactoryInit(request, key, activeSubCode);
+			dataModel = mouldRegisterService.doUpdateFactoryInit(request, key, mouldId);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -396,6 +458,19 @@ public class MouldRegisterAction extends BaseAction {
 		return model;
 	}
 	
+	public MouldRegisterModel doUpdateEquipment(String data, HttpSession session, HttpServletRequest request){
+		
+		MouldRegisterModel model = new MouldRegisterModel();
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		try {
+			model = mouldRegisterService.doUpdateEquipment(request, data, userInfo);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return model;
+	}	
 	public MouldRegisterModel doDelete(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		MouldRegisterModel model = new MouldRegisterModel();
 		
@@ -413,6 +488,16 @@ public class MouldRegisterAction extends BaseAction {
 		return model;
 	}
 
+	public MouldRegisterModel doDeleteEquipment(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		MouldRegisterModel model = new MouldRegisterModel();
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		model = mouldRegisterService.doDeleteEquipment(request, data, userInfo);
+
+		return model;
+	}
+
+	
 	public MouldRegisterModel doDeleteFactory(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		MouldRegisterModel model = new MouldRegisterModel();
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
