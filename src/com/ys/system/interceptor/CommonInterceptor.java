@@ -202,6 +202,12 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
             ////response.sendRedirect(request.getContextPath() + exceptionUrl);
             //return false;
         	//TODO:为了测试方便，将拦截器关闭--end
+        	
+        	//TODO:正式环境中下面的处理应该去除
+        	if (!isSessionValidate(session)) {
+        		request.getRequestDispatcher(exceptionUrl).forward(request, response);
+        		return false;
+        	}
         }
         
         return super.preHandle(request, response, handler);
