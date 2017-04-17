@@ -652,7 +652,7 @@ public class MaterialService extends CommonService {
 					reqData.setCustomerid(customerid);				
 				}
 				
-				String record = preMaterialCheckById(materialId).getRecordid();
+				B_MaterialData record = preMaterialCheckById(materialId);
 				if(record ==null || record.equals("")){//物料编号重复check
 					
 					dao.Create(reqData);
@@ -662,7 +662,7 @@ public class MaterialService extends CommonService {
 					if(record ==null || record.equals("")){
 						selectedRecord = guid;	
 					}else{	
-						selectedRecord = record;				
+						selectedRecord = record.getRecordid();				
 					}
 					frist = false;
 				}
@@ -703,61 +703,183 @@ public class MaterialService extends CommonService {
 			//物料编码 = parentId +"."+ subid 
 			//物料:G01.D018.YAT001001.000
 			//分类:G01.D018.YAT001
-			String parentId = reqData.getParentid();
+			//String parentId = reqData.getParentid();
 			//画面被选中的数据
 			String selectedRecord = reqData.getRecordid();
 			
-			/************************/
-			
-			String materialId = reqData.getMaterialid();
+			/************************/			
+			String selectMaterialId = reqData.getMaterialid();
 			String categoryId = reqData.getCategoryid();
-			
-			String subId = "";
-			String serialNumber = "";
-			subId = materialId.substring(materialId.length()-3);
-			parentId = materialId.substring(0,materialId.length()-4);
-			serialNumber = parentId.substring( categoryId.length());
-			
-				
+
+			String selectSubId = selectMaterialId.substring(selectMaterialId.length()-3);
+			String parentId = selectMaterialId.substring(0,selectMaterialId.length()-4);
+			String serialNumber = parentId.substring( categoryId.length());	
 			/************************/
+
+			//判断物料编码是否更改
+			B_MaterialData mater = preMaterialCheck(selectedRecord);
 			
+			
+			if(mater!=null && mater.getMaterialid() != null && 
+					!mater.getMaterialid().equals(selectMaterialId)){
+			
+				//物料编码更改的情况
+				//循环处理子编码
+				for(B_MaterialData data:reqDataList ){
+
+					String recordid = data.getRecordid();	
+					String subId = data.getSubid();
+					String material = parentId + "." + subId;
+
+					
+					if(recordid ==null || recordid.equals("")){
+						//插入新的数据
+						commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
+						copyProperties(reqData,commData);
+										
+						String guid = BaseDAO.getGuId();
+						reqData.setRecordid(guid);
+						reqData.setMaterialid(material);
+						reqData.setParentid(parentId);	
+						reqData.setSubid(subId);
+						reqData.setSubiddes(data.getSubiddes());
+
+						dao.Create(reqData);
+						continue;
+					}
+
+					//取得DB数据
+					B_MaterialData dbData = preMaterialCheck(recordid);
+					
+					//处理共通信息
+					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialUpdate",userInfo);
+					copyProperties(dbData,commData);
+					
+					//获取被选中数据的信息
+					dbData.setMaterialid(material);//
+					dbData.setParentid(parentId);//
+					dbData.setSerialnumber(serialNumber);//
+					dbData.setMaterialname(reqData.getMaterialname());
+					dbData.setCategoryid(reqData.getCategoryid());
+					dbData.setSharemodel(reqData.getSharemodel());
+					dbData.setDescription(reqData.getDescription());
+					dbData.setUnit(reqData.getUnit());
+					dbData.setSubid(data.getSubid());//
+					
+					if(data.getSubiddes() != null )
+						dbData.setSubiddes(data.getSubiddes());
+
+					dao.Store(dbData);
+
+				}
+				
+				
+			}else{
+				
+				//循环处理子编码
+				boolean updataFlg = false;
+				for(B_MaterialData data:reqDataList ){
+
+					String recordid = data.getRecordid();	
+					String subId = data.getSubid();
+					String subDes = data.getSubiddes();
+					String material = parentId + "." + subId;
+
+					//判断是否是被选中的数据
+					if(subId != "" && subDes != "" && !subId.equals(selectSubId) ){
+						
+						if(recordid != null && !recordid.equals(""))
+							continue;
+						
+						//编辑状态下,新增子编码的处理
+						commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
+						copyProperties(reqData,commData);
+										
+						String guid = BaseDAO.getGuId();
+						reqData.setRecordid(guid);
+						reqData.setMaterialid(material);
+						reqData.setParentid(parentId);	
+						reqData.setSerialnumber(serialNumber);//
+						reqData.setSubid(subId);
+						reqData.setSubiddes(subDes);
+
+						dao.Create(reqData);
+						continue;
+					}
+					
+					//子编码修改处理
+					if(updataFlg)
+						continue;//只更新被修改的那条数据
+					
+					//取得DB数据
+					B_MaterialData dbData = preMaterialCheck(recordid);
+					
+					if(dbData != null && !dbData.equals("")){
+						
+						//只更新被选中数据的物料编号,名称,说明,子编码解释等;
+						//处理共通信息
+						commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialUpdate",userInfo);
+						copyProperties(dbData,commData);
+						
+						//获取被选中数据的信息
+						dbData.setMaterialid(material);
+						dbData.setMaterialname(reqData.getMaterialname());
+						dbData.setSharemodel(reqData.getSharemodel());
+						dbData.setDescription(reqData.getDescription());
+						dbData.setUnit(reqData.getUnit());
+						dbData.setSubid(subId);//
+						dbData.setSubiddes(data.getSubiddes());
+
+						dao.Store(dbData);
+						updataFlg = true;
+					}
+				}
+			}
+			
+			/*
 			//循环处理子编码
 			for(B_MaterialData data:reqDataList ){
 
-				//String recordidPage = data.getRecordid();	
-				B_MaterialData dbData = preMaterialCheckById(materialId);
-				
-				//Recorded为空的情况,插入该数据,否则就更新
-				if(dbData == null || dbData.equals("") ){					
-					
-					commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
-					copyProperties(reqData,commData);
-									
-					String guid = BaseDAO.getGuId();
-					reqData.setRecordid(guid);
-					reqData.setMaterialid(parentId+"."+data.getSubid());
-					reqData.setParentid(parentId);	
-					reqData.setSubid(data.getSubid());
-					reqData.setSubiddes(data.getSubiddes());
+				String recordid = data.getRecordid();	
+				String subId = data.getSubid();
+				String material = parentId + "." + subId;
 
-					dao.Create(reqData);
+				//判断物料编码是否修改过
+				B_MaterialData dbData = preMaterialCheckById(material);
+				
+				if(dbData == null || dbData.equals("")){				
+
+					//物料编码被修改后,更新所有子编码的物料编码
+					B_MaterialData dbSub = preMaterialCheck(recordid);
 					
-					selectedRecord = guid;
+					if(dbSub == null || dbSub.equals(""))
+						continue;
+					
+					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialUpdate",userInfo);
+					copyProperties(dbSub,commData);
+
+					dbSub.setMaterialid(material);//
+					dbData.setCategoryid(categoryId);
+					dbSub.setParentid(parentId);//
+					dbSub.setSerialnumber(serialNumber);
+					dbSub.setSubid(data.getSubid());
+
+					dao.Store(dbSub);
 					
 				}else {
-
-					//只更新被选中数据的物料编号,名称,说明,子编码解释等;				
-					//B_MaterialData dbData = preMaterialCheck(recordidDb);	
+					
+					
+					//只更新被选中数据的物料编号,名称,说明,子编码解释等;
 
 					//处理共通信息
 					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialUpdate",userInfo);
 					copyProperties(dbData,commData);
 					
 					//获取被选中数据的信息
-					//dbData.setMaterialid(reqData.getParentid()+"."+data.getSubid());//以后要恢复的
-					dbData.setMaterialid(materialId);//以后要删除的
+					dbData.setMaterialid(material);//以后要恢复的
+					//dbData.setMaterialid(materialId);//以后要删除的
 					dbData.setParentid(parentId);//以后要删除的
-					dbData.setSubid(subId);//以后要删除的
+					//dbData.setSubid(subId);//以后要删除的
 					dbData.setSerialnumber(serialNumber);//以后要删除的
 					dbData.setMaterialname(reqData.getMaterialname());
 					dbData.setCategoryid(reqData.getCategoryid());
@@ -765,26 +887,15 @@ public class MaterialService extends CommonService {
 					dbData.setDescription(reqData.getDescription());
 					dbData.setUnit(reqData.getUnit());
 					//获取子编码list中的子编码解释
-					//dbData.setSubid(data.getSubid());//以后要恢复的
+					dbData.setSubid(data.getSubid());//以后要恢复的
 					dbData.setSubiddes(data.getSubiddes());
 
 					dao.Store(dbData);
 
-					selectedRecord = reqData.getRecordid();
-					
-					/*
-					String record = preMaterialCheckById(materialId);
-					
-					if(record == null || record.equals("")){
-
-						selectedRecord = record;
-						
-					}else{
-						dao.Store(dbData);
-					}
-					*/
-				}				
+					break;
+				}
 			}
+			*/
 			
 			ts.commit();
 			
@@ -798,6 +909,23 @@ public class MaterialService extends CommonService {
 		return model;
 	}
 	
+	private void insertMaterial(B_MaterialData reqData){
+/*
+		B_MaterialDao dao = new B_MaterialDao();
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
+		copyProperties(reqData,commData);
+						
+		String guid = BaseDAO.getGuId();
+		reqData.setRecordid(guid);
+		reqData.setMaterialid(parentId+"."+data.getSubid());
+		reqData.setParentid(parentId);	
+		reqData.setSubid(data.getSubid());
+		reqData.setSubiddes(data.getSubiddes());
+
+		dao.Create(reqData);
+		*/
+	}
 	
 	/*
 	 * 1.显示当前选中物料的基本信息
