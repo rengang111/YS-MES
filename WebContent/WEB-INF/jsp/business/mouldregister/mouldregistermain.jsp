@@ -20,7 +20,7 @@
 	
 		var t = $('#TMould').DataTable({
 				"paging": true,
-				"lengthMenu":[5,10,15],//设置一页展示10条记录
+				"lengthMenu":[10,20,50],//设置一页展示10条记录
 				"processing" : false,
 				"serverSide" : true,
 				"stateSave" : false,
@@ -74,7 +74,7 @@
 				        ],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "|" + row["subCodeId"] + "' />"
+								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
 		                    }},
 							{"targets": 3, "createdCell": function (td, cellData, rowData, row, col) {
 						        $(td).attr('title', cellData);

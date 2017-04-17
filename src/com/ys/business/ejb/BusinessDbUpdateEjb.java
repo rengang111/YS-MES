@@ -1688,81 +1688,50 @@ public class BusinessDbUpdateEjb  {
 			ts.begin();
 
 			String removeData[] = keyData.split(",");									
-			for (String keyValue:removeData) {
+			for (String key:removeData) {
 				
-				String key = "";
-				String subCodeId = "";
+				dbData.setId(key);
+				dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+				dbData = MouldRegisterService.updateMouldBaseInfoModifyInfo(dbData, userInfo);
+				dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
+				dao.Store(dbData);
+				/*
+				BaseModel dataModel = new BaseModel();
+				HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+				dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+				dataModel.setQueryName("mouldregisterquerydefine_getmouldsubcode");
+				BaseQuery baseQuery = new BaseQuery(request, dataModel);
+				userDefinedSearchCase.put("mouldId", key);
+				baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+				ArrayList<HashMap<String, String>> subCodes = baseQuery.getYsQueryData(0,0);
+				*/
+				StringBuffer sql = new StringBuffer("");
+				sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
 				
-				if (keyValue.indexOf("|") >= 0) {
-					key = keyValue.split("\\|")[0];
-					subCodeId = keyValue.split("\\|")[1];
-					mouldSubData.setId(subCodeId);
-					mouldSubData = (B_MouldSubData)mouldSubDao.FindByPrimaryKey(mouldSubData);
-					mouldSubData = MouldRegisterService.updateMouldSubModifyInfo(mouldSubData, userInfo);
-					mouldSubData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
-					mouldSubDao.Store(mouldSubData);
-
-					try {
-
-						lastestPriceData.setId(subCodeId);
-						lastestPriceData = (B_MouldLastestPriceData)lastestPriceDao.FindByPrimaryKey(lastestPriceData);
-						lastestPriceData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
-						lastestPriceData = MouldRegisterService.updateMouldLastestPriceModifyInfo(lastestPriceData, userInfo);
-						lastestPriceDao.Store(lastestPriceData);
-					}
-					catch(Exception e) {
-						
-					}
-					StringBuffer sql = new StringBuffer("");
-					sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-					sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-					sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-					sql.append(" WHERE subCode = '" + subCodeId + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-					BaseDAO.execUpdate(sql.toString());	
-
-				} else {
-					key = keyValue;
-					
-					dbData.setId(key);
-					dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
-					dbData = MouldRegisterService.updateMouldBaseInfoModifyInfo(dbData, userInfo);
-					dbData.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
-					dao.Store(dbData);
-					
-					BaseModel dataModel = new BaseModel();
-					HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-					dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
-					dataModel.setQueryName("mouldregisterquerydefine_getmouldsubcode");
-					BaseQuery baseQuery = new BaseQuery(request, dataModel);
-					userDefinedSearchCase.put("mouldId", key);
-					baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-					ArrayList<HashMap<String, String>> subCodes = baseQuery.getYsQueryData(0,0);
-					 
-					for(HashMap<String, String> subCodeMap:subCodes) {
-						String id = subCodeMap.get("id");
-						StringBuffer sql = new StringBuffer("");
-						sql.append("UPDATE b_MouldFactory SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-						sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-						sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-						sql.append(" WHERE subCode = '" + id + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-						BaseDAO.execUpdate(sql.toString());	
-						
-						sql.append("UPDATE b_MouldLastestPrice SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-						sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-						sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-						sql.append(" WHERE id = '" + id + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-						BaseDAO.execUpdate(sql.toString());	
-					}
-					
-					StringBuffer sql = new StringBuffer("");
-					sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
-					sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
-					sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
-					sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
-					BaseDAO.execUpdate(sql.toString());	
-					
-				}
-		    	
+				sql = new StringBuffer("");
+				sql.append("UPDATE b_MouldLastestPrice SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE id = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
+				
+				sql = new StringBuffer("");
+				sql.append("UPDATE b_MouldHistoryPrice SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
+				
+				sql = new StringBuffer("");
+				sql.append("UPDATE b_MouldSub SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
 
 				count++;												
 			}

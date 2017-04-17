@@ -326,6 +326,7 @@
 		$('#unit').val('${DisplayData.mouldBaseInfoData.unit}');
 		if ($('#unit').val() == null) {
 		    $("#unit option").each(function(){
+		    	console.log($(this).text());
 		        if($(this).text() == "副"){  
 		            $(this).attr("selected","selected");  
 		        }  
