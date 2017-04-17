@@ -15,6 +15,7 @@
 <script type="text/javascript">
 
 	var counter = 0;
+	var GBomId = "";
 	
 	//Form序列化后转为AJAX可提交的JSON格式。
 	$.fn.serializeObject = function() {
@@ -41,16 +42,16 @@
 			{
 				"fnClick" : function(button) {
 					
-					// var rowIndex = counter;
 					
 					for (var i=0;i<10;i++){
-						
-				var rowNode = $('#example')
+
+						var rowIndex = i+1;
+						var rowNode = $('#example')
 							.DataTable()
 							.row
 							.add(
 							  [
-								'<td></td>',
+								'<td>'+rowIndex+'<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="bomDetailLines['+counter+'].materialid" id="bomDetailLines'+counter+'.materialid" /></td>',
 								'<td><span></span></td>',
@@ -456,35 +457,15 @@
 				</tr>
 			</tfoot>
 		<tbody>
-		
-		<c:if test="${fn:length(materialDetail) eq 0}" >
-						
-			<c:forEach var="i" begin="0" end="99" step="1">	
-				<tr>				
-					<td></td>
-					<td><input type="text" name="attributeList1" class="attributeList1" />
-						<form:hidden path="bomDetailLines[${i}].materialid"/></td>								
-					<td><span></span></td>	
-					<td><input type="text" name="attributeList2" class="attributeList2" style="width:80px"/>
-						<form:hidden path="bomDetailLines[${i}].supplierid"/></td>
-					<td><span></span></td>							
-					<td><span></span></td>						
-					<td><span></span>
-						<form:hidden path="bomDetailLines[${i}].totalprice"/></td>					
-				</tr>				
-				<script type="text/javascript">
-					counter++;
-				</script>
-					
-			</c:forEach>
-		</c:if>
-		
+		<script type="text/javascript">
+		var bomIndex = 0;
+		</script>
 		<c:if test="${fn:length(materialDetail) > 0}" >
 						
 			<c:forEach var="detail" items="${materialDetail}" varStatus='status' >		
 				
 				<tr>
-					<td></td>
+					<td><span id="index${status.index}"></span><input type=checkbox name='numCheck' id='numCheck' value='' /></td>
 					<td><input type="text" name="attributeList1" class="attributeList1" value="${detail.materialId}" />
 						<form:hidden path="bomDetailLines[${status.index}].materialid"  value="${detail.materialId}"/></td>								
 					<td><span id="name${status.index}">${detail.materialName}</span></td>
@@ -508,13 +489,32 @@
 					var materialName = '${detail.materialName}';
 					var quantity = currencyToFloat('${detail.quantity}');
 					var price =currencyToFloat( '${detail.price}');
+					var subBomId = '${detail.subBomId}';
 					var totalPrice = float4ToCurrency(quantity * price);
 					var labor = fnLaborCost( materialId,totalPrice);
 					
 					var bomid = '${detail.bomId}';
 					if(accessFlg == '1'){
-						bomid = '${detail.subBomId}';
+						bomid = subBomId;
 					}
+					//alert(bomIndex+":222")
+					if(GBomId !=  subBomId){
+
+						bomIndex = 1;
+						GBomId = subBomId;
+						//alert(subBomId+"1111")
+					}else{
+
+						if(subBomId == null || subBomId == ""){
+							bomIndex = 1;
+							//GBomId = subBomId;
+							subBomId = bomIndex;
+						}
+						//alert(bomIndex+":222")
+					}
+					$('#index'+index).html(bomIndex);
+
+					bomIndex++;
 					//alert('accessFlg'+accessFlg+"bomid:"+bomid)
 					$('#labor'+index).val(labor);
 					$('#total'+index).html(totalPrice);
@@ -522,7 +522,9 @@
 					$('#bomDetailLines'+index+'\\.totalprice').val(totalPrice);
 					$('#bomDetailLines'+index+'\\.subbomid').val(bomid);
 					$('#name'+index).html(jQuery.fixedWidth(materialName,40));
+					
 					counter++;
+					
 				</script>
 				
 			</c:forEach>

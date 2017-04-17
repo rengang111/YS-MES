@@ -735,9 +735,7 @@ function requirementAjax() {
 		"async" : false,
         "sScrollY": scrollHeight,
         "sScrollX": true,
-        "fixedColumns":   {
-            leftColumns: 3
-        },
+      //  "fixedColumns":   { leftColumns: 3 },
 		"dom" : '<"clear">rt',
 
 		"columns" : [ 
@@ -757,82 +755,12 @@ function requirementAjax() {
 			],
 		    // "aaSorting": [[ 1, "asc" ]]
 			 "columnDefs": [{    
-                 "targets": [ 10 ], //隐藏第1列，从第0列开始   
+                 "targets": [ 4,5,10 ], //隐藏第1列，从第0列开始   
                  "visible": false    
 	     	}],
 		
 	}).draw();
 
-
-// new $.fn.dataTable.FixedColumns( t3 ,{leftColumns: 1,leftColumns: 2,leftColumns: 3});
-	
-	t3.on('blur', 'tr td:nth-child(7),tr td:nth-child(8),tr td:nth-child(10)',function() {
-		
-		var currValue = $(this).find("input:text").val().trim();
-
-        $(this).find("input:text").removeClass('bgwhite');
-        
-        if(currValue =="" ){
-        	
-        	 $(this).find("input:text").addClass('error');
-        }else{
-        	 $(this).find("input:text").addClass('bgnone');
-        }
-		
-	});
-			
-
-	t3.on('change', 'tr td:nth-child(7),tr td:nth-child(8)',function() {
-		
-		/*产品成本 = 各项累计
-		人工成本 = H带头的ERP编号下的累加
-		材料成本 = 产品成本 - 人工成本
-		经管费 = 经管费率 x 产品成本
-		核算成本 = 产品成本 + 经管费*/
-		
-        var $tds = $(this).parent().find("td");
-		
-        //var $oMaterial  = $tds.eq(1).find("input:text");
-       // var $oQuantity  = $tds.eq(4).find("input");
-		//var $oThisPrice = $tds.eq(5).find("span");
-		var $oQuantity    = $tds.eq(6).find("input");
-		var $oPrice       = $tds.eq(7).find("input");
-		var $oTotali      = $tds.eq(8);
-		//var $oTotals      = $tds.eq(9).find("span");
-		var $oLastPrice   = $tds.eq(10).find("input");
-		//var $oAmount2   = $tds.eq(6).find("span");
-		//var $oAmountd   = $tds.eq(6).find("input:last-child");//人工成本
-		
-		//var materialId = $oMaterial.val();
-		var fLastPrice = currencyToFloat($oLastPrice.val());
-		var fPrice = currencyToFloat($oPrice.val());		
-		var fQuantity = currencyToFloat($oQuantity.val());	
-		
-		var fTotalNew = currencyToFloat(fPrice * fQuantity);
-		//var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
-
-		var vPrice = float4ToCurrency(fPrice);	
-		var vQuantity = floatToCurrency(fQuantity);
-		var vTotalNew = floatToCurrency(fTotalNew);
-				
-		//详情列表显示新的价格
-		//$oThisPrice.val(vPrice);					
-		$oQuantity.val(vQuantity);	
-		$oPrice.val(vPrice);	
-		//$oTotals.html(vTotalNew);
-		$oTotali.text(vTotalNew);
-		
-		if(fPrice > fLastPrice){
-			$oPrice.removeClass('decline').addClass('rise');
-		}else if(fPrice < fLastPrice){
-			$oPrice.removeClass('rise').addClass('decline');			
-		}
-
-		//alert("fPrice:"+fPrice+"::fLastPrice:"+fLastPrice)
-		//合计成本
-		costAcount();
-		
-	});
 	
 	t3.on('order.dt search.dt draw.dt', function() {
 		t3.column(0, {

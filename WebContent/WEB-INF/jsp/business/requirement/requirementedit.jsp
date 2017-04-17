@@ -718,7 +718,7 @@ function requirementAjax() {
 			"columnDefs":[
 	    		{
 					"visible" : false,
-					"targets" : [ 12 ]
+					"targets" : [ 4,5,12 ]
 				} 
 			] 
 		

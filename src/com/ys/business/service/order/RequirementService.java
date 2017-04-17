@@ -21,11 +21,13 @@ import com.ys.business.action.model.order.RequirementModel;
 import com.ys.business.db.dao.B_BaseBomDao;
 import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_BomPlanDao;
+import com.ys.business.db.dao.B_InventoryDao;
 import com.ys.business.db.dao.B_MaterialRequirmentDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.data.B_BaseBomData;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
+import com.ys.business.db.data.B_InventoryData;
 import com.ys.business.db.data.B_MaterialRequirmentData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
@@ -323,6 +325,24 @@ public class RequirementService extends CommonService {
 		dao.Create(data);	
 	}	
 	
+	private void insertInventory(
+			String availabel) throws Exception{
+		
+		B_InventoryDao dao = new B_InventoryDao();
+		B_InventoryData data = new B_InventoryData();
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"AvailabelInsert",userInfo);
+
+		copyProperties(data,commData);
+		
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		data.setAvailabeltopromise(availabel);
+		
+		dao.Create(data);	
+	}	
+	
 	private void insertBomPlan(
 			B_BomPlanData data) throws Exception{
 		
@@ -399,6 +419,7 @@ public class RequirementService extends CommonService {
 			//String where = " bomId = '"+bomId +"'";
 			//deleteBomDetail(where);
 			
+			//基础BOM的供应商,单价处理
 			for(B_PurchasePlanData data:reqDataList ){
 
 				//data.setBomid(bomId);
@@ -411,6 +432,7 @@ public class RequirementService extends CommonService {
 				
 				//更新单价
 				updatePriceSupplier(baseMaterialId,supplierId,price);
+				
 				//更新最新,最低单价
 				updatePriceInfo(baseMaterialId);
 			}
@@ -424,8 +446,19 @@ public class RequirementService extends CommonService {
 
 				data.setPurchaseid(YSId+"000");
 				data.setYsid(YSId);
-				insertPurchasePlan(data);				
+				insertPurchasePlan(data);
+				
 			}
+			
+			//虚拟库存处理
+			for(B_PurchasePlanData data:reqDataList ){
+
+				String availabel = data.getQuantity();
+				insertInventory(availabel);
+				
+				
+			}
+			//orderBomInsert(accessFlg);
 			
 			ts.commit();
 			
@@ -438,6 +471,74 @@ public class RequirementService extends CommonService {
 		
 		return YSId;
 		
+	}
+	
+	private void orderBomInsert(boolean accessFlg) throws Exception{
+		//订单BOM做成
+		//BOM方案
+		B_BomPlanData reqBom = reqModel.getBomPlan();
+		String YSId = reqBom.getYsid();
+		String materialId = reqBom.getMaterialid();
+		String bomId="";
+		if(accessFlg){
+			String parentId = BusinessService.getOrderBOMParentId(materialId);
+			B_BomPlanData bom = getBomIdByParentId(parentId);
+			bomId = bom.getBomid();
+			reqBom.setBomid(bomId);
+			reqBom.setParentid(bom.getParentid());
+			reqBom.setSubid(bom.getSubid());
+		}else{
+			bomId = reqBom.getBomid();
+		}
+		
+		insertBomPlan(reqBom);
+		//reqModel.setBomPlan(reqBom);
+		
+		//BOM详情
+		List<B_BomDetailData> reqBomList = reqModel.getBomDetailList();
+		//采购方案详情		
+		List<B_PurchasePlanData> reqDataList = reqModel.getPurchaseList();
+		
+		//首先删除旧数据
+		String where = " bomId = '"+bomId +"'";
+		deleteBomDetail(where);
+		
+		for(B_BomDetailData data:reqBomList ){
+
+			data.setBomid(bomId);
+			String baseMaterialId=data.getMaterialid();
+			
+			//一级单价处理
+			boolean flg = true;
+			for(B_PurchasePlanData purchase:reqDataList){
+				String purchaseMate = purchase.getMaterialid();
+				if(baseMaterialId.equals(purchaseMate)){
+					data.setPrice(purchase.getPrice());
+					data.setSupplierid(purchase.getSupplierid());
+					data.setTotalprice(purchase.getTotalprice());
+					
+					flg = false;
+					break;
+				}
+			}
+			
+			if(flg){//二级物料
+
+				//B系列的计算					
+				List<HashMap<String, String>> hsmp = getZZRawMaterial(baseMaterialId);
+				
+				for(HashMap<String, String> map:hsmp){
+												
+					if(baseMaterialId.equals(map.get("materialId"))){
+						data.setPrice(map.get("newPrice"));
+						break;								
+					}
+				}					
+			}
+			
+			insertBomDetail(data);		
+			
+		}
 	}
 	
 	/*
@@ -788,7 +889,7 @@ public class RequirementService extends CommonService {
 				
 			subBomIdBefore = subBomId;//第一次不设置				
 
-			if (supplierId.trim().equals("0574YS00")){
+			if (supplierId!=null && supplierId.trim().equals("0574YS00")){
 
 				if(typeH.equals("H"))
 					continue;

@@ -1206,9 +1206,14 @@ public class BomService extends BaseService {
 		
 	}
 
-	public Model editBaseBom() throws Exception {
+	public void editBaseBom() throws Exception{
 
 		String materialId = request.getParameter("materialId");	
+		getBaseBom(materialId);
+	}
+	
+	private void getBaseBom(String materialId) throws Exception {
+
 		//取得该产品的新BOM编号
 		String parentId = BusinessService.getBaseBomId(materialId)[0];
 		String bomId = BusinessService.getBaseBomId(materialId)[1];
@@ -1225,9 +1230,10 @@ public class BomService extends BaseService {
 		
 		model.addAttribute("accessFlg","1");//accessFlg:1 编辑
 		
-		return model;
+		//return model;
 		
 	}
+	
 	//报价BOM:客户报价
 	public Model createQuotation() throws Exception {
 
@@ -1512,7 +1518,9 @@ public class BomService extends BaseService {
 		String materialId = reqModel.getBomPlan().getMaterialid();
 		
 		//取得产品信息
-		getProductDetail(materialId);
+		//getProductDetail(materialId);
+		
+		getBaseBom(materialId);
 		
 		return model;
 		
