@@ -119,7 +119,7 @@
     <pool></pool>     
     <name value="mouldregisterquerydefine_getmouldserialno" />
     <where>
-    <w name="substring(B.mouldId, 1, char_length(mouldId) - 2)" des=""  reqName="mouldNo" dtype="ch" oper="="  lg="" bt="" />
+    <w name="substring(B.mouldId, 1, char_length(mouldId) - 3)" des=""  reqName="mouldNo" dtype="ch" oper="="  lg="" bt="" />
     </where>
     <select>
       <f name="IFNULL(max(B.serialNo), 0)" alias="serialNo" ctype="" />
@@ -127,23 +127,6 @@
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>(select mouldId, CONVERT(substring(mouldId, char_length(mouldId) - 1, char_length(mouldId)), SIGNED) + 1 as serialNo FROM b_MouldBaseInfo WHERE deleteflag='0') as B WHERE NOT EXISTS (select serialNo from (select mouldId, CONVERT(substring(mouldId, char_length(mouldId) - 1, char_length(mouldId)), SIGNED) as serialNo FROM b_MouldBaseInfo WHERE deleteflag='0') as A WHERE A.serialNo = B.serialNo) </from>
-    <orderby></orderby>
-    <groupby></groupby>
-    <having></having>
-	<power>
-	</power>    
-  </query>
-   <query>
-    <pool></pool>     
-    <name value="mouldregisterquerydefine_getmouldserialno" />
-    <where>
-    </where>
-    <select>
-      <f name="IFNULL(min(B.serialNo), 1)" alias="serialNo" ctype="" />
-    </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>(select (CONVERT(substring(mouldId, char_length(mouldId) - 1, 2), SIGNED) + 1) as serialNo FROM b_MouldBaseInfo WHERE deleteflag='0') as B WHERE NOT EXISTS (select serialNo from (select CONVERT(substring(mouldId, char_length(mouldId) - 1, 2), SIGNED) as serialNo FROM b_MouldBaseInfo WHERE deleteflag='0') as A WHERE A.serialNo = B.serialNo) </from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>

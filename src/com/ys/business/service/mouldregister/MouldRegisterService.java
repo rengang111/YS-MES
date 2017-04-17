@@ -753,14 +753,13 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 		String mouldId = "";
 
+		String key = getJsonData(data, "keyBackup");
 		String type = getJsonData(data, "type");
-		String activeSubCode = getJsonData(data, "activeSubCode");
+		//String activeSubCode = getJsonData(data, "activeSubCode");
 		boolean isTypeChanged = false;
 		try {
-			if (!activeSubCode.equals("")) {
-				subData.setId(activeSubCode);
-				subData = (B_MouldSubData)subDao.FindByPrimaryKey(subData);
-				dbData.setId(subData.getMouldid());
+			if (!key.equals("")) {
+				dbData.setId(key);
 				dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
 				if (!dbData.getType().equals(type)) {
 					isTypeChanged = true;

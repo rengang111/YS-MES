@@ -20,7 +20,7 @@
 	
 		var t = $('#TMould').DataTable({
 				"paging": true,
-				"lengthMenu":[5,10,15],//设置一页展示10条记录
+				"lengthMenu":[20,50,100],//设置一页展示10条记录
 				"processing" : false,
 				"serverSide" : true,
 				"stateSave" : false,
@@ -63,7 +63,7 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "mouldId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "mouldId", "defaultContent" : '',"className" : 'td-left'},
 							{"data": "name", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "subname", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "parentId", "defaultContent" : '',"className" : 'td-center'},
