@@ -15,6 +15,7 @@
 <script type="text/javascript">
 
 	var counter = 0;
+	var moduleNum = 0;
 	var GBomId = "";
 	
 	//Form序列化后转为AJAX可提交的JSON格式。
@@ -34,7 +35,8 @@
 		return o;
 	};
 	
-	$.fn.dataTable.TableTools.buttons.add_rows = $
+	//追加单行
+	$.fn.dataTable.TableTools.buttons.add_row = $
 	.extend(
 			true,
 			{},
@@ -43,15 +45,18 @@
 				"fnClick" : function(button) {
 					
 					
-					for (var i=0;i<10;i++){
+					for (var i=0;i<1;i++){
 
 						var rowIndex = i+1;
+						var hidden = '<input type="hidden" name="bomDetailLines['+counter+'].subbomid" id="bomDetailLines'+counter+'.subbomid" value=""/>'+
+									 '<input type="hidden" name="bomDetailLines['+counter+'].subbomno" id="bomDetailLines'+counter+'.subbomno" value="0"/>'+
+									 '<input type="hidden" name="bomDetailLines['+counter+'].subbomserial" id="bomDetailLines'+counter+'.subbomserial" value=""/>'
 						var rowNode = $('#example')
 							.DataTable()
 							.row
 							.add(
 							  [
-								'<td>'+rowIndex+'<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
+								'<td>'+hidden+rowIndex+'<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="bomDetailLines['+counter+'].materialid" id="bomDetailLines'+counter+'.materialid" /></td>',
 								'<td><span></span></td>',
@@ -60,11 +65,61 @@
 								'<td><input type="text"   name="bomDetailLines['+counter+'].quantity"   id="bomDetailLines'+counter+'.quantity"   class="cash"  style="width:70px"/></td>',
 								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].price"      id="bomDetailLines'+counter+'.price" /></td>',
 								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].totalprice" id="bomDetailLines'+counter+'.totalprice"/><input type="hidden" id="labor"></td>',
+
+								'<input type="hidden" name="bomDetailLines['+counter+'].subbomno" id="bomDetailLines'+counter+'.subbomno" value="0"/>'
+								
 								]).draw();
 						
 						counter ++;						
 					}					
 					//counter += 1;
+					
+					autocomplete();
+						
+					foucsInit();
+				}
+			});
+	
+	//模块追加
+	$.fn.dataTable.TableTools.buttons.add_rows = $
+	.extend(
+			true,
+			{},
+			$.fn.dataTable.TableTools.buttonBase,
+			{
+				"fnClick" : function(button) {
+					
+					moduleNum++;//块:物料一组一组地
+					
+					for (var i=0;i<10;i++){
+
+						var rowIndex = i+1;
+						var hidden = '<input type="hidden" name="bomDetailLines['+counter+'].subbomid" id="bomDetailLines'+counter+'.subbomid" value=""/>'+
+									 '<input type="hidden" name="bomDetailLines['+counter+'].subbomno" id="bomDetailLines'+counter+'.subbomno" value="'+moduleNum+'"/>'+
+									 '<input type="hidden" name="bomDetailLines['+counter+'].subbomserial" id="bomDetailLines'+counter+'.subbomserial" value=""/>'
+					
+						var rowNode = $('#example')
+							.DataTable()
+							.row
+							.add(
+							  [
+								'<td>' + hidden + rowIndex + '<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
+								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
+									'<input type="hidden" name="bomDetailLines['+counter+'].materialid" id="bomDetailLines'+counter+'.materialid" /></td>',
+								'<td><span></span></td>',
+								'<td><input type="text"   name="attributeList2"  class="attributeList2" style="width:80px"> '+
+									'<input type="hidden" name="bomDetailLines['+counter+'].supplierid" id="bomDetailLines'+counter+'.supplierid" /></td>',
+								'<td><input type="text"   name="bomDetailLines['+counter+'].quantity"   id="bomDetailLines'+counter+'.quantity"   class="cash"  style="width:70px"/></td>',
+								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].price"      id="bomDetailLines'+counter+'.price" /></td>',
+								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].totalprice" id="bomDetailLines'+counter+'.totalprice"/><input type="hidden" id="labor"></td>',
+								
+															
+								]).draw();
+						
+						counter ++;	//总行数				
+					}
+					
+					moduleNum++;//模块数量
 					
 					autocomplete();
 						
@@ -111,14 +166,19 @@
 	        "ordering"  : false,
 
 			dom : 'T<"clear">rt',
-
+			success : function(data) {
+			},
 			"tableTools" : {
 
 				//"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
 
 				"aButtons" : [ {
+					"sExtends" : "add_row",
+					"sButtonText" : "追加行"
+				},
+				{
 					"sExtends" : "add_rows",
-					"sButtonText" : "追加新行"
+					"sButtonText" : "追加块"
 				},
 				{
 					"sExtends" : "reset",
@@ -224,7 +284,7 @@
 			}).nodes().each(function(cell, i) {
 				var num   = i + 1;
 				var checkBox = "<input type=checkbox name='numCheck' id='numCheck' value='" + num + "' />";
-				cell.innerHTML = num + checkBox;
+				//cell.innerHTML = num + checkBox;
 			});
 		}).draw();
 
@@ -457,11 +517,12 @@
 				</tr>
 			</tfoot>
 		<tbody>
-		<script type="text/javascript">
-		var bomIndex = 0;
-		</script>
+		
 		<c:if test="${fn:length(materialDetail) > 0}" >
-						
+		<script type="text/javascript">
+			var prev = '0';
+			var subIndex = '0';
+		</script>
 			<c:forEach var="detail" items="${materialDetail}" varStatus='status' >		
 				
 				<tr>
@@ -479,6 +540,9 @@
 					
 					<form:hidden path="bomDetailLines[${status.index}].sourceprice"  value="${detail.price}" />	
 					<form:hidden path="bomDetailLines[${status.index}].subbomid"  value="" />
+					<form:hidden path="bomDetailLines[${status.index}].subbomno"  value="${detail.subbomno}" />
+					<form:hidden path="bomDetailLines[${status.index}].subbomserial"  value="" />
+					
 				</tr>
 
 				<script type="text/javascript">
@@ -490,40 +554,41 @@
 					var quantity = currencyToFloat('${detail.quantity}');
 					var price =currencyToFloat( '${detail.price}');
 					var subBomId = '${detail.subBomId}';
-					var totalPrice = float4ToCurrency(quantity * price);
-					var labor = fnLaborCost( materialId,totalPrice);
-					
 					var bomid = '${detail.bomId}';
 					if(accessFlg == '1'){
 						bomid = subBomId;
 					}
-					//alert(bomIndex+":222")
-					if(GBomId !=  subBomId){
+					
+					var totalPrice = float4ToCurrency(quantity * price);
+					var labor = fnLaborCost( materialId,totalPrice);
+					
 
-						bomIndex = 1;
-						GBomId = subBomId;
-						//alert(subBomId+"1111")
+					var next = '${detail.subbomno}';
+					if(next == prev){
+						subIndex++;
+						
 					}else{
-
-						if(subBomId == null || subBomId == ""){
-							bomIndex = 1;
-							//GBomId = subBomId;
-							subBomId = bomIndex;
-						}
-						//alert(bomIndex+":222")
+						subIndex = '1';
+						prev = next;
 					}
-					$('#index'+index).html(bomIndex);
-
-					bomIndex++;
+		
 					//alert('accessFlg'+accessFlg+"bomid:"+bomid)
+					var rowNum = '${status.index +1}';
+					//$('#index'+index).html(rowNum);
+					$('#index'+index).html(subIndex);
 					$('#labor'+index).val(labor);
 					$('#total'+index).html(totalPrice);
 					$('#bomDetailLines'+index+'\\.quantity').val(float5ToCurrency(quantity));
 					$('#bomDetailLines'+index+'\\.totalprice').val(totalPrice);
-					$('#bomDetailLines'+index+'\\.subbomid').val(bomid);
 					$('#name'+index).html(jQuery.fixedWidth(materialName,40));
 					
-					counter++;
+					$('#bomDetailLines'+index+'\\.subbomid').val(bomid);
+					//$('#bomDetailLines'+index+'\\.subbomno').val(moduleNum);
+					$('#bomDetailLines'+index+'\\.subbomserial').val(rowNum);
+					
+					moduleNum = '${detail.subbomno}';//模块数量,模块追加时,该No加一
+					
+					counter++;	
 					
 				</script>
 				
@@ -652,6 +717,9 @@ function autocomplete(){
 					var recordCont = data["recordsTotal"];
 					var dataList = data["data"];
 					//alert(recordCont)
+					if(recordCont>0){
+						moduleNum++;
+					}
 					for (var i = 0; i < recordCont; i++) {						
 
 						var recordId  = data['data'][i]['productRecord'];
@@ -662,15 +730,19 @@ function autocomplete(){
 						var quantity  = data['data'][i]['quantity'];
 						var price  = data['data'][i]['price'];
 						//alert('bomId'+bomId);
-						var rowNum = count+1;
+						var rowNum = i+1;
 						var trhtml = "";
 
+						var hidden = '<input type="hidden" name="bomDetailLines['+count+'].subbomid" id="bomDetailLines'+count+'.subbomid" value=""/>'+
+									 '<input type="hidden" name="bomDetailLines['+count+'].subbomno" id="bomDetailLines'+count+'.subbomno" value=""/>'+
+									 '<input type="hidden" name="bomDetailLines['+count+'].subbomserial" id="bomDetailLines'+count+'.subbomserial" value=""/>';
+					
 						var rowNode = $('#example')
 						.DataTable()
 						.row
 						.add(
 						  [
-							'<td></td>',
+							'<td>'+ hidden + rowNum+'<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
 							'<td><input type="text" name="attributeList1" class="attributeList1" value="'+materialId+'" />'+
 							'    <input type="hidden" name="bomDetailLines['+count+'].materialid"   id="bomDetailLines'+count+'.materialid"  value="'+materialId+'"/></td>	',							
 							'<td><span id="name'+count+'"></span><input type="hidden" name="bomDetailLines['+count+'].subbomid"   id="bomDetailLines'+count+'.subbomid" value="" /></td>',
@@ -681,6 +753,8 @@ function autocomplete(){
 							'<td class="td-right"><span id="total'+count+'"></span>'+
 							'    <input type="hidden" name="bomDetailLines['+count+'].totalprice" id="bomDetailLines'+count+'.totalprice" value=""/>'+
 							'    <input type="hidden" id="labor'+count+'"></td>',
+							
+							
 							
 						   ]).draw();
 						   
@@ -705,6 +779,13 @@ function autocomplete(){
 
 						$("#example tbody tr:last").after(trhtml);
 						*/
+
+						var subBomId = '${detail.subBomId}';
+						var bomid = '${detail.bomId}';
+						if(accessFlg == '1'){
+							bomid = subBomId;
+						}
+						
 						price = currencyToFloat(price);
 						quantity = currencyToFloat(quantity);
 						
@@ -715,10 +796,14 @@ function autocomplete(){
 						$('#bomDetailLines'+count+'\\.price').val(price);
 						$('#bomDetailLines'+count+'\\.quantity').val(float5ToCurrency(quantity));
 						$('#bomDetailLines'+count+'\\.totalprice').val(totalPrice);
-						$('#bomDetailLines'+count+'\\.subbomid').val(bomId);
 						$('#name'+count).html(jQuery.fixedWidth(materialName,40));
 						//alert($('#bomDetailLines'+count+'\\.subbomid').val()+':::'+bomId)
 
+						$('#bomDetailLines'+count+'\\.subbomid').val(bomid);
+						$('#bomDetailLines'+count+'\\.subbomno').val(moduleNum);	
+						//alert(moduleNum)
+						$('#bomDetailLines'+count+'\\.subbomserial').val(rowNum);
+						
 						count++;
 							
 					};

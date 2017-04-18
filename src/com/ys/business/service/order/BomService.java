@@ -364,9 +364,7 @@ public class BomService extends BaseService {
 				model.addAttribute("materialDetail",dataModel.getYsViewData());
 				bomPlanData.setRecordid(dataModel.getYsViewData().get(0).get("recordId"));		
 			}
-		}else{
-			return null;
-		}		
+		}	
 				
 		return HashMap;
 	}
@@ -1219,9 +1217,11 @@ public class BomService extends BaseService {
 		String bomId = BusinessService.getBaseBomId(materialId)[1];
 		
 		//新建
+		bomPlanData = new B_BomPlanData();
 		bomPlanData.setBomid(bomId);
 		bomPlanData.setSubid(BusinessConstants.FORMAT_00);
-		bomPlanData.setParentid(parentId);		
+		bomPlanData.setParentid(parentId);	
+		
 		reqModel.setBomPlan(bomPlanData);
 
 		getBaseBomDetail(bomId,false);
@@ -1279,6 +1279,7 @@ public class BomService extends BaseService {
 		//}
 		
 		//取得最新的报价BOM编号
+		bomPlanData = new B_BomPlanData();
 		bomPlanData.setBomid(bomId);
 		bomPlanData.setSubid(subId);
 		bomPlanData.setMaterialid(materialId);
