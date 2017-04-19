@@ -20,12 +20,15 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.material.MaterialModel;
+import com.ys.business.db.dao.B_InventoryDao;
 import com.ys.business.db.dao.B_PriceReferenceDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
+import com.ys.business.db.data.B_InventoryData;
 import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
+import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.CommFieldsData;
 
 @Service
@@ -455,8 +458,68 @@ public class CommonService extends BaseService {
 			
 		return pricedt;
 	}
-
 	
+	//更新虚拟库存
+	public void updateInventory(
+			B_InventoryData planData) throws Exception{
+		
+		B_InventoryDao dao = new B_InventoryDao();
+		B_InventoryData data = null;
+		
+		//确认物料的库存是否存在
+		data = checkInventoryExsit(planData.getMaterialid());
+		
+		if(data == null){
+			//insert
+			data = new B_InventoryData();
+
+			copyProperties(data,planData);
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"AvailabelInsert",userInfo);
+			copyProperties(data,commData);
+			
+			guid = BaseDAO.getGuId();
+			data.setRecordid(guid);
+			
+			dao.Create(data);	
+			
+		}else{
+			//update
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"AvailabelUpdate",userInfo);
+			copyProperties(data,commData);
+			
+			//计算虚拟库存
+			String oldAva = data.getAvailabeltopromise();
+			String newAva = planData.getAvailabeltopromise();		
+			float cunt =Float.parseFloat(oldAva) + Float.parseFloat(newAva);
+			
+			data.setAvailabeltopromise(String.valueOf(cunt));
+			
+			dao.Store(data);	
+		}
+		
+	}	
+
+
+	@SuppressWarnings("unchecked")
+	private B_InventoryData checkInventoryExsit(
+			String materialId) throws Exception {
+
+		B_InventoryDao dao = new B_InventoryDao();
+		B_InventoryData data = null;
+		List<B_InventoryData> list = null;
+
+		String where = " materialId = '" + materialId +
+				"' AND deleteFlag = '0' ";		
+
+		list = (List<B_InventoryData>)dao.Find(where);
+		
+		if(list != null && list.size() > 0)
+			data = list.get(0);	
+			
+		return data;
+	}
 	
 	
 }

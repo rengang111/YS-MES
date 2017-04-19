@@ -308,7 +308,7 @@
 						<th class="dt-center" style="width:150px">物料编码</th>
 						<th class="dt-center" style="width:180px">物料名称</th>
 						<th class="dt-center" style="width:30px">单位</th>
-						<th class="dt-center" width="60px">采购需求量</th>
+						<th class="dt-center" width="60px">订单需求量</th>
 						<th class="dt-center" width="60px">当前库存</th>
 						<th class="dt-center" width="60px">建议采购量</th>
 						<th class="dt-center" style="width:30px">本次单价</th>
@@ -718,7 +718,7 @@ function requirementAjax() {
 			"columnDefs":[
 	    		{
 					"visible" : false,
-					"targets" : [ 4,5,12 ]
+					"targets" : [ 12 ]
 				} 
 			] 
 		

@@ -259,6 +259,21 @@ function laborCostSum(){
 	return sum;
 }
 
+var prev ='0';
+var subIndex = '0';//
+function rowNoShow(next){
+	if(next == prev){
+		subIndex++;
+		
+	}else{
+		subIndex = '1';
+		prev = next;
+	}
+
+	//alert(subIndex+"::返回值")
+	return subIndex;
+}
+
 //编辑基础BOM
 function doCreateBaseBom() {
 	var materialId ='${product.materialId}';
@@ -289,6 +304,7 @@ function baseBomView() {
 		"searching" : false,
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
+		"bSort":false,
 		"async" : false,
 		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -343,7 +359,7 @@ function baseBomView() {
        		"url":"${ctx}/plugins/datatables/chinese.json"
        	},
 		"columns": [
-			{"data": null,"className" : 'td-center'},
+			{"data": null},
 			{"data": "materialId"},
 			{"data": "materialName"},
 			{"data": "unit","className" : 'td-center'},
@@ -353,6 +369,12 @@ function baseBomView() {
 			{"data": "totalPrice","className" : 'td-right'},
 		 ],
 		"columnDefs":[
+    		{"targets":0,"render":function(data, type, row){
+    			
+    			var rowNum = row["subbomno"];				
+    			var setNo = rowNoShow(rowNum);			    			
+    			return setNo;
+    		}},
     		{"targets":2,"render":function(data, type, row){
     			
     			var name = row["materialName"];				    			
@@ -361,12 +383,12 @@ function baseBomView() {
     		}},
     		{"targets":1,"render":function(data, type, row){
     			var materialId = row["materialId"];
-    			rtn= "<a href=\"#\" onClick=\"doEditMaterial('" + row["rawRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
+    			rtn= "<a href=\"###\" onClick=\"doEditMaterial('" + row["rawRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
     			return rtn;
     		}},
     		{"targets":4,"render":function(data, type, row){
     			var supplierId = row["supplierId"];
-    			rtn= "<a href=\"#\" onClick=\"doShowSupplier('" + row["supplierId"] +"')\">"+supplierId+"</a>";
+    			rtn= "<a href=\"###\" onClick=\"doShowSupplier('" + row["supplierId"] +"')\">"+supplierId+"</a>";
     			return rtn;
     		}},
     		{"targets":6,"render":function(data, type, row){
@@ -410,11 +432,10 @@ function baseBomView() {
 			search : 'applied',
 			order : 'applied'
 		}).nodes().each(function(cell, i) {
-			var num   = i + 1;
-			cell.innerHTML = num ;
+			//var num   = i + 1;
+			//cell.innerHTML = num ;
 		});
 	}).draw();
-
 	
 }//ajax()供应商信息
 
@@ -492,7 +513,7 @@ function quotationView() {
       			var bomId = row["bomId"];
       			var materialId = row["materialId"];
       			var accessFlg = row["recordId"];
-      			rtn= "<a href=\"#\" onClick=\"doEditQuotation('" + row["bomId"] +"','"+ row["materialId"] + "','"+ row["subId"] + "')\">"+bomId+"</a>";
+      			rtn= "<a href=\"###\" onClick=\"doEditQuotation('" + row["bomId"] +"','"+ row["materialId"] + "','"+ row["subId"] + "')\">"+bomId+"</a>";
       			return rtn;
       		}},
       		{"targets":8,"render":function(data, type, row){
@@ -512,7 +533,7 @@ function quotationView() {
       			return rate + "%";
       		}},
       		{"targets":12,"render":function(data, type, row){
-      			rtn= "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
+      			rtn= "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
 	    		
       			return rtn;
       		}}

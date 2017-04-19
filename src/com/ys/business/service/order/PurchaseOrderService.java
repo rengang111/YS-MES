@@ -256,15 +256,17 @@ public class PurchaseOrderService extends BaseService {
 					continue;
 				
 				boolean suppFlg = true;
+				B_PurchaseOrderData purDt = null;
 				for(B_PurchaseOrderData order:supplierContrct){
 					
-					String supplierIdOrder = order.getSupplierid();
+					String supplierIdCntr = order.getSupplierid();
 					
-					if(supplierIdOrder == null || supplierIdOrder.equals(""))
+					if(supplierIdCntr == null || supplierIdCntr.equals(""))
 						continue;
 					
-					if(supplierIdOrder.equals(supplierId)){
+					if(supplierIdCntr.equals(supplierId)){
 						suppFlg = false;
+						purDt = order;//找到同一个供应商
 						supplierContrct.remove(order);
 						break;
 					}
@@ -286,13 +288,15 @@ public class PurchaseOrderService extends BaseService {
 					String contractId = BusinessService.getContractCode(YSId, shortName, subId);
 					
 					//新增采购合同
-					insertOrder(YSId,materialId,supplierId,contractId,parentId,subId,total);
+					insertPurchaseOrder(
+							YSId,materialId,supplierId,contractId,parentId,subId,total);
 					
-					//从物料需求表取得合同详情
-					String where = " YSId = '"+YSId +"'"+ 
-							" AND supplierId = '"+supplierId +"'"+ 
-							" AND deleteFlag = '0' ";	
-				}				
+				}else{
+					//更新处理
+					purDt.setTotal(total);
+					updatePurchaseOrder(purDt);
+					
+				}
 			}
 			
 			if(supplierContrct.size() > 0){
@@ -314,9 +318,19 @@ public class PurchaseOrderService extends BaseService {
 	}	
 
 	/*
-	 * 订单详情插入处理
+	 * 更新处理
 	 */
-	private void insertOrder(
+	private void updatePurchaseOrder(
+			B_PurchaseOrderData data) throws Exception{
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseOrderUpdate",userInfo);
+		copyProperties(data,commData);
+		
+		orderDao.Store(data);	
+	}
+	
+	private void insertPurchaseOrder(
 			String YSId,
 			String materialId,
 			String supplierId,
@@ -329,7 +343,6 @@ public class PurchaseOrderService extends BaseService {
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"PurchaseOrderInsert",userInfo);
-
 		copyProperties(data,commData);
 		
 		guid = BaseDAO.getGuId();
