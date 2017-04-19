@@ -2,47 +2,56 @@
 <!DOCTYPE html>
 <%@ include file="../common/common.jsp"%>
 <html>
-<head>
-	用户管理
-</head>
 
 <body>
-	<form name="form" id="form" modelAttribute="dataModels" action="${ctx}/login/checklogin" method="post"  autocomplete="off">
 
-		<table>
-			<tr>
-				<td>
-					用户名：
-				</td>
-				<td>
-					<input type=text name="loginId" id="loginId" value="${DisplayData.loginId}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					密码：
-				</td>
-				<td>
-					<input type=password name="pwd" id="pwd" value=""/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					验证码：
-				</td>
-				<td>
-	 				<input type="text" name="verifyCode" id="verifyCode"  />       
-	        		<img id="imgObj"  alt="" src="${ctx}/login/verifyCode"/>       
-	        		<a href="#" onclick="changeImg();">换一张</a>
-	        	</td>	
-			<tr>
-				<td>
-					<input type=button name="search" id="search" value="登录" onClick="doLogin()"/>
-				</td>
-			</tr>
-		</table>
-	</form>
+	<div style="margin:0 auto;width:400px;height:200px; position: fixed;top: 50%;botoom: 50%; left:50%; right:50%;">
 
+		<div style="margin-left:-200px;margin-top:-200px;width:400px;height:200px;">
+			<form name="form" id="form" modelAttribute="dataModels" action="${ctx}/login/checklogin" method="post"  autocomplete="off">
+			
+				<table width="400px" style='margin:0px auto;border-collapse:separate; border-spacing:10px;'>
+					<tr height="30px">
+						<td width="60px">
+							用户名：
+						</td>
+						<td width="150px" colspan=3>
+							<input type=text name="loginId" id="loginId" value="${DisplayData.loginId}" style="height:30px" />
+						</td>
+					</tr>
+					<tr height="30px">
+						<td width="60px">
+							密码：
+						</td>
+						<td width="150px" colspan=3>
+							<input type=password name="pwd" id="pwd" value="" style="height:30px" />
+						</td>
+					</tr>
+					<tr height="30px">
+						<td width="60px">
+							验证码：
+						</td>
+						<td width="150px">
+			 				<input type="text" name="verifyCode" id="verifyCode" style="height:30px" />
+			 			</td>
+			 			<td width="100px">
+			        			<img id="imgObj" src="${ctx}/login/verifyCode" height="100%" width="100%"></img>
+			        	</td>
+			        	<td width="60px">
+			        		<a href="#" onclick="changeImg();">换一张</a>
+			        	</td>
+			        </tr>	
+					<tr height="30px">
+						<td></td>
+						<td align="center">
+							<button type="button" id="login" class="DTTT_button" style="width:50px" value="登陆" onClick="doLogin();">登陆</button>
+						</td>
+						<td colspan=2></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
 </body>
 
 <script>
