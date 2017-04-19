@@ -14,8 +14,12 @@ import com.ys.business.db.data.B_ExternalSampleData;
 import com.ys.business.db.data.B_LatePerfectionQuestionData;
 import com.ys.business.db.data.B_LatePerfectionRelationFileData;
 import com.ys.business.db.data.B_MouldAcceptanceData;
+import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_MouldContractBaseInfoData;
+import com.ys.business.db.data.B_MouldContractDetailData;
+import com.ys.business.db.data.B_MouldContractRegulationData;
 import com.ys.business.db.data.B_MouldDetailData;
+import com.ys.business.db.data.B_MouldFactoryData;
 import com.ys.business.db.data.B_MouldPayInfoData;
 import com.ys.business.db.data.B_MouldPayListData;
 import com.ys.business.db.data.B_ProcessControlData;
@@ -26,13 +30,17 @@ import com.ys.system.db.data.S_DICData;
 public class MouldContractModel extends BaseModel {
 	private final String className = "com.ys.business.service.mouldcontract.MouldContractService";
 	private String keyBackup = "";
+	private B_MouldBaseInfoData mouldBaseInfoData = new B_MouldBaseInfoData();
+	private B_MouldFactoryData mouldFactoryData = new B_MouldFactoryData();
 	private B_MouldContractBaseInfoData mouldContractBaseInfoData = new B_MouldContractBaseInfoData();
-	private B_MouldDetailData mouldDetailData = new B_MouldDetailData();
+	private B_MouldContractRegulationData mouldContractRegulationData = new B_MouldContractRegulationData();
+	private B_MouldContractDetailData mouldContractDetailData = new B_MouldContractDetailData();
 	private B_MouldAcceptanceData mouldAcceptanceData = new B_MouldAcceptanceData();
 	private B_MouldPayInfoData mouldPayInfoData = new B_MouldPayInfoData();
 	private B_MouldPayListData mouldPayListData = new B_MouldPayListData();
 
 	private String mouldBaseId = "";
+	private String mouldId = "";
 	private String contractId = "";
 	private String contractYear = "";
 	private String productModelId = "";
@@ -65,6 +73,7 @@ public class MouldContractModel extends BaseModel {
 	private ArrayList<ListOption> typeList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> belongList = new ArrayList<ListOption>();
 	private ArrayList<HashMap<String, String>> regulations = new ArrayList<HashMap<String, String>>(); 
+	private ArrayList<HashMap<String, String>> mouldDetails = new ArrayList<HashMap<String, String>>();
 	
 	public String getClassName() {
 		return this.className;
@@ -78,6 +87,20 @@ public class MouldContractModel extends BaseModel {
 		this.keyBackup = keyBackup;
 	}
 	
+	public B_MouldBaseInfoData getMouldBaseInfoData() {
+		return this.mouldBaseInfoData;
+	}
+	public void setMouldBaseInfoData(B_MouldBaseInfoData mouldBaseInfoData) {
+		this.mouldBaseInfoData = mouldBaseInfoData;
+	}
+	
+	public B_MouldFactoryData getMouldFactoryData() {
+		return this.mouldFactoryData;
+	}
+	public void setMouldFactoryData(B_MouldFactoryData mouldFactoryData) {
+		this.mouldFactoryData = mouldFactoryData;
+	}
+	
 	public B_MouldContractBaseInfoData getMouldContractBaseInfoData() {
 		return this.mouldContractBaseInfoData;
 	}
@@ -85,11 +108,18 @@ public class MouldContractModel extends BaseModel {
 		this.mouldContractBaseInfoData = mouldContractBaseInfoData;
 	}
 
-	public B_MouldDetailData getMouldDetailData() {
-		return this.mouldDetailData;
+	public B_MouldContractDetailData getMouldContractDetailData() {
+		return this.mouldContractDetailData;
 	}
-	public void setMouldDetailData(B_MouldDetailData mouldDetailData) {
-		this.mouldDetailData = mouldDetailData;
+	public void setMouldContractDetailData(B_MouldContractDetailData mouldContractDetailData) {
+		this.mouldContractDetailData = mouldContractDetailData;
+	}	
+	
+	public B_MouldContractRegulationData getMouldContractRegulationData() {
+		return this.mouldContractRegulationData;
+	}
+	public void setMouldContractRegulationData(B_MouldContractRegulationData mouldContractRegulationData) {
+		this.mouldContractRegulationData = mouldContractRegulationData;
 	}	
 	
 	public B_MouldPayInfoData getMouldPayInfoData() {
@@ -119,6 +149,13 @@ public class MouldContractModel extends BaseModel {
 	public void setMouldBaseId(String mouldBaseId) {
 	    this.mouldBaseId = mouldBaseId;
 	}
+	public String getMouldId() {
+		return this.mouldId;
+	}
+	public void setMouldId(String mouldId) {
+	    this.mouldId = mouldId;
+	}
+
 	public String getContractId() {
 	    return this.contractId;
 	}
@@ -313,5 +350,12 @@ public class MouldContractModel extends BaseModel {
 	public void setRegulations(ArrayList<HashMap<String, String>> regulations) {
 		this.regulations = regulations;
 	}
-	
+
+	public ArrayList<HashMap<String, String>> getMouldDetails() {
+		return this.mouldDetails;
+	}
+	public void setMouldDetails(ArrayList<HashMap<String, String>> mouldDetails) {
+		this.mouldDetails = mouldDetails;
+	}
+
 }

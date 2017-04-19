@@ -431,7 +431,7 @@
 								<label id="name" name="name" style="margin:0px 10px">${DisplayData.mouldBaseInfoData.name}</label>
 							</td>
 							<td class="label" width="50px">
-								出模数-一出：
+								出模数-&nbsp;<p>一出：
 							</td>					
 							<td>
 								<label id="unloadingNum" name="unloadingNum" style="margin:0px 10px">${DisplayData.mouldBaseInfoData.unloadingnum}</label>

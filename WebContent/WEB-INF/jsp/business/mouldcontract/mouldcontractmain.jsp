@@ -64,7 +64,6 @@
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "contractId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "productModelId", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "parentName", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "type", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "supplierName", "defaultContent" : '',"className" : 'td-center'},
@@ -76,7 +75,7 @@
 					    		{"targets":0,"render":function(data, type, row){
 									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
 			                    }},
-					    		{"targets":8,"render":function(data, type, row){
+					    		{"targets":7,"render":function(data, type, row){
 					    			return "<a href=\"#\" onClick=\"doUpdate('" + row["id"] + "')\">查看</a>"
 			                    }}
 			           
@@ -234,7 +233,6 @@
 							<tr class="selected">
 								<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具合同编号:" class="dt-middle sorting_disabled">模具合同编号</th>
-								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="机器型号:" class="dt-middle sorting_disabled">机器型号</th>
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="类型分类" class="dt-middle sorting_disabled">类型分类</th>
 								<th colspan="1" rowspan="1" style="width: 60px;" aria-label="模具类型" class="dt-middle sorting_disabled">模具类型</th>
 								<th colspan="1" rowspan="1" style="width: 120px;" aria-label="模具供应商" class="dt-middle sorting_disabled">模具供应商</th>
