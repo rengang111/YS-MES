@@ -157,23 +157,7 @@ function ajaxMouldContractDetailList() {
 							"data" : JSON.stringify(aoData),
 							success: function(data){
 								fnCallback(data);
-								var rowNode = $('#MouldContractDetailList')
-								.DataTable()
-								.row
-								.add(
-								  [
-									'<td></td>',
-									'<td></td>',
-									'<td></td>',
-									'<td></td>',
-									'<td></td>',
-									'<td></td>',
-									'<td></td>',
-									'<td>合计</td>',
-									'<td><label  name="sumNum" id="sumNum"></label></td>',
-									'<td><label  name="sumPrice" id="sumPrice"></label></td>',
-									'<td</td>'
-									]).draw();
+								
 							},
 							 error:function(XMLHttpRequest, textStatus, errorThrown){
 				             }
@@ -195,16 +179,16 @@ function ajaxMouldContractDetailList() {
 		        	},
 					"columns" : [ 
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "mouldId", "className" : 'td-center'}, 
-						{"data" : "name", "className" : 'td-center'},
-						{"data" : "size", "className" : 'td-center'},
-						{"data" : "weight", "className" : 'td-center'},
-						{"data" : "materialQuality", "className" : 'td-center'},
-						{"data" : "unloadingNum", "className" : 'td-center'},
-						{"data" : "price", "className" : 'td-center'},
-						{"data" : "number", "className" : 'td-center'},
-						{"data" : "totalPrice", "className" : 'td-center'},
-						{"data" : null, "className" : 'td-center'},
+						{"data" : "mouldId", "defaultContent" : '', "className" : 'td-center'}, 
+						{"data" : "name", "defaultContent" : '', "className" : 'td-center'},
+						{"data" : "size", "defaultContent" : '', "className" : 'td-center'},
+						{"data" : "weight", "defaultContent" : '', "className" : 'td-center'},
+						{"data" : "materialQuality", "defaultContent" : '', "className" : 'td-center'},
+						{"data" : "unloadingNum", "defaultContent" : '', "className" : 'td-center'},
+						{"data" : "price", "defaultContent" : '', "className" : 'td-center'},
+						{"data" : "number", "defaultContent" : '', "className" : 'td-center'},
+						{"data" : "totalPrice", "defaultContent" : '', "className" : 'td-center'},
+						{"data" : null, "defaultContent" : '', "className" : 'td-center'},
 					],
 					"columnDefs":[
 						{"targets":0,"render":function(data, type, row){
@@ -213,7 +197,11 @@ function ajaxMouldContractDetailList() {
 							return row["rownum"]// + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
 						}},
 						{"targets":10,"render":function(data, type, row){
-							return "<a href=\"#\" onClick=\"doUpdateDetail('" + row["id"] + "')\">编辑</a>&nbsp;" + "<a href=\"#\" onClick=\"doDeleteDetail('" + row["id"] + "')\">删除</a>"
+							if (row["price"] == '合计'){
+								return ''	
+							} else {
+								return "<a href=\"#\" onClick=\"doUpdateDetail('" + row["id"] + "')\">编辑</a>&nbsp;" + "<a href=\"#\" onClick=\"doDeleteDetail('" + row["id"] + "')\">删除</a>"
+							}
 						}},
 				    ] 						
 				});
@@ -275,16 +263,16 @@ function ajaxMouldContractDetailList2() {
 		},
 		
 		"columns" : [ 
-		        	{"className":"dt-body-center"
-				}, {"className":"dt-body-center"
-				}, {"className":"dt-body-center"
-				}, {"className":"dt-body-center"
-				}, {"className":"dt-body-center"
-				}, {"className":"dt-body-center"
-				}, {"className":"dt-body-center"
-				}, {"className":"dt-body-center"
-				}, {"className":"dt-body-right"				
-				}, {"className":"dt-body-left"				
+		        	{"className":"dt-body-center", "data":null,"defaultContent":''
+				}, {"className":"dt-body-center", "data":null,"defaultContent":''
+				}, {"className":"dt-body-center", "data":null,"defaultContent":''
+				}, {"className":"dt-body-center", "data":null,"defaultContent":''
+				}, {"className":"dt-body-center", "data":null,"defaultContent":''
+				}, {"className":"dt-body-center", "data":null,"defaultContent":''
+				}, {"className":"dt-body-center", "data":null,"defaultContent":''
+				}, {"className":"dt-body-center", "data":null,"defaultContent":''
+				}, {"className":"dt-body-right" , "data":null,"defaultContent":''
+				}, {"className":"dt-body-left", "data":null,"defaultContent":''				
 				}			
 			]
 		
@@ -329,6 +317,7 @@ $.fn.dataTable.TableTools.buttons.add_rows = $
 		$.fn.dataTable.TableTools.buttonBase,
 		{
 			"fnClick" : function(button) {
+				
 				var key = $("#keyBackup").val();
 				var url = "${ctx}/business/mouldcontract?methodtype=adddetailsinit&mouldId=" + key;
 				openLayer(url, '', 300, false);

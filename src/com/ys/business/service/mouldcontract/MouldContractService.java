@@ -1064,6 +1064,37 @@ public class MouldContractService extends BaseService {
 			
 		}
 		
+		if (dataModel.getYsViewData().size() > 0) {
+			float sumNum = 0;
+			float sumPrice = 0;
+			for(HashMap<String, String> rowData:dataModel.getYsViewData()) {
+				String num = rowData.get("number");
+				String totalPrice = rowData.get("totalPrice");
+				if (!num.equals("")) {
+					sumNum += Float.parseFloat(num);
+				}
+				if (!totalPrice.equals("")) {
+					sumPrice += Float.parseFloat(totalPrice);
+				}
+			}
+			HashMap<String, String> sumRow = new HashMap<String, String>();
+			sumRow.put("id", "");
+			sumRow.put("mouldFactoryId", "");
+			sumRow.put("supplierId", "");
+			sumRow.put("supplierName", "");
+			sumRow.put("viewList", "");
+			sumRow.put("mouldId", "");
+			sumRow.put("name", "");
+			sumRow.put("materialQuality", "");
+			sumRow.put("size", "");
+			sumRow.put("weight", "");
+			sumRow.put("unloadingNum", "");
+			sumRow.put("price", "合计");
+			sumRow.put("number", String.valueOf(sumNum));
+			sumRow.put("totalPrice", String.valueOf(sumPrice));
+			dataModel.getYsViewData().add(sumRow);
+		}
+		
 		modelMap.put("sEcho", sEcho); 
 		
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
