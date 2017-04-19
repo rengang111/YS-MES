@@ -454,7 +454,7 @@
 <script  type="text/javascript">
 function baseBomView() {
 
-	var bomId=$('#bomId').text();
+	var materialId='${order.materialId}';
 	var table = $('#orderBomTable').dataTable();
 	if(table) {
 		table.fnDestroy();
@@ -468,7 +468,7 @@ function baseBomView() {
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
 		"async" : false,
-		"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBom&bomId="+bomId,				
+		"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBom&materialId="+materialId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
 				"url" : sSource,

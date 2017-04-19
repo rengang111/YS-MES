@@ -279,7 +279,7 @@
       <f name="b.fax" alias="" ctype="" />
       <f name="b.mobile" alias="" ctype="" />
     </select>
-    <from>v_purchaseplan a LEFT JOIN v_supplierbasicinfo b ON a.supplierId = b.supplierID AND b.DELETEFLAG = '0' LEFT JOIN b_purchaseorder c ON a.supplierId = c.supplierId AND c.deleteFlag = '0'</from>
+    <from>v_purchaseplan a LEFT JOIN v_supplierbasicinfo b ON a.supplierId = b.supplierID AND b.DELETEFLAG = '0' LEFT JOIN b_purchaseorder c ON a.YSId = c.YSID AND a.supplierId = c.supplierId AND c.deleteFlag = '0'</from>
     <orderby>a.materialId</orderby>
     <groupby></groupby>
     <having></having>

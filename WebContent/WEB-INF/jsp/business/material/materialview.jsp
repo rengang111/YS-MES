@@ -320,7 +320,7 @@ function autoAddSubid() {
 		trHtml+="<td width='60px'>";
 		trHtml+="</td>";
 		trHtml+="<td class='td-center'>";		  
-		trHtml+="<label>"+subid+"</a></label>";
+		trHtml+="<label><a href=\"#\" onClick=\"doSubDetail('" + recordid +"','"+ parentid + "')\">"+subid+"</a></label>";
 		trHtml+="<input name='materialLines["+i+"].recordid'    id='materialLines"+i+".recordid'   type='hidden' value='"+recordid+"' />";
 		trHtml+="</td>";
 		trHtml+="<td class='td-center'>";
@@ -332,7 +332,7 @@ function autoAddSubid() {
 			trHtml+="<label>"+des+"</label>";
 		
 		}else{
-			trHtml+="<label><a href=\"#\" onClick=\"doSubDetail('" + recordid +"','"+ parentid + "')\">"+des+"</a></label>";
+			trHtml+="<label>"+des+"</label>";
 			
 		}
 		trHtml+="</td>";

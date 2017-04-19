@@ -325,23 +325,7 @@ public class RequirementService extends CommonService {
 		dao.Create(data);	
 	}	
 	
-	private void insertInventory(
-			String availabel) throws Exception{
-		
-		B_InventoryDao dao = new B_InventoryDao();
-		B_InventoryData data = new B_InventoryData();
-		
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"AvailabelInsert",userInfo);
 
-		copyProperties(data,commData);
-		
-		guid = BaseDAO.getGuId();
-		data.setRecordid(guid);
-		data.setAvailabeltopromise(availabel);
-		
-		dao.Create(data);	
-	}	
 	
 	private void insertBomPlan(
 			B_BomPlanData data) throws Exception{
@@ -451,13 +435,18 @@ public class RequirementService extends CommonService {
 			}
 			
 			//虚拟库存处理
+			/*
 			for(B_PurchasePlanData data:reqDataList ){
 
-				String availabel = data.getQuantity();
-				insertInventory(availabel);
+				B_InventoryData d = new B_InventoryData();
+				d.setMaterialid(data.getMaterialid());
+				d.setAvailabeltopromise(data.getQuantity());
+				
+				updateInventory(d);
 				
 				
 			}
+			*/
 			//orderBomInsert(accessFlg);
 			
 			ts.commit();
@@ -1245,7 +1234,8 @@ public class RequirementService extends CommonService {
 	
 	public HashMap<String, Object> showOrderBomDetail() throws Exception {
 
-		String bomId = request.getParameter("bomId");
+		String materialId = request.getParameter("materialId");
+		String bomId = BusinessService.getBaseBomId(materialId)[1];
 		
 		return getOrderBomDetail(bomId);		
 	}
