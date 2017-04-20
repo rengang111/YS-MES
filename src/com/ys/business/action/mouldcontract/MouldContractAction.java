@@ -65,8 +65,10 @@ public class MouldContractAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "addinit":
+				rtnUrl = doAddInit(model, session, request, response);
+				break;				
 			case "updateinit":
-				rtnUrl = doGetMouldContractBaseInfo(model, session, request, response);
+				rtnUrl = doGetMouldContractBaseInfo(model, session, request, response, false);
 				break;
 			case "add":
 			case "update":
@@ -77,10 +79,6 @@ public class MouldContractAction extends BaseAction {
 				viewModel = doDelete(data, session, request, response);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
-			case "deleteDetail":
-				viewModel = doDeleteDetail(data, session, request, response);
-				printOutJsonObj(response, viewModel.getEndInfoMap());
-				return null;
 			case "getMouldDetailList":
 				dataMap = getMouldDetailList(data, session, request, response);
 				printOutJsonObj(response, dataMap);
@@ -88,19 +86,6 @@ public class MouldContractAction extends BaseAction {
 			case "getPayList":
 				dataMap = getPayList(data, session, request, response);
 				printOutJsonObj(response, dataMap);
-				return null;
-			case "addmdinit":		
-			case "updatemdinit":
-				rtnUrl = doUpdateMdInit(model, session, request, response);
-				break;				
-			case "deletemd":
-			case "deletemoulddetail":
-				viewModel = doDeleteMd(data, session, request, response);
-				printOutJsonObj(response, viewModel.getEndInfoMap());
-				return null;
-			case "updatemoulddetail":
-				viewModel = doUpdateMd(data, session, request, response);
-				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
 			case "addacceptance":
 			case "updateacceptance":
@@ -147,6 +132,58 @@ public class MouldContractAction extends BaseAction {
 				dataMap = doTypeSearch(data, request);
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "factorySearch":
+				dataMap = doFactorySearch(data, request);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "mouldcontractedit":
+				rtnUrl = doGetMouldContractBaseInfo(model, session, request, response, false);
+				rtnUrl = "/business/mouldcontract/mouldcontractedit";
+				break;
+			case "getMouldContractDetailList":
+				dataMap = getMouldContractDetailList(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "getMouldContractRegulationList":
+				dataMap = getMouldContractRegulationList(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "updateregulaltioninit":
+				doGetMouldContractBaseInfo(model, session, request, response, true);
+				rtnUrl = doUpdateRegulationInit(model, session, request, response);
+				break;
+			case "updatedetailsinit":
+				doGetMouldContractBaseInfo(model, session, request, response, true);
+				rtnUrl = doUpdateDetailsInit(model, session, request, response);
+				break;
+				
+			case "addregulationinit":
+				doGetMouldContractBaseInfo(model, session, request, response, true);
+				rtnUrl = doUpdateRegulationInit(model, session, request, response);
+				break;
+				
+			case "adddetailsinit":
+				doGetMouldContractBaseInfo(model, session, request, response, true);
+				rtnUrl = doUpdateDetailsInit(model, session, request, response);
+				break;
+				
+			case "deleteregulation":
+				viewModel = doDeleteRegulation(data, session, request, response);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
+				
+			case "deletedetails":
+				viewModel = doDeleteDetail(data, session, request, response);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
+			case "updateRegulation":
+				viewModel = doUpdateRegulation(data, session, request, response);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;				
+			case "updateDetails":
+				viewModel = doUpdateDetails(data, session, request, response);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 		}
 		
 		return rtnUrl;
@@ -171,10 +208,15 @@ public class MouldContractAction extends BaseAction {
 		return dataMap;
 	}	
 	
-	public String doGetMouldContractBaseInfo(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doGetMouldContractBaseInfo(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response, boolean isSubForm){
 
 		MouldContractModel dataModel = new MouldContractModel();
-		String key = request.getParameter("key");
+		String key = "";
+		if (isSubForm) {
+			key = request.getParameter("mouldId");
+		} else {
+			key = request.getParameter("key");
+		}
 		try {
 			dataModel = mouldContractService.getMouldContractBaseInfo(request, key);
 		}
@@ -184,8 +226,39 @@ public class MouldContractAction extends BaseAction {
 		}
 		model.addAttribute("DisplayData", dataModel);
 		
-		return "/business/mouldcontract/mouldcontractedit";
+		return "/business/mouldcontract/mouldcontractedit2";
 	}		
+	
+	public String doGetMouldContractBaseInfo1(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+
+		MouldContractModel dataModel = new MouldContractModel();
+		String key = request.getParameter("mouldId");
+		try {
+			dataModel = mouldContractService.getMouldContractBaseInfo(request, key);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataModel.setMessage("发生错误，请联系系统管理员");
+		}
+		model.addAttribute("DisplayData", dataModel);
+		
+		return "/business/mouldcontract/mouldcontractedit2";
+	}	
+	
+	public String doAddInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+
+		MouldContractModel dataModel = new MouldContractModel();
+		try {
+			dataModel = mouldContractService.doAddInit(request);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataModel.setMessage("发生错误，请联系系统管理员");
+		}
+		model.addAttribute("DisplayData", dataModel);
+		
+		return "/business/mouldcontract/mouldcontractedit";
+	}	
 	
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doSupplierSearch(@RequestBody String data, HttpServletRequest request){
@@ -299,25 +372,7 @@ public class MouldContractAction extends BaseAction {
 		
 		return dataMap;
 	}
-	
-	public String doUpdateMdInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-
-		MouldContractModel dataModel = new MouldContractModel();
-		String mouldBaseId = request.getParameter("mouldBaseId");
-		String key = request.getParameter("key");
-
-		try {
-			dataModel = mouldContractService.doUpdateMdInit(request, mouldBaseId, key);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("发生错误，请联系系统管理员");
-		}
-		model.addAttribute("DisplayData", dataModel);
 		
-		return "/business/mouldcontract/mouldcontractmoulddetailedit";
-	}	
-	
 	public MouldContractModel doUpdateAcceptance(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		MouldContractModel model = new MouldContractModel();
@@ -356,12 +411,22 @@ public class MouldContractAction extends BaseAction {
 		return "/business/mouldcontract/mouldcontractpayedit";
 	}	
 	
-	public MouldContractModel doUpdateMd(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public MouldContractModel doUpdateRegulation(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		MouldContractModel model = new MouldContractModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = mouldContractService.doUpdateMd(request, data, userInfo);
+		model = mouldContractService.doUpdateRegulation(request, data, userInfo);
+		
+		return model;
+	}	
+	
+	public MouldContractModel doUpdateDetails(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		
+		MouldContractModel model = new MouldContractModel();
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		model = mouldContractService.doUpdateDetails(request, data, userInfo);
 		
 		return model;
 	}		
@@ -376,11 +441,11 @@ public class MouldContractAction extends BaseAction {
 		return model;
 	}	
 	
-	public MouldContractModel doDeleteMd(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public MouldContractModel doDeleteMouldContractDetail(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		MouldContractModel model = new MouldContractModel();
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = mouldContractService.doDeleteMd(request, data, userInfo);
+		model = mouldContractService.doDeleteDetail(request, data, userInfo);
 
 		return model;
 	}
@@ -413,10 +478,18 @@ public class MouldContractAction extends BaseAction {
 		return model;
 	}
 
+	public MouldContractModel doDeleteRegulation(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		MouldContractModel model = new MouldContractModel();
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		model = mouldContractService.doDeleteRegulation(request, data, userInfo);
+		
+		return model;
+	}
+	
 	public MouldContractModel doDeleteDetail(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		MouldContractModel model = new MouldContractModel();
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		model = mouldContractService.doDelete(request, data, userInfo);
+		model = mouldContractService.doDeleteDetail(request, data, userInfo);
 		
 		return model;
 	}
@@ -449,5 +522,93 @@ public class MouldContractAction extends BaseAction {
 		}
 		
 		return dataMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doFactorySearch(@RequestBody String data, HttpServletRequest request){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = mouldContractService.doFactorySearch(request);
+			
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			//dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> getMouldContractDetailList(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			dataMap = mouldContractService.getMouldContractDetailList(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> getMouldContractRegulationList(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			dataMap = mouldContractService.getMouldContractRegulationList(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public String doUpdateRegulationInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+
+		MouldContractModel dataModel = new MouldContractModel();
+		try {
+			dataModel = mouldContractService.doUpdateRegulationInit(request, (MouldContractModel)model.asMap().get("DisplayData"));
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataModel.setMessage("发生错误，请联系系统管理员");
+		}
+		model.addAttribute("DisplayData", dataModel);
+		
+		return "/business/mouldcontract/mouldcontractregulationedit";
+	}
+	
+	public String doUpdateDetailsInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+
+		MouldContractModel dataModel = new MouldContractModel();
+		try {
+			dataModel = mouldContractService.doUpdateDetailsInit(request, (MouldContractModel)model.asMap().get("DisplayData"));
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataModel.setMessage("发生错误，请联系系统管理员");
+		}
+		model.addAttribute("DisplayData", dataModel);
+		
+		return "/business/mouldcontract/mouldcontractdetailsedit";
 	}
 }

@@ -173,14 +173,10 @@ function initEvent(){
 	
 	validatorBaseInfo = $("#mouldContractBaseInfo").validate({
 		rules: {
-			productModelId: {
-				required: true,
-				minlength: 1,
-				maxlength: 120,
-			},
 			contractYear: {
 				required: true,
 				digits: true,
+				isYear: true,
 			},
 			type: {
 				required: true,
@@ -265,7 +261,7 @@ $(document).ready(function() {
 
 	initEvent();
 	
-	ajaxMouldContractDetailList();
+	//ajaxMouldContractDetailList();
 	//ajaxMouldContractRegulationList();
 	
 	if ($('#contractYear').val() == '') {
@@ -288,9 +284,10 @@ $(document).ready(function() {
 		</c:forEach>
 
 	} else {
-		addRegulationTr('', '');
+		//addRegulationTr('', '');
 		$('#type').focus();
 	}
+	
 	
 })
 
@@ -341,7 +338,6 @@ function getMouldContractId() {
 	} else {
 		$('#contractId').html("");
 		$('#mouldType').html("");
-		$('#typeDesc').html("");
 		$('#supplierIdView').attr("disabled", true);
 	}
 }
@@ -390,11 +386,11 @@ function addRegulationTr(name, money){
 	var trHtml = "";
 	
 	trHtml += "<tr>";
-	trHtml += "<td class='td-center'>";
-	trHtml += "<input name='regulations[" + i + "].name' id='regulations[" + i + "].name' type='text' class='mini' value='" + name + "'/>";
+	trHtml += "<td class='td-left'>";
+	trHtml += "<input name='regulations[" + i + "].name' id='regulations[" + i + "].name' type='text' style='width:150px' value='" + name + "'/>";
 	trHtml += "</td>";
-	trHtml += "<td class='td-center'>";
-	trHtml += "<input name='regulations[" + i + "].money' id='regulations[" + i + "].money' type='text' class='mini' value='" + money + "'/>";
+	trHtml += "<td class='td-left'>";
+	trHtml += "<input name='regulations[" + i + "].money' id='regulations[" + i + "].money' type='text'  style='width:150px' value='" + money + "'/>";
 	trHtml += "</td>";
 	trHtml += "</tr>";			
 	$('#MouldContractRegulationList tr:last').after(trHtml);
@@ -455,9 +451,12 @@ function doSave() {
 		
 		var message = "${DisplayData.endInfoMap.message}";
 		
+		
+		
 		if ($('#keyBackup').val() == "") {				
 			//新建
 			actionUrl = "${ctx}/business/mouldcontract?methodtype=add";
+			message = "模具类型以及供应商选定后将无法修改。" + message;
 		} else {
 			//修正
 			actionUrl = "${ctx}/business/mouldcontract?methodtype=update";
@@ -478,11 +477,19 @@ function doSave() {
 					if (d.rtnCd != "000") {
 						alert(d.message);	
 					} else {
+						var x = new Array();
+						x = d.info.split("|");
+						controlButtons(x[0]);
+						$('#contractId').html(x[1]);
+						
 						//reloadMouldContractDetailList();
 						$('oldContractYear').val($('contractYear').val());
 						$('oldType').val($('type').val());
 						$('oldSupplierIdView').val($('oldSupplierIdView').val());
 						parent.reload();
+						
+						var url = "${ctx}/business/mouldcontract?methodtype=updateinit&key=" + x[0];
+						location.href = url;
 						//reloadTabWindow();
 					}
 					
@@ -633,8 +640,7 @@ function autoCompleteType() {
 		select : function(event, ui) {
 
 			$("#type").val(ui.item.id);
-			$("#mouldType").html(ui.item.parentId);
-			$("#typeDesc").html(ui.item.parentName);
+			$("#mouldType").html(ui.item.parentId + "&nbsp;" + ui.item.parentName);
 			getMouldContractId();
 			//$("#factoryProductCode").focus();
 		},
@@ -645,8 +651,7 @@ function autoCompleteType() {
             if(ui.item == null) {
                 $(this).val('');
 				$("#mouldType").html('');
-				$("#typeDesc").html('');
-                $('#mouldId').html('');
+                $('#contractId').html('');
             }
         },
 		
@@ -690,18 +695,18 @@ function doReturn() {
 				
 				<legend>模具合同-基本信息</legend>
 				<div style="height:10px"></div>
-				<button type="button" id="delete" class="DTTT_button" onClick="doDelete();"
-						style="height:25px;margin:-20px 30px 0px 0px;float:right;">删除</button>
-				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
-				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
-				<div  style="height:20px"></div>
-				<table class="form" width="1100px" cellspacing="0" style="table-layout:fixed">
+				<table class="form" width="1100px" cellspacing="0">
 					<tr>
 						<td width="60px">编号：</td>
 						<td width="130px">
 							<label id="contractId" name="contractId" style="margin:0px 10px">${DisplayData.mouldContractBaseInfoData.contractid}</label>
 						</td>
+						<td width="60px">模具类型：</td>
+						<td width="140px" colspan = 3>
+							<label id="mouldType" name="mouldType">${DisplayData.mouldType}&nbsp;${DisplayData.typeDesc}</label>
+						</td>
+					</tr>
+					<tr>
 						<td width="60px">年份：</td>
 						<td width="130px">
 							<input type="text" name="contractYear" id="contractYear" class="mini" value="${DisplayData.mouldContractBaseInfoData.contractyear}"></input>
@@ -710,20 +715,6 @@ function doReturn() {
 						<td width="150px">
 							<form:input path="type"	class="short" onBlur="changeWorkingMode();" value="${DisplayData.mouldContractBaseInfoData.type}"/>
 						</td>
-						<td width="60px">模具类型：</td>
-						<td width="140px">
-							<label name="mouldType" id="mouldType" >${DisplayData.mouldType}</label>
-						</td>
-						<td width="60px">类型解释：</td>
-						<td width="140px">
-							<label name="typeDesc" id="typeDesc" class="short" class="read-only short">${DisplayData.typeDesc}</label>
-						</td>
-					</tr>
-					<tr>
-						<td width="60px">机器型号：</td>
-						<td width="130px">
-							<input type=text name="productModelId" id="productModelId" class="required mini" value="${DisplayData.mouldContractBaseInfoData.productmodelid}"/>
-						</td>
 						<td width="50px">
 							供应商ID：
 						</td>
@@ -731,11 +722,13 @@ function doReturn() {
 							<input type="text" id="supplierIdView" name="supplierIdView" class="short" value="${DisplayData.supplierIdView}" disabled></input>
 						</td>
 						<td width="50px">
-							供应商名称：
+							名称：
 						</td>
-						<td width="100px">
+						<td width="150px">
 							<label id="supplierName" name="supplierName" >${DisplayData.supplierName}</label>
 						</td>
+					</tr>
+					<tr>
 						<td>
 							合同日期：
 						</td>
@@ -747,17 +740,6 @@ function doReturn() {
 						</td>
 						<td>
 							<input type="text" id="deliverDate" name="deliverDate" class="short" value="${DisplayData.deliverDate}"></input>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							模具归属：
-						</td>
-						<td>
-							<form:select path="belong">
-								<form:options items="${DisplayData.belongList}" itemValue="key"
-									itemLabel="value" />
-							</form:select>
 						</td>
 						<td>
 							我方费用：
@@ -774,58 +756,27 @@ function doReturn() {
 					</tr>
 					<tr>
 						<td>
+							模具归属：
+						</td>
+						<td colspan=7>
+							<form:select path="belong">
+								<form:options items="${DisplayData.belongList}" itemValue="key"
+									itemLabel="value" />
+							</form:select>
+						</td>
+					</tr>
+					<tr>
+						<td>
 							返还条件：
 						</td>
-						<td colspan=9>
+						<td colspan=7>
 							<textarea id="returnCase" name="returnCase" cols=50 rows=2>${DisplayData.mouldContractBaseInfoData.returncase}</textarea>
 						</td>
 					</tr>
 				</table>
-				
-				<div  style="height:20px"></div>
-				<legend>合同增减项</legend>
-				<div>
-				<button type="button" id="printmd" class="DTTT_button" onClick="addRegulationTr('', '');"
-						style="height:25px;margin:-20px 920px 0px 0px;float:right;" >新建</button>				
-				</div>
-				<div style="height:10px"></div>
-				<div class="list" style="width:160px">
-					<table id="MouldContractRegulationList" class="display" cellspacing="0" width="160px" style="table-layout:fixed">
-						<tr class="selected">
-							<th style="width: 80px;" class="dt-middle">名称</th>
-							<th style="width: 80px;" class="dt-middle">金额</th>
-						</tr>
-					</table>
-				</div>
-				
-				<div  style="height:20px"></div>
-				<legend>模具详情</legend>
-				<div>
-				<button type="button" id="printmd" class="DTTT_button" onClick="doPrintContract();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >打印模具合同</button>
-				<button type="button" id="printmd" class="DTTT_button" onClick="doCreateContract();"
-						style="height:25px;margin:-20px 5px 0px 0px;float:right;" >新建</button>				
-				</div>
-				<div style="height:10px"></div>
-				<div class="list">
-					<table id="MouldContractDetailList" class="display" cellspacing="0">
-						<thead>
-							<tr class="selected">
-								<th style="width: 40px;" class="dt-middle">No</th>
-								<th style="width: 80px;" class="dt-middle">编号</th>
-								<th style="width: 80px;" class="dt-middle">名称</th>
-								<th style="width: 80px;" class="dt-middle">尺寸</th>
-								<th style="width: 80px;" class="dt-middle">重量</th>
-								<th style="width: 80px;" class="dt-middle">材质</th>
-								<th style="width: 80px;" class="dt-middle">出模数</th>
-								<th style="width: 80px;" class="dt-middle">单价</th>
-								<th style="width: 80px;" class="dt-middle">数量</th>
-								<th style="width: 80px;" class="dt-middle">总价</th>
-								<th style="width: 80px;" class="dt-middle">操作</th>
-							</tr>
-						</thead>
-					</table>
-				</div>
+				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:10px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
+				<button type="button" id="edit" class="DTTT_button" onClick="doSave();"
+						style="height:25px;margin:10px 5px 0px 0px;float:right;" >保存</button>
 			</form:form>
 		</div>
 </html>

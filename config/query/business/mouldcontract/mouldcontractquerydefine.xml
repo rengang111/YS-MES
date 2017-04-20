@@ -337,5 +337,87 @@
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="factorysearch" />
+    <where>
+      <w name="A.type" des=""  reqName="type" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="B.mouldFactoryId" des=""  reqName="supplierId" dtype="ch" oper="="  lg="" bt="" />
+     </where>
+    <select>
+      <f name="DISTINCT A.id" alias="" ctype="" />
+      <f name="B.id" alias="mouldFactoryId" ctype="" />
+      <f name="C.supplierId" alias="" ctype="" />
+      <f name="C.shortName" alias="supplierName" ctype="" />
+      <f name="CONCAT_WS(' | ', A.mouldId, A.name, CONCAT('单价:', B.price), CONCAT('模具信息:', CONCAT_WS('|', A.size, A.weight, A.materialQuality, A.unloadingNum)))" alias="viewList" ctype="" />
+      <f name="A.mouldId" alias="" ctype="" />
+      <f name="A.name" alias="" ctype="" />
+      <f name="A.materialQuality" alias="" ctype="" />
+      <f name="A.size" alias="" ctype="" />
+      <f name="A.weight" alias="" ctype="" />
+      <f name="A.unloadingNum" alias="" ctype="" />
+      <f name="B.price" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldBaseInfo AS A, b_MouldFactory as B,  b_supplier as C WHERE A.deleteFlag = '0' AND B.deleteFlag = '0' AND C.deleteFlag = '0' AND B.mouldId = A.id AND C.recordId = B.mouldFactoryId </from>
+    <orderby>A.mouldId, A.name, B.price</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 
+  <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_getdetails" />
+    <where>
+      <w name="A.mouldContractBaseId" des=""  reqName="mouldContractBaseId" dtype="ch" oper="="  lg="" bt="" />
+     </where>
+    <select>
+      <f name="DISTINCT A.id" alias="" ctype="" />
+      <f name="D.id" alias="mouldFactoryId" ctype="" />
+      <f name="E.supplierId" alias="" ctype="" />
+      <f name="E.shortName" alias="supplierName" ctype="" />
+      <f name="CONCAT_WS(' | ', C.mouldId, C.name, CONCAT('单价:', D.price), CONCAT('模具信息:', CONCAT_WS('|', C.size, C.weight, C.materialQuality, C.unloadingNum)))" alias="viewList" ctype="" />
+      <f name="C.mouldId" alias="" ctype="" />
+      <f name="C.name" alias="" ctype="" />
+      <f name="C.materialQuality" alias="" ctype="" />
+      <f name="C.size" alias="" ctype="" />
+      <f name="C.weight" alias="" ctype="" />
+      <f name="C.unloadingNum" alias="" ctype="" />
+      <f name="D.price" alias="" ctype="" />
+      <f name="A.number" alias="" ctype="" />
+      <f name="A.totalPrice" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldContractDetail as A, b_MouldContractBaseInfo as B, b_MouldBaseInfo AS C, b_MouldFactory as D,  b_supplier as E WHERE A.deleteFlag = '0' AND B.deleteFlag = '0' AND C.deleteFlag = '0' AND D.deleteFlag = '0' AND E.deleteFlag = '0' AND B.id = A.mouldContractBaseId AND C.id = A.mouldId AND D.id = A.mouldFactoryId AND E.recordId = D.mouldFactoryId </from>
+    <orderby>C.mouldId, C.name, D.price</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  
+    <query>
+    <pool></pool>     
+    <name value="mouldcontractquerydefine_getregulations" />
+    <where>
+      <w name="D.mouldContractBaseId" des=""  reqName="mouldContractBaseId" dtype="ch" oper="="  lg="" bt="" />
+     </where>
+    <select>
+      <f name="DISTINCT A.id" alias="" ctype="" />
+      <f name="A.name" alias="" ctype="" />
+      <f name="A.money" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_MouldContractRegulation AS A WHERE A.deleteFlag = '0' </from>
+    <orderby>A.createtime, A.name</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>
