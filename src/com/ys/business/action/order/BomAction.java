@@ -166,7 +166,7 @@ public class BomAction extends BaseAction {
 				break;
 			case "baseBomInsert":
 				doInsertBaseBom();
-				rtnUrl = "/business/bom/basebomadd";
+				rtnUrl = "/business/material/productview";
 				break;
 			case "getBaseBom":
 				dataMap = doShowBaseBom();

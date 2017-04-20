@@ -349,6 +349,7 @@ function baseBomView() {
 					$('#costRate').val(costRote);
 					$('#productRecordId').val(recordId);
 					
+					subIndex = '0';
 					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -633,6 +634,7 @@ function doShowHistory(supplierId) {
 }
 
 function doEditMaterial(recordid,parentid) {
+	//var height = setScrollTop();
 	//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
 	var url = '${ctx}/business/material?methodtype=detailView';
 	url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
@@ -650,7 +652,9 @@ function doEditMaterial(recordid,parentid) {
 		 // if(confirm('确定要关闭么')){
 		    layer.close(index)
 		 // }
-		  baseBomView();
+		  //  getScrollTop(height);
+		 // baseBomView();
+		  $('#baseBomTable').DataTable().ajax.reload(null,false);
 		  return false; 
 		}    
 	});		
@@ -753,7 +757,7 @@ function openPrint() {
 		}    
 	});		
 }
-
+ 
 </script>
 </body>
 </html>
