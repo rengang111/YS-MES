@@ -521,5 +521,21 @@ public class CommonService extends BaseService {
 		return data;
 	}
 	
+	public static float toFloat(String s){
+
+		float rtn = 0;
+		
+		try{
+			if(s == null || s.trim().equals(""))
+				return rtn;
+			
+			rtn = Float.parseFloat(s.replace(",",""));
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+		return rtn;		
+	}
 	
 }

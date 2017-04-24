@@ -10,14 +10,12 @@
 <title>供应商基本数据检索</title>
 <script type="text/javascript">
 
-	var layerHeight = '600';
-
-	function ajax() {
+	function ajax(type) {
 		var table = $('#TSupplier').dataTable();
 		if(table) {
 			table.fnDestroy();
 		}
-	
+		
 		var t = $('#TSupplier').DataTable({
 				"paging": true,
 				"lengthChange":false,
@@ -32,7 +30,9 @@
 				//"scrollY":scrollHeight,
 				"scrollCollapse":true,
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search",
+				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search&type="+type,
+				//"dom" : 'T<"clear">rt',
+				
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -107,15 +107,17 @@
 	}
 
 	$(document).ready(function() {
-		//ajax();
 		initEvent();
 		
 	})	
 	
 	function doSearch() {
 	
-		ajax();
-		//reload();
+		ajax('');
+	}
+	
+	function SelectSupplier(type){
+		ajax(type);
 	}
 	
 	function doCreate() {
@@ -209,8 +211,12 @@
 
 	<div class="list">
 
-		<div id="TSupplier_wrapper" class="dataTables_wrapper">
-			<div id="DTTT_container" align="right" style="height:40px;">
+			<div id="DTTT_container" align="left" style="height:40px;width:50%">
+				<a class="DTTT_button DTTT_button_text" onclick="SelectSupplier('010');">物料供应商</a>
+				<a class="DTTT_button DTTT_button_text" onclick="SelectSupplier('020');">模具供应商</a>
+				<a class="DTTT_button DTTT_button_text" onclick="SelectSupplier('030');">设备供应商</a>
+			</div>
+			<div id="DTTT_container" align="right" style="height:40px;margin-top: -40px;">
 				<a class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>新建</span></a>
 				<a class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a>
 			</div>
@@ -230,7 +236,6 @@
 				</thead>
 
 			</table>
-		</div>
 	</div>
 </div>
 </body>

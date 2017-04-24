@@ -70,10 +70,6 @@ public class SupplierService extends BaseService {
 	}
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
 		int iStart = 0;
 		int iEnd =0;
 		String sEcho = "";
@@ -81,6 +77,8 @@ public class SupplierService extends BaseService {
 		String length = "";
 		String key1 = "";
 		String key2 = "";
+		
+		String type = request.getParameter("type");
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
@@ -100,9 +98,17 @@ public class SupplierService extends BaseService {
 		
 		dataModel.setQueryFileName("/business/supplier/supplierquerydefine");
 		dataModel.setQueryName("supplierquerydefine_search");
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
+		
+		if(type == null || type.equals("")){
+			userDefinedSearchCase.put("keyword1", key1);
+			userDefinedSearchCase.put("keyword2", key2);
+		}else{
+			userDefinedSearchCase.put("type", type);
+			iStart = 0;
+			iEnd = 0;			
+		}
+
+		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
 		
@@ -312,7 +318,8 @@ public class SupplierService extends BaseService {
 		reqModel.setCountryList(getProvinceList());
 		
 		reqModel.setKeyBackup(dbData.getRecordid());
-		
+		reqModel.setTypeList(util.getListOption(DicUtil.SUPPLIER_TYPE, ""));	
+
 		model.addAttribute(reqModel);
 		
 		return model;

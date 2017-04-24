@@ -1435,6 +1435,7 @@ public class BomService extends BaseService {
 	  String materialId = this.request.getParameter("materialId");
 	  String parentId = null;
 	 // String bomId = null;
+	  /*
 	  this.bomPlanData = BomPlanExistCheck2(YSId);
 	  if (this.bomPlanData == null)
 	  {
@@ -1446,7 +1447,7 @@ public class BomService extends BaseService {
 	  {
 	    this.reqModel.setBomPlan(this.bomPlanData);
 	  }
-
+*/
 	  getOrderDetail(YSId);
 
 	  getOrderExpense(YSId);

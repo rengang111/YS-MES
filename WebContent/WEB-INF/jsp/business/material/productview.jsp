@@ -306,7 +306,7 @@ function baseBomView() {
 		"retrieve" : false,
 		"bSort":false,
 		"async" : false,
-		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,				
+		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,	
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
 				"url" : sSource,

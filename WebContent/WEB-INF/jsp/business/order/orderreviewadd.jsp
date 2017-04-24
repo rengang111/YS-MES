@@ -863,7 +863,7 @@ function baseBomView() {
 					laborCost =  floatToCurrency( laborCost );
 
 					$('#parentId').val(parentId);
-					//$('#bomId').html(bomId);
+					$('#bomId').html(bomId);
 					$('#materialCost').html(mateCost);
 					$('#laborCost').html(laborCost);
 					$('#bomCost').html(bomCost);

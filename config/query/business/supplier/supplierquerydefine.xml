@@ -6,6 +6,7 @@
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+   	  <w name="A.type" des=""  reqName="type" dtype="ch" oper="like"  lg="AND" bt="" />   
     </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -20,6 +21,7 @@
       <f name="A.city" alias="cityName" ctype="A2" />
       <f name="A.address" alias="" ctype="" />
       <f name="A.userName" alias="" ctype="" />
+      <f name="A.type" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->

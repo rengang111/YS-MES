@@ -428,9 +428,13 @@ public class RequirementService extends CommonService {
 			
 			for(B_PurchasePlanData data:reqDataList ){
 
-				data.setPurchaseid(YSId+"000");
-				data.setYsid(YSId);
-				insertPurchasePlan(data);
+				float quantiy = toFloat(data.getQuantity());
+				//采购数量==0的物料不计入
+				if(quantiy > 0){
+					data.setPurchaseid(YSId+"000");
+					data.setYsid(YSId);
+					insertPurchasePlan(data);
+				}
 				
 			}
 			
