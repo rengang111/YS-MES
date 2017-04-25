@@ -207,7 +207,9 @@
     <pool></pool>     
     <name value="getContractList" />
     <where>
-      <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+    	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
+       	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
+      	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="AND" />
       </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -231,21 +233,19 @@
     <pool></pool>     
     <name value="getContractDetail" />
     <where>
-      <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
-      <w name="A.supplierId" des=""  reqName="supplierId" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
       </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
-      <f name="A.YSId" alias="" ctype="" />
-      <f name="A.supplierId" alias="" ctype="" />
-      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="b.unit" alias="" ctype="计量单位" />
       <f name="A.materialId" alias="" ctype="" />
-      <f name="A.materialName" alias="" ctype="" />
+      <f name="b.materialName" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="A.totalPrice" alias="" ctype="" />
     </select>
-    <from>v_purchaseplan a  WHERE a.deleteFlag = '0' </from>
+    <from>b_PurchaseOrderDetail a  LEFT JOIN b_material b ON b.materialId = a.materialId AND b.deleteFlag = '0'  WHERE a.deleteFlag = '0' </from>
     <orderby>a.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -276,6 +276,29 @@
       <f name="b.address" alias="" ctype="" />
       <f name="b.userName" alias="" ctype="" />
       <f name="b.phone" alias="" ctype="" />
+      <f name="b.fax" alias="" ctype="" />
+      <f name="b.mobile" alias="" ctype="" />
+    </select>
+    <from>v_purchaseplan a LEFT JOIN v_supplierbasicinfo b ON a.supplierId = b.supplierID AND b.DELETEFLAG = '0' LEFT JOIN b_purchaseorder c ON a.YSId = c.YSID AND a.supplierId = c.supplierId AND c.deleteFlag = '0'</from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getRequriementList" />
+    <where>
+      	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
+       	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
+      </where>
+    <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="b.materialId" alias="" ctype="" />
+      <f name="b.materialName" alias="" ctype="" />
+      <f name="b.quantity" alias="" ctype="" />
+      <f name="format(sum(REPLACE(a.totalPrice,',','')),2)" alias="totalPrice" ctype="" />
       <f name="b.fax" alias="" ctype="" />
       <f name="b.mobile" alias="" ctype="" />
     </select>

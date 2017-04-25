@@ -34,8 +34,8 @@
 				"ordering "	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",
-				"scrollY":scrollHeight,
-				"scrollCollapse":true,
+				//"scrollY":scrollHeight,
+				//"scrollCollapse":true,
 				"retrieve" : true,
 				"sAjaxSource" : "${ctx}/business/contract?methodtype=search",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -147,13 +147,13 @@
 </script>
 </head>
 
-<body class="panel-body">
+<body>
 <div id="container">
 <div id="main">
 
 	<div id="search">
 
-		<form id="condition"  style='padding: 0px; margin: 10px;' >
+		<form id="condition" >
 
 			<table>
 				<tr>
@@ -180,24 +180,22 @@
 
 	<div class="list">
 
-		<div id="TSupplier_wrapper" class="dataTables_wrapper">
-			<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
+			<table style="width: 100%;" id="TMaterial" class="display dataTable" >
 				<thead>						
-					<tr class="selected">
-						<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
-						<th style="width: 120px;" aria-label="物料编号" class="dt-middle ">合同编号</th>
-						<th style="width: 100px;" aria-label="物料编号" class="dt-middle ">产品编号</th>
-						<th style="width: 120px;" aria-label="物料编号" class="dt-middle ">产品名称</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">供应商</th>
-						<th style="width: 100px;" aria-label="物料编号" class="dt-middle ">供应商名称</th>
-						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">下单日期</th>
-						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">合同交期</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">合同金额</th>
-						<th style="width: 30px;" aria-label="操作" class="dt-middle ">操作</th>
+					<tr>
+						<th style="width: 10px;" class="dt-middle ">No</th>
+						<th style="width: 80px;"  class="dt-middle ">耀升编号</th>
+						<th style="width: 100px;"  class="dt-middle ">产品编码</th>
+						<th  class="dt-middle ">产品名称</th>
+						<th style="width: 100px;"  class="dt-middle ">合同编号</th>
+						<th style="width: 80px;"  class="dt-middle ">供应商</th>
+						<th style="width: 60px;"  class="dt-middle ">下单日期</th>
+						<th style="width: 60px;"  class="dt-middle ">合同交期</th>
+						<th style="width: 80px;"  class="dt-middle ">合同数量</th>
+						<th style="width: 30px;"  class="dt-middle ">操作</th>
 					</tr>
 				</thead>
 			</table>
-		</div>
 	</div>
 </div>
 </div>

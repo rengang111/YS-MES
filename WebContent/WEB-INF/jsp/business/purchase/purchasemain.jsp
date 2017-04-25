@@ -146,7 +146,7 @@
 </script>
 </head>
 
-<body class="panel-body">
+<body>
 <div id="container">
 <div id="main">
 
@@ -179,26 +179,19 @@
 
 	<div class="list">
 
-		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 			<table aria-describedby="TSupplier_info" style="width: 100%;" id="TMaterial" class="display dataTable" cellspacing="0">
 				<thead>						
 					<tr class="selected">
 						<th style="width: 10px;" aria-label="No:" class="dt-middle ">No</th>
-						<th style="width: 55px;" aria-label="物料编号" class="dt-middle ">耀升编号</th>
-						<th style="width: 100px;" aria-label="物料编号" class="dt-middle ">BOM编号</th>
-						<th style="width: 40px;" aria-label="物料编号" class="dt-middle ">数量</th>
-						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">材料成本</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">人工成本</th>
-						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">经管费</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">产品成本</th>
-						<th style="width: 80px;" aria-label="物料编号" class="dt-middle ">核算成本</th>
+						<th style="width: 55px;" class="dt-middle ">耀升编号</th>
+						<th style="width: 100px;" aria-label="物料编号" class="dt-middle ">产品编号</th>
+						<th style="width: 40px;" aria-label="物料编号" class="dt-middle ">订单数量</th>
 						<th style="width: 60px;" aria-label="物料编号" class="dt-middle ">方案日期</th>
 						<th style="width: 50px;" aria-label="操作" class="dt-middle ">操作</th>
 						<th></th>
 					</tr>
 				</thead>
 			</table>
-		</div>
 	</div>
 </div>
 </div>

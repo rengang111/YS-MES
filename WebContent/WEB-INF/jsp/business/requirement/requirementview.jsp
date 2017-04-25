@@ -53,8 +53,8 @@
 				//$('#set_lines').DataTable().ajax.reload();
 				//ajax_factory_bid_set_lines(d["bid_id"]);
 				//var d = $('#contractTable').DataTable().row(this).data();
-				//alert(d["YSId"])
-				contractDetailView(d["YSId"],d["supplierId"]);
+				//alert(d["contractId"])
+				contractDetailView(d["contractId"]);
 					            
 	        }
 			
@@ -112,14 +112,9 @@
 				"contentType": "application/json; charset=utf-8",
 				success : function(data) {			
 
-					$().toastmessage('showNoticeToast', "保存成功。");	
-					$('#contractTable').DataTable().destroy();
-					contractTableView();//
-					
-					//$("#costRate").attr('readonly',true);
-					//$("#costRate").addClass('read-only');
-					//$("#doSave").hide();
-					//$("#doEdit").show();
+					$().toastmessage('showNoticeToast', "保存成功。");
+					contractTableView();//					
+		  			//$('#contractTable').DataTable().ajax.reload(null,false);
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 					alert(textStatus)
@@ -1030,7 +1025,7 @@ function contractTableView() {
 }//ajax()供应商信息
 
 
-function contractDetailView(YSId,supplierId) {
+function contractDetailView(contractId) {
 
 	//var YSId='${order.YSId}';
 	var table = $('#contractDetail').dataTable();
@@ -1047,7 +1042,7 @@ function contractDetailView(YSId,supplierId) {
 		"retrieve" : false,
 		"async" : false,
 		dom : '<"clear">rt',
-		"sAjaxSource" : "${ctx}/business/contract?methodtype=getContractDetail&YSId="+YSId+"+&supplierId="+supplierId,				
+		"sAjaxSource" : "${ctx}/business/contract?methodtype=getContractDetail&contractId="+contractId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
 				"url" : sSource,

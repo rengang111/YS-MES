@@ -28,16 +28,19 @@ import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
+import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.data.B_MaterialRequirmentData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
+import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
+import com.ys.business.service.material.CommonService;
 
 @Service
-public class PurchaseOrderService extends BaseService {
+public class PurchaseOrderService extends CommonService {
 
 	DicUtil util = new DicUtil();
 
@@ -174,6 +177,7 @@ public class PurchaseOrderService extends BaseService {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<B_PurchaseOrderData> getSupplierContrct(String YSId) throws Exception {
 			
 		String astr_Where = "YSId = '"+YSId+"'";
@@ -181,21 +185,57 @@ public class PurchaseOrderService extends BaseService {
 	}
 	
 	
+	/**
+	 * 采购合同明细做成
+	 * @param YSId
+	 * @param supplierId
+	 * @param contractId
+	 * @throws Exception 
+	 */
 	@SuppressWarnings("unchecked")
-	private List<B_MaterialRequirmentData> getContractDetail(String where){
-		List<B_MaterialRequirmentData> dbList = new ArrayList<B_MaterialRequirmentData>();
-		B_MaterialRequirmentDao dao = new B_MaterialRequirmentDao();
-				
-		try {
-
-			dbList = (List<B_MaterialRequirmentData>)dao.Find(where);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dbList = null;
-		}
+	private void insertPurchaseOrderDetail(
+			String YSId,
+			String supplierId,
+			String contractId) throws Exception{
 		
-		return dbList;
+		List<B_PurchasePlanData> dbList = new ArrayList<B_PurchasePlanData>();
+		B_PurchasePlanDao plan = new B_PurchasePlanDao();
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+
+		String where = " YSId= '" + YSId +"'AND supplierId= '" + supplierId +"' AND deleteFlag='0' ";
+		
+
+		dbList = (List<B_PurchasePlanData>)plan.Find(where);
+	
+		if(dbList != null && dbList.size() >0){
+			
+			for(B_PurchasePlanData dt:dbList){
+				
+				float quantity = toFloat(dt.getQuantity());
+				//采购数量为零的物料不生成采购合同
+				if (quantity == 0)
+					continue;
+				
+				B_PurchaseOrderDetailData d = new B_PurchaseOrderDetailData();
+
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+						"PurchaseOrderInsert",userInfo);
+				copyProperties(d,commData);
+				
+				guid = BaseDAO.getGuId();
+				d.setRecordid(guid);
+				
+				d.setYsid(YSId);
+				d.setContractid(contractId);
+				d.setMaterialid(dt.getMaterialid());
+				d.setQuantity(dt.getQuantity());
+				d.setPrice(dt.getPrice());					
+				d.setTotalprice(dt.getTotalprice());
+				
+				dao.Create(d);					
+			}
+		}		
+		
 	}
 	
 
@@ -221,9 +261,9 @@ public class PurchaseOrderService extends BaseService {
 		
 	}	
 	
-	/*
-	 * 1.物料新增处理(一条数据)
-	 * 2.子编码新增处理(N条数据)
+	/**
+	 * 1.生成采购合同(一条数据)
+	 * 2.合同明细(N条数据)
 	 */
 	public void insert(String YSId) throws Exception {
 
@@ -240,12 +280,16 @@ public class PurchaseOrderService extends BaseService {
 			if(supplierList == null || supplierList.size() <= 0)
 				return;
 				
-			//合同里的供应商
-			List<B_PurchaseOrderData> supplierContrct = getSupplierContrct(YSId);
-			
-			ArrayList<HashMap<String, String>> supplierdelete = 
-					new ArrayList<HashMap<String, String>>();
+			//取得合同里的供应商
+			//List<B_PurchaseOrderData> supplierContrct = getSupplierContrct(YSId);
 
+			//删除既存合同信息
+			deleteContract(YSId);
+			
+			//删除既存合同明细
+			deleteContractDetail(YSId);
+			
+			
 			for(int i=0;i<supplierList.size();i++){
 				
 				String supplierId = supplierList.get(i).get("supplierId");
@@ -254,7 +298,32 @@ public class PurchaseOrderService extends BaseService {
 				
 				if(supplierId == null || supplierId.equals(""))
 					continue;
+
+				float totalf = toFloat(total); 
+				if(totalf == 0)//采购金额为零的供应商不计入合同
+					continue;
+					
+				//取得供应商的合同流水号
+				//父编号:年份+供应商简称
+				String parentId = "";
+				if(null != YSId && YSId.length() > 3 )
+					parentId = YSId.substring(0,2);//耀升编号前两位是年份
+				parentId = parentId + shortName;
 				
+				int subId = getContractCode(parentId);
+
+				//3位流水号格式化	
+				//采购合同编号:16YS081-WL002
+				String contractId = BusinessService.getContractCode(YSId, shortName, subId);
+				
+				//新增采购合同
+				insertPurchaseOrder(
+						YSId,materialId,supplierId,contractId,parentId,subId,total);
+
+				//新增合同明细
+				insertPurchaseOrderDetail(YSId,supplierId,contractId);
+				
+				/*
 				boolean suppFlg = true;
 				B_PurchaseOrderData purDt = null;
 				for(B_PurchaseOrderData order:supplierContrct){
@@ -290,23 +359,20 @@ public class PurchaseOrderService extends BaseService {
 					//新增采购合同
 					insertPurchaseOrder(
 							YSId,materialId,supplierId,contractId,parentId,subId,total);
-					
+
+					//新增合同明细
+					insertPurchaseOrderDetail(YSId,supplierId,contractId);
+
 				}else{
 					//更新处理
 					purDt.setTotal(total);
 					updatePurchaseOrder(purDt);
 					
 				}
+				
+				*/
 			}
 			
-			if(supplierContrct.size() > 0){
-				//删除处理
-				for(B_PurchaseOrderData dt:supplierContrct){
-					orderDao.Remove(dt);
-				}
-			}
-
-						
 			ts.commit();
 		}
 		catch(Exception e) {
@@ -501,11 +567,44 @@ public class PurchaseOrderService extends BaseService {
 		}
 		
 	}
+
+	/**
+	 * 合同明细删除处理
+	 */
+	private void deleteContractDetail(String YSId) {
+		
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+
+		String astr_Where = " YSId = '" + YSId +"'";	
+		try {
+			dao.RemoveByWhere(astr_Where);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		}		
+		
+	}
 	
+	/**
+	 * 合同删除处理
+	 */
+	private void deleteContract(String YSId) {
+		
+		B_PurchaseOrderDao dao = new B_PurchaseOrderDao();
+
+		String astr_Where = " YSId = '" + YSId +"'";	
+		try {
+			dao.RemoveByWhere(astr_Where);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		}		
+		
+	}
 	/*
 	 * 订单详情删除处理
 	 */
-	public void deleteOrderDetail(List<B_OrderDetailData> oldDetailList) 
+	private void updateOrderDetail(List<B_OrderDetailData> oldDetailList) 
 			throws Exception{
 		
 		for(B_OrderDetailData detail:oldDetailList){
@@ -602,15 +701,13 @@ public class PurchaseOrderService extends BaseService {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
-		String YSId = request.getParameter("YSId");
-		String supplierId = request.getParameter("supplierId");
+		String contractId = request.getParameter("contractId");
 	
 		dataModel.setQueryName("getContractDetail");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		userDefinedSearchCase.put("YSId", YSId);
-		userDefinedSearchCase.put("supplierId", supplierId);
+		userDefinedSearchCase.put("contractId", contractId);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();

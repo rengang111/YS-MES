@@ -23,6 +23,8 @@ import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_InventoryDao;
 import com.ys.business.db.dao.B_MaterialRequirmentDao;
+import com.ys.business.db.dao.B_PurchaseOrderDao;
+import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.data.B_BaseBomData;
 import com.ys.business.db.data.B_BomDetailData;
@@ -428,15 +430,21 @@ public class RequirementService extends CommonService {
 			
 			for(B_PurchasePlanData data:reqDataList ){
 
-				float quantiy = toFloat(data.getQuantity());
+				//float quantiy = toFloat(data.getQuantity());
 				//采购数量==0的物料不计入
-				if(quantiy > 0){
+				//if(quantiy > 0){
 					data.setPurchaseid(YSId+"000");
 					data.setYsid(YSId);
 					insertPurchasePlan(data);
-				}
+				//}
 				
 			}
+			
+			//删除既存合同信息
+			deleteContract(YSId);
+			
+			//删除既存合同明细
+			deleteContractDetail(YSId);
 			
 			//虚拟库存处理
 			/*
@@ -466,6 +474,39 @@ public class RequirementService extends CommonService {
 		
 	}
 	
+	/**
+	 * 合同删除处理
+	 */
+	private void deleteContract(String YSId) {
+		
+		B_PurchaseOrderDao dao = new B_PurchaseOrderDao();
+
+		String astr_Where = " YSId = '" + YSId +"'";	
+		try {
+			dao.RemoveByWhere(astr_Where);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		}		
+		
+	}
+
+	/**
+	 * 合同明细删除处理
+	 */
+	private void deleteContractDetail(String YSId) {
+		
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+
+		String astr_Where = " YSId = '" + YSId +"'";	
+		try {
+			dao.RemoveByWhere(astr_Where);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+		}		
+		
+	}
 	private void orderBomInsert(boolean accessFlg) throws Exception{
 		//订单BOM做成
 		//BOM方案
