@@ -175,7 +175,7 @@
         
         qq(document.getElementById("trigger-upload")).attach("click", function() {
 
-        	if (confirm("${msg}")) {
+        	//if (confirm("${msg}")) {
         		totalAttachmentsCount = uploader._storedIds.length;
         		uploader.uploadStoredFiles();
         		
@@ -192,7 +192,7 @@
 					layer.close(index); //执行关闭
 				}
 				*/
-        	}
+        	//}
         	
         });
         

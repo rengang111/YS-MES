@@ -239,22 +239,22 @@ public class PurchaseOrderService extends CommonService {
 	}
 	
 
-	/*
-	 * 
+	/**
+	 * 取得合同详情
 	 */
-	public void getContractBySupplierId(String contractId) throws Exception {
+	public void getContractDetailList(String contractId) throws Exception {
 
 		if(null == contractId || ("").equals(contractId))
 			return;
 	
-		dataModel.setQueryName("getContractBySupplierId");
+		dataModel.setQueryName("getContractDetailList");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
 		userDefinedSearchCase.put("contractId", contractId);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);	 
+		baseQuery.getYsFullData();	 
 
 		model.addAttribute("contract",dataModel.getYsViewData().get(0));		
 		model.addAttribute("detail", dataModel.getYsViewData());
@@ -717,13 +717,14 @@ public class PurchaseOrderService extends CommonService {
 		
 		return modelMap;
 	}
+	
 	public void updateAndView() throws Exception {
 		
 		update();
 
 		String contractId = reqModel.getContract().getContractid();
 		
-		getContractBySupplierId(contractId);
+		//getContractBySupplierId(contractId);
 		
 	}
 	

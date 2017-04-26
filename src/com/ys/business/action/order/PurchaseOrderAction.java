@@ -156,7 +156,7 @@ public class PurchaseOrderAction extends BaseAction {
 
 		String contractId = request.getParameter("contractId");
 
-		service.getContractBySupplierId(contractId);
+		service.getContractDetailList(contractId);
 	}
 	
 	public void doUpdate() throws Exception {
@@ -169,7 +169,7 @@ public class PurchaseOrderAction extends BaseAction {
 		
 		String contractId = reqModel.getContract().getContractid();
 		
-		service.getContractBySupplierId(contractId);			
+		//service.getContractBySupplierId(contractId);			
 		
 	}
 	

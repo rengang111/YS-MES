@@ -12,6 +12,7 @@ import com.ys.business.db.data.B_PriceSupplierData;
 
 @Repository
 public class MaterialModel extends BaseModel {
+	private final String className = "com.ys.business.service.material.MaterialService";
 	private String recordId = "";
 	private String attribute1 = "";
 	private String attribute2 = "";
@@ -36,6 +37,10 @@ public class MaterialModel extends BaseModel {
 	private String paymentTerm="";
 	private B_PriceSupplierData price;
 
+	public String getClassName() {
+		return this.className;
+	}
+	
 	public B_PriceSupplierData getPrice() {
 		return this.price;
 	}

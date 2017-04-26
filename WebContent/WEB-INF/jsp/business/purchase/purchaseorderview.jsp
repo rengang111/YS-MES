@@ -32,7 +32,7 @@
 			        	{"className":"dt-body-center"
 					}, {
 					}, {								
-					}, {				
+					}, {"className":"td-center"					
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
@@ -127,7 +127,7 @@
 					<td colspan="3">&nbsp;${ contract.fullName }</td>
 				</tr>	
 				<tr> 		
-					<td class="label"><label>采购合同编号：</label></td>					
+					<td class="label"><label>合同编号：</label></td>					
 					<td>${ contract.contractId }
 						<form:hidden path="contract.contractid" value="${contract.contractId }"/></td>
 					<td class="label"><label>下单日期：</label></td>
@@ -164,16 +164,16 @@
 	<div id="floatTable" style="width: 70%; float: left; margin: 5px 0px 0px 0px;">
 	
 	<div class="list">
-	<table id="example" class="display" width="100%">	
+	<table id="example" class="display" >	
 		<thead>
 		<tr>
-			<th style="width:20px">No</th>
-			<th style="width:80px">物料ERP编码</th>
+			<th style="width:10px">No</th>
+			<th style="width:130px">物料编码</th>
 			<th>物料名称</th>
-			<th style="width:50px">计量单位</th>
-			<th style="width:80px">数量</th>
+			<th style="width:30px">单位</th>
+			<th style="width:50px">数量</th>
 			<th style="width:50px">单价</th>
-			<th style="width:70px">总价</th>
+			<th style="width:50px">总价</th>
 			<th style="width:1px"></th>
 		</tr>
 		</thead>		
@@ -231,7 +231,7 @@
 	<div style="clear: both"></div>
 	
 	<fieldset class="action" style="text-align: right;">
-		<button type="submit" id="doEdit" class="DTTT_button">编辑</button>
+		<!-- button type="submit" id="doEdit" class="DTTT_button">编辑</button-->
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>		
 		

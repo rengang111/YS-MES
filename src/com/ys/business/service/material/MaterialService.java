@@ -1,7 +1,9 @@
 package com.ys.business.service.material;
 
+import java.io.File;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import org.springframework.ui.Model;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.DicUtil;
+import com.ys.util.UploadReceiver;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
@@ -379,18 +382,30 @@ public class MaterialService extends CommonService {
 		
 	}
 	
-	/*
-	 * 1.显示当前选中物料的基本信息
-	 * 2.显示相关的所有子编码信息(N条数据) 
+	public Model MaterailDetail(String recordId,String parentId){
+		
+		String fileName = getMaterialDetail(recordId,parentId);
+		
+		getFileList(fileName,recordId);
+		
+		return model;
+		
+	}
+			
+	/**
+	 * 取得关联子编码的所有物料
+	 * @param recordId
+	 * @param parentId
+	 * @return
 	 */
-	
-	public Model view(
+	public String getMaterialDetail(
 			String recordId,
 			String parentId) {
 		MaterialModel Matmodel = new MaterialModel();
 		B_MaterialData FormDetail = new B_MaterialData();
 
 
+		String fileName="";
 		String shareModel = "";
 		String unitName = "";
 		
@@ -427,6 +442,7 @@ public class MaterialService extends CommonService {
 						FormDetail.setDescription(map.get("description"));
 						FormDetail.setSharemodel(map.get("shareModel"));
 						FormDetail.setUnit(map.get("unit"));
+						//FormDetail.setFileName(fileName);
 						Matmodel.setAttribute1(map.get("categoryId"));
 						Matmodel.setAttribute2(map.get("categoryName"));
 						shareModel = map.get("shareModel");
@@ -460,7 +476,7 @@ public class MaterialService extends CommonService {
 		
 		model.addAttribute("material", Matmodel);
 		
-		return model;
+		return fileName;
 		
 	}
 	
@@ -670,7 +686,7 @@ public class MaterialService extends CommonService {
 			ts.commit();
 			
 			//重新查询
-			model = view(selectedRecord,parentId);
+			getMaterialDetail(selectedRecord,parentId);
 			
 			reqModel.setEndInfoMap(NORMAL, "suc001", "");
 		}
@@ -900,7 +916,7 @@ public class MaterialService extends CommonService {
 			ts.commit();
 			
 			//重新查询
-			model = view(selectedRecord,parentId);		
+			getMaterialDetail(selectedRecord,parentId);		
 		}
 		catch(Exception e) {
 			ts.rollback();
@@ -1209,4 +1225,47 @@ public class MaterialService extends CommonService {
 		return rtn;
 	}
 	
+	public void getFileList(String nowUseImage,String id) {
+		UploadReceiver uploadReceiver = new UploadReceiver();
+		//int arraySize = 0;
+		String path = BusinessConstants.BUSINESSPHOTOPATH;
+		String dir = request.getSession().getServletContext().getRealPath("/") + path + id ; 
+		
+		//String nowUseImage = nowFileName;
+		
+		//ArrayList<ArrayList<String>> fileList = new ArrayList<ArrayList<String>>();
+		
+		String[] filenames = uploadReceiver.getFileNameList(
+				dir + File.separator + BusinessConstants.BUSINESSSMALLPHOTOPATH);
+		if (null != filenames && filenames.length > 0){
+			
+			//将当前图片放到最前
+			if (!(null == nowUseImage||nowUseImage.equals(""))){	
+				
+				ArrayList<String> list_image = new ArrayList<>(Arrays.asList(filenames));
+				
+				for(String fileName:list_image) {
+					if(fileName.equals(nowUseImage)) {
+						list_image.remove(nowUseImage);
+						break;
+					}
+				}
+				
+				list_image.add(0, nowUseImage);		
+				
+				filenames = new String[list_image.size()];
+				int index = 0;
+				for(Object fileName:list_image) {
+					filenames[index++] = String.valueOf(fileName);
+				}
+			}			
+		}
+				
+		reqModel.setFileNames(filenames);
+		reqModel.setImageKey(id);
+		reqModel.setPath(path);
+		reqModel.setNowUseImage(nowUseImage);
+		
+		//return model;
+	}
 }

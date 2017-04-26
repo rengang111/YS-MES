@@ -25,76 +25,69 @@
 			table.fnDestroy();
 		}
 		var t = $('#TMaterial').DataTable({
-				"paging": true,
-				"lengthChange":false,
-				"lengthMenu":[50,100,200],//设置一页展示20条记录
-				"processing" : false,
-				"serverSide" : false,
-				"stateSave" : false,
-				"ordering "	:true,
-				"searching" : false,
-				"pagingType" : "full_numbers",
-				//"scrollY":scrollHeight,
-				//"scrollCollapse":true,
-				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/contract?methodtype=search",
-				"fnServerData" : function(sSource, aoData, fnCallback) {
-					var param = {};
-					var formData = $("#condition").serializeArray();
-					formData.forEach(function(e) {
-						aoData.push({"name":e.name, "value":e.value});
-					});
+			"paging": true,
+			 "iDisplayLength" : 50,
+			"lengthChange":false,
+			//"lengthMenu":[10,150,200],//设置一页展示20条记录
+			"processing" : false,
+			"serverSide" : true,
+			"stateSave" : false,
+			"ordering "	:true,
+			"searching" : false,
+			"pagingType" : "full_numbers",
+			"retrieve" : true,
+			"sAjaxSource" : "${ctx}/business/contract?methodtype=search",
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				var param = {};
+				var formData = $("#condition").serializeArray();
+				formData.forEach(function(e) {
+					aoData.push({"name":e.name, "value":e.value});
+				});
 
-					$.ajax({
-						"url" : sSource,
-						"datatype": "json", 
-						"contentType": "application/json; charset=utf-8",
-						"type" : "POST",
-						"data" : JSON.stringify(aoData),
-						success: function(data){							
-							fnCallback(data);
-						},
-						 error:function(XMLHttpRequest, textStatus, errorThrown){
-			             }
-					})
-				},
-	        	"language": {
-	        		"url":"${ctx}/plugins/datatables/chinese.json"
-	        	},
-				"columns": [
-					{"data": null, "defaultContent" : '',"className" : 'td-center'},
-					{"data": "contractId", "defaultContent" : ''},
-					{"data": "productId"},
-					{"data": "productName", "defaultContent" : ''},
-					{"data": "supplierId", "defaultContent" : ''},
-					{"data": "fullName", "defaultContent" : ''},
-					{"data": "purchaseDate", "defaultContent" : ''},
-					{"data": "deliveryDate", "defaultContent" : ''},
-					{"data": "total", "defaultContent" : '',"className" : 'td-right'},
-					{"data": null, "defaultContent" : '',"className" : 'td-center'},
-				],
-				"columnDefs":[
-		    		{"targets":0,"render":function(data, type, row){
-						return row["rownum"];
-                    }},
-		    		{"targets":9,"render":function(data, type, row){
-		    			
-		    			return "<a href=\"#\" onClick=\"doShow('" + row["contractId"] + "')\">查看</a>";			    			
-		    		}},
-		    		{"targets":3,"render":function(data, type, row){
-		    			var name = row["productName"];				    			
-		    			if(name != null) name = jQuery.fixedWidth(name,10);
-		    			return name;
-		    		}},
-		    		{"targets":5,"render":function(data, type, row){
-		    			var name = row["fullName"];
-		    			if(name != null) name = jQuery.fixedWidth(name,15);
-		    			return name;
-		    		}}
-	         	] 
-			}
-		);
-
+				$.ajax({
+					"url" : sSource,
+					"datatype": "json", 
+					"contentType": "application/json; charset=utf-8",
+					"type" : "POST",
+					"data" : JSON.stringify(aoData),
+					success: function(data){							
+						fnCallback(data);
+					},
+					 error:function(XMLHttpRequest, textStatus, errorThrown){
+		             }
+				})
+			},
+        	"language": {
+        		"url":"${ctx}/plugins/datatables/chinese.json"
+        	},
+			"columns": [
+				{"data": null, "defaultContent" : '',"className" : 'td-center'},
+				{"data": "YSId", "defaultContent" : ''},
+				{"data": "productId"},
+				{"data": "productName", "defaultContent" : ''},
+				{"data": "contractId", "defaultContent" : ''},
+				{"data": "supplierId", "defaultContent" : ''},
+				{"data": "purchaseDate", "defaultContent" : ''},
+				{"data": "deliveryDate", "defaultContent" : ''},
+				{"data": "total", "defaultContent" : '',"className" : 'td-right'},
+				{"data": null, "defaultContent" : '',"className" : 'td-center'},
+			
+			],
+			"columnDefs":[
+	    		{"targets":0,"render":function(data, type, row){
+					return row["rownum"];
+                   }},
+	    		{"targets":9,"render":function(data, type, row){
+	    			
+	    			return "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">查看</a>";			    			
+	    		}},
+	    		{"targets":3,"render":function(data, type, row){
+	    			var name = row["productName"];				    			
+	    			if(name != null) name = jQuery.fixedWidth(name,25);
+	    			return name;
+	    		}}
+         	] 
+		});
 	}
 
 	
@@ -153,7 +146,7 @@
 
 	<div id="search">
 
-		<form id="condition" >
+		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
 			<table>
 				<tr>
@@ -180,18 +173,18 @@
 
 	<div class="list">
 
-			<table style="width: 100%;" id="TMaterial" class="display dataTable" >
+			<table id="TMaterial" class="display dataTable" >
 				<thead>						
 					<tr>
 						<th style="width: 10px;" class="dt-middle ">No</th>
-						<th style="width: 80px;"  class="dt-middle ">耀升编号</th>
+						<th style="width: 70px;"  class="dt-middle ">耀升编号</th>
 						<th style="width: 100px;"  class="dt-middle ">产品编码</th>
 						<th  class="dt-middle ">产品名称</th>
 						<th style="width: 100px;"  class="dt-middle ">合同编号</th>
 						<th style="width: 80px;"  class="dt-middle ">供应商</th>
 						<th style="width: 60px;"  class="dt-middle ">下单日期</th>
 						<th style="width: 60px;"  class="dt-middle ">合同交期</th>
-						<th style="width: 80px;"  class="dt-middle ">合同数量</th>
+						<th style="width: 60px;"  class="dt-middle ">合同数量</th>
 						<th style="width: 30px;"  class="dt-middle ">操作</th>
 					</tr>
 				</thead>

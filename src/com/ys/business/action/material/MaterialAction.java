@@ -488,7 +488,10 @@ public class MaterialAction extends BaseAction {
 		String recordId = request.getParameter("recordId");
 		String parentId = request.getParameter("parentId");
 		String keyBackup = this.request.getParameter("keyBackup");
-		model = materialService.view(recordId,parentId);
+		model = materialService.MaterailDetail(recordId,parentId);
+		
+		MaterialModel.setKeyBackup(recordId);
+		model.addAttribute("DisplayData",MaterialModel);
 		this.model.addAttribute("keyBackup", keyBackup);
 
 	}	
@@ -496,7 +499,7 @@ public class MaterialAction extends BaseAction {
 
 		String recordId = request.getParameter("recordId");
 		String parentId = request.getParameter("parentId");
-		model = materialService.view(recordId,parentId);
+		model = materialService.MaterailDetail(recordId,parentId);
 
 	}	
 	

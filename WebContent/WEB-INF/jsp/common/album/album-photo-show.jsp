@@ -16,8 +16,7 @@
 
 <style type="text/css">
 
-html { overflow: hidden; }
-
+html { overflow: auto; }
 .aligncenter {
 margin: auto;
 position: absolute;
@@ -27,6 +26,13 @@ top: -30px; left: 0; bottom: 0; right: 0;
 </style>
 
 <script type="text/javascript">
+
+$(document).ready(function() {
+	
+	var height = $(window).height(); 
+	 $("#photo").height(height - 60);
+	 
+});
 
 	//alert("${src}");
 
@@ -109,16 +115,16 @@ top: -30px; left: 0; bottom: 0; right: 0;
 	}
 		
 	function closeWindow(){
-		if (confirm("确认关闭窗口吗？")) {
+		//if (confirm("确认关闭窗口吗？")) {
 			
 			var index = parent.layer
 			.getFrameIndex(window.name); //获取当前窗体索引
 			//parent.$('#events').DataTable().destroy();/
-			parent.refresh();
+			//parent.refresh();
 			//alert(777);
 			parent.layer.close(index); //执行关闭
 			
-		}
+		//}
 	}
 					
 	function deletePhoto() {
@@ -160,10 +166,10 @@ top: -30px; left: 0; bottom: 0; right: 0;
 					
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					alert(XMLHttpRequest.status);
-					alert(XMLHttpRequest.readyState);
-					alert(textStatus);
-					alert(errorThrown);
+					//alert(XMLHttpRequest.status);
+					//alert(XMLHttpRequest.readyState);
+					//alert(textStatus);
+					//alert(errorThrown);
 					alert("操作失败，请再试或和系统管理员联系。");
 				}
 			});
@@ -175,34 +181,43 @@ top: -30px; left: 0; bottom: 0; right: 0;
 
 </head>
 <body>	
-
-	<div id="layer_main" style="padding:20px;height:480px;width:640px;">
-		<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" style="max-height:480px;max-width:640px;" class="aligncenter" >
-	</div>
+	<table  class="form">
+		<tr>
+			<td style="text-align:center">
+			<div id="photo" style="overflow: auto;">
+				<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" />
+			</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<div style="float:right;">
+				<a href="#" class="a-btn-green" style="padding: 0px 5px 0px 25px;margin:0px 25px 0px 3px;" onclick="return closeWindow()">
+					<img src="${pageContext.request.contextPath}/images/action_delete.png"  height="16px" style="top:5px;"/>
+					<span class="a-btn-text" >关闭窗口</span> 
+					
+				</a>	
+			</div>
+			
+			<div style="float:right;">
+				<a href="#" class="a-btn-green" style="padding: 0px 5px 0px 25px;margin:0px 25px 0px 3px;" onclick="return deletePhoto()">
+					<img src="${pageContext.request.contextPath}/images/action_delete.png"  height="16px" style="top:5px;" />
+					<span class="a-btn-text" >删除图片</span> 
+					
+				</a>		
+			</div>
+			
+			<div style="float:right;">
+				<a href="#" class="a-btn-green" style="padding: 0px 5px 0px 25px;margin:0px 25px 0px 3px;" onclick="return setNowUse()">
+					<img src="${pageContext.request.contextPath}/images/action_add.png" height="16px" style="top:5px;"/>
+					<span class="a-btn-text" >设为当前</span> 
+					
+				</a>	
+			</div>
+			</td>
+		</tr>
+	</table>
 	
-	<div style="float:right;">
-		<a href="#" class="a-btn-green" style="padding: 0px 5px 0px 25px;margin:0px 25px 0px 3px;" onclick="return closeWindow()">
-			<img src="../../images/action_delete.png" alt="Photos" height="16px" style="top:5px;"/>
-			<span class="a-btn-text" >关闭窗口</span> 
-			</span></span>
-		</a>	
-	</div>
-	
-	<div style="float:right;">
-		<a href="#" class="a-btn-green" style="padding: 0px 5px 0px 25px;margin:0px 25px 0px 3px;" onclick="return deletePhoto()">
-			<img src="../../images/action_delete.png" alt="Photos" height="16px" style="top:5px;" />
-			<span class="a-btn-text" style="font-size:12px;">删除图片</span> 
-			</span></span>
-		</a>		
-	</div>
-	
-	<div style="float:right;">
-		<a href="#" class="a-btn-green" style="padding: 0px 5px 0px 25px;margin:0px 25px 0px 3px;" onclick="return setNowUse()">
-			<img src="../../images/action_add.png" alt="Photos" height="16px" style="top:5px;"/>
-			<span class="a-btn-text" >设为当前</span> 
-			</span></span>
-		</a>	
-	</div>
 	
 </body>
 </html>

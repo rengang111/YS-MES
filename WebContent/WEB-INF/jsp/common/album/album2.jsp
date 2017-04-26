@@ -14,7 +14,7 @@
 	
     <div id="D1pic1" class="fPic">  
     
-    	<c:if test="${empty DisplayData.filenames}">	
+    	<c:if test="${empty DisplayData.fileNames}">	
     				
 			<div class="fcon" style="display: none;">
 	            <a  href="#"><img src="${pageContext.request.contextPath}/images/blankDemo.png" /></a>
@@ -23,16 +23,17 @@
 	        
 		</c:if>	
 		
-		<c:forEach var="filename" items="${DisplayData.filenames}">
+		<c:forEach var="filename" items="${DisplayData.fileNames}">
 		
 			<div class="fcon" style="display: none;">
 	            <a  href="#"><img src="${pageContext.request.contextPath}/${DisplayData.path}${DisplayData.imageKey}/small/${filename}" 
 	            			onclick = "showRealPhoto('${DisplayData.imageKey}', '${filename}');" />
 	            			<span style="position: absolute; top: 3; left: 3;">
 	            				<c:if test="${filename eq DisplayData.nowUseImage}">
-									<img src="${pageContext.request.contextPath}/images/now_use.jpg"/></span> 
+									<img src="${pageContext.request.contextPath}/images/now_use.jpg"/>
 								</c:if>
-	            				</a>
+							</span> 
+	           	</a>
 	        
 	        </div>
 	        
@@ -42,14 +43,14 @@
     <div class="fbg">  
     <div class="D1fBt" id="D1fBt">  
     
-    	<c:if test="${empty DisplayData.filenames}">	
+    	<c:if test="${empty DisplayData.fileNames}">	
     				
 			<a href="javascript:void(1)" hidefocus="true" target="_self" class=""><i>1</i></a>  
 	        
 		</c:if>	
     
     	<c:set var="i" value="0"></c:set>
-    	<c:forEach var="filename" items="${DisplayData.filenames}">
+    	<c:forEach var="filename" items="${DisplayData.fileNames}">
     	
     		<c:set var="i" value="${i+1}"></c:set>
         	<a href="javascript:void(${i})" hidefocus="true" target="_self" class=""><i>${i}</i></a>  
@@ -94,19 +95,21 @@
 		if (fileName.indexOf('blankDemo')>0)
 			return;
 		
-		layer.open({
+		var index = parent.layer.open({
 			type : 2,
 			title : false,
-			area : [ '690px', '560px' ],
-			scrollbar : false,
+			area : [ '90%', '90%' ],
+			//maxmin: true,
+			scrollbar:false,
 			content : '${pageContext.request.contextPath}/album/album-photo-show?className=' + '${DisplayData.className}' + '&key=' + key + '&fileName=' + fileName
 		});
+		layer.full(index);
 		
 	}
 	
 	function showLayer(){
 		
-		//alert('${DisplayData.keyBackup}');
+		//alert('keyBack:'+'${DisplayData.keyBackup}');
 		
 		layer.open({
 			type : 2,
@@ -128,7 +131,7 @@
 			tabTn:"a",
 			conCn: '.fcon', //** 大图域配置class       
 			auto: 0,   //自动播放 1或0
-			effect: 'fade',   //效果配置
+			//effect: 'fade',   //效果配置
 			eType: 'click', //** 鼠标事件
 			pageBt:true,//是否有按钮切换页码
 			bns: ['.prev', '.next'],//** 前后按钮配置class                          
