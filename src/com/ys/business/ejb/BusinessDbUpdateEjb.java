@@ -94,6 +94,7 @@ import com.ys.business.service.esrelationfile.EsRelationFileService;
 import com.ys.business.service.externalsample.ExternalSampleService;
 import com.ys.business.service.lateperfection.LatePerfectionService;
 import com.ys.business.service.makedocument.MakeDocumentService;
+import com.ys.business.service.material.CustomerService;
 import com.ys.business.service.material.SupplierService;
 import com.ys.business.service.mouldcontract.MouldContractService;
 import com.ys.business.service.mouldlendregister.MouldLendRegisterService;
@@ -265,7 +266,7 @@ public class BusinessDbUpdateEjb  {
 				StringBuffer sql = new StringBuffer("");								
 				data.setRecordid(key);								
 				B_CustomerDao dao = new B_CustomerDao(data);								
-				//data = CustomerService.updateModifyInfo(dao.beanData, userInfo);								
+				data = CustomerService.updateModifyInfo(dao.beanData, userInfo);								
 												
 				sql.append("UPDATE b_Contact SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
 				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
