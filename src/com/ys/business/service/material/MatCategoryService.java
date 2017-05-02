@@ -276,13 +276,13 @@ public class MatCategoryService extends BaseService {
 		return result;
 	}
 
-	public ArrayList<DicInfo> launchMaterial(HttpServletRequest request, String userId, String menuId, String unitId,
+	public ArrayList<DicInfo> launchMaterial(HttpServletRequest request, String userId, String menuId, String categoryId,
 			String userType) throws Exception {
 
 		ArrayList<DicInfo> leafDept = new ArrayList<DicInfo>();
 		ArrayList<ArrayList<String>> dbResult = new ArrayList<ArrayList<String>>();
 	
-		dbResult = getLeafDept(request);
+		dbResult = getLeafDept(request,categoryId);
 
 		for (ArrayList<String> rowData : dbResult) {
 			DicInfo deptInfo = new DicInfo();
@@ -299,16 +299,18 @@ public class MatCategoryService extends BaseService {
 		return leafDept;
 	}
 
-	public ArrayList<ArrayList<String>> getLeafDept(HttpServletRequest request) throws Exception {
+	public ArrayList<ArrayList<String>> getLeafDept(
+			HttpServletRequest request,String categoryId) throws Exception {
 		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
 		BaseQuery baseQuery;
 		BaseModel baseModel = new BaseModel();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 
 		baseModel.setQueryFileName("/business/material/matclassquerydefine");
-		baseModel.setQueryName("mainframequery_getleafdept_admin");
+		//baseModel.setQueryName("mainframequery_getleafdept_admin");
+		baseModel.setQueryName("mainframequery_getCategoryByParentId");
 		baseQuery = new BaseQuery(request, baseModel);
-		//userDefinedSearchCase.put("parentid", unitId);
+		userDefinedSearchCase.put("parentid", categoryId);
 
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 

@@ -22,7 +22,7 @@
 </script>
 
 <body>
-	<%@ include file="../../common/navitree.jsp"%>
+	<%@ include file="../../common/navitree2.jsp"%>
 </body>
 
 

@@ -29,7 +29,7 @@
 				//"lengthMenu":[10,150,200],//设置一页展示20条记录
 				"processing" : true,
 				"serverSide" : true,
-				"stateSave" : true,
+				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",

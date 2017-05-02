@@ -15,16 +15,17 @@
 		if(table) {
 			table.fnDestroy();
 		}
+
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
-			 "iDisplayLength" : 50,
 			"lengthChange":false,
 			//"lengthMenu":[10,150,200],//设置一页展示20条记录
 			"processing" : true,
 			"serverSide" : true,
-			"stateSave" : true,
+			"stateSave" : false,
 			"ordering "	:true,
 			"searching" : false,
+			 "iDisplayLength" : 50,
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
 			"sAjaxSource" : "${ctx}/business/material?methodtype=searchProduct&pageFlg="+pageFlg,
@@ -43,6 +44,7 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){							
 						fnCallback(data);
+						//$('#TMaterial').DataTable().ajax.reload(null,false);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -55,32 +57,30 @@
 						{"data": null,"className" : 'td-center'},
 						{"data": "materialId"},
 						{"data": "materialName"},
-						{"data": "productModel"},
-						{"data": "customerId"},
 						{"data": "totalCost", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "exchangePrice", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "currency", "defaultContent" : '0',"className" : 'td-center'},
-						{"data": null,"className" : 'td-center'},
+						{"data": null,"className" : 'td-right'},
 						{"data": null,"className" : 'td-center'}
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                 }},
-	    		{"targets":9,"render":function(data, type, row){
+	    		{"targets":7,"render":function(data, type, row){
 	    			var rtn = "";
 	    			var space = '&nbsp;';
-	    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["materialId"] + "')\">查看</a>";
+	    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["materialId"] + "')\">查看</a>";
 	    			//rtn= rtn+space+"<a href=\"#\" onClick=\"doCreate('" + row["materialId"] + "')\">BOM</a>";		
 	    			return rtn;
 	    		}},
 	    		{"targets":2,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
-	    			name = jQuery.fixedWidth(name,30);				    			
+	    			name = jQuery.fixedWidth(name,45);				    			
 	    			return name;
 	    		}},
-	    		{"targets":6,"render":function(data, type, row){
+	    		{"targets":4,"render":function(data, type, row){
 	    			var rate = row["exchangePrice"];
 	    			var c = row["currency"];
 	    			if(rate == null || rate == ""){
@@ -90,7 +90,7 @@
 		    			 //return row["profitRate"] + "%";	    				
 	    			}	    				
 	    		}},
-	    		{"targets":8,"render":function(data, type, row){
+	    		{"targets":6,"render":function(data, type, row){
 	    			var rate = row["profitRate"];
 	    			if(rate == null || rate == ""){
 		    			return "0";
@@ -99,8 +99,7 @@
 	    			}	    				
 	    		}}
          	] 
-			}
-		);
+		});
 	}
 
 
@@ -198,7 +197,7 @@
 
 	<div id="search">
 
-		<form id="condition"  style='padding: 0px; margin: 10px;' >
+		<form id="condition"  >
 
 			<table>
 				<tr>
@@ -227,15 +226,13 @@
 		<table id="TMaterial" class="display dataTable" >
 			<thead>						
 				<tr>
-					<th style="width: 30px;"class="dt-middle ">No</th>
-					<th style="width: 120px;" class="dt-middle ">成品编号</th>
+					<th style="width: 10px;"class="dt-middle ">No</th>
+					<th style="width: 180px;" class="dt-middle ">成品编号</th>
 					<th class="dt-middle">产品名称</th>
-					<th style="width: 30px;" class="dt-middle">型号</th>
-					<th style="width: 30px;" class="dt-middle">客户</th>
 					<th style="width: 80px;" class="dt-middle">核算成本</th>
 					<th style="width: 80px;" class="dt-middle">客户报价</th>
 					<th style="width: 60px;" class="dt-middle">币种</th>
-					<th style="width: 80px;" class="dt-middle ">利润率</th>
+					<th style="width: 60px;" class="dt-middle ">利润率</th>
 					<th style="width: 30px;" class="dt-middle ">操作</th>
 				</tr>
 			</thead>

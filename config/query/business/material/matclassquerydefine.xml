@@ -116,4 +116,24 @@
     <groupby></groupby>
     <having></having>
   </query>
+    
+  <query>
+    <pool></pool>     
+    <name value="mainframequery_getCategoryByParentId" />
+    <where>
+    	<w name="A.parentid" des="" reqName="parentid" dtype="ch" oper="="  lg="" bt="" /> 
+    </where>
+    <select>
+    	<f name="DISTINCT A.categoryId" alias="" ctype="" />
+    	<f name="A.categoryName" alias="" ctype="" />
+    	<f name="A.formatDes" alias="" ctype="" />
+    	<f name="A.parentId" alias="" ctype="" />
+    	<f name="A.childId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源' -->
+    <from>v_matcategorytree as A </from>
+    <orderby>A.categoryId, A.parentid</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
 </root>

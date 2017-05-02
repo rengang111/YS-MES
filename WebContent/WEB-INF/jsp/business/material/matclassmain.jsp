@@ -50,12 +50,12 @@
 			<thead>
 			<tr class="selected">
 				<td width="1px" style="display:none"></td>
-				<td width="50px">序号</td>
-				<td width="100px">分类编码</td>
+				<td width="30px">序号</td>
+				<td width="120px">分类编码</td>
 				<td width="200px">分类名称</td>
 				<td width="100px">上级单位</td>
 				<td width="160px">规格说明</td>
-				<td width="100px">操作</td>
+				<td width="80px">操作</td>
 			</tr>
 			</thead>
 			<tbody>
@@ -128,6 +128,9 @@
 	}); 
 	function noticeNaviChanged(id, name, isLeaf) {
 		//var infoList = name.split("_");
+		//alert(name+':name')
+		if( typeof name =='undefined')
+			return;
 		$('#userCategoryId').val(id);
 		$('#categoryName').val(name);
 		
@@ -206,7 +209,8 @@ $(document).ready( function () {
 	
 	var t = $('#example').DataTable({
 			"paging": true,
-			"lengthMenu":[50,100,200],//设置一页展示100条记录
+			 "iDisplayLength" : 100,
+			//"lengthMenu":[50,100,200],//设置一页展示100条记录
 			"searching" : false,
 			"lengthChange":false,
 			//"scrollY":scrollHeight,
@@ -218,8 +222,8 @@ $(document).ready( function () {
 						"orderable" : false,
 						"targets" : [6] 
 					}, {
-						"visible" : true,
-						"targets" : [0]
+						"visible" : false,
+						"targets" : [0,4]
 					} ]
 	});   
       
