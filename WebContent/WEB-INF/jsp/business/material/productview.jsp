@@ -107,13 +107,13 @@
 			<thead>				
 				<tr>
 					<th width="1px">No</th>
-					<th class="dt-center" width="150px">物料编码</th>
+					<th class="dt-center" width="180px">物料编码</th>
 					<th class="dt-center" >物料名称</th>
 					<th class="dt-center" width="30px">单位</th>
-					<th class="dt-center" width="80px">供应商编号</th>
+					<th class="dt-center" width="70px">供应商编号</th>
 					<th class="dt-center" width="60px">用量</th>
-					<th class="dt-center" width="80px">单价</th>
-					<th class="dt-center" width="100px">总价</th>
+					<th class="dt-center" width="60px">单价</th>
+					<th class="dt-center" width="60px">总价</th>
 				</tr>
 			</thead>
 			

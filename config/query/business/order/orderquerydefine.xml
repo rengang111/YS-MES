@@ -118,26 +118,6 @@
   </query>
   <query>
     <pool></pool>     
-    <name value="orderDetailExistCheck" />
-    <where>
-    	<w name="A.materialId" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="" bt="" />
-    </where>
-    <select>
-      <f name="A.recordId" alias="" ctype="" />
-      <f name="A.categoryId" alias="" ctype="" />
-      <f name="A.categoryName" alias="" ctype="" />
-      <f name="A.formatDes" alias="" ctype="" />
-      <f name="A.fullField" alias="" ctype="" />
-    </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_matcategorylist AS A </from>
-    <orderby></orderby>
-    <groupby></groupby>
-    <having></having>
-  </query>
-  <query>
-    <pool></pool>     
     <name value="getCustomer" />
     <where>
       <w name="A.full_field" des=""  reqName="keywords1" dtype="ch" oper="like"  lg="AND" bt="" />

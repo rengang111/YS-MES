@@ -48,9 +48,9 @@
 					for (var i=0;i<1;i++){
 
 						var rowIndex = i+1;
-						var hidden = '<input type="hidden" name="bomDetailLines['+counter+'].subbomid" id="bomDetailLines'+counter+'.subbomid" value=""/>'+
-									 '<input type="hidden" name="bomDetailLines['+counter+'].subbomno" id="bomDetailLines'+counter+'.subbomno" value="0"/>'+
-									 '<input type="hidden" name="bomDetailLines['+counter+'].subbomserial" id="bomDetailLines'+counter+'.subbomserial" value=""/>'
+						var hidden =	'<input type="hidden" name="bomDetailLines['+counter+'].subbomid" id="bomDetailLines'+counter+'.subbomid" value=""/>'+
+									 	'<input type="hidden" name="bomDetailLines['+counter+'].subbomno" id="bomDetailLines'+counter+'.subbomno" value="0"/>'+
+									 	'<input type="hidden" name="bomDetailLines['+counter+'].subbomserial" id="bomDetailLines'+counter+'.subbomserial" value=""/>'
 						var rowNode = $('#example')
 							.DataTable()
 							.row
@@ -65,8 +65,6 @@
 								'<td><input type="text"   name="bomDetailLines['+counter+'].quantity"   id="bomDetailLines'+counter+'.quantity"   class="cash"  style="width:70px"/></td>',
 								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].price"      id="bomDetailLines'+counter+'.price" /></td>',
 								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].totalprice" id="bomDetailLines'+counter+'.totalprice"/><input type="hidden" id="labor"></td>',
-
-								'<input type="hidden" name="bomDetailLines['+counter+'].subbomno" id="bomDetailLines'+counter+'.subbomno" value="0"/>'
 								
 								]).draw();
 						
@@ -550,7 +548,7 @@
 					var index = '${status.index}';
 					var cost = '${detail.productcost}';
 					var materialId = '${detail.materialId}';
-					var materialName = '${detail.materialName}';
+					var materialName= "${detail.materialName}";
 					var quantity = currencyToFloat('${detail.quantity}');
 					var price =currencyToFloat( '${detail.price}');
 					var subBomId = '${detail.subBomId}';
