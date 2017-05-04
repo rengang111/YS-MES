@@ -86,9 +86,18 @@
 			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=edit");
 			$('#attrForm').submit();
 		});		
+		
+	
+
 
 	});	
 	
+	function doShowYS(YSId) {
+
+		var url = '${ctx}/business/order?methodtype=getPurchaseOrder&YSId=' + YSId;
+		
+		location.href = url;
+	}
 	
 </script>
 
@@ -106,7 +115,7 @@
 			<table class="form" id="table_form">
 				<tr> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="200px">${contract.YSId }
+					<td width="200px"><a href="#" onClick="doShowYS('${contract.YSId}')">${contract.YSId }</a>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
@@ -195,9 +204,7 @@
 					var index = '${status.index}';
 					
 					$('#name'+index).html(jQuery.fixedWidth(materialName,20));
-					
-					counter++;
-					
+										
 				</script>	
 					
 			</c:forEach>

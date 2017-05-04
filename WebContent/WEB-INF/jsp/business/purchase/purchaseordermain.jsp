@@ -70,16 +70,19 @@
 				{"data": "purchaseDate", "defaultContent" : ''},
 				{"data": "deliveryDate", "defaultContent" : ''},
 				{"data": "total", "defaultContent" : '',"className" : 'td-right'},
-				{"data": null, "defaultContent" : '',"className" : 'td-center'},
 			
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                    }},
-	    		{"targets":9,"render":function(data, type, row){
+	    		{"targets":1,"render":function(data, type, row){
 	    			
-	    			return "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">查看</a>";			    			
+	    			return "<a href=\"###\" onClick=\"doShowYS('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";			    			
+	    		}},
+	    		{"targets":4,"render":function(data, type, row){
+	    			
+	    			return "<a href=\"###\" onClick=\"doShowControct('" + row["contractId"] + "')\">"+row["contractId"]+"</a>";			    			
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var name = row["productName"];				    			
@@ -124,13 +127,14 @@
 	}
 	
 	
-	function CreatePurchasePlan(bomId) {
+	function doShowYS(YSId) {
 
-		var url = '${ctx}/business/purchase?methodtype=detail&bomId=' + bomId;
+		var url = '${ctx}/business/order?methodtype=getPurchaseOrder&YSId=' + YSId;
+		
 		location.href = url;
 	}
 
-	function doShow(contractId) {
+	function doShowControct(contractId) {
 
 		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
 		location.href = url;
@@ -185,7 +189,6 @@
 						<th style="width: 60px;"  class="dt-middle ">下单日期</th>
 						<th style="width: 60px;"  class="dt-middle ">合同交期</th>
 						<th style="width: 60px;"  class="dt-middle ">合同数量</th>
-						<th style="width: 30px;"  class="dt-middle ">操作</th>
 					</tr>
 				</thead>
 			</table>

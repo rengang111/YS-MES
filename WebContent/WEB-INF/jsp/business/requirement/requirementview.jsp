@@ -216,7 +216,7 @@
 					<td style="width:150px;">${order.materialId}</td>
 				
 					<td class="label" style="width:100px;"><label>产品名称：</label></td>				
-					<td>&nbsp;${order.materialName}</td>
+					<td>${order.materialName}</td>
 				</tr>
 				<tr>
 					<td class="label"><label>ＰＩ编号：</label></td>

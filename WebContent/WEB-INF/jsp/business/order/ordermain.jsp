@@ -80,6 +80,11 @@
 				    			return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 				    			 
 		                    }},
+				    		{"targets":2,"render":function(data, type, row){
+				    			var name = row["orderId"];
+				    			name = jQuery.fixedWidth(name,15);
+				    			return name;
+				    		}},
 				    		{"targets":10,"render":function(data, type, row){
 				    			var rtn = "";
 				    			var space = '&nbsp;';

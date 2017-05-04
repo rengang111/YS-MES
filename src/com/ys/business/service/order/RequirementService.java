@@ -1055,7 +1055,7 @@ public class RequirementService extends CommonService {
 		
 		if(dataModel.getRecordCount() > 0){
 				HashMap.put("recordsTotal", dataModel.getRecordCount());
-				HashMap.put("data", modelMap);				
+				HashMap.put("data", dataModel.getYsViewData());				
 	
 		}else{
 			return null;
@@ -1279,8 +1279,8 @@ public class RequirementService extends CommonService {
 	
 	public HashMap<String, Object> showOrderBomDetail() throws Exception {
 
-		String materialId = request.getParameter("materialId");
-		String bomId = BusinessService.getBaseBomId(materialId)[1];
+		String bomId = request.getParameter("bomId");
+		//String bomId = BusinessService.getBaseBomId(materialId)[1];
 		
 		return getOrderBomDetail(bomId);		
 	}

@@ -127,6 +127,10 @@ public class OrderAction extends BaseAction {
 				dataMap = documenterayNameSearch();
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/demand/demandmain";
+				break;			
+			case "getPurchaseOrder":
+				getPurchaseOrder();
+				rtnUrl = "/business/purchase/purchaseorderlist";
 				break;
 				
 		}
@@ -407,6 +411,15 @@ public class OrderAction extends BaseAction {
 	{
 	  try {
 	    this.orderService.documentaryEdit();
+	  }
+	  catch (Exception e) {
+	    System.out.println(e.getMessage());
+	  }
+	}
+	public void getPurchaseOrder()
+	{
+	  try {
+	    this.orderService.getPurchaseOrder();
 	  }
 	  catch (Exception e) {
 	    System.out.println(e.getMessage());

@@ -770,6 +770,13 @@ public class OrderService extends BaseService {
 		getOrderDetail(YSId);
 	}
 	
+	
+	public void getPurchaseOrder() throws Exception{
+		
+		String YSId = this.request.getParameter("YSId");
+		getOrderDetail(YSId);
+	}
+	
 	public void getOrderDetail(String YSId) throws Exception{
 		
 	  this.dataModel.setQueryFileName("/business/order/orderquerydefine");
@@ -777,7 +784,7 @@ public class OrderService extends BaseService {
 	
 	  this.baseQuery = new BaseQuery(this.request, this.dataModel);
 	
-	  this.userDefinedSearchCase.put("keywords1", YSId);
+	  this.userDefinedSearchCase.put("keyword1", YSId);
 	  this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
 	  this.baseQuery.getYsFullData();
 	

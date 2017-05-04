@@ -67,6 +67,7 @@ public class PurchaseOrderAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
+				doInit(session);
 				rtnUrl = "/business/purchase/purchaseordermain";
 				break;				
 			case "search":
@@ -108,6 +109,17 @@ public class PurchaseOrderAction extends BaseAction {
 		}
 		
 		return rtnUrl;		
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void doInit(HttpSession session){	
+			
+		String contractId = request.getParameter("contractId");
+		//没有物料编号,说明是初期显示,清空保存的查询条件
+		if(contractId == null || ("").equals(contractId)){
+			session.removeValue("mainSearchKey1");
+			session.removeValue("mainSearchKey2");
+		}		
 	}
 	
 	@SuppressWarnings("unchecked")
