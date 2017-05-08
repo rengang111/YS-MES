@@ -103,6 +103,10 @@ public class CustomerAction extends BaseAction {
 				doOptionChange();
 				printOutJsonObj(response, modelMap);
 				return null;
+			case "shortNameCheck":
+				shortNameCheck();
+				printOutJsonObj(response, modelMap);
+				return null;
 		}
 		
 		return rtnUrl;
@@ -200,6 +204,11 @@ public class CustomerAction extends BaseAction {
 		modelMap = service.getCustomerId();
 
 	}
+	
+	public void shortNameCheck() throws Exception{
+		
+		modelMap = service.shortNameCheck();
 
+	}
 
 }

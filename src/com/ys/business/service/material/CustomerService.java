@@ -373,6 +373,25 @@ public class CustomerService extends BaseService {
 		return modelMap;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> shortNameCheck() throws Exception{
+		
+		String ExFlag = "";
+		String shortName = request.getParameter("shortName");
+		shortName = convertToUTF8(shortName).toUpperCase();
+		List<B_CustomerData> list = null;
+		String astr_Where = "UPPER(shortName) = '"+ shortName + "' " +
+							" AND deleteFlag = '0' ";
+		list = (List<B_CustomerData>)dao.Find(astr_Where);
+	
+		if(list != null && list.size() > 0){
+			ExFlag = "1";
+		}		
+		
+		modelMap.put("ExFlag",ExFlag);
+		
+		return modelMap;
+	}
 	public void insertAndView(){
 		
 		String recordId = insertAndUpdate();

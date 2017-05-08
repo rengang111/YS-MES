@@ -227,14 +227,15 @@ function supplierPriceView() {
 					}
 									
 					fnCallback(data);
+					var supplierId = "";
 					$.each(data, function (n, value) {
-			               $.each(value, function (i, v) {
-				               //alert(i + ' == ' + v["supplierId"]);
-			               });
-			           })
-			           
-					//重设显示窗口(iframe)高度
-					iFramAutoSroll();
+			            $.each(value, function (i, v) {
+		            	   supplierId = supplierId + v["supplierId"]+",";
+			               //alert(i + ' == ' + v["supplierId"]);
+			            });
+			        })
+					$("#supplierid").val(supplierId);
+ 
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	                 alert(XMLHttpRequest.status);
@@ -357,9 +358,10 @@ var layerHeight = '360px';
 var layerWidth  = '900px';
 //新增供应商
 function doCreatePrice() {
+	var supplierId = $("#supplierid").val();
 	var materialid ='${material.material.materialid}';
-	var url = "${ctx}/business/material?methodtype=addSupplier&materialid="+materialid;
-	
+	var url = "${ctx}/business/material?methodtype=addSupplier&materialid="+materialid+"&supplierId="+supplierId;
+	//alert('supplier'+supplierId)
 	layer.open({
 		offset :[100,''],
 		type : 2,

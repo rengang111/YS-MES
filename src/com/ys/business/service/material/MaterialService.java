@@ -319,7 +319,35 @@ public class MaterialService extends CommonService {
 		
 		userDefinedSearchCase.put("keywords1", key);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0,0);	 
+
+		String sql = baseQuery.getSql();
+		String key1 = request.getParameter("supplierId");
+		String[] arry = null;
+		String where = "";
+		if(!(key1==null || ("").equals(key1.trim()))){
+			arry = key1.split(",");
+			if(arry != null && arry.length > 0){
+				boolean flg = true;
+				for(String str:arry){
+					if(str ==null || str.trim().equals(""))
+						continue;
+					
+					if(flg){
+						where = where + " '" + str +"' ";						
+						flg=false;
+						continue;
+					}
+					where = where + ","+ " '" + str +"' ";		
+				}
+			}else{
+				where = " '" + key1 +"' ";
+			}
+
+			sql = sql.replace("#", where);
+		}
+		
+			
+		baseQuery.getYsQueryData(sql);	 
 		
 		modelMap.put("data", dataModel.getYsViewData());		
 		

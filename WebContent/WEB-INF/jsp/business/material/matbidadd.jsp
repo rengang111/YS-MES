@@ -1,32 +1,12 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <!DOCTYPE HTML>
 <html>
 
 <head>
+<%@ include file="../../common/common2.jsp"%>
 <title>物料管理--新增物料单价(供应商)</title>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
-<script type="text/javascript">
-  var ctx = '${ctx}'; 
-</script>
-<script type="text/javascript" src="${ctx}/js/jquery-2.1.3.js"></script>
-<script type="text/javascript" src="${ctx}/js/jquery-ui.min.js"></script>
-<script type="text/javascript" src="${ctx}/js/main.js"></script>
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/jquery.dataTables.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/dataTables.tableTools.css" />
-<link rel="stylesheet" type="text/css" href="${ctx}/css/all.css" />
-
 <script type="text/javascript">
 
 	$(document).ready(function() {
@@ -61,9 +41,9 @@
 		
 		$("#submit").click(function() {
 
-			if ($("#price\\.supplierid").val() == "0") {
+			if ($("#price\\.supplierid").val() == "") {
 
-				alert("请填入正确的供应商。");
+				alert("请填入正确的供应商。");	
 
 				$("#attribute1").focus();
 
@@ -224,9 +204,11 @@
 		
 		source : function(request, response) {
 			//alert(888);
+			var supplierId = '${supplierId}';
+			//alert(supplierId)
 			$.ajax({
 				type : "POST",
-				url : "${ctx}/business/material?methodtype=supplierSearch",
+				url : "${ctx}/business/material?methodtype=supplierSearch&supplierId="+supplierId,
 				dataType : "json",
 				data : {
 					key : request.term

@@ -1,14 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<!DOCTYPE HTML>
 
-<%@ include file="../../common/common.jsp"%>
+<html>
+<head>
+
+<%@ include file="../../common/common2.jsp"%>
 
 <title>客户基本数据</title>
 <script type="text/javascript">
+
+var ExFlag = '';//客户简称重复check
 
 $(document).ready(function() {
 
@@ -64,7 +66,8 @@ $(document).ready(function() {
 
 					$('#customer\\.parentid').val(parentId);
 					$('#customer\\.subid').val(subId);
-					$('#customer\\.customerId').val(customerId);
+					$('#customer\\.customerid').val(customerId);
+
 				},
 				error : function(
 						XMLHttpRequest,
@@ -79,10 +82,52 @@ $(document).ready(function() {
 		}
 	});	//国家选择
 
+	$("#customer\\.shortname").change(function() {
+
+		var shortName = $(this).val().toUpperCase();
+		$(this).val(shortName);
+		//alert(parentId)
+		var url = "${ctx}/business/customer?methodtype=shortNameCheck&shortName="+shortName
+											
+		if (shortName != ""){ 
+			$.ajax({
+				type : "post",
+				url : url,
+				async : false,
+				data : 'key=' + shortName,
+				dataType : "json",
+				success : function(data) {
+	
+					ExFlag = data["ExFlag"];					
+					if(ExFlag == '1'){
+						$().toastmessage('showWarningToast', "客户简称［ "+shortName+" ］已存在,请重新输入。");				
+					}
+
+				},
+				error : function(
+						XMLHttpRequest,
+						textStatus,
+						errorThrown) {
+					
+					//alert("supplierId2222:"+textStatus);
+				}
+			});
+		}else{
+			//关联项目清空
+		}
+	});	//国家选择
 })
 
 function doSave() {
 
+	if(ExFlag == 1){
+		$().toastmessage('showWarningToast', "客户简称已存在,请重新输入。");		
+		return;
+	}
+	if($('#customer\\.customerid').val() == ''){
+		$().toastmessage('showWarningToast', "请输入客户编号。");		
+		return;
+	}
 	if (validator.form()) {					
 		$('#customer').attr("action", "${ctx}/business/customer?methodtype=insert");
 		$('#customer').submit();	
@@ -120,7 +165,7 @@ function goBack() {
 						</td>
 						<td class="label" style="widht:100px">客户简称：</td> 
 						<td>
-							<form:input path="customer.shortname" class="short"/>
+							<form:input path="customer.shortname" class="short" style="text-transform:uppercase;"/>
 						</td>
 					
 						<td class="label" style="widht:100px">客户名称：</td> 

@@ -443,6 +443,8 @@ public class MaterialAction extends BaseAction {
 	public void doAddSupplier() {
 
 		String materialid = request.getParameter("materialid");
+		String supplierId = request.getParameter("supplierId");
+		model.addAttribute("supplierId",supplierId);
 		model = materialService.SelectSupplier(materialid);
 
 	}	
