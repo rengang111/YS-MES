@@ -27,7 +27,7 @@ import com.ys.business.db.data.B_SupplierData;
 import com.ys.system.db.data.S_DICData;
 
 public class MouldRegisterModel extends BaseModel {
-	private final String className = "com.ys.business.service.mouldcontract.MouldRegisterService";
+	private final String className = "com.ys.business.service.mouldregister.MouldRegisterService";
 	private String keyBackup = "";
 	private B_MouldBaseInfoData mouldBaseInfoData = new B_MouldBaseInfoData();
 	private B_MouldFactoryData mouldFactoryData = new B_MouldFactoryData();
