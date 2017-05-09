@@ -166,6 +166,12 @@
 		
 	}
 
+	function doTrimSerialNo() {
+		var url = "${ctx}/business/mouldregister?methodtype=trimSerialNoInit";
+
+		openLayer(url, '800', '500', false);
+	}
+	
 	function reload() {
 		
 		$('#TMould').DataTable().ajax.reload(null,false);
@@ -217,6 +223,7 @@
 					<div id="DTTT_container" align="right" style="height:40px">
 						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doCreate();"><span>新建</span></a>
 						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doDelete();"><span>删除</span></a>
+						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doTrimSerialNo();"><span>调整流水号</span></a>
 					</div>
 
 					<div id="clear"></div>

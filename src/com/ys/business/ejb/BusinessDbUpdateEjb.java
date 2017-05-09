@@ -2071,4 +2071,43 @@ public class BusinessDbUpdateEjb  {
 		
 		return model;
     }
+    
+    public MouldRegisterModel executeMouldRegisterTrimSerialNo(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+    	
+    	MouldRegisterService service = new MouldRegisterService();
+    	MouldRegisterModel model = new MouldRegisterModel();
+    	B_MouldBaseInfoDao mouldBaseInfoDao = new B_MouldBaseInfoDao();  
+    	B_MouldBaseInfoData mouldBaseInfoData = new B_MouldBaseInfoData(); 
+
+    	String key = "";
+    	
+    	ts = new BaseTransaction();	
+    	
+		try {
+			
+			ts.begin();
+			
+			String keyBackup = service.getJsonData(data, "selectedMouldType");
+
+			ArrayList<HashMap<String, String>> datas = service.getSerialNo(data);
+			for(HashMap<String, String> rowData: datas) {
+				mouldBaseInfoData.setId(rowData.get("id"));
+				mouldBaseInfoData = (B_MouldBaseInfoData)mouldBaseInfoDao.FindByPrimaryKey(mouldBaseInfoData);
+				if (!mouldBaseInfoData.getMouldid().equals(mouldBaseInfoData.getType() + "." + rowData.get("no"))) {
+					mouldBaseInfoData.setMouldid(mouldBaseInfoData.getType() + "." + rowData.get("no"));
+					mouldBaseInfoData = service.updateMouldBaseInfoModifyInfo(mouldBaseInfoData, userInfo);
+					mouldBaseInfoDao.Store(mouldBaseInfoData);
+				}
+			}
+			ts.commit();
+			model.setEndInfoMap(BaseService.NORMAL, "", "");
+
+		}
+		catch(Exception e) {
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "err001", key);
+			ts.rollback();
+		}
+		
+		return model;
+    }
 }												

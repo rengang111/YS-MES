@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -1265,5 +1268,101 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 		
 		
 		return model;
+	}
+	
+	public MouldRegisterModel doTrimSerialNoInit(HttpServletRequest request) {
+		MouldRegisterModel model = new MouldRegisterModel();
+		
+		model.setEndInfoMap("098", "0001", "");
+		
+		return model;
+		
+	}
+	
+	public HashMap<String, Object> doGetSerialNoList(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		String key = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		key = getJsonData(data, "selctedMouldType");
+		if (key == null || key.equals("")) {
+			key = "-1";
+		}
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+		dataModel.setQueryName("getSerialNoList");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("type", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
+	}
+	
+	public MouldRegisterModel doUpdateTrimSerialNo(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+		MouldRegisterModel model = new MouldRegisterModel();
+
+		BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
+			
+		model = bean.executeMouldRegisterTrimSerialNo(request, data, userInfo);
+		
+		return model;
+	}
+	
+	public ArrayList<HashMap<String, String>> getSerialNo(String formData) {
+		ArrayList<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
+	    try {
+	    	
+	        JSONArray jArray = new JSONArray(formData);
+	        
+	        for (int i = 0; i < jArray.length(); i++) {
+	            JSONObject resultJsnObj = jArray.getJSONObject(i);
+	            String name = (String)resultJsnObj.get("name");
+	            if (name.length() > 6 && name.substring(0, 6).equals("newNo-")) {
+	            	HashMap<String, String> map = new HashMap<String, String>();
+	            	map.put("id", name.substring(6));
+	            	map.put("no", String.valueOf(resultJsnObj.get("value")));
+	            	data.add(map);
+	            }
+	        }
+	        
+	    }
+	    catch(Exception e) {
+	        System.out.println(e.getMessage());
+	    }
+	    
+	    return data;
 	}
 }

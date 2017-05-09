@@ -133,7 +133,17 @@ public class MouldRegisterAction extends BaseAction {
 				rtnUrl = doUpdateInit(model, session, request, response, false);
 				rtnUrl = "/business/mouldregister/mouldregisteredit";
 				break;
-
+			case "trimSerialNoInit":
+				rtnUrl = doTrimSerialNoInit(model, session, request);
+				break;
+			case "getSerialNoList":
+				dataMap = doGetSerialNoList(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "updatetrimserialno":
+				viewModel = doUpdateTrimSerialNo(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 		}
 		
 		return rtnUrl;
@@ -251,7 +261,15 @@ public class MouldRegisterAction extends BaseAction {
 		model.addAttribute("DisplayData", dataModel);
 		
 		return rtnUrl;
-	}		
+	}	
+	
+	public String doTrimSerialNoInit(Model model, HttpSession session, HttpServletRequest request){
+		MouldRegisterModel dataModel = new MouldRegisterModel();
+		dataModel = mouldRegisterService.doTrimSerialNoInit(request);
+		model.addAttribute("DisplayData", dataModel);
+		
+		return "/business/mouldregister/mouldregistertrimserialno";
+	}
 	
 	public String doAddFactoryInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
@@ -558,4 +576,36 @@ public class MouldRegisterAction extends BaseAction {
 		return dataMap;
 	}	
 	
+	public HashMap<String, Object> doGetSerialNoList(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			dataMap = mouldRegisterService.doGetSerialNoList(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public MouldRegisterModel doUpdateTrimSerialNo(String data, HttpSession session, HttpServletRequest request){
+		
+		MouldRegisterModel model = new MouldRegisterModel();
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		try {
+			model = mouldRegisterService.doUpdateTrimSerialNo(request, data, userInfo);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return model;
+	}
 }
