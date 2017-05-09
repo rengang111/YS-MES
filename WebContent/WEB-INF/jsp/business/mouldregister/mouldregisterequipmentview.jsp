@@ -70,13 +70,13 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "shortName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "currency", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "shortName", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "supplierName", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "price", "defaultContent" : '',"className" : 'td-right'},
+							{"data": "currency", "defaultContent" : '',"className" : 'td-right'},
 							{"data": "priceUnit", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "priceTime", "defaultContent" : '',"className" : 'td-center'}
+							{"data": "priceTime", "defaultContent" : '',"className" : 'td-left'}
 				        ],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
