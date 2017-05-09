@@ -303,6 +303,7 @@
 			<form:form modelAttribute="dataModels" id="mouldBaseInfo" style='padding: 0px; margin: 10px;' >
 				<input type=hidden id="keyBackup" name="keyBackup" value="${DisplayData.keyBackup}"/>
 				<input type=hidden id="selctedMouldType" name="selctedMouldType" value=""/>
+				<fieldset>
 				<legend>分类编码-基本信息</legend>
 				<div style="height:10px"></div>
 
@@ -321,11 +322,12 @@
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave(0);"
 						style="height:25px;margin:10px 5px 0px 0px;float:right;" >保存</button>
 				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:10px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
-				
+				</fieldset>
 				<div  style="height:20px"></div>
 				
 			
 				<div id="factoryArea" style="width:100%;">
+					<fieldset>
 					<legend>供应商单价信息</legend>
 					<div  style="height:20px"></div>
 					<div class="form">
@@ -340,6 +342,7 @@
 							</thead>
 						</table>
 					</div>
+					</fieldset>
 				</div>
 
 

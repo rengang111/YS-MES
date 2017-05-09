@@ -771,7 +771,7 @@
 				<input type=hidden id="activeSubCodeIndex" name="activeSubCodeIndex" value=""/>
 				<input type=hidden id="rotateDirect" name="rotateDirect" value=""/>
 				<input type=hidden id="shareModelCount" name="shareModelCount" value=""/>
-				
+				<fieldset>
 				<legend>模具单元-基本信息</legend>
 				<div style="height:10px"></div>
 				<!-- 
@@ -846,7 +846,7 @@
 						</td>
 					</tr>
 				</table>			
-				
+
 				<div  style="height:20px"></div>
 				
 			
@@ -869,8 +869,9 @@
 						</thead>
 					</table>
 				</div>
-				
-				<legend style="margin: 10px 0px 0px 0px"> 模具-关联信息</legend>
+				</fieldset>
+				<fieldset>
+				<legend style="margin: 0px 0px 0px 0px"> 模具-关联信息</legend>
 				<div id="autoscroll">
 					<table class="form">
 						<tr>
@@ -892,10 +893,11 @@
 						</tr>
 					</table>
 				</div>
+
 				<button type="button" id="edit" class="DTTT_button" onClick="doSave(0);"
 						style="height:25px;margin:10px 5px 0px 0px;float:right;" >保存</button>
 				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:10px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
-
+				</fieldset>
 			</form:form>
 		</div>
 </html>

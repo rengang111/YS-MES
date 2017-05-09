@@ -160,7 +160,8 @@
 				</tr>
 
 			</table>
-
+		</fieldset>
+		<fieldset>
 			<legend Style="margin: 10px 0px 0px 0px"> 供应商信息</legend>
 			<table class="form">
 				<tr>
@@ -184,7 +185,8 @@
 					</td>
 				</tr>
 			</table>	
-
+		</fieldset>
+		<fieldset>
 			<legend Style="margin: 10px 0px 0px 0px"> 报价信息</legend>
 			<table class="form">
 				<tr>

@@ -404,9 +404,10 @@
 				<input type=hidden id='productModelId' name='productModelId'/>
 				<input type=hidden id="subCodeCount" name="subCodeCount" value=""/>
 				<input type=hidden id="mouldId" name="mouldId" value="${DisplayData.mouldBaseInfoData.id}"/>
-				<legend>模具单元-基本信息</legend>
-				<div style="height:10px"></div>
 				<fieldset style="float:left;width:65%">
+					<legend>模具单元-基本信息</legend>
+					<div style="height:10px"></div>
+
 					<table class="form" width="700px" cellspacing="0">
 						<tr>
 							<td class="label" width="80px">编号：</td>
@@ -494,6 +495,7 @@
 				
 				<div  style="height:30px;clear:both;"></div>
 				<div id="factoryArea" style="display:none;">
+					<fieldset>
 					<legend>供应商单价信息</legend>
 					<div  style="height:10px;"></div>
 					<button type="button" id="createFactory" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doCreateFactory();">新建</button>
@@ -515,6 +517,7 @@
 							</thead>
 						</table>
 					</div>
+					</fieldset>
 				</div>
 			</form:form>
 		</div>
