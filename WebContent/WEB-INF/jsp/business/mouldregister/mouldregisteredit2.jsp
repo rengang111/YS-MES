@@ -10,7 +10,7 @@
 <title>模具单元基本信息管理</title>
 <script type="text/javascript">
 	var validatorBaseInfo;
-	var layerHeight = "350";
+	var layerHeight = "380";
 	var sumPrice = 0.0;
 	var paid = 0.0;    
 	

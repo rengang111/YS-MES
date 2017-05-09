@@ -207,13 +207,11 @@
 
 				</tr>
 			</table>
-		</fieldset>
 
-		<fieldset class="action">
 			<button type="button" id="return" class="DTTT_button" 
-					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >关闭</button>
+					style="height:25px;margin:0px 5px 0px 0px;float:right;" >关闭</button>
 			<button type="button" id="save" class="DTTT_button" 
-					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
+					style="height:25px;margin:0px 5px 0px 0px;float:right;" >保存</button>
 		</fieldset>
 
 	</form:form>
