@@ -31,6 +31,7 @@ import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_MouldFactoryData;
 import com.ys.business.db.data.B_MouldHistoryPriceData;
 import com.ys.business.db.data.B_MouldLastestPriceData;
+import com.ys.business.db.data.B_MouldShareModelData;
 import com.ys.business.db.data.B_MouldSubData;
 import com.ys.business.db.data.B_SupplierData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
@@ -184,6 +185,24 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 			model.setMouldFactoryDatas(baseQuery.getYsQueryData(0,0));
 			
+			userDefinedSearchCase = new HashMap<String, String>();
+			dataModel = new BaseModel();
+			dataModel.setQueryFileName("/business/mouldregister/mouldregisterquerydefine");
+			dataModel.setQueryName("getShareModelList");
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("mouldId", key);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			tmpData = baseQuery.getYsQueryData(0,0);
+			if (tmpData.size() > 0) {
+				String[] tempArray = new String[tmpData.size()];
+				String shareModelView = "";
+				for(int i = 0; i < tmpData.size(); i++) {
+					tempArray[i] = ((HashMap<String, String>)tmpData.get(i)).get("shareModel");
+					shareModelView += tempArray[i] + " ";
+				}
+				model.setShareModelList(tempArray);				
+				model.setShareModel(shareModelView);
+			}
 		}
 		//model.setTypeList(doOptionChange(DicUtil.MOULDTYPE, ""));
 		model.setMouldFactoryList(doGetMouldFactoryList(request));
@@ -951,6 +970,21 @@ public class MouldRegisterService extends BaseService implements I_BaseService {
 	}
 	
 	public static B_MouldHistoryPriceData updateMouldHistoryPriceModifyInfo(B_MouldHistoryPriceData data, UserInfo userInfo) {
+		String createUserId = data.getCreateperson();
+		if ( createUserId == null || createUserId.equals("")) {
+			data.setCreateperson(userInfo.getUserId());
+			data.setCreatetime(CalendarUtil.fmtDate());
+			data.setCreateunitid(userInfo.getUnitId());
+			data.setDeptguid(userInfo.getDeptGuid());
+		}
+		data.setModifyperson(userInfo.getUserId());
+		data.setModifytime(CalendarUtil.fmtDate());
+		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
+		
+		return data;
+	}
+	
+	public static B_MouldShareModelData updateMouldShareModelModifyInfo(B_MouldShareModelData data, UserInfo userInfo) {
 		String createUserId = data.getCreateperson();
 		if ( createUserId == null || createUserId.equals("")) {
 			data.setCreateperson(userInfo.getUserId());

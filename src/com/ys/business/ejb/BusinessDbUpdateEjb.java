@@ -45,6 +45,7 @@ import com.ys.business.db.dao.B_MouldLendRegisterDao;
 import com.ys.business.db.dao.B_MouldPayInfoDao;
 import com.ys.business.db.dao.B_MouldPayListDao;
 import com.ys.business.db.dao.B_MouldReturnRegisterDao;
+import com.ys.business.db.dao.B_MouldShareModelDao;
 import com.ys.business.db.dao.B_MouldSubDao;
 import com.ys.business.db.dao.B_OrganizationDao;
 import com.ys.business.db.dao.B_ProcessControlDao;
@@ -78,6 +79,7 @@ import com.ys.business.db.data.B_MouldLendRegisterData;
 import com.ys.business.db.data.B_MouldPayInfoData;
 import com.ys.business.db.data.B_MouldPayListData;
 import com.ys.business.db.data.B_MouldReturnRegisterData;
+import com.ys.business.db.data.B_MouldShareModelData;
 import com.ys.business.db.data.B_MouldSubData;
 import com.ys.business.db.data.B_OrganizationData;
 import com.ys.business.db.data.B_ProcessControlData;
@@ -1815,7 +1817,14 @@ public class BusinessDbUpdateEjb  {
 				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
 				BaseDAO.execUpdate(sql.toString());	
 
-				count++;												
+				sql = new StringBuffer("");
+				sql.append("UPDATE b_MouldShareModel SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());	
+				
+				count++;									
 			}
 			ts.commit();									
 		}
@@ -1875,10 +1884,8 @@ public class BusinessDbUpdateEjb  {
     	MouldRegisterModel model = new MouldRegisterModel();
     	B_MouldBaseInfoDao mouldBaseInfoDao = new B_MouldBaseInfoDao();  
     	B_MouldBaseInfoData mouldBaseInfoData = new B_MouldBaseInfoData(); 
-    	B_MouldSubDao mouldSubDao = new B_MouldSubDao();
-    	B_MouldSubData mouldSubData = new B_MouldSubData();
-    	B_MouldFactoryDao mouldFactoryDao = new B_MouldFactoryDao();
-    	B_MouldFactoryData mouldFactoryData = new B_MouldFactoryData();
+    	B_MouldShareModelDao mouldShareModelDao = new B_MouldShareModelDao();
+    	B_MouldShareModelData mouldShareModelData = new B_MouldShareModelData();
 
     	String key = "";
     	
@@ -1903,7 +1910,7 @@ public class BusinessDbUpdateEjb  {
 			String subCodeCount = service.getJsonData(data, "subCodeCount");
 			String activeSubCode = service.getJsonData(data, "activeSubCode");
 			String activeSubCodeIndex = service.getJsonData(data, "activeSubCodeIndex");
-			
+			String shareModelCount = service.getJsonData(data, "shareModelCount");
 			String mouldId = "";
 			String oldMouldId = "";
 			
@@ -1948,7 +1955,30 @@ public class BusinessDbUpdateEjb  {
 				mouldBaseInfoData.setComment(comment);
 				mouldBaseInfoData = service.updateMouldBaseInfoModifyInfo(mouldBaseInfoData, userInfo);
 				mouldBaseInfoDao.Store(mouldBaseInfoData);
+
 			}
+			if (shareModelCount != null && !shareModelCount.equals("")) {
+				int iShareModelCount = Integer.parseInt(shareModelCount);
+				StringBuffer sql = new StringBuffer();
+				
+				sql.append("UPDATE b_MouldShareModel SET DeleteFlag = '" + BusinessConstants.DELETEFLG_DELETED + "' ");								
+				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");								
+				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");								
+				sql.append(" WHERE mouldId = '" + key + "' AND DELETEFLAG = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");								
+				BaseDAO.execUpdate(sql.toString());								
+
+				for(int i = 0; i < iShareModelCount; i++) {
+					String shareModelData = service.getJsonData(data, "sharemodel" + String.valueOf(i));
+					if (shareModelData != null && !(service.getJsonData(data, "sharemodel" + String.valueOf(i)).equals(""))) {
+						mouldShareModelData.setId(BaseDAO.getGuId());
+						mouldShareModelData.setMouldid(key);
+						mouldShareModelData.setSharemodel(shareModelData);
+						mouldShareModelData = service.updateMouldShareModelModifyInfo(mouldShareModelData, userInfo);
+						mouldShareModelDao.Create(mouldShareModelData);
+					}
+				}
+			}
+			
 			/*
 			if (!subCodeCount.equals("")) {
 				int iCount = Integer.parseInt(subCodeCount);

@@ -467,6 +467,12 @@
 								</form:select>
 							</td>
 						</tr>
+						<tr>				
+							<td class="label"><label>通用型号：</label></td>
+							<td colspan="2" style="word-break:break-all;">
+								<label style="margin:0px 10px">${DisplayData.shareModel}</label>	
+							</td>							
+						</tr>
 						<tr>
 							<td rowspan=2 class="label">
 								中文描述：

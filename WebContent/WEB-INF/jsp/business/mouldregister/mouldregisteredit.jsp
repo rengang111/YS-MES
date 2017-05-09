@@ -13,7 +13,7 @@
 	var layerHeight = "350";
 	var sumPrice = 0.0;
 	var paid = 0.0;    
-	
+	var strShareMode = "<input type='text' class='mini' maxlength='5' name='sharemodel";
 	var datas = new Array();
 	
 	function PrefixInteger(num, length) {
@@ -347,6 +347,8 @@
 			//ajax();
 		}
 		
+		autoAddShareModel();
+		
 		$('#type').focus();
 	}
 
@@ -372,7 +374,7 @@
 					//修正
 					actionUrl = "${ctx}/business/mouldregister?methodtype=update";
 				}		
-
+				$('#shareModelCount').val($("#coupon input[type=text]").length);
 				//将提交按钮置为【不可用】状态
 				//$("#submit").attr("disabled", true); 
 				$.ajax({
@@ -672,6 +674,89 @@
 		var url = "${ctx}/business/mouldregister?methodtype=updateinit&key=" + $('#keyBackup').val() + "&activeSubCode=" + id;
 		$(window.location).attr('href', url);
 	}
+	
+	function autoAddShareModel() {
+
+		var firstFlg = true;
+		var isData = false;
+		<c:forEach var="model" items="${DisplayData.shareModelList}" varStatus="status">
+
+			var modelSize = '${DisplayData.shareModelList}.size()'
+			var model = '${model}';
+			var i = '${status.index}';
+			var tdHtml = '';
+			isData = true;
+			if(firstFlg){
+				tdHtml = strShareMode + i + "' id='sharemodel" + i + "' value='" + model + "'/>"; 
+			
+				$('#ShareTab tr:first td:first').after(tdHtml);
+				firstFlg = false;
+			}else{
+				tdHtml = strShareMode + i + "' id='sharemodel" + i + "' value='" + model + "'/>"; 		
+				$('#coupon input:last').after(tdHtml);	
+			}
+
+		</c:forEach>
+		if (isData) {
+			autoNextSelect();
+		} else {
+			autoAddShareModelInit();
+		}
+		
+	} 
+	
+	 function addTd(){	
+		var i = $("#coupon input[type=text]").length - 1;		
+		i++;		
+	    var trHtml = strShareMode + i + "' id='sharemodel" + i + "'/>"; 		
+		$("#coupon input:last").after(trHtml);			
+		autoNextSelect();
+	}
+	 
+	function autoAddShareModelInit() {
+		var i = 0;
+		var tdHtml = '';
+		tdHtml = strShareMode + i + "' id='sharemodel" + i+ "'/>";     
+		$('#ShareTab tr:first td:first').after(tdHtml);
+	
+		i++;	
+		for(i; i < 5; i++){
+		    tdHtml = strShareMode + i + "' id='sharemodel" + i + "'/>"; 		
+			$('#coupon input:last').after(tdHtml);
+		}
+		autoNextSelect();
+	}
+	 
+	function autoNextSelect(){
+		//自动跳到下一个输入框  
+	    $("input[name^='sharemode']").each(function() {
+	    	
+	        $(this).keyup(function(e) {
+	        	
+	            e = window.event || e;
+	            var k = e.keyCode || e.which;
+	
+	            if (k == 8) {   //8是空格键
+	                if ($(this).val().length < 1) {
+	                    $(this).prev().focus();
+	                    $(this).prev().focus(function() {
+	                        var obj = e.srcElement ? e.srcElement: e.target;
+	                        if (obj.createTextRange) { //IE浏览器
+	                            var range = obj.createTextRange();
+	                            range.moveStart("character", 4);
+	                            range.collapse(true);
+	                            range.select();
+	                        }
+	                    });
+	                }
+	            } else {
+	                if ($(this).val().length > 4) {
+	                    $(this).next().focus();
+	                }
+	            }
+	        })
+	    });//自动跳到下一个输入框 
+	}
 </script>
 </head>
 
@@ -685,6 +770,8 @@
 				<input type=hidden id="subCodeCount" name="subCodeCount" value=""/>
 				<input type=hidden id="activeSubCodeIndex" name="activeSubCodeIndex" value=""/>
 				<input type=hidden id="rotateDirect" name="rotateDirect" value=""/>
+				<input type=hidden id="shareModelCount" name="shareModelCount" value=""/>
+				
 				<legend>模具单元-基本信息</legend>
 				<div style="height:10px"></div>
 				<!-- 
@@ -759,9 +846,6 @@
 						</td>
 					</tr>
 				</table>			
-				<button type="button" id="edit" class="DTTT_button" onClick="doSave(0);"
-						style="height:25px;margin:10px 5px 0px 0px;float:right;" >保存</button>
-				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:10px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 				
 				<div  style="height:20px"></div>
 				
@@ -785,7 +869,32 @@
 						</thead>
 					</table>
 				</div>
-
+				
+				<legend style="margin: 10px 0px 0px 0px"> 模具-关联信息</legend>
+				<div id="autoscroll">
+					<table class="form">
+						<tr>
+							<td><label>通用型号：</label>
+								<button type="button"  style = "height:25px" class="DTTT_button"
+								 id="createShare" onClick="addTd();">新建</button></td>
+						</tr>		
+						<tr>
+							<td>
+								<form:hidden path="shareModel" value=""/>	
+								<div class="" id="coupon">
+									<table id="ShareTab">
+										<tr>
+											<td></td>
+										</tr>
+									</table>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<button type="button" id="edit" class="DTTT_button" onClick="doSave(0);"
+						style="height:25px;margin:10px 5px 0px 0px;float:right;" >保存</button>
+				<button type="button" id="return" class="DTTT_button" style="height:25px;margin:10px 5px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 
 			</form:form>
 		</div>

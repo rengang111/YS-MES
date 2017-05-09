@@ -36,7 +36,8 @@ public class MouldRegisterModel extends BaseModel {
 	private ArrayList<HashMap<String, String>> mouldFactoryDatas = new ArrayList<HashMap<String, String>>();
 	
 	private List<B_MouldFactoryData> detailLines;
-
+	private String shareModel;
+	private String[] shareModelList;
 	private String mouldId = "";
 	private String subCode = "";
 	private String productModelId = "";
@@ -219,7 +220,21 @@ public class MouldRegisterModel extends BaseModel {
 	public void setDetailLines(List<B_MouldFactoryData> detailLines) {
 		this.detailLines = detailLines;
 	}
-
+	
+	public String getShareModel() {
+		return this.shareModel;
+	}
+	public void setShareModel(String shareModel) {
+		this.shareModel = shareModel;
+	}
+	
+	public String[] getShareModelList() {
+		return this.shareModelList;
+	}
+	public void setShareModelList(String[] shareModelList) {
+		this.shareModelList = shareModelList;
+	}
+	
 	public String getImageFileName() {
 		return this.imageFileName;
 	}
