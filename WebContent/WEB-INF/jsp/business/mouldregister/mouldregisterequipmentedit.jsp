@@ -480,9 +480,10 @@
 				<input type=hidden id="subCodeCount" name="subCodeCount" value=""/>
 				<input type=hidden id="activeSubCode" name="activeSubCode" value=""/>
 				<input type=hidden id="mouldId" name="mouldId" value="${DisplayData.mouldId}"/>
-				<legend>模具单元-基本信息</legend>
-				<div style="height:10px"></div>
 				<fieldset style="float:left;width:65%">
+					<legend>模具单元-基本信息</legend>
+					<div style="height:10px"></div>
+				
 					<table class="form" width="700px" cellspacing="0">
 						<tr>
 							<td class="label" width="80px">编号：</td>
@@ -563,6 +564,7 @@
 				
 				<div  style="clear:both;"></div>
 				<div style="margin: -70px 0px 0px 0px;width:65%">
+					<fieldset>
 					<legend>模具单元-设备信息</legend>
 					<button type="button" id="return" class="DTTT_button" style="height:25px;margin:-15px 0px 0px 0px;float:right;" onClick="doReturn();">返回</button>
 					<button type="button" id="edit" class="DTTT_button" style="height:25px;margin:-15px 10px 0px 0px;float:right;" onClick="doEdit();">保存</button>
@@ -598,9 +600,10 @@
 						</tr>
 					</table>
 				</div>
-				
+				</fieldset>
 				<div  style="height:30px;clear:both;"></div>
 				<div id="factoryArea" style="display:none;">
+					<fieldset>
 					<legend>供应商单价信息</legend>
 					<div  style="height:10px;"></div>
 					<div class="form">
@@ -619,6 +622,7 @@
 							</thead>
 						</table>
 					</div>
+					</fieldset>
 				</div>
 			</form:form>
 		</div>

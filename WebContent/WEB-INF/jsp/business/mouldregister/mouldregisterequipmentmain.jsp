@@ -64,12 +64,12 @@
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "mouldId", "defaultContent" : '',"className" : 'td-left'},
-							{"data": "name", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "subname", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "parentId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "unitName", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "name", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "subname", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "parentId", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "price", "defaultContent" : '',"className" : 'td-right'},
+							{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "unitName", "defaultContent" : '',"className" : 'td-left'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[

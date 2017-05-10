@@ -63,12 +63,12 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "mouldId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "name", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "comment", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "mouldId", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "name", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "comment", "defaultContent" : '',"className" : 'td-left'},
 							{"data": "parentId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "price", "defaultContent" : '',"className" : 'td-right'},
+							{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
 							{"data": "unitName", "defaultContent" : '',"className" : 'td-center'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
@@ -166,6 +166,12 @@
 		
 	}
 
+	function doTrimSerialNo() {
+		var url = "${ctx}/business/mouldregister?methodtype=trimSerialNoInit";
+
+		openLayer(url, '800', '500', false);
+	}
+	
 	function reload() {
 		
 		$('#TMould').DataTable().ajax.reload(null,false);
@@ -217,6 +223,7 @@
 					<div id="DTTT_container" align="right" style="height:40px">
 						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doCreate();"><span>新建</span></a>
 						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doDelete();"><span>删除</span></a>
+						<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doTrimSerialNo();"><span>调整流水号</span></a>
 					</div>
 
 					<div id="clear"></div>

@@ -10,7 +10,7 @@
 <title>模具单元基本信息管理</title>
 <script type="text/javascript">
 	var validatorBaseInfo;
-	var layerHeight = "350";
+	var layerHeight = "380";
 	var sumPrice = 0.0;
 	var paid = 0.0;    
 	
@@ -69,10 +69,10 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "shortName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "supplierName", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "price", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "shortName", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "supplierName", "defaultContent" : '',"className" : 'td-left'},
+							{"data": "price", "defaultContent" : '',"className" : 'td-right'},
 							{"data": "currency", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "priceUnit", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "priceTime", "defaultContent" : '',"className" : 'td-center'},
@@ -404,9 +404,10 @@
 				<input type=hidden id='productModelId' name='productModelId'/>
 				<input type=hidden id="subCodeCount" name="subCodeCount" value=""/>
 				<input type=hidden id="mouldId" name="mouldId" value="${DisplayData.mouldBaseInfoData.id}"/>
-				<legend>模具单元-基本信息</legend>
-				<div style="height:10px"></div>
 				<fieldset style="float:left;width:65%">
+					<legend>模具单元-基本信息</legend>
+					<div style="height:10px"></div>
+
 					<table class="form" width="700px" cellspacing="0">
 						<tr>
 							<td class="label" width="80px">编号：</td>
@@ -467,6 +468,12 @@
 								</form:select>
 							</td>
 						</tr>
+						<tr>				
+							<td class="label"><label>通用型号：</label></td>
+							<td colspan="2" style="word-break:break-all;">
+								<label style="margin:0px 10px">${DisplayData.shareModel}</label>	
+							</td>							
+						</tr>
 						<tr>
 							<td rowspan=2 class="label">
 								中文描述：
@@ -488,6 +495,7 @@
 				
 				<div  style="height:30px;clear:both;"></div>
 				<div id="factoryArea" style="display:none;">
+					<fieldset>
 					<legend>供应商单价信息</legend>
 					<div  style="height:10px;"></div>
 					<button type="button" id="createFactory" class="DTTT_button" style="height:25px;margin:-20px 5px 0px 0px;float:right;" onClick="doCreateFactory();">新建</button>
@@ -509,6 +517,7 @@
 							</thead>
 						</table>
 					</div>
+					</fieldset>
 				</div>
 			</form:form>
 		</div>

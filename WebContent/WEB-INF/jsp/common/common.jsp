@@ -139,10 +139,52 @@
         if (curTab && curTab.find('iframe').length > 0) {
             curTabWin = curTab.find('iframe')[0].contentWindow;
         }
+        
         if ($.isFunction(curTabWin.reload)) {
         	curTabWin.reload();
         }
-
+	}
+	
+	function reloadTabWindowWithNodeChangeNotice(nodeInfo, isParent) {
+		var curTabWin = null;
+		var curTabWinTree = null;
+		var curTab;
+		/*
+		var curTab = parent.$('#_main_center_tabs').tabs('getSelected');
+        if (curTab && curTab.find('iframe').length > 0) {
+            curTabWin = curTab.find('iframe')[0].contentWindow;
+        }
+        if ($.isFunction(curTabWin.reload)) {
+        	curTabWin.reload();
+        }
+		*/
+		if (isParent) {
+			var curTab = parent.parent.$('#_main_center_tabs').tabs('getSelected');
+	        if (curTab && curTab.find('iframe').length > 0) {
+	            curTabWinTree = curTab.find('iframe')[0].contentWindow;
+	            curTabWin = curTabWinTree.document.getElementById("mainFrame").contentWindow;
+	        }
+	        
+	        if ($.isFunction(curTabWin.reload)) {
+	        	curTabWin.reload();
+	        }
+	        
+	        if ($.isFunction(curTabWinTree.loadData)) {
+	        	curTabWinTree.loadData(nodeInfo);
+	        }
+		} else {
+			curTab = parent.$('#_main_center_tabs').tabs('getSelected');
+	        if (curTab && curTab.find('iframe').length > 0) {
+	            curTabWinTree = curTab.find('iframe')[0].contentWindow;
+	            curTabWin = curTabWinTree.document.getElementById("mainFrame").contentWindow;
+	        }
+	        if ($.isFunction(curTabWin.reload)) {
+	        	curTabWin.reload();
+	        }
+	        if ($.isFunction(curTabWinTree.loadData)) {
+	        	curTabWinTree.loadData(nodeInfo);
+	        }
+		}
 	}
 	
 	function getTabTitle() {

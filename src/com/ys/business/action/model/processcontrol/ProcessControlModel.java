@@ -16,7 +16,7 @@ import com.ys.business.db.data.B_ProjectTaskData;
 import com.ys.system.db.data.S_DICData;
 
 public class ProcessControlModel extends BaseModel {
-	private final String className = "com.ys.business.service.projecttask.ProcessControlService";
+	private final String className = "com.ys.business.service.processcontrol.ProcessControlService";
 	private String keyBackup = "";
 	private B_ProjectTaskData projectTaskData = new B_ProjectTaskData();
 	private B_ProcessControlData processControlData = new B_ProcessControlData();

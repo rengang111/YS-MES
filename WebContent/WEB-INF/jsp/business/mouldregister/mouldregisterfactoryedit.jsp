@@ -160,7 +160,8 @@
 				</tr>
 
 			</table>
-
+		</fieldset>
+		<fieldset>
 			<legend Style="margin: 10px 0px 0px 0px"> 供应商信息</legend>
 			<table class="form">
 				<tr>
@@ -184,7 +185,8 @@
 					</td>
 				</tr>
 			</table>	
-
+		</fieldset>
+		<fieldset>
 			<legend Style="margin: 10px 0px 0px 0px"> 报价信息</legend>
 			<table class="form">
 				<tr>
@@ -205,13 +207,11 @@
 
 				</tr>
 			</table>
-		</fieldset>
 
-		<fieldset class="action">
 			<button type="button" id="return" class="DTTT_button" 
-					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >关闭</button>
+					style="height:25px;margin:0px 5px 0px 0px;float:right;" >关闭</button>
 			<button type="button" id="save" class="DTTT_button" 
-					style="height:25px;margin:-20px 5px 0px 0px;float:right;" >保存</button>
+					style="height:25px;margin:0px 5px 0px 0px;float:right;" >保存</button>
 		</fieldset>
 
 	</form:form>
