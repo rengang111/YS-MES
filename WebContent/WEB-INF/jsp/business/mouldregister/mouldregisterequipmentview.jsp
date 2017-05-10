@@ -74,7 +74,7 @@
 							{"data": "shortName", "defaultContent" : '',"className" : 'td-left'},
 							{"data": "supplierName", "defaultContent" : '',"className" : 'td-left'},
 							{"data": "price", "defaultContent" : '',"className" : 'td-right'},
-							{"data": "currency", "defaultContent" : '',"className" : 'td-right'},
+							{"data": "currency", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "priceUnit", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "priceTime", "defaultContent" : '',"className" : 'td-left'}
 				        ],
