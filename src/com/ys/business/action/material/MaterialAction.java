@@ -110,8 +110,12 @@ public class MaterialAction extends BaseAction {
 				doAddSupplier();
 				rtnUrl = "/business/material/matbidadd";
 				break;
-			case "supplierSearch"://供应商查询
+			case "supplierSearch"://供应商查询:过滤已有报价的供应商
 				dataMap = doSupplierSearch(data, request);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "supplierSearch2"://供应商查询:全部
+				dataMap = doSupplierSearch2(data, request);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "insertPrice":
@@ -388,6 +392,29 @@ public class MaterialAction extends BaseAction {
 		
 		return dataMap;
 	}
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doSupplierSearch2(@RequestBody String data, 
+			HttpServletRequest request){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = materialService.getSupplierList2(request, data);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
 	public void doCreate(Model model){
 		
 		MaterialModel = materialService.createMaterial();

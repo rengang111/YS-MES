@@ -236,6 +236,7 @@
     <name value="getContractDetail" />
     <where>
       <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="like"  lg="AND" bt="" />
       </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -243,11 +244,12 @@
       <f name="b.unit" alias="" ctype="计量单位" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="b.materialName" alias="" ctype="" />
+      <f name="IFNULL(c.recodeSum,'0')" alias="recodeSum" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="A.totalPrice" alias="" ctype="" />
     </select>
-    <from>b_PurchaseOrderDetail a  LEFT JOIN b_material b ON b.materialId = a.materialId AND b.deleteFlag = '0'  WHERE a.deleteFlag = '0' </from>
+    <from>b_PurchaseOrderDetail a  LEFT JOIN b_material b ON b.materialId = a.materialId AND b.deleteFlag = '0' LEFT JOIN v_arrivalquantitygroup c ON c.contractId = a.contractId AND  c.materialId = a.materialId  WHERE a.deleteFlag = '0' </from>
     <orderby>a.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -349,4 +351,22 @@
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="getContractId" />
+    <where>
+      <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="like"  lg="AND" bt="" />
+      <w name="A.supplierId" des=""  reqName="supplierId" dtype="ch" oper="like"  lg="AND" bt="" />
+      </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+    </select>
+    <from>b_PurchaseOrder a  WHERE a.deleteFlag = '0' </from>
+    <orderby>a.contractId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query> 
 </root>

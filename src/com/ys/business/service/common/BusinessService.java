@@ -266,4 +266,24 @@ public class BusinessService {
 		//return df.format(value);
 	 }
 	 
+
+	/**
+	 * 到货登记编号
+	 * @return yyMMdd-nn
+	 */
+	 public static String getArriveRecordId(String code) {
+
+		String today = CalendarUtil.getDateyymmdd();
+		//格式化成2位流水号,并且+1
+		int num = 0;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		
+		String ft = BusinessService.getFormat2Code(num,true);
+		
+		return today + "-" + ft;
+	 }
+		 
+		 
+	 
 }
