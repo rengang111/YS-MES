@@ -1,5 +1,8 @@
 package com.ys.system.action.menu;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -10,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ys.business.action.model.mouldregister.MouldRegisterModel;
 import com.ys.system.action.common.BaseAction;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.system.action.model.login.UserInfo;
@@ -27,9 +32,11 @@ public class MenuAction extends BaseAction {
 	@Autowired
 	MenuService menuService;
 	@RequestMapping("/menu")
-	public String execute(@RequestBody String para, @ModelAttribute("dataModels")MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String execute(@RequestBody String data, @ModelAttribute("dataModels")MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		String type = request.getParameter("methodtype");
 		String rtnUrl = "";
+		HashMap<String, Object> dataMap = null;
+		MenuModel viewModel = null;
 		
 		if (type == null) {
 			type = "";
@@ -49,46 +56,52 @@ public class MenuAction extends BaseAction {
 				rtnUrl = "/menu/menumain";
 				break;
 			case "search":
-				rtnUrl = doSearch(dataModel, result,  model, session, request, response);
-				break;
+				dataMap = doSearch(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "updateinit":
 				rtnUrl = doUpdateInit(model, session, request, response);
 				break;
 			case "update":
-				rtnUrl = doUpdate(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doUpdate(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "add":
-				rtnUrl = doAdd(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doAdd(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "delete":
-				rtnUrl = doDelete(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doDelete(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "detail":
 				rtnUrl = doDetail(model, session, request, response);
 				break;
 			case "checkMenuId":
-				rtnUrl = checkMenuId(para, session, request, response);
-			printOut(response, rtnUrl);
+				rtnUrl = checkMenuId(data, session, request, response);
+				printOut(response, rtnUrl);
 				return null;
 		}
 		
 		return rtnUrl;
 	}	
 	
-	public String doSearch(MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-
+	public HashMap<String, Object> doSearch(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		try {
-			dataModel = menuService.doSearch(request, dataModel);
-			if (dataModel.getViewData().size() == 0) {
-				dataModel.setMessage("无符合条件的数据");
+			dataMap = menuService.doSearch(request, data);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
 			}
+
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("检索失败");
+			dataMap.put(INFO, ERRMSG);
 		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/menu/menumain";
+		
+		return dataMap;
 	}
 
 	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
@@ -120,65 +133,36 @@ public class MenuAction extends BaseAction {
 		return "/menu/menuedit";
 	}	
 	
-	public String doUpdate(MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public MenuModel doUpdate(String data, HttpSession session, HttpServletRequest request){
+		MenuModel dataModel = new MenuModel();
+	
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		dataModel = menuService.doUpdate(data, userInfo, false);
+		dataModel.setOperType("update");
 
-		
-		try {
-			dataModel.setUpdatedRecordCount(0);
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel.setMenuTypeList(DicUtil.getGroupValue(DicUtil.MENUTYPE));
-			menuService.doUpdate(dataModel, userInfo);
-			dataModel.setUpdatedRecordCount(1);
-			dataModel.setOperType("update");
-			dataModel.setMessage("更新成功");
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("更新失败");
-		}
-		
-		model.addAttribute("DisplayData", dataModel);
-		return "/menu/menuedit";
+		return dataModel;
 	}	
 
-	public String doAdd(MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public MenuModel doAdd(String data, HttpSession session, HttpServletRequest request){
 
-		try {
-			dataModel.setUpdatedRecordCount(0);
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel.setMenuTypeList(DicUtil.getGroupValue(DicUtil.MENUTYPE));
-			menuService.doAdd(dataModel, userInfo);
-			dataModel.setUpdatedRecordCount(1);
-			dataModel.setOperType("add");
-			dataModel.setMessage("增加成功");
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("增加失败");
-		}
-		model.addAttribute("DisplayData", dataModel);
+		MenuModel dataModel = new MenuModel();
 		
-		return "/menu/menuedit";
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		dataModel = menuService.doUpdate(data, userInfo, true);
+		dataModel.setOperType("add");
+
+		return dataModel;
 	}	
 	
-	public String doDelete(MenuModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public MenuModel doDelete(String data, HttpSession session, HttpServletRequest request){
 
+		MenuModel dataModel = new MenuModel();
+
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		dataModel = menuService.doDelete(request, data, userInfo);
+		dataModel.setOperType("delete");
 		
-		try {
-			dataModel.setUpdatedRecordCount(0);
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			menuService.doDelete(request, dataModel, userInfo);
-			dataModel.setUpdatedRecordCount(1);
-			dataModel.setOperType("delete");
-			dataModel.setMessage("删除成功");
-			dataModel = menuService.doSearch(request, dataModel);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("删除失败");
-		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/menu/menumain";
+		return dataModel;
 	}
 	
 	public String doDetail(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){

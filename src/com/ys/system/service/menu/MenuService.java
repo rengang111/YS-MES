@@ -8,26 +8,69 @@ import com.ys.system.common.BusinessConstants;
 import com.ys.system.db.dao.S_MENUDao;
 import com.ys.system.db.data.S_MENUData;
 import com.ys.system.ejb.DbUpdateEjb;
+import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basequery.BaseQuery;
+
+import java.util.HashMap;
+
 import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class MenuService {
+public class MenuService extends BaseService {
  
-	public MenuModel doSearch(HttpServletRequest request, MenuModel dataModel) throws Exception {
+	public HashMap<String, Object> doSearch(HttpServletRequest request, String data) throws Exception {
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		MenuModel dataModel = new MenuModel();
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
 		
 		dataModel.setMenuTypeList(DicUtil.getGroupValue(DicUtil.MENUTYPE));
 		
 		dataModel.setQueryFileName("/menu/menuquerydefine");
 		dataModel.setQueryName("menuquerydefine_search");
 		
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		baseQuery.getQueryData();	
+		String key1 = getJsonData(data, "menuId");
+		String key2 = getJsonData(data, "menuName");
+		String key3 = getJsonData(data, "parentMenuIdName");
 		
-		return dataModel;
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("menuId", key1);
+		userDefinedSearchCase.put("menuName", key2);
+		userDefinedSearchCase.put("parentMenuIdName", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
 	}
 
 	public MenuModel getDetail(HttpServletRequest request) throws Exception {
@@ -47,32 +90,87 @@ public class MenuService {
 		return menuModel;
 	
 	}
-
-	public void doAdd(MenuModel menuModel, UserInfo userInfo) throws Exception {
-		S_MENUDao dao = new S_MENUDao();
-		
-		S_MENUData data = menuModel.getmenuData();
-		data = updateModifyInfo(menuModel.getmenuData(), userInfo);
-		if (data.getMenuopenflag() == null || data.getMenuopenflag().equals("")) {
-			data.setMenuopenflag("F");
-		}
-		dao.Create(data);
-	}	
 	
-	public void doUpdate(MenuModel menuModel, UserInfo userInfo) throws Exception {
+	public MenuModel doUpdate(String formData, UserInfo userInfo, boolean isAdd) {
 		S_MENUDao dao = new S_MENUDao();
-		S_MENUData data = updateModifyInfo(menuModel.getmenuData(), userInfo);
-		if (data.getMenuopenflag() == null || data.getMenuopenflag().equals("")) {
-			data.setMenuopenflag("F");
+		S_MENUData data = new S_MENUData();
+		MenuModel model = new MenuModel();
+		
+		String operType = getJsonData(formData, "operType");
+		String menuparentid = getJsonData(formData, "menuparentid");
+		String menuid = getJsonData(formData, "menuid");
+		String menuname = getJsonData(formData, "menuname");
+		String menudes = getJsonData(formData, "menudes");
+		String menuurl = getJsonData(formData, "menuurl");
+		String menutype = getJsonData(formData, "menutype");
+		String menuviewflag = getJsonData(formData, "menuviewflag");
+		String menunnableflag = getJsonData(formData, "menunnableflag");
+		String relationalmenuid = getJsonData(formData, "relationalmenuid");
+		String menuwfnode = getJsonData(formData, "menuwfnode");
+		String menuicon1 = getJsonData(formData, "menuicon1");
+		String menuicon2 = getJsonData(formData, "menuicon2");
+		String sortno = getJsonData(formData, "sortno");
+		String menuopenflag = getJsonData(formData, "menuopenflag");
+		
+		try {
+			
+			data.setMenuid(menuid);
+			if (!isAdd) {
+				data = (S_MENUData)dao.FindByPrimaryKey(data);
+			}
+			data.setMenuparentid(menuparentid);
+			data.setMenuname(menuname);
+			data.setMenudes(menudes);
+			data.setMenuurl(menuurl);
+			data.setMenutype(menutype);
+			data.setMenuviewflag(menuviewflag);
+			data.setMenunnableflag(menunnableflag);
+			data.setRelationalmenuid(relationalmenuid);
+			data.setMenuwfnode(menuwfnode);
+			data.setMenuicon1(menuicon1);
+			data.setMenuicon2(menuicon2);
+			if (sortno != null && !sortno.equals("")) {
+				data.setSortno(Integer.parseInt(sortno));
+			} else {
+				data.setSortno(0);
+			}
+			data.setMenuopenflag(menuopenflag);
+			data = updateModifyInfo(data, userInfo);
+			if (data.getMenuopenflag() == null || data.getMenuopenflag().equals("")) {
+				data.setMenuopenflag("F");
+			}
+			if (!isAdd) {
+				dao.Store(data);
+			} else {
+				dao.Create(data);
+			}
+			
+			model.setEndInfoMap(BaseService.NORMAL, "", menuparentid);
 		}
-		dao.Store(data);
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
+		}
+		
+		return model;
 	}
 	
-	public void doDelete(HttpServletRequest request, MenuModel menuModel, UserInfo userInfo) throws Exception {
+	public MenuModel doDelete(HttpServletRequest request, String formData, UserInfo userInfo) {
 		
 		DbUpdateEjb bean = new DbUpdateEjb();
-        
-        bean.executeMenuDelete(menuModel, userInfo);
+		MenuModel model = new MenuModel();
+		
+		try {
+			bean.executeMenuDelete(formData, userInfo);
+			model.setEndInfoMap(BaseService.NORMAL, "", "");
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
+		}
+		
+		return model;
+		
         
 	}
 	

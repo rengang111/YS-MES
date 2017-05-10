@@ -46,6 +46,7 @@ import com.ys.system.db.data.S_POWERData;
 import com.ys.system.db.data.S_ROLEData;
 import com.ys.system.db.data.S_ROLEMENUData;
 import com.ys.system.db.data.S_USERData;
+import com.ys.system.service.common.BaseService;
 import com.ys.system.service.dic.DicService;
 import com.ys.system.service.dic.DicTypeService;
 import com.ys.system.service.menu.MenuService;
@@ -63,22 +64,22 @@ public class DbUpdateEjb  {
 	
 	BaseTransaction ts;
 	
-    public void executeMenuDelete(MenuModel menuModel, UserInfo userInfo) throws Exception {
+    public void executeMenuDelete(String formData, UserInfo userInfo) throws Exception {
 		
 		
 		int count = 0;
 	
         HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-        
+        BaseService service = new BaseService();
         ts = new BaseTransaction();
 
         
 		try {
 			ts.begin();
-			String removeData[] = menuModel.getNumCheck().split(",");
+			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
 			for (String menuId:removeData) {
 				count = deleteMenuChain(request, menuId, userInfo, count);
-				menuModel.setUpdatedRecordCount(count);
+				//menuModel.setUpdatedRecordCount(count);
 			}
 			ts.commit();
 		}

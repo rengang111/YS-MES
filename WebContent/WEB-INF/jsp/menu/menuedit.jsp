@@ -2,152 +2,203 @@
 <!DOCTYPE html>
 <%@ include file="../common/common.jsp"%>
 <html>
-<head>
-	菜单信息维护
-</head>
-<body>
-	<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
-		<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
-		<table>
-			<tr>
-				<td>
-					上级菜单：
-				</td>
-				<td>
-					<input type=text name="menuData.menuparentid" id="menuparentid" value="${DisplayData.menuData.menuparentid}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					菜单ID：
-				</td>
-				<td>
-					<input type=text name="menuData.menuid" id="menuid" value="${DisplayData.menuData.menuid}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					菜单名称：
-				</td>
-				<td>
-					<input type=text name="menuData.menuname" id="menuname" value="${DisplayData.menuData.menuname}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					菜单描述：
-				</td>
-				<td>
-					<input type=text name="menuData.menudes" id="menudes" value="${DisplayData.menuData.menudes}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					菜单URL：
-				</td>
-				<td>
-					<input type=text name="menuData.menuurl" id="menuurl" value="${DisplayData.menuData.menuurl}"/>
-				</td>
-			</tr>			
-			<tr>
-				<td>
-					菜单类型：
-				</td>
-				<td>
-					<select name="menuData.menutype" id="menutype">
-						<c:forEach items="${DisplayData.menuTypeList}" var="value" varStatus="status">
-							<option value ="${value[0]}">${value[1]}</option>
-						</c:forEach>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					授权显示项：		
-				</td>
-				<td>
-					<select name="menuData.menuviewflag" id="menuviewflag">
-								<option value ="T">是</option>
-								<option value ="F">否</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					是否有效：
-				</td>
-				<td>
-					<select name="menuData.menunnableflag" id="menunnableflag">
-							<option value ="0">有效</option>
-							<option value ="1">无效</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					关联菜单：
-				</td>
-				<td>
-					<input type=text name="menuData.relationalmenuid" id="relationalmenuid" value="${DisplayData.menuData.relationalmenuid}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					关联工作流ID：
-				</td>
-				<td>
-					<input type=text name="menuData.menuwfnode" id="menuwfnode" value="${DisplayData.menuData.menuwfnode}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					图标1：
-				</td>
-				<td>
-					<input type=text name="menuData.menuicon1" id="menuicon1" value="${DisplayData.menuData.menuicon1}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					图标2：
-				</td>
-				<td>
-					<input type=text name="menuData.menuicon2" id="menuicon2" value="${DisplayData.menuData.menuicon2}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					排序序号：
-				</td>
-				<td>
-					<input type=text name="menuData.sortno" id="sortno" value="${DisplayData.menuData.sortno}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-				</td>
-				<td>
-					<input type=checkbox name="menuData.menuopenflag" id="menuopenflag" value="T"/>在新窗口中打开
-				</td>
-			</tr>				
-			<tr>
-				<td colspan=2>
-					<input type=button name="save" id="save" value="保存" onClick="saveUpdate()"/>
-					<input type=button name="close" id="close"" value="关闭" onClick="closeWindow('')"/>
-				</td>
-			</tr>
 
-		</table>
-		<br>
-	</form>
-
+<body class="easyui-layout">
+<div id="container">
+	<div id="main">
+		<div style="height:10px"></div>
+		<fieldset>
+		<legend>菜单信息维护</legend>
+		<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
+			<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
+			<table width=100%>
+				<tr>
+					<td width="80px">
+						上级菜单：
+					</td>
+					<td>
+						<input type=text name="menuparentid" id="menuparentid" value="${DisplayData.menuData.menuparentid}"/>
+					</td>
+					<td width="80px">
+						菜单ID：
+					</td>
+					<td>
+						<input type=text name="menuid" id="menuid" value="${DisplayData.menuData.menuid}"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						菜单名称：
+					</td>
+					<td>
+						<input type=text name="menuname" id="menuname" value="${DisplayData.menuData.menuname}"/>
+					</td>
+					<td>
+						菜单描述：
+					</td>
+					<td>
+						<input type=text name="menudes" id="menudes" value="${DisplayData.menuData.menudes}"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						菜单URL：
+					</td>
+					<td>
+						<input type=text name="menuurl" id="menuurl" value="${DisplayData.menuData.menuurl}"/>
+					</td>
+					<td>
+						菜单类型：
+					</td>
+					<td>
+						<select name="menutype" id="menutype">
+							<c:forEach items="${DisplayData.menuTypeList}" var="value" varStatus="status">
+								<option value ="${value[0]}">${value[1]}</option>
+							</c:forEach>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						授权显示项：		
+					</td>
+					<td>
+						<select name="menuviewflag" id="menuviewflag">
+									<option value ="T">是</option>
+									<option value ="F">否</option>
+						</select>
+					</td>
+					<td>
+						是否有效：
+					</td>
+					<td>
+						<select name="menunnableflag" id="menunnableflag">
+								<option value ="0">有效</option>
+								<option value ="1">无效</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						关联菜单：
+					</td>
+					<td>
+						<input type=text name="relationalmenuid" id="relationalmenuid" value="${DisplayData.menuData.relationalmenuid}"/>
+					</td>
+					<td>
+						关联工作流ID：
+					</td>
+					<td>
+						<input type=text name="menuwfnode" id="menuwfnode" value="${DisplayData.menuData.menuwfnode}"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						图标1：
+					</td>
+					<td>
+						<input type=text name="menuicon1" id="menuicon1" value="${DisplayData.menuData.menuicon1}"/>
+					</td>
+					<td>
+						图标2：
+					</td>
+					<td>
+						<input type=text name="menuicon2" id="menuicon2" value="${DisplayData.menuData.menuicon2}"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						排序序号：
+					</td>
+					<td>
+						<input type=text name="sortno" id="sortno" value="${DisplayData.menuData.sortno}"/>
+					</td>
+					<td>
+					</td>
+					<td>
+						<input type=checkbox name="menuopenflag" id="menuopenflag" value="T"/>在新窗口中打开
+					</td>
+				</tr>
+				<tr rowspan=3><td>&nbsp;</td></tr>			
+				<tr>
+					<td colspan=4>
+						<button type="button" id="close" class="DTTT_button" onClick="doReturn();"
+								style="height:25px;margin:0px 5px 0px 0px;float:right;" >返回</button>
+						<button type="button" id="save" class="DTTT_button" onClick="saveUpdate();"
+								style="height:25px;margin:0px 5px 0px 0px;float:right;" >保存</button>
+					</td>
+				</tr>
+	
+			</table>
+			<br>
+		</form>
+		</fieldset>
+	</div>
 </body>
 
 <script>
+	var validatorBaseInfo;
 	var operType = '';
 	var isUpdateSuccessed = false;
 	var updatedRecordCount = parseInt('${DisplayData.updatedRecordCount}');
 	$(function(){
+		
+		validatorBaseInfo = $("#form").validate({
+			rules: {
+				menuparentid: {
+					maxlength: 3,
+				},
+				menuid: {
+					required: true,								
+					maxlength: 3,
+				},
+				menuname: {
+					required: true,
+					maxlength: 30,
+				},
+				menuurl: {				
+					maxlength: 100,
+				},
+				menudes	: {				
+					maxlength: 200,
+				},
+				menutype: {
+					required: true,
+				},
+				menuviewflag: {
+					required: true,
+				},
+				menunnableflag: {
+					required: true,
+				},
+				relationalmenuid: {
+					maxlength: 300,
+				},
+				menuwfnode: {
+					maxlength: 60,
+				},
+				menuicon1: {
+					maxlength: 200,
+				},
+				menuicon2: {
+					maxlength: 200,
+				},
+				sortno: {
+					number: true,
+					maxlength: 3,
+				},
+			},
+			errorPlacement: function(error, element) {
+			    if (element.is(":radio"))
+			        error.appendTo(element.parent().next().next());
+			    else if (element.is(":checkbox"))											    	
+			    	error.insertAfter(element.parent().parent());
+			    else
+			    	error.insertAfter(element);
+			}
+		});
+		
+		
 		operType = $('#operType').val();
 
 		if (updatedRecordCount > 0 ) {
@@ -298,18 +349,40 @@
 	}
 	
 	function saveUpdate() {
-		if (inputCheck()) {
+		if (validatorBaseInfo.form()) {
 			if (confirm("确定要保存吗？")) {
+				var actionUrl;
 				if (operType == 'add' || operType == 'addsub') {
-					$('#form').attr("action", "${ctx}/menu?methodtype=add");
+					actionUrl = "${ctx}/menu?methodtype=add";
 				} else {
-					$('#form').attr("action", "${ctx}/menu?methodtype=update");
+					actionUrl = "${ctx}/menu?methodtype=update";
 				}
-				$('#form').submit();
+				$.ajax({
+					type : "POST",
+					contentType : 'application/json',
+					dataType : 'json',
+					url : actionUrl,
+					data : JSON.stringify($('#form').serializeArray()),// 要提交的表单
+					success : function(d) {
+						if (d.rtnCd != "000") {
+							alert(d.message);	
+						} else {
+							reloadTabWindowWithNodeChangeNotice(d.info);
+							doReturn();
+						}
+						
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown) {
+						//alert(XMLHttpRequest.status);					
+						//alert(XMLHttpRequest.readyState);					
+						//alert(textStatus);					
+						//alert(errorThrown);
+					}
+				});
 			}
 		}	
 	}
-
+/*
 	function closeWindow(isNeedConfirm) {
 		if (isNeedConfirm == '') {
 			if (operType == 'add' || operType == 'addsub' || operType == 'update') {
@@ -326,7 +399,15 @@
 			self.close();
 		}
 	}
+*/
+	function doReturn() {
 
+		var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+		parent.layer.close(index); //执行关闭
+		
+	}
+
+	
 	function refreshOpenerData() {
 		if (operType == 'add' || operType == 'addsub' || operType == 'update') {
 			var goPageIndex = parseInt($(window.opener.document.getElementById('pageIndex')).val()) - 1;
