@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.business.action.model.material.ArrivalModel;
+import com.ys.business.action.model.material.MaterialModel;
 import com.ys.business.service.material.ArrivalService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
@@ -81,6 +82,16 @@ public class ArrivalAction extends BaseAction {
 				//printOutJsonObj(response, viewModel.getEndInfoMap());
 				rtnUrl = "/business/inventory/arrivalview";
 				break;
+			case "delete":
+				doDelete(data);
+				printOutJsonObj(response, reqModel.getEndInfoMap());
+				return null;
+			case "detailView":
+				doShowDetail();
+				//printOutJsonObj(response, viewModel.getEndInfoMap());
+				rtnUrl = "/business/inventory/arrivalview";
+				break;
+				
 		}
 		
 		return rtnUrl;
@@ -124,5 +135,16 @@ public class ArrivalAction extends BaseAction {
 		}
 	}
 	
+	public void doDelete(@RequestBody String data) throws Exception{
+		
+		service.doDelete(data);
+
+	}
+	
+	public void doShowDetail() throws Exception{
+		
+		service.showArrivalDetail();
+
+	}
 
 }

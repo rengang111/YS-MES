@@ -83,28 +83,35 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null,"className" : 'td-center'},
-							{"data": "materialId"},
-							{"data": "materialName"},
-							{"data": "arrivalId"},
-							{"data": "arriveDate","className" : 'td-center'},
-							{"data": "contractId"},
-							{"data": "YSId"},
-							{"data": "quantity","className" : 'td-right'},
-							{"data": "status","className" : 'td-center'},
-						],
+					{"data": null,"className" : 'td-center'},
+					{"data": "arriveDate","className" : 'td-center'},
+					{"data": "YSId"},
+					{"data": "contractId"},
+					{"data": "arrivalId"},
+					{"data": "materialId"},
+					{"data": "materialName"},
+					{"data": "quantity","className" : 'td-right'},
+					{"data": "status","className" : 'td-center'},
+				],
 				"columnDefs":[
-				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
-		                    }},
-				    		{"targets":2,"render":function(data, type, row){
-				    			
-				    			var name = row["materialName"];				    			
-				    			name = jQuery.fixedWidth(name,30);				    			
-				    			return name;
-				    		}}
-			           
-			         ] 
+		    		{"targets":0,"render":function(data, type, row){
+						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+                    }},
+		    		{"targets":5,"render":function(data, type, row){
+
+		    			var materialId = row["materialId"];	
+		    			var arrivalId = row["arrivalId"];		    			
+		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + row["arrivalId"] + "')\">"+materialId+"</a>";
+		    			return rtn;
+		    		}},
+		    		{"targets":6,"render":function(data, type, row){
+		    			
+		    			var name = row["materialName"];				    			
+		    			name = jQuery.fixedWidth(name,35);				    			
+		    			return name;
+		    		}}
+	           
+	         ] 
 		});
 
 	}
@@ -141,9 +148,9 @@
 		location.href = url;
 	}
 	
-	function doShow(recordId,parentId) {
+	function doShow(arrivalId) {
 
-		var url = '${ctx}/business/material?methodtype=detailView&parentId=' + parentId+'&recordId='+recordId;
+		var url = '${ctx}/business/arrival?methodtype=detailView&arrivalId=' + arrivalId;
 
 		location.href = url;
 	}
@@ -173,7 +180,7 @@
 					contentType : 'application/json',
 					dataType : 'json',
 					data : str,
-					url : "${ctx}/business/material?methodtype=delete",
+					url : "${ctx}/business/arrival?methodtype=delete",
 					success : function(data) {
 						reload();						
 					},
@@ -237,12 +244,12 @@
 			<thead>						
 				<tr>
 					<th style="width: 1px;" class="dt-middle ">No</th>
+					<th style="width: 60px;" class="dt-middle">到货日期</th>
+					<th style="width: 60px;" class="dt-middle">耀升编号</th>
+					<th style="width: 95px;" class="dt-middle">合同编号</th>
+					<th style="width: 50px;" class="dt-middle">到货登记</th>
 					<th style="width: 170px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
-					<th style="width: 50px;" class="dt-middle">到货编号</th>
-					<th style="width: 60px;" class="dt-middle">到货日期</th>
-					<th style="width: 90px;" class="dt-middle">合同编号</th>
-					<th style="width: 60px;" class="dt-middle">耀升编号</th>
 					<th style="width: 60px;" class="dt-middle ">到货数量</th>
 					<th style="width: 40px;" class="dt-middle ">状态</th>
 				</tr>

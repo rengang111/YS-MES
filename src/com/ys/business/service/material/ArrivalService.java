@@ -8,20 +8,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.material.ArrivalModel;
-import com.ys.business.action.model.material.CustomerModel;
 import com.ys.business.db.dao.B_ArrivalDao;
-import com.ys.business.db.dao.B_CustomerDao;
-import com.ys.business.db.dao.B_InventoryDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_CustomerData;
-import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.CommFieldsData;
-import com.ys.business.ejb.BusinessDbUpdateEjb;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.system.service.common.BaseService;
@@ -106,9 +99,7 @@ public class ArrivalService extends BaseService {
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
-		
-		dataModel.setYsViewData(makeAddress(dataModel.getYsViewData()));
-		
+				
 		if ( iEnd > dataModel.getYsViewData().size()){
 			
 			iEnd = dataModel.getYsViewData().size();
@@ -134,6 +125,12 @@ public class ArrivalService extends BaseService {
 	
 	}
 
+	public void showArrivalDetail() {
+
+		String arrivalId = request.getParameter("arrivalId");
+		getArrivaRecord(arrivalId);
+	}
+	
 	public void insertArrival() {
 
 		String arrivalId = insertAndView();
@@ -212,149 +209,42 @@ public class ArrivalService extends BaseService {
 			baseQuery.getYsFullData();
 
 			model.addAttribute("arrival",dataModel.getYsViewData().get(0));
+			//String userId = dataModel.getYsViewData().get(0).get("userId");
+			
 			model.addAttribute("arrivalList",dataModel.getYsViewData());
 			
 		} catch (Exception e) {
 			System.out.print(e.getMessage());
 		}
 	}
-	@SuppressWarnings("unchecked")
-	private B_CustomerData preCheckId(B_CustomerData  reqData) 
-			throws Exception {
-		List<B_CustomerData> dbData = null;
-		B_CustomerData dt = null;
-		String customerId = reqData.getCustomerid();
-		String where = " customerId = '" + customerId +"' AND deleteFlag = '0' ";
+	
 		
+	public void doDelete(String recordId) throws Exception{
+		
+		B_ArrivalData data = new B_ArrivalData();	
+															
 		try {
-			dbData = (List<B_CustomerData>)dao.Find(where);
 			
-			if(dbData.size() > 0)
-				dt = dbData.get(0);
-
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dt = null;
-		}
-		
-		return dt;
-	}
-	
-	public CustomerModel doOptionChange(String type, String parentCode) {
-		
-		CustomerModel model = new CustomerModel();
-		
-		try {
-			ArrayList<ListOption> optionList = util.getListOption(type, parentCode);
-			model.setUnsureList(optionList);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-			model.setUnsureList(null);
-		}
-		
-		return model;
-	}
-	
-	public CustomerModel doDelete(String data, UserInfo userInfo){
-		
-		CustomerModel model = new CustomerModel();
-		
-		try {
-			BusinessDbUpdateEjb bean = new BusinessDbUpdateEjb();
-	        
-	        bean.executeCustomerDelete(data, userInfo);
-	        
-	        model.setEndInfoMap(NORMAL, "", "");
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
-		
-		return model;
-	}
-	
-	private ArrayList<HashMap<String, String>> arrangeUserList(ArrayList<HashMap<String, String>> data) {
-		ArrayList<String> userList = new ArrayList<String>();
-		HashMap<String, String>rowDataBackup = null;
-		HashMap<String, String>rowData = null;
-		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
-		
-		for(int i = 0; i < data.size(); i++) {
-			rowData = data.get(i);
-			String userName = rowData.get("userName");
-			if (rowDataBackup == null) {
-				rowDataBackup = rowData;
-			}
-			if (rowData.get("id").equals(rowDataBackup.get("id"))) {
-				if (userName != null && !userName.equals("")) {
-					userList.add(userName);
-				}
-			} else {
-				rowDataBackup.put("userName", getUserList(userList));
-				rtnData.add(rowDataBackup);
-				rowDataBackup = rowData;
-				userList = new ArrayList<String>();
-				if (userName != null && !userName.equals("")) {
-					userList.add(userName);
-				}
-
-			}
-		}
-		
-		if (rowDataBackup != null) {
-			rowData.put("userName", getUserList(userList));
-			rtnData.add(rowDataBackup);
-		}
-
-		
-		return rtnData;
-		
-	}
-	
-	public static B_CustomerData updateModifyInfo(B_CustomerData data, UserInfo userInfo) {
-		String createUserId = data.getCreateperson();
-		if ( createUserId == null || createUserId.equals("")) {
-			data.setCreateperson(userInfo.getUserId());
-			data.setCreatetime(CalendarUtil.fmtDate());
-			data.setCreateunitid(userInfo.getUnitId());
-			//data.setDeptguid(userInfo.getDeptGuid());
-		}
-		data.setModifyperson(userInfo.getUserId());
-		data.setModifytime(CalendarUtil.fmtDate());
-		data.setDeleteflag(BusinessConstants.DELETEFLG_UNDELETE);
-		
-		return data;
-	}
-	private ArrayList<HashMap<String, String>> makeAddress(ArrayList<HashMap<String, String>> data) {
-
-		ArrayList<HashMap<String, String>> rtnData = new ArrayList<HashMap<String, String>>();
-		
-		for(HashMap<String, String>rowData:data) {
-			rowData.put("fullAddress", rowData.get("countryName") + rowData.get("provinceName") + rowData.get("cityName") + rowData.get("address"));
-			rtnData.add(rowData);
-		}
-		
-		return rtnData;
-	}
-	
-	private boolean isDataExist(B_CustomerData dbData) {
-		boolean rtnValue = false;
-		
-		try {
-			B_CustomerDao dao = new B_CustomerDao();
-			dao.FindByPrimaryKey(dbData);
-			rtnValue = true;
-		}
-		catch(Exception e) {
+			ts = new BaseTransaction();										
+			ts.begin();									
 			
+			String removeData[] = recordId.split(",");									
+			for (String key:removeData) {									
+												
+				data.setRecordid(key);							
+				dao.Remove(data);	
+				
+			}
+			
+			ts.commit();
 		}
-		return rtnValue;
-		
+		catch(Exception e) {
+			ts.rollback();
+		}
 	}
+	
+	
+	
 	
 	public void getArriveId() {
 
@@ -379,111 +269,5 @@ public class ArrivalService extends BaseService {
 		
 	}
 	
-	public Model getCustomerByRecordId(String key) throws Exception {
-
-		dataModel.setQueryName("getCustomerByRecordId");
-		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("recordId", key);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		
-		baseQuery.getYsQueryData(0, 0);		
-
-		model.addAttribute("customer",dataModel.getYsViewData().get(0));
-		
-		reqModel.setKeyBackup(key);
-		
-		return model;
-		
-	}
-	
-	public Model getCustomerDetail(String key) throws Exception {
-		
-		B_CustomerData dbData = new B_CustomerData();
-		
-		try {
-			dbData.setRecordid(key);
-			dbData = (B_CustomerData)dao.FindByPrimaryKey(dbData);
-
-			//reqModel.setCustomer(dbData);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dbData = null;
-		}
-		
-		reqModel.setKeyBackup(key);
-		
-		return model;
-		
-	}
-	
-	private ArrayList<ArrayList<String>> preCheckCustomerId(HttpServletRequest request, String key) throws Exception {
-		
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		dataModel.setQueryFileName("/business/customer/customerquerydefine");
-		dataModel.setQueryName("customerquerydefine_preCheck");
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword", key);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		
-		return baseQuery.getQueryData();
-					
-	}
-	
-	private String getUserList(ArrayList<String>userList) {
-		String viewUserList = "";
-		
-		for(String user:userList) {
-			viewUserList += "," + user;
-		}
-		
-		if (viewUserList.length() > 0) {
-			viewUserList = viewUserList.substring(1, viewUserList.length());
-		}
-		
-		return viewUserList;
-	}
-	
-	public HashMap<String, Object> getCustomerId() throws Exception{
-		
-		String parentId = request.getParameter("parentId");
-		parentId = convertToUTF8(parentId);
-		
-		dataModel.setQueryName("getCustomerSubId");
-		userDefinedSearchCase.put("parentId", parentId);
-		baseQuery = new BaseQuery(request, dataModel);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);
-		
-		//取得已有的最大流水号
-		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("MaxSubId"));
-				
-		String subid = BusinessService.getFormatCode(code, true);
-		
-		modelMap.put("subId",subid);
-		
-		return modelMap;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> shortNameCheck() throws Exception{
-		
-		String ExFlag = "";
-		String shortName = request.getParameter("shortName");
-		shortName = convertToUTF8(shortName).toUpperCase();
-		List<B_CustomerData> list = null;
-		String astr_Where = "UPPER(shortName) = '"+ shortName + "' " +
-							" AND deleteFlag = '0' ";
-		list = (List<B_CustomerData>)dao.Find(astr_Where);
-	
-		if(list != null && list.size() > 0){
-			ExFlag = "1";
-		}		
-		
-		modelMap.put("ExFlag",ExFlag);
-		
-		return modelMap;
-	}
 
 }

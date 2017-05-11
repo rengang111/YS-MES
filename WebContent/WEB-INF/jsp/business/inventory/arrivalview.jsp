@@ -75,7 +75,7 @@
 		$("#update").click(
 				function() {
 
-			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert");
+			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=updateInit");
 			$('#formModel').submit();
 		});		
 		
@@ -171,7 +171,7 @@
 
 <fieldset class="action" style="text-align: right;">
 	<button type="button" id="return" class="DTTT_button">返回</button>
-	<button type="button" id="update" class="DTTT_button">修改</button>
+	<!-- <button type="button" id="update" class="DTTT_button">修改</button> -->
 </fieldset>		
 	
 </form:form>

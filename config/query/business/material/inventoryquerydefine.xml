@@ -23,7 +23,7 @@
       <f name="a.total" alias="" ctype="" />
     </select>
     <from>v_arrivallist a WHERE a.deleteFlag = '0' </from>
-    <orderby>a.arrivalId,a.materialId</orderby>
+    <orderby>a.arriveDate DESC,a.YSId DESC,a.contractId,a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
