@@ -12,9 +12,12 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.system.service.common.I_BaseService;
 import com.ys.util.DicUtil;
 import com.ys.util.UploadReceiver;
 import com.ys.util.basedao.BaseDAO;
@@ -26,17 +29,19 @@ import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.material.MaterialModel;
 import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MaterialDao;
+import com.ys.business.db.dao.B_MouldBaseInfoDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
 import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
 import com.ys.business.db.data.CommFieldsData;
 
 @Service
-public class MaterialService extends CommonService {
+public class MaterialService extends CommonService implements I_BaseService{
 
 	DicUtil util = new DicUtil();
 
@@ -304,6 +309,30 @@ public class MaterialService extends CommonService {
 		return categoryList;
 	}
 	
+	public HashMap<String, Object> getSupplierList2(
+			HttpServletRequest request, 
+			String data) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		String key = request.getParameter("key").toUpperCase();
+
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("getSupplierList2");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("keywords1", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		
+		baseQuery.getYsFullData();	 
+		
+		modelMap.put("data", dataModel.getYsViewData());		
+		
+		return modelMap;
+	}
+	
 	public HashMap<String, Object> getSupplierList(
 			HttpServletRequest request, 
 			String data) throws Exception {
@@ -326,26 +355,24 @@ public class MaterialService extends CommonService {
 		String where = "";
 		if(!(key1==null || ("").equals(key1.trim()))){
 			arry = key1.split(",");
-			if(arry != null && arry.length > 0){
-				boolean flg = true;
-				for(String str:arry){
-					if(str ==null || str.trim().equals(""))
-						continue;
-					
-					if(flg){
-						where = where + " '" + str +"' ";						
-						flg=false;
-						continue;
-					}
-					where = where + ","+ " '" + str +"' ";		
+			boolean flg = true;
+			for(String str:arry){
+				if(str ==null || str.trim().equals(""))
+					continue;
+				
+				if(flg){
+					where = where + " '" + str +"' ";						
+					flg=false;
+					continue;
 				}
-			}else{
-				where = " '" + key1 +"' ";
+				where = where + ","+ " '" + str +"' ";		
 			}
 
-			sql = sql.replace("#", where);
+		}else{
+			where = " '' ";
 		}
-		
+
+		sql = sql.replace("#", where);
 			
 		baseQuery.getYsQueryData(sql);	 
 		
@@ -1295,5 +1322,44 @@ public class MaterialService extends CommonService {
 		reqModel.setNowUseImage(nowUseImage);
 		
 		//return model;
+	}
+
+	@Override
+	public void setNowUseImage(String key, String fileName) throws Exception {
+		// TODO Auto-generated method stub
+		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		
+		dbData.setId(key);
+		dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+		
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+		UserInfo userInfo = (UserInfo)request.getSession().getAttribute(BusinessConstants.SESSION_USERINFO);
+		
+		//dbData = updateMouldBaseInfoModifyInfo(dbData, userInfo);
+		
+		//dbData.setImage_filename(src);
+		
+		dao.Store(dbData);
+	}
+
+	@Override
+	public String getNowUseImage(String key) throws Exception {
+		// TODO Auto-generated method stub
+		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
+		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		
+		String nowUseImage = "";
+		
+		try {
+			dbData.setId(key);
+			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+			nowUseImage = dbData.getImage_filename();
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return nowUseImage;
 	}
 }

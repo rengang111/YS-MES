@@ -81,5 +81,13 @@ public class Constants {
 	public static final String ORDEREXPENSE_0 = "0";//未确认
 	public static final String ORDEREXPENSE_1 = "1";//已确认
 
+	/**
+	 * 进料报检状态
+	 */
+	public static final String ARRIVERECORD_0 = "010";//未检验
+	public static final String ARRIVERECORD_1 = "020";//合格
+	public static final String ARRIVERECORD_2 = "030";//让步接收
+	public static final String ARRIVERECORD_3 = "040";//退货
+
 
 }

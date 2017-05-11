@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="getArrivaList" />
+    <where>
+    	<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+    </where>
+    <select>
+      <f name="A.arrivalId" alias="" ctype="" />
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="a.arriveDate" alias="" ctype="" />
+      <f name="a.status" alias="" ctype="报检状态" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="a.supplierName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="a.total" alias="" ctype="" />
+    </select>
+    <from>v_arrivallist a WHERE a.deleteFlag = '0' </from>
+    <orderby>a.arriveDate DESC,a.YSId DESC,a.contractId,a.arrivalId,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  
+  <query>
+    <pool></pool>    
+    <name value="getMAXArrivalId" />
+     <where>
+       <w name="A.arriveDate" des=""  reqName="arriveDate" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name=" IFNULL(MAX(RIGHT(a.arrivalId,2)+0),'0')" alias="MaxSubId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_arrival a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getArrivaRecord" />
+    <where>
+      <w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.arrivalId" alias="" ctype="" />
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.arriveDate" alias="" ctype="" />
+      <f name="A.userId" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="a.supplierName" alias="" ctype="" />
+      <f name="IFNULL(c.recodeSum,'0')" alias="recodeSum" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="a.total" alias="" ctype="" />
+    </select>
+    <from>v_arrivallist a LEFT JOIN v_arrivalquantitygroup c ON c.contractId = a.contractId AND c.materialId = a.materialId WHERE a.deleteFlag = '0' </from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>

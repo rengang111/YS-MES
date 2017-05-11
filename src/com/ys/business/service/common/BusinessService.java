@@ -133,10 +133,11 @@ public class BusinessService {
 	 * @param code3:流水号
 	 * 
 	 */
-	public static String getContractCode(String code1,String code2,int code3)
+	public static String getContractCode(String code1,String code2,String code3)
 	{
+		int icode = Integer.parseInt(code3);
 		//格式化成3位流水号,并且+1
-		String num = getFormatCode(code3,true);
+		String num = getFormatCode(icode,true);
 		
 		//采购合同编号:16YS081-WL002
 		return code1 + "-" + code2 + num;
@@ -265,5 +266,25 @@ public class BusinessService {
          //DecimalFormat df = new DecimalFormat("#.00");
 		//return df.format(value);
 	 }
+	 
+
+	/**
+	 * 到货登记编号
+	 * @return yyMMdd-nn
+	 */
+	 public static String getArriveRecordId(String code) {
+
+		String today = CalendarUtil.getDateyymmdd();
+		//格式化成2位流水号,并且+1
+		int num = 0;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		
+		String ft = BusinessService.getFormat2Code(num,true);
+		
+		return today + "-" + ft;
+	 }
+		 
+		 
 	 
 }
