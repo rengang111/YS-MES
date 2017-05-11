@@ -215,7 +215,7 @@
 		if (inputCheck()) {
 			//$('#form').attr("action", "${ctx}/menu?methodtype=search");
 			//$('#form').submit();
-			ajax();
+			reload();
 		}
 	}
 
@@ -273,7 +273,6 @@
 		$('#operType').val("addsub");
 		//popupWindow("MenuDetail", "${pageContext.request.contextPath}/menu?methodtype=updateinit&operType=addsub&menuId=" + menuId, 800, 600);
 		var url = "${pageContext.request.contextPath}/menu?methodtype=updateinit&operType=addsub&menuId=" + menuId;
-		alert(menuId);
 		openLayer(url, $(document).width() - 25, layerHeight, true);
 	}
 	

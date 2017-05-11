@@ -1,5 +1,6 @@
 package com.ys.system.service.unit;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,29 +9,47 @@ import org.springframework.stereotype.Service;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.unit.UnitModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.system.db.dao.S_DEPTDao;
 import com.ys.system.db.data.S_DEPTData;
 import com.ys.system.ejb.DbUpdateEjb;
+import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basequery.BaseQuery;
-
-import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class UnitService {
+public class UnitService extends BaseService {
  
-	public UnitModel doSearch(HttpServletRequest request, UnitModel dataModel, UserInfo userInfo) throws Exception {
+	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
 		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		UnitModel dataModel = new UnitModel();
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
 		dataModel.setQueryFileName("/unit/unitquerydefine");
 		dataModel.setQueryName("unitquerydefine_search");
 		
-		dataModel.setUnitPropertyList(DicUtil.getGroupValue(DicUtil.UNITPROPERTY));
-		dataModel.setUnitTypeList(DicUtil.getGroupValue(DicUtil.UNITTYPE));
+		String key1 = getJsonData(data, "unitIdName");
 		
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
 		if (userInfo.isSA()) {
@@ -38,12 +57,24 @@ public class UnitService {
 		} else {
 			userDefinedSearchCase.put("userUnitId", userInfo.getUnitId());
 		}
+		userDefinedSearchCase.put("unitIdName", key1);
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getQueryData();
+		baseQuery.getYsQueryData(iStart, iEnd);	
 		
-		dataModel.setUserUnitId(userInfo.getUnitId());
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}
 		
-		return dataModel;
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
 	}
 
 	public UnitModel getDetail(HttpServletRequest request) throws Exception {
@@ -101,35 +132,99 @@ public class UnitService {
 	
 	}
 	
-	public void doAdd(HttpServletRequest request, UnitModel unitModel, UserInfo userInfo) throws Exception {
-		S_DEPTDao dao = new S_DEPTDao();
-		
-		S_DEPTData data = unitModel.getunitData();
-		data = updateModifyInfo(unitModel.getunitData(), userInfo);
-		
-		data = storeDeptGuid(request, unitModel, data);
-		data.setUnitid(getNewUnitId(unitModel, userInfo));
-		
-		dao.Create(data);
-	}	
 	
-	public void doUpdate(HttpServletRequest request, UnitModel unitModel, UserInfo userInfo) throws Exception {
+	public UnitModel doUpdate(HttpServletRequest request, String formData, UserInfo userInfo, boolean isAdd) {
 		S_DEPTDao dao = new S_DEPTDao();
-		S_DEPTData data = updateModifyInfo(unitModel.getunitData(), userInfo);
-		data = storeDeptGuid(request, unitModel, data);
-		dao.Store(data);
-	}
-	
-	public void doDelete(UnitModel UnitModel, UserInfo userInfo) throws Exception {
+		S_DEPTData data = new S_DEPTData();
+		UnitModel model = new UnitModel();
 		
+		String unitid = getJsonData(formData, "unitid");
+		String parentUnitId = getJsonData(formData, "parentUnitId");
+		String unitname = getJsonData(formData, "unitname");
+		String unitsimpledes = getJsonData(formData, "unitsimpledes");
+		String jianpin = getJsonData(formData, "jianpin");
+		String orgid = getJsonData(formData, "orgid");
+		String unitproperty = getJsonData(formData, "unitproperty");
+		String unittype = getJsonData(formData, "unittype");
+		String addresscode = getJsonData(formData, "addresscode");
+		String addressuser = getJsonData(formData, "addressuser");
+		String postcode = getJsonData(formData, "postcode");
+		String telphone = getJsonData(formData, "telphone");
+		String email = getJsonData(formData, "email");
+		String mgrperson = getJsonData(formData, "mgrperson");
+		String officeid = getJsonData(formData, "officeid");
+		String areaid = getJsonData(formData, "areaid");
+		String sortno = getJsonData(formData, "sortno");
+		
+		try {
 
+			if (isAdd) {
+				unitid = getNewUnitId(parentUnitId, userInfo);
+				data.setUnitid(unitid);
+			} else {
+				data.setUnitid(unitid);
+				data = (S_DEPTData)dao.FindByPrimaryKey(data);
+			}
+			
+			data = storeDeptGuid(request, parentUnitId, data);
+			
+			data.setUnitname(unitname);
+			data.setUnitsimpledes(unitsimpledes);
+			data.setJianpin(jianpin);
+			data.setOrgid(orgid);
+			data.setAddresscode(addresscode);
+			data.setAddressuser(addressuser);
+			data.setPostcode(postcode);
+			data.setTelphone(telphone);
+			data.setEmail(email);
+			data.setUnitproperty(unitproperty);
+			data.setOfficeid(officeid);
+			data.setAreaid(areaid);
+			data.setUnittype(unittype);
+			data.setMgrperson(mgrperson);
+			if (sortno != null && !sortno.equals("")) {
+				data.setSortno(Integer.parseInt(sortno));
+			} else {
+				data.setSortno(0);
+			}
+
+			data = updateModifyInfo(data, userInfo);
+
+			if (!isAdd) {
+				dao.Store(data);
+			} else {
+				dao.Create(data);
+			}
+			
+			model.setEndInfoMap(BaseService.NORMAL, "", unitid);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
+		}
+		
+		return model;
+	}
+	
+	public UnitModel doDelete(HttpServletRequest request, String formData, UserInfo userInfo) {
+		
 		DbUpdateEjb bean = new DbUpdateEjb();
-        
-        bean.executeUnitDelete(UnitModel, userInfo);
+		UnitModel model = new UnitModel();
+		
+		try {
+			bean.executeUnitDelete(formData, userInfo);
+			model.setEndInfoMap(BaseService.NORMAL, "", "");
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
+		}
+		
+		return model;
         
 	}
 	
-	public int preCheck(HttpServletRequest request, String operType, String parentUnitId, String userUnitId, String userType) throws Exception {
+	public int preCheck(HttpServletRequest request, String operType, String data, String userUnitId, String userType) throws Exception {
 		
 		int result = 0;
 		
@@ -137,7 +232,7 @@ public class UnitService {
 		
 		unitModel.setQueryFileName("/unit/unitquerydefine");
 		unitModel.setQueryName("unitquerydefine_getparentdeptguid");
-		
+		String parentUnitId = getJsonData(data, "parentUnitId");
 		BaseQuery baseQuery = new BaseQuery(request, unitModel);
 		ArrayList<ArrayList<String>> unitDataList = baseQuery.getQueryData();
 		//父单位是否存在
@@ -161,7 +256,7 @@ public class UnitService {
 			
 			//单位名称是否存在
 			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-			userDefinedSearchCase.put("unitIdName", request.getParameter("unitData.unitname"));
+			userDefinedSearchCase.put("unitIdName", getJsonData(data, "unitname"));
 			userDefinedSearchCase.put("userUnitId", userUnitId);
 			unitModel.setQueryFileName("/unit/unitquerydefine");
 			unitModel.setQueryName("unitquerydefine_confirmunitname");
@@ -178,7 +273,7 @@ public class UnitService {
 					//单位名称不存在
 					//result = 4;
 				} else {
-					String updateSrcUnitId = request.getParameter("unitData.unitid");
+					String updateSrcUnitId = getJsonData(data, "unitid");
 					if (!unitDataList.get(0).get(1).equals(updateSrcUnitId)) {
 						//单位名称已存在
 						result = 3;
@@ -205,8 +300,9 @@ public class UnitService {
 		return data;
 	}
 	
-	private S_DEPTData storeDeptGuid(HttpServletRequest request, UnitModel unitModel, S_DEPTData data) throws Exception {
-		if (unitModel.getParentUnitName().equals("")) {
+	private S_DEPTData storeDeptGuid(HttpServletRequest request, String parentUnitId, S_DEPTData data) throws Exception {
+		UnitModel unitModel = new UnitModel();
+		if (parentUnitId.equals("")) {
 			data.setDeptguid(BaseDAO.getGuId());
 			data.setParentid("");
 		} else {
@@ -222,10 +318,9 @@ public class UnitService {
 		return data;
 	}
 	
-	private String getNewUnitId(UnitModel unitModel, UserInfo userInfo) throws Exception {
+	private String getNewUnitId(String parentUnitId, UserInfo userInfo) throws Exception {
 
 		String newDeptId = "";
-		String parentUnitId = unitModel.getParentUnitId();
 		
 		if (parentUnitId.equals("")) {
 			if (!userInfo.getUserType().equals(Constants.USER_SA)) {
@@ -253,5 +348,57 @@ public class UnitService {
 		}
 		
 		return newDeptId;
+	}
+	
+	public HashMap<String, Object> doUnitSearch(HttpServletRequest request, String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		String key = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		key = request.getParameter("key");	
+		
+		dataModel.setQueryFileName("/unit/unitquerydefine");	
+		dataModel.setQueryName("unitSearch");	
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);	
+		
+		userDefinedSearchCase.put("key", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		baseQuery.getYsQueryData(0,0);	
+			
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
+	}
+	
+	public HashMap<String, Object> doAddressSearch(HttpServletRequest request, String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		String key = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		key = request.getParameter("key");	
+		
+		dataModel.setQueryFileName("/unit/unitquerydefine");	
+		dataModel.setQueryName("dicSearch");	
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);	
+		
+		userDefinedSearchCase.put("key", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		baseQuery.getYsQueryData(0,0);	
+			
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
 	}
 }

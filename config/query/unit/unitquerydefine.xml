@@ -98,4 +98,43 @@
     <groupby></groupby>
     <having></having>
   </query>  
+  <query>
+    <pool></pool>     
+    <name value="dicSearch" />
+    <where>
+      <w name="A.DICNAME" des=""  reqName="key" dtype="ch" oper="like"  lg="OR" bt="(" />
+      <w name="A.jianpin" des=""  reqName="key" dtype="ch" oper="like"  lg="AND" bt=")" />
+      <w name="A.DicTypeID" des=""  reqName="typeid" dtype="ch" oper="="  lg="" bt="" />
+      
+    </where>
+    <select>
+      <f name="A.dicName" alias="" ctype="" />
+      <f name="A.dicId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>S_DIC AS A WHERE A.DeleteFlag = '0' </from>
+    <orderby>dicname, sortno</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="unitSearch" />
+    <where>
+      <w name="A.UNITNAME" des=""  reqName="key" dtype="ch" oper="like"  lg="OR" bt="" />
+      <w name="A.UnitSimpleDes" des=""  reqName="key" dtype="ch" oper="like"  lg="OR" bt="" />
+      <w name="A.jianpin" des=""  reqName="key" dtype="ch" oper="like"  lg="" bt="" />
+    </where>
+    <select>
+      <f name="A.unitName" alias="" ctype="" />
+      <f name="A.unitId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>S_DEPT AS A WHERE A.DeleteFlag = '0' </from>
+    <orderby>unitname, sortno</orderby>
+    <groupby></groupby>
+    <having></having>
+  </query> 
 </root>
