@@ -242,16 +242,16 @@ public class DbUpdateEjb  {
 		}
     }
     
-    public void executeUnitDelete(UnitModel unitModel, UserInfo userInfo) throws Exception {
+    public void executeUnitDelete(String formData, UserInfo userInfo) throws Exception {
 		new S_DEPTData();
 		int count = 0;
-	
+		BaseService service = new BaseService();
 		//UserTransaction ts = context.getUserTransaction();
 		ts = new BaseTransaction();
 		
 		try {
 			ts.begin();
-			String removeData[] = unitModel.getNumCheck().split(",");
+			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
 			for (String unitId:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				//TODO:
@@ -278,7 +278,6 @@ public class DbUpdateEjb  {
 				//data.setDeleteflag(Constants.DELETEFLG_DELETED);
 				//dao.Store(data);
 
-				unitModel.setUpdatedRecordCount(count);
 			}
 			ts.commit();
 		}

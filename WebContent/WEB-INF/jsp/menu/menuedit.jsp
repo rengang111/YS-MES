@@ -367,7 +367,7 @@
 						if (d.rtnCd != "000") {
 							alert(d.message);	
 						} else {
-							reloadTabWindowWithNodeChangeNotice(d.info);
+							reloadTabWindowWithNodeChangeNotice(d.info, true);
 							doReturn();
 						}
 						

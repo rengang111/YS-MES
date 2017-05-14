@@ -820,11 +820,17 @@ public class BaseQuery {
 	public static String getContent(String fileName, String key) {
 
 		
-		String rtnValue = "";
+		String rtnValue = key;
         Locale locale = new Locale("zh", "CN");
-        ResourceBundle resb = ResourceBundle.getBundle(fileName, locale);
-
-        rtnValue = resb.getString(key);
+        
+        try {
+	        ResourceBundle resb = ResourceBundle.getBundle(fileName, locale);
+	
+	        rtnValue = resb.getString(key);
+        }
+        catch(Exception e) {
+        	System.out.println(e.getMessage());
+        }
 		return rtnValue;
 	 
 	}	

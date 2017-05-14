@@ -1,5 +1,8 @@
 package com.ys.system.action.unit;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -15,7 +18,7 @@ import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.unit.UnitModel;
 import com.ys.system.common.BusinessConstants;
-import com.ys.util.basequery.common.Constants;
+import com.ys.system.service.common.BaseService;
 import com.ys.system.service.unit.UnitService;
 import com.ys.util.DicUtil;
 
@@ -28,10 +31,12 @@ public class UnitAction extends BaseAction {
 	UnitService unitService;
 	
 	@RequestMapping("/unit")
-	public String doInit(@RequestBody String para, @ModelAttribute("dataModels")UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doInit(@RequestBody String data, @ModelAttribute("dataModels")UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		String type = request.getParameter("methodtype");
 		String rtnUrl = "";
+		HashMap<String, Object> dataMap = null;
+		UnitModel viewModel = null;
 		
 		if (type == null) {
 			type = "";
@@ -51,44 +56,58 @@ public class UnitAction extends BaseAction {
 				rtnUrl = "/unit/unitmain";
 				break;
 			case "search":
-				rtnUrl = doSearch(dataModel, result,  model, session, request, response);
-				break;
+				dataMap = doSearch(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "updateinit":
 				rtnUrl = doUpdateInit(model, session, request, response);
 				break;
 			case "update":
-				rtnUrl = doUpdate(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doUpdate(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "add":
-				rtnUrl = doAdd(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doAdd(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "delete":
-				rtnUrl = doDelete(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doDelete(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "detail":
 				rtnUrl = doDetail(model, session, request, response);
 				break;
+			case "unitSearch":
+				dataMap = doUnitSearch(data, request);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "addressSearch":
+				dataMap = doAddressSearch(data, request);
+				printOutJsonObj(response, dataMap);
+				return null;
 		}
 		
 		return rtnUrl;		
 		
 	}	
 	
-	public String doSearch(@ModelAttribute("dataModels")UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-
+	public HashMap<String, Object> doSearch(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel = unitService.doSearch(request, dataModel, userInfo);
-			if (dataModel.getViewData().size() == 0) {
-				dataModel.setMessage("无符合条件的数据");
+			dataMap = unitService.doSearch(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
 			}
+
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("检索失败");
+			dataMap.put(INFO, ERRMSG);
 		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/unit/unitmain";
+		
+		return dataMap;
 	}
 
 	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
@@ -122,102 +141,85 @@ public class UnitAction extends BaseAction {
 		return "/unit/unitedit";
 	}	
 	
-	public String doUpdate(UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	//public String doUpdate(UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public UnitModel doUpdate(String data, HttpSession session, HttpServletRequest request){
+		
+		UnitModel dataModel = new UnitModel();
+
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		
 		try {
-			dataModel.setUpdatedRecordCount(0);
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel.setUnitPropertyList(DicUtil.getGroupValue(DicUtil.UNITPROPERTY));
-			dataModel.setUnitTypeList(DicUtil.getGroupValue(DicUtil.UNITTYPE));
-			
-			int preCheckResult = unitService.preCheck(request, "update", dataModel.getParentUnitId(), userInfo.getUnitId(), userInfo.getUserType());
+			int preCheckResult = unitService.preCheck(request, "update", data, userInfo.getUnitId(), userInfo.getUserType());
 			switch(preCheckResult) {
 			case 0:
-				unitService.doUpdate(request, dataModel, userInfo);
-				dataModel.setUpdatedRecordCount(1);
+				dataModel = unitService.doUpdate(request, data, userInfo, false);
+				//dataModel.setUpdatedRecordCount(1);
 				dataModel.setOperType("update");
-				dataModel.setMessage("更新成功");
 				DicUtil.emptyBuffer(true);
 				break;
 			case 1:
-				dataModel.setMessage("父单位不正确");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "父单位不正确", "");
 				break;				
 			case 2:
-				dataModel.setMessage("父单位不正确");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "父单位不正确", "");
 				break;
 			case 3:
-				dataModel.setMessage("单位名称已存在");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "单位名称已存在", "");
 				break;
 			}			
-			
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("更新失败");
+			dataModel.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
 		}
-		
-		model.addAttribute("DisplayData", dataModel);
-		return "/unit/unitedit";
+		return dataModel;
 	}	
 
-	public String doAdd(UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public UnitModel doAdd(String data, HttpSession session, HttpServletRequest request){
+		
+		UnitModel dataModel = new UnitModel();
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		
 		try {
-			dataModel.setUpdatedRecordCount(0);
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel.setUnitPropertyList(DicUtil.getGroupValue(DicUtil.UNITPROPERTY));
-			dataModel.setUnitTypeList(DicUtil.getGroupValue(DicUtil.UNITTYPE));
-			
-			int preCheckResult = unitService.preCheck(request, "add", dataModel.getParentUnitId(), userInfo.getUnitId(), userInfo.getUserType());
+			int preCheckResult = unitService.preCheck(request, "add", data, userInfo.getUnitId(), userInfo.getUserType());
 			switch(preCheckResult) {
 			case 0:
-				unitService.doAdd(request, dataModel, userInfo);
-				dataModel.setUpdatedRecordCount(1);
+				dataModel = unitService.doUpdate(request, data, userInfo, true);
 				dataModel.setOperType("add");
-				dataModel.setMessage("增加成功");
 				DicUtil.emptyBuffer(true);
 				break;
 			case 1:
-				dataModel.setMessage("父单位不正确");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "父单位不正确", "");
 				break;				
 			case 2:
-				dataModel.setMessage("父单位不正确");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "父单位不正确", "");
 				break;
 			case 3:
-				dataModel.setMessage("单位名称已存在");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "单位名称已存在", "");
 				break;
 			case 4:
-				dataModel.setMessage("单位不存在");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "单位不存在", "");
 				break;
 			}
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("增加失败");
+			dataModel.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
 		}
-		model.addAttribute("DisplayData", dataModel);
 		
-		return "/unit/unitedit";
+		return dataModel;
 	}	
 	
-	public String doDelete(UnitModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public UnitModel doDelete(String data, HttpSession session, HttpServletRequest request){
+
+		UnitModel dataModel = new UnitModel();
+
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		dataModel = unitService.doDelete(request, data, userInfo);
+		DicUtil.emptyBuffer(true);
+		dataModel.setOperType("delete");
 		
-		try {
-			dataModel.setUpdatedRecordCount(0);
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			unitService.doDelete(dataModel, userInfo);
-			dataModel.setUpdatedRecordCount(1);
-			dataModel.setOperType("delete");
-			dataModel.setMessage("删除成功");
-			DicUtil.emptyBuffer(true);
-			dataModel = unitService.doSearch(request, dataModel, userInfo);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("删除失败");
-		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/unit/unitmain";
+		return dataModel;
 	}
 	
 	public String doDetail(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
@@ -236,4 +238,44 @@ public class UnitAction extends BaseAction {
 		
 		return "/unit/unitedit";
 	}	
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doUnitSearch(@RequestBody String data, HttpServletRequest request){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = unitService.doUnitSearch(request, data);
+			
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			//dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doAddressSearch(@RequestBody String data, HttpServletRequest request){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = unitService.doAddressSearch(request, data);
+			
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			//dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 }
