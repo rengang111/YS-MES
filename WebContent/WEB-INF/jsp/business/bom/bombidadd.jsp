@@ -15,8 +15,6 @@
 <script type="text/javascript">
 	
 	function ajax() {
-		var height = $(window).height();
-		height = height - 370;
 
 		var t = $('#example').DataTable({
 			
@@ -26,9 +24,7 @@
 	        "paging"    : false,
 	        "pageLength": 50,
 	        "ordering"  : false,
-
-			dom : '<"clear">rt',
-			
+			dom : '<"clear">rt',			
 			"columns" : [ 
 			        	{"className":"dt-body-center"
 					}, {
@@ -159,10 +155,10 @@
 				});
 		
 		$("#update").click(function() {			
-			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=insertQuotation");
+			$('#bomForm').attr("action", "${ctx}/business/quotation?methodtype=insertQuotation");
 			$('#bomForm').submit();
 		});
-	
+	/*
 		$("#bomPlan\\.currency").change(function(){
 			//alert($(this).val())
 			var currencyId = $(this).val();
@@ -181,7 +177,7 @@
 				dataType : "json",
 				contentType: "application/x-www-form-urlencoded; charset=utf-8",
 				success : function(data) {			
-alert(data["sysValue"])
+					alert(data["sysValue"])
 					//$().toastmessage('showNoticeToast', "保存成功。");	
 					//$("#costRate").attr('readonly',true);
 					//$("#costRate").addClass('read-only');
@@ -193,6 +189,7 @@ alert(data["sysValue"])
 				}
 			});	
 		});
+		*/
 		
 		foucsInit();//input获取焦点初始化处理
 		
@@ -202,14 +199,18 @@ alert(data["sysValue"])
 		$(".exchange").change(function() {
 			
 			var exchang  = currencyToFloat($('#bomPlan\\.exchangerate').val());
-			var exRebate  = currencyToFloat($('#bomPlan\\.rebaterate').val());
+			var exRebate = currencyToFloat($('#bomPlan\\.rebaterate').val());
 			var exprice  = currencyToFloat($('#bomPlan\\.exchangeprice').val());
 			var mateCost = currencyToFloat($('#bomPlan\\.materialcost').val());
 			var baseCost = currencyToFloat($('#bomPlan\\.productcost').val());
-			//原币价格=汇率*报价，利润率=（原币价格+退税-基础成本）/基础成本
+			var discount = currencyToFloat($('#bomPlan\\.discount').val());
+			var commissi = currencyToFloat($('#bomPlan\\.commission').val());
+			//利润 = 原币价格+退税-基础成本-因子-折扣
+			//原币价格 = 汇率*报价
+			//利润率= 利润/基础成本
 			var rmb = exchang * exprice;
-			var rebate = exRebate * mateCost / 1.17 / 100;
-			var profit = rmb + rebate - baseCost ;
+			var rebate = mateCost * exRebate / 1.17 / 100;
+			var profit = rmb + rebate - baseCost - baseCost*(discount+commissi)/100;
 			var profitRate = profit / baseCost * 100;
 			//alert('p='+(rmb - baseCost)+'profit='+profit)
 			$('#bomPlan\\.rebate').val(floatToCurrency(rebate));
@@ -303,18 +304,19 @@ alert(data["sysValue"])
 			<legend>客户报价</legend>
 			<table class="form" id="table_form" style="margin-top: -4px;">
 				<tr>
-					<td class="label" width="100px">BOM编号：</td>					
-					<td width="150px">${bomForm.bomPlan.bomid}
+					<td class="label">产品名称：</td>				
+					<td>（${product.materialId}）${product.materialName }
+						<form:hidden path="bomPlan.materialid"  value="${product.materialId}"/></td>					
+
+					<td class="label" width="120px">客户名称：</td>
+					<td>（${product.shortName }）${product.customerName }</td>
+				</tr>
+				<tr>
+					<td class="label" width="120px">BOM编号：</td>					
+					<td colspan="3">${bomForm.bomPlan.bomid}
 						<form:hidden path="bomPlan.bomid"    value="${bomForm.bomPlan.bomid}"/>
 						<form:hidden path="bomPlan.parentid" value="${bomForm.bomPlan.parentid}"/>
 						<form:hidden path="bomPlan.subid"    value="${bomForm.bomPlan.subid}"/></td>
-						
-					<td class="label" width="100px">产品名称：</td>				
-					<td colspan="3">${product.materialId} | ${product.materialName }
-						<form:hidden path="bomPlan.materialid"  value="${product.materialId}"/></td>					
-					
-					<td class="label" width="100px">客户名称：</td>
-					<td colspan="3">${product.shortName } | ${product.customerName }</td>
 				</tr>
 												
 			</table>
@@ -355,6 +357,8 @@ alert(data["sysValue"])
 					<td class="td-center"><label>原币价格</label></td>
 					<td class="td-center"><label>退税率</label></td>
 					<td class="td-center"><label>退税</label></td>
+					<td class="td-center"><label>折扣</label></td>
+					<td class="td-center"><label>因子</label></td>
 					<td class="td-center"><label>利润率</label></td>
 				</tr>	
 				<tr>			
@@ -366,7 +370,7 @@ alert(data["sysValue"])
 									itemLabel="value" />
 							</form:select></td>
 					<td class="td-center">
-						<form:input path="bomPlan.exchangerate" class="cash exchange short" value="${material.exchangeRate}"/></td>
+						<form:input path="bomPlan.exchangerate" class="cash exchange mini" value="${material.exchangeRate}"/></td>
 					<td class="td-center">
 						<form:input path="bomPlan.exchangeprice" class="cash exchange short" value="${material.exchangePrice}"/></td>
 					<td class="td-center">
@@ -376,8 +380,12 @@ alert(data["sysValue"])
 					<td class="td-center">
 						<form:input path="bomPlan.rebate" class="read-only cash mini" value="${material.rebate}"/></td>
 					<td class="td-center">
+						<form:input path="bomPlan.discount" class="cash exchange" value="${material.discount}" style="width: 30px;" />%</td>
+					<td class="td-center">
+						<form:input path="bomPlan.commission" class="cash exchange" value="${material.commission}" style="width: 30px;" />%</td>
+					<td class="td-center">
 						<form:hidden path="bomPlan.profit"/>
-						<form:input  path="bomPlan.profitrate" class="read-only cash mini" value="${material.profitRate}"/>%</td>
+						<form:input path="bomPlan.profitrate" class="read-only cash mini" value="${material.profitRate}"/>%</td>
 				</tr>								
 			</table>
 	</fieldset>
@@ -446,7 +454,7 @@ alert(data["sysValue"])
 					var index = '${status.index}';
 					var cost = '${detail.productcost}';
 					var materialId = '${detail.materialId}';
-					var materialName = '${detail.materialName}';
+					var materialName = "${detail.materialName}";
 					var quantity = currencyToFloat('${detail.quantity}');
 					var accessFlg = '${bomForm.accessFlg}';
 					if(accessFlg ==''){

@@ -1,18 +1,13 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <!DOCTYPE HTML>
 <html>
-
-
 <head>
 <title>成品信息-查看</title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common2.jsp"%>
 </head>
-
 <body>
 <div id="container">
 <div id="main">
@@ -134,14 +129,14 @@
 					<th style="width:120px;"  class="dt-middle ">BOM编号</th>
 					<th style="width: 80px;"  class="dt-middle ">材料成本</th>
 					<th style="width: 80px;"  class="dt-middle ">核算成本</th>
-					<th style="width: 50px;"  class="dt-middle ">退税率</th>
 					<th style="width: 80px;"  class="dt-middle ">退税额</th>
-					<th style="width: 60px;"  class="dt-middle ">币种</th>
 					<th style="width: 80px;"  class="dt-middle ">报价</th>
 					<th style="width: 60px;"  class="dt-middle ">换汇</th>
 					<th style="width:90px;"  class="dt-middle ">原币价格</th>
+					<th style="width: 50px;"  class="dt-middle ">折扣</th>
+					<th style="width: 50px;"  class="dt-middle ">因子</th>
 					<th style="width:60px;"  class="dt-middle ">利润率</th>
-					<th style="width:10px;"  class="dt-middle "></th>
+					<th style="width:1px;"  class="dt-middle "></th>
 				</tr>
 			</thead>
 		</table>
@@ -154,6 +149,11 @@
 
 $(document).ready(function() {
 		
+
+	baseBomView();//显示基础BOM
+
+	quotationView();//供应商单价显示处理
+	
 	$("#costRate").attr('readonly',true);
 	$("#costRate").addClass('read-only');
 	$("#doSave").hide();
@@ -187,7 +187,8 @@ $(document).ready(function() {
 			contentType: "application/x-www-form-urlencoded; charset=utf-8",
 			success : function(data) {			
 
-				$().toastmessage('showNoticeToast', "保存成功。");	
+				$().toastmessage('showNoticeToast', "保存成功。");
+				$("#costRate").val(floatToCurrency(costRate));
 				$("#costRate").attr('readonly',true);
 				$("#costRate").addClass('read-only');
 				$("#doSave").hide();
@@ -201,9 +202,6 @@ $(document).ready(function() {
 	});
 	
 	
-	baseBomView();//显示基础BOM
-
-	quotationView();//供应商单价显示处理
 	
 
 	
@@ -292,8 +290,10 @@ function doCreateBaseBom() {
 function baseBomView() {
 
 	var materialId='${product.materialId}';
+	//alert(materialId)
 	var table = $('#baseBomTable').dataTable();
 	if(table) {
+		table.fnClearTable();
 		table.fnDestroy();
 	}
 	var t2 = $('#baseBomTable').DataTable({
@@ -316,7 +316,7 @@ function baseBomView() {
 				"data" : null,
 				success: function(data){
 					fnCallback(data);
-					
+					//alert('unit:'+data['data'][0]['unit'])
 					$('#recordsTotal').val(data['recordsTotal']);
 
 					var recordId  = data['data'][0]['productRecord'];
@@ -324,7 +324,7 @@ function baseBomView() {
 					var parentId  = data['data'][0]['productParentId'];
 					var costRote  = data['data'][0]['managementCostRate'];
 					if(costRote == null || costRote =='')
-						costRote = '5';//默认值设定
+						costRote = '5.00';//默认值设定
 					
 					var laborCost = laborCostSum();
 					var bomCost   = productCostSum();
@@ -346,7 +346,7 @@ function baseBomView() {
 					$('#baseCost').html(baseCost);
 					$('#totalCost').val(totalCost);
 					$('#totalSpan').html(totalCost);
-					$('#costRate').val(costRote);
+					$('#costRate').val(floatToCurrency(costRote));
 					$('#productRecordId').val(recordId);
 					
 					subIndex = '0';
@@ -458,7 +458,7 @@ function quotationView() {
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
 		"async" : true,
-		"sAjaxSource" : "${ctx}/business/bom?methodtype=getQuotationBom&materialId="+materialId,				
+		"sAjaxSource" : "${ctx}/business/quotation?methodtype=getQuotationBom&materialId="+materialId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 				
 			$.ajax({
@@ -500,12 +500,12 @@ function quotationView() {
 			{"data": "bomId"},
 			{"data": "materialCost","className" : 'td-right'},
 			{"data": "totalCost","className" : 'td-right'},
-			{"data": "rebateRate","className" : 'td-center'},
 			{"data": "rebate","className" : 'td-right'},
-			{"data": "currency","className" : 'td-center'},
 			{"data": "exchangePrice","className" : 'td-right'},
 			{"data": "exchangeRate","className" : 'td-right'},
 			{"data": "RMBPrice","className" : 'td-right'},
+			{"data": "discount","className" : 'td-right'},
+			{"data": "commission","className" : 'td-right'},
 			{"data": "profitRate","className" : 'td-right'},
 			{"data": null,"className" : 'td-center'},
         ],
@@ -518,15 +518,20 @@ function quotationView() {
       			return rtn;
       		}},
       		{"targets":8,"render":function(data, type, row){
-      			var price = row["exchangePrice"];
+      			var price = row["RMBPrice"];
       			var curry = row["currency"];
       			
       			return floatToSymbol(price,curry);
       		}},
-      		{"targets":5,"render":function(data, type, row){
-      			var rate = row["rebateRate"];
+      		{"targets":9,"render":function(data, type, row){
+      			var v = row["discount"];
       			
-      			return rate + "%";
+      			return v + "%";
+      		}},
+      		{"targets":10,"render":function(data, type, row){
+      			var v = row["commission"];
+      			
+      			return v + "%";
       		}},
       		{"targets":11,"render":function(data, type, row){
       			var rate = row["profitRate"];
@@ -652,8 +657,6 @@ function doEditMaterial(recordid,parentid) {
 		 // if(confirm('确定要关闭么')){
 		    layer.close(index)
 		 // }
-		  //  getScrollTop(height);
-		 // baseBomView();
 		  $('#baseBomTable').DataTable().ajax.reload(null,false);
 		  return false; 
 		}    
@@ -678,7 +681,6 @@ function doShowSupplier(recordid) {
 		 // if(confirm('确定要关闭么')){
 		    layer.close(index)
 		 // }
-		  //baseBomView();
 		  return false; 
 		}    
 	});		
@@ -690,14 +692,14 @@ function doCreateQuotation() {
 	var parentId  = $('#parentId').val();
 	var materialId ='${product.materialId}'; 
 	if(bomId =='') return;
-	var url = "${ctx}/business/bom?methodtype=createQuotation";
+	var url = "${ctx}/business/quotation?methodtype=createQuotation";
 	url = url + "&bomId="+bomId +"&materialId="+materialId+"&parentId="+parentId;
 	location.href = url;
 
 };
 function doEditQuotation(bomId,materialId,subId) {
 	if(bomId =='') return;
-	var url = "${ctx}/business/bom?methodtype=editQuotation";
+	var url = "${ctx}/business/quotation?methodtype=showQuotation";
 	url = url + "&bomId="+bomId +"&materialId="+materialId+"&subId="+subId;//
 	location.href = url;
 
@@ -708,7 +710,7 @@ function doDelete(recordId){
 	if (recordId != ""){ //
 		$.ajax({
 			type : "post",
-			url : "${ctx}/business/bom?methodtype=deleteQuotation&recordId="+recordId,
+			url : "${ctx}/business/quotation?methodtype=deleteQuotation&recordId="+recordId,
 			async : false,
 			data : 'key=' + recordId,
 			dataType : "text",

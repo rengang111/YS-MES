@@ -955,7 +955,7 @@ function contractTableView() {
 					var record = data["recordsTotal"];
 					//alert(record);
 					if(record > 0)
-						$( "#tabs" ).tabs( "option", "active", 3 );//设置默认显示内容
+					//	$( "#tabs" ).tabs( "option", "active", 3 );//设置默认显示内容
 					
 					fnCallback(data);
 

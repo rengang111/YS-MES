@@ -448,13 +448,51 @@ public class PurchasePlanService extends BaseService {
 		
 	}
 	
-	public Model copyBomPlan() throws Exception {		
+	public HashMap<String, Object> getPurchasePlanList(String data) throws Exception {		
+	
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		dataModel = new BaseModel();
 
-		String bomId = request.getParameter("bomId");
-		getBomDetailView(bomId);
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		String key1 = getJsonData(data, "keyword1").toUpperCase();
+		String key2 = getJsonData(data, "keyword2").toUpperCase();
 
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getPurchasePlanList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase = new HashMap<String, String>();
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
 			
-		return model;
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("unitList",util.getListOption(DicUtil.MEASURESTYPE, ""));		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
 		
 	}
 	

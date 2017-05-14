@@ -352,12 +352,12 @@ public class BomService extends BaseService {
 		userDefinedSearchCase.put("bomId", bomId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
-		modelMap = baseQuery.getYsFullData();
+		baseQuery.getYsFullData();
 		
 		if(dataModel.getRecordCount() > 0){
 			if(accessFlg){
 				HashMap.put("recordsTotal", dataModel.getRecordCount());
-				HashMap.put("data", modelMap);				
+				HashMap.put("data", dataModel.getYsViewData());				
 			}else{
 				//编辑用
 				model.addAttribute("material",dataModel.getYsViewData().get(0));

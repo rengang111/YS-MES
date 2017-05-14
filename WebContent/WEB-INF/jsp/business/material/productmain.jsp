@@ -61,17 +61,14 @@
 						{"data": "exchangePrice", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "currency", "defaultContent" : '0',"className" : 'td-center'},
 						{"data": null,"className" : 'td-right'},
-						{"data": null,"className" : 'td-center'}
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                 }},
-	    		{"targets":7,"render":function(data, type, row){
-	    			var rtn = "";
-	    			var space = '&nbsp;';
-	    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["materialId"] + "')\">查看</a>";
-	    			//rtn= rtn+space+"<a href=\"#\" onClick=\"doCreate('" + row["materialId"] + "')\">BOM</a>";		
+	    		{"targets":1,"render":function(data, type, row){
+	    			var material = row["materialId"];
+	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + row["materialId"] + "')\">"+material+"</a>";	
 	    			return rtn;
 	    		}},
 	    		{"targets":2,"render":function(data, type, row){
@@ -197,7 +194,7 @@
 
 	<div id="search">
 
-		<form id="condition"  >
+		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
 			<table>
 				<tr>
@@ -233,7 +230,6 @@
 					<th style="width: 80px;" class="dt-middle">客户报价</th>
 					<th style="width: 60px;" class="dt-middle">币种</th>
 					<th style="width: 60px;" class="dt-middle ">利润率</th>
-					<th style="width: 30px;" class="dt-middle ">操作</th>
 				</tr>
 			</thead>
 		</table>

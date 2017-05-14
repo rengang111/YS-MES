@@ -79,8 +79,8 @@ public class RequirementAction extends BaseAction {
 				rtnUrl = "/business/requirement/requirementview";
 				break;					
 			case "purchasePlanView":
-				//doShowBomDetail();
-				rtnUrl = "/business/bom/bomselectlist";
+				purchasePlanView();
+				rtnUrl = "/business/purchase/purchaseplanview";
 				break;
 			case "editRequirement":
 				doEditRequirement();
@@ -166,6 +166,12 @@ public class RequirementAction extends BaseAction {
 	}
 
 
+	public void purchasePlanView() throws Exception {
+		
+		service.getPurchasePlan();		
+		
+	}		
+	
 	public String doCreate() throws Exception {
 		
 		String rtnUrl= "/business/requirement/requirementadd";
@@ -176,8 +182,7 @@ public class RequirementAction extends BaseAction {
 		}
 		
 		return rtnUrl;
-	}		
-	
+	}	
 	
 	public void doEditRequirement() throws Exception{
 

@@ -95,11 +95,14 @@ public class PurchaseAction extends BaseAction {
 			case "PurchaseView":
 				doShowPurchaseDetail();
 				rtnUrl = "/business/purchase/purchaseplan";
-				break;	
-			//case "copy":
-			//	doCopy();
-			//	rtnUrl = "/business/purchase/bomplancopy";
-			//	break;
+				break;
+			case "purchasePlanListInit":
+				rtnUrl = "/business/purchase/purchaseplanmain";
+				break;
+			case "getPurchasePlanList":
+				dataMap = getPurchasePlanList(data);
+				printOutJsonObj(response, dataMap);
+				break;
 			case "edit":
 				doEdit();
 				rtnUrl = "/business/purchase/purchaseplanedit";
@@ -163,9 +166,9 @@ public class PurchaseAction extends BaseAction {
 		return dataMap;
 	}
 	
-	public void doCopy() throws Exception{
+	public HashMap<String, Object> getPurchasePlanList(String data) throws Exception{
 			
-		model = purchaseService.copyBomPlan();
+		return purchaseService.getPurchasePlanList(data);
 			
 	}
 

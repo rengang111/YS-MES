@@ -1203,6 +1203,17 @@ public class RequirementService extends CommonService {
 		return flg;
 	}
 	
+
+	public void getPurchasePlan() throws Exception {
+		
+		String YSId = request.getParameter("YSId");	
+			
+		getPurchaseDetail(YSId);	
+
+		getOrderDetail(YSId);
+		
+	}
+	
 	public void editRequirement() throws Exception {
 		
 		String YSId = request.getParameter("YSId");
@@ -1279,8 +1290,8 @@ public class RequirementService extends CommonService {
 	
 	public HashMap<String, Object> showOrderBomDetail() throws Exception {
 
-		String materialId = request.getParameter("materialId");
-		String bomId = BusinessService.getBaseBomId(materialId)[1];
+		String bomId = request.getParameter("bomId");
+		//String bomId = BusinessService.getBaseBomId(materialId)[1];
 		
 		return getOrderBomDetail(bomId);		
 	}
