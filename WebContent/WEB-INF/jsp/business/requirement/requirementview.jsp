@@ -463,7 +463,7 @@ function baseBomView() {
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
 		"async" : false,
-		"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBom&materialId="+materialId,				
+		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
 				"url" : sSource,

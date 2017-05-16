@@ -21,6 +21,7 @@ public class OrderModel extends BaseModel {
 	private ArrayList<ListOption> deliveryPortList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> shippingCaseList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> currencyList = new ArrayList<ListOption>();
+	private ArrayList<ListOption> teamList;
 	private B_OrderData order = new B_OrderData();
 	private B_OrderDetailData orderDetail = new B_OrderDetailData();
 	private B_CustomerData customer = new B_CustomerData();
@@ -40,6 +41,12 @@ public class OrderModel extends BaseModel {
 	}
 	public void setCurrencyList(ArrayList<ListOption> currencyList) {
 		this.currencyList = currencyList;
+	}
+	public ArrayList<ListOption> getTeamList() {
+		return this.teamList;
+	}
+	public void setTeamList(ArrayList<ListOption> teamList) {
+		this.teamList = teamList;
 	}
 	
 	public List<B_OrderDetailData> getOrderDetailLines() {

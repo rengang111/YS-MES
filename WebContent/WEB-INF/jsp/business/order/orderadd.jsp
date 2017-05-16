@@ -314,22 +314,15 @@
 		<legend> 订单综合信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px"><label>PI编号：</label></td>					
+				<td class="label" width="100px">PI编号：</td>					
 				<td>
 					<form:input path="order.piid" class="short required read-only" /></td>
 					
-				<td width="100px" class="label" >
-					<label >客户订单号：</label></td>
-				<td>
+				<td width="100px" class="label" >客户订单号：</td>
+				<td colspan="5">
 					<form:input path="order.orderid" class="short required" /></td>
 										
-				<td width="100px" class="label">下单日期：</td>
-				<td>
-					<form:input path="order.orderdate" class="short required" /></td>
 				
-				<td width="100px" class="label">订单交期：</td>
-				<td>
-					<form:input path="order.deliverydate" class="short required" /></td>
 			</tr>
 			<tr>
 				<td class="label">客户编号：</td>				
@@ -338,7 +331,7 @@
 						<span style="color: blue">（查询范围：客户编号、客户简称、客户名称）</span></td>
 
 				<td class="label">客户名称：</td>
-				<td colspan="3">&nbsp;<span id="attribute2"></span> | <span id="attribute3"></span></td>				
+				<td colspan="3">&nbsp;<span id="attribute2"></span></td>				
 			</tr>					
 			<tr> 
 				<td class="label">付款条件：</td>
@@ -366,16 +359,30 @@
 					</form:select></td>							
 			</tr>
 			<tr>
+
+				<td class="label">业务组：</td>
+				<td><form:select path="order.team">
+						<form:options items="${orderForm.teamList}" 
+						 itemValue="key" itemLabel="value" />
+					</form:select></td>
+				<td class="label">下单日期：</td>
+				<td>
+					<form:input path="order.orderdate" class="short required" /></td>
+				
+				<td width="100px" class="label">订单交期：</td>
+				<td colspan="3">
+					<form:input path="order.deliverydate" class="short required" /></td>
+											
+			</tr>
+			<tr>
 				<td class="label">币种：</td>
 				<td>
 					<form:select path="order.currency">
 						<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
 					</form:select></td>	
-
 				<td class="label">销售总价：</td>
 				<td colspan="5">
-					<form:input path="order.totalprice" class="read-only cash" /></td>
-											
+					<form:input path="order.totalprice" class="read-only cash" /></td>											
 			</tr>							
 		</table>
 </fieldset>
@@ -499,8 +506,7 @@ $("#attribute1").autocomplete({
 
 		$("#attribute1").val(ui.item.id);	
 		$("#order\\.customerid").val(ui.item.id);
-		$("#attribute2").html(ui.item.shortName);
-		$("#attribute3").html(ui.item.fullName);
+		$("#attribute2").html("（"+ui.item.shortName+"）"+ui.item.fullName);
 		$("#order\\.paymentterm").val(ui.item.paymentTerm);
 		$("#order\\.shippingcase").val(ui.item.shippingCase);
 		$("#order\\.loadingport").val(ui.item.loadingPort);

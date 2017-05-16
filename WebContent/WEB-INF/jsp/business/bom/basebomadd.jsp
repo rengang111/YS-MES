@@ -291,7 +291,7 @@
 	$(document).ready(function() {
 		
 		var rate = '${material.managementCostRate}';
-		if(rate =='') $("#bomPlan\\.managementcostrate").val('5');
+		if(rate =='') $("#bomPlan\\.managementcostrate").val('2');
 		
 		ajax();
 		autocomplete();
@@ -327,6 +327,27 @@
 		foucsInit();//input获取焦点初始化处理
 		
 		costAcount();//成本核算
+		
+		$("#reverse").click(function () { 
+			$("input[name='numCheck']").each(function () {  
+		        $(this).prop("checked", !$(this).prop("checked"));  
+		    });
+		});
+		
+		$("#selectall").click(function () { 
+			if($("#selectall").prop("checked")){
+				$("input[name='numCheck']").each(function() {
+					$(this).prop("checked", true);
+				});
+					
+			}else{
+				$("input[name='numCheck']").each(function() {
+					if($(this).prop("checked")){
+						$(this).removeAttr("checked");
+					}
+				});
+			}
+		});
 
 		$(".DTTT_container").css('float','left');
 		
@@ -337,7 +358,7 @@
 			$('#bomPlan\\.recordid').val('');
 
 	});	
-	
+		
 	function fnLaborCost(materialId,cost){
 		
 		var laborCost = '0';
@@ -345,9 +366,7 @@
 		//判断是否是人工成本
 		if(materialId != '' && materialId.substring(0,1) == 'H')
 			laborCost = cost;
-		
-		//alert('materialId:'+materialId+'--laborCost:'+laborCost);
-		
+				
 		return laborCost;
 	}
 	
@@ -494,7 +513,9 @@
 		<table id="example" class="display">
 			<thead>				
 			<tr>
-				<th width="20px">No</th>
+				<th width="50px">
+					<input type="checkbox" name="selectall" id="selectall" /><label for="selectall">全选</label> 
+					<input type="checkbox" name="reverse" id="reverse" /><label for="reverse">反选</label></th>
 				<th class="dt-center" width="200px">物料编码</th>
 				<th class="dt-center" >物料名称</th>
 				<th class="dt-center" width="100px">供应商编号</th>
@@ -897,9 +918,9 @@ function autocomplete(){
 			var fAmountd  = fnLaborCost(ui.item.materialId,fTotalNew);//人工成本
 
 			//显示到页面
-			var vPrice    = floatToCurrency(fPrice);
-			var vTotalNew = floatToCurrency(fTotalNew);
-			var vMinPrice = floatToCurrency(ui.item.minPrice);
+			var vPrice    = float4ToCurrency(fPrice);
+			var vTotalNew = float4ToCurrency(fTotalNew);
+			//var vMinPrice = floatToCurrency(ui.item.minPrice);
 
 			$oMatName.html(jQuery.fixedWidth(ui.item.name,20));
 			$oSupplier.val(ui.item.supplierId);

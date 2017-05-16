@@ -559,6 +559,7 @@ public class OrderService extends BaseService {
 			dbData.setDeliveryport(order.getDeliveryport());
 			dbData.setLoadingport(order.getLoadingport());
 			dbData.setTotalprice(order.getTotalprice());
+			dbData.setTeam(order.getTeam());
 			
 			dao.Store(dbData);
 		}
@@ -678,6 +679,8 @@ public class OrderService extends BaseService {
 					util.getListOption(DicUtil.LOADINGPORT, ""));
 			reqModel.setCurrencyList(
 					util.getListOption(DicUtil.CURRENCY, ""));
+			reqModel.setTeamList(
+					util.getListOption(DicUtil.BUSINESSTEAM, ""));
 			
 			
 			reqModel.setEndInfoMap(NORMAL, "", "");

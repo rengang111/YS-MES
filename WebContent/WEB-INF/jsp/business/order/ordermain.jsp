@@ -70,10 +70,9 @@
 							{"data": "deliveryDate", "className" : 'td-center'},
 							{"data": "materialId", "defaultContent" : ''},
 							{"data": "materialName", "defaultContent" : ''},
-							{"data": "quantity", "className" : 'cash'},
-							{"data": "price", "className" : 'cash'},
-							{"data": null, "defaultContent" : '0', "className" : 'cash'},
-							{"data": null, "defaultContent" : '',"className" : 'td-center'}
+							{"data": "quantity", "className" : 'td-right'},
+							{"data": "price", "className" : 'td-right'},
+							{"data": null, "defaultContent" : '0', "className" : 'td-right'}
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
@@ -85,11 +84,9 @@
 				    			name = jQuery.fixedWidth(name,15);
 				    			return name;
 				    		}},
-				    		{"targets":10,"render":function(data, type, row){
+				    		{"targets":1,"render":function(data, type, row){
 				    			var rtn = "";
-				    			var space = '&nbsp;';
-				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">查看</a>";
-				    			// rtn= rtn + space + "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] +"','"+ row["PIId"] + "')\">删除</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">"+row["YSId"]+"</a>";
 				    			return rtn;
 				    		}},
 				    		{"targets":9,"render":function(data, type, row){
@@ -299,16 +296,15 @@
 						<thead>						
 							<tr>
 								<th style="width: 10px;" class="dt-middle ">No</th>
-								<th style="width: 80px;" class="dt-middle ">耀升编号</th>
+								<th style="width: 70px;" class="dt-middle ">耀升编号</th>
 								<th style="width: 100px;" class="dt-middle ">订单号</th>
-								<th style="width: 80px;" class="dt-middle ">PI编号</th>
-								<th style="width: 60px;" class="dt-middle ">订单交期</th>
+								<th style="width: 70px;" class="dt-middle ">PI编号</th>
+								<th style="width: 50px;" class="dt-middle ">订单交期</th>
 								<th style="width: 120px;" class="dt-middle ">产品编号</th>
-								<th style="width: 150px;" class="dt-middle ">产品名称</th>
-								<th style="width: 50px;" class="dt-middle ">数量</th>
+								<th class="dt-middle ">产品名称</th>
+								<th style="width: 40px;" class="dt-middle ">数量</th>
 								<th style="width: 50px;" class="dt-middle ">单价</th>
 								<th style="width: 80px;" class="dt-middle ">销售总价</th>
-								<th style="width: 50px;" class="dt-middle ">操作</th>
 							</tr>
 						</thead>
 					</table>

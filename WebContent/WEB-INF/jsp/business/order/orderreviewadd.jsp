@@ -103,7 +103,7 @@
 				contentType: "application/x-www-form-urlencoded; charset=utf-8",
 				success : function(data) {			
 
-					//$().toastmessage('showNoticeToast', "保存成功。");	
+					$().toastmessage('showNoticeToast', "汇率保存成功。");	
 					//$("#costRate").attr('readonly',true);
 					//$("#costRate").addClass('read-only');
 					//$("#doSave").hide();

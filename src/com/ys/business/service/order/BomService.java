@@ -770,55 +770,63 @@ public class BomService extends BaseService {
 	 * 1.物料新增处理(一条数据)
 	 * 2.子编码新增处理(N条数据)
 	 */
-	private String insertBaseBom() throws Exception  {
+	private void insertBaseBom() throws Exception  {
 
 		String bomid="";
 		ts = new BaseTransaction();
 
 		try {
-			
+
 			ts.begin();
 					
 			B_BomPlanData reqData = (B_BomPlanData)reqModel.getBomPlan();
 			B_BomDetailData reqDtlDt = (B_BomDetailData)reqModel.getBomDetail();
-			
-			//插入BOM基本信息
-			reqData.setBomtype(Constants.BOMTYPE_B);//BOM类别			
-			updateBomPlan(reqData);//基础BOM
-			
-			//插入BOM详情
-			//首先删除DB中的BOM详情
+			List<B_BomDetailData> reqDataList = reqModel.getBomDetailLines();
+
 			bomid = reqData.getBomid();
-			String where = " bomId = '"+bomid +"'";
+			String where = " bomId = '"+bomid +"'";			
+
+			//首先删除DB中的BOM详情
 			deleteBomDetail(where);
 			
-			List<B_BomDetailData> reqDataList = reqModel.getBomDetailLines();
-			String subBomId1 = "";
-			for(B_BomDetailData data:reqDataList ){
+			if(reqDataList == null){//清空物料列表时,删除处理
+				deleteBomPlan(where);
 				
-				//过滤空行或者被删除的数据
-				if(data.getMaterialid() != null && !("").equals(data.getMaterialid())){
+			}else{
+				
+				//插入BOM基本信息
+				reqData.setBomtype(Constants.BOMTYPE_B);//BOM类别			
+				updateBomPlan(reqData);//基础BOM
+				
+				//插入BOM详情
+				
+				String subBomId1 = "";
+				for(B_BomDetailData data:reqDataList ){
 					
-					data.setBomid(bomid);
-					data.setProductmodel(reqDtlDt.getProductmodel());
-					String subBomId2 = data.getSubbomid();
-					if(subBomId2 == null || subBomId2.equals("")){
-						subBomId2 =subBomId1;//基础BOM从历史BOM查新建后,又新增行时,没有subbomid;
-					}else{
-						subBomId1 = data.getSubbomid();
-					}
-					data.setSubbomid(subBomId2);
-					insertBomDetail(data,true);	
-
-					updateBom(data);//BOM结构
-					
-					//供应商单价修改
-					//String supplierId = data.getSupplierid();
-					//String materialId = data.getMaterialid();
-					//String price = data.getPrice();
-					//updatePriceSupplier(materialId,supplierId,price);
-				}	
-			
+					//过滤空行或者被删除的数据
+					if(data.getMaterialid() != null && !("").equals(data.getMaterialid())){
+						
+						data.setBomid(bomid);
+						data.setProductmodel(reqDtlDt.getProductmodel());
+						String subBomId2 = data.getSubbomid();
+						if(subBomId2 == null || subBomId2.equals("")){
+							subBomId2 =subBomId1;//基础BOM从历史BOM查新建后,又新增行时,没有subbomid;
+						}else{
+							subBomId1 = data.getSubbomid();
+						}
+						data.setSubbomid(subBomId2);
+						insertBomDetail(data,true);	
+	
+						updateBom(data);//BOM结构
+						
+						//供应商单价修改
+						//String supplierId = data.getSupplierid();
+						//String materialId = data.getMaterialid();
+						//String price = data.getPrice();
+						//updatePriceSupplier(materialId,supplierId,price);
+					}	
+				
+				}
 			}
 			
 			ts.commit();
@@ -827,10 +835,8 @@ public class BomService extends BaseService {
 			ts.rollback();
 			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
-		
-		return bomid;
-		
-	}	
+	}
+	
 	/*
 	 * 1.物料新增处理(一条数据)
 	 * 2.子编码新增处理(N条数据)
@@ -1057,6 +1063,17 @@ public class BomService extends BaseService {
 	}
 
 
+	/*
+	 * BOM详情删除处理
+	 */
+	private void deleteBomPlan(String where) {
+		
+		try{
+			bomPlanDao.RemoveByWhere(where);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}		
+	}
 	
 	/*
 	 * BOM详情删除处理

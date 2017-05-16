@@ -174,7 +174,7 @@
 					<td>${order.orderId}</td>
 					
 					<td class="label">客户名称：</td>				
-					<td colspan="5">${order.customerId} | ${order.shortName} | ${order.fullName}</td>
+					<td colspan="5">${order.customerId}（${order.shortName}）${order.fullName}</td>
 						
 
 				</tr>					
@@ -191,15 +191,15 @@
 					<td class="label">目的港：</td>
 					<td>${order.deliveryPort}</td>							
 				</tr>			
-				<tr>					
-					<td class="label">币种：</td>
-					<td>${order.currency}</td>
-
+				<tr>
 					<td class="label">下单日期：</td>
 					<td>${order.orderDate}</td>
 					
 					<td class="label">订单交期：</td>
 					<td>${order.deliveryDate}</td>
+					
+					<td class="label">业务组：</td>
+					<td>${order.team}</td>
 					
 					<td class="label">销售总价：</td>
 					<td>${order.total}</td>

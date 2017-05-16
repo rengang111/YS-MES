@@ -79,7 +79,7 @@
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.rawMaterialId" alias="" ctype="" />
       <f name="a.rawMaterialName" alias="" ctype="" />
-      <f name="IFNULL(a.quantity,0)" alias="quantity" ctype="" />
+      <f name="REPLACE(IFNULL(a.quantity,0),',','')" alias="quantity" ctype="" />
       <f name="IFNULL(a.weight,0)" alias="weight" ctype="" />
       <f name="a.matunit" alias="" ctype="计量单位" />
       <f name="IFNULL(a.convertUnit,0)" alias="convertUnit" ctype="" />
@@ -88,15 +88,15 @@
       <f name="a.unit" alias="unitName" ctype="计量单位" />
       <f name="a.zzunit" alias="zzunitName" ctype="计量单位" />
       <f name="IFNULL(a.zzunit,a.unit)" alias="chgUnitName" ctype="计量单位" />
-      <f name="IFNULL(d.price,0)" alias="price" ctype="" />
+      <f name="REPLACE(IFNULL(d.price,0),',','')" alias="price" ctype="" />
       <f name="d.supplierId" alias="" ctype="" />
-      <f name="IFNULL(b.lastPrice,0)" alias="lastPrice" ctype="" />
+      <f name="REPLACE(IFNULL(b.lastPrice,0),',','')" alias="lastPrice" ctype="" />
       <f name="b.lastSupplierId" alias="" ctype="" />
-      <f name="IFNULL(b.minPrice,0)" alias="minPrice" ctype="" />
+      <f name="REPLACE(IFNULL(b.minPrice,0),',','')" alias="minPrice" ctype="" />
       <f name="b.minSupplierId" alias="minSupplierId" ctype="" />
-      <f name="IFNULL(c.lastPrice,0)" alias="matLastPrice" ctype="" />
+      <f name="REPLACE(IFNULL(c.lastPrice,0),',','')" alias="matLastPrice" ctype="" />
       <f name="c.lastSupplierId" alias="matLastSupplierId" ctype="" />
-      <f name="c.minPrice" alias="matMinPrice" ctype="" />
+      <f name="REPLACE(c.minPrice,',','')" alias="matMinPrice" ctype="" />
       <f name="c.minSupplierId" alias="matMinSupplierId" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->

@@ -1296,6 +1296,14 @@ public class RequirementService extends CommonService {
 		return getOrderBomDetail(bomId);		
 	}
 	
+	public HashMap<String, Object> showBaseBomDetail() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		String bomId = BusinessService.getBaseBomId(materialId)[1];
+		
+		return getOrderBomDetail(bomId);		
+	}
+	
 	public HashMap<String, Object> getRequriementBySupplier() throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();

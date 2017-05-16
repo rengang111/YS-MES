@@ -68,22 +68,20 @@
 							{"data": "price","className" : 'td-right'},
 							{"data": "supplierId"},
 							{"data": "dicName","className" : 'td-center'}
-							,{"data": null,"className" : 'td-center'}
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
 								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 		                    }},
-				    		{"targets":8,"render":function(data, type, row){
+				    		{"targets":1,"render":function(data, type, row){
 				    			var rtn = "";
-				    			var space = '&nbsp;';
-				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">查看</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">" + row["materialId"] + "</a>";
 				    			return rtn;
 				    		}},
 				    		{"targets":2,"render":function(data, type, row){
 				    			
 				    			var name = row["materialName"];				    			
-				    			name = jQuery.fixedWidth(name,30);				    			
+				    			name = jQuery.fixedWidth(name,40);				    			
 				    			return name;
 				    		}},
 				    		{"targets":3,"render":function(data, type, row){
@@ -247,7 +245,6 @@
 								<th style="width: 50px;" class="dt-middle">价格</th>
 								<th style="width: 70px;" class="dt-middle">供应商</th>
 								<th style="width: 25px;" class="dt-middle ">单位</th>
-								<th style="width: 25px;" class="dt-middle ">操作</th>
 							</tr>
 						</thead>
 					</table>

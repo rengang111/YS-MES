@@ -120,6 +120,10 @@ public class RequirementAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/requirement/requirementview";
 				break;				
+			case "getBaseBom":
+				dataMap = doShowBaseBom();
+				printOutJsonObj(response, dataMap);
+				break;					
 			case "printRequirement":
 				orderBomPrint();
 				printOutJsonObj(response, dataMap);
@@ -246,6 +250,12 @@ public class RequirementAction extends BaseAction {
 	public HashMap<String, Object> doShowOrderBom() throws Exception{
 		
 		return  service.showOrderBomDetail();
+			
+	}
+	
+	public HashMap<String, Object> doShowBaseBom() throws Exception{
+		
+		return  service.showBaseBomDetail();
 			
 	}
 }

@@ -517,30 +517,25 @@ function quotationView() {
       			rtn= "<a href=\"###\" onClick=\"doEditQuotation('" + row["bomId"] +"','"+ row["materialId"] + "','"+ row["subId"] + "')\">"+bomId+"</a>";
       			return rtn;
       		}},
-      		{"targets":8,"render":function(data, type, row){
-      			var price = row["RMBPrice"];
-      			var curry = row["currency"];
-      			
+      		{"targets":6,"render":function(data, type, row){
+      			var price = row["exchangePrice"];
+      			var curry = row["currency"];      			
       			return floatToSymbol(price,curry);
       		}},
       		{"targets":9,"render":function(data, type, row){
-      			var v = row["discount"];
-      			
+      			var v = row["discount"];      			
       			return v + "%";
       		}},
       		{"targets":10,"render":function(data, type, row){
-      			var v = row["commission"];
-      			
+      			var v = row["commission"];      			
       			return v + "%";
       		}},
       		{"targets":11,"render":function(data, type, row){
-      			var rate = row["profitRate"];
-      			
+      			var rate = row["profitRate"];      			
       			return rate + "%";
       		}},
       		{"targets":12,"render":function(data, type, row){
-      			rtn= "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
-	    		
+      			rtn= "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";	    		
       			return rtn;
       		}}
         ] 

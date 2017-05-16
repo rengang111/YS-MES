@@ -279,6 +279,7 @@
 		$('#order\\.shippingcase').val('${order.shippingCaseId }');
 		$('#order\\.loadingport').val('${order.loadingPortId }');
 		$('#order\\.deliveryport').val('${order.deliveryPortId }');
+		$('#order\\.team').val('${order.teamId }');
 		
 		//input获取焦点初始化处理
 		foucsInit();
@@ -324,7 +325,7 @@
 						<form:input path="order.orderid" class="short required"  value="${order.orderId }" /></td>
 								
 					<td class="label"><label>客户编号：</label></td>				
-					<td colspan="3">${order.customerId } | ${order.shortName } | ${order.fullName }</td>
+					<td colspan="3">${order.customerId }（${order.shortName }）${order.fullName }</td>
 				</tr>					
 				<tr> 
 					<td class="label"><label>付款条件：</label></td>
@@ -351,12 +352,12 @@
 							<form:options items="${orderForm.deliveryPortList}" 
 							 itemValue="key" itemLabel="value" />
 						</form:select></td>							
-				</tr>			
+				</tr>
 				<tr>
-					<td class="label">币种：</td>
+					<td class="label">业务组：</td>
 					<td>
-						<form:select path="order.currency"  >
-							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
+						<form:select path="order.team"  >
+							<form:options items="${orderForm.teamList}" itemValue="key" itemLabel="value" />
 						</form:select></td>			
 					<td class="label">
 						<label>下单日期：</label></td>
@@ -366,11 +367,18 @@
 						<label  >订单交期：</label></td>
 					<td>
 						<form:input path="order.deliverydate" class="short required"  value="${order.deliveryDate }" /></td>
+				</tr>
+				<tr>
+					<td class="label">币种：</td>
+					<td>
+						<form:select path="order.currency"  >
+							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
+						</form:select></td>			
 					<td class="label">
 						<label>销售总价：</label></td>
-					<td><span id="total">${order.total}</span>
+					<td colspan="5"><span id="total">${order.total}</span>
 						<form:hidden path="order.totalprice" value="${order.total}" /></td>																	
-				</tr>							
+				</tr>						
 			</table>
 			
 
