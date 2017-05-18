@@ -2,6 +2,9 @@ package com.ys.util.basequery;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.Constants;
 
 public class QueryPowerBean {
@@ -25,8 +28,12 @@ public class QueryPowerBean {
 	public String getSql(HttpServletRequest request, String menuId)  throws Exception {
 		HttpSession session = request.getSession();
 		
-		String userId = (String)session.getAttribute(BaseQuery.USERID);
-		String userType = (String)session.getAttribute(BaseQuery.USERTYPE);
+		//String userId = (String)session.getAttribute(BaseQuery.USERID);
+		//String userType = (String)session.getAttribute(BaseQuery.USERTYPE);
+		
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		String userId = userInfo.getUserId();
+		String userType = userInfo.getUserType();
 		
 		userId = userId != null ? userId:"";
 		userType = userType != null ? userType:"";
@@ -62,7 +69,10 @@ public class QueryPowerBean {
 		StringBuffer sql = new StringBuffer();
 		sql.append("select y.UnitID ");
 		sql.append("from s_RoleMenu as x, s_Power as y, s_Role as z ");
-		sql.append("where x.MenuID = '" + menuId + "' and ");
+		sql.append("where ");
+		if (menuId != null && !menuId.equals("")) {
+			sql.append("x.MenuID = '" + menuId + "' and ");
+		}
 		sql.append("x.DeleteFlag = '0' and " );
 		sql.append("y.UserID = '" + userId + "' and ");
 		sql.append("y.roleid = x.roleid and ");
