@@ -234,6 +234,7 @@
       <f name="bomId" alias="" ctype="" />
       <f name="materialId" alias="" ctype="" />
       <f name="materialName" alias="" ctype="" />
+      <f name="materialNameView" alias="" ctype="" />
       <f name="productId" alias="" ctype="" />
       <f name="productName" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
@@ -243,7 +244,7 @@
       <f name="price" alias="" ctype="" />
       <f name="IFNULL(oldPrice,price)" alias="oldPrice" ctype="" />
       <f name="totalPrice" alias="" ctype="" />
-      <f name="IFNULL(managementCostRate,5)" alias="managementCostRate" ctype="" />
+      <f name="IFNULL(managementCostRate,2)" alias="managementCostRate" ctype="" />
       <f name="managementCost" alias="" ctype="" />
       <f name="bomCost" alias="" ctype="" />
       <f name="productCost" alias="" ctype="" />

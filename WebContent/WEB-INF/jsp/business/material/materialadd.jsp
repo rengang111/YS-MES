@@ -448,6 +448,9 @@ function doSubmitRefresh(){
 			
 	var actionUrl='${ctx}/business/material?methodtype=insertRefresh';
 
+	var material = $('material\\.materialname').val();
+	alert(material)
+	
 	$.ajax({
 		type : "POST",
 		//contentType : 'application/json',

@@ -338,6 +338,12 @@ $(document).ready(function() {
         $(this).parent().append($required); //然后将它追加到文档中
     });
 	
+
+	//var material = $('#material\\.materialname').val();
+	 //material= material.replace("&quot;","\"");
+	 //material= material.replace("&#39","\'");
+	// $('#material\\.materialname').val(material);
+	 
 	//通用型号 初始化时,5 个输入框,注意:编号从 0 开始
 	autoAddShareModel();
 
@@ -502,7 +508,12 @@ function inputCheck(){
 }
 
 function doSubmit(){
-		
+
+	//var material = $('#material\\.materialname').val();
+	 //material= material.replace("\"","&quot;");
+	// material= material.replace("\'","&#39");
+	//alert(material)
+	// $('#material\\.materialname').val(material);
 	$('#material').attr("action", "${ctx}/business/material?methodtype=update");
 	$('#material').submit();
 }
@@ -511,6 +522,8 @@ function doSubmitRefresh(){
 			
 	var actionUrl='${ctx}/business/material?methodtype=insertRefresh';
 
+	var material = $('#material\\.materialname').val();
+	alert(material)
 	$.ajax({
 		type : "POST",
 		//contentType : 'application/json',

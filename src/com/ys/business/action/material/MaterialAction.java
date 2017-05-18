@@ -159,18 +159,30 @@ public class MaterialAction extends BaseAction {
 			case "mategoryMAXId"://物料最新编号查询
 				dataMap = doMaterialMAXId(data);
 				printOutJsonObj(response, dataMap);
-				break;					
-			case "productInit":
+				break;				
+			case "productInit"://成品
 				doInit(session);
 				rtnUrl = "/business/material/productmain";
-				break;					
-			case "searchProduct":
+				break;
+			case "searchProduct"://成品
 				dataMap = dosearchProduct(session,data);
 				printOutJsonObj(response, dataMap);
-				break;				
+				break;	
 			case "productView":
 				productView();
 				rtnUrl = "/business/material/productview";
+				break;	
+			case "productSemiInit"://半成品
+				doInit(session);
+				rtnUrl = "/business/material/productsemimain";
+				break;			
+			case "searchProductSemi"://半成品
+				dataMap = dosearchProductSemi(session,data);
+				printOutJsonObj(response, dataMap);
+				break;	
+			case "productSemiView":
+				productView();
+				rtnUrl = "/business/material/productsemiview";
 				break;
 		}
 		
@@ -490,6 +502,30 @@ public class MaterialAction extends BaseAction {
 				}
 		try {
 			dataMap = materialService.getProductList(data);			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public HashMap<String, Object> dosearchProductSemi(HttpSession session,String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		//优先执行查询按钮事件,清空session中的查询条件
+				String pageFlg = request.getParameter("pageFlg");
+				if(pageFlg != null && !("").equals(pageFlg)){
+					session.removeValue("mainSearchKey1");
+					session.removeValue("mainSearchKey2");
+					
+				}
+		try {
+			dataMap = materialService.getProductSemiList(data);			
 			
 		}
 		catch(Exception e) {

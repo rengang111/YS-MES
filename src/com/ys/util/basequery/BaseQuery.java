@@ -46,7 +46,7 @@ public class BaseQuery {
 				
 		//TODO
 		//清空语句仅供开发时使用
-		queryInfoMap.clear();
+		//queryInfoMap.clear();
 	}
 		
 	

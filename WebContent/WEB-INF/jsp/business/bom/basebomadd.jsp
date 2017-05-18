@@ -44,23 +44,23 @@
 			{
 				"fnClick" : function(button) {
 					
-					
+					counter ++;
 					for (var i=0;i<1;i++){
 
 						var rowIndex = i+1;
 						var hidden =	'<input type="hidden" name="bomDetailLines['+counter+'].subbomid" id="bomDetailLines'+counter+'.subbomid" value=""/>'+
-									 	'<input type="hidden" name="bomDetailLines['+counter+'].subbomno" id="bomDetailLines'+counter+'.subbomno" value="0"/>'+
 									 	'<input type="hidden" name="bomDetailLines['+counter+'].subbomserial" id="bomDetailLines'+counter+'.subbomserial" value=""/>'
 						var rowNode = $('#example')
 							.DataTable()
 							.row
 							.add(
 							  [
+								'<td><input type="text"   name="bomDetailLines['+counter+'].subbomno"   id="bomDetailLines'+counter+'.subbomno" value="0" class="cash"  style="width:20px"/></td>',
 								'<td>'+hidden+rowIndex+'<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="bomDetailLines['+counter+'].materialid" id="bomDetailLines'+counter+'.materialid" /></td>',
 								'<td><span></span></td>',
-								'<td><input type="text"   name="attributeList2"  class="attributeList2" style="width:80px"> '+
+								'<td><input type="text"   name="attributeList2"  class="attributeList2" style="width:100px"> '+
 									'<input type="hidden" name="bomDetailLines['+counter+'].supplierid" id="bomDetailLines'+counter+'.supplierid" /></td>',
 								'<td><input type="text"   name="bomDetailLines['+counter+'].quantity"   id="bomDetailLines'+counter+'.quantity"   class="cash"  style="width:70px"/></td>',
 								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].price"      id="bomDetailLines'+counter+'.price" /></td>',
@@ -68,7 +68,7 @@
 								
 								]).draw();
 						
-						counter ++;						
+												
 					}					
 					//counter += 1;
 					
@@ -91,9 +91,9 @@
 					
 					for (var i=0;i<10;i++){
 
+						counter ++;	//总行数
 						var rowIndex = i+1;
 						var hidden = '<input type="hidden" name="bomDetailLines['+counter+'].subbomid" id="bomDetailLines'+counter+'.subbomid" value=""/>'+
-									 '<input type="hidden" name="bomDetailLines['+counter+'].subbomno" id="bomDetailLines'+counter+'.subbomno" value="'+moduleNum+'"/>'+
 									 '<input type="hidden" name="bomDetailLines['+counter+'].subbomserial" id="bomDetailLines'+counter+'.subbomserial" value=""/>'
 					
 						var rowNode = $('#example')
@@ -101,11 +101,12 @@
 							.row
 							.add(
 							  [
+								'<td><input type="text"   name="bomDetailLines['+counter+'].subbomno"   id="bomDetailLines'+counter+'.subbomno" value="'+moduleNum+'" class="cash"  style="width:20px"/></td>',
 								'<td>' + hidden + rowIndex + '<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="bomDetailLines['+counter+'].materialid" id="bomDetailLines'+counter+'.materialid" /></td>',
 								'<td><span></span></td>',
-								'<td><input type="text"   name="attributeList2"  class="attributeList2" style="width:80px"> '+
+								'<td><input type="text"   name="attributeList2"  class="attributeList2" style="width:100px"> '+
 									'<input type="hidden" name="bomDetailLines['+counter+'].supplierid" id="bomDetailLines'+counter+'.supplierid" /></td>',
 								'<td><input type="text"   name="bomDetailLines['+counter+'].quantity"   id="bomDetailLines'+counter+'.quantity"   class="cash"  style="width:70px"/></td>',
 								'<td><span></span><input type="hidden"   name="bomDetailLines['+counter+'].price"      id="bomDetailLines'+counter+'.price" /></td>',
@@ -113,11 +114,10 @@
 								
 															
 								]).draw();
-						
-						counter ++;	//总行数				
+								
 					}
 					
-					moduleNum++;//模块数量
+					// moduleNum++;//模块数量
 					
 					autocomplete();
 						
@@ -186,6 +186,7 @@
 			
 			"columns" : [ 
 			        	{"className":"dt-body-center"
+					}, {"className":"dt-body-center"
 					}, {
 					}, {								
 					}, {				
@@ -198,7 +199,7 @@
 		}).draw();
 
 		
-		t.on('blur', 'tr td:nth-child(2),tr td:nth-child(4)',function() {
+		t.on('blur', 'tr td:nth-child(3),tr td:nth-child(5)',function() {
 			
 			var currValue = $(this).find("input:text").val().trim();
 
@@ -214,14 +215,14 @@
 		});
 
 		
-		t.on('blur', 'tr td:nth-child(5)',function() {
+		t.on('blur', 'tr td:nth-child(6)',function() {
 			
            $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
 
 		});
 				
 
-		t.on('change', 'tr td:nth-child(5)',function() {
+		t.on('change', 'tr td:nth-child(6)',function() {
 			
 			/*产品成本 = 各项累计
 			人工成本 = H带头的ERP编号下的累加
@@ -231,12 +232,12 @@
 			
             var $tds = $(this).parent().find("td");
 			
-            var $oMaterial  = $tds.eq(1).find("input:text");
-            var $oQuantity  = $tds.eq(4).find("input");
-			var $oThisPrice = $tds.eq(5).find("span");
-			var $oAmount1   = $tds.eq(6).find("input:hidden");
-			var $oAmount2   = $tds.eq(6).find("span");
-			var $oAmountd   = $tds.eq(6).find("input:last-child");//人工成本
+            var $oMaterial  = $tds.eq(2).find("input:text");
+            var $oQuantity  = $tds.eq(5).find("input");
+			var $oThisPrice = $tds.eq(6).find("span");
+			var $oAmount1   = $tds.eq(7).find("input:hidden");
+			var $oAmount2   = $tds.eq(7).find("span");
+			var $oAmountd   = $tds.eq(7).find("input:last-child");//人工成本
 			
 			var materialId = $oMaterial.val();
 			var fPrice = currencyToFloat($oThisPrice.text());		
@@ -402,7 +403,7 @@
 		var sum = 0;
 		$('#example tbody tr').each (function (){
 			
-			var vtotal = $(this).find("td").eq(6).find("span").text();
+			var vtotal = $(this).find("td").eq(7).find("span").text();
 			var ftotal = currencyToFloat(vtotal);
 			
 			sum = currencyToFloat(sum) + ftotal;			
@@ -416,7 +417,7 @@
 		var sum = 0;
 		$('#example tbody tr').each (function (){
 			
-			var vtotal = $(this).find("td").eq(6).find("input:last-child").val();
+			var vtotal = $(this).find("td").eq(7).find("input:last-child").val();
 			var ftotal = currencyToFloat(vtotal);
 			
 			sum = currencyToFloat(sum) + ftotal;			
@@ -513,6 +514,7 @@
 		<table id="example" class="display">
 			<thead>				
 			<tr>
+				<th width="30px">模块<br>编号</th>
 				<th width="50px">
 					<input type="checkbox" name="selectall" id="selectall" /><label for="selectall">全选</label> 
 					<input type="checkbox" name="reverse" id="reverse" /><label for="reverse">反选</label></th>
@@ -520,12 +522,13 @@
 				<th class="dt-center" >物料名称</th>
 				<th class="dt-center" width="100px">供应商编号</th>
 				<th class="dt-center" width="60px">用量</th>
-				<th class="dt-center" width="80px">本次单价</th>
-				<th class="dt-center" width="80px">总价</th>
+				<th class="dt-center" width="60px">本次单价</th>
+				<th class="dt-center" width="60px">总价</th>
 			</tr>
 			</thead>
 			<tfoot>
 				<tr>
+					<th></th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -545,6 +548,7 @@
 			<c:forEach var="detail" items="${materialDetail}" varStatus='status' >		
 				
 				<tr>
+					<td><form:input path="bomDetailLines[${status.index}].subbomno" value="${detail.subbomno}"  class="cash" style="width:20px"/></td>
 					<td><span id="index${status.index}"></span><input type=checkbox name='numCheck' id='numCheck' value='' /></td>
 					<td><input type="text" name="attributeList1" class="attributeList1" value="${detail.materialId}" />
 						<form:hidden path="bomDetailLines[${status.index}].materialid"  value="${detail.materialId}"/></td>								
@@ -559,24 +563,22 @@
 					
 					<form:hidden path="bomDetailLines[${status.index}].sourceprice"  value="${detail.price}" />	
 					<form:hidden path="bomDetailLines[${status.index}].subbomid"  value="" />
-					<form:hidden path="bomDetailLines[${status.index}].subbomno"  value="${detail.subbomno}" />
 					<form:hidden path="bomDetailLines[${status.index}].subbomserial"  value="" />
 					
 				</tr>
 
 				<script type="text/javascript">
-					var accessFlg = '${accessFlg}';
+					// var accessFlg = '${accessFlg}';
 					var index = '${status.index}';
-					var cost = '${detail.productcost}';
 					var materialId = '${detail.materialId}';
-					var materialName= "${detail.materialName}";
+					var materialName= "${detail.materialNameView}";
 					var quantity = currencyToFloat('${detail.quantity}');
 					var price =currencyToFloat( '${detail.price}');
-					var subBomId = '${detail.subBomId}';
-					var bomid = '${detail.bomId}';
-					if(accessFlg == '1'){
-						bomid = subBomId;
-					}
+					//var subBomId = '${detail.subBomId}';
+					//var bomid = '${detail.bomId}';
+					//if(accessFlg == '1'){
+					//	bomid = subBomId;
+					//}
 					
 					var totalPrice = float4ToCurrency(quantity * price);
 					var labor = fnLaborCost( materialId,totalPrice);
@@ -599,9 +601,9 @@
 					$('#total'+index).html(totalPrice);
 					$('#bomDetailLines'+index+'\\.quantity').val(float5ToCurrency(quantity));
 					$('#bomDetailLines'+index+'\\.totalprice').val(totalPrice);
-					$('#name'+index).html(jQuery.fixedWidth(materialName,40));
+					$('#name'+index).html(jQuery.fixedWidth(materialName,35));
 					
-					$('#bomDetailLines'+index+'\\.subbomid').val(bomid);
+					//$('#bomDetailLines'+index+'\\.subbomid').val(bomid);
 					//$('#bomDetailLines'+index+'\\.subbomno').val(moduleNum);
 					$('#bomDetailLines'+index+'\\.subbomserial').val(rowNum);
 					
@@ -615,6 +617,8 @@
 		</c:if>
 		</tbody>
 	</table>
+	* 1、修改"模块编号",可以调整该模块的显示顺序,同一模块内的自动按照物料编码顺序排列；<br>
+	 * 2、"添加单行"后,请修改该行的模块编号；
 	</div>
 	</fieldset>
 		
@@ -732,7 +736,6 @@ function autocomplete(){
 				contentType: "application/x-www-form-urlencoded; charset=utf-8",
 				success : function(data) {
 					var jsonObj = data;
-					var count = counter;
 					var recordCont = data["recordsTotal"];
 					var dataList = data["data"];
 					//alert(recordCont)
@@ -740,7 +743,7 @@ function autocomplete(){
 						moduleNum++;
 					}
 					for (var i = 0; i < recordCont; i++) {						
-
+						counter++;//总行数
 						var recordId  = data['data'][i]['productRecord'];
 						var bomId     = data['data'][i]['bomId'];
 						var materialId  = data['data'][i]['materialId'];
@@ -752,28 +755,26 @@ function autocomplete(){
 						var rowNum = i+1;
 						var trhtml = "";
 
-						var hidden = '<input type="hidden" name="bomDetailLines['+count+'].subbomid" id="bomDetailLines'+count+'.subbomid" value=""/>'+
-									 '<input type="hidden" name="bomDetailLines['+count+'].subbomno" id="bomDetailLines'+count+'.subbomno" value=""/>'+
-									 '<input type="hidden" name="bomDetailLines['+count+'].subbomserial" id="bomDetailLines'+count+'.subbomserial" value=""/>';
+						var hidden = '<input type="hidden" name="bomDetailLines['+counter+'].subbomid" id="bomDetailLines'+counter+'.subbomid" value=""/>'+
+									 '<input type="hidden" name="bomDetailLines['+counter+'].subbomserial" id="bomDetailLines'+counter+'.subbomserial" value=""/>';
 					
 						var rowNode = $('#example')
 						.DataTable()
 						.row
 						.add(
 						  [
+							'<td><input type="text"   name="bomDetailLines['+counter+'].subbomno"   id="bomDetailLines'+counter+'.subbomno" value="'+moduleNum+'" class="cash"  style="width:20px"/></td>',
 							'<td>'+ hidden + rowNum+'<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
 							'<td><input type="text" name="attributeList1" class="attributeList1" value="'+materialId+'" />'+
-							'    <input type="hidden" name="bomDetailLines['+count+'].materialid"   id="bomDetailLines'+count+'.materialid"  value="'+materialId+'"/></td>	',							
-							'<td><span id="name'+count+'"></span><input type="hidden" name="bomDetailLines['+count+'].subbomid"   id="bomDetailLines'+count+'.subbomid" value="" /></td>',
+							'    <input type="hidden" name="bomDetailLines['+counter+'].materialid"   id="bomDetailLines'+counter+'.materialid"  value="'+materialId+'"/></td>	',							
+							'<td><span id="name'+counter+'"></span><input type="hidden" name="bomDetailLines['+counter+'].subbomid"   id="bomDetailLines'+counter+'.subbomid" value="" /></td>',
 							'<td><input type="text" name="attributeList2" class="attributeList2"  value="'+supplierid+'" style="width:100px" />'+
-							'    <input type="hidden" name="bomDetailLines['+count+'].supplierid" id="bomDetailLines'+count+'.materialid" value="'+supplierid+'" /></td>',
-							'<td><input type="text"   name="bomDetailLines['+count+'].quantity"   id="bomDetailLines'+count+'.quantity"   value="'+quantity+'"  class="cash"  style="width:70px"/></td>	',					
-							'<td class="td-right"><span id="price'+count+'"></span><input type="hidden"   name="bomDetailLines['+count+'].price"      id="bomDetailLines'+count+'.price"      value="'+price+'"  /></td>	',					
-							'<td class="td-right"><span id="total'+count+'"></span>'+
-							'    <input type="hidden" name="bomDetailLines['+count+'].totalprice" id="bomDetailLines'+count+'.totalprice" value=""/>'+
-							'    <input type="hidden" id="labor'+count+'"></td>',
-							
-							
+							'    <input type="hidden" name="bomDetailLines['+counter+'].supplierid" id="bomDetailLines'+counter+'.materialid" value="'+supplierid+'" /></td>',
+							'<td><input type="text"   name="bomDetailLines['+counter+'].quantity"   id="bomDetailLines'+counter+'.quantity"   value="'+quantity+'"  class="cash"  style="width:70px"/></td>	',					
+							'<td class="td-right"><span id="price'+counter+'"></span><input type="hidden"   name="bomDetailLines['+counter+'].price"      id="bomDetailLines'+counter+'.price"      value="'+price+'"  /></td>	',					
+							'<td class="td-right"><span id="total'+counter+'"></span>'+
+							'    <input type="hidden" name="bomDetailLines['+counter+'].totalprice" id="bomDetailLines'+counter+'.totalprice" value=""/>'+
+							'    <input type="hidden" id="labor'+counter+'"></td>',
 							
 						   ]).draw();
 						   
@@ -781,55 +782,52 @@ function autocomplete(){
 						/*   
 						   
 						trhtml += '<tr>';
-						trhtml +='<td>'+rowNum+'<input type=checkbox name="numCheck" id="numCheck" value="' + count + '" /></td>';
+						trhtml +='<td>'+rowNum+'<input type=checkbox name="numCheck" id="numCheck" value="' + counter + '" /></td>';
 						trhtml +='<td><input type="text" name="attributeList1" class="attributeList1" value="'+materialId+'" />';
-						trhtml +='    <input type="hidden" name="bomDetailLines['+count+'].materialid"   id="bomDetailLines'+count+'.materialid"  value="'+materialId+'"/></td>	';							
-						trhtml +='<td><span id="name'+count+'"></span></td>';
+						trhtml +='    <input type="hidden" name="bomDetailLines['+counter+'].materialid"   id="bomDetailLines'+counter+'.materialid"  value="'+materialId+'"/></td>	';							
+						trhtml +='<td><span id="name'+counter+'"></span></td>';
 						trhtml +='<td><input type="text" name="attributeList2" class="attributeList2"  value="'+supplierid+'" style="width:100px" />';
-						trhtml +='    <input type="hidden" name="bomDetailLines['+count+'].supplierid" id="bomDetailLines'+count+'.materialid" value="'+supplierid+'" /></td>';
-						trhtml +='<td><input type="text"   name="bomDetailLines['+count+'].quantity"   id="bomDetailLines'+count+'.quantity"   value="'+quantity+'"  class="cash"  style="width:70px"/></td>	';					
-						trhtml +='<td class="td-right"><span id="price'+count+'"></span><input type="hidden"   name="bomDetailLines['+count+'].price"      id="bomDetailLines'+count+'.price"      value="'+price+'"  /></td>	';					
-						trhtml +='<td class="td-right"><span id="total'+count+'">${detail.totalPrice}</span>';
-						trhtml +='    <input type="hidden" name="bomDetailLines['+count+'].totalprice" id="bomDetailLines'+count+'.totalprice" value="${detail.totalPrice}"/>';
-						trhtml +='    <input type="hidden" id="labor'+count+'"></td>';	
+						trhtml +='    <input type="hidden" name="bomDetailLines['+counter+'].supplierid" id="bomDetailLines'+counter+'.materialid" value="'+supplierid+'" /></td>';
+						trhtml +='<td><input type="text"   name="bomDetailLines['+counter+'].quantity"   id="bomDetailLines'+counter+'.quantity"   value="'+quantity+'"  class="cash"  style="width:70px"/></td>	';					
+						trhtml +='<td class="td-right"><span id="price'+counter+'"></span><input type="hidden"   name="bomDetailLines['+counter+'].price"      id="bomDetailLines'+counter+'.price"      value="'+price+'"  /></td>	';					
+						trhtml +='<td class="td-right"><span id="total'+counter+'">${detail.totalPrice}</span>';
+						trhtml +='    <input type="hidden" name="bomDetailLines['+counter+'].totalprice" id="bomDetailLines'+counter+'.totalprice" value="${detail.totalPrice}"/>';
+						trhtml +='    <input type="hidden" id="labor'+counter+'"></td>';	
 						
-						trhtml +='<input type="hidden" name="bomDetailLines['+count+'].sourceprice" id="bomDetailLines'+count+'.sourceprice" value="${detail.price}" />	';
+						trhtml +='<input type="hidden" name="bomDetailLines['+counter+'].sourceprice" id="bomDetailLines'+counter+'.sourceprice" value="${detail.price}" />	';
 						trhtml +='</tr>';
 
 						$("#example tbody tr:last").after(trhtml);
 						*/
 
-						var subBomId = '${detail.subBomId}';
-						var bomid = '${detail.bomId}';
-						if(accessFlg == '1'){
-							bomid = subBomId;
-						}
+						//var subBomId = '${detail.subBomId}';
+						//var bomid = '${detail.bomId}';
+						//if(accessFlg == '1'){
+						//	bomid = subBomId;
+						//}
 						
 						price = currencyToFloat(price);
 						quantity = currencyToFloat(quantity);
 						
 						var totalPrice = float4ToCurrency(quantity * price);
 						var labor = fnLaborCost( materialId,totalPrice);
-						$('#price'+count).html(float4ToCurrency(price));
-						$('#total'+count).html(totalPrice);
-						$('#bomDetailLines'+count+'\\.price').val(price);
-						$('#bomDetailLines'+count+'\\.quantity').val(float5ToCurrency(quantity));
-						$('#bomDetailLines'+count+'\\.totalprice').val(totalPrice);
-						$('#name'+count).html(jQuery.fixedWidth(materialName,40));
-						//alert($('#bomDetailLines'+count+'\\.subbomid').val()+':::'+bomId)
+						$('#price'+counter).html(float4ToCurrency(price));
+						$('#total'+counter).html(totalPrice);
+						$('#bomDetailLines'+counter+'\\.price').val(price);
+						$('#bomDetailLines'+counter+'\\.quantity').val(float5ToCurrency(quantity));
+						$('#bomDetailLines'+counter+'\\.totalprice').val(totalPrice);
+						$('#name'+counter).html(jQuery.fixedWidth(materialName,35));
+						//alert($('#bomDetailLines'+counter+'\\.subbomid').val()+':::'+bomId)
 
-						$('#bomDetailLines'+count+'\\.subbomid').val(bomid);
-						$('#bomDetailLines'+count+'\\.subbomno').val(moduleNum);	
+						//$('#bomDetailLines'+counter+'\\.subbomid').val(bomid);
+						//$('#bomDetailLines'+counter+'\\.subbomno').val(moduleNum);	
 						//alert(moduleNum)
-						$('#bomDetailLines'+count+'\\.subbomserial').val(rowNum);
-						
-						count++;
+						//$('#bomDetailLines'+counter+'\\.subbomserial').val(rowNum);						
 							
 					};
 
 					$().toastmessage('showNoticeToast', "从第 "+counter+" 行开始追加成功。");
 					
-					counter = count;
 					
 					foucsInit();//input获取焦点初始化处理
 
@@ -899,14 +897,14 @@ function autocomplete(){
 			
 			var $td = $(this).parent().parent().find('td');
 
-			var $oMatName   = $td.eq(2).find("span");
-			var $oSupplier  = $td.eq(3).find("input");
-			var $oQuantity  = $td.eq(4).find("input");
-			var $oThisPrice = $td.eq(5).find("span");
-			var $oThisPriceh= $td.eq(5).find("input:hidden");
-			var $oAmount1   = $td.eq(6).find("input:hidden")
-			var $oAmount2   = $td.eq(6).find("span");;
-			var $oAmountd   = $td.eq(6).find("input:last-child");//人工成本
+			var $oMatName   = $td.eq(3).find("span");
+			var $oSupplier  = $td.eq(4).find("input");
+			var $oQuantity  = $td.eq(5).find("input");
+			var $oThisPrice = $td.eq(6).find("span");
+			var $oThisPriceh= $td.eq(6).find("input:hidden");
+			var $oAmount1   = $td.eq(7).find("input:hidden")
+			var $oAmount2   = $td.eq(7).find("span");;
+			var $oAmountd   = $td.eq(7).find("input:last-child");//人工成本
 			//var $oCurrPrice = $td.eq(7).find("span");
 			//var $oSourPrice = $td.eq(8).find("span");
 			//var $oMinPrice  = $td.eq(9).find("span");
@@ -922,7 +920,7 @@ function autocomplete(){
 			var vTotalNew = float4ToCurrency(fTotalNew);
 			//var vMinPrice = floatToCurrency(ui.item.minPrice);
 
-			$oMatName.html(jQuery.fixedWidth(ui.item.name,20));
+			$oMatName.html(jQuery.fixedWidth(ui.item.name,35));
 			$oSupplier.val(ui.item.supplierId);
 			$oThisPrice.text(vPrice);
 			$oThisPriceh.val(vPrice);
@@ -954,7 +952,7 @@ function autocomplete(){
 		
 		search: function( event, ui ) {
 			var $tds = $(this).parent().parent().find('td');
-			var material = $tds.eq(1).find("input:text").val();
+			var material = $tds.eq(2).find("input:text").val();
 			$('#tmpMaterialId').val(material);
 
 			 if(material==""){
@@ -1007,14 +1005,14 @@ function autocomplete(){
 
 			var $td = $(this).parent().parent().find('td');
 
-			var $oMaterial  = $td.eq(1).find("input:text");
-			var $oSupplier  = $td.eq(3).find("input:hidden");
-			var $oQuantity  = $td.eq(4).find("input");
-			var $oThisPrice = $td.eq(5).find("span");
-			var $oThisPriceh= $td.eq(5).find("input:hidden");
-			var $oAmount1   = $td.eq(6).find("input:hidden");
-			var $oAmount2   = $td.eq(6).find("span");
-			var $oAmountd   = $td.eq(6).find("input:last-child");//人工成本
+			var $oMaterial  = $td.eq(2).find("input:text");
+			var $oSupplier  = $td.eq(4).find("input:hidden");
+			var $oQuantity  = $td.eq(5).find("input");
+			var $oThisPrice = $td.eq(6).find("span");
+			var $oThisPriceh= $td.eq(6).find("input:hidden");
+			var $oAmount1   = $td.eq(7).find("input:hidden");
+			var $oAmount2   = $td.eq(7).find("span");
+			var $oAmountd   = $td.eq(7).find("input:last-child");//人工成本
 			//var $oCurrPrice = $td.eq(7).find("span");
 			
 			//计算

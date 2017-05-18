@@ -454,7 +454,7 @@
 					var index = '${status.index}';
 					var cost = '${detail.productcost}';
 					var materialId = '${detail.materialId}';
-					var materialName = "${detail.materialName}";
+					var materialName = "${detail.materialNameView}";
 					var quantity = currencyToFloat('${detail.quantity}');
 					var accessFlg = '${bomForm.accessFlg}';
 					if(accessFlg ==''){
