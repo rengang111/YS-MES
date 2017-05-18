@@ -63,6 +63,9 @@
     <groupby></groupby>
     <having></having>
 	<power>
+	  <!-- menuid:该查询对应的功能菜单ID，用于过滤用户数据权限 -->
+	  <menuid></menuid>
+      <deptfield></deptfield>
 	</power>    
   </query>
 </root>
