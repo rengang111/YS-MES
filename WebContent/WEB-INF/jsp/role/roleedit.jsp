@@ -1,70 +1,109 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<%@ include file="../common/common.jsp"%>
+<%@ include file="../common/common2.jsp"%>
 <html>
-<head>
-	角色信息维护
-</head>
-<body>
-	<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
-		<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
 
-		<table>
-			<tr>
-				<td>
-					角色名称：
-				</td>
-				<td>
-					<input type=hidden name="roleData.roleid" id="roleid" value="${DisplayData.roleData.roleid}"/>
-					<input type=text name="roleData.rolename" id="rolename" value="${DisplayData.roleData.rolename}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					角色类型：
-				</td>
-				<td>
-					<select name="roleData.roletype" id="roletype">
-						<c:forEach items="${DisplayData.roleTypeList}" var="value" varStatus="status">
-							<option value ="${value[0]}">${value[1]}</option>
-						</c:forEach>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					创建单位：
-				</td>
-				<td>
-					<input type=text name="unitName" id="unitName" value="${DisplayData.unitName}" readonly/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					创建人：
-				</td>
-				<td>
-					<input type=text name="userName" id="userName" value="${DisplayData.userName}" readonly/>
-				</td>
-			</tr>			
-			<tr>
-				<td colspan=2>
-					<input type=button name="save" id="save" value="保存" onClick="saveUpdate()"/>
-					<input type=button name="close" id="close"" value="关闭" onClick="closeWindow('')"/>
-				</td>
-			</tr>
+<body class="easyui-layout">
+<div id="container">
+	<div id="main">
+		<div style="height:10px"></div>
+		<fieldset>
+		<legend>角色信息维护</legend>
+		<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
+			<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
+	
+			<table width=100%>
+				<tr>
+					<td width=80px>
+						角色名称：
+					</td>
+					<td>
+						<input type=hidden name="roleid" id="roleid" value="${DisplayData.roleData.roleid}"/>
+						<input type=text name="rolename" id="rolename" value="${DisplayData.roleData.rolename}"/>
+					</td>
+					<td width=80px>
+						角色类型：
+					</td>
+					<td>
+						<select name="roletype" id="roletype">
+							<c:forEach items="${DisplayData.roleTypeList}" var="value" varStatus="status">
+								<option value ="${value[0]}">${value[1]}</option>
+							</c:forEach>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						创建单位：
+					</td>
+					<td>
+						<input type=text name="unitName" id="unitName" value="${DisplayData.unitName}" readonly/>
+					</td>
+					<td>
+						创建人：
+					</td>
+					<td>
+						<input type=text name="userName" id="userName" value="${DisplayData.userName}" readonly/>
+					</td>
+				</tr>
+				<tr rowspan=3><td>&nbsp;</td></tr>			
+				<tr>
+					<td colspan=4>
+						<button type="button" id="close" class="DTTT_button" onClick="doReturn();"
+								style="height:25px;margin:0px 5px 0px 0px;float:right;" >返回</button>
+						<button type="button" id="save" class="DTTT_button" onClick="saveUpdate();"
+								style="height:25px;margin:0px 5px 0px 0px;float:right;" >保存</button>
 
-		</table>
-		<br>
-	</form>
-
+					</td>
+				</tr>
+			</table>
+			<br>
+		</form>
+	</fieldset>
+	</div>
+</div>
 </body>
 
 <script>
 	var operType = '';
 	var isUpdateSuccessed = false;
 	var updatedRecordCount = parseInt('${DisplayData.updatedRecordCount}');
+	var validatorBaseInfo;
+	
 	$(function(){
+		
+		validatorBaseInfo = $("#form").validate({
+			rules: {
+				rolename: {
+					required: true,
+					maxlength: 60,
+					rolename: true,
+				},
+				roletype: {
+					required: true,								
+					maxlength: 3,
+				}
+			},
+			errorPlacement: function(error, element) {
+			    if (element.is(":radio"))
+			        error.appendTo(element.parent().next().next());
+			    else if (element.is(":checkbox"))											    	
+			    	error.insertAfter(element.parent().parent());
+			    else
+			    	error.insertAfter(element);
+			}
+		});
+		
+	    jQuery.validator.addMethod("rolename",function(value, element){
+	    	var rtnValue = true;
+
+	    	if (value != "") {
+				rtnValue = checkRoleName();
+	    	}
+
+	        return rtnValue;   
+	    }, "子编码重复");
+		
 		operType = $('#operType').val();
 			
 		if (operType == 'add' || operType == 'addsub') {
@@ -121,31 +160,43 @@
 	function saveUpdate() {
 		if (inputCheck()) {
 			if (confirm("确定要保存吗？")) {
-				if (operType == 'add') {
-					$('#form').attr("action", "${ctx}/role?methodtype=add");
+				var actionUrl;
+				if (operType == 'add' || operType == 'addsub') {
+					actionUrl = "${ctx}/role?methodtype=add";
 				} else {
-					$('#form').attr("action", "${ctx}/role?methodtype=update");
+					actionUrl = "${ctx}/role?methodtype=update";
 				}
-				$('#form').submit();
+				$.ajax({
+					type : "POST",
+					contentType : 'application/json',
+					dataType : 'json',
+					url : actionUrl,
+					data : JSON.stringify($('#form').serializeArray()),// 要提交的表单
+					success : function(d) {
+						if (d.rtnCd != "000") {
+							alert(d.message);	
+						} else {
+							reloadTabWindowWithNodeChangeNotice(d.info, true);
+							doReturn();
+						}
+						
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown) {
+						//alert(XMLHttpRequest.status);					
+						//alert(XMLHttpRequest.readyState);					
+						//alert(textStatus);					
+						//alert(errorThrown);
+					}
+				});
 			}
 		}	
 	}
 
-	function closeWindow(isNeedConfirm) {
-		if (isNeedConfirm == '') {
-			if (operType == 'add' || operType == 'update') {
-				if (confirm("确定要离开吗？")) {
-					self.opener = null;
-					self.close();
-				}
-			} else {
-				self.opener = null;
-				self.close();
-			}
-		} else {
-			self.opener = null;
-			self.close();
-		}
+	function doReturn() {
+
+		var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+		parent.layer.close(index); //执行关闭
+		
 	}
 
 	function refreshOpenerData() {
@@ -167,11 +218,10 @@
 			data : $('#rolename').val() + '&' + $('#roleid').val(),
 			url : "${ctx}/role?methodtype=checkRoleName",
 			success : function(data) {
-				if (!data.success) {
-					alert(data.message);
-				} else {
-					result = true;
+				if (d.rtnCd != "000") {
+					alert(d.message);	
 				}
+
 			},
 			 error:function(XMLHttpRequest, textStatus, errorThrown){
              }

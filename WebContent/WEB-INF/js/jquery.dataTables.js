@@ -6444,6 +6444,7 @@
 				aoColumnsInit = oInit.aoColumns;
 			}
 			
+			
 			/* Add the columns */
 			for ( i=0, iLen=aoColumnsInit.length ; i<iLen ; i++ )
 			{
@@ -16206,7 +16207,7 @@
 				{
 					aTargets = [ aTargets ];
 				}
-	
+
 				for ( j=0, jLen=aTargets.length ; j<jLen ; j++ )
 				{
 					if ( typeof aTargets[j] === 'number' && aTargets[j] >= 0 )

@@ -1,6 +1,7 @@
 package com.ys.system.action.role;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,8 +19,10 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.role.RoleModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.system.interceptor.MenuInfo;
+import com.ys.system.service.common.BaseService;
 import com.ys.system.service.common.MakeTreeStyleData;
 import com.ys.system.service.role.RoleMenuService;
+import com.ys.util.DicUtil;
 import com.ys.util.JsonUtil;
 
 
@@ -31,10 +34,13 @@ public class RoleMenuAction extends BaseAction {
 	RoleMenuService roleMenuService;
 	
 	@RequestMapping("/rolemenu")
-	public String doInitRoleMenu(@RequestBody String para, @ModelAttribute("dataModels")RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doInitRoleMenu(@RequestBody String data, @ModelAttribute("dataModels")RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
 		String type = request.getParameter("methodtype");
 		String rtnUrl = "";
+		HashMap<String, Object> dataMap = null;
+		RoleModel viewModel = null;
+		
 		if (type == null) {
 			type = "";
 		} else {
@@ -53,16 +59,18 @@ public class RoleMenuAction extends BaseAction {
 				rtnUrl = "/role/rolemenumain";
 				break;
 			case "search":
-				rtnUrl = doSearch(dataModel, result,  model, session, request, response);
-				break;
+				dataMap = doSearch(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "updateinit":
 				rtnUrl = doUpdateInit(model, session, request, response);
 				break;
 			case "delete":
-				rtnUrl = doDelete(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doDelete(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "checkrolemenu":
-				rtnUrl = doCheckRoleMenu(para, session, request, response);
+				rtnUrl = doCheckRoleMenu(data, session, request, response);
 			printOut(response, rtnUrl);
 				return null;
 			case "getrolemenu":
@@ -70,51 +78,50 @@ public class RoleMenuAction extends BaseAction {
 			printOut(response, rtnUrl);
 				return null;
 			case "update":
-				rtnUrl = doUpdate(para, model, session, request, response);
-			printOut(response, rtnUrl);
+				viewModel = doUpdate(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
+			case "roleIdNameSearch":
+				dataMap = doRoleIdNameSearch(data, request);
+				printOutJsonObj(response, dataMap);
+				return null;
+
 		}
 		
 		return rtnUrl;
 		
 	}
 	
-	public String doSearch(RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public HashMap<String, Object> doSearch(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 
-		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		try {
-			dataModel = roleMenuService.doSearch(request, dataModel, userInfo);
-			if (dataModel.getViewData().size() == 0) {
-				dataModel.setMessage("无符合条件的数据");
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("检索失败");
-		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/role/rolemenumain";
-	}	
-	
-	public String doDelete(RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			
-			dataModel.setUpdatedRecordCount(0);
-			
-			roleMenuService.doDelete(dataModel, userInfo);
-			dataModel.setUpdatedRecordCount(1);
-			dataModel.setOperType("delete");
-			dataModel.setMessage("删除成功");
-			dataModel = roleMenuService.doSearch(request, dataModel, userInfo);
+			dataMap = roleMenuService.doSearch(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("删除失败");
+			dataMap.put(INFO, ERRMSG);
 		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/role/rolemenumain";
+		
+		return dataMap;
+	}	
+	
+	public RoleModel doDelete(String data, HttpSession session, HttpServletRequest request){
+		
+		RoleModel dataModel = new RoleModel();
+
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		dataModel = roleMenuService.doDelete(request, data, userInfo);
+		DicUtil.emptyBuffer(true);
+		dataModel.setOperType("delete");
+		
+		return dataModel;
 	}
 	
 	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
@@ -167,9 +174,9 @@ public class RoleMenuAction extends BaseAction {
 		return json;
 	}
 	
-	public String doUpdate(@RequestBody String data, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public RoleModel doUpdate(String data, HttpSession session, HttpServletRequest request){
 
-		BaseModel base = new BaseModel();
+		RoleModel dataModel = new RoleModel();
 		String dataArray[] = data.split(",");
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		
@@ -180,23 +187,39 @@ public class RoleMenuAction extends BaseAction {
 					menuIdList.add(dataArray[i]);
 				}
 				roleMenuService.doUpdate(request, dataArray[0], menuIdList, userInfo);
-				base.setMessage("更新完毕");
-				base.setSuccess(true);
+				dataModel.setEndInfoMap(BaseService.NORMAL, "", "");
 			} else {
-				base.setSuccess(false);
-				base.setMessage("角色不正确，无法更新");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "角色不正确，无法更新", "");
 			}
 			
 			//dataModel = roleMenuService.getRoleIdMenu(request);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			base.setMessage("发生错误，请联系系统管理员");
-			base.setSuccess(false);
+			dataModel.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
 		}
 		
 		
-		return JsonUtil.toJson(base);
+		return dataModel;
 	}	
 
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doRoleIdNameSearch(@RequestBody String data, HttpServletRequest request){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = roleMenuService.doRoleIdNameSearch(request);
+			
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			//dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 }

@@ -1,5 +1,8 @@
 package com.ys.system.action.role;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -14,7 +17,9 @@ import com.ys.system.action.common.BaseAction;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.role.RoleModel;
+import com.ys.system.action.model.unit.UnitModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.system.service.common.BaseService;
 import com.ys.system.service.role.RoleService;
 import com.ys.util.DicUtil;
 import com.ys.util.JsonUtil;
@@ -28,9 +33,11 @@ public class RoleAction extends BaseAction {
 	RoleService roleService;
 	
 	@RequestMapping("/role")
-	public String doInit(@RequestBody String para, @ModelAttribute("dataModels")RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doInit(@RequestBody String data, @ModelAttribute("dataModels")RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		String type = request.getParameter("methodtype");
 		String rtnUrl = "";
+		HashMap<String, Object> dataMap = null;
+		RoleModel viewModel = null;
 		
 		if (type == null) {
 			type = "";
@@ -50,29 +57,37 @@ public class RoleAction extends BaseAction {
 				rtnUrl = "/role/rolemain";	
 				break;
 			case "search":
-				rtnUrl = doSearch(dataModel, result,  model, session, request, response);
-				break;
+				dataMap = doSearch(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "updateinit":
 				rtnUrl = doUpdateInit(dataModel, model, session, request, response);
 				break;
 			case "update":
-				rtnUrl = doUpdate(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doUpdate(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "add":
-				rtnUrl = doAdd(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doAdd(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "delete":
-				rtnUrl = doDelete(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doDelete(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "detail":
 				rtnUrl = doDetail(dataModel, result, model, session, request, response);
 				break;
 			case "rolerelationuser":
 				rtnUrl = getRoleRelationUser(model, session, request, response);
 				break;
+			case "getrolerelationuser":
+				dataMap = getRoleRelationUserList(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "checkRoleName":
-				rtnUrl = doCheckRoleName(para);
-			printOut(response, rtnUrl);
+				rtnUrl = doCheckRoleName(data);
+				printOut(response, rtnUrl);
 				return null;
 		}
 		
@@ -80,22 +95,24 @@ public class RoleAction extends BaseAction {
 
 	}
 	
-	public String doSearch(RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public HashMap<String, Object> doSearch(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 
-		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		try {
-			dataModel = roleService.doSearch(request, dataModel, userInfo);
-			if (dataModel.getViewData().size() == 0) {
-				dataModel.setMessage("无符合条件的数据");
+			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			dataMap = roleService.doSearch(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
 			}
-			
+
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("检索失败");
+			dataMap.put(INFO, ERRMSG);
 		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/role/rolemain";
+		
+		return dataMap;
 	}
 
 	public String doUpdateInit(RoleModel dataModel, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
@@ -125,76 +142,59 @@ public class RoleAction extends BaseAction {
 		return "/role/roleedit";
 	}	
 	
-	public String doUpdate(RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public RoleModel doUpdate(String data, HttpSession session, HttpServletRequest request){
+		RoleModel dataModel = new RoleModel();
+
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		
 		try {
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel.setUpdatedRecordCount(0);
-			dataModel.setRoleTypeList(roleService.getRoleTypeList(userInfo));
-			
-			if (checkRoleName(dataModel.getroleData().getRoleid(), dataModel.getroleData().getRolename())) {
-				roleService.doUpdate(dataModel, userInfo);
-				dataModel.setUpdatedRecordCount(1);
-				dataModel.setMessage("更新成功");
+			if (checkRoleName(roleService.getJsonData(data, "roleid"), roleService.getJsonData(data, "rolename"))) {
+				dataModel = roleService.doUpdate(request, data, userInfo, false);
 			} else {
-				dataModel.setMessage("角色名已存在");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "角色名已存在", "");
 			}
 			dataModel.setOperType("update");
 			
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("更新失败");
+			dataModel.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
 		}
-		
-		model.addAttribute("DisplayData", dataModel);
-		return "/role/roleedit";
+		return dataModel;
 	}	
 
-	public String doAdd(RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public RoleModel doAdd(String data, HttpSession session, HttpServletRequest request){
 
+		RoleModel dataModel = new RoleModel();
+
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		
 		try {
-			dataModel.setUpdatedRecordCount(0);
-			dataModel.setRoleTypeList(DicUtil.getGroupValue(DicUtil.ROLETYPE));
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			if (checkRoleName(dataModel.getroleData().getRoleid(), dataModel.getroleData().getRolename())) {
-				roleService.doAdd(dataModel, userInfo);
-				dataModel.setUpdatedRecordCount(1);
-				dataModel.setMessage("增加成功");
+			if (checkRoleName(roleService.getJsonData(data, "roleid"), roleService.getJsonData(data, "rolename"))) {
+				dataModel = roleService.doUpdate(request, data, userInfo, true);
 			} else {
-				dataModel.setMessage("角色名已存在");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "角色名已存在", "");
 			}
 			dataModel.setOperType("add");
 			
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("增加失败");
+			dataModel.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
 		}
-		dataModel.getroleData().setRoleid("");
-		
-		model.addAttribute("DisplayData", dataModel);
-		
-		return "/role/roleedit";
+		return dataModel;
 	}	
 	
-	public String doDelete(RoleModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public RoleModel doDelete(String data, HttpSession session, HttpServletRequest request){
 		
-		try {
-			dataModel.setUpdatedRecordCount(0);
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			roleService.doDelete(dataModel, userInfo);
-			dataModel.setUpdatedRecordCount(1);
-			dataModel.setOperType("delete");
-			dataModel.setMessage("删除成功");
-			dataModel = roleService.doSearch(request, dataModel, userInfo);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("删除失败");
-		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/role/rolemain";
+		RoleModel dataModel = new RoleModel();
+
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		dataModel = roleService.doDelete(request, data, userInfo);
+		DicUtil.emptyBuffer(true);
+		dataModel.setOperType("delete");
+		
+		return dataModel;
 	}
 	
 
@@ -236,6 +236,26 @@ public class RoleAction extends BaseAction {
 		
 		return "/role/rolerelationuser";
 	}	
+	
+	public HashMap<String, Object> getRoleRelationUserList(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+
+		try {
+			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			dataMap = roleService.getRoleRelationUserList(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 	
     public String doCheckRoleName(String roleIdName) {
     	BaseModel base = new BaseModel();

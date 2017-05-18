@@ -4,7 +4,7 @@
     <pool></pool>     
     <name value="selectrolequery_init" />
     <where>
-    	<w name="A.UnitID" des=""  reqName="userUnitId" dtype="ch" oper="rlike"  lg="" bt="" />
+    	<w name="A.UnitID" des=""  reqName="userUnitId" dtype="ch" oper="like"  lg="" bt="" />
     </where>
     <select>
     	<f name="a.roleid" alias="" ctype="" />

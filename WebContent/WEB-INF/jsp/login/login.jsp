@@ -74,9 +74,9 @@
 			return false;
 		}
 		str = $('#verifyCode').val();
-		if (!inputStrCheck(str, "验证码", 5, 8, false, true)) {
-			return false;
-		}
+		//if (!inputStrCheck(str, "验证码", 5, 8, false, true)) {
+		//	return false;
+		//}
 		
 		$('#form').submit();
 	}

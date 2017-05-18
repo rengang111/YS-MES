@@ -8,6 +8,7 @@
 	<url>${ctx}/css/*</url>
 	<url>${ctx}/js/*</url>
 	<url>${ctx}/js/layer/*</url>
+	<url>${ctx}/js/lib/*</url>
 	<url>${ctx}/img/*</url>
 	<url>${ctx}/test123</url>
 	<url>${ctx}/doInit</url>

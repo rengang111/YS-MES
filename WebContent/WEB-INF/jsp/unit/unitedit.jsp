@@ -161,6 +161,8 @@
 	var operType = '';
 	var isUpdateSuccessed = false;
 	var updatedRecordCount = parseInt('${DisplayData.updatedRecordCount}');
+	var validatorBaseInfo;
+	
 	$(function(){
 		
 		autoCompleteParentUnit();
