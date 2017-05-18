@@ -28,12 +28,17 @@ public class QueryPowerBean {
 	public String getSql(HttpServletRequest request, String menuId)  throws Exception {
 		HttpSession session = request.getSession();
 		
-		//String userId = (String)session.getAttribute(BaseQuery.USERID);
-		//String userType = (String)session.getAttribute(BaseQuery.USERTYPE);
+		String userId = "";
+		String userType = "";
 		
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		String userId = userInfo.getUserId();
-		String userType = userInfo.getUserType();
+		if (userInfo != null) {
+			userId = userInfo.getUserId();
+			userType = userInfo.getUserType();
+		} else {
+			userId = (String)session.getAttribute(BaseQuery.USERID);
+			userType = (String)session.getAttribute(BaseQuery.USERTYPE);
+		}
 		
 		userId = userId != null ? userId:"";
 		userType = userType != null ? userType:"";

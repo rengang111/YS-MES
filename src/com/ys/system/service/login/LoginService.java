@@ -23,8 +23,8 @@ public class LoginService extends BaseService {
 	public LoginModel doLogin(HttpServletRequest request, LoginModel dataModel, String validateCode) {
 
 		//TODO:
-		validateCode = "1";
-		dataModel.setVerifyCode("1");
+		//validateCode = "1";
+		//dataModel.setVerifyCode("1");
 		try {
 	        if(dataModel.getVerifyCode() == null || dataModel.getVerifyCode().equals("")) { 
 	            dataModel.setMessage("验证码为空");         
