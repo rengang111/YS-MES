@@ -1,5 +1,8 @@
 package com.ys.system.action.power;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -9,12 +12,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.power.PowerModel;
+import com.ys.system.action.model.role.RoleModel;
+import com.ys.system.action.model.user.UserModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.system.service.common.BaseService;
 import com.ys.system.service.power.PowerService;
+import com.ys.util.DicUtil;
 
 @Controller
 
@@ -24,10 +32,13 @@ public class PowerAction extends BaseAction {
 	PowerService powerService;
 	
 	@RequestMapping("/power")
-	public String execute(@ModelAttribute("dataModels")PowerModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	//public String execute(@ModelAttribute("dataModels")PowerModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doInit(@RequestBody String data, @ModelAttribute("dataModels")PowerModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		
 		String type = request.getParameter("methodtype");
 		String rtnUrl = "";
+		HashMap<String, Object> dataMap = null;
+		PowerModel viewModel = null;
 		
 		if (type == null) {
 			type = "";
@@ -47,41 +58,59 @@ public class PowerAction extends BaseAction {
 				rtnUrl = "/power/powermain";
 				break;
 			case "search":
-				rtnUrl = doSearch(dataModel, result,  model, session, request, response);
-				break;
+				dataMap = doSearch(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "updateinit":
 				rtnUrl = doUpdateInit(model, session, request, response);
 				break;
 			case "add":
-				rtnUrl = doAdd(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doAdd(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "delete":
-				rtnUrl = doDelete(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doDelete(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "getUnitList":
 				rtnUrl = getUnitList(request, session);
-			printOut(response, rtnUrl);
+				printOut(response, rtnUrl);
+				return null;
+			case "roleIdNameSearch":
+				dataMap = doRoleIdNameSearch(data, request, session);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "userSearch":
+				dataMap = doUserSearch(data, request, session);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "roleSearch":
+				dataMap = doRoleIdNameSearch(data, request, session);
+				printOutJsonObj(response, dataMap);
 				return null;
 		}
 		
 		return rtnUrl;
 	}	
 	
-	public String doSearch(PowerModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		
+	public HashMap<String, Object> doSearch(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel = powerService.doSearch(request, dataModel, userInfo);
-			if (dataModel.getViewData().size() == 0) {
-				dataModel.setMessage("无符合条件的数据");
+			dataMap = powerService.doSearch(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
 			}
+
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("检索失败");
+			dataMap.put(INFO, ERRMSG);
 		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/power/powermain";
+		
+		return dataMap;
 	}
 
 	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
@@ -110,69 +139,31 @@ public class PowerAction extends BaseAction {
 		return "/power/poweredit";
 	}	
 
-	public String doAdd(PowerModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public PowerModel doAdd(String data, HttpSession session, HttpServletRequest request){
+		
+		PowerModel dataModel = new PowerModel();
 		
 		try {
-			dataModel.setUpdatedRecordCount(0);
-			
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			int rowCount = powerService.doAdd(request, dataModel, userInfo);
-			dataModel.setUpdatedRecordCount(rowCount);
-			dataModel.setOperType("add");
-			if (rowCount > 0) {
-				dataModel.setMessage("授权成功");
-			} else {
-				dataModel.setMessage("权限已存在，本次无授权发生。");
-			}
-			/*
-			int preCheckResult = powerService.preCheck(request);
-			switch(preCheckResult) {
-			case 0:
-				powerService.doAdd(request, dataModel, userInfo);
-				dataModel.setUpdatedRecordCount(1);
-				dataModel.setOperType("add");
-				dataModel.setMessage("增加成功");
-				
-				break;
-			case 1:
-				dataModel.setMessage("权限已存在");
-				break;
-			case 2:
-				dataModel.setMessage("权限不存在");
-				break;
-			case 3:
-				dataModel.setMessage("权限已存在");
-				break;
-			}
-			*/
-			
+
+			dataModel = powerService.doAdd(request, data, userInfo);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("授权失败");
+			dataModel.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
 		}
-		model.addAttribute("DisplayData", dataModel);
-		
-		return "/power/poweredit";
-	}	
+		return dataModel;
+	}		
 	
-	public String doDelete(PowerModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public PowerModel doDelete(String data, HttpSession session, HttpServletRequest request){
 		
-		try {
-			dataModel.setUpdatedRecordCount(0);
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			powerService.doDelete(dataModel, userInfo);
-			dataModel.setUpdatedRecordCount(1);
-			dataModel.setOperType("delete");
-			dataModel.setMessage("授权删除成功");
-			dataModel = powerService.doSearch(request, dataModel, userInfo);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("授权删除失败");
-		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/power/powermain";
+		PowerModel dataModel = new PowerModel();
+
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		dataModel = powerService.doDelete(request, data, userInfo);
+		dataModel.setOperType("delete");
+		
+		return dataModel;
 	}
 	
 	public String getUnitList(HttpServletRequest request, HttpSession session) {
@@ -186,5 +177,45 @@ public class PowerAction extends BaseAction {
 		json = powerService.getUnitList(request, userIdList, roleIdList, userInfo);
 		
 		return json;
-	}		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doRoleIdNameSearch(@RequestBody String data, HttpServletRequest request, HttpSession session){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		
+		try {
+			dataMap = powerService.doRoleIdNameSearch(request, data, userInfo);
+			
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			//dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doUserSearch(@RequestBody String data, HttpServletRequest request, HttpSession session){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		
+		try {
+			dataMap = powerService.doUserSearch(request, data, userInfo);
+			
+			//dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			//dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 }

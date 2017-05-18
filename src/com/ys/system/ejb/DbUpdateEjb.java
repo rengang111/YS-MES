@@ -478,10 +478,14 @@ public class DbUpdateEjb  {
 		return count;
 	}
 	
-	public int executePowerAdd(PowerModel powerModel, UserInfo userInfo) throws Exception {
-		String userArray[] = powerModel.getUserId().split(",");
-		String roleArray[] = powerModel.getRoleId().split(",");
-		String unitArray[] = powerModel.getUnitId().split(",");
+	public int executePowerAdd(String formData, UserInfo userInfo) throws Exception {
+		
+		BaseService service = new BaseService();
+		
+		String userArray[] = service.getJsonData(formData, "userId").split(",");
+		String roleArray[] = service.getJsonData(formData, "roleId").split(",");
+		String unitArray[] = service.getJsonData(formData, "unitId").split(",");
+		String powerType = service.getJsonData(formData, "powerType");
 		S_POWERDao dao = new S_POWERDao();
 		int rowCount = 0;
 		
@@ -509,7 +513,7 @@ public class DbUpdateEjb  {
 							data.setUserid(userId);
 							data.setRoleid(roleId);
 							data.setUnitid(unitId);						
-							data.setPowertype(powerModel.getPowerType());
+							data.setPowertype(powerType);
 							data = PowerService.setDeptGuid(data, userId, userInfo);
 							data = PowerService.updateModifyInfo(data, userInfo);
 							dao.Create(data);
@@ -527,15 +531,13 @@ public class DbUpdateEjb  {
 	
 		return rowCount;
 	}	
-	public void executePowerDelete(PowerModel powerModel, UserInfo userInfo) throws Exception {
-		//new S_ROLEData();
-		int count = 0;
+	public void executePowerDelete(String formData, UserInfo userInfo) throws Exception {
 	
-		//UserTransaction ts = context.getUserTransaction();
+		BaseService service = new BaseService();
 		ts = new BaseTransaction();
 		try {
 			ts.begin();
-			String removeData[] = powerModel.getNumCheck().split(",");
+			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
 			for (String powerId:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				//TODO:
@@ -546,9 +548,7 @@ public class DbUpdateEjb  {
 				sql.append("DELETE FROM s_Power ");
 				sql.append(" WHERE id = '" + powerId + "' AND DeleteFlag = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
 				BaseDAO.execUpdate(sql.toString());
-				count++;
 			}
-			powerModel.setUpdatedRecordCount(count);
 			
 			ts.commit();
 		}

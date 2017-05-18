@@ -6,7 +6,8 @@
     <where>
     	<w name="a.EnableStartTime" des=""  reqName="startTime" dtype="ch" oper="&lt;="  lg="AND" bt="" />
     	<w name="a.EnableEndTime" des=""  reqName="endTime" dtype="ch" oper="&gt;"  lg="AND" bt="" />
-    	<w name="A.UnitID" des=""  reqName="userUnitId" dtype="ch" oper="rlike"  lg="" bt="" />
+    	<w name="A.UnitID" des=""  reqName="userUnitId" dtype="ch" oper="rlike"  lg="AND" bt="" />
+    	<w name="A.LoginName" des=""  reqName="key" dtype="ch" oper="like"  lg="" bt="" />
     </where>
     <select>
     	<f name="a.UserID" alias="" ctype="" />

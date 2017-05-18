@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 	<div>
-		<h2>组织机构选择</h2>
 		<div class="easyui-panel" style="padding:5px;width:300px;height:400px;">
 			<!-- 
 		    <ul id="deptTree" class="easyui-tree" data-options="animate:false,border:false,checkbox:true"></ul>
