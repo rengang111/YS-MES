@@ -21,7 +21,7 @@
 			table.fnDestroy();
 		}
 		var t = $('#TMaterial').DataTable({
-				"paging": false,
+				"paging": true,
 				"lengthChange":false,
 				"lengthMenu":[50,100,200],//设置一页展示20条记录
 				"processing" : false,
@@ -49,11 +49,6 @@
 						"data" : JSON.stringify(aoData),
 						success: function(data){							
 							fnCallback(data);
-
-							//重设显示窗口(iframe)高度
-							//resetbodyHeight();
-							//$('#TMaterial').sScrollY = $(window).height() - 300;
-							//alert($('#TMaterial').sScrollY)
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -63,68 +58,68 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "YSId", "defaultContent" : ''},
-							{"data": "orderId", "defaultContent" : ''},
-							{"data": "PIId", "defaultContent" : ''},
-							{"data": "deliveryDate", "className" : 'td-center'},
-							{"data": "materialId", "defaultContent" : ''},
-							{"data": "materialName", "defaultContent" : ''},
-							{"data": "quantity", "className" : 'td-right'},
-							{"data": "price", "className" : 'td-right'},
-							{"data": null, "defaultContent" : '0', "className" : 'td-right'}
-						],
+					{"data": null, "defaultContent" : '',"className" : 'td-center'},
+					{"data": "YSId", "defaultContent" : ''},
+					{"data": "orderId", "defaultContent" : ''},
+					{"data": "PIId", "defaultContent" : ''},
+					{"data": "deliveryDate", "className" : 'td-center'},
+					{"data": "materialId", "defaultContent" : ''},
+					{"data": "materialName", "defaultContent" : ''},
+					{"data": "quantity", "className" : 'td-right'},
+					{"data": "price", "className" : 'td-right'},
+					{"data": null, "defaultContent" : '0', "className" : 'td-right'}
+				],
 				"columnDefs":[
-				    		{"targets":0,"render":function(data, type, row){
-				    			return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
-				    			 
-		                    }},
-				    		{"targets":2,"render":function(data, type, row){
-				    			var name = row["orderId"];
-				    			name = jQuery.fixedWidth(name,15);
-				    			return name;
-				    		}},
-				    		{"targets":1,"render":function(data, type, row){
-				    			var rtn = "";
-				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">"+row["YSId"]+"</a>";
-				    			return rtn;
-				    		}},
-				    		{"targets":9,"render":function(data, type, row){
-				    			
-				    			var v = row["totalprice"],id = row["YSId"];
-				    			return YSKcheck(v,id);
-				    		}},
-				    		{"targets":8,"render":function(data, type, row){
-				    			
-				    			var v = row["price"],id = row["YSId"];
-				    			return YSKcheck(v,id);
-				    		}},
-				    		{"targets":7,"render":function(data, type, row){
-				    			
-				    			var v = row["quantity"],id = row["YSId"];
-				    			return YSKcheck(v,id);
-				    		}},
-				    		{"targets":6,"render":function(data, type, row){
-				    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
-				    			name = jQuery.fixedWidth(name,20);
-				    			var zzFlag = "";
-				    			if(id != ''){
-				    				zzFlag = id.substr(2,3);
-				    			}
-				    			if(zzFlag == 'YSK') name = '库存订单';//库存订单不显示明细内容
-				    			
-				    			return name;
-				    		}},
-				    		{"targets":5,"render":function(data, type, row){
-				    			
-				    			var v = row["materialId"],id = row["YSId"], zzFlag = "";
-				    			if(id != ''){
-				    				zzFlag = id.substr(2,3);
-				    			}
-				    			if(zzFlag == 'YSK') v = '库存订单';//库存订单不显示明细内容
-				    			return v;
-				    		}}				           
-			         	] 
+		    		{"targets":0,"render":function(data, type, row){
+		    			return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+		    			 
+                    }},
+		    		{"targets":2,"render":function(data, type, row){
+		    			var name = row["orderId"];
+		    			name = jQuery.fixedWidth(name,15);
+		    			return name;
+		    		}},
+		    		{"targets":1,"render":function(data, type, row){
+		    			var rtn = "";
+		    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">"+row["YSId"]+"</a>";
+		    			return rtn;
+		    		}},
+		    		{"targets":9,"render":function(data, type, row){
+		    			
+		    			var v = row["totalprice"],id = row["YSId"];
+		    			return YSKcheck(v,id);
+		    		}},
+		    		{"targets":8,"render":function(data, type, row){
+		    			
+		    			var v = row["price"],id = row["YSId"];
+		    			return YSKcheck(v,id);
+		    		}},
+		    		{"targets":7,"render":function(data, type, row){
+		    			
+		    			var v = row["quantity"],id = row["YSId"];
+		    			return YSKcheck(v,id);
+		    		}},
+		    		{"targets":6,"render":function(data, type, row){
+		    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
+		    			name = jQuery.fixedWidth(name,20);
+		    			var zzFlag = "";
+		    			if(id != ''){
+		    				zzFlag = id.substr(2,3);
+		    			}
+		    			if(zzFlag == 'YSK') name = '库存订单';//库存订单不显示明细内容
+		    			
+		    			return name;
+		    		}},
+		    		{"targets":5,"render":function(data, type, row){
+		    			
+		    			var v = row["materialId"],id = row["YSId"], zzFlag = "";
+		    			if(id != ''){
+		    				zzFlag = id.substr(2,3);
+		    			}
+		    			if(zzFlag == 'YSK') v = '库存订单';//库存订单不显示明细内容
+		    			return v;
+		    		}}				           
+	         	] 
 			}
 		);
 

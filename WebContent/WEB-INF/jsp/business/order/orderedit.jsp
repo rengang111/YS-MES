@@ -74,7 +74,7 @@
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num short" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num mini" /></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      id="orderDetailLines'+rowIndex+'.price"      class="cash short" /></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short read-only" readonly="readonly"/></td>',				
 								
@@ -395,9 +395,9 @@
 				<th class="dt-left" width="80px">耀升编号</th>
 				<th class="dt-left" width="100px">产品编号</th>
 				<th class="dt-left" >产品名称</th>
-				<th class="dt-left" width="100px">数量</th>
+				<th class="dt-left" width="80px">数量</th>
 				<th class="dt-left" width="100px">销售单价</th>
-				<th class="dt-left" width="120px">销售总价</th>
+				<th class="dt-left" width="100px">销售总价</th>
 			</tr>
 			</thead>
 			<tfoot>
@@ -420,7 +420,7 @@
 					<td><input type="text" name="attributeList1" class="attributeList1"  value="${order.materialId}" />
 						<form:hidden path="orderDetailLines[${status.index}].materialid" value="${order.materialId }"/></td>								
 					<td id="shortName${status.index}">${order.materialName}</td>
-					<td><form:input path="orderDetailLines[${status.index}].quantity" class="num short" value="${order.quantity}"/></td>							
+					<td><form:input path="orderDetailLines[${status.index}].quantity" class="num mini" value="${order.quantity}"/></td>							
 					<td><form:input path="orderDetailLines[${status.index}].price" class="cash short"  value="${order.price}"/></td>
 					<td><input type="text" name="orderDetailLines[${status.index}].totalprice" id="orderDetailLines${status.index}.totalprice" value="${order.totalPrice}" class="read-only cash short" readonly="readonly"/></td>
 					
