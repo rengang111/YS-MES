@@ -388,7 +388,8 @@ public class UnitService extends BaseService {
 		key = request.getParameter("key");	
 		
 		dataModel.setQueryFileName("/unit/unitquerydefine");	
-		dataModel.setQueryName("dicSearch");	
+		dataModel.setQueryName("dicSearch");
+		userDefinedSearchCase.put("typeid", DicUtil.ADDRESS);
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);	
 		
 		userDefinedSearchCase.put("key", key);

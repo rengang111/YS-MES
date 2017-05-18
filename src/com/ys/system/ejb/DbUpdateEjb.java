@@ -126,16 +126,16 @@ public class DbUpdateEjb  {
 		return count;
     }
 
-    public void executeRoleDelete(RoleModel roleModel, UserInfo userInfo) throws Exception {
+    public void executeRoleDelete(String formData, UserInfo userInfo) throws Exception {
 		S_ROLEData data = new S_ROLEData();
 		int count = 0;
 	
 		//UserTransaction ts = context.getUserTransaction();
 		ts = new BaseTransaction();
-		
+		BaseService service = new BaseService();
 		try {
 			ts.begin();
-			String removeData[] = roleModel.getNumCheck().split(",");
+			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
 			for (String roleId:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				//TODO:
@@ -161,7 +161,6 @@ public class DbUpdateEjb  {
 				dao.Store(data);
 				
 				count++;
-				roleModel.setUpdatedRecordCount(count);
 			}
 			ts.commit();
 		}
@@ -171,16 +170,14 @@ public class DbUpdateEjb  {
 		}
     }
     
-    public void executeRoleMenuDelete(RoleModel roleModel, UserInfo userInfo) throws Exception {
+    public void executeRoleMenuDelete(String formData, UserInfo userInfo) throws Exception {
 		S_ROLEMENUData data = new S_ROLEMENUData();
-		int count = 0;
 	
-		//UserTransaction ts = context.getUserTransaction();
-		ts = new BaseTransaction();
-		
+		BaseService service = new BaseService();
 		try {
 			ts.begin();
-			String removeData[] = roleModel.getNumCheck().split(",");
+			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
+
 			for (String key:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				data.setId(key);
@@ -199,8 +196,6 @@ public class DbUpdateEjb  {
 				data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
 				dao.Store(data);
 				
-				count++;
-				roleModel.setUpdatedRecordCount(count);
 			}
 			ts.commit();
 		}
@@ -287,16 +282,16 @@ public class DbUpdateEjb  {
 		}
 	}
     
-	public void executeUserDelete(UserModel userModel, UserInfo userInfo) throws Exception {
+    public void executeUserDelete(String formData, UserInfo userInfo) throws Exception {
 		S_USERData data = new S_USERData();
 		int count = 0;
 	
 		//UserTransaction ts = context.getUserTransaction();
 		ts = new BaseTransaction();
-		
+		BaseService service = new BaseService();
 		try {
 			ts.begin();
-			String removeData[] = userModel.getNumCheck().split(",");
+			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
 			for (String userId:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				//TODO:
@@ -315,7 +310,7 @@ public class DbUpdateEjb  {
 				dao.Store(data);
 				
 				count++;
-				userModel.setUpdatedRecordCount(count);
+
 			}
 			ts.commit();
 		}
@@ -324,16 +319,16 @@ public class DbUpdateEjb  {
 			throw e;
 		}		
 	}
-	public void executeUserLock(UserModel userModel, UserInfo userInfo, String lockFlg) throws Exception {
+	public void executeUserLock(String formData, UserInfo userInfo, String lockFlg) throws Exception {
 		S_USERData data = new S_USERData();
 		int count = 0;
 	
 		//UserTransaction ts = context.getUserTransaction();
 		ts = new BaseTransaction();
-		
+		BaseService service = new BaseService();
 		try {
 			ts.begin();
-			String lockData[] = userModel.getNumCheck().split(",");
+			String lockData[] = service.getJsonData(formData, "numCheck").split(",");
 			for (String userId:lockData) {
 
 				data.setUserid(userId);
@@ -345,9 +340,7 @@ public class DbUpdateEjb  {
 					data.setLockflag(UserInfo.UNLOCKED);
 				}
 				dao.Store(data);
-				
-				count++;
-				userModel.setUpdatedRecordCount(count);
+
 			}
 			ts.commit();
 		}

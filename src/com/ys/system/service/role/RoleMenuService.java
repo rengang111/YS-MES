@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.role.RoleModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.system.db.dao.S_ROLEMENUDao;
 import com.ys.system.db.data.S_ROLEMENUData;
 import com.ys.system.ejb.DbUpdateEjb;
 import com.ys.system.interceptor.MenuInfo;
+import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.basequery.BaseQuery;
 
@@ -19,8 +21,66 @@ import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class RoleMenuService {
+public class RoleMenuService extends BaseService {
  
+	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		RoleModel dataModel = new RoleModel();
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryFileName("/role/rolequerydefine");
+		dataModel.setQueryName("rolemenuquerydefine_search");
+		
+		String key1 = getJsonData(data, "roleIdName");
+		String key2 = getJsonData(data, "menuIdName");
+		String key3 = getJsonData(data, "userIdName");
+		String key4 = getJsonData(data, "unitId");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("roleIdName", key1);
+		userDefinedSearchCase.put("menuIdName", key2);
+		userDefinedSearchCase.put("userIdName", key3);
+		userDefinedSearchCase.put("unitId", key4);
+
+		if (!userInfo.getUserType().equals(Constants.USER_SA)) {
+			userDefinedSearchCase.put("unitId", userInfo.getUnitId());
+		}
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		baseQuery.getYsQueryData(iStart, iEnd);	
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+	
 	public RoleModel doSearch(HttpServletRequest request, RoleModel dataModel, UserInfo userInfo) throws Exception {
 
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
@@ -67,11 +127,21 @@ public class RoleMenuService {
 
 	}
 	
-	public void doDelete(RoleModel roleModel, UserInfo userInfo) throws Exception {
+	public RoleModel doDelete(HttpServletRequest request, String formData, UserInfo userInfo) {
 		
 		DbUpdateEjb bean = new DbUpdateEjb();
-        
-        bean.executeRoleMenuDelete(roleModel, userInfo);
+		RoleModel model = new RoleModel();
+		
+		try {
+			bean.executeRoleMenuDelete(formData, userInfo);
+			model.setEndInfoMap(BaseService.NORMAL, "", "");
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
+		}
+		
+		return model;
 
 	}
 	
@@ -152,7 +222,6 @@ public class RoleMenuService {
 		
 	}
 	
-	
 	public static S_ROLEMENUData updateModifyInfo(S_ROLEMENUData data, UserInfo userInfo) {
 		String createUserId = data.getCreateperson();
 		if ( createUserId == null || createUserId.equals("")) {
@@ -168,5 +237,26 @@ public class RoleMenuService {
 		return data;
 	}
 	
-	
+	public HashMap<String, Object> doRoleIdNameSearch(HttpServletRequest request) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();	
+		BaseModel dataModel = new BaseModel();	
+		BaseQuery baseQuery = null;	
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		String key = request.getParameter("key");	
+		if (key.equals("*")) {
+			key = "";
+		}
+		dataModel.setQueryFileName("/common/selectrolequery");
+		dataModel.setQueryName("selectrolequery_search");
+		userDefinedSearchCase.put("roleIdName", key);
+
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0,0);	
+			
+		modelMap.put("data", dataModel.getYsViewData());	
+			
+		return modelMap;	
+	}
 }

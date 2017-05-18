@@ -3,7 +3,7 @@
 <%@ include file="../common/common.jsp"%>
 <html>
 <head>
-	组织机构管理
+	权限管理
 </head>
 
 <script>
