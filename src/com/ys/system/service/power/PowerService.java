@@ -1,6 +1,7 @@
 package com.ys.system.service.power;
 
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.action.model.power.PowerModel;
+import com.ys.system.action.model.user.UserModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.system.db.dao.S_POWERDao;
 import com.ys.system.db.dao.S_ROLEDao;
@@ -18,29 +21,73 @@ import com.ys.system.db.data.S_ROLEData;
 import com.ys.system.db.data.S_USERData;
 import com.ys.system.ejb.DbUpdateEjb;
 import com.ys.system.interceptor.DicInfo;
+import com.ys.system.service.common.BaseService;
 import com.ys.system.service.common.MakeTreeStyleData;
 import com.ys.util.CalendarUtil;
+import com.ys.util.DicUtil;
 import com.ys.util.basequery.BaseQuery;
 
 import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class PowerService {
+public class PowerService extends BaseService {
  
-	public PowerModel doSearch(HttpServletRequest request, PowerModel dataModel, UserInfo userInfo) throws Exception {
+	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		dataModel.setQueryFileName("/power/powerquerydefine");
-		dataModel.setQueryName("powerquerydefine_search");
-		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		if (!userInfo.isSA()) {
-			userDefinedSearchCase.put("userUnitId", userInfo.getUnitId());
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		UserModel dataModel = new UserModel();
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
 		}
 		
-		baseQuery.getQueryData();
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
 		
-		return dataModel;
+		dataModel.setQueryFileName("/power/powerquerydefine");
+		dataModel.setQueryName("powerquerydefine_search");
+		
+		String key1 = getJsonData(data, "userIdName");
+		String key2 = getJsonData(data, "unitIdName");
+		String key3 = getJsonData(data, "roleIdName");
+		String key4 = getJsonData(data, "userUnitId");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("userIdName", key1);
+		userDefinedSearchCase.put("unitIdName", key2);
+		userDefinedSearchCase.put("roleIdName", key3);
+		userDefinedSearchCase.put("userUnitId", key4);
+		if (!userInfo.isSA()) {
+			userDefinedSearchCase.put("userUnitId", userInfo.getUnitId());
+		}
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		ArrayList<HashMap<String, String>> userDataList = baseQuery.getYsQueryData(iStart, iEnd);	
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}
+
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
 	}
 
 	public PowerModel getDetail(HttpServletRequest request) throws Exception {
@@ -65,43 +112,37 @@ public class PowerService {
 	
 	}
 	
-	public int doAdd(HttpServletRequest request, PowerModel powerModel, UserInfo userInfo) throws Exception {
-		int rowCount = 0;
+	public PowerModel doAdd(HttpServletRequest request, String formData, UserInfo userInfo) {
+		PowerModel model = new PowerModel();
 		
 		DbUpdateEjb bean = new DbUpdateEjb();
-        
-        rowCount = bean.executePowerAdd(powerModel, userInfo);
-
-        
-        return rowCount;
-	}	
-	
-	public void doUpdate(HttpServletRequest request, PowerModel powerModel, UserInfo userInfo) throws Exception {
-		S_POWERDao dao = new S_POWERDao();
-		S_POWERData data = new S_POWERData();
-		
-		String id = request.getParameter("id");
-		data.setId(id);
-		data.setUserid(powerModel.getUnitId());
-		data.setRoleid(powerModel.getRoleId());
-		data.setUnitid(powerModel.getUnitId());
-		data.setPowertype(powerModel.getPowerType());
-		data = updateModifyInfo(powerModel.getpowerData(), userInfo);
-		data = setDeptGuid(data, powerModel.getUnitId(), userInfo);
-		
-		try {
-			dao.Store(data);
+        try {
+			bean.executePowerAdd(formData, userInfo);
+			model.setEndInfoMap(BaseService.NORMAL, "", "");
 		}
 		catch(Exception e) {
-			throw e;
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
 		}
-	}
+        return model;
+	}	
 	
-	public void doDelete(PowerModel powerModel, UserInfo userInfo) throws Exception {
+	public PowerModel doDelete(HttpServletRequest request, String formData, UserInfo userInfo) {
 		
+
 		DbUpdateEjb bean = new DbUpdateEjb();
-        
-        bean.executePowerDelete(powerModel, userInfo);
+		PowerModel model = new PowerModel();
+		
+		try {
+			bean.executePowerDelete(formData, userInfo);
+			model.setEndInfoMap(BaseService.NORMAL, "", "");
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
+		}
+		
+		return model;
 
 	}
 	/*
@@ -179,12 +220,14 @@ public class PowerService {
 			
 			//判断角色中是否有admin角色
 			for(String roleId:roleIdArray) {
-				S_ROLEData data = new S_ROLEData();
-				data.setRoleid(roleId);
-				data = (S_ROLEData)roleDao.FindByPrimaryKey(data);
-				if (data.getRoletype().equals(Integer.valueOf(Constants.USER_ADMIN))) {
-					isAdmin = true;
-					break;
+				if (roleId != null && !roleId.equals("")) {
+					S_ROLEData data = new S_ROLEData();
+					data.setRoleid(roleId);
+					data = (S_ROLEData)roleDao.FindByPrimaryKey(data);
+					if (data.getRoletype().equals(Integer.valueOf(Constants.USER_ADMIN))) {
+						isAdmin = true;
+						break;
+					}
 				}
 			}
 			
@@ -192,15 +235,17 @@ public class PowerService {
 				//判断用户单位是否相同
 				String unitIdBackup = "";
 				for(String userId:userIdArray) {
-					S_USERData data = new S_USERData();
-					data.setUserid(userId);
-					data = (S_USERData)userDao.FindByPrimaryKey(data);
-					if (unitIdBackup.equals("")) {
-						unitIdBackup = data.getUnitid();
-					} else {
-						if (!data.getUnitid().equals(unitIdBackup)) {
-							isSameUnit = false;
-							break;
+					if (userId != null && !userId.equals("")) {
+						S_USERData data = new S_USERData();
+						data.setUserid(userId);
+						data = (S_USERData)userDao.FindByPrimaryKey(data);
+						if (unitIdBackup.equals("")) {
+							unitIdBackup = data.getUnitid();
+						} else {
+							if (!data.getUnitid().equals(unitIdBackup)) {
+								isSameUnit = false;
+								break;
+							}
 						}
 					}
 				}
@@ -340,5 +385,105 @@ public class PowerService {
 		powerModel.setRoleName(roleNameList);	
 		
 		return powerModel;
-	}	
+	}
+	
+	public HashMap<String, Object> doRoleIdNameSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		String key = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		key = request.getParameter("key");	
+		if (key.equals("*")) {
+			key = "";
+		}
+		String keyArray[] = key.split(",");
+		if (keyArray.length > 0) {
+			key = keyArray[keyArray.length - 1];
+		}
+		dataModel.setQueryFileName("/common/selectrolequery");
+		dataModel.setQueryName("selectrolequery_init");
+		userDefinedSearchCase.put("key", key);
+		userDefinedSearchCase.put("userUnitId", userInfo.getUnitId());
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		baseQuery.getYsQueryData(0,0);	
+			
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
+	}
+	
+	public HashMap<String, Object> doUserSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		String key = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		key = request.getParameter("key");	
+		if (key.equals("*")) {
+			key = "";
+		}
+		String keyArray[] = key.split(",");
+		if (keyArray.length > 0) {
+			key = keyArray[keyArray.length - 1];
+		}
+		dataModel.setQueryFileName("/common/selectuserquery");
+		dataModel.setQueryName("selectuserquery_init");
+		userDefinedSearchCase.put("startTime", CalendarUtil.fmtDate());
+		userDefinedSearchCase.put("endTime", CalendarUtil.fmtDate());
+		userDefinedSearchCase.put("userUnitId", userInfo.getUnitId());
+		userDefinedSearchCase.put("key", key);
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);	
+		
+		userDefinedSearchCase.put("key", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		baseQuery.getYsQueryData(0,0);	
+			
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
+	}
+	
+	public HashMap<String, Object> doRoleSearch(HttpServletRequest request, String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		BaseModel dataModel = new BaseModel();
+		String key = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		key = request.getParameter("key");	
+		if (key.equals("*")) {
+			key = "";
+		}
+		String keyArray[] = key.split(",");
+		if (keyArray.length > 0) {
+			key = keyArray[keyArray.length - 1];
+		}
+		dataModel.setQueryFileName("/common/selectrolequery");
+		dataModel.setQueryName("selectrolequery_init");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);	
+		
+		userDefinedSearchCase.put("key", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		baseQuery.getYsQueryData(0,0);	
+			
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
+	}
 }
