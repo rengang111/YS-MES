@@ -209,6 +209,10 @@ public class BomAction extends BaseAction {
 				insertOrderCost1(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "updateRebaterate"://更新退税率
+				updateRebaterate();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -409,7 +413,7 @@ public class BomAction extends BaseAction {
 	}
 	public void doShowOrderDetail() throws Exception{
 				
-		model = bomService.getOrderDetail();
+		bomService.getOrderDetail();
 			
 	}
 	public HashMap<String, Object> doShowBaseBom() throws Exception{
@@ -500,6 +504,11 @@ public class BomAction extends BaseAction {
 	public void CheckOrderCost1(String data) throws Exception
 	{
 	  this.bomService.CheckOrderCost1(data);
+	}
+	
+	public void updateRebaterate() throws Exception
+	{
+	  this.bomService.updateRebaterate();
 	}
 	
 	@SuppressWarnings("unchecked")

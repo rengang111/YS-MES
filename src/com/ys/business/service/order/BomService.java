@@ -1446,30 +1446,17 @@ public class BomService extends BaseService {
 	}
 	
 	
-	public Model getOrderDetail() throws Exception
-	{
-	  String YSId = this.request.getParameter("YSId");
-	  String materialId = this.request.getParameter("materialId");
-	  String parentId = null;
-	 // String bomId = null;
-	  /*
-	  this.bomPlanData = BomPlanExistCheck2(YSId);
-	  if (this.bomPlanData == null)
-	  {
-	    this.bomPlanData = new B_BomPlanData();
-	    parentId = BusinessService.getOrderBOMParentId(materialId);
-	    bomPlanData = getBomIdByParentId(parentId, false);
-	  }
-	  else
-	  {
-	    this.reqModel.setBomPlan(this.bomPlanData);
-	  }
-*/
-	  getOrderDetail(YSId);
+	public void getOrderDetail() throws Exception{
+		String YSId = this.request.getParameter("YSId");
+		String materialId = this.request.getParameter("materialId");
+		String bomId = BusinessService.getBaseBomId(materialId)[1];
 
-	  getOrderExpense(YSId);
+		getOrderDetail(YSId);
 
-	  return this.model;
+		getOrderExpense(YSId);
+
+		getBaseBomDetail(bomId,false);
+
 	}
 
 
@@ -1511,7 +1498,28 @@ public class BomService extends BaseService {
 
 	  return this.model;
 	}
-			
+		
+
+	public void updateRebaterate()throws Exception{
+
+		B_BomPlanData dbData = null;
+
+		String bomId = request.getParameter("bomId");
+		String rate = request.getParameter("rate");
+		
+		dbData = BomPlanExistCheck(bomId);
+		if(dbData == null)
+			return;
+		
+	    commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"RebaterateUpdate",userInfo);
+	    copyProperties(dbData,commData);
+	    dbData.setRebaterate(rate);
+
+	    bomPlanDao.Store(dbData);
+
+	}
+	
 	public Model getOrderInfo()
 	  throws Exception
 	{

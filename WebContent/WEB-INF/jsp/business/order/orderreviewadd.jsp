@@ -54,9 +54,7 @@
 		
 		
 		baseBomView();//显示基础BOM
-		
-		$('#bomPlan\\.rebaterate').val('17');//初始值
-		
+				
 		//外汇报价换算
 		$(".exchange").change(function() {
 			
@@ -103,11 +101,35 @@
 				contentType: "application/x-www-form-urlencoded; charset=utf-8",
 				success : function(data) {			
 
-					$().toastmessage('showNoticeToast', "汇率保存成功。");	
+					$().toastmessage('showNoticeToast', "保存成功。");	
 					//$("#costRate").attr('readonly',true);
 					//$("#costRate").addClass('read-only');
 					//$("#doSave").hide();
 					//$("#doEdit").show();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					//alert(textStatus)
+				}
+			});	
+		});
+
+		//退税率保存
+		$("#bomPlan\\.rebaterate").blur(function() {
+			var rate = $(this).val();
+			var bomId = $('#bomId').text();
+			//alert(bomId)
+
+			var url = "${ctx}/business/bom?methodtype=updateRebaterate";
+			url = url + "&bomId="+bomId+"&rate="+rate;
+
+			$.ajax({
+				type : "post",
+				url : url,
+				dataType : "text",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
+				success : function(data) {			
+
+					$().toastmessage('showNoticeToast', "保存成功。");	
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 					//alert(textStatus)
@@ -381,17 +403,17 @@ function documentaryAjax4() {
 					<td class="td-center">
 						<form:input path="bomPlan.exchangerate" class="cash exchange mini"  value="${order.sysValue}"/></td>
 					<td class="td-center">
-						<form:input path="bomPlan.rmbprice" class="read-only cash short" /></td>
+						<form:input path="bomPlan.rmbprice" class="read-only cash short" value=""/></td>
 					<td class="td-center">
-						<form:input path="bomPlan.salestax" class="read-only cash short" /></td>
+						<form:input path="bomPlan.salestax" class="read-only cash short" value=""/></td>
 					<td class="td-center">
-						<form:input path="bomPlan.rebaterate" class="cash exchange mini"  />%</td>
+						<form:input path="bomPlan.rebaterate" class="cash exchange mini"  value="${material.rebateRate}" />%</td>
 					<td class="td-center">
-						<form:input path="bomPlan.rebate" class="read-only cash mini"  /></td>
+						<form:input path="bomPlan.rebate" class="read-only cash mini"  value=""/></td>
 					<td class="td-center">
-						<form:input  path="bomPlan.profit" class="read-only cash mini" /></td>
+						<form:input  path="bomPlan.profit" class="read-only cash mini" value=""/></td>
 					<td class="td-center">
-						<form:input  path="bomPlan.profitrate" class="read-only cash mini" />%</td>
+						<form:input  path="bomPlan.profitrate" class="read-only cash mini" value="" />%</td>
 				</tr>								
 			</table>
 			
@@ -871,7 +893,6 @@ function baseBomView() {
 					//$('#totalCost').val(totalCost);
 					$('#totalCost').html(totalCost);
 					$('#costRate').html(costRote);
-					$('#productRecordId').val(recordId);
 					
 					costAcount();//销售利润
 					

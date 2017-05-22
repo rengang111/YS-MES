@@ -87,6 +87,17 @@
 			     "aaSorting": [[ 4, "asc" ]]
 			}
 		);
+		
+		t.on('order.dt search.dt draw.dt', function() {
+			t.column(0, {
+				search : 'applied',
+				order : 'applied'
+			}).nodes().each(function(cell, i) {
+				var num   = i + 1;
+				var checkBox = "<input type=checkbox name='numCheck' id='numCheck' value='" + num + "' />";
+				//cell.innerHTML = num + checkBox;
+			});
+		}).draw();
 	}
 
 	

@@ -166,6 +166,11 @@
 				$(this).find("th").eq(6).css('width','100px');
 			})
 		});
+
+		$(".tabs3").click( function() {
+			requirementAjax();
+			//$('#example').DataTable().ajax.reload(null,false);
+		});
 		
 		
 		$('#example').DataTable().on('click', 'tr', function() {
@@ -719,7 +724,7 @@ function requirementAjax() {
 
 	var scrollHeight = $(window).height() - 250;
 	var t3 = $('#example').DataTable({
-
+		"destroy":true, //Cannot reinitialise DataTable,解决重新加载表格内容问题
 		"paging": false,
 		"processing" : false,
 		"serverSide" : false,

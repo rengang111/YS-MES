@@ -449,7 +449,7 @@ function inputCheck(){
 	
 (function($){
 	$.extend($,{
-		fixedWidth:function(str,length,char){
+		fixedWidth:function(str,length,flag,char){
 		
 			if(str == null || str == '' ) return str;
 			str = str.toString();
@@ -457,10 +457,23 @@ function inputCheck(){
 			var strFull = str;	
 			var num = length - lengthB(str);//获取字符串的字节数与指定长度的差值
 			
+			if((flag) && (num < 0)){				
+    			for(var i=0;i<str.length;i++){
+					if(str.charCodeAt(i) > 255 ){
+		    			str = str.substring(i,str.length);
+						break;
+					}
+				}
+			}
+			num = length - lengthB(str);//重复计算一次
+			
 			if(num < 0){
 				//按字节数截取字符串,并附加后缀
 				str = substringB(str,length - lengthB(char)) + char;
 				//添加一个提示信息				
+				str =  '<div title="' + strFull + '">' + str + '</div>';
+				
+			}else{
 				str =  '<div title="' + strFull + '">' + str + '</div>';
 				
 			}

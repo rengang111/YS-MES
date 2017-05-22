@@ -17,6 +17,7 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.QuotationModel;
+import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_QuotationDao;
 import com.ys.business.db.dao.B_QuotationDetailDao;
 import com.ys.business.db.data.B_BomDetailData;
@@ -273,6 +274,8 @@ public class QuotationService extends BaseService {
 			reqData.setBomtype(Constants.BOMTYPE_Q);//BOM类别
 			updateBomPlan(reqData);
 			
+			updateBaseBom(reqData);
+			
 			//插入BOM详情
 			//首先删除DB中的BOM详情
 			bomid = reqData.getBomid();
@@ -389,6 +392,27 @@ public class QuotationService extends BaseService {
 		}
 	}
 	
+
+	private void updateBaseBom(B_QuotationData reqBom) 
+			throws Exception{
+
+		String bomId = BusinessService.getBaseBomId(reqBom.getMaterialid())[1];
+		
+		//取得更新前数据		
+		B_BomPlanData quotData = baseBomExistCheck(bomId);					
+		B_BomPlanDao dao = new B_BomPlanDao();
+		if(null != quotData){
+
+			//处理共通信息
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"BomPlanUpdate",userInfo);
+			copyProperties(quotData,commData);
+			quotData.setRebaterate(reqBom.getRebaterate());//退税率
+			
+			dao.Store(quotData);
+			
+		}
+	}
 	
 	@SuppressWarnings("unchecked")
 	private B_QuotationData BomPlanExistCheck(String bomId) throws Exception {
@@ -408,6 +432,28 @@ public class QuotationService extends BaseService {
 		
 		return quotData;
 	}
+	
+
+	@SuppressWarnings("unchecked")
+	private B_BomPlanData baseBomExistCheck(String bomId) throws Exception {
+		
+		List<B_BomPlanData> dbList = null;
+		B_BomPlanData quotData = null;
+		B_BomPlanDao dao = new B_BomPlanDao();
+		try {
+			String where = "bomId = '" + bomId
+				+ "' AND  deleteFlag = '0' ";
+			dbList = (List<B_BomPlanData>)dao.Find(where);
+			if ( dbList == null || dbList.size() > 0 )
+				quotData = dbList.get(0);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return quotData;
+	}
+	
 	
 	public void deleteQuotation() throws Exception {		
 													

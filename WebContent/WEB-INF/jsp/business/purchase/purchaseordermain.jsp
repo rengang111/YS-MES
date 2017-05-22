@@ -86,7 +86,7 @@
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var name = row["productName"];				    			
-	    			if(name != null) name = jQuery.fixedWidth(name,30);
+	    			if(name != null) name = jQuery.fixedWidth(name,30,true);
 	    			return name;
 	    		}}
          	] 

@@ -246,6 +246,8 @@ function requirementAjax() {
                  "targets": [ 4,5,10 ], //隐藏第1列，从第0列开始   
                  "visible": false    
 	     	}],
+
+		     "aaSorting": [[ 0, "asc" ]]
 		
 	}).draw();
 

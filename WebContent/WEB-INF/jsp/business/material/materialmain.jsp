@@ -24,7 +24,7 @@
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
-				 "iDisplayLength" : 100,
+				 "iDisplayLength" : 50,
 				"lengthChange":false,
 				//"lengthMenu":[10,150,200],//设置一页展示20条记录
 				"processing" : true,
