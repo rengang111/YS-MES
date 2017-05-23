@@ -696,6 +696,27 @@ public class PurchaseOrderService extends CommonService {
 		return modelMap;
 	}
 
+	
+	public HashMap<String, Object> getContractByYSId() throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		String YSId = request.getParameter("YSId");
+	
+		dataModel.setQueryName("getContractByYSId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+	
+		userDefinedSearchCase.put("YSId", YSId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
 	//
 	public HashMap<String, Object> getContractDetail() throws Exception {
 

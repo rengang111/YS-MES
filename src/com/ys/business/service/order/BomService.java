@@ -1278,6 +1278,25 @@ public class BomService extends BaseService {
 		return model;
 		
 	}
+	
+	//报价BOM:客户报价
+	public Model createOrderBom() throws Exception {
+
+		String materialId = request.getParameter("materialId");	
+		String baseBomId = request.getParameter("bomId");
+		
+		//半成品BOM,l
+
+		//getBomDetail();
+	
+		
+		//取得最新的报价BOM编号
+		//getBomIdByParentId(parentId,true);
+	
+		
+		return model;
+			
+	}
 
 	//报价BOM:客户报价
 	public Model editQuotation() throws Exception {

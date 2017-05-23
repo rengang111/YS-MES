@@ -63,7 +63,8 @@
 
 		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/order";
+					var PIId = '${order.PIId}';
+					var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
 					location.href = url;		
 				});
 		

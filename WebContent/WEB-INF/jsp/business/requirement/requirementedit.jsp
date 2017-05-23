@@ -118,7 +118,9 @@
 		
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/order";
+					var YSId = '${order.YSId}';
+					var materialId = '${order.materialId}';
+					var url = '${ctx}/business/bom?methodtype=orderDetail&YSId=' + YSId+'&materialId='+materialId;
 					location.href = url;		
 				});
 		

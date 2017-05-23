@@ -75,4 +75,24 @@
 	<power>
 	</power>    
   </query>
+  
+  <query>
+    <pool></pool>     
+    <name value="getProductStock" />
+    <where>
+      <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="like"  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.availabelToPromise" alias="promise" ctype="" />
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.quantityOnHand" alias="quantity" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+    </select>
+    <from>b_inventory a WHERE  SUBSTRING(a.materialId FROM 1 FOR 1)='K' AND a.deleteflag='0' </from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>

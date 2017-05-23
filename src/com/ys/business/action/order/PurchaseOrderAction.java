@@ -161,7 +161,7 @@ public class PurchaseOrderAction extends BaseAction {
 	
 	public HashMap<String, Object> getContract() throws Exception{
 
-		return service.getContractList();
+		return service.getContractByYSId();
 	}
 	public HashMap<String, Object> getContractByMaterail() throws Exception{
 

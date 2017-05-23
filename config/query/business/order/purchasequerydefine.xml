@@ -209,23 +209,45 @@
     <where>
     	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
        	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
+      </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.purchaseDate" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="FORMAT(REPLACE(A.quantity,',',''),2)" alias="quantity" ctype="" />
+    </select>
+    <from>v_purchaseorderdetail a  WHERE a.deleteFlag = '0' </from>
+    <orderby>a.YSId DESC,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getContractByYSId" />
+    <where>
       	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="AND" />
       </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
       <f name="A.YSId" alias="" ctype="" />
-      <f name="A.productId" alias="" ctype="" />
-      <f name="A.productName" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
-      <f name="A.shortName" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
       <f name="A.purchaseDate" alias="" ctype="" />
       <f name="A.deliveryDate" alias="" ctype="" />
-      <f name="FORMAT(A.total,2)" alias="total" ctype="" />
+      <f name="FORMAT(REPLACE(A.total,',',''),2)" alias="total" ctype="" />
     </select>
-    <from>v_parchaseorderlist a  WHERE a.deleteFlag = '0' </from>
-    <orderby>a.YSId DESC,a.productId,a.contractId</orderby>
+    <from>v_purchaseorder a  WHERE a.deleteFlag = '0' </from>
+    <orderby>a.YSId DESC,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>

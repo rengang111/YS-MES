@@ -269,6 +269,22 @@ public class MaterialService extends CommonService implements I_BaseService{
 		model.addAttribute("product", dataModel.getYsViewData().get(0));
 
 	}
+	
+
+	public void getProductSemiDetail(String productId) throws Exception {
+
+		dataModel.setQueryName("getProductSemiList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", productId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		baseQuery.getYsFullData();	 
+		
+		model.addAttribute("product", dataModel.getYsViewData().get(0));
+
+	}
+
 
 	public HashMap<String, Object> supplierPriceView(HttpServletRequest request, 
 			String data) throws Exception {
@@ -1178,6 +1194,24 @@ public class MaterialService extends CommonService implements I_BaseService{
 		
 		//产品基本信息
 		getProductDetail(materialId);
+		
+		//基础BOM信息
+		
+		
+		//客户报价信息
+		
+		
+		//订单信息
+		
+
+	}
+	
+	public void getProductSemiDeital() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		
+		//产品基本信息
+		getProductSemiDetail(materialId);
 		
 		//基础BOM信息
 		

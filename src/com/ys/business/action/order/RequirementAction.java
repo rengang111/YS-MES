@@ -178,7 +178,7 @@ public class RequirementAction extends BaseAction {
 	
 	public String doCreate() throws Exception {
 		
-		String rtnUrl= "/business/requirement/requirementadd";
+		String rtnUrl= "/business/requirement/requirementadd2";
 		boolean flg = service.createOrView();
 		
 		if(flg){

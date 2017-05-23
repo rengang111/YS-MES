@@ -183,7 +183,7 @@
 	
 	function doShow(recordId,PIId) {
 
-		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId+'&recordId='+recordId;
+		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
 
 		location.href = url;
 	}

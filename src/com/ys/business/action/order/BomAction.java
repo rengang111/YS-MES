@@ -100,8 +100,8 @@ public class BomAction extends BaseAction {
 				dataMap = doSearchPurchase(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "createBomOrder":
-				//doCreateBomOrder();
+			case "createOrderBom":
+				doCreateOrderBom();
 				//rtnUrl = "/business/bom/bomorderadd";
 				break;
 			case "insert":
@@ -328,18 +328,20 @@ public class BomAction extends BaseAction {
 			
 	}
 	public void doCreateBaseBom() throws Exception{
-		
+
+		model.addAttribute("keyBackup", request.getParameter("keyBackup"));	
 		bomService.createBaseBom();
 		
 	}
 	public void doEditBaseBom() throws Exception{
-		
+
+		model.addAttribute("keyBackup", request.getParameter("keyBackup"));	
 		bomService.editBaseBom();
 		
 	}
-	public void doCreateBomOrder() throws Exception{
+	public void doCreateOrderBom() throws Exception{
 		
-		//model = bomService.createBomPlan();
+		bomService.createOrderBom();
 		
 	}
 	

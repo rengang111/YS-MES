@@ -359,7 +359,7 @@
   	</select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- 00 表示该产品的基础BOM -->
-    <from>v_materiallist a LEFT JOIN b_customer b ON b.shortName = a.customerId AND b.deleteFlag = '0' WHERE SUBSTR(a.materialId FROM 1 FOR 1) = 'I'</from>
+    <from>v_materiallist a LEFT JOIN b_customer b ON b.shortName = a.customerId AND b.deleteFlag = '0' </from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>

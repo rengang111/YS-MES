@@ -1,28 +1,23 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 
-
 <%@ include file="../../common/common.jsp"%>
 
-<title>采购合同一览</title>
+<title>半成品一览</title>
 <script type="text/javascript">
 
-	function ajax(scrollHeight) {
+	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnDestroy();
 		}
+
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
-			 "iDisplayLength" : 50,
 			"lengthChange":false,
 			//"lengthMenu":[10,150,200],//设置一页展示20条记录
 			"processing" : true,
@@ -30,9 +25,10 @@
 			"stateSave" : false,
 			"ordering "	:true,
 			"searching" : false,
+			 "iDisplayLength" : 50,
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
-			"sAjaxSource" : "${ctx}/business/contract?methodtype=search",
+			"sAjaxSource" : "${ctx}/business/material?methodtype=searchProductSemi&pageFlg="+pageFlg,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -57,43 +53,57 @@
         		"url":"${ctx}/plugins/datatables/chinese.json"
         	},
 			"columns": [
-				{"data": null,"className" : 'td-center'},
-				{"data": "contractId", "defaultContent" : ''},
-				{"data": "materialId"},
-				{"data": "materialName", "defaultContent" : ''},
-				{"data": "YSId", "defaultContent" : ''},
-				{"data": "supplierId", "defaultContent" : ''},
-				{"data": "purchaseDate", "defaultContent" : ''},
-				{"data": "deliveryDate", "defaultContent" : ''},
-				{"data": "quantity", "defaultContent" : '0',"className" : 'td-right'},
-			
+						{"data": null,"className" : 'td-center'},
+						{"data": "materialId"},
+						{"data": "materialName"},
+						{"data": "totalCost", "defaultContent" : '0',"className" : 'td-right'},
+						{"data": "exchangePrice", "defaultContent" : '0',"className" : 'td-right'},
+						{"data": "currency", "defaultContent" : '0',"className" : 'td-center'},
+						{"data": null,"className" : 'td-right'},
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
-                   }},
-	    		{"targets":4,"render":function(data, type, row){
-	    			
-	    			return "<a href=\"###\" onClick=\"doShowYS('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";			    			
-	    		}},
+                }},
 	    		{"targets":1,"render":function(data, type, row){
-	    			
-	    			return "<a href=\"###\" onClick=\"doShowControct('" + row["contractId"] + "')\">"+row["contractId"]+"</a>";			    			
+	    			var material = row["materialId"];
+	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + row["materialId"] + "')\">"+material+"</a>";	
+	    			return rtn;
 	    		}},
-	    		{"targets":3,"render":function(data, type, row){
+	    		{"targets":2,"render":function(data, type, row){
+	    			
 	    			var name = row["materialName"];				    			
-	    			if(name != null) name = jQuery.fixedWidth(name,30);
+	    			name = jQuery.fixedWidth(name,45);				    			
 	    			return name;
+	    		}},
+	    		{"targets":4,"render":function(data, type, row){
+	    			var rate = row["exchangePrice"];
+	    			var c = row["currency"];
+	    			if(rate == null || rate == ""){
+		    			return "0";
+	    			}else{
+	    				return floatToSymbol(rate,c);
+		    			 //return row["profitRate"] + "%";	    				
+	    			}	    				
+	    		}},
+	    		{"targets":6,"render":function(data, type, row){
+	    			var rate = row["profitRate"];
+	    			if(rate == null || rate == ""){
+		    			return "0";
+	    			}else{
+		    			return row["profitRate"] + "%";	    				
+	    			}	    				
 	    		}}
          	] 
 		});
 	}
 
-	
-	function initEvent(){
 
-		doSearch();
-	
+
+	$(document).ready(function() {
+
+		ajax("");
+		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
 			if ( $(this).hasClass('selected') ) {
@@ -104,34 +114,30 @@
 	            $(this).addClass('selected');
 	        }
 		});
-	}
-
-	$(document).ready(function() {
-		
-		initEvent();
-
 		
 	})	
 	
 	function doSearch() {	
 
-		var scrollHeight = $(document).height() - 197; 
-		ajax(scrollHeight);
+		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
+		ajax("S");
 
 	}
 	
-	
-	function doShowYS(YSId) {
-
-		var url = '${ctx}/business/order?methodtype=getPurchaseOrder&YSId=' + YSId;
 		
+	function doShow(materialId) {
+
+		var url = '${ctx}/business/material?methodtype=productSemiView&materialId=' + materialId;
+
 		location.href = url;
 	}
+	
 
-	function doShowControct(contractId) {
-
-		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
-		location.href = url;
+	function reload() {
+		
+		$('#TMaterial').DataTable().ajax.reload(null,false);
+		
+		return true;
 	}
 	
 	
@@ -170,22 +176,19 @@
 	<div  style="height:10px"></div>
 
 	<div class="list">
-
-			<table id="TMaterial" class="display dataTable" >
-				<thead>						
-					<tr>
-						<th style="width: 10px;" class="dt-middle ">No</th>
-						<th style="width: 100px;"  class="dt-middle ">合同编号</th>
-						<th style="width: 120px;"  class="dt-middle ">物料编号</th>
-						<th  class="dt-middle ">物料名称</th>
-						<th style="width: 70px;"  class="dt-middle ">耀升编号</th>
-						<th style="width: 80px;"  class="dt-middle ">供应商</th>
-						<th style="width: 60px;"  class="dt-middle ">下单日期</th>
-						<th style="width: 60px;"  class="dt-middle ">合同交期</th>
-						<th style="width: 60px;"  class="dt-middle ">合同数量</th>
-					</tr>
-				</thead>
-			</table>
+		<table id="TMaterial" class="display dataTable" >
+			<thead>						
+				<tr>
+					<th style="width: 10px;"class="dt-middle ">No</th>
+					<th style="width: 180px;" class="dt-middle ">半成品编号</th>
+					<th class="dt-middle">产品名称</th>
+					<th style="width: 80px;" class="dt-middle">核算成本</th>
+					<th style="width: 80px;" class="dt-middle">客户报价</th>
+					<th style="width: 60px;" class="dt-middle">币种</th>
+					<th style="width: 60px;" class="dt-middle ">利润率</th>
+				</tr>
+			</thead>
+		</table>
 	</div>
 </div>
 </div>

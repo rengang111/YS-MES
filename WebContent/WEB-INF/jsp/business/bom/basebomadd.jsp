@@ -301,7 +301,9 @@
 		$("#goBack").click(
 				function() {
 					var materialId = '${product.materialId}';
-					var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
+					var keyBackup = $("#keyBackup").val();
+					//alert("keyBackup:"+keyBackup)
+					var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId+'&keyBackup='+keyBackup;
 					location.href = url;		
 				});
 		
@@ -438,6 +440,7 @@
 		
 		<input type="hidden" id="tmpMaterialId" />
 		<form:hidden path="bomPlan.recordid" value="${material.productRecord}"/>
+		<form:hidden path="keyBackup" />
 		
 		<fieldset>
 			<legend>基础BOM</legend>

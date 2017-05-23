@@ -169,8 +169,7 @@ public class MaterialAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;	
 			case "productView":
-				productView();
-				rtnUrl = "/business/material/productview";
+				rtnUrl = productView();
 				break;	
 			case "productSemiInit"://半成品
 				doInit(session);
@@ -181,7 +180,7 @@ public class MaterialAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;	
 			case "productSemiView":
-				productView();
+				productSemiView();
 				rtnUrl = "/business/material/productsemiview";
 				break;
 		}
@@ -536,11 +535,34 @@ public class MaterialAction extends BaseAction {
 		return dataMap;
 	}
 	
-	public void productView(){
+	public String productView(){		
+
+		String rtnUrl = "/business/material/productview";
+		try {
+			String keyBackup = request.getParameter("keyBackup");
+			
+			if(keyBackup!=null && keyBackup.equals("K")){
+				
+				materialService.getProductSemiDeital();	
+				rtnUrl = "/business/material/productsemiview";
+				
+			}else{
+				materialService.getProductDeital();
+				
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}	
 		
+		return rtnUrl;
+	}
+	
+
+	public void productSemiView(){		
 		
 		try {
-			materialService.getProductDeital();			
+			materialService.getProductSemiDeital();		
 			
 		}
 		catch(Exception e) {
