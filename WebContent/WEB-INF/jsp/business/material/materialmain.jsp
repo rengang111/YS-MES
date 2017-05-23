@@ -20,7 +20,7 @@
 		if(table) {
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/material?methodtype=search&pageFlg="+pageFlg;
+		var url = "${ctx}/business/material?methodtype=search&keyBackup="+pageFlg;
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,

@@ -21,6 +21,8 @@
 	var YSSwift = "";
 	var totalPrice = "";
 	var shortYear = ""; 
+	var ExFlagPI = '';//PI编号重复check
+	var ExFlagYS = '';//ys编号重复check
 
 	YSSwift = '${orderForm.YSMaxId}';
 	YSParentId = '${orderForm.YSParentId}';
@@ -277,10 +279,84 @@
 		
 		$("#insert").click(
 				function() {
-
+			if(ExFlagPI == 1){
+				$().toastmessage('showWarningToast', "PI编号已存在,请重新输入。");		
+				return;
+			}
+			if(ExFlagYS == 1){
+				$().toastmessage('showWarningToast', "耀升编号有重复,请重新输入。");		
+				return;
+			}
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=insert");
 			$('#orderForm').submit();
 		});
+		
+		$("#order\\.piid").change(function() {
+
+			var piid = $(this).val().toUpperCase();
+			//alert(parentId)
+			var url = "${ctx}/business/order?methodtype=piidExistCheck&PIId="+piid
+												
+			if (piid != ""){ 
+				$.ajax({
+					type : "post",
+					url : url,
+					async : false,
+					data : 'key=' + piid,
+					dataType : "json",
+					success : function(data) {
+		
+						ExFlagPI = data["ExFlag"];
+						if(ExFlagPI == '1'){
+							$().toastmessage('showWarningToast', "PI编号［ "+piid+" ］已存在,请重新输入。");				
+						}
+
+					},
+					error : function(
+							XMLHttpRequest,
+							textStatus,
+							errorThrown) {
+						
+						//alert("supplierId2222:"+textStatus);
+					}
+				});
+			}else{
+				//关联项目清空
+			}
+		});	//
+		
+		$(".ysidCheck").change(function() {
+
+			var YSId = $(this).val().toUpperCase();
+			//alert(YSId)
+			var url = "${ctx}/business/order?methodtype=ysidExistCheck&YSId="+YSId
+												
+			if (YSId != ""){ 
+				$.ajax({
+					type : "post",
+					url : url,
+					async : false,
+					data : 'key=' + YSId,
+					dataType : "json",
+					success : function(data) {
+		
+						ExFlagYS = data["ExFlag"];
+						if(ExFlagYS == '1'){
+							$().toastmessage('showWarningToast', "耀升编号［ "+YSId+" ］已存在,请重新输入。");				
+						}
+
+					},
+					error : function(
+							XMLHttpRequest,
+							textStatus,
+							errorThrown) {
+						
+						//alert("supplierId2222:"+textStatus);
+					}
+				});
+			}else{
+			}
+		});	//
 		
 		foucsInit();
 		
@@ -418,7 +494,7 @@
 		<c:forEach var="i" begin="0" end="4" step="1">		
 			<tr>
 				<td></td>
-				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" style="width:70px;" class="read-only"  /></td>
+				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" style="width:70px;" class="read-only ysidCheck"  /></td>
 				<td><input type="text" name="attributeList1" class="attributeList1">
 					<form:hidden path="orderDetailLines[${i}].materialid" /></td>								
 				<td><span></span></td>

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -43,6 +44,7 @@ public class OrderService extends BaseService {
 	private HashMap<String, String> userDefinedSearchCase;
 	private BaseQuery baseQuery;
 	ArrayList<HashMap<String, String>> modelMap = null;	
+	HttpSession session;
 	
 	public OrderService(){
 		
@@ -51,7 +53,8 @@ public class OrderService extends BaseService {
 	public OrderService(Model model,
 			HttpServletRequest request,
 			OrderModel reqModel,
-			UserInfo userInfo){
+			UserInfo userInfo,
+			HttpSession session){
 		
 		//this.bomPlanDao = new B_BomPlanDao();
 		//this.bomPlanData = new B_BomPlanData();
@@ -61,6 +64,7 @@ public class OrderService extends BaseService {
 		this.reqModel = reqModel;
 		this.request = request;
 		this.userInfo = userInfo;
+		this.session = session;
 		this.dataModel = new BaseModel();
 		this.userDefinedSearchCase = new HashMap<String, String>();
 		
@@ -85,8 +89,11 @@ public class OrderService extends BaseService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		String key1 = getJsonData(data, "keyword1").toUpperCase();
-		String key2 = getJsonData(data, "keyword2").toUpperCase();
+		String[] keyArr = getSearchKey(Constants.FORM_ORDER,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		//String key1 = getJsonData(data, "keyword1").toUpperCase();
+		//String key2 = getJsonData(data, "keyword2").toUpperCase();
 		
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
@@ -792,6 +799,44 @@ public class OrderService extends BaseService {
 	  this.baseQuery.getYsFullData();
 	
 	  this.model.addAttribute("order", this.dataModel.getYsViewData().get(0));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> piidExistCheck() throws Exception{
+
+		String ExFlag = "";
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String PIId = request.getParameter("PIId");
+
+		String where = " piid = '"+PIId +"' AND deleteFlag='0' " ;
+		B_OrderDao dao = new B_OrderDao();
+		List<B_OrderData> list; 
+		list = (List<B_OrderData>)dao.Find(where);	
+		if(list != null && list.size() > 0){
+			ExFlag = "1";
+		}	
+		modelMap.put("ExFlag",ExFlag);
+			
+		return modelMap;		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> ysidExistCheck() throws Exception{
+
+		String ExFlag = "";
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String YSId = request.getParameter("YSId");
+
+		String where = " ysid = '"+YSId +"' AND deleteFlag='0' " ;
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+		List<B_OrderData> list; 
+		list = (List<B_OrderData>)dao.Find(where);	
+		if(list != null && list.size() > 0){
+			ExFlag = "1";
+		}	
+		modelMap.put("ExFlag",ExFlag);
+			
+		return modelMap;		
 	}
 	
 }

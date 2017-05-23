@@ -141,8 +141,9 @@ public class MaterialService extends CommonService implements I_BaseService{
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		String key1 = getSearchKey(data,session)[0];
-		String key2 = getSearchKey(data,session)[1];
+		String[] keyArr = getSearchKey(Constants.FORM_MATERIAL,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
 		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
@@ -185,8 +186,9 @@ public class MaterialService extends CommonService implements I_BaseService{
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		String key1 = getSearchKey(data,session)[0];
-		String key2 = getSearchKey(data,session)[1];
+		String[] keyArr = getSearchKey("product",data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
 
 		dataModel.setQueryName("getProductList");
 		
@@ -230,8 +232,9 @@ public class MaterialService extends CommonService implements I_BaseService{
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		String key1 = getSearchKey(data,session)[0];
-		String key2 = getSearchKey(data,session)[1];
+		String[] keyArr = getSearchKey("productSemi",data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
 
 		dataModel.setQueryName("getProductSemiList");
 		

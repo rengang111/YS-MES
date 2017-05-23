@@ -20,6 +20,7 @@ import com.ys.business.action.model.material.MaterialModel;
 import com.ys.business.action.model.order.BomModel;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.Constants;
 import com.ys.business.service.order.BomService;
 import com.ys.business.service.order.OrderService;
 import com.ys.system.action.model.login.UserInfo;
@@ -35,6 +36,7 @@ public class OrderAction extends BaseAction {
 	OrderModel reqModel= new OrderModel();
 	UserInfo userInfo = new UserInfo();
 	Model model;
+	HttpSession session;
 	
 	@RequestMapping(value="/order")
 	public String init(
@@ -50,9 +52,10 @@ public class OrderAction extends BaseAction {
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		orderService = new OrderService(model,request,order,userInfo);
+		orderService = new OrderService(model,request,order,userInfo,session);
 		reqModel = order;
 		this.model = model;
+		this.session = session;
 		
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
@@ -69,6 +72,7 @@ public class OrderAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
+				doInit(session);
 				rtnUrl = "/business/order/ordermain";
 				break;
 			case "expenseInit":
@@ -131,7 +135,15 @@ public class OrderAction extends BaseAction {
 			case "getPurchaseOrder":
 				getPurchaseOrder();
 				rtnUrl = "/business/purchase/purchaseorderlist";
-				break;
+				break;		
+			case "piidExistCheck":
+				dataMap = piidExistCheck();
+				printOutJsonObj(response, dataMap);
+				return null;		
+			case "ysidExistCheck":
+				dataMap = ysidExistCheck();
+				printOutJsonObj(response, dataMap);
+				return null;
 				
 		}
 		
@@ -164,13 +176,33 @@ public class OrderAction extends BaseAction {
 		return mv;		
 	}
 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("deprecation")
+	public void doInit(HttpSession session){	
+			
+		String keyBackup = request.getParameter("keyBackup");
+		//没有物料编号,说明是初期显示,清空保存的查询条件
+		if(keyBackup == null || ("").equals(keyBackup)){
+			session.removeValue(Constants.FORM_ORDER+Constants.FORM_KEYWORD1);
+			session.removeValue(Constants.FORM_ORDER+Constants.FORM_KEYWORD2);
+		}
+		
+	}
+	
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public HashMap<String, Object> doSearchOrderList(@RequestBody String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
 		
+		//优先执行查询按钮事件,清空session中的查询条件
+		String keyBackup = request.getParameter("keyBackup");
+		if(keyBackup != null && !("").equals(keyBackup)){
+			session.removeValue(Constants.FORM_ORDER+Constants.FORM_KEYWORD1);
+			session.removeValue(Constants.FORM_ORDER+Constants.FORM_KEYWORD2);
+			
+		}
+				
 		try {
 			dataMap = orderService.getOrderList(data);
 			
@@ -416,6 +448,7 @@ public class OrderAction extends BaseAction {
 	    System.out.println(e.getMessage());
 	  }
 	}
+	
 	public void getPurchaseOrder()
 	{
 	  try {
@@ -426,6 +459,20 @@ public class OrderAction extends BaseAction {
 	  }
 	}
 
+	public HashMap<String, Object>  piidExistCheck() throws Exception
+	{
+	    return this.orderService.piidExistCheck();
+	 
+	}
+	
+
+	public HashMap<String, Object>  ysidExistCheck() throws Exception
+	{
+	    return this.orderService.ysidExistCheck();
+	 
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> documenterayNameSearch()
 	{

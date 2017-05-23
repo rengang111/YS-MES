@@ -157,7 +157,7 @@ $(document).ready(function() {
 	$("#return").click(
 		function() {
 			var materialId='${material.material.materialid}';
-			var url = "${ctx}/business/material?materialId="+materialId;
+			var url = "${ctx}/business/material?keyBackup="+materialId;
 			location.href = url;		
 		});
 	$("#doEdit").click(

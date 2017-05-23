@@ -22,6 +22,7 @@ import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.material.MaterialModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.Constants;
 import com.ys.business.service.material.MaterialService;
 import com.ys.system.action.model.login.UserInfo;
 
@@ -191,11 +192,11 @@ public class MaterialAction extends BaseAction {
 	@SuppressWarnings("deprecation")
 	public void doInit(HttpSession session){	
 			
-		String materialId = request.getParameter("materialId");
+		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
-		if(materialId == null || ("").equals(materialId)){
-			session.removeValue("mainSearchKey1");
-			session.removeValue("mainSearchKey2");
+		if(keyBackup == null || ("").equals(keyBackup)){
+			session.removeValue(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD1);
+			session.removeValue(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD2);
 		}
 		
 	}
@@ -208,10 +209,10 @@ public class MaterialAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
 		//优先执行查询按钮事件,清空session中的查询条件
-		String pageFlg = request.getParameter("pageFlg");
-		if(pageFlg != null && !("").equals(pageFlg)){
-			session.removeValue("mainSearchKey1");
-			session.removeValue("mainSearchKey2");
+		String keyBackup = request.getParameter("keyBackup");
+		if(keyBackup != null && !("").equals(keyBackup)){
+			session.removeValue(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD1);
+			session.removeValue(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD2);
 			
 		}
 		

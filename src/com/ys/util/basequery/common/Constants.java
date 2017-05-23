@@ -11,6 +11,19 @@ public class Constants {
 	public static final String USER_ADMIN = "002";
 	public static final String USER_BUSINESS = "003";
 
+
+	/**
+	 * formId
+	 */
+	public static final String FORM_KEY1 = "key1";//
+	public static final String FORM_KEY2 = "key2";//
+	public static final String FORM_KEYWORD1 = "keyword1";//
+	public static final String FORM_KEYWORD2 = "keyword2";//
+	public static final String FORM_MATERIAL = "material";//未检验
+	public static final String FORM_PRODUCT= "product";//合格
+	public static final String FORM_PRODUCTSEMI = "productsemi";//让步接收
+	public static final String FORM_ORDER = "order";//退货
+	
 	
 	/*
 	 * DB操作方式:0 插入;1 更新;2 删除

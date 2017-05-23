@@ -15,7 +15,7 @@
 <title>订单基本数据一览页面</title>
 <script type="text/javascript">
 
-	function ajax(scrollHeight) {
+	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnDestroy();
@@ -33,7 +33,7 @@
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/order?methodtype=search",
+				"sAjaxSource" : "${ctx}/business/order?methodtype=search&keyBackup="+pageFlg,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -77,7 +77,7 @@
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["PIId"] + "')\">"+row["YSId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["PIId"] + "')\">"+row["YSId"]+"</a>";
 		    			return rtn;
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
@@ -133,7 +133,7 @@
 	
 	function initEvent(){
 
-		doSearch();
+		ajax("");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -149,8 +149,6 @@
 
 	$(document).ready(function() {
 
-		//重设iframe高度
-		iFramNoSroll()
 		
 		initEvent();
 		
@@ -158,8 +156,7 @@
 	
 	function doSearch() {	
 
-		var scrollHeight = $(document).height() - 197; 
-		ajax(scrollHeight);
+		ajax("S");
 
 	}
 	
@@ -181,7 +178,7 @@
 		location.href = url;
 	}
 	
-	function doShow(recordId,PIId) {
+	function doShow(PIId) {
 
 		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
 

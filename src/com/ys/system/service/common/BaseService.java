@@ -252,15 +252,15 @@ public class BaseService {
 	 * 
 	 * @return String 
 	 */
-	public String[] getSearchKey(String data,HttpSession session){
+	public String[] getSearchKey(String formId,String data,HttpSession session){
 		
 		String[] rtnAarry = new String[2];
 				
 		String reqkey1 = getJsonData(data, "keyword1").trim().toUpperCase();
 		String reqkey2 = getJsonData(data, "keyword2").trim().toUpperCase();
 
-		String sinkey1 = (String)session.getAttribute("mainSearchKey1");
-		String sinkey2 = (String)session.getAttribute("mainSearchKey2");
+		String sinkey1 = (String)session.getAttribute(formId+Constants.FORM_KEYWORD1);
+		String sinkey2 = (String)session.getAttribute(formId+Constants.FORM_KEYWORD2);
 		
 		if (!("").equals(reqkey1) || !("").equals(reqkey2)){
 			
@@ -268,8 +268,8 @@ public class BaseService {
 			rtnAarry[1] = reqkey2;
 			
 			//作为详细页面返回到一览时的默认查询条件
-			session.setAttribute("mainSearchKey1",reqkey1 );
-			session.setAttribute("mainSearchKey2",reqkey2 );
+			session.setAttribute(formId+Constants.FORM_KEYWORD1,reqkey1 );
+			session.setAttribute(formId+Constants.FORM_KEYWORD2,reqkey2 );
 			
 		}else{
 			
