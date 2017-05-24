@@ -86,6 +86,10 @@ public class RequirementAction extends BaseAction {
 				doEditRequirement();
 				rtnUrl = "/business/requirement/requirementedit";
 				break;
+			case "resetRequirement":
+				doRestRequirement();
+				rtnUrl = "/business/requirement/requirementadd";
+				break;
 			case "editZZ":
 				doEditZZ();
 				rtnUrl = "/business/requirement/rawrequirementedit";
@@ -178,7 +182,7 @@ public class RequirementAction extends BaseAction {
 	
 	public String doCreate() throws Exception {
 		
-		String rtnUrl= "/business/requirement/requirementadd2";
+		String rtnUrl= "/business/requirement/requirementadd";
 		boolean flg = service.createOrView();
 		
 		if(flg){
@@ -191,6 +195,11 @@ public class RequirementAction extends BaseAction {
 	public void doEditRequirement() throws Exception{
 
 		service.editRequirement();
+	}
+	
+	public void doRestRequirement() throws Exception{
+
+		service.resetRequirement();
 	}
 	
 	public void doInsert() throws Exception {

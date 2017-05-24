@@ -287,6 +287,15 @@
 				$().toastmessage('showWarningToast', "耀升编号有重复,请重新输入。");		
 				return;
 			}
+			var str = '';
+			$(".attributeList1").each(function(){			
+				str += $(this).val();				
+			});			
+			if(str.length<=0){
+				$().toastmessage('showWarningToast', "请输入产品信息。");		
+				return;				
+			}
+			
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=insert");
 			$('#orderForm').submit();
 		});

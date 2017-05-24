@@ -103,6 +103,8 @@
 		productStock();//半成品库存信息
 		
 		autocomplete();
+
+		$( "#tabs" ).tabs();
 		
 		$(".goBack").click(
 				function() {
@@ -188,12 +190,12 @@
 			
 		<fieldset>
 			<legend>半成品库存信息</legend>
-			<div class="list" style="width: 60%;">
+			<div class="list" style="width: 50%;">
 				<table id="productStock" class="display" style="width:98%">
 						<thead>				
 							<tr>
 								<th width="1px">No</th>
-								<th class="dt-center" style="width:150px">物料编码</th>
+								<th class="dt-center" style="width:100px">物料编码</th>
 								<th class="dt-center" style="width:100px">当前库存</th>
 								<th class="dt-center" style="width:80px">操作</th>
 							</tr>
@@ -203,13 +205,17 @@
 		</fieldset>
 				
 		<fieldset class="action" style="text-align: right;margin-top: -50px;width: 30%;float: right;">
-			<button type="button" id="deleteOrderBom" class="DTTT_button">删除订单BOM</button>
-			<button type="button" id="requirement" class="DTTT_button">生成采购合同</button>
+			<button type="button" id="deleteOrderBom" class="DTTT_button">恢复到基础BOM</button>
+			<button type="button" id="requirement" class="DTTT_button">生成采购方案</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		
-		<fieldset>
-		<legend>订单BOM方案</legend>
+		<div id="tabs" style="padding: 0px;white-space: nowrap;">
+		<ul>
+			<li><a href="#tabs-1" class="tabs1">订单BOM</a></li>
+		</ul>
+
+			<div id="tabs-1" style="padding: 5px;">
 
 			<table id="baseBomTable" class="display" style="width:98%">
 				<thead>				
@@ -226,7 +232,9 @@
 					</tr>
 				</thead>			
 			</table>
-		</fieldset>
+		</div>
+		</div>
+
 		
 		<div style="clear: both"></div>		
 	</form:form>

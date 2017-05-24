@@ -62,11 +62,11 @@
 					{"data": "YSId", "defaultContent" : ''},
 					// {"data": "orderId", "defaultContent" : ''},
 					{"data": "PIId", "defaultContent" : ''},
-					{"data": "deliveryDate", "className" : 'td-left'},
+					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "materialId", "defaultContent" : ''},
 					{"data": "materialName", "defaultContent" : ''},
-					{"data": "quantity", "className" : 'td-right'},
-					{"data": "price", "className" : 'td-right'},
+					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
+					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},
 					{"data": null, "defaultContent" : '0', "className" : 'td-right'},
 					{"data": "team", "defaultContent" : ''},
 				],
@@ -99,20 +99,20 @@
 		    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
 		    			name = jQuery.fixedWidth(name,30,true);//true:两边截取,左边从汉字开始
 		    			var zzFlag = "";
-		    			if(id != ''){
-		    				zzFlag = id.substr(2,3);
-		    			}
-		    			if(zzFlag == 'YSK') name = '库存订单';//库存订单不显示明细内容
+		    			//if(id != ''){
+		    			//	zzFlag = id.substr(2,3);
+		    			//}
+		    			//if(zzFlag == 'YSK') name = '库存订单';//库存订单不显示明细内容
 		    			
 		    			return name;
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 		    			
 		    			var v = row["materialId"],id = row["YSId"], zzFlag = "";
-		    			if(id != ''){
-		    				zzFlag = id.substr(2,3);
-		    			}
-		    			if(zzFlag == 'YSK') v = '库存订单';//库存订单不显示明细内容
+		    			//if(id != ''){
+		    			//	zzFlag = id.substr(2,3);
+		    			//}
+		    			//if(zzFlag == 'YSK') v = '库存订单';//库存订单不显示明细内容
 		    			return v;
 		    		}}				           
 	         	] 
@@ -123,7 +123,7 @@
 	
 	function YSKcheck(v,id){
 		var zzFlag = "";
-		if(id != ''){
+		if(id != null && id != ''){
 			zzFlag = id.substr(2,3);
 		}
 		if(zzFlag == 'YSK') v = 0;//库存订单不显示明细内容
@@ -235,8 +235,8 @@
 </script>
 </head>
 
-<body class="panel-body">
-<div id="container">
+<body>
+	<div id="container">
 
 		<div id="main">
 		

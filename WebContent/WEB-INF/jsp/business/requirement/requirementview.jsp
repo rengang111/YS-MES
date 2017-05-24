@@ -101,6 +101,16 @@
 			location.href = url;		
 		});
 		
+		$("#doReset").click(function() {
+			var order = '${order.quantity}';
+			order = order.replace(/,/g, "");
+			var materialId='${order.materialId}';
+			var YSId = '${order.YSId}';
+			var url = "${ctx}/business/requirement?methodtype=resetRequirement&YSId="+YSId+"&materialId="+materialId+"&order="+order;
+			location.href = url;		
+			
+		});
+		
 		$("#doContract").click(function() {
 			var YSId = '${order.YSId}';
 			var materialId='${order.materialId}';
@@ -392,6 +402,7 @@
 			</tbody>			
 			</table>
 		<fieldset class="action" style="text-align: right;margin-top: 10px;">
+			<button type="button" id="doReset" class="DTTT_button">重置采购方案</button>
 			<button type="button" id="doEdit" class="DTTT_button">编辑</button>
 			<button type="button" id="doReport" class="DTTT_button">提交</button>
 			<button type="button" id="doContract" class="DTTT_button">生成采购合同</button>

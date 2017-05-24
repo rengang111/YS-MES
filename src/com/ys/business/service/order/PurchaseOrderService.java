@@ -129,6 +129,54 @@ public class PurchaseOrderService extends CommonService {
 		return modelMap;
 	}
 	
+public HashMap<String, Object> getContractList2(String data) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		String key1 = getJsonData(data, "keyword1").toUpperCase();
+		String key2 = getJsonData(data, "keyword2").toUpperCase();
+	
+		dataModel.setQueryName("getContractList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+			
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		model.addAttribute("contract",dataModel.getYsViewData());
+		return modelMap;
+	}
+
 	public void getZZOrderDetail( 
 			String YSId) throws Exception {
 

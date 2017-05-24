@@ -73,6 +73,15 @@ public class PurchaseOrderAction extends BaseAction {
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
+				break;	
+			case "initTest":
+				//doInit(session);
+				dataMap = doSearch2(data);
+				rtnUrl = "/business/purchase/purchaseordermain2";
+				break;			
+			case "searchTest":
+				dataMap = doSearch(data);
+				printOutJsonObj(response, dataMap);
 				break;
 			case "creatPurchaseOrder":
 				creatPurchaseOrder();
@@ -140,6 +149,30 @@ public class PurchaseOrderAction extends BaseAction {
 		
 		try {
 			dataMap = service.getContractList(data);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doSearch2(
+			@RequestBody String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap = service.getContractList2(data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {

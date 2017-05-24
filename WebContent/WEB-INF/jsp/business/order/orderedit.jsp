@@ -270,7 +270,17 @@
 				});
 		
 		$("#insert").click(
-				function() {			
+				function() {	
+
+			var str = '';
+			$(".attributeList1").each(function(){			
+				str += $(this).val();				
+			});			
+			if(str.length<=0){
+				$().toastmessage('showWarningToast', "至少保留一个产品信息。");		
+				return;				
+			}
+			
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=update");
 			$('#orderForm').submit();
 		});

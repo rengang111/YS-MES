@@ -630,20 +630,38 @@ public class OrderService extends BaseService {
 			//nothing
 		}		
 	}
+	@SuppressWarnings("unchecked")
 	public Model delete(String delData){
 
-
 		B_OrderDetailDao dao = new B_OrderDetailDao();	
-		B_OrderDetailData data = new B_OrderDetailData();									
+		B_OrderDetailData data = new B_OrderDetailData();
+
+		B_OrderDao odao = new B_OrderDao();	
+		B_OrderData odata = new B_OrderData();
+		List<B_OrderData> list = null;		
+		
 		try {	
 			
 			ts = new BaseTransaction();										
 			ts.begin();									
 			String removeData[] = delData.split(",");									
 			for (String key:removeData) {									
+
+				data.setRecordid(key);				
+				data = (B_OrderDetailData)dao.FindByPrimaryKey(data);
+
+				dao.Remove(data);
+
+				//判断是否要删除PI信息				
+				String Piid = data.getPiid();
+				String where = "PIId = '" + Piid +"' AND deleteFlag='0'";
+				list = odao.Find(where);
+				
+				if(list !=null && list.size() == 1){
+					//一个PI下只有一个产品时,同时删除PI信息
+					odao.Remove(list.get(0));
+				}
 												
-				data.setRecordid(key);							
-				dao.Remove(data);								
 			}
 			ts.commit();
 		}

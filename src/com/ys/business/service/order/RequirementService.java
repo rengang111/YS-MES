@@ -872,7 +872,7 @@ public class RequirementService extends CommonService {
 		System.out.println("*****有临时对应*****");
 		
 		ArrayList<HashMap<String, String>> list = new  ArrayList<HashMap<String, String>>();
-		int orderNum = Integer.parseInt(order);
+		int orderNum = Integer.parseInt(order.replace(",", ""));
 		
 		dataModel = new BaseModel();
 		dataModel.setQueryFileName("/business/order/purchasequerydefine");
@@ -1054,8 +1054,9 @@ public class RequirementService extends CommonService {
 		modelMap = baseQuery.getYsFullData();
 		
 		if(dataModel.getRecordCount() > 0){
-				HashMap.put("recordsTotal", dataModel.getRecordCount());
-				HashMap.put("data", dataModel.getYsViewData());				
+			HashMap.put("recordsTotal", dataModel.getRecordCount());
+			HashMap.put("data", dataModel.getYsViewData());		
+			model.addAttribute("requirement", dataModel.getYsViewData());
 	
 		}else{
 			return null;
@@ -1063,7 +1064,28 @@ public class RequirementService extends CommonService {
 				
 		return HashMap;
 	}
+	
 	public void getPurchaseDetail(
+			String YSId) throws Exception {
+
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getPurchaseDetail");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		modelMap = baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			model.addAttribute("requirement", dataModel.getYsViewData());	
+		}	
+	}
+	
+	public void geBaseDetail(
 			String YSId) throws Exception {
 
 		HashMap<String, Object> HashMap = new HashMap<String, Object>();
@@ -1223,6 +1245,21 @@ public class RequirementService extends CommonService {
 		getOrderDetail(YSId);
 		
 	}
+	
+	//重置采购方案
+	public void resetRequirement() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		String materialId = request.getParameter("materialId");
+		String bomId = BusinessService.getBaseBomId(materialId)[1];
+		model.addAttribute("bomId",bomId);
+		
+		createRequirement();
+		
+		getOrderDetail(YSId);
+		
+	}
+	
 	
 	public void createRequirement() throws Exception {
 		

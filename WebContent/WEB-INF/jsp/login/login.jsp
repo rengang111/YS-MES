@@ -10,7 +10,7 @@
 		<div style="margin-left:-200px;margin-top:-200px;width:400px;height:200px;">
 			<form name="form" id="form" modelAttribute="dataModels" action="${ctx}/login/checklogin" method="post"  autocomplete="off">
 			
-				<table width="400px" style='margin:0px auto;border-collapse:separate; border-spacing:10px;'>
+				<table  style='margin:0px auto;border-collapse:separate; border-spacing:10px;width:500px'>
 					<tr height="30px">
 						<td width="60px">
 							用户名：
@@ -32,10 +32,10 @@
 							验证码：
 						</td>
 						<td width="150px">
-			 				<input type="text" name="verifyCode" id="verifyCode" style="height:30px" />
+			 				<input type="text" name="verifyCode" id="verifyCode" style="height:30px;text-transform:uppercase;font-size: 24px;width: 135px;"/>
 			 			</td>
 			 			<td width="100px">
-			        			<img id="imgObj" src="${ctx}/login/verifyCode" height="100%" width="100%"></img>
+			        			<img id="imgObj" src="${ctx}/login/verifyCode" ></img>
 			        	</td>
 			        	<td width="60px">
 			        		<a href="#" onclick="changeImg();">换一张</a>
