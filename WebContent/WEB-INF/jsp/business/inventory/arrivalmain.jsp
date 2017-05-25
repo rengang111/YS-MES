@@ -38,78 +38,97 @@
 		if(table) {
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/arrival?methodtype=search&pageFlg="+pageFlg;
+		var url = "${ctx}/business/arrival?methodtype=contractArrivalSearch&keyBackup="+pageFlg;
 
 		var t = $('#TMaterial').DataTable({
-				"paging": true,
-				 "iDisplayLength" : 100,
-				"lengthChange":false,
-				//"lengthMenu":[10,150,200],//设置一页展示20条记录
-				"processing" : true,
-				"serverSide" : true,
-				"stateSave" : false,
-				"ordering "	:true,
-				"searching" : false,
-				"pagingType" : "full_numbers",
-				"retrieve" : true,
-				"sAjaxSource" : url,
-				"fnServerData" : function(sSource, aoData, fnCallback) {
-					var param = {};
-					var formData = $("#condition").serializeArray();
-					formData.forEach(function(e) {
-						aoData.push({"name":e.name, "value":e.value});
-					});
+			"paging": true,
+			 "iDisplayLength" : 100,
+			"lengthChange":false,
+			//"lengthMenu":[10,150,200],//设置一页展示20条记录
+			"processing" : true,
+			"serverSide" : true,
+			"stateSave" : false,
+			"ordering "	:true,
+			"searching" : false,
+			"pagingType" : "full_numbers",
+			"retrieve" : true,
+			"sAjaxSource" : url,
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				var param = {};
+				var formData = $("#condition").serializeArray();
+				formData.forEach(function(e) {
+					aoData.push({"name":e.name, "value":e.value});
+				});
 
-					$.ajax({
-						"url" : sSource,
-						"datatype": "json", 
-						"contentType": "application/json; charset=utf-8",
-						"type" : "POST",
-						"data" : JSON.stringify(aoData),
-						success: function(data){	
-							//alert("recordsTotal"+data["recordsTotal"])
-							fnCallback(data);
+				$.ajax({
+					"url" : sSource,
+					"datatype": "json", 
+					"contentType": "application/json; charset=utf-8",
+					"type" : "POST",
+					"data" : JSON.stringify(aoData),
+					success: function(data){	
+						//alert("recordsTotal"+data["recordsTotal"])
+						fnCallback(data);
 
-						},
-						 error:function(XMLHttpRequest, textStatus, errorThrown){
-								//alert(XMLHttpRequest.status);
-								//alert(XMLHttpRequest.readyState);
-								//alert(textStatus);
-								//alert(errorThrown);
-						 }
-					})
-				},
-	        	"language": {
-	        		"url":"${ctx}/plugins/datatables/chinese.json"
-	        	},
-				"columns": [
-					{"data": null,"className" : 'td-center'},
-					{"data": "arriveDate","className" : 'td-center'},
-					{"data": "YSId"},
-					{"data": "contractId"},
-					{"data": "arrivalId"},
-					{"data": "materialId"},
-					{"data": "materialName"},
-					{"data": "quantity","className" : 'td-right'},
-					{"data": "status","className" : 'td-center'},
-				],
-				"columnDefs":[
-		    		{"targets":0,"render":function(data, type, row){
-						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
-                    }},
-		    		{"targets":5,"render":function(data, type, row){
+					},
+					 error:function(XMLHttpRequest, textStatus, errorThrown){
+							//alert(XMLHttpRequest.status);
+							//alert(XMLHttpRequest.readyState);
+							//alert(textStatus);
+							//alert(errorThrown);
+					 }
+				})
+			},
+        	"language": {
+        		"url":"${ctx}/plugins/datatables/chinese.json"
+        	},
+			"columns": [
+				{"data": null,"className" : 'td-center'},
+				{"data": "contractId"},
+				{"data": "materialId"},
+				{"data": "materialName"},
+				{"data": "YSId"},
+				{"data": "supplierId"},
+				{"data": "quantity","className" : 'td-right'},
+				{"data": "arrivalSum","className" : 'td-right'},
+				{"data": null,"className" : 'td-right'},
+				{"data": null,"className" : 'td-center'},
 
-		    			var materialId = row["materialId"];	
-		    			var arrivalId = row["arrivalId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + row["arrivalId"] + "')\">"+materialId+"</a>";
-		    			return rtn;
-		    		}},
-		    		{"targets":6,"render":function(data, type, row){
-		    			
-		    			var name = row["materialName"];				    			
-		    			name = jQuery.fixedWidth(name,35);				    			
-		    			return name;
-		    		}}
+			],
+			"columnDefs":[
+	    		{"targets":0,"render":function(data, type, row){
+					return row["rownum"];
+                   }},
+	    		{"targets":1,"render":function(data, type, row){
+
+	    			var contractId = row["contractId"];	
+	    			return "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">"+contractId+"</a>";
+	    		
+	    		}},
+	    		{"targets":3,"render":function(data, type, row){
+	    			
+	    			var name = row["materialName"];				    			
+	    			name = jQuery.fixedWidth(name,30);				    			
+	    			return name;
+	    		}},
+	    		{"targets":8,"render":function(data, type, row){
+	    			var quantity = currencyToFloat(row["quantity"]);
+	    			var arrivalSum = currencyToFloat(row["arrivalSum"]);
+	    			return floatToCurrency( quantity - arrivalSum);
+	    			
+	    		}},
+	    		{"targets":9,"render":function(data, type, row){
+	    			var contractId = row["contractId"];	
+	    			var quantity = currencyToFloat(row["quantity"]);
+	    			var arrivalSum = currencyToFloat(row["arrivalSum"]);
+	    			
+	    			var reful=  ( quantity - arrivalSum);
+	    			var rtn="";
+	    			if(reful >0)
+	    				rtn = "<a href=\"###\" onClick=\"doCreate('" + row["contractId"] + "')\">收货</a>";
+    			
+	    			return rtn;
+	    		}}
 	           
 	         ] 
 		});
@@ -142,15 +161,15 @@
 
 	}
 	
-	function doCreate() {
+	function doCreate(contractId) {
 		
-		var url = '${ctx}/business/arrival?methodtype=addinit';
+		var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId;
 		location.href = url;
 	}
 	
-	function doShow(arrivalId) {
+	function doShow(contractId) {
 
-		var url = '${ctx}/business/arrival?methodtype=detailView&arrivalId=' + arrivalId;
+		var url = '${ctx}/business/arrival?methodtype=gotoArrivalView&contractId=' + contractId;
 
 		location.href = url;
 	}
@@ -234,24 +253,26 @@
 	<div  style="height:10px"></div>
 
 	<div class="list">
-
+<!-- 
 		<div align="right" style="height:40px">
 			<a class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>新建</span></a>
 			<a class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a>
 		</div>
+-->
 		<div id="clear"></div>
 		<table id="TMaterial" class="display dataTable">
 			<thead>						
 				<tr>
 					<th style="width: 1px;" class="dt-middle ">No</th>
-					<th style="width: 60px;" class="dt-middle">到货日期</th>
-					<th style="width: 60px;" class="dt-middle">耀升编号</th>
 					<th style="width: 95px;" class="dt-middle">合同编号</th>
-					<th style="width: 50px;" class="dt-middle">到货登记</th>
-					<th style="width: 170px;" class="dt-middle ">物料编号</th>
+					<th style="width: 120px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
-					<th style="width: 60px;" class="dt-middle ">到货数量</th>
-					<th style="width: 40px;" class="dt-middle ">状态</th>
+					<th style="width: 60px;" class="dt-middle">耀升编号</th>
+					<th style="width: 60px;" class="dt-middle">供应商</th>
+					<th style="width: 60px;" class="dt-middle">合同数量</th>
+					<th style="width: 60px;" class="dt-middle ">累计到货</th>
+					<th style="width: 60px;" class="dt-middle ">剩余数量</th>
+					<th style="width: 25px;" class="dt-middle ">操作</th>
 				</tr>
 			</thead>
 		</table>

@@ -4,7 +4,7 @@
 <html>
 
 <head>
-<title>库存管理-到货登记</title>
+<title>库存管理-到货修改</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -242,12 +242,12 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px"><label>到货编号：</label></td>					
-				<td>
-					<form:input path="arrival.arrivalid" class="short required read-only" value="${arrivalId }" /></td>
+				<td>${arrivalId }
+					<form:hidden path="arrival.arrivalid"  value="${arrivalId }" /></td>
 														
 				<td width="100px" class="label">到货日期：</td>
 				<td>
-					<form:input path="arrival.arrivedate" class="short read-only" /></td>
+					<form:input path="arrival.arrivedate" class="short read-only"  value=""/></td>
 				
 				<td width="100px" class="label">仓管员：</td>
 				<td>
@@ -289,22 +289,25 @@
 			<tr>
 				<td></td>
 				<td>${list.materialId }
-					<form:hidden path="arrivalList[${status.index}].materialid" value="${list.materialId }"/></td>
+					<form:hidden path="arrivalList[${status.index}].materialid" value="${list.materialId }" /></td>
 				<td><span>${list.materialName }</span></td>
 				<td><span>${list.unit }</span></td>
-				<td><form:input path="arrivalList[${status.index}].quantity" class="num mini"  value="0"/></td>
-				<td><span>${list.quantity }</span></td>
+				<td><form:input path="arrivalList[${status.index}].quantity" class="num mini"  value="${list.quantity }"/></td>
+				<td><span>${list.contractQuantity }</span></td>
 				<td><span id="arrivalSum${ status.index}"></span></td>
 				<td><span id="surplus${ status.index}"></span></td>
 			</tr>
 			<script type="text/javascript">
 					var index = '${status.index}';
-					var quantity = currencyToFloat('${list.quantity}');
+					var contractQuantity = currencyToFloat('${list.contractQuantity}');
 					var arrivalSum = currencyToFloat('${list.arrivalSum}');
-					var surplus = quantity - arrivalSum;
+					var quantity = currencyToFloat('${list.quantity}');
 					
-					$('#surplus'+index).html(floatToCurrency( surplus ))
+					arrivalSum = arrivalSum - quantity;//剩余 - 刚登记的
+					var surplus = contractQuantity - arrivalSum - quantity;
+					
 					$('#arrivalSum'+index).html(floatToCurrency( arrivalSum ))
+					$('#surplus'+index).html(floatToCurrency( surplus ))
 			</script>
 			
 		</c:forEach>

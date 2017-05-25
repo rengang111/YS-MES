@@ -25,6 +25,7 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Service
 public class ArrivalService extends BaseService {
@@ -44,7 +45,8 @@ public class ArrivalService extends BaseService {
 	private  Model model;
 	private HashMap<String, String> userDefinedSearchCase;
 	private BaseQuery baseQuery;
-	HashMap<String, Object> modelMap = null;	
+	HashMap<String, Object> modelMap = null;
+	HttpSession session;	
 
 	public ArrivalService(){
 		
@@ -52,6 +54,7 @@ public class ArrivalService extends BaseService {
 
 	public ArrivalService(Model model,
 			HttpServletRequest request,
+			HttpSession session,
 			ArrivalModel reqModel,
 			UserInfo userInfo){
 		
@@ -60,6 +63,7 @@ public class ArrivalService extends BaseService {
 		this.reqModel = reqModel;
 		this.request = request;
 		this.userInfo = userInfo;
+		this.session = session;
 		dataModel = new BaseModel();
 		modelMap = new HashMap<String, Object>();
 		userDefinedSearchCase = new HashMap<String, String>();
@@ -117,11 +121,65 @@ public class ArrivalService extends BaseService {
 		return modelMap;		
 
 	}
+	
 
-	public void addInit() {
+	public HashMap<String, Object> contractArrivalSearch(
+			String data) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}
+	
+		dataModel.setQueryName("getArrivaList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+			
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+
+	public void addInit() throws Exception {
 
 		//取得到货编号"yyMMdd01"
 		getArriveId();
+		
+		//取得该合同编号下的物料信息
+		String contractId = request.getParameter("contractId");
+		getContractDetail(contractId);
 	
 	}
 
@@ -131,14 +189,14 @@ public class ArrivalService extends BaseService {
 		getArrivaRecord(arrivalId);
 	}
 	
-	public void insertArrival() {
+	public void insertAndViewArrival() throws Exception {
 
-		String arrivalId = insertAndView();
-		getArrivaRecord(arrivalId);
+		String contractId = insertArrival();
+		getContractDetail(contractId);
 	}
 	
-	private String insertAndView(){
-		String arrivalId = "";
+	private String insertArrival(){
+		String contractId = "";
 		ts = new BaseTransaction();
 		
 		
@@ -149,12 +207,13 @@ public class ArrivalService extends BaseService {
 			List<B_ArrivalData> reqDataList = reqModel.getArrivalList();
 			
 			//删除旧数据
-			arrivalId = reqData.getArrivalid();
+			String arrivalId = reqData.getArrivalid();
 			deleteArrivalById(arrivalId);
+			contractId = reqData.getContractid();
 			
 			for(B_ArrivalData data:reqDataList ){
-				String contract = data.getContractid();
-				if(contract == null || contract.equals(""))
+				String q = data.getQuantity();
+				if(q == null || q.equals("") || q.equals("0"))
 					continue;
 				
 				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
@@ -165,6 +224,7 @@ public class ArrivalService extends BaseService {
 				String guid = BaseDAO.getGuId();
 				data.setRecordid(guid);
 				data.setArrivalid(arrivalId);
+				data.setContractid(reqData.getContractid());
 				data.setUserid(userInfo.getUserId());
 				data.setArrivedate(reqData.getArrivedate());
 				data.setStatus(Constants.ARRIVERECORD_0);//未报检
@@ -185,7 +245,7 @@ public class ArrivalService extends BaseService {
 			}
 		}
 		
-		return arrivalId;
+		return contractId;
 	}
 	
 	private void deleteArrivalById(String arrivalId) {
@@ -269,5 +329,63 @@ public class ArrivalService extends BaseService {
 		
 	}
 	
+	public void getContractDetail(String contractId) throws Exception {
+
+		
+		dataModel.setQueryName("getContractById");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("contractId", contractId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));
+			model.addAttribute("material",dataModel.getYsViewData());			
+		}
+		
+	}
+	
+	public HashMap<String, Object> getArrivalHistory(
+			String contractId) throws Exception {
+		
+		dataModel.setQueryName("getArrivaListByContractId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("contractId", contractId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+		
+	}
+	
+	
+	public void getContractByArrivalId() throws Exception {
+
+		String contractId = request.getParameter("contractId");
+		String arrivalId = request.getParameter("arrivalId");
+		
+		dataModel.setQueryName("getContractByArrivalId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contractId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", arrivalId);
+		baseQuery.getYsFullData(sql);
+
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));
+			model.addAttribute("material",dataModel.getYsViewData());
+			model.addAttribute("arrivalId",arrivalId);
+		}
+		
+	}
 
 }

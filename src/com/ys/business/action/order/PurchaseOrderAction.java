@@ -22,6 +22,7 @@ import com.ys.business.service.order.PurchaseOrderService;
 import com.ys.business.service.order.RequirementService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.Constants;
 
 @Controller
 @RequestMapping("/business")
@@ -29,6 +30,7 @@ public class PurchaseOrderAction extends BaseAction {
 	
 	@Autowired PurchaseOrderService service;
 	@Autowired HttpServletRequest request;
+	HttpSession session;
 	
 	UserInfo userInfo = new UserInfo();
 	PurchaseOrderModel reqModel = new PurchaseOrderModel();
@@ -51,6 +53,7 @@ public class PurchaseOrderAction extends BaseAction {
 		this.service = new PurchaseOrderService(model,request,form,userInfo);
 		this.reqModel = form;
 		this.model = model;
+		this.session = session;
 		
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
@@ -67,9 +70,9 @@ public class PurchaseOrderAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				doInit(session);
+				doInit();
 				rtnUrl = "/business/purchase/purchaseordermain";
-				break;				
+				break;		
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
@@ -122,31 +125,38 @@ public class PurchaseOrderAction extends BaseAction {
 			case "approve":
 				doApprove();
 				rtnUrl = "/business/order/ordermain";
-				break;				
+				break;		
 		}
 		
 		return rtnUrl;		
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void doInit(HttpSession session){	
+	public void doInit(){	
 			
-		String contractId = request.getParameter("contractId");
+		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
-		if(contractId == null || ("").equals(contractId)){
-			session.removeValue("mainSearchKey1");
-			session.removeValue("mainSearchKey2");
-		}		
+		if(keyBackup == null || ("").equals(keyBackup)){
+			session.removeValue(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
+			session.removeValue(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
+		}
+		
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public HashMap<String, Object> doSearch(
 			@RequestBody String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
-		
+		//优先执行查询按钮事件,清空session中的查询条件
+		String keyBackup = request.getParameter("keyBackup");
+		if(keyBackup != null && !("").equals(keyBackup)){
+			session.removeValue(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
+			session.removeValue(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
+			
+		}
 		try {
 			dataMap = service.getContractList(data);
 			
@@ -240,4 +250,6 @@ public class PurchaseOrderAction extends BaseAction {
 		service.approveAndView();			
 		
 	}	
+	
+
 }

@@ -2,10 +2,9 @@
 <root>
   <query>
     <pool></pool>     
-    <name value="getArrivaList" />
+    <name value="getArrivaListByContractId" />
     <where>
-    	<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+       <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
     </where>
     <select>
       <f name="A.arrivalId" alias="" ctype="" />
@@ -21,9 +20,10 @@
       <f name="a.supplierName" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
       <f name="a.total" alias="" ctype="" />
+      <f name="a.LoginName" alias="" ctype="" />
     </select>
     <from>v_arrivallist a WHERE a.deleteFlag = '0' </from>
-    <orderby>a.arriveDate DESC,a.YSId DESC,a.contractId,a.arrivalId,a.materialId</orderby>
+    <orderby>a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -94,5 +94,109 @@
     <having></having>
 	<power>
 	</power>    
+  </query>
+  
+  <query>
+    <pool></pool>     
+    <name value="getArrivaList" />
+    <where>
+   		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+       </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="a.supplierName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="IFNULL(c.recodeSum,'0')" alias="arrivalSum" ctype="" />
+    </select>
+    <from>v_purchaseorderdetail a LEFT JOIN v_arrivalquantitygroup c ON c.contractId = a.contractId AND c.materialId = a.materialId WHERE a.deleteFlag = '0' </from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  
+  <query>
+    <pool></pool>    
+    <name value="getContractById" />
+    <where>
+    	<w name="a.contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.recordId" alias="productRecordId" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="IFNULL(a.productId,'自制库存订单')" alias="productId" ctype="" />
+      <f name="a.productName" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.quantity" alias="" ctype="" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="shortName" ctype="" />
+      <f name="a.supplierName" alias="fullName" ctype="" />
+      <f name="a.purchaseDate" alias="" ctype="" />
+      <f name="a.deliveryDate" alias="" ctype="" />
+      <f name="a.total" alias="" ctype="" />
+      <f name="a.memo" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="IFNULL(b.recodeSum,'0')" alias="arrivalSum" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_purchaseorderdetail a LEFT JOIN v_arrivalquantitygroup b ON b.contractId = a.contractId AND b.materialId = a.materialId</from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query> 
+  <query>
+    <pool></pool>    
+    <name value="getContractByArrivalId" />
+    <where>
+    	<w name="a.contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.recordId" alias="productRecordId" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="IFNULL(a.productId,'自制库存订单')" alias="productId" ctype="" />
+      <f name="a.productName" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.quantity" alias="contractQuantity" ctype="" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="shortName" ctype="" />
+      <f name="a.supplierName" alias="fullName" ctype="" />
+      <f name="a.purchaseDate" alias="" ctype="" />
+      <f name="a.deliveryDate" alias="" ctype="" />
+      <f name="a.total" alias="" ctype="" />
+      <f name="a.memo" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="IFNULL(b.recodeSum,'0')" alias="arrivalSum" ctype="" />
+      <f name="c.arrivalId" alias="" ctype="" />
+      <f name="c.arriveDate" alias="" ctype="" />
+      <f name="IFNULL(c.quantity,'0')" alias="quantity" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_purchaseorderdetail a LEFT JOIN v_arrivalquantitygroup b ON b.contractId = a.contractId AND b.materialId = a.materialId LEFT JOIN b_arrival c ON c.contractId = a.contractId AND c.materialId = a.materialId  AND c.deleteFlag='0' AND c.arrivalId = '#'</from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
   </query>
 </root>

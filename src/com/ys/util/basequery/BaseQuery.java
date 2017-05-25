@@ -159,7 +159,10 @@ public class BaseQuery {
     
     public ArrayList<HashMap<String, String>> getYsFullData(String sql) throws Exception {
 				
-		return getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), 0, 0, true);
+    	this.viewYsData =  getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), 0, 0, true);
+		this.commonModel.setYsViewData(viewYsData);
+		this.commonModel.setRecordCount(viewYsData.size());
+		return viewYsData;
     	
     }
     

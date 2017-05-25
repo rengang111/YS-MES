@@ -99,14 +99,15 @@ public class PurchaseOrderService extends CommonService {
 		String length = getJsonData(data, "iDisplayLength");
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
-		}		
-		
-		String key1 = getJsonData(data, "keyword1").toUpperCase();
-		String key2 = getJsonData(data, "keyword2").toUpperCase();
+		}
 	
 		dataModel.setQueryName("getContractList");
 		
-		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery = new BaseQuery(request, dataModel);		
+		
+		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
 		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
@@ -129,7 +130,8 @@ public class PurchaseOrderService extends CommonService {
 		return modelMap;
 	}
 	
-public HashMap<String, Object> getContractList2(String data) throws Exception {
+	
+	public HashMap<String, Object> getContractList2(String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
