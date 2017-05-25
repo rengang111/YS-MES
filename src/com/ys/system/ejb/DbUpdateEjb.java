@@ -76,7 +76,7 @@ public class DbUpdateEjb  {
         
 		try {
 			ts.begin();
-			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
+			String removeData[] = formData.split(",");
 			for (String menuId:removeData) {
 				count = deleteMenuChain(request, menuId, userInfo, count);
 				//menuModel.setUpdatedRecordCount(count);
@@ -135,7 +135,7 @@ public class DbUpdateEjb  {
 		BaseService service = new BaseService();
 		try {
 			ts.begin();
-			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
+			String removeData[] = formData.split(",");
 			for (String roleId:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				//TODO:
@@ -176,7 +176,7 @@ public class DbUpdateEjb  {
 		BaseService service = new BaseService();
 		try {
 			ts.begin();
-			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
+			String removeData[] = formData.split(",");
 
 			for (String key:removeData) {
 				StringBuffer sql = new StringBuffer("");
@@ -246,7 +246,7 @@ public class DbUpdateEjb  {
 		
 		try {
 			ts.begin();
-			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
+			String removeData[] = formData.split(",");
 			for (String unitId:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				//TODO:
@@ -291,7 +291,7 @@ public class DbUpdateEjb  {
 		BaseService service = new BaseService();
 		try {
 			ts.begin();
-			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
+			String removeData[] = formData.split(",");
 			for (String userId:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				//TODO:
@@ -328,7 +328,7 @@ public class DbUpdateEjb  {
 		BaseService service = new BaseService();
 		try {
 			ts.begin();
-			String lockData[] = service.getJsonData(formData, "numCheck").split(",");
+			String lockData[] = formData.split(",");
 			for (String userId:lockData) {
 
 				data.setUserid(userId);
@@ -350,7 +350,7 @@ public class DbUpdateEjb  {
 		}				
 	}
 	
-	public void executeDicTypeDelete(DicTypeModel dicTypeModel, UserInfo userInfo) throws Exception {
+	public void executeDicTypeDelete(String formData, UserInfo userInfo) throws Exception {
 		S_DICTYPEData data = new S_DICTYPEData();
 		int count = 0;
 	
@@ -359,7 +359,7 @@ public class DbUpdateEjb  {
 		
 		try {
 			ts.begin();
-			String removeData[] = dicTypeModel.getNumCheck().split(",");
+			String removeData[] = formData.split(",");
 			for (String dicTypeId:removeData) {
 				StringBuffer sql = new StringBuffer("");
 
@@ -376,7 +376,7 @@ public class DbUpdateEjb  {
 				dao.Store(data);
 				
 				count++;
-				dicTypeModel.setUpdatedRecordCount(count);
+				
 			}
 			ts.commit();
 		}
@@ -416,7 +416,7 @@ public class DbUpdateEjb  {
 		}
 	}
 	
-	public void executeDicDelete(DicModel dicModel, UserInfo userInfo) throws Exception {
+	public void executeDicDelete(String formData, UserInfo userInfo) throws Exception {
 		int count = 0;
 		
 		//UserTransaction ts = context.getUserTransaction();
@@ -426,10 +426,9 @@ public class DbUpdateEjb  {
 		
 		try {
 			ts.begin();
-			String removeData[] = dicModel.getNumCheck().split(",");
+			String removeData[] = formData.split(",");
 			for (String menuId:removeData) {
 				count = deleteDicChain(request, menuId, userInfo, count);
-				dicModel.setUpdatedRecordCount(count);
 			}
 			ts.commit();
 		}
@@ -530,7 +529,7 @@ public class DbUpdateEjb  {
 		ts = new BaseTransaction();
 		try {
 			ts.begin();
-			String removeData[] = service.getJsonData(formData, "numCheck").split(",");
+			String removeData[] = formData.split(",");
 			for (String powerId:removeData) {
 				StringBuffer sql = new StringBuffer("");
 				//TODO:
