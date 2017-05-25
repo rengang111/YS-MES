@@ -42,7 +42,7 @@
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
-			 "iDisplayLength" : 100,
+			 "iDisplayLength" : 50,
 			"lengthChange":false,
 			//"lengthMenu":[10,150,200],//设置一页展示20条记录
 			"processing" : true,
@@ -84,10 +84,10 @@
         	},
 			"columns": [
 				{"data": null,"className" : 'td-center'},
+				{"data": "YSId"},
 				{"data": "contractId"},
 				{"data": "materialId"},
 				{"data": "materialName"},
-				{"data": "YSId"},
 				{"data": "supplierId"},
 				{"data": "quantity","className" : 'td-right'},
 				{"data": "arrivalSum","className" : 'td-right'},
@@ -99,13 +99,13 @@
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                    }},
-	    		{"targets":1,"render":function(data, type, row){
+	    		{"targets":2,"render":function(data, type, row){
 
 	    			var contractId = row["contractId"];	
-	    			return "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">"+contractId+"</a>";
+	    			return "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">"+row["contractId"]+"</a>";
 	    		
 	    		}},
-	    		{"targets":3,"render":function(data, type, row){
+	    		{"targets":4,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
 	    			name = jQuery.fixedWidth(name,30);				    			
@@ -264,15 +264,15 @@
 			<thead>						
 				<tr>
 					<th style="width: 1px;" class="dt-middle ">No</th>
+					<th style="width: 60px;" class="dt-middle">耀升编号</th>
 					<th style="width: 95px;" class="dt-middle">合同编号</th>
 					<th style="width: 120px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
-					<th style="width: 60px;" class="dt-middle">耀升编号</th>
 					<th style="width: 60px;" class="dt-middle">供应商</th>
 					<th style="width: 60px;" class="dt-middle">合同数量</th>
 					<th style="width: 60px;" class="dt-middle ">累计到货</th>
 					<th style="width: 60px;" class="dt-middle ">剩余数量</th>
-					<th style="width: 25px;" class="dt-middle ">操作</th>
+					<th style="width: 20px;" class="dt-middle ">操作</th>
 				</tr>
 			</thead>
 		</table>

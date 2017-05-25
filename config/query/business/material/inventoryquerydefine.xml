@@ -112,12 +112,11 @@
       <f name="A.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
-      <f name="a.supplierName" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
-      <f name="IFNULL(c.recodeSum,'0')" alias="arrivalSum" ctype="" />
+      <f name="a.arrivalSum" alias="arrivalSum" ctype="" />
     </select>
-    <from>v_purchaseorderdetail a LEFT JOIN v_arrivalquantitygroup c ON c.contractId = a.contractId AND c.materialId = a.materialId WHERE a.deleteFlag = '0' </from>
-    <orderby>a.materialId</orderby>
+    <from>v_purchaseorderdetail2 a  WHERE a.deleteFlag = '0' </from>
+    <orderby>A.YSId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
