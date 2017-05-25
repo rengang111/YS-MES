@@ -182,8 +182,15 @@ public class UserService extends BaseService {
 			data.setPwdquestion1(pwdquestion1);
 			data.setPwdquestion2(pwdquestion2);
 			data.setLockflag(lockflag);
-			data.setEnableflag(enableflag);
+			if (enableflag.equals("")) {
+				data.setEnableendtime(null);
+			} else {
+				data.setEnableflag(enableflag);
+			}
 			data.setEnablestarttime(enablestarttime);
+			if (enableendtime.equals("")) {
+				enableendtime = "2075-12-31 23:59:59";
+			}
 			data.setEnableendtime(enableendtime);
 			data.setWorkid(workid);
 			data.setLoginpwd(DesUtil.DesEncryptData(loginpwd));

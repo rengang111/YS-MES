@@ -493,32 +493,25 @@ public class DbUpdateEjb  {
 		ts = new BaseTransaction();
 		try {
 			ts.begin();
+			
 			for(String userId:userArray) {
 				for(String roleId:roleArray) {
 					for(String unitId:unitArray) {
-						boolean isExisted = true;
+						StringBuffer sql = new StringBuffer("");
+						sql.append("DELETE FROM s_Power ");
+						sql.append(" WHERE userid = '" + userId + "' AND DeleteFlag = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
+						BaseDAO.execUpdate(sql.toString());
+						
 						S_POWERData data = new S_POWERData();
+						data = new S_POWERData();
+						data.setId(BaseDAO.getGuId());
 						data.setUserid(userId);
 						data.setRoleid(roleId);
-						data.setUnitid(unitId);
-						try {
-							dao.FindByPrimaryKey(data);
-						}
-						catch(Exception e) {
-							isExisted = false;
-						}
-						if (!isExisted) {
-							data = new S_POWERData();
-							data.setId(BaseDAO.getGuId());
-							data.setUserid(userId);
-							data.setRoleid(roleId);
-							data.setUnitid(unitId);						
-							data.setPowertype(powerType);
-							data = PowerService.setDeptGuid(data, userId, userInfo);
-							data = PowerService.updateModifyInfo(data, userInfo);
-							dao.Create(data);
-							rowCount++;
-						}
+						data.setUnitid(unitId);						
+						data.setPowertype(powerType);
+						data = PowerService.setDeptGuid(data, userId, userInfo);
+						data = PowerService.updateModifyInfo(data, userInfo);
+						dao.Create(data);
 					}
 				}
 			}
