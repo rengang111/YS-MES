@@ -249,7 +249,7 @@
 								return {
 									label : item.loginid + " | " + item.LoginName,
 									value : item.LoginName,
-									id : item.loginid,
+									id : item.UserID,
 								}
 							}));
 					},

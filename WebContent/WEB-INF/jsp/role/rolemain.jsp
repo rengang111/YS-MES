@@ -269,7 +269,7 @@
 		if (roleId != '') {
 			//popupWindow("PowerDetail", "${ctx}/power?methodtype=updateinit&operType=addviarole&roleId=" + roleId, 800, 600);
 			var url = "${ctx}/power?methodtype=updateinit&operType=addviarole&roleId=" + roleId;
-			openLayer(url, $(document).width() - 25, layerHeight + 300, true);
+			openLayer(url, $(document).width() - 25, layerHeight + 350, true);
 		} else {
 			var roleIdList = "";
 			var isFirst = true;
