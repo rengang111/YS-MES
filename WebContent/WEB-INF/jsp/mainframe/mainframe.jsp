@@ -42,7 +42,7 @@
 		</div>
 	</div>
 
-	<div id="center_div" data-options="region:'west',split:true,title:'树形菜单'" style="width:250px;padding:10px;">
+	<div id="center_div" data-options="region:'west',split:true,title:'树形菜单'" style="width:200px;padding:10px;">
 		<ul id="menuTree" data-options="animate:false,border:false"></ul>
 	</div>
 	

@@ -144,11 +144,14 @@
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr>
-				<td class="label" style="width:120px"><label>合同编号：</label></td>					
+			<tr> 				
+				<td class="label" style="width:100px"><label>耀升编号：</label></td>					
+				<td style="width:100px">&nbsp;${contract.YSId }</td>
+				<td class="label" style="width:100px"><label>合同编号：</label></td>					
 				<td  style="width:150px">${contract.contractId }</td>
-				<td class="label" style="width:120px"><label>供应商：</label></td>					
+				<td class="label" style="width:100px"><label>供应商：</label></td>					
 				<td>${contract.supplierId }（${contract.shortName }）${contract.fullName}</td>	
-			</tr>										
+			</tr>								
 		</table>
 	</fieldset>
 	

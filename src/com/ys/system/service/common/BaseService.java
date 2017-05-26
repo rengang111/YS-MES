@@ -255,32 +255,35 @@ public class BaseService {
 	public String[] getSearchKey(String formId,String data,HttpSession session){
 		
 		String[] rtnAarry = new String[2];
+			
+		try{
+			String reqkey1 = getJsonData(data, "keyword1").trim().toUpperCase();
+			String reqkey2 = getJsonData(data, "keyword2").trim().toUpperCase();
+	
+			String sinkey1 = (String)session.getAttribute(formId+Constants.FORM_KEYWORD1);
+			String sinkey2 = (String)session.getAttribute(formId+Constants.FORM_KEYWORD2);
+			
+			if (!("").equals(reqkey1) || !("").equals(reqkey2)){
 				
-		String reqkey1 = getJsonData(data, "keyword1").trim().toUpperCase();
-		String reqkey2 = getJsonData(data, "keyword2").trim().toUpperCase();
-
-		String sinkey1 = (String)session.getAttribute(formId+Constants.FORM_KEYWORD1);
-		String sinkey2 = (String)session.getAttribute(formId+Constants.FORM_KEYWORD2);
-		
-		if (!("").equals(reqkey1) || !("").equals(reqkey2)){
-			
-			rtnAarry[0] = reqkey1;
-			rtnAarry[1] = reqkey2;
-			
-			//作为详细页面返回到一览时的默认查询条件
-			session.setAttribute(formId+Constants.FORM_KEYWORD1,reqkey1 );
-			session.setAttribute(formId+Constants.FORM_KEYWORD2,reqkey2 );
-			
-		}else{
-			
-			if( (sinkey1 != null && !("").equals(sinkey1)) || 
-				(sinkey2 != null && !("").equals(sinkey2)) ){
+				rtnAarry[0] = reqkey1;
+				rtnAarry[1] = reqkey2;
 				
-				rtnAarry[0] = sinkey1;
-				rtnAarry[1] = sinkey2;				
+				//作为详细页面返回到一览时的默认查询条件
+				session.setAttribute(formId+Constants.FORM_KEYWORD1,reqkey1 );
+				session.setAttribute(formId+Constants.FORM_KEYWORD2,reqkey2 );
+				
+			}else{
+				
+				if( (sinkey1 != null && !("").equals(sinkey1)) || 
+					(sinkey2 != null && !("").equals(sinkey2)) ){
+					
+					rtnAarry[0] = sinkey1;
+					rtnAarry[1] = sinkey2;				
+				}
 			}
+		}catch(Exception e){
+			//nothing
 		}
-		
 		return rtnAarry;
 	}
 	

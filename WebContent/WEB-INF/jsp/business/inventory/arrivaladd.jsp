@@ -24,17 +24,13 @@
 	        "paging"    : false,
 	        "pageLength": 50,
 	        "ordering"  : false,
-
-			dom : '<"clear">rt',
-
-			
-			
+			dom : '<"clear">rt',		
 			"columns" : [
 			        	{"className":"dt-body-center"
 					}, {
 					}, {
 					}, {"className":"dt-body-center"
-					}, {
+					}, {"className":"dt-body-center"
 					}, {"className":"td-right"	
 					}, {"className":"td-right"
 					}, {"className":"td-right"
@@ -218,6 +214,57 @@
 			$('#formModel').submit();
 		});
 		
+		$("#reverse").click(function () { 
+			$("input[name='numCheck']").each(function () {  
+		        $(this).prop("checked", !$(this).prop("checked"));  
+		    });
+		});
+		
+		$("#selectall").click(function () { 
+			
+			$('#example tbody tr').each (function (){
+				
+				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
+				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
+				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
+
+				var fcontract= currencyToFloat(vcontract);
+				var freceive = currencyToFloat(vreceive);
+				var fsurplus = floatToCurrency(fcontract - freceive);
+				
+
+				if(vsurplus > "0"){
+					$(this).find("td").eq(4).find("input").val(fsurplus);//本次到货
+					$(this).find("td").eq(7).find("span").text("0")//剩余数清零
+				}
+							
+			})
+
+		});
+		
+
+		$("#reverse").click(function () { 
+			
+			$('#example tbody tr').each (function (){
+
+				var varrival  = $(this).find("td").eq(4).find("input").val();////本次收货
+				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
+				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
+				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
+
+				var fcontract= currencyToFloat(vcontract);
+				var freceive = currencyToFloat(vreceive);
+				var fsurplus = floatToCurrency(fcontract - freceive);
+
+				if(varrival > "0"){
+					$(this).find("td").eq(7).find("span").text(fsurplus);//剩余数
+					$(this).find("td").eq(4).find("input").val("0");//本次到货清零
+				}
+							
+			})
+
+		});
+		
 		foucsInit();
 		
 		
@@ -242,11 +289,11 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px"><label>到货编号：</label></td>					
-				<td>
+				<td width="150px">
 					<form:input path="arrival.arrivalid" class="short required read-only" value="${arrivalId }" /></td>
 														
 				<td width="100px" class="label">到货日期：</td>
-				<td>
+				<td width="150px">
 					<form:input path="arrival.arrivedate" class="short read-only" /></td>
 				
 				<td width="100px" class="label">仓管员：</td>
@@ -254,14 +301,15 @@
 					<form:input path="arrival.userid" class="short read-only" value="${userName }" /></td>
 			</tr>
 			<tr> 				
-				<td class="label"><label>供应商：</label></td>					
-				<td colspan="5">${contract.supplierId }（${contract.shortName }）${contract.fullName}</td>			
-			</tr>
-			<tr> 				
+				<td class="label"><label>耀升编号：</label></td>					
+				<td>&nbsp;${contract.YSId }</td>
+							
 				<td class="label"><label>合同编号：</label></td>					
-				<td colspan="5">${contract.contractId }
+				<td>&nbsp;${contract.contractId }
 					<form:hidden path="arrival.contractid"  value="${contract.contractId }"/></td>
-			
+							
+				<td class="label"><label>供应商：</label></td>					
+				<td>&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}</td>	
 			</tr>
 										
 		</table>
@@ -277,7 +325,9 @@
 				<th class="dt-center" width="175px">物料编号</th>
 				<th class="dt-center" >物料名称</th>
 				<th class="dt-center" width="30px">单位</th>
-				<th class="dt-center" width="60px">本次到货</th>
+				<th class="dt-center" width="80px">
+					<input type="checkbox" name="selectall" id="selectall" /><label for="selectall">全部到货</label> 
+					<input type="checkbox" name="reverse" id="reverse" /><label for="reverse">全部清空</label></th>
 				<th class="dt-center" width="60px">合同总数</th>
 				<th class="dt-center" width="60px">累计收货</th>
 				<th class="dt-center" width="60px">剩余数量</th>
@@ -292,7 +342,7 @@
 					<form:hidden path="arrivalList[${status.index}].materialid" value="${list.materialId }"/></td>
 				<td><span>${list.materialName }</span></td>
 				<td><span>${list.unit }</span></td>
-				<td><form:input path="arrivalList[${status.index}].quantity" class="num mini"  value="0"/></td>
+				<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
 				<td><span>${list.quantity }</span></td>
 				<td><span id="arrivalSum${ status.index}"></span></td>
 				<td><span id="surplus${ status.index}"></span></td>

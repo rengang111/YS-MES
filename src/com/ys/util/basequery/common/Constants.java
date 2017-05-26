@@ -21,6 +21,7 @@ public class Constants {
 	public static final String FORM_KEYWORD2 = "keyword2";//
 	public static final String FORM_MATERIAL = "material";//
 	public static final String FORM_ARRIVAL = "arrival";//到货登记
+	public static final String FORM_CONTRACT = "contract";//采购合同
 	public static final String FORM_PRODUCT= "product";//合格
 	public static final String FORM_PRODUCTSEMI = "productsemi";//让步接收
 	public static final String FORM_ORDER = "order";//退货

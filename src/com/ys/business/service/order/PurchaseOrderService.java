@@ -105,7 +105,7 @@ public class PurchaseOrderService extends CommonService {
 		
 		baseQuery = new BaseQuery(request, dataModel);		
 		
-		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_CONTRACT,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		

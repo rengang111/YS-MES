@@ -99,16 +99,23 @@
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                    }},
-	    		{"targets":2,"render":function(data, type, row){
+	    		{"targets":3,"render":function(data, type, row){
 
 	    			var contractId = row["contractId"];	
-	    			return "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">"+row["contractId"]+"</a>";
+	    			var quantity = currencyToFloat(row["quantity"]);
+	    			var arrivalSum = currencyToFloat(row["arrivalSum"]);
+	    			var reful=  ( quantity - arrivalSum);
+
+	    			var rtn = row["materialId"];
+	    			if(reful >0)
+	    				rtn =  "<a href=\"###\" onClick=\"doCreate('" + row["contractId"] + "')\">"+row["materialId"]+"</a>";
 	    		
+	    			return rtn;
 	    		}},
 	    		{"targets":4,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
-	    			name = jQuery.fixedWidth(name,30);				    			
+	    			name = jQuery.fixedWidth(name,40);				    			
 	    			return name;
 	    		}},
 	    		{"targets":8,"render":function(data, type, row){
@@ -119,13 +126,9 @@
 	    		}},
 	    		{"targets":9,"render":function(data, type, row){
 	    			var contractId = row["contractId"];	
-	    			var quantity = currencyToFloat(row["quantity"]);
-	    			var arrivalSum = currencyToFloat(row["arrivalSum"]);
 	    			
-	    			var reful=  ( quantity - arrivalSum);
 	    			var rtn="";
-	    			if(reful >0)
-	    				rtn = "<a href=\"###\" onClick=\"doCreate('" + row["contractId"] + "')\">收货</a>";
+	    				rtn = "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">查看</a>";
     			
 	    			return rtn;
 	    		}}

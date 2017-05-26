@@ -35,10 +35,12 @@ td.td-right {
 body{
     /* background-color: floralwhite; */
     font-size:12px;
-    font-family:"Microsoft YaHei,Arial, Helvetica, sans-serif";
-    /*font-family:"Arial","Microsoft YaHei","黑体","宋体",sans-serif;*/
+    /*font-family:helvetica,tahoma,verdana,sans-serif;*/
+     /*font-family:Microsoft YaHei,Arial, Helvetica, sans-serif;*/
+    font-family:Arial,Microsoft YaHei,"黑体","宋体",sans-serif;
     word-spacing:5px; 
 	letter-spacing: 0px;
+    margin:5px;
 }
 a:link {text-decoration:none;color:blue;}
 a:hover {text-decoration:underline;color:green;}
