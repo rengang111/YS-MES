@@ -50,7 +50,7 @@ public class PurchaseOrderAction extends BaseAction {
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		this.service = new PurchaseOrderService(model,request,form,userInfo);
+		this.service = new PurchaseOrderService(model,request,session,form,userInfo);
 		this.reqModel = form;
 		this.model = model;
 		this.session = session;

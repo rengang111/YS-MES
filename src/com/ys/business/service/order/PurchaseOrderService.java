@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -60,6 +61,7 @@ public class PurchaseOrderService extends CommonService {
 	private HashMap<String, String> userDefinedSearchCase;
 	private BaseQuery baseQuery;
 	ArrayList<HashMap<String, String>> modelMap = null;	
+	HttpSession session;
 
 	public PurchaseOrderService(){
 		
@@ -67,6 +69,7 @@ public class PurchaseOrderService extends CommonService {
 
 	public PurchaseOrderService(Model model,
 			HttpServletRequest request,
+			HttpSession session,
 			PurchaseOrderModel reqModel,
 			UserInfo userInfo){
 		
@@ -74,11 +77,15 @@ public class PurchaseOrderService extends CommonService {
 		this.detailDao = new B_PurchaseOrderDetailDao();
 		this.model = model;
 		this.reqModel = reqModel;
-		this.dataModel = new BaseModel();
 		this.request = request;
+		this.session = session;
 		this.userInfo = userInfo;
-		userDefinedSearchCase = new HashMap<String, String>();
-		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		this.dataModel = new BaseModel();
+		this.userDefinedSearchCase = new HashMap<String, String>();
+		this.dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		super.request = request;
+		super.userInfo = userInfo;
+		super.session = session;
 		
 	}
 

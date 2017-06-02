@@ -112,7 +112,7 @@
 	
 	$(document).ready(function() {
 
-		$("#bomPlan\\.plandate").val(shortToday());
+		$("#orderBom\\.plandate").val(shortToday());
 		
 		requirementAjax();//
 		
@@ -207,18 +207,18 @@
 		
 		
 		<input type="hidden" id="tmpMaterialId" />
-		<form:hidden path="bomPlan.plandate" />
+		<form:hidden path="orderBom.plandate" />
 		<fieldset>
 			<legend> 产品信息1</legend>
 			<table class="form" id="table_form">
 				<tr> 				
 					<td class="label" style="width:100px;"><label>耀升编号：</label></td>					
 					<td style="width:150px;">${order.YSId}
-					<form:hidden path="bomPlan.ysid"  value="${order.YSId}" /></td>
+					<form:hidden path="orderBom.ysid"  value="${order.YSId}" /></td>
 								
 					<td class="label" style="width:100px;"><label>产品编号：</label></td>					
 					<td style="width:150px;">${order.materialId}
-					<form:hidden path="bomPlan.materialid"  value="${order.materialId}" /></td>
+					<form:hidden path="orderBom.materialid"  value="${order.materialId}" /></td>
 				
 					<td class="label" style="width:100px;"><label>产品名称：</label></td>				
 					<td>&nbsp;${order.materialName}</td>

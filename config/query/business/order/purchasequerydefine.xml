@@ -189,7 +189,7 @@
       <f name="A.deliveryDate" alias="" ctype="" />
       <f name="FORMAT(REPLACE(A.quantity,',',''),2)" alias="quantity" ctype="" />
     </select>
-    <from>v_purchaseorderdetail a  WHERE a.deleteFlag = '0' </from>
+    <from>v_purchaseorderdetail3 a  WHERE a.deleteFlag = '0' </from>
     <orderby>a.YSId DESC,A.contractId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
