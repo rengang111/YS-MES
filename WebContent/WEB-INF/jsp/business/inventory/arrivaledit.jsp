@@ -141,8 +141,16 @@
 					}, {"data": "unit","className":"dt-body-center"
 					}, {"data": "quantity","className":"td-right"	
 					}, {"data": "status","className":"td-center"
+					}, {"data": null,"className":"td-center"
 					}
-				]        
+				] ,
+				"columnDefs":[
+		    		{"targets":8,"render":function(data, type, row){
+		    			var contractId = row["contractId"];		    			
+		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["contractId"] + "','" + row["arrivalId"] + "')\">编辑</a>";
+		    			return rtn;
+		    		}},
+		    	]          
 			
 		}).draw();
 						
@@ -201,9 +209,10 @@
 			}); 
 		
 		
-		$("#return").click(
+		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/arrival";
+					var contractId='${contract.contractId }';
+					var url = "${ctx}/business/arrival?keyBackup="+contractId;
 					location.href = url;		
 				});
 		
@@ -214,7 +223,7 @@
 			$('#formModel').submit();
 		});
 		
-$("#selectall").click(function () { 
+		$("#selectall").click(function () { 
 			
 			$('#example tbody tr').each (function (){
 				
@@ -362,8 +371,8 @@ $("#selectall").click(function () {
 </fieldset>
 <div style="clear: both"></div>
 <fieldset class="action" style="text-align: right;">
-	<button type="button" id="return" class="DTTT_button">返回</button>
 	<button type="button" id="insert" class="DTTT_button">保存</button>
+	<button type="button" id="goBack" class="DTTT_button">返回</button>
 </fieldset>		
 
 <div style="clear: both"></div>
@@ -382,6 +391,7 @@ $("#selectall").click(function () {
 				<th class="dt-center" width="40px">单位</th>
 				<th class="dt-center" width="80px">到货数量</th>
 				<th class="dt-center" width="60px">状态</th>
+				<th class="dt-center" width="30px"></th>
 			</tr>
 		</thead>
 </table>

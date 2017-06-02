@@ -186,7 +186,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		String[] keyArr = getSearchKey("product",data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_PRODUCT,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 
@@ -232,7 +232,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		String[] keyArr = getSearchKey("productSemi",data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_PRODUCTSEMI,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 

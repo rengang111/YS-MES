@@ -115,11 +115,7 @@ public class BomAction extends BaseAction {
 			case "purchasePlanView":
 				//doShowBomDetail();
 				rtnUrl = "/business/bom/bomselectlist";
-				break;									
-			//case "bomCopyDetail":
-				//doShowBomDetail();
-				//rtnUrl = "/business/bom/bomcopyview";
-			//	break;
+				break;	
 			case "edit":
 				doEdit();
 				rtnUrl = "/business/bom/bomplanedit";
@@ -388,6 +384,7 @@ public class BomAction extends BaseAction {
 
 		model = bomService.editBomPlan();
 	}
+		
 	
 	public HashMap<String, Object> doMultipleBomAdd() throws Exception{
 

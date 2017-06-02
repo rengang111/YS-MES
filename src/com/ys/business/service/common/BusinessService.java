@@ -221,7 +221,7 @@ public class BusinessService {
 		
 		String tmp2 = code1.substring(2);
 		//
-		rtn = BusinessConstants.ORDERBOM_BD +tmp2 ;
+		rtn = BusinessConstants.ORDERBOM_BD + "."+tmp2 + "-"+BusinessConstants.FORMAT_00;
 		
 		return rtn;
 	}

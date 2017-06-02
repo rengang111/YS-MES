@@ -72,4 +72,24 @@ function moveOption(dtTable,moveDown ){
 	}
 }
 
+function showContract(contractId) {
+	var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
+	alert(url)
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1100px', '520px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		}    
+	});		
+
+};
 

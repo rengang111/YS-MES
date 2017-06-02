@@ -71,8 +71,8 @@ public class RequirementAction extends BaseAction {
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "create"://订单采购需求
-				rtnUrl = doCreate();
+			case "createRequirement"://订单采购需求
+				rtnUrl = createRequirement();
 				break;		
 			case "insert":
 				doInsert();
@@ -118,12 +118,7 @@ public class RequirementAction extends BaseAction {
 			case "updateProcurement":
 				doUpdateProcurement();
 				rtnUrl = "/business/requirement/requirementview";
-				break;				
-			case "getOrderBom":
-				dataMap = doShowOrderBom();
-				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/requirement/requirementview";
-				break;				
+				break;		
 			case "getBaseBom":
 				dataMap = doShowBaseBom();
 				printOutJsonObj(response, dataMap);
@@ -142,6 +137,20 @@ public class RequirementAction extends BaseAction {
 				getRequriementBySupplier();
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/requirement/contractprint";
+				break;								
+			case "productSemiUsed":
+				productSemiUsed();
+				rtnUrl = "/business/requirement/requirementview";
+				break;							
+			case "getOrderBom":
+				dataMap = getOrderBom();
+				printOutJsonObj(response, dataMap);
+				rtnUrl = null;
+				break;						
+			case "updateOrderBomQuantity"://更新订单BOM的使用量
+				updateOrderBomQuantity();
+				printOutJsonObj(response, dataMap);
+				rtnUrl = null;
 				break;
 				
 		}
@@ -180,7 +189,7 @@ public class RequirementAction extends BaseAction {
 		
 	}		
 	
-	public String doCreate() throws Exception {
+	public String createRequirement() throws Exception {
 		
 		String rtnUrl= "/business/requirement/requirementadd";
 		boolean flg = service.createOrView();
@@ -251,14 +260,25 @@ public class RequirementAction extends BaseAction {
 	}
 	public HashMap<String, Object> getRequriementBySupplier() throws Exception {
 
-		return service.getRequriementBySupplier();	
-			
+		return service.getRequriementBySupplier();				
 		
+	}	
+
+	public void productSemiUsed() throws Exception{
+
+		service.productSemiUsed();
 	}
 
-	public HashMap<String, Object> doShowOrderBom() throws Exception{
+	public HashMap<String, Object> getOrderBom() throws Exception{
 		
-		return  service.showOrderBomDetail();
+		return  service.getOrderBomDetail();
+			
+	}
+	
+
+	public void updateOrderBomQuantity() throws Exception{
+		
+		service.updateOrderBomQuantity();
 			
 	}
 	

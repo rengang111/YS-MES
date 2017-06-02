@@ -56,7 +56,11 @@
 			if(fArrival > (fquantity-fRecorde)){
 
 				$().toastmessage('showWarningToast', "登记数不能大于剩余数");
+		       // $(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
+           	 	$(this).find("input:text").addClass('error');
 				return;
+			}else{
+				$(this).find("input:text").removeClass('error')
 			}
 			
 			//剩余数量
@@ -141,8 +145,16 @@
 					}, {"data": "unit","className":"dt-body-center"
 					}, {"data": "quantity","className":"td-right"	
 					}, {"data": "status","className":"td-center"
+					}, {"data": null,"className":"td-center"
 					}
-				]        
+				] ,
+				"columnDefs":[
+		    		{"targets":8,"render":function(data, type, row){
+		    			var contractId = row["contractId"];		    			
+		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["contractId"] + "','" + row["arrivalId"] + "')\">编辑</a>";
+		    			return rtn;
+		    		}},
+		    	]        
 			
 		}).draw();
 						
@@ -188,7 +200,7 @@
 
 		historyAjax();//到货登记历史记录
 
-		autocomplete();
+		//autocomplete();
 		
 		//$('#example').DataTable().columns.adjust().draw();
 		
@@ -201,15 +213,27 @@
 			}); 
 		
 		
-		$("#return").click(
+		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/arrival";
+					var contractId='${contract.contractId }';
+					var url = "${ctx}/business/arrival?keyBackup="+contractId;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
+				
+			var i=0;
+			$(".error").each(function () {  
+		       i++;  
+		    });
+			
+			if(i>0){
 
+				$().toastmessage('showWarningToast', "请先修正页面中的错误输入，再保存。");
+				return
+			}
+					
 			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert");
 			$('#formModel').submit();
 		});
@@ -270,6 +294,11 @@
 		
 	});
 	
+	function doEdit(contractId,arrivalId) {
+		
+		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
+		location.href = url;
+	}
 	
 </script>
 
@@ -285,15 +314,15 @@
 	<input type="hidden" id="tmpMaterialId" />
 	
 	<fieldset>
-		<legend> 基本信息</legend>
+		<legend> 基本信息11</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px"><label>到货编号：</label></td>					
-				<td width="150px">
+				<td width="200px">
 					<form:input path="arrival.arrivalid" class="short required read-only" value="${arrivalId }" /></td>
 														
 				<td width="100px" class="label">到货日期：</td>
-				<td width="150px">
+				<td width="200px">
 					<form:input path="arrival.arrivedate" class="short read-only" /></td>
 				
 				<td width="100px" class="label">仓管员：</td>
@@ -302,14 +331,22 @@
 			</tr>
 			<tr> 				
 				<td class="label"><label>耀升编号：</label></td>					
-				<td>&nbsp;${contract.YSId }</td>
+				<td>&nbsp;<a href="#" onClick="showYS('${contract.YSId}')">${contract.YSId }</a></td>
+									
+				<td class="label"><label>供应商：</label></td>					
+				<td colspan="3">&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}</td>	
+			</tr>
+			<tr>
 							
 				<td class="label"><label>合同编号：</label></td>					
-				<td>&nbsp;${contract.contractId }
+				<td>&nbsp;<a href="#" onClick="showContract('${contract.contractId }')">${contract.contractId }</a>
 					<form:hidden path="arrival.contractid"  value="${contract.contractId }"/></td>
 							
-				<td class="label"><label>供应商：</label></td>					
-				<td>&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}</td>	
+				<td class="label"><label>下单日期：</label></td>					
+				<td>&nbsp;${contract.purchaseDate }</td>	
+			 	
+				<td class="label"><label>合同交期：</label></td>					
+				<td>&nbsp;${contract.deliveryDate }</td>
 			</tr>
 										
 		</table>
@@ -335,28 +372,29 @@
 		</thead>
 		
 	<tbody>
-		<c:forEach var="list" items="${material}" varStatus='status' >	
-			<tr>
-				<td></td>
-				<td>${list.materialId }
-					<form:hidden path="arrivalList[${status.index}].materialid" value="${list.materialId }"/></td>
-				<td><span>${list.materialName }</span></td>
-				<td><span>${list.unit }</span></td>
-				<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
-				<td><span>${list.quantity }</span></td>
-				<td><span id="arrivalSum${ status.index}"></span></td>
-				<td><span id="surplus${ status.index}"></span></td>
-			</tr>
-			<script type="text/javascript">
-					var index = '${status.index}';
-					var quantity = currencyToFloat('${list.quantity}');
-					var arrivalSum = currencyToFloat('${list.arrivalSum}');
-					var surplus = quantity - arrivalSum;
-					
-					$('#surplus'+index).html(floatToCurrency( surplus ))
-					$('#arrivalSum'+index).html(floatToCurrency( arrivalSum ))
-			</script>
-			
+		<c:forEach var="list" items="${material}" varStatus='status' >
+			<c:if test="${list.surplus > '0'}">
+				<tr>
+					<td></td>
+					<td>${list.materialId }
+						<form:hidden path="arrivalList[${status.index}].materialid" value="${list.materialId }"/></td>
+					<td><span>${list.materialName }</span></td>
+					<td><span>${list.unit }</span></td>
+					<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
+					<td><span>${list.quantity }</span></td>
+					<td><span id="arrivalSum${ status.index}"></span></td>
+					<td><span id="surplus${ status.index}"></span></td>
+				</tr>
+				<script type="text/javascript">
+						var index = '${status.index}';
+						var quantity = currencyToFloat('${list.quantity}');
+						var arrivalSum = currencyToFloat('${list.arrivalSum}');
+						var surplus = quantity - arrivalSum;
+						
+						$('#surplus'+index).html(floatToCurrency( surplus ))
+						$('#arrivalSum'+index).html(floatToCurrency( arrivalSum ))
+				</script>
+			</c:if>
 		</c:forEach>
 		
 	</tbody>
@@ -365,8 +403,8 @@
 </fieldset>
 <div style="clear: both"></div>
 <fieldset class="action" style="text-align: right;">
-	<button type="button" id="return" class="DTTT_button">返回</button>
 	<button type="button" id="insert" class="DTTT_button">保存</button>
+	<button type="button" id="goBack" class="DTTT_button">返回</button>
 </fieldset>		
 
 <div style="clear: both"></div>
@@ -385,6 +423,7 @@
 				<th class="dt-center" width="40px">单位</th>
 				<th class="dt-center" width="80px">到货数量</th>
 				<th class="dt-center" width="60px">状态</th>
+				<th class="dt-center" width="30px"></th>
 			</tr>
 		</thead>
 </table>
@@ -444,6 +483,20 @@ function autocomplete(){
 		
 	});//attributeList1	
 }
+
+function showContract(contractId) {
+	var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
+	openLayer(url);
+
+};
+
+function showYS(YSId) {
+	var url = '${ctx}/business/order?methodtype=getPurchaseOrder&YSId=' + YSId;
+
+	//var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+	openLayer(url);
+
+};
 
 </script>
 

@@ -126,7 +126,7 @@ $(document).ready(function() {
 	
 	$("#goBack").click(function() {
 		var materialId='${product.materialId}';
-		var url = "${ctx}/business/material?methodtype=productSemiInit&materialId="+materialId;
+		var url = "${ctx}/business/material?methodtype=productSemiInit&keyBackup="+materialId;
 		location.href = url;		
 	});
 

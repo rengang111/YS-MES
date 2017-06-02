@@ -10,8 +10,10 @@ import org.springframework.ui.Model;
 
 import com.ys.business.action.model.material.ArrivalModel;
 import com.ys.business.db.dao.B_ArrivalDao;
+import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_CustomerData;
+import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
@@ -229,7 +231,10 @@ public class ArrivalService extends BaseService {
 				data.setArrivedate(reqData.getArrivedate());
 				data.setStatus(Constants.ARRIVERECORD_0);//未报检
 				
-				dao.Create(data);			
+				dao.Create(data);	
+				
+				//更新累计到货数量
+				updateContractArraival(contractId,data.getMaterialid(),data.getQuantity());
 			
 			}
 			
@@ -247,6 +252,53 @@ public class ArrivalService extends BaseService {
 		
 		return contractId;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void updateContractArraival(
+			String contractId,
+			String materialId,
+			String arrival) throws Exception{
+	
+		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+		
+		String where = "contractId ='"+contractId +
+				"' AND materialId ='"+ materialId +
+				"' AND deleteFlag='0' ";
+		
+		List<B_PurchaseOrderDetailData> list = 
+				(List<B_PurchaseOrderDetailData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
+
+		data = list.get(0);
+		
+		//计算到货累计数量
+		String accumulated = data.getAccumulated();
+		float iAcc = 0;
+		float iArr = 0;
+		if(!(arrival ==null || ("").equals(arrival)))
+			iArr = Float.parseFloat(arrival.replace(",", ""));
+
+		if(!(accumulated ==null || ("").equals(accumulated)))
+			iAcc = Float.parseFloat(accumulated.replace(",", ""));
+		
+		float iNew = iArr + iAcc;
+		
+		data.setAccumulated(String.valueOf(iNew));
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"ArrivalUpdate",userInfo);
+		copyProperties(data,commData);
+		
+		dao.Store(data);
+
+		
+	}
+	
 	
 	private void deleteArrivalById(String arrivalId) {
 

@@ -80,7 +80,7 @@
 			var YSId = '${order.YSId}';
 			var materialId='${order.materialId}';
 			var order = currencyToFloat( '${order.quantity}' );
-			$('#bomForm').attr("action", "${ctx}/business/requirement?methodtype=create&YSId="+YSId+"&materialId="+materialId+"&order="+order);
+			$('#bomForm').attr("action", "${ctx}/business/requirement?methodtype=createRequirement&YSId="+YSId+"&materialId="+materialId+"&order="+order);
 			$('#bomForm').submit();
 		});
 		

@@ -99,6 +99,33 @@
 		location.href = url;
 	}
 	
+
+	function doEditMaterial(recordid,parentid) {
+		//var height = setScrollTop();
+		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
+		var url = '${ctx}/business/material?methodtype=detailView';
+		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
+		
+		layer.open({
+			offset :[10,''],
+			type : 2,
+			title : false,
+			area : [ '1100px', '520px' ], 
+			scrollbar : false,
+			title : false,
+			content : url,
+			//只有当点击confirm框的确定时，该层才会关闭
+			cancel: function(index){ 
+			 // if(confirm('确定要关闭么')){
+			    layer.close(index)
+			 // }
+			  //$('#baseBomTable').DataTable().ajax.reload(null,false);
+			  return false; 
+			}    
+		});		
+
+	};
+	
 </script>
 
 </head>
@@ -115,11 +142,13 @@
 			<table class="form" id="table_form">
 				<tr> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="200px"><a href="#" onClick="doShowYS('${contract.YSId}')">${contract.YSId }</a>
+					<td width="200px">
+						<a href="#" onClick="doShowYS('${contract.YSId}')">${contract.YSId }</a>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td width="150px">${ contract.productId }</td>
+					<td width="150px">
+						<a href="#" onClick="doEditMaterial('${contract.productRecordId}','${contract.productParentId}')">${ contract.productId }</a></td>
 						
 					<td class="label" width="100px"><label>产品名称：</label></td>
 					<td colspan="3">${ contract.productName } </td>

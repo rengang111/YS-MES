@@ -28,7 +28,7 @@
 			 "iDisplayLength" : 50,
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
-			"sAjaxSource" : "${ctx}/business/material?methodtype=searchProduct&pageFlg="+pageFlg,
+			"sAjaxSource" : "${ctx}/business/material?methodtype=searchProduct&keyBackup="+pageFlg,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();

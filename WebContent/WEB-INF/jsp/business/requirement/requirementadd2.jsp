@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<title>订单采购方案--新建(半成品)</title>
+<title>订单采购方案--物料需求表做成</title>
 <%@ include file="../../common/common2.jsp"%>
  <style>th, td { white-space: nowrap; }</style>
   	
@@ -166,14 +166,14 @@
 				<tr> 				
 					<td class="label" style="width:100px;"><label>耀升编号：</label></td>					
 					<td style="width:150px;">${order.YSId}
-					<form:hidden path="bomPlan.ysid"  value="${order.YSId}" /></td>
+					<form:hidden path="orderBom.ysid"  value="${order.YSId}" /></td>
 								
 					<td class="label" style="width:100px;"><label>产品编号：</label></td>					
 					<td style="width:150px;">${order.materialId}
-					<form:hidden path="bomPlan.materialid"  value="${order.materialId}" /></td>
+					<form:hidden path="orderBom.materialid"  value="${order.materialId}" /></td>
 				
 					<td class="label" style="width:100px;"><label>产品名称：</label></td>				
-					<td>&nbsp;${order.materialName}</td>
+					<td>${order.materialName}</td>
 				</tr>
 				<tr>
 					<td class="label"><label>ＰＩ编号：</label></td>
@@ -192,27 +192,26 @@
 			<legend>半成品库存信息</legend>
 			<div class="list" style="width: 50%;">
 				<table id="productStock" class="display" style="width:98%">
-						<thead>				
-							<tr>
-								<th width="1px">No</th>
-								<th class="dt-center" style="width:100px">物料编码</th>
-								<th class="dt-center" style="width:100px">当前库存</th>
-								<th class="dt-center" style="width:80px">操作</th>
-							</tr>
-						</thead>			
+					<thead>				
+						<tr>
+							<th width="1px">No</th>
+							<th class="dt-center" style="width:100px">物料编码</th>
+							<th class="dt-center" style="width:100px">当前库存</th>
+							<th class="dt-center" style="width:80px">操作</th>
+						</tr>
+					</thead>			
 				</table>
 			</div>
 		</fieldset>
 				
 		<fieldset class="action" style="text-align: right;margin-top: -50px;width: 30%;float: right;">
-			<button type="button" id="deleteOrderBom" class="DTTT_button">恢复到基础BOM</button>
 			<button type="button" id="requirement" class="DTTT_button">生成采购方案</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		
 		<div id="tabs" style="padding: 0px;white-space: nowrap;">
 		<ul>
-			<li><a href="#tabs-1" class="tabs1">订单BOM</a></li>
+			<li><a href="#tabs-1" class="tabs1">物料需求表</a></li>
 		</ul>
 
 			<div id="tabs-1" style="padding: 5px;">
@@ -221,8 +220,8 @@
 				<thead>				
 					<tr>
 						<th width="1px">No</th>
-						<th class="dt-center" style="width:120px">物料编码</th>
-						<th class="dt-center" style="width:180px">物料名称</th>
+						<th class="dt-center" style="width:150px">物料编码</th>
+						<th class="dt-center" >物料名称</th>
 						<th class="dt-center" width="60px">用量</th>
 						<th class="dt-center" style="width:30px">单位</th>
 						<th class="dt-center" width="60px">订单数量</th>
@@ -362,6 +361,17 @@ function baseBomView() {
 	
 }//ajax()
 
+function productSemiUsed(semiMaterialId) {
+
+	var YSId='${order.YSId}';
+	var materialId = '${order.materialId}';
+	var url = "${ctx}/business/requirement?methodtype=productSemiUsed";
+	var url = url + "&materialId="+materialId+ "&semiMaterialId="+semiMaterialId+"&YSId="+YSId;
+
+	$('#attrForm').attr("action", url);
+	$('#attrForm').submit();
+}
+
 function doEditMaterial(recordid,parentid) {
 	//accessFlg:1 标识新窗口打开
 	var url = '${ctx}/business/material?methodtype=detailView&keyBackup=1';
@@ -435,7 +445,7 @@ function productStock() {
 		 ],
 		 "columnDefs":[
 	 		{"targets":3,"render":function(data, type, row){
-	 			return  "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["materialId"] + "')\">使用库存</a>";
+	 			return  "<a href=\"###\" onClick=\"productSemiUsed('" + row["materialId"] + "')\">使用库存</a>";
 	    		
 	 		}}
 			]
@@ -467,7 +477,6 @@ function productStock() {
 }//ajax()
 
 </script>
-
 
 
 <script type="text/javascript">

@@ -27,6 +27,7 @@
 							<input type=password name="pwd" id="pwd" value="" style="height:30px" />
 						</td>
 					</tr>
+					<!-- 
 					<tr height="30px">
 						<td width="60px">
 							验证码：
@@ -41,6 +42,7 @@
 			        		<a href="#" onclick="changeImg();">换一张</a>
 			        	</td>
 			        </tr>	
+			         -->
 					<tr height="30px">
 						<td></td>
 						<td align="center">

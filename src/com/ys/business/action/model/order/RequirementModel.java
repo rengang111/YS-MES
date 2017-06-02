@@ -2,9 +2,9 @@ package com.ys.business.action.model.order;
 
 import java.util.List;
 
-import com.ys.business.db.data.B_BomDetailData;
-import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_MaterialRequirmentData;
+import com.ys.business.db.data.B_OrderBomData;
+import com.ys.business.db.data.B_OrderBomDetailData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.util.basequery.common.BaseModel;
@@ -21,21 +21,21 @@ public class RequirementModel extends BaseModel {
 	private List<B_MaterialRequirmentData> requirmentList;
 	private List<B_PurchasePlanData> purchaseList;
 	private B_PurchasePlanData purchase;
-	private B_BomPlanData bomPlan;
-	private List<B_BomDetailData> bomDetailList;
+	private B_OrderBomData orderBom;
+	private List<B_OrderBomDetailData> bomDetailList;
 
 
-	public B_BomPlanData getBomPlan() {
-		return this.bomPlan;
+	public B_OrderBomData getOrderBom() {
+		return this.orderBom;
 	}
-	public void setBomPlan(B_BomPlanData bomPlan) {
-		this.bomPlan = bomPlan;
+	public void setOrderBom(B_OrderBomData orderBom) {
+		this.orderBom = orderBom;
 	}
 
-	public List<B_BomDetailData> getBomDetailList() {
+	public List<B_OrderBomDetailData> getBomDetailList() {
 		return this.bomDetailList;
 	}
-	public void setBomDetailList(List<B_BomDetailData> bomDetailList) {
+	public void setBomDetailList(List<B_OrderBomDetailData> bomDetailList) {
 		this.bomDetailList = bomDetailList;
 	}
 	

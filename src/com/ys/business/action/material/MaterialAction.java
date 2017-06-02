@@ -70,7 +70,7 @@ public class MaterialAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				doInit(session);
+				doInit(Constants.FORM_MATERIAL,session);
 				rtnUrl = "/business/material/materialmain";
 				break;
 			case "search":
@@ -162,7 +162,7 @@ public class MaterialAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;				
 			case "productInit"://成品
-				doInit(session);
+				doInit(Constants.FORM_PRODUCT,session);
 				rtnUrl = "/business/material/productmain";
 				break;
 			case "searchProduct"://成品
@@ -173,7 +173,7 @@ public class MaterialAction extends BaseAction {
 				rtnUrl = productView();
 				break;	
 			case "productSemiInit"://半成品
-				doInit(session);
+				doInit(Constants.FORM_PRODUCTSEMI,session);
 				rtnUrl = "/business/material/productsemimain";
 				break;			
 			case "searchProductSemi"://半成品
@@ -190,13 +190,13 @@ public class MaterialAction extends BaseAction {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void doInit(HttpSession session){	
+	public void doInit(String formId,HttpSession session){	
 			
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeValue(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD1);
-			session.removeValue(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD2);
+			session.removeValue(formId+Constants.FORM_KEYWORD1);
+			session.removeValue(formId+Constants.FORM_KEYWORD2);
 		}
 		
 	}
@@ -494,10 +494,11 @@ public class MaterialAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
 		//优先执行查询按钮事件,清空session中的查询条件
-				String pageFlg = request.getParameter("pageFlg");
-				if(pageFlg != null && !("").equals(pageFlg)){
-					session.removeValue("mainSearchKey1");
-					session.removeValue("mainSearchKey2");
+				String keyBackup = request.getParameter("keyBackup");
+				if(keyBackup != null && !("").equals(keyBackup)){
+					session.removeValue(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD1);
+					session.removeValue(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD2);
+
 					
 				}
 		try {
@@ -518,10 +519,11 @@ public class MaterialAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
 		//优先执行查询按钮事件,清空session中的查询条件
-				String pageFlg = request.getParameter("pageFlg");
-				if(pageFlg != null && !("").equals(pageFlg)){
-					session.removeValue("mainSearchKey1");
-					session.removeValue("mainSearchKey2");
+				String keyBackup = request.getParameter("keyBackup");
+				if(keyBackup != null && !("").equals(keyBackup)){
+					session.removeValue(Constants.FORM_PRODUCTSEMI+Constants.FORM_KEYWORD1);
+					session.removeValue(Constants.FORM_PRODUCTSEMI+Constants.FORM_KEYWORD2);
+
 					
 				}
 		try {

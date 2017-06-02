@@ -167,7 +167,7 @@ $(document).ready(function() {
 	
 	$("#goBack").click(function() {
 		var materialId='${product.materialId}';
-		var url = "${ctx}/business/material?methodtype=productInit&materialId="+materialId;
+		var url = "${ctx}/business/material?methodtype=productInit&keyBackup="+materialId;
 		location.href = url;		
 	});
 

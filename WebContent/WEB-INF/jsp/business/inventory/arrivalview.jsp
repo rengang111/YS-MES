@@ -104,9 +104,10 @@
 		historyAjax();//到货登记历史记录
 		
 		
-		$("#return").click(
+		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/arrival";
+					var contractId='${contract.contractId }';
+					var url = "${ctx}/business/arrival?keyBackup="+contractId;
 					location.href = url;		
 		});
 		
@@ -144,21 +145,26 @@
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr>
-			<tr> 				
 				<td class="label" style="width:100px"><label>耀升编号：</label></td>					
-				<td style="width:100px">&nbsp;${contract.YSId }</td>
-				<td class="label" style="width:100px"><label>合同编号：</label></td>					
-				<td  style="width:150px">${contract.contractId }</td>
+				<td style="width:200px">${contract.YSId }</td>
 				<td class="label" style="width:100px"><label>供应商：</label></td>					
-				<td>${contract.supplierId }（${contract.shortName }）${contract.fullName}</td>	
+				<td colspan="3">${contract.supplierId }（${contract.shortName }）${contract.fullName}</td>	
+			</tr>
+			<tr>
+				<td class="label" style="width:100px"><label>合同编号：</label></td>					
+				<td  style="width:200px">${contract.contractId }</td>
+				<td class="label" style="width:100px"><label>下单日期：</label></td>					
+				<td style="width:200px">${contract.purchaseDate }</td>
+				<td class="label" style="width:100px"><label>合同交期：</label></td>					
+				<td>${contract.deliveryDate }</td>	
 			</tr>								
 		</table>
 	</fieldset>
 	
 	<div style="clear: both"></div>
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="return" class="DTTT_button">返回</button>
 		<button type="button" id="doCreate" class="DTTT_button">收货</button>
+		<button type="button" id=goBack class="DTTT_button">返回</button>
 	</fieldset>		
 	
 	<div style="clear: both"></div>

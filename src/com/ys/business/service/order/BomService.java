@@ -1227,6 +1227,7 @@ public class BomService extends BaseService {
 		getBaseBom(materialId);
 	}
 	
+	
 	private void getBaseBom(String materialId) throws Exception {
 
 		//取得该产品的新BOM编号
@@ -1365,27 +1366,8 @@ public class BomService extends BaseService {
 		return getQuotationBomDetail(materialId);		
 	}
 		
-	/*
-	public Model createBomPlan() throws Exception {
-
-		String YSId = request.getParameter("YSId");
-		String materialId = request.getParameter("materialId");	
-
-		//取得该产品的基础BOM编号
-		String baseBomId = BusinessService.getBaseBomId(materialId)[1];
-		//取得基础BOM信息
-		getBaseBomDetail(baseBomId,false);
-		
-		//取得该产品的新BOM编号	
-		getOrderBomIdByMaterialId(materialId);	
-		
-		//取得订单信息
-		getOrderDetailByYSId(YSId);
-		
-		return model;
-		
-	}
-*/
+	
+	
 	public Model editBomPlan() throws Exception {
 
 		String YSId = request.getParameter("YSId");

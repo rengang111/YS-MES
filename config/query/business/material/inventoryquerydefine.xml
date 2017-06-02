@@ -21,6 +21,7 @@
       <f name="A.quantity" alias="" ctype="" />
       <f name="a.total" alias="" ctype="" />
       <f name="a.LoginName" alias="" ctype="" />
+      <f name="a.surplus" alias="" ctype="" />
     </select>
     <from>v_arrivallist a WHERE a.deleteFlag = '0' </from>
     <orderby>a.arrivalId,a.materialId</orderby>
@@ -101,7 +102,11 @@
     <name value="getArrivaList" />
     <where>
    		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="" bt="" />   
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.purchaseDate" des=""  reqName="purchaseDate1" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+   	  	<w name="A.purchaseDate" des=""  reqName="purchaseDate2" dtype="ch" oper="&gt;"  lg="AND" bt="" />
+   	  	<w name="A.accumulated"  des=""  reqName="accumulated1"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.accumulated"  des=""  reqName="accumulated2"  dtype="ch" oper="&gt;"  lg="AND" bt="" />
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -114,6 +119,11 @@
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
       <f name="a.arrivalSum" alias="arrivalSum" ctype="" />
+      <f name="A.purchaseDate" alias="" ctype="" />
+      <f name="A.surplus" alias="" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.customerShortName" alias="" ctype="" />
+      <f name="A.accumulated" alias="" ctype="" />
     </select>
     <from>v_purchaseorderdetail2 a  WHERE a.deleteFlag = '0' </from>
     <orderby>A.YSId,a.materialId</orderby>
@@ -150,6 +160,7 @@
       <f name="a.memo" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="IFNULL(b.recodeSum,'0')" alias="arrivalSum" ctype="" />
+      <f name="a.surplus" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->

@@ -80,7 +80,7 @@
 					    			return name;
 					    		}},
 					    		{"targets":8,"render":function(data, type, row){
-					    			return row["shippiingPort"] + "/"+row["destinationPort"] ;
+					    			return row["shippiingPort"] + " ／ "+row["destinationPort"] ;
 			                    }},
 					    		{"targets":9,"render":function(data, type, row){
 					    			return "<a href=\"###\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>"

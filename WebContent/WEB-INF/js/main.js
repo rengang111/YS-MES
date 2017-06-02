@@ -533,11 +533,11 @@ function foucsInit(){
 
 	
 	$("#baseinfo input").focus(function(){
-		$(this).removeClass('bgnone').removeClass('error');
+		$(this).removeClass('bgnone');
 	});
 	
 	$("#example input").focus(function(){
-		$(this).removeClass('bgnone').removeClass('error').addClass('bgwhite');
+		//$(this).removeClass('bgnone').addClass('bgwhite');
 	});
 
 	$(".num") .focus(function(){

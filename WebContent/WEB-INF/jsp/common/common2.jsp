@@ -24,6 +24,7 @@
 <script type="text/javascript" src="${ctx}/js/layer.js"></script>
 <script type="text/javascript" src="${ctx}/js/business.js"></script>
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
+<script type="text/javascript" src="${ctx}/js/all.js"></script>
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
 <!-- 
 <script type="text/javascript" src="${ctx}/js/browser.js"></script>
@@ -59,16 +60,19 @@
 		
 	}
 	function openLayer(url, width, height, isParentOpen,offsetTop) {
-		if (width == "") {
-			width = '900px';
+		if (typeof height == "undefined" || width == "") {
+			width = '1100px';
 		} else {
 			width = width + 'px';
 		}
-		if (height == "") {
-			height = '450px'
+		if (typeof height == "undefined" || height == "") {
+			height = '520px'
 		} else {
 			height = height + 'px';
 		}
+		if (typeof offsetTop == "undefined" || offsetTop == "") {
+			offsetTop = '10px'
+		} 
 		if (isParentOpen) {
 			parent.layer.open({
 				offset :[offsetTop,''],

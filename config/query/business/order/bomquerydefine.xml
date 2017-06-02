@@ -375,6 +375,7 @@
   	<select>
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
+      <f name="a.materialName" alias="materialNameView" ctype="" />
       <f name="a.shareModel" alias="" ctype="" />
       <f name="b.productModel" alias="" ctype="" />
       <f name="IFNULL(b.quantity,'1')" alias="quantity" ctype="" />

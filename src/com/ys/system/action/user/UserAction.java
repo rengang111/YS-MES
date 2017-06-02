@@ -103,7 +103,7 @@ public class UserAction extends BaseAction {
 				rtnUrl = doResetPwdInit();
 				break;
 			case "resetpwd":
-				viewModel = doUnLock(data, session, request);
+				viewModel = doResetPwd(data, session, request,dataModel);
 				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
 			//case "uploadHeadPhoto":
@@ -308,8 +308,8 @@ public class UserAction extends BaseAction {
 	}
 	
 	
-	public UserModel doResetPwd(String data, HttpSession session, HttpServletRequest request){
-		UserModel dataModel = new UserModel();
+	public UserModel doResetPwd(String data, HttpSession session, HttpServletRequest request,UserModel dataModel){
+		//UserModel dataModel = new UserModel();
 
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
