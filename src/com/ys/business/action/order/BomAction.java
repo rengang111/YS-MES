@@ -161,8 +161,7 @@ public class BomAction extends BaseAction {
 				rtnUrl = "/business/bom/basebomadd";
 				break;
 			case "baseBomInsert":
-				doInsertBaseBom();
-				rtnUrl = "/business/material/productview";
+				rtnUrl = doInsertBaseBom();
 				break;
 			case "getBaseBom":
 				dataMap = doShowBaseBom();
@@ -347,11 +346,21 @@ public class BomAction extends BaseAction {
 		
 	}		
 
-	public void doInsertBaseBom() throws Exception {
-
-		model = bomService.insertBaseBomAndView();
+	public String doInsertBaseBom() throws Exception {
+		
+		String rtnUrl = "/business/material/productview";
+		bomService.insertBaseBomAndView();
+		String keyBackup = request.getParameter("keyBackup");
+		
+		if(keyBackup!=null && keyBackup.equals("K")){
+				
+			rtnUrl = "/business/material/productsemiview";			
+		}
+		
+		return rtnUrl;
 		
 	}
+	
 	public void createQuotation() throws Exception {
 
 		model = bomService.createQuotation();

@@ -18,7 +18,7 @@
 	<input type="hidden" id="recordsTotal"  >
 	<input type="hidden" id="productRecordId"  >
 	<input type="hidden" id="parentId"  >
-	<form:hidden path="keyBackup"  value="K"/>
+	<input type="hidden" id="keyBackup"  value="K"/>
 	
 <fieldset style="float: left;width: 65%;">
 	<legend>产品信息</legend>

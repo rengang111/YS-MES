@@ -10,7 +10,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 
 
-<%@ include file="../../common/common.jsp"%>
+<%@ include file="../../common/common2.jsp"%>
 
 <title>到货登记一览(合同未到货)</title>
 <script type="text/javascript">
@@ -118,15 +118,27 @@
 				{"data": "supplierId"},
 				{"data": "purchaseDate","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
-				{"data": "arrivalSum","className" : 'td-right'},
-				{"data": null,"className" : 'td-right'},
+				{"data": "accumulated","className" : 'td-right'},
+				{"data": "surplus","className" : 'td-right'},
 				{"data": null,"className" : 'td-center'},
 
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
-                   }},
+                }},
+	    		{"targets":1,"render":function(data, type, row){
+	    			
+	    			var rtn = "<a href=\"###\" onClick=\"showYS('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";
+    			
+	    			return rtn;
+	    		}},
+	    		{"targets":2,"render":function(data, type, row){
+	    			
+	    			var rtn = "<a href=\"###\" onClick=\"showContract('" + row["contractId"] + "')\">"+row["contractId"]+"</a>";
+    			
+	    			return rtn;
+	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 
 	    			var contractId = row["contractId"];	
@@ -146,17 +158,9 @@
 	    			name = jQuery.fixedWidth(name,30);				    			
 	    			return name;
 	    		}},
-	    		{"targets":10,"render":function(data, type, row){
-	    			var quantity = currencyToFloat(row["quantity"]);
-	    			var arrivalSum = currencyToFloat(row["arrivalSum"]);
-	    			return floatToCurrency( quantity - arrivalSum);
-	    			
-	    		}},
 	    		{"targets":11,"render":function(data, type, row){
-	    			var contractId = row["contractId"];	
 	    			
-	    			var rtn="";
-	    				rtn = "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">查看</a>";
+	    			var rtn = "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">查看</a>";
     			
 	    			return rtn;
 	    		}},
@@ -267,6 +271,18 @@
 		
 		ajax(type);
 	}
+	
+	function showYS(YSId){
+		var url = '${ctx}/business/order?methodtype=detailView&YSId=' + YSId;
+
+		openLayer(url);
+	}
+	
+	function showContract(contractId) {
+		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
+		openLayer(url);
+
+	};
 	
 </script>
 </head>

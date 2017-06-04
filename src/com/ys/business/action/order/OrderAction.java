@@ -271,6 +271,9 @@ public class OrderAction extends BaseAction {
 					
 					rtnUrl = "/business/order/orderview";
 				}
+			}else{
+				dbData = orderService.getOrderViewByPIId(PIId);
+				rtnUrl = "/business/order/orderviewcomm";
 			}
 
 			model.addAttribute("order",  dbData.get(0));

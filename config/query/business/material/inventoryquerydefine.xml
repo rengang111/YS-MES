@@ -118,7 +118,6 @@
       <f name="a.materialName" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
-      <f name="a.arrivalSum" alias="arrivalSum" ctype="" />
       <f name="A.purchaseDate" alias="" ctype="" />
       <f name="A.surplus" alias="" ctype="" />
       <f name="A.customerId" alias="" ctype="" />

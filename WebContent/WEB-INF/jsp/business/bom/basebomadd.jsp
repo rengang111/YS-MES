@@ -307,8 +307,9 @@
 					location.href = url;		
 				});
 		
-		$("#update").click(function() {			
-			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=baseBomInsert");
+		$("#update").click(function() {	
+			var keyBackup = $("#keyBackup").val();		
+			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=baseBomInsert&keyBackup="+keyBackup);
 			$('#bomForm').submit();
 		});
 		
@@ -440,7 +441,7 @@
 		
 		<input type="hidden" id="tmpMaterialId" />
 		<form:hidden path="bomPlan.recordid" value="${material.productRecord}"/>
-		<form:hidden path="keyBackup" />
+		<form:hidden path="keyBackup"  value="${keyBackup }"/>
 		
 		<fieldset>
 			<legend>基础BOM</legend>

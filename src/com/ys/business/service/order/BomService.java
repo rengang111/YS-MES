@@ -591,10 +591,11 @@ public class BomService extends BaseService {
 		
 		List<B_BomData> dbList = null;
 		B_BomData bomData = null;
+		B_BomDao dao =new B_BomDao();
 		try {
 			String where = "bomId = '" + bomId
 				+ "' AND  deleteFlag = '0' ";
-			dbList = (List<B_BomData>)bomPlanDao.Find(where);
+			dbList = (List<B_BomData>)dao.Find(where);
 			
 			if ( dbList == null || dbList.size() > 0 )
 				bomData = dbList.get(0);
@@ -817,7 +818,7 @@ public class BomService extends BaseService {
 						data.setSubbomid(subBomId2);
 						insertBomDetail(data,true);	
 	
-						updateBom(data);//BOM结构
+						//updateBom(data);//BOM结构
 						
 						//供应商单价修改
 						//String supplierId = data.getSupplierid();
@@ -1031,35 +1032,25 @@ public class BomService extends BaseService {
 		B_BomDao bomDao = new B_BomDao();
 		String bomId = reqBom.getBomid();
 		
-		//取得更新前数据		
+		//删除旧数据
+		String where = " bomId ='"+bomId +"'";
+		bomDao.RemoveByWhere(where);
 		B_BomData bomData = BomExistCheck(bomId);					
 		
-		if(null != bomData){
+		//更新数据
+		bomData = new B_BomData();
+		bomData.setBomid(reqBom.getBomid());
+		bomData.setMaterialid(reqBom.getMaterialid());
+		bomData.setQuantity(reqBom.getQuantity());
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"BomInsert",userInfo);
+		copyProperties(bomData,commData);
 
-			//获取页面数据
-			bomData.setMaterialid(reqBom.getMaterialid());
-			bomData.setQuantity(reqBom.getQuantity());
-			//处理共通信息
-			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"BomPlanUpdate",userInfo);
-			copyProperties(bomData,commData);
-			
-			bomDao.Store(bomData);
-			
-		}else{
-			bomData = new B_BomData();
-			bomData.setBomid(reqBom.getBomid());
-			bomData.setMaterialid(reqBom.getMaterialid());
-			bomData.setQuantity(reqBom.getQuantity());
-			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-					"BomPlanInsert",userInfo);
-			copyProperties(bomData,commData);
-
-			guid = BaseDAO.getGuId();
-			bomData.setRecordid(guid);
-			
-			bomDao.Create(bomData);	
-		}
+		guid = BaseDAO.getGuId();
+		bomData.setRecordid(guid);
+		
+		bomDao.Create(bomData);	
+		
 	}
 
 

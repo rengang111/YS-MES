@@ -11,7 +11,7 @@
 <html>
 
 <head>
-<title>订单管理-订单查看</title>
+<title>订单管理-订单查看(共通信息)</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -38,8 +38,8 @@
 		var t = $('#example').DataTable({
 			
 			"processing" : false,
-			"retrieve"   : false,
-			"stateSave"  : false,
+			"retrieve"   : true,
+			"stateSave"  : true,
 			"pagingType" : "full_numbers",
 			//"scrollY"    : "160px",
 	        "scrollCollapse": false,
@@ -49,30 +49,43 @@
 	        "searching"  : false,
 	       	"language": {"url":"${ctx}/plugins/datatables/chinese.json"},
 	       	
-			"columns" : [{"className":"dt-body-center"},
-			             {},
-			             {}, 
-			             {}, 
+			"columns" : [{"className":"dt-body-center"}, {}, {}, {}, 
+
 			             {"className" : 'td-right'}, 
 			             {"className" : 'td-right'}, 
 			             {"className" : 'td-right'},
+			             
 			             {"className":"dt-body-center"},
-			             {"className":"dt-body-center"}
+			             {"className":"dt-body-center"}, {}
 						],
 			
 			"columnDefs":[
-				
+				{
+					"visible" : false,
+					"targets" : [ 7,8,9 ]
+				},
 			  { "targets":3,"render":function(data, type, row){
 	    			var name = row[3];	    			
 	    			name = jQuery.fixedWidth(name,40);		    			
 	    			return name;
 	    	  }},
 	    	  { "targets":7,"render":function(data, type, row){
-	    			
-	    			var rtn = "<a href=\"#\" onClick=\"orderReview2('" + row[1] + "')\">做单资料</a>";
+	    			var rtn = "";
+	    			//rtn= "<a href=\"#\" onClick=\"orderReview2('" + row[1] +"','"+ row[2] + "')\">做单资料</a>";
+	    			return rtn;
+	    	  }},
+	    	  { "targets":8,"render":function(data, type, row){
+	    			var rtn = "";
+	    			var status = row[9];
+	    			//if(status != 0){//1:BOM表已做成
+	    			//	rtn = "<a href=\"#\" onClick=\"ShowBomPlan('" + row[1] +"','"+ row[2] + "')\">订单详情</a>";
+		   			//	
+	    			//}else{
+		    		//	rtn = "<a href=\"#\" onClick=\"AddBomPlan('" + row[1] +"','"+ row[2] + "')\">新建</a>";
+	    			//}
 	    			return rtn;
 	    	  }}
-			  ] 	
+			] 	
 			
 		}).draw();
 						
@@ -112,7 +125,7 @@
 		
 		ajax();
 
-		//$('#example').DataTable().columns.adjust().draw();
+		$('#example').DataTable().columns.adjust().draw();
 		
 		$("#return").click(
 				function() {
@@ -139,7 +152,7 @@
 
 		var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
 
-		openLayer(url);
+		location.href = url;
 	}
 	
 </script>
@@ -206,7 +219,7 @@
 		<legend> 订单详情</legend>
 		<div class="list" style="margin-top: -4px;">
 		
-		<table id="example" class="display" style="width:100%">
+		<table id="example" class="display"  style="width:100%">
 			<thead>				
 			<tr>
 				<th width="1px">No</th>
@@ -218,10 +231,12 @@
 				<th class="dt-center" width="100px">销售总价</th>
 				<th class="dt-center" width="60px">操作</th>
 				<th class="dt-center" width="60px"></th>
+				<th class="dt-center" width="1px"></th>
 			</tr>
 			</thead>
 			<tfoot>
 				<tr>
+					<th></th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -244,7 +259,8 @@
 					<td class="cash" style="padding-right: 20px;">${order.price}</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
 					<td></td>
-					<td><a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">订单详情</a></td>												
+					<td></td>
+					<td>${order.status}</td>													
 				</tr>
 			</c:forEach>
 			
@@ -253,11 +269,7 @@
 	</div>
 	</fieldset>
 	<div style="clear: both"></div>
-	
-	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="return" class="DTTT_button">返回</button>
-		<button type="button" id="edit" class="DTTT_button">编辑</button>
-	</fieldset>		
+
 </form:form>		
 
 </div>

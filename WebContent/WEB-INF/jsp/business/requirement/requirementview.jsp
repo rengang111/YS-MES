@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<title>订单采购方案--物料需求表确认</title>
+<title>订单采购方案--采购方案</title>
 <%@ include file="../../common/common2.jsp"%>
  <style>th, td { white-space: nowrap; }</style>
   	
@@ -128,32 +128,72 @@
 		</fieldset>	
 		
 		<div id="tabs" style="padding: 0px;white-space: nowrap;">
-		<ul>
-			<li><a href="#tabs-1" class="tabs1">物料需求表</a></li>
-		</ul>
-
+			<ul>
+				<li><a href="#tabs-1" class="tabs1">物料需求表(一级)</a></li>
+				<li><a href="#tabs-2" class="tabs2">物料需求表(二级)</a></li>
+			</ul>
+	
 			<div id="tabs-1" style="padding: 5px;">
+	
+				<table id="example" class="display" style="width:98%">
+					<thead>				
+						<tr>
+							<th width="1px">No</th>
+							<th class="dt-center" style="width:120px">物料编码</th>
+							<th class="dt-center" >物料名称</th>
+							<th class="dt-center" style="width:60px">用量</th>
+							<th class="dt-center" style="width:30px">单位</th>
+							<th class="dt-center" style="width:60px">供应商</th>
+							<th class="dt-center" style="width:60px">订单数量</th>
+							<th class="dt-center" style="width:80px">总量</th>
+							<th class="dt-center" style="width:60px">当前库存</th>
+							<th class="dt-center" style="width:80px">建议需求量</th>
+						</tr>
+					</thead>			
+				</table>
+			</div>
+		</div>
+		
+		<div id="tabs-2" style="padding: 5px;">
 
-			<table id="example" class="display" style="width:98%">
+			<table id="ZZmaterial" class="display" style="width:98%">
 				<thead>				
 					<tr>
 						<th width="1px">No</th>
-						<th class="dt-center" style="width:120px">物料编码</th>
-						<th class="dt-center" >物料名称</th>
-						<th class="dt-center" style="width:60px">用量</th>
-						<th class="dt-center" style="width:30px">单位</th>
-						<th class="dt-center" style="width:60px">供应商</th>
-						<th class="dt-center" style="width:60px">订单数量</th>
-						<th class="dt-center" style="width:80px">总量</th>
-						<th class="dt-center" style="width:60px">当前库存</th>
-						<th class="dt-center" style="width:80px">建议需求量</th>
+						<th class="dt-center" style="width:120px !important">原材料编码</th>
+						<th class="dt-center">原材料名称</th>
+						<th class="dt-center" width="60px !important">单位</th>
+						<th class="dt-center" width="80px">总量</th>
+						<th class="dt-center" width="60px">当前库存</th>
+						<th class="dt-center" width="80px !important">建议需求量</th>
 					</tr>
-				</thead>			
-			</table>
-		</div>
-		</div>
-
+				</thead>
+				
+				<tbody>
+				<c:forEach var="detail" items="${requirement}" varStatus='status' >
+					<c:if test="${detail.materialId.substring(0,1) == 'A'}">
+						<tr>
+							<td></td>
+							<td>${detail.materialId}</td>								
+							<td><span id="rawName${status.index}"></span></td>
+							<td>${detail.unit}</td>		
+							<td>${detail.orderQuantity}</td>	
+							<td>0</td>	
+							<td>${detail.quantity}</td>							
+						</tr>
 		
+						<script type="text/javascript">
+							var index = '${status.index}';
+							var materialName = '${detail.materialName}';
+							var quantity = '${detail.advice}';	
+							//alert('quantity['+'${detail.advice}'+']')	
+							$('#rawName'+index).html(jQuery.fixedWidth(materialName,25));
+						</script>
+					</c:if>
+				</c:forEach>				
+				</tbody>		
+			</table>
+		</div>		
 		<div style="clear: both"></div>		
 	</form:form>
 </div>

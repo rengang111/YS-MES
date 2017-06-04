@@ -181,7 +181,13 @@ public class OrderService extends BaseService {
 		
 		baseQuery = new BaseQuery(request, dataModel);
 
-		userDefinedSearchCase.put("keywords1", PIId);
+		String YSId = request.getParameter("YSId");
+		if(YSId != null && !YSId.equals(""))
+			userDefinedSearchCase.put("YSId", YSId);
+		
+		if(PIId != null && !PIId.equals(""))
+			userDefinedSearchCase.put("keywords1", PIId);
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		modelMap = baseQuery.getYsQueryData(0, 0);
 		
