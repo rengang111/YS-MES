@@ -203,7 +203,7 @@
 		});
 
 		if (str != '') {
-			if(confirm("确定要删除数据吗？")) {
+			if(confirm("采购方案,采购合同,全部会被删除,\n\n        确定要删除订单吗？")) {
 				jQuery.ajax({
 					type : 'POST',
 					async: false,
