@@ -21,6 +21,9 @@ import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
+import com.ys.business.db.dao.B_PurchaseOrderDao;
+import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
+import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -646,6 +649,10 @@ public class OrderService extends BaseService {
 		B_OrderData odata = new B_OrderData();
 		List<B_OrderData> list = null;		
 		
+		B_PurchasePlanDao purchaseplan = new B_PurchasePlanDao();
+		B_PurchaseOrderDao purOrder = new B_PurchaseOrderDao();
+		B_PurchaseOrderDetailDao purOrderDetail = new B_PurchaseOrderDetailDao();
+		
 		try {	
 			
 			ts = new BaseTransaction();										
@@ -657,14 +664,35 @@ public class OrderService extends BaseService {
 				data = (B_OrderDetailData)dao.FindByPrimaryKey(data);
 
 				dao.Remove(data);
+				
+				
+				String Ysid = data.getYsid();
+				String purchaseStr = "Ysid = '" + Ysid +"'";
+				
+				try {
+					purchaseplan.RemoveByWhere(purchaseStr);//采购订单
+				} catch (Exception e1) {
+					//
+				}
+				try {
+					purOrder.RemoveByWhere(purchaseStr);//采购合同
+				} catch (Exception e1) {
+					//
+				}
+				
+				try {
+					purOrderDetail.RemoveByWhere(purchaseStr);//采购合同明细
+				} catch (Exception e1) {
+					//
+				}
 
 				//判断是否要删除PI信息				
 				String Piid = data.getPiid();
 				String where = "PIId = '" + Piid +"' AND deleteFlag='0'";
-				list = odao.Find(where);
+				list = dao.Find(where);
 				
 				if(list !=null && list.size() == 1){
-					//一个PI下只有一个产品时,同时删除PI信息
+					//一个PI下只有一个产品时,删除YS时,同时删除PI信息
 					odao.Remove(list.get(0));
 				}
 												
