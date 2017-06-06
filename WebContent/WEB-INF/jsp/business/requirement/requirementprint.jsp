@@ -183,7 +183,7 @@ function printPage(preview)
 
 function baseBomView() {
 
-	var bomId='${bomId }';
+	var materialId='${product.materialId}';
 	
 	var t2 = $('#orderBomTable').DataTable({
 		"paging": false,
@@ -194,7 +194,7 @@ function baseBomView() {
 		//"pagingType" : "full_numbers",
 		"retrieve" : false,
 		"async" : false,
-		"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBom&bomId="+bomId,				
+		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
 				"url" : sSource,
