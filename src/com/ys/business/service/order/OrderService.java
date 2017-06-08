@@ -689,7 +689,7 @@ public class OrderService extends BaseService {
 				//判断是否要删除PI信息				
 				String Piid = data.getPiid();
 				String where = "PIId = '" + Piid +"' AND deleteFlag='0'";
-				list = dao.Find(where);
+				list = odao.Find(where);
 				
 				if(list !=null && list.size() == 1){
 					//一个PI下只有一个产品时,删除YS时,同时删除PI信息
