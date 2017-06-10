@@ -102,7 +102,7 @@
 	    	}
 
 	        return rtnValue;   
-	    }, "子编码重复");
+	    }, "角色名称不正确");
 		
 		operType = $('#operType').val();
 			
@@ -158,7 +158,7 @@
 	}
 
 	function saveUpdate() {
-		if (inputCheck()) {
+		if (validatorBaseInfo.form()) {
 			if (confirm("确定要保存吗？")) {
 				var actionUrl;
 				if (operType == 'add' || operType == 'addsub') {
@@ -217,9 +217,11 @@
 			dataType : 'json',
 			data : $('#rolename').val() + '&' + $('#roleid').val(),
 			url : "${ctx}/role?methodtype=checkRoleName",
-			success : function(data) {
+			success : function(d) {
 				if (d.rtnCd != "000") {
-					alert(d.message);	
+					result = false;	
+				} else {
+					result = true;
 				}
 
 			},

@@ -188,19 +188,21 @@ function ajax() {
 	function deletePower(id) {
 		
 		$('#operType').val("delete");
-		
+		var str = "";	
 		var isAnyOneChecked = false;
 		$("input[name='numCheck']").each(function(){
 			if (id != '') {
 				if ($(this).val() == id) {
 					$(this).prop('checked', true);
 					isAnyOneChecked = true;
+					str += $(this).val() + ",";
 				} else {
 					$(this).prop('checked', false);
 				}
 			} else {
 				if ($(this).prop('checked')) {
 					isAnyOneChecked = true;
+					str += $(this).val() + ",";
 				}
 			}
 		});
@@ -213,7 +215,7 @@ function ajax() {
 					contentType : 'application/json',
 					dataType : 'json',
 					url : actionUrl,
-					data : JSON.stringify($('#form').serializeArray()),// 要提交的表单
+					data : str,// 要提交的表单
 					success : function(d) {
 						if (d.rtnCd != "000") {
 							alert(d.message);	

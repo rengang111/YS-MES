@@ -198,11 +198,12 @@
 	function deleterole() {
 		
 		$('#operType').val("delete");
-		
+		var str = "";
 		var isAnyOneChecked = false;
 		$("input[name='numCheck']").each(function(){
 			if ($(this).prop('checked')) {
 				isAnyOneChecked = true;
+				str += $(this).val() + ",";
 			}
 		});
 		if (isAnyOneChecked) {
@@ -214,7 +215,7 @@
 					contentType : 'application/json',
 					dataType : 'json',
 					url : actionUrl,
-					data : JSON.stringify($('#form').serializeArray()),// 要提交的表单
+					data : str,// 要提交的表单
 					success : function(d) {
 						if (d.rtnCd != "000") {
 							alert(d.message);	
@@ -269,7 +270,7 @@
 		if (roleId != '') {
 			//popupWindow("PowerDetail", "${ctx}/power?methodtype=updateinit&operType=addviarole&roleId=" + roleId, 800, 600);
 			var url = "${ctx}/power?methodtype=updateinit&operType=addviarole&roleId=" + roleId;
-			openLayer(url, $(document).width() - 25, layerHeight + 300, true);
+			openLayer(url, $(document).width() - 25, layerHeight + 350, true);
 		} else {
 			var roleIdList = "";
 			var isFirst = true;

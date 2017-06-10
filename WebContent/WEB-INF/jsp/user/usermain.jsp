@@ -196,11 +196,12 @@ function ajax() {
 	function deleteUser() {
 		
 		$('#operType').val("delete");
-		
+		var str = "";
 		var isAnyOneChecked = false;
 		$("input[name='numCheck']").each(function(){
 			if ($(this).prop('checked')) {
 				isAnyOneChecked = true;
+				str += $(this).val() + ",";
 			}
 		});
 		if (isAnyOneChecked) {
@@ -212,7 +213,7 @@ function ajax() {
 					contentType : 'application/json',
 					dataType : 'json',
 					url : actionUrl,
-					data : JSON.stringify($('#form').serializeArray()),// 要提交的表单
+					data : str,// 要提交的表单
 					success : function(d) {
 						if (d.rtnCd != "000") {
 							alert(d.message);	

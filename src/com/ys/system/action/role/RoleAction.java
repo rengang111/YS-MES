@@ -86,8 +86,8 @@ public class RoleAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "checkRoleName":
-				rtnUrl = doCheckRoleName(data);
-				printOut(response, rtnUrl);
+				viewModel = doCheckRoleName(data);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
 				return null;
 		}
 		
@@ -257,8 +257,8 @@ public class RoleAction extends BaseAction {
 		return dataMap;
 	}
 	
-    public String doCheckRoleName(String roleIdName) {
-    	BaseModel base = new BaseModel();
+    public RoleModel doCheckRoleName(String roleIdName) {
+    	RoleModel base = new RoleModel();
     	
     	String roleId = "";
     	String roleName = "";
@@ -271,12 +271,14 @@ public class RoleAction extends BaseAction {
     	}
     	
     	boolean result = checkRoleName(roleId, roleName);
-    	base.setSuccess(result);
+    	
     	if (!result) {
-	    	base.setMessage("角色名已存在");
+	    	base.setEndInfoMap(BaseService.DUMMYKEY, "角色名已存在", "");
+    	} else {
+    		base.setEndInfoMap(BaseService.NORMAL, "", "");
     	}
     	
-    	return JsonUtil.toJson(base);
+    	return base;
     	
     }
     
