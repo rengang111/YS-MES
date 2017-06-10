@@ -108,14 +108,21 @@
 		
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/order";
-					location.href = url;		
-				});
+			var YSId = '${order.YSId}';
+			var materialId = '${order.materialId}';
+			var url = '${ctx}/business/bom?methodtype=orderDetail&YSId=' + YSId+'&materialId='+materialId;
+	
+			location.href = url;		
+		});
 		
-		$("#insert").click(
+		$("#requirement").click(
 				function() {
-					
-			$('#attrForm').attr("action", "${ctx}/business/requirement?methodtype=insertProcurement");
+
+			var materialId='${order.materialId}';
+			var YSId ="${order.YSId}";
+			var quantity ="${order.quantity}";
+			$('#attrForm').attr("action",
+					"${ctx}/business/requirement?methodtype=createPurchasePlan2&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity);
 			$('#attrForm').submit();
 		});
 			
@@ -205,13 +212,13 @@
 		</fieldset>
 				
 		<fieldset class="action" style="text-align: right;margin-top: -50px;width: 30%;float: right;">
-			<button type="button" id="requirement" class="DTTT_button">生成采购方案</button>
-			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
+			<button type="button" id="requirement" class="DTTT_button">生成订单BOM</button>
+			<button type="button" id="goBack" class="DTTT_button goBack">返回订单详情</button>
 		</fieldset>	
 		
 		<div id="tabs" style="padding: 0px;white-space: nowrap;">
 		<ul>
-			<li><a href="#tabs-1" class="tabs1">物料需求表</a></li>
+			<li><a href="#tabs-1" class="tabs1">基础BOM</a></li>
 		</ul>
 
 			<div id="tabs-1" style="padding: 5px;">
@@ -220,14 +227,15 @@
 				<thead>				
 					<tr>
 						<th width="1px">No</th>
-						<th class="dt-center" style="width:150px">物料编码</th>
+						<th class="dt-center" style="width:120px">物料编码</th>
 						<th class="dt-center" >物料名称</th>
 						<th class="dt-center" width="60px">用量</th>
 						<th class="dt-center" style="width:30px">单位</th>
+						<th class="dt-center" style="width:80px">供应商</th>
 						<th class="dt-center" width="60px">订单数量</th>
 						<th class="dt-center" width="80px">总量</th>
-						<th class="dt-center" width="60px">当前库存</th>
-						<th class="dt-center" width="80px">建议需求量</th>
+						<th class="dt-center" width="60px">单价</th>
+						<th class="dt-center" width="80px">总价</th>
 					</tr>
 				</thead>			
 			</table>
@@ -282,9 +290,10 @@ function baseBomView() {
 			{"data": "materialName"},
 			{"data": "quantity","className" : 'td-right'},
 			{"data": "unit","className" : 'td-center'},
+			{"data": "supplierId"},
 			{"data": null,"className" : 'td-right'},
 			{"data": null,"className" : 'td-right'},
-			{"data": null,"className" : 'td-right'},
+			{"data": "price","className" : 'td-right'},
 			{"data": null,"className" : 'td-right'},
 		 ],
 		"columnDefs":[
@@ -313,24 +322,22 @@ function baseBomView() {
     			rtn=rtn  + "<input type=\"hidden\" id=\"bomDetailList"+rownum+".supplierid\" name=\"bomDetailList["+rownum+"].supplierid\" value=\""+supplierid+"\">";
     			return rtn;
     		}},
-    		{"targets":5,"render":function(data, type, row){
+    		{"targets":6,"render":function(data, type, row){
     			
     			var quantity =  '${order.quantity}' ;
     			return quantity;
     		}},
-    		{"targets":6,"render":function(data, type, row){
+    		{"targets":7,"render":function(data, type, row){
     			var price = currencyToFloat('${order.quantity}' );
     			var quantity = currencyToFloat( row["quantity"] );				    			
     			var total = floatToCurrency( price * quantity );			    			
     			return total;
     		}},
-    		{"targets":7,"render":function(data, type, row){			    			
-    			return "0";
-    		}},
-    		{"targets":8,"render":function(data, type, row){
-    			var price = currencyToFloat('${order.quantity}' );
-    			var quantity = currencyToFloat( row["quantity"] );				    			
-    			var total = floatToCurrency( price * quantity );			    			
+    		{"targets":9,"render":function(data, type, row){
+    			var order = currencyToFloat('${order.quantity}' );
+    			var quantity = currencyToFloat( row["quantity"] );	
+    			var price = currencyToFloat( row["price"] );				    			
+    			var total = floatToCurrency( price * quantity * order );			    			
     			return total;
     		}}
           
@@ -390,8 +397,8 @@ function doEditMaterial(recordid,parentid) {
 		 // if(confirm('确定要关闭么')){
 		    layer.close(index)
 		 // }
-		  baseBomView();
-		  return false; 
+			$('#baseBomTable').DataTable().ajax.reload(null,false);
+		  	return false; 
 		}    
 	});		
 

@@ -678,7 +678,8 @@ function autocomplete(){
 		select : function(event, ui) {
 			//所选择的BOM编号里面含有产品编号,所以要锁定原来的产品
 			var materialId = '${product.materialId}';
-			var url = '${ctx}/business/bom?methodtype=changeBomAdd&bomId='+ui.item.id+'&materialId='+materialId;
+			var keyBackup = $('#keyBackup').val();
+			var url = '${ctx}/business/bom?methodtype=changeBomAdd&bomId='+ui.item.id+'&materialId='+materialId+'&keyBackup='+keyBackup;
 			location.href = url;
 		},
 

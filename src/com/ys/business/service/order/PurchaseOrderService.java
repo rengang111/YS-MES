@@ -88,6 +88,26 @@ public class PurchaseOrderService extends CommonService {
 		super.session = session;
 		
 	}
+	
+	public PurchaseOrderService(Model model,
+			HttpServletRequest request,
+			HttpSession session,
+			UserInfo userInfo){
+		
+		this.orderDao = new B_PurchaseOrderDao();
+		this.detailDao = new B_PurchaseOrderDetailDao();
+		this.model = model;
+		this.request = request;
+		this.session = session;
+		this.userInfo = userInfo;
+		this.dataModel = new BaseModel();
+		this.userDefinedSearchCase = new HashMap<String, String>();
+		this.dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		super.request = request;
+		super.userInfo = userInfo;
+		super.session = session;
+		
+	}
 
 	public HashMap<String, Object> getContractList(String data) throws Exception {
 		
@@ -268,7 +288,7 @@ public class PurchaseOrderService extends CommonService {
 			
 			for(B_PurchasePlanData dt:dbList){
 				
-				float quantity = toFloat(dt.getQuantity());
+				float quantity = stringToFloat(dt.getQuantity());
 				//采购数量为零的物料不生成采购合同
 				if (quantity == 0)
 					continue;
@@ -353,18 +373,19 @@ public class PurchaseOrderService extends CommonService {
 				String shortName  = supplierList.get(i).get("shortName");
 				String total      = supplierList.get(i).get("total");
 				
-				if(supplierId == null || supplierId.equals(""))
+				if(supplierId == null || supplierId.equals("")){
 					continue;
-
-				float totalf = toFloat(total); 
-				if(totalf == 0)//采购金额为零的供应商不计入合同
+				}
+				float totalf = stringToFloat(total); 
+				if(totalf == 0){//采购数量为零的供应商不计入合同
 					continue;
-					
+				}
 				//取得供应商的合同流水号
 				//父编号:年份+供应商简称
 				String parentId = "";
-				if(null != YSId && YSId.length() > 3 )
+				if(null != YSId && YSId.length() > 3 ){
 					parentId = YSId.substring(0,2);//耀升编号前两位是年份
+				}
 				parentId = parentId + shortName;
 				
 				String subId = getContractCode(parentId);
@@ -375,59 +396,11 @@ public class PurchaseOrderService extends CommonService {
 				
 				//新增采购合同
 				insertPurchaseOrder(
-						YSId,materialId,supplierId,contractId,parentId,subId,total);
+						YSId,materialId,supplierId,contractId,parentId,subId,String.valueOf(totalf));
 
 				//新增合同明细
 				insertPurchaseOrderDetail(YSId,supplierId,contractId);
 				
-				/*
-				boolean suppFlg = true;
-				B_PurchaseOrderData purDt = null;
-				for(B_PurchaseOrderData order:supplierContrct){
-					
-					String supplierIdCntr = order.getSupplierid();
-					
-					if(supplierIdCntr == null || supplierIdCntr.equals(""))
-						continue;
-					
-					if(supplierIdCntr.equals(supplierId)){
-						suppFlg = false;
-						purDt = order;//找到同一个供应商
-						supplierContrct.remove(order);
-						break;
-					}
-				}
-				
-				if(suppFlg){
-					
-					//取得供应商的合同流水号
-					//父编号:年份+供应商简称
-					String parentId = "";
-					if(null != YSId && YSId.length() > 3 )
-						parentId = YSId.substring(0,2);//耀升编号前两位是年份
-					parentId = parentId + shortName;
-					
-					int subId = getContractCode(parentId);
-
-					//3位流水号格式化	
-					//采购合同编号:16YS081-WL002
-					String contractId = BusinessService.getContractCode(YSId, shortName, subId);
-					
-					//新增采购合同
-					insertPurchaseOrder(
-							YSId,materialId,supplierId,contractId,parentId,subId,total);
-
-					//新增合同明细
-					insertPurchaseOrderDetail(YSId,supplierId,contractId);
-
-				}else{
-					//更新处理
-					purDt.setTotal(total);
-					updatePurchaseOrder(purDt);
-					
-				}
-				
-				*/
 			}
 			
 			ts.commit();
@@ -636,7 +609,6 @@ public class PurchaseOrderService extends CommonService {
 		try {
 			dao.RemoveByWhere(astr_Where);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 		}		
 		
@@ -653,7 +625,6 @@ public class PurchaseOrderService extends CommonService {
 		try {
 			dao.RemoveByWhere(astr_Where);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 		}		
 		

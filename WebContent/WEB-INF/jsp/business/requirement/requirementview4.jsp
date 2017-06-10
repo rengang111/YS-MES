@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<title>订单采购方案--采购方案</title>
+<title>订单采购方案--采购合同</title>
 <%@ include file="../../common/common2.jsp"%>
  <style>th, td { white-space: nowrap; }</style>
   	
@@ -29,6 +29,31 @@
 		return o;
 	};	
 	
+	function initEvent(){
+		
+		$('#contractTable').DataTable().on('click', 'tr', function() {
+			
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	        	
+	        	$('#contractTable').DataTable().$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	            
+	            var d = $('#contractTable').DataTable().row(this).data();
+				//alert(d["bid_id"]);
+				
+				$('#contractDetail').DataTable().destroy();
+				//$('#set_lines').DataTable().ajax.reload();
+				//ajax_factory_bid_set_lines(d["bid_id"]);
+				//var d = $('#contractTable').DataTable().row(this).data();
+				//alert(d["contractId"])
+				contractDetailView(d["contractId"]);
+					            
+	        }			
+		});
+	}
 	
 	$(document).ready(function() {		
 		
@@ -38,13 +63,13 @@
 		ZZmaterialView();//二级BOM
 		
 		requirementAjax();//采购方案
-		
-		productStock();//半成品库存信息
-		
-		autocomplete();
 
+		contractTableView();//采购合同
+		
+		initEvent();//合同明细联动
+		
 		$( "#tabs" ).tabs();
-		$( "#tabs" ).tabs( "option", "active", 2 );//设置默认显示内容
+		$( "#tabs" ).tabs( "option", "active", 3 );//设置默认显示内容
 		
 		$(".goBack").click(
 				function() {
@@ -53,16 +78,6 @@
 					var url = '${ctx}/business/bom?methodtype=orderDetail&YSId=' + YSId+'&materialId='+materialId;
 					location.href = url;		
 				});
-		
-		$("#insert").click(
-				function() {
-					
-			if(confirm('保存后， [本次单价] 会反映到成品管理里面。')){
-				$('#attrForm').attr("action", "${ctx}/business/requirement?methodtype=insertProcurement");
-				$('#attrForm').submit();
-			 }
-			
-		});
 		
 		$('#example').DataTable().on('click', 'tr', function() {
 
@@ -82,6 +97,7 @@
 			$('.DTFC_Cloned').find('tr').eq(rowIndex+2).addClass('selected');
 		});
 			
+		
 		$("#doReset").click(function() {
 			var order = '${order.quantity}';
 			order = order.replace(/,/g, "");
@@ -92,8 +108,60 @@
 			
 		});
 		
+
+		$("#doEditPlan").click(function() {
+			var YSId = '${order.YSId}';
+			var bomId=$('#bomId').val();
+			var url = "${ctx}/business/requirement?methodtype=editRequirement&YSId="+YSId+"&bomId="+bomId;
+			location.href = url;		
+		});
 		
-		foucsInit();//input获取焦点初始化处理
+		$("#doContract").click(function() {
+			var YSId = '${order.YSId}';
+			var materialId='${order.materialId}';
+			var bomId=$('#bomId').val();
+			var url = "${ctx}/business/requirement?methodtype=creatPurchaseOrder&YSId="+YSId+"&materialId="+materialId+"&bomId="+bomId;
+			location.href = url;
+			
+		});
+		
+		$("#doReset").click(function() {
+			var order = '${order.quantity}';
+			order = order.replace(/,/g, "");
+			var materialId='${order.materialId}';
+			var YSId = '${order.YSId}';
+			var url = "${ctx}/business/requirement?methodtype=resetRequirement&YSId="+YSId+"&materialId="+materialId+"&order="+order;
+			location.href = url;		
+			
+		});
+		
+		$(".tabs3").click( function() {
+			
+			//$('#example').DataTable().ajax.reload(null,true);
+			//$(".DTFC_Cloned").attr('width','90% !important');
+			//$(".DTFC_Cloned").removeAttr('style');
+			
+			var scrollHeight = $(window).height() - 250;
+			$('#example').DataTable({
+		        "destroy":true, //Cannot reinitialise DataTable,解决重新加载表格内容问题
+				"paging": false,
+				"processing" : false,
+				"serverSide" : false,
+				"stateSave" : false,
+				"searching" : false,
+				"pagingType" : "full_numbers",
+				"retrieve" : false,
+				"async" : false,
+		        "sScrollY": scrollHeight,
+		        "sScrollX": true,
+		        "fixedColumns":   { leftColumns: 3 },
+		        "sScrollXInner": "110%",
+		        "bScrollCollapse": true,
+				"dom" : '<"clear">rt',
+		        "ordering"  : false,
+			});
+			
+		});
 	
 	});
 
@@ -110,7 +178,7 @@
 		
 		
 		<input type="hidden" id="tmpMaterialId" />
-		<form:hidden path="orderBom.bomid"  value="${bomId}" />
+		<input type="hidden" id="bomId" value="${bomId }">
 		<fieldset>
 			<legend> 产品信息</legend>
 			<table class="form" id="table_form">
@@ -138,26 +206,10 @@
 				</tr>							
 			</table>
 		</fieldset>
-			
-		<fieldset>
-			<legend>半成品库存信息</legend>
-			<div class="list" style="width: 50%;">
-				<table id="productStock" class="display" style="width:98%">
-					<thead>				
-						<tr>
-							<th width="1px">No</th>
-							<th class="dt-center" style="width:100px">物料编码</th>
-							<th class="dt-center" style="width:100px">当前库存</th>
-							<th class="dt-center" style="width:80px">操作</th>
-						</tr>
-					</thead>			
-				</table>
-			</div>
-		</fieldset>
 				
-		<fieldset class="action" style="text-align: right;margin-top: -50px;width: 30%;float: right;">
-				<button type="button" id="insert" class="DTTT_button">生成采购方案</button>
-				<button type="button" id="doReset" class="DTTT_button">重置订单BOM</button>
+		<fieldset class="action" style="text-align: right;margin-top: -5px;">
+			<button type="button" id="doEditPlan" class="DTTT_button">修改采购方案</button>
+			<button type="button" id="doReset" class="DTTT_button">重置订单BOM</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回订单详情</button>
 		</fieldset>	
 		
@@ -166,6 +218,7 @@
 				<li><a href="#tabs-1" class="tabs1">订单BOM</a></li>
 				<li><a href="#tabs-2" class="tabs2">二级BOM</a></li>
 				<li><a href="#tabs-3" class="tabs3">采购方案</a></li>
+				<li><a href="#tabs-4" class="tabs4">采购合同</a></li>
 			</ul>
 	
 			<div id="tabs-1" style="padding: 5px;">
@@ -227,9 +280,55 @@
 					</tr>
 				</thead>
 			</table>
-			&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red;font-weight: bold;font: 15px all-petite-caps;">注意：采购方案中的 “本次单价”&nbsp;修改后，会直接反映到“成品管理”。</span>
+	
 		</div>	
+		<div id="tabs-4" style="padding: 5px;">
 		
+			<table id="contractTable" class="display" style="width:98%">
+				<thead>				
+					<tr>
+						<th width="1px">No</th>
+						<th class="dt-center" style="width:120px">合同编号</th>
+						<th class="dt-center" style="width:100px">供应商简称</th>
+						<th class="dt-center" >供应商名称</th>
+						<th class="dt-center" style="width:80px">下单日期</th>
+						<th class="dt-center" width="80px">交货日期</th>
+						<th class="dt-center" width="100px">合同金额</th>
+						<th class="dt-center" width="30px"></th>
+					</tr>
+				</thead>			
+			</table>
+			<br/>
+			<fieldset style="min-height: 300px;">
+			<legend>合同明细</legend>
+			<div class="list">
+			<table id="contractDetail" class="display">	
+				<thead>
+				<tr>
+					<th style="width:30px">No</th>
+					<th style="width:150px">ERP编码</th>
+					<th>物料名称</th>
+					<th style="width:80px">数量</th>
+					<th style="width:60px">单价</th>
+					<th style="width:50px">单位</th>
+					<th style="width:80px">金额</th>
+				</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>
+			</div>
+			</fieldset>
+		</div>
 		</div>	
 		<div style="clear: both"></div>		
 	</form:form>
@@ -262,7 +361,7 @@ function orderBomView() {
 				"type" : "POST",
 				"data" : null,
 				success: function(data){
-					fnCallback(data);
+					fnCallback(data);;
 					foucsInit();//input获取焦点初始化处理
 					
 				},
@@ -358,7 +457,7 @@ function orderBomView() {
 		if(fQuantityt != fQuantityh){
 			
 			//alert("new:"+fQuantityt+"old:"+fQuantityh)
-			var bomId  = $('#orderBom\\.bomid').val();
+			var bomId  = $('#bomId').val();
 			
 			var url = "${ctx}/business/requirement?methodtype=updateOrderBomQuantity";
 			url = url + "&materialId="+ materialId + "&bomId="+bomId;
@@ -537,7 +636,7 @@ function productStock() {
 <script  type="text/javascript">
 function ZZmaterialView() {
 
-	var bomId=$("#orderBom\\.bomid").val();
+	var bomId=$("#bomId").val();
 	var table = $('#ZZmaterial').dataTable();
 	if(table) {
 		table.fnDestroy();
@@ -814,9 +913,8 @@ function autocomplete(){
 
 function requirementAjax() {
 
-	var scrollHeight = $(window).height() - 275;
+	var scrollHeight = $(window).height() - 250;
 	var bomId = "${bomId}";
-	var quantity = "${order.quantity}";
 	var YSId = '${order.YSId}';
 
 	var table = $('#example').dataTable();
@@ -840,7 +938,7 @@ function requirementAjax() {
         "bScrollCollapse": true,
 		"dom" : '<"clear">rt',
         "ordering"  : false,
-		"sAjaxSource" : "${ctx}/business/requirement?methodtype=createPurchasePlanFromBaseBom&bomId="+bomId+"&quantity="+quantity+"&YSId="+YSId,				
+		"sAjaxSource" : "${ctx}/business/requirement?methodtype=purchasePlanView&bomId="+bomId+"&YSId="+YSId,
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
 				"url" : sSource,
@@ -850,8 +948,8 @@ function requirementAjax() {
 				"data" : null,
 				success: function(data){
 					fnCallback(data);
-					autocomplete();//
-					foucsInit();//input获取焦点初始化处理
+					//autocomplete();//
+					//foucsInit();//input获取焦点初始化处理
 					// $(".DTFC_Cloned").css('width','100%');
 					
 					
@@ -875,8 +973,8 @@ function requirementAjax() {
 			{"data": "orderQuantity","className" : 'td-right'},
 			{"data": "availabelToPromise","className" : 'td-right'},
 			{"data": "purchaseQuantity","className" : 'td-right'},
-			{"data": "lastSupplierId"},
-			{"data": "lastPrice","className" : 'td-right'},
+			{"data": "supplierId"},
+			{"data": "price","className" : 'td-right'},
 			{"data": null,"className" : 'td-right'},
 			{"data": null,"className" : 'td-right'},
 			{"data": null,"className" : 'td-right'},
@@ -902,36 +1000,21 @@ function requirementAjax() {
     			var rownum = row["rownum"]-1;
     			var quantity =  floatToCurrency( row["orderQuantity"] );
     			rtn+= quantity;
-    			rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".orderquantity\" name=\"purchaseList["+rownum+"].orderquantity\" value=\""+quantity+"\">";
+    			//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".orderquantity\" name=\"purchaseList["+rownum+"].orderquantity\" value=\""+quantity+"\">";
     			return rtn;
     		}},
     		{"targets":6,"render":function(data, type, row){
 				var rtn = "";
     			var rownum = row["rownum"]-1;
-    			var quantity =  floatToCurrency( row["purchaseQuantity"] );
-    			rtn = "<input type=\"text\" id=\"purchaseList"+rownum+".quantity\" name=\"purchaseList["+rownum+"].quantity\" class=\"num\" style=\"width:80px\" value=\""+quantity+"\">";
-    			return rtn;
-    		}},
-    		{"targets":7,"render":function(data, type, row){
-				var rtn = "";
-    			var rownum = row["rownum"]-1;
-    			var quantity =  ( row["lastSupplierId"] );
-    			rtn = "<input type=\"text\" id=\"purchaseList"+rownum+".supplierid\" name=\"purchaseList["+rownum+"].supplierid\" class = 'supplierId' style=\"width:100px\" value=\""+quantity+"\">";
-    			return rtn;
-    		}},
-    		{"targets":8,"render":function(data, type, row){
-    			//本次单价
-				var rtn = "";
-    			var rownum = row["rownum"]-1;
-    			var quantity =  float5ToCurrency( row["lastPrice"] );
-    			//rtn+= "<span>"+quantity+"</span>";
-    			rtn+= "<input type=\"text\" id=\"purchaseList"+rownum+".price\" name=\"purchaseList["+rownum+"].price\" class = 'cash short' value=\""+quantity+"\">";
+    			var quantity =  floatToCurrency( row["quantity"] );
+    			rtn+= quantity;
+    			//rtn+= "<input type=\"text\" id=\"purchaseList"+rownum+".quantity\" name=\"purchaseList["+rownum+"].quantity\" class=\"num\" style=\"width:80px\" value=\""+quantity+"\">";
     			return rtn;
     		}},
     		{"targets":9,"render":function(data, type, row){
     			//总价
-				var purchaseQuantity = currencyToFloat(row["purchaseQuantity"]);	
-				var price =currencyToFloat(row["lastPrice"]);		
+				var purchaseQuantity = currencyToFloat(row["quantity"]);	
+				var price =currencyToFloat(row["price"]);		
 				var total = floatToCurrency( price * purchaseQuantity );
     			return "<span style='font-weight: bold;'>"+total+"</span>";
     		}},
@@ -942,8 +1025,8 @@ function requirementAjax() {
 				var price = row["lastPrice"];
 				var supplierId = row["lastSupplierId"];				
 				rtn+=  float4ToCurrency(price)+'／'+stringPadAfter(supplierId,12);
-				rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldsupplierid\" name=\"purchaseList["+rownum+"].oldsupplierid\"  value=\""+supplierId+"\">";
-				rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldprice\" name=\"purchaseList["+rownum+"].oldprice\"  value=\""+price+"\">";
+				//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldsupplierid\" name=\"purchaseList["+rownum+"].oldsupplierid\"  value=\""+supplierId+"\">";
+				//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldprice\" name=\"purchaseList["+rownum+"].oldprice\"  value=\""+price+"\">";
     			return rtn;
     		}},
     		{"targets":11,"render":function(data, type, row){
@@ -954,11 +1037,9 @@ function requirementAjax() {
 				var minPrice = row["minPrice"];
 				var minSupplierId = row["minSupplierId"];				
 				rtn+=  float4ToCurrency(minPrice)+'／'+stringPadAfter(minSupplierId,12);
-				rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".materialid\" name=\"purchaseList["+rownum+"].materialid\"  value=\""+materialId+"\">";
+				//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".materialid\" name=\"purchaseList["+rownum+"].materialid\"  value=\""+materialId+"\">";
     			return rtn;
-    		}},
-    		 { "sWidth": "30px", "aTargets": [0] }, 
-          
+    		}}          
         ]
 		
 	});
@@ -1046,6 +1127,198 @@ function requirementAjax() {
 
 
 };//ajax()
+
+</script>
+
+<script type="text/javascript">
+
+
+function contractTableView() {
+
+	var YSId='${order.YSId}';
+	var table = $('#contractTable').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+	var t2 = $('#contractTable').DataTable({
+		"paging": false,
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"searching" : false,
+		"pagingType" : "full_numbers",
+        "sScrollY": 250,
+		"retrieve" : false,
+		"async" : false,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/contract?methodtype=getContract&YSId="+YSId,				
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : null,
+				success: function(data){
+
+					var record = data["recordsTotal"];
+					//alert(record);
+					if(record > 0)
+					//	$( "#tabs" ).tabs( "option", "active", 3 );//设置默认显示内容
+					
+					fnCallback(data);
+
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+       	"language": {
+       		"url":"${ctx}/plugins/datatables/chinese.json"
+       	},
+		"columns": [
+			{"data": null,"className" : 'td-center'},
+			{"data": "contractId"},
+			{"data": "supplierId"},
+			{"data": "supplierName"},
+			{"data": "purchaseDate","className" : 'td-center'},
+			{"data": "deliveryDate","className" : 'td-center'},
+			{"data": "total","className" : 'td-right'},
+			{"data": null,"className" : 'td-right'}
+        ] ,
+		"columnDefs":[
+    		{"targets":7,"render":function(data, type, row){
+    			var contractId = row["contractId"];
+     			rtn= "<a href=\"###\" onClick=\"showContract('" + row["supplierId"] +"','"+ row["YSId"] + "')\">"+"打印"+"</a>";
+    			return rtn;
+    		}},
+      		{"targets":6,"render":function(data, type, row){
+      			var total = currencyToFloat( row["total"] );			    			
+      			totalPrice = floatToCurrency(total);			    			
+      			return totalPrice;
+      		}}
+            
+          ] 
+       	
+	});
+	
+
+	t2.on('order.dt search.dt draw.dt', function() {
+		t2.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			var num   = i + 1;
+			cell.innerHTML = num ;
+		});
+	}).draw();
+
+	
+}//ajax()供应商信息
+
+
+function contractDetailView(contractId) {
+
+	//var YSId='${order.YSId}';
+	var table = $('#contractDetail').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+	var t2 = $('#contractDetail').DataTable({
+		"paging": false,
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"searching" : false,
+		"pagingType" : "full_numbers",
+		"retrieve" : false,
+		"async" : false,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/contract?methodtype=getContractDetail&contractId="+contractId,				
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : null,
+				success: function(data){
+
+					
+					fnCallback(data);
+
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+       	"language": {
+       		"url":"${ctx}/plugins/datatables/chinese.json"
+       	},
+		"columns": [
+			{"data": null,"className" : 'td-center'},
+			{"data": "materialId"},
+			{"data": "materialName"},
+			{"data": "quantity","className" : 'td-right'},
+			{"data": "price","className" : 'td-right'},
+			{"data": "unit","className" : 'td-center'},
+			{"data": "totalPrice","className" : 'td-right'}
+        ] 
+		
+       	
+	});
+	
+	t2.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t2.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+		
+	});
+
+	t2.on('order.dt search.dt draw.dt', function() {
+		t2.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			var num   = i + 1;
+			cell.innerHTML = num ;
+		});
+	}).draw();
+
+	
+} // ajax()供应商信息
+
+function showContract(supplierId,YSId) {
+	//accessFlg:1 标识新窗口打开
+	var url = '${ctx}/business/requirement?methodtype=contractPrint';
+	url = url + '&YSId=' + YSId+'&supplierId='+supplierId;
+	//alert(YSId)
+	//"sAjaxSource" : "${ctx}/business/contract?methodtype=getContractDetail&supplierId="+supplierId,	
+	
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1100px', '520px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		  baseBomView();
+		  return false; 
+		}    
+	});		
+
+};
 
 </script>
 </body>

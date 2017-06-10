@@ -37,9 +37,10 @@ import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
+import com.ys.business.service.material.CommonService;
 
 @Service
-public class BomService extends BaseService {
+public class BomService extends CommonService {
 
 	DicUtil util = new DicUtil();
 
@@ -82,6 +83,9 @@ public class BomService extends BaseService {
 		dataModel = new BaseModel();
 		userDefinedSearchCase = new HashMap<String, String>();
 		dataModel.setQueryFileName("/business/order/bomquerydefine");
+		super.request = request;
+		super.userInfo = userInfo;
+		super.session = session;
 		
 	}
 	
@@ -799,6 +803,13 @@ public class BomService extends BaseService {
 				reqData.setBomtype(Constants.BOMTYPE_B);//BOM类别			
 				updateBomPlan(reqData);//基础BOM
 				
+				//供应商单价修改
+				String supplierId = Constants.SUPPLIER_YS;
+				String materialId = reqData.getMaterialid();
+				String price = reqData.getTotalcost();//核算成本
+				//更新单价
+				updatePriceSupplier(materialId,supplierId,price);
+				
 				//插入BOM详情
 				
 				String subBomId1 = "";
@@ -1381,6 +1392,7 @@ public class BomService extends BaseService {
 
 		String materialId = request.getParameter("materialId");
 		String oldBomId = request.getParameter("bomId");
+		String keyBackup = request.getParameter("keyBackup");
 
 		//取得该产品的新BOM编号
 		String parentId = BusinessService.getBaseBomId(materialId)[0];
@@ -1391,6 +1403,7 @@ public class BomService extends BaseService {
 		
 		//返回给页面刚才选择的BOM编号
 		model.addAttribute("selectedBomId",oldBomId);
+		model.addAttribute("keyBackup",keyBackup);
 		//新建
 		bomPlanData.setBomid(newBomId);
 		bomPlanData.setSubid(BusinessConstants.FORMAT_00);

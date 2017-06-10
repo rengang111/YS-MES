@@ -1013,23 +1013,7 @@ function contractTableView() {
        	
 	});
 	
-	/*
-	t2.on('click', 'tr', function() {
 
-		if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-            t2.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-
-        var d = $('#contractTable').DataTable().row(this).data();
-		contractDetailView(d["supplierId"]);
-		//alert(d["supplierId"]);
-		
-	});
-*/
 	t2.on('order.dt search.dt draw.dt', function() {
 		t2.column(0, {
 			search : 'applied',

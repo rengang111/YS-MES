@@ -382,17 +382,16 @@
 					<td><span>${list.unit }</span></td>
 					<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
 					<td><span>${list.quantity }</span></td>
-					<td><span id="arrivalSum${ status.index}"></span></td>
+					<td>${list.accumulated }</td>
 					<td><span id="surplus${ status.index}"></span></td>
 				</tr>
 				<script type="text/javascript">
 						var index = '${status.index}';
 						var quantity = currencyToFloat('${list.quantity}');
-						var arrivalSum = currencyToFloat('${list.arrivalSum}');
-						var surplus = quantity - arrivalSum;
+						var accumulated = currencyToFloat('${list.accumulated}');
+						var surplus = quantity - accumulated;
 						
 						$('#surplus'+index).html(floatToCurrency( surplus ))
-						$('#arrivalSum'+index).html(floatToCurrency( arrivalSum ))
 				</script>
 			</c:if>
 		</c:forEach>

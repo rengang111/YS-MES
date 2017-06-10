@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.system.service.common.BaseService;
+import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
@@ -190,7 +191,7 @@ public class CommonService extends BaseService {
 				reqData.setRecordid(guid);
 				reqData.setPricesource(BusinessConstants.PRICESOURCE_OTHER);	
 				reqData.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
-	
+				
 				priceDao.Create(reqData);	
 
 				updatePriceInfo(reqData.getMaterialid());//
@@ -210,12 +211,10 @@ public class CommonService extends BaseService {
 			
 			ts.commit();
 			
-			reqFormBean.setEndInfoMap(NORMAL, "suc001", "");
 		}
 		catch(Exception e) {
 			ts.rollback();
 			System.out.println(e.getMessage());
-			reqFormBean.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
 		rtnModel.addAttribute("material",reqFormBean);
@@ -264,54 +263,57 @@ public class CommonService extends BaseService {
 		
 	}
 
-	/*
+	/**
 	 * 更新供应商单价
 	 */
-	@SuppressWarnings("unchecked")
 	public void updatePriceSupplier(
 			String materialId,
 			String supplierId,
 			String price ) throws Exception {
 		
-		List<B_PriceSupplierData> priceList = null;
+		//List<B_PriceSupplierData> priceList = null;
 		B_PriceSupplierData pricedt = null;
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();
 		B_PriceSupplierHistoryData historyDt = new B_PriceSupplierHistoryData();
 		B_PriceSupplierHistoryDao historyDao = new B_PriceSupplierHistoryDao();
 
 		String where ="materialId= '" + materialId + "'" + 
-				" AND supplierId = '" + supplierId + "'" + 
-				" AND deleteFlag = '0' ";		
+				" AND supplierId = '" + supplierId + "'" ;
 
-		priceList = (List<B_PriceSupplierData>)dao.Find(where);
+		//priceList = (List<B_PriceSupplierData>)dao.Find(where);
+		try {
+			dao.RemoveByWhere(where);
+		} catch (Exception e) {
+			//
+		}	
 		
-		if(priceList != null && priceList.size() > 0){
-			
-			pricedt = priceList.get(0);	
+		pricedt = new B_PriceSupplierData();
+		pricedt.setMaterialid(materialId);
+		pricedt.setSupplierid(supplierId);
+		pricedt.setPrice(price);
+		pricedt.setPricedate(CalendarUtil.getToDay());
+		
+		//处理共通信息					
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BaseBomInsert",userInfo);
+		copyProperties(pricedt,commData);
+		guid = BaseDAO.getGuId();
+		pricedt.setRecordid(guid);
+		
+		dao.Create(pricedt);		
 
-			if(!price.equals(pricedt.getPrice())){//价格有变动的话,更新为最新价格
-				
-				//处理共通信息					
-				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"BaseBomInsert",userInfo);
-				copyProperties(pricedt,commData);
-				
-				pricedt.setPrice(price);
-				
-				dao.Store(pricedt);
-				
-				//插入历史表
-				//处理共通信息	
-				copyProperties(historyDt,pricedt);
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BaseBomInsert",userInfo);
-				copyProperties(historyDt,commData);
-				
-				guid = BaseDAO.getGuId();
-				historyDt.setRecordid(guid);
-				
-				historyDao.Create(historyDt);
-			}
-		}
-				
+		//更新最新,最低单价
+		updatePriceInfo(materialId);
+		
+		//插入历史表
+		//处理共通信息	
+		copyProperties(historyDt,pricedt);
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"BaseBomInsert",userInfo);
+		copyProperties(historyDt,commData);		
+		guid = BaseDAO.getGuId();
+		historyDt.setRecordid(guid);
+		
+		historyDao.Create(historyDt);
+	
 	}
 	
 	/*
@@ -521,7 +523,7 @@ public class CommonService extends BaseService {
 		return data;
 	}
 	
-	public static float toFloat(String s){
+	public static float stringToFloat(String s){
 
 		float rtn = 0;
 		

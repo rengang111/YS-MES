@@ -50,7 +50,7 @@ public class IQCAction extends BaseAction {
 		this.userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		this.service = new ArrivalService(model,request,dataModel,userInfo);
+		//this.service = new ArrivalService(model,request,dataModel,userInfo);
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -129,7 +129,7 @@ public class IQCAction extends BaseAction {
 
 	public void doInsert(){
 		try{
-			service.insertArrival();
+			//service.insertArrival();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

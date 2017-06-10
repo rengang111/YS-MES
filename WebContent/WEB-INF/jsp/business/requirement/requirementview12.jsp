@@ -43,20 +43,14 @@
 		
 		$(".goBack").click(
 				function() {
-					var YSId = '${order.YSId}';
-					var materialId = '${order.materialId}';
-					var url = '${ctx}/business/bom?methodtype=orderDetail&YSId=' + YSId+'&materialId='+materialId;
+					var url = "${ctx}/business/order";
 					location.href = url;		
 				});
 		
-		$("#requirement").click(
+		$("#insert").click(
 				function() {
-				
-			var bomId=$("#bomId").val();
-			var YSId ="${order.YSId}";
-			var quantity ="${order.quantity}";
-			$('#attrForm').attr("action", 
-					"${ctx}/business/requirement?methodtype=createPurchasePlan&YSId="+YSId+"&bomId="+bomId+"&quantity="+quantity);
+					
+			$('#attrForm').attr("action", "${ctx}/business/requirement?methodtype=insertProcurement");
 			$('#attrForm').submit();
 		});
 			
@@ -82,7 +76,7 @@
 		
 		
 		<input type="hidden" id="tmpMaterialId" />
-		<input type="hidden" id="bomId" value="${bomId }">
+		<input type="hidden" id="bomId">
 		<fieldset>
 			<legend> 产品信息</legend>
 			<table class="form" id="table_form">
@@ -129,35 +123,37 @@
 				
 		<fieldset class="action" style="text-align: right;margin-top: -50px;width: 30%;float: right;">
 			<button type="button" id="deleteOrderBom" class="DTTT_button">恢复到基础BOM</button>
-			<button type="button" id="requirement" class="DTTT_button">生成订单BOM</button>
+			<button type="button" id="requirement" class="DTTT_button">生成采购方案</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		
 		<div id="tabs" style="padding: 0px;white-space: nowrap;">
-			<ul>
-				<li><a href="#tabs-1" class="tabs1">订单BOM</a></li>
-			</ul>
-	
+		<ul>
+			<li><a href="#tabs-1" class="tabs1">物料需求表</a></li>
+		</ul>
+
 			<div id="tabs-1" style="padding: 5px;">
-	
-				<table id="example" class="display" style="width:98%">
-					<thead>				
-						<tr>
-							<th width="1px">No</th>
-							<th class="dt-center" style="width:120px">物料编码</th>
-							<th class="dt-center" >物料名称</th>
-							<th class="dt-center" style="width:60px">用量</th>
-							<th class="dt-center" style="width:30px">单位</th>
-							<th class="dt-center" style="width:60px">供应商</th>
-							<th class="dt-center" style="width:60px">订单数量</th>
-							<th class="dt-center" style="width:80px">总量</th>
-							<th class="dt-center" style="width:60px">当前库存</th>
-							<th class="dt-center" style="width:80px">建议需求量</th>
-						</tr>
-					</thead>			
-				</table>
-			</div>
-		</div>	
+
+			<table id="example" class="display" style="width:98%">
+				<thead>				
+					<tr>
+						<th width="1px">No</th>
+						<th class="dt-center" style="width:120px">物料编码</th>
+						<th class="dt-center" >物料名称</th>
+						<th class="dt-center" style="width:60px">用量</th>
+						<th class="dt-center" style="width:30px">单位</th>
+						<th class="dt-center" style="width:60px">供应商</th>
+						<th class="dt-center" style="width:60px">订单数量</th>
+						<th class="dt-center" style="width:80px">总量</th>
+						<th class="dt-center" style="width:60px">当前库存</th>
+						<th class="dt-center" style="width:80px">建议需求量</th>
+					</tr>
+				</thead>			
+			</table>
+		</div>
+		</div>
+
+		
 		<div style="clear: both"></div>		
 	</form:form>
 </div>
@@ -166,7 +162,7 @@
 <script  type="text/javascript">
 function orderBomView() {
 
-	var YSId='${order.YSId}';
+	var materialId='${order.materialId}';
 	var table = $('#example').dataTable();
 	if(table) {
 		table.fnDestroy();
@@ -180,7 +176,7 @@ function orderBomView() {
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
 		"async" : false,
-		"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBom&YSId="+YSId,		
+		"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBom&materialId="+materialId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
 				"url" : sSource,
@@ -190,9 +186,9 @@ function orderBomView() {
 				"data" : null,
 				success: function(data){
 					fnCallback(data);
-					//var bomId = data['data'][0]['bomId'];
+					var bomId = data['data'][0]['bomId'];
 					//alert(bomId+":bomdi")
-					//$("#bomId").val(bomId);
+					$("#bomId").val(bomId);
 					foucsInit();//input获取焦点初始化处理
 					
 				},

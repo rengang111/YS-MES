@@ -79,10 +79,11 @@ public class RequirementAction extends BaseAction {
 				rtnUrl = "/business/requirement/requirementview";
 				break;					
 			case "purchasePlanView":
-				purchasePlanView();
-				rtnUrl = "/business/purchase/purchaseplanview";
+				dataMap = purchasePlanView();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/requirement/purchaseplanview";
 				break;
-			case "editRequirement":
+			case "editRequirement"://编辑采购方案
 				doEditRequirement();
 				rtnUrl = "/business/requirement/requirementedit";
 				break;
@@ -111,9 +112,9 @@ public class RequirementAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/requirement/requirementedit";
 				break;				
-			case "insertProcurement":
+			case "insertProcurement"://保存采购方案
 				doInsertProcurement();
-				rtnUrl = "/business/requirement/requirementview";
+				rtnUrl = "/business/requirement/requirementview3";
 				break;				
 			case "updateProcurement":
 				doUpdateProcurement();
@@ -151,6 +152,22 @@ public class RequirementAction extends BaseAction {
 				updateOrderBomQuantity();
 				printOutJsonObj(response, dataMap);
 				rtnUrl = null;
+				break;					
+			case "createPurchasePlan"://生成采购方案
+				createPurchasePlan();
+				rtnUrl = "/business/requirement/requirementview2";
+				break;				
+			case "createPurchasePlan2"://生成采购方案
+				createPurchasePlan2();
+				rtnUrl = "/business/requirement/requirementview2";
+				break;
+			case "createPurchasePlanFromBaseBom"://生成采购方案ajax
+				dataMap = createPurchasePlanFromBaseBom();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "creatPurchaseOrder"://生成采购合同
+				creatPurchaseOrder();
+				rtnUrl = "/business/requirement/requirementview4";
 				break;
 				
 		}
@@ -183,19 +200,33 @@ public class RequirementAction extends BaseAction {
 	}
 
 
-	public void purchasePlanView() throws Exception {
+	public HashMap<String,Object> purchasePlanView() throws Exception {
 		
-		service.getPurchasePlan();		
+		return service.getPurchasePlan();		
 		
 	}		
 	
 	public String createRequirement() throws Exception {
 		
-		String rtnUrl= "/business/requirement/requirementadd";
-		boolean flg = service.createOrView();
+		service.createOrView();
 		
-		if(flg){
-			rtnUrl = "/business/requirement/requirementview";
+		String YSId=request.getParameter("YSId");
+		
+		boolean flg = service.checkContractExsit(YSId);	
+		//默认到初始页面(新建订单BOM)
+		String rtnUrl= "/business/requirement/requirementadd";
+		if(flg){//合同check
+			service.checkOrderBomExsit(YSId);//订单BOM编号取得
+			return rtnUrl = "/business/requirement/requirementview4";
+		}
+		flg = service.checkPurchaseExsit(YSId);
+		if(flg){//采购方案check
+			service.checkOrderBomExsit(YSId);//订单BOM编号取得
+			return rtnUrl = "/business/requirement/requirementview3";
+		}
+		flg = service.checkOrderBomExsit(YSId);
+		if(flg){//订单BOMcheck
+			return rtnUrl = "/business/requirement/requirementview2";
 		}
 		
 		return rtnUrl;
@@ -254,7 +285,8 @@ public class RequirementAction extends BaseAction {
 	public HashMap<String, Object> getzzMaterial() throws Exception {
 
 		//HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		return service.getZZMaterial();	
+		String bomId = request.getParameter("bomId");
+		return service.getZZMaterial(bomId);	
 			
 		
 	}
@@ -267,6 +299,28 @@ public class RequirementAction extends BaseAction {
 	public void productSemiUsed() throws Exception{
 
 		service.productSemiUsed();
+	}
+
+
+	public void createPurchasePlan() throws Exception{
+
+		service.createPurchasePlan();
+	}
+	
+	public void createPurchasePlan2() throws Exception{
+
+		service.createPurchasePlan2();
+	}
+	
+	public void creatPurchaseOrder() throws Exception{
+
+		service.creatPurchaseOrder();
+	}
+	
+	
+	public HashMap<String,Object> createPurchasePlanFromBaseBom() throws Exception{
+
+		return service.createPurchasePlanFromBaseBom();
 	}
 
 	public HashMap<String, Object> getOrderBom() throws Exception{
