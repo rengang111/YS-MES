@@ -19,6 +19,8 @@
       <f name="b.unit" alias="zzUnitName" ctype="计量单位" />
       <f name="b.unit" alias="zzUnit" ctype="" />
       <f name="sum(REPLACE(IFNULL(a.quantity, 0),',','')  * b.weight )" alias="requirement" ctype="" />
+      <f name="e.lastPrice" alias="price" ctype="" />
+      <f name="e.lastSupplierId" alias="supplierId" ctype="" />
       <f name="e.lastPrice" alias="" ctype="" />
       <f name="e.lastSupplierId" alias="" ctype="" />
       <f name="e.lastDate" alias="" ctype="" />
@@ -43,6 +45,7 @@
   	<select>
       <f name="a.recordId" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.price" alias="" ctype="" />
       <f name="a.quantity" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
@@ -50,6 +53,8 @@
       <f name="a.materialParentId" alias="" ctype="" />
       <f name="a.unit" alias="unitName" ctype="计量单位" />
       <f name="availabelToPromise" alias="" ctype="" />
+      <f name="purchaseType" alias="" ctype="" />
+      <f name="purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
       <f name="a.lastPrice" alias="" ctype="" />
       <f name="a.lastSupplierId" alias="" ctype="" />
       <f name="a.lastDate" alias="" ctype="" />

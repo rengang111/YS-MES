@@ -22,11 +22,14 @@ public class MaterialModel extends BaseModel {
 	private String categoryid="";
 	private String parentid="";
 	private String categoryname="";
+	private String purchaseTypeName="";
 	private String unit="";
+	private String purchaseType="";
 	private String unitname="";
 	private String currency="";
 	private ArrayList<ListOption> unitList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> currencyList = new ArrayList<ListOption>();
+	private ArrayList<ListOption> purchaseTypeList = new ArrayList<ListOption>();
 	private B_MaterialData material;
 	private String[] shareModelList;
 	private String shareModel;
@@ -75,13 +78,27 @@ public class MaterialModel extends BaseModel {
 		this.unitList = unitList;
 	}
 	
+	public ArrayList<ListOption> getPurchaseTypeList() {
+		return this.purchaseTypeList;
+	}
+	public void setPurchaseTypeList(ArrayList<ListOption> purchaseTypeList) {
+		this.purchaseTypeList = purchaseTypeList;
+	}
+	
 	public String getUnitname() {
 		return this.unitname;
 	}
 	public void setUnitname(String unitname) {
 		this.unitname = unitname;
 	}
-			
+	
+	public String getPurchaseTypeName() {
+		return this.purchaseTypeName;
+	}
+	public void setPurchaseTypeName(String purchaseTypeName) {
+		this.purchaseTypeName = purchaseTypeName;
+	}
+	
 	public String getParentid() {
 		return this.parentid;
 	}
@@ -129,6 +146,12 @@ public class MaterialModel extends BaseModel {
 	}
 	public void setSubid(String subid) {
 		this.subid = subid;
+	}
+	public String getPurchaseType() {
+		return this.purchaseType;
+	}
+	public void setPurchaseType(String purchaseType) {
+		this.purchaseType = purchaseType;
 	}
 	
 	public String getSubidDes() {

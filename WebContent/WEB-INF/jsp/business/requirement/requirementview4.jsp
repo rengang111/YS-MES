@@ -99,19 +99,15 @@
 			
 		
 		$("#doReset").click(function() {
-			var order = '${order.quantity}';
-			order = order.replace(/,/g, "");
-			var materialId='${order.materialId}';
-			var YSId = '${order.YSId}';
-			var url = "${ctx}/business/requirement?methodtype=resetRequirement&YSId="+YSId+"&materialId="+materialId+"&order="+order;
-			location.href = url;		
+			$('#attrForm').attr("action","${ctx}/business/requirement?methodtype=resetRequirement");
+			$('#attrForm').submit();
 			
 		});
 		
 
 		$("#doEditPlan").click(function() {
 			var YSId = '${order.YSId}';
-			var bomId=$('#bomId').val();
+			var bomId=$('#orderBom\\.bomid').val();
 			var url = "${ctx}/business/requirement?methodtype=editRequirement&YSId="+YSId+"&bomId="+bomId;
 			location.href = url;		
 		});
@@ -119,21 +115,12 @@
 		$("#doContract").click(function() {
 			var YSId = '${order.YSId}';
 			var materialId='${order.materialId}';
-			var bomId=$('#bomId').val();
+			var bomId=$('#orderBom\\.bomid').val();
 			var url = "${ctx}/business/requirement?methodtype=creatPurchaseOrder&YSId="+YSId+"&materialId="+materialId+"&bomId="+bomId;
 			location.href = url;
 			
 		});
 		
-		$("#doReset").click(function() {
-			var order = '${order.quantity}';
-			order = order.replace(/,/g, "");
-			var materialId='${order.materialId}';
-			var YSId = '${order.YSId}';
-			var url = "${ctx}/business/requirement?methodtype=resetRequirement&YSId="+YSId+"&materialId="+materialId+"&order="+order;
-			location.href = url;		
-			
-		});
 		
 		$(".tabs3").click( function() {
 			
@@ -178,7 +165,7 @@
 		
 		
 		<input type="hidden" id="tmpMaterialId" />
-		<input type="hidden" id="bomId" value="${bomId }">
+		<form:hidden path="orderBom.bomid" value="${bomId }" />
 		<fieldset>
 			<legend> 产品信息</legend>
 			<table class="form" id="table_form">
@@ -397,8 +384,8 @@ function orderBomView() {
     			var materialId = row["materialId"];
     			var subBomId = row["subBomId"];
     			var rownum = row["rownum"]-1;
-    			rtn = materialId;
-    			//rtn= "<a href=\"###\" onClick=\"doEditMaterial('#orderBom','" + row["materialRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
+    			//rtn = materialId;
+    			rtn= "<a href=\"###\" onClick=\"doEditMaterial('" + row["materialRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
     			// rtn=rtn+ "<input type=\"hidden\" id=\"bomDetailList"+rownum+".materialid\" name=\"bomDetailList["+rownum+"].materialid\" value=\""+materialId+"\">";
     			return rtn;
     		}},
@@ -457,7 +444,7 @@ function orderBomView() {
 		if(fQuantityt != fQuantityh){
 			
 			//alert("new:"+fQuantityt+"old:"+fQuantityh)
-			var bomId  = $('#bomId').val();
+			var bomId  = $('#orderBom\\.bomid').val();
 			
 			var url = "${ctx}/business/requirement?methodtype=updateOrderBomQuantity";
 			url = url + "&materialId="+ materialId + "&bomId="+bomId;
@@ -636,7 +623,7 @@ function productStock() {
 <script  type="text/javascript">
 function ZZmaterialView() {
 
-	var bomId=$("#bomId").val();
+	var bomId=$("#orderBom\\.bomid").val();
 	var table = $('#ZZmaterial').dataTable();
 	if(table) {
 		table.fnDestroy();

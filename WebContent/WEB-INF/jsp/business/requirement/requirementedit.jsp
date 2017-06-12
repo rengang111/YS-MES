@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<title>订单采购方案--采购方案编辑</title>
+<title>订单采购方案--采购方案(修改)</title>
 <%@ include file="../../common/common2.jsp"%>
  <style>th, td { white-space: nowrap; }</style>
   	
@@ -57,10 +57,8 @@
 		$("#insert").click(
 				function() {
 					
-			if(confirm('保存后， [本次单价] 会反映到成品管理里面。')){
 				$('#attrForm').attr("action", "${ctx}/business/requirement?methodtype=insertProcurement");
 				$('#attrForm').submit();
-			 }
 			
 		});
 		
@@ -85,17 +83,44 @@
 		$("#doReset").click(function() {
 			var order = '${order.quantity}';
 			order = order.replace(/,/g, "");
-			var materialId='${order.materialId}';
+			var bomId='${bomId}';
 			var YSId = '${order.YSId}';
-			var url = "${ctx}/business/requirement?methodtype=resetRequirement&YSId="+YSId+"&materialId="+materialId+"&order="+order;
+			var url = "${ctx}/business/requirement?methodtype=cansolEditPlan&YSId="+YSId+"&bomId="+bomId;
 			location.href = url;		
 			
 		});
 		
+		$("#tmpQuantity").change(function() {
+			var tmp = $(this).val();
+			tmp = currencyToFloat(tmp);
+			var quantity = '${order.quantity}';
+
+			$('#example tbody tr').each (function (){
+				
+				var vold = $(this).find("td").eq(6).find("input").val();
+				var price = $(this).find("td").eq(8).find("input").val();
+				var fold = currencyToFloat(vold);
+				var ftotal = currencyToFloat(quantity);
+				
+				price = currencyToFloat(price);
+				if(fold >0){
+					var newQuantiy =  tmp + ftotal ;					
+					var total = floatToCurrency( price * newQuantiy );
+					
+					$(this).find("td").eq(6).find("input").val(floatToCurrency(newQuantiy));
+					$(this).find("td").eq(9).find("span").html(total);
+				}
+							
+			})
+			
+			$().toastmessage('showNoticeToast', "建议采购量已经更新。");	
+			
+		});
 		
 		foucsInit();//input获取焦点初始化处理
 	
 	});
+	
 
 </script>
 
@@ -140,8 +165,9 @@
 		</fieldset>
 						
 		<fieldset class="action" style="text-align: right;margin-top: -5px;">
+			额外采购数<input type="text" id="tmpQuantity" style="margin-right: 115px;height: 24px;" class="num mini" />
 			<button type="button" id="insert" class="DTTT_button">保存采购方案</button>
-			<button type="button" id="doReset" class="DTTT_button">重置订单BOM</button>
+			<button type="button" id="doReset" class="DTTT_button">取消编辑</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回订单详情</button>
 		</fieldset>	
 		
@@ -211,7 +237,6 @@
 					</tr>
 				</thead>
 			</table>
-			&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red;font-weight: bold;font: 15px all-petite-caps;">注意：采购方案中的 “本次单价”&nbsp;修改后，会直接反映到“成品管理”。</span>	
 		</div>	
 		
 		</div>	
@@ -282,8 +307,8 @@ function orderBomView() {
     			var materialId = row["materialId"];
     			var subBomId = row["subBomId"];
     			var rownum = row["rownum"]-1;
-    			rtn = materialId;
-    			//rtn= "<a href=\"###\" onClick=\"doEditMaterial('#orderBom','" + row["materialRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
+    			//rtn = materialId;
+    			rtn= "<a href=\"###\" onClick=\"doEditMaterial('#orderBom','" + row["materialRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
     			// rtn=rtn+ "<input type=\"hidden\" id=\"bomDetailList"+rownum+".materialid\" name=\"bomDetailList["+rownum+"].materialid\" value=\""+materialId+"\">";
     			return rtn;
     		}},
@@ -404,7 +429,7 @@ function productSemiUsed(semiMaterialId) {
 	location.href = url;
 }
 
-function doEditMaterial(recordid,parentid) {
+function doEditMaterial(rownum,recordid,parentid) {
 	//accessFlg:1 标识新窗口打开
 	var url = '${ctx}/business/material?methodtype=detailView&keyBackup=1';
 	url = url + '&parentId=' + parentid+'&recordId='+recordid;
@@ -419,18 +444,23 @@ function doEditMaterial(recordid,parentid) {
 		content : url,
 		//只有当点击confirm框的确定时，该层才会关闭
 		cancel: function(index){ 
-			//$('#example').DataTable().ajax.reload();
-			/*
+			var body = layer.getChildFrame('body', index);  //加载目标页面的内容
+			var price = body.find('#price').val();
 			
-					function ( json ) {
-					    //这里的json返回的是服务器的数据
-					   // alert(2222);
-						$(".DTFC_Cloned").css('width','380px');
-						$('#example thead tr').each (function (){
-							$(this).find("th").eq(2).css('width','100px ');
-						});
-					} 
-			*/
+			var $oQuantity = $('#purchaseList'+rownum+'\\.quantity');
+			var $oPricei = $('#purchaseList'+rownum+'\\.price');
+			var $oTotali = $('#purchaseList'+rownum+'\\.totalprice');
+			
+			var fQuantity = currencyToFloat($oQuantity.val());
+			var fPrice = currencyToFloat(price);//子窗口传回来的新的单价
+			
+			var vPrice = float5ToCurrency(fPrice);
+			var total = floatToCurrency( fQuantity * fPrice );
+			
+          	$oPricei.val(vPrice); //赋给当前页面元素
+          	$('#price'+rownum).text(vPrice); //赋给当前页面元素
+          	$oTotali.val(total); //赋给当前页面元素
+          	$('#totalprice'+rownum).text(total);
 			layer.close(index);
 		}    
 	});		
@@ -798,7 +828,7 @@ function autocomplete(){
 
 function requirementAjax() {
 
-	var scrollHeight = $(window).height() - 275;
+	var scrollHeight = $(window).height() - 255;
 	var bomId = "${bomId}";
 	var YSId = '${order.YSId}';
 	var quantity = "${order.quantity}";
@@ -836,18 +866,11 @@ function requirementAjax() {
 					fnCallback(data);
 					autocomplete();//
 					foucsInit();//input获取焦点初始化处理
-					// $(".DTFC_Cloned").css('width','100%');
-					
-					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	             }
 			})
 		},
-		"fnHeaderCallback": function( nHead, aData, iStart, iEnd, aiDisplay ) {
-		      //nHead.getElementsByTagName('th')[0].innerHTML = "Displaying "+(iEnd-iStart)+" records";
-		     // nHead.getElementsByTagName('th')[0].css('width','30px');
-		 },
        	"language": {
        		"url":"${ctx}/plugins/datatables/chinese.json"
        	},
@@ -878,8 +901,9 @@ function requirementAjax() {
     			var rownum = row["rownum"]-1;
     			var materialId = row["materialId"];
     			//rtn+= materialId;
-    			rtn+= "<a href=\"###\" onClick=\"doEditMaterial('" + row["materialRecordId"] +"','"+ row["materialParentId"] + "')\">"+materialId+"</a>";
-    			return rtn;
+    			//rtn+= "<a href=\"###\" onClick=\"doEditMaterial('" + row["materialRecordId"] +"','"+ row["materialParentId"] + "')\">"+materialId+"</a>";
+    			rtn+= "<a href=\"###\" onClick=\"doEditMaterial('" + rownum +"','" + row["materialRecordId"] +"','"+ row["materialParentId"] + "')\">"+materialId+"</a>";
+   			return rtn;
     		}},
     		{"targets":4,"render":function(data, type, row){    			
 				var rtn = "";
@@ -908,23 +932,28 @@ function requirementAjax() {
 				var rtn = "";
     			var rownum = row["rownum"]-1;
     			var quantity =  float5ToCurrency( row["price"] );
-    			//rtn+= "<span>"+quantity+"</span>";
-    			rtn+= "<input type=\"text\" id=\"purchaseList"+rownum+".price\" name=\"purchaseList["+rownum+"].price\" class = 'cash short' value=\""+quantity+"\">";
+    			rtn+= "<span id='price"+rownum+ "'>"+quantity+"</span>";
+    			rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".price\" name=\"purchaseList["+rownum+"].price\" class = 'cash short' value=\""+quantity+"\">";
     			return rtn;
     		}},
     		{"targets":9,"render":function(data, type, row){
     			//总价
+				var rtn = "";
+    			var rownum = row["rownum"]-1;
 				var purchaseQuantity = currencyToFloat(row["quantity"]);	
 				var price =currencyToFloat(row["price"]);		
 				var total = floatToCurrency( price * purchaseQuantity );
-    			return "<span>"+total+"</span>";
+				rtn+= "<span id='totalprice"+rownum+"'>"+total+"</span>";
+    			rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".totalprice\" name=\"purchaseList["+rownum+"].totalprice\" class = 'cash short' value=\""+total+"\">";
+
+    			return rtn;
     		}},
     		{"targets":10,"render":function(data, type, row){
     			//最新价
     			var rtn ="";
     			var rownum = row["rownum"]-1;
-				var price = row["lastPrice"];
-				var supplierId = row["lastSupplierId"];				
+				var price = row["price"];
+				var supplierId = row["supplierId"];				
 				rtn+=  float4ToCurrency(price)+'／'+stringPadAfter(supplierId,12);
 				rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldsupplierid\" name=\"purchaseList["+rownum+"].oldsupplierid\"  value=\""+supplierId+"\">";
 				rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldprice\" name=\"purchaseList["+rownum+"].oldprice\"  value=\""+price+"\">";
@@ -965,52 +994,27 @@ function requirementAjax() {
 			
 
 	t3.on('change', 'tr td:nth-child(7),tr td:nth-child(8),tr td:nth-child(9)',function() {
-		
-		/*产品成本 = 各项累计
-		人工成本 = H带头的ERP编号下的累加
-		材料成本 = 产品成本 - 人工成本
-		经管费 = 经管费率 x 产品成本
-		核算成本 = 产品成本 + 经管费*/
-		
-        var $tds = $(this).parent().find("td");
-		
-        //var $oMaterial  = $tds.eq(1).find("input:text");
-       // var $oQuantity  = $tds.eq(4).find("input");
-		//var $oThisPrice = $tds.eq(5).find("span");
-		var $oQuantity    = $tds.eq(6).find("input");
-		var $oPrice       = $tds.eq(8).find("input");
-		//var $oTotali      = $tds.eq(9).find("input");
-		var $oTotals      = $tds.eq(9).find("span");
-		//var $oLastPrice   = $tds.eq(10).find("input");
-		//var $oAmount2   = $tds.eq(6).find("span");
-		//var $oAmountd   = $tds.eq(6).find("input:last-child");//人工成本
-		
-		//var materialId = $oMaterial.val();
-		//var fLastPrice = currencyToFloat($oLastPrice.val());
-		var fPrice = currencyToFloat($oPrice.val());		
-		var fQuantity = currencyToFloat($oQuantity.val());	
-		6
-		var fTotalNew = currencyToFloat(fPrice * fQuantity);
-		//var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本	
 
-		var vPrice = float5ToCurrency(fPrice);	
+        var $tds = $(this).parent().find("td");
+    	
+		var $oQuantity    = $tds.eq(6).find("input");
+		//var $oPricei      = $tds.eq(8).find("input");
+		var $oPrice       = $tds.eq(8).find("span");
+		var $oTotali      = $tds.eq(9).find("input");
+		var $oTotals      = $tds.eq(9).find("span");
+		
+		var fPrice = currencyToFloat($oPrice.text());		
+		var fQuantity = currencyToFloat($oQuantity.val());	
+		var fTotalNew = currencyToFloat(fPrice * fQuantity);
+
+		var vPrice = floatToCurrency(fPrice);	
 		var vQuantity = floatToCurrency(fQuantity);
 		var vTotalNew = floatToCurrency(fTotalNew);
 				
-		//详情列表显示新的价格
-		//$oThisPrice.val(vPrice);					
-		$oQuantity.val(vQuantity);	
-		$oPrice.val(vPrice);	
+		//详情列表显示新的价格				
+		$oQuantity.val(vQuantity);
 		$oTotals.html(vTotalNew);
-	//	$oTotali.val(vTotalNew);
-		
-		/*
-		if(fPrice > fLastPrice){
-			$oPrice.removeClass('decline').addClass('rise');
-		}else if(fPrice < fLastPrice){
-			$oPrice.removeClass('rise').addClass('decline');			
-		}
-		*/
+		$oTotali.val(vTotalNew);
 		
 		//alert("fPrice:"+fPrice+"::fLastPrice:"+fLastPrice)
 		

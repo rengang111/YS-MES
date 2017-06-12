@@ -53,10 +53,8 @@
 		$("#insert").click(
 				function() {
 					
-			if(confirm('保存后， [本次单价] 会反映到成品管理里面。')){
 				$('#attrForm').attr("action", "${ctx}/business/requirement?methodtype=insertProcurement");
 				$('#attrForm').submit();
-			 }
 			
 		});
 		
@@ -80,19 +78,16 @@
 			
 		
 		$("#doReset").click(function() {
-			var order = '${order.quantity}';
-			order = order.replace(/,/g, "");
-			var materialId='${order.materialId}';
-			var YSId = '${order.YSId}';
-			var url = "${ctx}/business/requirement?methodtype=resetRequirement&YSId="+YSId+"&materialId="+materialId+"&order="+order;
-			location.href = url;		
+
+			$('#attrForm').attr("action","${ctx}/business/requirement?methodtype=resetRequirement");
+			$('#attrForm').submit();
 			
 		});
 		
 
 		$("#doEdit").click(function() {
 			var YSId = '${order.YSId}';
-			var bomId=$('#bomId').val();
+			var bomId=$('#orderBom\\.bomid').val();
 			var url = "${ctx}/business/requirement?methodtype=editRequirement&YSId="+YSId+"&bomId="+bomId;
 			location.href = url;		
 		});
@@ -100,7 +95,7 @@
 		$("#doContract").click(function() {
 			var YSId = '${order.YSId}';
 			var materialId='${order.materialId}';
-			var bomId=$('#bomId').val();
+			var bomId=$('#orderBom\\.bomid').val();
 			var url = "${ctx}/business/requirement?methodtype=creatPurchaseOrder&YSId="+YSId+"&materialId="+materialId+"&bomId="+bomId;
 			location.href = url;
 			
@@ -120,10 +115,10 @@
 
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">
-		
-		
+			
 		<input type="hidden" id="tmpMaterialId" />
-		<input type="hidden" id="bomId" value="${bomId }">
+		<form:hidden path="orderBom.bomid" value="${bomId }" />
+		<input type="hidden" id="price" />
 		<fieldset>
 			<legend> 产品信息</legend>
 			<table class="form" id="table_form">
@@ -225,8 +220,6 @@
 					</tr>
 				</thead>
 			</table>
-			&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red;font-weight: bold;font: 15px all-petite-caps;">注意：采购方案中的 “本次单价”&nbsp;修改后，会直接反映到“成品管理”。</span>
-
 		</div>	
 		
 		</div>	
@@ -297,8 +290,8 @@ function orderBomView() {
     			var materialId = row["materialId"];
     			var subBomId = row["subBomId"];
     			var rownum = row["rownum"]-1;
-    			rtn = materialId;
-    			//rtn= "<a href=\"###\" onClick=\"doEditMaterial('#orderBom','" + row["materialRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
+    			//rtn = materialId;
+    			rtn= "<a href=\"###\" onClick=\"doEditMaterial('" + row["materialRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
     			// rtn=rtn+ "<input type=\"hidden\" id=\"bomDetailList"+rownum+".materialid\" name=\"bomDetailList["+rownum+"].materialid\" value=\""+materialId+"\">";
     			return rtn;
     		}},
@@ -357,7 +350,7 @@ function orderBomView() {
 		if(fQuantityt != fQuantityh){
 			
 			//alert("new:"+fQuantityt+"old:"+fQuantityh)
-			var bomId  = $('#bomId').val();
+			var bomId  = $('#orderBom\\.bomid').val();
 			
 			var url = "${ctx}/business/requirement?methodtype=updateOrderBomQuantity";
 			url = url + "&materialId="+ materialId + "&bomId="+bomId;
@@ -433,19 +426,7 @@ function doEditMaterial(recordid,parentid) {
 		title : false,
 		content : url,
 		//只有当点击confirm框的确定时，该层才会关闭
-		cancel: function(index){ 
-			//$('#example').DataTable().ajax.reload();
-			/*
-			
-					function ( json ) {
-					    //这里的json返回的是服务器的数据
-					   // alert(2222);
-						$(".DTFC_Cloned").css('width','380px');
-						$('#example thead tr').each (function (){
-							$(this).find("th").eq(2).css('width','100px ');
-						});
-					} 
-			*/
+		cancel: function(index){		
 			layer.close(index);
 		}    
 	});		
@@ -536,7 +517,7 @@ function productStock() {
 <script  type="text/javascript">
 function ZZmaterialView() {
 
-	var bomId=$("#bomId").val();
+	var bomId=$("#orderBom\\.bomid").val();
 	var table = $('#ZZmaterial').dataTable();
 	if(table) {
 		table.fnDestroy();
@@ -813,7 +794,7 @@ function autocomplete(){
 
 function requirementAjax() {
 
-	var scrollHeight = $(window).height() - 275;
+	var scrollHeight = $(window).height() - 255;
 	var bomId = "${bomId}";
 	var YSId = '${order.YSId}';
 
@@ -922,8 +903,8 @@ function requirementAjax() {
     			//最新价
     			var rtn ="";
     			var rownum = row["rownum"]-1;
-				var price = row["lastPrice"];
-				var supplierId = row["lastSupplierId"];				
+				var price = row["price"];
+				var supplierId = row["supplierId"];				
 				rtn+=  float4ToCurrency(price)+'／'+stringPadAfter(supplierId,12);
 				//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldsupplierid\" name=\"purchaseList["+rownum+"].oldsupplierid\"  value=\""+supplierId+"\">";
 				//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldprice\" name=\"purchaseList["+rownum+"].oldprice\"  value=\""+price+"\">";
@@ -945,57 +926,8 @@ function requirementAjax() {
 		
 	});
 
+
 	
-	t3.on('blur', 'tr td:nth-child(7),tr td:nth-child(8),tr td:nth-child(9)',function() {
-		
-		var currValue = $(this).find("input:text").val().trim();
-
-        $(this).find("input:text").removeClass('bgwhite');
-        
-        if(currValue =="" ){
-        	
-        	 $(this).find("input:text").addClass('error');
-        }else{
-        	 $(this).find("input:text").removeClass('error').addClass('bgnone');
-        }
-		
-	});
-			
-
-	t3.on('change', 'tr td:nth-child(7),tr td:nth-child(8),tr td:nth-child(9)',function() {
-		
-        var $tds = $(this).parent().find("td");
-		
-		var $oQuantity    = $tds.eq(6).find("input");
-		var $oPrice       = $tds.eq(8).find("input");
-		var $oTotals      = $tds.eq(9).find("span");
-		
-		//var fLastPrice = currencyToFloat($oLastPrice.val());
-		var fPrice = currencyToFloat($oPrice.val());		
-		var fQuantity = currencyToFloat($oQuantity.val());	
-		6
-		var fTotalNew = currencyToFloat(fPrice * fQuantity);
-
-		var vPrice = floatToCurrency(fPrice);	
-		var vQuantity = floatToCurrency(fQuantity);
-		var vTotalNew = floatToCurrency(fTotalNew);
-				
-		//详情列表显示新的价格					
-		$oQuantity.val(vQuantity);	
-		$oPrice.val(vPrice);	
-		$oTotals.html(vTotalNew);
-		
-		/*
-		if(fPrice > fLastPrice){
-			$oPrice.removeClass('decline').addClass('rise');
-		}else if(fPrice < fLastPrice){
-			$oPrice.removeClass('rise').addClass('decline');			
-		}
-		*/
-		
-		//alert("fPrice:"+fPrice+"::fLastPrice:"+fLastPrice)
-		
-	});
 	
 	
 	t3.on('order.dt search.dt draw.dt', function() {

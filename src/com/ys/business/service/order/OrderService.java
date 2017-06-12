@@ -352,7 +352,7 @@ public class OrderService extends BaseService {
 
 		String key = request.getParameter("key").toUpperCase();
 
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
 		dataModel.setQueryName("materialList");
 		
 		baseQuery = new BaseQuery(request, dataModel);

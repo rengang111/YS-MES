@@ -116,6 +116,10 @@ public class RequirementAction extends BaseAction {
 				doInsertProcurement();
 				rtnUrl = "/business/requirement/requirementview3";
 				break;				
+			case "cansolEditPlan"://取消编辑采购方案,返回到采购方案查看页面
+				cansolEditPlan();
+				rtnUrl = "/business/requirement/requirementview3";
+				break;				
 			case "updateProcurement":
 				doUpdateProcurement();
 				rtnUrl = "/business/requirement/requirementview";
@@ -157,8 +161,8 @@ public class RequirementAction extends BaseAction {
 				createPurchasePlan();
 				rtnUrl = "/business/requirement/requirementview2";
 				break;				
-			case "createPurchasePlan2"://生成采购方案
-				createPurchasePlan2();
+			case "createOrderBom"://生成订单BOM
+				createOrderBom();
 				rtnUrl = "/business/requirement/requirementview2";
 				break;
 			case "createPurchasePlanFromBaseBom"://生成采购方案ajax
@@ -270,6 +274,13 @@ public class RequirementAction extends BaseAction {
 		
 	}
 
+
+	public void cansolEditPlan() throws Exception {
+		
+		service.cansolEditPlan();			
+		
+	}
+	
 	public void doUpdateProcurement() throws Exception {
 		
 		service.updateProcurement();			
@@ -307,9 +318,9 @@ public class RequirementAction extends BaseAction {
 		service.createPurchasePlan();
 	}
 	
-	public void createPurchasePlan2() throws Exception{
+	public void createOrderBom() throws Exception{
 
-		service.createPurchasePlan2();
+		service.createOrderBom();
 	}
 	
 	public void creatPurchaseOrder() throws Exception{

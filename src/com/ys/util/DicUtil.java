@@ -23,6 +23,7 @@ public class DicUtil {
 	public static final String MENUTYPE = "A9";
 	public static final String ORGANTYPE = "机构类别";
 	public static final String MEASURESTYPE = "计量单位";
+	public static final String PURCHASETYPE = "物料采购类别";
 	public static final String CURRENCY = "币种";
 	public static final String LOADINGPORT = "出运港";
 	public static final String DELIVERYPORT = "目的港";

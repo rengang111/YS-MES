@@ -321,38 +321,42 @@ public class RequirementService extends CommonService {
 	
 
 	public HashMap<String,Object> createPurchasePlanFromBaseBom() throws Exception {
-
-		//String materialId = request.getParameter("materialId");
-		//B_OrderBomData order = getMAXOrderBomId (materialId) ;	
+	
 		String bomId = request.getParameter("bomId");
-		//model.addAttribute("bomId",bomId);
-		
-		//
-		//createOrderBomFromBaseBom(bomId,materialId);
-		
+				
 		//取得订单信息
-		String YSId = request.getParameter("YSId");	
-
-		//getOrderDetail(YSId);
-		
+		String YSId = request.getParameter("YSId");			
 		
 		//采购方案
 		String orderQuantity = request.getParameter("quantity");	
-		return createPurchasePlanView(YSId,bomId,orderQuantity);
-		
-		//return model;
+		return createPurchasePlanView(YSId,bomId,orderQuantity);		
 		
 	}
 	
-	public void createPurchasePlan2() throws Exception {
+	public void createOrderBom() throws Exception {
 
-		String materialId = request.getParameter("materialId");
-		B_OrderBomData order = getMAXOrderBomId (materialId) ;	
-		String bomId = order.getBomid();
+		B_OrderBomData reqBom = reqModel.getOrderBom();
+		String materialId = reqBom.getMaterialid();
+		String YSId = reqBom.getYsid();	
+		String bomId = reqBom.getBomid();
+		
+		if(YSId != null && !("").equals(YSId)){
+			//已经存在的,先删除
+			deleteOrderBom(YSId);
+		}
+		
+		if(bomId != null && !("").equals(bomId)){
+			//已经存在的,先删除
+			deleteBomDetail(bomId);
+		}
+		
+		//取得订单BOM的编号
+		B_OrderBomData order = getMAXOrderBomId (materialId);	
+		bomId = order.getBomid();
+		
 		model.addAttribute("bomId",bomId);
 
-		String YSId = request.getParameter("YSId");	
-		//
+		//创建订单BOM
 		order.setYsid(YSId);
 		order.setMaterialid(materialId);
 		createOrderBomFromBaseBom(order);
@@ -452,8 +456,7 @@ public class RequirementService extends CommonService {
 
 	
 	private void insertOrderBom(
-			B_OrderBomData data,
-			B_OrderBomData req) throws Exception{
+			B_OrderBomData data) throws Exception{
 		
 		B_OrderBomDao dao = new B_OrderBomDao();
 				
@@ -463,15 +466,14 @@ public class RequirementService extends CommonService {
 		
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
-		data.setMaterialid(req.getMaterialid());
+		//data.setMaterialid(req.getMaterialid());
 		dao.Create(data);			
 		
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void insertOrderBom2(
-			B_OrderBomData orderData,
-			String BaseBomId){
+			B_OrderBomData orderData,String BaseBomId){
 		
 		try{
 			B_OrderBomDao order = new B_OrderBomDao();
@@ -529,6 +531,22 @@ public class RequirementService extends CommonService {
 		dao.Create(dt);	
 	}
 	
+	
+	private void insertOrderBomDetail(
+			B_OrderBomDetailData data) throws Exception{
+		
+		B_OrderBomDetailDao dao = new B_OrderBomDetailDao();
+
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"OrderBomDetailInsert",userInfo);
+		copyProperties(data,commData);
+		
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		dao.Create(data);	
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void insertOrderBomDetail2(
 			String bomId,
@@ -573,7 +591,8 @@ public class RequirementService extends CommonService {
 		}
 	}
 	
-	public void createOrderBomFromBaseBom(B_OrderBomData order){
+	public void createOrderBomFromBaseBom(
+			B_OrderBomData order){
 		ts = new BaseTransaction();
 
 		try {
@@ -581,19 +600,33 @@ public class RequirementService extends CommonService {
 
 			//删除旧数据
 			String bomId = order.getBomid();
-			String YSId = order.getYsid();
-			String materialId = order.getMaterialid();
-			deleteOrderBom(YSId);
-			deleteBomDetail(bomId);
+			//String materialId = order.getMaterialid();
+			//String YSId = order.getYsid();
+			//deleteOrderBom(YSId);
+			//deleteBomDetail(bomId);
+
+			//基础BOM编号
+			//String baseMaterialId =BusinessService.getBaseBomId(materialId)[1];
 			
+			insertOrderBom(order);
+			
+			List<B_OrderBomDetailData> list = reqModel.getBomDetailList();
+			
+			for(B_OrderBomDetailData detail:list){
+				String materilid = detail.getMaterialid();
+				if(materilid != null && !("").equals(materilid)){
+					detail.setBomid(bomId);
+					insertOrderBomDetail(detail);					
+				}
+			}
+			
+
 			//订单BOM做成
-			//  基础BOM编号
-			String baseMaterialId =BusinessService.getBaseBomId(materialId)[1];
-			insertOrderBom2(order,baseMaterialId);
+			//insertOrderBom2(order,baseMaterialId);
 
 
 			//订单BOM详情做成
-			insertOrderBomDetail2(bomId,baseMaterialId);
+			//insertOrderBomDetail2(bomId,baseMaterialId);
 			
 			ts.commit();
 			
@@ -668,31 +701,31 @@ public class RequirementService extends CommonService {
 
 				//data.setBomid(bomId);
 				String baseMaterialId=data.getMaterialid();
-				String price = data.getPrice();
+				//String price = data.getPrice();
 				String supplierId = data.getSupplierid();
-				String oldPrice = data.getOldprice();
+				//String oldPrice = data.getOldprice();
 				String oldSupplierId = data.getOldsupplierid();
 				
-				float fprice = 0;
-				float foldPrice = 0;
+				//float fprice = 0;
+				//float foldPrice = 0;
 				
-				if(oldPrice != null && !oldPrice.equals("")){
-					foldPrice = Float.valueOf(oldPrice.replace(",", ""));
-				}
+				//if(oldPrice != null && !oldPrice.equals("")){
+				//	foldPrice = Float.valueOf(oldPrice.replace(",", ""));
+				//}
 				
-				if(price != null && !price.equals("")){			
-					fprice = Float.valueOf(price.replace(",", ""));
-				}
+				//if(price != null && !price.equals("")){			
+				//	fprice = Float.valueOf(price.replace(",", ""));
+				//}
 				
 				if(supplierId != null && !supplierId.equals(oldSupplierId)){
 					//只有供应商变动时,更新供应商
 					updateBaseBom(bomId,baseMaterialId,supplierId);	
 				}
 				
-				if(fprice != foldPrice){
+				//if(fprice != foldPrice){
 					//只有价格有变动时,更新单价
-					updatePriceSupplier(baseMaterialId,supplierId,price);
-				}
+					//updatePriceSupplier(baseMaterialId,supplierId,price);
+				//}
 			}
 			
 			//采购方案做成
@@ -846,7 +879,8 @@ public class RequirementService extends CommonService {
 			
 			//头表处理
 			order.setYsid(YSId);
-			insertOrderBom(order,reqOrder);
+			order.setMaterialid(reqOrder.getMaterialid());
+			insertOrderBom(order);
 			
 			//订单BOM详情
 			
@@ -1351,9 +1385,9 @@ public class RequirementService extends CommonService {
 			
 		int rowNum = 1;
 		for(HashMap<String, String> map:zzmaterial){
-			String reqQuantiy = map.get("requirement");
+			String reqQuantiy = map.get("requirement").replace(",", "");
 			String convertUnit = map.get("convertUnit");
-			String promise = map.get("availabelToPromise");
+			String promise = map.get("availabelToPromise").replace(",", "");
 			float freqQuantiy = Float.parseFloat(reqQuantiy);
 			float fconvertUnit = Float.parseFloat(convertUnit);
 			float fpromise = Float.parseFloat(promise);
@@ -1391,8 +1425,8 @@ public class RequirementService extends CommonService {
 					continue;//过滤掉二级BOM
 				}
 			}
-			String promise = map.get("availabelToPromise");
-			String quantity = map.get("quantity");
+			String promise = map.get("availabelToPromise").replace(",", "");
+			String quantity = map.get("quantity").replace(",", "");
 			float freqQuantiy = Float.parseFloat(quantity);
 			float fpromise = Float.parseFloat(promise);
 			
@@ -1690,7 +1724,7 @@ public class RequirementService extends CommonService {
 		String YSId = request.getParameter("YSId");
 		String bomId = request.getParameter("bomId");
 		model.addAttribute("bomId",bomId);
-		//getPurchaseDetail(YSId);
+
 		getOrderDetail(YSId);
 		
 	}
@@ -1698,15 +1732,11 @@ public class RequirementService extends CommonService {
 	//重置采购方案
 	public void resetRequirement() throws Exception {
 		
-		String YSId = request.getParameter("YSId");
-		String materialId = request.getParameter("materialId");
-		String bomId = BusinessService.getBaseBomId(materialId)[1];
+		String YSId = reqModel.getOrderBom().getYsid();
+		String bomId = reqModel.getOrderBom().getBomid();
 		model.addAttribute("bomId",bomId);
 		
-		//createRequirement();
-		
-		getOrderDetail(YSId);
-		
+		getOrderDetail(YSId);		
 	}
 	
 	
@@ -1734,6 +1764,16 @@ public class RequirementService extends CommonService {
 		
 	}
 	
+	public void cansolEditPlan() throws Exception {
+		
+		String YSId = request.getParameter("YSId");			
+		String bomId = request.getParameter("bomId");
+		model.addAttribute("bomId",bomId);
+		
+		//取得订单信息
+		getOrderDetail(YSId);
+		
+	}
 
 	public void creatPurchaseOrder() throws Exception {
 

@@ -160,7 +160,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		modelMap.put("unitList",doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
+		//modelMap.put("unitList",doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
 		
 		modelMap.put("data", dataModel.getYsViewData());
 		
@@ -527,6 +527,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 		String fileName="";
 		String shareModel = "";
 		String unitName = "";
+		String purchaseTypeName = "";
 		
 		try {
 			
@@ -535,7 +536,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 			
 			baseQuery = new BaseQuery(request, dataModel);
 			
-			userDefinedSearchCase.put("keywords1", parentId);
+			userDefinedSearchCase.put("parentId", parentId);
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 			baseQuery.getYsQueryData(0, 0);	 
 			
@@ -561,11 +562,13 @@ public class MaterialService extends CommonService implements I_BaseService{
 						FormDetail.setDescription(map.get("description"));
 						FormDetail.setSharemodel(map.get("shareModel"));
 						FormDetail.setUnit(map.get("unit"));
+						FormDetail.setPurchasetype(map.get("purchaseType"));
 						//FormDetail.setFileName(fileName);
 						Matmodel.setAttribute1(map.get("categoryId"));
 						Matmodel.setAttribute2(map.get("categoryName"));
 						shareModel = map.get("shareModel");
 						unitName = map.get("dicName");
+						purchaseTypeName = map.get("purchaseTypeName");
 					}
 					db.setRecordid(map.get("recordId"));
 					db.setSubid(map.get("subId"));
@@ -582,8 +585,11 @@ public class MaterialService extends CommonService implements I_BaseService{
 
 			//计量单位
 			Matmodel.setUnitname(unitName);
+			Matmodel.setPurchaseTypeName(purchaseTypeName);
 			Matmodel.setUnit(FormDetail.getUnit());
-			Matmodel.setUnitList(doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
+			Matmodel.setPurchaseType(FormDetail.getPurchasetype());
+			Matmodel.setUnitList(util.getListOption(DicUtil.MEASURESTYPE, ""));
+			Matmodel.setPurchaseTypeList(util.getListOption(DicUtil.PURCHASETYPE, ""));
 				
 			Matmodel.setShareModelList(shareModel.split(","));
 			Matmodel.setEndInfoMap("098", "0001", "");
@@ -900,6 +906,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 					dbData.setDescription(reqData.getDescription());
 					dbData.setUnit(reqData.getUnit());
 					dbData.setSubid(data.getSubid());//
+					dbData.setPurchasetype(reqData.getPurchasetype());
 					
 					if(data.getSubiddes() != null )
 						dbData.setSubiddes(data.getSubiddes());
@@ -964,73 +971,13 @@ public class MaterialService extends CommonService implements I_BaseService{
 						dbData.setUnit(reqData.getUnit());
 						dbData.setSubid(subId);//
 						dbData.setSubiddes(data.getSubiddes());
+						dbData.setPurchasetype(reqData.getPurchasetype());
 
 						dao.Store(dbData);
 						updataFlg = true;
 					}
 				}
 			}
-			
-			/*
-			//循环处理子编码
-			for(B_MaterialData data:reqDataList ){
-
-				String recordid = data.getRecordid();	
-				String subId = data.getSubid();
-				String material = parentId + "." + subId;
-
-				//判断物料编码是否修改过
-				B_MaterialData dbData = preMaterialCheckById(material);
-				
-				if(dbData == null || dbData.equals("")){				
-
-					//物料编码被修改后,更新所有子编码的物料编码
-					B_MaterialData dbSub = preMaterialCheck(recordid);
-					
-					if(dbSub == null || dbSub.equals(""))
-						continue;
-					
-					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialUpdate",userInfo);
-					copyProperties(dbSub,commData);
-
-					dbSub.setMaterialid(material);//
-					dbData.setCategoryid(categoryId);
-					dbSub.setParentid(parentId);//
-					dbSub.setSerialnumber(serialNumber);
-					dbSub.setSubid(data.getSubid());
-
-					dao.Store(dbSub);
-					
-				}else {
-					
-					
-					//只更新被选中数据的物料编号,名称,说明,子编码解释等;
-
-					//处理共通信息
-					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"MaterialUpdate",userInfo);
-					copyProperties(dbData,commData);
-					
-					//获取被选中数据的信息
-					dbData.setMaterialid(material);//以后要恢复的
-					//dbData.setMaterialid(materialId);//以后要删除的
-					dbData.setParentid(parentId);//以后要删除的
-					//dbData.setSubid(subId);//以后要删除的
-					dbData.setSerialnumber(serialNumber);//以后要删除的
-					dbData.setMaterialname(reqData.getMaterialname());
-					dbData.setCategoryid(reqData.getCategoryid());
-					dbData.setSharemodel(reqData.getSharemodel());
-					dbData.setDescription(reqData.getDescription());
-					dbData.setUnit(reqData.getUnit());
-					//获取子编码list中的子编码解释
-					dbData.setSubid(data.getSubid());//以后要恢复的
-					dbData.setSubiddes(data.getSubiddes());
-
-					dao.Store(dbData);
-
-					break;
-				}
-			}
-			*/
 			
 			ts.commit();
 			
@@ -1044,23 +991,6 @@ public class MaterialService extends CommonService implements I_BaseService{
 		return model;
 	}
 	
-	private void insertMaterial(B_MaterialData reqData){
-/*
-		B_MaterialDao dao = new B_MaterialDao();
-		
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
-		copyProperties(reqData,commData);
-						
-		String guid = BaseDAO.getGuId();
-		reqData.setRecordid(guid);
-		reqData.setMaterialid(parentId+"."+data.getSubid());
-		reqData.setParentid(parentId);	
-		reqData.setSubid(data.getSubid());
-		reqData.setSubiddes(data.getSubiddes());
-
-		dao.Create(reqData);
-		*/
-	}
 	
 	/*
 	 * 1.显示当前选中物料的基本信息
@@ -1160,7 +1090,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 		MaterialModel model = new MaterialModel();
 
 		try {			
-			model.setUnitList(doOptionChange(DicUtil.MEASURESTYPE, "").getUnitList());
+			model.setUnitList(util.getListOption(DicUtil.MEASURESTYPE, ""));
+			model.setPurchaseTypeList(util.getListOption(DicUtil.PURCHASETYPE, ""));
 			model.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {
@@ -1172,21 +1103,6 @@ public class MaterialService extends CommonService implements I_BaseService{
 	
 	}
 
-	public MaterialModel doOptionChange(String type, String parentCode) {
-		MaterialModel model = new MaterialModel();
-		
-		try {
-			ArrayList<ListOption> optionList = util.getListOption(type, parentCode);
-			model.setUnitList(optionList);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
-			model.setUnitList(null);
-		}
-		
-		return model;
-	}
 	
 	/*
 	 * 

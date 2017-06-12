@@ -54,8 +54,8 @@ input.middle{width:300px;}
 			<td style="width: 240px;">
 				<form:input path="material.materialid" class="read-only"  style="width: 180px;"/></td>
 								
-			<td class="label"><label>物料名称：</label></td>
-			<td colspan="3">
+			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
+			<td>
 				<form:input path="material.materialname" class="long required" /></td>												
 		</tr>
 		<tr>				
@@ -63,15 +63,23 @@ input.middle{width:300px;}
 			<td>
 				<form:input path="attribute1" class="required read-only" /></td>	
 				
-			<td class="label" style="width: 100px;"><label>编码解释：</label></td>
+			<td class="label"><label>编码解释：</label></td>
 			<td>
 				<form:input path="attribute2" class="middle read-only" /></td>
-								
-			<td class="label" style="width: 100px;"><label>计量单位：</label></td>
+		</tr>
+		<tr>				
+			<td class="label"><label>计量单位：</label></td>
 			<td>
 				<form:select path="material.unit" style="width: 100px;">							
 					<form:options items="${material.unitList}" 
-						itemValue="key" itemLabel="value" /></form:select></td>				
+						itemValue="key" itemLabel="value" /></form:select></td>	
+						
+			<td class="label">物料采购类别：</td>
+			<td>
+				<form:select path="material.purchasetype" style="width: 120px;">							
+					<form:options items="${material.purchaseTypeList}" 
+						itemValue="key" itemLabel="value" /></form:select></td>
+											
 		</tr>
 				
 		

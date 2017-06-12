@@ -34,6 +34,7 @@
 	<input type="hidden" id="suppliershortname" />
 	<input type="hidden" id="supplierfullname" />
 	<input type="hidden" id="keyBackup" value="${keyBackup }"/>
+	<input type="hidden" id="price" />
 	
 	
 	<input id="handle_status" value="1133" hidden="hidden">
@@ -45,19 +46,22 @@
 		<tr>
 			<td class="label" style="width: 100px;"><label>物料(ERP)编号：</label></td>
 			<td style="width: 150px;">
-				<label>${material.material.materialid}</label></td>
-								
-			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
-			<td colspan="3">${material.material.materialname}</td>												
-		</tr>
-		<tr>				
+				<label>${material.material.materialid}</label></td>	
+				
 			<td class="label" style="width: 100px;"><label>分类编码：</label></td>
-			<td colspan="3">${material.material.categoryid} | ${material.attribute2}</td>				
-								
+			<td>${material.attribute2}</td>
 			<td class="label" style="width: 100px;"><label>计量单位：</label></td>
-			<td style="width: 50px;text-align: center;">${material.unitname}</td>				
+			<td style="width: 50px;text-align: center;">${material.unitname}</td>	
+														
 		</tr>
-		<tr>				
+		<tr>
+			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
+			<td colspan="3">${material.material.materialname}</td>			
+								
+			<td class="label" style="width: 100px;">采购类别：</td>
+			<td style="width: 50px;text-align: center;">${material.purchaseTypeName}</td>					
+		</tr>
+		<tr>
 			<td class="label"><label>通用型号：</label></td>
 			<td colspan="5" style="word-break:break-all;"><form:hidden path="material.sharemodel" value=""/>	
 				<div class="" id="coupon">
@@ -235,6 +239,9 @@ function supplierPriceView() {
 			            });
 			        })
 					$("#supplierid").val(supplierId);
+					
+					var price = data["data"][0]["price"];
+					$("#price").val(price);			        
  
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){

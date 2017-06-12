@@ -112,32 +112,6 @@ public class B_MaterialData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String productmodel;
-	public String getProductmodel()
-	{
-		return this.productmodel;
-	}
-	public void setProductmodel(String productmodel)
-	{
-		this.productmodel=productmodel;
-	}
-
-	/**
-	*
-	*/
-	private String customerid;
-	public String getCustomerid()
-	{
-		return this.customerid;
-	}
-	public void setCustomerid(String customerid)
-	{
-		this.customerid=customerid;
-	}
-
-	/**
-	*
-	*/
 	private String unit;
 	public String getUnit()
 	{
@@ -185,6 +159,58 @@ public class B_MaterialData implements java.io.Serializable
 	public void setSubiddes(String subiddes)
 	{
 		this.subiddes=subiddes;
+	}
+
+	/**
+	*
+	*/
+	private String productmodel;
+	public String getProductmodel()
+	{
+		return this.productmodel;
+	}
+	public void setProductmodel(String productmodel)
+	{
+		this.productmodel=productmodel;
+	}
+
+	/**
+	*
+	*/
+	private String customerid;
+	public String getCustomerid()
+	{
+		return this.customerid;
+	}
+	public void setCustomerid(String customerid)
+	{
+		this.customerid=customerid;
+	}
+
+	/**
+	*
+	*/
+	private String image_filename;
+	public String getImage_filename()
+	{
+		return this.image_filename;
+	}
+	public void setImage_filename(String image_filename)
+	{
+		this.image_filename=image_filename;
+	}
+
+	/**
+	*
+	*/
+	private String purchasetype;
+	public String getPurchasetype()
+	{
+		return this.purchasetype;
+	}
+	public void setPurchasetype(String purchasetype)
+	{
+		this.purchasetype=purchasetype;
 	}
 
 	/**
@@ -319,13 +345,13 @@ public class B_MaterialData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("serialnumber = "+(serialnumber == null ? "null" : serialnumber)+"\n");		sb.append("materialname = "+(materialname == null ? "null" : materialname)+"\n");		sb.append("categoryid = "+(categoryid == null ? "null" : categoryid)+"\n");		sb.append("description = "+(description == null ? "null" : description)+"\n");		sb.append("sharemodel = "+(sharemodel == null ? "null" : sharemodel)+"\n");		sb.append("productmodel = "+(productmodel == null ? "null" : productmodel)+"\n");		sb.append("customerid = "+(customerid == null ? "null" : customerid)+"\n");		sb.append("unit = "+(unit == null ? "null" : unit)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("subiddes = "+(subiddes == null ? "null" : subiddes)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("serialnumber = "+(serialnumber == null ? "null" : serialnumber)+"\n");		sb.append("materialname = "+(materialname == null ? "null" : materialname)+"\n");		sb.append("categoryid = "+(categoryid == null ? "null" : categoryid)+"\n");		sb.append("description = "+(description == null ? "null" : description)+"\n");		sb.append("sharemodel = "+(sharemodel == null ? "null" : sharemodel)+"\n");		sb.append("unit = "+(unit == null ? "null" : unit)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("subiddes = "+(subiddes == null ? "null" : subiddes)+"\n");		sb.append("productmodel = "+(productmodel == null ? "null" : productmodel)+"\n");		sb.append("customerid = "+(customerid == null ? "null" : customerid)+"\n");		sb.append("image_filename = "+(image_filename == null ? "null" : image_filename)+"\n");		sb.append("purchasetype = "+(purchasetype == null ? "null" : purchasetype)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		materialid= (materialid == null ?null : materialid.trim());		serialnumber= (serialnumber == null ?null : serialnumber.trim());		materialname= (materialname == null ?null : materialname.trim());		categoryid= (categoryid == null ?null : categoryid.trim());		description= (description == null ?null : description.trim());		sharemodel= (sharemodel == null ?null : sharemodel.trim());		productmodel= (productmodel == null ?null : productmodel.trim());		customerid= (customerid == null ?null : customerid.trim());		unit= (unit == null ?null : unit.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		subiddes= (subiddes == null ?null : subiddes.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		materialid= (materialid == null ?null : materialid.trim());		serialnumber= (serialnumber == null ?null : serialnumber.trim());		materialname= (materialname == null ?null : materialname.trim());		categoryid= (categoryid == null ?null : categoryid.trim());		description= (description == null ?null : description.trim());		sharemodel= (sharemodel == null ?null : sharemodel.trim());		unit= (unit == null ?null : unit.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		subiddes= (subiddes == null ?null : subiddes.trim());		productmodel= (productmodel == null ?null : productmodel.trim());		customerid= (customerid == null ?null : customerid.trim());		image_filename= (image_filename == null ?null : image_filename.trim());		purchasetype= (purchasetype == null ?null : purchasetype.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
