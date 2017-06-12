@@ -22,9 +22,12 @@ public class Constants {
 	public static final String FORM_MATERIAL = "material";//
 	public static final String FORM_ARRIVAL = "arrival";//到货登记
 	public static final String FORM_CONTRACT = "contract";//采购合同
-	public static final String FORM_PRODUCT= "product";//合格
+	public static final String FORM_PRODUCT= "product";//成品管理
 	public static final String FORM_PRODUCTSEMI = "productsemi";//让步接收
-	public static final String FORM_ORDER = "order";//退货
+	public static final String FORM_ORDER = "order";//订单管理
+	public static final String FORM_ORDERBOM= "orderbom";//订单BOM管理
+	public static final String FORM_PURCHASEPLAN= "purchaseplan";//采购方案
+	public static final String FORM_PURCHASEORDER= "purchaseorder";//采购合同
 	
 	
 	/*

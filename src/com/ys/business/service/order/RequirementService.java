@@ -1,5 +1,6 @@
 package com.ys.business.service.order;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,6 +71,7 @@ public class RequirementService extends CommonService {
 
 	public RequirementService(Model model,
 			HttpServletRequest request,
+			HttpSession session,
 			RequirementModel reqModel,
 			UserInfo userInfo){
 		
@@ -79,8 +81,9 @@ public class RequirementService extends CommonService {
 		this.dataModel = new BaseModel();
 		this.request = request;
 		this.userInfo = userInfo;
-		userDefinedSearchCase = new HashMap<String, String>();
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		this.session = session;
+		this.userDefinedSearchCase = new HashMap<String, String>();
+		this.dataModel.setQueryFileName("/business/order/orderquerydefine");
 		super.request = request;
 		super.userInfo = userInfo;
 		super.session = session;
@@ -100,6 +103,108 @@ public class RequirementService extends CommonService {
 			
 		model.addAttribute("order",dataModel.getYsViewData().get(0));		
 		model.addAttribute("detail", dataModel.getYsViewData());
+		
+	}
+	
+	public HashMap<String, Object> getPurchasePlanList(String data) throws Exception {		
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		dataModel = new BaseModel();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		//String key1 = getJsonData(data, "keyword1").toUpperCase();
+		//String key2 = getJsonData(data, "keyword2").toUpperCase();
+
+		String[] keyArr = getSearchKey(Constants.FORM_PURCHASEPLAN,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getPurchasePlanList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase = new HashMap<String, String>();
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());	
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+		
+	}
+
+	public HashMap<String, Object> getOrderBomList(String data) throws Exception {		
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		dataModel = new BaseModel();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		//String key1 = getJsonData(data, "keyword1").toUpperCase();
+		//String key2 = getJsonData(data, "keyword2").toUpperCase();
+
+		String[] keyArr = getSearchKey(Constants.FORM_PURCHASEPLAN,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getOrderBomList");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase = new HashMap<String, String>();
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());	
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
 		
 	}
 	
@@ -1709,13 +1814,13 @@ public class RequirementService extends CommonService {
 	}
 	
 
-	public HashMap<String,Object> getPurchasePlan() throws Exception {
+	public void getPurchasePlan() throws Exception {
 		
 		String YSId = request.getParameter("YSId");	
 			
-		return getPurchaseDetail(YSId);	
+		//return getPurchaseDetail(YSId);	
 
-		//getOrderDetail(YSId);
+		getOrderDetail(YSId);
 		
 	}
 	

@@ -20,6 +20,7 @@ import com.ys.business.action.model.order.RequirementModel;
 import com.ys.business.service.order.RequirementService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.Constants;
 
 @Controller
 @RequestMapping("/business")
@@ -27,6 +28,7 @@ public class RequirementAction extends BaseAction {
 	
 	@Autowired RequirementService service;
 	@Autowired HttpServletRequest request;
+	HttpSession session;
 	
 	UserInfo userInfo = new UserInfo();
 	RequirementModel reqModel = new RequirementModel();
@@ -46,8 +48,11 @@ public class RequirementAction extends BaseAction {
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		this.service = new RequirementService(model,request,form,userInfo);
+		this.service = new RequirementService(model,request,session,form,userInfo);
 		this.reqModel = form;
+		this.session = session;
+		this.request = request;
+		
 		this.model = model;
 		
 		String rtnUrl = null;
@@ -79,9 +84,9 @@ public class RequirementAction extends BaseAction {
 				rtnUrl = "/business/requirement/requirementview";
 				break;					
 			case "purchasePlanView":
-				dataMap = purchasePlanView();
+				purchasePlanView();
 				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/requirement/purchaseplanview";
+				rtnUrl = "/business/requirement/purchaseplanview";
 				break;
 			case "editRequirement"://编辑采购方案
 				doEditRequirement();
@@ -173,10 +178,38 @@ public class RequirementAction extends BaseAction {
 				creatPurchaseOrder();
 				rtnUrl = "/business/requirement/requirementview4";
 				break;
+			case "purchasePlanListInit"://采购方案一览
+				doInit(Constants.FORM_PURCHASEPLAN);
+				rtnUrl = "/business/requirement/purchaseplanmain";
+				break;
+			case "getPurchasePlanList":
+				dataMap = getPurchasePlanList(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "orderBomInit"://采购方案一览
+				doInit(Constants.FORM_ORDERBOM);
+				rtnUrl = "/business/requirement/purchaseplanmain";
+				break;
+			case "getOrderBomList":
+				dataMap = getOrderBomList(data);
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
 		return rtnUrl;		
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void doInit(String formId){	
+			
+		String keyBackup = request.getParameter("keyBackup");
+		//没有物料编号,说明是初期显示,清空保存的查询条件
+		if(keyBackup == null || ("").equals(keyBackup)){
+			session.removeValue(formId+Constants.FORM_KEYWORD1);
+			session.removeValue(formId+Constants.FORM_KEYWORD2);
+		}
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -202,13 +235,40 @@ public class RequirementAction extends BaseAction {
 		
 		return dataMap;
 	}
+	
+	@SuppressWarnings("deprecation")
+	public HashMap<String, Object> getPurchasePlanList(String data) throws Exception{
+		//优先执行查询按钮事件,清空session中的查询条件
+		String keyBackup = request.getParameter("keyBackup");
+		if(keyBackup != null && !("").equals(keyBackup)){
+			session.removeValue(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD1);
+			session.removeValue(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD2);
+			
+		}
+		return service.getPurchasePlanList(data);
+			
+	}
 
-
-	public HashMap<String,Object> purchasePlanView() throws Exception {
+	public void purchasePlanView() throws Exception {
 		
-		return service.getPurchasePlan();		
+		service.getPurchasePlan();		
 		
 	}		
+	
+	
+	@SuppressWarnings("deprecation")
+	public HashMap<String, Object> getOrderBomList(String data) throws Exception{
+		//优先执行查询按钮事件,清空session中的查询条件
+		String keyBackup = request.getParameter("keyBackup");
+		if(keyBackup != null && !("").equals(keyBackup)){
+			session.removeValue(Constants.FORM_ORDERBOM+Constants.FORM_KEYWORD1);
+			session.removeValue(Constants.FORM_ORDERBOM+Constants.FORM_KEYWORD2);
+			
+		}
+		return service.getOrderBomList(data);
+			
+	}
+
 	
 	public String createRequirement() throws Exception {
 		

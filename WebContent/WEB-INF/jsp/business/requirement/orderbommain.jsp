@@ -5,10 +5,10 @@
 <head>
 <%@ include file="../../common/common.jsp"%>
 
-<title>采购方案一览</title>
+<title>采购方案--订单BOM一览</title>
 <script type="text/javascript">
 
-	function ajax() {
+	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnDestroy();
@@ -26,7 +26,7 @@
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/purchase?methodtype=getPurchasePlanList",
+				"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBomList&keyBackup="+pageFlg,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -63,7 +63,6 @@
 							{"data": "unit", "defaultContent" : '',"className" : 'td-center'},
 							{"data": "deliveryDate", "className" : 'td-center'},
 							{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
-							{"data": "total", "defaultContent" : '',"className" : 'td-right'}
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
@@ -95,8 +94,6 @@
 	}
 	
 	function initEvent(){
-
-		doSearch();
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -112,7 +109,7 @@
 
 	$(document).ready(function() {
 
-		initEvent();
+		ajax("");
 		
 		$("#create").click(
 				function() {			
@@ -124,15 +121,14 @@
 	
 	function doSearch() {	
 
-		var scrollHeight = $(document).height() - 197; 
-		ajax(scrollHeight);
+		ajax("purchaseplan");
 
 	}
 
 	
 	function doShowDetail(YSId) {
 		
-		var url =  "${ctx}/business/requirement?methodtype=purchasePlanView&YSId="+YSId;
+		var url =  "${ctx}/business/requirement?methodtype=orderBomView&YSId="+YSId;
 		location.href = url;
 	}
 	
@@ -214,7 +210,6 @@
 					<th style="width: 30px;" class="dt-middle ">单位</th>
 					<th style="width: 80px;" class="dt-middle ">订单交期</th>
 					<th style="width: 80px;"  class="dt-middle ">订单数量</th>
-					<th style="width: 100px;"  class="dt-middle ">采购金额</th>
 				</tr>
 			</thead>
 		</table>
