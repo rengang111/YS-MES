@@ -84,9 +84,14 @@ public class RequirementAction extends BaseAction {
 				rtnUrl = "/business/requirement/requirementview";
 				break;					
 			case "purchasePlanView":
-				purchasePlanView();
+				dataMap = purchasePlanView();
 				printOutJsonObj(response, dataMap);
-				rtnUrl = "/business/requirement/purchaseplanview";
+				//rtnUrl = "/business/requirement/requirementview3";
+				break;					
+			case "getPurchasePlan":
+				dataMap = purchasePlanView();
+				printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/requirement/requirementview3";
 				break;
 			case "editRequirement"://编辑采购方案
 				doEditRequirement();
@@ -249,9 +254,9 @@ public class RequirementAction extends BaseAction {
 			
 	}
 
-	public void purchasePlanView() throws Exception {
+	public HashMap<String, Object> purchasePlanView() throws Exception {
 		
-		service.getPurchasePlan();		
+		return service.PurchasePlanView();		
 		
 	}		
 	

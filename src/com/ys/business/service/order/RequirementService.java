@@ -1814,7 +1814,7 @@ public class RequirementService extends CommonService {
 	}
 	
 
-	public void getPurchasePlan() throws Exception {
+	public void  getPurchasePlan() throws Exception {
 		
 		String YSId = request.getParameter("YSId");	
 			
@@ -1824,6 +1824,16 @@ public class RequirementService extends CommonService {
 		
 	}
 	
+	public HashMap<String, Object> PurchasePlanView() throws Exception {
+		
+		String YSId = request.getParameter("YSId");	
+			
+		return getPurchaseDetail(YSId);	
+
+		//getOrderDetail(YSId);
+		
+	}
+
 	public void editRequirement() throws Exception {
 		
 		String YSId = request.getParameter("YSId");
