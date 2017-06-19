@@ -47,63 +47,61 @@
 	<input type="hidden" id="tmpMaterialId" />
 	
 	<fieldset>
-		<legend> 到货信息</legend>
+		<legend> 检验报告</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px">进料检报告编号：</td>					
-				<td colspan="7"></td>
-
-			</tr>
-			<tr> 				
-				<td class="label">采购合同编号：</td>					
+				<td class="label" width="100px">报告编号：</td>	
+				<td width="200px"></td>
+				<td class="label">合同编号：</td>					
+				<td width="200px"></td>										
+				<td class="label" width="100px">供应商：</td>
 				<td></td>
-														
-				<td class="label">供应商：</td>
-				<td colspan="5"></td>
 			</tr>
-			<tr> 				
-				<td class="label" width="100px">ERP编号：</td>
-				<td width="150px"></td>
-				<td class="label" width="100px">产品品名：</td>
+			<tr> 
+				<td class="label" width="100px">检验数量：</td>
+				<td></td>				
+				<td class="label" width="100px">物料编号：</td>			
 				<td></td>
-				<td class="label" width="100px">数量：</td>
-				<td width="100px"></td>
-				<td class="label" width="100px">检验结果：</td>
-				<td width="100px"></td>
-			</tr>										
-		</table>
-</fieldset>
-	
-
-		<table class="include" style="width: 98%;">
-			<tr>
-				<td><span class="tablename">检验报告</span>
-					<button type="button" id="submit1" class="DTTT_button">确认提交</button></td>
+				<td class="label" width="100px">物料名称：</td>
+				<td colspan="3"></td>
 			</tr>
 			<tr>
-				<td class="td-left" >
-				<form:textarea path="arrival.arrivalid" rows="7" cols="70" /></td>
+				<td colspan="5" rowspan="3">
+					<form:textarea path="arrival.arrivalid" rows="7" cols="80" /></td>
+
+			</tr>
+			<tr>
+				<td colspan="6">检验结果：</td>
+
+			</tr>
+			<tr>
+				<td colspan="6" style="vertical-align: bottom;" ><button type="button" id="submit1" class="DTTT_button" style="margin-bottom: 5px;">确认提交</button></td>
 
 			</tr>
 												
 		</table>
-<fieldset>
+		
+	</fieldset>
+	<fieldset>
 		<legend>品质部经理</legend>
 		<table class="form" id="table_form2">
 			<tr>
-				<td class="label" width="100px">品质部经理判断：</td>
-				<td width="150px"></td>
-				<td class="label" width="100px">品质部经理批示：</td>
-				<td><button type="button" id="submit1" class="DTTT_button">确认提交</button></td>
+				<td rowspan="3" width="700">
+					<form:textarea path="arrival.arrivalid" rows="7" cols="80" /></td>
 			</tr>
 			<tr>
-				<td colspan="4">
-				<form:textarea path="arrival.arrivalid" rows="7" cols="70" /></td>
+				<td>品质部经理判断：<%-- 
+					<form:select path="material.purchasetype" style="width: 120px;">							
+					<form:options items="${DisplayData.purchaseTypeList}" 
+						itemValue="key" itemLabel="value" /></form:select> --%></td>
+			</tr>
+			<tr>
+				<td><button type="button" id="submit1" class="DTTT_button">确认提交</button></td>
 			</tr>
 												
 		</table>
-</fieldset>
-<fieldset>
+	</fieldset>
+	<fieldset>
 		<legend>总经理</legend>
 		<table class="form" id="table_form2">
 			<tr>

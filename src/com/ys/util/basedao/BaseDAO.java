@@ -12,12 +12,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.dom4j.Element;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mchange.v2.c3p0.PooledDataSource;
 import com.ys.util.DicUtil;
 import com.ys.util.XmlUtil;
 import com.ys.util.basequery.QueryInfoBean;
@@ -116,52 +121,80 @@ public class BaseDAO {
 		return dataSource;
 	}
 	
-	public static Connection getConnection(String name) throws Exception {
-		
+	public static Connection getConnection(String name)  {
+		//System.out.println("connection name:"+name);
+		ComboPooledDataSource ds = new ComboPooledDataSource();
 		SysBaseDaoDefineBean defineBean = null;
 		DataSource dataSource = null;
 		Connection connection = null;
-		
-		if (!dataDefineMap.containsKey(name)) {
-			dataDefineMap = getPrivateDaoConfig(SYSBASEDAOCONFIGFILE, name);
-		}
-		if (dataDefineMap.containsKey(name)) {
-			defineBean = (SysBaseDaoDefineBean)dataDefineMap.get(name);
-		}
-		if (defineBean != null) {
-			if (defineBean.getIsPool().toUpperCase().equals("T")) {
-				HashMap<String, DataSource> dsMap = (HashMap<String, DataSource>)dsLocal.get();
-				
-				if (dsMap != null && dsMap.containsKey(name)) {
-					dataSource = dsMap.get(name);
-				} else {
-				    dataSource = (DataSource)XmlUtil.getContent(DATASOURCEDEFINITION, defineBean.getName());
-				    if (dsMap == null) {
-				    	dsMap = new HashMap<String, DataSource>();
-				    }
-				    dsMap.put(name, dataSource);
-				    dsLocal.set(dsMap);
-				}
-
-				connection = DataSourceUtils.getConnection(dataSource);
-
-				/*
-				Context ctx = new InitialContext();
-				//通过JNDI查找DataSource  
-				DataSource ds = (DataSource)ctx.lookup(defineBean.getName());
-				connection = ds.getConnection();
-			    */
-			} else {
-				Class.forName(defineBean.getDriver()).newInstance();
-				connection = java.sql.DriverManager.getConnection(defineBean.getUrl(), defineBean.getUserName(), defineBean.getPwd());	    
+		try{
+	        
+			if (!dataDefineMap.containsKey(name)) {
+				dataDefineMap = getPrivateDaoConfig(SYSBASEDAOCONFIGFILE, name);
 			}
-		} else {
-			throw new Exception("无效的数据库连接定义");
+			if (dataDefineMap.containsKey(name)) {
+				defineBean = (SysBaseDaoDefineBean)dataDefineMap.get(name);
+			}
+			if (defineBean != null) {
+				if (defineBean.getIsPool().toUpperCase().equals("T")) {
+					HashMap<String, DataSource> dsMap = (HashMap<String, DataSource>)dsLocal.get();
+					
+					if (dsMap != null && dsMap.containsKey(name)) {
+						dataSource = dsMap.get(name);
+					} else {
+					    dataSource = (DataSource)XmlUtil.getContent(DATASOURCEDEFINITION, defineBean.getName());
+					    if (dsMap == null) {
+					    	dsMap = new HashMap<String, DataSource>();
+					    }
+					    dsMap.put(name, dataSource);
+					    dsLocal.set(dsMap);
+					}
+/*
+					Context initCtx = new InitialContext();
+				    BasicDataSource bds = (BasicDataSource)initCtx.lookup(defineBean.getName());
+				    initCtx.close();    
+				    bds.getConnection();
+				    System.out.println("当前连接数=" + bds.getNumActive());
+				    
+			       */
+					connection = DataSourceUtils.getConnection(dataSource);
+					 //DataSourceUtil util = new DatasourceUtil();
+
+					showConnPoolInfo(dataSource);
+				        
+					//Context ctx = new InitialContext();
+					//通过JNDI查找DataSource  
+					//DataSource ds2 = (DataSource)ctx.lookup(defineBean.getName());
+					//connection = ds.getConnection();
+				    
+				} else {
+					Class.forName(defineBean.getDriver()).newInstance();
+					connection = java.sql.DriverManager.getConnection(defineBean.getUrl(), defineBean.getUserName(), defineBean.getPwd());	    
+				}
+			} else {
+				//throw new Exception("无效的数据库连接定义");
+			}
+		}catch(Exception e){
+			System.out.println("DB getConnection error:"+e.getMessage()+"name:"+name);
 		}
 		
 		return connection;
 	}
 	
+	private static void showConnPoolInfo(DataSource pool){    
+        PooledDataSource pds = (PooledDataSource) pool;    
+        if(null != pds){    
+            try {    
+                System.out.println("------------c3p0连接池链接状态--------------");    
+                System.out.println("c3p0连接池中 【 总共 】 连接数量："+pds.getNumConnectionsDefaultUser());    
+                System.out.println("c3p0连接池中 【  忙  】 连接数量："+pds.getNumBusyConnectionsDefaultUser());    
+                System.out.println("c3p0连接池中 【 空闲 】 连接数量："+pds.getNumIdleConnectionsDefaultUser());    
+                System.out.println("c3p0连接池中 【未关闭】 连接数量："+pds.getNumUnclosedOrphanedConnectionsAllUsers());    
+            } catch (Exception e) {    
+                System.out.println("c3p0连接池异常！");    
+            }    
+        }    
+    }    
 	public static DataSourceTransactionManager getTransaction(String name) throws Exception {
 		
 		DataSourceTransactionManager transactionManager = null;

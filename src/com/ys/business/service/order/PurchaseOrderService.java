@@ -350,7 +350,8 @@ public class PurchaseOrderService extends CommonService {
 			ts.begin();
 
 			String materialId = request.getParameter("materialId");
-			
+			System.out.println("end purchaseOrderCreate:"+YSId+"时间:"+CalendarUtil.getSystemDate());
+
 			//以采购方案里的供应商为单位集计
 			ArrayList<HashMap<String, String>> supplierList = getSupplierList(YSId);
 					
@@ -404,6 +405,7 @@ public class PurchaseOrderService extends CommonService {
 			}
 			
 			ts.commit();
+			System.out.println("end purchaseOrderCreate:"+YSId+"时间:"+CalendarUtil.getSystemDate());
 		}
 		catch(Exception e) {
 			ts.rollback();

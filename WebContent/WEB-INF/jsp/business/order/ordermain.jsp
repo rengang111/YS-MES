@@ -82,7 +82,7 @@
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
 		    			
-		    			var v = row["totalprice"],id = row["YSId"];
+		    			var v = row["totalPrice"],id = row["YSId"];
 		    			return YSKcheck(v,id);
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
@@ -97,7 +97,7 @@
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
-		    			name = jQuery.fixedWidth(name,30,true);//true:两边截取,左边从汉字开始
+		    			name = jQuery.fixedWidth(name,35,true);//true:两边截取,左边从汉字开始
 		    			var zzFlag = "";
 		    			//if(id != ''){
 		    			//	zzFlag = id.substr(2,3);
@@ -293,7 +293,7 @@
 								<th style="width: 40px;" class="dt-middle ">数量</th>
 								<th style="width: 50px;" class="dt-middle ">单价</th>
 								<th style="width: 80px;" class="dt-middle ">销售总价</th>
-								<th style="width: 50px;" class="dt-middle ">业务组</th>
+								<th style="width: 60px;" class="dt-middle ">业务组</th>
 							</tr>
 						</thead>
 					</table>

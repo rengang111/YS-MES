@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.mail.Session;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -189,20 +188,19 @@ public class MaterialAction extends BaseAction {
 		return rtnUrl;		
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void doInit(String formId,HttpSession session){	
 			
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeValue(formId+Constants.FORM_KEYWORD1);
-			session.removeValue(formId+Constants.FORM_KEYWORD2);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 		}
 		
 	}
 
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearch(@RequestBody String data, 
 			HttpServletRequest request,HttpSession session){
 		
@@ -211,8 +209,8 @@ public class MaterialAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeValue(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD1);
-			session.removeValue(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD2);
 			
 		}
 		
@@ -496,8 +494,8 @@ public class MaterialAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 				String keyBackup = request.getParameter("keyBackup");
 				if(keyBackup != null && !("").equals(keyBackup)){
-					session.removeValue(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD1);
-					session.removeValue(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD2);
+					session.removeAttribute(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD1);
+					session.removeAttribute(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD2);
 
 					
 				}
@@ -521,8 +519,8 @@ public class MaterialAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 				String keyBackup = request.getParameter("keyBackup");
 				if(keyBackup != null && !("").equals(keyBackup)){
-					session.removeValue(Constants.FORM_PRODUCTSEMI+Constants.FORM_KEYWORD1);
-					session.removeValue(Constants.FORM_PRODUCTSEMI+Constants.FORM_KEYWORD2);
+					session.removeAttribute(Constants.FORM_PRODUCTSEMI+Constants.FORM_KEYWORD1);
+					session.removeAttribute(Constants.FORM_PRODUCTSEMI+Constants.FORM_KEYWORD2);
 
 					
 				}

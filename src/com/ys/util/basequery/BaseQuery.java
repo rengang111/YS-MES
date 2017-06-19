@@ -21,7 +21,7 @@ public class BaseQuery {
 	public static final String USERID = "userId";
 	public static final String USERTYPE = "userType";
 	private final String QUERYDEFINEDRESOURCE_PATH = "/query/";
-	private static HashMap<String, QueryInfoBean> queryInfoMap = new HashMap<String, QueryInfoBean>();
+	private HashMap<String, QueryInfoBean> queryInfoMap = new HashMap<String, QueryInfoBean>();
 	private HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 	private String menuId = "";
 	
@@ -46,7 +46,7 @@ public class BaseQuery {
 				
 		//TODO
 		//清空语句仅供开发时使用
-		//queryInfoMap.clear();
+		queryInfoMap.clear();
 	}
 		
 	

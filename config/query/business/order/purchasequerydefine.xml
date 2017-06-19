@@ -155,6 +155,7 @@
       <f name="IFNULL(b.minPrice, 0)" alias="minPrice" ctype="" />
       <f name="b.minSupplierId" alias="" ctype="" />
       <f name="a.orderQuantity" alias="" ctype="" />
+      <f name="a.unitQuantity" alias="" ctype="" />
       <f name="a.quantity" alias="" ctype="" />
       <f name="a.availabelToPromise" alias="" ctype="" />
       <f name="a.priceStatus" alias="" ctype="" />
