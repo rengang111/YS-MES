@@ -3,8 +3,6 @@ package com.ys.system.service.area;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
@@ -12,25 +10,16 @@ import org.springframework.ui.Model;
 
 import com.ys.system.action.model.area.AreaModel;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.system.common.BusinessConstants;
 import com.ys.system.db.dao.S_areaDao;
 import com.ys.system.db.data.S_areaData;
 import com.ys.system.service.common.BaseService;
-import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.business.action.model.material.ZZMaterialModel;
-import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_ZZMaterialPriceDao;
-import com.ys.business.db.dao.B_ZZRawMaterialDao;
-import com.ys.business.db.data.B_BomDetailData;
-import com.ys.business.db.data.B_PriceSupplierData;
-import com.ys.business.db.data.B_ZZMaterialPriceData;
-import com.ys.business.db.data.B_ZZRawMaterialData;
 import com.ys.business.db.data.CommFieldsData;
 
 @Service
@@ -50,10 +39,8 @@ public class AreaService extends BaseService {
 	private B_ZZMaterialPriceDao priceDao;
 	private AreaModel reqModel;
 	private UserInfo userInfo;
-	private BaseModel dataModel;
 	private  Model model;
 	private HashMap<String, String> userDefinedSearchCase;
-	private BaseQuery baseQuery;
 	ArrayList<HashMap<String, String>> modelMap = null;	
 
 	public AreaService(){

@@ -82,7 +82,7 @@ public class DicService {
 		
 		DbUpdateEjb bean = new DbUpdateEjb();
         
-        bean.executeDicDelete(DicModel, userInfo);
+        //bean.executeDicDelete(DicModel, userInfo);
 
 	}
 	

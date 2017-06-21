@@ -72,7 +72,7 @@ public class DicTypeService {
 		
         DbUpdateEjb bean = new DbUpdateEjb();
         
-        bean.executeDicTypeDelete(DicTypeModel, userInfo);
+       // bean.executeDicTypeDelete(DicTypeModel, userInfo);
 
 	}
 	

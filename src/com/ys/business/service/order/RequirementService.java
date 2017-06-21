@@ -39,10 +39,9 @@ import com.ys.business.db.data.B_OrderBomData;
 import com.ys.business.db.data.B_OrderBomDetailData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
-import com.ys.business.db.data.B_QuotationData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
-import com.ys.business.service.material.CommonService;
+import com.ys.business.service.order.CommonService;
 
 @Service
 public class RequirementService extends CommonService {
