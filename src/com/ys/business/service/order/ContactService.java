@@ -6,7 +6,7 @@ import java.util.HashMap;
 import org.springframework.stereotype.Service;
 
 import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.contact.ContactModel;
+import com.ys.business.action.model.order.ContactModel;
 import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_SupplierDao;
 import com.ys.business.db.data.B_ContactData;

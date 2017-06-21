@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.ys.system.action.common.BaseAction;
-import com.ys.business.action.model.organ.OrganModel;
+import com.ys.business.action.model.order.OrganModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.business.service.order.OrganService;
 import com.ys.system.action.model.login.UserInfo;

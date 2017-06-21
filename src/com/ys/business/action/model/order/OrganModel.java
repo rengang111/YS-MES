@@ -1,4 +1,4 @@
-package com.ys.business.action.model.organ;
+package com.ys.business.action.model.order;
 
 import java.util.ArrayList;
 

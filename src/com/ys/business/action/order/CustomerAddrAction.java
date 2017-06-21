@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.business.action.model.customeraddr.CustomerAddrModel;
+import com.ys.business.action.model.order.CustomerAddrModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.business.service.order.CustomerAddrService;
 

@@ -16,14 +16,13 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.contact.ContactModel;
-import com.ys.business.action.model.organ.OrganModel;
+import com.ys.business.action.model.order.ContactModel;
+import com.ys.business.action.model.order.OrganModel;
 import com.ys.business.db.dao.B_ContactDao;
 import com.ys.business.db.dao.B_OrganizationDao;
 import com.ys.business.db.data.B_ContactData;
 import com.ys.business.db.data.B_OrganizationData;
 import com.ys.business.db.data.CommFieldsData;
-import com.ys.business.ejb.BusinessDbUpdateEjb;
 
 @Service
 public class OrganService extends BaseService {

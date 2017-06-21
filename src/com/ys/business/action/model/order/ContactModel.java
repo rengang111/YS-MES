@@ -1,4 +1,4 @@
-package com.ys.business.action.model.contact;
+package com.ys.business.action.model.order;
 
 import com.ys.util.basequery.common.BaseModel;
 

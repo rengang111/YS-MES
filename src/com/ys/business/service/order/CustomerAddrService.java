@@ -4,7 +4,7 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import org.springframework.stereotype.Service;
 
-import com.ys.business.action.model.customeraddr.CustomerAddrModel;
+import com.ys.business.action.model.order.CustomerAddrModel;
 import com.ys.business.db.dao.B_CustomerAddrDao;
 import com.ys.business.db.data.B_CustomerAddrData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
