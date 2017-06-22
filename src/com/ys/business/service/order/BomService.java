@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
-import com.ys.system.service.common.BaseService;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
@@ -26,18 +25,14 @@ import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_OrderExpenseDao;
-import com.ys.business.db.dao.B_PriceSupplierDao;
-import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
 import com.ys.business.db.data.B_BomData;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderExpenseData;
-import com.ys.business.db.data.B_PriceSupplierData;
-import com.ys.business.db.data.B_PriceSupplierHistoryData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
-import com.ys.business.service.material.CommonService;
+import com.ys.business.service.order.CommonService;
 
 @Service
 public class BomService extends CommonService {

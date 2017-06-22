@@ -81,39 +81,12 @@
 		});
 			
 		$("#doReset").click(function() {
-			var order = '${order.quantity}';
+			var order = '${order.totalQuantity}';
 			order = order.replace(/,/g, "");
 			var bomId='${bomId}';
 			var YSId = '${order.YSId}';
 			var url = "${ctx}/business/requirement?methodtype=cansolEditPlan&YSId="+YSId+"&bomId="+bomId;
 			location.href = url;		
-			
-		});
-		
-		$("#tmpQuantity").change(function() {
-			var tmp = $(this).val();
-			tmp = currencyToFloat(tmp);
-			var quantity = '${order.quantity}';
-
-			$('#example tbody tr').each (function (){
-				
-				var vold = $(this).find("td").eq(6).find("input").val();
-				var price = $(this).find("td").eq(8).find("input").val();
-				var fold = currencyToFloat(vold);
-				var ftotal = currencyToFloat(quantity);
-				
-				price = currencyToFloat(price);
-				if(fold >0){
-					var newQuantiy =  tmp + ftotal ;					
-					var total = floatToCurrency( price * newQuantiy );
-					
-					$(this).find("td").eq(6).find("input").val(floatToCurrency(newQuantiy));
-					$(this).find("td").eq(9).find("span").html(total);
-				}
-							
-			})
-			
-			$().toastmessage('showNoticeToast', "建议采购量已经更新。");	
 			
 		});
 		
@@ -131,10 +104,10 @@
 <div id="main">
 
 	<form:form modelAttribute="attrForm" method="POST"
-		id="attrForm" name="attrForm"  autocomplete="off">
-		
+		id="attrForm" name="attrForm"  autocomplete="off">		
 		
 		<input type="hidden" id="tmpMaterialId" />
+		<input type="hidden" id="totalQuantity" value="${order.totalQuantity}" />
 		<form:hidden path="orderBom.bomid"  value="${bomId}" />
 		<fieldset>
 			<legend> 产品信息</legend>
@@ -165,7 +138,6 @@
 		</fieldset>
 						
 		<fieldset class="action" style="text-align: right;margin-top: -5px;">
-			额外采购数<input type="text" id="tmpQuantity" style="margin-right: 115px;height: 24px;" class="num mini" />
 			<button type="button" id="insert" class="DTTT_button">保存采购方案</button>
 			<button type="button" id="doReset" class="DTTT_button">取消编辑</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回订单详情</button>
@@ -226,7 +198,9 @@
 						<th class="dt-center" style="width:120px">物料编码</th>
 						<th class="dt-center" >物料名称</th>
 						<th class="dt-center" style="width:30px">单位</th>
-						<th class="dt-center" width="80px">订单需求量</th>
+						<th class="dt-center" style="width:30px">使用量</th>
+						<th class="dt-center" style="width:30px">生产数量</th>
+						<th class="dt-center" width="80px">生产需求量</th>
 						<th class="dt-center" width="80px">当前库存</th>
 						<th class="dt-center" width="80px">建议采购量</th>
 						<th class="dt-center" width="100px">供应商</th>
@@ -314,18 +288,18 @@ function orderBomView() {
     		}},
     		{"targets":6,"render":function(data, type, row){
     			
-    			var quantity =  '${order.quantity}' ;
+    			var quantity =  '${order.totalQuantity}' ;
     			return quantity;
     		}},
     		{"targets":7,"render":function(data, type, row){
-    			var order = currencyToFloat('${order.quantity}' );
+    			var order = currencyToFloat('${order.totalQuantity}' );
     			var quantity = currencyToFloat( row["quantity"] );				    			
     			var total = floatToCurrency( order * quantity );			    			
     			return total;
     		}},
     		{"targets":11,"render":function(data, type, row){
     			var price = currencyToFloat(row["price"] );
-    			var order = currencyToFloat('${order.quantity}' );
+    			var order = currencyToFloat('${order.totalQuantity}' );
     			var quantity = currencyToFloat( row["quantity"] );				    			
     			var total = floatToCurrency( order * quantity * price);		    			
     			return total;
@@ -341,7 +315,7 @@ function orderBomView() {
 	t2.on('change', 'tr td:nth-child(4)',function() {
 		
 		/*总量计算*/
-		var fOrderQuanty =  currencyToFloat('${order.quantity}') ;//订单数量
+		var fOrderQuanty =  currencyToFloat('${order.totalQuantity}') ;//生产数量
 
         var $tds = $(this).parent().find("td");
 
@@ -614,7 +588,7 @@ function ZZmaterialView() {
     		}},
     		{"targets":4,"render":function(data, type, row){
     		
-    			var order="${order.quantity}";
+    			var order="${order.totalQuantity}";
     			var requirement = row["requirement"];
     			order=currencyToFloat(order);
     			requirement=currencyToFloat(requirement);
@@ -652,7 +626,7 @@ function ZZmaterialView() {
     		}},
     		{"targets":6,"render":function(data, type, row){
     			//建议需求量
-    			var order="${order.quantity}";
+    			var order="${order.totalQuantity}";
     			var requirement = row["requirement"];
     			var promise = row["availabelToPromise"];
     			order=currencyToFloat(order);
@@ -831,7 +805,7 @@ function requirementAjax() {
 	var scrollHeight = $(window).height() - 255;
 	var bomId = "${bomId}";
 	var YSId = '${order.YSId}';
-	var quantity = "${order.quantity}";
+	var quantity = "${order.totalQuantity}";
 
 	var table = $('#example').dataTable();
 	if(table) {
@@ -879,6 +853,8 @@ function requirementAjax() {
 			{"data": "materialId" },
 			{"data": "materialName"},
 			{"data": "unitName","className" : 'td-center'},
+			{"data": "unitQuantity","className" : 'td-center', "defaultContent" : '1.00000'},
+			{"data": null,"className" : 'td-center', "defaultContent" : '0'},
 			{"data": "orderQuantity","className" : 'td-right'},
 			{"data": "availabelToPromise","className" : 'td-right'},
 			{"data": null,"className" : 'td-right bold'},
@@ -905,7 +881,23 @@ function requirementAjax() {
     			rtn+= "<a href=\"###\" onClick=\"doEditMaterial('" + rownum +"','" + row["materialRecordId"] +"','"+ row["materialParentId"] + "')\">"+materialId+"</a>";
    			return rtn;
     		}},
-    		{"targets":4,"render":function(data, type, row){    			
+    		{"targets":4,"render":function(data, type, row){//单位使用量
+				var rtn = "";
+    			var rownum = row["rownum"]-1;
+    			var quantity =  row["unitQuantity"];
+    			rtn+= quantity;
+    			rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".unitquantity\" name=\"purchaseList["+rownum+"].unitquantity\" value=\""+quantity+"\">";
+    			return rtn;
+    		}},
+    		{"targets":5,"render":function(data, type, row){//生产数量
+				var rtn = "";
+    			var rownum = row["rownum"]-1;
+    			var quantity =  floatToCurrency( $('#totalQuantity').val() );
+    			rtn+= quantity;
+    			//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".orderquantity\" name=\"purchaseList["+rownum+"].orderquantity\" value=\""+quantity+"\">";
+    			return rtn;
+    		}},
+    		{"targets":6,"render":function(data, type, row){    			
 				var rtn = "";
     			var rownum = row["rownum"]-1;
     			var quantity =  floatToCurrency( row["orderQuantity"] );
@@ -913,21 +905,22 @@ function requirementAjax() {
     			rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".orderquantity\" name=\"purchaseList["+rownum+"].orderquantity\" value=\""+quantity+"\">";
     			return rtn;
     		}},
-    		{"targets":6,"render":function(data, type, row){
+    		{"targets":8,"render":function(data, type, row){
 				var rtn = "";
     			var rownum = row["rownum"]-1;
     			var quantity =  floatToCurrency( row["quantity"] );
     			rtn = "<input type=\"text\" id=\"purchaseList"+rownum+".quantity\" name=\"purchaseList["+rownum+"].quantity\" class=\"num\" style=\"width:80px\" value=\""+quantity+"\">";
     			return rtn;
     		}},
-    		{"targets":7,"render":function(data, type, row){
+    		{"targets":9,"render":function(data, type, row){
 				var rtn = "";
     			var rownum = row["rownum"]-1;
     			var quantity =  ( row["supplierId"] );
-    			rtn = "<input type=\"text\" id=\"purchaseList"+rownum+".supplierid\" name=\"purchaseList["+rownum+"].supplierid\" class = 'supplierId' style=\"width:100px\" value=\""+quantity+"\">";
+    			rtn += quantity;
+    			rtn += "<input type=\"hidden\" id=\"purchaseList"+rownum+".supplierid\" name=\"purchaseList["+rownum+"].supplierid\" class = 'supplierId' style=\"width:100px\" value=\""+quantity+"\">";
     			return rtn;
     		}},
-    		{"targets":8,"render":function(data, type, row){
+    		{"targets":10,"render":function(data, type, row){
     			//本次单价
 				var rtn = "";
     			var rownum = row["rownum"]-1;
@@ -936,7 +929,7 @@ function requirementAjax() {
     			rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".price\" name=\"purchaseList["+rownum+"].price\" class = 'cash short' value=\""+quantity+"\">";
     			return rtn;
     		}},
-    		{"targets":9,"render":function(data, type, row){
+    		{"targets":11,"render":function(data, type, row){
     			//总价
 				var rtn = "";
     			var rownum = row["rownum"]-1;
@@ -948,7 +941,7 @@ function requirementAjax() {
 
     			return rtn;
     		}},
-    		{"targets":10,"render":function(data, type, row){
+    		{"targets":12,"render":function(data, type, row){
     			//最新价
     			var rtn ="";
     			var rownum = row["rownum"]-1;
@@ -959,7 +952,7 @@ function requirementAjax() {
 				rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldprice\" name=\"purchaseList["+rownum+"].oldprice\"  value=\""+price+"\">";
     			return rtn;
     		}},
-    		{"targets":11,"render":function(data, type, row){
+    		{"targets":13,"render":function(data, type, row){
     			//最低价
     			var rtn ="";
     			var rownum = row["rownum"]-1;
@@ -977,7 +970,7 @@ function requirementAjax() {
 	});
 
 	
-	t3.on('blur', 'tr td:nth-child(7),tr td:nth-child(8),tr td:nth-child(9)',function() {
+	t3.on('blur', 'tr td:nth-child(9)',function() {
 		
 		var currValue = $(this).find("input:text").val().trim();
 
@@ -993,15 +986,14 @@ function requirementAjax() {
 	});
 			
 
-	t3.on('change', 'tr td:nth-child(7),tr td:nth-child(8),tr td:nth-child(9)',function() {
+	t3.on('change', 'tr td:nth-child(9)',function() {
 
         var $tds = $(this).parent().find("td");
     	
-		var $oQuantity    = $tds.eq(6).find("input");
-		//var $oPricei      = $tds.eq(8).find("input");
-		var $oPrice       = $tds.eq(8).find("span");
-		var $oTotali      = $tds.eq(9).find("input");
-		var $oTotals      = $tds.eq(9).find("span");
+		var $oQuantity    = $tds.eq(8).find("input");
+		var $oPrice       = $tds.eq(10).find("span");
+		var $oTotali      = $tds.eq(11).find("input");
+		var $oTotals      = $tds.eq(11).find("span");
 		
 		var fPrice = currencyToFloat($oPrice.text());		
 		var fQuantity = currencyToFloat($oQuantity.val());	

@@ -576,6 +576,7 @@ public class OrderService extends BaseService {
 			dbData.setLoadingport(order.getLoadingport());
 			dbData.setTotalprice(order.getTotalprice());
 			dbData.setTeam(order.getTeam());
+			dbData.setOrdercompany(order.getOrdercompany());
 			
 			dao.Store(dbData);
 		}
@@ -719,8 +720,7 @@ public class OrderService extends BaseService {
 			HttpServletRequest request,
 			OrderModel reqModel) {
 
-		try {	
-			
+		try {			
       
 			//耀升编号
 	        String paternId = BusinessService.getYSCommCode();
@@ -740,11 +740,10 @@ public class OrderService extends BaseService {
 					util.getListOption(DicUtil.CURRENCY, ""));
 			reqModel.setTeamList(
 					util.getListOption(DicUtil.BUSINESSTEAM, ""));
-			
+			reqModel.setOrdercompanyList(
+					util.getListOption(DicUtil.ORDERCOMPANY, ""));
 			
 			reqModel.setEndInfoMap(NORMAL, "", "");
-				
-
 			
 		}
 		catch(Exception e) {

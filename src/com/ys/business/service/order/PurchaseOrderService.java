@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
-import com.ys.system.common.BusinessConstants;
-import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
@@ -20,25 +18,18 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.PurchaseOrderModel;
-import com.ys.business.action.model.order.ZZOrderModel;
-import com.ys.business.action.model.organ.OrganModel;
-import com.ys.business.db.dao.B_MaterialRequirmentDao;
-import com.ys.business.db.dao.B_OrderDao;
-import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.data.B_MaterialRequirmentData;
-import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
-import com.ys.business.service.material.CommonService;
+import com.ys.business.service.order.CommonService;
 
 @Service
 public class PurchaseOrderService extends CommonService {
@@ -350,7 +341,8 @@ public class PurchaseOrderService extends CommonService {
 			ts.begin();
 
 			String materialId = request.getParameter("materialId");
-			
+			System.out.println("end purchaseOrderCreate:"+YSId+"时间:"+CalendarUtil.getSystemDate());
+
 			//以采购方案里的供应商为单位集计
 			ArrayList<HashMap<String, String>> supplierList = getSupplierList(YSId);
 					
@@ -404,6 +396,7 @@ public class PurchaseOrderService extends CommonService {
 			}
 			
 			ts.commit();
+			System.out.println("end purchaseOrderCreate:"+YSId+"时间:"+CalendarUtil.getSystemDate());
 		}
 		catch(Exception e) {
 			ts.rollback();

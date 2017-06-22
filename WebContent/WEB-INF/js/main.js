@@ -586,13 +586,13 @@ var currencyAarry = [
 	['€','欧元'],
 	['£','英镑'],
 	['¥','人民币'],
-	['￥','日元'],
+	['¥','日元'],
 	['$','新加坡']
 	
 ];
 
 function getCurrencySymbol(curr){
-	var rtn = '￥';//默认单位:人民币
+	var rtn = '¥';//默认单位:人民币
 	for(var i=0;i<currencyAarry.length;i++){
 		var val = currencyAarry[i][0];//取得货币符号:$,€...
 		var key = currencyAarry[i][1];//取得货币名称:美元,欧元...

@@ -162,7 +162,7 @@ public class DicTypeService extends BaseService {
 	
 	
 	public DicTypeModel doDelete(HttpServletRequest request, String formData, UserInfo userInfo) {
-		
+
 
 		DbUpdateEjb bean = new DbUpdateEjb();
 		DicTypeModel model = new DicTypeModel();
@@ -177,6 +177,7 @@ public class DicTypeService extends BaseService {
 		}
 		
 		return model;
+
 
 	}
 	

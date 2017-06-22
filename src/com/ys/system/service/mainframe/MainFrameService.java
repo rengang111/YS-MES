@@ -2,12 +2,11 @@ package com.ys.system.service.mainframe;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
-import com.ys.business.service.material.MatCategoryService;
+import com.ys.business.service.order.MatCategoryService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.util.basequery.common.Constants;
 import com.ys.system.common.BusinessConstants;
@@ -19,7 +18,6 @@ import com.ys.system.interceptor.DicInfo;
 import com.ys.system.interceptor.MenuInfo;
 import com.ys.system.service.common.MakeTreeStyleData;
 import com.ys.system.service.role.RoleMenuService;
-import com.ys.business.service.material.MatCategoryService;
 
 @Service
 public class MainFrameService {

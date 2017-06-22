@@ -29,6 +29,7 @@ public class DicUtil {
 	public static final String DELIVERYPORT = "目的港";
 	public static final String MANAGEMENTRATE = "经管费率";
 	public static final String BUSINESSTEAM = "业务组";
+	public static final String ORDERCOMPANY = "下单公司";
 
 	public static final String PRODUCTMODEL = "产品型号";
 	public static final String CONFIRMRESULT = "确认结果";//合格/不合格

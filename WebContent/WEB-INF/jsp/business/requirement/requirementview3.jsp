@@ -828,21 +828,13 @@ function requirementAjax() {
 				"type" : "POST",
 				"data" : null,
 				success: function(data){
-					fnCallback(data);
-					//autocomplete();//
-					//foucsInit();//input获取焦点初始化处理
-					// $(".DTFC_Cloned").css('width','100%');
-					
-					
+					fnCallback(data);				
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	             }
 			})
 		},
-		"fnHeaderCallback": function( nHead, aData, iStart, iEnd, aiDisplay ) {
-		      //nHead.getElementsByTagName('th')[0].innerHTML = "Displaying "+(iEnd-iStart)+" records";
-		     // nHead.getElementsByTagName('th')[0].css('width','30px');
-		 },
+		
        	"language": {
        		"url":"${ctx}/plugins/datatables/chinese.json"
        	},

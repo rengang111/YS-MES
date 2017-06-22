@@ -4,15 +4,7 @@
 package com.ys.business.action.album;
 
 import java.io.File;
-import java.net.BindException;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,33 +12,24 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.ys.business.action.model.common.AlbumInfo;
-import com.ys.business.action.model.contact.ContactModel;
+import com.ys.business.action.model.order.ContactModel;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.common.BusinessConstants;
 import com.ys.system.service.common.I_BaseService;
 import com.ys.system.service.common.I_MultiAlbumService;
 import com.ys.util.CommonUtil;
 import com.ys.util.UploadReceiver;
-import com.ys.business.service.externalsample.ExternalSampleService;
 
 /**
  * 

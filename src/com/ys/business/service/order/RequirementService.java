@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
@@ -38,10 +39,9 @@ import com.ys.business.db.data.B_OrderBomData;
 import com.ys.business.db.data.B_OrderBomDetailData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
-import com.ys.business.db.data.B_QuotationData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
-import com.ys.business.service.material.CommonService;
+import com.ys.business.service.order.CommonService;
 
 @Service
 public class RequirementService extends CommonService {
@@ -441,30 +441,9 @@ public class RequirementService extends CommonService {
 	public void createOrderBom() throws Exception {
 
 		B_OrderBomData reqBom = reqModel.getOrderBom();
-		String materialId = reqBom.getMaterialid();
 		String YSId = reqBom.getYsid();	
-		String bomId = reqBom.getBomid();
-		
-		if(YSId != null && !("").equals(YSId)){
-			//已经存在的,先删除
-			deleteOrderBom(YSId);
-		}
-		
-		if(bomId != null && !("").equals(bomId)){
-			//已经存在的,先删除
-			deleteBomDetail(bomId);
-		}
-		
-		//取得订单BOM的编号
-		B_OrderBomData order = getMAXOrderBomId (materialId);	
-		bomId = order.getBomid();
-		
-		model.addAttribute("bomId",bomId);
 
-		//创建订单BOM
-		order.setYsid(YSId);
-		order.setMaterialid(materialId);
-		createOrderBomFromBaseBom(order);
+		createOrderBomFromBaseBom();
 		
 		//取得订单信息
 		getOrderDetail(YSId);
@@ -571,7 +550,6 @@ public class RequirementService extends CommonService {
 		
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
-		//data.setMaterialid(req.getMaterialid());
 		dao.Create(data);			
 		
 	}
@@ -696,23 +674,35 @@ public class RequirementService extends CommonService {
 		}
 	}
 	
-	public void createOrderBomFromBaseBom(
-			B_OrderBomData order){
+	public void createOrderBomFromBaseBom(){
+		
 		ts = new BaseTransaction();
 
 		try {
 			ts.begin();
 
-			//删除旧数据
-			String bomId = order.getBomid();
-			//String materialId = order.getMaterialid();
-			//String YSId = order.getYsid();
-			//deleteOrderBom(YSId);
-			//deleteBomDetail(bomId);
-
-			//基础BOM编号
-			//String baseMaterialId =BusinessService.getBaseBomId(materialId)[1];
+			B_OrderBomData reqBom = reqModel.getOrderBom();
+			String materialId = reqBom.getMaterialid();
+			String YSId = reqBom.getYsid();	
+			String bomId = reqBom.getBomid();
+			System.out.println("start createOrderBomFromBaseBom:"+YSId+"时间:"+CalendarUtil.getSystemDate());
+			if(YSId != null && !("").equals(YSId)){
+				//已经存在的,先删除
+				deleteOrderBom(YSId);
+			}
 			
+			if(bomId != null && !("").equals(bomId)){
+				//已经存在的,先删除
+				deleteBomDetail(bomId);
+			}
+			
+			//取得订单BOM的编号
+			B_OrderBomData order = getMAXOrderBomId (materialId);	
+			bomId = order.getBomid();			
+
+			//创建订单BOM
+			order.setYsid(YSId);
+			order.setMaterialid(materialId);			
 			insertOrderBom(order);
 			
 			List<B_OrderBomDetailData> list = reqModel.getBomDetailList();
@@ -725,16 +715,11 @@ public class RequirementService extends CommonService {
 				}
 			}
 			
-
-			//订单BOM做成
-			//insertOrderBom2(order,baseMaterialId);
-
-
-			//订单BOM详情做成
-			//insertOrderBomDetail2(bomId,baseMaterialId);
-			
 			ts.commit();
 			
+			model.addAttribute("bomId",bomId);
+
+			System.out.println("end createOrderBomFromBaseBom:"+YSId+"时间:"+CalendarUtil.getSystemDate());
 		}
 		catch(Exception e) {
 			try {
@@ -790,7 +775,8 @@ public class RequirementService extends CommonService {
 			String materialId = reqBom.getMaterialid();
 
 			String bomId = BusinessService.getBaseBomId(materialId)[1];
-			
+			System.out.println("start insertProcurementPlan:"+YSId+"时间:"+CalendarUtil.getSystemDate());
+
 			
 			//BOM详情
 			//采购方案详情		
@@ -870,6 +856,7 @@ public class RequirementService extends CommonService {
 			*/
 			
 			ts.commit();
+			System.out.println("end insertProcurementPlan:"+YSId+"时间:"+CalendarUtil.getSystemDate());
 			
 		}
 		catch(Exception e) {
@@ -965,7 +952,10 @@ public class RequirementService extends CommonService {
 
 		ts = new BaseTransaction();
 		try {
-			ts.begin();
+			ts.begin();	
+			
+			System.out.println("start createOrderBom:"+YSId+"时间:"+CalendarUtil.getSystemDate());
+
 		
 			//取得订单BOM编号
 			B_OrderBomData order = getMAXOrderBomId (materialId) ;	
@@ -1004,6 +994,7 @@ public class RequirementService extends CommonService {
 				
 			}
 			ts.commit();
+			System.out.println("end createOrderBom:"+YSId+"时间:"+CalendarUtil.getSystemDate());
 			
 		}catch(Exception e){
 			ts.rollback();
@@ -1483,7 +1474,7 @@ public class RequirementService extends CommonService {
 		ArrayList<HashMap<String, String>> list = 
 				new  ArrayList<HashMap<String, String>>();		
 			
-		int orderNum = Integer.parseInt(order.replace(",", ""));
+		float orderNum = Float.parseFloat(order.replace(",", ""));
 		
 		ArrayList<HashMap<String, String>> zzmaterial = 
 				(ArrayList<HashMap<String, String>>) getZZMaterial(bomId).get("data");		
@@ -1503,6 +1494,7 @@ public class RequirementService extends CommonService {
 
 			map.put("orderQuantity", String.valueOf(orderQuantity));
 			map.put("purchaseQuantity", String.valueOf(purchaseQuantiy));
+			map.put("unitQuantity", String.valueOf(freqQuantiy / fconvertUnit));//单位使用量
 			
 			list.add(map);
 			rowNum++;
@@ -1541,6 +1533,7 @@ public class RequirementService extends CommonService {
 			
 			map.put("orderQuantity", String.valueOf(orderQuantity));//订单需求量
 			map.put("purchaseQuantity", String.valueOf(purchaseQuantiy));//建议采购量
+			map.put("unitQuantity", map.get("quantity"));//单位使用量
 			map.put("rownum", String.valueOf(rowNum));
 			list.add(map);	
 			rowNum++;			
@@ -1814,7 +1807,7 @@ public class RequirementService extends CommonService {
 	}
 	
 
-	public void getPurchasePlan() throws Exception {
+	public void  getPurchasePlan() throws Exception {
 		
 		String YSId = request.getParameter("YSId");	
 			
@@ -1824,6 +1817,16 @@ public class RequirementService extends CommonService {
 		
 	}
 	
+	public HashMap<String, Object> PurchasePlanView() throws Exception {
+		
+		String YSId = request.getParameter("YSId");	
+			
+		return getPurchaseDetail(YSId);	
+
+		//getOrderDetail(YSId);
+		
+	}
+
 	public void editRequirement() throws Exception {
 		
 		String YSId = request.getParameter("YSId");

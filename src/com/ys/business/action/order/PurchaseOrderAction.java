@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.order.PurchaseOrderModel;
-import com.ys.business.action.model.order.RequirementModel;
 import com.ys.business.service.order.PurchaseOrderService;
-import com.ys.business.service.order.RequirementService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.Constants;
@@ -131,19 +129,18 @@ public class PurchaseOrderAction extends BaseAction {
 		return rtnUrl;		
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void doInit(){	
 			
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeValue(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD1);
-			session.removeValue(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD2);
 		}
 		
 	}
 	
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearch(
 			@RequestBody String data){
 		
@@ -153,8 +150,8 @@ public class PurchaseOrderAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeValue(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD1);
-			session.removeValue(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD2);
 			
 		}
 		try {

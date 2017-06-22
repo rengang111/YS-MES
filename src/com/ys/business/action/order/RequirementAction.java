@@ -84,9 +84,14 @@ public class RequirementAction extends BaseAction {
 				rtnUrl = "/business/requirement/requirementview";
 				break;					
 			case "purchasePlanView":
-				purchasePlanView();
+				dataMap = purchasePlanView();
 				printOutJsonObj(response, dataMap);
-				rtnUrl = "/business/requirement/purchaseplanview";
+				//rtnUrl = "/business/requirement/requirementview3";
+				break;					
+			case "getPurchasePlan":
+				dataMap = purchasePlanView();
+				printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/requirement/requirementview3";
 				break;
 			case "editRequirement"://编辑采购方案
 				doEditRequirement();
@@ -200,14 +205,13 @@ public class RequirementAction extends BaseAction {
 		return rtnUrl;		
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void doInit(String formId){	
 			
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeValue(formId+Constants.FORM_KEYWORD1);
-			session.removeValue(formId+Constants.FORM_KEYWORD2);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 		}
 		
 	}
@@ -236,33 +240,31 @@ public class RequirementAction extends BaseAction {
 		return dataMap;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public HashMap<String, Object> getPurchasePlanList(String data) throws Exception{
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeValue(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD1);
-			session.removeValue(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD2);
 			
 		}
 		return service.getPurchasePlanList(data);
 			
 	}
 
-	public void purchasePlanView() throws Exception {
+	public HashMap<String, Object> purchasePlanView() throws Exception {
 		
-		service.getPurchasePlan();		
+		return service.PurchasePlanView();		
 		
 	}		
 	
 	
-	@SuppressWarnings("deprecation")
 	public HashMap<String, Object> getOrderBomList(String data) throws Exception{
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeValue(Constants.FORM_ORDERBOM+Constants.FORM_KEYWORD1);
-			session.removeValue(Constants.FORM_ORDERBOM+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_ORDERBOM+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_ORDERBOM+Constants.FORM_KEYWORD2);
 			
 		}
 		return service.getOrderBomList(data);

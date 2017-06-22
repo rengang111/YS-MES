@@ -16,12 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.system.action.common.BaseAction;
-import com.ys.business.action.model.material.MaterialModel;
-import com.ys.business.action.model.order.BomModel;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.Constants;
-import com.ys.business.service.order.BomService;
 import com.ys.business.service.order.OrderService;
 import com.ys.system.action.model.login.UserInfo;
 
@@ -176,19 +173,18 @@ public class OrderAction extends BaseAction {
 		return mv;		
 	}
 */
-	@SuppressWarnings("deprecation")
 	public void doInit(HttpSession session){	
 			
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeValue(Constants.FORM_ORDER+Constants.FORM_KEYWORD1);
-			session.removeValue(Constants.FORM_ORDER+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_ORDER+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_ORDER+Constants.FORM_KEYWORD2);
 		}
 		
 	}
 	
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearchOrderList(@RequestBody String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -198,8 +194,8 @@ public class OrderAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeValue(Constants.FORM_ORDER+Constants.FORM_KEYWORD1);
-			session.removeValue(Constants.FORM_ORDER+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_ORDER+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_ORDER+Constants.FORM_KEYWORD2);
 			
 		}
 				
