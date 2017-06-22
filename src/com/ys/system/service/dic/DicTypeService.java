@@ -2,19 +2,28 @@ package com.ys.system.service.dic;
 
 import org.springframework.stereotype.Service;
 import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.action.model.user.UserModel;
+import com.ys.system.action.model.dic.DicModel;
 import com.ys.system.action.model.dic.DicTypeModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.system.db.dao.S_DICDao;
 import com.ys.system.db.dao.S_DICTYPEDao;
+import com.ys.system.db.data.S_DICData;
 import com.ys.system.db.data.S_DICTYPEData;
 import com.ys.system.ejb.DbUpdateEjb;
+import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basequery.BaseQuery;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class DicTypeService {
+public class DicTypeService extends BaseService {
  
 	public DicTypeModel doSearch(HttpServletRequest request, DicTypeModel dataModel, UserInfo userInfo) throws Exception {
 		
@@ -28,6 +37,54 @@ public class DicTypeService {
 		baseQuery.getQueryData();
 				
 		return dataModel;
+	}
+	
+	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		UserModel dataModel = new UserModel();
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryFileName("/dic/dicquerydefine");
+		dataModel.setQueryName("dictypequerydefine_search");
+		
+		String key = getJsonData(data, "dicTypeIdName");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("dicTypeIdName", key);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		ArrayList<HashMap<String, String>> userDataList = baseQuery.getYsQueryData(iStart, iEnd);	
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}
+		
+		modelMap.put("sEcho", sEcho); 
+		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
+		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
 	}
 
 	public DicTypeModel getDetail(HttpServletRequest request) throws Exception {
@@ -50,33 +107,80 @@ public class DicTypeService {
 	
 	}
 	
-	public void doAdd(HttpServletRequest request, DicTypeModel dicTypeModel, UserInfo userInfo) throws Exception {
+	public DicTypeModel doUpdate(HttpServletRequest request, String formData, UserInfo userInfo, boolean isAdd) {
 		S_DICTYPEDao dao = new S_DICTYPEDao();
+		S_DICTYPEData data = new S_DICTYPEData();
+		DicTypeModel model = new DicTypeModel();
 		
-		S_DICTYPEData data = dicTypeModel.getdicTypeData();
-		data = updateModifyInfo(dicTypeModel.getdicTypeData(), userInfo);
-		data = setEnableFlag(data);
-		dao.Create(data);
-	}	
-	
-	public void doUpdate(HttpServletRequest request, DicTypeModel dicTypeModel, UserInfo userInfo) throws Exception {
-		String updateSrcDicTypeId = request.getParameter("dicTypeId");
-		dicTypeModel.setdicTypeData(setEnableFlag(dicTypeModel.getdicTypeData()));
+		try {
+			String dicTypeId = getJsonData(formData, "dicTypeId");
+			String dictypeid = getJsonData(formData, "dictypeid");
+			String dictypename = getJsonData(formData, "dictypename");
+			String dictypelevel = getJsonData(formData, "dictypelevel");
+			String dicselectedflag = getJsonData(formData, "dicselectedflag");
+			String sortno = getJsonData(formData, "sortno");
+			String enableflag = getJsonData(formData, "enableflag");
+			
+			if (isAdd) {
+				data.setDictypeid(dictypeid);
+			} else {
+				data.setDictypeid(dictypeid);
+				data = (S_DICTYPEData)dao.FindByPrimaryKey(data);
+			}
+
+			data.setDictypename(dictypename);
+			data.setDictypelevel(dictypelevel);
+			data.setDictypelevel(dictypelevel);
+			data.setDicselectedflag(dicselectedflag);
+			data.setEnableflag(enableflag);
+			if (sortno != null && !sortno.equals("")) {
+				data.setSortno(Integer.parseInt(sortno));
+			} else {
+				data.setSortno(0);
+			}
 		
-		DbUpdateEjb bean = new DbUpdateEjb();
-                
-        bean.executeDicTypeUpdate(dicTypeModel, updateSrcDicTypeId, userInfo);
+			data = updateModifyInfo(data, userInfo);
+		
+			if (isAdd) {
+				dao.Create(data);
+			} else {
+				//dao.Store(data);
+				DbUpdateEjb bean = new DbUpdateEjb();
+		                
+		        bean.executeDicTypeUpdate(data, dicTypeId, userInfo);
+			}
+			
+			model.setEndInfoMap(BaseService.NORMAL, "", dicTypeId);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
+		}
+		
+		return model;
 	}
 	
-	public void doDelete(DicTypeModel DicTypeModel, UserInfo userInfo) throws Exception {
+	
+	public DicTypeModel doDelete(HttpServletRequest request, String formData, UserInfo userInfo) {
 		
-        DbUpdateEjb bean = new DbUpdateEjb();
-        
-        bean.executeDicTypeDelete(DicTypeModel, userInfo);
+
+		DbUpdateEjb bean = new DbUpdateEjb();
+		DicTypeModel model = new DicTypeModel();
+		
+		try {
+			bean.executeDicTypeDelete(formData, userInfo);
+			model.setEndInfoMap(BaseService.NORMAL, "", "");
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			model.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
+		}
+		
+		return model;
 
 	}
 	
-	public int preCheck(HttpServletRequest request, String operType) throws Exception {
+	public int preCheck(String formData, String operType) throws Exception {
 		S_DICTYPEDao dao = new S_DICTYPEDao();
 		S_DICTYPEData data = new S_DICTYPEData();
 		
@@ -85,7 +189,7 @@ public class DicTypeService {
 		
 		try {
 
-			data.setDictypeid(request.getParameter("dicTypeData.dictypeid"));
+			data.setDictypeid(getJsonData(formData, "dictypeid"));
 			data = (S_DICTYPEData)dao.FindByPrimaryKey(data);
 			isExists = true;
 		}
@@ -99,7 +203,7 @@ public class DicTypeService {
 				result = 1;
 			}
 		} else {
-			String updateSrcDicTypeId = request.getParameter("dicTypeId");
+			String updateSrcDicTypeId = getJsonData(formData, "dicTypeId");
 			if (isExists) {
 				if (!data.getDictypeid().equals(updateSrcDicTypeId)) {
 					//dicid已存在

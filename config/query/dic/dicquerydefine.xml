@@ -57,6 +57,7 @@
     </where>
     <select>
       <f name="a.DicID" alias="" ctype="" />
+      <f name="a.DicTypeID" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->

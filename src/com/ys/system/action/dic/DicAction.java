@@ -1,5 +1,8 @@
 package com.ys.system.action.dic;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -8,13 +11,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.action.model.power.PowerModel;
+import com.ys.system.action.model.user.UserModel;
 import com.ys.system.action.model.dic.DicModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.Constants;
 import com.ys.system.db.data.S_DICData;
+import com.ys.system.service.common.BaseService;
 import com.ys.system.service.dic.DicService;
 import com.ys.util.DicUtil;
 
@@ -26,9 +33,12 @@ public class DicAction extends BaseAction {
 	DicService dicService;
 	
 	@RequestMapping("/diccode")
-	public String execute(@ModelAttribute("dataModels")DicModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	//public String execute(@ModelAttribute("dataModels")DicModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public String doInit(@RequestBody String data, @ModelAttribute("dataModels")DicModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		String type = request.getParameter("methodtype");
 		String rtnUrl = "";
+		HashMap<String, Object> dataMap = null;
+		DicModel viewModel = null;
 		
 		if (type == null) {
 			type = "";
@@ -45,20 +55,24 @@ public class DicAction extends BaseAction {
 				rtnUrl = "/dic/dicmain";
 				break;
 			case "search":
-				rtnUrl = doSearch(dataModel, result,  model, session, request, response);
-				break;
+				dataMap = doSearch(data, session, request, response);
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "updateinit":
 				rtnUrl = doUpdateInit(model, session, request, response);
 				break;
 			case "update":
-				rtnUrl = doUpdate(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doUpdate(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "add":
-				rtnUrl = doAdd(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doAdd(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "delete":
-				rtnUrl = doDelete(dataModel, result, model, session, request, response);
-				break;
+				viewModel = doDelete(data, session, request);
+				printOutJsonObj(response, viewModel.getEndInfoMap());
+				return null;
 			case "detail":
 				rtnUrl = doDetail(model, session, request, response);
 				break;
@@ -67,29 +81,33 @@ public class DicAction extends BaseAction {
 		return rtnUrl;
 	}	
 	
-	public String doSearch(DicModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-		
+	public HashMap<String, Object> doSearch(String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dataModel = dicService.doSearch(request, dataModel, userInfo);
-			if (dataModel.getViewData().size() == 0) {
-				dataModel.setMessage("无符合条件的数据");
+			dataMap = dicService.doSearch(request, data, userInfo);
+			ArrayList<HashMap<String, String>> dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
 			}
+
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("检索失败");
+			dataMap.put(INFO, ERRMSG);
 		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/dic/dicmain";
+		
+		return dataMap;
 	}
 
 	public String doUpdateInit(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 
 		DicModel dataModel = new DicModel();
 		String operType = request.getParameter("operType");
+		String index = request.getParameter("index");
 		try {
-
+			
 			if (operType.equals("update")) {
 				dataModel = dicService.getDetail(request);
 			}
@@ -114,6 +132,7 @@ public class DicAction extends BaseAction {
 			}
 			dataModel.setOperType(operType);	
 			dataModel.setIsOnlyView("");
+			dataModel.setIndex(index);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -124,89 +143,74 @@ public class DicAction extends BaseAction {
 		return "/dic/dicedit";
 	}	
 	
-	public String doUpdate(DicModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public DicModel doUpdate(String data, HttpSession session, HttpServletRequest request){
+		
+		DicModel dataModel = new DicModel();
 		
 		try {
-			dataModel.setUpdatedRecordCount(0);
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 			
-			int preCheckResult = dicService.preCheck(request, "update");
+			int preCheckResult = dicService.preCheck(data, "update");
 			switch(preCheckResult) {
 			case 0:
-				dicService.doUpdate(request, dataModel, userInfo);
-				dataModel.setUpdatedRecordCount(1);
-				dataModel.setOperType("update");
-				dataModel.setMessage("更新成功");
-				DicUtil.emptyBuffer(false);
+				dataModel = dicService.doUpdate(request, data, userInfo, false);
+				DicUtil.emptyBuffer(true);
 				break;
 			case 1:
-				dataModel.setMessage("代码已存在");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "代码已存在", "");
 				break;				
 			case 2:
-				dataModel.setMessage("代码已存在");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "代码已存在", "");
 				break;
 			}			
 			
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("更新失败");
+			dataModel.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
 		}
 		
-		model.addAttribute("DisplayData", dataModel);
-		return "/dic/dicedit";
+		return dataModel;
 	}	
 
-	public String doAdd(DicModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
-
+	public DicModel doAdd(String data, HttpSession session, HttpServletRequest request){
+		DicModel dataModel = new DicModel();
 		try {
-			dataModel.setUpdatedRecordCount(0);
+
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		
-			int preCheckResult = dicService.preCheck(request, "add");
+			int preCheckResult = dicService.preCheck(data, "add");
 			switch(preCheckResult) {
 			case 0:
-				dataModel.setOperType("add");
-				dicService.doAdd(request, dataModel, userInfo);
-				dataModel.setUpdatedRecordCount(1);
-				dataModel.setMessage("增加成功");
-				DicUtil.emptyBuffer(false);
+				dataModel = dicService.doUpdate(request, data, userInfo, true);
+				DicUtil.emptyBuffer(true);
 				break;
 			case 1:
-				dataModel.setMessage("代码已存在");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "代码已存在", "");
 				break;				
 			case 2:
-				dataModel.setMessage("代码已存在");
+				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "代码已存在", "");
 				break;
 			}
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			dataModel.setMessage("增加失败");
+			dataModel.setEndInfoMap(BaseService.SYSTEMERROR, "", "");
 		}
-		model.addAttribute("DisplayData", dataModel);
 		
-		return "/dic/dicedit";
+		return dataModel;
 	}	
 	
-	public String doDelete(DicModel dataModel, BindingResult result, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	public DicModel doDelete(String data, HttpSession session, HttpServletRequest request){
+		
+		DicModel dataModel = new DicModel();
 
-		try {
-			dataModel.setUpdatedRecordCount(0);
-			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			dicService.doDelete(request, dataModel, userInfo);
-			dataModel.setUpdatedRecordCount(1);
-			dataModel.setOperType("delete");
-			dataModel.setMessage("删除成功");
-			DicUtil.emptyBuffer(false);
-			dataModel = dicService.doSearch(request, dataModel, userInfo);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataModel.setMessage("删除失败");
-		}
-		model.addAttribute("DisplayData", dataModel);
-		return "/dic/dicmain";
+		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		dataModel = dicService.doDelete(request, data, userInfo);
+		DicUtil.emptyBuffer(true);
+		dataModel.setOperType("delete");
+		
+		return dataModel;
 	}
 	
 	public String doDetail(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response){

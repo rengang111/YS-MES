@@ -65,7 +65,8 @@
 			</table>
 		</div>
 	</form>
-
+	</div>
+</div>
 </body>
 
 <script>

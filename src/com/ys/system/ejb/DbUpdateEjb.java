@@ -386,13 +386,11 @@ public class DbUpdateEjb  {
 		}			
 	}
 	
-	public void executeDicTypeUpdate(DicTypeModel dicTypeModel, String updateSrcDicTypeId, UserInfo userInfo) throws Exception {
-		
-		//UserTransaction ts = context.getUserTransaction();
+	public void executeDicTypeUpdate(S_DICTYPEData data, String updateSrcDicTypeId, UserInfo userInfo) throws Exception {
+		BaseService service = new BaseService();
 		ts = new BaseTransaction();
 		
 		S_DICTYPEDao dao = new S_DICTYPEDao();
-		S_DICTYPEData data = DicTypeService.updateModifyInfo(dicTypeModel.getdicTypeData(), userInfo);
 		
 		try {
 			ts.begin();
@@ -401,7 +399,7 @@ public class DbUpdateEjb  {
 			if (!data.getDictypeid().equals(updateSrcDicTypeId)) {
 				//dicid变更
 				StringBuffer sql = new StringBuffer();
-				sql.append("UPDATE s_dic SET DicTypeID = '" + dicTypeModel.getdicTypeData().getDictypeid() + "' ");
+				sql.append("UPDATE s_dic SET DicTypeID = '" + data.getDictypeid() + "' ");
 				sql.append(", ModifyTime = '" + CalendarUtil.fmtDate() + "'");
 				sql.append(", ModifyPerson = '" + userInfo.getUserId() + "'");
 				sql.append(" WHERE DicTypeID = '" + updateSrcDicTypeId + "' AND DeleteFlag = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
@@ -427,8 +425,8 @@ public class DbUpdateEjb  {
 		try {
 			ts.begin();
 			String removeData[] = formData.split(",");
-			for (String menuId:removeData) {
-				count = deleteDicChain(request, menuId, userInfo, count);
+			for (String dicId:removeData) {
+				count = deleteDicChain(request, dicId, userInfo, count);
 			}
 			ts.commit();
 		}
@@ -438,42 +436,44 @@ public class DbUpdateEjb  {
 		}		
 	}
 	
-	private int deleteDicChain(HttpServletRequest request, String dicId, UserInfo userInfo, int count) throws Exception {
+	private int deleteDicChain(HttpServletRequest request, String dicIdType, UserInfo userInfo, int count) throws Exception {
 			BaseModel dataModel = new BaseModel();
 			ArrayList<ArrayList<String>> dicDataList;
 			new StringBuffer("");
 		S_DICData data = new S_DICData();
+		S_DICDao dao = new S_DICDao();
 		
     	//UserTransaction ts = context.getUserTransaction();
-		ts = new BaseTransaction();
+		//ts = new BaseTransaction();
+		String dicId = dicIdType.split("--")[0];
+		String dicType = dicIdType.split("--")[1];
+		//ts.begin();
 		try {
-    		ts.begin();
 			data.setDicid(dicId);
-			S_DICDao dao = new S_DICDao(data);
-			data = DicService.updateModifyInfo(dao.beanData, userInfo);
+			data.setDictypeid(dicType);
+			data = (S_DICData)dao.FindByPrimaryKey(data);
+			data = DicService.updateModifyInfo(data, userInfo);
 			data.setDeleteflag(BusinessConstants.DELETEFLG_DELETED);
 			dao.Store(data);
-			count++;
+		}
+		catch(Exception e) {
 			
-			dataModel.setQueryFileName("/dic/dicquerydefine");
-			dataModel.setQueryName("dicquerydefine_searchfordelete");
-			BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		}
+		
+		dataModel.setQueryFileName("/dic/dicquerydefine");
+		dataModel.setQueryName("dicquerydefine_searchfordelete");
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		
+		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
+		userDefinedSearchCase.put("dicId", dicId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		dicDataList = baseQuery.getFullData();		
+		
+		for(ArrayList<String> rowData:dicDataList) {
+			count = deleteDicChain(request, rowData.get(0) + "--" + rowData.get(1), userInfo, count);
+		}
 			
-			HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-			userDefinedSearchCase.put("dicId", dicId);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			dicDataList = baseQuery.getQueryData();		
-			
-			for(ArrayList<String> rowData:dicDataList) {
-				count = deleteDicChain(request, rowData.get(1), userInfo, count);
-			}
-			
-			ts.commit();
-    	}
-    	catch(Exception e) {
-    		ts.rollback();
-    		throw e;
-    	}
+
 		return count;
 	}
 	

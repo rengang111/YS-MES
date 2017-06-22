@@ -183,7 +183,7 @@ public class UserService extends BaseService {
 			data.setPwdquestion2(pwdquestion2);
 			data.setLockflag(lockflag);
 			if (enableflag.equals("")) {
-				data.setEnableendtime(null);
+				data.setEnableflag(null);
 			} else {
 				data.setEnableflag(enableflag);
 			}

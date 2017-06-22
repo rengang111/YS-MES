@@ -10,6 +10,7 @@ public class DicModel extends BaseModel {
 	private String dicTypeName = "";
 	private String dicParentName = "";
 	private String numCheck = "";
+	private String index = "";
 	private S_DICData dicData = new S_DICData();
 	
 	public String getDicTypeIdName() {
@@ -52,6 +53,12 @@ public class DicModel extends BaseModel {
 	}
 	public void setNumCheck(String numCheck) {
 		this.numCheck = numCheck;
+	}
+	public String getIndex() {
+		return this.index;
+	}
+	public void setIndex(String index) {
+		this.index = index;
 	}
 	public S_DICData getdicData() {
 		return this.dicData;
