@@ -1,13 +1,3 @@
-function today() {
-	var mydate = new Date();
-	var str = "" + mydate.getFullYear() + "-";
-	str += (mydate.getMonth() + 1) + "-";
-	str +=  mydate.getDate() ;
-	
-	return "'" +str+ "'";
-
-};
-
 
 function nopermit(){
 	$().toastmessage('showWarningToast', "您没有相应权限！");	

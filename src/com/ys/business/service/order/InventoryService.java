@@ -15,7 +15,6 @@ import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
@@ -25,7 +24,7 @@ import com.ys.util.basequery.BaseQuery;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
-public class InventoryService extends BaseService {
+public class InventoryService extends CommonService {
  
 	DicUtil util = new DicUtil();
 	BaseTransaction ts;
@@ -62,6 +61,9 @@ public class InventoryService extends BaseService {
 		modelMap = new HashMap<String, Object>();
 		userDefinedSearchCase = new HashMap<String, String>();
 		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		super.request = request;
+		super.userInfo = userInfo;
+		super.session = session;
 		
 	}
 	public HashMap<String, Object> doSearch( String data) throws Exception {
@@ -72,13 +74,12 @@ public class InventoryService extends BaseService {
 		String sEcho = "";
 		String start = "";
 		String length = "";
-		String key1 = "";
-		String key2 = "";
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
-		key1 = getJsonData(data, "keyword1").toUpperCase();
-		key2 = getJsonData(data, "keyword2").toUpperCase();
+		String[] keyArr = getSearchKey(Constants.FORM_RECEIVEINSPECTION,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
 		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		

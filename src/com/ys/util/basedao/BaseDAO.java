@@ -160,7 +160,7 @@ public class BaseDAO {
 					connection = DataSourceUtils.getConnection(dataSource);
 					 //DataSourceUtil util = new DatasourceUtil();
 
-					showConnPoolInfo(dataSource);
+					//showConnPoolInfo(dataSource);
 				        
 					//Context ctx = new InitialContext();
 					//通过JNDI查找DataSource  

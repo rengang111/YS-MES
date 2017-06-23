@@ -20,7 +20,39 @@
 		if(table) {
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/arrival?methodtype=search&pageFlg="+pageFlg;
+		
+var url = "${ctx}/business/receiveinspection?methodtype=search";
+		
+		var type = pageFlg;
+		
+		if(type == '0'){
+			//未检验
+			$("#keyword1").val("");
+			$("#keyword2").val("");
+			//url += "&result=0"+"&purchaseDate1="+shortToday();
+			
+		}else if(type == '1'){
+			//合格
+			$("#keyword1").val("");
+			$("#keyword2").val("");
+			url += "&result=020";
+			
+		}else if(type == '2'){
+			//让步接收
+			$("#keyword1").val("");
+			$("#keyword2").val("");
+			url += "&result=030";
+			
+		}else if(type == '3'){
+			//退货
+			$("#keyword1").val("");
+			$("#keyword2").val("");
+			url += "&result=040";			
+		}
+
+		url += "&keyBackup="+pageFlg;
+		//alert(type+"----"+url)
+		//var url = "${ctx}/business/receiveinspection?methodtype=search&pageFlg="+pageFlg;
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -66,31 +98,38 @@
 	        	},
 				"columns": [
 					{"data": null,"className" : 'td-center'},
-					{"data": "arriveDate","className" : 'td-center'},
-					{"data": "YSId"},
-					{"data": "contractId"},
-					{"data": "arrivalId"},
 					{"data": "materialId"},
 					{"data": "materialName"},
+					{"data": "arrivalId"},
+					{"data": "arriveDate","className" : 'td-center'},
+					{"data": "contractId"},
+					{"data": "YSId"},
 					{"data": "quantity","className" : 'td-right'},
-					{"data": "status","className" : 'td-center'},
+					{"data": "resultName","className" : 'td-center'},
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
                     }},
-		    		{"targets":5,"render":function(data, type, row){
+		    		{"targets":1,"render":function(data, type, row){
 
 		    			var materialId = row["materialId"];	
 		    			var arrivalId = row["arrivalId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + row["arrivalId"] + "')\">"+materialId+"</a>";
+		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + arrivalId + "','" + materialId + "')\">"+materialId+"</a>";
 		    			return rtn;
 		    		}},
-		    		{"targets":6,"render":function(data, type, row){
+		    		{"targets":2,"render":function(data, type, row){
 		    			
 		    			var name = row["materialName"];				    			
 		    			name = jQuery.fixedWidth(name,35);				    			
 		    			return name;
+		    		}},
+		    		{"targets":6,"render":function(data, type, row){
+		    			
+		    			var contractId = row["contractId"];
+		    			var YSId = contractId.split('-',1);
+		    							    			
+		    			return YSId;
 		    		}}
 	           
 	         ] 
@@ -124,65 +163,15 @@
 
 	}
 	
-	function doCreate() {
-		
-		var url = '${ctx}/business/iqc?methodtype=addinit';
-		location.href = url;
-	}
+
 	
-	function doShow(arrivalId) {
+	function doShow(arrivalId,materialId) {
 
-		var url = '${ctx}/business/iqc?methodtype=addinit';
+		var url = '${ctx}/business/receiveinspection?methodtype=addinit&materialId='+materialId+'&arrivalId='+arrivalId;
 		location.href = url;
 		
 	}
 
-	function doEdit(recordId,parentId) {
-		var str = '';
-		var isFirstRow = true;
-		var url = '${ctx}/business/material?methodtype=edit&parentId=' + parentId+'&recordId='+recordId;
-
-		location.href = url;
-	}
-		
-	function doDelete() {
-
-		var str = '';
-		$("input[name='numCheck']").each(function(){
-			if ($(this).prop('checked')) {
-				str += $(this).val() + ",";
-			}
-		});
-
-		if (str != '') {
-			if(confirm("确定要删除数据吗？")) {
-				jQuery.ajax({
-					type : 'POST',
-					async: false,
-					contentType : 'application/json',
-					dataType : 'json',
-					data : str,
-					url : "${ctx}/business/arrival?methodtype=delete",
-					success : function(data) {
-						reload();						
-					},
-					error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				});
-			}
-		} else {
-			alert("请至少选择一条数据");
-		}
-		
-	}
-
-	function reload() {
-		
-		$('#TMaterial').DataTable().ajax.reload(null,false);
-		
-		return true;
-	}
-	
 	
 </script>
 </head>
@@ -216,22 +205,23 @@
 	<div  style="height:10px"></div>
 
 	<div class="list">
-
-		<div align="right" style="height:40px">
-			<a class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>新建</span></a>
-			<a class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a>
+		<div id="DTTT_container" align="left" style="height:40px;width:50%">
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0');">未检验</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1');">合格</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2');">让步接收</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('3');">退货</a>
 		</div>
 		<div id="clear"></div>
 		<table id="TMaterial" class="display dataTable">
 			<thead>						
 				<tr>
 					<th style="width: 1px;" class="dt-middle ">No</th>
-					<th style="width: 60px;" class="dt-middle">到货日期</th>
-					<th style="width: 60px;" class="dt-middle">耀升编号</th>
-					<th style="width: 95px;" class="dt-middle">合同编号</th>
-					<th style="width: 50px;" class="dt-middle">到货登记</th>
 					<th style="width: 170px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
+					<th style="width: 50px;" class="dt-middle">到货编号</th>
+					<th style="width: 60px;" class="dt-middle">到货日期</th>
+					<th style="width: 95px;" class="dt-middle">合同编号</th>
+					<th style="width: 60px;" class="dt-middle">耀升编号</th>
 					<th style="width: 60px;" class="dt-middle ">到货数量</th>
 					<th style="width: 40px;" class="dt-middle ">状态</th>
 				</tr>

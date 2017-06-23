@@ -539,4 +539,22 @@ public class CommonService extends BaseService {
 		return rtn;		
 	}
 	
+	/**
+	 * 换行符转换
+	 * @param mystr
+	 * @return
+	 */
+	public String replaceTextArea(String str) {
+		if (str == null || str == "") {
+			return ("&nbsp;");
+		} else {
+			str = str.replace("\n\r", "<br>");
+			str = str.replace("\r\n", "<br>");
+			str = str.replace("\r", "<br>");
+			str = str.replace("\t", "  ");
+			//str = str.replace(" ", "&nbsp;");
+			//mystr = mystr.replace("\"", "\\"+"\"");
+			return (str);
+		}
+	}
 }

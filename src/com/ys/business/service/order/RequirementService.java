@@ -1297,7 +1297,7 @@ public class RequirementService extends CommonService {
 		
 		baseQuery = new BaseQuery(request, dataModel);
 
-		userDefinedSearchCase.put("keyword1", YSId);
+		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
 		modelMap = baseQuery.getYsFullData();
 		

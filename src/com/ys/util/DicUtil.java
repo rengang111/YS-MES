@@ -47,6 +47,7 @@ public class DicUtil {
 	public static final String PORT = "B3";
 	public static final String SUPPLIER_TYPE = "供应商类型";
 	public static final String MOULDBELONG = "模具归属";
+	public static final String RECEIVEINSPECTION = "报检状态";
 	//HashMap通过id查找
 	private static HashMap<String,String> dicMapViaId = new HashMap<String, String>();
 	//HashMap通过类型查找

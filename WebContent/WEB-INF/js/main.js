@@ -154,7 +154,19 @@ function today() {
 	var d = format(mydate.getDate());
 	var h = format(mydate.getHours());	
 	var n = format(mydate.getMinutes());	
-	var s = format(mydate.getSeconds());		
+	var s = format(mydate.getSeconds());
+	return y+'-'+m+'-'+d+' '+h+':'+n+':'+s;
+};
+
+
+function fullToday() {
+	var mydate = new Date();
+	var y = format(mydate.getFullYear());
+	var m = format((mydate.getMonth() + 1));
+	var d = format(mydate.getDate());
+	var h = format(mydate.getHours());	
+	var n = format(mydate.getMinutes());	
+	var s = format(mydate.getSeconds());	
 	return y+'-'+m+'-'+d+' '+h+':'+n+':'+s;
 };
 
@@ -650,3 +662,27 @@ function stringPadAfter(value,len){
 	return value+str;
 }
 
+
+function replaceTextarea(str){
+	var reg=new RegExp("<br>","g");
+	var reg1=new RegExp("<p>","g");
+	var reg2=new RegExp("&quot;","g");
+	var reg3=new RegExp("&apos;","g");
+
+	str = str.replace(reg,"\r\n");
+	str = str.replace(reg1," ");
+	str = str.replace(reg2,"\"");
+	str = str.replace(reg3,"\'");
+
+	return str;
+} 
+
+function replaceTextarea1(str){
+var reg=new RegExp("\r\n","g");
+var reg1=new RegExp(" ","g");
+
+str = str.replace(reg,"＜br＞");
+str = str.replace(reg1,"＜p＞");
+
+return str;
+}

@@ -28,6 +28,7 @@ public class Constants {
 	public static final String FORM_ORDERBOM= "orderbom";//订单BOM管理
 	public static final String FORM_PURCHASEPLAN= "purchaseplan";//采购方案
 	public static final String FORM_PURCHASEORDER= "purchaseorder";//采购合同
+	public static final String FORM_RECEIVEINSPECTION= "receiveinspection";//进料报检
 	
 	
 	/*
