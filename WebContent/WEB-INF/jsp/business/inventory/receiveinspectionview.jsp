@@ -64,7 +64,8 @@
 				<td width="200px">${arrived.contractId }
 					<form:hidden path="inspect.contractid" value="${arrived.contractId }"/></td>										
 				<td class="label" width="100px">供应商：</td>
-				<td></td>
+				<td>${arrived.supplierName }
+					<form:hidden path="inspect.supplierid" value="${arrived.supplierId }"/></td>
 			</tr>
 			<tr> 
 				<td class="label" width="100px">检验数量：</td>

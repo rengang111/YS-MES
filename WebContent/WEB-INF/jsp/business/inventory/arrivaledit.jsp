@@ -312,7 +312,8 @@
 					<form:hidden path="arrival.contractid"  value="${contract.contractId }"/></td>
 							
 				<td class="label"><label>供应商：</label></td>					
-				<td>&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}</td>	
+				<td>&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}
+					<form:hidden path="arrival.supplierid"  value="${contract.supplierId }"/></td>	
 			</tr>
 										
 		</table>

@@ -243,6 +243,8 @@
       <f name="A.gmFeedback" alias="" ctype="" />
       <f name="A.gmResult" alias="" ctype="" />
       <f name="A.gmDate" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.supplierName" alias="" ctype="" />
     </select>
     <from>v_receiveinspetionList a  WHERE a.deleteFlag = '0' </from>
     <orderby>a.arriveDate DESC,a.arrivalId,a.materialId</orderby>

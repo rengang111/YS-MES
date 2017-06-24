@@ -334,7 +334,8 @@
 				<td>&nbsp;<a href="#" onClick="showYS('${contract.YSId}')">${contract.YSId }</a></td>
 									
 				<td class="label"><label>供应商：</label></td>					
-				<td colspan="3">&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}</td>	
+				<td colspan="3">&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}
+					<form:hidden path="arrival.supplierid"  value="${contract.supplierId }"/></td>	
 			</tr>
 			<tr>
 							

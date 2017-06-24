@@ -183,9 +183,9 @@
 
 		if(keyBackup ==""){
 
-			ajax("");
+			//ajax("");
 		}else{
-			ajax("0");
+			ajax("");
 			
 		}
 	
@@ -293,7 +293,7 @@
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
-		<input type="hidden" id="keyBackup" value="" />
+		<input type="hidden" id="keyBackup" value="${keyBackup }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 

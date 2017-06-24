@@ -226,6 +226,7 @@ public class ArrivalService extends CommonService {
 				data.setRecordid(guid);
 				data.setArrivalid(arrivalId);
 				data.setContractid(reqData.getContractid());
+				data.setSupplierid(reqData.getSupplierid());
 				data.setUserid(userInfo.getUserId());
 				data.setArrivedate(reqData.getArrivedate());
 				data.setStatus(Constants.ARRIVERECORD_0);//未报检
