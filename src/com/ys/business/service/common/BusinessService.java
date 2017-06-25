@@ -125,6 +125,26 @@ public class BusinessService {
 
 		return rtnCode;
 	}
+
+	/**
+	 * 2位流水号格式化处理
+	 * blAdd:是否要递增
+	 */
+	public static String getFormat3Code(int code,boolean blAdd)
+	{
+		//流水号递增
+		if(blAdd){
+			code++;
+		}
+		
+		//格式化成3位流水号
+		DecimalFormat df = new DecimalFormat(
+				BusinessConstants.FORMAT_000);		
+		
+		String rtnCode = df.format(code);
+
+		return rtnCode;
+	}
 	
 	/**
 	 * @return 采购合同编号
@@ -280,7 +300,7 @@ public class BusinessService {
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
 		
-		String ft = BusinessService.getFormat2Code(num,true);
+		String ft = BusinessService.getFormat3Code(num,true);
 		
 		return today + "-" + ft;
 	 }
