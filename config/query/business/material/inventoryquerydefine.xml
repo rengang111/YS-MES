@@ -48,6 +48,40 @@
     <having></having>
 	<power></power>
   </query>
+    <query>
+    <pool></pool>    
+    <name value="getMAXInspectionId" />
+     <where>
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name="IFNULL(MAX(a.subId+1),1)" alias="MaxSubId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_receiveinspection a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getMAXInventoryId" />
+     <where>
+       <w name="A.inventoryId" des=""  reqName="inventoryId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name="IFNULL(MAX(SUBSTR(a.inventoryId FROM 10)+0),'0')" alias="MaxSubId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_InventoryRecord a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
   <query>
     <pool></pool>     
     <name value="getArrivaRecord" />
@@ -221,6 +255,7 @@
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
+      <f name="A.inspectionId" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
       <f name="A.arrivalId" alias="" ctype="" />
       <f name="A.arriveDate" alias="" ctype="" />
@@ -236,7 +271,7 @@
       <f name="A.inspectArrivalId" alias="" ctype="" />
       <f name="A.checkResult" alias="" ctype="" />
       <f name="A.checkDate" alias="" ctype="" />
-      <f name="A.checker" alias="" ctype="" />
+      <f name="A.checkerId" alias="" ctype="" />
       <f name="A.managerFeedback" alias="" ctype="" />
       <f name="A.managerResult" alias="" ctype="报检状态" />
       <f name="A.managerDate" alias="" ctype="" />
@@ -248,6 +283,40 @@
     </select>
     <from>v_receiveinspetionList a  WHERE a.deleteFlag = '0' </from>
     <orderby>a.arriveDate DESC,a.arrivalId,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+   
+  <query>
+    <pool></pool>     
+    <name value="getMaterialCheckInList" />
+    <where>
+   		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.result" des=""  reqName="result" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.arrivalId" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.result" alias="" ctype="" />
+      <f name="A.result" alias="resultName" ctype="报检状态" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.checkDate" alias="" ctype="" />
+      <f name="A.checkerId" alias="" ctype="" />
+      <f name="A.checkerName" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+    </select>
+    <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' AND (result = '020' OR result = '030')</from>
+    <orderby>a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>

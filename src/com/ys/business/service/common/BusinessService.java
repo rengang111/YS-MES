@@ -295,7 +295,7 @@ public class BusinessService {
 	 public static String getArriveRecordId(String code) {
 
 		String today = CalendarUtil.getDateyymmdd();
-		//格式化成2位流水号,并且+1
+		//格式化成3位流水号,并且+1
 		int num = 0;
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
@@ -304,7 +304,49 @@ public class BusinessService {
 		
 		return today + "-" + ft;
 	 }
-		 
+		
+
+	 /**
+	 * 进料检报告编号
+	 * @return 16IQC月份-3位流水号
+	 */
+	 public static String getInspectionRecordId(
+			 String parent,String code,boolean addFlag) {
+
+		 StringBuffer sb = new StringBuffer();
+	    sb.append(parent);
+	    sb.append("-");
+	    		
+		//格式化成3位流水号,并且+1
+		int num = 0;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		sb.append( BusinessService.getFormat3Code(num,addFlag));
+		
+		return sb.toString();
+	 }
+	 
+
+	 /**
+	 * 进料检报告编号的父编号
+	 * @return 16IQC月份
+	 */
+	 public static String getInspectionParentId() {
+
+		 StringBuffer sb = new StringBuffer();
+		//当前的2位年份取得
+		SimpleDateFormat sdf = new SimpleDateFormat(
+				BusinessConstants.SHORTNAME_YEAR_YY);
+	    Date date = new Date();
+	    sb.append(sdf.format(date));
+	    sb.append(BusinessConstants.SHORTNAME_IQC);
+	  //当前的2位月份取得	  	    
+	    String month = new CalendarUtil().getMonthOfYear();
+	    month = getFormat2Code(Integer.parseInt(month),false);
+		sb.append(month);		
+		
+		return sb.toString();
+	 }
 		 
 	 
 }

@@ -4,7 +4,7 @@
 <html>
 
 <head>
-<title>进料检验--查看</title>
+<title>进料检验--检验报告</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -14,6 +14,7 @@
 		var contractId = '${arrived.contractId }';
 		var ysid = contractId.split('-',1);
 		$("#inspect\\.ysid").val(ysid);
+		$("#process\\.checkdate").val(shortToday());
 		
 		$("#inspect\\.report").val(replaceTextarea('${arrived.report}'));
 		$("#process\\.managerfeedback").val(replaceTextarea('${arrived.managerFeedback}'));
@@ -63,6 +64,8 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<form:hidden path="inspect.ysid" value=""/>
+	<form:hidden path="inspect.parentid" value=""/>
+	<form:hidden path="inspect.subid" value=""/>
 	<form:hidden path="inspect.arrivedate" value="${arrived.arriveDate }"/>
 	<input type="hidden" id=report value="${arrived.report }" />
 	
@@ -70,7 +73,18 @@
 		<legend> 到货信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px">报告编号：</td>	
+				<td class="label" width="100px">进料检报告编号：</td>	
+				<td width="200px">
+					<form:input path="inspect.inspectionid" class="read-only" /></td>
+				<td class="label">质检员：</td>					
+				<td width="200px">
+					<form:input path="process.checkerid" value="${userName }" class="read-only" /></td>										
+				<td class="label" width="100px">报检日期：</td>
+				<td>
+					<form:input path="process.checkdate" value="" class="read-only"/></td>
+			</tr>
+			<tr> 				
+				<td class="label" width="100px">到货登记：</td>	
 				<td width="200px">${arrived.arrivalId }
 					<form:hidden path="inspect.arrivalid" value="${arrived.arrivalId }"/></td>
 				<td class="label">合同编号：</td>					

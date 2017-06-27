@@ -74,7 +74,7 @@
 	</div>
 	<script type="text/javascript" >
 		var isClicked = 0;
-		
+		/*
 		$('#_main_center_tabs').tabs({
 			onSelect:function(title,index){
 		    	//alert(title + ' is selected');
@@ -87,7 +87,7 @@
 			    });
 		    }
 		});
-		
+		*/
 	    $(function() {
 	        $(document).ready(function() {
 	        	$('#menuTree').tree({

@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.ys.system.common.BusinessConstants;
+
 public class CalendarUtil {
 	
 	Calendar calendar_instance = Calendar.getInstance();
@@ -52,12 +54,18 @@ public class CalendarUtil {
 	}
 	
 	/**
-	 * ����·�
+	 * 两位数的当前月份
 	 *
-	 * @return	String		�·�
+	 * @return	String	两位数的当前月份
 	 */	
 	public String getMonthOfYear() {
-		return String.valueOf(calendar_instance.get(Calendar.MONTH) + 1);
+		SimpleDateFormat sdf = new SimpleDateFormat(
+  				BusinessConstants.SHORTNAME_YEAR_MM);
+  	    Date date = new Date();
+  	    String nowYear = sdf.format(date);
+
+		return nowYear;
+		//return String.valueOf(calendar_instance.get(Calendar.MONTH) + 1);
 	}
 	
 	/**

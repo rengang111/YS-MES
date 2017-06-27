@@ -7,7 +7,7 @@
 <html>
 
 <head>
-<title>进料检验</title>
+<title>进料检验--查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -57,8 +57,9 @@
 		<legend> 到货信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px">报告编号：</td>	
-				<td width="200px">${arrived.arrivalId }
+				<td class="label" width="100px">进料检报告编号：</td>	
+				<td width="200px">${arrived.inspectionId }
+					<form:hidden path="inspect.inspectionid" value="${arrived.inspectionId }"/>
 					<form:hidden path="inspect.arrivalid" value="${arrived.arrivalId }"/></td>
 				<td class="label">合同编号：</td>					
 				<td width="200px">${arrived.contractId }

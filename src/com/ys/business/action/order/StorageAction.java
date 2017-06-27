@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.business.action.model.order.ArrivalModel;
-import com.ys.business.action.model.order.ReceiveInspectionModel;
+import com.ys.business.action.model.order.StorageModel;
 import com.ys.business.service.order.ArrivalService;
-import com.ys.business.service.order.ReceiveInspectionService;
+import com.ys.business.service.order.StorageService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
@@ -26,21 +26,22 @@ import com.ys.util.basequery.common.Constants;
 
 @Controller
 @RequestMapping("/business")
-public class ReceiveInspectionAction extends BaseAction {
+public class StorageAction extends BaseAction {
 	
 	@Autowired
-	ReceiveInspectionService service;
+	StorageService service;
 	@Autowired HttpServletRequest request;
 	
 	UserInfo userInfo = new UserInfo();
-	ReceiveInspectionModel reqModel = new ReceiveInspectionModel();
+	StorageModel reqModel = new StorageModel();
 	HashMap<String, Object> modelMap = new HashMap<String, Object>();
 	Model model;
 	HttpServletResponse response;
+	HttpSession session;
 	
-	@RequestMapping(value="receiveinspection")
+	@RequestMapping(value="storage")
 	public String execute(@RequestBody String data, 
-			@ModelAttribute("formModel")ReceiveInspectionModel dataModel, 
+			@ModelAttribute("formModel")StorageModel dataModel, 
 			BindingResult result, 
 			Model model, 
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
@@ -52,10 +53,11 @@ public class ReceiveInspectionAction extends BaseAction {
 		this.userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		this.service = new ReceiveInspectionService(model,request,session,dataModel,userInfo);
+		this.service = new StorageService(model,request,session,dataModel,userInfo);
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
+		this.session = session;
 		
 		if (type == null) {
 			type = "";
@@ -69,31 +71,28 @@ public class ReceiveInspectionAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				doInit(Constants.FORM_RECEIVEINSPECTION,session);
-				rtnUrl = "/business/inventory/receiveinspectionmain";
+				doInit();
+				rtnUrl = "/business/inventory/storagemain";
 				break;
 			case "search":
-				dataMap = doSearch(data, session, request, response);
+				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
-				return null;
-			case "updateInit":
-				doUpdateInit();
-				rtnUrl = "/business/inventory/receiveinspectionadd";
-				break;
+				return null;				
+			case "contractArrivalSearch":
+				dataMap = contractArrivalSearch(data);
+				printOutJsonObj(response, dataMap);
+				return null;	
 			case "addinit":
-				rtnUrl = doAddInit();
+				doAddInit();
+				rtnUrl = "/business/inventory/storageadd";
+				break;
+			case "edit":
+				doEdit();
+				rtnUrl = "/business/inventory/arrivaledit";
 				break;
 			case "insert":
 				doInsert();
-				rtnUrl = "/business/inventory/receiveinspectionview";
-				break;
-			case "insertPM":
-				doUpdatePM();
-				rtnUrl = "/business/inventory/receiveinspectionview";
-				break;
-			case "insertGM":
-				doUpdateGM();
-				rtnUrl = "/business/inventory/receiveinspectionview";
+				rtnUrl = "/business/inventory/arrivalview";
 				break;
 			case "delete":
 				doDelete(data);
@@ -104,34 +103,41 @@ public class ReceiveInspectionAction extends BaseAction {
 				//printOutJsonObj(response, viewModel.getEndInfoMap());
 				rtnUrl = "/business/inventory/arrivalview";
 				break;
+			case "gotoArrivalView":
+				gotoArrivalView();
+				rtnUrl = "/business/inventory/arrivalview";
+				break;
 				
 		}
 		
 		return rtnUrl;
 	}	
 	
-
-	public void doInit(String formId,HttpSession session){	
+	public void doInit(){	
 			
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
-			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD2);
+		}else{
+			model.addAttribute("keyBackup",keyBackup);
 		}
 		
 	}
 	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearch(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doSearch(@RequestBody String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD2);
 			
-		}		
+		}
+		
 		try {
 			dataMap = service.doSearch(data);
 			
@@ -149,54 +155,63 @@ public class ReceiveInspectionAction extends BaseAction {
 		return dataMap;
 	}
 	
-	public String  doAddInit(){
-		String rtnUrl = "/business/inventory/receiveinspectionadd";
-		model.addAttribute("userName", userInfo.getUserName());
-		try{
-			String inspectArrivalId = service.addInit();
-			if(inspectArrivalId != null && !("").equals(inspectArrivalId)){
-				rtnUrl = "/business/inventory/receiveinspectionview";
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> contractArrivalSearch(
+			@RequestBody String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String keyBackup = request.getParameter("keyBackup");
+		if(keyBackup != null && !("").equals(keyBackup)){
+			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
+			
+		}
+		try {
+			dataMap = service.contractArrivalSearch(data);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
 			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public void doAddInit(){
+		try{
+			service.addInit();
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
-		return rtnUrl;
 	}
 
 	public void doInsert(){
 		try{
-			service.insertAndView();
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-	}
-
-
-	public void doUpdateInit(){
-		try{
-			service.updateInit();
+			service.insertAndViewArrival();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 	}
 	
-	public void doUpdatePM(){
+	public void doEdit(){
 		try{
-			service.PMUpdateAndView();
+			model.addAttribute("userName", userInfo.getUserName());
+			service.getContractByArrivalId();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 	}
 	
-
-	public void doUpdateGM(){
-		try{
-			service.GMUpdateAndView();
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-	}
 	
 	public void doDelete(@RequestBody String data) throws Exception{
 		
@@ -210,4 +225,14 @@ public class ReceiveInspectionAction extends BaseAction {
 
 	}
 
+	
+	public void gotoArrivalView(){
+		try{
+			String contractId = request.getParameter("contractId");
+			service.getContractDetail(contractId);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
 }
