@@ -2,13 +2,11 @@ package com.ys.business.action.model.order;
 
 import com.ys.util.basequery.common.BaseModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.ys.business.action.model.common.ListOption;
-import com.ys.business.db.data.B_InspectionProcessData;
-import com.ys.business.db.data.B_InventoryData;
-import com.ys.business.db.data.B_ReceiveInspectionData;
+import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_PurchaseStockInData;
+import com.ys.business.db.data.B_PurchaseStockInDetailData;
 
 public class StorageModel extends BaseModel {
 	/**
@@ -16,46 +14,29 @@ public class StorageModel extends BaseModel {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private B_InventoryData inventory ;
-	private List<B_ReceiveInspectionData> inspectList;
-	private B_ReceiveInspectionData inspect;
-	private B_InspectionProcessData process;
-	ArrayList<ListOption> resultList = new ArrayList<ListOption>();
-
-
-	public ArrayList<ListOption> getResultList() {
-		return this.resultList;
+	private B_MaterialData material ;
+	private B_PurchaseStockInData stock;
+	private List<B_PurchaseStockInDetailData> stockList;
+	
+	public B_MaterialData getMaterial() {
+		return this.material;
 	}
-	public void setResultList(ArrayList<ListOption> resultList) {
-		this.resultList = resultList;
+	public void setMaterial(B_MaterialData material) {
+		this.material = material;
 	}
 	
-	public B_InventoryData getInventory() {
-		return this.inventory;
+	public B_PurchaseStockInData getStock() {
+		return this.stock;
 	}
-	public void setInventory(B_InventoryData inventory) {
-		this.inventory = inventory;
+	public void setStock(B_PurchaseStockInData stock) {
+		this.stock = stock;
 	}
 	
-	public B_ReceiveInspectionData getInspect() {
-		return this.inspect;
+	public List<B_PurchaseStockInDetailData> getStockList() {
+		return this.stockList;
 	}
-	public void setInspect(B_ReceiveInspectionData inspect) {
-		this.inspect = inspect;
+	public void setStockList(List<B_PurchaseStockInDetailData> stockList) {
+		this.stockList = stockList;
 	}
 
-	public B_InspectionProcessData getProcess() {
-		return this.process;
-	}
-	public void setProcess(B_InspectionProcessData process) {
-		this.process = process;
-	}
-	
-	public List<B_ReceiveInspectionData> getInspectList() {
-		return this.inspectList;
-	}
-	public void setInspectList(List<B_ReceiveInspectionData> inspectList) {
-		this.inspectList = inspectList;
-	}
-	
 }

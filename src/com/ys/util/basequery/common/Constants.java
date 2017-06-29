@@ -108,6 +108,6 @@ public class Constants {
 	public static final String ARRIVERECORD_1 = "020";//合格
 	public static final String ARRIVERECORD_2 = "030";//让步接收
 	public static final String ARRIVERECORD_3 = "040";//退货
-
+	public static final String ARRIVERECORD_4 = "050";//入库
 
 }

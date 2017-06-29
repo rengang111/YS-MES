@@ -87,8 +87,10 @@ public class ReceiveInspectionService extends CommonService  {
 		String sEcho = "";
 		String start = "";
 		String length = "";
-		
 		data = URLDecoder.decode(data, "UTF-8");
+		
+
+		String result = request.getParameter("result");
 
 		String[] keyArr = getSearchKey(Constants.FORM_RECEIVEINSPECTION,data,session);
 		String key1 = keyArr[0];
@@ -109,6 +111,7 @@ public class ReceiveInspectionService extends CommonService  {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
+		userDefinedSearchCase.put("result", result);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
 				
@@ -130,55 +133,6 @@ public class ReceiveInspectionService extends CommonService  {
 
 	}
 	
-
-	public HashMap<String, Object> contractArrivalSearch(
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-
-		data = URLDecoder.decode(data, "UTF-8");
-		
-		int iStart = 0;
-		int iEnd =0;
-		String sEcho = getJsonData(data, "sEcho");	
-		String start = getJsonData(data, "iDisplayStart");		
-		if (start != null && !start.equals("")){
-			iStart = Integer.parseInt(start);			
-		}
-		
-		String length = getJsonData(data, "iDisplayLength");
-		if (length != null && !length.equals("")){			
-			iEnd = iStart + Integer.parseInt(length);			
-		}
-	
-		dataModel.setQueryName("getArrivaList");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
-		String key1 = keyArr[0];
-		String key2 = keyArr[1];
-		
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
-		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();			
-		}		
-		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-			
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
-	}
 
 	public String addInit() throws Exception {
 

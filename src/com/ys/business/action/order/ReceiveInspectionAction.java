@@ -176,6 +176,7 @@ public class ReceiveInspectionAction extends BaseAction {
 	public void doUpdateInit(){
 		try{
 			service.updateInit();
+			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

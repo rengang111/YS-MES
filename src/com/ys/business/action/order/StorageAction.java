@@ -77,11 +77,7 @@ public class StorageAction extends BaseAction {
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
-				return null;				
-			case "contractArrivalSearch":
-				dataMap = contractArrivalSearch(data);
-				printOutJsonObj(response, dataMap);
-				return null;	
+				return null;
 			case "addinit":
 				doAddInit();
 				rtnUrl = "/business/inventory/storageadd";
@@ -92,7 +88,7 @@ public class StorageAction extends BaseAction {
 				break;
 			case "insert":
 				doInsert();
-				rtnUrl = "/business/inventory/arrivalview";
+				rtnUrl = "/business/inventory/storagemain";
 				break;
 			case "delete":
 				doDelete(data);
@@ -197,7 +193,7 @@ public class StorageAction extends BaseAction {
 
 	public void doInsert(){
 		try{
-			service.insertAndViewArrival();
+			service.insertAndReturn();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

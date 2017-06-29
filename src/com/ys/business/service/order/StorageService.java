@@ -10,9 +10,18 @@ import org.springframework.ui.Model;
 import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.StorageModel;
 import com.ys.business.db.dao.B_ArrivalDao;
+import com.ys.business.db.dao.B_InspectionProcessDao;
+import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
+import com.ys.business.db.dao.B_PurchaseStockInDao;
+import com.ys.business.db.dao.B_PurchaseStockInDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
+import com.ys.business.db.data.B_InspectionProcessData;
+import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
+import com.ys.business.db.data.B_PurchaseStockInData;
+import com.ys.business.db.data.B_PurchaseStockInDetailData;
+import com.ys.business.db.data.B_ReceiveInspectionData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
@@ -38,7 +47,8 @@ public class StorageService extends CommonService {
 	
 	private HttpServletRequest request;
 	
-	private B_ArrivalDao dao;
+	private B_PurchaseStockInDao dao;
+	private B_PurchaseStockInDetailDao detaildao;
 	private StorageModel reqModel;
 	private UserInfo userInfo;
 	private BaseModel dataModel;
@@ -58,7 +68,8 @@ public class StorageService extends CommonService {
 			StorageModel reqModel,
 			UserInfo userInfo){
 		
-		this.dao = new B_ArrivalDao();
+		this.dao = new B_PurchaseStockInDao();
+		this.detaildao = new B_PurchaseStockInDetailDao();
 		this.model = model;
 		this.reqModel = reqModel;
 		this.request = request;
@@ -83,6 +94,9 @@ public class StorageService extends CommonService {
 		String length = "";
 		
 		data = URLDecoder.decode(data, "UTF-8");
+		
+		String result1 = request.getParameter("result1");
+		String result2 = request.getParameter("result2");
 
 		String[] keyArr = getSearchKey(Constants.FORM_STORAGE,data,session);
 		String key1 = keyArr[0];
@@ -103,6 +117,8 @@ public class StorageService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
+		userDefinedSearchCase.put("result1", result1);
+		userDefinedSearchCase.put("result2", result2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
 				
@@ -176,12 +192,14 @@ public class StorageService extends CommonService {
 
 	public void addInit() throws Exception {
 
-		//取得入库申请编号"I耀升编号-三位流水号"
-		getInventoryId();
-		
-		//取得该合同编号下的物料信息
 		String contractId = request.getParameter("contractId");
-		getContractDetail(contractId);
+		String arrivalId = request.getParameter("arrivalId");
+		
+		//取得入库申请编号
+		getStorageRecordId(contractId);
+		
+		//取得该到货编号下的物料信息
+		getContractDetail(arrivalId);
 	
 	}
 
@@ -191,30 +209,32 @@ public class StorageService extends CommonService {
 		getArrivaRecord(arrivalId);
 	}
 	
-	public void insertAndViewArrival() throws Exception {
+	public void insertAndReturn() throws Exception {
 
-		String contractId = insertArrival();
-		getContractDetail(contractId);
+		String contractId = insertStorage();
+		//getContractDetail(contractId);
 	}
 	
-	private String insertArrival(){
+	private String insertStorage(){
 		String contractId = "";
-		ts = new BaseTransaction();
+		ts = new BaseTransaction();		
 		
-		/*
 		try {
 			ts.begin();
 			
-			B_ArrivalData reqData = (B_ArrivalData)reqModel.getArrival();
-			List<B_ArrivalData> reqDataList = reqModel.getArrivalList();
+			B_PurchaseStockInData reqData = reqModel.getStock();
+			List<B_PurchaseStockInDetailData> reqDataList = 
+					reqModel.getStockList();
 			
-			//删除旧数据
-			String arrivalId = reqData.getArrivalid();
-			deleteArrivalById(arrivalId);
-			contractId = reqData.getContractid();
+			//采购入库记录
+			insertPurchaseStockIn(reqData);
+			String receiptid = reqData.getReceiptid();
+			String arrivalid = reqData.getArrivelid();
 			
-			for(B_ArrivalData data:reqDataList ){
+			//采购入库记录明细
+			for(B_PurchaseStockInDetailData data:reqDataList ){
 				String q = data.getQuantity();
+				String materialid= data.getMaterialid();
 				if(q == null || q.equals("") || q.equals("0"))
 					continue;
 				
@@ -225,18 +245,15 @@ public class StorageService extends CommonService {
 
 				String guid = BaseDAO.getGuId();
 				data.setRecordid(guid);
-				data.setArrivalid(arrivalId);
-				data.setContractid(reqData.getContractid());
-				data.setSupplierid(reqData.getSupplierid());
-				data.setUserid(userInfo.getUserId());
-				data.setArrivedate(reqData.getArrivedate());
-				data.setStatus(Constants.ARRIVERECORD_0);//未报检
+				data.setReceiptid(receiptid);
+				//
+				detaildao.Create(data);	
 				
-				dao.Create(data);	
-				
-				//更新累计到货数量
-				updateContractArraival(contractId,data.getMaterialid(),data.getQuantity());
+				//更新当前库存
+				updateMaterial(materialid,q);
 			
+				//更新物料状态
+				updateInspectionProcess(arrivalid,materialid);
 			}
 			
 			ts.commit();			
@@ -250,25 +267,23 @@ public class StorageService extends CommonService {
 				System.out.println(e1.getMessage());
 			}
 		}
-		*/
+		
 		return contractId;
 	}
 	
+	//更新当前库存
 	@SuppressWarnings("unchecked")
-	private void updateContractArraival(
-			String contractId,
+	private void updateMaterial(
 			String materialId,
-			String arrival) throws Exception{
+			String newQuantity) throws Exception{
 	
-		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
-		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+		B_MaterialData data = new B_MaterialData();
+		B_MaterialDao dao = new B_MaterialDao();
 		
-		String where = "contractId ='"+contractId +
-				"' AND materialId ='"+ materialId +
-				"' AND deleteFlag='0' ";
+		String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
 		
-		List<B_PurchaseOrderDetailData> list = 
-				(List<B_PurchaseOrderDetailData>)dao.Find(where);
+		List<B_MaterialData> list = 
+				(List<B_MaterialData>)dao.Find(where);
 		
 		if(list ==null || list.size() == 0){
 			return ;
@@ -276,34 +291,91 @@ public class StorageService extends CommonService {
 
 		data = list.get(0);
 		
-		//计算到货累计数量
-		String accumulated = data.getAccumulated();
-		float iAcc = 0;
-		float iArr = 0;
-		if(!(arrival ==null || ("").equals(arrival)))
-			iArr = Float.parseFloat(arrival.replace(",", ""));
+		//当前库存
+		String quantity = data.getQuantityonhand();
+		float iQuantity = 0;
+		float inewQuantity = 0;
+		if(!(newQuantity ==null || ("").equals(newQuantity)))
+			inewQuantity = Float.parseFloat(newQuantity.replace(",", ""));
 
-		if(!(accumulated ==null || ("").equals(accumulated)))
-			iAcc = Float.parseFloat(accumulated.replace(",", ""));
+		if(!(quantity ==null || ("").equals(quantity)))
+			iQuantity = Float.parseFloat(quantity.replace(",", ""));
 		
-		float iNew = iArr + iAcc;
+		float iNew = iQuantity + inewQuantity;
 		
-		data.setAccumulated(String.valueOf(iNew));
+		data.setQuantityonhand(String.valueOf(iNew));
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ArrivalUpdate",userInfo);
+				"PurchaseStockInUpdate",userInfo);
 		copyProperties(data,commData);
 		
 		dao.Store(data);
-
 		
 	}
 	
-	
-	private void deleteArrivalById(String arrivalId) {
 
-		String where = " arrivalId = '"+arrivalId+"' AND deleteFlag='0' ";
+	//更新当前库存
+	@SuppressWarnings("unchecked")
+	private void updateInspectionProcess(
+			String arrivalId,
+			String materialId) throws Exception{
+	
+		B_InspectionProcessData data = new B_InspectionProcessData();
+		B_InspectionProcessDao dao = new B_InspectionProcessDao();
+		
+		String where = "arrivalId ='"+ arrivalId + 
+				"' AND materialId ='"+ materialId + 
+				"' AND deleteFlag='0' ";
+		
+		List<B_InspectionProcessData> list = 
+				(List<B_InspectionProcessData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
+
+		data = list.get(0);
+		
+		data.setResult(Constants.ARRIVERECORD_4);//入库完毕
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseStockInUpdate",userInfo);
+		copyProperties(data,commData);
+		
+		dao.Store(data);
+		
+	}
+	
+	private void insertPurchaseStockIn(
+			B_PurchaseStockInData stock) throws Exception {
+
+		//删除旧数据,防止数据重复
+		String receiptId = stock.getReceiptid();
+		String where = " receiptId = '"+receiptId+"'";
+		try {
+			dao.RemoveByWhere(where);
+		} catch (Exception e) {
+			// nothing
+		}
+		
+		//插入新数据
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"PurchaseStockInInsert",userInfo);
+		copyProperties(stock,commData);
+		stock.setKeepuser(userInfo.getUserId());//默认为登陆者	
+
+		String guid = BaseDAO.getGuId();
+		stock.setRecordid(guid);
+		
+		dao.Create(stock);
+	}
+	
+	
+	private void deleteArrivalById(String receiptId) {
+
+		String where = " receiptId = '"+receiptId+"'";
 		try {
 			dao.RemoveByWhere(where);
 		} catch (Exception e) {
@@ -359,20 +431,25 @@ public class StorageService extends CommonService {
 	
 	
 	
-	public void getInventoryId() {
+	public void getStorageRecordId(String contractId) {
 
 		try {
-			String key = CalendarUtil.fmtYmdDate();
-			dataModel.setQueryName("getMAXInventoryId");
+			dataModel.setQueryName("getMAXStorageRecordId");
 			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("arriveDate", key);
+			userDefinedSearchCase.put("contractId", contractId);
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
 			baseQuery.getYsFullData();	
 			
+			//查询出的流水号已经在最大值上 " 加一 "了
 			String code = dataModel.getYsViewData().get(0).get("MaxSubId");		
 			
-			model.addAttribute("arrivalId",
-					BusinessService.getArriveRecordId(code));
+			String inspectionId = 
+					BusinessService.getStorageRecordId(contractId,code,false);
+			
+			B_PurchaseStockInData data = new B_PurchaseStockInData();
+			data.setReceiptid(inspectionId);
+			data.setSubid(code);
+			reqModel.setStock(data);
 			
 		}
 		catch(Exception e) {
@@ -382,25 +459,19 @@ public class StorageService extends CommonService {
 		
 	}
 	
-	public void getContractDetail(String contractId) throws Exception {
-
+	public void getContractDetail(String arrivalId) throws Exception {
 		
-		dataModel.setQueryName("getContractById");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("contractId", contractId);
-		
+		dataModel.setQueryName("getMaterialCheckInList");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("arrivalId", arrivalId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() >0){
 			model.addAttribute("contract",dataModel.getYsViewData().get(0));
 			model.addAttribute("material",dataModel.getYsViewData());			
-		}
-		
-	}
-	
+		}		
+	}	
 	
 	
 	public void getContractByArrivalId() throws Exception {

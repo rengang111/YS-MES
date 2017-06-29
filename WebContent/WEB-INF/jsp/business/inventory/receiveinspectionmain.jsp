@@ -29,7 +29,7 @@ var url = "${ctx}/business/receiveinspection?methodtype=search";
 			//未检验
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			//url += "&result=0"+"&purchaseDate1="+shortToday();
+			url += "&result=010";
 			
 		}else if(type == '1'){
 			//合格
@@ -48,6 +48,9 @@ var url = "${ctx}/business/receiveinspection?methodtype=search";
 			$("#keyword1").val("");
 			$("#keyword2").val("");
 			url += "&result=040";			
+		}else{
+			//点击查询按钮 不区分状态
+			url += "&result=";
 		}
 
 		url += "&keyBackup="+pageFlg;

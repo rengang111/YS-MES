@@ -318,7 +318,7 @@ public class BusinessService {
 	    sb.append("-");
 	    		
 		//格式化成3位流水号,并且+1
-		int num = 0;
+		int num = 1;
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
 		sb.append( BusinessService.getFormat3Code(num,addFlag));
@@ -344,6 +344,26 @@ public class BusinessService {
 	    String month = new CalendarUtil().getMonthOfYear();
 	    month = getFormat2Code(Integer.parseInt(month),false);
 		sb.append(month);		
+		
+		return sb.toString();
+	 }
+	 
+	 /**
+	 * 入库单编号
+	 * @return 合同编号-2位流水号
+	 */
+	 public static String getStorageRecordId(
+			 String parent,String code,boolean addFlag) {
+
+		StringBuffer sb = new StringBuffer();
+	    sb.append(parent);
+	    sb.append("-");
+	    		
+		//格式化成2位流水号
+		int num = 1;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		sb.append( BusinessService.getFormat2Code(num,addFlag));
 		
 		return sb.toString();
 	 }

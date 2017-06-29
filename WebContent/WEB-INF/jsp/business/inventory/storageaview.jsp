@@ -4,7 +4,7 @@
 <html>
 
 <head>
-<title>库存管理-入库登记</title>
+<title>库存管理-查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 

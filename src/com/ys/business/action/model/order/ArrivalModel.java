@@ -5,7 +5,6 @@ import com.ys.util.basequery.common.BaseModel;
 import java.util.List;
 
 import com.ys.business.db.data.B_ArrivalData;
-import com.ys.business.db.data.B_InventoryData;
 
 public class ArrivalModel extends BaseModel {
 	/**
@@ -22,7 +21,6 @@ public class ArrivalModel extends BaseModel {
 	private String shippingCase = "";
 	private String loadingPort = "";	
 	private String deliveryPort = "";
-	private B_InventoryData inventory ;
 	private List<B_ArrivalData> arrivalList;
 	private B_ArrivalData arrival;
 	
@@ -96,12 +94,7 @@ public class ArrivalModel extends BaseModel {
 		this.deliveryPort = deliveryPort;
 	}
 	
-	public B_InventoryData getInventory() {
-		return this.inventory;
-	}
-	public void setInventory(B_InventoryData inventory) {
-		this.inventory = inventory;
-	}
+	
 	
 	public B_ArrivalData getArrival() {
 		return this.arrival;

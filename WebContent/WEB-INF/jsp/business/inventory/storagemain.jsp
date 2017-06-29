@@ -44,25 +44,21 @@
 		var type = pageFlg;
 		
 		if(type == '0'){
-			//逾期未到货
+			//未入库
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&accumulated1=0"+"&purchaseDate1="+shortToday();
+			url += "&result1=020&result2=030";
 			
 		}else if(type == '1'){
-			//未到货
+			//已入库
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&accumulated1=0";
+			url += "&result1=050&result2=050";
 			
-		}else if(type == '2'){
-			//已到货
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&accumulated2=0";
-			
+		}else{
+			//默认是质检合格或者让步接收
+			url += "&result1=020&result2=030";
 		}
-
 		url += "&keyBackup="+pageFlg;
 		//alert(type+"----"+url)
 
@@ -113,10 +109,11 @@
 				{"data": "materialId"},
 				{"data": "materialName"},
 				{"data": "unit","className" : 'td-center'},
+				{"data": "arrivalId"},
 				{"data": "contractId"},
 				{"data": "YSId"},
 				{"data": "checkDate","className" : 'td-center'},
-				{"data": "resultName","className" : 'td-center'},
+				{"data": "contractQuantity","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
 				
 				
@@ -127,9 +124,9 @@
                 }},
 	    		{"targets":1,"render":function(data, type, row){
 
-	    			var materialId = row["materialId"];	
+	    			var contractId = row["contractId"];	
 	    			var arrivalId = row["arrivalId"];		    			
-	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + arrivalId + "','" + materialId + "')\">"+materialId+"</a>";
+	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + contractId + "','" + arrivalId + "')\">"+row["materialId"]+"</a>";
 	    			return rtn;
 	    		}},
 	    		{"targets":2,"render":function(data, type, row){
@@ -151,13 +148,7 @@
 		
 		var keyBackup = $("#keyBackup").val();
 
-		if(keyBackup ==""){
-
-			ajax("");
-		}else{
-			ajax("0");
-			
-		}
+		ajax("");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -178,27 +169,16 @@
 
 	}
 	
-	function doCreate(contractId) {
-		
-		var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId;
-		location.href = url;
-	}
 	
-	function doShow(contractId) {
+	
+	function doShow(contractId,arrivalId) {
 
-		var url = '${ctx}/business/storage?methodtype=addinit&contractId=' + contractId;
-
-		location.href = url;
-	}
-
-	function doEdit(recordId,parentId) {
-		var str = '';
-		var isFirstRow = true;
-		var url = '${ctx}/business/material?methodtype=edit&parentId=' + parentId+'&recordId='+recordId;
+		var url = '${ctx}/business/storage?methodtype=addinit&contractId=' + contractId+"&arrivalId="+arrivalId;
 
 		location.href = url;
 	}
-		
+
+			
 	function doDelete() {
 
 		var str = '';
@@ -288,12 +268,9 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0');">逾期未到货</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1');">未到货</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2');">已到货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0');">未入库</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1');">已入库</a>
 		</div>
-
-		<div id="clear"></div>
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						
 				<tr>
@@ -301,10 +278,11 @@
 					<th style="width: 120px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
 					<th style="width: 50px;" class="dt-middle">单位</th>
+					<th style="width: 80px;" class="dt-middle">到货登记</th>
 					<th style="width: 100px;" class="dt-middle">合同编号</th>
 					<th style="width: 50px;" class="dt-middle">耀升编号</th>
 					<th style="width: 60px;" class="dt-middle">质检日期</th>
-					<th style="width: 60px;" class="dt-middle">报检结果</th>
+					<th style="width: 60px;" class="dt-middle">合同数量</th>
 					<th style="width: 60px;" class="dt-middle">入库数量</th>
 				</tr>
 			</thead>

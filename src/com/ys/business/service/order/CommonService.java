@@ -21,11 +21,9 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.MaterialModel;
-import com.ys.business.db.dao.B_InventoryDao;
 import com.ys.business.db.dao.B_PriceReferenceDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
-import com.ys.business.db.data.B_InventoryData;
 import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
@@ -461,6 +459,7 @@ public class CommonService extends BaseService {
 	}
 	
 	//更新虚拟库存
+	/*
 	public void updateInventory(
 			B_InventoryData planData) throws Exception{
 		
@@ -521,7 +520,7 @@ public class CommonService extends BaseService {
 			
 		return data;
 	}
-	
+	*/
 	public static float stringToFloat(String s){
 
 		float rtn = 0;

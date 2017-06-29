@@ -86,14 +86,14 @@ public class B_InspectionProcessData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String checker;
-	public String getChecker()
+	private String checkerid;
+	public String getCheckerid()
 	{
-		return this.checker;
+		return this.checkerid;
 	}
-	public void setChecker(String checker)
+	public void setCheckerid(String checkerid)
 	{
-		this.checker=checker;
+		this.checkerid=checkerid;
 	}
 
 	/**
@@ -164,6 +164,19 @@ public class B_InspectionProcessData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String managerid;
+	public String getManagerid()
+	{
+		return this.managerid;
+	}
+	public void setManagerid(String managerid)
+	{
+		this.managerid=managerid;
+	}
+
+	/**
+	*
+	*/
 	private String gmdate;
 	public String getGmdate()
 	{
@@ -198,6 +211,19 @@ public class B_InspectionProcessData implements java.io.Serializable
 	public void setGmresult(String gmresult)
 	{
 		this.gmresult=gmresult;
+	}
+
+	/**
+	*
+	*/
+	private String gmid;
+	public String getGmid()
+	{
+		return this.gmid;
+	}
+	public void setGmid(String gmid)
+	{
+		this.gmid=gmid;
 	}
 
 	/**
@@ -332,13 +358,13 @@ public class B_InspectionProcessData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("arrivalid = "+(arrivalid == null ? "null" : arrivalid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("result = "+(result == null ? "null" : result)+"\n");		sb.append("checker = "+(checker == null ? "null" : checker)+"\n");		sb.append("checkresult = "+(checkresult == null ? "null" : checkresult)+"\n");		sb.append("checkdate = "+(checkdate == null ? "null" : checkdate)+"\n");		sb.append("managerresult = "+(managerresult == null ? "null" : managerresult)+"\n");		sb.append("managerdate = "+(managerdate == null ? "null" : managerdate)+"\n");		sb.append("managerfeedback = "+(managerfeedback == null ? "null" : managerfeedback)+"\n");		sb.append("gmdate = "+(gmdate == null ? "null" : gmdate)+"\n");		sb.append("gmfeedback = "+(gmfeedback == null ? "null" : gmfeedback)+"\n");		sb.append("gmresult = "+(gmresult == null ? "null" : gmresult)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("arrivalid = "+(arrivalid == null ? "null" : arrivalid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("result = "+(result == null ? "null" : result)+"\n");		sb.append("checkerid = "+(checkerid == null ? "null" : checkerid)+"\n");		sb.append("checkresult = "+(checkresult == null ? "null" : checkresult)+"\n");		sb.append("checkdate = "+(checkdate == null ? "null" : checkdate)+"\n");		sb.append("managerresult = "+(managerresult == null ? "null" : managerresult)+"\n");		sb.append("managerdate = "+(managerdate == null ? "null" : managerdate)+"\n");		sb.append("managerfeedback = "+(managerfeedback == null ? "null" : managerfeedback)+"\n");		sb.append("managerid = "+(managerid == null ? "null" : managerid)+"\n");		sb.append("gmdate = "+(gmdate == null ? "null" : gmdate)+"\n");		sb.append("gmfeedback = "+(gmfeedback == null ? "null" : gmfeedback)+"\n");		sb.append("gmresult = "+(gmresult == null ? "null" : gmresult)+"\n");		sb.append("gmid = "+(gmid == null ? "null" : gmid)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		arrivalid= (arrivalid == null ?null : arrivalid.trim());		materialid= (materialid == null ?null : materialid.trim());		result= (result == null ?null : result.trim());		checker= (checker == null ?null : checker.trim());		checkresult= (checkresult == null ?null : checkresult.trim());		checkdate= (checkdate == null ?null : checkdate.trim());		managerresult= (managerresult == null ?null : managerresult.trim());		managerdate= (managerdate == null ?null : managerdate.trim());		managerfeedback= (managerfeedback == null ?null : managerfeedback.trim());		gmdate= (gmdate == null ?null : gmdate.trim());		gmfeedback= (gmfeedback == null ?null : gmfeedback.trim());		gmresult= (gmresult == null ?null : gmresult.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		arrivalid= (arrivalid == null ?null : arrivalid.trim());		materialid= (materialid == null ?null : materialid.trim());		result= (result == null ?null : result.trim());		checkerid= (checkerid == null ?null : checkerid.trim());		checkresult= (checkresult == null ?null : checkresult.trim());		checkdate= (checkdate == null ?null : checkdate.trim());		managerresult= (managerresult == null ?null : managerresult.trim());		managerdate= (managerdate == null ?null : managerdate.trim());		managerfeedback= (managerfeedback == null ?null : managerfeedback.trim());		managerid= (managerid == null ?null : managerid.trim());		gmdate= (gmdate == null ?null : gmdate.trim());		gmfeedback= (gmfeedback == null ?null : gmfeedback.trim());		gmresult= (gmresult == null ?null : gmresult.trim());		gmid= (gmid == null ?null : gmid.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
