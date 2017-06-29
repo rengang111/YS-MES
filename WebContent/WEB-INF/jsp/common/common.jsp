@@ -21,7 +21,7 @@
 <script type="text/javascript" src="${ctx}/js/jquery.similar.msgbox.js"></script>
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/css/main.css">
+<link rel="stylesheet" type="text/css" href="${ctx}/css/main2.css">
 <!-- 
 <script type="text/javascript" src="${ctx}/js/jquery.min.js"></script>
  -->
@@ -65,10 +65,12 @@
 		popupWindow("selectunit", "${ctx}" + "/common/selectUnitPopActionSearch?unitControl=" + unitControl + "&unitControlView=" + unitControlView + "&treeType=" + treeType, 800, 600);
 	}
 	//type->0:代码类     1:代码
-	function callDicTypeSelect(dicTypeControl, dicTypeControlView, type, dicTypeId, treeType) {
-		popupWindow("selectdictype", "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + dicTypeControl + "&dicControlView=" + dicTypeControlView + "&type=" + type + "&dicTypeId=" + dicTypeId + "&treeType=0", 800, 600);
-		
+	function callDicTypeSelect(dicTypeControl, dicTypeControlView, type, dicTypeId, treeType, parentIndex) {
+		//popupWindow("selectdictype", "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + dicTypeControl + "&dicControlView=" + dicTypeControlView + "&type=" + type + "&dicTypeId=" + dicTypeId + "&treeType=0", 800, 600);
+		var url = "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + dicTypeControl + "&dicControlView=" + dicTypeControlView + "&type=" + type + "&dicTypeId=" + dicTypeId + "&treeType=0&index=" + parentIndex;
+		openLayer(url, $(document).width() - 500, 500, true, dicTypeControl, dicTypeControlView);
 	}
+	
 	function openLayer(url, width, height, isParentOpen) {
 		if (width == "") {
 			//width = '900px';
@@ -92,7 +94,7 @@
 			});
 		} else {
 			layer.open({
-				type : 2,
+				type : 1,
 				title : false,
 				area : [ width, height ], 
 				scrollbar : false,

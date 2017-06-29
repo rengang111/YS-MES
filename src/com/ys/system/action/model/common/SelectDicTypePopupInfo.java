@@ -13,6 +13,7 @@ public class SelectDicTypePopupInfo extends BaseModel {
 	private String dicTypeId = "";
 	private String dicControl = "";
 	private String dicControlView = "";
+	private String index = "";
 
 	public String getDicTypeIdName() {
 		return this.dicTypeIdName;
@@ -62,4 +63,12 @@ public class SelectDicTypePopupInfo extends BaseModel {
 	public void setDicControlView(String dicControlView) {
 		this.dicControlView = dicControlView;
 	}	
+	
+	public String getIndex() {
+		return this.index;
+	}
+	public void setIndex(String index) {
+		this.index = index;
+	}	
+
 }

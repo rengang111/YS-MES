@@ -2,100 +2,101 @@
 <!DOCTYPE html>
 <%@ include file="../common/common.jsp"%>
 <html>
-<head>
-	代码维护
-</head>
-<body>
-	<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
-		<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
-		<input type=hidden name="dicId" id="dicId" value="${DisplayData.dicData.dicid}"/>
-		<table>
-			<tr>
-				<td>
-					代码类：
-				</td>
-				<td>
-					<input type=text name="dicTypeName" id="dicTypeName" value="${DisplayData.dicTypeName}" readonly/>
-					<input type=hidden name="dicData.dictypeid" id="dictypeid" value="${DisplayData.dicData.dictypeid}"/>
-					<input type=button name="dicTypeSelect" id="dicTypeSelect" value="选择" onClick="selectDicType()" />
-				</td>
-			</tr>
-			<tr>
-				<td>
-					代码ID：
-				</td>
-				<td>
-					<input type=text name="dicData.dicid" id="dicid" value="${DisplayData.dicData.dicid}"/>
-				</td>
-			</tr>			
-			<tr>
-				<td>
-					代码名称：
-				</td>
-				<td>
-					<input type=text name="dicData.dicname" id="dicname" value="${DisplayData.dicData.dicname}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					简拼：
-				</td>
-				<td>
-					<input type=text name="dicData.jianpin" id="jianpin" value="${DisplayData.dicData.jianpin}"/>
-				</td>
-			</tr>				
-			<tr>
-				<td>
-					代码描述：
-				</td>
-				<td>
-					<input type=text name="dicData.dicdes" id="dicdes" value="${DisplayData.dicData.dicdes}"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					上级代码：
-				</td>
-				<td>
-					<input type=text name="dicParentName" id="dicParentName" value="${DisplayData.dicParentName}" readonly/>
-					<input type=hidden name="dicData.dicprarentid" id="dicprarentid" value="${DisplayData.dicData.dicprarentid}"/>
-					<input type=button name="dicParentIdSelect" id="dicParentIdSelect" value="选择" onClick="selectDicParentId()" />
-					<input type=button name="dicParentIdClear" id="dicParentIdClear" value="清空" onClick="clearDicParentId()" />
-				</td>
-			</tr>
-			<tr>
-				<td>
-					是否叶子节点：
-				</td>
-				<td>
-					<select name="dicData.isleaf" id="dicisleaf">
-						<option value ="0">否</option>
-						<option value ="1">是</option>
-					</select>
-				</td>
-			</tr>
-						
-			<tr>
-				<td>
-					序号：
-				</td>
-				<td>
-					<input type=text name="dicData.sortno" id="sortno" value="${DisplayData.dicData.sortno}"/>
-				</td>
-			</tr>
-			<tr>
-				<td colspan=2>
-					<input type=checkbox name="dicData.enableflag" id="enableflag" value="0"/>选中有效
-				</td>
-			</tr>					
-			<tr>
-				<td colspan=2>
-					<input type=button name="save" id="save" value="保存" onClick="saveUpdate()"/>
-					<input type=button name="close" id="close"" value="关闭" onClick="closeWindow('')"/>
-				</td>
-			</tr>
+<div id="container">
+	<div id="main">
+		<div style="height:10px"></div>
+		<fieldset>
+		<legend>字典编辑</legend>
+		<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
+			<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
+			<input type=hidden name="dicId" id="dicId" value="${DisplayData.dicData.dicid}"/>
+				<div class="">
+					<table width=100% style=" border-collapse: separate;border-spacing:6px;"  >
+						<tr>
+							<td>
+								代码类：
+							</td>
+							<td>
+								<input type=text name="dicTypeName" id="dicTypeName" value="${DisplayData.dicTypeName}" onfocusin="setReadonly(this, true);" onBlur="setReadonly(this, false);"/>
+								<input type=hidden name="dictypeid" id="dictypeid" value="${DisplayData.dicData.dictypeid}"/>
+								<button type="button" id="selectdictype" class="DTTT_button" onClick="selectDicType();"
+									style="height:25px;margin:0px 5px 0px 0px;" >选择</button>
+							</td>
+						<td>
+							代码ID：
+						</td>
+						<td>
+							<input type=text name="dicid" id="dicid" value="${DisplayData.dicData.dicid}"/>
+						</td>
+					</tr>			
+					<tr>
+						<td>
+							代码名称：
+						</td>
+						<td>
+							<input type=text name="dicname" id="dicname" value="${DisplayData.dicData.dicname}"/>
+						</td>
+						<td>
+							简拼：
+						</td>
+						<td>
+							<input type=text name="jianpin" id="jianpin" value="${DisplayData.dicData.jianpin}"/>
+						</td>
+					</tr>				
+					<tr>
+						<td>
+							代码描述：
+						</td>
+						<td>
+							<input type=text name="dicdes" id="dicdes" value="${DisplayData.dicData.dicdes}"/>
+						</td>
+						<td>
+							上级代码：
+						</td>
+						<td>
+							<input type=text name="dicParentName" id="dicParentName" value="${DisplayData.dicParentName}" readonly/>
+							<input type=hidden name="dicprarentid" id="dicprarentid" value="${DisplayData.dicData.dicprarentid}"/>
+							<button type="button" id="selectdicparentid" class="DTTT_button" onClick="selectDicParentId();"
+								style="height:25px;margin:0px 0px 0px 0px;" >选择</button>
+							<button type="button" id="clear" class="DTTT_button" onClick="clearDicParentId();"
+								style="height:25px;margin:0px 0px 0px 0px;" >清空</button>
 
-		</table>
+						
+						</td>
+					</tr>
+					<tr>
+						<td>
+							是否叶子节点：
+						</td>
+						<td>
+							<select name="isleaf" id="dicisleaf">
+								<option value ="0">否</option>
+								<option value ="1">是</option>
+							</select>
+						</td>
+						<td>
+							序号：
+						</td>
+						<td>
+							<input type=text name="sortno" id="sortno" value="${DisplayData.dicData.sortno}"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan=2>
+							<input type=checkbox name="enableflag" id="enableflag" value="0"/>选中有效
+						</td>
+					</tr>					
+					<tr>
+						<td colspan=4>
+							<button type="button" id="close" class="DTTT_button" onClick="doReturn();"
+									style="height:25px;margin:0px 5px 0px 0px;float:right;" >返回</button>
+							<button type="button" id="save" class="DTTT_button" onClick="saveUpdate();"
+									style="height:25px;margin:0px 5px 0px 0px;float:right;" >保存</button>
+						</td>
+					</tr>
+		
+				</table>
+			</div>
 		<br>
 	</form>
 
@@ -105,7 +106,33 @@
 	var operType = '';
 	var isUpdateSuccessed = false;
 	var updatedRecordCount = parseInt('${DisplayData.updatedRecordCount}');
+	var validatorBaseInfo;
 	$(function(){
+		
+		validatorBaseInfo = $("#form").validate({
+			rules: {
+				dicTypeName: {
+					required: true,	
+				},
+				dicname: {
+					required: true,
+					maxlength: 60,
+				},
+				dicid: {
+					required: true,								
+					maxlength: 120,
+				},
+			},
+			errorPlacement: function(error, element) {
+			    if (element.is(":radio"))
+			        error.appendTo(element.parent().next().next());
+			    else if (element.is(":checkbox"))											    	
+			    	error.insertAfter(element.parent().parent());
+			    else
+			    	error.insertAfter(element);
+			}
+		});		
+		
 		operType = $('#operType').val();
 			
 		if (operType == 'add' || operType == 'addsub' || operType == 'addsubfromtype') {
@@ -124,13 +151,18 @@
 			} else {
 				$('#save').val("保存修正");
 				$('#dicid').attr('readonly', true);
+				$('#selectdictype').attr("disabled", true);
 			}
 		}
 		if ('${DisplayData.isOnlyView}' != '') {
-			setPageReadonly('dic');
+			//setPageReadonly('dic');
+			$('#save').attr("disabled", true);
+			$('#selectdicparentid').attr("disabled", true);
+			$('#selectdictype').attr("disabled", true);
+			$('#clear').attr("disabled", true);
 		}
 
-		if ('${DisplayData.dicData.enableflag}' != '1') {
+		if ('${DisplayData.dicData.enableflag}' == '0') {
 			$('#enableflag').attr("checked", "true");
 		}
 
@@ -150,6 +182,10 @@
 		
 	});
 
+	function setReadonly(ctl, flag) {
+		$(ctl).attr('readonly', flag);		
+	}
+	
 	function inputCheck() {
 		var str = '';
 
@@ -194,33 +230,49 @@
 	}
 
 	function saveUpdate() {
-		if (inputCheck()) {
+		if (validatorBaseInfo.form()) {
 			if (confirm("确定要保存吗？")) {
+				
+				var actionUrl;
+				
 				if (operType == 'add' || operType == 'addsub' || operType == 'addsubfromtype') {
-					$('#form').attr("action", "${ctx}/diccode?methodtype=add");
+					actionUrl = "${ctx}/diccode?methodtype=add";
 				} else {
-					$('#form').attr("action", "${ctx}/diccode?methodtype=update");
+					actionUrl = "${ctx}/diccode?methodtype=update";
 				}
-				$('#form').submit();
+				
+				$.ajax({
+					type : "POST",
+					contentType : 'application/json',
+					dataType : 'json',
+					url : actionUrl,
+					data : JSON.stringify($('#form').serializeArray()),// 要提交的表单
+					success : function(d) {
+						if (d.rtnCd != "000") {
+							alert(d.message);	
+						} else {
+							reloadTabWindow();
+							doReturn();
+						}
+						
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown) {
+						//alert(XMLHttpRequest.status);					
+						//alert(XMLHttpRequest.readyState);					
+						//alert(textStatus);					
+						//alert(errorThrown);
+					}
+				});				
+								
 			}
 		}	
 	}
 	
-	function closeWindow(isNeedConfirm) {
-		if (isNeedConfirm == '') {
-			if (operType == 'add' || operType == 'addsub' ||  operType == 'update' || operType == 'addsubfromtype') {
-				if (confirm("确定要离开吗？")) {
-					self.opener = null;
-					self.close();
-				}
-			} else {
-				self.opener = null;
-				self.close();
-			}
-		} else {
-			self.opener = null;
-			self.close();
-		}
+	function doReturn() {
+
+		var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+		parent.layer.close(index); //执行关闭
+		
 	}
 
 	function refreshOpenerData() {
@@ -233,7 +285,8 @@
 	}
 
 	function selectDicType() {
-		callDicTypeSelect("dictypeid", "dicTypeName", "0", "", "");
+		var parentindex = parent.layer.getFrameIndex(window.name);
+		callDicTypeSelect("dictypeid", "dicTypeName", "0", "", "", parentindex);
 	}
 	
 	function selectDicParentId() {
@@ -241,14 +294,18 @@
 			alert("请先选择代码类");
 			return false;
 		}
-
-		callDicTypeSelect("dicprarentid", "dicParentName", "1", $('#dictypeid').val(), "");
+		var parentindex = parent.layer.getFrameIndex(window.name);
+		callDicTypeSelect("dicprarentid", "dicParentName", "1", $('#dictypeid').val(), "", parentindex);
 	}
 
 	function clearDicParentId() {
 		$('#dicprarentid').val('');
 		$('#dicParentName').val('');
 	}
-	
+
+	function setDicType(id, name) {
+		$('#dictypeid').val(id);
+		$('#dicTypeName').val(name);
+	}
 </script>
 </html>

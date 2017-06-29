@@ -12,10 +12,12 @@
 		<input type="hidden" name="dicControl" id="dicControl" value="${DisplayData.dicControl}" />
 		<input type="hidden" name="dicControlView" id="dicControlView" value="${DisplayData.dicControlView}" />
 		<input type="hidden" name="treeType" id="treeType" value="${DisplayData.treeType}" />
+		<input type="hidden" name="index" id="index" value="${DisplayData.index}" />
 		<table>
 			<tr>
 				<td>
-					<input type=button value="选择" onClick="doSelect();"/>
+					<button type="button" id="close" class="DTTT_button" onClick="doSelect();"
+									style="height:25px;margin:0px 5px 0px 0px;" >选择</button>
 				</td>
 			</tr>
 		</table>
@@ -87,7 +89,6 @@
 
 	function doSelect() {
 
-		if(window.opener) {
 			var dicTypeCode = "";
 			var dicTypeName = "";
 			
@@ -127,16 +128,36 @@
 					}
 				}
 			}
+
 			if (dicTypeCode != "") {
-				window.opener.document.getElementById("${DisplayData.dicControl}").value = dicTypeCode;
-				window.opener.document.getElementById("${DisplayData.dicControlView}").value = dicTypeName;
-				self.opener = null;
-				self.close();
+				if ($("#index").val() != "") {
+					var body = parent.layer.getChildFrame('body', $("#index").val());
+					var inputList = body.find('input');
+		            for(var j = 0; j< inputList.length; j++){
+		                if ("${DisplayData.dicControl}" == $(inputList[j]).attr('name')) {
+		                	$(inputList[j]).val(dicTypeCode);
+		                }
+		                if ("${DisplayData.dicControlView}" == $(inputList[j]).attr('name')) {
+		                	$(inputList[j]).val(dicTypeName);
+		                }
+	
+		            }				
+				} else {
+					var curTab = parent.parent.$('#_main_center_tabs').tabs('getSelected');
+			        if (curTab && curTab.find('iframe').length > 0) {
+			            curTabWin = curTab.find('iframe')[0].contentWindow;
+			        }
+			        curTabWin.setDicTypeInfo(dicTypeName, dicTypeCode);
+				}
+				
+				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+				parent.layer.close(index); //执行关闭
+				
 			} else {
-				self.opener = null;
-				self.close();
+				var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+				parent.layer.close(index); //执行关闭
 			}			
-		}
+
 	}
 
 	function getChain(node) {
@@ -149,6 +170,9 @@
 		}
 	}
 
+	function test() {
+		alert(123);
+	}
 
 </script>
 </body>
