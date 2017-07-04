@@ -10,38 +10,15 @@
  <style>th, td { white-space: nowrap; }</style>
   	
 <script type="text/javascript">
-
-	var counter  = 0;
-	//Form序列化后转为AJAX可提交的JSON格式。
-	$.fn.serializeObject = function() {
-		var o = {};
-		var a = this.serializeArray();
-		$.each(a, function() {
-			if (o[this.name] !== undefined) {
-				if (!o[this.name].push) {
-					o[this.name] = [ o[this.name] ];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
-			}
-		});
-		return o;
-	};	
-	
 	
 	$(document).ready(function() {		
 		
-		
 		orderBomView();//订单BOM
-		
-		
-		
+				
 		$(".goBack").click(
 				function() {
 					var YSId = '${order.YSId}';
-					var materialId = '${order.materialId}';
-					var url = '${ctx}/business/bom?methodtype=orderDetail&YSId=' + YSId+'&materialId='+materialId;
+					var url = '${ctx}/business/requirement?methodtype=getOrderBomListInit&keyBackup=' + YSId;
 					location.href = url;		
 				});
 
@@ -96,25 +73,23 @@
 		</fieldset>	
 		
 		<fieldset>
-			<legend> 产品信息</legend>
+			<legend> 物料详情</legend>
+			<div class="list">
 				<table id="orderBom" class="display" style="width:98%">
 					<thead>				
 						<tr>
 							<th width="1px">No</th>
 							<th class="dt-center" style="width:120px">物料编码</th>
 							<th class="dt-center" >物料名称</th>
-							<th class="dt-center" style="width:60px">用量</th>
 							<th class="dt-center" style="width:30px">单位</th>
-							<th class="dt-center" style="width:60px">供应商</th>
-							<th class="dt-center" style="width:60px">订单数量</th>
-							<th class="dt-center" style="width:80px">总量</th>
-							<th class="dt-center" style="width:60px">当前库存</th>
-							<th class="dt-center" style="width:80px">建议采购量</th>
-							<th class="dt-center" style="width:60px">单价</th>
-							<th class="dt-center" style="width:60px">总价</th>
+							<th class="dt-center" style="width:80px">用量</th>
+							<th class="dt-center" style="width:80px">供应商</th>
+							<th class="dt-center" style="width:80px">生产数量</th>
+							<th class="dt-center" style="width:100px">总量</th>
 						</tr>
 					</thead>			
 				</table>
+				</div>
 			</fieldset>	
 		
 		<div style="clear: both"></div>		
@@ -131,14 +106,17 @@ function orderBomView() {
 		table.fnDestroy();
 	}
 	var t2 = $('#orderBom').DataTable({
-		"paging": false,
+		"paging": true,
+		 "iDisplayLength" : 50,
+		"lengthChange":false,
+		//"lengthMenu":[10,150,200],//设置一页展示20条记录
 		"processing" : true,
-		"serverSide" : false,
+		"serverSide" : true,
 		"stateSave" : false,
+		"ordering "	:true,
 		"searching" : false,
 		"pagingType" : "full_numbers",
-		"retrieve" : false,
-		"async" : false,
+		"retrieve" : true,
 		"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBom&YSId="+YSId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
@@ -149,7 +127,6 @@ function orderBomView() {
 				"data" : null,
 				success: function(data){
 					fnCallback(data);
-					foucsInit();//input获取焦点初始化处理
 					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -163,15 +140,11 @@ function orderBomView() {
 			{"data": null,"className" : 'td-center'},
 			{"data": "materialId"},
 			{"data": "materialName"},
-			{"data": "quantity","className" : 'td-right'},
 			{"data": "unit","className" : 'td-center'},
+			{"data": "quantity","className" : 'td-right'},
 			{"data": "supplierId"},
 			{"data": null,"className" : 'td-right'},
 			{"data": null,"className" : 'td-right'},
-			{"data": "availabelToPromise","className" : 'td-right'},
-			{"data": null,"className" : 'td-right'},
-			{"data": "price","className" : 'td-right'},
-			{"data": null,"className" : 'td-right'},	
 		 ],
 		"columnDefs":[
     		{"targets":2,"render":function(data, type, row){
@@ -184,38 +157,27 @@ function orderBomView() {
     			var materialId = row["materialId"];
     			var subBomId = row["subBomId"];
     			var rownum = row["rownum"]-1;
-    			//rtn = materialId;
-    			rtn= "<a href=\"###\" onClick=\"doEditMaterial('#orderBom','" + row["materialRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
-    			// rtn=rtn+ "<input type=\"hidden\" id=\"bomDetailList"+rownum+".materialid\" name=\"bomDetailList["+rownum+"].materialid\" value=\""+materialId+"\">";
-    			return rtn;
+    			rtn= "<a href=\"###\" onClick=\"doEditMaterial('" + row["materialRecordId"] +"','"+ row["parentId"] + "')\">"+materialId+"</a>";
+      			return rtn;
     		}},
     		{"targets":6,"render":function(data, type, row){
     			
-    			var quantity =  '${order.quantity}' ;
+    			var quantity =  '${order.totalQuantity}' ;
     			return quantity;
     		}},
     		{"targets":7,"render":function(data, type, row){
-    			var order = currencyToFloat('${order.quantity}' );
+    			var order = currencyToFloat('${order.totalQuantity}' );
     			var quantity = currencyToFloat( row["quantity"] );				    			
-    			var total = floatToCurrency( order * quantity );			    			
-    			return total;
-    		}},
-    		{"targets":11,"render":function(data, type, row){
-    			var price = currencyToFloat(row["price"] );
-    			var order = currencyToFloat('${order.quantity}' );
-    			var quantity = currencyToFloat( row["quantity"] );				    			
-    			var total = floatToCurrency( order * quantity * price);		    			
+    			var total = floatToCurrency( order * quantity );		    			
     			return total;
     		}},
 	 		{
 				"visible" : false,
-				"targets" : [5,8,9]
-			}
-          
+				"targets" : []
+			}          
         ] 
-	});
+	}).draw();
 	
-
 	
 	t2.on('click', 'tr', function() {
 
@@ -242,7 +204,7 @@ function orderBomView() {
 }//ajax()
 
 
-function doEditMaterial(rownum,recordid,parentid) {
+function doEditMaterial(recordid,parentid) {
 	//accessFlg:1 标识新窗口打开
 	var url = '${ctx}/business/material?methodtype=detailView&keyBackup=1';
 	url = url + '&parentId=' + parentid+'&recordId='+recordid;
@@ -256,25 +218,7 @@ function doEditMaterial(rownum,recordid,parentid) {
 		title : false,
 		content : url,
 		//只有当点击confirm框的确定时，该层才会关闭
-		cancel: function(index){ 
-			var body = layer.getChildFrame('body', index);  //加载目标页面的内容
-			var price = body.find('#price').val();
-			
-			var $oQuantity = $('#purchaseList'+rownum+'\\.quantity');
-			var $oPricei = $('#purchaseList'+rownum+'\\.price');
-			var $oTotali = $('#purchaseList'+rownum+'\\.totalprice');
-			
-			var fQuantity = currencyToFloat($oQuantity.val());
-			var fPrice = currencyToFloat(price);//子窗口传回来的新的单价
-			
-			var vPrice = float5ToCurrency(fPrice);
-			var total = floatToCurrency( fQuantity * fPrice );
-			
-          	$oPricei.val(vPrice); //赋给当前页面元素
-          	$('#price'+rownum).text(vPrice); //赋给当前页面元素
-          	$oTotali.val(total); //赋给当前页面元素
-          	$('#totalprice'+rownum).text(total);
-          	
+		cancel: function(index){           	
 			layer.close(index);
 		}    
 	});		

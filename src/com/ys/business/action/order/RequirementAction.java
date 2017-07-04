@@ -191,13 +191,21 @@ public class RequirementAction extends BaseAction {
 				dataMap = getPurchasePlanList(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "orderBomInit"://采购方案一览
+			//case "orderBomInit"://采购方案一览
+			//	doInit(Constants.FORM_ORDERBOM);
+			//	rtnUrl = "/business/requirement/purchaseplanmain";
+			//	break;
+			case "getOrderBomListInit":
 				doInit(Constants.FORM_ORDERBOM);
-				rtnUrl = "/business/requirement/purchaseplanmain";
+				rtnUrl = "/business/requirement/orderbommain";
 				break;
 			case "getOrderBomList":
 				dataMap = getOrderBomList(data);
 				printOutJsonObj(response, dataMap);
+				break;
+			case "getOrderBomDetail":
+				getOrderBomDetail();
+				rtnUrl = "/business/requirement/orderbomview";
 				break;
 				
 		}
@@ -399,9 +407,14 @@ public class RequirementAction extends BaseAction {
 	public HashMap<String, Object> getOrderBom() throws Exception{
 		
 		return  service.getOrderBomDetail();
-			
 	}
 	
+	public void getOrderBomDetail() throws Exception{
+
+		String YSId = request.getParameter("YSId");
+		service.getOrderDetail(YSId);
+	}
+
 
 	public void updateOrderBomQuantity() throws Exception{
 		

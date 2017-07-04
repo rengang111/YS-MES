@@ -124,10 +124,7 @@ public class RequirementService extends CommonService {
 		String length = getJsonData(data, "iDisplayLength");
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
-		}		
-		
-		//String key1 = getJsonData(data, "keyword1").toUpperCase();
-		//String key2 = getJsonData(data, "keyword2").toUpperCase();
+		}
 
 		String[] keyArr = getSearchKey(Constants.FORM_PURCHASEPLAN,data,session);
 		String key1 = keyArr[0];
@@ -175,16 +172,13 @@ public class RequirementService extends CommonService {
 		String length = getJsonData(data, "iDisplayLength");
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
-		}		
-		
-		//String key1 = getJsonData(data, "keyword1").toUpperCase();
-		//String key2 = getJsonData(data, "keyword2").toUpperCase();
+		}
 
-		String[] keyArr = getSearchKey(Constants.FORM_PURCHASEPLAN,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_ORDERBOM,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
-		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderBomList");
 		
 		baseQuery = new BaseQuery(request, dataModel);
@@ -1588,8 +1582,7 @@ public class RequirementService extends CommonService {
 		
 		if(dataModel.getRecordCount() > 0){
 			HashMap.put("recordsTotal", dataModel.getRecordCount());
-			HashMap.put("data", dataModel.getYsViewData());		
-	
+			HashMap.put("data", dataModel.getYsViewData());	
 		}		
 				
 		return HashMap;

@@ -324,4 +324,30 @@
     <having></having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="getOrderBomList" />
+     <where>
+   		<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
+       	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="recordId" alias="" ctype="" />
+      <f name="YSId" alias="" ctype="" />
+      <f name="bomId" alias="" ctype="" />
+      <f name="materialId" alias="" ctype="" />
+      <f name="materialName" alias="" ctype="" />
+      <f name="quantity" alias="" ctype="" />
+      <f name="deliveryDate" alias="" ctype="" />
+      <f name="unit" alias="" ctype="计量单位" />
+      <f name="deleteFlag" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_orderbomlist A WHERE A.deleteFlag = '0' </from>
+    <orderby>a.bomId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>
