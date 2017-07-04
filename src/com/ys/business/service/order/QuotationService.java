@@ -300,6 +300,7 @@ public class QuotationService extends BaseService {
 			ts.commit();
 		}
 		catch(Exception e) {
+			System.out.print(e.getMessage());
 			ts.rollback();
 			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}

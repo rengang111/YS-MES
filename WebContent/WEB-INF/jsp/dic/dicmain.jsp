@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <%@ include file="../common/common.jsp"%>
 <html>
-<body class="easyui-layout">
+<body>
 <div id="container">
 	<div id="main">
 	<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
@@ -77,13 +77,21 @@ function ajax() {
 
 	var t = $('#TMain').DataTable({
 			"paging": true,
-			"lengthMenu":[10,20,50],//设置一页展示10条记录
+			 "iDisplayLength" : 100,
+			"lengthChange":false,
+			//"lengthMenu":[50,100,200],//设置一页展示20条记录
 			"processing" : false,
-			"serverSide" : true,
-			"stateSave" : false,
-			"searching" : false,
-			"pagingType" : "full_numbers",
 			"retrieve" : true,
+			"stateSave" : true,
+			"pagingType" : "full_numbers",
+			"serverSide" : false,
+			"ordering "	:true,
+			"searching" : true,
+			//"processing" : false,
+			//"retrieve" : true,
+			//"stateSave" : true,
+			//"pagingType" : "full_numbers",
+			//"pageLength": 50,		
 			"sAjaxSource" : "${ctx}/diccode?methodtype=search",
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
@@ -151,6 +159,17 @@ function ajax() {
 		if ('${DisplayData.message}' != '') {
 			alert('${DisplayData.message}');
 		}
+		
+		$('#TMain').DataTable().on('click', 'tr', function() {
+			
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	        	$('#TMain').DataTable().$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }
+		});		
 		
 	});
 

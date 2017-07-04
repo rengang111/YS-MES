@@ -79,30 +79,27 @@ public class StorageAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "addinit":
-				doAddInit();
-				rtnUrl = "/business/inventory/storageadd";
-				break;
+				rtnUrl = doAddInit();
+				return rtnUrl;
 			case "edit":
 				doEdit();
-				rtnUrl = "/business/inventory/arrivaledit";
+				rtnUrl = "/business/inventory/storageedit";
+				break;
+			case "update":
+				doUpdate();
+				rtnUrl = "/business/inventory/storageview";
 				break;
 			case "insert":
 				doInsert();
-				rtnUrl = "/business/inventory/storagemain";
+				rtnUrl = "/business/inventory/storageview";
 				break;
 			case "delete":
 				doDelete(data);
-				printOutJsonObj(response, reqModel.getEndInfoMap());
 				return null;
-			case "detailView":
-				doShowDetail();
-				//printOutJsonObj(response, viewModel.getEndInfoMap());
-				rtnUrl = "/business/inventory/arrivalview";
-				break;
-			case "gotoArrivalView":
-				gotoArrivalView();
-				rtnUrl = "/business/inventory/arrivalview";
-				break;
+			case "getStockInDetail":
+				dataMap = doShowDetail();
+				printOutJsonObj(response, dataMap);
+				return null;
 				
 		}
 		
@@ -182,13 +179,20 @@ public class StorageAction extends BaseAction {
 		return dataMap;
 	}
 	
-	public void doAddInit(){
+	public String doAddInit(){
+
+		String rtnUrl = "/business/inventory/storageadd";
 		try{
-			service.addInit();
+			boolean viewFlag = service.addInit();
+			if(viewFlag){
+				rtnUrl = "/business/inventory/storageview";
+			}
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
+		
+		return rtnUrl;
 	}
 
 	public void doInsert(){
@@ -199,10 +203,18 @@ public class StorageAction extends BaseAction {
 		}
 	}
 	
+	public void doUpdate(){
+		try{
+			service.updateAndReturn();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	public void doEdit(){
 		try{
 			model.addAttribute("userName", userInfo.getUserName());
-			service.getContractByArrivalId();
+			service.edit();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -215,9 +227,9 @@ public class StorageAction extends BaseAction {
 
 	}
 	
-	public void doShowDetail() throws Exception{
+	public HashMap<String, Object> doShowDetail() throws Exception{
 		
-		service.showArrivalDetail();
+		return service.getStockInDetail();
 
 	}
 

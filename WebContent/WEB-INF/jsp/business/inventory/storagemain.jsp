@@ -44,7 +44,7 @@
 		var type = pageFlg;
 		
 		if(type == '0'){
-			//未入库
+			//默认是质检合格或者让步接收
 			$("#keyword1").val("");
 			$("#keyword2").val("");
 			url += "&result1=020&result2=030";
@@ -56,8 +56,8 @@
 			url += "&result1=050&result2=050";
 			
 		}else{
-			//默认是质检合格或者让步接收
-			url += "&result1=020&result2=030";
+			//按钮查询,不设状态条件
+			url += "&result1=";
 		}
 		url += "&keyBackup="+pageFlg;
 		//alert(type+"----"+url)
@@ -112,9 +112,9 @@
 				{"data": "arrivalId"},
 				{"data": "contractId"},
 				{"data": "YSId"},
-				{"data": "checkDate","className" : 'td-center'},
 				{"data": "contractQuantity","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
+				{"data": "checkInDate","className" : 'td-right'},
 				
 				
 			],
@@ -126,7 +126,7 @@
 
 	    			var contractId = row["contractId"];	
 	    			var arrivalId = row["arrivalId"];		    			
-	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + contractId + "','" + arrivalId + "')\">"+row["materialId"]+"</a>";
+	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + contractId + "','" + arrivalId + "','" + row["receiptId"] + "')\">"+row["materialId"]+"</a>";
 	    			return rtn;
 	    		}},
 	    		{"targets":2,"render":function(data, type, row){
@@ -148,7 +148,7 @@
 		
 		var keyBackup = $("#keyBackup").val();
 
-		ajax("");
+		ajax("0");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -171,9 +171,9 @@
 	
 	
 	
-	function doShow(contractId,arrivalId) {
+	function doShow(contractId,arrivalId,receiptId) {
 
-		var url = '${ctx}/business/storage?methodtype=addinit&contractId=' + contractId+"&arrivalId="+arrivalId;
+		var url = '${ctx}/business/storage?methodtype=addinit&contractId=' + contractId+"&arrivalId="+arrivalId+"&receiptId="+receiptId;
 
 		location.href = url;
 	}
@@ -209,30 +209,18 @@
 		}
 		
 	}
-
-	function reload() {
-		
-		$('#TMaterial').DataTable().ajax.reload(null,false);
-		
-		return true;
-	}
 	
 	function selectContractByDate(type){
-		
+		if(type=='0'){
+
+			//$("#TMaterial thead").find("th").eq(8).text("待入库数量");
+		}else{
+			//$("#TMaterial thead").find("th").eq(8).text("已入库数量");
+			
+		}
 		ajax(type);
 	}
 	
-	function showYS(YSId){
-		var url = '${ctx}/business/order?methodtype=detailView&YSId=' + YSId;
-
-		openLayer(url);
-	}
-	
-	function showContract(contractId) {
-		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
-		openLayer(url);
-
-	};
 	
 </script>
 </head>
@@ -281,9 +269,9 @@
 					<th style="width: 80px;" class="dt-middle">到货登记</th>
 					<th style="width: 100px;" class="dt-middle">合同编号</th>
 					<th style="width: 50px;" class="dt-middle">耀升编号</th>
-					<th style="width: 60px;" class="dt-middle">质检日期</th>
 					<th style="width: 60px;" class="dt-middle">合同数量</th>
 					<th style="width: 60px;" class="dt-middle">入库数量</th>
+					<th style="width: 60px;" class="dt-middle">入库时间</th>
 				</tr>
 			</thead>
 		</table>

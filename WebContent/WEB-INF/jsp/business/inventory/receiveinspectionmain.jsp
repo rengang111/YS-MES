@@ -21,7 +21,7 @@
 			table.fnDestroy();
 		}
 		
-var url = "${ctx}/business/receiveinspection?methodtype=search";
+		var url = "${ctx}/business/receiveinspection?methodtype=search";
 		
 		var type = pageFlg;
 		
@@ -145,7 +145,7 @@ var url = "${ctx}/business/receiveinspection?methodtype=search";
 
 	$(document).ready(function() {
 		
-		ajax("");
+		ajax("0");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -209,10 +209,10 @@ var url = "${ctx}/business/receiveinspection?methodtype=search";
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0');">未检验</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1');">合格</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2');">让步接收</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('3');">退货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('0');">未检验</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('1');">合格</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('2');">让步接收</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('3');">退货</a>
 		</div>
 		<div id="clear"></div>
 		<table id="TMaterial" class="display dataTable">

@@ -190,33 +190,62 @@ public class StorageService extends CommonService {
 		return modelMap;
 	}
 
-	public void addInit() throws Exception {
-
+	public boolean addInit() throws Exception {
+		boolean viewFlag=true;
 		String contractId = request.getParameter("contractId");
 		String arrivalId = request.getParameter("arrivalId");
+		String receiptId = request.getParameter("receiptId");
 		
-		//取得入库申请编号
-		getStorageRecordId(contractId);
+		//确认是否已经入库
+		if(receiptId ==null || receiptId.equals("")){
+			viewFlag = false;
+			//取得入库申请编号
+			getStorageRecordId(contractId);
+			
+			//取得该到货编号下的物料信息
+			getContractDetail(arrivalId);
+		}else{
+			model.addAttribute("receiptId",receiptId);//已入库
+		}
 		
-		//取得该到货编号下的物料信息
-		getContractDetail(arrivalId);
+		return viewFlag;
+	
+	}
+	
+	public void edit() throws Exception {
+		String contractId = request.getParameter("contractId");
+		String arrivalId = request.getParameter("arrivalId");
+		String receiptId = request.getParameter("receiptId");
+		
+		//getArrivaRecord(receiptId);
+		model.addAttribute("receiptId",receiptId);//已入库
+		
 	
 	}
 
-	public void showArrivalDetail() {
+	public HashMap<String, Object> getStockInDetail() {
 
-		String arrivalId = request.getParameter("arrivalId");
-		getArrivaRecord(arrivalId);
+		String receiptId = request.getParameter("receiptId");
+		return getArrivaRecord(receiptId);
 	}
 	
 	public void insertAndReturn() throws Exception {
 
-		String contractId = insertStorage();
-		//getContractDetail(contractId);
+		String receiptid = insertStorage(true);
+		
+		model.addAttribute("receiptId",receiptid);//返回到页面
 	}
 	
-	private String insertStorage(){
-		String contractId = "";
+	public void updateAndReturn() throws Exception {
+
+		String receiptid = insertStorage(false);
+		
+		model.addAttribute("receiptId",receiptid);//返回到页面
+	}
+	
+	
+	private String insertStorage(boolean accessFlag){
+		String receiptid = "";
 		ts = new BaseTransaction();		
 		
 		try {
@@ -228,8 +257,16 @@ public class StorageService extends CommonService {
 			
 			//采购入库记录
 			insertPurchaseStockIn(reqData);
-			String receiptid = reqData.getReceiptid();
+			receiptid = reqData.getReceiptid();
 			String arrivalid = reqData.getArrivelid();
+			
+			//先删除已经存在的入库明细
+			String where = " receiptId = '"+receiptid+"'";
+			try {
+				detaildao.RemoveByWhere(where);
+			} catch (Exception e) {
+				// nothing
+			}
 			
 			//采购入库记录明细
 			for(B_PurchaseStockInDetailData data:reqDataList ){
@@ -250,10 +287,13 @@ public class StorageService extends CommonService {
 				detaildao.Create(data);	
 				
 				//更新当前库存
-				updateMaterial(materialid,q);
-			
-				//更新物料状态
-				updateInspectionProcess(arrivalid,materialid);
+				if(accessFlag){
+					updateMaterial(materialid,q);//更新入库记录时,不再更新库存数量
+
+					//更新物料状态
+					updateInspectionProcess(arrivalid,materialid);
+				}
+				
 			}
 			
 			ts.commit();			
@@ -268,7 +308,7 @@ public class StorageService extends CommonService {
 			}
 		}
 		
-		return contractId;
+		return receiptid;
 	}
 	
 	//更新当前库存
@@ -373,34 +413,25 @@ public class StorageService extends CommonService {
 	}
 	
 	
-	private void deleteArrivalById(String receiptId) {
+	private HashMap<String, Object> getArrivaRecord(String receiptId){
 
-		String where = " receiptId = '"+receiptId+"'";
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		try {
-			dao.RemoveByWhere(where);
-		} catch (Exception e) {
-			// nothing
-		}
-		
-	}
-	
-	private void getArrivaRecord(String arrivalId){
-		
-		try {
-			dataModel.setQueryName("getArrivaRecord");
-			userDefinedSearchCase.put("arrivalId", arrivalId);
+			dataModel.setQueryName("getPurchaseStockInById");
+			userDefinedSearchCase.put("receiptId", receiptId);
 			baseQuery = new BaseQuery(request, dataModel);
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 			baseQuery.getYsFullData();
 
-			model.addAttribute("arrival",dataModel.getYsViewData().get(0));
-			//String userId = dataModel.getYsViewData().get(0).get("userId");
-			
-			model.addAttribute("arrivalList",dataModel.getYsViewData());
+			modelMap.put("data", dataModel.getYsViewData());
+			model.addAttribute("head",dataModel.getYsViewData().get(0));
+			model.addAttribute("material",dataModel.getYsViewData());		
 			
 		} catch (Exception e) {
 			System.out.print(e.getMessage());
 		}
+
+		return modelMap;
 	}
 	
 		
@@ -474,25 +505,5 @@ public class StorageService extends CommonService {
 	}	
 	
 	
-	public void getContractByArrivalId() throws Exception {
-
-		String contractId = request.getParameter("contractId");
-		String arrivalId = request.getParameter("arrivalId");
-		
-		dataModel.setQueryName("getContractByArrivalId");		
-		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("contractId", contractId);		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = baseQuery.getSql();
-		sql = sql.replace("#", arrivalId);
-		baseQuery.getYsFullData(sql);
-
-		if(dataModel.getRecordCount() >0){
-			model.addAttribute("contract",dataModel.getYsViewData().get(0));
-			model.addAttribute("material",dataModel.getYsViewData());
-			model.addAttribute("arrivalId",arrivalId);
-		}
-		
-	}
 
 }

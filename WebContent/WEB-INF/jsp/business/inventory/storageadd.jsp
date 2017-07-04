@@ -77,93 +77,7 @@
 
 	};
 
-	function historyAjax() {
-		var contractId = '${contract.contractId }';
-		var t = $('#example2').DataTable({
-			
-			"paging": true,
-			"lengthChange":false,
-			"lengthMenu":[50,100,200],//设置一页展示20条记录
-			"processing" : false,
-			"serverSide" : false,
-			"stateSave" : false,
-			"ordering "	:true,
-			"searching" : false,
-			"retrieve" : true,
-			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/arrival?methodtype=getArrivalHistory&contractId="+contractId,
-			"fnServerData" : function(sSource, aoData, fnCallback) {
-				var param = {};
-				var formData = $("#condition").serializeArray();
-				formData.forEach(function(e) {
-					aoData.push({"name":e.name, "value":e.value});
-				});
-
-				$.ajax({
-					"url" : sSource,
-					"datatype": "json", 
-					"contentType": "application/json; charset=utf-8",
-					"type" : "POST",
-					"data" : JSON.stringify(aoData),
-					success: function(data){							
-						fnCallback(data);
-					},
-					 error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				})
-			},
-        	"language": {
-        		"url":"${ctx}/plugins/datatables/chinese.json"
-        	},
-			
-			"columns" : [
-			           {"data": null,"className":"dt-body-center"
-					}, {"data": "arrivalId","className":"dt-body-center"
-					}, {"data": "arriveDate","className":"dt-body-center"
-					}, {"data": "materialId"
-					}, {"data": "materialName"
-					}, {"data": "unit","className":"dt-body-center"
-					}, {"data": "quantity","className":"td-right"	
-					}, {"data": "status","className":"td-center"
-					}, {"data": null,"className":"td-center"
-					}
-				] ,
-				"columnDefs":[
-		    		{"targets":8,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["contractId"] + "','" + row["arrivalId"] + "')\">编辑</a>";
-		    			return rtn;
-		    		}},
-		    	]        
-			
-		}).draw();
-						
-		t.on('click', 'tr', function() {
-			
-			var rowIndex = $(this).context._DT_RowIndex; //行号			
-			//alert(rowIndex);
-
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-			
-		});
 		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
-
-	};
-	
 	$(document).ready(function() {
 
 		//设置光标项目
@@ -177,12 +91,6 @@
 		$("#stock\\.checkindate").val(shortToday());
 		
 		ajax();
-
-		//historyAjax();//到货登记历史记录
-
-		//autocomplete();
-		
-		//$('#example').DataTable().columns.adjust().draw();
 		
 		$("#stock\\.checkindate").datepicker({
 				dateFormat:"yy-mm-dd",
@@ -216,14 +124,7 @@
 			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insert");
 			$('#formModel').submit();
 		});
-		
-		$("#reverse").click(function () { 
-			$("input[name='numCheck']").each(function () {  
-		        $(this).prop("checked", !$(this).prop("checked"));  
-		    });
-		});
-		
-		
+				
 		foucsInit();
 		
 		
@@ -302,7 +203,7 @@
 					<td></td>
 					<td>${list.materialId }
 						<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
-					<td><span>${list.materialName }</span></td>
+					<td>${list.materialName }</td>
 					<td>${list.unit }</td>
 					<td>${list.checkDate }</td>
 					<td>${list.checkerName }</td>
@@ -321,13 +222,13 @@
 	</tbody>
 									
 	</table>
+	
+	<fieldset class="action" style="text-align: right;margin-top:10px">
+		<button type="button" id="insert" class="DTTT_button">入库</button>
+		<button type="button" id="goBack" class="DTTT_button">返回</button>
+	</fieldset>	
 	</div>
 </fieldset>
-<div style="clear: both"></div>
-<fieldset class="action" style="text-align: right;">
-	<button type="button" id="insert" class="DTTT_button">入库</button>
-	<button type="button" id="goBack" class="DTTT_button">返回</button>
-</fieldset>	
 
 
 </form:form>
