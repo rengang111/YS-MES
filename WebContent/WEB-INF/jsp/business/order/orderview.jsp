@@ -65,7 +65,7 @@
 				
 			  { "targets":3,"render":function(data, type, row){
 	    			var name = row[3];	    			
-	    			name = jQuery.fixedWidth(name,35);		    			
+	    			name = jQuery.fixedWidth(name,30);		    			
 	    			return name;
 	    	  }},
 	    	  { "targets":8,"render":function(data, type, row){
@@ -214,7 +214,7 @@
 			<thead>				
 			<tr>
 				<th width="1px">No</th>
-				<th class="dt-center" width="50px">耀升编号</th>
+				<th class="dt-center" width="65px">耀升编号</th>
 				<th class="dt-center" width="120px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
 				<th class="dt-center" width="80px">销售数量</th>

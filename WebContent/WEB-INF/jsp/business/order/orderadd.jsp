@@ -71,7 +71,7 @@
 							.add(
 							  [
 								'<td class="dt-center"></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid" style="width:70px;" class="read-only" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="short read-only ysidCheck" /></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
@@ -118,8 +118,9 @@
 				$().toastmessage('showWarningToast', "删除后,[ PI编号 ]可能会发生变化。");	
 				t.row('.selected').remove().draw();
 
-				//随时计算该客户的销售总价
-				totalPrice = currencyToFloat(totalPrice) - currencyToFloat(amount);			
+				//销售总价	
+				var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+				totalPrice = floatToSymbol( productCostSum(),currency);			
 				$('#order\\.totalprice').val(floatToCurrency(totalPrice));
 			}
 						
@@ -557,7 +558,7 @@
 		<c:forEach var="i" begin="0" end="0" step="1">		
 			<tr>
 				<td></td>
-				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" style="width:70px;" class="read-only ysidCheck"  /></td>
+				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" class="short read-only ysidCheck"  /></td>
 				<td><input type="text" name="attributeList1" class="attributeList1">
 					<form:hidden path="orderDetailLines[${i}].materialid" /></td>
 				<td><span></span></td>

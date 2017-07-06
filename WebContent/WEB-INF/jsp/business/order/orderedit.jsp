@@ -70,7 +70,7 @@
 							.add(
 							  [
 								'<td class="dt-center"></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"  id="orderDetailLines'+rowIndex+'.ysid" style="width:70px;"  class="read-only" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"  id="orderDetailLines'+rowIndex+'.ysid" class="short read-only ysidCheck" /></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 								'<td></td>',
@@ -115,8 +115,9 @@
 				$().toastmessage('showWarningToast', "删除后,[ PI编号 ]可能会发生变化。");	
 				t.row('.selected').remove().draw();
 
-				//随时计算该客户的销售总价
-				totalPrice = currencyToFloat(totalPrice) - currencyToFloat(amount);			
+				//销售总价	
+				var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+				totalPrice = floatToSymbol( productCostSum(),currency);			
 				$('#order\\.totalprice').val(floatToCurrency(totalPrice));	
 				$('#total').text(floatToCurrency(totalPrice));
 			}
@@ -480,7 +481,7 @@
 
 				<tr>				
 					<td></td>
-					<td><input type="text" name="orderDetailLines[${status.index}].ysid" id="orderDetailLines${status.index}.ysid" value="${order.YSId}" style="width:70px;" class="read-only"  /></td>
+					<td><input type="text" name="orderDetailLines[${status.index}].ysid" id="orderDetailLines${status.index}.ysid" value="${order.YSId}" class="short read-only ysidCheck"  /></td>
 					<td><input type="text" name="attributeList1" class="attributeList1"  value="${order.materialId}" />
 						<form:hidden path="orderDetailLines[${status.index}].materialid" value="${order.materialId }"/></td>
 					<td id="shortName${status.index}">${order.materialName}</td>
