@@ -9,8 +9,10 @@ import org.springframework.ui.Model;
 
 import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.db.dao.B_ArrivalDao;
+import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
+import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
@@ -259,13 +261,31 @@ public class ArrivalService extends CommonService {
 			String materialId,
 			String arrival) throws Exception{
 	
-		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
-		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+
+		//更新合同状态
+		B_PurchaseOrderData d = new B_PurchaseOrderData();
+		B_PurchaseOrderDao o = new B_PurchaseOrderDao();		
+		String strwhere = "contractId ='"+contractId +
+				"' AND deleteFlag='0' ";
+		List<B_PurchaseOrderData> l = 
+				(List<B_PurchaseOrderData>)o.Find(strwhere);
 		
 		String where = "contractId ='"+contractId +
 				"' AND materialId ='"+ materialId +
 				"' AND deleteFlag='0' ";
+		if(l ==null || l.size() == 0){
+			return ;
+		}		
+		d = l.get(0);
+		d.setStatus(Constants.ORDER_STS_5);//合同执行中
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"ArrivalUpdate",userInfo);
+		copyProperties(d,commData);		
+		o.Store(d);
 		
+		//更新到货数量
+		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
 		List<B_PurchaseOrderDetailData> list = 
 				(List<B_PurchaseOrderDetailData>)dao.Find(where);
 		

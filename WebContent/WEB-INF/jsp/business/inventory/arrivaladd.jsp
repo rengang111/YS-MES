@@ -383,7 +383,7 @@
 					<td><span>${list.unit }</span></td>
 					<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
 					<td><span>${list.quantity }</span></td>
-					<td>${list.accumulated }</td>
+					<td><span>${list.accumulated }</span></td>
 					<td><span id="surplus${ status.index}"></span></td>
 				</tr>
 				<script type="text/javascript">

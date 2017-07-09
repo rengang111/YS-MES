@@ -12,7 +12,7 @@ import com.ys.business.db.data.B_PriceSupplierData;
 
 @Repository
 public class MaterialModel extends BaseModel {
-	private final String className = "com.ys.business.service.material.MaterialService";
+	private final String className = "com.ys.business.service.order.MaterialService";
 	private String recordId = "";
 	private String attribute1 = "";
 	private String attribute2 = "";

@@ -207,7 +207,7 @@
 				<tr> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
 					<td width="200px">${contract.YSId }
-						<form:hidden path="contract.recordid" value="${contract.productRecordId }"/>
+						<form:hidden path="contract.recordid" value="${contract.contractRecordId }"/>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
@@ -247,7 +247,7 @@
 	<legend> 合同详情</legend>
 	
 	<div class="list">
-	<table id="example" class="display" width="100%">	
+	<table id="example" class="display">	
 		<thead>
 		<tr>
 			<th style="width:30px">No</th>

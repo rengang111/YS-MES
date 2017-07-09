@@ -210,12 +210,12 @@
       <f name="a.total" alias="" ctype="" />
       <f name="a.memo" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
-      <f name="IFNULL(b.recodeSum,'0')" alias="arrivalSum" ctype="" />
+      <f name="IFNULL(a.accumulated,'0')" alias="accumulated" ctype="" />
       <f name="a.surplus" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseorderdetail a LEFT JOIN v_arrivalquantitygroup b ON b.contractId = a.contractId AND b.materialId = a.materialId</from>
+   <from>v_purchaseorderdetail a WHERE a.deleteFlag='0'</from>
     <orderby>a.materialId</orderby>
     <groupby></groupby>
     <having></having>

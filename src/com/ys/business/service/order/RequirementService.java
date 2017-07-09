@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.swing.text.AbstractDocument.Content;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -38,6 +39,7 @@ import com.ys.business.db.data.B_MaterialRequirmentData;
 import com.ys.business.db.data.B_OrderBomData;
 import com.ys.business.db.data.B_OrderBomDetailData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
@@ -831,10 +833,10 @@ public class RequirementService extends CommonService {
 			}
 			
 			//删除既存合同信息
-			deleteContract(YSId);
+			//deleteContract(YSId);
 			
 			//删除既存合同明细
-			deleteContractDetail(YSId);
+			//deleteContractDetail(YSId);
 			
 			//虚拟库存处理
 			/*
@@ -866,13 +868,19 @@ public class RequirementService extends CommonService {
 	/**
 	 * 合同删除处理
 	 */
-	private void deleteContract(String YSId) {
+	@SuppressWarnings("rawtypes")
+	private void getContractStatus(String YSId) {
 		
 		B_PurchaseOrderDao dao = new B_PurchaseOrderDao();
 
-		String astr_Where = " YSId = '" + YSId +"'";	
+		String astr_Where = " YSId = '" + YSId +"'" +" AND Status > '"+Constants.ORDER_STS_4+"' ";	
 		try {
-			dao.RemoveByWhere(astr_Where);
+			Vector l = dao.Find(astr_Where);
+			if(l!=null && l.size()>0){
+				model.addAttribute("contractCreateFlag",false);
+			}else{
+				model.addAttribute("contractCreateFlag",true);
+			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}		
@@ -1856,7 +1864,7 @@ public class RequirementService extends CommonService {
 		
 		String YSId = insertProcurementPlan(true);	
 		
-		//getPurchaseDetail(YSId);
+		getContractStatus(YSId);//check合同是否存在,取得合同状态
 		String bomId = reqModel.getOrderBom().getBomid();
 		model.addAttribute("bomId",bomId);
 		
@@ -1879,6 +1887,8 @@ public class RequirementService extends CommonService {
 	public void creatPurchaseOrder() throws Exception {
 
 		String YSId = request.getParameter("YSId");
+		
+		//生成合同之前,判断合同是否存在,如果已经在执行中,不允许再次生成合同
 		
 		PurchaseOrderService contract = new PurchaseOrderService(
 				model,request,session,userInfo);

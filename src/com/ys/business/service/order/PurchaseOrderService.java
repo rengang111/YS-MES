@@ -811,7 +811,7 @@ public class PurchaseOrderService extends CommonService {
 
 		String contractId = reqModel.getContract().getContractid();
 		
-		//getContractBySupplierId(contractId);
+		getContractDetailList(contractId);
 		
 	}
 	

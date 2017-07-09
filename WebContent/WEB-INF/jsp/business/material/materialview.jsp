@@ -109,16 +109,17 @@
 	
 	<table id="TSupplier" style="width: 100%;" id="TOgran" class="display dataTable" >
 		<thead>				
-		<tr class="selected">
-			<th style="width:10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-			<th style="width:80px;" aria-label="供应商编码" class="dt-middle sorting_disabled">供应商编码</th>
-			<th style="width:50px;" aria-label="供应商简称" class="dt-middle sorting_disabled">简称</th>
-			<th style="width:200px;" aria-label="供应商名称" class="dt-middle sorting_disabled">供应商名称</th>
-			<th style="width:80px;" aria-label="采购单价" class="dt-middle sorting_disabled">采购单价</th>
-			<th style="width:30px;" aria-label="币种" class="dt-middle sorting_disabled">币种</th>
-			<th style="width:50px;" aria-label="报价单位" class="dt-middle sorting_disabled">报价单位</th>
-			<th style="width:60px;" aria-label="报价日期" class="dt-middle sorting_disabled">报价日期</th>
-			<th style="width:100px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
+		<tr>
+			<th style="width:10px;"  class="dt-middle ">No</th>
+			<th style="width:70px;"  class="dt-middle ">供应商编码</th>
+			<th style="width:30px;"  class="dt-middle ">简称</th>
+			<th class="dt-middle ">供应商名称</th>
+			<th style="width:60px;"  class="dt-middle ">采购单价</th>
+			<th style="width:30px;"  class="dt-middle ">币种</th>
+			<th style="width:50px;"  class="dt-middle ">报价单位</th>
+			<th style="width:60px;" class="dt-middle ">报价日期</th>
+			<th style="width:50px;" class="dt-middle ">采购</th>
+			<th style="width:100px;" class="dt-middle ">操作</th>
 		</tr>
 		</thead>
 	</table>
@@ -257,12 +258,13 @@ function supplierPriceView() {
 		"columns": [
 					{"data": null,"className" : 'td-center'},
 					{"data": "supplierId"},
-					{"data": "shortName"},
+					{"data": "shortName","className" : 'td-center'},
 					{"data": "fullName"},
 					{"data": "price","className" : 'td-right'},
 					{"data": "currency","className" : 'td-center'},
 					{"data": "unit","className" : 'td-center'},
 					{"data": "priceDate","className" : 'td-center'},
+					{"data": null,"className" : 'td-center'},
 					{"data": null,"className" : 'td-center'}
 		        ],
 		"columnDefs":[
@@ -270,12 +272,18 @@ function supplierPriceView() {
 		    			
 						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){
 		    			var edit = "<a href=\"#\" onClick=\"doUpdate('" + row["supplierId"] + "')\">编辑</a>";
 		    			var history = "<a href=\"#\" onClick=\"doShowHistory('" + row["supplierId"] + "')\">历史报价</a>";
 		    			var delet = "<a href=\"#\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
 		    			
 		    			return edit+"&nbsp;"+history+"&nbsp;"+delet;
+                    }},
+		    		{"targets":8,"render":function(data, type, row){
+		    			var materialId="${material.material.materialid}";
+		    			var edit = "<a href=\"#\" onClick=\"doUpdate('" + row["supplierId"] + "','" + row["materialId"] + "')\">直接采购</a>";
+		    			
+		    			return edit;
                     }}	           
 	         	] 
 		}

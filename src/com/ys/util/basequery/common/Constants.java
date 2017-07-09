@@ -30,6 +30,7 @@ public class Constants {
 	public static final String FORM_PURCHASEORDER= "purchaseorder";//采购合同
 	public static final String FORM_RECEIVEINSPECTION= "receiveinspection";//进料报检
 	public static final String FORM_STORAGE= "storage";//入库登记
+	public static final String FORM_PRODUCTDETAIL= "productdetail";//做单资料
 	
 	
 	/*
@@ -64,6 +65,7 @@ public class Constants {
 	public static final String ORDER_STS_2 = "2";//已审核
 	public static final String ORDER_STS_3 = "3";//采购方案做成
 	public static final String ORDER_STS_4 = "4";//合同签订
+	public static final String ORDER_STS_5 = "5";//合同执行中
 	
 	/**
 	 * 币种:与字典表关联
@@ -109,5 +111,16 @@ public class Constants {
 	public static final String ARRIVERECORD_2 = "030";//让步接收
 	public static final String ARRIVERECORD_3 = "040";//退货
 	public static final String ARRIVERECORD_4 = "050";//入库
+
+	/**
+	 * 做单资料详情
+	 */
+	public static final String PRODUCTDETAIL_1 = "machineConfiguration";//机器配置清单
+	public static final String PRODUCTDETAIL_2 = "plastic";	//塑料制品
+	public static final String PRODUCTDETAIL_3 = "accessory";//配件清单
+	public static final String PRODUCTDETAIL_4 = "storageBox";//产品收纳
+	public static final String PRODUCTDETAIL_5 = "label";	//标贴
+	public static final String PRODUCTDETAIL_6 = "textPrint";//文字印刷
+
 
 }

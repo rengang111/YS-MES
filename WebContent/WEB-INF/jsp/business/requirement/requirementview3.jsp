@@ -93,15 +93,18 @@
 		});
 		
 		$("#doContract").click(function() {
-			var YSId = '${order.YSId}';
-			var materialId='${order.materialId}';
-			var bomId=$('#orderBom\\.bomid').val();
-			var url = "${ctx}/business/requirement?methodtype=creatPurchaseOrder&YSId="+YSId+"&materialId="+materialId+"&bomId="+bomId;
-			location.href = url;
+			var contractCreateFlag = '${contractCreateFlag}';
+			if(contractCreateFlag == 'true'){
+				var YSId = '${order.YSId}';
+				var materialId='${order.materialId}';
+				var bomId=$('#orderBom\\.bomid').val();
+				var url = "${ctx}/business/requirement?methodtype=creatPurchaseOrder&YSId="+YSId+"&materialId="+materialId+"&bomId="+bomId;
+				location.href = url;
+			}else{
+				alert("该合同已经在执行中,不建议重新生成合同。\n请在 [采购合同] 中修改合同内容。")						
+			}
 			
 		});
-		
-		//foucsInit();//input获取焦点初始化处理
 	
 	});
 

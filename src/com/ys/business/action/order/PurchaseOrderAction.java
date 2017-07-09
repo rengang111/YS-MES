@@ -238,7 +238,7 @@ public class PurchaseOrderAction extends BaseAction {
 		
 		String contractId = reqModel.getContract().getContractid();
 		
-		//service.getContractBySupplierId(contractId);			
+		service.getContractDetailList(contractId);			
 		
 	}
 	

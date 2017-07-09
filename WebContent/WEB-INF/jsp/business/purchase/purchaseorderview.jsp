@@ -75,14 +75,14 @@
 		$('#example').DataTable().columns.adjust().draw();		
 		
 		$("#goBack").click(
-				function() {
-					//history.go(-1);
-					var url = '${ctx}/business/contract';
+				function() {	
+					var keyBackup = '${contract.YSId}';
+					var url = '${ctx}/business/contract?keyBackup='+keyBackup;
 					location.href = url;		
 				});
 		
 		$("#doEdit").click(
-				function() {			
+				function() {
 			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=edit");
 			$('#attrForm').submit();
 		});		
@@ -179,6 +179,12 @@
 			
 	</fieldset>
 	
+	<div style="clear: both"></div>
+	
+	<fieldset class="action" style="text-align: right;">
+		<button type="submit" id="doEdit" class="DTTT_button">编辑</button>
+		<button type="button" id="goBack" class="DTTT_button">返回</button>
+	</fieldset>
 	<div style="clear: both"></div>		
 	<fieldset>
 	<legend> 合同详情</legend>
@@ -264,12 +270,6 @@
 	</table>
 	
 	</fieldset>
-	<div style="clear: both"></div>
-	
-	<fieldset class="action" style="text-align: right;">
-		<!-- button type="submit" id="doEdit" class="DTTT_button">编辑</button-->
-		<button type="button" id="goBack" class="DTTT_button">返回</button>
-	</fieldset>		
 		
 </form:form>
 

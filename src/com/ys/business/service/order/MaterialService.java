@@ -1324,34 +1324,29 @@ public class MaterialService extends CommonService implements I_BaseService{
 
 	@Override
 	public void setNowUseImage(String key, String fileName) throws Exception {
-		// TODO Auto-generated method stub
-		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
-		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
 		
-		dbData.setId(key);
-		dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+		B_MaterialData dbData = new B_MaterialData();
 		
-		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
-		UserInfo userInfo = (UserInfo)request.getSession().getAttribute(BusinessConstants.SESSION_USERINFO);
+		dbData.setRecordid(key);
+		dbData = new B_MaterialDao(dbData).beanData;
+
+		commData = commFiledEdit(
+				Constants.ACCESSTYPE_UPD,"AlbumUpdate",userInfo);
+		copyProperties(dbData,commData);
+		dbData.setImage_filename(fileName);		
 		
-		//dbData = updateMouldBaseInfoModifyInfo(dbData, userInfo);
-		
-		//dbData.setImage_filename(src);
-		
-		dao.Store(dbData);
+		new B_MaterialDao().Store(dbData);
 	}
 
 	@Override
 	public String getNowUseImage(String key) throws Exception {
-		// TODO Auto-generated method stub
-		B_MouldBaseInfoDao dao = new B_MouldBaseInfoDao();
-		B_MouldBaseInfoData dbData = new B_MouldBaseInfoData();
+		B_MaterialData dbData = new B_MaterialData();
 		
 		String nowUseImage = "";
 		
 		try {
-			dbData.setId(key);
-			dbData = (B_MouldBaseInfoData)dao.FindByPrimaryKey(dbData);
+			dbData.setRecordid(key);
+			dbData = (B_MaterialData)dao.FindByPrimaryKey(dbData);
 			nowUseImage = dbData.getImage_filename();
 		}
 		catch(Exception e) {

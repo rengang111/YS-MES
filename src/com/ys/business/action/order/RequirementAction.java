@@ -289,17 +289,17 @@ public class RequirementAction extends BaseAction {
 		boolean flg = service.checkContractExsit(YSId);	
 		//默认到初始页面(新建订单BOM)
 		String rtnUrl= "/business/requirement/requirementadd";
-		if(flg){//合同check
+		if(flg){//合同存在时
 			service.checkOrderBomExsit(YSId);//订单BOM编号取得
 			return rtnUrl = "/business/requirement/requirementview4";
 		}
 		flg = service.checkPurchaseExsit(YSId);
-		if(flg){//采购方案check
+		if(flg){//采购方案存在时
 			service.checkOrderBomExsit(YSId);//订单BOM编号取得
 			return rtnUrl = "/business/requirement/requirementview3";
 		}
 		flg = service.checkOrderBomExsit(YSId);
-		if(flg){//订单BOMcheck
+		if(flg){//订单BOM存在时
 			return rtnUrl = "/business/requirement/requirementview2";
 		}
 		
