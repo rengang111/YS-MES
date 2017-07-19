@@ -1,7 +1,11 @@
 package com.ys.business.service.order;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
+//import com.ckfinder.connector.utils.FileUtils;
 import com.ys.business.action.model.order.ProductDesignModel;
 import com.ys.business.db.dao.B_ProductDesignDao;
 import com.ys.business.db.dao.B_ProductDesignDetailDao;
@@ -20,7 +25,6 @@ import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_ProductDesignData;
 import com.ys.business.db.data.B_ProductDesignDetailData;
 import com.ys.business.db.data.CommFieldsData;
-import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
@@ -32,6 +36,7 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Service
@@ -46,15 +51,16 @@ public class ProductDesignService extends CommonService {
 	private HttpServletRequest request;
 	
 	private B_ProductDesignDao dao;
+	private B_ProductDesignDetailDao detailDao;
 	private ProductDesignModel reqModel;
 	private UserInfo userInfo;
 	private BaseModel dataModel;
 	private  Model model;
 	private HashMap<String, String> userDefinedSearchCase;
 	private BaseQuery baseQuery;
-	private MultipartFile[] textPrintFile;
 	HashMap<String, Object> modelMap = null;
 	HttpSession session;
+	HttpServletResponse response;
 
 	public ProductDesignService(){
 		
@@ -63,14 +69,17 @@ public class ProductDesignService extends CommonService {
 	public ProductDesignService(
 			Model model,
 			HttpServletRequest request,
+			HttpServletResponse response,
 			HttpSession session,
 			ProductDesignModel reqModel,
 			UserInfo userInfo){
 		
 		this.dao = new B_ProductDesignDao();
+		this.detailDao = new B_ProductDesignDetailDao();
 		this.model = model;
 		this.reqModel = reqModel;
 		this.request = request;
+		this.response = response;
 		this.userInfo = userInfo;
 		this.session = session;
 		dataModel = new BaseModel();
@@ -311,17 +320,7 @@ public class ProductDesignService extends CommonService {
 					continue;
 				d.setProductdetailid(productdetailid);
 				d.setType(Constants.PRODUCTDETAIL_6);
-				//文件处理//保存文件的目录  
-				 if(null != textPrintFile && textPrintFile.length > 0){  
-			            //遍历并保存文件  
-			            for(MultipartFile file : textPrintFile){  
-					        String savePath = request.getSession().
-					        		getServletContext().getRealPath("/") 
-					        		+ "/file/productDesign/"
-					        		+YSId+"/";
-			                file.transferTo(new File(savePath + file.getOriginalFilename()));  
-			            }  
-			        }  
+				
 				insertProductDesignDetail(d);
 			}
 			
@@ -465,6 +464,32 @@ public class ProductDesignService extends CommonService {
 		dao.Store(mData);	
 	}
 	
+
+	private void updateTextPrint(
+			String recordid,
+			String filename) throws Exception{
+		
+		B_ProductDesignDetailData db = new B_ProductDesignDetailData();
+		db.setRecordid(recordid);
+		
+		try{
+			db = new B_ProductDesignDetailDao(db).beanData;
+			if(db == null || ("").equals(db)){			
+				return;
+			}					
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"ProductDesignDetailUpdate",userInfo);
+			copyProperties(db,commData);	
+			db.setFilename(filename);
+			
+			detailDao.Store(db);
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}	
+	}
+	
+	
 	private void insertProductDesign(
 			B_ProductDesignData mData) throws Exception{
 		
@@ -483,25 +508,25 @@ public class ProductDesignService extends CommonService {
 	
 	private void insertProductDesignDetail(
 			B_ProductDesignDetailData mData) throws Exception{
-		
-		B_ProductDesignDetailDao dao = new B_ProductDesignDetailDao();
-		
+				
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"ProductDesignDetailInsert",userInfo);
 		copyProperties(mData,commData);		
 		guid = BaseDAO.getGuId();
 		mData.setRecordid(guid);
 		
-		dao.Create(mData);	
+		detailDao.Create(mData);	
 	}
 	
 	private void deleteProductDesignDetail(
-			String  productdetailid) throws Exception{
+			String  productdetailid){
 		
-		B_ProductDesignDetailDao dao = new B_ProductDesignDetailDao();
-
 		String astr_Where = " productDetailId = '"+productdetailid+"' ";
-		dao.RemoveByWhere(astr_Where);	
+		try{
+			detailDao.RemoveByWhere(astr_Where);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	public void getProductDesignDetail(String contractId) throws Exception {
@@ -586,7 +611,7 @@ public class ProductDesignService extends CommonService {
 		String productId = request.getParameter("productId");
 		//getProductDesignById(YSId);
 		
-		getPackagePhoto(YSId,productId,"storage","storageFileList","storageFileCount");
+		getPhoto(YSId,productId,"storage","storageFileList","storageFileCount");
 		
 		return modelMap;
 	}
@@ -598,7 +623,7 @@ public class ProductDesignService extends CommonService {
 		String productId = request.getParameter("productId");
 		//getProductDesignById(YSId);
 		
-		getPackagePhoto(YSId,productId,"product","productFileList","productFileCount");
+		getPhoto(YSId,productId,"product","productFileList","productFileCount");
 		
 		return modelMap;
 	}
@@ -610,7 +635,7 @@ public class ProductDesignService extends CommonService {
 		String productId = request.getParameter("productId");
 		//getProductDesignById(YSId);
 		
-		getPackagePhoto(YSId,productId,"label","labelFileList","labelFileCount");
+		getPhoto(YSId,productId,"label","labelFileList","labelFileCount");
 		
 		return modelMap;
 	}
@@ -660,13 +685,13 @@ public class ProductDesignService extends CommonService {
 		String productId = request.getParameter("productId");
 		//getProductDesignById(YSId);
 		
-		getPackagePhoto(YSId,productId,"package","packageFileList","packageFileCount");
+		getPhoto(YSId,productId,"package","packageFileList","packageFileCount");
 		
 		return modelMap;
 	}
 	
 
-	public void getPackagePhoto(
+	public void getPhoto(
 			String YSId,String productId,
 			String folderName,String fileList,String fileCount) {
 		
@@ -849,5 +874,142 @@ public class ProductDesignService extends CommonService {
 		
 		return jsonObj;
 	}
+	
+	public JSONObject uploadFile(MultipartFile file,String folder) {
+		B_ProductDesignData reqDesign = reqModel.getProductDesign();
+		String recordid = request.getParameter("recordId");
+		String productId = reqDesign.getProductid();
+		String YSId = reqDesign.getYsid();
+		//int id = Integer.parseInt(request.getParameter("id"));
+		//String finalUserId = "";
+		String orgFileName = file.getOriginalFilename();
+		
+		String tempPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+
+				"/"+productId+"/"+YSId+"/"+folder;		
 
+		String realPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
+				"/"+productId+"/"+YSId+"/"+folder;
+		
+		String savePath = BusinessConstants.PATH_PRODUCTDESIGNTEMP +
+				productId+ "/"+YSId+ "/"+folder+
+				File.separator + orgFileName;
+		boolean isSuccess = false;
+		JSONObject jsonObj = new JSONObject();
+		
+		//String type = orgFileName.substring(orgFileName.lastIndexOf("."));
+		
+		try {
+			//同时copy两份,一份到临时目录,显示用,另一个备份
+			FileUtils.copyInputStreamToFile(file.getInputStream(), 
+					new File(tempPath, orgFileName));
+
+			FileUtils.copyInputStreamToFile(file.getInputStream(), 
+					new File(realPath, orgFileName));
+			
+			//更新文字印刷DB
+			updateTextPrint(recordid,savePath);
+			
+			isSuccess = true;			
+			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+		try {
+			if (isSuccess) {
+				jsonObj.put("result", "0");
+				jsonObj.put("path", savePath);
+			} else {
+				jsonObj.put("result", "1");
+				jsonObj.put("message", "上传失败");
+			}
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return jsonObj;
+	}
+
+
+	public void downloadFile() throws Exception {
+
+		//B_ProductDesignData reqDesign = reqModel.getProductDesign();
+		//String recordid = request.getParameter("recordId");
+		//String productId = reqDesign.getProductid();
+		//String YSId = reqDesign.getYsid();
+		String productId = request.getParameter("productId");
+		String YSId = request.getParameter("YSId");
+
+		JSONObject jsonObj = new JSONObject();
+		
+		//得到要下载的文件名
+		String fileName = request.getParameter("fileName"); //
+		fileName = new String(fileName.getBytes("iso8859-1"),"UTF-8");
+		//上传的文件都是保存在/WEB-INF/upload目录下的子目录当中
+		String fileDownloadPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+
+				"/"+productId+"/"+YSId+"/"+"textPrint";	
+		//通过文件名找出文件的所在目录
+		//String path = findFileSavePathByFileName(fileName,fileSaveRootPath);
+		//得到要下载的文件
+		File file = new File(fileDownloadPath + "\\" + fileName);
+		//如果文件不存在
+		if(!file.exists()){
+			request.setAttribute("message", "您要下载的资源已被删除！！");
+			jsonObj.put("message", "下载失败");
+			jsonObj.put("result", "1");
+			//request.getRequestDispatcher("/message.jsp").forward(request, response);
+			return;
+		}
+		//处理文件名
+		String realname = fileName.substring(fileName.indexOf("_")+1);
+		//设置响应头，控制浏览器下载该文件
+		response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(realname, "UTF-8"));
+		//读取要下载的文件，保存到文件输入流
+		FileInputStream in = new FileInputStream(file);
+		//创建输出流
+		OutputStream out = response.getOutputStream();
+		//创建缓冲区
+		byte buffer[] = new byte[1024];
+		int len = 0;
+		//循环将输入流中的内容读取到缓冲区当中
+		while((len=in.read(buffer))>0){
+			//输出缓冲区的内容到浏览器，实现文件下载
+			out.write(buffer, 0, len);
+		}
+		//关闭文件输入流
+		in.close();
+		//关闭输出流
+		out.close();
+	}
+		 
+		/**
+		* @Method: findFileSavePathByFileName
+		* @Description: 通过文件名和存储上传文件根目录找出要下载的文件的所在路径
+		* @Anthor:孤傲苍狼
+		* @param filename 要下载的文件名
+		* @param saveRootPath 上传文件保存的根目录，也就是/WEB-INF/upload目录
+		* @return 要下载的文件的存储目录
+		*/
+		public String findFileSavePathByFileName(String filename,String saveRootPath){
+			//int hashcode = filename.hashCode();
+			//int dir1 = hashcode&0xf; //0--15
+			//int dir2 = (hashcode&0xf0)>>4; //0-15
+			String dir = saveRootPath;
+			//String dir = saveRootPath + "\\" + dir1 + "\\" + dir2; //upload\2\3 upload\3\5
+			File file = new File(dir);
+			if(!file.exists()){
+				//创建目录
+				file.mkdirs();
+			}
+			return dir;
+		}
+	
+		 
 }

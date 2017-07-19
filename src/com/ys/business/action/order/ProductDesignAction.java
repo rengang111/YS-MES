@@ -1,6 +1,10 @@
 package com.ys.business.action.order;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,8 +23,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
+import org.springframework.web.util.WebUtils;
 
 import com.ys.business.action.model.order.ProductDesignModel;
+import com.ys.business.db.data.B_ProductDesignData;
 import com.ys.business.service.order.ProductDesignService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
@@ -43,10 +52,20 @@ public class ProductDesignAction extends BaseAction {
 	
 	@RequestMapping("productDesign")
 	public String init(@RequestBody String data,
+			//DefaultMultipartHttpServletRequest multipartRequest,
+			//@RequestParam(value = "pdfFile", required = false) MultipartFile[] headPhotoFile,
 			@ModelAttribute("formModel")ProductDesignModel dataModel, 
 			BindingResult result, 
 			Model model, 
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
+
+		/*		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+		if (isMultipart){ 
+		    MultipartHttpServletRequest multipartRequest3 = WebUtils.getNativeRequest(request, MultipartHttpServletRequest.class);
+		    MultipartFile file = multipartRequest3.getFile("pdfFile");
+			MultipartHttpServletRequest multipartRequest2 = (MultipartHttpServletRequest) request;		
+			MultipartFile headPhotoFile2 = multipartRequest2.getFile("pdfFile");			
+		}*/		
 		
 		String type = request.getParameter("methodtype");
 		String rtnUrl = null;
@@ -55,7 +74,7 @@ public class ProductDesignAction extends BaseAction {
 		this.userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		this.service = new ProductDesignService(model,request,session,dataModel,userInfo);
+		this.service = new ProductDesignService(model,request,response,session,dataModel,userInfo);
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -140,6 +159,9 @@ public class ProductDesignAction extends BaseAction {
 				dataMap = getPackage();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "downloadFile":
+				downloadFile();
+				break;
 				
 		}
 		
@@ -149,14 +171,13 @@ public class ProductDesignAction extends BaseAction {
 	@RequestMapping(value="productDesignPhotoUpload{id}")
 	public String doInit(
 			@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
-			//@RequestParam MultipartFile[] headPhotoFile, 
 			@RequestBody String data,
 			@ModelAttribute("formModel")ProductDesignModel dataModel,
 			BindingResult result, Model model, HttpSession session, 
 			HttpServletRequest request, HttpServletResponse response){
 
 		this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		this.service = new ProductDesignService(model,request,session,dataModel,userInfo);
+		this.service = new ProductDesignService(model,request,response,session,dataModel,userInfo);
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -178,6 +199,34 @@ public class ProductDesignAction extends BaseAction {
 			break;
 		case "uploadStoragePhoto":
 			uploadPhoto(headPhotoFile,"storage");
+			break;
+		}
+		
+		
+		return null;
+	}
+	@RequestMapping(value="productDesignFileUpload")
+	public String doInit(
+			@RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile,
+			@RequestBody String data,
+			@ModelAttribute("formModel")ProductDesignModel dataModel,
+			BindingResult result, Model model, HttpSession session, 
+			HttpServletRequest request, HttpServletResponse response){
+
+		this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		this.service = new ProductDesignService(model,request,response,session,dataModel,userInfo);
+		this.reqModel = dataModel;
+		this.model = model;
+		this.response = response;
+		this.session = session;
+
+		String type = request.getParameter("methodtype");
+		
+		switch(type) {
+		case "":
+			break;
+		case "uploadTextPrintFile":
+			uploadFile(pdfFile,"textPrint");
 			break;
 		}
 		
@@ -449,6 +498,39 @@ public class ProductDesignAction extends BaseAction {
 		try {
 			out = response.getWriter();
 			out.print(jsonObj);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	private void uploadFile(MultipartFile file,String folder) {
+		
+		PrintWriter out = null;
+			    
+		JSONObject jsonObj = service.uploadFile(file,folder);
+		
+		try {
+			out = response.getWriter();
+			out.print(jsonObj);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	private void downloadFile() {
+		
+		//PrintWriter out = null;
+			    
+		
+		try {
+			service.downloadFile();
+			//JSONObject jsonObj = service.downloadFile();
+			//out = response.getWriter();
+			//out.print(jsonObj);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

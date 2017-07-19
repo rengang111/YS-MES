@@ -513,6 +513,7 @@
       <f name="a.process" alias="" ctype="" />
       <f name="a.size" alias="" ctype="" />
       <f name="a.packingQty" alias="" ctype="" />
+      <f name="a.fileName" alias="" ctype="" />
       <f name="a.remark" alias="" ctype="" />
       <f name="a.purchaser" alias="" ctype="采购方" />
       <f name="a.purchaser" alias="purchaserId" ctype="" />

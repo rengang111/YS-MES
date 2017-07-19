@@ -642,7 +642,7 @@
 							'<td><input  name="textPrintList['+rowIndex+'].materialquality" id="textPrintList'+rowIndex+'.materialquality" class="middle" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].size"            id="textPrintList'+rowIndex+'.size" class="short" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].color"           id="textPrintList'+rowIndex+'.color" class="short" /></td>',
-							'<td><input  name="textPrintList['+rowIndex+'].pdffilename"     id="textPrintList'+rowIndex+'.pdffilename"   type="file" size="30"/></td>',
+							'<td><input  name="pdfFile"     type="file" size="30"/></td>',
 
 							]).draw();
 					
@@ -885,7 +885,7 @@
 <div id="container">
 <div id="main">
 	
-<form:form modelAttribute="formModel" method="POST"  
+<form:form modelAttribute="formModel" method="POST"
 	id="form" name="form"   autocomplete="off">
 	
 	<input type="hidden" id="PIId" value="${PIId}" />
@@ -1109,7 +1109,7 @@
 					<td><form:input path="textPrintList[${status.index}].materialquality"  class="middle" value="${list.materialQuality }" /></td>
 					<td><form:input path="textPrintList[${status.index}].size"  class="short" value="${list.size }" /></td>
 					<td><form:input path="textPrintList[${status.index}].color"  class="short" value="${list.color }" /></td>
-					<td><!-- input name="textPrint" type="file" size="30" / --></td>
+					<td></td>
 				</tr>
 			
 			</c:forEach>

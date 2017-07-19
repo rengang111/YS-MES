@@ -719,8 +719,28 @@ function textPrintView() {
 			{"data": "materialQuality"},
 			{"data": "size"},
 			{"data": "color"},
-			{"data": null},
-		 ],
+			{"data": null,"className" : 'td-center'},
+		],
+		"columnDefs":[
+    		{"targets":5,"render":function(data, type, row){
+    			var recordId=row["recordId"];
+    			var id = row["rownum"];
+    			var fileName = row["fileName"];
+    			var html="";
+    			if(fileName == null || fileName ==""){
+    				html= '<div id="textPrintUpload'+id+'"><input name="pdfFile" onchange="uploadFileFn('+'\''+recordId+'\''+','+id+');" type="file" size="30" /></div>'; 
+    				html+='<div id="textPrintDelete'+id+'" style="display:none"><a href="###" id="textPrintLink'+id+'" onclick="downloadFile('+'\''+recordId+'\''+','+id+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+','+id+')">删除</a></div>'
+    			}else{
+       				html= '<div id="textPrintUpload'+id+'" style="display:none"><input name="pdfFile" onchange="uploadFileFn('+'\''+recordId+'\''+','+id+');" type="file" size="30" /></div>'; 
+    				html+='<div id="textPrintDelete'+id+'"><a href="###" onclick="downloadFile('+'\''+fileName+'\''+','+id+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+','+id+')">删除</a></div>'
+    				//html+='<div id="textPrintDelete'+id+'"><a href="'+"${ctx}" + fileName+'" onclick="downloadFile('+'\''+fileName+'\''+','+id+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+','+id+')">删除</a></div>'
+   				
+    			}
+				//return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+				return html;
+				
+    		}}
+    	]
 		
 	});
 
@@ -833,8 +853,6 @@ function packageView() {
 <script type="text/javascript">
 
 function showUploadItem(item) {
-	$("#uploadFile"+item).show();
-	$("#uploadFile"+item).show();
 	
 	
 }
@@ -964,6 +982,42 @@ function addPhotoRow(tdTable,index){
 	
 	return trHtml;
 }
+
+function uploadFileFn(recordId,id) {
+	//alert("recordeId:"+recordId+"---id:"+id)
+    var url = '${ctx}/business/productDesignFileUpload?methodtype=uploadTextPrintFile'+'&id='+id+'&recordId='+recordId;
+    alert(url)
+    $("#form").ajaxSubmit({
+		type: "POST",
+		url:url,	
+		data:$('#form').serialize(),// 你的formid
+		dataType: 'json',
+	    success: function(data){
+	     	if(data.result == '0'){
+				$('#textPrintUpload'+id).remove();	
+				$('#textPrintDelete'+id).show();
+				
+				$('#textPrintLink'+id).attr('href', '${ctx}' + data.path);	
+				
+	   		 }
+	    	else{
+	    		alert(data.message);
+	    	}
+		},
+        error : function(XMLHttpRequest, textStatus, errorThrown) {  
+			
+        } 		
+	});	
+}
+
+function downloadFile(fileName){
+	var YSId = $("#productDesign\\.ysid").val();
+	var productId = $("#productDesign\\.productid").val();
+	var url = '${ctx}/business/productDesign?methodtype=downloadFile&fileName='+fileName+"&productId="+productId+"&YSId="+YSId;
+
+	location.href = url;
+}
+
 </script>
 	</body>
 </html>

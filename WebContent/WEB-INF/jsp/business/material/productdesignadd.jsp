@@ -574,7 +574,7 @@
 					var hidden = "";
 					
 					hidden = '';
-					
+					//<input  name="textPrintList['+rowIndex+'].pdffilename"     id="textPrintList'+rowIndex+'.pdffilename"   type="file" size="30"/>
 					var rowNode = $('#textPrint')
 						.DataTable()
 						.row
@@ -585,7 +585,7 @@
 							'<td><input  name="textPrintList['+rowIndex+'].materialquality" id="textPrintList'+rowIndex+'.materialquality" class="middle" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].size"            id="textPrintList'+rowIndex+'.size" class="short" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].color"           id="textPrintList'+rowIndex+'.color" class="short" /></td>',
-							'<td><input  name="textPrintList['+rowIndex+'].pdffilename"     id="textPrintList'+rowIndex+'.pdffilename"   type="file" size="30"/></td>',
+							'<td></td>',
 
 							]).draw();
 					
@@ -815,7 +815,7 @@
 			});
 		}).draw();
 		
-	}//包装描述
+	}//包装描述enctype="multipart/form-data"
 
 </script>
 
@@ -1041,7 +1041,7 @@
 					<td><form:input path="textPrintList[${i}].materialquality"  class="middle"/></td>
 					<td><form:input path="textPrintList[${i}].size"  class="short"/></td>
 					<td><form:input path="textPrintList[${i}].color"  class="short"/></td>
-					<td><!-- input name="textPrint" type="file" size="30" / --></td>
+					<td><!-- input name="pdfFile" id="pdfFile" type="file" size="30" /> --></td>
 				</tr>
 			
 			</c:forEach>
