@@ -115,12 +115,13 @@ public class Constants {
 	/**
 	 * 做单资料详情
 	 */
-	public static final String PRODUCTDETAIL_1 = "machineConfiguration";//机器配置清单
-	public static final String PRODUCTDETAIL_2 = "plastic";	//塑料制品
-	public static final String PRODUCTDETAIL_3 = "accessory";//配件清单
-	public static final String PRODUCTDETAIL_4 = "storageBox";//产品收纳
-	public static final String PRODUCTDETAIL_5 = "label";	//标贴
-	public static final String PRODUCTDETAIL_6 = "textPrint";//文字印刷
+	public static final String PRODUCTDETAIL_1 = "机器配置";//机器配置清单
+	public static final String PRODUCTDETAIL_2 = "塑料制品";	//塑料制品
+	public static final String PRODUCTDETAIL_3 = "配件清单";//配件清单
+	public static final String PRODUCTDETAIL_4 = "产品收纳";//产品收纳
+	public static final String PRODUCTDETAIL_5 = "标贴";	//标贴
+	public static final String PRODUCTDETAIL_6 = "文字印刷";//文字印刷
+	public static final String PRODUCTDETAIL_7 = "包装描述";
 
 
 }

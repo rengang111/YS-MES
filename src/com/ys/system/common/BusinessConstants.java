@@ -21,6 +21,8 @@ public class BusinessConstants {
 	public static final String BUSINESSPHOTOPATH = "/img/businessphoto/";
 	public static final String USERHEADPHOTOPATH = "/img/headphoto/";
 	public static final String USERHEADPHOTOTEMPPATH = "/img/headphototemp/";
+	public static final String PATH_PRODUCTDESIGNTEMP = "/img/productDesign/";
+	public static final String PATH_PRODUCTDESIGNFILE = "/file/productDesign/";
 	public static final String JPEGSUFFIX = ".jpg";
 	public static final String DUTY_PJMANAGER = "001";
 

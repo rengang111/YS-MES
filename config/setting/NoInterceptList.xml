@@ -10,6 +10,8 @@
 	<url>${ctx}/js/layer/*</url>
 	<url>${ctx}/js/lib/*</url>
 	<url>${ctx}/img/*</url>
+	<url>${ctx}/file/*</url>
+	<url>${ctx}/file</url>
 	<url>${ctx}/test123</url>
 	<url>${ctx}/doInit</url>
 	<url>${ctx}/company</url>

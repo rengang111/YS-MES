@@ -69,8 +69,8 @@
 	    			return name;
 	    	  }},
 	    	  { "targets":8,"render":function(data, type, row){
-	    			
-	    			var rtn = "<a href=\"#\" onClick=\"orderReview2('" + row[1] + "')\">做单资料</a>";
+	    			var PIId = '${order.PIId}';
+	    			var rtn = "<a href=\"#\" onClick=\"ShowProductDesign('" + PIId + "','" + row[1] + "')\">做单资料</a>";
 	    			return rtn;
 	    	  }}
 			  ] 	
@@ -133,6 +133,11 @@
 
 	function ShowBomPlan(YSId,materialId) {
 		var url = '${ctx}/business/bom?methodtype=orderDetail&YSId=' + YSId+'&materialId='+materialId;
+		location.href = url;
+	};
+	
+	function ShowProductDesign(PIId,YSId) {
+		var url = '${ctx}/business/productDesign?methodtype=addinit&PIId=' + PIId+'&YSId=' + YSId;
 		location.href = url;
 	};
 	
