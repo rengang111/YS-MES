@@ -1,10 +1,5 @@
 package com.ys.business.action.order;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,8 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,12 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
-import org.springframework.web.util.WebUtils;
-
 import com.ys.business.action.model.order.ProductDesignModel;
-import com.ys.business.db.data.B_ProductDesignData;
 import com.ys.business.service.order.ProductDesignService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
@@ -120,7 +108,6 @@ public class ProductDesignAction extends BaseAction {
 				break;
 			case "delete":
 				doDelete(data);
-				printOutJsonObj(response, reqModel.getEndInfoMap());
 				break;
 			case "detailView":
 				doShowDetail();
@@ -162,13 +149,33 @@ public class ProductDesignAction extends BaseAction {
 			case "downloadFile":
 				downloadFile();
 				break;
+			case "productPhotoDelete":
+				dataMap = deletePhoto("product","productFileList","productFileCount");
+				printOutJsonObj(response, dataMap);
+				break;
+			case "storagePhotoDelete":
+				dataMap = deletePhoto("storage","storageFileList","storageFileCount");
+				printOutJsonObj(response, dataMap);
+				break;
+			case "labelPhotoDelete":
+				dataMap = deletePhoto("label","labelFileList","labelFileCount");
+				printOutJsonObj(response, dataMap);
+				break;
+			case "packagePhotoDelete":
+				dataMap = deletePhoto("package","packageFileList","packageFileCount");
+				printOutJsonObj(response, dataMap);
+				break;
+			case "textPrintFileDelete":
+				dataMap = deleteTextPrintFile();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
 		return rtnUrl;
 	}	
 	
-	@RequestMapping(value="productDesignPhotoUpload{id}")
+	@RequestMapping(value="productDesignPhotoUpload")
 	public String doInit(
 			@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
 			@RequestBody String data,
@@ -182,6 +189,7 @@ public class ProductDesignAction extends BaseAction {
 		this.model = model;
 		this.response = response;
 		this.session = session;
+		HashMap<String, Object> dataMap = null;
 
 		String type = request.getParameter("methodtype");
 		
@@ -189,16 +197,20 @@ public class ProductDesignAction extends BaseAction {
 		case "":
 			break;
 		case "uploadPackagePhoto":
-			uploadPhoto(headPhotoFile,"package");
+			dataMap = uploadPhoto(headPhotoFile,"package","packageFileList","packageFileCount");
+			printOutJsonObj(response, dataMap);
 			break;
 		case "uploadLabelPhoto":
-			uploadPhoto(headPhotoFile,"label");
+			dataMap = uploadPhoto(headPhotoFile,"label","labelFileList","labelFileCount");
+			printOutJsonObj(response, dataMap);
 			break;
 		case "uploadProductPhoto":
-			uploadPhoto(headPhotoFile,"product");
+			dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
+			printOutJsonObj(response, dataMap);
 			break;
 		case "uploadStoragePhoto":
-			uploadPhoto(headPhotoFile,"storage");
+			dataMap = uploadPhoto(headPhotoFile,"storage","storageFileList","storageFileCount");
+			printOutJsonObj(response, dataMap);
 			break;
 		}
 		
@@ -226,7 +238,8 @@ public class ProductDesignAction extends BaseAction {
 		case "":
 			break;
 		case "uploadTextPrintFile":
-			uploadFile(pdfFile,"textPrint");
+			dataMap = uploadFile(pdfFile,"textPrint");
+			printOutJsonObj(response, dataMap);
 			break;
 		}
 		
@@ -367,7 +380,36 @@ public class ProductDesignAction extends BaseAction {
 		service.showArrivalDetail();
 
 	}
-
+	
+	public HashMap<String, Object> deletePhoto(
+			String folderName,String fileList,String fileCount){	
+		
+		try {
+			dataMap = service.deletePhotoAndReload(folderName,fileList,fileCount);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> deleteTextPrintFile(){	
+		
+		try {
+			
+			service.deleteTextPrintFile();
+			dataMap.put(INFO, SUCCESSMSG);	
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		return dataMap;
+	}
+	
 	public HashMap<String, Object> getProductPhoto(){	
 		
 		try {
@@ -489,36 +531,32 @@ public class ProductDesignAction extends BaseAction {
 	
 	
 	
-	private void uploadPhoto(MultipartFile[] headPhotoFile,String folder) {
+	private HashMap<String, Object> uploadPhoto(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) {
 		
-		PrintWriter out = null;
-			    
-		JSONObject jsonObj = service.uploadPhoto(headPhotoFile,folder);
+		HashMap<String, Object> map = null;
 		
 		try {
-			out = response.getWriter();
-			out.print(jsonObj);
+			 map = service.uploadPhotoAndReload(headPhotoFile,folderName,fileList,fileCount);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
 		
+		return map;
 	}
 	
-	private void uploadFile(MultipartFile file,String folder) {
-		
-		PrintWriter out = null;
-			    
-		JSONObject jsonObj = service.uploadFile(file,folder);
-		
+	private HashMap<String, Object> uploadFile(MultipartFile file,String folder) {
+			
 		try {
-			out = response.getWriter();
-			out.print(jsonObj);
+			dataMap= service.uploadFile(file,folder);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
 		
+		return dataMap;
 	}
 	
 	private void downloadFile() {

@@ -642,7 +642,7 @@
 							'<td><input  name="textPrintList['+rowIndex+'].materialquality" id="textPrintList'+rowIndex+'.materialquality" class="middle" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].size"            id="textPrintList'+rowIndex+'.size" class="short" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].color"           id="textPrintList'+rowIndex+'.color" class="short" /></td>',
-							'<td><input  name="pdfFile"     type="file" size="30"/></td>',
+							'<td></td>',
 
 							]).draw();
 					
@@ -1102,14 +1102,14 @@
 			</tr>
 		</thead>	
 		<tbody>
-			<c:forEach var="list" items="${textPrintList}" varStatus="status">
+			<c:forEach var="l" items="${textPrintList}" varStatus="status">
 				<tr>
 					<td></td>
-					<td><form:input path="textPrintList[${status.index}].componentname"  class="short" value="${list.componentName }" /></td>
-					<td><form:input path="textPrintList[${status.index}].materialquality"  class="middle" value="${list.materialQuality }" /></td>
-					<td><form:input path="textPrintList[${status.index}].size"  class="short" value="${list.size }" /></td>
-					<td><form:input path="textPrintList[${status.index}].color"  class="short" value="${list.color }" /></td>
-					<td></td>
+					<td><form:input path="textPrintList[${status.index}].componentname"  class="short" value="${l.componentName }" /></td>
+					<td><form:input path="textPrintList[${status.index}].materialquality"  class="middle" value="${l.materialQuality }" /></td>
+					<td><form:input path="textPrintList[${status.index}].size"  class="short" value="${l.size }" /></td>
+					<td><form:input path="textPrintList[${status.index}].color"  class="short" value="${l.color }" /></td>
+					<td><form:hidden path="textPrintList[${status.index}].filename"  class="short" value="${l.fileName }" /></td>
 				</tr>
 			
 			</c:forEach>
@@ -1132,14 +1132,14 @@
 			</tr>
 		</thead>	
 		<tbody>
-			<c:forEach var="list" items="${packageList}" varStatus="status">
+			<c:forEach var="i" items="${packageList}" varStatus="status">
 				<tr>
 					<td></td>
-					<td><form:input path="packageList[${status.index}].componentname"  class="short" value="${list.componentName }" /></td>
-					<td><form:input path="packageList[${status.index}].materialquality"  class="middle" value="${list.materialQuality }" /></td>
-					<td><form:input path="packageList[${status.index}].packingqty"  class="short" value="${list.packingQty }" /></td>
-					<td><form:input path="packageList[${status.index}].size"  class="short" value="${list.size }" /></td>
-					<td><form:input path="packageList[${status.index}].remark"  class="middle" value="${list.remark }" /></td>
+					<td><form:input path="packageList[${status.index}].componentname"  class="short" value="${i.componentName }" /></td>
+					<td><form:input path="packageList[${status.index}].materialquality"  class="middle" value="${i.materialQuality }" /></td>
+					<td><form:input path="packageList[${status.index}].packingqty"  class="short" value="${i.packingQty }" /></td>
+					<td><form:input path="packageList[${status.index}].size"  class="short" value="${i.size }" /></td>
+					<td><form:input path="packageList[${status.index}].remark"  class="middle" value="${i.remark }" /></td>
 				</tr>
 			
 			</c:forEach>
@@ -1176,12 +1176,6 @@ $(document).ready(function() {
 	packageView();//包装描述
 	
 	$( "#tabs" ).tabs();
-	
-	setMachineName();//设置机器配置默认项
-	setPlasticName();//塑料制品默认项
-	setLableName();//标贴
-	setTextPrintName();//文字印刷
-	setPackageName();//包装描述
 	
 	autocomplete();
 	
@@ -1228,67 +1222,9 @@ function doEditMaterial(recordid,parentid) {
 		  $('#baseBomTable').DataTable().ajax.reload(null,false);
 		  return false; 
 		}    
-	});		
-
+	});	
 };
 
-//机器配置
-function setMachineName(){
-
-	var name=new Array("钻夹头","开关","电机","线路板","电池","充电器");
-
-	$('#machineConfiguration tbody tr').each (function (index){
-		
-		$(this).find("td").eq(1).find("input").val(name[index]);
-
-	})
-}
-
-//塑料制品
-function setPlasticName(){
-
-	var name=new Array("机身","电池包壳体","充电器壳体","开关","正反转拨杆","单双速推扭","电池包按钮");
-
-	$('#plastic tbody tr').each (function (index){
-		
-		$(this).find("td").eq(1).find("input").val(name[index]);
-
-	})
-}
-//文字印刷
-function setTextPrintName(){
-
-	var name=new Array("说明书","警告说明书","CE声明");
-
-	$('#textPrint tbody tr').each (function (index){
-		
-		$(this).find("td").eq(1).find("input").val(name[index]);
-
-	})
-}
-//标贴
-function setLableName(){
-
-	var name=new Array("机身标贴正面","机身标贴反面","电池包标贴正面","电池包标贴反面","电池包底部标贴","充电器标贴");
-
-	$('#labelT tbody tr').each (function (index){
-		
-		$(this).find("td").eq(1).find("input").val(name[index]);
-
-	})
-}
-
-//包装
-function setPackageName(){
-
-	var name=new Array("彩盒","中盒","外箱");
-
-	$('#package tbody tr').each (function (index){
-		
-		$(this).find("td").eq(1).find("input").val(name[index]);
-
-	})
-}
 
 function foucsInit(){
 	

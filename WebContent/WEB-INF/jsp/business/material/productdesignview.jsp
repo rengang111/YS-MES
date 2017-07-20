@@ -16,6 +16,7 @@
 	id="form" name="form"   autocomplete="off">
 	
 	<input type="hidden" id="PIId" value="${PIId}" />
+	<input type="hidden" id="path" value="" />
 	<input type="hidden" id="productDetailId" value="${product.productDetailId}" />
 	<form:hidden path="productDesign.ysid"  value="${product.YSId}" />
 	<form:hidden path="productDesign.productid"  value="${product.productId}" />
@@ -186,7 +187,8 @@
 				<th class="dt-center" style="width:40px">材质</th>
 				<th class="dt-center" style="width:60px">尺寸</th>
 				<th class="dt-center" style="width:60px">颜色</th>
-				<th class="dt-center" style="width:60px">文件</th>
+				<th class="dt-center" style="width:120px">文件名</th>
+				<th class="dt-center" style="width:60px">操作</th>
 			</tr>
 		</thead>			
 	</table>
@@ -263,12 +265,12 @@ $(document).ready(function() {
 		var row = $("#productPhoto tbody tr.photo").length - 1;
 
 		//从 1 开始
-		var trHtml = addPhotoRow('uploadProductPhoto',productIndex);		
+		var trHtml = addPhotoRow('productPhoto','uploadProductPhoto',productIndex);		
 
 		$('#productPhoto tr.photo:eq('+row+')').after(trHtml);	
 		productIndex++;	
 		productIndex++;	
-		alert("row:"+row+"-----"+"::productIndex:"+productIndex)	
+		//alert("row:"+row+"-----"+"::productIndex:"+productIndex)	
 						
 		
 	});
@@ -279,7 +281,7 @@ $(document).ready(function() {
 		
 		var row = $("#storagePhoto tbody tr.photo").length - 1;
 
-		var trHtml = addPhotoRow('uploadStoragePhoto',storageIndex);		
+		var trHtml = addPhotoRow('storagePhoto','uploadStoragePhoto',storageIndex);		
 
 		$('#storagePhoto tr.photo:eq('+row+')').after(trHtml);	
 		storageIndex++;
@@ -294,7 +296,7 @@ $(document).ready(function() {
 		
 		var row = $("#packagePhoto tbody tr.photo").length - 1;
 
-		var trHtml = addPhotoRow('uploadPackagePhoto',packageIndex);	
+		var trHtml = addPhotoRow('packagePhoto','uploadPackagePhoto',packageIndex);	
 		
 		$('#packagePhoto tr.photo:eq('+row+')').after(trHtml);	
 		packageIndex++;	
@@ -308,7 +310,7 @@ $(document).ready(function() {
 		
 		var row = $("#labelPhoto tbody tr.photo").length - 1;
 
-		var trHtml = addPhotoRow('uploadLabelPhoto',labelIndex);		
+		var trHtml = addPhotoRow('labelPhoto','uploadLabelPhoto',labelIndex);		
 
 		$('#labelPhoto tr.photo:eq('+row+')').after(trHtml);	
 		labelIndex++;
@@ -719,24 +721,25 @@ function textPrintView() {
 			{"data": "materialQuality"},
 			{"data": "size"},
 			{"data": "color"},
+			{"data": "fileName"},
 			{"data": null,"className" : 'td-center'},
 		],
 		"columnDefs":[
-    		{"targets":5,"render":function(data, type, row){
+    		{"targets":6,"render":function(data, type, row){
     			var recordId=row["recordId"];
     			var id = row["rownum"];
+    			var componentName = row["componentName"];
     			var fileName = row["fileName"];
     			var html="";
     			if(fileName == null || fileName ==""){
-    				html= '<div id="textPrintUpload'+id+'"><input name="pdfFile" onchange="uploadFileFn('+'\''+recordId+'\''+','+id+');" type="file" size="30" /></div>'; 
-    				html+='<div id="textPrintDelete'+id+'" style="display:none"><a href="###" id="textPrintLink'+id+'" onclick="downloadFile('+'\''+recordId+'\''+','+id+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+','+id+')">删除</a></div>'
+    				html+='<input name="pdfFile" onchange="uploadFileFn('+'\''+recordId+'\''+');" type="file" size="30" />'; 
+    				//html+='<div id="textPrintDelete'+id+'" style="display:none"><a href="###" onclick="downloadFile('+'\''+fileName+'\''+','+id+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+')">删除</a></div>'
     			}else{
-       				html= '<div id="textPrintUpload'+id+'" style="display:none"><input name="pdfFile" onchange="uploadFileFn('+'\''+recordId+'\''+','+id+');" type="file" size="30" /></div>'; 
-    				html+='<div id="textPrintDelete'+id+'"><a href="###" onclick="downloadFile('+'\''+fileName+'\''+','+id+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+','+id+')">删除</a></div>'
+       				//html+='<div id="textPrintUpload'+id+'" style="display:none"><input name="pdfFile" onchange="uploadFileFn('+'\''+recordId+'\''+','+id+');" type="file" size="30" /></div>'; 
+    				html+='<a href="###" onclick="downloadFile('+'\''+fileName+'\''+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+','+'\''+componentName+'\''+')">删除</a>'
     				//html+='<div id="textPrintDelete'+id+'"><a href="'+"${ctx}" + fileName+'" onclick="downloadFile('+'\''+fileName+'\''+','+id+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+','+id+')">删除</a></div>'
    				
     			}
-				//return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 				return html;
 				
     		}}
@@ -852,172 +855,287 @@ function packageView() {
 </script>
 <script type="text/javascript">
 
-function showUploadItem(item) {
+function deletePhoto(tableId,tdTable,path) {
 	
-	
-}
-
-function uploadPhoto(tdTable,id) {
-		
-    var url = '${ctx}/business/productDesignPhotoUpload'+id+'?methodtype='+tdTable+'&id='+id;
-    //alert(url)
+	var url = '${ctx}/business/productDesign?methodtype='+tableId+'Delete';
+	url+='&tabelId='+tableId+"&path="+path;
+	    
+	if(!(confirm("确定要删除该图片吗？"))){
+		return;
+	}
     $("#form").ajaxSubmit({
 		type: "POST",
 		url:url,	
 		data:$('#form').serialize(),// 你的formid
 		dataType: 'json',
 	    success: function(data){
-	     	if(data.result == '0'){
-				$('#imgFile'+tdTable+id).attr('src', '${ctx}' + data.path);	
-				$('#uploadFile'+tdTable+id).remove();	
-				$('#deleteFile'+tdTable+id).show();
-				
-	   		 }
-	    	else{
-	    		alert(data.message);
-	    	}
-		},
-        error : function(XMLHttpRequest, textStatus, errorThrown) {  
+	    	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+				case "storagePhoto":
+					countData = data["storageFileCount"];
+					photo = data['storageFileList'];
+					break;
+				case "labelPhoto":
+					countData = data["labelFileCount"];
+					photo = data['labelFileList']
+					break;
+				case "packagePhoto":
+					countData = data["packageFileCount"];
+					photo = data['packageFileList']
+					break;
+				default:
+					break;
+			}
 			
-        } 		
-	});	
+			//删除后,刷新现有图片
+			$("#" + tableId + " tr:gt(0)").remove();
+			photoView(tableId, tdTable, countData, photo);
+
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("error:"+errorThrown)
+		}
+	});
 }
 
+function uploadPhoto(tableId,tdTable, id) {
 
-
-function photoView(id,tdTable,count,data){
-	var countView = (count%2 ==0) ?count:count+1;  //判断是否能整除2
-	//alert("id:"+id+"--count:"+count+"--countView:"+countView)
-	var row =0;
+	var url = '${ctx}/business/productDesignPhotoUpload'
+			+ '?methodtype=' + tdTable + '&id=' + id;
+	//alert(url)
+	$("#form").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#form').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
 	
-	for(var index=0;index<count;index++){
-		
-		var path = '${ctx}'+data[index];
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+				case "storagePhoto":
+					countData = data["storageFileCount"];
+					photo = data['storageFileList'];
+					break;
+				case "labelPhoto":
+					countData = data["labelFileCount"];
+					photo = data['labelFileList']
+					break;
+				case "packagePhoto":
+					countData = data["packageFileCount"];
+					photo = data['packageFileList']
+					break;
+				default:
+					break;
+			}
+			
+			//添加后,刷新现有图片
+			$("#" + tableId + " tr:gt(0)").remove();
+			photoView(tableId, tdTable, countData, photo);
+			
+			/*
+			if (data.result == '0') {
+				$('#imgFile' + tdTable + id).attr('src','${ctx}' + data.path);
+				$('#uploadFile' + tdTable + id).remove();
+				$('#deleteFile' + tdTable + id).show();
+	
+			} else {
+				alert(data.message);
+			}
+			*/
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("error:"+errorThrown)
+		}
+	});
+}
+
+function photoView(id, tdTable, count, data) {
+	
+	//var countView = (count % 2 == 0) ? count : count + 1; //判断是否能整除2
+	//alert("id:"+id+"--count:"+count+"--countView:"+countView)
+	
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
 		//alert(index+"::::::::::::"+path)
 		var trHtml = '';
-		
-		trHtml+='<tr style="text-align: center;" class="photo">';	
-		
-		trHtml+='<td>';
-		trHtml+='<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
-		trHtml+='<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml+='<td></td>';
-		trHtml+='<td width="50px"><a id="uploadFile'+index+'" href="###" onclick="showUploadItem('+index+');">删除</a></td>';
-		trHtml+="</tr>";
-		trHtml+='<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
-		trHtml+='</tr>';
-		trHtml+='</table>';
-		trHtml+='</td>';
-		
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+
+		trHtml += '<td>';
+		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td></td>';
+		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
+				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+
 		index++;
-		if(((index+1) == countView) && (count < countView)){
+		if (index == count) {
 			//因为是偶数循环,所以奇数张图片的最后一张为空
-			path= '${ctx}'+"/images/blankDemo.png";
+			path = '${ctx}' + "/images/blankDemo.png";
+			index=0;
 
-			var trHtmlOdd='<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" onchange="uploadPhoto('+'\''+tdTable+'\''+','+index+');" accept="image/*" style="max-width: 250px;" /></div></td>';
-			trHtmlOdd+='<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###" onclick=\"deletePhoto()\">删除</a></div></td>';
-			trHtmlOdd+="</tr>";
-			trHtmlOdd+='<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';			
-		}else{
-			path = '${ctx}'+data[index];
-			var trHtmlOdd='<td></td>';
-			trHtmlOdd+='<td width="50px"><a id="uploadFile1'+index+'" href="###" onclick="showUploadItem('+index+');">删除</a></td>';
-			trHtmlOdd+="</tr>";
-			trHtmlOdd+='<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
-		}			
+			var trHtmlOdd = '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
+					'onchange="uploadPhoto(' + '\''+ id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
 			
-		trHtml+='<td>';
-		trHtml+='<table style="width:400px;margin: auto;" class="form">';
-		trHtml+='<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml+=trHtmlOdd;
-		trHtml+='</tr>';
-		trHtml+='</table>';
-		trHtml+='</td>';		
-		trHtml+="</tr>";
+			trHtmlOdd += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###"'+ 
+					'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+			
+			trHtmlOdd += "</tr>";
+			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		} else {
+			path = '${ctx}' + data[index];
+			pathDel = data[index];
+			
+			var trHtmlOdd = '<td></td>';
+			
+			trHtmlOdd += '<td width="50px"><a id="uploadFile1' + index + '" href="###" '+
+					'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\''+ tdTable + '\'' + ','+ '\'' + pathDel + '\'' + ');">删除</a></td>';
+			
+			trHtmlOdd += "</tr>";
+			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		}
 
-		$('#'+id+' tr.photo:eq('+row+')').after(trHtml);	
+		trHtml += '<td>';
+		trHtml += '<table style="width:400px;margin: auto;" class="form">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += trHtmlOdd;
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+		trHtml += "</tr>";
+
+		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
 		row++;
-		
+
 	}
-	
+
 }
 
-function addPhotoRow(tdTable,index){
-	
-	for(var i=0;i<1;i++){
-		
-		var path = '${ctx}'+"/images/blankDemo.png";
+function addPhotoRow(id,tdTable, index) {
+
+	for (var i = 0; i < 1; i++) {
+
+		var path = '${ctx}' + "/images/blankDemo.png";
+		var pathDel = '';
 		var trHtml = '';
-		
-		trHtml+='<tr style="text-align: center;" class="photo">';	
-		
-		trHtml+='<td>';
-		trHtml+='<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
-		trHtml+='<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml+='<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" onchange="uploadPhoto('+'\''+tdTable+'\''+','+index+');" accept="image/*" style="max-width: 250px;" /></div></td>';
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+
+		trHtml += '<td>';
+		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
+				'onchange="uploadPhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
 		//trHtml+='<td><div id="uploadFile'+index+'" ></div></td>';
-		trHtml+='<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###" onclick=\"deletePhoto()\">删除</a></div></td>';
-		trHtml+="</tr>";
-		trHtml+='<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
-		trHtml+='</tr>';
-		trHtml+='</table>';
-		trHtml+='</td>';
-		
+		trHtml += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###" '+
+				'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+
 		index++;
-						
-		trHtml+='<td>';
-		trHtml+='<table style="width:400px;margin: auto;" class="form">';
-		trHtml+='<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml+='<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" onchange="uploadPhoto('+'\''+tdTable+'\''+','+index+');" accept="image/*" style="max-width: 250px;" /></div></td>';
-		trHtml+='<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###" onclick=\"deletePhoto()\">删除</a></div></td>';
-		trHtml+="</tr>";
-		trHtml+='<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
-		trHtml+='</tr>';
-		trHtml+='</table>';
-		trHtml+='</td>';		
-		trHtml+="</tr>";
-		
-		//index++;		
-	}//for		
+
+		trHtml += '<td>';
+		trHtml += '<table style="width:400px;margin: auto;" class="form">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
+				'onchange="uploadPhoto('+ '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
+		trHtml += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###" '+
+				'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+		trHtml += "</tr>";
 	
+	}//for		
+
 	return trHtml;
 }
 
-function uploadFileFn(recordId,id) {
+function uploadFileFn(recordId, id) {
 	//alert("recordeId:"+recordId+"---id:"+id)
-    var url = '${ctx}/business/productDesignFileUpload?methodtype=uploadTextPrintFile'+'&id='+id+'&recordId='+recordId;
-    alert(url)
-    $("#form").ajaxSubmit({
-		type: "POST",
-		url:url,	
-		data:$('#form').serialize(),// 你的formid
-		dataType: 'json',
-	    success: function(data){
-	     	if(data.result == '0'){
-				$('#textPrintUpload'+id).remove();	
-				$('#textPrintDelete'+id).show();
-				
-				$('#textPrintLink'+id).attr('href', '${ctx}' + data.path);	
-				
-	   		 }
-	    	else{
-	    		alert(data.message);
-	    	}
+	var url = '${ctx}/business/productDesignFileUpload?methodtype=uploadTextPrintFile'
+			+ '&id=' + id + '&recordId=' + recordId;
+	//alert(url)
+	$("#form").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#form').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
+			if (data.result == '0') {
+				$('#textPrint').DataTable().ajax.reload(null,false);
+
+			} else {
+				alert(data.message);
+			}
 		},
-        error : function(XMLHttpRequest, textStatus, errorThrown) {  
-			
-        } 		
-	});	
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("error:"+errorThrown)
+		}
+	});
 }
 
-function downloadFile(fileName){
+function downloadFile(fileName) {
+
 	var YSId = $("#productDesign\\.ysid").val();
 	var productId = $("#productDesign\\.productid").val();
-	var url = '${ctx}/business/productDesign?methodtype=downloadFile&fileName='+fileName+"&productId="+productId+"&YSId="+YSId;
+	var url = '${ctx}/business/productDesign?methodtype=downloadFile&fileName='
+			+ fileName + "&productId=" + productId + "&YSId=" + YSId;
+	url =encodeURI(encodeURI(url));//中文两次转码
 
 	location.href = url;
 }
 
+function deleteTextPrintFile(recordId,componentName){
+	
+	if(confirm("确定要删除文件 [ "+componentName+" ] 吗？")){
+		var url = '${ctx}/business/productDesign?methodtype=textPrintFileDelete'+ '&recordId=' + recordId;
+		//alert(url)
+		$("#form").ajaxSubmit({
+			type : "POST",
+			url : url,
+			data : $('#form').serialize(),// 你的formid
+			dataType : 'json',
+			success : function(data) {
+				if (data.message == "操作成功") {
+					$().toastmessage('showWarningToast', "文件已被删除。");
+					$('#textPrint').DataTable().ajax.reload(null,false);
+				}
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("error:"+errorThrown)
+			}
+
+		});
+	}
+	
+}
 </script>
 	</body>
 </html>

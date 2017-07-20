@@ -3,6 +3,7 @@ package com.ys.business.service.order;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -203,6 +204,49 @@ public class ProductDesignService extends CommonService {
 			addInit(YSId);
 		}
 		return rtn;
+	}
+	
+
+	public void deleteTextPrintFile() throws Exception{
+		
+		String recordId = request.getParameter("recordId");
+		String fileName = updateTextPrint(recordId,"");
+		
+		deletePhoto(null,fileName);
+	}
+	
+	
+	public HashMap<String, Object> deletePhotoAndReload(
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		String path = request.getParameter("path");
+		
+		deletePhoto(path,null);
+		
+		B_ProductDesignData reqDt = reqModel.getProductDesign();
+		String YSId = reqDt.getYsid();
+		String productId = reqDt.getProductid();
+		
+		getPhoto(YSId,productId,folderName,fileList,fileCount);
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> uploadPhotoAndReload(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		B_ProductDesignData reqDt = reqModel.getProductDesign();
+		String YSId = reqDt.getYsid();
+		String productId = reqDt.getProductid();
+		String recordid = reqDt.getRecordid();
+		
+		uploadPhoto(headPhotoFile,folderName,recordid,productId,YSId);
+		
+		
+		getPhoto(YSId,productId,folderName,fileList,fileCount);
+		
+		return modelMap;
 	}
 	
 	public void addInit(String YSId) throws Exception {
@@ -465,18 +509,22 @@ public class ProductDesignService extends CommonService {
 	}
 	
 
-	private void updateTextPrint(
+	private String updateTextPrint(
 			String recordid,
 			String filename) throws Exception{
 		
+		String oldFile = "";
 		B_ProductDesignDetailData db = new B_ProductDesignDetailData();
 		db.setRecordid(recordid);
 		
 		try{
 			db = new B_ProductDesignDetailDao(db).beanData;
 			if(db == null || ("").equals(db)){			
-				return;
-			}					
+				return null;
+			}
+			//既存文件名
+			oldFile = db.getFilename();
+			
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"ProductDesignDetailUpdate",userInfo);
 			copyProperties(db,commData);	
@@ -486,7 +534,8 @@ public class ProductDesignService extends CommonService {
 			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
-		}	
+		}
+		return oldFile;
 	}
 	
 	
@@ -810,11 +859,12 @@ public class ProductDesignService extends CommonService {
 	}
 	
 	
-	public JSONObject uploadPhoto(MultipartFile[] headPhotoFile,String folder) {
-		B_ProductDesignData reqDesign = reqModel.getProductDesign();
-		String recordid = reqDesign.getRecordid();
-		String productId = reqDesign.getProductid();
-		String YSId = reqDesign.getYsid();
+	public HashMap<String, Object> uploadPhoto(
+			MultipartFile[] headPhotoFile,String folder,
+			String recordid,String productId,String YSId
+			) {
+		
+		
 		//int id = Integer.parseInt(request.getParameter("id"));
 		String finalUserId = "";
 		
@@ -828,7 +878,7 @@ public class ProductDesignService extends CommonService {
 		
 		String photoName = "";
 		boolean isSuccess = false;
-		JSONObject jsonObj = new JSONObject();
+		HashMap<String, Object> jsonObj = new HashMap<String, Object>();
 		
 		if (recordid == null || recordid.equals("")) {
 			finalUserId = BaseDAO.getGuId();
@@ -874,8 +924,8 @@ public class ProductDesignService extends CommonService {
 		
 		return jsonObj;
 	}
-	
-	public JSONObject uploadFile(MultipartFile file,String folder) {
+		
+	public HashMap<String, Object> uploadFile(MultipartFile file,String folder) {
 		B_ProductDesignData reqDesign = reqModel.getProductDesign();
 		String recordid = request.getParameter("recordId");
 		String productId = reqDesign.getProductid();
@@ -896,7 +946,7 @@ public class ProductDesignService extends CommonService {
 				productId+ "/"+YSId+ "/"+folder+
 				File.separator + orgFileName;
 		boolean isSuccess = false;
-		JSONObject jsonObj = new JSONObject();
+		HashMap<String, Object> jsonObj = new HashMap<String, Object>();
 		
 		//String type = orgFileName.substring(orgFileName.lastIndexOf("."));
 		
@@ -909,7 +959,7 @@ public class ProductDesignService extends CommonService {
 					new File(realPath, orgFileName));
 			
 			//更新文字印刷DB
-			updateTextPrint(recordid,savePath);
+			updateTextPrint(recordid,orgFileName);
 			
 			isSuccess = true;			
 			
@@ -922,7 +972,7 @@ public class ProductDesignService extends CommonService {
 		try {
 			if (isSuccess) {
 				jsonObj.put("result", "0");
-				jsonObj.put("path", savePath);
+				jsonObj.put("path", orgFileName);
 			} else {
 				jsonObj.put("result", "1");
 				jsonObj.put("message", "上传失败");
@@ -949,8 +999,8 @@ public class ProductDesignService extends CommonService {
 		JSONObject jsonObj = new JSONObject();
 		
 		//得到要下载的文件名
-		String fileName = request.getParameter("fileName"); //
-		fileName = new String(fileName.getBytes("iso8859-1"),"UTF-8");
+		String fileName = URLDecoder.decode(request.getParameter("fileName"),"UTF-8"); //
+		//fileName = new String(fileName.getBytes("iso8859-1"),"UTF-8");
 		//上传的文件都是保存在/WEB-INF/upload目录下的子目录当中
 		String fileDownloadPath = session.getServletContext().
 				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+
@@ -1011,5 +1061,40 @@ public class ProductDesignService extends CommonService {
 			return dir;
 		}
 	
-		 
+		public void deletePhoto (String path,String fileName)throws Exception {
+	    	
+			String tempPath = "";
+			
+			if(path == null){//这里只处理文字印刷的文件
+				B_ProductDesignData reqDt = reqModel.getProductDesign();
+				String YSId = reqDt.getYsid();
+				String productId = reqDt.getProductid();
+		    	//临时文件
+				tempPath = session.getServletContext().
+						getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+
+						"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;	
+			}else{
+		    	//临时文件
+				tempPath = session.getServletContext().getRealPath(path);
+			}
+			
+	    	//备份文件
+	    	String realPath = tempPath.replaceFirst("img", "file");
+	    			
+	    	//String file = pathAndName.replace('/', '\\') ;
+	    	//String file = ctxPath + path.replace('/', '\\') ;
+	    	//String fileSmall = ctxPath + BusinessConstants.BUSINESSPHOTOPATH.replace('/', '\\') + key + "\\" +  BusinessConstants.BUSINESSSMALLPHOTOPATH.replace('/', '\\') + fileName.replace('/', '\\');
+
+	    	File f1 = new File(tempPath); //临时文件
+	    	if(f1.exists()) {
+	    		f1.delete(); 
+	    	}
+	    	
+	    	File f = new File(realPath); //备份文件
+	    	if(f.exists()) {
+	    		f.delete(); 
+	    	}
+	    	
+	    }
+	    
 }
