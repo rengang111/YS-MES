@@ -46,59 +46,57 @@
 	
 	$.fn.dataTable.TableTools.buttons.add_rows = $
 	.extend(
-			true,
-			{},
-			$.fn.dataTable.TableTools.buttonBase,
-			{
-				"fnClick" : function(button) {
+		true,
+		{},
+		$.fn.dataTable.TableTools.buttonBase,
+		{
+			"fnClick" : function(button) {
+				
+				var rowIndex = counter;
+				var hidden = '';
+				
+				for (var i=0;i<1;i++){
 					
-					var rowIndex = counter;
-					var hidden = '';
+					//alert('YSSwift='+YSSwift); 
+					YSSwift = YSSwift+1;
+					var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
+					var lineNo =  rowIndex+1;
+					var hidden = "";
 					
-					for (var i=0;i<1;i++){
-						
-						//alert('YSSwift='+YSSwift); 
-						YSSwift = YSSwift+1;
-						var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
-						var lineNo =  rowIndex+1;
-						var hidden = "";
-						
-						hidden = '';
-						
-						var rowNode = $('#example')
-							.DataTable()
-							.row
-							.add(
-							  [
-								'<td class="dt-center"></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="short read-only ysidCheck" /></td>',
-								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
-									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
-								'<td></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num mini" /></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"   	 id="orderDetailLines'+rowIndex+'.extraquantity"   class="num mini" />'+
-									'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"        id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"           id="orderDetailLines'+rowIndex+'.price"           class="cash short" /></td>',
-								'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice"  readonly="readonly"/></td>',
-								
-								
-								
-								]).draw();
-						
-						$("#orderDetailLines" + rowIndex + "\\.currency").html(options);
-						$("#orderDetailLines" + rowIndex + "\\.ysid").val(fmtId);
-						
-						rowIndex ++;						
-					}					
-					counter += 1;
+					hidden = '';
 					
-					foucsInit();//设置新增行的基本属性
+					var rowNode = $('#example')
+						.DataTable()
+						.row
+						.add(
+						  [
+							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="mini read-only ysidCheck" /></td>',
+							'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
+								'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
+							'<td><span></span></td>',
+							'<td><select  name="orderDetailLines['+rowIndex+'].productclassify"   id="orderDetailLines'+rowIndex+'.productclassify" class="short"></select></td>',
+							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num mini" /></td>',
+							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"   	 id="orderDetailLines'+rowIndex+'.extraquantity"   class="num mini" />'+
+								'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"        id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
+							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"           id="orderDetailLines'+rowIndex+'.price"           class="cash short" /></td>',
+							'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice"  readonly="readonly"/></td>',
+							
+							]).draw();
 					
-					autocomplete();//调用自动填充功能
+					$("#orderDetailLines" + rowIndex + "\\.productclassify").html(options);
+					$("#orderDetailLines" + rowIndex + "\\.ysid").val(fmtId);
 					
-					iFramAutoSroll();//重设显示窗口(iframe)高度
-				}
-			});
+					rowIndex ++;						
+				}					
+				counter += 1;				
+
+				$('select').css('width','100px');	
+				
+				foucsInit();//设置新增行的基本属性
+				
+				autocomplete();//调用自动填充功能
+			}
+		});
 
 	$.fn.dataTable.TableTools.buttons.reset = $.extend(true, {},
 		$.fn.dataTable.TableTools.buttonBase, {
@@ -158,9 +156,9 @@
 			},
 			
 			"columns" : [ 
-			        	{"className":"dt-body-center"
-					}, {
+			        {
 					}, {								
+					}, {				
 					}, {				
 					}, {				
 					}, {				
@@ -249,15 +247,6 @@
 	        }
 			
 		});
-		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
 
 	};
 
@@ -277,6 +266,12 @@
 	
 	$(document).ready(function() {
 
+		var i = 0;	
+		<c:forEach var="list" items="${orderForm.productClassifyList}">
+			i++;
+			options += '<option value="${list.key}">${list.value}</option>';
+		</c:forEach>
+		
 		//设置光标项目
 		$("#attribute1").focus();
 		//$("#order\\.piid").attr('readonly', "true");
@@ -532,14 +527,14 @@
 	<table id="example" class="display" >
 		<thead>				
 		<tr>
-			<th width="1px">No</th>
-			<th class="dt-center" width="80px">耀升编号</th>
+			<th class="dt-center" width="60px">耀升编号</th>
 			<th class="dt-center" width="100px">产品编号</th>
 			<th class="dt-center" >产品名称</th>
-			<th class="dt-center" width="100px">订单数量</th>
+			<th class="dt-center" width="90px">版本类别</th>
+			<th class="dt-center" width="60px">订单数量</th>
 			<th class="dt-center" width="60px">额外<br>采购数量</th>
-			<th class="dt-center" width="100px">销售单价</th>
-			<th class="dt-center" width="100px">销售总价</th>
+			<th class="dt-center" width="60px">销售单价</th>
+			<th class="dt-center" width="60px">销售总价</th>
 		</tr>
 		</thead>
 		<tfoot>
@@ -557,11 +552,14 @@
 	<tbody>
 		<c:forEach var="i" begin="0" end="0" step="1">		
 			<tr>
-				<td></td>
-				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" class="short read-only ysidCheck"  /></td>
+				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" class="mini read-only ysidCheck"  /></td>
 				<td><input type="text" name="attributeList1" class="attributeList1">
 					<form:hidden path="orderDetailLines[${i}].materialid" /></td>
 				<td><span></span></td>
+				<td>
+					<form:select path="orderDetailLines[${i}].productclassify" >							
+						<form:options items="${orderForm.productClassifyList}" 
+							itemValue="key" itemLabel="value" /></form:select></td>
 				<td><form:input path="orderDetailLines[${i}].quantity" class="num mini" /></td>
 				<td><input id="extraquantiry${i}" class="num mini"  />
 					<form:hidden path="orderDetailLines[${i}].totalquantity" /></td>
@@ -742,7 +740,7 @@ function autocomplete(){
 		select : function(event, ui) {
 			
 			//产品名称
-			$(this).parent().parent().find("td").eq(3).find("span")
+			$(this).parent().parent().find("td").eq(2).find("span")
 				.html(jQuery.fixedWidth(ui.item.name,30));
 
 			//产品编号

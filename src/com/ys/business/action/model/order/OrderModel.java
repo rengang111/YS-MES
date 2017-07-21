@@ -22,6 +22,7 @@ public class OrderModel extends BaseModel {
 	private ArrayList<ListOption> shippingCaseList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> currencyList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> ordercompanyList = new ArrayList<ListOption>();
+	private ArrayList<ListOption> productClassifyList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> teamList;
 	private B_OrderData order = new B_OrderData();
 	private B_OrderDetailData orderDetail = new B_OrderDetailData();
@@ -37,6 +38,12 @@ public class OrderModel extends BaseModel {
 	private String attribute3 = "";
 	private String attributeList1 = "";
 
+	public ArrayList<ListOption> getProductClassifyList() {
+		return this.productClassifyList;
+	}
+	public void setProductClassifyList(ArrayList<ListOption> productClassifyList) {
+		this.productClassifyList = productClassifyList;
+	}
 	public ArrayList<ListOption> getCurrencyList() {
 		return this.currencyList;
 	}

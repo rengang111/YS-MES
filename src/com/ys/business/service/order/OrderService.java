@@ -742,6 +742,8 @@ public class OrderService extends BaseService {
 					util.getListOption(DicUtil.BUSINESSTEAM, ""));
 			reqModel.setOrdercompanyList(
 					util.getListOption(DicUtil.ORDERCOMPANY, ""));
+			reqModel.setProductClassifyList(
+					util.getListOption(DicUtil.PRODUCTCLASSIFY, ""));
 			
 			reqModel.setEndInfoMap(NORMAL, "", "");
 			

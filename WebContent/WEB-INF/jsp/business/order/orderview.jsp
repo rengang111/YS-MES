@@ -49,28 +49,29 @@
 	        "searching"  : false,
 	       	"language": {"url":"${ctx}/plugins/datatables/chinese.json"},
 	       	
-			"columns" : [{"className":"dt-body-center"},
+			"columns" : [
 			             {},
 			             {}, 
 			             {}, 
+			             {"className" : "dt-body-center"}, 
 			             {"className" : 'td-right'}, 
 			             {"className" : 'td-right'}, 
 			             {"className" : 'td-right'},
 			             {"className" : 'td-right'},
-			             {"className":"dt-body-center"},
-			             {"className":"dt-body-center"}
+			             {"className" : "dt-body-center"},
+			             {"className" : "dt-body-center"}
 						],
 			
 			"columnDefs":[
 				
-			  { "targets":3,"render":function(data, type, row){
-	    			var name = row[3];	    			
+			  { "targets":2,"render":function(data, type, row){
+	    			var name = row[2];	    			
 	    			name = jQuery.fixedWidth(name,30);		    			
 	    			return name;
 	    	  }},
 	    	  { "targets":8,"render":function(data, type, row){
 	    			var PIId = '${order.PIId}';
-	    			var rtn = "<a href=\"#\" onClick=\"ShowProductDesign('" + PIId + "','" + row[1] + "')\">做单资料</a>";
+	    			var rtn = "<a href=\"#\" onClick=\"ShowProductDesign('" + PIId + "','" + row[0] + "')\">做单资料</a>";
 	    			return rtn;
 	    	  }}
 			  ] 	
@@ -91,15 +92,6 @@
 	        }
 			
 		});
-		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
 
 	};
 
@@ -218,14 +210,14 @@
 		<table id="example" class="display" style="width:100%">
 			<thead>				
 			<tr>
-				<th width="1px">No</th>
 				<th class="dt-center" width="65px">耀升编号</th>
 				<th class="dt-center" width="120px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="80px">销售数量</th>
-				<th class="dt-center" width="80px">生产数量</th>
+				<th class="dt-center" width="60px">版本类别</th>
+				<th class="dt-center" width="60px">销售数量</th>
+				<th class="dt-center" width="60px">生产数量</th>
 				<th class="dt-center" width="50px">销售单价</th>
-				<th class="dt-center" width="100px">销售总价</th>
+				<th class="dt-center" width="80px">销售总价</th>
 				<th class="dt-center" width="30px">操作</th>
 				<th class="dt-center" width="30px"></th>
 			</tr>
@@ -247,10 +239,10 @@
 		<tbody>
 			<c:forEach var='order' items='${detail}' varStatus='status'>	
 				<tr>
-					<td></td>
 					<td>${order.YSId}</td>
 					<td><a href="###" onClick="doShow('${order.materialId}')">${order.materialId}</a></td>								
 					<td>${order.materialName}</td>
+					<td>${order.productClassifyName}</td>
 					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>	
 					<td class="cash" style="padding-right: 20px;">${order.totalQuantity}</td>						
 					<td class="cash" style="padding-right: 20px;">${order.price}</td>

@@ -2,8 +2,6 @@ package com.ys.business.service.order;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -307,6 +305,7 @@ public class ProductDesignService extends CommonService {
 			//0:先删除旧数据
 			deleteProductDesignDetail(productdetailid);
 			
+			int sortNo = 0;
 			//1:机器配置清单;
 			List<B_ProductDesignDetailData> machineList = reqModel.getMachineConfigList();
 			for(B_ProductDesignDetailData d:machineList){
@@ -315,11 +314,14 @@ public class ProductDesignService extends CommonService {
 					continue;
 				d.setProductdetailid(productdetailid);
 				d.setType(Constants.PRODUCTDETAIL_1);
+				d.setSortno(String.valueOf(sortNo));
 				
 				insertProductDesignDetail(d);
+				sortNo++;
 			}
 			
 			//2:塑料制品清单;
+			sortNo = 0;
 			List<B_ProductDesignDetailData> plasticList = reqModel.getPlasticList();
 			for(B_ProductDesignDetailData d:plasticList){
 				String name = d.getComponentname();
@@ -327,12 +329,15 @@ public class ProductDesignService extends CommonService {
 					continue;
 				d.setProductdetailid(productdetailid);
 				d.setType(Constants.PRODUCTDETAIL_2);
+				d.setSortno(String.valueOf(sortNo));
 				
 				insertProductDesignDetail(d);
+				sortNo++;
 			}
 			
 			
 			//3:配件清单;
+			sortNo = 0;
 			List<B_ProductDesignDetailData> accessList = reqModel.getAccessoryList();
 			for(B_ProductDesignDetailData d:accessList){
 				String name = d.getComponentname();
@@ -340,11 +345,14 @@ public class ProductDesignService extends CommonService {
 					continue;
 				d.setProductdetailid(productdetailid);
 				d.setType(Constants.PRODUCTDETAIL_3);
+				d.setSortno(String.valueOf(sortNo));
 				
 				insertProductDesignDetail(d);
+				sortNo++;
 			}
 			
 			//5:标贴;
+			sortNo = 0;
 			List<B_ProductDesignDetailData> labelList = reqModel.getLabelList();
 			for(B_ProductDesignDetailData d:labelList){
 				String name = d.getComponentname();
@@ -352,11 +360,14 @@ public class ProductDesignService extends CommonService {
 					continue;
 				d.setProductdetailid(productdetailid);
 				d.setType(Constants.PRODUCTDETAIL_5);
+				d.setSortno(String.valueOf(sortNo));
 				
 				insertProductDesignDetail(d);
+				sortNo++;
 			}
 			
 			//6:文字印刷;
+			sortNo = 0;
 			List<B_ProductDesignDetailData> textList = reqModel.getTextPrintList();
 			for(B_ProductDesignDetailData d:textList){
 				String name = d.getComponentname();
@@ -364,11 +375,14 @@ public class ProductDesignService extends CommonService {
 					continue;
 				d.setProductdetailid(productdetailid);
 				d.setType(Constants.PRODUCTDETAIL_6);
+				d.setSortno(String.valueOf(sortNo));
 				
 				insertProductDesignDetail(d);
+				sortNo++;
 			}
 			
 			//6:包装描述;
+			sortNo = 0;
 			List<B_ProductDesignDetailData> packageList = reqModel.getPackageList();
 			for(B_ProductDesignDetailData d:packageList){
 				String name = d.getComponentname();
@@ -376,8 +390,10 @@ public class ProductDesignService extends CommonService {
 					continue;
 				d.setProductdetailid(productdetailid);
 				d.setType(Constants.PRODUCTDETAIL_7);
+				d.setSortno(String.valueOf(sortNo));
 				
 				insertProductDesignDetail(d);
+				sortNo++;
 			}
 			
 			ts.commit();			

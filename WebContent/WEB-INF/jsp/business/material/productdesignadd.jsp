@@ -837,7 +837,7 @@
 	<table class="form" >		
 		<tr>
 			<td class="label" style="width: 100px;">耀升编号：</td>
-			<td style="width: 150px;">${product.YSId}</td>
+			<td style="width: 150px;">&nbsp;${product.YSId}</td>
 								
 			<td class="label" style="width: 100px;">产品编号：</td>
 			<td style="width: 150px;">&nbsp;${product.materialId}</td>
@@ -847,7 +847,7 @@
 		</tr>
 		<tr>				
 			<td class="label">交货时间：</td>
-			<td>${product.deliveryDate}</td>				
+			<td>&nbsp;${product.deliveryDate}</td>				
 								
 			<td class="label">交货数量：</td>
 			<td>&nbsp;${product.quantity}</td>
@@ -857,7 +857,7 @@
 		</tr>
 		<tr>
 			<td class="label">版本类别：</td>
-			<td>${product.productClassify}</td>
+			<td>&nbsp;${product.productClassify}</td>
 			<td class="label" >电池包数量：</td>
 			<td>
 				<form:select path="productDesign.batterypack" style="width: 100px;">							

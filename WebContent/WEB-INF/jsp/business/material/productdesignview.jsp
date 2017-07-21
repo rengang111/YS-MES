@@ -993,10 +993,10 @@ function photoView(id, tdTable, count, data) {
 		if (index == count) {
 			//因为是偶数循环,所以奇数张图片的最后一张为空
 			path = '${ctx}' + "/images/blankDemo.png";
-			index=0;
+			var index0=0;
 
 			var trHtmlOdd = '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
-					'onchange="uploadPhoto(' + '\''+ id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
+					'onchange="uploadPhoto(' + '\''+ id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + index0 + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
 			
 			trHtmlOdd += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###"'+ 
 					'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';

@@ -56,7 +56,6 @@
 					
 					for (var i=0;i<1;i++){
 						
-						//alert('YSSwift='+YSSwift); 
 						YSSwift = Number(YSSwift)+1;
 						var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
 						var lineNo =  rowIndex+1;
@@ -69,11 +68,11 @@
 							.row
 							.add(
 							  [
-								'<td class="dt-center"></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"  id="orderDetailLines'+rowIndex+'.ysid" class="short read-only ysidCheck" /></td>',
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"  id="orderDetailLines'+rowIndex+'.ysid" class="mini read-only ysidCheck" /></td>',
 								'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
-								'<td></td>',
+								'<td><span></span></td>',
+								'<td><select  name="orderDetailLines['+rowIndex+'].productclassify"   id="orderDetailLines'+rowIndex+'.productclassify" class="short"></select></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num mini" /></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"    id="orderDetailLines'+rowIndex+'.extraquantity"   class="num mini" />'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"    id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
@@ -81,18 +80,17 @@
 								'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" /></td>',				
 								
 								]).draw();
-						
+
+						$("#orderDetailLines" + rowIndex + "\\.productclassify").html(options);
 						$("#orderDetailLines" + rowIndex + "\\.ysid").val(fmtId);
-						//$("#ysid" + rowIndex).text(fmtId);
 						
 						rowIndex ++;						
 					}					
 					counter += 1;
+
+					$('select').css('width','100px');	
 					
 					autocomplete();
-
-					//重设显示窗口(iframe)高度
-					iFramAutoSroll();
 						
 					foucsInit();
 				}
@@ -109,7 +107,7 @@
 				$().toastmessage('showWarningToast', "请选择要删除的数据。");	
 			}else{
 				
-				var amount = $('#example tbody tr').eq(rowIndex).find("td").eq(6).find("input").val();
+				//var amount = $('#example tbody tr').eq(rowIndex).find("td").eq(6).find("input").val();
 				//alert('['+amount+']:amount '+'---- totalPrice:'+totalPrice)
 				
 				$().toastmessage('showWarningToast', "删除后,[ PI编号 ]可能会发生变化。");	
@@ -156,7 +154,7 @@
 			},
 			
 			"columns" : [ 
-			        	{"className":"dt-body-center"
+			        	{
 					}, {
 					}, {								
 					}, {				
@@ -247,15 +245,6 @@
 	        }
 			
 		});
-		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
 
 	};//ajax()
 
@@ -275,6 +264,12 @@
 	
 	$(document).ready(function() {
 
+		var i = 0;	
+		<c:forEach var="list" items="${orderForm.productClassifyList}">
+			i++;
+			options += '<option value="${list.key}">${list.value}</option>';
+		</c:forEach>
+		
 		//日期
 		var mydate = new Date();
 		var number = mydate.getFullYear();
@@ -454,14 +449,14 @@
 		<table id="example" class="display" >
 			<thead>				
 			<tr>
-				<th width="1px">No</th>
-				<th class="dt-center" width="80px">耀升编号</th>
+				<th class="dt-center" width="60px">耀升编号</th>
 				<th class="dt-center" width="100px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="80px">销售数量</th>
+				<th class="dt-center" width="90px">版本类别</th>
+				<th class="dt-center" width="60px">订单数量</th>
 				<th class="dt-center" width="60px">额外<br>采购数量</th>
-				<th class="dt-center" width="100px">销售单价</th>
-				<th class="dt-center" width="100px">销售总价</th>
+				<th class="dt-center" width="60px">销售单价</th>
+				<th class="dt-center" width="60px">销售总价</th>
 			</tr>
 			</thead>
 			<tfoot>
@@ -479,12 +474,15 @@
 		<tbody>
 			<c:forEach var='order' items='${detail}' varStatus='status'>	
 
-				<tr>				
-					<td></td>
-					<td><input type="text" name="orderDetailLines[${status.index}].ysid" id="orderDetailLines${status.index}.ysid" value="${order.YSId}" class="short read-only ysidCheck"  /></td>
+				<tr>
+					<td><input type="text" name="orderDetailLines[${status.index}].ysid" id="orderDetailLines${status.index}.ysid" value="${order.YSId}" class="mini read-only ysidCheck"  /></td>
 					<td><input type="text" name="attributeList1" class="attributeList1"  value="${order.materialId}" />
 						<form:hidden path="orderDetailLines[${status.index}].materialid" value="${order.materialId }"/></td>
-					<td id="shortName${status.index}">${order.materialName}</td>
+					<td id="shortName${status.index}"></td>
+					<td>
+						<form:select path="orderDetailLines[${status.index}].productclassify" >							
+							<form:options items="${orderForm.productClassifyList}" 
+								itemValue="key" itemLabel="value" /></form:select></td>
 					<td><form:input path="orderDetailLines[${status.index}].quantity" class="num mini" value="${order.quantity}"/></td>
 				<td><input id="extraquantiry${status.index}" class="num mini"  value="${order.extraQuantity}"/>
 					<form:hidden path="orderDetailLines[${status.index}].totalquantity" value="${order.totalQuantity}"/></td>
@@ -494,9 +492,11 @@
 					<form:hidden path="orderDetailLines[${status.index}].recordid" value="${order.detailRecordId }"/>
 				</tr>
 					<script type="text/javascript">
+						var productclassify = '${order.productClassify}';
 						var materialName = '${order.materialName}';
 						var index = '${status.index}';
-						$('#shortName'+index).html(jQuery.fixedWidth(materialName,30));
+						$('#shortName'+index).html(jQuery.fixedWidth(materialName,35));
+						$("#orderDetailLines"+index+"\\.productclassify").val(productclassify);
 						counter++;
 					</script>	
 			</c:forEach>
@@ -564,24 +564,9 @@ function autocomplete(){
 
 		select : function(event, ui) {
 			
-			var rowIndex = $(this).parent().parent().parent()
-					.find("tr").index(
-							$(this).parent().parent()[0]);
-
-			//alert(rowIndex);
-
-			var t = $('#example').DataTable();
-			
-			//产品名称			
-			if(ui.item.name.length > 30){	
-				var shortName =  '<div title="' +
-				ui.item.name + '">' + 
-				ui.item.name.substr(0,30)+ '...</div>';
-			}else{	
-				var shortName = ui.item.name;
-			}
-			
-			t.cell(rowIndex, 3).data(shortName);
+			//产品名称
+			$(this).parent().parent().find("td").eq(2).find("span")
+				.html(jQuery.fixedWidth(ui.item.name,35));
 
 			//产品编号
 			$(this).parent().find("input:hidden").val(ui.item.materialId);
