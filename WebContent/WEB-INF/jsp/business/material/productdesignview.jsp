@@ -16,7 +16,7 @@
 	id="form" name="form"   autocomplete="off">
 	
 	<input type="hidden" id="PIId" value="${PIId}" />
-	<input type="hidden" id="path" value="" />
+	<input type="hidden" id="goBackFlag" value="${goBackFlag }" />
 	<input type="hidden" id="productDetailId" value="${product.productDetailId}" />
 	<form:hidden path="productDesign.ysid"  value="${product.YSId}" />
 	<form:hidden path="productDesign.productid"  value="${product.productId}" />
@@ -254,7 +254,15 @@ $(document).ready(function() {
 	
 	$("#goBack").click(function() {
 		var PIId=$('#PIId').val();
-		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+		var goBackFlag = $('#goBackFlag').val();
+		if(goBackFlag == "1"){
+			//该查看页面来自于一览
+			var url = '${ctx}/business/productDesign?keyBackup='+ PIId;
+			
+		}else{
+			var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+			
+		}
 		location.href = url;	
 	});
 

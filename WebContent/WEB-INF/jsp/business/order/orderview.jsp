@@ -71,7 +71,7 @@
 	    	  }},
 	    	  { "targets":8,"render":function(data, type, row){
 	    			var PIId = '${order.PIId}';
-	    			var rtn = "<a href=\"#\" onClick=\"ShowProductDesign('" + PIId + "','" + row[0] + "')\">做单资料</a>";
+	    			var rtn = "<a href=\"#\" onClick=\"ShowProductDesign('" + PIId + "','" + row[0] + "','" + row[8] + "')\">做单资料</a>";
 	    			return rtn;
 	    	  }}
 			  ] 	
@@ -128,8 +128,14 @@
 		location.href = url;
 	};
 	
-	function ShowProductDesign(PIId,YSId) {
-		var url = '${ctx}/business/productDesign?methodtype=addinit&PIId=' + PIId+'&YSId=' + YSId;
+	function ShowProductDesign(PIId,YSId,productId) {
+ 		var goBackFlag = '';
+		var url = '${ctx}/business/productDesign?methodtype=addinit'
+				+'&PIId=' + PIId
+				+'&YSId=' + YSId
+				+'&productId=' + productId
+				+'&goBackFlag=' + goBackFlag;
+		
 		location.href = url;
 	};
 	
@@ -247,7 +253,7 @@
 					<td class="cash" style="padding-right: 20px;">${order.totalQuantity}</td>						
 					<td class="cash" style="padding-right: 20px;">${order.price}</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
-					<td></td>
+					<td>${order.materialId}</td>
 					<td><a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">订单详情</a></td>												
 				</tr>
 					

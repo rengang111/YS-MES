@@ -447,11 +447,11 @@
 						.add(
 						  [
 							'<td class="dt-center"></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].componentname"   id="accessoryList'+rowIndex+'.componentname"  class="short" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].materialquality" id="accessoryList'+rowIndex+'.materialquality" class="middle" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].process"         id="accessoryList'+rowIndex+'.process" class="short" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].specification"   id="accessoryList'+rowIndex+'.specification" class="middle" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].remark"   	    id="accessoryList'+rowIndex+'.remark"   class="middle" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].componentname"   id="labelList'+rowIndex+'.componentname"  class="short" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].materialquality" id="labelList'+rowIndex+'.materialquality" class="middle" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].process"         id="labelList'+rowIndex+'.process" class="short" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].specification"   id="labelList'+rowIndex+'.specification" class="middle" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].remark"   	    id="labelList'+rowIndex+'.remark"   class="middle" /></td>',
 							
 							]).draw();
 					
@@ -828,6 +828,7 @@
 	id="form" name="form"   autocomplete="off">
 	
 	<input type="hidden" id="PIId" value="${PIId}" />
+	<input type="hidden" id="goBackFlag" value="${goBackFlag }" />
 	<form:hidden path="productDesign.ysid"  value="${product.YSId}" />
 	<form:hidden path="productDesign.productid"  value="${product.materialId}" />
 	
@@ -1119,7 +1120,16 @@ $(document).ready(function() {
 	
 	$("#goBack").click(function() {
 		var PIId=$('#PIId').val();
-		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+		var goBackFlag = $('#goBackFlag').val();
+		
+		if(goBackFlag == "1"){
+			//该查看页面来自于一览
+			var url = '${ctx}/business/productDesign?keyBackup='+ PIId;
+			
+		}else{
+			var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+			
+		}
 		location.href = url;			
 	});
 

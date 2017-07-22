@@ -1,12 +1,11 @@
 package com.ys.business.action.model.order;
 
-import com.ys.util.basequery.common.BaseModel;
-
+import java.util.ArrayList;
 import java.util.List;
 
-import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_ProductDesignData;
 import com.ys.business.db.data.B_ProductDesignDetailData;
+import com.ys.util.basequery.common.BaseModel;
 
 public class ProductDesignModel extends BaseModel {
 	/**
@@ -14,12 +13,12 @@ public class ProductDesignModel extends BaseModel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private List<B_ProductDesignDetailData> machineConfigList;
-	private List<B_ProductDesignDetailData> plasticList;
-	private List<B_ProductDesignDetailData> accessoryList;
-	private List<B_ProductDesignDetailData> labelList;
-	private List<B_ProductDesignDetailData> textPrintList;
-	private List<B_ProductDesignDetailData> packageList;
+	private List<B_ProductDesignDetailData> machineConfigList = new ArrayList<B_ProductDesignDetailData>();
+	private List<B_ProductDesignDetailData> plasticList = new ArrayList<B_ProductDesignDetailData>();
+	private List<B_ProductDesignDetailData> accessoryList = new ArrayList<B_ProductDesignDetailData>();
+	private List<B_ProductDesignDetailData> labelList = new ArrayList<B_ProductDesignDetailData>();
+	private List<B_ProductDesignDetailData> textPrintList = new ArrayList<B_ProductDesignDetailData>();
+	private List<B_ProductDesignDetailData> packageList = new ArrayList<B_ProductDesignDetailData>();
 	private B_ProductDesignData productDesign;
 	
 	public List<B_ProductDesignDetailData> getPackageList() {

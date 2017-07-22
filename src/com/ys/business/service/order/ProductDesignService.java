@@ -10,6 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -24,19 +28,16 @@ import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_ProductDesignData;
 import com.ys.business.db.data.B_ProductDesignDetailData;
 import com.ys.business.db.data.CommFieldsData;
+import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
-import com.ys.util.basequery.common.BaseModel;
-import com.ys.util.basequery.common.Constants;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import com.ys.util.basequery.common.BaseModel;
+import com.ys.util.basequery.common.Constants;
 
 @Service
 public class ProductDesignService extends CommonService {
@@ -101,7 +102,7 @@ public class ProductDesignService extends CommonService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
-		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_PRODUCTDETAIL,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -166,7 +167,7 @@ public class ProductDesignService extends CommonService {
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_PRODUCTDETAIL,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -191,17 +192,47 @@ public class ProductDesignService extends CommonService {
 		return modelMap;
 	}
 
-	public boolean addOrView() throws Exception {
+	
+	public String doAddOrView() throws Exception {
 
-		String YSId = request.getParameter("YSId");
-		boolean rtn = checkProductDesignlById(YSId);
+		String reqYsid = request.getParameter("YSId");
+		String PIId = request.getParameter("PIId");
+		String productid = request.getParameter("productId");
+		String goBackFlag = request.getParameter("goBackFlag");
 		
-		if(rtn){//做单资料已存在的话,取得明细内容
-			getProductDesignById(YSId);
-		}else{
-			addInit(YSId);
+
+		String rtnFlg = "查看";
+		//1.判断画面来的耀升编号是否有做单资料
+		B_ProductDesignData reqDb = checkProductDesignlById(reqYsid);
+		
+		if(reqDb == null || ("").equals(reqDb)){
+			B_ProductDesignData dt = new B_ProductDesignData();
+			dt.setProductid(productid);
+			dt = getMaxProductDesignId(dt);
+			String oldYsid = dt.getYsid();
+			
+			if(oldYsid == null || ("").equals(oldYsid)){
+				//画面来的耀升编号既没有做单资料,
+				//也没有该产品的历史做单资料
+				addInit(reqYsid);
+				rtnFlg = "新建";
+				
+			}else{
+				//没有该耀升编号的做单资料,
+				//显示该产品最近的耀升编号到编辑页面
+				updateInit(oldYsid);
+				rtnFlg = "编辑新建";
+			}
+		}else{	
+			getProductDesignById(reqYsid);
+			rtnFlg = "查看";		
 		}
-		return rtn;
+
+		model.addAttribute("YSId",reqYsid);
+		model.addAttribute("PIId",PIId);
+		model.addAttribute("goBackFlag",goBackFlag);
+			
+		return rtnFlg;
 	}
 	
 
@@ -267,19 +298,16 @@ public class ProductDesignService extends CommonService {
 				util.getListOption(DicUtil.DIC_PURCHASER, ""));
 	}
 
-	public void showArrivalDetail() {
 
-		String arrivalId = request.getParameter("arrivalId");
-		getArrivaRecord(arrivalId);
-	}
 	
-	public void insertAndView() throws Exception {
+	
+	public void doInsertAndView() throws Exception {
 
 		String YSId = insert();
 		getProductDesignById(YSId);
 	}
 	
-	public void UpdateAndView() throws Exception {
+	public void doUpdateAndView() throws Exception {
 
 		String YSId = insert();
 		getProductDesignById(YSId);
@@ -295,10 +323,7 @@ public class ProductDesignService extends CommonService {
 			//做单资料 head处理
 			B_ProductDesignData design = reqModel.getProductDesign();
 			YSId = design.getYsid();
-			//做单资料编号:耀升编号-yymmdd
-			String productdetailid=YSId+"-"+CalendarUtil.getDateyymmdd();
-			design.setProductdetailid(productdetailid);
-			updateProductDesign(design);
+			String productdetailid = updateProductDesign(design);//更新处理
 			
 			//做单资料明细部分
 			
@@ -410,67 +435,50 @@ public class ProductDesignService extends CommonService {
 		
 		return YSId;
 	}
-	
-	
-	
-	@SuppressWarnings("rawtypes")
-	private boolean checkProductDesignlById(String YSId) {
 
-		boolean flag = false;
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private B_ProductDesignData checkProductDesignlById(String YSId) {
+
+		List<B_ProductDesignData> dbList = new ArrayList<B_ProductDesignData>();
+		B_ProductDesignData db = null;
 		String where = " YSId = '"+YSId+"' AND deleteFlag='0' ";
 		try {
-			Vector list = dao.Find(where);
-			if(list != null && list.size()>0)
-				flag=true;
+			dbList = (List<B_ProductDesignData>)dao.Find(where);
+			if(dbList != null && dbList.size()>0){
+				db = dbList.get(0);
+			}
 		} catch (Exception e) {
 			// nothing
 		}
-		return flag;
+		return db;
 	}
 	
-	private void getArrivaRecord(String arrivalId){
-		
-		try {
-			dataModel.setQueryName("getArrivaRecord");
-			userDefinedSearchCase.put("arrivalId", arrivalId);
-			baseQuery = new BaseQuery(request, dataModel);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			baseQuery.getYsFullData();
-
-			model.addAttribute("arrival",dataModel.getYsViewData().get(0));
-			//String userId = dataModel.getYsViewData().get(0).get("userId");
-			
-			model.addAttribute("arrivalList",dataModel.getYsViewData());
-			
-		} catch (Exception e) {
-			System.out.print(e.getMessage());
-		}
-	}
 	
-	public void updateInit() throws Exception{
+	public void updateInit(String YSId) throws Exception{
 
-		String YSId = request.getParameter("YSId");
 		
 		//做单资料明细内容
 		getProductDesignById(YSId);		
-
+		String productDetailId = reqModel.getProductDesign().getProductdetailid();
+		
 		//机器配置信息
-		getMachineConfiguration();
+		getMachineConfiguration(productDetailId);
 		
 		//塑料制品
-		getPlastic();
+		getPlastic(productDetailId);
 		
 		//配件清单
-		getAccessory();
+		getAccessory(productDetailId);
 		
 		//标贴
-		getLabel();
+		getLabel(productDetailId);
 		
 		//文字印刷
-		getTextPrint();
+		getTextPrint(productDetailId);
 		
 		//包装描述
-		getPackage();
+		getPackage(productDetailId);
 		
 		setDicList();//设置下拉框内容
 	}
@@ -499,18 +507,25 @@ public class ProductDesignService extends CommonService {
 		}
 	}
 	
-	private void updateProductDesign(
+	private String  updateProductDesign(
 			B_ProductDesignData mData) throws Exception{
 		B_ProductDesignData db = null;
 		
+		String YSId = mData.getYsid();
+		String productdetailid = mData.getProductdetailid();
 		try{
-			db = new B_ProductDesignDao(mData).beanData;
+			//db = new B_ProductDesignDao(mData).beanData;
+			db = checkProductDesignlById(YSId);
 		}catch(Exception e){
 			//nothing
 		}
 		if(db == null || ("").equals(db)){
+			//做单资料编号取得
+			mData =getMaxProductDesignId(mData);
+			mData.setYsid(YSId);//新建时,录入新的耀升编号
+			productdetailid = mData.getProductdetailid();
 			insertProductDesign(mData);//找不到就新增一条数据
-			return;
+			return productdetailid;
 		}
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
@@ -522,6 +537,8 @@ public class ProductDesignService extends CommonService {
 				replaceTextArea(mData.getStoragedescription()));	
 	
 		dao.Store(mData);	
+
+		return productdetailid;
 	}
 	
 
@@ -613,9 +630,8 @@ public class ProductDesignService extends CommonService {
 		
 	}
 	
-	public HashMap<String, Object> getMachineConfiguration() throws Exception {
+	public HashMap<String, Object> getMachineConfiguration(String productDetailId) throws Exception {
 		
-		String productDetailId = request.getParameter("productDetailId");
 		dataModel.setQueryName("getProductDesignDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("productDetailId", productDetailId);
@@ -632,9 +648,8 @@ public class ProductDesignService extends CommonService {
 		
 	}
 	
-	public HashMap<String, Object> getPlastic() throws Exception {
+	public HashMap<String, Object> getPlastic(String productDetailId) throws Exception {
 		
-		String productDetailId = request.getParameter("productDetailId");
 		dataModel.setQueryName("getProductDesignDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("productDetailId", productDetailId);
@@ -651,9 +666,8 @@ public class ProductDesignService extends CommonService {
 		
 	}
 	
-	public HashMap<String, Object> getAccessory() throws Exception {
+	public HashMap<String, Object> getAccessory(String productDetailId) throws Exception {
 		
-		String productDetailId = request.getParameter("productDetailId");
 		dataModel.setQueryName("getProductDesignDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("productDetailId", productDetailId);
@@ -695,18 +709,18 @@ public class ProductDesignService extends CommonService {
 	
 	public HashMap<String, Object> getLabelAndPhoto() throws Exception {
 		
-		getLabel();//标贴
 		String YSId = request.getParameter("YSId");
 		String productId = request.getParameter("productId");
+		String productDetailId = request.getParameter("productDetailId");
 		//getProductDesignById(YSId);
+		getLabel(productDetailId);//标贴
 		
 		getPhoto(YSId,productId,"label","labelFileList","labelFileCount");
 		
 		return modelMap;
 	}
-	public HashMap<String, Object> getLabel() throws Exception {
+	public HashMap<String, Object> getLabel(String productDetailId) throws Exception {
 		
-		String productDetailId = request.getParameter("productDetailId");
 		dataModel.setQueryName("getProductDesignDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("productDetailId", productDetailId);
@@ -724,9 +738,8 @@ public class ProductDesignService extends CommonService {
 	}
 
 
-	public HashMap<String, Object> getTextPrint() throws Exception {
+	public HashMap<String, Object> getTextPrint(String productDetailId) throws Exception {
 		
-		String productDetailId = request.getParameter("productDetailId");
 		dataModel.setQueryName("getProductDesignDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("productDetailId", productDetailId);
@@ -743,13 +756,40 @@ public class ProductDesignService extends CommonService {
 		
 	}
 	
+	public B_ProductDesignData getMaxProductDesignId(
+			B_ProductDesignData bean) throws Exception{
+		
+		String productId = bean.getProductid();
+		dataModel.setQueryName("getMaxProductDesignId");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("productId", productId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();	 
+		
+		//取得已有的最大流水号(sql里已经加1了)
+		String subid ="1";
+		String ysid ="";
+		if(dataModel.getRecordCount() > 0){
+			subid =dataModel.getYsViewData().get(0).get("MaxSubId");
+			ysid = dataModel.getYsViewData().get(0).get("YSId");
+			bean.setYsid(ysid);
+		}	
+		String productdetailid = 
+				BusinessService.getProductDesignDetailId(productId,subid);
+			
+		bean.setProductdetailid(productdetailid);
+		bean.setSubid(subid);
+		return bean;
+	}
+	
 	public HashMap<String, Object> getPackageAndPhoto() throws Exception {
 		
-		getPackage();//包装描述
 		String YSId = request.getParameter("YSId");
 		String productId = request.getParameter("productId");
+		String productDetailId = request.getParameter("productDetailId");
 		//getProductDesignById(YSId);
-		
+
+		getPackage(productDetailId);//包装描述
 		getPhoto(YSId,productId,"package","packageFileList","packageFileCount");
 		
 		return modelMap;
@@ -816,9 +856,8 @@ public class ProductDesignService extends CommonService {
 		modelMap.put(fileCount, count);
 	}
 	
-	public HashMap<String, Object> getPackage() throws Exception {
+	public HashMap<String, Object> getPackage(String productDetailId) throws Exception {
 		
-		String productDetailId = request.getParameter("productDetailId");
 		dataModel.setQueryName("getProductDesignDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("productDetailId", productDetailId);
@@ -863,6 +902,7 @@ public class ProductDesignService extends CommonService {
 			B_ProductDesignData d = new B_ProductDesignData();
 			d.setYsid(dataModel.getYsViewData().get(0).get("YSId"));
 			d.setProductid(dataModel.getYsViewData().get(0).get("productId"));
+			d.setProductdetailid(dataModel.getYsViewData().get(0).get("productDetailId"));
 			d.setPackagedescription(dataModel.getYsViewData().get(0).get("packageDescription"));
 			d.setSealedsample(dataModel.getYsViewData().get(0).get("sealedSample"));
 			d.setBatterypack(dataModel.getYsViewData().get(0).get("batteryPackId"));

@@ -81,7 +81,7 @@ public class ProductDesignAction extends BaseAction {
 			case "":
 			case "init":
 				doInit();
-				rtnUrl = "/business/inventory/arrivalmain";
+				rtnUrl = "/business/material/productdesignmain";
 				break;
 			case "search":
 				dataMap = doSearch(data);
@@ -110,9 +110,9 @@ public class ProductDesignAction extends BaseAction {
 				doDelete(data);
 				break;
 			case "detailView":
-				doShowDetail();
+				rtnUrl = doShowDetail();
 				//printOutJsonObj(response, viewModel.getEndInfoMap());
-				rtnUrl = "/business/inventory/arrivalview";
+				//rtnUrl = "/business/material/productdesignview";
 				break;
 			case "getProductPhoto":
 				dataMap = getProductPhoto();
@@ -252,8 +252,8 @@ public class ProductDesignAction extends BaseAction {
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_PRODUCTDETAIL+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PRODUCTDETAIL+Constants.FORM_KEYWORD2);
 		}else{
 			model.addAttribute("keyBackup",keyBackup);
 		}
@@ -267,8 +267,8 @@ public class ProductDesignAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_PRODUCTDETAIL+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PRODUCTDETAIL+Constants.FORM_KEYWORD2);
 			
 		}
 		
@@ -300,8 +300,8 @@ public class ProductDesignAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
+			session.removeAttribute(Constants.FORM_PRODUCTDETAIL+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PRODUCTDETAIL+Constants.FORM_KEYWORD2);
 			
 		}
 		try {
@@ -321,15 +321,21 @@ public class ProductDesignAction extends BaseAction {
 	}
 	
 	public String doAddInit(){
-
-		String PIId = request.getParameter("PIId");
-		model.addAttribute("PIId",PIId);
-		
-		String rtnUrl = "/business/material/productdesignadd";
+	
+		String rtnUrl = "";
 		try{
-			boolean redirect = service.addOrView();
-			if(redirect){//已存在的话,查看该信息
+			String redirect = service.doAddOrView();
+			switch(redirect) {
+			case "":
+			case "新建":
+				rtnUrl = "/business/material/productdesignadd";
+				break;
+			case "查看":
 				rtnUrl = "/business/material/productdesignview";
+				break;
+			case "编辑新建":
+				rtnUrl = "/business/material/productdesignedit";
+				break;
 			}
 		}catch(Exception e){
 			System.out.println(e.getMessage());
@@ -342,7 +348,7 @@ public class ProductDesignAction extends BaseAction {
 		try{
 			String PIId = request.getParameter("PIId");
 			model.addAttribute("PIId",PIId);
-			service.insertAndView();
+			service.doInsertAndView();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -352,7 +358,7 @@ public class ProductDesignAction extends BaseAction {
 		try{
 			String PIId = request.getParameter("PIId");
 			model.addAttribute("PIId",PIId);
-			service.UpdateAndView();
+			service.doUpdateAndView();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -361,8 +367,11 @@ public class ProductDesignAction extends BaseAction {
 	public void doEdit(){
 		try{
 			String PIId = request.getParameter("PIId");
+			String YSId = request.getParameter("YSId");
 			model.addAttribute("PIId",PIId);
-			service.updateInit();
+			model.addAttribute("YSId",YSId);
+			service.updateInit(YSId);
+			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -375,9 +384,27 @@ public class ProductDesignAction extends BaseAction {
 
 	}
 	
-	public void doShowDetail() throws Exception{
-		
-		service.showArrivalDetail();
+	public String doShowDetail() throws Exception{
+
+		String rtnUrl = "/business/material/productdesignadd";
+		try{
+			String redirect = service.doAddOrView();
+			switch(redirect) {
+			case "":
+			case "新建":
+				rtnUrl = "/business/material/productdesignadd";
+				break;
+			case "查看":
+				rtnUrl = "/business/material/productdesignview";
+				break;
+			case "编辑新建":
+				rtnUrl = "/business/material/productdesignedit";
+				break;
+			}
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		return rtnUrl;
 
 	}
 	
@@ -442,7 +469,8 @@ public class ProductDesignAction extends BaseAction {
 	public HashMap<String, Object> getMachineConfiguration(){	
 		
 		try {
-			dataMap = service.getMachineConfiguration();
+			String productDetailId = request.getParameter("productDetailId");
+			dataMap = service.getMachineConfiguration(productDetailId);
 		
 		}
 		catch(Exception e) {
@@ -456,7 +484,8 @@ public class ProductDesignAction extends BaseAction {
 	public HashMap<String, Object> getPlastic(){	
 		
 		try {
-			dataMap = service.getPlastic();
+			String productDetailId = request.getParameter("productDetailId");
+			dataMap = service.getPlastic(productDetailId);
 
 		}
 		catch(Exception e) {
@@ -471,7 +500,8 @@ public class ProductDesignAction extends BaseAction {
 	public HashMap<String, Object> getAccessory(){	
 		
 		try {
-			dataMap = service.getAccessory();
+			String productDetailId = request.getParameter("productDetailId");
+			dataMap = service.getAccessory(productDetailId);
 			
 		}
 		catch(Exception e) {
@@ -502,7 +532,8 @@ public class ProductDesignAction extends BaseAction {
 	public HashMap<String, Object> getTextPrint(){
 		
 		try {
-			dataMap = service.getTextPrint();
+			String productDetailId = request.getParameter("productDetailId");
+			dataMap = service.getTextPrint(productDetailId);
 			
 		}
 		catch(Exception e) {

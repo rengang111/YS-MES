@@ -86,11 +86,6 @@
 	
 	function machineConfigurationView() {
 			
-		var productDetailId = $("#productDetailId").val();
-		//var table = $('#machineConfiguration').dataTable();
-		//if(table) {
-		//	table.fnDestroy();
-		//}
 		
 		var t = $('#machineConfiguration').DataTable({
 			"processing" : false,
@@ -500,11 +495,11 @@
 						.add(
 						  [
 							'<td class="dt-center"></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].componentname"   id="accessoryList'+rowIndex+'.componentname"  class="short" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].materialquality" id="accessoryList'+rowIndex+'.materialquality" class="middle" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].process"         id="accessoryList'+rowIndex+'.process" class="short" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].specification"   id="accessoryList'+rowIndex+'.specification" class="middle" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].remark"   	    id="accessoryList'+rowIndex+'.remark"   class="middle" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].componentname"   id="labelList'+rowIndex+'.componentname"  class="short" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].materialquality" id="labelList'+rowIndex+'.materialquality" class="middle" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].process"         id="labelList'+rowIndex+'.process" class="short" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].specification"   id="labelList'+rowIndex+'.specification" class="middle" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].remark"   	    id="labelList'+rowIndex+'.remark"   class="middle" /></td>',
 							
 							]).draw();
 					
@@ -890,8 +885,10 @@
 	
 	<input type="hidden" id="PIId" value="${PIId}" />
 	<form:hidden path="productDesign.recordid"  value="${product.recordId}" />
-	<form:hidden path="productDesign.ysid"  value="${product.YSId}" />
+	<form:hidden path="productDesign.ysid"  value="${YSId}" />
 	<form:hidden path="productDesign.productid"  value="${product.materialId}" />
+	<form:hidden path="productDesign.productdetailid"  value="${product.productDetailId}" />
+	<form:hidden path="productDesign.subid"  value="${product.subId}" />
 	
 <fieldset>
 	<legend>做单资料</legend>
@@ -899,7 +896,7 @@
 	<table class="form" >		
 		<tr>
 			<td class="label" style="width: 100px;">耀升编号：</td>
-			<td style="width: 150px;">${product.YSId}</td>
+			<td style="width: 150px;">${YSId}</td>
 								
 			<td class="label" style="width: 100px;">产品编号：</td>
 			<td style="width: 150px;">&nbsp;${product.productId}</td>

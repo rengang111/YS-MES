@@ -368,5 +368,16 @@ public class BusinessService {
 		return sb.toString();
 	 }
 		 
-	 
+	 /**
+		 * @return 做单资料编号
+		 * 
+		 */
+	public static String getProductDesignDetailId(String code1,String code2 )
+	{
+		//格式化成2位流水号,并且+1
+		//String ft = BusinessService.getFormat3Code(code2,blAdd);
+		
+		//
+		return code1 + "-"+code2;
+	}
 }

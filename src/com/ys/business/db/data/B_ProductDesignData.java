@@ -47,6 +47,19 @@ public class B_ProductDesignData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String subid;
+	public String getSubid()
+	{
+		return this.subid;
+	}
+	public void setSubid(String subid)
+	{
+		this.subid=subid;
+	}
+
+	/**
+	*
+	*/
 	private String ysid;
 	public String getYsid()
 	{
@@ -280,13 +293,13 @@ public class B_ProductDesignData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("productdetailid = "+(productdetailid == null ? "null" : productdetailid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("productid = "+(productid == null ? "null" : productid)+"\n");		sb.append("sealedsample = "+(sealedsample == null ? "null" : sealedsample)+"\n");		sb.append("batterypack = "+(batterypack == null ? "null" : batterypack)+"\n");		sb.append("chargertype = "+(chargertype == null ? "null" : chargertype)+"\n");		sb.append("packagedescription = "+(packagedescription == null ? "null" : packagedescription)+"\n");		sb.append("storagedescription = "+(storagedescription == null ? "null" : storagedescription)+"\n");		sb.append("image_filename = "+(image_filename == null ? "null" : image_filename)+"\n");		sb.append("image_filename2 = "+(image_filename2 == null ? "null" : image_filename2)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("productdetailid = "+(productdetailid == null ? "null" : productdetailid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("productid = "+(productid == null ? "null" : productid)+"\n");		sb.append("sealedsample = "+(sealedsample == null ? "null" : sealedsample)+"\n");		sb.append("batterypack = "+(batterypack == null ? "null" : batterypack)+"\n");		sb.append("chargertype = "+(chargertype == null ? "null" : chargertype)+"\n");		sb.append("packagedescription = "+(packagedescription == null ? "null" : packagedescription)+"\n");		sb.append("storagedescription = "+(storagedescription == null ? "null" : storagedescription)+"\n");		sb.append("image_filename = "+(image_filename == null ? "null" : image_filename)+"\n");		sb.append("image_filename2 = "+(image_filename2 == null ? "null" : image_filename2)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		productdetailid= (productdetailid == null ?null : productdetailid.trim());		ysid= (ysid == null ?null : ysid.trim());		productid= (productid == null ?null : productid.trim());		sealedsample= (sealedsample == null ?null : sealedsample.trim());		batterypack= (batterypack == null ?null : batterypack.trim());		chargertype= (chargertype == null ?null : chargertype.trim());		packagedescription= (packagedescription == null ?null : packagedescription.trim());		storagedescription= (storagedescription == null ?null : storagedescription.trim());		image_filename= (image_filename == null ?null : image_filename.trim());		image_filename2= (image_filename2 == null ?null : image_filename2.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		productdetailid= (productdetailid == null ?null : productdetailid.trim());		subid= (subid == null ?null : subid.trim());		ysid= (ysid == null ?null : ysid.trim());		productid= (productid == null ?null : productid.trim());		sealedsample= (sealedsample == null ?null : sealedsample.trim());		batterypack= (batterypack == null ?null : batterypack.trim());		chargertype= (chargertype == null ?null : chargertype.trim());		packagedescription= (packagedescription == null ?null : packagedescription.trim());		storagedescription= (storagedescription == null ?null : storagedescription.trim());		image_filename= (image_filename == null ?null : image_filename.trim());		image_filename2= (image_filename2 == null ?null : image_filename2.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
