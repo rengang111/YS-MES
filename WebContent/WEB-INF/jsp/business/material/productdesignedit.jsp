@@ -886,7 +886,7 @@
 	<input type="hidden" id="PIId" value="${PIId}" />
 	<form:hidden path="productDesign.recordid"  value="${product.recordId}" />
 	<form:hidden path="productDesign.ysid"  value="${YSId}" />
-	<form:hidden path="productDesign.productid"  value="${product.materialId}" />
+	<form:hidden path="productDesign.productid"  value="${product.productId}" />
 	<form:hidden path="productDesign.productdetailid"  value="${product.productDetailId}" />
 	<form:hidden path="productDesign.subid"  value="${product.subId}" />
 	
@@ -899,7 +899,8 @@
 			<td style="width: 150px;">${YSId}</td>
 								
 			<td class="label" style="width: 100px;">产品编号：</td>
-			<td style="width: 150px;">&nbsp;${product.productId}</td>
+			<td style="width: 150px;">
+				&nbsp;<a href="###" onClick="doShowProduct()">${product.productId}</a></td>
 			
 			<td class="label" style="width: 100px;">产品名称：</td>
 			<td>&nbsp;${product.materialName}</td>
@@ -936,7 +937,12 @@
 		</tr>
 	</table>
 </fieldset>	
-
+		
+<div style="clear: both"></div>		
+<div class="action" style="text-align: right;margin-right: 10px;">
+	<button type="button" id="doSave" class="DTTT_button" >保存</button>
+	<button type="button" id="goBack" class="DTTT_button">返回</button>
+</div>
 
 <fieldset>
 	<legend style="margin-bottom: -60px;margin-left: 10px;">机器配置</legend>
@@ -1144,12 +1150,7 @@
 	</table>
 	</div>
 </fieldset>
-		
-<div style="clear: both"></div>		
-		<div class="action" style="text-align: right;">
-		<button type="button" id="doSave" class="DTTT_button" >保存</button>
-		<button type="button" id="goBack" class="DTTT_button">返回</button>
-	</div>
+
 </form:form>
 </div>
 </div>
@@ -1292,7 +1293,26 @@ function autocomplete(){
 	});
 }
 
-
+function doShowProduct() {
+	var materialId = '${product.productId}';
+	var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1100px', '500px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		  return false; 
+		}    
+	});		
+}
 
 </script>
 </body>

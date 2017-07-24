@@ -32,7 +32,8 @@
 			<td style="width: 150px;">${product.YSId}</td>
 								
 			<td class="label" style="width: 100px;">产品编号：</td>
-			<td style="width: 150px;">${product.productId}</td>
+			<td style="width: 150px;">
+				&nbsp;<a href="###" onClick="doShowProduct()">${product.productId}</a></td>
 			
 			<td class="label" style="width: 100px;">产品名称：</td>
 			<td>${product.materialName}</td>
@@ -1144,6 +1145,29 @@ function deleteTextPrintFile(recordId,componentName){
 	}
 	
 }
+
+
+function doShowProduct() {
+	var materialId = '${product.productId}';
+	var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1100px', '500px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		//只有当点击confirm框的确定时，该层才会关闭
+		cancel: function(index){ 
+		 // if(confirm('确定要关闭么')){
+		    layer.close(index)
+		 // }
+		  return false; 
+		}    
+	});		
+}
+
 </script>
 	</body>
 </html>
