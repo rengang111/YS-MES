@@ -958,16 +958,6 @@ function uploadPhoto(tableId,tdTable, id) {
 			$("#" + tableId + " tr:gt(0)").remove();
 			photoView(tableId, tdTable, countData, photo);
 			
-			/*
-			if (data.result == '0') {
-				$('#imgFile' + tdTable + id).attr('src','${ctx}' + data.path);
-				$('#uploadFile' + tdTable + id).remove();
-				$('#deleteFile' + tdTable + id).show();
-	
-			} else {
-				alert(data.message);
-			}
-			*/
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert("error:"+errorThrown)
@@ -977,9 +967,7 @@ function uploadPhoto(tableId,tdTable, id) {
 
 function photoView(id, tdTable, count, data) {
 	
-	//var countView = (count % 2 == 0) ? count : count + 1; //判断是否能整除2
-	//alert("id:"+id+"--count:"+count+"--countView:"+countView)
-	
+	//alert("id:"+id+"--count:"+count+"--countView:"+countView)	
 	var row = 0;
 	for (var index = 0; index < count; index++) {
 
@@ -1005,23 +993,20 @@ function photoView(id, tdTable, count, data) {
 		index++;
 		if (index == count) {
 			//因为是偶数循环,所以奇数张图片的最后一张为空
-			path = '${ctx}' + "/images/blankDemo.png";
-			var index0=0;
 
-			var trHtmlOdd = '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
-					'onchange="uploadPhoto(' + '\''+ id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + index0 + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
-			
-			trHtmlOdd += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###"'+ 
-					'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
-			
+			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
+			trHtmlOdd += '<tr>';
+			trHtmlOdd += '<td></td>';			
+			trHtmlOdd += '<td width="50px"></td>';			
 			trHtmlOdd += "</tr>";
-			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"></td>';
 		} else {
 			path = '${ctx}' + data[index];
 			pathDel = data[index];
-			
-			var trHtmlOdd = '<td></td>';
-			
+
+			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="form">';
+			trHtmlOdd += '<tr style="background: #d4d0d0;height: 35px;">';
+			trHtmlOdd += '<td></td>';			
 			trHtmlOdd += '<td width="50px"><a id="uploadFile1' + index + '" href="###" '+
 					'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\''+ tdTable + '\'' + ','+ '\'' + pathDel + '\'' + ');">删除</a></td>';
 			
@@ -1030,8 +1015,8 @@ function photoView(id, tdTable, count, data) {
 		}
 
 		trHtml += '<td>';
-		trHtml += '<table style="width:400px;margin: auto;" class="form">';
-		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		//trHtml += '<table style="width:400px;margin: auto;" class="form">';
+		//trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
 		trHtml += trHtmlOdd;
 		trHtml += '</tr>';
 		trHtml += '</table>';
@@ -1072,14 +1057,12 @@ function addPhotoRow(id,tdTable, index) {
 		index++;
 
 		trHtml += '<td>';
-		trHtml += '<table style="width:400px;margin: auto;" class="form">';
-		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
-				'onchange="uploadPhoto('+ '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
-		trHtml += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###" '+
-				'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+		trHtml += '<table style="width:400px;margin: auto;" class="">';
+		trHtml += '<tr style="height: 35px;">';
+		trHtml += '<td></td>';
+		trHtml += '<td width="50px"></td>';
 		trHtml += "</tr>";
-		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '<tr><td colspan="2"  style="height:300px;"></td>';
 		trHtml += '</tr>';
 		trHtml += '</table>';
 		trHtml += '</td>';

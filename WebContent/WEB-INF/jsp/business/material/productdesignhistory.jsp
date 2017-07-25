@@ -176,7 +176,7 @@
 			</div>
 		</fieldset>
 		<fieldset>
-			<span class="tablename">产品图片</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
+			<span class="tablename">产品图片</span>&nbsp;
 			<div class="list">
 				<div class="" id="subidDiv" style="overflow: auto;height: 360px;">
 					<table id="productPhoto" style="width:100%">
@@ -221,7 +221,7 @@
 			</div>
 		</fieldset>
 		<fieldset>
-			<span class="tablename">产品收纳</span>&nbsp;<button type="button" id="addStoragePhoto" class="DTTT_button">添加图片</button>
+			<span class="tablename">产品收纳</span>
 			<div class="list">
 				<div class="" id="subidDiv" style="overflow: auto;height: 360px;">
 					<table id="storagePhoto" style="width:100%">
@@ -248,7 +248,7 @@
 		</thead>			
 	</table>
 	</div><br/>
-	<span class="tablename">标贴-图片</span>&nbsp;<button type="button" id="addLabelPhoto" class="DTTT_button">添加图片</button>
+	<span class="tablename">标贴-图片</span>
 	<div class="list">
 		<div class="" id="subidDiv" style="overflow: auto;height: 360px;">
 			<table id="labelPhoto" style="width:100%">
@@ -294,7 +294,7 @@
 	</table>
 	</div>
 	<br/>
-	<span class="tablename">包装描述-图片</span>&nbsp;<button type="button" id="addPackagePhoto" class="DTTT_button">添加图片</button>
+	<span class="tablename">包装描述-图片</span>
 	<div class="list">
 	<table id="packagePhoto" style="width:100%">
 		<tbody><tr class="photo"><td></td><td></td></tr></tbody>
@@ -821,12 +821,9 @@ function textPrintView() {
     			var fileName = row["fileName"];
     			var html="";
     			if(fileName == null || fileName ==""){
-    				html+='<input name="pdfFile" onchange="uploadFileFn('+'\''+recordId+'\''+');" type="file" size="30" />'; 
-    				//html+='<div id="textPrintDelete'+id+'" style="display:none"><a href="###" onclick="downloadFile('+'\''+fileName+'\''+','+id+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+')">删除</a></div>'
+    				html+=''; 
     			}else{
-       				//html+='<div id="textPrintUpload'+id+'" style="display:none"><input name="pdfFile" onchange="uploadFileFn('+'\''+recordId+'\''+','+id+');" type="file" size="30" /></div>'; 
-    				html+='<a href="###" onclick="downloadFile('+'\''+fileName+'\''+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+','+'\''+componentName+'\''+')">删除</a>'
-    				//html+='<div id="textPrintDelete'+id+'"><a href="'+"${ctx}" + fileName+'" onclick="downloadFile('+'\''+fileName+'\''+','+id+')">下载</a>&nbsp;<a href="###" onclick="deleteTextPrintFile('+'\''+recordId+'\''+','+id+')">删除</a></div>'
+    				html+='<a href="###" onclick="downloadFile('+'\''+fileName+'\''+')">下载</a>'
    				
     			}
 				return html;
@@ -1070,8 +1067,7 @@ function photoView(id, tdTable, count, data) {
 		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
 		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
 		trHtml += '<td></td>';
-		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
-				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+		trHtml += '<td width="50px"></td>';
 		trHtml += "</tr>";
 		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
 		trHtml += '</tr>';
@@ -1081,33 +1077,27 @@ function photoView(id, tdTable, count, data) {
 		index++;
 		if (index == count) {
 			//因为是偶数循环,所以奇数张图片的最后一张为空
-			path = '${ctx}' + "/images/blankDemo.png";
-			var index0=0;
 
-			var trHtmlOdd = '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
-					'onchange="uploadPhoto(' + '\''+ id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + index0 + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
-			
-			trHtmlOdd += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###"'+ 
-					'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
-			
+			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
+			trHtmlOdd += '<tr>';
+			trHtmlOdd += '<td></td>';			
+			trHtmlOdd += '<td width="50px"></td>';			
 			trHtmlOdd += "</tr>";
-			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"></td>';
 		} else {
 			path = '${ctx}' + data[index];
 			pathDel = data[index];
-			
-			var trHtmlOdd = '<td></td>';
-			
-			trHtmlOdd += '<td width="50px"><a id="uploadFile1' + index + '" href="###" '+
-					'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\''+ tdTable + '\'' + ','+ '\'' + pathDel + '\'' + ');">删除</a></td>';
+
+			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="form">';
+			trHtmlOdd += '<tr style="background: #d4d0d0;height: 35px;">';
+			trHtmlOdd += '<td></td>';			
+			trHtmlOdd += '<td width="50px"></td>';
 			
 			trHtmlOdd += "</tr>";
 			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
 		}
 
 		trHtml += '<td>';
-		trHtml += '<table style="width:400px;margin: auto;" class="form">';
-		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
 		trHtml += trHtmlOdd;
 		trHtml += '</tr>';
 		trHtml += '</table>';
@@ -1137,8 +1127,7 @@ function addPhotoRow(id,tdTable, index) {
 		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
 				'onchange="uploadPhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
 		//trHtml+='<td><div id="uploadFile'+index+'" ></div></td>';
-		trHtml += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###" '+
-				'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+		trHtml += '<td width="50px"></td>';
 		trHtml += "</tr>";
 		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
 		trHtml += '</tr>';
@@ -1152,8 +1141,7 @@ function addPhotoRow(id,tdTable, index) {
 		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
 		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
 				'onchange="uploadPhoto('+ '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
-		trHtml += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###" '+
-				'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+		trHtml += '<td width="50px"></td>';
 		trHtml += "</tr>";
 		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
 		trHtml += '</tr>';
