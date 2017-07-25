@@ -9,6 +9,7 @@ import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -170,7 +171,6 @@ public class UserService extends BaseService {
 			data.setLoginid(loginid);
 			data.setLoginname(loginname);
 			data.setJianpin(jianpin);
-			data.setLoginpwd(loginpwd);
 			data.setSex(sex);
 			data.setDuty(duty);
 			data.setAddresscode(addresscode);
@@ -193,7 +193,9 @@ public class UserService extends BaseService {
 			}
 			data.setEnableendtime(enableendtime);
 			data.setWorkid(workid);
-			data.setLoginpwd(DesUtil.DesEncryptData(loginpwd));
+			if (isAdd) {
+				data.setLoginpwd(DesUtil.DesEncryptData(loginpwd));
+			}
 			if (sortno != null && !sortno.equals("")) {
 				data.setSortno(Integer.parseInt(sortno));
 			} else {
@@ -425,13 +427,9 @@ public class UserService extends BaseService {
 		if (result.size() == 0) {
 			rtnValue = 1;
 		} else {
-			S_USERData data = new S_USERData();
-			data.setUserid(userInfo.getUserId());
-			S_USERDao dao = new S_USERDao(data);
-			data = dao.beanData;
-			data.setLoginpwd(DesUtil.DesEncryptData(userModel.getWantPwd()));
-			
-			dao.Store(data);
+			String encryptPwd = DesUtil.DesEncryptData(userModel.getWantPwd());
+			String sql = "update s_user set loginpwd='" + encryptPwd + "' where loginId='" + userInfo.geLoginId() + "'"; 
+			BaseDAO.execUpdate(sql);
 		}
 	
 		return rtnValue;
