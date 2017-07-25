@@ -35,7 +35,7 @@
 						.row
 						.add(
 						  [
-							'<td class="dt-center"></td>',
+							'<td></td>',
 							'<td><input   name="machineConfigList['+rowIndex+'].componentname" id="machineConfigList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input   name="machineConfigList['+rowIndex+'].materialid"    id="machineConfigList'+rowIndex+'.materialid"  class="materialid"/></td>',
 							'<td><span></span></td>',
@@ -109,7 +109,7 @@
 					}, {
 					}, {								
 					}, {				
-					}, {"className":"dt-body-center"		
+					}, {		
 					}, {				
 					}			
 				]
@@ -172,7 +172,7 @@
 						.row
 						.add(
 						  [
-							'<td class="dt-center"></td>',
+							'<td></td>',
 							'<td><input  name="plasticList['+rowIndex+'].componentname" id="plasticList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input  name="plasticList['+rowIndex+'].materialid"    id="plasticList'+rowIndex+'.materialid"  class="materialid"/></td>',
 							'<td><span></span></td>',
@@ -310,7 +310,7 @@
 						.row
 						.add(
 						  [
-							'<td class="dt-center"></td>',
+							'<td></td>',
 							'<td><input  name="accessoryList['+rowIndex+'].componentname"   id="accessoryList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input  name="accessoryList['+rowIndex+'].materialquality" id="accessoryList'+rowIndex+'.materialquality" class="short" /></td>',
 							'<td><input  name="accessoryList['+rowIndex+'].process"         id="accessoryList'+rowIndex+'.process" class="short" /></td>',
@@ -446,7 +446,7 @@
 						.row
 						.add(
 						  [
-							'<td class="dt-center"></td>',
+							'<td></td>',
 							'<td><input  name="labelList['+rowIndex+'].componentname"   id="labelList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input  name="labelList['+rowIndex+'].materialquality" id="labelList'+rowIndex+'.materialquality" class="middle" /></td>',
 							'<td><input  name="labelList['+rowIndex+'].process"         id="labelList'+rowIndex+'.process" class="short" /></td>',
@@ -580,7 +580,7 @@
 						.row
 						.add(
 						  [
-							'<td class="dt-center"></td>',
+							'<td></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].componentname"   id="textPrintList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].materialquality" id="textPrintList'+rowIndex+'.materialquality" class="middle" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].size"            id="textPrintList'+rowIndex+'.size" class="short" /></td>',
@@ -711,7 +711,7 @@
 						.row
 						.add(
 						  [
-							'<td class="dt-center"></td>',
+							'<td></td>',
 							'<td><input  name="packageList['+rowIndex+'].componentname"   id="packageList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input  name="packageList['+rowIndex+'].materialquality" id="packageList'+rowIndex+'.materialquality" class="middle" /></td>',
 							'<td><input  name="packageList['+rowIndex+'].packingqty"      id="packageList'+rowIndex+'.packingqty" class="short" /></td>',
@@ -891,13 +891,13 @@
 	<div class="list">
 	<table id="machineConfiguration" class="display" >
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">名称</th>
-				<th class="dt-center" style="width:120px">ERP编码</th>
-				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" style="width:105px">采购方</th>
-				<th class="dt-center" style="width:255px">备注</th>
+				<th style="width:60px">名称</th>
+				<th style="width:120px">ERP编码</th>
+				<th >产品名称</th>
+				<th style="width:105px">采购方</th>
+				<th style="width:255px">备注</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -926,14 +926,14 @@
 	<div class="list">
 	<table id="plastic" class="display" >
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">名称</th>
-				<th class="dt-center" style="width:120px">ERP编码</th>
-				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" style="width:40px">材质</th>
-				<th class="dt-center" style="width:60px">颜色</th>
-				<th class="dt-center" style="width:60px">备注</th>
+				<th style="width:60px">名称</th>
+				<th style="width:120px">ERP编码</th>
+				<th >产品名称</th>
+				<th style="width:40px">材质</th>
+				<th style="width:60px">颜色</th>
+				<th style="width:60px">备注</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -958,23 +958,23 @@
 	<div class="list">
 	<table id="accessory" class="display">
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">配件名称</th>
-				<th class="dt-center" style="width:40px">材质</th>
-				<th class="dt-center" style="width:60px">加工方式</th>
-				<th class="dt-center" style="width:60px">规格描述</th>
-				<th class="dt-center" style="width:60px">备注</th>
+				<th style="width:60px">配件名称及规格描述</th>
+				<th style="width:40px">材质</th>
+				<th style="width:60px">加工方式</th>
+				<th style="width:60px">表面处理</th>
+				<th style="width:60px">备注</th>
 			</tr>
 		</thead>	
 		<tbody>
 			<c:forEach var="i" begin="0" end="2" step="1">
 				<tr>
 					<td></td>
-					<td><form:input path="accessoryList[${i}].componentname"  class="short"/></td>
+					<td><form:input path="accessoryList[${i}].componentname"  class="middle"/></td>
 					<td><form:input path="accessoryList[${i}].materialquality"  class="short"/></td>
 					<td><form:input path="accessoryList[${i}].process"  class="short"/></td>
-					<td><form:input path="accessoryList[${i}].specification"  class="middle"/></td>
+					<td><form:input path="accessoryList[${i}].specification"  class="short"/></td>
 					<td><form:input path="accessoryList[${i}].remark"  class="middle"/></td>
 				</tr>
 			
@@ -1001,43 +1001,43 @@
 <fieldset>
 	<legend style="margin-bottom: -60px;margin-left: 10px;">标贴</legend>
 	<div class="list">
-	<table id="labelT" class="display">
-		<thead>				
-			<tr>
-				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">配件名称</th>
-				<th class="dt-center" style="width:40px">材质及要求</th>
-				<th class="dt-center" style="width:60px">尺寸</th>
-				<th class="dt-center" style="width:60px">备注</th>
-			</tr>
-		</thead>	
-		<tbody>
-			<c:forEach var="i" begin="0" end="5" step="1">
-				<tr>
-					<td></td>
-					<td><form:input path="labelList[${i}].componentname"  class="short"/></td>
-					<td><form:input path="labelList[${i}].materialquality"  class="middle"/></td>
-					<td><form:input path="labelList[${i}].size"  class="short"/></td>
-					<td><form:input path="labelList[${i}].remark"  class="middle"/></td>
+		<table id="labelT" class="display">
+			<thead>				
+				<tr style="text-align: left;">
+					<th width="1px">No</th>
+					<th style="width:60px">配件名称</th>
+					<th style="width:40px">材质及要求</th>
+					<th style="width:60px">尺寸</th>
+					<th style="width:60px">备注</th>
 				</tr>
-			
-			</c:forEach>
-		</tbody>				
-	</table>
-	</div>
+			</thead>	
+			<tbody>
+				<c:forEach var="i" begin="0" end="5" step="1">
+					<tr>
+						<td></td>
+						<td><form:input path="labelList[${i}].componentname"  class="short"/></td>
+						<td><form:input path="labelList[${i}].materialquality"  class="middle"/></td>
+						<td><form:input path="labelList[${i}].size"  class="short"/></td>
+						<td><form:input path="labelList[${i}].remark"  class="middle"/></td>
+					</tr>
+				
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>				
 </fieldset>
 <fieldset>
 	<legend style="margin-bottom: -60px;margin-left: 10px;">文字印刷</legend>
 	<div class="list">
 	<table id="textPrint" class="display">
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">配件名称</th>
-				<th class="dt-center" style="width:40px">材质</th>
-				<th class="dt-center" style="width:60px">尺寸</th>
-				<th class="dt-center" style="width:60px">颜色</th>
-				<th class="dt-center" style="width:60px">文件</th>
+				<th style="width:60px">配件名称</th>
+				<th style="width:40px">材质</th>
+				<th style="width:60px">尺寸</th>
+				<th style="width:60px">颜色</th>
+				<th style="width:60px">文件</th>
 			</tr>
 		</thead>	
 		<tbody>
@@ -1061,13 +1061,13 @@
 	<div class="list">
 	<table id="package" class="display">
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">名称</th>
-				<th class="dt-center" style="width:40px">材质</th>
-				<th class="dt-center" style="width:60px">装箱数量</th>
-				<th class="dt-center" style="width:60px">尺寸</th>
-				<th class="dt-center" style="width:60px">备注</th>
+				<th style="width:60px">名称</th>
+				<th style="width:40px">材质</th>
+				<th style="width:60px">装箱数量</th>
+				<th style="width:60px">尺寸</th>
+				<th style="width:60px">备注</th>
 			</tr>
 		</thead>	
 		<tbody>

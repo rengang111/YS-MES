@@ -21,6 +21,7 @@ import com.ys.business.service.order.ProductDesignService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.system.service.common.BaseService;
 import com.ys.util.basequery.common.Constants;
 
 @Controller
@@ -113,6 +114,11 @@ public class ProductDesignAction extends BaseAction {
 				rtnUrl = doShowDetail();
 				//printOutJsonObj(response, viewModel.getEndInfoMap());
 				//rtnUrl = "/business/material/productdesignview";
+				break;				
+			case "detailViewHistory":
+				dataMap = doShowDetailHistory();
+				printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/material/productdesignhistory";
 				break;
 			case "getProductPhoto":
 				dataMap = getProductPhoto();
@@ -368,8 +374,10 @@ public class ProductDesignAction extends BaseAction {
 		try{
 			String PIId = request.getParameter("PIId");
 			String YSId = request.getParameter("YSId");
+			String goBackFlag = request.getParameter("goBackFlag");
 			model.addAttribute("PIId",PIId);
 			model.addAttribute("YSId",YSId);
+			model.addAttribute("goBackFlag",goBackFlag);
 			service.updateInit(YSId);
 			
 		}catch(Exception e){
@@ -406,6 +414,23 @@ public class ProductDesignAction extends BaseAction {
 		}
 		return rtnUrl;
 
+	}
+	
+	public HashMap<String, Object> doShowDetailHistory() {
+		String rtnUrl = null;
+		try {
+			String ysid = service.doShowDetailHistory();
+			if(ysid == null){
+				model.addAttribute("message","还没有该产品的做单资料");
+			}else{
+				
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		return dataMap;
 	}
 	
 	public HashMap<String, Object> deletePhoto(

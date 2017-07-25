@@ -4,7 +4,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>产品设计明细-查看</title>
+<title>产品设计明细-历史查看</title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common2.jsp"%>
 </head>
@@ -26,46 +26,126 @@
 <fieldset>
 	<legend>做单资料</legend>
 
-	<table class="form" >		
+	<table class="form" >
 		<tr>
-			<td class="label" style="width: 100px;">耀升编号：</td>
-			<td style="width: 150px;">${product.YSId}</td>
-								
-			<td class="label" style="width: 100px;">产品编号：</td>
-			<td style="width: 150px;">
-				&nbsp;<a href="###" onClick="doShowProduct()">${product.productId}</a></td>
-			
-			<td class="label" style="width: 100px;">产品名称：</td>
-			<td>${product.materialName}</td>
-		</tr>
-		<tr>				
-			<td class="label">交货时间：</td>
-			<td>${product.deliveryDate}</td>				
-								
-			<td class="label">交货数量：</td>
-			<td>${product.quantity}</td>
-			
-			<td class="label">封样数量：</td>
-			<td>${product.sealedSample}</td>		
-		</tr>
-		<tr>
-			<td class="label">版本类别：</td>
-			<td>${product.productClassify}</td>
-			<td class="label" >电池包数量：</td>
-			<td>${product.batteryPack}</td>
-								
-			<td class="label">充电器：</td>
-			<td>${product.chargerType}</td>
-				
-		</tr>
-		<tr>		
-			<td class="label">包装描述：</td>
-			<td colspan="5">${product.packageDescription }</td>
+			<td style="width: 30px;background:#f1f7fc;">
+				<span id="left1"></span>
+				<div id="left2" style="display:none;">
+					<a href="###" onclick="gotoPrevious()">
+						<img id="imgPrevId" src="${ctx}/images/left.png" style="width: 20px;height: 40px;" /></a></div>
+			</td>
+			<td>
+			<table>
+				<tr>
+					<td class="label" style="width: 100px;">耀升编号：</td>
+					<td style="width: 150px;">${product.YSId}</td>
+										
+					<td class="label" style="width: 100px;">产品编号：</td>
+					<td style="width: 150px;">
+						&nbsp;<a href="###" onClick="doShowProduct()">${product.productId}</a></td>
+					
+					<td class="label" style="width: 100px;">产品名称：</td>
+					<td>${product.materialName}</td>
+				</tr>
+				<tr>				
+					<td class="label">交货时间：</td>
+					<td>${product.deliveryDate}</td>				
+										
+					<td class="label">交货数量：</td>
+					<td>${product.quantity}</td>
+					
+					<td class="label">封样数量：</td>
+					<td>${product.sealedSample}</td>		
+				</tr>
+				<tr>
+					<td class="label">版本类别：</td>
+					<td>${product.productClassify}</td>
+					<td class="label" >电池包数量：</td>
+					<td>${product.batteryPack}</td>
+										
+					<td class="label">充电器：</td>
+					<td>${product.chargerType}</td>
+						
+				</tr>
+				<tr>		
+					<td class="label">包装描述：</td>
+					<td colspan="5">${product.packageDescription }</td>
+				</tr>
+			</table>
+			</td>
+			<td style="width: 30px;background:#f1f7fc;">
+				<span id="right1"></span>
+				<div id="right2" style="display:none;" title="">
+					<a href="###" onclick="gotoNext()">
+						<img id="imgNextId" src="${ctx}/images/right.png" style="width: 20px;height: 40px;"/></a></div>
+			</td>
 		</tr>
 	</table>
-	
+		<script type="text/javascript">
+			var ysid_prev = "${ysidMap.ysid_prev}";
+			var ysid = "${ysidMap.ysid}";
+			var ysid_next = "${ysidMap.ysid_next}";
+
+			//alert("ysid_prev:"+ysid_prev+"--ysid:"+ysid+"--ysid_next:"+ysid_next)
+			if(ysid_prev == ""){
+				$("#left1").attr("style","display:block");
+				$("#left2").attr("style","display:none")
+
+				//$("#left2").css("display", "block");
+			}else{
+
+				$("#left1").attr("style","display:none");
+				$("#left2").attr("style","display:block");
+				$("#left2").attr("title",ysid_prev)
+			}
+
+			if(ysid_next == ""){
+				$("#right1").attr("style","display:block");
+				$("#right2").attr("style","display:none")
+
+				//$("#left2").css("display", "block");
+			}else{
+
+				$("#right1").attr("style","display:none");
+				$("#right2").attr("style","display:block");
+				$("#right2").attr("title",ysid_next)
+			}
+			
+			function gotoPrevious(){
+				var goBackFlag = '1';
+				var YSId = "${ysidMap.ysid_prev}";
+				var PIId = "${PIId}";
+				var productId = "${product.productId}";
+				
+				var url = '${ctx}/business/productDesign?methodtype=detailViewHistory'
+						+'&PIId='+PIId 
+						+'&YSId='+YSId
+						+'&productId='+productId
+						+'&goBackFlag='+goBackFlag;
+
+				location.href = url;
+
+			}
+			
+			function gotoNext(){
+				var goBackFlag = '1';
+				var YSId = "${ysidMap.ysid_next}";
+				var PIId = "${PIId}";
+				var productId = "${product.productId}";
+				
+				var url = '${ctx}/business/productDesign?methodtype=detailViewHistory'
+						+'&PIId='+PIId 
+						+'&YSId='+YSId
+						+'&productId='+productId
+						+'&goBackFlag='+goBackFlag;
+
+				location.href = url;
+
+			}
+			
+		</script>
 	<div class="action" style="text-align: right;">
-		<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
+		<!-- button type="button" id="doEdit" class="DTTT_button" >复制新建</button-->
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</div>
 </fieldset>	
@@ -236,38 +316,34 @@ $(document).ready(function() {
 	$( "#tabs" ).tabs();	
 	//$("#tabs").tabs({ active: 2 });  //选择第二个tab为默认显示。
 
-	productPhotoView();//产品图片
-	productStoragePhotoView();//产品收纳
-	machineConfigurationView();//机器配置
-	plasticView();//塑料制品
-	accessoryView();//配件清单
-	labelView();//标贴
-	textPrintView();//文字印刷
-	packageView();//包装描述	
-
+	var massage = '${message}';
+	if(massage != null && massage != "")
+		alert(massage)
+	
+	var productDetailId = $("#productDetailId").val();
+	if(productDetailId != null && productDetailId !=""){
+		productPhotoView();//产品图片
+		productStoragePhotoView();//产品收纳
+		machineConfigurationView();//机器配置
+		plasticView();//塑料制品
+		accessoryView();//配件清单
+		labelView();//标贴
+		textPrintView();//文字印刷
+		packageView();//包装描述	
+	}
 	$("#doEdit").click(function() {
 		var PIId=$('#PIId').val();
 		var YSId=$('#productDesign\\.ysid').val();
-		var goBackFlag = $('#goBackFlag').val();
 		var productDetailId=$('#productDesign\\.productdetailid').val();
-		var url = '${ctx}/business/productDesign?methodtype=edit&YSId=' + YSId+
-				"&productDetailId="+productDetailId+
-				"&PIId="+PIId+
-				"&goBackFlag="+goBackFlag;
+		var url = '${ctx}/business/productDesign?methodtype=edit&YSId=' + YSId+"&productDetailId="+productDetailId+"&PIId="+PIId;
 		location.href = url;	 
 	});
 	
 	$("#goBack").click(function() {
-		var PIId=$('#PIId').val();
-		var goBackFlag = $('#goBackFlag').val();
-		if(goBackFlag == "1"){
-			//该查看页面来自于一览
-			var url = '${ctx}/business/productDesign?keyBackup='+ PIId;
-			
-		}else{
-			var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
-			
-		}
+		var productId=$("#productDesign\\.productid").val();				
+		//该查看页面来自于一览
+		var url = '${ctx}/business/productDesign?keyBackup='+ productId;	
+	
 		location.href = url;	
 	});
 

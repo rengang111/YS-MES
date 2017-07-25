@@ -288,6 +288,89 @@ public class ProductDesignService extends CommonService {
 	
 	}
 	
+	public String doShowDetailHistory() throws Exception{
+
+		String productId = request.getParameter("productId");
+		String reqYsid = request.getParameter("YSId");
+		
+		String ysid = getRpsList(productId,reqYsid);
+
+		if(ysid != null){
+			getProductDesignById(ysid);
+		}
+		
+		return ysid;
+	}
+	
+	private String getRpsList(String productId,String reqYsid){
+		
+		String rtnYsid = reqYsid;
+		
+		List<B_ProductDesignData> dbList = 
+				getProductDesignlByProductId(productId);
+		
+		if(dbList == null || dbList.size()<=0){
+			return null;
+		}
+				
+		HashMap<String, String> map = new HashMap<String, String>();
+		boolean reqFlag=false;
+		int size = dbList.size(); 
+		for(int i=0;i<size;i++){
+			
+			B_ProductDesignData d = dbList.get(i);
+			
+			//找到页面来的耀升编号
+			if((d.getYsid()).equals(reqYsid)){
+				
+				if(i>0){
+					//上一条
+					map.put("ysid_prev", dbList.get(i-1).getYsid());
+				}else{
+					//第一条就匹配上了,所以没有上一条
+					map.put("ysid_prev","");		
+				}
+				map.put("ysid",dbList.get(i).getYsid());
+				
+				i++;
+				if(i < size){
+					//有两条以上,有下一条
+					map.put("ysid_next",dbList.get(i).getYsid());
+				}else{
+					//只有一条的话,没有下一条
+					map.put("ysid_next","");
+				}
+				reqFlag = true;
+				break;				
+			}			
+		}//for
+		
+		if(reqFlag){
+
+			model.addAttribute("ysidMap",map);
+			return rtnYsid;
+		}
+		
+		//该耀升编号没有做单资料的话,默认显示该产品最近的耀升编号
+		if(size > 1){
+			//2条以上
+			map.put("ysid_prev","");
+			map.put("ysid", dbList.get(0).getYsid());
+			map.put("ysid_next",dbList.get(1).getYsid());
+		}else{
+			//1条
+			map.put("ysid_prev","");
+			map.put("ysid", dbList.get(0).getYsid());
+			map.put("ysid_next","");
+		}
+		
+		rtnYsid = dbList.get(0).getYsid();
+		
+		model.addAttribute("ysidMap",map);
+		
+		return rtnYsid;
+	}
+	
 	private void setDicList() throws Exception{
 
 		model.addAttribute("chargerTypeList",
@@ -437,7 +520,7 @@ public class ProductDesignService extends CommonService {
 	}
 
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	private B_ProductDesignData checkProductDesignlById(String YSId) {
 
 		List<B_ProductDesignData> dbList = new ArrayList<B_ProductDesignData>();
@@ -452,6 +535,22 @@ public class ProductDesignService extends CommonService {
 			// nothing
 		}
 		return db;
+	}
+	
+	
+	@SuppressWarnings({ "unchecked" })
+	private List<B_ProductDesignData> getProductDesignlByProductId(String productId) {
+
+		List<B_ProductDesignData> dbList = new ArrayList<B_ProductDesignData>();
+		B_ProductDesignData db = null;
+		String where = " productId = '"+productId+"' AND deleteFlag='0' order by YSId DESC ";
+		try {
+			dbList = (List<B_ProductDesignData>)dao.Find(where);
+			
+		} catch (Exception e) {
+			// nothing
+		}
+		return dbList;
 	}
 	
 	

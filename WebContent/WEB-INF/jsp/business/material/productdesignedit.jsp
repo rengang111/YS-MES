@@ -884,6 +884,7 @@
 	id="form" name="form"   autocomplete="off">
 	
 	<input type="hidden" id="PIId" value="${PIId}" />
+	<input type="hidden" id="goBackFlag" value="${goBackFlag }" />
 	<form:hidden path="productDesign.recordid"  value="${product.recordId}" />
 	<form:hidden path="productDesign.ysid"  value="${YSId}" />
 	<form:hidden path="productDesign.productid"  value="${product.productId}" />
@@ -949,13 +950,13 @@
 	<div class="list">
 	<table id="machineConfiguration" class="display" >
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">名称</th>
-				<th class="dt-center" style="width:120px">ERP编码</th>
-				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" style="width:105px">采购方</th>
-				<th class="dt-center" style="width:255px">备注</th>
+				<th style="width:60px">名称</th>
+				<th style="width:120px">ERP编码</th>
+				<th >产品名称</th>
+				<th style="width:105px">采购方</th>
+				<th style="width:255px">备注</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -990,14 +991,14 @@
 	<div class="list">
 	<table id="plastic" class="display" >
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">名称</th>
-				<th class="dt-center" style="width:120px">ERP编码</th>
-				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" style="width:40px">材质</th>
-				<th class="dt-center" style="width:60px">颜色</th>
-				<th class="dt-center" style="width:60px">备注</th>
+				<th style="width:60px">名称</th>
+				<th style="width:120px">ERP编码</th>
+				<th >产品名称</th>
+				<th style="width:40px">材质</th>
+				<th style="width:60px">颜色</th>
+				<th style="width:60px">备注</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -1022,13 +1023,13 @@
 	<div class="list">
 	<table id="accessory" class="display">
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">配件名称</th>
-				<th class="dt-center" style="width:40px">材质</th>
-				<th class="dt-center" style="width:60px">加工方式</th>
-				<th class="dt-center" style="width:60px">规格描述</th>
-				<th class="dt-center" style="width:60px">备注</th>
+				<th style="width:60px">配件名称</th>
+				<th style="width:40px">材质</th>
+				<th style="width:60px">加工方式</th>
+				<th style="width:60px">规格描述</th>
+				<th style="width:60px">备注</th>
 			</tr>
 		</thead>	
 		<tbody>
@@ -1067,12 +1068,12 @@
 	<div class="list">
 	<table id="labelT" class="display">
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">配件名称</th>
-				<th class="dt-center" style="width:40px">材质及要求</th>
-				<th class="dt-center" style="width:60px">尺寸</th>
-				<th class="dt-center" style="width:60px">备注</th>
+				<th style="width:60px">配件名称</th>
+				<th style="width:40px">材质及要求</th>
+				<th style="width:60px">尺寸</th>
+				<th style="width:60px">备注</th>
 			</tr>
 		</thead>	
 		<tbody>
@@ -1095,13 +1096,13 @@
 	<div class="list">
 	<table id="textPrint" class="display">
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">配件名称</th>
-				<th class="dt-center" style="width:40px">材质</th>
-				<th class="dt-center" style="width:60px">尺寸</th>
-				<th class="dt-center" style="width:60px">颜色</th>
-				<th class="dt-center" style="width:60px">文件</th>
+				<th style="width:60px">配件名称</th>
+				<th style="width:40px">材质</th>
+				<th style="width:60px">尺寸</th>
+				<th style="width:60px">颜色</th>
+				<th style="width:60px">文件</th>
 			</tr>
 		</thead>	
 		<tbody>
@@ -1125,13 +1126,13 @@
 	<div class="list">
 	<table id="package" class="display">
 		<thead>				
-			<tr>
+			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">名称</th>
-				<th class="dt-center" style="width:40px">材质</th>
-				<th class="dt-center" style="width:60px">装箱数量</th>
-				<th class="dt-center" style="width:60px">尺寸</th>
-				<th class="dt-center" style="width:60px">备注</th>
+				<th style="width:60px">名称</th>
+				<th style="width:40px">材质</th>
+				<th style="width:60px">装箱数量</th>
+				<th style="width:60px">尺寸</th>
+				<th style="width:60px">备注</th>
 			</tr>
 		</thead>	
 		<tbody>
@@ -1179,8 +1180,17 @@ $(document).ready(function() {
 	
 	
 	$("#goBack").click(function() {
+
 		var PIId=$('#PIId').val();
-		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+		var goBackFlag = $('#goBackFlag').val();
+		if(goBackFlag == "1"){
+			//该查看页面来自于一览
+			var url = '${ctx}/business/productDesign?keyBackup='+ PIId;
+			
+		}else{
+			var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+			
+		}
 		location.href = url;			
 	});
 

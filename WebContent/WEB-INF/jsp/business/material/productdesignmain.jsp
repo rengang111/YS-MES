@@ -74,7 +74,7 @@
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["PIId"] + "','"+ row["YSId"] + "','"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["PIId"] + "','"+ row["YSId"] + "','"+ row["materialId"] + "')\">"+row["YSId"]+"</a>";
 		    			return rtn;
 		    		}},
 		    		
@@ -82,7 +82,13 @@
 		    			var name = row["materialName"];
 		    			name = jQuery.fixedWidth(name,40,true);//true:两边截取,左边从汉字开始
 		    			return name;
-		    		}}			           
+		    		}},
+		    		
+		    		{"targets":2,"render":function(data, type, row){
+		    			var rtn = "";
+		    			rtn= "<a href=\"###\" onClick=\"doShowHistory('"+ row["PIId"] + "','"+ row["YSId"] + "','"+ row["materialId"] + "')\">"+row["materialId"]+"</a>";
+		    			return rtn;
+		    		}}				           
 	         	] 
 			}
 		);
@@ -132,6 +138,18 @@
 	function doShow(PIId,YSId,productId) {
  		var goBackFlag = '1';
 		var url = '${ctx}/business/productDesign?methodtype=detailView'
+				+'&PIId='+PIId 
+				+'&YSId='+YSId
+				+'&productId='+productId
+				+'&goBackFlag='+goBackFlag;
+
+		location.href = url;
+	}
+	
+
+	function doShowHistory(PIId,YSId,productId) {
+ 		var goBackFlag = '1';
+		var url = '${ctx}/business/productDesign?methodtype=detailViewHistory'
 				+'&PIId='+PIId 
 				+'&YSId='+YSId
 				+'&productId='+productId
@@ -217,7 +235,7 @@
 							<th style="width: 120px;" class="dt-middle ">产品编号</th>
 							<th class="dt-middle ">产品名称</th>
 							<th style="width: 100px;" class="dt-middle ">订单号</th>
-							<th style="width: 100px;" class="dt-middle ">PI编号</th>
+							<th style="width: 140px;" class="dt-middle ">PI编号</th>
 							<th style="width: 60px;" class="dt-middle ">订单交期</th>
 							<th style="width: 60px;" class="dt-middle ">业务组</th>
 						</tr>
