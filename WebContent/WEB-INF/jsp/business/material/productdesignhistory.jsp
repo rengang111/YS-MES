@@ -210,10 +210,10 @@
 				<thead>				
 					<tr style="text-align: left;">
 						<th width="1px">No</th>
-						<th style="width:60px">配件名称</th>
+						<th style="width:120px">配件名称及规格描述</th>
 						<th style="width:40px">材质</th>
 						<th style="width:60px">加工方式</th>
-						<th style="width:60px">规格描述</th>
+						<th style="width:60px">表面处理</th>
 						<th style="width:60px">备注</th>
 					</tr>
 				</thead>			
@@ -250,9 +250,9 @@
 	</div><br/>
 	<span class="tablename">标贴-图片</span>
 	<div class="list">
-		<div class="" id="subidDiv" style="overflow: auto;height: 360px;">
+		<div class="" id="subidDiv" style="overflow: auto;">
 			<table id="labelPhoto" style="width:100%">
-				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
+				<tbody><tr class="photo"><td></td></tr></tbody>
 			</table>
 		</div>
 	</div>	
@@ -725,7 +725,7 @@ function labelView() {
 					fnCallback(data);			
 					var countData = data["labelFileCount"];
 					//alert(countData)
-					photoView('labelPhoto','uploadLabelPhoto',countData,data['labelFileList'])		
+					photoViewLabel('labelPhoto','uploadLabelPhoto',countData,data['labelFileList'])		
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	             }
@@ -941,112 +941,6 @@ function packageView() {
 </script>
 <script type="text/javascript">
 
-function deletePhoto(tableId,tdTable,path) {
-	
-	var url = '${ctx}/business/productDesign?methodtype='+tableId+'Delete';
-	url+='&tabelId='+tableId+"&path="+path;
-	    
-	if(!(confirm("确定要删除该图片吗？"))){
-		return;
-	}
-    $("#form").ajaxSubmit({
-		type: "POST",
-		url:url,	
-		data:$('#form').serialize(),// 你的formid
-		dataType: 'json',
-	    success: function(data){
-	    	
-			var type = tableId;
-			var countData = "0";
-			var photo="";
-			switch (type) {
-				case "productPhoto":
-					countData = data["productFileCount"];
-					photo = data['productFileList'];
-					break;
-				case "storagePhoto":
-					countData = data["storageFileCount"];
-					photo = data['storageFileList'];
-					break;
-				case "labelPhoto":
-					countData = data["labelFileCount"];
-					photo = data['labelFileList']
-					break;
-				case "packagePhoto":
-					countData = data["packageFileCount"];
-					photo = data['packageFileList']
-					break;
-				default:
-					break;
-			}
-			
-			//删除后,刷新现有图片
-			$("#" + tableId + " tr:gt(0)").remove();
-			photoView(tableId, tdTable, countData, photo);
-
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("error:"+errorThrown)
-		}
-	});
-}
-
-function uploadPhoto(tableId,tdTable, id) {
-
-	var url = '${ctx}/business/productDesignPhotoUpload'
-			+ '?methodtype=' + tdTable + '&id=' + id;
-	//alert(url)
-	$("#form").ajaxSubmit({
-		type : "POST",
-		url : url,
-		data : $('#form').serialize(),// 你的formid
-		dataType : 'json',
-		success : function(data) {
-	
-			var type = tableId;
-			var countData = "0";
-			var photo="";
-			switch (type) {
-				case "productPhoto":
-					countData = data["productFileCount"];
-					photo = data['productFileList'];
-					break;
-				case "storagePhoto":
-					countData = data["storageFileCount"];
-					photo = data['storageFileList'];
-					break;
-				case "labelPhoto":
-					countData = data["labelFileCount"];
-					photo = data['labelFileList']
-					break;
-				case "packagePhoto":
-					countData = data["packageFileCount"];
-					photo = data['packageFileList']
-					break;
-				default:
-					break;
-			}
-			
-			//添加后,刷新现有图片
-			$("#" + tableId + " tr:gt(0)").remove();
-			photoView(tableId, tdTable, countData, photo);
-			
-			/*
-			if (data.result == '0') {
-				$('#imgFile' + tdTable + id).attr('src','${ctx}' + data.path);
-				$('#uploadFile' + tdTable + id).remove();
-				$('#deleteFile' + tdTable + id).show();
-	
-			} else {
-				alert(data.message);
-			}
-			*/
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("error:"+errorThrown)
-		}
-	});
-}
 
 function photoView(id, tdTable, count, data) {
 	
@@ -1111,71 +1005,38 @@ function photoView(id, tdTable, count, data) {
 
 }
 
-function addPhotoRow(id,tdTable, index) {
 
-	for (var i = 0; i < 1; i++) {
+function photoViewLabel(id, tdTable, count, data) {
+	
+	//alert("id:"+id+"--count:"+count+"--countView:"+countView)	
+	var row = 0;
+	for (var index = 0; index < count; index++) {
 
-		var path = '${ctx}' + "/images/blankDemo.png";
-		var pathDel = '';
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
+		//alert(index+"::::::::::::"+path)
 		var trHtml = '';
 
 		trHtml += '<tr style="text-align: center;" class="photo">';
 
 		trHtml += '<td>';
-		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<table style="width:100%;margin: auto;" class="form" id="tb'+index+'">';
 		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
-				'onchange="uploadPhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
-		//trHtml+='<td><div id="uploadFile'+index+'" ></div></td>';
-		trHtml += '<td width="50px"></td>';
+		trHtml += '<td></td>';
+		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
+				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
 		trHtml += "</tr>";
-		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
-		trHtml += '</tr>';
-		trHtml += '</table>';
-		trHtml += '</td>';
-
-		index++;
-
-		trHtml += '<td>';
-		trHtml += '<table style="width:400px;margin: auto;" class="form">';
-		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
-				'onchange="uploadPhoto('+ '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
-		trHtml += '<td width="50px"></td>';
-		trHtml += "</tr>";
-		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-height: 450px;"  /></td>';
 		trHtml += '</tr>';
 		trHtml += '</table>';
 		trHtml += '</td>';
 		trHtml += "</tr>";
-	
-	}//for		
 
-	return trHtml;
-}
+		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		row++;
 
-function uploadFileFn(recordId, id) {
-	//alert("recordeId:"+recordId+"---id:"+id)
-	var url = '${ctx}/business/productDesignFileUpload?methodtype=uploadTextPrintFile'
-			+ '&id=' + id + '&recordId=' + recordId;
-	//alert(url)
-	$("#form").ajaxSubmit({
-		type : "POST",
-		url : url,
-		data : $('#form').serialize(),// 你的formid
-		dataType : 'json',
-		success : function(data) {
-			if (data.result == '0') {
-				$('#textPrint').DataTable().ajax.reload(null,false);
+	}
 
-			} else {
-				alert(data.message);
-			}
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("error:"+errorThrown)
-		}
-	});
 }
 
 function downloadFile(fileName) {
@@ -1187,31 +1048,6 @@ function downloadFile(fileName) {
 	url =encodeURI(encodeURI(url));//中文两次转码
 
 	location.href = url;
-}
-
-function deleteTextPrintFile(recordId,componentName){
-	
-	if(confirm("确定要删除文件 [ "+componentName+" ] 吗？")){
-		var url = '${ctx}/business/productDesign?methodtype=textPrintFileDelete'+ '&recordId=' + recordId;
-		//alert(url)
-		$("#form").ajaxSubmit({
-			type : "POST",
-			url : url,
-			data : $('#form').serialize(),// 你的formid
-			dataType : 'json',
-			success : function(data) {
-				if (data.message == "操作成功") {
-					$().toastmessage('showWarningToast', "文件已被删除。");
-					$('#textPrint').DataTable().ajax.reload(null,false);
-				}
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {
-				alert("error:"+errorThrown)
-			}
-
-		});
-	}
-	
 }
 
 

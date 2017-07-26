@@ -311,11 +311,11 @@
 						.add(
 						  [
 							'<td></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].componentname"   id="accessoryList'+rowIndex+'.componentname"  class="short" /></td>',
+							'<td><input  name="accessoryList['+rowIndex+'].componentname"   id="accessoryList'+rowIndex+'.componentname"  class="middle" /></td>',
 							'<td><input  name="accessoryList['+rowIndex+'].materialquality" id="accessoryList'+rowIndex+'.materialquality" class="short" /></td>',
 							'<td><input  name="accessoryList['+rowIndex+'].process"         id="accessoryList'+rowIndex+'.process" class="short" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].specification"   id="accessoryList'+rowIndex+'.specification" class="middle" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].remark"   	    id="accessoryList'+rowIndex+'.remark"   class="middle" /></td>',
+							'<td><input  name="accessoryList['+rowIndex+'].specification"   id="accessoryList'+rowIndex+'.specification" class="short" /></td>',
+							'<td><input  name="accessoryList['+rowIndex+'].remark"   	    id="accessoryList'+rowIndex+'.remark"   class="short" /></td>',
 							
 							]).draw();
 					
@@ -975,7 +975,7 @@
 					<td><form:input path="accessoryList[${i}].materialquality"  class="short"/></td>
 					<td><form:input path="accessoryList[${i}].process"  class="short"/></td>
 					<td><form:input path="accessoryList[${i}].specification"  class="short"/></td>
-					<td><form:input path="accessoryList[${i}].remark"  class="middle"/></td>
+					<td><form:input path="accessoryList[${i}].remark"  class="short"/></td>
 				</tr>
 			
 			</c:forEach>

@@ -355,11 +355,11 @@
 						.add(
 						  [
 							'<td class="dt-center"></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].componentname"   id="accessoryList'+rowIndex+'.componentname"  class="short" /></td>',
+							'<td><input  name="accessoryList['+rowIndex+'].componentname"   id="accessoryList'+rowIndex+'.componentname"  class="middle" /></td>',
 							'<td><input  name="accessoryList['+rowIndex+'].materialquality" id="accessoryList'+rowIndex+'.materialquality" class="short" /></td>',
 							'<td><input  name="accessoryList['+rowIndex+'].process"         id="accessoryList'+rowIndex+'.process" class="short" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].specification"   id="accessoryList'+rowIndex+'.specification" class="middle" /></td>',
-							'<td><input  name="accessoryList['+rowIndex+'].remark"   	    id="accessoryList'+rowIndex+'.remark"   class="middle" /></td>',
+							'<td><input  name="accessoryList['+rowIndex+'].specification"   id="accessoryList'+rowIndex+'.specification" class="short" /></td>',
+							'<td><input  name="accessoryList['+rowIndex+'].remark"   	    id="accessoryList'+rowIndex+'.remark"   class="short" /></td>',
 							
 							]).draw();
 					
@@ -1025,10 +1025,10 @@
 		<thead>				
 			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th style="width:60px">配件名称</th>
+				<th style="width:60px">配件名称及规格描述</th>
 				<th style="width:40px">材质</th>
 				<th style="width:60px">加工方式</th>
-				<th style="width:60px">规格描述</th>
+				<th style="width:60px">表面处理</th>
 				<th style="width:60px">备注</th>
 			</tr>
 		</thead>	
@@ -1036,11 +1036,11 @@
 			<c:forEach var="list" items="${accessoryList}" varStatus="status">
 				<tr>
 					<td></td>
-					<td><form:input path="accessoryList[${status.index}].componentname"  class="short" value="${list.componentName }" /></td>
+					<td><form:input path="accessoryList[${status.index}].componentname"  class="middle" value="${list.componentName }" /></td>
 					<td><form:input path="accessoryList[${status.index}].materialquality"  class="short" value="${list.materialQuality }" /></td>
 					<td><form:input path="accessoryList[${status.index}].process"  class="short" value="${list.process }" /></td>
-					<td><form:input path="accessoryList[${status.index}].specification"  class="middle" value="${list.specification }" /></td>
-					<td><form:input path="accessoryList[${status.index}].remark"  class="middle" value="${list.remark }" /></td>
+					<td><form:input path="accessoryList[${status.index}].specification"  class="short" value="${list.specification }" /></td>
+					<td><form:input path="accessoryList[${status.index}].remark"  class="short" value="${list.remark }" /></td>
 				</tr>
 			
 			</c:forEach>

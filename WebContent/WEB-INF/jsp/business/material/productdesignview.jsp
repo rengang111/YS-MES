@@ -130,10 +130,10 @@
 				<thead>				
 					<tr style="text-align: left;">
 						<th width="1px">No</th>
-						<th style="width:60px">配件名称</th>
+						<th style="width:120px">配件名称及规格描述</th>
 						<th style="width:40px">材质</th>
 						<th style="width:60px">加工方式</th>
-						<th style="width:60px">规格描述</th>
+						<th style="width:60px">表面处理</th>
 						<th style="width:60px">备注</th>
 					</tr>
 				</thead>			
@@ -170,9 +170,9 @@
 	</div><br/>
 	<span class="tablename">标贴-图片</span>&nbsp;<button type="button" id="addLabelPhoto" class="DTTT_button">添加图片</button>
 	<div class="list">
-		<div class="" id="subidDiv" style="overflow: auto;height: 360px;">
+		<div class="" id="subidDiv" style="overflow: auto;">
 			<table id="labelPhoto" style="width:100%">
-				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
+				<tbody><tr class="photo"><td></td></tr></tbody>
 			</table>
 		</div>
 	</div>	
@@ -323,7 +323,7 @@ $(document).ready(function() {
 		
 		var row = $("#labelPhoto tbody tr.photo").length - 1;
 
-		var trHtml = addPhotoRow('labelPhoto','uploadLabelPhoto',labelIndex);		
+		var trHtml = addPhotoRowLabel('labelPhoto','uploadLabelPhoto',labelIndex);		
 
 		$('#labelPhoto tr.photo:eq('+row+')').after(trHtml);	
 		labelIndex++;
@@ -649,7 +649,7 @@ function labelView() {
 					fnCallback(data);			
 					var countData = data["labelFileCount"];
 					//alert(countData)
-					photoView('labelPhoto','uploadLabelPhoto',countData,data['labelFileList'])		
+					photoViewLabel('labelPhoto','uploadLabelPhoto',countData,data['labelFileList'])		
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	             }
@@ -886,6 +886,7 @@ function deletePhoto(tableId,tdTable,path) {
 			var type = tableId;
 			var countData = "0";
 			var photo="";
+			var flg="true";
 			switch (type) {
 				case "productPhoto":
 					countData = data["productFileCount"];
@@ -898,6 +899,7 @@ function deletePhoto(tableId,tdTable,path) {
 				case "labelPhoto":
 					countData = data["labelFileCount"];
 					photo = data['labelFileList']
+					flg = "false";
 					break;
 				case "packagePhoto":
 					countData = data["packageFileCount"];
@@ -909,7 +911,12 @@ function deletePhoto(tableId,tdTable,path) {
 			
 			//删除后,刷新现有图片
 			$("#" + tableId + " tr:gt(0)").remove();
-			photoView(tableId, tdTable, countData, photo);
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}else{
+				photoViewLabel(tableId, tdTable, countData, photo);
+				
+			}
 
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -933,6 +940,7 @@ function uploadPhoto(tableId,tdTable, id) {
 			var type = tableId;
 			var countData = "0";
 			var photo="";
+			var flg="true";
 			switch (type) {
 				case "productPhoto":
 					countData = data["productFileCount"];
@@ -945,6 +953,7 @@ function uploadPhoto(tableId,tdTable, id) {
 				case "labelPhoto":
 					countData = data["labelFileCount"];
 					photo = data['labelFileList']
+					flg = "false";
 					break;
 				case "packagePhoto":
 					countData = data["packageFileCount"];
@@ -956,7 +965,12 @@ function uploadPhoto(tableId,tdTable, id) {
 			
 			//添加后,刷新现有图片
 			$("#" + tableId + " tr:gt(0)").remove();
-			photoView(tableId, tdTable, countData, photo);
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}else{
+				photoViewLabel(tableId, tdTable, countData, photo);
+				
+			}
 			
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -1030,8 +1044,72 @@ function photoView(id, tdTable, count, data) {
 
 }
 
-function addPhotoRow(id,tdTable, index) {
 
+function photoViewLabel(id, tdTable, count, data) {
+	
+	//alert("id:"+id+"--count:"+count+"--countView:"+countView)	
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
+		//alert(index+"::::::::::::"+path)
+		var trHtml = '';
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+
+		trHtml += '<td>';
+		trHtml += '<table style="width:100%;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td></td>';
+		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
+				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'"  style="max-height: 450px;" /></td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+		trHtml += "</tr>";
+
+		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		row++;
+
+	}
+
+}
+
+function addPhotoRowLabel(id,tdTable, index) {
+
+	for (var i = 0; i < 1; i++) {
+
+		var path = '${ctx}' + "/images/blankDemo.png";
+		var pathDel = '';
+		var trHtml = '';
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+
+		trHtml += '<td>';
+		trHtml += '<table style="width:100%;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
+				'onchange="uploadPhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
+		//trHtml+='<td><div id="uploadFile'+index+'" ></div></td>';
+		trHtml += '<td width="50px"><div id="deleteFile'+tdTable+index+'" style="display:none"><a href="###" '+
+				'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+		trHtml += "</tr>";
+	
+	}//for		
+
+	return trHtml;
+}
+
+function addPhotoRow(id,tdTable, index) {
+	
 	for (var i = 0; i < 1; i++) {
 
 		var path = '${ctx}' + "/images/blankDemo.png";
@@ -1072,7 +1150,6 @@ function addPhotoRow(id,tdTable, index) {
 
 	return trHtml;
 }
-
 function uploadFileFn(recordId, id) {
 	//alert("recordeId:"+recordId+"---id:"+id)
 	var url = '${ctx}/business/productDesignFileUpload?methodtype=uploadTextPrintFile'
