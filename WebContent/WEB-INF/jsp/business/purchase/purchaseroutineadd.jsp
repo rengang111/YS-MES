@@ -10,10 +10,38 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>采购合同-编辑</title>
+<title>日常采购-新建</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
+		
+	$.fn.dataTable.TableTools.buttons.reset = $
+	.extend(
+			true,
+			{},
+			$.fn.dataTable.TableTools.buttonBase,
+			{
+				"fnClick" : function(button) {
+					
+					var t=$('#example').DataTable();
+					
+					rowIndex = t.row('.selected').index();
+					
+					if(typeof rowIndex == "undefined"){				
+						$().toastmessage('showWarningToast', "请选择要删除的数据。");	
+					}else{
+						if(confirm("删除后不可恢复，确定要删除吗？")) {
+
+							t.row('.selected').remove().draw();
+							$().toastmessage('showNoticeToast', "删除成功。");	
+							weightsum();
+						}	
+					}
+						
+				}
+			
+			});
+	
 	function ajaxRawGroup() {
 		
 		var t = $('#example').DataTable({
@@ -25,37 +53,67 @@
 	        "paging"    : false,
 	        "pageLength": 50,
 	        "ordering"  : false,
+	       	"dom"		  : 'T<"clear">rt',
+			"tableTools" : {
 
-			dom : '<"clear">rt',
+				"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
+
+				"aButtons" : [ 
+				{
+					"sExtends" : "reset",
+					"sButtonText" : "删除行"
+				}],
+			},
 			
 			"columns" : [ 
-			        	{"className":"dt-body-center"
+			           {"className":"dt-body-center"
 					}, {
-					}, {								
+					}, {							
 					}, {"className":"td-center"
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
+					}, {"className":"td-right"				
 					}			
-				]
+				],
+				/*
+			"columnDefs":[
+	    		
+	    		{"targets":2,"render":function(data, type, row){
+	    			
+	    			var name = row["materialName"];
+	    			name = jQuery.fixedWidth(name,30);
+	    			
+	    			return name;
+	    		}},
+	    		{"targets":1,"render":function(data, type, row){
+	    			var rtn = "";
+	    			var rowIndex = row["rownum"];
+	    			var materialId = row["materialId"];
+	    			rtn = '<a href="###" onClick="doShow('+'\''+ materialId +'\''+ ')">'+materialId+'</a>';
+	    			rtn += '<input type="hidden" id="contract'+rowIndex+'.materialid" name="contract['+rowIndex+'].materialid" value="'+materialId+'">';
+	    			return rtn;
+	    		}}
+         	] 
+			*/
 			
 		}).draw();
 		
-		t.on('blur', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
+		t.on('blur', 'tr td:nth-child(7)',function() {
 			
 	           $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
 
 		});
 			
-		t.on('change', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
+		t.on('change', 'tr td:nth-child(7)',function() {
 			
             var $tds = $(this).parent().find("td");
 			
-            var $oQuantity  = $tds.eq(4).find("input");
-			var $oThisPrice = $tds.eq(5).find("input");
-			var $oAmounti   = $tds.eq(6).find("input:hidden");
-			var $oAmounts   = $tds.eq(6).find("span");
+            var $oQuantity  = $tds.eq(6).find("input");
+			var $oThisPrice = $tds.eq(7).find("input");
+			var $oAmounti   = $tds.eq(8).find("input:hidden");
+			var $oAmounts   = $tds.eq(8).find("span");
 			
 			var fPrice    = currencyToFloat($oThisPrice.val());		
 			var fQuantity = currencyToFloat($oQuantity.val());			
@@ -103,20 +161,10 @@
 	
 	$(document).ready(function() {
 
-		var productid = '${ contract.productId }';
-		if(productid == null || productid == ""){
-			$('#ysid00').attr("style","display:none");			
-		}
-		
-		ajaxRawGroup();			
-		
-		var deliverydate = '${contract.purchaseDate}';
-		if(deliverydate == "" || deliverydate == null){
 		var date = new Date(shortToday());
-			date.setDate(date.getDate()+20);
-			$("#contract\\.deliverydate").val(date.format("yyyy-MM-dd"));
-			$("#contract\\.purchasedate").val(shortToday());
-		}
+		date.setDate(date.getDate()+20);
+		$("#contract\\.deliverydate").val(date.format("yyyy-MM-dd"));
+		$("#contract\\.purchasedate").val(shortToday());
 		
 		$("#contract\\.purchasedate").datepicker({
 			dateFormat:"yy-mm-dd",
@@ -133,23 +181,10 @@
 			selectOtherMonths:true,
 			showOtherMonths:true,
 		});
+			
 		
+		ajaxRawGroup();		
 		
-		$('#example').DataTable().columns.adjust().draw();		
-		
-		$("#goBack").click(
-				function() {
-					history.go(-1);
-					//var url = '${ctx}/business/purchase?methodtype=init';
-					//location.href = url;		
-				});
-		
-		$("#insert").click(
-				function() {			
-			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=update");
-			$('#attrForm').submit();
-		});		
-
 		$("#contract\\.purchasedate").change(function(){
 			
 			var val = $(this).val();
@@ -158,14 +193,33 @@
 			$("#contract\\.deliverydate").val(date.format("yyyy-MM-dd"));
 		});	
 		
-		$("#contract\\.supplierid").change(function(){
-			
-			var YSId = '${order.YSId }';
-			var supplierId = $(this).val();
-			var url = '${ctx}/business/contract?methodtype=edit&YSId='+YSId+"&supplierId="+supplierId;
-			location.href = url;	
-		});	
+		$("#goBack").click(
+				function() {
+					var goBackFlag = $('#goBackFlag').val();
+					
+					if(goBackFlag == "1"){
+						//该页面来自于物料详情
+						var recordId ="${ contract.materialRecordId }";
+						var parentId ="${ contract.materialParentId }";
+						var url = '${ctx}/business/material?methodtype=detailView';
+						url = url + '&parentId=' + parentId+'&recordId='+recordId+'&keyBackup=2';
+						
+					}else{
+						//该页面来自于供应商
+						var supplierId="${ contract.supplierId }";
+						var url = "${ctx}/business/supplier?keyBackup="+supplierId;
+						
+					}
+					
+					location.href = url;		
+				});
 		
+		$("#insert").click(
+				function() {			
+			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=createRoutineContract");
+			$('#attrForm').submit();
+		});
+				
 		//input格式化
 		foucsInit();
 		
@@ -180,7 +234,7 @@
 		var sum = 0;
 		$('#example tbody tr').each (function (){
 			
-			var vtotal = $(this).find("td").eq(6).find("span").text();
+			var vtotal = $(this).find("td").eq(8).find("span").text();
 			var ftotal = currencyToFloat(vtotal);
 			
 			sum = currencyToFloat(sum) + ftotal;
@@ -198,6 +252,7 @@
 		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
 		var url = '${ctx}/business/material?methodtype=detailView';
 		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
+		
 		layer.open({
 			offset :[10,''],
 			type : 2,
@@ -228,63 +283,50 @@
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">
 			
+		<input type="hidden" id="goBackFlag"  value="${goBackFlag }"/>
+		<form:hidden path="shortName"  value="${ contract.shortName }"/>
 		<fieldset>
-			<legend> 采购合同</legend>
+			<legend> 供应商</legend>
 			<table class="form" id="table_form">
-				<tr id="ysid00">		
-					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="200px">${contract.YSId }
-						<form:hidden path="contract.recordid" value="${contract.contractRecordId }"/>
-						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
-									
-					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td width="150px">&nbsp;${ contract.productId }</td>
-						
-					<td class="label" width="100px"><label>产品名称：</label></td>
-					<td>&nbsp;${ contract.productName } </td>
-				</tr>	
+				
 				<tr> 		
-					<td class="label"><label>供应商编号：</label></td>					
-					<td>${ contract.supplierId }
-						<form:hidden path="contract.supplierid" value="${contract.supplierId }"/></td>
+					<td class="label" style="width:120px">供应商编号：</td>					
+					<td style="width:200px">&nbsp;${ contract.supplierId }
+						<form:hidden path="contract.supplierid" value="${ contract.supplierId }"/></td>
 									
-					<td class="label"><label>供应商简称：</label></td>					
-					<td>&nbsp;${ contract.shortName }</td>
+					<td class="label" style="width:120px">供应商简称：</td>					
+					<td style="width:200px">&nbsp;${ contract.shortName }</td>
 						
-					<td class="label"><label>供应商名称：</label></td>
-					<td>&nbsp;${ contract.fullName }</td>
+					<td class="label" style="width:120px">供应商名称：</td>
+					<td><div id="fullName">${ contract.supplierName }</div></td>
 				</tr>	
-				<tr> 		
-					<td class="label"><label>采购合同编号：</label></td>					
-					<td>${ contract.contractId }
-						<form:hidden path="contract.contractid" value="${contract.contractId }"/></td>
-					<td class="label"><label>下单日期：</label></td>
-					<td>
-						<form:input path="contract.purchasedate" value="${ contract.purchaseDate }"/></td>
-					<td class="label"><label>合同交期：</label></td>
-					<td>
-						<form:input path="contract.deliverydate" value="${ contract.deliveryDate }"/></td>
-				</tr>									
+				<tr> 
+					<td class="label">下单日期：</td>
+					<td><form:input path="contract.purchasedate" value="${ contract.purchaseDate }"/></td>
+					<td class="label">合同交期：</td>
+					<td colspan="3"><form:input path="contract.deliverydate" value="${ contract.deliveryDate }"/></td>
+				</tr>								
 			</table>
 			
 	</fieldset>
 	
 	<div style="clear: both"></div>		
 	<fieldset>
-	<legend> 合同详情</legend>
+	<legend> 物料详情</legend>
 	
 	<div class="list">
 	<table id="example" class="display">	
 		<thead>
 		<tr>
-			<th style="width:30px">No</th>
-			<th style="width:150px">物料ERP编码</th>
+			<th style="width:1px">No</th>
+			<th style="width:150px">物料编码</th>
 			<th>物料名称</th>
-			<th style="width:50px">计量单位</th>
-			<th style="width:80px">数量</th>
+			<th style="width:30px">单位</th>
+			<th style="width:60px">当前库存</th>
+			<th style="width:60px">虚拟库存</th>
+			<th style="width:80px">采购数量</th>
 			<th style="width:50px">单价</th>
 			<th style="width:70px">总价</th>
-			<th style="width:1px"></th>
 		</tr>
 		</thead>		
 		<tbody>
@@ -294,24 +336,15 @@
 					<td>
 						<a href="###" onClick="doShowMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
 						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
-					<td><span id="name${status.index}"></span></td>					
-					<td>${ detail.unit }</td>
-					<td><form:input path="detailList[${status.index}].quantity" value="${detail.quantity}" class="num short"/></td>							
+					<td><span id="name${status.index}">${detail.materialName}</span></td>					
+					<td>${ detail.unit }</td>				
+					<td>${ detail.accountingQuantity }</td>				
+					<td>${ detail.availabelToPromise }</td>
+					<td><form:input path="detailList[${status.index}].quantity" value="" class="num short"/></td>							
 					<td>${detail.price}<form:hidden  path="detailList[${status.index}].price" value="${detail.price}"  class="cash short" /></td>
-					<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice} "/></td>				
-					<td><form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" /></td>				
+					<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice} "/></td>								
 					
-				</tr>	
-								
-				<script type="text/javascript">
-					var materialName = '${detail.materialName}';
-					var index = '${status.index}';
-					
-					$('#name'+index).html(jQuery.fixedWidth(materialName,20));
-					
-					counter++;
-					
-				</script>	
+				</tr>
 					
 			</c:forEach>
 			
@@ -323,28 +356,20 @@
 				<td></td>
 				<td></td>
 				<td></td>
+				<td></td>
+				<td></td>
 				<td class="td-right">合计:</td>
 				<td class="td-right" style="padding-right: 2px;"><span id=weightsum></span>
 					<form:hidden path="contract.total"/></td>
-				<td></td>
 			</tr>
 		</tfoot>
 	</table>
 	</div>
 	</fieldset>
-	<fieldset>
-	<legend> 合同注意事项</legend>
-	<table class="form" >
-		<tr>
-			<td class="td-left"><textarea name="contract.memo" rows="7" cols="100" >${contract.memo}</textarea></td>
-		</tr>
-	</table>
-	
-	</fieldset>
 	<div style="clear: both"></div>
 	
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="insert" class="DTTT_button">保存</button>
+		<button type="button" id="insert" class="DTTT_button">生成采购合同</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>		
 		

@@ -14,7 +14,7 @@
 	$(document).ready(function() {		
 		
 		orderBomView();//订单BOM
-				
+
 		$(".goBack").click(
 				function() {
 					var YSId = '${order.YSId}';
@@ -98,6 +98,7 @@
 </div>
 
 <script  type="text/javascript">
+
 function orderBomView() {
 
 	var YSId='${order.YSId}';
@@ -106,17 +107,15 @@ function orderBomView() {
 		table.fnDestroy();
 	}
 	var t2 = $('#orderBom').DataTable({
-		"paging": true,
-		 "iDisplayLength" : 50,
-		"lengthChange":false,
-		//"lengthMenu":[10,150,200],//设置一页展示20条记录
-		"processing" : true,
-		"serverSide" : true,
+		"paging": false,
+		//"lengthMenu":[20,50,100],//设置一页展示10条记录
+		"processing" : false,
+		"serverSide" : false,
 		"stateSave" : false,
-		"ordering "	:true,
 		"searching" : false,
 		"pagingType" : "full_numbers",
-		"retrieve" : true,
+		//"bJQueryUI": true,
+		"retrieve" : false,
 		"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBom&YSId="+YSId,				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
@@ -176,7 +175,7 @@ function orderBomView() {
 				"targets" : []
 			}          
         ] 
-	}).draw();
+	});
 	
 	
 	t2.on('click', 'tr', function() {

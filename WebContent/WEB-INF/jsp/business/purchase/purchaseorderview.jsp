@@ -68,6 +68,11 @@
 	
 	$(document).ready(function() {
 
+		var productid = '${ contract.productId }';
+		if(productid == null || productid == ""){
+			$('#ysid00').attr("style","display:none");			
+		}
+		
 		ajaxRawGroup();			
 		
 		$( "#tabs" ).tabs();
@@ -140,29 +145,30 @@
 		<fieldset>
 			<legend> 采购合同</legend>
 			<table class="form" id="table_form">
-				<tr> 		
+			
+				<tr id="ysid00"> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="200px">
+					<td width="150px">
 						<a href="#" onClick="doShowYS('${contract.YSId}')">${contract.YSId }</a>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
 									
-					<td class="label" width="100px"><label>产品编号：</label></td>					
+					<td class="label" width="100px">产品编号：</td>					
 					<td width="150px">
 						<a href="#" onClick="doEditMaterial('${contract.productRecordId}','${contract.productParentId}')">${ contract.productId }</a></td>
 						
-					<td class="label" width="100px"><label>产品名称：</label></td>
+					<td class="label" width="100px">产品名称：</td>
 					<td colspan="3">${ contract.productName } </td>
-				</tr>	
+				</tr>
 				<tr> 		
-					<td class="label"><label>供应商编号：</label></td>					
-					<td>${ contract.supplierId }
+					<td class="label" width="100px"><label>供应商编号：</label></td>					
+					<td width="200px">${ contract.supplierId }
 						<form:hidden path="contract.supplierid" value="${contract.supplierId }"/></td>
 									
-					<td class="label"><label>供应商简称：</label></td>					
-					<td>${ contract.shortName }</td>
+					<td class="label" width="100px"><label>供应商简称：</label></td>					
+					<td width="200px">${ contract.shortName }</td>
 						
-					<td class="label"><label>供应商名称：</label></td>
-					<td colspan="3">&nbsp;${ contract.fullName }</td>
+					<td class="label" width="100px"><label>供应商名称：</label></td>
+					<td colspan="3">${ contract.fullName }</td>
 				</tr>	
 				<tr> 		
 					<td class="label"><label>合同编号：</label></td>					

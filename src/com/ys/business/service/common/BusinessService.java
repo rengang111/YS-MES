@@ -380,4 +380,17 @@ public class BusinessService {
 		//
 		return code1 + "-"+code2;
 	}
+	
+	 /**
+	 * @return 日常采购的耀升编号
+	 * 
+	 */
+	public static String getRoutinePurchaseYsid()
+	{
+		//格式化成2位流水号,并且+1
+		//String ft = BusinessService.getFormat3Code(code2,blAdd);
+		
+		//
+		return getYSCommCode() + "000";
+	}
 }

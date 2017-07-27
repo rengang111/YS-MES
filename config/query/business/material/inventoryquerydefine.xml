@@ -193,7 +193,7 @@
   	<select>
       <f name="a.recordId" alias="productRecordId" ctype="" />
       <f name="a.YSId" alias="" ctype="" />
-      <f name="IFNULL(a.productId,'自制库存订单')" alias="productId" ctype="" />
+      <f name="IFNULL(a.productId,'')" alias="productId" ctype="" />
       <f name="a.productName" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
@@ -230,7 +230,7 @@
   	<select>
       <f name="a.recordId" alias="productRecordId" ctype="" />
       <f name="a.YSId" alias="" ctype="" />
-      <f name="IFNULL(a.productId,'自制库存订单')" alias="productId" ctype="" />
+      <f name="IFNULL(a.productId,'')" alias="productId" ctype="" />
       <f name="a.productName" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />

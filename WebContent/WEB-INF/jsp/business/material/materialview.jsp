@@ -170,7 +170,7 @@ $(document).ready(function() {
 	});
 	
 	var keyBackup = $('#keyBackup').val();
-	if(keyBackup != ''){
+	if(keyBackup == '1'){
 		$('#return').css('display', 'none');//弹窗方式下,不显示返回按钮
 	}
 	/*

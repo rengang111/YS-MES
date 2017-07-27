@@ -27,13 +27,13 @@ public class PurchaseOrderModel extends BaseModel {
 	}
 	
 	private String YSId;
-	private String bomId;
+	private String shortName;
 
-	public String getBomId() {
-		return this.bomId;
+	public String getShortName() {
+		return this.shortName;
 	}
-	public void BomId(String bomId) {
-		this.bomId = bomId;
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 	public String getYSId() {
 		return this.YSId;

@@ -10,7 +10,7 @@
 <title>供应商基本数据检索</title>
 <script type="text/javascript">
 
-	function ajax(type) {
+	function ajax(keyBackup,type) {
 		var table = $('#TSupplier').dataTable();
 		if(table) {
 			table.fnDestroy();
@@ -30,7 +30,7 @@
 				//"scrollY":scrollHeight,
 				"scrollCollapse":true,
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search&type="+type,
+				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search&type="+type+"&keyBackup="+keyBackup,
 				//"dom" : 'T<"clear">rt',
 				
 				"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -73,12 +73,15 @@
 		    		{"targets":0,"render":function(data, type, row){
 						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
                     }},
+		    		{"targets":1,"render":function(data, type, row){
+		    			return "<a href=\"#\" onClick=\"doUpdate('" + row["recordId"] + "')\">"+data+"</a>";
+                    }},
 		    		{"targets":5,"render":function(data, type, row){
 		    			var name = row["categoryDes"];				    			
 		    			return jQuery.fixedWidth(name,25);
                     }},
 		    		{"targets":7,"render":function(data, type, row){
-		    			return "<a href=\"#\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>";
+		    			return "<a href=\"#\" onClick=\"doPurchasePlan('" + row["supplierID"] + "')\">采购下单</a>";
                     }},
                     {"bSortable": false, "aTargets": [ 0 ] 
                     }
@@ -103,7 +106,7 @@
 	
 	function initEvent(){
 
-		doSearch();
+		ajax('','');
 	
 		$('#TSupplier').DataTable().on('click', 'tr', function() {
 			
@@ -124,11 +127,11 @@
 	
 	function doSearch() {
 	
-		ajax('');
+		ajax('S','');
 	}
 	
 	function SelectSupplier(type){
-		ajax(type);
+		ajax('',type);
 	}
 	
 	function doCreate() {
@@ -186,7 +189,13 @@
 		return true;
 	}
 
-
+	function doPurchasePlan(supplierId) {
+		//goBackFlag:区别采购入口是物料还是供应商
+		var url = '${ctx}/business/contract?methodtype=createRoutineContractInit&goBackFlag=';
+		url = url + '&supplierId=' + supplierId;
+		location.href = url;
+		
+	}
 	
 </script>
 

@@ -127,6 +127,14 @@ public class PurchaseOrderService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
+		if((key1 == null || ("").equals(key1)) &&
+			(key2 == null || ("").equals(key2))){
+			//没有查询条件的时候,默认显示一周的数据
+			String modifyTime = CalendarUtil.dateAddToString(
+					CalendarUtil.fmtDate(),-7);
+			userDefinedSearchCase.put("keyword3", modifyTime);
+		}
+		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -326,6 +334,32 @@ public class PurchaseOrderService extends CommonService {
 
 		model.addAttribute("contract",dataModel.getYsViewData().get(0));		
 		model.addAttribute("detail", dataModel.getYsViewData());
+		
+	}	
+	
+	/**
+	 * 
+	 */
+	public void getMaterialDetailList(String supplierId,
+			String materialId) throws Exception {
+
+		if(null == supplierId || ("").equals(supplierId))
+			return;
+	
+		dataModel.setQueryName("getMaterialForPurchase");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("contractId", supplierId);
+		userDefinedSearchCase.put("contractId", materialId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();	 
+
+		if(dataModel.getRecordCount() > 0){
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));		
+			model.addAttribute("detail", dataModel.getYsViewData());
+		}
 		
 	}	
 	
@@ -607,6 +641,23 @@ public class PurchaseOrderService extends CommonService {
 		
 	}
 	
+
+	/**
+	 * 合同明细删除处理
+	 */
+	private void deleteContractDetailByContractId(String contractId) {
+		
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+
+		String astr_Where = " contractId = '" + contractId +"'";	
+		try {
+			dao.RemoveByWhere(astr_Where);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}		
+		
+	}
+	
 	/**
 	 * 合同删除处理
 	 */
@@ -622,6 +673,24 @@ public class PurchaseOrderService extends CommonService {
 		}		
 		
 	}
+	
+
+	/**
+	 * 合同删除处理
+	 */
+	private void deleteContractByContractId(String contractId) {
+		
+		B_PurchaseOrderDao dao = new B_PurchaseOrderDao();
+
+		String astr_Where = " contractId = '" + contractId +"'";	
+		try {
+			dao.RemoveByWhere(astr_Where);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}		
+		
+	}
+	
 	/*
 	 * 订单详情删除处理
 	 */
@@ -825,4 +894,126 @@ public class PurchaseOrderService extends CommonService {
 		
 	}
 	
+
+	public void createContractInit() throws Exception {
+		
+		String supplierId = request.getParameter("supplierId");
+		String materialId = request.getParameter("materialId");
+		String goBackFlag = request.getParameter("goBackFlag");
+		
+		getMaterialDetailList(supplierId,materialId);
+		
+		model.addAttribute("goBackFlag",goBackFlag);
+	}
+	
+
+	public void createRoutineContract() throws Exception {
+		
+		String goBackFlag = request.getParameter("goBackFlag");
+		String shortName = reqModel.getShortName();
+
+		//常规采购的耀升编号:17YS00
+		String YSId = BusinessService.getRoutinePurchaseYsid();
+		
+		B_PurchaseOrderData contract = reqModel.getContract();
+		//创建合同编号
+		contract = geRoutinePurchaseContractId(contract,YSId,shortName);
+		
+		//合同数据做成
+		insertRoutine(contract);
+		//跳转到查看页面
+		String contractId = contract.getContractid();
+		getContractDetailList(contractId);
+		
+		model.addAttribute("goBackFlag",goBackFlag);
+	}
+	
+	private B_PurchaseOrderData geRoutinePurchaseContractId(
+			B_PurchaseOrderData dt,
+			String YSId,String shortName) throws Exception{
+		
+		//取得供应商的合同流水号
+		//父编号:年份+供应商简称
+		String parentId = "";
+		if(null != YSId && YSId.length() > 3 ){
+			parentId = YSId.substring(0,2);//耀升编号前两位是年份
+		}
+		parentId = parentId + shortName;
+		
+		String subId = getContractCode(parentId);
+		
+		//3位流水号格式化	
+		//采购合同编号:16YS081-WL002
+		String contractId = BusinessService.getContractCode(YSId, shortName, subId);
+
+		dt.setYsid(YSId);
+		dt.setContractid(contractId);
+		dt.setParentid(parentId);
+		dt.setSubid(String.valueOf(Integer.parseInt(subId)+1));
+		
+		return dt;
+
+	}
+	
+	private void insertRoutine(B_PurchaseOrderData contract){
+		
+		ts = new BaseTransaction();
+
+		try {
+			ts.begin();
+
+			String contractId = contract.getContractid();
+			String YSId = contract.getYsid();
+
+			//删除既存合同信息
+			deleteContractByContractId(contractId);
+			
+			//删除既存合同明细
+			deleteContractDetailByContractId(contractId);
+			
+			//新增常规采购合同
+			insertPurchaseOrder(contract);
+			
+			//合同明细
+			List<B_PurchaseOrderDetailData> reqDetail = reqModel.getDetailList();
+			for(B_PurchaseOrderDetailData d:reqDetail){
+				d.setYsid(YSId);
+				d.setContractid(contractId);				
+				insertPurchaseOrderDetail(d);				
+			}
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void insertPurchaseOrder(B_PurchaseOrderData data) throws Exception{
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"RoutinePurchaseOrderInsert",userInfo);
+		copyProperties(data,commData);		
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		orderDao.Create(data);	
+	}
+	
+	
+	private void insertPurchaseOrderDetail(B_PurchaseOrderDetailData data) throws Exception{
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"RoutinePurchaseOrderDetailInsert",userInfo);
+		copyProperties(data,commData);		
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		detailDao.Create(data);	
+	}
 }

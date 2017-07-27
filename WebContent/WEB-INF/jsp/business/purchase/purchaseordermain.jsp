@@ -15,7 +15,7 @@
 <title>采购合同一览</title>
 <script type="text/javascript">
 
-	function ajax(scrollHeight) {
+	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnDestroy();
@@ -32,7 +32,7 @@
 			"searching" : false,
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
-			"sAjaxSource" : "${ctx}/business/contract?methodtype=search",
+			"sAjaxSource" : "${ctx}/business/contract?methodtype=search&keyBackup="+pageFlg,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -73,8 +73,14 @@
 					return row["rownum"];
                    }},
 	    		{"targets":4,"render":function(data, type, row){
+	    			var rtn="";var ysid=data.substring(2,8);
 	    			
-	    			return "<a href=\"###\" onClick=\"doShowYS('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";			    			
+	    			if(ysid == "YS000"){
+	    				rtn= data;	
+	    			}else{
+	    				rtn= "<a href=\"###\" onClick=\"doShowYS('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";				
+	    			}
+	    			return rtn;
 	    		}},
 	    		{"targets":1,"render":function(data, type, row){
 	    			
@@ -82,7 +88,7 @@
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var name = row["materialName"];				    			
-	    			if(name != null) name = jQuery.fixedWidth(name,30);
+	    			if(name != null) name = jQuery.fixedWidth(name,40);
 	    			return name;
 	    		}}
          	] 
@@ -90,10 +96,11 @@
 	}
 
 	
-	function initEvent(){
 
-		doSearch();
-	
+	$(document).ready(function() {
+		
+		ajax("");
+		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
 			if ( $(this).hasClass('selected') ) {
@@ -104,19 +111,14 @@
 	            $(this).addClass('selected');
 	        }
 		});
-	}
-
-	$(document).ready(function() {
-		
-		initEvent();
 
 		
 	})	
 	
 	function doSearch() {	
 
-		var scrollHeight = $(document).height() - 197; 
-		ajax(scrollHeight);
+		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
+		ajax("S");
 
 	}
 	

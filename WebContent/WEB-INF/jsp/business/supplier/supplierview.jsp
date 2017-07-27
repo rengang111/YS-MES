@@ -247,8 +247,9 @@ function doEdit() {
 
 
 
-function doDelete() {
-	var url = "${ctx}/business/supplier";
+function doBack() {
+	var supplierId = "${formModel.supplier.supplierid}";
+	var url = "${ctx}/business/supplier?keyBackup="+supplierId;
 	location.href = url;
 }
 
@@ -348,7 +349,7 @@ function controlButtons(data) {
 		</fieldset>	
 		<fieldset class="action" style="text-align: right;">
 		<button type="button" class="DTTT_button" onclick="doEdit();">编辑</button>
-		<button type="button" class="DTTT_button" onclick="doDelete();">返回</button>
+		<button type="button" class="DTTT_button" onclick="doBack();">返回</button>
 		</fieldset>
 							
 		<fieldset>		

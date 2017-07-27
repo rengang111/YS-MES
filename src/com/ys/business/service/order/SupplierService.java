@@ -27,6 +27,7 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Service
 public class SupplierService extends BaseService {
@@ -68,22 +69,18 @@ public class SupplierService extends BaseService {
 		dataModel.setQueryFileName("/business/supplier/supplierquerydefine");
 		
 	}
-	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
+	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, HttpSession session) throws Exception {
 
 		int iStart = 0;
 		int iEnd =0;
 		String sEcho = "";
 		String start = "";
 		String length = "";
-		String key1 = "";
-		String key2 = "";
 		
 		String type = request.getParameter("type");
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
-		key1 = getJsonData(data, "keyword1").toUpperCase();
-		key2 = getJsonData(data, "keyword2").toUpperCase();
 		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		
@@ -98,6 +95,10 @@ public class SupplierService extends BaseService {
 		
 		dataModel.setQueryFileName("/business/supplier/supplierquerydefine");
 		dataModel.setQueryName("supplierquerydefine_search");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_SUPPLIER,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
 		
 		if(type == null || type.equals("")){
 			userDefinedSearchCase.put("keyword1", key1);

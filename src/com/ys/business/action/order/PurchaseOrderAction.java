@@ -123,6 +123,14 @@ public class PurchaseOrderAction extends BaseAction {
 			case "approve":
 				doApprove();
 				rtnUrl = "/business/order/ordermain";
+				break;
+			case "createRoutineContractInit":
+				createContractInit();
+				rtnUrl = "/business/purchase/purchaseroutineadd";
+				break;	
+			case "createRoutineContract":
+				createRoutineContract();
+				rtnUrl = "/business/purchase/purchaseorderview";
 				break;		
 		}
 		
@@ -248,5 +256,16 @@ public class PurchaseOrderAction extends BaseAction {
 		
 	}	
 	
+	public void createContractInit() throws Exception {
+		
+		service.createContractInit();			
+		
+	}
+	
+	public void createRoutineContract() throws Exception {
+		
+		service.createRoutineContract();			
+		
+	}	
 
 }
