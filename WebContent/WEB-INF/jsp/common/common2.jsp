@@ -59,6 +59,11 @@
 		popupWindow("selectdictype", "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + dicTypeControl + "&dicControlView=" + dicTypeControlView + "&type=" + type + "&dicTypeId=" + dicTypeId + "&treeType=0", 800, 600);
 		
 	}
+	//产品信息查看
+	function callProductView(materialId) {
+		popupWindow("productView", '${ctx}/business/material?methodtype=productView&materialId=' + materialId, 1024, 600);
+	}
+	
 	function openLayer(url, width, height, isParentOpen,offsetTop) {
 		if (typeof height == "undefined" || width == "") {
 			width = '1100px';

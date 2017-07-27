@@ -1305,6 +1305,8 @@ function autocomplete(){
 
 function doShowProduct() {
 	var materialId = '${product.productId}';
+	callProductView(materialId);
+	/*
 	var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
 	layer.open({
 		offset :[10,''],
@@ -1322,6 +1324,7 @@ function doShowProduct() {
 		  return false; 
 		}    
 	});		
+	*/
 }
 
 </script>

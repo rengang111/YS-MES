@@ -114,7 +114,7 @@ function popupWindow(name, url, width, height) {
     var iLeft = (window.screen.availWidth - 10 - width) / 2;	
 	
 	
-	window.open(url, name, 'height=' + height + ',width=' + width + ',top=' + iTop + ',left=' + iLeft + ',toolbar=no,menubar=no,scrollbars=no, resizable=no,location=no,status=no');
+	window.open(url, name, 'height=' + height + ',width=' + width + ',top=' + iTop + ',left=' + iLeft + ',toolbar=no,menubar=no,scrollbars=yes, resizable=no,location=no,status=no');
 }
 
 var totalPages = $("#totalPages").val();

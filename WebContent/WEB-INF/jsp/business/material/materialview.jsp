@@ -5,16 +5,11 @@
 
 <!DOCTYPE HTML>
 <html>
-
-
 <head>
 <title>物料基本数据-查看</title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-
 <%@ include file="../../common/common2.jsp"%>
-
 </head>
-
 <body>
 <div id="container">
 <div id="main">
@@ -281,7 +276,7 @@ function supplierPriceView() {
                     }},
 		    		{"targets":8,"render":function(data, type, row){
 		    			var materialId="${material.material.materialid}";
-		    			var edit = "<a href=\"#\" onClick=\"doUpdate('" + row["supplierId"] + "','" + row["materialId"] + "')\">直接采购</a>";
+		    			var edit = "<a href=\"#\" onClick=\"doPurchasePlan('" + row["supplierId"] + "','" + row["materialId"] + "')\">直接采购</a>";
 		    			
 		    			return edit;
                     }}	           
@@ -369,6 +364,15 @@ function doSubDetail(recordid , parentid) {
 	location.href = url;
 	
 }
+
+function doPurchasePlan(supplierId , materialId) {
+	//goBackFlag:区别采购入口是物料还是供应商
+	var url = '${ctx}/business/contract?methodtype=createRoutineContractInit&goBackFlag=1';
+	url = url + '&supplierId=' + supplierId+'&materialId='+materialId;
+	location.href = url;
+	
+}
+
 var layerHeight = '360px';
 var layerWidth  = '900px';
 //新增供应商
