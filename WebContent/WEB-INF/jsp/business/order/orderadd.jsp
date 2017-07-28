@@ -374,8 +374,8 @@
 			}
 		});	//
 		
-		$(".ysidCheck").change(function() {
-
+		
+		$(document).on("change", ".ysidCheck", function(){
 			var YSId = $(this).val().toUpperCase();
 			//alert(YSId)
 			var url = "${ctx}/business/order?methodtype=ysidExistCheck&YSId="+YSId

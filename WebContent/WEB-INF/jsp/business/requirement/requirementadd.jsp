@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<title>订单采购方案--物料需求表做成</title>
+<title>订单采购方案--物料需求表做成(订单BOM)</title>
 <%@ include file="../../common/common2.jsp"%>
  <style>th, td { white-space: nowrap; }</style>
   	
@@ -295,10 +295,13 @@
 	    			return rtn;
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
-	    			var name = row["materialName"];				    			
-	    			name = jQuery.fixedWidth(name,40);	
-	    					    			
-	    			return name;
+	    			var name = row["materialName"];			    			
+	    			name = jQuery.fixedWidth(name,40);
+	    			var rownum = row["rownum"];
+	    			var rtn = "<span>";
+	    			rtn += name;
+	    			rtn += "</span>";
+	    			return rtn;
 	    		}},
 	    		{"targets":5,"render":function(data, type, row){
 	    			var rtn="";
@@ -423,7 +426,7 @@
 					<form:hidden path="orderBom.ysid"  value="${order.YSId}" /></td>
 								
 					<td class="label" style="width:100px;"><label>产品编号：</label></td>					
-					<td style="width:150px;">${order.materialId}
+					<td style="width:150px;"><a href="###" onClick="doShowProduct()">${order.materialId}</a>
 					<form:hidden path="orderBom.materialid"  value="${order.materialId}" /></td>
 				
 					<td class="label" style="width:100px;"><label>产品名称：</label></td>				
@@ -514,17 +517,16 @@ function productSemiUsed(semiMaterialId) {
 	$('#attrForm').attr("action", url);
 	$('#attrForm').submit();
 }
-
-function doEditMaterial(recordid,parentid) {
-	//accessFlg:1 标识新窗口打开
-	var url = '${ctx}/business/material?methodtype=detailView&keyBackup=1';
-	url = url + '&parentId=' + parentid+'&recordId='+recordid;
+function doShowProduct() {
+	var materialId = '${order.materialId}';
+	//callProductView(materialId);
 	
+	var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
 	layer.open({
 		offset :[10,''],
 		type : 2,
 		title : false,
-		area : [ '1100px', '520px' ], 
+		area : [ '1100px', '500px' ], 
 		scrollbar : false,
 		title : false,
 		content : url,
@@ -536,9 +538,9 @@ function doEditMaterial(recordid,parentid) {
 			$('#example').DataTable().ajax.reload(null,false);
 		  	return false; 
 		}    
-	});		
-
-};
+	});
+	
+}
 
 function productStock() {
 
@@ -625,6 +627,11 @@ function productStock() {
 <script type="text/javascript">
 
 function autocomplete(){
+	$('.attributeList1').bind('input propertychange', function() {
+
+		$(this).parent().parent().find('td').eq(3).find('div').text('');
+	}); 
+	
 //物料选择
 $(".attributeList1").autocomplete({
 	minLength : 2,

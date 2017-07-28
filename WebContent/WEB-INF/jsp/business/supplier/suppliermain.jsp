@@ -13,6 +13,7 @@
 	function ajax(keyBackup,type) {
 		var table = $('#TSupplier').dataTable();
 		if(table) {
+			table.fnClearTable();
 			table.fnDestroy();
 		}
 		

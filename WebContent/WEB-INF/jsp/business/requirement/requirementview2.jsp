@@ -911,9 +911,9 @@ function requirementAjax() {
     			var type = materialId.substr(0,1);
     			var quantity =  floatToCurrency( row["purchaseQuantity"] );
     			
-    			if(purchaseType !='010'){//非订单采购
-    				quantity = '0';
-    			}
+    			//if(purchaseType !='010'){//非订单采购
+    			//	quantity = '0';
+    			//}
     			
     			rtn = "<input type=\"text\" id=\"purchaseList"+rownum+".quantity\" name=\"purchaseList["+rownum+"].quantity\" class=\"num\" style=\"width:80px\" value=\""+quantity+"\">";
     			return rtn;
@@ -942,9 +942,9 @@ function requirementAjax() {
 				var purchaseQuantity = currencyToFloat(row["purchaseQuantity"]);	
 				var price =currencyToFloat(row["price"]);
     			var purchaseType = row["purchaseType"];
-				if(purchaseType !='010'){//非订单采购
-					purchaseQuantity = '0';
-    			}
+				//if(purchaseType !='010'){//非订单采购
+				//	purchaseQuantity = '0';
+    			//}
 				var total = floatToCurrency( price * purchaseQuantity );
 				rtn+= "<span id='totalprice"+rownum+"'>"+total+"</span>";
     			rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".totalprice\" name=\"purchaseList["+rownum+"].totalprice\" class = 'cash short' value=\""+total+"\">";

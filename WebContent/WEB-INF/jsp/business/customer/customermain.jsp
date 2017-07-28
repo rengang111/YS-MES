@@ -15,6 +15,7 @@
 	function ajax() {
 		var table = $('#TCustomer').dataTable();
 		if(table) {
+			table.fnClearTable();
 			table.fnDestroy();
 		}
 	

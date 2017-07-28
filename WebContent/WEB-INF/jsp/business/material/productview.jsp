@@ -640,10 +640,10 @@ function doEditMaterial(recordid,parentid) {
 	url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
 	
 	layer.open({
-		offset :[10,''],
+		offset :[30,''],
 		type : 2,
 		title : false,
-		area : [ '1100px', '520px' ], 
+		area : [ '1000px', '500px' ], 
 		scrollbar : false,
 		title : false,
 		content : url,

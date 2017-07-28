@@ -72,51 +72,6 @@
   </query>
 <query>
     <pool></pool>    
-    <name value="getRequirement" />
-    <where>
-    	<w name="a.bomId" des="" reqName="bomId" dtype="ch" oper="=" lg="AND" bt="" />
-    </where>
-  	<select>
-      <f name="a.recordId" alias="" ctype="" />
-      <f name="a.materialRecordId" alias="" ctype="" />
-      <f name="a.materialParentId" alias="" ctype="" />
-      <f name="a.bomId" alias="" ctype="" />
-      <f name="IFNULL(a.subBomId,'')" alias="subBomId" ctype="" />
-      <f name="a.materialId" alias="" ctype="" />
-      <f name="a.materialName" alias="" ctype="" />
-      <f name="a.rawMaterialId" alias="" ctype="" />
-      <f name="a.rawMaterialName" alias="" ctype="" />
-      <f name="REPLACE(IFNULL(a.quantity,0),',','')" alias="quantity" ctype="" />
-      <f name="IFNULL(a.weight,0)" alias="weight" ctype="" />
-      <f name="a.matunit" alias="" ctype="计量单位" />
-      <f name="IFNULL(a.convertUnit,0)" alias="convertUnit" ctype="" />
-      <f name="IFNULL(a.unit,a.matunit)" alias="matunitName" ctype="计量单位" />
-      <f name="a.zzunit" alias="" ctype="" />
-      <f name="a.unit" alias="unitName" ctype="计量单位" />
-      <f name="a.zzunit" alias="zzunitName" ctype="计量单位" />
-      <f name="IFNULL(a.zzunit,a.unit)" alias="chgUnitName" ctype="计量单位" />
-      <f name="REPLACE(IFNULL(d.price,0),',','')" alias="price" ctype="" />
-      <f name="d.supplierId" alias="" ctype="" />
-      <f name="REPLACE(IFNULL(b.lastPrice,0),',','')" alias="lastPrice" ctype="" />
-      <f name="b.lastSupplierId" alias="" ctype="" />
-      <f name="REPLACE(IFNULL(b.minPrice,0),',','')" alias="minPrice" ctype="" />
-      <f name="b.minSupplierId" alias="minSupplierId" ctype="" />
-      <f name="REPLACE(IFNULL(c.lastPrice,0),',','')" alias="matLastPrice" ctype="" />
-      <f name="c.lastSupplierId" alias="matLastSupplierId" ctype="" />
-      <f name="REPLACE(c.minPrice,',','')" alias="matMinPrice" ctype="" />
-      <f name="c.minSupplierId" alias="matMinSupplierId" ctype="" />
-  </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <!-- 限定显示订单状态为"BOM表已做成,已评审"的数据 -->
-   <from> v_bomdetailraw a LEFT JOIN b_PriceReference b ON a.rawMaterialId = b.materialId LEFT JOIN b_PriceReference c ON a.materialId = c.materialId LEFT JOIN b_pricesupplier d ON a.materialId = d.materialId AND a.supplierId = d.supplierId</from>
-    <orderby>a.materialId,a.rawMaterialId</orderby>
-    <groupby></groupby>
-    <having></having>
-	<power></power>    
-  </query>
-<query>
-    <pool></pool>    
     <name value="getRequirementPrice" />
     <where>
     	<w name="c.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />

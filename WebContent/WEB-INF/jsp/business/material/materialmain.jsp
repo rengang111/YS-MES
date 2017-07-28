@@ -18,6 +18,7 @@
 	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
+			table.fnClearTable();
 			table.fnDestroy();
 		}
 		var url = "${ctx}/business/material?methodtype=search&keyBackup="+pageFlg;

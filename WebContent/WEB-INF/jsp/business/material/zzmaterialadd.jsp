@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
 
-	var counter  = 5;
+	var counter  = 2;
 	//Form序列化后转为AJAX可提交的JSON格式。
 	$.fn.serializeObject = function() {
 		var o = {};
@@ -518,7 +518,7 @@ function doSubmitRefresh(){
 		</tr>
 		</thead>		
 		<tbody>
-			<c:forEach var="i" begin="0" end="4" step="1">		
+			<c:forEach var="i" begin="0" end="1" step="1">		
 				<tr>
 					<td></td>
 					<td><input type="text" name="attributeList1" class="attributeList1" style="width: 130px;">

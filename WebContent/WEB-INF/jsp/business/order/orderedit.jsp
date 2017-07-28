@@ -321,6 +321,39 @@
 			$('#orderForm').submit();
 		});
 		
+		$(document).on("change", ".ysidCheck", function(){
+
+			var YSId = $(this).val().toUpperCase();
+			//alert(YSId)
+			var url = "${ctx}/business/order?methodtype=ysidExistCheck&YSId="+YSId
+												
+			if (YSId != ""){ 
+				$.ajax({
+					type : "post",
+					url : url,
+					async : false,
+					data : 'key=' + YSId,
+					dataType : "json",
+					success : function(data) {
+		
+						ExFlagYS = data["ExFlag"];
+						if(ExFlagYS == '1'){
+							$().toastmessage('showWarningToast', "耀升编号［ "+YSId+" ］已存在,请重新输入。");				
+						}
+
+					},
+					error : function(
+							XMLHttpRequest,
+							textStatus,
+							errorThrown) {
+						
+						//alert("supplierId2222:"+textStatus);
+					}
+				});
+			}else{
+			}
+		});	//ysidcheck()
+		
 		$('#order\\.currency').val('${order.currencyId }');
 		$('#order\\.shippingcase').val('${order.shippingCaseId }');
 		$('#order\\.loadingport').val('${order.loadingPortId }');

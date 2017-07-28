@@ -36,6 +36,7 @@
 	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
+			table.fnClearTable();
 			table.fnDestroy();
 		}
 
@@ -183,7 +184,7 @@
 
 		if(keyBackup ==""){
 
-			//ajax("");
+			ajax("0");//逾期未到货
 		}else{
 			ajax("");
 			

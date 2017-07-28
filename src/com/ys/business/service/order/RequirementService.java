@@ -76,19 +76,19 @@ public class RequirementService extends CommonService {
 			HttpSession session,
 			RequirementModel reqModel,
 			UserInfo userInfo){
-		
-		this.dao = new B_MaterialRequirmentDao();
-		this.model = model;
-		this.reqModel = reqModel;
-		this.dataModel = new BaseModel();
-		this.request = request;
-		this.userInfo = userInfo;
-		this.session = session;
-		this.userDefinedSearchCase = new HashMap<String, String>();
-		this.dataModel.setQueryFileName("/business/order/orderquerydefine");
+
 		super.request = request;
 		super.userInfo = userInfo;
 		super.session = session;
+		this.model = model;
+		this.reqModel = reqModel;
+		this.request = request;
+		this.userInfo = userInfo;
+		this.session = session;
+		this.dataModel = new BaseModel();
+		this.dataModel.setQueryFileName("/business/order/orderquerydefine");
+		this.userDefinedSearchCase = new HashMap<String, String>();
+		this.dao = new B_MaterialRequirmentDao();
 		
 	}
 
@@ -1307,7 +1307,7 @@ public class RequirementService extends CommonService {
 			model.addAttribute("order",  modelMap.get(0));		
 		}	
 	}
-	public void getRequirement(String bomId,String order) throws Exception {
+	private void getRequirement(String bomId,String order) throws Exception {
 
 		System.out.println("*****有临时对应*****");
 		
@@ -1469,7 +1469,6 @@ public class RequirementService extends CommonService {
 	}
 	
 
-	@SuppressWarnings("unchecked")
 	private HashMap<String, Object> createPurchasePlanView(
 			String YSId,String bomId,String order) throws Exception {
 		
@@ -1477,11 +1476,12 @@ public class RequirementService extends CommonService {
 				new  ArrayList<HashMap<String, String>>();		
 			
 		float orderNum = Float.parseFloat(order.replace(",", ""));
+		int rowNum = 1;
 		
+		/*
 		ArrayList<HashMap<String, String>> zzmaterial = 
 				(ArrayList<HashMap<String, String>>) getZZMaterial(bomId).get("data");		
 			
-		int rowNum = 1;
 		for(HashMap<String, String> map:zzmaterial){
 			String reqQuantiy = map.get("requirement").replace(",", "");
 			String convertUnit = map.get("convertUnit");
@@ -1502,8 +1502,9 @@ public class RequirementService extends CommonService {
 			rowNum++;
 			
 		}
-		
+		*/
 		//取得订单BOM的物料信息
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		dataModel.setQueryName("getOrderBomForPurchasePlan");		
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("bomId", bomId);
@@ -1512,7 +1513,8 @@ public class RequirementService extends CommonService {
 		
 		for(int i=0;i<material.size();i++){
 			HashMap<String, String> map = material.get(i);
-			String materialId = map.get("materialId");//一级级物料名称
+			/*
+			String materialId = map.get("materialId");//一级级物料名称			
 			String type = materialId.substring(0, 3);//物料编号
 			String supplierId = map.get("supplierId");//一级物料供应商
 			
@@ -1524,6 +1526,7 @@ public class RequirementService extends CommonService {
 					continue;//过滤掉二级BOM
 				}
 			}
+			*/
 			String promise = map.get("availabelToPromise").replace(",", "");
 			String quantity = map.get("quantity").replace(",", "");
 			float freqQuantiy = Float.parseFloat(quantity);
@@ -1550,28 +1553,7 @@ public class RequirementService extends CommonService {
 			
 	}
 	
-	
-	public void createRequirementTable() throws Exception{
-		String order = "0";
-		ArrayList<HashMap<String, String>> list = new  ArrayList<HashMap<String, String>>();
-		int orderNum = Integer.parseInt(order.replace(",", ""));
-		
-		dataModel = new BaseModel();
-		dataModel.setQueryFileName("/business/order/purchasequerydefine");
-		dataModel.setQueryName("getRequirement");
-		
-		baseQuery = new BaseQuery(request, dataModel);
 
-		//userDefinedSearchCase.put("bomId", bomId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
-		baseQuery.getYsFullData();
-		//baseQuery.getSql();
-		//baseQuery.getFullData();
-		
-		if (dataModel.getRecordCount() <= 0 )
-			return;
-		
-	}
 	
 	public HashMap<String, Object> getOrderBomByYSId(
 			String YSId) throws Exception {
@@ -1849,17 +1831,6 @@ public class RequirementService extends CommonService {
 	}
 	
 	
-	public void createRequirement() throws Exception {
-		
-		String materialId = request.getParameter("materialId");
-
-		String bomId = BusinessService.getBaseBomId(materialId)[1];
-		
-		String order = request.getParameter("order");
-		getRequirement(bomId,order);	
-		
-	}
-
 	public void insertProcurement() throws Exception {
 		
 		String YSId = insertProcurementPlan(true);	

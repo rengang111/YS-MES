@@ -22,6 +22,7 @@
 	function ajax() {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
+			table.fnClearTable();
 			table.fnDestroy();
 		}
 		var t = $('#TMaterial').DataTable({

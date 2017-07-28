@@ -20,6 +20,7 @@ import com.ys.business.action.model.order.ZZMaterialModel;
 import com.ys.business.service.order.ZZMaterialService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.Constants;
 
 
 @Controller
@@ -84,11 +85,11 @@ public class ZZMaterialAction extends BaseAction {
 				rtnUrl = "/business/material/zzhmaterialadd";
 				break;
 			case "insert":
-				doInsert();
+				doInsert(Constants.SUPPLIER_YZ);
 				rtnUrl = "/business/material/zzmaterialview";
 				break;	
 			case "insertH":
-				doInsert();
+				doInsert(Constants.SUPPLIER_YH);
 				rtnUrl = "/business/material/zzhmaterialview";
 				break;						
 			case "detailViewB":
@@ -116,11 +117,11 @@ public class ZZMaterialAction extends BaseAction {
 				rtnUrl = "/business/material/zzhmaterialadd";
 				break;				
 			case "updateB":
-				doUpdate();
+				doUpdate(Constants.SUPPLIER_YZ);
 				rtnUrl = "/business/material/zzmaterialview";
 				break;				
 			case "updateH":
-				doUpdate();
+				doUpdate(Constants.SUPPLIER_YH);
 				rtnUrl = "/business/material/zzhmaterialview";
 				break;
 			case "delete":
@@ -170,9 +171,9 @@ public class ZZMaterialAction extends BaseAction {
 		model = ZZService.createMaterial();
 		
 	}
-	public void doInsert() throws Exception {
+	public void doInsert(String supplierType) throws Exception {
 
-		model = ZZService.insertAndView();
+		model = ZZService.insertAndView(supplierType);
 		
 	}		
 
@@ -191,9 +192,9 @@ public class ZZMaterialAction extends BaseAction {
 		
 	}	
 	
-	public void doUpdate() throws Exception {
+	public void doUpdate(String supplierType) throws Exception {
 		
-		model = ZZService.updateAndView();	
+		model = ZZService.updateAndView(supplierType);	
 			
 		
 	}

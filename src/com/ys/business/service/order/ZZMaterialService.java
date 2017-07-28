@@ -174,7 +174,8 @@ public class ZZMaterialService extends BaseService {
 	 * 供应商单价(耀升YS)insert处理
 	 */
 	private void insertSupplierPrice(
-			B_ZZMaterialPriceData data) throws Exception{
+			B_ZZMaterialPriceData data,
+			String supplierType) throws Exception{
 		
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();
 		B_PriceSupplierData dt = new B_PriceSupplierData();
@@ -186,7 +187,7 @@ public class ZZMaterialService extends BaseService {
 		guid = BaseDAO.getGuId();
 		dt.setRecordid(guid);
 		dt.setMaterialid(data.getMaterialid());
-		dt.setSupplierid(Constants.SUPPLIER_YS);//耀升为供应商编号
+		dt.setSupplierid(supplierType);//耀升为供应商编号
 		dt.setCurrency(Constants.CURRENCY_RMB);//人民币
 		dt.setPrice(data.getTotalprice());
 		dt.setPriceunit("");
@@ -204,7 +205,7 @@ public class ZZMaterialService extends BaseService {
 	 * 1.自制品单价更新处理(一条数据)
 	 * 2.自制品原材料新增/更新处理(N条数据)
 	 */
-	private String update() throws Exception  {
+	private String update(String supplierType) throws Exception  {
 
 		String materialId = "";
 		ts = new BaseTransaction();
@@ -242,10 +243,10 @@ public class ZZMaterialService extends BaseService {
 			
 			if(null != ys){
 				
-				updateSupplierPrice(ys,priceData);
+				updateSupplierPrice(ys,priceData,supplierType);
 				
 			}else{
-				insertSupplierPrice(priceData);
+				insertSupplierPrice(priceData,supplierType);
 				
 			}
 
@@ -307,7 +308,8 @@ public class ZZMaterialService extends BaseService {
 	 */
 	private void updateSupplierPrice(
 			B_PriceSupplierData price,
-			B_ZZMaterialPriceData dt) throws Exception{
+			B_ZZMaterialPriceData dt,
+			String supplierType) throws Exception{
 		
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();
 		
@@ -317,6 +319,7 @@ public class ZZMaterialService extends BaseService {
 		
 		price.setPrice(dt.getTotalprice());
 		price.setPricedate(CalendarUtil.fmtYmdDate());
+		price.setSupplierid(supplierType);
 		price.setPricesource(BusinessConstants.PRICESOURCE_SUPPLIER);
 		price.setUsedflag(BusinessConstants.MATERIAL_USERD_Y);
 		
@@ -531,9 +534,9 @@ public class ZZMaterialService extends BaseService {
 		
 	}
 	
-	public Model insertAndView() throws Exception {
+	public Model insertAndView(String supplierType) throws Exception {
 
-		String materialId = update();
+		String materialId = update(supplierType);
 		
 		getZZPriceDetailView(materialId);
 		
@@ -541,9 +544,9 @@ public class ZZMaterialService extends BaseService {
 		
 	}
 	
-	public Model updateAndView() throws Exception {
+	public Model updateAndView(String supplierType) throws Exception {
 
-		String materialId = update();
+		String materialId = update(supplierType);
 		
 		getZZPriceDetailView(materialId);
 		
