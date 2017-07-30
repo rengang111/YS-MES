@@ -1356,7 +1356,7 @@ public class RequirementService extends CommonService {
 			float ibomq = Float.parseFloat(bomq);//自制品的用量
 			float istock = Float.parseFloat(stock);//自制品的库存
 			
-			if (supplierId!=null && supplierId.trim().equals("0574YS00")){
+			if (supplierId!=null && supplierId.trim().equals("0574YZ00")){
 
 				if(typeH.equals("H"))
 					continue;
@@ -1390,8 +1390,7 @@ public class RequirementService extends CommonService {
 					String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)\
 					
 					if(rawmater.equals(rawmater2) 
-							&& bomsupplier2.equals("0574YS00")){
-							//&& subBomIdBefore.equals(subBomIdAfter)){
+							&& bomsupplier2.equals("0574YZ00")){
 						//合并重复的原材料
 						float value2 = Float.parseFloat(map2.get("advice"));
 						float cnt = value + value2;
@@ -1477,32 +1476,7 @@ public class RequirementService extends CommonService {
 			
 		float orderNum = Float.parseFloat(order.replace(",", ""));
 		int rowNum = 1;
-		
-		/*
-		ArrayList<HashMap<String, String>> zzmaterial = 
-				(ArrayList<HashMap<String, String>>) getZZMaterial(bomId).get("data");		
-			
-		for(HashMap<String, String> map:zzmaterial){
-			String reqQuantiy = map.get("requirement").replace(",", "");
-			String convertUnit = map.get("convertUnit");
-			String promise = map.get("availabelToPromise").replace(",", "");
-			float freqQuantiy = Float.parseFloat(reqQuantiy);
-			float fconvertUnit = Float.parseFloat(convertUnit);
-			float fpromise = Float.parseFloat(promise);
-			
-			float orderQuantity = freqQuantiy * orderNum / fconvertUnit;//订单需求量
-			float purchaseQuantiy = orderQuantity - fpromise;//需求量-库存
-			if(purchaseQuantiy < 0) purchaseQuantiy = 0;//小于库存,即为有库存,采购量就是0
 
-			map.put("orderQuantity", String.valueOf(orderQuantity));
-			map.put("purchaseQuantity", String.valueOf(purchaseQuantiy));
-			map.put("unitQuantity", String.valueOf(freqQuantiy / fconvertUnit));//单位使用量
-			
-			list.add(map);
-			rowNum++;
-			
-		}
-		*/
 		//取得订单BOM的物料信息
 		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		dataModel.setQueryName("getOrderBomForPurchasePlan");		
@@ -1513,20 +1487,6 @@ public class RequirementService extends CommonService {
 		
 		for(int i=0;i<material.size();i++){
 			HashMap<String, String> map = material.get(i);
-			/*
-			String materialId = map.get("materialId");//一级级物料名称			
-			String type = materialId.substring(0, 3);//物料编号
-			String supplierId = map.get("supplierId");//一级物料供应商
-			
-			if (supplierId!=null && supplierId.trim().equals("0574YS00")){
-				if(type.equals("B01") || type.equals("F01") || 
-				   type.equals("F02") || type.equals("F03") || 
-				   type.equals("F04")){	//自制品按照原材料采购,不显示一级BOM
-					
-					continue;//过滤掉二级BOM
-				}
-			}
-			*/
 			String promise = map.get("availabelToPromise").replace(",", "");
 			String quantity = map.get("quantity").replace(",", "");
 			float freqQuantiy = Float.parseFloat(quantity);

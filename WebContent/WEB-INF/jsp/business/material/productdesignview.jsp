@@ -991,7 +991,6 @@ function photoView(id, tdTable, count, data) {
 		var trHtml = '';
 
 		trHtml += '<tr style="text-align: center;" class="photo">';
-
 		trHtml += '<td>';
 		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
 		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
@@ -999,7 +998,12 @@ function photoView(id, tdTable, count, data) {
 		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
 				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
 		trHtml += "</tr>";
-		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '<tr><td colspan="2"  style="height:300px;">';
+				//'<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">'+
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+		trHtml += '</a>';
+		trHtml += '</td>';
 		trHtml += '</tr>';
 		trHtml += '</table>';
 		trHtml += '</td>';
@@ -1021,11 +1025,17 @@ function photoView(id, tdTable, count, data) {
 			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="form">';
 			trHtmlOdd += '<tr style="background: #d4d0d0;height: 35px;">';
 			trHtmlOdd += '<td></td>';			
-			trHtmlOdd += '<td width="50px"><a id="uploadFile1' + index + '" href="###" '+
-					'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\''+ tdTable + '\'' + ','+ '\'' + pathDel + '\'' + ');">删除</a></td>';
-			
-			trHtmlOdd += "</tr>";
-			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+			trHtmlOdd += '<td width="50px">';
+			trHtmlOdd += '<a id="uploadFile1' + index + '" href="###" onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\''+ tdTable + '\'' + ','+ '\'' + pathDel + '\'' + ');">删除';
+			trHtmlOdd += '</a>';
+			trHtmlOdd += '</td>';
+			trHtmlOdd += '</tr>';
+			trHtmlOdd += '<tr>';
+			trHtmlOdd += '<td colspan="2"  style="height:300px;">';
+			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+			trHtmlOdd += '</a>'
+			trHtmlOdd += '</td>';
 		}
 
 		trHtml += '<td>';
@@ -1065,7 +1075,11 @@ function photoViewLabel(id, tdTable, count, data) {
 		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
 				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
 		trHtml += "</tr>";
-		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'"  style="max-height: 450px;" /></td>';
+		trHtml += '<tr><td colspan="2"  style="height:300px;">'
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'"  style="max-height: 450px;" />';
+		trHtml += '</a>';
+		trHtml += '</td>';
 		trHtml += '</tr>';
 		trHtml += '</table>';
 		trHtml += '</td>';
@@ -1216,7 +1230,7 @@ function doShowProduct() {
 	callProductView(materialId);
 	/*
 	var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
-	layer.open({
+	var index = parent.layer.open({
 		offset :[10,''],
 		type : 2,
 		title : false,
@@ -1225,16 +1239,61 @@ function doShowProduct() {
 		title : false,
 		content : url,
 		//只有当点击confirm框的确定时，该层才会关闭
-		cancel: function(index){ 
+		//cancel: function(index){ 
 		 // if(confirm('确定要关闭么')){
-		    layer.close(index)
+		//    layer.close(index)
 		 // }
-		  return false; 
-		}    
+		 // return false; 
+		//}    
 	});
+	parent.layer.full(index);
 	*/
 }
 
+</script>
+<script>
+function bigImage(tdTable,index,path){
+
+	  var sWidth = $(window).width()+"px";
+	  var sHeight= $(window).height()+"px";
+	  var tWidth = ($(window).width() - 100 )+"px"
+	  var tHeight= ($(window).height() - 50 )+"px"
+	 //alert("sWidth:"+sWidth+"----tWidth:"+tWidth)
+ 	//var imgUrl = $("#linkFile"+tdTable+index).attr('data-src');
+ 	var imgUrl = path
+ 	// window.img_width = 1024;
+	var html  = "<table style='height:"+tHeight+";width:"+tWidth+"'><tr><td style='text-align: center;'>";
+ 	//html += "<span style='height:100%;display:inline-block;vertical-align:middle;'></span>"
+   //html += "<div style='position:fixed; left:50%; margin-left:-40px; bottom:5px;'>";
+   //html += "<div>";
+   //html += "  <button style='width:40px; height:40px; border-radius:20px;'";
+   //html += "        onclick='window.img_width < 1000 ? window.img_width += 100 : 0;";
+   //html += "  $(\".img_url_class\").css({width: window.img_width});'>";
+   //html += "  放大";
+   //html += "  </button>&nbsp; &nbsp; ";
+  // html += "  <button style='width:40px;  height:40px;border-radius:20px;'";
+   //html += "  onclick='parent.window.img_width > 100 ? wparent.indow.img_width -= 100 : 0;";
+   //html += "  $(\".img_url_class\").css({width: window.img_width})' >"; 
+   //html += "  缩小"; 
+ //  html += "  </button>";
+   //html += "</div>";
+   //html += "</center>";
+   //html += "<br/>";
+   //html += "<center>";
+   html += "<img class='img_url_class' style='' src='"+imgUrl+"' />";
+   //html += "<img class='img_url_class' style='width:100%;' src='"+imgUrl+"' />";
+   html += "</td></tr></table>";
+  //页面层
+ var idx = parent.layer.open({
+    	title:'原始图预览',
+    	type: 1,
+		scrollbar : true,
+   		skin: 'layui-layer-rim', //加上边框
+   		area: [sWidth, sHeight], //宽高
+   		content: html
+  	});
+ //parent.layer.full(idx);
+}
 </script>
 	</body>
 </html>

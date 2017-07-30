@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <!DOCTYPE HTML >
 <html>
-<%@ include file="../../common/common.jsp"%>
+<%@ include file="../../common/common2.jsp"%>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 	<title>	物料分类管理</title>

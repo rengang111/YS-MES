@@ -239,7 +239,7 @@ public class ZZMaterialService extends BaseService {
 				}
 			}
 			//耀升自制品的物料单价表更新处理
-			B_PriceSupplierData ys = getPriceSupplierBySupplierId(materialId);
+			B_PriceSupplierData ys = getPriceSupplierBySupplierId(materialId,supplierType);
 			
 			if(null != ys){
 				
@@ -414,14 +414,15 @@ public class ZZMaterialService extends BaseService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private B_PriceSupplierData getPriceSupplierBySupplierId(String materialId) {
+	private B_PriceSupplierData getPriceSupplierBySupplierId(
+			String materialId,String supplierType) {
 		
 		B_PriceSupplierDao dao = new B_PriceSupplierDao();
 		B_PriceSupplierData rtnData = null;
 		List<B_PriceSupplierData> dbList = null;
 				
 		try {
-			String where = " supplierId = '"+Constants.SUPPLIER_YS +"'" + 
+			String where = " supplierId = '"+supplierType +"'" + 
 					" AND materialId = '"+materialId +"'" + 
 					" AND deleteFlag = '0' ";
 

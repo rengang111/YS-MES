@@ -30,7 +30,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>b_zzrawmaterial b LEFT JOIN b_orderbomdetail a ON b.materialId=a.materialId LEFT JOIN b_material c ON c.materialId=b.rawmaterialId LEFT JOIN b_pricereference e ON e.materialId=b.rawmaterialId  WHERE a.deleteflag = '0' AND  b.deleteflag = '0' AND c.deleteflag = '0' AND a.supplierId = '0574YS00' </from>
+   <from>b_zzrawmaterial b LEFT JOIN b_orderbomdetail a ON b.materialId=a.materialId LEFT JOIN b_material c ON c.materialId=b.rawmaterialId LEFT JOIN b_pricereference e ON e.materialId=b.rawmaterialId  WHERE a.deleteflag = '0' AND  b.deleteflag = '0' AND c.deleteflag = '0' AND a.supplierId = '0574YZ00' </from>
     <orderby>b.rawMaterialId</orderby>
     <groupby>b.rawMaterialId</groupby>
     <having></having>
