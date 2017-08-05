@@ -678,11 +678,95 @@ function replaceTextarea(str){
 } 
 
 function replaceTextarea1(str){
-var reg=new RegExp("\r\n","g");
-var reg1=new RegExp(" ","g");
-
-str = str.replace(reg,"＜br＞");
-str = str.replace(reg1,"＜p＞");
-
-return str;
+	var reg=new RegExp("\r\n","g");
+	var reg1=new RegExp(" ","g");
+	
+	str = str.replace(reg,"＜br＞");
+	str = str.replace(reg1,"＜p＞");
+	
+	return str;
 }
+
+function bigImage(tdTable,index,path){
+
+	var sWidth = $(window).width()+"px";
+	var sHeight= $(window).height()+"px";
+	var tWidth = ($(window).width() - 100 )+"px"
+	var tHeight= ($(window).height() - 50 )+"px"
+	//alert("sWidth:"+sWidth+"----tWidth:"+tWidth)
+ 	var imgUrl = path
+	var html  = "<table style='height:"+tHeight+";width:"+tWidth+"'><tr><td style='text-align: center;'>";
+	html += "<img class='img_url_class' style='' src='"+imgUrl+"' />";
+	html += "</td></tr></table>";
+	 //页面层
+ 	var idx = parent.layer.open({
+    	title:'原始图预览',
+    	type: 1,
+		scrollbar : true,
+   		skin: 'layui-layer-rim', //加上边框
+   		area: [sWidth, sHeight], //宽高
+   		content: html
+  	});
+}
+
+function bigImage2(tdTable,index,path){
+
+	var imgUrl = path;
+	//var imgUrl = $("#itemLi_"+id).attr('data-src');
+	//var imgSrc = $("#linkFile"+tdTable+index).attr("src");
+
+	getImageWidth(path,function(imageW,iamgeH){
+		//alert("width:"+w+"---height:"+h);
+		var sWidth = $(window).width()+"px";
+		var sHeight= $(window).height()+"px";
+		var tWidth = ($(window).width() - 100 )+"px"
+		var tHeight= ($(window).height() - 50 )+"px"
+		window.parent.img_width = imageW;
+		var html  = "<table style='height:"+tHeight+";width:"+tWidth+"'><tr><td style='text-align: center;'>";
+		//var html  = "<center>"
+		html += "<div style='position:fixed; left:50%; margin-left:-40px; bottom:5px;'>";
+		   html += "  <button style='width:40px; height:40px; border-radius:20px;'";
+		   html += "        onclick='window.parent.img_width < "+imageW+" ? window.parent.img_width += 100 : 0;";
+		   html += "  $(\".img_url_class\").css({width: window.img_width});'>";
+		   html += "  放大";
+		   html += "  </button>&nbsp; &nbsp; ";
+		   html += "  <button style='width:40px;  height:40px;border-radius:20px;'";
+		   html += "  onclick='window.parent.img_width > 100 ? window.parent.img_width -= 100 : 0;";
+		   html += "  $(\".img_url_class\").css({width: window.img_width})' >"; 
+		   html += "  缩小"; 
+		   html += "  </button>";
+		   html += "</div>";
+		   html += "</center>";
+		   html += "<br/>";
+		   html += "<center>";
+		   html += "<img class='img_url_class'  src='"+imgUrl+"' />";
+		   //html += "</center>"
+		   html += "</td></tr></table>";
+		  //页面层
+		var idx = parent.layer.open({
+		    title:'原始图预览',
+		    type: 1,
+			//skin: 'layui-layer-rim', //加上边框
+	  		area: [sWidth, sHeight], //宽高
+		   	content: html
+		});
+		parent.layer.full(idx);
+	});
+}
+
+function getImageWidth(url,callback){
+	var img = new Image();
+	img.src = url;
+	
+	// 如果图片被缓存，则直接返回缓存数据
+	if(img.complete){
+	    callback(img.width, img.height);
+	}else{
+            // 完全加载完毕的事件
+	    img.onload = function(){
+		callback(img.width, img.height);
+	    }
+    }
+	
+}
+

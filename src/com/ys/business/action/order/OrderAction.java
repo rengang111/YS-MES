@@ -49,7 +49,7 @@ public class OrderAction extends BaseAction {
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		orderService = new OrderService(model,request,order,userInfo,session);
+		orderService = new OrderService(model,request,response,session,order,userInfo);
 		reqModel = order;
 		this.model = model;
 		this.session = session;
@@ -82,6 +82,10 @@ public class OrderAction extends BaseAction {
 			case "create":
 				doCreate(request,reqModel,model);
 				rtnUrl = "/business/order/orderadd";
+				break;
+			case "createByMaterialId"://来自于成品管理
+				createByMaterialId(reqModel,request,model);
+				rtnUrl = "/business/order/orderedit";
 				break;
 			case "insert":
 				doInsert(reqModel,model, request);
@@ -316,7 +320,10 @@ public class OrderAction extends BaseAction {
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
 		
 		try {
-			dataMap = orderService.getOrderSubIdByParentId(request, data);
+
+			String key = request.getParameter("parentId");
+
+			dataMap = orderService.getOrderSubIdByParentId(key);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -363,7 +370,7 @@ public class OrderAction extends BaseAction {
 			OrderModel reqModel,
 			Model model){
 		
-		reqModel = orderService.createOrder(request,reqModel);
+		reqModel = orderService.createOrder();
 		model.addAttribute("orderForm", reqModel);
 		
 	}
@@ -402,7 +409,7 @@ public class OrderAction extends BaseAction {
 				String PIId = reqModel.getOrder().getPiid();
 				dbData = orderService.getOrderViewByPIId(PIId);
 				
-				reqModel = orderService.createOrder(request, reqModel);
+				reqModel = orderService.createOrder();
 
 				model.addAttribute("order",  dbData.get(0));
 				model.addAttribute("detail", dbData);
@@ -412,6 +419,22 @@ public class OrderAction extends BaseAction {
 				System.out.println(e.getMessage());
 			}
 	}	
+
+	public void createByMaterialId(
+			OrderModel reqModel, 
+			HttpServletRequest request,
+			Model model){
+		
+			try {
+						
+				orderService.createOrderByMaterialId();
+
+			}
+			catch(Exception e) {
+				System.out.println(e.getMessage());
+			}
+	}	
+	
 	
 	public void doUpdate(
 			OrderModel reqModel,

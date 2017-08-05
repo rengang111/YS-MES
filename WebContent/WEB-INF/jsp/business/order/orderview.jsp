@@ -59,21 +59,32 @@
 			             {"className" : 'td-right'},
 			             {"className" : 'td-right'},
 			             {"className" : "dt-body-center"},
-			             {"className" : "dt-body-center"}
+			             {"className" : "dt-body-center"},
+			             {}
 						],
 			
 			"columnDefs":[
 				
 			  { "targets":2,"render":function(data, type, row){
 	    			var name = row[2];	    			
-	    			name = jQuery.fixedWidth(name,30);		    			
+	    			name = jQuery.fixedWidth(name,35);		    			
 	    			return name;
 	    	  }},
 	    	  { "targets":8,"render":function(data, type, row){
 	    			var PIId = '${order.PIId}';
-	    			var rtn = "<a href=\"#\" onClick=\"ShowProductDesign('" + PIId + "','" + row[0] + "','" + row[8] + "')\">做单资料</a>";
+	    			var type=row[10];
+	    			var rtn = "<a href=\"#\" onClick=\"ShowProductDesign('" + 
+	    					PIId + "','" + 
+	    					row[0] + "','" +
+	    					row[8] + "','" +
+	    					row[10] + 
+	    					"')\">做单资料</a>";
 	    			return rtn;
-	    	  }}
+	    	  }},
+	    	  {
+					"visible" : false,
+					"targets" : [10,]
+				}
 			  ] 	
 			
 		}).draw();
@@ -128,12 +139,13 @@
 		location.href = url;
 	};
 	
-	function ShowProductDesign(PIId,YSId,productId) {
+	function ShowProductDesign(PIId,YSId,productId,type) {
  		var goBackFlag = '';
 		var url = '${ctx}/business/productDesign?methodtype=addinit'
 				+'&PIId=' + PIId
 				+'&YSId=' + YSId
 				+'&productId=' + productId
+				+'&productType=' + type
 				+'&goBackFlag=' + goBackFlag;
 		
 		location.href = url;
@@ -226,10 +238,12 @@
 				<th class="dt-center" width="80px">销售总价</th>
 				<th class="dt-center" width="30px">操作</th>
 				<th class="dt-center" width="30px"></th>
+				<th class="dt-center" width="30px"></th>
 			</tr>
 			</thead>
 			<tfoot>
 				<tr>
+					<th></th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -254,7 +268,8 @@
 					<td class="cash" style="padding-right: 20px;">${order.price}</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
 					<td>${order.materialId}</td>
-					<td><a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">订单详情</a></td>												
+					<td><a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">订单详情</a></td>
+					<td>${order.productClassify}</td>												
 				</tr>
 					
 			</c:forEach>

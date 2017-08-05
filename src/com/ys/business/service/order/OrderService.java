@@ -1,10 +1,12 @@
 package com.ys.business.service.order;
 
 import java.net.URLDecoder;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.service.common.BaseService;
+import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
@@ -19,18 +22,20 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.OrderModel;
+import com.ys.business.db.dao.B_CustomerDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
+import com.ys.business.db.data.B_CustomerData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 
 @Service
-public class OrderService extends BaseService {
+public class OrderService extends CommonService  {
 
 	DicUtil util = new DicUtil();
 
@@ -53,11 +58,13 @@ public class OrderService extends BaseService {
 		
 	}
 
-	public OrderService(Model model,
+	public OrderService(
+			Model model,
 			HttpServletRequest request,
+			HttpServletResponse response,
+			HttpSession session,
 			OrderModel reqModel,
-			UserInfo userInfo,
-			HttpSession session){
+			UserInfo userInfo){
 		
 		//this.bomPlanDao = new B_BomPlanDao();
 		//this.bomPlanData = new B_BomPlanData();
@@ -70,6 +77,9 @@ public class OrderService extends BaseService {
 		this.session = session;
 		this.dataModel = new BaseModel();
 		this.userDefinedSearchCase = new HashMap<String, String>();
+		super.request = request;
+		super.userInfo = userInfo;
+		super.session = session;
 		
 	}
 	
@@ -197,6 +207,24 @@ public class OrderService extends BaseService {
 		return modelMap;
 	}
 	
+
+	public ArrayList<HashMap<String, String>> createOrderFromProduct(
+			String materialId ) throws Exception {
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("createorderfromproduct");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		
+		userDefinedSearchCase.put("materialId", materialId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsFullData();
+		
+		return modelMap;
+	}
+	
 	public ArrayList<HashMap<String, String>> getZZOrderDetail(
 			String PIId ) throws Exception {
 
@@ -303,16 +331,12 @@ public class OrderService extends BaseService {
 	
 	
 	public HashMap<String, Object> getOrderSubIdByParentId(
-			HttpServletRequest request, 
-			String data) throws Exception {
+			String key) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		BaseModel dataModel = new BaseModel();
 		BaseQuery baseQuery = null;
-
-		
-		String key = request.getParameter("parentId");
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderSubIdByParentId");
@@ -714,11 +738,9 @@ public class OrderService extends BaseService {
 	}
 	
 	/*
-	 * 新增物料初始处理
+	 * 
 	 */
-	public OrderModel createOrder(
-			HttpServletRequest request,
-			OrderModel reqModel) {
+	public OrderModel createOrder() {
 
 		try {			
       
@@ -755,6 +777,79 @@ public class OrderService extends BaseService {
 		
 		return reqModel;
 	
+	}
+	
+	public void createOrderByMaterialId() throws Exception{
+
+		String materialId = request.getParameter("materialId");
+		
+		B_OrderData order = getPiidByCustomer(materialId);
+		
+		//B_CustomerData cus = getCustomerInfo(order.getCustomerid());
+		
+		ArrayList<HashMap<String, String>> dbData = createOrderFromProduct(materialId);
+
+		//order.setCustomerid(cus.getCustomerid());
+		//order.setCurrency(cus.getCurrency());
+		//order.setDeliveryport(cus.getDestinationport());
+		//order.setLoadingport(cus.getShippiingport());
+		//order.setPaymentterm(cus.getPaymentterm());
+		//order.setShippingcase(cus.getShippingcondition());
+
+		createOrder();//下拉框
+		String YSId = reqModel.getYSParentId()+String.valueOf(reqModel.getYSMaxId());
+		
+		dbData.get(0).put("PIId",order.getPiid());
+		dbData.get(0).put("orderDate",CalendarUtil.getToDay());
+		dbData.get(0).put("deliveryDate",CalendarUtil.dateAddToString(CalendarUtil.getToDay(), 20));
+		dbData.get(0).put("YSId",YSId);
+
+		
+		model.addAttribute("order",  dbData.get(0));
+		model.addAttribute("detail", dbData);
+		model.addAttribute("orderForm", reqModel);
+	}
+
+	@SuppressWarnings("unchecked")
+	private B_CustomerData getCustomerInfo(String shortName) throws Exception{
+		B_CustomerData data = null;
+		B_CustomerDao dao = new B_CustomerDao();
+		
+		String where = " shortName ='" + shortName + "' AND deleteFlag='0' ";
+		List<B_CustomerData> list = dao.Find(where);
+		if(list != null && list.size() > 0)
+				data = list.get(0);
+		
+		return data;
+	}
+	
+	private B_OrderData getPiidByCustomer(String materialId) throws Exception{
+		
+		String shortName = "";
+		
+		if(!(materialId == null || ("").equals(materialId))){
+			String[] splits = materialId.split("[.]");
+			if(splits.length ==4){
+				shortName = splits[2].substring(0, splits[2].length()-3);
+			}else if(splits.length ==5){
+				shortName = splits[3].substring(0, splits[3].length()-3);
+				
+			}
+		}
+		
+		String yearCode = BusinessService.getshortYearcode();
+		String parentId = yearCode+shortName;
+		HashMap<String, Object> map = getOrderSubIdByParentId(parentId);
+		String piid = parentId + map.get("codeFormat");
+		
+		B_OrderData order = new B_OrderData();		
+		order.setSubid(map.get("code").toString());
+		order.setParentid(parentId);
+		order.setPiid(piid);
+		order.setCustomerid(shortName);
+		
+		
+		return order;
 	}
 
 	/*

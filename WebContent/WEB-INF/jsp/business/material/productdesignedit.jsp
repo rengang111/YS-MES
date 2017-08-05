@@ -4,17 +4,18 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>产品设计明细-新建</title>
+<title>产品设计资料-编辑</title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common2.jsp"%>
-<script type="text/javascript">
 
+<script type="text/javascript">
+	//机器配置
 	var counter = 0;
 	var dbCnt = '${machineConfigCount}';
 	if(dbCnt >0 ){
 		counter = Number(dbCnt)-1;
 	}
-	var options="";
+	var purchaserOptions="";
 
 	$.fn.dataTable.TableTools.buttons.add_rows = $
 	.extend(
@@ -34,7 +35,6 @@
 					var hidden = "";
 					
 					hidden = '';
-					alert(options)
 					var rowNode = $('#machineConfiguration')
 						.DataTable()
 						.row
@@ -49,7 +49,7 @@
 							
 							]).draw();
 					
-							$("#machineConfigList" + rowIndex + "\\.purchaser").html(options);
+							$("#machineConfigList" + rowIndex + "\\.purchaser").html(purchaserOptions);
 					
 					rowIndex ++;						
 				}					
@@ -108,50 +108,6 @@
 					"sButtonText" : "清空一行"
 				}  ],
 			},
-	       	/*
-			"columns": [
-				{"data": null,"className" : 'td-center'},
-				{"data": "componentName"},
-				{"data": "materialId"},
-				{"data": "materialName"},
-				{"data": "purchaser","className" : 'td-center'},
-				{"data": "remark"},
-			 ],
-			 
-			"columnDefs":[
-	    		{"targets":1,"render":function(data, type, row){
-	    			var rtn = "";
-	    			var rowIndex = row["rownum"];
-	    			rtn= '<input  value="'+data+'" name="machineConfigList['+rowIndex+'].componentname" id="machineConfigList'+rowIndex+'.componentname"  class="short" />';
-	    			return rtn;
-               	}},
-               	{"targets":2,"render":function(data, type, row){
-	    			var rtn = "";
-	    			var rowIndex = row["rownum"];
-	    			rtn= '<input  value="'+data+'" name="machineConfigList['+rowIndex+'].materialid" id="machineConfigList'+rowIndex+'.materialid"  class="materialid" />';
-	    			return rtn;
-               	}},
-	    		{"targets":4,"render":function(data, type, row){
-	    			var rtn = "";
-	    			var rowIndex = row["rownum"];
-	    			rtn= '<select  name="machineConfigList['+rowIndex+'].purchaser"   id="machineConfigList'+rowIndex+'.purchaser" style="width: 100px;"></select>';
-	    			return rtn;
-	    		}},
-	    		{"targets":3,"render":function(data, type, row){
-	    			
-	    			var name = row["materialName"];				    			
-	    			name = jQuery.fixedWidth(name,40);				    			
-	    			return name;
-	    		}},
-	    		{"targets":5,"render":function(data, type, row){
-	    			var rtn = "";
-	    			var rowIndex = row["rownum"];
-	    			rtn= '<input  value="'+data+'" name="machineConfigList['+rowIndex+'].remark" id="machineConfigList'+rowIndex+'.remark"  class="middle" />';
-	    			return rtn;
-	    		}} 		
-	    		
-        	] 
-	       	*/
 			
 		}).draw();
 
@@ -177,7 +133,7 @@
 			});
 		}).draw();
 		
-	}//ajax()供应商信息
+	}//机器配置
 
 </script>
 
@@ -637,7 +593,15 @@
 							'<td><input  name="textPrintList['+rowIndex+'].materialquality" id="textPrintList'+rowIndex+'.materialquality" class="middle" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].size"            id="textPrintList'+rowIndex+'.size" class="short" /></td>',
 							'<td><input  name="textPrintList['+rowIndex+'].color"           id="textPrintList'+rowIndex+'.color" class="short" /></td>',
-							'<td></td>',
+							'<td><div id="fileName'+rowIndex+'"></div>'+
+								'<input  name="textPrintList['+rowIndex+'].filename"        id="textPrintList'+rowIndex+'.filename" type="hidden" /></td>',
+							'<td><div id="uploadItem'+rowIndex+'" >'+
+								'<input  name="pdfFile" id="pdfFile" onchange="uploadFileFn('+rowIndex+')" type="file" size="30" style="width:60px;border:0px"/>'+
+								'</div>'+
+								'<div id="deleteItem'+rowIndex+'" style="display:none">'+
+								'<a href="###" onclick="deleteTextPrintFile('+rowIndex+')">删除</a>'+
+								'</div>'+
+							'</td>',
 
 							]).draw();
 					
@@ -702,6 +666,7 @@
 					}, {				
 					}, {	
 					}, {	
+					}, {"className":"dt-body-center"
 					}			
 				]
 			
@@ -893,7 +858,6 @@
 	
 <fieldset>
 	<legend>做单资料</legend>
-
 	<table class="form" >		
 		<tr>
 			<td class="label" style="width: 100px;">耀升编号：</td>
@@ -904,7 +868,7 @@
 				&nbsp;<a href="###" onClick="doShowProduct()">${product.productId}</a></td>
 			
 			<td class="label" style="width: 100px;">产品名称：</td>
-			<td>&nbsp;${product.materialName}</td>
+			<td colspan="3">&nbsp;${product.materialName}</td>
 		</tr>
 		<tr>				
 			<td class="label">交货时间：</td>
@@ -912,13 +876,26 @@
 								
 			<td class="label">交货数量：</td>
 			<td>&nbsp;${product.quantity}</td>
-			
-			<td class="label">封样数量：</td>
-			<td><form:input path="productDesign.sealedsample"  class="middle"/></td>		
+
+			<td class="label">版本类别：</td>
+			<td colspan="3">&nbsp;${product.productClassify}</td>			
 		</tr>
 		<tr>
-			<td class="label">版本类别：</td>
-			<td>${product.productClassify}</td>
+			<td class="label">包装描述：</td>
+			<td colspan="3"><form:input path="productDesign.packagedescription"  class="long"/></td>
+
+			<td class="label">封样数量：</td>
+			<td><form:input path="productDesign.sealedsample"  class="short"/></td>		
+								
+			<td class="label">资料完成状况：</td>
+			<td style="width: 150px;">
+				<form:select path="productDesign.status" style="width: 100px;">							
+					<form:options items="${statusList}" 
+						itemValue="key" itemLabel="value" /></form:select></td>
+		</tr>
+		<c:set var="type"  value="${product.productClassifyId}"/>
+		<c:if test="${type eq '010'}">
+		<tr>
 			<td class="label" >电池包数量：</td>
 			<td>
 				<form:select path="productDesign.batterypack" style="width: 100px;">							
@@ -926,16 +903,12 @@
 						itemValue="key" itemLabel="value" /></form:select></td>
 								
 			<td class="label">充电器：</td>
-			<td>
+			<td colspan="5">
 				<form:select path="productDesign.chargertype" style="width: 100px;">							
 					<form:options items="${chargerTypeList}" 
-						itemValue="key" itemLabel="value" /></form:select></td>
-				
-		</tr>
-		<tr>		
-			<td class="label">包装描述：</td>
-			<td colspan="5"><form:input path="productDesign.packagedescription"  class="long"/></td>
-		</tr>
+						itemValue="key" itemLabel="value" /></form:select></td>				
+		</tr>		
+		</c:if>
 	</table>
 </fieldset>	
 		
@@ -945,6 +918,15 @@
 	<button type="button" id="goBack" class="DTTT_button">返回</button>
 </div>
 
+<div id="tabs" style="padding: 0px;white-space: nowrap;margin: 10px;">
+	<ul>
+		<li><a href="#tabs-1" class="tabs1">产品信息</a></li>
+		<li><a href="#tabs-2" class="tabs2">标贴及文字印刷</a></li>
+		<li><a href="#tabs-3" class="tabs3">包装</a></li>
+	</ul>
+	
+	<div id="tabs-1" style="padding: 5px;">
+<c:if test="${type eq '010'}"><!-- 机器配置 -->
 <fieldset>
 	<legend style="margin-bottom: -60px;margin-left: 10px;">机器配置</legend>
 	<div class="list">
@@ -985,7 +967,20 @@
 	</table>
 	</div>
 </fieldset>
+</c:if>
 
+<fieldset>
+	<span class="tablename">产品图片</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
+	<div class="list">
+		<div class="showPhotoDiv" style="overflow: auto;">
+			<table id="productPhoto" style="width:100%;height:335px">
+				<tbody><tr><td class="photo"></td></tr></tbody>
+			</table>
+		</div>
+	</div>	
+</fieldset>
+		
+<c:if test="${type eq '010' || type eq '020'}">
 <fieldset>
 	<legend style="margin-bottom: -60px;margin-left: 10px;">塑料制品</legend>
 	<div class="list">
@@ -1018,6 +1013,9 @@
 	</table>
 	</div>
 </fieldset>
+</c:if>
+
+<c:if test="${type eq '010'}"><!-- 配件清单 -->
 <fieldset>
 	<legend style="margin-bottom: -60px;margin-left: 10px;">配件清单</legend>
 	<div class="list">
@@ -1048,8 +1046,10 @@
 	</table>
 	</div>
 </fieldset>
+</c:if>
+
 <fieldset>
-	<legend style="margin-bottom: -60px;margin-left: 10px;margin-top: 20px;">产品收纳描述信息</legend>
+	<legend style="margin-bottom: -60px;margin-left: 10px;margin-top: 20px;">产品收纳-描述</legend>
 	<div class="list">
 	<table id="orderBom1" class="display" >
 		<thead>		
@@ -1062,7 +1062,19 @@
 		</thead>			
 	</table>
 	</div>
+	<div style="margin-top: 5px;">
+	<span class="tablename">产品收纳-图片</span>&nbsp;<button type="button" id="addStoragePhoto" class="DTTT_button">添加图片</button>
+	</div>
+	<div class="list">
+		<div class="showPhotoDiv" style="overflow: auto;">
+		<table id="storagePhoto" style="width:100%;height:335px">
+			<tbody><tr><td class="photo"></td></tr></tbody>
+		</table>
+		</div>
+	</div>	
 </fieldset>
+</div>
+	<div id="tabs-2" style="padding: 5px;">
 <fieldset>
 	<legend style="margin-bottom: -60px;margin-left: 10px;">标贴</legend>
 	<div class="list">
@@ -1070,7 +1082,7 @@
 		<thead>				
 			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th style="width:60px">配件名称</th>
+				<th style="width:60px">名称</th>
 				<th style="width:40px">材质及要求</th>
 				<th style="width:60px">尺寸</th>
 				<th style="width:60px">备注</th>
@@ -1089,7 +1101,15 @@
 			</c:forEach>
 		</tbody>				
 	</table>
-	</div>
+	</div><br/>
+	<span class="tablename">标贴-图片</span>&nbsp;<button type="button" id="addLabelPhoto" class="DTTT_button">添加图片</button>
+	<div class="list">
+		<div class="" id="subidDiv" style="overflow: auto;">
+			<table id="labelPhoto" style="width:100%;height:300px">
+				<tbody><tr class="photo"><td></td></tr></tbody>
+			</table>
+		</div>
+	</div>	
 </fieldset>
 <fieldset>
 	<legend style="margin-bottom: -60px;margin-left: 10px;">文字印刷</legend>
@@ -1098,11 +1118,12 @@
 		<thead>				
 			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th style="width:60px">配件名称</th>
+				<th style="width:60px">名称</th>
 				<th style="width:40px">材质</th>
 				<th style="width:60px">尺寸</th>
 				<th style="width:60px">颜色</th>
-				<th style="width:60px">文件</th>
+				<th style="width:60px">文件名</th>
+				<th style="width:60px">文件上传</th>
 			</tr>
 		</thead>	
 		<tbody>
@@ -1113,14 +1134,35 @@
 					<td><form:input path="textPrintList[${status.index}].materialquality"  class="middle" value="${l.materialQuality }" /></td>
 					<td><form:input path="textPrintList[${status.index}].size"  class="short" value="${l.size }" /></td>
 					<td><form:input path="textPrintList[${status.index}].color"  class="short" value="${l.color }" /></td>
-					<td><form:hidden path="textPrintList[${status.index}].filename"  class="short" value="${l.fileName }" /></td>
+					<td><div id="fileName${status.index }">
+						<a href="###" onclick="downloadFile('${status.index}')">${l.fileName}</a></div>
+						<form:hidden path="textPrintList[${status.index}].filename" value="${l.fileName}"/></td>
+					<td>
+						<div id="uploadItem${status.index }" >
+							<input name="pdfFile" id="pdfFile" onchange="uploadFileFn('${status.index}')" type="file" size="30"  style="width:60px;border:0px"/></div>
+						<div id="deleteItem${status.index }" style="display:none">
+							<a href="###" onclick="deleteTextPrintFile('${status.index}')">删除</a></div>
+						
+					</td> 
 				</tr>
-			
+				
+				<script type="text/javascript">
+				
+					var fileName = "${l.fileName}";
+					var rowNo = "${status.index }";
+					if(fileName != "" ){
+						$("#uploadItem"+rowNo).attr("style","display:none");
+						$("#deleteItem"+rowNo).attr("style","display:block");
+					}
+					
+				</script>
 			</c:forEach>
 		</tbody>				
 	</table>
 	</div>
 </fieldset>
+</div>
+<div id="tabs-3" style="padding: 5px;">
 <fieldset>
 	<legend style="margin-bottom: -60px;margin-left: 10px;">包装描述</legend>
 	<div class="list">
@@ -1150,31 +1192,45 @@
 		</tbody>				
 	</table>
 	</div>
+	<br/>
+	<span class="tablename">包装描述-图片</span>&nbsp;<button type="button" id="addPackagePhoto" class="DTTT_button">添加图片</button>
+	<div class="list">
+		<div class="showPhotoDiv" style="overflow: auto;">
+			<table id="packagePhoto" style="width:100%;height:335px">
+				<tbody><tr><td class="photo"></td><td></tbody>
+			</table>
+		</div>
+	</div>	
 </fieldset>
-
+</div>
+</div>
 </form:form>
 </div>
 </div>
 
 <script type="text/javascript">
 $(document).ready(function() {
-	
-	var i = 0;
-	<c:forEach var="purchaser" items="${purchaserList}">
-		i++;
-		options += '<option value="${purchaser.key}">${purchaser.value}</option>';
-	</c:forEach>
-	//alert(options)
+
+	$( "#tabs" ).tabs();
 	
 	machineConfigurationView();//机器配置
-
 	plasticView();//塑料制品
 	accessoryView();//配件清单
 	labelView();//标贴
 	textPrintView();//文字印刷
 	packageView();//包装描述
 	
-	$( "#tabs" ).tabs();
+	productPhotoView();//产品图片
+	productStoragePhotoView();//产品收纳图片
+	packagePhotoView();//包装图片
+	labelPhotoView();//标贴图片
+	
+	var i = 0;
+	<c:forEach var="purchaser" items="${purchaserList}">
+		i++;
+		purchaserOptions += '<option value="${purchaser.key}">${purchaser.value}</option>';
+	</c:forEach>
+	//alert(purchaserOptions)
 	
 	autocomplete();
 	
@@ -1203,36 +1259,171 @@ $(document).ready(function() {
 	});
 
 	foucsInit();//设置input的基本属性
+
+	//横向滚动条宽度计算
+	var maxW = $("#container").width();
+	var DivWidth = maxW -80 + "px";
+	$(".showPhotoDiv").css("width",DivWidth);
+
+	//产品图片添加位置,                                                                                                                                                                                        
+	var productIndex = 1;
+	$("#addProductPhoto").click(function() {
+		
+		var cols = $("#productPhoto tbody td.photo").length - 1;
+
+		//从 1 开始
+		var trHtml = addPhotoRow('productPhoto','uploadProductPhoto',productIndex);		
+
+		$('#productPhoto td.photo:eq('+0+')').after(trHtml);	
+		productIndex++;		
+		//alert("row:"+row+"-----"+"::productIndex:"+productIndex)	
+						
+		
+	});
+	
+	//产品收纳图片添加位置,
+	var storageIndex = 1;
+	$("#addStoragePhoto").click(function() {
+		
+		var row = $("#storagePhoto tbody td.photo").length - 1;
+
+		var trHtml = addPhotoRow('storagePhoto','uploadStoragePhoto',storageIndex);		
+
+		$('#storagePhoto td.photo:eq('+0+')').after(trHtml);	
+		storageIndex++;
+						
+		
+	});
+	
+	//包装图片添加位置,
+	var packageIndex = 1;
+	$("#addPackagePhoto").click(function() {
+		
+		var row = $("#packagePhoto tbody td.photo").length - 1;
+
+		var trHtml = addPhotoRow('packagePhoto','uploadPackagePhoto',packageIndex);	
+		
+		$('#packagePhoto td.photo:eq('+0+')').after(trHtml);	
+		packageIndex++;	
+		
+	});
+	
+	//标贴图片添加位置,
+	var labelIndex = 0;
+	$("#addLabelPhoto").click(function() {
+		
+		var row = $("#labelPhoto tbody tr.photo").length - 1;
+
+		var trHtml = addPhotoRowLabel('labelPhoto','uploadLabelPhoto',labelIndex);		
+
+		$('#labelPhoto tr.photo:eq('+row+')').after(trHtml);	
+		labelIndex++;
+						
+		
+	});
     	
 });
 </script>
 <script type="text/javascript">
 
-function doEditMaterial(recordid,parentid) {
-	//var height = setScrollTop();
-	//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
-	var url = '${ctx}/business/material?methodtype=detailView';
-	url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
-	
-	layer.open({
-		offset :[10,''],
-		type : 2,
-		title : false,
-		area : [ '1100px', '520px' ], 
-		scrollbar : false,
-		title : false,
-		content : url,
-		//只有当点击confirm框的确定时，该层才会关闭
-		cancel: function(index){ 
-		 // if(confirm('确定要关闭么')){
-		    layer.close(index)
-		 // }
-		  $('#baseBomTable').DataTable().ajax.reload(null,false);
-		  return false; 
-		}    
-	});	
-};
+function productPhotoView() {
 
+	var productDetailId = $("#productDetailId").val();
+	var YSId = $("#productDesign\\.ysid").val();
+	var productId = $("#productDesign\\.productid").val();
+
+	$.ajax({
+		"url" :"${ctx}/business/productDesign?methodtype=getProductPhoto&productDetailId="+productDetailId+"&YSId="+YSId+"&productId="+productId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+				
+			var countData = data["productFileCount"];
+			//alert(countData)
+			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+            }
+	});
+	
+}//产品图片
+
+
+function productStoragePhotoView() {
+
+	var productDetailId = $("#productDetailId").val();
+	var YSId = $("#productDesign\\.ysid").val();
+	var productId = $("#productDesign\\.productid").val();
+
+	$.ajax({
+		"url" :"${ctx}/business/productDesign?methodtype=getProductStoragePhoto&productDetailId="+productDetailId+"&YSId="+YSId+"&productId="+productId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+				
+			var countData = data["storageFileCount"];
+			//alert(countData)
+			photoView('storagePhoto','uploadStoragePhoto',countData,data['storageFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+            }
+	});
+	
+}//产品收纳图片
+
+
+function labelPhotoView() {
+
+	var productDetailId = $("#productDetailId").val();
+	var YSId = $("#productDesign\\.ysid").val();
+	var productId = $("#productDesign\\.productid").val();
+
+	$.ajax({
+		"url" :"${ctx}/business/productDesign?methodtype=getLabelPhoto&productDetailId="+productDetailId+"&YSId="+YSId+"&productId="+productId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+
+			var countData = data["labelFileCount"];
+			photoViewLabel('labelPhoto','uploadLabelPhoto',countData,data['labelFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+            }
+	});
+	
+}//标贴图片
+
+function packagePhotoView() {
+
+	var productDetailId = $("#productDetailId").val();
+	var YSId = $("#productDesign\\.ysid").val();
+	var productId = $("#productDesign\\.productid").val();
+
+	$.ajax({
+		"url" :"${ctx}/business/productDesign?methodtype=getPackagePhoto&productDetailId="+productDetailId+"&YSId="+YSId+"&productId="+productId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+
+			var countData = data["packageFileCount"];
+			photoView('packagePhoto','uploadPackagePhoto',countData,data['packageFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+            }
+	});
+	
+}//包装图片
+
+</script>
+<script type="text/javascript">
 
 function foucsInit(){
 	
@@ -1303,30 +1494,347 @@ function autocomplete(){
 	});
 }
 
+</script>
+
+
+<script type="text/javascript">
+
+function photoView(id, tdTable, count, data) {
+	
+	//alert("id:"+id+"--count:"+count+"--countView:"+countView)	
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
+		//alert(index+"::::::::::::"+path)
+		var trHtml = '';
+
+		//trHtml += '<tr style="text-align: center;" class="photo">';
+		trHtml += '<td class="photo" style="text-align:center;padding: 10px;">';
+		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td></td>';
+		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
+				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;">';
+		trHtml +='<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+		//trHtml += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+		trHtml += '</a>';
+		trHtml += '</td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+
+		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
+		row++;
+
+	}
+
+}
+
+
+function photoViewLabel(id, tdTable, count, data) {
+	
+	//alert("id:"+id+"--count:"+count+"--countView:"+countView)	
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
+		//alert(index+"::::::::::::"+path)
+		var trHtml = '';
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+
+		trHtml += '<td>';
+		trHtml += '<table style="width:100%;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td></td>';
+		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
+				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;">'
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+	  //trHtml += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'"  style="max-height: 450px;" />';
+		trHtml += '</a>';
+		trHtml += '</td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+		trHtml += "</tr>";
+
+		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		row++;
+
+	}
+
+}
+
+function addPhotoRowLabel(id,tdTable, index) {
+
+	for (var i = 0; i < 1; i++) {
+
+		var path = '${ctx}' + "/images/blankDemo.png";
+		var pathDel = '';
+		var trHtml = '';
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+
+		trHtml += '<td>';
+		trHtml += '<table style="width:100%;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
+				'onchange="uploadPhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
+		//trHtml+='<td><div id="uploadFile'+index+'" ></div></td>';
+		trHtml += '<td width="50px"><div id="deleteFile'+tdTable+index+'"><a href="###" '+
+				'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+		trHtml += "</tr>";
+	
+	}//for		
+
+	return trHtml;
+}
+
+function addPhotoRow(id,tdTable, index) {
+	
+	for (var i = 0; i < 1; i++) {
+
+		var path = '${ctx}' + "/images/blankDemo.png";
+		var pathDel = '';
+		var trHtml = '';
+
+		//trHtml += '<tr style="text-align: center;" class="photo">';
+		trHtml += '<td class="photo" style="text-align:center;padding: 10px;">';
+		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
+				'onchange="uploadPhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
+		trHtml += '<td width="50px"><div id="deleteFile'+tdTable+index+'" ><a href="###" '+
+				'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;text-align: center;""><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+				
+	}//for		
+
+	return trHtml;
+}
+function uploadFileFn(rowNo) {
+	
+	var componentName = $("#textPrintList"+rowNo+"\\.componentname").val();
+	if(componentName ==""){
+		$().toastmessage('showWarningToast', "请先输入名称。");
+		return 
+	}
+	var url = '${ctx}/business/productDesignFileUpload?methodtype=uploadTextPrintFile';
+	url =encodeURI(encodeURI(url));//中文两次转码
+	$("#form").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#form').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
+			if (data.result == '0') {
+				var fileName = data.fileName;
+				//alert("fileName:"+fileName)
+				var shortName = jQuery.fixedWidth(fileName,20)
+				$("#fileName"+rowNo).html(shortName);
+				$("#textPrintList"+rowNo+"\\.filename").val(fileName);
+				$("input[name='pdfFile']").each(function(){
+					var file = $(this);
+					file.after(file.clone().val(""));
+					file.remove(); 
+					$("#uploadItem"+rowNo).attr("style","display:none");
+					$("#deleteItem"+rowNo).attr("style","display:block");
+					
+				});
+				//$('#textPrint').DataTable().ajax.reload(null,false);
+
+			} else {
+				alert(data.message);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("error:"+errorThrown)
+		}
+	});
+}
+
+function downloadFile(rowNo) {
+
+	var YSId = $("#productDesign\\.ysid").val();
+	var productId = $("#productDesign\\.productid").val();
+	var fileName = $("#textPrintList"+rowNo+"\\.filename").val();
+	var url = '${ctx}/business/productDesign?methodtype=downloadFile&fileName='
+			+ fileName + "&productId=" + productId + "&YSId=" + YSId;
+	alert(url)
+	url =encodeURI(encodeURI(url));//中文两次转码
+
+	location.href = url;
+}
+
+function deleteTextPrintFile(rowNo){
+	
+	var componentName = $("#textPrintList"+rowNo+"\\.componentname").val();
+	var fileName = $("#textPrintList"+rowNo+"\\.filename").val();
+	
+	if(confirm("确定要删除文件 [ "+componentName+" ] 吗？")){
+		
+		var url = '${ctx}/business/productDesign?methodtype=textPrintFileDelete'+'&fileName='+fileName;
+		url =encodeURI(encodeURI(url));//中文两次转码
+
+		$("#form").ajaxSubmit({
+			type : "POST",
+			url : url,
+			data : $('#form').serialize(),// 你的formid
+			dataType : 'json',
+			success : function(data) {
+				//if (data.message == "操作成功") {
+					$().toastmessage('showWarningToast', "文件已被删除。");
+					$("#fileName"+rowNo).html("");
+					$("#textPrintList"+rowNo+"\\.filename").val("");
+					$("#uploadItem"+rowNo).attr("style","display:block");
+					$("#deleteItem"+rowNo).attr("style","display:none");
+					
+				//}
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("error:"+errorThrown)
+			}
+
+		});
+	}
+	
+}
+
 function doShowProduct() {
 	var materialId = '${product.productId}';
 	callProductView(materialId);
-	/*
-	var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
-	layer.open({
-		offset :[10,''],
-		type : 2,
-		title : false,
-		area : [ '1100px', '500px' ], 
-		scrollbar : false,
-		title : false,
-		content : url,
-		//只有当点击confirm框的确定时，该层才会关闭
-		cancel: function(index){ 
-		 // if(confirm('确定要关闭么')){
-		    layer.close(index)
-		 // }
-		  return false; 
-		}    
-	});		
-	*/
+}
+
+function deletePhoto(tableId,tdTable,path) {
+	
+	var url = '${ctx}/business/productDesign?methodtype='+tableId+'Delete';
+	url+='&tabelId='+tableId+"&path="+path;
+	    
+	if(!(confirm("确定要删除该图片吗？"))){
+		return;
+	}
+    $("#form").ajaxSubmit({
+		type: "POST",
+		url:url,	
+		data:$('#form').serialize(),// 你的formid
+		dataType: 'json',
+	    success: function(data){
+	    	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+				case "storagePhoto":
+					countData = data["storageFileCount"];
+					photo = data['storageFileList'];
+					break;
+				case "labelPhoto":
+					countData = data["labelFileCount"];
+					photo = data['labelFileList']
+					flg = "false";
+					break;
+				case "packagePhoto":
+					countData = data["packageFileCount"];
+					photo = data['packageFileList']
+					break;
+				default:
+					break;
+			}
+			
+			//删除后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}else{
+				photoViewLabel(tableId, tdTable, countData, photo);
+				
+			}
+
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("error:"+errorThrown)
+		}
+	});
+}
+
+function uploadPhoto(tableId,tdTable, id) {
+
+	var url = '${ctx}/business/productDesignPhotoUpload'
+			+ '?methodtype=' + tdTable + '&id=' + id;
+	//alert(url)
+	$("#form").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#form').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
+	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+				case "storagePhoto":
+					countData = data["storageFileCount"];
+					photo = data['storageFileList'];
+					break;
+				case "labelPhoto":
+					countData = data["labelFileCount"];
+					photo = data['labelFileList']
+					flg = "false";
+					break;
+				case "packagePhoto":
+					countData = data["packageFileCount"];
+					photo = data['packageFileList']
+					break;
+				default:
+					break;
+			}
+			
+			//添加后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}else{
+				photoViewLabel(tableId, tdTable, countData, photo);
+				
+			}
+			
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("error:"+errorThrown)
+		}
+	});
 }
 
 </script>
+
 </body>
 </html>

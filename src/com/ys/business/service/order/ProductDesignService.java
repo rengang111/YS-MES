@@ -2,6 +2,9 @@ package com.ys.business.service.order;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -236,12 +239,12 @@ public class ProductDesignService extends CommonService {
 	}
 	
 
-	public void deleteTextPrintFile() throws Exception{
+	public boolean deleteTextPrintFile() throws Exception{
 		
-		String recordId = request.getParameter("recordId");
-		String fileName = updateTextPrint(recordId,"");
+		String fileName = request.getParameter("fileName");
+		//String fileName = updateTextPrint(recordId,"");
 		
-		deletePhoto(null,fileName);
+		return deletePhoto(null,fileName);
 	}
 	
 	
@@ -379,6 +382,8 @@ public class ProductDesignService extends CommonService {
 				util.getListOption(DicUtil.DIC_BATTERYPACK, ""));
 		model.addAttribute("purchaserList",
 				util.getListOption(DicUtil.DIC_PURCHASER, ""));
+		model.addAttribute("statusList",
+				util.getListOption(DicUtil.DIC_PRODUCTDESIGNSTATUS, ""));
 	}
 
 
@@ -406,6 +411,7 @@ public class ProductDesignService extends CommonService {
 			//做单资料 head处理
 			B_ProductDesignData design = reqModel.getProductDesign();
 			YSId = design.getYsid();
+			String productId = design.getProductid();
 			String productdetailid = updateProductDesign(design);//更新处理
 			
 			//做单资料明细部分
@@ -487,6 +493,11 @@ public class ProductDesignService extends CommonService {
 				
 				insertProductDesignDetail(d);
 				sortNo++;
+				
+				//文件处理
+				String filename = d.getFilename();
+				if(!(filename == null || ("").equals(filename)))
+					fileCopyToStorageFolder(filename,productId,YSId);
 			}
 			
 			//6:包装描述;
@@ -782,19 +793,7 @@ public class ProductDesignService extends CommonService {
 		return modelMap;
 		
 	}
-	
-	public HashMap<String, Object> getProductStoragePhoto() throws Exception {
 		
-		String YSId = request.getParameter("YSId");
-		String productId = request.getParameter("productId");
-		//getProductDesignById(YSId);
-		
-		getPhoto(YSId,productId,"storage","storageFileList","storageFileCount");
-		
-		return modelMap;
-	}
-	
-	
 	public HashMap<String, Object> getProductPhoto() throws Exception {
 		
 		String YSId = request.getParameter("YSId");
@@ -806,18 +805,52 @@ public class ProductDesignService extends CommonService {
 		return modelMap;
 	}
 	
+
+	public HashMap<String, Object> getProductStoragePhoto() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		String productId = request.getParameter("productId");
+		//getProductDesignById(YSId);
+		
+		getPhoto(YSId,productId,"storage","storageFileList","storageFileCount");
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> getPackagePhoto() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		String productId = request.getParameter("productId");
+
+		getPhoto(YSId,productId,"package","packageFileList","packageFileCount");
+		
+		return modelMap;
+	}
+	
+
+	public HashMap<String, Object> getLabelPhoto() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		String productId = request.getParameter("productId");
+		//getProductDesignById(YSId);
+
+		getPhoto(YSId,productId,"label","labelFileList","labelFileCount");
+		
+		return modelMap;
+	}
+	
 	public HashMap<String, Object> getLabelAndPhoto() throws Exception {
 		
 		String YSId = request.getParameter("YSId");
 		String productId = request.getParameter("productId");
 		String productDetailId = request.getParameter("productDetailId");
-		//getProductDesignById(YSId);
 		getLabel(productDetailId);//标贴
 		
 		getPhoto(YSId,productId,"label","labelFileList","labelFileCount");
 		
 		return modelMap;
 	}
+	
 	public HashMap<String, Object> getLabel(String productDetailId) throws Exception {
 		
 		dataModel.setQueryName("getProductDesignDetailById");		
@@ -904,10 +937,33 @@ public class ProductDesignService extends CommonService {
 		//String YSId = reqDesign.getYsid();
 		//int id = Integer.parseInt(request.getParameter("id"));
 		
-		String tempPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+
+		String backPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
 				"/"+productId+"/"+YSId+"/"+folderName;	
-		String viewPath = BusinessConstants.PATH_PRODUCTDESIGNTEMP+
+		String viewPath = BusinessConstants.PATH_PRODUCTDESIGNVIEW+
+				productId+"/"+YSId+"/"+folderName+"/";	
+
+	
+		
+		try {
+			
+			getFiles(backPath,viewPath,fileList,fileCount);
+							
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+
+		}		
+	}
+	
+	public void getTempPhoto(
+			String YSId,String productId,
+			String folderName,String fileList,String fileCount) {
+				
+		String tempPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
+				"/"+productId+"/"+YSId+"/"+folderName;	
+		String viewPath = BusinessConstants.PATH_PRODUCTDESIGNVIEW+
 				productId+"/"+YSId+"/"+folderName+"/";	
 
 	
@@ -1014,17 +1070,66 @@ public class ProductDesignService extends CommonService {
 	}
 	
 	
+	public HashMap<String, Object> uploadPhotoToTempFolder(
+			MultipartFile[] headPhotoFile,String folder,
+			String recordid,String productId,String YSId) {
+				
+		String tempPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP);	
+		
+		String photoName = "";
+		String orgFileName = "";
+		String newFileName = "";
+		boolean isSuccess = false;
+		HashMap<String, Object> jsonObj = new HashMap<String, Object>();
+		
+
+		orgFileName = headPhotoFile[0].getOriginalFilename();
+		photoName = orgFileName + "-" + CalendarUtil.fmtDate().replace(" ", "").replace(":", "").replace("-", ""); 
+		
+		String suffix = orgFileName.substring(orgFileName.lastIndexOf("."));
+		newFileName = photoName + suffix;
+		
+		try {
+			//上传到临时目录
+			FileUtils.copyInputStreamToFile(headPhotoFile[0].getInputStream(), 
+					new File(tempPath, newFileName));			
+			
+			isSuccess = true;			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+		try {
+			if (isSuccess) {
+				jsonObj.put("result", "0");
+				jsonObj.put("path", BusinessConstants.PATH_PRODUCTDESIGNTEMP +
+						File.separator + newFileName);
+			} else {
+				jsonObj.put("result", "1");
+				jsonObj.put("message", "图片上传失败");
+			}
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return jsonObj;
+	}
+		
+
 	public HashMap<String, Object> uploadPhoto(
 			MultipartFile[] headPhotoFile,String folder,
 			String recordid,String productId,String YSId
 			) {
 		
-		
-		//int id = Integer.parseInt(request.getParameter("id"));
 		String finalUserId = "";
 		
 		String tempPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
 				"/"+productId+"/"+YSId+"/"+folder;		
 
 		String realPath = session.getServletContext().
@@ -1062,7 +1167,7 @@ public class ProductDesignService extends CommonService {
 			if (isSuccess) {
 				jsonObj.put("result", "0");
 				jsonObj.put("userId", finalUserId);
-				jsonObj.put("path", BusinessConstants.PATH_PRODUCTDESIGNTEMP +
+				jsonObj.put("path", BusinessConstants.PATH_PRODUCTDESIGNVIEW +
 						productId+
 						"/"+YSId+
 						"/"+folder+
@@ -1080,6 +1185,7 @@ public class ProductDesignService extends CommonService {
 		return jsonObj;
 	}
 		
+	
 	public HashMap<String, Object> uploadFile(MultipartFile file,String folder) {
 		B_ProductDesignData reqDesign = reqModel.getProductDesign();
 		String recordid = request.getParameter("recordId");
@@ -1090,16 +1196,13 @@ public class ProductDesignService extends CommonService {
 		String orgFileName = file.getOriginalFilename();
 		
 		String tempPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
 				"/"+productId+"/"+YSId+"/"+folder;		
 
 		String realPath = session.getServletContext().
 				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
 				"/"+productId+"/"+YSId+"/"+folder;
 		
-		String savePath = BusinessConstants.PATH_PRODUCTDESIGNTEMP +
-				productId+ "/"+YSId+ "/"+folder+
-				File.separator + orgFileName;
 		boolean isSuccess = false;
 		HashMap<String, Object> jsonObj = new HashMap<String, Object>();
 		
@@ -1114,7 +1217,7 @@ public class ProductDesignService extends CommonService {
 					new File(realPath, orgFileName));
 			
 			//更新文字印刷DB
-			updateTextPrint(recordid,orgFileName);
+			//updateTextPrint(recordid,orgFileName);
 			
 			isSuccess = true;			
 			
@@ -1127,7 +1230,7 @@ public class ProductDesignService extends CommonService {
 		try {
 			if (isSuccess) {
 				jsonObj.put("result", "0");
-				jsonObj.put("path", orgFileName);
+				jsonObj.put("fileName", orgFileName);
 			} else {
 				jsonObj.put("result", "1");
 				jsonObj.put("message", "上传失败");
@@ -1141,6 +1244,54 @@ public class ProductDesignService extends CommonService {
 		return jsonObj;
 	}
 
+	public HashMap<String, Object> uploadFileToTempFolder(
+			MultipartFile file,String folder) {
+		
+		B_ProductDesignData reqDesign = reqModel.getProductDesign();
+		String productId = reqDesign.getProductid();
+		String YSId = reqDesign.getYsid();
+		String orgFileName = file.getOriginalFilename();
+		
+		String tempPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP);
+				//"/"+productId+"/"+YSId+"/"+folder;		
+		
+		boolean isSuccess = false;
+		HashMap<String, Object> jsonObj = new HashMap<String, Object>();
+
+		String timesTmp = CalendarUtil.fmtDate().replace(" ", "").replace(":", "").replace("-", ""); 
+		String suffix = orgFileName.substring(orgFileName.lastIndexOf("."));
+		String fileName = orgFileName.substring(0, orgFileName.length()-suffix.length())+ "-" + timesTmp; 
+		String newFileName = fileName + suffix;
+		
+		try {
+			//文件上传到临时目录
+			FileUtils.copyInputStreamToFile(file.getInputStream(), 
+					new File(tempPath, newFileName));
+			
+			isSuccess = true;		
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+		try {
+			if (isSuccess) {
+				jsonObj.put("result", "0");
+				jsonObj.put("fileName", newFileName);
+			} else {
+				jsonObj.put("result", "1");
+				jsonObj.put("message", "上传失败");
+			}
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return jsonObj;
+	}
 
 	public void downloadFile() throws Exception {
 
@@ -1158,7 +1309,7 @@ public class ProductDesignService extends CommonService {
 		//fileName = new String(fileName.getBytes("iso8859-1"),"UTF-8");
 		//上传的文件都是保存在/WEB-INF/upload目录下的子目录当中
 		String fileDownloadPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
 				"/"+productId+"/"+YSId+"/"+"textPrint";	
 		//通过文件名找出文件的所在目录
 		//String path = findFileSavePathByFileName(fileName,fileSaveRootPath);
@@ -1216,40 +1367,130 @@ public class ProductDesignService extends CommonService {
 			return dir;
 		}
 	
-		public void deletePhoto (String path,String fileName)throws Exception {
+		public boolean deletePhoto (String path,String fileName)throws Exception {
 	    	
+			boolean rtnFlag = false;
 			String tempPath = "";
+			String viewPath = "";
 			
 			if(path == null){//这里只处理文字印刷的文件
 				B_ProductDesignData reqDt = reqModel.getProductDesign();
 				String YSId = reqDt.getYsid();
 				String productId = reqDt.getProductid();
+				fileName = URLDecoder.decode(fileName,"UTF-8"); //格式转换
+
 		    	//临时文件
 				tempPath = session.getServletContext().
-						getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+
+						getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+ "/" +fileName;	
+		    	//显示用目录
+				viewPath = session.getServletContext().
+						getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
 						"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;	
 			}else{
-		    	//临时文件
-				tempPath = session.getServletContext().getRealPath(path);
+		    	//显示用目录
+				viewPath = session.getServletContext().getRealPath(path);
 			}
 			
-	    	//备份文件
-	    	String realPath = tempPath.replaceFirst("img", "file");
+	    	//存储文件
+	    	String realPath = viewPath.replaceFirst("img", "file");
 	    			
 	    	//String file = pathAndName.replace('/', '\\') ;
 	    	//String file = ctxPath + path.replace('/', '\\') ;
 	    	//String fileSmall = ctxPath + BusinessConstants.BUSINESSPHOTOPATH.replace('/', '\\') + key + "\\" +  BusinessConstants.BUSINESSSMALLPHOTOPATH.replace('/', '\\') + fileName.replace('/', '\\');
 
-	    	File f1 = new File(tempPath); //临时文件
+	    	File f1 = new File(tempPath); //临时目录,文件用
 	    	if(f1.exists()) {
 	    		f1.delete(); 
+	    		rtnFlag = true;
 	    	}
 	    	
-	    	File f = new File(realPath); //备份文件
+	    	File f2 = new File(viewPath); //显示目录,文件和图片通用
+	    	if(f2.exists()) {
+	    		f2.delete(); 
+	    		rtnFlag = true;
+	    	}
+	    	
+	    	File f = new File(realPath); //存储目录,文件和图片通用
 	    	if(f.exists()) {
 	    		f.delete(); 
+	    		rtnFlag = true;
 	    	}
 	    	
+	    	return rtnFlag;
+	    	
 	    }
+		
+		public void fileCopyToStorageFolder(
+				String fileName,String productId,String YSId) {
+
+	    	//临时文件
+			String tempPath = session.getServletContext().
+					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+ "/" +fileName;
+	    	//显示用目录
+			String viewPath = session.getServletContext().
+					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
+					"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;
+			//存储目录
+			String backPath = session.getServletContext().
+					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
+					"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;	
+			
+			try {
+			
+				InputStream  temp = new FileInputStream(tempPath);
+				OutputStream view = new FileOutputStream(viewPath);
+				OutputStream back = new FileOutputStream(backPath);
+				byte[] buf = new byte[BusinessConstants.MAX_BUFFER_SIZE];
+				int len;
+				while ((len = temp.read(buf)) > 0) {
+					view.write(buf, 0, len);
+					back.write(buf, 0, len);
+					
+				}
+				temp.close();
+				view.close();
+				back.close();
+				
+				File sourceFile = new File(tempPath); //删除临时文件			
+				sourceFile.delete();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}			
+				
+		}
 	    
+		public void fileCopyToTempFolder(String folder,
+				String fileName,String productId,String YSId) {
+					
+	    	//临时文件
+			String tempPath = session.getServletContext().
+					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
+					"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;
+			//存储目录
+			String backPath = session.getServletContext().
+					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
+					"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;	
+			
+			try {
+			
+				InputStream in = new FileInputStream(backPath);
+				OutputStream out = new FileOutputStream(tempPath);
+				byte[] buf = new byte[BusinessConstants.MAX_BUFFER_SIZE];
+				int len;
+				while ((len = in.read(buf)) > 0) {
+					out.write(buf, 0, len);
+				}
+				in.close();
+				out.close();
+				
+				File sourceFile = new File(tempPath); //删除临时文件			
+				sourceFile.delete();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+						
+		}
 }

@@ -109,7 +109,7 @@ public class OrderModel extends BaseModel {
 	public B_OrderData getOrder() {
 		return this.order;
 	}
-	public void setOrderDetail(B_OrderData order) {
+	public void setOrderData(B_OrderData order) {
 		this.order = order;
 	}
 	

@@ -66,7 +66,7 @@
 					{"data": "PIId", "defaultContent" : ''},
 					{"data": "orderId", "defaultContent" : ''},
 					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
-					{"data": "team", "defaultContent" : ''},
+					{"data": "productClassifyName", "className" : 'td-center'},
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
@@ -75,7 +75,12 @@
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["PIId"] + "','"+ row["YSId"] + "','"+ row["materialId"] + "')\">"+row["YSId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ 
+		    					row["PIId"] + "','"+ 
+		    					row["YSId"] + "','"+ 
+		    					row["materialId"] + "','"+ 
+		    					row["productClassify"] + 
+		    					"')\">"+row["YSId"]+"</a>";
 		    			return rtn;
 		    		}},
 		    		
@@ -87,7 +92,11 @@
 		    		
 		    		{"targets":2,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShowHistory('"+ row["PIId"] + "','"+ row["YSId"] + "','"+ row["materialId"] + "')\">"+row["materialId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowHistory('"+ 
+		    					row["PIId"] + "','"+ 
+		    					row["YSId"] + "','"+ 
+		    					row["materialId"] + 
+		    					"')\">"+row["materialId"]+"</a>";
 		    			return rtn;
 		    		}}				           
 	         	] 
@@ -136,12 +145,13 @@
 	}
 
 	
-	function doShow(PIId,YSId,productId) {
+	function doShowDetail(PIId,YSId,productId,type) {
  		var goBackFlag = '1';
 		var url = '${ctx}/business/productDesign?methodtype=detailView'
 				+'&PIId='+PIId 
 				+'&YSId='+YSId
 				+'&productId='+productId
+				+'&productType='+type
 				+'&goBackFlag='+goBackFlag;
 
 		location.href = url;
@@ -238,7 +248,7 @@
 							<th style="width: 100px;" class="dt-middle ">订单号</th>
 							<th style="width: 140px;" class="dt-middle ">PI编号</th>
 							<th style="width: 60px;" class="dt-middle ">订单交期</th>
-							<th style="width: 60px;" class="dt-middle ">业务组</th>
+							<th style="width: 60px;" class="dt-middle ">版本类别</th>
 						</tr>
 					</thead>
 				</table>

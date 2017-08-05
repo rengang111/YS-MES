@@ -21,10 +21,12 @@ public class BusinessConstants {
 	public static final String BUSINESSPHOTOPATH = "/img/businessphoto/";
 	public static final String USERHEADPHOTOPATH = "/img/headphoto/";
 	public static final String USERHEADPHOTOTEMPPATH = "/img/headphototemp/";
-	public static final String PATH_PRODUCTDESIGNTEMP = "/img/productDesign/";
+	public static final String PATH_PRODUCTDESIGNTEMP = "/temp/";
+	public static final String PATH_PRODUCTDESIGNVIEW = "/img/productDesign/";
 	public static final String PATH_PRODUCTDESIGNFILE = "/file/productDesign/";
 	public static final String JPEGSUFFIX = ".jpg";
 	public static final String DUTY_PJMANAGER = "001";
+	public static final int MAX_BUFFER_SIZE = 1024;
 
 	public static final String PRICESOURCE_OTHER = "0";
 	public static final String PRICESOURCE_PLAN = "1";

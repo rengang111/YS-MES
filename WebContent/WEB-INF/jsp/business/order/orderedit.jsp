@@ -409,7 +409,7 @@
 						<form:input path="order.orderid" class="short required"  value="${order.orderId }" /></td>								
 				</tr>	
 				<tr>
-					<td class="label"><label>客户名称：</label></td>				
+					<td class="label">&nbsp;客户名称：</td>				
 					<td colspan="3">${order.customerId }（${order.shortName }）${order.fullName }</td>
 					<td class="label"><label>下单公司：</label></td>				
 					<td colspan="3">

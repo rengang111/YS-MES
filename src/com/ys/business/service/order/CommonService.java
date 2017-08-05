@@ -24,6 +24,7 @@ import com.ys.business.action.model.order.MaterialModel;
 import com.ys.business.db.dao.B_PriceReferenceDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
+import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
@@ -555,5 +556,26 @@ public class CommonService extends BaseService {
 			//mystr = mystr.replace("\"", "\\"+"\"");
 			return (str);
 		}
+	}
+	
+	public B_MaterialData editCustomerId(
+			B_MaterialData dbData, String materialId){
+		
+		String customerId = "";
+		String[] splits = materialId.split("[.]");
+		if(("I").equals(splits[0])){
+			if(splits.length ==4){
+				dbData.setProductmodel( splits[1]);
+				customerId = splits[2].substring(0, splits[2].length()-3);
+			}else if(splits.length ==5){
+				dbData.setProductmodel( splits[2]);
+				customerId = splits[3].substring(0, splits[3].length()-3);
+				
+			}
+			//编辑客户编号
+			dbData.setCustomerid(customerId);	
+		}
+		
+		return dbData;
 	}
 }

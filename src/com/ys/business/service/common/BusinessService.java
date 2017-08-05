@@ -20,15 +20,27 @@ public class BusinessService {
 	
 	
 	/**
-	 * @return 耀升编号,2位年份+YS
+	 * @return 2位年份
 	 */
-	public static String getYSCommCode()
+	public static String getshortYearcode()
 	{
 		//当前的2位年份取得
 		SimpleDateFormat sdf = new SimpleDateFormat(
 				BusinessConstants.SHORTNAME_YEAR_YY);
 	    Date date = new Date();
 	    String nowYear = sdf.format(date);
+	        
+		return nowYear;
+	}
+	
+	
+	/**
+	 * @return 耀升编号,2位年份+YS
+	 */
+	public static String getYSCommCode()
+	{
+		//两位年份
+	    String nowYear = getshortYearcode();
 	        
 		//耀升编号
 	    String code = nowYear + BusinessConstants.SHORTNAME_YS;

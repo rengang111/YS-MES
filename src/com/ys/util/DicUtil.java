@@ -51,6 +51,7 @@ public class DicUtil {
 	public static final String DIC_CHARGERTYPE = "充电器";
 	public static final String DIC_BATTERYPACK = "电池包数量";
 	public static final String DIC_PURCHASER = "采购方";
+	public static final String DIC_PRODUCTDESIGNSTATUS = "做单资料状态";
 	//HashMap通过id查找
 	private static HashMap<String,String> dicMapViaId = new HashMap<String, String>();
 	//HashMap通过类型查找

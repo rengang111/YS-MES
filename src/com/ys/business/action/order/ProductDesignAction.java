@@ -2,11 +2,17 @@ package com.ys.business.action.order;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,7 +27,6 @@ import com.ys.business.service.order.ProductDesignService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
-import com.ys.system.service.common.BaseService;
 import com.ys.util.basequery.common.Constants;
 
 @Controller
@@ -126,6 +131,14 @@ public class ProductDesignAction extends BaseAction {
 				break;
 			case "getProductStoragePhoto":
 				dataMap = getProductStoragePhoto();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getLabelPhoto":
+				dataMap = getLabelPhoto();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getPackagePhoto":
+				dataMap = getPackagePhoto();
 				printOutJsonObj(response, dataMap);
 				break;
 			case "getMachineConfiguration":
@@ -239,7 +252,6 @@ public class ProductDesignAction extends BaseAction {
 		this.session = session;
 
 		String type = request.getParameter("methodtype");
-		
 		switch(type) {
 		case "":
 			break;
@@ -330,18 +342,22 @@ public class ProductDesignAction extends BaseAction {
 	
 		String rtnUrl = "";
 		try{
+			
 			String redirect = service.doAddOrView();
 			switch(redirect) {
 			case "":
 			case "新建":
-				rtnUrl = "/business/material/productdesignadd";
+					rtnUrl = "/business/material/productdesignadd";				
 				break;
+				
 			case "查看":
-				rtnUrl = "/business/material/productdesignview";
+					rtnUrl = "/business/material/productdesignview";
 				break;
+				
 			case "编辑新建":
 				rtnUrl = "/business/material/productdesignedit";
 				break;
+				
 			}
 		}catch(Exception e){
 			System.out.println(e.getMessage());
@@ -396,14 +412,44 @@ public class ProductDesignAction extends BaseAction {
 
 		String rtnUrl = "/business/material/productdesignadd";
 		try{
+			String type=request.getParameter("productType");
+			
 			String redirect = service.doAddOrView();
 			switch(redirect) {
 			case "":
 			case "新建":
 				rtnUrl = "/business/material/productdesignadd";
+				/*
+				switch(type) {
+				case "010":
+					rtnUrl = "/business/material/productdesignadd";
+					break;
+				case "020":
+					rtnUrl = "/business/material/productdesignadd2";
+					break;
+				case "030":
+					rtnUrl = "/business/material/productdesignadd3";
+					break;
+				default:
+					rtnUrl = "/business/material/productdesignadd";
+				}*/
 				break;
 			case "查看":
+
 				rtnUrl = "/business/material/productdesignview";
+				/*switch(type) {
+				case "010":
+					rtnUrl = "/business/material/productdesignview";
+					break;
+				case "020":
+					rtnUrl = "/business/material/productdesignview2";
+					break;
+				case "030":
+					rtnUrl = "/business/material/productdesignview3";
+					break;
+				default:
+					rtnUrl = "/business/material/productdesignview";
+				}*/
 				break;
 			case "编辑新建":
 				rtnUrl = "/business/material/productdesignedit";
@@ -452,8 +498,12 @@ public class ProductDesignAction extends BaseAction {
 		
 		try {
 			
-			service.deleteTextPrintFile();
-			dataMap.put(INFO, SUCCESSMSG);	
+			boolean rtnFlag = service.deleteTextPrintFile();
+			if(rtnFlag){
+				dataMap.put(INFO, SUCCESSMSG);	
+			}else{
+				dataMap.put(INFO, ERRMSG);
+			}
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -481,6 +531,35 @@ public class ProductDesignAction extends BaseAction {
 		
 		try {
 			dataMap = service.getProductStoragePhoto();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+
+	public HashMap<String, Object> getPackagePhoto(){	
+		
+		try {
+			dataMap = service.getPackagePhoto();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+
+	public HashMap<String, Object> getLabelPhoto(){	
+		
+		try {
+			dataMap = service.getLabelPhoto();
 			
 		}
 		catch(Exception e) {
@@ -606,7 +685,7 @@ public class ProductDesignAction extends BaseAction {
 	private HashMap<String, Object> uploadFile(MultipartFile file,String folder) {
 			
 		try {
-			dataMap= service.uploadFile(file,folder);
+			dataMap= service.uploadFileToTempFolder(file,folder);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

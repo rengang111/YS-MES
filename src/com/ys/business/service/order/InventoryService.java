@@ -137,7 +137,7 @@ public class InventoryService extends CommonService {
 		if(materialId==null || materialId.equals(""))
 			return rtn;
 		
-		String[] arry = materialId.split("\\.");
+		String[] arry = materialId.split("[.]");
 		boolean lenFlag = true;
 		for(int i = 0;i<arry.length;i++){
 			if(i == 0 || i == arry.length-1 || i == (arry.length-2))

@@ -782,16 +782,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 				reqData.setSubid(data.getSubid());
 				reqData.setSubiddes(data.getSubiddes());
 				
-				//编辑产品型号,完整的产品编号:I.IW03.WTR01.00
-				String[] tmp1 = parentId.split("\\.");
-				if(tmp1.length > 2 && ("I").equals(tmp1[0])){
-					reqData.setProductmodel( tmp1[1]);
-					String customerid = tmp1[2].substring(0, 
-							tmp1[2].length()-
-							BusinessConstants.CUSTOMER_MUN.length());
-					//编辑客户编号
-					reqData.setCustomerid(customerid);				
-				}
+				//编辑产品型号,完整的产品编号:I.D008.WTR001.000 或者 I.BTR.D008.WTR001.000
+				reqData = editCustomerId(reqData,materialId);
 				
 				B_MaterialData record = preMaterialCheckById(materialId);
 				if(record ==null || record.equals("")){//物料编号重复check
@@ -907,7 +899,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 					dbData.setUnit(reqData.getUnit());
 					dbData.setSubid(data.getSubid());//
 					dbData.setPurchasetype(reqData.getPurchasetype());
-					
+					dbData = editCustomerId(dbData,material);
+										
 					if(data.getSubiddes() != null )
 						dbData.setSubiddes(data.getSubiddes());
 
@@ -944,7 +937,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 						reqData.setSerialnumber(serialNumber);//
 						reqData.setSubid(subId);
 						reqData.setSubiddes(subDes);
-
+						reqData = editCustomerId(reqData,parentId);
+						
 						dao.Create(reqData);
 						continue;
 					}
@@ -972,6 +966,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 						dbData.setSubid(subId);//
 						dbData.setSubiddes(data.getSubiddes());
 						dbData.setPurchasetype(reqData.getPurchasetype());
+						dbData = editCustomerId(dbData,material);
 
 						dao.Store(dbData);
 						updataFlg = true;

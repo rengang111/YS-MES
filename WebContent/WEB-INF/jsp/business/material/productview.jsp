@@ -82,6 +82,7 @@
 		</tr>									
 	</table>
 	<div class="action" style="text-align: right;">
+		<button type="button" id="doOrderEdit" class="DTTT_button" >订单录入</button>
 		<button type="button" id="doEdit" class="DTTT_button" >修改费率</button>
 		<button type="button" id="doSave" class="DTTT_button" >保存</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
@@ -168,6 +169,15 @@ $(document).ready(function() {
 	$("#goBack").click(function() {
 		var materialId='${product.materialId}';
 		var url = "${ctx}/business/material?methodtype=productInit&keyBackup="+materialId;
+		location.href = url;		
+	});
+	
+	$("#doOrderEdit").click(function() {
+		var materialId='${product.materialId}';
+		var name ='${product.materialName}';
+		var url = "${ctx}/business/order?methodtype=createByMaterialId&keyBackup="+materialId
+			+"&materialId="+materialId;
+		//url =encodeURI(encodeURI(url));//中文两次转码
 		location.href = url;		
 	});
 

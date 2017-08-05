@@ -65,6 +65,8 @@
       <f name="A.sysValue" alias="" ctype="" />
       <f name="A.team" alias="" ctype="业务组" />
       <f name="A.orderCompany" alias="" ctype="" />
+      <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
+      <f name="A.productClassify" alias="" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -351,5 +353,37 @@
     <groupby></groupby>
     <having></having>
 	<power></power>    
+  </query>
+  
+  <query>
+    <pool></pool>     
+    <name value="createorderfromproduct" />
+    <where>
+      <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.CustomerName" alias="fullName" ctype="" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.shippingCase" alias="shippingCaseId" ctype="" />
+      <f name="A.loadingPort" alias="loadingPortId" ctype="" />
+      <f name="A.deliveryPort" alias="deliveryPortId" ctype="" />
+      <f name="A.paymentTerm" alias="" ctype="" />
+      <f name="A.currency" alias="currency" ctype="币种" />
+      <f name="A.shippingCase" alias="shippingCase" ctype="出运条件" />
+      <f name="A.loadingPort" alias="loadingPort" ctype="出运港" />
+      <f name="A.deliveryPort" alias="deliveryPort" ctype="目的港" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_createorderfromproduct AS A WHERE A.deleteFlag = '0' </from>
+    <orderby>A.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
   </query>
 </root>
