@@ -21,6 +21,31 @@
 			table.fnClearTable();
 			table.fnDestroy();
 		}
+		var url = "${ctx}/business/productDesign?methodtype=search";
+		var type = pageFlg;
+		
+		if(type == '0'){
+			//未完成
+			$("#keyword1").val("");
+			$("#keyword2").val("");
+			url += "&status=010";
+			
+		}else if(type == '1'){
+			//完成
+			$("#keyword1").val("");
+			$("#keyword2").val("");
+			url += "&status=020";
+			
+		}else if(type == '2'){
+			//完美
+			$("#keyword1").val("");
+			$("#keyword2").val("");
+			url += "&status=030";
+			
+		}
+
+		url += "&keyBackup="+pageFlg;
+		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				"lengthChange":false,
@@ -34,7 +59,7 @@
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/order?methodtype=search&keyBackup="+pageFlg,
+				"sAjaxSource" : url,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -63,9 +88,9 @@
 					{"data": "YSId", "defaultContent" : ''},
 					{"data": "materialId", "defaultContent" : ''},
 					{"data": "materialName", "defaultContent" : ''},
-					{"data": "PIId", "defaultContent" : ''},
 					{"data": "orderId", "defaultContent" : ''},
 					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
+					{"data": "statusName", "defaultContent" : '',"className" : 'td-center'},
 					{"data": "productClassifyName", "className" : 'td-center'},
 				],
 				"columnDefs":[
@@ -78,7 +103,7 @@
 		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ 
 		    					row["PIId"] + "','"+ 
 		    					row["YSId"] + "','"+ 
-		    					row["materialId"] + "','"+ 
+		    					row["productId"] + "','"+ 
 		    					row["productClassify"] + 
 		    					"')\">"+row["YSId"]+"</a>";
 		    			return rtn;
@@ -117,7 +142,6 @@
 	
 	function initEvent(){
 
-		ajax("");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -133,6 +157,15 @@
 
 	$(document).ready(function() {
 
+		var keyBackup = $("#keyBackup").val();
+
+		if(keyBackup ==""){
+
+			ajax("0");//未完成
+		}else{
+			ajax("");
+			
+		}
 		
 		initEvent();
 		
@@ -146,7 +179,7 @@
 
 	
 	function doShowDetail(PIId,YSId,productId,type) {
- 		var goBackFlag = '1';
+ 		var goBackFlag = 'productDesignMain';
 		var url = '${ctx}/business/productDesign?methodtype=detailView'
 				+'&PIId='+PIId 
 				+'&YSId='+YSId
@@ -200,6 +233,10 @@
 		
 	}
 	
+	function selectContractByDate(type){
+		
+		ajax(type);
+	}
 	
 </script>
 </head>
@@ -213,6 +250,7 @@
 
 				<form id="condition"  style='padding: 0px; margin: 10px;' >
 
+					<input type="hidden" id="keyBackup" value="${keyBackup }" />
 					<table>
 						<tr>
 							<td width="10%"></td> 
@@ -237,17 +275,22 @@
 			<div  style="height:10px"></div>
 		
 			<div class="list">
+				<div id="DTTT_container" align="left" style="height:40px;width:50%">
+					<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0');">未完成</a>
+					<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1');">完成</a>
+					<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2');">完美</a>
+				</div>
 			
 				<table id="TMaterial" class="display dataTable" cellspacing="0">
 					<thead>						
 						<tr>
 							<th style="width: 10px;" class="dt-middle ">No</th>
 							<th style="width: 70px;" class="dt-middle ">耀升编号</th>
-							<th style="width: 120px;" class="dt-middle ">产品编号</th>
+							<th style="width: 150px;" class="dt-middle ">产品编号</th>
 							<th class="dt-middle ">产品名称</th>
-							<th style="width: 100px;" class="dt-middle ">订单号</th>
-							<th style="width: 140px;" class="dt-middle ">PI编号</th>
+							<th style="width: 120px;" class="dt-middle ">订单号</th>
 							<th style="width: 60px;" class="dt-middle ">订单交期</th>
+							<th style="width: 60px;" class="dt-middle ">完成状况</th>
 							<th style="width: 60px;" class="dt-middle ">版本类别</th>
 						</tr>
 					</thead>

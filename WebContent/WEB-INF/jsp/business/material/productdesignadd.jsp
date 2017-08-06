@@ -860,16 +860,16 @@
 								
 			<td class="label">交货数量：</td>
 			<td>&nbsp;${product.quantity}</td>
-			
-			<td class="label">封样数量：</td>
-			<td colspan="3"><form:input path="productDesign.sealedsample"  class="short"/></td>		
+				
+			<td class="label">版本类别：</td>
+			<td colspan="3">&nbsp;${product.productClassify}</td>
 		</tr>
 		<tr>
 			<td class="label">包装描述：</td>
 			<td colspan="3"><form:input path="productDesign.packagedescription"  class="long"/></td>
 
-			<td class="label">版本类别：</td>
-			<td>&nbsp;${product.productClassify}</td>
+			<td class="label">封样数量：</td>
+			<td><form:input path="productDesign.sealedsample"  class="short"/></td>	
 								
 			<td class="label">资料完成状况：</td>
 			<td style="width: 150px;">
@@ -927,26 +927,20 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="list" items="${machineConfigList}" varStatus="status">
+					<c:forEach var="i" begin="0" end="5" step="1">
 						<tr>
 							<td></td>
-							<td><form:input path="machineConfigList[${status.index}].componentname"  class="short" value="${list.componentName }" /></td>
-							<td><form:input path="machineConfigList[${status.index}].materialid"  class="materialid" value="${list.materialId }" /></td>
-							<td><span>${list.materialName }</span></td>
+							<td><form:input path="machineConfigList[${i}].componentname"  class="short"/></td>
+							<td><form:input path="machineConfigList[${i}].materialid"  class="materialid"/></td>
+							<td><span></span></td>
 							<td>
-								<form:select path="machineConfigList[${status.index}].purchaser" style="width: 100px;">							
+								<form:select path="machineConfigList[${i}].purchaser" style="width: 100px;">							
 									<form:options items="${purchaserList}" 
 										itemValue="key" itemLabel="value" /></form:select>
 							</td>
-							<td><form:input path="machineConfigList[${status.index}].remark"  class="middle" value="${list.remark }" /></td>
+							<td><form:input path="machineConfigList[${i}].remark"  class="middle"/></td>
 						</tr>
-						<script type="text/javascript">
-							var purchaser="${list.purchaserId }" ;
-							var index ="${status.index}";
-							$("#machineConfigList"+index+"\\.purchaser").val(purchaser);
-							//$("#machineConfigList"+index+"\\.purchaser").find("option[value='"+purchaser+"']").attr("selected",true);
-							
-						</script>
+					
 					</c:forEach>
 				</tbody>
 			</table>
@@ -1162,7 +1156,8 @@ $(document).ready(function() {
 	labelView();//标贴
 	textPrintView();//文字印刷
 	packageView();//包装描述	
-	
+
+	setMachineName();//设置机器配置默认项
 	setPlasticName();//塑料制品默认项
 	setLableName();//标贴
 	setTextPrintName();//文字印刷
@@ -1371,6 +1366,17 @@ function packagePhotoView() {
 </script>
 <script type="text/javascript">
 
+//机器配置
+function setMachineName(){
+
+	var name=new Array("钻夹头","开关","电机","线路板","电池","充电器");
+
+	$('#machineConfiguration tbody tr').each (function (index){
+		
+		$(this).find("td").eq(1).find("input").val(name[index]);
+
+	})
+}
 
 //塑料制品
 function setPlasticName(){
@@ -1419,8 +1425,10 @@ function setPackageName(){
 }
 
 function foucsInit(){
-	
+
+	$("#machineConfiguration input").addClass('bgnone').addClass('bsolid');
 	$("#plastic input").addClass('bgnone').addClass('bsolid');
+	$("#accessory input").addClass('bsolid').addClass('bsolid');
 	$("#textPrint input").addClass('bsolid').addClass('bsolid');
 	$("#labelT input").addClass('bsolid').addClass('bsolid');
 	$("#package input").addClass('bsolid').addClass('bsolid');
@@ -1476,7 +1484,7 @@ function autocomplete(){
 			
 			//产品名称
 			$(this).parent().parent().find("td").eq(3).find("span")
-				.html(jQuery.fixedWidth(ui.item.name,45));
+				.html(jQuery.fixedWidth(ui.item.name,40));
 
 			//产品编号
 			//$(this).parent().find("input:hidden").val(ui.item.materialId);

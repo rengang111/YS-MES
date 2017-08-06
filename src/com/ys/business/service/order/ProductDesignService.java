@@ -120,7 +120,7 @@ public class ProductDesignService extends CommonService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		dataModel.setQueryName("getArrivaList");
+		dataModel.setQueryName("getProductDesignList");
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
@@ -129,16 +129,12 @@ public class ProductDesignService extends CommonService {
 				
 		if ( iEnd > dataModel.getYsViewData().size()){
 			
-			iEnd = dataModel.getYsViewData().size();
-			
+			iEnd = dataModel.getYsViewData().size();			
 		}
 		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;		
@@ -553,7 +549,7 @@ public class ProductDesignService extends CommonService {
 	private List<B_ProductDesignData> getProductDesignlByProductId(String productId) {
 
 		List<B_ProductDesignData> dbList = new ArrayList<B_ProductDesignData>();
-		B_ProductDesignData db = null;
+
 		String where = " productId = '"+productId+"' AND deleteFlag='0' order by YSId DESC ";
 		try {
 			dbList = (List<B_ProductDesignData>)dao.Find(where);

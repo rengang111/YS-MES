@@ -395,6 +395,11 @@ function machineConfigurationView() {
 			{"data": "purchaser"},
 			{"data": "remark"},
 		 ],
+		"columnDefs":[
+    		{"targets":3,"render":function(data, type, row){
+				return jQuery.fixedWidth(data,40);
+            }}
+    	]
 		
 	});
 
@@ -468,6 +473,11 @@ function plasticView() {
 			{"data": "color"},
 			{"data": "remark"},
 		 ],
+		"columnDefs":[
+      		{"targets":3,"render":function(data, type, row){
+  				return jQuery.fixedWidth(data,40);
+              }}
+	      ]
 		
 	});
 

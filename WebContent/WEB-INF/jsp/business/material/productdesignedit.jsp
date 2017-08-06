@@ -7,7 +7,6 @@
 <title>产品设计资料-编辑</title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common2.jsp"%>
-
 <script type="text/javascript">
 	//机器配置
 	var counter = 0;
@@ -136,7 +135,6 @@
 	}//机器配置
 
 </script>
-
 <script type="text/javascript">
 	//塑料制品
 	var plasticCont = 0;
@@ -278,7 +276,6 @@
 	}//ajax()供应商信息
 
 </script>
-
 <script type="text/javascript">
 	//配件
 	var accessoryCont = 0;
@@ -418,7 +415,6 @@
 	}//配件
 
 </script>
-
 <script type="text/javascript">
 	//标贴
 	var labelCont = 0;
@@ -556,7 +552,6 @@
 	}//标贴
 
 </script>
-
 <script type="text/javascript">
 	//文字印刷
 	var textPrintCont = 0;
@@ -700,7 +695,6 @@
 	}//文字印刷
 
 </script>
-	
 <script type="text/javascript">
 	//包装描述
 	var packageCont = 0;
@@ -947,7 +941,7 @@
 					<td></td>
 					<td><form:input path="machineConfigList[${status.index}].componentname"  class="short" value="${list.componentName }" /></td>
 					<td><form:input path="machineConfigList[${status.index}].materialid"  class="materialid" value="${list.materialId }" /></td>
-					<td><span>${list.materialName }</span></td>
+					<td><span id="name${status.index }">${list.materialName }</span></td>
 					<td>
 						<form:select path="machineConfigList[${status.index}].purchaser" style="width: 100px;">							
 							<form:options items="${purchaserList}" 
@@ -959,8 +953,9 @@
 					var purchaser="${list.purchaserId }" ;
 					var index ="${status.index}";
 					$("#machineConfigList"+index+"\\.purchaser").val(purchaser);
-					//$("#machineConfigList"+index+"\\.purchaser").find("option[value='"+purchaser+"']").attr("selected",true);
-					
+					var name = '${list.materialName }';
+					$("#name"+index).html(jQuery.fixedWidth(name,40))
+										
 				</script>
 			</c:forEach>
 		</tbody>
@@ -1002,12 +997,18 @@
 					<td></td>
 					<td><form:input path="plasticList[${status.index}].componentname"  class="short" value="${list.componentName }" /></td>
 					<td><form:input path="plasticList[${status.index}].materialid"  class="materialid" value="${list.materialId }" /></td>
-					<td><span>${list.materialName }</span></td>
+					<td><span id="name${status.index }">${list.materialName }</span></td>
 					<td><form:input path="plasticList[${status.index}].materialquality"  class="short" value="${list.materialQuality }" /></td>
 					<td><form:input path="plasticList[${status.index}].color"  class="mini" value="${list.color }" /></td>
 					<td><form:input path="plasticList[${status.index}].remark"  class="middle" value="${list.remark }" /></td>
 				</tr>
 			
+				<script type="text/javascript">
+					var index ="${status.index}";
+					var name = '${list.materialName }';
+					$("#name"+index).html(jQuery.fixedWidth(name,40))
+										
+				</script>
 			</c:forEach>
 		</tbody>		
 	</table>
@@ -1211,6 +1212,9 @@
 <script type="text/javascript">
 $(document).ready(function() {
 
+	$('#productDesign\\.status').val('${product.statusId }');
+	$("#productDesign\\.storagedescription").val(replaceTextarea('${product.storageDescription}'));
+	
 	$( "#tabs" ).tabs();
 	
 	machineConfigurationView();//机器配置
@@ -1233,7 +1237,6 @@ $(document).ready(function() {
 	//alert(purchaserOptions)
 	
 	autocomplete();
-	
 	
 	$("#goBack").click(function() {
 
@@ -1485,7 +1488,7 @@ function autocomplete(){
 			
 			//产品名称
 			$(this).parent().parent().find("td").eq(3).find("span")
-				.html(jQuery.fixedWidth(ui.item.name,45));
+				.html(jQuery.fixedWidth(ui.item.name,40));
 
 			//产品编号
 			//$(this).parent().find("input:hidden").val(ui.item.materialId);

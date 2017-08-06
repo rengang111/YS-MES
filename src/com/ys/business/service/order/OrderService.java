@@ -603,6 +603,22 @@ public class OrderService extends CommonService  {
 			dbData.setOrdercompany(order.getOrdercompany());
 			
 			dao.Store(dbData);
+			
+		}else{
+			
+			commData = commFiledEdit(
+					Constants.ACCESSTYPE_INS,"OrderInsert",userInfo);
+			copyProperties(order,commData);
+			
+			guid = BaseDAO.getGuId();
+			order.setRecordid(guid);
+			//重新编辑PI的流水号
+			String PI = order.getPiid();
+			String parentId = order.getParentid();
+			String subId = PI.substring(parentId.length());
+			order.setSubid(subId);
+			
+			dao.Create(order);	
 		}
 	}
 
@@ -784,11 +800,12 @@ public class OrderService extends CommonService  {
 		String materialId = request.getParameter("materialId");
 		
 		B_OrderData order = getPiidByCustomer(materialId);
-		
 		//B_CustomerData cus = getCustomerInfo(order.getCustomerid());
 		
 		ArrayList<HashMap<String, String>> dbData = createOrderFromProduct(materialId);
 
+		order.setCustomerid(dbData.get(0).get("customerId"));
+		reqModel.setOrderData(order);
 		//order.setCustomerid(cus.getCustomerid());
 		//order.setCurrency(cus.getCurrency());
 		//order.setDeliveryport(cus.getDestinationport());
@@ -797,7 +814,7 @@ public class OrderService extends CommonService  {
 		//order.setShippingcase(cus.getShippingcondition());
 
 		createOrder();//下拉框
-		String YSId = reqModel.getYSParentId()+String.valueOf(reqModel.getYSMaxId());
+		String YSId = reqModel.getYSParentId()+String.valueOf(reqModel.getYSMaxId()+1);
 		
 		dbData.get(0).put("PIId",order.getPiid());
 		dbData.get(0).put("orderDate",CalendarUtil.getToDay());

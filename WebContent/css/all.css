@@ -601,6 +601,7 @@ input.decline { color: green !important; }
 
 pre{
 	white-space: inherit;
+	font-family:initial;
 }
 
 .phototable{

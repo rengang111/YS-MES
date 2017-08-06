@@ -369,7 +369,9 @@ public class ProductDesignAction extends BaseAction {
 	public void doInsert(){
 		try{
 			String PIId = request.getParameter("PIId");
+			String goBackFlag = request.getParameter("goBackFlag");
 			model.addAttribute("PIId",PIId);
+			model.addAttribute("goBackFlag",goBackFlag);
 			service.doInsertAndView();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
@@ -379,6 +381,8 @@ public class ProductDesignAction extends BaseAction {
 	public void doUpdate(){
 		try{
 			String PIId = request.getParameter("PIId");
+			String goBackFlag = request.getParameter("goBackFlag");
+			model.addAttribute("goBackFlag",goBackFlag);
 			model.addAttribute("PIId",PIId);
 			service.doUpdateAndView();
 		}catch(Exception e){

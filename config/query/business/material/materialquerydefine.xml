@@ -458,9 +458,11 @@
       <f name="b.unit" alias="" ctype="计量单位" />
       <f name="c.quantity" alias="" ctype="" />
       <f name="c.totalQuantity" alias="" ctype="" />
-      <f name="c.productClassify" alias="" ctype="版本类别" />
-      <f name="c.productClassify" alias="productClassifyId" ctype="" />
+      <f name="IFNULL(c.productClassify,'010')" alias="productClassify" ctype="版本类别" />
+      <f name="IFNULL(c.productClassify,'010')" alias="productClassifyId" ctype="" />
       <f name="c.deliveryDate" alias="" ctype="" />
+      <f name="IFNULL(a.status,'010')" alias="status" ctype="做单资料状态" />
+      <f name="IFNULL(a.status,'010')" alias="statusId" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
@@ -524,4 +526,38 @@
 	<power>
 	</power>    
   </query> 
+   <query>
+    <pool></pool>     
+    <name value="getProductDesignList" />
+    <where>
+   		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.deliveryDate" des=""  reqName="deliveryDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+   	  	<w name="A.deliveryDate" des=""  reqName="deliveryDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
+   	  	<w name="A.status"       des=""  reqName="status"  dtype="ch" oper="="  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.productDetailId" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.status" alias="statusName" ctype="做单资料状态" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.productClassify" alias="" ctype="" />
+      <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
+      <f name="A.fullField" alias="" ctype="" />
+    </select>
+    <from>v_getProductDesignList a  WHERE a.deleteFlag = '0' </from>
+    <orderby>A.YSId DESC,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  
 </root>
