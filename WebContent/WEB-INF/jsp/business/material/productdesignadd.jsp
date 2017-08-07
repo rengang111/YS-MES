@@ -1181,7 +1181,7 @@ $(document).ready(function() {
 		var PIId=$('#PIId').val();
 		var goBackFlag = $('#goBackFlag').val();
 		
-		if(goBackFlag == "1"){
+		if(goBackFlag == "productDesignMain"){
 			//该查看页面来自于一览
 			var url = '${ctx}/business/productDesign?keyBackup='+ PIId;
 			

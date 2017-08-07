@@ -175,8 +175,11 @@ $(document).ready(function() {
 	$("#doOrderEdit").click(function() {
 		var materialId='${product.materialId}';
 		var name ='${product.materialName}';
-		var url = "${ctx}/business/order?methodtype=createByMaterialId&keyBackup="+materialId
-			+"&materialId="+materialId;
+		var goBackFlag = "productView";
+		var url = "${ctx}/business/order?methodtype=createByMaterialId"
+				+"&keyBackup="+materialId
+				+"&materialId="+materialId
+				+"&goBackFlag="+goBackFlag;
 		//url =encodeURI(encodeURI(url));//中文两次转码
 		location.href = url;		
 	});

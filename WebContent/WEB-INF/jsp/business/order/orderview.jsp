@@ -118,9 +118,19 @@
 
 		//$('#example').DataTable().columns.adjust().draw();
 		
-		$("#return").click(
+		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/order?keyBackup=${order.PIId}";
+
+					var goBackFlag = $('#goBackFlag').val();
+					var materialId = $('#materialId').val();
+					if(goBackFlag == "productView"){
+						//该查看页面来自于一览
+						var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
+						
+					}else{
+						var url = "${ctx}/business/order?keyBackup=${order.PIId}";
+						
+					}
 					location.href = url;		
 				});
 		
@@ -170,6 +180,8 @@
 		id="orderForm" name="orderForm"  autocomplete="off">	
 		
 		<form:hidden path="order.piid" value="${order.PIId}"/>
+		<input type="hidden" id="goBackFlag" value="${goBackFlag }" />
+		<input type="hidden" id="materialId" value="${order.materialId }" />
 		
 		<fieldset>
 			<legend> 订单综合信息</legend>
@@ -281,8 +293,8 @@
 	<div style="clear: both"></div>
 	
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="return" class="DTTT_button">返回</button>
 		<button type="button" id="edit" class="DTTT_button">编辑</button>
+		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>		
 </form:form>		
 

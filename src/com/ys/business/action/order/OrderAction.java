@@ -389,8 +389,10 @@ public class OrderAction extends BaseAction {
 		String PIId = reqModel.getOrder().getPiid();
 		dbData = orderService.getOrderViewByPIId(PIId);
 
+		String goBackFlag = request.getParameter("goBackFlag");
 		model.addAttribute("order",  dbData.get(0));
 		model.addAttribute("detail", dbData);
+		model.addAttribute("goBackFlag",goBackFlag);
 		
 	}		
 	
@@ -399,9 +401,9 @@ public class OrderAction extends BaseAction {
 			OrderModel reqModel, 
 			HttpServletRequest request,
 			Model model){
-
-			
+		
 			try {
+				String goBackFlag = request.getParameter("goBackFlag");
 
 				ArrayList<HashMap<String, String>> dbData = 
 						new ArrayList<HashMap<String, String>>();
@@ -414,6 +416,7 @@ public class OrderAction extends BaseAction {
 				model.addAttribute("order",  dbData.get(0));
 				model.addAttribute("detail", dbData);
 				model.addAttribute("orderForm", reqModel);
+				model.addAttribute("goBackFlag",goBackFlag);
 			}
 			catch(Exception e) {
 				System.out.println(e.getMessage());
@@ -426,9 +429,11 @@ public class OrderAction extends BaseAction {
 			Model model){
 		
 			try {
-						
+
 				orderService.createOrderByMaterialId();
 
+				String goBackFlag = request.getParameter("goBackFlag");
+				model.addAttribute("goBackFlag",goBackFlag);
 			}
 			catch(Exception e) {
 				System.out.println(e.getMessage());
@@ -445,13 +450,15 @@ public class OrderAction extends BaseAction {
 				new ArrayList<HashMap<String, String>>();
 		
 		model = orderService.update(reqModel,model, request,userInfo);
-		
+
+		String goBackFlag = request.getParameter("goBackFlag");
 		//返回到明细查看页面
 		String PIId = reqModel.getOrder().getPiid();
 		dbData = orderService.getOrderViewByPIId(PIId);
 
 		model.addAttribute("order",  dbData.get(0));
 		model.addAttribute("detail", dbData);
+		model.addAttribute("goBackFlag",goBackFlag);
 		
 		
 	}	

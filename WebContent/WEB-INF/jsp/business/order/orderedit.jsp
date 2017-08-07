@@ -298,10 +298,19 @@
 		});
 		
 		
-		$("#return").click(
+		$("#goBack").click(
 				function() {
 					var PIId = '${order.PIId }';
-					var url = "${ctx}/business/order?methodtype=detailView&PIId=" + PIId;
+					var goBackFlag = $('#goBackFlag').val();
+					var materialId = $('#materialId').val();
+					if(goBackFlag == "productView"){
+						//该查看页面来自于一览
+						var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
+						
+					}else{
+						var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+						
+					}
 					location.href = url;		
 				});
 		
@@ -316,8 +325,9 @@
 				$().toastmessage('showWarningToast', "至少保留一个产品信息。");		
 				return;				
 			}
-			
-			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=update");
+
+			var goBackFlag = $('#goBackFlag').val();
+			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=update"+"&goBackFlag="+goBackFlag);
 			$('#orderForm').submit();
 		});
 		
@@ -393,16 +403,16 @@
 		<form:hidden path="order.recordid"  value="${order.orderRecordId}"/>
 		<form:hidden path="order.parentid" />
 		<form:hidden path="order.subid" />
+		<input type="hidden" id="goBackFlag" value="${goBackFlag }" />
+		<input type="hidden" id="materialId" value="${order.materialId }" />
 		
 		<fieldset>
 			<legend> 订单综合信息</legend>
 			<table class="form" id="table_form">
 				<tr> 				
 					<td class="label" width="100px"><label>PI编号：</label></td>					
-					<td><form:input path="order.piid" 
-							value="${order.PIId }" class="read-only" />
-						<form:hidden path="keyBackup" 
-							value="${order.PIId }" /></td>
+					<td><form:input path="order.piid"  value="${order.PIId }" class="read-only" />
+						<form:hidden path="keyBackup"  value="${order.PIId }" /></td>
 					<td width="100px" class="label" >
 						<label >客户订单号：</label></td>
 					<td colspan="5">
@@ -541,8 +551,8 @@
 	<div style="clear: both"></div>
 	
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="return" class="DTTT_button">返回</button>
 		<button type="button" id="insert" class="DTTT_button">保存</button>
+		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>		
 		
 </form:form>
