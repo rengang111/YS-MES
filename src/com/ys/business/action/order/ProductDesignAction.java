@@ -168,6 +168,9 @@ public class ProductDesignAction extends BaseAction {
 			case "downloadFile":
 				downloadFile();
 				break;
+			case "convertToPdf":
+				convertToPdf();
+				break;
 			case "productPhotoDelete":
 				dataMap = deletePhoto("product","productFileList","productFileCount");
 				printOutJsonObj(response, dataMap);
@@ -708,6 +711,19 @@ public class ProductDesignAction extends BaseAction {
 			//JSONObject jsonObj = service.downloadFile();
 			//out = response.getWriter();
 			//out.print(jsonObj);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	private void convertToPdf() {
+		
+	
+		
+		try {
+			service.convertAndDownloadToPdf();
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

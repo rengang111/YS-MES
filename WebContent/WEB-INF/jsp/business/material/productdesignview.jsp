@@ -75,6 +75,7 @@
 	
 	<div class="action" style="text-align: right;margin: 10px 0px -10px 0px;">
 		<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
+		<button type="button" id="doDownloadPdf" class="DTTT_button" >PDF文件下载</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</div>
 </fieldset>	
@@ -273,6 +274,19 @@ $(document).ready(function() {
 	textPrintView();//文字印刷
 	packageView();//包装描述	
 
+
+	$("#doDownloadPdf").click(function() {
+		var PIId=$('#PIId').val();
+		var YSId=$('#productDesign\\.ysid').val();
+		var goBackFlag = $('#goBackFlag').val();
+		var productDetailId=$('#productDesign\\.productdetailid').val();
+		var url = '${ctx}/business/productDesign?methodtype=convertToPdf&YSId=' + YSId+
+				"&productDetailId="+productDetailId+
+				"&PIId="+PIId+
+				"&goBackFlag="+goBackFlag;
+		location.href = url;	 
+	});
+	
 	$("#doEdit").click(function() {
 		var PIId=$('#PIId').val();
 		var YSId=$('#productDesign\\.ysid').val();

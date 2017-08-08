@@ -1,5 +1,15 @@
 package com.ys.business.service.order;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -578,4 +588,60 @@ public class CommonService extends BaseService {
 		
 		return dbData;
 	}
+	
+	/** 
+	 *  
+	 * 文件夹拷贝(文件内含有文件和文件夹) 
+	 * @param src 
+	 */  
+    public static void folderCopy(String src, String des) {  
+        File file1=new File(src);  
+        File[] fs=file1.listFiles();  
+        File file2=new File(des);  
+        if(!file2.exists()){  
+            file2.mkdirs();  
+        }  
+        for (File f : fs) {  
+            if(f.isFile()){  
+                fileCopy(f.getPath(),des+"\\"+f.getName()); //调用文件拷贝的方法  
+            }else if(f.isDirectory()){  
+            	folderCopy(f.getPath(),des+"\\"+f.getName());  
+            }  
+        }  
+    }   
+    
+    /** 
+     * 文件拷贝
+     */  
+    public static void fileCopy(String src, String target) {  
+      
+    	InputStream in=null;
+    	OutputStream out=null;
+        try {
+        	 File srcFile = new File(src);
+             File targetFile = new File(target);
+             in = new FileInputStream(srcFile);
+             out = new FileOutputStream(targetFile);
+             byte[] bytes = new byte[1024];    
+             int len = -1;    
+             while((len=in.read(bytes))!=-1)
+             {
+                 out.write(bytes, 0, len);
+             } 
+        } catch (FileNotFoundException e) {
+            e.printStackTrace(); 
+        } catch (IOException e) {
+            e.printStackTrace();  
+        }finally{
+            try {
+                if(in!=null)  in.close();  
+                if(out!=null)  out.close();  
+            } catch (IOException e) {  
+                e.printStackTrace();  
+            }  
+                  
+        }  
+          
+          
+    }  
 }

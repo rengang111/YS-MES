@@ -1770,7 +1770,7 @@ function deleteTextPrintFile(rowNo){
 }
 
 function doShowProduct() {
-	var materialId = '${product.productId}';
+	var materialId = '${product.materialId}';
 	callProductView(materialId);
 }
 

@@ -103,7 +103,7 @@
 		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ 
 		    					row["PIId"] + "','"+ 
 		    					row["YSId"] + "','"+ 
-		    					row["productId"] + "','"+ 
+		    					row["materialId"] + "','"+ 
 		    					row["productClassify"] + 
 		    					"')\">"+row["YSId"]+"</a>";
 		    			return rtn;
@@ -111,7 +111,7 @@
 		    		
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["materialName"];
-		    			name = jQuery.fixedWidth(name,40,true);//true:两边截取,左边从汉字开始
+		    			name = jQuery.fixedWidth(name,40,false);//true:两边截取,左边从汉字开始
 		    			return name;
 		    		}},
 		    		

@@ -11,6 +11,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.itextpdf.forms.PdfAcroForm;
+import com.itextpdf.forms.fields.PdfFormField;
+import com.itextpdf.kernel.color.Color;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.border.SolidBorder;
+import com.itextpdf.layout.element.Paragraph;
 //import com.ckfinder.connector.utils.FileUtils;
 import com.ys.business.action.model.order.ProductDesignModel;
 import com.ys.business.db.dao.B_ProductDesignDao;
@@ -220,6 +234,7 @@ public class ProductDesignService extends CommonService {
 				//没有该耀升编号的做单资料,
 				//显示该产品最近的耀升编号到编辑页面
 				updateInit(oldYsid);
+				photoCopy(productid,reqYsid,oldYsid);
 				rtnFlg = "编辑新建";
 			}
 		}else{	
@@ -235,6 +250,26 @@ public class ProductDesignService extends CommonService {
 	}
 	
 
+	private void photoCopy(
+			String productid,String newYsid,String oldYsid){
+		//String sourceFld = 
+		String viewOldFld = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
+				"/"+productid+"/"+oldYsid;
+		String viewNewFld = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
+				"/"+productid+"/"+newYsid;
+
+    	//存储目录
+    	String realOldPath = viewOldFld.replaceFirst("img", "file");
+    	String realNewPath = viewNewFld.replaceFirst("img", "file");
+    	
+    	folderCopy(viewOldFld, viewNewFld);
+    	folderCopy(realOldPath, realNewPath);
+    	
+		
+	}
+	
 	public boolean deleteTextPrintFile() throws Exception{
 		
 		String fileName = request.getParameter("fileName");
@@ -483,6 +518,13 @@ public class ProductDesignService extends CommonService {
 				String name = d.getComponentname();
 				if(name == null || ("").equals(name))
 					continue;
+
+				//文件处理
+				String filename = d.getFilename();
+				if(!(filename == null || ("").equals(filename)))
+					if(fileCopyToStorageFolder(filename,productId,YSId))
+						d.setFilename("");//文件上传失败,清空文件名
+				//数据处理
 				d.setProductdetailid(productdetailid);
 				d.setType(Constants.PRODUCTDETAIL_6);
 				d.setSortno(String.valueOf(sortNo));
@@ -490,10 +532,6 @@ public class ProductDesignService extends CommonService {
 				insertProductDesignDetail(d);
 				sortNo++;
 				
-				//文件处理
-				String filename = d.getFilename();
-				if(!(filename == null || ("").equals(filename)))
-					fileCopyToStorageFolder(filename,productId,YSId);
 			}
 			
 			//6:包装描述;
@@ -952,29 +990,7 @@ public class ProductDesignService extends CommonService {
 		}		
 	}
 	
-	public void getTempPhoto(
-			String YSId,String productId,
-			String folderName,String fileList,String fileCount) {
-				
-		String tempPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
-				"/"+productId+"/"+YSId+"/"+folderName;	
-		String viewPath = BusinessConstants.PATH_PRODUCTDESIGNVIEW+
-				productId+"/"+YSId+"/"+folderName+"/";	
-
-	
 		
-		try {
-			
-			getFiles(tempPath,viewPath,fileList,fileCount);
-							
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-
-		}		
-	}
-	
 	private void getFiles(String filePath,String viewPath,
 			String fileList,String fileCount){
 
@@ -1289,6 +1305,18 @@ public class ProductDesignService extends CommonService {
 		return jsonObj;
 	}
 
+	public void convertAndDownloadToPdf(){
+		//createPdf();
+		  PDFPractise tPDFPractise = new PDFPractise();  
+	        try {  
+	            tPDFPractise.createPdfFile();  
+	  
+	            // tPDFPractise.createPDFFile();  
+	  
+	        } catch (Exception e) {  
+	            e.printStackTrace();  
+	        }  
+	}
 	public void downloadFile() throws Exception {
 
 		//B_ProductDesignData reqDesign = reqModel.getProductDesign();
@@ -1341,152 +1369,250 @@ public class ProductDesignService extends CommonService {
 		out.close();
 	}
 		 
-		/**
-		* @Method: findFileSavePathByFileName
-		* @Description: 通过文件名和存储上传文件根目录找出要下载的文件的所在路径
-		* @Anthor:孤傲苍狼
-		* @param filename 要下载的文件名
-		* @param saveRootPath 上传文件保存的根目录，也就是/WEB-INF/upload目录
-		* @return 要下载的文件的存储目录
-		*/
-		public String findFileSavePathByFileName(String filename,String saveRootPath){
-			//int hashcode = filename.hashCode();
-			//int dir1 = hashcode&0xf; //0--15
-			//int dir2 = (hashcode&0xf0)>>4; //0-15
-			String dir = saveRootPath;
-			//String dir = saveRootPath + "\\" + dir1 + "\\" + dir2; //upload\2\3 upload\3\5
-			File file = new File(dir);
-			if(!file.exists()){
-				//创建目录
-				file.mkdirs();
-			}
-			return dir;
+	/**
+	* @Method: findFileSavePathByFileName
+	* @Description: 通过文件名和存储上传文件根目录找出要下载的文件的所在路径
+	* @Anthor:孤傲苍狼
+	* @param filename 要下载的文件名
+	* @param saveRootPath 上传文件保存的根目录，也就是/WEB-INF/upload目录
+	* @return 要下载的文件的存储目录
+	*/
+	public String findFileSavePathByFileName(String filename,String saveRootPath){
+		//int hashcode = filename.hashCode();
+		//int dir1 = hashcode&0xf; //0--15
+		//int dir2 = (hashcode&0xf0)>>4; //0-15
+		String dir = saveRootPath;
+		//String dir = saveRootPath + "\\" + dir1 + "\\" + dir2; //upload\2\3 upload\3\5
+		File file = new File(dir);
+		if(!file.exists()){
+			//创建目录
+			file.mkdirs();
 		}
-	
-		public boolean deletePhoto (String path,String fileName)throws Exception {
-	    	
-			boolean rtnFlag = false;
-			String tempPath = "";
-			String viewPath = "";
-			
-			if(path == null){//这里只处理文字印刷的文件
-				B_ProductDesignData reqDt = reqModel.getProductDesign();
-				String YSId = reqDt.getYsid();
-				String productId = reqDt.getProductid();
-				fileName = URLDecoder.decode(fileName,"UTF-8"); //格式转换
+		return dir;
+	}
 
-		    	//临时文件
-				tempPath = session.getServletContext().
-						getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+ "/" +fileName;	
-		    	//显示用目录
-				viewPath = session.getServletContext().
-						getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
-						"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;	
-			}else{
-		    	//显示用目录
-				viewPath = session.getServletContext().getRealPath(path);
-			}
-			
-	    	//存储文件
-	    	String realPath = viewPath.replaceFirst("img", "file");
-	    			
-	    	//String file = pathAndName.replace('/', '\\') ;
-	    	//String file = ctxPath + path.replace('/', '\\') ;
-	    	//String fileSmall = ctxPath + BusinessConstants.BUSINESSPHOTOPATH.replace('/', '\\') + key + "\\" +  BusinessConstants.BUSINESSSMALLPHOTOPATH.replace('/', '\\') + fileName.replace('/', '\\');
-
-	    	File f1 = new File(tempPath); //临时目录,文件用
-	    	if(f1.exists()) {
-	    		f1.delete(); 
-	    		rtnFlag = true;
-	    	}
-	    	
-	    	File f2 = new File(viewPath); //显示目录,文件和图片通用
-	    	if(f2.exists()) {
-	    		f2.delete(); 
-	    		rtnFlag = true;
-	    	}
-	    	
-	    	File f = new File(realPath); //存储目录,文件和图片通用
-	    	if(f.exists()) {
-	    		f.delete(); 
-	    		rtnFlag = true;
-	    	}
-	    	
-	    	return rtnFlag;
-	    	
-	    }
+	public boolean deletePhoto (String path,String fileName)throws Exception {
+    	
+		boolean rtnFlag = false;
+		String tempPath = "";
+		String viewPath = "";
 		
-		public void fileCopyToStorageFolder(
-				String fileName,String productId,String YSId) {
+		if(path == null){//这里只处理文字印刷的文件
+			B_ProductDesignData reqDt = reqModel.getProductDesign();
+			String YSId = reqDt.getYsid();
+			String productId = reqDt.getProductid();
+			fileName = URLDecoder.decode(fileName,"UTF-8"); //格式转换
 
 	    	//临时文件
-			String tempPath = session.getServletContext().
-					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+ "/" +fileName;
+			tempPath = session.getServletContext().
+					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+ "/" +fileName;	
 	    	//显示用目录
-			String viewPath = session.getServletContext().
+			viewPath = session.getServletContext().
 					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
-					"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;
-			//存储目录
-			String backPath = session.getServletContext().
-					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
 					"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;	
-			
-			try {
-			
-				InputStream  temp = new FileInputStream(tempPath);
-				OutputStream view = new FileOutputStream(viewPath);
-				OutputStream back = new FileOutputStream(backPath);
-				byte[] buf = new byte[BusinessConstants.MAX_BUFFER_SIZE];
-				int len;
-				while ((len = temp.read(buf)) > 0) {
-					view.write(buf, 0, len);
-					back.write(buf, 0, len);
-					
-				}
-				temp.close();
-				view.close();
-				back.close();
-				
-				File sourceFile = new File(tempPath); //删除临时文件			
-				sourceFile.delete();
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}			
-				
+		}else{
+	    	//显示用目录
+			viewPath = session.getServletContext().getRealPath(path);
 		}
-	    
-		public void fileCopyToTempFolder(String folder,
-				String fileName,String productId,String YSId) {
-					
-	    	//临时文件
-			String tempPath = session.getServletContext().
-					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
-					"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;
-			//存储目录
-			String backPath = session.getServletContext().
-					getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
-					"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;	
-			
-			try {
-			
-				InputStream in = new FileInputStream(backPath);
-				OutputStream out = new FileOutputStream(tempPath);
-				byte[] buf = new byte[BusinessConstants.MAX_BUFFER_SIZE];
-				int len;
-				while ((len = in.read(buf)) > 0) {
-					out.write(buf, 0, len);
-				}
-				in.close();
-				out.close();
+		
+    	//存储文件
+    	String realPath = viewPath.replaceFirst("img", "file");
+    			
+    	//String file = pathAndName.replace('/', '\\') ;
+    	//String file = ctxPath + path.replace('/', '\\') ;
+    	//String fileSmall = ctxPath + BusinessConstants.BUSINESSPHOTOPATH.replace('/', '\\') + key + "\\" +  BusinessConstants.BUSINESSSMALLPHOTOPATH.replace('/', '\\') + fileName.replace('/', '\\');
+
+    	File f1 = new File(tempPath); //临时目录,文件用
+    	if(f1.exists()) {
+    		f1.delete(); 
+    		rtnFlag = true;
+    	}
+    	
+    	File f2 = new File(viewPath); //显示目录,文件和图片通用
+    	if(f2.exists()) {
+    		f2.delete(); 
+    		rtnFlag = true;
+    	}
+    	
+    	File f = new File(realPath); //存储目录,文件和图片通用
+    	if(f.exists()) {
+    		f.delete(); 
+    		rtnFlag = true;
+    	}
+    	
+    	return rtnFlag;
+    	
+    }
+	
+	public boolean fileCopyToStorageFolder(
+			String fileName,String productId,String YSId) {
+
+		boolean rtnbl = false;
+    	//临时文件
+		String tempPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)+ "/" +fileName;
+    	//显示用目录
+		String viewPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
+				"/"+productId+"/"+YSId+"/"+"textPrint";
+		//存储目录
+		String backPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
+				"/"+productId+"/"+YSId+"/"+"textPrint";	
+		
+		try {
+			File viewT = new File(tempPath);
+			if(!viewT.exists()){
+				return rtnbl;//临时目录没有的话,表示没有上传新的文件
+	    	} 
+			File viewF = new File(viewPath);
+			if(!viewF.exists()){
+				viewF.mkdirs();  
+	    	} 
+			File backF = new File(backPath);
+			if(!backF.exists()){  
+				backF.mkdirs();  
+		    } 
+			InputStream  temp = new FileInputStream(new File(tempPath));
+			OutputStream view = new FileOutputStream(viewPath+"\\"+fileName);
+			OutputStream back = new FileOutputStream(backPath+"\\"+fileName);
+			byte[] buf = new byte[BusinessConstants.MAX_BUFFER_SIZE];
+			int len;
+			while ((len = temp.read(buf)) > 0) {
+				view.write(buf, 0, len);
+				back.write(buf, 0, len);
 				
-				File sourceFile = new File(tempPath); //删除临时文件			
-				sourceFile.delete();
-				
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+			temp.close();
+			view.close();
+			back.close();				
 			
-						
+		} catch (IOException e) {
+			rtnbl = true;
+			e.printStackTrace();
+		}finally{
+			File sourceFile = new File(tempPath); //删除临时文件			
+			sourceFile.delete();
 		}
+		
+		return rtnbl;
+			
+	}
+    
+	public void fileCopyToTempFolder(String folder,
+			String fileName,String productId,String YSId) {
+				
+    	//临时文件
+		String tempPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
+				"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;
+		//存储目录
+		String backPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
+				"/"+productId+"/"+YSId+"/"+"textPrint/"+ fileName;	
+		
+		try {
+		
+			InputStream in = new FileInputStream(backPath);
+			OutputStream out = new FileOutputStream(tempPath);
+			byte[] buf = new byte[BusinessConstants.MAX_BUFFER_SIZE];
+			int len;
+			while ((len = in.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			in.close();
+			out.close();
+			
+			File sourceFile = new File(tempPath); //删除临时文件			
+			sourceFile.delete();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+					
+	}
+	
+	 public void createPdf(){  
+	        // 生成的新文件路径  
+	        String fileName = "itext-pdf-{0}.pdf";  
+	        String newPDFPath = "D:/Temp/pdf/itext-pdf-1.pdf";  
+	      
+	        try {     
+	  
+	  
+	            //处理中文问题    
+	            PdfFont font = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H", false);    
+	              
+	            PdfWriter writer = new PdfWriter(new FileOutputStream(newPDFPath));  
+	            //Initialize PDF document    
+	            PdfDocument pdf = new PdfDocument(writer);      
+	            Document document = new Document(pdf);  
+	              
+	            Paragraph p =new Paragraph("你好,世界！hello word!");  
+	            p.setFont(font);  
+	            p.setFontSize(12);  
+	            p.setBorder(new SolidBorder(Color.BLACK,0.5f));  
+	            document.add(p);              
+	              
+	            document.close();  
+	            writer.close();  
+	            pdf.close();  
+	        } catch (Exception e) {  
+	            e.printStackTrace();  
+	        }  
+	    }  
+	    /** 
+	     * 使用pdf 模板生成 pdf 文件 
+	     *   */  
+	    public void fillTemplate() {// 利用模板生成pdf  
+	        // 模板路径  
+	        String templatePath = "D:/Temp/pdf/pdf-template-form.pdf";  
+	        // 生成的新文件路径  
+	       // String fileName = StringExtend.format("itext-template-{0}.pdf", DateExtend.getDate("yyyyMMddHHmmss"));  
+	        String newPDFPath = "D:/Temp/pdf/";  
+	  
+	  
+	        try {  
+	            //Initialize PDF document  
+	            PdfDocument pdf = new PdfDocument(new PdfReader(templatePath), new PdfWriter(newPDFPath));  
+	            PdfAcroForm form = PdfAcroForm.getAcroForm(pdf, true);  
+	            Map<String, PdfFormField> fields = form.getFormFields();  
+	              
+	            //处理中文问题    
+	            PdfFont font = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H", false);    
+	            String[] str = {  
+	                    "01.hello word!",   
+	                    "02.你好，世界！",  
+	                    "03.hello word!",   
+	                    "04.你好，世界！",  
+	                    "05.hello word!",   
+	                    "06.你好，世界！",  
+	                    "07.hello word!",   
+	                    "08.你好，世界！",  
+	                    "09.hello word!",   
+	                    "10.你好，世界！",  
+	                    "11.hello word!",   
+	                    "12.你好，世界！", };  
+	            int i = 0;  
+	            java.util.Iterator<String> it = fields.keySet().iterator();  
+	            while (it.hasNext()) {  
+	                //获取文本域名称  
+	                String name = it.next().toString();  
+	                //填充文本域  
+	                fields.get(name).setValue(str[i++]).setFont(font).setFontSize(12);  
+	                System.out.println(name);  
+	            }     
+	            form.flattenFields();//设置表单域不可编辑              
+	            pdf.close();  
+	  
+	  
+	        } catch (IOException e) {  
+	            e.printStackTrace();  
+	        } catch (Exception e){  
+	            e.printStackTrace();  
+	        }  
+	  
+	  
+	    } 
 }

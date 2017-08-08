@@ -16,9 +16,12 @@
 <script type="text/javascript">
 
 	var options = "";//币种可选项
-	var counter = 5;
+	var counter = 0;
 	var YSParentId = "";
 	var YSSwift = "";
+	var YSPeiFlag = "true"
+	var YSSwiftPei = "";
+	var YSSwiftPeiIndex = "0";
 	var totalPrice = "";
 	var shortYear = ""; 
 	var ExFlagPI = '';//PI编号重复check
@@ -70,7 +73,7 @@
 						.row
 						.add(
 						  [
-							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="mini read-only ysidCheck" /></td>',
+							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="short read-only ysidCheck" /></td>',
 							'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 								'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 							'<td><span></span></td>',
@@ -113,12 +116,12 @@
 				var amount = $('#example tbody tr').eq(rowIndex).find("td").eq(6).find("input").val();
 				//alert('['+amount+']:amount '+'---- totalPrice:'+totalPrice)
 				
-				$().toastmessage('showWarningToast', "删除后,[ PI编号 ]可能会发生变化。");	
+				$().toastmessage('showWarningToast', "删除后,[ 耀升编号 ]可能会发生变化。");	
 				t.row('.selected').remove().draw();
 
 				//销售总价	
 				var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
-				totalPrice = floatToSymbol( productCostSum(),currency);			
+				totalPrice = floatToSymbol( saleTotalSum(),currency);			
 				$('#order\\.totalprice').val(floatToCurrency(totalPrice));
 			}
 						
@@ -204,7 +207,7 @@
 			//临时计算该客户的销售总价
 			//首先减去旧的价格			
 			//totalPrice = currencyToFloat(totalPrice) - fTotalOld + fTotalNew;
-			totalPrice = floatToSymbol( productCostSum(),currency);			
+			totalPrice = floatToSymbol( saleTotalSum(),currency);			
 						
 			$('#order\\.totalprice').val(totalPrice);				
 
@@ -282,8 +285,8 @@
 		shortYear = String(number).substr(2); 
 		$("#order\\.orderdate").val(shortToday());
 		
-		ajax();
-
+		ajax();//正常订单
+		ajax2();//配件订单
 
 		autocomplete();
 		
@@ -416,7 +419,7 @@
 		});
 		
 		$('select').css('width','100px');		
-		$('#order\\.ordercompany').css('width','200px');
+		$('#order\\.ordercompany').css('width','300px');
 		$(".DTTT_container").css('float','left');
 	});
 	
@@ -452,20 +455,12 @@
 			</tr>
 			<tr>
 				<td class="label">客户编号：</td>				
-				<td colspan="7">
+				<td colspan="3">
 						<form:input path="attribute1" class="short required" />
 						<span style="color: blue">（查询范围：客户编号、客户简称、客户名称）</span></td>
-			</tr>
-			<tr>
 				<td class="label">客户名称：</td>
 				<td colspan="3">&nbsp;<span id="attribute2"></span></td>	
-				<td class="label">下单公司：</td>				
-				<td colspan="3">
-					<form:select path="order.ordercompany">
-							<form:options items="${orderForm.ordercompanyList}" 
-							  itemValue="key" itemLabel="value" />
-					</form:select></td>		
-			</tr>					
+			</tr>				
 			<tr> 
 				<td class="label">付款条件：</td>
 				<td >&nbsp;出运后
@@ -513,28 +508,40 @@
 					<form:select path="order.currency">
 						<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
 					</form:select></td>	
+				<td class="label">下单公司：</td>				
+				<td colspan="3">
+					<form:select path="order.ordercompany">
+							<form:options items="${orderForm.ordercompanyList}" 
+							  itemValue="key" itemLabel="value" />
+					</form:select></td>	
 				<td class="label">销售总价：</td>
-				<td colspan="5">
+				<td>
 					<form:input path="order.totalprice" class="read-only cash" /></td>											
 			</tr>							
 		</table>
 </fieldset>
 
-<fieldset>
-	<legend> 订单详情</legend>
+<div style="clear: both"></div>
+
+<fieldset class="action" style="text-align: right;">
+	<button type="button" id="return" class="DTTT_button">返回</button>
+	<button type="button" id="insert" class="DTTT_button">保存</button>
+</fieldset>
+<fieldset style="margin-top: -20px;">
+	<legend> 产品订单详情</legend>
 	<div class="list">
 	
 	<table id="example" class="display" >
 		<thead>				
 		<tr>
-			<th class="dt-center" width="60px">耀升编号</th>
+			<th class="dt-center" width="100px">耀升编号</th>
 			<th class="dt-center" width="100px">产品编号</th>
 			<th class="dt-center" >产品名称</th>
 			<th class="dt-center" width="90px">版本类别</th>
 			<th class="dt-center" width="60px">订单数量</th>
-			<th class="dt-center" width="60px">额外<br>采购数量</th>
+			<th class="dt-center" width="60px">额外采购</th>
 			<th class="dt-center" width="60px">销售单价</th>
-			<th class="dt-center" width="60px">销售总价</th>
+			<th class="dt-center" width="90px">销售总价</th>
 		</tr>
 		</thead>
 		<tfoot>
@@ -552,7 +559,7 @@
 	<tbody>
 		<c:forEach var="i" begin="0" end="0" step="1">		
 			<tr>
-				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" class="mini read-only ysidCheck"  /></td>
+				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" class="short read-only ysidCheck"  /></td>
 				<td><input type="text" name="attributeList1" class="attributeList1">
 					<form:hidden path="orderDetailLines[${i}].materialid" /></td>
 				<td><span></span></td>
@@ -571,24 +578,61 @@
 				
 			</tr>
 				<script type="text/javascript" >
+					counter++;
 					var index = '${i}';
 					YSSwift = parseInt(YSSwift)+ 1;
 					var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
-					$("#orderDetailLines" + index + "\\.ysid").val(fmtId);						
+					$("#orderDetailLines" + index + "\\.ysid").val(fmtId);		
+
+					if(YSPeiFlag == "true"){
+
+						YSSwiftPei = fmtId;
+						YSPeiFlag = "false";
+					}
 				</script>
 		</c:forEach>
 		
 	</tbody>
 </table>
 </div>
-</fieldset>
-<div style="clear: both"></div>
+</fieldset>	
 
-<fieldset class="action" style="text-align: right;">
-	<button type="button" id="return" class="DTTT_button">返回</button>
-	<button type="button" id="insert" class="DTTT_button">保存</button>
-</fieldset>		
+<fieldset>
+	<legend> 配件订单详情</legend>
+	<div class="list">
 	
+	<table id="example2" class="display" >
+		<thead>				
+		<tr>
+			<th class="dt-center" width="100px">耀升编号</th>
+			<th class="dt-center" width="100px">产品编号</th>
+			<th class="dt-center" width="210px">产品名称</th>
+			<th class="dt-center" width="90px">版本类别</th>
+			<th class="dt-center" width="60px">订单数量</th>
+			<th class="dt-center" width="60px">额外采购</th>
+			<th class="dt-center" width="60px">销售单价</th>
+			<th class="dt-center" width="90px">销售总价</th>
+		</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</tfoot>
+	<tbody>
+		
+		
+	</tbody>
+</table>
+</div>
+</fieldset>
 </form:form>
 
 </div>
@@ -751,5 +795,238 @@ function autocomplete(){
 }
 
 </script>
+
+<script type="text/javascript">
+$.fn.dataTable.TableTools.buttons.add_rows2 = $
+.extend(
+	true,
+	{},
+	$.fn.dataTable.TableTools.buttonBase,
+	{
+		"fnClick" : function(button) {
+			
+			var rowIndex = counter;
+			var hidden = '';
+			var fmtId = "";
+			
+			YSSwiftPeiIndex++;
+			YSSwiftPeiIndex = PrefixInteger(YSSwiftPeiIndex,2)
+			
+			if(YSSwiftPei ==""){
+				fmtId = YSParentId + PrefixInteger(YSSwift,3);
+				YSSwiftPei = YSParentId + PrefixInteger(YSSwift,3);
+			}else{
+				fmtId = YSSwiftPei;
+			}
+			for (var i=0;i<1;i++){
+				
+				//alert('YSSwift='+YSSwift); 
+				
+				//var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
+				var lineNo =  rowIndex+1;
+				var hidden = "";
+				
+				hidden = '';
+				
+				var rowNode = $('#example2')
+					.DataTable()
+					.row
+					.add(
+					  [
+						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="short read-only" /></td>',
+						'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
+							'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
+						'<td><span></span></td>',
+						'<td><select  name="orderDetailLines['+rowIndex+'].productclassify"   id="orderDetailLines'+rowIndex+'.productclassify" class="short"></select></td>',
+						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num mini" /></td>',
+						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"   	 id="orderDetailLines'+rowIndex+'.extraquantity"   class="num mini" />'+
+							'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"        id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
+						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"           id="orderDetailLines'+rowIndex+'.price"           class="cash short" /></td>',
+						'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice"  readonly="readonly"/></td>',
+						
+						]).draw();
+				
+				$("#orderDetailLines" + rowIndex + "\\.productclassify").html(options);
+				$("#orderDetailLines" + rowIndex + "\\.productclassify").val('040');
+				$("#orderDetailLines" + rowIndex + "\\.ysid").val(fmtId);
+				
+				rowIndex ++;						
+			}					
+			counter += 1;				
+
+			$('select').css('width','100px');	
+			
+			foucsInit();//设置新增行的基本属性
+			
+			autocomplete();//调用自动填充功能
+		}
+	});
+
+$.fn.dataTable.TableTools.buttons.reset2 = $.extend(true, {},
+	$.fn.dataTable.TableTools.buttonBase, {
+	"fnClick" : function(button) {
+
+		var t=$('#example2').DataTable();
+		
+		rowIndex = t.row('.selected').index();
+
+		if(typeof rowIndex == "undefined"){				
+			$().toastmessage('showWarningToast', "请选择要删除的数据。");	
+		}else{
+			
+			$().toastmessage('showWarningToast', "删除后,[ 耀升编号 ]可能会发生变化。");	
+			t.row('.selected').remove().draw();
+
+			//销售总价	
+			var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+			totalPrice = floatToSymbol( saleTotalSum(),currency);			
+			$('#order\\.totalprice').val(floatToCurrency(totalPrice));
+		}
+					
+	}
+});
+
+function ajax2() {
+
+	var t = $('#example2').DataTable({
+		
+		"processing" : false,
+		"retrieve"   : true,
+		"stateSave"  : true,
+		"pagingType" : "full_numbers",
+		//"scrollY"    : "160px",
+        "scrollCollapse": false,
+        "paging"    : false,
+        "pageLength": 50,
+        "ordering"  : false,
+
+		dom : 'T<"clear">rt',
+
+		"tableTools" : {
+
+			"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
+
+			"aButtons" : [ {
+				"sExtends" : "add_rows2",
+				"sButtonText" : "追加新行"
+			},
+			{
+				"sExtends" : "reset2",
+				"sButtonText" : "清空一行"
+			}  ],
+		},
+		
+		"columns" : [ 
+		        {
+				}, {								
+				}, {				
+				}, {				
+				}, {				
+				}, {				
+				}, {				
+				}, {"className":"dt-body-right"				
+				}			
+			]
+		
+	}).draw();
+
 	
+	t.on('change', 'tr td:nth-child(5),tr td:nth-child(7)',function() {
+
+		var $td = $(this).parent().find("td");
+
+		var $oQuantity = $td.eq(4).find("input");
+		var $oPricei  = $td.eq(6).find("input:text");
+		var $oAmount  = $td.eq(7).find("input");
+		var $oAmounts = $td.eq(7).find("span");
+		
+		var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+
+		var fPrice = currencyToFloat($oPricei.val());	
+
+		var fQuantity = currencyToFloat($oQuantity.val());
+
+		var fTotalNew = currencyToFloat(fPrice * fQuantity);
+
+		var vPricei = floatToSymbol(fPrice,currency);
+		var vQuantity = floatToNumber($oQuantity.val());
+		var vTotalNew = floatToSymbol(fTotalNew,currency);
+		
+		//详情列表显示新的价格
+		$oPricei.val(vPricei);
+		$oQuantity.val(vQuantity);
+		$oAmount.val(vTotalNew);
+		$oAmounts.html(vTotalNew);
+
+		//临时计算该客户的销售总价
+		//首先减去旧的价格			
+		totalPrice = floatToSymbol( saleTotalSum(),currency);					
+		$('#order\\.totalprice').val(totalPrice);				
+
+	});
+	
+	t.on('change', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
+
+		var $td = $(this).parent().find("td");
+
+		var $oQuantity = $td.eq(4).find("input");
+		var $oExtraQua = $td.eq(5).find("input:text");
+		var $oTotalQua = $td.eq(5).find("input:hidden");			
+
+		var fQuantity = currencyToFloat($oQuantity.val());
+		var fExtraQua = currencyToFloat($oExtraQua.val());
+		var fTotalQua = currencyToFloat(fExtraQua + fQuantity);
+
+		var vPriceh = floatToCurrency(fExtraQua);
+		var vTotalNew = floatToCurrency(fTotalQua);			
+		//
+		//alert("fQuantity"+fQuantity+"fExtraQua"+fExtraQua+"vTotalNew"+vTotalNew)
+		$oExtraQua.val(vPriceh);
+		$oTotalQua.val(vTotalNew);
+		$oExtraQua.val(floatToNumber(fExtraQua));
+
+	});
+	
+					
+	t.on('click', 'tr', function() {
+		
+		var rowIndex = $(this).context._DT_RowIndex; //行号			
+		//alert(rowIndex);
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+		
+	});
+
+};
+
+//列合计:总价
+function productCostSum2(){
+
+	var sum = 0;
+	$('#example2 tbody tr').each (function (){
+		
+		var vtotal = $(this).find("td").eq(7).find("input").val();
+		var ftotal = currencyToFloat(vtotal);
+		
+		sum = currencyToFloat(sum) + ftotal;			
+	})
+	return sum;
+}
+
+function saleTotalSum(){
+	
+	var product = productCostSum();//正常订单销售额
+
+	var product2 = productCostSum2();//配件订单销售额
+	
+	return product+ product2;
+	
+}
+</script>
 </html>

@@ -540,15 +540,15 @@ function inputCheck(){
 
 function foucsInit(){
 	
-	$("#example input").addClass('bgnone');
-	$("#example input").addClass('bsolid');
+	$("table[id^='example'] input").addClass('bgnone');
+	$("table[id^='example'] input").addClass('bsolid');
 
 	
 	$("#baseinfo input").focus(function(){
 		$(this).removeClass('bgnone');
 	});
 	
-	$("#example input").focus(function(){
+	$("table[id^='example'] input").focus(function(){
 		//$(this).removeClass('bgnone').addClass('bgwhite');
 	});
 
