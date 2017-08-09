@@ -43,8 +43,9 @@
 							'<td><input   name="machineConfigList['+rowIndex+'].componentname" id="machineConfigList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input   name="machineConfigList['+rowIndex+'].materialid"    id="machineConfigList'+rowIndex+'.materialid"  class="materialid"/></td>',
 							'<td><span></span></td>',
+							'<td><span></span></td>',
 							'<td><select  name="machineConfigList['+rowIndex+'].purchaser"   id="machineConfigList'+rowIndex+'.purchaser" style="width: 100px;"></select></td>',
-							'<td><input   name="machineConfigList['+rowIndex+'].remark"   	 id="machineConfigList'+rowIndex+'.remark"   class="middle" /></td>',
+							'<td><input   name="machineConfigList['+rowIndex+'].remark"   	 id="machineConfigList'+rowIndex+'.remark"   class="short" /></td>',
 							
 							]).draw();
 					
@@ -172,7 +173,7 @@
 							'<td><span></span></td>',
 							'<td><input  name="plasticList['+rowIndex+'].materialquality" id="plasticList'+rowIndex+'.materialquality" class="short" /></td>',
 							'<td><input  name="plasticList['+rowIndex+'].color"           id="plasticList'+rowIndex+'.color" class="mini" /></td>',
-							'<td><input  name="plasticList['+rowIndex+'].remark"   	      id="plasticList'+rowIndex+'.remark"   class="middle" /></td>',
+							'<td><input  name="plasticList['+rowIndex+'].remark"   	      id="plasticList'+rowIndex+'.remark"   class="short" /></td>',
 							
 							]).draw();
 					
@@ -846,7 +847,7 @@
 	<input type="hidden" id="goBackFlag" value="${goBackFlag }" />
 	<form:hidden path="productDesign.recordid"  value="${product.recordId}" />
 	<form:hidden path="productDesign.ysid"  value="${YSId}" />
-	<form:hidden path="productDesign.productid"  value="${product.productId}" />
+	<form:hidden path="productDesign.productid"  value="" />
 	<form:hidden path="productDesign.productdetailid"  value="${product.productDetailId}" />
 	<form:hidden path="productDesign.subid"  value="${product.subId}" />
 	
@@ -858,8 +859,7 @@
 			<td style="width: 150px;">${YSId}</td>
 								
 			<td class="label" style="width: 100px;">产品编号：</td>
-			<td style="width: 150px;">
-				&nbsp;<a href="###" onClick="doShowProduct()">${product.productId}</a></td>
+			<td style="width: 150px;">&nbsp;<a href="###" onClick="doShowProduct()">${product.productId}</a></td>
 			
 			<td class="label" style="width: 100px;">产品名称：</td>
 			<td colspan="3">&nbsp;${product.materialName}</td>
@@ -931,8 +931,9 @@
 				<th style="width:60px">名称</th>
 				<th style="width:120px">ERP编码</th>
 				<th >产品名称</th>
+				<th style="width:60px">供应商</th>
 				<th style="width:105px">采购方</th>
-				<th style="width:255px">备注</th>
+				<th style="width:100px">备注</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -941,20 +942,23 @@
 					<td></td>
 					<td><form:input path="machineConfigList[${status.index}].componentname"  class="short" value="${list.componentName }" /></td>
 					<td><form:input path="machineConfigList[${status.index}].materialid"  class="materialid" value="${list.materialId }" /></td>
-					<td><span id="name${status.index }">${list.materialName }</span></td>
+					<td><span id="machineName${status.index }"></span></td>
+					<td><span id="supplier${status.index }"></span></td>
 					<td>
 						<form:select path="machineConfigList[${status.index}].purchaser" style="width: 100px;">							
 							<form:options items="${purchaserList}" 
 								itemValue="key" itemLabel="value" /></form:select>
 					</td>
-					<td><form:input path="machineConfigList[${status.index}].remark"  class="middle" value="${list.remark }" /></td>
+					<td><form:input path="machineConfigList[${status.index}].remark"  class="short" value="${list.remark }" /></td>
 				</tr>
 				<script type="text/javascript">
 					var purchaser="${list.purchaserId }" ;
+					var supplier ="${list.supplierId }";
 					var index ="${status.index}";
 					$("#machineConfigList"+index+"\\.purchaser").val(purchaser);
 					var name = '${list.materialName }';
-					$("#name"+index).html(jQuery.fixedWidth(name,40))
+					$("#machineName"+index).html(jQuery.fixedWidth(name,40));
+					$("#supplier"+index).text(supplier)
 										
 				</script>
 			</c:forEach>
@@ -988,7 +992,7 @@
 				<th >产品名称</th>
 				<th style="width:40px">材质</th>
 				<th style="width:60px">颜色</th>
-				<th style="width:60px">备注</th>
+				<th style="width:100px">备注</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -997,16 +1001,16 @@
 					<td></td>
 					<td><form:input path="plasticList[${status.index}].componentname"  class="short" value="${list.componentName }" /></td>
 					<td><form:input path="plasticList[${status.index}].materialid"  class="materialid" value="${list.materialId }" /></td>
-					<td><span id="name${status.index }">${list.materialName }</span></td>
+					<td><span id="plasticName${status.index }">${list.materialName }</span></td>
 					<td><form:input path="plasticList[${status.index}].materialquality"  class="short" value="${list.materialQuality }" /></td>
 					<td><form:input path="plasticList[${status.index}].color"  class="mini" value="${list.color }" /></td>
-					<td><form:input path="plasticList[${status.index}].remark"  class="middle" value="${list.remark }" /></td>
+					<td><form:input path="plasticList[${status.index}].remark"  class="short" value="${list.remark }" /></td>
 				</tr>
 			
 				<script type="text/javascript">
 					var index ="${status.index}";
 					var name = '${list.materialName }';
-					$("#name"+index).html(jQuery.fixedWidth(name,40))
+					$("#plasticName"+index).html(jQuery.fixedWidth(name,40))
 										
 				</script>
 			</c:forEach>
@@ -1450,13 +1454,15 @@ function autocomplete(){
 		autoFocus : false,
 		source : function(request, response) {
 			//alert(888);
+			var materialId = $('#productDesign\\.productid').val();
 			$
 			.ajax({
 				type : "POST",
-				url : "${ctx}/business/order?methodtype=getMaterialList",
+				url : "${ctx}/business/productDesign?methodtype=getSupplierFromBom",
 				dataType : "json",
 				data : {
-					key : request.term
+					key1 : request.term,
+					key2 : materialId,
 				},
 				success : function(data) {
 					//alert(777);
@@ -1466,34 +1472,33 @@ function autocomplete(){
 							function(item) {
 
 								return {
-									label : item.viewList,
+									label : item.materialId+" | "+item.materialName,
 									value : item.materialId,
 									id : item.materialId,
 									name : item.materialName,
-									materialId : item.materialId
+									materialId : item.materialId,
+									supplierId : item.supplierId
 								}
 							}));
 				},
 				error : function(XMLHttpRequest,
 						textStatus, errorThrown) {
-					alert(XMLHttpRequest.status);
-					alert(XMLHttpRequest.readyState);
-					alert(textStatus);
-					alert(errorThrown);
+					//alert(XMLHttpRequest.status);
+					//alert(XMLHttpRequest.readyState);
+					//alert(textStatus);
+					//alert(errorThrown);
 					alert("系统异常，请再试或和系统管理员联系。");
 				}
 			});
 		},
 
-		select : function(event, ui) {
-			
+		select : function(event, ui) {			
 			//产品名称
 			$(this).parent().parent().find("td").eq(3).find("span")
 				.html(jQuery.fixedWidth(ui.item.name,40));
-
-			//产品编号
-			//$(this).parent().find("input:hidden").val(ui.item.materialId);
-			
+			//供应商
+			$(this).parent().parent().find("td").eq(4).find("span")
+				.text(ui.item.supplierId);			
 		},
 	});
 }

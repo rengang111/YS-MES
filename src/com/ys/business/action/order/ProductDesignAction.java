@@ -2,17 +2,10 @@ package com.ys.business.action.order;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -119,6 +112,11 @@ public class ProductDesignAction extends BaseAction {
 				rtnUrl = doShowDetail();
 				//printOutJsonObj(response, viewModel.getEndInfoMap());
 				//rtnUrl = "/business/material/productdesignview";
+				break;	
+			case "getSupplierFromBom":
+				dataMap = getSupplierFromBom();
+				printOutJsonObj(response, dataMap);
+				
 				break;				
 			case "detailViewHistory":
 				dataMap = doShowDetailHistory();
@@ -412,6 +410,12 @@ public class ProductDesignAction extends BaseAction {
 	public void doDelete(@RequestBody String data) throws Exception{
 		
 		service.doDelete(data);
+
+	}
+	
+	public HashMap<String, Object> getSupplierFromBom() throws Exception{
+		
+		return service.getSupplierFromBom();
 
 	}
 	

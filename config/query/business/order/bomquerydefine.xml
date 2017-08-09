@@ -187,7 +187,9 @@
     <pool></pool>    
     <name value="getBomDetailListByBomId" />
      <where>
-       <w name="YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="" bt="" />
+       <w name="YSId"       des=""  reqName="YSId"       dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+       <w name="productId" des=""  reqName="productId" dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   <select>
       <f name="recordId" alias="" ctype="" />

@@ -397,7 +397,7 @@ public class BomService extends CommonService {
 		
 		baseQuery = new BaseQuery(request, dataModel);
 
-		userDefinedSearchCase.put("keywords1", YSId);
+		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		modelMap = baseQuery.getYsQueryData(0, 0);

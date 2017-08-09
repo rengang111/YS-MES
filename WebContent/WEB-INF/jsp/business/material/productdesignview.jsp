@@ -99,8 +99,9 @@
 							<th style="width:60px">名称</th>
 							<th style="width:120px">ERP编码</th>
 							<th >产品名称</th>
+							<th style="width:60px">供应商</th>
 							<th style="width:105px">采购方</th>
-							<th style="width:255px">备注</th>
+							<th style="width:100px">备注</th>
 						</tr>
 					</thead>
 				</table>
@@ -406,6 +407,7 @@ function machineConfigurationView() {
 			{"data": "componentName"},
 			{"data": "materialId"},
 			{"data": "materialName"},
+			{"data": "supplierId"},
 			{"data": "purchaser"},
 			{"data": "remark"},
 		 ],

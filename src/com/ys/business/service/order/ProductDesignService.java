@@ -233,7 +233,10 @@ public class ProductDesignService extends CommonService {
 			}else{
 				//没有该耀升编号的做单资料,
 				//显示该产品最近的耀升编号到编辑页面
-				updateInit(oldYsid);
+				getOrderDetailById(reqYsid);
+
+				copyToEdit(oldYsid);
+				//updateInit(reqYsid);
 				photoCopy(productid,reqYsid,oldYsid);
 				rtnFlg = "编辑新建";
 			}
@@ -250,6 +253,13 @@ public class ProductDesignService extends CommonService {
 	}
 	
 
+	private void copyToEdit(String YSId) throws Exception{
+		
+		String productDetailId = getProductDesignlByYSId(YSId);
+	
+		getShareInfo(productDetailId);
+	}
+	
 	private void photoCopy(
 			String productid,String newYsid,String oldYsid){
 		//String sourceFld = 
@@ -597,15 +607,29 @@ public class ProductDesignService extends CommonService {
 		}
 		return dbList;
 	}
-	
-	
-	public void updateInit(String YSId) throws Exception{
 
-		
-		//做单资料明细内容
-		getProductDesignById(YSId);		
-		String productDetailId = reqModel.getProductDesign().getProductdetailid();
-		
+	@SuppressWarnings({ "unchecked" })
+	private String getProductDesignlByYSId(String YSId) {
+
+		String productDetailId = "";
+
+		String where = " YSId = '"+YSId+"' AND deleteFlag='0' order by YSId DESC ";
+		try {
+			List<B_ProductDesignData> dbList = (List<B_ProductDesignData>)dao.Find(where);
+			
+			if(!(dbList == null || ("").equals(dbList))){
+				B_ProductDesignData data = dbList.get(0);
+				productDetailId = data.getProductdetailid();
+				reqModel.setProductDesign(data);
+				
+			}
+		} catch (Exception e) {
+			// nothing
+		}
+		return productDetailId;
+	}
+	
+	private void getShareInfo(String productDetailId) throws Exception{
 		//机器配置信息
 		getMachineConfiguration(productDetailId);
 		
@@ -625,6 +649,17 @@ public class ProductDesignService extends CommonService {
 		getPackage(productDetailId);
 		
 		setDicList();//设置下拉框内容
+	}
+	
+	public void updateInit(String YSId) throws Exception{
+
+		
+		//做单资料明细内容
+		getProductDesignById(YSId);		
+		String productDetailId = reqModel.getProductDesign().getProductdetailid();
+		
+		getShareInfo(productDetailId);
+		
 	}
 	
 	public void doDelete(String recordId) throws Exception{
@@ -1050,6 +1085,13 @@ public class ProductDesignService extends CommonService {
 		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() >0){
+			dataModel
+				.getYsViewData()
+				.get(0)
+				.put("productId",dataModel
+					.getYsViewData()
+					.get(0)
+					.get("materialId"));
 			model.addAttribute("product",dataModel.getYsViewData().get(0));
 
 		}
@@ -1614,5 +1656,28 @@ public class ProductDesignService extends CommonService {
 	        }  
 	  
 	  
-	    } 
-}
+	}
+	    
+	public HashMap<String, Object> getSupplierFromBom() throws Exception {
+
+		String key1 = request.getParameter("key1").toUpperCase();
+		String key2 = request.getParameter("key2");
+		
+		userDefinedSearchCase.clear();
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("productId", key2);
+		
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/order/bomquerydefine");
+		dataModel.setQueryName("getBomDetailListByBomId");
+		
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+	
+		modelMap.put("data", dataModel.getYsViewData());		
+		modelMap.put("retValue", "success");			
+		
+		return modelMap;
+	}
+}	

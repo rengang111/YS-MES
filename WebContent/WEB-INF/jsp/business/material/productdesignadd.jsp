@@ -39,8 +39,9 @@
 							'<td><input   name="machineConfigList['+rowIndex+'].componentname" id="machineConfigList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input   name="machineConfigList['+rowIndex+'].materialid"    id="machineConfigList'+rowIndex+'.materialid"  class="materialid"/></td>',
 							'<td><span></span></td>',
+							'<td><span></span></td>',
 							'<td><select  name="machineConfigList['+rowIndex+'].purchaser"   id="machineConfigList'+rowIndex+'.purchaser" style="width: 100px;"></select></td>',
-							'<td><input   name="machineConfigList['+rowIndex+'].remark"   	 id="machineConfigList'+rowIndex+'.remark"   class="middle" /></td>',
+							'<td><input   name="machineConfigList['+rowIndex+'].remark"   	 id="machineConfigList'+rowIndex+'.remark"   class="short" /></td>',
 							
 							]).draw();
 					
@@ -109,10 +110,13 @@
 					}, {
 					}, {								
 					}, {				
+					}, {				
 					}, {		
 					}, {				
 					}			
-				]
+			],
+			"columnDefs":[
+			    { "sWidth": "15px", "aTargets": [0] }], 
 			
 		}).draw();
 
@@ -177,7 +181,7 @@
 							'<td><span></span></td>',
 							'<td><input  name="plasticList['+rowIndex+'].materialquality" id="plasticList'+rowIndex+'.materialquality" class="short" /></td>',
 							'<td><input  name="plasticList['+rowIndex+'].color"           id="plasticList'+rowIndex+'.color" class="mini" /></td>',
-							'<td><input  name="plasticList['+rowIndex+'].remark"   	      id="plasticList'+rowIndex+'.remark"   class="middle" /></td>',
+							'<td><input  name="plasticList['+rowIndex+'].remark"   	      id="plasticList'+rowIndex+'.remark"   class="short" /></td>',
 							
 							]).draw();
 					
@@ -512,8 +516,7 @@
 					"sExtends" : "reset4",
 					"sButtonText" : "清空一行"
 				}  ],
-			},
-			
+			},			
 			"columns" : [ 
 			        	{"className":"dt-body-center"
 					}, {
@@ -521,7 +524,7 @@
 					}, {				
 					}, {	
 					}			
-				]
+			],
 			
 		}).draw();
 
@@ -921,9 +924,10 @@
 						<th width="1px">No</th>
 						<th style="width:60px">名称</th>
 						<th style="width:120px">ERP编码</th>
-						<th >产品名称</th>
+						<th>产品名称</th>
+						<th style="width:60px">供应商</th>
 						<th style="width:105px">采购方</th>
-						<th style="width:255px">备注</th>
+						<th style="width:100px">备注</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -933,12 +937,13 @@
 							<td><form:input path="machineConfigList[${i}].componentname"  class="short"/></td>
 							<td><form:input path="machineConfigList[${i}].materialid"  class="materialid"/></td>
 							<td><span></span></td>
+							<td><span></span></td>
 							<td>
 								<form:select path="machineConfigList[${i}].purchaser" style="width: 100px;">							
 									<form:options items="${purchaserList}" 
 										itemValue="key" itemLabel="value" /></form:select>
 							</td>
-							<td><form:input path="machineConfigList[${i}].remark"  class="middle"/></td>
+							<td><form:input path="machineConfigList[${i}].remark"  class="short"/></td>
 						</tr>
 					
 					</c:forEach>
@@ -970,7 +975,7 @@
 						<th >产品名称</th>
 						<th style="width:40px">材质</th>
 						<th style="width:60px">颜色</th>
-						<th style="width:60px">备注</th>
+						<th style="width:100px">备注</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -982,7 +987,7 @@
 							<td><span></span></td>
 							<td><form:input path="plasticList[${i}].materialquality"  class="short"/></td>
 							<td><form:input path="plasticList[${i}].color"  class="mini"/></td>
-							<td><form:input path="plasticList[${i}].remark"  class="middle"/></td>
+							<td><form:input path="plasticList[${i}].remark"  class="short"/></td>
 						</tr>
 					
 					</c:forEach>
@@ -1445,13 +1450,15 @@ function autocomplete(){
 		autoFocus : false,
 		source : function(request, response) {
 			//alert(888);
+			var materialId = $('#productDesign\\.productid').val();
 			$
 			.ajax({
 				type : "POST",
-				url : "${ctx}/business/order?methodtype=getMaterialList",
+				url : "${ctx}/business/productDesign?methodtype=getSupplierFromBom",
 				dataType : "json",
 				data : {
-					key : request.term
+					key1 : request.term,
+					key2 : materialId,
 				},
 				success : function(data) {
 					//alert(777);
@@ -1461,20 +1468,21 @@ function autocomplete(){
 							function(item) {
 
 								return {
-									label : item.viewList,
+									label : item.materialId+" | "+item.materialName,
 									value : item.materialId,
 									id : item.materialId,
 									name : item.materialName,
-									materialId : item.materialId
+									materialId : item.materialId,
+									supplierId : item.supplierId
 								}
 							}));
 				},
 				error : function(XMLHttpRequest,
 						textStatus, errorThrown) {
-					alert(XMLHttpRequest.status);
-					alert(XMLHttpRequest.readyState);
-					alert(textStatus);
-					alert(errorThrown);
+					//alert(XMLHttpRequest.status);
+					//alert(XMLHttpRequest.readyState);
+					//alert(textStatus);
+					//alert(errorThrown);
 					alert("系统异常，请再试或和系统管理员联系。");
 				}
 			});
@@ -1485,9 +1493,9 @@ function autocomplete(){
 			//产品名称
 			$(this).parent().parent().find("td").eq(3).find("span")
 				.html(jQuery.fixedWidth(ui.item.name,40));
-
-			//产品编号
-			//$(this).parent().find("input:hidden").val(ui.item.materialId);
+			//供应商
+			$(this).parent().parent().find("td").eq(4).find("span")
+				.text(ui.item.supplierId);
 			
 		},
 	});
