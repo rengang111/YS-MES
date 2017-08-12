@@ -279,11 +279,13 @@ $(document).ready(function() {
 	$("#doDownloadPdf").click(function() {
 		var PIId=$('#PIId').val();
 		var YSId=$('#productDesign\\.ysid').val();
+		var productId=$('#productDesign\\.productid').val();
 		var goBackFlag = $('#goBackFlag').val();
 		var productDetailId=$('#productDesign\\.productdetailid').val();
 		var url = '${ctx}/business/productDesign?methodtype=convertToPdf&YSId=' + YSId+
 				"&productDetailId="+productDetailId+
 				"&PIId="+PIId+
+				"&productId="+productId+
 				"&goBackFlag="+goBackFlag;
 		location.href = url;	 
 	});
@@ -922,7 +924,7 @@ function photoViewLabel(id, tdTable, count, data) {
 		trHtml += '<tr><td style="height:300px;">'
 		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
 		//trHtml += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
-		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'"  style="max-height: 450px;" />';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'"  style="max-width: 100%;" />';
 		trHtml += '</a>';
 		trHtml += '</td>';
 		trHtml += '</tr>';

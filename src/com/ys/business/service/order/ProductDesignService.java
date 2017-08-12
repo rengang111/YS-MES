@@ -6,18 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -29,14 +26,17 @@ import com.itextpdf.forms.fields.PdfFormField;
 import com.itextpdf.kernel.color.Color;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.border.SolidBorder;
+import com.itextpdf.layout.element.AreaBreak;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.AreaBreakType;
+import com.itextpdf.layout.property.UnitValue;
 //import com.ckfinder.connector.utils.FileUtils;
 import com.ys.business.action.model.order.ProductDesignModel;
 import com.ys.business.db.dao.B_ProductDesignDao;
@@ -50,6 +50,7 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
+import com.ys.util.PdfUnit;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
@@ -57,7 +58,7 @@ import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 
 @Service
-public class ProductDesignService extends CommonService {
+public class ProductDesignService extends CommonService  {
  
 	DicUtil util = new DicUtil();
 	BaseTransaction ts;
@@ -1038,17 +1039,16 @@ public class ProductDesignService extends CommonService {
 		try{
 			for(File file:files){    
 				if(file.isDirectory()){
-					 //递归调用
+					//递归调用
 					// getFiles(file.getAbsolutePath());
 					// filelist.add(file.getAbsolutePath());
-					 //count++;
-					 
-					 System.out.println("显示"+filePath+"下所有子目录及其文件"+file.getAbsolutePath());
-				 }else{
-					 filelist.add(viewPath+file.getName());
-					 count++;   
-					 System.out.println("显示"+filePath+"下所有子目录"+file.getAbsolutePath());
-				 } 
+					//count++;					 
+					//System.out.println("显示"+filePath+"下所有子目录及其文件"+file.getAbsolutePath());
+				}else{
+					filelist.add(viewPath+file.getName());
+					count++;   
+					//System.out.println("显示"+filePath+"下所有子目录"+file.getAbsolutePath());
+				} 
 				    
 			}	
 		}catch(Exception e){
@@ -1093,9 +1093,7 @@ public class ProductDesignService extends CommonService {
 					.get(0)
 					.get("materialId"));
 			model.addAttribute("product",dataModel.getYsViewData().get(0));
-
-		}
-		
+		}		
 	}
 	
 	public void getProductDesignById(String YSId) throws Exception {
@@ -1200,7 +1198,7 @@ public class ProductDesignService extends CommonService {
 			finalUserId = recordid;
 		}
 		String type = headPhotoFile[0].getOriginalFilename().substring(headPhotoFile[0].getOriginalFilename().lastIndexOf("."));
-		photoName = finalUserId + "-" + CalendarUtil.fmtDate().replace(" ", "").replace(":", "").replace("-", ""); 
+		photoName = finalUserId + "-" + CalendarUtil.timeStempDate(); 
 		
 		try {
 			//同时copy两份,一份到临时目录,显示用,另一个备份
@@ -1313,7 +1311,7 @@ public class ProductDesignService extends CommonService {
 		boolean isSuccess = false;
 		HashMap<String, Object> jsonObj = new HashMap<String, Object>();
 
-		String timesTmp = CalendarUtil.fmtDate().replace(" ", "").replace(":", "").replace("-", ""); 
+		String timesTmp = CalendarUtil.timeStempDate(); 
 		String suffix = orgFileName.substring(orgFileName.lastIndexOf("."));
 		String fileName = orgFileName.substring(0, orgFileName.length()-suffix.length())+ "-" + timesTmp; 
 		String newFileName = fileName + suffix;
@@ -1347,24 +1345,351 @@ public class ProductDesignService extends CommonService {
 		return jsonObj;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void convertAndDownloadToPdf(){
-		//createPdf();
-		  PDFPractise tPDFPractise = new PDFPractise();  
-	        try {  
-	            tPDFPractise.createPdfFile();  
-	  
-	            // tPDFPractise.createPDFFile();  
-	  
-	        } catch (Exception e) {  
-	            e.printStackTrace();  
-	        }  
+		String YSId = request.getParameter("YSId");
+		String productId = request.getParameter("productId");
+		String productDetailId = request.getParameter("productDetailId");
+		ArrayList<String> list ;
+		ArrayList<HashMap<String,String>> mapList;		
+		PdfUnit pdf = new PdfUnit(session,response,YSId);  
+		Table table;
+		Cell cell;
+		UnitValue unitValue[];
+	    try {
+			
+	    	//主题	 
+			pdf.doc.add(pdf.addTitleForCenter("做单资料"));
+			//标题
+			pdf.doc.add(pdf.addTitle("订单信息"));
+			//做单资料基本信息
+			getProductDesignById(YSId);			
+			HashMap<String,String> product = 
+					(HashMap<String, String>) model.asMap().get("product");
+			table = createHeadTable(product,pdf);  
+			pdf.doc.add(table); 
+	        
+			//机器配置-标题***************************************************************
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("机器配置"));
+			//机器配置-列表
+			unitValue = new UnitValue[]{
+	                    UnitValue.createPercentValue((float) 5),
+	                    UnitValue.createPercentValue((float) 10),
+	                    UnitValue.createPercentValue((float) 13),
+	                    UnitValue.createPercentValue((float) 40),
+	                    UnitValue.createPercentValue((float) 10),
+	                    UnitValue.createPercentValue((float) 7),
+	                    UnitValue.createPercentValue((float) 15)};
+		    table = pdf.addTable(unitValue);
+		    
+			getMachineConfiguration(productDetailId);
+			mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("machineConfigList");
+			String[] arrTitleM =
+				{ "No","名称","ERP编码","产品名称","供应商","采购方","备注"}; 
+			String[] arrContentM =
+				{"rownum","componentName","materialId","materialName","supplierId", "purchaser","remark"}; 
+			table = createTextTable(arrTitleM,arrContentM,mapList,pdf,table);
+			
+			pdf.doc.add(table); 		
+			
+			//产品图片***************************************************************
+			//产品图片-标题
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("产品图片"));
+			//产品图片-图片列表
+			getPhoto(YSId,productId,"product","productFileList","productFileCount");
+			list = (ArrayList<String>) modelMap.get("productFileList");			
+			table = createPhotoTable(list,pdf);
+			pdf.doc.add(table); 
+			
+			//塑料制品***************************************************************
+			//塑料制品-标题
+			pdf.doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));//换页
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("塑料制品"));
+			//机器配置-列表
+			unitValue = new UnitValue[]{
+	                    UnitValue.createPercentValue((float) 5),
+	                    UnitValue.createPercentValue((float) 10),
+	                    UnitValue.createPercentValue((float) 13),
+	                    UnitValue.createPercentValue((float) 40),
+	                    UnitValue.createPercentValue((float) 10),
+	                    UnitValue.createPercentValue((float) 15),
+	                    UnitValue.createPercentValue((float) 7)};
+		    table = pdf.addTable(unitValue);
+		    
+		    getPlastic(productDetailId);
+			mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("plasticList");
+			String[] arrTitleP =
+				{ "No","名称","ERP编码","产品名称","材质","颜色","备注"}; 
+			String[] arrContentP =
+				{"rownum","componentName","materialId","materialName","materialQuality", "color","remark"}; 
+			table = createTextTable(arrTitleP,arrContentP,mapList,pdf,table);
+			
+			pdf.doc.add(table);
+			//文字印刷***************************************************************
+			//文字印刷-标题
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("文字印刷"));
+			//文字印刷-列表
+			unitValue = new UnitValue[]{
+                    UnitValue.createPercentValue((float) 5),
+                    UnitValue.createPercentValue((float) 15),
+                    UnitValue.createPercentValue((float) 30),
+                    UnitValue.createPercentValue((float) 10),
+                    UnitValue.createPercentValue((float) 10),
+                    UnitValue.createPercentValue((float) 30)};
+		    table = pdf.addTable(unitValue);
+		    
+		    getTextPrint(productDetailId);
+			mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("textPrintList");
+			String[] titleT =
+				{ "No","名称","材质","尺寸","颜色","文件名"}; 
+			String[] contentT =
+				{"rownum","componentName","materialQuality","size","color","fileName"};
+			table = createTextTable(titleT,contentT,mapList,pdf,table);	
+			pdf.doc.add(table); 
+			
+			//产品收纳***************************************************************
+			//产品收纳-标题
+			pdf.doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));//换页
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("产品收纳-描述信息"));
+			unitValue = new UnitValue[]{
+                    UnitValue.createPercentValue((float) 100)};
+			table = pdf.addTable(unitValue).setMinHeight(50);			
+			cell = pdf.addCell(pdf.addContent(
+							product.get("storageDescription").replace("<br>", "\n")));
+			table.addCell(cell);
+			pdf.doc.add(table);
+			//产品收纳-图片
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("产品收纳-图片"));
+			getPhoto(YSId,productId,"storage","storageFileList","storageFileCount");
+			list = (ArrayList<String>) modelMap.get("storageFileList");
+	        table = createPhotoTable(list,pdf);
+			pdf.doc.add(table);
+			
+			//标贴***************************************************************
+			//标贴-标题
+			pdf.doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));//换页
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("标贴-描述信息"));
+			//标贴-列表
+			unitValue = new UnitValue[]{
+	                    UnitValue.createPercentValue((float) 5),
+	                    UnitValue.createPercentValue((float) 15),
+	                    UnitValue.createPercentValue((float) 40),
+	                    UnitValue.createPercentValue((float) 20),
+	                    UnitValue.createPercentValue((float) 20)};
+		    table = pdf.addTable(unitValue);
+		    
+		    getLabel(productDetailId);
+			mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("labelList");
+			String[] arrTitleL =
+				{ "No","名称","材质及要求","尺寸","备注"}; 
+			String[] arrContentL =
+				{"rownum","componentName","materialQuality","size","remark"};
+			table = createTextTable(arrTitleL,arrContentL,mapList,pdf,table);	
+			pdf.doc.add(table); //标贴
+			
+			//标贴***************************************************************
+			//标贴图片-标题
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("标贴-图片"));
+			//标贴图片-列表
+			getPhoto(YSId,productId,"label","labelFileList","labelFileCount");
+			list = (ArrayList<String>) modelMap.get("labelFileList");
+			table = createLabelPhotoTable(list,pdf);
+			pdf.doc.add(table);
+			
+			//包装描述***************************************************************
+			//包装描述-标题
+			pdf.doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));//换页
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("包装描述"));
+			//包装描述-列表
+			unitValue = new UnitValue[]{
+                    UnitValue.createPercentValue((float) 5),
+                    UnitValue.createPercentValue((float) 15),
+                    UnitValue.createPercentValue((float) 30),
+                    UnitValue.createPercentValue((float) 10),
+                    UnitValue.createPercentValue((float) 10),
+                    UnitValue.createPercentValue((float) 30)};
+		    table = pdf.addTable(unitValue);
+		    
+		    getPackage(productDetailId);
+			mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("packageList");
+			String[] titleP =
+				{ "No","名称","材质","装箱数量","尺寸","备注"}; 
+			String[] contentP =
+				{"rownum","componentName","materialQuality","packingQty","size","remark"};
+			table = createTextTable(titleP,contentP,mapList,pdf,table);	
+			pdf.doc.add(table); 
+			
+			//包装描述-图片
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("包装描述-图片"));
+			//包装描述-图片列表
+			getPhoto(YSId,productId,"package","packageFileList","packageFileCount");
+			list = (ArrayList<String>) modelMap.get("packageFileList");			
+			table = createPhotoTable(list,pdf);
+			pdf.doc.add(table); 
+
+        	pdf.doc.close();  
+        	
+        	//***********************PDF下载************************//
+        	pdf.downloadFile();
+        	
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  finally {
+        	if (pdf.doc !=null) pdf.doc.close();  
+		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Table createHeadTable(
+			HashMap<String,String> product,
+			PdfUnit pdf) throws Exception{
+		
+
+		int tCol = 6; 
+		int tRow = 4;
+        UnitValue[] unitValue = new UnitValue[]{
+                UnitValue.createPercentValue((float) 12),
+                UnitValue.createPercentValue((float) 15),
+                UnitValue.createPercentValue((float) 12),
+                UnitValue.createPercentValue((float) 15),
+                UnitValue.createPercentValue((float) 12),
+                UnitValue.createPercentValue((float) 34)};
+        Table table = pdf.addTable(unitValue);
+        
+        String[][] arrTitle = { 
+        		{"耀升编号","","产品编号","", "产品名称",""},
+        		{"交货时间","", "交货数量","", "封样数量",""}, 
+        		{"电池包数量","", "充电器","", "版本类别",""},
+        		{"包装描述","", "资料完成状况","", "",""}}; 
+        String[][] arrContent = { 
+        		{"","YSId","","productId","", "materialName"},
+        		{"","deliveryDate","", "quantity","", "sealedSample"}, 
+        		{"","batteryPack","", "chargerType","", "productClassify"},
+        		{"","packageDescription", "","status", "",""}}; 
+		Cell cell = new Cell(); 
+        String strTableTitle="";
+        Paragraph tableTitle;
+        
+        for (int i = 0; i < tRow; i++) {  
+            for (int j = 0; j < tCol; j++) {
+            	
+            	if(j%2==0){
+	            	strTableTitle = arrTitle[i][j];
+		    	    tableTitle = pdf.tableTitleRight(strTableTitle);   
+	    	        cell = pdf.addCellEven(tableTitle);
+                }else{
+	            	strTableTitle = arrContent[i][j];
+	            	if(strTableTitle.length()<=0){
+	            		tableTitle = pdf.addContent("");
+	            	}else{
+
+		    	        tableTitle = pdf.addContent(product.get(strTableTitle));
+	            	}
+	    	        cell = pdf.addCell(tableTitle);	                	
+                }
+    	        table.addCell(cell);
+            }
+            
+        }	 
+		return table;		
+	}
+	
+	public Table createLabelPhotoTable(
+			ArrayList<String> list,
+			PdfUnit pdf) throws MalformedURLException{
+
+		UnitValue[] unitValue = new UnitValue[]{
+                UnitValue.createPercentValue((float) 100)};
+		Table table = pdf.addTable(unitValue);
+		
+   		for(int i=0;i<list.size();i++){
+			String path = list.get(i);
+			//显示用目录
+			String viewPath = session.getServletContext().getRealPath(path);
+			Cell cell = pdf.addCell(pdf.addLargeImage(viewPath));
+			table.addCell(cell);			
+		}				
+		return table;		
+	}
+	
+	public Table createPhotoTable(
+			ArrayList<String> list,
+			PdfUnit pdf) throws Exception{
+
+		UnitValue[] unitValue = new UnitValue[]{
+                UnitValue.createPercentValue((float) 50),
+                UnitValue.createPercentValue((float) 50)};
+		Table table = pdf.addTable(unitValue);
+		
+   		for(int i=0;i<list.size();i++){
+			String path = list.get(i);
+			//显示用目录
+			String viewPath = session.getServletContext().getRealPath(path);
+			Cell cell = pdf.addCell(pdf.addImage(viewPath));
+			table.addCell(cell);
+			
+			i++;
+			if (i == list.size()) {//一行两列,奇数张图片时
+				cell = pdf.addCell("");
+			}else{
+				path = list.get(i);
+				//显示用目录
+				viewPath = session.getServletContext().getRealPath(path);
+				cell = pdf.addCell(pdf.addImage(viewPath));
+			}
+			table.addCell(cell);			
+		}		
+		return table;		
+	}
+	
+	public Table createTextTable(
+			String[] title,
+			String[] content,
+			ArrayList<HashMap<String, String>> mapList,
+			PdfUnit pdf,
+			Table table){
+		
+		Cell cell;
+		//机器配置-表头
+		for(int j=0;j<title.length;j++){			
+			String t = title[j];
+			Paragraph tableTitle = pdf.tableTitle(t);   
+	        cell = pdf.addCellEven(tableTitle);				
+			table.addCell(cell);
+		}
+		
+		//机器配置-数据
+		for(int i=0;i<mapList.size();i++){
+			HashMap<String, String> machine = mapList.get(i);
+			for(int j=0;j<title.length;j++){					
+				
+				String cent = content[j];
+				String data = machine.get(cent) ==null?"":machine.get(cent);
+				Paragraph tableTitle = pdf.addContent(data);
+
+				if(i%2==0){
+	    	        cell = pdf.addCell(tableTitle);
+				}else{
+	    	        cell = pdf.addCellEven(tableTitle);	
+				}					
+				table.addCell(cell);
+			}			
+		}		
+		return table;		
+	}
+	
 	public void downloadFile() throws Exception {
 
-		//B_ProductDesignData reqDesign = reqModel.getProductDesign();
-		//String recordid = request.getParameter("recordId");
-		//String productId = reqDesign.getProductid();
-		//String YSId = reqDesign.getYsid();
 		String productId = request.getParameter("productId");
 		String YSId = request.getParameter("YSId");
 
@@ -1386,29 +1711,12 @@ public class ProductDesignService extends CommonService {
 			request.setAttribute("message", "您要下载的资源已被删除！！");
 			jsonObj.put("message", "下载失败");
 			jsonObj.put("result", "1");
-			//request.getRequestDispatcher("/message.jsp").forward(request, response);
 			return;
 		}
 		//处理文件名
 		String realname = fileName.substring(fileName.indexOf("_")+1);
-		//设置响应头，控制浏览器下载该文件
-		response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(realname, "UTF-8"));
-		//读取要下载的文件，保存到文件输入流
-		FileInputStream in = new FileInputStream(file);
-		//创建输出流
-		OutputStream out = response.getOutputStream();
-		//创建缓冲区
-		byte buffer[] = new byte[1024];
-		int len = 0;
-		//循环将输入流中的内容读取到缓冲区当中
-		while((len=in.read(buffer))>0){
-			//输出缓冲区的内容到浏览器，实现文件下载
-			out.write(buffer, 0, len);
-		}
-		//关闭文件输入流
-		in.close();
-		//关闭输出流
-		out.close();
+		new PdfUnit(session,response).downloadFile(fileDownloadPath + "\\" + fileName,realname);
+		
 	}
 		 
 	/**

@@ -161,6 +161,19 @@ public class CalendarUtil {
 	public static String fmtDate() {
 		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sd.format(getSystemDate()); 
+	}
+	
+
+	/**
+	 * ���ڸ�ʽ��
+	 *
+	 * @param	srcDate		��������
+	 * @param	format		��ʽ
+	 * @return	String		��ʽ���������
+	 */
+	public static String timeStempDate() {
+		SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmss");
+		return sd.format(getSystemDate()); 
 	}	
 
 	/**

@@ -1,16 +1,18 @@
-package com.ys.business.service.order;  
+package com.ys.util;  
 
-import java.awt.Font;
-import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;  
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URLEncoder;
 
-import javax.swing.GroupLayout.Alignment;
-
-import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec.Phrase;
-import org.apache.poi.hsmf.datatypes.Chunk;
-
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.DeviceRgb;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
@@ -19,6 +21,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.border.Border;
 import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
@@ -26,6 +29,9 @@ import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
 import com.itextpdf.layout.property.VerticalAlignment;
+import com.ys.system.common.BusinessConstants;
+import com.ys.util.CalendarUtil;
+import com.ys.util.TextFooterEventHandler;
   
   
 /** 
@@ -39,25 +45,60 @@ import com.itextpdf.layout.property.VerticalAlignment;
  * @version: 1.0 
  * @CreateDate：Nov 5, 2014 
  */  
-public class PDFPractise {  
+public class PdfUnit {  
   
-    /** 
-     * @author ShaoMin 
-     * @param args 
-     */  
-    public static void main(String[] args) {  
-  
-        PDFPractise tPDFPractise = new PDFPractise();  
-        try {  
-            tPDFPractise.createPdfFile();  
-  
-            // tPDFPractise.createPDFFile();  
-  
-        } catch (Exception e) {  
-            e.printStackTrace();  
-        }  
-    }  
-  
+    private static PdfFont bfChinese ;
+    String pdfPath = "";
+    String fileName = "";
+    private static String errorImg="E:\\publish\\wtpwebapps\\YS-MES\\images\\errorphoto240.png";
+    private static String errorImg2 = "D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\YS-MES\\images\\errorphoto240.png";
+    public String dest="";
+    public Document doc;
+    PdfDocument pdf;
+    private HttpServletResponse response;
+    private HttpSession session;
+    
+    public PdfUnit(){
+    	
+    }
+    
+    public PdfUnit(HttpSession session,HttpServletResponse response){
+	 this.response = response;
+	 this.session = session;
+    }
+    public PdfUnit(
+    		HttpSession session,
+    		HttpServletResponse response,
+    		String YSId){
+    	try {
+    		this.response = response;
+
+	        //处理中文问题  
+    		bfChinese = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H", false);
+    		
+    		this.pdfPath = session
+    				.getServletContext()
+    				.getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP);
+    		
+    		//格式:17YS001_20170811121009.pdf
+    		this.fileName = YSId + "_" + CalendarUtil.timeStempDate() + ".pdf";
+    		this.dest = pdfPath + File.separator + fileName;
+    		
+    		PdfWriter writer = new PdfWriter(new FileOutputStream(dest)); 
+    		
+    		//Initialize PDF document
+    		this.pdf = new PdfDocument(writer);
+    		this.doc = new Document(pdf, PageSize.A4,true);
+    		
+	 	   	//设置页码
+	 	   	TextFooterEventHandler eh= new TextFooterEventHandler(doc);
+	 	   this.pdf.addEventHandler(PdfDocumentEvent.END_PAGE,eh);
+	        
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+   
     /** 
      * 创建PDF 
      *  
@@ -65,31 +106,19 @@ public class PDFPractise {
      * @throws Exception 
      */  
     public void createPdfFile() throws Exception {  
-        String newPDFPath = "D:/Temp/pdf/practisePdfFile.pdf";  
-        //处理中文问题    
-        PdfFont bfChinese = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H", false);    
-          
-        PdfWriter writer = new PdfWriter(new FileOutputStream(newPDFPath));  
-        //Initialize PDF document    
-        PdfDocument pdf = new PdfDocument(writer);   
-        Document doc = new Document(pdf, PageSize.A4,true);  
+         
+        String timeStemp = CalendarUtil.fmtDate().replace(" ", "").replace(":", "").replace("-", "");
+       
+         
        // FileOutputStream out = new FileOutputStream("temp/pdf/practisePdfFile.pdf");  
        // PdfWriter.getInstance(doc, out);
         //doc..open();  
         
-        
-        //BaseFont bfChinese = BaseFont.createFont("STSongStd-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);  
-        //Font titleFont = new Font(bfChinese, 16, Font.BOLD);// 标题  
-        //Font tableTitleFont = new Font(bfChinese, 12, Font.BOLD);// 表格标题  
-       // Font conyentFont = new Font(bfChinese, 12, Font.NORMAL);// 内容  
         Text text1 = new Text("人类的海洋").setFont(bfChinese)  
                 .setFontSize((float) 7.41)  
                 .setFontColor(new DeviceRgb(46, 46, 46)).setBold();// setBold()字体为加粗 
   
-        Paragraph title = new Paragraph("受理材料收取凭证")
-        		.setBold()
-        		.setFontSize(14)
-        		.setTextAlignment(TextAlignment.CENTER); 
+        Paragraph title = addTitle("受理材料收取凭证");
         
         doc.add(title);  
   
@@ -98,39 +127,19 @@ public class PDFPractise {
         strBuff.append("（先生/女士）提交的保单号为    " + "123456789009876");  
         strBuff.append("     的申请材料，共   " + " 2 " + "  张保单。");  
   
-        Paragraph content = new Paragraph(strBuff.toString())
-        		.setFont(bfChinese)
-        		.setFontSize(14)
-        		.setBold()
-        		.setTextAlignment(TextAlignment.JUSTIFIED)
-        		.setFirstLineIndent(15f)
-        		.setSpacingRatio(30f);  
-        //content.setAlignment(TextAlignment.JUSTIFIED);  
-        //content.setFirstLineIndent(15f);// 首行缩进  
-        //content.setSpacingBefore(30f);// 上留白  
+        Paragraph content;
+        content = addContent(strBuff.toString());
+       
         doc.add(content);  
   
         String cont2 = "申请保全项目    " + " CM-退保";  
-        content = new Paragraph(cont2)
-        		.setFont(bfChinese)
-        		.setFontSize(14)
-        		.setBold()
-        		.setTextAlignment(TextAlignment.JUSTIFIED)
-        		.setFirstLineIndent(15f)
-        		.setSpacingRatio(15f); ;  
-        //content.setAlignment(Rectangle.ALIGN_JUSTIFIED);  
-       // content.setFirstLineIndent(15f);// 首行缩进  
-        //content.setSpacingBefore(15f);// 上留白  
+        content = addContent(cont2);
+         
         doc.add(content);  
   
         String cont3 = "所提供材料明细如下：";  
-        content = new Paragraph(cont3)
-        		.setFont(bfChinese)
-        		.setFontSize(14)
-        		.setBold()
-        		.setTextAlignment(TextAlignment.CENTER)
-        		.setFirstLineIndent(15f)
-        		.setSpacingRatio(15f); 
+        content = addContent(cont3);
+        
         //content.setAlignment(Rectangle.ALIGN_JUSTIFIED);  
         //content.setFirstLineIndent(15f);// 首行缩进  
         //content.setSpacingBefore(15f);// 上留白  
@@ -142,7 +151,8 @@ public class PDFPractise {
         int tCol = 5;  
         Table table = new Table(new float[] { 0.4f, 0.25f, 0.25f, 0.25f, 0.25f })
         		.setWidth(UnitValue.createPercentValue(100))
-        		.setHorizontalAlignment(HorizontalAlignment.LEFT);  
+        		.setHorizontalAlignment(HorizontalAlignment.LEFT)
+        		;  
        // table.setHorizontalAlignment(Element.ALIGN_LEFT);  
       //  table.setWidth(500f);  
        // table.setWidthPercent(new float[] { 0.4f, 0.25f, 0.25f, 0.25f, 0.25f });  
@@ -225,18 +235,8 @@ public class PDFPractise {
         table.addCell(cell);  
    
         strTableTitle = "复印件";  
-        tableTitle = new Paragraph(strTableTitle)
-        		.setFont(bfChinese)
-        		.setFontSize(14)
-        		.setBold()
-        		.setTextAlignment(TextAlignment.CENTER)
-        		.setFirstLineIndent(15f)
-        		.setSpacingRatio(15f); 
-        cell = new Cell()
-        		.add(tableTitle)
-        		.setTextAlignment(TextAlignment.CENTER)
-        		.setVerticalAlignment(VerticalAlignment.MIDDLE);
-        table.addCell(cell);  
+        tableTitle = tableTitle(strTableTitle);      
+        table.addCell(addCell(tableTitle));  
 
         String[] arrTitle = { "保险合同", "保险合同收据或发票", "保单贷款申请书", "保全变更申请书", "被保险人变更清单", "健康及财务告知", "授权委托书", "投保人身份证件", "被保险人身份证件", "身故受益人身份证件", "受托人身份证件", "投保人账号", "被保险人/监护人账号 ", "生存证明", "关系证明 ",  
                 "其他受理材料 " };  
@@ -523,4 +523,287 @@ public class PDFPractise {
   
     }  
   */
+    
+
+	/** 
+	 * Table
+	 *  
+	 * @return  Paragraph
+	 */  
+    public Table addTable( UnitValue[] unitValue) {  
+        
+    	Table table = new Table(unitValue)
+        		.setWidthPercent(100)
+        		.setHorizontalAlignment(HorizontalAlignment.LEFT)
+        		;    	
+        return table;   
+    } 
+    
+	/** 
+	 * tableTitle
+	 *  
+	 * @return  Paragraph
+	 */  
+    public Paragraph tableTitleRight(String strTableTitle) {  
+        
+    	Paragraph tableTitle = new Paragraph(strTableTitle)
+       		.setFont(bfChinese)
+       		.setFontSize(8)
+       		//.setBold()
+       		.setTextAlignment(TextAlignment.RIGHT)
+       		//.setFirstLineIndent(15f)
+       		////.setSpacingRatio(15f)
+       		; 
+    	
+        return tableTitle;   
+    } 
+    
+    /** 
+	 * tableTitle
+	 *  
+	 * @return  Paragraph
+	 */  
+    public Paragraph tableTitle(String strTableTitle) {  
+        
+    	Paragraph tableTitle = new Paragraph(strTableTitle)
+       		.setFont(bfChinese)
+       		.setFontSize(8)
+       		//.setBold()
+       		.setTextAlignment(TextAlignment.LEFT)
+       		//.setFirstLineIndent(15f)
+       		////.setSpacingRatio(15f)
+       		; 
+    	
+        return tableTitle;   
+    } 
+    
+	/** 
+	 * Cell
+	 *  
+	 * @return Cell
+	 */ 
+    public Cell addCell(Paragraph tableTitle) {  
+        
+    	Cell cell = new Cell()
+         		.add(tableTitle)
+         		
+         		//.setTextRenderingMode(TextRenderingMode.FILL_STROKE)
+         		.setTextAlignment(TextAlignment.LEFT)
+         		//.setVerticalAlignment(VerticalAlignment.MIDDLE)
+         		//.setBorder(Border.NO_BORDER)
+         		;   
+    	
+        return cell;   
+    }
+    
+    /** 
+	 * Cell
+	 *  
+	 * @return Cell
+     * @throws MalformedURLException 
+	 */ 
+    public Image addLargeImage(String path) throws MalformedURLException {  
+
+    	Image img = new Image(ImageDataFactory.create(path))
+				.scaleToFit(500, 200)
+				.setHorizontalAlignment(HorizontalAlignment.CENTER)
+         		;    	
+        return img;   
+    }
+    
+    /** 
+ 	 * Image
+ 	 *  
+ 	 * @return Image
+      * @throws MalformedURLException 
+ 	 */ 
+     public Image addImage(String path) {
+     	Image img = null;
+		try {
+			img = new Image(ImageDataFactory.create(path))
+					//.setMaxHeight(180)
+					.scaleToFit(250, 180)
+					.setHorizontalAlignment(HorizontalAlignment.CENTER);
+		} catch (Exception e) {
+				e.printStackTrace();
+			try {
+				img = new Image(ImageDataFactory.create(errorImg))
+				.setHorizontalAlignment(HorizontalAlignment.CENTER);
+			} catch (Exception e1) {
+				try {
+					img = new Image(ImageDataFactory.create(errorImg2))
+					.setHorizontalAlignment(HorizontalAlignment.CENTER);
+				} catch (Exception e2) {
+					try {
+						img = new Image(ImageDataFactory.create(errorImg))
+								.setHorizontalAlignment(HorizontalAlignment.CENTER);
+					} catch (Exception e3) {
+						e3.printStackTrace();
+					}
+					e2.printStackTrace();
+				}
+			}
+			//e.printStackTrace();
+		}     	
+         return img;
+     }
+     
+    /** 
+	 * Cell
+	 *  
+	 * @return Cell
+	 */ 
+    public Cell addCell(Image img) {  
+        
+    	Cell cell = new Cell()
+         		.add(img)
+         		.setTextAlignment(TextAlignment.CENTER)
+         		.setHorizontalAlignment(HorizontalAlignment.CENTER)
+         		.setVerticalAlignment(VerticalAlignment.MIDDLE)
+         		//.setWidth(50)
+         		//.setHeight(250)
+         		;   
+    	
+        return cell;   
+    }
+    
+   	/** 
+   	 * Cell
+   	 *  
+   	 * @return Cell
+   	 */ 
+       public Cell addCell(String tableTitle) {  
+           
+       	Cell cell = new Cell()
+            		.add(tableTitle)            		
+            		//.setTextRenderingMode(TextRenderingMode.FILL_STROKE)
+            		.setTextAlignment(TextAlignment.LEFT)
+            		//.setVerticalAlignment(VerticalAlignment.MIDDLE)
+            		//.setBorder(Border.NO_BORDER)
+            		;   
+       	
+           return cell;   
+       }
+    
+   	/** 
+   	 * Cell
+   	 *  
+   	 * @return Cell
+   	 */ 
+       public Cell addCellEven(Paragraph tableTitle) {  
+           
+       	Cell cell = new Cell()
+            		.add(tableTitle)
+            		.setTextAlignment(TextAlignment.LEFT)
+            		//.setVerticalAlignment(VerticalAlignment.MIDDLE)
+            		//.setBorder(Border.SOLID)
+            		.setBackgroundColor(new DeviceRgb(221,234,238))
+            		;   
+       	
+           return cell;   
+       }
+       
+  	/** 
+  	 * Cell
+  	 *  
+  	 * @return Cell
+  	 */ 
+	public Cell addCellForNumber(Paragraph tableTitle) {  
+	      
+	  	Cell cell = new Cell()
+	       		.add(tableTitle)
+	       		.setTextAlignment(TextAlignment.RIGHT)
+	       		//.setVerticalAlignment(VerticalAlignment.MIDDLE)
+	       		//.setBorder(Border.SOLID)
+	       		;   
+	  	
+	  	return cell;   
+	}
+	 
+  	/** 
+  	 * content
+  	 *  
+  	 * @return Paragraph
+  	 */ 
+	public Paragraph addContent(String cont) {  
+		
+		Paragraph content = new Paragraph(cont)
+        		.setFont(bfChinese)
+        		.setFontSize(8)
+        		//.setBold()
+        		.setTextAlignment(TextAlignment.JUSTIFIED)
+        		//.setFirstLineIndent(15f)
+        		//.setSpacingRatio(15f)
+	       		;   
+	  	
+	  	return content;   
+	}
+	
+	/** 
+  	 * content
+  	 *  
+  	 * @return Paragraph
+  	 */ 
+	public Paragraph addTitleForCenter(String cont) {  
+
+        Paragraph title = new Paragraph(cont)
+        		.setFont(bfChinese)
+        		.setBold()
+        		.setFontSize(12)
+        		.setTextAlignment(TextAlignment.CENTER)
+        		; 
+	  	
+	  	return title;   
+	}
+	
+	/** 
+  	 * content
+  	 *  
+  	 * @return Paragraph
+  	 */ 
+	public Paragraph addTitle(String cont) {  
+
+        Paragraph title = new Paragraph(cont)
+        		.setFont(bfChinese)
+        		.setBold()
+        		.setFontSize(8)
+        		.setTextAlignment(TextAlignment.LEFT)
+        		; 
+	  	
+	  	return title;   
+	}
+	
+	public void downloadFile() throws IOException{
+		
+		//设置响应头，控制浏览器下载该文件
+		response.setHeader(
+				"content-disposition",
+				"attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+		//读取要下载的文件，保存到文件输入流
+		FileInputStream in = new FileInputStream(dest);
+		//创建输出流
+		OutputStream out = response.getOutputStream();
+		//创建缓冲区
+		byte buffer[] = new byte[1024];
+		int len = 0;
+		//循环将输入流中的内容读取到缓冲区当中
+		while((len=in.read(buffer))>0){
+			//输出缓冲区的内容到浏览器，实现文件下载
+			out.write(buffer, 0, len);
+		}
+		
+		in.close();//关闭文件输入流		
+		out.close();//关闭输出流
+		
+		//删除临时文件
+		File file = new File(dest);
+		file.delete();
+	}
+	
+	public void downloadFile(String dest,String fileName) throws IOException{
+			
+		this.dest = dest;
+		this.fileName = fileName;
+		downloadFile();
+	}
 }  
