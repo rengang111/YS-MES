@@ -47,7 +47,7 @@ public class BomAction extends BaseAction {
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		bomService = new BomService(model,request,bom,userInfo);
+		bomService = new BomService(model,request,response,session,bom,userInfo);
 		reqModel = bom;
 		this.model = model;
 		
@@ -207,6 +207,9 @@ public class BomAction extends BaseAction {
 			case "updateRebaterate"://更新退税率
 				updateRebaterate();
 				printOutJsonObj(response, dataMap);
+				break;
+			case "downloadExcelForBaseBom":
+				downloadExcelForBaseBom();
 				break;
 				
 		}
@@ -546,5 +549,17 @@ public class BomAction extends BaseAction {
 	  this.model = this.bomService.getOrderInfo();
 	}
 
+	private void downloadExcelForBaseBom() {
+		
+		
+		try {
+			bomService.downloadExcelForBaseBom();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			//System.out.println(e.getMessage());
+		}
+		
+	}
 	
 }

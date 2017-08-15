@@ -165,11 +165,9 @@ public class CalendarUtil {
 	
 
 	/**
-	 * ���ڸ�ʽ��
+	 * 当前时间的日期格式
 	 *
-	 * @param	srcDate		��������
-	 * @param	format		��ʽ
-	 * @return	String		��ʽ���������
+	 * @return	String	yyyyMMddHHmmss
 	 */
 	public static String timeStempDate() {
 		SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmss");

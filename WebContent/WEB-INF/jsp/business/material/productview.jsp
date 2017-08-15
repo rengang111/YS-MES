@@ -97,6 +97,7 @@
 	<dl class="collapse" style="width: 98%;margin-left:10px">
 		<dt style="width: 80%;"><span id="bomId">基础BOM</span></dt>
 		<button type="button" class="DTTT_button" onclick="openPrint();" style="float: right;margin-top: -27px;">打印</button>
+		<button type="button" class="DTTT_button" onclick="downloadExcel();" style="float: right;margin-top: -27px;">Excel下载</button>
 		<button type="button" class="DTTT_button" onclick="doCreateBaseBom();" style="float: right;margin-top: -27px;">编辑</button>
 		<dd>
 		<table id="baseBomTable" class="display" style="width: 98%;">
@@ -692,6 +693,18 @@ function openPrint() {
 	});		
 }
  
+
+function downloadExcel() {
+
+	var materialId='${product.materialId}';
+	var url = '${ctx}/business/bom?methodtype=downloadExcelForBaseBom'
+			 + "&materialId=" + materialId;
+	url =encodeURI(encodeURI(url));//中文两次转码
+	//"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,	
+
+	location.href = url;
+}
+
 </script>
 </body>
 </html>

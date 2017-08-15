@@ -1,19 +1,31 @@
 package com.ys.business.service.order;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
+import com.ys.util.ExcelUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
@@ -58,12 +70,15 @@ public class BomService extends CommonService {
 	private BaseQuery baseQuery;
 	ArrayList<HashMap<String, String>> modelMap = null;	
 	HttpSession session;
+	HttpServletResponse response;
 	public BomService(){
 		
 	}
 
 	public BomService(Model model,
 			HttpServletRequest request,
+			HttpServletResponse response,
+			HttpSession session,
 			BomModel reqModel,
 			UserInfo userInfo){
 		
@@ -74,6 +89,8 @@ public class BomService extends CommonService {
 		this.model = model;
 		this.reqModel = reqModel;
 		this.request = request;
+		this.response = response;
+		this.session = session;
 		this.userInfo = userInfo;
 		dataModel = new BaseModel();
 		userDefinedSearchCase = new HashMap<String, String>();
@@ -366,6 +383,26 @@ public class BomService extends CommonService {
 		}	
 				
 		return HashMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Map<Integer, Object>> baseBomDataFormat() throws Exception {
+
+		List<Map<Integer, Object>> listMap = new ArrayList<Map<Integer, Object>>();
+		ArrayList<HashMap<String, String>>  hashMap = 
+				(ArrayList<HashMap<String, String>>) model.asMap().get("materialDetail");
+	
+		for(int i=0;i<hashMap.size();i++){
+			
+			String[] title = {"rownum","materialId","materialName","unit","supplierId","quantity",""};
+			Map<Integer, Object> excel = new HashMap<Integer, Object>();
+			for(int j=0;j<title.length;j++){
+				excel.put(j,hashMap.get(i).get(title[j]));		
+			}
+			listMap.add(excel);
+		}
+		
+		return listMap;
 	}
 
 	public HashMap<String, Object> getQuotationBomDetail(String bomId) throws Exception {
@@ -1611,4 +1648,63 @@ public class BomService extends CommonService {
 		}
 		
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void downloadExcelForBaseBom() throws Exception{
+		
+		//设置响应头，控制浏览器下载该文件
+				
+		//baseBom数据取得
+		String materialId = request.getParameter("materialId");
+		String bomId = BusinessService.getBaseBomId(materialId)[1];
+		getBaseBomDetail(bomId,false);
+		List<Map<Integer, Object>>  datalist = baseBomDataFormat();
+		
+		HashMap<String, String> map = 
+				(HashMap<String, String>) model.asMap().get("material");
+		String mateiralName = map.get("productName");		
+		String fileName = materialId+"_"+CalendarUtil.timeStempDate()+".xls";
+		String dest = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)
+				+"/"+File.separator+fileName;
+		//Excel做成
+		//String tempFilePath = "e:/Temp/excel/template/demo.xlsx";
+        //File file = new File("e:/Temp/excel/data/"+materialId+"_"+CalendarUtil.timeStempDate()+".xlsx");
+        
+		String tempFilePath = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_EXCELTEMPLATE)+File.separator+"basebom.xls";
+        File file = new File(dest);
+       
+        OutputStream out = new FileOutputStream(file);         
+        ExcelUtil excel = new ExcelUtil(response);
+
+
+        //读取模板
+        Workbook wbModule = excel.getTempWorkbook(tempFilePath);
+        //数据填充的sheet
+        int sheetNo=0;
+       // Sheet wsheet = wbModule.getSheetAt(sheetNo);
+        //title
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        dataMap.put("D1", materialId);
+        dataMap.put("H1", mateiralName);
+        wbModule = excel.writeData(wbModule, dataMap, sheetNo);        
+        
+        //detail
+        //必须为列表头部所有位置集合,输出 数据单元格样式和头部单元格样式保持一致
+        String[] heads = new String[]{"A2","B2","E2","J2","K2","L2","M2"};  
+        excel.writeDateList(wbModule,heads,datalist,sheetNo);
+         
+        //写到输出流并移除资源
+        excel.writeAndClose(tempFilePath, out);
+        System.out.println("导出成功");
+        out.flush();
+        out.close();
+        
+      //***********************Excel下载************************//
+        excel.downloadFile(dest,fileName);
+	}
+	
 }
