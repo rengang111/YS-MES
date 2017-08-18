@@ -533,9 +533,10 @@
     <where>
    		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  	<w name="A.deliveryDate" des=""  reqName="deliveryDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
-   	  	<w name="A.deliveryDate" des=""  reqName="deliveryDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
-   	  	<w name="A.status"       des=""  reqName="status"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.status"       des=""  reqName="status1"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.status"       des=""  reqName="status21"  dtype="ch" oper="="  lg="OR" bt="(" />
+   	  	<w name="A.status"       des=""  reqName="status22"  dtype="ch" oper="="  lg="AND" bt=")" />
+   	  	<w name="A.status"       des=""  reqName="status3"  dtype="ch" oper="="  lg="AND" bt="" />
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />

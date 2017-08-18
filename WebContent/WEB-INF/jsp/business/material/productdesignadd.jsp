@@ -1198,8 +1198,11 @@ $(document).ready(function() {
 	});
 
 	$("#doSave").click(function() {
+		var PIId=$('#PIId').val();
+		var goBackFlag = $('#goBackFlag').val();
 		$('#form').attr("action", 
-				"${ctx}/business/productDesign?methodtype=insert");
+				"${ctx}/business/productDesign?methodtype=insert"+
+				"&PIId=" + PIId+"&goBackFlag="+goBackFlag);
 		$('#form').submit();	
 
 	});

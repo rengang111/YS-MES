@@ -28,19 +28,19 @@
 			//未完成
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&status=010";
+			url += "&status1=010";
 			
 		}else if(type == '1'){
 			//完成
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&status=020";
+			url += "&status21=020&status22=030";
 			
 		}else if(type == '2'){
 			//完美
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&status=030";
+			url += "&status3=030";
 			
 		}
 
