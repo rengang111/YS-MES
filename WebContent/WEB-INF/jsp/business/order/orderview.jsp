@@ -46,7 +46,8 @@
 	        "paging"    : false,
 	        "pageLength": 50,
 	        "ordering"  : false,
-	        "searching"  : false,
+	        "searching" : false,
+			"dom" 		: '<"clear">rt',
 	       	"language": {"url":"${ctx}/plugins/datatables/chinese.json"},
 	       	
 			"columns" : [
@@ -106,6 +107,71 @@
 
 	};
 
+	function ajax2() {
+
+		var t = $('#example2').DataTable({
+			
+			"processing" : false,
+			"retrieve"   : false,
+			"stateSave"  : false,
+			"pagingType" : "full_numbers",
+			//"scrollY"    : "160px",
+	        "scrollCollapse": false,
+	        "paging"    : false,
+	        "pageLength": 50,
+	        "ordering"  : false,
+	        "searching" : false,
+			"dom" 		: '<"clear">rt',
+	       	"language": {"url":"${ctx}/plugins/datatables/chinese.json"},
+	       	
+			"columns" : [
+			             {},
+			             {}, 
+			             {}, 
+			             {"className" : "dt-body-center"}, 
+			             {"className" : 'td-right'}, 
+			             {"className" : 'td-right'}, 
+			             {"className" : 'td-right'},
+			             {"className" : 'td-right'},
+			             {"className" : "dt-body-center"},
+			             {"className" : "dt-body-center"},
+			             {}
+						],
+			
+			"columnDefs":[
+				
+			  { "targets":2,"render":function(data, type, row){
+	    			var name = row[2];	    			
+	    			name = jQuery.fixedWidth(name,35);		    			
+	    			return name;
+	    	  }},
+	    	  { "targets":8,"render":function(data, type, row){
+	    			var PIId = '${order.PIId}';
+	    			var type=row[10];
+	    			var rtn = "<a href=\"#\" onClick=\"doPurchasePlan('"
+	    					+ row[0] + "'," +"'" + row[5] + "'," +"'" + row[8] + "')\">采购合同</a>";
+	    			return rtn;
+	    	  }},
+	    	  {
+					"visible" : false,
+					"targets" : [10,]
+				}
+			  ] 	
+			
+		}).draw();
+						
+		t.on('click', 'tr', function() {
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	            t.$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }			
+		});
+
+	};
+
 	
 	$(document).ready(function() {
 
@@ -115,7 +181,8 @@
 		$("#attribute3").attr('readonly', "true");
 		
 		ajax();
-
+		ajax2();
+		
 		//$('#example').DataTable().columns.adjust().draw();
 		
 		$("#goBack").click(
@@ -168,6 +235,14 @@
 		openLayer(url);
 	}
 	
+	function doPurchasePlan(YSId,quantity, materialId) {
+		//goBackFlag:区别采购入口是物料还是供应商,或者订单详情
+		var goBackFlag = "orderView";
+		var url = '${ctx}/business/contract?methodtype=createRoutineContractInit&goBackFlag='+goBackFlag;
+		url = url +'&materialId='+materialId+'&quantity='+quantity+'&YSId='+YSId;
+		location.href = url;
+		
+	}
 </script>
 
 </head>
@@ -232,9 +307,13 @@
 			
 
 	</fieldset>
-	
-	<fieldset>
-		<legend> 订单详情</legend>
+		
+	<fieldset class="action" style="text-align: right;">
+		<button type="button" id="edit" class="DTTT_button">编辑</button>
+		<button type="button" id="goBack" class="DTTT_button">返回</button>
+	</fieldset>	
+	<fieldset style="margin-top: -20px;">
+		<legend>正常订单详情</legend>
 		<div class="list" style="margin-top: -4px;">
 		
 		<table id="example" class="display" style="width:100%">
@@ -270,6 +349,7 @@
 			</tfoot>
 		<tbody>
 			<c:forEach var='order' items='${detail}' varStatus='status'>	
+			<c:if test="${order.orderType eq '010' }">	
 				<tr>
 					<td>${order.YSId}</td>
 					<td><a href="###" onClick="doShow('${order.materialId}')">${order.materialId}</a></td>								
@@ -283,6 +363,7 @@
 					<td><a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">订单详情</a></td>
 					<td>${order.productClassify}</td>												
 				</tr>
+			</c:if>
 					
 			</c:forEach>
 			
@@ -290,12 +371,64 @@
 	</table>
 	</div>
 	</fieldset>
-	<div style="clear: both"></div>
-	
-	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="edit" class="DTTT_button">编辑</button>
-		<button type="button" id="goBack" class="DTTT_button">返回</button>
-	</fieldset>		
+	<fieldset>
+		<legend> 配件订单详情</legend>
+		<div class="list" style="margin-top: -4px;">
+		
+		<table id="example2" class="display" style="width:100%">
+			<thead>				
+			<tr>
+				<th class="dt-center" width="65px">耀升编号</th>
+				<th class="dt-center" width="120px">产品编号</th>
+				<th class="dt-center" >产品名称</th>
+				<th class="dt-center" width="60px">版本类别</th>
+				<th class="dt-center" width="60px">销售数量</th>
+				<th class="dt-center" width="60px">生产数量</th>
+				<th class="dt-center" width="50px">销售单价</th>
+				<th class="dt-center" width="80px">销售总价</th>
+				<th class="dt-center" width="30px">操作</th>
+				<th class="dt-center" width="30px"></th>
+				<th class="dt-center" width="30px"></th>
+			</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</tfoot>
+		<tbody>
+			<c:forEach var='order' items='${detail}' varStatus='status'>
+			<c:if test="${order.orderType eq '020' }">	
+				<tr>
+					<td>${order.YSId}</td>
+					<td><a href="###" onClick="doShow('${order.materialId}')">${order.materialId}</a></td>								
+					<td>${order.materialName}</td>
+					<td>${order.productClassifyName}</td>
+					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>	
+					<td class="cash" style="padding-right: 20px;">${order.totalQuantity}</td>						
+					<td class="cash" style="padding-right: 20px;">${order.price}</td>
+					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
+					<td>${order.materialId}</td>
+					<td><!-- <a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">订单详情</a> --></td>
+					<td>${order.productClassify}</td>												
+				</tr>
+			</c:if>	
+			</c:forEach>
+			
+		</tbody>
+	</table>
+	</div>
+	</fieldset>
 </form:form>		
 
 </div>

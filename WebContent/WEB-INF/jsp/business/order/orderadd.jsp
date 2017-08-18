@@ -77,7 +77,8 @@
 							'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 								'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 							'<td><span></span></td>',
-							'<td><select  name="orderDetailLines['+rowIndex+'].productclassify"   id="orderDetailLines'+rowIndex+'.productclassify" class="short"></select></td>',
+							'<td><select  name="orderDetailLines['+rowIndex+'].productclassify"   id="orderDetailLines'+rowIndex+'.productclassify" class="short"></select>'+
+							    '<input type="hidden" name="orderDetailLines['+rowIndex+'].ordertype"  id="orderDetailLines'+rowIndex+'.ordertype"  value="010"/></td>',
 							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num mini" /></td>',
 							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"   	 id="orderDetailLines'+rowIndex+'.extraquantity"   class="num mini" />'+
 								'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"        id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
@@ -93,7 +94,8 @@
 				}					
 				counter += 1;				
 
-				$('select').css('width','100px');	
+				$('select').css('width','100px');
+				$('#order\\.ordercompany').css('width','300px');	
 				
 				foucsInit();//设置新增行的基本属性
 				
@@ -122,7 +124,7 @@
 				//销售总价	
 				var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
 				totalPrice = floatToSymbol( saleTotalSum(),currency);			
-				$('#order\\.totalprice').val(floatToCurrency(totalPrice));
+				$('#order\\.totalprice').val(totalPrice);
 			}
 						
 		}
@@ -340,7 +342,7 @@
 		
 		$("#order\\.currency").change(function() {
 
-			$().toastmessage('showWarningToast', "请重新输入销售单价。");	
+			$().toastmessage('showWarningToast', "货币符号发生变化,请重新输入销售单价。");	
 		});
 		
 		$("#order\\.piid").change(function() {
@@ -575,6 +577,7 @@
 				
 				<form:hidden path="orderDetailLines[${i}].parentid" />
 				<form:hidden path="orderDetailLines[${i}].subid" />
+				<form:hidden path="orderDetailLines[${i}].ordertype" value="010"/>
 				
 			</tr>
 				<script type="text/javascript" >
@@ -837,12 +840,13 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 						'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 							'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 						'<td><span></span></td>',
-						'<td><select  name="orderDetailLines['+rowIndex+'].productclassify"   id="orderDetailLines'+rowIndex+'.productclassify" class="short"></select></td>',
+						'<td><select  name="orderDetailLines['+rowIndex+'].productclassify"   id="orderDetailLines'+rowIndex+'.productclassify" class="short"></select>'+
+					        '<input type="hidden" name="orderDetailLines['+rowIndex+'].ordertype"  id="orderDetailLines'+rowIndex+'.ordertype"  value="020"/></td>',
 						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num mini" /></td>',
 						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"   	 id="orderDetailLines'+rowIndex+'.extraquantity"   class="num mini" />'+
 							'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"        id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
 						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"           id="orderDetailLines'+rowIndex+'.price"           class="cash short" /></td>',
-						'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice"  readonly="readonly"/></td>',
+						'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" /></td>',
 						
 						]).draw();
 				
@@ -855,6 +859,7 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 			counter += 1;				
 
 			$('select').css('width','100px');	
+			$('#order\\.ordercompany').css('width','300px');
 			
 			foucsInit();//设置新增行的基本属性
 			
@@ -880,7 +885,7 @@ $.fn.dataTable.TableTools.buttons.reset2 = $.extend(true, {},
 			//销售总价	
 			var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
 			totalPrice = floatToSymbol( saleTotalSum(),currency);			
-			$('#order\\.totalprice').val(floatToCurrency(totalPrice));
+			$('#order\\.totalprice').val(totalPrice);
 		}
 					
 	}

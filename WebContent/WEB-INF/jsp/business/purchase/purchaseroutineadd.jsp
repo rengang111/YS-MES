@@ -1,19 +1,11 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
 <!DOCTYPE HTML>
 <html>
 <head>
 <title>日常采购-新建</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
-
 		
 	$.fn.dataTable.TableTools.buttons.reset = $
 	.extend(
@@ -51,7 +43,7 @@
 			"stateSave"  : true,
 			"pagingType" : "full_numbers",
 	        "paging"    : false,
-	        "pageLength": 50,
+	        "pageLength": 500,
 	        "ordering"  : false,
 	       	"dom"		  : 'T<"clear">rt',
 			"tableTools" : {
@@ -76,27 +68,7 @@
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}			
-				],
-				/*
-			"columnDefs":[
-	    		
-	    		{"targets":2,"render":function(data, type, row){
-	    			
-	    			var name = row["materialName"];
-	    			name = jQuery.fixedWidth(name,30);
-	    			
-	    			return name;
-	    		}},
-	    		{"targets":1,"render":function(data, type, row){
-	    			var rtn = "";
-	    			var rowIndex = row["rownum"];
-	    			var materialId = row["materialId"];
-	    			rtn = '<a href="###" onClick="doShow('+'\''+ materialId +'\''+ ')">'+materialId+'</a>';
-	    			rtn += '<input type="hidden" id="contract'+rowIndex+'.materialid" name="contract['+rowIndex+'].materialid" value="'+materialId+'">';
-	    			return rtn;
-	    		}}
-         	] 
-			*/
+				],				
 			
 		}).draw();
 		
@@ -161,6 +133,10 @@
 	
 	$(document).ready(function() {
 
+		//设置光标项目
+		$(".supplierid").focus();
+		autocomplete();
+		
 		var date = new Date(shortToday());
 		date.setDate(date.getDate()+20);
 		$("#contract\\.deliverydate").val(date.format("yyyy-MM-dd"));
@@ -204,6 +180,10 @@
 						var url = '${ctx}/business/material?methodtype=detailView';
 						url = url + '&parentId=' + parentId+'&recordId='+recordId+'&keyBackup=2';
 						
+					}else if (goBackFlag == "orderView"){
+						//该页面来自于订单
+						var url = "${ctx}/business/order";
+						
 					}else{
 						//该页面来自于供应商
 						var supplierId="${ contract.supplierId }";
@@ -215,14 +195,28 @@
 				});
 		
 		$("#insert").click(
-				function() {			
-			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=createRoutineContract");
+				function() {
+					var YSId= $("#YSId").val();
+			$('#attrForm').attr("action",
+					"${ctx}/business/contract?methodtype=createRoutineContract"+"&YSId="+YSId);
 			$('#attrForm').submit();
 		});
 				
 		//input格式化
 		foucsInit();
 		
+		
+		//采购合同来自于配件订单时,带有采购数量
+		var quantity = currencyToFloat('${quantity}');
+		if(!(quantity == null || quantity == "")){
+
+			var price = currencyToFloat($(".price1").text());
+			var total = floatToCurrency(quantity * price);
+			$(".quantity").val(quantity);
+			$(".total").val(total);
+			$(".total1").html(total);
+		}
+
 		//列合计
 		weightsum();
 
@@ -252,7 +246,7 @@
 		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
 		var url = '${ctx}/business/material?methodtype=detailView';
 		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
-		
+
 		layer.open({
 			offset :[10,''],
 			type : 2,
@@ -272,8 +266,68 @@
 		});		
 
 	};
+	
 </script>
+<script type="text/javascript">
+function autocomplete(){
+	
+$(".supplierid").autocomplete({
+		
+		source : function(request, response) {
+			//alert(888);
+			var materialId = $('.materialid').val();
+			//alert(materialId)
+			$.ajax({
+				type : "POST",
+				url : "${ctx}/business/bom?methodtype=getSupplierPriceList",
+				dataType : "json",
+				data : {
+					key1 : request.term,
+					key2 : materialId,
+				},
+				success : function(data) {
+					//alert(777);
+					response($.map(
+						data.data,
+						function(item) {
+							//alert(item.viewList)
+							return {
+								label : item.viewList,
+								value : item.supplierId,
+								id : item.supplierId,
+								shortName : item.shortName,
+								fullName : item.supplierName,
+							    price : item.price								
+							}
+						}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+					alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
 
+		select : function(event, ui) {	
+			//$("#price\\.supplierid ").val(ui.item.id);
+			$("#shortName").val(ui.item.shortName);
+			$("#shortName1").text(ui.item.shortName);
+			$("#fullName").text(ui.item.fullName);
+			$(".price1").text(ui.item.price);
+			$(".price").val(ui.item.price);
+		},
+
+		minLength : 2,
+		autoFocus : false,
+		width: 500,
+	});	
+		
+}
+</script>
 </head>
 <body>
 <div id="container">
@@ -285,20 +339,21 @@
 			
 		<input type="hidden" id="goBackFlag"  value="${goBackFlag }"/>
 		<form:hidden path="shortName"  value="${ contract.shortName }"/>
+		<input type="hidden" id="YSId"  value="${ YSId }"/>
 		<fieldset>
 			<legend> 供应商</legend>
 			<table class="form" id="table_form">
 				
 				<tr> 		
 					<td class="label" style="width:120px">供应商编号：</td>					
-					<td style="width:200px">&nbsp;${ contract.supplierId }
-						<form:hidden path="contract.supplierid" value="${ contract.supplierId }"/></td>
+					<td style="width:200px">
+						<form:input path="contract.supplierid"  value="${ contract.supplierId }" class="supplierid" /></td>
 									
 					<td class="label" style="width:120px">供应商简称：</td>					
-					<td style="width:200px">&nbsp;${ contract.shortName }</td>
+					<td style="width:200px">&nbsp;<span id="shortName1">${ contract.shortName }</span></td>
 						
 					<td class="label" style="width:120px">供应商名称：</td>
-					<td><div id="fullName">${ contract.supplierName }</div></td>
+					<td><span id="fullName">${ contract.supplierName }</span></td>
 				</tr>	
 				<tr> 
 					<td class="label">下单日期：</td>
@@ -332,17 +387,17 @@
 		<tbody>
 			<c:forEach var="detail" items="${detail}" varStatus='status' >	
 				<tr>
-					<td></td>
+					<td><c:out value="${status.index}"/></td>
 					<td>
 						<a href="###" onClick="doShowMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
-						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
+						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}"  class="materialid"/></td>								
 					<td><span id="name${status.index}">${detail.materialName}</span></td>					
 					<td>${ detail.unit }</td>				
 					<td>${ detail.accountingQuantity }</td>				
 					<td>${ detail.availabelToPromise }</td>
-					<td><form:input path="detailList[${status.index}].quantity" value="" class="num short"/></td>							
-					<td>${detail.price}<form:hidden  path="detailList[${status.index}].price" value="${detail.price}"  class="cash short" /></td>
-					<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice} "/></td>								
+					<td><form:input path="detailList[${status.index}].quantity" value="" class="quantity num short"/></td>							
+					<td><span class="price1">${detail.price}</span><form:hidden  path="detailList[${status.index}].price" value="${detail.price}"  class="price" /></td>
+					<td><span class="total1">${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice}" class="total"/></td>								
 					
 				</tr>
 					

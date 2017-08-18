@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
 import com.ys.system.common.BusinessConstants;
@@ -26,6 +27,7 @@ import java.util.Iterator;
  * @author 
  *
  */
+ 
 public class BaseAction {
 
 	protected static Logger logger = Logger.getLogger(BaseAction.class);
@@ -35,7 +37,9 @@ public class BaseAction {
 	protected final String ERRMSG = "操作失败，请再次尝试或联系管理员";
 	
 	@InitBinder
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) {
+	public void initBinder(WebDataBinder binder) {  
+	    // 重设List的最大长度 (SpringMVC限制了前端数组的最大长度256)
+	    binder.setAutoGrowCollectionLimit(10000);  
 	}
 	
 	protected boolean printOut(HttpServletResponse response, Object data) {

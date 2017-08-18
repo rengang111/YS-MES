@@ -343,8 +343,8 @@ public class PurchaseOrderService extends CommonService {
 	public void getMaterialDetailList(String supplierId,
 			String materialId) throws Exception {
 
-		if(null == supplierId || ("").equals(supplierId))
-			return;
+		//if(null == supplierId || ("").equals(supplierId))
+		//	return;
 	
 		dataModel.setQueryName("getMaterialForPurchase");
 		
@@ -900,20 +900,27 @@ public class PurchaseOrderService extends CommonService {
 		String supplierId = request.getParameter("supplierId");
 		String materialId = request.getParameter("materialId");
 		String goBackFlag = request.getParameter("goBackFlag");
+		String quantity = request.getParameter("quantity");
+		String YSId = request.getParameter("YSId");
 		
 		getMaterialDetailList(supplierId,materialId);
 		
 		model.addAttribute("goBackFlag",goBackFlag);
+		model.addAttribute("quantity",quantity);
+		model.addAttribute("YSId",YSId);
 	}
 	
 
 	public void createRoutineContract() throws Exception {
 		
 		String goBackFlag = request.getParameter("goBackFlag");
+		String YSId = request.getParameter("YSId");
 		String shortName = reqModel.getShortName();
 
 		//常规采购的耀升编号:17YS00
-		String YSId = BusinessService.getRoutinePurchaseYsid();
+		if(YSId == null || ("").equals(YSId)){
+			YSId = BusinessService.getRoutinePurchaseYsid();
+		}
 		
 		B_PurchaseOrderData contract = reqModel.getContract();
 		//创建合同编号

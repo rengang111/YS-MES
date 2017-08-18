@@ -69,6 +69,8 @@
       <f name="A.recordId" alias="" ctype="" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.supplierName" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="A.fullField" alias="" ctype="" />
       <f name="A.viewList" alias="" ctype="" />
