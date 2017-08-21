@@ -553,6 +553,8 @@
 						var productclassify = '${order.productClassify}';
 						var materialName = '${order.materialName}';
 						var index = '${status.index}';
+						var ysid='${order.YSId}';
+						YSSwiftPei = ysid;
 						$('#shortName'+index).html(jQuery.fixedWidth(materialName,35));
 						$("#orderDetailLines"+index+"\\.productclassify").val(productclassify);
 						counter++;
@@ -618,6 +620,7 @@
 						var productclassify = '${order.productClassify}';
 						var materialName = '${order.materialName}';
 						var index = '${status.index}';
+						
 						$('#shortName'+index).html(jQuery.fixedWidth(materialName,35));
 						$("#orderDetailLines"+index+"\\.productclassify").val(productclassify);
 						counter++;
@@ -752,7 +755,7 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 						]).draw();
 				
 				$("#orderDetailLines" + rowIndex + "\\.productclassify").html(options);
-				$("#orderDetailLines" + rowIndex + "\\.productclassify").val('040');
+				$("#orderDetailLines" + rowIndex + "\\.productclassify").val('035');
 				$("#orderDetailLines" + rowIndex + "\\.ysid").val(fmtId);
 				
 				rowIndex ++;						

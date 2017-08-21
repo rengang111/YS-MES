@@ -292,8 +292,8 @@
 								<th style="width: 120px;" class="dt-middle ">产品编号</th>
 								<th class="dt-middle ">产品名称</th>
 								<th style="width: 40px;" class="dt-middle ">数量</th>
-								<th style="width: 50px;" class="dt-middle ">单价</th>
-								<th style="width: 80px;" class="dt-middle ">销售总价</th>
+								<th style="width: 65px;" class="dt-middle ">单价</th>
+								<th style="width: 90px;" class="dt-middle ">销售总价</th>
 								<th style="width: 60px;" class="dt-middle ">业务组</th>
 							</tr>
 						</thead>
