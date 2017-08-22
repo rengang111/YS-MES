@@ -10,6 +10,8 @@ import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.DeviceRgb;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
@@ -74,7 +76,8 @@ public class PdfUnit {
     		this.response = response;
 
 	        //处理中文问题  
-    		bfChinese = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H", false);
+    		bfChinese = PdfFontFactory.createFont("c://windows//fonts//simsun.ttc,1",PdfEncodings.IDENTITY_H, false);//中文设置,解决特殊字符错误，
+    		//bfChinese = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H", false);
     		
     		this.pdfPath = session
     				.getServletContext()
