@@ -408,7 +408,7 @@ public class OrderService extends CommonService  {
 
 		try {
 
-			int YSMaxid = getYSIdByParentId(request);
+			//int YSMaxid = getYSIdByParentId(request);
 			
 			ts.begin();
 					
@@ -429,9 +429,9 @@ public class OrderService extends CommonService  {
 					data.getMaterialid() != null && 
 					data.getMaterialid() != ""){
 
-					insertOrderDetail(data, YSMaxid,piId, userInfo);
+					insertOrderDetail(data,piId, userInfo);
 					
-					YSMaxid++;
+					//YSMaxid++;
 								
 				}	
 			
@@ -482,15 +482,15 @@ public class OrderService extends CommonService  {
 	 */
 	private void insertOrderDetail(
 			B_OrderDetailData newData,
-			int YSMaxid ,
+			//int YSMaxid ,
 			String piId,
 			UserInfo userInfo) throws Exception{
 
 		B_OrderDetailDao dao = new B_OrderDetailDao();
 
-		String parentid = BusinessService.getYSCommCode();
+		//String parentid = BusinessService.getYSCommCode();
 		
-		String ysid = BusinessService.getYSFormatCode(YSMaxid,true);
+		//String ysid = BusinessService.getYSFormatCode(YSMaxid,false);
 			
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"OrderDetailInsert",userInfo);
 
@@ -525,7 +525,7 @@ public class OrderService extends CommonService  {
 			
 			ts.begin();
 			
-			int YSMaxid = getYSIdByParentId(request);
+			//int YSMaxid = getYSIdByParentId(request);
 				
 			B_OrderData reqOrder = (B_OrderData)reqForm.getOrder();
 			
@@ -550,7 +550,7 @@ public class OrderService extends CommonService  {
 				if(mateId != null && mateId.trim() != ""){
 					
 					//更新处理
-					insertOrderDetail(newData, YSMaxid, piId, userInfo);						
+					insertOrderDetail(newData, piId, userInfo);						
 					
 				}
 			}
@@ -763,7 +763,8 @@ public class OrderService extends CommonService  {
 			//耀升编号
 	        String paternId = BusinessService.getYSCommCode();
 	        
-			int YSMaxId = getYSIdByParentId(request);
+			//int YSMaxId = getYSIdByParentId(request);
+			int YSMaxId = getYSIdByParentId();
 
 			reqModel.setYSMaxId(YSMaxId);	
 			reqModel.setYSParentId(paternId);
@@ -899,6 +900,55 @@ public class OrderService extends CommonService  {
 		return code;
 	}
 	
+
+	/*
+	 * 取得耀升编号的流水号
+	 */
+	@SuppressWarnings("unchecked")
+	public int getYSIdByParentId() 
+			throws Exception {
+
+		String parentId = BusinessService.getYSCommCode();
+		int code = 1;
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+				
+		try {
+			String astr_Where = " parentId= '" +parentId +"' order by subId+0";
+			List<B_OrderDetailData> list = dao.Find(astr_Where);
+			
+			if(list == null || ("").equals(list))
+					return code;
+			
+			int max=999;
+			int subid =0;
+			int size = list.size();
+			for(int i=1;i<max;i++){
+				
+				if(i > size){//取得最大的编码值
+					code = i;
+					break;
+				}
+				String s = list.get(i-1).getSubid();
+				try{
+					subid = Integer.parseInt(s);
+				}catch(Exception e){
+					continue;//防止有非数字混入到编码中
+				}
+				if(subid == i){
+					continue;
+				}else{
+					code = i;
+					break;
+				}
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+  
+		return code;
+	}
 	
 	private B_OrderData getOrderByRecordId(String key) throws Exception {
 		B_OrderDao dao = new B_OrderDao();

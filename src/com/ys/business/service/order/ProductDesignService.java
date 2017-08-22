@@ -1350,6 +1350,7 @@ public class ProductDesignService extends CommonService  {
 		String YSId = request.getParameter("YSId");
 		String productId = request.getParameter("productId");
 		String productDetailId = request.getParameter("productDetailId");
+		String productClassify = request.getParameter("productClassify");
 		ArrayList<String> list ;
 		ArrayList<HashMap<String,String>> mapList;		
 		PdfUnit pdf = new PdfUnit(session,response,YSId);  
@@ -1369,29 +1370,32 @@ public class ProductDesignService extends CommonService  {
 			table = createHeadTable(product,pdf);  
 			pdf.doc.add(table); 
 	        
-			//机器配置-标题***************************************************************
-			pdf.doc.add(pdf.addTitle(""));
-			pdf.doc.add(pdf.addTitle("机器配置"));
-			//机器配置-列表
-			unitValue = new UnitValue[]{
-	                    UnitValue.createPercentValue((float) 5),
-	                    UnitValue.createPercentValue((float) 10),
-	                    UnitValue.createPercentValue((float) 13),
-	                    UnitValue.createPercentValue((float) 40),
-	                    UnitValue.createPercentValue((float) 10),
-	                    UnitValue.createPercentValue((float) 7),
-	                    UnitValue.createPercentValue((float) 15)};
-		    table = pdf.addTable(unitValue);
-		    
-			getMachineConfiguration(productDetailId);
-			mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("machineConfigList");
-			String[] arrTitleM =
-				{ "No","名称","ERP编码","产品名称","供应商","采购方","备注"}; 
-			String[] arrContentM =
-				{"rownum","componentName","materialId","materialName","supplierId", "purchaser","remark"}; 
-			table = createTextTable(arrTitleM,arrContentM,mapList,pdf,table);
-			
-			pdf.doc.add(table); 		
+			if(productClassify != null && ("010").equals(productClassify)){//电动工具
+
+				//机器配置-标题***************************************************************
+				pdf.doc.add(pdf.addTitle(""));
+				pdf.doc.add(pdf.addTitle("机器配置"));
+				//机器配置-列表
+				unitValue = new UnitValue[]{
+		                    UnitValue.createPercentValue((float) 5),
+		                    UnitValue.createPercentValue((float) 13),
+		                    UnitValue.createPercentValue((float) 18),
+		                    UnitValue.createPercentValue((float) 37),
+		                    UnitValue.createPercentValue((float) 10),
+		                    UnitValue.createPercentValue((float) 7),
+		                    UnitValue.createPercentValue((float) 10)};
+			    table = pdf.addTable(unitValue);
+			    
+				getMachineConfiguration(productDetailId);
+				mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("machineConfigList");
+				String[] arrTitleM =
+					{ "No","名称","ERP编码","产品名称","供应商","采购方","备注"}; 
+				String[] arrContentM =
+					{"rownum","componentName","materialId","materialName","supplierId", "purchaser","remark"}; 
+				table = createTextTable(arrTitleM,arrContentM,mapList,pdf,table);
+				
+				pdf.doc.add(table); 
+			}		
 			
 			//产品图片***************************************************************
 			//产品图片-标题
@@ -1403,31 +1407,61 @@ public class ProductDesignService extends CommonService  {
 			table = createPhotoTable(list,pdf);
 			pdf.doc.add(table); 
 			
-			//塑料制品***************************************************************
-			//塑料制品-标题
-			pdf.doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));//换页
-			pdf.doc.add(pdf.addTitle(""));
-			pdf.doc.add(pdf.addTitle("塑料制品"));
-			//机器配置-列表
-			unitValue = new UnitValue[]{
+			if(productClassify != null && 
+				(("010").equals(productClassify) || ("020").equals(productClassify))){
+
+				//塑料制品***************************************************************
+				//塑料制品-标题
+				pdf.doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));//换页
+				pdf.doc.add(pdf.addTitle(""));
+				pdf.doc.add(pdf.addTitle("塑料制品"));
+				//塑料制品-列表
+				unitValue = new UnitValue[]{
+		                    UnitValue.createPercentValue((float) 5),
+		                    UnitValue.createPercentValue((float) 15),
+		                    UnitValue.createPercentValue((float) 18),
+		                    UnitValue.createPercentValue((float) 35),
+		                    UnitValue.createPercentValue((float) 7),
+		                    UnitValue.createPercentValue((float) 13),
+		                    UnitValue.createPercentValue((float) 7)};
+			    table = pdf.addTable(unitValue);
+			    
+			    getPlastic(productDetailId);
+				mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("plasticList");
+				String[] arrTitleP =
+					{ "No","名称","ERP编码","产品名称","材质","颜色","备注"}; 
+				String[] arrContentP =
+					{"rownum","componentName","materialId","materialName","materialQuality", "color","remark"}; 
+				table = createTextTable(arrTitleP,arrContentP,mapList,pdf,table);
+				
+				pdf.doc.add(table);
+			}
+			if(productClassify != null && ("010").equals(productClassify)){//电动工具
+
+				//配件清单***************************************************************
+				//配件清单-标题
+				pdf.doc.add(pdf.addTitle(""));
+				pdf.doc.add(pdf.addTitle("配件清单"));
+				//配件清单-列表
+				unitValue = new UnitValue[]{
 	                    UnitValue.createPercentValue((float) 5),
-	                    UnitValue.createPercentValue((float) 10),
-	                    UnitValue.createPercentValue((float) 13),
 	                    UnitValue.createPercentValue((float) 40),
-	                    UnitValue.createPercentValue((float) 10),
 	                    UnitValue.createPercentValue((float) 15),
-	                    UnitValue.createPercentValue((float) 7)};
-		    table = pdf.addTable(unitValue);
-		    
-		    getPlastic(productDetailId);
-			mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("plasticList");
-			String[] arrTitleP =
-				{ "No","名称","ERP编码","产品名称","材质","颜色","备注"}; 
-			String[] arrContentP =
-				{"rownum","componentName","materialId","materialName","materialQuality", "color","remark"}; 
-			table = createTextTable(arrTitleP,arrContentP,mapList,pdf,table);
+	                    UnitValue.createPercentValue((float) 15),
+	                    UnitValue.createPercentValue((float) 15),
+	                    UnitValue.createPercentValue((float) 10)};
+			    table = pdf.addTable(unitValue);
+			    
+			    getAccessory(productDetailId);
+				mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("accessoryList");
+				String[] titleS =
+					{ "No","名称及规格描述","材质","加工方式","表面处理","备注"}; 
+				String[] contentS =
+					{"rownum","componentName","materialQuality","process","specification","remark"};
+				table = createTextTable(titleS,contentS,mapList,pdf,table);	
+				pdf.doc.add(table);
+			}
 			
-			pdf.doc.add(table);
 			//文字印刷***************************************************************
 			//文字印刷-标题
 			pdf.doc.add(pdf.addTitle(""));
@@ -1479,10 +1513,10 @@ public class ProductDesignService extends CommonService  {
 			//标贴-列表
 			unitValue = new UnitValue[]{
 	                    UnitValue.createPercentValue((float) 5),
-	                    UnitValue.createPercentValue((float) 15),
+	                    UnitValue.createPercentValue((float) 20),
 	                    UnitValue.createPercentValue((float) 40),
 	                    UnitValue.createPercentValue((float) 20),
-	                    UnitValue.createPercentValue((float) 20)};
+	                    UnitValue.createPercentValue((float) 15)};
 		    table = pdf.addTable(unitValue);
 		    
 		    getLabel(productDetailId);
@@ -1512,11 +1546,11 @@ public class ProductDesignService extends CommonService  {
 			//包装描述-列表
 			unitValue = new UnitValue[]{
                     UnitValue.createPercentValue((float) 5),
-                    UnitValue.createPercentValue((float) 15),
+                    UnitValue.createPercentValue((float) 20),
                     UnitValue.createPercentValue((float) 30),
                     UnitValue.createPercentValue((float) 10),
-                    UnitValue.createPercentValue((float) 10),
-                    UnitValue.createPercentValue((float) 30)};
+                    UnitValue.createPercentValue((float) 15),
+                    UnitValue.createPercentValue((float) 20)};
 		    table = pdf.addTable(unitValue);
 		    
 		    getPackage(productDetailId);
@@ -1549,7 +1583,6 @@ public class ProductDesignService extends CommonService  {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Table createHeadTable(
 			HashMap<String,String> product,
 			PdfUnit pdf) throws Exception{
@@ -1561,9 +1594,9 @@ public class ProductDesignService extends CommonService  {
                 UnitValue.createPercentValue((float) 12),
                 UnitValue.createPercentValue((float) 15),
                 UnitValue.createPercentValue((float) 12),
-                UnitValue.createPercentValue((float) 15),
+                UnitValue.createPercentValue((float) 19),
                 UnitValue.createPercentValue((float) 12),
-                UnitValue.createPercentValue((float) 34)};
+                UnitValue.createPercentValue((float) 30)};
         Table table = pdf.addTable(unitValue);
         
         String[][] arrTitle = { 

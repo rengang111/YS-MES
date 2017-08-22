@@ -146,7 +146,7 @@
 					<thead>				
 						<tr style="text-align: left;">
 							<th width="1px">No</th>
-							<th style="width:120px">配件名称及规格描述</th>
+							<th style="width:120px">名称及规格描述</th>
 							<th style="width:40px">材质</th>
 							<th style="width:60px">加工方式</th>
 							<th style="width:60px">表面处理</th>
@@ -188,7 +188,7 @@
 		<thead>				
 			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th style="width:60px">配件名称</th>
+				<th style="width:60px">名称</th>
 				<th style="width:40px">材质及要求</th>
 				<th style="width:60px">尺寸</th>
 				<th style="width:60px">备注</th>
@@ -212,7 +212,7 @@
 		<thead>				
 			<tr style="text-align: left;">
 				<th width="1px">No</th>
-				<th style="width:60px">配件名称</th>
+				<th style="width:60px">名称</th>
 				<th style="width:40px">材质</th>
 				<th style="width:60px">尺寸</th>
 				<th style="width:60px">颜色</th>
@@ -280,12 +280,14 @@ $(document).ready(function() {
 		var PIId=$('#PIId').val();
 		var YSId=$('#productDesign\\.ysid').val();
 		var productId=$('#productDesign\\.productid').val();
+		var productClassify='${product.productClassifyId}';
 		var goBackFlag = $('#goBackFlag').val();
 		var productDetailId=$('#productDesign\\.productdetailid').val();
 		var url = '${ctx}/business/productDesign?methodtype=convertToPdf&YSId=' + YSId+
 				"&productDetailId="+productDetailId+
 				"&PIId="+PIId+
 				"&productId="+productId+
+				"&productClassify="+productClassify+
 				"&goBackFlag="+goBackFlag;
 		location.href = url;	 
 	});
