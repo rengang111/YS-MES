@@ -1,11 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <!DOCTYPE HTML>
 <html>
@@ -19,8 +13,7 @@
 	var counter = 0;
 	var YSParentId = "";
 	var YSSwift = "";
-	var YSPeiFlag = "true"
-	var YSSwiftPei = "";
+	var PieYSId = ""
 	var YSSwiftPeiIndex = "0";
 	var totalPrice = "";
 	var shortYear = ""; 
@@ -62,12 +55,9 @@
 					
 					//alert('YSSwift='+YSSwift); 
 					YSSwift = YSSwift+1;
-					var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
+					var fmtId = YSParentId + PrefixInteger(YSSwift,4); 
 					var lineNo =  rowIndex+1;
 					var hidden = "";
-					
-					hidden = '';
-					
 					var rowNode = $('#example')
 						.DataTable()
 						.row
@@ -584,14 +574,9 @@
 					counter++;
 					var index = '${i}';
 					YSSwift = parseInt(YSSwift)+ 1;
-					var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
+					var fmtId = YSParentId + PrefixInteger(YSSwift,4); 
 					$("#orderDetailLines" + index + "\\.ysid").val(fmtId);		
 
-					if(YSPeiFlag == "true"){
-
-						YSSwiftPei = fmtId;
-						YSPeiFlag = "false";
-					}
 				</script>
 		</c:forEach>
 		
@@ -812,14 +797,15 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 			var hidden = '';
 			var fmtId = "";
 			
-			YSSwiftPeiIndex++;
-			YSSwiftPeiIndex = PrefixInteger(YSSwiftPeiIndex,2)
+			//YSSwiftPeiIndex = PrefixInteger(YSSwiftPeiIndex,2)
 			
-			if(YSSwiftPei ==""){
-				fmtId = YSParentId + PrefixInteger(YSSwift,3);
-				YSSwiftPei = YSParentId + PrefixInteger(YSSwift,3);
+			if(PieYSId ==""){
+				YSSwift = YSSwift+1;
+				PieYSId = fmtId  = YSParentId + PrefixInteger(YSSwift,4);
 			}else{
-				fmtId = YSSwiftPei;
+
+				YSSwiftPeiIndex++;
+				fmtId = PieYSId+"-"+YSSwiftPeiIndex;
 			}
 			for (var i=0;i<1;i++){
 				
