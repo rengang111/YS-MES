@@ -919,10 +919,10 @@ public class OrderService extends CommonService  {
 			if(list == null || ("").equals(list))
 					return code;
 			
-			int max=999;
+			int max=9999;
 			int subid =0;
 			int size = list.size();
-			for(int i=1;i<max;i++){
+			for(int i=800;i<max;i++){
 				
 				if(i > size){//取得最大的编码值
 					code = i;
