@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.common.BusinessConstants;
 import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
@@ -919,10 +920,10 @@ public class OrderService extends CommonService  {
 			if(list == null || ("").equals(list))
 					return code;
 			
-			int max=9999;
+			int max=BusinessConstants.ORDERNO_MAX;
 			int subid =0;
 			int size = list.size();
-			for(int i=800;i<max;i++){
+			for(int i=BusinessConstants.ORDERBNO_START;i<max;i++){
 				
 				if(i > size){//取得最大的编码值
 					code = i;

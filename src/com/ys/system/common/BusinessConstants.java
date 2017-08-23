@@ -47,6 +47,8 @@ public class BusinessConstants {
 	public static final String CUSTOMER_MUN = "000";
 	public static final String BASEBOM_BM = "BM";
 	public static final String ORDERBOM_BD = "BD";
+	public static final int ORDERNO_MAX = 9999;
+	public static final int ORDERBNO_START = 800;
 	
 	public static final String FILESYSTEMBROWSERBASEFOLDER = "CKFinderBaseFolder-";
 	public static final String FILESYSTEMBROWSERUSERFOLDER = "CKFinderUserFolder-";
