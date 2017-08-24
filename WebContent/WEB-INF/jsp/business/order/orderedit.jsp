@@ -58,7 +58,7 @@
 						var lineNo =  rowIndex+1;
 						var hidden = "";
 						
-						hidden = '';
+						ysidCheck(fmtId);//耀升编号重复check
 						
 						var rowNode = $('#example')
 							.DataTable()
@@ -340,35 +340,10 @@
 		$(document).on("change", ".ysidCheck", function(){
 
 			var YSId = $(this).val().toUpperCase();
-			//alert(YSId)
-			var url = "${ctx}/business/order?methodtype=ysidExistCheck&YSId="+YSId
-												
-			if (YSId != ""){ 
-				$.ajax({
-					type : "post",
-					url : url,
-					async : false,
-					data : 'key=' + YSId,
-					dataType : "json",
-					success : function(data) {
+			return ysidCheck(YSId);
+			
+		});	//耀升编号重复check
 		
-						ExFlagYS = data["ExFlag"];
-						if(ExFlagYS == '1'){
-							$().toastmessage('showWarningToast', "耀升编号［ "+YSId+" ］已存在,请重新输入。");				
-						}
-
-					},
-					error : function(
-							XMLHttpRequest,
-							textStatus,
-							errorThrown) {
-						
-						//alert("supplierId2222:"+textStatus);
-					}
-				});
-			}else{
-			}
-		});	//ysidcheck()
 		
 		$('#order\\.currency').val('${order.currencyId }');
 		$('#order\\.shippingcase').val('${order.shippingCaseId }');
@@ -926,6 +901,38 @@ function saleTotalSum(){
 	var product2 = productCostSum2();//配件订单销售额
 	
 	return product+ product2;
+	
+}
+
+function ysidCheck(YSId){
+	
+	var url = "${ctx}/business/order?methodtype=ysidExistCheck&YSId="+YSId
+	
+	if (YSId != ""){ 
+		$.ajax({
+			type : "post",
+			url : url,
+			async : false,
+			data : 'key=' + YSId,
+			dataType : "json",
+			success : function(data) {
+
+				ExFlagYS = data["ExFlag"];
+				if(ExFlagYS == '1'){
+					$().toastmessage('showWarningToast', "耀升编号［ "+YSId+" ］已存在,请重新输入。");				
+				}
+
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+				
+				//alert("supplierId2222:"+textStatus);
+			}
+		});
+	}else{
+	}
 	
 }
 </script>	

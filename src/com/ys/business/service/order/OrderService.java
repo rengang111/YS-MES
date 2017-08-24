@@ -923,24 +923,50 @@ public class OrderService extends CommonService  {
 			int max=BusinessConstants.ORDERNO_MAX;
 			int subid =0;
 			int size = list.size();
-			for(int i=BusinessConstants.ORDERBNO_START;i<max;i++){
+			for(int i=0;i<max;i++){
 				
-				if(i > size){//取得最大的编码值
+				String s="";
+				try{
+					s = list.get(i).getSubid();
+				}catch(Exception e){
 					code = i;
 					break;
 				}
-				String s = list.get(i-1).getSubid();
+				
 				try{
 					subid = Integer.parseInt(s);
 				}catch(Exception e){
 					continue;//防止有非数字混入到编码中
 				}
-				if(subid == i){
-					continue;
+				
+				if(subid > BusinessConstants.ORDERBNO_START){
+					
+					if(i<size-1){
+						
+						String s2 = list.get(i+1).getSubid();
+						int subid2=0;
+						try{
+							subid2 = Integer.parseInt(s2);
+						}catch(Exception e){
+							continue;//防止有非数字混入到编码中									
+						}
+						if(subid+1 >= subid2){
+							continue;
+						}else{
+							code = subid;
+							break;
+						}
+						
+					}else{
+						code = subid;
+						break;
+						
+					}//i<size-1					
+					
 				}else{
-					code = i;
-					break;
+					continue;
 				}
+					
 			}
 		}
 		catch(Exception e) {
