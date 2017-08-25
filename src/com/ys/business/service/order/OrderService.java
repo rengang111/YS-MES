@@ -499,7 +499,12 @@ public class OrderService extends CommonService  {
 		guid = BaseDAO.getGuId();
 		newData.setRecordid(guid);
 		newData.setParentid(newData.getYsid().substring(0, 4));//临时设置
-		newData.setSubid(newData.getYsid().substring(4));//临时设置
+		String subid = newData.getYsid().substring(4);
+		String split[] = subid.split("-");
+		if(split != null && split.length >1){
+			subid = split[0];
+		}
+		newData.setSubid(subid);//临时设置
 		//newData.setParentid(parentid);
 		//newData.setSubid(String.valueOf(YSMaxid+1));
 		newData.setPiid(piId);
