@@ -124,6 +124,8 @@
       <f name="A.productClassify" alias="" ctype="" />
       <f name="A.status" alias="" ctype="" />
       <f name="A.orderType" alias="" ctype="" />
+      <f name="A.materialParentId" alias="" ctype="" />
+      <f name="A.materialRecordId" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
