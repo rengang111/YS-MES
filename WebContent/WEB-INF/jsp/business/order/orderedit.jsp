@@ -19,6 +19,8 @@
 	var shortYear = ""; 
 	var matMsg= "请选择产品!";
 	var ExFlagYS = '';//ys编号重复check
+	var ysidList = new Array();
+	var ysidPeiList = new Array();
 
 	YSSwift = '${orderForm.YSMaxId}';
 	YSParentId = '${orderForm.YSParentId}';
@@ -48,15 +50,36 @@
 			{
 				"fnClick" : function(button) {
 					
-					var rowIndex = counter;
-					var hidden = '';
-					
+					var rowIndex = counter;					
 					for (var i=0;i<1;i++){
 						
-						YSSwift = Number(YSSwift)+1;
-						var fmtId = YSParentId + PrefixInteger(YSSwift,4); 
+						var fmtId = "";
+						var deleteFlag = false;
+						
 						var lineNo =  rowIndex+1;
 						var hidden = "";
+
+						//优先考虑前端删掉的编号
+						for(var i=0;i<ysidList.length;i++){
+							var tmp = ysidList[i][1];
+							if(tmp == "1"){
+								fmtId = ysidList[i][0];
+								ysidList[i][1]="0";
+								deleteFlag = true;
+								break;
+							}
+						}
+						//alert("YSSwift:"+YSSwift)
+						if(deleteFlag == false){
+							
+							YSSwift = parseInt(YSSwift)+1;						
+							fmtId = YSParentId + PrefixInteger(YSSwift,4); 							
+							var i = ysidList.length;	
+							ysidList[i]=new Array()
+							ysidList[i][0]=fmtId;
+							ysidList[i][1]="0";						
+						}
+						
 						
 						ysidCheck(fmtId);//耀升编号重复check
 						
@@ -106,8 +129,23 @@
 				$().toastmessage('showWarningToast', "请选择要删除的数据。");	
 			}else{
 				
-				//var amount = $('#example tbody tr').eq(rowIndex).find("td").eq(6).find("input").val();
-				//alert('['+amount+']:amount '+'---- totalPrice:'+totalPrice)
+				var ysid = $('#example tbody tr').eq(rowIndex).find("td").eq(0).find("input").val();
+				var flg = true;
+				for(var i=0;i<ysidList.length;i++){
+					var tmp = ysidList[i][0];
+					//alert("tmp:"+tmp)
+					if(ysid == tmp){
+						ysidList[i][1] = "1";//删除的耀升编号标识出来
+						flg = false;
+						break;
+					}
+				}
+				if(flg == true){//存储新的编号
+					var i = ysidList.length;
+					ysidList[i] = new Array();
+					ysidList[i][0] = ysid;
+					ysidList[i][1] = "1";
+				}
 				
 				$().toastmessage('showWarningToast', "删除后,[ PI编号 ]可能会发生变化。");	
 				t.row('.selected').remove().draw();
@@ -524,6 +562,7 @@
 						var ysid='${order.YSId}';
 						$('#shortName'+index).html(jQuery.fixedWidth(materialName,35));
 						$("#orderDetailLines"+index+"\\.productclassify").val(productclassify);
+						
 						counter++;
 					</script>
 			</c:if>
@@ -590,6 +629,15 @@
 						
 						$('#shortName'+index).html(jQuery.fixedWidth(materialName,35));
 						$("#orderDetailLines"+index+"\\.productclassify").val(productclassify);
+
+						var ysid = '${order.YSId}';
+						ysidPeiList[index] = new Array();
+						ysidPeiList[0] = ysid;
+						ysidPeiList[1] = ysid.split("-")[0];
+						ysidPeiList[2] = "0";
+						PieYSId = ysid.split("-")[0]
+						YSSwiftPeiIndex++;
+						
 						counter++;
 					</script>	
 			</c:if>
@@ -681,16 +729,63 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 			
 			var rowIndex = counter;
 			var hidden = '';
-			var fmtId = "";
+			var fmtId = "";	
+			var deleteFlag = false;		
+			//YSSwiftPeiIndex = PrefixInteger(YSSwiftPeiIndex,2)
 			
-			if(PieYSId ==""){
-				YSSwift = YSSwift+1;
-				PieYSId = fmtId  = YSParentId + PrefixInteger(YSSwift,4);
-			}else{
+			//优先考虑正常订单删掉的编号
+			var deleteFlag2 = false;
+			if(PieYSId == ""){
+				for(var i=0;i<ysidList.length;i++){
+					var tmp = ysidList[i][1];
+					if(tmp == "1"){
+						PieYSId = ysidList[i][0];
+						ysidList[i][1]="0";
+						deleteFlag2 = true;
+						break;
+					}
+				}				
+			}
+			//alert("deleteFlag2:"+deleteFlag2+"--PieYSId:"+PieYSId)
+			//找出前端删掉的编号
+			if(deleteFlag2 == false){
 
+				for(var i=0;i<ysidPeiList.length;i++){
+					var tmp = ysidPeiList[i][2];
+					if(tmp == "1"){
+						fmtId = ysidPeiList[i][0];
+						ysidPeiList[i][2]="0";
+						deleteFlag = true;
+						break;
+					}
+				}			
+
+				if(deleteFlag == false){
+	
+					YSSwiftPeiIndex++;
+					if(PieYSId ==""){
+						YSSwift = YSSwift+1;
+						PieYSId = YSParentId + PrefixInteger(YSSwift,4);
+					}
+					fmtId = PieYSId+"-"+YSSwiftPeiIndex;
+					var index = ysidPeiList.length;
+					ysidPeiList[index] = new Array();
+					ysidPeiList[index][0] = fmtId;
+					ysidPeiList[index][1] = PieYSId;
+					ysidPeiList[index][2] = "0";
+					
+				}
+			}else{
 				YSSwiftPeiIndex++;
 				fmtId = PieYSId+"-"+YSSwiftPeiIndex;
+				
+				var index = ysidPeiList.length;
+				ysidPeiList[index] = new Array();
+				ysidPeiList[index][0] = fmtId;
+				ysidPeiList[index][1] = PieYSId;
+				ysidPeiList[index][2] = "0";
 			}
+			
 			for (var i=0;i<1;i++){
 				
 				//alert('YSSwift='+YSSwift); 
@@ -748,6 +843,49 @@ $.fn.dataTable.TableTools.buttons.reset2 = $.extend(true, {},
 		if(typeof rowIndex == "undefined"){				
 			$().toastmessage('showWarningToast', "请选择要删除的数据。");	
 		}else{
+
+			var ysid = $('#example2 tbody tr').eq(rowIndex).find("td").eq(0).find("input").val();
+	
+			var flg = true;
+			for(var i=0;i<ysidPeiList.length;i++){
+				var tmp = ysidPeiList[i][0];
+				//alert("length:"+ysidPeiList.length+"--list:"+tmp+"--ysid:"+ysid)
+				if(ysid == tmp){
+					ysidPeiList[i][2] = "1";//删除的耀升编号标识出来
+					flg=false;
+					break;
+				}
+			}
+			//alert(flg+"ysidPeiList.length:"+ysidPeiList)
+			if(flg == true){//存储新的编号
+				var i = ysidPeiList.length;
+				ysidPeiList[i] = new Array();
+				ysidPeiList[i][0] = ysid;
+				ysidPeiList[i][1] = ysid.split("-")[0];
+				ysidPeiList[i][2] = "1";
+			}			
+			
+			var ysidCount = true;
+			for(var i=0;i<ysidPeiList.length;i++){//确认是否已经全部删除
+				var tmp = ysidPeiList[i][2];
+				//alert("tmp:"+tmp+"--ysid:"+ysid)
+				if(tmp == "0"){
+					ysidCount = false;
+					break;
+				}
+			}
+			
+			if(ysidCount == true){//如全部删除,回收该编号
+				//alert("ysidCount:"+ysidCount)
+				PieYSId = "";//清空预留的耀升编号
+				YSSwiftPeiIndex = 0;//清空
+				ysidPeiList = new Array();//清空
+				
+				var i = ysidList.length;
+				ysidList[i] = new Array();
+				ysidList[i][0] = ysid.split("-")[0];
+				ysidList[i][1] = "1";
+			}
 			
 			$().toastmessage('showWarningToast', "删除后,[ 耀升编号 ]可能会发生变化。");	
 			t.row('.selected').remove().draw();

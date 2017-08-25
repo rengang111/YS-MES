@@ -243,6 +243,32 @@
 		location.href = url;
 		
 	}
+	
+	function doEditMaterial(recordid,parentid) {
+		//var height = setScrollTop();
+		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
+		var url = '${ctx}/business/material?methodtype=detailView';
+		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
+		
+		layer.open({
+			offset :[30,''],
+			type : 2,
+			title : false,
+			area : [ '1000px', '500px' ], 
+			scrollbar : false,
+			title : false,
+			content : url,
+			//只有当点击confirm框的确定时，该层才会关闭
+			cancel: function(index){ 
+			 // if(confirm('确定要关闭么')){
+			    layer.close(index)
+			 // }
+			  //$('#baseBomTable').DataTable().ajax.reload(null,false);
+			  return false; 
+			}    
+		});		
+
+	};
 </script>
 
 </head>
@@ -411,7 +437,7 @@
 			<c:if test="${order.orderType eq '020' }">	
 				<tr>
 					<td>${order.YSId}</td>
-					<td><a href="###" onClick="doShow('${order.materialId}')">${order.materialId}</a></td>								
+					<td><a href="###" onClick="doEditMaterial('${order.materialRecordId}','${order.materialParentId}')">${order.materialId}</a></td>								
 					<td>${order.materialName}</td>
 					<td>${order.productClassifyName}</td>
 					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>	
