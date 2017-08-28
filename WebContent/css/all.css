@@ -30,6 +30,7 @@ td.bold {
 td.td-right {
 	text-align: right !important;
 	padding-right: 20px !important;
+    white-space:nowrap;/* 不换行 */
 }
 
 body{

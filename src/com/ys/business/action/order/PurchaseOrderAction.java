@@ -132,6 +132,15 @@ public class PurchaseOrderAction extends BaseAction {
 				createRoutineContract();
 				rtnUrl = "/business/purchase/purchaseorderview";
 				break;		
+			case "createAcssoryContractInit"://配件订单直接下采购合同
+				createAcssoryContractInit();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/purchase/purchaseraccessoryadd";
+				break;	
+			case "createAcssoryContract":
+				createAcssoryContract();
+				rtnUrl = "/business/purchase/purchaseorderview";
+				break;			
 		}
 		
 		return rtnUrl;		
@@ -266,6 +275,18 @@ public class PurchaseOrderAction extends BaseAction {
 		
 		service.createRoutineContract();			
 		
-	}	
+	}
+	
+	public void  createAcssoryContractInit() throws Exception
+	{
+		service.createAcssoryContractInit();
+	 
+	}
+	public void  createAcssoryContract() throws Exception
+	{
+		service.createAcssoryContractAndView();
+	 
+	}
+	
 
 }

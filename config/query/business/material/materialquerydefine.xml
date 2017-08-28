@@ -555,7 +555,7 @@
       <f name="A.fullField" alias="" ctype="" />
     </select>
     <from>v_getProductDesignList a  WHERE a.deleteFlag = '0' </from>
-    <orderby>A.YSId DESC,a.materialId</orderby>
+    <orderby>A.parentId DESC,LPAD(a.subId,10,0)+0 DESC</orderby>
     <groupby></groupby>
     <having></having>
 	<power>

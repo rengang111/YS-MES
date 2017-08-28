@@ -68,9 +68,19 @@
 	
 	$(document).ready(function() {
 
+		var YSId = '${ contract.YSId }';
 		var productid = '${ contract.productId }';
+		if(YSId == null || YSId == ""){
+			$('#ysid00').attr("style","display:none");
+						
+		}else{
+			if(productid == null || productid == ""){
+				$('#ysidLink').contents().unwrap();			
+			}
+		}
+		
 		if(productid == null || productid == ""){
-			$('#ysid00').attr("style","display:none");			
+			$('#product00').attr("style","display:none");			
 		}
 		
 		ajaxRawGroup();			
@@ -148,16 +158,20 @@
 			
 				<tr id="ysid00"> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="150px">
-						<a href="#" onClick="doShowYS('${contract.YSId}')">${contract.YSId }</a>
+					<td colspan="7">
+						<a href="#" id="ysidLink" onClick="doShowYS('${contract.YSId}')">${contract.YSId }</a>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
+					
+				</tr>
+				
+				<tr id="product00"> 		
 									
 					<td class="label" width="100px">产品编号：</td>					
 					<td width="150px">
 						<a href="#" onClick="doEditMaterial('${contract.productRecordId}','${contract.productParentId}')">${ contract.productId }</a></td>
 						
 					<td class="label" width="100px">产品名称：</td>
-					<td colspan="3">${ contract.productName } </td>
+					<td colspan="5">${ contract.productName } </td>
 				</tr>
 				<tr> 		
 					<td class="label" width="100px"><label>供应商编号：</label></td>					

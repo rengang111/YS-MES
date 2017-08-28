@@ -18,6 +18,7 @@ public class PurchaseOrderModel extends BaseModel {
 	private ArrayList<ListOption> supplierList = new ArrayList<ListOption>();
 	private List<B_PurchaseOrderDetailData> detailList;
 	private B_PurchaseOrderData contract;
+	private List<B_PurchaseOrderData> contractList;
 	
 	public ArrayList<ListOption> getSupplierList() {
 		return this.supplierList;
@@ -56,6 +57,12 @@ public class PurchaseOrderModel extends BaseModel {
 		this.contract = contract;
 	}
 
+	public List<B_PurchaseOrderData> getContractList() {
+		return contractList;
+	}
+	public void setContractList(List<B_PurchaseOrderData> contractList) {
+		this.contractList = contractList;
+	}
 	
 	
 }

@@ -1344,19 +1344,140 @@ public class ProductDesignService extends CommonService  {
 		
 		return jsonObj;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	public void convertAndDownloadToPdf(){
+	public void accessoryConvertAndDownloadToPdf(){
 		String YSId = request.getParameter("YSId");
 		String productId = request.getParameter("productId");
 		String productDetailId = request.getParameter("productDetailId");
-		String productClassify = request.getParameter("productClassify");
+		String productClassify = request.getParameter("productClassify1");
 		ArrayList<String> list ;
 		ArrayList<HashMap<String,String>> mapList;		
 		PdfUnit pdf = new PdfUnit(session,response,YSId);  
 		Table table;
 		Cell cell;
 		UnitValue unitValue[];
+		
+		productClassify = productClassify == null?"":productClassify;
+		
+	    try {
+			
+	    	//主题	 
+			pdf.doc.add(pdf.addTitleForCenter("配件做单资料"));
+			//标题
+			pdf.doc.add(pdf.addTitle("订单信息"));
+			//做单资料基本信息
+			getProductDesignById(YSId);			
+			HashMap<String,String> product = 
+					(HashMap<String, String>) model.asMap().get("product");
+			table = createHeadTable(product,pdf);  
+			pdf.doc.add(table); 
+				
+			//产品图片***************************************************************
+			//产品图片-标题
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("产品图片"));
+			//产品图片-图片列表
+			getPhoto(YSId,productId,"product","productFileList","productFileCount");
+			list = (ArrayList<String>) modelMap.get("productFileList");			
+			table = createPhotoTable(list,pdf);
+			pdf.doc.add(table); 
+			
+			//产品收纳***************************************************************
+			//产品收纳-标题
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("产品收纳-描述信息"));
+			unitValue = new UnitValue[]{
+                    UnitValue.createPercentValue((float) 100)};
+			table = pdf.addTable(unitValue).setMinHeight(50);			
+			cell = pdf.addCell(pdf.addContent(
+							product.get("storageDescription").replace("<br>", "\n")));
+			table.addCell(cell);
+			pdf.doc.add(table);
+			
+			//标贴***************************************************************
+			//标贴-标题
+			pdf.doc.add(new AreaBreak(AreaBreakType.NEXT_PAGE));//换页
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("标贴-描述信息"));
+			//标贴-列表
+			unitValue = new UnitValue[]{
+	                    UnitValue.createPercentValue((float) 5),
+	                    UnitValue.createPercentValue((float) 20),
+	                    UnitValue.createPercentValue((float) 40),
+	                    UnitValue.createPercentValue((float) 20),
+	                    UnitValue.createPercentValue((float) 15)};
+		    table = pdf.addTable(unitValue);
+		    
+		    getLabel(productDetailId);
+			mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("labelList");
+			String[] arrTitleL =
+				{ "No","名称","材质及要求","尺寸","备注"}; 
+			String[] arrContentL =
+				{"rownum","componentName","materialQuality","size","remark"};
+			table = createTextTable(arrTitleL,arrContentL,mapList,pdf,table);	
+			pdf.doc.add(table); //标贴
+			
+			//标贴***************************************************************
+			//标贴图片-标题
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("标贴-图片"));
+			//标贴图片-列表
+			getPhoto(YSId,productId,"label","labelFileList","labelFileCount");
+			list = (ArrayList<String>) modelMap.get("labelFileList");
+			table = createLabelPhotoTable(list,pdf);
+			pdf.doc.add(table);
+			
+			//包装描述***************************************************************
+			//包装描述-标题
+			pdf.doc.add(pdf.addTitle(""));
+			pdf.doc.add(pdf.addTitle("包装描述"));
+			//包装描述-列表
+			unitValue = new UnitValue[]{
+                    UnitValue.createPercentValue((float) 5),
+                    UnitValue.createPercentValue((float) 20),
+                    UnitValue.createPercentValue((float) 30),
+                    UnitValue.createPercentValue((float) 10),
+                    UnitValue.createPercentValue((float) 15),
+                    UnitValue.createPercentValue((float) 20)};
+		    table = pdf.addTable(unitValue);
+		    
+		    getPackage(productDetailId);
+			mapList = (ArrayList<HashMap<String, String>>) model.asMap().get("packageList");
+			String[] titleP =
+				{ "No","名称","材质","装箱数量","尺寸","备注"}; 
+			String[] contentP =
+				{"rownum","componentName","materialQuality","packingQty","size","remark"};
+			table = createTextTable(titleP,contentP,mapList,pdf,table);	
+			pdf.doc.add(table); 
+
+        	pdf.doc.close();  
+        	
+        	//***********************PDF下载************************//
+        	pdf.downloadFile();
+        	
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  finally {
+        	if (pdf.doc !=null) pdf.doc.close();  
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void convertAndDownloadToPdf(){
+		String YSId = request.getParameter("YSId");
+		String productId = request.getParameter("productId");
+		String productDetailId = request.getParameter("productDetailId");
+		String productClassify = request.getParameter("productClassify1");
+		ArrayList<String> list ;
+		ArrayList<HashMap<String,String>> mapList;		
+		PdfUnit pdf = new PdfUnit(session,response,YSId);  
+		Table table;
+		Cell cell;
+		UnitValue unitValue[];
+		
+		productClassify = productClassify == null?"":productClassify;
+		
 	    try {
 			
 	    	//主题	 
@@ -1370,7 +1491,7 @@ public class ProductDesignService extends CommonService  {
 			table = createHeadTable(product,pdf);  
 			pdf.doc.add(table); 
 	        
-			if(productClassify != null && ("010").equals(productClassify)){//电动工具
+			if(("010").equals(productClassify)){//电动工具
 
 				//机器配置-标题***************************************************************
 				pdf.doc.add(pdf.addTitle(""));
@@ -1407,8 +1528,7 @@ public class ProductDesignService extends CommonService  {
 			table = createPhotoTable(list,pdf);
 			pdf.doc.add(table); 
 			
-			if(productClassify != null && 
-				(("010").equals(productClassify) || ("020").equals(productClassify))){
+			if(("010").equals(productClassify) || ("020").equals(productClassify)){
 
 				//塑料制品***************************************************************
 				//塑料制品-标题
@@ -1436,7 +1556,7 @@ public class ProductDesignService extends CommonService  {
 				
 				pdf.doc.add(table);
 			}
-			if(productClassify != null && ("010").equals(productClassify)){//电动工具
+			if(("010").equals(productClassify)){//电动工具
 
 				//配件清单***************************************************************
 				//配件清单-标题
@@ -1589,7 +1709,7 @@ public class ProductDesignService extends CommonService  {
 		
 
 		int tCol = 6; 
-		int tRow = 4;
+		int tRow = 3;
         UnitValue[] unitValue = new UnitValue[]{
                 UnitValue.createPercentValue((float) 12),
                 UnitValue.createPercentValue((float) 15),
@@ -1602,13 +1722,11 @@ public class ProductDesignService extends CommonService  {
         String[][] arrTitle = { 
         		{"耀升编号","","产品编号","", "产品名称",""},
         		{"交货时间","", "交货数量","", "封样数量",""}, 
-        		{"电池包数量","", "充电器","", "版本类别",""},
-        		{"包装描述","", "资料完成状况","", "",""}}; 
+        		{"包装描述","", "资料完成状况","", "版本类别",""}}; 
         String[][] arrContent = { 
         		{"","YSId","","productId","", "materialName"},
         		{"","deliveryDate","", "quantity","", "sealedSample"}, 
-        		{"","batteryPack","", "chargerType","", "productClassify"},
-        		{"","packageDescription", "","status", "",""}}; 
+        		{"","packageDescription", "","status", "","productClassify"}}; 
 		Cell cell = new Cell(); 
         String strTableTitle="";
         Paragraph tableTitle;

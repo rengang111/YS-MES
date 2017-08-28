@@ -27,6 +27,7 @@ import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
+import com.ys.business.db.data.B_SupplierData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.order.CommonService;
@@ -313,7 +314,6 @@ public class PurchaseOrderService extends CommonService {
 		}		
 		
 	}
-	
 
 	/**
 	 * 取得合同详情
@@ -375,7 +375,7 @@ public class PurchaseOrderService extends CommonService {
 			ts.begin();
 
 			String materialId = request.getParameter("materialId");
-			System.out.println("end purchaseOrderCreate:"+YSId+"时间:"+CalendarUtil.getSystemDate());
+			//System.out.println("end purchaseOrderCreate:"+YSId+"时间:"+CalendarUtil.getSystemDate());
 
 			//以采购方案里的供应商为单位集计
 			ArrayList<HashMap<String, String>> supplierList = getSupplierList(YSId);
@@ -430,7 +430,7 @@ public class PurchaseOrderService extends CommonService {
 			}
 			
 			ts.commit();
-			System.out.println("end purchaseOrderCreate:"+YSId+"时间:"+CalendarUtil.getSystemDate());
+			//System.out.println("end purchaseOrderCreate:"+YSId+"时间:"+CalendarUtil.getSystemDate());
 		}
 		catch(Exception e) {
 			ts.rollback();
@@ -1023,4 +1023,143 @@ public class PurchaseOrderService extends CommonService {
 		
 		detailDao.Create(data);	
 	}
+	
+
+	public void createAcssoryContractInit() throws Exception{
+
+		String PIId = request.getParameter("PIId");
+		String orderType = Constants.ORDERTYPE_2;//配件
+		this.dataModel.setQueryName("createAcssoryContractInit");
+
+		this.userDefinedSearchCase.put("PIId", PIId);
+		this.userDefinedSearchCase.put("orderType", orderType);
+		this.baseQuery = new BaseQuery(this.request, this.dataModel);	
+		this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
+		this.baseQuery.getYsFullData();
+	
+		this.model.addAttribute("order", this.dataModel.getYsViewData().get(0));
+		this.model.addAttribute("detail", this.dataModel.getYsViewData());
+		this.model.addAttribute("PIId", PIId);
+	}
+	
+	public void createAcssoryContractAndView() throws Exception{
+
+		//跳转到查看页面
+		String contractId = insertPurchaseOrderAndDetail();
+		getContractDetailList(contractId);
+	}
+	
+	public String insertPurchaseOrderAndDetail() throws Exception{
+		ts = new BaseTransaction();
+
+		String YSId = request.getParameter("YSId");
+		String contractId = "";
+		try {
+			ts.begin();
+			
+			if(!(YSId == null || ("").equals(YSId))){
+				String[] tmp = YSId.split("-");
+				if(tmp.length>1)
+					YSId = tmp[0];//配件订单的耀升编号形式:17YS001-1
+			}
+			
+			//B_PurchaseOrderData contract = reqModel.getContract();
+			List<B_PurchaseOrderData> contractList = reqModel.getContractList();
+			List<B_PurchaseOrderDetailData> detailList = reqModel.getDetailList();
+						
+			//删除既存合同信息
+			deleteContract(YSId);
+			
+			//删除既存合同明细
+			deleteContractDetail(YSId);			
+			
+			//供应商集计
+			List<B_SupplierData> supplier = new ArrayList<B_SupplierData>();			
+			for(int j=0;j<contractList.size();j++){
+				
+				String supplierId = contractList.get(j).getSupplierid();
+				String shortName  = contractList.get(j).getSubid();//临时借用
+				String totalPrice = detailList.get(j).getTotalprice();//合同跟明细件数相同
+				float f1 = stringToFloat(totalPrice.replace(",", ""));
+				
+				if(supplierId == null || supplierId.equals("")){
+					continue;
+				}
+				
+				boolean repeatFlag = true;
+				for(int i=0;i<supplier.size();i++){
+					String id = supplier.get(i).getSupplierid();
+					String price = supplier.get(i).getSuppliername();//临时借用
+					
+					if(supplierId.equals(id)){//计算重复的供应商
+						float f2 = stringToFloat(price.replace(",", ""));
+						supplier.get(i).setSuppliername(String.valueOf(f1+f2));//相同供应商的价格合并
+						repeatFlag = false;
+						break;
+					}
+				}
+				
+				if(repeatFlag){//保存不一致的供应商
+					B_SupplierData s = new B_SupplierData();
+					s.setSupplierid(supplierId);
+					s.setShortname(shortName);
+					s.setSuppliername(totalPrice);//临时借用
+					supplier.add(s);
+				}
+				
+			}//供应商集计
+				
+			for(B_SupplierData sup: supplier){
+				
+				String supplierId = sup.getSupplierid();
+				String shortName  = sup.getShortname();
+				String total  = sup.getSuppliername();//临时借用
+				
+				float totalf = stringToFloat(total); 
+				if(totalf == 0){//采购数量为零的供应商不计入合同
+					continue;
+				}
+				//取得供应商的合同流水号
+				//父编号:年份+供应商简称
+				String parentId = "";
+				if(null != YSId && YSId.length() > 3 ){
+					parentId = YSId.substring(0,2);//耀升编号前两位是年份
+				}
+				parentId = parentId + shortName;
+				
+				String subId = getContractCode(parentId);
+
+				//3位流水号格式化	
+				//采购合同编号:16YS081-WL002
+				contractId = BusinessService.getContractCode(YSId, shortName, subId);
+				
+				//新增采购合同:由于是配件订单,没有成品
+				insertPurchaseOrder(
+						YSId,null,supplierId,contractId,parentId,subId,String.valueOf(totalf));
+
+				for(int i=0;i<detailList.size();i++){
+					B_PurchaseOrderDetailData detail = detailList.get(i);
+				
+					String id = contractList.get(i).getSupplierid();
+					if(supplierId.equals(id)){
+						//新增合同明细
+						detail.setYsid(YSId);
+						detail.setContractid(contractId);
+						insertPurchaseOrderDetail(detail);						
+					}
+				}
+				
+			}
+			
+			ts.commit();
+			
+		}catch(Exception e) {
+			ts.rollback();
+			System.out.println(e.getMessage());
+			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
+		}
+		
+		return contractId;
+	}
+	
 }

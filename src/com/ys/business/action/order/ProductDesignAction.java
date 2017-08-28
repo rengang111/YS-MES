@@ -92,18 +92,33 @@ public class ProductDesignAction extends BaseAction {
 				break;	
 			case "addinit":
 				rtnUrl = doAddInit();
+				break;	
+			case "accessoryAddInit"://配件订单的做单资料
+				rtnUrl = doAccessoryAddInit();
 				break;
 			case "edit":
 				doEdit();
 				rtnUrl = "/business/material/productdesignedit";
 				break;
+			case "accessoryEdit":
+				doEdit();
+				rtnUrl = "/business/material/accessorydesignedit";
+				break;
 			case "insert":
 				doInsert();
 				rtnUrl = "/business/material/productdesignview";
 				break;
+			case "accessoryInsert":
+				doAccessoryInsert();
+				rtnUrl = "/business/material/accessorydesignview";
+				break;
 			case "update":
 				doUpdate();
 				rtnUrl = "/business/material/productdesignview";
+				break;
+			case "accessoryUpdate":
+				doUpdate();
+				rtnUrl = "/business/material/accessorydesignview";
 				break;
 			case "delete":
 				doDelete(data);
@@ -168,6 +183,9 @@ public class ProductDesignAction extends BaseAction {
 				break;
 			case "convertToPdf":
 				convertToPdf();
+				break;
+			case "accceesoryConvertToPdf":
+				accessoryConvertToPdf();
 				break;
 			case "productPhotoDelete":
 				dataMap = deletePhoto("product","productFileList","productFileCount");
@@ -342,32 +360,63 @@ public class ProductDesignAction extends BaseAction {
 	public String doAddInit(){
 	
 		String rtnUrl = "";
-		try{
-			
+		try{			
 			String redirect = service.doAddOrView();
 			switch(redirect) {
 			case "":
 			case "新建":
 					rtnUrl = "/business/material/productdesignadd";				
-				break;
-				
+				break;				
 			case "查看":
 					rtnUrl = "/business/material/productdesignview";
-				break;
-				
+				break;				
 			case "编辑新建":
 				rtnUrl = "/business/material/productdesignedit";
-				break;
-				
+				break;				
 			}
 		}catch(Exception e){
 			System.out.println(e.getMessage());
-		}
-		
+		}		
+		return rtnUrl;
+	}
+
+
+	public String doAccessoryAddInit(){
+	
+		String rtnUrl = "";
+		try{			
+			String redirect = service.doAddOrView();
+			switch(redirect) {
+			case "":
+			case "新建":
+				rtnUrl = "/business/material/accessorydesignadd";				
+				break;				
+			case "查看":
+				rtnUrl = "/business/material/accessorydesignview";
+				break;				
+			case "编辑新建":
+				rtnUrl = "/business/material/accessorydesignedit";
+				break;				
+			}
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}		
 		return rtnUrl;
 	}
 
 	public void doInsert(){
+		try{
+			String PIId = request.getParameter("PIId");
+			String goBackFlag = request.getParameter("goBackFlag");
+			model.addAttribute("PIId",PIId);
+			model.addAttribute("goBackFlag",goBackFlag);
+			service.doInsertAndView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void doAccessoryInsert(){
 		try{
 			String PIId = request.getParameter("PIId");
 			String goBackFlag = request.getParameter("goBackFlag");
@@ -430,40 +479,19 @@ public class ProductDesignAction extends BaseAction {
 			case "":
 			case "新建":
 				rtnUrl = "/business/material/productdesignadd";
-				/*
-				switch(type) {
-				case "010":
-					rtnUrl = "/business/material/productdesignadd";
-					break;
-				case "020":
-					rtnUrl = "/business/material/productdesignadd2";
-					break;
-				case "030":
-					rtnUrl = "/business/material/productdesignadd3";
-					break;
-				default:
-					rtnUrl = "/business/material/productdesignadd";
-				}*/
+				
+				if(("035").equals(type))
+					rtnUrl = "/business/material/accessorydesignadd";
 				break;
 			case "查看":
-
 				rtnUrl = "/business/material/productdesignview";
-				/*switch(type) {
-				case "010":
-					rtnUrl = "/business/material/productdesignview";
-					break;
-				case "020":
-					rtnUrl = "/business/material/productdesignview2";
-					break;
-				case "030":
-					rtnUrl = "/business/material/productdesignview3";
-					break;
-				default:
-					rtnUrl = "/business/material/productdesignview";
-				}*/
+				if(("035").equals(type))
+					rtnUrl = "/business/material/accessorydesignview";
 				break;
 			case "编辑新建":
 				rtnUrl = "/business/material/productdesignedit";
+				if(("035").equals(type))
+					rtnUrl = "/business/material/accessorydesignedit";
 				break;
 			}
 		}catch(Exception e){
@@ -474,7 +502,6 @@ public class ProductDesignAction extends BaseAction {
 	}
 	
 	public HashMap<String, Object> doShowDetailHistory() {
-		String rtnUrl = null;
 		try {
 			String ysid = service.doShowDetailHistory();
 			if(ysid == null){
@@ -723,11 +750,18 @@ public class ProductDesignAction extends BaseAction {
 	}
 	
 	private void convertToPdf() {
-		
-	
-		
 		try {
 			service.convertAndDownloadToPdf();
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	private void accessoryConvertToPdf() {
+		try {
+			service.accessoryConvertAndDownloadToPdf();
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

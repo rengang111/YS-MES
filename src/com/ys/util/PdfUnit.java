@@ -548,7 +548,8 @@ public class PdfUnit {
 	 * @return  Paragraph
 	 */  
     public Paragraph tableTitleRight(String strTableTitle) {  
-        
+
+    	strTableTitle = strTableTitle == null?"":strTableTitle;
     	Paragraph tableTitle = new Paragraph(strTableTitle)
        		.setFont(bfChinese)
        		.setFontSize(8)
@@ -567,7 +568,8 @@ public class PdfUnit {
 	 * @return  Paragraph
 	 */  
     public Paragraph tableTitle(String strTableTitle) {  
-        
+
+    	strTableTitle = strTableTitle == null?"":strTableTitle;
     	Paragraph tableTitle = new Paragraph(strTableTitle)
        		.setFont(bfChinese)
        		.setFontSize(8)
@@ -675,8 +677,9 @@ public class PdfUnit {
    	 *  
    	 * @return Cell
    	 */ 
-       public Cell addCell(String tableTitle) {  
-           
+    public Cell addCell(String tableTitle) {  
+
+    	tableTitle = tableTitle == null?"":tableTitle;
        	Cell cell = new Cell()
             		.add(tableTitle)            		
             		//.setTextRenderingMode(TextRenderingMode.FILL_STROKE)
@@ -685,8 +688,8 @@ public class PdfUnit {
             		//.setBorder(Border.NO_BORDER)
             		;   
        	
-           return cell;   
-       }
+         return cell;   
+     }
     
    	/** 
    	 * Cell
@@ -712,7 +715,7 @@ public class PdfUnit {
   	 * @return Cell
   	 */ 
 	public Cell addCellForNumber(Paragraph tableTitle) {  
-	      
+
 	  	Cell cell = new Cell()
 	       		.add(tableTitle)
 	       		.setTextAlignment(TextAlignment.RIGHT)
@@ -730,6 +733,7 @@ public class PdfUnit {
   	 */ 
 	public Paragraph addContent(String cont) {  
 		
+		cont = cont == null?"":cont;		
 		Paragraph content = new Paragraph(cont)
         		.setFont(bfChinese)
         		.setFontSize(8)
@@ -766,6 +770,7 @@ public class PdfUnit {
   	 */ 
 	public Paragraph addTitle(String cont) {  
 
+		cont = cont == null?"":cont;
         Paragraph title = new Paragraph(cont)
         		.setFont(bfChinese)
         		.setBold()

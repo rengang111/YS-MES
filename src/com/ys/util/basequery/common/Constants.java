@@ -126,5 +126,11 @@ public class Constants {
 	public static final String PRODUCTDETAIL_6 = "文字印刷";//文字印刷
 	public static final String PRODUCTDETAIL_7 = "包装描述";
 
+	/**
+	 *@category 订单类型
+	 *
+	 */
+	public static final String ORDERTYPE_1 = "010";//正常订单
+	public static final String ORDERTYPE_2 = "020";//配件订单
 
 }

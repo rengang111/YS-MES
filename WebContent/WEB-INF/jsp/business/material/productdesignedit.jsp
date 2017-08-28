@@ -450,8 +450,7 @@
 							'<td class="dt-center"></td>',
 							'<td><input  name="labelList['+rowIndex+'].componentname"   id="labelList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input  name="labelList['+rowIndex+'].materialquality" id="labelList'+rowIndex+'.materialquality" class="middle" /></td>',
-							'<td><input  name="labelList['+rowIndex+'].process"         id="labelList'+rowIndex+'.process" class="short" /></td>',
-							'<td><input  name="labelList['+rowIndex+'].specification"   id="labelList'+rowIndex+'.specification" class="middle" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].size"            id="labelList'+rowIndex+'.size" class="short" /></td>',
 							'<td><input  name="labelList['+rowIndex+'].remark"   	    id="labelList'+rowIndex+'.remark"   class="middle" /></td>',
 							
 							]).draw();

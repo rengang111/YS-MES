@@ -4,7 +4,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>产品设计资料-查看</title>
+<title>配件产品设计资料-查看</title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common2.jsp"%>
 </head>
@@ -32,8 +32,7 @@
 			<td style="width: 150px;">${product.YSId}</td>
 								
 			<td class="label" style="width: 100px;">产品编号：</td>
-			<td style="width: 150px;">
-				&nbsp;<a href="###" onClick="doShowProduct()">${product.productId}</a></td>
+			<td style="width: 150px;">&nbsp;${product.productId}</td>
 			
 			<td class="label" style="width: 100px;">产品名称：</td>
 			<td colspan="3">${product.materialName}</td>
@@ -49,18 +48,6 @@
 			<td colspan="3">${product.sealedSample}</td>	
 			
 		</tr>
-		
-		<c:set var="type"  value="${product.productClassifyId}"/>
-		<c:if test="${type eq '010'}">
-		<tr>
-			<td class="label" >电池包数量：</td>
-			<td>${product.batteryPack}</td>
-								
-			<td class="label">充电器：</td>
-			<td colspan="5">${product.chargerType}</td>
-				
-		</tr>
-		</c:if>
 		<tr>		
 			<td class="label">包装描述：</td>
 			<td colspan="3">${product.packageDescription }</td>
@@ -78,36 +65,7 @@
 		<button type="button" id="doDownloadPdf" class="DTTT_button" >PDF文件下载</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</div>
-</fieldset>	
-
-<div id="tabs" style="padding: 0px;white-space: nowrap;margin: 10px;">
-	<ul>
-		<li><a href="#tabs-1" class="tabs1">产品信息</a></li>
-		<li><a href="#tabs-2" class="tabs2">标贴及文字印刷</a></li>
-		<li><a href="#tabs-3" class="tabs3">包装</a></li>
-	</ul>
-
-	<div id="tabs-1" style="padding: 5px;">
-		<c:if test="${type eq '010'}">
-			<fieldset>
-				<legend>机器配置</legend>
-				<div class="list">
-				<table id="machineConfiguration" class="display" style="width:100%">
-					<thead>				
-						<tr style="text-align: left;">
-							<th width="1px">No</th>
-							<th style="width:60px">名称</th>
-							<th style="width:120px">ERP编码</th>
-							<th >产品名称</th>
-							<th style="width:60px">供应商</th>
-							<th style="width:105px">采购方</th>
-							<th style="width:100px">备注</th>
-						</tr>
-					</thead>
-				</table>
-				</div>
-			</fieldset>
-		</c:if>
+</fieldset>
 		<fieldset>
 			<legend>产品图片</legend>
 			<div class="list">
@@ -116,51 +74,21 @@
 						<tbody><tr class="photo"><td></td><td></td></tr></tbody>
 					</table>
 				</div>
+			</div><br/>
+			<span class="tablename">标贴-图片</span>
+			<div class="list">
+				<div class="" id="subidDiv" style="min-height: 300px;">
+					<table id="labelPhoto"  class="phototable">
+						<tbody><tr class="photo"><td></td></tr></tbody>
+					</table>
+				</div>
 			</div>	
 		</fieldset>
-		<c:if test="${type eq '010' || type eq '020'}">
-			<fieldset>
-				<legend>塑料制品</legend>
-				<div class="list">
-				<table id="plastic" class="display" style="width:100%">
-					<thead>				
-						<tr style="text-align: left;">
-							<th width="1px">No</th>
-							<th style="width:60px">名称</th>
-							<th style="width:120px">ERP编码</th>
-							<th >产品名称</th>
-							<th style="width:40px">材质</th>
-							<th style="width:60px">颜色</th>
-							<th style="width:60px">备注</th>
-						</tr>
-					</thead>			
-				</table>
-				</div>
-			</fieldset>
-		</c:if>
-		<c:if test="${type eq '010'}">
-			<fieldset>
-				<legend>配件清单</legend>
-				<div class="list">
-				<table id="accessory" class="display"  style="width:100%">
-					<thead>				
-						<tr style="text-align: left;">
-							<th width="1px">No</th>
-							<th style="width:120px">名称及规格描述</th>
-							<th style="width:40px">材质</th>
-							<th style="width:60px">加工方式</th>
-							<th style="width:60px">表面处理</th>
-							<th style="width:60px">备注</th>
-						</tr>
-					</thead>			
-				</table>
-				</div>
-			</fieldset>
-		</c:if>
+		
 		<fieldset>
-			<legend>产品收纳-描述信息</legend>
+			<legend>产品描述</legend>
 			<div class="list">
-				<table class="form" id="table_form">					
+				<table class="form" id="table_form">				
 					<tr>
 						<td style="width:700px;height:200px;vertical-align: text-top;"> 
 							<pre>${ product.storageDescription}</pre></td>
@@ -168,93 +96,42 @@
 				</table>
 			</div>	
 		</fieldset>
-		<fieldset>
-			<legend>产品收纳-图片</legend>
-			<div class="list">
-				<div class="" id="subidDiv" style="min-height: 300px;">
-					<table id="storagePhoto"  class="phototable">
-						<tbody><tr class="photo"><td></td><td></td></tr></tbody>
-					</table>
-				</div>
-			</div>	
-		</fieldset>
-	</div>
-	
-	<div id="tabs-2" style="padding: 5px;">
-	<fieldset>
-	<legend>标贴-描述</legend>
-	<div class="list">
-	<table id="labelT" class="display"  style="width:100%">
-		<thead>				
-			<tr style="text-align: left;">
-				<th width="1px">No</th>
-				<th style="width:60px">名称</th>
-				<th style="width:40px">材质及要求</th>
-				<th style="width:60px">尺寸</th>
-				<th style="width:60px">备注</th>
-			</tr>
-		</thead>			
-	</table>
-	</div><br/>
-	<span class="tablename">标贴-图片</span>
-	<div class="list">
-		<div class="" id="subidDiv" style="min-height: 300px;">
-			<table id="labelPhoto"  class="phototable">
-				<tbody><tr class="photo"><td></td></tr></tbody>
-			</table>
-		</div>
-	</div>	
-</fieldset>
-<fieldset>
-	<legend>文字印刷</legend>
-	<div class="list">
-	<table id="textPrint" class="display" style="width:100%">
-		<thead>				
-			<tr style="text-align: left;">
-				<th width="1px">No</th>
-				<th style="width:60px">名称</th>
-				<th style="width:40px">材质</th>
-				<th style="width:60px">尺寸</th>
-				<th style="width:60px">颜色</th>
-				<th style="width:120px">文件名</th>
-				<th style="width:60px">操作</th>
-			</tr>
-		</thead>			
-	</table>
-	</div>
-</fieldset>
-	</div>
-	<div id="tabs-3" style="padding: 5px;">
-	<fieldset>
-	<legend>包装描述</legend>
-	<div class="list">
-	<table id="package" class="display" style="width:100%">
-		<thead>				
-			<tr style="text-align: left;">
-				<th style="width:1px">No</th>
-				<th style="width:100px">名称</th>
-				<th style="width:300px">材质</th>
-				<th style="width:100px">装箱数量</th>
-				<th style="width:100px">尺寸</th>
-				<th style="width:160px">备注</th>
-			</tr>
-		</thead>		
-	</table>
-	</div>
-	<br/>
-	<span class="tablename">包装描述-图片</span>
-	<div class="list">
-		<div class="" id="subidDiv" style="min-height: 300px;">
-			<table id="packagePhoto" class="phototable">
-				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
-			</table>
-		</div>
-	</div>	
-</fieldset>
-	</div>
-</div>
 		
-<div style="clear: both"></div>		
+		<fieldset>
+			<legend>标贴描述</legend>
+			<div class="list">
+				<table id="labelT" class="display"  style="width:100%">
+					<thead>				
+						<tr style="text-align: left;">
+							<th width="1px">No</th>
+							<th style="width:60px">名称</th>
+							<th style="width:40px">材质及要求</th>
+							<th style="width:60px">尺寸</th>
+							<th style="width:60px">备注</th>
+						</tr>
+					</thead>			
+				</table>
+			</div>
+		</fieldset>
+
+	
+		<fieldset>
+		<legend>包装描述</legend>
+		<div class="list">
+			<table id="package" class="display" style="width:100%">
+				<thead>				
+					<tr style="text-align: left;">
+						<th style="width:1px">No</th>
+						<th style="width:100px">名称</th>
+						<th style="width:300px">材质</th>
+						<th style="width:100px">装箱数量</th>
+						<th style="width:100px">尺寸</th>
+						<th style="width:160px">备注</th>
+					</tr>
+				</thead>		
+			</table>
+		</div>		
+		</fieldset>
 	
 </form:form>
 </div>
@@ -283,7 +160,7 @@ $(document).ready(function() {
 		var productClassify='${product.productClassifyId}';
 		var goBackFlag = $('#goBackFlag').val();
 		var productDetailId=$('#productDesign\\.productdetailid').val();
-		var url = '${ctx}/business/productDesign?methodtype=convertToPdf&YSId=' + YSId+
+		var url = '${ctx}/business/productDesign?methodtype=accceesoryConvertToPdf&YSId=' + YSId+
 				"&productDetailId="+productDetailId+
 				"&PIId="+PIId+
 				"&productId="+productId+
@@ -297,7 +174,7 @@ $(document).ready(function() {
 		var YSId=$('#productDesign\\.ysid').val();
 		var goBackFlag = $('#goBackFlag').val();
 		var productDetailId=$('#productDesign\\.productdetailid').val();
-		var url = '${ctx}/business/productDesign?methodtype=edit&YSId=' + YSId+
+		var url = '${ctx}/business/productDesign?methodtype=accessoryEdit&YSId=' + YSId+
 				"&productDetailId="+productDetailId+
 				"&PIId="+PIId+
 				"&goBackFlag="+goBackFlag;

@@ -145,11 +145,11 @@
 	    			name = jQuery.fixedWidth(name,35);		    			
 	    			return name;
 	    	  }},
-	    	  { "targets":8,"render":function(data, type, row){
+	    	  { "targets":9,"render":function(data, type, row){
 	    			var PIId = '${order.PIId}';
 	    			var type=row[10];
 	    			var rtn = "<a href=\"#\" onClick=\"doPurchasePlan('"
-	    					+ row[0] + "'," +"'" + row[5] + "'," +"'" + row[8] + "')\">采购合同</a>";
+	    					+ PIId + "')\">采购合同</a>";
 	    			return rtn;
 	    	  }},
 	    	  {
@@ -228,6 +228,19 @@
 		location.href = url;
 	};
 	
+
+	function ShowProductDesign2(PIId,YSId,productId,type) {
+ 		var goBackFlag = '';
+		var url = '${ctx}/business/productDesign?methodtype=accessoryAddInit'
+				+'&PIId=' + PIId
+				+'&YSId=' + YSId
+				+'&productId=' + productId
+				+'&productType=' + type
+				+'&goBackFlag=' + goBackFlag;
+		
+		location.href = url;
+	};
+	
 	function doShow(materialId) {
 
 		var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
@@ -235,11 +248,10 @@
 		openLayer(url);
 	}
 	
-	function doPurchasePlan(YSId,quantity, materialId) {
-		//goBackFlag:区别采购入口是物料还是供应商,或者订单详情
-		var goBackFlag = "orderView";
-		var url = '${ctx}/business/contract?methodtype=createRoutineContractInit&goBackFlag='+goBackFlag;
-		url = url +'&materialId='+materialId+'&quantity='+quantity+'&YSId='+YSId;
+	function doPurchasePlan(PIId) {
+		
+		var url = '${ctx}/business/contract?methodtype=createAcssoryContractInit';
+		url = url +'&PIId='+PIId;
 		location.href = url;
 		
 	}
@@ -444,9 +456,9 @@
 					<td class="cash" style="padding-right: 20px;">${order.totalQuantity}</td>						
 					<td class="cash" style="padding-right: 20px;">${order.price}</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
+					<td><a href="###" onClick="ShowProductDesign2('${order.PIId}','${order.YSId}','${order.materialId}','${order.type}')">做单资料</a></td>
 					<td>${order.materialId}</td>
-					<td><!-- <a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">订单详情</a> --></td>
-					<td>${order.productClassify}</td>												
+					<td>${order.productClassify}</td>									
 				</tr>
 			</c:if>	
 			</c:forEach>

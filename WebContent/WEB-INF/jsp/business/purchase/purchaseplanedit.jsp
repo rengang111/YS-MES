@@ -1,16 +1,9 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>订单采购方案-编辑</title>
+<title>订单采购方案-配件采购</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -134,7 +127,6 @@
 			$('#purchaseForm').submit();
 		});		
 		
-		//iFramAutoSroll();//重设显示窗口(iframe)高度
 		
 		foucsInit();//input获取焦点初始化处理
 
@@ -152,53 +144,33 @@
 	<form:form modelAttribute="purchaseForm" method="POST"
 		id="purchaseForm" name="purchaseForm"  autocomplete="off">
 			
-		<fieldset>
-			<legend> 订单执行方案</legend>
-			<table class="form" id="table_form">
-				<tr> 		
-					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="250px">${bomPlan.YSId }
-						<form:hidden path="YSId"  value="${bomPlan.YSId }"/></td>
-									
-					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td width="150px">${bomPlan.productId}					
-						<form:hidden path="bomId" value="11111" /></td>
-						
-					<td class="label"><label>产品名称：</label></td>
-					<td>${bomPlan.productName }</td>
-					
-					<td class="label"><label>数量：</label></td>
-					<td>&nbsp;${bomPlan.productQty }</td>
-				</tr>								
-			</table>
+<fieldset>
+	<legend> 订单执行方案</legend>
+	<table class="form" id="table_form">
+		<tr> 		
+			<td class="label" width="100px"><label>耀升编号：</label></td>					
+			<td width="250px">${bomPlan.YSId }
+				<form:hidden path="YSId"  value="${bomPlan.YSId }"/></td>
+							
+			<td class="label" width="100px"><label>产品编号：</label></td>					
+			<td width="150px">${bomPlan.productId}					
+				<form:hidden path="bomId" value="11111" /></td>
+				
+			<td class="label"><label>产品名称：</label></td>
+			<td>${bomPlan.productName }</td>
 			
-		<div class="list">
-			<table class="form" id="table_form2" width="100%" style="margin-top: 6px;">
-				<thead>
-				<tr>
-					<th class="td-center" width="150px">产品型号</th>	
-					<th class="td-center" width="100px">库存数量</th>
-					<th class="td-center" width="80px">耀升编号</th>
-					<th class="td-center" width="150px">其他备注</th>
-				</tr>
-				</thead>
-				<tbody>	
-					<tr>			
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>								
-			</table>
-		</div>
-	</fieldset>
+			<td class="label"><label>数量：</label></td>
+			<td>&nbsp;${bomPlan.productQty }</td>
+			</tr>								
+		</table>
+		
+</fieldset>
 	
 	<fieldset>
 		<legend> 物料详情</legend>
 		<div class="list" style="margin-top: -4px;">
 		
-		<table id="example" class="display" width="100%">
+		<table id="example" class="display">
 			<thead>				
 			<tr>
 				<th width="1px">No</th>

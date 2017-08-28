@@ -5,12 +5,13 @@
 <head>
 <%@ include file="../../common/common.jsp"%>
 
-<title>领料申请一览</title>
+<title>领料申请--订单一览</title>
 <script type="text/javascript">
 
 	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
+			table.fnClearTable();
 			table.fnDestroy();
 		}
 		var t = $('#TMaterial').DataTable({
@@ -26,7 +27,7 @@
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/requirement?methodtype=getPurchasePlanList&keyBackup="+pageFlg,
+				"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBomList&keyBackup="+pageFlg,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -42,10 +43,9 @@
 						"data" : JSON.stringify(aoData),
 						success: function(data){							
 							fnCallback(data);
-
 						},
-						error:function(XMLHttpRequest, textStatus, errorThrown){
-			            }
+						 error:function(XMLHttpRequest, textStatus, errorThrown){
+			             }
 					})
 				},
 	        	"language": {
@@ -57,9 +57,9 @@
 							{"data": "materialId", "defaultContent" : ''},
 							{"data": "materialName", "defaultContent" : ''},
 							{"data": "unit", "defaultContent" : '',"className" : 'td-center'},
+							{"data": "bomId", "defaultContent" : ''},
 							{"data": "deliveryDate", "className" : 'td-center'},
 							{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
-							{"data": "total", "defaultContent" : '',"className" : 'td-right'}
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
@@ -71,7 +71,7 @@
 				    		}},
 				    		{"targets":3,"render":function(data, type, row){
 				    			var name = row["materialName"];				    			
-				    			if(name != null) name = jQuery.fixedWidth(name,40);
+				    			if(name != null) name = jQuery.fixedWidth(name,40,true);
 				    			return name;
 				    		}}
 			         	] 
@@ -79,17 +79,7 @@
 		);
 
 	}
-	
-	function YSKcheck(v,id){
-		var zzFlag = "";
-		if(id != ''){
-			zzFlag = id.substr(2,3);
-		}
-		if(zzFlag == 'YSK') v = 0;//库存订单不显示明细内容
-		return v;
-		
-	}
-	
+
 	function initEvent(){
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
@@ -107,7 +97,7 @@
 	$(document).ready(function() {
 
 		ajax("");
-		
+		initEvent();
 		$("#create").click(
 				function() {			
 			$('#purchaseForm').attr("action", "${ctx}/business/purchase?methodtype=insert");
@@ -125,41 +115,8 @@
 	
 	function doShowDetail(YSId) {
 		
-		var url =  "${ctx}/business/requirement?methodtype=purchasePlanView&YSId="+YSId;
+		var url =  "${ctx}/business/requisition?methodtype=addinit&YSId="+YSId;
 		location.href = url;
-	}
-	
-	
-
-	function doDelete() {
-
-		var str = '';
-		$("input[name='numCheck']").each(function(){
-			if ($(this).prop('checked')) {
-				str += $(this).val() + ",";
-			}
-		});
-
-		if (str != '') {
-			if(confirm("确定要删除数据吗？")) {
-				jQuery.ajax({
-					type : 'POST',
-					async: false,
-					contentType : 'application/json',
-					dataType : 'json',
-					data : str,
-					url : "${ctx}/business/matcategory?methodtype=delete",
-					success : function(data) {
-						reload();						
-					},
-					error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				});
-			}
-		} else {
-			alert("请至少选择一条数据");
-		}
-		
 	}
 	
 	
@@ -205,9 +162,9 @@
 					<th style="width: 150px;" class="dt-middle ">产品编号</th>
 					<th class="dt-middle ">产品名称</th>
 					<th style="width: 30px;" class="dt-middle ">单位</th>
+					<th style="width: 100px;" class="dt-middle ">BOM编号</th>
 					<th style="width: 80px;" class="dt-middle ">订单交期</th>
 					<th style="width: 80px;"  class="dt-middle ">订单数量</th>
-					<th style="width: 100px;"  class="dt-middle ">采购金额</th>
 				</tr>
 			</thead>
 		</table>

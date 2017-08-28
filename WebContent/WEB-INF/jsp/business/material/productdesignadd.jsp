@@ -454,8 +454,7 @@
 							'<td></td>',
 							'<td><input  name="labelList['+rowIndex+'].componentname"   id="labelList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input  name="labelList['+rowIndex+'].materialquality" id="labelList'+rowIndex+'.materialquality" class="middle" /></td>',
-							'<td><input  name="labelList['+rowIndex+'].process"         id="labelList'+rowIndex+'.process" class="short" /></td>',
-							'<td><input  name="labelList['+rowIndex+'].specification"   id="labelList'+rowIndex+'.specification" class="middle" /></td>',
+							'<td><input  name="labelList['+rowIndex+'].size"            id="labelList'+rowIndex+'.size" class="short" /></td>',
 							'<td><input  name="labelList['+rowIndex+'].remark"   	    id="labelList'+rowIndex+'.remark"   class="middle" /></td>',
 							
 							]).draw();
@@ -851,7 +850,7 @@
 			<td style="width: 150px;">&nbsp;${product.YSId}</td>
 								
 			<td class="label" style="width: 100px;">产品编号：</td>
-			<td style="width: 150px;">
+			<td style="width: 150px;" class="td-left">
 				&nbsp;<a href="###" onClick="doShowProduct()">${product.materialId}</a></td>
 			
 			<td class="label" style="width: 100px;">产品名称：</td>
@@ -869,13 +868,13 @@
 		</tr>
 		<tr>
 			<td class="label">包装描述：</td>
-			<td colspan="3"><form:input path="productDesign.packagedescription"  class="long"/></td>
+			<td colspan="3"><form:input path="productDesign.packagedescription"  style="width:100%"/></td>
 
 			<td class="label">封样数量：</td>
-			<td><form:input path="productDesign.sealedsample"  class="short"/></td>	
+			<td style="width: 150px;"><form:input path="productDesign.sealedsample"  class="short"/></td>	
 								
-			<td class="label">资料完成状况：</td>
-			<td style="width: 150px;">
+			<td class="label" style="width: 100px;">资料完成状况：</td>
+			<td>
 				<form:select path="productDesign.status" style="width: 100px;">							
 					<form:options items="${statusList}" 
 						itemValue="key" itemLabel="value" /></form:select></td>
@@ -1510,13 +1509,11 @@ function autocomplete(){
 
 function photoView(id, tdTable, count, data) {
 	
-	//alert("id:"+id+"--count:"+count+"--countView:"+countView)	
 	var row = 0;
 	for (var index = 0; index < count; index++) {
 
 		var path = '${ctx}' + data[index];
 		var pathDel = data[index];
-		//alert(index+"::::::::::::"+path)
 		var trHtml = '';
 
 		//trHtml += '<tr style="text-align: center;" class="photo">';
@@ -1536,51 +1533,10 @@ function photoView(id, tdTable, count, data) {
 		trHtml += '</tr>';
 		trHtml += '</table>';
 		trHtml += '</td>';
-/*
-		index++;
-		if (index == count) {
-			//因为是偶数循环,所以奇数张图片的最后一张为空
-
-			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
-			trHtmlOdd += '<tr>';
-			trHtmlOdd += '<td></td>';			
-			trHtmlOdd += '<td width="50px"></td>';			
-			trHtmlOdd += "</tr>";
-			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"></td>';
-		} else {
-			path = '${ctx}' + data[index];
-			pathDel = data[index];
-
-			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="form">';
-			trHtmlOdd += '<tr style="background: #d4d0d0;height: 35px;">';
-			trHtmlOdd += '<td></td>';			
-			trHtmlOdd += '<td width="50px">';
-			trHtmlOdd += '<a id="uploadFile1' + index + '" href="###" onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\''+ tdTable + '\'' + ','+ '\'' + pathDel + '\'' + ');">删除';
-			trHtmlOdd += '</a>';
-			trHtmlOdd += '</td>';
-			trHtmlOdd += '</tr>';
-			trHtmlOdd += '<tr>';
-			trHtmlOdd += '<td colspan="2"  style="height:300px;">';
-			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
-			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
-			trHtmlOdd += '</a>'
-			trHtmlOdd += '</td>';
-		}
-
-		trHtml += '<td>';
-		//trHtml += '<table style="width:400px;margin: auto;" class="form">';
-		//trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml += trHtmlOdd;
-		trHtml += '</tr>';
-		trHtml += '</table>';
-		trHtml += '</td>';
-		trHtml += "</tr>";
-*/
+		
 		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
 		row++;
-
 	}
-
 }
 
 
@@ -1617,9 +1573,7 @@ function photoViewLabel(id, tdTable, count, data) {
 
 		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
 		row++;
-
 	}
-
 }
 
 function addPhotoRowLabel(id,tdTable, index) {
@@ -1673,21 +1627,6 @@ function addPhotoRow(id,tdTable, index) {
 		trHtml += '</tr>';
 		trHtml += '</table>';
 		trHtml += '</td>';
-		/*
-		index++;
-
-		trHtml += '<td>';
-		trHtml += '<table style="width:400px;margin: auto;" class="">';
-		trHtml += '<tr style="height: 35px;">';
-		trHtml += '<td></td>';
-		trHtml += '<td width="50px"></td>';
-		trHtml += "</tr>";
-		trHtml += '<tr><td colspan="2"  style="height:300px;"></td>';
-		trHtml += '</tr>';
-		trHtml += '</table>';
-		trHtml += '</td>';
-		trHtml += "</tr>";	
-		*/
 		
 	}//for		
 

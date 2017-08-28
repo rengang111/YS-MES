@@ -405,4 +405,21 @@ public class BusinessService {
 		//
 		return getYSCommCode() + "000";
 	}
+
+	/**
+	 * 领料单编号
+	 * @return O耀升编号-2位流水号
+	 */
+	 public static String getRequisitionId(String ysid,String code) {
+
+		//格式化成2位流水号,并且+1
+		int num = 0;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		
+		String ft = BusinessService.getFormat2Code(num,true);
+		
+		return "O"+ysid+"-"+ ft;
+	 }
+		
 }
