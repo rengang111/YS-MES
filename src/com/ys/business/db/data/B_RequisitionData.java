@@ -86,58 +86,6 @@ public class B_RequisitionData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String contractid;
-	public String getContractid()
-	{
-		return this.contractid;
-	}
-	public void setContractid(String contractid)
-	{
-		this.contractid=contractid;
-	}
-
-	/**
-	*
-	*/
-	private String supplierid;
-	public String getSupplierid()
-	{
-		return this.supplierid;
-	}
-	public void setSupplierid(String supplierid)
-	{
-		this.supplierid=supplierid;
-	}
-
-	/**
-	*
-	*/
-	private String materialid;
-	public String getMaterialid()
-	{
-		return this.materialid;
-	}
-	public void setMaterialid(String materialid)
-	{
-		this.materialid=materialid;
-	}
-
-	/**
-	*
-	*/
-	private String quantity;
-	public String getQuantity()
-	{
-		return this.quantity;
-	}
-	public void setQuantity(String quantity)
-	{
-		this.quantity=quantity;
-	}
-
-	/**
-	*
-	*/
 	private String requisitiondate;
 	public String getRequisitiondate()
 	{
@@ -151,14 +99,79 @@ public class B_RequisitionData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String userid;
-	public String getUserid()
+	private String requisitionstoreid;
+	public String getRequisitionstoreid()
 	{
-		return this.userid;
+		return this.requisitionstoreid;
 	}
-	public void setUserid(String userid)
+	public void setRequisitionstoreid(String requisitionstoreid)
 	{
-		this.userid=userid;
+		this.requisitionstoreid=requisitionstoreid;
+	}
+
+	/**
+	*
+	*/
+	private String requisitionunitid;
+	public String getRequisitionunitid()
+	{
+		return this.requisitionunitid;
+	}
+	public void setRequisitionunitid(String requisitionunitid)
+	{
+		this.requisitionunitid=requisitionunitid;
+	}
+
+	/**
+	*
+	*/
+	private String requisitionuserid;
+	public String getRequisitionuserid()
+	{
+		return this.requisitionuserid;
+	}
+	public void setRequisitionuserid(String requisitionuserid)
+	{
+		this.requisitionuserid=requisitionuserid;
+	}
+
+	/**
+	*
+	*/
+	private String storeuserid;
+	public String getStoreuserid()
+	{
+		return this.storeuserid;
+	}
+	public void setStoreuserid(String storeuserid)
+	{
+		this.storeuserid=storeuserid;
+	}
+
+	/**
+	*
+	*/
+	private String storepmuserid;
+	public String getStorepmuserid()
+	{
+		return this.storepmuserid;
+	}
+	public void setStorepmuserid(String storepmuserid)
+	{
+		this.storepmuserid=storepmuserid;
+	}
+
+	/**
+	*
+	*/
+	private String unitpmuserid;
+	public String getUnitpmuserid()
+	{
+		return this.unitpmuserid;
+	}
+	public void setUnitpmuserid(String unitpmuserid)
+	{
+		this.unitpmuserid=unitpmuserid;
 	}
 
 	/**
@@ -293,13 +306,13 @@ public class B_RequisitionData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("requisitionid = "+(requisitionid == null ? "null" : requisitionid)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("contractid = "+(contractid == null ? "null" : contractid)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("quantity = "+(quantity == null ? "null" : quantity)+"\n");		sb.append("requisitiondate = "+(requisitiondate == null ? "null" : requisitiondate)+"\n");		sb.append("userid = "+(userid == null ? "null" : userid)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("requisitionid = "+(requisitionid == null ? "null" : requisitionid)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("requisitiondate = "+(requisitiondate == null ? "null" : requisitiondate)+"\n");		sb.append("requisitionstoreid = "+(requisitionstoreid == null ? "null" : requisitionstoreid)+"\n");		sb.append("requisitionunitid = "+(requisitionunitid == null ? "null" : requisitionunitid)+"\n");		sb.append("requisitionuserid = "+(requisitionuserid == null ? "null" : requisitionuserid)+"\n");		sb.append("storeuserid = "+(storeuserid == null ? "null" : storeuserid)+"\n");		sb.append("storepmuserid = "+(storepmuserid == null ? "null" : storepmuserid)+"\n");		sb.append("unitpmuserid = "+(unitpmuserid == null ? "null" : unitpmuserid)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		requisitionid= (requisitionid == null ?null : requisitionid.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		ysid= (ysid == null ?null : ysid.trim());		contractid= (contractid == null ?null : contractid.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		materialid= (materialid == null ?null : materialid.trim());		quantity= (quantity == null ?null : quantity.trim());		requisitiondate= (requisitiondate == null ?null : requisitiondate.trim());		userid= (userid == null ?null : userid.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		requisitionid= (requisitionid == null ?null : requisitionid.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		ysid= (ysid == null ?null : ysid.trim());		requisitiondate= (requisitiondate == null ?null : requisitiondate.trim());		requisitionstoreid= (requisitionstoreid == null ?null : requisitionstoreid.trim());		requisitionunitid= (requisitionunitid == null ?null : requisitionunitid.trim());		requisitionuserid= (requisitionuserid == null ?null : requisitionuserid.trim());		storeuserid= (storeuserid == null ?null : storeuserid.trim());		storepmuserid= (storepmuserid == null ?null : storepmuserid.trim());		unitpmuserid= (unitpmuserid == null ?null : unitpmuserid.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

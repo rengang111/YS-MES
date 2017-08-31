@@ -270,9 +270,9 @@ public class StorageService extends CommonService {
 			
 			//采购入库记录明细
 			for(B_PurchaseStockInDetailData data:reqDataList ){
-				String q = data.getQuantity();
+				String quantity = data.getQuantity();
 				String materialid= data.getMaterialid();
-				if(q == null || q.equals("") || q.equals("0"))
+				if(quantity == null || quantity.equals("") || quantity.equals("0"))
 					continue;
 				
 				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
@@ -288,10 +288,14 @@ public class StorageService extends CommonService {
 				
 				//更新当前库存
 				if(accessFlag){
-					updateMaterial(materialid,q);//更新入库记录时,不再更新库存数量
+					updateMaterial(materialid,quantity);//更新入库记录时,不再更新库存数量
 
-					//更新物料状态
+					//更新到货记录的物料状态
 					updateInspectionProcess(arrivalid,materialid);
+					
+					//更新合同的累计入库数量
+					updateContractStorage(reqData.getContractid(),materialid,quantity);
+					
 				}
 				
 			}
@@ -331,19 +335,17 @@ public class StorageService extends CommonService {
 
 		data = list.get(0);
 		
-		//当前库存
-		String quantity = data.getQuantityonhand();
-		float iQuantity = 0;
-		float inewQuantity = 0;
-		if(!(newQuantity ==null || ("").equals(newQuantity)))
-			inewQuantity = Float.parseFloat(newQuantity.replace(",", ""));
-
-		if(!(quantity ==null || ("").equals(quantity)))
-			iQuantity = Float.parseFloat(quantity.replace(",", ""));
+		//当前库存数量
+		float iQuantity = stringToFloat(data.getQuantityonhand());
+		float inewQuantity = stringToFloat(newQuantity);				
+		float iNewQuantiy = iQuantity + inewQuantity;		
 		
-		float iNew = iQuantity + inewQuantity;
+		//待入库数量
+		float istockin = stringToFloat(data.getWaitstockin());		
+		float iNewStockIn = istockin - iQuantity;
 		
-		data.setQuantityonhand(String.valueOf(iNew));
+		data.setQuantityonhand(String.valueOf(iNewQuantiy));
+		data.setWaitstockin(String.valueOf(iNewStockIn));		
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
@@ -355,7 +357,7 @@ public class StorageService extends CommonService {
 	}
 	
 
-	//更新当前库存
+	//
 	@SuppressWarnings("unchecked")
 	private void updateInspectionProcess(
 			String arrivalId,
@@ -383,6 +385,41 @@ public class StorageService extends CommonService {
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"PurchaseStockInUpdate",userInfo);
 		copyProperties(data,commData);
+		
+		dao.Store(data);
+		
+	}
+	
+	//更新合同的累计入库数量
+	@SuppressWarnings("unchecked")
+	private void updateContractStorage(
+			String contractId,
+			String materialId,
+			String quantity) throws Exception{
+	
+		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+		
+		String where = "contractId ='"+ contractId + 
+				"' AND materialId ='"+ materialId + 
+				"' AND deleteFlag='0' ";
+		
+		List<B_PurchaseOrderDetailData> list = 
+				(List<B_PurchaseOrderDetailData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0)
+			return ;		
+
+		String SQuantyDB = list.get(0).getContractstorage();//累计入库		
+		float iQuantity = stringToFloat(SQuantyDB);
+		float inewQuantity = stringToFloat(quantity);		
+		float iNew = iQuantity + inewQuantity;
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseStockInUpdate",userInfo);
+		copyProperties(data,commData);
+		data.setContractstorage(String.valueOf(iNew));
 		
 		dao.Store(data);
 		

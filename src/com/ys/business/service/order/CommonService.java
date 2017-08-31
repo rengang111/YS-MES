@@ -598,10 +598,14 @@ public class CommonService extends BaseService {
         File file1=new File(src);  
         File[] fs=file1.listFiles();  
         File file2=new File(des);  
+        String timeStemp = CalendarUtil.timeStempDate();
         if(!file2.exists()){  
-            file2.mkdirs();  
-        }  
-        for (File f : fs) {  
+            file2.mkdirs(); 
+        }else{
+        	file2.renameTo( new File(des+"_"+timeStemp));//已经存在的话,备份后再新建
+            file2.mkdirs(); 
+        }
+        for (File f : fs) {
             if(f.isFile()){  
                 fileCopy(f.getPath(),des+"\\"+f.getName()); //调用文件拷贝的方法  
             }else if(f.isDirectory()){  

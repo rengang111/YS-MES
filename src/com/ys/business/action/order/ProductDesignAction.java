@@ -104,6 +104,10 @@ public class ProductDesignAction extends BaseAction {
 				doEdit();
 				rtnUrl = "/business/material/accessorydesignedit";
 				break;
+			case "copyToEdit":
+				doCopyToEdit();
+				rtnUrl = "/business/material/productdesignedit";
+				break;
 			case "insert":
 				doInsert();
 				rtnUrl = "/business/material/productdesignview";
@@ -455,6 +459,17 @@ public class ProductDesignAction extends BaseAction {
 		}
 	}
 	
+	
+
+	public void doCopyToEdit(){
+	
+		try{			
+			service.doCopyToEdit();
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}		
+	}
 	
 	public void doDelete(@RequestBody String data) throws Exception{
 		

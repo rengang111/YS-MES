@@ -865,10 +865,10 @@
 		</tr>
 		<tr>				
 			<td class="label">交货时间：</td>
-			<td>${product.deliveryDate}</td>				
+			<td>${deliveryDate}</td>				
 								
 			<td class="label">交货数量：</td>
-			<td>&nbsp;${product.quantity}</td>
+			<td>&nbsp;${quantity}</td>
 
 			<td class="label">版本类别：</td>
 			<td colspan="3">&nbsp;${product.productClassify}</td>			

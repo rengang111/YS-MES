@@ -29,13 +29,13 @@
 	<table class="form" >		
 		<tr>
 			<td class="label" style="width: 100px;">耀升编号：</td>
-			<td style="width: 150px;">${product.YSId}</td>
+			<td style="width: 120px;">${product.YSId}</td>
 								
 			<td class="label" style="width: 100px;">产品编号：</td>
 			<td style="width: 150px;">
 				&nbsp;<a href="###" onClick="doShowProduct()">${product.productId}</a></td>
 			
-			<td class="label" style="width: 100px;">产品名称：</td>
+			<td class="label" style="width: 150px;">产品名称：</td>
 			<td colspan="3">${product.materialName}</td>
 		</tr>
 		<tr>				
@@ -46,8 +46,8 @@
 			<td>${product.quantity}</td>
 			
 			<td class="label">封样数量：</td>
-			<td colspan="3">${product.sealedSample}</td>	
-			
+			<td colspan="3">${product.sealedSample}</td>
+				
 		</tr>
 		
 		<c:set var="type"  value="${product.productClassifyId}"/>
@@ -57,19 +57,26 @@
 			<td>${product.batteryPack}</td>
 								
 			<td class="label">充电器：</td>
-			<td colspan="5">${product.chargerType}</td>
-				
-		</tr>
-		</c:if>
-		<tr>		
-			<td class="label">包装描述：</td>
-			<td colspan="3">${product.packageDescription }</td>
+			<td>${product.chargerType}</td>
 			
 			<td class="label">版本类别：</td>
 			<td>${product.productClassify}</td>
 			
 			<td class="label">资料完成状况：</td>
 			<td style="width: 150px;">${product.status}</td>
+			
+		</tr>
+		</c:if>
+		<tr>		
+			<td class="label">包装描述：</td>
+			<td colspan="3">${product.packageDescription }</td>
+			
+			<td class="label">做单资料同步更新：</td>
+			<td colspan="3">
+				<button  type="button" class="DTTT_button"  id="doCoypToAll"  value="test" style="height: 25px;">同步做单资料</button>
+				<span id="synchro">与耀升编号<input type="text" id="ysid"  class="short" style="text-transform:uppercase;" />
+				<button  type="button" class="DTTT_button"  id="doSynchroSave"  value="test" style="height: 25px;">同步</button></span>
+				</td>
 		</tr>
 	</table>
 	
@@ -262,8 +269,10 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-			
-	$( "#tabs" ).tabs();	
+	
+	$("#synchro").hide();
+	
+	$("#tabs" ).tabs();
 	//$("#tabs").tabs({ active: 2 });  //选择第二个tab为默认显示。
 
 	productPhotoView();//产品图片
@@ -281,6 +290,7 @@ $(document).ready(function() {
 		var YSId=$('#productDesign\\.ysid').val();
 		var productId=$('#productDesign\\.productid').val();
 		var productClassify='${product.productClassifyId}';
+		alert(productClassify)
 		var goBackFlag = $('#goBackFlag').val();
 		var productDetailId=$('#productDesign\\.productdetailid').val();
 		var url = '${ctx}/business/productDesign?methodtype=convertToPdf&YSId=' + YSId+
@@ -302,6 +312,45 @@ $(document).ready(function() {
 				"&PIId="+PIId+
 				"&goBackFlag="+goBackFlag;
 		location.href = url;	 
+	});
+	
+	$("#doCoypToAll").click(function() {
+		
+		var text = $("#doCoypToAll").text();
+		//alert(text)
+		if(text == "同步做单资料"){
+			$("#doCoypToAll").text('取消同步');
+			$("#synchro").show();
+			$("#ysid").focus();
+		}else{
+			$("#doCoypToAll").text('同步做单资料');
+			$("#synchro").hide();
+			$("#ysid").focus();
+		}
+	});
+	
+	$("#doSynchroSave").click(function() {
+		var ysid = $('#ysid').val();
+		if(ysid.trim() == ''){
+			$().toastmessage('showWarningToast', "请输入耀升编号。");
+			return;
+		}
+		ysid = ysid.toUpperCase();//转换成大写
+		
+		if(confirm("此操作会删除当前的做单资料,\n与[ "+ysid+" ]同步,\n确定要同步吗?")){
+			var PIId=$('#PIId').val();
+			var oldYSId=$('#productDesign\\.ysid').val();
+			var goBackFlag = $('#goBackFlag').val();
+			var productDetailId=$('#productDesign\\.productdetailid').val();
+			var productId=$("#productDesign\\.productid").val();
+			var url = '${ctx}/business/productDesign?methodtype=copyToEdit&newYSId=' + ysid+
+					"&productDetailId="+productDetailId+
+					"&oldYSId="+oldYSId+
+					"&PIId="+PIId+
+					"&productId="+productId+
+					"&goBackFlag="+goBackFlag;
+			location.href = url;
+		}
 	});
 	
 	$("#goBack").click(function() {

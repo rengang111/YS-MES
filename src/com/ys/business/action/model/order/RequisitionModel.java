@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_RequisitionData;
+import com.ys.business.db.data.B_RequisitionDetailData;
 
 public class RequisitionModel extends BaseModel {
 	/**
@@ -14,7 +15,7 @@ public class RequisitionModel extends BaseModel {
 	private static final long serialVersionUID = 1L;
 	private String keyBackup = "";
 	
-	private List<B_RequisitionData> requisitionList;
+	private List<B_RequisitionDetailData> requisitionList;
 	private B_RequisitionData requisition;
 	
 	public String getKeyBackup() {
@@ -31,10 +32,10 @@ public class RequisitionModel extends BaseModel {
 		this.requisition = requisition;
 	}
 
-	public List<B_RequisitionData> getRequisitionList() {
+	public List<B_RequisitionDetailData> getRequisitionList() {
 		return this.requisitionList;
 	}
-	public void setRequisitionList(List<B_RequisitionData> list) {
+	public void setRequisitionList(List<B_RequisitionDetailData> list) {
 		this.requisitionList = list;
 	}
 	

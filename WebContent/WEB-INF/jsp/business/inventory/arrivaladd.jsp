@@ -257,7 +257,7 @@
 				var fsurplus = floatToCurrency(fcontract - freceive);
 				
 
-				if(vsurplus > "0"){
+				if(fsurplus > "0"){
 					$(this).find("td").eq(4).find("input").val(fsurplus);//本次到货
 					$(this).find("td").eq(7).find("span").text("0")//剩余数清零
 				}

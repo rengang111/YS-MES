@@ -244,19 +244,28 @@
 		$("#selectall").click(function () { 
 			
 			$('#example tbody tr').each (function (){
-				
-				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
-				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
-				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
+			
+				var vcontract = $(this).find("td").eq(5).find("span").text();////计划用量
+				var vreceive  = $(this).find("td").eq(7).find("span").text();//已领量
+				var vstocks   = $(this).find("td").eq(8).find("span").text();//库存
+				var vsurplus  = $(this).find("td").eq(10).find("span").text();//剩余
 
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
+				var fstocks  = currencyToFloat(vstocks);
 				var fsurplus = floatToCurrency(fcontract - freceive);
 				
 
-				if(vsurplus > "0"){
-					$(this).find("td").eq(4).find("input").val(fsurplus);//本次到货
-					$(this).find("td").eq(7).find("span").text("0")//剩余数清零
+				if(fsurplus > "0"){
+					if(fstocks > fsurplus){
+
+						$(this).find("td").eq(9).find("input").val(fsurplus);//本次领料
+						$(this).find("td").eq(10).find("span").text("0")//剩余数清零
+					}else{
+
+						$(this).find("td").eq(9).find("input").val(fstocks);//本次领料						
+						$(this).find("td").eq(10).find("span").text(fsurplus - fstocks)//剩余数清零
+					}
 				}
 							
 			})
@@ -268,19 +277,22 @@
 			
 			$('#example tbody tr').each (function (){
 
-				var varrival  = $(this).find("td").eq(4).find("input").val();////本次收货
-				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
-				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
-				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
+				var vcontract = $(this).find("td").eq(5).find("span").text();////计划用量
+				var vreceive  = $(this).find("td").eq(7).find("span").text();//已领量
+				var vstocks   = $(this).find("td").eq(8).find("span").text();//库存
+				var vquantity = $(this).find("td").eq(9).find("span").text();//本次领料
+				var vsurplus  = $(this).find("td").eq(10).find("span").text();//剩余
 
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
+				var fstocks  = currencyToFloat(vstocks);
+				var fquantity= currencyToFloat(vquantity);
 				var fsurplus = floatToCurrency(fcontract - freceive);
 
-				if(varrival > "0"){
-					$(this).find("td").eq(7).find("span").text(fsurplus);//剩余数
-					$(this).find("td").eq(4).find("input").val("0");//本次到货清零
-				}
+				
+					$(this).find("td").eq(10).find("span").text(fsurplus);//剩余数
+					$(this).find("td").eq(9).find("input").val("0");//本次到货清零
+				
 							
 			})
 
@@ -316,7 +328,7 @@
 			<tr> 				
 				<td class="label" width="100px">领料申请编号：</td>					
 				<td width="200px">
-					<form:input path="requisition.requisitionid" class="short required read-only" value="${requisitionId }" /></td>
+					<form:input path="requisition.requisitionid" class="short required read-only" value="保存后自动生成" /></td>
 														
 				<td width="100px" class="label">领料日期：</td>
 				<td width="200px">
@@ -408,7 +420,7 @@
 <div style="clear: both"></div>
 
 <fieldset>
-	<legend>收货记录</legend>
+	<legend>领料记录</legend>
 	<div class="list">	
 	<table id="example2" class="display" >
 		<thead>				

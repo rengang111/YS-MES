@@ -417,7 +417,7 @@ public class BusinessService {
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
 		
-		String ft = BusinessService.getFormat2Code(num,true);
+		String ft = BusinessService.getFormat2Code(num,false);
 		
 		return "O"+ysid+"-"+ ft;
 	 }

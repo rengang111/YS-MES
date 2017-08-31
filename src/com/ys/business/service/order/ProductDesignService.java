@@ -234,10 +234,10 @@ public class ProductDesignService extends CommonService  {
 			}else{
 				//没有该耀升编号的做单资料,
 				//显示该产品最近的耀升编号到编辑页面
-				getOrderDetailById(reqYsid);
+				getProductDesignById(oldYsid);
+				getOrderDetailById(reqYsid,"edit");
 
 				copyToEdit(oldYsid);
-				//updateInit(reqYsid);
 				photoCopy(productid,reqYsid,oldYsid);
 				rtnFlg = "编辑新建";
 			}
@@ -254,6 +254,33 @@ public class ProductDesignService extends CommonService  {
 	}
 	
 
+	public void doCopyToEdit() throws Exception {
+
+		String newYsid = request.getParameter("newYSId");
+		String oldYsid = request.getParameter("oldYSId");
+		String PIId = request.getParameter("PIId");
+		String productid = request.getParameter("productId");
+		String goBackFlag = request.getParameter("goBackFlag");
+		
+
+		//1.判断画面来的耀升编号是否有做单资料
+		B_ProductDesignData reqDb = checkProductDesignlById(newYsid);
+		
+		if(!(reqDb == null || ("").equals(reqDb))){
+			//显示该产品最近的耀升编号到编辑页面
+			getProductDesignById(newYsid);
+			getOrderDetailById(oldYsid,"edit");
+			
+			copyToEdit(newYsid);
+			photoCopy(productid,oldYsid,newYsid);
+		}
+
+		model.addAttribute("YSId",oldYsid);
+		model.addAttribute("PIId",PIId);
+		model.addAttribute("goBackFlag",goBackFlag);
+			
+	}
+	
 	private void copyToEdit(String YSId) throws Exception{
 		
 		String productDetailId = getProductDesignlByYSId(YSId);
@@ -327,7 +354,7 @@ public class ProductDesignService extends CommonService  {
 	
 		//取得该耀升编号下的产品信息
 		if(!(YSId == null || ("").equals(YSId)))
-			getOrderDetailById(YSId);
+			getOrderDetailById(YSId,"add");
 		
 		setDicList();//设置下拉框内容
 	
@@ -694,7 +721,6 @@ public class ProductDesignService extends CommonService  {
 		String YSId = mData.getYsid();
 		String productdetailid = mData.getProductdetailid();
 		try{
-			//db = new B_ProductDesignDao(mData).beanData;
 			db = checkProductDesignlById(YSId);
 		}catch(Exception e){
 			//nothing
@@ -711,13 +737,21 @@ public class ProductDesignService extends CommonService  {
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"ProductDesignUpdate",userInfo);
 		copyProperties(mData,commData);	
+		mData.setRecordid(db.getRecordid());
+		mData.setCreateperson(db.getCreateperson());
+		mData.setCreatetime(db.getCreatetime());
+		mData.setDeptguid(db.getDeptguid());
+		mData.setCreateunitid(db.getCreateunitid());
+		mData.setProductdetailid(db.getProductdetailid());
+		mData.setSubid(db.getSubid());
 		mData.setPackagedescription(
 				replaceTextArea(mData.getPackagedescription()));//字符转换
 		mData.setStoragedescription(
 				replaceTextArea(mData.getStoragedescription()));	
 	
 		dao.Store(mData);	
-
+		
+		productdetailid = db.getProductdetailid();
 		return productdetailid;
 	}
 	
@@ -1076,7 +1110,7 @@ public class ProductDesignService extends CommonService  {
 		
 	}
 	
-	public void getOrderDetailById(String YSId) throws Exception {
+	public void getOrderDetailById(String YSId,String type) throws Exception {
 		
 		dataModel.setQueryName("getOrderDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
@@ -1085,14 +1119,19 @@ public class ProductDesignService extends CommonService  {
 		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() >0){
-			dataModel
+			if(("add").equals(type)){
+				dataModel
 				.getYsViewData()
 				.get(0)
 				.put("productId",dataModel
 					.getYsViewData()
 					.get(0)
 					.get("materialId"));
-			model.addAttribute("product",dataModel.getYsViewData().get(0));
+				model.addAttribute("product",dataModel.getYsViewData().get(0));
+			}else{				
+				model.addAttribute("deliveryDate",dataModel.getYsViewData().get(0).get("deliveryDate"));//交货时间
+				model.addAttribute("quantity",dataModel.getYsViewData().get(0).get("quantity"));//交货数量
+			}
 		}		
 	}
 	
@@ -1116,6 +1155,9 @@ public class ProductDesignService extends CommonService  {
 			d.setChargertype(dataModel.getYsViewData().get(0).get("chargerTypeId"));
 			d.setStoragedescription(dataModel.getYsViewData().get(0).get("storageDescription"));
 			reqModel.setProductDesign(d);
+			//复制新建用
+			model.addAttribute("deliveryDate",dataModel.getYsViewData().get(0).get("deliveryDate"));//交货时间
+			model.addAttribute("quantity",dataModel.getYsViewData().get(0).get("quantity"));//交货数量
 
 		}
 		
@@ -1468,7 +1510,7 @@ public class ProductDesignService extends CommonService  {
 		String YSId = request.getParameter("YSId");
 		String productId = request.getParameter("productId");
 		String productDetailId = request.getParameter("productDetailId");
-		String productClassify = request.getParameter("productClassify1");
+		String productClassify = request.getParameter("productClassify");
 		ArrayList<String> list ;
 		ArrayList<HashMap<String,String>> mapList;		
 		PdfUnit pdf = new PdfUnit(session,response,YSId);  

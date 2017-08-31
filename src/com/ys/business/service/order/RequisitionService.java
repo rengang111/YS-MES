@@ -12,10 +12,16 @@ import com.ys.business.action.model.order.RequisitionModel;
 import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
+import com.ys.business.db.dao.B_PurchasePlanDao;
+import com.ys.business.db.dao.B_RequisitionDao;
+import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
+import com.ys.business.db.data.B_PurchasePlanData;
+import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_RequisitionData;
+import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
@@ -41,7 +47,8 @@ public class RequisitionService extends CommonService {
 	
 	private HttpServletRequest request;
 	
-	private B_ArrivalDao dao;
+	private B_RequisitionDao dao;
+	private B_RequisitionDetailDao detailDao;
 	private RequisitionModel reqModel;
 	private UserInfo userInfo;
 	private BaseModel dataModel;
@@ -61,7 +68,8 @@ public class RequisitionService extends CommonService {
 			RequisitionModel reqModel,
 			UserInfo userInfo){
 		
-		this.dao = new B_ArrivalDao();
+		this.dao = new B_RequisitionDao();
+		this.detailDao = new B_RequisitionDetailDao();
 		this.model = model;
 		this.reqModel = reqModel;
 		this.request = request;
@@ -87,7 +95,7 @@ public class RequisitionService extends CommonService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
-		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -152,7 +160,7 @@ public class RequisitionService extends CommonService {
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -180,8 +188,6 @@ public class RequisitionService extends CommonService {
 	public void addInit() throws Exception {
 
 		String YSId = request.getParameter("YSId");
-		//取得领料单编号
-		getRequisitionId(YSId);
 		
 		//物料需求表
 		getPurchasePlan(YSId);
@@ -194,29 +200,31 @@ public class RequisitionService extends CommonService {
 		getArrivaRecord(arrivalId);
 	}
 	
-	public void insertAndViewArrival() throws Exception {
+	public void insertAndView() throws Exception {
 
-		//String contractId = insertArrival();
+		String contractId = insert();
 		//getPurchasePlan(contractId);
 	}
 	
-	private String insertArrival(){
-		String contractId = "";
-		ts = new BaseTransaction();
+	private String insert(){
 		
-		/*
+		ts = new BaseTransaction();
+
 		try {
 			ts.begin();
 			
 			B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
-			List<B_RequisitionData> reqDataList = reqModel.getRequisitionList();
+			List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
+
+			//取得领料单编号
+			String YSId = reqData.getYsid();
+			reqData = getRequisitionId(reqData,YSId);
+			String requisitionid = reqData.getRequisitionid();
 			
-			//删除旧数据
-			String arrivalId = reqData.getArrivalid();
-			deleteArrivalById(arrivalId);
-			contractId = reqData.getContractid();
-			
-			for(B_ArrivalData data:reqDataList ){
+			//领料申请insert
+			insertRequisition(reqData);
+						
+			for(B_RequisitionDetailData data:reqDataList ){
 				String q = data.getQuantity();
 				if(q == null || q.equals("") || q.equals("0"))
 					continue;
@@ -228,17 +236,12 @@ public class RequisitionService extends CommonService {
 
 				String guid = BaseDAO.getGuId();
 				data.setRecordid(guid);
-				data.setArrivalid(arrivalId);
-				data.setContractid(reqData.getContractid());
-				data.setSupplierid(reqData.getSupplierid());
-				data.setUserid(userInfo.getUserId());
-				data.setArrivedate(reqData.getArrivedate());
-				data.setStatus(Constants.ARRIVERECORD_0);//未报检
+				data.setRequisitionid(requisitionid);
 				
 				dao.Create(data);	
 				
-				//更新累计到货数量
-				updateContractArraival(contractId,data.getMaterialid(),data.getQuantity());
+				//更新累计领料数量
+				updatePurchasePlan(YSId,data.getMaterialid(),data.getQuantity());
 			
 			}
 			
@@ -253,72 +256,58 @@ public class RequisitionService extends CommonService {
 				System.out.println(e1.getMessage());
 			}
 		}
-		*/
-		return contractId;
+		
+		return "";
+	}
+	
+	private void insertRequisition(
+			B_RequisitionData stock) throws Exception {
+		
+		//插入新数据
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"RequisitionInsert",userInfo);
+		copyProperties(stock,commData);
+		stock.setStoreuserid(userInfo.getUserId());//默认为登陆者
+
+		String guid = BaseDAO.getGuId();
+		stock.setRecordid(guid);
+		
+		dao.Create(stock);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void updateContractArraival(
-			String contractId,
+	private void updatePurchasePlan(
+			String YSId,
 			String materialId,
-			String arrival) throws Exception{
-	
-
-		//更新合同状态
-		B_PurchaseOrderData d = new B_PurchaseOrderData();
-		B_PurchaseOrderDao o = new B_PurchaseOrderDao();		
-		String strwhere = "contractId ='"+contractId +
-				"' AND deleteFlag='0' ";
-		List<B_PurchaseOrderData> l = 
-				(List<B_PurchaseOrderData>)o.Find(strwhere);
+			String quantity) throws Exception{
 		
-		String where = "contractId ='"+contractId +
+		String where = "YSId ='"+YSId +
 				"' AND materialId ='"+ materialId +
 				"' AND deleteFlag='0' ";
-		if(l ==null || l.size() == 0){
-			return ;
-		}		
-		d = l.get(0);
-		d.setStatus(Constants.ORDER_STS_5);//合同执行中
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ArrivalUpdate",userInfo);
-		copyProperties(d,commData);		
-		o.Store(d);
-		
+				
 		//更新到货数量
-		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
-		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
-		List<B_PurchaseOrderDetailData> list = 
-				(List<B_PurchaseOrderDetailData>)dao.Find(where);
+		B_PurchasePlanData data = new B_PurchasePlanData();
+		B_PurchasePlanDao dao = new B_PurchasePlanDao();
+		List<B_PurchasePlanData> list = 
+				(List<B_PurchasePlanData>)dao.Find(where);
 		
 		if(list ==null || list.size() == 0){
 			return ;
 		}
-
 		data = list.get(0);
 		
-		//计算到货累计数量
-		String accumulated = data.getAccumulated();
-		float iAcc = 0;
-		float iArr = 0;
-		if(!(arrival ==null || ("").equals(arrival)))
-			iArr = Float.parseFloat(arrival.replace(",", ""));
-
-		if(!(accumulated ==null || ("").equals(accumulated)))
-			iAcc = Float.parseFloat(accumulated.replace(",", ""));
-		
-		float iNew = iArr + iAcc;
-		
-		data.setAccumulated(String.valueOf(iNew));
+		//计算累计领料数量
+		float iAcc = stringToFloat(data.getTotalrequisition());
+		float iArr = stringToFloat(quantity);				
+		float iNew = iArr + iAcc;		
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ArrivalUpdate",userInfo);
+				"RequriUpdate",userInfo);
 		copyProperties(data,commData);
+		data.setTotalrequisition(String.valueOf(iNew));
 		
-		dao.Store(data);
-
-		
+		dao.Store(data);		
 	}
 	
 	
@@ -380,26 +369,22 @@ public class RequisitionService extends CommonService {
 	
 	
 	
-	public void getRequisitionId(String parentId) {
-
-		try {
-			dataModel.setQueryName("getMAXRequisitionId");
-			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("parentId", parentId);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
-			baseQuery.getYsFullData();	
-			
-			String code = dataModel.getYsViewData().get(0).get("MaxSubId");		
-			
-			model.addAttribute("requisitionId",
-					BusinessService.getRequisitionId(parentId,code));
-			
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
+	public B_RequisitionData getRequisitionId(B_RequisitionData data,
+			String parentId) throws Exception {
 		
+		dataModel.setQueryName("getMAXRequisitionId");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("parentId", parentId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		baseQuery.getYsFullData();
+		//sql里已经是MAX+1
+		String subid = dataModel.getYsViewData().get(0).get("MaxSubId");
+		String id =  BusinessService.getRequisitionId(parentId,subid);
+		data.setRequisitionid(id);
+		data.setParentid(parentId);
+		data.setSubid(subid);
+		
+		return data;
 	}
 	
 	public void getPurchasePlan(String YSId) throws Exception {
