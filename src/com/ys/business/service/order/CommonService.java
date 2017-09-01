@@ -561,6 +561,7 @@ public class CommonService extends BaseService {
 			str = str.replace("\n\r", "<br>");
 			str = str.replace("\r\n", "<br>");
 			str = str.replace("\r", "<br>");
+			str = str.replace("\n", "");
 			str = str.replace("\t", "  ");
 			//str = str.replace(" ", "&nbsp;");
 			//mystr = mystr.replace("\"", "\\"+"\"");
@@ -596,7 +597,9 @@ public class CommonService extends BaseService {
 	 */  
     public static void folderCopy(String src, String des) {  
         File file1=new File(src);  
-        File[] fs=file1.listFiles();  
+        File[] fs=file1.listFiles();
+        if(fs == null)
+        	return;//复制源文件夹里面没有文件的话,直接返回;
         File file2=new File(des);  
         String timeStemp = CalendarUtil.timeStempDate();
         if(!file2.exists()){  
