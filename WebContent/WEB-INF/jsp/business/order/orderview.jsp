@@ -212,7 +212,7 @@
 	});
 
 	function ShowBomPlan(YSId,materialId) {
-		var url = '${ctx}/business/bom?methodtype=orderDetail&YSId=' + YSId+'&materialId='+materialId;
+		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanAddInit&YSId=' + YSId+'&materialId='+materialId;
 		location.href = url;
 	};
 	
@@ -398,7 +398,7 @@
 					<td class="cash" style="padding-right: 20px;">${order.price}</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
 					<td>${order.materialId}</td>
-					<td><a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">订单详情</a></td>
+					<td><a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">采购方案</a></td>
 					<td>${order.productClassify}</td>												
 				</tr>
 			</c:if>

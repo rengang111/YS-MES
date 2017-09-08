@@ -133,5 +133,23 @@ public class Constants {
 	 */
 	public static final String ORDERTYPE_1 = "010";//正常订单
 	public static final String ORDERTYPE_2 = "020";//配件订单
+	
+	/**
+	 *@category 物料采购类别
+	 *
+	 */
+	public static final String PURCHASE_TYPE_D = "010";//订购件
+	public static final String PURCHASE_TYPE_T = "020";//通用件
+	public static final String PURCHASE_TYPE_Y = "040";//自制品
+	public static final String PURCHASE_TYPE_O = "030";//其他
+	
+	/**
+	 *@category 合同类别
+	 *
+	 */
+	public static final String CONTRACT_TYPE_D = "D";//订购件
+	public static final String CONTRACT_TYPE_T = "T";//通用件
+	public static final String CONTRACT_TYPE_Y = "Y";//自制品
+	public static final String CONTRACT_TYPE_O = "O";//其他
 
 }

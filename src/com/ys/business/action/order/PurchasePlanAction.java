@@ -19,24 +19,26 @@ import com.ys.business.action.model.order.PurchasePlanModel;
 import com.ys.business.service.order.PurchasePlanService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.Constants;
 import com.ys.system.action.common.BaseAction;
 
 
 @Controller
 @RequestMapping("/business")
-public class PurchaseAction extends BaseAction {
+public class PurchasePlanAction extends BaseAction {
 	
 	@Autowired PurchasePlanService purchaseService;
 	@Autowired HttpServletRequest request;
+	HttpSession session;
 	
 	UserInfo userInfo = new UserInfo();
 	PurchasePlanModel reqModel = new PurchasePlanModel();
 	Model model;
 	
-	@RequestMapping(value="/purchase")
+	@RequestMapping(value="/purchasePlan")
 	public String init(
 			@RequestBody String data, 
-			@ModelAttribute("purchaseForm") PurchasePlanModel plan, 
+			@ModelAttribute("attrForm") PurchasePlanModel plan, 
 			BindingResult result,
 			Model model, 
 			HttpSession session, 
@@ -47,9 +49,10 @@ public class PurchaseAction extends BaseAction {
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		purchaseService = new PurchasePlanService(model,request,plan,userInfo);
+		purchaseService = new PurchasePlanService(model,request,response,session,plan,userInfo);
 		reqModel = plan;
 		this.model = model;
+		this.session = session;
 		
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
@@ -66,43 +69,48 @@ public class PurchaseAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				rtnUrl = "/business/purchase/purchasemain";
+				doInit(Constants.FORM_PURCHASEPLAN,session);
+				rtnUrl = "/business/purchaseplan/purchaseplanmain";
 				break;				
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;							
 			case "purchasePlan":
-				doShowBomDetail();
-				rtnUrl = "/business/purchase/purchaseplanedit";
+				//doShowBomDetail();
+				rtnUrl = "/business/purchaseplan/purchaseplanedit";
 				break;			
 			case "searchPurchase":
 				dataMap = doSearchPurchase(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "create":
-				doCreate();
-				rtnUrl = "/business/purchase/bomplanadd";
+			case "purchasePlanAddInit":
+				purchasePlanAddInit();
+				rtnUrl = "/business/purchaseplan/purchaseplanadd";
 				break;
-			case "insert":
-				doInsert();
-				rtnUrl = "/business/requirement/requirementmain";
+			case "purchasePlanAdd":
+				doPurchasePlanAdd();
+				rtnUrl = "/business/purchaseplan/purchaseplanview";
+				break;				
+			case "detailView":
+				doShowPurchaseDetail();
+				rtnUrl = "/business/purchaseplan/purchaseplanview";
+				break;				
+			case "purchasePlanView":
+				dataMap = purchasePlanView();
+				printOutJsonObj(response, dataMap);
 				break;							
-			case "detail":
-				doShowBomDetail();
-				rtnUrl = "/business/purchase/purchaseplanview";
-				break;								
 			case "PurchaseView":
 				doShowPurchaseDetail();
 				rtnUrl = "/business/purchase/purchaseplan";
 				break;
-			case "edit":
+			case "purchasePlanEdit":
 				doEdit();
-				rtnUrl = "/business/purchase/purchaseplanedit";
+				rtnUrl = "/business/purchaseplan/purchaseplanedit";
 				break;				
-			case "update":
+			case "purchasePlanUpdate":
 				doUpdate();
-				rtnUrl = "/business/purchase/bomplanview";
+				rtnUrl = "/business/purchaseplan/purchaseplanview";
 				break;
 				
 		}
@@ -110,6 +118,17 @@ public class PurchaseAction extends BaseAction {
 		return rtnUrl;		
 	}
 	
+	public void doInit(String formId,HttpSession session){	
+		
+		String keyBackup = request.getParameter("keyBackup");
+		//没有物料编号,说明是初期显示,清空保存的查询条件
+		if(keyBackup == null || ("").equals(keyBackup)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+		}
+		
+	}
+
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doSearch(
 			@RequestBody String data){
@@ -117,7 +136,13 @@ public class PurchaseAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
-		
+		//优先执行查询按钮事件,清空session中的查询条件
+		String keyBackup = request.getParameter("keyBackup");
+		if(keyBackup != null && !("").equals(keyBackup)){
+			session.removeAttribute(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD2);
+			
+		}
 		try {
 			dataMap = purchaseService.getBomList(data);
 			
@@ -160,13 +185,13 @@ public class PurchaseAction extends BaseAction {
 	}
 
 
-	public void doCreate() throws Exception{
+	public void purchasePlanAddInit() throws Exception{
 		
-		model = purchaseService.createBomPlan();
+		purchaseService.createBomPlan();
 		
 	}
 	
-	public void doInsert() throws Exception {
+	public void doPurchasePlanAdd() throws Exception {
 
 		model = purchaseService.insertAndView();
 		
@@ -175,25 +200,26 @@ public class PurchaseAction extends BaseAction {
 	
 	public void doEdit() throws Exception{
 
-		model = purchaseService.editBomPlan();
+		purchaseService.editPurchasePlan();
 	}	
 	
 	public void doUpdate() throws Exception {
 		
-		//purchaseService.updateAndView();			
+		purchaseService.updateAndView();			
 		
 	}
 
-	public void doShowBomDetail() throws Exception{
-				
-		model = purchaseService.showBomDetail();
+
+	public void doShowPurchaseDetail() throws Exception{
+		
+		purchaseService.showPurchaseDetail();
 			
 	}
 	
-	public void doShowPurchaseDetail() throws Exception{
+	public HashMap<String, Object> purchasePlanView() throws Exception {
 		
-		model = purchaseService.showBomDetail();
-			
+		return purchaseService.purchasePlanView();		
+		
 	}
 	
 }

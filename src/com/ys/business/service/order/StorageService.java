@@ -315,11 +315,11 @@ public class StorageService extends CommonService {
 		return receiptid;
 	}
 	
-	//更新当前库存
+	//更新当前库存:采购入库时，减少“待入库”，增加“当前库存”
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
 			String materialId,
-			String newQuantity) throws Exception{
+			String reqQuantity) throws Exception{
 	
 		B_MaterialData data = new B_MaterialData();
 		B_MaterialDao dao = new B_MaterialDao();
@@ -337,15 +337,20 @@ public class StorageService extends CommonService {
 		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());
-		float inewQuantity = stringToFloat(newQuantity);				
-		float iNewQuantiy = iQuantity + inewQuantity;		
+		float ireqQuantity = stringToFloat(reqQuantity);				
+		float iNewQuantiy = iQuantity + ireqQuantity;		
 		
 		//待入库数量
 		float istockin = stringToFloat(data.getWaitstockin());		
-		float iNewStockIn = istockin - iQuantity;
+		float iNewStockIn = istockin - ireqQuantity;
+		
+		//虚拟库存=当前库存 + 待入库 - 待出库
+		float waitstockout = stringToFloat(data.getWaitstockout());//待出库	
+		float availabeltopromise = iNewQuantiy + iNewStockIn - waitstockout;
 		
 		data.setQuantityonhand(String.valueOf(iNewQuantiy));
-		data.setWaitstockin(String.valueOf(iNewStockIn));		
+		data.setWaitstockin(String.valueOf(iNewStockIn));
+		data.setAvailabeltopromise(String.valueOf(availabeltopromise));
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,

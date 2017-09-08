@@ -86,157 +86,235 @@ public class B_PurchasePlanData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String unitquantity;
-	public String getUnitquantity()
+	private String managementcostrate;
+	public String getManagementcostrate()
 	{
-		return this.unitquantity;
+		return this.managementcostrate;
 	}
-	public void setUnitquantity(String unitquantity)
+	public void setManagementcostrate(String managementcostrate)
 	{
-		this.unitquantity=unitquantity;
-	}
-
-	/**
-	*
-	*/
-	private String supplierid;
-	public String getSupplierid()
-	{
-		return this.supplierid;
-	}
-	public void setSupplierid(String supplierid)
-	{
-		this.supplierid=supplierid;
+		this.managementcostrate=managementcostrate;
 	}
 
 	/**
 	*
 	*/
-	private String price;
-	public String getPrice()
+	private String managementcost;
+	public String getManagementcost()
 	{
-		return this.price;
+		return this.managementcost;
 	}
-	public void setPrice(String price)
+	public void setManagementcost(String managementcost)
 	{
-		this.price=price;
-	}
-
-	/**
-	*
-	*/
-	private String oldsupplierid;
-	public String getOldsupplierid()
-	{
-		return this.oldsupplierid;
-	}
-	public void setOldsupplierid(String oldsupplierid)
-	{
-		this.oldsupplierid=oldsupplierid;
+		this.managementcost=managementcost;
 	}
 
 	/**
 	*
 	*/
-	private String oldprice;
-	public String getOldprice()
+	private String bomcost;
+	public String getBomcost()
 	{
-		return this.oldprice;
+		return this.bomcost;
 	}
-	public void setOldprice(String oldprice)
+	public void setBomcost(String bomcost)
 	{
-		this.oldprice=oldprice;
-	}
-
-	/**
-	*
-	*/
-	private String pricestatus;
-	public String getPricestatus()
-	{
-		return this.pricestatus;
-	}
-	public void setPricestatus(String pricestatus)
-	{
-		this.pricestatus=pricestatus;
+		this.bomcost=bomcost;
 	}
 
 	/**
 	*
 	*/
-	private String orderquantity;
-	public String getOrderquantity()
+	private String productcost;
+	public String getProductcost()
 	{
-		return this.orderquantity;
+		return this.productcost;
 	}
-	public void setOrderquantity(String orderquantity)
+	public void setProductcost(String productcost)
 	{
-		this.orderquantity=orderquantity;
-	}
-
-	/**
-	*
-	*/
-	private String quantity;
-	public String getQuantity()
-	{
-		return this.quantity;
-	}
-	public void setQuantity(String quantity)
-	{
-		this.quantity=quantity;
+		this.productcost=productcost;
 	}
 
 	/**
 	*
 	*/
-	private String totalrequisition;
-	public String getTotalrequisition()
+	private String totalcost;
+	public String getTotalcost()
 	{
-		return this.totalrequisition;
+		return this.totalcost;
 	}
-	public void setTotalrequisition(String totalrequisition)
+	public void setTotalcost(String totalcost)
 	{
-		this.totalrequisition=totalrequisition;
-	}
-
-	/**
-	*
-	*/
-	private String totalprice;
-	public String getTotalprice()
-	{
-		return this.totalprice;
-	}
-	public void setTotalprice(String totalprice)
-	{
-		this.totalprice=totalprice;
+		this.totalcost=totalcost;
 	}
 
 	/**
 	*
 	*/
-	private String subbomid;
-	public String getSubbomid()
+	private String laborcost;
+	public String getLaborcost()
 	{
-		return this.subbomid;
+		return this.laborcost;
 	}
-	public void setSubbomid(String subbomid)
+	public void setLaborcost(String laborcost)
 	{
-		this.subbomid=subbomid;
+		this.laborcost=laborcost;
 	}
 
 	/**
 	*
 	*/
-	private String remark;
-	public String getRemark()
+	private String materialcost;
+	public String getMaterialcost()
 	{
-		return this.remark;
+		return this.materialcost;
 	}
-	public void setRemark(String remark)
+	public void setMaterialcost(String materialcost)
 	{
-		this.remark=remark;
+		this.materialcost=materialcost;
+	}
+
+	/**
+	*
+	*/
+	private String plandate;
+	public String getPlandate()
+	{
+		return this.plandate;
+	}
+	public void setPlandate(String plandate)
+	{
+		this.plandate=plandate;
+	}
+
+	/**
+	*
+	*/
+	private String currency;
+	public String getCurrency()
+	{
+		return this.currency;
+	}
+	public void setCurrency(String currency)
+	{
+		this.currency=currency;
+	}
+
+	/**
+	*
+	*/
+	private String exchangerate;
+	public String getExchangerate()
+	{
+		return this.exchangerate;
+	}
+	public void setExchangerate(String exchangerate)
+	{
+		this.exchangerate=exchangerate;
+	}
+
+	/**
+	*
+	*/
+	private String exchangeprice;
+	public String getExchangeprice()
+	{
+		return this.exchangeprice;
+	}
+	public void setExchangeprice(String exchangeprice)
+	{
+		this.exchangeprice=exchangeprice;
+	}
+
+	/**
+	*
+	*/
+	private String salestax;
+	public String getSalestax()
+	{
+		return this.salestax;
+	}
+	public void setSalestax(String salestax)
+	{
+		this.salestax=salestax;
+	}
+
+	/**
+	*
+	*/
+	private String rebate;
+	public String getRebate()
+	{
+		return this.rebate;
+	}
+	public void setRebate(String rebate)
+	{
+		this.rebate=rebate;
+	}
+
+	/**
+	*
+	*/
+	private String rebaterate;
+	public String getRebaterate()
+	{
+		return this.rebaterate;
+	}
+	public void setRebaterate(String rebaterate)
+	{
+		this.rebaterate=rebaterate;
+	}
+
+	/**
+	*
+	*/
+	private String rmbprice;
+	public String getRmbprice()
+	{
+		return this.rmbprice;
+	}
+	public void setRmbprice(String rmbprice)
+	{
+		this.rmbprice=rmbprice;
+	}
+
+	/**
+	*
+	*/
+	private String profitrate;
+	public String getProfitrate()
+	{
+		return this.profitrate;
+	}
+	public void setProfitrate(String profitrate)
+	{
+		this.profitrate=profitrate;
+	}
+
+	/**
+	*
+	*/
+	private String profit;
+	public String getProfit()
+	{
+		return this.profit;
+	}
+	public void setProfit(String profit)
+	{
+		this.profit=profit;
+	}
+
+	/**
+	*
+	*/
+	private int version;
+	public int getVersion()
+	{
+		return this.version;
+	}
+	public void setVersion(int version)
+	{
+		this.version=version;
 	}
 
 	/**
@@ -371,13 +449,13 @@ public class B_PurchasePlanData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("purchaseid = "+(purchaseid == null ? "null" : purchaseid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("unitquantity = "+(unitquantity == null ? "null" : unitquantity)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("oldsupplierid = "+(oldsupplierid == null ? "null" : oldsupplierid)+"\n");		sb.append("oldprice = "+(oldprice == null ? "null" : oldprice)+"\n");		sb.append("pricestatus = "+(pricestatus == null ? "null" : pricestatus)+"\n");		sb.append("orderquantity = "+(orderquantity == null ? "null" : orderquantity)+"\n");		sb.append("quantity = "+(quantity == null ? "null" : quantity)+"\n");		sb.append("totalrequisition = "+(totalrequisition == null ? "null" : totalrequisition)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("subbomid = "+(subbomid == null ? "null" : subbomid)+"\n");		sb.append("remark = "+(remark == null ? "null" : remark)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("purchaseid = "+(purchaseid == null ? "null" : purchaseid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("managementcostrate = "+(managementcostrate == null ? "null" : managementcostrate)+"\n");		sb.append("managementcost = "+(managementcost == null ? "null" : managementcost)+"\n");		sb.append("bomcost = "+(bomcost == null ? "null" : bomcost)+"\n");		sb.append("productcost = "+(productcost == null ? "null" : productcost)+"\n");		sb.append("totalcost = "+(totalcost == null ? "null" : totalcost)+"\n");		sb.append("laborcost = "+(laborcost == null ? "null" : laborcost)+"\n");		sb.append("materialcost = "+(materialcost == null ? "null" : materialcost)+"\n");		sb.append("plandate = "+(plandate == null ? "null" : plandate)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("exchangerate = "+(exchangerate == null ? "null" : exchangerate)+"\n");		sb.append("exchangeprice = "+(exchangeprice == null ? "null" : exchangeprice)+"\n");		sb.append("salestax = "+(salestax == null ? "null" : salestax)+"\n");		sb.append("rebate = "+(rebate == null ? "null" : rebate)+"\n");		sb.append("rebaterate = "+(rebaterate == null ? "null" : rebaterate)+"\n");		sb.append("rmbprice = "+(rmbprice == null ? "null" : rmbprice)+"\n");		sb.append("profitrate = "+(profitrate == null ? "null" : profitrate)+"\n");		sb.append("profit = "+(profit == null ? "null" : profit)+"\n");		sb.append("version = "+version+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		purchaseid= (purchaseid == null ?null : purchaseid.trim());		ysid= (ysid == null ?null : ysid.trim());		subid= (subid == null ?null : subid.trim());		materialid= (materialid == null ?null : materialid.trim());		unitquantity= (unitquantity == null ?null : unitquantity.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		price= (price == null ?null : price.trim());		oldsupplierid= (oldsupplierid == null ?null : oldsupplierid.trim());		oldprice= (oldprice == null ?null : oldprice.trim());		pricestatus= (pricestatus == null ?null : pricestatus.trim());		orderquantity= (orderquantity == null ?null : orderquantity.trim());		quantity= (quantity == null ?null : quantity.trim());		totalrequisition= (totalrequisition == null ?null : totalrequisition.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		subbomid= (subbomid == null ?null : subbomid.trim());		remark= (remark == null ?null : remark.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		purchaseid= (purchaseid == null ?null : purchaseid.trim());		ysid= (ysid == null ?null : ysid.trim());		subid= (subid == null ?null : subid.trim());		materialid= (materialid == null ?null : materialid.trim());		managementcostrate= (managementcostrate == null ?null : managementcostrate.trim());		managementcost= (managementcost == null ?null : managementcost.trim());		bomcost= (bomcost == null ?null : bomcost.trim());		productcost= (productcost == null ?null : productcost.trim());		totalcost= (totalcost == null ?null : totalcost.trim());		laborcost= (laborcost == null ?null : laborcost.trim());		materialcost= (materialcost == null ?null : materialcost.trim());		plandate= (plandate == null ?null : plandate.trim());		currency= (currency == null ?null : currency.trim());		exchangerate= (exchangerate == null ?null : exchangerate.trim());		exchangeprice= (exchangeprice == null ?null : exchangeprice.trim());		salestax= (salestax == null ?null : salestax.trim());		rebate= (rebate == null ?null : rebate.trim());		rebaterate= (rebaterate == null ?null : rebaterate.trim());		rmbprice= (rmbprice == null ?null : rmbprice.trim());		profitrate= (profitrate == null ?null : profitrate.trim());		profit= (profit == null ?null : profit.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

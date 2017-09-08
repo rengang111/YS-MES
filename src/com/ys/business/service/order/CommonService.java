@@ -651,4 +651,28 @@ public class CommonService extends BaseService {
           
           
     }  
+	
+	public String getContractType(String dicType){
+
+		String type = "";
+		switch(dicType){
+			case Constants.PURCHASE_TYPE_D:
+				type=Constants.CONTRACT_TYPE_D;
+				break;
+			case Constants.PURCHASE_TYPE_T:
+				type=Constants.CONTRACT_TYPE_T;
+				break;
+			case Constants.PURCHASE_TYPE_Y:
+				type=Constants.CONTRACT_TYPE_Y;
+				break;	
+			case Constants.PURCHASE_TYPE_O:
+				type=Constants.CONTRACT_TYPE_O;
+				break;	
+			default:
+				type=Constants.CONTRACT_TYPE_D;
+				break;
+		}
+		
+		return type;
+	}
 }

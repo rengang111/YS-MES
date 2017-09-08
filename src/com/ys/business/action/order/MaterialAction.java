@@ -444,13 +444,16 @@ public class MaterialAction extends BaseAction {
 			Model model,
 			HttpServletRequest request) throws Exception {
 
+		
 		model = materialService.insertPrice(reqModel,model, request,userInfo);
 		
 	}	
 
 	
 	public void doUpdate() throws Exception {
-				
+
+		String keyBackup = this.request.getParameter("keyBackup");
+		this.model.addAttribute("keyBackup", keyBackup);
 		model = materialService.update();
 		
 		
@@ -587,7 +590,10 @@ public class MaterialAction extends BaseAction {
 
 		String recordId = request.getParameter("recordId");
 		String parentId = request.getParameter("parentId");
+		String keyBackup = this.request.getParameter("keyBackup");
+		
 		model = materialService.MaterailDetail(recordId,parentId);
+		this.model.addAttribute("keyBackup", keyBackup);
 
 	}	
 	

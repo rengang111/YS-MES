@@ -13,12 +13,14 @@ import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
+import com.ys.business.db.dao.B_PurchasePlanDetailDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
+import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_RequisitionDetailData;
@@ -286,10 +288,10 @@ public class RequisitionService extends CommonService {
 				"' AND deleteFlag='0' ";
 				
 		//更新到货数量
-		B_PurchasePlanData data = new B_PurchasePlanData();
-		B_PurchasePlanDao dao = new B_PurchasePlanDao();
-		List<B_PurchasePlanData> list = 
-				(List<B_PurchasePlanData>)dao.Find(where);
+		B_PurchasePlanDetailData data = new B_PurchasePlanDetailData();
+		B_PurchasePlanDetailDao dao = new B_PurchasePlanDetailDao();
+		List<B_PurchasePlanDetailData> list = 
+				(List<B_PurchasePlanDetailData>)dao.Find(where);
 		
 		if(list ==null || list.size() == 0){
 			return ;

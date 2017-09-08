@@ -44,6 +44,7 @@ input.middle{width:300px;}
 	<form:hidden path="material.serialnumber" />
 	<form:hidden path="material.categoryid" />
 	<form:hidden path="categoryname" />
+	<input type="hidden" id="keyBackup" value="${keyBackup }"/>
 	
 <fieldset>
 	<legend>物料基本信息-编辑</legend>
@@ -522,7 +523,9 @@ function doSubmit(){
 	// material= material.replace("\'","&#39");
 	//alert(material)
 	// $('#material\\.materialname').val(material);
-	$('#material').attr("action", "${ctx}/business/material?methodtype=update");
+	
+	var keyBackup = $("#keyBackup").val();
+	$('#material').attr("action", "${ctx}/business/material?methodtype=update"+"&keyBackup="+keyBackup);
 	$('#material').submit();
 }
 

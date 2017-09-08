@@ -41,6 +41,7 @@ import com.ys.business.db.data.B_OrderBomDetailData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchasePlanData;
+import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.order.CommonService;
@@ -762,6 +763,7 @@ public class RequirementService extends CommonService {
 		ts = new BaseTransaction();
 
 		String YSId = "";
+		/*
 		try {
 			ts.begin();
 			
@@ -776,7 +778,7 @@ public class RequirementService extends CommonService {
 			
 			//BOM详情
 			//采购方案详情		
-			List<B_PurchasePlanData> reqDataList = reqModel.getPurchaseList();
+			List<B_PurchasePlanDetailData> reqDataList = reqModel.getPurchaseList();
 			
 			//首先删除旧数据
 			//String where = " bomId = '"+bomId +"'";
@@ -784,7 +786,7 @@ public class RequirementService extends CommonService {
 			
 			//基础BOM的供应商,单价处理
 			
-			for(B_PurchasePlanData data:reqDataList ){
+			for(B_PurchasePlanDetailData data:reqDataList ){
 
 				//data.setBomid(bomId);
 				String baseMaterialId=data.getMaterialid();
@@ -839,7 +841,7 @@ public class RequirementService extends CommonService {
 			//deleteContractDetail(YSId);
 			
 			//虚拟库存处理
-			/*
+			
 			for(B_PurchasePlanData data:reqDataList ){
 
 				B_InventoryData d = new B_InventoryData();
@@ -849,7 +851,7 @@ public class RequirementService extends CommonService {
 				updateInventory(d);			
 				
 			}
-			*/
+			
 			
 			ts.commit();
 			System.out.println("end insertProcurementPlan:"+YSId+"时间:"+CalendarUtil.getSystemDate());
@@ -860,7 +862,7 @@ public class RequirementService extends CommonService {
 			System.out.println(e.getMessage());
 			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
-		
+		*/
 		return YSId;
 		
 	}

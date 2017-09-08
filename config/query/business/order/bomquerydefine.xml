@@ -38,12 +38,17 @@
     <select>
       <f name="A.recordId" alias="" ctype="" />
       <f name="A.materialId" alias="" ctype="" />
+      <f name="A.recordId" alias="materialRecordId" ctype="" />
+      <f name="A.parentId" alias="materialParentId" ctype="" />
       <f name="A.materialName" alias="" ctype="" />
       <f name="A.categoryId" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.minPrice" alias="" ctype="" />
       <f name="A.lastPrice" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
+      <f name="A.availabelToPromise" alias="" ctype="" />
+      <f name="A.purchaseType" alias="" ctype="物料采购类别" />
+      <f name="A.purchaseType" alias="purchaseTypeId" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.fullField" alias="" ctype="" />
@@ -270,7 +275,13 @@
       <f name="unit" alias="" ctype="计量单位" />
       <f name="supplierRecordId" alias="" ctype="" />
       <f name="subBomId" alias="" ctype="" />
+      <f name="availabelToPromise" alias="" ctype="" />
+      <f name="quantityOnHand" alias="" ctype="" />
+      <f name="purchaseType" alias="" ctype="物料采购类别" />
+      <f name="purchaseType" alias="purchaseTypeId" ctype="" />
       <f name="IFNULL(subbomno,0)" alias="subbomno" ctype="" />
+      <f name="materialRecordId" alias="" ctype="" />
+      <f name="materialParentId" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->

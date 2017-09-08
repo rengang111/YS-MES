@@ -336,7 +336,7 @@
 				
 				<td width="100px" class="label">领料人：</td>
 				<td>
-					<form:input path="requisition.userid" class="short read-only" value="${userName }" /></td>
+					<form:input path="requisition.requisitionuserid" class="short read-only" value="${userName }" /></td>
 			</tr>
 			<tr> 				
 				<td class="label">耀升编号：</td>					

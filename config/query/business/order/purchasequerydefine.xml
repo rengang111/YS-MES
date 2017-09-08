@@ -97,6 +97,7 @@
     </where>
   	<select>
       <f name="a.recordId" alias="" ctype="" />
+      <f name="a.planRecordId" alias="" ctype="" />
       <f name="a.YSId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
@@ -104,21 +105,33 @@
       <f name="a.materialRecordId" alias="" ctype="" />
       <f name="a.unit" alias="unitName" ctype="计量单位" />
       <f name="a.price" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="IFNULL(b.lastPrice, 0)" alias="lastPrice" ctype="" />
       <f name="b.lastSupplierId" alias="" ctype="" />
       <f name="IFNULL(b.minPrice, 0)" alias="minPrice" ctype="" />
       <f name="b.minSupplierId" alias="" ctype="" />
-      <f name="a.orderQuantity" alias="" ctype="" />
-      <f name="a.unitQuantity" alias="" ctype="" />
-      <f name="a.quantity" alias="" ctype="" />
+      <f name="a.purchaseQuantity" alias="" ctype="" />
+      <f name="a.planDate" alias="" ctype="" />
+      <f name="a.bomCost" alias="" ctype="" />
+      <f name="a.managementCost" alias="" ctype="" />
+      <f name="a.managementCostRate" alias="" ctype="" />
+      <f name="a.productCost" alias="" ctype="" />
+      <f name="a.materialCost" alias="" ctype="" />
+      <f name="a.laborCost" alias="" ctype="" />
+      <f name="a.totalCost" alias="" ctype="" />
       <f name="a.availabelToPromise" alias="" ctype="" />
       <f name="a.priceStatus" alias="" ctype="" />
+      <f name="a.purchaseType" alias="" ctype="物料采购类别" />
+      <f name="a.purchaseType" alias="purchaseTypeId" ctype="" />
+      <f name="a.unitQuantity" alias="" ctype="" />
+      <f name="a.subbomno" alias="" ctype="" />
+      <f name="a.prevQuantity" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId  </from>
-    <orderby>a.materialId</orderby>
+   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' </from>
+    <orderby>a.subBomNo+0,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    
@@ -137,14 +150,13 @@
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="a.price" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
-      <f name="a.orderQuantity" alias="" ctype="" />
-      <f name="a.quantity" alias="" ctype="" />
-      <f name="sum(REPLACE(IFNULL(a.price,0),',','') *  REPLACE(IFNULL(a.quantity,0),',',''))" alias="total" ctype="" />
-      <f name="b.shortName" alias="" ctype="" />
+      <f name="a.purchaseType" alias="" ctype="" />
+      <f name="FORMAT(sum(REPLACE(IFNULL(a.price,0),',','') *  REPLACE(IFNULL(a.manufactureQuantity,0),',','')),2)" alias="total" ctype="" />
+      <f name="a.supplierShortName" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseplan a LEFT JOIN b_supplier b ON b.supplierId = a.supplierId AND  b.deleteFlag = '0' WHERE a.deleteFlag = '0' </from>
+   <from>v_purchaseplan a  WHERE a.deleteFlag = '0' </from>
     <orderby>a.supplierId</orderby>
     <groupby>a.supplierId</groupby>
     <having></having>
@@ -152,16 +164,29 @@
   </query>
   <query>
     <pool></pool>    
-    <name value="getContractCode" />
+    <name value="getContractTypeCode" />
     <where>
-      <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="A.typeParentId" des=""  reqName="typeParentId" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
   	<select>
-      <f name=" IFNULL(max(subId+0),'0')" alias="MaxSubId" ctype="" />
+      <f name=" IFNULL(max(typeSerial+1),'1')" alias="MaxSubId" ctype="" />
   </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <!-- 限定显示订单状态为"BOM表已做成,已评审"的数据 -->
+    <from>b_purchaseorder AS A WHERE A.deleteFlag = '0' </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getContractSupplierCode" />
+    <where>
+      <w name="A.supplierParentId" des=""  reqName="supplierParentId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+  	<select>
+      <f name=" IFNULL(max(supplierSerial+1),'1')" alias="MaxSubId" ctype="" />
+  </select>
    <from>b_purchaseorder AS A WHERE A.deleteFlag = '0' </from>
     <orderby></orderby>
     <groupby></groupby>
@@ -497,5 +522,34 @@
     <having></having>
 	<power>
 	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getContractMateriaBySupplier" />
+    <where>
+    	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.supplierId" des="" reqName="supplierId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.purchaseType" alias="" ctype="" />
+      <f name="format(sum(REPLACE(IFNULL(a.manufactureQuantity,0),',','')),2) " alias="manufactureQuantity" ctype="" />
+      <f name="format(sum(REPLACE(IFNULL(a.purchaseQuantity,0),',','')),2) " alias="purchaseQuantity" ctype="" />
+      <f name="format(sum(REPLACE(IFNULL(a.totalPrice,0),',','')),2) " alias="totalPrice" ctype="" />
+      <f name="a.supplierShortName" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_purchaseplan a</from>
+    <orderby>a.materialId</orderby>
+    <groupby>a.materialId</groupby>
+    <having></having>
+	<power></power>    
   </query>
 </root>

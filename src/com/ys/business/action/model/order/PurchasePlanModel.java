@@ -3,6 +3,7 @@ package com.ys.business.action.model.order;
 import java.util.List;
 
 import com.ys.business.db.data.B_PurchasePlanData;
+import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.util.basequery.common.BaseModel;
 
 public class PurchasePlanModel extends BaseModel {
@@ -12,29 +13,21 @@ public class PurchasePlanModel extends BaseModel {
 	 * 采购方案
 	 */
 	private static final long serialVersionUID = 1L;
-	private List<B_PurchasePlanData> detail;
+	private B_PurchasePlanData purchasePlan;
+	private List<B_PurchasePlanDetailData> planDetailList;
 	
-	private String YSId;
-	private String bomId;
-
-	public String getBomId() {
-		return this.bomId;
+	public B_PurchasePlanData getPurchasePlan() {
+		return this.purchasePlan;
 	}
-	public void BomId(String bomId) {
-		this.bomId = bomId;
-	}
-	public String getYSId() {
-		return this.YSId;
-	}
-	public void setYSId(String YSId) {
-		this.YSId = YSId;
+	public void setPurchasePlan(B_PurchasePlanData purchasePlan) {
+		this.purchasePlan = purchasePlan;
 	}
 	
-	public List<B_PurchasePlanData> getDetail() {
-		return this.detail;
+	public List<B_PurchasePlanDetailData> getPlanDetailList() {
+		return this.planDetailList;
 	}
-	public void setDetail(List<B_PurchasePlanData> detail) {
-		this.detail = detail;
+	public void setPlanDetailList(List<B_PurchasePlanDetailData> planDetailList) {
+		this.planDetailList = planDetailList;
 	}
 
 	

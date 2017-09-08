@@ -159,20 +159,43 @@ public class BusinessService {
 	}
 	
 	/**
-	 * @return 采购合同编号
-	 * @param code1:耀升编号
-	 * @param code2:供应商简称
-	 * @param code3:流水号
+	 * @return 订购件采购合同编号
 	 * 
 	 */
-	public static String getContractCode(String code1,String code2,String code3)
+	public static String getContractCodeD(String type,String supllier,String shortName)
 	{
-		int icode = Integer.parseInt(code3);
+		return getContractCode("D",type,supllier,shortName);
+	}
+	
+	/**
+	 * @return 通用件采购合同编号
+	 * 
+	 */
+	public static String getContractCodeT(String type,String supllier,String shortName)
+	{
+		return getContractCode("T",type,supllier,shortName);
+	}
+	/**
+	 * @return 原材料采购合同编号
+	 * 
+	 */
+	public static String getContractCodeY(String type,String supllier,String shortName)
+	{
+		return getContractCode("Y",type,supllier,shortName);
+	}
+	
+	public static String getContractCode(
+			String type,String typesubid,String suppliersubid,String shortname)
+	{
+
+		int icode1 = Integer.parseInt(typesubid);
+		int icode2 = Integer.parseInt(suppliersubid);
 		//格式化成3位流水号,并且+1
-		String num = getFormatCode(icode,true);
+		String num1 = getFormatCode(icode1,false);
+		String num2 = getFormatCode(icode2,false);
 		
-		//采购合同编号:16YS081-WL002
-		return code1 + "-" + code2 + num;
+		//采购合同编号:16D001-WL001
+		return getshortYearcode() + type + num1 + "-" + shortname + num2;
 	}
 	
 	/**

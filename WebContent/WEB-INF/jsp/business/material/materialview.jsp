@@ -30,6 +30,7 @@
 	<input type="hidden" id="supplierfullname" />
 	<input type="hidden" id="keyBackup" value="${keyBackup }"/>
 	<input type="hidden" id="price" />
+	<input type="hidden" id="purchaseType" value="${material.purchaseType}"/>
 	
 	
 	<input id="handle_status" value="1133" hidden="hidden">
@@ -153,7 +154,6 @@ $(document).ready(function() {
 	//子编码 初始化时,5 个输入框,注意:编号从 0 开始
 	autoAddSubid();
 		
-	
 	$("#return").click(
 		function() {
 			var materialId='${material.material.materialid}';
@@ -164,8 +164,9 @@ $(document).ready(function() {
 			function() {				
 				var recordid = $('#material\\.recordid').val();
 				var parentid = $('#material\\.parentid').val();
+				var keyBackup = $('#keyBackup').val();
 				var url = '${ctx}/business/material?methodtype=edit';
-				url = url + '&parentId=' + parentid+'&recordId='+recordid;
+				url = url + '&parentId=' + parentid+'&recordId='+recordid+"&keyBackup="+keyBackup;
 				location.href = url;			
 	});
 	

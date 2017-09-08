@@ -775,10 +775,18 @@ function setPurchaseQuantity(stock,order){
 	stock = currencyToFloat(stock);//格式化
 	order = currencyToFloat(order);//格式化
 	var quan = 0;
-	if(stock < order){
+	if(stock >= 0 && stock < order){
+				
 		quan = order - stock;
+		
 	}
 	
 	return quan;
 }
 
+function getLetters(text){
+	//alert(text)
+	//var value = text.replace(/[^0-9]/ig,""); 
+	var value =  text.replace(/[^a-z]+/ig,"");
+	return value;
+}
