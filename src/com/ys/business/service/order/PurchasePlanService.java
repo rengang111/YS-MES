@@ -249,33 +249,38 @@ public class PurchasePlanService extends CommonService {
 	private String update(){
 		
 		ts = new BaseTransaction();
-		String  purchaseId="";
+		String  YSId="";
 		
 		try {
 			ts.begin();
 
 			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();
-			String YSId = reqPlan.getYsid();
-			purchaseId = reqPlan.getPurchaseid();		
+			YSId = reqPlan.getYsid();
+			String materialId = reqPlan.getMaterialid();
+			String purchaseId = reqPlan.getPurchaseid();		
 
-			//更新采购方案head表	
+			//采购方案****************************************************
+			//更新采购方案
 			int version = updatePurchasePlan(reqPlan);
 						
 			//更新前数据取得
-			List<B_PurchasePlanDetailData> oldList = getPurchasePlanDetail(YSId);			
+			List<B_PurchasePlanDetailData> oldDBList = getPurchasePlanDetail(YSId);			
 			
 			//旧数据:采购方案,的待出库"减少"处理
-			for(B_PurchasePlanDetailData old:oldList){
+			for(B_PurchasePlanDetailData old:oldDBList){
 
 				String oldmaterilid = old.getMaterialid();				
 
 				//旧数据物料的待出库"减少"处理
-				String stock = String.valueOf(0 - stringToFloat(old.getPurchasequantity()));
-				//updateMaterial(oldmaterilid,stock);
+				String purchase = String.valueOf(0 - stringToFloat(old.getPurchasequantity()));
+				String requirement = String.valueOf(0 - stringToFloat(old.getManufacturequantity()));
+				updateMaterial(oldmaterilid,purchase,requirement);
 				
-				old.setPurchasequantity(stock);
-				//旧数据的逻辑删除处理
-				updatePurchasePlanDetail(old);				
+				old.setPurchasequantity(purchase);
+				old.setManufacturequantity(requirement);
+				
+				//旧数据的删除处理
+				deletePurchasePlanDetail(old);				
 				
 			}//for
 			
@@ -294,10 +299,114 @@ public class PurchasePlanService extends CommonService {
 				insertPurchasePlanDetail(detail);			
 
 				//更新虚拟库存
-				String stock = detail.getPurchasequantity();
-				//updateMaterial(materilid,stock);
+				String purchase = detail.getPurchasequantity();
+				String requirement = detail.getManufacturequantity();
+
+				updateMaterial(materilid,purchase,requirement);
 				
-			}//for		
+			}//for
+			
+			
+			//采购合同****************************************************
+			
+			//旧数据:数据取得
+			List<B_PurchaseOrderData> contractDBList = 
+					getPurchaseOrderFromDB(YSId);
+			List<B_PurchaseOrderDetailData> contractDetailDBList = 
+					getPurchaseOrderDetailFromDB(YSId);
+			
+			//旧数据抵消处理:合同
+			for(B_PurchaseOrderData db:contractDBList){
+				
+				deletePurchaseOrder(db);
+				
+				db.setTotal(String.valueOf(stringToFloat(db.getTotal()) * (-1)));
+				insertPurchaseOrder2(db);				
+			}
+			
+			//旧数据抵消处理:合同明细
+			for(B_PurchaseOrderDetailData db:contractDetailDBList){
+				
+				//合同明细
+				deletePurchaseOrderDetail(db);
+				
+				db.setQuantity(String.valueOf(-1 * stringToFloat(db.getQuantity())));
+				db.setTotalprice(String.valueOf(-1 * stringToFloat(db.getTotalprice())));
+				insertPurchaseOrderDetail2(db);				
+			}
+			
+			
+			
+			
+			//新数据取得:从采购方案表中取得,集计单位:供应商
+			ArrayList<HashMap<String, String>> reqPlanList = getSupplierList(YSId);
+					
+			//新数据insert处理
+			for(int i=0;i<reqPlanList.size();i++){
+				
+				String supplierId = reqPlanList.get(i).get("supplierId");
+				String shortName  = reqPlanList.get(i).get("supplierShortName");
+				String total      = reqPlanList.get(i).get("total");
+				String purchaseType = reqPlanList.get(i).get("purchaseType");
+				
+				if(supplierId == null || supplierId.equals("")){
+					continue;
+				}
+				float totalf = stringToFloat(total); 
+				if(totalf == 0){//采购数量为零的供应商不计入合同
+					continue;
+				}
+				//取得供应商的合同流水号
+				//父编号:年份+供应商简称
+				String type = getContractType(purchaseType);
+				
+				String typeParentId = BusinessService.getshortYearcode()+type;				
+				String supplierParentId = BusinessService.getshortYearcode() + shortName;				
+				String typeSubId = getContractTypeCode(typeParentId);
+				String suplierSubId = getContractSupplierCode(supplierParentId);
+
+				//3位流水号格式化	
+				//采购合同编号:16D081-WL002
+				String contractId = BusinessService.getContractCode(type,typeSubId, suplierSubId,shortName);
+				
+				//新增采购合同*************
+				B_PurchaseOrderData data = new B_PurchaseOrderData();
+				
+				data.setYsid(YSId);
+				data.setMaterialid(materialId);
+				data.setContractid(contractId);
+				data.setTypeparentid(typeParentId);
+				data.setTypeserial(typeSubId);
+				data.setSupplierparentid(supplierParentId);
+				data.setSupplierserial(suplierSubId);
+				data.setSupplierid(supplierId);
+				data.setTotal(total);
+				data.setPurchasedate(CalendarUtil.fmtYmdDate());
+				data.setDeliverydate(CalendarUtil.dateAddToString(data.getPurchasedate(),20));
+				data.setVersion(1);//默认为1
+				
+				insertPurchaseOrder(data);//新增合同头表
+
+				
+				//新增合同明细*************
+				List<HashMap<String, String>> dbList = getMaterialGroupList(YSId,supplierId);
+				
+				for(HashMap<String, String> dt:dbList){					
+					
+					B_PurchaseOrderDetailData d = new B_PurchaseOrderDetailData();				
+					d.setYsid(YSId);
+					d.setContractid(contractId);
+					d.setMaterialid(dt.get("materialId"));
+					d.setQuantity(dt.get("purchaseQuantity"));
+					d.setPrice(dt.get("price"));					
+					d.setTotalprice(dt.get("totalPrice"));
+					d.setVersion(1);//默认为1
+					
+					insertPurchaseOrderDetail(d);
+										
+					continue;					
+				}		
+			}					
 			
 			ts.commit();
 			
@@ -311,13 +420,12 @@ public class PurchasePlanService extends CommonService {
 			System.out.println(e.getMessage());
 		}
 		
-		return purchaseId;
+		return YSId;
 	}
 	
 	/*
 	 * insert处理
 	 */
-	@SuppressWarnings("unchecked")
 	private String insert(){
 		
 		ts = new BaseTransaction();
@@ -352,7 +460,7 @@ public class PurchasePlanService extends CommonService {
 				//更新虚拟库存
 				String purchase = detail.getPurchasequantity();//采购量
 				String requirement = detail.getManufacturequantity();//需求量
-				updateMaterial(materilid,requirement,purchase);
+				updateMaterial(materilid,purchase,requirement);
 			}
 			
 			//采购合同****************************************************
@@ -362,8 +470,7 @@ public class PurchasePlanService extends CommonService {
 			ArrayList<HashMap<String, String>> supplierList = getSupplierList(YSId);
 					
 			if(supplierList == null || supplierList.size() <= 0)
-				return purchaseId;
-			
+				return purchaseId;			
 			
 			for(int i=0;i<supplierList.size();i++){
 				
@@ -429,143 +536,7 @@ public class PurchasePlanService extends CommonService {
 										
 					continue;					
 				}				
-			}			
-			
-			
-/*
-			List<B_PurchasePlanDetailData> supplier = new ArrayList<B_PurchasePlanDetailData>();			
-			for(int j=0;j<reqPlanList.size();j++){
-				
-				String supplierId = reqPlanList.get(j).getSupplierid();
-				String shortName  = reqPlanList.get(j).getSuppliershortname();
-				String totalprice = reqPlanList.get(j).getTotalprice();//总价
-				String manufact   = reqPlanList.get(j).getManufacturequantity();//需求量
-				String purchase   = reqPlanList.get(j).getPurchasequantity();//采购量
-				
-				if(supplierId == null || supplierId.equals("")){
-					continue;
-				}				
-				boolean repeatFlag = true;
-				for(int i=0;i<supplier.size();i++){
-					String id = supplier.get(i).getSupplierid();
-					int count = supplier.get(i).getVersion();//借用版本号计算供应商重复次数
-					
-					if(supplierId.equals(id)){//计算重复的供应商
-						float totalprice1 = stringToFloat(totalprice);//总价
-						float manufact1   = stringToFloat(manufact);//需求量
-						float purchase1   = stringToFloat(purchase);//采购量
-						
-						float totalprice2 = stringToFloat(supplier.get(i).getTotalprice());
-						float manufact2 = stringToFloat(supplier.get(i).getManufacturequantity());//需求量
-						float purchase2 = stringToFloat(supplier.get(i).getPurchasequantity());//采购量
-						supplier.get(i).setTotalprice(String.valueOf(totalprice1+totalprice2));//相同供应商的价格合并
-						supplier.get(i).setManufacturequantity(String.valueOf(manufact1+manufact2));//相同供应商的需求量合并
-						supplier.get(i).setPurchasequantity(String.valueOf(purchase1+purchase2));//相同供应商的采购量合并
-						supplier.get(i).setVersion(count++);
-						repeatFlag = false;
-						break;
-					}
-				}				
-				if(repeatFlag){//保存不一致的供应商
-					B_PurchasePlanDetailData s = new B_PurchasePlanDetailData();
-					s.setSupplierid(supplierId);
-					s.setSuppliershortname(shortName);
-					s.setTotalprice(totalprice);
-					s.setManufacturequantity(manufact);
-					s.setPurchasequantity(purchase);
-					s.setVersion(0);
-					
-					supplier.add(s);
-				}
-				
-			}//供应商集计
-			
-				*/
-			//取得合同里的供应商
-			//List<B_PurchaseOrderData> supplierContrct = getSupplierContrct(YSId);
-
-			//逻辑删除既存合同信息
-			//deleteContract(YSId);
-			
-			//删除既存合同明细
-			//deleteContractDetail(YSId);
-			
-			/*
-			for(int i=0;i<supplier.size();i++){
-				
-				String supplierId = supplier.get(i).getSupplierid();
-				String shortName  = supplier.get(i).getSuppliershortname();
-				String total      = supplier.get(i).getTotalprice();
-				String purchaseType = supplier.get(i).getPurchasetype();
-				int materialCont  = supplier.get(i).getVersion();//供应商对应的物料数量
-				
-				if(supplierId == null || supplierId.equals("")){
-					continue;
-				}
-				float totalf = stringToFloat(total); 
-				if(totalf == 0){//采购数量为零的供应商不计入合同
-					continue;
-				}
-				//取得供应商的合同流水号
-				//父编号:年份+供应商简称
-				String type = getContractType(purchaseType);
-				
-				String typeParentId = BusinessService.getshortYearcode()+type;				
-				String supplierParentId = BusinessService.getshortYearcode() + shortName;				
-				String typeSubId = getContractTypeCode(typeParentId);
-				String suplierSubId = getContractSupplierCode(supplierParentId);
-
-				//3位流水号格式化	
-				//采购合同编号:16D081-WL002
-				String contractId = BusinessService.getContractCode(type,typeSubId, suplierSubId,shortName);
-				
-				//新增采购合同
-
-				B_PurchaseOrderData data = new B_PurchaseOrderData();
-				
-				data.setRecordid(guid);
-				data.setYsid(YSId);
-				data.setMaterialid(materialId);
-				data.setContractid(contractId);
-				data.setTypeparentid(typeParentId);
-				data.setTypeserial(typeSubId);
-				data.setSupplierparentid(supplierParentId);
-				data.setSupplierserial(suplierSubId);
-				data.setSupplierid(supplierId);
-				data.setTotal(total);
-				data.setPurchasedate(CalendarUtil.fmtYmdDate());
-				data.setDeliverydate(CalendarUtil.dateAddToString(data.getPurchasedate(),20));
-				data.setVersion(1);//默认为1
-				
-				insertPurchaseOrder(data);//新增合同
-
-				//新增合同明细
-				int index = 0;
-				for(B_PurchasePlanDetailData dt:reqPlanList){
-					
-					if (index > materialCont)
-						break;//物料处理完后,直接退出
-					
-					if (dt.getSupplierid().equals(supplierId)){
-
-						B_PurchaseOrderDetailData d = new B_PurchaseOrderDetailData();				
-						d.setYsid(YSId);
-						d.setContractid(contractId);
-						d.setMaterialid(dt.getMaterialid());
-						d.setQuantity(dt.getPurchasequantity());
-						d.setPrice(dt.getPrice());					
-						d.setTotalprice(dt.getTotalprice());
-						d.setVersion(1);//默认为1
-						
-						insertPurchaseOrderDetail(d);
-						
-						index++;						
-						continue;
-					}	
-				}
-				
 			}
-			*/
 			
 			ts.commit();
 			
@@ -582,16 +553,59 @@ public class PurchasePlanService extends CommonService {
 		
 		return purchaseId;
 	}
-	/*
-	 * insert处理
-	 */
-	public void deletePurchasePlan(String YSId) throws Exception{
-		
-		String astr_Where = " YSId = '" + YSId + "'";
-		
-		planDetailDao.RemoveByWhere(astr_Where);	
+	
 
-	}	
+	/*
+	 * delete处理
+	 */
+	public void deletePurchaseOrder(B_PurchaseOrderData db) throws Exception{
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"purchaseOrderdelete",userInfo);			
+		copyProperties(db,commData);
+
+		new B_PurchaseOrderDao().Store(db);
+
+	}
+
+	/*
+	 * delete处理
+	 */
+	public void deletePurchaseOrderDetail(B_PurchaseOrderDetailData db) throws Exception{
+
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"purchaseOrderDetaildelete",userInfo);			
+		copyProperties(db,commData);
+		
+		new B_PurchaseOrderDetailDao().Store(db);	
+
+	}
+	
+	/*
+	 * delete处理
+	 */
+	public void deletePurchasePlan(B_PurchasePlanData db) throws Exception{
+		
+		//update处理	
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"purchasePlanDelete",userInfo);			
+		copyProperties(db,commData);
+		db.setVersion(db.getVersion()+1);
+
+		planDetailDao.Store(db);
+
+	}
+	
+	/*
+	 * delete处理
+	 */
+	public void deletePurchasePlanDetail(B_PurchasePlanDetailData db) throws Exception{
+		
+		//update处理			
+		planDetailDao.Remove(db);
+
+	}
+	
 	/*
 	 * insert处理
 	 */
@@ -726,6 +740,22 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * 更新
 	 */
+	private int updatePurchaseOrder(B_PurchaseOrderData dbPlan) throws Exception{
+		
+		//update处理	
+		int version = dbPlan.getVersion()+1;
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"purchasePlanUpdate",userInfo);			
+		copyProperties(dbPlan,commData);
+		dbPlan.setVersion(version);
+		new B_PurchaseOrderDao().Store(dbPlan);
+		
+		return version;
+	}
+	/*
+	 * 更新
+	 */
 	private int updatePurchasePlan(B_PurchasePlanData reqPlan) throws Exception{
 		
 		int version = 0;
@@ -733,13 +763,13 @@ public class PurchasePlanService extends CommonService {
 		B_PurchasePlanData dbPlan = new B_PurchasePlanDao(reqPlan).beanData;
 		if(!(dbPlan == null || ("").equals(dbPlan))){	
 			//update处理	
-			version = dbPlan.getVersion();
+			version = dbPlan.getVersion()+1;
 			
 			copyProperties(dbPlan,reqPlan);
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"purchasePlanUpdate",userInfo);			
 			copyProperties(dbPlan,commData);
-			reqPlan.setVersion(version++);
+			reqPlan.setVersion(version);
 			planDao.Store(dbPlan);
 
 		}else{
@@ -786,16 +816,23 @@ public class PurchasePlanService extends CommonService {
 		return null;
 	}
 
-	public void createBomPlan() throws Exception {
+	public String createBomPlan() throws Exception {
 
+		String rtnFlag = "新建";
 		String YSId = request.getParameter("YSId");
 		String materialId = request.getParameter("materialId");
 		String bomId = BusinessService.getBaseBomId(materialId)[1];
-		
+
 		getOrderDetailByYSId(YSId);
+		//确认采购方案是否存在
+		List<B_PurchasePlanDetailData> detail = getPurchasePlanDetail(YSId);
+		if(detail.size() > 0){
+			rtnFlag = "查看";
+		}else{			
+			getBomDetailView(bomId);	
+		}
 		
-		getBomDetailView(bomId);	
-		
+		return rtnFlag;
 	}
 	
 	
@@ -899,7 +936,7 @@ public class PurchasePlanService extends CommonService {
 
 	private String getContractSupplierCode(String parentId) throws Exception {
 
-		dataModel.setQueryName("getContractTypeCode");		
+		dataModel.setQueryName("getContractSupplierCode");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("supplierParentId", parentId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -907,9 +944,29 @@ public class PurchasePlanService extends CommonService {
 		String code =dataModel.getYsViewData().get(0).get("MaxSubId");		
 		return code;		
 	}	
+	private void insertPurchaseOrderDetail2(B_PurchaseOrderDetailData data) throws Exception{
+		B_PurchaseOrderDetailData db = data;
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"PurchaseOrderDetailDelete",userInfo);
+		copyProperties(db,commData);		
+		guid = BaseDAO.getGuId();
+		db.setRecordid(guid);
+		
+		new B_PurchaseOrderDetailDao().Create(db);	
+	}
 	
+	private void insertPurchaseOrder2(B_PurchaseOrderData data) throws Exception{
+		B_PurchaseOrderData db = new B_PurchaseOrderData();
+		db = 	data;
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"PurchaseOrderDelete",userInfo);
+		copyProperties(db,commData);		
+		guid = BaseDAO.getGuId();
+		db.setRecordid(guid);
+		
+		new B_PurchaseOrderDao().Create(db);	
+	}
 	private void insertPurchaseOrderDetail(B_PurchaseOrderDetailData data) throws Exception{
-		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
 
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"RoutinePurchaseOrderDetailInsert",userInfo);
@@ -917,7 +974,7 @@ public class PurchasePlanService extends CommonService {
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
 		
-		dao.Create(data);	
+		new B_PurchaseOrderDetailDao().Create(data);	
 	}
 	
 	private void insertPurchaseOrder(B_PurchaseOrderData data) throws Exception{
@@ -954,5 +1011,23 @@ public class PurchasePlanService extends CommonService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		return baseQuery.getYsFullData();
 		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<B_PurchaseOrderData> getPurchaseOrderFromDB(
+			String YSId) throws Exception {
+		
+		String where = " YSId = '" + YSId +"' AND deleteflag = '0'";
+		return (List<B_PurchaseOrderData>) new B_PurchaseOrderDao().Find(where);
+				
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<B_PurchaseOrderDetailData> getPurchaseOrderDetailFromDB(
+			String YSId) throws Exception {
+
+		String where = " YSId = '" + YSId  +"' AND deleteflag = '0'";
+		return (List<B_PurchaseOrderDetailData>) new B_PurchaseOrderDetailDao().Find(where);
+				
 	}
 }

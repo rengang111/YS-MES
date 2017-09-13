@@ -42,14 +42,14 @@
 '<td class="td-center"><span id="unit'+counter+'"></span></td>',
 '<td><input type="text" name="planDetailList['+counter+'].unitquantity" id="planDetailList'+counter+'.unitquantity"  class="num mini" /></td>',
 '<td class="td-right"><span>'+orderQuantity+'</span></td>',
-'<td class="td-center"><span></span></td>',
+'<td class="td-center"><span></span><input type="hidden"   name="planDetailList['+counter+'].manufacturequantity" id="planDetailList'+counter+'.manufacturequantity"/></td>',
 '<td class="td-right"><span></span></td>',
 '<td><input type="text" name="planDetailList['+counter+'].purchasequantity" id="planDetailList'+counter+'.purchasequantity"  class="num mini" /></td>',
 '<td><input type="text" name="planDetailList['+counter+'].supplierid" id="planDetailList'+counter+'.supplierid"  class="supplierid short"/></td>',
 '<td class="td-right"><input type="text" name="planDetailList['+counter+'].price"      id="planDetailList'+counter+'.price" class="num mini" /></td>',
 '<td class="td-right"><span id="totalPrice'+counter+'"></span><input type="hidden"   name="planDetailList['+counter+'].totalprice" id="planDetailList'+counter+'.totalprice"/></td>',
-'<td class="td-right"><span><span></td>',
-					
+'<td class="td-right"><span></span><input type="hidden"   name="planDetailList['+counter+'].suppliershortname" id="planDetailList'+counter+'.suppliershortname"/></td>',
+				
 						]).draw();
 						
 						$("#planDetailList" + counter + "\\.materialid").focus();
@@ -131,9 +131,35 @@
 			var materialId='${order.materialId}';
 			var YSId ="${order.YSId}";
 			var quantity ="${order.quantity}";
-			$('#attrForm').attr("action",
-					"${ctx}/business/purchasePlan?methodtype=purchasePlanUpdate&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity);
+			
+			$('#attrForm').attr("action","${ctx}/business/purchasePlan?methodtype=purchasePlanUpdate&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity);
 			$('#attrForm').submit();
+			/*
+			var actionUrl = "${ctx}/business/purchasePlan?methodtype=purchasePlanUpdate&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity;
+			$.ajax({
+				type : "POST",
+				contentType : 'application/json',
+				dataType : 'json',
+				url : actionUrl,
+				data : JSON.stringify($('#attrForm').serializeArray()),// 要提交的表单
+				beforeSend:function(){
+					$('#warning').text('正在处理，请稍等！');
+				},
+				success : function(d) {
+					if (d.message != "") {
+						
+					}
+					alert(d.message);	
+					
+				},
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					//alert(XMLHttpRequest.status);					
+					//alert(XMLHttpRequest.readyState);					
+					//alert(textStatus);					
+					alert(errorThrown);
+				}
+			});
+			*/
 		});
 			
 		
@@ -315,7 +341,7 @@
 				</tr>							
 			</table>
 		</fieldset>
-
+<div id="warning"></div>
 		<fieldset>
 			<legend> 采购成本核算</legend>
 			<table class="form" id="table_form2">
@@ -341,7 +367,8 @@
 		
 		</fieldset>	
 		<fieldset class="action" style="text-align: right;margin-top: -15px;">
-			<button type="button" id="updateOrderBom" class="DTTT_button">确认采购方案</button>
+			<button type="button" id="updateOrderBom" class="DTTT_button">确认并生成采购合同</button>
+			<button type="button" id="consoleOrderBom" class="DTTT_button">取消修改</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回订单详情</button>
 		</fieldset>	
 		
@@ -389,7 +416,8 @@
 	    <td><span id="unit${status.index}">${bom.purchaseType }</span></td>
 	    <td><form:input path="planDetailList[${status.index}].unitquantity"  class="num mini" value="${bom.unitQuantity }" /></td>
 	    <td><span id="orderQuantity${status.index}">${order.totalQuantity}</span></td>
-	    <td><span id="totalQuantity${status.index}"></span></td>
+	    <td><span id="totalQuantity${status.index}">${bom.manufactureQuantity }</span>
+	    	<form:hidden path="planDetailList[${status.index}].manufacturequantity" value="${bom.manufactureQuantity }" /></td>
 	    <td><span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></td>
 	    <td><form:input path="planDetailList[${status.index}].purchasequantity"  class="num mini" value="${bom.purchaseQuantity }" /></td>
 	    <td><form:input path="planDetailList[${status.index}].supplierid"  class="supplierid short" value="${bom.supplierId }" /></td>
@@ -397,8 +425,9 @@
 	    <td><span id="totalPrice${status.index}">${bom.totalPrice }</span>
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  value="${bom.totalPrice }" /></td>
 	    <td><span id="price${status.index}">${bom.lastPrice }</span></td>
-	    <form:hidden path="planDetailList[${status.index}].recordid" value="${bom.recordId }" />
-	    <form:hidden path="planDetailList[${status.index}].prevquantity" value="${bom.purchaseQuantity }" />
+	    
+	    	<form:hidden path="planDetailList[${status.index}].recordid" value="${bom.recordId }" />
+	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" />
 	</tr>
 	<script type="text/javascript">
 		var index = '${status.index}';
@@ -408,17 +437,20 @@
 		var order = '${order.totalQuantity}';
 		var stock = '${bom.availabelToPromise}';
 		var type = '${bom.purchaseTypeId}';
+		var supplierId = '${bom.supplierId}'
 		
-		var totalQuantity = floatToCurrency(currencyToFloat(quantity) * currencyToFloat(order));
-		var fpurchase = setPurchaseQuantity(stock,totalQuantity);
+		//var totalQuantity = floatToCurrency(currencyToFloat(quantity) * currencyToFloat(order));
+		//var fpurchase = setPurchaseQuantity(stock,totalQuantity);
 		if(type=="020"){//通用件单独采购
 			fpurchase = "0";
 		}
-		var vpurchase = floatToCurrency(fpurchase);
-		var totalPrice = floatToCurrency( currencyToFloat(price) * fpurchase );
+		//var vpurchase = floatToCurrency(fpurchase);
+		//var totalPrice = floatToCurrency( currencyToFloat(price) * fpurchase );
 		
+		var shortName = getLetters(supplierId);
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
-		$('#totalQuantity'+index).html(totalQuantity);
+		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
+		//$('#totalQuantity'+index).html(totalQuantity);
 		//$('#totalPrice'+index).html(totalPrice);
 		//$("#planDetailList"+index+"\\.totalprice").val(totalPrice);
 		//$("#planDetailList"+index+"\\.purchasequantity").val(vpurchase);
@@ -549,6 +581,7 @@ $(".attributeList1").autocomplete({
 		var $oTotPriceS = $td.eq(13).find("span");
 		var $oTotPriceI = $td.eq(13).find("input");
 		var $oSourPrice = $td.eq(14).find("span");
+		var $oShortName = $td.eq(14).find("input");
 	
 		//开始计算
 		//var fPrice    = currencyToFloat(ui.item.price);//计算用单价
@@ -564,6 +597,7 @@ $(".attributeList1").autocomplete({
 		var vStock  = floatToCurrency(ui.item.availabelToPromise);
 		var supplierId = ui.item.supplierId;		
 		var vPrice     = float4ToCurrency(ui.item.price);
+		var shortName = getLetters(supplierId);
 		
 		//显示到页面
 		$('.DTFC_Cloned tbody tr:eq('+rowNumber+') td').eq(0).html(idLink);//固定列是clone出来的,特殊处理
@@ -575,8 +609,10 @@ $(".attributeList1").autocomplete({
 		$oType.html(type);
 		$oStock.html(vStock)
 		$oSupplier.val(supplierId);
+		$oShortName.val(shortName);
 		$oThisPrice.val(vPrice);
 		$oSourPrice.html(vPrice);
+
 		
 		if(typeId == "020"){//通用件
 			var total = 0;
@@ -657,8 +693,12 @@ $(".supplierid").autocomplete({
 
 		var $td = $(this).parent().parent().find('td');
 		
+		var supplierId = ui.item.supplierId;
+		var shortName = getLetters(supplierId);
+		
 		$td.eq(12).find("input").val(ui.item.price);
 		$td.eq(14).find("span").html(ui.item.price);
+		$td.eq(14).find("input").val(shortName);
 		
 		purchasePlanCompute($td,'2');
 		
@@ -709,6 +749,7 @@ function purchasePlanCompute(obj,flg){
 	var $oUnitQuty  = $td.eq(6).find("input");
 	var $oOrder     = $td.eq(7).find("span");
 	var $oTotalQuty = $td.eq(8).find("span");
+	var $oTotalQutyI= $td.eq(8).find("input");
 	var $oStock     = $td.eq(9).find("span");
 	var $oPurchase  = $td.eq(10).find("input");
 	var $oSupplier  = $td.eq(11).find("input");
@@ -739,7 +780,8 @@ function purchasePlanCompute(obj,flg){
 	//详情列表显示
 	$oUnitQuty.val(vUnitQuty)
 	$oPurchase.val(vPurchase);
-	$oTotalQuty.html(fTotalQuty);
+	$oTotalQuty.html(vTotalQuty);
+	$oTotalQutyI.val(vTotalQuty);
 	$oTotPriceS.html(vTotalNew);
 	$oTotPriceI.val(vTotalNew);
 	

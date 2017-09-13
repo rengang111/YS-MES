@@ -85,8 +85,7 @@ public class PurchasePlanAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "purchasePlanAddInit":
-				purchasePlanAddInit();
-				rtnUrl = "/business/purchaseplan/purchaseplanadd";
+				rtnUrl = purchasePlanAddInit();
 				break;
 			case "purchasePlanAdd":
 				doPurchasePlanAdd();
@@ -185,10 +184,15 @@ public class PurchasePlanAction extends BaseAction {
 	}
 
 
-	public void purchasePlanAddInit() throws Exception{
+	public String purchasePlanAddInit() throws Exception{
+
+		String rtnUrl = "/business/purchaseplan/purchaseplanadd";
+		String flag = purchaseService.createBomPlan();
 		
-		purchaseService.createBomPlan();
+		if(flag.equals("查看"))
+			rtnUrl = "/business/purchaseplan/purchaseplanview";
 		
+		return rtnUrl;
 	}
 	
 	public void doPurchasePlanAdd() throws Exception {

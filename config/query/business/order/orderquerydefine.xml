@@ -76,7 +76,7 @@
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
     <from>v_orderlist AS A WHERE A.deleteFlag = '0'</from>
-    <orderby>A.parentId DESC,LPAD(a.subId,10,0)+0 DESC </orderby>
+    <orderby>A.YSId DESC </orderby>
     <groupby></groupby>
     <having></having>
 	<power>
