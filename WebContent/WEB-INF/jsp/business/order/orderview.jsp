@@ -212,7 +212,9 @@
 	});
 
 	function ShowBomPlan(YSId,materialId) {
-		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanAddInit&YSId=' + YSId+'&materialId='+materialId;
+		var backFlag = 'orderView';
+		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanAddInit&YSId=' 
+				+ YSId+'&materialId='+materialId+'&backFlag='+backFlag;
 		location.href = url;
 	};
 	

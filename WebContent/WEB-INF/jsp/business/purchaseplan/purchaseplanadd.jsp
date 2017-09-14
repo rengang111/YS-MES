@@ -119,8 +119,16 @@
 		
 		$(".goBack").click(
 				function() {
+			var backFlag = $("#backFlag").val();
 			var PIId = '${order.PIId}';
-			var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+			var YSId = '${order.YSId}';
+			if( backFlag == 'purchasePlan'){
+
+				var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
+			}else{
+				var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+				
+			}
 	
 			location.href = url;		
 		});
@@ -131,8 +139,10 @@
 			var materialId='${order.materialId}';
 			var YSId ="${order.YSId}";
 			var quantity ="${order.quantity}";
+			var backFlag = $("#backFlag").val();
 			$('#attrForm').attr("action",
-					"${ctx}/business/purchasePlan?methodtype=purchasePlanAdd&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity);
+					"${ctx}/business/purchasePlan?methodtype=purchasePlanAdd&YSId="
+							+YSId+"&materialId="+materialId+"&quantity="+quantity+"&backFlag="+backFlag);
 			$('#attrForm').submit();
 		});
 			
@@ -285,6 +295,7 @@
 		id="attrForm" name="attrForm"  autocomplete="off">		
 		
 		<input type="hidden" id="tmpMaterialId" />
+		<input type="hidden" id="backFlag"  value="${backFlag }"/>
 		
 		<fieldset>
 			<legend> 产品信息</legend>
@@ -340,7 +351,7 @@
 		</fieldset>	
 		<fieldset class="action" style="text-align: right;margin-top: -15px;">
 			<button type="button" id="createOrderBom" class="DTTT_button">确认并生成采购合同</button>
-			<button type="button" id="goBack" class="DTTT_button goBack">返回订单详情</button>
+			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		<script type="text/javascript">
 

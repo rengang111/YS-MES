@@ -846,7 +846,7 @@
 	<input type="hidden" id="goBackFlag" value="${goBackFlag }" />
 	<form:hidden path="productDesign.recordid"  value="${product.recordId}" />
 	<form:hidden path="productDesign.ysid"  value="${YSId}" />
-	<form:hidden path="productDesign.productid"  value="" />
+	<form:hidden path="productDesign.productid"  value="${product.productId}" />
 	<form:hidden path="productDesign.productdetailid"  value="${product.productDetailId}" />
 	<form:hidden path="productDesign.subid"  value="${product.subId}" />
 	

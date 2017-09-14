@@ -49,7 +49,15 @@ function initEvent(){
 		$(".goBack").click(
 				function() {
 			var YSId = '${order.YSId}';
-			var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
+			var PIId = '${order.PIId}';
+			var backFlag = $("#backFlag").val();
+			if( backFlag == 'purchasePlan'){
+
+				var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
+			}else{
+				var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+				
+			}
 	
 			location.href = url;		
 		});
@@ -60,8 +68,13 @@ function initEvent(){
 			var materialId='${order.materialId}';
 			var YSId ="${order.YSId}";
 			var quantity ="${order.quantity}";
+			var backFlag = $("#backFlag").val();
 			$('#attrForm').attr("action",
-					"${ctx}/business/purchasePlan?methodtype=purchasePlanEdit&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity);
+					"${ctx}/business/purchasePlan?methodtype=purchasePlanEdit"
+							+"&YSId="+YSId
+							+"&materialId="+materialId
+							+"&backFlag="+backFlag
+							+"&quantity="+quantity);
 			$('#attrForm').submit();
 		});
 			
@@ -441,6 +454,7 @@ function showContract(supplierId,YSId) {
 		id="attrForm" name="attrForm"  autocomplete="off">		
 		
 		<input type="hidden" id="tmpMaterialId" />
+		<input type="hidden" id="backFlag"  value="${backFlag }"/>
 		
 		<fieldset>
 			<legend> 产品信息</legend>

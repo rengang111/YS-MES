@@ -120,7 +120,15 @@
 		$(".goBack").click(
 				function() {
 			var PIId = '${order.PIId}';
-			var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+			var YSId = '${order.YSId}';
+			var backFlag = $("#backFlag").val();
+			if( backFlag == 'purchasePlan'){
+
+				var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
+			}else{
+				var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+				
+			}
 	
 			location.href = url;		
 		});
@@ -131,8 +139,9 @@
 			var materialId='${order.materialId}';
 			var YSId ="${order.YSId}";
 			var quantity ="${order.quantity}";
+			var backFlag = $("#backFlag").val();
 			
-			$('#attrForm').attr("action","${ctx}/business/purchasePlan?methodtype=purchasePlanUpdate&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity);
+			$('#attrForm').attr("action","${ctx}/business/purchasePlan?methodtype=purchasePlanUpdate&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity+"&backFlag="+backFlag);
 			$('#attrForm').submit();
 			/*
 			var actionUrl = "${ctx}/business/purchasePlan?methodtype=purchasePlanUpdate&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity;
@@ -311,6 +320,7 @@
 		id="attrForm" name="attrForm"  autocomplete="off">		
 		
 		<input type="hidden" id="tmpMaterialId" />
+		<input type="hidden" id="backFlag"  value="${backFlag }"/>
 		<form:hidden path="purchasePlan.purchaseid"  value="${purchasePlan.purchaseId}" />
 		<form:hidden path="purchasePlan.recordid"  value="${purchasePlan.planRecordId}" />
 		
@@ -368,8 +378,7 @@
 		</fieldset>	
 		<fieldset class="action" style="text-align: right;margin-top: -15px;">
 			<button type="button" id="updateOrderBom" class="DTTT_button">确认并生成采购合同</button>
-			<button type="button" id="consoleOrderBom" class="DTTT_button">取消修改</button>
-			<button type="button" id="goBack" class="DTTT_button goBack">返回订单详情</button>
+			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		
 		<div id="tabs" style="padding: 0px;white-space: nowrap;margin-top: -10px;">

@@ -65,7 +65,7 @@
 		    		
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "','"+ row["materialId"] + "')\">"+row["YSId"]+"</a>";
 		    			return rtn;
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
@@ -144,9 +144,13 @@
 	}
 	
 
-	function doShow(YSId) {
+	function doShow(YSId,materialId) {
 
-		var url = '${ctx}/business/purchasePlan?methodtype=detailView&YSId=' + YSId;
+		var backFlag = 'purchasePlan';
+		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanAddInit&YSId=' 
+				+ YSId+'&materialId='+materialId
+				+'&backFlag='+backFlag;
+
 
 		location.href = url;
 	}

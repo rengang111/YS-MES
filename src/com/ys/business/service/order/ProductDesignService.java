@@ -238,7 +238,7 @@ public class ProductDesignService extends CommonService  {
 				getOrderDetailById(reqYsid,"edit");
 
 				copyToEdit(oldYsid);
-				photoCopy(productid,reqYsid,oldYsid);
+				photoCopy(productid,productid,reqYsid,oldYsid);
 				rtnFlg = "编辑新建";
 			}
 		}else{	
@@ -268,11 +268,12 @@ public class ProductDesignService extends CommonService  {
 		
 		if(!(reqDb == null || ("").equals(reqDb))){
 			//显示该产品最近的耀升编号到编辑页面
+			String newProductId = reqDb.getProductid();
 			getProductDesignById(newYsid);
 			getOrderDetailById(oldYsid,"edit");
 			
 			copyToEdit(newYsid);
-			photoCopy(productid,oldYsid,newYsid);
+			photoCopy(newProductId,productid,oldYsid,newYsid);
 		}
 
 		model.addAttribute("YSId",oldYsid);
@@ -289,14 +290,15 @@ public class ProductDesignService extends CommonService  {
 	}
 	
 	private void photoCopy(
-			String productid,String newYsid,String oldYsid){
-		//String sourceFld = 
+			String productid,
+			String newProductid,String newYsid,String oldYsid){
+		
 		String viewOldFld = session.getServletContext().
 				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
 				"/"+productid+"/"+oldYsid;
 		String viewNewFld = session.getServletContext().
 				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNVIEW)+
-				"/"+productid+"/"+newYsid;
+				"/"+newProductid+"/"+newYsid;
 
     	//存储目录
     	String realOldPath = viewOldFld.replaceFirst("img", "file");
@@ -311,7 +313,6 @@ public class ProductDesignService extends CommonService  {
 	public boolean deleteTextPrintFile() throws Exception{
 		
 		String fileName = request.getParameter("fileName");
-		//String fileName = updateTextPrint(recordId,"");
 		
 		return deletePhoto(null,fileName);
 	}
@@ -1119,16 +1120,12 @@ public class ProductDesignService extends CommonService  {
 		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() >0){
-			if(("add").equals(type)){
-				dataModel
-				.getYsViewData()
-				.get(0)
-				.put("productId",dataModel
-					.getYsViewData()
-					.get(0)
-					.get("materialId"));
-				model.addAttribute("product",dataModel.getYsViewData().get(0));
-			}else{				
+
+			dataModel.getYsViewData().get(0)
+				.put("productId",dataModel.getYsViewData().get(0).get("materialId"));
+			model.addAttribute("product",dataModel.getYsViewData().get(0));
+			
+			if(("edit").equals(type)){			
 				model.addAttribute("deliveryDate",dataModel.getYsViewData().get(0).get("deliveryDate"));//交货时间
 				model.addAttribute("quantity",dataModel.getYsViewData().get(0).get("quantity"));//交货数量
 			}

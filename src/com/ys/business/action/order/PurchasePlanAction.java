@@ -191,6 +191,9 @@ public class PurchasePlanAction extends BaseAction {
 		
 		if(flag.equals("查看"))
 			rtnUrl = "/business/purchaseplan/purchaseplanview";
+
+		String backFlag = request.getParameter("backFlag");
+		model.addAttribute("backFlag",backFlag);
 		
 		return rtnUrl;
 	}
@@ -198,19 +201,26 @@ public class PurchasePlanAction extends BaseAction {
 	public void doPurchasePlanAdd() throws Exception {
 
 		model = purchaseService.insertAndView();
-		
+
+		String backFlag = request.getParameter("backFlag");
+		model.addAttribute("backFlag",backFlag);
 	}		
 	
 	
 	public void doEdit() throws Exception{
-
+		
 		purchaseService.editPurchasePlan();
+
+		String backFlag = request.getParameter("backFlag");
+		model.addAttribute("backFlag",backFlag);
 	}	
 	
 	public void doUpdate() throws Exception {
 		
 		purchaseService.updateAndView();			
-		
+
+		String backFlag = request.getParameter("backFlag");
+		model.addAttribute("backFlag",backFlag);
 	}
 
 

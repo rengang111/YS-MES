@@ -144,15 +144,13 @@
     	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
-      <f name="a.recordId" alias="" ctype="" />
-      <f name="a.YSId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="a.price" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.purchaseType" alias="" ctype="" />
-      <f name="FORMAT(sum(REPLACE(IFNULL(a.price,0),',','') *  REPLACE(IFNULL(a.manufactureQuantity,0),',','')),2)" alias="total" ctype="" />
+      <f name="FORMAT(sum(REPLACE(IFNULL(a.totalPrice,0),',','')),2)" alias="total" ctype="" />
       <f name="a.supplierShortName" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
