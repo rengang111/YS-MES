@@ -290,7 +290,7 @@ $(document).ready(function() {
 		var YSId=$('#productDesign\\.ysid').val();
 		var productId=$('#productDesign\\.productid').val();
 		var productClassify='${product.productClassifyId}';
-		alert(productClassify)
+		
 		var goBackFlag = $('#goBackFlag').val();
 		var productDetailId=$('#productDesign\\.productdetailid').val();
 		var url = '${ctx}/business/productDesign?methodtype=convertToPdf&YSId=' + YSId+

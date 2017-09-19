@@ -22,8 +22,8 @@
 				"lengthChange":false,
 				 "iDisplayLength" : 100,
 				//"lengthMenu":[50,100,200],//设置一页展示20条记录
-				"processing" : false,
-				"serverSide" : false,
+				"processing" : true,
+				"serverSide" : true,
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
@@ -84,7 +84,7 @@
 		    		{"targets":7,"render":function(data, type, row){
 		    			return "<a href=\"#\" onClick=\"doPurchasePlan('" + row["supplierID"] + "')\">采购下单</a>";
                     }},
-                    {"bSortable": false, "aTargets": [ 0 ] 
+                    {"bSortable": false, "aTargets": [ 0,7 ] 
                     }
 			           
 			     ] ,

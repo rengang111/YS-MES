@@ -12,7 +12,7 @@
 
 	var layerHeight = '600';
 
-	function ajax() {
+	function ajax(pageFlg) {
 		var table = $('#TCustomer').dataTable();
 		if(table) {
 			table.fnClearTable();
@@ -31,7 +31,7 @@
 				"searching" : false,
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/customer?methodtype=search",
+				"sAjaxSource" : "${ctx}/business/customer?methodtype=search&keyBackup="+pageFlg,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -59,43 +59,41 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null,"className" : 'td-center'},
-							{"data": "customerId"},
-							{"data": "shortName"},
-							{"data": "customerName"},
-							{"data": "country","className" : 'td-center'},
-							{"data": "paymentTerm","className" : 'td-right'},
-							{"data": "currency","className" : 'td-center'},
-							{"data": "shippingCondition","className" : 'td-center'},						
-							{"data": null},
-							{"data": null,"className" : 'td-center'}
-				        ],
+					{"data": null,"className" : 'td-center'},
+					{"data": "customerId"},
+					{"data": "shortName"},
+					{"data": "customerName"},
+					{"data": "country","className" : 'td-left'},
+					{"data": "paymentTerm","className" : 'td-right'},
+					{"data": "currency","className" : 'td-center'},
+					{"data": "shippingCondition","className" : 'td-center'},						
+					{"data": null,"className" : 'td-left'},
+		        ],
 				"columnDefs":[
-					    		{"targets":0,"render":function(data, type, row){
-									return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
-			                    }},
-					    		{"targets":3,"render":function(data, type, row){
-					    			
-					    			var name = row["customerName"];				    			
-					    			name = jQuery.fixedWidth(name,30);				    			
-					    			return name;
-					    		}},
-					    		{"targets":8,"render":function(data, type, row){
-					    			return row["shippiingPort"] + " ／ "+row["destinationPort"] ;
-			                    }},
-					    		{"targets":9,"render":function(data, type, row){
-					    			return "<a href=\"###\" onClick=\"doUpdate('" + row["recordId"] + "')\">查看</a>"
-			                    }}
+		    		{"targets":0,"render":function(data, type, row){
+						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+                    }},
+		    		{"targets":3,"render":function(data, type, row){
+		    			
+		    			var name = row["customerName"];				    			
+		    			name = jQuery.fixedWidth(name,40);				    			
+		    			return name;
+		    		}},
+		    		{"targets":8,"render":function(data, type, row){
+		    			return row["shippiingPort"] + " ／ "+row["destinationPort"] ;
+                    }},
+		    		{"targets":1,"render":function(data, type, row){
+		    			return "<a href=\"###\" onClick=\"doUpdate('" + row["recordId"] + "')\">"+row["customerId"]+"</a>"
+                    }}
 			           
-			         ] 
-			}
-		);
+			    ] 
+			});
 	}
 
 	
 	function initEvent(){
 
-		doSearch();
+		ajax("");
 	
 		$('#TCustomer').DataTable().on('click', 'tr', function() {
 			
@@ -120,15 +118,13 @@
 	}
 
 	$(document).ready(function() {
-		//ajax();
 		initEvent();
 		
 	})	
 	
 	function doSearch() {
 	
-		ajax();
-		//reload();
+		ajax("customer");
 	}
 	
 	function doCreate() {
@@ -239,7 +235,6 @@
 							<th style="width: 30px;" class="dt-middle ">计价货币</th>
 							<th style="width: 30px;" class="dt-middle ">出运条件</th>
 							<th style="width: 140px;" class="dt-middle ">出运港/目的港</th>
-							<th style="width: 30px;"  class="dt-middle ">操作</th>
 						</tr>
 					</thead>
 

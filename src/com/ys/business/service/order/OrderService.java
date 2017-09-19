@@ -93,7 +93,8 @@ public class OrderService extends CommonService  {
 		int iStart = 0;
 		int iEnd =0;
 		String sEcho = getJsonData(data, "sEcho");	
-		String start = getJsonData(data, "iDisplayStart");		
+		String start = getJsonData(data, "iDisplayStart");	
+		
 		if (start != null && !start.equals("")){
 			iStart = Integer.parseInt(start);			
 		}
@@ -102,36 +103,27 @@ public class OrderService extends CommonService  {
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
-		
 		String[] keyArr = getSearchKey(Constants.FORM_ORDER,data,session);
 		String key1 = keyArr[0];
-		String key2 = keyArr[1];
-		//String key1 = getJsonData(data, "keyword1").toUpperCase();
-		//String key2 = getJsonData(data, "keyword2").toUpperCase();
-		
+		String key2 = keyArr[1];		
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderList");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
+		dataModel.setQueryName("getOrderList");	
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
 		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
 		}		
 		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		modelMap.put("unitList",util.getListOption(DicUtil.MEASURESTYPE, ""));
-		
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;
@@ -463,7 +455,6 @@ public class OrderService extends CommonService  {
 		B_OrderDao dao = new B_OrderDao();	
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"OrderInsert",userInfo);
-
 		copyProperties(data,commData);
 		
 		guid = BaseDAO.getGuId();
@@ -473,9 +464,8 @@ public class OrderService extends CommonService  {
 		String parentId = data.getParentid();
 		String subId = PI.substring(parentId.length());
 		data.setSubid(subId);
-		dao.Create(data);	
 		
-
+		dao.Create(data);
 	}	
 	
 	/*
@@ -493,8 +483,8 @@ public class OrderService extends CommonService  {
 		
 		//String ysid = BusinessService.getYSFormatCode(YSMaxid,false);
 			
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"OrderDetailInsert",userInfo);
-
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"OrderDetailInsert",userInfo);
 		copyProperties(newData,commData);
 		guid = BaseDAO.getGuId();
 		newData.setRecordid(guid);
@@ -509,7 +499,8 @@ public class OrderService extends CommonService  {
 		//newData.setSubid(String.valueOf(YSMaxid+1));
 		newData.setPiid(piId);
 		//newData.setYsid(ysid);
-		newData.setStatus(Constants.ORDER_STS_0);
+		newData.setStatus(Constants.ORDER_STS_1);
+		newData.setReturnquantity(Constants.ORDER_RETURNQUANTY);
 		
 		dao.Create(newData);
 
@@ -774,6 +765,17 @@ public class OrderService extends CommonService  {
 
 			reqModel.setYSMaxId(YSMaxId);	
 			reqModel.setYSParentId(paternId);
+			
+			//订单性质
+			String type = request.getParameter("orderNature");
+			String name = "";
+			if(type != null && ("1").equals(type)){
+				name = "常规订单";
+			}else{
+				name = "库存订单";
+			}
+			model.addAttribute("orderNature",name);
+			model.addAttribute("orderNatureId",type);
 			
 			reqModel.setDeliveryPortList(
 					util.getListOption(DicUtil.DELIVERYPORT, ""));

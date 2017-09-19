@@ -59,32 +59,22 @@
 			             {"className" : 'td-right'}, 
 			             {"className" : 'td-right'},
 			             {"className" : 'td-right'},
+			             {"className" : 'td-right'},
 			             {"className" : "dt-body-center"},
 			             {"className" : "dt-body-center"},
-			             {}
+			            
 						],
 			
 			"columnDefs":[
 				
 			  { "targets":2,"render":function(data, type, row){
 	    			var name = row[2];	    			
-	    			name = jQuery.fixedWidth(name,35);		    			
+	    			name = jQuery.fixedWidth(name,50);		    			
 	    			return name;
-	    	  }},
-	    	  { "targets":8,"render":function(data, type, row){
-	    			var PIId = '${order.PIId}';
-	    			var type=row[10];
-	    			var rtn = "<a href=\"#\" onClick=\"ShowProductDesign('" + 
-	    					PIId + "','" + 
-	    					row[0] + "','" +
-	    					row[8] + "','" +
-	    					row[10] + 
-	    					"')\">做单资料</a>";
-	    			return rtn;
-	    	  }},
+	    	  }},	    	  
 	    	  {
 					"visible" : false,
-					"targets" : [10,]
+					"targets" : []
 				}
 			  ] 	
 			
@@ -306,7 +296,9 @@
 					<td>${order.PIId}</td>
 
 					<td width="100px" class="label" >客户订单号：</td>
-					<td colspan="5">${order.orderId}</td>
+					<td>${order.orderId}</td>
+					<td width="100px" class="label" >订单性质：</td>
+					<td colspan="3">${order.orderNatureName}</td>
 				</tr>
 				<tr>
 					<td class="label">客户名称：</td>				
@@ -362,14 +354,14 @@
 				<th class="dt-center" width="65px">耀升编号</th>
 				<th class="dt-center" width="120px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="60px">版本类别</th>
-				<th class="dt-center" width="60px">销售数量</th>
+				<th class="dt-center" width="50px">版本类别</th>
+				<th class="dt-center" width="55px">销售数量</th>
 				<th class="dt-center" width="60px">生产数量</th>
+				<th class="dt-center" width="30px">返还<BR>数量</th>
 				<th class="dt-center" width="50px">销售单价</th>
 				<th class="dt-center" width="80px">销售总价</th>
+				<th class="dt-center" width="50px">订单状态</th>
 				<th class="dt-center" width="30px">操作</th>
-				<th class="dt-center" width="30px"></th>
-				<th class="dt-center" width="30px"></th>
 			</tr>
 			</thead>
 			<tfoot>
@@ -396,12 +388,17 @@
 					<td>${order.materialName}</td>
 					<td>${order.productClassifyName}</td>
 					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>	
-					<td class="cash" style="padding-right: 20px;">${order.totalQuantity}</td>						
+					<td class="cash" style="padding-right: 20px;">${order.totalQuantity}</td>
+					<td class="cash" style="padding-right: 20px;">${order.returnQuantity}</td>					
 					<td class="cash" style="padding-right: 20px;">${order.price}</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
-					<td>${order.materialId}</td>
-					<td><a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">采购方案</a></td>
-					<td>${order.productClassify}</td>												
+					<td>${order.statusName}</td>
+					<td>
+						<a href="###" onClick="ShowProductDesign('${order.PIId}','${order.YSId}','${order.materialId}','${order.productClassify}')">做单资料</a><br>						
+						<a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">采购方案</a></td>
+
+				
+	    														
 				</tr>
 			</c:if>
 					

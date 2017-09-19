@@ -446,12 +446,15 @@
 				<td class="label" width="100px">PI编号：</td>					
 				<td>
 					<form:input path="order.piid" class="short required read-only" /></td>
-					
+								
 				<td width="100px" class="label" >客户订单号：</td>
-				<td colspan="5">
+				<td>
 					<form:input path="order.orderid" class="short required" /></td>
 										
-				
+				<td width="100px" class="label" >订单性质：</td>
+				<td colspan="3">${orderNature}
+					<form:hidden path="order.ordernature"  value="${orderNatureId}" /></td>
+						
 			</tr>
 			<tr>
 				<td class="label">客户编号：</td>				

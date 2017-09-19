@@ -33,6 +33,7 @@ public class Constants {
 	public static final String FORM_STORAGE= "storage";//入库登记
 	public static final String FORM_PRODUCTDETAIL= "productdetail";//做单资料
 	public static final String FORM_SUPPLIER= "supplier";//供应商
+	public static final String FORM_CUSTOMER = "order";//客户管理
 	
 	
 	/*
@@ -56,18 +57,18 @@ public class Constants {
 	public static final String APPROVE_NG = "1";
 	
 	/**
-	 *@see "0";新建
-	 *@see "1";BOM做成,待评审
-	 *@see "2";已审核
-	 *@see "3";采购方案做成
-	 *@see "4";合同签订 
+	 *@see "0";初始值
+	 *@see "010";待合同
+	 *@see "020";待到料
+	 *@see "030";待交货
+	 *@see "040";已入库 
 	 */
-	public static final String ORDER_STS_0 = "0";//新建
-	public static final String ORDER_STS_1 = "1";//BOM做成,待评审
-	public static final String ORDER_STS_2 = "2";//已审核
-	public static final String ORDER_STS_3 = "3";//采购方案做成
-	public static final String ORDER_STS_4 = "4";//合同签订
-	public static final String ORDER_STS_5 = "5";//合同执行中
+	public static final String ORDER_STS_0 = "0";//初始值
+	public static final String ORDER_STS_1 = "010";//待合同
+	public static final String ORDER_STS_2 = "020";//待到料
+	public static final String ORDER_STS_3 = "030";//待交货
+	public static final String ORDER_STS_4 = "040";//已入库
+	public static final String ORDER_STS_5 = "050";//合同执行中
 	
 	/**
 	 * 币种:与字典表关联
@@ -151,5 +152,12 @@ public class Constants {
 	public static final String CONTRACT_TYPE_T = "T";//通用件
 	public static final String CONTRACT_TYPE_Y = "Y";//自制品
 	public static final String CONTRACT_TYPE_O = "O";//其他
+	
+	/**
+	 *@category 订单属性
+	 *
+	 */
+	public static final String ORDER_RETURNQUANTY = "2";//订单返还数量默认值
+
 
 }

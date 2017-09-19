@@ -21,6 +21,7 @@ import com.ys.business.service.order.CustomerService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.Constants;
 
 @Controller
 @RequestMapping("/business")
@@ -47,7 +48,7 @@ public class CustomerAction extends BaseAction {
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		service = new CustomerService(model,request,dataModel,userInfo);
+		service = new CustomerService(model,request,response,session,dataModel,userInfo);
 		reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -64,6 +65,7 @@ public class CustomerAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
+				doInit(session);
 				rtnUrl = "/business/customer/customermain";
 				break;
 			case "search":
@@ -111,10 +113,26 @@ public class CustomerAction extends BaseAction {
 		
 		return rtnUrl;
 	}	
-	
+	public void doInit(HttpSession session){	
+		
+		String keyBackup = request.getParameter("keyBackup");
+		//没有物料编号,说明是初期显示,清空保存的查询条件
+		if(keyBackup == null || ("").equals(keyBackup)){
+			session.removeAttribute(Constants.FORM_CUSTOMER+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_CUSTOMER+Constants.FORM_KEYWORD2);
+		}
+		
+	}
 	public HashMap<String, Object> doSearch(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
+		//优先执行查询按钮事件,清空session中的查询条件
+		String keyBackup = request.getParameter("keyBackup");
+		if(keyBackup != null && !("").equals(keyBackup)){
+			session.removeAttribute(Constants.FORM_CUSTOMER+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_CUSTOMER+Constants.FORM_KEYWORD2);
+			
+		}
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 			dataMap = service.doSearch(request, data, userInfo);

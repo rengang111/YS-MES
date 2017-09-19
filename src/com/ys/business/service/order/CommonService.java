@@ -1,15 +1,12 @@
 package com.ys.business.service.order;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -674,5 +671,27 @@ public class CommonService extends BaseService {
 		}
 		
 		return type;
+	}
+	
+	/**
+	 * 服务器端排序,获取网页传来的sortkey
+	 * @param data
+	 * @param query
+	 * @return sql
+	 * @throws Exception
+	 */
+	public String getSortKeyFormWeb(String data,BaseQuery query) throws Exception{
+		String sql = query.getSql();
+		if(sql == null || ("").equals(sql.trim()))
+			return null;
+		int index = sql.indexOf("ORDER BY");
+		String iSortCol_0 = getJsonData(data, "iSortCol_0");
+		String sSortDir_0 = getJsonData(data, "sSortDir_0");
+		if(("").equals(iSortCol_0))
+			return sql;
+		String sortColName = getJsonData(data, "mDataProp_"+iSortCol_0);
+		String newSql = sql.replace(sql.substring(index),"ORDER BY " + sortColName + " "+ sSortDir_0);
+	
+		return newSql;
 	}
 }

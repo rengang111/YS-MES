@@ -502,7 +502,7 @@
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>v_productdesigndetail a LEFT JOIN b_material b on b.materialId=a.materialId AND b.deleteFlag='0' LEFT JOIN v_basebomdetail c ON c.productId = a.productId AND c.materialId=a.materialId where a.deleteFlag = '0' </from>
     <orderby>a.sortNo</orderby>
-    <groupby></groupby>
+    <groupby>c.materialId</groupby>
     <having></having>
 	<power></power>    
   </query>

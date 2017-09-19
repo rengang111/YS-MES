@@ -28,9 +28,11 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Service
-public class CustomerService extends BaseService {
+public class CustomerService extends CommonService {
  
 	DicUtil util = new DicUtil();
 	BaseTransaction ts;
@@ -55,6 +57,8 @@ public class CustomerService extends BaseService {
 
 	public CustomerService(Model model,
 			HttpServletRequest request,
+			HttpServletResponse response,
+			HttpSession session,
 			CustomerModel reqModel,
 			UserInfo userInfo){
 		
@@ -67,6 +71,10 @@ public class CustomerService extends BaseService {
 		modelMap = new HashMap<String, Object>();
 		userDefinedSearchCase = new HashMap<String, String>();
 		dataModel.setQueryFileName("/business/customer/customerquerydefine");
+		super.request = request;
+		super.userInfo = userInfo;
+		super.session = session;
+		
 		
 	}
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, UserInfo userInfo) throws Exception {
@@ -80,13 +88,8 @@ public class CustomerService extends BaseService {
 		String sEcho = "";
 		String start = "";
 		String length = "";
-		String key1 = "";
-		String key2 = "";
 		
 		data = URLDecoder.decode(data, "UTF-8");
-
-		key1 = getJsonData(data, "keyword1").toUpperCase();
-		key2 = getJsonData(data, "keyword2").toUpperCase();
 		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		
@@ -102,25 +105,24 @@ public class CustomerService extends BaseService {
 		dataModel.setQueryFileName("/business/customer/customerquerydefine");
 		dataModel.setQueryName("customerquerydefine_search");
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+		String[] keyArr = getSearchKey(Constants.FORM_CUSTOMER,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	
+		String sql = getSortKeyFormWeb(data, baseQuery);
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	
 		
 		dataModel.setYsViewData(makeAddress(dataModel.getYsViewData()));
 		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
+		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();
 			
-		}
-		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;		

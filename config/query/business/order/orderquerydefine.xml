@@ -43,6 +43,8 @@
    	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.status"  des=""  reqName="status" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.orderNature"  des=""  reqName="orderNature" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -59,7 +61,6 @@
       <f name="A.orderDate" alias="" ctype="" />
       <f name="A.orderId" alias="" ctype="" />
       <f name="A.deliveryDate" alias="" ctype="" />
-      <f name="A.status" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="计量单位" />
       <f name="A.currency" alias="" ctype="币种" />
       <f name="A.currency" alias="currencyId" ctype="" />
@@ -70,6 +71,12 @@
       <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
       <f name="A.productClassify" alias="" ctype="" />
       <f name="A.orderType" alias="" ctype="" />
+      <f name="A.orderNature" alias="orderNatureName" ctype="订单性质" />
+      <f name="A.orderNature" alias="" ctype="" />
+      <f name="A.status" alias="statusName" ctype="订单状态" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.returnQuantity" alias="" ctype="" />
+      <f name="A.storageDate" alias="" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -123,10 +130,14 @@
       <f name="A.team" alias="" ctype="业务组" />
       <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
       <f name="A.productClassify" alias="" ctype="" />
-      <f name="A.status" alias="" ctype="" />
       <f name="A.orderType" alias="" ctype="" />
       <f name="A.materialParentId" alias="" ctype="" />
       <f name="A.materialRecordId" alias="" ctype="" />
+      <f name="A.orderNature" alias="orderNatureName" ctype="订单性质" />
+      <f name="A.orderNature" alias="" ctype="" />
+      <f name="A.status" alias="statusName" ctype="订单状态" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.returnQuantity" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->

@@ -27,10 +27,11 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Service
-public class SupplierService extends BaseService {
+public class SupplierService extends CommonService {
 	DicUtil util = new DicUtil();
 
 	BaseTransaction ts;
@@ -55,6 +56,8 @@ public class SupplierService extends BaseService {
 
 	public SupplierService(Model model,
 			HttpServletRequest request,
+			HttpServletResponse response,
+			HttpSession session,
 			SupplierModel reqModel,
 			UserInfo userInfo){
 		
@@ -67,6 +70,10 @@ public class SupplierService extends BaseService {
 		modelMap = new HashMap<String, Object>();
 		userDefinedSearchCase = new HashMap<String, String>();
 		dataModel.setQueryFileName("/business/supplier/supplierquerydefine");
+		super.request = request;
+		super.userInfo = userInfo;
+		super.session = session;
+		
 		
 	}
 	public HashMap<String, Object> doSearch(HttpServletRequest request, String data, HttpSession session) throws Exception {
@@ -111,7 +118,8 @@ public class SupplierService extends BaseService {
 
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	
 		
 		
 		if ( iEnd > dataModel.getYsViewData().size()){

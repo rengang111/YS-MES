@@ -203,6 +203,19 @@ public class B_OrderData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String storagedate;
+	public String getStoragedate()
+	{
+		return this.storagedate;
+	}
+	public void setStoragedate(String storagedate)
+	{
+		this.storagedate=storagedate;
+	}
+
+	/**
+	*
+	*/
 	private String totalprice;
 	public String getTotalprice()
 	{
@@ -224,6 +237,19 @@ public class B_OrderData implements java.io.Serializable
 	public void setYskordertarget(String yskordertarget)
 	{
 		this.yskordertarget=yskordertarget;
+	}
+
+	/**
+	*
+	*/
+	private String ordernature;
+	public String getOrdernature()
+	{
+		return this.ordernature;
+	}
+	public void setOrdernature(String ordernature)
+	{
+		this.ordernature=ordernature;
 	}
 
 	/**
@@ -371,13 +397,13 @@ public class B_OrderData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("piid = "+(piid == null ? "null" : piid)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("customerid = "+(customerid == null ? "null" : customerid)+"\n");		sb.append("orderid = "+(orderid == null ? "null" : orderid)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("shippingcase = "+(shippingcase == null ? "null" : shippingcase)+"\n");		sb.append("paymentterm = "+(paymentterm == null ? "null" : paymentterm)+"\n");		sb.append("loadingport = "+(loadingport == null ? "null" : loadingport)+"\n");		sb.append("deliveryport = "+(deliveryport == null ? "null" : deliveryport)+"\n");		sb.append("ordercompany = "+(ordercompany == null ? "null" : ordercompany)+"\n");		sb.append("orderdate = "+(orderdate == null ? "null" : orderdate)+"\n");		sb.append("deliverydate = "+(deliverydate == null ? "null" : deliverydate)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("yskordertarget = "+(yskordertarget == null ? "null" : yskordertarget)+"\n");		sb.append("team = "+(team == null ? "null" : team)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("piid = "+(piid == null ? "null" : piid)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("customerid = "+(customerid == null ? "null" : customerid)+"\n");		sb.append("orderid = "+(orderid == null ? "null" : orderid)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("shippingcase = "+(shippingcase == null ? "null" : shippingcase)+"\n");		sb.append("paymentterm = "+(paymentterm == null ? "null" : paymentterm)+"\n");		sb.append("loadingport = "+(loadingport == null ? "null" : loadingport)+"\n");		sb.append("deliveryport = "+(deliveryport == null ? "null" : deliveryport)+"\n");		sb.append("ordercompany = "+(ordercompany == null ? "null" : ordercompany)+"\n");		sb.append("orderdate = "+(orderdate == null ? "null" : orderdate)+"\n");		sb.append("deliverydate = "+(deliverydate == null ? "null" : deliverydate)+"\n");		sb.append("storagedate = "+(storagedate == null ? "null" : storagedate)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("yskordertarget = "+(yskordertarget == null ? "null" : yskordertarget)+"\n");		sb.append("ordernature = "+(ordernature == null ? "null" : ordernature)+"\n");		sb.append("team = "+(team == null ? "null" : team)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		piid= (piid == null ?null : piid.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		customerid= (customerid == null ?null : customerid.trim());		orderid= (orderid == null ?null : orderid.trim());		currency= (currency == null ?null : currency.trim());		shippingcase= (shippingcase == null ?null : shippingcase.trim());		paymentterm= (paymentterm == null ?null : paymentterm.trim());		loadingport= (loadingport == null ?null : loadingport.trim());		deliveryport= (deliveryport == null ?null : deliveryport.trim());		ordercompany= (ordercompany == null ?null : ordercompany.trim());		orderdate= (orderdate == null ?null : orderdate.trim());		deliverydate= (deliverydate == null ?null : deliverydate.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		yskordertarget= (yskordertarget == null ?null : yskordertarget.trim());		team= (team == null ?null : team.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		piid= (piid == null ?null : piid.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		customerid= (customerid == null ?null : customerid.trim());		orderid= (orderid == null ?null : orderid.trim());		currency= (currency == null ?null : currency.trim());		shippingcase= (shippingcase == null ?null : shippingcase.trim());		paymentterm= (paymentterm == null ?null : paymentterm.trim());		loadingport= (loadingport == null ?null : loadingport.trim());		deliveryport= (deliveryport == null ?null : deliveryport.trim());		ordercompany= (ordercompany == null ?null : ordercompany.trim());		orderdate= (orderdate == null ?null : orderdate.trim());		deliverydate= (deliverydate == null ?null : deliverydate.trim());		storagedate= (storagedate == null ?null : storagedate.trim());		totalprice= (totalprice == null ?null : totalprice.trim());		yskordertarget= (yskordertarget == null ?null : yskordertarget.trim());		ordernature= (ordernature == null ?null : ordernature.trim());		team= (team == null ?null : team.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
