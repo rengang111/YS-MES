@@ -429,18 +429,20 @@
 			<legend> 订单综合信息</legend>
 			<table class="form" id="table_form">
 				<tr> 				
-					<td class="label" width="100px"><label>PI编号：</label></td>					
+					<td class="label" width="100px">PI编号：</td>					
 					<td><form:input path="order.piid"  value="${order.PIId }" class="read-only" />
 						<form:hidden path="keyBackup"  value="${order.PIId }" /></td>
-					<td width="100px" class="label" >
-						<label >客户订单号：</label></td>
-					<td colspan="5">
+					<td width="100px" class="label" >订单性质：</td>
+					<td>${order.orderNatureName }
+						<form:hidden path="order.ordernature" value="${order.orderNature }" /></td>	
+					<td width="100px" class="label" >客户订单号：</td>
+					<td  colspan="3">
 						<form:input path="order.orderid" class="short required"  value="${order.orderId }" /></td>								
 				</tr>	
 				<tr>
 					<td class="label">&nbsp;客户名称：</td>				
 					<td colspan="3">${order.customerId }（${order.shortName }）${order.fullName }</td>
-					<td class="label"><label>下单公司：</label></td>				
+					<td class="label">下单公司：</td>				
 					<td colspan="3">
 						<form:select path="order.ordercompany">
 								<form:options items="${orderForm.ordercompanyList}" 
@@ -448,26 +450,26 @@
 						</form:select></td>	
 				</tr>				
 				<tr> 
-					<td class="label"><label>付款条件：</label></td>
+					<td class="label">付款条件：</td>
 					<td >&nbsp;出运后
 						<form:input path="order.paymentterm"  value="${order.paymentTerm }" 
 							style="width: 30px;text-align: center;" class="td-center" />&nbsp;天</td>
 						
 					<td width="100px"  class="label">
-						<label >出运条件：</label></td>
+						出运条件：</td>
 					<td >
 						<form:select path="order.shippingcase">
 								<form:options items="${orderForm.shippingCaseList}" 
 								  itemValue="key" itemLabel="value" />
 						</form:select></td>
 					
-					<td class="label"><label>出运港：</label></td>
+					<td class="label">出运港：</td>
 					<td><form:select path="order.loadingport">
 							<form:options items="${orderForm.loadingPortList}"
 							  itemValue="key" itemLabel="value" />
 						</form:select></td>
 
-					<td class="label"><label>目的港：</label></td>
+					<td class="label">目的港：</td>
 					<td><form:select path="order.deliveryport" >
 							<form:options items="${orderForm.deliveryPortList}" 
 							 itemValue="key" itemLabel="value" />
@@ -480,11 +482,11 @@
 							<form:options items="${orderForm.teamList}" itemValue="key" itemLabel="value" />
 						</form:select></td>			
 					<td class="label">
-						<label>下单日期：</label></td>
+						下单日期：</td>
 					<td>
 						<form:input path="order.orderdate" class="short required"  value="${order.orderDate }" /></td>					
 					<td class="label">
-						<label>订单交期：</label></td>
+						订单交期：</td>
 					<td>
 						<form:input path="order.deliverydate" class="short required"  value="${order.deliveryDate }" /></td>
 				</tr>
@@ -495,7 +497,7 @@
 							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
 						</form:select></td>			
 					<td class="label">
-						<label>销售总价：</label></td>
+						销售总价：</td>
 					<td colspan="5">
 						<form:input path="order.totalprice" value="${order.total}" class="read-only cash short" /></td>																	
 				</tr>						

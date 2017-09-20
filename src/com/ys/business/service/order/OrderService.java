@@ -84,7 +84,7 @@ public class OrderService extends CommonService  {
 		
 	}
 	
-	public HashMap<String, Object> getOrderList(String data) throws Exception {
+	public HashMap<String, Object> getOrderList(String formId,String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
@@ -103,7 +103,7 @@ public class OrderService extends CommonService  {
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
-		String[] keyArr = getSearchKey(Constants.FORM_ORDER,data,session);
+		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];		
 

@@ -69,14 +69,14 @@ public class OrderAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				doInit(session);
+				doInit(Constants.FORM_ORDER,session);
 				rtnUrl = "/business/order/ordermain";
 				break;
 			case "expenseInit":
 				rtnUrl = "/business/order/orderexpensemain";
 				break;
 			case "search":
-				dataMap = doSearchOrderList(data);
+				dataMap = doSearchOrderList(Constants.FORM_ORDER,data);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "create":
@@ -145,6 +145,10 @@ public class OrderAction extends BaseAction {
 				dataMap = ysidExistCheck();
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "purchasePlanSearch":
+				dataMap = doSearchOrderList(Constants.FORM_PURCHASEPLAN,data);
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -177,19 +181,21 @@ public class OrderAction extends BaseAction {
 		return mv;		
 	}
 */
-	public void doInit(HttpSession session){	
+	public void doInit(String formId,HttpSession session){	
 			
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_ORDER+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_ORDER+Constants.FORM_KEYWORD2);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+		}else{
+			model.addAttribute("keyBackup",keyBackup);
 		}
 		
 	}
-	
+
 	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doSearchOrderList(@RequestBody String data){
+	public HashMap<String, Object> doSearchOrderList(String formId, String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
@@ -198,13 +204,13 @@ public class OrderAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_ORDER+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_ORDER+Constants.FORM_KEYWORD2);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 			
 		}
 				
 		try {
-			dataMap = orderService.getOrderList(data);
+			dataMap = orderService.getOrderList(formId,data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -218,7 +224,6 @@ public class OrderAction extends BaseAction {
 		
 		return dataMap;
 	}
-
 
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doSearchOrderListDemand(@RequestBody String data){

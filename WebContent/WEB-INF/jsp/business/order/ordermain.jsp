@@ -49,7 +49,7 @@
 	function ajax(pageFlg,status,orderNature,col_no) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
-			table.fnClearTable();
+			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 		var url = "${ctx}/business/order?methodtype=search&keyBackup="+pageFlg
@@ -63,7 +63,7 @@
 				"lengthChange":false,
 				"lengthMenu":[50,100,200],//每页显示条数设置
 				"processing" : true,
-				"serverSide" : false,
+				"serverSide" : true,
 				"stateSave" : false,
 				//"bSort":true,
 				// "bFilter": false, //列筛序功能
@@ -204,7 +204,15 @@
 	
 	function initEvent(){
 
-		ajax("","010","",9);
+		var keyBackup = $("#keyBackup").val();
+
+		if(keyBackup ==""){
+
+			ajax("","010","",9);
+		}else{
+			ajax("","","",9);
+			
+		}
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -330,6 +338,7 @@
 		
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
+			<input type="hidden" id="keyBackup" value="${keyBackup }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 

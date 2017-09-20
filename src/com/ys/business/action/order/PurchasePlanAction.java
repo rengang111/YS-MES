@@ -124,6 +124,8 @@ public class PurchasePlanAction extends BaseAction {
 		if(keyBackup == null || ("").equals(keyBackup)){
 			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
 			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+		}else{
+			model.addAttribute("keyBackup",keyBackup);
 		}
 		
 	}
