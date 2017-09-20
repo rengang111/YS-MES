@@ -496,13 +496,13 @@
       <f name="a.purchaser" alias="purchaserId" ctype="" />
       <f name="b.materialName" alias="" ctype="" />
       <f name="b.unit" alias="" ctype="计量单位" />
-      <f name="c.supplierId" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_productdesigndetail a LEFT JOIN b_material b on b.materialId=a.materialId AND b.deleteFlag='0' LEFT JOIN v_basebomdetail c ON c.productId = a.productId AND c.materialId=a.materialId where a.deleteFlag = '0' </from>
+    <from>v_productdesigndetail a LEFT JOIN b_material b on b.materialId=a.materialId AND b.deleteFlag='0'  where a.deleteFlag = '0' </from>
     <orderby>a.sortNo</orderby>
-    <groupby>c.materialId</groupby>
+    <groupby></groupby>
     <having></having>
 	<power></power>    
   </query>

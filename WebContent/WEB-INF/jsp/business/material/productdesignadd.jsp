@@ -39,7 +39,7 @@
 							'<td><input   name="machineConfigList['+rowIndex+'].componentname" id="machineConfigList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input   name="machineConfigList['+rowIndex+'].materialid"    id="machineConfigList'+rowIndex+'.materialid"  class="materialid"/></td>',
 							'<td><span></span></td>',
-							'<td><span></span></td>',
+							'<td><span></span><input  type="hidden" name="machineConfigList['+rowIndex+'].supplierid"   	 id="machineConfigList'+rowIndex+'.supplierid" /></td>',
 							'<td><select  name="machineConfigList['+rowIndex+'].purchaser"   id="machineConfigList'+rowIndex+'.purchaser" style="width: 100px;"></select></td>',
 							'<td><input   name="machineConfigList['+rowIndex+'].remark"   	 id="machineConfigList'+rowIndex+'.remark"   class="short" /></td>',
 							
@@ -936,7 +936,7 @@
 							<td><form:input path="machineConfigList[${i}].componentname"  class="short"/></td>
 							<td><form:input path="machineConfigList[${i}].materialid"  class="materialid"/></td>
 							<td><span></span></td>
-							<td><span></span></td>
+							<td><span></span><form:hidden path="machineConfigList[${i}].supplierid" /></td>
 							<td>
 								<form:select path="machineConfigList[${i}].purchaser" style="width: 100px;">							
 									<form:options items="${purchaserList}" 
@@ -1498,6 +1498,8 @@ function autocomplete(){
 			//供应商
 			$(this).parent().parent().find("td").eq(4).find("span")
 				.text(ui.item.supplierId);
+			$(this).parent().parent().find("td").eq(4).find("input:hidden")
+				.val(ui.item.supplierId);
 			
 		},
 	});

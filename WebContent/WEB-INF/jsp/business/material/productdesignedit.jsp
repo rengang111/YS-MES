@@ -43,7 +43,7 @@
 							'<td><input   name="machineConfigList['+rowIndex+'].componentname" id="machineConfigList'+rowIndex+'.componentname"  class="short" /></td>',
 							'<td><input   name="machineConfigList['+rowIndex+'].materialid"    id="machineConfigList'+rowIndex+'.materialid"  class="materialid"/></td>',
 							'<td><span></span></td>',
-							'<td><span></span></td>',
+							'<td><span></span><input  type="hidden" name="machineConfigList['+rowIndex+'].supplierid"   	 id="machineConfigList'+rowIndex+'.supplierid" /></td>',
 							'<td><select  name="machineConfigList['+rowIndex+'].purchaser"   id="machineConfigList'+rowIndex+'.purchaser" style="width: 100px;"></select></td>',
 							'<td><input   name="machineConfigList['+rowIndex+'].remark"   	 id="machineConfigList'+rowIndex+'.remark"   class="short" /></td>',
 							
@@ -942,7 +942,8 @@
 					<td><form:input path="machineConfigList[${status.index}].componentname"  class="short" value="${list.componentName }" /></td>
 					<td><form:input path="machineConfigList[${status.index}].materialid"  class="materialid" value="${list.materialId }" /></td>
 					<td><span id="machineName${status.index }"></span></td>
-					<td><span id="supplier${status.index }"></span></td>
+					<td><span id="supplier${status.index }">${list.supplierId }</span>
+						<form:hidden path="machineConfigList[${status.index}].supplierid"  value="${list.supplierId }" /></td>
 					<td>
 						<form:select path="machineConfigList[${status.index}].purchaser" style="width: 100px;">							
 							<form:options items="${purchaserList}" 
@@ -951,14 +952,11 @@
 					<td><form:input path="machineConfigList[${status.index}].remark"  class="short" value="${list.remark }" /></td>
 				</tr>
 				<script type="text/javascript">
-					var purchaser="${list.purchaserId }" ;
-					var supplier ="${list.supplierId }";
+					var purchaser="${list.purchaserId }" ;					
 					var index ="${status.index}";
 					$("#machineConfigList"+index+"\\.purchaser").val(purchaser);
 					var name = '${list.materialName }';
 					$("#machineName"+index).html(jQuery.fixedWidth(name,40));
-					$("#supplier"+index).text(supplier)
-										
 				</script>
 			</c:forEach>
 		</tbody>
@@ -1497,7 +1495,9 @@ function autocomplete(){
 				.html(jQuery.fixedWidth(ui.item.name,40));
 			//供应商
 			$(this).parent().parent().find("td").eq(4).find("span")
-				.text(ui.item.supplierId);			
+				.text(ui.item.supplierId);	
+			$(this).parent().parent().find("td").eq(4).find("input:hidden")
+				.val(ui.item.supplierId);			
 		},
 	});
 }
