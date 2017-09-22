@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_CustomerData;
-import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.util.basequery.common.BaseModel;
@@ -24,6 +23,7 @@ public class OrderModel extends BaseModel {
 	private ArrayList<ListOption> ordercompanyList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> productClassifyList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> teamList;
+	private ArrayList<ListOption> orderNatureList;//订单性质
 	private B_OrderData order = new B_OrderData();
 	private B_OrderDetailData orderDetail = new B_OrderDetailData();
 	private B_CustomerData customer = new B_CustomerData();
@@ -37,7 +37,15 @@ public class OrderModel extends BaseModel {
 	private String attribute2 = "";
 	private String attribute3 = "";
 	private String attributeList1 = "";
+	private String currency;
 
+	public ArrayList<ListOption> getOrderNatureList() {
+		return this.orderNatureList;
+	}
+	public void setOrderNatureList(ArrayList<ListOption> orderNatureList) {
+		this.orderNatureList = orderNatureList;
+	}
+	
 	public ArrayList<ListOption> getProductClassifyList() {
 		return this.productClassifyList;
 	}
@@ -176,5 +184,12 @@ public class OrderModel extends BaseModel {
 	}
 	public void setAttribute3(String attribute3) {
 		this.attribute3 = attribute3;
+	}
+	
+	public String getCurrency() {
+		return this.currency;
+	}
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 }

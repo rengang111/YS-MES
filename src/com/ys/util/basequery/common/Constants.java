@@ -153,6 +153,15 @@ public class Constants {
 	public static final String CONTRACT_TYPE_Y = "Y";//自制品
 	public static final String CONTRACT_TYPE_O = "O";//其他
 	
+
+	/**
+	 *@category 合同状态
+	 *
+	 */
+	public static final String CONTRACT_STS_1 = "010";//新建
+	public static final String CONTRACT_STS_2 = "020";//执行中
+	public static final String CONTRACT_STS_3 = "030";//完结
+	
 	/**
 	 *@category 订单属性
 	 *

@@ -151,7 +151,7 @@
 				t.row('.selected').remove().draw();
 
 				//销售总价	
-				var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+				var currency = $('#currency option:checked').text();// 选中项目的显示值
 				totalPrice = floatToSymbol( saleTotalSum(),currency);			
 				$('#order\\.totalprice').val(totalPrice);
 			}
@@ -214,7 +214,7 @@
 			var $oAmount  = $td.eq(7).find("input");
 			var $oAmounts = $td.eq(7).find("span");
 			
-			var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+			var currency = $('#currency option:checked').text();// 选中项目的显示值
 
 			var fPrice = currencyToFloat($oPricei.val());	
 
@@ -370,7 +370,7 @@
 			$('#orderForm').submit();
 		});
 
-		$("#order\\.currency").change(function() {
+		$("#currency").change(function() {
 
 			$().toastmessage('showWarningToast', "货币符号发生变化,请重新输入销售单价。");	
 		});
@@ -383,7 +383,7 @@
 		});	//耀升编号重复check
 		
 		
-		$('#order\\.currency').val('${order.currencyId }');
+		$('#currency').val('${order.currencyId }');
 		$('#order\\.shippingcase').val('${order.shippingCaseId }');
 		$('#order\\.loadingport').val('${order.loadingPortId }');
 		$('#order\\.deliveryport').val('${order.deliveryPortId }');
@@ -398,12 +398,12 @@
 		
 		$(".cash") .blur(function(){
 			
-			var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+			var currency = $('#currency option:checked').text();// 选中项目的显示值
 			$(this).val(floatToSymbol($(this).val(),currency));
 		});
 		
-		$('select').css('width','100px');
-		$('#order\\.ordercompany').css('width','200px');
+		$('select').css('width','107px');
+		$('#order\\.ordercompany').css('width','300px');
 		$(".DTTT_container").css('float','left');
 	});	
 	
@@ -430,14 +430,17 @@
 			<table class="form" id="table_form">
 				<tr> 				
 					<td class="label" width="100px">PI编号：</td>					
-					<td><form:input path="order.piid"  value="${order.PIId }" class="read-only" />
+					<td width="150px"><form:input path="order.piid"  value="${order.PIId }" class="read-only short" />
 						<form:hidden path="keyBackup"  value="${order.PIId }" /></td>
 					<td width="100px" class="label" >订单性质：</td>
-					<td>${order.orderNatureName }
-						<form:hidden path="order.ordernature" value="${order.orderNature }" /></td>	
+					<td width="150px">
+						<form:select path="order.ordernature">
+						<form:options items="${orderForm.orderNatureList}" itemValue="key" itemLabel="value" />
+					</form:select>	</td>	
 					<td width="100px" class="label" >客户订单号：</td>
-					<td  colspan="3">
-						<form:input path="order.orderid" class="short required"  value="${order.orderId }" /></td>								
+					<td colspan="3">
+						<form:input path="order.orderid" class="short required"  value="${order.orderId }" /></td>	
+										
 				</tr>	
 				<tr>
 					<td class="label">&nbsp;客户名称：</td>				
@@ -451,8 +454,7 @@
 				</tr>				
 				<tr> 
 					<td class="label">付款条件：</td>
-					<td >&nbsp;出运后
-						<form:input path="order.paymentterm"  value="${order.paymentTerm }" 
+					<td >&nbsp;出运后<form:input path="order.paymentterm"  value="${order.paymentTerm }" 
 							style="width: 30px;text-align: center;" class="td-center" />&nbsp;天</td>
 						
 					<td width="100px"  class="label">
@@ -463,13 +465,13 @@
 								  itemValue="key" itemLabel="value" />
 						</form:select></td>
 					
-					<td class="label">出运港：</td>
-					<td><form:select path="order.loadingport">
+					<td class="label" width="100px">出运港：</td>
+					<td width="150px"><form:select path="order.loadingport">
 							<form:options items="${orderForm.loadingPortList}"
 							  itemValue="key" itemLabel="value" />
 						</form:select></td>
 
-					<td class="label">目的港：</td>
+					<td class="label" width="100px">目的港：</td>
 					<td><form:select path="order.deliveryport" >
 							<form:options items="${orderForm.deliveryPortList}" 
 							 itemValue="key" itemLabel="value" />
@@ -493,13 +495,13 @@
 				<tr>
 					<td class="label">币种：</td>
 					<td>
-						<form:select path="order.currency"  >
+						<form:select path="currency"  >
 							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
 						</form:select></td>			
 					<td class="label">
 						销售总价：</td>
 					<td colspan="5">
-						<form:input path="order.totalprice" value="${order.total}" class="read-only cash short" /></td>																	
+						<form:input path="order.totalprice" value="${order.total}" class="read-only cash"  style="width:150px"/></td>																	
 				</tr>						
 			</table>
 	</fieldset>
@@ -893,7 +895,7 @@ $.fn.dataTable.TableTools.buttons.reset2 = $.extend(true, {},
 			t.row('.selected').remove().draw();
 
 			//销售总价	
-			var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+			var currency = $('#currency option:checked').text();// 选中项目的显示值
 			totalPrice = floatToSymbol( saleTotalSum(),currency);					
 			$('#order\\.totalprice').val(totalPrice);
 		}
@@ -955,7 +957,7 @@ function ajax2() {
 		var $oAmount  = $td.eq(7).find("input");
 		var $oAmounts = $td.eq(7).find("span");
 		
-		var currency = $('#order\\.currency option:checked').text();// 选中项目的显示值
+		var currency = $('#currency option:checked').text();// 选中项目的显示值
 
 		var fPrice = currencyToFloat($oPricei.val());	
 

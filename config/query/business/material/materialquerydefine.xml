@@ -320,11 +320,11 @@
       <f name="b.exchangePrice" alias="" ctype="" />
       <f name="b.profitRate" alias="" ctype="" />
       <f name="b.bomCost" alias="" ctype="" />
-      <f name="b.totalCost" alias="" ctype="" />
+      <f name="ifnull(b.totalCost,c.totalCost)" alias="totalCost" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- 限定条件:成品 -->
-    <from>v_materiallist AS A LEFT JOIN v_basebomgroup b ON a.materialId = b.productId  WHERE  SUBSTR(a.materialId FROM 1 FOR 1) = 'I' AND a.deleteFlag = '0' </from>
+    <from>v_materiallist AS A LEFT JOIN v_basebomgroup b ON a.materialId = b.productId LEFT JOIN b_bomplan c ON a.materialId = c.materialId AND c.deleteFlag = '0' WHERE  SUBSTR(a.materialId FROM 1 FOR 1) = 'I' AND a.deleteFlag = '0' </from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>

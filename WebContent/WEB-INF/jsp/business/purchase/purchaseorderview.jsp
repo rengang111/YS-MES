@@ -141,6 +141,7 @@
 
 	};
 	
+	
 </script>
 
 </head>
@@ -206,7 +207,7 @@
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>
 	<div style="clear: both"></div>		
-	<fieldset>
+	<fieldset style="margin-top: -30px;">
 	<legend> 合同详情</legend>
 	<div id="tabs" style="margin: -6px 0px 0px 5px; float: right; padding: 0px;">
 		<ul>
@@ -245,7 +246,8 @@
 			<c:forEach var="detail" items="${detail}" varStatus='status' >	
 				<tr>
 					<td></td>
-					<td>${ detail.materialId }<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
+					<td><a href="###" onClick="doEditMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
+						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
 					<td><span id="name${status.index}"></span></td>					
 					<td>${ detail.unit }</td>
 					<td>${ detail.quantity}   <form:hidden path="detailList[${status.index}].quantity" value="${detail.quantity}"/></td>							
@@ -258,7 +260,7 @@
 					var materialName = '${detail.materialName}';
 					var index = '${status.index}';
 					
-					$('#name'+index).html(jQuery.fixedWidth(materialName,20));
+					$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 										
 				</script>	
 					

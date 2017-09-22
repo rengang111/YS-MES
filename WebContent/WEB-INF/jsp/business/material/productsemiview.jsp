@@ -253,7 +253,7 @@ function baseBomView() {
 	//alert(materialId)
 	var table = $('#baseBomTable').dataTable();
 	if(table) {
-		table.fnClearTable();
+		table.fnClearTable(false);
 		table.fnDestroy();
 	}
 	var t2 = $('#baseBomTable').DataTable({

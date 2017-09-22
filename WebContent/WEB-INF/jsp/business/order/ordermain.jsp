@@ -421,10 +421,7 @@
 				<a  class="DTTT_button " onclick="doSearchCustomer2('020',9);"><span>库存订单</span></a>
 			</div>
 			<div id="DTTT_container" style="height:40px;float: right">
-				<a  title="常规"
-					class="DTTT_button " onclick="doCreate(1);"><span>常规订单录入</span></a>
-				<a  title="库存"
-					class="DTTT_button " onclick="doCreate(2);"><span>库存订单录入</span></a>
+				<a  class="DTTT_button " onclick="doCreate(1);"><span>订单录入</span></a>
 				<a  class="DTTT_button " onclick="doDelete();"><span>删除订单</span></a>
 			</div>
 			<div id="clear"></div>

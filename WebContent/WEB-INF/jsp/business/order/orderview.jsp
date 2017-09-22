@@ -293,10 +293,10 @@
 			<table class="form" id="table_form">
 				<tr> 				
 					<td class="label" width="100px">PI编号：</td>					
-					<td>${order.PIId}</td>
+					<td width="150px">${order.PIId}</td>
 
 					<td width="100px" class="label" >订单性质：</td>
-					<td>${order.orderNatureName}</td>
+					<td width="150px">${order.orderNatureName}</td>
 					<td width="100px" class="label" >客户订单号：</td>
 					<td colspan="3">${order.orderId}</td>
 				</tr>

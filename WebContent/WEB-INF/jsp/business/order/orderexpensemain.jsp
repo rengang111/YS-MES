@@ -63,66 +63,28 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "PIId", "defaultContent" : ''},
-							{"data": "orderId", "defaultContent" : ''},
-							{"data": "YSId", "defaultContent" : ''},
-							{"data": "deliveryDate", "className" : 'td-center'},
-							{"data": "materialId", "defaultContent" : ''},
-							{"data": "materialName", "defaultContent" : ''},
-							{"data": "quantity", "className" : 'cash'},
-							{"data": "price", "className" : 'cash'},
-							{"data": null, "defaultContent" : '0', "className" : 'cash'},
-							{"data": null, "defaultContent" : '',"className" : 'td-center'}
-						],
+					{"data": null, "defaultContent" : '',"className" : 'td-center'},
+					{"data": "YSId", "defaultContent" : ''},
+					{"data": "materialId", "defaultContent" : ''},
+					{"data": "materialName", "defaultContent" : ''},
+					{"data": "quantity", "className" : 'td-right'},
+					{"data": null, "defaultContent" : '',"className" : 'td-center'}
+				],
 				"columnDefs":[
-				    		{"targets":0,"render":function(data, type, row){
-				    			return row["rownum"];			    			 
-		                    }},
-				    		{"targets":10,"render":function(data, type, row){
-				    			var rtn = "";
-				    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["YSId"] +"','"+ row["materialId"] + "')\">费用</a>";
-				    			return rtn;
-				    		}},
-				    		{"targets":9,"render":function(data, type, row){
-				    			
-				    			var v = row["totalprice"],id = row["YSId"];
-				    			//return YSKcheck(v,id);
-				    			return '******';
-				    		}},
-				    		{"targets":8,"render":function(data, type, row){
-				    			
-				    			var v = row["price"],id = row["YSId"];
-				    			//return YSKcheck(v,id);
-				    			return '******';
-				    		}},
-				    		{"targets":7,"render":function(data, type, row){
-				    			
-				    			var v = row["quantity"],id = row["YSId"];
-				    			//return YSKcheck(v,id);
-				    			return '******';
-				    		}},
-				    		{"targets":6,"render":function(data, type, row){
-				    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
-				    			name = jQuery.fixedWidth(name,20);
-				    			var zzFlag = "";
-				    			if(id != ''){
-				    				zzFlag = id.substr(2,3);
-				    			}
-				    			if(zzFlag == 'YSK') name = '库存订单';//库存订单不显示明细内容
-				    			
-				    			return name;
-				    		}},
-				    		{"targets":5,"render":function(data, type, row){
-				    			
-				    			var v = row["materialId"],id = row["YSId"], zzFlag = "";
-				    			if(id != ''){
-				    				zzFlag = id.substr(2,3);
-				    			}
-				    			if(zzFlag == 'YSK') v = '库存订单';//库存订单不显示明细内容
-				    			return v;
-				    		}}				           
-			         	] 
+		    		{"targets":0,"render":function(data, type, row){
+		    			return row["rownum"];			    			 
+                    }},
+		    		{"targets":1,"render":function(data, type, row){
+		    			var rtn = "";
+		    			rtn= "<a href=\"#\" onClick=\"doShow('" + row["YSId"] +"','"+ row["materialId"] + "')\">"+ row["YSId"] +"</a>";
+		    			return rtn;
+		    		}},
+		    		{"targets":3,"render":function(data, type, row){
+		    			var name = row["materialName"];
+		    			name = jQuery.fixedWidth(name,40);
+		    			return name;
+		    		}}				           
+	         	] 
 			}
 		);
 
@@ -225,16 +187,11 @@
 						<thead>						
 							<tr>
 								<th style="width: 10px;" class="dt-middle ">No</th>
-								<th style="width: 80px;" class="dt-middle ">PI编号</th>
-								<th style="width: 100px;" class="dt-middle ">订单号</th>
-								<th style="width: 80px;" class="dt-middle ">耀升编号</th>
-								<th style="width: 60px;" class="dt-middle ">订单交期</th>
-								<th style="width: 120px;" class="dt-middle ">产品编号</th>
-								<th style="width: 150px;" class="dt-middle ">产品名称</th>
-								<th style="width: 50px;" class="dt-middle ">数量</th>
-								<th style="width: 50px;" class="dt-middle ">单价</th>
-								<th style="width: 80px;" class="dt-middle ">销售总价</th>
-								<th style="width: 50px;" class="dt-middle ">操作</th>
+								<th style="width: 100px;" class="dt-middle ">耀升编号</th>
+								<th style="width: 200px;" class="dt-middle ">产品编号</th>
+								<th class="dt-middle ">产品名称</th>
+								<th style="width: 100px;" class="dt-middle ">数量</th>
+								<th style="width: 100px;" class="dt-middle ">增减费用</th>
 							</tr>
 						</thead>
 					</table>

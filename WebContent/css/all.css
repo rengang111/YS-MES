@@ -335,7 +335,7 @@ input.cash{
 
 input.num{
 	/* width:60px; */
-	padding:0 2px 0 2px; 
+	padding:2px 10px 2px 2px; 
 	text-align:right;
 }
 

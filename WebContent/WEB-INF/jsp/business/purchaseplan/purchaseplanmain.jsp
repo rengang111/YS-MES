@@ -102,7 +102,8 @@
 						"visible" : false,
 						"targets" : [col_no ]
 					}
-	         	] 
+	         	] ,
+	         	"aaSorting": [[ 1, "DESC" ]]
 	    		
 			});
 		
@@ -136,7 +137,7 @@
 
 		if(keyBackup ==""){
 
-			ajax("","020","",8);
+			ajax("","010","",8);
 		}else{
 			ajax("","","",8);
 			
@@ -215,7 +216,7 @@
 			<div class="list">
 				<div id="DTTT_container2" style="height:40px;float: left">
 					<a  class="DTTT_button " onclick="doSearchCustomer('010',8);"><span>待合同</span></a>
-					<a  class="DTTT_button " onclick="doSearchCustomer('020',8);"><span>待倒料</span></a>
+					<a  class="DTTT_button " onclick="doSearchCustomer('020',8);"><span>待到料</span></a>
 					<a  class="DTTT_button " onclick="doSearchCustomer('030',8);"><span>待交货</span></a>
 					<a  class="DTTT_button " onclick="doSearchCustomer('040','');"><span>已入库</span></a>
 				</div>

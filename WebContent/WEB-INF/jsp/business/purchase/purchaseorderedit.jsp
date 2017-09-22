@@ -1,12 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -24,13 +17,12 @@
 			"pagingType" : "full_numbers",
 	        "paging"    : false,
 	        "pageLength": 50,
+	        "bAutoWidth":false,
 	        "ordering"  : false,
-
-			dom : '<"clear">rt',
-			
+			"dom" : '<"clear">rt',			
 			"columns" : [ 
 			        	{"className":"dt-body-center"
-					}, {
+					}, {"className":"td-left"
 					}, {								
 					}, {"className":"td-center"
 					}, {"className":"td-right"				
@@ -38,13 +30,19 @@
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}			
+				],
+				"columnDefs":[
+				    {
+						"visible" : false,
+						"targets" : [6,7 ]
+					}
 				]
 			
 		}).draw();
 		
 		t.on('blur', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
 			
-	           $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
+	          // $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
 
 		});
 			
@@ -52,8 +50,8 @@
 			
             var $tds = $(this).parent().find("td");
 			
-            var $oQuantity  = $tds.eq(4).find("input");
-			var $oThisPrice = $tds.eq(5).find("input");
+            var $oQuantity  = $tds.eq(4).find("input[type=text]");
+			var $oThisPrice = $tds.eq(5).find("input[type=text]");
 			var $oAmounti   = $tds.eq(6).find("input:hidden");
 			var $oAmounts   = $tds.eq(6).find("span");
 			
@@ -63,8 +61,8 @@
 			
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 
-			var vPrice = floatToCurrency(fPrice);	
-			var vQuantity = floatToNumber(fQuantity);
+			var vPrice = float4ToCurrency(fPrice);	
+			var vQuantity = floatToCurrency(fQuantity);
 			var vTotalNew = floatToCurrency(fTotalNew);
 					
 			//详情列表显示新的价格
@@ -77,7 +75,8 @@
 			weightsum();
 			
 		});
-			
+		
+		/*
 		t.on('click', 'tr', function() {
 			
 			if ( $(this).hasClass('selected') ) {
@@ -89,7 +88,7 @@
 	        }
 			
 		});
-		
+		*/
 		t.on('order.dt search.dt draw.dt', function() {
 			t.column(0, {
 				search : 'applied',
@@ -98,7 +97,7 @@
 				cell.innerHTML = i + 1;
 			});
 		}).draw();
-
+		
 	};//ajaxRawGroup()
 	
 	$(document).ready(function() {
@@ -139,9 +138,9 @@
 		
 		$("#goBack").click(
 				function() {
-					history.go(-1);
-					//var url = '${ctx}/business/purchase?methodtype=init';
-					//location.href = url;		
+					var contractId = '${ contract.contractId }';
+					var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
+					location.href = url;		
 				});
 		
 		$("#insert").click(
@@ -166,8 +165,28 @@
 			location.href = url;	
 		});	
 		
+		$(".imgbtn").click(function(){
+			
+			var input = $(this).parent().find("input[type=text]");
+			var span = $(this).parent().find("span");
+			if(input.is(":hidden")){
+				input.show();
+				span.hide();
+			}else{
+				input.hide();
+				span.show();
+				input.val(span.text());
+			}
+			
+			return false;
+		});	
+		
 		//input格式化
 		foucsInit();
+		
+		$(".short").hide();
+		//$(".num").attr( 'readonly',true);
+		//$(".cash").attr( 'readonly',true);
 		
 		//列合计
 		weightsum();
@@ -233,7 +252,7 @@
 			<table class="form" id="table_form">
 				<tr id="ysid00">		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="200px">${contract.YSId }
+					<td width="150px">${contract.YSId }
 						<form:hidden path="contract.recordid" value="${contract.contractRecordId }"/>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
 									
@@ -269,86 +288,89 @@
 			
 	</fieldset>
 	
-	<div style="clear: both"></div>		
-	<fieldset>
-	<legend> 合同详情</legend>
-	
-	<div class="list">
-	<table id="example" class="display">	
-		<thead>
-		<tr>
-			<th style="width:30px">No</th>
-			<th style="width:150px">物料ERP编码</th>
-			<th>物料名称</th>
-			<th style="width:50px">计量单位</th>
-			<th style="width:80px">数量</th>
-			<th style="width:50px">单价</th>
-			<th style="width:70px">总价</th>
-			<th style="width:1px"></th>
-		</tr>
-		</thead>		
-		<tbody>
-			<c:forEach var="detail" items="${detail}" varStatus='status' >	
-				<tr>
-					<td></td>
-					<td>
-						<a href="###" onClick="doShowMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
-						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
-					<td><span id="name${status.index}"></span></td>					
-					<td>${ detail.unit }</td>
-					<td><form:input path="detailList[${status.index}].quantity" value="${detail.quantity}" class="num short"/></td>							
-					<td>${detail.price}<form:hidden  path="detailList[${status.index}].price" value="${detail.price}"  class="cash short" /></td>
-					<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice} "/></td>				
-					<td><form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" /></td>				
-					
-				</tr>	
-								
-				<script type="text/javascript">
-					var materialName = '${detail.materialName}';
-					var index = '${status.index}';
-					
-					$('#name'+index).html(jQuery.fixedWidth(materialName,20));
-					
-					counter++;
-					
-				</script>	
-					
-			</c:forEach>
-			
-		</tbody>
-		<tfoot>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td class="td-right">合计:</td>
-				<td class="td-right" style="padding-right: 2px;"><span id=weightsum></span>
-					<form:hidden path="contract.total"/></td>
-				<td></td>
-			</tr>
-		</tfoot>
-	</table>
-	</div>
-	</fieldset>
-	<fieldset>
-	<legend> 合同注意事项</legend>
-	<table class="form" >
-		<tr>
-			<td class="td-left"><textarea name="contract.memo" rows="7" cols="100" >${contract.memo}</textarea></td>
-		</tr>
-	</table>
-	
-	</fieldset>
-	<div style="clear: both"></div>
-	
 	<fieldset class="action" style="text-align: right;">
 		<button type="button" id="insert" class="DTTT_button">保存</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
-	</fieldset>		
+	</fieldset>			
+	<fieldset style="margin-top: -30px;">
+	<legend> 合同详情</legend>	
+		<div class="list">
+		<table id="example" class="display" style="width:100%">	
+			<thead>
+			<tr>
+				<th style="width:1px">No</th>
+				<th style="width:120px">物料ERP编码</th>
+				<th>物料名称</th>
+				<th style="width:30px">单位</th>
+				<th style="width:160px">数量</th>
+				<th style="width:160px">单价</th>
+				<th style="width:70px">总价</th>
+				<td></td>
+			</tr>
+			</thead>		
+			<tbody>
+				<c:forEach var="detail" items="${detail}" varStatus='status' >	
+					<tr>
+						<td></td>
+						<td>
+							<a href="###" onClick="doShowMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
+							<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
+						
+						<td><span id="name${status.index}"></span></td>					
+						
+						<td>${ detail.unit }</td>
+						
+						<td><span>${detail.quantity}</span>
+							<form:input path="detailList[${status.index}].quantity" value="${detail.quantity}" class="num short" />
+							<input type="image" name="quantityBtn${status.index}" src="${ctx}/images/action_edit.png" class="imgbtn" style="border: 0;" ></td>							
+						
+						<td><span>${detail.price}</span>
+							<form:input path="detailList[${status.index}].price" value="${detail.price}"  class="cash short" />
+							<input type="image" name="priceBtn${status.index}" src="${ctx}/images/action_edit.png" class="imgbtn" style="border: 0;"></td>
+						
+						<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice} "/></td>				
+						<td><form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" /></td>				
+						
+					</tr>	
+									
+					<script type="text/javascript">
+						var materialName = '${detail.materialName}';
+						var index = '${status.index}';
+						
+						$('#name'+index).html(jQuery.fixedWidth(materialName,40));
+
+					</script>	
+						
+				</c:forEach>
+				
+			</tbody>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="td-right">合计:</td>
+					<td class="td-right" style="padding-right: 2px;"><span id=weightsum></span>
+						<form:hidden path="contract.total"/></td>
+					<td></td>
+				</tr>
+			</tfoot>
+		</table>
+		</div>
+		</fieldset>
+		<fieldset>
+		<legend> 合同注意事项</legend>
+		<table class="form" >
+			<tr>
+				<td class="td-left"><textarea name="contract.memo" rows="6" cols="100" >${contract.memo}</textarea></td>
+			</tr>
+		</table>
 		
-</form:form>
+		</fieldset>
+			
+	</form:form>
 
 </div>
 </div>

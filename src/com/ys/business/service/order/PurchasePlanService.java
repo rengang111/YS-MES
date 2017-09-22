@@ -26,6 +26,7 @@ import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.PurchasePlanModel;
 import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_MaterialDao;
+import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
@@ -36,6 +37,7 @@ import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderBomData;
 import com.ys.business.db.data.B_OrderBomDetailData;
+import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
@@ -538,6 +540,9 @@ public class PurchasePlanService extends CommonService {
 				}				
 			}
 			
+			//更新订单状态:待到料
+			updateOrderStatusByYSId(YSId,Constants.ORDER_STS_2);
+			
 			ts.commit();
 			
 
@@ -778,26 +783,7 @@ public class PurchasePlanService extends CommonService {
 		
 		return version;
 	}	
-	
-	/*
-	 * 更新
-	 */
-	private void updatePurchasePlanDetail(B_PurchasePlanDetailData reqPlan) throws Exception{
 		
-		//确认Order表是否存在		
-		reqPlan = new B_PurchasePlanDetailDao(reqPlan).beanData;
-		if(!(reqPlan == null || ("").equals(reqPlan))){				
-			//update处理			
-			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-					"purchasePlanUpdate",userInfo);			
-			copyProperties(reqPlan,commData);
-
-			planDetailDao.Store(reqPlan);	
-			
-		}else{
-			//insert处理
-		}
-	}	
 	
 	@SuppressWarnings("unchecked")
 	public B_OrderDetailData getOrderByYSId(
@@ -865,6 +851,38 @@ public class PurchasePlanService extends CommonService {
 		getOrderDetailByYSId(YSId);
 		
 		return model;
+		
+	}
+	
+	public HashMap<String, Object> updateOrderCost() throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		
+		
+		//更新成本核算
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+		B_OrderDetailData dt = new B_OrderDetailData();
+		B_OrderDetailData reqDt = reqModel.getOrderDetail();
+		String recordId = request.getParameter("detailRecordId");
+		dt.setRecordid(recordId);
+		dt = (B_OrderDetailData) dao.FindByPrimaryKey(dt);
+		if(!(dt == null || ("").equals(dt))){
+			//update处理		
+			copyProperties(dt,reqDt);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"ExchangerateUpdate",userInfo);			
+			copyProperties(dt,commData);
+			
+			dao.Store(dt);
+		}
+		
+		//更新汇率
+		updateExchangeRate(dt.getCurrency(),dt.getExchangerate());
+		
+		modelMap.put("message", NORMAL);	
+		
+		return modelMap;
 		
 	}
 	
@@ -985,6 +1003,7 @@ public class PurchasePlanService extends CommonService {
 		copyProperties(data,commData);		
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
+		data.setStatus(Constants.CONTRACT_STS_1);
 		
 		dao.Create(data);	
 	}

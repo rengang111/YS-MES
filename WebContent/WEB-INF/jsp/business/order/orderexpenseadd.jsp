@@ -44,7 +44,10 @@
 				trHtml+="</tr>";	
 
 				$('#documentary tbody tr:last').after(trHtml);
-
+				
+				if(counter1 == 0){
+					//$('#documentary tbody tr:eq(0)').remove();//删除无效行
+				}
 				counter1 += 1;//记录费用总行数
 				//alert(counter1+'::counter1')
 				autocomplete();
@@ -915,8 +918,8 @@ function expenseAjax4() {
 					<td class="label"><label>ＰＩ编号：</label></td>
 					<td>${order.PIId}</td>
 
-					<td class="label"><label>订单交期：</label></td>
-					<td>${order.deliveryDate}<span id="quantity">${order.quantity}</span>（${order.unit}）</td>
+					<td class="label"><label>订单数量：</label></td>
+					<td><span id="quantity">${order.quantity}</span>（${order.unit}）</td>
 						
 					<td class="label"><label>客户名称：</label></td>
 					<td>${order.customerFullName}</td>
@@ -924,7 +927,77 @@ function expenseAjax4() {
 			</table>
 		</fieldset>
 
-	
+			
+		<fieldset>
+			<legend> 车间增减费用</legend>
+			<div class="list">
+				<table id="workshop" class="display" >
+					<thead>				
+					<tr>
+						<th width="30px">No</th>
+						<th class="dt-center" width="250px">增减内容</th>
+						<th class="dt-center" width="150px">金额</th>
+						<th class="dt-center" width="150px">供应商</th>
+						<th class="dt-center" width="150px">供应商金额</th>
+						<th></th>
+					</tr>
+					</thead>
+					<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>
+				</table>
+				<div class="action" style="text-align: right;">
+					<button type="button" id="insert4" onclick="doSave('W');" class="DTTT_button">保存</button>
+					<button type="button" id="goBack4" class="goBack DTTT_button">返回</button>
+				</div>	
+			</div>
+		</fieldset>	
+				
+		<fieldset>
+			<legend> 工厂（供应商）增减费用</legend>
+			<div class="list">
+				<table id="supplier" class="display" >
+					<thead>				
+					<tr>
+						<th width="30px">No</th>
+						<th class="dt-center" width="150px">工厂合同号</th>
+						<th class="dt-center" width="150px">工厂名称</th>
+						<th class="dt-center" width="250px">增减内容</th>
+						<th class="dt-center" width="150px">金额</th>
+						<th class="dt-center" width="150px">日期</th>
+					</tr>
+					</thead>					
+					<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>
+				</table>
+				<div class="action" style="text-align: right;">
+					<button type="button" id="insert3" onclick="doSave('S');" class="DTTT_button">保存</button>
+					<button type="button" id="goBack3" class="goBack DTTT_button">返回</button>
+				</div>	
+			</div>
+		</fieldset>			
+		
+		<fieldset>
+			<legend> 客户增减</legend>
+			<div class="list">
+				<table id="custmer" class="display" >
+					<thead>				
+					<tr>
+						<th width="30px">No</th>
+						<th class="dt-center" width="250px">费用名称</th>
+						<th class="dt-center" width="150px">金额</th>
+						<th class="dt-center" width="150px">报销人</th>
+						<th class="dt-center" width="150px">日期</th>
+						<th></th>
+					</tr>
+					</thead>
+					
+					<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>
+				</table>
+				<div class="action" style="text-align: right;">
+					<button type="button" id="insert2" onclick="doSave('C');" class="DTTT_button">保存</button>
+					<button type="button" id="goBack2" class=" goBack DTTT_button">返回</button>
+				</div>	
+			</div>
+		</fieldset>	
+		
 		<fieldset>
 			<legend> 跟单费用</legend>
 			<div class="list">
@@ -950,73 +1023,6 @@ function expenseAjax4() {
 			</div>
 		</fieldset>	
 		
-		<fieldset>
-			<legend> 客户增减</legend>
-			<div class="list">
-				<table id="custmer" class="display" >
-					<thead>				
-					<tr>
-						<th width="30px">No</th>
-						<th class="dt-center" width="250px">费用名称</th>
-						<th class="dt-center" width="150px">金额</th>
-						<th class="dt-center" width="150px">报销人</th>
-						<th class="dt-center" width="150px">日期</th>
-						<th></th>
-					</tr>
-					</thead>
-					
-					<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>
-				</table>
-				<div class="action" style="text-align: right;">
-					<button type="button" id="insert2" onclick="doSave('C');" class="DTTT_button">保存</button>
-					<button type="button" id="goBack2" class=" goBack DTTT_button">返回</button>
-				</div>	
-			</div>
-		</fieldset>			
-		<fieldset>
-			<legend> 工厂（供应商）增减费用</legend>
-			<div class="list">
-				<table id="supplier" class="display" >
-					<thead>				
-					<tr>
-						<th width="30px">No</th>
-						<th class="dt-center" width="150px">工厂合同号</th>
-						<th class="dt-center" width="150px">工厂名称</th>
-						<th class="dt-center" width="250px">增减内容</th>
-						<th class="dt-center" width="150px">金额</th>
-						<th class="dt-center" width="150px">日期</th>
-					</tr>
-					</thead>					
-					<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>
-				</table>
-				<div class="action" style="text-align: right;">
-					<button type="button" id="insert3" onclick="doSave('S');" class="DTTT_button">保存</button>
-					<button type="button" id="goBack3" class="goBack DTTT_button">返回</button>
-				</div>	
-			</div>
-		</fieldset>			
-		<fieldset>
-			<legend> 车间增减费用</legend>
-			<div class="list">
-				<table id="workshop" class="display" >
-					<thead>				
-					<tr>
-						<th width="30px">No</th>
-						<th class="dt-center" width="250px">增减内容</th>
-						<th class="dt-center" width="150px">金额</th>
-						<th class="dt-center" width="150px">报销人</th>
-						<th class="dt-center" width="150px">日期</th>
-						<th></th>
-					</tr>
-					</thead>
-					<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>
-				</table>
-				<div class="action" style="text-align: right;">
-					<button type="button" id="insert4" onclick="doSave('W');" class="DTTT_button">保存</button>
-					<button type="button" id="goBack4" class="goBack DTTT_button">返回</button>
-				</div>	
-			</div>
-		</fieldset>			
 <div style="clear: both"></div>		
 </form:form>
 
@@ -1082,7 +1088,7 @@ function doSave(type) {
 		success : function(d) {
 			//alert(d)
 			documentaryAjax();
-			$().toastmessage('showWarningToast', "保存成功!");	
+			$().toastmessage('showWarningToast', "保存成功!");		
 			
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {				

@@ -13,7 +13,7 @@
 	function ajax(pageFlg) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
-			table.fnClearTable();
+			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 
@@ -22,7 +22,7 @@
 			"lengthChange":false,
 			//"lengthMenu":[10,150,200],//设置一页展示20条记录
 			"processing" : true,
-			"serverSide" : true,
+			"serverSide" : false,
 			"stateSave" : false,
 			"ordering "	:true,
 			"searching" : false,

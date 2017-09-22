@@ -499,6 +499,7 @@ public class OrderService extends CommonService  {
 		//newData.setSubid(String.valueOf(YSMaxid+1));
 		newData.setPiid(piId);
 		//newData.setYsid(ysid);
+		newData.setCurrency(reqModel.getCurrency());
 		newData.setStatus(Constants.ORDER_STS_1);
 		newData.setReturnquantity(Constants.ORDER_RETURNQUANTY);
 		
@@ -589,7 +590,7 @@ public class OrderService extends CommonService  {
 			dbData.setSubid(piid.substring(piid.length() -3));
 			dbData.setOrderid(order.getOrderid());
 			dbData.setPaymentterm(order.getPaymentterm());
-			dbData.setCurrency(order.getCurrency());;
+			//dbData.setCurrency(order.getCurrency());;
 			dbData.setShippingcase(order.getShippingcase());
 			dbData.setDeliverydate(order.getDeliverydate());
 			dbData.setOrderdate(order.getOrderdate());
@@ -766,17 +767,6 @@ public class OrderService extends CommonService  {
 			reqModel.setYSMaxId(YSMaxId);	
 			reqModel.setYSParentId(paternId);
 			
-			//订单性质
-			String type = request.getParameter("orderNature");
-			String name = "";
-			if(type != null && ("1").equals(type)){
-				name = "常规订单";
-			}else{
-				name = "库存订单";
-			}
-			model.addAttribute("orderNature",name);
-			model.addAttribute("orderNatureId",type);
-			
 			reqModel.setDeliveryPortList(
 					util.getListOption(DicUtil.DELIVERYPORT, ""));
 			reqModel.setShippingCaseList(
@@ -791,6 +781,8 @@ public class OrderService extends CommonService  {
 					util.getListOption(DicUtil.ORDERCOMPANY, ""));
 			reqModel.setProductClassifyList(
 					util.getListOption(DicUtil.PRODUCTCLASSIFY, ""));
+			reqModel.setOrderNatureList(
+					util.getListOption(DicUtil.ORDERNATURE,""));
 			
 			reqModel.setEndInfoMap(NORMAL, "", "");
 			

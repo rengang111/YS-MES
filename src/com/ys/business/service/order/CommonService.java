@@ -28,14 +28,20 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.MaterialModel;
+import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PriceReferenceDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
+import com.ys.business.db.dao.B_PurchasePlanDetailDao;
+import com.ys.business.db.dao.S_systemConfigDao;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
+import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.CommFieldsData;
+import com.ys.business.db.data.S_systemConfigData;
 
 @Service
 public class CommonService extends BaseService {
@@ -466,6 +472,45 @@ public class CommonService extends BaseService {
 		return pricedt;
 	}
 	
+	/**
+	 * 更新订单状态
+	 */
+	public void updateOrderStatusByYSId(String YSId,String status) throws Exception{
+		
+		//确认Order表是否存在
+		
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+		B_OrderDetailData dbData = getOrderByYSId(dao,YSId);
+		
+		if(dbData != null){				
+			//update处理
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderStatusUpdate",userInfo);			
+			copyProperties(dbData,commData);
+			dbData.setStatus(status);
+
+			dao.Store(dbData);				
+		}	
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	public B_OrderDetailData getOrderByYSId(
+			B_OrderDetailDao dao,
+			String YSId ) throws Exception {
+		
+		List<B_OrderDetailData> dbList = null;
+		
+		String where = " YSId = '"+YSId +"'" + " AND deleteFlag = '0' ";
+						
+		dbList = (List<B_OrderDetailData>)dao.Find(where);
+		
+		if(dbList != null & dbList.size() > 0)
+			return dbList.get(0);		
+		
+		return null;
+	}
+	
 	//更新虚拟库存
 	/*
 	public void updateInventory(
@@ -693,5 +738,48 @@ public class CommonService extends BaseService {
 		String newSql = sql.replace(sql.substring(index),"ORDER BY " + sortColName + " "+ sSortDir_0);
 	
 		return newSql;
+	}
+	
+	/**
+	 * 更新系统信息:汇率
+	 */
+	@SuppressWarnings("unchecked")
+	public void updateExchangeRate(String currencyId,String exRate) {
+ 		
+		try {
+
+			S_systemConfigDao dao = new S_systemConfigDao();
+			S_systemConfigData dbData = new S_systemConfigData();
+			List<S_systemConfigData> dbList = null;
+			String where = null;
+			
+			//更新汇率
+			if(exRate != null && !("").equals(exRate)){
+				where = "sysKey='"+currencyId+"'";
+				dbList = (List<S_systemConfigData>)dao.Find(where);
+				
+				if(dbList!=null && dbList.size() >0){
+
+					dbData = dbList.get(0);
+					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+							"SystemConfigUpdate",userInfo);	
+					copyProperties(dbData,commData);
+					dbData.setSysvalue(exRate);
+
+					dao.Store(dbData);	
+				}else{		
+					commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+							"SystemConfigInsert",userInfo);	
+					copyProperties(dbData,commData);	
+					dbData.setSyskey(currencyId);
+					dbData.setSysvalue(exRate);
+					dao.Create(dbData);
+				}
+				dbList.clear();
+			}
+			
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}		
 	}
 }

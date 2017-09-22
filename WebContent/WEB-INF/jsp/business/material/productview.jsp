@@ -312,7 +312,7 @@ function baseBomView() {
 	}
 	var t2 = $('#baseBomTable').DataTable({
 		"paging": false,
-		"processing" : false,
+		"processing" : true,
 		"serverSide" : false,
 		"stateSave" : false,
 		"searching" : false,

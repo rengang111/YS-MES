@@ -38,6 +38,7 @@ function initEvent(){
 
 	$(document).ready(function() {		
 
+		$(".read-only").attr( 'readonly',true)
 		$( "#tabs" ).tabs();
 		
 		baseBomView();//基础BOM
@@ -99,18 +100,49 @@ function initEvent(){
 			
 		});
 		
-		$(".tabs2").click(
-				function() {
+		$(".tabs2").click(function() {
 					contractTableView();
 					//$('#contractTableView').DataTable().ajax.reload(false);
 				});
+		
+		$("#doSaveCost").click(function(){
+			
+			var PIId = '${order.PIId}';
+			var detailRecordId = '${order.detailRecordId}';
+
+			var url = "${ctx}/business/purchasePlan?methodtype=updateOrderCost"
+					+"&PIId="+PIId+"&detailRecordId="+detailRecordId;
+		
+			$.ajax({
+				type : "post",
+				url : url,
+				async : false,
+				data :$("#attrForm").serializeArray(),
+				dataType : "json",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
+				success : function(data) {			
+
+					$().toastmessage('showNoticeToast', "保存成功。");
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					alert(textStatus)
+				}
+			});	
+		});
+		
+		//外汇报价换算
+		$(".exchange").change(function() {
+			
+			costAcount();
+		});
+		
 	
 	});
 
 	
 	function baseBomView() {
 
-		var scrollHeight = $(window).height() - 255;
+		var scrollHeight = $(window).height() - 120;
 		var YSId='${order.YSId}';
 		var table = $('#example').dataTable();
 		if(table) {
@@ -145,7 +177,10 @@ function initEvent(){
 						$('#laborCost').text(data["data"][0]["laborCost"]);
 						$('#managementCost').text(data["data"][0]["managementCost"]);
 						$('#totalCost').text(data["data"][0]["totalCost"]);
+						$('#purchasePlan\\.recordid').val(data["data"][0]["planRecordId"]);
+						$('#orderDetail\\.productcost').val(data["data"][0]["productCost"]);
 						
+						costAcount();//初始化计算
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -156,18 +191,18 @@ function initEvent(){
 	       		"url":"${ctx}/plugins/datatables/chinese.json"
 	       	},
 			"columns": [
-				{"data": null,"className" : 'td-center'},//1
-				{"data": "materialId","className" : 'td-left',"defaultContent" : ''},//2.物料编号
-				{"data": null,"defaultContent" : ''},//3.物料名称
-				{"data": "purchaseType","className" : 'td-center', "defaultContent" : ''},//4.物料特性:物料
-				{"data": "unitQuantity","className" : 'td-right', "defaultContent" : ''},//5.单位使用量:baseBom
-				{"data": null,"className" : 'td-right'},//6.生产需求量:订单
-				{"data": null,"className" : 'td-right'},//7.总量= 单位使用量 * 生产需求量
-				{"data": "availabelToPromise","className" : 'td-right'},//8.当前库存(虚拟库存):物料
-				{"data": "purchaseQuantity","className" : 'td-right'},//9.建议采购量:输入
-				{"data": "supplierId","className" : 'td-left'},//10.供应商,可修改:baseBom
-				{"data": "price","className" : 'td-right', "defaultContent" : '0'},//11.本次单价,可修改:baseBom
-				{"data": "totalPrice","className" : 'td-right', "defaultContent" : '0'},//12.总价=本次单价*采购量
+				{"data": null,"className" : 'td-center'},//0
+				{"data": "materialId","className" : 'td-left',"defaultContent" : ''},//1.物料编号
+				{"data": null,"defaultContent" : ''},//2.物料名称
+				{"data": "purchaseType","className" : 'td-center', "defaultContent" : ''},//3.物料特性:物料
+				{"data": "unitQuantity","className" : 'td-right', "defaultContent" : ''},//4.单位使用量:baseBom
+				{"data": null,"className" : 'td-right'},//5.生产需求量:订单
+				{"data": null,"className" : 'td-right'},//6.总量= 单位使用量 * 生产需求量
+				{"data": "availabelToPromise","className" : 'td-right'},//7.当前库存(虚拟库存):物料
+				{"data": "purchaseQuantity","className" : 'td-right'},//8.建议采购量:输入
+				{"data": "supplierId","className" : 'td-left'},//9.供应商,可修改:baseBom
+				{"data": "price","className" : 'td-right', "defaultContent" : '0'},//10.本次单价,可修改:baseBom
+				{"data": "totalPrice","className" : 'td-right', "defaultContent" : '0'},//11.总价=本次单价*采购量
 			 ],
 			"columnDefs":[
 				
@@ -213,7 +248,11 @@ function initEvent(){
 						rtn = stock;
 					}
 	    			return rtn;
-	    		}}
+	    		}},
+	    		{
+					"visible" : false,
+					"targets" : [ 7]
+				}	
 	          
 	        ] 
 	     
@@ -483,13 +522,11 @@ function showContract(supplierId,YSId) {
 				</tr>							
 			</table>
 		</fieldset>
-
-		<fieldset class="action" style="text-align: right;margin-top: -15px;">
-			<button type="button" id="editPurchasePlan" class="DTTT_button">修改采购方案</button>
-			<!-- <button type="button" id="deletePurchasePlan" class="DTTT_button">删除采购方案</button> -->
-			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
-		</fieldset>	
-		<fieldset style="margin-top: -20px;">
+		<div style="text-align: right;float: right;width: 50%;margin: 0px 10px -30px 0px;">
+			<button type="button" id="doSaveCost" class="DTTT_button">保存核算结果</button>
+		</div>	
+		<fieldset>
+			<legend> 成本核算</legend>
 			<table class="form" id="table_form2">
 				<tr>
 					<td class="td-center"><label>材料成本</label></td>
@@ -510,8 +547,78 @@ function showContract(supplierId,YSId) {
 					<td class="td-center"><span id="totalCost"></span> </td>
 				</tr>								
 			</table>
-	
+			<table class="form" id="table_form3" >				
+				<tr>
+					<!-- <td class="td-center"><label>下单日期</label></td>-->
+					
+					<td class="td-center"><label>销售单价</label></td> 
+					<!-- <td class="td-center"><label>币种</label></td>-->
+					<td class="td-center"><label>换汇</label></td>
+					<td class="td-center"><label>原币价格</label></td>
+					<td class="td-center"><label>销售税</label></td>
+					<td class="td-center"><label>退税率</label></td>
+					<td class="td-center"><label>退税</label></td>
+					<td class="td-center"><label>利润</label></td>
+					<td class="td-center"><label>利润率</label></td>
+				</tr>	
+				<tr>
+					<form:hidden path="purchasePlan.recordid" />			
+					<!-- <td class="td-center">${order.orderDate}
+						<form:hidden path="purchasePlan.plandate"  class="read-only short" value="${order.orderDate}"/></td>-->
+					<td class="td-center"><span id="orderPrice">${order.price}</span></td>
+					<!-- <td class="td-center">${order.currency}</td> -->
+					<td class="td-center">
+						<form:input path="orderDetail.exchangerate" class="cash exchange mini"  value="${order.sysValue}"/></td>
+					<td class="td-center">
+						<form:input path="orderDetail.rmbprice" class="read-only cash short" value=""/></td>
+					<td class="td-center">
+						<form:input path="orderDetail.salestax" class="read-only cash short" value=""/></td>
+					<td class="td-center">
+						<form:input path="orderDetail.rebaterate" class="cash exchange mini"  value="${order.rebateRate}" />%</td>
+					<td class="td-center">
+						<form:input path="orderDetail.rebate" class="read-only cash short"  value=""/></td>
+					<td class="td-center">
+						<form:input path="orderDetail.profit" class="read-only cash short" value=""/></td>
+					<td class="td-center">
+						<form:input path="orderDetail.profitrate" class="read-only cash mini" value="" />%</td>
+				</tr>								
+			</table>
+			
+			<table class="form" id="table_form2" style="margin-top: -3px;height:70px">
+				
+				<tr style="vertical-align: bottom;">
+					<td class="td-center" width="150px"><label>单位销售毛利</label></td>	
+					<td class="td-center" width="150px"><label>单位核算毛利</label></td>
+					<td class="td-center" style="font-weight: bold;"><label>销售毛利</label></td>
+					<td class="td-center" style="font-weight: bold;"><label>核算毛利</label></td>
+					<td class="td-center" style="font-weight: bold;"><label>订单增减费用</label></td>
+					<td class="td-center" style="font-weight: bold;"><label>贸易净利</label></td>
+				</tr>	
+				<tr>			
+					<td class="td-center">
+						<form:input  path="orderDetail.salesprofit" class="read-only cash mini" value="" /></td>
+					<td class="td-center">
+						<form:input  path="orderDetail.adjustprofit" class="read-only cash mini" value="" /></td>
+					<td class="td-center" style="font-weight: bold;">
+						<form:input  path="orderDetail.totalsalesprofit" class="read-only cash short" value="" /></td>
+					<td class="td-center" style="font-weight: bold;">
+						<form:input  path="orderDetail.totaladjustprofit" class="read-only cash short" value="" /></td>
+					<td class="td-center" style="font-weight: bold;">${order.orderCost}
+						<input type="hidden" id="orderCost" value="${order.orderCost}" /></td>
+					<td class="td-center" style="font-weight: bold;width: 250px;">
+						<span id="netProfit"></span>
+						<form:input  path="orderDetail.netprofit" class="read-only cash short" value="" /></td>
+						<form:hidden path="orderDetail.productcost" value="" />
+				</tr>								
+			</table>
 		</fieldset>	
+		
+		<fieldset class="action" style="text-align: right;">
+			<button type="button" id="editPurchasePlan" class="DTTT_button">修改采购方案</button>
+			<!-- <button type="button" id="deletePurchasePlan" class="DTTT_button">删除采购方案</button> -->
+			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
+		</fieldset>	
+		
 		<div id="tabs" style="padding: 0px;white-space: nowrap;margin-top: -10px;">
 		<ul>
 			<li><a href="#tabs-1" class="tabs1">采购方案</a></li>
@@ -689,6 +796,54 @@ function purchasePlanCompute(obj,flg){
 	$oTotalQuty.html(fTotalQuty);
 	$oTotPriceS.html(vTotalNew);
 	$oTotPriceI.val(vTotalNew);
+}
+
+//销售利润计算
+function costAcount(){
+	var exchang  = currencyToFloat($('#orderDetail\\.exchangerate').val());
+	var exRebate = currencyToFloat($('#orderDetail\\.rebaterate').val());
+	var exprice  = currencyToFloat($('#orderPrice').text());
+	var mateCost = currencyToFloat($('#materialCost').text());
+	var productCost = currencyToFloat($('#productCost').text());
+	var costRate =  currencyToFloat($('#managementCostRate').text());
+	var quantity = currencyToFloat($('#quantity').text());
+	//原币价格=汇率*报价*订单数，利润率=（原币价格+退税-基础成本）/基础成本
+	var rmb = exchang * exprice * quantity;
+	//alert("exRebate:"+exRebate+"----mateCost:"+mateCost)
+	var rebate = exRebate * mateCost / 1.17 / 100;	//退税
+	var profit = rmb + rebate - productCost ;			//利润
+	var profitRate = profit / productCost * 100;		//利润率
+	//销售税=（销售单价(原币)-材料成本）*17%
+	var salesTax = ( rmb - mateCost ) * 17 / 100;	
+	
+	//单位销售毛利=销售单价（原币）-产品成本-销售税+退税
+	//单位核算毛利=销售单价（原币）-产品成本-销售税+退税-经管费=单位销售毛利-经管费
+	var sale = rmb - productCost - salesTax + rebate;
+	var adjust = sale - productCost * costRate / 100;
+	var unitSale = sale / quantity;
+	var unitAdjust = adjust / quantity;
+	//alert('经管费='+costRate+'productCost='+productCost)
+	$('#orderDetail\\.salestax').val(floatToCurrency(salesTax));
+	$('#orderDetail\\.rebate').val(floatToCurrency(rebate));
+	$('#orderDetail\\.rmbprice').val(floatToCurrency(rmb));
+	$('#orderDetail\\.profit').val(floatToCurrency(profit));
+	$('#orderDetail\\.profitrate').val(floatToCurrency(profitRate));
+
+	$('#orderDetail\\.salesprofit').val(floatToCurrency(unitSale));
+	$('#orderDetail\\.adjustprofit').val(floatToCurrency(unitAdjust));
+	$('#orderDetail\\.totalsalesprofit').val(floatToCurrency(sale));
+	$('#orderDetail\\.totaladjustprofit').val(floatToCurrency(adjust));
+	
+	netAdjustAccout();//贸易净利	
+}
+
+function netAdjustAccout(){
+	var ordercost = currencyToFloat( $('#orderCost').val() );
+	var adjust = currencyToFloat( $('#orderDetail\\.totaladjustprofit').val() );
+	//alert('docCost:'+ordercost+'--adjust:'+adjust)
+	var netProfit = adjust - ordercost ;
+	$('#orderDetail\\.netprofit').val(floatToCurrency(netProfit));
+	
 }
 </script>
 </body>

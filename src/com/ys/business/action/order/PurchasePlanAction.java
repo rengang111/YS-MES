@@ -110,6 +110,11 @@ public class PurchasePlanAction extends BaseAction {
 			case "purchasePlanUpdate":
 				doUpdate();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
+				break;			
+			case "updateOrderCost":
+				dataMap = doUpdateOrderCost();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/purchaseplan/purchaseplanview";
 				break;
 				
 		}
@@ -225,6 +230,13 @@ public class PurchasePlanAction extends BaseAction {
 		model.addAttribute("backFlag",backFlag);
 	}
 
+	public HashMap<String, Object> doUpdateOrderCost() throws Exception {
+		
+		return purchaseService.updateOrderCost();			
+
+	}
+
+	
 
 	public void doShowPurchaseDetail() throws Exception{
 		

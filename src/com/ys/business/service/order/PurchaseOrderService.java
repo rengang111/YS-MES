@@ -132,6 +132,7 @@ public class PurchaseOrderService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
+		/*
 		if((key1 == null || ("").equals(key1)) &&
 			(key2 == null || ("").equals(key2))){
 			//没有查询条件的时候,默认显示一周的数据
@@ -139,23 +140,20 @@ public class PurchaseOrderService extends CommonService {
 					CalendarUtil.fmtDate(),-7);
 			userDefinedSearchCase.put("keyword3", modifyTime);
 		}
-		
+		*/
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
+		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
 		}		
 		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-			
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount());		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());			
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;
