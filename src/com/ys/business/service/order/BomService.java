@@ -542,12 +542,12 @@ public class BomService extends CommonService {
 	      
 		      order.setYsid(ysid);
 		      order.setMaterialid(materialId);
-		      order.setContractid(contr);
-		      order.setCostname(name);
-		      order.setCost(cost);
-		      order.setPerson(person);
-		      order.setQuotationdate(date);
-		      order.setType(type);
+		     // order.setContractid(contr);
+		     // order.setCostname(name);
+		     // order.setCost(cost);
+		     // order.setPerson(person);
+		     // order.setQuotationdate(date);
+		     // order.setType(type);
 		      order.setStatus("0");
 		      insertDocumentary(order);
 	    }

@@ -413,10 +413,10 @@
 			<tbody>
 <c:forEach var='bom' items='${planDetail}' varStatus='status'>	
 			
-	<tr> 
+	<tr id="tr${status.index}"> 
 		<td><span id="materialId${status.index}">
 			<a href="###" onClick="doEditMaterial('${status.index}','${bom.materialRecordId }','${bom.materialParentId }')">${bom.materialId }</a></span></td>
-		<td><form:input path="planDetailList[${status.index}].subbomno" class="cash" style="width:20px" value="${bom.subbomno }" /></td>
+		<td><form:input path="planDetailList[${status.index}].subbomno" class="cash" style="width:20px" value="${bom.subBomNo }" /></td>
 	    <td>
 			<span id="index${status.index}">${bom.rownum }</span><input type="checkbox" id="numCheck" name="numCheck" value="" /></td>
    		<td>
@@ -433,7 +433,7 @@
 	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }" /></td>
 	    <td><span id="totalPrice${status.index}">${bom.totalPrice }</span>
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  value="${bom.totalPrice }" /></td>
-	    <td><span id="price${status.index}">${bom.lastPrice }</span></td>
+	    <td><span id="price${status.index}">${bom.price }</span></td>
 	    
 	    	<form:hidden path="planDetailList[${status.index}].recordid" value="${bom.recordId }" />
 	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" />
@@ -441,29 +441,51 @@
 	<script type="text/javascript">
 		var index = '${status.index}';
 		var materialName = '${bom.materialName}';
-		var price = '${bom.price}';
+		var planMaterialId = '${bom.planMaterialId}';
+		var price = currencyToFloat ('${bom.price}');
 		var quantity = '${bom.quantity}';
-		var order = '${order.totalQuantity}';
+		var order = currencyToFloat( '${order.totalQuantity}' );
+		var unitQuantity = currencyToFloat( '${bom.unitQuantity}' );
+		var totalPrice = currencyToFloat( '${bom.totalPrice}' );
 		var stock = '${bom.availabelToPromise}';
 		var type = '${bom.purchaseTypeId}';
 		var supplierId = '${bom.supplierId}'
-		
-		//var totalQuantity = floatToCurrency(currencyToFloat(quantity) * currencyToFloat(order));
-		//var fpurchase = setPurchaseQuantity(stock,totalQuantity);
-		if(type=="020"){//通用件单独采购
-			fpurchase = "0";
-		}
-		//var vpurchase = floatToCurrency(fpurchase);
-		//var totalPrice = floatToCurrency( currencyToFloat(price) * fpurchase );
+		var vtotalPrice = '0';//初始化
+			
 		
 		var shortName = getLetters(supplierId);
+		
+		var ftotalQuantity =  order * unitQuantity ;
+		var vtotalQuantity = floatToCurrency( ftotalQuantity );//总量
+		var fpurchase = ftotalQuantity;
+		if(type=="020"){//通用件单独采购
+			fpurchase = "0";
+		}	
+		if(planMaterialId == null || planMaterialId == ""){//基础BOM有物料发生变更
+			
+			vtotalPrice = floatToCurrency( price * fpurchase );
+			
+			$("#planDetailList"+index+"\\.manufacturequantity").val(vtotalQuantity);
+			$('#totalQuantity'+index).html(vtotalQuantity);
+			$("#planDetailList"+index+"\\.purchasequantity").val(vtotalQuantity);
+			
+			$('#tr'+index).css('color','red');
+			$("#planDetailList"+index+"\\.materialid").css('color','red');
+			
+			
+		}else{
+			if(totalPrice =="" || totalPrice == '0'){//已有的方案计算有误的情况
+				vtotalPrice = floatToCurrency( price * fpurchase );
+			}else{
+				vtotalPrice = floatToCurrency(totalPrice);
+			}
+				
+		}
+		$('#totalPrice'+index).html(vtotalPrice);
+		$("#planDetailList"+index+"\\.totalprice").val(vtotalPrice);
+		
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
-		//$('#totalQuantity'+index).html(totalQuantity);
-		//$('#totalPrice'+index).html(totalPrice);
-		//$("#planDetailList"+index+"\\.totalprice").val(totalPrice);
-		//$("#planDetailList"+index+"\\.purchasequantity").val(vpurchase);
-
 		
 		counter++;
 	</script>	
@@ -471,7 +493,7 @@
 			</tbody>
 		</table>
 	 * 1、修改"模块编号",可以调整该模块的显示顺序,同一模块内的自动按照物料编码顺序排列；<br>
-	 * 2、"添加单行"后,请修改该行的模块编号；
+	 * 2、"添加单行"后,请修改该行的模块编号；<span style="color:red">* 3、红色,表示基础BOM有变动</span>
 	</div>
 </div>
 

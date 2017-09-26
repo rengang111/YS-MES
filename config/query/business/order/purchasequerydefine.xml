@@ -544,6 +544,7 @@
       <f name="format(sum(REPLACE(IFNULL(a.manufactureQuantity,0),',','')),2) " alias="manufactureQuantity" ctype="" />
       <f name="format(sum(REPLACE(IFNULL(a.purchaseQuantity,0),',','')),2) " alias="purchaseQuantity" ctype="" />
       <f name="format(sum(REPLACE(IFNULL(a.totalPrice,0),',','')),2) " alias="totalPrice" ctype="" />
+      <f name="format(sum(REPLACE(IFNULL(a.unitQuantity,0),',','')),5)" alias="unitQuantity" ctype="" />
       <f name="a.supplierShortName" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -551,6 +552,51 @@
    <from>v_purchaseplan a</from>
     <orderby>a.materialId</orderby>
     <groupby>a.materialId</groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  
+<query>
+    <pool></pool>    
+    <name value="updateInitPurchasePlan" />
+    <where>
+    	<w name="a.productId" des="" reqName="productId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="b.recordId" alias="" ctype="" />
+      <f name="b.purchaseId" alias="" ctype="" />
+      <f name="b.planRecordId" alias="" ctype="" />
+      <f name="b.YSId" alias="" ctype="" />
+      <f name="b.purchaseQuantity" alias="" ctype="" />
+      <f name="b.manufactureQuantity" alias="" ctype="" />
+      <f name="b.priceStatus" alias="" ctype="" />
+      <f name="IFNULL(b.unitQuantity,a.quantity)" alias="unitQuantity" ctype="" />
+      <f name="b.materialId" alias="planMaterialId" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.materialParentId" alias="" ctype="" />
+      <f name="a.materialRecordId" alias="" ctype="" />
+      <f name="a.unit" alias="unitName" ctype="计量单位" />
+      <f name="IFNULL(b.price,a.price)" alias="price" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.bomCost" alias="" ctype="" />
+      <f name="a.managementCost" alias="" ctype="" />
+      <f name="a.managementCostRate" alias="" ctype="" />
+      <f name="a.productCost" alias="" ctype="" />
+      <f name="a.materialCost" alias="" ctype="" />
+      <f name="a.laborCost" alias="" ctype="" />
+      <f name="a.totalCost" alias="" ctype="" />
+      <f name="a.availabelToPromise" alias="" ctype="" />
+      <f name="a.purchaseType" alias="" ctype="物料采购类别" />
+      <f name="a.purchaseType" alias="purchaseTypeId" ctype="" />
+      <f name="a.subBomNo" alias="" ctype="" />
+      <f name="b.totalPrice" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_basebomdetail a LEFT JOIN v_purchaseplan b ON a.materialId = b.materialId and b.subBomNo=a.subBomNo and b.YSId = '#' and b.deleteFlag='0' </from>
+    <orderby>a.subBomNo+0,a.materialId</orderby>
+    <groupby></groupby>
     <having></having>
 	<power></power>    
   </query>

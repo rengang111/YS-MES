@@ -21,18 +21,19 @@
 			table.fnDestroy();
 		}
 		var t = $('#TMaterial').DataTable({
-				"paging": false,
-				"lengthChange":false,
-				"lengthMenu":[50,100,200],//设置一页展示20条记录
-				"processing" : false,
-				"serverSide" : false,
-				"stateSave" : false,
-				"ordering "	:true,
-				"searching" : false,
-				"pagingType" : "full_numbers",
-				//"scrollY":scrollHeight,
-				//"scrollCollapse":true,
-				"retrieve" : true,
+			"paging": true,
+			"lengthChange":false,
+			"lengthMenu":[50,100,200],//每页显示条数设置
+			"processing" : true,
+			"serverSide" : true,
+			"stateSave" : false,
+			//"bSort":true,
+			// "bFilter": false, //列筛序功能
+			"ordering"	:true,
+			"searching" : false,
+			// "Info": true,//页脚信息
+			// "bPaginate": true, //翻页功能
+			"pagingType" : "full_numbers",
 				"sAjaxSource" : "${ctx}/business/order?methodtype=search",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
@@ -50,10 +51,6 @@
 						success: function(data){							
 							fnCallback(data);
 
-							//重设显示窗口(iframe)高度
-							//resetbodyHeight();
-							//$('#TMaterial').sScrollY = $(window).height() - 300;
-							//alert($('#TMaterial').sScrollY)
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -68,7 +65,8 @@
 					{"data": "materialId", "defaultContent" : ''},
 					{"data": "materialName", "defaultContent" : ''},
 					{"data": "quantity", "className" : 'td-right'},
-					{"data": null, "defaultContent" : '',"className" : 'td-center'}
+					{"data": null, "defaultContent" : '',"className" : 'td-center'},
+					{"data": "statusName", "defaultContent" : '',"className" : 'td-center'}
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
@@ -192,6 +190,7 @@
 								<th class="dt-middle ">产品名称</th>
 								<th style="width: 100px;" class="dt-middle ">数量</th>
 								<th style="width: 100px;" class="dt-middle ">增减费用</th>
+								<th style="width: 80px;" class="dt-middle ">订单状态</th>
 							</tr>
 						</thead>
 					</table>

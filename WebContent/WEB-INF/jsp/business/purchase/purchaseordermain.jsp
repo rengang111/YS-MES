@@ -194,7 +194,7 @@
 					<th style="width: 60px;"  class="dt-middle ">供应商</th>
 					<th style="width: 50px;"  class="dt-middle ">合同交期</th>
 					<th style="width: 60px;"  class="dt-middle ">合同数</th>
-					<th style="width: 60px;"  class="dt-middle ">到货数</th>
+					<th style="width: 60px;"  class="dt-middle ">入库数</th>
 					<th style="width: 50px;"  class="dt-middle ">退货数</th>
 				</tr>
 			</thead>

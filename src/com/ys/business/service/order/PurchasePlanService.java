@@ -256,15 +256,16 @@ public class PurchasePlanService extends CommonService {
 		try {
 			ts.begin();
 
-			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();
-			YSId = reqPlan.getYsid();
-			String materialId = reqPlan.getMaterialid();
-			String purchaseId = reqPlan.getPurchaseid();		
+			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();	
 
 			//采购方案****************************************************
 			//更新采购方案
-			int version = updatePurchasePlan(reqPlan);
-						
+			B_PurchasePlanData dbPlan = updatePurchasePlan(reqPlan);
+			int version = dbPlan.getVersion();
+			YSId = dbPlan.getYsid();
+			String materialId = dbPlan.getMaterialid();
+			String purchaseId = dbPlan.getPurchaseid();	
+			
 			//更新前数据取得
 			List<B_PurchasePlanDetailData> oldDBList = getPurchasePlanDetail(YSId);			
 			
@@ -337,9 +338,6 @@ public class PurchasePlanService extends CommonService {
 				insertPurchaseOrderDetail2(db);				
 			}
 			
-			
-			
-			
 			//新数据取得:从采购方案表中取得,集计单位:供应商
 			ArrayList<HashMap<String, String>> reqPlanList = getSupplierList(YSId);
 					
@@ -402,6 +400,7 @@ public class PurchasePlanService extends CommonService {
 					d.setQuantity(dt.get("purchaseQuantity"));
 					d.setPrice(dt.get("price"));					
 					d.setTotalprice(dt.get("totalPrice"));
+					d.setUnitquantity(dt.get("unitQuantity"));
 					d.setVersion(1);//默认为1
 					
 					insertPurchaseOrderDetail(d);
@@ -532,6 +531,7 @@ public class PurchasePlanService extends CommonService {
 					d.setQuantity(dt.get("purchaseQuantity"));
 					d.setPrice(dt.get("price"));					
 					d.setTotalprice(dt.get("totalPrice"));
+					d.setUnitquantity(dt.get("unitQuantity"));
 					d.setVersion(1);//默认为1
 					
 					insertPurchaseOrderDetail(d);
@@ -761,7 +761,7 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * 更新
 	 */
-	private int updatePurchasePlan(B_PurchasePlanData reqPlan) throws Exception{
+	private B_PurchasePlanData updatePurchasePlan(B_PurchasePlanData reqPlan) throws Exception{
 		
 		int version = 0;
 		//确认数据是否存在		
@@ -781,7 +781,7 @@ public class PurchasePlanService extends CommonService {
 			//insert处理
 		}
 		
-		return version;
+		return dbPlan;
 	}	
 		
 	
@@ -827,10 +827,13 @@ public class PurchasePlanService extends CommonService {
 	public void editPurchasePlan() throws Exception {
 
 		String YSId = request.getParameter("YSId");
+		String materialId = request.getParameter("materialId");
 
 		getOrderDetailByYSId(YSId);
 		
-		getPurchaseDetail(YSId);
+		//getPurchaseDetail(YSId);
+		updateInitPurchasePlan(YSId,materialId);
+		
 		
 	}
 
@@ -916,6 +919,32 @@ public class PurchasePlanService extends CommonService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			HashMap.put("data", dataModel.getYsViewData());
+			model.addAttribute("purchasePlan",dataModel.getYsViewData().get(0));
+			model.addAttribute("planDetail",dataModel.getYsViewData());
+		}
+		return HashMap;
+	}
+	
+
+	public HashMap<String, Object> updateInitPurchasePlan(
+			String YSId,String productId) throws Exception {
+
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("updateInitPurchasePlan");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		//userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("productId", productId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		baseQuery.getYsFullData(sql);
 		
 		if(dataModel.getRecordCount() > 0){
 			HashMap.put("data", dataModel.getYsViewData());

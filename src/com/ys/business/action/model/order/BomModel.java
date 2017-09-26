@@ -8,6 +8,7 @@ import com.ys.business.db.data.B_BaseBomData;
 import com.ys.business.db.data.B_BomData;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
+import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderExpenseData;
 import com.ys.util.basequery.common.BaseModel;
 
@@ -21,6 +22,7 @@ public class BomModel extends BaseModel {
 	private ArrayList<ListOption> manageRateList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> currencyList = new ArrayList<ListOption>();
 	private B_BomDetailData bomDetail = new B_BomDetailData();
+	private B_OrderDetailData orderDetail = new B_OrderDetailData();
 	private B_BomData bom = new B_BomData();
 	private B_BaseBomData baseBom = new B_BaseBomData();
 	private B_BomPlanData bomPlan = new B_BomPlanData();
@@ -37,6 +39,15 @@ public class BomModel extends BaseModel {
 	private List<B_OrderExpenseData> documentaryLines2;
 	private List<B_OrderExpenseData> documentaryLines3;
 	private List<B_OrderExpenseData> documentaryLines4;
+
+	
+	public void seOrderDetail(B_OrderDetailData orderDetail) {
+		this.orderDetail = orderDetail;
+	}
+	
+	public B_OrderDetailData getOrderDetail() {
+		return this.orderDetail;
+	}
 
 	public List<B_OrderExpenseData> getDocumentaryLines1()
 	{

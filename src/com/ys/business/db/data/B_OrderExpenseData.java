@@ -60,79 +60,66 @@ public class B_OrderExpenseData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String type;
-	public String getType()
+	private String workshopcost;
+	public String getWorkshopcost()
 	{
-		return this.type;
+		return this.workshopcost;
 	}
-	public void setType(String type)
+	public void setWorkshopcost(String workshopcost)
 	{
-		this.type=type;
-	}
-
-	/**
-	*
-	*/
-	private String contractid;
-	public String getContractid()
-	{
-		return this.contractid;
-	}
-	public void setContractid(String contractid)
-	{
-		this.contractid=contractid;
+		this.workshopcost=workshopcost;
 	}
 
 	/**
 	*
 	*/
-	private String costname;
-	public String getCostname()
+	private String suppliercost;
+	public String getSuppliercost()
 	{
-		return this.costname;
+		return this.suppliercost;
 	}
-	public void setCostname(String costname)
+	public void setSuppliercost(String suppliercost)
 	{
-		this.costname=costname;
-	}
-
-	/**
-	*
-	*/
-	private String cost;
-	public String getCost()
-	{
-		return this.cost;
-	}
-	public void setCost(String cost)
-	{
-		this.cost=cost;
+		this.suppliercost=suppliercost;
 	}
 
 	/**
 	*
 	*/
-	private String person;
-	public String getPerson()
+	private String customercost;
+	public String getCustomercost()
 	{
-		return this.person;
+		return this.customercost;
 	}
-	public void setPerson(String person)
+	public void setCustomercost(String customercost)
 	{
-		this.person=person;
+		this.customercost=customercost;
 	}
 
 	/**
 	*
 	*/
-	private String quotationdate;
-	public String getQuotationdate()
+	private String inspectioncost;
+	public String getInspectioncost()
 	{
-		return this.quotationdate;
+		return this.inspectioncost;
 	}
-	public void setQuotationdate(String quotationdate)
+	public void setInspectioncost(String inspectioncost)
 	{
-		this.quotationdate=quotationdate;
+		this.inspectioncost=inspectioncost;
+	}
+
+	/**
+	*
+	*/
+	private String documentarycost;
+	public String getDocumentarycost()
+	{
+		return this.documentarycost;
+	}
+	public void setDocumentarycost(String documentarycost)
+	{
+		this.documentarycost=documentarycost;
 	}
 
 	/**
@@ -280,13 +267,13 @@ public class B_OrderExpenseData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("type = "+(type == null ? "null" : type)+"\n");		sb.append("contractid = "+(contractid == null ? "null" : contractid)+"\n");		sb.append("costname = "+(costname == null ? "null" : costname)+"\n");		sb.append("cost = "+(cost == null ? "null" : cost)+"\n");		sb.append("person = "+(person == null ? "null" : person)+"\n");		sb.append("quotationdate = "+(quotationdate == null ? "null" : quotationdate)+"\n");		sb.append("status = "+(status == null ? "null" : status)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("workshopcost = "+(workshopcost == null ? "null" : workshopcost)+"\n");		sb.append("suppliercost = "+(suppliercost == null ? "null" : suppliercost)+"\n");		sb.append("customercost = "+(customercost == null ? "null" : customercost)+"\n");		sb.append("inspectioncost = "+(inspectioncost == null ? "null" : inspectioncost)+"\n");		sb.append("documentarycost = "+(documentarycost == null ? "null" : documentarycost)+"\n");		sb.append("status = "+(status == null ? "null" : status)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		materialid= (materialid == null ?null : materialid.trim());		type= (type == null ?null : type.trim());		contractid= (contractid == null ?null : contractid.trim());		costname= (costname == null ?null : costname.trim());		cost= (cost == null ?null : cost.trim());		person= (person == null ?null : person.trim());		quotationdate= (quotationdate == null ?null : quotationdate.trim());		status= (status == null ?null : status.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		materialid= (materialid == null ?null : materialid.trim());		workshopcost= (workshopcost == null ?null : workshopcost.trim());		suppliercost= (suppliercost == null ?null : suppliercost.trim());		customercost= (customercost == null ?null : customercost.trim());		inspectioncost= (inspectioncost == null ?null : inspectioncost.trim());		documentarycost= (documentarycost == null ?null : documentarycost.trim());		status= (status == null ?null : status.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
