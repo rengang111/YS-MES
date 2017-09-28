@@ -326,11 +326,11 @@ function float4ToCurrency(value){
 	if(toFloat == 0)
 		return value;
 		
-	var numString = toFloat.toFixed(4);
+	var numString = toFloat.toFixed(5);
 	var parts = numString.split('.');
 	var outParts = [];
 	var beforeDecimal = '0';
-	var afterDecimal = '0000';
+	var afterDecimal = '00000';
 	var currSegment;
 
 	beforeDecimal = parts[0];

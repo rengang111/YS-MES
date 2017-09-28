@@ -210,7 +210,7 @@
       <f name="a.total" alias="" ctype="" />
       <f name="a.memo" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
-      <f name="IFNULL(a.accumulated,'0')" alias="accumulated" ctype="" />
+      <f name="contractStorage" alias="" ctype="" />
       <f name="a.surplus" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->

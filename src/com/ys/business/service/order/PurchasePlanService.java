@@ -269,6 +269,23 @@ public class PurchasePlanService extends CommonService {
 			//更新前数据取得
 			List<B_PurchasePlanDetailData> oldDBList = getPurchasePlanDetail(YSId);			
 			
+			//旧数据:二级BOM(原材料)的待出库"减少"处理
+			ArrayList<HashMap<String, String>> list2 = getRawMaterialGroupList(YSId);	
+			
+			for(HashMap<String, String> map2:list2){
+				
+				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
+				
+				//更新虚拟库存
+				String purchase = "0";//采购量
+				//float convertUnit = stringToFloat(map2.get("convertUnit"));//换算单位
+				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
+				String requirement = String.valueOf(-1 * totalQuantity);
+				//String requirement = map2.get("totalQuantity");//需求量
+				
+				updateMaterial(rawmater2,purchase,requirement);						
+			}
+			
 			//旧数据:采购方案,的待出库"减少"处理
 			for(B_PurchasePlanDetailData old:oldDBList){
 
@@ -286,8 +303,7 @@ public class PurchasePlanService extends CommonService {
 				deletePurchasePlanDetail(old);				
 				
 			}//for
-			
-			
+						
 			//新数据:采购方案处理
 			List<B_PurchasePlanDetailData> list = reqModel.getPlanDetailList();
 			
@@ -407,7 +423,23 @@ public class PurchasePlanService extends CommonService {
 										
 					continue;					
 				}		
-			}					
+			}	
+			
+			//二级BOM(原材料)物料需求表
+			ArrayList<HashMap<String, String>> list3 = getRawMaterialGroupList(YSId);	
+			
+			for(HashMap<String, String> map2:list3){
+				
+				float convertUnit = stringToFloat(map2.get("convertUnit"));//换算单位
+				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
+				
+				//更新虚拟库存
+				String purchase = "0";//采购量
+				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
+				String requirement = String.valueOf(totalQuantity/convertUnit);
+				
+				updateMaterial(rawmater2,purchase,requirement);						
+			}	
 			
 			ts.commit();
 			
@@ -517,7 +549,6 @@ public class PurchasePlanService extends CommonService {
 				data.setVersion(1);//默认为1
 				
 				insertPurchaseOrder(data);//新增合同头表
-
 				
 				//新增合同明细*************
 				List<HashMap<String, String>> dbList = getMaterialGroupList(YSId,supplierId);
@@ -540,6 +571,22 @@ public class PurchasePlanService extends CommonService {
 				}				
 			}
 			
+			//二级BOM(原材料)物料需求表
+			ArrayList<HashMap<String, String>> list = getRawMaterialGroupList(YSId);	
+			
+			for(HashMap<String, String> map2:list){
+				
+				float convertUnit = stringToFloat(map2.get("convertUnit"));//换算单位
+				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
+				
+				//更新虚拟库存
+				String purchase = "0";//采购量
+				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
+				String requirement = String.valueOf(totalQuantity/convertUnit);
+				
+				updateMaterial(rawmater2,purchase,requirement);						
+			}			
+			
 			//更新订单状态:待到料
 			updateOrderStatusByYSId(YSId,Constants.ORDER_STS_2);
 			
@@ -559,7 +606,144 @@ public class PurchasePlanService extends CommonService {
 		return purchaseId;
 	}
 	
+	/*
+	 * insert处理
+	 */
+	private void insertRoutineContract(){
+		
+		ts = new BaseTransaction();
+		//String  purchaseId="";
+		
+		try {
+			ts.begin();
 
+			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();
+			//String YSId = reqPlan.getYsid();
+			//String materialId = reqPlan.getMaterialid();
+							
+
+			//更新虚拟库存****************************************************			
+			List<B_PurchasePlanDetailData> reqPlanList = reqModel.getPlanDetailList();
+			
+			for(B_PurchasePlanDetailData detail:reqPlanList){
+				String materilid = detail.getMaterialid();
+				if(materilid == null || ("").equals(materilid)){
+					continue;		
+				}
+				
+				//更新虚拟库存
+				String purchase = detail.getPurchasequantity();//采购量
+				String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
+				updateMaterial(materilid,purchase,requirement);
+			}
+			
+			//采购合同****************************************************
+			
+			//供应商集计
+			//以采购方案里的供应商为单位集计					
+			List<B_PurchasePlanDetailData> contract = new ArrayList<B_PurchasePlanDetailData>();	
+			
+			for(B_PurchasePlanDetailData detail:reqPlanList){
+				
+				String supplierId1 = detail.getSupplierid();
+				String totalprice   = detail.getTotalprice();
+				
+				if(supplierId1 == null || supplierId1.equals("")){
+					continue;
+				}
+				float totalf1 = stringToFloat(totalprice); 
+				if(totalf1 == 0){//采购数量为零的供应商不计入合同
+					continue;
+				}
+				boolean flag = true;
+				for(B_PurchasePlanDetailData dt:contract){
+					String supplierId2 = dt.getSupplierid();
+					if(supplierId1.equals(supplierId2)){
+						String totalprice2 = dt.getTotalprice();
+						float totalf12 = stringToFloat(totalprice2); 
+						dt.setTotalprice(String.valueOf(totalf1 + totalf12));
+						flag = false;
+						break;
+					}
+				}
+				
+				if(flag){
+					contract.add(detail);
+				}
+			}
+			
+			for(B_PurchasePlanDetailData detail:contract){
+				//取得供应商的合同流水号
+				//父编号:年份+供应商简称
+				String supplierId = detail.getSupplierid();
+				String shortName  = detail.getSuppliershortname();
+				String total   = detail.getTotalprice();
+				String purchaseType = detail.getPurchasetype();
+				//String materialId = detail.getMaterialid();
+				
+				String type = getContractType(purchaseType);
+				
+				String typeParentId = BusinessService.getshortYearcode()+type;				
+				String supplierParentId = BusinessService.getshortYearcode() + shortName;				
+				String typeSubId = getContractTypeCode(typeParentId);
+				String suplierSubId = getContractSupplierCode(supplierParentId);
+
+				//3位流水号格式化	
+				//采购合同编号:16D081-WL002
+				String contractId = BusinessService.getContractCode(type,typeSubId, suplierSubId,shortName);
+				
+				//新增采购合同*************
+				B_PurchaseOrderData data = new B_PurchaseOrderData();
+				
+				//data.setYsid(YSId);
+				//data.setMaterialid(materialId);
+				data.setContractid(contractId);
+				data.setTypeparentid(typeParentId);
+				data.setTypeserial(typeSubId);
+				data.setSupplierparentid(supplierParentId);
+				data.setSupplierserial(suplierSubId);
+				data.setSupplierid(supplierId);
+				data.setTotal(total);
+				data.setPurchasedate(CalendarUtil.fmtYmdDate());
+				data.setDeliverydate(CalendarUtil.dateAddToString(data.getPurchasedate(),20));
+				data.setVersion(1);//默认为1
+				
+				insertPurchaseOrder(data);//新增合同头表
+				
+				//新增合同明细*************				
+				for(B_PurchasePlanDetailData dt:reqPlanList){					
+					
+					String supplierId2 = dt.getSupplierid();
+					if(supplierId.equals(supplierId2)){
+															
+						B_PurchaseOrderDetailData d = new B_PurchaseOrderDetailData();				
+						//d.setYsid(YSId);
+						d.setContractid(contractId);
+						d.setMaterialid(dt.getMaterialid());
+						d.setQuantity(dt.getPurchasequantity());
+						d.setPrice(dt.getPrice());					
+						d.setTotalprice(dt.getTotalprice());
+						d.setVersion(1);//默认为1
+						
+						insertPurchaseOrderDetail(d);
+											
+						continue;	
+					}
+				}				
+			}
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	/*
 	 * delete处理
 	 */
@@ -846,7 +1030,11 @@ public class PurchasePlanService extends CommonService {
 		return model;
 		
 	}
-	
+	public void purchaseRoutineAdd() throws Exception {
+
+		insertRoutineContract();		
+		
+	}
 
 	public Model updateAndView() throws Exception {
 
@@ -928,6 +1116,57 @@ public class PurchasePlanService extends CommonService {
 		return HashMap;
 	}
 	
+	public HashMap<String, Object> getPurchaseMaterialList(String materialRecord) throws Exception {
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("materialquerydefine_search");		
+		baseQuery = new BaseQuery(request, dataModel);			
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		ArrayList<HashMap<String, String>> list = baseQuery.getYsFullData();
+		
+		ArrayList<HashMap<String, String>> newList = new ArrayList<HashMap<String, String>>();
+		String arry = request.getParameter("data");
+		int index = 0;
+		for(int i=0;i<list.size();i++){
+			String id = list.get(i).get("recordId");
+			boolean flag=false;
+			for(String key:arry.split(",")){
+				if(key.equals(id)){
+					newList.add(list.get(i));
+					flag = true;
+					break;
+				}
+			}
+			if(flag){
+				//list.remove(i);
+			}
+			index++;
+		}
+		model.addAttribute("material",newList);
+		modelMap.put("material", list);
+		
+		return modelMap;
+	}
+
+	public HashMap<String, Object> getRawMaterialList() throws Exception {
+
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getRawMaterialList");
+		String YSId = request.getParameter("YSId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			HashMap.put("data", dataModel.getYsViewData());
+		}
+		return HashMap;
+	}
 
 	public HashMap<String, Object> updateInitPurchasePlan(
 			String YSId,String productId) throws Exception {
@@ -1056,6 +1295,18 @@ public class PurchasePlanService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);
 		userDefinedSearchCase.put("supplierId", supplierId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		return baseQuery.getYsFullData();
+		
+	}
+	
+
+	public ArrayList<HashMap<String, String>> getRawMaterialGroupList(
+			String YSId ) throws Exception {		
+		
+		dataModel.setQueryName("getRawMaterialGroupList");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		return baseQuery.getYsFullData();
 		

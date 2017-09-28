@@ -132,13 +132,13 @@
 	    			
 	    			var rtn = "<a href=\"###\" onClick=\"showYS('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";
     			
-	    			return rtn;
+	    			return data;
 	    		}},
 	    		{"targets":2,"render":function(data, type, row){
 	    			
 	    			var rtn = "<a href=\"###\" onClick=\"showContract('" + row["contractId"] + "')\">"+row["contractId"]+"</a>";
     			
-	    			return rtn;
+	    			return data;
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 
@@ -337,7 +337,7 @@
 					<th style="width: 50px;" class="dt-middle">供应商</th>
 					<th style="width: 50px;" class="dt-middle">合同交期</th>
 					<th style="width: 50px;" class="dt-middle">合同数量</th>
-					<th style="width: 50px;" class="dt-middle ">累计到货</th>
+					<th style="width: 50px;" class="dt-middle ">累计入库</th>
 					<th style="width: 50px;" class="dt-middle ">剩余数量</th>
 					<th style="width: 1px;" class="dt-middle ">操作</th>
 				</tr>

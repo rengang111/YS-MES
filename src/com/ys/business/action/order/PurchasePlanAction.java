@@ -84,7 +84,7 @@ public class PurchasePlanAction extends BaseAction {
 				dataMap = doSearchPurchase(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "purchasePlanAddInit":
+			case "purchasePlanAddInit"://订单采购
 				rtnUrl = purchasePlanAddInit();
 				break;
 			case "purchasePlanAdd":
@@ -115,6 +115,24 @@ public class PurchasePlanAction extends BaseAction {
 				dataMap = doUpdateOrderCost();
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/purchaseplan/purchaseplanview";
+				break;		
+			case "getRawMaterialList":
+				dataMap = getRawMaterialList();
+				printOutJsonObj(response, dataMap);
+				break;	
+			case "purchaseRoutineInit"://日常采购一览
+				doInit(Constants.FORM_PURCHASEPLAN,session);
+				rtnUrl = "/business/purchaseplan/purchaseroutinemain";
+				break;
+			case "purchaseRoutineAddInit"://日常采购初始化
+				purchaseRoutineAddInit(data);
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/purchaseplan/purchaseroutineadd";
+				break;
+			case "purchaseRoutineAdd"://日常采购
+				purchaseRoutineAdd(data);
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/purchase/purchaseordermain";
 				break;
 				
 		}
@@ -236,13 +254,32 @@ public class PurchasePlanAction extends BaseAction {
 
 	}
 
-	
+
+	public HashMap<String, Object> getRawMaterialList() throws Exception {
+		
+		return purchaseService.getRawMaterialList();			
+
+	}
+
 
 	public void doShowPurchaseDetail() throws Exception{
 		
 		purchaseService.showPurchaseDetail();
 			
 	}
+	
+	public HashMap<String, Object> purchaseRoutineAddInit(String data) throws Exception{
+		
+		return purchaseService.getPurchaseMaterialList(data);
+			
+	}
+
+	public void purchaseRoutineAdd(String data) throws Exception{
+		
+		 purchaseService.purchaseRoutineAdd();
+			
+	}
+	
 	
 	public HashMap<String, Object> purchasePlanView() throws Exception {
 		

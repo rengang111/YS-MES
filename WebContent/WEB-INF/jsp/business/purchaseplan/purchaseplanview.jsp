@@ -44,7 +44,7 @@ function initEvent(){
 		baseBomView();//基础BOM
 		
 		contractTableView();//采购合同
-
+		ZZmaterialView();//二级BOM
 		initEvent();//合同明细联动
 		
 		$(".goBack").click(
@@ -483,6 +483,102 @@ function showContract(supplierId,YSId) {
 };
 
 </script>
+
+<script  type="text/javascript">
+function ZZmaterialView() {
+
+	var YSId=$("#purchasePlan\\.ysid").val();
+	var table = $('#ZZmaterial').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+	var t2 = $('#ZZmaterial').DataTable({
+		"paging": false,
+		"processing" : true,
+		"serverSide" : false,
+		"stateSave" : false,
+		"searching" : false,
+		"pagingType" : "full_numbers",
+		"retrieve" : false,
+		"async" : false,
+		"sAjaxSource" : "${ctx}/business/purchasePlan?methodtype=getRawMaterialList&YSId="+YSId,				
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : null,
+				success: function(data){
+					fnCallback(data);
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+       	"language": {
+       		"url":"${ctx}/plugins/datatables/chinese.json"
+       	},
+       	
+		"columns": [
+			{"data": null,"className" : 'td-center'},
+			{"data": null,},
+			{"data": null,},
+			{"data": "unit","className" : 'td-center'},
+			{"data": "totalQuantity","defaultContent" : '0',"className" : 'td-right'},
+			{"data": "price","defaultContent" : '0',"className" : 'td-right'},
+			{"data": "total","defaultContent" : '0',"className" : 'td-right'},
+		 ],
+		 
+		"columnDefs":[
+      		{"targets":1,"render":function(data, type, row){
+      			var name = row["rawMaterialId"];
+    			//if(name == null){
+    			//	name = "<a href=\"###\" onClick=\"doEditMaterial2('" + row["materialRecordId"] +"','"+ row["materialParentId"] + "')\">"+row["materialId"]+"</a>";
+    			//}			    			
+    			return name;
+    		}},
+    		{"targets":2,"render":function(data, type, row){
+    			
+    			var name = row["materialName"];
+    			if(name == null){
+    				name = '******';
+    			}else{
+        			name = jQuery.fixedWidth(name,40);	
+    			}			    			
+    			return name;
+    		}}
+          
+        ] ,
+        
+	     "aaSorting": [[ 1, "asc" ]]
+	});
+	
+	
+	t2.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t2.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+	});
+
+	t2.on('order.dt search.dt draw.dt', function() {
+		t2.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			var num   = i + 1;
+			cell.innerHTML = num ;
+		});
+	}).draw();
+
+	
+}//ajax()供应商信息
+</script>
 </head>
 <body>
 <div id="container">
@@ -621,8 +717,9 @@ function showContract(supplierId,YSId) {
 		
 		<div id="tabs" style="padding: 0px;white-space: nowrap;margin-top: -10px;">
 		<ul>
-			<li><a href="#tabs-1" class="tabs1">采购方案</a></li>
+			<li><a href="#tabs-1" class="tabs1">采购方案</a></li> 
 			<li><a href="#tabs-2" class="tabs2">采购合同</a></li>
+			<li><a href="#tabs-3" class="tabs3">自制物料需求表（原材料）</a></li>
 		</ul>
 
 		<div id="tabs-1" style="padding: 5px;">
@@ -694,6 +791,23 @@ function showContract(supplierId,YSId) {
 		</div>
 		</fieldset>
 	</div>
+		<div id="tabs-3" style="padding: 5px;">
+	
+				<table id="ZZmaterial" class="display" style="width:98%">
+					<thead>				
+						<tr>
+							<th width="1px">No</th>
+							<th class="dt-center" style="width:120px !important">原材料编码</th>
+							<th class="dt-center">原材料名称</th>
+							<th class="dt-center" width="80px !important">单位</th>
+							<th class="dt-center" width="100px">总量</th>
+							<th class="dt-center" width="100px">单价</th>
+							<th class="dt-center" width="100px !important">总价</th>
+						</tr>
+					</thead>
+							
+				</table>
+			</div>
 </div>
 
 </form:form>

@@ -67,14 +67,16 @@
 					return row["rownum"];
                    }},
 	    		{"targets":4,"render":function(data, type, row){
-	    			//var rtn="";var ysid=data.substring(2,8);
+	    			var rtn="";var ysid=row["YSId"];
+	    			//alert("["+ysid+"]")
+	    			var len = ysid.length;
+	    			if(ysid == ""){
+	    				return  "日常采购";	
+	    			}else{
+	    				//rtn= "<a href=\"###\" onClick=\"doShowYS('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";				
+	    				return ysid;
+	    			}
 	    			
-	    			//if(ysid == "YS000"){
-	    			//	rtn= data;	
-	    			//}else{
-	    			//	rtn= "<a href=\"###\" onClick=\"doShowYS('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";				
-	    			//}
-	    			return row["YSId"];
 	    		}},
 	    		{"targets":1,"render":function(data, type, row){
 	    			

@@ -46,7 +46,7 @@
 <script type="text/javascript" src="${ctx}/js/jquery.jqprint.js"></script>
 <link rel="stylesheet" type="text/css" href="${ctx}/plugins/toastMessage/resources/css/jquery.toastmessage.css" />
 <script type="text/javascript" src="${ctx}/plugins/toastMessage/javascript/jquery.toastmessage.js"></script>
-
+<script type="text/javascript" src="${ctx}/js/jquery.dataTables.js"></script>
 <Script>
 	function callMenuSelect(menuControl, menuControlView) {
 		popupWindow("selectmenu", "${ctx}" + "/common/selectMenuPopActionInit?menuControl=" + menuControl + "&menuControlView=" + menuControlView, 800, 600);

@@ -7,9 +7,9 @@
 <title>进料检验--检验报告</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
-
 		
 	$(document).ready(function() {
+		$("#quantity").hide();
 		//设置耀升编号
 		var contractId = '${arrived.contractId }';
 		var ysid = contractId.split('-',1);
@@ -29,6 +29,15 @@
 					location.href = url;		
 				});
 		
+		$("#process\\.checkresult").change(function() {
+			var val = $(this).val();
+			if(val == '030'){
+				$("#quantity").show();
+			}else{
+				$("#quantity").hide();
+				
+			}
+		});
 		
 		$('select').css('width','100px');
 	});
@@ -95,9 +104,8 @@
 					<form:hidden path="inspect.supplierid" value="${arrived.supplierId }"/></td>
 			</tr>
 			<tr> 
-				<td class="label" width="100px">检验数量：</td>
-				<td>${arrived.quantity }
-					<form:hidden path="inspect.quantity" value="${arrived.quantity }"/></td>				
+				<td class="label" width="100px">到货数量：</td>
+				<td>${arrived.quantity }</td>				
 				<td class="label" width="100px">物料编号：</td>			
 				<td>${arrived.materialId }
 					<form:hidden path="inspect.materialid" value="${arrived.materialId }"/></td>
@@ -126,7 +134,9 @@
 				<td>质检员检验结果：
 					<form:select path="process.checkresult">
 							<form:options items="${resultList}" 
-								itemValue="key" itemLabel="value"/></form:select></td>
+								itemValue="key" itemLabel="value"/></form:select>
+					<br><br><br><div id="quantity">合格数量：<form:input path="inspect.quantity" value="${arrived.quantity }" class="num short" /></div>
+								</td>
 
 			</tr>
 			<tr>

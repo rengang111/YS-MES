@@ -55,12 +55,12 @@
 			
 			if(fArrival > (fquantity-fRecorde)){
 
-				$().toastmessage('showWarningToast', "登记数不能大于剩余数");
+				$().toastmessage('showWarningToast', "登记数大于剩余数了。");
 		       // $(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
-           	 	$(this).find("input:text").addClass('error');
-				return;
+           	 	//$(this).find("input:text").addClass('error');
+				//return;
 			}else{
-				$(this).find("input:text").removeClass('error')
+				//$(this).find("input:text").removeClass('error')
 			}
 			
 			//剩余数量
@@ -198,7 +198,7 @@
 		
 		ajax();
 
-		historyAjax();//到货登记历史记录
+		//historyAjax();//到货登记历史记录
 
 		//autocomplete();
 		
@@ -311,16 +311,17 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<input type="hidden" id="tmpMaterialId" />
-	
+	<input type="hidden" id="tmpMaterialId" />	
+	<form:hidden path="arrival.arrivalid" class="short required read-only" value="${arrivalId }" />
 	<fieldset>
-		<legend> 基本信息11</legend>
+		<legend> 合同信息</legend>
 		<table class="form" id="table_form">
-			<tr> 				
-				<td class="label" width="100px"><label>到货编号：</label></td>					
-				<td width="200px">
-					<form:input path="arrival.arrivalid" class="short required read-only" value="${arrivalId }" /></td>
-														
+			<tr> 
+							
+				<td class="label" width="100px"><label>合同编号：</label></td>					
+				<td width="200px"><a href="#" onClick="showContract('${contract.contractId }')">${contract.contractId }</a>
+					<form:hidden path="arrival.contractid"  value="${contract.contractId }"/></td>				
+																		
 				<td width="100px" class="label">到货日期：</td>
 				<td width="200px">
 					<form:input path="arrival.arrivedate" class="short read-only" /></td>
@@ -331,7 +332,7 @@
 			</tr>
 			<tr> 				
 				<td class="label"><label>耀升编号：</label></td>					
-				<td>&nbsp;<a href="#" onClick="showYS('${contract.YSId}')">${contract.YSId }</a></td>
+				<td><a href="#" onClick="showYS('${contract.YSId}')">${contract.YSId }</a></td>
 									
 				<td class="label"><label>供应商：</label></td>					
 				<td colspan="3">&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}
@@ -339,12 +340,8 @@
 			</tr>
 			<tr>
 							
-				<td class="label"><label>合同编号：</label></td>					
-				<td>&nbsp;<a href="#" onClick="showContract('${contract.contractId }')">${contract.contractId }</a>
-					<form:hidden path="arrival.contractid"  value="${contract.contractId }"/></td>
-							
 				<td class="label"><label>下单日期：</label></td>					
-				<td>&nbsp;${contract.purchaseDate }</td>	
+				<td>${contract.purchaseDate }</td>	
 			 	
 				<td class="label"><label>合同交期：</label></td>					
 				<td>&nbsp;${contract.deliveryDate }</td>
@@ -352,9 +349,12 @@
 										
 		</table>
 </fieldset>
-
-<fieldset>
-	<legend>到货登记</legend>
+<div style="clear: both"></div>
+<fieldset class="action" style="text-align: right;">
+	<button type="button" id="insert" class="DTTT_button">保存</button>
+	<button type="button" id="goBack" class="DTTT_button">返回</button>
+</fieldset>
+<fieldset style="margin-top: -25px;">
 	<div class="list">	
 	<table id="example" class="display" >
 		<thead>				
@@ -367,7 +367,7 @@
 					<input type="checkbox" name="selectall" id="selectall" /><label for="selectall">全部到货</label> 
 					<input type="checkbox" name="reverse" id="reverse" /><label for="reverse">全部清空</label></th>
 				<th class="dt-center" width="60px">合同总数</th>
-				<th class="dt-center" width="60px">累计收货</th>
+				<th class="dt-center" width="60px">累计入库</th>
 				<th class="dt-center" width="60px">剩余数量</th>
 			</tr>
 		</thead>
@@ -383,14 +383,14 @@
 					<td><span>${list.unit }</span></td>
 					<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
 					<td><span>${list.quantity }</span></td>
-					<td><span>${list.accumulated }</span></td>
+					<td><span>${list.contractStorage }</span></td>
 					<td><span id="surplus${ status.index}"></span></td>
 				</tr>
 				<script type="text/javascript">
 						var index = '${status.index}';
 						var quantity = currencyToFloat('${list.quantity}');
-						var accumulated = currencyToFloat('${list.accumulated}');
-						var surplus = quantity - accumulated;
+						var contractStorage = currencyToFloat('${list.contractStorage}');
+						var surplus = quantity - contractStorage;
 						
 						$('#surplus'+index).html(floatToCurrency( surplus ))
 				</script>
@@ -400,13 +400,8 @@
 	</tbody>
 </table>
 </div>
-</fieldset>
-<div style="clear: both"></div>
-<fieldset class="action" style="text-align: right;">
-	<button type="button" id="insert" class="DTTT_button">保存</button>
-	<button type="button" id="goBack" class="DTTT_button">返回</button>
 </fieldset>		
-
+<!--  
 <div style="clear: both"></div>
 
 <fieldset>
@@ -429,7 +424,7 @@
 </table>
 </div>
 </fieldset>
-
+-->
 </form:form>
 
 </div>
