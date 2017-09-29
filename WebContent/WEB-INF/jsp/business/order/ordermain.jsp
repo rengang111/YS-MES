@@ -107,7 +107,7 @@
 					{"data": "YSId", "defaultContent" : ''},
 					{"data": "materialId", "defaultContent" : ''},
 					{"data": "materialName", "defaultContent" : ''},//3
-					{"data": "PIId", "defaultContent" : ''},
+					{"data": "orderDate", "defaultContent" : ''},
 					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
 					{"data": "team", "className" : 'td-left'},//7
@@ -432,7 +432,7 @@
 						<th style="width: 70px;" class="dt-middle ">耀升编号</th>
 						<th style="width: 150px;" class="dt-middle ">产品编号</th>
 						<th class="dt-middle ">产品名称</th>
-						<th style="width: 70px;" class="dt-middle ">PI编号</th>
+						<th style="width: 50px;" class="dt-middle ">下单日期</th>
 						<th style="width: 50px;" class="dt-middle ">订单交期</th>
 						<th style="width: 60px;" class="dt-middle ">数量</th>
 						<th style="width: 40px;" class="dt-middle ">业务组</th>
