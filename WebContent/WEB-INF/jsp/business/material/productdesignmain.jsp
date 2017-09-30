@@ -199,7 +199,7 @@
 				+'&productId='+productId
 				+'&goBackFlag='+goBackFlag;
 
-		location.href = url;
+		callProductDesignView("ProductDesign",url);
 	}
 		
 	function doDelete() {

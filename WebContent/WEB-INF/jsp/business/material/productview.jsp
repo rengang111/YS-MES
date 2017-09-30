@@ -82,6 +82,7 @@
 		</tr>									
 	</table>
 	<div class="action" style="text-align: right;">
+		<button type="button" id="doProductDesign" class="DTTT_button" >做单资料</button>
 		<button type="button" id="doOrderEdit" class="DTTT_button" >订单录入</button>
 		<button type="button" id="doEdit" class="DTTT_button" >修改费率</button>
 		<button type="button" id="doSave" class="DTTT_button" >保存</button>
@@ -171,6 +172,18 @@ $(document).ready(function() {
 		var materialId='${product.materialId}';
 		var url = "${ctx}/business/material?methodtype=productInit&keyBackup="+materialId;
 		location.href = url;		
+	});
+	
+	$("#doProductDesign").click(function() {
+		var materialId='${product.materialId}';
+		var name ='${product.materialName}';
+		var goBackFlag = "productView";
+		var url = "${ctx}/business/productDesign?methodtype=detailViewHistory"
+				+"&keyBackup="+materialId
+				+"&productId="+materialId
+				+"&goBackFlag="+goBackFlag;
+				
+		callProductDesignView("ProductView",url);	
 	});
 	
 	$("#doOrderEdit").click(function() {

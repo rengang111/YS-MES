@@ -160,7 +160,8 @@ public class PurchaseOrderService extends CommonService {
 	}
 	
 	
-	public HashMap<String, Object> getContractList2(String data) throws Exception {
+	public HashMap<String, Object> getContractListForWorkshopReturn(
+			String data,String formId) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
@@ -179,32 +180,29 @@ public class PurchaseOrderService extends CommonService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		String key1 = getJsonData(data, "keyword1").toUpperCase();
-		String key2 = getJsonData(data, "keyword2").toUpperCase();
+		String[] keyArr = getSearchKey(formId,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
 	
-		dataModel.setQueryName("getContractList");
+		dataModel.setQueryName("getContractListForWorkshopReturn");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){
 			
 			iEnd = dataModel.getYsViewData().size();			
 		}		
 		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-			
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());			
 		modelMap.put("data", dataModel.getYsViewData());
-		
-		model.addAttribute("contract",dataModel.getYsViewData());
 		return modelMap;
 	}
 

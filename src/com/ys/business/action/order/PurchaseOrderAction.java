@@ -137,7 +137,7 @@ public class PurchaseOrderAction extends BaseAction {
 				rtnUrl = "/business/purchase/workshopreturnmain";
 				break;			
 			case "searchWorkshopReturn"://车间退货:查询
-				dataMap = doSearch(data,Constants.FORM_WORKSHOPRETURN);
+				dataMap = doSearchForWorkshopReturn(data,Constants.FORM_WORKSHOPRETURN);
 				printOutJsonObj(response, dataMap);
 				break;			
 			case "createWorkshopRentunInit"://车间退货:新建
@@ -212,17 +212,22 @@ public class PurchaseOrderAction extends BaseAction {
 		
 		return dataMap;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearch2(
-			@RequestBody String data){
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doSearchForWorkshopReturn(
+			String data,String formId){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
-		
+		//优先执行查询按钮事件,清空session中的查询条件
+		String keyBackup = request.getParameter("keyBackup");
+		if(keyBackup != null && !("").equals(keyBackup)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+			
+		}
 		try {
-			dataMap = service.getContractList2(data);
+			dataMap = service.getContractListForWorkshopReturn(data,formId);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {

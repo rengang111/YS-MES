@@ -69,6 +69,11 @@
 		var url = "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + dicTypeControl + "&dicControlView=" + dicTypeControlView + "&type=" + type + "&dicTypeId=" + dicTypeId + "&treeType=0&index=" + parentIndex;
 		openLayer(url, $(document).width() - 500, 500, true, dicTypeControl, dicTypeControlView);
 	}
+
+	//做单资料查看
+	function callProductDesignView(formId,url) {
+		popupWindow(formId, url, 1024, 600);
+	}
 	
 	function openLayer(url, width, height, isParentOpen) {
 		if (width == "") {

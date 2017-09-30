@@ -224,6 +224,35 @@
   </query>
   <query>
     <pool></pool>     
+    <name value="getContractListForWorkshopReturn" />
+    <where>
+    	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
+       	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
+       	<w name="A.modifyTime" des="" reqName="keyword3" dtype="ch" oper="&gt;" lg="AND" bt="" />
+   	  	<w name="A.status"     des="" reqName="status" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.purchaseDate" alias="" ctype="" />
+      <f name="A.contractStorage" alias="" ctype="" />
+      <f name="A.returnGoods" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="FORMAT(REPLACE(A.quantity,',',''),2)" alias="quantity" ctype="" />
+    </select>
+    <from>v_purchaseorderdetail3 a  WHERE mid(a.contractId,3,1) = 'D' AND left(A.materialId,1) &lt;&gt; 'G' AND a.deleteFlag = '0' </from>
+    <orderby>a.modifyTime DESC,A.contractId,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
     <name value="getContractByYSId" />
     <where>
       	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="AND" />

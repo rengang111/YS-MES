@@ -119,7 +119,7 @@
 
 		if(keyBackup ==""){
 
-			ajax("","010");
+			ajax("","");
 		}else{
 			ajax("","");
 			

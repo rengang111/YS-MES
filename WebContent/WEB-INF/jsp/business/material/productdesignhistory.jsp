@@ -144,10 +144,10 @@
 			}
 			
 		</script>
-	<div class="action" style="text-align: right;">
-		<!-- button type="button" id="doEdit" class="DTTT_button" >复制新建</button-->
+	<!-- <div class="action" style="text-align: right;">
+		button type="button" id="doEdit" class="DTTT_button" >复制新建</button
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
-	</div>
+	</div>-->
 </fieldset>	
 
 <div id="tabs" style="padding: 0px;white-space: nowrap;">
@@ -176,10 +176,10 @@
 			</div>
 		</fieldset>
 		<fieldset>
-			<span class="tablename">产品图片</span>&nbsp;
+			<legend>产品图片</legend>
 			<div class="list">
-				<div class="" id="subidDiv" style="overflow: auto;height: 360px;">
-					<table id="productPhoto" style="width:100%">
+				<div class="" id="subidDiv" style="min-height: 300px;">
+					<table id="productPhoto" class="phototable">
 						<tbody><tr class="photo"><td></td><td></td></tr></tbody>
 					</table>
 				</div>
@@ -221,10 +221,21 @@
 			</div>
 		</fieldset>
 		<fieldset>
-			<span class="tablename">产品收纳</span>
+			<legend>产品收纳-描述信息</legend>
 			<div class="list">
-				<div class="" id="subidDiv" style="overflow: auto;height: 360px;">
-					<table id="storagePhoto" style="width:100%">
+				<table class="form" id="table_form">					
+					<tr>
+						<td style="width:700px;height:200px;vertical-align: text-top;"> 
+							<pre>${ product.storageDescription}</pre></td>
+					</tr>														
+				</table>
+			</div>	
+		</fieldset>
+		<fieldset>
+			<legend>产品收纳-图片</legend>
+			<div class="list">
+				<div class="" id="subidDiv" style="min-height: 300px;">
+					<table id="storagePhoto"  class="phototable">
 						<tbody><tr class="photo"><td></td><td></td></tr></tbody>
 					</table>
 				</div>
@@ -250,8 +261,8 @@
 	</div><br/>
 	<span class="tablename">标贴-图片</span>
 	<div class="list">
-		<div class="" id="subidDiv" style="overflow: auto;">
-			<table id="labelPhoto" style="width:100%">
+		<div class="" id="subidDiv" style="min-height: 300px;">
+			<table id="labelPhoto"  class="phototable">
 				<tbody><tr class="photo"><td></td></tr></tbody>
 			</table>
 		</div>
@@ -944,9 +955,6 @@ function packageView() {
 
 function photoView(id, tdTable, count, data) {
 	
-	//var countView = (count % 2 == 0) ? count : count + 1; //判断是否能整除2
-	//alert("id:"+id+"--count:"+count+"--countView:"+countView)
-	
 	var row = 0;
 	for (var index = 0; index < count; index++) {
 
@@ -956,14 +964,14 @@ function photoView(id, tdTable, count, data) {
 		var trHtml = '';
 
 		trHtml += '<tr style="text-align: center;" class="photo">';
-
 		trHtml += '<td>';
-		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
-		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml += '<td></td>';
-		trHtml += '<td width="50px"></td>';
-		trHtml += "</tr>";
-		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '<table style="width:400px;height:300px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr><td>';
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+		//trHtml += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+		trHtml += '</a>';
+		trHtml += '</td>';
 		trHtml += '</tr>';
 		trHtml += '</table>';
 		trHtml += '</td>';
@@ -973,28 +981,24 @@ function photoView(id, tdTable, count, data) {
 			//因为是偶数循环,所以奇数张图片的最后一张为空
 
 			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
-			trHtmlOdd += '<tr>';
-			trHtmlOdd += '<td></td>';			
-			trHtmlOdd += '<td width="50px"></td>';			
-			trHtmlOdd += "</tr>";
-			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"></td>';
+			trHtmlOdd += '<tr><td></td></tr>';	
+			trHtmlOdd += '</table>';
 		} else {
 			path = '${ctx}' + data[index];
 			pathDel = data[index];
 
-			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="form">';
-			trHtmlOdd += '<tr style="background: #d4d0d0;height: 35px;">';
-			trHtmlOdd += '<td></td>';			
-			trHtmlOdd += '<td width="50px"></td>';
-			
-			trHtmlOdd += "</tr>";
-			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+			var trHtmlOdd = '<table style="width:400px;height:300px;margin: auto;" class="form">';
+			trHtmlOdd += '<tr><td>';
+			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+			//trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+			trHtmlOdd += '</a>'
+			trHtmlOdd += '</td></tr>';
+			trHtmlOdd += '</table>';
 		}
 
 		trHtml += '<td>';
 		trHtml += trHtmlOdd;
-		trHtml += '</tr>';
-		trHtml += '</table>';
 		trHtml += '</td>';
 		trHtml += "</tr>";
 
@@ -1008,7 +1012,6 @@ function photoView(id, tdTable, count, data) {
 
 function photoViewLabel(id, tdTable, count, data) {
 	
-	//alert("id:"+id+"--count:"+count+"--countView:"+countView)	
 	var row = 0;
 	for (var index = 0; index < count; index++) {
 
@@ -1021,12 +1024,12 @@ function photoViewLabel(id, tdTable, count, data) {
 
 		trHtml += '<td>';
 		trHtml += '<table style="width:100%;margin: auto;" class="form" id="tb'+index+'">';
-		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
-		trHtml += '<td></td>';
-		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
-				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
-		trHtml += "</tr>";
-		trHtml += '<tr><td colspan="2"  style="height:300px;"><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-height: 450px;"  /></td>';
+		trHtml += '<tr><td style="height:300px;">'
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+		//trHtml += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'"  style="max-width: 100%;" />';
+		trHtml += '</a>';
+		trHtml += '</td>';
 		trHtml += '</tr>';
 		trHtml += '</table>';
 		trHtml += '</td>';
@@ -1054,26 +1057,8 @@ function downloadFile(fileName) {
 function doShowProduct() {
 	var materialId = '${product.productId}';
 	callProductView(materialId);
-	/*
-	var url = '${ctx}/business/material?methodtype=productView&materialId=' + materialId;
-	layer.open({
-		offset :[10,''],
-		type : 2,
-		title : false,
-		area : [ '1100px', '500px' ], 
-		scrollbar : false,
-		title : false,
-		content : url,
-		//只有当点击confirm框的确定时，该层才会关闭
-		cancel: function(index){ 
-		 // if(confirm('确定要关闭么')){
-		    layer.close(index)
-		 // }
-		  return false; 
-		}    
-	});	
-	*/
 }
+
 
 </script>
 	</body>

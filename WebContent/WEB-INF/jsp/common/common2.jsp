@@ -64,6 +64,11 @@
 		popupWindow("productView", '${ctx}/business/material?methodtype=productView&materialId=' + materialId, 1024, 600);
 	}
 	
+	//做单资料查看
+	function callProductDesignView(formId,url) {
+		popupWindow(formId, url, 1024, 600);
+	}
+	
 	function openLayer(url, width, height, isParentOpen,offsetTop) {
 		if (typeof height == "undefined" || width == "") {
 			width = '1100px';
