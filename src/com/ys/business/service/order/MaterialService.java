@@ -87,8 +87,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 		
 	}
 
-	public HashMap<String, Object> search(HttpServletRequest request, 
-			String data) throws Exception {
+	public HashMap<String, Object> search(
+			String data,String formId) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
@@ -105,42 +105,12 @@ public class MaterialService extends CommonService implements I_BaseService{
 		String length = getJsonData(data, "iDisplayLength");
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
-		}	
-		/*
-		String key1="";
-		String key2="";
-		String sinkey1="";
-		String sinkey2="";
-		String reqkey1 = getJsonData(data, "keyword1").trim().toUpperCase();
-		String reqkey2 = getJsonData(data, "keyword2").trim().toUpperCase();
-
-		sinkey1 = (String)session.getAttribute("key1");
-		sinkey2 = (String)session.getAttribute("key2");
-		
-		if (!("").equals(reqkey1) || !("").equals(reqkey2)){
-			
-			key1 = reqkey1;
-			key2 = reqkey2;
-			
-			//作为详细页面返回到一览时的默认查询条件
-			session.setAttribute("key1",key1 );
-			session.setAttribute("key2",key2 );
-			
-		}else{
-			
-			if( (sinkey1 != null && !("").equals(sinkey1)) || 
-				(sinkey2 != null && !("").equals(sinkey2)) ){
-				
-				key1 = sinkey1;
-				key2 = sinkey1;				
-			}
-		}	
-*/
+		}
 		
 		dataModel.setQueryName("materialquerydefine_search");		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		String[] keyArr = getSearchKey(Constants.FORM_MATERIAL,data,session);
+		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		

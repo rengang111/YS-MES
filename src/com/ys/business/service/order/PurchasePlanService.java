@@ -142,19 +142,16 @@ public class PurchasePlanService extends CommonService {
 		
 		modelMap.put("sEcho", sEcho);		
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		modelMap.put("unitList",util.getListOption(DicUtil.MEASURESTYPE, ""));		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());	
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;
 	}
 	
-	
 	public HashMap<String, Object> getBomApproveList(String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		dataModel = new BaseModel();
-
+		
 		data = URLDecoder.decode(data, "UTF-8");
 		
 		int iStart = 0;
@@ -194,8 +191,7 @@ public class PurchasePlanService extends CommonService {
 	
 	public void getBomDetailView(String bomId) 
 			throws Exception {
-		
-		dataModel = new BaseModel();		
+			
 		dataModel.setQueryFileName("/business/order/bomquerydefine");
 		dataModel.setQueryName("getBaseBomDetailByBomId");
 		

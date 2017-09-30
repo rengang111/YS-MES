@@ -34,6 +34,7 @@ public class MaterialAction extends BaseAction {
 	UserInfo userInfo = new UserInfo();
 	@Autowired MaterialService materialService;
 	@Autowired HttpServletRequest request;
+	HttpSession session;
 	
 	Model model;
 	
@@ -52,6 +53,7 @@ public class MaterialAction extends BaseAction {
 	
 		materialService = new MaterialService(model,request,session,reqModel,userInfo);
 		MaterialModel = reqModel;
+		this.session = session;
 		this.model = model;
 		
 		String rtnUrl = null;
@@ -73,7 +75,7 @@ public class MaterialAction extends BaseAction {
 				rtnUrl = "/business/material/materialmain";
 				break;
 			case "search":
-				dataMap = doSearch(data, request,session);
+				dataMap = doSearch(data, Constants.FORM_MATERIAL);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "supplierPriceView":
@@ -183,6 +185,10 @@ public class MaterialAction extends BaseAction {
 				productSemiView();
 				rtnUrl = "/business/material/productsemiview";
 				break;
+			case "searchPurchaseRoutine":
+				dataMap = doSearch(data,Constants.FORM_PURCHASEROUTINE );
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -195,27 +201,29 @@ public class MaterialAction extends BaseAction {
 		if(keyBackup == null || ("").equals(keyBackup)){
 			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
 			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+		}else{
+			model.addAttribute("keyBackup",keyBackup);
 		}
 		
 	}
 
 
 	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doSearch(@RequestBody String data, 
-			HttpServletRequest request,HttpSession session){
+	public HashMap<String, Object> doSearch(String data, 
+			String formId){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_MATERIAL+Constants.FORM_KEYWORD2);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 			
 		}
 		
 		try {
-			dataMap = materialService.search(request, data);
+			dataMap = materialService.search(data,formId);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {

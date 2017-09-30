@@ -68,20 +68,11 @@ public class PurchaseOrderAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				doInit();
+				doInit(Constants.FORM_CONTRACT);
 				rtnUrl = "/business/purchase/purchaseordermain";
 				break;		
 			case "search":
-				dataMap = doSearch(data);
-				printOutJsonObj(response, dataMap);
-				break;	
-			case "initTest":
-				//doInit(session);
-				dataMap = doSearch2(data);
-				rtnUrl = "/business/purchase/purchaseordermain2";
-				break;			
-			case "searchTest":
-				dataMap = doSearch(data);
+				dataMap = doSearch(data,Constants.FORM_CONTRACT);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "creatPurchaseOrder":
@@ -141,18 +132,51 @@ public class PurchaseOrderAction extends BaseAction {
 				createAcssoryContract();
 				rtnUrl = "/business/purchase/purchaseorderview";
 				break;			
+			case "workshopRentunInit"://车间退货一览
+				doInit(Constants.FORM_WORKSHOPRETURN);
+				rtnUrl = "/business/purchase/workshopreturnmain";
+				break;			
+			case "searchWorkshopReturn"://车间退货:查询
+				dataMap = doSearch(data,Constants.FORM_WORKSHOPRETURN);
+				printOutJsonObj(response, dataMap);
+				break;			
+			case "createWorkshopRentunInit"://车间退货:新建
+				doDetailView();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/purchase/workshopreturnadd";
+				break;				
+			case "createWorkshopRentun"://车间退货:新建保存
+				createWorkshopRentun();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/purchase/workshopreturnview";
+				break;				
+			case "workshopRentunEdit"://车间退货:编辑
+				workshopRentunEdit();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/purchase/workshopreturnedit";
+				break;					
+			case "workshopRentunUpdate"://车间退货:编辑保存
+				updateWorkshopRentun();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/purchase/workshopreturnview";
+				break;						
+			case "workshopRentunDetailView"://车间退货:查看
+				workshopRentunDetailView();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/purchase/workshopreturnview";
+				break;			
 		}
 		
 		return rtnUrl;		
 	}
 	
-	public void doInit(){	
+	public void doInit(String formId){	
 			
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD2);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 		}else{
 			model.addAttribute("keyBackup",keyBackup);
 		}
@@ -161,7 +185,7 @@ public class PurchaseOrderAction extends BaseAction {
 	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearch(
-			@RequestBody String data){
+			String data,String formId){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
@@ -169,12 +193,12 @@ public class PurchaseOrderAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 		String keyBackup = request.getParameter("keyBackup");
 		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_CONTRACT+Constants.FORM_KEYWORD2);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 			
 		}
 		try {
-			dataMap = service.getContractList(data);
+			dataMap = service.getContractList(data,formId);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -247,10 +271,30 @@ public class PurchaseOrderAction extends BaseAction {
 		service.getContractDetailList(contractId);
 	}
 	
+
+	public void workshopRentunEdit() throws Exception{
+
+		service.updateWorkshopRentunInit();
+	}
+
+	public void updateWorkshopRentun() throws Exception{
+
+		service.updateWorkshopAndView();
+	}
+	
+	public void workshopRentunDetailView() throws Exception{
+
+		service.workshopRentunDetailView();
+	}
+	
 	public void doUpdate() throws Exception {
 		
 		service.updateAndView();			
 		
+	}
+	public void createWorkshopRentun() throws Exception{
+
+		service.createWorkshopRentun();
 	}
 	
 	public void editPurchaseOrder() throws Exception {

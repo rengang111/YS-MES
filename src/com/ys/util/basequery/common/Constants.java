@@ -34,6 +34,8 @@ public class Constants {
 	public static final String FORM_PRODUCTDETAIL= "productdetail";//做单资料
 	public static final String FORM_SUPPLIER= "supplier";//供应商
 	public static final String FORM_CUSTOMER = "order";//客户管理
+	public static final String FORM_WORKSHOPRETURN = "workshopreturn";//车间退货
+	public static final String FORM_PURCHASEROUTINE = "purchaseroutine";//日常采购
 	
 	
 	/*

@@ -646,4 +646,33 @@
     <having></having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="getWorkshopReturnList" />
+    <where>
+    	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.workshopReturnId" des="" reqName="workshopReturnId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.workshopReturnId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.returnDate" alias="" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.quantity" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.materialRecordId" alias="" ctype="" />
+      <f name="a.materialParentId" alias="" ctype="" />
+      <f name="a.workshopRecordId" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+   <from>v_workshopreturnview a where a.deleteFlag='0'</from>
+    <orderby>a.workshopReturnId,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>

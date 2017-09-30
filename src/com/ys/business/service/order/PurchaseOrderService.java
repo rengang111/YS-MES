@@ -4,8 +4,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -23,15 +21,16 @@ import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.PurchaseOrderModel;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
-import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
-import com.ys.business.db.data.B_MaterialRequirmentData;
+import com.ys.business.db.dao.B_WorkshopReturnDao;
+import com.ys.business.db.dao.B_WorkshopReturnDetailDao;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
-import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.B_SupplierData;
+import com.ys.business.db.data.B_WorkshopReturnData;
+import com.ys.business.db.data.B_WorkshopReturnDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.order.CommonService;
@@ -105,7 +104,8 @@ public class PurchaseOrderService extends CommonService {
 		
 	}
 
-	public HashMap<String, Object> getContractList(String data) throws Exception {
+	public HashMap<String, Object> getContractList(
+			String data,String formId) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
@@ -128,7 +128,7 @@ public class PurchaseOrderService extends CommonService {
 		
 		baseQuery = new BaseQuery(request, dataModel);		
 		
-		String[] keyArr = getSearchKey(Constants.FORM_CONTRACT,data,session);
+		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -254,6 +254,39 @@ public class PurchaseOrderService extends CommonService {
 				
 		return supplierList;	
 		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<B_WorkshopReturnDetailData> getWorkshopReturnDetail(
+			String workshopReturnId) throws Exception {
+			
+		String astr_Where = "workshopReturnId = '"+workshopReturnId+"'";
+		return (List<B_WorkshopReturnDetailData>)
+				new B_WorkshopReturnDetailDao().Find(astr_Where);
+	}
+	
+	
+	public void getWorkshopReturnList(
+			String YSId,String contractId) throws Exception {
+				
+		dataModel.setQueryName("getWorkshopReturnList");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("contractId", contractId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();					
+		model.addAttribute("workshop",dataModel.getYsViewData());
+	}
+	
+	public void getWorkshopReturnList(String workshopReturnId) throws Exception {
+				
+		dataModel.setQueryName("getWorkshopReturnList");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("workshopReturnId", workshopReturnId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();					
+		model.addAttribute("workshop",dataModel.getYsViewData().get(0));
+		model.addAttribute("workshopDetail",dataModel.getYsViewData());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -464,32 +497,67 @@ public class PurchaseOrderService extends CommonService {
 		orderDao.Store(data);	
 	}
 	
-	/*
-	 * 订单详情插入处理
+	/**
+	 * 插入处理
 	 */
-	private void insertOrderDetail(
-			B_MaterialRequirmentData mData,
-			String contractId) throws Exception{
-		
-		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
+	private void insertWorkshopRentun(
+			B_WorkshopReturnData data) throws Exception{
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"PurchaseOrderInsert",userInfo);
-
+				"WorkshopReturnInsert",userInfo);
 		copyProperties(data,commData);
 		
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
-		data.setContractid(contractId);
-		data.setMaterialid(mData.getMaterialid());
-		data.setQuantity(mData.getQuantity());
-		data.setPrice(mData.getPrice());
-		data.setTotalprice(mData.getTotalprice());
+		data.setReturnperson(userInfo.getUserId());
 		
-		detailDao.Create(data);	
-	}	
+		new B_WorkshopReturnDao().Create(data);	
+	}
 	
-	/*
+	/**
+	 * 插入处理
+	 */
+	private void insertWorkshopRentunDetail(
+			B_WorkshopReturnDetailData data) throws Exception{
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"WorkshopReturnDetailInsert",userInfo);
+		copyProperties(data,commData);
+		
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		new B_WorkshopReturnDetailDao().Create(data);	
+	}
+	
+	/**
+	 * 更新累计退货处理
+	 */
+	@SuppressWarnings("unchecked")
+	private void updateContractForWorkshopReturn(B_WorkshopReturnData data,
+			B_WorkshopReturnDetailData detail) throws Exception{
+		
+		String where = "contractId = '" + data.getContractid() + 
+				"' AND materialId = '"+detail.getMaterialid()+"'";
+		List<B_PurchaseOrderDetailData> list = detailDao.Find(where);
+		if(list == null || ("").equals(list)){
+			return;
+		}
+		B_PurchaseOrderDetailData purchase = list.get(0);
+		//累计退货数量
+		float goods = stringToFloat(purchase.getReturngoods());
+		float quantity = stringToFloat(detail.getQuantity());
+		String total = String.valueOf(goods + quantity);
+		purchase.setReturngoods(total);
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"WorkshopReturnDetailInsert",userInfo);
+		copyProperties(purchase,commData);
+		
+		detailDao.Store(purchase);	
+	}
+	
+	/**
 	 * 1.订单基本信息更新处理(1条数据)
 	 * 2.订单详情 新增/更新/删除 处理(N条数据)
 	 */
@@ -544,6 +612,16 @@ public class PurchaseOrderService extends CommonService {
 		
 		orderDao.Store(orderDao.beanData);
 	
+	}
+	
+	public void updateWorkshopRentunInit() throws Exception{
+
+		String contractId = request.getParameter("contractId");
+		String workshopReturnId = request.getParameter("workshopReturnId");
+		
+		getContractDetailList(contractId);		
+
+		getWorkshopReturnList(workshopReturnId);
 	}
 
 	/*
@@ -702,24 +780,22 @@ public class PurchaseOrderService extends CommonService {
 	}
 	
 	/*
-	 * 订单详情删除处理
+	 * 更新处理
 	 */
-	private void updateOrderDetail(List<B_OrderDetailData> oldDetailList) 
+	private void updateWorkshopRentun(B_WorkshopReturnData data) 
 			throws Exception{
 		
-		for(B_OrderDetailData detail:oldDetailList){
+		B_WorkshopReturnData dbDt = 
+			(B_WorkshopReturnData) new B_WorkshopReturnDao().FindByPrimaryKey(data);
+		
+		if(null != dbDt){			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"WorkshopReturnUPdate",userInfo);
+			copyProperties(dbDt,commData);
 			
-			if(null != detail){
-				
-				//处理共通信息
-				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-						"ZZOrderDetailDelete",userInfo);
-
-				copyProperties(detail,commData);
-				
-				detailDao.Store(detail);
-			}
+			new B_WorkshopReturnDao().Store(dbDt);
 		}
+		
 	}		
 	
 	private String getContractTypeCode(String parentId) throws Exception {
@@ -945,8 +1021,122 @@ public class PurchaseOrderService extends CommonService {
 		//跳转到查看页面
 		String contractId = contract.getContractid();
 		getContractDetailList(contractId);
-		
+				
 		model.addAttribute("goBackFlag",goBackFlag);
+	}
+	
+	/**
+	 * 车间退货处理
+	 * @throws Exception
+	 */
+	public void createWorkshopRentun() throws Exception {
+			
+		ts = new BaseTransaction();
+
+		B_WorkshopReturnData workshop = reqModel.getWorkshopReturn();
+		List<B_WorkshopReturnDetailData> reqList = reqModel.getWorkshopRetunList();
+		
+		try {
+			ts.begin();			
+			
+			//创建退货编号
+			String workshopReturnId = CalendarUtil.timeStempDate();
+			
+			//退货
+			workshop.setWorkshopreturnid(workshopReturnId);
+			insertWorkshopRentun(workshop);
+			
+			//退货明细
+			for(B_WorkshopReturnDetailData dt:reqList){
+				
+				dt.setWorkshopreturnid(workshopReturnId);
+				insertWorkshopRentunDetail(dt);			
+	
+				//更新累计退货			
+				updateContractForWorkshopReturn(workshop,dt);
+			}
+			
+			ts.commit();
+			
+		}catch(Exception e){
+			ts.rollback();
+			System.out.println(e.getMessage());
+		}
+		
+		//跳转到查看页面
+		String contractId = workshop.getContractid();
+		getContractDetailList(contractId);
+
+		getWorkshopReturnList(workshop.getYsid(),contractId);
+	}
+	
+
+	/**
+	 * 车间退货处理
+	 * @throws Exception
+	 */
+	public void updateWorkshopAndView() throws Exception {
+			
+		ts = new BaseTransaction();
+
+		B_WorkshopReturnData workshop = reqModel.getWorkshopReturn();
+		List<B_WorkshopReturnDetailData> reqList = reqModel.getWorkshopRetunList();
+		
+		try {
+			ts.begin();			
+			
+			//退货编号
+			String workshopReturnId = workshop.getWorkshopreturnid();
+			
+			//更新退货
+			updateWorkshopRentun(workshop);
+			
+			//累计退货返还
+			List<B_WorkshopReturnDetailData> dbList = 
+					getWorkshopReturnDetail(workshopReturnId);
+			for(B_WorkshopReturnDetailData dt:dbList){
+				
+				//更新累计退货(减去已经累计进去的数量)					
+				dt.setQuantity(String.valueOf( -1 * stringToFloat(dt.getQuantity())));
+				updateContractForWorkshopReturn(workshop,dt);
+			}
+			
+			//退货明细
+			for(B_WorkshopReturnDetailData dt:reqList){
+				
+				dt.setWorkshopreturnid(workshopReturnId);
+				insertWorkshopRentunDetail(dt);			
+	
+				//更新累计退货			
+				updateContractForWorkshopReturn(workshop,dt);
+			}
+			
+			ts.commit();
+			
+		}catch(Exception e){
+			ts.rollback();
+			System.out.println(e.getMessage());
+		}
+		
+		//跳转到查看页面
+		String contractId = workshop.getContractid();
+		getContractDetailList(contractId);
+
+		getWorkshopReturnList(workshop.getYsid(),contractId);
+	}
+	
+	/**
+	 * 车间退货处理
+	 * @throws Exception
+	 */
+	public void workshopRentunDetailView() throws Exception {
+			
+		String ysid = request.getParameter("YSId");
+		String contractId = request.getParameter("contractId");
+		//跳转到查看页面
+		getContractDetailList(contractId);
+
+		getWorkshopReturnList(ysid,contractId);
 	}
 	
 	private B_PurchaseOrderData geRoutinePurchaseContractId(

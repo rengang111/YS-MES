@@ -5,9 +5,10 @@
     <name value="materialquerydefine_search" />
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />   
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" /> 
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType1"  dtype="ch" oper="="  lg="OR" bt="(" />
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType2"  dtype="ch" oper="="  lg="AND" bt=")" />
+  	  <w name="A.purchaseType"     des=""  reqName="purchaseType"  dtype="ch" oper="="  lg="AND" bt="" />  
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -566,5 +567,4 @@
 	<power>
 	</power>    
   </query>
-  
 </root>

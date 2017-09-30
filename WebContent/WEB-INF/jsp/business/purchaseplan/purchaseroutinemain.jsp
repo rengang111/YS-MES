@@ -8,14 +8,13 @@
 <title>常规采购</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,scrollHeight) {
+	function ajax(pageFlg,type,scrollHeight) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
-			//table.fnClearTable(false);
+			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/material?methodtype=search"+"&keyBackup="+pageFlg
-				+"&purchaseType1=020&purchaseType2=040";
+		var url = "${ctx}/business/material?methodtype=searchPurchaseRoutine"+"&keyBackup="+pageFlg+type;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": false,
@@ -100,27 +99,20 @@
 	
 	$(document).ready(function() {
 		var scrollHeight = $(document).height() - 200; 
-		ajax("",scrollHeight);
+		var type = "&purchaseType1=020&purchaseType2=040";
+		ajax("",type,scrollHeight);
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
-			 $(this).toggleClass("selected");
-			    if ($(this).hasClass("selected")){//如果有某个样式则表明，这一行已经被选中
-			        $(this).children().first().children().prop("checked", true);
-			   		//alert(1111)
-			    } else {                                  //如果没有被选中
-			       // alert(22222)
-			    	$(this).children().first().children().prop("checked", false);
-			   //	alert(333)
-			    }
-			
-		});	
-		
-		$('#TMaterial tbody').on( 'click', 'tr', function () {
-		       // $(this).toggleClass('selected');
-		} );
-		
+			$(this).toggleClass("selected");
+		    if($(this).hasClass("selected")){//如果有某个样式则表明，这一行已经被选中
+		        
+		    	$(this).children().first().children().prop("checked", true);
+		    }else{//如果没有被选中
 
+		    	$(this).children().first().children().prop("checked", false);
+		    }			
+		});	
 
 	})	
 	
@@ -128,7 +120,18 @@
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		var scrollHeight = $(document).height() - 200; 
-		ajax("S",scrollHeight);
+		var type = "";
+		ajax("purchaseRoutineMain",type,scrollHeight);
+
+	}
+	
+	function doSearch2(str) {	
+
+		$("#keyword1").val("");
+		$("#keyword2").val("");
+		var scrollHeight = $(document).height() - 200; 
+		var type = "&purchaseType="+str;
+		ajax("purchaseRoutineMain",type,scrollHeight);
 
 	}
 	
@@ -148,29 +151,12 @@
 		var url = '${ctx}/business/purchasePlan?methodtype=purchaseRoutineAddInit&purchaseType1=020&purchaseType2=040';
 		url = url +"&data="+str;
 		location.href = url;
-		/*
-		jQuery.ajax({
-			type : 'POST',
-			async: false,
-			contentType : 'application/json',
-			dataType : 'json',
-			data : str,
-			url : url,
-			success : function(data) {
-				//reload();						
-			},
-			error:function(XMLHttpRequest, textStatus, errorThrown){
-             }
-		});
-		*/
+		
 	}
 	
 	function doShow(recordId,parentId) {
 
 		var url = '${ctx}/business/material?methodtype=detailView&parentId=' + parentId+'&recordId='+recordId;
-
-		//var url = '${ctx}/business/material?methodtype=detailView&keyBackup=1';
-		//url = url + '&parentId=' + parentid+'&recordId='+recordid;
 		
 		layer.open({
 			offset :[10,''],
@@ -271,7 +257,11 @@
 			<div class="list">
 
 				<div id="TSupplier_wrapper" class="dataTables_wrapper">
-					<div id="DTTT_container" style="height:40px;margin-bottom: -10px;">
+					<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
+						<a class="DTTT_button DTTT_button_text" onclick="doSearch2('040');"><span>原材料</span></a>
+						<a class="DTTT_button DTTT_button_text" onclick="doSearch2('020');"><span>通用件</span></a>
+					</div>
+					<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:right">
 						<a class="DTTT_button DTTT_button_text" onclick="doCreate();"><span>开始采购（原材料、通用件）</span></a>
 						<!-- <a class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a> -->
 					</div>

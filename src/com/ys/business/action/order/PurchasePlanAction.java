@@ -121,7 +121,7 @@ public class PurchasePlanAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;	
 			case "purchaseRoutineInit"://日常采购一览
-				doInit(Constants.FORM_PURCHASEPLAN,session);
+				doInit(Constants.FORM_PURCHASEROUTINE,session);
 				rtnUrl = "/business/purchaseplan/purchaseroutinemain";
 				break;
 			case "purchaseRoutineAddInit"://日常采购初始化
@@ -154,8 +154,7 @@ public class PurchasePlanAction extends BaseAction {
 	}
 
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearch(
-			@RequestBody String data){
+	public HashMap<String, Object> doSearch(String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
@@ -182,7 +181,7 @@ public class PurchasePlanAction extends BaseAction {
 		
 		return dataMap;
 	}
-
+	
 
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doSearchPurchase(

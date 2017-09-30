@@ -6,6 +6,8 @@ import java.util.List;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
+import com.ys.business.db.data.B_WorkshopReturnData;
+import com.ys.business.db.data.B_WorkshopReturnDetailData;
 import com.ys.util.basequery.common.BaseModel;
 
 public class PurchaseOrderModel extends BaseModel {
@@ -19,6 +21,8 @@ public class PurchaseOrderModel extends BaseModel {
 	private List<B_PurchaseOrderDetailData> detailList;
 	private B_PurchaseOrderData contract;
 	private List<B_PurchaseOrderData> contractList;
+	private B_WorkshopReturnData workshopReturn;
+	private List<B_WorkshopReturnDetailData> workshopRetunList;
 	
 	public ArrayList<ListOption> getSupplierList() {
 		return this.supplierList;
@@ -64,5 +68,19 @@ public class PurchaseOrderModel extends BaseModel {
 		this.contractList = contractList;
 	}
 	
+	public List<B_WorkshopReturnDetailData> getWorkshopRetunList() {
+		return workshopRetunList;
+	}
+	public void setWorkshopRetunList(List<B_WorkshopReturnDetailData> workshopRetunList) {
+		this.workshopRetunList = workshopRetunList;
+	}
+	
+	public B_WorkshopReturnData getWorkshopReturn() {
+		return this.workshopReturn;
+	}
+	public void setWorkshopReturn(B_WorkshopReturnData workshopReturn) {
+		this.workshopReturn = workshopReturn;
+	}
+
 	
 }
