@@ -332,7 +332,8 @@
 			</tr>
 			<tr> 				
 				<td class="label"><label>耀升编号：</label></td>					
-				<td><a href="#" onClick="showYS('${contract.YSId}')">${contract.YSId }</a></td>
+				<td><a href="#" onClick="showYS('${contract.YSId}')">${contract.YSId }</a>
+					<form:hidden path="arrival.ysid"  value="${contract.YSId }"/></td>
 									
 				<td class="label"><label>供应商：</label></td>					
 				<td colspan="3">&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}

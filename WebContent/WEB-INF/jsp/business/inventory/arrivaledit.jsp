@@ -305,7 +305,8 @@
 			</tr>
 			<tr> 				
 				<td class="label"><label>耀升编号：</label></td>					
-				<td>${contract.YSId }</td>
+				<td>${contract.YSId }
+					<form:hidden path="arrival.ysid"  value="${contract.YSId }"/></td>
 							
 				<td class="label"><label>合同编号：</label></td>					
 				<td>&nbsp;${contract.contractId }

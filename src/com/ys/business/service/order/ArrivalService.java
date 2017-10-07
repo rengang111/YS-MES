@@ -227,6 +227,7 @@ public class ArrivalService extends CommonService {
 				String guid = BaseDAO.getGuId();
 				data.setRecordid(guid);
 				data.setArrivalid(arrivalId);
+				data.setYsid(reqData.getYsid());
 				data.setContractid(reqData.getContractid());
 				data.setSupplierid(reqData.getSupplierid());
 				data.setUserid(userInfo.getUserId());

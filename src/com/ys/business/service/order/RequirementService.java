@@ -1824,7 +1824,7 @@ public class RequirementService extends CommonService {
 		//生成合同之前,判断合同是否存在,如果已经在执行中,不允许再次生成合同
 		
 		PurchaseOrderService contract = new PurchaseOrderService(
-				model,request,session,userInfo);
+				model,request,session,null, userInfo);
 		
 		contract.insert(YSId);
 		

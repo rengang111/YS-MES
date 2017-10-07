@@ -11,8 +11,7 @@
 	$(document).ready(function() {
 		$("#quantity").hide();
 		//设置耀升编号
-		var contractId = '${arrived.contractId }';
-		var ysid = contractId.split('-',1);
+		var ysid = '${arrived.YSId }';
 		$("#inspect\\.ysid").val(ysid);
 		$("#process\\.checkdate").val(shortToday());
 		

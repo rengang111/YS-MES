@@ -12,12 +12,16 @@ import com.ys.business.action.model.order.StorageModel;
 import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_InspectionProcessDao;
 import com.ys.business.db.dao.B_MaterialDao;
+import com.ys.business.db.dao.B_OrderDetailDao;
+import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseStockInDao;
 import com.ys.business.db.dao.B_PurchaseStockInDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_InspectionProcessData;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_PurchaseStockInDetailData;
@@ -415,10 +419,25 @@ public class StorageService extends CommonService {
 		if(list ==null || list.size() == 0)
 			return ;		
 
-		String SQuantyDB = list.get(0).getContractstorage();//累计入库		
+		String ysid = list.get(0).getYsid();
+		String SContrat = list.get(0).getQuantity();//合同数量
+		String SQuantyDB = list.get(0).getContractstorage();//累计入库
+		float iContrat = stringToFloat(SContrat);
 		float iQuantity = stringToFloat(SQuantyDB);
-		float inewQuantity = stringToFloat(quantity);		
+		float inewQuantity = stringToFloat(quantity);
+		
 		float iNew = iQuantity + inewQuantity;
+		if(iNew == iContrat){
+			//更新合同总数量
+			if(updatePurchaseOrderStatus(ysid,contractId,iNew)){
+				//确认合同状态:是否全部入库
+				boolean flag = checkPurchaseOrderStatus(ysid,contractId);
+				if(flag){
+					//更新订单状态
+					updateOrderStatus(ysid);
+				}
+			}			
+		}
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
@@ -428,6 +447,76 @@ public class StorageService extends CommonService {
 		
 		dao.Store(data);
 		
+		
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	private boolean updatePurchaseOrderStatus(
+			String ysid,String contractId,float quantity) throws Exception{
+		
+		boolean rtnFlag = false;
+		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
+		List<B_PurchaseOrderData> list  = new B_PurchaseOrderDao().Find(where);
+		if(list ==null || list.size() == 0)
+			return rtnFlag;	
+
+		B_PurchaseOrderData data = list.get(0);
+		float orderTotal = stringToFloat(data.getOrderquantity());//合同总数
+		float storageTotal = stringToFloat(data.getStoragequantity());//入库总数
+		
+		float newStorage = storageTotal + quantity;
+		
+		if(newStorage == orderTotal){
+			//全部入库,更新状态
+			data.setStatus(Constants.CONTRACT_STS_3);//完结
+			rtnFlag = true;
+		}else{
+			data.setStatus(Constants.CONTRACT_STS_2);//执行中
+			rtnFlag = false;
+		}
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseStockInUpdate",userInfo);
+		copyProperties(data,commData);
+		data.setStoragequantity(String.valueOf(newStorage));
+		
+		dao.Store(data);
+		
+		return rtnFlag;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private boolean  checkPurchaseOrderStatus(
+			String ysid,String contractId) throws Exception{
+		String where = "YSId = '" + ysid  +"'"
+			//	+ " contractId = '" + contractId  +"' "
+				+ " status <> '" + Constants.CONTRACT_STS_3  +"' "
+				+ "AND deleteFlag = '0' ";
+		List<B_PurchaseOrderData> list  = new B_PurchaseOrderDao().Find(where);
+		if(list ==null || list.size() == 0){
+			return true;	
+		}else{
+			return false;	
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void updateOrderStatus(String ysid) throws Exception{
+		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
+		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
+		if(list ==null || list.size() == 0)
+			return ;	
+		
+		//更新DB
+		B_OrderDetailData data = list.get(0);
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseStockInUpdate",userInfo);
+		copyProperties(data,commData);
+		data.setStatus(Constants.ORDER_STS_3);//待交货
+		
+		dao.Store(data);
 	}
 	
 	private void insertPurchaseStockIn(

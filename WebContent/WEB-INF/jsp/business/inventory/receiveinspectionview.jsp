@@ -15,11 +15,9 @@
 	$(document).ready(function() {
 
 		//设置耀升编号
-		var contractId = '${arrived.contractId }';
-		var ysid = contractId.split('-',1);
+		var ysid = '${arrived.YSId }';
 		$("#inspect\\.ysid").val(ysid);
-		$("#process\\.checkresult").val('${arrived.result}');
-		
+		$("#process\\.checkresult").val('${arrived.result}');		
 		
 		$("#goBack").click(
 				function() {

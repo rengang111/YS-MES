@@ -127,13 +127,6 @@
 		    			var name = row["materialName"];				    			
 		    			name = jQuery.fixedWidth(name,35);				    			
 		    			return name;
-		    		}},
-		    		{"targets":6,"render":function(data, type, row){
-		    			
-		    			var contractId = row["contractId"];
-		    			var YSId = contractId.split('-',1);
-		    							    			
-		    			return YSId;
 		    		}}
 	           
 	         ] 

@@ -83,26 +83,6 @@ public class PurchaseOrderService extends CommonService {
 		super.session = session;
 		
 	}
-	
-	public PurchaseOrderService(Model model,
-			HttpServletRequest request,
-			HttpSession session,
-			UserInfo userInfo){
-		
-		this.orderDao = new B_PurchaseOrderDao();
-		this.detailDao = new B_PurchaseOrderDetailDao();
-		this.model = model;
-		this.request = request;
-		this.session = session;
-		this.userInfo = userInfo;
-		this.dataModel = new BaseModel();
-		this.userDefinedSearchCase = new HashMap<String, String>();
-		this.dataModel.setQueryFileName("/business/order/purchasequerydefine");
-		super.request = request;
-		super.userInfo = userInfo;
-		super.session = session;
-		
-	}
 
 	public HashMap<String, Object> getContractList(
 			String data,String formId) throws Exception {

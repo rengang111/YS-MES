@@ -273,6 +273,7 @@
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
       <f name="A.inspectionId" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
       <f name="A.arrivalId" alias="" ctype="" />
