@@ -99,7 +99,8 @@
 	
 	$(document).ready(function() {
 		var scrollHeight = $(document).height() - 200; 
-		var type = "&purchaseType1=020&purchaseType2=040";
+		//var type = "&purchaseType1=020&purchaseType2=040";
+		var type = "&purchaseType=040";
 		ajax("",type,scrollHeight);
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {

@@ -1011,8 +1011,8 @@ public class PurchasePlanService extends CommonService {
 
 		getOrderDetailByYSId(YSId);
 		
-		//getPurchaseDetail(YSId);
-		updateInitPurchasePlan(YSId,materialId);
+		getPurchaseDetail(YSId);
+		//updateInitPurchasePlan(YSId,materialId);
 		
 		
 	}

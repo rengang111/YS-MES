@@ -199,7 +199,7 @@
 		foucsInit();//input获取焦点初始化处理
 		$(".DTTT_container").css('float','left');
 	
-		costAcount();//成本核算
+		//costAcount();//成本核算
 	});
 
 	
@@ -416,24 +416,30 @@
 	<tr id="tr${status.index}"> 
 		<td><span id="materialId${status.index}">
 			<a href="###" onClick="doEditMaterial('${status.index}','${bom.materialRecordId }','${bom.materialParentId }')">${bom.materialId }</a></span></td>
-		<td><form:input path="planDetailList[${status.index}].subbomno" class="cash" style="width:20px" value="${bom.subBomNo }" /></td>
+		<td><form:input value="${bom.subBomNo }" path="planDetailList[${status.index}].subbomno" class="cash" style="width:20px"  /></td>
 	    <td>
 			<span id="index${status.index}">${bom.rownum }</span><input type="checkbox" id="numCheck" name="numCheck" value="" /></td>
    		<td>
 	    	<form:input path="planDetailList[${status.index}].materialid" class="attributeList1"  value="${bom.materialId }" /></td>
 	    <td><span id="name${status.index}"></span></td>
+	    <!-- 物料特性 -->
 	    <td><span id="unit${status.index}">${bom.purchaseType }</span></td>
-	    <td><form:input path="planDetailList[${status.index}].unitquantity"  class="num mini" value="${bom.unitQuantity }" /></td>
+	    <!-- 用量 -->
+	    <td><form:input value="${bom.unitQuantity }" path="planDetailList[${status.index}].unitquantity"  class="num mini"  /></td>
+	    <!-- 生产需求量 -->
 	    <td><span id="orderQuantity${status.index}">${order.totalQuantity}</span></td>
+	    <!-- 总量 -->
 	    <td><span id="totalQuantity${status.index}">${bom.manufactureQuantity }</span>
-	    	<form:hidden path="planDetailList[${status.index}].manufacturequantity" value="${bom.manufactureQuantity }" /></td>
+	    	<form:hidden value="${bom.manufactureQuantity }" path="planDetailList[${status.index}].manufacturequantity" /></td>
+	     <!-- 当前库存 -->
 	    <td><span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></td>
-	    <td><form:input path="planDetailList[${status.index}].purchasequantity"  class="num mini" value="${bom.purchaseQuantity }" /></td>
-	    <td><form:input path="planDetailList[${status.index}].supplierid"  class="supplierid short" value="${bom.supplierId }" /></td>
+	     <!-- 建议采购量 -->
+	    <td><form:input value="${bom.purchaseQuantity }" path="planDetailList[${status.index}].purchasequantity"  class="num mini"  /></td>
+	    <td><form:input value="${bom.supplierId }"  path="planDetailList[${status.index}].supplierid"  class="supplierid short" /></td>
 	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }" /></td>
 	    <td><span id="totalPrice${status.index}">${bom.totalPrice }</span>
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  value="${bom.totalPrice }" /></td>
-	    <td><span id="price${status.index}">${bom.price }</span></td>
+	    <td><span id="price${status.index}">${bom.lastPrice }</span></td>
 	    
 	    	<form:hidden path="planDetailList[${status.index}].recordid" value="${bom.recordId }" />
 	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" />
@@ -455,12 +461,15 @@
 		
 		var shortName = getLetters(supplierId);
 		
-		var ftotalQuantity =  order * unitQuantity ;
-		var vtotalQuantity = floatToCurrency( ftotalQuantity );//总量
+		var ftotalQuantity =  currencyToFloat( '${bom.purchaseQuantity}' ) ;
+		//var ftotalQuantity =  order * unitQuantity ;
+		//var vtotalQuantity = floatToCurrency( ftotalQuantity );//总量
 		var fpurchase = ftotalQuantity;
 		if(type=="020"){//通用件单独采购
 			fpurchase = "0";
 		}	
+		
+		/*
 		if(planMaterialId == null || planMaterialId == ""){//基础BOM有物料发生变更
 			
 			vtotalPrice = floatToCurrency( price * fpurchase );
@@ -481,8 +490,11 @@
 			}
 				
 		}
+		*/
+		vtotalPrice = floatToCurrency( price * fpurchase );
 		$('#totalPrice'+index).html(vtotalPrice);
 		$("#planDetailList"+index+"\\.totalprice").val(vtotalPrice);
+		
 		
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
@@ -493,7 +505,7 @@
 			</tbody>
 		</table>
 	 * 1、修改"模块编号",可以调整该模块的显示顺序,同一模块内的自动按照物料编码顺序排列；<br>
-	 * 2、"添加单行"后,请修改该行的模块编号；<span style="color:red">* 3、红色,表示基础BOM有变动</span>
+	 * 2、"添加单行"后,请修改该行的模块编号；<!-- <span style="color:red">* 3、红色,表示基础BOM有变动</span> -->
 	</div>
 </div>
 
@@ -763,6 +775,14 @@ function doEditMaterial(rownum,recordid,parentid) {
 				$('#planDetailList'+rownum+'\\.purchasequantity').val(total); //赋给当前页面元素
 				$('#planDetailList'+rownum+'\\.totalprice').val(total); //赋给当前页面元素
 	          	$('#totalPrice'+rownum).text(total);
+			}else if(type=="010"){
+				var quantity = $('#planDetailList'+rownum+'\\.manufacturequantity').val();
+				var price = $('#planDetailList'+rownum+'\\.price').val();
+				var totalPrice = floatToCurrency( currencyToFloat(quantity) * currencyToFloat(price) );
+				$('#unit'+rownum).text("订购件");
+				$('#planDetailList'+rownum+'\\.purchasequantity').val(quantity); //赋给当前页面元素
+				$('#planDetailList'+rownum+'\\.totalprice').val(totalPrice); //赋给当前页面元素
+	          	$('#totalPrice'+rownum).text(totalPrice);
 			}
 
 			layer.close(index);
