@@ -10,6 +10,8 @@
   	
 <script type="text/javascript">
 
+var GcontractStatusFlag="false";
+
 function initEvent(){
 	
 	$('#contractTable').DataTable().on('click', 'tr', function() {
@@ -79,7 +81,31 @@ function initEvent(){
 			$('#attrForm').submit();
 		});
 			
-	
+		$("#deletePurchasePlan").click(
+				function() {
+
+			var materialId='${order.materialId}';
+			var YSId ="${order.YSId}";
+			var quantity ="${order.quantity}";
+			var backFlag = $("#backFlag").val();
+			if(GcontractStatusFlag == "true"){
+				alert("该方案有部分合同已经收货,不允许重置！");
+				return;					
+			}
+			if(confirm("重置采购方案,会清空已有的方案数据,\n\n        确定要重置吗？")) {
+				
+				
+				$('#attrForm').attr("action",
+						"${ctx}/business/purchasePlan?methodtype=purchasePlanDeleteInit"
+								+"&YSId="+YSId
+								+"&materialId="+materialId
+								+"&backFlag="+backFlag
+								+"&quantity="+quantity);
+				$('#attrForm').submit();
+			}
+			
+		});
+			
 		
 		$('#example').DataTable().on('click', 'tr', function() {
 
@@ -351,7 +377,14 @@ function contractTableView() {
     		}},
       		{"targets":6,"render":function(data, type, row){
       			var total = currencyToFloat( row["total"] );			    			
-      			totalPrice = floatToCurrency(total);			    			
+      			totalPrice = floatToCurrency(total);
+      			
+      			//合同执行状况确认:如已有收货,则不能重置采购方案
+      			var status = row["status"];
+      			if(status == "050"){
+      				GcontractStatusFlag = "true";
+      			}
+      			
       			return totalPrice;
       		}}
             
@@ -711,7 +744,7 @@ function ZZmaterialView() {
 		
 		<fieldset class="action" style="text-align: right;">
 			<button type="button" id="editPurchasePlan" class="DTTT_button">修改采购方案</button>
-			<!-- <button type="button" id="deletePurchasePlan" class="DTTT_button">删除采购方案</button> -->
+			<button type="button" id="deletePurchasePlan" class="DTTT_button">重置采购方案</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		

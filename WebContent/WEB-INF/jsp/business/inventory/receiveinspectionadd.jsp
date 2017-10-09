@@ -23,8 +23,9 @@
 		
 		$("#goBack").click(
 				function() {
-					var materialId = '${arrived.materialId }';
-					var url = "${ctx}/business/receiveinspection?keyBackup="+materialId;
+					//var materialId = '${arrived.materialId }';
+					var keyBackup = $('#keyBackup').val();
+					var url = "${ctx}/business/receiveinspection?keyBackup="+keyBackup;
 					location.href = url;		
 				});
 		
@@ -43,7 +44,8 @@
 	
 	function doInsert() {
 
-		$('#formModel').attr("action", "${ctx}/business/receiveinspection?methodtype=insert");
+		var keyBackup = $('#keyBackup').val();
+		$('#formModel').attr("action", "${ctx}/business/receiveinspection?methodtype=insert"+"&keyBackup="+keyBackup);
 		$('#formModel').submit();
 	}
 	
@@ -76,6 +78,7 @@
 	<form:hidden path="inspect.subid" value=""/>
 	<form:hidden path="inspect.arrivedate" value="${arrived.arriveDate }"/>
 	<input type="hidden" id=report value="${arrived.report }" />
+	<input type="hidden" id="keyBackup" value="${keyBackup }" />
 	
 	<fieldset>
 		<legend> 到货信息</legend>

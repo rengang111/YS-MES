@@ -112,14 +112,18 @@ public class ReceiveInspectionAction extends BaseAction {
 	
 
 	public void doInit(String formId,HttpSession session){	
-			
+		/*	
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
 			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
 			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+		}else{
+			model.addAttribute("keyBackup",keyBackup);
+			model.addAttribute("keyword1",session.getAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD1));
+			model.addAttribute("keyword2",session.getAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD2));
 		}
-		
+		*/
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -140,6 +144,18 @@ public class ReceiveInspectionAction extends BaseAction {
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
 			}
+			/*
+			String keyword1 = (String) session.getAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD1);
+			String keyword2 = (String) session.getAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD2);
+			
+			if((keyword1 != null && !("").equals(keyword1)) ||
+				(keyword2 != null && !("").equals(keyword2))){
+				dataMap.put("keyBackup",keyword1+"&"+keyword2);
+			}else{
+				dataMap.put("keyBackup","");
+			}
+			*/
+			
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -152,6 +168,8 @@ public class ReceiveInspectionAction extends BaseAction {
 	public String  doAddInit(){
 		String rtnUrl = "/business/inventory/receiveinspectionadd";
 		model.addAttribute("userName", userInfo.getUserName());
+		String keyBackup = request.getParameter("keyBackup");
+		model.addAttribute("keyBackup",keyBackup);
 		try{
 			String inspectArrivalId = service.addInit();
 			if(inspectArrivalId != null && !("").equals(inspectArrivalId)){
@@ -167,6 +185,8 @@ public class ReceiveInspectionAction extends BaseAction {
 	public void doInsert(){
 		try{
 			service.insertAndView();
+			String keyBackup = request.getParameter("keyBackup");
+			model.addAttribute("keyBackup",keyBackup);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -177,6 +197,8 @@ public class ReceiveInspectionAction extends BaseAction {
 		try{
 			service.updateInit();
 			model.addAttribute("userName", userInfo.getUserName());
+			String keyBackup = request.getParameter("keyBackup");
+			model.addAttribute("keyBackup",keyBackup);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

@@ -15,7 +15,7 @@
 <title>进料报检一览(报检前)</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg) {
+	function ajax(pageFlg,keyBackup) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -26,41 +26,48 @@
 		
 		var type = pageFlg;
 		
-		if(type == '0'){
-			//未检验
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&result=010";
-			
-		}else if(type == '1'){
-			//合格
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&result=020";
-			
-		}else if(type == '2'){
-			//让步接收
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&result=030";
-			
-		}else if(type == '3'){
-			//退货
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&result=040";			
+		
+		if(keyBackup != ''){
+
+			keyBackup = $("#keyword1").val()+"&"+$("#keyword2").val();
 		}else{
-			//点击查询按钮 不区分状态
-			url += "&result=";
+
+			if(type == '0'){
+				//未检验
+				$("#keyword1").val("");
+				$("#keyword2").val("");
+				url += "&result=010";
+				
+			}else if(type == '1'){
+				//合格
+				$("#keyword1").val("");
+				$("#keyword2").val("");
+				url += "&result=020";
+				
+			}else if(type == '2'){
+				//让步接收
+				$("#keyword1").val("");
+				$("#keyword2").val("");
+				url += "&result=030";
+				
+			}else if(type == '3'){
+				//退货
+				$("#keyword1").val("");
+				$("#keyword2").val("");
+				url += "&result=040";			
+			}else{
+				//点击查询按钮 不区分状态
+				url += "&result=";
+			}
 		}
 
-		url += "&keyBackup="+pageFlg;
+		url += "&keyBackup="+keyBackup;
 		//alert(type+"----"+url)
 		//var url = "${ctx}/business/receiveinspection?methodtype=search&pageFlg="+pageFlg;
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
-				 "iDisplayLength" : 100,
+				 "iDisplayLength" : 150,
 				"lengthChange":false,
 				//"lengthMenu":[10,150,200],//设置一页展示20条记录
 				"processing" : true,
@@ -84,8 +91,9 @@
 						"contentType": "application/json; charset=utf-8",
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
-						success: function(data){	
-							//alert("recordsTotal"+data["recordsTotal"])
+						success: function(data){
+							$("#keyword1").val(data["keyword1"]);
+							$("#keyword2").val(data["keyword2"]);
 							fnCallback(data);
 
 						},
@@ -138,8 +146,8 @@
 
 
 	$(document).ready(function() {
-		
-		ajax("0");
+		var keyBackup = $("#keyBackup").val();
+		ajax("0","");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -156,7 +164,7 @@
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("S");
+		ajax("S","S");
 
 	}
 	
@@ -164,7 +172,9 @@
 	
 	function doShow(arrivalId,materialId) {
 
-		var url = '${ctx}/business/receiveinspection?methodtype=addinit&materialId='+materialId+'&arrivalId='+arrivalId;
+		var keyBackup = $("#keyBackup").val();
+		var url = '${ctx}/business/receiveinspection?methodtype=addinit&materialId='+materialId
+				+'&arrivalId='+arrivalId+'&keyBackup='+keyBackup;
 		location.href = url;
 		
 	}
@@ -178,17 +188,17 @@
 <div id="main">		
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
-
+			<input type="hidden" id="keyBackup" value="${keyBackup }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 
 					<td class="label">关键字1：</td>
 					<td class="condition">
-						<input type="text" id="keyword1" name="keyword1" class="middle"/>
+						<input type="text" id="keyword1" name="keyword1" class="middle" value="${keyword1 }" />
 					</td>
 					<td class="label">关键字2：</td> 
 					<td class="condition">
-						<input type="text" id="keyword2" name="keyword2" class="middle"/>
+						<input type="text" id="keyword2" name="keyword2" class="middle" value="${keyword2 }" />
 					</td>
 					<td>
 						<button type="button" id="retrieve" class="DTTT_button" 
@@ -203,10 +213,10 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('0');">未检验</a>
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('1');">合格</a>
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('2');">让步接收</a>
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('3');">退货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('0','');">未检验</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('1','');">合格</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('2','');">让步接收</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('3','');">退货</a>
 		</div>
 		<div id="clear"></div>
 		<table id="TMaterial" class="display dataTable">

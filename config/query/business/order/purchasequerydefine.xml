@@ -267,6 +267,8 @@
       <f name="A.supplierName" alias="" ctype="" />
       <f name="A.purchaseDate" alias="" ctype="" />
       <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.status" alias="statusName" ctype="合同状态" />
       <f name="FORMAT(REPLACE(A.total,',',''),2)" alias="total" ctype="" />
     </select>
     <from>v_purchaseorder a  WHERE a.deleteFlag = '0' </from>

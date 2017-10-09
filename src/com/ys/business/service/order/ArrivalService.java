@@ -1,6 +1,7 @@
 package com.ys.business.service.order;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -105,21 +106,19 @@ public class ArrivalService extends CommonService {
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 				
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();
-			
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
 		}
 		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		
-		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
 		
 		return modelMap;		
 
@@ -156,34 +155,46 @@ public class ArrivalService extends CommonService {
 		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
+		if((key1 !=null && !("").equals(key1)) || 
+				(key2 !=null && !("").equals(key2))){
+			userDefinedSearchCase.put("accumulated1", "");
+		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){
 			
 			iEnd = dataModel.getYsViewData().size();			
 		}		
 		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-			
-		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());			
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
 		
 		return modelMap;
 	}
 
-	public void addInit() throws Exception {
+	public String addInit() throws Exception {
 
-		//取得到货编号"yyMMdd01"
-		getArriveId();
-		
+		String rtnFlag = "查看";
 		//取得该合同编号下的物料信息
 		String contractId = request.getParameter("contractId");
+		
+		boolean hash = checkContractDetail(contractId);
+		
+		if (hash) {
+			//取得到货编号"yyMMdd01"
+			getArriveId();
+			rtnFlag = "新建";
+		}
+		
 		getContractDetail(contractId);
 	
+		return rtnFlag;
 	}
 
 	public void showArrivalDetail() {
@@ -403,8 +414,7 @@ public class ArrivalService extends CommonService {
 	}
 	
 	public void getContractDetail(String contractId) throws Exception {
-
-		
+ 
 		dataModel.setQueryName("getContractById");
 		
 		baseQuery = new BaseQuery(request, dataModel);
@@ -416,11 +426,27 @@ public class ArrivalService extends CommonService {
 
 		if(dataModel.getRecordCount() >0){
 			model.addAttribute("contract",dataModel.getYsViewData().get(0));
-			model.addAttribute("material",dataModel.getYsViewData());			
+			model.addAttribute("material",dataModel.getYsViewData());
 		}
-		
 	}
 	
+	public boolean checkContractDetail(String contractId) throws Exception {
+
+		boolean rtnFlag = false; 
+		dataModel.setQueryName("checkContractExsitById");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("contractId", contractId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			rtnFlag = true;
+		}
+		return rtnFlag;
+	}
 	public HashMap<String, Object> getArrivalHistory(
 			String contractId) throws Exception {
 		

@@ -22,7 +22,8 @@
 		$("#goBack").click(
 				function() {
 					var materialId = '${arrived.materialId }';
-					var url = "${ctx}/business/receiveinspection?keyBackup="+materialId;
+					var keyBackup = $('#keyBackup').val();
+					var url = "${ctx}/business/receiveinspection?keyBackup="+keyBackup;
 					location.href = url;		
 				});
 		
@@ -50,6 +51,7 @@
 
 	<input type="hidden" id="tmpMaterialId" />
 	<form:hidden path="inspect.ysid" value=""/>
+	<input type="hidden" id="keyBackup" value="${keyBackup }" />
 	
 	<fieldset>
 		<legend> 到货信息</legend>

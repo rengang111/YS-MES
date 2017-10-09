@@ -110,6 +110,10 @@ public class PurchasePlanAction extends BaseAction {
 			case "purchasePlanUpdate":
 				doUpdate();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
+				break;	
+			case "purchasePlanDeleteInit":
+				doDeleteInit();
+				rtnUrl = "/business/purchaseplan/purchaseplanadd";
 				break;			
 			case "updateOrderCost":
 				dataMap = doUpdateOrderCost();
@@ -234,6 +238,15 @@ public class PurchasePlanAction extends BaseAction {
 	public void doEdit() throws Exception{
 		
 		purchaseService.editPurchasePlan();
+
+		String backFlag = request.getParameter("backFlag");
+		model.addAttribute("backFlag",backFlag);
+	}	
+	
+	
+	public void doDeleteInit() throws Exception{
+		
+		purchaseService.deleteInitPurchasePlan();
 
 		String backFlag = request.getParameter("backFlag");
 		model.addAttribute("backFlag",backFlag);

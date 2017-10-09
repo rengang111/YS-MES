@@ -732,7 +732,7 @@ public class CommonService extends BaseService {
 		int index = sql.indexOf("ORDER BY");
 		String iSortCol_0 = getJsonData(data, "iSortCol_0");
 		String sSortDir_0 = getJsonData(data, "sSortDir_0");
-		if(("").equals(iSortCol_0))
+		if(("").equals(iSortCol_0) || ("0").equals(iSortCol_0))
 			return sql;
 		String sortColName = getJsonData(data, "mDataProp_"+iSortCol_0);
 		String newSql = sql.replace(sql.substring(index),"ORDER BY " + sortColName + " "+ sSortDir_0);

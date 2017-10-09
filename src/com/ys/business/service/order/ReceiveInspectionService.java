@@ -87,8 +87,7 @@ public class ReceiveInspectionService extends CommonService  {
 		String sEcho = "";
 		String start = "";
 		String length = "";
-		data = URLDecoder.decode(data, "UTF-8");
-		
+		data = URLDecoder.decode(data, "UTF-8");		
 
 		String result = request.getParameter("result");
 
@@ -111,23 +110,23 @@ public class ReceiveInspectionService extends CommonService  {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		userDefinedSearchCase.put("result", result);
+		if((key1 !=null && !("").equals(key1)) || 
+				(key2 !=null && !("").equals(key2))){
+			userDefinedSearchCase.put("result", "");
+		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
 				
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();
-			
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
 		}
 		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		
-		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
 		
 		return modelMap;		
 

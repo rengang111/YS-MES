@@ -48,19 +48,22 @@
 			//逾期未到货
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&accumulated1=0"+"&purchaseDate1="+shortToday();
-			
+			//url += "&accumulated1=0"+"&purchaseDate1="+shortToday();
+			url += "&accumulated1=0";
+			pageFlg="";
 		}else if(type == '1'){
 			//未到货
 			$("#keyword1").val("");
 			$("#keyword2").val("");
 			url += "&accumulated1=0";
+			pageFlg="";
 			
 		}else if(type == '2'){
 			//已到货
 			$("#keyword1").val("");
 			$("#keyword2").val("");
 			url += "&accumulated2=0";
+			pageFlg="";
 			
 		}
 
@@ -69,7 +72,7 @@
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
-			 "iDisplayLength" : 150,
+			 "iDisplayLength" : 100,
 			"lengthChange":false,
 			//"lengthMenu":[10,150,200],//设置一页展示20条记录
 			"processing" : true,
@@ -78,7 +81,8 @@
 			"ordering "	:true,
 			"searching" : false,
 			"pagingType" : "full_numbers",
-			"retrieve" : true,
+			//"aaSorting": [[ 3, "ASC" ]],
+			//"retrieve" : true,
 			"sAjaxSource" : url,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
@@ -94,7 +98,8 @@
 					"type" : "POST",
 					"data" : JSON.stringify(aoData),
 					success: function(data){	
-						//alert("recordsTotal"+data["recordsTotal"])
+						$("#keyword1").val(data["keyword1"]);
+						$("#keyword2").val(data["keyword2"]);
 						fnCallback(data);
 
 					},
@@ -180,15 +185,15 @@
 
 	$(document).ready(function() {
 		
-		var keyBackup = $("#keyBackup").val();
+		//var keyBackup = $("#keyBackup").val();
 
-		if(keyBackup ==""){
+		//if(keyBackup ==""){
 
 			ajax("0");//逾期未到货
-		}else{
-			ajax("");
+		//}else{
+		//	ajax("");
 			
-		}
+		//}
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
