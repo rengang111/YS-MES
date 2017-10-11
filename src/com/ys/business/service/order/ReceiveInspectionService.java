@@ -12,10 +12,12 @@ import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_InspectionProcessDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_ReceiveInspectionDao;
+import com.ys.business.db.dao.B_ReceiveInspectionDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_InspectionProcessData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_ReceiveInspectionData;
+import com.ys.business.db.data.B_ReceiveInspectionDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
@@ -87,9 +89,7 @@ public class ReceiveInspectionService extends CommonService  {
 		String sEcho = "";
 		String start = "";
 		String length = "";
-		data = URLDecoder.decode(data, "UTF-8");		
-
-		String result = request.getParameter("result");
+		data = URLDecoder.decode(data, "UTF-8");
 
 		String[] keyArr = getSearchKey(Constants.FORM_RECEIVEINSPECTION,data,session);
 		String key1 = keyArr[0];
@@ -112,10 +112,11 @@ public class ReceiveInspectionService extends CommonService  {
 		userDefinedSearchCase.put("keyword2", key2);
 		if((key1 !=null && !("").equals(key1)) || 
 				(key2 !=null && !("").equals(key2))){
-			userDefinedSearchCase.put("result", "");
+			userDefinedSearchCase.put("checkResult", "");
 		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -136,11 +137,12 @@ public class ReceiveInspectionService extends CommonService  {
 	public String addInit() throws Exception {
 
 		//取得进料检报告编号
-		getRecordId();
+		//getRecordId();
 		
 		String arrivalId = request.getParameter("arrivalId");
 		String materialId = request.getParameter("materialId");
-		String inspectArrivalId = getArriveId(arrivalId,materialId);
+		
+		String inspectArrivalId = getReceiveInspection(arrivalId);
 		
 		model.addAttribute("resultList",util.getListOption(DicUtil.RECEIVEINSPECTION, ""));
 
@@ -148,16 +150,14 @@ public class ReceiveInspectionService extends CommonService  {
 	
 	}
 
-	public String updateInit() throws Exception {
+	public void updateInit() throws Exception {
 
 		//取得到货信息
 		String arrivalId = reqModel.getInspect().getArrivalid() ;
-		String materialId = reqModel.getInspect().getMaterialid();
-		String inspectArrivalId = getArriveId(arrivalId,materialId);
+		//String materialId = reqModel.getInspect().getMaterialid();
+		String inspectArrivalId = getReceiveInspection(arrivalId);
 		
 		model.addAttribute("resultList",util.getListOption(DicUtil.RECEIVEINSPECTION, ""));
-
-		return inspectArrivalId;
 	
 	}
 	public void showArrivalDetail() {
@@ -171,21 +171,21 @@ public class ReceiveInspectionService extends CommonService  {
 		insertArrival();
 
 		String arrivalId = reqModel.getInspect().getArrivalid();
-		String materialId = reqModel.getInspect().getMaterialid();
-		getArriveId(arrivalId,materialId);
+		//String materialId = reqModel.getInspect().getMaterialid();
+		getReceiveInspection(arrivalId);
 	}
 
 	public void PMUpdateAndView() throws Exception {
 
 
 		String arrivalId = reqModel.getInspect().getArrivalid();
-		String materialId = reqModel.getInspect().getMaterialid();
+		//String materialId = reqModel.getInspect().getMaterialid();
 		
-		updateProcess2(arrivalId,materialId,true);
+		//updateProcess2(arrivalId,materialId,true);
 		
-		getArriveId(arrivalId,materialId);
+		//getArriveId(arrivalId,materialId);
 	}
-
+/*
 	public void GMUpdateAndView() throws Exception {
 
 		String arrivalId = reqModel.getInspect().getArrivalid();
@@ -195,7 +195,7 @@ public class ReceiveInspectionService extends CommonService  {
 		
 		getArriveId(arrivalId,materialId);
 	}
-	
+	*/
 	private String insertArrival(){
 		String contractId = "";
 		ts = new BaseTransaction();
@@ -205,29 +205,32 @@ public class ReceiveInspectionService extends CommonService  {
 			ts.begin();
 			
 			B_ReceiveInspectionData reqData = reqModel.getInspect();
-			B_InspectionProcessData process = reqModel.getProcess();
-			String result = process.getManagerresult();
+			List<B_ReceiveInspectionDetailData> reqList = reqModel.getInspectList();
+			//B_InspectionProcessData process = reqModel.getProcess();
+			//String result = process.getManagerresult();
 			
-			//删除旧数据
-			String arrivalId = reqData.getArrivalid();
-			String materialId = reqData.getMaterialid();
-			deleteArrivalById(arrivalId,materialId);
-			contractId = reqData.getContractid();			
-				
-			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-					"ReceiveInspctionInsert",userInfo);
-			copyProperties(reqData,commData);
-
-			String guid = BaseDAO.getGuId();
-			reqData.setRecordid(guid);
+			//取得进料检报告编号
+			reqData = getReceiveInspectionId(reqData);
+			
+			//新增进料报检
 			reqData.setInspecttime(CalendarUtil.fmtDate());
-			reqData.setMemo(replaceTextArea(reqData.getMemo()));//字符转换
 			reqData.setReport(replaceTextArea(reqData.getReport()));//字符转换
-			reqData.setLossandcisposal(replaceTextArea(reqData.getLossandcisposal()));//字符转换
-			dao.Create(reqData);	
+			insertReceivInspection(reqData);
 			
-			//更新进料检确认流程
-			updateProcess(reqData);
+			String inspectionid = reqData.getInspectionid();			
+			String arrivalId = reqData.getArrivalid();
+			//新增进料报检明细
+			for(B_ReceiveInspectionDetailData data:reqList){
+				
+				data.setInspectionid(inspectionid);
+				insertReceivInspectionDetail(data);
+				
+				//更新收货状态为检验结果
+				updateArrivlStatus(
+						arrivalId,
+						data.getMaterialid(),
+						data.getCheckresult());
+			}
 	
 			ts.commit();			
 			
@@ -243,10 +246,61 @@ public class ReceiveInspectionService extends CommonService  {
 		return contractId;
 	}
 
+	@SuppressWarnings("rawtypes")
+	private void updateArrivlStatus(
+			String arrivalId,
+			String materialId,
+			String result) throws Exception{
+
+		//B_InspectionProcessData process = reqModel.getProcess();
+		
+		B_ArrivalData dt = new B_ArrivalData();
+		String where = "arrivalId ='"+arrivalId +
+				"' AND materialId ='"+ materialId+"'";
+		
+		List list = new B_ArrivalDao().Find(where);
+		
+		if(list == null || list.size() == 0)
+			return;
+		
+		dt = (B_ArrivalData) list.get(0);		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"ReceiveInspctionInsert",userInfo);
+		copyProperties(dt,commData);
+		dt.setStatus(result);//质检结果
+		
+		new B_ArrivalDao().Store(dt);
+	}
+	
+	private void insertReceivInspection(
+			B_ReceiveInspectionData data) throws Exception{
+			
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"ReceiveInspctionInsert",userInfo);
+		copyProperties(data,commData);
+
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		new B_ReceiveInspectionDao().Create(data);
+	}
+	
+	private void insertReceivInspectionDetail(
+			B_ReceiveInspectionDetailData data) throws Exception{
+			
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"ReceiveInspctionDetailInsert",userInfo);
+		copyProperties(data,commData);
+
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		new B_ReceiveInspectionDetailDao().Create(data);
+	}
 	
 	private void updateProcess(
 			B_ReceiveInspectionData inspect) throws Exception{
-	
+	/*
 		B_InspectionProcessDao dao = new B_InspectionProcessDao();
 
 		B_InspectionProcessData process = reqModel.getProcess();
@@ -271,6 +325,7 @@ public class ReceiveInspectionService extends CommonService  {
 		process.setManagerfeedback(replaceTextArea(process.getManagerfeedback()));//字符转换
 		process.setGmfeedback(replaceTextArea(process.getGmfeedback()));//字符转换
 		dao.Create(process);
+		*/
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -370,24 +425,19 @@ public class ReceiveInspectionService extends CommonService  {
 	
 	
 	
-	public String getArriveId(String arrivalId,String materialId) {
-		String inspectArrivalId = "";
-		try {
-			dataModel.setQueryName("getReceiveInspectionList");
-			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("arrivalId", arrivalId);
-			userDefinedSearchCase.put("materialId", materialId);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
-			baseQuery.getYsFullData();	
-			
-			model.addAttribute("arrived",dataModel.getYsViewData().get(0));
-			inspectArrivalId = dataModel.getYsViewData().get(0).get("inspectArrivalId");
-			
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
+	public String getReceiveInspection(String arrivalId) throws Exception {
+
+		dataModel.setQueryName("getReceiveInspectionList");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("arrivalId", arrivalId);
+		//userDefinedSearchCase.put("materialId", materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		baseQuery.getYsFullData();	
+		
+		model.addAttribute("material",dataModel.getYsViewData());
+		model.addAttribute("arrived",dataModel.getYsViewData().get(0));
+		String	inspectArrivalId = dataModel.getYsViewData().get(0).get("inspectArrivalId");		
+	
 		return inspectArrivalId;
 	}
 	
@@ -410,34 +460,27 @@ public class ReceiveInspectionService extends CommonService  {
 		
 	}
 	
-	public void getRecordId() {
-
-		try {
-			String parentid = BusinessService.getInspectionParentId();
-			dataModel.setQueryName("getMAXInspectionId");
-			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("parentId", parentid);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
-			baseQuery.getYsFullData();	
-			//查询出的流水号已经在最大值上 " 加一 "了
-			String code = dataModel.getYsViewData().get(0).get("MaxSubId");		
-			
-			String inspectionId = 
-					BusinessService.getInspectionRecordId(parentid,code,false);
-			
-			B_ReceiveInspectionData data = new B_ReceiveInspectionData();
-			data.setInspectionid(inspectionId);
-			data.setParentid(parentid);
-			data.setSubid(code);
-			reqModel.setInspect(data);
-			
-			
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
+	public B_ReceiveInspectionData getReceiveInspectionId(B_ReceiveInspectionData data) throws Exception {
+	
+		String parentid = BusinessService.getInspectionParentId();
+		dataModel.setQueryName("getMAXInspectionId");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("parentId", parentid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		baseQuery.getYsFullData();	
+		//查询出的流水号已经在最大值上 " 加一 "了
+		String code = dataModel.getYsViewData().get(0).get("MaxSubId");		
 		
+		String inspectionId = 
+				BusinessService.getInspectionRecordId(parentid,code,false);
+		
+		//B_ReceiveInspectionData data = new B_ReceiveInspectionData();
+		data.setInspectionid(inspectionId);
+		data.setParentid(parentid);
+		data.setSubid(code);
+		reqModel.setInspect(data);
+		
+		return data;		
 	}
 	
 	public HashMap<String, Object> getArrivalHistory(

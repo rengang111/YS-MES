@@ -124,7 +124,7 @@
 				{"data": "supplierId"},
 				{"data": "purchaseDate","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
-				{"data": "accumulated","className" : 'td-right'},
+				{"data": "contractStorage","className" : 'td-right'},
 				{"data": "surplus","className" : 'td-right'},
 				{"data": null,"className" : 'td-center'},
 
@@ -172,7 +172,7 @@
 	    		}},
 	    		{
 	    			"visible":false,
-	    			"targets":[11]
+	    			"targets":[10,11]
 	    		}
 	           
 	         ] 

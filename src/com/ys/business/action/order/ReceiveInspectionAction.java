@@ -166,12 +166,14 @@ public class ReceiveInspectionAction extends BaseAction {
 	}
 	
 	public String  doAddInit(){
+		
 		String rtnUrl = "/business/inventory/receiveinspectionadd";
-		model.addAttribute("userName", userInfo.getUserName());
 		String keyBackup = request.getParameter("keyBackup");
-		model.addAttribute("keyBackup",keyBackup);
+		
 		try{
+			
 			String inspectArrivalId = service.addInit();
+			
 			if(inspectArrivalId != null && !("").equals(inspectArrivalId)){
 				rtnUrl = "/business/inventory/receiveinspectionview";
 			}
@@ -179,6 +181,10 @@ public class ReceiveInspectionAction extends BaseAction {
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
+		
+		model.addAttribute("keyBackup",keyBackup);
+		model.addAttribute("userName", userInfo.getUserName());
+		
 		return rtnUrl;
 	}
 
@@ -215,7 +221,7 @@ public class ReceiveInspectionAction extends BaseAction {
 
 	public void doUpdateGM(){
 		try{
-			service.GMUpdateAndView();
+			//service.GMUpdateAndView();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

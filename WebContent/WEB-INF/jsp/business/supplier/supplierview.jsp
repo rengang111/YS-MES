@@ -254,7 +254,7 @@ function doBack() {
 }
 
 function doAddContact() {
-	var supplierId = '$(#supplier\\.supplierid).val()';
+	var supplierId = $("#supplier\\.supplierid").val();
 	var url = "${ctx}/business/contact?methodtype=addinit&supplierId="+supplierId;
 	openLayer(url, $(document).width() - 300, layerHeight, false);	
 	

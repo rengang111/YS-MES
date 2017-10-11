@@ -187,8 +187,6 @@ public class ArrivalService extends CommonService {
 		boolean hash = checkContractDetail(contractId);
 		
 		if (hash) {
-			//取得到货编号"yyMMdd01"
-			getArriveId();
 			rtnFlag = "新建";
 		}
 		
@@ -210,20 +208,23 @@ public class ArrivalService extends CommonService {
 	}
 	
 	private String insertArrival(){
+		
 		String contractId = "";
 		ts = new BaseTransaction();
-		
-		
+				
 		try {
 			ts.begin();
 			
 			B_ArrivalData reqData = (B_ArrivalData)reqModel.getArrival();
 			List<B_ArrivalData> reqDataList = reqModel.getArrivalList();
 			
-			//删除旧数据
-			String arrivalId = reqData.getArrivalid();
-			deleteArrivalById(arrivalId);
+			//删除未报检数据
+			//String arrivalId = reqData.getArrivalid();
 			contractId = reqData.getContractid();
+			deleteArrivalById(contractId);
+
+			//取得到货编号"yyMMdd01"
+			String arrivalId = getArriveId();
 			
 			for(B_ArrivalData data:reqDataList ){
 				String q = data.getQuantity();
@@ -243,7 +244,7 @@ public class ArrivalService extends CommonService {
 				data.setSupplierid(reqData.getSupplierid());
 				data.setUserid(userInfo.getUserId());
 				data.setArrivedate(reqData.getArrivedate());
-				data.setStatus(Constants.ARRIVERECORD_0);//未报检
+				data.setStatus(Constants.ARRIVERECORD_0);//已收货
 				
 				dao.Create(data);	
 				
@@ -332,9 +333,10 @@ public class ArrivalService extends CommonService {
 	}
 	
 	
-	private void deleteArrivalById(String arrivalId) {
+	private void deleteArrivalById(String contractId) {
 
-		String where = " arrivalId = '"+arrivalId+"' AND deleteFlag='0' ";
+		String where = " contractId = '"+contractId+
+				"' AND status='" + Constants.ARRIVERECORD_0 +"' ";
 		try {
 			dao.RemoveByWhere(where);
 		} catch (Exception e) {
@@ -390,27 +392,17 @@ public class ArrivalService extends CommonService {
 	
 	
 	
-	public void getArriveId() {
+	public String getArriveId() throws Exception {
 
-		try {
-			String key = CalendarUtil.fmtYmdDate();
-			dataModel.setQueryName("getMAXArrivalId");
-			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("arriveDate", key);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
-			baseQuery.getYsFullData();	
-			
-			String code = dataModel.getYsViewData().get(0).get("MaxSubId");		
-			
-			model.addAttribute("arrivalId",
-					BusinessService.getArriveRecordId(code));
-			
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
+		String key = CalendarUtil.fmtYmdDate();
+		dataModel.setQueryName("getMAXArrivalId");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("arriveDate", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		baseQuery.getYsFullData();	
 		
+		String code = dataModel.getYsViewData().get(0).get("MaxSubId");		
+		return BusinessService.getArriveRecordId(code);			
 	}
 	
 	public void getContractDetail(String contractId) throws Exception {

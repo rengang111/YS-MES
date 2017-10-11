@@ -48,7 +48,7 @@ public class DicUtil {
 	public static final String SHIPPINGCASE = "出运条件";
 	public static final String SUPPLIER_TYPE = "供应商类型";
 	public static final String MOULDBELONG = "模具归属";
-	public static final String RECEIVEINSPECTION = "报检状态";
+	public static final String RECEIVEINSPECTION = "进料检验结果";
 	public static final String DIC_CHARGERTYPE = "充电器";
 	public static final String DIC_BATTERYPACK = "电池包数量";
 	public static final String DIC_PURCHASER = "采购方";

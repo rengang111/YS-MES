@@ -175,6 +175,7 @@
       <f name="A.customerId" alias="" ctype="" />
       <f name="A.customerShortName" alias="" ctype="" />
       <f name="A.accumulated" alias="" ctype="" />
+      <f name="A.contractStorage" alias="" ctype="" />
     </select>
     <from>v_purchaseorderdetail2 a  WHERE a.deleteFlag = '0' AND left(a.materialId,1) &lt;&gt;'H' </from>
     <orderby>A.YSId,a.materialId</orderby>
@@ -304,7 +305,7 @@
     <where>
    		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  	<w name="A.result" des=""  reqName="result" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.checkResult" des=""  reqName="checkResult" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
        </where>
@@ -318,26 +319,21 @@
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
-      <f name="A.result" alias="" ctype="" />
-      <f name="A.result" alias="resultName" ctype="报检状态" />
       <f name="A.quantity" alias="" ctype="" />
+      <f name="b.quantity" alias="contractQuantity" ctype="" />
+      <f name="a.quantityQualified" alias="" ctype="" />
       <f name="A.report" alias="" ctype="" />
       <f name="A.LossAndCisposal" alias="" ctype="" />
       <f name="A.memo" alias="" ctype="" />
       <f name="A.inspectArrivalId" alias="" ctype="" />
-      <f name="A.checkResult" alias="" ctype="" />
+      <f name="A.checkResult" alias="" ctype="报检状态" />
+      <f name="A.checkResult" alias="checkResultId" ctype="" />
       <f name="A.checkDate" alias="" ctype="" />
       <f name="A.checkerId" alias="" ctype="" />
-      <f name="A.managerFeedback" alias="" ctype="" />
-      <f name="A.managerResult" alias="" ctype="报检状态" />
-      <f name="A.managerDate" alias="" ctype="" />
-      <f name="A.gmFeedback" alias="" ctype="" />
-      <f name="A.gmResult" alias="" ctype="" />
-      <f name="A.gmDate" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
     </select>
-    <from>v_receiveinspetionList a  WHERE a.deleteFlag = '0' </from>
+    <from>v_receiveinspetionList a LEFT JOIN b_purchaseorderdetail b ON b.contractId=a.contractId AND b.materialId=a.materialId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
     <orderby>a.arriveDate DESC,a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -351,8 +347,6 @@
     <where>
    		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  	<w name="A.result" des=""  reqName="result1" dtype="ch" oper="="  lg="OR" bt="(" />
-   	  	<w name="A.result" des=""  reqName="result2" dtype="ch" oper="="  lg="AND" bt=")" />
    	  	<w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
        </where>

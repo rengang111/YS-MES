@@ -245,11 +245,15 @@ public class PurchasePlanAction extends BaseAction {
 	
 	
 	public void doDeleteInit() throws Exception{
-		
-		purchaseService.deleteInitPurchasePlan();
+		try{
 
-		String backFlag = request.getParameter("backFlag");
-		model.addAttribute("backFlag",backFlag);
+			purchaseService.deleteInitPurchasePlan();
+
+			String backFlag = request.getParameter("backFlag");
+			model.addAttribute("backFlag",backFlag);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}	
 	
 	public void doUpdate() throws Exception {

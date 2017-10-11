@@ -76,14 +76,13 @@
 	}
 	
 	function openLayer(url, width, height, isParentOpen) {
-		if (width == "") {
-			//width = '900px';
-			width = $(document).width() + 'px';
+		if (typeof height == "undefined" || width == "") {
+			width = '1100px';
 		} else {
 			width = width + 'px';
 		}
-		if (height == "") {
-			height = '450px'
+		if (typeof height == "undefined" || height == "") {
+			height = '520px'
 		} else {
 			height = height + 'px';
 		}
@@ -98,7 +97,7 @@
 			});
 		} else {
 			layer.open({
-				type : 1,
+				type : 2,
 				title : false,
 				area : [ width, height ], 
 				scrollbar : false,

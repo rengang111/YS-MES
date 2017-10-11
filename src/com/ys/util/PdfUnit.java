@@ -804,8 +804,8 @@ public class PdfUnit {
 		out.close();//关闭输出流
 		
 		//删除临时文件
-		File file = new File(dest);
-		file.delete();
+		//File file = new File(dest);
+		//file.delete();
 	}
 	
 	public void downloadFile(String dest,String fileName) throws IOException{

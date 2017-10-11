@@ -29,35 +29,35 @@
 		
 		if(keyBackup != ''){
 
-			keyBackup = $("#keyword1").val()+"&"+$("#keyword2").val();
+			//
 		}else{
 
 			if(type == '0'){
 				//未检验
 				$("#keyword1").val("");
 				$("#keyword2").val("");
-				url += "&result=010";
+				url += "&checkResult=010";
 				
 			}else if(type == '1'){
 				//合格
 				$("#keyword1").val("");
 				$("#keyword2").val("");
-				url += "&result=020";
+				url += "&checkResult=020";
 				
 			}else if(type == '2'){
 				//让步接收
 				$("#keyword1").val("");
 				$("#keyword2").val("");
-				url += "&result=030";
+				url += "&checkResult=030";
 				
 			}else if(type == '3'){
 				//退货
 				$("#keyword1").val("");
 				$("#keyword2").val("");
-				url += "&result=040";			
+				url += "&checkResult=040";			
 			}else{
 				//点击查询按钮 不区分状态
-				url += "&result=";
+				url += "&checkResult=";
 			}
 		}
 
@@ -117,7 +117,7 @@
 					{"data": "contractId"},
 					{"data": "YSId"},
 					{"data": "quantity","className" : 'td-right'},
-					{"data": "resultName","className" : 'td-center'},
+					{"data": "checkResult","className" : 'td-center'},
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
@@ -126,8 +126,9 @@
 		    		{"targets":1,"render":function(data, type, row){
 
 		    			var materialId = row["materialId"];	
-		    			var arrivalId = row["arrivalId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + arrivalId + "','" + materialId + "')\">"+materialId+"</a>";
+		    			var arrivalId = row["arrivalId"];	
+		    			var contractId = row["contractId"];			    			
+		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + arrivalId + "','" + contractId + "')\">"+materialId+"</a>";
 		    			return rtn;
 		    		}},
 		    		{"targets":2,"render":function(data, type, row){
@@ -170,10 +171,10 @@
 	
 
 	
-	function doShow(arrivalId,materialId) {
+	function doShow(arrivalId,contractId) {
 
 		var keyBackup = $("#keyBackup").val();
-		var url = '${ctx}/business/receiveinspection?methodtype=addinit&materialId='+materialId
+		var url = '${ctx}/business/receiveinspection?methodtype=addinit&contractId='+contractId
 				+'&arrivalId='+arrivalId+'&keyBackup='+keyBackup;
 		location.href = url;
 		

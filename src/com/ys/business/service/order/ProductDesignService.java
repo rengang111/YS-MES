@@ -816,7 +816,7 @@ public class ProductDesignService extends CommonService  {
 	}
 	
 	private void deleteProductDesignDetail(
-			String  productdetailid){
+			String  productdetailid) throws Exception{
 		
 		String astr_Where = " productDetailId = '"+productdetailid+"' ";
 		try{

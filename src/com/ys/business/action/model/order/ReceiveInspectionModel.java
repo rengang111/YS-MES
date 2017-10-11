@@ -8,6 +8,7 @@ import java.util.List;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_InspectionProcessData;
 import com.ys.business.db.data.B_ReceiveInspectionData;
+import com.ys.business.db.data.B_ReceiveInspectionDetailData;
 
 public class ReceiveInspectionModel extends BaseModel {
 	/**
@@ -15,7 +16,7 @@ public class ReceiveInspectionModel extends BaseModel {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private List<B_ReceiveInspectionData> inspectList;
+	private List<B_ReceiveInspectionDetailData> inspectList;
 	private B_ReceiveInspectionData inspect;
 	private B_InspectionProcessData process;
 	ArrayList<ListOption> resultList = new ArrayList<ListOption>();
@@ -42,10 +43,10 @@ public class ReceiveInspectionModel extends BaseModel {
 		this.process = process;
 	}
 	
-	public List<B_ReceiveInspectionData> getInspectList() {
+	public List<B_ReceiveInspectionDetailData> getInspectList() {
 		return this.inspectList;
 	}
-	public void setInspectList(List<B_ReceiveInspectionData> inspectList) {
+	public void setInspectList(List<B_ReceiveInspectionDetailData> inspectList) {
 		this.inspectList = inspectList;
 	}
 	
