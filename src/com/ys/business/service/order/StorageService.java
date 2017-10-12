@@ -99,9 +99,6 @@ public class StorageService extends CommonService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 		
-		String result1 = request.getParameter("result1");
-		String result2 = request.getParameter("result2");
-
 		String[] keyArr = getSearchKey(Constants.FORM_STORAGE,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
@@ -121,77 +118,25 @@ public class StorageService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		userDefinedSearchCase.put("result1", result1);
-		userDefinedSearchCase.put("result2", result2);
+		if((key1 !=null && !("").equals(key1)) || 
+				(key2 !=null && !("").equals(key2))){
+			userDefinedSearchCase.put("status", "");
+		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(iStart, iEnd);	
 				
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();
-			
-		}
-		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		
-		modelMap.put("data", dataModel.getYsViewData());
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
 		
 		return modelMap;		
 
-	}
-	
-
-	public HashMap<String, Object> contractArrivalSearch(
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-
-		data = URLDecoder.decode(data, "UTF-8");
-		
-		int iStart = 0;
-		int iEnd =0;
-		String sEcho = getJsonData(data, "sEcho");	
-		String start = getJsonData(data, "iDisplayStart");		
-		if (start != null && !start.equals("")){
-			iStart = Integer.parseInt(start);			
-		}
-		
-		String length = getJsonData(data, "iDisplayLength");
-		if (length != null && !length.equals("")){			
-			iEnd = iStart + Integer.parseInt(length);			
-		}
-	
-		dataModel.setQueryName("getArrivaList");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
-		String key1 = keyArr[0];
-		String key2 = keyArr[1];
-		
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
-		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();			
-		}		
-		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-			
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
 	}
 
 	public boolean addInit() throws Exception {
@@ -203,27 +148,31 @@ public class StorageService extends CommonService {
 		//确认是否已经入库
 		if(receiptId ==null || receiptId.equals("")){
 			viewFlag = false;
-			//取得入库申请编号
-			getStorageRecordId(contractId);
 			
-			//取得该到货编号下的物料信息
-			getContractDetail(arrivalId);
 		}else{
 			model.addAttribute("receiptId",receiptId);//已入库
 		}
 		
+		//取得该到货编号下的物料信息
+		getContractDetail(arrivalId);
+
+		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+	
 		return viewFlag;
 	
 	}
 	
 	public void edit() throws Exception {
-		String contractId = request.getParameter("contractId");
-		String arrivalId = request.getParameter("arrivalId");
-		String receiptId = request.getParameter("receiptId");
+		B_PurchaseStockInData reqData = reqModel.getStock();
+		String contractId = reqData.getContractid();
+		String arrivalId = reqData.getArrivelid();
+		String receiptId = reqData.getReceiptid();
 		
-		//getArrivaRecord(receiptId);
+		getContractDetail(arrivalId);//合同信息
+		getArrivaRecord(receiptId);//入库明细
+
+		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
 		model.addAttribute("receiptId",receiptId);//已入库
-		
 	
 	}
 
@@ -235,21 +184,23 @@ public class StorageService extends CommonService {
 	
 	public void insertAndReturn() throws Exception {
 
-		String receiptid = insertStorage(true);
-		
-		model.addAttribute("receiptId",receiptid);//返回到页面
+		String arrivalId = insertStorage(true);
+
+		getContractDetail(arrivalId);
+		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
 	
 	public void updateAndReturn() throws Exception {
 
-		String receiptid = insertStorage(false);
-		
-		model.addAttribute("receiptId",receiptid);//返回到页面
+		String arrivalId = insertStorage(false);
+
+		getContractDetail(arrivalId);
+		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
 	
 	
 	private String insertStorage(boolean accessFlag){
-		String receiptid = "";
+		String arrivalid = "";
 		ts = new BaseTransaction();		
 		
 		try {
@@ -258,11 +209,15 @@ public class StorageService extends CommonService {
 			B_PurchaseStockInData reqData = reqModel.getStock();
 			List<B_PurchaseStockInDetailData> reqDataList = 
 					reqModel.getStockList();
+
+			//取得入库申请编号
+			reqData = getStorageRecordId(reqData);
+			String receiptid = reqData.getReceiptid();
+			arrivalid = reqData.getArrivelid();
+			String contractId = reqData.getContractid();
 			
 			//采购入库记录
 			insertPurchaseStockIn(reqData);
-			receiptid = reqData.getReceiptid();
-			String arrivalid = reqData.getArrivelid();
 			
 			//先删除已经存在的入库明细
 			String where = " receiptId = '"+receiptid+"'";
@@ -279,25 +234,18 @@ public class StorageService extends CommonService {
 				if(quantity == null || quantity.equals("") || quantity.equals("0"))
 					continue;
 				
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-						"ArrivalInsert",userInfo);
-
-				copyProperties(data,commData);
-
-				String guid = BaseDAO.getGuId();
-				data.setRecordid(guid);
 				data.setReceiptid(receiptid);
-				//
-				detaildao.Create(data);	
+				insertPurchaseStockInDetail(data);
 				
-				//更新当前库存
+				//更新时,不再更新库存数量
 				if(accessFlag){
-					updateMaterial(materialid,quantity);//更新入库记录时,不再更新库存数量
-
-					//更新到货记录的物料状态
-					updateInspectionProcess(arrivalid,materialid);
 					
-					//更新合同的累计入库数量
+					updateMaterial(materialid,quantity);//更新库存
+
+					//更新收货状态
+					//updateInspectionProcess(contractId,materialid);
+					
+					//更新合同的累计入库数量,收货状态
 					updateContractStorage(reqData.getContractid(),materialid,quantity);
 					
 				}
@@ -316,7 +264,7 @@ public class StorageService extends CommonService {
 			}
 		}
 		
-		return receiptid;
+		return arrivalid;
 	}
 	
 	//更新当前库存:采购入库时，减少“待入库”，增加“当前库存”
@@ -369,33 +317,32 @@ public class StorageService extends CommonService {
 	//
 	@SuppressWarnings("unchecked")
 	private void updateInspectionProcess(
-			String arrivalId,
+			String contractId,
 			String materialId) throws Exception{
 	
-		B_InspectionProcessData data = new B_InspectionProcessData();
-		B_InspectionProcessDao dao = new B_InspectionProcessDao();
 		
-		String where = "arrivalId ='"+ arrivalId + 
+		String where = "contractId ='"+ contractId + 
 				"' AND materialId ='"+ materialId + 
 				"' AND deleteFlag='0' ";
 		
-		List<B_InspectionProcessData> list = 
-				(List<B_InspectionProcessData>)dao.Find(where);
+		List<B_PurchaseOrderDetailData> list = 
+				(List<B_PurchaseOrderDetailData>)
+				new B_PurchaseOrderDetailDao().Find(where);
 		
 		if(list ==null || list.size() == 0){
 			return ;
 		}
 
-		data = list.get(0);
+		B_PurchaseOrderDetailData data = list.get(0);
 		
-		data.setResult(Constants.ARRIVERECORD_4);//入库完毕
+		//data.setStatus(Constants.ARRIVERECORD_4);//入库完毕
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"PurchaseStockInUpdate",userInfo);
 		copyProperties(data,commData);
 		
-		dao.Store(data);
+		new B_PurchaseOrderDetailDao().Store(data);
 		
 	}
 	
@@ -406,7 +353,6 @@ public class StorageService extends CommonService {
 			String materialId,
 			String quantity) throws Exception{
 	
-		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
 		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
 		
 		String where = "contractId ='"+ contractId + 
@@ -418,26 +364,29 @@ public class StorageService extends CommonService {
 		
 		if(list ==null || list.size() == 0)
 			return ;		
-
-		String ysid = list.get(0).getYsid();
+		B_PurchaseOrderDetailData data = list.get(0);
+		//String ysid = data.getYsid();
 		String SContrat = list.get(0).getQuantity();//合同数量
 		String SQuantyDB = list.get(0).getContractstorage();//累计入库
-		float iContrat = stringToFloat(SContrat);
-		float iQuantity = stringToFloat(SQuantyDB);
-		float inewQuantity = stringToFloat(quantity);
+		float iContrat = stringToFloat(SContrat);//合同数量
+		float iQuantity = stringToFloat(SQuantyDB);//累计入库
+		float inewQuantity = stringToFloat(quantity);//本次入库
 		
 		float iNew = iQuantity + inewQuantity;
-		if(iNew == iContrat){
+		//if(iNew == iContrat){
 			//更新合同总数量
-			if(updatePurchaseOrderStatus(ysid,contractId,iNew)){
+			//if(updatePurchaseOrderStatus(ysid,contractId,iNew)){
 				//确认合同状态:是否全部入库
-				boolean flag = checkPurchaseOrderStatus(ysid,contractId);
-				if(flag){
+				//boolean flag = checkPurchaseOrderStatus(ysid,contractId);
+				//if(flag){
 					//更新订单状态
-					updateOrderStatus(ysid);
-				}
-			}			
-		}
+					//updateOrderStatus(ysid);
+				//}
+			//}
+			data.setStatus(Constants.CONTRACT_STS_4);//入库完毕		
+		//}else{
+		//	data.setStatus(Constants.CONTRACT_STS_41);//部分入库
+		//}
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
@@ -445,8 +394,7 @@ public class StorageService extends CommonService {
 		copyProperties(data,commData);
 		data.setContractstorage(String.valueOf(iNew));
 		
-		dao.Store(data);
-		
+		dao.Store(data);		
 		
 	}
 	
@@ -529,20 +477,31 @@ public class StorageService extends CommonService {
 			dao.RemoveByWhere(where);
 		} catch (Exception e) {
 			// nothing
-		}
-		
+		}		
 		//插入新数据
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"PurchaseStockInInsert",userInfo);
 		copyProperties(stock,commData);
-		stock.setKeepuser(userInfo.getUserId());//默认为登陆者	
-
+		stock.setKeepuser(userInfo.getUserId());//默认为登陆者
 		String guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
 		
 		dao.Create(stock);
 	}
 	
+	private void insertPurchaseStockInDetail(
+			B_PurchaseStockInDetailData stock) throws Exception {
+		
+		//插入新数据
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"PurchaseStockInDetailInsert",userInfo);
+		copyProperties(stock,commData);
+
+		String guid = BaseDAO.getGuId();
+		stock.setRecordid(guid);
+		
+		detaildao.Create(stock);	
+	}
 	
 	private HashMap<String, Object> getArrivaRecord(String receiptId){
 
@@ -593,31 +552,23 @@ public class StorageService extends CommonService {
 	
 	
 	
-	public void getStorageRecordId(String contractId) {
-
-		try {
-			dataModel.setQueryName("getMAXStorageRecordId");
-			baseQuery = new BaseQuery(request, dataModel);
-			userDefinedSearchCase.put("contractId", contractId);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
-			baseQuery.getYsFullData();	
-			
-			//查询出的流水号已经在最大值上 " 加一 "了
-			String code = dataModel.getYsViewData().get(0).get("MaxSubId");		
-			
-			String inspectionId = 
-					BusinessService.getStorageRecordId(contractId,code,false);
-			
-			B_PurchaseStockInData data = new B_PurchaseStockInData();
-			data.setReceiptid(inspectionId);
-			data.setSubid(code);
-			reqModel.setStock(data);
-			
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
-		}
+	public B_PurchaseStockInData getStorageRecordId(
+			B_PurchaseStockInData data) throws Exception {
+	
+		dataModel.setQueryName("getMAXStorageRecordId");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("contractId", data.getContractid());
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		baseQuery.getYsFullData();	
+		
+		//查询出的流水号已经在最大值上 " 加一 "了
+		String code = dataModel.getYsViewData().get(0).get("MaxSubId");			
+		String inspectionId = 
+				BusinessService.getStorageRecordId(data.getContractid(),code,false);	
+		data.setReceiptid(inspectionId);
+		data.setSubid(code);			
+		
+		return data;
 		
 	}
 	

@@ -11,7 +11,7 @@
       <f name="A.recordId" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
       <f name="a.arriveDate" alias="" ctype="" />
-      <f name="a.status" alias="" ctype="报检状态" />
+      <f name="a.status" alias="" ctype="收货状态" />
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="A.YSId" alias="" ctype="" />
       <f name="A.materialId" alias="" ctype="" />
@@ -326,7 +326,7 @@
       <f name="A.LossAndCisposal" alias="" ctype="" />
       <f name="A.memo" alias="" ctype="" />
       <f name="A.inspectArrivalId" alias="" ctype="" />
-      <f name="A.checkResult" alias="" ctype="报检状态" />
+      <f name="A.checkResult" alias="" ctype="收货状态" />
       <f name="A.checkResult" alias="checkResultId" ctype="" />
       <f name="A.checkDate" alias="" ctype="" />
       <f name="A.checkerId" alias="" ctype="" />
@@ -345,9 +345,10 @@
     <pool></pool>     
     <name value="getMaterialCheckInList" />
     <where>
-   		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   		<w name="A.fullField" des=""  reqName="keyword1"  dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2"  dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.status"     des=""  reqName="status"     dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
        </where>
     <select>
@@ -356,21 +357,20 @@
       <f name="A.contractId" alias="" ctype="" />
       <f name="A.arrivalId" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.purchaseType" alias="" ctype="物料采购类别" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
-      <f name="A.result" alias="" ctype="" />
-      <f name="A.result" alias="resultName" ctype="报检状态" />
-      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.quantityQualified" alias="" ctype="" />
+      <f name="A.contractStorage" alias="" ctype="" />
       <f name="A.checkDate" alias="" ctype="" />
       <f name="A.checkerId" alias="" ctype="" />
-      <f name="A.checkerName" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
       <f name="A.contractQuantity" alias="" ctype="" />
       <f name="A.receiptId" alias="" ctype="" />
       <f name="A.checkInDate" alias="" ctype="" />
     </select>
-    <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' </from>
+    <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
     <orderby>a.YSId DESC,a.contractId,a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -395,7 +395,11 @@
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
       <f name="A.contractQuantity" alias="" ctype="" />
+      <f name="A.contractStorage" alias="" ctype="" />
+      <f name="A.packagNumber" alias="" ctype="" />
       <f name="A.areaNumber" alias="" ctype="" />
+      <f name="A.packaging" alias="" ctype="包装方式" />
+      <f name="A.packaging" alias="packagingId" ctype="" />
       <f name="A.LoginName" alias="" ctype="" />
       <f name="A.checkInDate" alias="" ctype="" />
       <f name="A.arrivelId" alias="" ctype="" />

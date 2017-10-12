@@ -15,22 +15,19 @@
 <title>进料报检一览(报检前)</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,keyBackup) {
+	function ajax(pageFlg,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 		
-		var url = "${ctx}/business/receiveinspection?methodtype=search";
+		var url = "${ctx}/business/receiveinspection?methodtype=search"+"&sessionFlag="+sessionFlag;
 		
 		var type = pageFlg;
 		
 		
-		if(keyBackup != ''){
-
-			//
-		}else{
+		
 
 			if(type == '0'){
 				//未检验
@@ -59,9 +56,9 @@
 				//点击查询按钮 不区分状态
 				url += "&checkResult=";
 			}
-		}
+		
 
-		url += "&keyBackup="+keyBackup;
+		url += "&keyBackup="+pageFlg;
 		//alert(type+"----"+url)
 		//var url = "${ctx}/business/receiveinspection?methodtype=search&pageFlg="+pageFlg;
 
@@ -147,7 +144,6 @@
 
 
 	$(document).ready(function() {
-		var keyBackup = $("#keyBackup").val();
 		ajax("0","");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
@@ -214,10 +210,10 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('0','');">未检验</a>
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('1','');">合格</a>
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('2','');">让步接收</a>
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('3','');">退货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('0','1');">未检验</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('1','1');">合格</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('2','1');">让步接收</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('3','1');">退货</a>
 		</div>
 		<div id="clear"></div>
 		<table id="TMaterial" class="display dataTable">

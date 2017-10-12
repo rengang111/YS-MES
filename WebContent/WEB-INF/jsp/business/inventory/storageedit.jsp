@@ -22,64 +22,28 @@
 			"ordering "	:true,
 			"searching" : false,
 			"retrieve" : true,
-			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/storage?methodtype=getStockInDetail&receiptId="+receiptId,
-			"fnServerData" : function(sSource, aoData, fnCallback) {
-				var param = {};
-				var formData = $("#condition").serializeArray();
-				formData.forEach(function(e) {
-					aoData.push({"name":e.name, "value":e.value});
-				});
-
-				$.ajax({
-					"url" : sSource,
-					"datatype": "json", 
-					"contentType": "application/json; charset=utf-8",
-					"type" : "POST",
-					"data" : JSON.stringify(aoData),
-					success: function(data){
-						$("#receiptId").text(data["data"][0]["receiptId"]);
-						$("#supplierName").text(data["data"][0]["supplierName"]);
-						$("#contractId").text(data["data"][0]["contractId"]);
-						$("#LoginName").text(data["data"][0]["LoginName"]);
-						$("#checkInDate").text(data["data"][0]["checkInDate"]);
-						$("#stock\\.arrivelid").val(data["data"][0]["arrivelId"]);
-						$("#stock\\.subid").val(data["data"][0]["subId"]);
-						$("#stock\\.contractid").val(data["data"][0]["contractId"]);
-						$("#stock\\.supplierid").val(data["data"][0]["supplierId"]);
-						fnCallback(data);
-					},
-					 error:function(XMLHttpRequest, textStatus, errorThrown){
-						 alert(errorThrown)
-		             }
-				})
-			},
+			dom : '<"clear">rt',		
 			"columns" : [
-	           		{"data": null,"className":"dt-body-center"
-				}, {"data": "materialId"
-				}, {"data": "materialName"
-				}, {"data": "unit","className":"dt-body-center"
-				}, {"data": "contractQuantity","className":"td-right"	
-				}, {"data": "quantity","className":"td-right"	
-				}, {"data": "areaNumber","className":"td-left"
-				}
-			] ,	
-			"columnDefs":[
-	    		{"targets":5,"render":function(data, type, row){
-	    			var quantity = row["quantity"];	
-	    			var rownum = row["rownum"]-1;
-	    			var rtn = quantity;
-	     			rtn += "<input type=\"hidden\" id=\"stockList"+rownum+".quantity\" name=\"stockList["+rownum+"].quantity\"  class=\"num\" value=\""+quantity+"\">";
-	     			rtn += "<input type=\"hidden\" id=\"stockList"+rownum+".materialid\" name=\"stockList["+rownum+"].materialid\"  class=\"num\" value=\""+row["materialId"]+"\">";
-	    			return rtn;
-	    		}},
-	    		{"targets":6,"render":function(data, type, row){
-	    			var areaNumber = row["areaNumber"];	
-	    			var rownum = row["rownum"]-1;
-	     			var rtn= "<input type=\"text\" id=\"stockList"+rownum+".areanumber\" name=\"stockList["+rownum+"].areanumber\"  class=\"short\" value=\""+areaNumber+"\">";
-	    			return rtn;
-	    		}},
-	    	]  	
+			        	{"className":"dt-body-center"
+					}, {"className":"td-left"
+					}, {
+					}, {"className":"td-right"
+					}, {"className":"td-right"
+					}, {"className":"td-right"	
+					}, {"className":"td-left"
+					}, {"className":"td-left"
+					}, {
+					}
+				],
+		"columnDefs":[
+    		{"targets":2,"render":function(data, type, row){
+    			
+    			var name = data;				    			
+    			name = jQuery.fixedWidth(name,35);				    			
+    			return name;
+    		}}
+           
+         ] 
 
 		}).draw();
 						
@@ -130,6 +94,13 @@
 			$('#formModel').submit();
 		});
 		
+
+		foucsInit();
+
+		$(".quantity").attr('readonly', "true");
+		$(".quantity").addClass('read-only');
+		$(".quantity").removeClass('bgnone');
+		
 	});
 	
 	function doEdit(contractId,arrivalId) {
@@ -137,6 +108,7 @@
 		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
 		location.href = url;
 	}
+
 	
 </script>
 
@@ -155,52 +127,90 @@
 	<form:hidden path="stock.contractid"  value=""/>
 	<form:hidden path="stock.supplierid"  value=""/>
 	
+	
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px">入库单编号：</td>					
-				<td width="200px"><span id="receiptId"></span></td>		
-									
-				<td width="100px" class="label">仓管员：</td>
-				<td width="200px"><span id="LoginName"></span></td>	
-										
-				<td width="100px"class="label">入库时间：</td>
-				<td><span id="checkInDate"></span>
-					<form:hidden path="stock.checkindate" /></td>
+				<td class="label" width="100px">耀升编号：</td>					
+				<td width="200px">&nbsp;${contract.YSId }</td>
+							
+				<td width="100px" class="label">成品编码：</td>
+				<td width="200px">&nbsp;${contract.materialId }</td>							
+				<td width="100px" class="label">成品名称：</td>
+				<td>${contract.materialName }</td>
+			</tr>
 			<tr>							
 				<td class="label">合同编号：</td>					
-				<td><span id="contractId"></span></td>								 	
-				
+				<td>&nbsp;<a href="#" onClick="showContract('${contract.contractId }')">${contract.contractId }</a></td>								 	
 				<td class="label">供应商：</td>					
-				<td colspan="3"><span id="supplierName"> </span></td>	
+				<td colspan="3">&nbsp;${contract.supplierName }</td>	
+			</tr>
+			<tr> 				
+				<td class="label" width="100px">入库时间：</td>					
+				<td width="200px">
+					<form:input path="stock.checkindate" class="read-only" /></td>
+							
+				<td width="100px" class="label">仓管员：</td>
+				<td width="200px">
+					<form:input path="stock.keepuser" class="short read-only" value="${userName }" /></td>							
+				<td class="label">物料类别：</td>
+				<td>${contract.purchaseType }</td>
 			</tr>
 										
 		</table>
-</fieldset>
-<fieldset>
-	<legend> 物料信息</legend>
-	<div class="list">
-	<table class="display" id="example">	
-		<thead>		
-			<tr>
-				<th style="width:1px">No</th>
-				<th style="width:150px">物料编号</th>
-				<th>物料名称</th>
-				<th style="width:30px">单位</th>
-				<th style="width:100px">合同数量</th>
-				<th style="width:100px">入库数量</th>
-				<th style="width:120px">仓库位置</th>		
-			</tr>
-		</thead>		
-									
-	</table>
-	<fieldset class="action" style="text-align: right;margin-top:10px">
-		<button type="button" id="insert" class="DTTT_button">入库</button>
+	</fieldset>
+	<fieldset class="action" style="text-align: right;margin-top:-20px">
+		<button type="button" id="insert" class="DTTT_button">确认入库</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
-	</div>
-</fieldset>
+	<fieldset style="margin-top: -40px;">
+		<legend> 物料信息</legend>
+		<div class="list">
+		<table class="display" id="example">	
+			<thead>		
+				<tr>
+						<th style="width:1px">No</th>
+						<th style="width:100px">物料编号</th>
+						<th>物料名称</th>
+						<th style="width:65px">合同数量</th>
+						<th style="width:65px">已入库数量</th>
+						<th style="width:65px">待入库数</th>
+						<th style="width:55px">包装方式</th>
+						<th style="width:40px">件数</th>
+						<th style="width:60px">库位编号</th>			
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="list" items="${material}" varStatus='status' >			
+					<tr>
+						<td></td>
+						<td>${list.materialId }
+							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
+						<td>${list.materialName }</td>
+						<td>${list.contractQuantity }</td>
+						<td>${list.contractStorage }</td>
+						<td><form:input path="stockList[${status.index}].quantity"  value="${list.quantity }" class="num short quantity" /></td>
+						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
+								<form:options items="${packagingList}" 
+									itemValue="key" itemLabel="value"/></form:select></td>
+						<td><form:input path="stockList[${status.index}].packagnumber" value="${list.packagNumber }" class="mini" /></td>
+						<td><form:input path="stockList[${status.index}].areanumber" value="${list.areaNumber }"  class="short" /></td>
+					</tr>
+					<script type="text/javascript">
+							var index = '${status.index}';
+							var type = '${list.packagingId}';
+
+							$('#stockList'+index+'\\.packaging').val(type);
+					</script>
+				
+				</c:forEach>
+			
+		</tbody>		
+										
+		</table>
+		</div>
+	</fieldset>
 
 
 </form:form>

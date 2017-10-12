@@ -73,8 +73,8 @@ public class ArrivalAction extends BaseAction {
 				rtnUrl = "/business/inventory/arrivalmain";
 				break;
 			case "search":
-				dataMap = doSearch(data);
-				printOutJsonObj(response, dataMap);
+				//dataMap = doSearch(data);
+				//printOutJsonObj(response, dataMap);
 				return null;				
 			case "contractArrivalSearch":
 				dataMap = contractArrivalSearch(data);
@@ -128,35 +128,6 @@ public class ArrivalAction extends BaseAction {
 		*/
 	}
 	
-	
-	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doSearch(@RequestBody String data){
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		//优先执行查询按钮事件,清空session中的查询条件
-	/*	String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
-			
-		}*/
-		
-		try {
-			dataMap = service.doSearch(data);
-			
-			ArrayList<HashMap<String, String>> dbData = 
-					(ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-	
 
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> contractArrivalSearch(
@@ -166,8 +137,8 @@ public class ArrivalAction extends BaseAction {
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
 		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(sessionFlag != null && !("").equals(sessionFlag)){
 			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
 			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
 			

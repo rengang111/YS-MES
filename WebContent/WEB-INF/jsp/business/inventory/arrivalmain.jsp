@@ -15,32 +15,14 @@
 <title>到货登记一览(合同未到货)</title>
 <script type="text/javascript">
 
-
-	//Form序列化后转为AJAX可提交的JSON格式。
-	$.fn.serializeObject = function() {
-		var o = {};
-		var a = this.serializeArray();
-		$.each(a, function() {
-			if (o[this.name] !== undefined) {
-				if (!o[this.name].push) {
-					o[this.name] = [ o[this.name] ];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
-			}
-		});
-		return o;
-	};
-
-	function ajax(pageFlg) {
+	function ajax(pageFlg,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 
-		var url = "${ctx}/business/arrival?methodtype=contractArrivalSearch";
+		var url = "${ctx}/business/arrival?methodtype=contractArrivalSearch"+"&sessionFlag="+sessionFlag;
 		
 		var type = pageFlg;
 		
@@ -189,7 +171,7 @@
 
 		//if(keyBackup ==""){
 
-			ajax("0");//逾期未到货
+			ajax("0","");//逾期未到货
 		//}else{
 		//	ajax("");
 			
@@ -206,13 +188,6 @@
 	        }
 		});		
 	})	
-	
-	function doSearch() {	
-
-		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("S");
-
-	}
 	
 	function doCreate(contractId) {
 		
@@ -273,9 +248,16 @@
 		return true;
 	}
 	
+	function doSearch() {	
+
+		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
+		ajax("S",'1');
+
+	}
+	
 	function selectContractByDate(type){
 		
-		ajax(type);
+		ajax(type,'1');
 	}
 	
 	function showYS(YSId){

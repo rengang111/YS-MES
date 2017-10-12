@@ -10,7 +10,7 @@
 
 	function ajax() {
 
-		var receiptId = $("#receiptid").val();
+		var receiptId = $("#stock\\.receiptid").val();
 		var t = $('#example').DataTable({
 			
 			"paging": true,
@@ -38,28 +38,33 @@
 					"type" : "POST",
 					"data" : JSON.stringify(aoData),
 					success: function(data){
-						$("#receiptId").text(data["data"][0]["receiptId"]);
-						$("#supplierName").text(data["data"][0]["supplierName"]);
-						$("#contractId").text(data["data"][0]["contractId"]);
-						$("#LoginName").text(data["data"][0]["LoginName"]);
-						$("#checkInDate").text(data["data"][0]["checkInDate"]);
 						fnCallback(data);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 						 alert(errorThrown)
 		             }
 				})
-			},
+			},	
 			"columns" : [
-	           		{"data": null,"className":"dt-body-center"
-				}, {"data": "materialId"
-				}, {"data": "materialName"
-				}, {"data": "unit","className":"dt-body-center"
-				}, {"data": "contractQuantity","className":"td-right"	
-				}, {"data": "quantity","className":"td-right"	
-				}, {"data": "areaNumber","className":"td-left"
-				}
-			] ,		
+				        	{"data": null,"className":"dt-body-center"
+						}, {"data": "materialId","className":"td-left"
+						}, {"data": "materialName",
+						}, {"data": "contractQuantity","className":"td-right"
+						}, {"data": "contractStorage","className":"td-right"
+						}, {"data": "quantity","className":"td-right"	
+						}, {"data": "packaging","className":"td-left"
+						}, {"data": "packagNumber","className":"td-left"
+						}, {"data": "areaNumber",
+						}
+					],
+			"columnDefs":[
+	    		{"targets":2,"render":function(data, type, row){
+	    			
+	    			var name = data;				    			
+	    			name = jQuery.fixedWidth(name,35);				    			
+	    			return name;
+	    		}}
+	    	]
 	
 		}).draw();
 						
@@ -103,7 +108,7 @@
 		
 		$("#insert").click(
 				function() {
-				var receiptId = $("#receiptid").val();	
+				var receiptId = $("#stock\\.receiptid").val();	
 			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=edit&receiptId="+receiptId);
 			$('#formModel').submit();
 		});
@@ -126,31 +131,43 @@
 
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
-
-	<input type="hidden" id="receiptid"  value="${receiptId}"/>
+	
+	<form:hidden path="stock.receiptid"  value="${receiptId}"/>
+	<form:hidden path="stock.ysid"  value="${contract.YSId }"/>
+	<form:hidden path="stock.arrivelid"  value="${contract.arrivalId }"/>
+	<form:hidden path="stock.supplierid"  value="${contract.supplierId }"/>
+	<form:hidden path="stock.contractid"  value="${contract.contractId }"/>
 	
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px">入库单编号：</td>					
-				<td width="200px"><span id="receiptId"></span></td>		
-									
-				<td width="100px" class="label">仓管员：</td>
-				<td width="200px"><span id="LoginName"></span></td>	
-										
-				<td width="100px"class="label">入库时间：</td>
-				<td><span id="checkInDate"></span></td>
+				<td class="label" width="100px">耀升编号：</td>					
+				<td width="200px">&nbsp;${contract.YSId }</td>
+							
+				<td width="100px" class="label">成品编码：</td>
+				<td width="200px">&nbsp;${contract.materialId }</td>							
+				<td width="100px" class="label">成品名称：</td>
+				<td>${contract.materialName }</td>
+			</tr>
 			<tr>							
 				<td class="label">合同编号：</td>					
-				<td><span id="contractId"></span></td>								 	
-				
+				<td>&nbsp;<a href="#" onClick="showContract('${contract.contractId }')">${contract.contractId }</a></td>								 	
 				<td class="label">供应商：</td>					
-				<td colspan="3"><span id="supplierName"> </span></td>	
+				<td colspan="3">&nbsp;${contract.supplierName }</td>	
+			</tr>
+			<tr> 				
+				<td class="label" width="100px">入库时间：</td>					
+				<td width="200px">${contract.checkInDate }</td>
+							
+				<td width="100px" class="label">仓管员：</td>
+				<td width="200px">${userName }</td>							
+				<td class="label">物料类别：</td>
+				<td>${contract.purchaseType }</td>
 			</tr>
 										
 		</table>
-</fieldset>
+	</fieldset>
 	<div style="clear: both"></div>
 	<fieldset class="action" style="text-align: right;">
 		<button type="button" id="insert" class="DTTT_button">编辑</button>
@@ -162,13 +179,15 @@
 	<table class="display" id="example">	
 		<thead>		
 			<tr>
-				<th style="width:1px">No</th>
-				<th style="width:150px">物料编号</th>
-				<th>物料名称</th>
-				<th style="width:30px">单位</th>
-				<th style="width:100px">合同数量</th>
-				<th style="width:100px">入库数量</th>
-				<th style="width:120px">仓库位置</th>		
+					<th style="width:1px">No</th>
+					<th style="width:100px">物料编号</th>
+					<th>物料名称</th>
+					<th style="width:65px">合同数量</th>
+					<th style="width:65px">已入库数量</th>
+					<th style="width:65px">本次入库数</th>
+					<th style="width:55px">包装方式</th>
+					<th style="width:40px">件数</th>
+					<th style="width:60px">库位编号</th>		
 			</tr>
 		</thead>		
 									

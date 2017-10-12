@@ -326,6 +326,7 @@ public class ArrivalService extends CommonService {
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"ArrivalUpdate",userInfo);
 		copyProperties(data,commData);
+		data.setStatus(Constants.CONTRACT_STS_2);//带报检
 		
 		dao.Store(data);
 

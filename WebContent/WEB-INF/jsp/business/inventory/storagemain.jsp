@@ -15,32 +15,14 @@
 <title>入库登记一览(检验完毕)</title>
 <script type="text/javascript">
 
-
-	//Form序列化后转为AJAX可提交的JSON格式。
-	$.fn.serializeObject = function() {
-		var o = {};
-		var a = this.serializeArray();
-		$.each(a, function() {
-			if (o[this.name] !== undefined) {
-				if (!o[this.name].push) {
-					o[this.name] = [ o[this.name] ];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
-			}
-		});
-		return o;
-	};
-
-	function ajax(pageFlg) {
+	function ajax(pageFlg,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 
-		var url = "${ctx}/business/storage?methodtype=search";
+		var url = "${ctx}/business/storage?methodtype=search"+"&sessionFlag="+sessionFlag;
 		
 		var type = pageFlg;
 		
@@ -48,17 +30,17 @@
 			//默认是质检合格或者让步接收
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&result1=020&result2=030";
+			url += "&status=030";
 			
 		}else if(type == '1'){
 			//已入库
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&result1=050&result2=050";
+			url += "&status=040";
 			
 		}else{
 			//按钮查询,不设状态条件
-			url += "&result1=";
+			url += "&status=";
 		}
 		url += "&keyBackup="+pageFlg;
 		//alert(type+"----"+url)
@@ -91,6 +73,8 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){	
 						//alert("recordsTotal"+data["recordsTotal"])
+						$("#keyword1").val(data["keyword1"]);
+						$("#keyword2").val(data["keyword2"]);
 						fnCallback(data);
 
 					},
@@ -114,7 +98,7 @@
 				{"data": "contractId"},
 				{"data": "YSId"},
 				{"data": "contractQuantity","className" : 'td-right'},
-				{"data": "quantity","className" : 'td-right'},
+				{"data": "contractStorage","className" : 'td-right'},
 				{"data": "checkInDate","className" : 'td-right'},
 				
 				
@@ -149,7 +133,7 @@
 		
 		var keyBackup = $("#keyBackup").val();
 
-		ajax("0");
+		ajax("0","");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -166,7 +150,7 @@
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("S");
+		ajax("S","1");
 
 	}
 	
@@ -211,7 +195,7 @@
 		
 	}
 	
-	function selectContractByDate(type){
+	function selectContractByDate(type,sessionFlag){
 		if(type=='0'){
 
 			//$("#TMaterial thead").find("th").eq(8).text("待入库数量");
@@ -219,7 +203,7 @@
 			//$("#TMaterial thead").find("th").eq(8).text("已入库数量");
 			
 		}
-		ajax(type);
+		ajax(type,sessionFlag);
 	}
 	
 	
@@ -257,8 +241,8 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0');">未入库</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1');">已入库</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0','1');">未入库</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1','1');">已入库</a>
 		</div>
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						

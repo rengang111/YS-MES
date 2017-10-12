@@ -27,14 +27,13 @@
 			dom : '<"clear">rt',		
 			"columns" : [
 			        	{"className":"dt-body-center"
+					}, {"className":"td-left"
 					}, {
-					}, {
-					}, {"className":"dt-body-center"
-					}, {"className":"dt-body-center"
-					}, {"className":"dt-body-center"
-					}, {"className":"td-center"	
 					}, {"className":"td-right"
 					}, {"className":"td-right"
+					}, {"className":"td-right"	
+					}, {"className":"td-left"
+					}, {"className":"td-left"
 					}, {
 					}
 				],
@@ -42,7 +41,7 @@
     		{"targets":2,"render":function(data, type, row){
     			
     			var name = data;				    			
-    			name = jQuery.fixedWidth(name,40);				    			
+    			name = jQuery.fixedWidth(name,35);				    			
     			return name;
     		}}
            
@@ -110,23 +109,16 @@
 		
 		$("#insert").click(
 				function() {
-				
-			var i=0;
-			$(".error").each(function () {  
-		       i++;  
-		    });
-			
-			if(i>0){
-				$().toastmessage('showWarningToast', "请先修正页面中的错误输入，再保存。");
-				return
-			}
 					
 			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insert");
 			$('#formModel').submit();
 		});
 				
 		foucsInit();
-		
+
+		$(".quantity").attr('readonly', "true");
+		$(".quantity").addClass('read-only');
+		$(".quantity").removeClass('bgnone');
 		
 	});
 	
@@ -135,7 +127,7 @@
 		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
 		location.href = url;
 	}
-	
+		
 </script>
 
 </head>
@@ -147,89 +139,94 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<input type="hidden" id="tmpMaterialId" />
+	<form:hidden path="stock.subid" />
+	<form:hidden path="stock.ysid"  value="${contract.YSId }"/>
+	<form:hidden path="stock.arrivelid"  value="${contract.arrivalId }"/>
+	<form:hidden path="stock.supplierid"  value="${contract.supplierId }"/>
+	<form:hidden path="stock.contractid"  value="${contract.contractId }"/>
 	
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px">入库单编号：</td>					
+				<td class="label" width="100px">耀升编号：</td>					
+				<td width="200px">&nbsp;${contract.YSId }</td>
+							
+				<td width="100px" class="label">成品编码：</td>
+				<td width="200px">&nbsp;${contract.materialId }</td>							
+				<td width="100px" class="label">成品名称：</td>
+				<td>${contract.materialName }</td>
+			</tr>
+			<tr>							
+				<td class="label">合同编号：</td>					
+				<td>&nbsp;<a href="#" onClick="showContract('${contract.contractId }')">${contract.contractId }</a></td>								 	
+				<td class="label">供应商：</td>					
+				<td colspan="3">&nbsp;${contract.supplierName }</td>	
+			</tr>
+			<tr> 				
+				<td class="label" width="100px">入库时间：</td>					
 				<td width="200px">
-					<form:input path="stock.receiptid" class="required read-only" />
-					<form:hidden path="stock.subid" />
-					<form:hidden path="stock.arrivelid"  value="${contract.arrivalId }"/></td>
+					<form:input path="stock.checkindate" class="read-only" /></td>
 							
 				<td width="100px" class="label">仓管员：</td>
 				<td width="200px">
 					<form:input path="stock.keepuser" class="short read-only" value="${userName }" /></td>							
-				<td class="label">入库时间：</td>
-				<td>
-					<form:input path="stock.checkindate" class="short read-only" /></td>
-
-			<tr>
-							
-				<td class="label">合同编号：</td>					
-				<td>&nbsp;<a href="#" onClick="showContract('${contract.contractId }')">${contract.contractId }</a>
-					<form:hidden path="stock.contractid"  value="${contract.contractId }"/></td>								 	
-				
-				<td class="label">供应商：</td>					
-				<td colspan="3">&nbsp;${contract.supplierName }
-					<form:hidden path="stock.supplierid"  value="${contract.supplierId }"/></td>	
+				<td class="label">物料类别：</td>
+				<td>${contract.purchaseType }</td>
 			</tr>
 										
 		</table>
-</fieldset>
-<fieldset>
-	<legend> 物料信息</legend>
-	<div class="list">
-	<table class="display" id="example">	
-		<thead>		
-			<tr>
-				<th style="width:1px">No</th>
-				<th style="width:120px">物料编号</th>
-				<th>物料名称</th>
-				<th style="width:30px">单位</th>
-				<th style="width:60px">报检日期</th>
-				<th style="width:50px">报检人</th>
-				<th style="width:55px">报检结果</th>
-				<th style="width:60px">合同数量</th>
-				<th style="width:80px">待入库数</th>
-				<th style="width:80px">仓库位置</th>		
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach var="list" items="${material}" varStatus='status' >			
-				<tr>
-					<td></td>
-					<td>${list.materialId }
-						<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
-					<td>${list.materialName }</td>
-					<td>${list.unit }</td>
-					<td>${list.checkDate }</td>
-					<td>${list.checkerName }</td>
-					<td>${list.resultName }</td>
-					<td>${list.contractQuantity }</td>
-					<td>${list.quantity }
-						<form:hidden path="stockList[${status.index}].quantity" value="${list.quantity }" /></td>
-					<td><form:input path="stockList[${status.index}].areanumber" class="short" /></td>
-				</tr>
-				<script type="text/javascript">
-						var index = '${status.index}';
-				</script>
-			
-			</c:forEach>
+	</fieldset>
 		
-	</tbody>
-									
-	</table>
-	
-	<fieldset class="action" style="text-align: right;margin-top:10px">
-		<button type="button" id="insert" class="DTTT_button">入库</button>
+	<fieldset class="action" style="text-align: right;margin-top:-20px">
+		<button type="button" id="insert" class="DTTT_button">确认入库</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
-	</div>
-</fieldset>
+	<fieldset style="margin-top: -40px;">
+		<legend> 物料信息</legend>
+		<div class="list">
+		<table class="display" id="example">	
+			<thead>		
+				<tr>
+					<th style="width:1px">No</th>
+					<th style="width:100px">物料编号</th>
+					<th>物料名称</th>
+					<th style="width:65px">合同数量</th>
+					<th style="width:65px">已入库数量</th>
+					<th style="width:65px">待入库数</th>
+					<th style="width:55px">包装方式</th>
+					<th style="width:40px">件数</th>
+					<th style="width:60px">库位编号</th>		
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="list" items="${material}" varStatus='status' >			
+					<tr>
+						<td></td>
+						<td>${list.materialId }
+							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
+						<td>${list.materialName }</td>
+						<td>${list.contractQuantity }</td>
+						<td>${list.contractStorage }</td>
+						<td><form:input path="stockList[${status.index}].quantity"  value="${list.quantityQualified }" class="num short quantity" /></td>
+						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
+								<form:options items="${packagingList}" 
+									itemValue="key" itemLabel="value"/></form:select></td>
+						<td><form:input path="stockList[${status.index}].packagnumber" class="mini" /></td>
+						<td><form:input path="stockList[${status.index}].areanumber" class="short" /></td>
+					</tr>
+					<script type="text/javascript">
+							var index = '${status.index}';
+					</script>
+				
+				</c:forEach>
+			
+		</tbody>
+										
+		</table>
 
+		</div>
+	</fieldset>
 
 </form:form>
 
@@ -238,52 +235,6 @@
 </body>
 
 <script type="text/javascript">
-
-function autocomplete(){
-	
-	//合同编号自动提示
-	$("#arrival\\.contractid").autocomplete({
-		minLength : 2,
-		autoFocus : false,
-	
-		source : function(request, response) {
-			//alert(888);
-			var supplierId = $("#attribute1").val();
-			$.ajax({
-				type : "POST",
-				url : "${ctx}/business/contract?methodtype=getContractId",
-				dataType : "json",
-				data : {
-					contractId : request.term,
-					supplierId : supplierId
-				},
-				success : function(data) {
-					//alert(777);
-					response($
-						.map(
-							data.data,
-							function(item) {
-
-								return {
-									label : item.contractId,
-									value : item.contractId,
-									id : item.contractId
-								}
-							}));
-				},
-				error : function(XMLHttpRequest,
-						textStatus, errorThrown) {
-					alert(XMLHttpRequest.status);
-					alert(XMLHttpRequest.readyState);
-					alert(textStatus);
-					alert(errorThrown);
-					alert("系统异常，请再试或和系统管理员联系。");
-				}
-			});
-		},
-		
-	});//attributeList1	
-}
 
 function showContract(contractId) {
 	var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;

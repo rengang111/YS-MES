@@ -107,7 +107,7 @@ public class StorageAction extends BaseAction {
 	}	
 	
 	public void doInit(){	
-			
+		/*	
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
@@ -116,7 +116,7 @@ public class StorageAction extends BaseAction {
 		}else{
 			model.addAttribute("keyBackup",keyBackup);
 		}
-		
+		*/
 	}
 	
 	
@@ -124,11 +124,10 @@ public class StorageAction extends BaseAction {
 	public HashMap<String, Object> doSearch(@RequestBody String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(sessionFlag != null && !("").equals(sessionFlag)){
 			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD2);
-			
+			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD2);			
 		}
 		
 		try {
@@ -147,38 +146,7 @@ public class StorageAction extends BaseAction {
 		
 		return dataMap;
 	}
-	
-
-	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> contractArrivalSearch(
-			@RequestBody String data){
 		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
-			
-		}
-		try {
-			dataMap = service.contractArrivalSearch(data);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-	
 	public String doAddInit(){
 
 		String rtnUrl = "/business/inventory/storageadd";

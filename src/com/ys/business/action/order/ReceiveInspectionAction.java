@@ -130,12 +130,12 @@ public class ReceiveInspectionAction extends BaseAction {
 	public HashMap<String, Object> doSearch(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(sessionFlag != null && !("").equals(sessionFlag)){
 			session.removeAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD1);
 			session.removeAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD2);
 			
-		}		
+		}
 		try {
 			dataMap = service.doSearch(data);
 			

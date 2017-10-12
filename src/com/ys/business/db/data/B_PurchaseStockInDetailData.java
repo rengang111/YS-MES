@@ -73,6 +73,32 @@ public class B_PurchaseStockInDetailData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String packaging;
+	public String getPackaging()
+	{
+		return this.packaging;
+	}
+	public void setPackaging(String packaging)
+	{
+		this.packaging=packaging;
+	}
+
+	/**
+	*
+	*/
+	private String packagnumber;
+	public String getPackagnumber()
+	{
+		return this.packagnumber;
+	}
+	public void setPackagnumber(String packagnumber)
+	{
+		this.packagnumber=packagnumber;
+	}
+
+	/**
+	*
+	*/
 	private String price;
 	public String getPrice()
 	{
@@ -267,13 +293,13 @@ public class B_PurchaseStockInDetailData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("receiptid = "+(receiptid == null ? "null" : receiptid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("quantity = "+(quantity == null ? "null" : quantity)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("depotid = "+(depotid == null ? "null" : depotid)+"\n");		sb.append("areanumber = "+(areanumber == null ? "null" : areanumber)+"\n");		sb.append("shelfnumber = "+(shelfnumber == null ? "null" : shelfnumber)+"\n");		sb.append("placenumber = "+(placenumber == null ? "null" : placenumber)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("receiptid = "+(receiptid == null ? "null" : receiptid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("quantity = "+(quantity == null ? "null" : quantity)+"\n");		sb.append("packaging = "+(packaging == null ? "null" : packaging)+"\n");		sb.append("packagnumber = "+(packagnumber == null ? "null" : packagnumber)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("depotid = "+(depotid == null ? "null" : depotid)+"\n");		sb.append("areanumber = "+(areanumber == null ? "null" : areanumber)+"\n");		sb.append("shelfnumber = "+(shelfnumber == null ? "null" : shelfnumber)+"\n");		sb.append("placenumber = "+(placenumber == null ? "null" : placenumber)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		receiptid= (receiptid == null ?null : receiptid.trim());		materialid= (materialid == null ?null : materialid.trim());		quantity= (quantity == null ?null : quantity.trim());		price= (price == null ?null : price.trim());		depotid= (depotid == null ?null : depotid.trim());		areanumber= (areanumber == null ?null : areanumber.trim());		shelfnumber= (shelfnumber == null ?null : shelfnumber.trim());		placenumber= (placenumber == null ?null : placenumber.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		receiptid= (receiptid == null ?null : receiptid.trim());		materialid= (materialid == null ?null : materialid.trim());		quantity= (quantity == null ?null : quantity.trim());		packaging= (packaging == null ?null : packaging.trim());		packagnumber= (packagnumber == null ?null : packagnumber.trim());		price= (price == null ?null : price.trim());		depotid= (depotid == null ?null : depotid.trim());		areanumber= (areanumber == null ?null : areanumber.trim());		shelfnumber= (shelfnumber == null ?null : shelfnumber.trim());		placenumber= (placenumber == null ?null : placenumber.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

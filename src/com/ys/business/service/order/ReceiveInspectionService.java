@@ -10,11 +10,13 @@ import org.springframework.ui.Model;
 import com.ys.business.action.model.order.ReceiveInspectionModel;
 import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_InspectionProcessDao;
+import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_ReceiveInspectionDao;
 import com.ys.business.db.dao.B_ReceiveInspectionDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_InspectionProcessData;
+import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_ReceiveInspectionData;
 import com.ys.business.db.data.B_ReceiveInspectionDetailData;
@@ -219,6 +221,7 @@ public class ReceiveInspectionService extends CommonService  {
 			
 			String inspectionid = reqData.getInspectionid();			
 			String arrivalId = reqData.getArrivalid();
+			contractId = reqData.getContractid();
 			//新增进料报检明细
 			for(B_ReceiveInspectionDetailData data:reqList){
 				
@@ -230,6 +233,10 @@ public class ReceiveInspectionService extends CommonService  {
 						arrivalId,
 						data.getMaterialid(),
 						data.getCheckresult());
+				
+				updateContractStatus(
+						contractId,
+						data.getMaterialid());
 			}
 	
 			ts.commit();			
@@ -245,7 +252,38 @@ public class ReceiveInspectionService extends CommonService  {
 		}
 		return contractId;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void updateContractStatus(
+			String contractId,
+			String materialId) throws Exception{
+	
+		String where = "contractId ='"+contractId +
+				"' AND materialId ='"+ materialId +
+				"' AND deleteFlag='0' ";
+		
+		//更新到货数量
+		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+		List<B_PurchaseOrderDetailData> list = 
+				(List<B_PurchaseOrderDetailData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
 
+		data = list.get(0);
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"ReceiveInspectionUpdate",userInfo);
+		copyProperties(data,commData);
+		data.setStatus(Constants.CONTRACT_STS_3);//带入库
+		
+		dao.Store(data);
+
+		
+	}
 	@SuppressWarnings("rawtypes")
 	private void updateArrivlStatus(
 			String arrivalId,

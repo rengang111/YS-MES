@@ -118,7 +118,6 @@ public class Constants {
 	public static final String ARRIVERECORD_1 = "020";//合格
 	public static final String ARRIVERECORD_2 = "030";//让步接收
 	public static final String ARRIVERECORD_3 = "040";//退货
-	public static final String ARRIVERECORD_4 = "050";//入库
 
 	/**
 	 * 做单资料详情
@@ -161,9 +160,11 @@ public class Constants {
 	 *@category 合同状态
 	 *
 	 */
-	public static final String CONTRACT_STS_1 = "010";//新建
-	public static final String CONTRACT_STS_2 = "020";//执行中
-	public static final String CONTRACT_STS_3 = "030";//完结
+	public static final String CONTRACT_STS_1 = "010";//待收货
+	public static final String CONTRACT_STS_2 = "020";//带报检
+	public static final String CONTRACT_STS_3 = "030";//待入库
+	public static final String CONTRACT_STS_4 = "040";//已入库
+	public static final String CONTRACT_STS_41 = "041";//部分入库
 	
 	/**
 	 *@category 订单属性

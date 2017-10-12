@@ -45,8 +45,8 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getReceiptid());			statement.setString( 3,beanData.getSubid());			statement.setString( 4,beanData.getContractid());			statement.setString( 5,beanData.getArrivelid());			statement.setString( 6,beanData.getSupplierid());			statement.setString( 7,beanData.getCheckindate());			statement.setString( 8,beanData.getKeepuser());			statement.setString( 9,beanData.getDeptguid());			statement.setString( 10,beanData.getCreatetime());			statement.setString( 11,beanData.getCreateperson());			statement.setString( 12,beanData.getCreateunitid());			statement.setString( 13,beanData.getModifytime());			statement.setString( 14,beanData.getModifyperson());			statement.setString( 15,beanData.getDeleteflag());			statement.setString( 16,beanData.getFormid());
+			statement = connection.prepareStatement("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,ysid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getReceiptid());			statement.setString( 3,beanData.getSubid());			statement.setString( 4,beanData.getYsid());			statement.setString( 5,beanData.getContractid());			statement.setString( 6,beanData.getArrivelid());			statement.setString( 7,beanData.getSupplierid());			statement.setString( 8,beanData.getCheckindate());			statement.setString( 9,beanData.getKeepuser());			statement.setString( 10,beanData.getDeptguid());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());			statement.setString( 17,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -54,7 +54,7 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,ysid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -72,8 +72,8 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 		StringBuffer bufSQL = new StringBuffer();
 		try
 		{
-			bufSQL.append("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
-			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getReceiptid()) + "',");			bufSQL.append("'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("'" + nullString(beanData.getContractid()) + "',");			bufSQL.append("'" + nullString(beanData.getArrivelid()) + "',");			bufSQL.append("'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("'" + nullString(beanData.getCheckindate()) + "',");			bufSQL.append("'" + nullString(beanData.getKeepuser()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,ysid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
+			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getReceiptid()) + "',");			bufSQL.append("'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("'" + nullString(beanData.getYsid()) + "',");			bufSQL.append("'" + nullString(beanData.getContractid()) + "',");			bufSQL.append("'" + nullString(beanData.getArrivelid()) + "',");			bufSQL.append("'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("'" + nullString(beanData.getCheckindate()) + "',");			bufSQL.append("'" + nullString(beanData.getKeepuser()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(")");
 
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -101,8 +101,8 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getReceiptid());			statement.setString( 3,beanData.getSubid());			statement.setString( 4,beanData.getContractid());			statement.setString( 5,beanData.getArrivelid());			statement.setString( 6,beanData.getSupplierid());			statement.setString( 7,beanData.getCheckindate());			statement.setString( 8,beanData.getKeepuser());			statement.setString( 9,beanData.getDeptguid());			statement.setString( 10,beanData.getCreatetime());			statement.setString( 11,beanData.getCreateperson());			statement.setString( 12,beanData.getCreateunitid());			statement.setString( 13,beanData.getModifytime());			statement.setString( 14,beanData.getModifyperson());			statement.setString( 15,beanData.getDeleteflag());			statement.setString( 16,beanData.getFormid());
+			statement = connection.prepareStatement("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,ysid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getReceiptid());			statement.setString( 3,beanData.getSubid());			statement.setString( 4,beanData.getYsid());			statement.setString( 5,beanData.getContractid());			statement.setString( 6,beanData.getArrivelid());			statement.setString( 7,beanData.getSupplierid());			statement.setString( 8,beanData.getCheckindate());			statement.setString( 9,beanData.getKeepuser());			statement.setString( 10,beanData.getDeptguid());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());			statement.setString( 17,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -110,7 +110,7 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_PurchaseStockIn( recordid,receiptid,subid,ysid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -213,19 +213,19 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT recordid,receiptid,subid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PurchaseStockIn WHERE  recordid =?");
+			statement = connection.prepareStatement("SELECT recordid,receiptid,subid,ysid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PurchaseStockIn WHERE  recordid =?");
 			statement.setString( 1,beanData.getRecordid());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
 				throw new Exception(" Row Not does;");
 			}
-			returnData.setRecordid( resultSet.getString( 1));			returnData.setReceiptid( resultSet.getString( 2));			returnData.setSubid( resultSet.getString( 3));			returnData.setContractid( resultSet.getString( 4));			returnData.setArrivelid( resultSet.getString( 5));			returnData.setSupplierid( resultSet.getString( 6));			returnData.setCheckindate( resultSet.getString( 7));			returnData.setKeepuser( resultSet.getString( 8));			returnData.setDeptguid( resultSet.getString( 9));			returnData.setCreatetime( resultSet.getString( 10));			returnData.setCreateperson( resultSet.getString( 11));			returnData.setCreateunitid( resultSet.getString( 12));			returnData.setModifytime( resultSet.getString( 13));			returnData.setModifyperson( resultSet.getString( 14));			returnData.setDeleteflag( resultSet.getString( 15));			returnData.setFormid( resultSet.getString( 16));
+			returnData.setRecordid( resultSet.getString( 1));			returnData.setReceiptid( resultSet.getString( 2));			returnData.setSubid( resultSet.getString( 3));			returnData.setYsid( resultSet.getString( 4));			returnData.setContractid( resultSet.getString( 5));			returnData.setArrivelid( resultSet.getString( 6));			returnData.setSupplierid( resultSet.getString( 7));			returnData.setCheckindate( resultSet.getString( 8));			returnData.setKeepuser( resultSet.getString( 9));			returnData.setDeptguid( resultSet.getString( 10));			returnData.setCreatetime( resultSet.getString( 11));			returnData.setCreateperson( resultSet.getString( 12));			returnData.setCreateunitid( resultSet.getString( 13));			returnData.setModifytime( resultSet.getString( 14));			returnData.setModifyperson( resultSet.getString( 15));			returnData.setDeleteflag( resultSet.getString( 16));			returnData.setFormid( resultSet.getString( 17));
 			return returnData;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT recordid,receiptid,subid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PurchaseStockIn  WHERE  "+e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,receiptid,subid,ysid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PurchaseStockIn  WHERE  "+e.toString());
 		}
 		finally
 		{
@@ -251,19 +251,19 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 			str_Where=str_Where.trim(); 
 			if(!str_Where.equals(""))
 				str_Where=" WHERE " + str_Where ; 
-			statement = connection.prepareStatement("SELECT recordid,receiptid,subid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PurchaseStockIn"+str_Where);
+			statement = connection.prepareStatement("SELECT recordid,receiptid,subid,ysid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PurchaseStockIn"+str_Where);
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next())
 			{
 				B_PurchaseStockInData returnData=new B_PurchaseStockInData();
-				returnData.setRecordid( resultSet.getString( 1));				returnData.setReceiptid( resultSet.getString( 2));				returnData.setSubid( resultSet.getString( 3));				returnData.setContractid( resultSet.getString( 4));				returnData.setArrivelid( resultSet.getString( 5));				returnData.setSupplierid( resultSet.getString( 6));				returnData.setCheckindate( resultSet.getString( 7));				returnData.setKeepuser( resultSet.getString( 8));				returnData.setDeptguid( resultSet.getString( 9));				returnData.setCreatetime( resultSet.getString( 10));				returnData.setCreateperson( resultSet.getString( 11));				returnData.setCreateunitid( resultSet.getString( 12));				returnData.setModifytime( resultSet.getString( 13));				returnData.setModifyperson( resultSet.getString( 14));				returnData.setDeleteflag( resultSet.getString( 15));				returnData.setFormid( resultSet.getString( 16));
+				returnData.setRecordid( resultSet.getString( 1));				returnData.setReceiptid( resultSet.getString( 2));				returnData.setSubid( resultSet.getString( 3));				returnData.setYsid( resultSet.getString( 4));				returnData.setContractid( resultSet.getString( 5));				returnData.setArrivelid( resultSet.getString( 6));				returnData.setSupplierid( resultSet.getString( 7));				returnData.setCheckindate( resultSet.getString( 8));				returnData.setKeepuser( resultSet.getString( 9));				returnData.setDeptguid( resultSet.getString( 10));				returnData.setCreatetime( resultSet.getString( 11));				returnData.setCreateperson( resultSet.getString( 12));				returnData.setCreateunitid( resultSet.getString( 13));				returnData.setModifytime( resultSet.getString( 14));				returnData.setModifyperson( resultSet.getString( 15));				returnData.setDeleteflag( resultSet.getString( 16));				returnData.setFormid( resultSet.getString( 17));
 				v_1.add(returnData);
 			}
 			return v_1;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT recordid,receiptid,subid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PurchaseStockIn" + astr_Where +e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,receiptid,subid,ysid,contractid,arrivelid,supplierid,checkindate,keepuser,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PurchaseStockIn" + astr_Where +e.toString());
 		}
 		finally
 		{
@@ -282,15 +282,15 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_PurchaseStockIn SET recordid= ? , receiptid= ? , subid= ? , contractid= ? , arrivelid= ? , supplierid= ? , checkindate= ? , keepuser= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getReceiptid());			statement.setString( 3,beanData.getSubid());			statement.setString( 4,beanData.getContractid());			statement.setString( 5,beanData.getArrivelid());			statement.setString( 6,beanData.getSupplierid());			statement.setString( 7,beanData.getCheckindate());			statement.setString( 8,beanData.getKeepuser());			statement.setString( 9,beanData.getDeptguid());			statement.setString( 10,beanData.getCreatetime());			statement.setString( 11,beanData.getCreateperson());			statement.setString( 12,beanData.getCreateunitid());			statement.setString( 13,beanData.getModifytime());			statement.setString( 14,beanData.getModifyperson());			statement.setString( 15,beanData.getDeleteflag());			statement.setString( 16,beanData.getFormid());
-			statement.setString( 17,beanData.getRecordid());
+			statement = connection.prepareStatement("UPDATE B_PurchaseStockIn SET recordid= ? , receiptid= ? , subid= ? , ysid= ? , contractid= ? , arrivelid= ? , supplierid= ? , checkindate= ? , keepuser= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getReceiptid());			statement.setString( 3,beanData.getSubid());			statement.setString( 4,beanData.getYsid());			statement.setString( 5,beanData.getContractid());			statement.setString( 6,beanData.getArrivelid());			statement.setString( 7,beanData.getSupplierid());			statement.setString( 8,beanData.getCheckindate());			statement.setString( 9,beanData.getKeepuser());			statement.setString( 10,beanData.getDeptguid());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());			statement.setString( 17,beanData.getFormid());
+			statement.setString( 18,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_PurchaseStockIn SET recordid= ? , receiptid= ? , subid= ? , contractid= ? , arrivelid= ? , supplierid= ? , checkindate= ? , keepuser= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_PurchaseStockIn SET recordid= ? , receiptid= ? , subid= ? , ysid= ? , contractid= ? , arrivelid= ? , supplierid= ? , checkindate= ? , keepuser= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -308,7 +308,7 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("UPDATE B_PurchaseStockIn SET ");
-			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Receiptid = " + "'" + nullString(beanData.getReceiptid()) + "',");			bufSQL.append("Subid = " + "'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("Contractid = " + "'" + nullString(beanData.getContractid()) + "',");			bufSQL.append("Arrivelid = " + "'" + nullString(beanData.getArrivelid()) + "',");			bufSQL.append("Supplierid = " + "'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("Checkindate = " + "'" + nullString(beanData.getCheckindate()) + "',");			bufSQL.append("Keepuser = " + "'" + nullString(beanData.getKeepuser()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Receiptid = " + "'" + nullString(beanData.getReceiptid()) + "',");			bufSQL.append("Subid = " + "'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("Ysid = " + "'" + nullString(beanData.getYsid()) + "',");			bufSQL.append("Contractid = " + "'" + nullString(beanData.getContractid()) + "',");			bufSQL.append("Arrivelid = " + "'" + nullString(beanData.getArrivelid()) + "',");			bufSQL.append("Supplierid = " + "'" + nullString(beanData.getSupplierid()) + "',");			bufSQL.append("Checkindate = " + "'" + nullString(beanData.getCheckindate()) + "',");			bufSQL.append("Keepuser = " + "'" + nullString(beanData.getKeepuser()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(" WHERE ");
 			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -335,15 +335,15 @@ public class B_PurchaseStockInDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_PurchaseStockIn SET recordid= ? , receiptid= ? , subid= ? , contractid= ? , arrivelid= ? , supplierid= ? , checkindate= ? , keepuser= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getReceiptid());			statement.setString( 3,beanData.getSubid());			statement.setString( 4,beanData.getContractid());			statement.setString( 5,beanData.getArrivelid());			statement.setString( 6,beanData.getSupplierid());			statement.setString( 7,beanData.getCheckindate());			statement.setString( 8,beanData.getKeepuser());			statement.setString( 9,beanData.getDeptguid());			statement.setString( 10,beanData.getCreatetime());			statement.setString( 11,beanData.getCreateperson());			statement.setString( 12,beanData.getCreateunitid());			statement.setString( 13,beanData.getModifytime());			statement.setString( 14,beanData.getModifyperson());			statement.setString( 15,beanData.getDeleteflag());			statement.setString( 16,beanData.getFormid());
-			statement.setString( 17,beanData.getRecordid());
+			statement = connection.prepareStatement("UPDATE B_PurchaseStockIn SET recordid= ? , receiptid= ? , subid= ? , ysid= ? , contractid= ? , arrivelid= ? , supplierid= ? , checkindate= ? , keepuser= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getReceiptid());			statement.setString( 3,beanData.getSubid());			statement.setString( 4,beanData.getYsid());			statement.setString( 5,beanData.getContractid());			statement.setString( 6,beanData.getArrivelid());			statement.setString( 7,beanData.getSupplierid());			statement.setString( 8,beanData.getCheckindate());			statement.setString( 9,beanData.getKeepuser());			statement.setString( 10,beanData.getDeptguid());			statement.setString( 11,beanData.getCreatetime());			statement.setString( 12,beanData.getCreateperson());			statement.setString( 13,beanData.getCreateunitid());			statement.setString( 14,beanData.getModifytime());			statement.setString( 15,beanData.getModifyperson());			statement.setString( 16,beanData.getDeleteflag());			statement.setString( 17,beanData.getFormid());
+			statement.setString( 18,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_PurchaseStockIn SET recordid= ? , receiptid= ? , subid= ? , contractid= ? , arrivelid= ? , supplierid= ? , checkindate= ? , keepuser= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_PurchaseStockIn SET recordid= ? , receiptid= ? , subid= ? , ysid= ? , contractid= ? , arrivelid= ? , supplierid= ? , checkindate= ? , keepuser= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
