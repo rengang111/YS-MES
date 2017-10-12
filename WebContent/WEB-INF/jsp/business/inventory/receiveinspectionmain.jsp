@@ -112,10 +112,10 @@
 					{"data": null,"className" : 'td-center'},
 					{"data": "materialId"},
 					{"data": "materialName"},
-					{"data": "arrivalId"},
 					{"data": "arriveDate","className" : 'td-center'},
-					{"data": "contractId"},
 					{"data": "YSId"},
+					{"data": "contractId","className" : 'td-left'},
+					{"data": "contractQuantity","className" : 'td-right'},
 					{"data": "quantity","className" : 'td-right'},
 					{"data": "checkResult","className" : 'td-center'},
 				],
@@ -224,12 +224,12 @@
 			<thead>						
 				<tr>
 					<th style="width: 1px;" class="dt-middle ">No</th>
-					<th style="width: 170px;" class="dt-middle ">物料编号</th>
+					<th style="width: 120px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
-					<th style="width: 50px;" class="dt-middle">到货编号</th>
 					<th style="width: 60px;" class="dt-middle">到货日期</th>
+					<th style="width: 80px;" class="dt-middle">耀升编号</th>
 					<th style="width: 95px;" class="dt-middle">合同编号</th>
-					<th style="width: 60px;" class="dt-middle">耀升编号</th>
+					<th style="width: 60px;" class="dt-middle">合同数量</th>
 					<th style="width: 60px;" class="dt-middle ">到货数量</th>
 					<th style="width: 40px;" class="dt-middle ">状态</th>
 				</tr>
