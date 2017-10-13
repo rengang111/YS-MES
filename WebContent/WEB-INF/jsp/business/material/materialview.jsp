@@ -58,6 +58,11 @@
 			<td style="width: 50px;text-align: center;">${material.purchaseTypeName}</td>					
 		</tr>
 		<tr>
+			<td class="label" style="width: 100px;"><label>原物料编码：</label></td>
+			<td colspan="5">${material.material.originalid}</td>			
+												
+		</tr>
+		<tr>
 			<td class="label"><label>通用型号：</label></td>
 			<td colspan="5" style="word-break:break-all;"><form:hidden path="material.sharemodel" value=""/>	
 				<div class="" id="coupon">

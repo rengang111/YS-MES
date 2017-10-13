@@ -42,7 +42,7 @@ input.middle{width:300px;}
 				<form:input path="material.materialid" class="read-only" style="width: 180px;" /></td>
 								
 			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
-			<td>
+			<td colspan="3">
 				<form:input path="material.materialname" class="long required" /></td>												
 		</tr>
 		<tr>				
@@ -51,7 +51,7 @@ input.middle{width:300px;}
 				<form:input path="attribute1" class="required" /></td>	
 				
 			<td class="label"><label>编码解释：</label></td>
-			<td>
+			<td colspan="3" >
 				<form:input path="attribute2" class="middle read-only" /></td>
 		</tr>
 		<tr>				
@@ -66,6 +66,10 @@ input.middle{width:300px;}
 				<form:select path="material.purchasetype" style="width: 120px;">							
 					<form:options items="${DisplayData.purchaseTypeList}" 
 						itemValue="key" itemLabel="value" /></form:select></td>
+			
+			<td class="label">原物料编码：</td>
+			<td style="width: 320px;">
+				<form:input path="material.originalid" class="middle" /></td>
 											
 		</tr>
 				
@@ -455,9 +459,6 @@ function doSubmitReturn(){
 function doSubmitRefresh(){
 			
 	var actionUrl='${ctx}/business/material?methodtype=insertRefresh';
-
-	var material = $('material\\.materialname').val();
-	alert(material)
 	
 	$.ajax({
 		type : "POST",

@@ -528,7 +528,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 						FormDetail.setSharemodel(map.get("shareModel"));
 						FormDetail.setUnit(map.get("unit"));
 						FormDetail.setPurchasetype(map.get("purchaseType"));
-						//FormDetail.setFileName(fileName);
+						FormDetail.setOriginalid(map.get("originalId"));
 						Matmodel.setAttribute1(map.get("categoryId"));
 						Matmodel.setAttribute2(map.get("categoryName"));
 						shareModel = map.get("shareModel");
@@ -931,6 +931,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 						dbData.setSubid(subId);//
 						dbData.setSubiddes(data.getSubiddes());
 						dbData.setPurchasetype(reqData.getPurchasetype());
+						dbData.setOriginalid(reqData.getOriginalid());
 						dbData = editCustomerId(dbData,material);
 
 						dao.Store(dbData);

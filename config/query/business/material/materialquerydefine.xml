@@ -79,6 +79,7 @@
       <f name="A.shareModel" alias="" ctype="" />
       <f name="A.subId" alias="" ctype="" />
       <f name="A.subIdDes" alias="" ctype="" />
+      <f name="A.originalId" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.purchaseType" alias="" ctype="" />

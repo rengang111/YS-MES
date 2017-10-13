@@ -59,12 +59,14 @@
 					<textarea rows="6" cols="60" name="unitData.memo" id="memo" class="long" >${DisplayData.unitData.memo}</textarea>
 				</td>
 			</tr>
+			<!-- 
 			<tr>
 				<td class="label">原物料编码：</td>
 				<td colspan="3">
 					<input type="text" name="unitData.originalid" id="originalid" class="middle" value="${DisplayData.unitData.originalid}"/>
 				</td>
 			</tr>
+			 -->
 		</table>
 		</fieldset>					
 		<fieldset class="action" style="text-align: end;">
