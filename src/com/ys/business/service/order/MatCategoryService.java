@@ -132,7 +132,7 @@ public class MatCategoryService extends BaseService {
 					childid = childid.substring(inChar + 1);
 				}
 				data.setChildid(childid);
-				System.out.println("=======================childid================="+childid);
+				//System.out.println("=======================childid================="+childid);
 					
 			}			
 		}

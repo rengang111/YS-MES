@@ -73,19 +73,6 @@ public class B_MaterialCategoryData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String childid;
-	public String getChildid()
-	{
-		return this.childid;
-	}
-	public void setChildid(String childid)
-	{
-		this.childid=childid;
-	}
-
-	/**
-	*
-	*/
 	private String formatdes;
 	public String getFormatdes()
 	{
@@ -107,6 +94,32 @@ public class B_MaterialCategoryData implements java.io.Serializable
 	public void setMemo(String memo)
 	{
 		this.memo=memo;
+	}
+
+	/**
+	*
+	*/
+	private String childid;
+	public String getChildid()
+	{
+		return this.childid;
+	}
+	public void setChildid(String childid)
+	{
+		this.childid=childid;
+	}
+
+	/**
+	*
+	*/
+	private String originalid;
+	public String getOriginalid()
+	{
+		return this.originalid;
+	}
+	public void setOriginalid(String originalid)
+	{
+		this.originalid=originalid;
 	}
 
 	/**
@@ -241,13 +254,13 @@ public class B_MaterialCategoryData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("categoryid = "+(categoryid == null ? "null" : categoryid)+"\n");		sb.append("categoryname = "+(categoryname == null ? "null" : categoryname)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("childid = "+(childid == null ? "null" : childid)+"\n");		sb.append("formatdes = "+(formatdes == null ? "null" : formatdes)+"\n");		sb.append("memo = "+(memo == null ? "null" : memo)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("categoryid = "+(categoryid == null ? "null" : categoryid)+"\n");		sb.append("categoryname = "+(categoryname == null ? "null" : categoryname)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("formatdes = "+(formatdes == null ? "null" : formatdes)+"\n");		sb.append("memo = "+(memo == null ? "null" : memo)+"\n");		sb.append("childid = "+(childid == null ? "null" : childid)+"\n");		sb.append("originalid = "+(originalid == null ? "null" : originalid)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		categoryid= (categoryid == null ?null : categoryid.trim());		categoryname= (categoryname == null ?null : categoryname.trim());		parentid= (parentid == null ?null : parentid.trim());		childid= (childid == null ?null : childid.trim());		formatdes= (formatdes == null ?null : formatdes.trim());		memo= (memo == null ?null : memo.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		categoryid= (categoryid == null ?null : categoryid.trim());		categoryname= (categoryname == null ?null : categoryname.trim());		parentid= (parentid == null ?null : parentid.trim());		formatdes= (formatdes == null ?null : formatdes.trim());		memo= (memo == null ?null : memo.trim());		childid= (childid == null ?null : childid.trim());		originalid= (originalid == null ?null : originalid.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

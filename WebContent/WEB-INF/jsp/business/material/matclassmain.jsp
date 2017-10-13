@@ -173,7 +173,7 @@
 
 	function callAddSubUnit(categoryId,parentName) {
 		$('#operType').val("addsub");
-		var url = "${ctx}/business/matcategory?methodtype=updateinit&operType=addsub&categoryId=" + categoryId + "&parentName=" + encodeURIComponent(parentName);
+		var url = "${ctx}/business/matcategory?methodtype=updateinit&operType=addsub&categoryId=" + categoryId + "&parentName=" + encodeURI(encodeURI(parentName));
 		openLayer(url, layerWidth, layerHeight, false,'100px');
 	}
 	
