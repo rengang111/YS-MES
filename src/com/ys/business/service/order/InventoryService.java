@@ -164,7 +164,7 @@ public class InventoryService extends CommonService {
 		String arrivalId = "";
 		ts = new BaseTransaction();
 		
-		
+		/*
 		try {
 			ts.begin();
 			
@@ -207,7 +207,7 @@ public class InventoryService extends CommonService {
 				System.out.println(e1.getMessage());
 			}
 		}
-		
+		*/
 		return arrivalId;
 	}
 	

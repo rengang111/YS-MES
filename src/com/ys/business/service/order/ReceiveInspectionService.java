@@ -93,7 +93,7 @@ public class ReceiveInspectionService extends CommonService  {
 		String length = "";
 		data = URLDecoder.decode(data, "UTF-8");
 
-		String[] keyArr = getSearchKey(Constants.FORM_RECEIVEINSPECTION,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_INSPECTIONRETURN,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -108,7 +108,7 @@ public class ReceiveInspectionService extends CommonService  {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		dataModel.setQueryName("getReceiveInspectionList");
+		dataModel.setQueryName("getInspectionReturnList");
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
@@ -170,7 +170,7 @@ public class ReceiveInspectionService extends CommonService  {
 	
 	public void insertAndView() throws Exception {
 
-		insertArrival();
+		insert();
 
 		String arrivalId = reqModel.getInspect().getArrivalid();
 		//String materialId = reqModel.getInspect().getMaterialid();
@@ -198,7 +198,7 @@ public class ReceiveInspectionService extends CommonService  {
 		getArriveId(arrivalId,materialId);
 	}
 	*/
-	private String insertArrival(){
+	private String insert(){
 		String contractId = "";
 		ts = new BaseTransaction();
 		
@@ -228,13 +228,14 @@ public class ReceiveInspectionService extends CommonService  {
 				data.setInspectionid(inspectionid);
 				insertReceivInspectionDetail(data);
 				
-				//更新收货状态为检验结果
+				//更新收货状态
 				updateArrivlStatus(
 						arrivalId,
 						data.getMaterialid(),
 						data.getCheckresult());
 				
-				updateContractStatus(
+				//更新执行状态
+				updateContractStatusById(
 						contractId,
 						data.getMaterialid());
 			}
@@ -254,7 +255,7 @@ public class ReceiveInspectionService extends CommonService  {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void updateContractStatus(
+	private void updateContractStatusById(
 			String contractId,
 			String materialId) throws Exception{
 	
@@ -268,29 +269,22 @@ public class ReceiveInspectionService extends CommonService  {
 		List<B_PurchaseOrderDetailData> list = 
 				(List<B_PurchaseOrderDetailData>)dao.Find(where);
 		
-		if(list ==null || list.size() == 0){
+		if(list ==null || list.size() == 0)
 			return ;
-		}
-
-		data = list.get(0);
-		
+				
 		//更新DB
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ReceiveInspectionUpdate",userInfo);
-		copyProperties(data,commData);
-		data.setStatus(Constants.CONTRACT_STS_3);//带入库
+		data = list.get(0);
+		data.setStatus(Constants.CONTRACT_PROCESS_2);//待入库
 		
-		dao.Store(data);
-
+		updateContractDetailStatus(data);
 		
 	}
+	
 	@SuppressWarnings("rawtypes")
 	private void updateArrivlStatus(
 			String arrivalId,
 			String materialId,
 			String result) throws Exception{
-
-		//B_InspectionProcessData process = reqModel.getProcess();
 		
 		B_ArrivalData dt = new B_ArrivalData();
 		String where = "arrivalId ='"+arrivalId +
@@ -305,7 +299,7 @@ public class ReceiveInspectionService extends CommonService  {
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"ReceiveInspctionInsert",userInfo);
 		copyProperties(dt,commData);
-		dt.setStatus(result);//质检结果
+		dt.setStatus(Constants.ARRIVAL_STS_2);//已检验
 		
 		new B_ArrivalDao().Store(dt);
 	}

@@ -252,6 +252,14 @@ public class StorageService extends CommonService {
 				
 			}
 			
+
+			//确认合同状态:是否全部入库
+			boolean flag = checkPurchaseOrderStatus(reqData.getYsid(),contractId);
+			if(flag){			
+				////更新合同状态
+				updateContractStatus(contractId,Constants.CONTRACT_STS_3);//入库完毕			
+			}
+			
 			ts.commit();			
 			
 		}
@@ -352,20 +360,19 @@ public class StorageService extends CommonService {
 			String contractId,
 			String materialId,
 			String quantity) throws Exception{
-	
-		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
 		
 		String where = "contractId ='"+ contractId + 
 				"' AND materialId ='"+ materialId + 
 				"' AND deleteFlag='0' ";
 		
 		List<B_PurchaseOrderDetailData> list = 
-				(List<B_PurchaseOrderDetailData>)dao.Find(where);
+				(List<B_PurchaseOrderDetailData>) 
+				new B_PurchaseOrderDetailDao().Find(where);
 		
 		if(list ==null || list.size() == 0)
 			return ;		
 		B_PurchaseOrderDetailData data = list.get(0);
-		//String ysid = data.getYsid();
+		String ysid = data.getYsid();
 		String SContrat = list.get(0).getQuantity();//合同数量
 		String SQuantyDB = list.get(0).getContractstorage();//累计入库
 		float iContrat = stringToFloat(SContrat);//合同数量
@@ -373,28 +380,13 @@ public class StorageService extends CommonService {
 		float inewQuantity = stringToFloat(quantity);//本次入库
 		
 		float iNew = iQuantity + inewQuantity;
-		//if(iNew == iContrat){
-			//更新合同总数量
-			//if(updatePurchaseOrderStatus(ysid,contractId,iNew)){
-				//确认合同状态:是否全部入库
-				//boolean flag = checkPurchaseOrderStatus(ysid,contractId);
-				//if(flag){
-					//更新订单状态
-					//updateOrderStatus(ysid);
-				//}
-			//}
-			data.setStatus(Constants.CONTRACT_STS_4);//入库完毕		
-		//}else{
-		//	data.setStatus(Constants.CONTRACT_STS_41);//部分入库
-		//}
+		if(iNew == iContrat){
+			data.setStatus(Constants.CONTRACT_STS_3);//入库完毕		
+		}
 		
 		//更新DB
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
-		copyProperties(data,commData);
 		data.setContractstorage(String.valueOf(iNew));
-		
-		dao.Store(data);		
+		updateContractDetailStatus(data);		
 		
 	}
 	
@@ -438,9 +430,9 @@ public class StorageService extends CommonService {
 	private boolean  checkPurchaseOrderStatus(
 			String ysid,String contractId) throws Exception{
 		String where = "YSId = '" + ysid  +"'"
-			//	+ " contractId = '" + contractId  +"' "
-				+ " status <> '" + Constants.CONTRACT_STS_3  +"' "
-				+ "AND deleteFlag = '0' ";
+				+ " AND contractId = '" + contractId  +"' "
+				+ " AND status <> '" + Constants.CONTRACT_STS_3  +"' "
+				+ " AND deleteFlag = '0' ";
 		List<B_PurchaseOrderData> list  = new B_PurchaseOrderDao().Find(where);
 		if(list ==null || list.size() == 0){
 			return true;	

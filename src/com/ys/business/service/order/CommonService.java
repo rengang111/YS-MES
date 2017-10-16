@@ -32,6 +32,8 @@ import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PriceReferenceDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
+import com.ys.business.db.dao.B_PurchaseOrderDao;
+import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
 import com.ys.business.db.dao.S_systemConfigDao;
 import com.ys.business.db.data.B_MaterialData;
@@ -39,6 +41,8 @@ import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
+import com.ys.business.db.data.B_PurchaseOrderData;
+import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.db.data.S_systemConfigData;
@@ -510,7 +514,53 @@ public class CommonService extends BaseService {
 		
 		return null;
 	}
-	
+
+	/**
+	 * 更新合同状态
+	 */
+	@SuppressWarnings("unchecked")
+	public void updateContractStatus(String contractId,String status) throws Exception{
+		
+		//更新合同状态
+		String where = "contractId ='"+contractId + "' AND deleteFlag='0' ";
+		B_PurchaseOrderData d = new B_PurchaseOrderData();	
+		List<B_PurchaseOrderData> l = 
+				(List<B_PurchaseOrderData>)new B_PurchaseOrderDao().Find(where);
+		
+		if(l ==null || l.size() == 0){
+			return ;
+		}		
+		d = l.get(0);
+		d.setStatus(status);
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"purchaseOrderUpdate",userInfo);
+		copyProperties(d,commData);	
+		
+		new B_PurchaseOrderDao().Store(d);
+
+	}
+	/**
+	 * 更新合同明细
+	 */
+	public void updateContractDetailStatus(B_PurchaseOrderDetailData d) throws Exception{
+		
+		//更新合同状态
+		//B_PurchaseOrderDetailData d = new B_PurchaseOrderData();	
+		//List<B_PurchaseOrderData> l = 
+		//		(List<B_PurchaseOrderData>)new B_PurchaseOrderDao().Find(where);
+		
+		//if(l ==null || l.size() == 0){
+		//	return ;
+		//}		
+		//d = l.get(0);
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"purchaseOrderDetailUpdate",userInfo);
+		copyProperties(d,commData);	
+		
+		new B_PurchaseOrderDetailDao().Store(d);
+
+	}
 	//更新虚拟库存
 	/*
 	public void updateInventory(

@@ -157,8 +157,8 @@
    	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.purchaseDate" des=""  reqName="purchaseDate1" dtype="ch" oper="&lt;"  lg="AND" bt="" />
    	  	<w name="A.purchaseDate" des=""  reqName="purchaseDate2" dtype="ch" oper="&gt;"  lg="AND" bt="" />
-   	  	<w name="A.accumulated"  des=""  reqName="accumulated1"  dtype="ch" oper="="  lg="AND" bt="" />
-   	  	<w name="A.accumulated"  des=""  reqName="accumulated2"  dtype="ch" oper="&gt;"  lg="AND" bt="" />
+   	  	<w name="A.contractStorage"  des=""  reqName="accumulated1"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.contractStorage"  des=""  reqName="accumulated2"  dtype="ch" oper="&gt;"  lg="AND" bt="" />
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />

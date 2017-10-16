@@ -12,9 +12,11 @@ import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
+import com.ys.business.db.dao.B_ReceiveInspectionDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
+import com.ys.business.db.data.B_ReceiveInspectionData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
@@ -203,11 +205,11 @@ public class ArrivalService extends CommonService {
 	
 	public void insertAndViewArrival() throws Exception {
 
-		String contractId = insertArrival();
+		String contractId = insert();
 		getContractDetail(contractId);
 	}
 	
-	private String insertArrival(){
+	private String insert(){
 		
 		String contractId = "";
 		ts = new BaseTransaction();
@@ -219,7 +221,6 @@ public class ArrivalService extends CommonService {
 			List<B_ArrivalData> reqDataList = reqModel.getArrivalList();
 			
 			//删除未报检数据
-			//String arrivalId = reqData.getArrivalid();
 			contractId = reqData.getContractid();
 			deleteArrivalById(contractId);
 
@@ -231,25 +232,22 @@ public class ArrivalService extends CommonService {
 				if(q == null || q.equals("") || q.equals("0"))
 					continue;
 				
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-						"ArrivalInsert",userInfo);
-
-				copyProperties(data,commData);
-
-				String guid = BaseDAO.getGuId();
-				data.setRecordid(guid);
 				data.setArrivalid(arrivalId);
 				data.setYsid(reqData.getYsid());
 				data.setContractid(reqData.getContractid());
 				data.setSupplierid(reqData.getSupplierid());
 				data.setUserid(userInfo.getUserId());
 				data.setArrivedate(reqData.getArrivedate());
-				data.setStatus(Constants.ARRIVERECORD_0);//已收货
+				data.setStatus(Constants.ARRIVAL_STS_1);//待报检
 				
-				dao.Create(data);	
+				//到货登记
+				insertArrival(data);
 				
-				//更新累计到货数量
-				updateContractArraival(contractId,data.getMaterialid(),data.getQuantity());
+				//更新累计到货数量,合同状态
+				updateContractArraival(
+						contractId,
+						data.getMaterialid(),
+						data.getQuantity());
 			
 			}
 			
@@ -268,6 +266,22 @@ public class ArrivalService extends CommonService {
 		return contractId;
 	}
 	
+
+	private void insertArrival(
+			B_ArrivalData data) throws Exception{
+			
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"ArrivalInsert",userInfo);
+
+		copyProperties(data,commData);
+
+		String guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		dao.Create(data);
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	private void updateContractArraival(
 			String contractId,
@@ -276,29 +290,15 @@ public class ArrivalService extends CommonService {
 	
 
 		//更新合同状态
-		B_PurchaseOrderData d = new B_PurchaseOrderData();
-		B_PurchaseOrderDao o = new B_PurchaseOrderDao();		
-		String strwhere = "contractId ='"+contractId +
-				"' AND deleteFlag='0' ";
-		List<B_PurchaseOrderData> l = 
-				(List<B_PurchaseOrderData>)o.Find(strwhere);
+		updateContractStatus(contractId,Constants.CONTRACT_STS_2);
 		
-		String where = "contractId ='"+contractId +
-				"' AND materialId ='"+ materialId +
-				"' AND deleteFlag='0' ";
-		if(l ==null || l.size() == 0){
-			return ;
-		}		
-		d = l.get(0);
-		d.setStatus(Constants.ORDER_STS_5);//合同执行中
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ArrivalUpdate",userInfo);
-		copyProperties(d,commData);		
-		o.Store(d);
-		
+					
 		//更新到货数量
 		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
 		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+		String where = "contractId ='"+contractId +
+				"' AND materialId ='"+ materialId +
+				"' AND deleteFlag='0' ";
 		List<B_PurchaseOrderDetailData> list = 
 				(List<B_PurchaseOrderDetailData>)dao.Find(where);
 		
@@ -309,35 +309,22 @@ public class ArrivalService extends CommonService {
 		data = list.get(0);
 		
 		//计算到货累计数量
-		String accumulated = data.getAccumulated();
-		float iAcc = 0;
-		float iArr = 0;
-		if(!(arrival ==null || ("").equals(arrival)))
-			iArr = Float.parseFloat(arrival.replace(",", ""));
-
-		if(!(accumulated ==null || ("").equals(accumulated)))
-			iAcc = Float.parseFloat(accumulated.replace(",", ""));
-		
-		float iNew = iArr + iAcc;
-		
-		data.setAccumulated(String.valueOf(iNew));
+		float iAcc = stringToFloat(data.getAccumulated());
+		float iArr = stringToFloat(arrival);				
+		float iNew = iArr + iAcc;		
 		
 		//更新DB
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ArrivalUpdate",userInfo);
-		copyProperties(data,commData);
-		data.setStatus(Constants.CONTRACT_STS_2);//带报检
+		data.setAccumulated(String.valueOf(iNew));
+		data.setStatus(Constants.CONTRACT_PROCESS_1);//待报检
 		
-		dao.Store(data);
-
-		
+		updateContractDetailStatus(data);	
 	}
 	
-	
+	//删除待报检的记录
 	private void deleteArrivalById(String contractId) {
 
 		String where = " contractId = '"+contractId+
-				"' AND status='" + Constants.ARRIVERECORD_0 +"' ";
+				"' AND status='" + Constants.ARRIVAL_STS_1 +"' ";
 		try {
 			dao.RemoveByWhere(where);
 		} catch (Exception e) {

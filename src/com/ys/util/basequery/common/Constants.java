@@ -35,6 +35,7 @@ public class Constants {
 	public static final String FORM_SUPPLIER= "supplier";//供应商
 	public static final String FORM_CUSTOMER = "order";//客户管理
 	public static final String FORM_WORKSHOPRETURN = "workshopreturn";//车间退货
+	public static final String FORM_INSPECTIONRETURN = "inspectionreturn";//报检退货
 	public static final String FORM_PURCHASEROUTINE = "purchaseroutine";//日常采购
 	
 	
@@ -59,18 +60,14 @@ public class Constants {
 	public static final String APPROVE_NG = "1";
 	
 	/**
-	 *@see "0";初始值
-	 *@see "010";待合同
-	 *@see "020";待到料
-	 *@see "030";待交货
-	 *@see "040";已入库 
+	 *订单状态
 	 */
 	public static final String ORDER_STS_0 = "0";//初始值
 	public static final String ORDER_STS_1 = "010";//待合同
 	public static final String ORDER_STS_2 = "020";//待到料
 	public static final String ORDER_STS_3 = "030";//待交货
 	public static final String ORDER_STS_4 = "040";//已入库
-	public static final String ORDER_STS_5 = "050";//合同执行中
+	//public static final String ORDER_STS_5 = "050";//合同执行中
 	
 	/**
 	 * 币种:与字典表关联
@@ -110,15 +107,7 @@ public class Constants {
 	public static final String ORDEREXPENSE_0 = "0";//未确认
 	public static final String ORDEREXPENSE_1 = "1";//已确认
 
-	/**
-	 * 物料入库流程状态
-	 */
-	public static final String ARRIVERECORD_11 = "011";//未收货
-	public static final String ARRIVERECORD_0 = "010";//已收货/未检验
-	public static final String ARRIVERECORD_1 = "020";//合格
-	public static final String ARRIVERECORD_2 = "030";//让步接收
-	public static final String ARRIVERECORD_3 = "040";//退货
-
+	
 	/**
 	 * 做单资料详情
 	 */
@@ -160,11 +149,30 @@ public class Constants {
 	 *@category 合同状态
 	 *
 	 */
-	public static final String CONTRACT_STS_1 = "010";//待收货
-	public static final String CONTRACT_STS_2 = "020";//带报检
-	public static final String CONTRACT_STS_3 = "030";//待入库
-	public static final String CONTRACT_STS_4 = "040";//已入库
-	public static final String CONTRACT_STS_41 = "041";//部分入库
+	public static final String CONTRACT_STS_1 = "010";//未执行
+	public static final String CONTRACT_STS_2 = "020";//收货中
+	public static final String CONTRACT_STS_3 = "030";//已清
+	
+	/**
+	 * 合同执行流程状态
+	 */
+	public static final String CONTRACT_PROCESS_1 = "010";//待报检
+	public static final String CONTRACT_PROCESS_2 = "020";//待入库
+	public static final String CONTRACT_PROCESS_3 = "030";//完成
+	
+	
+	/**
+	 * 到货登记状态
+	 */
+	
+	public static final String ARRIVAL_STS_1 = "010";//待报检
+	public static final String ARRIVAL_STS_2 = "020";//已报检
+	/**
+	 * 进料报检结果
+	 */
+	public static final String ARRIVERECORD_1 = "020";//合格
+	public static final String ARRIVERECORD_2 = "030";//让步接收
+	public static final String ARRIVERECORD_3 = "040";//退货
 	
 	/**
 	 *@category 订单属性
