@@ -159,6 +159,7 @@ public class Constants {
 	public static final String CONTRACT_PROCESS_1 = "010";//待报检
 	public static final String CONTRACT_PROCESS_2 = "020";//待入库
 	public static final String CONTRACT_PROCESS_3 = "030";//完成
+	public static final String CONTRACT_PROCESS_4 = "040";//完成(退货)
 	
 	
 	/**
@@ -173,6 +174,13 @@ public class Constants {
 	public static final String ARRIVERECORD_1 = "020";//合格
 	public static final String ARRIVERECORD_2 = "030";//让步接收
 	public static final String ARRIVERECORD_3 = "040";//退货
+
+	/**
+	 * 退货处理状态
+	 */
+	
+	public static final String INSPECTIONRETURN_STS_1 = "010";//未处理
+	public static final String INSPECTIONRETURN_STS_2 = "020";//已处理
 	
 	/**
 	 *@category 订单属性

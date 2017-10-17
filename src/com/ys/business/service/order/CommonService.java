@@ -624,6 +624,12 @@ public class CommonService extends BaseService {
 		return data;
 	}
 	*/
+
+	/**
+	 * 字符串转float
+	 * @param s
+	 * @return
+	 */
 	public static float stringToFloat(String s){
 
 		float rtn = 0;
@@ -640,6 +646,29 @@ public class CommonService extends BaseService {
 		
 		return rtn;		
 	}
+	
+	/**
+	 * 字符串转int
+	 * @param s
+	 * @return
+	 */
+	public static int stringToInteger(String s){
+
+		int rtn = 0;
+		
+		try{
+			if(s == null || s.trim().equals(""))
+				return rtn;
+			
+			rtn = Integer.parseInt(s.replace(",",""));
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+		return rtn;		
+	}
+	
 	
 	/**
 	 * 换行符转换

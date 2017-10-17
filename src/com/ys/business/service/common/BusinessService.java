@@ -391,7 +391,9 @@ public class BusinessService {
 			 String parent,String code,boolean addFlag) {
 
 		StringBuffer sb = new StringBuffer();
+		sb.append("I");
 	    sb.append(parent);
+		sb.append("ZP");
 	    sb.append("-");
 	    		
 		//格式化成2位流水号
@@ -445,4 +447,22 @@ public class BusinessService {
 		return "O"+ysid+"-"+ ft;
 	 }
 		
+
+	/**
+	 * 退货单编号
+	 * @return 合同编号-2位流水号
+	 */
+	 public static String getInspectionReturnId(String contractId,String code,boolean flag) {
+
+		//格式化成2位流水号,并且+1
+		int num = 0;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		
+		String ft = BusinessService.getFormat2Code(num,flag);
+		
+		return contractId+"-"+ ft;
+	 }
+			
+		 
 }

@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ys.business.action.model.order.ArrivalModel;
-import com.ys.business.action.model.order.StorageModel;
-import com.ys.business.service.order.ArrivalService;
-import com.ys.business.service.order.StorageService;
+import com.ys.business.action.model.order.InspectionReturnModel;
+import com.ys.business.service.order.InspectionReturnService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
@@ -26,22 +24,21 @@ import com.ys.util.basequery.common.Constants;
 
 @Controller
 @RequestMapping("/business")
-public class StorageAction extends BaseAction {
+public class InspectionReturnAction extends BaseAction {
 	
 	@Autowired
-	StorageService service;
+	InspectionReturnService service;
 	@Autowired HttpServletRequest request;
 	
 	UserInfo userInfo = new UserInfo();
-	StorageModel reqModel = new StorageModel();
+	InspectionReturnModel reqModel = new InspectionReturnModel();
 	HashMap<String, Object> modelMap = new HashMap<String, Object>();
 	Model model;
 	HttpServletResponse response;
-	HttpSession session;
 	
-	@RequestMapping(value="storage")
+	@RequestMapping(value="inspectionReturn")
 	public String execute(@RequestBody String data, 
-			@ModelAttribute("formModel")StorageModel dataModel, 
+			@ModelAttribute("formModel")InspectionReturnModel dataModel, 
 			BindingResult result, 
 			Model model, 
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
@@ -53,11 +50,10 @@ public class StorageAction extends BaseAction {
 		this.userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		this.service = new StorageService(model,request,session,dataModel,userInfo);
+		this.service = new InspectionReturnService(model,request,session,dataModel,userInfo);
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
-		this.session = session;
 		
 		if (type == null) {
 			type = "";
@@ -71,63 +67,62 @@ public class StorageAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				doInit();
-				rtnUrl = "/business/inventory/storagemain";
+				//doInit(Constants.FORM_RECEIVEINSPECTION,session);
+				rtnUrl = "/business/inventory/inspectionreturnmain";
 				break;
 			case "search":
-				dataMap = doSearch(data);
+				dataMap = doSearch(data, session, request, response);
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "updateInit":
+				doUpdateInit();
+				rtnUrl = "/business/inventory/inspectionreturnedit";
+				break;
 			case "addinit":
 				rtnUrl = doAddInit();
-				return rtnUrl;
-			case "edit":
-				doEdit();
-				rtnUrl = "/business/inventory/storageedit";
-				break;
-			case "update":
-				doUpdate();
-				rtnUrl = "/business/inventory/storageview";
 				break;
 			case "insert":
 				doInsert();
-				rtnUrl = "/business/inventory/storageview";
+				rtnUrl = "/business/inventory/inspectionreturnview";
+				break;
+			case "update":
+				doUpdate();
+				rtnUrl = "/business/inventory/inspectionreturnview";
 				break;
 			case "delete":
 				doDelete(data);
-				return null;
-			case "getStockInDetail":
-				dataMap = doShowDetail();
-				printOutJsonObj(response, dataMap);
-				return null;
+				printOutJsonObj(response, reqModel.getEndInfoMap());
+				break;
 				
 		}
 		
 		return rtnUrl;
 	}	
 	
-	public void doInit(){	
+
+	public void doInit(String formId,HttpSession session){	
 		/*	
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD2);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 		}else{
 			model.addAttribute("keyBackup",keyBackup);
+			model.addAttribute("keyword1",session.getAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD1));
+			model.addAttribute("keyword2",session.getAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD2));
 		}
 		*/
 	}
 	
-	
-	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doSearch(@RequestBody String data){
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doSearch(@RequestBody String data, HttpSession session, HttpServletRequest request, HttpServletResponse response){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
 		String sessionFlag = request.getParameter("sessionFlag");
 		if(("false").equals(sessionFlag)){
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD2);			
+			session.removeAttribute(Constants.FORM_INSPECTIONRETURN+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_INSPECTIONRETURN+Constants.FORM_KEYWORD2);		
 		}
 		
 		try {
@@ -137,7 +132,7 @@ public class StorageAction extends BaseAction {
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
 				dataMap.put(INFO, NODATAMSG);
-			}
+			}			
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -146,26 +141,33 @@ public class StorageAction extends BaseAction {
 		
 		return dataMap;
 	}
+	
+	public String  doAddInit(){
 		
-	public String doAddInit(){
-
-		String rtnUrl = "/business/inventory/storageadd";
+		String rtnUrl = "/business/inventory/inspectionreturnadd";
+		String keyBackup = request.getParameter("keyBackup");
+		
 		try{
-			boolean viewFlag = service.addInit();
-			if(viewFlag){
-				rtnUrl = "/business/inventory/storageview";
+			
+			String inspectArrivalId = service.addInit();
+			
+			if(inspectArrivalId != null && !("").equals(inspectArrivalId)){
+				rtnUrl = "/business/inventory/inspectionreturnview";
 			}
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 		
+		model.addAttribute("keyBackup",keyBackup);
+		model.addAttribute("userName", userInfo.getUserName());
+		
 		return rtnUrl;
 	}
 
 	public void doInsert(){
 		try{
-			service.insertAndReturn();
+			service.insertAndView();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -173,21 +175,22 @@ public class StorageAction extends BaseAction {
 	
 	public void doUpdate(){
 		try{
-			service.updateAndReturn();
+			service.updateAndView();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 	}
-	
-	public void doEdit(){
+
+	public void doUpdateInit(){
 		try{
+			service.updateInit();
 			model.addAttribute("userName", userInfo.getUserName());
-			service.edit();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 	}
 	
+
 	
 	public void doDelete(@RequestBody String data) throws Exception{
 		
@@ -195,20 +198,10 @@ public class StorageAction extends BaseAction {
 
 	}
 	
-	public HashMap<String, Object> doShowDetail() throws Exception{
+	public void doShowDetail() throws Exception{
 		
-		return service.getStockInDetail();
+		service.showArrivalDetail();
 
 	}
 
-	
-	public void gotoArrivalView(){
-		try{
-			String contractId = request.getParameter("contractId");
-			service.getContractDetail(contractId);
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-	}
-	
 }

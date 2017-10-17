@@ -70,7 +70,7 @@
     <pool></pool>    
     <name value="getMAXStorageRecordId" />
      <where>
-       <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="" bt="" />
+       <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="" bt="" />
     </where>
   <select>
       <f name="IFNULL(MAX(a.subId+1),1)" alias="MaxSubId" ctype="" />
@@ -411,5 +411,64 @@
     <having></having>
 	<power>
 	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getInspectionReturnList" />
+    <where>
+   		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.status" des=""  reqName="status" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.inspectionReturnId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.arrivalId" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="a.contractQuantity" alias="" ctype="" />
+      <f name="a.quantityQualified" alias="" ctype="" />
+      <f name="a.quantityInspection" alias="" ctype="" />
+      <f name="a.returnQuantity" alias="" ctype="" />
+      <f name="A.checkResult" alias="" ctype="进料检验结果" />
+      <f name="A.checkResult" alias="checkResultId" ctype="" />
+      <f name="A.status" alias="" ctype="处理状态" />
+      <f name="A.status" alias="statusId" ctype="" />
+      <f name="A.checkDate" alias="" ctype="" />
+      <f name="A.returnDate" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.supplierName" alias="" ctype="" />
+    </select>
+    <from>v_inspectionreturn a  WHERE a.deleteFlag = '0' </from>
+    <orderby>a.arrivalId,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getMAXInspectionReturnId" />
+     <where>
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name="IFNULL(MAX(a.subId+1),'1')" alias="MaxSubId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_InspectionReturn a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
   </query>
 </root>

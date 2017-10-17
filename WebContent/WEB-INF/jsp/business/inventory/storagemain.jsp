@@ -1,21 +1,13 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-
-
 <%@ include file="../../common/common2.jsp"%>
-
 <title>入库登记一览(检验完毕)</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,sessionFlag) {
+	function ajax(status,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -24,26 +16,15 @@
 
 		var url = "${ctx}/business/storage?methodtype=search"+"&sessionFlag="+sessionFlag;
 		
-		var type = pageFlg;
 		
-		if(type == '0'){
+		if(status != ''){
 			//默认是质检合格或者让步接收
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&status=030";
+			url += "&status="+status;
 			
-		}else if(type == '1'){
-			//已入库
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&status=040";
-			
-		}else{
-			//按钮查询,不设状态条件
-			url += "&status=";
 		}
-		url += "&keyBackup="+pageFlg;
-		//alert(type+"----"+url)
+		url += "&keyBackup="+status;
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -131,9 +112,8 @@
 
 	$(document).ready(function() {
 		
-		var keyBackup = $("#keyBackup").val();
-
-		ajax("0","");
+		//010:默认显示未处理的数据
+		ajax("020","true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -149,8 +129,8 @@
 	
 	function doSearch() {	
 
-		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("S","1");
+		//false:不使用session
+		ajax("","false");
 
 	}
 	
@@ -195,15 +175,9 @@
 		
 	}
 	
-	function selectContractByDate(type,sessionFlag){
-		if(type=='0'){
-
-			//$("#TMaterial thead").find("th").eq(8).text("待入库数量");
-		}else{
-			//$("#TMaterial thead").find("th").eq(8).text("已入库数量");
-			
-		}
-		ajax(type,sessionFlag);
+	function selectContractByDate(status,sessionFlag){
+	
+		ajax(status,sessionFlag);
 	}
 	
 	
@@ -241,8 +215,8 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0','1');">未入库</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1','1');">已入库</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('020','false');">未入库</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('030','false');">已入库</a>
 		</div>
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						

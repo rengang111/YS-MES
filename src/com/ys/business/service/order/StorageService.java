@@ -123,7 +123,8 @@ public class StorageService extends CommonService {
 			userDefinedSearchCase.put("status", "");
 		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -549,14 +550,19 @@ public class StorageService extends CommonService {
 	
 		dataModel.setQueryName("getMAXStorageRecordId");
 		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("contractId", data.getContractid());
+		userDefinedSearchCase.put("YSId", data.getYsid());
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
 		baseQuery.getYsFullData();	
 		
 		//查询出的流水号已经在最大值上 " 加一 "了
-		String code = dataModel.getYsViewData().get(0).get("MaxSubId");			
+		String code = dataModel.getYsViewData().get(0).get("MaxSubId");	
+		
 		String inspectionId = 
-				BusinessService.getStorageRecordId(data.getContractid(),code,false);	
+				BusinessService.getStorageRecordId(
+						data.getYsid(),
+						code,
+						false);	
+		
 		data.setReceiptid(inspectionId);
 		data.setSubid(code);			
 		

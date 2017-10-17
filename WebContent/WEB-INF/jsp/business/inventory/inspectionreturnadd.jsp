@@ -1,10 +1,8 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-
 <!DOCTYPE HTML>
 <html>
-
 <head>
-<title>库存管理-进料报检</title>
+<title>检验退货管理-录入</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -31,56 +29,15 @@
 					}, {"className":"dt-body-center"
 					}, {"className":"td-right"
 					}, {"className":"td-right"
-					}, {
+					}, {"className":"dt-body-center"
+					}, {"className":"td-right"
 					}, {"className":"td-right"
 					}
 				],
 			
 		}).draw();
 
-		
-		t.on('change', 'tr td:nth-child(7)',function() {
-
-			var $td = $(this).parent().find("td");
-
-			var $oArrival = $td.eq(7).find("input");
-			var $oQuantity= $td.eq(5).find("span");
-			var $oRecorde = $td.eq(6).find("select");
-			//var $oSurplus = $td.eq(7).find("span");
-
-			var type = $oRecorde.val();
-			var quantity = $oQuantity.text();
-			//alert(quantity)
-			if(type == '030'){
-				//让步接收,允许输入
-				$oArrival.removeAttr('readonly');
-				$oArrival.removeClass('read-only');
-			}else if( type == '040'){
 				
-				quantity = 0;
-				$oArrival.attr('readonly', "true");
-				$oArrival.addClass('read-only');
-				
-			}else{
-				$oArrival.attr('readonly', "true");
-				$oArrival.addClass('read-only');
-			}
-			
-			$oArrival.val(quantity);
-			//var fArrival  = currencyToFloat($oArrival.val());
-			//var fRecorde  = currencyToFloat($oRecorde.html());
-			//var fquantity = currencyToFloat($oQuantity.html());	
-			
-			
-			
-			//剩余数量
-			//var fsurplus = floatToCurrency(fquantity - fRecorde - fArrival);	
-			//$oSurplus.html(fsurplus);
-			//$oArrival.val(floatToCurrency(fArrival))
-
-		});
-		
-		/*				
 		t.on('click', 'tr', function() {			
 
 			if ( $(this).hasClass('selected') ) {
@@ -92,7 +49,7 @@
 	        }
 			
 		});
-		*/
+
 		t.on('order.dt search.dt draw.dt', function() {
 			t.column(0, {
 				search : 'applied',
@@ -108,7 +65,7 @@
 
 		//设置光标项目
 		//$("#attribute1").focus();
-		$("#inspect\\.checkdate").val(shortToday());
+		$("#inspectReturn\\.returndate").val(shortToday());
 
 		//日期
 		var mydate = new Date();
@@ -132,57 +89,24 @@
 		$("#goBack").click(
 				function() {
 					var contractId='${arrived.contractId }';
-					var url = "${ctx}/business/receiveinspection?keyBackup="+contractId;
+					var url = "${ctx}/business/inspectionReturn?keyBackup="+contractId;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
 					var keyBackup = $('#keyBackup').val();				
-					$('#formModel').attr("action", "${ctx}/business/receiveinspection?methodtype=insert"+"&keyBackup="+keyBackup);
+					$('#formModel').attr("action", "${ctx}/business/inspectionReturn?methodtype=insert"+"&keyBackup="+keyBackup);
 					$('#formModel').submit();
 		});
 		
-		//foucsInit();
-		$(".quantity").attr('readonly', "true");
-		$(".quantity").addClass('read-only');
+		foucsInit();
+		//$(".quantity").attr('readonly', "true");
+		//$(".quantity").addClass('read-only');
 		
-		checkResult();//
+		
 	});
 	
-	function doEdit(contractId,arrivalId) {
-		
-		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
-		location.href = url;
-	}
-	
-	//检验结果
-	function checkResult(){
-
-		var sum = 0;
-		$('#example tbody tr').each (function (){
-			
-			var type      = $(this).find("td").eq(6).find("select").val();
-			var $oArrival = $(this).find("td").eq(7).find("input");
-			//alert(type)
-			if(type == '030'){
-				//让步接收,允许输入
-				quantity = '${list.quantityQualified}';
-				$oArrival.removeAttr('readonly');
-				$oArrival.removeClass('read-only');
-			}else if( type == '040'){
-				//退货
-				quantity = 0;
-				$oArrival.attr('readonly', "true");
-				$oArrival.addClass('read-only');
-				
-			}else{
-				$oArrival.attr('readonly', "true");
-				$oArrival.addClass('read-only');
-			}			
-		})		
-		
-	}
 </script>
 
 </head>
@@ -194,37 +118,35 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<form:hidden path="inspect.ysid" value="${arrived.YSId }"/>
-	<form:hidden path="inspect.parentid" value=""/>
-	<form:hidden path="inspect.subid" value=""/>
-	<form:hidden path="inspect.arrivedate" value="${arrived.arriveDate }"/>
+	<form:hidden path="inspectReturn.ysid" value="${arrived.YSId }"/>
+	<form:hidden path="inspectReturn.parentid" value=""/>
+	<form:hidden path="inspectReturn.subid" value=""/>
+	<form:hidden path="inspectReturn.arrivalid" value="${arrived.arrivalId }"/>
 	<input type="hidden" id=report value="${arrived.report }" />
 	<input type="hidden" id="keyBackup" value="${keyBackup }" />
 	
 	<fieldset>
-		<legend> 报检信息</legend>
+		<legend> 退货信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px">到货登记：</td>	
-				<td width="200px">${arrived.arrivalId }
-					<form:hidden path="inspect.arrivalid" value="${arrived.arrivalId }"/></td>
+				<td class="label" width="100px">耀升编号：</td>	
+				<td width="200px">&nbsp;${arrived.YSId }</td>
 				<td class="label">合同编号：</td>					
-				<td width="200px">${arrived.contractId }
-					<form:hidden path="inspect.contractid" value="${arrived.contractId }"/></td>										
+				<td width="200px">&nbsp;${arrived.contractId }
+					<form:hidden path="inspectReturn.contractid" value="${arrived.contractId }"/></td>										
 				<td class="label" width="100px">供应商：</td>
-				<td>${arrived.supplierName }
-					<form:hidden path="inspect.supplierid" value="${arrived.supplierId }"/></td>
+				<td>（${arrived.supplierId }）${arrived.supplierName }
+					<form:hidden path="inspectReturn.supplierid" value="${arrived.supplierId }"/></td>
 			</tr>
 			<tr> 				
 				<!-- <td class="label" width="100px">进料检报告编号：</td>	
+				<td width="200px"></td> -->
+				<td class="label">退货处理人：</td>					
 				<td width="200px">
-					<form:input path="inspect.inspectionid" class="read-only" /></td> -->
-				<td class="label">质检员：</td>					
-				<td width="200px">
-					<form:input path="inspect.checkerid" value="${userName }" class="read-only" /></td>										
-				<td class="label" width="100px">报检日期：</td>
+					<form:input path="inspectReturn.checkerid" value="${userName }" class="read-only" /></td>										
+				<td class="label" width="100px">处理日期：</td>
 				<td colspan="3">
-					<form:input path="inspect.checkdate" value="" class="read-only"/></td>
+					<form:input path="inspectReturn.returndate" value="" class="read-only"/></td>
 			</tr>
 												
 		</table>		
@@ -244,9 +166,10 @@
 					<th class="dt-center" >物料名称</th>
 					<th class="dt-center" width="30px">单位</th>
 					<th class="dt-center" width="60px">合同数量</th>
-					<th class="dt-center" width="80px">本次到货</th>
+					<th class="dt-center" width="80px">报检数量</th>
 					<th class="dt-center" width="60px">检验结果</th>
-					<th class="dt-center" width="60px">合格数量</th>
+					<th class="dt-center" width="80px">合格数量</th>
+					<th class="dt-center" width="60px">退货数量</th>
 				</tr>
 			</thead>
 			
@@ -256,16 +179,14 @@
 					<tr>
 						<td></td>
 						<td>${list.materialId }
-							<form:hidden path="inspectList[${status.index}].materialid" value="${list.materialId }"/></td>
+							<form:hidden path="inspectReturnList[${status.index}].materialid" value="${list.materialId }"/></td>
 						<td><span>${list.materialName }</span></td>
 						<td><span>${list.unit }</span></td>
 						<td><span>${list.contractQuantity }</span></td>
-						<td><span>${list.quantity }</span>
-							<form:hidden path="inspectList[${status.index}].quantityinspection" value="${list.quantity }"/></td>												
-						<td><form:select path="inspectList[${status.index}].checkresult" style="width: 100px;">
-								<form:options items="${resultList}" 
-									itemValue="key" itemLabel="value"/></form:select></td>
-						<td><span><form:input path="inspectList[${status.index}].quantityqualified" value="${list.quantityQualified }" class="num short quantity"/></span></td>
+						<td><span>${list.quantityInspection }</span></td>										
+						<td>${list.checkResult }</td>
+						<td><span>${list.quantityQualified }</span></td>		
+						<td><span><form:input path="inspectReturnList[${status.index}].returnquantity" value="${list.quantity }" class="num short quantity"/></span></td>
 					</tr>
 					<script type="text/javascript">
 							var index = '${status.index}';
@@ -273,9 +194,7 @@
 							var $oArrival = $('#inspectList'+index+'\\.quantityqualified');
 							var quantity = '${list.quantity}';
 							//alert($oArrival.val())
-							if(type=='010')
-								type = '020';//默认设置为合格
-							$('#inspectList'+index+'\\.checkresult').val(type);
+							
 					</script>
 				
 			</c:forEach>
@@ -283,16 +202,6 @@
 		</tbody>
 	</table>
 	</div>
-	</fieldset>		
-	<fieldset>
-		<legend> 检验报告</legend>
-		<table class="form" id="table_form">		
-			<tr>
-				<td rowspan="3" width="700">
-					<form:textarea path="inspect.report" rows="7" cols="80" /></td>
-			</tr>												
-		</table>
-		
 	</fieldset>
 </form:form>
 

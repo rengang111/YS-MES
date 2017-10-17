@@ -4,33 +4,29 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-<title>进料报检一览(报检前)</title>
+<title>报检退货一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,sessionFlag) {
+	function ajax(status,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 		
-		var url = "${ctx}/business/receiveinspection?methodtype=search"+"&sessionFlag="+sessionFlag;
+		var url = "${ctx}/business/inspectionReturn?methodtype=search"
+				+"&sessionFlag="+sessionFlag;
 		
-		var type = pageFlg;
-
-		if(pageFlg != ''){
+		if(status != ''){
 			//未检验
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			url += "&checkResult="+pageFlg;
-						
-		}else{
-			//点击查询按钮 不区分状态
-			url += "&checkResult=";
-		}
-		
-		url += "&keyBackup="+pageFlg;
+			url += "&status="+status;
+			
+		}		
 
+		url += "&keyBackup="+status;
+	
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				 "iDisplayLength" : 150,
@@ -78,12 +74,13 @@
 					{"data": null,"className" : 'td-center'},
 					{"data": "materialId"},
 					{"data": "materialName"},
-					{"data": "arriveDate","className" : 'td-center'},
+					{"data": "checkDate","className" : 'td-center'},
 					{"data": "YSId"},
 					{"data": "contractId","className" : 'td-left'},
 					{"data": "contractQuantity","className" : 'td-right'},
 					{"data": "quantity","className" : 'td-right'},
-					{"data": "checkResult","className" : 'td-center'},
+					{"data": "status","className" : 'td-center'},
+					
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
@@ -102,8 +99,7 @@
 		    			var name = row["materialName"];				    			
 		    			name = jQuery.fixedWidth(name,35);				    			
 		    			return name;
-		    		}}
-	           
+		    		}}	           
 	         ] 
 		});
 
@@ -113,6 +109,9 @@
 
 
 	$(document).ready(function() {
+
+		//true:使用session
+		//010:默认显示未处理的数据
 		ajax("010","true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
@@ -129,15 +128,14 @@
 	
 	function doSearch() {	
 
-		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
+		//false:不使用session
 		ajax("","false");
-
 	}
 	
 	function doShow(arrivalId,contractId) {
 
 		var keyBackup = $("#keyBackup").val();
-		var url = '${ctx}/business/receiveinspection?methodtype=addinit&contractId='+contractId
+		var url = '${ctx}/business/inspectionReturn?methodtype=addinit&contractId='+contractId
 				+'&arrivalId='+arrivalId+'&keyBackup='+keyBackup;
 		location.href = url;
 		
@@ -177,10 +175,8 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('010','false');">未检验</a>
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('020','false');">合格</a>
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('030','false');">让步接收</a>
-			<a class="DTTT_button DTTT_button_text" onclick="ajax('040','false');">退货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('010','false');">未处理</a>
+			<a class="DTTT_button DTTT_button_text" onclick="ajax('020','false');">已处理</a>
 		</div>
 		<div id="clear"></div>
 		<table id="TMaterial" class="display dataTable">
@@ -189,12 +185,12 @@
 					<th style="width: 1px;" class="dt-middle ">No</th>
 					<th style="width: 120px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
-					<th style="width: 60px;" class="dt-middle">到货日期</th>
+					<th style="width: 60px;" class="dt-middle">报检日期</th>
 					<th style="width: 80px;" class="dt-middle">耀升编号</th>
 					<th style="width: 95px;" class="dt-middle">合同编号</th>
-					<th style="width: 60px;" class="dt-middle">合同数量</th>
-					<th style="width: 60px;" class="dt-middle ">到货数量</th>
-					<th style="width: 40px;" class="dt-middle ">状态</th>
+					<th style="width: 70px;" class="dt-middle">合同数量</th>
+					<th style="width: 70px;" class="dt-middle ">退货数量</th>
+					<th style="width: 50px;" class="dt-middle ">处理结果</th>
 				</tr>
 			</thead>
 		</table>

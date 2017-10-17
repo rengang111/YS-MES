@@ -1,17 +1,9 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-
-
 <%@ include file="../../common/common2.jsp"%>
-
 <title>到货登记一览(合同未到货)</title>
 <script type="text/javascript">
 
@@ -30,8 +22,8 @@
 			//逾期未到货
 			$("#keyword1").val("");
 			$("#keyword2").val("");
-			//url += "&accumulated1=0"+"&purchaseDate1="+shortToday();
-			url += "&accumulated1=0";
+			url += "&accumulated1=0"+"&purchaseDate1="+shortToday();
+			//url += "&accumulated1=0";
 			pageFlg="";
 		}else if(type == '1'){
 			//未到货
@@ -50,7 +42,6 @@
 		}
 
 		url += "&keyBackup="+pageFlg;
-		//alert(type+"----"+url)
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -171,7 +162,7 @@
 
 		//if(keyBackup ==""){
 
-			ajax("0","");//逾期未到货
+			ajax("0","true");//逾期未到货
 		//}else{
 		//	ajax("");
 			
@@ -251,13 +242,13 @@
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("S",'1');
+		ajax("",'false');
 
 	}
 	
-	function selectContractByDate(type){
+	function selectContractByDate(type,sessionFlag){
 		
-		ajax(type,'1');
+		ajax(type,sessionFlag);
 	}
 	
 	function showYS(YSId){
@@ -306,9 +297,9 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0');">逾期未到货</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1');">未到货</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2');">已到货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0','false');">逾期未到货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1','false');">未到货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2','false');">已到货</a>
 		</div>
 
 		<div id="clear"></div>
