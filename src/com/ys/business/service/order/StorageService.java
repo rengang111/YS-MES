@@ -88,6 +88,7 @@ public class StorageService extends CommonService {
 		super.session = session;
 		
 	}
+	
 	public HashMap<String, Object> doSearch( String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -99,7 +100,7 @@ public class StorageService extends CommonService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 		
-		String[] keyArr = getSearchKey(Constants.FORM_STORAGE,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_MATERIALSTORAGE,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -140,6 +141,60 @@ public class StorageService extends CommonService {
 
 	}
 
+	public HashMap<String, Object> doOrderSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_PRODUCTSTORAGE,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderList");	
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if((key1 !=null && !("").equals(key1)) || 
+				(key2 !=null && !("").equals(key2))){
+			userDefinedSearchCase.put("status", "");
+		}
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
 	public boolean addInit() throws Exception {
 		boolean viewFlag=true;
 		String contractId = request.getParameter("contractId");
@@ -163,6 +218,18 @@ public class StorageService extends CommonService {
 	
 	}
 	
+
+	public void addProductInit() throws Exception {
+		
+		String YSId = request.getParameter("YSId");		
+				
+		//取得订单信息
+		getOrderDetail(YSId);
+
+		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+				
+	}
+	
 	public void edit() throws Exception {
 		B_PurchaseStockInData reqData = reqModel.getStock();
 		String contractId = reqData.getContractid();
@@ -182,7 +249,13 @@ public class StorageService extends CommonService {
 		String receiptId = request.getParameter("receiptId");
 		return getArrivaRecord(receiptId);
 	}
-	
+
+	public HashMap<String, Object> getProductStockInDetail() {
+
+		String YSId = request.getParameter("YSId");
+		String materialId = request.getParameter("materialId");
+		return getOrderAndStockDetail(YSId,materialId);
+	}
 	public void insertAndReturn() throws Exception {
 
 		String arrivalId = insertStorage(true);
@@ -191,10 +264,26 @@ public class StorageService extends CommonService {
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
 	
+	public void insertProductAndReturn() throws Exception {
+
+		String YSId = insertStorageProduct();
+
+		getOrderDetail(YSId);
+		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
+	}
+	
 	public void updateAndReturn() throws Exception {
 
 		String arrivalId = insertStorage(false);
 
+		getContractDetail(arrivalId);
+		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
+	}
+	
+
+	public void updateProductAndReturn() throws Exception {
+
+		String arrivalId = updateStorageProduct();
 		getContractDetail(arrivalId);
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
@@ -247,12 +336,9 @@ public class StorageService extends CommonService {
 					//updateInspectionProcess(contractId,materialid);
 					
 					//更新合同的累计入库数量,收货状态
-					updateContractStorage(reqData.getContractid(),materialid,quantity);
-					
-				}
-				
-			}
-			
+					updateContractStorage(reqData.getContractid(),materialid,quantity);					
+				}				
+			}			
 
 			//确认合同状态:是否全部入库
 			boolean flag = checkPurchaseOrderStatus(reqData.getYsid(),contractId);
@@ -276,7 +362,129 @@ public class StorageService extends CommonService {
 		return arrivalid;
 	}
 	
-	//更新当前库存:采购入库时，减少“待入库”，增加“当前库存”
+
+	private String insertStorageProduct(){
+		String ysid = "";
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			B_PurchaseStockInData reqData = reqModel.getStock();
+			List<B_PurchaseStockInDetailData> reqDataList = 
+					reqModel.getStockList();
+
+			//取得入库申请编号
+			reqData = getStorageRecordId(reqData);
+			String receiptid = reqData.getReceiptid();
+			ysid = reqData.getYsid();
+			
+			//采购入库记录
+			insertPurchaseStockIn(reqData);
+			
+			//先删除已经存在的入库明细
+			String where = " receiptId = '"+receiptid+"'";
+			try {
+				detaildao.RemoveByWhere(where);
+			} catch (Exception e) {
+				// nothing
+			}
+			
+			//采购入库记录明细
+			for(B_PurchaseStockInDetailData data:reqDataList ){
+				String quantity = data.getQuantity();
+				String materialid= data.getMaterialid();
+				if(quantity == null || quantity.equals("") || quantity.equals("0"))
+					continue;
+				
+				data.setReceiptid(receiptid);
+				insertPurchaseStockInDetail(data);
+							
+				updateProductStock(materialid,quantity,"0");//更新库存
+				
+				//更新订单的累计完成数量,累计件数
+				updateOrderDetail(data,ysid);					
+							
+			}			
+
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		
+		return ysid;
+	}
+	
+
+	private String updateStorageProduct(){
+		String ysid = "";
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			B_PurchaseStockInData reqData = reqModel.getStock();
+			List<B_PurchaseStockInDetailData> reqDataList = 
+					reqModel.getStockList();
+			String oldQuantity = reqModel.getOldQuantity();
+
+			//取得入库申请编号
+			//reqData = getStorageRecordId(reqData);
+			String receiptid = reqData.getReceiptid();
+			ysid = reqData.getYsid();
+			
+			//采购入库记录
+			insertPurchaseStockIn(reqData);
+			
+			//先删除已经存在的入库明细
+			String where = " receiptId = '"+receiptid+"'";
+			try {
+				detaildao.RemoveByWhere(where);
+			} catch (Exception e) {
+				// nothing
+			}
+			
+			//采购入库记录明细
+			for(B_PurchaseStockInDetailData data:reqDataList ){
+				String quantity = data.getQuantity();
+				String materialid= data.getMaterialid();
+				if(quantity == null || quantity.equals("") || quantity.equals("0"))
+					continue;
+				
+				data.setReceiptid(receiptid);
+				insertPurchaseStockInDetail(data);
+							
+				updateProductStock(materialid,quantity,oldQuantity);//更新库存
+				
+				//更新订单的累计完成数量,累计件数
+				updateOrderDetail(data,ysid);					
+							
+			}			
+
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		
+		return ysid;
+	}
+	//更新当前库存:成品入库时，减少“待入库”，增加“当前库存”
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
 			String materialId,
@@ -322,7 +530,44 @@ public class StorageService extends CommonService {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void updateProductStock(
+			String materialId,
+			String reqQuantity,
+			String oldQuantity) throws Exception{
+	
+		B_MaterialData data = new B_MaterialData();
+		B_MaterialDao dao = new B_MaterialDao();
+		
+		String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
+		
+		List<B_MaterialData> list = 
+				(List<B_MaterialData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
 
+		data = list.get(0);
+		
+		//当前库存数量
+		float iQuantity = stringToFloat(data.getQuantityonhand());
+		float ireqQuantity = stringToFloat(reqQuantity);				
+		float oldQuan = stringToFloat(oldQuantity);
+		float iNewQuantiy = iQuantity + ireqQuantity - oldQuan;
+		
+				
+		data.setQuantityonhand(String.valueOf(iNewQuantiy));
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseStockInUpdate",userInfo);
+		copyProperties(data,commData);
+		
+		dao.Store(data);
+		
+	}
+	
 	//
 	@SuppressWarnings("unchecked")
 	private void updateInspectionProcess(
@@ -444,7 +689,9 @@ public class StorageService extends CommonService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void updateOrderStatus(String ysid) throws Exception{
+	private void updateOrderDetail(
+			B_PurchaseStockInDetailData stock,
+			String ysid) throws Exception{
 		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
 		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
 		if(list ==null || list.size() == 0)
@@ -452,12 +699,30 @@ public class StorageService extends CommonService {
 		
 		//更新DB
 		B_OrderDetailData data = list.get(0);
+	
+		float orderQuan = stringToFloat(data.getTotalquantity());//生产数量
+		float quantity = stringToFloat(data.getCompletedquantity());//已完成数量
+		int number = stringToInteger(data.getCompletednumber());//已完成件数
+		
+		float thisQuan = stringToFloat(stock.getQuantity());//本次入库数
+		int thisNum = stringToInteger(stock.getPackagnumber());//本次入库件数
+		
+		float totalQuan = quantity+thisQuan;//累计完成数量
+		int totalNum = number+thisNum;//累计完成件数
+		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"PurchaseStockInUpdate",userInfo);
 		copyProperties(data,commData);
-		data.setStatus(Constants.ORDER_STS_3);//待交货
+	
+		if(orderQuan == totalQuan){
+			data.setStatus(Constants.ORDER_STS_4);//已入库
+		}else{
+			data.setStatus(Constants.ORDER_STS_3);//待交货			
+		}
 		
-		dao.Store(data);
+		data.setCompletedquantity(String.valueOf(totalQuan));
+		data.setCompletednumber(String.valueOf(totalNum));
+		new B_OrderDetailDao().Store(data);
 	}
 	
 	private void insertPurchaseStockIn(
@@ -517,7 +782,29 @@ public class StorageService extends CommonService {
 		return modelMap;
 	}
 	
-		
+	private HashMap<String, Object> getOrderAndStockDetail(
+			String YSId,String materialId){
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		try {
+			dataModel.setQueryName("getPurchaseStockInById");
+			userDefinedSearchCase.put("YSId", YSId);
+			userDefinedSearchCase.put("materialId", materialId);
+			baseQuery = new BaseQuery(request, dataModel);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+			baseQuery.getYsFullData();
+
+			modelMap.put("data", dataModel.getYsViewData());
+			model.addAttribute("head",dataModel.getYsViewData().get(0));
+			model.addAttribute("material",dataModel.getYsViewData());		
+			
+		} catch (Exception e) {
+			System.out.print(e.getMessage());
+		}
+
+		return modelMap;
+	}
+	
 	public void doDelete(String recordId) throws Exception{
 		
 		B_ArrivalData data = new B_ArrivalData();	
@@ -581,6 +868,22 @@ public class StorageService extends CommonService {
 		if(dataModel.getRecordCount() >0){
 			model.addAttribute("contract",dataModel.getYsViewData().get(0));
 			model.addAttribute("material",dataModel.getYsViewData());			
+		}		
+	}	
+	
+
+	public void getOrderDetail(String YSId) throws Exception {
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderViewByPIId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("order",dataModel.getYsViewData().get(0));
+			model.addAttribute("orderDetail",dataModel.getYsViewData());			
 		}		
 	}	
 	

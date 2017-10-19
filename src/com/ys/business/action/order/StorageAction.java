@@ -100,6 +100,34 @@ public class StorageAction extends BaseAction {
 				dataMap = doShowDetail();
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "orderSearchInit":
+				doInit();
+				rtnUrl = "/business/inventory/productstoragemain";
+				break;
+			case "orderSearch":
+				dataMap = doOrderSearch(data);
+				printOutJsonObj(response, dataMap);
+				return null;
+			case "productAddInit":
+				doProductAddInit();
+				rtnUrl = "/business/inventory/productstorageadd";
+				return rtnUrl;
+			case "updateProduct":
+				doUpdateProduct();
+				rtnUrl = "/business/inventory/productstorageview";
+				break;
+			case "insertProduct":
+				doInsertProduct();
+				rtnUrl = "/business/inventory/productstorageview";
+				break;
+			case "editProduct":
+				doEditProduct();
+				rtnUrl = "/business/inventory/productstorageedit";
+				break;
+			case "getProductStockInDetail":
+				dataMap = doShowProductDetail();
+				printOutJsonObj(response, dataMap);
+				return null;
 				
 		}
 		
@@ -126,12 +154,40 @@ public class StorageAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 		String sessionFlag = request.getParameter("sessionFlag");
 		if(("false").equals(sessionFlag)){
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD2);			
+			session.removeAttribute(Constants.FORM_MATERIALSTORAGE+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_MATERIALSTORAGE+Constants.FORM_KEYWORD2);			
 		}
 		
 		try {
 			dataMap = service.doSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doOrderSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_PRODUCTSTORAGE	+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PRODUCTSTORAGE+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.doOrderSearch(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
@@ -163,9 +219,29 @@ public class StorageAction extends BaseAction {
 		return rtnUrl;
 	}
 
+	public void doProductAddInit(){
+
+		try{
+			service.addProductInit();
+			
+			model.addAttribute("userName", userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}	
+		
+	}
+	
 	public void doInsert(){
 		try{
 			service.insertAndReturn();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public void doInsertProduct(){
+		try{
+			service.insertProductAndReturn();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -179,7 +255,25 @@ public class StorageAction extends BaseAction {
 		}
 	}
 	
+	public void doUpdateProduct(){
+		try{
+			service.updateAndReturn();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	
 	public void doEdit(){
+		try{
+			model.addAttribute("userName", userInfo.getUserName());
+			service.edit();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public void doEditProduct(){
 		try{
 			model.addAttribute("userName", userInfo.getUserName());
 			service.edit();
@@ -198,6 +292,13 @@ public class StorageAction extends BaseAction {
 	public HashMap<String, Object> doShowDetail() throws Exception{
 		
 		return service.getStockInDetail();
+
+	}
+
+
+	public HashMap<String, Object> doShowProductDetail() throws Exception{
+		
+		return service.getProductStockInDetail();
 
 	}
 

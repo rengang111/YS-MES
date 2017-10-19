@@ -14,9 +14,18 @@ public class StorageModel extends BaseModel {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private String oldQuantity;
 	private B_MaterialData material ;
 	private B_PurchaseStockInData stock;
 	private List<B_PurchaseStockInDetailData> stockList;
+	
+	public String getOldQuantity(){
+		return this.oldQuantity;
+	}
+	
+	public void setOldQuantity(String quantity){
+		this.oldQuantity = quantity;
+	}
 	
 	public B_MaterialData getMaterial() {
 		return this.material;

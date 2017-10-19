@@ -81,6 +81,8 @@
       <f name="A.orderCost" alias="" ctype="" />
       <f name="A.storageDate" alias="" ctype="" />
       <f name="A.rebateRate" alias="" ctype="" />
+      <f name="A.completedQuantity" alias="" ctype="" />
+      <f name="A.completedNumber" alias="" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -121,12 +123,14 @@
       <f name="A.loadingPort" alias="loadingPort" ctype="出运港" />
       <f name="A.deliveryPort" alias="deliveryPort" ctype="目的港" />
       <f name="A.quantity" alias="" ctype="" />
+      <f name="A.completedQuantity" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.completedNumber" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="A.totalprice" alias="" ctype="" />
       <f name="A.orderDate" alias="" ctype="" />
       <f name="A.orderId" alias="" ctype="" />
       <f name="A.deliveryDate" alias="" ctype="" />
-      <f name="A.totalQuantity" alias="" ctype="" />
       <f name="A.extraQuantity" alias="" ctype="" />
       <f name="A.orderCompany" alias="orderCompanyName" ctype="下单公司" />
       <f name="A.orderCompany" alias="" ctype="" />
@@ -142,6 +146,7 @@
       <f name="A.status" alias="statusName" ctype="订单状态" />
       <f name="A.status" alias="" ctype="" />
       <f name="A.returnQuantity" alias="" ctype="" />
+      <f name="A.surplus" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->

@@ -383,6 +383,8 @@
     <name value="getPurchaseStockInById" />
     <where>
    	  	<w name="A.receiptId" des=""  reqName="receiptId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
         </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -406,7 +408,7 @@
       <f name="A.subId" alias="" ctype="" />
     </select>
     <from>v_purchaseStockInById a  WHERE a.deleteFlag = '0' </from>
-    <orderby>a.materialId</orderby>
+    <orderby>a.materialId,A.checkInDate DESC,A.receiptId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -470,5 +472,39 @@
     <groupby></groupby>
     <having></having>
 	<power></power>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getOrderStockInById" />
+    <where>
+   	  	<w name="A.receiptId" des=""  reqName="receiptId" dtype="ch" oper="="  lg="AND" bt="" />
+        </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.receiptId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.supplierName" alias="" ctype="" />
+      <f name="A.contractQuantity" alias="" ctype="" />
+      <f name="A.contractStorage" alias="" ctype="" />
+      <f name="A.packagNumber" alias="" ctype="" />
+      <f name="A.areaNumber" alias="" ctype="" />
+      <f name="A.packaging" alias="" ctype="包装方式" />
+      <f name="A.packaging" alias="packagingId" ctype="" />
+      <f name="A.LoginName" alias="" ctype="" />
+      <f name="A.checkInDate" alias="" ctype="" />
+      <f name="A.arrivelId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+    </select>
+    <from>v_purchaseStockInById a  WHERE a.deleteFlag = '0' </from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
   </query>
 </root>
