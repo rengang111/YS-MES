@@ -15,10 +15,18 @@ public class StorageModel extends BaseModel {
 	private static final long serialVersionUID = 1L;
 	
 	private String oldQuantity;
+	private String oldPackagNumber;
 	private B_MaterialData material ;
 	private B_PurchaseStockInData stock;
 	private List<B_PurchaseStockInDetailData> stockList;
 	
+	public String getOldPackagNumber(){
+		return this.oldPackagNumber;
+	}
+	
+	public void setOldPackagNumber(String number){
+		this.oldPackagNumber = number;
+	}
 	public String getOldQuantity(){
 		return this.oldQuantity;
 	}
@@ -26,7 +34,6 @@ public class StorageModel extends BaseModel {
 	public void setOldQuantity(String quantity){
 		this.oldQuantity = quantity;
 	}
-	
 	public B_MaterialData getMaterial() {
 		return this.material;
 	}

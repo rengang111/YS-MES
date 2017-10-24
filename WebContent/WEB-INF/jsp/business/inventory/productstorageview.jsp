@@ -50,16 +50,21 @@
 				})
 			},	
 			"columns" : [
-				        	{"data": null,"className":"dt-body-center"
-							}, {"data": "checkInDate","className":"td-center"
-							}, {"data": "receiptId","className":"td-left"
-							}, {"data": "quantity","className":"td-right"
-							}, {"data": "packagNumber","className":"td-right"
-							}, {"data": "packaging","className":"td-center"
-							}, {"data": "areaNumber",
-							}
-					],
-			
+	        	   {"data": null,"className":"dt-body-center"
+				}, {"data": "checkInDate","className":"td-center"
+				}, {"data": "receiptId","className":"td-left"
+				}, {"data": "quantity","className":"td-right"
+				}, {"data": "packagNumber","className":"td-right"
+				}, {"data": "packaging","className":"td-center"
+				}, {"data": "areaNumber",
+				}, {"data": null,"className":"dt-body-center"
+				}
+			],
+			"columnDefs":[
+	    		{"targets":7,"render":function(data, type, row){
+					return "<a href=\"###\" onClick=\"doEdit('"  + row["YSId"] + "')\">"+"编辑"+"</a>";
+                   }}
+			]
 	
 		}).draw();
 						
@@ -109,6 +114,11 @@
 		});
 		
 	});
+	
+	function doEdit(receiptId) {
+		var url = "${ctx}/business/storage?methodtype=editProduct&receiptId="+receiptId;
+		location.href = url;
+	}
 	
 </script>
 
@@ -162,6 +172,7 @@
 						<th style="width:80px">入库件数</th>
 						<th style="width:55px">包装方式</th>
 						<th style="width:60px">库位编号</th>	
+						<th style="width:30px"></th>	
 				</tr>
 			</thead>		
 										

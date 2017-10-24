@@ -257,7 +257,7 @@ public class StorageAction extends BaseAction {
 	
 	public void doUpdateProduct(){
 		try{
-			service.updateAndReturn();
+			service.updateProductAndReturn();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -276,7 +276,7 @@ public class StorageAction extends BaseAction {
 	public void doEditProduct(){
 		try{
 			model.addAttribute("userName", userInfo.getUserName());
-			service.edit();
+			service.editProduct();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>库存管理-成品入库登记</title>
+<title>库存管理-成品入库编辑</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -24,14 +24,12 @@
 			dom : '<"clear">rt',		
 			"columns" : [
 			        	{"className":"dt-body-center"
-					}, {"className":"td-right"
-					}, {"className":"td-right"
+					}, {"className":"td-center"
+					}, {"className":"td-left"
 					}, {"className":"td-right"
 					}, {"className":"td-right"
 					}, {"className":"td-right"	
 					}, {"className":"td-left"
-					}, {"className":"td-left"
-					}, {
 					}
 				],
 		"columnDefs":[
@@ -108,21 +106,23 @@
 		$("#insert").click(
 				function() {
 					
-			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insertProduct");
+			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=updateProduct");
 			$('#formModel').submit();
 		});
 				
 		foucsInit();
 
+		//$(".quantity").attr('readonly', "true");
+		//$(".quantity").addClass('read-only');
+		//$(".quantity").removeClass('bgnone');
+		
 	});
 	
-	function doEdit(YSId,receiptId) {
-		var url = "${ctx}/business/storage?methodtype=editProduct"
-				+"&YSId="+YSId
-				+"&receiptId="+receiptId;
+	function doEdit(contractId,arrivalId) {
+		
+		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
 		location.href = url;
 	}
-	
 		
 	function ajaxHistory() {
 
@@ -166,21 +166,16 @@
 				})
 			},	
  			"columns" : [
-		        	{"data": null,"className":"dt-body-center"
-				}, {"data": "checkInDate","className":"td-center"
-				}, {"data": "receiptId","className":"td-left"
-				}, {"data": "quantity","className":"td-right"
-				}, {"data": "packagNumber","className":"td-right"
-				}, {"data": "packaging","className":"td-center"
-				}, {"data": "areaNumber",
-				}, {"data": null,"className":"dt-body-center"
-				}
-			],
-			"columnDefs":[
-	    		{"targets":7,"render":function(data, type, row){
-					return "<a href=\"###\" onClick=\"doEdit('"  + row["YSId"] + "','"  + row["receiptId"] + "')\">"+"编辑"+"</a>";
-                   }}
-			]
+				        	{"data": null,"className":"dt-body-center"
+						}, {"data": "checkInDate","className":"td-center"
+						}, {"data": "receiptId","className":"td-left"
+						}, {"data": "quantity","className":"td-right"
+						}, {"data": "packagNumber","className":"td-right"
+						}, {"data": "packaging","className":"td-center"
+						}, {"data": "areaNumber",
+						}
+					],
+			
 	
 		}).draw();
 						
@@ -261,36 +256,35 @@
 		<table class="display" id="example">	
 			<thead>		
 				<tr>
-					<th style="width:1px">No</th>
-					<th style="width:80px">订单数量</th>
-					<th style="width:80px">生产数量</th>
-					<th style="width:80px">已入库数量</th>
-					<th style="width:80px">已入库件数</th>
-					<th style="width:80px">本次入库数量</th>
-					<th style="width:55px">包装方式</th>
-					<th style="width:40px">件数</th>
-					<th style="width:60px">库位编号</th>		
+						<th style="width:1px">No</th>
+						<th style="width:80px">入库时间</th>
+						<th style="width:120px">入库单号</th>
+						<th style="width:80px">入库数量</th>
+						<th style="width:55px">包装方式</th>
+						<th style="width:80px">入库件数</th>
+						<th style="width:60px">库位编号</th>	
 				</tr>
 			</thead>
 			<tbody>
-				<c:forEach var="list" items="${orderDetail}" varStatus='status' >			
+				<c:forEach var="list" items="${material}" varStatus='status' >			
 					<tr>
 						<td></td>
-						<td>${list.quantity }
-							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
-						<td>${list.totalQuantity }</td>
-						<td>${list.completedQuantity }</td>
-						<td>${list.completedNumber }</td>
-						<td><form:input path="stockList[${status.index}].quantity"  value="${list.surplus }" class="num short quantity" /></td>
+						<td>${list.checkInDate }
+							<form:hidden path="stockList[${status.index}].receiptid" value="${list.receiptId }"/>
+							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/>
+							<form:hidden path="stockList[${status.index}].recordid" value="${list.recordId }"/>
+							<form:hidden path="stock.receiptid" value="${list.receiptId }"/>
+							<form:hidden path="stock.recordid" value="${list.stockRcordId }"/>
+							<form:hidden path="oldQuantity" value="${list.quantity }"/>
+							<form:hidden path="oldPackagNumber" value="${list.packagNumber }"/></td>
+						<td>${list.receiptId }</td>
+						<td><form:input path="stockList[${status.index}].quantity"  value="${list.quantity }" class="num short quantity" /></td>
 						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
 								<form:options items="${packagingList}" 
 									itemValue="key" itemLabel="value"/></form:select></td>
-						<td><form:input path="stockList[${status.index}].packagnumber" class="mini" /></td>
-						<td><form:input path="stockList[${status.index}].areanumber" class="short" /></td>
+						<td><form:input path="stockList[${status.index}].packagnumber" class="mini" value="${list.packagNumber }" /></td>
+						<td><form:input path="stockList[${status.index}].areanumber" class="short" value="${list.areaNumber }" /></td>
 					</tr>
-					<script type="text/javascript">
-							var index = '${status.index}';
-					</script>
 				
 				</c:forEach>
 			
@@ -313,7 +307,6 @@
 						<th style="width:80px">入库件数</th>
 						<th style="width:55px">包装方式</th>
 						<th style="width:60px">库位编号</th>	
-						<th style="width:30px"></th>	
 			</tr>
 		</thead>		
 									

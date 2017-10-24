@@ -473,55 +473,7 @@
     <groupby>A.materialId</groupby>
     <having></having>
 	<power></power>    
-  </query>
-  
-<query>
-    <pool></pool>    
-    <name value="getPurchasePlanByYSId" />
-    <where>
-    	<w name="A.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
-    </where>
-  	<select>
-      <f name="recordId" alias="" ctype="" />
-      <f name="YSId" alias="" ctype="" />
-      <f name="materialId" alias="" ctype="" />
-      <f name="materialName" alias="" ctype="" />
-      <f name="supplierId" alias="" ctype="" />
-      <f name="quantity" alias="" ctype="" />
-      <f name="orderQuantity" alias="" ctype="" />
-      <f name="quantityOnHand" alias="" ctype="" />
-      <f name="availabelToPromise" alias="" ctype="" />
-      <f name="accumulated" alias="" ctype="" />
-      <f name="totalRequisition" alias="" ctype="" />
-      <f name="unitQuantity" alias="" ctype="" />
-      <f name="unit" alias="" ctype="计量单位" />
-  </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_createrequisitionfromplan AS A WHERE  A.deleteFlag = '0'</from>
-    <orderby>A.materialId</orderby>
-    <groupby></groupby>
-    <having></having>
-	<power></power>    
-  </query>
-  <query>
-    <pool></pool>    
-    <name value="getMAXRequisitionId" />
-     <where>
-       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="" bt="" />
-    </where>
-  <select>
-      <f name=" IFNULL(MAX(a.subId+1),1)" alias="MaxSubId" ctype="" />
-  </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_requisition a</from>
-    <orderby></orderby>
-    <groupby></groupby>
-    <having></having>
-	<power></power>
-  </query>
-  
+  </query>  
   <query>
     <pool></pool>     
     <name value="createAcssoryContractInit" />

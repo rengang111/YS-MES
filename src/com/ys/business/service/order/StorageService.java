@@ -244,7 +244,21 @@ public class StorageService extends CommonService {
 	
 	}
 
-	public HashMap<String, Object> getStockInDetail() {
+	
+	public void editProduct() throws Exception {
+		String YSId = request.getParameter("YSId");
+		String receiptId = request.getParameter("receiptId");
+		
+		//取得订单信息
+		getOrderDetail(YSId);
+		getArrivaRecord(receiptId);//入库明细
+
+		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+		model.addAttribute("receiptId",receiptId);//已入库
+	
+	}
+
+	public HashMap<String, Object> getStockInDetail() throws Exception {
 
 		String receiptId = request.getParameter("receiptId");
 		return getArrivaRecord(receiptId);
@@ -283,8 +297,9 @@ public class StorageService extends CommonService {
 
 	public void updateProductAndReturn() throws Exception {
 
-		String arrivalId = updateStorageProduct();
-		getContractDetail(arrivalId);
+		String YSId = updateStorageProduct();
+
+		getOrderDetail(YSId);
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
 	
@@ -403,7 +418,7 @@ public class StorageService extends CommonService {
 				updateProductStock(materialid,quantity,"0");//更新库存
 				
 				//更新订单的累计完成数量,累计件数
-				updateOrderDetail(data,ysid);					
+				updateOrderDetail(data,ysid,"0","0");					
 							
 			}			
 
@@ -434,23 +449,22 @@ public class StorageService extends CommonService {
 			B_PurchaseStockInData reqData = reqModel.getStock();
 			List<B_PurchaseStockInDetailData> reqDataList = 
 					reqModel.getStockList();
-			String oldQuantity = reqModel.getOldQuantity();
 
 			//取得入库申请编号
-			//reqData = getStorageRecordId(reqData);
+			reqData = getStorageRecordId(reqData);
 			String receiptid = reqData.getReceiptid();
 			ysid = reqData.getYsid();
 			
 			//采购入库记录
-			insertPurchaseStockIn(reqData);
+			updatePurchaseStockIn(reqData);
 			
 			//先删除已经存在的入库明细
-			String where = " receiptId = '"+receiptid+"'";
-			try {
-				detaildao.RemoveByWhere(where);
-			} catch (Exception e) {
+			//String where = " receiptId = '"+receiptid+"'";
+			//try {
+			//	detaildao.RemoveByWhere(where);
+			//} catch (Exception e) {
 				// nothing
-			}
+			//}
 			
 			//采购入库记录明细
 			for(B_PurchaseStockInDetailData data:reqDataList ){
@@ -459,13 +473,17 @@ public class StorageService extends CommonService {
 				if(quantity == null || quantity.equals("") || quantity.equals("0"))
 					continue;
 				
+				deletePurchaseStockInDetail(data);
+
 				data.setReceiptid(receiptid);
 				insertPurchaseStockInDetail(data);
-							
+
+				String oldQuantity = reqModel.getOldQuantity();
+				String oldNumber = reqModel.getOldPackagNumber();
 				updateProductStock(materialid,quantity,oldQuantity);//更新库存
 				
 				//更新订单的累计完成数量,累计件数
-				updateOrderDetail(data,ysid);					
+				updateOrderDetail(data,ysid,oldQuantity,oldNumber);					
 							
 			}			
 
@@ -691,7 +709,9 @@ public class StorageService extends CommonService {
 	@SuppressWarnings("unchecked")
 	private void updateOrderDetail(
 			B_PurchaseStockInDetailData stock,
-			String ysid) throws Exception{
+			String ysid,
+			String oldQuantity,
+			String oldNumber) throws Exception{
 		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
 		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
 		if(list ==null || list.size() == 0)
@@ -707,8 +727,11 @@ public class StorageService extends CommonService {
 		float thisQuan = stringToFloat(stock.getQuantity());//本次入库数
 		int thisNum = stringToInteger(stock.getPackagnumber());//本次入库件数
 		
-		float totalQuan = quantity+thisQuan;//累计完成数量
-		int totalNum = number+thisNum;//累计完成件数
+		float oldQuan = stringToFloat(oldQuantity);//本次入库数
+		int oldNum = stringToInteger(oldNumber);//本次入库件数
+		
+		float totalQuan = quantity+thisQuan - oldQuan;//累计完成数量
+		int totalNum = number+thisNum - oldNum;//累计完成件数
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"PurchaseStockInUpdate",userInfo);
@@ -747,6 +770,25 @@ public class StorageService extends CommonService {
 		dao.Create(stock);
 	}
 	
+	private void updatePurchaseStockIn(
+			B_PurchaseStockInData stock) throws Exception {
+
+		//删除旧数据,防止数据重复
+		B_PurchaseStockInData db = new B_PurchaseStockInDao(stock).beanData;
+		
+		if(db == null || ("").equals(db))
+			return;
+
+		db.setOriginalreceiptid(db.getReceiptid());
+		copyProperties(db,stock);
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseStockInUpdate",userInfo);
+		copyProperties(db,commData);
+				
+		dao.Store(db);
+	}
+	
 	private void insertPurchaseStockInDetail(
 			B_PurchaseStockInDetailData stock) throws Exception {
 		
@@ -761,24 +803,35 @@ public class StorageService extends CommonService {
 		detaildao.Create(stock);	
 	}
 	
-	private HashMap<String, Object> getArrivaRecord(String receiptId){
+	
+	private void deletePurchaseStockInDetail(
+			B_PurchaseStockInDetailData stock) throws Exception {
+		
+		//插入新数据
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"PurchaseStockInDetailInsert",userInfo);
+		copyProperties(stock,commData);
+
+		
+		detaildao.Store(stock);	
+	}
+	
+	
+	private HashMap<String, Object> getArrivaRecord(String receiptId) throws Exception{
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		try {
-			dataModel.setQueryName("getPurchaseStockInById");
-			userDefinedSearchCase.put("receiptId", receiptId);
-			baseQuery = new BaseQuery(request, dataModel);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			baseQuery.getYsFullData();
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("getPurchaseStockInById");
+		userDefinedSearchCase.put("receiptId", receiptId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
 
-			modelMap.put("data", dataModel.getYsViewData());
-			model.addAttribute("head",dataModel.getYsViewData().get(0));
-			model.addAttribute("material",dataModel.getYsViewData());		
-			
-		} catch (Exception e) {
-			System.out.print(e.getMessage());
-		}
-
+		modelMap.put("data", dataModel.getYsViewData());
+		model.addAttribute("head",dataModel.getYsViewData().get(0));
+		model.addAttribute("material",dataModel.getYsViewData());		
+	
 		return modelMap;
 	}
 	

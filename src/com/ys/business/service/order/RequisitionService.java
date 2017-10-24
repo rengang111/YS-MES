@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.RequisitionModel;
 import com.ys.business.db.dao.B_ArrivalDao;
+import com.ys.business.db.dao.B_MaterialDao;
+import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
@@ -17,11 +19,14 @@ import com.ys.business.db.dao.B_PurchasePlanDetailDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
+import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
+import com.ys.business.db.data.B_PurchaseStockInDetailData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -80,7 +85,7 @@ public class RequisitionService extends CommonService {
 		dataModel = new BaseModel();
 		modelMap = new HashMap<String, Object>();
 		userDefinedSearchCase = new HashMap<String, String>();
-		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");
 		super.request = request;
 		super.userInfo = userInfo;
 		super.session = session;
@@ -111,83 +116,45 @@ public class RequisitionService extends CommonService {
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
-		
-		dataModel.setQueryName("getArrivaList");
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderList");	
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 				
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();
-			
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
 		}
 		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
 		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
 		
 		return modelMap;		
 
 	}
 	
 
-	public HashMap<String, Object> contractArrivalSearch(
-			String data) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+	public void addInit() throws Exception {
 
-		data = URLDecoder.decode(data, "UTF-8");
+		String YSId = request.getParameter("YSId");
+		if(YSId== null || ("").equals(YSId))
+			return;
 		
-		int iStart = 0;
-		int iEnd =0;
-		String sEcho = getJsonData(data, "sEcho");	
-		String start = getJsonData(data, "iDisplayStart");		
-		if (start != null && !start.equals("")){
-			iStart = Integer.parseInt(start);			
-		}
-		
-		String length = getJsonData(data, "iDisplayLength");
-		if (length != null && !length.equals("")){			
-			iEnd = iStart + Integer.parseInt(length);			
-		}
+		//订单详情
+		getOrderDetail(YSId);
 	
-		dataModel.setQueryName("getArrivaList");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION,data,session);
-		String key1 = keyArr[0];
-		String key2 = keyArr[1];
-		
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
-		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();			
-		}		
-		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-			
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
 	}
 
-	public void addInit() throws Exception {
+
+	public void updateInit() throws Exception {
 
 		String YSId = request.getParameter("YSId");
 		
@@ -195,21 +162,26 @@ public class RequisitionService extends CommonService {
 		getPurchasePlan(YSId);
 	
 	}
+	public HashMap<String, Object> showDetail() throws Exception {
 
-	public void showArrivalDetail() {
-
-		String arrivalId = request.getParameter("arrivalId");
-		getArrivaRecord(arrivalId);
+		String YSId = request.getParameter("YSId");
+		if(YSId == null || ("").equals(YSId))
+			return null;
+		//物料需求表
+		return getPurchasePlan(YSId);
 	}
 	
 	public void insertAndView() throws Exception {
 
-		String contractId = insert();
-		//getPurchasePlan(contractId);
+		String YSId = insert();
+
+		//订单详情
+		getOrderDetail(YSId);
 	}
 	
 	private String insert(){
 		
+		String YSId = "";
 		ts = new BaseTransaction();
 
 		try {
@@ -219,7 +191,7 @@ public class RequisitionService extends CommonService {
 			List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
 
 			//取得领料单编号
-			String YSId = reqData.getYsid();
+			YSId = reqData.getYsid();
 			reqData = getRequisitionId(reqData,YSId);
 			String requisitionid = reqData.getRequisitionid();
 			
@@ -227,25 +199,26 @@ public class RequisitionService extends CommonService {
 			insertRequisition(reqData);
 						
 			for(B_RequisitionDetailData data:reqDataList ){
-				String q = data.getQuantity();
-				if(q == null || q.equals("") || q.equals("0"))
+				float quantity = stringToFloat(data.getQuantity());
+				float overQuty = stringToFloat(data.getOverquantity());//超领
+				
+				if(quantity <= 0)
 					continue;
 				
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-						"ArrivalInsert",userInfo);
-
-				copyProperties(data,commData);
-
-				String guid = BaseDAO.getGuId();
-				data.setRecordid(guid);
 				data.setRequisitionid(requisitionid);
-				
-				dao.Create(data);	
-				
+				insertRequisitionDetail(data);
+								
 				//更新累计领料数量
 				updatePurchasePlan(YSId,data.getMaterialid(),data.getQuantity());
+				
+				//更新库存
+				updateMaterialStock(data.getMaterialid(),quantity,overQuty);
 			
 			}
+			
+			//更新订单状态:待交货
+			updateOrderDetail(YSId);
+			
 			
 			ts.commit();			
 			
@@ -259,7 +232,7 @@ public class RequisitionService extends CommonService {
 			}
 		}
 		
-		return "";
+		return YSId;
 	}
 	
 	private void insertRequisition(
@@ -273,8 +246,23 @@ public class RequisitionService extends CommonService {
 
 		String guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
+		stock.setRequisitiondate(CalendarUtil.fmtYmdDate());
 		
 		dao.Create(stock);
+	}
+	
+	private void insertRequisitionDetail(
+			B_RequisitionDetailData stock) throws Exception {
+		
+		//插入新数据
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"RequisitionInsert",userInfo);
+		copyProperties(stock,commData);
+
+		String guid = BaseDAO.getGuId();
+		stock.setRecordid(guid);
+		
+		detailDao.Create(stock);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -312,16 +300,72 @@ public class RequisitionService extends CommonService {
 		dao.Store(data);		
 	}
 	
+	//更新当前库存:领料时，减少“当前库存”,减少“待出库”,
+	@SuppressWarnings("unchecked")
+	private void updateMaterialStock(
+			String materialId,
+			float reqQuantity,
+			float overQuantity) throws Exception{
 	
-	private void deleteArrivalById(String arrivalId) {
-
-		String where = " arrivalId = '"+arrivalId+"' AND deleteFlag='0' ";
-		try {
-			dao.RemoveByWhere(where);
-		} catch (Exception e) {
-			// nothing
-		}
+		B_MaterialData data = new B_MaterialData();
+		B_MaterialDao dao = new B_MaterialDao();
 		
+		String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
+		
+		List<B_MaterialData> list = 
+				(List<B_MaterialData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
+
+		data = list.get(0);
+		
+		//当前库存数量
+		float iQuantity = stringToFloat(data.getQuantityonhand());
+		//float ireqQuantity = stringToFloat(reqQuantity);				
+		float iNewQuantiy = iQuantity - reqQuantity;		
+		
+		//待入库数量
+		float istockin = stringToFloat(data.getWaitstockin());		
+		//float iNewStockIn = istockin - reqQuantity;
+		
+		//待出库
+		float waitstockout = stringToFloat(data.getWaitstockout());
+		waitstockout = waitstockout - reqQuantity + overQuantity;//超领部分不计入
+		
+		//虚拟库存=当前库存 + 待入库 - 待出库
+		float availabeltopromise = iNewQuantiy + istockin - waitstockout;
+		
+		data.setQuantityonhand(String.valueOf(iNewQuantiy));
+		data.setWaitstockout(String.valueOf(waitstockout));
+		data.setAvailabeltopromise(String.valueOf(availabeltopromise));
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseStockInUpdate",userInfo);
+		copyProperties(data,commData);
+		
+		dao.Store(data);
+		
+	}
+		
+	@SuppressWarnings("unchecked")
+	private void updateOrderDetail(
+			String ysid) throws Exception{
+		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
+		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
+		if(list ==null || list.size() == 0)
+			return ;	
+		
+		//更新DB
+		B_OrderDetailData data = list.get(0);
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchaseStockInUpdate",userInfo);
+		copyProperties(data,commData);
+		data.setStatus(Constants.ORDER_STS_3);//待交货	
+		
+		new B_OrderDetailDao().Store(data);
 	}
 	
 	private void getArrivaRecord(String arrivalId){
@@ -389,34 +433,35 @@ public class RequisitionService extends CommonService {
 		return data;
 	}
 	
-	public void getPurchasePlan(String YSId) throws Exception {
+	public HashMap<String, Object> getPurchasePlan(String YSId) throws Exception {
 
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
 		dataModel.setQueryName("getPurchasePlanByYSId");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		userDefinedSearchCase.put("contractId", YSId);
+		userDefinedSearchCase.put("YSId", YSId);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() >0){
 			model.addAttribute("order",dataModel.getYsViewData().get(0));
-			model.addAttribute("material",dataModel.getYsViewData());			
+			model.addAttribute("material",dataModel.getYsViewData());
+			modelMap.put("data", dataModel.getYsViewData());
 		}
+		
+		return modelMap;
 		
 	}
 	
-	public HashMap<String, Object> getArrivalHistory(
-			String contractId) throws Exception {
+	public HashMap<String, Object> getRequisitionHistory(
+			String YSId) throws Exception {
 		
-		dataModel.setQueryName("getArrivaListByContractId");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("contractId", contractId);
-		
+		dataModel.setQueryName("getRequisitionById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 
@@ -425,26 +470,48 @@ public class RequisitionService extends CommonService {
 		return modelMap;
 		
 	}
-	
-	
-	public void getContractByArrivalId() throws Exception {
-
-		String contractId = request.getParameter("contractId");
-		String arrivalId = request.getParameter("arrivalId");
+	public HashMap<String, Object> getRequisitionDetail(
+			String requisitionId) throws Exception {
 		
-		dataModel.setQueryName("getContractByArrivalId");		
+		dataModel.setQueryName("getRequisitionDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("contractId", contractId);		
+		userDefinedSearchCase.put("requisitionId", requisitionId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = baseQuery.getSql();
-		sql = sql.replace("#", arrivalId);
-		baseQuery.getYsFullData(sql);
+		baseQuery.getYsFullData();
 
-		if(dataModel.getRecordCount() >0){
-			model.addAttribute("contract",dataModel.getYsViewData().get(0));
-			model.addAttribute("material",dataModel.getYsViewData());
-			model.addAttribute("arrivalId",arrivalId);
-		}
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+		
+	}
+	public HashMap<String, Object> getOrderDetail(
+			String YSId) throws Exception {
+		
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderViewByPIId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		model.addAttribute("order",dataModel.getYsViewData().get(0));
+		
+		return modelMap;
+		
+	}
+	
+	
+	public HashMap<String, Object> getRequisitionById(
+			String YSId) throws Exception {
+		
+		dataModel.setQueryName("getRequisitionById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
 		
 	}
 

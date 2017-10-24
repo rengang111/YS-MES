@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>    
+    <name value="getRequisitionById" />
+     <where>
+       <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.requisitionId" alias="" ctype="" />
+      <f name="a.requisitionDate" alias="" ctype="" />
+      <f name="a.storeUserId" alias="" ctype="" />
+      <f name="a.requisitionUserId" alias="" ctype="" />      
+      <f name="b.loginName" alias="storeUser" ctype="" />  
+      <f name="c.loginName" alias="requisitionUser" ctype="" />
+      <f name="a.deleteFlag" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_requisition a LEFT JOIN s_user b ON a.storeUserId=b.UserID AND b.deleteFlag='0' LEFT JOIN s_user c ON a.requisitionUserId=c.UserID AND c.deleteFlag='0'  where a.deleteFlag='0'</from>
+    <orderby>a.requisitionId </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getPurchasePlanByYSId" />
+    <where>
+    	<w name="A.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="recordId" alias="" ctype="" />
+      <f name="YSId" alias="" ctype="" />
+      <f name="materialId" alias="" ctype="" />
+      <f name="materialName" alias="" ctype="" />
+      <f name="contractId" alias="" ctype="" />
+      <f name="supplierId" alias="" ctype="" />
+      <f name="manufactureQuantity" alias="" ctype="" />
+      <f name="contractStorage" alias="" ctype="" />
+      <f name="quantityOnHand" alias="" ctype="" />
+      <f name="availabelToPromise" alias="" ctype="" />
+      <f name="totalRequisition" alias="" ctype="" />
+      <f name="unitQuantity" alias="" ctype="" />
+      <f name="unit" alias="" ctype="计量单位" />
+      <f name="contractMaterialId" alias="" ctype="" />
+      <f name="purchaseType" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_createrequisitionfromplan AS A WHERE  A.deleteFlag = '0'</from>
+    <orderby>A.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getMAXRequisitionId" />
+     <where>
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name=" IFNULL(MAX(a.subId+1),1)" alias="MaxSubId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_requisition a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getRequisitionDetailById" />
+     <where>
+        <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="b.materialName" alias="" ctype="" />
+      <f name="b.purchaseType" alias="" ctype="物料采购类别" />
+      <f name="a.requisitionId" alias="" ctype="" />
+      <f name="format(replace(a.quantity,',',''),2)" alias="quantity" ctype="" />
+      <f name="IFNULL(a.overQuantity,0)" alias="overQuantity" ctype="" />
+      <f name="a.deleteFlag" alias="" ctype="" />
+      <f name="IFNULL(a.contractId,'-')" alias="contractId" ctype="" />
+      <f name="IFNULL(a.supplierId,'-')" alias="supplierId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_requisitionDetail a LEFT JOIN b_material b ON a.materialId=b.materialId AND b.deleteFlag='0'  where a.deleteFlag='0'</from>
+    <orderby>a.materialId </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>

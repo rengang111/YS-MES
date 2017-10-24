@@ -388,6 +388,8 @@
         </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
+      <f name="A.stockRcordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
       <f name="A.receiptId" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />

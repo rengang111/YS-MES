@@ -8,12 +8,18 @@
 <title>领料申请--订单一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg) {
+	function ajax(pageFlg,sessionFlag) {
+		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+
+		var actionUrl = "${ctx}/business/requisition?methodtype=search";
+		actionUrl = actionUrl + "&keyBackup=" + pageFlg;
+		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
+		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				"lengthChange":false,
@@ -24,10 +30,11 @@
 				"ordering "	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",
+	         	"aaSorting": [[ 1, "DESC" ]],
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/requirement?methodtype=getOrderBomList&keyBackup="+pageFlg,
+				"sAjaxSource" : actionUrl,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -41,7 +48,9 @@
 						"contentType": "application/json; charset=utf-8",
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
-						success: function(data){							
+						success: function(data){	
+							$("#keyword1").val(data["keyword1"]);
+							$("#keyword2").val(data["keyword2"]);						
 							fnCallback(data);
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -55,26 +64,36 @@
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "YSId", "defaultContent" : ''},
 							{"data": "materialId", "defaultContent" : ''},
-							{"data": "materialName", "defaultContent" : ''},
-							{"data": "unit", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "bomId", "defaultContent" : ''},
-							{"data": "deliveryDate", "className" : 'td-center'},
+							{"data": "materialName", "defaultContent" : ''},//3
+							{"data": "orderDate", "defaultContent" : ''},
+							{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
 							{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
+							{"data": "team", "className" : 'td-left'},//7
+							{"data": "statusName", "className" : 'td-center'},//8
+							{"data": "storageDate", "className" : 'td-center'},//9
 						],
 				"columnDefs":[
-				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] ;
-		                    }},
-				    		{"targets":1,"render":function(data, type, row){				    			
-				    			return "<a href=\"###\" onClick=\"doShowDetail('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";			    			
-
-				    		}},
-				    		{"targets":3,"render":function(data, type, row){
-				    			var name = row["materialName"];				    			
-				    			if(name != null) name = jQuery.fixedWidth(name,40,true);
-				    			return name;
-				    		}}
-			         	] 
+		    		{"targets":0,"render":function(data, type, row){
+		    			return row["rownum"] ;				    			 
+                    }},
+		    		{"targets":1,"render":function(data, type, row){
+		    			var rtn = "";
+		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
+		    			return rtn;
+		    		}},
+		    		{"targets":3,"render":function(data, type, row){
+		    			var name = row["materialName"];
+		    			name = jQuery.fixedWidth(name,40);//true:两边截取,左边从汉字开始
+		    			return name;
+		    		}},
+		    		{
+		    			"orderable":false,"targets":[0]
+		    		},
+		    		{
+						"visible" : false,
+						"targets" : [7,8,9]
+					}
+	         	]
 			}
 		);
 
@@ -96,7 +115,7 @@
 
 	$(document).ready(function() {
 
-		ajax("");
+		ajax("","true");
 		initEvent();
 		$("#create").click(
 				function() {			
@@ -108,7 +127,7 @@
 	
 	function doSearch() {	
 
-		ajax("purchaseplan");
+		ajax("purchaseplan","false");
 
 	}
 
@@ -157,14 +176,16 @@
 		<table id="TMaterial" class="display dataTable">
 			<thead>						
 				<tr>
-					<th style="width: 10px;" class="dt-middle ">No</th>
-					<th style="width: 80px;" class="dt-middle ">耀升编号</th>
-					<th style="width: 150px;" class="dt-middle ">产品编号</th>
-					<th class="dt-middle ">产品名称</th>
-					<th style="width: 30px;" class="dt-middle ">单位</th>
-					<th style="width: 100px;" class="dt-middle ">BOM编号</th>
-					<th style="width: 80px;" class="dt-middle ">订单交期</th>
-					<th style="width: 80px;"  class="dt-middle ">订单数量</th>
+						<th style="width: 10px;" class="dt-middle ">No</th>
+						<th style="width: 70px;" class="dt-middle ">耀升编号</th>
+						<th style="width: 150px;" class="dt-middle ">产品编号</th>
+						<th class="dt-middle ">产品名称</th>
+						<th style="width: 50px;" class="dt-middle ">下单日期</th>
+						<th style="width: 50px;" class="dt-middle ">订单交期</th>
+						<th style="width: 60px;" class="dt-middle ">订单数量</th>
+						<th style="width: 40px;" class="dt-middle ">业务组</th>
+						<th style="width: 60px;" class="dt-middle ">订单状态</th>
+						<th style="width: 50px;" class="dt-middle ">入库时间</th>
 				</tr>
 			</thead>
 		</table>

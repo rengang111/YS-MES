@@ -77,40 +77,41 @@ public class RequisitionAction extends BaseAction {
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
-				return null;				
-			case "contractArrivalSearch":
-				dataMap = contractArrivalSearch(data);
-				printOutJsonObj(response, dataMap);
-				return null;	
+				return null;
 			case "addinit":
 				doAddInit();
 				rtnUrl = "/business/inventory/requisitionadd";
 				break;
-			case "edit":
-				doEdit();
-				rtnUrl = "/business/inventory/arrivaledit";
+			case "updateInit":
+				doUpdateInit();
+				rtnUrl = "/business/inventory/requisitionedit";
 				break;
 			case "insert":
 				doInsert();
-				rtnUrl = "/business/inventory/arrivalview";
+				rtnUrl = "/business/inventory/requisitionview";
 				break;
 			case "delete":
 				doDelete(data);
 				printOutJsonObj(response, reqModel.getEndInfoMap());
 				return null;
 			case "detailView":
-				doShowDetail();
-				//printOutJsonObj(response, viewModel.getEndInfoMap());
-				rtnUrl = "/business/inventory/arrivalview";
+				dataMap = doShowDetail();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/inventory/requisitionview";
+				rtnUrl = null;
 				break;
-			case "getArrivalHistory":
-				dataMap = getArrivalHistory();
+			case "getRequisitionHistoryInit":
+				doAddInit();
+				rtnUrl = "/business/inventory/requisitionview";
+				break;
+			case "getRequisitionHistory":
+				dataMap = getRequisitionHistory();
 				printOutJsonObj(response, dataMap);
 				return null;
-			case "gotoArrivalView":
-				gotoArrivalView();
-				rtnUrl = "/business/inventory/arrivalview";
-				break;
+			case "getRequisitionDetail":
+				dataMap = getRequisitionDetail();
+				printOutJsonObj(response, dataMap);
+				return null;
 				
 		}
 		
@@ -118,25 +119,15 @@ public class RequisitionAction extends BaseAction {
 	}	
 	
 	public void doInit(){	
-			
-		String keyBackup = request.getParameter("keyBackup");
-		//没有物料编号,说明是初期显示,清空保存的查询条件
-		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_REQUISITION+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_REQUISITION+Constants.FORM_KEYWORD2);
-		}else{
-			model.addAttribute("keyBackup",keyBackup);
-		}
-		
-	}
-	
+
+	}	
 	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearch(@RequestBody String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
 			session.removeAttribute(Constants.FORM_REQUISITION+Constants.FORM_KEYWORD1);
 			session.removeAttribute(Constants.FORM_REQUISITION+Constants.FORM_KEYWORD2);
 			
@@ -159,36 +150,6 @@ public class RequisitionAction extends BaseAction {
 		return dataMap;
 	}
 	
-
-	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> contractArrivalSearch(
-			@RequestBody String data){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
-			
-		}
-		try {
-			dataMap = service.contractArrivalSearch(data);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
 	
 	public void doAddInit(){
 		try{
@@ -207,10 +168,10 @@ public class RequisitionAction extends BaseAction {
 		}
 	}
 	
-	public void doEdit(){
+	public void doUpdateInit(){
 		try{
 			model.addAttribute("userName", userInfo.getUserName());
-			service.getContractByArrivalId();
+			service.updateInit();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -223,20 +184,20 @@ public class RequisitionAction extends BaseAction {
 
 	}
 	
-	public void doShowDetail() throws Exception{
+	public HashMap<String, Object> doShowDetail() throws Exception{
 		
-		service.showArrivalDetail();
+		return service.showDetail();
 
 	}
 
 
 	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> getArrivalHistory(){
+	public HashMap<String, Object> getRequisitionHistory(){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
 		
 		try {
-			String contractId = request.getParameter("contractId");
-			dataMap = service.getArrivalHistory(contractId);
+			String YSId = request.getParameter("YSId");
+			dataMap = service.getRequisitionHistory(YSId);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
@@ -251,14 +212,25 @@ public class RequisitionAction extends BaseAction {
 		
 		return dataMap;
 	}
-	
-	public void gotoArrivalView(){
-		try{
-			String contractId = request.getParameter("contractId");
-			//service.getContractDetail(contractId);
-		}catch(Exception e){
-			System.out.println(e.getMessage());
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> getRequisitionDetail(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
+		
+		try {
+			String requisitionId = request.getParameter("requisitionId");
+			dataMap = service.getRequisitionDetail(requisitionId);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
 		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
 	}
-	
 }
