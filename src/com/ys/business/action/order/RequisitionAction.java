@@ -86,6 +86,10 @@ public class RequisitionAction extends BaseAction {
 				doUpdateInit();
 				rtnUrl = "/business/inventory/requisitionedit";
 				break;
+			case "update":
+				doUpdate();
+				rtnUrl = "/business/inventory/requisitionview";
+				break;
 			case "insert":
 				doInsert();
 				rtnUrl = "/business/inventory/requisitionview";
@@ -177,6 +181,16 @@ public class RequisitionAction extends BaseAction {
 		}
 	}
 	
+
+	public void doUpdate(){
+		try{
+			model.addAttribute("userName", userInfo.getUserName());
+			service.updateAndView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	
 	public void doDelete(@RequestBody String data) throws Exception{
 		
@@ -217,8 +231,7 @@ public class RequisitionAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
 		
 		try {
-			String requisitionId = request.getParameter("requisitionId");
-			dataMap = service.getRequisitionDetail(requisitionId);
+			dataMap = service.getRequisitionDetail();
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

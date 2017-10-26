@@ -157,9 +157,12 @@ public class RequisitionService extends CommonService {
 	public void updateInit() throws Exception {
 
 		String YSId = request.getParameter("YSId");
+		//String requisitionId = request.getParameter("requisitionId");
 		
-		//物料需求表
-		getPurchasePlan(YSId);
+		//订单详情
+		getOrderDetail(YSId);
+		//领料单
+		getRequisitionDetail();
 	
 	}
 	public HashMap<String, Object> showDetail() throws Exception {
@@ -170,6 +173,13 @@ public class RequisitionService extends CommonService {
 		//物料需求表
 		return getPurchasePlan(YSId);
 	}
+	public void updateAndView() throws Exception {
+
+		String YSId = update();
+
+		//订单详情
+		getOrderDetail(YSId);
+	}
 	
 	public void insertAndView() throws Exception {
 
@@ -177,6 +187,69 @@ public class RequisitionService extends CommonService {
 
 		//订单详情
 		getOrderDetail(YSId);
+	}
+	
+
+	private String update(){
+		
+		String YSId = "";
+		ts = new BaseTransaction();
+
+		try {
+			ts.begin();
+			
+			B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
+			List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
+
+			YSId = reqData.getYsid();
+			//旧的领料单号
+			String oldId = reqData.getRequisitionid();
+			
+			//领料单更新处理
+			reqData = getRequisitionId(reqData,YSId);
+			String requisitionid = reqData.getRequisitionid();//新的单号
+			reqData.setOriginalrequisitionid(oldId);
+			updateRequisition(reqData);
+
+			//旧的明细删除处理
+			deleteRequisitionDetail(YSId,oldId);
+			
+			//新的领料单明细						
+			for(B_RequisitionDetailData data:reqDataList ){
+				float quantity = stringToFloat(data.getQuantity());
+				float overQuty = stringToFloat(data.getOverquantity());//超领
+				
+				if(quantity <= 0)
+					continue;
+				
+				data.setRequisitionid(requisitionid);
+				insertRequisitionDetail(data);
+								
+				//更新累计领料数量
+				updatePurchasePlan(YSId,data.getMaterialid(),quantity);
+				
+				//更新库存
+				updateMaterialStock(data.getMaterialid(),quantity,overQuty);
+			
+			}
+			
+			//更新订单状态:待交货
+			updateOrderDetail(YSId);
+			
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		
+		return YSId;
 	}
 	
 	private String insert(){
@@ -209,7 +282,7 @@ public class RequisitionService extends CommonService {
 				insertRequisitionDetail(data);
 								
 				//更新累计领料数量
-				updatePurchasePlan(YSId,data.getMaterialid(),data.getQuantity());
+				updatePurchasePlan(YSId,data.getMaterialid(),quantity);
 				
 				//更新库存
 				updateMaterialStock(data.getMaterialid(),quantity,overQuty);
@@ -269,7 +342,7 @@ public class RequisitionService extends CommonService {
 	private void updatePurchasePlan(
 			String YSId,
 			String materialId,
-			String quantity) throws Exception{
+			float quantity) throws Exception{
 		
 		String where = "YSId ='"+YSId +
 				"' AND materialId ='"+ materialId +
@@ -288,8 +361,7 @@ public class RequisitionService extends CommonService {
 		
 		//计算累计领料数量
 		float iAcc = stringToFloat(data.getTotalrequisition());
-		float iArr = stringToFloat(quantity);				
-		float iNew = iArr + iAcc;		
+		float iNew = quantity + iAcc;		
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
@@ -368,25 +440,55 @@ public class RequisitionService extends CommonService {
 		new B_OrderDetailDao().Store(data);
 	}
 	
-	private void getArrivaRecord(String arrivalId){
+	
+	private void updateRequisition(
+			B_RequisitionData data) throws Exception{
 		
-		try {
-			dataModel.setQueryName("getArrivaRecord");
-			userDefinedSearchCase.put("arrivalId", arrivalId);
-			baseQuery = new BaseQuery(request, dataModel);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			baseQuery.getYsFullData();
+		//
+		B_RequisitionData db = new B_RequisitionDao(data).beanData;
 
-			model.addAttribute("arrival",dataModel.getYsViewData().get(0));
-			//String userId = dataModel.getYsViewData().get(0).get("userId");
-			
-			model.addAttribute("arrivalList",dataModel.getYsViewData());
-			
-		} catch (Exception e) {
-			System.out.print(e.getMessage());
-		}
+		copyProperties(db,data);
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"RequisitionUpdate",userInfo);
+		copyProperties(db,commData);
+		db.setRequisitiondate(CalendarUtil.fmtYmdDate());		
+		
+		new B_RequisitionDao().Store(db);
 	}
 	
+
+	@SuppressWarnings("unchecked")
+	private void deleteRequisitionDetail(
+			String YSId,
+			String requisitionId) throws Exception{
+		
+		B_RequisitionDetailDao dao = new B_RequisitionDetailDao();
+		//
+		String where = "requisitionId = '" + requisitionId  +"' AND deleteFlag = '0' ";
+		List<B_RequisitionDetailData> list  = 
+				new B_RequisitionDetailDao().Find(where);
+		if(list ==null || list.size() == 0)
+			return ;
+		
+		for(B_RequisitionDetailData dt:list){
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"RequisitionDelete",userInfo);
+			copyProperties(dt,commData);
+			
+			dao.Store(dt);
+			
+			//更新累计领料数量(恢复)
+			String mateId = dt.getMaterialid();
+			float quantity = (-1) * stringToFloat(dt.getQuantity());
+			updatePurchasePlan(YSId,mateId,quantity);
+			
+			//更新库存(恢复)
+			float overQuty = (-1) * stringToFloat(dt.getOverquantity());
+			updateMaterialStock(mateId,quantity,overQuty);
+		}
+		
+	}
+
 		
 	public void doDelete(String recordId) throws Exception{
 		
@@ -452,8 +554,7 @@ public class RequisitionService extends CommonService {
 			modelMap.put("data", dataModel.getYsViewData());
 		}
 		
-		return modelMap;
-		
+		return modelMap;		
 	}
 	
 	public HashMap<String, Object> getRequisitionHistory(
@@ -470,20 +571,23 @@ public class RequisitionService extends CommonService {
 		return modelMap;
 		
 	}
-	public HashMap<String, Object> getRequisitionDetail(
-			String requisitionId) throws Exception {
+	public HashMap<String, Object> getRequisitionDetail() throws Exception {
+
+		String requisitionId = request.getParameter("requisitionId");
 		
-		dataModel.setQueryName("getRequisitionDetailById");		
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");		
+		dataModel.setQueryName("updateRequisition");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("requisitionId", requisitionId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 
 		modelMap.put("data", dataModel.getYsViewData());
+		model.addAttribute("detail",dataModel.getYsViewData().get(0));
 		
-		return modelMap;
-		
+		return modelMap;		
 	}
+	
 	public HashMap<String, Object> getOrderDetail(
 			String YSId) throws Exception {
 		
@@ -495,8 +599,7 @@ public class RequisitionService extends CommonService {
 		baseQuery.getYsFullData();
 		model.addAttribute("order",dataModel.getYsViewData().get(0));
 		
-		return modelMap;
-		
+		return modelMap;		
 	}
 	
 	
@@ -511,8 +614,7 @@ public class RequisitionService extends CommonService {
 
 		modelMap.put("data", dataModel.getYsViewData());
 		
-		return modelMap;
-		
+		return modelMap;		
 	}
 
 }

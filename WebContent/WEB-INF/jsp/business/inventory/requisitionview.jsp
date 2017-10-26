@@ -55,10 +55,10 @@
 					}
 				] ,
 				"columnDefs":[
-		    		{"targets":1,"render":function(data, type, row){
+		    		{"targets":5,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">"+row["requisitionId"]+"</a>";
-		    			return row["requisitionId"];
+		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
+		    			return rtn;
 		    		}},
 		    	]        
 			
@@ -85,7 +85,7 @@
 		}
 		var t = $('#example').DataTable({
 			
-			"paging": true,
+			"paging": false,
 			"lengthChange":false,
 			"lengthMenu":[50,100,200],//设置一页展示20条记录
 			"processing" : false,
@@ -225,9 +225,9 @@
 		
 		var url = '${ctx}/business/requisition?methodtype=updateInit&YSId='
 				+YSId+'&requisitionId='+requisitionId;
-		
-		callProductDesignView("requisition",url)
-		//location.href = url;
+		//alert("requisitionId"+requisitionId)
+		//callProductDesignView("requisition",url)
+		location.href = url;
 	}
 	
 </script>

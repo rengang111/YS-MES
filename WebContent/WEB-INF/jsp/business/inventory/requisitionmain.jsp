@@ -83,7 +83,7 @@
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["materialName"];
-		    			name = jQuery.fixedWidth(name,40);//true:两边截取,左边从汉字开始
+		    			name = jQuery.fixedWidth(name,50);//true:两边截取,左边从汉字开始
 		    			return name;
 		    		}},
 		    		{
@@ -173,7 +173,7 @@
 
 	<div class="list">
 
-		<table id="TMaterial" class="display dataTable">
+		<table id="TMaterial" class="display dataTable" style="width:100%">
 			<thead>						
 				<tr>
 						<th style="width: 10px;" class="dt-middle ">No</th>
