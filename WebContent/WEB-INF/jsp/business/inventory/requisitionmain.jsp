@@ -8,7 +8,7 @@
 <title>领料申请--订单一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,sessionFlag) {
+	function ajax(pageFlg,sessionFlag,stateSave) {
 		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -24,8 +24,8 @@
 				"paging": true,
 				"lengthChange":false,
 				"lengthMenu":[50,100,200],//设置一页展示20条记录
-				"processing" : false,
-				"serverSide" : false,
+				"processing" : true,
+				"serverSide" : true,
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
@@ -115,7 +115,7 @@
 
 	$(document).ready(function() {
 
-		ajax("","true");
+		ajax("","true",true);
 		initEvent();
 		$("#create").click(
 				function() {			
@@ -127,7 +127,7 @@
 	
 	function doSearch() {	
 
-		ajax("purchaseplan","false");
+		ajax("purchaseplan","false",false);
 
 	}
 
