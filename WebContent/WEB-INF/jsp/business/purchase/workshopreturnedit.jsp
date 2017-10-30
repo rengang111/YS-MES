@@ -63,12 +63,7 @@
 	};//ajaxRawGroup()
 	
 	$(document).ready(function() {
-
-		var productid = '${ contract.productId }';
-		if(productid == null || productid == ""){
-			$('#ysid00').attr("style","display:none");			
-		}
-		
+			
 		ajaxRawGroup();			
 		
 		$("#workshopReturn\\.returndate").val(shortToday());
@@ -85,16 +80,23 @@
 		
 		$('#example').DataTable().columns.adjust().draw();		
 		
+		$("#cansol").click(
+				function() {
+					var YSId = '${ order.YSId }';
+					var url = "${ctx}/business/workshopReturn?methodtype=workshopRentunDetailView&YSId="+YSId;
+					location.href = url;		
+				});
+		
 		$("#goBack").click(
 				function() {
-					var contractId = '${ contract.contractId }';
-					var url = '${ctx}/business/contract?methodtype=workshopRentunInit&keyBackup=' + contractId;
+					var YSId = '${ order.YSId }';
+					var url = '${ctx}/business/workshopReturn?methodtype=workshopRentunInit&keyBackup=' + YSId;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {			
-			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=workshopRentunUpdate");
+			$('#attrForm').attr("action", "${ctx}/business/workshopReturn?methodtype=workshopRentunUpdate");
 			$('#attrForm').submit();
 		});		
 	
@@ -141,58 +143,46 @@
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">
 			
-		<form:hidden path="workshopReturn.ysid" value="${contract.YSId }"/>
-		<form:hidden path="workshopReturn.contractid" value="${contract.contractId }"/>
+		<form:hidden path="workshopReturn.ysid" value="${order.YSId }"/>
 		<form:hidden path="workshopReturn.workshopreturnid" value="${workshop.workshopReturnId }"/>
-		<form:hidden path="workshopReturn.recordid" value="${workshop.workshopRecordId }"/>
+
 		<fieldset>
-			<legend> 采购合同</legend>
+			<legend> 订单信息</legend>
 			<table class="form" id="table_form">
-				<tr id="ysid00">		
+				<tr>		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="150px">${contract.YSId }</td>
+					<td width="150px">${order.YSId }</td>
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td width="150px">&nbsp;${ contract.productId }</td>
+					<td width="150px">&nbsp;${ order.materialId }</td>
 						
 					<td class="label" width="100px"><label>产品名称：</label></td>
-					<td>&nbsp;${ contract.productName } </td>
+					<td>&nbsp;${ order.materialName } </td>
 				</tr>	
-				<tr> 		
-					<td class="label"><label>供应商编号：</label></td>					
-					<td>${ contract.supplierId }</td>
-									
-					<td class="label"><label>供应商简称：</label></td>					
-					<td>&nbsp;${ contract.shortName }</td>
-						
-					<td class="label"><label>供应商名称：</label></td>
-					<td>&nbsp;${ contract.fullName }</td>
-				</tr>	
-				<tr> 		
-					<td class="label"><label>采购合同编号：</label></td>					
-					<td>${ contract.contractId }</td>
+				<tr>
 					<td class="label"><label>退货日期：</label></td>
-					<td><form:input path="workshopReturn.returndate"  /></td>
+					<td><form:input path="workshopReturn.returndate"  class="read-only short"/></td>
 					<td class="label"><label>任务编号：</label></td>
-					<td><form:input  path="workshopReturn.taskid" calss="short" /></td>
+					<td colspan="3"><form:input  path="workshopReturn.taskid" calss="short" value="${workshop.taskId }"/></td>
 				</tr>									
 			</table>
 			
 	</fieldset>
 	
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="insert" class="DTTT_button">保存</button>
+		<button type="button" id="insert" class="DTTT_button">确认编辑</button>
+		<button type="button" id="cansol" class="DTTT_button">取消编辑</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>			
 	<fieldset style="margin-top: -30px;">
-	<legend> 合同详情</legend>	
+	<legend> 退货详情</legend>	
 		<div class="list">
 		<table id="example" class="display" style="width:100%">	
 			<thead>
 				<tr>
 					<th style="width:1px">No</th>
-					<th style="width:120px">ERP编码</th>
-					<th>ERP名称</th>
+					<th style="width:170px">物料编码</th>
+					<th>物料名称</th>
 					<th style="width:40px">单位</th>
 					<th style="width:100px">今日退货(修改后)</th>
 					<th style="width:100px">今日退货(修改前)</th>
@@ -200,7 +190,7 @@
 				</tr>
 			</thead>		
 			<tbody>
-				<c:forEach var="detail" items="${workshopDetail}" varStatus='status' >	
+				<c:forEach var="detail" items="${workshopList}" varStatus='status' >	
 					<tr>
 						<td></td>
 						<td>
@@ -224,15 +214,16 @@
 		</table>
 		</div>
 		</fieldset>
+		<!-- 
 		<fieldset>
-		<legend> 退货详情</legend>
+		<legend> 退货原因</legend>
 		<table class="form" >
 			<tr>
 				<td class="td-left"><textarea name="workshopReturn.remarks" rows="6" cols="100" ></textarea></td>
 			</tr>
 		</table>		
 		</fieldset>
-			
+			 -->
 	</form:form>
 
 </div>

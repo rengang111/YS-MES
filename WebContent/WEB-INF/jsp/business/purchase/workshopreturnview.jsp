@@ -7,50 +7,73 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
-	function ajaxRawGroup() {
-		
+	function historyAjax() {
+		var YSId = '${order.YSId }';
 		var t = $('#example').DataTable({
 			
+			"paging": true,
+			"lengthChange":false,
+			"lengthMenu":[50,100,200],//设置一页展示20条记录
 			"processing" : false,
-			"retrieve"   : true,
-			"stateSave"  : true,
-			"pagingType" : "full_numbers",
-	        "paging"    : false,
-	        "pageLength": 50,
-	        "bAutoWidth":false,
-	        "ordering"  : false,
-			"dom" : '<"clear">rt',			
-			"columns" : [ 
-			        	{"className":"dt-body-center"
-					}, {"className":"td-left"
-					}, {								
-					}, {"className":"td-center"		
-					}, {"className":"td-center"
-					}, {"className":"td-right"		
-					}, {"className":"td-right"				
-					}, {"className":"td-right"				
-					}			
-				],
-				"columnDefs":[
-				    {
-						"visible" : false,
-						"targets" : [ ]
+			"serverSide" : false,
+			"stateSave" : false,
+			"ordering "	:true,
+			"searching" : false,
+			"retrieve" : true,
+			dom : '<"clear">rt',
+			"sAjaxSource" : "${ctx}/business/workshopReturn?methodtype=getWorkshopReturnHistory&YSId="+YSId,
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				//var param = {};
+				//var formData = $("#condition").serializeArray();
+				//formData.forEach(function(e) {
+				//	aoData.push({"name":e.name, "value":e.value});
+				//});
+	
+				$.ajax({
+					"url" : sSource,
+					"datatype": "json", 
+					"contentType": "application/json; charset=utf-8",
+					"type" : "POST",
+					//"data" : JSON.stringify(aoData),
+					success: function(data){							
+						fnCallback(data);
+					},
+					 error:function(XMLHttpRequest, textStatus, errorThrown){
+		             }
+				})
+			},
+	    	"language": {
+	    		"url":"${ctx}/plugins/datatables/chinese.json"
+	    	},
+			
+			"columns" : [
+			        	{"data": null,"className":"dt-body-center"
+					}, {"data": "returnDate","className":"dt-body-center"
+					}, {"data": "taskId","className":"td-left"
+					}, {"data": "materialId","className":"td-left"
+					}, {"data": "materialName","className":"td-left"
+					}, {"data": "unit","className":"td-center"
+					}, {"data": "quantity","className":"td-right","defaultContent" : '0'
+					}, {"data": null,"className":"td-center","defaultContent" : ''
 					}
-				]
+				] ,
+				"columnDefs":[
+		    		{"targets":7,"render":function(data, type, row){
+		    			var returnDate = row["returnDate"];
+		    			var today = shortToday();
+		    			//var sysDate = new Date();//获取系统时间 
+		    		  // var newDate = new Date(returnDate);//把录入时间转换成日期格式；  
+		    		    var rtn= "";
+		    		   // alert("newDate:"+newDate+"-----sysDate:"+sysDate)
+		    		    if(today == returnDate){  
+		    		         rtn = "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["workshopReturnId"] + "')\">编辑</a>";
+		    		    }		    			
+		    			return rtn;
+		    		}},
+		    	]        
 			
 		}).draw();
-		
-		t.on('click', 'tr', function() {
-			
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-			
-		});
+						
 		
 		t.on('order.dt search.dt draw.dt', function() {
 			t.column(0, {
@@ -60,17 +83,13 @@
 				cell.innerHTML = i + 1;
 			});
 		}).draw();
-		
-	};//ajaxRawGroup()
+	
+	};
 	
 	$(document).ready(function() {
 
-		var productid = '${ contract.productId }';
-		if(productid == null || productid == ""){
-			$('#ysid00').attr("style","display:none");			
-		}
-		
-		ajaxRawGroup();			
+			
+		historyAjax();			
 		
 		$("#workshopReturn\\.returndate").val(shortToday());
 		
@@ -83,21 +102,26 @@
 			showOtherMonths:true,
 		}); 
 		
+			
 		
-		$('#example').DataTable().columns.adjust().draw();		
-		
+		$("#addInit").click(function() {
+			var YSId = '${ order.YSId }';
+			var url =  "${ctx}/business/workshopReturn?methodtype=createWorkshopRentunInit&YSId="+YSId;
+			location.href = url;	
+		});
+
 		$("#goBack").click(function() {
-			var contractId = '${ contract.contractId }';
-			var url = '${ctx}/business/contract?methodtype=workshopRentunInit&keyBackup=' + contractId;
+			var YSId = '${ order.YSId }';
+			var url = '${ctx}/business/workshopReturn?methodtype=workshopRentunInit&keyBackup=' + YSId;
 			location.href = url;	
 		});
 	});	
 	
-	function doEdit(workshopReturnId,contractId) {
+	function doEdit(YSId,workshopReturnId) {
 		
-		var url =  "${ctx}/business/contract?methodtype=workshopRentunEdit"
+		var url =  "${ctx}/business/workshopReturn?methodtype=workshopRentunEdit"
 				+"&workshopReturnId="+workshopReturnId
-				+"&contractId="+contractId;
+				+"&YSId="+YSId;
 		location.href = url;	
 	}
 	
@@ -136,46 +160,27 @@
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">
 			
-		<form:hidden path="workshopReturn.recordid" value="${workshopReturn.recordId }"/>
-		<form:hidden path="workshopReturn.ysid" value="${workshopReturn.YSId }"/>
+		<form:hidden path="workshopReturn.recordid" value="${order.recordId }"/>
+		<form:hidden path="workshopReturn.ysid" value="${order.YSId }"/>
 		<fieldset>
 			<legend> 采购合同</legend>
 			<table class="form" id="table_form">
 				<tr id="ysid00">		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="150px">${contract.YSId }</td>
+					<td width="150px">${order.YSId }</td>
 									
 					<td class="label" width="100px"><label>产品编号：</label></td>					
-					<td width="150px">&nbsp;${ contract.productId }</td>
+					<td width="150px">&nbsp;${ order.materialId }</td>
 						
 					<td class="label" width="100px"><label>产品名称：</label></td>
-					<td>&nbsp;${ contract.productName } </td>
-				</tr>	
-				<tr> 		
-					<td class="label"><label>供应商编号：</label></td>					
-					<td>${ contract.supplierId }</td>
-									
-					<td class="label"><label>供应商简称：</label></td>					
-					<td>&nbsp;${ contract.shortName }</td>
-						
-					<td class="label"><label>供应商名称：</label></td>
-					<td>&nbsp;${ contract.fullName }</td>
-				</tr>	
-				<tr> 		
-					<td class="label"><label>采购合同编号：</label></td>					
-					<td>${ contract.contractId }
-						<form:hidden path="workshopReturn.contractid" value="${ contract.contractId }"/></td>
-					<td class="label"><label>退货日期：</label></td>
-					<td>${ workshopReturn.returnDate }</td>
-					<td class="label"><label>任务编号：</label></td>
-					<td>${ workshopReturn.taskId }</td>
-				</tr>									
+					<td>${ order.materialName } </td>
+				</tr>								
 			</table>
 			
 	</fieldset>
 	
 	<fieldset class="action" style="text-align: right;">
-	<!-- 	<button type="button" id="insert" class="DTTT_button">保存</button> -->
+		<button type="button" id="addInit" class="DTTT_button">继续退货</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>			
 	<fieldset style="margin-top: -30px;">
@@ -185,51 +190,18 @@
 			<thead>
 				<tr>
 					<th style="width:30px">No</th>
-					<th style="width:150px">ERP编码</th>
-					<th>ERP名称</th>
-					<th style="width:40px">单位</th>
 					<th style="width:100px">退货日期</th>
+					<th style="width:100px">任务编号</th>
+					<th style="width:150px">物料编码</th>
+					<th>物料名称</th>
+					<th style="width:40px">单位</th>
 					<th style="width:100px">退货数量</th>
-					<th style="width:100px">操作</th>
-					<th></th>
+					<th style="width:40px">操作</th>
 				</tr>
-			</thead>		
-			<tbody>
-				<c:forEach var="detail" items="${workshop}" varStatus='status' >	
-					<tr>
-						<td></td>
-						<td>
-							<a href="###" onClick="doShowMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
-							<form:hidden path="workshopRetunList[${status.index}].materialid" value="${detail.materialId}" /></td>								
-						
-						<td><span id="name${status.index}"></span></td>
-						<td>${ detail.unit }</td>		
-						<td><span>${detail.returnDate}</span></td>
-						<td><span>${detail.quantity}</span></td>
-						<td><a href="###" onClick="doEdit('${detail.workshopReturnId}','${ contract.contractId }')">编辑</a></td>				
-						<td><form:hidden path="workshopRetunList[${status.index}].recordid" value="${detail.recordId}" /></td>				
-						
-					</tr>			
-					<script type="text/javascript">
-						var materialName = '${detail.materialName}';
-						var index = '${status.index}';						
-						$('#name'+index).html(jQuery.fixedWidth(materialName,60));
-					</script>
-				</c:forEach>
-				
-			</tbody>
-			
+			</thead>			
 		</table>
 		</div>
-		</fieldset>
-		<fieldset>
-		<legend> 退货详情</legend>
-		<table class="form" >
-			<tr>
-				<td class="td-left"><pre>${workshopReturn.remarks}</pre></td>
-			</tr>
-		</table>		
-		</fieldset>
+		</fieldset>	
 			
 	</form:form>
 

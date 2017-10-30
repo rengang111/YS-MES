@@ -23,14 +23,12 @@ import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
 import com.ys.business.db.dao.B_WorkshopReturnDao;
-import com.ys.business.db.dao.B_WorkshopReturnDetailDao;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.B_SupplierData;
 import com.ys.business.db.data.B_WorkshopReturnData;
-import com.ys.business.db.data.B_WorkshopReturnDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.order.CommonService;
@@ -135,6 +133,8 @@ public class PurchaseOrderService extends CommonService {
 		modelMap.put("recordsTotal", dataModel.getRecordCount());		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());			
 		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);
 		
 		return modelMap;
 	}
@@ -163,8 +163,10 @@ public class PurchaseOrderService extends CommonService {
 		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
-	
-		dataModel.setQueryName("getContractListForWorkshopReturn");
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderList");	
+		//dataModel.setQueryName("getContractListForWorkshopReturn");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
@@ -174,15 +176,17 @@ public class PurchaseOrderService extends CommonService {
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
+		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
-		}		
+		}
 		
 		modelMap.put("sEcho", sEcho); 		
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());			
 		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
 		return modelMap;
 	}
 
@@ -234,14 +238,6 @@ public class PurchaseOrderService extends CommonService {
 		
 	}
 	
-	@SuppressWarnings("unchecked")
-	public List<B_WorkshopReturnDetailData> getWorkshopReturnDetail(
-			String workshopReturnId) throws Exception {
-			
-		String astr_Where = "workshopReturnId = '"+workshopReturnId+"'";
-		return (List<B_WorkshopReturnDetailData>)
-				new B_WorkshopReturnDetailDao().Find(astr_Where);
-	}
 	
 	
 	public void getWorkshopReturnList(
@@ -492,48 +488,8 @@ public class PurchaseOrderService extends CommonService {
 		new B_WorkshopReturnDao().Create(data);	
 	}
 	
-	/**
-	 * 插入处理
-	 */
-	private void insertWorkshopRentunDetail(
-			B_WorkshopReturnDetailData data) throws Exception{
-		
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"WorkshopReturnDetailInsert",userInfo);
-		copyProperties(data,commData);
-		
-		guid = BaseDAO.getGuId();
-		data.setRecordid(guid);
-		
-		new B_WorkshopReturnDetailDao().Create(data);	
-	}
 	
-	/**
-	 * 更新累计退货处理
-	 */
-	@SuppressWarnings("unchecked")
-	private void updateContractForWorkshopReturn(B_WorkshopReturnData data,
-			B_WorkshopReturnDetailData detail) throws Exception{
-		
-		String where = "contractId = '" + data.getContractid() + 
-				"' AND materialId = '"+detail.getMaterialid()+"'";
-		List<B_PurchaseOrderDetailData> list = detailDao.Find(where);
-		if(list == null || ("").equals(list)){
-			return;
-		}
-		B_PurchaseOrderDetailData purchase = list.get(0);
-		//累计退货数量
-		float goods = stringToFloat(purchase.getReturngoods());
-		float quantity = stringToFloat(detail.getQuantity());
-		String total = String.valueOf(goods + quantity);
-		purchase.setReturngoods(total);
-		
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"WorkshopReturnDetailInsert",userInfo);
-		copyProperties(purchase,commData);
-		
-		detailDao.Store(purchase);	
-	}
+	
 	
 	/**
 	 * 1.订单基本信息更新处理(1条数据)
@@ -1003,119 +959,6 @@ public class PurchaseOrderService extends CommonService {
 		model.addAttribute("goBackFlag",goBackFlag);
 	}
 	
-	/**
-	 * 车间退货处理
-	 * @throws Exception
-	 */
-	public void createWorkshopRentun() throws Exception {
-			
-		ts = new BaseTransaction();
-
-		B_WorkshopReturnData workshop = reqModel.getWorkshopReturn();
-		List<B_WorkshopReturnDetailData> reqList = reqModel.getWorkshopRetunList();
-		
-		try {
-			ts.begin();			
-			
-			//创建退货编号
-			String workshopReturnId = CalendarUtil.timeStempDate();
-			
-			//退货
-			workshop.setWorkshopreturnid(workshopReturnId);
-			insertWorkshopRentun(workshop);
-			
-			//退货明细
-			for(B_WorkshopReturnDetailData dt:reqList){
-				
-				dt.setWorkshopreturnid(workshopReturnId);
-				insertWorkshopRentunDetail(dt);			
-	
-				//更新累计退货			
-				updateContractForWorkshopReturn(workshop,dt);
-			}
-			
-			ts.commit();
-			
-		}catch(Exception e){
-			ts.rollback();
-			System.out.println(e.getMessage());
-		}
-		
-		//跳转到查看页面
-		String contractId = workshop.getContractid();
-		getContractDetailList(contractId);
-
-		getWorkshopReturnList(workshop.getYsid(),contractId);
-	}
-	
-
-	/**
-	 * 车间退货处理
-	 * @throws Exception
-	 */
-	public void updateWorkshopAndView() throws Exception {
-			
-		ts = new BaseTransaction();
-
-		B_WorkshopReturnData workshop = reqModel.getWorkshopReturn();
-		List<B_WorkshopReturnDetailData> reqList = reqModel.getWorkshopRetunList();
-		
-		try {
-			ts.begin();			
-			
-			//退货编号
-			String workshopReturnId = workshop.getWorkshopreturnid();
-			
-			//更新退货
-			updateWorkshopRentun(workshop);
-			
-			//累计退货返还
-			List<B_WorkshopReturnDetailData> dbList = 
-					getWorkshopReturnDetail(workshopReturnId);
-			for(B_WorkshopReturnDetailData dt:dbList){
-				
-				//更新累计退货(减去已经累计进去的数量)					
-				dt.setQuantity(String.valueOf( -1 * stringToFloat(dt.getQuantity())));
-				updateContractForWorkshopReturn(workshop,dt);
-			}
-			
-			//退货明细
-			for(B_WorkshopReturnDetailData dt:reqList){
-				
-				dt.setWorkshopreturnid(workshopReturnId);
-				insertWorkshopRentunDetail(dt);			
-	
-				//更新累计退货			
-				updateContractForWorkshopReturn(workshop,dt);
-			}
-			
-			ts.commit();
-			
-		}catch(Exception e){
-			ts.rollback();
-			System.out.println(e.getMessage());
-		}
-		
-		//跳转到查看页面
-		String contractId = workshop.getContractid();
-		getContractDetailList(contractId);
-
-		getWorkshopReturnList(workshop.getYsid(),contractId);
-	}
-	
-	/**
-	 * 车间退货处理
-	 * @throws Exception
-	 */
-	public void workshopRentunDetailView() throws Exception {
-			
-		String ysid = request.getParameter("YSId");
-		String contractId = request.getParameter("contractId");
-		//跳转到查看页面
-		getContractDetailList(contractId);
-
-		getWorkshopReturnList(ysid,contractId);
-	}
 	
 	private B_PurchaseOrderData geRoutinePurchaseContractId(
 			B_PurchaseOrderData dt,
