@@ -1,8 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-
 <!DOCTYPE HTML>
 <html>
-
 <head>
 <title>领料申请-领料单</title>
 <%@ include file="../../common/common2.jsp"%>
@@ -363,6 +361,24 @@
     		 table.draw();
 	    } );
 		
+	    //加载事件
+        $(function () {
+            var collection = $(".box");
+            $.each(collection, function () {
+                $(this).addClass("start");
+            });
+        });
+        //单击事件
+        $(".box").click(function () { 
+            var collection = $(".box");
+            $.each(collection, function () {
+                $(this).removeClass("end");
+                $(this).addClass("start");
+            });
+            $(this).removeClass("start");
+            $(this).addClass("end");
+        });
+		
 	});
 	
 	function doEdit(contractId,arrivalId) {
@@ -431,13 +447,13 @@
 		<legend> 物料需求表</legend>
 		<div class="list">
 			<div id="DTTT_container" align="left" style="height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
-				<a class="DTTT_button DTTT_button_text" id="all" data-id="4">显示全部</a>
-				<a class="DTTT_button DTTT_button_text" id="wll" data-id="5">未领物料</a>
-				<a class="DTTT_button DTTT_button_text" id="yz" data-id="0">自制品</a>
-				<a class="DTTT_button DTTT_button_text" id="dg" data-id="1">订购件</a>
-				<a class="DTTT_button DTTT_button_text" id="ty" data-id="2">通用件</a>
-				<a class="DTTT_button DTTT_button_text" id="bz" data-id="3">包装品</a>&nbsp;&nbsp;
-				<a class="DTTT_button DTTT_button_text" id="ycl">自制品原材料</a>
+				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
+				<a class="DTTT_button DTTT_button_text box" id="wll" data-id="5">未领物料</a>
+				<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a>
+				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
+				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
+				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>&nbsp;&nbsp;
+				<a class="DTTT_button DTTT_button_text box" id="ycl">自制品原材料</a>
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
 			<!-- 
@@ -575,5 +591,4 @@ function reloadFn(){
 	
 }
 </script>
-
 </html>

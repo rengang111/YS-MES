@@ -610,3 +610,10 @@ pre{
     border-collapse: separate;
     border-spacing: 5px 10px;
 }
+.start{
+   background:white !important;
+    
+}
+.end{
+    background:#86c3e4 !important;
+}
