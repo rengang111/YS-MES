@@ -23,7 +23,7 @@
 		    	{		    		
 		    		return true;
 		    		
-		    	}else if(type=='dg'){
+		    	}else if(type=='dg'){//订购件
 		    		var val1=data[10];
 		    		var val2=data[11];
 		    		var val3=data[1];
@@ -35,7 +35,7 @@
 		    			return true;
 		    		}
 		    		
-		    	}else if(type=='ty'){
+		    	}else if(type=='ty'){//通用件
 		    		var val=data[10];
 		    		var tmp = val.substring(3,0);
 		    		
@@ -43,7 +43,7 @@
 		    			return true;
 		    		}
 		    		
-		    	}else if(type=='bz'){
+		    	}else if(type=='bz'){//包装品
 		    		var val=data[1];
 		    		var tmp = val.substring(0,1);
 		    		
@@ -51,11 +51,27 @@
 		    			return true;
 		    		}
 		    		
-		    	}else if(type=='yz'){
+		    	}else if(type=='yz'){//自制品
 		    		var val=data[11];
 		    		var tmp = val.substring(6,4);
 		    		
 		    		if(tmp == 'YZ'){
+		    			return true;
+		    		}
+		    		
+		    	}else if(type=='ycl'){//原材料
+		    		var val=data[10];
+		    		var tmp = val.substring(3,0);
+		    		
+		    		if(tmp == '050'){
+		    			return true;
+		    		}
+		    		
+		    	}else if(type=='wll'){//未领物料
+		    		var val=data[6];
+		    		var tmp = currencyToFloat(val);
+		    		
+		    		if(tmp <= '0'){
 		    			return true;
 		    		}
 		    		
@@ -126,7 +142,7 @@
 				}, {"data": "manufactureQuantity","className":"td-right"
 				}, {"data": "contractStorage","className":"td-right"	//5
 				}, {"data": "totalRequisition","className":"td-right"
-				}, {"data": "quantityOnHand","className":"td-right"	//7
+				}, {"data": "quantityOnHand","className":"td-right"	//7 可用库存
 				}, {"data": null,"className":"td-right"		//8
 				}, {"data": null,"className":"td-right"		//9
 				}, {"data": "purchaseType","className":"td-right"		//10
@@ -138,41 +154,83 @@
 	    		
 	    		{"targets":2,"render":function(data, type, row){ 					
 					var index=row["rownum"]	
-	    			inputTxt =  '<input type="hidden" id="requisitionList'+index+'.overquantity" name="requisitionList['+index+'].overquantity" value=""/>';
-	    			var name =  jQuery.fixedWidth( row["materialName"],30); 	    			
+	    			var name =  jQuery.fixedWidth( row["materialName"],40);
+					var inputTxt =       '<input type="hidden" id="requisitionList'+index+'.overquantity" name="requisitionList['+index+'].overquantity" value=""/>';
+	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.materialid" name="requisitionList['+index+'].materialid" value="'+row["materialId"]+'"/>';
+	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.contractid" name="requisitionList['+index+'].contractid" value="'+row["contractId"]+'"/>';
+	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.supplierid" name="requisitionList['+index+'].supplierid" value="'+row["supplierId"]+'"/>';
+	    			
 	    			return name + inputTxt;
+                }},
+	    		{"targets":4,"render":function(data, type, row){	    			
+	    			
+	    			var unit = row["unit"];	    			
+	    			var index=row["rownum"]
+	    			var qty = currencyToFloat(row["manufactureQuantity"]);
+	    			var value = '0';
+	    			//alert(unit)
+	    			if(unit == '吨'){
+	    				value = floatToCurrency( qty * 1000 );//转换成公斤
+	    			}else{
+	    				value = floatToCurrency(qty);
+	    			}
+	    								
+	    			return value;				 
                 }},
 	    		{"targets":5,"render":function(data, type, row){	    			
 	    			var val = row["contractMaterialId"];
 	    			var storage = row["contractStorage"];
 	    			var index=row["rownum"]
 	    			if(val == null || val =='')
-	    				storage='-';
-	    			var inputTxt = '<input type="hidden" id="requisitionList'+index+'.materialid" name="requisitionList['+index+'].materialid" value="'+row["materialId"]+'"/>';
-	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.contractid" name="requisitionList['+index+'].contractid" value="'+row["contractId"]+'"/>';
-	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.supplierid" name="requisitionList['+index+'].supplierid" value="'+row["supplierId"]+'"/>';
-				
-	    			return storage + inputTxt;				 
+	    				storage='-';				
+	    			return storage;				 
                 }},
-	    		{"targets":8,"render":function(data, type, row){	    			
-					var index=row["rownum"]
-					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="0"/>';
+	    		{"targets":8,"render":function(data, type, row){	
+	    			
+					var index=row["rownum"];	
+					/*
+					var qtyManuf  = currencyToFloat(row["manufactureQuantity"]);
+					var totalRequ = currencyToFloat(row["totalRequisition"]);	
+					var qtyOnHand = currencyToFloat(row["quantityOnHand"]);
+					var currValue = qtyManuf - totalRequ;
+					
+					if(currValue > 0){//未领完
+						if(qtyOnHand <= currValue)//库存不够
+							currValue = qtyOnHand;
+					}else{//已超领
+						currValue = 0;
+					}
+					currValue = floatToCurrency(currValue);
+					*/
+					var currValue = currencyToFloat(row["manufactureQuantity"]);
+					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="'+currValue+'"/>';
 				
 					return inputTxt;
-                }},
+                }},/*
 	    		{"targets":9,"render":function(data, type, row){	    			
 
-					var quantity = currencyToFloat(row["manufactureQuantity"]);
-					var accumulated = currencyToFloat(row["totalRequisition"]);
+					var qtyManuf  = currencyToFloat(row["manufactureQuantity"]);
+					var totalRequ = currencyToFloat(row["totalRequisition"]);	
+					var qtyOnHand = currencyToFloat(row["quantityOnHand"]);
+					var currValue = qtyManuf - totalRequ;
 					
-					var surplus = (quantity - accumulated);	
+					if(currValue > 0){//未领完
+						if(qtyOnHand <= currValue)//库存不够
+							currValue = qtyOnHand;
+					}else{//已超领
+						currValue = 0;
+					}
+					
+					var surplus = (qtyManuf - totalRequ - currValue);	
+
 					if(surplus < 0)
 						surplus = 0;
 					return floatToCurrency(surplus);
-                }},
+					
+                }},*/
                 {
 					"visible" : false,
-					"targets" : [10,11,12]
+					"targets" : [5,10,11,12]
 				}
 			]
 			
@@ -288,13 +346,18 @@
 		    });
 		});
 		
-		reloadFn();
+		$("#yuancailiao").click(function () { 
+			//$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=getRawM");
+			//$('#formModel').submit();
+		});
+		
+		//reloadFn();
 		
 		foucsInit();
 		
 		var table = $('#example').DataTable();
 		// Event listener to the two range filtering inputs to redraw on input
-	    $('#yz, #ty, #dg, #bz,#all').click( function() {
+	    $('#yz, #ty, #dg, #bz, #all, #ycl, #wll').click( function() {
 	    	
 	    	 $('#selectedPurchaseType').val($(this).attr('id'));
     		 table.draw();
@@ -366,49 +429,51 @@
 
 	<fieldset style="margin-top: -30px;">
 		<legend> 物料需求表</legend>
-		<div id="DTTT_container" align="left" style="height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
-			<a class="DTTT_button DTTT_button_text" id="all" data-id="4">显示全部</a>
-			<a class="DTTT_button DTTT_button_text" id="yz" data-id="0">自制品</a>
-			<a class="DTTT_button DTTT_button_text" id="dg" data-id="1">订购件</a>
-			<a class="DTTT_button DTTT_button_text" id="ty" data-id="2">通用件</a>
-			<a class="DTTT_button DTTT_button_text" id="bz" data-id="3">包装品</a>
-			<input type="hidden" id="selectedPurchaseType" />
+		<div class="list">
+			<div id="DTTT_container" align="left" style="height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
+				<a class="DTTT_button DTTT_button_text" id="all" data-id="4">显示全部</a>
+				<a class="DTTT_button DTTT_button_text" id="wll" data-id="5">未领物料</a>
+				<a class="DTTT_button DTTT_button_text" id="yz" data-id="0">自制品</a>
+				<a class="DTTT_button DTTT_button_text" id="dg" data-id="1">订购件</a>
+				<a class="DTTT_button DTTT_button_text" id="ty" data-id="2">通用件</a>
+				<a class="DTTT_button DTTT_button_text" id="bz" data-id="3">包装品</a>&nbsp;&nbsp;
+				<a class="DTTT_button DTTT_button_text" id="ycl">自制品原材料</a>
+				<input type="hidden" id="selectedPurchaseType" />
+			</div>
+			<!-- 
+			 <table border="0" cellspacing="5" cellpadding="5">
+		        <tbody><tr>
+		            <td>最小年龄:</td>
+		            <td><input type="text" id="min" name="min"></td>
+		        </tr>
+		        <tr>
+		            <td>最大年龄:</td>
+		            <td><input type="text" id="max" name="max"></td>
+		        </tr>
+		        </tbody>
+		    </table>
+		     -->
+			<table id="example" class="display" >
+				<thead>				
+					<tr>
+						<th style="width:1px">No</th>
+						<th class="dt-center" width="120px">物料编号</th>
+						<th class="dt-center" >物料名称</th>				
+						<th class="dt-center" width="60px">基本用量</th>
+						<th class="dt-center" width="60px">计划用量</th>
+						<th class="dt-center" width="60px">已入库</th>
+						<th class="dt-center" width="60px">已领数量</th>
+						<th class="dt-center" width="60px">可用库存</th>
+						<th class="dt-center" width="80px">
+							<input type="checkbox" name="selectall" id="selectall"  checked="checked"/><label for="selectall">本次领料</label></th>
+						<th class="dt-center" width="60px">剩余数量</th>
+						<th class="dt-center" width="60px">物料特性</th>
+						<th class="dt-center" width="60px">供应商</th>
+						<th class="dt-center" width="60px"></th>
+					</tr>
+				</thead>	
+			</table>
 		</div>
-	<!-- 
-	 <table border="0" cellspacing="5" cellpadding="5">
-        <tbody><tr>
-            <td>最小年龄:</td>
-            <td><input type="text" id="min" name="min"></td>
-        </tr>
-        <tr>
-            <td>最大年龄:</td>
-            <td><input type="text" id="max" name="max"></td>
-        </tr>
-        </tbody>
-    </table>
-     -->
-	<table id="example" class="display" >
-		<thead>				
-			<tr>
-				<th style="width:1px">No</th>
-				<th class="dt-center" width="120px">物料编号</th>
-				<th class="dt-center" >物料名称</th>				
-				<th class="dt-center" width="60px">基本用量</th>
-				<th class="dt-center" width="60px">计划用量</th>
-				<th class="dt-center" width="60px">已入库</th>
-				<th class="dt-center" width="60px">已领数量</th>
-				<th class="dt-center" width="60px">可用库存</th>
-				<th class="dt-center" width="80px">
-					<input type="checkbox" name="selectall" id="selectall" /><label for="selectall">本次领料</label></th>
-				<th class="dt-center" width="60px">剩余数量</th>
-				<th class="dt-center" width="60px">物料特性</th>
-				<th class="dt-center" width="60px">供应商</th>
-				<th class="dt-center" width="60px"></th>
-			</tr>
-		</thead>
-		
-	
-</table>
 	</fieldset>
 </form:form>
 
@@ -433,19 +498,48 @@ function showYS(YSId) {
 };
 
 function reloadFn(){
+	
+	$('#example tbody tr').each (function (){
+		
+		var vcontract = $(this).find("td").eq(4).text();////计划用量
+		var vreceive  = $(this).find("td").eq(5).text();//已领量:table初始化时,第五列被隐藏了
+		var vstocks   = $(this).find("td").eq(6).text();//库存
+		var fcontract= currencyToFloat(vcontract);
+		var freceive = currencyToFloat(vreceive);
+		var fstocks  = currencyToFloat(vstocks);
+		//alert("计划用量+已领量+库存:"+fcontract+"---"+freceive+"---"+fstocks)
+		var fsurplus = fcontract - freceive;
+		if(fsurplus < 0)
+			fsurplus = 0;
+		var vsurplus = floatToCurrency(fsurplus);
+		
+		if(fsurplus >= "0"){//未领完的场合下
+			if(fstocks >= fsurplus){//库存大于需求量
+				$(this).find("td").eq(7).find("input").val(vsurplus);//本次领料
+				$(this).find("td").eq(8).html("0")//剩余数清零
+			}else{
+				$(this).find("td").eq(7).find("input").val(floatToCurrency(fstocks));//本次领料
+				$(this).find("td").eq(8).html(floatToCurrency( fsurplus - fstocks ));//剩余数清零							
+			}
+		}
+		
+		
+	});	
+	
 	$("#selectall").click(function () { 
 		
 		var sltFlag = $(this).prop("checked");
 			
+		var flg = true;
 		$('#example tbody tr').each (function (){
 		
 			var vcontract = $(this).find("td").eq(4).text();////计划用量
-			var vreceive  = $(this).find("td").eq(6).text();//已领量
-			var vstocks   = $(this).find("td").eq(7).text();//库存
-
+			var vreceive  = $(this).find("td").eq(5).text();//已领量:table初始化时,第五列被隐藏了
+			var vstocks   = $(this).find("td").eq(6).text();//库存
 			var fcontract= currencyToFloat(vcontract);
 			var freceive = currencyToFloat(vreceive);
 			var fstocks  = currencyToFloat(vstocks);
+			//alert("计划用量+已领量+库存:"+fcontract+"---"+freceive+"---"+fstocks)
 			var fsurplus = fcontract - freceive;
 			if(fsurplus < 0)
 				fsurplus = 0;
@@ -455,19 +549,24 @@ function reloadFn(){
 				
 				if(fsurplus > "0"){//未领完的场合下
 					if(fstocks >= fsurplus){//库存大于需求量
-						$(this).find("td").eq(8).find("input").val(vsurplus);//本次领料
-						$(this).find("td").eq(9).html("0")//剩余数清零
+						$(this).find("td").eq(7).find("input").val(vsurplus);//本次领料
+						$(this).find("td").eq(8).html("0")//剩余数清零
 					}else{
-						$(this).find("td").eq(8).find("input").val(fstocks);//本次领料
-						$(this).find("td").eq(9).html(floatToCurrency( fsurplus - fstocks ));//剩余数清零							
+						$(this).find("td").eq(7).find("input").val(fstocks);//本次领料
+						$(this).find("td").eq(8).html(floatToCurrency( fsurplus - fstocks ));//剩余数清零							
 					}
 				}else{//超领
 					
 				}
 			
 			}else{//取消一次性全部领料
-				$(this).find("td").eq(8).find("input").val("0");//本次到货清零
-				$(this).find("td").eq(9).html(vsurplus);//剩余数
+				if(flg == true){
+
+					//alert(11)
+					flg = false;
+				}
+				$(this).find("td").eq(7).find("input").val("0");//本次到货清零
+				$(this).find("td").eq(8).html(vsurplus);//剩余数
 			}		
 		})			
 	
@@ -475,7 +574,6 @@ function reloadFn(){
 	});
 	
 }
-
 </script>
 
 </html>

@@ -261,6 +261,7 @@ public class QueryInfoBean {
 			sqlCount.append(" UNION ");
 			sql.append(unionSql);
 			sqlCount.append(unionSql);
+			sql.append(definedOrderBy.getSql());
 			sql.append(" ");
 			sqlCount.append(" ");
 		}

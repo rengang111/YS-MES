@@ -48,15 +48,43 @@
       <f name="unitQuantity" alias="" ctype="" />
       <f name="unit" alias="" ctype="计量单位" />
       <f name="contractMaterialId" alias="" ctype="" />
-      <f name="purchaseType" alias="" ctype="物料采购类别" />
-      <f name="totalWorkshopReturn" alias="" ctype="" />
+      <f name="purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
+      <f name="purchaseType" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
    <from>v_createrequisitionfromplan AS A WHERE  A.deleteFlag = '0'</from>
-    <orderby>A.materialId</orderby>
+  
     <groupby></groupby>
     <having></having>
+    
+    <union>
+	    <where>
+    		<w name="b.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+	    </where>	    
+	    <select>
+	      <f name="''" alias="recordId" ctype="" />
+	      <f name="c.YSId" alias="YSId" ctype="" />
+	      <f name="b.rawMaterialId" alias="materialId" ctype="" />
+	      <f name="b.materialName" alias="" ctype="" />
+	      <f name="''" alias="contractId" ctype="" />
+	      <f name="''" alias="supplierId" ctype="" />
+	      <f name="b.totalQuantity" alias="manufactureQuantity" ctype="" />
+	      <f name="''" alias="contractStorage" ctype="" />
+	      <f name="quantityOnHand" alias="" ctype="" />
+	      <f name="b.availabelToPromise" alias="" ctype="" />
+	      <f name="IFNULL(c.quantity,'0.00')" alias="totalRequisition" ctype="" />
+	      <f name="'-'" alias="unitQuantity" ctype="" />
+	      <f name="b.unit" alias="" ctype="计量单位" />
+	      <f name="''" alias="contractMaterialId" ctype="" />
+	      <f name="'原材料'" alias="purchaseTypeName" ctype="物料采购类别" />
+	      <f name="'050'" alias="purchaseType" ctype="" />
+	    </select>
+	    <from>v_purchaseplandetailzz b LEFT JOIN v_requisitiondetailgroup c ON b.rawMaterialId=c.materialId AND b.YSId=c.YSId AND c.deleteFlag='0' where</from>	
+	    <groupby></groupby>
+	    <having></having>
+    </union>
+    <orderby>materialId</orderby>
 	<power></power>    
   </query>
   <query>

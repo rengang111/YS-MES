@@ -226,7 +226,7 @@ public class RequisitionService extends CommonService {
 				insertRequisitionDetail(data);
 								
 				//更新累计领料数量
-				updatePurchasePlan(YSId,data.getMaterialid(),quantity);
+				//updatePurchasePlan(YSId,data.getMaterialid(),quantity);
 				
 				//更新库存
 				updateMaterialStock(data.getMaterialid(),quantity,overQuty);
@@ -282,7 +282,7 @@ public class RequisitionService extends CommonService {
 				insertRequisitionDetail(data);
 								
 				//更新累计领料数量
-				updatePurchasePlan(YSId,data.getMaterialid(),quantity);
+				//updatePurchasePlan(YSId,data.getMaterialid(),quantity);
 				
 				//更新库存
 				updateMaterialStock(data.getMaterialid(),quantity,overQuty);
@@ -480,7 +480,7 @@ public class RequisitionService extends CommonService {
 			//更新累计领料数量(恢复)
 			String mateId = dt.getMaterialid();
 			float quantity = (-1) * stringToFloat(dt.getQuantity());
-			updatePurchasePlan(YSId,mateId,quantity);
+			//updatePurchasePlan(YSId,mateId,quantity);
 			
 			//更新库存(恢复)
 			float overQuty = (-1) * stringToFloat(dt.getOverquantity());
