@@ -78,9 +78,8 @@ public class WorkshopReturnAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;			
 			case "createWorkshopRentunInit"://车间退货:新建
-				createWorkshopRentunInit();
+				rtnUrl = createWorkshopRentunInit();
 				//printOutJsonObj(response, dataMap);
-				rtnUrl = "/business/purchase/workshopreturnadd";
 				break;				
 			case "createWorkshopRentun"://车间退货:新建保存
 				createWorkshopRentun();
@@ -184,9 +183,13 @@ public class WorkshopReturnAction extends BaseAction {
 		return service.getWorkshopReturnList(YSId,"");
 	}
 	
-	public void createWorkshopRentunInit() throws Exception{
+	public String createWorkshopRentunInit() throws Exception{
 
-		service.createWorkshopRentunInit();
+		String rtnUrl = "/business/purchase/workshopreturnadd";
+		String flag = service.createWorkshopRentunInit();
+		if("查看".equals(flag))
+			rtnUrl = "/business/purchase/workshopreturnview";
+		return rtnUrl;
 	}
 	
 	

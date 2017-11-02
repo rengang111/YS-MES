@@ -738,6 +738,7 @@ public class StorageService extends CommonService {
 		copyProperties(data,commData);
 	
 		if(orderQuan == totalQuan){
+			data.setStoragedate(CalendarUtil.fmtYmdDate());
 			data.setStatus(Constants.ORDER_STS_4);//已入库
 		}else{
 			data.setStatus(Constants.ORDER_STS_3);//待交货			

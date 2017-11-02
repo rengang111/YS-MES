@@ -12,7 +12,7 @@
 		var type =  $('#selectedPurchaseType').val();
 		       	
 		    	
-		    	var data11=data[11];
+		    	var data11=data[10];
 		    	var data01=data[1];
 		        var data011 = data01.substring(0,1)
 			   
@@ -22,8 +22,8 @@
 		    		return true;
 		    		
 		    	}else if(type=='dg'){//订购件
-		    		var val1=data[10];
-		    		var val2=data[11];
+		    		var val1=data[9];
+		    		var val2=data[10];
 		    		var val3=data[1];
 		    		var tmp3 = val3.substring(0,1);
 		    		var tmp2 = val2.substring(6,4);
@@ -34,7 +34,7 @@
 		    		}
 		    		
 		    	}else if(type=='ty'){//通用件
-		    		var val=data[10];
+		    		var val=data[9];
 		    		var tmp = val.substring(3,0);
 		    		
 		    		if(tmp == '020'){
@@ -50,7 +50,7 @@
 		    		}
 		    		
 		    	}else if(type=='yz'){//自制品
-		    		var val=data[11];
+		    		var val=data[10];
 		    		var tmp = val.substring(6,4);
 		    		
 		    		if(tmp == 'YZ'){
@@ -58,7 +58,7 @@
 		    		}
 		    		
 		    	}else if(type=='ycl'){//原材料
-		    		var val=data[10];
+		    		var val=data[9];
 		    		var tmp = val.substring(3,0);
 		    		
 		    		if(tmp == '050'){
@@ -66,10 +66,12 @@
 		    		}
 		    		
 		    	}else if(type=='wll'){//未领物料
-		    		var val=data[6];
-		    		var tmp = currencyToFloat(val);
+		    		var val5=data[5];//已领数量
+		    		var val4=data[4];//计划用量
+		    		var jihua = currencyToFloat(val4);
+		    		var yiling = currencyToFloat(val5);
 		    		
-		    		if(tmp <= '0'){
+		    		if(yiling < jihua){
 		    			return true;
 		    		}
 		    		
@@ -133,19 +135,17 @@
         		"url":"${ctx}/plugins/datatables/chinese.json"
         	},
 			"columns" : [
-		        	{"data": null,"className":"dt-body-center"
-				}, {"data": "materialId","className":"td-left"
-				}, {"data": "materialName",
+		        	{"data": null,"className":"dt-body-center"//0
+				}, {"data": "materialId","className":"td-left"//1
+				}, {"data": "materialName",						//2
 				}, {"data": "unitQuantity","className":"td-right"	//3
-				}, {"data": "manufactureQuantity","className":"td-right"
-				}, {"data": "contractStorage","className":"td-right"	//5
-				}, {"data": "totalRequisition","className":"td-right"
-				}, {"data": "quantityOnHand","className":"td-right"	//7 可用库存
-				}, {"data": null,"className":"td-right"		//8
-				}, {"data": null,"className":"td-right"		//9
-				}, {"data": "purchaseType","className":"td-right"		//10
-				}, {"data": "supplierId","className":"td-right"		//11
-				}, {"data": null,"className":"td-right"		//12
+				}, {"data": "manufactureQuantity","className":"td-right"//4
+				}, {"data": "totalRequisition","className":"td-right"//5
+				}, {"data": "quantityOnHand","className":"td-right"	//6 可用库存
+				}, {"data": null,"className":"td-right"		//7
+				}, {"data": null,"className":"td-right","defaultContent" : '0'		//8
+				}, {"data": "purchaseType","className":"td-right"		//9
+				}, {"data": "supplierId","className":"td-right"		//10
 				}
 			],
 			"columnDefs":[
@@ -175,15 +175,7 @@
 	    								
 	    			return value;				 
                 }},
-	    		{"targets":5,"render":function(data, type, row){	    			
-	    			var val = row["contractMaterialId"];
-	    			var storage = row["contractStorage"];
-	    			var index=row["rownum"]
-	    			if(val == null || val =='')
-	    				storage='-';				
-	    			return storage;				 
-                }},
-	    		{"targets":8,"render":function(data, type, row){	
+	    		{"targets":7,"render":function(data, type, row){	
 	    			
 					var index=row["rownum"];	
 					/*
@@ -228,7 +220,7 @@
                 }},*/
                 {
 					"visible" : false,
-					"targets" : [5,10,11,12]
+					"targets" : [9,10]
 				}
 			]
 			
@@ -333,6 +325,11 @@
 		
 		$("#insert").click(
 				function() {
+			var submitFlg = $('#requrisitionFlag').val();
+			if(submitFlg == '0'){
+				alert("该订单物料已全部领完。")
+				return;
+			}
 					
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insert");
 			$('#formModel').submit();
@@ -400,6 +397,7 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<input type="hidden" id="goBackFlag" />
+	<input type="hidden" id="requrisitionFlag" value="0"/>
 	<form:hidden path="requisition.ysid"  value="${order.YSId }" />
 	<fieldset>
 		<legend> 领料单</legend>
@@ -477,15 +475,13 @@
 						<th class="dt-center" >物料名称</th>				
 						<th class="dt-center" width="60px">基本用量</th>
 						<th class="dt-center" width="60px">计划用量</th>
-						<th class="dt-center" width="60px">已入库</th>
 						<th class="dt-center" width="60px">已领数量</th>
 						<th class="dt-center" width="60px">可用库存</th>
 						<th class="dt-center" width="80px">
 							<input type="checkbox" name="selectall" id="selectall"  checked="checked"/><label for="selectall">本次领料</label></th>
 						<th class="dt-center" width="60px">剩余数量</th>
-						<th class="dt-center" width="60px">物料特性</th>
-						<th class="dt-center" width="60px">供应商</th>
-						<th class="dt-center" width="60px"></th>
+						<th class="dt-center" width="1px"></th>
+						<th class="dt-center" width="1px"></th>
 					</tr>
 				</thead>	
 			</table>
@@ -515,38 +511,45 @@ function showYS(YSId) {
 
 function reloadFn(){
 	
+	var countValue = '0';
+
+	//alert("countValue1:"+countValue)
 	$('#example tbody tr').each (function (){
 		
-		var vcontract = $(this).find("td").eq(4).text();////计划用量
-		var vreceive  = $(this).find("td").eq(5).text();//已领量:table初始化时,第五列被隐藏了
-		var vstocks   = $(this).find("td").eq(6).text();//库存
-		var fcontract= currencyToFloat(vcontract);
-		var freceive = currencyToFloat(vreceive);
-		var fstocks  = currencyToFloat(vstocks);
-		//alert("计划用量+已领量+库存:"+fcontract+"---"+freceive+"---"+fstocks)
-		var fsurplus = fcontract - freceive;
-		if(fsurplus < 0)
-			fsurplus = 0;
-		var vsurplus = floatToCurrency(fsurplus);
-		
-		if(fsurplus >= "0"){//未领完的场合下
-			if(fstocks >= fsurplus){//库存大于需求量
-				$(this).find("td").eq(7).find("input").val(vsurplus);//本次领料
+		var jihua = $(this).find("td").eq(4).text();////计划用量
+		var yiling  = $(this).find("td").eq(5).text();//已领量:table初始化时,第五列被隐藏了
+		var kucun   = $(this).find("td").eq(6).text();//库存
+		var fjihua= currencyToFloat(jihua);
+		var fyiling = currencyToFloat(yiling);
+		var fkucun  = currencyToFloat(kucun);
+		//alert("计划用量+已领量+库存:"+fjihua+"---"+fyiling+"---"+fkucun)
+		var fsurplus = fjihua - fyiling;
+				
+		if(fsurplus > 0){//未领完的场合下
+			if(fkucun >= fsurplus){//库存大于需求量
+				$(this).find("td").eq(7).find("input").val(floatToCurrency(fsurplus));//本次领料
 				$(this).find("td").eq(8).html("0")//剩余数清零
+				countValue++;//累计未领完的物料
 			}else{
-				$(this).find("td").eq(7).find("input").val(floatToCurrency(fstocks));//本次领料
-				$(this).find("td").eq(8).html(floatToCurrency( fsurplus - fstocks ));//剩余数清零							
+				$(this).find("td").eq(7).find("input").val(floatToCurrency(fkucun));//本次领料
+				$(this).find("td").eq(8).html(floatToCurrency( fsurplus - fkucun ));//剩余数清零							
 			}
+		}else{
+			fsurplus = 0;
+			$(this).find("td").eq(7).find("input").val(fsurplus);//本次领料清零
+			$(this).find("td").eq(8).html(fsurplus);//剩余数清零
 		}
 		
 		
 	});	
+
+	if(countValue > '0')
+		$('#requrisitionFlag').val('1');//是否可以继续领料标识
 	
 	$("#selectall").click(function () { 
 		
 		var sltFlag = $(this).prop("checked");
 			
-		var flg = true;
 		$('#example tbody tr').each (function (){
 		
 			var vcontract = $(this).find("td").eq(4).text();////计划用量
@@ -576,12 +579,7 @@ function reloadFn(){
 				}
 			
 			}else{//取消一次性全部领料
-				if(flg == true){
-
-					//alert(11)
-					flg = false;
-				}
-				$(this).find("td").eq(7).find("input").val("0");//本次到货清零
+				$(this).find("td").eq(7).find("input").val("0");//本次领料清零
 				$(this).find("td").eq(8).html(vsurplus);//剩余数
 			}		
 		})			

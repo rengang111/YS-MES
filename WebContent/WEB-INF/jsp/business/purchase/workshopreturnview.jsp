@@ -105,6 +105,11 @@
 			
 		
 		$("#addInit").click(function() {
+			var status = $('#orderStatus').val();
+			if(status == '040'){
+				alert('该订单已入库，关闭车间退货录入。');
+				return;
+			}
 			var YSId = '${ order.YSId }';
 			var url =  "${ctx}/business/workshopReturn?methodtype=createWorkshopRentunInit&YSId="+YSId;
 			location.href = url;	
@@ -162,6 +167,8 @@
 			
 		<form:hidden path="workshopReturn.recordid" value="${order.recordId }"/>
 		<form:hidden path="workshopReturn.ysid" value="${order.YSId }"/>
+		<input type="hidden" id ="orderStatus" value = "${orderStatus }" />
+		
 		<fieldset>
 			<legend> 采购合同</legend>
 			<table class="form" id="table_form">

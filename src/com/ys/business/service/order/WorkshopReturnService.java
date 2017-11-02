@@ -216,29 +216,40 @@ public class WorkshopReturnService extends CommonService {
 	}		
 	
 	
-	public HashMap<String, Object> getOrderDetail(
+	public String getOrderDetail(
 			String YSId) throws Exception {
-		
+		String status = "";
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderViewByPIId");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
-		model.addAttribute("order",dataModel.getYsViewData().get(0));
-		
-		return modelMap;		
+		if(dataModel.getRecordCount() > 0){
+			model.addAttribute("order",dataModel.getYsViewData().get(0));
+			status = dataModel.getYsViewData().get(0).get("status");
+		}
+		return status;		
 	}
 
-	public void createWorkshopRentunInit() throws Exception {
-
+	public String createWorkshopRentunInit() throws Exception {
+		
+		String rtnFlg = "新规";
 		String YSId = request.getParameter("YSId");
 		if(YSId== null || ("").equals(YSId))
-			return;
-		
+			return null;
+				
 		//订单详情
-		getOrderDetail(YSId);
+		String status = getOrderDetail(YSId);
 	
+		//确认订单是否完全入库
+		if(Constants.ORDER_STS_4.equals(status)){
+
+			rtnFlg = "查看";
+			model.addAttribute("orderStatus",status);
+		}
+		
+		return rtnFlg;
 	}
 	
 
