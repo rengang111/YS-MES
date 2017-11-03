@@ -7,7 +7,7 @@
 <title>采购合同一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,status) {
+	function ajax(status,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -15,7 +15,7 @@
 		}
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
-			 "iDisplayLength" : 50,
+			 "iDisplayLength" : 100,
 			"lengthChange":false,
 			//"lengthMenu":[10,150,200],//设置一页展示20条记录
 			"processing" : true,
@@ -25,7 +25,7 @@
 			"searching" : false,
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
-			"sAjaxSource" : "${ctx}/business/contract?methodtype=search&keyBackup="+pageFlg+"&status="+status,
+			"sAjaxSource" : "${ctx}/business/contract?methodtype=search&sessionFlag="+sessionFlag+"&status="+status,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -59,7 +59,7 @@
 				{"data": "purchaseDate", "defaultContent" : ''},
 				{"data": "quantity", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "contractStorage", "defaultContent" : '',"className" : 'td-right'},
-				{"data": "returnGoods", "defaultContent" : '',"className" : 'td-right'},
+				{"data": "returnQty", "defaultContent" : '0',"className" : 'td-right'},
 			
 			],
 			"columnDefs":[
@@ -106,30 +106,20 @@
 
 	$(document).ready(function() {
 		
-
-		var keyBackup = $("#keyBackup").val();
-
-		if(keyBackup ==""){
-
-			ajax("","010");
-		}else{
-			ajax("","");
-			
-		}
-		
+		ajax("010","true");				
 		
 	})	
 	
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("purchaseOrderMain","");
+		ajax("","false");
 
 	}
 
 	//合同状态
 	function doSearchCustomer(type){
-		ajax('purchaseOrderMain',type);
+		ajax(type,"false");
 	}
 	
 	function doShowYS(YSId) {

@@ -214,8 +214,9 @@
       <f name="A.returnGoods" alias="" ctype="" />
       <f name="A.deliveryDate" alias="" ctype="" />
       <f name="FORMAT(REPLACE(A.quantity,',',''),2)" alias="quantity" ctype="" />
+      <f name="IFNULL(b.quantity,'0')" alias="returnQty" ctype="" />
     </select>
-    <from>v_purchaseorderdetail3 a  WHERE a.deleteFlag = '0' </from>
+    <from>v_purchaseorderdetail3 a  left join v_workshopreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId and b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
     <orderby>a.modifyTime DESC,A.contractId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -367,34 +368,35 @@
     	<w name="contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
-      <f name="YSId" alias="" ctype="" />
-      <f name="IFNULL(productId,'')" alias="productId" ctype="" />
-      <f name="productName" alias="" ctype="" />
-      <f name="materialId" alias="" ctype="" />
-      <f name="materialName" alias="" ctype="" />
-      <f name="materialParentId" alias="" ctype="" />
-      <f name="materialRecordId" alias="" ctype="" />
-      <f name="recordId" alias="" ctype="" />
-      <f name="contractId" alias="" ctype="" />
-      <f name="quantity" alias="" ctype="" />
-      <f name="price" alias="" ctype="" />
-      <f name="totalPrice" alias="" ctype="" />
-      <f name="supplierId" alias="" ctype="" />
-      <f name="shortName" alias="shortName" ctype="" />
-      <f name="supplierName" alias="fullName" ctype="" />
-      <f name="purchaseDate" alias="" ctype="" />
-      <f name="deliveryDate" alias="" ctype="" />
-      <f name="total" alias="" ctype="" />
-      <f name="memo" alias="" ctype="" />
-      <f name="unit" alias="" ctype="计量单位" />
-      <f name="productParentId" alias="" ctype="" />
-      <f name="productRecordId" alias="" ctype="" />
-      <f name="productUnit" alias="" ctype="计量单位" />
-      <f name="contractRecordId" alias="" ctype="" />
+  	  <f name="a.YSId" alias="" ctype="" />
+      <f name="IFNULL(a.productId,'')" alias="productId" ctype="" />
+      <f name="a.productName" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.materialParentId" alias="" ctype="" />
+      <f name="a.materialRecordId" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.quantity" alias="" ctype="" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="shortName" ctype="" />
+      <f name="a.supplierName" alias="fullName" ctype="" />
+      <f name="a.purchaseDate" alias="" ctype="" />
+      <f name="a.deliveryDate" alias="" ctype="" />
+      <f name="a.total" alias="" ctype="" />
+      <f name="a.memo" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.productParentId" alias="" ctype="" />
+      <f name="a.productRecordId" alias="" ctype="" />
+      <f name="a.productUnit" alias="" ctype="计量单位" />
+      <f name="a.contractRecordId" alias="" ctype="" />
+      <f name="IFNULL(b.quantity,'0')" alias="returnQty" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseorderdetail</from>
+   <from>v_purchaseorderdetail a left join v_workshopreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId and b.deleteFlag='0'</from>
     <orderby>materialId</orderby>
     <groupby></groupby>
     <having></having>

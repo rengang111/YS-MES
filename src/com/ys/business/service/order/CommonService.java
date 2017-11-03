@@ -861,4 +861,21 @@ public class CommonService extends BaseService {
 			System.out.println(e.getMessage());
 		}		
 	}
+	
+	public boolean isNullOrEmpty(String value){
+		boolean rtn = false;
+		if(value == null || ("").equals(value.trim())){
+			rtn = true;
+		}
+		return rtn;
+	}
+
+	public boolean notEmpty(String value){
+		boolean rtn = true;
+		if(value == null || 
+			("").equals(value.trim())){
+			rtn = false;
+		}
+		return rtn;
+	}
 }

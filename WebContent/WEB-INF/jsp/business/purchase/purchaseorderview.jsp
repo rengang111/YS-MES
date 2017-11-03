@@ -37,6 +37,7 @@
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
+					}, {"className":"td-right"				
 					}			
 				]
 			
@@ -102,9 +103,8 @@
 			$('#attrForm').submit();
 		});		
 		
-	
-
-
+		sumFn();//合计值计算
+		
 	});	
 	
 	function doShowYS(YSId) {
@@ -141,7 +141,32 @@
 
 	};
 	
-	
+	function sumFn(){
+		
+		var sum7 = 0;
+		var sum8 = 0;
+		var sum9 = 0;
+		$('#example tbody tr').each (function (){
+			
+			var contractValue = $(this).find("td").eq(6).text();////合同
+			var returnValue  = $(this).find("td").eq(7).text();//退货
+			var payValue   = $(this).find("td").eq(8).text();//应付
+			
+			contractValue= currencyToFloat(contractValue);
+			returnValue = currencyToFloat(returnValue);
+			payValue  = currencyToFloat(payValue);
+			//alert("计划用量+已领量+库存:"+fjihua+"---"+fyiling+"---"+fkucun)
+			
+			sum7 = sum7 + contractValue;
+			sum8 = sum8 + returnValue;
+			sum9 = sum9 + payValue;
+						
+		});	
+		
+		$('#contractValue').html(floatToCurrency(sum7));
+		$('#returnValue').html(floatToCurrency(sum8));
+		$('#payValue').html(floatToCurrency(sum9));
+	}
 </script>
 
 </head>
@@ -192,9 +217,9 @@
 					<td class="label"><label>下单日期：</label></td>
 					<td>${ contract.purchaseDate }</td>
 					<td class="label"><label>合同交期：</label></td>
-					<td width="150px">${ contract.deliveryDate }</td>
+					<td width="150px">${ contract.deliveryDate }</td><!--
 					<td class="label" width="100px"><label>合同金额：</label></td>
-					<td>${ contract.total }</td>
+					<td>  ${ contract.total }</td>-->
 				</tr>									
 			</table>
 			
@@ -209,24 +234,6 @@
 	<div style="clear: both"></div>		
 	<fieldset style="margin-top: -30px;">
 	<legend> 合同详情</legend>
-	<div id="tabs" style="margin: -6px 0px 0px 5px; float: right; padding: 0px;">
-		<ul>
-			<li><a href="#tabs-1" style="font-size: 11px;">描述</a></li>
-			<li><a href="#tabs-2" style="font-size: 11px;">图片</a></li>
-		</ul>
-
-		<div id="tabs-2" style="padding: 5px;">
-			<img id="productImage"
-				src="${ctx}/css/images/blankDemo.png"
-				style="width: 280px; height: 210px;" />
-		</div>
-
-		<div id="tabs-1" style="padding: 5px;">
-			<div id="productDetail" style="width: 280px; height: 210px;"></div>
-		</div>
-
-	</div>
-	<div id="floatTable" style="width: 70%; float: left; margin: 5px 0px 0px 0px;">
 	
 	<div class="list">
 	<table id="example" class="display" >	
@@ -235,11 +242,12 @@
 			<th style="width:10px">No</th>
 			<th style="width:130px">物料编码</th>
 			<th>物料名称</th>
-			<th style="width:30px">单位</th>
-			<th style="width:50px">数量</th>
+			<th style="width:50px">合同数</th>
+			<th style="width:40px">退货数</th>
 			<th style="width:50px">单价</th>
-			<th style="width:50px">总价</th>
-			<th style="width:1px"></th>
+			<th style="width:60px">合同额</th>
+			<th style="width:50px">退货额</th>
+			<th style="width:60px">应付款</th>
 		</tr>
 		</thead>		
 		<tbody>
@@ -249,18 +257,30 @@
 					<td><a href="###" onClick="doEditMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
 						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
 					<td><span id="name${status.index}"></span></td>					
-					<td>${ detail.unit }</td>
-					<td>${ detail.quantity}   <form:hidden path="detailList[${status.index}].quantity" value="${detail.quantity}"/></td>							
-					<td>${ detail.price }     <form:hidden path="detailList[${status.index}].price" value="${detail.price}" /></td>
-					<td>${ detail.totalPrice }<form:hidden path="detailList[${status.index}].totalprice" value="${detail.totalPrice}" /></td>				
-					<td>					  <form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" /></td>				
+				
+					<td>${ detail.quantity}   </td>								
+					<td><span id="returnQty${status.index }">${ detail.returnQty }</span></td>		
+					<td>${ detail.price }</td>
+					<td>${ detail.totalPrice }</td>					
+					<td><span id="returnValue${status.index }"></span></td>				
+					<td><span id="pay${status.index }"></span></td>			
+									
 				</tr>	
 								
 				<script type="text/javascript">
 					var materialName = '${detail.materialName}';
 					var index = '${status.index}';
+					var contractQty = currencyToFloat('${detail.quantity}');
+					var returnQty = currencyToFloat('{${detail.returnQty}');
+					var price = currencyToFloat('${detail.price}');
+//alert("合同数量+退货数量+单价"+contractQty+"---"+returnQty+"---"+price)
+					var contractValue = contractQty * price;
+					var returnValue = floatToCurrency( returnQty * price );
+					var pay = floatToCurrency( contractValue - returnValue );
 					
-					$('#name'+index).html(jQuery.fixedWidth(materialName,30));
+					$('#name'+index).html(jQuery.fixedWidth(materialName,45));
+					$('#returnValue'+index).html(returnValue);
+					$('#pay'+index).html(pay);
 										
 				</script>	
 					
@@ -274,13 +294,13 @@
 				<td></td>
 				<td></td>
 				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td class="font16">合计：</td>
+				<td class="font16"><div id="contractValue"></div></td>
+				<td class="font16"><div id="returnValue"></div></td>
+				<td class="font16"><div id="payValue"></div></td>
 			</tr>
 		</tfoot>
 	</table>
-	</div>
 	</div>
 	</fieldset>
 	<fieldset>

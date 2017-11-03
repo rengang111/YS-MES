@@ -107,7 +107,7 @@
 		$("#addInit").click(function() {
 			var status = $('#orderStatus').val();
 			if(status == '040'){
-				alert('该订单已入库，关闭车间退货录入。');
+				alert('该订单已入库完毕，关闭车间退货录入。');
 				return;
 			}
 			var YSId = '${ order.YSId }';
