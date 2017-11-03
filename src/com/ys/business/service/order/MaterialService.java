@@ -116,6 +116,9 @@ public class MaterialService extends CommonService implements I_BaseService{
 		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2) ){
+			userDefinedSearchCase.put("purchaseType", "");
+		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);
 		baseQuery.getYsQueryData(sql,iStart, iEnd);

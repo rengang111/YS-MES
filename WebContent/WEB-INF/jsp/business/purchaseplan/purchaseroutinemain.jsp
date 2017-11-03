@@ -8,13 +8,14 @@
 <title>常规采购</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,type,scrollHeight) {
+	function ajax(pageFlg,type,scrollHeight,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 		var url = "${ctx}/business/material?methodtype=searchPurchaseRoutine"+"&keyBackup="+pageFlg+type;
+		url = url + "&sessionFlag="+sessionFlag;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": false,
@@ -47,6 +48,8 @@
 						"data" : JSON.stringify(aoData),
 						success: function(data){							
 							fnCallback(data);
+							$("#keyword1").val(data["keyword1"]);
+							$("#keyword2").val(data["keyword2"]);	
 
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -70,7 +73,7 @@
 						],
 				"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row){
-							return "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 	                   //row["rownum"] + 
 			    		}},
 			    		{"targets":1,"render":function(data, type, row){
@@ -89,8 +92,8 @@
 			    			var name = row["categoryName"];				    			
 			    			name = jQuery.fixedWidth(name,20);				    			
 			    			return name;
-			    		}}
-			    		//,  { type: 'any-number', targets : 0 }
+			    		}},
+			    		{ "bSortable": false, "aTargets": [ 0 ] }
 		           
 		         ] 
 			});
@@ -122,7 +125,7 @@
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		var scrollHeight = $(document).height() - 200; 
 		var type = "";
-		ajax("purchaseRoutineMain",type,scrollHeight);
+		ajax("purchaseRoutineMain",type,scrollHeight,"true");
 
 	}
 	
@@ -132,7 +135,7 @@
 		$("#keyword2").val("");
 		var scrollHeight = $(document).height() - 200; 
 		var type = "&purchaseType="+str;
-		ajax("purchaseRoutineMain",type,scrollHeight);
+		ajax("purchaseRoutineMain",type,scrollHeight,"false");
 
 	}
 	
@@ -218,7 +221,29 @@
 		
 		return true;
 	}
+	function fnselectall() { 
+		if($("#selectall").prop("checked")){
+			$("input[name='numCheck']").each(function() {
+				$(this).prop("checked", true);
+				$(this).parent().parent().addClass("selected");
+			});
+				
+		}else{
+			$("input[name='numCheck']").each(function() {
+				if($(this).prop("checked")){
+					$(this).removeAttr("checked");
+					$(this).parent().parent().removeClass('selected');
+				}
+			});
+		}
+	};
 	
+	function fnreverse() { 
+		$("input[name='numCheck']").each(function () {  
+	        $(this).prop("checked", !$(this).prop("checked"));  
+			$(this).parent().parent().toggleClass("selected");
+	    });
+	};
 	
 </script>
 </head>
@@ -269,8 +294,10 @@
 					<div id="clear"></div>
 					<table style="width: 100%;" id="TMaterial" class="display">
 						<thead>						
-							<tr>
-								<th style="width: 30px;" aria-label="No:" class="dt-middle ">No</th>
+							<tr>					
+								<th width="50px">
+									<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
+									<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
 								<th style="width: 100px;" class="dt-middle ">物料编号</th>
 								<th class="dt-middle">物料名称</th>
 								<th style="width: 70px;" class="dt-middle">物料分类</th>
