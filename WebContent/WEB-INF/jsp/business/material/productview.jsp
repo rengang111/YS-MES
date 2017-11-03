@@ -320,19 +320,18 @@ function baseBomView() {
 	//alert(materialId)
 	var table = $('#baseBomTable').dataTable();
 	if(table) {
-		table.fnClearTable();
+		table.fnClearTable(false);
 		table.fnDestroy();
 	}
 	var t2 = $('#baseBomTable').DataTable({
 		"paging": false,
-		"processing" : true,
+		"processing" : false,
 		"serverSide" : false,
 		"stateSave" : false,
 		"searching" : false,
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
-		"bSort":false,
-		"async" : false,
+		"async" : true,
 		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,	
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
@@ -342,10 +341,14 @@ function baseBomView() {
 				"type" : "POST",
 				"data" : null,
 				success: function(data){
+					
 					fnCallback(data);
-					//alert('unit:'+data['data'][0]['unit'])
+					
+					if(data['recordsTotal'] == '0')
+						return;
+					
 					$('#recordsTotal').val(data['recordsTotal']);
-
+					
 					var recordId  = data['data'][0]['productRecord'];
 					var bomId     = data['data'][0]['bomId'];
 					var parentId  = data['data'][0]['productParentId'];
@@ -380,7 +383,8 @@ function baseBomView() {
 					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
-	             }
+	             alert(errorThrown)
+				 }
 			})
 		},
        	"language": {
@@ -471,6 +475,7 @@ function quotationView() {
 
 	var table = $('#TQuotation').dataTable();
 	if(table) {
+		table.fnClearTable(false);
 		table.fnDestroy();
 	}
 	
@@ -486,8 +491,7 @@ function quotationView() {
 		"retrieve" : false,
 		"async" : true,
 		"sAjaxSource" : "${ctx}/business/quotation?methodtype=getQuotationBom&materialId="+materialId,				
-		"fnServerData" : function(sSource, aoData, fnCallback) {
-				
+		"fnServerData" : function(sSource, aoData, fnCallback) {			
 			$.ajax({
 				"url" : sSource,
 				"datatype": "json", 
@@ -495,8 +499,10 @@ function quotationView() {
 				"type" : "POST",
 				"data" : null,
 				success: function(data){
+					
 						fnCallback(data);
-						
+						if(data["recordsTotal"] == "0")
+							return;
 						var mateCost1  = data['data'][0]['materialCost'];
 						var laborCost1 = data['data'][0]['laborCost'];
 						var bomCost1   = data['data'][0]['bomCost'];

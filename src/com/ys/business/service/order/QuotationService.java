@@ -494,7 +494,8 @@ public class QuotationService extends BaseService {
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
 		modelMap.put("data", dataModel.getYsViewData());
-		model.addAttribute("lastPrice",dataModel.getYsViewData().get(0));//最新报价
+		if(dataModel.getRecordCount() > 0)
+			model.addAttribute("lastPrice",dataModel.getYsViewData().get(0));//最新报价
 		
 		return modelMap;
 	}

@@ -144,7 +144,6 @@
       <f name="laborCost" alias="" ctype="" />
       <f name="materialCost" alias="" ctype="" />
       <f name="planDate" alias="" ctype="" />
-      <f name="status" alias="" ctype="" />
       <f name="fullField" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -176,8 +175,7 @@
       <f name="laborCost" alias="" ctype="" />
       <f name="materialCost" alias="" ctype="" />
       <f name="planDate" alias="" ctype="" />
-      <f name="status" alias="" ctype="" />
-      <f name="CONCAT_WS(' | ',YSId,bomId,materialName)" alias="viewList" ctype="" />
+      <f name="CONCAT_WS(' | ',bomId,materialName)" alias="viewList" ctype="" />
       <f name="fullField" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -312,8 +310,7 @@
       <f name="laborCost" alias="" ctype="" />
       <f name="materialCost" alias="" ctype="" />
       <f name="planDate" alias="" ctype="" />
-      <f name="CONCAT_WS(' | ',YSId,bomId,materialName)" alias="viewList" ctype="" />
-      <f name="status" alias="" ctype="" />
+      <f name="CONCAT_WS(' | ',bomId,materialName)" alias="viewList" ctype="" />
       <f name="fullField" alias="" ctype="" />
  	</select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->

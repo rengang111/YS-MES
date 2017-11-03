@@ -427,15 +427,34 @@ public class BomAction extends BaseAction {
 		bomService.getOrderDetail();
 			
 	}
+	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doShowBaseBom() throws Exception{
 		
-		return  bomService.showBaseBomDetail();
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap =  bomService.showBaseBomDetail();
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData == null || dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
 			
 	}
 
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doShowQuotationBom() throws Exception{
-		
+
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();

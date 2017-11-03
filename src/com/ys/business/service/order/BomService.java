@@ -370,12 +370,13 @@ public class BomService extends CommonService {
 		
 		baseQuery.getYsFullData();
 		
-		if(dataModel.getRecordCount() > 0){
-			if(accessFlg){
-				HashMap.put("recordsTotal", dataModel.getRecordCount());
-				HashMap.put("data", dataModel.getYsViewData());				
-			}else{
-				//编辑用
+		
+		if(accessFlg){
+			HashMap.put("recordsTotal", dataModel.getRecordCount());
+			HashMap.put("data", dataModel.getYsViewData());				
+		}else{
+			//编辑用
+			if(dataModel.getRecordCount() > 0){
 				model.addAttribute("material",dataModel.getYsViewData().get(0));
 				model.addAttribute("materialDetail",dataModel.getYsViewData());
 				bomPlanData.setRecordid(dataModel.getYsViewData().get(0).get("recordId"));		
