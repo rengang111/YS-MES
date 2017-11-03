@@ -15,13 +15,13 @@
 <title>物料(成品)管理一览页面</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg) {
+	function ajax(sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/material?methodtype=search&keyBackup="+pageFlg;
+		var url = "${ctx}/business/material?methodtype=search&sessionFlag="+sessionFlag;
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -49,7 +49,9 @@
 						"contentType": "application/json; charset=utf-8",
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
-						success: function(data){							
+						success: function(data){	
+							$("#keyword1").val(data["keyword1"]);
+							$("#keyword2").val(data["keyword2"]);						
 							fnCallback(data);
 
 						},
@@ -109,7 +111,7 @@
 
 	$(document).ready(function() {
 		
-		ajax("");
+		ajax("true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -126,7 +128,7 @@
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("S");
+		ajax("false");
 
 	}
 	

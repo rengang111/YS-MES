@@ -289,7 +289,7 @@ public class ProductDesignAction extends BaseAction {
 	}
 	
 	public void doInit(){	
-			
+		/*	
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
@@ -298,6 +298,7 @@ public class ProductDesignAction extends BaseAction {
 		}else{
 			model.addAttribute("keyBackup",keyBackup);
 		}
+		*/
 		
 	}
 	
@@ -306,8 +307,8 @@ public class ProductDesignAction extends BaseAction {
 	public HashMap<String, Object> doSearch(@RequestBody String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
 			session.removeAttribute(Constants.FORM_PRODUCTDETAIL+Constants.FORM_KEYWORD1);
 			session.removeAttribute(Constants.FORM_PRODUCTDETAIL+Constants.FORM_KEYWORD2);
 			

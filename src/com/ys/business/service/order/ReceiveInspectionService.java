@@ -112,8 +112,7 @@ public class ReceiveInspectionService extends CommonService  {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		if((key1 !=null && !("").equals(key1)) || 
-				(key2 !=null && !("").equals(key2))){
+		if(notEmpty(key1) ||  notEmpty(key2)){
 			userDefinedSearchCase.put("checkResult", "");
 		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

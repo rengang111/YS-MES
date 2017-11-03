@@ -15,7 +15,7 @@
 <title>做单资料一览页面</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg) {
+	function ajax(pageFlg,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -44,14 +44,14 @@
 			
 		}
 
-		url += "&keyBackup="+pageFlg;
+		url += "&sessionFlag="+sessionFlag;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				"lengthChange":false,
 				"lengthMenu":[50,100,200],//设置一页展示20条记录
-				"processing" : false,
-				"serverSide" : false,
+				"processing" : true,
+				"serverSide" : true,
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
@@ -73,7 +73,9 @@
 						"contentType": "application/json; charset=utf-8",
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
-						success: function(data){							
+						success: function(data){	
+							$("#keyword1").val(data["keyword1"]);
+							$("#keyword2").val(data["keyword2"]);						
 							fnCallback(data);
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -157,15 +159,7 @@
 
 	$(document).ready(function() {
 
-		var keyBackup = $("#keyBackup").val();
-
-		if(keyBackup ==""){
-
-			ajax("0");//未完成
-		}else{
-			ajax("");
-			
-		}
+		ajax("0","true");//未完成		
 		
 		initEvent();
 		
@@ -173,7 +167,7 @@
 	
 	function doSearch() {	
 
-		ajax("S");
+		ajax("","false");
 
 	}
 
@@ -235,7 +229,7 @@
 	
 	function selectContractByDate(type){
 		
-		ajax(type);
+		ajax(type,"false");
 	}
 	
 </script>

@@ -65,6 +65,7 @@
 				"processing" : true,
 				"serverSide" : true,
 				"stateSave" : false,
+	         	"bAutoWidth":false,
 				//"bSort":true,
 				// "bFilter": false, //列筛序功能
 				"ordering"	:true,
@@ -105,7 +106,7 @@
 				"columns": [
 					{"data": null, "defaultContent" : '',"className" : 'td-center'},
 					{"data": "YSId", "defaultContent" : ''},
-					{"data": "materialId", "defaultContent" : ''},
+					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "materialName", "defaultContent" : ''},//3
 					{"data": "orderDate", "defaultContent" : ''},
 					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
@@ -425,19 +426,19 @@
 				<a  class="DTTT_button " onclick="doDelete();"><span>删除订单</span></a>
 			</div>
 			<div id="clear"></div>
-			<table id="TMaterial" class="display dataTable" cellspacing="0" style="width:100%">
+			<table id="TMaterial" class="display" >
 				<thead>						
 					<tr>
-						<th style="width: 10px;" class="dt-middle ">No</th>
-						<th style="width: 70px;" class="dt-middle ">耀升编号</th>
-						<th style="width: 150px;" class="dt-middle ">产品编号</th>
-						<th class="dt-middle ">产品名称</th>
-						<th style="width: 50px;" class="dt-middle ">下单日期</th>
-						<th style="width: 50px;" class="dt-middle ">订单交期</th>
-						<th style="width: 60px;" class="dt-middle ">数量</th>
-						<th style="width: 40px;" class="dt-middle ">业务组</th>
-						<th style="width: 60px;" class="dt-middle ">订单状态</th>
-						<th style="width: 50px;" class="dt-middle ">入库时间</th>
+						<th style="width: 10px;">No</th>
+						<th style="width: 70px;">耀升编号</th>
+						<th style="width: 150px;">产品编号</th>
+						<th>产品名称</th>
+						<th style="width: 50px;">下单日期</th>
+						<th style="width: 50px;">订单交期</th>
+						<th style="width: 60px;">数量</th>
+						<th style="width: 40px;">业务组</th>
+						<th style="width: 60px;">订单状态</th>
+						<th style="width: 50px;">入库时间</th>
 					</tr>
 				</thead>
 			</table>

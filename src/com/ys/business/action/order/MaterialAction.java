@@ -195,7 +195,7 @@ public class MaterialAction extends BaseAction {
 	}
 	
 	public void doInit(String formId,HttpSession session){	
-			
+			/*
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
@@ -204,7 +204,7 @@ public class MaterialAction extends BaseAction {
 		}else{
 			model.addAttribute("keyBackup",keyBackup);
 		}
-		
+		*/
 	}
 
 
@@ -215,8 +215,8 @@ public class MaterialAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
 		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
 			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
 			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 			
@@ -497,19 +497,18 @@ public class MaterialAction extends BaseAction {
 
 	}	
 	
-	@SuppressWarnings("deprecation")
 	public HashMap<String, Object> dosearchProduct(HttpSession session,String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
 		//优先执行查询按钮事件,清空session中的查询条件
-				String keyBackup = request.getParameter("keyBackup");
-				if(keyBackup != null && !("").equals(keyBackup)){
-					session.removeAttribute(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD1);
-					session.removeAttribute(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD2);
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PRODUCT+Constants.FORM_KEYWORD2);
 
-					
-				}
+			
+		}
 		try {
 			dataMap = materialService.getProductList(data);			
 			

@@ -117,17 +117,19 @@ public class MaterialService extends CommonService implements I_BaseService{
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		String sql = getSortKeyFormWeb(data,baseQuery);
+		baseQuery.getYsQueryData(sql,iStart, iEnd);
 		
-		if ( iEnd > dataModel.getYsViewData().size()){			
-			iEnd = dataModel.getYsViewData().size();			
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
 		}		
 		
-		modelMap.put("sEcho", sEcho); 		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
 		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);
+		modelMap.put("keyword2",key2);
 		
 		return modelMap;
 	}
@@ -162,8 +164,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		
-		baseQuery.getYsQueryData(iStart, iEnd);	 
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	
 		
 		if ( iEnd > dataModel.getYsViewData().size()){
 			
@@ -174,6 +176,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
 		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
 		
 		return modelMap;
 	}

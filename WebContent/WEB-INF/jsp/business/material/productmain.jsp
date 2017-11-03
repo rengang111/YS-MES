@@ -10,7 +10,7 @@
 <title>成品一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg) {
+	function ajax(sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -22,14 +22,14 @@
 			"lengthChange":false,
 			//"lengthMenu":[10,150,200],//设置一页展示20条记录
 			"processing" : true,
-			"serverSide" : false,
+			"serverSide" : true,
 			"stateSave" : false,
 			"ordering "	:true,
 			"searching" : false,
 			 "iDisplayLength" : 50,
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
-			"sAjaxSource" : "${ctx}/business/material?methodtype=searchProduct&keyBackup="+pageFlg,
+			"sAjaxSource" : "${ctx}/business/material?methodtype=searchProduct&sessionFlag="+sessionFlag,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -45,6 +45,8 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){							
 						fnCallback(data);
+						$("#keyword1").val(data["keyword1"]);
+						$("#keyword2").val(data["keyword2"]);
 						//$('#TMaterial').DataTable().ajax.reload(null,false);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -104,7 +106,7 @@
 
 	$(document).ready(function() {
 
-		ajax("");
+		ajax("true");
 		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -122,7 +124,7 @@
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("S");
+		ajax("false");
 
 	}
 	

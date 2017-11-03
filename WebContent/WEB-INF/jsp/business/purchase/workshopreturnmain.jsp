@@ -33,6 +33,7 @@
 				"searching" : false,
 				"pagingType" : "full_numbers",
 	         	"aaSorting": [[ 1, "DESC" ]],
+	         	"bAutoWidth":false,
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				"retrieve" : true,
@@ -63,17 +64,17 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "YSId", "defaultContent" : ''},
-							{"data": "materialId", "defaultContent" : ''},
-							{"data": "materialName", "defaultContent" : ''},//3
-							{"data": "orderDate", "defaultContent" : ''},
-							{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
-							{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
-							{"data": "team", "className" : 'td-left'},//7
-							{"data": "statusName", "className" : 'td-center'},//8
-							{"data": "storageDate", "className" : 'td-center'},//9
-						],
+					{"data": null, "defaultContent" : '',"className" : 'td-center'},
+					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
+					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
+					{"data": "materialName", "defaultContent" : ''},//3
+					{"data": "orderDate", "defaultContent" : ''},
+					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
+					{"data": "totalQuantity", "defaultContent" : '0', "className" : 'td-right'},
+					{"data": "team", "className" : 'td-left'},//7
+					{"data": "statusName", "className" : 'td-center'},//8
+					{"data": "storageDate", "className" : 'td-center'},//9
+				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 		    			return row["rownum"] ;				    			 
@@ -93,7 +94,7 @@
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : [7,8,9]
+						"targets" : [7,9]
 					}
 	         	]
 			}
@@ -175,19 +176,19 @@
 
 	<div class="list">
 
-		<table id="TMaterial" class="display dataTable" style="width:100%">
+		<table id="TMaterial" class="display" >
 			<thead>						
 				<tr>
-						<th style="width: 10px;" class="dt-middle ">No</th>
-						<th style="width: 70px;" class="dt-middle ">耀升编号</th>
-						<th style="width: 150px;" class="dt-middle ">产品编号</th>
-						<th class="dt-middle ">产品名称</th>
-						<th style="width: 50px;" class="dt-middle ">下单日期</th>
-						<th style="width: 50px;" class="dt-middle ">订单交期</th>
-						<th style="width: 60px;" class="dt-middle ">订单数量</th>
-						<th style="width: 40px;" class="dt-middle ">业务组</th>
-						<th style="width: 60px;" class="dt-middle ">订单状态</th>
-						<th style="width: 50px;" class="dt-middle ">入库时间</th>
+					<th style="width: 10px;">No</th>
+					<th style="width: 70px;">耀升编号</th>
+					<th style="width: 120px;">产品编号</th>
+					<th>产品名称</th>
+					<th style="width: 50px;">下单日期</th>
+					<th style="width: 50px;">订单交期</th>
+					<th style="width: 60px;">订单数量</th>
+					<th style="width: 40px;">业务组</th>
+					<th style="width: 50px">订单状态</th>
+					<th style="width: 50px;">入库时间</th>
 				</tr>
 			</thead>
 		</table>
