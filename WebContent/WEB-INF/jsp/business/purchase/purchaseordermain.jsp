@@ -3,16 +3,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<%@ include file="../../common/common.jsp"%>
+<%@ include file="../../common/common2.jsp"%>
 <title>采购合同一览</title>
 <script type="text/javascript">
 
-	function ajax(status,sessionFlag) {
+	function ajax(where,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		var actionUrl = "${ctx}/business/contract?methodtype=search";
+		actionUrl = actionUrl +	"&sessionFlag="+sessionFlag;
+		actionUrl = actionUrl +	where;
+		//actionUrl = actionUrl+ 	"&status1="+status1;
+		
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
 			 "iDisplayLength" : 100,
@@ -25,7 +30,7 @@
 			"searching" : false,
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
-			"sAjaxSource" : "${ctx}/business/contract?methodtype=search&sessionFlag="+sessionFlag+"&status="+status,
+			"sAjaxSource" : actionUrl,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -41,6 +46,8 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){							
 						fnCallback(data);
+						$("#keyword1").val(data["keyword1"]);
+						$("#keyword2").val(data["keyword2"]);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -100,13 +107,29 @@
 	            $(this).addClass('selected');
 	        }
 		});
-	}
-
-	
+	}	
 
 	$(document).ready(function() {
 		
-		ajax("010","true");				
+		ajax("010","true");
+		
+		 //加载事件
+	    $(function () {
+	        var collection = $(".box");
+	        $.each(collection, function () {
+	            $(this).addClass("start");
+	        });
+	    });
+	    //单击事件
+	    $(".box").click(function () { 
+	        var collection = $(".box");
+	        $.each(collection, function () {
+	            $(this).removeClass("end");
+	            $(this).addClass("start");
+	        });
+	        $(this).removeClass("start");
+	        $(this).addClass("end");
+	    });
 		
 	})	
 	
@@ -114,14 +137,28 @@
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		ajax("","false");
-
 	}
 
 	//合同状态
-	function doSearchCustomer(type){
-		ajax(type,"false");
+	function doSearchCustomer(){
+		ajax("","false");
 	}
 	
+	//自制品未到货
+	function doSearchCustomer2(){
+		var where = "&supplierId=0574YZ00&status=030";
+		ajax(where,"false");
+	}
+	//订购件未到货
+	function doSearchCustomer3(){
+		var where = "&supplierId2=0574YZ00&materialId2=G&status=030&purchaseType=010";
+		ajax(where,"false");
+	}
+	//包装品未到货
+	function doSearchCustomer4(){
+		var where = "&materialId=G&status=030";
+		ajax(where,"false");
+	}
 	function doShowYS(YSId) {
 
 		var url = '${ctx}/business/order?methodtype=getPurchaseOrder&YSId=' + YSId;
@@ -135,6 +172,7 @@
 		location.href = url;
 	}
 	
+   
 	
 </script>
 </head>
@@ -172,22 +210,24 @@
 
 	<div class="list">
 		<div id="DTTT_container2" style="height:40px;float: left">
-					<a  class="DTTT_button " onclick="doSearchCustomer('010');"><span>未清</span></a>
-					<a  class="DTTT_button " onclick="doSearchCustomer('020');"><span>已清</span></a>
+			<a  class="DTTT_button box" onclick="doSearchCustomer();"><span>显示全部</span></a>&nbsp;&nbsp;
+			<a  class="DTTT_button box" onclick="doSearchCustomer2();"><span>自制品未到货</span></a>
+			<a  class="DTTT_button box" onclick="doSearchCustomer3();"><span>订购件未到货</span></a>
+			<a  class="DTTT_button box" onclick="doSearchCustomer4();"><span>包装品未到货</span></a>
 		</div>
-		<table id="TMaterial" class="display dataTable" >
+		<table id="TMaterial" class="display" >
 			<thead>						
 				<tr>
-					<th style="width: 10px;" class="dt-middle ">No</th>
-					<th style="width: 100px;"  class="dt-middle ">合同编号</th>
-					<th style="width: 120px;"  class="dt-middle ">物料编号</th>
-					<th class="dt-middle ">物料名称</th>
-					<th style="width: 70px;"  class="dt-middle ">耀升编号</th>
-					<th style="width: 60px;"  class="dt-middle ">供应商</th>
-					<th style="width: 50px;"  class="dt-middle ">合同交期</th>
-					<th style="width: 60px;"  class="dt-middle ">合同数</th>
-					<th style="width: 60px;"  class="dt-middle ">入库数</th>
-					<th style="width: 50px;"  class="dt-middle ">退货数</th>
+					<th style="width: 10px;">No</th>
+					<th style="width: 100px;">合同编号</th>
+					<th style="width: 120px;">物料编号</th>
+					<th>物料名称</th>
+					<th style="width: 70px;">耀升编号</th>
+					<th style="width: 60px;">供应商</th>
+					<th style="width: 50px;">合同交期</th>
+					<th style="width: 60px;">合同数</th>
+					<th style="width: 60px;">入库数</th>
+					<th style="width: 50px;">退货数</th>
 				</tr>
 			</thead>
 		</table>

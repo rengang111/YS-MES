@@ -644,8 +644,10 @@ public class StorageService extends CommonService {
 		float inewQuantity = stringToFloat(quantity);//本次入库
 		
 		float iNew = iQuantity + inewQuantity;
-		if(iNew == iContrat){
+		if(iNew >= iContrat){
 			data.setStatus(Constants.CONTRACT_STS_3);//入库完毕		
+		}else{
+			data.setStatus(Constants.CONTRACT_STS_2);//收货中			
 		}
 		
 		//更新DB

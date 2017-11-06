@@ -51,6 +51,10 @@ public class QueryWhereBean {
 				String dType = subWhere.getDType();
 				String oper = subWhere.getOper().toLowerCase();
 				switch(oper) {
+				case "<>":
+					sql.append("<> ");
+					sql.append(BaseQuery.processDataType(value, dType, ""));
+					break;
 				case ">":
 					sql.append("> ");
 					sql.append(BaseQuery.processDataType(value, dType, ""));

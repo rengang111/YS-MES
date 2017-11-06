@@ -109,8 +109,7 @@ public class WorkshopReturnService extends CommonService {
 		String key2 = keyArr[1];
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderList");	
-		//dataModel.setQueryName("getContractListForWorkshopReturn");
+		dataModel.setQueryName("getOrderList");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		

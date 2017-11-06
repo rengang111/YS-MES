@@ -110,20 +110,8 @@ public class PurchaseOrderService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
-		/*
-		if((key1 == null || ("").equals(key1)) &&
-			(key2 == null || ("").equals(key2))){
-			//没有查询条件的时候,默认显示一周的数据
-			String modifyTime = CalendarUtil.dateAddToString(
-					CalendarUtil.fmtDate(),-7);
-			userDefinedSearchCase.put("keyword3", modifyTime);
-		}
-		*/
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		if(notEmpty(key1) || notEmpty(key2)){
-			userDefinedSearchCase.put("status", "");
-		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
@@ -142,57 +130,6 @@ public class PurchaseOrderService extends CommonService {
 		return modelMap;
 	}
 	
-	
-	public HashMap<String, Object> getContractListForWorkshopReturn(
-			String data,String formId) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-
-		data = URLDecoder.decode(data, "UTF-8");
-		
-		int iStart = 0;
-		int iEnd =0;
-		String sEcho = getJsonData(data, "sEcho");	
-		String start = getJsonData(data, "iDisplayStart");		
-		if (start != null && !start.equals("")){
-			iStart = Integer.parseInt(start);			
-		}
-		
-		String length = getJsonData(data, "iDisplayLength");
-		if (length != null && !length.equals("")){			
-			iEnd = iStart + Integer.parseInt(length);			
-		}		
-		
-		String[] keyArr = getSearchKey(formId,data,session);
-		String key1 = keyArr[0];
-		String key2 = keyArr[1];
-
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderList");	
-		//dataModel.setQueryName("getContractListForWorkshopReturn");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
-		
-		if ( iEnd > dataModel.getYsViewData().size()){			
-			iEnd = dataModel.getYsViewData().size();			
-		}
-		
-		modelMap.put("sEcho", sEcho); 		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());			
-		modelMap.put("data", dataModel.getYsViewData());
-		modelMap.put("keyword1",key1);	
-		modelMap.put("keyword2",key2);		
-		
-		return modelMap;
-	}
-
 	public void getZZOrderDetail( 
 			String YSId) throws Exception {
 
