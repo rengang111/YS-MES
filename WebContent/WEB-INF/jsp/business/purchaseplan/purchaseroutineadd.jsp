@@ -168,7 +168,7 @@
 		foucsInit();//input获取焦点初始化处理
 		$(".DTTT_container").css('float','left');
 	
-		//costAcount();//成本核算
+		autocomplete();
 	});
 
 	
@@ -280,33 +280,35 @@
 		<input type="hidden" id="tmpMaterialId" />
 		<input type="hidden" id="backFlag"  value="${backFlag }"/>
 		
-		<fieldset class="action" style="text-align: right;">
+		
+		<fieldset>
+		<legend> 采购信息</legend>
+		<div class="action" style="text-align: right;width: 50%;float: right;">
 			<button type="button" id="createOrderBom" class="DTTT_button">确认并生成采购合同</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
-		</fieldset>	
-		<script type="text/javascript">
-
-		</script>
-		<div id="tabs" style="padding: 0px;white-space: nowrap;margin-top: -10px;">
-		<ul>
-			<li><a href="#tabs-1" class="tabs1">采购方案</a></li>
-		</ul>
-
-		<div id="tabs-1" style="padding: 5px;">
-
+		</div>
+		<table  style="width:300px;float:left">
+			<tr> 				
+				<td class="label" style="width:100px;">关联耀升编号：</td>					
+				<td style="width:150px;">
+				<form:input path="purchasePlan.ysid"  value="" style="text-transform:uppercase;"/></td>
+				
+			</tr>						
+		</table>
+		<div class="list" style="margin-top: 40px;">
 		<table id="example" class="display" style="width:100%">
 			<thead>				
 				<tr>
-					<th class="dt-center"  width="100px">0物料编号</th>
-					<th class="dt-center" >1物料名称</th>
-					<th class="dt-center" width="30px">2单位</th>
-					<th class="dt-center" width="60px">3安全库存</th>
-					<th class="dt-center" width="60px">4当前库存</th>
-					<th class="dt-center" width="60px">5建议采购量</th>
-					<th class="dt-center" style="width:80px">6供应商</th>
-					<th class="dt-center" width="60px">7本次单价</th>
-					<th class="dt-center" width="80px">8总价</th>
-					<th class="dt-center" width="60px">9当前价格</th>
+					<th width="100px">物料编号</th>
+					<th >物料名称</th>
+					<th width="30px">单位</th>
+					<th width="60px">安全库存</th>
+					<th width="60px">当前库存</th>
+					<th width="60px">建议采购量</th>
+					<th style="width:80px">供应商</th>
+					<th width="60px">本次单价</th>
+					<th width="80px">总价</th>
+					<th width="60px">当前价格</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -364,8 +366,8 @@
 </c:forEach>
 			</tbody>
 		</table>
-	</div>
-</div>
+		</div>
+		</fieldset>
 
 </form:form>
 </div>
@@ -656,6 +658,52 @@ function purchasePlanCompute(obj){
 
 
 </script>
+
+<script type="text/javascript">
+function autocomplete(){
+	
+	$("#purchasePlan\\.ysid").autocomplete({
+		minLength : 2,
+		autoFocus : false,
+		source : function(request, response) {
+			//alert(888);
+			$
+			.ajax({
+				type : "POST",
+				url : "${ctx}/business/order?methodtype=getYsidList",
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					//alert(777);
+					response($
+						.map(
+							data.data,
+							function(item) {
+
+								return {
+									label : item.YSId,
+									value : item.YSId,
+								}
+							}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					//alert(XMLHttpRequest.status);
+					//alert(XMLHttpRequest.readyState);
+					//alert(textStatus);
+					//alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
+	
+	});
+}
+
+</script>
+
 </body>
 	
 </html>

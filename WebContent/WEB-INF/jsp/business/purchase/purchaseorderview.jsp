@@ -1,12 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -167,6 +160,33 @@
 		$('#returnValue').html(floatToCurrency(sum8));
 		$('#payValue').html(floatToCurrency(sum9));
 	}
+	
+
+	function showContract() {
+		var contractId = '${ contract.contractId }';
+		var url = '${ctx}/business/requirement?methodtype=contractPrint';
+		url = url +'&contractId='+contractId;
+		//alert(url)
+		
+		layer.open({
+			offset :[10,''],
+			type : 2,
+			title : false,
+			area : [ '1100px', '520px' ], 
+			scrollbar : false,
+			title : false,
+			content : url,
+			//只有当点击confirm框的确定时，该层才会关闭
+			cancel: function(index){ 
+			 // if(confirm('确定要关闭么')){
+			  //  layer.close(index)
+			 // }
+			  //baseBomView();
+			 // return false; 
+			}    
+		});		
+
+	};
 </script>
 
 </head>
@@ -229,6 +249,7 @@
 	
 	<fieldset class="action" style="text-align: right;">
 		<button type="submit" id="doEdit" class="DTTT_button">编辑</button>
+		<button type="button" id="doPrint" class="DTTT_button" onclick="showContract();">打印</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>
 	<div style="clear: both"></div>		

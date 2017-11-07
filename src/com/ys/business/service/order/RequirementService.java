@@ -1922,6 +1922,7 @@ public class RequirementService extends CommonService {
 		
 		String YSId = request.getParameter("YSId");
 		String supplierId = request.getParameter("supplierId");
+		String contractId = request.getParameter("contractId");
 
 		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		dataModel.setQueryName("getRequriementBySupplier");
@@ -1930,6 +1931,7 @@ public class RequirementService extends CommonService {
 
 		userDefinedSearchCase.put("YSId", YSId);
 		userDefinedSearchCase.put("supplierId", supplierId);
+		userDefinedSearchCase.put("contractId", contractId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 		

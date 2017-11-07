@@ -1030,23 +1030,42 @@ public class OrderService extends CommonService  {
 	
 	public void getOrderDetail(String YSId) throws Exception{
 		
-	  this.dataModel.setQueryFileName("/business/order/orderquerydefine");
-	  this.dataModel.setQueryName("getOrderList");
-	
-	  this.baseQuery = new BaseQuery(this.request, this.dataModel);
-	
-	  this.userDefinedSearchCase.put("keyword1", YSId);
-	  this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
-	  this.baseQuery.getYsFullData();
-	
-	  this.model.addAttribute("order", this.dataModel.getYsViewData().get(0));
+		  this.dataModel.setQueryFileName("/business/order/orderquerydefine");
+		  this.dataModel.setQueryName("getOrderList");
+		
+		  this.baseQuery = new BaseQuery(this.request, this.dataModel);
+		
+		  this.userDefinedSearchCase.put("keyword1", YSId);
+		  this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
+		  this.baseQuery.getYsFullData();
+		
+		  this.model.addAttribute("order", this.dataModel.getYsViewData().get(0));
 	}
 	
+	public HashMap<String, Object> getYsidList() throws Exception{
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		  this.dataModel.setQueryFileName("/business/order/orderquerydefine");
+		  this.dataModel.setQueryName("getYsidList");
+		
+		  this.baseQuery = new BaseQuery(this.request, this.dataModel);
+		  String YSId = request.getParameter("key");
+		  if(notEmpty(YSId))
+			  YSId = YSId.toUpperCase();
+		  this.userDefinedSearchCase.put("YSId", YSId);
+		  this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
+		  this.baseQuery.getYsFullData();
+		
+		  modelMap.put("data", dataModel.getYsViewData());
+		  
+		  return modelMap;		  
+		}
+		
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> piidExistCheck() throws Exception{
 
-		String ExFlag = "";
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String ExFlag = "";
 		String PIId = request.getParameter("PIId");
 
 		String where = " piid = '"+PIId +"' AND deleteFlag='0' " ;
@@ -1060,6 +1079,7 @@ public class OrderService extends CommonService  {
 			
 		return modelMap;		
 	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> ysidExistCheck() throws Exception{

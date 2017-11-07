@@ -148,7 +148,11 @@ public class OrderAction extends BaseAction {
 			case "purchasePlanSearch":
 				dataMap = doSearchOrderList(Constants.FORM_PURCHASEPLAN,data);
 				printOutJsonObj(response, dataMap);
-				break;
+				break;		
+			case "getYsidList":
+				dataMap = getYsidList();
+				printOutJsonObj(response, dataMap);
+				return null;
 				
 		}
 		
@@ -496,6 +500,12 @@ public class OrderAction extends BaseAction {
 	public HashMap<String, Object>  piidExistCheck() throws Exception
 	{
 	    return this.orderService.piidExistCheck();
+	 
+	}
+	
+	public HashMap<String, Object>  getYsidList() throws Exception
+	{
+	    return this.orderService.getYsidList();
 	 
 	}
 	

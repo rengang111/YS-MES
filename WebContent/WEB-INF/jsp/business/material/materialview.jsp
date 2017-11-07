@@ -375,7 +375,8 @@ function doPurchasePlan(supplierId , materialId) {
 	//goBackFlag:区别采购入口是物料还是供应商
 	var url = '${ctx}/business/contract?methodtype=createRoutineContractInit&goBackFlag=1';
 	url = url + '&supplierId=' + supplierId+'&materialId='+materialId;
-	location.href = url;
+	callProductDesignView("物料采购",url);
+	//location.href = url;
 	
 }
 

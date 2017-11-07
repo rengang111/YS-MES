@@ -647,7 +647,9 @@ public class PurchasePlanService extends CommonService {
 			ts.begin();
 
 			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();
-			//String YSId = reqPlan.getYsid();
+			String YSId = reqPlan.getYsid();
+			if(notEmpty(YSId))
+				YSId = YSId.toUpperCase();//关联耀升编号存在的情况
 			//String materialId = reqPlan.getMaterialid();
 							
 
@@ -724,7 +726,7 @@ public class PurchasePlanService extends CommonService {
 				//新增采购合同*************
 				B_PurchaseOrderData data = new B_PurchaseOrderData();
 				
-				//data.setYsid(YSId);
+				data.setYsid(YSId);
 				//data.setMaterialid(materialId);
 				data.setContractid(contractId);
 				data.setTypeparentid(typeParentId);
@@ -746,7 +748,7 @@ public class PurchasePlanService extends CommonService {
 					if(supplierId.equals(supplierId2)){
 															
 						B_PurchaseOrderDetailData d = new B_PurchaseOrderDetailData();				
-						//d.setYsid(YSId);
+						d.setYsid(YSId);
 						d.setContractid(contractId);
 						d.setMaterialid(dt.getMaterialid());
 						d.setQuantity(dt.getPurchasequantity());

@@ -877,26 +877,11 @@ public class PurchaseOrderService extends CommonService {
 
 	public void createRoutineContract() throws Exception {
 		
-		String goBackFlag = request.getParameter("goBackFlag");
-		String YSId = request.getParameter("YSId");
-		String shortName = reqModel.getShortName();
-
-		//常规采购的耀升编号:17YS00
-		if(YSId == null || ("").equals(YSId)){
-			YSId = BusinessService.getRoutinePurchaseYsid();
-		}
-		
-		B_PurchaseOrderData contract = reqModel.getContract();
-		//创建合同编号
-		contract = geRoutinePurchaseContractId(contract,YSId,shortName);
-		
 		//合同数据做成
-		insertRoutine(contract);
+		String contractId = insertRoutine();
 		//跳转到查看页面
-		String contractId = contract.getContractid();
 		getContractDetailList(contractId);
 				
-		model.addAttribute("goBackFlag",goBackFlag);
 	}
 	
 	
@@ -920,11 +905,11 @@ public class PurchaseOrderService extends CommonService {
 		//采购合同编号:16D081-WL002
 		String contractId = BusinessService.getContractCodeD(typeSubId, suplierSubId,shortName);
 
-		String parentId = "";
-		if(null != YSId && YSId.length() > 3 ){
-			parentId = YSId.substring(0,2);//耀升编号前两位是年份
-		}
-		parentId = parentId + shortName;
+		//String parentId = "";
+		//if(null != YSId && YSId.length() > 3 ){
+		//	parentId = YSId.substring(0,2);//耀升编号前两位是年份
+		//}
+		//parentId = parentId + shortName;
 		
 		//String subId = getContractCode(parentId);
 		
@@ -932,37 +917,49 @@ public class PurchaseOrderService extends CommonService {
 		//采购合同编号:16YS081-WL002
 		//String contractId = BusinessService.getContractCode(YSId, shortName, subId);
 
-		//dt.setYsid(YSId);
-		//dt.setContractid(contractId);
-		//dt.setParentid(parentId);
-		//dt.setSubid(String.valueOf(Integer.parseInt(subId)+1));
+		dt.setYsid(YSId);
+		dt.setContractid(contractId);
+		dt.setTypeparentid(typeParentId);
+		dt.setTypeserial(typeSubId);
+		dt.setSupplierparentid(supplierParentId);
+		dt.setSupplierserial(suplierSubId);
 		
 		return dt;
 
 	}
 	
-	private void insertRoutine(B_PurchaseOrderData contract){
+	private String insertRoutine(){
 		
 		ts = new BaseTransaction();
-
+		String contractId = "";
 		try {
 			ts.begin();
 
-			String contractId = contract.getContractid();
-			String YSId = contract.getYsid();
+			//String contractId = contract.getContractid();
+			//String YSId = contract.getYsid();
 
 			//删除既存合同信息
-			deleteContractByContractId(contractId);
+			//deleteContractByContractId(contractId);
 			
 			//删除既存合同明细
-			deleteContractDetailByContractId(contractId);
+			//deleteContractDetailByContractId(contractId);
 			
-			//新增常规采购合同
-			insertPurchaseOrder(contract);
 			
-			//合同明细
+			//合同明细:因为是从物料信息过来的,所以只有一条数据
 			List<B_PurchaseOrderDetailData> reqDetail = reqModel.getDetailList();
 			for(B_PurchaseOrderDetailData d:reqDetail){
+
+				B_PurchaseOrderData contract = reqModel.getContract();
+				//创建合同编号
+				String YSId = request.getParameter("YSId");
+				String shortName = reqModel.getShortName();
+				contract = geRoutinePurchaseContractId(contract,YSId,shortName);
+				contractId = contract.getContractid();
+				
+				//新增常规采购合同
+				insertPurchaseOrder(contract);
+				
+				//合同明细
 				d.setYsid(YSId);
 				d.setContractid(contractId);				
 				insertPurchaseOrderDetail(d);				
@@ -978,6 +975,7 @@ public class PurchaseOrderService extends CommonService {
 			}
 			System.out.println(e.getMessage());
 		}
+		return contractId;
 	}
 	
 	private void insertPurchaseOrder(B_PurchaseOrderData data) throws Exception{
