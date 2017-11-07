@@ -409,7 +409,7 @@ public class PurchasePlanService extends CommonService {
 					data.setDeliverydate(CalendarUtil.dateAddToString(data.getPurchasedate(),20));
 					data.setVersion(1);//默认为1
 					
-					insertPurchaseOrder(oldDb);//新增合同头表
+					insertPurchaseOrder(data);//新增合同头表
 					
 				}else{
 					//update
