@@ -113,23 +113,7 @@
 		
 		ajax("010","true");
 		
-		 //加载事件
-	    $(function () {
-	        var collection = $(".box");
-	        $.each(collection, function () {
-	            $(this).addClass("start");
-	        });
-	    });
-	    //单击事件
-	    $(".box").click(function () { 
-	        var collection = $(".box");
-	        $.each(collection, function () {
-	            $(this).removeClass("end");
-	            $(this).addClass("start");
-	        });
-	        $(this).removeClass("start");
-	        $(this).addClass("end");
-	    });
+		buttonSelectedEvent();//按钮选择式样
 		
 	})	
 	

@@ -16,6 +16,7 @@ import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basequery.BaseQuery;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -88,7 +89,9 @@ public class DicTypeService extends BaseService {
 	}
 
 	public DicTypeModel getDetail(HttpServletRequest request) throws Exception {
-		String dicTypeId = request.getParameter("dictypeId");
+		
+		String dicTypeId = convertToUTF8(request.getParameter("dictypeId"));
+		
 		DicTypeModel dataModel = new DicTypeModel();
 		
 		dataModel.setDicSelectedFlagList(DicUtil.getGroupValue(DicUtil.DICSELECTEDFLAG));

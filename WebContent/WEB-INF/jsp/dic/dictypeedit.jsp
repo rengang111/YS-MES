@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <%@ include file="../common/common.jsp"%>
 <html>
+<body>
 <div id="container">
 	<div id="main">
 		<div style="height:10px"></div>
@@ -11,32 +12,41 @@
 			<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
 			<input type=hidden name="dicTypeId" id="dicTypeId" value="${DisplayData.dicTypeData.dictypeid}"/>
 			<div class="">
-				<table width=100% style=" border-collapse: separate;border-spacing:6px;"  >
+				<table  style=" border-collapse: separate;border-spacing:6px;width:100%" >
 				<tr>
-					<td>
-						代码类ID：
+					<td class="label">
+						字典编号：
 					</td>
 					<td>
 						<input type=text name="dictypeid" id="dictypeid" value="${DisplayData.dicTypeData.dictypeid}"/>
+						（可以是汉字，或者字母，或者数字）
+					</td>
+					<td class="label">
+						字典名称：
 					</td>
 					<td>
-						代码类名称：
-					</td>
-					<td>
-						<input type=text name="dictypename" id="dictypename" value="${DisplayData.dicTypeData.dictypename}"/>
+						<input type=text name="dictypename" id="dictypename" value="${DisplayData.dicTypeData.dictypename}" class="middle"/>
 					</td>
 				</tr>			
 				<tr>
-					<td>
-						代码类属性：
+					<td class="label" width="100px">
+						字典使用范围：
 					</td>
 					<td>
-						<select name="dictypelevel" id="dictypelevel">
+						<select name="dictypelevel" id="dictypelevel"  style="width:100px">
 							<c:forEach items="${DisplayData.dicTypeLevelList}" var="value" varStatus="status">
 								<option value ="${value[0]}">${value[1]}</option>
 							</c:forEach>
 						</select>
 					</td>
+					
+					<td class="label" width="100px">
+						是否使用：
+					</td>
+					<td>
+						<input type=checkbox name="enableflag" id="enableflag" value="0"/>（选中有效）
+					</td>
+					<!--  
 					<td>
 						代码采集层次：
 					</td>
@@ -47,7 +57,9 @@
 							</c:forEach>
 						</select>
 					</td>
-				</tr>		
+					-->
+				</tr>
+				<!-- 	
 				<tr>
 					<td>
 						序号：
@@ -58,7 +70,8 @@
 					<td colspan=2>
 						<input type=checkbox name="enableflag" id="enableflag" value="0"/>选中有效
 					</td>
-				</tr>					
+				</tr>	
+				 -->					
 				<tr>
 					<td colspan=4>
 						<button type="button" id="close" class="DTTT_button" onClick="doReturn();"
@@ -71,7 +84,9 @@
 			</table>
 			</div>
 		</form>
-
+</fieldset>
+</div>
+</div>
 </body>
 
 <script>
@@ -85,7 +100,7 @@
 			rules: {
 				dictypeid: {
 					required: true,	
-					maxlength: 10,
+					maxlength: 20,
 				},
 				dictypename: {
 					required: true,
@@ -173,7 +188,7 @@
 
 	function saveUpdate() {
 		if (validatorBaseInfo.form()) {
-			if (confirm("确定要保存吗？")) {
+			//if (confirm("确定要保存吗？")) {
 				var actionUrl;
 				if (operType == 'add') {
 					actionUrl = "${ctx}/dictype?methodtype=add";
@@ -203,7 +218,7 @@
 						//alert(errorThrown);
 					}
 				});	
-			}
+			//}
 		}	
 	}
 	

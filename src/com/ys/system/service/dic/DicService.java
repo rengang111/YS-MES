@@ -79,7 +79,7 @@ public class DicService extends BaseService {
 	
 	public DicModel getDetail(HttpServletRequest request) throws Exception {
 		String dicId = request.getParameter("dicCodeId");
-		String dicTypeId = request.getParameter("dicTypeId");
+		String dicTypeId = convertToUTF8(request.getParameter("dicTypeId"));
 		DicModel dicModel = new DicModel();
 		
 		S_DICDao dao = new S_DICDao();

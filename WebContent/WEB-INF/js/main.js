@@ -790,3 +790,26 @@ function getLetters(text){
 	var value =  text.replace(/[^a-z]+/ig,"");
 	return value;
 }
+
+function buttonSelectedEvent(){
+	//加载事件
+    $(function () {
+        var collection = $(".box");
+        $.each(collection, function () {
+            $(this).addClass("start");
+        });
+    });
+    //单击事件
+    $(".box").click(function () { 
+        var collection = $(".box");
+        $.each(collection, function () {
+            $(this).removeClass("end");
+            $(this).addClass("start");
+        });
+        $(this).removeClass("start");
+        $(this).addClass("end");
+    });
+}
+
+
+ 

@@ -17,6 +17,7 @@
 		<fieldset>
 		<legend>字典管理</legend>
 		<div style="height:5px"></div>
+		
 		<table>
 			<tr>
 				<td>
@@ -25,7 +26,7 @@
 				<td>
 					<input type=text name="dicTypeIdName" id="dicTypeIdName" value="${DisplayData.dicTypeIdName}"/>
 					<input type=hidden name="dicTypeId" id="dicTypeId"/>
-					<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="selectDicType();"><span>选择</span></a>
+					<a class="DTTT_button DTTT_button_text" onClick="selectDicType();"><span>选择</span></a>
 				</td>
 				<td>
 					代码名称：
@@ -34,7 +35,7 @@
 					<input type=text name="dicIdName" id="dicIdName" value="${DisplayData.dicIdName}"/>
 				</td>
 				<td>
-					<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="doSearch();"><span>查询</span></a>
+					<a class="DTTT_button DTTT_button_text" onClick="doSearch();"><span>查询</span></a>
 				</td>
 			</tr>
 		</table>
@@ -42,22 +43,22 @@
 		
 		<div id="TMould_wrapper" class="list">
 			<div id="DTTT_container" align="right" style="height:40px">
-				<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="addDicCode();"><span>增加</span></a>
-				<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="deleteDicCode();"><span>删除</span></a>
+				<a class="DTTT_button DTTT_button_text" onClick="addDicCode();"><span>增加</span></a>
+				<a class="DTTT_button DTTT_button_text" onClick="deleteDicCode();"><span>删除</span></a>
 			</div>	
 	
-			<table aria-describedby="TMould_info" style="width: 100%;" id="TMain" class="display dataTable" cellspacing="0">
+			<table style="width: 100%;" id="TMain" class="display" >
 				<thead>
-					<tr class="selected">
-						<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-						<th colspan="1" rowspan="1" style="width: 85px;" aria-label="代码类ID:" class="dt-middle sorting_disabled">代码类ID</th>
-						<th colspan="1" rowspan="1" style="width: 40px;" aria-label="代码类名称:" class="dt-middle sorting_disabled">代码类名称</th>
-						<th colspan="1" rowspan="1" style="width: 85px;" aria-label="代码类属性:" class="dt-middle sorting_disabled">代码类属性</th>
-						<th colspan="1" rowspan="1" style="width: 85px;" aria-label="代码录入层次:" class="dt-middle sorting_disabled">代码录入层次</th>
-						<th colspan="1" rowspan="1" style="width: 85px;" aria-label="代码ID:" class="dt-middle sorting_disabled">代码ID</th>
-						<th colspan="1" rowspan="1" style="width: 85px;" aria-label="代码名称:" class="dt-middle sorting_disabled">代码名称</th>
-						<th colspan="1" rowspan="1" style="width: 85px;" aria-label="上级代码:" class="dt-middle sorting_disabled">上级代码</th>
-						<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
+					<tr>
+						<th style="width: 10px;" aria-label="No:" >No</th>
+						<th style="width: 85px;" aria-label="代码类ID:" >字典编号</th>
+						<th style="width: 40px;" aria-label="代码类名称:" >字典名称</th>
+						<th style="width: 85px;" aria-label="代码ID:" >Key</th>
+						<th style="width: 85px;" aria-label="代码名称:" >Value</th>
+						<th style="width: 85px;" aria-label="代码类属性:" >字典使用范围</th>
+						<th style="width: 85px;" aria-label="代码录入层次:" >代码录入层次</th>
+						<th style="width: 85px;" aria-label="上级代码:" >上级代码</th>
+						<th style="width: 50px;" aria-label="操作" >操作</th>
 					</tr>
 				</thead>
 			</table>
@@ -80,9 +81,9 @@ function ajax() {
 			 "iDisplayLength" : 100,
 			"lengthChange":false,
 			//"lengthMenu":[50,100,200],//设置一页展示20条记录
-			"processing" : false,
+			"processing" : true,
 			"retrieve" : true,
-			"stateSave" : true,
+			"stateSave" : false,
 			"pagingType" : "full_numbers",
 			"serverSide" : false,
 			"ordering "	:true,
@@ -130,20 +131,28 @@ function ajax() {
 						{"data": null, "defaultContent" : '',"className" : 'td-center'},
 						{"data": "DicTypeID", "defaultContent" : '',"className" : 'td-center'},
 						{"data": "DicTypeName", "defaultContent" : '',"className" : 'td-left'},
+						{"data": "DicID", "defaultContent" : '',"className" : 'td-center'},
+						{"data": "DicName", "defaultContent" : '',"className" : 'td-left'},
 						{"data": "DicTypeLevel", "defaultContent" : '',"className" : 'td-left'},
 						{"data": "DicSelectedFlag", "defaultContent" : '',"className" : 'td-center'},
-						{"data": "DicID", "defaultContent" : '',"className" : 'td-center'},
-						{"data": "DicName", "defaultContent" : '',"className" : 'td-center'},
-						{"data": "parentName", "defaultContent" : '',"className" : 'td-center'},
+						{"data": "parentName", "defaultContent" : '',"className" : 'td-left'},
 						{"data": null, "defaultContent" : '',"className" : 'td-center'}
 			        ],
 			"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row){
 							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["DicID"] + "--" + row["DicTypeID"] + "' />"
 	                    }},	
-			    		{"targets":7,"render":function(data, type, row){
+			    		{"targets":8,"render":function(data, type, row){
+			    			//return 	"<a href='javascript:void(0);' title='增加子代码' onClick=\"callAddSubDicCode('" + row["DicID"] + "', '" + row["DicTypeID"] + "');\">增加子代码</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='详细信息' onClick=\"dispDicCodeDetail('" + row["DicID"] + "', '" + row["DicTypeID"] + "');\">详细信息</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='修改' onClick=\"callUpdateDicCode('" + row["DicID"] + "', '" + row["DicTypeID"] + "');\">修改</a>"
 			    			return 	"<a href='javascript:void(0);' title='增加子代码' onClick=\"callAddSubDicCode('" + row["DicID"] + "', '" + row["DicTypeID"] + "');\">增加子代码</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='详细信息' onClick=\"dispDicCodeDetail('" + row["DicID"] + "', '" + row["DicTypeID"] + "');\">详细信息</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='修改' onClick=\"callUpdateDicCode('" + row["DicID"] + "', '" + row["DicTypeID"] + "');\">修改</a>"
-	                    }}
+	                    }},
+	                    {
+							"orderable" : false,
+							"targets" : [] 
+						}, {
+							"visible" : false,
+							"targets" : [6,7]
+						}
 		         ] 
 		}
 	);
@@ -240,7 +249,7 @@ function ajax() {
 	
 	function dispDicCodeDetail(dicCodeId, dicTypeId) {
 		//popupWindow("DicCodeDetail", "${pageContext.request.contextPath}/diccode?methodtype=detail&dicCodeId=" + dicCodeId + "&dicTypeId=" + dicTypeId, 800, 600);
-		var url = "${ctx}/diccode?methodtype=detail&dicCodeId=" + dicCodeId + "&dicTypeId=" + dicTypeId;
+		var url = "${ctx}/diccode?methodtype=detail&dicCodeId=" + dicCodeId + "&dicTypeId=" + encodeURI(encodeURI(dicTypeId));
 		openLayer(url, $(document).width() - 250, layerHeight, true);
 	}
 
@@ -255,7 +264,7 @@ function ajax() {
 	function callAddSubDicCode(dicCodeId, dicTypeId) {
 		$('#operType').val("addsub");
 		//popupWindow("DicCodeDetail", "${pageContext.request.contextPath}/diccode?methodtype=updateinit&operType=addsub&dicCodeId=" + dicCodeId + "&dicTypeId=" + dicTypeId, 800, 600);	
-		var url = "${ctx}/diccode?methodtype=updateinit&operType=addsub&dicCodeId=" + dicCodeId + "&dicTypeId=" + dicTypeId;
+		var url = "${ctx}/diccode?methodtype=updateinit&operType=addsub&dicCodeId=" + dicCodeId + "&dicTypeId=" + encodeURI(encodeURI(dicTypeId));
 		openLayer(url, $(document).width() - 250, layerHeight, true);
 
 	}
@@ -263,14 +272,14 @@ function ajax() {
 	function callUpdateDicCode(dicCodeId, dicTypeId) {
 		$('#operType').val("update");
 		//popupWindow("DictypeDetail", "${pageContext.request.contextPath}/diccode?methodtype=updateinit&operType=update&dicCodeId=" + dicCodeId + "&dicTypeId=" + dicTypeId, 800, 600);
-		var url = "${ctx}/diccode?methodtype=updateinit&operType=update&dicCodeId=" + dicCodeId + "&dicTypeId=" + dicTypeId;
+		var url = "${ctx}/diccode?methodtype=updateinit&operType=update&dicCodeId=" + dicCodeId + "&dicTypeId=" + encodeURI(encodeURI(dicTypeId));
 		openLayer(url, $(document).width() - 250, layerHeight, true);
 
 	}
 
 	function selectDicType() {
 		//callDicTypeSelect("dicTypeId", "dicTypeIdName", "0", "", "");
-		var url = "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + dicTypeId + "&dicControlView=" + dicTypeIdName + "&type=" + 0 + "&dicTypeId=" + "&treeType=0&index=";
+		var url = "${ctx}" + "/common/selectDicTypePopActionInit?dicControl=" + encodeURI(encodeURI(dicTypeId)) + "&dicControlView=" + dicTypeIdName + "&type=" + 0 + "&dicTypeId=" + "&treeType=0&index=";
 		//openLayer(url, $(document).width() - 250, layerHeight, true);
 		callDicTypeSelect("dicTypeId", "dicTypeIdName", "0", "", "0", "");
 		

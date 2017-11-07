@@ -10,11 +10,11 @@
 		<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
 			<input type=hidden name="operType" id="operType" value='${DisplayData.operType}'/>
 			<input type=hidden name="dicId" id="dicId" value="${DisplayData.dicData.dicid}"/>
-				<div class="">
+				
 					<table width=100% style=" border-collapse: separate;border-spacing:6px;"  >
 						<tr>
-							<td>
-								代码类：
+							<td class="label" width="100px">
+								字典名称：
 							</td>
 							<td>
 								<input type=text name="dicTypeName" id="dicTypeName" value="${DisplayData.dicTypeName}" onfocusin="setReadonly(this, true);" onBlur="setReadonly(this, false);"/>
@@ -22,27 +22,46 @@
 								<button type="button" id="selectdictype" class="DTTT_button" onClick="selectDicType();"
 									style="height:25px;margin:0px 5px 0px 0px;" >选择</button>
 							</td>
-						<td>
-							代码ID：
+						
+					</tr>			
+					<tr>
+						<td class="label" width="100px">
+							Key：
 						</td>
 						<td>
 							<input type=text name="dicid" id="dicid" value="${DisplayData.dicData.dicid}"/>
 						</td>
-					</tr>			
-					<tr>
-						<td>
-							代码名称：
+						<td class="label" width="100px">
+							Value：
 						</td>
 						<td>
 							<input type=text name="dicname" id="dicname" value="${DisplayData.dicData.dicname}"/>
 						</td>
-						<td>
+						<!-- <td>
 							简拼：
 						</td>
 						<td>
 							<input type=text name="jianpin" id="jianpin" value="${DisplayData.dicData.jianpin}"/>
 						</td>
-					</tr>				
+						 -->
+					</tr>
+					<tr>
+					
+						<td class="label" width="100px">
+							排序No：
+						</td>
+						<td>
+							<input type=text name="sortno" id="sortno" value="${DisplayData.dicData.sortno}"/>
+						</td>
+						<td class="label" width="100px">
+							是否使用：
+						</td>					
+						<td colspan=2>
+							<input type=checkbox name="enableflag" id="enableflag" value="0"/>（选中有效）
+						</td>
+					
+					</tr>
+					<!-- 				
 					<tr>
 						<td>
 							代码描述：
@@ -64,6 +83,7 @@
 						
 						</td>
 					</tr>
+					
 					<tr>
 						<td>
 							是否叶子节点：
@@ -74,18 +94,8 @@
 								<option value ="1">是</option>
 							</select>
 						</td>
-						<td>
-							序号：
-						</td>
-						<td>
-							<input type=text name="sortno" id="sortno" value="${DisplayData.dicData.sortno}"/>
-						</td>
 					</tr>
-					<tr>
-						<td colspan=2>
-							<input type=checkbox name="enableflag" id="enableflag" value="0"/>选中有效
-						</td>
-					</tr>					
+					 -->					
 					<tr>
 						<td colspan=4>
 							<button type="button" id="close" class="DTTT_button" onClick="doReturn();"
@@ -96,10 +106,12 @@
 					</tr>
 		
 				</table>
-			</div>
+			
 		<br>
 	</form>
-
+</fieldset>
+</div>
+</div>
 </body>
 
 <script>

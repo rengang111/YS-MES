@@ -49,8 +49,11 @@
 				<td class="td-center" colspan="4" style="font-size: 26px;height: 55px;">采购订单</td>
 			</tr>
 			<tr> 				
+				<td class="label" style="width:100px;">耀升编号：</td>					
+				<td style="width:400px;">${contract.YSId}</td>
+								
 				<td class="label" style="width:100px;">合同编号：</td>					
-				<td style="width:400px;">${contract.contractId}</td>
+				<td style="width:200px;">${contract.contractId}</td>
 							
 				<td class="label" style="width:100px;"> 签单日期：</td>					
 				<td>${contract.purchaseDate}</td>
@@ -60,28 +63,28 @@
 				<td>${contract.supplierName}</td>
 							
 				<td class="label" style="width:100px;"> 需方：</td>					
-				<td>宁波耀升工具实业有限公司</td>
+				<td colspan="3">宁波耀升工具实业有限公司</td>
 			</tr>
 			<tr> 				
 				<td class="label" style="width:100px;">地址：</td>					
 				<td>${contract.address}</td>
 							
 				<td class="label" style="width:100px;"> 地址：</td>					
-				<td>宁波镇海区蛟川街道俞范东路776弄11号</td>
+				<td colspan="3">宁波镇海区蛟川街道俞范东路776弄11号</td>
 			</tr>
 			<tr> 				
 				<td class="label" style="width:100px;">电话：</td>					
-				<td>  ${contract.phone}&nbsp;${contract.mobile}&nbsp;传真：${contract.fax}</td>
+				<td> ${contract.phone}&nbsp;${contract.mobile}&nbsp;传真：${contract.fax}</td>
 							
 				<td class="label" style="width:100px;">电话：</td>					
-				<td> 0574-86365153 &nbsp;传真：0574-86656306</td>
+				<td colspan="3"> 0574-86365153 &nbsp;传真：0574-86656306</td>
 			</tr>
 			<tr> 				
 				<td class="label" style="width:100px;">联系人：</td>					
 				<td>${contract.userName}</td>
 							
 				<td class="label" style="width:100px;"> </td>					
-				<td></td>
+				<td colspan="3"></td>
 			</tr>
 								
 		</table>
@@ -106,7 +109,7 @@
 				<tr>
 					<td></td>
 					<td>${detail.materialId }</td>
-					<td>${detail.materialName }</td>
+					<td>${detail.description }</td>
 					<td>${detail.quantity }</td>
 					<td>${detail.price }</td>
 					<td>${detail.unit }</td>

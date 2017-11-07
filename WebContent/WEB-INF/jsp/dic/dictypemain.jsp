@@ -1,8 +1,8 @@
-<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE html>
 <%@ include file="../common/common.jsp"%>
 <html>
-<body class="easyui-layout">
+<body>
 <div id="container">
 	<div id="main">
 	<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
@@ -17,6 +17,7 @@
 		<fieldset>
 		<legend>字典类管理</legend>
 		<div style="height:5px"></div>
+		<!-- 
 		<table>
 			<tr>
 				<td>
@@ -30,28 +31,30 @@
 				</td>
 			</tr>
 		</table>
-		</fieldset>
+		 -->
+		
 		
 		<div id="TMould_wrapper" class="list">
 			<div id="DTTT_container" align="right" style="height:40px">
-				<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="addDictype();"><span>增加</span></a>
-				<a aria-controls="TExternalSample" tabindex="0" id="ToolTables_TExternalSample_1" class="DTTT_button DTTT_button_text" onClick="deleteDictype();"><span>删除</span></a>
+				<a class="DTTT_button DTTT_button_text" onClick="addDictype();"><span>增加</span></a>
+				<a class="DTTT_button DTTT_button_text" onClick="deleteDictype();"><span>删除</span></a>
 			</div>	
-			<table aria-describedby="TMould_info" style="width: 100%;" id="TMain" class="display dataTable" cellspacing="0">
+			<table id="TMain" class="display">
 				<thead>
-					<tr class="selected">
-						<th colspan="1" rowspan="1" style="width: 10px;" aria-label="No:" class="dt-middle sorting_disabled">No</th>
-						<th colspan="1" rowspan="1" style="width: 85px;" aria-label="代码类ID:" class="dt-middle sorting_disabled">代码类ID</th>
-						<th colspan="1" rowspan="1" style="width: 40px;" aria-label="代码类名称:" class="dt-middle sorting_disabled">代码类名称</th>
-						<th colspan="1" rowspan="1" style="width: 85px;" aria-label="代码类属性:" class="dt-middle sorting_disabled">代码类属性</th>
-						<th colspan="1" rowspan="1" style="width: 85px;" aria-label="代码录入层次:" class="dt-middle sorting_disabled">代码录入层次</th>
-						<th colspan="1" rowspan="1" style="width: 50px;" aria-label="操作" class="dt-middle sorting_disabled">操作</th>
+					<tr>
+						<th style="width: 30px;">No</th>
+						<th style="width: 85px;">字典编码</th>
+						<th style="width: 100px;">字典名称</th>
+						<th style="width: 85px;">字典使用范围</th>
+						<th style="width: 50px;">操作</th>
 					</tr>
 				</thead>
 			</table>
 		</div>
+		</fieldset>
 	</form>
 	</div>
+</div>
 </body>
 
 <script>
@@ -64,12 +67,13 @@
 		}
 
 		var t = $('#TMain').DataTable({
-				"paging": true,
+				"paging": false,
 				"lengthMenu":[10,20,50],//设置一页展示10条记录
-				"processing" : false,
-				"serverSide" : true,
+				"processing" : true,
+				"serverSide" : false,
 				"stateSave" : false,
-				"searching" : false,
+				"ordering "	:true,
+				"searching" : true,
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
 				"sAjaxSource" : "${ctx}/dictype?methodtype=search",
@@ -87,12 +91,7 @@
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
 						success: function(data){
-							/*
-							if (data.message != undefined) {
-								alert(data.message);
-							}
-							*/
-							
+														
 							fnCallback(data);
 
 						},
@@ -107,23 +106,34 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "DicTypeID", "defaultContent" : '',"className" : 'td-center'},
+							{"data": null, "defaultContent" : '',"className" : 'td-left'},
+							{"data": "DicTypeID", "defaultContent" : '',"className" : 'td-left'},
 							{"data": "DicTypeName", "defaultContent" : '',"className" : 'td-left'},
 							{"data": "DicTypeLevel", "defaultContent" : '',"className" : 'td-center'},
-							{"data": "DicSelectedFlag", "defaultContent" : '',"className" : 'td-center'},
 							{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				        ],
 				"columnDefs":[
-				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["DicTypeID"] + "' />"
-		                    }},	
-				    		{"targets":5,"render":function(data, type, row){
-				    			return 	"<a href='javascript:void(0);' title='增加子代码' onClick=\"callAddSubDictype('" + row["DicTypeID"] + "', '" + row["DicTypeName"] + "');\">增加子代码</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='详细信息' onClick=\"dispDictypeDetail('" + row["DicTypeID"] + "');\">详细信息</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='修改' onClick=\"callUpdateDictype('" + row["DicTypeID"] + "');\">修改</a>"
-		                    }}
-			         ] 
+		    		{"targets":0,"render":function(data, type, row){
+						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["DicTypeID"] + "' />"
+                    }},	
+		    		{"targets":4,"render":function(data, type, row){
+		    			// return 	"<a href='javascript:void(0);' title='增加子代码' onClick=\"callAddSubDictype('" + row["DicTypeID"] + "', '" + row["DicTypeName"] + "');\">增加子代码</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='详细信息' onClick=\"dispDictypeDetail('" + row["DicTypeID"] + "');\">详细信息</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='修改' onClick=\"callUpdateDictype('" + row["DicTypeID"] + "');\">修改</a>"
+		    			return 	 "<a href='javascript:void(0);' title='修改' onClick=\"callUpdateDictype('" + row["DicTypeID"] + "');\">修改</a>"
+                    }}
+	         	] 
 			}
 		);
+
+		t.on('click', 'tr', function() {
+
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	            t.$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }
+		});
 	}
 	
 	$(function(){
@@ -160,7 +170,7 @@
 		//popupWindow("DictypeDetail", "${pageContext.request.contextPath}/dictype?methodtype=updateinit&operType=add", 800, 600);
 		
 		var url = "${ctx}/dictype?methodtype=updateinit&operType=add";
-		openLayer(url, $(document).width() - 250, layerHeight, true);
+		openLayer(url, $(document).width() - 150, layerHeight, true);
 	}
 	
 	function deleteDictype() {
@@ -222,8 +232,9 @@
 	function callUpdateDictype(dictypeId) {
 		$('#operType').val("update");
 		//popupWindow("DictypeDetail", "${pageContext.request.contextPath}/dictype?methodtype=updateinit&operType=update&dictypeId=" + dictypeId, 800, 600);
-		var url = "${ctx}/dictype?methodtype=updateinit&operType=update&dictypeId=" + dictypeId;
-		openLayer(url, $(document).width() - 250, layerHeight, true);
+		var url = "${ctx}/dictype?methodtype=updateinit&operType=update&dictypeId=" + encodeURI(encodeURI(dictypeId));
+		//alert(url);//中文两次转码
+		openLayer(url, $(document).width() - 150, layerHeight, true);
 	}
 	function reload() {
 		$('#TMain').DataTable().ajax.reload(null,false);

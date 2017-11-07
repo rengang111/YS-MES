@@ -305,6 +305,7 @@
       <f name="b.phone" alias="" ctype="" />
       <f name="b.fax" alias="" ctype="" />
       <f name="b.mobile" alias="" ctype="" />
+      <f name="a.description" alias="" ctype="" />
     </select>
     <from>v_purchaseorderdetail a LEFT JOIN v_supplierbasicinfo b ON a.supplierId = b.supplierID AND b.DELETEFLAG = '0' </from>
     <orderby>a.materialId</orderby>

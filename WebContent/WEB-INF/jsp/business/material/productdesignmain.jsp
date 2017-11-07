@@ -162,6 +162,8 @@
 		ajax("0","true");//未完成		
 		
 		initEvent();
+
+		buttonSelectedEvent();//按钮选择式样
 		
 	})	
 	
@@ -270,9 +272,9 @@
 		
 			<div class="list">
 				<div id="DTTT_container" align="left" style="height:40px;width:50%">
-					<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0');">未完成</a>
-					<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1');">完成</a>
-					<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2');">完美</a>
+					<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('0');">未完成</a>
+					<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('1');">完成</a>
+					<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('2');">完美</a>
 				</div>
 			
 				<table id="TMaterial" class="display dataTable" cellspacing="0">

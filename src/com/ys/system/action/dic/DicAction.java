@@ -1,5 +1,6 @@
 package com.ys.system.action.dic;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -115,7 +116,7 @@ public class DicAction extends BaseAction {
 				dataModel = dicService.getDetail(request);
 				S_DICData data = new S_DICData();
 				String dicCodeId = request.getParameter("dicCodeId");
-				String dicTypeId = request.getParameter("dicTypeId");
+				String dicTypeId = URLDecoder.decode(request.getParameter("dicTypeId"), "UTF-8");
 				data.setDicprarentid(dicCodeId);
 				dataModel.setDicParentName(DicUtil.getCodeValue(dicTypeId + dicCodeId));
 				data.setDictypeid(dicTypeId);
@@ -123,7 +124,7 @@ public class DicAction extends BaseAction {
 			}
 			if (operType.equals("addsubfromtype")) {
 				S_DICData data = new S_DICData();
-				data.setDictypeid(request.getParameter("dicTypeId"));
+				data.setDictypeid(URLDecoder.decode(request.getParameter("dicTypeId"), "UTF-8"));
 				dataModel.setDicTypeName(request.getParameter("dicTypeName"));
 				dataModel.setdicData(data);
 			}			
@@ -154,7 +155,7 @@ public class DicAction extends BaseAction {
 			switch(preCheckResult) {
 			case 0:
 				dataModel = dicService.doUpdate(request, data, userInfo, false);
-				DicUtil.emptyBuffer(true);
+				DicUtil.emptyBuffer(false);
 				break;
 			case 1:
 				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "代码已存在", "");
@@ -183,7 +184,7 @@ public class DicAction extends BaseAction {
 			switch(preCheckResult) {
 			case 0:
 				dataModel = dicService.doUpdate(request, data, userInfo, true);
-				DicUtil.emptyBuffer(true);
+				DicUtil.emptyBuffer(false);
 				break;
 			case 1:
 				dataModel.setEndInfoMap(BaseService.DUMMYKEY, "代码已存在", "");
@@ -207,7 +208,7 @@ public class DicAction extends BaseAction {
 
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		dataModel = dicService.doDelete(request, data, userInfo);
-		DicUtil.emptyBuffer(true);
+		DicUtil.emptyBuffer(false);
 		dataModel.setOperType("delete");
 		
 		return dataModel;
