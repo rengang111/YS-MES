@@ -243,7 +243,13 @@ public class BaseService {
 	 */
 	public String convertToUTF8(String s) 
 			throws UnsupportedEncodingException{
-
+		
+		if(s == null || ("").equals(s)){		
+			return "";
+		}else{
+			s = s.replaceAll("%(?![0-9a-fA-F]{2})", "%25");  
+		    s = s.replaceAll("\\+", "%2B");  
+		}			
 		return  URLDecoder.decode(s, "UTF-8");
 		
 	}
