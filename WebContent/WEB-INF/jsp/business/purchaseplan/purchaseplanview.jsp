@@ -10,6 +10,67 @@
   	
 <script type="text/javascript">
 
+/* Custom filtering function which will search data in column four between two values */
+$('#example').dataTable.ext.search.push(function( settings, data, dataIndex ) {
+	       
+	var type =  $('#selectedPurchaseType').val();
+	       	
+	    	//return true;
+	    	
+	    	var data11=data[10];
+	    	var data01=data[1];
+	        var data011 = data01.substring(0,1)
+		   
+		    		
+	    	if (type =='' || type == 'all')		    		
+	    	{		    		
+	    		return true;
+	    		
+	    	}else if(type=='dg'){//订购件
+	    		var val1=data[13];
+	    		var val2=data[9];
+	    		var val3=data[1];
+	    		var tmp3 = val3.substring(0,1);
+	    		var tmp2 = val2.substring(6,4);
+	    		var tmp1 = val1.substring(3,0);
+	    		//alert(tmp)
+	    		if(tmp1 == '010' && tmp2 != 'YZ' && tmp3 != 'G' ){
+	    			return true;
+	    		}
+	    		
+	    	}else if(type=='ty'){//通用件
+	    		var val=data[13];
+	    		var tmp = val.substring(3,0);
+	    		
+	    		if(tmp == '020'){
+	    			return true;
+	    		}
+	    		
+	    	}else if(type=='bz'){//包装品
+	    		var val=data[1];
+	    		var tmp = val.substring(0,1);
+	    		
+	    		if(tmp == 'G'){
+	    			return true;
+	    		}
+	    		
+	    	}else if(type=='yz'){//自制品
+	    		var val=data[9];
+	    		var tmp = val.substring(6,4);
+	    		
+	    		if(tmp == 'YZ'){
+	    			return true;
+	    		}
+	    		
+	    	}else{
+
+		    	return false;
+	    		
+	    	}
+	    	  
+ 
+});
+
 var GcontractStatusFlag="false";
 
 function initEvent(){
@@ -22,11 +83,8 @@ function initEvent(){
         else {
         	
         	$('#contractTable').DataTable().$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-            
-            var d = $('#contractTable').DataTable().row(this).data();
-			//alert(d["bid_id"]);
-			
+            $(this).addClass('selected');            
+            var d = $('#contractTable').DataTable().row(this).data();			
 			$('#contractDetail').DataTable().destroy();
 			//$('#set_lines').DataTable().ajax.reload();
 			//ajax_factory_bid_set_lines(d["bid_id"]);
@@ -45,10 +103,43 @@ function initEvent(){
 		
 		baseBomView();//基础BOM
 		
-		contractTableView();//采购合同
-		ZZmaterialView();//二级BOM
-		initEvent();//合同明细联动
 		
+		$("#createPurchaseOrder").click(function() {
+
+			var str = '';
+			$("input[name='numCheck']").each(function(){
+				if ($(this).prop('checked')) {
+					str += $(this).val() + ",";
+				}
+			});
+			var materialId='${order.materialId}';
+			var YSId ="${order.YSId}";
+			var quantity ="${order.quantity}";
+			var actionUrl = "${ctx}/business/contract?methodtype=creatPurchaseOrder&YSId="
+			+YSId+"&materialId="+materialId+"&quantity="+quantity;
+//alert(actionUrl+"OOOOOO"+str)
+			if (str != '') {
+				//if(confirm("采购方案,采购合同,全部会被删除,\n\n        确定要删除订单吗？")) {
+					jQuery.ajax({
+						type : 'POST',
+						async: false,
+						contentType : 'application/json',
+						dataType : 'json',
+						data : str,
+						url : actionUrl,
+						success : function(data) {
+							$('#example').DataTable().ajax.reload(false);					
+						},
+						error:function(XMLHttpRequest, textStatus, errorThrown){
+			            	alert(errorThrown);
+						}
+					});
+				//}
+			} else {
+				alert("请至少选择一条数据");
+			}
+		});
+				
 		$(".goBack").click(
 				function() {
 			var YSId = '${order.YSId}';
@@ -92,8 +183,7 @@ function initEvent(){
 				alert("该方案有部分合同已经收货,不允许重置！");
 				return;					
 			}
-			if(confirm("重置采购方案,会清空已有的方案数据,\n\n        确定要重置吗？")) {
-				
+			if(confirm("重置采购方案,会删除现有的采购方案和采购合同,\n\n        确定要重置吗？")) {
 				
 				$('#attrForm').attr("action",
 						"${ctx}/business/purchasePlan?methodtype=purchasePlanDeleteInit"
@@ -106,7 +196,7 @@ function initEvent(){
 			
 		});
 			
-		
+		/*
 		$('#example').DataTable().on('click', 'tr', function() {
 
 			var rowIndex = $(this).context._DT_RowIndex; //行号		
@@ -125,6 +215,23 @@ function initEvent(){
 			$('.DTFC_Cloned').find('tr').eq(rowIndex+2).addClass('selected');
 			
 		});
+		*/
+		
+		$('#example').DataTable().on('click', 'tr', function() {
+			
+			if(!(typeof($(this).children().last().children().val()) == 'undefined')){
+				
+				//只处理有checkBox的数据
+				$(this).toggleClass("selected");
+			    if($(this).hasClass("selected")){//如果有某个样式则表明，这一行已经被选中
+			        
+			    	$(this).children().last().children().prop("checked", true);
+			    }else{//如果没有被选中
+
+			    	$(this).children().last().children().prop("checked", false);
+			    }
+			}			
+		});	
 		
 		$(".tabs2").click(function() {
 					contractTableView();
@@ -162,7 +269,18 @@ function initEvent(){
 			costAcount();
 		});
 		
-	
+		var table = $('#example').DataTable();
+		// Event listener to the two range filtering inputs to redraw on input
+	    $('#yz, #ty, #dg, #bz, #all, #ycl, #wll').click( function() {
+	    	
+	    	 $('#selectedPurchaseType').val($(this).attr('id'));
+    		 table.draw();
+	    } );
+	    buttonSelectedEvent();//按钮点击效果
+
+		contractTableView();//采购合同
+		ZZmaterialView();//二级BOM
+		initEvent();//合同明细联动
 	});
 
 	
@@ -170,20 +288,22 @@ function initEvent(){
 
 		var scrollHeight = $(window).height() - 120;
 		var YSId='${order.YSId}';
-		var table = $('#example').dataTable();
-		if(table) {
-			table.fnDestroy();
-		}
+		//var table = $('#example').dataTable();
+		//if(table) {
+		//	table.fnDestroy();
+		//}
+		
 		var t = $('#example').DataTable({
+			"paging": false,
 			"processing" : false,
-			"retrieve"   : false,
+			"retrieve"   : true,
 			"stateSave"  : false,
-	        "paging"    : false,
-	        "pageLength": 50,
 	        "ordering"  : false,
-	        "sScrollY"	: scrollHeight,
-	        "sScrollX": true,
-	       	"fixedColumns":   { leftColumns: 2 },
+	        "autoWidth": false,
+			"pagingType" : "full_numbers",
+			"scrollY"    : scrollHeight,
+	        "scrollCollapse": false,
+	       //	"fixedColumns":   { leftColumns: 2 },
 			"dom" 		: '<"clear">rt',
 			"sAjaxSource" : "${ctx}/business/purchasePlan?methodtype=purchasePlanView&orderType=010"+"&YSId="+YSId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -209,7 +329,8 @@ function initEvent(){
 						costAcount();//初始化计算
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
+		            	alert(errorThrown)
+					 }
 				})
 			},
 			
@@ -217,8 +338,8 @@ function initEvent(){
 	       		"url":"${ctx}/plugins/datatables/chinese.json"
 	       	},
 			"columns": [
-				{"data": null,"className" : 'td-center'},//0
-				{"data": "materialId","className" : 'td-left',"defaultContent" : ''},//1.物料编号
+				{"data": null,"className" : 'td-center',"sWidth": "15px"},//0
+				{"data": "materialId","className" : 'td-left',"sWidth": "120px"},//1.物料编号
 				{"data": null,"defaultContent" : ''},//2.物料名称
 				{"data": "purchaseType","className" : 'td-center', "defaultContent" : ''},//3.物料特性:物料
 				{"data": "unitQuantity","className" : 'td-right', "defaultContent" : ''},//4.单位使用量:baseBom
@@ -226,14 +347,47 @@ function initEvent(){
 				{"data": null,"className" : 'td-right'},//6.总量= 单位使用量 * 生产需求量
 				{"data": "availabelToPromise","className" : 'td-right'},//7.当前库存(虚拟库存):物料
 				{"data": "purchaseQuantity","className" : 'td-right'},//8.建议采购量:输入
-				{"data": "supplierId","className" : 'td-left'},//9.供应商,可修改:baseBom
+				{"data": "supplierId","className" : 'td-left',"sWidth": "60px"},//9.供应商,可修改:baseBom
 				{"data": "price","className" : 'td-right', "defaultContent" : '0'},//10.本次单价,可修改:baseBom
 				{"data": "totalPrice","className" : 'td-right', "defaultContent" : '0'},//11.总价=本次单价*采购量
-			 ],
+				{"data": null,"className" : 'td-right',"sWidth": "100px"},//12
+				{"data": "purchaseTypeId","className" : 'td-center'},//13
+				],
 			"columnDefs":[
+				{"targets":12,"render":function(data, type, row){
+					var contractId = row["contractId"];
+					var contractPrice = currencyToFloat(row["contractPrice"]);
+					var planPrice = currencyToFloat(row["price"]);
+					var contractQty = currencyToFloat(row["contractQty"]);
+					var planQty = currencyToFloat(row["planQty"]);
+					var txt = "";
+					if(contractId == ''){//没做过合同
+						if(planQty <= '0'){
+							txt = txt + '本次不采购';
+						}else{
+							txt = txt + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["supplierId"] + "' />";	
+							txt = txt + '新建合同';
+						}
+					}else{//做过合同
+						if(contractPrice == planPrice && contractQty == planQty){
+
+							txt = txt + "采购无变化"
+						}else{
+							if(planQty <= '0'){
+								txt = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["supplierId"] + "' />";	
+								txt = txt + '采购有变化'
+							}else{
+								txt = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["supplierId"] + "' />";	
+								txt = txt + "采购有变化"
+							}
+						}
+					}
+					
+					return txt;
 				
+				}},
 				{"targets":1,"render":function(data, type, row){
-					rtn= "<a href=\"#\" onClick=\"doEditMaterial('" + row["materialRecordId"] +"','" + row["materialParentId"] +"')\">"+data+"</a>";
+					rtn= "<a href=\"###\" onClick=\"doEditMaterial('" + row["materialRecordId"] +"','" + row["materialParentId"] +"')\">"+data+"</a>";
 					return rtn;
 				}},
 	    		{"targets":2,"render":function(data, type, row){	 			
@@ -277,12 +431,14 @@ function initEvent(){
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : [ 7]
-				}	
+					"targets" : [3, 5,7,13]
+				},
+	    		{ "bSortable": false, "aTargets": [ 0 ,12] }
 	          
 	        ] 
 	     
-		});	
+		}).draw();	
+		
 		/*
 		t.on('click', 'tr', function() {
 
@@ -305,7 +461,32 @@ function initEvent(){
 			});
 		}).draw();
 		
+		
 	}//ajax()
+	
+	function fnselectall() { 
+		if($("#selectall").prop("checked")){
+			$("input[name='numCheck']").each(function() {
+				$(this).prop("checked", true);
+				$(this).parent().parent().addClass("selected");
+			});
+				
+		}else{
+			$("input[name='numCheck']").each(function() {
+				if($(this).prop("checked")){
+					$(this).removeAttr("checked");
+					$(this).parent().parent().removeClass('selected');
+				}
+			});
+		}
+	};
+	
+	function fnreverse() { 
+		$("input[name='numCheck']").each(function () {  
+	        $(this).prop("checked", !$(this).prop("checked"));  
+			$(this).parent().parent().toggleClass("selected");
+	    });
+	};
 	
 </script>
 <script type="text/javascript">
@@ -508,7 +689,7 @@ function showContract(supplierId,YSId) {
 		 // if(confirm('确定要关闭么')){
 		    layer.close(index)
 		 // }
-		  baseBomView();
+		  //baseBomView();
 		  return false; 
 		}    
 	});		
@@ -745,6 +926,7 @@ function ZZmaterialView() {
 		<fieldset class="action" style="text-align: right;">
 			<button type="button" id="editPurchasePlan" class="DTTT_button">修改采购方案</button>
 			<button type="button" id="deletePurchasePlan" class="DTTT_button">重置采购方案</button>
+			<button type="button" id="deleteWrapping" class="DTTT_button">重置包装品</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		
@@ -757,21 +939,35 @@ function ZZmaterialView() {
 
 		<div id="tabs-1" style="padding: 5px;">
 
-		<table id="example" class="display" style="width:100%">
+			<div id="DTTT_container"  style="float:left;height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
+				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
+				<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a>
+				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
+				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
+				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>
+				<input type="hidden" id="selectedPurchaseType" />
+			</div>
+			<div id="DTTT_container" style="float:right;height:40px;margin: 5px 0px -10px 10px;">
+				<a class="DTTT_button" id="createPurchaseOrder">选中并生成采购合同</a>
+			</div>
+		<table id="example" class="display" >
 			<thead>				
 				<tr>
-					<th class="dt-center" style="width:30px">No</th>
-					<th class="dt-center" style="width:100px">物料编码</th>
-					<th class="dt-center" >物料名称</th>
-					<th class="dt-center" style="width:30px">物料特性</th>
-					<th class="dt-center" width="60px">用量</th>
-					<th class="dt-center" width="60px">需求量</th>
-					<th class="dt-center" width="60px">总量</th>
-					<th class="dt-center" width="60px">当前库存</th>
-					<th class="dt-center" width="60px">采购量</th>
-					<th class="dt-center" style="width:80px">供应商</th>
-					<th class="dt-center" width="60px">单价</th>
-					<th class="dt-center" width="80px">总价</th>
+					<th>No</th>
+					<th>物料编码</th>
+					<th>物料名称</th>
+					<th>物料特性</th>
+					<th width="60px">基本用量</th>
+					<th width="60px">需求量</th>
+					<th width="60px">计划用量</th>
+					<th width="60px">当前库存</th>
+					<th width="60px">采购量</th>
+					<th>供应商</th>
+					<th width="60px">单价</th>
+					<th width="80px">总价</th>
+					<th>合同做成<br>
+						<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
+					<th width="1px"></th>
 				</tr>
 			</thead>
 		</table>
@@ -783,13 +979,13 @@ function ZZmaterialView() {
 			<thead>				
 				<tr>
 					<th width="1px">No</th>
-					<th class="dt-center" style="width:120px">合同编号</th>
-					<th class="dt-center" style="width:100px">供应商简称</th>
-					<th class="dt-center" >供应商名称</th>
-					<th class="dt-center" style="width:80px">下单日期</th>
-					<th class="dt-center" width="80px">交货日期</th>
-					<th class="dt-center" width="100px">合同金额</th>
-					<th class="dt-center" width="30px"></th>
+					<th style="width:120px">合同编号</th>
+					<th style="width:100px">供应商简称</th>
+					<th >供应商名称</th>
+					<th style="width:80px">下单日期</th>
+					<th width="80px">交货日期</th>
+					<th width="100px">合同金额</th>
+					<th width="30px"></th>
 				</tr>
 			</thead>			
 		</table>
@@ -830,12 +1026,12 @@ function ZZmaterialView() {
 					<thead>				
 						<tr>
 							<th width="1px">No</th>
-							<th class="dt-center" style="width:120px !important">原材料编码</th>
-							<th class="dt-center">原材料名称</th>
-							<th class="dt-center" width="80px !important">单位</th>
-							<th class="dt-center" width="100px">总量</th>
-							<th class="dt-center" width="100px">单价</th>
-							<th class="dt-center" width="100px !important">总价</th>
+							<th style="width:120px !important">原材料编码</th>
+							<th>原材料名称</th>
+							<th width="80px !important">单位</th>
+							<th width="100px">总量</th>
+							<th width="100px">单价</th>
+							<th width="100px !important">总价</th>
 						</tr>
 					</thead>
 							

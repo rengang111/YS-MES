@@ -1826,7 +1826,7 @@ public class RequirementService extends CommonService {
 		PurchaseOrderService contract = new PurchaseOrderService(
 				model,request,session,null, userInfo);
 		
-		contract.insert(YSId);
+		contract.insert(YSId,"");//11/8
 		
 		String bomId = request.getParameter("bomId");
 		model.addAttribute("bomId",bomId);

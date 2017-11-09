@@ -377,7 +377,7 @@
 		
 		</fieldset>	
 		<fieldset class="action" style="text-align: right;margin-top: -15px;">
-			<button type="button" id="updateOrderBom" class="DTTT_button">确认并生成采购合同</button>
+			<button type="button" id="updateOrderBom" class="DTTT_button">确认采购方案</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		
@@ -448,26 +448,40 @@
 		var index = '${status.index}';
 		var materialName = '${bom.materialName}';
 		var planMaterialId = '${bom.planMaterialId}';
-		var price = currencyToFloat ('${bom.price}');
-		var quantity = '${bom.quantity}';
 		var order = currencyToFloat( '${order.totalQuantity}' );
 		var unitQuantity = currencyToFloat( '${bom.unitQuantity}' );
 		var totalPrice = currencyToFloat( '${bom.totalPrice}' );
-		var stock = '${bom.availabelToPromise}';
+		var stock = currencyToFloat( '${bom.availabelToPromise}' );
 		var type = '${bom.purchaseTypeId}';
 		var supplierId = '${bom.supplierId}'
-		var vtotalPrice = '0';//初始化
-			
 		
-		var shortName = getLetters(supplierId);
-		
+		var vtotalPrice = '0';//初始化		
+		var shortName = getLetters(supplierId);		
 		var ftotalQuantity =  currencyToFloat( '${bom.purchaseQuantity}' ) ;
-		//var ftotalQuantity =  order * unitQuantity ;
-		//var vtotalQuantity = floatToCurrency( ftotalQuantity );//总量
-		var fpurchase = ftotalQuantity;
+		var fPlanQuantity =  currencyToFloat( '${bom.manufactureQuantity}' ) ;
+		var price = currencyToFloat ('${bom.price}');
+
+		vtotalPrice = floatToCurrency( price * ftotalQuantity );
+		
+		//虚拟库存回退处理		
+		var contractId = '${bom.contractId}';
+		var contractPrice = currencyToFloat('${bom.contractPrice}');
+		var contractQty = currencyToFloat('${bom.contractQty}');
+		//虚拟库存=实际库存 + 待入库 - 待出库,这里做反向操作: 页面显示的虚拟库存 = 实际库存 - 待入库 + 待出库
+		var newStock =  floatToCurrency( stock - contractQty + fPlanQuantity );
+		//alert("newStock:---"+stock+"---"+contractQty+"---"+ftotalQuantity)
 		if(type=="020"){//通用件单独采购
-			fpurchase = "0";
+			ftotalQuantity = "0";
 		}	
+		$('#availabelToPromise'+index).html(newStock);
+		
+		$('#totalPrice'+index).html(vtotalPrice);
+		$("#planDetailList"+index+"\\.totalprice").val(vtotalPrice);		
+		
+		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
+		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
+		
+		counter++;
 		
 		/*
 		if(planMaterialId == null || planMaterialId == ""){//基础BOM有物料发生变更
@@ -491,15 +505,6 @@
 				
 		}
 		*/
-		vtotalPrice = floatToCurrency( price * fpurchase );
-		$('#totalPrice'+index).html(vtotalPrice);
-		$("#planDetailList"+index+"\\.totalprice").val(vtotalPrice);
-		
-		
-		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
-		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
-		
-		counter++;
 	</script>	
 </c:forEach>
 			</tbody>

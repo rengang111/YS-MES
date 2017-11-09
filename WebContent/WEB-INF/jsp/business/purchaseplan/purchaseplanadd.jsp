@@ -350,7 +350,8 @@
 		
 		</fieldset>	
 		<fieldset class="action" style="text-align: right;margin-top: -15px;">
-			<button type="button" id="createOrderBom" class="DTTT_button">确认并生成采购合同</button>
+			<!-- <button type="button" id="createOrderBom" class="DTTT_button">确认并生成采购合同</button> -->
+			<button type="button" id="createOrderBom" class="DTTT_button">确认采购方案</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		<script type="text/javascript">

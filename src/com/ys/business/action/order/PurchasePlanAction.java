@@ -79,7 +79,7 @@ public class PurchasePlanAction extends BaseAction {
 			case "purchasePlan":
 				//doShowBomDetail();
 				rtnUrl = "/business/purchaseplan/purchaseplanedit";
-				break;			
+				break;
 			case "searchPurchase":
 				dataMap = doSearchPurchase(data);
 				printOutJsonObj(response, dataMap);
@@ -87,10 +87,10 @@ public class PurchasePlanAction extends BaseAction {
 			case "purchasePlanAddInit"://订单采购
 				rtnUrl = purchasePlanAddInit();
 				break;
-			case "purchasePlanAdd":
+			case "purchasePlanAdd"://保存采购方案
 				doPurchasePlanAdd();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
-				break;				
+				break;
 			case "detailView":
 				doShowPurchaseDetail();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
@@ -98,7 +98,7 @@ public class PurchasePlanAction extends BaseAction {
 			case "purchasePlanView":
 				dataMap = purchasePlanView();
 				printOutJsonObj(response, dataMap);
-				break;							
+				break;
 			case "PurchaseView":
 				doShowPurchaseDetail();
 				rtnUrl = "/business/purchase/purchaseplan";
@@ -145,7 +145,7 @@ public class PurchasePlanAction extends BaseAction {
 	}
 	
 	public void doInit(String formId,HttpSession session){	
-		
+		/*
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
@@ -154,7 +154,7 @@ public class PurchasePlanAction extends BaseAction {
 		}else{
 			model.addAttribute("keyBackup",keyBackup);
 		}
-		
+		*/
 	}
 
 	@SuppressWarnings("unchecked")
@@ -164,8 +164,8 @@ public class PurchasePlanAction extends BaseAction {
 		ArrayList<HashMap<String, String>> dbData = 
 				new ArrayList<HashMap<String, String>>();
 		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
 			session.removeAttribute(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD1);
 			session.removeAttribute(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD2);
 			

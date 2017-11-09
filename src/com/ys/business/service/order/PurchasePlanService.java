@@ -256,12 +256,15 @@ public class PurchasePlanService extends CommonService {
 
 			//采购方案****************************************************
 			//更新采购方案
-			B_PurchasePlanData dbPlan = updatePurchasePlan(reqPlan);
-			int version = dbPlan.getVersion();
-			YSId = dbPlan.getYsid();
-			String materialId = dbPlan.getMaterialid();
-			String purchaseId = dbPlan.getPurchaseid();	
+			String purchaseId = reqPlan.getPurchaseid();
+			YSId = reqPlan.getYsid();			
+			if(isNullOrEmpty(purchaseId)){
+				purchaseId = getPurchaseId(YSId);
+				reqPlan.setPurchaseid(purchaseId);
+			}
 			
+			int version = updatePurchasePlan(reqPlan);
+						
 			//更新前数据取得
 			List<B_PurchasePlanDetailData> oldDBList = getPurchasePlanDetail(YSId);			
 			
@@ -277,7 +280,6 @@ public class PurchasePlanService extends CommonService {
 				//float convertUnit = stringToFloat(map2.get("convertUnit"));//换算单位
 				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
 				String requirement = String.valueOf(-1 * totalQuantity);
-				//String requirement = map2.get("totalQuantity");//需求量
 				
 				updateMaterial(rawmater2,purchase,requirement);						
 			}
@@ -288,9 +290,9 @@ public class PurchasePlanService extends CommonService {
 				String oldmaterilid = old.getMaterialid();				
 
 				//旧数据物料的待出库"减少"处理
-				String purchase = String.valueOf(0 - stringToFloat(old.getPurchasequantity()));
-				String requirement = String.valueOf(0 - stringToFloat(old.getManufacturequantity()));
-				updateMaterial(oldmaterilid,purchase,requirement);
+				String purchase = String.valueOf(-1 * stringToFloat(old.getPurchasequantity()));
+				String requirement = String.valueOf(-1 * stringToFloat(old.getManufacturequantity()));
+				updateMaterial(oldmaterilid,"0",requirement);
 				
 				old.setPurchasequantity(purchase);
 				old.setManufacturequantity(requirement);
@@ -317,11 +319,11 @@ public class PurchasePlanService extends CommonService {
 				String purchase = detail.getPurchasequantity();
 				String requirement = detail.getManufacturequantity();
 
-				updateMaterial(materilid,purchase,requirement);
+				updateMaterial(materilid,"0",requirement);
 				
 			}//for
 			
-			
+			/*
 			//采购合同****************************************************
 			
 			//旧数据:数据取得
@@ -453,7 +455,7 @@ public class PurchasePlanService extends CommonService {
 					continue;					
 				}		
 			}	
-			
+			*/
 			//二级BOM(原材料)物料需求表
 			ArrayList<HashMap<String, String>> list3 = getRawMaterialGroupList(YSId);	
 			
@@ -484,157 +486,7 @@ public class PurchasePlanService extends CommonService {
 		
 		return YSId;
 	}
-	
-	/*
-	 * insert处理
-	 */
-	private String insert(){
 		
-		ts = new BaseTransaction();
-		String  purchaseId="";
-		
-		try {
-			ts.begin();
-
-			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();
-			String YSId = reqPlan.getYsid();
-			String materialId = reqPlan.getMaterialid();
-			
-			//设置采购方案编号
-			purchaseId = getPurchaseId(YSId);					
-
-			//采购方案****************************************************
-			reqPlan.setPurchaseid(purchaseId);		
-			insertPurchasePlan(reqPlan);
-			
-			List<B_PurchasePlanDetailData> reqPlanList = reqModel.getPlanDetailList();
-			
-			for(B_PurchasePlanDetailData detail:reqPlanList){
-				String materilid = detail.getMaterialid();
-				if(materilid == null || ("").equals(materilid)){
-					continue;		
-				}
-				detail.setPurchaseid(purchaseId);
-				detail.setYsid(YSId);
-				detail.setVersion(1);//第一次生成时,默认:1
-				insertPurchasePlanDetail(detail);
-				
-				//更新虚拟库存
-				String purchase = detail.getPurchasequantity();//采购量
-				String requirement = detail.getManufacturequantity();//需求量
-				updateMaterial(materilid,purchase,requirement);
-			}
-			
-			//采购合同****************************************************
-			
-			//供应商集计
-			//以采购方案里的供应商为单位集计
-			ArrayList<HashMap<String, String>> supplierList = getSupplierList(YSId);
-					
-			if(supplierList == null || supplierList.size() <= 0)
-				return purchaseId;			
-			
-			for(int i=0;i<supplierList.size();i++){
-				
-				String supplierId = supplierList.get(i).get("supplierId");
-				String shortName  = supplierList.get(i).get("supplierShortName");
-				String total      = supplierList.get(i).get("total");
-				String purchaseType = supplierList.get(i).get("purchaseType");
-				
-				if(supplierId == null || supplierId.equals("")){
-					continue;
-				}
-				float totalf = stringToFloat(total); 
-				if(totalf == 0){//采购数量为零的供应商不计入合同
-					continue;
-				}
-				//取得供应商的合同流水号
-				//父编号:年份+供应商简称
-				String type = getContractType(purchaseType);
-				
-				String typeParentId = BusinessService.getshortYearcode()+type;				
-				String supplierParentId = BusinessService.getshortYearcode() + shortName;				
-				String typeSubId = getContractTypeCode(typeParentId);
-				String suplierSubId = getContractSupplierCode(supplierParentId);
-
-				//3位流水号格式化	
-				//采购合同编号:16D081-WL002
-				String contractId = BusinessService.getContractCode(type,typeSubId, suplierSubId,shortName);
-				
-				//新增采购合同*************
-				B_PurchaseOrderData data = new B_PurchaseOrderData();
-				
-				data.setYsid(YSId);
-				data.setMaterialid(materialId);
-				data.setContractid(contractId);
-				data.setTypeparentid(typeParentId);
-				data.setTypeserial(typeSubId);
-				data.setSupplierparentid(supplierParentId);
-				data.setSupplierserial(suplierSubId);
-				data.setSupplierid(supplierId);
-				data.setTotal(total);
-				data.setPurchasedate(CalendarUtil.fmtYmdDate());
-				data.setDeliverydate(CalendarUtil.dateAddToString(data.getPurchasedate(),20));
-				data.setVersion(1);//默认为1
-				
-				insertPurchaseOrder(data);//新增合同头表
-				
-				//新增合同明细*************
-				List<HashMap<String, String>> dbList = getMaterialGroupList(YSId,supplierId);
-				
-				for(HashMap<String, String> dt:dbList){					
-					
-					B_PurchaseOrderDetailData d = new B_PurchaseOrderDetailData();				
-					d.setYsid(YSId);
-					d.setContractid(contractId);
-					d.setMaterialid(dt.get("materialId"));
-					d.setQuantity(dt.get("purchaseQuantity"));
-					d.setPrice(dt.get("price"));					
-					d.setTotalprice(dt.get("totalPrice"));
-					d.setUnitquantity(dt.get("unitQuantity"));
-					d.setVersion(1);//默认为1
-					
-					insertPurchaseOrderDetail(d);
-										
-					continue;					
-				}				
-			}
-			
-			//二级BOM(原材料)物料需求表
-			ArrayList<HashMap<String, String>> list = getRawMaterialGroupList(YSId);	
-			
-			for(HashMap<String, String> map2:list){
-				
-				float convertUnit = stringToFloat(map2.get("convertUnit"));//换算单位
-				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
-				
-				//更新虚拟库存
-				String purchase = "0";//采购量
-				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
-				String requirement = String.valueOf(totalQuantity/convertUnit);
-				
-				updateMaterial(rawmater2,purchase,requirement);						
-			}			
-			
-			//更新订单状态:待到料
-			updateOrderStatusByYSId(YSId,Constants.ORDER_STS_2);
-			
-			ts.commit();
-			
-
-		}
-		catch(Exception e) {
-			try {
-				ts.rollback();
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-			System.out.println(e.getMessage());
-		}
-		
-		return purchaseId;
-	}
-	
 	/*
 	 * insert处理
 	 */
@@ -823,17 +675,33 @@ public class PurchasePlanService extends CommonService {
 	public void deletePurchasePlan(String YSId) throws Exception{
 		
 		//
-		String where = "YSId = '" + YSId +"'";
-		List<B_PurchasePlanData> list = new B_PurchasePlanDao().Find(where);
-		
-		for(B_PurchasePlanData dt:list){
-			new B_PurchasePlanDao().Remove(dt);
-		}
-		
-		List<B_PurchasePlanDetailData> list2 = new B_PurchasePlanDetailDao().Find(where);
-		
-		for(B_PurchasePlanDetailData dt:list2){
-			new B_PurchasePlanDetailDao().Remove(dt);
+		ts = new BaseTransaction();
+		try{
+
+			ts.begin();
+			
+			String where = "YSId = '" + YSId +"'";
+			List<B_PurchasePlanData> list = new B_PurchasePlanDao().Find(where);
+			
+			for(B_PurchasePlanData dt:list){
+				new B_PurchasePlanDao().Remove(dt);
+			}
+			
+			List<B_PurchasePlanDetailData> list2 = new B_PurchasePlanDetailDao().Find(where);
+			
+			for(B_PurchasePlanDetailData dt:list2){
+
+				//更新虚拟库存
+				String requirement = String.valueOf(-1 * stringToFloat(dt.getManufacturequantity()));//需求量
+				
+				updateMaterial(dt.getMaterialid(),"0",requirement);
+				
+				new B_PurchasePlanDetailDao().Remove(dt);
+			}
+			ts.commit();
+		}catch(Exception e){
+			ts.rollback();
+			e.printStackTrace();
 		}	
 
 	}
@@ -846,17 +714,32 @@ public class PurchasePlanService extends CommonService {
 	public void deletePurchaseOrder(String YSId) throws Exception{
 		
 		//
-		String where = "YSId = '" + YSId +"'";
-		List<B_PurchaseOrderData> list = new B_PurchaseOrderDao().Find(where);
-		
-		for(B_PurchaseOrderData dt:list){
-			new B_PurchaseOrderDao().Remove(dt);
-		}
-		
-		List<B_PurchaseOrderDetailData> list2 = new B_PurchaseOrderDetailDao().Find(where);
-		
-		for(B_PurchaseOrderDetailData dt:list2){
-			new B_PurchaseOrderDetailDao().Remove(dt);
+		ts = new BaseTransaction();
+		try{
+
+			ts.begin();
+			String where = "YSId = '" + YSId +"'";
+			List<B_PurchaseOrderData> list = new B_PurchaseOrderDao().Find(where);
+			
+			for(B_PurchaseOrderData dt:list){
+				new B_PurchaseOrderDao().Remove(dt);
+			}
+			
+			List<B_PurchaseOrderDetailData> list2 = new B_PurchaseOrderDetailDao().Find(where);
+			
+			for(B_PurchaseOrderDetailData dt:list2){
+				
+				//更新虚拟库存
+				String purchase = String.valueOf(-1 * stringToFloat(dt.getQuantity()));//采购量
+				
+				updateMaterial(dt.getMaterialid(),purchase,"0");
+				new B_PurchaseOrderDetailDao().Remove(dt);
+			}
+			ts.commit();
+			
+		}catch(Exception e){
+			ts.rollback();
+			e.printStackTrace();
 		}		
 
 
@@ -952,6 +835,52 @@ public class PurchasePlanService extends CommonService {
 		
 	}
 	
+	/* 11/8 临时备份
+	//更新虚拟库存:生成物料需求时增加“待出库”
+		@SuppressWarnings("unchecked")
+		private void updateMaterial(
+				String materialId,
+				String purchaseIn,
+				String requirementOut) throws Exception{
+		
+			B_MaterialData data = new B_MaterialData();
+			B_MaterialDao dao = new B_MaterialDao();
+			
+			String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
+			
+			List<B_MaterialData> list = 
+					(List<B_MaterialData>)dao.Find(where);
+			
+			if(list ==null || list.size() == 0){
+				return ;
+			}
+
+			data = list.get(0);
+			
+			//当前库存数量
+			float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
+			float iWaitOut = stringToFloat(data.getWaitstockout());//待出库
+			float iWaitIn  = stringToFloat(data.getWaitstockin());//待入库
+			
+			iWaitOut = iWaitOut + stringToFloat(requirementOut);
+			iWaitIn = iWaitIn + stringToFloat(purchaseIn);
+			
+			//虚拟库存 = 当前库存 + 待入库 - 待出库
+			float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		
+			
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"PurchasePlanInsert",userInfo);
+			copyProperties(data,commData);
+			
+			data.setAvailabeltopromise(String.valueOf(availabeltopromise));//虚拟库存
+			data.setWaitstockout(String.valueOf(iWaitOut));//待出库
+			data.setWaitstockin(String.valueOf(iWaitIn));//待入库
+			
+			dao.Store(data);
+			
+		}
+		*/
 	/*
 	 * 更新供应商单价
 	 */
@@ -1038,11 +967,16 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * 更新
 	 */
-	private B_PurchasePlanData updatePurchasePlan(B_PurchasePlanData reqPlan) throws Exception{
+	private int updatePurchasePlan(B_PurchasePlanData reqPlan) throws Exception{
 		
 		int version = 0;
-		//确认数据是否存在		
-		B_PurchasePlanData dbPlan = new B_PurchasePlanDao(reqPlan).beanData;
+		B_PurchasePlanData dbPlan = null;
+		//确认数据是否存在	
+		try{
+			dbPlan = new B_PurchasePlanDao(reqPlan).beanData;			
+		}catch(Exception e){
+			
+		}
 		if(!(dbPlan == null || ("").equals(dbPlan))){	
 			//update处理	
 			version = dbPlan.getVersion()+1;
@@ -1056,9 +990,10 @@ public class PurchasePlanService extends CommonService {
 
 		}else{
 			//insert处理
+			insertPurchasePlan(reqPlan);
 		}
 		
-		return dbPlan;
+		return version;
 	}	
 		
 	
@@ -1168,7 +1103,8 @@ public class PurchasePlanService extends CommonService {
 	
 	public Model insertAndView() throws Exception {
 
-		String YSId = insert();
+		//String YSId = insert();
+		String YSId = update();
 		getOrderDetailByYSId(YSId);
 		
 		return model;

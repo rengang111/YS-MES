@@ -76,7 +76,7 @@ public class PurchaseOrderAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "creatPurchaseOrder":
-				creatPurchaseOrder();
+				dataMap = creatPurchaseOrder(data);
 				printOutJsonObj(response, dataMap);
 				break;					
 			case "getContract":
@@ -202,9 +202,18 @@ public class PurchaseOrderAction extends BaseAction {
 
 		return service.getContractId();
 	}
-	public void creatPurchaseOrder() throws Exception{
+	public HashMap<String, Object> creatPurchaseOrder(String inData) throws Exception{
 
-		service.creatPurchaseOrder();
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		try {
+			service.creatPurchaseOrder(inData);
+			dataMap.put(INFO, SUCCESSMSG);			
+		}
+		catch(Exception e) {
+			dataMap.put(INFO, ERRMSG);
+			System.out.println(e.getMessage());
+		}
+		return dataMap;
 	}	
 
 	public void doDetailView() throws Exception{
