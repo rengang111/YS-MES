@@ -183,7 +183,7 @@ function initEvent(){
 				alert("该方案有部分合同已经收货,不允许重置！");
 				return;					
 			}
-			if(confirm("重置采购方案,会删除现有的采购方案和采购合同,\n\n        确定要重置吗？")) {
+			if(confirm("重置采购方案,会清空现有的采购方案,\n\n        确定要重置吗？")) {
 				
 				$('#attrForm').attr("action",
 						"${ctx}/business/purchasePlan?methodtype=purchasePlanDeleteInit"

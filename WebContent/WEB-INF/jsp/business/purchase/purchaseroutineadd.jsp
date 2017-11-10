@@ -3,7 +3,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>日常采购-新建</title>
+<title>日常采购-新建(从物料管理进入)</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 		
@@ -196,9 +196,8 @@
 		
 		$("#insert").click(
 				function() {
-					var YSId= $("#YSId").val();
 			$('#attrForm').attr("action",
-					"${ctx}/business/contract?methodtype=createRoutineContract"+"&YSId="+YSId);
+					"${ctx}/business/contract?methodtype=createRoutineContract");
 			$('#attrForm').submit();
 		});
 				
@@ -339,11 +338,19 @@ $(".supplierid").autocomplete({
 			
 		<input type="hidden" id="goBackFlag"  value="${goBackFlag }"/>
 		<form:hidden path="shortName"  value="${ contract.shortName }"/>
-		<input type="hidden" id="YSId"  value="${ YSId }"/>
 		<fieldset>
 			<legend> 供应商</legend>
 			<table class="form" id="table_form">
 				
+				<tr> 
+					<td class="label">耀升编号：</td>
+					<td><form:input path="contract.ysid" value=""/></td>
+					 
+					<td class="label">下单日期：</td>
+					<td><form:input path="contract.purchasedate" value="${ contract.purchaseDate }"/></td>
+					<td class="label">合同交期：</td>
+					<td><form:input path="contract.deliverydate" value="${ contract.deliveryDate }"/></td>
+				</tr>	
 				<tr> 		
 					<td class="label" style="width:120px">供应商编号：</td>					
 					<td style="width:200px">
@@ -354,13 +361,7 @@ $(".supplierid").autocomplete({
 						
 					<td class="label" style="width:120px">供应商名称：</td>
 					<td><span id="fullName">${ contract.supplierName }</span></td>
-				</tr>	
-				<tr> 
-					<td class="label">下单日期：</td>
-					<td><form:input path="contract.purchasedate" value="${ contract.purchaseDate }"/></td>
-					<td class="label">合同交期：</td>
-					<td colspan="3"><form:input path="contract.deliverydate" value="${ contract.deliveryDate }"/></td>
-				</tr>								
+				</tr>							
 			</table>
 			
 	</fieldset>
@@ -433,6 +434,49 @@ $(".supplierid").autocomplete({
 </div>
 </div>
 </body>
+<script type="text/javascript">
+function autocomplete(){
+	
+	$("#contract\\.ysid").autocomplete({
+		minLength : 2,
+		autoFocus : false,
+		source : function(request, response) {
+			//alert(888);
+			$
+			.ajax({
+				type : "POST",
+				url : "${ctx}/business/order?methodtype=getYsidList",
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					//alert(777);
+					response($
+						.map(
+							data.data,
+							function(item) {
 
+								return {
+									label : item.YSId +" | "+ item.materialId +" | "+ item.materialName,
+									value : item.YSId,
+								}
+							}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					//alert(XMLHttpRequest.status);
+					//alert(XMLHttpRequest.readyState);
+					//alert(textStatus);
+					//alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
+	
+	});
+}
+
+</script>
 	
 </html>

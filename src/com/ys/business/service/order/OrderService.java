@@ -1052,13 +1052,13 @@ public class OrderService extends CommonService  {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		  this.dataModel.setQueryFileName("/business/order/orderquerydefine");
-		  this.dataModel.setQueryName("getYsidList");
+		  this.dataModel.setQueryName("getOrderList");
 		
 		  this.baseQuery = new BaseQuery(this.request, this.dataModel);
-		  String YSId = request.getParameter("key");
-		  if(notEmpty(YSId))
-			  YSId = YSId.toUpperCase();
-		  this.userDefinedSearchCase.put("YSId", YSId);
+		  String key = request.getParameter("key");
+		  if(notEmpty(key))
+			  key = key.toUpperCase();
+		  this.userDefinedSearchCase.put("keyword1", key);
 		  this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
 		  this.baseQuery.getYsFullData();
 		

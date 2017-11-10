@@ -102,8 +102,8 @@
       <f name="a.YSId" alias="" ctype="" />
       <f name="IFNULL(c.contractId,'')" alias="contractId" ctype="" />
       <f name="IFNULL(c.quantity,'0')" alias="contractQty" ctype="" />
+      <f name="IFNULL(c.price,'0')" alias="contractPrice" ctype="" />
       <f name="IFNULL(d.purchaseQuantity,'0')" alias="planQty" ctype="" />
-      <f name="IFNULL(d.price,'0')" alias="contractPrice" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.materialParentId" alias="" ctype="" />

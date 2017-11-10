@@ -1293,7 +1293,7 @@ public class PurchaseOrderService extends CommonService {
 
 				B_PurchaseOrderData contract = reqModel.getContract();
 				//创建合同编号
-				String YSId = request.getParameter("YSId");
+				String YSId = contract.getYsid();
 				String shortName = reqModel.getShortName();
 				contract = geRoutinePurchaseContractId(contract,YSId,shortName);
 				contractId = contract.getContractid();

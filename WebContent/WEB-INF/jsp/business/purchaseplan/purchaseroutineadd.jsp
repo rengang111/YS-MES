@@ -683,7 +683,7 @@ function autocomplete(){
 							function(item) {
 
 								return {
-									label : item.YSId,
+									label : item.YSId +" | "+ item.materialId +" | "+ item.materialName,
 									value : item.YSId,
 								}
 							}));
