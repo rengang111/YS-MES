@@ -46,15 +46,14 @@
 <script type="text/javascript">
 
 
-	function ajax(pageFlg,status,orderNature,col_no) {
+	function ajax(pageFlg,status,sessionFlag,col_no) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/order?methodtype=search&keyBackup="+pageFlg
-				+"&status="+status
-				+"&orderNature="+orderNature;
+		var url = "${ctx}/business/order?methodtype=search&sessionFlag="+sessionFlag
+				+"&status="+status;
 		
 		//$(".addselect").remove();
 		//var scrollHeight = $(document).height() - 197; 
@@ -95,6 +94,8 @@
 						"data" : JSON.stringify(aoData),
 						success: function(data){							
 							fnCallback(data);
+							$("#keyword1").val(data["keyword1"]);
+							$("#keyword2").val(data["keyword2"]);
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -205,15 +206,7 @@
 	
 	function initEvent(){
 
-		var keyBackup = $("#keyBackup").val();
-
-		if(keyBackup ==""){
-
-			ajax("","010","",9);
-		}else{
-			ajax("","","",9);
-			
-		}
+		ajax("","010","true",9);
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -246,7 +239,7 @@
 	
 	function doSearch() {	
 
-		ajax('orderMain','','',9);
+		ajax('orderMain','','false',9);
 
 	}
 	
@@ -257,11 +250,11 @@
 	}
 	//订单状态
 	function doSearchCustomer(type,col_no){
-		ajax('orderMain',type,'',col_no);
+		ajax('orderMain',type,'false',col_no);
 	}
 	//常规订单OR库存
 	function doSearchCustomer2(type,col_no){
-		ajax('orderMain','',type,col_no);
+		ajax('orderMain','false',type,col_no);
 	}	
 	
 	function doCreateZZ() {

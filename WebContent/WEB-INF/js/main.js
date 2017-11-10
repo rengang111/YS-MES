@@ -775,10 +775,15 @@ function setPurchaseQuantity(stock,order){
 	stock = currencyToFloat(stock);//格式化
 	order = currencyToFloat(order);//格式化
 	var quan = 0;
-	if(stock >= 0 && stock < order){
-				
-		quan = order - stock;
+	if(stock >= 0 ){
+		if(stock < order){			
+			quan = order - stock;
+		}else{
+			quan = 0;
+		}
 		
+	}else{
+		quan = order;
 	}
 	
 	return quan;

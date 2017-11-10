@@ -111,6 +111,8 @@ public class OrderService extends CommonService  {
 		dataModel.setQueryName("getOrderList");	
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2))
+			userDefinedSearchCase.put("status", "");
 		
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -124,7 +126,9 @@ public class OrderService extends CommonService  {
 		modelMap.put("sEcho", sEcho);
 		modelMap.put("recordsTotal", dataModel.getRecordCount());
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
 		
 		return modelMap;
 	}
@@ -174,7 +178,9 @@ public class OrderService extends CommonService  {
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
 		modelMap.put("unitList",util.getListOption(DicUtil.MEASURESTYPE, ""));
 		
-		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
 		
 		return modelMap;
 	}

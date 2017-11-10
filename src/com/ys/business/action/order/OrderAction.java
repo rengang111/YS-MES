@@ -186,7 +186,7 @@ public class OrderAction extends BaseAction {
 	}
 */
 	public void doInit(String formId,HttpSession session){	
-			
+			/*
 		String keyBackup = request.getParameter("keyBackup");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
 		if(keyBackup == null || ("").equals(keyBackup)){
@@ -195,7 +195,7 @@ public class OrderAction extends BaseAction {
 		}else{
 			model.addAttribute("keyBackup",keyBackup);
 		}
-		
+		*/
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -206,8 +206,8 @@ public class OrderAction extends BaseAction {
 				new ArrayList<HashMap<String, String>>();
 		
 		//优先执行查询按钮事件,清空session中的查询条件
-		String keyBackup = request.getParameter("keyBackup");
-		if(keyBackup != null && !("").equals(keyBackup)){
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
 			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
 			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 			

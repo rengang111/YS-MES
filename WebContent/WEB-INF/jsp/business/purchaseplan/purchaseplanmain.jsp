@@ -8,15 +8,14 @@
 <title>采购方案--订单基本数据</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,status,orderNature,col_no) {
+	function ajax(pageFlg,status,sessionFlag,col_no) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/order?methodtype=purchasePlanSearch&keyBackup="+pageFlg
-					+"&status="+status
-					+"&orderNature="+orderNature;
+		var url = "${ctx}/business/order?methodtype=purchasePlanSearch&sessionFlag="+sessionFlag
+					+"&status="+status;
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -63,6 +62,8 @@
 						"data" : JSON.stringify(aoData),
 						success: function(data){							
 							fnCallback(data);
+							$("#keyword1").val(data["keyword1"]);
+							$("#keyword2").val(data["keyword2"]);
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -130,35 +131,22 @@
 		return v;
 		
 	}
-	
-	function initEvent(){
 
-		var keyBackup = $("#keyBackup").val();
-
-		if(keyBackup ==""){
-
-			ajax("","010","",8);
-		}else{
-			ajax("","","",8);
-			
-		}
-	
-	}
 
 	$(document).ready(function() {
 
-		
-		initEvent();
+		ajax("","010","true",8);
 		
 	})	
+	
 	//订单状态
 	function doSearchCustomer(type,col_no){
-		ajax('orderMain',type,'',col_no);
+		ajax('orderMain',type,'false',col_no);
 	}
 	
 	function doSearch() {	
 
-		ajax('orderMain','','',8);
+		ajax('orderMain','','false',8);
 
 	}
 	
