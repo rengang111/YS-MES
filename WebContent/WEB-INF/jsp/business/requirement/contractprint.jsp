@@ -25,7 +25,7 @@
 		
 		var total = productCostSum();
 		total = Arabia_to_Chinese(total);
-		$('#total').html(total);
+		$('.total').html(total);
 		
 		
 	});
@@ -43,8 +43,9 @@
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">
 
-		<input type="hidden" id="tmpMaterialId" />
-		<table class="form" id="table_form" style="border: 1px solid #c0c0c0;">
+	<c:forEach var="detail" items="${contractList}" varStatus='status' step="5">
+	<div style="/*page-break-before:always;*/">
+		<table class="" id="table_form"  >
 			<tr> 				
 				<td class="td-center" colspan="4" style="font-size: 26px;height: 55px;">采购订单</td>
 			</tr>
@@ -88,9 +89,9 @@
 			</tr>
 								
 		</table>
-
+		<div style="page-break-after:always;">
 		<div class="list">	
-			<table id="orderBomTable" class="display" >
+			<table id="orderBomTable" class="display orderBomTable" >
 				<thead>				
 					<tr>
 						<th style="width:10px">No</th>
@@ -104,18 +105,21 @@
 					</tr>
 				</thead>
 				<tbody>
-				<c:forEach var="detail" items="${contractList}" varStatus='status' >		
-				
-				<tr>
-					<td></td>
-					<td>${detail.materialId }</td>
-					<td>${detail.description }</td>
-					<td>${detail.quantity }</td>
-					<td>${detail.price }</td>
-					<td>${detail.unit }</td>
-					<td>${detail.totalPrice }</td>
-					<td>${detail.deliveryDate }</td>
-				</tr>
+				<c:set var="start" value="${status.index }" />
+				<c:set var="end" value="${status.index +4}" />
+				<c:forEach begin="${start }" end="${end }"  var="i" >  		
+					<c:if test="${not empty  contractList[i] }">
+						<tr>
+							<td>${i + 1 }</td>
+							<td>${contractList[i].materialId }</td>
+							<td>${contractList[i].description }</td>
+							<td>${contractList[i].quantity }</td>
+							<td>${contractList[i].price }</td>
+							<td>${contractList[i].unit }</td>
+							<td>${contractList[i].totalPrice }</td>
+							<td>${contractList[i].deliveryDate }</td>
+						</tr>
+					</c:if>
 					
 				</c:forEach>
 				</tbody>
@@ -127,7 +131,7 @@
 						<th>金额总计</th>
 						<th></th>
 						<th>RMB</th>
-						<th colspan="3"><span id="total"></span></th>
+						<th colspan="3"><span id="total" class="total"></span></th>
 					</tr>
 				</tfoot>			
 			</table>
@@ -153,6 +157,12 @@
 				<td>需方盖章：</td>
 			</tr>
 		</table>
+		</div>
+		
+		
+		</div>
+		
+		</c:forEach>
 	</form:form>
 
 </div>
@@ -223,7 +233,7 @@ function baseBomView() {
 
 	var bomId=$('#bomId').text();
 
-	var t2 = $('#orderBomTable').DataTable({
+	var t2 = $('.orderBomTable').DataTable({
 		"paging": false,
 		"processing" : false,
 		"serverSide" : false,
@@ -238,7 +248,7 @@ function baseBomView() {
        		"url":"${ctx}/plugins/datatables/chinese.json"
        	},
 		"columns": [
-			{"data": null,"className" : 'td-center'},
+			{"className" : 'td-center'},
 			{},
 			{},
 			{"className" : 'td-right'},
@@ -264,7 +274,7 @@ function baseBomView() {
             $(this).addClass('selected');
         }
 	});
-
+/*
 	t2.on('order.dt search.dt draw.dt', function() {
 		t2.column(0, {
 			search : 'applied',
@@ -274,7 +284,7 @@ function baseBomView() {
 			cell.innerHTML = num ;
 		});
 	}).draw();
-
+*/
 	
 }//ajax()供应商信息
 
