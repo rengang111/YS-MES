@@ -131,7 +131,7 @@ public class ReceiveInspectionAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
 		String sessionFlag = request.getParameter("sessionFlag");
-		if(sessionFlag != null && !("").equals(sessionFlag)){
+		if(("false").equals(sessionFlag)){
 			session.removeAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD1);
 			session.removeAttribute(Constants.FORM_RECEIVEINSPECTION+Constants.FORM_KEYWORD2);
 			

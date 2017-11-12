@@ -93,7 +93,7 @@ public class ReceiveInspectionService extends CommonService  {
 		String length = "";
 		data = URLDecoder.decode(data, "UTF-8");
 
-		String[] keyArr = getSearchKey(Constants.FORM_INSPECTIONRETURN,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_RECEIVEINSPECTION,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		

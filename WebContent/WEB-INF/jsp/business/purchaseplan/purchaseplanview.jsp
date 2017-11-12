@@ -355,7 +355,7 @@ function initEvent(){
 				],
 			"columnDefs":[
 				{"targets":12,"render":function(data, type, row){
-					var contractId = row["contractId"];
+					var contractId = row["contractSupplierId"];
 					var contractPrice = currencyToFloat(row["contractPrice"]);
 					var planPrice = currencyToFloat(row["price"]);
 					var contractQty = currencyToFloat(row["contractQty"]);
@@ -543,18 +543,24 @@ function contractTableView() {
 			{"data": "purchaseDate","className" : 'td-center'},
 			{"data": "deliveryDate","className" : 'td-center'},
 			{"data": "total","className" : 'td-right'},
-			{"data": null,"className" : 'td-right'}
+			{"data": null,"className" : 'td-center'},
+			{"data": "deleteFlag","className" : 'td-center'}
         ] ,
 		"columnDefs":[
       		{"targets":1,"render":function(data, type, row){
     			var contractId = row["contractId"];
-    			rtn= "<a href=\"###\" onClick=\"showControctDetail('" + contractId +"')\">"+contractId+"</a>";
+    			rtn = contractId;
+    			//rtn= "<a href=\"###\" onClick=\"showControctDetail('" + contractId +"')\">"+contractId+"</a>";
     			return rtn;
     		}},
     		{"targets":7,"render":function(data, type, row){
     			var contractId = row["contractId"];
-     			rtn= "<a href=\"###\" onClick=\"showContract('" + row["supplierId"] +"','"+ row["YSId"] + "')\">"+"打印"+"</a>";
-    			return rtn;
+    			var deleteFlag = row["deleteFlag"];
+    			var rtn = "";
+    			if(deleteFlag == 0){
+        			rtn= "<a href=\"###\" onClick=\"showContract('" + row["supplierId"] +"','"+ row["YSId"] + "')\">"+"打印"+"</a>";   				
+    			}
+     			return rtn;
     		}},
       		{"targets":6,"render":function(data, type, row){
       			var total = currencyToFloat( row["total"] );			    			
@@ -567,9 +573,28 @@ function contractTableView() {
       			}
       			
       			return totalPrice;
-      		}}
+      		}},
+      		{"targets":8,"render":function(data, type, row){
+      			if( data == 1 ) {
+      				return "已删除";
+				}else{
+      				return "有效";					
+				}
+      		}},
+      		{"targets":8,"createdCell":function(td, cellData, rowData, row, col){
+
+      			if( cellData == 1 ) {
+      				$(td).parent().addClass('delete');
+				}
+      			
+      		}},
+    		{
+				"visible" : false,
+				"targets" : []
+			},
+      		
             
-          ] 
+          ]
        	
 	});
 	
@@ -638,8 +663,31 @@ function contractDetailView(contractId) {
 			{"data": "quantity","className" : 'td-right'},
 			{"data": "price","className" : 'td-right'},
 			{"data": "unit","className" : 'td-center'},
-			{"data": "totalPrice","className" : 'td-right'}
-        ] 
+			{"data": "totalPrice","className" : 'td-right'},
+			{"data": "deleteFlag","className" : 'td-right'}
+        ],
+        "columnDefs":[
+         	
+       		{"targets":7,"render":function(data, type, row){
+       			if( data == 1 ) {
+       				return "已删除";
+ 				}else{
+       				return "有效";					
+ 				}
+       		}},
+       		{"targets":7,"createdCell":function(td, cellData, rowData, row, col){
+
+       			if( cellData == 1 ) {
+       				$(td).parent().addClass('delete');
+ 				}
+       			
+       		}},
+       		{
+   				"visible" : false,
+   				"targets" : []
+   			},
+         		
+        ]
 		
        	
 	});
@@ -986,6 +1034,7 @@ function ZZmaterialView() {
 					<th width="80px">交货日期</th>
 					<th width="100px">合同金额</th>
 					<th width="30px"></th>
+					<th width="30px">是否有效</th>
 				</tr>
 			</thead>			
 		</table>
@@ -1003,19 +1052,9 @@ function ZZmaterialView() {
 				<th style="width:60px">单价</th>
 				<th style="width:50px">单位</th>
 				<th style="width:80px">金额</th>
+				<th style="width:30px">是否有效</th>
 			</tr>
 			</thead>
-			<tfoot>
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-			</tfoot>
 		</table>
 		</div>
 		</fieldset>

@@ -621,3 +621,7 @@ pre{
 	font-weight:bold;
     font-size:16px;
 }
+.delete{
+	color:#969696;
+	text-decoration: line-through;
+}

@@ -1027,7 +1027,7 @@ public class PurchaseOrderService extends CommonService {
 
 	private String getContractSupplierCode(String parentId) throws Exception {
 
-		dataModel.setQueryName("getContractTypeCode");		
+		dataModel.setQueryName("getContractSupplierCode");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("supplierParentId", parentId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -1155,31 +1155,7 @@ public class PurchaseOrderService extends CommonService {
 		
 		return modelMap;
 	}
-	public HashMap<String, Object> getContractByMaterialId() throws Exception {
-
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		
-		String contractId = request.getParameter("contractId");
-		String materialId = request.getParameter("materialId");
 	
-		if(!(materialId == null || ("").equals(materialId))){
-			materialId = materialId.toUpperCase();
-		}
-		dataModel.setQueryName("getContractDetail");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("contractId", contractId);
-		userDefinedSearchCase.put("materialId", materialId);
-		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
-
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		modelMap.put("data", dataModel.getYsViewData());
-		
-		return modelMap;
-	}
 	public void updateAndView() throws Exception {
 		
 		update();

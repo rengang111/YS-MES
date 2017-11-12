@@ -100,6 +100,7 @@
       <f name="a.purchaseId" alias="" ctype="" />
       <f name="a.planRecordId" alias="" ctype="" />
       <f name="a.YSId" alias="" ctype="" />
+      <f name="IFNULL(c.supplierId,'')" alias="contractSupplierId" ctype="" />
       <f name="IFNULL(c.contractId,'')" alias="contractId" ctype="" />
       <f name="IFNULL(c.quantity,'0')" alias="contractQty" ctype="" />
       <f name="IFNULL(c.price,'0')" alias="contractPrice" ctype="" />
@@ -135,7 +136,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.materialId = c.materialId AND c.deleteFlag = '0' LEFT JOIN v_purchaseplandetailgroup d ON a.ysid = d.ysid  AND a.materialId = d.materialId AND d.deleteFlag = '0' where a.deleteFlag='0' </from>
+   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.supplierId = c.supplierId AND a.materialId = c.materialId AND c.deleteFlag = '0' LEFT JOIN v_purchaseplandetailgroup d ON a.ysid = d.ysid  AND a.materialId = d.materialId AND d.deleteFlag = '0' where a.deleteFlag='0' </from>
     <orderby>a.subBomNo+0,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -250,9 +251,10 @@
       <f name="A.status" alias="" ctype="" />
       <f name="A.status" alias="statusName" ctype="合同状态" />
       <f name="FORMAT(REPLACE(A.total,',',''),2)" alias="total" ctype="" />
+      <f name="A.deleteFlag" alias="" ctype="" />
     </select>
-    <from>v_purchaseorder a  WHERE a.deleteFlag = '0' </from>
-    <orderby>A.contractId,a.materialId</orderby>
+    <from>v_purchaseorder a </from>
+    <orderby>A.deleteFlag,A.contractId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -271,13 +273,13 @@
       <f name="b.unit" alias="" ctype="计量单位" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="b.materialName" alias="" ctype="" />
-      <f name="IFNULL(c.recodeSum,'0')" alias="recodeSum" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
+      <f name="A.deleteFlag" alias="" ctype="" />
       <f name="format(replace(IFNULL(A.price,0),',','') *  replace(IFNULL(A.quantity,0),',',''),2)" alias="totalPrice" ctype="" />
     </select>
-    <from>b_PurchaseOrderDetail a  LEFT JOIN b_material b ON b.materialId = a.materialId AND b.deleteFlag = '0' LEFT JOIN v_arrivalquantitygroup c ON c.contractId = a.contractId AND  c.materialId = a.materialId  WHERE a.deleteFlag = '0' </from>
-    <orderby>a.materialId</orderby>
+    <from>b_PurchaseOrderDetail a  LEFT JOIN b_material b ON b.materialId = a.materialId AND b.deleteFlag = '0' </from>
+    <orderby>a.deleteFlag,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>

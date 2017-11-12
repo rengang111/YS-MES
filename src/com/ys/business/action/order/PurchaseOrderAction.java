@@ -82,11 +82,7 @@ public class PurchaseOrderAction extends BaseAction {
 			case "getContract":
 				dataMap = getContract();
 				printOutJsonObj(response, dataMap);
-				break;						
-			case "getContractByMaterail":
-				dataMap = getContractByMaterail();
-				printOutJsonObj(response, dataMap);
-				break;					
+				break;				
 			case "getContractDetail":
 				dataMap = getContractDetail();
 				printOutJsonObj(response, dataMap);
@@ -188,10 +184,6 @@ public class PurchaseOrderAction extends BaseAction {
 	public HashMap<String, Object> getContract() throws Exception{
 
 		return service.getContractByYSId();
-	}
-	public HashMap<String, Object> getContractByMaterail() throws Exception{
-
-		return service.getContractByMaterialId();
 	}
 	public HashMap<String, Object> getContractDetail() throws Exception{
 
