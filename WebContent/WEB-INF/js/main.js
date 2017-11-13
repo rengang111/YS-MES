@@ -514,29 +514,30 @@ function inputCheck(){
 				
 			}//substrigB
 			
-			//获取字符串的字节数
-			function lengthB(str){
-			
-				var num = 0,len = str.length;
-				
-				if(len){
-					for(var i=0;i<len;i++){
-						if(str.charCodeAt(i) > 255 ){
-							num+= 2;
-						}else{
-							num++;
-						}
-					}
 					
-					return num;
-				}else{
-					return 0;
-				}
-			}		
 		}
 	})
 })(jQuery);
 
+//获取字符串的字节数
+function lengthB(str){
+
+	var num = 0,len = str.length;
+	
+	if(len){
+		for(var i=0;i<len;i++){
+			if(str.charCodeAt(i) > 255 ){
+				num+= 2;
+			}else{
+				num++;
+			}
+		}
+		
+		return num;
+	}else{
+		return 0;
+	}
+}
 
 function foucsInit(){
 	

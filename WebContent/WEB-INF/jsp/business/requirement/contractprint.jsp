@@ -44,10 +44,10 @@
 		id="attrForm" name="attrForm"  autocomplete="off">
 
 	<c:forEach var="detail" items="${contractList}" varStatus='status' step="5">
-	<div style="/*page-break-before:always;*/">
-		<table class="" id="table_form"  >
+	
+		<table class="" id="table_form"  style="margin-top: -10px;">
 			<tr> 				
-				<td class="td-center" colspan="4" style="font-size: 26px;height: 55px;">采购订单</td>
+				<td class="td-center" colspan="6" style="font-size: 26px;height: 50px;">采购订单</td>
 			</tr>
 			<tr> 				
 				<td class="label" style="width:100px;">耀升编号：</td>					
@@ -75,7 +75,7 @@
 			</tr>
 			<tr> 				
 				<td class="label" style="width:100px;">电话：</td>					
-				<td> ${contract.phone}&nbsp;${contract.mobile}&nbsp;传真：${contract.fax}</td>
+				<td>${contract.mobile}&nbsp;${contract.phone}&nbsp;传真：${contract.fax}</td>
 							
 				<td class="label" style="width:100px;">电话：</td>					
 				<td colspan="3"> 0574-86365153 &nbsp;传真：0574-86656306</td>
@@ -89,7 +89,7 @@
 			</tr>
 								
 		</table>
-		<div style="page-break-after:always;">
+		
 		<div class="list">	
 			<table id="orderBomTable" class="display orderBomTable" >
 				<thead>				
@@ -112,7 +112,7 @@
 						<tr>
 							<td>${i + 1 }</td>
 							<td>${contractList[i].materialId }</td>
-							<td>${contractList[i].description }</td>
+							<td><div id="name${i }" >${contractList[i].description }</div></td>
 							<td>${contractList[i].quantity }</td>
 							<td>${contractList[i].price }</td>
 							<td>${contractList[i].unit }</td>
@@ -120,7 +120,16 @@
 							<td>${contractList[i].deliveryDate }</td>
 						</tr>
 					</c:if>
-					
+					<script  type="text/javascript">
+						var index = '${i}';
+						var name = '${contractList[i].description }';
+						
+						if (lengthB(name) > 50){
+							
+							name = '<span style="font-size:11px">' + name + '</sapn>'
+						}
+						$('#name'+index).html(name);
+					</script>
 				</c:forEach>
 				</tbody>
 				
@@ -136,10 +145,8 @@
 				</tfoot>			
 			</table>
 		</div>
-		<br>
-		<br>
 		<pre>
-		<span style="font-weight:bold">备注：以上配件具体要求为：需符合ROHS(2016最新标准),PAHS(多环芳烃),REACH(SVHC高关注度物质),NP(壬基酚)，SCCP(锻炼氯化石蜡)等环保要求！</span><br><br>
+		<span style="font-weight:bold">备注：以上配件具体要求为：需符合ROHS(2016最新标准),PAHS(多环芳烃),REACH(SVHC高关注度物质),NP(壬基酚)，SCCP(锻炼氯化石蜡)等环保要求！</span><br>
 一、包装要求：内保装要保证单件产品不刮划擦伤，外包装要注意坚固不破损，必须在外箱上写明耀升编号，品名，数量及总箱数，以及联系人和电话，<br>
 并能及时把发货清单传真给我司采购员。 <br>
 二、合同履行地：需方仓库 特别注意：合同要双方盖章，严格履行交货期，延时10天以上将扣该10%的货款。<br>
@@ -157,14 +164,12 @@
 				<td>需方盖章：</td>
 			</tr>
 		</table>
-		</div>
+	<div style="page-break-before:always;"></div>
 		
-		
-		</div>
-		
-		</c:forEach>
+	</c:forEach>
+	
+	
 	</form:form>
-
 </div>
 </div>
 

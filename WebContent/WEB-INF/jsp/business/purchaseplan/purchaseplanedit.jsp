@@ -416,7 +416,7 @@
 	<tr id="tr${status.index}"> 
 		<td><span id="materialId${status.index}">
 			<a href="###" onClick="doEditMaterial('${status.index}','${bom.materialRecordId }','${bom.materialParentId }')">${bom.materialId }</a></span></td>
-		<td><form:input value="${bom.subBomNo }" path="planDetailList[${status.index}].subbomno" class="cash" style="width:20px"  /></td>
+		<td><form:input value="${bom.subbomno }" path="planDetailList[${status.index}].subbomno" class="cash" style="width:20px"  /></td>
 	    <td>
 			<span id="index${status.index}">${bom.rownum }</span><input type="checkbox" id="numCheck" name="numCheck" value="" /></td>
    		<td>
