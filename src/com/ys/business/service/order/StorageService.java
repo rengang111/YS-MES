@@ -272,7 +272,7 @@ public class StorageService extends CommonService {
 	}
 	public void insertAndReturn() throws Exception {
 
-		String arrivalId = insertStorage(true);
+		String arrivalId = insertStorage();
 
 		getContractDetail(arrivalId);
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
@@ -288,7 +288,7 @@ public class StorageService extends CommonService {
 	
 	public void updateAndReturn() throws Exception {
 
-		String arrivalId = insertStorage(false);
+		String arrivalId = updateStorage();
 
 		getContractDetail(arrivalId);
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
@@ -303,8 +303,7 @@ public class StorageService extends CommonService {
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
 	
-	
-	private String insertStorage(boolean accessFlag){
+	private String updateStorage(){
 		String arrivalid = "";
 		ts = new BaseTransaction();		
 		
@@ -316,7 +315,58 @@ public class StorageService extends CommonService {
 					reqModel.getStockList();
 
 			//取得入库申请编号
-			reqData = getStorageRecordId(reqData);
+			String receiptid = reqData.getReceiptid();
+			arrivalid = reqData.getArrivelid();
+			
+			//采购入库记录
+			updatePurchaseStockIn(reqData);
+			
+			//先删除已经存在的入库明细
+			String where = " receiptId = '"+receiptid+"'";
+			try {
+				detaildao.RemoveByWhere(where);
+			} catch (Exception e) {
+				// nothing
+			}
+			
+			//采购入库记录明细
+			for(B_PurchaseStockInDetailData data:reqDataList ){
+				String quantity = data.getQuantity();
+				if(isNullOrEmpty(quantity) || quantity.equals("0"))
+					continue;
+				
+				data.setReceiptid(receiptid);
+				insertPurchaseStockInDetail(data);						
+			}
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		
+		return arrivalid;
+	}
+	
+	private String insertStorage(){
+		String arrivalid = "";
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			B_PurchaseStockInData reqData = reqModel.getStock();
+			List<B_PurchaseStockInDetailData> reqDataList = 
+					reqModel.getStockList();
+
+			//取得入库申请编号
+			reqData = getStorageRecordId(reqData);			
 			String receiptid = reqData.getReceiptid();
 			arrivalid = reqData.getArrivelid();
 			String contractId = reqData.getContractid();
@@ -341,18 +391,15 @@ public class StorageService extends CommonService {
 				
 				data.setReceiptid(receiptid);
 				insertPurchaseStockInDetail(data);
-				
-				//更新时,不再更新库存数量
-				if(accessFlag){
-					
-					updateMaterial(materialid,quantity);//更新库存
+									
+				updateMaterial(materialid,quantity);//更新库存
 
-					//更新收货状态
-					//updateInspectionProcess(contractId,materialid);
-					
-					//更新合同的累计入库数量,收货状态
-					updateContractStorage(reqData.getContractid(),materialid,quantity);					
-				}				
+				//更新收货状态
+				//updateInspectionProcess(contractId,materialid);
+				
+				//更新合同的累计入库数量,收货状态
+				updateContractStorage(reqData.getContractid(),materialid,quantity);					
+						
 			}			
 
 			//确认合同状态:是否全部入库
@@ -782,9 +829,8 @@ public class StorageService extends CommonService {
 		if(db == null || ("").equals(db))
 			return;
 
-		db.setOriginalreceiptid(db.getReceiptid());
-		copyProperties(db,stock);
-		
+		//db.setOriginalreceiptid(db.getReceiptid());
+		//copyProperties(db,stock);
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"PurchaseStockInUpdate",userInfo);
 		copyProperties(db,commData);

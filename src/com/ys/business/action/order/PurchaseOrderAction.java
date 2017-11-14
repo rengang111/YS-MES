@@ -111,7 +111,7 @@ public class PurchaseOrderAction extends BaseAction {
 				doApprove();
 				rtnUrl = "/business/order/ordermain";
 				break;
-			case "createRoutineContractInit":
+			case "createRoutineContractInit"://物料管理入口,直接采购
 				createContractInit();
 				rtnUrl = "/business/purchase/purchaseroutineadd";
 				break;	

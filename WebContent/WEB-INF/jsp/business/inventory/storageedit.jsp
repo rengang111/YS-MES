@@ -121,11 +121,13 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<form:hidden path="stock.receiptid"  value="${receiptId}"/>
-	<form:hidden path="stock.subid" />
-	<form:hidden path="stock.arrivelid" />
-	<form:hidden path="stock.contractid"  value=""/>
-	<form:hidden path="stock.supplierid"  value=""/>
+	<form:hidden path="stock.recordid" value="${head.stockRcordId }"/>
+	<form:hidden path="stock.receiptid"  value="${head.receiptId}"/>
+	<form:hidden path="stock.subid" value="${head.subId }"/>
+	<form:hidden path="stock.arrivelid"  value="${head.arrivalId }"/>
+	<form:hidden path="stock.contractid"  value="${head.contractId }"/>
+	<form:hidden path="stock.supplierid"  value="${head.supplierId }"/>
+	<form:hidden path="stock.ysid"  value="${head.YSId }"/>
 	
 	
 	<fieldset>

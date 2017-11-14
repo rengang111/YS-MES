@@ -391,7 +391,8 @@ $(".supplierid").autocomplete({
 					<td><c:out value="${status.index}"/></td>
 					<td>
 						<a href="###" onClick="doShowMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
-						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}"  class="materialid"/></td>								
+						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}"  class="materialid"/>
+						<form:hidden path="detailList[${status.index}].contractid" value="${detail.purchaseType}" /><!-- 临时借用contractid --></td>								
 					<td><span id="name${status.index}">${detail.materialName}</span></td>					
 					<td>${ detail.unit }</td>				
 					<td>${ detail.accountingQuantity }</td>				

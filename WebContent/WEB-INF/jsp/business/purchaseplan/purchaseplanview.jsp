@@ -102,7 +102,16 @@ function initEvent(){
 		$( "#tabs" ).tabs();
 		
 		baseBomView();//基础BOM
-		
+		var now = new Date();  //Wed Jul 05 2017 13:50:11 GMT+0800 (中国标准时间)
+		now.setDate(now.getDate() + 20);//默认20天
+		$("#contractDelivery").val(formatTime(now));
+		$("#contractDelivery").datepicker({
+				dateFormat:"yy-mm-dd",
+				changeYear: true,
+				changeMonth: true,
+				selectOtherMonths:true,
+				showOtherMonths:true,
+		}); 
 		
 		$("#createPurchaseOrder").click(function() {
 
@@ -115,8 +124,10 @@ function initEvent(){
 			var materialId='${order.materialId}';
 			var YSId ="${order.YSId}";
 			var quantity ="${order.quantity}";
+			var contractDelivery=$('#contractDelivery').val();
 			var actionUrl = "${ctx}/business/contract?methodtype=creatPurchaseOrder&YSId="
-			+YSId+"&materialId="+materialId+"&quantity="+quantity;
+			+YSId+"&materialId="+materialId+"&contractDelivery="+contractDelivery
+			+"&quantity="+quantity;
 //alert(actionUrl+"OOOOOO"+str)
 			if (str != '') {
 				//if(confirm("采购方案,采购合同,全部会被删除,\n\n        确定要删除订单吗？")) {
@@ -1029,6 +1040,7 @@ function ZZmaterialView() {
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
 			<div id="DTTT_container" style="float:right;height:40px;margin: 5px 0px -10px 10px;">
+				<b>合同交期：<input type="text" id="contractDelivery"  value=""  class=short/></b>&nbsp;&nbsp;&nbsp;&nbsp;
 				<a class="DTTT_button" id="createPurchaseOrder">选中并生成采购合同</a>
 			</div>
 		<table id="example" class="display" >

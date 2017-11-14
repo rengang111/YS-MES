@@ -448,6 +448,8 @@
       <f name="materialParentId" alias="" ctype="" />
       <f name="materialRecordId" alias="" ctype="" />
       <f name="shortName" alias="" ctype="" />
+      <f name="purchaseType" alias="" ctype="" />
+      <f name="purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
       <f name="supplierName" alias="" ctype="" />
       <f name="unit" alias="" ctype="计量单位" />
   </select>

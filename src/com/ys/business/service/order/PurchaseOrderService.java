@@ -352,6 +352,7 @@ public class PurchaseOrderService extends CommonService {
 			List<String> reqContractList = new ArrayList<String>();
 			reqSupplierList = removeDuplicate(reqSupplierList);
 			String materialId = request.getParameter("materialId");
+			String contractDelivery = request.getParameter("contractDelivery");
 
 			
 			//采购合同****************************************************
@@ -456,7 +457,7 @@ public class PurchaseOrderService extends CommonService {
 					data.setSupplierid(supplierId);
 					data.setTotal(total);
 					data.setPurchasedate(CalendarUtil.fmtYmdDate());
-					data.setDeliverydate(CalendarUtil.dateAddToString(data.getPurchasedate(),20));
+					data.setDeliverydate(contractDelivery);
 					data.setVersion(1);//默认为1
 					
 					insertPurchaseOrder(data);//新增合同头表
@@ -1205,35 +1206,39 @@ public class PurchaseOrderService extends CommonService {
 	
 	private B_PurchaseOrderData geRoutinePurchaseContractId(
 			B_PurchaseOrderData dt,
-			String YSId,String shortName) throws Exception{
+			String YSId,String shortName,String purchaseType) throws Exception{
 		
 		//取得供应商的合同流水号
 		//父编号:年份+供应商简称
 		
 		//取得供应商的合同流水号
 		//父编号:年份+供应商简称
-		String typeParentId = BusinessService.getshortYearcode()+Constants.PURCHASE_TYPE_T;
+		//String typeParentId = BusinessService.getshortYearcode()+Constants.PURCHASE_TYPE_T;
 		
-		String supplierParentId = BusinessService.getshortYearcode() + shortName;
+		//String supplierParentId = BusinessService.getshortYearcode() + shortName;
 		
+		//String typeSubId = getContractTypeCode(typeParentId);
+		//String suplierSubId = getContractSupplierCode(supplierParentId);
+
+		//3位流水号格式化	
+		//采购合同编号:16D081-WL002
+		//String contractId = BusinessService.getContractCodeD(typeSubId, suplierSubId,shortName);
+
+		
+		
+		//3位流水号格式化	
+		//采购合同编号:16YS081-WL002
+		String type = getContractType(purchaseType);
+		
+		String typeParentId = BusinessService.getshortYearcode()+type;				
+		String supplierParentId = BusinessService.getshortYearcode() + shortName;				
 		String typeSubId = getContractTypeCode(typeParentId);
 		String suplierSubId = getContractSupplierCode(supplierParentId);
 
 		//3位流水号格式化	
 		//采购合同编号:16D081-WL002
-		String contractId = BusinessService.getContractCodeD(typeSubId, suplierSubId,shortName);
+		String contractId = BusinessService.getContractCode(type,typeSubId, suplierSubId,shortName);
 
-		//String parentId = "";
-		//if(null != YSId && YSId.length() > 3 ){
-		//	parentId = YSId.substring(0,2);//耀升编号前两位是年份
-		//}
-		//parentId = parentId + shortName;
-		
-		//String subId = getContractCode(parentId);
-		
-		//3位流水号格式化	
-		//采购合同编号:16YS081-WL002
-		//String contractId = BusinessService.getContractCode(YSId, shortName, subId);
 
 		dt.setYsid(YSId);
 		dt.setContractid(contractId);
@@ -1251,17 +1256,7 @@ public class PurchaseOrderService extends CommonService {
 		ts = new BaseTransaction();
 		String contractId = "";
 		try {
-			ts.begin();
-
-			//String contractId = contract.getContractid();
-			//String YSId = contract.getYsid();
-
-			//删除既存合同信息
-			//deleteContractByContractId(contractId);
-			
-			//删除既存合同明细
-			//deleteContractDetailByContractId(contractId);
-			
+			ts.begin();			
 			
 			//合同明细:因为是从物料信息过来的,所以只有一条数据
 			List<B_PurchaseOrderDetailData> reqDetail = reqModel.getDetailList();
@@ -1271,7 +1266,8 @@ public class PurchaseOrderService extends CommonService {
 				//创建合同编号
 				String YSId = contract.getYsid();
 				String shortName = reqModel.getShortName();
-				contract = geRoutinePurchaseContractId(contract,YSId,shortName);
+				String purchaseType = d.getContractid();//页面端借用Contractid传值物料特性
+				contract = geRoutinePurchaseContractId(contract,YSId,shortName,purchaseType);
 				contractId = contract.getContractid();
 				
 				//新增常规采购合同
@@ -1280,9 +1276,16 @@ public class PurchaseOrderService extends CommonService {
 				//合同明细
 				d.setYsid(YSId);
 				d.setContractid(contractId);				
-				insertPurchaseOrderDetail(d);				
-			}
+				insertPurchaseOrderDetail(d);	
+				
+				//更新虚拟库存
+				String purchase = d.getQuantity();//采购量
+				String materilid = d.getMaterialid();
+				String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
+				updateMaterial(materilid,purchase,requirement);
+			}		
 			
+
 			ts.commit();
 		}
 		catch(Exception e) {
