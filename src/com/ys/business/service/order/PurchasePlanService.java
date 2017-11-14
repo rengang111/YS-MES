@@ -199,6 +199,27 @@ public class PurchasePlanService extends CommonService {
 	}
 	
 
+	public void getBomeDetailAndContract(
+			String bomId,String YSId,String materialId) 
+			throws Exception {
+			
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getBomDetailAndContract");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("bomId", bomId);
+		userDefinedSearchCase.put("productId", materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);		
+		modelMap = baseQuery.getYsFullData(sql);
+
+		if(dataModel.getRecordCount() > 0){
+			model.addAttribute("baseBom", dataModel.getYsViewData().get(0));
+			model.addAttribute("bomDetail", dataModel.getYsViewData());
+		}
+		
+	}
+	
 	public HashMap<String, Object> getOrderDetailByYSId(String YSId) throws Exception{
 
 		HashMap<String, Object> HashMap = new HashMap<String, Object>();
@@ -264,22 +285,22 @@ public class PurchasePlanService extends CommonService {
 			List<B_PurchasePlanDetailData> deleteList = new ArrayList<B_PurchasePlanDetailData>();
 			for(B_PurchasePlanDetailData detail:oldDBList){
 				String reqMate = detail.getMaterialid();
-				String reqSubNo = detail.getSubbomno(); 
+				String reqSubNo = detail.getSubbomno();  
 				if(isNullOrEmpty(reqMate))
 					continue;
 				
 				boolean exflg = true;
 				for(B_PurchasePlanDetailData db:list){
 					String dbMate = db.getMaterialid();
-					String dbqSubNo = detail.getSubbomno(); 
-					if(reqMate.equals(dbMate) && reqSubNo.equals(dbqSubNo)){
-						exflg = false;						
-						break;
+					String dbSubNo = db.getSubbomno();  
+					if(reqMate.equals(dbMate) && reqSubNo.equals(dbSubNo)){						
+						exflg = false;											
+						break;						
 					}
 				}
 				if(exflg){
 					B_PurchasePlanDetailData d = new B_PurchasePlanDetailData();
-					copyProperties(d,detail);
+					copyProperties(d,detail);					
 					deleteList.add(d);
 				}
 			}
@@ -293,7 +314,7 @@ public class PurchasePlanService extends CommonService {
 				
 				//更新虚拟库存
 				String purchase = "0";//采购量
-				//float convertUnit = stringToFloat(map2.get("convertUnit"));//换算单位
+				//int convertUnit = stringToFloat(map2.get("convertUnit"));//换算单位
 				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
 				String requirement = String.valueOf(-1 * totalQuantity);
 				
@@ -343,7 +364,6 @@ public class PurchasePlanService extends CommonService {
 			for(B_PurchasePlanDetailData dt:deleteList){
 				
 				String materialId = dt.getMaterialid();
-				float requerementQyt = stringToFloat(dt.getManufacturequantity());
 				float purchaseQty = stringToFloat(dt.getPurchasequantity());
 				
 				String where = " YSId = '" + YSId +"' AND materialId = '" + materialId  +"' AND deleteflag = '0'";
@@ -383,24 +403,23 @@ public class PurchasePlanService extends CommonService {
 				}
 				
 				//退换物料的库存
-				updateMaterial(
-						materialId, 
-						String.valueOf((-1) * purchaseQty),
-						String.valueOf((-1) * requerementQyt));
+				//if(supplierFlag.equals("1")){//只处理被删除的物料
+					updateMaterial(
+							materialId, 
+							String.valueOf((-1) * purchaseQty),
+							"0");					
+				//}
 			}
 
 			//二级BOM(原材料)物料需求表
 			ArrayList<HashMap<String, String>> list3 = getRawMaterialGroupList(YSId);	
 			
 			for(HashMap<String, String> map2:list3){
-				
-				float convertUnit = stringToFloat(map2.get("convertUnit"));//换算单位
-				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
-				
+					
 				//更新虚拟库存
+				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
 				String purchase = "0";//采购量
-				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
-				String requirement = String.valueOf(totalQuantity/convertUnit);
+				String requirement = map2.get("totalQuantity");//需求量
 				
 				updateMaterial(rawmater2,purchase,requirement);						
 			}	
@@ -1028,7 +1047,7 @@ public class PurchasePlanService extends CommonService {
 			String where = " YSId = '" + reqPlan.getYsid() + "' AND deleteflag = '0'";
 			List<B_PurchasePlanData> list = new B_PurchasePlanDao().Find(where);			
 		
-			if(!(list == null || ("").equals(list))){	
+			if(list.size() > 0){	
 				//update处理	
 				dbPlan = list.get(0);
 				version = dbPlan.getVersion()+1;
@@ -1149,7 +1168,8 @@ public class PurchasePlanService extends CommonService {
 		
 		getOrderDetailByYSId(YSId);
 			
-		getBomDetailView(bomId);	
+		getBomeDetailAndContract(bomId,YSId,materialId);
+		//getBomDetailView(bomId);	
 		
 		
 		

@@ -111,7 +111,7 @@ public class PurchasePlanAction extends BaseAction {
 				doUpdate();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
 				break;	
-			case "purchasePlanDeleteInit":
+			case "purchasePlanDeleteInit"://重置采购
 				doDeleteInit();
 				rtnUrl = "/business/purchaseplan/purchaseplanadd";
 				break;			

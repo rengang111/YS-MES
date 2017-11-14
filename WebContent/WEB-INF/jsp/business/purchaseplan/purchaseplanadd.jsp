@@ -423,9 +423,17 @@
 		var stock = '${bom.availabelToPromise}';
 		var type = '${bom.purchaseTypeId}';
 		var supplierId = '${bom.supplierId}'
-		
+
 		var totalQuantity = floatToCurrency(currencyToFloat(quantity) * currencyToFloat(order));
-		var fpurchase = setPurchaseQuantity(stock,totalQuantity);
+		//虚拟库存回退处理		
+		var contractId = '${bom.contractId}';
+		var contractPrice = currencyToFloat('${bom.contractPrice}');
+		var contractQty = currencyToFloat('${bom.contractQty}');
+		var fPlanQuantity =  currencyToFloat( '${bom.manufactureQuantity}' ) ;
+		//虚拟库存=实际库存 + 待入库 - 待出库,这里做反向操作: 页面显示的虚拟库存 = 实际库存 - 待入库 + 待出库
+		var newStock =  floatToCurrency( currencyToFloat(stock) - contractQty + fPlanQuantity );
+		var fpurchase = setPurchaseQuantity(newStock,totalQuantity);
+		//alert("newStock:::"+stock+":::"+contractQty+":::"+fPlanQuantity)
 		if(type=="020"){//通用件单独采购
 			fpurchase = "0";
 		}
@@ -433,7 +441,8 @@
 		var totalPrice = floatToCurrency( currencyToFloat(price) * fpurchase );
 		
 		var shortName = getLetters(supplierId);
-		
+
+		$('#availabelToPromise'+index).html(newStock);
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$('#totalQuantity'+index).html(totalQuantity);
 		$("#planDetailList"+index+"\\.manufacturequantity").val(totalQuantity);

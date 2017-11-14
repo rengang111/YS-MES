@@ -667,7 +667,15 @@ function contractDetailView(contractId) {
 			{"data": "deleteFlag","className" : 'td-right'}
         ],
         "columnDefs":[
-         	
+
+			{"targets":2,"render":function(data, type, row){
+				
+				var name = row["materialName"];
+
+				name = jQuery.fixedWidth(name,40);	
+				    			
+				return name;
+			}},
        		{"targets":7,"render":function(data, type, row){
        			if( data == 1 ) {
        				return "已删除";
@@ -761,6 +769,7 @@ function ZZmaterialView() {
 		"stateSave" : false,
 		"searching" : false,
 		"pagingType" : "full_numbers",
+		"autoWidth":false,
 		"retrieve" : false,
 		"async" : false,
 		"sAjaxSource" : "${ctx}/business/purchasePlan?methodtype=getRawMaterialList&YSId="+YSId,				
@@ -809,7 +818,31 @@ function ZZmaterialView() {
         			name = jQuery.fixedWidth(name,40);	
     			}			    			
     			return name;
-    		}}
+    		}},
+    		{"targets":3,"render":function(data, type, row){
+      			var total = row["totalQuantity"];
+      			var unit = row["unit"];
+      			var chanegVal = "";
+    			if(unit == "吨"){//换算成千克
+    				unit = "千克";
+    			}	    			
+    			return unit;
+    		}},
+    		{"targets":4,"render":function(data, type, row){
+      			var total = row["totalQuantity"];
+      			var unit = row["unit"];
+      			var chanegVal = "";
+    			if(unit == "吨"){//换算成千克
+    				total = float4ToCurrency( total * 1000 );
+    			}else{
+    				total = float4ToCurrency( total);
+    			}	    			
+    			return total;
+    		}},
+    		{"targets":5,"render":function(data, type, row){
+      				    			
+    			return  floatToCurrency( data );;
+    		}},
           
         ] ,
         
@@ -1064,13 +1097,13 @@ function ZZmaterialView() {
 				<table id="ZZmaterial" class="display" style="width:98%">
 					<thead>				
 						<tr>
-							<th width="1px">No</th>
-							<th style="width:120px !important">原材料编码</th>
+							<th width="15px">No</th>
+							<th style="width:100px">原材料编码</th>
 							<th>原材料名称</th>
-							<th width="80px !important">单位</th>
-							<th width="100px">总量</th>
-							<th width="100px">单价</th>
-							<th width="100px !important">总价</th>
+							<th width="15px">单位</th>
+							<th width="50px">总量</th>
+							<th width="50px">单价</th>
+							<th width="50px">总价</th>
 						</tr>
 					</thead>
 							
