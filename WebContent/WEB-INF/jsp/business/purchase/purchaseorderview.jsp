@@ -281,8 +281,8 @@
 				
 					<td>${ detail.quantity}   </td>								
 					<td><span id="returnQty${status.index }">${ detail.returnQty }</span></td>		
-					<td>${ detail.price }</td>
-					<td>${ detail.totalPrice }</td>					
+					<td><span id="price${status.index }">${ detail.price }</span></td>
+					<td><span id="total${status.index }">${ detail.totalPrice }</span></td>					
 					<td><span id="returnValue${status.index }"></span></td>				
 					<td><span id="pay${status.index }"></span></td>			
 									
@@ -302,6 +302,8 @@
 					$('#name'+index).html(jQuery.fixedWidth(materialName,45));
 					$('#returnValue'+index).html(returnValue);
 					$('#pay'+index).html(pay);
+					$('#price'+index).html(float5ToCurrency(price));
+					$('#total'+index).html(floatToCurrency(contractValue));
 										
 				</script>	
 					
