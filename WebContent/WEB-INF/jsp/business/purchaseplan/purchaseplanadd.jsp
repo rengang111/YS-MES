@@ -591,7 +591,7 @@ $(".attributeList1").autocomplete({
 		var typeId  = ui.item.purchaseTypeId;
 		var vStock  = floatToCurrency(ui.item.availabelToPromise);
 		var supplierId = ui.item.supplierId;		
-		var vPrice     = float4ToCurrency(ui.item.price);
+		var vPrice     = float5ToCurrency(ui.item.price);
 		var shortName = getLetters(supplierId);
 
 		//显示到页面
@@ -769,6 +769,7 @@ function purchasePlanCompute(obj,flg){
 	var vTotalQuty= floatToCurrency(fTotalQuty);	
 	var vTotalNew = floatToCurrency(fTotalNew);
 	var vUnitQuty = float5ToCurrency(fUnitQuty);
+	var vPrice = float5ToCurrency(fPrice);
 			
 	//详情列表显示
 	$oUnitQuty.val(vUnitQuty)
@@ -777,6 +778,7 @@ function purchasePlanCompute(obj,flg){
 	$oTotalQutyI.val(vTotalQuty);
 	$oTotPriceS.html(vTotalNew);
 	$oTotPriceI.val(vTotalNew);
+	$oThisPrice.val(vPrice);
 	
 	costAcount();//成本核算
 }

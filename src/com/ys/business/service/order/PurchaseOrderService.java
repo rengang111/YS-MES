@@ -28,14 +28,11 @@ import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
-import com.ys.business.db.dao.B_WorkshopReturnDao;
 import com.ys.business.db.data.B_MaterialData;
-import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.B_SupplierData;
-import com.ys.business.db.data.B_WorkshopReturnData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.order.CommonService;
@@ -217,58 +214,6 @@ public class PurchaseOrderService extends CommonService {
 		return (List<B_PurchaseOrderData>)orderDao.Find(astr_Where);
 	}
 	
-	
-	/**
-	 * 采购合同明细做成
-	 * @param YSId
-	 * @param supplierId
-	 * @param contractId
-	 * @throws Exception 
-	 */
-	@SuppressWarnings("unchecked")
-	private void insertPurchaseOrderDetail(
-			String YSId,
-			String supplierId,
-			String contractId) throws Exception{
-		
-		List<B_PurchasePlanDetailData> dbList = new ArrayList<B_PurchasePlanDetailData>();
-		B_PurchasePlanDetailDao plan = new B_PurchasePlanDetailDao();
-		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
-
-		String where = " YSId= '" + YSId +"'AND supplierId= '" + supplierId +"' AND deleteFlag='0' ";	
-
-		dbList = (List<B_PurchasePlanDetailData>)plan.Find(where);
-	
-		if(dbList != null && dbList.size() >0){
-			
-			for(B_PurchasePlanDetailData dt:dbList){
-				
-				float quantity = stringToFloat(dt.getPurchasequantity());
-				//采购数量为零的物料不生成采购合同
-				if (quantity == 0)
-					continue;
-				
-				B_PurchaseOrderDetailData d = new B_PurchaseOrderDetailData();
-
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-						"PurchaseOrderInsert",userInfo);
-				copyProperties(d,commData);
-				
-				guid = BaseDAO.getGuId();
-				d.setRecordid(guid);				
-				d.setYsid(YSId);
-				d.setContractid(contractId);
-				d.setMaterialid(dt.getMaterialid());
-				d.setQuantity(dt.getPurchasequantity());
-				d.setPrice(dt.getPrice());					
-				d.setTotalprice(dt.getTotalprice());
-				d.setVersion(1);//默认为1
-				
-				dao.Create(d);					
-			}
-		}		
-		
-	}
 
 	/**
 	 * 取得合同详情
@@ -649,12 +594,56 @@ public class PurchaseOrderService extends CommonService {
 		dao.Store(data);
 		
 	}
+	//更新虚拟库存:生成合同时增加“待入库”
+		@SuppressWarnings("unchecked")
+		private void updatePurchasePlanDetail(
+				String ysid,
+				String materialId,
+				float reqPrice,
+				float reqQuantity) throws Exception{
+		/*
+			B_PurchasePlanDetailData data = new B_PurchasePlanDetailData();
+			
+			String where = "ysid ='"+ ysid + "' AND materialId ='"+ materialId + "' AND deleteFlag='0' ";
+			
+			List<B_PurchasePlanDetailData> list = 
+					(List<B_PurchasePlanDetailData>)new B_PurchasePlanDetailDao().Find(where);
+			
+			for(B_PurchasePlanDetailData dt:list){
+				//当前库存数量
+				float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
+				float iWaitOut = stringToFloat(data.getWaitstockout());//待出库
+				float iWaitIn  = stringToFloat(data.getWaitstockin());//待入库
+				
+				//iWaitOut = iWaitOut + stringToFloat(requirementOut);
+				iWaitIn = iWaitIn + stringToFloat(purchaseIn);
+				
+				//虚拟库存 = 当前库存 + 待入库 - 待出库
+				float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		
+				
+				//更新DB
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"PurchasePlanInsert",userInfo);
+				copyProperties(data,commData);
+				
+				data.setAvailabeltopromise(String.valueOf(availabeltopromise));//虚拟库存
+				//data.setWaitstockout(String.valueOf(iWaitOut));//待出库
+				data.setWaitstockin(String.valueOf(iWaitIn));//待入库
+				
+				new B_PurchasePlanDetailDao().Store(data);
+			}
+
+			*/
+			
+			
+		}
 	
 	/*
 	 * delete处理
 	 */
-	public void deletePurchaseOrder(B_PurchaseOrderData db) throws Exception{
+	private void deletePurchaseOrder(B_PurchaseOrderData data) throws Exception{
 		
+		B_PurchaseOrderData db = new B_PurchaseOrderDao(data).beanData;
 		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 				"purchaseOrderdelete",userInfo);			
 		copyProperties(db,commData);
@@ -666,8 +655,8 @@ public class PurchaseOrderService extends CommonService {
 	/*
 	 * delete处理
 	 */
-	public void deletePurchaseOrderDetail(B_PurchaseOrderDetailData db) throws Exception{
-
+	private void deletePurchaseOrderDetail(B_PurchaseOrderDetailData data) throws Exception{
+		B_PurchaseOrderDetailData db = new B_PurchaseOrderDetailDao(data).beanData;
 		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 				"purchaseOrderDetaildelete",userInfo);			
 		copyProperties(db,commData);
@@ -754,25 +743,7 @@ public class PurchaseOrderService extends CommonService {
 		orderDao.Store(data);	
 	}
 	
-	/**
-	 * 插入处理
-	 */
-	private void insertWorkshopRentun(
-			B_WorkshopReturnData data) throws Exception{
 		
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"WorkshopReturnInsert",userInfo);
-		copyProperties(data,commData);
-		
-		guid = BaseDAO.getGuId();
-		data.setRecordid(guid);
-		data.setReturnperson(userInfo.getUserId());
-		
-		new B_WorkshopReturnDao().Create(data);	
-	}
-	
-	
-	
 	
 	/**
 	 * 1.订单基本信息更新处理(1条数据)
@@ -790,6 +761,8 @@ public class PurchaseOrderService extends CommonService {
 			B_PurchaseOrderData orderData = reqModel.getContract();
 			
 			updateOrder(orderData);
+
+			String ysid = orderData.getYsid();
 			
 			//合同详情 更新 处理			
 			List<B_PurchaseOrderDetailData> newDetailList = reqModel.getDetailList();
@@ -798,8 +771,33 @@ public class PurchaseOrderService extends CommonService {
 			for(B_PurchaseOrderDetailData data:newDetailList ){
 				
 				//更新处理
-				updateOrderDetail(data);						
+				B_PurchaseOrderDetailData dbDt = updateOrderDetail(data);
+
+				float oldQty = stringToFloat(dbDt.getQuantity());
+				//float oldPrice = stringToFloat(dbDt.getPrice());
+				float reqQty = stringToFloat(data.getQuantity());
+				//float reqPrice = stringToFloat(data.getPrice());
+				
+				
+				//数量有变动才更新库存
+				if(!("").equals(dbDt) && oldQty != reqQty) {
+					String newQty = String.valueOf(reqQty - oldQty);					
+					//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面
+					updateMaterial(data.getMaterialid(),newQty,"0");
+				}
+			
+				/*
+				//同步采购方案:单价,数量
+				if(isNullOrEmpty(ysid))
+					continue;
+				
+				if(!("").equals(dbDt) && 
+						(oldQty != reqQty || oldPrice != reqPrice)){
 					
+					updatePurchasePlanDetail(ysid,data.getMaterialid(),reqPrice,reqQty);
+				}
+				
+				*/
 			}
 			
 			ts.commit();
@@ -844,176 +842,56 @@ public class PurchaseOrderService extends CommonService {
 	/*
 	 * 订单详情更新处理
 	 */
-	private void updateOrderDetail(
+	private B_PurchaseOrderDetailData updateOrderDetail(
 			B_PurchaseOrderDetailData data) throws Exception{
-			
-		detailDao = new B_PurchaseOrderDetailDao(data);
+		
+		B_PurchaseOrderDetailData rtnDt= new B_PurchaseOrderDetailData();
+		try{
 
-		//处理共通信息
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseOrderDetailUpdate",userInfo);
-		copyProperties(detailDao.beanData,commData);
+			B_PurchaseOrderDetailData db = new B_PurchaseOrderDetailDao(data).beanData;
+			
+			copyProperties(rtnDt,db);//返回值
+			//处理共通信息
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"PurchaseOrderDetailUpdate",userInfo);
+			copyProperties(db,commData);		
+			//获取页面数据
+			db.setQuantity(data.getQuantity());
+			db.setPrice(data.getPrice());
+			db.setTotalprice(data.getTotalprice());
+			
+			detailDao.Store(db);
+			
+		}catch(Exception e){
+			
+		}
 		
-		//获取页面数据
-		copyProperties(detailDao.beanData,data);
-		
-		detailDao.Store(detailDao.beanData);
+		return rtnDt;
 	}
 	
-	/*
-	 * 审批处理:常规订单是以耀升编号为单位更新,
-	 * 库存订单存在多个相同的耀升编号,需要逐条更新
-	 */
-	public void updateDetailToApprove(String PIId) throws Exception  {
-
-		ts = new BaseTransaction();
-		
-		try {
-			
-			ts.begin();
-
-			//根据画面的PiId取得DB中更新前的订单详情 
-			List<B_OrderDetailData> detailList = null;
-
-			//库存订单的PI编号,订单编号,耀升编号相同
-			String where = " PIId = '"+PIId +"'" + " AND deleteFlag = '0' ";
-			//detailList = getOrderDetailByPIId(where);
-						
-			for(B_OrderDetailData dbData:detailList ){				
-					
-				//更新处理//处理共通信息
-				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-						"ZZOrderDetailUpdate",userInfo);
-
-				copyProperties(dbData,commData);
-				//更新审批状态:下一步是审批
-				dbData.setStatus(Constants.ORDER_STS_1);
-				
-				detailDao.Store(dbData);
-			}
-			
-			ts.commit();
-		}
-		catch(Exception e) {
-			ts.rollback();
-		}
-		
-	}
-
+	
 	/**
-	 * 合同明细删除处理
+	 * 合同删除处理
+	 * @throws Exception 
 	 */
-	private void deleteContractDetail(String YSId) {
+	@SuppressWarnings("unchecked")
+	private void deleteContract(String where) throws Exception {
 		
-		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
-
-		String astr_Where = " YSId = '" + YSId +"'";
-		/*
+		B_PurchaseOrderDao dao = new B_PurchaseOrderDao();
+		
+		//确认数据是否存在		
+		List<B_PurchaseOrderData> list = dao.Find(where);
+		
 		for(B_PurchaseOrderData data:list){
 
-			version = data.getVersion();
-			
-			//copyProperties(dbPlan,reqPlan);
 			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 					"purchasePlanUpdate",userInfo);			
 			copyProperties(data,commData);
-			data.setVersion(version+1);
 			dao.Store(data);
-		}
-		try {
-			dao.RemoveByWhere(astr_Where);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
 		}		
-		*/
 	}
 	
-
-	/**
-	 * 合同明细删除处理
-	 */
-	private void deleteContractDetailByContractId(String contractId) {
-		
-		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
-
-		String astr_Where = " contractId = '" + contractId +"'";	
-		try {
-			dao.RemoveByWhere(astr_Where);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}		
-		
-	}
 	
-	/**
-	 * 合同删除处理
-	 */
-	@SuppressWarnings("unchecked")
-	private int deleteContract(String YSId) {
-		
-		int version = 0;
-		B_PurchaseOrderDao dao = new B_PurchaseOrderDao();
-		String astr_Where = " YSId = '" + YSId +"'";	
-		
-		/*//确认数据是否存在		
-		List<B_PurchaseOrderData> list = dao.Find(astr_Where);
-		if(!(list == null || ("").equals(list))){	
-			//update处理	
-			for(B_PurchaseOrderData data:list){
-
-				version = data.getVersion();
-				
-				//copyProperties(dbPlan,reqPlan);
-				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-						"purchasePlanUpdate",userInfo);			
-				copyProperties(data,commData);
-				data.setVersion(version+1);
-				dao.Store(data);
-			}
-
-		}else{
-			//insert处理
-		}
-		*/
-		return version;	
-		
-	}
-	
-
-	/**
-	 * 合同删除处理
-	 */
-	private void deleteContractByContractId(String contractId) {
-		
-		B_PurchaseOrderDao dao = new B_PurchaseOrderDao();
-
-		String astr_Where = " contractId = '" + contractId +"'";	
-		try {
-			dao.RemoveByWhere(astr_Where);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}		
-		
-	}
-	
-	/*
-	 * 更新处理
-	 */
-	private void updateWorkshopRentun(B_WorkshopReturnData data) 
-			throws Exception{
-		
-		B_WorkshopReturnData dbDt = 
-			(B_WorkshopReturnData) new B_WorkshopReturnDao().FindByPrimaryKey(data);
-		
-		if(null != dbDt){			
-			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"WorkshopReturnUPdate",userInfo);
-			copyProperties(dbDt,commData);
-			
-			new B_WorkshopReturnDao().Store(dbDt);
-		}
-		
-	}		
 	
 	private String getContractTypeCode(String parentId) throws Exception {
 
@@ -1167,14 +1045,38 @@ public class PurchaseOrderService extends CommonService {
 		
 	}
 	
-	public void approveAndView() throws Exception {
+	public void deletePurchaseOrder() throws Exception {
 		
-		String YSId = request.getParameter("YSId");
-		
-		updateDetailToApprove(YSId);
-		
-		//getZZOrderDetail(YSId);	
-		
+		ts = new BaseTransaction();
+
+		try {
+			ts.begin();
+			//合同基本信息
+			B_PurchaseOrderData orderData = reqModel.getContract();
+			deletePurchaseOrder(orderData);
+			
+			//合同详情 删除 处理			
+			List<B_PurchaseOrderDetailData> newDetailList = reqModel.getDetailList();
+						
+			//页面数据的recordId与DB匹配			
+			for(B_PurchaseOrderDetailData data:newDetailList ){
+				
+				//删除处理
+				deletePurchaseOrderDetail(data);
+				
+				//恢复库存"待入数量"
+				updateMaterial(
+						data.getMaterialid(),
+						String.valueOf(-1 * stringToFloat(data.getQuantity())),
+						"0");//合同只处理待入数量,待出在采购方案里面
+			}
+			
+			ts.commit();
+			
+		}catch(Exception e){
+			ts.rollback();
+			e.printStackTrace();
+		}
 	}
 	
 
@@ -1369,7 +1271,7 @@ public class PurchaseOrderService extends CommonService {
 			deleteContract(YSId);
 			
 			//删除既存合同明细
-			deleteContractDetail(YSId);			
+			//deleteContractDetail(YSId);			
 			
 			//供应商集计
 			List<B_SupplierData> supplier = new ArrayList<B_SupplierData>();			

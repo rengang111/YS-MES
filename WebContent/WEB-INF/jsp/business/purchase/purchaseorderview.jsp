@@ -94,7 +94,17 @@
 				function() {
 			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=edit");
 			$('#attrForm').submit();
-		});		
+		});	
+		
+		$("#doDelete").click(
+				function() {
+			if(confirm("采购合同删除后不能恢复,\n\n        确定要删除吗？")) {
+				$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=delete");
+				$('#attrForm').submit();
+			}else{
+				return false;
+			}
+		});
 		
 		sumFn();//合计值计算
 		
@@ -198,6 +208,7 @@
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">
 			
+		<form:hidden path="contract.recordid" value="${contract.contractRecordId }"/>
 		<fieldset>
 			<legend> 采购合同</legend>
 			<table class="form" id="table_form">
@@ -249,6 +260,7 @@
 	
 	<fieldset class="action" style="text-align: right;">
 		<button type="submit" id="doEdit" class="DTTT_button">编辑</button>
+		<button type="submit" id="doDelete" class="DTTT_button">删除</button>
 		<button type="button" id="doPrint" class="DTTT_button" onclick="showContract();">打印</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>
@@ -285,7 +297,9 @@
 					<td><span id="total${status.index }">${ detail.totalPrice }</span></td>					
 					<td><span id="returnValue${status.index }"></span></td>				
 					<td><span id="pay${status.index }"></span></td>			
-									
+						
+						<form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" />	
+						<form:hidden path="detailList[${status.index}].quantity" value="${detail.quantity}" />	
 				</tr>	
 								
 				<script type="text/javascript">

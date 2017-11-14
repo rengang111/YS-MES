@@ -210,7 +210,9 @@ public class ReceiveInspectionService extends CommonService  {
 			//String result = process.getManagerresult();
 			
 			//取得进料检报告编号
-			reqData = getReceiveInspectionId(reqData);
+			String recordId = reqData.getRecordid();
+			if(isNullOrEmpty(recordId))				
+				reqData = getReceiveInspectionId(reqData);
 			
 			//新增进料报检
 			reqData.setInspecttime(CalendarUtil.fmtDate());
@@ -220,6 +222,14 @@ public class ReceiveInspectionService extends CommonService  {
 			String inspectionid = reqData.getInspectionid();			
 			String arrivalId = reqData.getArrivalid();
 			contractId = reqData.getContractid();
+			
+			//删除历史数据
+			String where = " inspectionid = '"+inspectionid+"'";
+			try {
+				new B_ReceiveInspectionDetailDao().RemoveByWhere(where);
+			} catch (Exception e) {
+				// nothing
+			}
 			//新增进料报检明细
 			for(B_ReceiveInspectionDetailData data:reqList){
 				
@@ -311,15 +321,30 @@ public class ReceiveInspectionService extends CommonService  {
 	
 	private void insertReceivInspection(
 			B_ReceiveInspectionData data) throws Exception{
+		B_ReceiveInspectionData db=null;
+		try{
+			db = new B_ReceiveInspectionDao(data).beanData;
+		}catch(Exception e){
 			
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"ReceiveInspctionInsert",userInfo);
-		copyProperties(data,commData);
+		}
+		if(db == null || ("").equals(db)){
 
-		guid = BaseDAO.getGuId();
-		data.setRecordid(guid);
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"ReceiveInspctionInsert",userInfo);
+			copyProperties(data,commData);
+			guid = BaseDAO.getGuId();
+			data.setRecordid(guid);
+			
+			new B_ReceiveInspectionDao().Create(data);
+		}else{
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"ReceiveInspctionUpdate",userInfo);
+			copyProperties(db,commData);
+			
+			new B_ReceiveInspectionDao().Store(db);
+		}		
 		
-		new B_ReceiveInspectionDao().Create(data);
 	}
 	
 	private void insertReceivInspectionDetail(

@@ -194,6 +194,8 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
+	<form:hidden path="inspect.recordid" value="${arrived.inspectionRecordId }"/>
+	<form:hidden path="inspect.inspectionid" value="${arrived.inspectionId }"/>
 	<form:hidden path="inspect.ysid" value="${arrived.YSId }"/>
 	<form:hidden path="inspect.parentid" value=""/>
 	<form:hidden path="inspect.subid" value=""/>

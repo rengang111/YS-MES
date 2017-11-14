@@ -106,10 +106,10 @@ public class PurchaseOrderAction extends BaseAction {
 			case "update":
 				doUpdate();
 				rtnUrl = "/business/purchase/purchaseorderview";
-				break;				
-			case "approve":
-				doApprove();
-				rtnUrl = "/business/order/ordermain";
+				break;	
+			case "delete":
+				deletePurchaseOrder();
+				rtnUrl = "/business/purchase/purchaseordermain";
 				break;
 			case "createRoutineContractInit"://物料管理入口,直接采购
 				createContractInit();
@@ -231,11 +231,12 @@ public class PurchaseOrderAction extends BaseAction {
 		
 	}
 	
-	public void doApprove() throws Exception {
+	public void deletePurchaseOrder() throws Exception {
+	
+		service.deletePurchaseOrder();			
 		
-		service.approveAndView();			
+	}
 		
-	}	
 	
 	public void createContractInit() throws Exception {
 		

@@ -34,7 +34,7 @@
 				"columnDefs":[
 				    {
 						"visible" : false,
-						"targets" : [6,7 ]
+						"targets" : [7 ]
 					}
 				]
 			
@@ -329,8 +329,8 @@
 							<input type="image" name="priceBtn${status.index}" src="${ctx}/images/action_edit.png" class="imgbtn" style="border: 0;"></td>
 						
 						<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice} "/></td>				
-						<td><form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" /></td>				
-						
+						<td></td>				
+						<form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" />
 					</tr>	
 									
 					<script type="text/javascript">
