@@ -31,7 +31,6 @@
 					}, {"className":"td-right"
 					}, {"className":"td-right"	
 					}, {"className":"td-left"
-					}, {"className":"td-left"
 					}, {
 					}
 				],
@@ -156,8 +155,8 @@
 				<td width="100px" class="label">仓管员：</td>
 				<td width="200px">
 					<form:input path="stock.keepuser" class="short read-only" value="${userName }" /></td>							
-				<td class="label">物料类别：</td>
-				<td>${contract.purchaseType }</td>
+				<td class="label">入库件数：</td>
+				<td><form:input path="stock.packagnumber" class="short num" value="${head.materialNumber }" /></td>
 			</tr>
 										
 		</table>
@@ -179,7 +178,6 @@
 						<th style="width:65px">已入库数量</th>
 						<th style="width:65px">待入库数</th>
 						<th style="width:55px">包装方式</th>
-						<th style="width:40px">件数</th>
 						<th style="width:60px">库位编号</th>			
 				</tr>
 			</thead>
@@ -196,7 +194,6 @@
 						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
 								<form:options items="${packagingList}" 
 									itemValue="key" itemLabel="value"/></form:select></td>
-						<td><form:input path="stockList[${status.index}].packagnumber" value="${list.packagNumber }" class="mini" /></td>
 						<td><form:input path="stockList[${status.index}].areanumber" value="${list.areaNumber }"  class="short" /></td>
 					</tr>
 					<script type="text/javascript">

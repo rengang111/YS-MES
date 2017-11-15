@@ -138,6 +138,19 @@ public class B_PurchaseStockInData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String packagnumber;
+	public String getPackagnumber()
+	{
+		return this.packagnumber;
+	}
+	public void setPackagnumber(String packagnumber)
+	{
+		this.packagnumber=packagnumber;
+	}
+
+	/**
+	*
+	*/
 	private String originalreceiptid;
 	public String getOriginalreceiptid()
 	{
@@ -280,13 +293,13 @@ public class B_PurchaseStockInData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("receiptid = "+(receiptid == null ? "null" : receiptid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("contractid = "+(contractid == null ? "null" : contractid)+"\n");		sb.append("arrivelid = "+(arrivelid == null ? "null" : arrivelid)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("checkindate = "+(checkindate == null ? "null" : checkindate)+"\n");		sb.append("keepuser = "+(keepuser == null ? "null" : keepuser)+"\n");		sb.append("originalreceiptid = "+(originalreceiptid == null ? "null" : originalreceiptid)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("receiptid = "+(receiptid == null ? "null" : receiptid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("contractid = "+(contractid == null ? "null" : contractid)+"\n");		sb.append("arrivelid = "+(arrivelid == null ? "null" : arrivelid)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("checkindate = "+(checkindate == null ? "null" : checkindate)+"\n");		sb.append("keepuser = "+(keepuser == null ? "null" : keepuser)+"\n");		sb.append("packagnumber = "+(packagnumber == null ? "null" : packagnumber)+"\n");		sb.append("originalreceiptid = "+(originalreceiptid == null ? "null" : originalreceiptid)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		receiptid= (receiptid == null ?null : receiptid.trim());		subid= (subid == null ?null : subid.trim());		ysid= (ysid == null ?null : ysid.trim());		contractid= (contractid == null ?null : contractid.trim());		arrivelid= (arrivelid == null ?null : arrivelid.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		checkindate= (checkindate == null ?null : checkindate.trim());		keepuser= (keepuser == null ?null : keepuser.trim());		originalreceiptid= (originalreceiptid == null ?null : originalreceiptid.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		receiptid= (receiptid == null ?null : receiptid.trim());		subid= (subid == null ?null : subid.trim());		ysid= (ysid == null ?null : ysid.trim());		contractid= (contractid == null ?null : contractid.trim());		arrivelid= (arrivelid == null ?null : arrivelid.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		checkindate= (checkindate == null ?null : checkindate.trim());		keepuser= (keepuser == null ?null : keepuser.trim());		packagnumber= (packagnumber == null ?null : packagnumber.trim());		originalreceiptid= (originalreceiptid == null ?null : originalreceiptid.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

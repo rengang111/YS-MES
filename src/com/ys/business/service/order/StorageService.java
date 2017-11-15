@@ -829,11 +829,10 @@ public class StorageService extends CommonService {
 		if(db == null || ("").equals(db))
 			return;
 
-		//db.setOriginalreceiptid(db.getReceiptid());
-		//copyProperties(db,stock);
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"PurchaseStockInUpdate",userInfo);
 		copyProperties(db,commData);
+		db.setPackagnumber(stock.getPackagnumber());
 				
 		dao.Store(db);
 	}

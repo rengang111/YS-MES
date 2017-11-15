@@ -39,6 +39,8 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){
 						fnCallback(data);
+						
+						$('#materialNumber').text(data['data'][0]["materialNumber"]);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 						 alert(errorThrown)
@@ -52,8 +54,7 @@
 						}, {"data": "contractQuantity","className":"td-right"
 						}, {"data": "contractStorage","className":"td-right"
 						}, {"data": "quantity","className":"td-right"	
-						}, {"data": "packaging","className":"td-left"
-						}, {"data": "packagNumber","className":"td-left"
+						}, {"data": "packaging","className":"td-center"
 						}, {"data": "areaNumber",
 						}
 					],
@@ -63,6 +64,10 @@
 	    			var name = data;				    			
 	    			name = jQuery.fixedWidth(name,35);				    			
 	    			return name;
+	    		}},
+	    		{"targets":7,"render":function(data, type, row){
+	    				    				    			
+	    			return "&nbsp;&nbsp;"+data;
 	    		}}
 	    	]
 	
@@ -158,12 +163,13 @@
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">入库时间：</td>					
-				<td width="200px">${contract.checkInDate }</td>
-							
+				<td width="200px">&nbsp;${contract.checkInDate }</td>
+				<!-- 			
 				<td width="100px" class="label">仓管员：</td>
-				<td width="200px">${userName }</td>							
-				<td class="label">物料类别：</td>
-				<td>${contract.purchaseType }</td>
+				<td width="200px">${userName }</td>	
+				 -->						
+				<td class="label">入库件数：</td>
+				<td>&nbsp;<span id="materialNumber">${head.materialNumber }</span></td>
 			</tr>
 										
 		</table>
@@ -186,7 +192,6 @@
 					<th style="width:65px">已入库数量</th>
 					<th style="width:65px">本次入库数</th>
 					<th style="width:55px">包装方式</th>
-					<th style="width:40px">件数</th>
 					<th style="width:60px">库位编号</th>		
 			</tr>
 		</thead>		

@@ -20,11 +20,11 @@
 			"stateSave"  : true,
 			"pagingType" : "full_numbers",
 			//"scrollY"    : "160px",
-	        "scrollCollapse": false,
+	        //"scrollCollapse": false,
 	        "paging"    : false,
 	        "pageLength": 50,
 	        "ordering"  : false,
-			dom : '<"clear">rt',		
+			"dom"		: '<"clear">rt',		
 			"columns" : [
 			        	{"className":"dt-body-center"
 					}, {"className":"td-left"
@@ -33,19 +33,16 @@
 					}, {"className":"td-right"
 					}, {"className":"td-right"	
 					}, {"className":"td-left"
-					}, {"className":"td-left"
 					}, {
 					}
 				],
-		"columnDefs":[
-    		{"targets":2,"render":function(data, type, row){
-    			
-    			var name = data;				    			
-    			name = jQuery.fixedWidth(name,35);				    			
-    			return name;
-    		}}
-           
-         ] 
+			"columnDefs":[
+    			{"targets":2,"render":function(data, type, row){
+	    			var name = data;				    			
+	    			name = jQuery.fixedWidth(name,35);				    			
+	    			return name;
+    			}}           
+        	] 
 	
 		}).draw();
 
@@ -171,8 +168,8 @@
 				<td width="100px" class="label">仓管员：</td>
 				<td width="200px">
 					<form:input path="stock.keepuser" class="short read-only" value="${userName }" /></td>							
-				<td class="label">物料类别：</td>
-				<td>${contract.purchaseType }</td>
+				<td class="label">入库件数：</td>
+				<td><form:input path="stock.packagnumber" class="short num" value="" /></td>
 			</tr>
 										
 		</table>
@@ -195,7 +192,6 @@
 					<th style="width:65px">已入库数量</th>
 					<th style="width:65px">待入库数</th>
 					<th style="width:55px">包装方式</th>
-					<th style="width:40px">件数</th>
 					<th style="width:60px">库位编号</th>		
 				</tr>
 			</thead>
@@ -212,7 +208,6 @@
 						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
 								<form:options items="${packagingList}" 
 									itemValue="key" itemLabel="value"/></form:select></td>
-						<td><form:input path="stockList[${status.index}].packagnumber" class="mini" /></td>
 						<td><form:input path="stockList[${status.index}].areanumber" class="short" /></td>
 					</tr>
 					<script type="text/javascript">

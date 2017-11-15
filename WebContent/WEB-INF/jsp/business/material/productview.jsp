@@ -291,7 +291,7 @@ function rowNoShow(next){
 		subIndex++;
 		
 	}else{
-		subIndex = '1';
+		subIndex = "1";
 		prev = next;
 	}
 
@@ -331,6 +331,7 @@ function baseBomView() {
 		"searching" : false,
 		"pagingType" : "full_numbers",
 		"retrieve" : false,
+		"ordering":false,
 		"async" : true,
 		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,	
 		"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -391,7 +392,7 @@ function baseBomView() {
        		"url":"${ctx}/plugins/datatables/chinese.json"
        	},
 		"columns": [
-			{"data": null},
+			{"data": null,"className" : 'td-left'},
 			{"data": "materialId"},
 			{"data": "materialName"},
 			{"data": "unit","className" : 'td-center'},
@@ -403,9 +404,10 @@ function baseBomView() {
 		"columnDefs":[
     		{"targets":0,"render":function(data, type, row){
     			
-    			var rowNum = row["subbomno"];				
-    			var setNo = rowNoShow(rowNum);			    			
-    			return setNo;
+    			var subbomno = row["subbomno"];
+    			var rownum = row["rownum"];
+    			var setNo = rowNoShow(subbomno);			    			
+    			return subbomno + '-' + setNo;
     		}},
     		{"targets":2,"render":function(data, type, row){
     			

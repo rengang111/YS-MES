@@ -409,6 +409,7 @@
       <f name="A.checkInDate" alias="" ctype="" />
       <f name="A.arrivelId" alias="" ctype="" />
       <f name="A.subId" alias="" ctype="" />
+      <f name="A.materialNumber" alias="" ctype="" />
     </select>
     <from>v_purchaseStockInById a  WHERE a.deleteFlag = '0' </from>
     <orderby>a.materialId,A.checkInDate DESC,A.receiptId</orderby>
