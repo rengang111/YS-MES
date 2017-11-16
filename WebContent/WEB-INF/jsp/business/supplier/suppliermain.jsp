@@ -20,7 +20,7 @@
 		var t = $('#TSupplier').DataTable({
 				"paging": true,
 				"lengthChange":false,
-				 "iDisplayLength" : 100,
+				 "iDisplayLength" : 50,
 				//"lengthMenu":[50,100,200],//设置一页展示20条记录
 				"processing" : true,
 				"serverSide" : true,
