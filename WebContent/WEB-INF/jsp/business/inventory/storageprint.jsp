@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <title></title>
-<!-- 领料单打印 -->
+<!-- 入库单打印 -->
 <%@ include file="../../common/common2.jsp"%>
 <link rel="stylesheet" type="text/css" href="${ctx}/css/print.css" />
 <script type="text/javascript">
@@ -33,7 +33,7 @@
 	
 		<table class="" id="table_form"  style="margin-top: -10px;width: 100%;">
 			<tr> 				
-				<td class="td-center" colspan="6" style="font-size: 26px;height: 50px;">料检入库单</td>
+				<td class="td-center" colspan="6" style="font-size: 26px;height: 50px;">料件入库单</td>
 			</tr>
 		</table>
 		<table>

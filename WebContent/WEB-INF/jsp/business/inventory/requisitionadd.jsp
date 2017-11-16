@@ -437,6 +437,7 @@
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >确认领料</a>
+		<a class="DTTT_button DTTT_button_text" id="print" onclick="doPrint();return false;">打印领料单</a>
 		<a class="DTTT_button DTTT_button_text" id="showHistory" >查看领料记录</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
@@ -451,7 +452,7 @@
 				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
 				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
 				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>&nbsp;&nbsp;
-				<a class="DTTT_button DTTT_button_text box" id="ycl">自制品原材料</a>
+			<!-- 	<a class="DTTT_button DTTT_button_text box" id="ycl">自制品原材料</a> -->
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
 			<!-- 
@@ -471,17 +472,17 @@
 				<thead>				
 					<tr>
 						<th style="width:1px">No</th>
-						<th class="dt-center" width="120px">物料编号</th>
-						<th class="dt-center" >物料名称</th>				
-						<th class="dt-center" width="60px">基本用量</th>
-						<th class="dt-center" width="60px">计划用量</th>
-						<th class="dt-center" width="60px">已领数量</th>
-						<th class="dt-center" width="60px">可用库存</th>
-						<th class="dt-center" width="80px">
+						<th width="120px">物料编号</th>
+						<th >物料名称</th>				
+						<th width="60px">基本用量</th>
+						<th width="60px">计划用量</th>
+						<th width="60px">已领数量</th>
+						<th width="60px">可用库存</th>
+						<th width="80px">
 							<input type="checkbox" name="selectall" id="selectall"  checked="checked"/><label for="selectall">本次领料</label></th>
-						<th class="dt-center" width="60px">剩余数量</th>
-						<th class="dt-center" width="1px"></th>
-						<th class="dt-center" width="1px"></th>
+						<th width="60px">剩余数量</th>
+						<th width="1px"></th>
+						<th width="1px"></th>
 					</tr>
 				</thead>	
 			</table>
@@ -588,5 +589,27 @@ function reloadFn(){
 	});
 	
 }
+
+function doPrint() {
+	var YSId = '${order.YSId }';
+	var url = '${ctx}/business/requisition?methodtype=print';
+	url = url +'&YSId='+YSId;
+		
+	callProductDesignView("print",url);
+	/*
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1100px', '520px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		cancel: function(index){			
+		}    
+	});		
+
+	*/
+};
 </script>
 </html>

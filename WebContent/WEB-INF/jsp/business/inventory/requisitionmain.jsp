@@ -8,7 +8,7 @@
 <title>领料申请--订单一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,sessionFlag,stateSave) {
+	function ajax(pageFlg,sessionFlag,status) {
 		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -16,9 +16,16 @@
 			table.fnDestroy();
 		}
 
+		var key1 = $("#keyword1").val();
+		var key2 = $("#keyword1").val();
+		var key = myTrim(key1)+myTrim(key2);
+		if(key == "")
+			status = "020,030";
+
 		var actionUrl = "${ctx}/business/requisition?methodtype=search";
 		actionUrl = actionUrl + "&keyBackup=" + pageFlg;
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
+		actionUrl = actionUrl + "&status=" + status;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -29,6 +36,7 @@
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
+				"autoWidth"	:false,
 				"pagingType" : "full_numbers",
 	         	"aaSorting": [[ 1, "DESC" ]],
 				//"scrollY":scrollHeight,
@@ -62,11 +70,11 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "YSId", "defaultContent" : ''},
-							{"data": "materialId", "defaultContent" : ''},
+							{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
+							{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
 							{"data": "materialName", "defaultContent" : ''},//3
-							{"data": "orderDate", "defaultContent" : ''},
-							{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
+							{"data": "orderDate", "defaultContent" : '', "className" : 'td-center'},
+							{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},
 							{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
 							{"data": "team", "className" : 'td-left'},//7
 							{"data": "statusName", "className" : 'td-center'},//8
@@ -91,43 +99,36 @@
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : [7,8,9]
+						"targets" : [7,9]
 					}
 	         	]
 			}
 		);
+		
 
-	}
+		t.on('click', 'tr', function() {
 
-	function initEvent(){
-	
-		$('#TMaterial').DataTable().on('click', 'tr', function() {
-			
 			if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
 	        }
 	        else {
-	        	$('#TMaterial').DataTable().$('tr.selected').removeClass('selected');
+	            t.$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	        }
 		});
+
 	}
+
 
 	$(document).ready(function() {
 
-		ajax("","true",true);
-		initEvent();
-		$("#create").click(
-				function() {			
-			$('#purchaseForm').attr("action", "${ctx}/business/purchase?methodtype=insert");
-			$('#purchaseForm').submit();
-		});	
+		ajax("","true","030");
 		
 	})	
 	
 	function doSearch() {	
 
-		ajax("purchaseplan","false",false);
+		ajax("purchaseplan","false","");
 
 	}
 
@@ -172,20 +173,19 @@
 	<div  style="height:10px"></div>
 
 	<div class="list">
-
-		<table id="TMaterial" class="display dataTable" style="width:100%">
+		<table id="TMaterial" class="display">
 			<thead>						
 				<tr>
-						<th style="width: 10px;" class="dt-middle ">No</th>
-						<th style="width: 70px;" class="dt-middle ">耀升编号</th>
-						<th style="width: 150px;" class="dt-middle ">产品编号</th>
-						<th class="dt-middle ">产品名称</th>
-						<th style="width: 50px;" class="dt-middle ">下单日期</th>
-						<th style="width: 50px;" class="dt-middle ">订单交期</th>
-						<th style="width: 60px;" class="dt-middle ">订单数量</th>
-						<th style="width: 40px;" class="dt-middle ">业务组</th>
-						<th style="width: 60px;" class="dt-middle ">订单状态</th>
-						<th style="width: 50px;" class="dt-middle ">入库时间</th>
+						<th style="width: 10px;">No</th>
+						<th style="width: 70px;">耀升编号</th>
+						<th style="width: 120px;">产品编号</th>
+						<th>产品名称</th>
+						<th style="width: 50px;">下单日期</th>
+						<th style="width: 50px;">订单交期</th>
+						<th style="width: 60px;">订单数量</th>
+						<th style="width: 40px;">业务组</th>
+						<th style="width: 60px;">订单状态</th>
+						<th style="width: 50px;">入库时间</th>
 				</tr>
 			</thead>
 		</table>

@@ -27,7 +27,6 @@ import com.ys.util.basequery.common.Constants;
 @Controller
 @RequestMapping("/business")
 public class RequisitionAction extends BaseAction {
-	
 	@Autowired
 	RequisitionService service;
 	@Autowired HttpServletRequest request;
@@ -116,6 +115,10 @@ public class RequisitionAction extends BaseAction {
 				dataMap = getRequisitionDetail();
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "print"://领料单打印
+				doAddInit();
+				rtnUrl = "/business/inventory/requisitionprint";
+				break;
 				
 		}
 		

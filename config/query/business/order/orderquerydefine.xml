@@ -43,7 +43,7 @@
    	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
-   	  <w name="A.status"  des=""  reqName="status" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.status"  des=""  reqName="status" dtype="ch" oper="in"  lg="AND" bt="" />
    	  <w name="A.orderNature"  des=""  reqName="orderNature" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>

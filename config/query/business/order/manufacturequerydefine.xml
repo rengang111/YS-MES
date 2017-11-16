@@ -34,30 +34,31 @@
     	<w name="A.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
-      <f name="recordId" alias="" ctype="" />
-      <f name="YSId" alias="" ctype="" />
-      <f name="materialId" alias="" ctype="" />
-      <f name="materialName" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
       <f name="contractId" alias="" ctype="" />
-      <f name="supplierId" alias="" ctype="" />
-      <f name="manufactureQuantity" alias="" ctype="" />
-      <f name="contractStorage" alias="" ctype="" />
-      <f name="quantityOnHand" alias="" ctype="" />
-      <f name="availabelToPromise" alias="" ctype="" />
-      <f name="totalRequisition" alias="" ctype="" />
-      <f name="unitQuantity" alias="" ctype="" />
-      <f name="unit" alias="" ctype="计量单位" />
-      <f name="contractMaterialId" alias="" ctype="" />
-      <f name="purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
-      <f name="purchaseType" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="a.contractStorage" alias="" ctype="" />
+      <f name="a.quantityOnHand" alias="" ctype="" />
+      <f name="a.availabelToPromise" alias="" ctype="" />
+      <f name="a.totalRequisition" alias="" ctype="" />
+      <f name="a.unitQuantity" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.contractMaterialId" alias="" ctype="" />
+      <f name="a.purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
+      <f name="a.purchaseType" alias="" ctype="" />
+      <f name="b.areaNumber" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_createrequisitionfromplan AS A WHERE  A.deleteFlag = '0'</from>
+   <from>v_createrequisitionfromplan AS A LEFT JOIN v_purchasestockindetailgroup b ON b.YSId=a.YSId AND b.materialId=a.materialId  WHERE  A.deleteFlag = '0'</from>
   
     <groupby></groupby>
     <having></having>
-    
+    <!--
     <union>
 	    <where>
     		<w name="b.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
@@ -79,12 +80,14 @@
 	      <f name="''" alias="contractMaterialId" ctype="" />
 	      <f name="'原材料'" alias="purchaseTypeName" ctype="物料采购类别" />
 	      <f name="'050'" alias="purchaseType" ctype="" />
+      	  <f name="-" alias="areaNumber" ctype="" />
 	    </select>
 	    <from>v_purchaseplandetailzz b LEFT JOIN v_requisitiondetailgroup c ON b.rawMaterialId=c.materialId AND b.YSId=c.YSId AND c.deleteFlag='0' where</from>	
 	    <groupby></groupby>
 	    <having></having>
     </union>
-    <orderby>materialId</orderby>
+    -->
+    <orderby>a.materialId</orderby>
 	<power></power>    
   </query>
   <query>
