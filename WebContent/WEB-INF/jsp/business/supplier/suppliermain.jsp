@@ -13,7 +13,7 @@
 	function ajax(keyBackup,type) {
 		var table = $('#TSupplier').dataTable();
 		if(table) {
-			table.fnClearTable();
+			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 		
@@ -242,17 +242,17 @@
 				<a class="DTTT_button DTTT_button_text" onclick="doDelete();"><span>删除</span></a>
 			</div>
 			<div id="clear"></div>
-			<table id="TSupplier" class="display dataTable" >
+			<table id="TSupplier" class="display" >
 				<thead>
 					<tr>
-						<th style="width:30px;" class="dt-middle">No</th>
-						<th style="width:120px;" class="dt-middle">供应商编码</th>
-						<th style="width:60px;"  class="dt-middle">简称</th>
-						<th class="dt-middle">供应商名称</th>
-						<th style="width:50px;" class="dt-middle">物料分类</th>
-						<th style="width:150px;" class="dt-middle">分类解释</th>
-						<th style="width:50px;" class="dt-middle">付款条件</th>
-						<th style="width:50px;" class="dt-middle">操作</th>
+						<th style="width:30px;">No</th>
+						<th style="width:120px;">供应商编码</th>
+						<th style="width:60px;" >简称</th>
+						<th>供应商名称</th>
+						<th style="width:50px;">物料分类</th>
+						<th style="width:150px;">分类解释</th>
+						<th style="width:50px;">付款条件</th>
+						<th style="width:50px;">操作</th>
 					</tr>
 				</thead>
 

@@ -23,6 +23,8 @@ public class BusinessConstants {
 	public static final String USERHEADPHOTOTEMPPATH = "/img/headphototemp/";
 	public static final String PATH_PRODUCTDESIGNTEMP = "/temp/";
 	public static final String PATH_PRODUCTDESIGNVIEW = "/img/productDesign/";
+	public static final String PATH_GODOWNENTRYVIEW = "/img/supplier/";
+	public static final String PATH_GODOWNENTRYFILE = "/file/supplier/";
 	public static final String PATH_PRODUCTDESIGNFILE = "/file/productDesign/";
 	public static final String PATH_EXCELTEMPLATE = "/file/excel/template/";
 	public static final String JPEGSUFFIX = ".jpg";

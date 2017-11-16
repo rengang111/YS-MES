@@ -1,11 +1,15 @@
 package com.ys.business.service.order;
 
+import java.io.File;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.StorageModel;
@@ -21,6 +25,7 @@ import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_InspectionProcessData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_ProductDesignData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
@@ -29,6 +34,7 @@ import com.ys.business.db.data.B_ReceiveInspectionData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.util.CalendarUtil;
@@ -209,8 +215,10 @@ public class StorageService extends CommonService {
 			model.addAttribute("receiptId",receiptId);//已入库
 		}
 		
+		//合同信息
+		getContractDetail(contractId);
 		//取得该到货编号下的物料信息
-		getContractDetail(arrivalId);
+		getReceivInspectionById(arrivalId);
 
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
 	
@@ -236,7 +244,7 @@ public class StorageService extends CommonService {
 		String arrivalId = reqData.getArrivelid();
 		String receiptId = reqData.getReceiptid();
 		
-		getContractDetail(arrivalId);//合同信息
+		getContractDetail(contractId);//合同信息
 		getArrivaRecord(receiptId);//入库明细
 
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
@@ -258,6 +266,16 @@ public class StorageService extends CommonService {
 	
 	}
 
+	public void printReceipt() throws Exception {
+		String contractId = request.getParameter("contractId");
+		String receiptId = request.getParameter("receiptId");
+		
+		//取得订单信息
+		getContractDetail(contractId);//合同信息
+		getArrivaRecord(receiptId);//入库明细
+	
+	}
+
 	public HashMap<String, Object> getStockInDetail() throws Exception {
 
 		String receiptId = request.getParameter("receiptId");
@@ -272,9 +290,9 @@ public class StorageService extends CommonService {
 	}
 	public void insertAndReturn() throws Exception {
 
-		String arrivalId = insertStorage();
+		String contractId = insertStorage();
 
-		getContractDetail(arrivalId);
+		getContractDetail(contractId);
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
 	
@@ -288,9 +306,9 @@ public class StorageService extends CommonService {
 	
 	public void updateAndReturn() throws Exception {
 
-		String arrivalId = updateStorage();
+		String contractId = updateStorage();
 
-		getContractDetail(arrivalId);
+		getContractDetail(contractId);
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
 	
@@ -304,7 +322,7 @@ public class StorageService extends CommonService {
 	}
 	
 	private String updateStorage(){
-		String arrivalid = "";
+		String contractId = "";
 		ts = new BaseTransaction();		
 		
 		try {
@@ -316,7 +334,7 @@ public class StorageService extends CommonService {
 
 			//取得入库申请编号
 			String receiptid = reqData.getReceiptid();
-			arrivalid = reqData.getArrivelid();
+			contractId = reqData.getContractid();
 			
 			//采购入库记录
 			updatePurchaseStockIn(reqData);
@@ -339,6 +357,14 @@ public class StorageService extends CommonService {
 				insertPurchaseStockInDetail(data);						
 			}
 			
+			//确认合同状态:是否全部入库
+			boolean flag = checkPurchaseOrderStatus(reqData.getYsid(),contractId);
+			if(flag){			
+				////更新合同状态
+				updateContractStatus(contractId,Constants.CONTRACT_STS_3);//入库完毕			
+			}
+			
+			
 			ts.commit();			
 			
 		}
@@ -351,11 +377,11 @@ public class StorageService extends CommonService {
 			}
 		}
 		
-		return arrivalid;
+		return contractId;
 	}
 	
 	private String insertStorage(){
-		String arrivalid = "";
+		String contractId = "";
 		ts = new BaseTransaction();		
 		
 		try {
@@ -368,8 +394,8 @@ public class StorageService extends CommonService {
 			//取得入库申请编号
 			reqData = getStorageRecordId(reqData);			
 			String receiptid = reqData.getReceiptid();
-			arrivalid = reqData.getArrivelid();
-			String contractId = reqData.getContractid();
+			//arrivalid = reqData.getArrivelid();
+			contractId = reqData.getContractid();
 			
 			//采购入库记录
 			insertPurchaseStockIn(reqData);
@@ -421,7 +447,7 @@ public class StorageService extends CommonService {
 			}
 		}
 		
-		return arrivalid;
+		return contractId;
 	}
 	
 
@@ -958,7 +984,22 @@ public class StorageService extends CommonService {
 		
 	}
 	
-	public void getContractDetail(String arrivalId) throws Exception {
+	public void getContractDetail(String contractId) throws Exception {
+		
+		dataModel.setQueryName("getContractById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contractId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));
+			//model.addAttribute("material",dataModel.getYsViewData());			
+		}		
+	}	
+	
+
+	private void getReceivInspectionById(String arrivalId) throws Exception {
 		
 		dataModel.setQueryName("getMaterialCheckInList");		
 		baseQuery = new BaseQuery(request, dataModel);		
@@ -967,7 +1008,7 @@ public class StorageService extends CommonService {
 		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() >0){
-			model.addAttribute("contract",dataModel.getYsViewData().get(0));
+			model.addAttribute("head",dataModel.getYsViewData().get(0));
 			model.addAttribute("material",dataModel.getYsViewData());			
 		}		
 	}	
@@ -988,6 +1029,185 @@ public class StorageService extends CommonService {
 		}		
 	}	
 	
+	public HashMap<String, Object> uploadPhotoAndReload(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		B_PurchaseStockInData reqDt = reqModel.getStock();
+		String YSId = reqDt.getYsid();
+		String supplierId = reqDt.getSupplierid();
+		String contractId = reqDt.getContractid();
+		
+		uploadPhoto(headPhotoFile,YSId,supplierId,contractId);
+		
+		
+		getPhoto(supplierId,contractId,folderName,fileList,fileCount);
+		
+		return modelMap;
+	}
 	
+	public HashMap<String, Object> uploadPhoto(
+			MultipartFile[] headPhotoFile,
+			String YSId,String supplierId,String contractId
+			) {
+		
+		String finalUserId = "";
+		
+		String tempPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_GODOWNENTRYVIEW)
+				+"/"+supplierId+"/"+contractId;		
+
+		String realPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_GODOWNENTRYFILE)
+				+"/"+supplierId+"/"+contractId;
+		
+		String photoName = "";
+		boolean isSuccess = false;
+		HashMap<String, Object> jsonObj = new HashMap<String, Object>();
+		
+		String type = headPhotoFile[0].getOriginalFilename().substring(headPhotoFile[0].getOriginalFilename().lastIndexOf("."));
+		photoName = YSId + "-" + supplierId+ "-" + contractId + "-" + CalendarUtil.timeStempDate(); 
+		
+		try {
+			//同时copy两份,一份到临时目录,显示用,另一个备份
+			FileUtils.copyInputStreamToFile(headPhotoFile[0].getInputStream(), 
+					new File(tempPath, photoName + type));
+
+			FileUtils.copyInputStreamToFile(headPhotoFile[0].getInputStream(), 
+					new File(realPath, photoName + type));
+			
+			isSuccess = true;			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+		try {
+			if (isSuccess) {
+				jsonObj.put("result", "0");
+				jsonObj.put("userId", finalUserId);
+				jsonObj.put("path", BusinessConstants.PATH_GODOWNENTRYVIEW +
+						supplierId+
+						File.separator + photoName + type);
+			} else {
+				jsonObj.put("result", "1");
+				jsonObj.put("message", "图片上传失败");
+			}
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return jsonObj;
+	}
+	
+	public void getPhoto(
+			String supplierId,String contractId,
+			String folderName,String fileList,String fileCount) {
+
+		
+		String backPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_GODOWNENTRYFILE)
+				+"/"+supplierId+"/"+contractId;	
+		String viewPath = BusinessConstants.PATH_GODOWNENTRYVIEW
+				+supplierId+"/"+contractId+"/";	
+
+	
+		
+		try {
+			
+			getFiles(backPath,viewPath,fileList,fileCount);
+							
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+	}
+	
+	
+	private void getFiles(String filePath,String viewPath,
+			String fileList,String fileCount){
+
+		ArrayList<String> filelist = new ArrayList<String>();
+		
+		File root = new File(filePath);
+		File[] files = root.listFiles();
+		
+		int count = 0;
+		try{
+			for(File file:files){    
+				if(file.isDirectory()){
+					//递归调用
+				}else{
+					filelist.add(viewPath+file.getName());
+					count++;   
+					//System.out.println("显示"+filePath+"下所有子目录"+file.getAbsolutePath());
+				} 
+				    
+			}	
+		}catch(Exception e){
+			//nothing
+		}
+		modelMap.put(fileList, filelist);
+		modelMap.put(fileCount, count);
+	}
+	
+	public HashMap<String, Object> getProductPhoto() throws Exception {
+		
+		String supplierId = request.getParameter("supplierId");
+		String contractId = request.getParameter("contractId");
+		
+		getPhoto(supplierId,contractId,"product","productFileList","productFileCount");
+		
+		return modelMap;
+	}
+	
+
+	public HashMap<String, Object> deletePhotoAndReload(
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		String path = request.getParameter("path");
+		
+		deletePhoto(path);
+
+		B_PurchaseStockInData reqDt = reqModel.getStock();
+		String supplierId = reqDt.getSupplierid();
+		String contractId = reqDt.getContractid();
+		
+		getPhoto(supplierId,contractId,folderName,fileList,fileCount);
+		
+		return modelMap;
+	}
+	
+
+	public boolean deletePhoto (String path)throws Exception {
+    	
+		boolean rtnFlag = false;
+		String viewPath = "";
+		
+    	//显示用目录
+		viewPath = session.getServletContext().getRealPath(path);
+			
+    	//存储文件
+    	String realPath = viewPath.replaceFirst("img", "file");
+    			   	
+    	File f2 = new File(viewPath); //显示目录,文件和图片通用
+    	if(f2.exists()) {
+    		f2.delete(); 
+    		rtnFlag = true;
+    	}
+    	
+    	File f = new File(realPath); //存储目录,文件和图片通用
+    	if(f.exists()) {
+    		f.delete(); 
+    		rtnFlag = true;
+    	}
+    	
+    	return rtnFlag;
+    	
+    }
 
 }

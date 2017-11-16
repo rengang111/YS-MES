@@ -303,7 +303,6 @@
 		
 		//设置光标项目
 		$("#attribute1").focus();
-		//$("#order\\.piid").attr('readonly', "true");
 
 		//日期
 		var mydate = new Date();
@@ -314,7 +313,6 @@
 		ajax();//正常订单
 		ajax2();//配件订单
 
-		autocomplete();
 		
 		//$('#example').DataTable().columns.adjust().draw();
 		
@@ -418,9 +416,9 @@
 			$(this).val(floatToSymbol($(this).val(),currency));
 		});
 			
-		$('select').css('width','107px');		
-		$('#order\\.ordercompany').css('width','300px');
 		$(".DTTT_container").css('float','left');
+
+		autocomplete();
 	});
 	
 	
@@ -742,6 +740,11 @@ $("#attribute1").autocomplete({
 
 
 function autocomplete(){
+
+	$('select').css('width','100px');	
+	$('#order\\.ordercompany').css('width','300px');
+	$('.ysidCheck').removeClass('bgnone');
+	$(".ysidCheck").attr('readonly', "true");
 	
 	$(".attributeList1").autocomplete({
 		minLength : 2,
@@ -900,9 +903,6 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 			}					
 			counter += 1;				
 
-			$('select').css('width','100px');	
-			$('#order\\.ordercompany').css('width','300px');
-			
 			foucsInit();//设置新增行的基本属性
 			
 			autocomplete();//调用自动填充功能

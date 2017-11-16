@@ -108,13 +108,10 @@
 						rowIndex ++;						
 					}					
 					counter += 1;
-
-					$('select').css('width','100px');	
-					$('#order\\.ordercompany').css('width','300px');
 					
-					autocomplete();
-						
 					foucsInit();
+					
+					autocomplete();					
 				}
 			});
 
@@ -311,9 +308,7 @@
 		shortYear = String(number).substr(2); 
 		
 		ajax();
-		ajax2();
-		
-		autocomplete();
+		ajax2();		
 		
 		//$('#example').DataTable().columns.adjust().draw();
 		
@@ -405,6 +400,9 @@
 		$('select').css('width','107px');
 		$('#order\\.ordercompany').css('width','300px');
 		$(".DTTT_container").css('float','left');
+		
+
+		autocomplete();
 	});	
 	
 </script>
@@ -661,6 +659,11 @@
 <script type="text/javascript">
 
 function autocomplete(){
+
+	$('select').css('width','100px');	
+	$('#order\\.ordercompany').css('width','300px');
+	$('.ysidCheck').removeClass('bgnone');
+	$(".ysidCheck").attr('readonly', "true");
 	
 	$(".attributeList1").autocomplete({
 		minLength : 2,
@@ -826,9 +829,6 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 				rowIndex ++;						
 			}					
 			counter += 1;				
-
-			$('select').css('width','100px');	
-			$('#order\\.ordercompany').css('width','300px');
 			
 			foucsInit();//设置新增行的基本属性
 			

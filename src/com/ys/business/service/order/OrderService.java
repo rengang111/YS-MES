@@ -715,18 +715,18 @@ public class OrderService extends CommonService  {
 				String purchaseStr = "Ysid = '" + Ysid +"'";
 				
 				try {
-					purchaseplan.RemoveByWhere(purchaseStr);//采购订单
+					//purchaseplan.RemoveByWhere(purchaseStr);//采购订单
 				} catch (Exception e1) {
 					//
 				}
 				try {
-					purOrder.RemoveByWhere(purchaseStr);//采购合同
+					//purOrder.RemoveByWhere(purchaseStr);//采购合同
 				} catch (Exception e1) {
 					//
 				}
 				
 				try {
-					purOrderDetail.RemoveByWhere(purchaseStr);//采购合同明细
+					//purOrderDetail.RemoveByWhere(purchaseStr);//采购合同明细
 				} catch (Exception e1) {
 					//
 				}

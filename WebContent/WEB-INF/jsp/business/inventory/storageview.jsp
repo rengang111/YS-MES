@@ -118,6 +118,8 @@
 			$('#formModel').submit();
 		});
 		
+		productPhotoView();
+		
 	});
 	
 	function doEdit(contractId,arrivalId) {
@@ -125,6 +127,26 @@
 		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
 		location.href = url;
 	}
+
+	function doPrint() {
+		var contractId = $("#stock\\.contractid").val();
+		var receiptId = $("#stock\\.receiptid").val();
+		var url = '${ctx}/business/storage?methodtype=printReceipt';
+		url = url +'&contractId='+contractId+'&receiptId='+receiptId;
+			
+		layer.open({
+			offset :[10,''],
+			type : 2,
+			title : false,
+			area : [ '1100px', '520px' ], 
+			scrollbar : false,
+			title : false,
+			content : url,
+			cancel: function(index){			
+			}    
+		});		
+
+	};
 	
 </script>
 
@@ -139,7 +161,7 @@
 	
 	<form:hidden path="stock.receiptid"  value="${receiptId}"/>
 	<form:hidden path="stock.ysid"  value="${contract.YSId }"/>
-	<form:hidden path="stock.arrivelid"  value="${contract.arrivalId }"/>
+	<form:hidden path="stock.arrivelid"  value="${head.arrivalId }"/>
 	<form:hidden path="stock.supplierid"  value="${contract.supplierId }"/>
 	<form:hidden path="stock.contractid"  value="${contract.contractId }"/>
 	
@@ -151,19 +173,19 @@
 				<td width="200px">&nbsp;${contract.YSId }</td>
 							
 				<td width="100px" class="label">成品编码：</td>
-				<td width="200px">&nbsp;${contract.materialId }</td>							
+				<td width="200px">&nbsp;${contract.productId }</td>							
 				<td width="100px" class="label">成品名称：</td>
-				<td>${contract.materialName }</td>
+				<td>${contract.productName }</td>
 			</tr>
 			<tr>							
 				<td class="label">合同编号：</td>					
-				<td>&nbsp;<a href="#" onClick="showContract('${contract.contractId }')">${contract.contractId }</a></td>								 	
+				<td>&nbsp;${contract.contractId }</td>								 	
 				<td class="label">供应商：</td>					
-				<td colspan="3">&nbsp;${contract.supplierName }</td>	
+				<td colspan="3">&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName }</td>	
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">入库时间：</td>					
-				<td width="200px">&nbsp;${contract.checkInDate }</td>
+				<td width="200px">&nbsp;${head.checkInDate }</td>
 				<!-- 			
 				<td width="100px" class="label">仓管员：</td>
 				<td width="200px">${userName }</td>	
@@ -177,6 +199,7 @@
 	<div style="clear: both"></div>
 	<fieldset class="action" style="text-align: right;">
 		<button type="button" id="insert" class="DTTT_button">编辑</button>
+		<button type="button" id="print" class="DTTT_button" onclick="doPrint();return false;">打印</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
 <fieldset>
@@ -200,12 +223,112 @@
 	</div>
 </fieldset>
 
+<fieldset>
+	<legend>产品图片</legend>
+	<div class="list">
+		<div class="" id="subidDiv" style="min-height: 300px;">
+			<table id="productPhoto" class="phototable">
+				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
+			</table>
+		</div>
+	</div>	
+</fieldset>
 
 </form:form>
 
 </div>
 </div>
 </body>
+<script type="text/javascript">
 
+function productPhotoView() {
+
+	var contractId = $("#stock\\.contractid").val();
+	var YSId = $("#stock\\.ysid").val();
+	var supplierId = $("#stock\\.supplierid").val();
+
+	$.ajax({
+		"url" :"${ctx}/business/storage?methodtype=getProductPhoto&YSId="+YSId+"&supplierId="+supplierId+"&contractId="+contractId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+				
+			var countData = data["productFileCount"];
+			//alert(countData)
+			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+         	alert(errorThrown)
+		 }
+	});
+	
+}//产品图片
+
+function photoView(id, tdTable, count, data) {
+
+	//alert("id:"+id+"--count:"+count+"--countView:"+countView)	
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
+		//alert(index+"::::::::::::"+path)
+		var trHtml = '';
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+		trHtml += '<td>';
+		trHtml += '<table style="width:400px;height:300px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr><td>';
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+		//trHtml += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+		trHtml += '</a>';
+		trHtml += '</td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+
+		index++;
+		if (index == count) {
+			//因为是偶数循环,所以奇数张图片的最后一张为空
+
+			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
+			trHtmlOdd += '<tr><td></td></tr>';	
+			trHtmlOdd += '</table>';
+		} else {
+			path = '${ctx}' + data[index];
+			pathDel = data[index];
+
+			var trHtmlOdd = '<table style="width:400px;height:300px;margin: auto;" class="form">';
+			trHtmlOdd += '<tr><td>';
+			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+			//trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
+			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+			trHtmlOdd += '</a>'
+			trHtmlOdd += '</td></tr>';
+			trHtmlOdd += '</table>';
+		}
+
+		trHtml += '<td>';
+		trHtml += trHtmlOdd;
+		trHtml += '</td>';
+		trHtml += "</tr>";
+
+		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		row++;
+
+	}
+}
+
+
+function doShowProduct() {
+	var materialId = '${product.materialId}';
+	callProductView(materialId);
+}
+
+
+</script>
 
 </html>

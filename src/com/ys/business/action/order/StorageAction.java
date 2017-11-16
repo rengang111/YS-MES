@@ -14,10 +14,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.ys.business.action.model.order.ArrivalModel;
+import com.ys.business.action.model.order.ProductDesignModel;
 import com.ys.business.action.model.order.StorageModel;
-import com.ys.business.service.order.ArrivalService;
+import com.ys.business.service.order.ProductDesignService;
 import com.ys.business.service.order.StorageService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
@@ -47,7 +49,7 @@ public class StorageAction extends BaseAction {
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
-		String rtnUrl = "";
+		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
 		this.userInfo = (UserInfo)session.getAttribute(
@@ -128,12 +130,72 @@ public class StorageAction extends BaseAction {
 				dataMap = doShowProductDetail();
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "printReceipt"://打印入库单
+				doPrintReceipt();
+				rtnUrl = "/business/inventory/storageprint";
+				break;
+			case "getProductPhoto"://显示供应商的入库单
+				dataMap = getProductPhoto();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "productPhotoDelete"://删除供应商的入库单
+				dataMap = deletePhoto("product","productFileList","productFileCount");
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
 		return rtnUrl;
 	}	
 	
+	//入库单上传
+	@RequestMapping(value="godownEntryUpload")
+	public String doInit(
+			@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
+			@RequestBody String data,
+			@ModelAttribute("formModel")StorageModel dataModel,
+			BindingResult result, Model model, HttpSession session, 
+			HttpServletRequest request, HttpServletResponse response){
+
+		this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		this.service = new StorageService(model,request,session,dataModel,userInfo);;
+		this.reqModel = dataModel;
+		this.model = model;
+		this.response = response;
+		this.session = session;
+		HashMap<String, Object> dataMap = null;
+
+		String type = request.getParameter("methodtype");
+		
+		switch(type) {
+		case "":
+			break;
+		case "uploadPhoto":
+			dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
+			printOutJsonObj(response, dataMap);
+			break;
+	
+		}
+		
+		
+		return null;
+	}
+	
+	private HashMap<String, Object> uploadPhoto(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) {
+		
+		HashMap<String, Object> map = null;
+		
+		try {
+			 map = service.uploadPhotoAndReload(headPhotoFile,folderName,fileList,fileCount);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return map;
+	}
 	public void doInit(){	
 		/*	
 		String keyBackup = request.getParameter("keyBackup");
@@ -282,6 +344,13 @@ public class StorageAction extends BaseAction {
 		}
 	}
 	
+	public void doPrintReceipt(){
+		try{
+			service.printReceipt();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
 	
 	public void doDelete(@RequestBody String data) throws Exception{
 		
@@ -310,6 +379,35 @@ public class StorageAction extends BaseAction {
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
+	}
+	
+	public HashMap<String, Object> getProductPhoto(){	
+		
+		try {
+			modelMap = service.getProductPhoto();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> deletePhoto(
+			String folderName,String fileList,String fileCount){	
+		
+		try {
+			modelMap = service.deletePhotoAndReload(folderName,fileList,fileCount);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
 	}
 	
 }
