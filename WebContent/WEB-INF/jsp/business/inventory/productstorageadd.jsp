@@ -140,6 +140,7 @@
 			"serverSide" : false,
 			"stateSave" : false,
 			"ordering "	:true,
+			"autoWidth"	:false,
 			"searching" : false,
 			"retrieve"  : true,
 			"dom"		: '<"clear">rt',
@@ -303,21 +304,24 @@
 	<fieldset>
 	<legend> 入库记录</legend>
 	<div class="list">
-	<table class="display" id="history">	
-		<thead>		
-			<tr>
-						<th style="width:1px">No</th>
-						<th style="width:80px">入库时间</th>
-						<th style="width:120px">入库单号</th>
-						<th style="width:80px">入库数量</th>
-						<th style="width:80px">入库件数</th>
-						<th style="width:55px">包装方式</th>
-						<th style="width:60px">库位编号</th>	
-						<th style="width:30px"></th>	
-			</tr>
-		</thead>		
+		<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;margin: 5px 0px -10px 10px;">
+				<a class="DTTT_button" id="all" onclick="doPrint();return false;">打印入库单</a>
+		</div>
+		<table class="display" id="history" >	
+			<thead>		
+				<tr>
+							<th style="width:15px">No</th>
+							<th style="width:80px">入库时间</th>
+							<th style="width:120px">入库单号</th>
+							<th style="width:80px">入库数量</th>
+							<th style="width:60px">入库件数</th>
+							<th style="width:55px">包装方式</th>
+							<th style="width:80px">库位编号</th>	
+							<th style="width:30px"></th>	
+				</tr>
+			</thead>		
 									
-	</table>
+		</table>
 	</div>
 </fieldset>
 	
@@ -344,6 +348,25 @@ function showYS(YSId) {
 
 };
 
+function doPrint() {
+	var YSId = '${order.YSId }';
+	var materialId = '${order.materialId }';
+	var actionUrl = "${ctx}/business/storage?methodtype=printProductReceipt";
+	actionUrl = actionUrl + "&YSId="+YSId+"&materialId="+materialId;
+		
+	layer.open({
+		offset :[10,''],
+		type : 2,
+		title : false,
+		area : [ '1100px', '520px' ], 
+		scrollbar : false,
+		title : false,
+		content : actionUrl,
+		cancel: function(index){			
+		}    
+	});		
+
+};
 </script>
 
 </html>

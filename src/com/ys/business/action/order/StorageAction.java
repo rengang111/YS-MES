@@ -142,6 +142,10 @@ public class StorageAction extends BaseAction {
 				dataMap = deletePhoto("product","productFileList","productFileCount");
 				printOutJsonObj(response, dataMap);
 				break;
+			case "printProductReceipt"://打印成品入库单
+				doPrintProductReceipt();
+				rtnUrl = "/business/inventory/productstorageprint";
+				break;
 				
 		}
 		
@@ -347,6 +351,15 @@ public class StorageAction extends BaseAction {
 	public void doPrintReceipt(){
 		try{
 			service.printReceipt();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public void doPrintProductReceipt(){
+		try{
+			service.printProductReceipt();
+			model.addAttribute("userName",userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

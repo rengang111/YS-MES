@@ -272,10 +272,16 @@ public class StorageService extends CommonService {
 		
 		//取得订单信息
 		getContractDetail(contractId);//合同信息
-		getArrivaRecord(receiptId);//入库明细
-	
+		getArrivaRecord(receiptId);//入库明细	
 	}
 
+	public void printProductReceipt() throws Exception {
+		String YSId = request.getParameter("YSId");
+		
+		//取得订单信息
+		getOrderDetail(YSId);	
+	}
+	
 	public HashMap<String, Object> getStockInDetail() throws Exception {
 
 		String receiptId = request.getParameter("receiptId");
@@ -524,7 +530,7 @@ public class StorageService extends CommonService {
 					reqModel.getStockList();
 
 			//取得入库申请编号
-			reqData = getStorageRecordId(reqData);
+			//reqData = getStorageRecordId(reqData);
 			String receiptid = reqData.getReceiptid();
 			ysid = reqData.getYsid();
 			

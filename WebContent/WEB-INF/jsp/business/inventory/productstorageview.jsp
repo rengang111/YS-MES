@@ -62,7 +62,7 @@
 			],
 			"columnDefs":[
 	    		{"targets":7,"render":function(data, type, row){
-					return "<a href=\"###\" onClick=\"doEdit('"  + row["YSId"] + "')\">"+"编辑"+"</a>";
+					return "<a href=\"###\" onClick=\"doEdit('"  + row["YSId"] + "','"  + row["receiptId"] + "')\">"+"编辑"+"</a>";
                    }}
 			]
 	
@@ -115,10 +115,29 @@
 		
 	});
 	
-	function doEdit(receiptId) {
-		var url = "${ctx}/business/storage?methodtype=editProduct&receiptId="+receiptId;
+	function doEdit(YSId,receiptId) {
+		var url = "${ctx}/business/storage?methodtype=editProduct&YSId="+YSId+"&receiptId="+receiptId;
 		location.href = url;
 	}
+	function doPrint() {
+		var YSId = '${order.YSId }';
+		var materialId = '${order.materialId }';
+		var actionUrl = "${ctx}/business/storage?methodtype=printProductReceipt";
+		actionUrl = actionUrl + "&YSId="+YSId+"&materialId="+materialId;
+			
+		layer.open({
+			offset :[10,''],
+			type : 2,
+			title : false,
+			area : [ '1100px', '520px' ], 
+			scrollbar : false,
+			title : false,
+			content : actionUrl,
+			cancel: function(index){			
+			}    
+		});		
+
+	};
 	
 </script>
 
@@ -162,9 +181,12 @@
 	<fieldset>
 		<legend> 入库记录</legend>
 		<div class="list">
-		<table class="display" id="example">	
-			<thead>		
-				<tr>
+			<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;margin: 5px 0px -10px 10px;">
+					<a class="DTTT_button" id="all" onclick="doPrint();return false;">打印入库单</a>
+			</div>
+			<table class="display" id="example">	
+				<thead>		
+					<tr>
 						<th style="width:1px">No</th>
 						<th style="width:80px">入库时间</th>
 						<th style="width:120px">入库单号</th>
@@ -173,10 +195,10 @@
 						<th style="width:55px">包装方式</th>
 						<th style="width:60px">库位编号</th>	
 						<th style="width:30px"></th>	
-				</tr>
-			</thead>		
+					</tr>
+				</thead>		
 										
-		</table>
+			</table>
 		</div>
 	</fieldset>
 
