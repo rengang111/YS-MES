@@ -21,7 +21,7 @@
       <f name="A.shareModel" alias="" ctype="" />
       <f name="A.availabelToPromise" alias="" ctype="" />
       <f name="A.safetyInventory" alias="" ctype="" />
-      <f name="FORMAT(REPLACE(A.price,',',''),5)" alias="price" ctype="" />
+      <f name="price" alias="price" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />

@@ -113,9 +113,9 @@
       <f name="a.price" alias="" ctype="" />
       <f name="a.totalPrice" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
-      <f name="format(replace(IFNULL(b.lastPrice, 0),',',''),4)" alias="lastPrice" ctype="" />
+      <f name="lastPrice" alias="lastPrice" ctype="" />
       <f name="b.lastSupplierId" alias="" ctype="" />
-      <f name="format(replace(IFNULL(b.minPrice, 0),',',''),4)" alias="minPrice" ctype="" />
+      <f name="minPrice" alias="minPrice" ctype="" />
       <f name="b.minSupplierId" alias="" ctype="" />
       <f name="a.purchaseQuantity" alias="" ctype="" />
       <f name="a.planDate" alias="" ctype="" />
@@ -639,9 +639,9 @@
       <f name="a.price" alias="" ctype="" />
       <f name="a.totalPrice" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
-      <f name="format(replace(IFNULL(b.lastPrice, 0),',',''),4)" alias="lastPrice" ctype="" />
+      <f name="lastPrice" alias="lastPrice" ctype="" />
       <f name="b.lastSupplierId" alias="" ctype="" />
-      <f name="format(replace(IFNULL(b.minPrice, 0),',',''),4)" alias="minPrice" ctype="" />
+      <f name="minPrice" alias="minPrice" ctype="" />
       <f name="b.minSupplierId" alias="" ctype="" />
       <f name="a.planDate" alias="" ctype="" />
       <f name="a.bomCost" alias="" ctype="" />

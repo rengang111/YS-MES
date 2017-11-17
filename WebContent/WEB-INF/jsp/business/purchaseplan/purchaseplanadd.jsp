@@ -406,7 +406,7 @@
 	    <td><span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></td>
 	    <td><form:input path="planDetailList[${status.index}].purchasequantity"  class="num mini" value="" /></td>
 	    <td><form:input path="planDetailList[${status.index}].supplierid"  class="supplierid short" value="${bom.supplierId }" /></td>
-	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }" /></td>
+	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="" /></td>
 	    <td><span id="totalPrice${status.index}"></span>
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  class="num short" value="" /></td>
 	    <td><span id="price${status.index}">${bom.price }</span></td>
@@ -448,6 +448,7 @@
 		$("#planDetailList"+index+"\\.manufacturequantity").val(totalQuantity);
 		$('#totalPrice'+index).html(totalPrice);
 		$("#planDetailList"+index+"\\.totalprice").val(totalPrice);
+		$("#planDetailList"+index+"\\.price").val(formatNumber(price));
 		$("#planDetailList"+index+"\\.purchasequantity").val(vpurchase);
 		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
 
@@ -591,7 +592,7 @@ $(".attributeList1").autocomplete({
 		var typeId  = ui.item.purchaseTypeId;
 		var vStock  = floatToCurrency(ui.item.availabelToPromise);
 		var supplierId = ui.item.supplierId;		
-		var vPrice     = float5ToCurrency(ui.item.price);
+		var vPrice     = formatNumber(ui.item.price);
 		var shortName = getLetters(supplierId);
 
 		//显示到页面
@@ -768,8 +769,8 @@ function purchasePlanCompute(obj,flg){
 	var vPurchase = floatToCurrency(fPurchase);	
 	var vTotalQuty= floatToCurrency(fTotalQuty);	
 	var vTotalNew = floatToCurrency(fTotalNew);
-	var vUnitQuty = float5ToCurrency(fUnitQuty);
-	var vPrice = float5ToCurrency(fPrice);
+	var vUnitQuty = formatNumber(fUnitQuty);
+	var vPrice = formatNumber(fPrice);
 			
 	//详情列表显示
 	$oUnitQuty.val(vUnitQuty)

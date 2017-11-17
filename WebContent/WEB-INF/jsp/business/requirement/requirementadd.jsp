@@ -323,7 +323,7 @@
 	    			var rtn="";
 	    			var price = row["price"];
 	    			var rownum = row["rownum"]-1;
-	    			rtn+= float4ToCurrency(price);
+	    			rtn+= formatNumber(price);
 	    			rtn+= "<input type=\"hidden\" id=\"bomDetailList"+rownum+".price\" name=\"bomDetailList["+rownum+"].price\"  value=\""+price+"\">";
 	        		return rtn;
 	    		}},
@@ -385,8 +385,8 @@
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 			//var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
 
-			//var vPrice = float4ToCurrency(fPrice);	
-			var vQuantity = float5ToCurrency(fQuantity);
+			//var vPrice = formatNumber(fPrice);	
+			var vQuantity = formatNumber(fQuantity);
 			var vTotalNew = floatToCurrency(fTotalNew);
 					
 			//详情列表显示新的价格
@@ -705,7 +705,7 @@ $(".attributeList1").autocomplete({
 		//var fAmountd  = fnLaborCost(ui.item.materialId,fTotalNew);//人工成本
 
 		//显示到页面
-		var vPrice    = float4ToCurrency(fPrice);
+		var vPrice    = formatNumber(fPrice);
 		var vTotalNew = floatToCurrency(fTotalNew);
 		//var vMinPrice = floatToCurrency(ui.item.minPrice);
 
@@ -813,7 +813,7 @@ $(".supplierid").autocomplete({
 		//var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
 
 		//显示到页面	
-		var vPrice = float4ToCurrency(fPrice);
+		var vPrice = formatNumber(fPrice);
 		var vTotalNew = floatToCurrency(fTotalNew);
 
 		$oSupplier.val(ui.item.supplierId);

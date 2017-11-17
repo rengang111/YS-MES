@@ -177,9 +177,9 @@
 			<script type="text/javascript">
 				var index = '${status.index}';
 				var materialName = '${detail.materialName}';
-				var lastPrice = float4ToCurrency( '${detail.lastPrice}' );
+				var lastPrice = formatNumber( '${detail.lastPrice}' );
 				var lastSupplierId = '${detail.lastSupplierId}';
-				var minPrice = float4ToCurrency( '${detail.minPrice}' );
+				var minPrice = formatNumber( '${detail.minPrice}' );
 				var minSupplierId = '${detail.minSupplierId}';
 				var price =currencyToFloat( '${detail.lastPrice}');
 				var quantity = currencyToFloat('${detail.quantity}');

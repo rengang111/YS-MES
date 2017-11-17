@@ -330,7 +330,7 @@ function orderBomView() {
 
 				
 		//详情列表显示新的价格	
-		$oQuantityt.val(float5ToCurrency(fQuantityt));
+		$oQuantityt.val(formatNumber(fQuantityt));
 		$oAmount1.text(floatToCurrency(fTotalNew));	
 		
 		
@@ -361,7 +361,7 @@ function orderBomView() {
 			});	
 			
 			//hidden重新赋值
-			$oQuantityh.val(float5ToCurrency(fQuantityt));
+			$oQuantityh.val(formatNumber(fQuantityt));
 		}
 		
 	});
@@ -425,7 +425,7 @@ function doEditMaterial(rownum,recordid,parentid) {
 			var fQuantity = currencyToFloat($oQuantity.val());
 			var fPrice = currencyToFloat(price);//子窗口传回来的新的单价
 			
-			var vPrice = float5ToCurrency(fPrice);
+			var vPrice = formatNumber(fPrice);
 			var total = floatToCurrency( fQuantity * fPrice );
 			
           	$oPricei.val(vPrice); //赋给当前页面元素
@@ -618,7 +618,7 @@ function ZZmaterialView() {
     				}
     			}	
     			
-    			var total = float5ToCurrency( order * requirement * farwunit / fchgunit);
+    			var total = formatNumber( order * requirement * farwunit / fchgunit);
 		
     			return total;
     		}},
@@ -778,7 +778,7 @@ function autocomplete(){
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);//合计
 	
 			//显示到页面	
-			var vPrice = float5ToCurrency(fPrice);
+			var vPrice = formatNumber(fPrice);
 			var vTotalNew = floatToCurrency(fTotalNew);
 
 			$oPrices.text(vPrice);
@@ -930,7 +930,7 @@ function requirementAjax() {
     			//本次单价
 				var rtn = "";
     			var rownum = row["rownum"]-1;
-    			var quantity =  float5ToCurrency( row["price"] );
+    			var quantity =  formatNumber( row["price"] );
     			rtn+= "<span id='price"+rownum+ "'>"+quantity+"</span>";
     			rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".price\" name=\"purchaseList["+rownum+"].price\" class = 'cash short' value=\""+quantity+"\">";
     			return rtn;
@@ -958,7 +958,7 @@ function requirementAjax() {
 				var price = row["price"];
 				var supplierId = row["supplierId"];
 				//alert(row["lastSupplierId"])
-				rtn+=  float4ToCurrency(price)+'／'+stringPadAfter(supplierId,12);
+				rtn+=  formatNumber(price)+'／'+stringPadAfter(supplierId,12);
 				rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldsupplierid\" name=\"purchaseList["+rownum+"].oldsupplierid\"  value=\""+supplierId+"\">";
 				rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldprice\" name=\"purchaseList["+rownum+"].oldprice\"  value=\""+price+"\">";
     			return rtn;
@@ -970,7 +970,7 @@ function requirementAjax() {
     			var materialId = row["materialId"];
 				var minPrice = row["minPrice"];
 				var minSupplierId = row["minSupplierId"];				
-				rtn+=  float4ToCurrency(minPrice)+'／'+stringPadAfter(minSupplierId,12);
+				rtn+=  formatNumber(minPrice)+'／'+stringPadAfter(minSupplierId,12);
 				rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".materialid\" name=\"purchaseList["+rownum+"].materialid\"  value=\""+materialId+"\">";
     			return rtn;
     		}},

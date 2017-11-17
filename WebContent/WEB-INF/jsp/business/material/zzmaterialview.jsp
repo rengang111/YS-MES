@@ -84,7 +84,7 @@
 					var name = '${raw.rawMaterialName }';
 					var price  = currencyToFloat( '${raw.price }' );
 					var convet = currencyToFloat( '${raw.convertUnit }' );
-					var vprice = float4ToCurrency(price / convet);
+					var vprice = formatNumber(price / convet);
 					$('#rawMaterialName'+index).html(jQuery.fixedWidth(name,25));
 					$('#price'+index).html(vprice);
 				</script>

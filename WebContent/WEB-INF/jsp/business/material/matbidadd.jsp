@@ -20,12 +20,6 @@
 
 		$("#attribute3").attr('readonly', "true");
 		$("#attribute2").attr('readonly', "true");
-
-		
-		$("#price\\.price").blur(function(){
-			
-			$(this).val(float4ToCurrency($(this).val()));
-		});
 		
 		$("#return").click(function() {
 

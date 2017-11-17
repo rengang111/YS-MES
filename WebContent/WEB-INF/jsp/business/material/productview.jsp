@@ -427,23 +427,14 @@ function baseBomView() {
     		}},
     		{"targets":6,"render":function(data, type, row){
     			
-    			var price =  row["price"] ;
-    			var fprice = currencyToFloat( price );
-    			var oldPrice = currencyToFloat( row["oldPrice"] );
+    			return formatNumber( row["price"] );
 
-				if(fprice > oldPrice){
-					price = '<div style="font-weight:bold;color:red">' + price + '</div>';
-				}else if(fprice < oldPrice){
-					price = '<div style="font-weight:bold;color:green">' + price + '</div>';
-					
-				}
-    			return price;
     		}},
     		{"targets":7,"render":function(data, type, row){
     			
     			var price = currencyToFloat( row["price"] );
     			var quantity = currencyToFloat( row["quantity"] );				    			
-    			var total = float4ToCurrency( price * quantity );			    			
+    			var total = formatNumber( price * quantity );			    			
     			return total;
     		}}
           

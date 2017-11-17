@@ -285,7 +285,7 @@ function orderBomView() {
 
 				
 		//详情列表显示新的价格	
-		$oQuantityt.val(float5ToCurrency(fQuantityt));
+		$oQuantityt.val(formatNumber(fQuantityt));
 		$oAmount1.text(floatToCurrency(fTotalNew));	
 		
 		
@@ -316,7 +316,7 @@ function orderBomView() {
 			});	
 			
 			//hidden重新赋值
-			$oQuantityh.val(float5ToCurrency(fQuantityt));
+			$oQuantityh.val(formatNumber(fQuantityt));
 		}
 
 

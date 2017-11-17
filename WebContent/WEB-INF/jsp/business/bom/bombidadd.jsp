@@ -85,9 +85,9 @@
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 			var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
 
-			var vPrice = float4ToCurrency(fPrice);	
-			var vQuantity = float5ToCurrency(fQuantity);
-			var vTotalNew = float4ToCurrency(fTotalNew);
+			var vPrice = formatNumber(fPrice);	
+			var vQuantity = formatNumber(fQuantity);
+			var vTotalNew = formatNumber(fTotalNew);
 					
 			//详情列表显示新的价格
 			$oThisPrice.val(vPrice);					
@@ -464,7 +464,7 @@
 						var price = currencyToFloat( '${detail.oldPrice}');
 						
 					}
-					var totalPrice = float4ToCurrency(quantity * price);
+					var totalPrice = formatNumber(quantity * price);
 					var labor = fnLaborCost( materialId,totalPrice);
 					$('#labor'+index).val(labor);
 					$('#total'+index).html(totalPrice);

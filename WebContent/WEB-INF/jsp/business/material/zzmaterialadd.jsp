@@ -210,11 +210,11 @@ function ajax() {
 		var fconvunit = fchgunit / farwunit;				//换算单位
 		//alert('frawprice:'+frawprice+'--farwunit:'+farwunit+'--fchgunit:'+fchgunit+'--fpricenew:'+fpricenew);	
 
-		var vnetweight = float5ToCurrency(fnetweight);
-		var vwastage = float5ToCurrency(fwastage);	
-		var vweight  = float5ToCurrency(fweight);		
-		var vkgprice  = float4ToCurrency(fkgprice);
-		var vpricenew = float4ToCurrency(fpricenew);
+		var vnetweight = formatNumber(fnetweight);
+		var vwastage = formatNumber(fwastage);	
+		var vweight  = formatNumber(fweight);		
+		var vkgprice  = formatNumber(fkgprice);
+		var vpricenew = formatNumber(fpricenew);
 		
 		//详情列表显示新的价格
 		$onetweight.val(vnetweight);
@@ -314,7 +314,7 @@ $(document).ready(function() {
 		}
 
 		var vyield = floatToCurrency(fyield);
-		var vlabor = float4ToCurrency(labor);		
+		var vlabor = formatNumber(labor);		
 
 		$('#houryield').html(vyield);
 		$("#price\\.houryield").val(vyield);
@@ -376,7 +376,7 @@ function costAcount(){
 	
 	//计算该自制品的合计单价=合计*经管费率
 	var ftotalPrice = (labor + pwer + raw) * (1 + frate / 100);
-	var vtotalPrice = float4ToCurrency(ftotalPrice);
+	var vtotalPrice = formatNumber(ftotalPrice);
 	
 	$('#price\\.totalprice').val(vtotalPrice);
 	
@@ -411,7 +411,7 @@ function acountPowerPrice(){
 	if(fyield != '0'){
 		pwer = fhourpwer * fkwprice / fyield;			
 	}
-	var vpwer = float4ToCurrency(pwer);
+	var vpwer = formatNumber(pwer);
 
 	$('#powerprice').html(vpwer);
 	$('#price\\.powerprice').val(vpwer);

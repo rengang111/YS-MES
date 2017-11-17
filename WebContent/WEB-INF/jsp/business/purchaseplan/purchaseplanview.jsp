@@ -404,10 +404,6 @@ function initEvent(){
 	    		{"targets":2,"render":function(data, type, row){	 			
 	    			return jQuery.fixedWidth(row["materialName"],35);	
 	    		}},
-	    		{"targets":5,"render":function(data, type, row){
-	    			var order = '${order.totalQuantity}';
-	    			return currencyToFloat(order);
-	    		}},
 	    		{"targets":6,"render":function(data, type, row){
 	    			var order = currencyToFloat( '${order.totalQuantity}' );
 	    			var price = currencyToFloat( row["unitQuantity"] );				    			
@@ -439,6 +435,10 @@ function initEvent(){
 						rtn = stock;
 					}
 	    			return rtn;
+	    		}},
+	    		{"targets":10,"render":function(data, type, row){
+	    			
+	    			return formatNumber(data);
 	    		}},
 	    		{
 					"visible" : false,
@@ -844,9 +844,9 @@ function ZZmaterialView() {
       			var unit = row["unit"];
       			var chanegVal = "";
     			if(unit == "吨"){//换算成千克
-    				total = float4ToCurrency( total * 1000 );
+    				total = formatNumber( total * 1000 );
     			}else{
-    				total = float4ToCurrency( total);
+    				total = formatNumber( total);
     			}	    			
     			return total;
     		}},
@@ -1215,7 +1215,7 @@ function purchasePlanCompute(obj,flg){
 	var vPurchase = floatToCurrency(fPurchase);	
 	var vTotalQuty= floatToCurrency(fTotalQuty);	
 	var vTotalNew = floatToCurrency(fTotalNew);
-	var vUnitQuty = float5ToCurrency(fUnitQuty);
+	var vUnitQuty = formatNumber(fUnitQuty);
 			
 	//详情列表显示
 	$oUnitQuty.val(vUnitQuty)

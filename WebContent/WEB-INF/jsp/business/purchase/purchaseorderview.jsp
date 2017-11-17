@@ -316,7 +316,7 @@
 					$('#name'+index).html(jQuery.fixedWidth(materialName,45));
 					$('#returnValue'+index).html(returnValue);
 					$('#pay'+index).html(pay);
-					$('#price'+index).html(float5ToCurrency(price));
+					$('#price'+index).html(formatNumber(price));
 					$('#total'+index).html(floatToCurrency(contractValue));
 										
 				</script>	

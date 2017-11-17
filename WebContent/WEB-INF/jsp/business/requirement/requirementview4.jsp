@@ -436,7 +436,7 @@ function orderBomView() {
 
 				
 		//详情列表显示新的价格	
-		$oQuantityt.val(float5ToCurrency(fQuantityt));
+		$oQuantityt.val(formatNumber(fQuantityt));
 		$oAmount1.text(floatToCurrency(fTotalNew));	
 		
 		
@@ -467,7 +467,7 @@ function orderBomView() {
 			});	
 			
 			//hidden重新赋值
-			$oQuantityh.val(float5ToCurrency(fQuantityt));
+			$oQuantityh.val(formatNumber(fQuantityt));
 		}
 		
 	});
@@ -718,7 +718,7 @@ function ZZmaterialView() {
     				}
     			}	
     			
-    			var total = float5ToCurrency( order * requirement * farwunit / fchgunit);
+    			var total = formatNumber( order * requirement * farwunit / fchgunit);
 		
     			return total;
     		}},
@@ -878,7 +878,7 @@ function autocomplete(){
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);//合计
 	
 			//显示到页面	
-			var vPrice = float5ToCurrency(fPrice);
+			var vPrice = formatNumber(fPrice);
 			var vTotalNew = floatToCurrency(fTotalNew);
 
 			$oPrices.text(vPrice);
@@ -1011,7 +1011,7 @@ function requirementAjax() {
     			var rownum = row["rownum"]-1;
 				var price = row["lastPrice"];
 				var supplierId = row["lastSupplierId"];				
-				rtn+=  float4ToCurrency(price)+'／'+stringPadAfter(supplierId,12);
+				rtn+=  formatNumber(price)+'／'+stringPadAfter(supplierId,12);
 				//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldsupplierid\" name=\"purchaseList["+rownum+"].oldsupplierid\"  value=\""+supplierId+"\">";
 				//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".oldprice\" name=\"purchaseList["+rownum+"].oldprice\"  value=\""+price+"\">";
     			return rtn;
@@ -1023,7 +1023,7 @@ function requirementAjax() {
     			var materialId = row["materialId"];
 				var minPrice = row["minPrice"];
 				var minSupplierId = row["minSupplierId"];				
-				rtn+=  float4ToCurrency(minPrice)+'／'+stringPadAfter(minSupplierId,12);
+				rtn+=  formatNumber(minPrice)+'／'+stringPadAfter(minSupplierId,12);
 				//rtn+= "<input type=\"hidden\" id=\"purchaseList"+rownum+".materialid\" name=\"purchaseList["+rownum+"].materialid\"  value=\""+materialId+"\">";
     			return rtn;
     		}}          

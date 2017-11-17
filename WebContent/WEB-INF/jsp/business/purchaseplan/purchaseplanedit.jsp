@@ -476,7 +476,8 @@
 		$('#availabelToPromise'+index).html(newStock);
 		
 		$('#totalPrice'+index).html(vtotalPrice);
-		$("#planDetailList"+index+"\\.totalprice").val(vtotalPrice);		
+		$("#planDetailList"+index+"\\.totalprice").val(vtotalPrice);	
+		$("#planDetailList"+index+"\\.price").val(formatNumber(price));	
 		
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
@@ -644,7 +645,7 @@ $(".attributeList1").autocomplete({
 		var typeId  = ui.item.purchaseTypeId;
 		var vStock  = floatToCurrency(ui.item.availabelToPromise);
 		var supplierId = ui.item.supplierId;		
-		var vPrice     = float5ToCurrency(ui.item.price);
+		var vPrice     = formatNumber(ui.item.price);
 		var shortName = getLetters(supplierId);
 		
 		//显示到页面
@@ -831,8 +832,8 @@ function purchasePlanCompute(obj,flg){
 	var vPurchase = floatToCurrency(fPurchase);	
 	var vTotalQuty= floatToCurrency(fTotalQuty);	
 	var vTotalNew = floatToCurrency(fTotalNew);
-	var vUnitQuty = float5ToCurrency(fUnitQuty);
-	var vPrice = float5ToCurrency(fPrice);
+	var vUnitQuty = formatNumber(fUnitQuty);
+	var vPrice = formatNumber(fPrice);
 			
 	//详情列表显示
 	$oUnitQuty.val(vUnitQuty)

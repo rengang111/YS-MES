@@ -497,7 +497,7 @@ $(".attributeList1").autocomplete({
 		var typeId  = ui.item.purchaseTypeId;
 		var vStock  = floatToCurrency(ui.item.availabelToPromise);
 		var supplierId = ui.item.supplierId;		
-		var vPrice     = float4ToCurrency(ui.item.price);
+		var vPrice     = formatNumber(ui.item.price);
 		var shortName = getLetters(supplierId);
 
 		//显示到页面
@@ -648,7 +648,7 @@ function purchasePlanCompute(obj){
 			
 	//详情列表显示
 	$oPurchase.val(vPurchase);
-	$oThisPrice.val(float5ToCurrency(fPrice));
+	$oThisPrice.val(formatNumber(fPrice));
 	$oTotPriceS.html(vTotalNew);
 	$oTotPriceI.val(vTotalNew);
 	

@@ -285,17 +285,24 @@ public class PurchasePlanService extends CommonService {
 			List<B_PurchasePlanDetailData> deleteList = new ArrayList<B_PurchasePlanDetailData>();
 			for(B_PurchasePlanDetailData detail:oldDBList){
 				String reqMate = detail.getMaterialid();
-				String reqSubNo = detail.getSubbomno();  
+				String reqSubNo = detail.getSubbomno();
+				String reqSupp = detail.getSupplierid();
 				if(isNullOrEmpty(reqMate))
 					continue;
 				
 				boolean exflg = true;
 				for(B_PurchasePlanDetailData db:list){
+					
 					String dbMate = db.getMaterialid();
 					String dbSubNo = db.getSubbomno();  
-					if(reqMate.equals(dbMate) && reqSubNo.equals(dbSubNo)){						
-						exflg = false;											
-						break;						
+					String dbSupp = db.getSupplierid();
+					
+					if( reqMate.equals(dbMate) && 
+						reqSubNo.equals(dbSubNo) &&
+						reqSupp.equals(dbSupp) ){	
+						
+							exflg = false;
+							break;
 					}
 				}
 				if(exflg){

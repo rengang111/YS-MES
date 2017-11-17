@@ -238,7 +238,7 @@
 				var fQuantity = currencyToFloat($oQuantity.val());
 				var fPrice = currencyToFloat(price);//子窗口传回来的新的单价
 				
-				var vPrice = float4ToCurrency(fPrice);
+				var vPrice = formatNumber(fPrice);
 				var total = floatToCurrency( fQuantity * fPrice );
 				
 	          	$oPricei.val(vPrice); //赋给当前页面元素
@@ -323,7 +323,7 @@ function autocomplete(){
 			var fPrice  = currencyToFloat(ui.item.price);
 			
 			var vTotal = floatToCurrency( fQuanty * fPrice );
-			var vPrice = float4ToCurrency(fPrice);
+			var vPrice = formatNumber(fPrice);
 			
 			$oPriceS.text(vPrice);
 			$oPriceH.val(vPrice);

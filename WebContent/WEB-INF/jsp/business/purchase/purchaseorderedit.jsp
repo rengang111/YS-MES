@@ -61,7 +61,7 @@
 			
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 
-			var vPrice = float4ToCurrency(fPrice);	
+			var vPrice = formatNumber(fPrice);	
 			var vQuantity = floatToCurrency(fQuantity);
 			var vTotalNew = floatToCurrency(fTotalNew);
 					

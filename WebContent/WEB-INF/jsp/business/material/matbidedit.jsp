@@ -55,12 +55,6 @@
 		$("#price\\.pricedate").val(mydate);
 		$("#price\\.pricedate").attr('readonly', "true");
 		
-
-		$("#price\\.price").blur(function(){
-			
-			$(this).val(float4ToCurrency($(this).val()));
-		});
-		
 		$("#return").click(function() {
 
 					//alert(999);

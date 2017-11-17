@@ -98,6 +98,12 @@
 				    			var name = row["shareModel"];				    			
 				    			name = jQuery.fixedWidth(name,20);				    			
 				    			return name;
+				    		}},
+				    		{"targets":5,"render":function(data, type, row){
+				    			
+				    			var price = row["price"];				    			
+				    			return formatNumber(price);				    			
+				    			
 				    		}}
 			           
 			         ] 

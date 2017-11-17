@@ -245,9 +245,9 @@
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 			var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
 
-			var vPrice = float4ToCurrency(fPrice);	
-			var vQuantity = float5ToCurrency(fQuantity);
-			var vTotalNew = float4ToCurrency(fTotalNew);
+			var vPrice = formatNumber(fPrice);	
+			var vQuantity = formatNumber(fQuantity);
+			var vTotalNew = formatNumber(fTotalNew);
 					
 			//详情列表显示新的价格
 			//$oThisPrice.val(vPrice);					
@@ -560,7 +560,7 @@
 					<td><input type="text" name="attributeList2" class="attributeList2"  value="${detail.supplierId}" style="width:100px" />
 						<form:hidden path="bomDetailLines[${status.index}].supplierid"  value="${detail.supplierId}" /></td>
 					<td><form:input path="bomDetailLines[${status.index}].quantity" value="${detail.quantity}"  class="cash"  style="width:70px"/></td>							
-					<td><span>${detail.price}</span><form:hidden path="bomDetailLines[${status.index}].price"  value="${detail.price}"  /></td>						
+					<td><span id="price${status.index }"></span><form:hidden path="bomDetailLines[${status.index}].price"  value="${detail.price}"  /></td>						
 					<td><span id="total${status.index}">${detail.totalPrice}</span>
 						<form:hidden path="bomDetailLines[${status.index}].totalprice"  value="${detail.totalPrice}"/>
 						<input type="hidden" id="labor${status.index}"></td>	
@@ -584,7 +584,7 @@
 					//	bomid = subBomId;
 					//}
 					
-					var totalPrice = float4ToCurrency(quantity * price);
+					var totalPrice = formatNumber(quantity * price);
 					var labor = fnLaborCost( materialId,totalPrice);
 					
 
@@ -599,16 +599,14 @@
 		
 					//alert('accessFlg'+accessFlg+"bomid:"+bomid)
 					var rowNum = '${status.index +1}';
-					//$('#index'+index).html(rowNum);
+					$('#price'+index).html(formatNumber(price));
 					$('#index'+index).html(subIndex);
 					$('#labor'+index).val(labor);
 					$('#total'+index).html(totalPrice);
-					$('#bomDetailLines'+index+'\\.quantity').val(float5ToCurrency(quantity));
+					$('#bomDetailLines'+index+'\\.quantity').val(formatNumber(quantity));
 					$('#bomDetailLines'+index+'\\.totalprice').val(totalPrice);
 					$('#name'+index).html(jQuery.fixedWidth(materialName,35));
 					
-					//$('#bomDetailLines'+index+'\\.subbomid').val(bomid);
-					//$('#bomDetailLines'+index+'\\.subbomno').val(moduleNum);
 					$('#bomDetailLines'+index+'\\.subbomserial').val(rowNum);
 					
 					moduleNum = '${detail.subbomno}';//模块数量,模块追加时,该No加一
@@ -814,12 +812,12 @@ function autocomplete(){
 						price = currencyToFloat(price);
 						quantity = currencyToFloat(quantity);
 						
-						var totalPrice = float4ToCurrency(quantity * price);
+						var totalPrice = formatNumber(quantity * price);
 						var labor = fnLaborCost( materialId,totalPrice);
-						$('#price'+counter).html(float4ToCurrency(price));
+						$('#price'+counter).html(formatNumber(price));
 						$('#total'+counter).html(totalPrice);
 						$('#bomDetailLines'+counter+'\\.price').val(price);
-						$('#bomDetailLines'+counter+'\\.quantity').val(float5ToCurrency(quantity));
+						$('#bomDetailLines'+counter+'\\.quantity').val(formatNumber(quantity));
 						$('#bomDetailLines'+counter+'\\.totalprice').val(totalPrice);
 						$('#name'+counter).html(jQuery.fixedWidth(materialName,35));
 						//alert($('#bomDetailLines'+counter+'\\.subbomid').val()+':::'+bomId)
@@ -921,8 +919,8 @@ function autocomplete(){
 			var fAmountd  = fnLaborCost(ui.item.materialId,fTotalNew);//人工成本
 
 			//显示到页面
-			var vPrice    = float4ToCurrency(fPrice);
-			var vTotalNew = float4ToCurrency(fTotalNew);
+			var vPrice    = formatNumber(fPrice);
+			var vTotalNew = formatNumber(fTotalNew);
 			//var vMinPrice = floatToCurrency(ui.item.minPrice);
 
 			$oMatName.html(jQuery.fixedWidth(ui.item.name,35));
@@ -1028,7 +1026,7 @@ function autocomplete(){
 			var fAmountd  = fnLaborCost(materialId,fTotalNew);//人工成本
 	
 			//显示到页面	
-			var vPrice = float5ToCurrency(fPrice);
+			var vPrice = formatNumber(fPrice);
 			var vTotalNew = floatToCurrency(fTotalNew);
 
 			$oSupplier.val(ui.item.supplierId);

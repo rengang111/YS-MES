@@ -370,7 +370,7 @@ function baseBomView() {
     			
     			var price = currencyToFloat( row["price"] );
     			var quantity = currencyToFloat( row["quantity"] );				    			
-    			var total = float4ToCurrency( price * quantity );			    			
+    			var total = formatNumber( price * quantity );			    			
     			return total;
     		}}
           
