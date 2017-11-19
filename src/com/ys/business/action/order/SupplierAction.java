@@ -91,7 +91,7 @@ public class SupplierAction extends BaseAction {
 				break;
 			case "edit":
 				doUpdateInit();
-				rtnUrl = "/business/supplier/supplieradd";
+				rtnUrl = "/business/supplier/supplieredit";
 				break;
 			case "delete":
 				viewModel = doDelete(data, session, request, response);
@@ -125,23 +125,18 @@ public class SupplierAction extends BaseAction {
 				setSupplierId(data);
 				printOutJsonObj(response, modelMap);
 				return null;
-			case "picTest":
-				//setSupplierId(data);
+			case "checkShortName":
+				checkShortName();
+				printOutJsonObj(response, modelMap);
+				return null;
 				//printOutJsonObj(response, modelMap);
-				rtnUrl = "/business/supplier/supplieradd2";
+				//rtnUrl = "/business/supplier/supplieradd2";
 		}
 		
 		return rtnUrl;
 	}	
 	
 	public void doInit(String formId,HttpSession session){	
-		
-		String keyBackup = request.getParameter("keyBackup");
-		//没有物料编号,说明是初期显示,清空保存的查询条件
-		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
-			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
-		}
 		
 	}
 	
@@ -151,8 +146,8 @@ public class SupplierAction extends BaseAction {
 		try {
 			UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 			//优先执行查询按钮事件,清空session中的查询条件
-			String keyBackup = request.getParameter("keyBackup");
-			if(keyBackup != null && !("").equals(keyBackup)){
+			String sessionFlag = request.getParameter("sessionFlag");
+			if(("false").equals(sessionFlag)){
 				session.removeAttribute(Constants.FORM_SUPPLIER+Constants.FORM_KEYWORD1);
 				session.removeAttribute(Constants.FORM_SUPPLIER+Constants.FORM_KEYWORD2);
 				
@@ -278,6 +273,12 @@ public class SupplierAction extends BaseAction {
 		parentId = URLDecoder.decode(parentId,"utf-8");
 
 		modelMap = service.getSupplierId(parentId);
+
+	}
+	
+	public void checkShortName() throws Exception{
+		
+		modelMap = service.checkShortName();
 
 	}
 

@@ -95,7 +95,7 @@
 				{"data": "materialName"},
 				{"data": "customerShortName"},
 				{"data": "supplierId"},
-				{"data": "purchaseDate","className" : 'td-right'},
+				{"data": "deliveryDate","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
 				{"data": "contractStorage","className" : 'td-right'},
 				{"data": "surplus","className" : 'td-right'},

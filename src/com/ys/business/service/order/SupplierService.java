@@ -119,22 +119,18 @@ public class SupplierService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);			
 		
-		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();
-			
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
 		}
 		
-		modelMap.put("sEcho", sEcho); 
-		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 
-		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		
-		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);			
 				
 		return modelMap;		
 
@@ -459,10 +455,57 @@ public class SupplierService extends CommonService {
 	
 	public HashMap<String, Object> getSupplierId(String parentId) throws Exception{
 		
-		String subId = getSupplierSubId(parentId);
+		String shortName = request.getParameter("key");
+		//check 简称是否存在
+		String where = " shortName = '"+ shortName +"' AND deleteFlag='0'";
+		boolean flag = CheckSupplierShortName(where);
 		
-		modelMap.put("subId",subId);
+		if(flag){
+			String subId = getSupplierSubId(parentId);			
+			modelMap.put("subId",subId);
+			modelMap.put("returnCode","0");
+		}else{
+			modelMap.put("returnCode","1");
+		}
 		
 		return modelMap;
+	}
+	
+
+	public HashMap<String, Object> checkShortName() throws Exception{
+		
+		String shortName = request.getParameter("key");
+		String supplierId = request.getParameter("supplierId");
+		//check 简称是否存在
+		String where = " supplierId != '"+ supplierId +"' AND shortName = '"+ shortName +"' AND deleteFlag='0'";
+		boolean flag = CheckSupplierShortName(where);
+		
+		if(flag){
+			modelMap.put("returnCode","0");
+		}else{
+			modelMap.put("returnCode","1");
+		}
+		
+		return modelMap;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private boolean CheckSupplierShortName(
+			String  where) throws Exception {
+		
+		boolean rtn = true;
+		try {
+			List<B_SupplierData> dbData = (List<B_SupplierData>)dao.Find(where);
+			
+			if(dbData.size() >0)
+				rtn = false;
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			
+		}
+		
+		return rtn;
 	}
 }

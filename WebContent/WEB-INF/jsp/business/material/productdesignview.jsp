@@ -152,12 +152,12 @@
 				<table id="accessory" class="display"  style="width:100%">
 					<thead>				
 						<tr style="text-align: left;">
-							<th width="1px">No</th>
-							<th style="width:120px">名称及规格描述</th>
-							<th style="width:40px">材质</th>
-							<th style="width:60px">加工方式</th>
+							<th width="15px">No</th>
+							<th>名称及规格描述</th>
+							<th style="width:60px">材质</th>
+							<th style="width:80px">加工方式</th>
 							<th style="width:60px">表面处理</th>
-							<th style="width:60px">备注</th>
+							<th style="width:80px">备注</th>
 						</tr>
 					</thead>			
 				</table>
@@ -619,6 +619,13 @@ function accessoryView() {
 			{"data": "specification"},
 			{"data": "remark"},
 		 ],
+		 "columnDefs":[
+     			{"targets":1,"render":function(data, type, row){
+
+    				return '<pre style="white-space: pre-wrap;">'+data+"</pre>";
+    				
+    			}}
+        	]
 		
 	});
 

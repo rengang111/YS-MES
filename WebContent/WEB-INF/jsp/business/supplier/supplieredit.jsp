@@ -13,8 +13,6 @@ $(document).ready(function() {
 
 	$("#supplier\\.supplierid").attr('readonly', "true");
 	$("#supplier\\.supplierid").addClass('read-only');
-	$("#supplier\\.shortname").attr('readonly', "true");
-	$("#supplier\\.shortname").addClass('read-only');
 	
 	$("#supplier\\.province").change(function() {
 		
@@ -81,49 +79,49 @@ $(document).ready(function() {
 	
 	$("#supplier\\.shortname").change(function() {
 
-		var city =  $("#supplier\\.city").val();
+		//var city =  $("#supplier\\.city").val();
 		var shortName = $(this).val().toUpperCase();
-		var parentId = city+shortName;
-		//alert(parentId)
-		var url = "${ctx}/business/supplier?methodtype=setSupplierId&parentId="+parentId;					
-											
-		if (parentId != ""){ //
-			$.ajax({
-				type : "post",
-				url : url,
-				async : false,
-				data : 'key=' + shortName,
-				dataType : "json",
-				success : function(data) {
+		var supplierId = $('#supplier\\.supplierid').val();
 
-					var returnCode = data["returnCode"];
-					if(returnCode == 1){
-						$("#supplier\\.shortname").addClass('error');
-						$().toastmessage('showWarningToast', "该简称已存在，请重新输入。");
-						
-					}else{
-						$("#supplier\\.shortname").removeClass('error');
-						var subId = data["subId"];
-						var supplierId = parentId + subId;
+		if(shortName.trim() == '')
+			return;
+		
+		var url = "${ctx}/business/supplier?methodtype=checkShortName&supplierId="+supplierId;							
+	
+		$.ajax({
+			type : "post",
+			url : url,
+			async : false,
+			data : 'key=' + shortName,
+			dataType : "json",
+			success : function(data) {
 
-						$('#supplier\\.parentid').val(parentId);
-						$('#supplier\\.subid').val(subId);
-						$('#supplier\\.supplierid').val(supplierId);
-						$('#supplier\\.shortname').val(shortName);						
-						
-					}
-				},
-				error : function(
-						XMLHttpRequest,
-						textStatus,
-						errorThrown) {
+				var returnCode = data["returnCode"];
+				if(returnCode == 1){
+					$("#supplier\\.shortname").addClass('error');
+					$().toastmessage('showWarningToast', "该简称已存在，请重新输入。");
 					
-					alert("supplierId2222:"+textStatus);
+				}else{
+					$("#supplier\\.shortname").removeClass('error');
+					//var subId = data["subId"];
+					//var supplierId = parentId + subId;
+
+					//$('#supplier\\.parentid').val(parentId);
+					//$('#supplier\\.subid').val(subId);
+					//$('#supplier\\.supplierid').val(supplierId);
+					//$('#supplier\\.shortname').val(shortName);						
+					
 				}
-			});
-		}else{
-			//关联项目清空
-		}
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+				
+				alert("supplierId2222:"+textStatus);
+			}
+		});
+
 	});	//市县选择
 	
 	$("#doSave").click(function() {
@@ -138,10 +136,21 @@ $(document).ready(function() {
 			return;
 		}	
 		
+		$('#supplier\\.shortname').val($('#supplier\\.shortname').val().toUpperCase());
+		
 		$('#supplierBasicInfo').attr("action", "${ctx}/business/supplier?methodtype=insert");
 		$('#supplierBasicInfo').submit();
 		
 	});
+
+	//加载编辑模式
+	var province = "${formModel.supplier.province}";
+	$("#supplier\\.province").val(province);
+	if(province != null || province != ""){
+		$("#supplier\\.province").trigger('change');
+		$("#supplier\\.city").val("${formModel.supplier.city}");
+		$("#supplier\\.supplierid").val("${formModel.supplier.supplierid}");
+	}
 	
 })
 
@@ -168,12 +177,16 @@ function doDelete() {
 		<table class="form" style="line-height: 30px;">
 			<tr>
 				<td class="label" width="100px">供应商编码：</td>
-				<td colspan="5">
+				<td>
 					<form:input path="supplier.supplierid" class="read-only" />
 					<form:hidden path="supplier.parentid" />
 					<form:hidden path="supplier.subid" /></td>			
+				<td class="label" width="100px">供应商简称：</td> 
+				<td colspan="3">
+					<form:input path="supplier.shortname" class="short" style="text-transform:uppercase;"/></td>
 
-			</tr>		
+			</tr>	
+		<!-- 
 			<tr>
 				<td class="label">所在省份：</td>
 				<td width="150px">
@@ -187,10 +200,9 @@ function doDelete() {
 						<form:options items="${formModel.provinceList}" itemValue="key"
 							itemLabel="value" />
 					</form:select></td>
-				<td class="label" width="100px">供应商简称：</td> 
-				<td width="150px">
-					<form:input path="supplier.shortname" class="short" style="text-transform:uppercase;"/></td>
+					
 			</tr>
+		 -->	
 			<tr>
 			
 				<td class="label" width="100px">供应商名称：</td> 

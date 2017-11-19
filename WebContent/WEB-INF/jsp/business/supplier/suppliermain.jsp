@@ -1,22 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-
-<%@ include file="../../common/common.jsp"%>
-
+<%@ include file="../../common/common2.jsp"%>
 <title>供应商基本数据检索</title>
 <script type="text/javascript">
 
-	function ajax(keyBackup,type) {
+	function ajax(type,sessionFlag) {
 		var table = $('#TSupplier').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		
 		var t = $('#TSupplier').DataTable({
 				"paging": true,
 				"lengthChange":false,
@@ -29,11 +26,10 @@
 				"searching" : false,
 				"pagingType" : "full_numbers",
 				//"scrollY":scrollHeight,
-				"scrollCollapse":true,
-				"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search&type="+type+"&keyBackup="+keyBackup,
-				//"dom" : 'T<"clear">rt',
-				
+				//"scrollCollapse":true,
+				//"retrieve" : true,
+				"sAjaxSource" : "${ctx}/business/supplier?methodtype=search&type="+type+"&sessionFlag="+sessionFlag,
+				//"dom" : 'T<"clear">rt',				
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -49,6 +45,9 @@
 						"data" : JSON.stringify(aoData),
 						success: function(data){							
 							fnCallback(data);
+							$("#keyword1").val(data["keyword1"]);
+							$("#keyword2").val(data["keyword2"]);
+
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			                 //alert(XMLHttpRequest.status);
@@ -92,22 +91,12 @@
 			}
 		);
 		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				var num   = i + 1;
-				var checkBox = "<input type=checkbox name='numCheck' id='numCheck' value='" + num + "' />";
-				//cell.innerHTML = num + checkBox;
-			});
-		}).draw();
 	}
 
 	
 	function initEvent(){
 
-		ajax('','');
+		ajax('','true');
 	
 		$('#TSupplier').DataTable().on('click', 'tr', function() {
 			
@@ -128,11 +117,11 @@
 	
 	function doSearch() {
 	
-		ajax('S','');
+		ajax('','false');
 	}
 	
 	function SelectSupplier(type){
-		ajax('',type);
+		ajax(type,'false');
 	}
 	
 	function doCreate() {
