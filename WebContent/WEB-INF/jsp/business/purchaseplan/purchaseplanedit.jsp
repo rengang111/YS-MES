@@ -205,7 +205,7 @@
 	
 	function baseBomView() {
 
-		var scrollHeight = $(window).height() - 255;
+		var scrollHeight = $(window).height() - 135;
 		var materialId='${order.materialId}';
 		var table = $('#example').dataTable();
 		if(table) {
