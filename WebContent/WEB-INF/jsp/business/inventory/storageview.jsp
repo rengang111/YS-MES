@@ -49,6 +49,7 @@
 			},	
 			"columns" : [
 				        	{"data": null,"className":"dt-body-center"
+						}, {"data": "receiptId","className":"td-left"
 						}, {"data": "materialId","className":"td-left"
 						}, {"data": "materialName",
 						}, {"data": "contractQuantity","className":"td-right"
@@ -59,13 +60,13 @@
 						}
 					],
 			"columnDefs":[
-	    		{"targets":2,"render":function(data, type, row){
+	    		{"targets":3,"render":function(data, type, row){
 	    			
 	    			var name = data;				    			
 	    			name = jQuery.fixedWidth(name,35);				    			
 	    			return name;
 	    		}},
-	    		{"targets":7,"render":function(data, type, row){
+	    		{"targets":8,"render":function(data, type, row){
 	    				    				    			
 	    			return "&nbsp;&nbsp;"+data;
 	    		}}
@@ -203,12 +204,13 @@
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
 <fieldset>
-	<legend> 物料信息</legend>
+	<legend> 入库记录</legend>
 	<div class="list">
 	<table class="display" id="example">	
 		<thead>		
 			<tr>
 					<th style="width:1px">No</th>
+					<th style="width:100px">入库单编号</th>
 					<th style="width:100px">物料编号</th>
 					<th>物料名称</th>
 					<th style="width:65px">合同数量</th>

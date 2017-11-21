@@ -60,6 +60,7 @@
 				<thead>				
 					<tr>
 						<th style="width:1px">No</th>
+						<th style="width:100px">入库单编号</th>
 						<th style="width:100px">物料编号</th>
 						<th>物料名称</th>
 						<th style="width:65px">合同数量</th>
@@ -76,6 +77,7 @@
 					<c:if test="${not empty  material[i] }">
 						<tr>
 							<td>${i + 1 }</td>
+							<td>${material[i].receiptId }</td>
 							<td>${material[i].materialId }</td>
 							<td><div id="name${i }" >${material[i].materialName }</div></td>
 							<td>${material[i].contractQuantity }</td>

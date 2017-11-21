@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<url>${ctx}/</url>
+	<url>${ctx}/MP_verify_65Uv3LP2kPcy3IMr.txt</url>
 	<url>${ctx}/login/checklogin</url>
 	<url>${ctx}/login/verifyCode</url>
 	<url>${ctx}/jsp/login/login.jsp</url>

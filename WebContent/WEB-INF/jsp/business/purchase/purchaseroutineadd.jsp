@@ -47,16 +47,13 @@
 	        "ordering"  : false,
 	       	"dom"		  : 'T<"clear">rt',
 			"tableTools" : {
-
 				"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
-
-				"aButtons" : [ 
+				"aButtons" : [
 				{
 					"sExtends" : "reset",
 					"sButtonText" : "删除行"
 				}],
-			},
-			
+			},			
 			"columns" : [ 
 			           {"className":"dt-body-center"
 					}, {
@@ -93,12 +90,10 @@
 			
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 
-			var vPrice = floatToCurrency(fPrice);	
 			var vQuantity = floatToNumber(fQuantity);
 			var vTotalNew = floatToCurrency(fTotalNew);
 					
-			//详情列表显示新的价格
-			$oThisPrice.val(vPrice);					
+			//详情列表显示新的价格					
 			$oQuantity.val(vQuantity);	
 			$oAmounti.val(vTotalNew);	
 			$oAmounts.html(vTotalNew);	
@@ -156,8 +151,7 @@
 			changeMonth: true,
 			selectOtherMonths:true,
 			showOtherMonths:true,
-		});
-			
+		});			
 		
 		ajaxRawGroup();		
 		
@@ -477,7 +471,5 @@ function autocomplete(){
 	
 	});
 }
-
-</script>
-	
+</script>	
 </html>

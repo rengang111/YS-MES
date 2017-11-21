@@ -30,6 +30,7 @@
  	 <mvc:resources mapping="/images/**" location="/images/" />
  	<mvc:resources mapping="/userfiles/**" location="/userfiles/" />
  	<mvc:resources mapping="/install/**" location="/install/" />
+ 	<mvc:resources mapping="/**" location="/" />
 	<!-- 国际化配置 -->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="language" />

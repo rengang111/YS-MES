@@ -319,37 +319,6 @@ function floatToCurrency(value){
 	
 }
 
-
-function replacePos(mtext,pos,ptext)
-{
-	var text1= mtext.charAt(pos);
-	mtext=mtext.replace(text1,ptext)
-	return mtext;
-}
-
-
-//为String对象增加一个Right方法
-String.prototype.right = function(i) { 
-	//返回值为 以“该字符串长度减i”为起始 到 该字符串末尾 的截取字符串
- return this.slice(this.length - i,this.length); 
-};
-/*
- alert("abcdefg".right(3)==="efg")
- alert("cdefg中国人".right(5)==="国人")
- alert("abcdefg中国".right(5)==="g中国")
- */
-
-
-//从左边截取n个字符 ,如果包含汉字,则汉字按两个字符计算
- String.prototype.left=function(n){
-     return this.slice(0,n-this.slice(0,n).replace(/[\x00-\xff]/g,"").length)
- };
- /*
- alert("abcdefg".left(3)==="abc")
- alert("中国人cdefg".left(5)==="中国")
- alert("中国abcdefg".left(5)==="中国a")
- */
- 
  
 function formatNumber(value){
 
