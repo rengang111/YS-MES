@@ -152,6 +152,13 @@ function ajaxFn(scrollHeight) {
 			],
 			"columnDefs":[
 				
+                
+	    		{"targets":2,"render":function(data, type, row){ 					
+					//var index=row["rownum"]	
+	    			//var name =  jQuery.fixedWidth( row["materialName"],40);
+
+	    			return "&nbsp;&nbsp;"+data;
+                }},
                 {
 					"visible" : false,
 					"targets" : [3,6,8,9,10]

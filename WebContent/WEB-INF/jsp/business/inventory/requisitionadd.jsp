@@ -146,6 +146,7 @@
 				}, {"data": null,"className":"td-right","defaultContent" : '0'		//8
 				}, {"data": "purchaseType","className":"td-right"		//9
 				}, {"data": "supplierId","className":"td-right"		//10
+				}, {"data": "areaNumber"		//11
 				}
 			],
 			"columnDefs":[
@@ -220,7 +221,7 @@
                 }},*/
                 {
 					"visible" : false,
-					"targets" : [9,10]
+					"targets" : [8,9,10]
 				}
 			]
 			
@@ -455,19 +456,6 @@
 			<!-- 	<a class="DTTT_button DTTT_button_text box" id="ycl">自制品原材料</a> -->
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
-			<!-- 
-			 <table border="0" cellspacing="5" cellpadding="5">
-		        <tbody><tr>
-		            <td>最小年龄:</td>
-		            <td><input type="text" id="min" name="min"></td>
-		        </tr>
-		        <tr>
-		            <td>最大年龄:</td>
-		            <td><input type="text" id="max" name="max"></td>
-		        </tr>
-		        </tbody>
-		    </table>
-		     -->
 			<table id="example" class="display" >
 				<thead>				
 					<tr>
@@ -483,6 +471,7 @@
 						<th width="60px">剩余数量</th>
 						<th width="1px"></th>
 						<th width="1px"></th>
+						<th width="80px">库位</th>
 					</tr>
 				</thead>	
 			</table>
@@ -529,16 +518,16 @@ function reloadFn(){
 		if(fsurplus > 0){//未领完的场合下
 			if(fkucun >= fsurplus){//库存大于需求量
 				$(this).find("td").eq(7).find("input").val(floatToCurrency(fsurplus));//本次领料
-				$(this).find("td").eq(8).html("0")//剩余数清零
+				//$(this).find("td").eq(8).html("0")//剩余数清零
 				countValue++;//累计未领完的物料
 			}else{
 				$(this).find("td").eq(7).find("input").val(floatToCurrency(fkucun));//本次领料
-				$(this).find("td").eq(8).html(floatToCurrency( fsurplus - fkucun ));//剩余数清零							
+				//$(this).find("td").eq(8).html(floatToCurrency( fsurplus - fkucun ));//剩余数清零							
 			}
 		}else{
 			fsurplus = 0;
 			$(this).find("td").eq(7).find("input").val(fsurplus);//本次领料清零
-			$(this).find("td").eq(8).html(fsurplus);//剩余数清零
+			//$(this).find("td").eq(8).html(fsurplus);//剩余数清零
 		}
 		
 		
@@ -570,10 +559,10 @@ function reloadFn(){
 				if(fsurplus > "0"){//未领完的场合下
 					if(fstocks >= fsurplus){//库存大于需求量
 						$(this).find("td").eq(7).find("input").val(vsurplus);//本次领料
-						$(this).find("td").eq(8).html("0")//剩余数清零
+						//$(this).find("td").eq(8).html("0")//剩余数清零
 					}else{
 						$(this).find("td").eq(7).find("input").val(fstocks);//本次领料
-						$(this).find("td").eq(8).html(floatToCurrency( fsurplus - fstocks ));//剩余数清零							
+						//$(this).find("td").eq(8).html(floatToCurrency( fsurplus - fstocks ));//剩余数清零							
 					}
 				}else{//超领
 					
@@ -581,7 +570,7 @@ function reloadFn(){
 			
 			}else{//取消一次性全部领料
 				$(this).find("td").eq(7).find("input").val("0");//本次领料清零
-				$(this).find("td").eq(8).html(vsurplus);//剩余数
+				//$(this).find("td").eq(8).html(vsurplus);//剩余数
 			}		
 		})			
 	
