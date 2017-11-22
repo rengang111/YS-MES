@@ -1227,11 +1227,11 @@ public class PurchaseOrderService extends CommonService {
 
 	public void createAcssoryContractInit() throws Exception{
 
-		String PIId = request.getParameter("PIId");
+		String YSId = request.getParameter("YSId");
 		String orderType = Constants.ORDERTYPE_2;//配件
 		this.dataModel.setQueryName("createAcssoryContractInit");
 
-		this.userDefinedSearchCase.put("PIId", PIId);
+		this.userDefinedSearchCase.put("YSId", YSId);
 		this.userDefinedSearchCase.put("orderType", orderType);
 		this.baseQuery = new BaseQuery(this.request, this.dataModel);	
 		this.baseQuery.setUserDefinedSearchCase(this.userDefinedSearchCase);
@@ -1239,7 +1239,7 @@ public class PurchaseOrderService extends CommonService {
 	
 		this.model.addAttribute("order", this.dataModel.getYsViewData().get(0));
 		this.model.addAttribute("detail", this.dataModel.getYsViewData());
-		this.model.addAttribute("PIId", PIId);
+		this.model.addAttribute("YSId", YSId);
 	}
 	
 	public void createAcssoryContractAndView() throws Exception{
@@ -1252,27 +1252,61 @@ public class PurchaseOrderService extends CommonService {
 	public String insertPurchaseOrderAndDetail() throws Exception{
 		ts = new BaseTransaction();
 
-		String YSId = request.getParameter("YSId");
 		String contractId = "";
 		try {
 			ts.begin();
 			
+			/*
 			if(!(YSId == null || ("").equals(YSId))){
 				String[] tmp = YSId.split("-");
 				if(tmp.length>1)
 					YSId = tmp[0];//配件订单的耀升编号形式:17YS001-1
 			}
-			
+			*/
 			//B_PurchaseOrderData contract = reqModel.getContract();
-			List<B_PurchaseOrderData> contractList = reqModel.getContractList();
-			List<B_PurchaseOrderDetailData> detailList = reqModel.getDetailList();
+			//List<B_PurchaseOrderData> contractList = reqModel.getContractList();
+			//List<B_PurchaseOrderDetailData> detailList = reqModel.getDetailList();
 						
+			//String YSId = contract.getYsid();
+			//String purchaseDate = contract.getPurchasedate();
+			//String contractDelivery = contract.getDeliverydate();
+			
+			
+			//合同明细:因为是从物料信息过来的,所以只有一条数据
+			List<B_PurchaseOrderDetailData> reqDetail = reqModel.getDetailList();
+			for(B_PurchaseOrderDetailData d:reqDetail){
+
+				B_PurchaseOrderData contract = reqModel.getContract();
+				//创建合同编号
+				String YSId = contract.getYsid();
+				String shortName = reqModel.getShortName();
+				contract = geRoutinePurchaseContractId(contract,YSId,shortName,"D");
+				contractId = contract.getContractid();
+				
+				//新增常规采购合同
+				insertPurchaseOrder(contract);
+				
+				//合同明细
+				d.setYsid(YSId);
+				d.setContractid(contractId);				
+				insertPurchaseOrderDetail(d);	
+				
+				//更新虚拟库存
+				String purchase = d.getQuantity();//采购量
+				String materilid = d.getMaterialid();
+				String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
+				updateMaterial(materilid,purchase,requirement);
+			}	
+
+			ts.commit();
+			
 			//删除既存合同信息
-			deleteContract(YSId);
+			//deleteContract(YSId);
 			
 			//删除既存合同明细
 			//deleteContractDetail(YSId);			
 			
+			/*
 			//供应商集计
 			List<B_SupplierData> supplier = new ArrayList<B_SupplierData>();			
 			for(int j=0;j<contractList.size();j++){
@@ -1280,7 +1314,7 @@ public class PurchaseOrderService extends CommonService {
 				String supplierId = contractList.get(j).getSupplierid();
 				String shortName  = contractList.get(j).getTypeserial();//临时借用
 				String totalPrice = detailList.get(j).getTotalprice();//合同跟明细件数相同
-				float f1 = stringToFloat(totalPrice.replace(",", ""));
+				float f1 = stringToFloat(totalPrice);
 				
 				if(supplierId == null || supplierId.equals("")){
 					continue;
@@ -1292,7 +1326,7 @@ public class PurchaseOrderService extends CommonService {
 					String price = supplier.get(i).getSuppliername();//临时借用
 					
 					if(supplierId.equals(id)){//计算重复的供应商
-						float f2 = stringToFloat(price.replace(",", ""));
+						float f2 = stringToFloat(price);
 						supplier.get(i).setSuppliername(String.valueOf(f1+f2));//相同供应商的价格合并
 						repeatFlag = false;
 						break;
@@ -1308,14 +1342,13 @@ public class PurchaseOrderService extends CommonService {
 				}
 				
 			}//供应商集计
-				
+			
 			for(B_SupplierData sup: supplier){
 				
 				String supplierId = sup.getSupplierid();
 				String shortName  = sup.getShortname();
 				String total  = sup.getSuppliername();//临时借用
-				//String total  = sup.();//临时借用
-				
+								
 				float totalf = stringToFloat(total); 
 				if(totalf == 0){//采购数量为零的供应商不计入合同
 					continue;
@@ -1328,17 +1361,36 @@ public class PurchaseOrderService extends CommonService {
 				}
 				parentId = parentId + shortName;
 
-				//String type = getContractType(purchaseType);
+				//取得供应商的合同流水号
+				//父编号:年份+供应商简称
+				String type = "D";//作为订购件处理
 				
-				//String subId = getContractCode(parentId);
+				String typeParentId = BusinessService.getshortYearcode()+type;				
+				String supplierParentId = BusinessService.getshortYearcode() + shortName;				
+				String typeSubId = getContractTypeCode(typeParentId);
+				String suplierSubId = getContractSupplierCode(supplierParentId);
 
 				//3位流水号格式化	
-				//采购合同编号:16YS081-WL002
-				//contractId = BusinessService.getContractCode(YSId, shortName, subId);
+				//采购合同编号:16D081-WL002
+				contractId = BusinessService.getContractCodeD(typeSubId, suplierSubId,shortName);
 				
-				//新增采购合同:由于是配件订单,没有成品
-				//insertPurchaseOrder(
-						//YSId,null,supplierId,contractId,parentId,subId,String.valueOf(totalf));
+				//新增采购合同*************
+				B_PurchaseOrderData data = new B_PurchaseOrderData();
+				
+				data.setYsid(YSId);
+				//data.setMaterialid(materialId);//配件订单没有统一的产品
+				data.setContractid(contractId);
+				data.setTypeparentid(typeParentId);
+				data.setTypeserial(typeSubId);
+				data.setSupplierparentid(supplierParentId);
+				data.setSupplierserial(suplierSubId);
+				data.setSupplierid(supplierId);
+				data.setTotal(total);
+				data.setPurchasedate(purchaseDate);
+				data.setDeliverydate(contractDelivery);
+				data.setVersion(1);//默认为1
+				
+				insertPurchaseOrder(data);//新增合同头表
 
 				for(int i=0;i<detailList.size();i++){
 					B_PurchaseOrderDetailData detail = detailList.get(i);
@@ -1353,8 +1405,8 @@ public class PurchaseOrderService extends CommonService {
 				}
 				
 			}
+			*/
 			
-			ts.commit();
 			
 		}catch(Exception e) {
 			ts.rollback();

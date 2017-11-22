@@ -45,16 +45,16 @@
 	        "paging"    : false,
 	        "pageLength": 500,
 	        "ordering"  : false,
-	       	"dom"		  : 'T<"clear">rt',
-			"tableTools" : {
+	       	"dom"		  : '<"clear">rt',
+	       	"tableTools" : {
 
-				"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
+			"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
 
-				"aButtons" : [ 
-				{
-					"sExtends" : "reset",
-					"sButtonText" : "删除行"
-				}],
+			//"aButtons" : [ 
+			//	{
+					//"sExtends" : "reset",
+					//"sButtonText" : "删除行"
+			//	}],
 			},
 			
 			"columns" : [ 
@@ -181,9 +181,8 @@
 		
 		$("#insert").click(
 				function() {
-					var YSId= $("#YSId").val();
 			$('#attrForm').attr("action",
-					"${ctx}/business/contract?methodtype=createAcssoryContract"+"&YSId="+YSId);
+					"${ctx}/business/contract?methodtype=createAcssoryContract");
 			$('#attrForm').submit();
 		});
 				
@@ -353,30 +352,26 @@ function autocomplete(){
 		<input type="hidden" id="goBackFlag"  value=""/>
 		<input type="hidden" id="tmpMaterialId"  value=""/>
 		<input type="hidden" id="PIId"  value="${PIId }"/>
-		<input type="hidden" id="YSId"  value="${order.YSId }"/>
+		<form:hidden path="contract.ysid"  value="${order.YSId }" />
 		
 		<fieldset>
 			<legend> 配件订单采购信息</legend>
 			<table class="form" id="table_form">
 				<tr>  		
-					<td class="label" style="width:120px">PI编号：</td>					
-					<td style="width:200px">${ PIId }</td>				
+					<td class="label" style="width:120px">耀升编号：</td>					
+					<td style="width:200px">${ order.YSId  }</td>				
 					<td class="label">下单日期：</td>
 					<td><form:input path="contract.purchasedate" /></td>
 					<td class="label">合同交期：</td>
 					<td colspan="3"><form:input path="contract.deliverydate" /></td>
 				</tr>						
-			</table>			
-	</fieldset>
+			</table>	
 	<div style="clear: both"></div>
 	
-	<fieldset class="action" style="text-align: right;">
+	<fieldset class="action" style="text-align: right;margin-top: 10px;">
 		<button type="button" id="insert" class="DTTT_button">生成采购合同</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
-	
-	<fieldset>
-	<legend> 物料详情</legend>	
 	<div class="list">
 	<table id="example" class="display">	
 		<thead>
@@ -404,12 +399,12 @@ function autocomplete(){
 						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}"  class="materialid"/></td>								
 					<td><span id="name${status.index}">${detail.materialName}</span></td>					
 					<td>${ detail.unit }
-						<form:hidden path="contractList[${status.index}].subid" value="${ detail.shortName }"/></td>
+						<form:hidden path="shortName" value="${ detail.shortName }"/></td>
 					<td>${ detail.quantityOnHand }</td>				
 					<td>${ detail.quantity }</td>			
 					<td>${ detail.totalQuantity }</td>	
 					<td><form:input path="detailList[${status.index}].quantity" value="" class="quantity num mini"/></td>
-					<td><form:input path="contractList[${status.index}].supplierid" value="${ detail.lastSupplierId }" class="supplierid mini"/></td>						
+					<td><form:input path="contract.supplierid" value="${ detail.lastSupplierId }" class="supplierid mini"/></td>						
 					<td><span id="price${status.index}">${detail.lastPrice}</span>
 						<form:hidden  path="detailList[${status.index}].price" value="${detail.lastPrice}"  class="price " /></td>
 					<td><span id="total${status.index}">${ detail.totalPrice}</span>

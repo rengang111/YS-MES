@@ -465,7 +465,7 @@
     <pool></pool>     
     <name value="createAcssoryContractInit" />
     <where>
-      <w name="A.PIId" des=""  reqName="PIId" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
       <w name="A.orderType" des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>

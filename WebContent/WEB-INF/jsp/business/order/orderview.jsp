@@ -136,10 +136,10 @@
 	    			return name;
 	    	  }},
 	    	  { "targets":9,"render":function(data, type, row){
-	    			var PIId = '${order.PIId}';
+	    			var YSId = row[0];
 	    			var type=row[10];
 	    			var rtn = "<a href=\"#\" onClick=\"doPurchasePlan('"
-	    					+ PIId + "')\">采购合同</a>";
+	    					+ YSId + "')\">采购合同</a>";
 	    			return rtn;
 	    	  }},
 	    	  {
@@ -240,11 +240,12 @@
 		openLayer(url);
 	}
 	
-	function doPurchasePlan(PIId) {
+	function doPurchasePlan(YSId) {
 		
 		var url = '${ctx}/business/contract?methodtype=createAcssoryContractInit';
-		url = url +'&PIId='+PIId;
-		location.href = url;
+		url = url +'&YSId='+YSId;
+		callProductDesignView("配件采购",url);
+		//location.href = url;
 		
 	}
 	

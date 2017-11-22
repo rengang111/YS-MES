@@ -228,18 +228,18 @@
 						<a href="#" onClick="doEditMaterial('${contract.productRecordId}','${contract.productParentId}')">${ contract.productId }</a></td>
 						
 					<td class="label" width="100px">产品名称：</td>
-					<td colspan="5">${ contract.productName } </td>
+					<td colspan="3">${ contract.productName } </td>
 				</tr>
 				<tr> 		
-					<td class="label" width="100px"><label>供应商编号：</label></td>					
-					<td width="200px">${ contract.supplierId }
+					<td class="label"><label>供应商编号：</label></td>					
+					<td>${ contract.supplierId }
 						<form:hidden path="contract.supplierid" value="${contract.supplierId }"/></td>
 									
-					<td class="label" width="100px"><label>供应商简称：</label></td>					
-					<td width="200px">${ contract.shortName }</td>
+					<td class="label"><label>供应商简称：</label></td>					
+					<td width="100px">${ contract.shortName }</td>
 						
 					<td class="label" width="100px"><label>供应商名称：</label></td>
-					<td colspan="3">${ contract.fullName }</td>
+					<td>${ contract.fullName }</td>
 				</tr>	
 				<tr> 		
 					<td class="label"><label>合同编号：</label></td>					
@@ -248,7 +248,7 @@
 					<td class="label"><label>下单日期：</label></td>
 					<td>${ contract.purchaseDate }</td>
 					<td class="label"><label>合同交期：</label></td>
-					<td width="150px">${ contract.deliveryDate }</td><!--
+					<td>${ contract.deliveryDate }</td><!--
 					<td class="label" width="100px"><label>合同金额：</label></td>
 					<td>  ${ contract.total }</td>-->
 				</tr>									
