@@ -270,6 +270,14 @@ public class OrderService extends CommonService  {
 		return dbList;
 	}
 	
+	public String  getNewYsid() throws Exception{
+		
+		String paternId = BusinessService.getYSCommCode();
+		int YSMaxid = getYSIdByParentId(paternId);
+		return BusinessService.getYSFormatCode(YSMaxid,true);
+			
+	}
+	
 	/*
 	public ArrayList<HashMap<String, String>> getOrderDetailByPIId(
 			HttpServletRequest request,
@@ -491,9 +499,19 @@ public class OrderService extends CommonService  {
 	        String paternId = BusinessService.getYSCommCode();
 			int YSMaxid = getYSIdByParentId(paternId);
 			ysid = BusinessService.getYSFormatCode(YSMaxid,true);
-			
+
+			newData.setYsid(ysid);
 			newData.setParentid(paternId);
 			newData.setSubid(String.valueOf(YSMaxid+1));
+		}else{
+			//newData.setYsid(ysid);
+			newData.setParentid(ysid.substring(0, 4));
+			String subid = newData.getYsid().substring(4);
+			String split[] = ysid.split("-");
+			if(split != null && split.length >1){
+				subid = split[0].substring(4);
+			}
+			newData.setSubid(subid);
 		}
 			
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
@@ -501,15 +519,8 @@ public class OrderService extends CommonService  {
 		copyProperties(newData,commData);
 		guid = BaseDAO.getGuId();
 		newData.setRecordid(guid);
-		newData.setParentid(newData.getYsid().substring(0, 4));//临时设置
-		//String subid = newData.getYsid().substring(4);
-		//String split[] = subid.split("-");
-		//if(split != null && split.length >1){
-		//	subid = split[0];
-		//}
-		//newData.setSubid(subid);//临时设置
+	
 		newData.setPiid(piId);
-		newData.setYsid(ysid);
 		newData.setCurrency(reqModel.getCurrency());
 		newData.setStatus(Constants.ORDER_STS_1);
 		newData.setReturnquantity(Constants.ORDER_RETURNQUANTY);
@@ -770,11 +781,8 @@ public class OrderService extends CommonService  {
 		try {			
       
 			//耀升编号
-	        String paternId = BusinessService.getYSCommCode();
-	        
-			//int YSMaxId = getYSIdByParentId(request);
-			int YSMaxId = getYSIdByParentId();
-
+	        String paternId = BusinessService.getYSCommCode();	        
+			int YSMaxId = getYSIdByParentId(paternId);
 			reqModel.setYSMaxId(YSMaxId);	
 			reqModel.setYSParentId(paternId);
 			

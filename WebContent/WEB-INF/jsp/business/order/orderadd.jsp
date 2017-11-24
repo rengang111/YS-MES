@@ -1,9 +1,6 @@
-<%@ page language="java" pageEncoding="UTF-8"
-	contentType="text/html; charset=UTF-8"%>
-
+<%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE HTML>
 <html>
-
 <head>
 <title>订单管理-订单录入</title>
 <%@ include file="../../common/common2.jsp"%>

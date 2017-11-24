@@ -507,8 +507,7 @@ public class OrderAction extends BaseAction {
 	{
 	    return this.orderService.getYsidList();
 	 
-	}
-	
+	}	
 
 	public HashMap<String, Object>  ysidExistCheck() throws Exception
 	{
@@ -518,8 +517,7 @@ public class OrderAction extends BaseAction {
 		dataMap.put("ExFlag",ExFlag);
 	    return dataMap;
 	 
-	}
-	
+	}	
 	
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> documenterayNameSearch()
