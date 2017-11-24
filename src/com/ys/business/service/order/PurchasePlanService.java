@@ -1063,7 +1063,8 @@ public class PurchasePlanService extends CommonService {
 				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 						"purchasePlanUpdate",userInfo);			
 				copyProperties(dbPlan,commData);
-				reqPlan.setVersion(version);
+				dbPlan.setVersion(version);
+				dbPlan.setPurchaseid(reqPlan.getPurchaseid());
 				planDao.Store(dbPlan);
 	
 			}else{

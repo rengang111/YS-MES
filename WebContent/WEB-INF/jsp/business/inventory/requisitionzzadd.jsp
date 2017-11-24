@@ -2,95 +2,20 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>领料申请-领料单</title>
+<title>原材料领料申请-领料单</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
-	/* Custom filtering function which will search data in column four between two values */
-	$.fn.dataTable.ext.search.push(function( settings, data, dataIndex ) {
-		       
-		var type =  $('#selectedPurchaseType').val();
-		       	
-		    	
-		    	var data11=data[10];
-		    	var data01=data[1];
-		        var data011 = data01.substring(0,1)
-			   
-			    		
-		    	if (type =='' || type == 'all')		    		
-		    	{		    		
-		    		return true;
-		    		
-		    	}else if(type=='dg'){//订购件
-		    		var val1=data[9];
-		    		var val2=data[10];
-		    		var val3=data[1];
-		    		var tmp3 = val3.substring(0,1);
-		    		var tmp2 = val2.substring(6,4);
-		    		var tmp1 = val1.substring(3,0);
-		    		//alert(tmp)
-		    		if(tmp1 == '010' && tmp2 != 'YZ' && tmp3 != 'G' ){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='ty'){//通用件
-		    		var val=data[9];
-		    		var tmp = val.substring(3,0);
-		    		
-		    		if(tmp == '020'){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='bz'){//包装品
-		    		var val=data[1];
-		    		var tmp = val.substring(0,1);
-		    		
-		    		if(tmp == 'G'){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='yz'){//自制品
-		    		var val=data[10];
-		    		var tmp = val.substring(6,4);
-		    		
-		    		if(tmp == 'YZ'){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='ycl'){//原材料
-		    		var val=data[9];
-		    		var tmp = val.substring(3,0);
-		    		
-		    		if(tmp == '050'){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='wll'){//未领物料
-		    		var val5=data[5];//已领数量
-		    		var val4=data[4];//计划用量
-		    		var jihua = currencyToFloat(val4);
-		    		var yiling = currencyToFloat(val5);
-		    		
-		    		if(yiling < jihua){
-		    			return true;
-		    		}
-		    		
-		    	}else{
-
-			    	return false;
-		    		
-		    	}
-		    	  
-	 
-	});
 	
 	var shortYear = ""; 
 	
 	function ajax(scrollHeight) {
 		
-		var YSId= '${order.YSId}';
-		var actionUrl = "${ctx}/business/requisition?methodtype=detailView";
+		var taskId = $('#task\\.taskid').val();
+		var YSId= $('#task\\.collectysid').val();
+		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getRawMaterialList";
 		actionUrl = actionUrl +"&YSId="+YSId;
+		actionUrl = actionUrl +"&taskId="+taskId;
 		
 		scrollHeight =$(document).height() - 200; 
 		
@@ -138,15 +63,11 @@
 		        	{"data": null,"className":"dt-body-center"//0
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
-				}, {"data": "unitQuantity","className":"td-right"	//3
+				}, {"data": null,"className":"td-center"		//3单位
 				}, {"data": "manufactureQuantity","className":"td-right"//4
-				}, {"data": "totalRequisition","className":"td-right"//5
+				}, {"data": "totalRequisition","className":"td-right", "defaultContent" : '0'//5
 				}, {"data": "quantityOnHand","className":"td-right"	//6 可用库存
 				}, {"data": null,"className":"td-right"		//7
-				}, {"data": null,"className":"td-right","defaultContent" : '0'		//8
-				}, {"data": "purchaseType","className":"td-right"		//9
-				}, {"data": "supplierId","className":"td-right"		//10
-				}, {"data": "areaNumber"		//11
 				}
 			],
 			"columnDefs":[
@@ -156,10 +77,21 @@
 	    			var name =  jQuery.fixedWidth( row["materialName"],40);
 					var inputTxt =       '<input type="hidden" id="requisitionList'+index+'.overquantity" name="requisitionList['+index+'].overquantity" value=""/>';
 	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.materialid" name="requisitionList['+index+'].materialid" value="'+row["materialId"]+'"/>';
-	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.contractid" name="requisitionList['+index+'].contractid" value="'+row["contractId"]+'"/>';
-	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.supplierid" name="requisitionList['+index+'].supplierid" value="'+row["supplierId"]+'"/>';
+	    			//inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.contractid" name="requisitionList['+index+'].contractid" value="'+row["contractId"]+'"/>';
+	    			//inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.supplierid" name="requisitionList['+index+'].supplierid" value="'+row["supplierId"]+'"/>';
 	    			
 	    			return name + inputTxt;
+                }},
+	    		{"targets":3,"render":function(data, type, row){	    			
+	    			
+	    			var unit = row["unit"];	    			
+	    			var index=row["rownum"]
+	
+	    			if(unit == '吨'){
+	    				unit = '千克';//转换成公斤
+	    			}
+	    								
+	    			return unit;				 
                 }},
 	    		{"targets":4,"render":function(data, type, row){	    			
 	    			
@@ -169,75 +101,50 @@
 	    			var value = '0';
 	    			//alert(unit)
 	    			if(unit == '吨'){
-	    				value = formatNumber( qty * 1000 );//转换成公斤
+	    				value = floatToCurrency( qty * 1000 );//转换成公斤
 	    			}else{
-	    				value = formatNumber(qty);
+	    				value = floatToCurrency(qty);
 	    			}
 	    								
 	    			return value;				 
                 }},
+	    		{"targets":5,"render":function(data, type, row){	    			
+	    			
+	    			var qty = floatToCurrency(row["totalRequisition"]);			
+	    			return qty;				 
+                }},
+	    		{"targets":6,"render":function(data, type, row){	    			
+	    			
+	    			var qty = floatToCurrency(row["quantityOnHand"]);			
+	    			return qty;				 
+                }},
 	    		{"targets":7,"render":function(data, type, row){	
 	    			
 					var index=row["rownum"];	
-					/*
-					var qtyManuf  = currencyToFloat(row["manufactureQuantity"]);
-					var totalRequ = currencyToFloat(row["totalRequisition"]);	
-					var qtyOnHand = currencyToFloat(row["quantityOnHand"]);
-					var currValue = qtyManuf - totalRequ;
-					
-					if(currValue > 0){//未领完
-						if(qtyOnHand <= currValue)//库存不够
-							currValue = qtyOnHand;
-					}else{//已超领
-						currValue = 0;
-					}
-					currValue = formatNumber(currValue);
-					*/
 					var currValue = currencyToFloat(row["manufactureQuantity"]);
 					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="'+currValue+'"/>';
 				
 					return inputTxt;
-                }},/*
-	    		{"targets":9,"render":function(data, type, row){	    			
-
-					var qtyManuf  = currencyToFloat(row["manufactureQuantity"]);
-					var totalRequ = currencyToFloat(row["totalRequisition"]);	
-					var qtyOnHand = currencyToFloat(row["quantityOnHand"]);
-					var currValue = qtyManuf - totalRequ;
-					
-					if(currValue > 0){//未领完
-						if(qtyOnHand <= currValue)//库存不够
-							currValue = qtyOnHand;
-					}else{//已超领
-						currValue = 0;
-					}
-					
-					var surplus = (qtyManuf - totalRequ - currValue);	
-
-					if(surplus < 0)
-						surplus = 0;
-					return formatNumber(surplus);
-					
-                }},*/
+                }},
                 {
 					"visible" : false,
-					"targets" : [8,9,10]
+					"targets" : []
 				}
 			]
 			
 		}).draw();
 
 		
-		t.on('change', 'tr td:nth-child(9)',function() {
+		t.on('change', 'tr td:nth-child(8)',function() {
 
 			var $td = $(this).parent().find("td");
 
-			var $oArrival = $td.eq(4);//计划
 			var $oOverQty = $td.eq(2).find("input");//超领
-			var $oyiling  = $td.eq(6);//已领料
-			var $oTotalQt = $td.eq(7);//总库存
-			var $oCurrQty = $td.eq(8).find("input");//本次领料
-			var $oSurplus = $td.eq(9);//剩余
+			var $oArrival = $td.eq(4);//计划
+			var $oyiling  = $td.eq(5);//已领料
+			var $oTotalQt = $td.eq(6);//总库存
+			var $oCurrQty = $td.eq(7).find("input");//本次领料
+			//var $oSurplus = $td.eq(9);//剩余
 
 			var fArrival  = currencyToFloat($oArrival.text());
 			var fYiling   = currencyToFloat($oyiling.text());
@@ -260,10 +167,10 @@
 			}
 			
 			//剩余数量=计划 - 本次 - 已领
-			var fSurplus = fArrival - fYiling - fCurrQty;
-			if (fSurplus < 0)
-				fSurplus = 0;
-			$oSurplus.html(formatNumber(fSurplus));
+			//var fSurplus = fArrival - fYiling - fCurrQty;
+			//if (fSurplus < 0)
+			//	fSurplus = 0;
+			//$oSurplus.html(formatNumber(fSurplus));
 			$oCurrQty.val(fCurrQty);
 			$oOverQty.val(formatNumber(fOverQty));
 
@@ -313,26 +220,21 @@
 		
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/requisition";
+					var url = "${ctx}/business/requisitionzz";
 					location.href = url;		
 				});
 
 		$("#showHistory").click(
 				function() {
-					var YSId='${order.YSId }';
-					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId;
+					var taskId=$("#task\\.taskid").val();
+					var url = "${ctx}/business/requisitionzz?methodtype=getRequisitionHistoryInit&taskId="+taskId;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
-			var submitFlg = $('#requrisitionFlag').val();
-			if(submitFlg == '0'){
-				alert("该订单物料已全部领完。")
-				return;
-			}
 					
-			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insert");
+			$('#formModel').attr("action", "${ctx}/business/requisitionzz?methodtype=insert");
 			$('#formModel').submit();
 		});
 		
@@ -351,13 +253,6 @@
 		
 		foucsInit();
 		
-		var table = $('#example').DataTable();
-		// Event listener to the two range filtering inputs to redraw on input
-	    $('#yz, #ty, #dg, #bz, #all, #ycl, #wll').click( function() {
-	    	
-	    	 $('#selectedPurchaseType').val($(this).attr('id'));
-    		 table.draw();
-	    } );
 		
 	    //加载事件
         $(function () {
@@ -398,15 +293,17 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<input type="hidden" id="goBackFlag" />
-	<input type="hidden" id="requrisitionFlag" value="0"/>
-	<form:hidden path="requisition.ysid"  value="${order.YSId }" />
+	<form:hidden path="requisition.collectysid" value="${currentYsids} "/>
+	<form:hidden path="task.parentid"  />
+	<form:hidden path="task.subid"  />
+	<form:hidden path="task.recordid"  />
 	<fieldset>
-		<legend> 领料单</legend>
+		<legend> 自制品原材料领料单</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px">领料申请编号：</td>					
+				<td class="label" width="100px">领料单编号：</td>					
 				<td width="200px">
-					<form:input path="requisition.requisitionid" class="short required read-only" value="保存后自动生成" /></td>
+					<form:input path="task.taskid" class="short required read-only" /></td>
 														
 				<td width="100px" class="label">领料日期：</td>
 				<td width="200px">
@@ -417,19 +314,8 @@
 					<form:input path="requisition.requisitionuserid" class="short read-only" value="${userName }" /></td>
 			</tr>
 			<tr> 				
-				<td class="label">耀升编号：</td>					
-				<td>&nbsp;${order.YSId }</td>
-									
-				<td class="label">生产数量：</td>					
-				<td colspan="3">&nbsp;${order.totalQuantity }&nbsp;（订单数量 + 额外采购）</td>
-			</tr>
-			<tr>
-							
-				<td class="label">产品编号：</td>					
-				<td>&nbsp;${order.materialId }</td>
-							
-				<td class="label">产品名称：</td>					
-				<td colspan="3">&nbsp;${order.materialName }</td>
+				<td class="label">关联耀升编号：</td>				
+				<td colspan="5"><form:input path="task.collectysid" class="long read-only" /></td>
 			</tr>
 										
 		</table>
@@ -438,40 +324,27 @@
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >确认领料</a>
-		<a class="DTTT_button DTTT_button_text" id="print" onclick="doPrint();return false;">打印领料单</a>
+		<!-- <a class="DTTT_button DTTT_button_text" id="print" onclick="doPrint();return false;">打印领料单</a> -->
 		<a class="DTTT_button DTTT_button_text" id="showHistory" >查看领料记录</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 
 	<fieldset style="margin-top: -30px;">
-		<legend> 物料需求表</legend>
+		<legend> 原材料</legend>
 		<div class="list">
-			<div id="DTTT_container" align="left" style="height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
-				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
-				<a class="DTTT_button DTTT_button_text box" id="wll" data-id="5">未领物料</a>
-				<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a>
-				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
-				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
-				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>&nbsp;&nbsp;
-			 	<a class="DTTT_button DTTT_button_text box" id="ycl">自制品原材料</a>
-				<input type="hidden" id="selectedPurchaseType" />
-			</div>
 			<table id="example" class="display" >
 				<thead>				
 					<tr>
 						<th style="width:1px">No</th>
 						<th width="120px">物料编号</th>
-						<th >物料名称</th>				
-						<th width="60px">基本用量</th>
+						<th >物料名称</th>
+						<th width="50px">领料单位</th>				
 						<th width="60px">计划用量</th>
 						<th width="60px">已领数量</th>
-						<th width="60px">可用库存</th>
+						<th width="80px">可用库存</th>
 						<th width="80px">
 							<input type="checkbox" name="selectall" id="selectall"  checked="checked"/><label for="selectall">本次领料</label></th>
-						<th width="60px">剩余数量</th>
-						<th width="1px"></th>
-						<th width="1px"></th>
-						<th width="80px">库位</th>
+
 					</tr>
 				</thead>	
 			</table>
@@ -533,8 +406,7 @@ function reloadFn(){
 		
 	});	
 
-	if(countValue > '0')
-		$('#requrisitionFlag').val('1');//是否可以继续领料标识
+	
 	
 	$("#selectall").click(function () { 
 		
@@ -581,7 +453,7 @@ function reloadFn(){
 
 function doPrint() {
 	var YSId = '${order.YSId }';
-	var url = '${ctx}/business/requisition?methodtype=print';
+	var url = '${ctx}/business/requisitionzz?methodtype=print';
 	url = url +'&YSId='+YSId;
 		
 	callProductDesignView("print",url);

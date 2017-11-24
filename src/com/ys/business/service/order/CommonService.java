@@ -640,8 +640,11 @@ public class CommonService extends BaseService {
 			
 			rtn = Float.parseFloat(s.replace(",",""));
 			
-		}catch(Exception e){
-			System.out.println(e.getMessage());
+			if(Float.isInfinite(rtn) || Float.isNaN(rtn))
+				rtn = 0;
+			
+		}catch(NumberFormatException e){
+			e.printStackTrace();
 		}
 		
 		return rtn;		

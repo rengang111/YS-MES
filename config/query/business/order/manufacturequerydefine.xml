@@ -29,6 +29,34 @@
   </query>
   <query>
     <pool></pool>    
+    <name value="getRequisitionZZById" />
+     <where>
+       <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.collectYsid" alias="" ctype="" />
+      <f name="a.requisitionId" alias="" ctype="" />
+      <f name="a.requisitionDate" alias="" ctype="" />
+      <f name="a.storeUserId" alias="" ctype="" />
+      <f name="a.requisitionUserId" alias="" ctype="" />      
+      <f name="b.loginName" alias="storeUser" ctype="" />  
+      <f name="c.loginName" alias="requisitionUser" ctype="" />
+      <f name="a.deleteFlag" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_requisition a LEFT JOIN s_user b ON a.storeUserId=b.UserID AND b.deleteFlag='0' LEFT JOIN s_user c ON a.requisitionUserId=c.UserID AND c.deleteFlag='0'  where a.deleteFlag='0'</from>
+    <orderby>a.requisitionId </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
     <name value="getPurchasePlanByYSId" />
     <where>
     	<w name="A.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
@@ -58,7 +86,7 @@
   
     <groupby></groupby>
     <having></having>
-    <!--
+    
     <union>
 	    <where>
     		<w name="b.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
@@ -80,14 +108,14 @@
 	      <f name="''" alias="contractMaterialId" ctype="" />
 	      <f name="'原材料'" alias="purchaseTypeName" ctype="物料采购类别" />
 	      <f name="'050'" alias="purchaseType" ctype="" />
-      	  <f name="-" alias="areaNumber" ctype="" />
+      	  <f name="''" alias="areaNumber" ctype="" />
 	    </select>
 	    <from>v_purchaseplandetailzz b LEFT JOIN v_requisitiondetailgroup c ON b.rawMaterialId=c.materialId AND b.YSId=c.YSId AND c.deleteFlag='0' where</from>	
 	    <groupby></groupby>
 	    <having></having>
     </union>
-    -->
-    <orderby>a.materialId</orderby>
+    
+    <orderby>materialId</orderby>
 	<power></power>    
   </query>
   <query>
@@ -102,6 +130,24 @@
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>b_requisition a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
+  
+  <query>
+    <pool></pool>    
+    <name value="getMAXTaskId" />
+     <where>
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name=" IFNULL(MAX(a.subId+1),1)" alias="MaxSubId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_ProductionTask a</from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>
@@ -224,5 +270,66 @@
     <groupby></groupby>
     <having></having>
 	<power></power>    
+  </query>
+  
+  <query>
+    <pool></pool>    
+    <name value="getRawMaterialList" />
+    <where>
+    	<w name="b.YSId" des="" reqName="YSId" dtype="ch" oper="in" lg="AND" bt="" />
+    </where>
+  	<select>
+	      <f name="b.rawMaterialId" alias="materialId" ctype="" />
+	      <f name="b.materialName" alias="" ctype="" />
+	      <f name="SUM(REPLACE(b.totalQuantity,',',''))" alias="manufactureQuantity" ctype="" />
+	      <f name="b.quantityOnHand" alias="" ctype="" />
+	      <f name="b.availabelToPromise" alias="" ctype="" />
+	      <f name="IFNULL(c.quantity,'0')" alias="totalRequisition" ctype="" />
+	      <f name="b.unit" alias="" ctype="计量单位" />
+	      <f name="b.unit" alias="unitId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+   <from>v_purchaseplandetailzz b LEFT JOIN v_requisitiondetailgroup c ON b.rawMaterialId = c.materialId AND c.YSId='#' AND c.deleteFlag = '0'</from>
+    <orderby>b.rawMaterialId</orderby>
+    <groupby>b.rawMaterialId</groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getOrderListForZZ" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="B.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="b.materialId" alias="" ctype="" />
+      <f name="b.materialName" alias="" ctype="" />
+      <f name="b.PIId" alias="" ctype="" />
+      <f name="b.YSId" alias="" ctype="" />
+      <f name="b.quantity" alias="" ctype="" />
+      <f name="b.price" alias="" ctype="" />
+      <f name="b.totalprice" alias="" ctype="" />
+      <f name="b.totalQuantity" alias="" ctype="" />
+      <f name="b.status" alias="statusName" ctype="订单状态" />
+      <f name="b.status" alias="" ctype="" />
+      <f name="b.returnQuantity" alias="" ctype="" />
+      <f name="b.orderCost" alias="" ctype="" />
+      <f name="b.orderDate" alias="" ctype="" />
+      <f name="b.deliveryDate" alias="" ctype="" />
+      <f name="b.storageDate" alias="" ctype="" />
+      <f name="b.rebateRate" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
+    <from>v_orderdetailforzz AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid AND (b.status='020' OR b.status='030') AND b.deleteFlag='0'</from>
+    <orderby>A.YSId DESC </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
   </query>
 </root>

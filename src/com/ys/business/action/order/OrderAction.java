@@ -512,7 +512,11 @@ public class OrderAction extends BaseAction {
 
 	public HashMap<String, Object>  ysidExistCheck() throws Exception
 	{
-	    return this.orderService.ysidExistCheck();
+		String YSId = request.getParameter("YSId");
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		String ExFlag = orderService.ysidExistCheck(YSId);
+		dataMap.put("ExFlag",ExFlag);
+	    return dataMap;
 	 
 	}
 	

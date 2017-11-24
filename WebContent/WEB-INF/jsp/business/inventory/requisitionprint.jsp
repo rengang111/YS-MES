@@ -159,6 +159,21 @@ function ajaxFn(scrollHeight) {
 
 	    			return "&nbsp;&nbsp;"+data;
                 }},
+	    		{"targets":4,"render":function(data, type, row){	    			
+	    			
+	    			var unit = row["unit"];	    			
+	    			var index=row["rownum"]
+	    			var qty = currencyToFloat(row["manufactureQuantity"]);
+	    			var value = '0';
+	    			//alert(unit)
+	    			if(unit == '吨'){
+	    				value = formatNumber( qty * 1000 );//转换成公斤
+	    			}else{
+	    				value = formatNumber(qty);
+	    			}
+	    								
+	    			return value;				 
+                }},
                 {
 					"visible" : false,
 					"targets" : [3,6,8,9,10]
@@ -239,7 +254,8 @@ function ajaxFn(scrollHeight) {
 				<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a>
 				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
 				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
-				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>
+				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>&nbsp;&nbsp;
+			 	<a class="DTTT_button DTTT_button_text box" id="ycl">自制品原材料</a>
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
 			<table id="example" class="display" width="100%">

@@ -407,7 +407,6 @@ public class OrderService extends CommonService  {
 
 		try {
 
-			//int YSMaxid = getYSIdByParentId(request);
 			
 			ts.begin();
 					
@@ -430,7 +429,6 @@ public class OrderService extends CommonService  {
 
 					insertOrderDetail(data,piId, userInfo);
 					
-					//YSMaxid++;
 								
 				}	
 			
@@ -479,15 +477,24 @@ public class OrderService extends CommonService  {
 	 */
 	private void insertOrderDetail(
 			B_OrderDetailData newData,
-			//int YSMaxid ,
 			String piId,
 			UserInfo userInfo) throws Exception{
 
 		B_OrderDetailDao dao = new B_OrderDetailDao();
 
-		//String parentid = BusinessService.getYSCommCode();
+		String ysid = newData.getYsid();
+		//耀升编号重复check
+		String existFlag = ysidExistCheck(ysid);
 		
-		//String ysid = BusinessService.getYSFormatCode(YSMaxid,false);
+		//如果重复的话,重新设置
+		if(("1").equals(existFlag)){
+	        String paternId = BusinessService.getYSCommCode();
+			int YSMaxid = getYSIdByParentId(paternId);
+			ysid = BusinessService.getYSFormatCode(YSMaxid,true);
+			
+			newData.setParentid(paternId);
+			newData.setSubid(String.valueOf(YSMaxid+1));
+		}
 			
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"OrderDetailInsert",userInfo);
@@ -495,16 +502,14 @@ public class OrderService extends CommonService  {
 		guid = BaseDAO.getGuId();
 		newData.setRecordid(guid);
 		newData.setParentid(newData.getYsid().substring(0, 4));//临时设置
-		String subid = newData.getYsid().substring(4);
-		String split[] = subid.split("-");
-		if(split != null && split.length >1){
-			subid = split[0];
-		}
-		newData.setSubid(subid);//临时设置
-		//newData.setParentid(parentid);
-		//newData.setSubid(String.valueOf(YSMaxid+1));
+		//String subid = newData.getYsid().substring(4);
+		//String split[] = subid.split("-");
+		//if(split != null && split.length >1){
+		//	subid = split[0];
+		//}
+		//newData.setSubid(subid);//临时设置
 		newData.setPiid(piId);
-		//newData.setYsid(ysid);
+		newData.setYsid(ysid);
 		newData.setCurrency(reqModel.getCurrency());
 		newData.setStatus(Constants.ORDER_STS_1);
 		newData.setReturnquantity(Constants.ORDER_RETURNQUANTY);
@@ -879,24 +884,19 @@ public class OrderService extends CommonService  {
 	/*
 	 * 取得耀升编号的流水号
 	 */
-	public int getYSIdByParentId(HttpServletRequest request) 
+	public int getYSIdByParentId(String paternId) 
 			throws Exception {
 		
 		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
 		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-		
+		BaseQuery baseQuery = null;		
   
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getYSIdByParentId");
-		
+		dataModel.setQueryName("getYSIdByParentId");		
 		baseQuery = new BaseQuery(request, dataModel);
 
-		//查询条件
-        String paternId = BusinessService.getYSCommCode();
-        
-		userDefinedSearchCase.put("keywords1", paternId);
-		
+		//查询条件        
+		userDefinedSearchCase.put("keywords1", paternId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsQueryData(0, 0);	 
 		
@@ -1088,22 +1088,18 @@ public class OrderService extends CommonService  {
 	
 	
 	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> ysidExistCheck() throws Exception{
+	public String ysidExistCheck(String YSId) throws Exception{
 
 		String ExFlag = "";
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		String YSId = request.getParameter("YSId");
-
 		String where = " ysid = '"+YSId +"' AND deleteFlag='0' " ;
 		B_OrderDetailDao dao = new B_OrderDetailDao();
 		List<B_OrderData> list; 
 		list = (List<B_OrderData>)dao.Find(where);	
 		if(list != null && list.size() > 0){
 			ExFlag = "1";
-		}	
-		modelMap.put("ExFlag",ExFlag);
+		}
 			
-		return modelMap;		
+		return ExFlag;		
 	}
 	
 }

@@ -139,7 +139,7 @@ public class BusinessService {
 	}
 
 	/**
-	 * 2位流水号格式化处理
+	 * 3位流水号格式化处理
 	 * blAdd:是否要递增
 	 */
 	public static String getFormat3Code(int code,boolean blAdd)
@@ -446,7 +446,36 @@ public class BusinessService {
 		
 		return "O"+ysid+"-"+ ft;
 	 }
+	 
+	 /**
+		 * 自制品任务编号
+		 * @return 17ZZLL-001 3位流水号
+		 */
+	 public static String getProductionTaskId(String parentId,String code) {
+
+		int num = 0;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
 		
+		String ft = BusinessService.getFormatCode(num,false);
+		
+		return  parentId + "-" + ft;
+	 }
+	 
+	 /**
+		 * 自制品领料单编号
+		 * @return 17ZZLL-001-1 1位流水号
+		 */
+	 public static String getRequisitionZZId(String parentId,String code) {
+
+		int num = 0;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		
+		//String ft = BusinessService.getFormatCode(num,false);
+		
+		return  parentId + "-" + num;
+	 }
 
 	/**
 	 * 退货单编号

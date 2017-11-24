@@ -44,6 +44,7 @@ public class BusinessConstants {
 	public static final String SHORTNAME_YEAR_YY = "yy";
 	public static final String SHORTNAME_YEAR_MM = "MM";
 	public static final String SHORTNAME_IQC = "IQC";
+	public static final String SHORTNAME_LLZZ = "LLZZ";
 	public static final String FORMAT_000 = "000";
 	public static final String FORMAT_00 = "00";
 	public static final String CUSTOMER_MUN = "000";
