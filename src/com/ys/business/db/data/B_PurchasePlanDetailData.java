@@ -242,6 +242,19 @@ public class B_PurchasePlanDetailData implements java.io.Serializable
 	/**
 	*
 	*/
+	private int contractflag;
+	public int getContractflag()
+	{
+		return this.contractflag;
+	}
+	public void setContractflag(int contractflag)
+	{
+		this.contractflag=contractflag;
+	}
+
+	/**
+	*
+	*/
 	private String deptguid;
 	public String getDeptguid()
 	{
@@ -371,7 +384,7 @@ public class B_PurchasePlanDetailData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("purchaseid = "+(purchaseid == null ? "null" : purchaseid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("purchasetype = "+(purchasetype == null ? "null" : purchasetype)+"\n");		sb.append("unitquantity = "+(unitquantity == null ? "null" : unitquantity)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("suppliershortname = "+(suppliershortname == null ? "null" : suppliershortname)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("pricestatus = "+(pricestatus == null ? "null" : pricestatus)+"\n");		sb.append("manufacturequantity = "+(manufacturequantity == null ? "null" : manufacturequantity)+"\n");		sb.append("purchasequantity = "+(purchasequantity == null ? "null" : purchasequantity)+"\n");		sb.append("totalrequisition = "+(totalrequisition == null ? "null" : totalrequisition)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("subbomno = "+(subbomno == null ? "null" : subbomno)+"\n");		sb.append("version = "+version+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("purchaseid = "+(purchaseid == null ? "null" : purchaseid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("materialid = "+(materialid == null ? "null" : materialid)+"\n");		sb.append("purchasetype = "+(purchasetype == null ? "null" : purchasetype)+"\n");		sb.append("unitquantity = "+(unitquantity == null ? "null" : unitquantity)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("suppliershortname = "+(suppliershortname == null ? "null" : suppliershortname)+"\n");		sb.append("price = "+(price == null ? "null" : price)+"\n");		sb.append("pricestatus = "+(pricestatus == null ? "null" : pricestatus)+"\n");		sb.append("manufacturequantity = "+(manufacturequantity == null ? "null" : manufacturequantity)+"\n");		sb.append("purchasequantity = "+(purchasequantity == null ? "null" : purchasequantity)+"\n");		sb.append("totalrequisition = "+(totalrequisition == null ? "null" : totalrequisition)+"\n");		sb.append("totalprice = "+(totalprice == null ? "null" : totalprice)+"\n");		sb.append("subbomno = "+(subbomno == null ? "null" : subbomno)+"\n");		sb.append("version = "+version+"\n");		sb.append("contractflag = "+contractflag+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 

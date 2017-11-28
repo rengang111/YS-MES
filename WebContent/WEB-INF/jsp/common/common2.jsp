@@ -204,3 +204,4 @@
 	}
 </Script>
 
+<div class="loading" style="z-index: 100;width:60px; height:24px; position:absolute;left:50%;top:120%;margin-left:-30px;margin-top:-12px;"><img src="${ctx}/images/loading.gif"/></div>

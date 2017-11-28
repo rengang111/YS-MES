@@ -292,13 +292,27 @@ public class PurchaseOrderService extends CommonService {
 		try {
 			ts.begin();
 
-			String[] reqSupplierArray = inData.split(","); 
-			List<String> reqSupplierList = Arrays.asList(reqSupplierArray);
-			List<String> reqContractList = new ArrayList<String>();
-			reqSupplierList = removeDuplicate(reqSupplierList);
+			String[] reqSupplierArray = inData.split(",");
+			List<String> reqSupplier = new ArrayList<String>();
+			List<String> reqSupplierList = new ArrayList<String>();
+			List<B_PurchasePlanDetailData> reqMaterail = new ArrayList<B_PurchasePlanDetailData>();
+			for(int i=0;i<reqSupplierArray.length;i++){
+				String[] tmp = reqSupplierArray[i].split(":");
+				reqSupplier.add(i,tmp[0]);
+				
+				B_PurchasePlanDetailData plan = new B_PurchasePlanDetailData();
+				plan.setRecordid(tmp[1]);
+				
+				reqMaterail.add(i,plan);
+			}
+			updatePurchasePlanDetail(reqMaterail);//更新采购方案,标识出本次创建合同的物料
+
+			reqSupplierList = removeDuplicate(reqSupplier);
 			String materialId = request.getParameter("materialId");
 			String contractDelivery = request.getParameter("contractDelivery");
 
+			//更新采购方案,标识出本次创建合同的物料
+			//List<B_PurchasePlanDetailData> planDetail = getPurchasePlanDetail(YSId);
 			
 			//采购合同****************************************************
 			
@@ -309,6 +323,7 @@ public class PurchaseOrderService extends CommonService {
 					getPurchaseOrderDetailFromDB(YSId);
 			
 			//旧数据抵消处理:合同
+			List<String> reqContractList = new ArrayList<String>();
 			for(B_PurchaseOrderData db:contractDBList){
 
 				//int versionOrder = db.getVersion();
@@ -594,49 +609,26 @@ public class PurchaseOrderService extends CommonService {
 		dao.Store(data);
 		
 	}
-	//更新虚拟库存:生成合同时增加“待入库”
-		@SuppressWarnings("unchecked")
-		private void updatePurchasePlanDetail(
-				String ysid,
-				String materialId,
-				float reqPrice,
-				float reqQuantity) throws Exception{
-		/*
-			B_PurchasePlanDetailData data = new B_PurchasePlanDetailData();
-			
-			String where = "ysid ='"+ ysid + "' AND materialId ='"+ materialId + "' AND deleteFlag='0' ";
-			
-			List<B_PurchasePlanDetailData> list = 
-					(List<B_PurchasePlanDetailData>)new B_PurchasePlanDetailDao().Find(where);
-			
-			for(B_PurchasePlanDetailData dt:list){
-				//当前库存数量
-				float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
-				float iWaitOut = stringToFloat(data.getWaitstockout());//待出库
-				float iWaitIn  = stringToFloat(data.getWaitstockin());//待入库
-				
-				//iWaitOut = iWaitOut + stringToFloat(requirementOut);
-				iWaitIn = iWaitIn + stringToFloat(purchaseIn);
-				
-				//虚拟库存 = 当前库存 + 待入库 - 待出库
-				float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		
-				
-				//更新DB
-				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-						"PurchasePlanInsert",userInfo);
-				copyProperties(data,commData);
-				
-				data.setAvailabeltopromise(String.valueOf(availabeltopromise));//虚拟库存
-				//data.setWaitstockout(String.valueOf(iWaitOut));//待出库
-				data.setWaitstockin(String.valueOf(iWaitIn));//待入库
-				
-				new B_PurchasePlanDetailDao().Store(data);
-			}
+	/**
+	 * 更新采购方案
+	 * @param list
+	 * @throws Exception
+	 */
+	private void updatePurchasePlanDetail(
+			List<B_PurchasePlanDetailData> list) throws Exception{
 
-			*/
+		for(B_PurchasePlanDetailData dt:list){
 			
+			dt = new B_PurchasePlanDetailDao(dt).beanData;
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"createContract",userInfo);
+			copyProperties(dt,commData);			
+			dt.setContractflag(0);//本次创建合同
 			
-		}
+			new B_PurchasePlanDetailDao().Store(dt);
+		}		
+	}
 	
 	/*
 	 * delete处理

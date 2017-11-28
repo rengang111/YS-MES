@@ -665,4 +665,155 @@
     <having></having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="getOrderListForPurchasePlan" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.detailRecordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.orderRecordId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.customerFullName" alias="" ctype="" />
+      <f name="A.sysValue" alias="" ctype="" />
+      <f name="A.team" alias="" ctype="业务组" />
+      <f name="A.orderCompany" alias="" ctype="" />
+      <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
+      <f name="A.productClassify" alias="" ctype="" />
+      <f name="A.returnQuantity" alias="" ctype="" />
+      <f name="A.orderCost" alias="" ctype="" />
+      <f name="A.storageDate" alias="" ctype="" />
+      <f name="A.rebateRate" alias="" ctype="" />
+      <f name="C.YSId" alias="planYsid" ctype="" />
+      <f name="C.contractFlag" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_orderlist AS A , ( SELECT b.YSId,SUM(b.contractFlag) contractFlag FROM b_purchaseplandetail b where # GROUP BY b.YSId HAVING SUM(b.contractFlag) > 0) AS c where a.YSId=c.ysid  AND A.deleteFlag = '0'</from>
+    <orderby>A.YSId DESC </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getOrderListForPurchasePlan2" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.status"  des=""  reqName="status" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.detailRecordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.orderRecordId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.customerFullName" alias="" ctype="" />
+      <f name="A.sysValue" alias="" ctype="" />
+      <f name="A.team" alias="" ctype="业务组" />
+      <f name="A.orderCompany" alias="" ctype="" />
+      <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
+      <f name="A.productClassify" alias="" ctype="" />
+      <f name="A.status" alias="statusName" ctype="订单状态" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.returnQuantity" alias="" ctype="" />
+      <f name="A.orderCost" alias="" ctype="" />
+      <f name="A.storageDate" alias="" ctype="" />
+      <f name="A.rebateRate" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_orderlist AS A where A.deleteFlag = '0'</from>
+    <orderby>A.YSId DESC </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getOrderListForPurchasePlan3" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.detailRecordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.orderRecordId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.customerFullName" alias="" ctype="" />
+      <f name="A.sysValue" alias="" ctype="" />
+      <f name="A.team" alias="" ctype="业务组" />
+      <f name="A.orderCompany" alias="" ctype="" />
+      <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
+      <f name="A.productClassify" alias="" ctype="" />
+      <f name="A.returnQuantity" alias="" ctype="" />
+      <f name="A.orderCost" alias="" ctype="" />
+      <f name="A.storageDate" alias="" ctype="" />
+      <f name="A.rebateRate" alias="" ctype="" />
+      <f name="C.YSId" alias="planYsid" ctype="" />
+      <f name="C.contractFlag" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_orderlist AS A , ( SELECT b.YSId,SUM(b.contractFlag) contractFlag FROM b_purchaseplandetail b GROUP BY b.YSId HAVING SUM(b.contractFlag) = 0) AS c where a.YSId=c.ysid  AND A.deleteFlag = '0'</from>
+    <orderby>A.YSId DESC </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>

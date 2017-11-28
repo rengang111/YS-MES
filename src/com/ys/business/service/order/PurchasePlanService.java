@@ -90,12 +90,14 @@ public class PurchasePlanService extends CommonService {
 		
 	}
 
-	public HashMap<String, Object> getBomList(String data) throws Exception {
+	public HashMap<String, Object> getOrderList(String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		dataModel = new BaseModel();
 
 		data = URLDecoder.decode(data, "UTF-8");
+		String sqlFlag=request.getParameter("sqlFlag");
+		String materialType=request.getParameter("materialType");
 		
 		int iStart = 0;
 		int iEnd =0;
@@ -114,25 +116,46 @@ public class PurchasePlanService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 
-		dataModel.setQueryFileName("/business/order/purchasequerydefine");
-		dataModel.setQueryName("getBomList");
-		
 		baseQuery = new BaseQuery(request, dataModel);
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		if(("new").equals(sqlFlag)){
+			dataModel.setQueryName("getOrderListForPurchasePlan2");//新合同			
+		}else if(("contract").equals(sqlFlag)){
+			dataModel.setQueryName("getOrderListForPurchasePlan3");//合同全部完成
+		}else{
+			dataModel.setQueryName("getOrderListForPurchasePlan");//合同完成部分
+		}
+		String tmpWhere = "";
+		if( ("yszz").equals(materialType) ){
+			tmpWhere = " b.supplierId='0574YZ00' ";
+		}else if(("order").equals(materialType)){
+			tmpWhere = " b.purchaseType='010' AND b.supplierId<>'0574YZ00' ";
+		}else if(("package").equals(materialType)){
+			tmpWhere = " left(b.materialId,1)='G' ";
+		}
+		
 		userDefinedSearchCase = new HashMap<String, String>();
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2))
+			userDefinedSearchCase.put("status", "");//有查询内容时,不再添加其他条件
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
 		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
+		String sql = baseQuery.getSql();
+		sql = getSortKeyFormWeb(data,baseQuery);	
+		sql = sql.replace("#", tmpWhere);
+		
+		baseQuery.getYsQueryData(sql,tmpWhere,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
 		}		
-		
 		modelMap.put("sEcho", sEcho);		
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());	
 		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
 		
 		return modelMap;
 	}
@@ -276,40 +299,47 @@ public class PurchasePlanService extends CommonService {
 			int version = updatePurchasePlan(reqPlan);
 						
 			//更新前数据取得
-			List<B_PurchasePlanDetailData> oldDBList = getPurchasePlanDetail(YSId);	
+			List<B_PurchasePlanDetailData> DBList = getPurchasePlanDetail(YSId);	
 			
 			//新数据:采购方案处理
-			List<B_PurchasePlanDetailData> list = reqModel.getPlanDetailList();		
+			List<B_PurchasePlanDetailData> webList = reqModel.getPlanDetailList();		
 			
 			//找出页面删除的数据
 			List<B_PurchasePlanDetailData> deleteList = new ArrayList<B_PurchasePlanDetailData>();
-			for(B_PurchasePlanDetailData detail:oldDBList){
-				String reqMate = detail.getMaterialid();
-				String reqSubNo = detail.getSubbomno();
-				String reqSupp = detail.getSupplierid();
+			
+			for(B_PurchasePlanDetailData db:DBList){
+				String reqMate = db.getMaterialid();
+				String reqSubNo = db.getSubbomno();
+				String reqSupp = db.getSupplierid();
 				if(isNullOrEmpty(reqMate))
 					continue;
 				
 				boolean exflg = true;
-				for(B_PurchasePlanDetailData db:list){
+				for(B_PurchasePlanDetailData web:webList){
 					
-					String dbMate = db.getMaterialid();
-					String dbSubNo = db.getSubbomno();  
-					String dbSupp = db.getSupplierid();
+					String dbMate = web.getMaterialid();
+					String dbSubNo = web.getSubbomno();  
+					String dbSupp = web.getSupplierid();
 					
-					if( reqMate.equals(dbMate) && 
+					if( reqMate.equals(dbMate)  && 
 						reqSubNo.equals(dbSubNo) &&
-						reqSupp.equals(dbSupp) ){	
+						reqSupp.equals(dbSupp) ){						
+					
+						web.setContractflag(db.getContractflag());//
+						web.setPurchasetype(db.getPurchasetype());
 						
-							exflg = false;
-							break;
-					}
+						exflg = false;
+						break;
+						
+					}//物料是否存在判定
 				}
+				
 				if(exflg){
 					B_PurchasePlanDetailData d = new B_PurchasePlanDetailData();
-					copyProperties(d,detail);					
+					copyProperties(d,db);					
 					deleteList.add(d);
 				}
+				
 			}
 			
 			//旧数据:二级BOM(原材料)的待出库"减少"处理
@@ -329,7 +359,7 @@ public class PurchasePlanService extends CommonService {
 			}
 			
 			//旧数据:采购方案,的待出库"减少"处理
-			for(B_PurchasePlanDetailData old:oldDBList){
+			for(B_PurchasePlanDetailData old:DBList){
 
 				String oldmaterilid = old.getMaterialid();				
 
@@ -347,23 +377,29 @@ public class PurchasePlanService extends CommonService {
 			}//for
 						
 			//新数据:采购方案处理			
-			for(B_PurchasePlanDetailData detail:list){
+			for(B_PurchasePlanDetailData detail:webList){
 				String materilid = detail.getMaterialid();
-				if(materilid == null || ("").equals(materilid)){
+				float purchase = stringToFloat(detail.getPurchasequantity());
+				if(materilid == null || ("").equals(materilid))
 					continue;		
-				}
+				
+				if(purchase == 0)
+					detail.setContractflag(0);//不采购的不做合同				
+				if(materilid.substring(0,1).equals("H"))
+					detail.setContractflag(0);//人工成本不做合同
+				
 				detail.setPurchaseid(purchaseId);
 				detail.setYsid(YSId);
 				detail.setVersion(version);
 				insertPurchasePlanDetail(detail);			
 
 				//更新虚拟库存
-				//String purchase = detail.getPurchasequantity();
 				String requirement = detail.getManufacturequantity();
 
 				updateMaterial(materilid,"0",requirement);
 				
-			}//for			
+			}//for
+			
 			
 			//采购合同****************************************************
 			

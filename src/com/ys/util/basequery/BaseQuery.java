@@ -139,7 +139,12 @@ public class BaseQuery {
     	
     	return recordCount;
     }
-    
+    public int getRecodCount(String where) throws Exception {
+    	int recordCount = getRecordCount(sqlCount, getQueryConnectionDefine(commonModel.getQueryName()),where);
+    	pageBean.setCount(recordCount);
+    	
+    	return recordCount;
+    }
     public ArrayList<ArrayList<String>> getFullData() throws Exception {
 		sql = getSql();
 		
@@ -207,6 +212,26 @@ public class BaseQuery {
 		return ysViewData;
 
 	}
+
+	public ArrayList<HashMap<String, String>> getYsQueryData(
+			String sql,String where, int iStart, int iEnd) throws Exception {
+
+		ArrayList<HashMap<String, String>> ysViewData = null;
+		this.sql = sql;
+		//getSql();
+		
+		int recordCount = getRecodCount(where);
+		
+		ysViewData = getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), iStart, iEnd, true);
+		
+		commonModel.setYsViewData(ysViewData);
+		commonModel.setRecordCount(recordCount);
+		//commonModel.setTurnPageHtml(this.getTurnPageHtml());
+
+		return ysViewData;
+
+	}
+
 	public ArrayList<HashMap<String, String>> getYsQueryData(int iStart, int iEnd) throws Exception {
 
 		ArrayList<HashMap<String, String>> ysViewData = null;
@@ -401,6 +426,15 @@ public class BaseQuery {
 		recordCount = Integer.parseInt(result.get(0).get(0));
 		
 		//totalSum
+		
+		return recordCount;
+	}	
+	
+	private int getRecordCount(String sqlCount, String dataSourceName,String where) throws Exception {
+		int recordCount = 0;
+		sqlCount = sqlCount.replace("#", where);
+		ArrayList<ArrayList<String>> result = execQuery(sqlCount, dataSourceName);
+		recordCount = Integer.parseInt(result.get(0).get(0));
 		
 		return recordCount;
 	}	

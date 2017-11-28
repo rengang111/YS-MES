@@ -145,10 +145,6 @@ public class OrderAction extends BaseAction {
 				dataMap = ysidExistCheck();
 				printOutJsonObj(response, dataMap);
 				return null;
-			case "purchasePlanSearch":
-				dataMap = doSearchOrderList(Constants.FORM_PURCHASEPLAN,data);
-				printOutJsonObj(response, dataMap);
-				break;		
 			case "getYsidList":
 				dataMap = getYsidList();
 				printOutJsonObj(response, dataMap);

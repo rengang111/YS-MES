@@ -75,7 +75,7 @@ public class PurchasePlanAction extends BaseAction {
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
-				break;							
+				break;
 			case "purchasePlan":
 				//doShowBomDetail();
 				rtnUrl = "/business/purchaseplan/purchaseplanedit";
@@ -167,11 +167,11 @@ public class PurchasePlanAction extends BaseAction {
 		String sessionFlag = request.getParameter("sessionFlag");
 		if(("false").equals(sessionFlag)){
 			session.removeAttribute(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD2);
-			
-		}
+			session.removeAttribute(Constants.FORM_PURCHASEPLAN+Constants.FORM_KEYWORD2);			
+		}		
+		
 		try {
-			dataMap = purchaseService.getBomList(data);
+			dataMap = purchaseService.getOrderList(data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {

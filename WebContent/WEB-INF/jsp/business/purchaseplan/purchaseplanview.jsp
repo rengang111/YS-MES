@@ -98,6 +98,7 @@ function initEvent(){
 
 	$(document).ready(function() {		
 
+		$(".loading").hide();
 		$(".read-only").attr( 'readonly',true)
 		$( "#tabs" ).tabs();
 		
@@ -128,24 +129,34 @@ function initEvent(){
 			var actionUrl = "${ctx}/business/contract?methodtype=creatPurchaseOrder&YSId="
 			+YSId+"&materialId="+materialId+"&contractDelivery="+contractDelivery
 			+"&quantity="+quantity;
-//alert(actionUrl+"OOOOOO"+str)
+
 			if (str != '') {
-				//if(confirm("采购方案,采购合同,全部会被删除,\n\n        确定要删除订单吗？")) {
-					jQuery.ajax({
-						type : 'POST',
-						async: false,
-						contentType : 'application/json',
-						dataType : 'json',
-						data : str,
-						url : actionUrl,
-						success : function(data) {
-							$('#example').DataTable().ajax.reload(false);					
-						},
-						error:function(XMLHttpRequest, textStatus, errorThrown){
-			            	alert(errorThrown);
-						}
-					});
-				//}
+
+				jQuery.ajax({
+					type : 'POST',
+					async: false,
+					contentType : 'application/json',
+					dataType : 'json',
+					data : str,
+					url : actionUrl,
+					async: false, //同步请求，默认情况下是异步（true）
+					success : function(data) {
+						$().toastmessage('showNoticeToast', "合同创建成功。");
+						$('#example').DataTable().ajax.reload(false);	
+						
+					},
+					beforeSend: function(){
+						$('#createPurchaseOrder').attr("disabled","true").removeClass("DTTT_button");
+						$(".loading").show();
+					},
+					complete: function () {
+						$('#createPurchaseOrder').removeAttr("disabled").addClass("DTTT_button");
+					    $(".loading").hide();  
+					},					
+					error:function(XMLHttpRequest, textStatus, errorThrown){
+		            	alert("error:"+errorThrown);
+					}
+				});
 			} else {
 				alert("请至少选择一条数据");
 			}
@@ -376,7 +387,7 @@ function initEvent(){
 						if(planQty <= '0'){
 							txt = txt + '本次不采购';
 						}else{
-							txt = txt + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["supplierId"] + "' />";	
+							txt = txt + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["supplierId"] +":"+ row["recordId"] + "' />";	
 							txt = txt + '新建合同';
 						}
 					}else{//做过合同
@@ -890,7 +901,6 @@ function ZZmaterialView() {
 <div id="container">
 <!--主工作区,编辑页面或查询显示页面-->
 <div id="main">
-
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">		
 		
@@ -1035,13 +1045,13 @@ function ZZmaterialView() {
 				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
 				<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a>
 				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
-				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
 				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>
+				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
 			<div id="DTTT_container" style="float:right;height:40px;margin: 5px 0px -10px 10px;">
 				<b>合同交期：<input type="text" id="contractDelivery"  value=""  class=short/></b>&nbsp;&nbsp;&nbsp;&nbsp;
-				<a class="DTTT_button" id="createPurchaseOrder">选中并生成采购合同</a>
+				<button type="button" id="createPurchaseOrder" class="DTTT_button">选中并生成采购合同</button>
 			</div>
 		<table id="example" class="display" >
 			<thead>				

@@ -48,7 +48,9 @@
 '<td><input type="text" name="planDetailList['+counter+'].supplierid" id="planDetailList'+counter+'.supplierid"  class="supplierid short"/></td>',
 '<td class="td-right"><input type="text" name="planDetailList['+counter+'].price"      id="planDetailList'+counter+'.price" class="num mini" /></td>',
 '<td class="td-right"><span id="totalPrice'+counter+'"></span><input type="hidden"   name="planDetailList['+counter+'].totalprice" id="planDetailList'+counter+'.totalprice"/></td>',
-'<td class="td-right"><span></span><input type="hidden"   name="planDetailList['+counter+'].suppliershortname" id="planDetailList'+counter+'.suppliershortname"/></td>',
+'<td class="td-right"><span></span>'+
+'<input type="hidden"   name="planDetailList['+counter+'].suppliershortname" id="planDetailList'+counter+'.suppliershortname"/>'+
+'<input type="hidden"   name="planDetailList['+counter+'].contractflag" id="planDetailList'+counter+'.contractflag" value="1" /></td>',
 				
 						]).draw();
 						
@@ -112,7 +114,10 @@
 	};
 	
 	$(document).ready(function() {		
-
+		
+		//$(".loading").hide();
+		//$(".loading").attr("top","80%");
+		
 		baseBomView();//基础BOM
 		
 		autocomplete();		
@@ -135,7 +140,10 @@
 		
 		$("#updateOrderBom").click(
 				function() {
-
+			
+			//$(".loading").show();
+			$('#updateOrderBom').attr("disabled","true").removeClass("DTTT_button");
+			
 			var materialId='${order.materialId}';
 			var YSId ="${order.YSId}";
 			var quantity ="${order.quantity}";
@@ -443,6 +451,7 @@
 	    
 	    	<form:hidden path="planDetailList[${status.index}].recordid" value="${bom.recordId }" />
 	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" />
+	    	<form:hidden path="planDetailList[${status.index}].contractflag" value="1" />
 	</tr>
 	<script type="text/javascript">
 		var index = '${status.index}';
