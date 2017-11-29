@@ -396,10 +396,10 @@ function initEvent(){
 							txt = txt + "采购无变化"
 						}else{
 							if(planQty <= '0'){
-								txt = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["supplierId"] + "' />";	
+								txt = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["supplierId"]  +":"+ row["recordId"]+ "' />";	
 								txt = txt + '采购有变化'
 							}else{
-								txt = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["supplierId"] + "' />";	
+								txt = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["supplierId"]  +":"+ row["recordId"]+ "' />";	
 								txt = txt + "采购有变化"
 							}
 						}
