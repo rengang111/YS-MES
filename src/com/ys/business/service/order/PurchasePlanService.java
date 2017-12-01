@@ -316,7 +316,10 @@ public class PurchasePlanService extends CommonService {
 					
 					if( reqMate.equals(dbMate)  && 
 						reqSubNo.equals(dbSubNo) &&
-						reqSupp.equals(dbSupp) ){						
+						reqSupp.equals(dbSupp) ){
+						
+						web.setContractflag(db.getContractflag());//
+						web.setPurchasetype(db.getPurchasetype());
 						
 						exflg = false;
 						break;
@@ -1082,7 +1085,9 @@ public class PurchasePlanService extends CommonService {
 				//update处理	
 				dbPlan = list.get(0);	
 				purchaseId = dbPlan.getPurchaseid();
-				
+				if(isNullOrEmpty(purchaseId))
+					purchaseId = getPurchaseId(YSId);
+				dbPlan.setPurchaseid(purchaseId);
 				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 						"purchasePlanUpdate",userInfo);			
 				copyProperties(dbPlan,commData);
