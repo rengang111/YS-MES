@@ -205,7 +205,8 @@
 		var backFlag = 'orderView';
 		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanAddInit&YSId=' 
 				+ YSId+'&materialId='+materialId+'&backFlag='+backFlag;
-		location.href = url;
+
+		callProductDesignView("采购方案",url);
 	};
 	
 	function ShowProductDesign(PIId,YSId,productId,type) {
@@ -217,7 +218,7 @@
 				+'&productType=' + type
 				+'&goBackFlag=' + goBackFlag;
 		
-		location.href = url;
+		callProductDesignView("做单资料",url);
 	};
 	
 

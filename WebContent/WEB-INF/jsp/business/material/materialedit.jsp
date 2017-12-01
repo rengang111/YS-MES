@@ -431,7 +431,16 @@ $(document).ready(function() {
 							$("#material\\.serialnumber").val(data.code);
 							//设置光标项目
 							$("#material\\.materialname").focus();
-							//alert($('#material\\.categoryid').val());
+							//设置采购类别
+							var type=val_category.substring(0,1);
+							if(typeof(type) !='undefined'){
+								if(type == 'G'){
+									$('#material\\.purchasetype').val('050');//包装品
+								}else if(type == 'A'){
+									$('#material\\.purchasetype').val('040');//原材料
+									
+								}
+							}
 						}
 					},
 					error : function(

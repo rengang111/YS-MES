@@ -4,6 +4,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -223,14 +225,14 @@ public class PurchasePlanService extends CommonService {
 	
 
 	public void getBomeDetailAndContract(
-			String bomId,String YSId,String materialId) 
+			String bomId,String YSId,String productId) 
 			throws Exception {
 			
 		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		dataModel.setQueryName("getBomDetailAndContract");		
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("bomId", bomId);
-		userDefinedSearchCase.put("productId", materialId);
+		userDefinedSearchCase.put("productId", productId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = baseQuery.getSql();
 		sql = sql.replace("#", YSId);		
@@ -239,7 +241,7 @@ public class PurchasePlanService extends CommonService {
 		if(dataModel.getRecordCount() > 0){
 			model.addAttribute("baseBom", dataModel.getYsViewData().get(0));
 			model.addAttribute("bomDetail", dataModel.getYsViewData());
-		}
+		}		
 		
 	}
 	
@@ -261,15 +263,14 @@ public class PurchasePlanService extends CommonService {
 		HashMap.put("data", dataModel.getYsViewData());
 		return HashMap;
 		
-	}
-	
-	
+	}	
 	
 	public String getPurchaseId(String YSId) throws Exception {
-			
-		String timestemp = CalendarUtil.getDateyymmdd();
 
-		return YSId+"-"+ timestemp;
+		String timestemp = CalendarUtil.getDateyymmdd();
+		String purchaseid= YSId+"-"+ timestemp;
+
+		return purchaseid;
 		
 	}
 	
@@ -277,7 +278,7 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * update处理
 	 */
-	private String update(){
+	private String update(String where){
 		
 		ts = new BaseTransaction();
 		String  YSId="";
@@ -288,25 +289,17 @@ public class PurchasePlanService extends CommonService {
 			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();	
 
 			//采购方案****************************************************
-			//更新采购方案
-			String purchaseId = reqPlan.getPurchaseid();
-			YSId = reqPlan.getYsid();			
-			if(isNullOrEmpty(purchaseId)){
-				purchaseId = getPurchaseId(YSId);
-				reqPlan.setPurchaseid(purchaseId);
-			}
-			
-			int version = updatePurchasePlan(reqPlan);
+			YSId = reqPlan.getYsid();		
+			String purchaseId = updatePurchasePlan(reqPlan);			
 						
 			//更新前数据取得
-			List<B_PurchasePlanDetailData> DBList = getPurchasePlanDetail(YSId);	
+			List<B_PurchasePlanDetailData> DBList = getPurchasePlanDetail(where);	
 			
 			//新数据:采购方案处理
 			List<B_PurchasePlanDetailData> webList = reqModel.getPlanDetailList();		
 			
-			//找出页面删除的数据
-			List<B_PurchasePlanDetailData> deleteList = new ArrayList<B_PurchasePlanDetailData>();
-			
+			List<B_PurchasePlanDetailData> deleteList = new ArrayList<B_PurchasePlanDetailData>();			
+			//找出页面被删除的数据
 			for(B_PurchasePlanDetailData db:DBList){
 				String reqMate = db.getMaterialid();
 				String reqSubNo = db.getSubbomno();
@@ -324,9 +317,6 @@ public class PurchasePlanService extends CommonService {
 					if( reqMate.equals(dbMate)  && 
 						reqSubNo.equals(dbSubNo) &&
 						reqSupp.equals(dbSupp) ){						
-					
-						web.setContractflag(db.getContractflag());//
-						web.setPurchasetype(db.getPurchasetype());
 						
 						exflg = false;
 						break;
@@ -340,7 +330,7 @@ public class PurchasePlanService extends CommonService {
 					deleteList.add(d);
 				}
 				
-			}
+			}//找出页面被删除的数据
 			
 			//旧数据:二级BOM(原材料)的待出库"减少"处理
 			ArrayList<HashMap<String, String>> list2 = getRawMaterialGroupList(YSId);	
@@ -374,7 +364,7 @@ public class PurchasePlanService extends CommonService {
 				//旧数据的删除处理
 				deletePurchasePlanDetail(old);				
 				
-			}//for
+			}//旧数据:采购方案,的待出库"减少"处理
 						
 			//新数据:采购方案处理			
 			for(B_PurchasePlanDetailData detail:webList){
@@ -385,12 +375,11 @@ public class PurchasePlanService extends CommonService {
 				
 				if(purchase == 0)
 					detail.setContractflag(0);//不采购的不做合同				
-				if(materilid.substring(0,1).equals("H"))
+				if(materilid.substring(0,1).equals(Constants.PURCHASETYPE_H))
 					detail.setContractflag(0);//人工成本不做合同
 				
 				detail.setPurchaseid(purchaseId);
 				detail.setYsid(YSId);
-				detail.setVersion(version);
 				insertPurchasePlanDetail(detail);			
 
 				//更新虚拟库存
@@ -398,20 +387,19 @@ public class PurchasePlanService extends CommonService {
 
 				updateMaterial(materilid,"0",requirement);
 				
-			}//for
+			}//新数据:采购方案处理
 			
 			
-			//采购合同****************************************************
-			
+			//采购合同****************************************************			
 			//旧数据:
 			for(B_PurchasePlanDetailData dt:deleteList){
 				
 				String materialId = dt.getMaterialid();
 				float purchaseQty = stringToFloat(dt.getPurchasequantity());
 				
-				String where = " YSId = '" + YSId +"' AND materialId = '" + materialId  +"' AND deleteflag = '0'";
+				String strwhere = " YSId = '" + YSId +"' AND materialId = '" + materialId  +"' AND deleteflag = '0'";
 				List<B_PurchaseOrderDetailData> detail = 
-						getPurchaseOrderDetailFromDB(where);
+						getPurchaseOrderDetailFromDB(strwhere);
 				
 				if(detail == null || detail.size() == 0)
 					continue;
@@ -896,7 +884,6 @@ public class PurchasePlanService extends CommonService {
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
 		data.setPlandate(CalendarUtil.fmtYmdDate());
-		data.setVersion(1);//新增时,默认为1
 		
 		planDao.Create(data);	
 
@@ -1081,36 +1068,38 @@ public class PurchasePlanService extends CommonService {
 	 * 更新
 	 */
 	@SuppressWarnings("unchecked")
-	private int updatePurchasePlan(B_PurchasePlanData reqPlan) throws Exception{
+	private String updatePurchasePlan(B_PurchasePlanData reqPlan) throws Exception{
 		
-		int version = 0;
+		String purchaseId = "";
+		String YSId = reqPlan.getYsid();
 		B_PurchasePlanData dbPlan = null;		
 		//确认数据是否存在	
 		try{			
-			String where = " YSId = '" + reqPlan.getYsid() + "' AND deleteflag = '0'";
+			String where = " YSId = '" + YSId + "' AND deleteflag = '0'";
 			List<B_PurchasePlanData> list = new B_PurchasePlanDao().Find(where);			
 		
 			if(list.size() > 0){	
 				//update处理	
-				dbPlan = list.get(0);
-				version = dbPlan.getVersion()+1;
+				dbPlan = list.get(0);	
+				purchaseId = dbPlan.getPurchaseid();
 				
-				//copyProperties(dbPlan,reqPlan);
 				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 						"purchasePlanUpdate",userInfo);			
 				copyProperties(dbPlan,commData);
-				dbPlan.setVersion(version);
-				dbPlan.setPurchaseid(reqPlan.getPurchaseid());
+
 				planDao.Store(dbPlan);
 	
 			}else{
 				//insert处理
+				purchaseId = getPurchaseId(YSId);
+				reqPlan.setPurchaseid(purchaseId);
 				insertPurchasePlan(reqPlan);
 			}
 		}catch(Exception e){
 			
 		}
-		return version;
+		
+		return purchaseId;
 	}	
 		
 	
@@ -1176,7 +1165,8 @@ public class PurchasePlanService extends CommonService {
 
 		getOrderDetailByYSId(YSId);
 		//确认采购方案是否存在
-		List<B_PurchasePlanDetailData> detail = getPurchasePlanDetail(YSId);
+		String where = " YSId='" + YSId + "'";
+		List<B_PurchasePlanDetailData> detail = getPurchasePlanDetail(where);
 		if(detail.size() > 0){
 			rtnFlag = "查看";
 		}else{			
@@ -1189,40 +1179,49 @@ public class PurchasePlanService extends CommonService {
 	public void editPurchasePlan() throws Exception {
 
 		String YSId = request.getParameter("YSId");
-		//String materialId = request.getParameter("materialId");
 
 		getOrderDetailByYSId(YSId);
 		
 		getPurchaseDetail(YSId);
-		//updateInitPurchasePlan(YSId,materialId);
 		
 	}
 
 	public void deleteInitPurchasePlan() throws Exception {
 
 		String YSId = request.getParameter("YSId");
-		String materialId = request.getParameter("materialId");
-		String bomId = BusinessService.getBaseBomId(materialId)[1];
-
-		//删除方案
-		//deletePurchasePlan(YSId);
-		
-		//删除合同
-		//deletePurchaseOrder(YSId);
-		
+		String productId = request.getParameter("productId");
+		String bomId = BusinessService.getBaseBomId(productId)[1];
+	
 		getOrderDetailByYSId(YSId);
 			
-		getBomeDetailAndContract(bomId,YSId,materialId);
-		//getBomDetailView(bomId);	
-		
-		
-		
+		getBomeDetailAndContract(bomId,YSId,productId);
+	
 	}
 	
 	public Model insertAndView() throws Exception {
 
-		//String YSId = insert();
-		String YSId = update();
+		String materialFlag = request.getParameter("materialFlag");
+		String YSId  = request.getParameter("YSId");
+		StringBuffer where = new StringBuffer();
+		where.append(" YSId = '" +YSId + "' ");
+		switch(materialFlag){
+			case "yszz"://重置自制品
+				where.append(" AND ");
+				where.append(" supplierId ='");
+				where.append(Constants.SUPPLIER_YZ);
+				where.append("' ");
+				break;
+			case "package"://重置包装件
+				where.append(" AND ");
+				where.append(" left(materialId,1) ='");
+				where.append(Constants.PURCHASETYPE_G);
+				where.append("' ");
+				break;
+			
+		}
+		
+		update(where.toString());//更新采购方案
+		
 		getOrderDetailByYSId(YSId);
 		
 		return model;
@@ -1235,8 +1234,10 @@ public class PurchasePlanService extends CommonService {
 	}
 
 	public Model updateAndView() throws Exception {
-
-		String YSId = update();
+		String YSId  = request.getParameter("YSId");
+		StringBuffer where = new StringBuffer();
+		where.append(" YSId = '" +YSId + "' ");
+		update(where.toString());
 		getOrderDetailByYSId(YSId);
 		
 		return model;
@@ -1400,9 +1401,9 @@ public class PurchasePlanService extends CommonService {
 	
 	@SuppressWarnings("unchecked")
 	public List<B_PurchasePlanDetailData> getPurchasePlanDetail(
-			String  YSId) throws Exception {
+			String  where) throws Exception {
 		
-		String where = " YSId = '" +YSId + "' ";
+		
 		return (List<B_PurchasePlanDetailData>) planDetailDao.Find(where);
 				
 	}

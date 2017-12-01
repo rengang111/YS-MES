@@ -81,6 +81,12 @@ public class Constants {
 	public static final String SUPPLIER_YS = "0574YS00";
 	public static final String SUPPLIER_YZ = "0574YZ00";
 	public static final String SUPPLIER_YH = "0574YH00";
+	
+	/**
+	 * 物料特性
+	 */
+	public static final String PURCHASETYPE_G = "G";//包装件
+	public static final String PURCHASETYPE_H = "H";//人工
 	/**
 	 * BOM种类
 	 */

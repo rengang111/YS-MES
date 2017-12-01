@@ -621,6 +621,8 @@
     <name value="getBomDetailAndContract" />
     <where>
     	<w name="a.productId" des="" reqName="productId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.supplierId" des="" reqName="supplierId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="left(a.materialId,1)" des="" reqName="materialFlag" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.recordId" alias="" ctype="" />
@@ -760,7 +762,7 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_orderlist AS A where A.deleteFlag = '0'</from>
+    <from>v_orderlist AS A where A.orderType='010' AND A.deleteFlag = '0'</from>
     <orderby>A.YSId DESC </orderby>
     <groupby></groupby>
     <having></having>

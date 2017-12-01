@@ -30,17 +30,21 @@ $('#example').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    		var val1=data[13];
 	    		var val2=data[9];
 	    		var val3=data[1];
-	    		var tmp3 = val3.substring(0,1);
-	    		var tmp2 = val2.substring(6,4);
-	    		var tmp1 = val1.substring(3,0);
-	    		//alert(tmp)
+	    		if(typeof( val1) != 'undefined')
+		    		var tmp1 = val1.substring(3,0);
+	    		if(typeof( val3) != 'undefined')
+	    			var tmp3 = val3.substring(0,1);
+	    		if(typeof( val2) != 'undefined')
+	    			var tmp2 = val2.substring(6,4);
+	    		
 	    		if(tmp1 == '010' && tmp2 != 'YZ' && tmp3 != 'G' ){
 	    			return true;
 	    		}
 	    		
 	    	}else if(type=='ty'){//通用件
 	    		var val=data[13];
-	    		var tmp = val.substring(3,0);
+	    		if(typeof( val) != 'undefined')
+	    			var tmp = val.substring(3,0);
 	    		
 	    		if(tmp == '020'){
 	    			return true;
@@ -48,7 +52,8 @@ $('#example').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    		
 	    	}else if(type=='bz'){//包装品
 	    		var val=data[1];
-	    		var tmp = val.substring(0,1);
+	    		if(typeof( val) != 'undefined')
+	    			var tmp = val.substring(0,1);
 	    		
 	    		if(tmp == 'G'){
 	    			return true;
@@ -56,7 +61,8 @@ $('#example').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    		
 	    	}else if(type=='yz'){//自制品
 	    		var val=data[9];
-	    		var tmp = val.substring(6,4);
+	    		if(typeof( val) != 'undefined')
+	    			var tmp = val.substring(6,4);
 	    		
 	    		if(tmp == 'YZ'){
 	    			return true;
@@ -164,16 +170,9 @@ function initEvent(){
 				
 		$(".goBack").click(
 				function() {
+					
 			var YSId = '${order.YSId}';
-			var PIId = '${order.PIId}';
-			var backFlag = $("#backFlag").val();
-			if( backFlag == 'purchasePlan'){
-
-				var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
-			}else{
-				var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
-				
-			}
+			var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
 	
 			location.href = url;		
 		});
@@ -197,7 +196,7 @@ function initEvent(){
 		$("#deletePurchasePlan").click(
 				function() {
 
-			var materialId='${order.materialId}';
+			var productId='${order.materialId}';
 			var YSId ="${order.YSId}";
 			var quantity ="${order.quantity}";
 			var backFlag = $("#backFlag").val();
@@ -210,7 +209,7 @@ function initEvent(){
 				$('#attrForm').attr("action",
 						"${ctx}/business/purchasePlan?methodtype=purchasePlanDeleteInit"
 								+"&YSId="+YSId
-								+"&materialId="+materialId
+								+"&productId="+productId
 								+"&backFlag="+backFlag
 								+"&quantity="+quantity);
 				$('#attrForm').submit();
@@ -218,6 +217,49 @@ function initEvent(){
 			
 		});
 			
+		
+		$("#resetPackage").click(
+				function() {
+
+			var productId='${order.materialId}';
+			var YSId ="${order.YSId}";
+			var quantity ="${order.quantity}";
+			var backFlag = $("#backFlag").val();
+			if(confirm("重置包装件,会删除现有方案中的包装件,\n\n        确定要重置吗？")) {
+				
+				$('#attrForm').attr("action",
+						"${ctx}/business/purchasePlan?methodtype=resetPackageInit"
+								+"&YSId="+YSId
+								+"&productId="+productId
+								+"&backFlag="+backFlag
+								+"&materialFlag=G"
+								+"&quantity="+quantity);
+				$('#attrForm').submit();
+			}
+			
+		});
+		
+		$("#resetYszz").click(
+				function() {
+
+			var productId='${order.materialId}';
+			var YSId ="${order.YSId}";
+			var quantity ="${order.quantity}";
+			var backFlag = $("#backFlag").val();
+			if(confirm("重置自制品,会删除现有方案中的自制品,\n\n        确定要重置吗？")) {
+				
+				$('#attrForm').attr("action",
+						"${ctx}/business/purchasePlan?methodtype=resetYszzInit"
+								+"&YSId="+YSId
+								+"&productId="+productId
+								+"&backFlag="+backFlag
+								+"&supplierId=0574YZ00"
+								+"&quantity="+quantity);
+				$('#attrForm').submit();
+			}
+			
+		});
+		
 		/*
 		$('#example').DataTable().on('click', 'tr', function() {
 
@@ -1027,8 +1069,9 @@ function ZZmaterialView() {
 		
 		<fieldset class="action" style="text-align: right;">
 			<button type="button" id="editPurchasePlan" class="DTTT_button">修改采购方案</button>
-			<button type="button" id="deletePurchasePlan" class="DTTT_button">重置采购方案</button>
-			<button type="button" id="deleteWrapping" class="DTTT_button">重置包装品</button>
+			<button type="button" id="deletePurchasePlan" class="DTTT_button warning">重置采购方案</button>
+			<button type="button" id="resetYszz" class="DTTT_button warning">重置自制品</button>
+			<button type="button" id="resetPackage" class="DTTT_button warning">重置包装件</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		

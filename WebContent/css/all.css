@@ -625,3 +625,7 @@ pre{
 	color:#969696;
 	text-decoration: line-through;
 }
+.warning{
+	background:#ed0d0d;
+	color:white !important;
+}

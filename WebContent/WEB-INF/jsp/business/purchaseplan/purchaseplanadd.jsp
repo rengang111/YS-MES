@@ -121,16 +121,10 @@
 		
 		$(".goBack").click(
 				function() {
-			var backFlag = $("#backFlag").val();
+
 			var PIId = '${order.PIId}';
 			var YSId = '${order.YSId}';
-			if( backFlag == 'purchasePlan'){
-
-				var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
-			}else{
-				var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
-				
-			}
+			var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
 	
 			location.href = url;		
 		});
@@ -138,15 +132,18 @@
 		$("#createOrderBom").click(
 				function() {
 			
-			//$(".loading").show();
 			$('#createOrderBom').attr("disabled","true").removeClass("DTTT_button");
+			var materialFlag = $("#materialFlag").val();//区分自制件,包装品,订购件
 			var materialId='${order.materialId}';
 			var YSId ="${order.YSId}";
 			var quantity ="${order.quantity}";
-			var backFlag = $("#backFlag").val();
 			$('#attrForm').attr("action",
-					"${ctx}/business/purchasePlan?methodtype=purchasePlanAdd&YSId="
-							+YSId+"&materialId="+materialId+"&quantity="+quantity+"&backFlag="+backFlag);
+					"${ctx}/business/purchasePlan?methodtype=purchasePlanAdd"
+							+"&YSId="+YSId
+							+"&materialId="+materialId
+							+"&materialFlag="+materialFlag
+							+"&quantity="+quantity);
+			
 			$('#attrForm').submit();
 		});
 			
@@ -184,7 +181,7 @@
 	
 	function baseBomView() {
 
-		var scrollHeight = $(window).height() - 135;
+		var scrollHeight = $(window).height() - 200;
 		var materialId='${order.materialId}';
 		var table = $('#example').dataTable();
 		if(table) {
@@ -299,7 +296,7 @@
 		id="attrForm" name="attrForm"  autocomplete="off">		
 		
 		<input type="hidden" id="tmpMaterialId" />
-		<input type="hidden" id="backFlag"  value="${backFlag }"/>
+		<input type="hidden" id="materialFlag"  value="${materialFlag }"/>
 		
 		<fieldset>
 			<legend> 产品信息</legend>
@@ -444,7 +441,7 @@
 		}
 		var vpurchase = floatToCurrency(fpurchase);
 		var totalPrice = floatToCurrency( currencyToFloat(price) * fpurchase );
-		
+		var vprice = formatNumber(price);
 		var shortName = getLetters(supplierId);
 
 		$('#availabelToPromise'+index).html(newStock);
@@ -453,10 +450,10 @@
 		$("#planDetailList"+index+"\\.manufacturequantity").val(totalQuantity);
 		$('#totalPrice'+index).html(totalPrice);
 		$("#planDetailList"+index+"\\.totalprice").val(totalPrice);
-		$("#planDetailList"+index+"\\.price").val(formatNumber(price));
+		$("#planDetailList"+index+"\\.price").val(vprice);
 		$("#planDetailList"+index+"\\.purchasequantity").val(vpurchase);
 		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
-
+		$("#price"+index).html(vprice);
 		
 		counter++;
 	</script>	

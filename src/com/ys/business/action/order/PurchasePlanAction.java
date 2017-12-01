@@ -114,6 +114,14 @@ public class PurchasePlanAction extends BaseAction {
 			case "purchasePlanDeleteInit"://重置采购
 				doDeleteInit();
 				rtnUrl = "/business/purchaseplan/purchaseplanadd";
+				break;		
+			case "resetPackageInit"://重置包装件
+				doResetPackageInit();
+				rtnUrl = "/business/purchaseplan/purchaseplanadd";
+				break;		
+			case "resetYszzInit"://重置包装件
+				doResetYszzInit();
+				rtnUrl = "/business/purchaseplan/purchaseplanadd";
 				break;			
 			case "updateOrderCost":
 				dataMap = doUpdateOrderCost();
@@ -219,9 +227,6 @@ public class PurchasePlanAction extends BaseAction {
 		
 		if(flag.equals("查看"))
 			rtnUrl = "/business/purchaseplan/purchaseplanview";
-
-		String backFlag = request.getParameter("backFlag");
-		model.addAttribute("backFlag",backFlag);
 		
 		return rtnUrl;
 	}
@@ -230,8 +235,6 @@ public class PurchasePlanAction extends BaseAction {
 
 		model = purchaseService.insertAndView();
 
-		String backFlag = request.getParameter("backFlag");
-		model.addAttribute("backFlag",backFlag);
 	}		
 	
 	
@@ -239,8 +242,6 @@ public class PurchasePlanAction extends BaseAction {
 		
 		purchaseService.editPurchasePlan();
 
-		String backFlag = request.getParameter("backFlag");
-		model.addAttribute("backFlag",backFlag);
 	}	
 	
 	
@@ -249,19 +250,38 @@ public class PurchasePlanAction extends BaseAction {
 
 			purchaseService.deleteInitPurchasePlan();
 
-			String backFlag = request.getParameter("backFlag");
-			model.addAttribute("backFlag",backFlag);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-	}	
+	}
+	
+	public void doResetPackageInit() throws Exception{
+		try{
+
+			purchaseService.deleteInitPurchasePlan();
+
+			model.addAttribute("materialFlag","package");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+
+	public void doResetYszzInit() throws Exception{
+		try{
+
+			purchaseService.deleteInitPurchasePlan();
+
+			model.addAttribute("materialFlag","yszz");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 	
 	public void doUpdate() throws Exception {
 		
 		purchaseService.updateAndView();			
 
-		String backFlag = request.getParameter("backFlag");
-		model.addAttribute("backFlag",backFlag);
 	}
 
 	public HashMap<String, Object> doUpdateOrderCost() throws Exception {

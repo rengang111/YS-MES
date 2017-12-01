@@ -124,16 +124,8 @@
 		
 		$(".goBack").click(
 				function() {
-			var PIId = '${order.PIId}';
 			var YSId = '${order.YSId}';
-			var backFlag = $("#backFlag").val();
-			if( backFlag == 'purchasePlan'){
-
-				var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
-			}else{
-				var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
-				
-			}
+			var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
 	
 			location.href = url;		
 		});
@@ -469,6 +461,7 @@
 		var ftotalQuantity =  currencyToFloat( '${bom.purchaseQuantity}' ) ;
 		var fPlanQuantity =  currencyToFloat( '${bom.manufactureQuantity}' ) ;
 		var price = currencyToFloat ('${bom.price}');
+		var vprice = formatNumber(price);
 
 		vtotalPrice = floatToCurrency( price * ftotalQuantity );
 		
@@ -486,10 +479,10 @@
 		
 		$('#totalPrice'+index).html(vtotalPrice);
 		$("#planDetailList"+index+"\\.totalprice").val(vtotalPrice);	
-		$("#planDetailList"+index+"\\.price").val(formatNumber(price));	
-		
+		$("#planDetailList"+index+"\\.price").val(vprice);	
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
+		$("#price"+index).html(vprice);
 		
 		counter++;
 		
