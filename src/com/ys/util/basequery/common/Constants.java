@@ -31,6 +31,7 @@ public class Constants {
 	public static final String FORM_PURCHASEORDER= "purchaseorder";//采购合同
 	public static final String FORM_RECEIVEINSPECTION= "receiveinspection";//进料报检
 	public static final String FORM_MATERIALSTORAGE= "materialstorage";//料检入库登记
+	public static final String FORM_MATERIALSTOCKOUT= "materialstockout";//料检出库
 	public static final String FORM_PRODUCTSTORAGE= "productstorage";//成品入库登记
 	public static final String FORM_PRODUCTDETAIL= "productdetail";//做单资料
 	public static final String FORM_SUPPLIER= "supplier";//供应商
@@ -181,6 +182,12 @@ public class Constants {
 	public static final String ARRIVERECORD_1 = "020";//合格
 	public static final String ARRIVERECORD_2 = "030";//让步接收
 	public static final String ARRIVERECORD_3 = "040";//退货
+	
+	/**
+	 * 料件出库
+	 */
+	public static final String STOCKOUT_1 = "010";//未出库
+	public static final String STOCKOUT_2 = "020";//已出库
 
 	/**
 	 * 退货处理状态

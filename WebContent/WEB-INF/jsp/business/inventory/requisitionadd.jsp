@@ -61,7 +61,7 @@
 		    		var val=data[9];
 		    		var tmp = val.substring(3,0);
 		    		
-		    		if(tmp == '050'){
+		    		if(tmp == '040'){
 		    			return true;
 		    		}
 		    		
@@ -438,7 +438,7 @@
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >确认领料</a>
-		<a class="DTTT_button DTTT_button_text" id="print" onclick="doPrint();return false;">打印领料单</a>
+	<!-- 	<a class="DTTT_button DTTT_button_text" id="print" onclick="doPrint();return false;">打印领料单</a> -->
 		<a class="DTTT_button DTTT_button_text" id="showHistory" >查看领料记录</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
@@ -449,7 +449,7 @@
 			<div id="DTTT_container" align="left" style="height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
 				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
 				<a class="DTTT_button DTTT_button_text box" id="wll" data-id="5">未领物料</a>
-				<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a>
+	<!-- 			<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a> -->
 				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
 				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
 				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>&nbsp;&nbsp;
@@ -521,7 +521,7 @@ function reloadFn(){
 				//$(this).find("td").eq(8).html("0")//剩余数清零
 				countValue++;//累计未领完的物料
 			}else{
-				$(this).find("td").eq(7).find("input").val(formatNumber(fkucun));//本次领料
+				$(this).find("td").eq(7).find("input").val("0");//本次领料
 				//$(this).find("td").eq(8).html(formatNumber( fsurplus - fkucun ));//剩余数清零							
 			}
 		}else{
@@ -561,7 +561,7 @@ function reloadFn(){
 						$(this).find("td").eq(7).find("input").val(vsurplus);//本次领料
 						//$(this).find("td").eq(8).html("0")//剩余数清零
 					}else{
-						$(this).find("td").eq(7).find("input").val(fstocks);//本次领料
+						$(this).find("td").eq(7).find("input").val("0");//本次领料
 						//$(this).find("td").eq(8).html(formatNumber( fsurplus - fstocks ));//剩余数清零							
 					}
 				}else{//超领
@@ -579,26 +579,6 @@ function reloadFn(){
 	
 }
 
-function doPrint() {
-	var YSId = '${order.YSId }';
-	var url = '${ctx}/business/requisition?methodtype=print';
-	url = url +'&YSId='+YSId;
-		
-	callProductDesignView("print",url);
-	/*
-	layer.open({
-		offset :[10,''],
-		type : 2,
-		title : false,
-		area : [ '1100px', '520px' ], 
-		scrollbar : false,
-		title : false,
-		content : url,
-		cancel: function(index){			
-		}    
-	});		
 
-	*/
-};
 </script>
 </html>

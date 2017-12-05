@@ -217,7 +217,7 @@ public class RequisitionService extends CommonService {
 			//新的领料单明细						
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
-				float overQuty = stringToFloat(data.getOverquantity());//超领
+				//float overQuty = stringToFloat(data.getOverquantity());//超领
 				
 				if(quantity <= 0)
 					continue;
@@ -229,12 +229,12 @@ public class RequisitionService extends CommonService {
 				//updatePurchasePlan(YSId,data.getMaterialid(),quantity);
 				
 				//更新库存
-				updateMaterialStock(data.getMaterialid(),quantity,overQuty);
+				//updateMaterialStock(data.getMaterialid(),quantity,overQuty);
 			
 			}
 			
 			//更新订单状态:待交货
-			updateOrderDetail(YSId);
+			//updateOrderDetail(YSId);
 			
 			
 			ts.commit();			
@@ -273,7 +273,7 @@ public class RequisitionService extends CommonService {
 						
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
-				float overQuty = stringToFloat(data.getOverquantity());//超领
+				//float overQuty = stringToFloat(data.getOverquantity());//超领
 				
 				if(quantity <= 0)
 					continue;
@@ -285,7 +285,7 @@ public class RequisitionService extends CommonService {
 				//updatePurchasePlan(YSId,data.getMaterialid(),quantity);
 				
 				//更新库存
-				updateMaterialStock(data.getMaterialid(),quantity,overQuty);
+				//updateMaterialStock(data.getMaterialid(),quantity,overQuty);
 			
 			}
 			
@@ -315,10 +315,10 @@ public class RequisitionService extends CommonService {
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"RequisitionInsert",userInfo);
 		copyProperties(stock,commData);
-		stock.setStoreuserid(userInfo.getUserId());//默认为登陆者
 
-		String guid = BaseDAO.getGuId();
+		guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
+		stock.setRequisitionuserid(userInfo.getUserId());//默认为登陆者
 		stock.setRequisitiondate(CalendarUtil.fmtYmdDate());
 		
 		dao.Create(stock);
@@ -332,7 +332,7 @@ public class RequisitionService extends CommonService {
 				"RequisitionInsert",userInfo);
 		copyProperties(stock,commData);
 
-		String guid = BaseDAO.getGuId();
+		guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
 		
 		detailDao.Create(stock);

@@ -226,7 +226,7 @@
 </fieldset>
 
 <fieldset>
-	<legend>产品图片</legend>
+	<legend>收据清单</legend>
 	<div class="list">
 		<div class="" id="subidDiv" style="min-height: 300px;">
 			<table id="productPhoto" class="phototable">

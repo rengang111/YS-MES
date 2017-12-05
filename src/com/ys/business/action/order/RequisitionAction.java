@@ -116,7 +116,7 @@ public class RequisitionAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "print"://领料单打印
-				doAddInit();
+				doPrintInit();
 				rtnUrl = "/business/inventory/requisitionprint";
 				break;
 				
@@ -167,6 +167,17 @@ public class RequisitionAction extends BaseAction {
 		}
 	}
 
+
+	public void doPrintInit(){
+		try{
+			service.addInit();
+			model.addAttribute("userName", userInfo.getUserName());
+			model.addAttribute("requisitionId", request.getParameter("requisitionId"));
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	public void doInsert(){
 		try{
 			service.insertAndView();

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>领料申请-领料单查看</title>
+<title>料件出库-查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -20,7 +20,7 @@
 			"searching" : false,
 			"retrieve" : true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/requisition?methodtype=getRequisitionHistory&YSId="+YSId,
+			"sAjaxSource" : "${ctx}/business/stockout?methodtype=getStockoutHistory&YSId="+YSId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -47,22 +47,22 @@
 			
 			"columns" : [
 			        	{"data": null,"className":"dt-body-center"
-					}, {"data": "requisitionId","className":"dt-body-center"
-					}, {"data": "requisitionDate","className":"dt-body-center"
-					}, {"data": "requisitionUserId","className":"dt-body-center"
-					}, {"data": "requisitionSts","className":"dt-body-center"
-					}, {"data": null,"className":"td-center","defaultContent" : ''
+					}, {"data": "stockOutId","className":"dt-body-center"
+					}, {"data": "checkOutDate","className":"dt-body-center"
+					}, {"data": "keepUser","className":"dt-body-center"
+					}, {"data": null,"className":"dt-body-center"
 					}, {"data": null,"className":"td-center","defaultContent" : ''
 					}
 				] ,
 				"columnDefs":[
+		    		{"targets":4,"render":function(data, type, row){
+		    			var contractId = row["contractId"];		    			
+		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["stockOutId"] + "')\">编辑</a>";
+		    			return rtn;
+		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
-		    			return rtn;
-		    		}},{"targets":6,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doPrint('" + row["requisitionId"] + "')\">打印领料单</a>";
+		    			var rtn= "<a href=\"###\" onClick=\"doPrint('" + row["stockOutId"] + "')\">打印出库单</a>";
 		    			return rtn;
 		    		}},
 		    	]        
@@ -82,7 +82,7 @@
 	};
 	
 
-	function detailAjax(requisitionId) {
+	function detailAjax(stockOutId) {
 	
 		var table = $('#example').dataTable();
 		if(table) {
@@ -100,7 +100,7 @@
 			"searching" : false,
 			"retrieve" : true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/requisition?methodtype=getRequisitionDetail&requisitionId="+requisitionId,
+			"sAjaxSource" : "${ctx}/business/stockout?methodtype=getStockoutDetail&stockOutId="+stockOutId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -129,21 +129,10 @@
 		        	{"data": null,"className":"dt-body-center"
 				}, {"data": "materialId","className":"td-left"
 				}, {"data": "materialName"
-				}, {"data": "purchaseType","className":"td-center"
-				}, {"data": "supplierId","className":"td-left"
-				}, {"data": "contractId","className":"td-left","defaultContent" : ''
-				}, {"data": "quantity","className":"td-right","defaultContent" : '0'
-				}, {"data": "overQuantity","className":"td-right","defaultContent" : '0'
+				}, {"data": "quantity","className":"td-center"
 				}
-			] ,
-			"columnDefs":[
-	      		{"targets":7,"render":function(data, type, row){
-	      			var val = row["overQuantity"];
-	      			if(val == '' || val == null || val == 'null')
-	      				val = 0;
-	      			return val;
-	      		}}
-			 ]
+			] 
+			
 			
 		}).draw();
 						
@@ -174,33 +163,22 @@
 	};
 	$(document).ready(function() {
 				
-		//detailAjax();
-		historyAjax();//领料记录
-		
-		$("#requisition\\.requisitiondate").datepicker({
-				dateFormat:"yy-mm-dd",
-				changeYear: true,
-				changeMonth: true,
-				selectOtherMonths:true,
-				showOtherMonths:true,
-			}); 
-		
-		
+		historyAjax();//出库记录
+				
 		$(".goBack").click(
 				function() {
-					var contractId='${contract.contractId }';
-					var url = "${ctx}/business/requisition";
+					var url = "${ctx}/business/stockout";
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
 					var YSId='${order.YSId }';
-					var url =  "${ctx}/business/requisition?methodtype=addinit&YSId="+YSId;
+					var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId;
 					location.href = url;
 		});
 		
-	$('#example2').DataTable().on('click', 'tr', function() {
+		$('#example2').DataTable().on('click', 'tr', function() {
 			
 			//$(this).toggleClass('selected');
 			if ( $(this).hasClass('selected') ) {
@@ -211,15 +189,9 @@
 	        	$('#example2').DataTable().$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	            
-	            var d = $('#example2').DataTable().row(this).data();
-				//alert(d["bid_id"]);
-				
+	            var d = $('#example2').DataTable().row(this).data();				
 				$('#example').DataTable().destroy();
-				//$('#set_lines').DataTable().ajax.reload();
-				//ajax_factory_bid_set_lines(d["bid_id"]);
-				//var d = $('#contractTable').DataTable().row(this).data();
-				//alert(d["requisitionId"])
-				detailAjax(d["requisitionId"]);
+				detailAjax(d["stockOutId"]);
 					            
 	        }
 			
@@ -247,9 +219,9 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<input type="hidden" id="goBackFlag" />
-	<form:hidden path="requisition.ysid"  value="${order.YSId }" />
+	<form:hidden path="stockout.ysid"  />
 	<fieldset>
-		<legend> 领料单</legend>
+		<legend> 出库单</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">耀升编号：</td>					
@@ -258,8 +230,7 @@
 				<td class="label" width="100px">生产数量：</td>					
 				<td colspan="3">${order.manufactureQuantity }&nbsp;(订单数量+额外采购)</td>
 			</tr>
-			<tr>
-							
+			<tr>							
 				<td class="label">产品编号：</td>					
 				<td>${order.materialId }</td>
 							
@@ -270,22 +241,21 @@
 		</table>
 </fieldset>
 <div style="clear: both"></div>
-	<div id="DTTT_container" align="right" style="height:40px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >继续领料</a>
-		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
+	<div id="DTTT_container" align="right" style="margin-right: 30px;">
+	<!-- 	<a class="DTTT_button DTTT_button_text" id="insert" >继续出库</a> -->
+		<a class="DTTT_button DTTT_button_text goBack" id="goBack" > 返回 </a>
 	</div>
 	<fieldset>
-		<legend> 领料记录</legend>
+		<legend> 出库记录</legend>
 		<div class="list">
 			<table id="example2" class="display" style="width:100%">
 				<thead>				
 					<tr>
 						<th width="30px">No</th>
-						<th class="dt-center" style="width:150px">领料单编号</th>
-						<th class="dt-center" width="150px">领料日期</th>
-						<th class="dt-center" width="150px">申请人</th>
-						<th class="dt-center" width="150px">是否出库</th>
-						<th class="dt-center" >操作</th>
+						<th class="dt-center" style="width:150px">出库单编号</th>
+						<th class="dt-center" width="150px">出库日期</th>
+						<th class="dt-center" width="150px">仓管员</th>
+						<th class="dt-center" width="150px">操作</th>
 						<th class="dt-center" ></th>
 					</tr>
 				</thead>
@@ -294,19 +264,15 @@
 	</fieldset>
 	
 	<fieldset>
-		<legend> 领料详情</legend>
+		<legend> 物料详情</legend>
 		<div class="list">		
 			<table id="example" class="display" style="width:100%">
 				<thead>				
 					<tr>
-						<th style="width:1px">No</th>
-						<th class="dt-center" width="120px">物料编号</th>
+						<th style="width:30px">No</th>
+						<th class="dt-center" width="200px">物料编号</th>
 						<th class="dt-center" >物料名称</th>	
-						<th class="dt-center" width="60px">物料特性</th>
-						<th class="dt-center" width="60px">供应商</th>
-						<th class="dt-center" width="60px">合同编号</th>
-						<th class="dt-center" width="60px">当前领料</th>
-						<th class="dt-center" width="80px">超领数量</th>
+						<th class="dt-center" width="150px">当前出库数量</th>
 					</tr>
 				</thead>
 			</table>
@@ -321,18 +287,11 @@
 
 <script type="text/javascript">
 
-function showContract(contractId) {
-	var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
-	openLayer(url);
-
-};
-
-
-function doPrint(requisitionId) {
+function doPrint(stockOutId) {
 	var YSId = '${order.YSId }';
-	var url = '${ctx}/business/requisition?methodtype=print';
+	var url = '${ctx}/business/stockout?methodtype=print';
 	url = url +'&YSId='+YSId;
-	url = url +'&requisitionId='+requisitionId;
+	url = url +'&stockOutId='+stockOutId;
 		
 	callProductDesignView("print",url);
 

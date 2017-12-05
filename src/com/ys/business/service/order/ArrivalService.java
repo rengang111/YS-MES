@@ -356,25 +356,25 @@ public class ArrivalService extends CommonService {
 	public void doDelete(String recordId) throws Exception{
 		
 		B_ArrivalData data = new B_ArrivalData();	
-															
-		try {
+		String key = recordId;											
+		//try {
 			
-			ts = new BaseTransaction();										
-			ts.begin();									
+			//ts = new BaseTransaction();										
+			//ts.begin();									
 			
-			String removeData[] = recordId.split(",");									
-			for (String key:removeData) {									
+			//String removeData[] = recordId.split(",");									
+			//for (String key:removeData) {									
 												
 				data.setRecordid(key);							
 				dao.Remove(data);	
 				
-			}
+			//}
 			
-			ts.commit();
-		}
-		catch(Exception e) {
-			ts.rollback();
-		}
+			//ts.commit();
+		//}
+		//catch(Exception e) {
+		//	ts.rollback();
+		//}
 	}
 	
 	

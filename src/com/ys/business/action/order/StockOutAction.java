@@ -14,21 +14,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.ys.business.action.model.order.ProductDesignModel;
 import com.ys.business.action.model.order.StockOutModel;
-import com.ys.business.action.model.order.StorageModel;
-import com.ys.business.service.order.ProductDesignService;
 import com.ys.business.service.order.StockOutService;
-import com.ys.business.service.order.StorageService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.Constants;
 /**
- * 成品出库
+ * 料件出库
  * @author rengang
  *
  */
@@ -80,46 +73,55 @@ public class StockOutAction extends BaseAction {
 			case "":
 			case "init":
 				doInit();
-				rtnUrl = "/business/inventory/storagemain";
+				rtnUrl = "/business/manufacture/stockoutmain";
 				break;
 			case "search":
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "addinit":
-				rtnUrl = doAddInit();
+				 doAddInit();
+				rtnUrl = "/business/manufacture/stockoutadd";
 				return rtnUrl;
+			case "getRequisitionDetail"://领料单详情
+				dataMap = getRequisitionDetail();
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "edit":
 				doEdit();
-				rtnUrl = "/business/inventory/storageedit";
+				rtnUrl = "/business/manufacture/stockoutedit";
 				break;
 			case "update":
 				doUpdate();
-				rtnUrl = "/business/inventory/storageview";
+				rtnUrl = "/business/manufacture/stockoutview";
 				break;
 			case "insert":
 				doInsert();
-				rtnUrl = "/business/inventory/storageview";
+				rtnUrl = "/business/manufacture/stockoutview";
 				break;
-			case "getStockInDetail":
-				dataMap = doShowDetail();
-				printOutJsonObj(response, dataMap);
-				return null;
 			case "orderSearchInit":
 				doInit();
-				rtnUrl = "/business/inventory/productstoragemain";
+				rtnUrl = "/business/manufacture/productstoragemain";
 				break;
-			case "orderSearch":
-				dataMap = doOrderSearch(data);
-				printOutJsonObj(response, dataMap);
-				return null;
-			case "printReceipt"://打印入库单
+			case "print"://打印出库单
 				doPrintReceipt();
-				rtnUrl = "/business/inventory/storageprint";
+				rtnUrl = "/business/manufacture/stockoutprint";
 				break;
 			case "printProductReceipt"://打印成品入库单
 				doPrintProductReceipt();
-				rtnUrl = "/business/inventory/productstorageprint";
+				rtnUrl = "/business/manufacture/productstorageprint";
+				break;
+			case "getStockoutHistoryInit":
+				doAddInit();
+				rtnUrl = "/business/manufacture/stockoutview";
+				break;
+			case "getStockoutHistory":
+				dataMap = getStockoutHistory();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getStockoutDetail":
+				dataMap = getStockoutDetail();
+				printOutJsonObj(response, dataMap);
 				break;
 				
 		}
@@ -130,17 +132,7 @@ public class StockOutAction extends BaseAction {
 
 	
 	
-	public void doInit(){	
-		/*	
-		String keyBackup = request.getParameter("keyBackup");
-		//没有物料编号,说明是初期显示,清空保存的查询条件
-		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD2);
-		}else{
-			model.addAttribute("keyBackup",keyBackup);
-		}
-		*/
+	public void doInit(){
 	}
 	
 	
@@ -150,8 +142,8 @@ public class StockOutAction extends BaseAction {
 		//优先执行查询按钮事件,清空session中的查询条件
 		String sessionFlag = request.getParameter("sessionFlag");
 		if(("false").equals(sessionFlag)){
-			session.removeAttribute(Constants.FORM_MATERIALSTORAGE+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_MATERIALSTORAGE+Constants.FORM_KEYWORD2);			
+			session.removeAttribute(Constants.FORM_MATERIALSTOCKOUT+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_MATERIALSTOCKOUT+Constants.FORM_KEYWORD2);			
 		}
 		
 		try {
@@ -172,49 +164,29 @@ public class StockOutAction extends BaseAction {
 	}
 	
 
-	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doOrderSearch(@RequestBody String data){
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		//优先执行查询按钮事件,清空session中的查询条件
-		String sessionFlag = request.getParameter("sessionFlag");
-		if(("false").equals(sessionFlag)){
-			session.removeAttribute(Constants.FORM_PRODUCTSTORAGE	+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_PRODUCTSTORAGE+Constants.FORM_KEYWORD2);			
-		}
-		
-		try {
-			dataMap = service.doOrderSearch(data);
-			
-			ArrayList<HashMap<String, String>> dbData = 
-					(ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
-		
-	public String doAddInit(){
+	public void doAddInit(){
 
-		String rtnUrl = "/business/inventory/storageadd";
 		try{
-			boolean viewFlag = service.addInit();
-			if(viewFlag){
-				rtnUrl = "/business/inventory/storageview";
-			}
+			service.addInit();
+			
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 		
-		return rtnUrl;
 	}
 
+	public HashMap<String, Object> getRequisitionDetail() throws Exception{
+
+		return service.getRequisitionDetail();		
+		
+	}
+	
+	public HashMap<String, Object> getStockoutDetail() throws Exception{
+
+		return service.getStockoutDetail();		
+		
+	}
 	
 	
 	public void doInsert(){
@@ -272,12 +244,27 @@ public class StockOutAction extends BaseAction {
 			System.out.println(e.getMessage());
 		}
 	}
-
 	
-	public HashMap<String, Object> doShowDetail() throws Exception{
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> getStockoutHistory(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
 		
-		return service.getStockInDetail();
-
+		try {
+			String YSId = request.getParameter("YSId");
+			dataMap = service.getStockoutHistory(YSId);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
 	}
-	
 }

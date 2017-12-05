@@ -391,20 +391,43 @@ public class BusinessService {
 			 String parent,String code,boolean addFlag) {
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("I");
-	    sb.append(parent);
+		sb.append("O");
+		sb.append(parent);
+	    //sb.append(getYSCommCode());
 		sb.append("ZP");
 	    sb.append("-");
 	    		
-		//格式化成2位流水号
+		//格式化成3位流水号
 		int num = 1;
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
-		sb.append( BusinessService.getFormat2Code(num,addFlag));
+		sb.append(getFormat2Code(num,addFlag));
 		
 		return sb.toString();
 	 }
-		 
+		
+	 
+	 /**
+	 * 出库单编号
+	 * @return O17YS-3位流水号
+	 */
+	 public static String getStockOutId(
+			 String parent,String code,boolean addFlag) {
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("O");
+	    sb.append(parent);
+	    sb.append("-");
+	    		
+		//格式化成3位流水号
+		int num = 1;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		sb.append(getFormat3Code(num,addFlag));
+		
+		return sb.toString();
+	 }
+	 
 	 /**
 		 * @return 做单资料编号
 		 * 

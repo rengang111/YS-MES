@@ -66,6 +66,7 @@
 		    		{"targets":9,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["contractId"] + "','" + row["arrivalId"] + "')\">编辑</a>";
+		    			rtn = rtn +"&nbsp;"+ "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
 		    			return rtn;
 		    		}},
 		    	] 
@@ -129,6 +130,27 @@
 		location.href = url;
 	}
 	
+	function doDelete(recordId) {
+		
+		if(confirm("删除后不能恢复,\n\n确定要删除吗？")) {
+			jQuery.ajax({
+				type : 'POST',
+				async: false,
+				contentType : 'application/json',
+				dataType : 'json',
+				data : recordId,
+				url : "${ctx}/business/arrival?methodtype=delete",
+				success : function(data) {
+					$().toastmessage('showNoticeToast', "删除成功。");
+					$('#example2').DataTable().ajax.reload(null,false);						
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+	            }
+			});
+		}
+		
+		
+	}
 	
 </script>
 
@@ -184,7 +206,7 @@
 					<th class="dt-center" width="60px">到货数量</th>
 					<th class="dt-center" width="60px">仓管员</th>
 					<th class="dt-center" style="width:30px">状态</th>
-					<th class="dt-center" style="width:25px"></th>
+					<th class="dt-center" style="width:50px"></th>
 				</tr>
 			</thead>
 	</table>

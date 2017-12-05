@@ -9,104 +9,19 @@
 <%@ include file="../../common/common2.jsp"%>
 <link rel="stylesheet" type="text/css" href="${ctx}/css/print.css" />
 <script type="text/javascript">
-	/*
-	// Custom filtering function which will search data in column four between two values 
-	$.fn.dataTable.ext.search.push(function( settings, data, dataIndex ) {
-	       
-		var type =  $('#selectedPurchaseType').val();
-	    		
-    	if (type =='' || type == 'all')		    		
-    	{		    		
-    		return true;
-    		
-    	}else if(type=='dg'){//订购件
-    		var val1=data[9];
-    		var val2=data[10];
-    		var val3=data[1];
-    		var tmp3 = val3.substring(0,1);
-    		var tmp2 = val2.substring(6,4);
-    		var tmp1 = val1.substring(3,0);
-    		//alert(tmp)
-    		if(tmp1 == '010' && tmp2 != 'YZ' && tmp3 != 'G' ){
-    			return true;
-    		}
-    		
-    	}else if(type=='ty'){//通用件
-    		var val=data[9];
-    		var tmp = val.substring(3,0);
-    		
-    		if(tmp == '020'){
-    			return true;
-    		}
-    		
-    	}else if(type=='bz'){//包装品
-    		var val=data[1];
-    		var tmp = val.substring(0,1);
-    		
-    		if(tmp == 'G'){
-    			return true;
-    		}
-    		
-    	}else if(type=='yz'){//自制品
-    		var val=data[10];
-    		var tmp = val.substring(6,4);
-    		
-    		if(tmp == 'YZ'){
-    			return true;
-    		}
-    		
-    	}else if(type=='ycl'){//原材料
-    		var val=data[9];
-    		var tmp = val.substring(3,0);
-    		
-    		if(tmp == '050'){
-    			return true;
-    		}
-    		
-    	}else if(type=='wll'){//未领物料
-    		var val5=data[5];//已领数量
-    		var val4=data[4];//计划用量
-    		var jihua = currencyToFloat(val4);
-    		var yiling = currencyToFloat(val5);
-    		
-    		if(yiling < jihua){
-    			return true;
-    		}
-    		
-    	}else{
 
-	    	return false;
-    		
-    	}
-    	  
- 
-	});
-*/
 	$(document).ready(function() {
-		//日期
-		var mydate = new Date();
-		var number = mydate.getFullYear();
-		shortYear = String(number).substr(2); 
-		$("#today").text(today());
-		
+			
 		ajaxFn();		
-		
-		var table = $('#example').DataTable();
-		// Event listener to the two range filtering inputs to redraw on input
-	    $('#yz, #ty, #dg, #bz, #all, #ycl, #wll').click( function() {
-	    	
-	    	 $('#selectedPurchaseType').val($(this).attr('id'));
-    		 table.draw();
-	    } );
-		
+	
 	});
 	
-function ajaxFn(scrollHeight) {
+	function ajaxFn() {
 		
 		var requisitionId= '${requisitionId}';
-		var actionUrl = "${ctx}/business/requisition?methodtype=getRequisitionDetail";
-		actionUrl = actionUrl +"&requisitionId="+requisitionId;		
-		
+		var actionUrl = "${ctx}/business/stockout?methodtype=stockoutdetail";
+		actionUrl = actionUrl +"&requisitionId="+requisitionId;
+				
 		var t = $('#example').DataTable({
 			"paging": false,
 			"processing" : false,
@@ -148,7 +63,9 @@ function ajaxFn(scrollHeight) {
 				}, {"data": "supplierId","className":"td-right"		//10
 				}
 			],
-			"columnDefs":[                
+			"columnDefs":[
+				
+                
 	    		{"targets":2,"render":function(data, type, row){ 					
 					//var index=row["rownum"]	
 	    			//var name =  jQuery.fixedWidth( row["materialName"],40);
@@ -172,7 +89,7 @@ function ajaxFn(scrollHeight) {
                 }},
                 {
 					"visible" : false,
-					"targets" : [3,8,9,10]
+					"targets" : [3,6,8,9,10]
 				}
 			]
 			
@@ -245,17 +162,6 @@ function ajaxFn(scrollHeight) {
 		</table>
 		
 		<div class="list">
-		<!-- 
-			<div id="DTTT_container" align="left" style="height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
-				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
-				<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a>
-				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
-				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
-				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>&nbsp;&nbsp;
-			 	<a class="DTTT_button DTTT_button_text box" id="ycl">自制品原材料</a>
-				<input type="hidden" id="selectedPurchaseType" />
-			</div>
-			 -->
 			<table id="example" class="display" width="100%">
 				<thead>				
 					<tr>
@@ -265,7 +171,7 @@ function ajaxFn(scrollHeight) {
 						<th width="60px">基本用量</th>
 						<th width="60px">计划用量</th>
 						<th width="80px">已领数量</th>
-						<th width="80px">本次领料</th>
+						<th width="80px">可用库存</th>
 						<th width="100px">库位</th>
 						<th width="60px">剩余数量</th>
 						<th width="1px"></th>
@@ -298,7 +204,7 @@ function doPrint(){
 	//document.body.innerHTML = oldstr;  
 
 	$("#printBtn").show();
-	$("#DTTT_container").show();
+	//$("#DTTT_container").show();
 }
 </script>
 </body>

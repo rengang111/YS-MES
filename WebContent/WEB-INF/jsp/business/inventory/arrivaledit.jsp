@@ -194,7 +194,7 @@
 		
 		ajax();
 
-		historyAjax();//到货登记历史记录
+		//historyAjax();//到货登记历史记录
 
 		autocomplete();
 		
@@ -213,6 +213,14 @@
 				function() {
 					var contractId='${contract.contractId }';
 					var url = "${ctx}/business/arrival?keyBackup="+contractId;
+					location.href = url;		
+				});
+		
+		$("#doView").click(
+				function() {
+					var contractId='${contract.contractId }';
+					var url = "${ctx}/business/arrival?methodtype=gotoArrivalView";
+					url = url + "&contractId="+contractId;
 					location.href = url;		
 				});
 		
@@ -320,6 +328,12 @@
 		</table>
 </fieldset>
 
+<div style="clear: both"></div>
+<fieldset class="action" style="text-align: right;">
+	<button type="button" id="insert" class="DTTT_button">确认收货</button>
+	<button type="button" id="doView" class="DTTT_button">查看到货记录</button>
+	<button type="button" id="goBack" class="DTTT_button">返回</button>
+</fieldset>	
 <fieldset>
 	<legend>到货登记</legend>
 	<div class="list">	
@@ -370,13 +384,8 @@
 	</tbody>
 </table>
 </div>
-</fieldset>
-<div style="clear: both"></div>
-<fieldset class="action" style="text-align: right;">
-	<button type="button" id="insert" class="DTTT_button">保存</button>
-	<button type="button" id="goBack" class="DTTT_button">返回</button>
-</fieldset>		
-
+</fieldset>	
+<!-- 
 <div style="clear: both"></div>
 
 <fieldset>
@@ -399,7 +408,7 @@
 </table>
 </div>
 </fieldset>
-
+ -->
 </form:form>
 
 </div>

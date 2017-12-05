@@ -152,6 +152,7 @@
 		    		{"targets":8,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["contractId"] + "','" + row["arrivalId"] + "')\">编辑</a>";
+		    			rtn = rtn +"&nbsp;&nbsp;"+ "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
 		    			return rtn;
 		    		}},
 		    	]        
@@ -219,7 +220,14 @@
 					var url = "${ctx}/business/arrival?keyBackup="+contractId;
 					location.href = url;		
 				});
-		
+
+		$("#doView").click(
+				function() {
+					var contractId='${contract.contractId }';
+					var url = "${ctx}/business/arrival?methodtype=gotoArrivalView";
+					url = url + "&contractId="+contractId;
+					location.href = url;		
+				});
 		$("#insert").click(
 				function() {
 				
@@ -352,7 +360,8 @@
 </fieldset>
 <div style="clear: both"></div>
 <fieldset class="action" style="text-align: right;">
-	<button type="button" id="insert" class="DTTT_button">保存</button>
+	<button type="button" id="insert" class="DTTT_button">确认收货</button>
+	<button type="button" id="doView" class="DTTT_button">查看到货记录</button>
 	<button type="button" id="goBack" class="DTTT_button">返回</button>
 </fieldset>
 <fieldset style="margin-top: -25px;">
@@ -402,7 +411,7 @@
 </table>
 </div>
 </fieldset>		
-<!--  
+ <!-- 
 <div style="clear: both"></div>
 
 <fieldset>
@@ -425,7 +434,7 @@
 </table>
 </div>
 </fieldset>
--->
+ -->
 </form:form>
 
 </div>
