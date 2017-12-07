@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -881,4 +882,14 @@ public class CommonService extends BaseService {
 		}
 		return rtn;
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public ArrayList removeDuplicate(ArrayList arlList)      
+	{      
+		HashSet h = new HashSet(arlList);      
+		arlList.clear();      
+		arlList.addAll(h);
+		
+		return arlList;
+	} 
 }

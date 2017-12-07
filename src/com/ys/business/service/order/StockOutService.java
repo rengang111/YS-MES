@@ -8,26 +8,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import com.ys.business.action.model.order.StockOutModel;
 import com.ys.business.db.dao.B_MaterialDao;
-import com.ys.business.db.dao.B_OrderDetailDao;
-import com.ys.business.db.dao.B_PurchaseOrderDao;
-import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.dao.B_StockOutDetailDao;
 import com.ys.business.db.data.B_MaterialData;
-import com.ys.business.db.data.B_OrderDetailData;
-import com.ys.business.db.data.B_PurchaseOrderData;
-import com.ys.business.db.data.B_PurchaseOrderDetailData;
-import com.ys.business.db.data.B_PurchaseStockInDetailData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.B_StockOutDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
@@ -410,7 +403,7 @@ public class StockOutService extends CommonService {
 
 		B_RequisitionData data = list.get(0);		
 		//更新状态
-		data.setRequisitionsts(Constants.STOCKOUT_2);//已出库		
+		data.setRequisitionsts(Constants.STOCKOUT_3);//已出库		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"StockOutInsert",userInfo);
@@ -501,7 +494,8 @@ public class StockOutService extends CommonService {
 	public B_StockOutData getStorageRecordId(
 			B_StockOutData data) throws Exception {
 	
-		String parentId = BusinessService.getYSCommCode();
+		String parentId = BusinessService.getshortYearcode()+
+				BusinessConstants.SHORTNAME_CK;
 		dataModel.setQueryName("getMAXStockOutId");
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("parentId", parentId);

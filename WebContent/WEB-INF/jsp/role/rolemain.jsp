@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <%@ include file="../common/common.jsp"%>
 <html>
-<body class="easyui-layout">
+<body>
 <div id="container">
 	<div id="main">
 		<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
@@ -80,7 +80,7 @@
 	
 		var t = $('#TMain').DataTable({
 				"paging": true,
-				"lengthMenu":[10,20,50],//设置一页展示10条记录
+				"lengthMenu":[50,100,200],//设置一页展示10条记录
 				"processing" : false,
 				"serverSide" : true,
 				"stateSave" : false,

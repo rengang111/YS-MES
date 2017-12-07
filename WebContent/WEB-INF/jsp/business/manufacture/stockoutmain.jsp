@@ -84,9 +84,23 @@
 		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "','"+ row["requisitionId"] + "')\">"+row["requisitionId"]+"</a>";
 		    			return rtn;
 		    		}},
+		    		{"targets":3,"render":function(data, type, row){
+		    			var name = row["materialId"];
+		    			if(name == null){
+		    				name="（自制件领料）";
+		    			}
+		    			
+		    			return name;
+		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 		    			var name = row["materialName"];
-		    			name = jQuery.fixedWidth(name,50);//true:两边截取,左边从汉字开始
+		    			if(name == null){
+		    				name="（自制件领料）";
+		    			}else{
+			    			name = jQuery.fixedWidth(name,50);//true:两边截取,左边从汉字开始
+		    				
+		    			}
+		    			
 		    			return name;
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
@@ -129,7 +143,7 @@
 
 	$(document).ready(function() {
 
-		ajax("010","true");
+		ajax("020","true");
 
 	    buttonSelectedEvent();//按钮点击效果
 	})	
@@ -185,8 +199,8 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('010');">待出库</a>
-			<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('020');">已出库</a>
+			<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('020');">待出库</a>
+			<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('030');">已出库</a>
 		</div>
 	
 		<table id="TMaterial" class="display">

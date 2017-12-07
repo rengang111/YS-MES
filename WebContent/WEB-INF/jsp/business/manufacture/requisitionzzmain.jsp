@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
 
-<title>自制件领料(吹塑)-一览</title>
+<title>自制件领料一览</title>
 <script type="text/javascript">
 
 	function ajax(pageFlg,type,scrollHeight,sessionFlag) {
@@ -14,8 +14,10 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		var makeType = $("#makeType").val();
 		var url = "${ctx}/business/requisitionzz?methodtype=searchOrderList"+"&keyBackup="+pageFlg;
 		url = url + "&sessionFlag="+sessionFlag;
+		url = url + "&makeType="+makeType;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": false,
@@ -71,7 +73,7 @@
 							{"data": "requisitionId", "className" : 'td-left'},//4
 							{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},
 							{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},//6
-							{"data": "statusName", "className" : 'td-center'},//7
+							{"data": "requisitionSts", "className" : 'td-center'},//7
 							{"data": null, "defaultContent" : '', "className" : 'td-center'},//8
 
 							
@@ -98,9 +100,23 @@
 			    				rtn = "（未领料）"			    			
 			    			return rtn;
 			    		}},
+			    		{"targets":7,"render":function(data, type, row){
+			    			var rtn = "";
+			    			if(data == "010"){
+			    				rtn = "待申请";
+			    				
+			    			}else if(data=="020"){
+			    				rtn = "待出库";
+			    				
+			    			}else{
+			    				rtn = "已出库";
+			    				
+			    			}			    			
+			    			return rtn;
+			    		}},
 			    		{"targets":8,"render":function(data, type, row){
 			    			var rtn = "";
-			    			rtn= "<a href=\"###\" onClick=\"doEdit('" + row["recordId"] +"','"+ row["parentId"] + "')\">" + "快速领料" + "</a>";
+			    			rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "快速领料" + "</a>";
 			    			//rtn=  row["YSId"];
 			    			return rtn;
 			    		}},
@@ -190,8 +206,20 @@
 			alert("请至少选择一条数据");
 			return;
 		}		
+		var makeType = $("#makeType").val();
 		var url = '${ctx}/business/requisitionzz?methodtype=addinit';
 		url = url +"&data="+str;
+		url = url +"&makeType="+makeType;
+		location.href = url;
+		
+	}
+	
+	function doCreate2(YSId) {
+	
+		var makeType = $("#makeType").val();
+		var url = '${ctx}/business/requisitionzz?methodtype=addinit';
+		url = url +"&data="+YSId;
+		url = url +"&makeType="+makeType;
 		location.href = url;
 		
 	}
@@ -255,6 +283,8 @@
 			<div id="search">
 
 				<form id="condition"  style='padding: 0px; margin: 10px;' >
+					
+					<input type="hidden" id="makeType" value="${makeType }" />
 
 					<table>
 						<tr>
@@ -287,7 +317,7 @@
 						<a class="DTTT_button DTTT_button_text" onclick="doSearch2('020');"><span>已领料</span></a>
 					</div> -->
 					<div style="height: 40px;margin-bottom: -15px;float:right">
-						<a class="DTTT_button DTTT_button_text" onclick="doCreate();">领料申请（自制件[吹塑]）</a>
+						<a class="DTTT_button DTTT_button_text" onclick="doCreate();">自制件领料申请</a>
 					</div>
 					<table style="width: 100%;" id="TMaterial" class="display">
 						<thead>						
@@ -301,7 +331,7 @@
 								<th style="width: 70px;">领料单编号</th>
 								<th style="width: 50px;">订单交期</th>
 								<th style="width: 60px;">订单数量</th>
-								<th style="width: 50px;">订单状态</th>
+								<th style="width: 50px;">领料状态</th>
 								<th style="width: 50px;">操作</th>
 							</tr>
 						</thead>

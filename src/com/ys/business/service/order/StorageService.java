@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.StorageModel;
-import com.ys.business.db.dao.B_ArrivalDao;
-import com.ys.business.db.dao.B_InspectionProcessDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
@@ -22,15 +19,12 @@ import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseStockInDao;
 import com.ys.business.db.dao.B_PurchaseStockInDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
-import com.ys.business.db.data.B_InspectionProcessData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
-import com.ys.business.db.data.B_ProductDesignData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_PurchaseStockInDetailData;
-import com.ys.business.db.data.B_ReceiveInspectionData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
@@ -241,7 +235,7 @@ public class StorageService extends CommonService {
 	public void edit() throws Exception {
 		B_PurchaseStockInData reqData = reqModel.getStock();
 		String contractId = reqData.getContractid();
-		String arrivalId = reqData.getArrivelid();
+		//String arrivalId = reqData.getArrivelid();
 		String receiptId = reqData.getReceiptid();
 		
 		getContractDetail(contractId);//合同信息
@@ -665,37 +659,7 @@ public class StorageService extends CommonService {
 		
 	}
 	
-	//
-	@SuppressWarnings("unchecked")
-	private void updateInspectionProcess(
-			String contractId,
-			String materialId) throws Exception{
 	
-		
-		String where = "contractId ='"+ contractId + 
-				"' AND materialId ='"+ materialId + 
-				"' AND deleteFlag='0' ";
-		
-		List<B_PurchaseOrderDetailData> list = 
-				(List<B_PurchaseOrderDetailData>)
-				new B_PurchaseOrderDetailDao().Find(where);
-		
-		if(list ==null || list.size() == 0){
-			return ;
-		}
-
-		B_PurchaseOrderDetailData data = list.get(0);
-		
-		//data.setStatus(Constants.ARRIVERECORD_4);//入库完毕
-		
-		//更新DB
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
-		copyProperties(data,commData);
-		
-		new B_PurchaseOrderDetailDao().Store(data);
-		
-	}
 	
 	//更新合同的累计入库数量
 	@SuppressWarnings("unchecked")
@@ -715,7 +679,7 @@ public class StorageService extends CommonService {
 		if(list ==null || list.size() == 0)
 			return ;		
 		B_PurchaseOrderDetailData data = list.get(0);
-		String ysid = data.getYsid();
+		//String ysid = data.getYsid();
 		String SContrat = list.get(0).getQuantity();//合同数量
 		String SQuantyDB = list.get(0).getContractstorage();//累计入库
 		float iContrat = stringToFloat(SContrat);//合同数量
@@ -734,43 +698,7 @@ public class StorageService extends CommonService {
 		updateContractDetailStatus(data);		
 		
 	}
-	
-
-	@SuppressWarnings("unchecked")
-	private boolean updatePurchaseOrderStatus(
-			String ysid,String contractId,float quantity) throws Exception{
 		
-		boolean rtnFlag = false;
-		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
-		List<B_PurchaseOrderData> list  = new B_PurchaseOrderDao().Find(where);
-		if(list ==null || list.size() == 0)
-			return rtnFlag;	
-
-		B_PurchaseOrderData data = list.get(0);
-		float orderTotal = stringToFloat(data.getOrderquantity());//合同总数
-		float storageTotal = stringToFloat(data.getStoragequantity());//入库总数
-		
-		float newStorage = storageTotal + quantity;
-		
-		if(newStorage == orderTotal){
-			//全部入库,更新状态
-			data.setStatus(Constants.CONTRACT_STS_3);//完结
-			rtnFlag = true;
-		}else{
-			data.setStatus(Constants.CONTRACT_STS_2);//执行中
-			rtnFlag = false;
-		}
-		//更新DB
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
-		copyProperties(data,commData);
-		data.setStoragequantity(String.valueOf(newStorage));
-		
-		dao.Store(data);
-		
-		return rtnFlag;
-	}
-	
 	@SuppressWarnings("unchecked")
 	private boolean  checkPurchaseOrderStatus(
 			String ysid,String contractId) throws Exception{
@@ -967,10 +895,12 @@ public class StorageService extends CommonService {
 	
 	public B_PurchaseStockInData getStorageRecordId(
 			B_PurchaseStockInData data) throws Exception {
-	
+
+		String parentId = BusinessService.getshortYearcode()+
+				BusinessConstants.SHORTNAME_RK;
 		dataModel.setQueryName("getMAXStorageRecordId");
 		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("YSId", data.getYsid());
+		userDefinedSearchCase.put("parentId", parentId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
 		baseQuery.getYsFullData();	
 		
@@ -979,7 +909,7 @@ public class StorageService extends CommonService {
 		
 		String inspectionId = 
 				BusinessService.getStorageRecordId(
-						data.getYsid(),
+						parentId,
 						code,
 						false);	
 		

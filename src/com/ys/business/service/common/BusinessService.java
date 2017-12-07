@@ -2,19 +2,9 @@ package com.ys.business.service.common;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.apache.commons.beanutils.BeanUtils;
-
-import com.ys.business.db.data.CommFieldsData;
-import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.CalendarUtil;
-import com.ys.util.basequery.common.Constants;
 
 public class BusinessService {
 	
@@ -97,6 +87,25 @@ public class BusinessService {
 		//格式化成3位流水号
 		DecimalFormat df = new DecimalFormat(
 				BusinessConstants.FORMAT_000);		
+		String rtnCode = df.format(code);
+
+		return rtnCode;
+	}
+
+	/**
+	 * 5位流水号格式化处理
+	 * blAdd:是否要递增
+	 */
+	public static String getFormat5Code(int code,boolean blAdd)
+	{
+		//流水号递增
+		if(blAdd){
+			code++;
+		}
+		
+		//格式化成5位流水号
+		DecimalFormat df = new DecimalFormat(
+				BusinessConstants.FORMAT_00000);		
 		String rtnCode = df.format(code);
 
 		return rtnCode;
@@ -385,23 +394,20 @@ public class BusinessService {
 	 
 	 /**
 	 * 入库单编号
-	 * @return 合同编号-2位流水号
+	 * @return 17RK-00001 5位流水号
 	 */
 	 public static String getStorageRecordId(
 			 String parent,String code,boolean addFlag) {
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("O");
 		sb.append(parent);
-	    //sb.append(getYSCommCode());
-		sb.append("ZP");
 	    sb.append("-");
 	    		
-		//格式化成3位流水号
+		//格式化成5位流水号
 		int num = 1;
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
-		sb.append(getFormat2Code(num,addFlag));
+		sb.append(getFormat5Code(num,addFlag));
 		
 		return sb.toString();
 	 }
@@ -409,21 +415,20 @@ public class BusinessService {
 	 
 	 /**
 	 * 出库单编号
-	 * @return O17YS-3位流水号
+	 * @return 17CK-00001 5位流水号
 	 */
 	 public static String getStockOutId(
 			 String parent,String code,boolean addFlag) {
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("O");
 	    sb.append(parent);
 	    sb.append("-");
 	    		
-		//格式化成3位流水号
+		//格式化成5位流水号
 		int num = 1;
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
-		sb.append(getFormat3Code(num,addFlag));
+		sb.append(getFormat5Code(num,addFlag));
 		
 		return sb.toString();
 	 }
@@ -453,22 +458,6 @@ public class BusinessService {
 		//
 		return getYSCommCode() + "000";
 	}
-
-	/**
-	 * 领料单编号
-	 * @return O耀升编号-2位流水号
-	 */
-	 public static String getRequisitionId(String ysid,String code) {
-
-		//格式化成2位流水号,并且+1
-		int num = 0;
-		if(!(code ==null || ("").equals(code)))
-			num = Integer.parseInt(code);
-		
-		String ft = BusinessService.getFormat2Code(num,false);
-		
-		return "O"+ysid+"-"+ ft;
-	 }
 	 
 	 /**
 		 * 自制品任务编号
@@ -485,19 +474,19 @@ public class BusinessService {
 		return  parentId + "-" + ft;
 	 }
 	 
-	 /**
-		 * 自制品领料单编号
-		 * @return 17ZZLL-001-1 1位流水号
-		 */
-	 public static String getRequisitionZZId(String parentId,String code) {
+	/**
+	 * 领料单编号
+	 * @return 17LL-00001 5位流水号
+	 */
+	 public static String getRequisitionId(String parentId,String code) {
 
 		int num = 0;
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
 		
-		//String ft = BusinessService.getFormatCode(num,false);
+		String ft = BusinessService.getFormat5Code(num,false);
 		
-		return  parentId + "-" + num;
+		return  parentId + "-" +ft;
 	 }
 
 	/**

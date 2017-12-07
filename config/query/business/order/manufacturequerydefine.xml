@@ -322,6 +322,7 @@
       <f name="b.deliveryDate" alias="" ctype="" />
       <f name="b.storageDate" alias="" ctype="" />
       <f name="b.rebateRate" alias="" ctype="" />
+      <f name="a.rawMaterialId" alias="" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -330,7 +331,7 @@
     <from>v_orderdetailforzz AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid AND (b.status='020' OR b.status='030') AND b.deleteFlag='0'</from>
     <orderby>A.YSId DESC </orderby>
     <groupby></groupby>
-    <having></having>
+    <having>b.YSId > 0</having>
 	<power>
 	</power>    
   </query> 
@@ -466,5 +467,29 @@
     <having></having>
 	<power>
 	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="zzmaterialFromPlan" />
+     <where>
+       <w name="b.YSId" des=""  reqName="YSId" dtype="ch" oper="in"  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="b.YSId" alias="" ctype="" />
+      <f name="b.materialId" alias="" ctype="" />
+      <f name="c.materialName" alias="" ctype="" /> 
+      <f name="d.rawmaterialId" alias="" ctype="" />
+      <f name="sum(replace(b.manufactureQuantity,',',''))" alias="manufactureQuantity" ctype="" />
+      <f name="c.unit" alias="" ctype="计量单位" />
+      <f name="b.purchaseType" alias="" ctype="" />
+      <f name="b.deleteFlag" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from> b_purchaseplandetail b LEFT JOIN  b_material c ON b.materialId=c.materialId AND c.deleteFlag='0' LEFT JOIN b_zzrawmaterial d ON d.materialId=b.materialId AND d.deleteFlag='0' WHERE b.supplierId='0574YZ00' AND LEFT(b.materialId,1) != 'H' AND b.deleteFlag='0' </from>
+    <orderby>b.YSId,b.materialId </orderby>
+    <groupby>b.YSId,b.materialId</groupby>
+    <having></having>
+	<power></power>    
   </query>
 </root>

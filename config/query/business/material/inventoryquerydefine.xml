@@ -70,7 +70,7 @@
     <pool></pool>    
     <name value="getMAXStorageRecordId" />
      <where>
-       <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="" bt="" />
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="" bt="" />
     </where>
   <select>
       <f name="IFNULL(MAX(a.subId+1),1)" alias="MaxSubId" ctype="" />

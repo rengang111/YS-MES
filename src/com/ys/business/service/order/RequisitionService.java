@@ -32,6 +32,7 @@ import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.util.CalendarUtil;
@@ -206,7 +207,7 @@ public class RequisitionService extends CommonService {
 			String oldId = reqData.getRequisitionid();
 			
 			//领料单更新处理
-			reqData = getRequisitionId(reqData,YSId);
+			reqData = getRequisitionId(reqData);
 			String requisitionid = reqData.getRequisitionid();//新的单号
 			reqData.setOriginalrequisitionid(oldId);
 			updateRequisition(reqData);
@@ -265,7 +266,7 @@ public class RequisitionService extends CommonService {
 
 			//取得领料单编号
 			YSId = reqData.getYsid();
-			reqData = getRequisitionId(reqData,YSId);
+			reqData = getRequisitionId(reqData);
 			String requisitionid = reqData.getRequisitionid();
 			
 			//领料申请insert
@@ -517,9 +518,11 @@ public class RequisitionService extends CommonService {
 	
 	
 	
-	public B_RequisitionData getRequisitionId(B_RequisitionData data,
-			String parentId) throws Exception {
-		
+	public B_RequisitionData getRequisitionId(
+			B_RequisitionData data ) throws Exception {
+
+		String parentId = BusinessService.getshortYearcode()+
+				BusinessConstants.SHORTNAME_LL;
 		dataModel.setQueryName("getMAXRequisitionId");
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("parentId", parentId);

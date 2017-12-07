@@ -2,38 +2,23 @@ package com.ys.business.service.order;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.RequisitionModel;
-import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_ProductionTaskDao;
-import com.ys.business.db.dao.B_PurchaseOrderDao;
-import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
-import com.ys.business.db.dao.B_PurchasePlanDao;
-import com.ys.business.db.dao.B_PurchasePlanDetailDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_MaterialData;
-import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_ProductionTaskData;
-import com.ys.business.db.data.B_PurchaseOrderData;
-import com.ys.business.db.data.B_PurchaseOrderDetailData;
-import com.ys.business.db.data.B_PurchasePlanData;
-import com.ys.business.db.data.B_PurchasePlanDetailData;
-import com.ys.business.db.data.B_PurchaseStockInData;
-import com.ys.business.db.data.B_PurchaseStockInDetailData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -99,7 +84,53 @@ public class RequisitionZZService extends CommonService {
 		super.session = session;
 		
 	}
-	public HashMap<String, Object> doSearch( String data) throws Exception {
+	
+	private ArrayList<HashMap<String, String>> getRequisitionZZData(
+			String makeType,
+			ArrayList<HashMap<String, String>>  list) throws Exception{
+		
+		//物料
+		//HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		//ArrayList<HashMap<String, String>> list = getRequisitionZZFromPlan(data);
+		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
+		
+		for(HashMap<String, String>map:list){
+			 
+			String subid = map.get("rawMaterialId").substring(0, 3);	
+			String ysid = map.get("YSId");
+
+			//确认领料状态
+			B_RequisitionData task = new B_RequisitionData();
+			String where = "collectYsid like '%" + ysid + "%'"; 
+			task = checkRequisitionExsit(where);
+			if(task == null){
+				map.put("requisitionSts", Constants.STOCKOUT_1);//待申请
+			}else{
+				String requisitionId = task.getRequisitionsts();
+				map.put("requisitionSts", requisitionId);//待出库/已出库
+			}			
+			//过滤数据
+			if(("A14").equals(subid)){//吹塑:A14
+				blow.add(map);
+			}else if( ("A03").equals(makeType) ){//吸塑:A03
+				blister.add(map);
+			}else{//以外
+				injection.add(map);
+			}
+		}
+		if( ("blow").equals(makeType) ){//吹塑:A14	
+			return blow;
+		}else if( ("blister").equals(makeType) ){//吸塑:A03
+			return blister;			 
+		}else{//以外
+			return injection;			 
+		}
+		 
+	}
+	
+	public HashMap<String, Object> doSearch(String makeType, String data,String formId) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		int iStart = 0;
@@ -110,7 +141,7 @@ public class RequisitionZZService extends CommonService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
-		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION,data,session);
+		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -140,8 +171,9 @@ public class RequisitionZZService extends CommonService {
 		
 		modelMap.put("sEcho", sEcho); 		
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
-		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());	
+
+		modelMap.put("data", getRequisitionZZData(makeType,dataModel.getYsViewData()));
 		modelMap.put("keyword1",key1);	
 		modelMap.put("keyword2",key2);		
 		
@@ -170,14 +202,14 @@ public class RequisitionZZService extends CommonService {
 			task = getTaskId(task);
 			newYsid = ysids;
 		}else{
-			newYsid = ysids + task.getCollectysid();
+			newYsid = ysids +","+ task.getCollectysid();
 			String[] newList = newYsid.split(",");
 			List<String> listTmp =  new ArrayList<String>();
 			for(String str:newList){
 				listTmp.add(str.trim());
 			}
             //去掉重复项
-			removeDuplicate((ArrayList<String>) listTmp);
+			listTmp = removeDuplicate((ArrayList<String>) listTmp);
 			//去掉首位的括号和中间的空格
 			newYsid = StringUtils.strip(listTmp.toString().replaceAll(" +", ""),"[]");
 		}
@@ -193,12 +225,7 @@ public class RequisitionZZService extends CommonService {
 		getTaskDetail(taskId);
 	}
 	
-	public void removeDuplicate(ArrayList arlList)      
-	{      
-		HashSet h = new HashSet(arlList);      
-		arlList.clear();      
-		arlList.addAll(h);      
-	}  
+ 
 
 	public void updateInit() throws Exception {
 
@@ -211,15 +238,78 @@ public class RequisitionZZService extends CommonService {
 		getRequisitionDetail();
 	
 	}
-	public HashMap<String, Object> getRawMaterial() throws Exception {
+	
+	public HashMap<String, Object> getRawMaterial(String makeType) throws Exception {
 
 		String taskId = request.getParameter("taskId");	
 		String ysids = request.getParameter("YSId");			
 		model.addAttribute("ysids",ysids);//选中的耀升编号
 	
-		//物料需求表
-		return getRawMaterialList(ysids,taskId);
+		//物料
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> list = getRawMaterialList(ysids,taskId);
+		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
+		
+		for(HashMap<String, String>map:list){
+			 
+			 String subid = map.get("materialId").substring(0, 3);	
+			 
+			 if(("A14").equals(subid)){//吹塑:A14
+				 blow.add(map);
+			 }else if( ("A03").equals(subid) ){//吸塑:A03
+				 blister.add(map);
+			 }else{//以外
+				 injection.add(map);
+			 }
+		}
+		if( ("blow").equals(makeType) ){//吹塑:A14	
+			modelMap.put("data", blow);
+		}else if( ("blister").equals(makeType) ){//吸塑:A03
+			modelMap.put("data", blister);			 
+		}else{//以外
+			modelMap.put("data", injection);			 
+		}
+		 
+		return modelMap;
 	}
+	
+	public HashMap<String, Object> getMaterialZZ(String makeType) throws Exception {
+
+		String ysids = request.getParameter("YSId");;			
+			
+		//自制品
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> list = getMaterialZZList(ysids);
+		
+		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
+		
+		for(HashMap<String, String>map:list){
+			 
+			 String subid = map.get("rawmaterialId").substring(0, 3);	
+			 
+			 if(("A14").equals(subid)){//吹塑:A14
+				 blow.add(map);
+			 }else if( ("A03").equals(subid) ){//吸塑:A03
+				 blister.add(map);
+			 }else{//以外
+				 injection.add(map);
+			 }
+		}
+		if( ("blow").equals(makeType) ){//吹塑:A14	
+			modelMap.put("data", blow);
+		}else if( ("blister").equals(makeType) ){//吸塑:A03
+			modelMap.put("data", blister);			 
+		}else{//以外
+			modelMap.put("data", injection);			 
+		}
+		 
+		return modelMap;
+	}
+	
 	public void updateAndView() throws Exception {
 
 		String YSId = update();
@@ -254,8 +344,8 @@ public class RequisitionZZService extends CommonService {
 			String oldId = reqData.getRequisitionid();
 			
 			//领料单更新处理
-			reqData = getRequisitionZZId(reqData,"");
-			String requisitionid = reqData.getRequisitionid();//新的单号
+			reqData = getRequisitionZZId(reqData);//领料单编号
+			String requisitionid = reqData.getRequisitionid();
 			reqData.setOriginalrequisitionid(oldId);
 			updateRequisition(reqData);
 
@@ -322,13 +412,11 @@ public class RequisitionZZService extends CommonService {
 			}				
 			//生产任务处理结束*******************
 			
-			//String currentYsids = reqDt.getCollectysid();
 			taskId = task.getTaskid();
-			reqData = getRequisitionZZId(reqData,taskId);
+			reqData = getRequisitionZZId(reqData);
 			String requisitionId = reqData.getRequisitionid();
 			reqData.setYsid(taskId);
-			//reqData.setCollectysid(currentYsids);			
-			
+			reqData.setRequisitionsts(Constants.STOCKOUT_2);//待出库
 			insertRequisition(reqData);//领料申请insert
 			
 			//领料明细
@@ -558,9 +646,10 @@ public class RequisitionZZService extends CommonService {
 	}
 
 	public B_RequisitionData getRequisitionZZId(
-			B_RequisitionData data,
-			String parentId) throws Exception {
-				
+			B_RequisitionData data) throws Exception {
+		
+		String parentId = BusinessService.getshortYearcode()+
+				BusinessConstants.SHORTNAME_LL;
 		dataModel.setQueryName("getMAXRequisitionId");
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("parentId", parentId);
@@ -568,7 +657,7 @@ public class RequisitionZZService extends CommonService {
 		baseQuery.getYsFullData();
 		//sql里已经是MAX+1
 		String subid = dataModel.getYsViewData().get(0).get("MaxSubId");
-		String id =  BusinessService.getRequisitionZZId(parentId,subid);
+		String id =  BusinessService.getRequisitionId(parentId,subid);
 		data.setRequisitionid(id);
 		data.setParentid(parentId);
 		data.setSubid(subid);
@@ -581,7 +670,7 @@ public class RequisitionZZService extends CommonService {
 			B_ProductionTaskData data) throws Exception {
 		
 		String parentId = BusinessService.getshortYearcode()
-				+ BusinessConstants.SHORTNAME_LLZZ;
+				+ BusinessConstants.SHORTNAME_RW;
 		
 		dataModel.setQueryName("getMAXTaskId");
 		baseQuery = new BaseQuery(request, dataModel);
@@ -612,8 +701,20 @@ public class RequisitionZZService extends CommonService {
 	@SuppressWarnings("unchecked")
 	public B_ProductionTaskData checkTaskIdExsit(String where) throws Exception{
 
-		B_ProductionTaskData rtnDt=null;
+		B_ProductionTaskData rtnDt= null;
 		List<B_ProductionTaskData> list = new B_ProductionTaskDao().Find(where);	
+		if(list != null && list.size() > 0){
+			rtnDt = list.get(0);
+		}
+			
+		return rtnDt;		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public B_RequisitionData checkRequisitionExsit(String where) throws Exception{
+
+		B_RequisitionData rtnDt= null;
+		List<B_RequisitionData> list = new B_RequisitionDao().Find(where);	
 		if(list != null && list.size() > 0){
 			rtnDt = list.get(0);
 		}
@@ -643,11 +744,10 @@ public class RequisitionZZService extends CommonService {
 		return modelMap;		
 	}
 	
-	public HashMap<String, Object> getRawMaterialList(
+	public ArrayList<HashMap<String, String>> getRawMaterialList(
 			String ysids,
 			String taskId) throws Exception {
-		
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();		
+				
 		dataModel.setQueryName("getRawMaterialList");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", ysids);		
@@ -656,11 +756,19 @@ public class RequisitionZZService extends CommonService {
 		
 		baseQuery.getYsFullData(sql);
 
-		if(dataModel.getRecordCount() >0){
-			modelMap.put("data", dataModel.getYsViewData());
-		}
+		return dataModel.getYsViewData();		
+	}
+	
+	public ArrayList<HashMap<String, String>> getMaterialZZList(
+			String ysids) throws Exception {
+				
+		dataModel.setQueryName("zzmaterialFromPlan");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", ysids);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
 		
-		return modelMap;		
+		return dataModel.getYsViewData();		
 	}
 	
 	public HashMap<String, Object> getRequisitionHistory(

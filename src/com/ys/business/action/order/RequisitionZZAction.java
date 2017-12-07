@@ -51,6 +51,7 @@ public class RequisitionZZAction extends BaseAction {
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
+		String makeType = request.getParameter("makeType");
 		String rtnUrl = "";
 		HashMap<String, Object> dataMap = null;
 		
@@ -62,6 +63,7 @@ public class RequisitionZZAction extends BaseAction {
 		this.model = model;
 		this.response = response;
 		this.session = session;
+		model.addAttribute("makeType",makeType);
 		
 		if (type == null) {
 			type = "";
@@ -75,42 +77,48 @@ public class RequisitionZZAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				doInit();
-				rtnUrl = "/business/inventory/requisitionzzmain";
+				doInit(makeType);
+				rtnUrl = "/business/manufacture/requisitionzzmain";
 				break;
 			case "searchOrderList":
-				dataMap = doSearch(data);
+				String formId = Constants.FORM_REQUISITION_Z;//注塑
+				if(("blow").equals(makeType)){
+					formId = Constants.FORM_REQUISITION_C;//吹塑
+				}else if (("blister").equals(makeType)){
+					formId = Constants.FORM_REQUISITION_X;//吸塑
+				}
+				dataMap = doSearch(makeType,data,formId);
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "addinit":
-				doAddInit();
-				rtnUrl = "/business/inventory/requisitionzzadd";
+				doAddInit(makeType);
+				rtnUrl = "/business/manufacture/requisitionzzadd";
 				break;
 			case "updateInit":
 				doUpdateInit();
-				rtnUrl = "/business/inventory/requisitionzzedit";
+				rtnUrl = "/business/manufacture/requisitionzzedit";
 				break;
 			case "update":
 				doUpdate();
-				rtnUrl = "/business/inventory/requisitionview";
+				rtnUrl = "/business/manufacture/requisitionzzview";
 				break;
 			case "insert":
 				doInsert();
-				rtnUrl = "/business/inventory/requisitionzzview";
+				rtnUrl = "/business/manufacture/requisitionzzview";
 				break;
 			case "delete":
 				doDelete(data);
 				printOutJsonObj(response, reqModel.getEndInfoMap());
 				return null;
 			case "getRawMaterialList":
-				dataMap = getRawMaterialList(data);
+				dataMap = getRawMaterialList(makeType);
 				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/inventory/requisitionview";
+				//rtnUrl = "/business/manufacture/requisitionview";
 				rtnUrl = null;
 				break;
 			case "getRequisitionHistoryInit":
 				doRequisitionHistoryInit();
-				rtnUrl = "/business/inventory/requisitionzzview";
+				rtnUrl = "/business/manufacture/requisitionzzview";
 				break;
 			case "getRequisitionHistory":
 				dataMap = getRequisitionHistory();
@@ -121,8 +129,13 @@ public class RequisitionZZAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "print"://领料单打印
-				doAddInit();
-				rtnUrl = "/business/inventory/requisitionzzprint";
+				doAddInit(makeType);
+				rtnUrl = "/business/manufacture/requisitionzzprint";
+				break;
+			case "getMaterialZZList"://取得自制品
+				dataMap = getMaterialZZList(makeType);
+				printOutJsonObj(response, dataMap);
+				rtnUrl = null;
 				break;
 				
 		}
@@ -130,23 +143,23 @@ public class RequisitionZZAction extends BaseAction {
 		return rtnUrl;
 	}	
 	
-	public void doInit(){	
+	public void doInit(String makeType){
 
 	}	
 	
 	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doSearch(@RequestBody String data){
+	public HashMap<String, Object> doSearch(String makeType,String data,String formId){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
 		String sessionFlag = request.getParameter("sessionFlag");
 		if(("false").equals(sessionFlag)){
-			session.removeAttribute(Constants.FORM_REQUISITION+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_REQUISITION+Constants.FORM_KEYWORD2);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
 			
 		}
 		
 		try {
-			dataMap = service.doSearch(data);
+			dataMap = service.doSearch(makeType,data,formId);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
@@ -163,9 +176,10 @@ public class RequisitionZZAction extends BaseAction {
 	}
 	
 	
-	public void doAddInit(){
+	public void doAddInit(String makeType){
 		try{
 			service.addInit();
+
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
@@ -214,12 +228,17 @@ public class RequisitionZZAction extends BaseAction {
 
 	}
 	
-	public HashMap<String, Object> getRawMaterialList(String data) throws Exception{
+	public HashMap<String, Object> getRawMaterialList(String makeType) throws Exception{
 		
-		return service.getRawMaterial();
+		return service.getRawMaterial(makeType);
 
 	}
 
+	public HashMap<String, Object> getMaterialZZList(String makeType) throws Exception{
+		
+		return service.getMaterialZZ(makeType);
+
+	}
 
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> getRequisitionHistory(){

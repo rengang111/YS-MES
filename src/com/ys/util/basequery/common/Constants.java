@@ -22,6 +22,9 @@ public class Constants {
 	public static final String FORM_MATERIAL = "material";//
 	public static final String FORM_ARRIVAL = "arrival";//到货登记
 	public static final String FORM_REQUISITION = "requisition";//领料申请
+	public static final String FORM_REQUISITION_C = "requisitionzz";//吹塑领料申请
+	public static final String FORM_REQUISITION_Z = "requisitionzz";//注塑领料申请
+	public static final String FORM_REQUISITION_X = "requisitionzz";//吸塑领料申请
 	public static final String FORM_CONTRACT = "contract";//采购合同
 	public static final String FORM_PRODUCT= "product";//成品管理
 	public static final String FORM_PRODUCTSEMI = "productsemi";//让步接收
@@ -186,8 +189,9 @@ public class Constants {
 	/**
 	 * 料件出库
 	 */
-	public static final String STOCKOUT_1 = "010";//未出库
-	public static final String STOCKOUT_2 = "020";//已出库
+	public static final String STOCKOUT_1 = "010";//待申请
+	public static final String STOCKOUT_2 = "020";//待出库
+	public static final String STOCKOUT_3 = "030";//已出库
 
 	/**
 	 * 退货处理状态
