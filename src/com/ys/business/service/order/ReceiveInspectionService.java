@@ -341,6 +341,8 @@ public class ReceiveInspectionService extends CommonService  {
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"ReceiveInspctionUpdate",userInfo);
 			copyProperties(db,commData);
+			db.setReport(data.getReport());
+			db.setCheckerid(data.getCheckerid());
 			
 			new B_ReceiveInspectionDao().Store(db);
 		}		

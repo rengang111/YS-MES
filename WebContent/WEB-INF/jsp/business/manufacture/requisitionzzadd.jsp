@@ -394,11 +394,15 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">任务编号：</td>					
-				<td width="200px">
+				<td width="150px">
 					<form:input path="task.taskid" class="short required read-only" /></td>
 														
+				<td width="100px" class="label">领料单编号：</td>
+				<td width="150px">
+					<form:input path="requisition.requisitionid" class="read-only"  value="（保存后自动生成）"/></td>
+														
 				<td width="100px" class="label">领料日期：</td>
-				<td width="200px">
+				<td width="150px">
 					<form:input path="requisition.requisitiondate" class="short read-only" /></td>
 				
 				<td width="100px" class="label">领料人：</td>
@@ -407,7 +411,7 @@
 			</tr>
 			<tr> 				
 				<td class="label">关联耀升编号：</td>				
-				<td colspan="5"><form:input path="task.collectysid" class="long read-only" /></td>
+				<td colspan="7"><form:input path="task.collectysid" class="long read-only" /></td>
 			</tr>
 										
 		</table>

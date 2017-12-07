@@ -146,11 +146,13 @@ public class RequisitionService extends CommonService {
 	public void addInit() throws Exception {
 
 		String YSId = request.getParameter("YSId");
+		String requisitionId = request.getParameter("requisitionId");
 		if(YSId== null || ("").equals(YSId))
 			return;
 		
 		//订单详情
 		getOrderDetail(YSId);
+		model.addAttribute("requisitionId",requisitionId);
 	
 	}
 
@@ -575,6 +577,24 @@ public class RequisitionService extends CommonService {
 		
 	}
 	public HashMap<String, Object> getRequisitionDetail() throws Exception {
+
+		String requisitionId = request.getParameter("requisitionId");
+		
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");		
+		dataModel.setQueryName("updateRequisition");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("requisitionId", requisitionId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		model.addAttribute("detail",dataModel.getYsViewData().get(0));
+		
+		return modelMap;		
+	}
+	
+
+	public HashMap<String, Object> requisitionPrint() throws Exception {
 
 		String requisitionId = request.getParameter("requisitionId");
 		

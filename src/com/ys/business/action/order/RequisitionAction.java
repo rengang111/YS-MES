@@ -115,6 +115,10 @@ public class RequisitionAction extends BaseAction {
 				dataMap = getRequisitionDetail();
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "requisitionPrint":
+				dataMap = requisitionPrint();
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "print"://领料单打印
 				doPrintInit();
 				rtnUrl = "/business/inventory/requisitionprint";
@@ -246,6 +250,26 @@ public class RequisitionAction extends BaseAction {
 		
 		try {
 			dataMap = service.getRequisitionDetail();
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> requisitionPrint(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
+		
+		try {
+			dataMap = service.requisitionPrint();
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

@@ -446,7 +446,7 @@
       <f name="a.returnQuantity" alias="" ctype="" />
       <f name="A.checkResult" alias="" ctype="进料检验结果" />
       <f name="A.checkResult" alias="checkResultId" ctype="" />
-      <f name="A.status" alias="" ctype="处理状态" />
+      <f name="A.status" alias="" ctype="退货处理状态" />
       <f name="A.status" alias="statusId" ctype="" />
       <f name="A.checkDate" alias="" ctype="" />
       <f name="A.returnDate" alias="" ctype="" />

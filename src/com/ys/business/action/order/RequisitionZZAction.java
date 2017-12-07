@@ -137,6 +137,11 @@ public class RequisitionZZAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				rtnUrl = null;
 				break;
+			case "detailView"://领料单查看
+				getRequisitionZZDetail();
+				printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/manufacture/requisitionzzview";
+				break;
 				
 		}
 		
@@ -237,6 +242,12 @@ public class RequisitionZZAction extends BaseAction {
 	public HashMap<String, Object> getMaterialZZList(String makeType) throws Exception{
 		
 		return service.getMaterialZZ(makeType);
+
+	}
+
+	public void getRequisitionZZDetail() throws Exception{
+		
+		service.getRequisitionZZDetail();
 
 	}
 

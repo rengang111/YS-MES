@@ -8,16 +8,18 @@
 <title>自制件领料一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,type,scrollHeight,sessionFlag) {
+	function ajax(colNum,type,scrollHeight,sessionFlag) {
+		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 		var makeType = $("#makeType").val();
-		var url = "${ctx}/business/requisitionzz?methodtype=searchOrderList"+"&keyBackup="+pageFlg;
+		var url = "${ctx}/business/requisitionzz?methodtype=searchOrderList";
 		url = url + "&sessionFlag="+sessionFlag;
 		url = url + "&makeType="+makeType;
+		url = url + "&requisitionSts="+type;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": false,
@@ -28,7 +30,7 @@
 				"serverSide" : false,
 				"stateSave" : false,
 				"ordering "	:true,
-				"searching" : true,
+				"searching" : false,
 				//"pagingType" : "full_numbers",
 				"retrieve" : true,
 				"sAjaxSource" : url,
@@ -66,15 +68,15 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null,"className" : 'td-right'},
-							{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//1
-							{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
-							{"data": "materialName", "defaultContent" : ''},//3
-							{"data": "requisitionId", "className" : 'td-left'},//4
-							{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},
-							{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},//6
-							{"data": "requisitionSts", "className" : 'td-center'},//7
-							{"data": null, "defaultContent" : '', "className" : 'td-center'},//8
+					{"data": null,"className" : 'td-right'},
+					{"data": "requisitionId", "className" : 'td-left'},//1
+					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//2
+					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//3
+					{"data": "materialName", "defaultContent" : ''},//4
+					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},//5
+					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},//6
+					{"data": "requisitionSts", "className" : 'td-center'},//7
+					{"data": null, "defaultContent" : '', "className" : 'td-center'},//8
 
 							
 						],
@@ -84,17 +86,23 @@
 			    		}},
 			    		{"targets":1,"render":function(data, type, row){
 			    			var rtn = "";
+			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["taskId"] + "')\">" + row["requisitionId"] + "</a>";
+			    			
+			    			return rtn;
+			    		}},
+			    		{"targets":2,"render":function(data, type, row){
+			    			var rtn = "";
 			    			//rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">" + row["YSId"] + "</a>";
 			    			rtn=  row["YSId"];
 			    			return rtn;
 			    		}},
-			    		{"targets":3,"render":function(data, type, row){
+			    		{"targets":4,"render":function(data, type, row){
 			    			
 			    			var name = row["materialName"];				    			
 			    			name = jQuery.fixedWidth(name,45);				    			
 			    			return name;
 			    		}},
-			    		{"targets":4,"render":function(data, type, row){
+			    		{"targets":5,"render":function(data, type, row){
 			    			var rtn = data;
 			    			if(data == null || data == "")
 			    				rtn = "（未领料）"			    			
@@ -123,7 +131,7 @@
 			    		{ "bSortable": false, "aTargets": [ 0 ] },
 			    		{
 							"visible" : false,
-							"targets" : [4]
+							"targets" : [colNum]
 						}
 		           
 		         ] 
@@ -134,8 +142,8 @@
 	$(document).ready(function() {
 		var scrollHeight = $(document).height() - 200; 
 		//var type = "&purchaseType1=020&purchaseType2=040";
-		var type = "&status=020";
-		ajax("",type,scrollHeight,"true");
+		//var type = "&status=020";
+		ajax(1,"010",scrollHeight,"true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -156,18 +164,18 @@
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		var scrollHeight = $(document).height() - 200; 
-		var type = "";
-		ajax("purchaseRoutineMain",type,scrollHeight,"false");
+		
+		ajax(8,"",scrollHeight,"false");
 
 	}
 	
-	function doSearch2(str) {	
+	function doSearch2(colNum,type) {	
 
 		$("#keyword1").val("");
 		$("#keyword2").val("");
 		var scrollHeight = $(document).height() - 200; 
-		var type = "&purchaseType="+str;
-		ajax("purchaseRoutineMain",type,scrollHeight,"false");
+		
+		ajax(colNum,type,scrollHeight,"false");
 
 	}
 	
@@ -224,22 +232,12 @@
 		
 	}
 	
-	function doShow(recordId,parentId) {
+	function doShowDetail(taskId) {
 
-		var url = '${ctx}/business/material?methodtype=detailView&parentId=' + parentId+'&recordId='+recordId;
+		var makeType = $("#makeType").val();
+		var url = '${ctx}/business/requisitionzz?methodtype=detailView&taskId=' + taskId+'&makeType='+makeType;
 		
-		layer.open({
-			offset :[10,''],
-			type : 2,
-			title : false,
-			area : [ '1100px', '520px' ], 
-			scrollbar : false,
-			title : false,
-			content : url,
-			cancel: function(index){ 			
-				layer.close(index);
-			}    
-		});	
+		location.href = url;
 	}
 
 	function reload() {
@@ -309,33 +307,33 @@
 			</div>
 			<div  style="height:10px"></div>
 		
-			<div class="list">
-
-					<!-- 
-					<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-						<a class="DTTT_button DTTT_button_text" onclick="doSearch2('040');"><span>未领料</span></a>
-						<a class="DTTT_button DTTT_button_text" onclick="doSearch2('020');"><span>已领料</span></a>
-					</div> -->
-					<div style="height: 40px;margin-bottom: -15px;float:right">
-						<a class="DTTT_button DTTT_button_text" onclick="doCreate();">自制件领料申请</a>
-					</div>
-					<table style="width: 100%;" id="TMaterial" class="display">
-						<thead>						
-							<tr>					
-								<th width="50px">
-									<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
-									<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
-								<th style="width: 70px;">耀升编号</th>
-								<th style="width: 120px;">产品编号</th>
-								<th>产品名称</th>
-								<th style="width: 70px;">领料单编号</th>
-								<th style="width: 50px;">订单交期</th>
-								<th style="width: 60px;">订单数量</th>
-								<th style="width: 50px;">领料状态</th>
-								<th style="width: 50px;">操作</th>
-							</tr>
-						</thead>
-					</table>
+			<div class="list">					
+				<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
+					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(1,'010');"><span>待申请</span></a>
+					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>待出库</span></a>
+					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>已领料</span></a>
+				</div>
+				<div style="height: 40px;margin-bottom: -15px;float:right">
+					<a class="DTTT_button DTTT_button_text" onclick="doCreate();">自制件领料申请</a>
+				</div>
+				<table style="width: 100%;" id="TMaterial" class="display">
+					<thead>						
+						<tr>					
+							<th width="50px">
+								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
+								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
+							
+							<th style="width: 70px;">领料单编号</th>
+							<th style="width: 70px;">耀升编号</th>
+							<th style="width: 120px;">产品编号</th>
+							<th>产品名称</th>
+							<th style="width: 50px;">订单交期</th>
+							<th style="width: 60px;">订单数量</th>
+							<th style="width: 50px;">领料状态</th>
+							<th style="width: 50px;">操作</th>
+						</tr>
+					</thead>
+				</table>
 			</div>
 		</div>
 	</div>

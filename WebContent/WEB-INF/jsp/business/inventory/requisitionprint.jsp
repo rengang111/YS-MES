@@ -9,79 +9,7 @@
 <%@ include file="../../common/common2.jsp"%>
 <link rel="stylesheet" type="text/css" href="${ctx}/css/print.css" />
 <script type="text/javascript">
-	/*
-	// Custom filtering function which will search data in column four between two values 
-	$.fn.dataTable.ext.search.push(function( settings, data, dataIndex ) {
-	       
-		var type =  $('#selectedPurchaseType').val();
-	    		
-    	if (type =='' || type == 'all')		    		
-    	{		    		
-    		return true;
-    		
-    	}else if(type=='dg'){//订购件
-    		var val1=data[9];
-    		var val2=data[10];
-    		var val3=data[1];
-    		var tmp3 = val3.substring(0,1);
-    		var tmp2 = val2.substring(6,4);
-    		var tmp1 = val1.substring(3,0);
-    		//alert(tmp)
-    		if(tmp1 == '010' && tmp2 != 'YZ' && tmp3 != 'G' ){
-    			return true;
-    		}
-    		
-    	}else if(type=='ty'){//通用件
-    		var val=data[9];
-    		var tmp = val.substring(3,0);
-    		
-    		if(tmp == '020'){
-    			return true;
-    		}
-    		
-    	}else if(type=='bz'){//包装品
-    		var val=data[1];
-    		var tmp = val.substring(0,1);
-    		
-    		if(tmp == 'G'){
-    			return true;
-    		}
-    		
-    	}else if(type=='yz'){//自制品
-    		var val=data[10];
-    		var tmp = val.substring(6,4);
-    		
-    		if(tmp == 'YZ'){
-    			return true;
-    		}
-    		
-    	}else if(type=='ycl'){//原材料
-    		var val=data[9];
-    		var tmp = val.substring(3,0);
-    		
-    		if(tmp == '050'){
-    			return true;
-    		}
-    		
-    	}else if(type=='wll'){//未领物料
-    		var val5=data[5];//已领数量
-    		var val4=data[4];//计划用量
-    		var jihua = currencyToFloat(val4);
-    		var yiling = currencyToFloat(val5);
-    		
-    		if(yiling < jihua){
-    			return true;
-    		}
-    		
-    	}else{
 
-	    	return false;
-    		
-    	}
-    	  
- 
-	});
-*/
 	$(document).ready(function() {
 		//日期
 		var mydate = new Date();
@@ -91,20 +19,13 @@
 		
 		ajaxFn();		
 		
-		var table = $('#example').DataTable();
-		// Event listener to the two range filtering inputs to redraw on input
-	    $('#yz, #ty, #dg, #bz, #all, #ycl, #wll').click( function() {
-	    	
-	    	 $('#selectedPurchaseType').val($(this).attr('id'));
-    		 table.draw();
-	    } );
 		
 	});
 	
 function ajaxFn(scrollHeight) {
 		
 		var requisitionId= '${requisitionId}';
-		var actionUrl = "${ctx}/business/requisition?methodtype=getRequisitionDetail";
+		var actionUrl = "${ctx}/business/requisition?methodtype=requisitionPrint";
 		actionUrl = actionUrl +"&requisitionId="+requisitionId;		
 		
 		var t = $('#example').DataTable({
@@ -138,41 +59,25 @@ function ajaxFn(scrollHeight) {
 		        	{"data": null,"className":"dt-body-center"//0
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
-				}, {"data": "unitQuantity","className":"td-right"	//3
-				}, {"data": "manufactureQuantity","className":"td-right"//4
-				}, {"data": "totalRequisition","className":"td-right"//5
-				}, {"data": "quantityOnHand","className":"td-right"	//6 可用库存
-				}, {"data": "areaNumber"		//7
-				}, {"data": null,"className":"td-right","defaultContent" : '0'//8
-				}, {"data": "purchaseType","className":"td-right"		//9
-				}, {"data": "supplierId","className":"td-right"		//10
+				}, {"data": "unit","className":"td-center"	//3
+				}, {"data": "quantity","className":"td-right"	//4
+				}, {"data": null,"className":"td-right"	,"defaultContent" : ''//5
 				}
 			],
 			"columnDefs":[                
-	    		{"targets":2,"render":function(data, type, row){ 					
-					//var index=row["rownum"]	
-	    			//var name =  jQuery.fixedWidth( row["materialName"],40);
-
+	    		{"targets":2,"render":function(data, type, row){
 	    			return "&nbsp;&nbsp;"+data;
                 }},
-	    		{"targets":4,"render":function(data, type, row){	    			
-	    			
-	    			var unit = row["unit"];	    			
-	    			var index=row["rownum"]
-	    			var qty = currencyToFloat(row["manufactureQuantity"]);
-	    			var value = '0';
-	    			//alert(unit)
+	    		{"targets":3,"render":function(data, type, row){	    			
+	    			var unit = row["unit"];		
 	    			if(unit == '吨'){
-	    				value = formatNumber( qty * 1000 );//转换成公斤
-	    			}else{
-	    				value = formatNumber(qty);
-	    			}
-	    								
-	    			return value;				 
+	    				unit = '千克';//转换成公斤
+	    			}	    								
+	    			return unit;						 
                 }},
                 {
 					"visible" : false,
-					"targets" : [3,8,9,10]
+					"targets" : []
 				}
 			]
 			
@@ -218,6 +123,7 @@ function ajaxFn(scrollHeight) {
 			</tr>
 		</table>
 		<table>
+		<!-- 
 			<tr> 				
 				<td class="label">耀升编号：</td>					
 				<td>&nbsp;${order.YSId }</td>
@@ -233,7 +139,10 @@ function ajaxFn(scrollHeight) {
 				<td width="100px" class="label">产品名称：</td>			
 				<td colspan="3">&nbsp;${order.materialName }</td>	
 			</tr>
+			 -->
 			<tr>
+				<td width="100px" class="label">领料单编号：</td>					
+				<td width="180px">&nbsp;${requisitionId }</td>
 							
 				<td width="100px" class="label">制单人：</td>					
 				<td width="180px">&nbsp;${userName }</td>
@@ -259,17 +168,12 @@ function ajaxFn(scrollHeight) {
 			<table id="example" class="display" width="100%">
 				<thead>				
 					<tr>
-						<th style="width:1px">No</th>
+						<th style="width:3px">No</th>
 						<th width="120px">物料编号</th>
 						<th >物料名称</th>				
-						<th width="60px">基本用量</th>
-						<th width="60px">计划用量</th>
-						<th width="80px">已领数量</th>
-						<th width="80px">本次领料</th>
-						<th width="100px">库位</th>
-						<th width="60px">剩余数量</th>
-						<th width="1px"></th>
-						<th width="1px"></th>
+						<th width="60px">单位</th>
+						<th width="120px">领料数量</th>
+						<th width="20px"></th>
 					</tr>
 	
 			</table>

@@ -89,13 +89,12 @@ public class RequisitionZZService extends CommonService {
 			String makeType,
 			ArrayList<HashMap<String, String>>  list) throws Exception{
 		
-		//物料
-		//HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		//ArrayList<HashMap<String, String>> list = getRequisitionZZFromPlan(data);
 		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
 		ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
 		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
 		
+
+		String requisitionSts = request.getParameter("requisitionSts");
 		for(HashMap<String, String>map:list){
 			 
 			String subid = map.get("rawMaterialId").substring(0, 3);	
@@ -107,19 +106,32 @@ public class RequisitionZZService extends CommonService {
 			task = checkRequisitionExsit(where);
 			if(task == null){
 				map.put("requisitionSts", Constants.STOCKOUT_1);//待申请
+				map.put("requisitionId", "（待申请）");//领料单编号
 			}else{
-				String requisitionId = task.getRequisitionsts();
-				map.put("requisitionSts", requisitionId);//待出库/已出库
-			}			
+				String sts = task.getRequisitionsts();
+				map.put("requisitionSts", sts);//待出库/已出库
+				map.put("requisitionId", task.getRequisitionid());//领料单编号
+				map.put("taskId", task.getYsid());//任务编号
+			}
+			
+			if(notEmpty(requisitionSts) && !requisitionSts.equals(map.get("requisitionSts")))
+				continue;//过滤页面传来的状态值
+			
+			blow.add(map);
+			
+			
+			/*
 			//过滤数据
 			if(("A14").equals(subid)){//吹塑:A14
 				blow.add(map);
-			}else if( ("A03").equals(makeType) ){//吸塑:A03
+			}else if( ("A03").equals(subid) ){//吸塑:A03
 				blister.add(map);
 			}else{//以外
 				injection.add(map);
 			}
+			*/
 		}
+		/*
 		if( ("blow").equals(makeType) ){//吹塑:A14	
 			return blow;
 		}else if( ("blister").equals(makeType) ){//吸塑:A03
@@ -127,7 +139,8 @@ public class RequisitionZZService extends CommonService {
 		}else{//以外
 			return injection;			 
 		}
-		 
+		*/
+		return blow;
 	}
 	
 	public HashMap<String, Object> doSearch(String makeType, String data,String formId) throws Exception {
@@ -156,13 +169,27 @@ public class RequisitionZZService extends CommonService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 
-		//dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderListForZZ");	
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
+		userDefinedSearchCase.put("keyword2", key2);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
+		//替换数据源
+		if(makeType.equals("blister")){
+			//吸塑
+			sql = sql.replace("v_orderdetailforzz", "v_orderdetailforf01");
+		}else if(makeType.equals("blow")){
+			//吹塑
+			sql = sql.replace("v_orderdetailforzz", "v_orderdetailforf02");
+			
+		}else{
+			//注塑
+			sql = sql.replace("v_orderdetailforzz", "v_orderdetailforb01");
+			
+		}
+		
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
@@ -236,6 +263,14 @@ public class RequisitionZZService extends CommonService {
 		getOrderDetail(YSId);
 		//领料单
 		getRequisitionDetail();
+	
+	}
+	
+	public void getRequisitionZZDetail() throws Exception {
+
+		String taskId = request.getParameter("taskId");
+		//任务详情
+		getTaskDetail(taskId);
 	
 	}
 	

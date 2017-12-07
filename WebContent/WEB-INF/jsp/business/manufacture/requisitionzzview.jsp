@@ -61,7 +61,7 @@
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
 		    			rtn = rtn + "&nbsp;&nbsp;";
-		    			rtn = rtn +  "<a href=\"###\" onClick=\"doAddInit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">继续领料</a>";
+		    			rtn = rtn +  "<a href=\"###\" onClick=\"doPrint('" + row["requisitionId"] + "')\">打印领料单</a>";
 		    			return rtn;
 		    		}},
 		    	]        
@@ -282,7 +282,7 @@
 						<th class="dt-center" >本次领料耀升编号</th>
 						<th class="dt-center" width="70px">申请人</th>
 						<th class="dt-center" width="70px">仓管员</th>
-						<th class="dt-center" width="80px"></th>
+						<th class="dt-center" width="150px"></th>
 					</tr>
 				</thead>
 			</table>
@@ -331,6 +331,15 @@ function showYS(YSId) {
 
 };
 
+function doPrint(requisitionId) {
+	var YSId = '${order.YSId }';
+	var url = '${ctx}/business/requisition?methodtype=print';
+	url = url +'&YSId='+YSId;
+	url = url +'&requisitionId='+requisitionId;
+		
+	callProductDesignView("print",url);
+
+};
 </script>
 
 </html>
