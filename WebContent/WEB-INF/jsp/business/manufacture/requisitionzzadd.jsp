@@ -95,18 +95,38 @@
                 }},
 	    		{"targets":4,"render":function(data, type, row){	    			
 	    			
-	    			var unit = row["unit"];	    			
-	    			var index=row["rownum"]
+	    			var vrawunit = row["unit"];
+	    			var vzzunit = row["zzunit"]; 			
+	    			
 	    			var qty = currencyToFloat(row["manufactureQuantity"]);
 	    			var value = '0';
-	    			//alert(unit)
-	    			if(unit == '吨'){
-	    				value = float5ToCurrency( qty * 1000 );//转换成公斤
-	    			}else{
-	    				value = float5ToCurrency(qty);
+	    			    			
+	    			var farwunit = '1';//初始值
+	    			//原材料的购买单位
+	    			for(var i=0;i<unitAaary.length;i++){
+	    				var val = unitAaary[i][0];//取得计算单位:100,1000...
+	    				var key = unitAaary[i][1];//取得显示单位:克,吨...
+	    				if(vrawunit == key){
+	    					farwunit = val;
+	    					//alert('原材料的购买单位'+farwunit)
+	    					break;
+	    				}
 	    			}
-	    								
-	    			return value;				 
+
+	    			//自制品的用量单位
+	    			var fchgunit = '1';//初始值
+	    			for(var i=0;i<unitAaary.length;i++){
+	    				var val = unitAaary[i][0];//取得计算单位:100,1000...
+	    				var key = unitAaary[i][1];//取得显示单位:克,吨...
+	    				if(vzzunit == key){
+	    					fchgunit = val;//只有在需要换算的时候,才设置换算单位
+	    					//alert('自制品的用量单位'+fchgunit)
+	    					break;
+	    				}
+	    			}
+	    			
+	    			return floatToCurrency( qty * farwunit / fchgunit );
+	    										 
                 }},
 	    		{"targets":5,"render":function(data, type, row){	    			
 	    			

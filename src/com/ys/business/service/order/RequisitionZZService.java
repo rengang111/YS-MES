@@ -106,7 +106,7 @@ public class RequisitionZZService extends CommonService {
 			task = checkRequisitionExsit(where);
 			if(task == null){
 				map.put("requisitionSts", Constants.STOCKOUT_1);//待申请
-				map.put("requisitionId", "（待申请）");//领料单编号
+				map.put("requisitionId", "");//领料单编号
 			}else{
 				String sts = task.getRequisitionsts();
 				map.put("requisitionSts", sts);//待出库/已出库

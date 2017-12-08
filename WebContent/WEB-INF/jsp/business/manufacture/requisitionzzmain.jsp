@@ -74,7 +74,7 @@
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//3
 					{"data": "materialName", "defaultContent" : ''},//4
 					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},//5
-					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},//6
+					{"data": "totalQuantity", "defaultContent" : '0', "className" : 'td-right'},//6
 					{"data": "requisitionSts", "className" : 'td-center'},//7
 					{"data": null, "defaultContent" : '', "className" : 'td-center'},//8
 
@@ -85,8 +85,12 @@
 							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["YSId"] + "' />";
 			    		}},
 			    		{"targets":1,"render":function(data, type, row){
-			    			var rtn = "";
-			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["taskId"] + "')\">" + row["requisitionId"] + "</a>";
+			    			var rtn = row["requisitionId"];//
+			    			if(rtn == ""){
+					    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "（待申请）" + "</a>";
+			    			}else{
+				    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["taskId"] + "')\">" + row["requisitionId"] + "</a>";
+			    			}
 			    			
 			    			return rtn;
 			    		}},

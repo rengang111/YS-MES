@@ -289,6 +289,8 @@
 	      <f name="IFNULL(c.quantity,'0')" alias="totalRequisition" ctype="" />
 	      <f name="b.unit" alias="" ctype="计量单位" />
 	      <f name="b.unit" alias="unitId" ctype="" />
+	      <f name="b.zzunit" alias="" ctype="计量单位" />
+	      <f name="b.zzunit" alias="zzunitId" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
    <from>v_purchaseplandetailzz b LEFT JOIN v_requisitiondetailgroup c ON b.rawMaterialId = c.materialId AND c.YSId='#' AND c.deleteFlag = '0'</from>
