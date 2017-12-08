@@ -20,3 +20,15 @@ var unitAaary = [
 	
 ];
 	
+function getUnitChange(unit){
+	var fchgunit = 1;
+	for(var i=0;i<unitAaary.length;i++){
+		var val = unitAaary[i][0];//取得计算单位:100,1000...
+		var key = unitAaary[i][1];//取得显示单位:克,吨...
+		if(unit == key){
+			fchgunit = val;//只有在需要换算的时候,才设置换算单位
+			break;
+		}
+	}
+	return fchgunit;
+}

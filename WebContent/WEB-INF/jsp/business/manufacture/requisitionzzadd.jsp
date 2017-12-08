@@ -100,31 +100,16 @@
 	    			
 	    			var qty = currencyToFloat(row["manufactureQuantity"]);
 	    			var value = '0';
-	    			    			
-	    			var farwunit = '1';//初始值
-	    			//原材料的购买单位
-	    			for(var i=0;i<unitAaary.length;i++){
-	    				var val = unitAaary[i][0];//取得计算单位:100,1000...
-	    				var key = unitAaary[i][1];//取得显示单位:克,吨...
-	    				if(vrawunit == key){
-	    					farwunit = val;
-	    					//alert('原材料的购买单位'+farwunit)
-	    					break;
-	    				}
-	    			}
-
-	    			//自制品的用量单位
-	    			var fchgunit = '1';//初始值
-	    			for(var i=0;i<unitAaary.length;i++){
-	    				var val = unitAaary[i][0];//取得计算单位:100,1000...
-	    				var key = unitAaary[i][1];//取得显示单位:克,吨...
-	    				if(vzzunit == key){
-	    					fchgunit = val;//只有在需要换算的时候,才设置换算单位
-	    					//alert('自制品的用量单位'+fchgunit)
-	    					break;
-	    				}
-	    			}
 	    			
+	    			//原材料的购买单位			
+	    			var farwunit = getUnitChange(vrawunit)
+	    			//自制品的用量单位
+	    			var fchgunit = getUnitChange(vzzunit)	    			
+	    			//alert("materialId:"+row["materialId"]+"购买:"+farwunit+"用量:"+fchgunit)
+
+	    			if(vrawunit == '吨')
+	    				farwunit = farwunit *1000;//换算成千克
+	    				
 	    			return floatToCurrency( qty * farwunit / fchgunit );
 	    										 
                 }},
@@ -259,8 +244,8 @@
 					success: function(data){					
 						fnCallback(data);
 						
-						reloadFn();
-						foucsInit();
+						//reloadFn();
+						//foucsInit();
 						
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
