@@ -133,7 +133,7 @@
 				        ],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["UnitID"] + "' />"
+								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["RoleID"] + "' />"
 		                    }},	
 				    		{"targets":7,"render":function(data, type, row){
 				    			return 	"<a href='javascript:void(0);' title='详细信息' onClick=\"dispRoleDetail('" + row["RoleID"] + "');\">详细信息</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='修改' onClick=\"callUpdateRole('" + row["RoleID"] + "');\">修改</a>" + "&nbsp;" +	"<a href='javascript:void(0);' title='菜单' onClick=\"callMenu('" + row["RoleID"] + "', '" + row["RoleName"] + "');\">菜单</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='关联用户' onClick=\"dispRelationUser('" + row["RoleID"] + "');\">关联用户</a>" + "&nbsp;" + "<a href='javascript:void(0);' title='授权' onClick=\"setPower('" + row["RoleID"] + "');\">授权</a>"

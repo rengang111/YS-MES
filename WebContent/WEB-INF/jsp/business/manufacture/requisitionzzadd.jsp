@@ -137,50 +137,7 @@
 				}
 			]
 			
-		}).draw();
-
-		
-		t.on('change', 'tr td:nth-child(8)',function() {
-
-			var $td = $(this).parent().find("td");
-
-			var $oOverQty = $td.eq(2).find("input");//超领
-			var $oArrival = $td.eq(4);//计划
-			var $oyiling  = $td.eq(5);//已领料
-			var $oTotalQt = $td.eq(6);//总库存
-			var $oCurrQty = $td.eq(7).find("input");//本次领料
-			//var $oSurplus = $td.eq(9);//剩余
-
-			var fArrival  = currencyToFloat($oArrival.text());
-			var fYiling   = currencyToFloat($oyiling.text());
-			var fCurrQty  = currencyToFloat($oCurrQty.val());	
-			var fTotalQt  = currencyToFloat($oTotalQt.text());	
-			var fOverQty  = currencyToFloat($oOverQty.val());	
-			
-			//最多允许领料数量 = 计划 - 已领料
-		 	var fMaxQuanty = fArrival - fYiling;
-			if(fMaxQuanty < 0)
-				fMaxQuanty = 0;
-			if ( fTotalQt >= fCurrQty ){//总库存充足
-				if(fCurrQty > fMaxQuanty){//超领
-					fOverQty = fCurrQty - fMaxQuanty
-					$().toastmessage('showWarningToast', "领料数量超出需求量！");
-				}				
-			}else{//领料数大于可用库存
-				fCurrQty = fTotalQt;
-				$().toastmessage('showWarningToast', "实际库存不足！");
-			}
-			
-			//剩余数量=计划 - 本次 - 已领
-			//var fSurplus = fArrival - fYiling - fCurrQty;
-			//if (fSurplus < 0)
-			//	fSurplus = 0;
-			//$oSurplus.html(formatNumber(fSurplus));
-			$oCurrQty.val(fCurrQty);
-			$oOverQty.val(formatNumber(fOverQty));
-
-		});
-		
+		}).draw();		
 						
 		t.on('click', 'tr', function() {
 			if ( $(this).hasClass('selected') ) {

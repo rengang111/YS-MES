@@ -457,7 +457,7 @@ public class RequisitionZZService extends CommonService {
 			//领料明细
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
-				float overQuty = stringToFloat(data.getOverquantity());//超领
+				//float overQuty = stringToFloat(data.getOverquantity());//超领
 				
 				if(quantity <= 0)
 					continue;
@@ -466,7 +466,7 @@ public class RequisitionZZService extends CommonService {
 				insertRequisitionDetail(data);
 				
 				//更新库存
-				updateMaterialStock(data.getMaterialid(),quantity,overQuty);
+				//updateMaterialStock(data.getMaterialid(),quantity,overQuty);
 			
 			}
 			

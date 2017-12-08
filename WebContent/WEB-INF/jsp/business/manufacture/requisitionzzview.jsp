@@ -37,6 +37,7 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){							
 						fnCallback(data);
+						$('#example2 tbody tr').trigger('click');
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -231,9 +232,8 @@
 	        }
 			
 		});
-	
-		$('#btn').trigger("myEvent");
-	
+
+		
 	});
 	
 	function doEdit(YSId,requisitionId) {

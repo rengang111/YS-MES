@@ -24,7 +24,10 @@
 							密码：
 						</td>
 						<td width="150px" colspan=3>
-							<input type=password name="pwd" id="pwd" value="" style="height:30px" />
+							<input type="text"  id="webPwd" value="" style="height:30px" 
+								onfocus="this.type='password'" 
+								onBlur="pwdChange();" />
+							<input type="hidden" name="pwd" id="pwd" />
 						</td>
 					</tr>
 					<!-- 
@@ -66,6 +69,13 @@
 		
 	});
 
+	function pwdChange() {
+		
+		var pwd=$('#webPwd').val();
+		$('#pwd').val(pwd);
+		$('#webPwd').val('         ');//清空
+	}
+	
 	function doLogin() {
 		str = $('#loginId').val();
 		if (!inputStrCheck(str, "用户名", 60, 8, false, true)) {
