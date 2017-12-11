@@ -26,7 +26,6 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
@@ -56,7 +55,7 @@ public class PdfUnit {
     private static String errorImg2 = "D:\\Program Files\\Apache Software Foundation\\Tomcat 7.0\\webapps\\YS-MES\\images\\errorphoto240.png";
     public String dest="";
     public Document doc;
-    PdfDocument pdf;
+    public PdfDocument pdf;
     private HttpServletResponse response;
     private HttpSession session;
     
@@ -108,19 +107,8 @@ public class PdfUnit {
      * @author ShaoMin 
      * @throws Exception 
      */  
-    public void createPdfFile() throws Exception {  
+    private void createPdfFile() throws Exception {  
          
-        String timeStemp = CalendarUtil.fmtDate().replace(" ", "").replace(":", "").replace("-", "");
-       
-         
-       // FileOutputStream out = new FileOutputStream("temp/pdf/practisePdfFile.pdf");  
-       // PdfWriter.getInstance(doc, out);
-        //doc..open();  
-        
-        Text text1 = new Text("人类的海洋").setFont(bfChinese)  
-                .setFontSize((float) 7.41)  
-                .setFontColor(new DeviceRgb(46, 46, 46)).setBold();// setBold()字体为加粗 
-  
         Paragraph title = addTitle("受理材料收取凭证");
         
         doc.add(title);  
@@ -155,12 +143,7 @@ public class PdfUnit {
         Table table = new Table(new float[] { 0.4f, 0.25f, 0.25f, 0.25f, 0.25f })
         		.setWidth(UnitValue.createPercentValue(100))
         		.setHorizontalAlignment(HorizontalAlignment.LEFT)
-        		;  
-       // table.setHorizontalAlignment(Element.ALIGN_LEFT);  
-      //  table.setWidth(500f);  
-       // table.setWidthPercent(new float[] { 0.4f, 0.25f, 0.25f, 0.25f, 0.25f });  
-       // table.setWidthPercentage(100);  
-        //table.setLockedWidth(true);  
+        		;
 
         Cell cell = new Cell();  
         String strTableTitle = "申请材料名称";        
@@ -801,6 +784,7 @@ public class PdfUnit {
 		}
 		
 		in.close();//关闭文件输入流		
+		out.flush();
 		out.close();//关闭输出流
 		
 		//删除临时文件

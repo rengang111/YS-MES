@@ -767,7 +767,10 @@ public class CommonService extends BaseService {
         }finally{
             try {
                 if(in!=null)  in.close();  
-                if(out!=null)  out.close();  
+                if(out!=null){
+                	out.flush();
+                	out.close();  
+                }
             } catch (IOException e) {  
                 e.printStackTrace();  
             }  

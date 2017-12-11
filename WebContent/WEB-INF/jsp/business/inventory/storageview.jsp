@@ -39,7 +39,8 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){
 						fnCallback(data);
-						
+
+						$('#checkInDate').text(data['data'][0]["checkInDate"]);
 						$('#materialNumber').text(data['data'][0]["materialNumber"]);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -171,28 +172,28 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">耀升编号：</td>					
-				<td width="200px">&nbsp;${contract.YSId }</td>
+				<td width="150px">${contract.YSId }</td>
 							
 				<td width="100px" class="label">成品编码：</td>
-				<td width="200px">&nbsp;${contract.productId }</td>							
+				<td width="150px">${contract.productId }</td>							
 				<td width="100px" class="label">成品名称：</td>
 				<td>${contract.productName }</td>
 			</tr>
 			<tr>							
 				<td class="label">合同编号：</td>					
-				<td>&nbsp;${contract.contractId }</td>								 	
+				<td>${contract.contractId }</td>								 	
 				<td class="label">供应商：</td>					
-				<td colspan="3">&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName }</td>	
+				<td colspan="3">${contract.supplierId }（${contract.shortName }）${contract.fullName }</td>	
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">入库时间：</td>					
-				<td width="200px">&nbsp;${head.checkInDate }</td>
+				<td><span id="checkInDate">${head.checkInDate }</span></td>
 				<!-- 			
 				<td width="100px" class="label">仓管员：</td>
 				<td width="200px">${userName }</td>	
 				 -->						
 				<td class="label">入库件数：</td>
-				<td>&nbsp;<span id="materialNumber">${head.materialNumber }</span></td>
+				<td colspan="3"><span id="materialNumber">${head.materialNumber }</span></td>
 			</tr>
 										
 		</table>

@@ -914,6 +914,7 @@ public class StorageService extends CommonService {
 						false);	
 		
 		data.setReceiptid(inspectionId);
+		data.setParentid(parentId);
 		data.setSubid(code);			
 		
 		return data;

@@ -1743,7 +1743,11 @@ public class ProductDesignService extends CommonService  {
         } catch (Exception e) {  
             e.printStackTrace();  
         }  finally {
-        	if (pdf.doc !=null) pdf.doc.close();  
+        	if (pdf.doc !=null) {
+        		pdf.doc.flush();
+        		pdf.doc.close();  
+        		pdf.pdf.close();
+        	}
 		}
 	}
 	
@@ -2029,8 +2033,8 @@ public class ProductDesignService extends CommonService  {
 				
 			}
 			temp.close();
-			view.close();
-			back.close();				
+			view.flush();view.close();
+			back.flush();back.close();				
 			
 		} catch (IOException e) {
 			rtnbl = true;
