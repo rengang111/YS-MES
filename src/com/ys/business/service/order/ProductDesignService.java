@@ -1041,61 +1041,23 @@ public class ProductDesignService extends CommonService  {
 	public void getPhoto(
 			String YSId,String productId,
 			String folderName,String fileList,String fileCount) {
-		
-		//B_ProductDesignData reqDesign = reqModel.getProductDesign();
-		//String productId = reqDesign.getProductid();
-		//String YSId = reqDesign.getYsid();
-		//int id = Integer.parseInt(request.getParameter("id"));
-		
+				
 		String backPath = session.getServletContext().
 				getRealPath(BusinessConstants.PATH_PRODUCTDESIGNFILE)+
 				"/"+productId+"/"+YSId+"/"+folderName;	
 		String viewPath = BusinessConstants.PATH_PRODUCTDESIGNVIEW+
 				productId+"/"+YSId+"/"+folderName+"/";	
-
-	
 		
 		try {
-			
-			getFiles(backPath,viewPath,fileList,fileCount);
+			ArrayList<String> list = getFiles(backPath,viewPath);
+			modelMap.put(fileList, list);
+			modelMap.put(fileCount, list.size());
 							
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 
 		}		
-	}
-	
-		
-	private void getFiles(String filePath,String viewPath,
-			String fileList,String fileCount){
-
-		ArrayList<String> filelist = new ArrayList<String>();
-		
-		File root = new File(filePath);
-		File[] files = root.listFiles();
-		
-		int count = 0;
-		try{
-			for(File file:files){    
-				if(file.isDirectory()){
-					//递归调用
-					// getFiles(file.getAbsolutePath());
-					// filelist.add(file.getAbsolutePath());
-					//count++;					 
-					//System.out.println("显示"+filePath+"下所有子目录及其文件"+file.getAbsolutePath());
-				}else{
-					filelist.add(viewPath+file.getName());
-					count++;   
-					//System.out.println("显示"+filePath+"下所有子目录"+file.getAbsolutePath());
-				} 
-				    
-			}	
-		}catch(Exception e){
-			//nothing
-		}
-		modelMap.put(fileList, filelist);
-		modelMap.put(fileCount, count);
 	}
 	
 	public HashMap<String, Object> getPackage(String productDetailId) throws Exception {
@@ -1284,7 +1246,7 @@ public class ProductDesignService extends CommonService  {
 	
 	public HashMap<String, Object> uploadFile(MultipartFile file,String folder) {
 		B_ProductDesignData reqDesign = reqModel.getProductDesign();
-		String recordid = request.getParameter("recordId");
+		//String recordid = request.getParameter("recordId");
 		String productId = reqDesign.getProductid();
 		String YSId = reqDesign.getYsid();
 		//int id = Integer.parseInt(request.getParameter("id"));
@@ -1344,8 +1306,8 @@ public class ProductDesignService extends CommonService  {
 			MultipartFile file,String folder) {
 		
 		B_ProductDesignData reqDesign = reqModel.getProductDesign();
-		String productId = reqDesign.getProductid();
-		String YSId = reqDesign.getYsid();
+		//String productId = reqDesign.getProductid();
+		//String YSId = reqDesign.getYsid();
 		String orgFileName = file.getOriginalFilename();
 		
 		String tempPath = session.getServletContext().
@@ -1503,7 +1465,11 @@ public class ProductDesignService extends CommonService  {
         } catch (Exception e) {  
             e.printStackTrace();  
         }  finally {
-        	if (pdf.doc !=null) pdf.doc.close();  
+        	if (pdf.doc !=null){
+        		pdf.doc.flush();
+        		pdf.doc.close(); 
+        		pdf.pdf.close(); 
+        	}
 		}
 	}
 
@@ -2082,7 +2048,7 @@ public class ProductDesignService extends CommonService  {
 					
 	}
 	
-	 public void createPdf(){  
+	 private void createPdf(){  
 	        // 生成的新文件路径  
 	        String fileName = "itext-pdf-{0}.pdf";  
 	        String newPDFPath = "D:/Temp/pdf/itext-pdf-1.pdf";  
@@ -2114,7 +2080,7 @@ public class ProductDesignService extends CommonService  {
 	    /** 
 	     * 使用pdf 模板生成 pdf 文件 
 	     *   */  
-	    public void fillTemplate() {// 利用模板生成pdf  
+	    private void fillTemplate() {// 利用模板生成pdf  
 	        // 模板路径  
 	        String templatePath = "D:/Temp/pdf/pdf-template-form.pdf";  
 	        // 生成的新文件路径  

@@ -238,7 +238,7 @@
 	
 	function doEdit(YSId,requisitionId) {
 		
-		var url = '${ctx}/business/requisition?methodtype=updateInit&YSId='
+		var url = '${ctx}/business/requisitionzz?methodtype=updateInit&YSId='
 				+YSId+'&requisitionId='+requisitionId;
 		//alert("requisitionId"+requisitionId)
 		//callProductDesignView("requisition",url)

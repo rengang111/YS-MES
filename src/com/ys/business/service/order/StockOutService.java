@@ -1,18 +1,24 @@
 package com.ys.business.service.order;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ys.business.action.model.order.StockOutModel;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_RequisitionDao;
+import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.dao.B_StockOutDetailDao;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_RequisitionData;
+import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.B_StockOutDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -21,6 +27,10 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+
+import antlr.collections.impl.Vector;
+
+import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
@@ -127,8 +137,9 @@ public class StockOutService extends CommonService {
 
 	}
 	
-	public void addInit() throws Exception {
+	public String addInitOrView() throws Exception {
 
+		String stockFlag ="查看";
 		String YSId = request.getParameter("YSId");
 		String requisitionId = request.getParameter("requisitionId");
 				
@@ -136,23 +147,24 @@ public class StockOutService extends CommonService {
 		stock.setYsid(YSId);
 		stock.setRequisitionid(requisitionId);
 		reqModel.setStockout(stock);
-
+		
+		String where = " requisitionId='"+requisitionId+"' ";
+		if(checkStcokoutExsit(where) == null)
+			stockFlag = "新建";
+		
 		//订单详情
-		getOrderDetail(YSId);
+		//getOrderDetail(YSId);
 	
+		return stockFlag;
 	}
 	
 
 	public void edit() throws Exception {
-	//	B_StockOutDetailData reqData = reqModel.getStockOut();
-		
-		
-	//	getContractDetail(contractId);//合同信息
-	//	getArrivaRecord(receiptId);//入库明细
-
-	//	model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
-	//	model.addAttribute("receiptId",receiptId);//已入库
+		String stockoutId = request.getParameter("stockoutId");
 	
+		String where = " stockoutId='"+stockoutId+"' ";
+		B_StockOutData data = checkStcokoutExsit(where);
+		reqModel.setStockout(data);	
 	}
 
 	
@@ -217,25 +229,32 @@ public class StockOutService extends CommonService {
 		try {
 			ts.begin();
 			
-			//B_StockOutData reqData = reqModel.getStockOut();
-
+			B_StockOutData reqData = reqModel.getStockout();
+			List<B_StockOutDetailData> reqDataList = reqModel.getStockList();
 
 			//取得出库单编号
-			//String receiptid = reqData.getReceiptid();
-			//YSId = reqData.getYsid();
+			YSId= reqData.getYsid();		
+			String stockoutId = reqData.getStockoutid();
+	
+			//出库记录
+			insertStockOut(reqData);
 			
-			//采购出库记录
-			//updatePurchaseStockIn(reqData);
+			//删除既存数据
+			deleteStockoutDetail(stockoutId);
 			
-
+			for(B_StockOutDetailData data:reqDataList ){
+				float quantity = stringToFloat(data.getQuantity());
+				
+				if(quantity <= 0)
+					continue;
+				
+				data.setStockoutid(stockoutId);
+				insertStockOutDetail(data);								
+				
+				//更新库存
+				updateMaterial(data.getMaterialid(),quantity);//更新库存
 			
-			//确认合同状态:是否全部入库
-		//	boolean flag = checkPurchaseOrderStatus(reqData.getYsid(),contractId);
-			//if(flag){			
-				////更新合同状态
-				//updateContractStatus(contractId,Constants.CONTRACT_STS_3);//入库完毕			
-		//	}
-			
+			}
 			
 			ts.commit();			
 			
@@ -285,8 +304,6 @@ public class StockOutService extends CommonService {
 				updateMaterial(data.getMaterialid(),quantity);//更新库存
 			
 			}
-			//确认合同状态:是否全部出库
-			//boolean flag = checkPurchaseOrderStatus(reqData.getYsid(),contractId);
 			
 			updateRequisition(requisitionId);
 			
@@ -417,23 +434,32 @@ public class StockOutService extends CommonService {
 	private void insertStockOut(
 			B_StockOutData stock) throws Exception {
 
-		//删除旧数据,防止数据重复
-		String receiptId = stock.getStockoutid();
-		String where = " receiptId = '"+receiptId+"'";
 		try {
-			dao.RemoveByWhere(where);
+			B_StockOutData db = new B_StockOutDao(stock).beanData;
+
+			if(db == null || db.equals("")){
+				//插入新数据
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+						"StockOutInsert",userInfo);
+				copyProperties(stock,commData);
+				guid = BaseDAO.getGuId();
+				stock.setRecordid(guid);
+				stock.setKeepuser(userInfo.getUserId());//默认为登陆者
+				
+				dao.Create(stock);
+			}else{
+				//更新
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"StockOutInsert",userInfo);
+				copyProperties(stock,commData);
+				stock.setKeepuser(userInfo.getUserId());//默认为登陆者
+				
+				dao.Store(stock);
+			}
 		} catch (Exception e) {
 			// nothing
 		}		
-		//插入新数据
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"StockOutInsert",userInfo);
-		copyProperties(stock,commData);
-		guid = BaseDAO.getGuId();
-		stock.setRecordid(guid);
-		stock.setKeepuser(userInfo.getUserId());//默认为登陆者
 		
-		dao.Create(stock);
 	}
 	
 	private void insertStockOutDetail(
@@ -562,6 +588,110 @@ public class StockOutService extends CommonService {
 		
 		return modelMap;
 		
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	public B_StockOutData checkStcokoutExsit(String where) throws Exception {
+		
+		B_StockOutData db = null ; 
+		
+		List<B_StockOutData> list = new B_StockOutDao().Find(where);
+		
+		if(list.size() > 0)
+			db = list.get(0);
+		
+		return db;
+		
+	}
+	
+	public HashMap<String, Object> uploadPhotoAndReload(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		B_StockOutData reqDt = reqModel.getStockout();
+		String YSId = reqDt.getYsid();
+
+		String viewPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_STOCKOUTVIEW)+"/"+YSId;	
+
+		String savePath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;	
+						
+		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
+		
+		String photoName  = YSId  + "-" + CalendarUtil.timeStempDate(); 
+		
+		uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
+
+		ArrayList<String> list = getFiles(savePath,webPath);
+		modelMap.put(fileList, list);
+		modelMap.put(fileCount, list.size());
+	
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> deletePhotoAndReload(
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		String path = request.getParameter("path");
+		B_StockOutData reqDt = reqModel.getStockout();
+		String YSId = reqDt.getYsid();		
+		String savePath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;							
+		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
+
+		deletePhoto(path);//删除图片
+		
+		ArrayList<String> list = getFiles(savePath,webPath);//重新获取图片
+		
+		modelMap.put(fileList, list);
+		modelMap.put(fileCount, list.size());
+		
+		return modelMap;
+	}
+	
+	
+	public HashMap<String, Object> getProductPhoto() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+
+		String savePath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;							
+		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
+		
+		ArrayList<String> list = getFiles(savePath,webPath);//获取图片
+
+		modelMap.put("productFileList", list);
+		modelMap.put("productFileCount", list.size());
+		
+		return modelMap;
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	private void deleteStockoutDetail(
+			String stockoutId) throws Exception{
+		
+		B_StockOutDetailDao dao = new B_StockOutDetailDao();
+		//
+		String where = "stockoutId = '" + stockoutId  +"' AND deleteFlag = '0' ";
+		List<B_StockOutDetailData> list  = 
+				new B_RequisitionDetailDao().Find(where);
+		if(list ==null || list.size() == 0)
+			return ;
+		
+		for(B_StockOutDetailData dt:list){
+			
+			dao.Remove(dt);
+
+			//更新库存(恢复)
+			String mateId = dt.getMaterialid();
+			float quantity = (-1) * stringToFloat(dt.getQuantity());
+			
+			updateMaterial(mateId,quantity);
+			
+		}		
 	}
 
 }

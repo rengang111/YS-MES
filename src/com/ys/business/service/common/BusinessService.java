@@ -461,7 +461,7 @@ public class BusinessService {
 	 
 	 /**
 		 * 自制品任务编号
-		 * @return 17ZZLL-001 3位流水号
+		 * @return 17RW-00001 5位流水号
 		 */
 	 public static String getProductionTaskId(String parentId,String code) {
 
@@ -469,7 +469,7 @@ public class BusinessService {
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
 		
-		String ft = BusinessService.getFormatCode(num,false);
+		String ft = BusinessService.getFormat5Code(num,false);
 		
 		return  parentId + "-" + ft;
 	 }
@@ -491,7 +491,7 @@ public class BusinessService {
 
 	/**
 	 * 退货单编号
-	 * @return 合同编号-2位流水号
+	 * @return 合同编号-5位流水号
 	 */
 	 public static String getInspectionReturnId(String contractId,String code,boolean flag) {
 
@@ -500,7 +500,7 @@ public class BusinessService {
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);
 		
-		String ft = BusinessService.getFormat2Code(num,flag);
+		String ft = BusinessService.getFormat5Code(num,flag);
 		
 		return contractId+"-"+ ft;
 	 }

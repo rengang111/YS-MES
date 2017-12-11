@@ -975,87 +975,46 @@ public class StorageService extends CommonService {
 		String supplierId = reqDt.getSupplierid();
 		String contractId = reqDt.getContractid();
 		
-		uploadPhoto(headPhotoFile,YSId,supplierId,contractId);
+		String viewPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_GODOWNENTRYVIEW)
+				+"/"+supplierId+"/"+contractId;	
+
+		String savePath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_GODOWNENTRYFILE)
+				+"/"+supplierId+"/"+contractId;
 		
+		String webPath = BusinessConstants.PATH_GODOWNENTRYVIEW
+				+supplierId+"/"+contractId+"/";	
 		
-		getPhoto(supplierId,contractId,folderName,fileList,fileCount);
+		String photoName  = YSId + "-" + supplierId+ "-" + contractId + "-" + CalendarUtil.timeStempDate(); 
+		
+		uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
+
+		ArrayList<String> list = getFiles(savePath,webPath);
+		modelMap.put(fileList, list);
+		modelMap.put(fileCount, list.size());
 		
 		return modelMap;
 	}
 	
-	public HashMap<String, Object> uploadPhoto(
-			MultipartFile[] headPhotoFile,
-			String YSId,String supplierId,String contractId
-			) {
-		
-		String finalUserId = "";
-		
-		String tempPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_GODOWNENTRYVIEW)
-				+"/"+supplierId+"/"+contractId;		
-
-		String realPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_GODOWNENTRYFILE)
-				+"/"+supplierId+"/"+contractId;
-		
-		String photoName = "";
-		boolean isSuccess = false;
-		HashMap<String, Object> jsonObj = new HashMap<String, Object>();
-		
-		String type = headPhotoFile[0].getOriginalFilename().substring(headPhotoFile[0].getOriginalFilename().lastIndexOf("."));
-		photoName = YSId + "-" + supplierId+ "-" + contractId + "-" + CalendarUtil.timeStempDate(); 
-		
-		try {
-			//同时copy两份,一份到临时目录,显示用,另一个备份
-			FileUtils.copyInputStreamToFile(headPhotoFile[0].getInputStream(), 
-					new File(tempPath, photoName + type));
-
-			FileUtils.copyInputStreamToFile(headPhotoFile[0].getInputStream(), 
-					new File(realPath, photoName + type));
-			
-			isSuccess = true;			
-			
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-
-		}
-		try {
-			if (isSuccess) {
-				jsonObj.put("result", "0");
-				jsonObj.put("userId", finalUserId);
-				jsonObj.put("path", BusinessConstants.PATH_GODOWNENTRYVIEW +
-						supplierId+
-						File.separator + photoName + type);
-			} else {
-				jsonObj.put("result", "1");
-				jsonObj.put("message", "图片上传失败");
-			}
-			
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
-		return jsonObj;
-	}
 	
-	public void getPhoto(
+	
+	private void getPhoto(
 			String supplierId,String contractId,
 			String folderName,String fileList,String fileCount) {
 
 		
-		String backPath = session.getServletContext().
+		String savePath = session.getServletContext().
 				getRealPath(BusinessConstants.PATH_GODOWNENTRYFILE)
 				+"/"+supplierId+"/"+contractId;	
 		String viewPath = BusinessConstants.PATH_GODOWNENTRYVIEW
 				+supplierId+"/"+contractId+"/";	
-
-	
 		
 		try {
-			
-			getFiles(backPath,viewPath,fileList,fileCount);
+
+			ArrayList<String> list = getFiles(savePath,viewPath);
+			modelMap.put(fileList, list);
+			modelMap.put(fileCount, list.size());
 							
 		}
 		catch(Exception e) {
@@ -1065,32 +1024,6 @@ public class StorageService extends CommonService {
 	}
 	
 	
-	private void getFiles(String filePath,String viewPath,
-			String fileList,String fileCount){
-
-		ArrayList<String> filelist = new ArrayList<String>();
-		
-		File root = new File(filePath);
-		File[] files = root.listFiles();
-		
-		int count = 0;
-		try{
-			for(File file:files){    
-				if(file.isDirectory()){
-					//递归调用
-				}else{
-					filelist.add(viewPath+file.getName());
-					count++;   
-					//System.out.println("显示"+filePath+"下所有子目录"+file.getAbsolutePath());
-				} 
-				    
-			}	
-		}catch(Exception e){
-			//nothing
-		}
-		modelMap.put(fileList, filelist);
-		modelMap.put(fileCount, count);
-	}
 	
 	public HashMap<String, Object> getProductPhoto() throws Exception {
 		
@@ -1120,31 +1053,5 @@ public class StorageService extends CommonService {
 	}
 	
 
-	public boolean deletePhoto (String path)throws Exception {
-    	
-		boolean rtnFlag = false;
-		String viewPath = "";
-		
-    	//显示用目录
-		viewPath = session.getServletContext().getRealPath(path);
-			
-    	//存储文件
-    	String realPath = viewPath.replaceFirst("img", "file");
-    			   	
-    	File f2 = new File(viewPath); //显示目录,文件和图片通用
-    	if(f2.exists()) {
-    		f2.delete(); 
-    		rtnFlag = true;
-    	}
-    	
-    	File f = new File(realPath); //存储目录,文件和图片通用
-    	if(f.exists()) {
-    		f.delete(); 
-    		rtnFlag = true;
-    	}
-    	
-    	return rtnFlag;
-    	
-    }
 
 }

@@ -260,9 +260,9 @@ public class RequisitionZZService extends CommonService {
 		//String requisitionId = request.getParameter("requisitionId");
 		
 		//订单详情
-		getOrderDetail(YSId);
+		//getOrderDetail(YSId);
 		//领料单
-		getRequisitionDetail();
+		getRequisitionDetailForEdit();
 	
 	}
 	
@@ -347,10 +347,10 @@ public class RequisitionZZService extends CommonService {
 	
 	public void updateAndView() throws Exception {
 
-		String YSId = update();
+		String taskId = update();
 
-		//订单详情
-		getOrderDetail(YSId);
+		//任务详情
+		getTaskDetail(taskId);
 	}
 	
 	public void insertAndView() throws Exception {
@@ -365,7 +365,7 @@ public class RequisitionZZService extends CommonService {
 
 	private String update(){
 		
-		String YSId = "";
+		String taskId = "";
 		ts = new BaseTransaction();
 
 		try {
@@ -373,42 +373,29 @@ public class RequisitionZZService extends CommonService {
 			
 			B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
 			List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
+			B_ProductionTaskData task = reqModel.getTask();
 
-			YSId = reqData.getYsid();
-			//旧的领料单号
-			String oldId = reqData.getRequisitionid();
+			taskId = task.getTaskid();
 			
 			//领料单更新处理
-			reqData = getRequisitionZZId(reqData);//领料单编号
 			String requisitionid = reqData.getRequisitionid();
-			reqData.setOriginalrequisitionid(oldId);
+			reqData.setOriginalrequisitionid(reqData.getRequisitionid());
 			updateRequisition(reqData);
 
 			//旧的明细删除处理
-			deleteRequisitionDetail(YSId,oldId);
+			deleteRequisitionDetail(requisitionid);
 			
 			//新的领料单明细						
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
-				float overQuty = stringToFloat(data.getOverquantity());//超领
 				
 				if(quantity <= 0)
 					continue;
 				
 				data.setRequisitionid(requisitionid);
-				insertRequisitionDetail(data);
-								
-				//更新累计领料数量
-				//updatePurchasePlan(YSId,data.getMaterialid(),quantity);
-				
-				//更新库存
-				updateMaterialStock(data.getMaterialid(),quantity,overQuty);
+				insertRequisitionDetail(data);								
 			
 			}
-			
-			//更新订单状态:待交货
-			updateOrderDetail(YSId);
-			
 			
 			ts.commit();			
 			
@@ -422,7 +409,7 @@ public class RequisitionZZService extends CommonService {
 			}
 		}
 		
-		return YSId;
+		return taskId;
 	}
 	
 	private String insert(){
@@ -625,7 +612,6 @@ public class RequisitionZZService extends CommonService {
 
 	@SuppressWarnings("unchecked")
 	private void deleteRequisitionDetail(
-			String YSId,
 			String requisitionId) throws Exception{
 		
 		B_RequisitionDetailDao dao = new B_RequisitionDetailDao();
@@ -637,20 +623,9 @@ public class RequisitionZZService extends CommonService {
 			return ;
 		
 		for(B_RequisitionDetailData dt:list){
-			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-					"RequisitionDelete",userInfo);
-			copyProperties(dt,commData);
 			
-			dao.Store(dt);
+			dao.Remove(dt);
 			
-			//更新累计领料数量(恢复)
-			String mateId = dt.getMaterialid();
-			float quantity = (-1) * stringToFloat(dt.getQuantity());
-			//updatePurchasePlan(YSId,mateId,quantity);
-			
-			//更新库存(恢复)
-			float overQuty = (-1) * stringToFloat(dt.getOverquantity());
-			updateMaterialStock(mateId,quantity,overQuty);
 		}
 		
 	}
@@ -837,6 +812,22 @@ public class RequisitionZZService extends CommonService {
 		model.addAttribute("detail",dataModel.getYsViewData().get(0));
 		
 		return modelMap;		
+	}
+	
+
+	public void getRequisitionDetailForEdit() throws Exception {
+
+		String requisitionId = request.getParameter("requisitionId");
+		
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");		
+		dataModel.setQueryName("requisitionEdit");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("requisitionId", requisitionId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		model.addAttribute("detail",dataModel.getYsViewData().get(0));
+			
 	}
 	
 	public HashMap<String, Object> getOrderDetail(

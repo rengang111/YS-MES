@@ -15,8 +15,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
@@ -886,6 +888,11 @@ public class CommonService extends BaseService {
 		return rtn;
 	}
 	
+	/**
+	 * 去掉list中的重复项
+	 * @param arlList
+	 * @return list
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ArrayList removeDuplicate(ArrayList arlList)      
 	{      
@@ -895,4 +902,90 @@ public class CommonService extends BaseService {
 		
 		return arlList;
 	} 
+	
+	public boolean deletePhoto (String path)throws Exception {
+    	
+		boolean rtnFlag = false;
+		String viewPath = "";
+		
+    	//显示用目录
+		viewPath = session.getServletContext().getRealPath(path);
+			
+    	//存储文件
+    	String realPath = viewPath.replaceFirst("img", "file");
+    			   	
+    	File f2 = new File(viewPath); //显示目录,文件和图片通用
+    	if(f2.exists()) {
+    		f2.delete(); 
+    		rtnFlag = true;
+    	}
+    	
+    	File f = new File(realPath); //存储目录,文件和图片通用
+    	if(f.exists()) {
+    		f.delete(); 
+    		rtnFlag = true;
+    	}
+    	
+    	return rtnFlag;
+    	
+    }
+	
+
+	public ArrayList<String> getFiles(
+			String filePath,String viewPath){
+		
+		ArrayList<String> filelist = new ArrayList<String>();
+		
+		File root = new File(filePath);
+		File[] files = root.listFiles();
+		
+		//int count = 0;
+		try{
+			for(File file:files){    
+				if(file.isDirectory()){
+					//递归调用
+				}else{
+					filelist.add(viewPath+"/"+file.getName());
+					//count++; 
+				} 
+				    
+			}	
+		}catch(Exception e){
+			//nothing
+		}
+	
+		return filelist;
+	}
+	
+	public HashMap<String, Object> uploadPhoto(
+			MultipartFile[] headPhotoFile,
+			String photoName,
+			String viewPath,
+			String savePath,
+			String webPath) {
+				
+		HashMap<String, Object> jsonObj = new HashMap<String, Object>();
+		
+		String orgName = headPhotoFile[0].getOriginalFilename();
+		String type = orgName.substring(orgName.lastIndexOf("."));
+		
+		try {
+			//同时copy两份,一份显示用,另一个是保存目录
+			FileUtils.copyInputStreamToFile(headPhotoFile[0].getInputStream(), 
+					new File(viewPath, photoName + type));
+
+			FileUtils.copyInputStreamToFile(headPhotoFile[0].getInputStream(), 
+					new File(savePath, photoName + type));		
+			
+		}
+		catch(Exception e) {
+			jsonObj.put("result", "1");
+			jsonObj.put("message", "图片上传失败");
+			System.out.println(e.getMessage());
+
+		}		
+		
+		return jsonObj;
+	}
+
 }

@@ -220,26 +220,13 @@ public class RequisitionService extends CommonService {
 			//新的领料单明细						
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
-				//float overQuty = stringToFloat(data.getOverquantity());//超领
 				
 				if(quantity <= 0)
 					continue;
 				
 				data.setRequisitionid(requisitionid);
 				insertRequisitionDetail(data);
-								
-				//更新累计领料数量
-				//updatePurchasePlan(YSId,data.getMaterialid(),quantity);
-				
-				//更新库存
-				//updateMaterialStock(data.getMaterialid(),quantity,overQuty);
-			
 			}
-			
-			//更新订单状态:待交货
-			//updateOrderDetail(YSId);
-			
-			
 			ts.commit();			
 			
 		}
@@ -375,55 +362,7 @@ public class RequisitionService extends CommonService {
 		dao.Store(data);		
 	}
 	
-	//更新当前库存:领料时，减少“当前库存”,减少“待出库”,
-	@SuppressWarnings("unchecked")
-	private void updateMaterialStock(
-			String materialId,
-			float reqQuantity,
-			float overQuantity) throws Exception{
 	
-		B_MaterialData data = new B_MaterialData();
-		B_MaterialDao dao = new B_MaterialDao();
-		
-		String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
-		
-		List<B_MaterialData> list = 
-				(List<B_MaterialData>)dao.Find(where);
-		
-		if(list ==null || list.size() == 0){
-			return ;
-		}
-
-		data = list.get(0);
-		
-		//当前库存数量
-		float iQuantity = stringToFloat(data.getQuantityonhand());
-		//float ireqQuantity = stringToFloat(reqQuantity);				
-		float iNewQuantiy = iQuantity - reqQuantity;		
-		
-		//待入库数量
-		float istockin = stringToFloat(data.getWaitstockin());		
-		//float iNewStockIn = istockin - reqQuantity;
-		
-		//待出库
-		float waitstockout = stringToFloat(data.getWaitstockout());
-		waitstockout = waitstockout - reqQuantity + overQuantity;//超领部分不计入
-		
-		//虚拟库存=当前库存 + 待入库 - 待出库
-		float availabeltopromise = iNewQuantiy + istockin - waitstockout;
-		
-		data.setQuantityonhand(String.valueOf(iNewQuantiy));
-		data.setWaitstockout(String.valueOf(waitstockout));
-		data.setAvailabeltopromise(String.valueOf(availabeltopromise));
-		
-		//更新DB
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
-		copyProperties(data,commData);
-		
-		dao.Store(data);
-		
-	}
 		
 	@SuppressWarnings("unchecked")
 	private void updateOrderDetail(
@@ -478,16 +417,16 @@ public class RequisitionService extends CommonService {
 					"RequisitionDelete",userInfo);
 			copyProperties(dt,commData);
 			
-			dao.Store(dt);
+			dao.Remove(dt);
 			
 			//更新累计领料数量(恢复)
-			String mateId = dt.getMaterialid();
-			float quantity = (-1) * stringToFloat(dt.getQuantity());
+			//String mateId = dt.getMaterialid();
+			//float quantity = (-1) * stringToFloat(dt.getQuantity());
 			//updatePurchasePlan(YSId,mateId,quantity);
 			
 			//更新库存(恢复)
-			float overQuty = (-1) * stringToFloat(dt.getOverquantity());
-			updateMaterialStock(mateId,quantity,overQuty);
+			//float overQuty = (-1) * stringToFloat(dt.getOverquantity());
+			//updateMaterialStock(mateId,quantity,overQuty);
 		}
 		
 	}
