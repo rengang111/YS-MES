@@ -1,12 +1,10 @@
 package com.ys.business.service.order;
 
-import java.io.File;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
@@ -340,12 +338,7 @@ public class StorageService extends CommonService {
 			updatePurchaseStockIn(reqData);
 			
 			//先删除已经存在的入库明细
-			String where = " receiptId = '"+receiptid+"'";
-			try {
-				detaildao.RemoveByWhere(where);
-			} catch (Exception e) {
-				// nothing
-			}
+			deletePurchaseStockInDetail(receiptid);
 			
 			//采购入库记录明细
 			for(B_PurchaseStockInDetailData data:reqDataList ){
@@ -394,19 +387,10 @@ public class StorageService extends CommonService {
 			//取得入库申请编号
 			reqData = getStorageRecordId(reqData);			
 			String receiptid = reqData.getReceiptid();
-			//arrivalid = reqData.getArrivelid();
 			contractId = reqData.getContractid();
 			
 			//采购入库记录
 			insertPurchaseStockIn(reqData);
-			
-			//先删除已经存在的入库明细
-			String where = " receiptId = '"+receiptid+"'";
-			try {
-				detaildao.RemoveByWhere(where);
-			} catch (Exception e) {
-				// nothing
-			}
 			
 			//采购入库记录明细
 			for(B_PurchaseStockInDetailData data:reqDataList ){
@@ -419,9 +403,6 @@ public class StorageService extends CommonService {
 				insertPurchaseStockInDetail(data);
 									
 				updateMaterial(materialid,quantity);//更新库存
-
-				//更新收货状态
-				//updateInspectionProcess(contractId,materialid);
 				
 				//更新合同的累计入库数量,收货状态
 				updateContractStorage(reqData.getContractid(),materialid,quantity);					
@@ -470,14 +451,6 @@ public class StorageService extends CommonService {
 			//采购入库记录
 			insertPurchaseStockIn(reqData);
 			
-			//先删除已经存在的入库明细
-			String where = " receiptId = '"+receiptid+"'";
-			try {
-				detaildao.RemoveByWhere(where);
-			} catch (Exception e) {
-				// nothing
-			}
-			
 			//采购入库记录明细
 			for(B_PurchaseStockInDetailData data:reqDataList ){
 				String quantity = data.getQuantity();
@@ -524,20 +497,12 @@ public class StorageService extends CommonService {
 					reqModel.getStockList();
 
 			//取得入库申请编号
-			//reqData = getStorageRecordId(reqData);
 			String receiptid = reqData.getReceiptid();
 			ysid = reqData.getYsid();
 			
 			//采购入库记录
 			updatePurchaseStockIn(reqData);
 			
-			//先删除已经存在的入库明细
-			//String where = " receiptId = '"+receiptid+"'";
-			//try {
-			//	detaildao.RemoveByWhere(where);
-			//} catch (Exception e) {
-				// nothing
-			//}
 			
 			//采购入库记录明细
 			for(B_PurchaseStockInDetailData data:reqDataList ){
@@ -546,7 +511,7 @@ public class StorageService extends CommonService {
 				if(quantity == null || quantity.equals("") || quantity.equals("0"))
 					continue;
 				
-				deletePurchaseStockInDetail(data);
+				deletePurchaseStockInDetail(receiptid);
 
 				data.setReceiptid(receiptid);
 				insertPurchaseStockInDetail(data);
@@ -567,6 +532,7 @@ public class StorageService extends CommonService {
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			try {
+	
 				ts.rollback();
 			} catch (Exception e1) {
 				System.out.println(e1.getMessage());
@@ -761,20 +727,12 @@ public class StorageService extends CommonService {
 	private void insertPurchaseStockIn(
 			B_PurchaseStockInData stock) throws Exception {
 
-		//删除旧数据,防止数据重复
-		String receiptId = stock.getReceiptid();
-		String where = " receiptId = '"+receiptId+"'";
-		try {
-			dao.RemoveByWhere(where);
-		} catch (Exception e) {
-			// nothing
-		}		
 		//插入新数据
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"PurchaseStockInInsert",userInfo);
 		copyProperties(stock,commData);
 		stock.setKeepuser(userInfo.getUserId());//默认为登陆者
-		String guid = BaseDAO.getGuId();
+		guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
 		
 		dao.Create(stock);
@@ -787,7 +745,7 @@ public class StorageService extends CommonService {
 		B_PurchaseStockInData db = new B_PurchaseStockInDao(stock).beanData;
 		
 		if(db == null || ("").equals(db))
-			return;
+			insertPurchaseStockIn(stock);
 
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"PurchaseStockInUpdate",userInfo);
@@ -812,16 +770,22 @@ public class StorageService extends CommonService {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	private void deletePurchaseStockInDetail(
-			B_PurchaseStockInDetailData stock) throws Exception {
+			String receiptid) throws Exception {
 		
-		//插入新数据
-		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-				"PurchaseStockInDetailInsert",userInfo);
-		copyProperties(stock,commData);
+		//删除处理
+		String astr_Where = "receiptid='"+ receiptid +"'";
+		List<B_PurchaseStockInDetailData> list = detaildao.Find(astr_Where);
 
-		
-		detaildao.Store(stock);	
+		for(B_PurchaseStockInDetailData stock:list){
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"PurchaseStockInDetailInsert",userInfo);
+			copyProperties(stock,commData);
+			
+			detaildao.Store(stock);
+		}	
 	}
 	
 	

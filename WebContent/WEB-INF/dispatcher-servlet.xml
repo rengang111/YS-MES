@@ -31,7 +31,7 @@
 	<context:component-scan base-package="com.ys.business.service" />
 	<context:component-scan base-package="com.ys.business.db" />
 		
-	<aop:aspectj-autoproxy proxy-target-class="true"/>
+	<aop:aspectj-autoproxy />
 
 	<mvc:interceptors>
 		<bean class="com.ys.system.interceptor.CommonInterceptor" />
