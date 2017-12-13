@@ -10,7 +10,7 @@
 
 	function ajax() {
 
-		var receiptId = $("#stock\\.receiptid").val();
+		var contractId = $("#stock\\.contractid").val();
 		var t = $('#example').DataTable({
 			
 			"paging": true,
@@ -19,11 +19,12 @@
 			"processing" : false,
 			"serverSide" : false,
 			"stateSave" : false,
+			"autoWidth"	:false,
 			"ordering "	:true,
 			"searching" : false,
 			"retrieve" : true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/storage?methodtype=getStockInDetail&receiptId="+receiptId,
+			"sAjaxSource" : "${ctx}/business/storage?methodtype=getStockInDetail&contractId="+contractId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -54,8 +55,8 @@
 						}, {"data": "materialId","className":"td-left"
 						}, {"data": "materialName",
 						}, {"data": "contractQuantity","className":"td-right"
-						}, {"data": "contractStorage","className":"td-right"
 						}, {"data": "quantity","className":"td-right"	
+						}, {"data": "checkInDate","className":"td-right"
 						}, {"data": "packaging","className":"td-center"
 						}, {"data": "areaNumber",
 						}
@@ -64,12 +65,16 @@
 	    		{"targets":3,"render":function(data, type, row){
 	    			
 	    			var name = data;				    			
-	    			name = jQuery.fixedWidth(name,35);				    			
+	    			name = jQuery.fixedWidth(name,40);				    			
 	    			return name;
 	    		}},
-	    		{"targets":8,"render":function(data, type, row){
-	    				    				    			
-	    			return "&nbsp;&nbsp;"+data;
+	    		{"targets":9,"render":function(data, type, row){
+	    			var text="";
+	    			text += "<a href=\"###\" onClick=\"doEdit('"  + row["contractId"] + "','"  + row["receiptId"] + "')\">编辑</a>";
+	    			text += "&nbsp;"
+	    			text += "<a href=\"###\" onClick=\"doPrint('" + row["receiptId"] + "')\">打印</a>";
+
+	    			return text;
 	    		}}
 	    	]
 	
@@ -113,28 +118,35 @@
 					location.href = url;		
 				});
 		
-		$("#insert").click(
-				function() {
-				var receiptId = $("#stock\\.receiptid").val();	
-			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=edit&receiptId="+receiptId);
-			$('#formModel').submit();
-		});
+		$("#doAddInit").click(
+					function() {
+						var addFlag = $('#addFlag').val();
+						if(addFlag == "false"){
+							$().toastmessage('showWarningToast', "该合同暂时没有要入库的数据。");	
+							return;
+						}
+						var arrivalId = $('#arrivalId').val();
+						var contractId='${contract.contractId }';
+						var url = "${ctx}/business/storage?methodtype=addinit";
+						url += "&contractId="+contractId;
+						url += "&arrivalId="+arrivalId;
+						location.href = url;		
+					});
 		
 		productPhotoView();
 		
 	});
 	
-	function doEdit(contractId,arrivalId) {
-		
-		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
+	function doEdit(contractId,receiptId) {
+
+		var url = "${ctx}/business/storage?methodtype=edit&receiptId="+receiptId
+				+ "&contractId="+contractId;
 		location.href = url;
 	}
 
-	function doPrint() {
-		var contractId = $("#stock\\.contractid").val();
-		var receiptId = $("#stock\\.receiptid").val();
+	function doPrint(receiptId) {
 		var url = '${ctx}/business/storage?methodtype=printReceipt';
-		url = url +'&contractId='+contractId+'&receiptId='+receiptId;
+		url = url +'&receiptId='+receiptId;
 			
 		layer.open({
 			offset :[10,''],
@@ -161,9 +173,10 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 	
+	<input type="hidden" id="addFlag"  value="${addFlag}"/>
+	<input type="hidden" id="arrivalId"  value="${arrivalId}"/>
 	<form:hidden path="stock.receiptid"  value="${receiptId}"/>
 	<form:hidden path="stock.ysid"  value="${contract.YSId }"/>
-	<form:hidden path="stock.arrivelid"  value="${head.arrivalId }"/>
 	<form:hidden path="stock.supplierid"  value="${contract.supplierId }"/>
 	<form:hidden path="stock.contractid"  value="${contract.contractId }"/>
 	
@@ -185,23 +198,12 @@
 				<td class="label">供应商：</td>					
 				<td colspan="3">${contract.supplierId }（${contract.shortName }）${contract.fullName }</td>	
 			</tr>
-			<tr> 				
-				<td class="label" width="100px">入库时间：</td>					
-				<td><span id="checkInDate">${head.checkInDate }</span></td>
-				<!-- 			
-				<td width="100px" class="label">仓管员：</td>
-				<td width="200px">${userName }</td>	
-				 -->						
-				<td class="label">入库件数：</td>
-				<td colspan="3"><span id="materialNumber">${head.materialNumber }</span></td>
-			</tr>
 										
 		</table>
 	</fieldset>
 	<div style="clear: both"></div>
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="insert" class="DTTT_button">编辑</button>
-		<button type="button" id="print" class="DTTT_button" onclick="doPrint();return false;">打印</button>
+		<button type="button" id="doAddInit" class="DTTT_button">继续入库</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
 <fieldset>
@@ -211,14 +213,15 @@
 		<thead>		
 			<tr>
 					<th style="width:1px">No</th>
-					<th style="width:100px">入库单编号</th>
+					<th style="width:65px">入库单编号</th>
 					<th style="width:100px">物料编号</th>
 					<th>物料名称</th>
 					<th style="width:65px">合同数量</th>
-					<th style="width:65px">已入库数量</th>
-					<th style="width:65px">本次入库数</th>
-					<th style="width:55px">包装方式</th>
-					<th style="width:60px">库位编号</th>		
+					<th style="width:65px">入库数量</th>
+					<th style="width:60px">入库时间</th>
+					<th style="width:35px">包装</th>
+					<th style="width:60px">库位编号</th>	
+					<th style="width:35px">操作</th>	
 			</tr>
 		</thead>		
 									

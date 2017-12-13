@@ -38,15 +38,17 @@
 		</table>
 		<table>
 			<tr> 				
-				<td class="label" width="100px">耀升编号：</td>					
-				<td width="100px">${contract.YSId }</td>
+				<td class="label" width="100px">入库单编号：</td>					
+				<td width="100px">${head.receiptId }</td>
 							
 				<td width="100px" class="label">成品编码：</td>
 				<td width="100px" class="td-left">${contract.productId }</td>							
 				<td width="100px" class="label">成品名称：</td>
 				<td>${contract.productName }</td>
 			</tr>
-			<tr>			
+			<tr>
+				<td class="label" width="100px">耀升编号：</td>					
+				<td width="100px">${contract.YSId }</td>			
 				<td class="label">合同编号：</td>					
 				<td class="td-left">${contract.contractId }</td>								 	
 				<td class="label">供应商：</td>					
@@ -60,7 +62,6 @@
 				<thead>				
 					<tr>
 						<th style="width:1px">No</th>
-						<th style="width:100px">入库单编号</th>
 						<th style="width:100px">物料编号</th>
 						<th>物料名称</th>
 						<th style="width:65px">合同数量</th>
@@ -77,7 +78,6 @@
 					<c:if test="${not empty  material[i] }">
 						<tr>
 							<td>${i + 1 }</td>
-							<td>${material[i].receiptId }</td>
 							<td>${material[i].materialId }</td>
 							<td><div id="name${i }" >${material[i].materialName }</div></td>
 							<td>${material[i].contractQuantity }</td>
@@ -138,13 +138,10 @@ function baseBomView() {
 			{"className" : 'td-right'},
 			{"className" : 'td-right'},
 			{"className" : 'td-center'},
-			{"className" : 'td-right'},
+			{"className" : 'td-left'},
 			{"className" : 'td-center'},
 		 ],
 		"columnDefs":[
-    		
-    		
-          
         ] 
 	});
 	

@@ -103,7 +103,14 @@
 					var url = "${ctx}/business/storage?keyBackup="+contractId;
 					location.href = url;		
 				});
-		
+		$("#showStockin").click(
+				function() {
+					var contractId='${contract.contractId }';
+					var arrivelId= $('#stock\\.arrivelid').val();
+					var url = "${ctx}/business/storage?methodtype=showHistory&contractId="+contractId
+							+"&arrivalId="+arrivelId;
+					location.href = url;		
+				});
 		$("#insert").click(
 				function() {					
 			$('#form').attr("action", "${ctx}/business/storage?methodtype=insert");
@@ -194,6 +201,7 @@
 		
 	<fieldset class="action" style="text-align: right;margin-top:-20px">
 		<button type="button" id="insert" class="DTTT_button">确认入库</button>
+		<button type="button" id="showStockin" class="DTTT_button">查看入库记录</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
 	<fieldset style="margin-top: -40px;">

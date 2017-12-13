@@ -98,6 +98,10 @@ public class StorageAction extends BaseAction {
 			case "delete":
 				doDelete(data);
 				return null;
+			case "showHistory":
+				showHistory();
+				rtnUrl = "/business/inventory/storageview";
+				break;
 			case "getStockInDetail":
 				dataMap = doShowDetail();
 				printOutJsonObj(response, dataMap);
@@ -285,6 +289,18 @@ public class StorageAction extends BaseAction {
 		return rtnUrl;
 	}
 
+	public void showStockIn(){
+		
+		try{
+			service.showStockIn();
+
+			model.addAttribute("userName", userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
 	public void doProductAddInit(){
 
 		try{
@@ -374,6 +390,12 @@ public class StorageAction extends BaseAction {
 	public HashMap<String, Object> doShowDetail() throws Exception{
 		
 		return service.getStockInDetail();
+
+	}
+
+	public void showHistory() throws Exception{
+		
+		service.showHistory();
 
 	}
 

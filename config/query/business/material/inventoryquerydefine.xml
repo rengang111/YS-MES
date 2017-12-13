@@ -386,6 +386,7 @@
    	  	<w name="A.receiptId" des=""  reqName="receiptId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
         </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -412,7 +413,7 @@
       <f name="A.materialNumber" alias="" ctype="" />
     </select>
     <from>v_purchaseStockInById a  WHERE a.deleteFlag = '0' </from>
-    <orderby>a.materialId,A.checkInDate DESC,A.receiptId</orderby>
+    <orderby>A.receiptId ,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -510,5 +511,21 @@
     <having></having>
 	<power>
 	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="checkStockInDataById" />
+    <where>
+   	  	<w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+        </where>
+    <select>
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="ifnull(B.recordId,'0')" alias="recordId" ctype="" />
+    </select>
+    <from>b_receiveinspection  a LEFT JOIN b_purchasestockin b ON a.contractId=b.contractId AND a.arrivalId=b.arrivelId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
+    <orderby>a.contractId</orderby>
+    <groupby></groupby>
+    <having>recordId = '0'</having>
+	<power></power>    
   </query>
 </root>
