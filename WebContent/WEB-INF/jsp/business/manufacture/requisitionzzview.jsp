@@ -448,17 +448,19 @@ function showContract(contractId) {
 };
 
 function showYS(YSId) {
-	//var url = '${ctx}/business/order?methodtype=getPurchaseOrder&YSId=' + YSId;
-
 	var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
 	openLayer(url);
 
 };
 
 function doPrint(requisitionId) {
-	var YSId = '${order.YSId }';
-	var url = '${ctx}/business/requisition?methodtype=print';
+	var makeType = $('#makeType').val();
+	var taskId = '${formModel.task.taskid }';
+	var YSId= '${formModel.task.collectysid }';
+	var url = '${ctx}/business/requisitionzz?methodtype=print';
 	url = url +'&YSId='+YSId;
+	url = url +'&makeType='+makeType;
+	url = url +'&taskId='+taskId;
 	url = url +'&requisitionId='+requisitionId;
 		
 	callProductDesignView("print",url);

@@ -196,11 +196,13 @@ public class RequisitionZZService extends CommonService {
 			iEnd = dataModel.getYsViewData().size();
 		}
 		
+		ArrayList<HashMap<String, String>> list = 
+				getRequisitionZZData(makeType,dataModel.getYsViewData());
 		modelMap.put("sEcho", sEcho); 		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());	
+		modelMap.put("recordsTotal", list.size()); 		
+		modelMap.put("recordsFiltered", list.size());	
 
-		modelMap.put("data", getRequisitionZZData(makeType,dataModel.getYsViewData()));
+		modelMap.put("data", list);
 		modelMap.put("keyword1",key1);	
 		modelMap.put("keyword2",key2);		
 		
@@ -323,8 +325,13 @@ public class RequisitionZZService extends CommonService {
 		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
 		
 		for(HashMap<String, String>map:list){
-			 
-			 String subid = map.get("rawmaterialId").substring(0, 3);	
+			 String rawmaterialId = map.get("rawmaterialId");
+			 String subid = "";
+			 if(isNullOrEmpty(rawmaterialId)){
+				 continue;
+			 }else{
+				 subid = rawmaterialId.substring(0, 3);	
+			 }
 			 
 			 if(("A14").equals(subid)){//吹塑:A14
 				 blow.add(map);

@@ -20,19 +20,20 @@
 		url = url + "&sessionFlag="+sessionFlag;
 		url = url + "&makeType="+makeType;
 		url = url + "&requisitionSts="+type;
-		
+
+		var scrollHeight = $(document).height() - 230; 
 		var t = $('#TMaterial').DataTable({
-				"paging": false,
-				// "iDisplayLength" : 50,
-				//"lengthChange":false,
+				"paging": true,
+				"iDisplayLength" : 50,
+				"lengthChange":false,
 				//"lengthMenu":[10,150,200],//设置一页展示20条记录
 				"processing" : true,
-				"serverSide" : false,
-				"stateSave" : false,
+				"serverSide" : true,
 				"ordering "	:true,
-				"searching" : false,
-				//"pagingType" : "full_numbers",
-				"retrieve" : true,
+				"searching" :false,
+				"stateSave" :false,
+	         	"bAutoWidth":false,
+				"pagingType" : "full_numbers",
 				"sAjaxSource" : url,
 				"scrollY":scrollHeight,
 				"scrollCollapse":true,
@@ -64,6 +65,10 @@
 			             }
 					})
 				},
+				fnRowCallback : function(nRow, aData, iDisplayIndex){  
+		            //jQuery("td:first", nRow).html(iDisplayIndex +1);  
+		            //return nRow;  
+		       }, 
 	        	"language": {
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
@@ -81,8 +86,9 @@
 							
 						],
 				"columnDefs":[
-			    		{"targets":0,"render":function(data, type, row){
-							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["YSId"] + "' />";
+			    		{"targets":0,"render":function(data, type, row,meta){
+		                    var startIndex = meta.settings._iDisplayStart; 
+							return startIndex + meta.row + 1 + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["YSId"] + "' />";
 			    		}},
 			    		{"targets":1,"render":function(data, type, row){
 			    			var rtn = row["requisitionId"];//
@@ -140,6 +146,8 @@
 		           
 		         ] 
 			});
+		
+		
 	}
 
 	

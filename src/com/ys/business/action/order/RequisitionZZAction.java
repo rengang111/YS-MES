@@ -129,7 +129,7 @@ public class RequisitionZZAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "print"://领料单打印
-				doAddInit(makeType);
+				doPrint(makeType);
 				rtnUrl = "/business/manufacture/requisitionzzprint";
 				break;
 			case "getMaterialZZList"://取得自制品
@@ -186,6 +186,23 @@ public class RequisitionZZAction extends BaseAction {
 			service.addInit();
 
 			model.addAttribute("userName", userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public void doPrint(String makeType){
+		try{
+			String taskId = request.getParameter("taskId");
+			String YSId = request.getParameter("YSId");
+			String requisitionId = request.getParameter("requisitionId");
+			
+			model.addAttribute("userName", userInfo.getUserName());
+			model.addAttribute("taskId", taskId);
+			model.addAttribute("YSId", YSId);
+			model.addAttribute("makeType", makeType);
+			model.addAttribute("requisitionId", requisitionId);
+			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
