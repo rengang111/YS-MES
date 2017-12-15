@@ -33,19 +33,21 @@
 		    			return true;
 		    		}
 		    		
-		    	}else if(type=='ty'){//通用件
-		    		var val=data[9];
-		    		var tmp = val.substring(3,0);
-		    		
-		    		if(tmp == '020'){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='bz'){//包装品
+		    	}else if(type=='ty'){//通用件(包装品以外的)
 		    		var val=data[1];
 		    		var tmp = val.substring(0,1);
 		    		
-		    		if(tmp == 'G'){
+		    		if(tmp == 'C' || tmp == 'E' ||tmp == 'F' ||tmp == 'G' ){
+		    			return false;
+		    		}else{
+		    			return true;
+		    		}
+		    		
+		    	}else if(type=='bz'){//包装品(C,E,F,G)
+		    		var val=data[1];
+		    		var tmp = val.substring(0,1);
+		    		
+		    		if(tmp == 'C' || tmp == 'E' ||tmp == 'F' ||tmp == 'G' ){
 		    			return true;
 		    		}
 		    		
@@ -123,7 +125,7 @@
 					success: function(data){					
 						fnCallback(data);
 						
-						reloadFn();
+						//reloadFn();
 						foucsInit();
 						
 					},
@@ -141,7 +143,7 @@
 				}, {"data": "unitQuantity","className":"td-right"	//3
 				}, {"data": "manufactureQuantity","className":"td-right"//4
 				}, {"data": "totalRequisition","className":"td-right"//5
-				}, {"data": "quantityOnHand","className":"td-right"	//6 可用库存
+				}, {"data": "quantityOnHand","className":"td-right","defaultContent" : '0'	//6 可用库存
 				}, {"data": null,"className":"td-right"		//7
 				}, {"data": null,"className":"td-right","defaultContent" : '0'		//8
 				}, {"data": "purchaseType","className":"td-right"		//9
@@ -193,7 +195,7 @@
 					}
 					currValue = formatNumber(currValue);
 					*/
-					var currValue = currencyToFloat(row["manufactureQuantity"]);
+					var currValue = floatToCurrency(row["manufactureQuantity"]);
 					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="'+currValue+'"/>';
 				
 					return inputTxt;
@@ -326,11 +328,11 @@
 		
 		$("#insert").click(
 				function() {
-			var submitFlg = $('#requrisitionFlag').val();
-			if(submitFlg == '0'){
-				alert("该订单物料已全部领完。")
-				return;
-			}
+			//var submitFlg = $('#requrisitionFlag').val();
+			//if(submitFlg == '0'){
+			//	alert("该订单物料已全部领完。")
+			//	return;
+			//}
 					
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insert");
 			$('#formModel').submit();
@@ -450,10 +452,10 @@
 				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
 				<a class="DTTT_button DTTT_button_text box" id="wll" data-id="5">未领物料</a>
 	<!-- 			<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a> -->
-				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
-				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
+	<!-- 			<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>-->
+				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">装配品</a>
 				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>&nbsp;&nbsp;
-			 	<a class="DTTT_button DTTT_button_text box" id="ycl">自制品原材料</a>
+	<!-- 		 	<a class="DTTT_button DTTT_button_text box" id="ycl">自制品原材料</a> -->
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
 			<table id="example" class="display" >
