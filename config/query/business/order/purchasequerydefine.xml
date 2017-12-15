@@ -224,8 +224,9 @@
       <f name="A.deliveryDate" alias="" ctype="" />
       <f name="FORMAT(REPLACE(A.quantity,',',''),2)" alias="quantity" ctype="" />
       <f name="IFNULL(b.quantity,'0')" alias="returnQty" ctype="" />
+      <f name="c.quantityInspection" alias="" ctype="" />
     </select>
-    <from>v_purchaseorderdetail3 a  left join v_workshopreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId and b.deleteFlag='0' WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from>
+    <from>v_purchaseorderdetail3 a  left join v_workshopreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId and b.deleteFlag='0' left join v_receiveinspectiongroup c ON c.contractId=a.contractId AND c.materialId=a.materialId WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from>
     <orderby>A.YSId DESC,a.materialId</orderby>
     <groupby></groupby>
     <having></having>

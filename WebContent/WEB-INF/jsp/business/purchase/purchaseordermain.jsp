@@ -65,6 +65,7 @@
 				{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
 				{"data": "purchaseDate", "defaultContent" : ''},
 				{"data": "quantity", "defaultContent" : '0',"className" : 'td-right'},
+				{"data": "quantityInspection", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "contractStorage", "defaultContent" : '',"className" : 'td-right'},
 				{"data": "returnQty", "defaultContent" : '0',"className" : 'td-right'},
 			
@@ -210,6 +211,7 @@
 					<th style="width: 60px;">供应商</th>
 					<th style="width: 50px;">合同交期</th>
 					<th style="width: 60px;">合同数</th>
+					<th style="width: 60px;">已检数</th>
 					<th style="width: 60px;">入库数</th>
 					<th style="width: 50px;">退货数</th>
 				</tr>

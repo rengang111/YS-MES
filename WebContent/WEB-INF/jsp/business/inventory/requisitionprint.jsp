@@ -77,7 +77,7 @@ function ajaxFn(scrollHeight) {
                 }},
                 {
 					"visible" : false,
-					"targets" : []
+					"targets" : [5]
 				}
 			]
 			
@@ -123,32 +123,32 @@ function ajaxFn(scrollHeight) {
 			</tr>
 		</table>
 		<table>
-		<!-- 
+		
 			<tr> 				
 				<td class="label">耀升编号：</td>					
-				<td>&nbsp;${order.YSId }</td>
+				<td>${order.YSId }</td>
 									
 				<td class="label">生产数量：</td>					
-				<td colspan="3">&nbsp;${order.totalQuantity }</td>
+				<td colspan="3">${order.totalQuantity }</td>
 			</tr>
 			<tr>
 							
 				<td width="100px" class="label">产品编号：</td>					
-				<td width="180px">&nbsp;${order.materialId }</td>
+				<td width="180px">${order.materialId }</td>
 							
 				<td width="100px" class="label">产品名称：</td>			
-				<td colspan="3">&nbsp;${order.materialName }</td>	
+				<td colspan="3">${order.materialName }</td>	
 			</tr>
-			 -->
+			
 			<tr>
 				<td width="100px" class="label">领料单编号：</td>					
-				<td width="180px">&nbsp;${requisitionId }</td>
+				<td width="180px">${requisitionId }</td>
 							
 				<td width="100px" class="label">制单人：</td>					
-				<td width="180px">&nbsp;${userName }</td>
+				<td width="180px">${userName }</td>
 							
 				<td width="100px" class="label">打印时间：</td>				
-				<td colspan="3">&nbsp;<span id="today"></span></td>		
+				<td colspan="3"><span id="today"></span></td>		
 			</tr>
 										
 		</table>
@@ -172,7 +172,7 @@ function ajaxFn(scrollHeight) {
 						<th width="120px">物料编号</th>
 						<th >物料名称</th>				
 						<th width="60px">单位</th>
-						<th width="120px">领料数量</th>
+						<th width="80px">领料数量</th>
 						<th width="20px"></th>
 					</tr>
 	
