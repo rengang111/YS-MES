@@ -59,12 +59,13 @@
 			"columns": [
 				{"data": null,"className" : 'td-center'},
 				{"data": "contractId", "defaultContent" : '',"className" : 'td-left'},
-				{"data": "materialId"},
+				{"data": "materialId","className" : 'td-left'},
 				{"data": "materialName", "defaultContent" : ''},
 				{"data": "YSId", "defaultContent" : ''},
 				{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
 				{"data": "purchaseDate", "defaultContent" : ''},
 				{"data": "quantity", "defaultContent" : '0',"className" : 'td-right'},
+				{"data": "arrivalQty", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "quantityInspection", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "contractStorage", "defaultContent" : '',"className" : 'td-right'},
 				{"data": "returnQty", "defaultContent" : '0',"className" : 'td-right'},
@@ -73,7 +74,14 @@
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
-                   }},
+                }},
+	    		{"targets":2,"render":function(data, type, row){			
+	    			var rtn=data;
+	    			if(data.length > 20){
+	    				rtn = '<div  title="'+data+'" style="font-size: 9px;">'+data+'</div>';	
+	    			}
+	    			return rtn;
+	    		}},
 	    		{"targets":4,"render":function(data, type, row){
 	    			var rtn="";var ysid=row["YSId"];
 	    			//alert("["+ysid+"]")
@@ -157,8 +165,6 @@
 		location.href = url;
 	}
 	
-   
-	
 </script>
 </head>
 
@@ -203,16 +209,17 @@
 		<table id="TMaterial" class="display" >
 			<thead>						
 				<tr>
-					<th style="width: 10px;">No</th>
-					<th style="width: 100px;">合同编号</th>
-					<th style="width: 120px;">物料编号</th>
+					<th style="width: 1px;">No</th>
+					<th style="width: 80px;">合同编号</th>
+					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 70px;">耀升编号</th>
 					<th style="width: 60px;">供应商</th>
-					<th style="width: 50px;">合同交期</th>
-					<th style="width: 60px;">合同数</th>
-					<th style="width: 60px;">已检数</th>
-					<th style="width: 60px;">入库数</th>
+					<th style="width: 60px;">合同交期</th>
+					<th style="width: 50px;">合同数</th>
+					<th style="width: 50px;">来货数</th>
+					<th style="width: 50px;">已检数</th>
+					<th style="width: 50px;">入库数</th>
 					<th style="width: 50px;">退货数</th>
 				</tr>
 			</thead>

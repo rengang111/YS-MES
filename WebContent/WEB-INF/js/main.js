@@ -270,7 +270,10 @@ function floatToCurrency(value){
 	if(toFloat == 0)
 		return value;
 		
-	var numString = toFloat.toFixed(2);
+	//var numString = toFloat.toFixed(2);
+	//自定义两位小数截取,对应前:0.055->0.05;对应后:0.06
+	var numString = myRound(toFloat,2);
+	numString = toFloat.toFixed(2);
 	var parts = numString.split('.');
 	var outParts = [];
 	var beforeDecimal = '0';
@@ -545,7 +548,7 @@ function inputCheck(){
 				//按字节数截取字符串,并附加后缀
 				str = substringB(str,length - lengthB(char)) + char;
 				//添加一个提示信息				
-				str =  '<div title="' + strFull + '">' + str + '</div>';
+				str =  '<div title="' + strFull + '" style="font-size: 11px;">' + str + '</div>';
 				
 			}else{
 				str =  '<div title="' + strFull + '">' + str + '</div>';
@@ -884,3 +887,7 @@ function myTrim(x) {
 }
 
  
+function myRound(number,fractionDigits){  
+    number = number + 1/Math.pow(10,number.toString().length-1);//往最后补一位  
+    return Math.round(number*Math.pow(10,fractionDigits))/Math.pow(10,fractionDigits);  
+}
