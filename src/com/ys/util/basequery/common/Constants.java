@@ -42,6 +42,7 @@ public class Constants {
 	public static final String FORM_WORKSHOPRETURN = "workshopreturn";//车间退货
 	public static final String FORM_INSPECTIONRETURN = "inspectionreturn";//报检退货
 	public static final String FORM_PURCHASEROUTINE = "purchaseroutine";//日常采购
+	public static final String FORM_PAYMENTREQUEST= "paymentrequest";//应付款申请
 	
 	
 	/*
@@ -205,6 +206,14 @@ public class Constants {
 	 *
 	 */
 	public static final String ORDER_RETURNQUANTY = "2";//订单返还数量默认值
+	
+	/**
+	 * 领料类别
+	 */
+	public static final String REQUISITION_PARTS = "010";//装配领料
+	public static final String REQUISITION_BLOW = "020";//吹塑
+	public static final String REQUISITION_BLISTE = "030";//吸塑
+	public static final String REQUISITION_INJECT = "040";//注塑
 
 
 }

@@ -82,9 +82,9 @@ public class RequisitionZZAction extends BaseAction {
 				break;
 			case "searchOrderList":
 				String formId = Constants.FORM_REQUISITION_Z;//注塑
-				if(("blow").equals(makeType)){
+				if(Constants.REQUISITION_INJECT.equals(makeType)){
 					formId = Constants.FORM_REQUISITION_C;//吹塑
-				}else if (("blister").equals(makeType)){
+				}else if (Constants.REQUISITION_BLOW.equals(makeType)){
 					formId = Constants.FORM_REQUISITION_X;//吸塑
 				}
 				dataMap = doSearch(makeType,data,formId);
@@ -274,7 +274,8 @@ public class RequisitionZZAction extends BaseAction {
 		
 		try {
 			String taskId = request.getParameter("taskId");
-			dataMap = service.getRequisitionHistory(taskId);
+			String makeType = request.getParameter("makeType");
+			dataMap = service.getRequisitionHistory(taskId,makeType);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

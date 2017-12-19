@@ -9,6 +9,7 @@
 	function historyAjax() {
 		
 		var taskId = '${formModel.task.taskid }';
+		var makeType = '${makeType }';
 		var t = $('#example2').DataTable({
 			
 			"paging": true,
@@ -21,7 +22,7 @@
 			"searching" : false,
 			"retrieve" : true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/requisitionzz?methodtype=getRequisitionHistory&taskId="+taskId,
+			"sAjaxSource" : "${ctx}/business/requisitionzz?methodtype=getRequisitionHistory&taskId="+taskId+"&makeType="+makeType,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();

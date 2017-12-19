@@ -121,7 +121,7 @@ public class StockOutService extends CommonService {
 		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		baseQuery.getYsQueryData(sql,iStart, iEnd);
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -137,7 +137,20 @@ public class StockOutService extends CommonService {
 
 	}
 	
-	public String addInitOrView() throws Exception {
+	public void addInitOrView() throws Exception {
+
+		String YSId = request.getParameter("YSId");
+		String requisitionId = request.getParameter("requisitionId");
+				
+		B_StockOutData stock = new B_StockOutData();
+		stock.setYsid(YSId);
+		stock.setRequisitionid(requisitionId);
+		reqModel.setStockout(stock);
+	
+	}
+	
+
+	public String stockoutHistoryInit() throws Exception {
 
 		String stockFlag ="查看";
 		String YSId = request.getParameter("YSId");
@@ -151,9 +164,6 @@ public class StockOutService extends CommonService {
 		String where = " requisitionId='"+requisitionId+"' ";
 		if(checkStcokoutExsit(where) == null)
 			stockFlag = "新建";
-		
-		//订单详情
-		//getOrderDetail(YSId);
 	
 		return stockFlag;
 	}
@@ -433,32 +443,33 @@ public class StockOutService extends CommonService {
 	
 	private void insertStockOut(
 			B_StockOutData stock) throws Exception {
-
+		
+		B_StockOutData db=null;
 		try {
-			B_StockOutData db = new B_StockOutDao(stock).beanData;
-
-			if(db == null || db.equals("")){
-				//插入新数据
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-						"StockOutInsert",userInfo);
-				copyProperties(stock,commData);
-				guid = BaseDAO.getGuId();
-				stock.setRecordid(guid);
-				stock.setKeepuser(userInfo.getUserId());//默认为登陆者
-				
-				dao.Create(stock);
-			}else{
-				//更新
-				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-						"StockOutInsert",userInfo);
-				copyProperties(stock,commData);
-				stock.setKeepuser(userInfo.getUserId());//默认为登陆者
-				
-				dao.Store(stock);
-			}
+			db = new B_StockOutDao(stock).beanData;
 		} catch (Exception e) {
 			// nothing
 		}		
+		
+		if(db == null || db.equals("")){
+			//插入新数据
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"StockOutInsert",userInfo);
+			copyProperties(stock,commData);
+			guid = BaseDAO.getGuId();
+			stock.setRecordid(guid);
+			stock.setKeepuser(userInfo.getUserId());//默认为登陆者
+			
+			dao.Create(stock);
+		}else{
+			//更新
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"StockOutInsert",userInfo);
+			copyProperties(stock,commData);
+			stock.setKeepuser(userInfo.getUserId());//默认为登陆者
+			
+			dao.Store(stock);
+		}
 		
 	}
 	

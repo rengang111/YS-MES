@@ -142,7 +142,7 @@
 		$("#showHistory").click(
 				function() {
 					var YSId='${order.YSId }';
-					var url = "${ctx}/business/stockout?methodtype=getStockoutHistoryInit&YSId="+YSId;
+					var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId;
 					location.href = url;		
 				});
 		
@@ -236,7 +236,7 @@
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >确认出库</a>
 	<!-- 	<a class="DTTT_button DTTT_button_text" id="print" onclick="doPrint();return false;">打印领料单</a> -->
-		<a class="DTTT_button DTTT_button_text" id="showHistory" >查看出库记录</a>
+	<!--	<a class="DTTT_button DTTT_button_text" id="showHistory" >查看出库记录</a>-->
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 

@@ -91,8 +91,10 @@
 	function ajax(scrollHeight) {
 		
 		var YSId= '${order.YSId}';
+		var orderType= '${order.orderType}';
 		var actionUrl = "${ctx}/business/requisition?methodtype=detailView";
 		actionUrl = actionUrl +"&YSId="+YSId;
+		actionUrl = actionUrl +"&orderType="+orderType;
 		
 		scrollHeight =$(document).height() - 200; 
 		
@@ -152,7 +154,10 @@
 				}
 			],
 			"columnDefs":[
-	    		
+	    		{"targets":0,"render":function(data, type, row,meta){
+                    var startIndex = meta.settings._iDisplayStart; 
+					return startIndex + meta.row + 1 + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["materialId"] + "' />";
+	    		}},
 	    		{"targets":2,"render":function(data, type, row){ 					
 					var index=row["rownum"]	
 	    			var name =  jQuery.fixedWidth( row["materialName"],40);
@@ -195,7 +200,14 @@
 					}
 					currValue = formatNumber(currValue);
 					*/
-					var currValue = floatToCurrency(row["manufactureQuantity"]);
+					var totalRequ = currencyToFloat(row["totalRequisition"]);
+					var qtyManuf = currencyToFloat(row["manufactureQuantity"]);
+					var currValue = qtyManuf - totalRequ;
+					if(currValue <= 0 ){
+						currValue = 0
+					}else{
+						currValue = floatToCurrency(currValue);
+					}
 					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="'+currValue+'"/>';
 				
 					return inputTxt;
@@ -270,26 +282,6 @@
 			$oOverQty.val(formatNumber(fOverQty));
 
 		});
-		
-						
-		t.on('click', 'tr', function() {
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }			
-		});
-		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
 
 	};
 	
@@ -326,37 +318,24 @@
 					location.href = url;		
 				});
 		
-		$("#insert").click(
-				function() {
-			//var submitFlg = $('#requrisitionFlag').val();
-			//if(submitFlg == '0'){
-			//	alert("该订单物料已全部领完。")
-			//	return;
-			//}
+		$("#insert").click(function() {
+					
+			$("input[name='numCheck']").each(function(){
+				if (!($(this).prop('checked'))) {
+					//未选中物料的领料数量恢复为0
+					$(this).parent().parent().find('td').eq(7).find("input").val('0');
+				}
+			});
 					
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insert");
 			$('#formModel').submit();
 		});
 		
-		$("#reverse").click(function () { 
-			$("input[name='numCheck']").each(function () {  
-		        $(this).prop("checked", !$(this).prop("checked"));  
-		    });
-		});
-		
-		$("#yuancailiao").click(function () { 
-			//$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=getRawM");
-			//$('#formModel').submit();
-		});
-		
-		//reloadFn();
-		
 		foucsInit();
 		
 		var table = $('#example').DataTable();
 		// Event listener to the two range filtering inputs to redraw on input
-	    $('#yz, #ty, #dg, #bz, #all, #ycl, #wll').click( function() {
-	    	
+	    $('#yz, #ty, #dg, #bz, #all, #ycl, #wll').click( function() {	    	
 	    	 $('#selectedPurchaseType').val($(this).attr('id'));
     		 table.draw();
 	    } );
@@ -379,6 +358,17 @@
             $(this).addClass("end");
         });
 		
+		$('#example').DataTable().on('click', 'tr', function() {
+			
+			$(this).toggleClass("selected");
+		    if($(this).hasClass("selected")){//如果有某个样式则表明，这一行已经被选中
+		        
+		    	$(this).children().first().children().prop("checked", true);
+		    }else{//如果没有被选中
+
+		    	$(this).children().first().children().prop("checked", false);
+		    }			
+		});	
 	});
 	
 	function doEdit(contractId,arrivalId) {
@@ -469,7 +459,8 @@
 						<th width="60px">已领数量</th>
 						<th width="60px">可用库存</th>
 						<th width="80px">
-							<input type="checkbox" name="selectall" id="selectall"  checked="checked"/><label for="selectall">本次领料</label></th>
+								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
+								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
 						<th width="60px">剩余数量</th>
 						<th width="1px"></th>
 						<th width="1px"></th>
@@ -486,6 +477,30 @@
 </body>
 
 <script type="text/javascript">
+
+function fnselectall() { 
+	if($("#selectall").prop("checked")){
+		$("input[name='numCheck']").each(function() {
+			$(this).prop("checked", true);
+			$(this).parent().parent().addClass("selected");
+		});
+			
+	}else{
+		$("input[name='numCheck']").each(function() {
+			if($(this).prop("checked")){
+				$(this).removeAttr("checked");
+				$(this).parent().parent().removeClass('selected');
+			}
+		});
+	}
+};
+
+function fnreverse() { 
+	$("input[name='numCheck']").each(function () {  
+        $(this).prop("checked", !$(this).prop("checked"));  
+		$(this).parent().parent().toggleClass("selected");
+    });
+};
 
 function showContract(contractId) {
 	var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;

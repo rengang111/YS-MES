@@ -7,7 +7,7 @@
 <script type="text/javascript">
 
 	function historyAjax() {
-		var YSId = '${order.YSId }';
+		var YSId = $('#stockout\\.ysid').val();
 		var t = $('#example2').DataTable({
 			
 			"paging": true,
@@ -50,18 +50,20 @@
 			        	{"data": null,"className":"dt-body-center"
 					}, {"data": "stockOutId","className":"dt-body-center"
 					}, {"data": "checkOutDate","className":"dt-body-center"
-					}, {"data": "keepUser","className":"dt-body-center"
+					}, {"data": "YSId"
+					}, {"data": "requisitionId","className":"dt-body-center"
+					}, {"data": "keepUser"
 					}, {"data": null,"className":"dt-body-center"
 					}, {"data": null,"className":"td-center","defaultContent" : ''
 					}
 				] ,
 				"columnDefs":[
-		    		{"targets":4,"render":function(data, type, row){
+		    		{"targets":5,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["stockOutId"] + "')\">编辑</a>";
 		    			return rtn;
 		    		}},
-		    		{"targets":5,"render":function(data, type, row){
+		    		{"targets":6,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doPrint('" + row["stockOutId"] + "')\">打印出库单</a>";
 		    			return rtn;
@@ -259,7 +261,9 @@
 						<th width="30px">No</th>
 						<th class="dt-center" style="width:150px">出库单编号</th>
 						<th class="dt-center" width="150px">出库日期</th>
-						<th class="dt-center" width="150px">仓管员</th>
+						<th class="dt-center" width="100px">耀升编号</th>
+						<th class="dt-center" width="100px">领料单编号</th>
+						<th class="dt-center" width="100px">仓管员</th>
 						<th class="dt-center" width="150px">操作</th>
 						<th class="dt-center" ></th>
 					</tr>

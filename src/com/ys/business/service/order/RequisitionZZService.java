@@ -86,23 +86,23 @@ public class RequisitionZZService extends CommonService {
 	}
 	
 	private ArrayList<HashMap<String, String>> getRequisitionZZData(
-			String makeType,
+			String makeType,String requisitionSts,
 			ArrayList<HashMap<String, String>>  list) throws Exception{
 		
 		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
-		ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
-		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
+		//ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
+		//ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
 		
 
-		String requisitionSts = request.getParameter("requisitionSts");
+		//String makeType = request.getParameter("makeType");
 		for(HashMap<String, String>map:list){
 			 
-			String subid = map.get("rawMaterialId").substring(0, 3);	
+			//String subid = map.get("rawMaterialId").substring(0, 3);	
 			String ysid = map.get("YSId");
 
 			//确认领料状态
 			B_RequisitionData task = new B_RequisitionData();
-			String where = "collectYsid like '%" + ysid + "%'"; 
+			String where = "collectYsid like '%" + ysid + "%'" +" AND requisitionType='"+makeType+"' "; 
 			task = checkRequisitionExsit(where);
 			if(task == null){
 				map.put("requisitionSts", Constants.STOCKOUT_1);//待申请
@@ -168,19 +168,24 @@ public class RequisitionZZService extends CommonService {
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
-
+		String requisitionSts = request.getParameter("requisitionSts");
+		if(notEmpty(key1) || notEmpty(key2))
+			requisitionSts = "";//有指定查询条件时,不再限定其业务状态
+		
 		dataModel.setQueryName("getOrderListForZZ");	
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);		
+		userDefinedSearchCase.put("keyword2", key2);
+		userDefinedSearchCase.put("requisitionSts", requisitionSts);
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		
 		//替换数据源
-		if(makeType.equals("blister")){
+		if(makeType.equals(Constants.REQUISITION_BLISTE)){
 			//吸塑
 			sql = sql.replace("v_orderdetailforzz", "v_orderdetailforf01");
-		}else if(makeType.equals("blow")){
+		}else if(makeType.equals(Constants.REQUISITION_BLOW)){
 			//吹塑
 			sql = sql.replace("v_orderdetailforzz", "v_orderdetailforf02");
 			
@@ -197,7 +202,7 @@ public class RequisitionZZService extends CommonService {
 		}
 		
 		ArrayList<HashMap<String, String>> list = 
-				getRequisitionZZData(makeType,dataModel.getYsViewData());
+				getRequisitionZZData(makeType,requisitionSts,dataModel.getYsViewData());
 		modelMap.put("sEcho", sEcho); 		
 		modelMap.put("recordsTotal", list.size()); 		
 		modelMap.put("recordsFiltered", list.size());	
@@ -293,7 +298,7 @@ public class RequisitionZZService extends CommonService {
 			 
 			 String subid = map.get("materialId").substring(0, 3);	
 			 
-			 if(("A14").equals(subid)){//吹塑:A14
+			 if(("A14").equals(subid) || ("A16").equals(subid)){//吹塑:A14,A16干燥剂
 				 blow.add(map);
 			 }else if( ("A03").equals(subid) ){//吸塑:A03
 				 blister.add(map);
@@ -301,9 +306,9 @@ public class RequisitionZZService extends CommonService {
 				 injection.add(map);
 			 }
 		}
-		if( ("blow").equals(makeType) ){//吹塑:A14	
+		if( Constants.REQUISITION_BLOW.equals(makeType) ){//吹塑:A14	
 			modelMap.put("data", blow);
-		}else if( ("blister").equals(makeType) ){//吸塑:A03
+		}else if( Constants.REQUISITION_BLISTE.equals(makeType) ){//吸塑:A03
 			modelMap.put("data", blister);			 
 		}else{//以外
 			modelMap.put("data", injection);			 
@@ -333,7 +338,7 @@ public class RequisitionZZService extends CommonService {
 				 subid = rawmaterialId.substring(0, 3);	
 			 }
 			 
-			 if(("A14").equals(subid)){//吹塑:A14
+			 if(("A14").equals(subid) || ("A16").equals(subid)){//吹塑:A14
 				 blow.add(map);
 			 }else if( ("A03").equals(subid) ){//吸塑:A03
 				 blister.add(map);
@@ -341,9 +346,9 @@ public class RequisitionZZService extends CommonService {
 				 injection.add(map);
 			 }
 		}
-		if( ("blow").equals(makeType) ){//吹塑:A14	
+		if( Constants.REQUISITION_BLOW.equals(makeType) ){//吹塑:A14	
 			modelMap.put("data", blow);
-		}else if( ("blister").equals(makeType) ){//吸塑:A03
+		}else if( Constants.REQUISITION_BLISTE.equals(makeType) ){//吸塑:A03
 			modelMap.put("data", blister);			 
 		}else{//以外
 			modelMap.put("data", injection);			 
@@ -446,6 +451,7 @@ public class RequisitionZZService extends CommonService {
 			String requisitionId = reqData.getRequisitionid();
 			reqData.setYsid(taskId);
 			reqData.setRequisitionsts(Constants.STOCKOUT_2);//待出库
+			
 			insertRequisition(reqData);//领料申请insert
 			
 			//领料明细
@@ -486,7 +492,7 @@ public class RequisitionZZService extends CommonService {
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"RequisitionInsert",userInfo);
 		copyProperties(stock,commData);
-		stock.setStoreuserid(userInfo.getUserId());//默认为登陆者
+		stock.setRequisitionuserid(userInfo.getUserId());//默认为登陆者
 
 		String guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
@@ -519,7 +525,7 @@ public class RequisitionZZService extends CommonService {
 		copyProperties(stock,commData);
 		String guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
-		
+				
 		new B_ProductionTaskDao().Create(stock);
 	}
 	
@@ -789,12 +795,13 @@ public class RequisitionZZService extends CommonService {
 	}
 	
 	public HashMap<String, Object> getRequisitionHistory(
-			String taskId) throws Exception {
+			String taskId,String makeType) throws Exception {
 		
 		dataModel.setQueryName("getRequisitionZZById");		
 		baseQuery = new BaseQuery(request, dataModel);
 		//自制品一次关联多个耀升编号,所以,领料单里的耀升编号实际存放的是任务编号
 		userDefinedSearchCase.put("YSId", taskId);
+		userDefinedSearchCase.put("requisitionType", makeType);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 

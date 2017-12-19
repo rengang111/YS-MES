@@ -17,8 +17,9 @@
 		}
 
 		var key1 = $("#keyword1").val();
-		var key2 = $("#keyword1").val();
+		var key2 = $("#keyword2").val();
 		var key = myTrim(key1)+myTrim(key2);
+		
 		if(key == "")
 			status = "020,030";
 

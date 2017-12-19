@@ -171,10 +171,16 @@ public class RequisitionService extends CommonService {
 	public HashMap<String, Object> showDetail() throws Exception {
 
 		String YSId = request.getParameter("YSId");
+		String orderType = request.getParameter("orderType");
 		if(YSId == null || ("").equals(YSId))
 			return null;
-		//物料需求表
-		return getPurchasePlan(YSId);
+		if(("010").equals(orderType)){
+			//常规订单			
+			return getPurchasePlan(YSId);//物料需求表
+		}else{
+			//配件订单
+			return getPartsOrderDetail(YSId);//装配品信息
+		}
 	}
 	public void updateAndView() throws Exception {
 
@@ -308,6 +314,7 @@ public class RequisitionService extends CommonService {
 
 		guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
+		stock.setRequisitiontype(Constants.REQUISITION_PARTS);//装配件
 		stock.setRequisitionuserid(userInfo.getUserId());//默认为登陆者
 		stock.setRequisitiondate(CalendarUtil.fmtYmdDate());
 		
@@ -484,6 +491,28 @@ public class RequisitionService extends CommonService {
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
 		dataModel.setQueryName("getPurchasePlanByYSId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("YSId", YSId);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("order",dataModel.getYsViewData().get(0));
+			model.addAttribute("material",dataModel.getYsViewData());
+			modelMap.put("data", dataModel.getYsViewData());
+		}
+		
+		return modelMap;		
+	}
+	
+	public HashMap<String, Object> getPartsOrderDetail(String YSId) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		dataModel.setQueryName("getPartsOrderDetailByYSId");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		

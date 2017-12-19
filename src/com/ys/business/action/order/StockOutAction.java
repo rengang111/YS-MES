@@ -85,8 +85,9 @@ public class StockOutAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "addinit":
-				rtnUrl = doAddInit();
-				return rtnUrl;
+				doAddInit();
+				rtnUrl = "/business/manufacture/stockoutadd";
+				break;
 			case "getRequisitionDetail"://领料单详情
 				dataMap = getRequisitionDetail();
 				printOutJsonObj(response, dataMap);
@@ -115,8 +116,8 @@ public class StockOutAction extends BaseAction {
 				doPrintProductReceipt();
 				rtnUrl = "/business/manufacture/productstorageprint";
 				break;
-			case "getStockoutHistoryInit":
-				doAddInit();
+			case "stockoutHistoryInit":
+				stockoutHistoryInit();
 				rtnUrl = "/business/manufacture/stockoutview";
 				break;
 			case "getStockoutHistory":
@@ -220,19 +221,26 @@ public class StockOutAction extends BaseAction {
 	}
 	
 
-	public String doAddInit(){
+	public void doAddInit(){
 
-		String rtnUrl = "/business/manufacture/stockoutadd";
 		try{
-			String flag = service.addInitOrView();
-			if(flag.equals("查看"))
-				rtnUrl = "/business/manufacture/stockoutview";
-			
+			service.addInitOrView();			
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
-		return rtnUrl;
+		
+	}
+	
+
+	public void stockoutHistoryInit(){
+
+		try{
+			service.addInitOrView();
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
 		
 	}
 

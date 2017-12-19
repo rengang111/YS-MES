@@ -141,8 +141,8 @@
 
 		$("#showHistory").click(
 				function() {
-					var YSId='${order.YSId }';
-					var url = "${ctx}/business/stockout?methodtype=getStockoutHistoryInit&YSId="+YSId;
+					var YSId=$('#stockout.ysid').val();
+					var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId;
 					location.href = url;		
 				});
 		

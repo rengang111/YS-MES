@@ -65,9 +65,10 @@
 				}, {"data": "materialName",						//2
 				}, {"data": null,"className":"td-center"		//3单位
 				}, {"data": "manufactureQuantity","className":"td-right"//4
-				}, {"data": "totalRequisition","className":"td-right", "defaultContent" : '0'//5
-				}, {"data": "quantityOnHand","className":"td-right"	//6 可用库存
-				}, {"data": null,"className":"td-right"		//7
+				}, {"data": "requisitionQty","className":"td-right", "defaultContent" : '0'//5
+				}, {"data": "totalRequisition","className":"td-right", "defaultContent" : '0'//6
+				}, {"data": "quantityOnHand","className":"td-right"	//7 可用库存
+				}, {"data": null,"className":"td-right"		//8
 				}
 			],
 			"columnDefs":[
@@ -115,15 +116,20 @@
                 }},
 	    		{"targets":5,"render":function(data, type, row){	    			
 	    			
-	    			var qty = floatToCurrency(row["totalRequisition"]);			
+	    			var qty = floatToCurrency(row["requisitionQty"]);			
 	    			return qty;				 
                 }},
 	    		{"targets":6,"render":function(data, type, row){	    			
 	    			
+	    			var qty = floatToCurrency(row["totalRequisition"]);			
+	    			return qty;				 
+                }},
+	    		{"targets":7,"render":function(data, type, row){	    			
+	    			
 	    			var qty = floatToCurrency(row["quantityOnHand"]);			
 	    			return qty;				 
                 }},
-	    		{"targets":7,"render":function(data, type, row){	
+	    		{"targets":8,"render":function(data, type, row){	
 	    			
 					var index=row["rownum"];	
 					//var currValue = currencyToFloat(row["manufactureQuantity"]);
@@ -141,8 +147,9 @@
 
 	    			if(vrawunit == '吨')
 	    				farwunit = farwunit *1000;//换算成千克
-	    				
-	    			var currValue =  floatToCurrency( qty * farwunit / fchgunit );
+
+		    		var requisitionQty = (row["requisitionQty"]);	
+	    			var currValue =  floatToCurrency( qty * farwunit / fchgunit -requisitionQty);
 					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="'+currValue+'"/>';
 				
 					return inputTxt;
@@ -305,9 +312,9 @@
 
 		$("#showHistory").click(
 				function() {
-					var taskId=$("#task\\.taskid").val();
+					var taskId=$("#requisition\\.requisitionid").val();
 					var makeType = $('#makeType').val();
-					if(taskId ==''){
+					if(taskId =='（保存后自动生成）'){
 						$().toastmessage('showWarningToast', "还没有领料记录。");
 						return;
 					}
@@ -360,6 +367,7 @@
 	<input type="hidden" id="goBackFlag" />
 	<input type="hidden" id="makeType" value="${makeType }" />
 	<form:hidden path="requisition.collectysid" value="${currentYsids} "/>
+	<form:hidden path="requisition.requisitiontype" value="${makeType} "/>
 	<form:hidden path="task.parentid"  />
 	<form:hidden path="task.subid"  />
 	<form:hidden path="task.recordid"  />
@@ -413,7 +421,8 @@
 						<th >物料名称</th>
 						<th width="50px">领料单位</th>				
 						<th width="60px">计划用量</th>
-						<th width="60px">已领数量</th>
+						<th width="60px">已申请数量</th>
+						<th width="60px">已出库数量</th>
 						<th width="80px">可用库存</th>
 						<th width="80px">
 							<input type="checkbox" name="selectall" id="selectall"  checked="checked"/><label for="selectall">本次领料</label></th>

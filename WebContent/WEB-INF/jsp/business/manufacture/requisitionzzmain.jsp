@@ -93,7 +93,7 @@
 			    		{"targets":1,"render":function(data, type, row){
 			    			var rtn = row["requisitionId"];//
 			    			if(rtn == ""){
-					    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "（待申请）" + "</a>";
+					    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "（快速领料）" + "</a>";
 			    			}else{
 				    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["taskId"] + "')\">" + row["requisitionId"] + "</a>";
 			    			}
@@ -134,14 +134,15 @@
 			    		}},
 			    		{"targets":8,"render":function(data, type, row){
 			    			var rtn = "";
-			    			rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "快速领料" + "</a>";
-			    			//rtn=  row["YSId"];
+			    			var sts = row["requisitionSts"];
+			    			if(sts == "010")
+			    				rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "快速领料" + "</a>";
 			    			return rtn;
 			    		}},
 			    		{ "bSortable": false, "aTargets": [ 0 ] },
 			    		{
 							"visible" : false,
-							"targets" : [colNum]
+							"targets" : [8]
 						}
 		           
 		         ] 
@@ -153,8 +154,7 @@
 	
 	$(document).ready(function() {
 		var scrollHeight = $(document).height() - 200; 
-		//var type = "&purchaseType1=020&purchaseType2=040";
-		//var type = "&status=020";
+
 		ajax(1,"010",scrollHeight,"true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
