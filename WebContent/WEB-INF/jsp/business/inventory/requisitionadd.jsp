@@ -319,14 +319,31 @@
 				});
 		
 		$("#insert").click(function() {
-					
+				
+			var str = '';
+			var val = '';
 			$("input[name='numCheck']").each(function(){
-				if (!($(this).prop('checked'))) {
+				if ($(this).prop('checked')) {
+					str += $(this).val() + ",";
+					var qty = $(this).parent().parent().find('td').eq(7).find("input").val();
+					val += currencyToFloat(qty);
+				}else{
 					//未选中物料的领料数量恢复为0
-					$(this).parent().parent().find('td').eq(7).find("input").val('0');
+					$(this).parent().parent().find('td').eq(7).find("input").val('0');			
+					
 				}
 			});
-					
+			
+			if (str == '') {
+				$().toastmessage('showWarningToast', "请选择要领取的配件。");
+				return;
+			}
+			
+			if(currencyToFloat(val) == 0){
+				$().toastmessage('showWarningToast', "选择的配件没有领料数量。");
+				return;
+				
+			}
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insert");
 			$('#formModel').submit();
 		});
