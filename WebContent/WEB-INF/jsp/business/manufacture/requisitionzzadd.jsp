@@ -324,8 +324,14 @@
 		
 		$("#insert").click(
 				function() {
-					
-			$('#formModel').attr("action", "${ctx}/business/requisitionzz?methodtype=insert");
+
+			var total = quantitySum();
+			if(total <= 0){
+				$().toastmessage('showWarningToast', "本次领料数量为零,请重试。");
+				return;
+			}
+			var makeType = $('#makeType').val();
+			$('#formModel').attr("action", "${ctx}/business/requisitionzz?methodtype=insert"+"&makeType="+makeType);
 			$('#formModel').submit();
 		});
 		
@@ -352,6 +358,19 @@
 		location.href = url;
 	}
 
+	//列合计
+	function quantitySum(){
+
+		var sum = 0;
+		$('#example tbody tr').each (function (){
+			
+			var vtotal = $(this).find("td").eq(8).find("input").val();
+			var ftotal = currencyToFloat(vtotal);
+			
+			sum = currencyToFloat(sum) + ftotal;			
+		})
+		return sum;
+	}
 	
 </script>
 
@@ -366,11 +385,12 @@
 
 	<input type="hidden" id="goBackFlag" />
 	<input type="hidden" id="makeType" value="${makeType }" />
-	<form:hidden path="requisition.collectysid" value="${currentYsids} "/>
+	
 	<form:hidden path="requisition.requisitiontype" value="${makeType} "/>
 	<form:hidden path="task.parentid"  />
 	<form:hidden path="task.subid"  />
 	<form:hidden path="task.recordid"  />
+	<form:hidden path="task.collectysid" class="long read-only" />
 	<fieldset>
 		<legend> 自制品原材料领料单</legend>
 		<table class="form" id="table_form">
@@ -393,7 +413,7 @@
 			</tr>
 			<tr> 				
 				<td class="label">关联耀升编号：</td>				
-				<td colspan="7"><form:input path="task.collectysid" class="long read-only" /></td>
+				<td colspan="7"><form:input path="requisition.collectysid" value="${currentYsids}" class="long read-only" /></td>
 			</tr>
 										
 		</table>

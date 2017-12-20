@@ -28,7 +28,7 @@
 				"lengthChange":false,
 				//"lengthMenu":[10,150,200],//设置一页展示20条记录
 				"processing" : true,
-				"serverSide" : true,
+				"serverSide" : false,
 				"ordering "	:true,
 				"searching" :false,
 				"stateSave" :false,
@@ -37,7 +37,7 @@
 				"sAjaxSource" : url,
 				"scrollY":scrollHeight,
 				"scrollCollapse":true,
-				 "aaSorting": [[ 5, "asc" ]],
+				 "aaSorting": [[2, "asc" ]],
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -139,7 +139,7 @@
 			    				rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "快速领料" + "</a>";
 			    			return rtn;
 			    		}},
-			    		{ "bSortable": false, "aTargets": [ 0 ] },
+			    		{ "bSortable": false, "aTargets": [ 0,1 ] },
 			    		{
 							"visible" : false,
 							"targets" : [8]
@@ -183,6 +183,14 @@
 	
 	function doSearch2(colNum,type) {	
 
+		if(type=='010'){
+			
+			//$('#zzcreate').removeAttr("disabled"); 
+		}else{
+			//$('#zzcreate').attr("disabled","disabled");
+			
+		}
+		
 		$("#keyword1").val("");
 		$("#keyword2").val("");
 		var scrollHeight = $(document).height() - 200; 
@@ -326,7 +334,8 @@
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>已领料</span></a>
 				</div>
 				<div style="height: 40px;margin-bottom: -15px;float:right">
-					<a class="DTTT_button DTTT_button_text" onclick="doCreate();">自制件领料申请</a>
+					<button type="button" id="zzcreate" class="DTTT_button" 
+						style="width:120px" onclick="doCreate();">自制件领料申请</button>
 				</div>
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						

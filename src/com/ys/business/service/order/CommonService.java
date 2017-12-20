@@ -534,7 +534,8 @@ public class CommonService extends BaseService {
 			return ;
 		}		
 		d = l.get(0);
-		d.setStatus(status);
+		d.setStatus(status);//状态
+		d.setStockindate(CalendarUtil.fmtYmdDate());//入库日期
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"purchaseOrderUpdate",userInfo);

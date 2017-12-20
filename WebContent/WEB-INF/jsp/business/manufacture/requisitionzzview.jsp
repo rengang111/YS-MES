@@ -238,10 +238,10 @@
 	});
 	
 	function doEdit(YSId,requisitionId) {
-		
+		var makeType = $('#makeType').val();
 		var url = '${ctx}/business/requisitionzz?methodtype=updateInit&YSId='
-				+YSId+'&requisitionId='+requisitionId;
-		//alert("requisitionId"+requisitionId)
+				+YSId+'&requisitionId='+requisitionId+'&makeType='+makeType;
+		//alert("requisitionId"+url)
 		//callProductDesignView("requisition",url)
 		location.href = url;
 	}
