@@ -175,7 +175,11 @@
       <f name="A.customerId" alias="" ctype="" />
       <f name="A.customerShortName" alias="" ctype="" />
       <f name="A.accumulated" alias="" ctype="" />
-      <f name="A.contractStorage" alias="" ctype="" />
+      <f name="FORMAT(replace(A.contractStorage,',',''),2)" alias="contractStorage" ctype="" />
+      <f name="FORMAT(replace(A.arrivalQty,',',''),2)" alias="arrivalQty" ctype="" />
+      <f name="A.arrivalStatus" alias="" ctype="收货状态" />
+      <f name="A.arriveDate" alias="" ctype="" />
+      <f name="A.arrivalId" alias="" ctype="" />
     </select>
     <from>v_purchaseorderdetail2 a  WHERE a.deleteFlag = '0' AND left(a.materialId,1) &lt;&gt;'H' </from>
     <orderby>A.YSId,a.materialId</orderby>

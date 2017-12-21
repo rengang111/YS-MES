@@ -97,9 +97,9 @@
 				{"data": "supplierId"},
 				{"data": "deliveryDate","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
+				{"data": "arrivalQty","className" : 'td-right'}, // 10
 				{"data": "contractStorage","className" : 'td-right'},
-				{"data": "surplus","className" : 'td-right'},
-				{"data": null,"className" : 'td-center'},
+				{"data": "arriveDate","className" : 'td-center'},// 11
 
 			],
 			"columnDefs":[
@@ -138,14 +138,15 @@
 	    			return name;
 	    		}},
 	    		{"targets":11,"render":function(data, type, row){
-	    			
-	    			var rtn = "<a href=\"###\" onClick=\"doShow('" + row["contractId"] + "')\">查看</a>";
-    			
-	    			return rtn;
+	    			if(data ==''){
+	    				return '（未到货）';   				
+	    			}else{
+	    				return data;    				
+	    			}
 	    		}},
 	    		{
 	    			"visible":false,
-	    			"targets":[10,11]
+	    			"targets":[7]
 	    		}
 	           
 	         ] 
@@ -299,7 +300,7 @@
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
 			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0','false');">逾期未到货</a>
 			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1','false');">未到货</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2','false');">已到货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2','false');">已收货</a>
 		</div>
 
 		<div id="clear"></div>
@@ -315,9 +316,9 @@
 					<th style="width: 50px;" class="dt-middle">供应商</th>
 					<th style="width: 50px;" class="dt-middle">合同交期</th>
 					<th style="width: 50px;" class="dt-middle">合同数量</th>
+					<th style="width: 50px;" class="dt-middle ">到货数量</th>
 					<th style="width: 50px;" class="dt-middle ">累计入库</th>
-					<th style="width: 50px;" class="dt-middle ">剩余数量</th>
-					<th style="width: 1px;" class="dt-middle ">操作</th>
+					<th style="width: 50px;" class="dt-middle ">到货日期</th>
 				</tr>
 			</thead>
 		</table>

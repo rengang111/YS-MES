@@ -46,9 +46,10 @@ public class BusinessConstants {
 	public static final String SHORTNAME_YEAR_YY = "yy";
 	public static final String SHORTNAME_YEAR_MM = "MM";
 	public static final String SHORTNAME_IQC = "IQC";
-	public static final String SHORTNAME_LL = "LL";
-	public static final String SHORTNAME_RK = "RK";
-	public static final String SHORTNAME_CK = "CK";
+	public static final String SHORTNAME_LL = "LL";//领料
+	public static final String SHORTNAME_RK = "RK";//入库
+	public static final String SHORTNAME_CK = "CK";//出库
+	public static final String SHORTNAME_FK = "FK";//付款单
 	public static final String SHORTNAME_RW = "RW";
 	public static final String FORMAT_000 = "000";
 	public static final String FORMAT_00000 = "00000";

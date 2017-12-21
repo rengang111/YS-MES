@@ -392,7 +392,7 @@ public class StorageService extends CommonService {
 			}
 			
 			//确认合同状态:是否全部入库
-			boolean flag = checkPurchaseOrderStatus(reqData.getYsid(),contractId);
+			boolean flag = checkPurchaseOrderDetailStatus(reqData.getYsid(),contractId);
 			if(flag){			
 				////更新合同状态
 				updateContractStatus(contractId,Constants.CONTRACT_STS_3);//入库完毕			
@@ -451,7 +451,7 @@ public class StorageService extends CommonService {
 			}			
 
 			//确认合同状态:是否全部入库
-			boolean flag = checkPurchaseOrderStatus(reqData.getYsid(),contractId);
+			boolean flag = checkPurchaseOrderDetailStatus(reqData.getYsid(),contractId);
 			if(flag){			
 				////更新合同状态
 				updateContractStatus(contractId,Constants.CONTRACT_STS_3);//入库完毕			
@@ -707,13 +707,13 @@ public class StorageService extends CommonService {
 	}
 		
 	@SuppressWarnings("unchecked")
-	private boolean  checkPurchaseOrderStatus(
+	private boolean  checkPurchaseOrderDetailStatus(
 			String ysid,String contractId) throws Exception{
 		String where = "YSId = '" + ysid  +"'"
 				+ " AND contractId = '" + contractId  +"' "
 				+ " AND status <> '" + Constants.CONTRACT_STS_3  +"' "
 				+ " AND deleteFlag = '0' ";
-		List<B_PurchaseOrderData> list  = new B_PurchaseOrderDao().Find(where);
+		List<B_PurchaseOrderDetailData> list  = new B_PurchaseOrderDetailDao().Find(where);
 		if(list ==null || list.size() == 0){
 			return true;	
 		}else{

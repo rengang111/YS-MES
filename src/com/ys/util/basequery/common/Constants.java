@@ -214,6 +214,15 @@ public class Constants {
 	public static final String REQUISITION_BLOW = "020";//吹塑
 	public static final String REQUISITION_BLISTE = "030";//吸塑
 	public static final String REQUISITION_INJECT = "040";//注塑
+	
+	/**
+	 * 付款状态
+	 */
+	public static final String payment_010 = "010";//待申请
+	public static final String payment_020 = "020";//待审核
+	public static final String payment_030 = "030";//待付款
+	public static final String payment_040 = "040";//部分付款
+	public static final String payment_050 = "050";//完成
 
 
 }

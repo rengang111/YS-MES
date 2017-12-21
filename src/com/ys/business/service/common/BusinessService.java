@@ -434,6 +434,26 @@ public class BusinessService {
 	 }
 	 
 	 /**
+	 * 付款单编号
+	 * @return 17FK-00001 5位流水号
+	 */
+	 public static String getPaymentId(
+			 String parent,String code,boolean addFlag) {
+
+		StringBuffer sb = new StringBuffer();
+	    sb.append(parent);
+	    sb.append("-");
+	    		
+		//格式化成5位流水号
+		int num = 1;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		sb.append(getFormat5Code(num,addFlag));
+		
+		return sb.toString();
+	 }
+	 
+	 /**
 		 * @return 做单资料编号
 		 * 
 		 */
