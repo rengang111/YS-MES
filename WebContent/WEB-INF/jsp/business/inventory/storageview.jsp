@@ -50,17 +50,18 @@
 				})
 			},	
 			"columns" : [
-				        	{"data": null,"className":"dt-body-center"
-						}, {"data": "receiptId","className":"td-left"
-						}, {"data": "materialId","className":"td-left"
-						}, {"data": "materialName",
-						}, {"data": "contractQuantity","className":"td-right"
-						}, {"data": "quantity","className":"td-right"	
-						}, {"data": "checkInDate","className":"td-right"
-						}, {"data": "packaging","className":"td-center"
-						}, {"data": "areaNumber",
-						}
-					],
+		        	{"data": null,"className":"dt-body-center"
+				}, {"data": "receiptId","className":"td-left"
+				}, {"data": "materialId","className":"td-left"
+				}, {"data": "materialName",
+				}, {"data": "contractQuantity","className":"td-right"
+				}, {"data": "contractTotalPrice","className":"td-right"
+				}, {"data": "quantity","className":"td-right"	
+				}, {"data": "checkInDate","className":"td-right"
+				}, {"data": "packaging","className":"td-center"
+				}, {"data": "areaNumber",
+				}
+			],
 			"columnDefs":[
 	    		{"targets":3,"render":function(data, type, row){
 	    			
@@ -68,11 +69,11 @@
 	    			name = jQuery.fixedWidth(name,40);				    			
 	    			return name;
 	    		}},
-	    		{"targets":9,"render":function(data, type, row){
+	    		{"targets":10,"render":function(data, type, row){
 	    			var text="";
 	    			text += "<a href=\"###\" onClick=\"doEdit('"  + row["contractId"] + "','"  + row["receiptId"] + "')\">编辑</a>";
 	    			text += "&nbsp;"
-	    			text += "<a href=\"###\" onClick=\"doPrint('" + row["receiptId"] + "')\">打印</a>";
+	    			text += "<a href=\"###\" onClick=\"doPrint('" + row["contractId"] + "','" + row["receiptId"] + "')\">打印</a>";
 
 	    			return text;
 	    		}}
@@ -144,8 +145,9 @@
 		location.href = url;
 	}
 
-	function doPrint(receiptId) {
+	function doPrint(contractId,receiptId) {
 		var url = '${ctx}/business/storage?methodtype=printReceipt';
+		url = url +'&contractId='+contractId;
 		url = url +'&receiptId='+receiptId;
 			
 		layer.open({
@@ -217,10 +219,11 @@
 					<th style="width:100px">物料编号</th>
 					<th>物料名称</th>
 					<th style="width:65px">合同数量</th>
+					<th style="width:65px">合同金额</th>
 					<th style="width:65px">入库数量</th>
 					<th style="width:60px">入库时间</th>
 					<th style="width:35px">包装</th>
-					<th style="width:60px">库位编号</th>	
+					<th style="width:40px">库位</th>	
 					<th style="width:35px">操作</th>	
 			</tr>
 		</thead>		

@@ -410,6 +410,7 @@
       <f name="b.requisitionUserId" alias="" ctype="" />
       <f name="b.collectYsid" alias="" ctype="" />
       <f name="b.requisitionSts" alias="" ctype="料件出库状态" />
+      <f name="b.requisitionType" alias="" ctype="领料类别" />
       <f name="b.requisitionSts" alias="requisitionStsId" ctype="" />
       <f name="b.requisitionUserName" alias="" ctype="" />
       <f name="b.stockOutId" alias="" ctype="" />

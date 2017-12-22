@@ -37,6 +37,35 @@
   </query>
   <query>
     <pool></pool>    
+    <name value="paymenRequestList" />
+     <where>
+        <w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	    <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+    	<w name="A.approvalStatus" des="" reqName="approvalStatus" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.paymentId" alias="" ctype="" />
+      <f name="a.contractIds" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="" ctype="" />
+      <f name="a.supplierName" alias="" ctype="" />
+      <f name="a.totalPayable" alias="" ctype="" />
+      <f name="a.requestDate" alias="" ctype="" />
+      <f name="a.finishDate" alias="" ctype="" />
+      <f name="a.applicant" alias="" ctype="" />
+      <f name="a.approvalStatus" alias="" ctype="应付款审核状态" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_paymentapprovallist a where a.deleteFlag='0'</from>
+    <orderby>a.paymentId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
+  <query>
+    <pool></pool>    
     <name value="getContractDetailById" />
      <where>
        <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="in"  lg="AND" bt="" />

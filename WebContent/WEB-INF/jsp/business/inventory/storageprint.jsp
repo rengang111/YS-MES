@@ -29,7 +29,7 @@
 	<form:form modelAttribute="formModel" method="POST"
 		id="formModel" name="formModel"  autocomplete="off">
 
-	<c:forEach var="detail" items="${material}" varStatus='status' step="20">
+
 	
 		<table class="" id="table_form"  style="margin-top: -10px;width: 100%;">
 			<tr> 				
@@ -39,20 +39,23 @@
 		<table>
 			<tr> 				
 				<td class="label" width="100px">入库单编号：</td>					
-				<td width="100px">${head.receiptId }</td>
-							
-				<td width="100px" class="label">成品编码：</td>
-				<td width="100px" class="td-left">${contract.productId }</td>							
-				<td width="100px" class="label">成品名称：</td>
-				<td>${contract.productName }</td>
+				<td width="150px">${head.receiptId }</td>
+				<td class="label" width="100px">入库时间：</td>					
+				<td  colspan="3">${head.checkInDate }</td>				
 			</tr>
 			<tr>
 				<td class="label" width="100px">耀升编号：</td>					
-				<td width="100px">${contract.YSId }</td>			
+				<td>${contract.YSId }</td>			
 				<td class="label">合同编号：</td>					
 				<td class="td-left">${contract.contractId }</td>								 	
-				<td class="label">供应商：</td>					
-				<td colspan="3">${contract.supplierId }（${contract.shortName }）${contract.fullName }</td>	
+				<td class="label" width="100px">供应商：</td>					
+				<td>${contract.supplierId }（${contract.shortName }）${contract.fullName }</td>	
+			</tr>
+			<tr> 							
+				<td width="100px" class="label">成品编码：</td>
+				<td class="td-left">${contract.productId }</td>							
+				<td width="100px" class="label">成品名称：</td>
+				<td colspan="3">${contract.productName }</td>
 			</tr>
 										
 		</table>
@@ -65,47 +68,40 @@
 						<th style="width:100px">物料编号</th>
 						<th>物料名称</th>
 						<th style="width:65px">合同数量</th>
+						<th style="width:60px">单价</th>
+						<th style="width:65px">合同金额</th>
 						<th style="width:65px">本次入库</th>
-						<th style="width:55px">包装</th>
+						<th style="width:50px">包装</th>
 						<th style="width:60px">库位</th>	
-						<th style="width:60px">入库时间</th>	
 					</tr>
 				</thead>
 				<tbody>
-				<c:set var="start" value="${status.index }" />
-				<c:set var="end" value="${status.index +19}" />
-				<c:forEach begin="${start }" end="${end }"  var="i" >  		
-					<c:if test="${not empty  material[i] }">
+					<c:forEach var="detail" items="${material}" varStatus='status' >
 						<tr>
-							<td>${i + 1 }</td>
-							<td>${material[i].materialId }</td>
-							<td><div id="name${i }" >${material[i].materialName }</div></td>
-							<td>${material[i].contractQuantity }</td>
-							<td>${material[i].quantity }</td>
-							<td>${material[i].packaging }</td>
-							<td>${material[i].areaNumber }</td>
-							<td>${material[i].checkInDate }</td>
+							<td>${status.index + 1 }</td>
+							<td>${detail.materialId }</td>
+							<td><div id="name${status.index }" >${detail.materialName }</div></td>
+							<td>${detail.contractQuantity }</td>
+							<td>${detail.price }</td>
+							<td>${detail.contractTotalPrice }</td>
+							<td>${detail.quantity }</td>
+							<td>${detail.packaging }</td>
+							<td>${detail.areaNumber }</td>
 						</tr>
-					</c:if>
+					
 					<script  type="text/javascript">
-						var index = '${i}';
-						var name = '${material[i].materialName }';
+						var index = '${status.index}';
+						var name = '${detail.materialName }';
 						
-						if (lengthB(name) > 50){
-							
-							name = '<span style="font-size:11px">' + name + '</sapn>'
+						if (lengthB(name) > 50){							
+							name = '<span style="font-size:10px">' + name + '</sapn>'
 						}
 						$('#name'+index).html(name);
 					</script>
 				</c:forEach>
-				</tbody>
-	
+				</tbody>	
 			</table>
-		</div>		
-
-	<div style="page-break-before:always;"></div>
-		
-	</c:forEach>
+		</div>
 	
 	</form:form>
 </div>
@@ -137,11 +133,15 @@ function baseBomView() {
 			{},
 			{"className" : 'td-right'},
 			{"className" : 'td-right'},
+			{"className" : 'td-right'},
+			{"className" : 'td-right'},
 			{"className" : 'td-center'},
-			{"className" : 'td-left'},
 			{"className" : 'td-center'},
 		 ],
-		"columnDefs":[
+		"columnDefs":[{
+			"visible" : false,
+			"targets" : [4]
+		}
         ] 
 	});
 	
@@ -162,9 +162,7 @@ function doPrint(){
 	
 	var headstr = "<html><head><title></title></head><body>";  
 	var footstr = "</body>";
-	var newstr = document.getElementById("main").innerHTML;
-	//var cont = document.body.innerHTML;    
-	//$("#print").addClass('noprint');      
+	var newstr = document.getElementById("main").innerHTML;  
 	var oldstr = window.document.body.innerHTML;
 	document.body.innerHTML = headstr+newstr+footstr;  
 	window.print();

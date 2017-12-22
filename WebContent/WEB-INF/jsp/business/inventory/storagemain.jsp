@@ -76,7 +76,7 @@
 				{"data": "materialName"},
 				{"data": "unit","className" : 'td-center'},
 				{"data": "arrivalId"},
-				{"data": "contractId"},
+				{"data": "supplierId"},
 				{"data": "YSId"},
 				{"data": "contractQuantity","className" : 'td-right'},
 				{"data": "contractStorage","className" : 'td-right'},
@@ -226,7 +226,7 @@
 					<th class="dt-middle">物料名称</th>
 					<th style="width: 50px;" class="dt-middle">单位</th>
 					<th style="width: 80px;" class="dt-middle">到货登记</th>
-					<th style="width: 100px;" class="dt-middle">合同编号</th>
+					<th style="width: 80px;" class="dt-middle">供应商</th>
 					<th style="width: 50px;" class="dt-middle">耀升编号</th>
 					<th style="width: 60px;" class="dt-middle">合同数量</th>
 					<th style="width: 60px;" class="dt-middle">入库数量</th>

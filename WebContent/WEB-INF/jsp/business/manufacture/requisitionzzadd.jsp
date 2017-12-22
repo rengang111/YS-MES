@@ -386,7 +386,7 @@
 	<input type="hidden" id="goBackFlag" />
 	<input type="hidden" id="makeType" value="${makeType }" />
 	
-	<form:hidden path="requisition.requisitiontype" value="${makeType} "/>
+	<form:hidden path="requisition.requisitiontype" value="${makeType}"/>
 	<form:hidden path="task.parentid"  />
 	<form:hidden path="task.subid"  />
 	<form:hidden path="task.recordid"  />

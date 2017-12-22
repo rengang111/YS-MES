@@ -70,11 +70,12 @@
 					{"data": "stockOutId", "defaultContent" : '', "className" : 'td-center'},
 					{"data": "requisitionId", "defaultContent" : '', "className" : 'td-center'},
 					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
-					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//3
-					{"data": "materialName", "defaultContent" : ''},//4
-					{"data": "requisitionUserName", "defaultContent" : '', "className" : 'td-center'},//5 领料申请者
-					{"data": "checkOutDate", "defaultContent" : '', "className" : 'td-right'},//6出库时间
-					{"data": "keepUser", "defaultContent" : '', "className" : 'td-right'},//7仓管员
+					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//4
+					{"data": "materialName", "defaultContent" : ''},//5
+					{"data": "requisitionType", "defaultContent" : '', "className" : 'td-center'},//6 
+					{"data": "requisitionUserName", "defaultContent" : '', "className" : ''},//7 领料申请者
+					{"data": "checkOutDate", "defaultContent" : '', "className" : 'td-right'},//8出库时间
+					{"data": "keepUser", "defaultContent" : '', "className" : 'td-right'},//9仓管员
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
@@ -99,21 +100,21 @@
 		    		{"targets":5,"render":function(data, type, row){
 		    			var name = row["materialName"];
 		    			if(name == null){
-		    				name = jQuery.fixedWidth(row["collectYsid"],50);
+		    				name = jQuery.fixedWidth(row["collectYsid"],40);
 		    			}else{
-			    			name = jQuery.fixedWidth(name,50);//true:两边截取,左边从汉字开始
+			    			name = jQuery.fixedWidth(name,40);//true:两边截取,左边从汉字开始
 		    				
 		    			}
 		    			
 		    			return name;
 		    		}},
-		    		{"targets":7,"render":function(data, type, row){
+		    		{"targets":8,"render":function(data, type, row){
 		    			var val = row["checkOutDate"];
 		    			if(val == null || val=="")
 		    				val = "未出库";
 		    			return val;
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){
 		    			var val = row["checkOutDate"];
 		    			if(val == null || val=="")
 		    				val = "未出库";
@@ -124,7 +125,7 @@
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : [8]
+						"targets" : [9]
 					}
 	         	]
 			}
@@ -219,12 +220,13 @@
 			<thead>						
 				<tr>
 						<th style="width: 10px;">No</th>
-						<th style="width: 80px;">出库单编号</th>
-						<th style="width: 80px;">领料单编号</th>
-						<th style="width: 80px;">耀升编号</th>
+						<th style="width: 70px;">出库单编号</th>
+						<th style="width: 70px;">领料单编号</th>
+						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 120px;">产品编号</th>
 						<th>产品名称（关联耀升编号）</th>
-						<th style="width: 70px;">料件申请人</th>
+						<th style="width: 30px;">分类</th>
+						<th style="width: 60px;">料件申请人</th>
 						<th style="width: 70px;">出库时间</th>
 						<th style="width: 50px;">仓管员</th>
 				</tr>

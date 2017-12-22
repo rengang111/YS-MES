@@ -317,6 +317,7 @@ public class RequisitionService extends CommonService {
 		stock.setRequisitiontype(Constants.REQUISITION_PARTS);//装配件
 		stock.setRequisitionuserid(userInfo.getUserId());//默认为登陆者
 		stock.setRequisitiondate(CalendarUtil.fmtYmdDate());
+		stock.setRequisitionsts(Constants.STOCKOUT_2);//待出库
 		
 		dao.Create(stock);
 	}

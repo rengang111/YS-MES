@@ -328,7 +328,7 @@
 							<form:input path="detailList[${status.index}].price" value="${detail.price}"  class="cash short" />
 							<input type="image" name="priceBtn${status.index}" src="${ctx}/images/action_edit.png" class="imgbtn" style="border: 0;"></td>
 						
-						<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice} "/></td>				
+						<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice}"/></td>				
 						<td></td>				
 						<form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" />
 					</tr>	
