@@ -133,9 +133,7 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">耀升编号：</td>	
-				<td width="200px">&nbsp;${arrived.YSId }</td>
-				<td class="label">合同编号：</td>					
-				<td width="200px">&nbsp;${arrived.contractId }</td>										
+				<td width="200px">&nbsp;${arrived.YSId }</td>							
 				<td class="label" width="100px">供应商：</td>
 				<td>（${arrived.supplierId }）${arrived.supplierName }</td>
 			</tr>
@@ -146,7 +144,7 @@
 				<td width="200px">
 					<form:input path="inspectReturn.checkerid" value="${userName }" class="read-only" /></td>										
 				<td class="label" width="100px">处理日期：</td>
-				<td colspan="3">
+				<td>
 					<form:input path="inspectReturn.returndate" value="" class="read-only"/></td>
 			</tr>
 												

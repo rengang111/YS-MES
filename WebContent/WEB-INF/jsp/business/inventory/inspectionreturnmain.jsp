@@ -79,6 +79,7 @@
 					{"data": "contractId","className" : 'td-left'},
 					{"data": "contractQuantity","className" : 'td-right'},
 					{"data": "quantity","className" : 'td-right'},
+					{"data": "returnDate","className" : 'td-center'},
 					{"data": "status","className" : 'td-center'},
 					
 				],
@@ -190,6 +191,7 @@
 					<th style="width: 95px;" class="dt-middle">合同编号</th>
 					<th style="width: 70px;" class="dt-middle">合同数量</th>
 					<th style="width: 70px;" class="dt-middle ">退货数量</th>
+					<th style="width: 70px;" class="dt-middle ">检验时间</th>
 					<th style="width: 50px;" class="dt-middle ">处理结果</th>
 				</tr>
 			</thead>

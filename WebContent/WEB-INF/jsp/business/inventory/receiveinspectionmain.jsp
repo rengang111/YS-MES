@@ -78,16 +78,17 @@
 					{"data": null,"className" : 'td-center'},
 					{"data": "materialId"},
 					{"data": "materialName"},
-					{"data": "arriveDate","className" : 'td-center'},
 					{"data": "YSId"},
-					{"data": "contractId","className" : 'td-left'},
+					{"data": "supplierId","className" : 'td-left'},
 					{"data": "contractQuantity","className" : 'td-right'},
 					{"data": "quantity","className" : 'td-right'},
+					{"data": "arriveDate","className" : 'td-center'},
+					{"data": "checkDate","className" : 'td-center', "defaultContent" : '（未检验）'},
 					{"data": "checkResult","className" : 'td-center'},
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+						return row["rownum"];
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 
@@ -100,9 +101,13 @@
 		    		{"targets":2,"render":function(data, type, row){
 		    			
 		    			var name = row["materialName"];				    			
-		    			name = jQuery.fixedWidth(name,35);				    			
+		    			name = jQuery.fixedWidth(name,40);				    			
 		    			return name;
-		    		}}
+		    		}},
+		    		{
+						"visible" : false,
+						"targets" : []
+					}
 	           
 	         ] 
 		});
@@ -189,12 +194,13 @@
 					<th style="width: 1px;" class="dt-middle ">No</th>
 					<th style="width: 120px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
-					<th style="width: 60px;" class="dt-middle">到货日期</th>
 					<th style="width: 80px;" class="dt-middle">耀升编号</th>
-					<th style="width: 95px;" class="dt-middle">合同编号</th>
+					<th style="width: 70px;" class="dt-middle">供应商</th>
 					<th style="width: 60px;" class="dt-middle">合同数量</th>
 					<th style="width: 60px;" class="dt-middle ">到货数量</th>
-					<th style="width: 40px;" class="dt-middle ">状态</th>
+					<th style="width: 60px;" class="dt-middle">到货日期</th>
+					<th style="width: 60px;" class="dt-middle ">检验日期</th>
+					<th style="width: 40px;" class="dt-middle ">结果</th>
 				</tr>
 			</thead>
 		</table>

@@ -124,16 +124,13 @@
 	<form:hidden path="inspectReturn.arrivalid" value="${arrived.arrivalId }"/>
 	<input type="hidden" id=report value="${arrived.report }" />
 	<input type="hidden" id="keyBackup" value="${keyBackup }" />
-	
+	<form:hidden path="inspectReturn.contractid" value="${arrived.contractId }"/>
 	<fieldset>
 		<legend> 退货信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">耀升编号：</td>	
-				<td width="200px">&nbsp;${arrived.YSId }</td>
-				<td class="label">合同编号：</td>					
-				<td width="200px">&nbsp;${arrived.contractId }
-					<form:hidden path="inspectReturn.contractid" value="${arrived.contractId }"/></td>										
+				<td width="200px">&nbsp;${arrived.YSId }</td>									
 				<td class="label" width="100px">供应商：</td>
 				<td>（${arrived.supplierId }）${arrived.supplierName }
 					<form:hidden path="inspectReturn.supplierid" value="${arrived.supplierId }"/></td>
@@ -144,7 +141,7 @@
 				<td class="label">退货处理人：</td>					
 				<td width="200px">${userName }</td>										
 				<td class="label" width="100px">处理日期：</td>
-				<td colspan="3">${arrived.returnDate }</td>
+				<td>${arrived.returnDate }</td>
 			</tr>
 												
 		</table>		
