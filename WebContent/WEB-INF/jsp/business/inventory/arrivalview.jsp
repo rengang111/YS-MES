@@ -103,12 +103,11 @@
 	$(document).ready(function() {
 		
 		historyAjax();//到货登记历史记录
-		
-		
+
 		$("#goBack").click(
 				function() {
-					var contractId='${contract.contractId }';
-					var url = "${ctx}/business/arrival?keyBackup="+contractId;
+					var makeType=$('#makeType').val();
+					var url = "${ctx}/business/arrival?makeType="+makeType;
 					location.href = url;		
 		});
 		
@@ -116,7 +115,8 @@
 		$("#doCreate").click(
 				function() {
 				var contractId = '${contract.contractId}'
-				var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId;
+				var makeType=$('#makeType').val();
+				var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId+"&makeType="+makeType;
 				location.href = url;
 	
 		});
@@ -125,8 +125,10 @@
 	});
 	
 	function doEdit(contractId,arrivalId) {
-		
-		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
+
+		var makeType=$('#makeType').val();
+		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId
+				+'&arrivalId='+arrivalId+'&makeType='+makeType;
 		location.href = url;
 	}
 	
@@ -163,6 +165,7 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 	
+	<input type="hidden" id="makeType" value="${makeType }" />
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">

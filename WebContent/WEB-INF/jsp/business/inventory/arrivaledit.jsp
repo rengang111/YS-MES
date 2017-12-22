@@ -211,23 +211,25 @@
 		
 		$("#goBack").click(
 				function() {
-					var contractId='${contract.contractId }';
-					var url = "${ctx}/business/arrival?keyBackup="+contractId;
+					var makeType=$('#makeType').val();
+					var url = "${ctx}/business/arrival?makeType="+makeType;
 					location.href = url;		
 				});
 		
 		$("#doView").click(
 				function() {
+					var makeType=$('#makeType').val();
 					var contractId='${contract.contractId }';
 					var url = "${ctx}/business/arrival?methodtype=gotoArrivalView";
 					url = url + "&contractId="+contractId;
+					url = url + "&makeType="+makeType;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
-
-			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert");
+			var makeType=$('#makeType').val();
+			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert"+ "&makeType="+makeType);
 			$('#formModel').submit();
 		});
 		
@@ -294,6 +296,7 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<input type="hidden" id="tmpMaterialId" />
+	<input type="hidden" id="makeType" value="${makeType }" />
 	
 	<fieldset>
 		<legend> 基本信息</legend>

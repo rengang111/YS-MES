@@ -45,6 +45,7 @@ public class ArrivalAction extends BaseAction {
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
+		String makeType = request.getParameter("makeType");
 		String rtnUrl = "";
 		HashMap<String, Object> dataMap = null;
 		
@@ -56,6 +57,7 @@ public class ArrivalAction extends BaseAction {
 		this.model = model;
 		this.response = response;
 		this.session = session;
+		model.addAttribute("makeType",makeType);
 		
 		if (type == null) {
 			type = "";
@@ -77,7 +79,7 @@ public class ArrivalAction extends BaseAction {
 				//printOutJsonObj(response, dataMap);
 				return null;				
 			case "contractArrivalSearch":
-				dataMap = contractArrivalSearch(data);
+				dataMap = contractArrivalSearch(makeType,data);
 				printOutJsonObj(response, dataMap);
 				return null;	
 			case "addinit":
@@ -131,7 +133,7 @@ public class ArrivalAction extends BaseAction {
 
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> contractArrivalSearch(
-			@RequestBody String data){
+			String makeType, String data){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		ArrayList<HashMap<String, String>> dbData = 
@@ -144,7 +146,7 @@ public class ArrivalAction extends BaseAction {
 			
 		}
 		try {
-			dataMap = service.contractArrivalSearch(data);
+			dataMap = service.contractArrivalSearch(makeType,data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {

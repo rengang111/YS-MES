@@ -216,16 +216,18 @@
 		
 		$("#goBack").click(
 				function() {
-					var contractId='${contract.contractId }';
-					var url = "${ctx}/business/arrival?keyBackup="+contractId;
+					var makeType=$('#makeType').val();
+					var url = "${ctx}/business/arrival?makeType="+makeType;
 					location.href = url;		
 				});
 
 		$("#doView").click(
 				function() {
 					var contractId='${contract.contractId }';
+					var makeType=$('#makeType').val();
 					var url = "${ctx}/business/arrival?methodtype=gotoArrivalView";
 					url = url + "&contractId="+contractId;
+					url = url + "&makeType="+makeType;
 					location.href = url;		
 				});
 		$("#insert").click(
@@ -241,8 +243,9 @@
 				$().toastmessage('showWarningToast', "请先修正页面中的错误输入，再保存。");
 				return
 			}
-					
-			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert");
+			
+			var makeType=$('#makeType').val();	
+			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert"+ "&makeType="+makeType);
 			$('#formModel').submit();
 		});
 		
@@ -320,7 +323,8 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<input type="hidden" id="tmpMaterialId" />	
-	<form:hidden path="arrival.arrivalid" class="short required read-only" value="${arrivalId }" />
+	<input type="hidden" id="makeType" value="${makeType }" />
+	<form:hidden path="arrival.arrivalid"  value="${arrivalId }" />
 	<fieldset>
 		<legend> 合同信息</legend>
 		<table class="form" id="table_form">

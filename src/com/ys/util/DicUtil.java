@@ -54,6 +54,7 @@ public class DicUtil {
 	public static final String DIC_PURCHASER = "采购方";
 	public static final String DIC_PRODUCTDESIGNSTATUS = "做单资料状态";
 	public static final String DIC_PACKAGING = "包装方式";
+	public static final String DIC_APPROVL = "审核结果";
 	//HashMap通过id查找
 	private static HashMap<String,String> dicMapViaId = new HashMap<String, String>();
 	//HashMap通过类型查找

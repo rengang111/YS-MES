@@ -43,6 +43,7 @@ public class Constants {
 	public static final String FORM_INSPECTIONRETURN = "inspectionreturn";//报检退货
 	public static final String FORM_PURCHASEROUTINE = "purchaseroutine";//日常采购
 	public static final String FORM_PAYMENTREQUEST= "paymentrequest";//应付款申请
+	public static final String FORM_PAYMENTAPPROVAL= "paymentapproval";//应付款审核
 	
 	
 	/*

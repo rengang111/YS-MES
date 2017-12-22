@@ -7,41 +7,24 @@
 <title>到货登记一览(合同未到货)</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,sessionFlag) {
+	function ajax(type,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 
+		var makeType = $("#makeType").val();
 		var url = "${ctx}/business/arrival?methodtype=contractArrivalSearch"+"&sessionFlag="+sessionFlag;
+		url = url + "&makeType="+makeType;
 		
-		var type = pageFlg;
-		
-		if(type == '0'){
-			//逾期未到货
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&accumulated1=0"+"&purchaseDate1="+shortToday();
-			//url += "&accumulated1=0";
-			pageFlg="";
-		}else if(type == '1'){
-			//未到货
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&accumulated1=0";
-			pageFlg="";
-			
-		}else if(type == '2'){
-			//已到货
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&accumulated2=0";
-			pageFlg="";
-			
+		if(type == '0'){			
+			url += "&accumulated1=0"+"&purchaseDate1="+shortToday();//逾期未到货
+		}else if(type == '1'){			
+			url += "&accumulated1=0";//未到货			
+		}else if(type == '2'){			
+			url += "&accumulated2=0";//已到货			
 		}
-
-		url += "&keyBackup="+pageFlg;
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -52,6 +35,7 @@
 			"serverSide" : true,
 			"stateSave" : false,
 			"ordering "	:true,
+			"autoWidth"	:false,
 			"searching" : false,
 			"pagingType" : "full_numbers",
 			//"aaSorting": [[ 3, "ASC" ]],
@@ -119,22 +103,15 @@
 	    			return data;
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
-
-	    			var contractId = row["contractId"];	
-	    			var quantity = currencyToFloat(row["quantity"]);
-	    			var arrivalSum = currencyToFloat(row["arrivalSum"]);
-	    			var reful=  ( quantity - arrivalSum);
-
-	    			var rtn = row["materialId"];
-	    			// if(reful >0)
-	    			rtn =  "<a href=\"###\" onClick=\"doCreate('" + row["contractId"] + "')\">"+row["materialId"]+"</a>";
-	    		
-	    			return rtn;
+	    			var mateid= data;
+	    			if(data.length>25)
+						mateid= '<div style="font-size: 11px;">' + data + '</div>';
+	    			return  "<a href=\"###\" onClick=\"doCreate('" + row["contractId"] + "')\">"+mateid+"</a>";	    			
 	    		}},
 	    		{"targets":4,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
-	    			name = jQuery.fixedWidth(name,30);				    			
+	    			name = jQuery.fixedWidth(name,35);				    			
 	    			return name;
 	    		}},
 	    		{"targets":11,"render":function(data, type, row){
@@ -146,7 +123,7 @@
 	    		}},
 	    		{
 	    			"visible":false,
-	    			"targets":[7]
+	    			"targets":[2,7]
 	    		}
 	           
 	         ] 
@@ -158,16 +135,8 @@
 
 
 	$(document).ready(function() {
-		
-		//var keyBackup = $("#keyBackup").val();
 
-		//if(keyBackup ==""){
-
-			ajax("0","true");//逾期未到货
-		//}else{
-		//	ajax("");
-			
-		//}
+		ajax("0","true");//逾期未到货
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -182,26 +151,14 @@
 	})	
 	
 	function doCreate(contractId) {
-		
-		var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId;
+
+		var makeType=$('#makeType').val();
+		var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId+
+			'&makeType='+makeType;
 		location.href = url;
 	}
 	
-	function doShow(contractId) {
 
-		var url = '${ctx}/business/arrival?methodtype=gotoArrivalView&contractId=' + contractId;
-
-		location.href = url;
-	}
-
-	function doEdit(recordId,parentId) {
-		var str = '';
-		var isFirstRow = true;
-		var url = '${ctx}/business/material?methodtype=edit&parentId=' + parentId+'&recordId='+recordId;
-
-		location.href = url;
-	}
-		
 	function doDelete() {
 
 		var str = '';
@@ -248,7 +205,9 @@
 	}
 	
 	function selectContractByDate(type,sessionFlag){
-		
+
+		$("#keyword1").val("");
+		$("#keyword2").val("");
 		ajax(type,sessionFlag);
 	}
 	
@@ -273,7 +232,7 @@
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
-		<input type="hidden" id="keyBackup" value="${keyBackup }" />
+		<input type="hidden" id="makeType" value="${makeType }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 
@@ -307,18 +266,18 @@
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						
 				<tr>
-					<th style="width: 1px;" class="dt-middle ">No</th>
-					<th style="width: 50px;" class="dt-middle">耀升编号</th>
-					<th style="width: 90px;" class="dt-middle">合同编号</th>
-					<th style="width: 100px;" class="dt-middle ">物料编号</th>
-					<th class="dt-middle">物料名称</th>
-					<th style="width: 30px;" class="dt-middle">客户</th>
-					<th style="width: 50px;" class="dt-middle">供应商</th>
-					<th style="width: 50px;" class="dt-middle">合同交期</th>
-					<th style="width: 50px;" class="dt-middle">合同数量</th>
-					<th style="width: 50px;" class="dt-middle ">到货数量</th>
-					<th style="width: 50px;" class="dt-middle ">累计入库</th>
-					<th style="width: 50px;" class="dt-middle ">到货日期</th>
+					<th width="20px">No</th>
+					<th style="width: 50px;">耀升编号</th>
+					<th style="width: 90px;">合同编号</th>
+					<th style="width: 100px;">物料编号</th>
+					<th>物料名称</th>
+					<th style="width: 30px;">客户</th>
+					<th style="width: 50px;">供应商</th>
+					<th style="width: 50px;">合同交期</th>
+					<th style="width: 50px;">合同数量</th>
+					<th style="width: 50px;">到货数量</th>
+					<th style="width: 50px;">累计入库</th>
+					<th width="50px">到货日期</th>
 				</tr>
 			</thead>
 		</table>

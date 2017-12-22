@@ -128,7 +128,7 @@ public class ArrivalService extends CommonService {
 	
 
 	public HashMap<String, Object> contractArrivalSearch(
-			String data) throws Exception {
+			String makeType,String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
@@ -161,6 +161,15 @@ public class ArrivalService extends CommonService {
 				(key2 !=null && !("").equals(key2))){
 			userDefinedSearchCase.put("accumulated1", "");
 		}
+		//包装到货,或者是料件到货
+		if(("G").equals(makeType)){//包装
+			userDefinedSearchCase.put("makeTypeG", "G");
+			userDefinedSearchCase.put("makeTypeL", "");
+		}else{//料件
+			userDefinedSearchCase.put("makeTypeG", "");
+			userDefinedSearchCase.put("makeTypeL", "G");			
+		}
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 

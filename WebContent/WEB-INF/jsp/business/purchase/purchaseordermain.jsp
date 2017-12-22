@@ -63,7 +63,7 @@
 				{"data": "materialName", "defaultContent" : ''},
 				{"data": "YSId", "defaultContent" : ''},
 				{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
-				{"data": "purchaseDate", "defaultContent" : ''},
+				{"data": "deliveryDate", "defaultContent" : ''},
 				{"data": "quantity", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "arrivalQty", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "quantityInspection", "defaultContent" : '0',"className" : 'td-right'},
