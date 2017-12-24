@@ -1,16 +1,18 @@
 package com.ys.system.interceptor;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
-import javax.naming.Context;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -22,6 +24,7 @@ import com.ys.system.db.data.S_OPERLOGData;
 import com.ys.system.db.data.S_USERData;
 import com.ys.system.ejb.DbUpdateEjb;
 import com.ys.util.CalendarUtil;
+import com.ys.util.RequestLog;
 import com.ys.util.XmlUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basequery.BaseQuery;
@@ -44,6 +47,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 	private static String adminRoleList = "";
 	private static String filterDefine = "";
 	private static boolean isFilter = false;
+	protected static Logger logger = Logger.getLogger("");
 	
     /**
      * (�� Javadoc)
@@ -65,7 +69,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request,
             HttpServletResponse response, Object handler) throws Exception {
-    	
+
     	boolean isRedirect = false;
         HttpSession session = request.getSession();
         String userId = "";
@@ -135,7 +139,40 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		        targetMenuId = menuMap.get(uri);
 		        
 		        //记录操作日志
-		        executeOperLogAdd(userInfo, targetMenuId==null?"":targetMenuId, fullUrl, ip, browserInfo);
+		       // executeOperLogAdd(userInfo, targetMenuId==null?"":targetMenuId, fullUrl, ip, browserInfo);
+		        StringBuffer bf = new StringBuffer();
+		        bf.append("login="+userInfo.getUserId()+"/"+userInfo.getUserName()+"/"+userInfo.geLoginId())
+		        .append(",targetMenuId="+targetMenuId)
+		        .append(",url="+fullUrl)
+		        .append(",ip="+ip)
+		        .append(",browser="+browserInfo)
+		        ;
+		        
+		        RequestLog.requestLog(logger, bf);
+		        //System.out.println(bf.toString());
+		       // Enumeration rnames=request.getParameterNames();		        
+		       // for (Enumeration e = rnames ; e.hasMoreElements() ;) {
+		       //      String thisName=e.nextElement().toString();
+		       //     String thisValue=request.getParameter(thisName);
+		       //     System.out.println(thisName+":"+thisValue);
+		       // }
+		        
+		      //request对象封装的参数是以Map的形式存储的
+		         Map<String, String[]> paramMap = request.getParameterMap();
+		         for(Map.Entry<String, String[]> entry :paramMap.entrySet()){
+		             String paramName = entry.getKey();
+		             String paramValue = "";
+		             String[] paramValueArr = entry.getValue();
+		             for (int i = 0; paramValueArr!=null && i < paramValueArr.length; i++) {
+		                 if (i == paramValueArr.length-1) {
+		                     paramValue+=paramValueArr[i];
+		                 }else {
+		                     paramValue+=paramValueArr[i]+",";
+		                 }
+		             }
+		             RequestLog.requestLog(logger,MessageFormat.format("{0}={1}", paramName,paramValue));
+		             //System.out.println(MessageFormat.format("{0}={1}", paramName,paramValue));
+		         }
 		        
 		        if (targetMenuId == null) {
 		        	//菜单表中无对应的action
