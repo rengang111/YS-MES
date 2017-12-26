@@ -77,6 +77,12 @@
 			$('#product00').attr("style","display:none");			
 		}
 		
+		//返回按钮
+		var goBactkBt = '${openFlag}';
+		if(goBactkBt == "newWindow"){
+			$('#goBack').attr("style","display:none");			
+		}
+		
 		ajaxRawGroup();			
 		
 		$( "#tabs" ).tabs();
@@ -228,7 +234,7 @@
 						<a href="#" onClick="doEditMaterial('${contract.productRecordId}','${contract.productParentId}')">${ contract.productId }</a></td>
 						
 					<td class="label" width="100px">产品名称：</td>
-					<td colspan="3">${ contract.productName } </td>
+					<td colspan="5">${ contract.productName } </td>
 				</tr>
 				<tr> 		
 					<td class="label"><label>供应商编号：</label></td>					
@@ -239,18 +245,18 @@
 					<td width="100px">${ contract.shortName }</td>
 						
 					<td class="label" width="100px"><label>供应商名称：</label></td>
-					<td>${ contract.fullName }</td>
+					<td colspan="3">${ contract.fullName }</td>
 				</tr>	
 				<tr> 		
 					<td class="label"><label>合同编号：</label></td>					
 					<td>${ contract.contractId }
 						<form:hidden path="contract.contractid" value="${contract.contractId }"/></td>
+					<td class="label" width="100px">付款条件：</td>
+					<td>入库后&nbsp;${ contract.paymentTerm }&nbsp;天</td>
 					<td class="label"><label>下单日期：</label></td>
 					<td>${ contract.purchaseDate }</td>
 					<td class="label"><label>合同交期：</label></td>
-					<td>${ contract.deliveryDate }</td><!--
-					<td class="label" width="100px"><label>合同金额：</label></td>
-					<td>  ${ contract.total }</td>-->
+					<td>${ contract.deliveryDate }</td>
 				</tr>									
 			</table>
 			

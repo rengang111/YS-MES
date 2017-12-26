@@ -41,6 +41,7 @@ public class BaseModel implements Serializable {
 	private ArrayList<ListOption> destinationPortList = new ArrayList<ListOption>();//目的港
 	private ArrayList<ListOption> shippingConditionList = new ArrayList<ListOption>();//出运条件
 	private ArrayList<ListOption> unsureList = new ArrayList<ListOption>();//通用
+	private ArrayList<ListOption> paymentMethodList = new ArrayList<ListOption>();//付款方式
 	
 	private String keyBackup = "";
 	private String imageFileName = "";
@@ -54,6 +55,12 @@ public class BaseModel implements Serializable {
 	}
 	public void setCountryList(ArrayList<ListOption> countryList) {
 		this.countryList = countryList;
+	}
+	public ArrayList<ListOption> getPaymentMethodList() {
+		return this.countryList;
+	}
+	public void setPaymentMethodList(ArrayList<ListOption> paymentMethodList) {
+		this.countryList = paymentMethodList;
 	}
 	
 	public ArrayList<ListOption> getShippingConditionList() {

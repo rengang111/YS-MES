@@ -102,13 +102,20 @@ public class PaymentAction extends BaseAction {
 				doUpdate();
 				rtnUrl = "/business/finance/stockoutview";
 				break;
-			case "applyInsert":
+			case "applyInsert"://申请
 				doApplyInsert();
-				rtnUrl = "/business/finance/paymentview";
+				rtnUrl = "/business/finance/paymentrequestview";
+				break;
+			case "approvalInit"://审核
+				rtnUrl = approvalInit();
+				break;
+			case "approvalInsert"://审核确认
+				doApprovalInsert();
+				rtnUrl = "/business/finance/paymentapprovalview";
 				break;
 			case "paymentView":
 				paymentView();
-				rtnUrl = "/business/finance/paymentview";
+				rtnUrl = "/business/finance/paymentrequestview";
 				break;
 			case "print"://打印出库单
 				doPrintReceipt();
@@ -137,6 +144,23 @@ public class PaymentAction extends BaseAction {
 			case "productPhotoDelete"://删除出库单附件
 				dataMap = deletePhoto("product","productFileList","productFileCount");
 				printOutJsonObj(response, dataMap);
+				break;
+			case "approvalMain"://审核
+				rtnUrl = "/business/finance/paymentapprovalmain";
+				break;
+			case "approvalSearch":
+				dataMap = approvalSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "finishMain"://付款完成
+				rtnUrl = "/business/finance/paymentfinishmain";
+				break;
+			case "finishSearch":
+				dataMap = finishSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "finishAddInit":
+				rtnUrl = finishAddInit();
 				break;
 				
 		}
@@ -223,6 +247,61 @@ public class PaymentAction extends BaseAction {
 	}
 	
 
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> approvalSearch(String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_PAYMENTAPPROVAL+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PAYMENTAPPROVAL+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.approvalSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> finishSearch(String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_PAYMENTAPPROVAL+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PAYMENTAPPROVAL+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.finishSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+
 	public void doAddInit(){
 
 		try{
@@ -236,6 +315,42 @@ public class PaymentAction extends BaseAction {
 	}
 
 	
+	public String approvalInit(){
+
+		String  rtnUrl = "/business/finance/paymentapproval";
+		try{
+			String rtnFlag = service.approvalInit();
+			if(("查看").equals(rtnFlag))
+				rtnUrl = "/business/finance/paymentapprovalview";
+			
+			model.addAttribute("userName", userInfo.getUserName());
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+		return rtnUrl;
+	}
+	
+	
+	
+	public String finishAddInit(){
+
+		String  rtnUrl = "/business/finance/paymentfinishadd";
+		try{
+			String rtnFlag = service.finishAddInit();
+			if(("查看").equals(rtnFlag))
+				rtnUrl = "/business/finance/paymentfinishview";
+			
+			model.addAttribute("userName", userInfo.getUserName());
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+		return rtnUrl;
+	}
+	
 	
 	public HashMap<String, Object> getStockoutDetail() throws Exception{
 
@@ -247,6 +362,14 @@ public class PaymentAction extends BaseAction {
 	public void doApplyInsert(){
 		try{
 			service.applyInsertAndReturn();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void doApprovalInsert(){
+		try{
+			service.approvalInsertAndReturn();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

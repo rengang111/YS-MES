@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>应付款申请-新建</title>
+<title>应付款-查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -40,8 +40,7 @@
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
-				{"className" : 'td-right'},//
-			
+				{"className" : 'td-right'},//			
 				
 			],	
 			
@@ -78,7 +77,7 @@
 		actionUrl = actionUrl +"&taskId="+taskId;
 		actionUrl = actionUrl +"&makeType="+makeType;
 				
-		var t = $('#example2').DataTable({
+		var t = $('#payment').DataTable({
 			"paging": false,
 			"processing" : false,
 			"retrieve"   : true,
@@ -172,17 +171,6 @@
 	};
 	$(document).ready(function() {
 		
-		//日期
-		$("#payment\\.requestdate").val(shortToday());
-		$("#payment\\.requestdate").datepicker({
-				dateFormat:"yy-mm-dd",
-				changeYear: true,
-				changeMonth: true,
-				selectOtherMonths:true,
-				showOtherMonths:true,
-			}); 
-		
-		
 		$(".goBack").click(
 				function() {
 					var url = "${ctx}/business/payment";
@@ -199,6 +187,7 @@
 		
 
 		ajax();
+		materialzzAjax();
 		
 		var contract = contractSum(4);
 		var minis = contractSum(5);
@@ -249,74 +238,62 @@
 
 	<form:hidden path="payment.parentid"  />
 	<form:hidden path="payment.subid"  />
-	<form:hidden path="payment.recordid"  />
-	<form:hidden path="payment.contractids"  value="${contractIds }"/>
-	<form:hidden path="payment.supplierid" value="${supplier.supplierId }" />
+	<form:hidden path="payment.recordid"  value="${payment.recordId }"/>
+	<form:hidden path="payment.paymentid" value="${payment.paymentId }"/>
 	<fieldset>
 		<legend> 付款申请单</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">申请单编号：</td>					
-				<td width="150px">
-					<form:input path="payment.paymentid" class="read-only"  value="（保存后自动生成）"/></td>	
+				<td width="150px">${payment.paymentId }</td>	
 								
 				<td class="label" width="100px">申请人：</td>					
-				<td width="150px">
-					<form:input path="payment.applicant" class="short required read-only"  value="${userName }"/></td>
+				<td width="150px">${payment.applicantName }</td>
 														
 				<td width="100px" class="label">申请日期：</td>
-				<td>
-					<form:input path="payment.requestdate" class="read-only"  value=""/></td>				
+				<td>${payment.requestDate }</td>				
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">供应商编号：</td>					
-				<td width="150px">&nbsp;${supplier.supplierId }</td>
+				<td width="150px">${supplier.supplierId }</td>
 														
 				<td width="100px" class="label">供应商简称：</td>
-				<td width="150px">&nbsp;${supplier.shortName }</td>
+				<td width="150px">${supplier.shortName }</td>
 														
 				<td width="100px" class="label">供应商名称：</td>
-				<td>&nbsp;${supplier.supplierName }</td>
+				<td>${supplier.supplierName }</td>
 			</tr>
 			<tr>			
-				<td class="label" width="100px">付款金额：</td>					
-				<td width="150px">
-					<form:input path="payment.totalpayable" class="read-only num"  style="width: 130px;"/></td>
+				<td class="label" width="100px">申请付款总额：</td>					
+				<td class="font16" width="150px">${payment.totalPayable }</td>
 								
 				<td class="label" width="100px">付款条件：</td>					
-				<td width="150px">&nbsp;入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
+				<td width="150px">入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
 														
-				<td width="100px" class="label">合同付款条件：</td>
-				<td>
-					<form:input path="payment.paymentterms" class="long"  /></td>
+				<td width="100px" class="label">申请付款状态：</td>
+				<td class="bold">${payment.finishStatus }</td>
 			</tr>										
 		</table>
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >提交申请</a>
-	<!-- 	<a class="DTTT_button DTTT_button_text" id="showHistory" >查看付款记录</a> -->
+		<a class="DTTT_button DTTT_button_text" id="insert" >修改</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<!-- 
 	<fieldset>
 		<legend> 付款信息</legend>
 		<table id="payment" class="form"  style="width:80%">
-		
-				<tr>
+			<thead>				
+				<tr>			
+					<th width="30px">No</th>
+					<th width="120px">付款日期</th>
+					<th width="120px">本次付款金额</th>
 					<th width="120px">应付款总额</th>
-					<th width="120px">待审核金额</th>
-					<th width="120px">待付款金额</th>				
-					<th width="120px">已完成金额</th>
-					<th width="120px">剩余总金额</th>
-				</tr>			
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>				
-					<td></td>
-			</tr>
+					<th width="120px">剩余未付款</th>
+					<th>备注</th>
+				</tr>
+			</thead>
 		</table>
 	</fieldset>
 	 -->
@@ -352,6 +329,7 @@
 					</tr>
 				</c:forEach>
 			</tbody>
+			<!--  -->
 			<tfoot>
 				<tr>
 					<td></td>

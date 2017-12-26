@@ -816,6 +816,7 @@ public class PurchaseOrderService extends CommonService {
 		
 		//获取页面数据
 		copyProperties(orderDao.beanData,order);
+		orderDao.beanData.setMemo(replaceTextArea(order.getMemo()));
 		
 		orderDao.Store(orderDao.beanData);
 	

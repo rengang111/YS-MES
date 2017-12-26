@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>应付款申请-新建</title>
+<title>应付款完成-录入</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -40,8 +40,7 @@
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
-				{"className" : 'td-right'},//
-			
+				{"className" : 'td-right'},//			
 				
 			],	
 			
@@ -78,7 +77,7 @@
 		actionUrl = actionUrl +"&taskId="+taskId;
 		actionUrl = actionUrl +"&makeType="+makeType;
 				
-		var t = $('#example2').DataTable({
+		var t = $('#payment').DataTable({
 			"paging": false,
 			"processing" : false,
 			"retrieve"   : true,
@@ -171,10 +170,9 @@
 
 	};
 	$(document).ready(function() {
-		
 		//日期
-		$("#payment\\.requestdate").val(shortToday());
-		$("#payment\\.requestdate").datepicker({
+		$("#history\\.finishdate").val(shortToday());
+		$("#history\\.finishdate").datepicker({
 				dateFormat:"yy-mm-dd",
 				changeYear: true,
 				changeMonth: true,
@@ -182,10 +180,9 @@
 				showOtherMonths:true,
 			}); 
 		
-		
-		$(".goBack").click(
+		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/payment";
+					var url = "${ctx}/business/payment?methodtype=approvalMain";
 					location.href = url;		
 		});
 
@@ -193,12 +190,13 @@
 		$("#insert").click(
 				function() {
 					
-			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert");
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=historyInsert");
 			$('#formModel').submit();
 		});
 		
 
 		ajax();
+		materialzzAjax();
 		
 		var contract = contractSum(4);
 		var minis = contractSum(5);
@@ -247,79 +245,114 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<form:hidden path="payment.parentid"  />
-	<form:hidden path="payment.subid"  />
-	<form:hidden path="payment.recordid"  />
-	<form:hidden path="payment.contractids"  value="${contractIds }"/>
-	<form:hidden path="payment.supplierid" value="${supplier.supplierId }" />
+	<form:hidden path="history.parentid"  />
+	<form:hidden path="history.subid"  />
+	<form:hidden path="history.paymenthistoryid"  />
+	
 	<fieldset>
 		<legend> 付款申请单</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">申请单编号：</td>					
-				<td width="150px">
-					<form:input path="payment.paymentid" class="read-only"  value="（保存后自动生成）"/></td>	
+				<td width="150px">${payment.paymentId }</td>	
 								
 				<td class="label" width="100px">申请人：</td>					
-				<td width="150px">
-					<form:input path="payment.applicant" class="short required read-only"  value="${userName }"/></td>
+				<td width="150px">${payment.applicantName }</td>
 														
 				<td width="100px" class="label">申请日期：</td>
-				<td>
-					<form:input path="payment.requestdate" class="read-only"  value=""/></td>				
+				<td>${payment.requestDate }</td>				
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">供应商编号：</td>					
-				<td width="150px">&nbsp;${supplier.supplierId }</td>
+				<td width="150px">${supplier.supplierId }</td>
 														
 				<td width="100px" class="label">供应商简称：</td>
-				<td width="150px">&nbsp;${supplier.shortName }</td>
+				<td width="150px">${supplier.shortName }</td>
 														
 				<td width="100px" class="label">供应商名称：</td>
-				<td>&nbsp;${supplier.supplierName }</td>
+				<td>${supplier.supplierName }</td>
+			</tr>
+			<tr>			
+				<td class="label" width="100px">申请付款总额：</td>					
+				<td class="font16" width="150px">${payment.totalPayable }</td>
+								
+				<td class="label" width="100px">付款条件：</td>					
+				<td width="150px">入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
+														
+				<td width="100px" class="label">申请付款状态：</td>
+				<td class="bold">${payment.finishStatus }</td>
+			</tr>										
+		</table>
+	</fieldset>	
+	<div style="clear: both"></div>	
+	<div id="DTTT_container" align="right" style="margin-right: 30px;">
+		<a class="DTTT_button DTTT_button_text" id="insert" >确认付款</a>
+		<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a>
+	</div>
+	<fieldset>
+		<legend> 付款信息</legend>
+		<table class="form" id="table_form">
+			<tr> 				
+				<td class="label" width="100px">付款单编号：</td>					
+				<td width="150px">
+					<form:input path="history.paymenthistoryid" class="short read-only"  /></td>	
+								
+				<td class="label" width="100px">付款人：</td>					
+				<td width="150px">
+					<form:input path="history.finishuser" class="short required read-only"  value="${userName }"/></td>
+														
+				<td width="100px" class="label">付款日期：</td>
+				<td>
+					<form:input path="history.finishdate" class="read-only short"  value=""/></td>				
 			</tr>
 			<tr>			
 				<td class="label" width="100px">付款金额：</td>					
-				<td width="150px">
-					<form:input path="payment.totalpayable" class="read-only num"  style="width: 130px;"/></td>
+				<td class="font16" width="150px">
+					<form:input path="history.paymentamount" class="num short"  /></td>
 								
-				<td class="label" width="100px">付款条件：</td>					
-				<td width="150px">&nbsp;入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
+				<td class="label" width="100px">币种：</td>					
+				<td width="150px">
+					<form:select path="history.currency" style="width: 120px;">							
+					<form:options items="${formModel.currencyList}" 
+						itemValue="key" itemLabel="value" /></form:select></td>
 														
-				<td width="100px" class="label">合同付款条件：</td>
-				<td>
-					<form:input path="payment.paymentterms" class="long"  /></td>
+				<td width="100px" class="label">付款方式：</td>
+				<td class="bold">
+					<form:select path="history.paymentmethod" style="width: 120px;">							
+					<form:options items="${formModel.paymentMethodList}" 
+						itemValue="key" itemLabel="value" /></form:select></td>
 			</tr>										
 		</table>
 	</fieldset>
-	<div style="clear: both"></div>	
-	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >提交申请</a>
-	<!-- 	<a class="DTTT_button DTTT_button_text" id="showHistory" >查看付款记录</a> -->
-		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
-	</div>
-	<!-- 
 	<fieldset>
-		<legend> 付款信息</legend>
-		<table id="payment" class="form"  style="width:80%">
-		
-				<tr>
-					<th width="120px">应付款总额</th>
-					<th width="120px">待审核金额</th>
-					<th width="120px">待付款金额</th>				
-					<th width="120px">已完成金额</th>
-					<th width="120px">剩余总金额</th>
-				</tr>			
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>				
-					<td></td>
-			</tr>
+		<span class="tablename">付款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
+		<div class="list">
+			<div class="showPhotoDiv" style="overflow: auto;">
+				<table id="productPhoto" style="width:100%;height:335px">
+					<tbody><tr><td class="photo"></td></tr></tbody>
+				</table>
+			</div>
+		</div>	
+	</fieldset>
+	
+	<fieldset>
+		<legend> 审核结果</legend>
+		<table class="form" id="table_form2">
+			<tr>
+				<td width="100px" class="label">审核人：</td>
+				<td width="150px" >${payment.approvalUser }</td>
+				<td width="100px" class="label">审核结果：</td>
+				<td width="150px" >${payment.approvalStatus }</td>
+				<td width="100px" class="label">审核日期：</td>
+				<td>${payment.approvalDate }</td>
+			</tr>	
+			<tr>	
+				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
+				<td colspan="5" >
+					<pre>${payment.approvalFeedback }</pre></td>
+			</tr>						
 		</table>
 	</fieldset>
-	 -->
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">
@@ -352,6 +385,7 @@
 					</tr>
 				</c:forEach>
 			</tbody>
+			<!--  -->
 			<tfoot>
 				<tr>
 					<td></td>

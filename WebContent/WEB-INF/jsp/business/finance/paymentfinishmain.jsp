@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-<title>应付款--审批一览</title>
+<title>应付款--完成一览</title>
 <script type="text/javascript">
 
 	function ajax(type,sessionFlag) {
@@ -14,9 +14,9 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/payment?methodtype=approvalSearch";
+		var url = "${ctx}/business/payment?methodtype=finishSearch";
 		url = url + "&sessionFlag="+sessionFlag;
-		url = url + "&approvalStatus="+type;
+		url = url + "&finishStatus="+type;
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -67,30 +67,33 @@
 	        	},
 				"columns": [
 					{"data": null,"className" : 'td-right'},//0
-					{"data": "paymentId", "defaultContent" : '', "className" : 'td-center'},//1 付款申请编号
+					{"data": "paymentId", "defaultContent" : '', "className" : 'td-center'},//1 付款编号
 					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//2
-					{"data": "supplierName", "defaultContent" : '', "className" : 'td-left'},//3				
-					{"data": "contractIds", "defaultContent" : '', "className" : 'td-left'},//4		
-					{"data": "totalPayable", "defaultContent" : '0', "className" : 'td-right'},//5
-					{"data": "requestDate", "defaultContent" : '', "className" : 'td-right'},//6
-					{"data": "approvalDate", "defaultContent" : '（待审核）', "className" : 'td-center'},//7
-					{"data": "approvalStatus", "className" : 'td-center'},//8
-					
+					{"data": "supplierName", "defaultContent" : '', "className" : 'td-left'},//3		
+					{"data": "requestDate", "defaultContent" : '0', "className" : 'td-right'},//5
+					{"data": "approvalDate", "defaultContent" : '', "className" : 'td-right'},//6
+					{"data": "finishDate", "defaultContent" : '（未付款）', "className" : 'td-center'},//7
+					{"data": "paymentAmount", "defaultContent" : '0', "className" : 'td-right'},//8			
+					{"data": "totalPayable", "defaultContent" : '', "className" : 'td-right'},//4	
+					{"data": "finishStatus", "className" : 'td-center'},//9
+				
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 						return row["rownum"];
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
-		    			var rtn = row["paymentId"];//		    			
-			    		rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["paymentId"] + "')\">" + row["paymentId"] + "</a>";		    			
-		    			return rtn;
+		    			var rtn = "";//
+		    			if(data ==""){
+		    	    		rtn= "（未付款）";		    			 				
+		    			}else{
+		    				rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ data + "')\">" + data + "</a>";		    					    				
+		    			}
+					    return rtn;
+					    
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			return jQuery.fixedWidth(data,35);		
-		    		}},
-		    		{"targets":4,"render":function(data, type, row){
-		    			return jQuery.fixedWidth(data,20);		
 		    		}},
 		    		{ "bSortable": false, "aTargets": [ 0 ] },
 		    		{
@@ -114,7 +117,7 @@
 	}
 
 	$(document).ready(function() {
-		ajax("010","true");
+		ajax("030","true");
 	})	
 	
 
@@ -140,7 +143,7 @@
 	
 	function doShowDetail(paymentId) {
 
-		var url = '${ctx}/business/payment?methodtype=approvalInit' + '&paymentId='+ paymentId;
+		var url = '${ctx}/business/payment?methodtype=finishAddInit' + '&paymentId='+ paymentId;
 		
 		location.href = url;
 	}
@@ -191,23 +194,23 @@
 		
 			<div class="list">					
 				<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-					<!-- <a class="DTTT_button DTTT_button_text" onclick="doSearch2(1,'010');"><span>待申请</span></a> -->
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('010');"><span>待审核</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('020');"><span>同意</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('030');"><span>不同意</span></a>
+					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('030');"><span>待付款</span></a>
+					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('040');"><span>分批付款中</span></a>
+					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('050');"><span>已完成</span></a>
 				</div>
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						
 						<tr>
 							<th width="30px">No</th>
-							<th width="80px">付款申请编号</th>
+							<th width="70px">付款单编号</th>
 							<th width="70px">供应商</th>
 							<th>供应商名称</th>
-							<th width="100px">关联合同</th>
-							<th width="60px">应付款总额</th>
 							<th width="70px">申请日期</th>
 							<th width="70px">审核日期</th>
-							<th width="50px">审核结果</th>
+							<th width="70px">付款日期</th>
+							<th width="70px">付款金额</th>
+							<th width="60px">应付款总额</th>
+							<th width="50px">状态</th>
 						</tr>
 					</thead>
 				</table>

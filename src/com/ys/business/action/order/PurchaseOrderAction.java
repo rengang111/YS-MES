@@ -211,7 +211,9 @@ public class PurchaseOrderAction extends BaseAction {
 	public void doDetailView() throws Exception{
 
 		String contractId = request.getParameter("contractId");
+		String openFlag = request.getParameter("openFlag");
 
+		model.addAttribute("openFlag",openFlag);//新窗口模式,不显示返回按钮
 		service.getContractDetailList(contractId);
 		
 	}

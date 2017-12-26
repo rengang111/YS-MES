@@ -14,6 +14,7 @@ import com.ys.business.action.model.order.StockOutModel;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PaymentDao;
 import com.ys.business.db.dao.B_PaymentDetailDao;
+import com.ys.business.db.dao.B_PaymentHistoryDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.dao.B_StockOutDao;
@@ -21,6 +22,7 @@ import com.ys.business.db.dao.B_StockOutDetailDao;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PaymentDetailData;
+import com.ys.business.db.data.B_PaymentHistoryData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_RequisitionDetailData;
@@ -142,6 +144,107 @@ public class PaymentService extends CommonService {
 
 	}
 	
+	public HashMap<String, Object> approvalSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_PAYMENTAPPROVAL,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryName("paymenRequestList");//申请单一览
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2)){
+			userDefinedSearchCase.put("approvalStatus", "");
+		}
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
+	public HashMap<String, Object> finishSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_PAYMENTAPPROVAL,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryName("paymenApprovalList");//申请单一览:审核通过
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2)){
+			userDefinedSearchCase.put("finishStatus", "");
+		}
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
 	public void addInitOrView() throws Exception {
 
 		String contractIds = request.getParameter("contractIds");
@@ -154,6 +257,54 @@ public class PaymentService extends CommonService {
 	}
 	
 
+	public String approvalInit() throws Exception {
+		
+		String rtnFlg = "";
+		String paymentid = request.getParameter("paymentId");
+		
+		//付款申请详情
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);
+			
+			if(notEmpty(map.get("approvalDate")))
+				rtnFlg = "查看";
+		}
+		
+		reqModel.setApprovalOption(util.getListOption(DicUtil.DIC_APPROVL, ""));
+
+		return rtnFlg;
+	}
+
+	public String finishAddInit() throws Exception {
+		
+		String rtnFlg = "";
+		String paymentid = request.getParameter("paymentId");
+		
+		//付款记录
+		boolean  record = getPaymentHistory(paymentid);
+		if(record){			
+			rtnFlg = "查看";
+		}else{
+			B_PaymentHistoryData history = getPaymentHistoryId(paymentid);
+			reqModel.setHistory(history);
+		}
+				
+		//付款申请详情
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);
+		}
+		
+		reqModel.setCurrencyList(util.getListOption(DicUtil.DENOMINATIONCURRENCY, ""));
+		reqModel.setPaymentMethodList(util.getListOption(DicUtil.DIC_PAYMENTMETHOD, ""));
+
+		return rtnFlg;
+	}
 	public void edit() throws Exception {
 		String stockoutId = request.getParameter("stockoutId");
 	
@@ -192,35 +343,54 @@ public class PaymentService extends CommonService {
 		getOrderDetail(YSId);	
 	}
 	
-	
-	public HashMap<String, Object> getProductStockInDetail() {
 
-		String YSId = request.getParameter("YSId");
-		String materialId = request.getParameter("materialId");
-		return getOrderAndStockDetail(YSId,materialId);
-	}
 	
 	public void applyInsertAndReturn() throws Exception {
 
 		String paymentid = applyInsert();
 
 		//付款申请详情
-		String contractId = getPaymentDetail(paymentid);
-		
-		//供应商
-		getContractDetail(contractId);	
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);				
+		}
 
 	}
 
+	
+	public void approvalInsertAndReturn() throws Exception {
+
+		
+		B_PaymentData reqData = reqModel.getPayment();
+	
+		String paymentid = reqData.getPaymentid();
+
+		//付款单审核
+		updatePayment(reqData);	
+			
+		//付款申请详情
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);				
+		}
+
+	}
+	
 	public void paymentView() throws Exception {
 
 		String paymentid = request.getParameter("paymentId");
 
 		//付款申请详情
-		String contractId = getPaymentDetail(paymentid);
-		
-		//供应商
-		getContractDetail(contractId);		
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);				
+		}	
 
 	}
 	
@@ -282,6 +452,16 @@ public class PaymentService extends CommonService {
 		return YSId;
 	}
 	
+	//新建付款申请
+	private String approvalInsert(){
+		String paymentid = "";		
+	
+			
+
+		
+		return paymentid;
+	}
+		
 	//新建付款申请
 	private String applyInsert(){
 		String paymentid = "";
@@ -370,11 +550,43 @@ public class PaymentService extends CommonService {
 		new B_PaymentDetailDao().Create(detail);
 	}
 	
+	private void updatePayment(
+			B_PaymentData payment) throws Exception {
+		
+		B_PaymentData db = null;
+		try {
+			db = new B_PaymentDao(payment).beanData;
 
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		if(db == null || db.equals(""))
+			return;
+		
+		//更新
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"paymentRequestUpdate",userInfo);
+		copyProperties(db,commData);
+		
+		db.setApprovaluser(userInfo.getUserId());//默认为登陆者
+		db.setApprovaldate(CalendarUtil.fmtYmdDate());
+		db.setApprovalstatus(payment.getApprovalstatus());
+		db.setApprovalfeedback(replaceTextArea(payment.getApprovalfeedback()));
+		
+		//审核结果:020同意;030不同意;010未审核
+		if(("020").equals(payment.getApprovalstatus())){
+			db.setFinishstatus(Constants.payment_030);//待付款
+		}else{
+			db.setFinishstatus(Constants.payment_060);//审核未通过			
+		}
+		new B_PaymentDao().Store(db);
+		
+	}
 	
-	public String  getPaymentDetail(String paymentid) throws Exception{
+	public HashMap<String, String>  getPaymentDetail(String paymentid) throws Exception{
 
-		String contractIds = "";
+		HashMap<String, String> payment = null;
 		
 		dataModel.setQueryName("paymentDetailById");
 		userDefinedSearchCase.put("paymentId", paymentid);
@@ -383,35 +595,51 @@ public class PaymentService extends CommonService {
 		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() > 0){
-			model.addAttribute("payment",dataModel.getYsViewData().get(0));
-			contractIds = dataModel.getYsViewData().get(0).get("contractIds");
+			payment = dataModel.getYsViewData().get(0);
+			model.addAttribute("payment",payment);
+			//contractIds = dataModel.getYsViewData().get(0).get("contractIds");
 			modelMap.put("data", dataModel.getYsViewData());
 		}	
 	
-		return contractIds;
+		return payment;
 	}
 	
-	private HashMap<String, Object> getOrderAndStockDetail(
-			String YSId,String materialId){
+	public boolean  getPaymentHistory(String paymentid) throws Exception{
 
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		try {
-			dataModel.setQueryName("getPurchaseStockInById");
-			userDefinedSearchCase.put("YSId", YSId);
-			userDefinedSearchCase.put("materialId", materialId);
-			baseQuery = new BaseQuery(request, dataModel);
-			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-			baseQuery.getYsFullData();
+		boolean rtnFlag=false;
+		String where = " paymentId ='" + paymentid +"' AND deleteFlag='0' ";
+		
+		List list = new B_PaymentHistoryDao().Find(where);
+		
+		if(list.size() > 0)
+			rtnFlag = true;
+		
+		return rtnFlag;
+		
+	}
+	
+	private B_PaymentHistoryData getPaymentHistoryId(String paymentid) throws Exception{
 
-			modelMap.put("data", dataModel.getYsViewData());
-			model.addAttribute("head",dataModel.getYsViewData().get(0));
-			model.addAttribute("material",dataModel.getYsViewData());		
-			
-		} catch (Exception e) {
-			System.out.print(e.getMessage());
-		}
+		dataModel.setQueryName("paymentHistoryMAXId");
+		userDefinedSearchCase.put("paymentid", paymentid);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
 
-		return modelMap;
+		//查询出的流水号已经在最大值上 " 加一 "了
+		String code = dataModel.getYsViewData().get(0).get("MaxSubId");	
+		
+		String id = BusinessService.getPaymentHistoryId(
+						paymentid,
+						code,
+						false);	
+		
+		B_PaymentHistoryData data = new B_PaymentHistoryData();
+		data.setPaymenthistoryid(id);
+		data.setParentid(paymentid);
+		data.setSubid(code);
+		
+		return data;
 	}
 	
 

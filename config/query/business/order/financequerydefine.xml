@@ -19,16 +19,20 @@
       <f name="a.detailPaymentId" alias="" ctype="" />
       <f name="IFNULL(a.paymentId,'')" alias="paymentId" ctype="" />
       <f name="a.payable" alias="" ctype="" />
+      <f name="a.stockInDate" alias="" ctype="" />
       <f name="a.requestDate" alias="" ctype="" />
       <f name="a.finishDate" alias="" ctype="" />
       <f name="a.agreementDate" alias="" ctype="" />
       <f name="a.paymentTerm" alias="" ctype="" />
       <f name="IFNULL(a.finishStatus,'010')" alias="finishStatus" ctype="应付款状态" />
       <f name="IFNULL(a.finishStatus,'010')" alias="finishStatusId" ctype="" />
+      <f name="a.approvalDate" alias="" ctype="" />
+      <f name="a.approvalStatus" alias="" ctype="审核结果" />
+      <f name="a.approvalStatus" alias="approvalStatusId" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_paymentlistfromcontract a where a.deleteFlag='0'</from>
+    <from>v_paymentlistfromcontract a where a.deleteFlag='0' AND supplierId != '0574YZ00'</from>
     <orderby>a.contractId </orderby>
     <groupby>a.contractId</groupby>
     <having></having>
@@ -54,12 +58,51 @@
       <f name="a.requestDate" alias="" ctype="" />
       <f name="a.finishDate" alias="" ctype="" />
       <f name="a.applicant" alias="" ctype="" />
-      <f name="a.approvalStatus" alias="" ctype="应付款审核状态" />
+      <f name="a.approvalDate" alias="" ctype="" />
+      <f name="a.approvalStatus" alias="" ctype="审核结果" />
+      <f name="a.approvalStatus" alias="approvalStatusId" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>v_paymentapprovallist a where a.deleteFlag='0'</from>
     <orderby>a.paymentId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="paymenApprovalList" />
+     <where>
+        <w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	    <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+    	<w name="A.finishStatus" des="" reqName="finishStatus" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.paymentId" alias="" ctype="" />
+      <f name="a.contractIds" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="" ctype="" />
+      <f name="a.supplierName" alias="" ctype="" />
+      <f name="a.totalPayable" alias="" ctype="" />
+      <f name="a.requestDate" alias="" ctype="" />
+      <f name="a.finishDate" alias="" ctype="" />
+      <f name="a.applicant" alias="" ctype="" />
+      <f name="a.approvalDate" alias="" ctype="" />
+      <f name="a.approvalStatus" alias="" ctype="审核结果" />
+      <f name="a.approvalStatus" alias="approvalStatusId" ctype="" />
+      <f name="a.paymentHistoryId" alias="" ctype="" />
+      <f name="a.paymentAmount" alias="" ctype="" />
+      <f name="a.paymentMethod" alias="" ctype="" />
+      <f name="a.finishUser" alias="" ctype="" />
+      <f name="a.finishStatus" alias="" ctype="应付款状态" />
+      <f name="a.finishStatus" alias="finishStatusId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_paymenthistorylist a where a.deleteFlag='0'</from>
+    <orderby>a.paymentHistoryId</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>
@@ -109,11 +152,16 @@
       <f name="a.contractIds" alias="" ctype="" />
       <f name="b.contractId" alias="" ctype="" />
       <f name="b.payable" alias="" ctype="" />
+      <f name="a.approvalDate" alias="" ctype="" />
+      <f name="a.approvalStatus" alias="" ctype="审核结果" />
+      <f name="a.approvalStatus" alias="approvalStatusId" ctype="" />
+      <f name="a.approvalFeedback" alias="" ctype="" />
       <f name="c.loginName" alias="applicantName" ctype="" />
+      <f name="d.loginName" alias="approvalUser" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>b_payment a LEFT JOIN b_paymentdetail b ON a.paymentId=b.paymentId AND b.deleteFlag='0' LEFT JOIN s_user c ON a.applicant=c.userId AND c.deleteFlag='0' WHERE a.deleteFlag='0'</from>
+   <from>b_payment a LEFT JOIN b_paymentdetail b ON a.paymentId=b.paymentId AND b.deleteFlag='0' LEFT JOIN s_user c ON a.applicant=c.userId AND c.deleteFlag='0'LEFT JOIN s_user d ON a.applicant=d.userId AND d.deleteFlag='0'  WHERE a.deleteFlag='0'</from>
     <groupby></groupby>
     <having></having>    
     <orderby></orderby>
@@ -149,6 +197,23 @@
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>b_payment a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query> 
+  <query>
+    <pool></pool>    
+    <name value="paymentHistoryMAXId" />
+     <where>
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name=" IFNULL(MAX(a.subId+1),1)" alias="MaxSubId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>b_paymenthistory a</from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>

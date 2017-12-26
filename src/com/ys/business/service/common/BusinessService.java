@@ -453,6 +453,27 @@ public class BusinessService {
 		return sb.toString();
 	 }
 	 
+	 
+	 /**
+	 * 付款编号=付款单编号-2位流水号
+	 * @return 17FK-00001-01 
+	 */
+	 public static String getPaymentHistoryId(
+			 String parent,String code,boolean addFlag) {
+
+		StringBuffer sb = new StringBuffer();
+	    sb.append(parent);
+	    sb.append("-");
+	    		
+		//格式化成5位流水号
+		int num = 1;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		sb.append(getFormat2Code(num,addFlag));
+		
+		return sb.toString();
+	 }
+	 
 	 /**
 		 * @return 做单资料编号
 		 * 

@@ -106,6 +106,8 @@
 		if(productid == null || productid == ""){
 			$('#ysid00').attr("style","display:none");			
 		}
+
+		$('#contract\\.memo').val(replaceTextarea('${contract.memo}'));
 		
 		ajaxRawGroup();			
 		
@@ -364,7 +366,9 @@
 		<legend> 合同注意事项</legend>
 		<table class="form" >
 			<tr>
-				<td class="td-left"><textarea name="contract.memo" rows="6" cols="100" >${contract.memo}</textarea></td>
+				<td class="td-left">
+					<form:textarea path="contract.memo" rows="6" cols="80" />
+				</td>
 			</tr>
 		</table>
 		

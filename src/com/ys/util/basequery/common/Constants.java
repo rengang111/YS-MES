@@ -224,6 +224,7 @@ public class Constants {
 	public static final String payment_030 = "030";//待付款
 	public static final String payment_040 = "040";//部分付款
 	public static final String payment_050 = "050";//完成
+	public static final String payment_060 = "060";//审核未通过
 
 
 }

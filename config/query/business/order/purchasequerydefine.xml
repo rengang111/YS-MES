@@ -372,6 +372,7 @@
       <f name="a.deliveryDate" alias="" ctype="" />
       <f name="a.total" alias="" ctype="" />
       <f name="a.memo" alias="" ctype="" />
+      <f name="a.paymentTerm" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="a.productParentId" alias="" ctype="" />
       <f name="a.productRecordId" alias="" ctype="" />

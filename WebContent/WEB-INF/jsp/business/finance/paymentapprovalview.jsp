@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>应付款-查看</title>
+<title>应付款审核-查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -171,17 +171,17 @@
 	};
 	$(document).ready(function() {
 		
-		$(".goBack").click(
+		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/payment";
+					var url = "${ctx}/business/payment?methodtype=approvalMain";
 					location.href = url;		
 		});
 
 		
-		$("#insert").click(
+		$("#update").click(
 				function() {
 					
-			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert");
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalEdit");
 			$('#formModel').submit();
 		});
 		
@@ -221,7 +221,7 @@
 	
 	function doShowContract(contractId) {
 
-		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
+		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
 		
 		callProductDesignView("采购合同",url);
 	}
@@ -277,27 +277,29 @@
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >修改</a>
-	<!-- 	<a class="DTTT_button DTTT_button_text" id="showHistory" >查看付款记录</a> -->
-		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
+	<!--	<a class="DTTT_button DTTT_button_text" id="update" >修改</a> -->
+		<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a>
 	</div>
-	<!-- 
+
 	<fieldset>
-		<legend> 付款信息</legend>
-		<table id="payment" class="form"  style="width:80%">
-			<thead>				
-				<tr>			
-					<th width="30px">No</th>
-					<th width="120px">付款日期</th>
-					<th width="120px">本次付款金额</th>
-					<th width="120px">应付款总额</th>
-					<th width="120px">剩余未付款</th>
-					<th>备注</th>
-				</tr>
-			</thead>
+		<legend> 审核结果</legend>
+		<table class="form" id="table_form2">
+			<tr>
+				<td width="100px" class="label">审核人：</td>
+				<td width="150px" >${payment.approvalUser }</td>
+				<td width="100px" class="label">审核结果：</td>
+				<td width="150px" >${payment.approvalStatus }</td>
+				<td width="100px" class="label">审核日期：</td>
+				<td>${payment.approvalDate }</td>
+			</tr>	
+			<tr>	
+				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
+				<td colspan="5" >
+					<pre>${payment.approvalFeedback }</pre></td>
+			</tr>						
 		</table>
 	</fieldset>
-	 -->
+	
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">
