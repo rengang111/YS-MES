@@ -79,7 +79,6 @@ public class PaymentAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				doInit();
 				rtnUrl = "/business/finance/paymentrequestmain";
 				break;
 			case "search":
@@ -167,9 +166,25 @@ public class PaymentAction extends BaseAction {
 		
 		return rtnUrl;
 	}	
+		
+	private HashMap<String, Object> uploadPhoto(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) {
+		
+		HashMap<String, Object> map = null;
+		
+		try {
+			 map = service.uploadPhotoAndReload(headPhotoFile,folderName,fileList,fileCount);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return map;
+	}
 	
-	//出库单上传
-	@RequestMapping(value="PaymentUpload")
+	//付款单上传
+	@RequestMapping(value="paymentBillUpload")
 	public String doInit(
 			@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
 			@RequestBody String data,
@@ -194,30 +209,13 @@ public class PaymentAction extends BaseAction {
 			dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
 			printOutJsonObj(response, dataMap);
 			break;
+	
 		}
+		
+		
 		return null;
 	}
-	
-	private HashMap<String, Object> uploadPhoto(
-			MultipartFile[] headPhotoFile,
-			String folderName,String fileList,String fileCount) {
 		
-		HashMap<String, Object> map = null;
-		
-		try {
-			 map = service.uploadPhotoAndReload(headPhotoFile,folderName,fileList,fileCount);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
-		return map;
-	}
-	
-	
-	public void doInit(){
-	}
-	
 	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearch(@RequestBody String data){

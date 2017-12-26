@@ -1,5 +1,7 @@
 package com.ys.system.service.role;
 
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.springframework.stereotype.Service;
@@ -155,9 +157,11 @@ public class RoleMenuService extends BaseService {
 		dataModel.setQueryName("rolemenuquerydefine_checkrole");
 		
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
-		String caseIdRoleName = request.getParameter("roleId");
-		if (!roleIdName.equals("")) {
-			caseIdRoleName = roleIdName;
+		String caseIdRoleName = roleIdName;
+
+		if (roleIdName.equals("")) {
+			caseIdRoleName = request.getParameter("roleId");
+			caseIdRoleName = new String(caseIdRoleName.getBytes("iso-8859-1"), "utf-8");
 		}
 		userDefinedSearchCase.put("roleIdName", caseIdRoleName);
 		
@@ -187,7 +191,7 @@ public class RoleMenuService extends BaseService {
 		
 		BaseQuery baseQuery = new BaseQuery(request, dataModel);
 		String caseIdRoleName = request.getParameter("roleId");
-		userDefinedSearchCase.put("roleIdName", caseIdRoleName);
+		userDefinedSearchCase.put("roleIdName", new String(caseIdRoleName.getBytes("iso-8859-1"), "utf-8"));
 		
 		if (!userInfo.getUserType().equals(Constants.USER_SA)) {
 			userDefinedSearchCase.put("unitId", userInfo.getUnitId());

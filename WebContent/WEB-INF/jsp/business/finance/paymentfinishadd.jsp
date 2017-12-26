@@ -67,109 +67,8 @@
 
 	};
 	
-	function materialzzAjax() {
-
-		var makeType = $('#makeType').val();
-		var taskId = $('#task\\.taskid').val();
-		var YSId= $('#task\\.collectysid').val();
-		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getMaterialZZList";
-		actionUrl = actionUrl +"&YSId="+YSId;
-		actionUrl = actionUrl +"&taskId="+taskId;
-		actionUrl = actionUrl +"&makeType="+makeType;
-				
-		var t = $('#payment').DataTable({
-			"paging": false,
-			"processing" : false,
-			"retrieve"   : true,
-			"stateSave"  : false,
-			"pagingType" : "full_numbers",
-			//"scrollY"    : scrollHeight,
-	       // "scrollCollapse": false,
-	       "autoWidth":false,
-	        "paging"    : false,
-	        //"pageLength": 50,
-	        "ordering"  : false,
-			"dom"		: '<"clear">rt',
-			"aaSorting": [[ 1, "DESC" ]],
-			"sAjaxSource" : actionUrl,
-			"fnServerData" : function(sSource, aoData, fnCallback) {
-				//var param = {};
-				//var formData = $("#condition").serializeArray();
-				//formData.forEach(function(e) {
-				//	aoData.push({"name":e.name, "value":e.value});
-				//});
-
-				$.ajax({
-					"url" : sSource,
-					"datatype": "json", 
-					"contentType": "application/json; charset=utf-8",
-					"type" : "POST",
-					//"data" : JSON.stringify(aoData),
-					success: function(data){					
-						fnCallback(data);
-					},
-					 error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				})
-			},
-        	"language": {
-        		"url":"${ctx}/plugins/datatables/chinese.json"
-        	},
-			"columns" : [
-		        	{"data": null,"className":"dt-body-center"//0
-				}, {"data": "YSId","className":"td-left", "defaultContent" : ''//5
-				}, {"data": "materialId","className":"td-left"//1
-				}, {"data": "materialName",						//2
-				}, {"data": "unit","className":"td-center"		//3单位
-				}, {"data": "manufactureQuantity","className":"td-right"//4
-				}, {"data": null, "defaultContent" : ''	//6 
-				}
-			],
-			"columnDefs":[
-	    		
-	    		{"targets":3,"render":function(data, type, row){ 					
-					var index=row["rownum"]	
-	    			var name =  jQuery.fixedWidth( row["materialName"],40);
-					//var inputTxt =       '<input type="hidden" id="requisitionList'+index+'.overquantity" name="requisitionList['+index+'].overquantity" value=""/>';
-	    			//inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.materialid" name="requisitionList['+index+'].materialid" value="'+row["materialId"]+'"/>';
-	    			//inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.contractid" name="requisitionList['+index+'].contractid" value="'+row["contractId"]+'"/>';
-	    			//inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.supplierid" name="requisitionList['+index+'].supplierid" value="'+row["supplierId"]+'"/>';
-	    			
-	    			return name;
-                }},
-				{"targets":5,"render":function(data, type, row){	    			
-	    			
-	    			var qty = floatToCurrency(row["manufactureQuantity"]);			
-	    			return qty;				 
-                }}
-			]
-			
-		}).draw();
-
-	
-		
-						
-		t.on('click', 'tr', function() {
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }			
-		});
-		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
-
-	};
 	$(document).ready(function() {
+		
 		//日期
 		$("#history\\.finishdate").val(shortToday());
 		$("#history\\.finishdate").datepicker({
@@ -193,10 +92,9 @@
 			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=historyInsert");
 			$('#formModel').submit();
 		});
-		
 
 		ajax();
-		materialzzAjax();
+		productPhotoView();//供应商的入库单
 		
 		var contract = contractSum(4);
 		var minis = contractSum(5);
@@ -235,7 +133,169 @@
 		callProductDesignView("采购合同",url);
 	}
 </script>
+<script type="text/javascript">
 
+function productPhotoView() {
+
+	var contractId = $("#stock\\.contractid").val();
+	var YSId = $("#stock\\.ysid").val();
+	var supplierId = $("#stock\\.supplierid").val();
+
+	$.ajax({
+		"url" :"${ctx}/business/payment?methodtype=getProductPhoto&YSId="+YSId+"&supplierId="+supplierId+"&contractId="+contractId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+				
+			var countData = data["productFileCount"];
+
+			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+         	alert("图片显示失败.")
+		 }
+	});
+	
+}//产品图片
+
+function photoView(id, tdTable, count, data) {
+	
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
+		var trHtml = '';
+		trHtml += '<td class="photo" style="text-align:center;padding: 10px;">';
+		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td></td>';
+		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
+				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;">';
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+		trHtml += '</a>';
+		trHtml += '</td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+		
+		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
+		row++;
+	}
+}
+
+function addPhotoRow(id,tdTable, index) {
+	
+	for (var i = 0; i < 1; i++) {
+
+		var path = '${ctx}' + "/images/blankDemo.png";
+		var pathDel = '';
+		var trHtml = '';
+
+		trHtml += '<td class="photo" style="text-align:center;padding: 10px;">';
+		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td><div id="uploadFile'+tdTable+index+'" ><input type="file"  id="photoFile" name="photoFile" '+
+				'onchange="uploadPhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\'' + ',' + index + ');" accept="image/*" style="max-width: 250px;" /></div></td>';
+		trHtml += '<td width="50px"><div id="deleteFile'+tdTable+index+'" ><a href="###" '+
+				'onclick=\"deletePhoto(' + '\'' + id + '\'' + ','+ '\''+ tdTable + '\'' + ',' + '\'' + pathDel+ '\''+ ')\">删除</a></div></td>';
+		trHtml += "</tr>";
+		trHtml += '<tr><td colspan="2"  style="height:300px;text-align: center;""><img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  /></td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+		
+	}//for		
+
+	return trHtml;
+}
+
+
+function doShowProduct() {
+	var materialId = '${product.materialId}';
+	callProductView(materialId);
+}
+
+function deletePhoto(tableId,tdTable,path) {
+	
+	var url = '${ctx}/business/payment?methodtype='+tableId+'Delete';
+	url+='&tabelId='+tableId+"&path="+path;
+	    
+	if(!(confirm("确定要删除该图片吗？"))){
+		return;
+	}
+    $("#formModel").ajaxSubmit({
+		type: "POST",
+		url:url,	
+		data:$('#formModel').serialize(),// 你的formid
+		dataType: 'json',
+	    success: function(data){
+	    	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//删除后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片删除失败.")
+		}
+	});
+}
+
+function uploadPhoto(tableId,tdTable, id) {
+
+	var url = '${ctx}/business/paymentBillUpload'
+			+ '?methodtype=uploadPhoto' + '&id=' + id;
+	//alert(url)
+	$("#form").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#formModel').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
+	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//添加后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+			
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片上传失败.")
+		}
+	});
+}
+
+</script>
 </head>
 <body>
 <div id="container">

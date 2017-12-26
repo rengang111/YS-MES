@@ -261,7 +261,7 @@
 	
 	function callMenu(roleId, roleName) {
 		//popupWindow("roleDetail", "${pageContext.request.contextPath}/rolemenu?methodtype=updateinit&roleId=" + roleId + "&roleName=" + roleName + "&menuId=", 800, 600);	
-		var url = "${pageContext.request.contextPath}/rolemenu?methodtype=updateinit&roleId=" + roleId + "&roleName=" + roleName + "&menuId=";
+		var url = "${pageContext.request.contextPath}/rolemenu?methodtype=updateinit&roleId=" + roleId + "&roleName=" + encodeURI(encodeURI(roleName)) + "&menuId=";
 		openLayer(url, $(document).width() - 25, layerHeight + 300, true);
 
 	}

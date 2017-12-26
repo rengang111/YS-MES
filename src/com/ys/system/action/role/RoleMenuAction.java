@@ -1,5 +1,7 @@
 package com.ys.system.action.role;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -131,7 +133,12 @@ public class RoleMenuAction extends BaseAction {
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		roleModel.setDeptGuid(userInfo.getDeptGuid());
 		roleModel.setRoleId(request.getParameter("roleId"));
-		roleModel.setRoleIdName(request.getParameter("roleName"));
+		try {
+			roleModel.setRoleIdName(URLDecoder.decode(request.getParameter("roleName"),"UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		model.addAttribute("DisplayData", roleModel);
 		
@@ -150,7 +157,7 @@ public class RoleMenuAction extends BaseAction {
 	    	}
 		}
 		catch(Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			base.setMessage("系统错误");
 		}
 		return JsonUtil.toJson(base);
@@ -161,8 +168,8 @@ public class RoleMenuAction extends BaseAction {
 		UserInfo userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
 		
 		try {
-			if (roleMenuService.isRightRole(request, "", userInfo)) {
 				ArrayList<MenuInfo> menuInfoLIst = roleMenuService.getRoleIdMenu(request, userInfo);
+				if (roleMenuService.isRightRole(request, "", userInfo)) {
 				json = MakeTreeStyleData.convertMenuChainToJson(menuInfoLIst);
 			} else {
 				System.out.println("角色不正确，无法更新");

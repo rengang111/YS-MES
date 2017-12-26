@@ -749,26 +749,31 @@ public class PaymentService extends CommonService {
 	public HashMap<String, Object> uploadPhotoAndReload(
 			MultipartFile[] headPhotoFile,
 			String folderName,String fileList,String fileCount) throws Exception {
-/*
-		B_StockOutData reqDt = reqModel.getStockout();
-		String YSId = reqDt.getYsid();
+
+		B_PaymentData payment = reqModel.getPayment();
+		B_PaymentHistoryData history = reqModel.getHistory();
+		String supplierId = payment.getSupplierid();
+		String paymentId = history.getPaymenthistoryid();
 
 		String viewPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_STOCKOUTVIEW)+"/"+YSId;	
+				getRealPath(BusinessConstants.PATH_GODOWNENTRYVIEW)
+				+"/"+supplierId+"/"+paymentId;
 
 		String savePath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;	
-						
-		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
-		
-		String photoName  = YSId  + "-" + CalendarUtil.timeStempDate(); 
+				getRealPath(BusinessConstants.PATH_GODOWNENTRYFILE)
+				+"/"+supplierId+"/"+paymentId;
+
+		String webPath = BusinessConstants.PATH_GODOWNENTRYVIEW
+				+supplierId+"/"+paymentId+"/";	
+
+		String photoName  = supplierId+ "-" + paymentId + "-" + CalendarUtil.timeStempDate(); 
 		
 		uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
 
 		ArrayList<String> list = getFiles(savePath,webPath);
 		modelMap.put(fileList, list);
 		modelMap.put(fileCount, list.size());
-	*/
+	
 		return modelMap;
 	}
 	

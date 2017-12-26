@@ -496,10 +496,10 @@ public class DbUpdateEjb  {
 			for(String userId:userArray) {
 				for(String roleId:roleArray) {
 					for(String unitId:unitArray) {
-						StringBuffer sql = new StringBuffer("");
-						sql.append("DELETE FROM s_Power ");
-						sql.append(" WHERE userid = '" + userId + "' AND DeleteFlag = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
-						BaseDAO.execUpdate(sql.toString());
+						//StringBuffer sql = new StringBuffer("");
+						//sql.append("DELETE FROM s_Power ");
+						//sql.append(" WHERE userid = '" + userId + "' AND DeleteFlag = '" + BusinessConstants.DELETEFLG_UNDELETE + "'");
+						//BaseDAO.execUpdate(sql.toString());
 						
 						S_POWERData data = new S_POWERData();
 						data = new S_POWERData();
