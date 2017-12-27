@@ -272,7 +272,7 @@ function floatToCurrency(value){
 		
 	//var numString = toFloat.toFixed(2);
 	//自定义两位小数截取,对应前:0.055->0.05;对应后:0.06
-	var numString = myRound(toFloat,2);
+	var numString = roundFixed(toFloat,2);
 	numString = numString.toFixed(2);
 	var parts = numString.split('.');
 	var outParts = [];
@@ -890,4 +890,13 @@ function myTrim(x) {
 function myRound(number,fractionDigits){  
     number = number + 1/Math.pow(10,number.toString().length-1);//往最后补一位  
     return Math.round(number*Math.pow(10,fractionDigits))/Math.pow(10,fractionDigits);  
+}
+
+function roundFixed(num, fixed) {
+    var pos = num.toString().indexOf('.'),
+        decimal_places = num.toString().length - pos - 1,
+        _int = num * Math.pow(10, decimal_places),
+        divisor_1 = Math.pow(10, decimal_places - fixed),
+        divisor_2 = Math.pow(10, fixed);
+    return Math.round(_int / divisor_1) / divisor_2;
 }

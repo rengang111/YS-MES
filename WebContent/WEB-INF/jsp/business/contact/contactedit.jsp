@@ -22,7 +22,7 @@ $(document).ready(function() {
 		rules: {
 			userName: {
 				required: true,
-				maxlength: 20,
+				maxlength: 40,
 			},
 			sex: {
 				maxlength: 2,
@@ -45,11 +45,11 @@ $(document).ready(function() {
 				maxlength: 20,
 			},
 			mail: {
-				maxlength: 20,
+				maxlength: 100,
 				email: true,
 			},
 			skype: {
-				maxlength: 20,
+				maxlength: 30,
 			},
 			mark: {
 				maxlength: 1,

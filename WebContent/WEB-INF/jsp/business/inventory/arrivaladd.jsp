@@ -34,6 +34,7 @@
 					}, {"className":"td-right"	
 					}, {"className":"td-right"
 					}, {"className":"td-right"
+					}, {"className":"td-right"
 					}
 				]
 			
@@ -45,9 +46,9 @@
 			var $td = $(this).parent().find("td");
 
 			var $oArrival = $td.eq(4).find("input");
-			var $oRecorde = $td.eq(6).find("span");
 			var $oQuantity= $td.eq(5).find("span");
-			var $oSurplus = $td.eq(7).find("span");
+			var $oRecorde = $td.eq(7).find("span");
+			var $oSurplus = $td.eq(8).find("span");
 
 			var fArrival  = currencyToFloat($oArrival.val());
 			var fRecorde  = currencyToFloat($oRecorde.html());
@@ -260,8 +261,8 @@
 			$('#example tbody tr').each (function (){
 				
 				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
-				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
-				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
+				var vreceive  = $(this).find("td").eq(7).find("span").text();//已收货
+				var vsurplus  = $(this).find("td").eq(8).find("span").text();//剩余
 
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
@@ -270,7 +271,7 @@
 
 				if(fsurplus > "0"){
 					$(this).find("td").eq(4).find("input").val(fsurplus);//本次到货
-					$(this).find("td").eq(7).find("span").text("0")//剩余数清零
+					$(this).find("td").eq(8).find("span").text("0")//剩余数清零
 				}
 							
 			})
@@ -284,15 +285,15 @@
 
 				var varrival  = $(this).find("td").eq(4).find("input").val();////本次收货
 				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
-				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
-				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
+				var vreceive  = $(this).find("td").eq(7).find("span").text();//已收货
+				var vsurplus  = $(this).find("td").eq(8).find("span").text();//剩余
 
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
 				var fsurplus = floatToCurrency(fcontract - freceive);
 
 				if(varrival > "0"){
-					$(this).find("td").eq(7).find("span").text(fsurplus);//剩余数
+					$(this).find("td").eq(8).find("span").text(fsurplus);//剩余数
 					$(this).find("td").eq(4).find("input").val("0");//本次到货清零
 				}
 							
@@ -382,6 +383,7 @@
 					<input type="checkbox" name="reverse" id="reverse" /><label for="reverse">全部清空</label></th>
 				<th class="dt-center" width="60px">合同总数</th>
 				<th class="dt-center" width="60px">累计入库</th>
+				<th class="dt-center" width="60px">累计收货</th>
 				<th class="dt-center" width="60px">剩余数量</th>
 			</tr>
 		</thead>
@@ -398,12 +400,13 @@
 					<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
 					<td><span>${list.quantity }</span></td>
 					<td><span>${list.contractStorage }</span></td>
+					<td><span>${list.accumulated }</span></td>
 					<td><span id="surplus${ status.index}"></span></td>
 				</tr>
 				<script type="text/javascript">
 						var index = '${status.index}';
 						var quantity = currencyToFloat('${list.quantity}');
-						var contractStorage = currencyToFloat('${list.contractStorage}');
+						var contractStorage = currencyToFloat('${list.accumulated}');
 						var surplus = quantity - contractStorage;
 						
 						$('#surplus'+index).html(floatToCurrency( surplus ))

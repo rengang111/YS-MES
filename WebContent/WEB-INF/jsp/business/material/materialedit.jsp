@@ -190,8 +190,11 @@ var strShareMode = "<input type='text' class='mini' maxlength='5' name='sharemod
  
  function addTr2(){
 	 
-	var i = $("#subidTab tr").length - 1;	
-	var subid = PrefixInteger(i,3);
+	var i = $("#subidTab tr").length -1;
+	var maxid = i-1;//已知最后一行的下标
+	var maxSub=$("#materialLines"+maxid+"\\.subid").val();
+	maxSub++;//已知的最大编号再累计
+	var subid = PrefixInteger(maxSub,3);
 	
 	var trHtml = "";
 	trHtml+="<tr>";	

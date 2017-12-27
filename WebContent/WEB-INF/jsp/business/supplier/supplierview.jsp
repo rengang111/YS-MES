@@ -57,22 +57,21 @@ function ajax() {
 		        	
 					"columns" : [ 
 						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "userName", "className" : 'td-center'}, 
+						{"data" : "userName", "className" : 'td-left'}, 
 						{"data" : "sex", "className" : 'td-center'},
 						{"data" : "position", "className" : 'td-center'}, 
-						{"data" : "mobile", "className" : 'td-center'}, 
-						{"data" : "phone", "className" : 'td-center'}, 
-						{"data" : "fax", "className" : 'td-center'}, 
-						{"data" : "mail", "className" : 'td-center'}, 
-						{"data" : "qq", "className" : 'td-center'},
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}
+						{"data" : "mobile", "className" : 'td-left'}, 
+						{"data" : "phone", "className" : 'td-left'}, 
+						{"data" : "fax", "className" : 'td-left'}, 
+						{"data" : "mail", "className" : 'td-left'}, 
+						{"data" : "qq", "className" : 'td-left'}
 					],
 					"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row){
 							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
 	                    }},
-			    		{"targets":9,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"doUpdateContact('" + row["id"] + "')\">编辑</a>"
+			    		{"targets":1,"render":function(data, type, row){
+			    			return "<a href=\"#\" onClick=\"doUpdateContact('" + row["id"] + "')\">"+data+"</a>"
 	                    }}
 				    ] 						
 				});
@@ -370,20 +369,18 @@ function controlButtons(data) {
 				<table id="TContactList" class="display" >
 					<thead>
 						<tr class="selected">
-							<th style="width: 10px;" class="dt-middle">No</th>
-							<th style="width: 80px;" class="dt-middle">姓名</th>
-							<th style="width: 30px;" class="dt-middle">性别</th>
-							<th style="width: 80px;" class="dt-middle">职务</th>
-							<th style="width: 80px;" class="dt-middle">手机</th>
-							<th style="width: 80px;" class="dt-middle">电话</th>
-							<th style="width: 80px;" class="dt-middle">传真</th>
-							<th style="width: 80px;" class="dt-middle">邮箱</th>
-							<th style="width: 80px;" class="dt-middle">QQ</th>
-							<th style="width: 30px;" class="dt-middle">操作</th>
+							<th style="width: 10px;">No</th>
+							<th style="width: 100px;">姓名</th>
+							<th style="width: 30px;">性别</th>
+							<th style="width: 50px;">职务</th>
+							<th style="width: 100px;">手机</th>
+							<th style="width: 100px;">电话</th>
+							<th style="width: 100px;">传真</th>
+							<th>邮箱</th>
+							<th style="width: 50px;">QQ</th>
 					</thead>
 					<tfoot>
 						<tr>
-							<th></th>
 							<th></th>
 							<th></th>
 							<th></th>
