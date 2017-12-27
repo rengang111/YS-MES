@@ -273,7 +273,7 @@ function floatToCurrency(value){
 	//var numString = toFloat.toFixed(2);
 	//自定义两位小数截取,对应前:0.055->0.05;对应后:0.06
 	var numString = myRound(toFloat,2);
-	numString = toFloat.toFixed(2);
+	numString = numString.toFixed(2);
 	var parts = numString.split('.');
 	var outParts = [];
 	var beforeDecimal = '0';

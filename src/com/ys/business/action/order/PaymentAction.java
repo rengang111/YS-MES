@@ -161,6 +161,10 @@ public class PaymentAction extends BaseAction {
 			case "finishAddInit":
 				rtnUrl = finishAddInit();
 				break;
+			case "finishInsert":
+				finishInsert();
+				rtnUrl = "/business/finance/paymentfinishview";
+				break;
 				
 		}
 		
@@ -347,6 +351,12 @@ public class PaymentAction extends BaseAction {
 		}
 		
 		return rtnUrl;
+	}
+
+	public void finishInsert() throws Exception{
+
+		 service.finishInsertAndReturn();		
+		
 	}
 	
 	

@@ -776,6 +776,7 @@ public class StorageService extends CommonService {
 		
 		data.setCompletedquantity(String.valueOf(totalQuan));
 		data.setCompletednumber(String.valueOf(totalNum));
+		data.setStoragedate(CalendarUtil.fmtYmdDate());//入库时间
 		new B_OrderDetailDao().Store(data);
 	}
 	

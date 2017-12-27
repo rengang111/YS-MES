@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>库存管理-成品入库登记</title>
+<title>库存管理-成品出库登记</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -84,12 +84,12 @@
 		var mydate = new Date();
 		var number = mydate.getFullYear();
 		shortYear = String(number).substr(2); 
-		$("#stock\\.checkindate").val(shortToday());
+		$("#stockout\\.checkindate").val(shortToday());
 		
 		ajax();//产品
-		ajaxHistory();//入库记录
+		ajaxHistory();//出库记录
 		
-		$("#stock\\.checkindate").datepicker({
+		$("#stockout\\.checkindate").datepicker({
 				dateFormat:"yy-mm-dd",
 				changeYear: true,
 				changeMonth: true,
@@ -222,8 +222,8 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<form:hidden path="stock.subid" />
-	<form:hidden path="stock.ysid"  value="${order.YSId }"/>
+	<form:hidden path="stockout.subid" />
+	<form:hidden path="stockout.ysid"  value="${order.YSId }"/>
 	
 	<fieldset>
 		<legend> 基本信息</legend>
@@ -238,13 +238,13 @@
 				<td>${order.materialName }</td>
 			</tr>
 			<tr> 				
-				<td class="label" width="100px">入库时间：</td>					
+				<td class="label" width="100px">出库时间：</td>					
 				<td width="200px">
-					<form:input path="stock.checkindate" class="read-only" /></td>
+					<form:input path="stockout.checkindate" class="read-only" /></td>
 							
 				<td width="100px" class="label">仓管员：</td>
 				<td width="200px">
-					<form:input path="stock.keepuser" class="short read-only" value="${userName }" /></td>							
+					<form:input path="stockout.keepuser" class="short read-only" value="${userName }" /></td>							
 				<td class="label"></td>
 				<td></td>
 			</tr>
@@ -253,7 +253,7 @@
 	</fieldset>
 		
 	<fieldset class="action" style="text-align: right;margin-top:-20px">
-		<button type="button" id="insert" class="DTTT_button">确认入库</button>
+		<button type="button" id="insert" class="DTTT_button">确认出库</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
 	<fieldset style="margin-top: -40px;">
@@ -264,59 +264,46 @@
 				<tr>
 					<th style="width:1px">No</th>
 					<th style="width:80px">订单数量</th>
-					<th style="width:80px">生产数量</th>
-					<th style="width:80px">已入库数量</th>
-					<th style="width:80px">已入库件数</th>
-					<th style="width:80px">本次入库数量</th>
-					<th style="width:55px">包装方式</th>
-					<th style="width:40px">件数</th>
 					<th style="width:60px">库位编号</th>		
+					<th style="width:80px">已出库数量</th>
+					<th style="width:80px">本次出库数量</th>
+					<th style="width:55px">包装方式</th>
+					<th style="width:40px">出库件数</th>
 				</tr>
 			</thead>
-			<tbody>
-				<c:forEach var="list" items="${orderDetail}" varStatus='status' >			
-					<tr>
-						<td></td>
-						<td>${list.quantity }
-							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
-						<td>${list.totalQuantity }</td>
-						<td>${list.completedQuantity }</td>
-						<td>${list.completedNumber }</td>
-						<td><form:input path="stockList[${status.index}].quantity"  value="${list.surplus }" class="num short quantity" /></td>
-						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
-								<form:options items="${packagingList}" 
-									itemValue="key" itemLabel="value"/></form:select></td>
-						<td><form:input path="stockList[${status.index}].packagnumber" class="mini" /></td>
-						<td><form:input path="stockList[${status.index}].areanumber" class="short" /></td>
-					</tr>
-					<script type="text/javascript">
-							var index = '${status.index}';
-					</script>
-				
-				</c:forEach>
+			<tbody>			
+				<tr>
+					<td>${stockout.quantity }
+						<form:hidden path="stockout.materialid" value="${stockout.materialId }"/></td>
+					<td>${stock.areaNumber }</td>
+					<td>${stockout.completedQuantity }</td>
+					<td>${stockout.completedNumber }</td>
+					<td><form:input path="stockout.quantity"  value="${stockout.surplus }" class="num short quantity" /></td>
+					<td>${stock.packaging }</td>
+					<td><form:input path="stockout.packagnumber" class="mini" /></td>
+				</tr>
 			
-		</tbody>
+			</tbody>
 										
 		</table>
 
 		</div>
 	</fieldset>
 	<fieldset>
-	<legend> 入库记录</legend>
+	<legend> 出库记录</legend>
 	<div class="list">
 		<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;margin: 5px 0px -10px 10px;">
-				<a class="DTTT_button" id="all" onclick="doPrint();return false;">打印入库单</a>
+				<a class="DTTT_button" id="all" onclick="doPrint();return false;">打印出库单</a>
 		</div>
 		<table class="display" id="history" >	
 			<thead>		
 				<tr>
 							<th style="width:15px">No</th>
-							<th style="width:80px">入库时间</th>
-							<th style="width:120px">入库单号</th>
-							<th style="width:80px">入库数量</th>
-							<th style="width:60px">入库件数</th>
+							<th style="width:120px">出库单号</th>
+							<th style="width:80px">出库时间</th>
+							<th style="width:80px">出库数量</th>
+							<th style="width:60px">出库件数</th>
 							<th style="width:55px">包装方式</th>
-							<th style="width:80px">库位编号</th>	
 							<th style="width:30px"></th>	
 				</tr>
 			</thead>		

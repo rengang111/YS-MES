@@ -89,7 +89,7 @@
 		$("#insert").click(
 				function() {
 					
-			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=historyInsert");
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=finishInsert");
 			$('#formModel').submit();
 		});
 

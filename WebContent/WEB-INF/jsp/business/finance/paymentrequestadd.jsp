@@ -236,6 +236,13 @@
 		
 		callProductDesignView("采购合同",url);
 	}
+
+	function doShowSupplier(supplierId) {
+
+		var url = '${ctx}/business/supplier?methodtype=showById&openFlag=newWindow&key=' + supplierId;
+		
+		callProductDesignView("供应商",url);
+	}
 </script>
 
 </head>
@@ -270,7 +277,7 @@
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">供应商编号：</td>					
-				<td width="150px">&nbsp;${supplier.supplierId }</td>
+				<td width="150px">&nbsp;<a href="###" onClick="doShowSupplier('${supplier.supplierId }')">${supplier.supplierId }</a></td>
 														
 				<td width="100px" class="label">供应商简称：</td>
 				<td width="150px">&nbsp;${supplier.shortName }</td>
@@ -283,7 +290,7 @@
 				<td width="150px">
 					<form:input path="payment.totalpayable" class="read-only num"  style="width: 130px;"/></td>
 								
-				<td class="label" width="100px">付款条件：</td>					
+				<td class="label" width="100px">供应商付款条件：</td>					
 				<td width="150px">&nbsp;入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
 														
 				<td width="100px" class="label">合同付款条件：</td>

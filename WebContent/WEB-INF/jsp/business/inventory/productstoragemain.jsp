@@ -75,6 +75,7 @@
 				{"data": "totalQuantity","className" : 'td-right'},
 				{"data": "completedQuantity","className" : 'td-right'},
 				{"data": "completedNumber","className" : 'td-right'},
+				{"data": "storageDate","className" : 'td-center',"defaultContent" : '（未入库）'},
 								
 			],
 			"columnDefs":[
@@ -129,36 +130,7 @@
 
 		location.href = url;
 	}
-			
-	function doDelete() {
 
-		var str = '';
-		$("input[name='numCheck']").each(function(){
-			if ($(this).prop('checked')) {
-				str += $(this).val() + ",";
-			}
-		});
-
-		if (str != '') {
-			if(confirm("确定要删除数据吗？")) {
-				jQuery.ajax({
-					type : 'POST',
-					async: false,
-					contentType : 'application/json',
-					dataType : 'json',
-					data : str,
-					url : "${ctx}/business/arrival?methodtype=delete",
-					success : function(data) {
-						reload();						
-					},
-					error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				});
-			}
-		} else {
-			alert("请至少选择一条数据");
-		}		
-	}
 	
 	function selectContractByDate(status,sessionFlag){
 	
@@ -205,13 +177,14 @@
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						
 				<tr>
-					<th style="width: 1px;" class="dt-middle ">No</th>
-					<th style="width: 100px;" class="dt-middle">耀升编号</th>
-					<th style="width: 170px;" class="dt-middle ">产品编号</th>
-					<th class="dt-middle">产品名称</th>
-					<th style="width: 80px;" class="dt-middle">订单数量</th>
-					<th style="width: 80px;" class="dt-middle">已入库数量</th>
-					<th style="width: 80px;" class="dt-middle">已入库件数</th>
+					<th style="width: 1px;">No</th>
+					<th style="width: 100px;">耀升编号</th>
+					<th style="width: 150px;">产品编号</th>
+					<th>产品名称</th>
+					<th style="width: 80px;">订单数量</th>
+					<th style="width: 80px;">已入库数量</th>
+					<th style="width: 80px;">已入库件数</th>
+					<th style="width: 80px;">入库时间</th>
 				</tr>
 			</thead>
 		</table>

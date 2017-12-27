@@ -347,7 +347,7 @@ public class PaymentService extends CommonService {
 	
 	public void applyInsertAndReturn() throws Exception {
 
-		String paymentid = applyInsert();
+		String paymentid = insertApproval();
 
 		//付款申请详情
 		HashMap<String, String> map = getPaymentDetail(paymentid);
@@ -370,6 +370,21 @@ public class PaymentService extends CommonService {
 		//付款单审核
 		updatePayment(reqData);	
 			
+		//付款申请详情
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);				
+		}
+
+	}
+	
+	
+	public void finishInsertAndReturn() throws Exception {
+
+		String paymentid = insertFinish();
+		
 		//付款申请详情
 		HashMap<String, String> map = getPaymentDetail(paymentid);
 		if(!(map == null)){
@@ -463,7 +478,7 @@ public class PaymentService extends CommonService {
 	}
 		
 	//新建付款申请
-	private String applyInsert(){
+	private String insertApproval(){
 		String paymentid = "";
 		ts = new BaseTransaction();		
 		
@@ -503,6 +518,56 @@ public class PaymentService extends CommonService {
 		return paymentid;
 	}
 		
+	//付款完成
+	private String insertFinish(){
+		String paymentid = "";
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			B_PaymentData reqData = reqModel.getPayment();
+			B_PaymentHistoryData history = reqModel.getHistory();
+			//取得付款编号
+			//reqData = getPaymentRecordId(reqData);	
+			paymentid = reqData.getPaymentid();
+	
+			float contract = stringToFloat(reqData.getTotalpayable());
+			float payment = stringToFloat(history.getPaymentamount());
+
+			if(payment <= 0)
+				return paymentid;
+			
+			if(payment == contract){
+				reqData.setFinishstatus(Constants.payment_050);//完成
+			}else{
+				reqData.setFinishstatus(Constants.payment_040);//部分付款
+				
+				//取得累计付款金额
+				//未完成
+			}
+			
+			//付款单审核
+			updatePayment(reqData);	
+			
+			insertPaymentHistory(history);
+			
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		
+		return paymentid;
+	}
+	
 	private void insertPayment(
 			B_PaymentData payment) throws Exception {
 		
@@ -584,6 +649,40 @@ public class PaymentService extends CommonService {
 		
 	}
 	
+	private void insertPaymentHistory(
+			B_PaymentHistoryData payment) throws Exception {
+		
+		B_PaymentData db = null;
+		try {
+			db = new B_PaymentDao(payment).beanData;
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		if(db == null || db.equals("")){
+			//插入新数据
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"paymentRequestInsert",userInfo);
+			copyProperties(payment,commData);
+			guid = BaseDAO.getGuId();
+			payment.setRecordid(guid);
+			payment.setFinishuser(userInfo.getUserId());//默认为登陆者
+			payment.setFinishdate(CalendarUtil.fmtYmdDate());
+			
+			new B_PaymentDao().Create(payment);
+		}else{
+			//更新
+			copyProperties(db,payment);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"paymentRequestUpdate",userInfo);
+			copyProperties(db,commData);
+			db.setApplicant(userInfo.getUserId());//默认为登陆者
+			
+			new B_PaymentDao().Store(db);
+		}
+		
+	}
 	public HashMap<String, String>  getPaymentDetail(String paymentid) throws Exception{
 
 		HashMap<String, String> payment = null;

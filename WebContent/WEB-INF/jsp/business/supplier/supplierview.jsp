@@ -134,7 +134,11 @@ function reloadContact() {
 }
 
 $(document).ready(function() {
-
+	//返回按钮
+	var goBactkBt = '${openFlag}';
+	if(goBactkBt == "newWindow"){
+		$('#goBack').attr("style","display:none");			
+	}
 	initEvent();
 	
 	$("#country").change(function() {
@@ -349,7 +353,7 @@ function controlButtons(data) {
 		</fieldset>	
 		<fieldset class="action" style="text-align: right;">
 		<button type="button" class="DTTT_button" onclick="doEdit();">编辑</button>
-		<button type="button" class="DTTT_button" onclick="doBack();">返回</button>
+		<button type="button" class="DTTT_button" onclick="doBack();" id="goBack">返回</button>
 		</fieldset>
 							
 		<fieldset>		

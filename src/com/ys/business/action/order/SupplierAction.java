@@ -182,6 +182,9 @@ public class SupplierAction extends BaseAction {
 	public void doShowDetailById(){
 
 		String key = request.getParameter("key");
+		String openFlag = request.getParameter("openFlag");
+		model.addAttribute("openFlag",openFlag);
+		
 		try {
 			model = service.getSupplierById(key);
 		}
