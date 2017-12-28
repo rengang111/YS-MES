@@ -229,13 +229,16 @@ public class ArrivalService extends CommonService {
 			B_ArrivalData reqData = (B_ArrivalData)reqModel.getArrival();
 			List<B_ArrivalData> reqDataList = reqModel.getArrivalList();
 			
-			//删除未报检数据
 			contractId = reqData.getContractid();
-			deleteArrivalById(contractId);
 
 			//取得到货编号"yyMMdd01"
-			String arrivalId = getArriveId();
-			
+			String arrivalId = reqData.getArrivalid();
+			if(isNullOrEmpty(arrivalId)){
+				arrivalId = getArriveId();//重新取得到货编号
+			}else{
+				deleteArrivalById(arrivalId);//删除旧数据
+			}
+						
 			for(B_ArrivalData data:reqDataList ){
 				String q = data.getQuantity();
 				if(q == null || q.equals("") || q.equals("0"))
@@ -256,8 +259,8 @@ public class ArrivalService extends CommonService {
 				updateContractArraival(
 						contractId,
 						data.getMaterialid(),
-						data.getQuantity());
-			
+						data.getQuantity());	
+								
 			}
 			
 			ts.commit();			
@@ -330,16 +333,32 @@ public class ArrivalService extends CommonService {
 	}
 	
 	//删除待报检的记录
-	private void deleteArrivalById(String contractId) {
+	@SuppressWarnings("unchecked")
+	private void deleteArrivalById(String arrivalId) throws Exception {
 
-		String where = " contractId = '"+contractId+
-				"' AND status='" + Constants.ARRIVAL_STS_1 +"' ";
-		try {
-			dao.RemoveByWhere(where);
-		} catch (Exception e) {
-			// nothing
-		}
+		String where = " arrivalId = '"+arrivalId+
+				"' AND deleteFlag='0' ";
 		
+		List<B_ArrivalData> list = dao.Find(where);
+		if(list.size() > 0){
+			
+			for(B_ArrivalData data:list){
+
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"ArrivalDelete",userInfo);
+				copyProperties(data,commData);
+				dao.Store(data);
+				
+				//恢复合同里的到货数量
+				float quantity = stringToFloat(data.getQuantity());
+				quantity = (-1) * quantity;
+
+				updateContractArraival(
+						data.getContractid(),
+						data.getMaterialid(),
+						String.valueOf(quantity));
+			}
+		}		
 	}
 	
 	private void getArrivaRecord(String arrivalId){
@@ -366,24 +385,43 @@ public class ArrivalService extends CommonService {
 		
 		B_ArrivalData data = new B_ArrivalData();	
 		String key = recordId;											
-		//try {
+		try {
 			
-			//ts = new BaseTransaction();										
-			//ts.begin();									
+			ts = new BaseTransaction();										
+			ts.begin();									
 			
-			//String removeData[] = recordId.split(",");									
-			//for (String key:removeData) {									
-												
-				data.setRecordid(key);							
-				dao.Remove(data);	
+			String contractId = request.getParameter("contractId");
+			//String materialId = request.getParameter("materialId");
+			
+			String where = " recordId = '"+recordId+
+					"' AND status='" + Constants.ARRIVAL_STS_1 +"' ";
+			
+			List list = dao.Find(where);
+			if(list.size() > 0){
+				data = (B_ArrivalData) list.get(0);
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"ArrivalDelete",userInfo);
+
+				copyProperties(data,commData);
+				dao.Store(data);
 				
-			//}
+				//恢复合同里的到货数量
+				float quantity = stringToFloat(data.getQuantity());
+				quantity = (-1) * quantity;
+
+				updateContractArraival(
+						contractId,
+						data.getMaterialid(),
+						String.valueOf(quantity));
+			}		
 			
-			//ts.commit();
-		//}
-		//catch(Exception e) {
-		//	ts.rollback();
-		//}
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();
+			e.printStackTrace();
+		}
 	}
 	
 	

@@ -12,6 +12,7 @@
       <f name="A.contractId" alias="" ctype="" />
       <f name="a.arriveDate" alias="" ctype="" />
       <f name="a.status" alias="" ctype="收货状态" />
+      <f name="a.status" alias="statusId" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="A.YSId" alias="" ctype="" />
       <f name="A.materialId" alias="" ctype="" />

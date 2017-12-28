@@ -64,10 +64,15 @@
 				],
 				"columnDefs":[
 		    		{"targets":9,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["contractId"] + "','" + row["arrivalId"] + "')\">编辑</a>";
-		    			rtn = rtn +"&nbsp;"+ "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
-		    			return rtn;
+		    			var contractId = row["contractId"];	
+		    			var status = row["statusId"];
+		    			var rtn= "";
+		    			if(status == '010'){//未检验的可以修改
+			    			rtn= "<a href=\"###\" onClick=\"doEdit('" + row["contractId"] + "','" + row["arrivalId"] + "')\">编辑</a>";
+			    			rtn = rtn +"&nbsp;"+ "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["contractId"] + "','" + row["materialId"] + "')\">删除</a>";
+		    				
+		    			}
+			    		return rtn;
 		    		}},
 		    	] 
 			
@@ -132,7 +137,7 @@
 		location.href = url;
 	}
 	
-	function doDelete(recordId) {
+	function doDelete(recordId,contractId,materialId) {
 		
 		if(confirm("删除后不能恢复,\n\n确定要删除吗？")) {
 			jQuery.ajax({
@@ -141,7 +146,7 @@
 				contentType : 'application/json',
 				dataType : 'json',
 				data : recordId,
-				url : "${ctx}/business/arrival?methodtype=delete",
+				url : "${ctx}/business/arrival?methodtype=delete"+"&contractId="+contractId+"&materialId="+materialId,
 				success : function(data) {
 					$().toastmessage('showNoticeToast', "删除成功。");
 					$('#example2').DataTable().ajax.reload(null,false);						
