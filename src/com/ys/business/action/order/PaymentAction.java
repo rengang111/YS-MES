@@ -18,11 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.order.PaymentModel;
-import com.ys.business.action.model.order.StockOutModel;
-import com.ys.business.action.model.order.StorageModel;
 import com.ys.business.service.order.PaymentService;
-import com.ys.business.service.order.StockOutService;
-import com.ys.business.service.order.StorageService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
@@ -158,11 +154,23 @@ public class PaymentAction extends BaseAction {
 				dataMap = finishSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "finishAddInit":
-				rtnUrl = finishAddInit();
+			case "finishAddOrView":
+				rtnUrl = finishAddOrView();
 				break;
 			case "finishInsert":
 				finishInsert();
+				rtnUrl = "/business/finance/paymentfinishview";
+				break;
+			case "finishEdit":
+				//finishInsert();
+				rtnUrl = "/business/finance/paymentfinishedit";
+				break;
+			case "finishAddInit":
+				finishAddInit();
+				rtnUrl = "/business/finance/paymentfinishadd";
+				break;
+			case "finishHistoryView":
+				finishHistoryView();
 				rtnUrl = "/business/finance/paymentfinishview";
 				break;
 				
@@ -336,11 +344,11 @@ public class PaymentAction extends BaseAction {
 	
 	
 	
-	public String finishAddInit(){
+	public String finishAddOrView(){
 
 		String  rtnUrl = "/business/finance/paymentfinishadd";
 		try{
-			String rtnFlag = service.finishAddInit();
+			String rtnFlag = service.finishAddOrView();
 			if(("查看").equals(rtnFlag))
 				rtnUrl = "/business/finance/paymentfinishview";
 			
@@ -353,6 +361,32 @@ public class PaymentAction extends BaseAction {
 		return rtnUrl;
 	}
 
+	
+	public void finishHistoryView(){
+
+	
+		try{
+			service.finishView();
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+
+	public void finishAddInit(){
+	
+		try{
+			service.finishAddInit();
+			
+			model.addAttribute("userName", userInfo.getUserName());
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
 	public void finishInsert() throws Exception{
 
 		 service.finishInsertAndReturn();		

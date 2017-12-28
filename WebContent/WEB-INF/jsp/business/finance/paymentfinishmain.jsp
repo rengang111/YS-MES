@@ -67,7 +67,7 @@
 	        	},
 				"columns": [
 					{"data": null,"className" : 'td-right'},//0
-					{"data": "paymentId", "defaultContent" : '', "className" : 'td-center'},//1 付款编号
+					{"data": "paymentHistoryId", "defaultContent" : '', "className" : 'td-left'},//1 付款编号
 					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//2
 					{"data": "supplierName", "defaultContent" : '', "className" : 'td-left'},//3		
 					{"data": "requestDate", "defaultContent" : '0', "className" : 'td-right'},//5
@@ -84,11 +84,13 @@
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";//
-		    			if(data ==""){
-		    	    		rtn= "（未付款）";		    			 				
-		    			}else{
-		    				rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ data + "')\">" + data + "</a>";		    					    				
+		    			var paymentId=row["paymentId"];
+		    			var id = data;
+		    			if(data =="" || data == null){
+		    				id= "（未付款）";		    			 				
 		    			}
+		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ paymentId + "')\">" + id + "</a>";		    					    				
+		    			
 					    return rtn;
 					    
 		    		}},
@@ -143,7 +145,7 @@
 	
 	function doShowDetail(paymentId) {
 
-		var url = '${ctx}/business/payment?methodtype=finishAddInit' + '&paymentId='+ paymentId;
+		var url = '${ctx}/business/payment?methodtype=finishAddOrView' + '&paymentId='+ paymentId;
 		
 		location.href = url;
 	}
@@ -201,8 +203,8 @@
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						
 						<tr>
-							<th width="30px">No</th>
-							<th width="70px">付款单编号</th>
+							<th width="20px">No</th>
+							<th width="90px">付款单编号</th>
 							<th width="70px">供应商</th>
 							<th>供应商名称</th>
 							<th width="70px">申请日期</th>

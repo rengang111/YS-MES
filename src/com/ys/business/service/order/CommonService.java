@@ -952,7 +952,7 @@ public class CommonService extends BaseService {
 				    
 			}	
 		}catch(Exception e){
-			//nothing
+			e.printStackTrace();
 		}
 	
 		return filelist;

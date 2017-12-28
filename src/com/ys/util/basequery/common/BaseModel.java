@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.ys.business.action.model.common.FilePath;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.system.action.common.BaseAction;
 import com.ys.util.CommonUtil;
@@ -49,6 +50,16 @@ public class BaseModel implements Serializable {
 	private String path = "";
 	private String nowUseImage = "";
 	private String[] fileNames;
+	
+	private ArrayList<FilePath> filePath =new ArrayList<FilePath>(); 
+	
+
+	public ArrayList<FilePath> getFilePath() {
+		return this.filePath;
+	}
+	public void setFilePath(ArrayList<FilePath> path) {
+		this.filePath = path;
+	}
 	
 	public ArrayList<ListOption> getCountryList() {
 		return this.countryList;

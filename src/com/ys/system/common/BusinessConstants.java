@@ -25,6 +25,8 @@ public class BusinessConstants {
 	public static final String PATH_PRODUCTDESIGNVIEW = "/img/productDesign/";
 	public static final String PATH_GODOWNENTRYVIEW = "/img/supplier/";
 	public static final String PATH_GODOWNENTRYFILE = "/file/supplier/";
+	public static final String PATH_PAYMENTVIEW = "/img/payment/";
+	public static final String PATH_PAYMENTFILE = "/file/payment/";
 	public static final String PATH_STOCKOUTVIEW = "/img/ODO/";
 	public static final String PATH_STOCKOUTFILE = "/file/ODO/";
 	public static final String PATH_PRODUCTDESIGNFILE = "/file/productDesign/";

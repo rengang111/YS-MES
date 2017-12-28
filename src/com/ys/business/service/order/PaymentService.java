@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ys.business.action.model.common.FilePath;
 import com.ys.business.action.model.order.PaymentModel;
 import com.ys.business.action.model.order.StockOutModel;
 import com.ys.business.db.dao.B_MaterialDao;
@@ -278,7 +279,7 @@ public class PaymentService extends CommonService {
 		return rtnFlg;
 	}
 
-	public String finishAddInit() throws Exception {
+	public String finishAddOrView() throws Exception {
 		
 		String rtnFlg = "";
 		String paymentid = request.getParameter("paymentId");
@@ -287,6 +288,7 @@ public class PaymentService extends CommonService {
 		boolean  record = getPaymentHistory(paymentid);
 		if(record){			
 			rtnFlg = "查看";
+			getPaymentHistoryList(paymentid);
 		}else{
 			B_PaymentHistoryData history = getPaymentHistoryId(paymentid);
 			reqModel.setHistory(history);
@@ -298,6 +300,10 @@ public class PaymentService extends CommonService {
 			String contractId = map.get("contractIds");
 			//供应商
 			getContractDetail(contractId);
+			
+			//取得已付款信息
+			String amount = getPaymentSumAmount(paymentid);
+			model.addAttribute("paymentAmount",amount);
 		}
 		
 		reqModel.setCurrencyList(util.getListOption(DicUtil.DENOMINATIONCURRENCY, ""));
@@ -305,6 +311,52 @@ public class PaymentService extends CommonService {
 
 		return rtnFlg;
 	}
+	
+	public void finishView() throws Exception {
+		
+		String paymentid = request.getParameter("paymentId");
+		
+		//付款记录
+		getPaymentHistoryList(paymentid);
+		
+				
+		//付款申请详情
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);
+		}
+		
+	}
+	
+	public String finishAddInit() throws Exception {
+		
+		String rtnFlg = "";
+		String paymentid = request.getParameter("paymentId");
+		
+		//付款单编号
+		B_PaymentHistoryData history = getPaymentHistoryId(paymentid);
+		reqModel.setHistory(history);		
+		
+		//付款申请详情
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);
+			
+			//取得已付款信息
+			String amount = getPaymentSumAmount(paymentid);
+			model.addAttribute("paymentAmount",amount);
+		}
+		
+		reqModel.setCurrencyList(util.getListOption(DicUtil.DENOMINATIONCURRENCY, ""));
+		reqModel.setPaymentMethodList(util.getListOption(DicUtil.DIC_PAYMENTMETHOD, ""));
+
+		return rtnFlg;
+	}
+
 	public void edit() throws Exception {
 		String stockoutId = request.getParameter("stockoutId");
 	
@@ -385,13 +437,16 @@ public class PaymentService extends CommonService {
 
 		String paymentid = insertFinish();
 		
+
+		getPaymentHistoryList(paymentid);
+		
 		//付款申请详情
 		HashMap<String, String> map = getPaymentDetail(paymentid);
 		if(!(map == null)){
 			String contractId = map.get("contractIds");
 			//供应商
 			getContractDetail(contractId);				
-		}
+		}		
 
 	}
 	
@@ -528,30 +583,33 @@ public class PaymentService extends CommonService {
 			
 			B_PaymentData reqData = reqModel.getPayment();
 			B_PaymentHistoryData history = reqModel.getHistory();
-			//取得付款编号
-			//reqData = getPaymentRecordId(reqData);	
 			paymentid = reqData.getPaymentid();
-	
+
+			
 			float contract = stringToFloat(reqData.getTotalpayable());
 			float payment = stringToFloat(history.getPaymentamount());
 
 			if(payment <= 0)
 				return paymentid;
+
+			//新增付款记录
+			insertPaymentHistory(history);
 			
 			if(payment == contract){
 				reqData.setFinishstatus(Constants.payment_050);//完成
-			}else{
-				reqData.setFinishstatus(Constants.payment_040);//部分付款
-				
+			}else{				
 				//取得累计付款金额
-				//未完成
-			}
-			
-			//付款单审核
-			updatePayment(reqData);	
-			
-			insertPaymentHistory(history);
-			
+				float paymentAmount = stringToFloat(getPaymentSumAmount(paymentid));
+				
+				if(paymentAmount == contract){
+					reqData.setFinishstatus(Constants.payment_050);//完成
+				}else{
+					reqData.setFinishstatus(Constants.payment_040);//部分付款
+				}
+				
+			}			
+			//更新付款单状态
+			updatePaymentFinishSts(reqData);
 			
 			ts.commit();			
 			
@@ -649,6 +707,32 @@ public class PaymentService extends CommonService {
 		
 	}
 	
+	private void updatePaymentFinishSts(
+			B_PaymentData payment) throws Exception {
+		
+		B_PaymentData db = null;
+		try {
+			db = new B_PaymentDao(payment).beanData;
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		if(db == null || db.equals(""))
+			return;
+		
+		//更新
+		copyProperties(db,payment);
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"paymentRequestUpdate",userInfo);
+		copyProperties(db,commData);
+		
+		db.setFinishdate(CalendarUtil.fmtYmdDate());		
+
+		new B_PaymentDao().Store(db);
+		
+	}
+	
 	private void insertPaymentHistory(
 			B_PaymentHistoryData payment) throws Exception {
 		
@@ -670,7 +754,7 @@ public class PaymentService extends CommonService {
 			payment.setFinishuser(userInfo.getUserId());//默认为登陆者
 			payment.setFinishdate(CalendarUtil.fmtYmdDate());
 			
-			new B_PaymentDao().Create(payment);
+			new B_PaymentHistoryDao().Create(payment);
 		}else{
 			//更新
 			copyProperties(db,payment);
@@ -679,7 +763,7 @@ public class PaymentService extends CommonService {
 			copyProperties(db,commData);
 			db.setApplicant(userInfo.getUserId());//默认为登陆者
 			
-			new B_PaymentDao().Store(db);
+			new B_PaymentHistoryDao().Store(db);
 		}
 		
 	}
@@ -701,6 +785,35 @@ public class PaymentService extends CommonService {
 		}	
 	
 		return payment;
+	}
+	
+
+	public String  getPaymentSumAmount(String paymentid) throws Exception{
+
+		String payment = "0";
+		
+		dataModel.setQueryName("sumPaymentHistoryByPaymentId");
+		userDefinedSearchCase.put("paymentId", paymentid);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		if(dataModel.getRecordCount() > 0){			
+			payment = dataModel.getYsViewData().get(0).get("paymentAmount");
+		}	
+	
+		return payment;
+	}
+	
+	public void  getPaymentHistoryList(String paymentid) throws Exception{
+
+		dataModel.setQueryName("paymentHistoryList");
+		userDefinedSearchCase.put("paymentId", paymentid);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		model.addAttribute("history",dataModel.getYsViewData());
+		
 	}
 	
 	public boolean  getPaymentHistory(String paymentid) throws Exception{
@@ -852,18 +965,13 @@ public class PaymentService extends CommonService {
 		B_PaymentData payment = reqModel.getPayment();
 		B_PaymentHistoryData history = reqModel.getHistory();
 		String supplierId = payment.getSupplierid();
-		String paymentId = history.getPaymenthistoryid();
+		String paymentId = history.getPaymentid();
 
-		String viewPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_GODOWNENTRYVIEW)
-				+"/"+supplierId+"/"+paymentId;
+		FilePath file = getPath(supplierId,paymentId);
+		String savePath = file.getSave();						
+		String viewPath = file.getView();
+		String webPath = file.getWeb();
 
-		String savePath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_GODOWNENTRYFILE)
-				+"/"+supplierId+"/"+paymentId;
-
-		String webPath = BusinessConstants.PATH_GODOWNENTRYVIEW
-				+supplierId+"/"+paymentId+"/";	
 
 		String photoName  = supplierId+ "-" + paymentId + "-" + CalendarUtil.timeStempDate(); 
 		
@@ -878,40 +986,72 @@ public class PaymentService extends CommonService {
 	
 	public HashMap<String, Object> deletePhotoAndReload(
 			String folderName,String fileList,String fileCount) throws Exception {
-/*
+
 		String path = request.getParameter("path");
-		B_StockOutData reqDt = reqModel.getStockout();
-		String YSId = reqDt.getYsid();		
-		String savePath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;							
-		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
+		B_PaymentData payment = reqModel.getPayment();
+		B_PaymentHistoryData history = reqModel.getHistory();
+		String supplierId = payment.getSupplierid();
+		String paymentId = history.getPaymenthistoryid();
 
 		deletePhoto(path);//删除图片
+
+		getPhoto(supplierId,paymentId,folderName,fileList,fileCount);
 		
-		ArrayList<String> list = getFiles(savePath,webPath);//重新获取图片
-		
-		modelMap.put(fileList, list);
-		modelMap.put(fileCount, list.size());
-		*/
 		return modelMap;
 	}
 	
 	
 	public HashMap<String, Object> getProductPhoto() throws Exception {
 		
-		String YSId = request.getParameter("YSId");
+		String supplierId = request.getParameter("supplierId");
+		String paymentId = request.getParameter("paymentId");
 
-		String savePath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;							
-		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
-		
-		ArrayList<String> list = getFiles(savePath,webPath);//获取图片
-
-		modelMap.put("productFileList", list);
-		modelMap.put("productFileCount", list.size());
-		
+		getPhoto(supplierId,paymentId,"product","productFileList","productFileCount");
+	
 		return modelMap;
 	}
 	
 
+	private void getPhoto(
+			String supplierId,String paymentId,
+			String folderName,String fileList,String fileCount) {
+
+		
+		FilePath file = getPath(supplierId,paymentId);
+		String savePath = file.getSave();						
+		String viewPath = file.getWeb();
+		
+		try {
+
+			ArrayList<String> list = getFiles(savePath,viewPath);
+			modelMap.put(fileList, list);
+			modelMap.put(fileCount, list.size());
+							
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+	}
+	
+	private FilePath getPath(String key1,String key2){
+		FilePath filePath = new FilePath();
+		
+		filePath.setSave(
+				session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PAYMENTFILE)
+				+"/"+key1+"/"+key2
+				);	
+		filePath.setView(
+				session.getServletContext().
+				getRealPath(BusinessConstants.PATH_PAYMENTVIEW)
+				+"/"+key1+"/"+key2
+				);	
+
+		filePath.setWeb(BusinessConstants.PATH_PAYMENTVIEW
+				+key1+"/"+key2+"/"
+				);	
+		
+		return filePath;
+	}
 }
