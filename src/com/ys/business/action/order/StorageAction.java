@@ -55,7 +55,7 @@ public class StorageAction extends BaseAction {
 		this.userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		this.service = new StorageService(model,request,session,dataModel,userInfo);
+		this.service = new StorageService(model,request,response,session,dataModel,userInfo);
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -150,6 +150,17 @@ public class StorageAction extends BaseAction {
 				doPrintProductReceipt();
 				rtnUrl = "/business/inventory/productstorageprint";
 				break;
+			case "financeSearchInit":
+				doInit();
+				rtnUrl = "/business/finance/financestockinmain";
+				break;
+			case "financeSearch":
+				dataMap = financeSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "downloadExcel":
+				downloadExcel();
+				break;
 				
 		}
 		
@@ -166,7 +177,7 @@ public class StorageAction extends BaseAction {
 			HttpServletRequest request, HttpServletResponse response){
 
 		this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		this.service = new StorageService(model,request,session,dataModel,userInfo);;
+		this.service = new StorageService(model,request,response,session,dataModel,userInfo);;
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -205,16 +216,7 @@ public class StorageAction extends BaseAction {
 		return map;
 	}
 	public void doInit(){	
-		/*	
-		String keyBackup = request.getParameter("keyBackup");
-		//没有物料编号,说明是初期显示,清空保存的查询条件
-		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_STORAGE+Constants.FORM_KEYWORD2);
-		}else{
-			model.addAttribute("keyBackup",keyBackup);
-		}
-		*/
+
 	}
 	
 	
@@ -229,7 +231,7 @@ public class StorageAction extends BaseAction {
 		}
 		
 		try {
-			dataMap = service.doSearch(data);
+			dataMap = service.doSearch(data,Constants.FORM_MATERIALSTORAGE);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
@@ -245,6 +247,32 @@ public class StorageAction extends BaseAction {
 		return dataMap;
 	}
 	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> financeSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_FINANCESTOCKIN+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_FINANCESTOCKIN+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.doFinanceSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doOrderSearch(@RequestBody String data){
@@ -443,6 +471,20 @@ public class StorageAction extends BaseAction {
 		}
 		
 		return modelMap;
+	}
+	
+
+	private void downloadExcel() {
+		
+		
+		try {
+			service.stockinDownloadExcelForfinance();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			//System.out.println(e.getMessage());
+		}
+		
 	}
 	
 }

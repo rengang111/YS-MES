@@ -359,6 +359,8 @@
    	  	<w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.status"     des=""  reqName="status"     dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -378,6 +380,9 @@
       <f name="A.contractQuantity" alias="" ctype="" />
       <f name="A.receiptId" alias="" ctype="" />
       <f name="A.checkInDate" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="format((replace(A.price,',','') / 1.17),2)" alias="taxPrice" ctype="" />
+      <f name="format((replace(A.price,',','') / 1.17) * replace(A.contractQuantity,',',''),2)" alias="total" ctype="" />
     </select>
     <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
     <orderby>a.YSId DESC,a.contractId,a.arrivalId,a.materialId</orderby>
@@ -391,10 +396,14 @@
     <pool></pool>     
     <name value="getPurchaseStockInById" />
     <where>
-   	  	<w name="A.receiptId" des=""  reqName="receiptId" dtype="ch" oper="="  lg="AND" bt="" />
+   		<w name="A.fullField" des=""  reqName="keyword1"  dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2"  dtype="ch" oper="like"  lg="AND" bt="" />
+  	  	<w name="A.receiptId" des=""  reqName="receiptId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
         </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -422,6 +431,9 @@
       <f name="FORMAT((REPLACE(A.contractQuantity,',','') * b.lastPrice),2)" alias="total" ctype="" />      
       <f name="FORMAT(REPLACE(b.lastPrice,',',''),2)" alias="price" ctype="" />  
       <f name="FORMAT(REPLACE(a.contractTotalPrice,',',''),2)" alias="contractTotalPrice" ctype="" />
+      <f name="format((replace(A.contractPrice,',','')),2)" alias="contractPrice" ctype="" />
+      <f name="format((replace(A.contractPrice,',','') / 1.17),6)" alias="taxPrice" ctype="" />
+      <f name="format((replace(A.contractPrice,',','') / 1.17) * replace(A.contractQuantity,',',''),2)" alias="taxTotal" ctype="" />
     </select>
     <from>v_purchaseStockInById a  LEFT JOIN b_pricereference b ON b.materialId=a.materialId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
     <orderby>A.receiptId ,a.materialId</orderby>

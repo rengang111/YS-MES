@@ -59,7 +59,7 @@ public class StockOutAction extends BaseAction {
 		this.userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		this.service = new StockOutService(model,request,session,dataModel,userInfo);
+		this.service = new StockOutService(model,request,response,session,dataModel,userInfo);
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -136,6 +136,17 @@ public class StockOutAction extends BaseAction {
 				dataMap = deletePhoto("product","productFileList","productFileCount");
 				printOutJsonObj(response, dataMap);
 				break;
+			case "financeSearchInit":
+				doInit();
+				rtnUrl = "/business/finance/financestockoutmain";
+				break;
+			case "financeSearch":
+				dataMap = financeSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "downloadExcel":
+				downloadExcel();
+				break;
 				
 		}
 		
@@ -152,7 +163,7 @@ public class StockOutAction extends BaseAction {
 			HttpServletRequest request, HttpServletResponse response){
 
 		this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		this.service = new StockOutService(model,request,session,dataModel,userInfo);;
+		this.service = new StockOutService(model,request,response,session,dataModel,userInfo);;
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -363,5 +374,45 @@ public class StockOutAction extends BaseAction {
 		}
 		
 		return modelMap;
+	}
+	
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> financeSearch( String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_FINANCESTOCKIN+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_FINANCESTOCKIN+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.getStockoutForFinance(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	private void downloadExcel() {
+		
+		
+		try {
+			service.stockoutDownloadExcelForfinance();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 }
