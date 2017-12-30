@@ -184,7 +184,6 @@ public class StorageService extends CommonService {
 
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		ArrayList<HashMap<String, String>> hashmap = 
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	
 		
 		
@@ -197,8 +196,10 @@ public class StorageService extends CommonService {
 		modelMap.put("data", dataModel.getYsViewData());	
 		modelMap.put("keyword1",key1);	
 		modelMap.put("keyword2",key2);	
-
-		List list = setStockinCountData(hashmap);
+		
+		ArrayList<HashMap<String, String>> hashmap = 
+				baseQuery.getYsFullData(sql);	
+		ArrayList<Float> list = setStockinCountData(hashmap);
 		modelMap.put("baozhuang",list.get(0));	
 		modelMap.put("zhuangpei",list.get(1));	
 		modelMap.put("zongji",list.get(2));	
@@ -1269,7 +1270,7 @@ public class StorageService extends CommonService {
 				zhuangpei += stringToFloat(taxTotal);				
 			}
 		}
-		ArrayList<Float> list = new ArrayList();
+		ArrayList<Float> list = new ArrayList<Float>();
 		list.add(baozhuang);
 		list.add(zhuangpei);
 		list.add(zongji);
