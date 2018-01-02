@@ -301,14 +301,17 @@ public class InspectionReturnService extends CommonService  {
 		B_PurchaseOrderDetailData detail = list.get(0);
 		
 		int number = stringToInteger(detail.getReturnnumber());//退货次数
-		float returngoods = stringToFloat(detail.getQuantity());//累计退货数量
+		float returngoods = stringToFloat(detail.getReturngoods());//累计退货数量
+		float accumulated = stringToFloat(detail.getAccumulated());//累计到货数量
 		
 		number = number + 1;//累计退货次数
 		float totalQuantity = rtnQuantity + returngoods;//累计退货数量
+		accumulated = accumulated - rtnQuantity;//
 		
 		//更新DB
 		detail.setReturnnumber(String.valueOf(number));
 		detail.setReturngoods(String.valueOf(totalQuantity));
+		detail.setAccumulated(String.valueOf(accumulated));
 		
 		updateContractDetailStatus(detail);	
 		
