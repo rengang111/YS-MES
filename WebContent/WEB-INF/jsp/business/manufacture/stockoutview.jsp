@@ -170,14 +170,16 @@
 				
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/stockout";
+					var makeType=$('#makeType').val();
+					var url = "${ctx}/business/stockout?makeType="+makeType;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
 					var YSId='${order.YSId }';
-					var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId;
+					var makeType=$('#makeType').val();
+					var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId+"&makeType="+makeType;
 					location.href = url;
 		});
 		
@@ -205,9 +207,11 @@
 	});
 	
 	function doEdit(YSId,stockoutid) {
-		
+
+		var makeType=$('#makeType').val();
 		var url = '${ctx}/business/stockout?methodtype=updateInit&YSId='
-				+YSId+'&stockoutId='+stockoutid;
+				+YSId+'&stockoutId='+stockoutid
+				+'&makeType='+makeType;
 		location.href = url;
 	}
 	
@@ -222,7 +226,7 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<input type="hidden" id="goBackFlag" />
+	<input type="hidden" id="makeType" value="${makeType }" />
 	<form:hidden path="stockout.ysid"  />
 	<!-- 
 	<fieldset>

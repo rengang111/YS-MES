@@ -118,11 +118,13 @@ public class RequisitionService extends CommonService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderList");	
+		dataModel.setQueryName("getOrderListForRequisition");	
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2))
+				userDefinedSearchCase.put("requisitionSts", "");//有查询条件,不再限定其状态
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
@@ -421,9 +423,6 @@ public class RequisitionService extends CommonService {
 			return ;
 		
 		for(B_RequisitionDetailData dt:list){
-			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-					"RequisitionDelete",userInfo);
-			copyProperties(dt,commData);
 			
 			dao.Remove(dt);
 			
@@ -440,6 +439,7 @@ public class RequisitionService extends CommonService {
 	}
 
 		
+	@SuppressWarnings("unchecked")
 	public void doDelete(String recordId) throws Exception{
 		
 		B_ArrivalData data = new B_ArrivalData();	
@@ -449,12 +449,27 @@ public class RequisitionService extends CommonService {
 			ts = new BaseTransaction();										
 			ts.begin();									
 			
-			String removeData[] = recordId.split(",");									
-			for (String key:removeData) {									
-												
-				data.setRecordid(key);							
-				dao.Remove(data);	
-				
+			String recordid = request.getParameter("recordId");
+			B_RequisitionData req = new B_RequisitionData();
+			req.setRecordid(recordid);
+			req = new B_RequisitionDao(req).beanData;
+			if(req ==null || ("").equals(req))
+				return;
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"RequisitionDelete",userInfo);
+			copyProperties(req,commData);
+			new B_RequisitionDao().Store(req);
+			
+			String requisitionId = req.getRequisitionid();
+			String astr_Where = " requisitionId='" +requisitionId+"' AND deleteFlag='0' ";
+			List<B_RequisitionDetailData> list = new B_RequisitionDetailDao().Find(astr_Where);					
+
+			for(B_RequisitionDetailData dt:list){
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"RequisitionDelete",userInfo);
+				copyProperties(dt,commData);
+				new B_RequisitionDetailDao().Store(dt);				
 			}
 			
 			ts.commit();

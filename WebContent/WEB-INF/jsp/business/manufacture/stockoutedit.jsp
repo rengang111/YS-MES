@@ -135,21 +135,25 @@
 		
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/stockout";
+					var makeType=$('#makeType').val();
+					var url = "${ctx}/business/stockout?makeType="+makeType;
 					location.href = url;		
 				});
 
 		$("#showHistory").click(
 				function() {
-					var YSId=$('#stockout.ysid').val();
-					var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId;
+					var YSId=$('#stockout\\.ysid').val();
+					var makeType=$('#makeType').val();
+					var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId
+					+"&makeType="+makeType;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
-					
-			$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=update");
+
+					var makeType=$('#makeType').val();
+			$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=update"+"&makeType="+makeType);
 			$('#formModel').submit();
 		});
 		
@@ -178,12 +182,6 @@
 		});
 		
 	});
-	
-	function doEdit(contractId,arrivalId) {
-		
-		var url = '${ctx}/business/requisition?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
-		location.href = url;
-	}
 
 	
 </script>
@@ -197,6 +195,7 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 	
+	<input type="hidden" id="makeType" value="${makeType }" />
 	<form:hidden path="stockout.ysid" />
 	<form:hidden path="stockout.requisitionid"  />
 	<form:hidden path="stockout.recordid"  />

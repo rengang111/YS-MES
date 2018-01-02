@@ -59,7 +59,8 @@
 		    		{"targets":5,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
-		    			return rtn;
+		    			rtn = rtn + "&nbsp;" + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
+						return rtn;
 		    		}},{"targets":6,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doPrint('" + row["requisitionId"] + "')\">打印领料单</a>";
@@ -86,8 +87,11 @@
 	
 		var table = $('#example').dataTable();
 		if(table) {
+			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		if(requisitionId =='' || requisitionId == null)
+			return;
 		var t = $('#example').DataTable({
 			
 			"paging": false,
@@ -210,16 +214,11 @@
 	        	
 	        	$('#example2').DataTable().$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
-	            
+			
 	            var d = $('#example2').DataTable().row(this).data();
-				//alert(d["bid_id"]);
-				
-				$('#example').DataTable().destroy();
-				//$('#set_lines').DataTable().ajax.reload();
-				//ajax_factory_bid_set_lines(d["bid_id"]);
-				//var d = $('#contractTable').DataTable().row(this).data();
-				//alert(d["requisitionId"])
-				detailAjax(d["requisitionId"]);
+				if(!(typeof(d)=="undefined")){ 
+					detailAjax(d["requisitionId"]);
+				}
 					            
 	        }
 			
@@ -235,6 +234,31 @@
 		location.href = url;
 	}
 	
+	
+
+	function doDelete(recordId,requisitionId) {
+		if(confirm("删除后不能恢复,\n\n确定要删除吗？")) {
+			jQuery.ajax({
+				type : 'POST',
+				async: false,
+				contentType : 'application/json',
+				dataType : 'json',
+				data : '',
+				url : "${ctx}/business/requisition?methodtype=delete"+"&recordId="+recordId,
+				success : function(data) {
+					$('#example2').DataTable().ajax.reload(null,false);	
+					var table = $('#example').dataTable();
+					if(table) {
+						table.fnClearTable(false);
+						table.fnDestroy();
+					}
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			});
+		}
+		
+	}
 </script>
 
 </head>

@@ -8,7 +8,7 @@
 <title>领料申请--订单一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,sessionFlag,status) {
+	function ajax(pageFlg,sessionFlag,requisitionSts) {
 		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -16,17 +16,10 @@
 			table.fnDestroy();
 		}
 
-		var key1 = $("#keyword1").val();
-		var key2 = $("#keyword2").val();
-		var key = myTrim(key1)+myTrim(key2);
-		
-		if(key == "")
-			status = "020,030";
-
 		var actionUrl = "${ctx}/business/requisition?methodtype=search";
-		actionUrl = actionUrl + "&keyBackup=" + pageFlg;
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
-		actionUrl = actionUrl + "&status=" + status;
+		actionUrl = actionUrl + "&requisitionSts=" + requisitionSts;
+		
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -71,15 +64,14 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
+							{"data": "requisitionId", "defaultContent" : '', "className" : 'td-left'},
 							{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
 							{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
 							{"data": "materialName", "defaultContent" : ''},//3
-							{"data": "orderDate", "defaultContent" : '', "className" : 'td-center'},
 							{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},
 							{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
-							{"data": "team", "className" : 'td-left'},//7
-							{"data": "statusName", "className" : 'td-center'},//8
-							{"data": "storageDate", "className" : 'td-center'},//9
+							{"data": "requisitionDate", "defaultContent" : '', "className" : 'td-center'},
+							{"data": "requisitionSts", "className" : 'td-center'},//8
 						],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
@@ -87,10 +79,14 @@
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
+		    			if(data == ""){
+			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+"（领料申请）"+"</a>";		    				
+		    			}else{
+			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+data+"</a>";
+		    			}
 		    			return rtn;
 		    		}},
-		    		{"targets":3,"render":function(data, type, row){
+		    		{"targets":4,"render":function(data, type, row){
 		    			var name = row["materialName"];
 		    			name = jQuery.fixedWidth(name,50);//true:两边截取,左边从汉字开始
 		    			return name;
@@ -98,9 +94,23 @@
 		    		{
 		    			"orderable":false,"targets":[0]
 		    		},
+		    		{"targets":8,"render":function(data, type, row){
+		    			var rtn = "";
+		    			if(data == "010"){
+		    				rtn = "待申请";
+		    				
+		    			}else if(data=="020"){
+		    				rtn = "待出库";
+		    				
+		    			}else{
+		    				rtn = "已出库";
+		    				
+		    			}			    			
+		    			return rtn;
+		    		}},
 		    		{
 						"visible" : false,
-						"targets" : [7,9]
+						"targets" : []
 					}
 	         	]
 			}
@@ -123,7 +133,7 @@
 
 	$(document).ready(function() {
 
-		ajax("","true","030");
+		ajax("","true","010");
 		
 	})	
 	
@@ -132,7 +142,15 @@
 		ajax("purchaseplan","false","");
 
 	}
+	function doSearch2(colNum,type) {	
+		
+		$("#keyword1").val("");
+		$("#keyword2").val("");
+		
+		ajax("","false",type);
 
+	}
+	
 	
 	function doShowDetail(YSId) {
 		
@@ -173,20 +191,24 @@
 	</div>
 	<div  style="height:10px"></div>
 
-	<div class="list">
+	<div class="list">					
+		<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
+			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(1,'010');"><span>待申请</span></a>
+			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>待出库</span></a>
+			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>已领料</span></a>
+		</div>
 		<table id="TMaterial" class="display">
 			<thead>						
 				<tr>
 						<th style="width: 10px;">No</th>
+						<th style="width: 70px;">领料单编号</th>
 						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 120px;">产品编号</th>
 						<th>产品名称</th>
-						<th style="width: 50px;">下单日期</th>
 						<th style="width: 50px;">订单交期</th>
 						<th style="width: 60px;">订单数量</th>
-						<th style="width: 40px;">业务组</th>
-						<th style="width: 60px;">订单状态</th>
-						<th style="width: 50px;">入库时间</th>
+						<th style="width: 60px;">申请时间</th>
+						<th style="width: 60px;">领料状态</th>
 				</tr>
 			</thead>
 		</table>

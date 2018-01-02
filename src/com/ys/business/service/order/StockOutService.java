@@ -96,7 +96,7 @@ public class StockOutService extends CommonService {
 		
 	}
 	
-	public HashMap<String, Object> doSearch( String data) throws Exception {
+	public HashMap<String, Object> doSearch( String data,String makeType) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		int iStart = 0;
@@ -128,6 +128,14 @@ public class StockOutService extends CommonService {
 		userDefinedSearchCase.put("keyword2", key2);
 		if(notEmpty(key1) || notEmpty(key2)){
 			userDefinedSearchCase.put("requisitionSts", "");
+		}
+		//包装,或者是料件入库
+		if(("G").equals(makeType)){//包装
+			userDefinedSearchCase.put("makeTypeG", "G");
+			userDefinedSearchCase.put("makeTypeL", "");
+		}else{//料件
+			userDefinedSearchCase.put("makeTypeG", "");
+			userDefinedSearchCase.put("makeTypeL", "G");			
 		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	

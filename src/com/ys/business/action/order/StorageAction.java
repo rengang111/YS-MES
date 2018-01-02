@@ -49,6 +49,7 @@ public class StorageAction extends BaseAction {
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
+		String makeType = request.getParameter("makeType");
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
@@ -60,6 +61,7 @@ public class StorageAction extends BaseAction {
 		this.model = model;
 		this.response = response;
 		this.session = session;
+		model.addAttribute("makeType",makeType);
 		
 		if (type == null) {
 			type = "";
@@ -77,7 +79,7 @@ public class StorageAction extends BaseAction {
 				rtnUrl = "/business/inventory/storagemain";
 				break;
 			case "search":
-				dataMap = doSearch(data);
+				dataMap = doSearch(data,makeType);
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "addinit":
@@ -221,7 +223,7 @@ public class StorageAction extends BaseAction {
 	
 	
 	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doSearch(@RequestBody String data){
+	public HashMap<String, Object> doSearch(String data,String makeType){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
 		String sessionFlag = request.getParameter("sessionFlag");
@@ -231,7 +233,7 @@ public class StorageAction extends BaseAction {
 		}
 		
 		try {
-			dataMap = service.doSearch(data,Constants.FORM_MATERIALSTORAGE);
+			dataMap = service.doSearch(data,Constants.FORM_MATERIALSTORAGE,makeType);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

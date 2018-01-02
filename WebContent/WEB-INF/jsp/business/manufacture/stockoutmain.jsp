@@ -14,15 +14,12 @@
 			table.fnDestroy();
 		}
 
-		var key1 = $("#keyword1").val();
-		var key2 = $("#keyword1").val();
-		var key = myTrim(key1)+myTrim(key2);
-		//if(key == "")
-		//	status = "010";
+		var makeType = $("#makeType").val();
 
 		var actionUrl = "${ctx}/business/stockout?methodtype=search";
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
 		actionUrl = actionUrl + "&requisitionSts=" + status;
+		actionUrl = actionUrl + "&makeType=" + makeType;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -160,15 +157,19 @@
 
 	
 	function showHistory(YSId,stockOutId) {
-		
-		var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId;
+
+		var makeType=$('#makeType').val();
+		var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId
+			+"&makeType="+makeType;
 		location.href = url;
 	}
 	
 
 	function doCreate(YSId,requisitionId) {
-		
-		var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId+"&requisitionId="+requisitionId;
+
+		var makeType=$('#makeType').val();
+		var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId
+			+"&requisitionId="+requisitionId+"&makeType="+makeType;
 		location.href = url;
 	}
 	
@@ -187,6 +188,7 @@
 		
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
+			<input type="hidden" id="makeType" value="${makeType }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 

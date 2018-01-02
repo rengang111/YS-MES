@@ -114,8 +114,8 @@
 		
 		$("#goBack").click(
 				function() {
-					var contractId='${contract.contractId }';
-					var url = "${ctx}/business/storage?keyBackup="+contractId;
+					var makeType=$('#makeType').val();
+					var url = "${ctx}/business/storage?makeType="+makeType;
 					location.href = url;		
 				});
 		
@@ -126,11 +126,13 @@
 							$().toastmessage('showWarningToast', "该合同暂时没有要入库的数据。");	
 							return;
 						}
+						var makeType=$('#makeType').val();
 						var arrivalId = $('#arrivalId').val();
 						var contractId='${contract.contractId }';
 						var url = "${ctx}/business/storage?methodtype=addinit";
 						url += "&contractId="+contractId;
 						url += "&arrivalId="+arrivalId;
+						url += "&makeType="+makeType;
 						location.href = url;		
 					});
 		
@@ -140,8 +142,9 @@
 	
 	function doEdit(contractId,receiptId) {
 
+		var makeType=$('#makeType').val();
 		var url = "${ctx}/business/storage?methodtype=edit&receiptId="+receiptId
-				+ "&contractId="+contractId;
+				+ "&contractId="+contractId+ "&makeType="+makeType;
 		location.href = url;
 	}
 
@@ -175,6 +178,7 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 	
+	<input type="hidden" id="makeType" value="${makeType }" />
 	<input type="hidden" id="addFlag"  value="${addFlag}"/>
 	<input type="hidden" id="arrivalId"  value="${arrivalId}"/>
 	<form:hidden path="stock.receiptid"  value="${receiptId}"/>

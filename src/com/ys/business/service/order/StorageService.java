@@ -98,7 +98,7 @@ public class StorageService extends CommonService {
 	}
 	
 	public HashMap<String, Object> doSearch(
-			String data,String formId) throws Exception {
+			String data,String formId,String makeType) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		int iStart = 0;
@@ -132,6 +132,15 @@ public class StorageService extends CommonService {
 				(key2 !=null && !("").equals(key2))){
 			userDefinedSearchCase.put("status", "");
 		}
+		//包装,或者是料件入库
+		if(("G").equals(makeType)){//包装
+			userDefinedSearchCase.put("makeTypeG", "G");
+			userDefinedSearchCase.put("makeTypeL", "");
+		}else{//料件
+			userDefinedSearchCase.put("makeTypeG", "");
+			userDefinedSearchCase.put("makeTypeL", "G");			
+		}
+				
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 

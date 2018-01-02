@@ -67,6 +67,7 @@
 				"columns": [
 					{"data": null, "defaultContent" : '',"className" : 'td-center'},
 					{"data": "stockOutId", "defaultContent" : '', "className" : 'td-left'},
+					{"data": "YSId", "defaultContent" : ''},//
 					{"data": "checkOutDate", "defaultContent" : '', "className" : 'td-right'},//8出库时间
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//4
 					{"data": "materialName", "defaultContent" : ''},//5
@@ -85,7 +86,10 @@
 		    			}
 		    			return rtn;
 		    		}},
-		    		{"targets":4,"render":function(data, type, row){	    			
+		    		{"targets":2,"render":function(data, type, row){	    			
+		    			return jQuery.fixedWidth(data,20);
+		    		}},
+		    		{"targets":5,"render":function(data, type, row){	    			
 		    			return jQuery.fixedWidth(data,45);
 		    		}},
 		    		{
@@ -201,6 +205,7 @@
 				<tr>
 					<th style="width: 30px;">No</th>
 					<th style="width: 100px;">出库单编号</th>
+					<th style="width: 80px;">耀升编号</th>
 					<th style="width: 80px;">出库时间</th>
 					<th style="width: 170px;">物料编号</th>
 					<th>物料名称</th>

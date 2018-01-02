@@ -14,8 +14,9 @@
 			table.fnDestroy();
 		}
 
+		var makeType = $("#makeType").val();
 		var url = "${ctx}/business/storage?methodtype=search"+"&sessionFlag="+sessionFlag;
-		
+		url = url + "&makeType="+makeType;
 		
 		if(status != ''){
 			//默认是质检合格或者让步接收
@@ -24,7 +25,6 @@
 			url += "&status="+status;
 			
 		}
-		url += "&keyBackup="+status;
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -72,10 +72,10 @@
         	},
 			"columns": [
 				{"data": null,"className" : 'td-center'},
+				{"data": "receiptId"},
 				{"data": "materialId"},
 				{"data": "materialName"},
 				{"data": "unit","className" : 'td-center'},
-				{"data": "arrivalId"},
 				{"data": "supplierId"},
 				{"data": "YSId"},
 				{"data": "contractQuantity","className" : 'td-right'},
@@ -91,11 +91,17 @@
 	    		{"targets":1,"render":function(data, type, row){
 
 	    			var contractId = row["contractId"];	
-	    			var arrivalId = row["arrivalId"];		    			
-	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + contractId + "','" + arrivalId + "','" + row["receiptId"] + "')\">"+row["materialId"]+"</a>";
+	    			var arrivalId = row["arrivalId"];	
+	    			if(data == ''){
+		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + contractId + "','" + arrivalId + "','" + row["receiptId"] + "')\">"+"（未入库）"+"</a>";
+    				
+	    			}else{
+		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + contractId + "','" + arrivalId + "','" + row["receiptId"] + "')\">"+data+"</a>";
+	    				
+	    			}	    			
 	    			return rtn;
 	    		}},
-	    		{"targets":2,"render":function(data, type, row){
+	    		{"targets":3,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
 	    			name = jQuery.fixedWidth(name,35);				    			
@@ -138,7 +144,12 @@
 	
 	function doShow(contractId,arrivalId,receiptId) {
 
-		var url = '${ctx}/business/storage?methodtype=addinit&contractId=' + contractId+"&arrivalId="+arrivalId+"&receiptId="+receiptId;
+		var makeType=$('#makeType').val();
+		var url = '${ctx}/business/storage?methodtype=addinit&contractId=' 
+				+ contractId
+				+"&arrivalId="+arrivalId
+				+"&receiptId="+receiptId
+				+"&makeType="+makeType;
 
 		location.href = url;
 	}
@@ -190,7 +201,7 @@
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
-		<input type="hidden" id="keyBackup" value="${keyBackup }" />
+		<input type="hidden" id="makeType" value="${makeType }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 
@@ -222,10 +233,10 @@
 			<thead>						
 				<tr>
 					<th style="width: 1px;" class="dt-middle ">No</th>
+					<th style="width: 80px;" class="dt-middle">入库单编号</th>
 					<th style="width: 120px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
 					<th style="width: 50px;" class="dt-middle">单位</th>
-					<th style="width: 80px;" class="dt-middle">到货登记</th>
 					<th style="width: 80px;" class="dt-middle">供应商</th>
 					<th style="width: 50px;" class="dt-middle">耀升编号</th>
 					<th style="width: 60px;" class="dt-middle">合同数量</th>

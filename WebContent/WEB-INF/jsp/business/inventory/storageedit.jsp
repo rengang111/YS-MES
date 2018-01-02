@@ -82,15 +82,16 @@
 		
 		$("#goBack").click(
 				function() {
-					var contractId='${contract.contractId }';
-					var url = "${ctx}/business/storage?keyBackup="+contractId;
+					var makeType=$('#makeType').val();
+					var url = "${ctx}/business/storage?makeType="+makeType;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
 				var receiptId = $("#receiptid").val();	
-			$('#form').attr("action", "${ctx}/business/storage?methodtype=update&receiptId="+receiptId);
+				var makeType=$('#makeType').val();
+			$('#form').attr("action", "${ctx}/business/storage?methodtype=update&receiptId="+receiptId+"&receiptId="+receiptId);
 			$('#form').submit();
 		});
 		
@@ -119,12 +120,6 @@
 		
 	});
 	
-	function doEdit(contractId,arrivalId) {
-		
-		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
-		location.href = url;
-	}
-
 	
 </script>
 
@@ -137,6 +132,7 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="form" name="form"  autocomplete="off">
 
+	<input type="hidden" id="makeType" value="${makeType }" />
 	<form:hidden path="stock.recordid" value="${head.stockRcordId }"/>
 	<form:hidden path="stock.receiptid"  value="${head.receiptId}"/>
 	<form:hidden path="stock.subid" value="${head.subId }"/>

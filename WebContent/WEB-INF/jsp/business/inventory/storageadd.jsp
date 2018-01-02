@@ -99,21 +99,23 @@
 		
 		$("#goBack").click(
 				function() {
-					var contractId='${contract.contractId }';
-					var url = "${ctx}/business/storage?keyBackup="+contractId;
+					var makeType=$('#makeType').val();
+					var url = "${ctx}/business/storage?makeType="+makeType;
 					location.href = url;		
 				});
 		$("#showStockin").click(
 				function() {
 					var contractId='${contract.contractId }';
 					var arrivelId= $('#stock\\.arrivelid').val();
+					var makeType=$('#makeType').val();
 					var url = "${ctx}/business/storage?methodtype=showHistory&contractId="+contractId
-							+"&arrivalId="+arrivelId;
+							+"&arrivalId="+arrivelId+"&makeType="+makeType;
 					location.href = url;		
 				});
 		$("#insert").click(
-				function() {					
-			$('#form').attr("action", "${ctx}/business/storage?methodtype=insert");
+				function() {	
+					var makeType=$('#makeType').val();		
+			$('#form').attr("action", "${ctx}/business/storage?methodtype=insert"+"&makeType="+makeType);
 			$('#form').submit();
 		});
 		
@@ -144,8 +146,9 @@
 	});
 	
 	function doEdit(contractId,arrivalId) {
-		
-		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
+
+		var makeType=$('#makeType').val();
+		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId + "&makeType="+makeType;
 		location.href = url;
 	}
 		
@@ -160,6 +163,7 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="form" name="form"  autocomplete="off">
 
+	<input type="hidden" id="makeType" value="${makeType }" />
 	<form:hidden path="stock.subid" />
 	<form:hidden path="stock.ysid"  value="${contract.YSId }"/>
 	<form:hidden path="stock.arrivelid"  value="${head.arrivalId }"/>

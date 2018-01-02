@@ -936,18 +936,19 @@ public class CommonService extends BaseService {
 			String filePath,String viewPath){
 		
 		ArrayList<String> filelist = new ArrayList<String>();
-		
+
 		File root = new File(filePath);
 		File[] files = root.listFiles();
 		
-		//int count = 0;
+		if (files == null)
+			return filelist;
+
 		try{
 			for(File file:files){    
 				if(file.isDirectory()){
 					//递归调用
 				}else{
 					filelist.add(viewPath+"/"+file.getName());
-					//count++; 
 				} 
 				    
 			}	
