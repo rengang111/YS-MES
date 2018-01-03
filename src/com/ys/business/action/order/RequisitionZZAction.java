@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.RequisitionModel;
+import com.ys.business.db.data.B_ProductionTaskData;
 import com.ys.business.service.order.ArrivalService;
 import com.ys.business.service.order.RequisitionService;
 import com.ys.business.service.order.RequisitionZZService;
@@ -124,6 +125,10 @@ public class RequisitionZZAction extends BaseAction {
 				dataMap = getRequisitionHistory();
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "checkRequisitionHistory":
+				dataMap = checkRequisitionHistory();
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "getRequisitionDetail":
 				dataMap = getRequisitionDetail();
 				printOutJsonObj(response, dataMap);
@@ -180,6 +185,28 @@ public class RequisitionZZAction extends BaseAction {
 		return dataMap;
 	}
 	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> checkRequisitionHistory(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			service.getRequisitionHistoryInit();
+			
+			B_ProductionTaskData data = reqModel.getTask();
+		
+			if (("").equals(data) || data == null) {
+				dataMap.put(INFO, "false");
+			}else{
+				dataMap.put(INFO, "true");
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 	
 	public void doAddInit(String makeType){
 		try{

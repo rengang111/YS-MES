@@ -62,6 +62,8 @@
 		    		{"targets":6,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
+		    			rtn = rtn + "&nbsp;&nbsp;";	    			
+		    			rtn = rtn + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
 		    			rtn = rtn + "&nbsp;&nbsp;";
 		    			rtn = rtn +  "<a href=\"###\" onClick=\"doPrint('" + row["requisitionId"] + "')\">打印领料单</a>";
 		    			return rtn;
@@ -204,8 +206,10 @@
 		
 		$("#insert").click(
 				function() {
-					var YSId='${order.YSId }';
-					var url =  "${ctx}/business/requisitionzz?methodtype=addinit&YSId="+YSId;
+					var YSId='${formModel.task.collectysid  }';
+					var makeType = $('#makeType').val();
+					var url =  "${ctx}/business/requisitionzz?methodtype=addinit&data="+YSId+"&makeType="+makeType;
+
 					location.href = url;
 		});
 		
@@ -221,14 +225,11 @@
 	            $(this).addClass('selected');
 	            
 	            var d = $('#example2').DataTable().row(this).data();
-				//alert(d["bid_id"]);
-				
+
 				$('#example').DataTable().destroy();
-				//$('#set_lines').DataTable().ajax.reload();
-				//ajax_factory_bid_set_lines(d["bid_id"]);
-				//var d = $('#contractTable').DataTable().row(this).data();
-				//alert(d["requisitionId"])
-				detailAjax(d["requisitionId"]);
+				if(!(typeof(d)=="undefined")){ 
+					detailAjax(d["requisitionId"]);
+				}
 					            
 	        }
 			
@@ -244,6 +245,30 @@
 		//alert("requisitionId"+url)
 		//callProductDesignView("requisition",url)
 		location.href = url;
+	}
+	
+	function doDelete(recordId,requisitionId) {
+		if(confirm("删除后不能恢复,\n\n确定要删除吗？")) {
+			jQuery.ajax({
+				type : 'POST',
+				async: false,
+				contentType : 'application/json',
+				dataType : 'json',
+				data : '',
+				url : "${ctx}/business/requisitionzz?methodtype=delete"+"&recordId="+recordId,
+				success : function(data) {
+					$('#example2').DataTable().ajax.reload(null,false);	
+					var table = $('#example').dataTable();
+					if(table) {
+						table.fnClearTable(false);
+						table.fnDestroy();
+					}
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			});
+		}
+		
 	}
 	
 	function materialzzAjax() {
@@ -374,7 +399,7 @@
 </fieldset>
 <div style="clear: both"></div>
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<!-- <a class="DTTT_button DTTT_button_text" id="insert" >继续领料</a> -->
+		<a class="DTTT_button DTTT_button_text" id="insert" >继续领料</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>

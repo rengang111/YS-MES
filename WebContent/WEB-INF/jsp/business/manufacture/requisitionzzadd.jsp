@@ -310,17 +310,34 @@
 					location.href = url;		
 				});
 
-		$("#showHistory").click(
-				function() {
-					var taskId=$("#requisition\\.requisitionid").val();
-					var makeType = $('#makeType').val();
-					if(taskId =='（保存后自动生成）'){
+		$("#showHistory").click(function() {
+			
+			var taskId=$("#task\\.taskid").val();
+			var makeType = $('#makeType').val();
+
+			$.ajax({
+				type : 'POST',
+				async: false,
+				contentType : 'application/json',
+				dataType : 'json',
+				data : '',
+				url : "${ctx}/business/requisitionzz?methodtype=checkRequisitionHistory"+"&taskId="+taskId,
+				success : function(data) {
+	
+					var rtnFlag = data["message"];
+					if(rtnFlag == "true"){
+
+						var url = "${ctx}/business/requisitionzz?methodtype=getRequisitionHistoryInit&taskId="+taskId+"&makeType="+makeType;
+						location.href = url;
+					}else{
 						$().toastmessage('showWarningToast', "还没有领料记录。");
-						return;
+						return false;						
 					}
-					var url = "${ctx}/business/requisitionzz?methodtype=getRequisitionHistoryInit&taskId="+taskId+"&makeType="+makeType;
-					location.href = url;		
-				});
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			});	
+		});
 		
 		$("#insert").click(
 				function() {
@@ -483,7 +500,7 @@ function reloadFn(){
 		
 		var jihua = $(this).find("td").eq(4).text();////计划用量
 		var yiling  = $(this).find("td").eq(5).text();//已领量:table初始化时,第五列被隐藏了
-		var kucun   = $(this).find("td").eq(6).text();//库存
+		var kucun   = $(this).find("td").eq(7).text();//库存
 		var fjihua= currencyToFloat(jihua);
 		var fyiling = currencyToFloat(yiling);
 		var fkucun  = currencyToFloat(kucun);
@@ -492,16 +509,16 @@ function reloadFn(){
 				
 		if(fsurplus > 0){//未领完的场合下
 			if(fkucun >= fsurplus){//库存大于需求量
-				$(this).find("td").eq(7).find("input").val(formatNumber(fsurplus));//本次领料
+				$(this).find("td").eq(8).find("input").val(formatNumber(fsurplus));//本次领料
 				//$(this).find("td").eq(8).html("0")//剩余数清零
 				countValue++;//累计未领完的物料
 			}else{
-				$(this).find("td").eq(7).find("input").val(formatNumber(fkucun));//本次领料
+				$(this).find("td").eq(8).find("input").val(formatNumber(fkucun));//本次领料
 				//$(this).find("td").eq(8).html(formatNumber( fsurplus - fkucun ));//剩余数清零							
 			}
 		}else{
 			fsurplus = 0;
-			$(this).find("td").eq(7).find("input").val(fsurplus);//本次领料清零
+			$(this).find("td").eq(8).find("input").val(fsurplus);//本次领料清零
 			//$(this).find("td").eq(8).html(fsurplus);//剩余数清零
 		}
 		

@@ -102,7 +102,7 @@ public class RequisitionZZService extends CommonService {
 
 			//确认领料状态
 			B_RequisitionData task = new B_RequisitionData();
-			String where = "collectYsid like '%" + ysid + "%'" +" AND requisitionType='"+makeType+"' "; 
+			String where = "collectYsid like '%" + ysid + "%'" +" AND requisitionType='"+makeType+"' AND deleteFlag='0' "; 
 			task = checkRequisitionExsit(where);
 			if(task == null){
 				map.put("requisitionSts", Constants.STOCKOUT_1);//待申请
@@ -297,10 +297,10 @@ public class RequisitionZZService extends CommonService {
 		for(HashMap<String, String>map:list){
 			 
 			 String subid = map.get("materialId").substring(0, 3);	
-			 
-			 if(("A14").equals(subid) || ("A16").equals(subid)){//吹塑:A14,A16干燥剂
+			 String subMat = map.get("materialId").substring(0, 1);
+			 if(("A14").equals(subid) || ("A16").equals(subid)){//吹塑:A14
 				 blow.add(map);
-			 }else if( ("A03").equals(subid) ){//吸塑:A03
+			 }else if( ("A03").equals(subid) && ("F").equals(subMat)){//吸塑:A03
 				 blister.add(map);
 			 }else{//以外
 				 injection.add(map);
@@ -330,17 +330,18 @@ public class RequisitionZZService extends CommonService {
 		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
 		
 		for(HashMap<String, String>map:list){
-			 String rawmaterialId = map.get("rawmaterialId");
+			 String rawmaterialId = map.get("rawmaterialId");			
 			 String subid = "";
 			 if(isNullOrEmpty(rawmaterialId)){
 				 continue;
 			 }else{
 				 subid = rawmaterialId.substring(0, 3);	
 			 }
-			 
+			 String materialId = map.get("materialId");
+			 String subMat = materialId.substring(0, 1);
 			 if(("A14").equals(subid) || ("A16").equals(subid)){//吹塑:A14
 				 blow.add(map);
-			 }else if( ("A03").equals(subid) ){//吸塑:A03
+			 }else if( ("A03").equals(subid) && ("F").equals(subMat)){//吸塑:A03
 				 blister.add(map);
 			 }else{//以外
 				 injection.add(map);
@@ -644,21 +645,35 @@ public class RequisitionZZService extends CommonService {
 	}
 
 		
+	@SuppressWarnings("unchecked")
 	public void doDelete(String recordId) throws Exception{
 		
-		B_ArrivalData data = new B_ArrivalData();	
-															
 		try {
 			
 			ts = new BaseTransaction();										
 			ts.begin();									
 			
-			String removeData[] = recordId.split(",");									
-			for (String key:removeData) {									
-												
-				data.setRecordid(key);							
-				dao.Remove(data);	
-				
+			String recordid = request.getParameter("recordId");
+			B_RequisitionData req = new B_RequisitionData();
+			req.setRecordid(recordid);
+			req = new B_RequisitionDao(req).beanData;
+			if(req ==null || ("").equals(req))
+				return;
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"RequisitionDelete",userInfo);
+			copyProperties(req,commData);
+			new B_RequisitionDao().Store(req);
+			
+			String requisitionId = req.getRequisitionid();
+			String astr_Where = " requisitionId='" +requisitionId+"' AND deleteFlag='0' ";
+			List<B_RequisitionDetailData> list = new B_RequisitionDetailDao().Find(astr_Where);					
+
+			for(B_RequisitionDetailData dt:list){
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"RequisitionDelete",userInfo);
+				copyProperties(dt,commData);
+				new B_RequisitionDetailDao().Store(dt);				
 			}
 			
 			ts.commit();
