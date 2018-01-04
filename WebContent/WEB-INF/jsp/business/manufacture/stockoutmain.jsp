@@ -88,8 +88,14 @@
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 		    			var name = row["materialId"];
+		    			var type = row["requisitionTypeId"];
 		    			if(name == null){
-		    				name="（自制件领料）";
+		    				if(type == '050'){
+			    				name="（单独领料）";
+		    				}else{
+			    				name="（自制件领料）";
+		    					
+		    				}
 		    			}
 		    			
 		    			return name;

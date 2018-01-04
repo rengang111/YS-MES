@@ -23,6 +23,7 @@
       <f name="A.safetyInventory" alias="" ctype="" />
       <f name="price" alias="price" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
+      <f name="IFNULL(A.quantityOnHand,0)" alias="quantityOnHand" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.purchaseType" alias="" ctype="" />

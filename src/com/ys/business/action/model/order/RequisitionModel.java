@@ -18,6 +18,7 @@ public class RequisitionModel extends BaseModel {
 	
 	private List<B_RequisitionDetailData> requisitionList;
 	private B_RequisitionData requisition;
+	private B_RequisitionDetailData reqDetail;
 	private B_ProductionTaskData task;
 	
 	public String getKeyBackup() {
@@ -27,6 +28,13 @@ public class RequisitionModel extends BaseModel {
 		this.keyBackup = keyBackup;
 	}
 		
+	public B_RequisitionDetailData getReqDetail() {
+		return this.reqDetail;
+	}
+	public void setReqDetail(B_RequisitionDetailData reqDetail) {
+		this.reqDetail = reqDetail;
+	}
+	
 	public B_ProductionTaskData getTask() {
 		return this.task;
 	}

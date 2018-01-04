@@ -199,18 +199,22 @@
   <select>
       <f name="a.recordId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
-      <f name="b.materialName" alias="" ctype="" />
-      <f name="b.purchaseType" alias="" ctype="物料采购类别" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.purchaseType" alias="" ctype="物料采购类别" />
+      <f name="a.remarks" alias="" ctype="" />
       <f name="a.requisitionId" alias="" ctype="" />
+      <f name="a.requisitionDate" alias="" ctype="" />
+      <f name="a.requisitionSts" alias="" ctype="料件出库状态" />
       <f name="format(replace(a.quantity,',',''),2)" alias="quantity" ctype="" />
       <f name="IFNULL(a.overQuantity,0)" alias="overQuantity" ctype="" />
       <f name="a.deleteFlag" alias="" ctype="" />
       <f name="IFNULL(a.contractId,'-')" alias="contractId" ctype="" />
       <f name="IFNULL(a.supplierId,'-')" alias="supplierId" ctype="" />
+      <f name="c.loginName" alias="requisitionUser" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_requisitionDetail a LEFT JOIN b_material b ON a.materialId=b.materialId AND b.deleteFlag='0'  where a.deleteFlag='0'</from>
+    <from>v_requisitionDetail a LEFT JOIN s_user c ON a.requisitionUserId=c.UserID AND c.deleteFlag='0'  where a.deleteFlag='0'</from>
     <orderby>a.materialId </orderby>
     <groupby></groupby>
     <having></having>
@@ -398,8 +402,8 @@
    	  <w name="B.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="B.YSId"      des=""  reqName="YSId"     dtype="ch" oper="="     lg="AND" bt="" />
    	  <w name="B.requisitionSts" des=""  reqName="requisitionSts" dtype="ch" oper="="  lg="AND" bt="" />
-  	  <w name="left(b.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
-   	  <w name="left(b.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
+  	  <!--w name="left(b.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" /-->
+   	  <!--w name="left(b.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" /-->
      </where>
     <select>
       <f name="b.requisitionId" alias="" ctype="" />
@@ -412,15 +416,15 @@
       <f name="b.requisitionUserId" alias="" ctype="" />
       <f name="b.collectYsid" alias="" ctype="" />
       <f name="b.requisitionSts" alias="" ctype="料件出库状态" />
-      <f name="b.requisitionType" alias="" ctype="领料类别" />
       <f name="b.requisitionSts" alias="requisitionStsId" ctype="" />
+      <f name="b.requisitionType" alias="" ctype="领料类别" />
+      <f name="b.requisitionType" alias="requisitionTypeId" ctype="" />
       <f name="b.requisitionUserName" alias="" ctype="" />
       <f name="b.stockOutId" alias="" ctype="" />
       <f name="b.fullField" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
     <from>v_stockoutlist AS B WHERE b.deleteFlag='0'</from>
     <orderby>b.requisitionDate DESC,b.requisitionId ,b.materialId</orderby>
     <groupby></groupby>
@@ -674,5 +678,36 @@
     <groupby></groupby>
     <having></having>
 	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getRequisitionAndStockout" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="a.requisitionSts"  des=""  reqName="requisitionSts" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.requisitionUserId" alias="" ctype="" />
+      <f name="a.requisitionId" alias="" ctype="" />
+      <f name="a.requisitionDate" alias="" ctype="" />
+      <f name="a.requisitionSts" alias="" ctype="料件出库状态" />
+      <f name="b.checkOutDate" alias="" ctype="" />
+      <f name="b.stockOutId" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
+    <from>v_requisitiondetail a LEFT JOIN b_stockout b ON b.requisitionId=a.requisitionId AND b.deleteFlag='0' WHERE a.deleteFlag='0' AND a.requisitionType='050'</from>
+    <orderby>a.requisitionId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
   </query>
 </root>

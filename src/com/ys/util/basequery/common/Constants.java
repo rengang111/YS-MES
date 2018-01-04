@@ -22,6 +22,7 @@ public class Constants {
 	public static final String FORM_MATERIAL = "material";//
 	public static final String FORM_ARRIVAL = "arrival";//到货登记
 	public static final String FORM_REQUISITION = "requisition";//领料申请
+	public static final String FORM_REQUISITION_M = "requisitionmateiral";//直接领料申请
 	public static final String FORM_REQUISITION_C = "requisitionzz";//吹塑领料申请
 	public static final String FORM_REQUISITION_Z = "requisitionzz";//注塑领料申请
 	public static final String FORM_REQUISITION_X = "requisitionzz";//吸塑领料申请
@@ -216,6 +217,7 @@ public class Constants {
 	public static final String REQUISITION_BLOW = "020";//吹塑
 	public static final String REQUISITION_BLISTE = "030";//吸塑
 	public static final String REQUISITION_INJECT = "040";//注塑
+	public static final String REQUISITION_5 = "050";//直接领料
 	
 	/**
 	 * 付款状态

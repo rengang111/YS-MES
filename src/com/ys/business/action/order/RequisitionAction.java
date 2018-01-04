@@ -46,7 +46,7 @@ public class RequisitionAction extends BaseAction {
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
-		String rtnUrl = "";
+		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
 		this.userInfo = (UserInfo)session.getAttribute(
@@ -123,6 +123,25 @@ public class RequisitionAction extends BaseAction {
 				doPrintInit();
 				rtnUrl = "/business/inventory/requisitionprint";
 				break;
+			case "materialRequisitionMain":
+				rtnUrl = "/business/manufacture/materialrequisitionmain";
+				break;
+			case "materialRequisitionSearch":
+				dataMap = materialRequisitionSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "materialReqeuisitionAddInit":
+				materialStockoutAddInit();
+				rtnUrl = "/business/manufacture/materialrequisitionadd";
+				break;
+			case "materialRequisitionInsert":
+				materialStockoutAdd();
+				rtnUrl = "/business/manufacture/materialrequisitionview";
+				break;
+			case "materialRequisitionView":
+				materialStockoutView();
+				rtnUrl = "/business/manufacture/materialrequisitionview";
+				break;
 				
 		}
 		
@@ -161,6 +180,33 @@ public class RequisitionAction extends BaseAction {
 		return dataMap;
 	}
 	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> materialRequisitionSearch(String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_REQUISITION_M+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_REQUISITION_M+Constants.FORM_KEYWORD2);
+			
+		}
+		
+		try {
+			dataMap = service.doMaterialRequisitionSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 	
 	public void doAddInit(){
 		try{
@@ -284,4 +330,36 @@ public class RequisitionAction extends BaseAction {
 		
 		return dataMap;
 	}
+	
+
+	public void materialStockoutAddInit(){
+
+		try{
+			//service.materialStockoutAddInit();			
+			model.addAttribute("userName", userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	public void materialStockoutAdd(){
+
+		try{
+			service.materialRquisitionInsert();			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+
+	public void materialStockoutView(){
+
+		try{
+			service.materialRquisitionView();			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+		
 }

@@ -1209,7 +1209,7 @@ public class StorageService extends CommonService {
         
         //detail
         //必须为列表头部所有位置集合,输出 数据单元格样式和头部单元格样式保持一致
-        String[] heads = new String[]{"A2","B2","C2","D2","E2","J2","K2","L2","M2","N2","O2","P2"};  
+        String[] heads = new String[]{"A2","B2","C2","D2","E2","J2","K2","L2","M2","N2","O2","P2","Q2"};  
         excel.writeDateList(wbModule,heads,datalist,sheetNo);
          
         //写到输出流并移除资源
@@ -1247,7 +1247,7 @@ public class StorageService extends CommonService {
 		
 		for(int i=0;i<hashMap.size();i++){
 			
-			String[] title = {"rownum","receiptId","checkInDate","materialId","materialName","supplierId","YSId","contractQuantity","price","taxPrice","taxTotal",""};
+			String[] title = {"rownum","receiptId","checkInDate","materialId","materialName","unit","supplierId","YSId","contractQuantity","price","taxPrice","taxTotal",""};
 			Map<Integer, Object> excel = new HashMap<Integer, Object>();
 			for(int j=0;j<title.length;j++){
 				excel.put(j,hashMap.get(i).get(title[j]));		

@@ -92,6 +92,7 @@ public class RequisitionService extends CommonService {
 		super.session = session;
 		
 	}
+	
 	public HashMap<String, Object> doSearch( String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -119,6 +120,59 @@ public class RequisitionService extends CommonService {
 		}		
 
 		dataModel.setQueryName("getOrderListForRequisition");	
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2))
+				userDefinedSearchCase.put("requisitionSts", "");//有查询条件,不再限定其状态
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}
+		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
+	public HashMap<String, Object> doMaterialRequisitionSearch(
+			String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION_M,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+
+		dataModel.setQueryName("getRequisitionAndStockout");	
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
@@ -267,7 +321,7 @@ public class RequisitionService extends CommonService {
 			String requisitionid = reqData.getRequisitionid();
 			
 			//领料申请insert
-			insertRequisition(reqData);
+			insertRequisition(reqData,Constants.REQUISITION_PARTS);
 						
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
@@ -307,7 +361,7 @@ public class RequisitionService extends CommonService {
 	}
 	
 	private void insertRequisition(
-			B_RequisitionData stock) throws Exception {
+			B_RequisitionData stock,String type) throws Exception {
 		
 		//插入新数据
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
@@ -316,10 +370,11 @@ public class RequisitionService extends CommonService {
 
 		guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
-		stock.setRequisitiontype(Constants.REQUISITION_PARTS);//装配件
+		stock.setRequisitiontype(type);//
 		stock.setRequisitionuserid(userInfo.getUserId());//默认为登陆者
 		stock.setRequisitiondate(CalendarUtil.fmtYmdDate());
 		stock.setRequisitionsts(Constants.STOCKOUT_2);//待出库
+		stock.setRemarks(replaceTextArea(stock.getRemarks()));//换行符转换
 		
 		dao.Create(stock);
 	}
@@ -337,41 +392,6 @@ public class RequisitionService extends CommonService {
 		
 		detailDao.Create(stock);
 	}
-	
-	@SuppressWarnings("unchecked")
-	private void updatePurchasePlan(
-			String YSId,
-			String materialId,
-			float quantity) throws Exception{
-		
-		String where = "YSId ='"+YSId +
-				"' AND materialId ='"+ materialId +
-				"' AND deleteFlag='0' ";
-				
-		//更新到货数量
-		B_PurchasePlanDetailData data = new B_PurchasePlanDetailData();
-		B_PurchasePlanDetailDao dao = new B_PurchasePlanDetailDao();
-		List<B_PurchasePlanDetailData> list = 
-				(List<B_PurchasePlanDetailData>)dao.Find(where);
-		
-		if(list ==null || list.size() == 0){
-			return ;
-		}
-		data = list.get(0);
-		
-		//计算累计领料数量
-		float iAcc = stringToFloat(data.getTotalrequisition());
-		float iNew = quantity + iAcc;		
-		
-		//更新DB
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"RequriUpdate",userInfo);
-		copyProperties(data,commData);
-		data.setTotalrequisition(String.valueOf(iNew));
-		
-		dao.Store(data);		
-	}
-	
 	
 		
 	@SuppressWarnings("unchecked")
@@ -441,9 +461,7 @@ public class RequisitionService extends CommonService {
 		
 	@SuppressWarnings("unchecked")
 	public void doDelete(String recordId) throws Exception{
-		
-		B_ArrivalData data = new B_ArrivalData();	
-															
+																	
 		try {
 			
 			ts = new BaseTransaction();										
@@ -622,6 +640,93 @@ public class RequisitionService extends CommonService {
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;		
+	}
+	
+	public void getRequisitionByRequisitionId(
+			String requisitionId) throws Exception {
+		
+		dataModel.setQueryName("getRequisitionDetailById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("requisitionId", requisitionId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		model.addAttribute("requisition",dataModel.getYsViewData().get(0));
+				
+	}
+	
+	public void materialStockoutAddInit() throws Exception {
+
+		String recordid = request.getParameter("recordId");
+				
+		B_MaterialData mate = new B_MaterialData();
+		mate.setRecordid(recordid);
+		
+		mate = new B_MaterialDao(mate).beanData;
+		
+		model.addAttribute("materialId",mate.getMaterialid());
+		model.addAttribute("materialName",mate.getMaterialname());
+		model.addAttribute("materialQty",mate.getQuantityonhand());
+		model.addAttribute("UnitNmae",DicUtil.getCodeValue("计量单位"+mate.getUnit()));
+	
+	}
+
+	public void materialRquisitionView() throws Exception {
+
+		String requisitionid = request.getParameter("requisitionId");
+
+		//申请单详情
+		getRequisitionByRequisitionId(requisitionid);
+	}
+	
+	
+	public void materialRquisitionInsert() throws Exception {
+
+		String requisitionid = insertMaterialRquisition();
+
+		//申请单详情
+		getRequisitionByRequisitionId(requisitionid);
+	}
+	
+	private String insertMaterialRquisition(){
+		
+		String requisitionid = "";
+		ts = new BaseTransaction();
+
+		try {
+			ts.begin();
+			
+			B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
+			B_RequisitionDetailData detail = reqModel.getReqDetail();
+
+			//取得领料单编号
+			reqData = getRequisitionId(reqData);
+			requisitionid = reqData.getRequisitionid();
+		
+			float quantity = stringToFloat(detail.getQuantity());
+			
+			if(quantity <= 0)
+				return requisitionid;
+			
+			detail.setRequisitionid(requisitionid);
+			insertRequisitionDetail(detail);
+
+			//领料申请insert
+			insertRequisition(reqData,Constants.REQUISITION_5);//直接领料			
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		
+		return requisitionid;
 	}
 
 }
