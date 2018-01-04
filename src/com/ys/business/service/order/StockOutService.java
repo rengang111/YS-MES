@@ -759,7 +759,8 @@ public class StockOutService extends CommonService {
         
         //detail
         //必须为列表头部所有位置集合,输出 数据单元格样式和头部单元格样式保持一致
-        String[] heads = new String[]{"A2","B2","C2","D2","E2","F2","K2","L2"};  
+		String head = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "stockoutForFinanceExcel");
+        String[] heads = head.split(",");  
         excel.writeDateList(wbModule,heads,datalist,sheetNo);
          
         //写到输出流并移除资源
@@ -787,11 +788,11 @@ public class StockOutService extends CommonService {
 		ArrayList<HashMap<String, String>>  hashMap = baseQuery.getYsFullData();	
 		
 		for(int i=0;i<hashMap.size();i++){
-			
-			String[] title = {"rownum","stockOutId","YSId","checkOutDate","materialId","materialName","quantity",""};
+			String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "stockoutForFinanceTitle");
+			String[] titles = title.split(",",-1);
 			Map<Integer, Object> excel = new HashMap<Integer, Object>();
-			for(int j=0;j<title.length;j++){
-				excel.put(j,hashMap.get(i).get(title[j]));		
+			for(int j=0;j<titles.length;j++){
+				excel.put(j,hashMap.get(i).get(titles[j]));		
 			}
 			listMap.add(excel);
 		}
@@ -827,8 +828,8 @@ public class StockOutService extends CommonService {
 		dataModel.setQueryName("stockoutForfinance");
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		String key1 = request.getParameter("key1");
-		String key2 = request.getParameter("key2");
+		String key1 = request.getParameter("key1").trim().toUpperCase();
+		String key2 = request.getParameter("key2").trim().toUpperCase();
 		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);

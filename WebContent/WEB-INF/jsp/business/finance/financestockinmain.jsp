@@ -264,7 +264,7 @@
 					<th style="width: 60px;">入库时间</th>
 					<th style="width: 120px;">物料编号</th>
 					<th>物料名称</th>
-					<th style="width: 40px;">计量单位</th>
+					<th style="width: 40px;">单位</th>
 					<th style="width: 60px;">供应商</th>
 					<th style="width: 50px;">耀升编号</th>
 					<th style="width: 60px;">入库数量</th>

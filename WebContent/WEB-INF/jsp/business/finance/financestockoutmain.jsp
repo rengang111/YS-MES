@@ -67,11 +67,13 @@
 				"columns": [
 					{"data": null, "defaultContent" : '',"className" : 'td-center'},
 					{"data": "stockOutId", "defaultContent" : '', "className" : 'td-left'},
-					{"data": "YSId", "defaultContent" : ''},//
-					{"data": "checkOutDate", "defaultContent" : '', "className" : 'td-right'},//8出库时间
+					{"data": "checkOutDate", "defaultContent" : '', "className" : 'td-center'},//出库时间
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//4
 					{"data": "materialName", "defaultContent" : ''},//5
-					{"data": "quantity", "defaultContent" : '', "className" : 'td-right'},//7 领料申请者
+					{"data": "unit", "defaultContent" : '', "className" : 'td-center'},
+					{"data": "YSId", "defaultContent" : ''},//
+					{"data": "supplierId", "defaultContent" : '（集中采购）', "className" : 'td-left'},//
+					{"data": "quantity", "defaultContent" : '', "className" : 'td-right'},// 领料申请者
 					
 					],
 				"columnDefs":[
@@ -86,10 +88,10 @@
 		    			}
 		    			return rtn;
 		    		}},
-		    		{"targets":2,"render":function(data, type, row){	    			
+		    		{"targets":6,"render":function(data, type, row){	    			
 		    			return jQuery.fixedWidth(data,20);
 		    		}},
-		    		{"targets":5,"render":function(data, type, row){	    			
+		    		{"targets":4,"render":function(data, type, row){	    			
 		    			return jQuery.fixedWidth(data,45);
 		    		}},
 		    		{
@@ -204,12 +206,14 @@
 			<thead>						
 				<tr>
 					<th style="width: 30px;">No</th>
-					<th style="width: 100px;">出库单编号</th>
-					<th style="width: 80px;">耀升编号</th>
-					<th style="width: 80px;">出库时间</th>
-					<th style="width: 170px;">物料编号</th>
+					<th style="width: 70px;">出库单编号</th>
+					<th style="width: 70px;">出库时间</th>
+					<th style="width: 150px;">物料编号</th>
 					<th>物料名称</th>
-					<th style="width: 120px;">出库数量</th>
+					<th style="width: 50px;">单位</th>
+					<th style="width: 80px;">耀升编号</th>
+					<th style="width: 70px;">供应商</th>
+					<th style="width: 100px;">出库数量</th>
 				</tr>
 			</thead>
 		</table>
