@@ -435,7 +435,7 @@ public class OrderService extends CommonService  {
 					data.getMaterialid() != null && 
 					data.getMaterialid() != ""){
 
-					insertOrderDetail(data,piId, userInfo);
+					insertOrderDetail(data,piId);
 					
 								
 				}	
@@ -485,8 +485,7 @@ public class OrderService extends CommonService  {
 	 */
 	private void insertOrderDetail(
 			B_OrderDetailData newData,
-			String piId,
-			UserInfo userInfo) throws Exception{
+			String piId) throws Exception{
 
 		B_OrderDetailDao dao = new B_OrderDetailDao();
 
@@ -559,8 +558,8 @@ public class OrderService extends CommonService  {
 			//首先删除DB中的订单详情
 			String piId = reqOrder.getPiid();
 			String oldPiId = reqModel.getKeyBackup();
-			String where = " piid = '"+oldPiId +"'" ;
-			deleteOrderDetail(where);
+		
+			deleteOrderDetail(oldPiId);
 			
 			//订单详情 
 			for(B_OrderDetailData newData:newDetailList ){
@@ -570,7 +569,8 @@ public class OrderService extends CommonService  {
 				if(mateId != null && mateId.trim() != ""){
 					
 					//更新处理
-					insertOrderDetail(newData, piId, userInfo);						
+					newData.setPiid(piId);
+					updateOrderDetail(newData);						
 					
 				}
 			}
@@ -646,24 +646,28 @@ public class OrderService extends CommonService  {
 	 * 订单详情更新处理
 	 */
 	private void updateOrderDetail(
-			B_OrderDetailData newData,
-			B_OrderDetailData dbData,
-			UserInfo userInfo) 
-			throws Exception{
+			B_OrderDetailData newData) throws Exception{
 		
-		B_OrderDetailDao dao = new B_OrderDetailDao();							
-		
-		//处理共通信息
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,"OrderDetailUpdate",userInfo);
-
-		copyProperties(dbData,commData);
-		//获取页面数据
-		dbData.setQuantity(newData.getQuantity());
-		dbData.setPrice(newData.getPrice());;
-		dbData.setTotalprice(newData.getTotalprice());
-		
-		dao.Store(dbData);
-
+		B_OrderDetailData dbData = null;
+		try{
+			dbData = new B_OrderDetailDao(newData).beanData;
+		}catch(Exception e){
+			
+		}		
+		if(dbData == null || ("").equals(dbData)){
+			//insert
+			insertOrderDetail(newData,newData.getPiid());
+		}else{
+			//update
+			//获取页面数据
+			copyProperties(dbData,newData);
+			//处理共通信息
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderDetailUpdate",userInfo);
+			copyProperties(dbData,commData);
+			
+			new B_OrderDetailDao().Store(dbData);
+		}
 	}
 	
 	/*
@@ -689,17 +693,23 @@ public class OrderService extends CommonService  {
 	}
 	
 	/*
-	 * BOM详情删除处理
+	 * 详情删除处理
 	 */
-	private void deleteOrderDetail(String where) {
-
-		B_OrderDetailDao dao = new B_OrderDetailDao();
-		try{
-			dao.RemoveByWhere(where);
-		}catch(Exception e){
-			//nothing
-		}		
+	@SuppressWarnings("unchecked")
+	private void deleteOrderDetail(String oldPiId) throws Exception {
+		String where = " piid = '"+oldPiId +"'" ;
+		List<B_OrderDetailData> list = new B_OrderDetailDao().Find(where);
+		
+		for(B_OrderDetailData detail:list){
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"OrderDetailDelete",userInfo);
+			copyProperties(detail,commData);			
+			new B_OrderDetailDao().Store(detail);
+		}
+		
 	}
+	
+	
 	@SuppressWarnings("unchecked")
 	public Model delete(String delData){
 
