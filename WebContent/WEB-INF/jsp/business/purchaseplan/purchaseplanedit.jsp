@@ -439,10 +439,10 @@
 	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }" /></td>
 	    <td><span id="totalPrice${status.index}">${bom.totalPrice }</span>
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  value="${bom.totalPrice }" /></td>
-	    <td><span id="price${status.index}">${bom.lastPrice }</span></td>
+	    <td><span id="price${status.index}">${bom.lastPrice }</span>
+	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" /></td>
 	    
-	    	<form:hidden path="planDetailList[${status.index}].recordid" value="${bom.recordId }" />
-	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" />
+	    	<form:hidden path="planDetailList[${status.index}].recordid" value="${bom.recordId }" />	    	
 	    	<form:hidden path="planDetailList[${status.index}].contractflag" value="1" />
 	</tr>
 	<script type="text/javascript">
