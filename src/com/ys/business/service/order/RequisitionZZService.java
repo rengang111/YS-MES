@@ -297,7 +297,7 @@ public class RequisitionZZService extends CommonService {
 		for(HashMap<String, String>map:list){
 			 
 			 String subid = map.get("materialId").substring(0, 3);	
-			 String subMat = map.get("materialId").substring(0, 1);
+			 String subMat = map.get("parentMaterialId").substring(0, 1);
 			 if(("A14").equals(subid) || ("A16").equals(subid)){//吹塑:A14
 				 blow.add(map);
 			 }else if( ("A03").equals(subid) && ("F").equals(subMat)){//吸塑:A03

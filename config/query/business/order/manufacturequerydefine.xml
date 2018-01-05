@@ -321,6 +321,7 @@
     </where>
   	<select>
 	      <f name="b.rawMaterialId" alias="materialId" ctype="" />
+	      <f name="b.materialId" alias="parentMaterialId" ctype="" />
 	      <f name="b.materialName" alias="" ctype="" />
 	      <f name="SUM(REPLACE(b.totalQuantity,',',''))" alias="manufactureQuantity" ctype="" />
 	      <f name="b.quantityOnHand" alias="" ctype="" />
