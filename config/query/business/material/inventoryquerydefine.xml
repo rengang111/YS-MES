@@ -551,4 +551,36 @@
     <having>recordId = '0'</having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="materialStockInList" />
+    <where>
+   		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.receiptId" des=""  reqName="receiptId" dtype="ch" oper="="  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.receiptId" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.packagNumber" alias="" ctype="" />
+      <f name="a.packaging" alias="" ctype="包装方式" />
+      <f name="a.packaging" alias="packagingId" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+      <f name="A.stockinType" alias="" ctype="入库类别" />
+      <f name="A.stockinType" alias="stockinTypeId" ctype="" />
+      <f name="A.checkInDate" alias="" ctype="" />
+      <f name="A.keepUser" alias="" ctype="" />
+      <f name="b.LoginName" alias="stockInName" ctype="" />
+    </select>
+    <!-- stockinType='010' 直接入库;020:料件入库;030:成品入库 -->
+    <from>v_purchasestockinbyid a LEFT JOIN s_user b ON b.userId=a.keepUser AND b.deleteFlag='0' WHERE a.deleteFlag = '0' AND a.stockinType='010' </from>
+    <orderby>a.receiptId DESC,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>

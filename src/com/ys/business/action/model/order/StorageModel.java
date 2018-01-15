@@ -18,7 +18,16 @@ public class StorageModel extends BaseModel {
 	private String oldPackagNumber;
 	private B_MaterialData material ;
 	private B_PurchaseStockInData stock;
+	private B_PurchaseStockInDetailData stockDetail;
 	private List<B_PurchaseStockInDetailData> stockList;
+	
+	
+	public B_PurchaseStockInDetailData getStockDetail() {
+		return this.stockDetail;
+	}
+	public void setStockDetail(B_PurchaseStockInDetailData stockDetail) {
+		this.stockDetail = stockDetail;
+	}
 	
 	public String getOldPackagNumber(){
 		return this.oldPackagNumber;
@@ -47,6 +56,7 @@ public class StorageModel extends BaseModel {
 	public void setStock(B_PurchaseStockInData stock) {
 		this.stock = stock;
 	}
+	
 	
 	public List<B_PurchaseStockInDetailData> getStockList() {
 		return this.stockList;

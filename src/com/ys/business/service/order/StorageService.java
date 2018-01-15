@@ -159,7 +159,62 @@ public class StorageService extends CommonService {
 
 	}
 
+	public HashMap<String, Object> doMaterialStockinSearch(
+			String data) throws Exception {
 
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_MATERIALSTOCKIN,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryName("materialStockInList");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if((key1 !=null && !("").equals(key1)) || 
+				(key2 !=null && !("").equals(key2))){
+			userDefinedSearchCase.put("status", "");
+		}
+		
+				
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+
+	
 	public HashMap<String, Object> doFinanceSearch( String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -268,6 +323,13 @@ public class StorageService extends CommonService {
 		
 		return modelMap;		
 
+	}
+	
+	public void materialStockinAddInit() throws Exception {
+
+		model.addAttribute("packagingList",
+				util.getListOption(DicUtil.DIC_PACKAGING, ""));
+	
 	}
 	
 	public boolean addInit() throws Exception {
@@ -414,6 +476,7 @@ public class StorageService extends CommonService {
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
 	
+	
 	public void updateAndReturn() throws Exception {
 
 		String contractId = updateStorage();
@@ -452,7 +515,7 @@ public class StorageService extends CommonService {
 			String receiptid = reqData.getReceiptid();
 			contractId = reqData.getContractid();
 			
-			//采购入库记录
+			//料件入库记录
 			updatePurchaseStockIn(reqData);
 			
 			//先删除已经存在的入库明细
@@ -507,7 +570,8 @@ public class StorageService extends CommonService {
 			String receiptid = reqData.getReceiptid();
 			contractId = reqData.getContractid();
 			
-			//采购入库记录
+			//料件入库记录
+			reqData.setStockintype(Constants.STOCKINTYPE_2);
 			insertPurchaseStockIn(reqData);
 			
 			//采购入库记录明细
@@ -566,7 +630,8 @@ public class StorageService extends CommonService {
 			String receiptid = reqData.getReceiptid();
 			ysid = reqData.getYsid();
 			
-			//采购入库记录
+			//成品入库记录
+			reqData.setStockintype(Constants.STOCKINTYPE_3);
 			insertPurchaseStockIn(reqData);
 			
 			//采购入库记录明细
@@ -867,6 +932,7 @@ public class StorageService extends CommonService {
 		stock.setKeepuser(userInfo.getUserId());//默认为登陆者
 		guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
+		stock.setRemarks(replaceTextArea(stock.getRemarks()));
 		
 		dao.Create(stock);
 	}
@@ -877,8 +943,10 @@ public class StorageService extends CommonService {
 		//删除旧数据,防止数据重复
 		B_PurchaseStockInData db = new B_PurchaseStockInDao(stock).beanData;
 		
-		if(db == null || ("").equals(db))
+		if(db == null || ("").equals(db)){
+			stock.setStockintype(Constants.STOCKINTYPE_2);
 			insertPurchaseStockIn(stock);
+		}
 
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"PurchaseStockInUpdate",userInfo);
@@ -943,6 +1011,24 @@ public class StorageService extends CommonService {
 		return modelMap;
 	}
 	
+
+	private void getStockinDetail(
+			String receiptId) throws Exception{
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("materialStockInList");
+		userDefinedSearchCase.put("receiptId", receiptId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0 ){
+			model.addAttribute("storage", dataModel.getYsViewData().get(0));		
+		}	
+		
+	}
 	private boolean checkStockInDataById(
 			String contractId) throws Exception{
 		
@@ -1285,5 +1371,63 @@ public class StorageService extends CommonService {
 		list.add(zongji);
 		
 		return list;
+	}
+	
+	public void materialStockinDetailView() throws Exception {
+
+		String receiptId = request.getParameter("receiptId");
+
+		getStockinDetail(receiptId);
+	}
+	
+	public void insertMaterialAndReturn() throws Exception {
+
+		String receiptId = insertStorageMaterial();
+
+		getStockinDetail(receiptId);
+	}
+	
+	private String insertStorageMaterial(){
+		String ysid = "";
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			B_PurchaseStockInData reqData = reqModel.getStock();
+			B_PurchaseStockInDetailData detail = reqModel.getStockDetail();
+
+			//取得入库申请编号
+			reqData = getStorageRecordId(reqData);
+			String receiptid = reqData.getReceiptid();
+			ysid = reqData.getYsid();
+			
+			//直接入库记录
+			reqData.setStockintype(Constants.STOCKINTYPE_1);
+			insertPurchaseStockIn(reqData);
+			
+			//入库记录明细			
+			detail.setReceiptid(receiptid);
+			insertPurchaseStockInDetail(detail);
+			
+			//更新库存			
+			updateProductStock(
+					detail.getMaterialid(),
+					detail.getQuantity(),
+					"0");			
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		
+		return ysid;
 	}
 }

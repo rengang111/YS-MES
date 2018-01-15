@@ -167,6 +167,25 @@ public class StorageAction extends BaseAction {
 				showStockIn();
 				rtnUrl = "/business/finance/paymentstockinview";
 				break;
+			case "materialStockinMainInit"://直接入库一览
+				rtnUrl = "/business/inventory/materialstockinmain";
+				break;
+			case "materialStockinMainSearch"://直接入库查询
+				dataMap = doMaterialStockinSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "materialStockinAddInit"://直接入库
+				materialStockinAddInit();
+				rtnUrl = "/business/inventory/materialstockinadd";
+				break;
+			case "materialStockinAdd"://直接入库
+				materialStockinAdd();
+				rtnUrl = "/business/inventory/materialstockinview";
+				break;
+			case "materialStockinDetailView"://直接入库明细查看
+				materialStockinDetailView();
+				rtnUrl = "/business/inventory/materialstockinview";
+				break;
 				
 		}
 		
@@ -238,6 +257,34 @@ public class StorageAction extends BaseAction {
 		
 		try {
 			dataMap = service.doSearch(data,Constants.FORM_MATERIALSTORAGE,makeType);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doMaterialStockinSearch(String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_MATERIALSTORAGE+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_MATERIALSTORAGE+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.doMaterialStockinSearch(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
@@ -480,14 +527,45 @@ public class StorageAction extends BaseAction {
 	
 
 	private void downloadExcel() {
-		
-		
+				
 		try {
 			service.stockinDownloadExcelForfinance();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 			//System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	public void materialStockinAddInit(){
+
+		try{		
+			service.materialStockinAddInit();
+			model.addAttribute("userName", userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	public void materialStockinAdd(){
+
+		try{	
+			service.insertMaterialAndReturn();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	
+	public void materialStockinDetailView(){
+
+		try{	
+			service.materialStockinDetailView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
 		}
 		
 	}

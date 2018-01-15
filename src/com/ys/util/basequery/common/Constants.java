@@ -46,6 +46,7 @@ public class Constants {
 	public static final String FORM_PAYMENTREQUEST= "paymentrequest";//应付款申请
 	public static final String FORM_PAYMENTAPPROVAL= "paymentapproval";//应付款审核
 	public static final String FORM_FINANCESTOCKIN= "financestockin";//财务入库管理
+	public static final String FORM_MATERIALSTOCKIN= "materialstockin";//直接入库
 	
 	
 	/*
@@ -229,5 +230,11 @@ public class Constants {
 	public static final String payment_050 = "050";//完成
 	public static final String payment_060 = "060";//审核未通过
 
+	/**
+	 * 入库类别
+	 */
+	public static final String STOCKINTYPE_1 = "010";//直接入库
+	public static final String STOCKINTYPE_2 = "020";//料件入库
+	public static final String STOCKINTYPE_3 = "030";//成品入库
 
 }

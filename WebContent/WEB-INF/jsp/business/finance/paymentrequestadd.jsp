@@ -375,7 +375,7 @@
 						<td class="td-right">${list.totalPrice }</td>
 						<td class="td-center">
 							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>&nbsp;&nbsp;
-							<a href="###" onClick="doShowContract('${list.contractId }')">打印入库单</a>
+							<a href="###" onClick="doShowStockin('${list.contractId }')">打印入库单</a>
 						</td>
 							<form:hidden path="paymentList[${status.index }].contractid"  value="${list.contractId }" />
 							<form:hidden path="paymentList[${status.index }].payable"  value="${list.total }" />
