@@ -57,11 +57,11 @@
 			if(fArrival > (fquantity-fRecorde)){
 
 				$().toastmessage('showWarningToast', "登记数大于剩余数了。");
-		       // $(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
-           	 	//$(this).find("input:text").addClass('error');
-				//return;
+		        $(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
+           	 	$(this).find("input:text").addClass('error');
+				return;
 			}else{
-				//$(this).find("input:text").removeClass('error')
+				$(this).find("input:text").removeClass('error')
 			}
 			
 			//剩余数量

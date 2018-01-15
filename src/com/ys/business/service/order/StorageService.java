@@ -310,9 +310,9 @@ public class StorageService extends CommonService {
 		//合同信息
 		getContractDetail(contractId);
 		//取得该到货编号下的物料信息
-		getReceivInspectionById(arrivalId);
+		//getReceivInspectionById(arrivalId);
 
-		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+		//model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
 	
 	}
 
@@ -1247,7 +1247,7 @@ public class StorageService extends CommonService {
 		
 		for(int i=0;i<hashMap.size();i++){
 			
-			String[] title = {"rownum","receiptId","checkInDate","materialId","materialName","unit","supplierId","YSId","contractQuantity","price","taxPrice","taxTotal",""};
+			String[] title = {"rownum","receiptId","checkInDate","materialId","materialName","unit","supplierName","YSId","contractQuantity","contractPrice","taxPrice","taxTotal",""};
 			Map<Integer, Object> excel = new HashMap<Integer, Object>();
 			for(int j=0;j<title.length;j++){
 				excel.put(j,hashMap.get(i).get(title[j]));		

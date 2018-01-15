@@ -508,14 +508,14 @@ function reloadFn(){
 		var fsurplus = fjihua - fyiling;
 				
 		if(fsurplus > 0){//未领完的场合下
-			if(fkucun >= fsurplus){//库存大于需求量
+			//if(fkucun >= fsurplus){//库存大于需求量
 				$(this).find("td").eq(8).find("input").val(formatNumber(fsurplus));//本次领料
 				//$(this).find("td").eq(8).html("0")//剩余数清零
 				countValue++;//累计未领完的物料
-			}else{
-				$(this).find("td").eq(8).find("input").val(formatNumber(fkucun));//本次领料
+			//}else{
+			//	$(this).find("td").eq(8).find("input").val(formatNumber(fkucun));//本次领料
 				//$(this).find("td").eq(8).html(formatNumber( fsurplus - fkucun ));//剩余数清零							
-			}
+			//}
 		}else{
 			fsurplus = 0;
 			$(this).find("td").eq(8).find("input").val(fsurplus);//本次领料清零
@@ -548,13 +548,13 @@ function reloadFn(){
 			if(sltFlag){//一次性全部领料
 				
 				if(fsurplus > "0"){//未领完的场合下
-					if(fstocks >= fsurplus){//库存大于需求量
+					//if(fstocks >= fsurplus){//库存大于需求量
 						$(this).find("td").eq(7).find("input").val(vsurplus);//本次领料
 						//$(this).find("td").eq(8).html("0")//剩余数清零
-					}else{
-						$(this).find("td").eq(7).find("input").val(fstocks);//本次领料
+					//}else{
+					//	$(this).find("td").eq(7).find("input").val(fstocks);//本次领料
 						//$(this).find("td").eq(8).html(formatNumber( fsurplus - fstocks ));//剩余数清零							
-					}
+					//}
 				}else{//超领
 					
 				}

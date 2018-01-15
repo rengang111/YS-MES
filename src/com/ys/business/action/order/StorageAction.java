@@ -163,6 +163,10 @@ public class StorageAction extends BaseAction {
 			case "downloadExcel":
 				downloadExcel();
 				break;
+			case "showStockInByContractId":
+				showStockIn();
+				rtnUrl = "/business/finance/paymentstockinview";
+				break;
 				
 		}
 		
@@ -324,7 +328,6 @@ public class StorageAction extends BaseAction {
 		try{
 			service.showStockIn();
 
-			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

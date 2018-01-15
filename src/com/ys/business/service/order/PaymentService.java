@@ -901,7 +901,7 @@ public class PaymentService extends CommonService {
 	
 	public void getContractDetail(String contractIds) throws Exception {
 
-		dataModel.setQueryName("contractListForPaymenRequest");		
+		dataModel.setQueryName("contractListForPaymenRequestById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("contractId", contractIds);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

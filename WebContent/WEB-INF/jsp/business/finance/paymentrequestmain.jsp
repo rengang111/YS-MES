@@ -7,7 +7,7 @@
 <title>应付款--申请一览</title>
 <script type="text/javascript">
 
-	function ajax(colNum,type,scrollHeight,sessionFlag) {
+	function ajax(action,type,scrollHeight,sessionFlag) {
 		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -20,10 +20,11 @@
 		url = url + "&makeType="+makeType;
 		url = url + "&finishStatus="+type;
 
+		
 		//var scrollHeight = $(document).height(); 
 		var t = $('#TMaterial').DataTable({
-				"paging": true,
-				"iDisplayLength" : 50,
+				"paging": action,
+				"iDisplayLength" : 300,
 				"lengthChange":false,
 				//"lengthMenu":[10,150,200],//设置一页展示20条记录
 				"processing" : true,
@@ -116,7 +117,7 @@
 	$(document).ready(function() {
 	
 		var scrollHeight = $(document).height() - 200; 
-		ajax(1,"010",scrollHeight,"true");
+		ajax("true","010",scrollHeight,"true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -144,7 +145,7 @@
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		var scrollHeight = $(document).height() - 200; 
 		
-		ajax(8,"",scrollHeight,"false");
+		ajax("false","",scrollHeight,"false");
 
 	}
 	
@@ -154,7 +155,7 @@
 		$("#keyword2").val("");
 		var scrollHeight = $(document).height() - 200; 
 		
-		ajax(colNum,type,scrollHeight,"false");
+		ajax("false",type,scrollHeight,"false");
 
 	}
 	

@@ -429,9 +429,9 @@
       <f name="A.subId" alias="" ctype="" />
       <f name="A.materialNumber" alias="" ctype="" />
       <f name="FORMAT((REPLACE(A.contractQuantity,',','') * b.lastPrice),2)" alias="total" ctype="" />      
-      <f name="FORMAT(REPLACE(b.lastPrice,',',''),2)" alias="price" ctype="" />  
-      <f name="FORMAT(REPLACE(a.contractTotalPrice,',',''),2)" alias="contractTotalPrice" ctype="" />
-      <f name="format((replace(A.contractPrice,',','')),2)" alias="contractPrice" ctype="" />
+      <f name="b.lastPrice" alias="price" ctype="" />  
+      <f name="A.contractTotalPrice" alias="" ctype="" />
+      <f name="A.contractPrice" alias="" ctype="" />
       <f name="format((replace(A.contractPrice,',','') / 1.17),6)" alias="taxPrice" ctype="" />
       <f name="format((replace(A.contractPrice,',','') / 1.17) * replace(A.contractQuantity,',',''),2)" alias="taxTotal" ctype="" />
     </select>

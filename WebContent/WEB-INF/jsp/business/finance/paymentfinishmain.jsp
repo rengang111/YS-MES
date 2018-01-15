@@ -211,7 +211,7 @@
 							<th width="70px">审核日期</th>
 							<th width="70px">付款日期</th>
 							<th width="70px">付款金额</th>
-							<th width="60px">应付款总额</th>
+							<th width="80px">应付款总额</th>
 							<th width="50px">状态</th>
 						</tr>
 					</thead>

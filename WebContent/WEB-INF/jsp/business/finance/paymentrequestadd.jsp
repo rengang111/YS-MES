@@ -35,6 +35,7 @@
 			"columns": [
 				{"className" : 'td-center'},//
 				{"className" : 'td-left'},//
+				{"className" : ''},//
 				{"className" : 'td-left'},//
 				{"className" : 'td-center'},//
 				{"className" : 'td-right'},//
@@ -200,9 +201,9 @@
 
 		ajax();
 		
-		var contract = contractSum(4);
-		var minis = contractSum(5);
-		var payment = contractSum(6);
+		var contract = contractSum(5);
+		var minis = contractSum(6);
+		var payment = contractSum(7);
 		$('#contractTotal').html(floatToCurrency(contract));
 		$('#minisTotal').html(floatToCurrency(minis));
 		$('#paymentTotal').html(floatToCurrency(payment));		
@@ -243,6 +244,23 @@
 		
 		callProductDesignView("供应商",url);
 	}
+	
+	function doShowStockin(contractId) {
+
+		var url = '${ctx}/business/storage?methodtype=showStockInByContractId&openFlag=newWindow&contractId=' + contractId;
+		
+		callProductDesignView("入库单",url);
+	}
+	
+	function doPrintContract(contractId) {
+	
+		var url = '${ctx}/business/requirement?methodtype=contractPrint';
+		url = url +'&contractId='+contractId;
+		//alert(url)		
+		callProductDesignView("打印合同",url);	
+
+	}
+	
 </script>
 
 </head>
@@ -334,26 +352,31 @@
 			<thead>				
 				<tr>
 					<th width="30px">No</th>
-					<th width="120px">合同编号</th>
+					<th width="100px">合同编号</th>
+					<th width="120px">入库单号</th>
 					<th width="80px">耀升编号</th>
 					<th width="80px">约定付款日</th>
-					<th width="100px">合同金额</th>
-					<th width="100px">增减项总额</th>
-					<th width="100px">应付款金额</th>
-					<th></th>
+					<th width="90px">合同金额</th>
+					<th width="80px">增减项总额</th>
+					<th width="90px">应付款金额</th>
+					<th>操作</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:forEach var='list' items='${contract}' varStatus='status'>	
 					<tr>
-						<td>${status.index+1 }</td>
+						<td class="td-center">${status.index+1 }</td>
 						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a></td>
+						<td><a href="###" onClick="doShowStockin('${list.contractId }')">${list.receiptId }</a></td>
 						<td>${list.YSId }</td>
-						<td>${list.agreementDate }</td>
-						<td>${list.totalPrice }</td>
-						<td>0</td>
-						<td>${list.totalPrice }</td>
-						<td></td>
+						<td class="td-center">${list.agreementDate }</td>
+						<td class="td-right">${list.totalPrice }</td>
+						<td class="td-right">0</td>
+						<td class="td-right">${list.totalPrice }</td>
+						<td class="td-center">
+							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>&nbsp;&nbsp;
+							<a href="###" onClick="doShowContract('${list.contractId }')">打印入库单</a>
+						</td>
 							<form:hidden path="paymentList[${status.index }].contractid"  value="${list.contractId }" />
 							<form:hidden path="paymentList[${status.index }].payable"  value="${list.total }" />
 					</tr>
@@ -361,6 +384,7 @@
 			</tbody>
 			<tfoot>
 				<tr>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
