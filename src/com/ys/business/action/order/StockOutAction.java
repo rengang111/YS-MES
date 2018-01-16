@@ -149,6 +149,26 @@ public class StockOutAction extends BaseAction {
 			case "downloadExcel":
 				downloadExcel();
 				break;
+			case "productSearchMainInit"://成品出库一览
+				doInit();
+				rtnUrl = "/business/inventory/productstockoutmain";
+				break;
+			case "productSearchMain"://成品一览查询
+				dataMap = productSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "productStockoutAddInit"://成品出库
+				productStockoutAddInit();
+				rtnUrl = "/business/inventory/productstockoutadd";
+				break;
+			case "productStockoutAdd"://成品出库保存
+				productStockoutAdd();
+				rtnUrl = "/business/inventory/productstockoutview";
+				break;
+			case "getProductStockoutDetail"://成品出库记录
+				dataMap = getProductStockoutDetail();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -417,4 +437,62 @@ public class StockOutAction extends BaseAction {
 		}
 		
 	}
+	
+	private void productStockoutAddInit() {		
+		
+		try {
+			model.addAttribute("userName",userInfo.getUserName());
+			service.productStockoutAddInit();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	
+	private void productStockoutAdd() {		
+		
+		try {
+			service.insertProductAndReturn();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> productSearch( String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_PRODUCTSTOCKOUT+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PRODUCTSTOCKOUT+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.doSearchForProduct(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> getProductStockoutDetail() throws Exception{
+
+		return service.getProductStockoutDetail();		
+		
+	}
+	
 }

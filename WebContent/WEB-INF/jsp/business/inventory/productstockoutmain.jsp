@@ -14,16 +14,8 @@
 			table.fnDestroy();
 		}
 
-		var url = "${ctx}/business/stockout?methodtype=orderSearch"+"&sessionFlag="+sessionFlag;
-		
-		if(status != ''){
-			//默认是未出库
-			$("#keyword1").val("");
-			$("#keyword2").val("");
+		var url = "${ctx}/business/stockout?methodtype=productSearchMain"+"&sessionFlag="+sessionFlag;
 			url += "&status="+status;
-			
-		}
-		url += "&keyBackup="+status;
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -57,10 +49,7 @@
 						fnCallback(data);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
-							//alert(XMLHttpRequest.status);
-							//alert(XMLHttpRequest.readyState);
-							//alert(textStatus);
-							//alert(errorThrown);
+
 					 }
 				})
 			},
@@ -72,9 +61,10 @@
 				{"data": "YSId"},
 				{"data": "materialId"},
 				{"data": "materialName"},
-				{"data": "totalQuantity","className" : 'td-right'},
-				{"data": "completedQuantity","className" : 'td-right'},
-				{"data": "completedNumber","className" : 'td-right'},
+				{"data": "orderQty","className" : 'td-right'},
+				{"data": "stockinQty","className" : 'td-right'},
+				{"data": "stockoutQty","className" : 'td-right',"defaultContent" : '0'},
+				{"data": "stockoutDate","className" : 'td-center',"defaultContent" : '（未出库）'},
 								
 			],
 			"columnDefs":[
@@ -102,8 +92,8 @@
 
 	$(document).ready(function() {
 		
-		//030:默认显示待生产的数据
-		ajax("030","true");
+		//
+		ajax("040","true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -125,44 +115,15 @@
 		
 	function doShow(YSId) {
 
-		var url = '${ctx}/business/storage?methodtype=productAddInit&YSId=' + YSId;
+		var url = '${ctx}/business/stockout?methodtype=productStockoutAddInit&YSId=' + YSId;
 
 		location.href = url;
 	}
 			
-	function doDelete() {
-
-		var str = '';
-		$("input[name='numCheck']").each(function(){
-			if ($(this).prop('checked')) {
-				str += $(this).val() + ",";
-			}
-		});
-
-		if (str != '') {
-			if(confirm("确定要删除数据吗？")) {
-				jQuery.ajax({
-					type : 'POST',
-					async: false,
-					contentType : 'application/json',
-					dataType : 'json',
-					data : str,
-					url : "${ctx}/business/arrival?methodtype=delete",
-					success : function(data) {
-						reload();						
-					},
-					error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				});
-			}
-		} else {
-			alert("请至少选择一条数据");
-		}		
-	}
 	
-	function selectContractByDate(status,sessionFlag){
+	function selectContractByDate(status){
 	
-		ajax(status,sessionFlag);
+		ajax(status,'false');
 	}
 		
 </script>
@@ -199,8 +160,9 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('030','false');">未出库</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('040','false');">已出库</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('040');">未出库</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('051');">部分出库中</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('050');">已出库</a>
 		</div>
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						
@@ -210,6 +172,7 @@
 					<th style="width: 170px;" class="dt-middle ">产品编号</th>
 					<th class="dt-middle">产品名称</th>
 					<th style="width: 80px;" class="dt-middle">订单数量</th>
+					<th style="width: 80px;" class="dt-middle">入库数量</th>
 					<th style="width: 80px;" class="dt-middle">出库数量</th>
 					<th style="width: 80px;" class="dt-middle">出库日期</th>
 				</tr>

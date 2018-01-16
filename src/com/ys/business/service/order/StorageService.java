@@ -909,12 +909,12 @@ public class StorageService extends CommonService {
 				"PurchaseStockInUpdate",userInfo);
 		copyProperties(data,commData);
 	
-		if(orderQuan == totalQuan){
+		//if(orderQuan == totalQuan){
 			data.setStoragedate(CalendarUtil.fmtYmdDate());
 			data.setStatus(Constants.ORDER_STS_4);//已入库
-		}else{
-			data.setStatus(Constants.ORDER_STS_3);//待交货			
-		}
+		//}else{
+			//data.setStatus(Constants.ORDER_STS_41);//入库中			
+		//}
 		
 		data.setCompletedquantity(String.valueOf(totalQuan));
 		data.setCompletednumber(String.valueOf(totalNum));

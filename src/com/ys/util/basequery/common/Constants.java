@@ -47,6 +47,7 @@ public class Constants {
 	public static final String FORM_PAYMENTAPPROVAL= "paymentapproval";//应付款审核
 	public static final String FORM_FINANCESTOCKIN= "financestockin";//财务入库管理
 	public static final String FORM_MATERIALSTOCKIN= "materialstockin";//直接入库
+	public static final String FORM_PRODUCTSTOCKOUT= "productstockout";//成品出库
 	
 	
 	/*
@@ -77,7 +78,9 @@ public class Constants {
 	public static final String ORDER_STS_2 = "020";//待到料
 	public static final String ORDER_STS_3 = "030";//待交货
 	public static final String ORDER_STS_4 = "040";//已入库
-	//public static final String ORDER_STS_5 = "050";//合同执行中
+	public static final String ORDER_STS_41 = "041";//入库中
+	public static final String ORDER_STS_5  = "050";//已出库
+	public static final String ORDER_STS_51 = "051";//出库中
 	
 	/**
 	 * 币种:与字典表关联
@@ -236,5 +239,11 @@ public class Constants {
 	public static final String STOCKINTYPE_1 = "010";//直接入库
 	public static final String STOCKINTYPE_2 = "020";//料件入库
 	public static final String STOCKINTYPE_3 = "030";//成品入库
+	
+	/**
+	 * 出库类别
+	 */
+	public static final String STOCKOUTTYPE_1 = "010";//料件出库
+	public static final String STOCKOUTTYPE_2 = "020";//成品出库
 
 }

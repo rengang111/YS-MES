@@ -228,6 +228,7 @@ public class ReceiveInspectionService extends CommonService  {
 			try {
 				new B_ReceiveInspectionDetailDao().RemoveByWhere(where);
 			} catch (Exception e) {
+				e.printStackTrace();
 				// nothing
 			}
 			//新增进料报检明细

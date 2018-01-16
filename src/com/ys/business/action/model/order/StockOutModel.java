@@ -14,7 +14,15 @@ public class StockOutModel extends BaseModel {
 	private static final long serialVersionUID = 1L;
 	
 	private B_StockOutData stockout;
+	private B_StockOutDetailData stockDetail;
 	private List<B_StockOutDetailData> stockList;
+		
+	public B_StockOutDetailData getStockDetail() {
+		return this.stockDetail;
+	}
+	public void setStockDetail(B_StockOutDetailData stockDetail) {
+		this.stockDetail = stockDetail;
+	}
 		
 	public B_StockOutData getStockout() {
 		return this.stockout;

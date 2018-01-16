@@ -16,12 +16,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.order.StockOutModel;
 import com.ys.business.db.dao.B_MaterialDao;
+import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.dao.B_StockOutDetailDao;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
+import com.ys.business.db.data.B_PurchaseStockInDetailData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.B_StockOutData;
@@ -232,6 +235,7 @@ public class StockOutService extends CommonService {
 		String materialId = request.getParameter("materialId");
 		return getOrderAndStockDetail(YSId,materialId);
 	}
+	
 	public void insertAndReturn() throws Exception {
 
 		String YSId = insertStorage();
@@ -247,8 +251,17 @@ public class StockOutService extends CommonService {
 		getOrderDetail(YSId);
 
 	}
-	
+	/**
+	 * 成品出库
+	 * @throws Exception
+	 */
+	public void insertProductAndReturn() throws Exception {
 
+		String YSId = insertProductStorage();
+
+		getOrderDetail(YSId);
+
+	}
 	
 	private String updateStorage(){
 		String YSId = "";
@@ -316,6 +329,7 @@ public class StockOutService extends CommonService {
 			String requisitionId = reqData.getRequisitionid();
 	
 			//出库记录
+			reqData.setStockouttype(Constants.STOCKOUTTYPE_1);
 			insertStockOut(reqData);
 			
 
@@ -350,8 +364,87 @@ public class StockOutService extends CommonService {
 		return YSId;
 	}
 	
+	/**
+	 * 成品出库
+	 * @return
+	 */
+	private String insertProductStorage(){
+		String YSId = "";
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			B_StockOutData reqData = reqModel.getStockout();
+			B_StockOutDetailData detail = reqModel.getStockDetail();
 
+			//取得出库单编号
+			YSId= reqData.getYsid();
+			reqData = getStorageRecordId(reqData);			
+			String id = reqData.getStockoutid();
+	
+			//出库记录
+			reqData.setStockouttype(Constants.STOCKOUTTYPE_2);
+			insertStockOut(reqData);
+			
+		
+			float quantity = stringToFloat(detail.getQuantity());
+			
+			detail.setStockoutid(id);
+			insertStockOutDetail(detail);								
+			
+			//更新库存
+			updateMaterial(detail.getMaterialid(),quantity);			
+			
+			//更新订单状态->出库
+			updateOrderDetail(YSId,quantity);
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		
+		return YSId;
+	}
 
+	@SuppressWarnings("unchecked")
+	private void updateOrderDetail(
+			String ysid,
+			float quantity) throws Exception{
+		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
+		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
+		if(list ==null || list.size() == 0)
+			return ;	
+		
+		//更新DB
+		B_OrderDetailData data = list.get(0);
+	
+		float orderQty = stringToFloat(data.getQuantity());//订单数量
+		float oldQuan = stringToFloat(data.getStockoutqty());//已出库数量		
+		
+		float totalQuan = oldQuan + quantity;//累计出库
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"ProductStockOutUpdate",userInfo);
+		copyProperties(data,commData);
+	
+		if(orderQty == totalQuan){
+			data.setStatus(Constants.ORDER_STS_5);//已出库
+		}else{
+			data.setStatus(Constants.ORDER_STS_51);//出库中			
+		}
+		
+		data.setStockoutqty(String.valueOf(totalQuan));
+		data.setStockoutdate(CalendarUtil.fmtYmdDate());//出库时间
+		new B_OrderDetailDao().Store(data);
+	}
 	
 	//更新当前库存:出库时，减少“当前库存”，减少“待出库“
 	@SuppressWarnings("unchecked")
@@ -592,7 +685,7 @@ public class StockOutService extends CommonService {
 	public HashMap<String, Object> getStockoutHistory(
 			String YSId) throws Exception {
 		
-		dataModel.setQueryName("stockoutListById");		
+		dataModel.setQueryName("stockoutHistory");
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -854,4 +947,91 @@ public class StockOutService extends CommonService {
 	}
 	
 
+
+	public HashMap<String, Object> doSearchForProduct(String data) throws Exception{
+
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+
+		dataModel.setQueryName("stockoutforproduct");
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		String[] keyArr = getSearchKey(Constants.FORM_PRODUCTSTOCKOUT,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2)){
+			userDefinedSearchCase.put("requisitionSts", "");
+		}
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;	
+	}
+	
+
+	public void productStockoutAddInit() throws Exception {
+		String YSId = request.getParameter("YSId");
+		
+		//取得订单信息
+		getOrderDetail(YSId);
+		//取得入库信息
+		getStockinDetail(YSId);//入库明细
+
+	
+	}
+	
+	public HashMap<String, Object> getProductStockoutDetail() throws Exception {
+		
+		String YSId = request.getParameter("YSId");	
+		
+		return getStockoutHistory(YSId);//出库明细	
+		
+	}
+
+	public void getStockinDetail(String YSId) throws Exception {
+
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");
+		dataModel.setQueryName("stockoutforproduct");
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0) {
+			model.addAttribute("stockin",dataModel.getYsViewData().get(0));
+		}
+	}
+	
 }
