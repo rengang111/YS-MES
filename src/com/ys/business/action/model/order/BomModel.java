@@ -35,6 +35,7 @@ public class BomModel extends BaseModel {
 	private String counter2;
 	private String counter3;
 	private String counter4;
+	private String counter5;
 	private List<B_OrderExpenseData> documentaryLines1;
 	private List<B_OrderExpenseData> documentaryLines2;
 	private List<B_OrderExpenseData> documentaryLines3;
@@ -116,8 +117,16 @@ public class BomModel extends BaseModel {
 	}
 
 	public void setCounter4(String counter4) {
-	  this.counter4 = counter4; }
+	  this.counter4 = counter4;
+	}
 
+	public String getCounter5() {
+		  return this.counter5;
+		}
+
+		public void setCounter5(String counter5) {
+		  this.counter5 = counter5;
+		}
 
 
 

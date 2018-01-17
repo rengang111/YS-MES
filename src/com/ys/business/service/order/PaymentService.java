@@ -696,6 +696,7 @@ public class PaymentService extends CommonService {
 		db.setApprovaldate(CalendarUtil.fmtYmdDate());
 		db.setApprovalstatus(payment.getApprovalstatus());
 		db.setApprovalfeedback(replaceTextArea(payment.getApprovalfeedback()));
+		db.setInvoicenumber(payment.getInvoicenumber());//发票编号
 		
 		//审核结果:020同意;030不同意;010未审核
 		if(("020").equals(payment.getApprovalstatus())){

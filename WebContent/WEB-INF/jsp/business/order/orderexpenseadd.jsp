@@ -32,7 +32,7 @@
 				trHtml+="<tr>";	
 				trHtml+='<td class="td-left">'+ rownum + checkbox +'</td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].costname"      id="documentaryLines1'+rowIndex+'.costname" class="costname middle" /></td>';
-				trHtml+='<td class="td-right"><input type="text" name="documentaryLines1['+rowIndex+'].cost"          id="documentaryLines1'+rowIndex+'.cost" class="cash" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].cost"          id="documentaryLines1'+rowIndex+'.cost" class="cash" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].remarks" id="documentaryLines1'+rowIndex+'.remarks" class="middle" /></td>';
 				trHtml+='<td class="td-center"></td>',
 				trHtml+="</tr>";	
@@ -103,10 +103,10 @@
 				var checkbox = "<input type=checkbox name='numCheck2' id='numCheck2' value='" + rowIndex + "' />";
 				trHtml+="<tr>";	
 				trHtml+='<td class="td-left">'+ rownum + checkbox +'</td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines2['+rowIndex+'].costname"      id="documentaryLines1'+rowIndex+'.costname" class="costname middle" /></td>';
-				trHtml+='<td class="td-right"><input type="text"  name="documentaryLines2['+rowIndex+'].cost"          id="documentaryLines1'+rowIndex+'.cost" class="cash" /></td>';
-				//trHtml+='<td class="td-center"><input type="text" name="documentaryLines2['+rowIndex+'].person"        id="documentaryLines1'+rowIndex+'.person" /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines2['+rowIndex+'].remaks"        id="documentaryLines1'+rowIndex+'.remaks" class="middle" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines2['+rowIndex+'].costname"      id="documentaryLines2'+rowIndex+'.costname" class="costname middle" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines2['+rowIndex+'].cost"          id="documentaryLines2'+rowIndex+'.cost" class="cash" /></td>';
+			  //trHtml+='<td class="td-center"><input type="text" name="documentaryLines2['+rowIndex+'].person"        id="documentaryLines2'+rowIndex+'.person" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines2['+rowIndex+'].remarks"        id="documentaryLines2'+rowIndex+'.remaks" class="middle" /></td>';
 				trHtml+='<td class="td-center"></td>',
 				trHtml+="</tr>";	
 
@@ -174,12 +174,11 @@
 				var checkbox = "<input type=checkbox name='numCheck3' id='numCheck3' value='" + rowIndex + "' />";
 				trHtml+="<tr>";	
 				trHtml+='<td class="td-left">'+ rownum + checkbox +'</td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines3['+rowIndex+'].supplierid"    id="documentaryLines3'+rowIndex+'.supplierid" class="short supplierid" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines3['+rowIndex+'].contractid"    id="documentaryLines3'+rowIndex+'.contractid" class="" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines3['+rowIndex+'].costname"      id="documentaryLines3'+rowIndex+'.costname" class=" middle" /></td>';
-				trHtml+='<td class="td-right"><input type="text"  name="documentaryLines3['+rowIndex+'].cost"          id="documentaryLines3'+rowIndex+'.cost" class="cash short" /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines3['+rowIndex+'].contractid"    id="documentaryLines3'+rowIndex+'.contractid" class="short" /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines3['+rowIndex+'].supplierid"    id="documentaryLines3'+rowIndex+'.supplierid" class="short" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines3['+rowIndex+'].cost"          id="documentaryLines3'+rowIndex+'.cost" class="cash short" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines3['+rowIndex+'].remarks"       id="documentaryLines3'+rowIndex+'.remarks" /></td>';
-				//trHtml+='<td class="td-center"><input type="text" name="documentaryLines3['+rowIndex+'].quotationdate" id="documentaryLines3'+rowIndex+'.quotationdate" class="" /></td>';
 				trHtml+='<td class="td-center"></td>',
 				trHtml+="</tr>";	
 
@@ -189,9 +188,11 @@
 				}
 				counter3 += 1;//记录费用总行数
 
-				$(".quotationdate").val(shortToday());
+				// $(".quotationdate").val(shortToday());
 				
 				foucsInit();
+				
+				autocomplete();
 			}
 		});
 
@@ -248,10 +249,10 @@
 				trHtml+="<tr>";	
 				trHtml+='<td class="td-left">'+ rownum + checkbox +'</td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].costname"      id="documentaryLines4'+rowIndex+'.costname" class="costname middle" /></td>';
-				trHtml+='<td class="td-right"> <input type="text" name="documentaryLines4['+rowIndex+'].cost"          id="documentaryLines4'+rowIndex+'.cost" class="cash" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].cost"          id="documentaryLines4'+rowIndex+'.cost" class="cash" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].person"        id="documentaryLines4'+rowIndex+'.person" /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].cost" id="documentaryLines4'+rowIndex+'.cost" class="cash short"  /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].remarks" id="documentaryLines4'+rowIndex+'.remarks" class="" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].cost"          id="documentaryLines4'+rowIndex+'.cost" class="cash short"  /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].remarks"       id="documentaryLines4'+rowIndex+'.remarks" class="" /></td>';
 				trHtml+='<td class="td-center"></td>',
 				trHtml+="</tr>";	
 
@@ -318,10 +319,10 @@
 				var checkbox = "<input type=checkbox name='numCheck5' id='numCheck5' value='" + rowIndex + "' />";
 				trHtml+="<tr>";	
 				trHtml+='<td class="td-left">'+ rownum + checkbox +'</td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].costname"      id="documentaryLines4'+rowIndex+'.costname" class="costname middle" /></td>';
-				trHtml+='<td class="td-right"> <input type="text" name="documentaryLines4['+rowIndex+'].cost"          id="documentaryLines4'+rowIndex+'.cost" class="cash" /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].person"        id="documentaryLines4'+rowIndex+'.person" class="short"/></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].remarks"       id="documentaryLines4'+rowIndex+'.remarks" class="middle" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines5['+rowIndex+'].costname"      id="documentaryLines5'+rowIndex+'.costname" class="costname middle" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines5['+rowIndex+'].cost"          id="documentaryLines5'+rowIndex+'.cost" class="cash" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines5['+rowIndex+'].person"        id="documentaryLines5'+rowIndex+'.person" class="short"/></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines5['+rowIndex+'].remarks"       id="documentaryLines5'+rowIndex+'.remarks" class="middle" /></td>';
 				trHtml+='<td class="td-center"></td>',
 				trHtml+="</tr>";	
 
@@ -429,8 +430,8 @@
 			
 			"columns" : [
 			    {"data": null,"className" : 'td-left'},
-			    {"data": null, "defaultContent" : '',"className" : 'td-center'},
-			    {"data": null, "defaultContent" : '',"className" : 'td-right'},
+			    {"data": "costName", "defaultContent" : '',"className" : 'td-center'},
+			    {"data": "cost", "defaultContent" : '',"className" : 'td-center'},
 			    {"data": "remarks", "defaultContent" : '',"className" : 'td-center'},
 			    {"data": null, "className" : 'td-center'},
 			],
@@ -449,35 +450,36 @@
 	    		{"targets":1,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var costName = row["costName"];
-	    			var recordHidden = "<input type='hidden' name='documentaryLines1["+ rownum +"].recordid'   id='documentaryLines1"+ rownum +".recordid'  value='" + row["recordId"] + "' />";
-	    			var nameHidden   = "<input type='hidden' name='documentaryLines1["+ rownum +"].costname'   id='documentaryLines1"+ rownum +".costname'  value='" + costName + "' class='cash' />";
-	    			
-	    			if (status != "1"){//可以修改
-	    				return costName +recordHidden+nameHidden;
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines1["+ rownum +"].costname' id='documentaryLines1"+ rownum +".costname' value='" + data + "' />"
 	    			}else{
-	    				return costName;
+	    				rtnVal = "<input type='text' name='documentaryLines1["+ rownum +"].costname' id='documentaryLines1"+ rownum +".costname' value='" + data + "' class='middle' />"
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":2,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var cost = row["cost"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines1["+ rownum +"].cost'   id='documentaryLines1"+ rownum +".cost'  value='" + cost + "' class='cash' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = fomatToColor(data) +  "<input type='hidden' name='documentaryLines1["+ rownum +"].cost'   id='documentaryLines1"+ rownum +".cost'  value='" + data + "' class='cash' />"
 	    			}else{
-	    				return fomatToColor(cost)+'&nbsp;';
+	       				rtnVal = "<input type='text' name='documentaryLines1["+ rownum +"].cost'   id='documentaryLines1"+ rownum +".cost'  value='" + data + "' class='cash' />"
+	    				
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var person = row["remarks"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines1["+ rownum +"].remarks' id='documentaryLines1"+ rownum +".remarks' value='" + remarks + "' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines1["+ rownum +"].remarks' id='documentaryLines1"+ rownum +".remarks' value='" + data + "' />"
 	    			}else{
-	    				return person;
+	    				rtnVal = "<input type='text' name='documentaryLines1["+ rownum +"].remarks' id='documentaryLines1"+ rownum +".remarks' value='" + data + "' class='middle' />"
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":4,"render":function(data, type, row){
 	    			var status = row["status"];
@@ -496,50 +498,16 @@
 		})
 
 		
-		t.on('change', 'tr td:nth-child(3)',function() {
-			
+		t.on('change', 'tr td:nth-child(3)',function() {			
 			var $tds = $(this).parent().find("td");
 			var $cost = $tds.eq(2).find("input");//金额	
 			$cost.val(floatToCurrency($cost.val()));
 			
 		});
 		
-			/*
-		t.on('click', 'tr', function() {
-
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-			
-		});
-		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				var num   = i + 1;
-				var checkBox = "<input type=checkbox name='numCheck' id='numCheck' value='" + num + "' />";
-				cell.innerHTML = num + checkBox;
-			});
-		}).draw();
-*/
-	};//ajax()
+	};//跟单费用
 	
 	$(document).ready(function() {
-
-		$("#bomPlan\\.plandate").val(shortToday());
-		$("#bomPlan\\.plandate").datepicker({
-			dateFormat:"yy-mm-dd",
-			changeYear: true,
-			changeMonth: true,
-			selectOtherMonths:true,
-			showOtherMonths:true,
-		});	
 		
 		documentaryAjax();	//跟单费用
 		expenseAjax2();		//客户增减费用
@@ -628,9 +596,9 @@ function expenseAjax2() {//客户增减费用
 			
 			"columns" : [
 			    {"data": null,"className" : 'td-left'},
-			    {"data": null, "defaultContent" : '',"className" : 'td-center'},
-			    {"data": null, "defaultContent" : '',"className" : 'td-right'},
-			    {"data": null, "defaultContent" : '',"className" : 'td-center'},
+			    {"data": "costName", "defaultContent" : '',"className" : 'td-center'},
+			    {"data": "cost", "defaultContent" : '',"className" : 'td-center'},
+			    {"data": "remarks", "defaultContent" : '',"className" : 'td-center'},
 			   // {"data": "quotationDate", "defaultContent" : '',"className" : 'td-center'},
 			    {"data": null, "className" : 'td-center'},
 			],
@@ -649,29 +617,38 @@ function expenseAjax2() {//客户增减费用
 	    		{"targets":1,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var costName = row["costName"];
-	    			
-	    			return costName;
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines2["+ rownum +"].costname'   id='documentaryLines2"+ rownum +".costname'  value='" + data + "' />"
+	    			}else{
+	    				//可以修改
+	    				rtnVal = "<input type='text' name='documentaryLines2["+ rownum +"].costname'   id='documentaryLines2"+ rownum +".costname'  value='" + data + "' class='costname middle' />"
+	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":2,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var cost = row["cost"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines2["+ rownum +"].cost'   id='documentaryLines1"+ rownum +".cost'  value='" + cost + "' class='cash' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines2["+ rownum +"].cost'   id='documentaryLines2"+ rownum +".cost'  value='" + data + "' />"
 	    			}else{
-	    				return cost+'&nbsp;';
+	    				//可以修改
+	    				rtnVal = "<input type='text' name='documentaryLines2["+ rownum +"].cost'   id='documentaryLines2"+ rownum +".cost'  value='" + data + "' class='cash' />"
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var person = row["person"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines2["+ rownum +"].remarks' id='documentaryLines1"+ rownum +".remarks' value='" + person + "' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines2["+ rownum +"].remarks'   id='documentaryLines2"+ rownum +".remarks'  value='" + data + "' />"
 	    			}else{
-	    				return person;
+	    				//可以修改
+	    				rtnVal = "<input type='text' name='documentaryLines2["+ rownum +"].remarks'   id='documentaryLines2"+ rownum +".remarks'  value='" + data + "' class='middle' />"
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":4,"render":function(data, type, row){
 	    			var status = row["status"];
@@ -740,6 +717,8 @@ function expenseAjax3() {//工厂（供应商）增减费用
 						
 						fnCallback(data);
 						$(".DTTT_container").css('float','left');
+						
+						autocomplete();
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {
 						alert(textStatus)
@@ -765,11 +744,11 @@ function expenseAjax3() {//工厂（供应商）增减费用
 			
 			"columns" : [
 			    {"data": null,"className" : 'td-left'},
-			    {"data": "contractId", "defaultContent" : '',"className" : 'td-center'},//增减内容1
-			    {"data": null, "defaultContent" : '',"className" : 'td-right'},//金额2
-			    {"data": null, "defaultContent" : '',"className" : 'td-right'},//合同编号3
-			    {"data": "", "defaultContent" : '',"className" : 'td-center'},//供应商4
-			    {"data": "", "defaultContent" : '',"className" : 'td-center'},//备注5
+			    {"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},//供应商
+			    {"data": "contractId", "defaultContent" : '',"className" : 'td-center'},//合同编号
+			    {"data": "costName", "defaultContent" : '',"className" : 'td-center'},//增减内容3
+			    {"data": "cost", "defaultContent" : '',"className" : 'td-center'},//金额4
+			    {"data": "remarks", "defaultContent" : '',"className" : 'td-center'},//备注5
 			    {"data": null, "className" : 'td-center'},//6
 			],
 			"columnDefs":[
@@ -787,52 +766,58 @@ function expenseAjax3() {//工厂（供应商）增减费用
 	    		{"targets":1,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var costName = row["costName"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines3["+ rownum +"].costname' id='documentaryLines1"+ rownum +".costname' value='" + costName + "' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines3["+ rownum +"].supplierid' id='documentaryLines3"+ rownum +".supplierid' value='" + data + "'  />"
 	    			}else{
-	    				return costName;
+	    				//可以修改
+	    				rtnVal = "<input type='text' name='documentaryLines3["+ rownum +"].supplierid' id='documentaryLines3"+ rownum +".supplierid' value='" + data + "' class='supplierid short' />"			
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":2,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var person = row["cost"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines3["+ rownum +"].cost' id='documentaryLines1"+ rownum +".cost' value='" + person + "' class='cash short' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){//可以修改
+	    				rtnVal = data +  "<input type='hidden' name='documentaryLines3["+ rownum +"].contractid' id='documentaryLines3"+ rownum +".contractid' value='" + data + "' />"
 	    			}else{
-	    				return person;
+	    				rtnVal = "<input type='text' name='documentaryLines3["+ rownum +"].contractid' id='documentaryLines3"+ rownum +".contractid' value='" + data + "' />"    				
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var costName = row["contractId"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines3["+ rownum +"].contractid' id='documentaryLines1"+ rownum +".contractid' value='" + costName + "' class='short' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){//可以修改
+	    				rtnVal = data +   "<input type='hidden' name='documentaryLines3["+ rownum +"].costname' id='documentaryLines3"+ rownum +".costname' value='" + data + "' />"
 	    			}else{
-	    				return costName;
+	    				rtnVal =  "<input type='text' name='documentaryLines3["+ rownum +"].costname' id='documentaryLines3"+ rownum +".costname' value='" + data + "' class='middle' />"			
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":4,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var date = row["remarks"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines3["+ rownum +"].remarks' id='documentaryLines1"+ rownum +".remarks' value='" + date + "' class='short' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){//可以修改
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines3["+ rownum +"].cost' id='documentaryLines3"+ rownum +".cost' value='" + data + "' class='cash short' />"
 	    			}else{
-	    				return date;
+	    				rtnVal = "<input type='text' name='documentaryLines3["+ rownum +"].cost' id='documentaryLines3"+ rownum +".cost' value='" + data + "' class='cash short' />"
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":5,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var date = row["remarks"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines3["+ rownum +"].remarks' id='documentaryLines1"+ rownum +".remarks' value='" + date + "' class='' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){//可以修改
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines3["+ rownum +"].remarks' id='documentaryLines3"+ rownum +".remarks' value='" + data + "' class='' />"
 	    			}else{
-	    				return date;
+	    				rtnVal = "<input type='text' name='documentaryLines3["+ rownum +"].remarks' id='documentaryLines3"+ rownum +".remarks' value='" + data + "' class='' />"
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":6,"render":function(data, type, row){
 	    			var status = row["status"];
@@ -850,16 +835,15 @@ function expenseAjax3() {//工厂（供应商）增减费用
 		     ] ,
 			
 		})
-
 		
-		t.on('change', 'tr td:nth-child(3)',function() {
+		t.on('change', 'tr td:nth-child(5)',function() {
 			
 			var $tds = $(this).parent().find("td");
-			var $cost = $tds.eq(2).find("input");//金额			
+			var $cost = $tds.eq(4).find("input");//金额			
 			$cost.val(floatToCurrency($cost.val()));
 		});
 	
-};//ajax()
+};//供应商
 
 </script>
 
@@ -925,8 +909,8 @@ function expenseAjax4() {//车间增减费用
 		
 		"columns" : [
 		    {"data": null,"className" : 'td-left'},
-		    {"data": null, "defaultContent" : '',"className" : 'td-center'},
-		    {"data": null, "defaultContent" : '',"className" : 'td-right'},
+		    {"data": "costName", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "cost", "defaultContent" : '',"className" : 'td-right'},
 		    {"data": null, "defaultContent" : '',"className" : 'td-center'},
 		    {"data": "cost", "defaultContent" : '',"className" : 'td-center'},
 		    {"data": "remarks", "defaultContent" : '',"className" : 'td-center'},
@@ -954,9 +938,9 @@ function expenseAjax4() {//车间增减费用
     		{"targets":2,"render":function(data, type, row){
     			var status = row["status"];
     			var rownum = row["rownum"] - 1;
-    			var cost = row["cost"];
-    			if (status != "1"){//可以修改
-    				return "<input type='text' name='documentaryLines4["+ rownum +"].cost'   id='documentaryLines1"+ rownum +".cost'  value='" + cost + "' class='cash' />"
+    			var rtnVal = "";
+    			if (status == "1"){//可以修改
+    				return "<input type='text' name='documentaryLines4["+ rownum +"].cost'   id='documentaryLines4"+ rownum +".cost'  value='" + cost + "' class='cash' />"
     			}else{
     				return cost+'&nbsp;';
     			}
@@ -966,7 +950,7 @@ function expenseAjax4() {//车间增减费用
     			var rownum = row["rownum"] - 1;
     			var person = row["person"];
     			if (status != "1"){//可以修改
-    				return "<input type='text' name='documentaryLines4["+ rownum +"].person' id='documentaryLines1"+ rownum +".person' value='" + person + "' />"
+    				return "<input type='text' name='documentaryLines4["+ rownum +"].person' id='documentaryLines4"+ rownum +".person' value='" + person + "' />"
     			}else{
     				return person;
     			}
@@ -976,7 +960,7 @@ function expenseAjax4() {//车间增减费用
     			var rownum = row["rownum"] - 1;
     			var date = row["quotationDate"];
     			if (status != "1"){//可以修改
-    				return "<input type='text' name='documentaryLines4["+ rownum +"].cost' id='documentaryLines1"+ rownum +".cost' value='" + cost + "' class='short cash' />"
+    				return "<input type='text' name='documentaryLines4["+ rownum +"].cost' id='documentaryLines4"+ rownum +".cost' value='" + cost + "' class='short cash' />"
     			}else{
     				return date;
     			}
@@ -986,7 +970,7 @@ function expenseAjax4() {//车间增减费用
     			var rownum = row["rownum"] - 1;
     			var date = row["remarks"];
     			if (status != "1"){//可以修改
-    				return "<input type='text' name='documentaryLines4["+ rownum +"].remarks' id='documentaryLines1"+ rownum +".remarks' value='" + remarks + "' />"
+    				return "<input type='text' name='documentaryLines4["+ rownum +"].remarks' id='documentaryLines4"+ rownum +".remarks' value='" + remarks + "' />"
     			}else{
     				return date;
     			}
@@ -1083,9 +1067,9 @@ function expenseAjax5() {//检验费用
 			
 			"columns" : [
 			    {"data": null,"className" : 'td-left'},
-			    {"data": null, "defaultContent" : '',"className" : 'td-center'},
-			    {"data": null, "defaultContent" : '',"className" : 'td-right'},
-			    {"data": null, "defaultContent" : '',"className" : 'td-center'},
+			    {"data": "costName", "defaultContent" : '',"className" : 'td-center'},
+			    {"data": "cost", "defaultContent" : '',"className" : 'td-center'},
+			    {"data": "person", "defaultContent" : '',"className" : 'td-center'},
 			   	{"data": "remarks", "defaultContent" : '',"className" : 'td-center'},
 			    {"data": null, "className" : 'td-center'},
 			],
@@ -1094,7 +1078,6 @@ function expenseAjax5() {//检验费用
 					var status = row["status"];
 	    			var rownum = row["rownum"];
 					var checkbox = "<input type=checkbox name='numCheck5' id='numCheck5' value='" + row["recordId"] + "' />";
-	    			var cost = row["cost"];
 	    			if (status != "1"){//可以修改
 	    				return rownum + checkbox;
 	    			}else{
@@ -1104,39 +1087,47 @@ function expenseAjax5() {//检验费用
 	    		{"targets":1,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var costName = row["costName"];
-	    			
-	    			return costName;
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines5["+ rownum +"].costname'   id='documentaryLines5"+ rownum +".costname'  value='" + data + "' />"
+	    			}else{
+	    				rtnVal = "<input type='text' name='documentaryLines5["+ rownum +"].costname'   id='documentaryLines5"+ rownum +".costname'  value='" + data + "' class='costname middle' />"
+	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":2,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var cost = row["cost"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines2["+ rownum +"].cost'   id='documentaryLines1"+ rownum +".cost'  value='" + cost + "' class='cash' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines5["+ rownum +"].cost'   id='documentaryLines5"+ rownum +".cost'  value='" + data + "' />"
 	    			}else{
-	    				return cost+'&nbsp;';
+	    				rtnVal = "<input type='text' name='documentaryLines5["+ rownum +"].cost'   id='documentaryLines5"+ rownum +".cost'  value='" + data + "' class='cash' />"
+	    				
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var cost = row["cost"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines2["+ rownum +"].person'   id='documentaryLines1"+ rownum +".person'  value='" + cost + "' class='cash' />"
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines5["+ rownum +"].person'   id='documentaryLines5"+ rownum +".person'  value='" + data + "' />"
 	    			}else{
-	    				return cost+'&nbsp;';
+	    				rtnVal = "<input type='text' name='documentaryLines5["+ rownum +"].person'   id='documentaryLines5"+ rownum +".person'  value='" + data + "' class='short' />"	    				
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":4,"render":function(data, type, row){
 	    			var status = row["status"];
 	    			var rownum = row["rownum"] - 1;
-	    			var person = row["person"];
-	    			if (status != "1"){//可以修改
-	    				return "<input type='text' name='documentaryLines2["+ rownum +"].remarks' id='documentaryLines1"+ rownum +".remarks' value='" + person + "' class='short'/>"
+	    			var rtnVal = "";
+	    			if (status == "1"){
+	    				rtnVal = data + "<input type='hidden' name='documentaryLines5["+ rownum +"].remarks'   id='documentaryLines5"+ rownum +".remarks'  value='" + data + "' />"
 	    			}else{
-	    				return person;
+	    				rtnVal = "<input type='text' name='documentaryLines5["+ rownum +"].remarks'   id='documentaryLines5"+ rownum +".remarks'  value='" + data + "' class='middle' />"	    				
 	    			}
+	    			return rtnVal;
                 }},
 	    		{"targets":5,"render":function(data, type, row){
 	    			var status = row["status"];
@@ -1177,11 +1168,11 @@ function expenseAjax5() {//检验费用
 	<form:form modelAttribute="bomForm" method="POST"
 		id="bomForm" name="bomForm"  autocomplete="off">
 		
-		<form:hidden path="counter" />
 		<form:hidden path="counter1" />
 		<form:hidden path="counter2" />
 		<form:hidden path="counter3" />
 		<form:hidden path="counter4" />
+		<form:hidden path="counter5" />
 		
 		<fieldset>
 			<legend> 产品信息</legend>
@@ -1246,36 +1237,37 @@ function expenseAjax5() {//检验费用
 						<th class="dt-center" width="150px">金额</th>
 						<th class="dt-center" width="150px">供应商</th>
 						<th class="dt-center" width="150px">供应商承担金额</th>
-						<th class="dt-center" width="200px">备注</th>
-						<th></th>
+						<th class="dt-center" >备注</th>
+						<th class="dt-center" width="50px"></th>
 					</tr>
 					</thead>
 				</table>
 			</div>
 		</fieldset>	
-				
+		
+		
 		<fieldset>
 			<legend> 工厂（供应商）增减费用</legend>
-				<div class="action" style="text-align: right;width: 50%;float: right;margin-top: -30px;">
-					<button type="button" id="insert3" onclick="doSave('S');" class="DTTT_button">保存</button>
-					<button type="button" id="goBack3" class="goBack DTTT_button">返回</button>
-				</div>	
-			<div class="list">
+			<div class="action" style="text-align: right;width: 50%;float: right;margin-top: -30px;">
+				<button type="button" id="insert3" onclick="doSave('S');" class="DTTT_button">保存</button>
+				<button type="button" id="goBack3" class="goBack DTTT_button">返回</button>
+			</div>	
+			<div class="list">		
 				<table id="supplier" class="display" >
 					<thead>				
 					<tr>
-						<th width="30px">No</th>
-						<th class="dt-center" width="250px">增减内容</th>
-						<th class="dt-center" width="150px">金额</th>
-						<th class="dt-center" width="150px">合同编号</th>
+						<th width="20px">No</th>
 						<th class="dt-center" width="150px">供应商</th>
-						<th class="dt-center" width="150px">备注</th>
-						<th class="dt-center" width="1px"></th>
+						<th class="dt-center" width="150px">合同编号</th>
+						<th class="dt-center" >增减内容</th>
+						<th class="dt-center" width="150px">金额</th>
+						<th class="dt-center">备注</th>
+						<th class="dt-center" width="50px"></th>
 					</tr>
 					</thead>					
 				</table>
 			</div>
-		</fieldset>			
+		</fieldset>		
 		
 		<fieldset>
 			<legend> 客户增减费用</legend>
@@ -1287,11 +1279,11 @@ function expenseAjax5() {//检验费用
 				<table id="custmer" class="display" >
 					<thead>				
 					<tr>
-						<th width="30px">No</th>
+						<th width="20px">No</th>
 						<th class="dt-center" width="300px">增减内容</th>
 						<th class="dt-center" width="150px">金额</th>
-						<th class="dt-center" width="300px">备注</th>
-						<th></th>
+						<th class="dt-center" >备注</th>
+						<th class="dt-center" width="50px"></th>
 					</tr>
 					</thead>
 				</table>
@@ -1308,12 +1300,12 @@ function expenseAjax5() {//检验费用
 				<table id="inspection" class="display" >
 					<thead>				
 					<tr>
-						<th width="30px">No</th>
+						<th width="20px">No</th>
 						<th class="dt-center" width="300px">费用名称</th>
 						<th class="dt-center" width="150px">金额</th>
 						<th class="dt-center" width="100px">申报人</th>
-						<th class="dt-center" width="200px">备注</th>
-						<th></th>
+						<th class="dt-center">备注</th>
+						<th class="dt-center" width="50px"></th>
 					</tr>
 					</thead>
 				</table>
@@ -1333,11 +1325,11 @@ function expenseAjax5() {//检验费用
 				<table id="documentary" class="display" >
 					<thead>				
 					<tr>
-						<th width="30px">No</th>
+						<th width="20px">No</th>
 						<th class="dt-center" width="300px">费用名称</th>
 						<th class="dt-center" width="150px">金额</th>
-						<th class="dt-center" width="300px">备注</th>
-						<th></th>
+						<th class="dt-center" >备注</th>
+						<th class="dt-center" width="50px"></th>
 					</tr>
 					</thead>
 				</table>
@@ -1385,6 +1377,57 @@ function autocomplete(){
 		minLength : 0,
 		autoFocus : false,
 	});
+
+	//供应商选择
+	$(".supplierid").autocomplete({
+		
+		source : function(request, response) {
+			
+			var ysid = $('#bomPlan\\.ysid').val();
+			//alert(ysid)
+			$.ajax({
+				type : "POST",
+				url : "${ctx}/business/contract?methodtype=getContract&YSId="+ysid,
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					//alert(777);
+					response($.map(
+						data.data,
+						function(item) {
+							//alert(item.viewList)
+							return {
+								label : item.supplierId +" | " + item.supplierName,
+								value : item.supplierId,
+								id : item.supplierId,
+								contractId : item.contractId,
+								
+							}
+						}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+					alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
+
+		select : function(event, ui) {			
+			//合同编号
+			$(this).parent().parent().find("td").eq(2)
+				.find("input").val(ui.item.contractId);
+		},
+
+		minLength : 2,
+		autoFocus : false,
+		width: 300,
+	});
 }
 </script>
 <script type="text/javascript">
@@ -1398,6 +1441,7 @@ function doSave(type) {
 	$('#counter2').val(counter2);
 	$('#counter3').val(counter3);
 	$('#counter4').val(counter4);
+	$('#counter5').val(counter5);
 	//alert(counter1+':::counter1'+counter2+':::counter2::'+counter3+':::counter3::'+counter4+':::counter4')
 	//return null;
 	$.ajax({
@@ -1408,7 +1452,24 @@ function doSave(type) {
 		data : JSON.stringify($('#bomForm').serializeArray()),// 要提交的表单
 		success : function(d) {
 			//alert(d)
-			documentaryAjax();
+			switch(type){
+				case "C":
+					expenseAjax2();		//客户增减费用
+					break;
+				case "W":
+					expenseAjax4();		//车间增减费用
+					break;
+				case "S":
+					expenseAjax3();		//工厂（供应商）增减费用
+					break;
+				case "D":
+					documentaryAjax();	//跟单费用
+					break;
+				case "E":
+					expenseAjax5();		//检验费用
+					break;				
+			}			
+			
 			$().toastmessage('showWarningToast', "保存成功!");		
 			
 		},

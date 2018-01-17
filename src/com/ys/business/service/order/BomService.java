@@ -1,12 +1,9 @@
 package com.ys.business.service.order;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -37,11 +33,13 @@ import com.ys.business.db.dao.B_BomDetailDao;
 import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_OrderExpenseDao;
+import com.ys.business.db.dao.B_OrderExpenseDetailDao;
 import com.ys.business.db.data.B_BomData;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderExpenseData;
+import com.ys.business.db.data.B_OrderExpenseDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.order.CommonService;
@@ -485,42 +483,23 @@ public class BomService extends CommonService {
 		return bomPlanData;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private B_BomPlanData BomPlanExistCheck2(String ysid)
-			  throws Exception
-			{
-		List<B_BomPlanData> dbList = null;
-		bomPlanData = null;
-		try {
-			String where = "ysid = '" + ysid + 
-					"' AND  deleteFlag = '0' ";
-	    dbList = (List<B_BomPlanData>)bomPlanDao.Find(where);
-	    if ((dbList != null) && (dbList.size() > 0))
-	      bomPlanData = ((B_BomPlanData)dbList.get(0));
-	  }
-	  catch (Exception e) {
-	    System.out.println(e.getMessage());
-	  }
-
-	  return this.bomPlanData;
-	}
 
 	private String insertOrder1(String data, int index, String counter, String type)
-			  throws Exception
-	{
+			  throws Exception{
+		
 	  if ((data == null) || (data.trim() == "")) return null;
 
 	  String ysid = "";
-	  String materialId = "";
+	  //String materialId = "";
 	  this.ts = new BaseTransaction();
 	  try
 	  {
 	    this.ts.begin();
 
-	    B_OrderExpenseData order = new B_OrderExpenseData();
+	    B_OrderExpenseDetailData order = new B_OrderExpenseDetailData();
 
 	    ysid = getJsonData(data, "bomPlan.ysid");
-	    materialId = getJsonData(data, "bomPlan.materialid");
+	   // materialId = getJsonData(data, "bomPlan.materialid");
 	    String where = " ysid = '" + ysid + 
 	      "' AND type = '" + type + 
 	      "' AND status = " + "0";
@@ -532,59 +511,60 @@ public class BomService extends CommonService {
 	    }
 	    for (int i = 0; i < counterInt; ++i) {
 
-	    	String name = getJsonData(data, "documentaryLines" + index + "[" + i + "].costname");
-	    	String contr = getJsonData(data, "documentaryLines" + index + "[" + i + "].contractid");
-		    String cost = getJsonData(data, "documentaryLines" + index + "[" + i + "].cost");
-		    String person = getJsonData(data, "documentaryLines" + index + "[" + i + "].person");
-		    String date = getJsonData(data, "documentaryLines" + index + "[" + i + "].quotationdate");
+	    	String name 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].costname");
+	    	String supplierid = getJsonData(data, "documentaryLines" + index + "[" + i + "].supplierid");
+	    	String contractid = getJsonData(data, "documentaryLines" + index + "[" + i + "].contractid");
+		    String cost 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].cost");
+		    String person     = getJsonData(data, "documentaryLines" + index + "[" + i + "].person");
+		    String date 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].quotationdate");
+		    String remarks 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].remarks");
 
-		    if ((name == null) || ("".equals(name)))
+		    if (isNullOrEmpty(name))
 		    	continue;
 	      
-		      order.setYsid(ysid);
-		      order.setMaterialid(materialId);
-		     // order.setContractid(contr);
-		     // order.setCostname(name);
-		     // order.setCost(cost);
-		     // order.setPerson(person);
-		     // order.setQuotationdate(date);
-		     // order.setType(type);
-		      order.setStatus("0");
-		      insertDocumentary(order);
+			  order.setYsid(ysid);
+			  order.setSupplierid(supplierid);
+			  order.setContractid(contractid);
+			  order.setCostname(name);
+			  order.setCost(cost);
+			  order.setPerson(person);
+			  order.setQuotationdate(date);
+			  order.setRemarks(remarks);
+			  order.setType(type);
+			  order.setStatus("0");
+			  insertDocumentary(order);
 	    }
 
-	    this.ts.commit();
+	    	this.ts.commit();
 	  }
 	  catch (Exception e) {
-	    this.ts.rollback();
-	    this.reqModel.setEndInfoMap("-1", "err001", "");
+		  e.printStackTrace();
+		  this.ts.rollback();
 	  }
 
 	  return ysid;
 	}
 
 
-	private void insertDocumentary(B_OrderExpenseData detailData)
-	  throws Exception
-	{
-	  B_OrderExpenseDao dao = new B_OrderExpenseDao();
-	  this.commData = commFiledEdit(0, 
-	    "DocumentaryInsert", this.userInfo);
+	private void insertDocumentary(
+			B_OrderExpenseDetailData detailData)throws Exception{
 
-	  copyProperties(detailData, this.commData);
-	  this.guid = BaseDAO.getGuId();
-	  detailData.setRecordid(this.guid);
+		this.commData = commFiledEdit(Constants.ACCESSTYPE_INS, 
+				"DocumentaryInsert", userInfo);
+		copyProperties(detailData, commData);
+		guid = BaseDAO.getGuId();
+		detailData.setRecordid(guid);
 
-	  dao.Create(detailData);
+		new B_OrderExpenseDetailDao().Create(detailData);
 	}
 		
 	private void deleteDocumentary(String where){
-	  B_OrderExpenseDao dao = new B_OrderExpenseDao();
-	  try {
-	    dao.RemoveByWhere(where);
-	  }catch (Exception e){
-		  System.out.println(e.getMessage());
-	  }
+
+		try {
+			new B_OrderExpenseDetailDao().RemoveByWhere(where);
+		}catch (Exception e){
+			//e.printStackTrace();
+		}
 	}
 	private void updateOrderStatus(String data)
 			  throws Exception {
@@ -621,28 +601,6 @@ public class BomService extends CommonService {
 	  B_OrderExpenseDao dao = new B_OrderExpenseDao(dt);
 	  return dao.beanData;
 	}
-
-
-	@SuppressWarnings("unchecked")
-	private B_BomData BomExistCheck(String bomId) throws Exception {
-		
-		List<B_BomData> dbList = null;
-		B_BomData bomData = null;
-		B_BomDao dao =new B_BomDao();
-		try {
-			String where = "bomId = '" + bomId
-				+ "' AND  deleteFlag = '0' ";
-			dbList = (List<B_BomData>)dao.Find(where);
-			
-			if ( dbList == null || dbList.size() > 0 )
-				bomData = dbList.get(0);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		
-		return bomData;
-	}	
 	
 	/*
 	 * 
@@ -1067,36 +1025,6 @@ public class BomService extends CommonService {
 		}
 	}
 
-	/*
-	 * BOM结构信息更新处理
-	 */
-	private void updateBom(B_BomDetailData reqBom) 
-			throws Exception{
-
-		B_BomDao bomDao = new B_BomDao();
-		String bomId = reqBom.getBomid();
-		
-		//删除旧数据
-		String where = " bomId ='"+bomId +"'";
-		bomDao.RemoveByWhere(where);
-		B_BomData bomData = BomExistCheck(bomId);					
-		
-		//更新数据
-		bomData = new B_BomData();
-		bomData.setBomid(reqBom.getBomid());
-		bomData.setMaterialid(reqBom.getMaterialid());
-		bomData.setQuantity(reqBom.getQuantity());
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"BomInsert",userInfo);
-		copyProperties(bomData,commData);
-
-		guid = BaseDAO.getGuId();
-		bomData.setRecordid(guid);
-		
-		bomDao.Create(bomData);	
-		
-	}
-
 
 	/*
 	 * BOM详情删除处理
@@ -1169,7 +1097,7 @@ public class BomService extends CommonService {
 			throws Exception {
 		
 		String bomId = null;
-		String newParentId = null;
+		//String newParentId = null;
 		dataModel = new BaseModel();
 		
 		dataModel.setQueryFileName("/business/order/bomquerydefine");
@@ -1318,8 +1246,8 @@ public class BomService extends CommonService {
 	//报价BOM:客户报价
 	public Model createOrderBom() throws Exception {
 
-		String materialId = request.getParameter("materialId");	
-		String baseBomId = request.getParameter("bomId");
+		//String materialId = request.getParameter("materialId");	
+		//String baseBomId = request.getParameter("bomId");
 		
 		//半成品BOM,l
 
@@ -1514,6 +1442,7 @@ public class BomService extends CommonService {
 	  String counter2 = getJsonData(data, "counter2");
 	  String counter3 = getJsonData(data, "counter3");
 	  String counter4 = getJsonData(data, "counter4");
+	  String counter5 = getJsonData(data, "counter5");
 
 	  switch (type){
 		  case "D":
@@ -1524,6 +1453,8 @@ public class BomService extends CommonService {
 			  insertOrder1(data, 3, counter3, type); break;
 		  case "W":
 			  insertOrder1(data, 4, counter4, type); break;
+		  case "E":
+			  insertOrder1(data, 5, counter5, type); break;
 	  }
 
 	  	return this.model;

@@ -287,6 +287,10 @@
 						itemValue="key" itemLabel="value" /></form:select> </td>
 			</tr>
 			<tr>
+				<td>发票编号： 
+					<form:input path="payment.invoicenumber"  class="" /></td>
+			</tr>
+			<tr>
 				<td style="vertical-align: bottom;" >
 					<button type="button" id="submit12"  onclick="doInsert();"
 						class="DTTT_button" style="margin-bottom: 5px;">确认提交</button>

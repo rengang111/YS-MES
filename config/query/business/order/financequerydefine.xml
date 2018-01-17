@@ -152,6 +152,7 @@
       <f name="a.contractIds" alias="" ctype="" />
       <f name="b.contractId" alias="" ctype="" />
       <f name="b.payable" alias="" ctype="" />
+      <f name="a.invoiceNumber" alias="" ctype="" />
       <f name="a.approvalDate" alias="" ctype="" />
       <f name="a.approvalStatus" alias="" ctype="审核结果" />
       <f name="a.approvalStatus" alias="approvalStatusId" ctype="" />
