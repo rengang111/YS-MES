@@ -36,6 +36,7 @@
 			"stateSave" : false,
 			"ordering "	:true,
 			"searching" : false,
+			"aaSorting": [[ 9, "ASC" ]],
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
 			"sAjaxSource" : url,
@@ -80,6 +81,7 @@
 				{"data": "YSId"},
 				{"data": "contractQuantity","className" : 'td-right'},
 				{"data": "contractStorage","className" : 'td-right'},
+				{"data": "checkDate","className" : 'td-right'},
 				{"data": "checkInDate","className" : 'td-right'},
 				
 				
@@ -106,7 +108,11 @@
 	    			var name = row["materialName"];				    			
 	    			name = jQuery.fixedWidth(name,35);				    			
 	    			return name;
-	    		}}
+	    		}},
+	    		{
+					"visible" : false,
+					"targets" : [4]
+				}
 	           
 	         ] 
 		});
@@ -229,18 +235,19 @@
 			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('020','false');">未入库</a>
 			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('030','false');">已入库</a>
 		</div>
-		<table id="TMaterial" class="display dataTable" style="width: 100%;">
+		<table id="TMaterial" class="display" style="width: 100%;">
 			<thead>						
 				<tr>
 					<th style="width: 1px;" class="dt-middle ">No</th>
 					<th style="width: 80px;" class="dt-middle">入库单编号</th>
-					<th style="width: 120px;" class="dt-middle ">物料编号</th>
+					<th style="width: 100px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
 					<th style="width: 50px;" class="dt-middle">单位</th>
-					<th style="width: 80px;" class="dt-middle">供应商</th>
+					<th style="width: 70px;" class="dt-middle">供应商</th>
 					<th style="width: 50px;" class="dt-middle">耀升编号</th>
 					<th style="width: 60px;" class="dt-middle">合同数量</th>
 					<th style="width: 60px;" class="dt-middle">入库数量</th>
+					<th style="width: 60px;" class="dt-middle">质检日期</th>
 					<th style="width: 60px;" class="dt-middle">入库时间</th>
 				</tr>
 			</thead>

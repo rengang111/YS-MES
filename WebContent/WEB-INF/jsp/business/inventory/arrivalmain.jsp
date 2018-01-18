@@ -38,7 +38,7 @@
 			"autoWidth"	:false,
 			"searching" : false,
 			"pagingType" : "full_numbers",
-			//"aaSorting": [[ 3, "ASC" ]],
+			"aaSorting": [[ 7, "ASC" ]],
 			//"retrieve" : true,
 			"sAjaxSource" : url,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -77,7 +77,7 @@
 				{"data": "contractId"},
 				{"data": "materialId"},
 				{"data": "materialName"},
-				{"data": "customerShortName"},
+				{"data": "customerShortName", "defaultContent" : '-',"className" : 'td-center'},
 				{"data": "supplierId"},
 				{"data": "deliveryDate","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
@@ -111,7 +111,7 @@
 	    		{"targets":4,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
-	    			name = jQuery.fixedWidth(name,35);				    			
+	    			name = jQuery.fixedWidth(name,32);				    			
 	    			return name;
 	    		}},
 	    		{"targets":11,"render":function(data, type, row){
@@ -123,7 +123,7 @@
 	    		}},
 	    		{
 	    			"visible":false,
-	    			"targets":[2,7]
+	    			"targets":[2]
 	    		}
 	           
 	         ] 
@@ -257,8 +257,8 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0','false');">逾期未到货</a>
 			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1','false');">未到货</a>
+			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0','false');">逾期未到货</a>
 			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2','false');">已收货</a>
 		</div>
 
@@ -266,7 +266,7 @@
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						
 				<tr>
-					<th width="20px">No</th>
+					<th width="10px">No</th>
 					<th style="width: 50px;">耀升编号</th>
 					<th style="width: 90px;">合同编号</th>
 					<th style="width: 100px;">物料编号</th>

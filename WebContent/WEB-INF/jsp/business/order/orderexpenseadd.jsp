@@ -250,9 +250,9 @@
 				trHtml+='<td class="td-left">'+ rownum + checkbox +'</td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].costname"      id="documentaryLines4'+rowIndex+'.costname" class="costname middle" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].cost"          id="documentaryLines4'+rowIndex+'.cost" class="cash" /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].person"        id="documentaryLines4'+rowIndex+'.person" /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].cost"          id="documentaryLines4'+rowIndex+'.cost" class="cash short"  /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].remarks"       id="documentaryLines4'+rowIndex+'.remarks" class="" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].supplierid"        id="documentaryLines4'+rowIndex+'.supplierid" /></td>';
+				//trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].cost"          id="documentaryLines4'+rowIndex+'.cost" class="cash short"  /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines4['+rowIndex+'].remarks"       id="documentaryLines4'+rowIndex+'.remarks" class="middle" /></td>';
 				trHtml+='<td class="td-center"></td>',
 				trHtml+="</tr>";	
 
@@ -910,9 +910,9 @@ function expenseAjax4() {//车间增减费用
 		"columns" : [
 		    {"data": null,"className" : 'td-left'},
 		    {"data": "costName", "defaultContent" : '',"className" : 'td-center'},
-		    {"data": "cost", "defaultContent" : '',"className" : 'td-right'},
-		    {"data": null, "defaultContent" : '',"className" : 'td-center'},
 		    {"data": "cost", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},
+		   // {"data": "cost", "defaultContent" : '',"className" : 'td-center'},
 		    {"data": "remarks", "defaultContent" : '',"className" : 'td-center'},
 		    {"data": null, "className" : 'td-center'},
 		],
@@ -931,51 +931,48 @@ function expenseAjax4() {//车间增减费用
     		{"targets":1,"render":function(data, type, row){
     			var status = row["status"];
     			var rownum = row["rownum"] - 1;
-    			var costName = row["costName"];
-    			
-    			return costName;
+    			var rtnVal = "";
+    			if (status == "1"){
+    				rtnVal = data +  "<input type='hidden' name='documentaryLines4["+ rownum +"].costname'   id='documentaryLines4"+ rownum +".costname'  value='" + data + "' />"
+    			}else{
+    				rtnVal = "<input type='text' name='documentaryLines4["+ rownum +"].costname'   id='documentaryLines4"+ rownum +".costname'  value='" + data + "' class='middle' />"
+    			}
+    			return rtnVal;
             }},
     		{"targets":2,"render":function(data, type, row){
     			var status = row["status"];
     			var rownum = row["rownum"] - 1;
     			var rtnVal = "";
-    			if (status == "1"){//可以修改
-    				return "<input type='text' name='documentaryLines4["+ rownum +"].cost'   id='documentaryLines4"+ rownum +".cost'  value='" + cost + "' class='cash' />"
+    			if (status == "1"){
+    				rtnVal = data +  "<input type='hidden' name='documentaryLines4["+ rownum +"].cost'   id='documentaryLines4"+ rownum +".cost'  value='" + data + "' />"
     			}else{
-    				return cost+'&nbsp;';
+    				rtnVal = "<input type='text' name='documentaryLines4["+ rownum +"].cost'   id='documentaryLines4"+ rownum +".cost'  value='" + data + "' class='cash' />"
     			}
+    			return rtnVal;
             }},
     		{"targets":3,"render":function(data, type, row){
     			var status = row["status"];
     			var rownum = row["rownum"] - 1;
-    			var person = row["person"];
-    			if (status != "1"){//可以修改
-    				return "<input type='text' name='documentaryLines4["+ rownum +"].person' id='documentaryLines4"+ rownum +".person' value='" + person + "' />"
+    			var rtnVal = "";
+    			if (status == "1"){
+    				rtnVal = data + "<input type='hidden' name='documentaryLines4["+ rownum +"].supplierid' id='documentaryLines4"+ rownum +".supplierid'  value='" + data + "' />"
     			}else{
-    				return person;
+    				rtnVal = "<input type='text' name='documentaryLines4["+ rownum +"].supplierid'   id='documentaryLines4"+ rownum +".supplierid'  value='" + data + "' class='' />"
     			}
+    			return rtnVal;
             }},
     		{"targets":4,"render":function(data, type, row){
     			var status = row["status"];
     			var rownum = row["rownum"] - 1;
-    			var date = row["quotationDate"];
-    			if (status != "1"){//可以修改
-    				return "<input type='text' name='documentaryLines4["+ rownum +"].cost' id='documentaryLines4"+ rownum +".cost' value='" + cost + "' class='short cash' />"
+    			var rtnVal = "";
+    			if (status == "1"){
+    				rtnVal = data + "<input type='hidden' name='documentaryLines4["+ rownum +"].remarks' id='documentaryLines4"+ rownum +".remarks'  value='" + data + "' />"
     			}else{
-    				return date;
+    				rtnVal = "<input type='text' name='documentaryLines4["+ rownum +"].remarks'   id='documentaryLines4"+ rownum +".remarks'  value='" + data + "' class='middle' />"
     			}
+    			return rtnVal;
             }},
     		{"targets":5,"render":function(data, type, row){
-    			var status = row["status"];
-    			var rownum = row["rownum"] - 1;
-    			var date = row["remarks"];
-    			if (status != "1"){//可以修改
-    				return "<input type='text' name='documentaryLines4["+ rownum +"].remarks' id='documentaryLines4"+ rownum +".remarks' value='" + remarks + "' />"
-    			}else{
-    				return date;
-    			}
-            }},
-    		{"targets":6,"render":function(data, type, row){
     			var status = row["status"];
     			var rownum = row["rownum"];
     			var rtn = "";
@@ -1236,7 +1233,7 @@ function expenseAjax5() {//检验费用
 						<th class="dt-center" width="250px">增减内容</th>
 						<th class="dt-center" width="150px">金额</th>
 						<th class="dt-center" width="150px">供应商</th>
-						<th class="dt-center" width="150px">供应商承担金额</th>
+						<!-- <th class="dt-center" width="150px">供应商承担金额</th> -->
 						<th class="dt-center" >备注</th>
 						<th class="dt-center" width="50px"></th>
 					</tr>

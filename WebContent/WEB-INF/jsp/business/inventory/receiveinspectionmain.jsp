@@ -41,6 +41,7 @@
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
+				"aaSorting": [[ 7, "ASC" ]],
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
 				"sAjaxSource" : url,
