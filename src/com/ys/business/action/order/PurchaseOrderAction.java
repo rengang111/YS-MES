@@ -128,6 +128,14 @@ public class PurchaseOrderAction extends BaseAction {
 				createAcssoryContract();
 				rtnUrl = "/business/purchase/purchaseorderview";
 				break;	
+			case "YZinit"://自制件任务查询
+				doInit(Constants.FORM_CONTRACTZZ);
+				rtnUrl = "/business/purchase/purchaseorderzzmain";
+				break;		
+			case "YZsearch"://自制件任务查询
+				dataMap = doSearch(data,Constants.FORM_CONTRACTZZ);
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		

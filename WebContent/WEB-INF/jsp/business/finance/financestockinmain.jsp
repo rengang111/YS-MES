@@ -77,7 +77,7 @@
 				{"data": "unit","className" : 'td-center'},
 				{"data": "supplierId"},
 				{"data": "YSId"},//6
-				{"data": "contractQuantity","className" : 'td-right'},
+				{"data": "quantity","className" : 'td-right'},
 				{"data": "contractPrice","className" : 'td-right'},
 				{"data": "taxPrice","className" : 'td-right'},//9
 				{"data": "taxTotal","className" : 'td-right'},//10
@@ -115,9 +115,9 @@
 	    			
 	    			var price = currencyToFloat(row["contractPrice"]);
 	    			var newPrice = ( price / 1.17 );
-	    			var quantity = currencyToFloat( row["contractQuantity"] ); 
+	    			var quantity = currencyToFloat( row["quantity"] ); 
 	    			var sum = floatToCurrency( newPrice * quantity );
-	    			return data;
+	    			return sum;
 	    		}},
 	    		{
 					"visible" : false,

@@ -35,6 +35,7 @@
 			"columns": [
 				{"className" : 'td-center'},//
 				{"className" : 'td-left'},//
+				{"className" : 'td-center'},//
 				{"className" : 'td-left'},//
 				{"className" : 'td-center'},//
 				{"className" : 'td-right'},//
@@ -189,9 +190,9 @@
 		ajax();
 		materialzzAjax();
 		
-		var contract = contractSum(4);
-		var minis = contractSum(5);
-		var payment = contractSum(6);
+		var contract = contractSum(5);
+		var minis = contractSum(6);
+		var payment = contractSum(7);
 		$('#contractTotal').html(floatToCurrency(contract));
 		$('#minisTotal').html(floatToCurrency(minis));
 		$('#paymentTotal').html(floatToCurrency(payment));		
@@ -224,6 +225,29 @@
 		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
 		
 		callProductDesignView("采购合同",url);
+	}
+
+	function doShowSupplier(supplierId) {
+
+		var url = '${ctx}/business/supplier?methodtype=showById&openFlag=newWindow&key=' + supplierId;
+		
+		callProductDesignView("供应商",url);
+	}
+	
+	function doShowStockin(contractId) {
+
+		var url = '${ctx}/business/storage?methodtype=showStockInByContractId&openFlag=newWindow&contractId=' + contractId;
+		
+		callProductDesignView("入库单",url);
+	}
+	
+	function doPrintContract(contractId) {
+	
+		var url = '${ctx}/business/requirement?methodtype=contractPrint';
+		url = url +'&contractId='+contractId;
+		//alert(url)		
+		callProductDesignView("打印合同",url);	
+
 	}
 </script>
 
@@ -305,12 +329,13 @@
 				<tr>
 					<th width="30px">No</th>
 					<th width="120px">合同编号</th>
+					<th width="120px">入库单号</th>
 					<th width="80px">耀升编号</th>
 					<th width="80px">约定付款日</th>
 					<th width="100px">合同金额</th>
 					<th width="100px">增减项总额</th>
 					<th width="100px">应付款金额</th>
-					<th></th>
+					<th>操作</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -318,12 +343,16 @@
 					<tr>
 						<td>${status.index+1 }</td>
 						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a></td>
+						<td><a href="###" onClick="doShowStockin('${list.contractId }')">${list.receiptId }</a></td>
 						<td>${list.YSId }</td>
 						<td>${list.agreementDate }</td>
 						<td>${list.totalPrice }</td>
 						<td>0</td>
 						<td>${list.totalPrice }</td>
-						<td></td>
+						<td class="td-center">
+							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>&nbsp;&nbsp;
+							<a href="###" onClick="doShowStockin('${list.contractId }')">打印入库单</a>
+						</td>
 							<form:hidden path="paymentList[${status.index }].contractid"  value="${list.contractId }" />
 							<form:hidden path="paymentList[${status.index }].payable"  value="${list.total }" />
 					</tr>
@@ -332,6 +361,7 @@
 			<!--  -->
 			<tfoot>
 				<tr>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>

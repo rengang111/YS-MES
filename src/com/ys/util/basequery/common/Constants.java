@@ -27,6 +27,7 @@ public class Constants {
 	public static final String FORM_REQUISITION_Z = "requisitionzz";//注塑领料申请
 	public static final String FORM_REQUISITION_X = "requisitionzz";//吸塑领料申请
 	public static final String FORM_CONTRACT = "contract";//采购合同
+	public static final String FORM_CONTRACTZZ = "contractzz";//采购合同
 	public static final String FORM_PRODUCT= "product";//成品管理
 	public static final String FORM_PRODUCTSEMI = "productsemi";//让步接收
 	public static final String FORM_ORDER = "order";//订单管理

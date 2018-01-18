@@ -428,12 +428,12 @@
       <f name="A.arrivelId" alias="" ctype="" />
       <f name="A.subId" alias="" ctype="" />
       <f name="A.materialNumber" alias="" ctype="" />
-      <f name="FORMAT((REPLACE(A.contractQuantity,',','') * b.lastPrice),2)" alias="total" ctype="" />      
+      <f name="FORMAT((REPLACE(A.quantity,',','') * b.lastPrice),2)" alias="total" ctype="" />      
       <f name="b.lastPrice" alias="price" ctype="" />  
       <f name="A.contractTotalPrice" alias="" ctype="" />
       <f name="A.contractPrice" alias="" ctype="" />
       <f name="format((replace(A.contractPrice,',','') / 1.17),6)" alias="taxPrice" ctype="" />
-      <f name="format((replace(A.contractPrice,',','') / 1.17) * replace(A.contractQuantity,',',''),2)" alias="taxTotal" ctype="" />
+      <f name="format((replace(A.contractPrice,',','') / 1.17) * replace(A.quantity,',',''),2)" alias="taxTotal" ctype="" />
     </select>
     <from>v_purchaseStockInById a  LEFT JOIN b_pricereference b ON b.materialId=a.materialId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
     <orderby>A.receiptId ,a.materialId</orderby>
