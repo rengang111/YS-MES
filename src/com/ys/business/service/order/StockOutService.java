@@ -171,9 +171,8 @@ public class StockOutService extends CommonService {
 	}
 	
 
-	public String stockoutHistoryInit() throws Exception {
+	public void stockoutHistoryInit() throws Exception {
 
-		String stockFlag ="查看";
 		String YSId = request.getParameter("YSId");
 		String requisitionId = request.getParameter("requisitionId");
 				
@@ -181,12 +180,7 @@ public class StockOutService extends CommonService {
 		stock.setYsid(YSId);
 		stock.setRequisitionid(requisitionId);
 		reqModel.setStockout(stock);
-		
-		String where = " requisitionId='"+requisitionId+"' ";
-		if(checkStcokoutExsit(where) == null)
-			stockFlag = "新建";
 	
-		return stockFlag;
 	}
 	
 

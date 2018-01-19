@@ -36,7 +36,7 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){							
 						fnCallback(data);
-						$('#example2 tbody tr').trigger('click');
+						$('#example2 tbody tr:first').trigger('click');
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -52,7 +52,7 @@
 					}, {"data": "checkOutDate","className":"dt-body-center"
 					}, {"data": "YSId"
 					}, {"data": "requisitionId","className":"dt-body-center"
-					}, {"data": "keepUser"
+					}, {"data": "loginName"
 					}, {"data": null,"className":"dt-body-center"
 					}, {"data": null,"className":"td-center","defaultContent" : ''
 					}

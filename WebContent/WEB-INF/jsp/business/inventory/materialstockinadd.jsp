@@ -92,7 +92,7 @@ function materialAjax(sessionFlag) {
 		
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/stock?methodtype=materialRequisitionMain";
+					var url = "${ctx}/business/storage?methodtype=materialStockinMainInit";
 					location.href = url;
 				});
 

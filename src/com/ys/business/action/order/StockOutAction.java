@@ -269,7 +269,7 @@ public class StockOutAction extends BaseAction {
 	public void stockoutHistoryInit(){
 
 		try{
-			service.addInitOrView();
+			service.stockoutHistoryInit();
 			
 		}catch(Exception e){
 			System.out.println(e.getMessage());

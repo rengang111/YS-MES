@@ -82,6 +82,13 @@ public class StorageAction extends BaseAction {
 				dataMap = doSearch(data,makeType);
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "initYszz":
+				rtnUrl = "/business/inventory/storagezzmain";
+				break;
+			case "searchYszz"://自制件任务查询
+				dataMap = doSearchYszz(data,makeType);
+				printOutJsonObj(response, dataMap);
+				return null;
 			case "addinit":
 				rtnUrl = doAddInit();
 				return rtnUrl;
@@ -273,6 +280,35 @@ public class StorageAction extends BaseAction {
 	}
 	
 
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doSearchYszz(String data,String makeType){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_CONTRACTZZ+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_CONTRACTZZ+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.doSearchYszz(data,Constants.FORM_CONTRACTZZ,makeType);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doMaterialStockinSearch(String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();

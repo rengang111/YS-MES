@@ -159,6 +159,60 @@ public class StorageService extends CommonService {
 
 	}
 
+
+	public HashMap<String, Object> doSearchYszz(
+			String data,String formId,String makeType) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(formId,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryName("getMaterialCheckInListYszz");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2)){
+			userDefinedSearchCase.put("status", "");
+		}
+						
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
 	public HashMap<String, Object> doMaterialStockinSearch(
 			String data) throws Exception {
 
