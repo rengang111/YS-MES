@@ -165,9 +165,19 @@ public class ArrivalService extends CommonService {
 		if(("G").equals(makeType)){//包装
 			userDefinedSearchCase.put("makeTypeG", "G");
 			userDefinedSearchCase.put("makeTypeL", "");
-		}else{//料件
+			userDefinedSearchCase.put("supplierId1", "");
+			userDefinedSearchCase.put("supplierId2", Constants.SUPPLIER_YZ);
+		}else if(("L").equals(makeType)){//料件
 			userDefinedSearchCase.put("makeTypeG", "");
-			userDefinedSearchCase.put("makeTypeL", "G");			
+			userDefinedSearchCase.put("makeTypeL", "G");
+			userDefinedSearchCase.put("supplierId1", "");
+			userDefinedSearchCase.put("supplierId2", Constants.SUPPLIER_YZ);
+		}else{//自制件
+			userDefinedSearchCase.put("makeTypeG", "");
+			userDefinedSearchCase.put("makeTypeL", "");	
+			userDefinedSearchCase.put("supplierId1", Constants.SUPPLIER_YZ);
+			userDefinedSearchCase.put("supplierId2", "");
+			
 		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

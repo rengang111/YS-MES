@@ -276,6 +276,7 @@
       <f name="a.shortName" alias="" ctype="" />
       <f name="a.supplierName" alias="" ctype="" />
       <f name="a.detailPaymentId" alias="" ctype="" />
+      <f name="a.detailRecordId" alias="" ctype="" />
       <f name="IFNULL(a.paymentId,'')" alias="paymentId" ctype="" />
       <f name="a.payable" alias="" ctype="" />
       <f name="a.stockInDate" alias="" ctype="" />

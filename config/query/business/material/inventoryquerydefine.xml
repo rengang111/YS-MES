@@ -158,9 +158,11 @@
    	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.purchaseDate" des=""  reqName="purchaseDate1" dtype="ch" oper="&lt;"  lg="AND" bt="" />
    	  	<w name="A.purchaseDate" des=""  reqName="purchaseDate2" dtype="ch" oper="&gt;"  lg="AND" bt="" />
-   	  	<w name="A.arrivalQty"  des=""  reqName="accumulated1"  dtype="ch" oper="="  lg="AND" bt="" />
-   	  	<w name="A.arrivalQty"  des=""  reqName="accumulated2"  dtype="ch" oper="&gt;"  lg="AND" bt="" />
-   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+   	  	<w name="A.arrivalQty"  des=""  reqName="accumulated1"   dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.arrivalQty"  des=""  reqName="accumulated2"   dtype="ch" oper="&gt;"  lg="AND" bt="" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId1"     dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId2"     dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+  	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
        </where>
     <select>

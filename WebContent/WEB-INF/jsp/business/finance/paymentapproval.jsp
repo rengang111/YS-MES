@@ -36,6 +36,7 @@
 				{"className" : 'td-center'},//
 				{"className" : 'td-left'},//
 				{"className" : 'td-left'},//
+				{"className" : 'td-left'},//
 				{"className" : 'td-center'},//
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
@@ -179,10 +180,11 @@
 
 		ajax();
 		materialzzAjax();
+		productPhotoView();
 		
-		var contract = contractSum(4);
-		var minis = contractSum(5);
-		var payment = contractSum(6);
+		var contract = contractSum(5);
+		var minis = contractSum(6);
+		var payment = contractSum(7);
 		$('#contractTotal').html(floatToCurrency(contract));
 		$('#minisTotal').html(floatToCurrency(minis));
 		$('#paymentTotal').html(floatToCurrency(payment));		
@@ -210,21 +212,120 @@
 		return sum;
 	}
 	
-	function doShowContract(contractId) {
-
-		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
-		
-		callProductDesignView("采购合同",url);
-	}
-	
 	function doInsert() {
 				
 		$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalInsert");
 		$('#formModel').submit();
 	};
 	
-</script>
+	function doShowContract(contractId) {
 
+		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
+		
+		callProductDesignView("采购合同",url);
+	}
+
+	function doShowSupplier(supplierId) {
+
+		var url = '${ctx}/business/supplier?methodtype=showById&openFlag=newWindow&key=' + supplierId;
+		
+		callProductDesignView("供应商",url);
+	}
+	
+	function doShowStockin(contractId) {
+
+		var url = '${ctx}/business/storage?methodtype=showStockInByContractId&openFlag=newWindow&contractId=' + contractId;
+		
+		callProductDesignView("入库单",url);
+	}
+	
+	function doPrintContract(contractId) {
+	
+		var url = '${ctx}/business/requirement?methodtype=contractPrint';
+		url = url +'&contractId='+contractId;
+		//alert(url)		
+		callProductDesignView("打印合同",url);	
+
+	}
+	
+</script>
+<script type="text/javascript">
+
+function productPhotoView() {
+
+	var paymentId = $("#payment\\.paymentid").val();
+	var supplierId = '${supplier.supplierId }';
+
+	$.ajax({
+		"url" :"${ctx}/business/payment?methodtype=getProductPhoto&paymentId="+paymentId+"&supplierId="+supplierId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+				
+			var countData = data["productFileCount"];
+			//alert(countData)
+			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+         	alert(errorThrown)
+		 }
+	});
+	
+}//产品图片
+
+function photoView(id, tdTable, count, data) {
+
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
+		var trHtml = '';
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+		trHtml += '<td>';
+		trHtml += '<table style="width:400px;height:300px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr><td>';
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+		trHtml += '</a>';
+		trHtml += '</td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+
+		index++;
+		if (index == count) {
+			//因为是偶数循环,所以奇数张图片的最后一张为空
+			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
+			trHtmlOdd += '<tr><td></td></tr>';	
+			trHtmlOdd += '</table>';
+		} else {
+			path = '${ctx}' + data[index];
+			pathDel = data[index];
+
+			var trHtmlOdd = '<table style="width:400px;height:300px;margin: auto;" class="form">';
+			trHtmlOdd += '<tr><td>';
+			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+			trHtmlOdd += '</a>'
+			trHtmlOdd += '</td></tr>';
+			trHtmlOdd += '</table>';
+		}
+		trHtml += '<td>';
+		trHtml += trHtmlOdd;
+		trHtml += '</td>';
+		trHtml += "</tr>";
+
+		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		row++;
+
+	}
+}
+
+</script>
 </head>
 <body>
 <div id="container">
@@ -276,22 +377,22 @@
 	<fieldset>
 		<legend> 审核意见</legend>
 		<table class="form" id="table_form2">
+		<!-- 
 			<tr>
 				<td rowspan="5" width="700">
 					<form:textarea path="payment.approvalfeedback" rows="5" cols="80" /></td>
 			</tr>
+			 -->
 			<tr>
-				<td>审核结果： 
+				<td width="250px">审核结果： 
 					<form:select path="payment.approvalstatus" style="width: 120px;">							
 					<form:options items="${formModel.approvalOption}" 
 						itemValue="key" itemLabel="value" /></form:select> </td>
-			</tr>
-			<tr>
+			
 				<td>发票编号： 
-					<form:input path="payment.invoicenumber"  class="" /></td>
-			</tr>
-			<tr>
-				<td style="vertical-align: bottom;" >
+					<form:input path="payment.invoicenumber"  class="long" /></td>
+			
+				<td style="width:200px" >
 					<button type="button" id="submit12"  onclick="doInsert();"
 						class="DTTT_button" style="margin-bottom: 5px;">确认提交</button>
 					<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a></td>
@@ -307,6 +408,7 @@
 				<tr>
 					<th width="30px">No</th>
 					<th width="120px">合同编号</th>
+					<th width="120px">入库单号</th>
 					<th width="80px">耀升编号</th>
 					<th width="80px">约定付款日</th>
 					<th width="100px">合同金额</th>
@@ -320,12 +422,16 @@
 					<tr>
 						<td>${status.index+1 }</td>
 						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a></td>
+						<td><a href="###" onClick="doShowStockin('${list.contractId }')">${list.receiptId }</a></td>
 						<td>${list.YSId }</td>
 						<td>${list.agreementDate }</td>
 						<td>${list.totalPrice }</td>
 						<td>0</td>
 						<td>${list.totalPrice }</td>
-						<td></td>
+						<td class="td-center">
+							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>&nbsp;&nbsp;
+							<a href="###" onClick="doShowStockin('${list.contractId }')">打印入库单</a>
+						</td>
 							<form:hidden path="paymentList[${status.index }].contractid"  value="${list.contractId }" />
 							<form:hidden path="paymentList[${status.index }].payable"  value="${list.total }" />
 					</tr>
@@ -334,6 +440,7 @@
 			<!--  -->
 			<tfoot>
 				<tr>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
@@ -346,6 +453,16 @@
 			</tfoot>
 		</table>
 		</div>
+	</fieldset>
+	<fieldset>
+		<legend> 发票 </legend>
+		<div class="list">
+			<div class="" id="subidDiv" style="min-height: 300px;">
+				<table id="productPhoto" class="phototable">
+					<tbody><tr class="photo"><td></td><td></td></tr></tbody>
+				</table>
+			</div>
+		</div>	
 	</fieldset>
 </form:form>
 

@@ -81,31 +81,31 @@ public class PaymentAction extends BaseAction {
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
 				return null;
-			case "addinit":
-				doAddInit();
-				rtnUrl = "/business/finance/paymentrequestadd";
-				return rtnUrl;
 			case "getRequisitionDetail"://领料单详情
 				//dataMap = getRequisitionDetail();
 				printOutJsonObj(response, dataMap);
 				return null;
-			case "updateInit":
-				doEdit();
-				rtnUrl = "/business/finance/stockoutedit";
+			case "applyUpdateInit"://付款申请修改初始化
+				applyUpdateInit();
+				rtnUrl = "/business/finance/paymentrequestadd";
 				break;
-			case "update":
+			case "applyUpdate"://付款申请修改
 				doUpdate();
-				rtnUrl = "/business/finance/stockoutview";
+				rtnUrl = "/business/finance/paymentrequestview";
 				break;
-			case "applyInsert"://申请
+			case "addinit"://付款申请初始化
+				doApplyAddInit();
+				rtnUrl = "/business/finance/paymentrequestadd";
+				return rtnUrl;
+			case "applyInsert"://付款申请
 				doApplyInsert();
 				rtnUrl = "/business/finance/paymentrequestview";
 				break;
-			case "approvalInit"://审核
+			case "approvalInit"://审核初始化
 				rtnUrl = approvalInit();
 				break;
 			case "approvalInsert"://审核确认
-				doApprovalInsert();
+				doApprovalUpdate();
 				rtnUrl = "/business/finance/paymentapprovalview";
 				break;
 			case "paymentView":
@@ -119,18 +119,6 @@ public class PaymentAction extends BaseAction {
 			case "printProductReceipt"://打印成品入库单
 				doPrintProductReceipt();
 				rtnUrl = "/business/finance/productstorageprint";
-				break;
-			case "getStockoutHistoryInit":
-				doAddInit();
-				rtnUrl = "/business/finance/stockoutview";
-				break;
-			case "getStockoutHistory":
-				dataMap = getStockoutHistory();
-				printOutJsonObj(response, dataMap);
-				break;
-			case "getStockoutDetail":
-				dataMap = getStockoutDetail();
-				printOutJsonObj(response, dataMap);
 				break;
 			case "getProductPhoto"://显示出库单附件
 				dataMap = getProductPhoto();
@@ -312,10 +300,10 @@ public class PaymentAction extends BaseAction {
 	}
 	
 
-	public void doAddInit(){
+	public void doApplyAddInit(){
 
 		try{
-			service.addInitOrView();
+			service.applyAddInit();
 			
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
@@ -409,9 +397,9 @@ public class PaymentAction extends BaseAction {
 		}
 	}
 	
-	public void doApprovalInsert(){
+	public void doApprovalUpdate(){
 		try{
-			service.approvalInsertAndReturn();
+			service.approvalUpdateAndReturn();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -437,10 +425,10 @@ public class PaymentAction extends BaseAction {
 	
 	
 	
-	public void doEdit(){
+	public void applyUpdateInit(){
 		try{
 			model.addAttribute("userName", userInfo.getUserName());
-			service.edit();
+			service.applyUpdateInit();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

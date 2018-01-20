@@ -179,16 +179,17 @@
 		});
 
 		
-		$("#insert").click(
+		$("#update").click(
 				function() {
 					
-			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert");
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyUpdateInit");
 			$('#formModel').submit();
 		});
 		
 
 		ajax();
 		materialzzAjax();
+		productPhotoView();
 		
 		var contract = contractSum(5);
 		var minis = contractSum(6);
@@ -250,7 +251,83 @@
 
 	}
 </script>
+<script type="text/javascript">
 
+function productPhotoView() {
+
+	var paymentId = $("#payment\\.paymentid").val();
+	var supplierId = '${supplier.supplierId }';
+
+	$.ajax({
+		"url" :"${ctx}/business/payment?methodtype=getProductPhoto&paymentId="+paymentId+"&supplierId="+supplierId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+				
+			var countData = data["productFileCount"];
+			//alert(countData)
+			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+         	alert(errorThrown)
+		 }
+	});
+	
+}//产品图片
+
+function photoView(id, tdTable, count, data) {
+
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
+		var trHtml = '';
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+		trHtml += '<td>';
+		trHtml += '<table style="width:400px;height:300px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr><td>';
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+		trHtml += '</a>';
+		trHtml += '</td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+
+		index++;
+		if (index == count) {
+			//因为是偶数循环,所以奇数张图片的最后一张为空
+			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
+			trHtmlOdd += '<tr><td></td></tr>';	
+			trHtmlOdd += '</table>';
+		} else {
+			path = '${ctx}' + data[index];
+			pathDel = data[index];
+
+			var trHtmlOdd = '<table style="width:400px;height:300px;margin: auto;" class="form">';
+			trHtmlOdd += '<tr><td>';
+			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+			trHtmlOdd += '</a>'
+			trHtmlOdd += '</td></tr>';
+			trHtmlOdd += '</table>';
+		}
+		trHtml += '<td>';
+		trHtml += trHtmlOdd;
+		trHtml += '</td>';
+		trHtml += "</tr>";
+
+		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		row++;
+
+	}
+}
+
+</script>
 </head>
 <body>
 <div id="container">
@@ -262,8 +339,9 @@
 
 	<form:hidden path="payment.parentid"  />
 	<form:hidden path="payment.subid"  />
-	<form:hidden path="payment.recordid"  value="${payment.recordId }"/>
-	<form:hidden path="payment.paymentid" value="${payment.paymentId }"/>
+	<form:hidden path="payment.recordid"     value="${payment.recordId }"/>
+	<form:hidden path="payment.contractids"  value="${payment.contractIds }"/>
+	<form:hidden path="payment.paymentid"    value="${payment.paymentId }"/>
 	<fieldset>
 		<legend> 付款申请单</legend>
 		<table class="form" id="table_form">
@@ -301,26 +379,9 @@
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >修改</a>
+		<a class="DTTT_button DTTT_button_text" id="update" >修改</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
-	<!-- 
-	<fieldset>
-		<legend> 付款信息</legend>
-		<table id="payment" class="form"  style="width:80%">
-			<thead>				
-				<tr>			
-					<th width="30px">No</th>
-					<th width="120px">付款日期</th>
-					<th width="120px">本次付款金额</th>
-					<th width="120px">应付款总额</th>
-					<th width="120px">剩余未付款</th>
-					<th>备注</th>
-				</tr>
-			</thead>
-		</table>
-	</fieldset>
-	 -->
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">
@@ -358,7 +419,6 @@
 					</tr>
 				</c:forEach>
 			</tbody>
-			<!--  -->
 			<tfoot>
 				<tr>
 					<td></td>
@@ -375,6 +435,18 @@
 		</table>
 		</div>
 	</fieldset>
+	<fieldset>
+	<legend> 发票 </legend>
+	<div class="list">
+		<div class="" id="subidDiv" style="min-height: 300px;">
+			<table id="productPhoto" class="phototable">
+				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
+			</table>
+		</div>
+	</div>	
+</fieldset>
+	
+	
 </form:form>
 
 </div>

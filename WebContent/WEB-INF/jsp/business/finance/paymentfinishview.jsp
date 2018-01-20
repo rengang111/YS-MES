@@ -365,16 +365,18 @@ function photoView(id, tdTable, count, data) {
 				<td width="100px" >${payment.approvalUser }</td>
 				<td width="100px" class="label">审核结果：</td>
 				<td width="100px" >${payment.approvalStatus }</td>
-				<td width="100px" class="label">发票编号：</td>
-				<td width="150px" >${payment.invoiceNumber }</td>
 				<td width="100px" class="label">审核日期：</td>
-				<td>${payment.approvalDate }</td>
-			</tr>	
+				<td width="100px" >${payment.approvalDate }</td>
+				<td width="100px" class="label">发票编号：</td>
+				<td>${payment.invoiceNumber }</td>
+			</tr>
+			<!-- 	
 			<tr>	
 				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
 				<td colspan="7" >
 					<pre>${payment.approvalFeedback }</pre></td>
-			</tr>						
+			</tr>	
+			 -->					
 		</table>
 	</fieldset>
 	<fieldset>

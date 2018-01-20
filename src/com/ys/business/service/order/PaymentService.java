@@ -246,10 +246,21 @@ public class PaymentService extends CommonService {
 		return modelMap;		
 
 	}
-	public void addInitOrView() throws Exception {
+	public void applyAddInit() throws Exception {
 
 		String contractIds = request.getParameter("contractIds");
 
+		//确认付款申请是否存在
+		String[] list = contractIds.split(",");
+		for(String contractId:list){
+			String where = " contractId='" + contractId +"' AND deleteFlag='0' ";
+			B_PaymentDetailData payment = checkPaymentExsit(where);
+			if(!(payment == null)){
+				model.addAttribute("payment",payment );
+				break;				
+			}
+		}
+		
 		//合同详情
 		getContractDetail(contractIds);
 		
@@ -357,12 +368,11 @@ public class PaymentService extends CommonService {
 		return rtnFlg;
 	}
 
-	public void edit() throws Exception {
-		String stockoutId = request.getParameter("stockoutId");
-	
-		String where = " stockoutId='"+stockoutId+"' ";
-		B_StockOutData data = checkStcokoutExsit(where);
-		//reqModel.setStockout(data);	
+	public void applyUpdateInit() throws Exception {
+		B_PaymentData payment = reqModel.getPayment();
+		model.addAttribute("payment",payment);
+		//供应商
+		getContractDetail(payment.getContractids());
 	}
 
 	
@@ -396,10 +406,12 @@ public class PaymentService extends CommonService {
 	}
 	
 
-	
+	/**
+	 * 新增付款申请
+	 */
 	public void applyInsertAndReturn() throws Exception {
 
-		String paymentid = insertApproval();
+		String paymentid = insertApply(Constants.payment_020);//待审核
 
 		//付款申请详情
 		HashMap<String, String> map = getPaymentDetail(paymentid);
@@ -411,8 +423,11 @@ public class PaymentService extends CommonService {
 
 	}
 
-	
-	public void approvalInsertAndReturn() throws Exception {
+	/**
+	 * 付款审核
+	 * @throws Exception
+	 */
+	public void approvalUpdateAndReturn() throws Exception {
 
 		
 		B_PaymentData reqData = reqModel.getPayment();
@@ -522,18 +537,9 @@ public class PaymentService extends CommonService {
 		return YSId;
 	}
 	
-	//新建付款申请
-	private String approvalInsert(){
-		String paymentid = "";		
-	
-			
-
-		
-		return paymentid;
-	}
 		
 	//新建付款申请
-	private String insertApproval(){
+	private String insertApply(String paymentStatus){
 		String paymentid = "";
 		ts = new BaseTransaction();		
 		
@@ -544,18 +550,20 @@ public class PaymentService extends CommonService {
 			List<B_PaymentDetailData> reqDataList = reqModel.getPaymentList();
 
 			//取得付款编号
-			reqData = getPaymentRecordId(reqData);			
 			paymentid = reqData.getPaymentid();
-	
+			if(isNullOrEmpty(paymentid)){
+				reqData = getPaymentRecordId(reqData);	
+				paymentid = reqData.getPaymentid();//重新取值
+			}	
 			//付款单
+			reqData.setFinishstatus(paymentStatus);//待审核
 			insertPayment(reqData);			
 
 			//关联合同
 			for(B_PaymentDetailData data:reqDataList ){				
 				
 				data.setPaymentid(paymentid);
-				insertPaymentDetail(data);
-			
+				insertPaymentDetail(data);			
 			}			
 			
 			ts.commit();			
@@ -645,7 +653,6 @@ public class PaymentService extends CommonService {
 			guid = BaseDAO.getGuId();
 			payment.setRecordid(guid);
 			payment.setApplicant(userInfo.getUserId());//默认为登陆者
-			payment.setFinishstatus(Constants.payment_020);//待审核
 			
 			new B_PaymentDao().Create(payment);
 		}else{
@@ -664,13 +671,31 @@ public class PaymentService extends CommonService {
 	private void insertPaymentDetail(
 			B_PaymentDetailData detail) throws Exception {
 
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"paymentRequestInsert",userInfo);
-		copyProperties(detail,commData);
-		guid = BaseDAO.getGuId();
-		detail.setRecordid(guid);
-				
-		new B_PaymentDetailDao().Create(detail);
+		B_PaymentDetailData db = null;
+		try {
+			db = new B_PaymentDetailDao(detail).beanData;
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		if(db == null || db.equals("")){
+			//插入新数据
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+			"paymentRequestInsert",userInfo);
+			copyProperties(detail,commData);
+			guid = BaseDAO.getGuId();
+			detail.setRecordid(guid);
+					
+			new B_PaymentDetailDao().Create(detail);
+		}else{
+			//更新
+			copyProperties(db,detail);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"paymentRequestUpdate",userInfo);
+			copyProperties(db,commData);
+			
+			new B_PaymentDetailDao().Store(db);
+		}		
 	}
 	
 	private void updatePayment(
@@ -959,14 +984,37 @@ public class PaymentService extends CommonService {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	public B_PaymentDetailData checkPaymentExsit(String where) throws Exception {
+		
+		B_PaymentDetailData db = null ; 
+		
+		List<B_PaymentDetailData> list = new B_PaymentDetailDao().Find(where);
+		
+		if(list.size() > 0)
+			db = list.get(0);
+		
+		return db;
+		
+	}
+	
+	
 	public HashMap<String, Object> uploadPhotoAndReload(
 			MultipartFile[] headPhotoFile,
 			String folderName,String fileList,String fileCount) throws Exception {
 
 		B_PaymentData payment = reqModel.getPayment();
-		B_PaymentHistoryData history = reqModel.getHistory();
+		//B_PaymentHistoryData history = reqModel.getHistory();
+
+		//判断是否有申请编号
+		String paymentId = payment.getPaymentid();
+		if(isNullOrEmpty(paymentId)){			
+			paymentId = insertApply(Constants.payment_010);//待申请
+		}
+		modelMap.put("paymentId", paymentId);//返回到申请页面显示
+		
 		String supplierId = payment.getSupplierid();
-		String paymentId = history.getPaymentid();
+		//String paymentId = history.getPaymentid();
 
 		FilePath file = getPath(supplierId,paymentId);
 		String savePath = file.getSave();						
@@ -990,9 +1038,9 @@ public class PaymentService extends CommonService {
 
 		String path = request.getParameter("path");
 		B_PaymentData payment = reqModel.getPayment();
-		B_PaymentHistoryData history = reqModel.getHistory();
+		//B_PaymentHistoryData history = reqModel.getHistory();
 		String supplierId = payment.getSupplierid();
-		String paymentId = history.getPaymenthistoryid();
+		String paymentId = payment.getPaymentid();
 
 		deletePhoto(path);//删除图片
 
