@@ -70,7 +70,7 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-					{"data": null,"className" : 'td-right'},//0
+					{"data": null,"className" : 'td-left'},//0
 					{"data": null, "defaultContent" : '', "className" : 'td-center'},//1 付款申请编号
 					{"data": "contractId", "defaultContent" : '', "className" : 'td-left'},//2
 					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//3				
@@ -86,7 +86,13 @@
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["contractId"] + "' />";
+		    			var paymentId = row["paymentId"];
+		    			if(paymentId == ""){
+							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["contractId"] + "' />";		    				
+		    			}else{
+							return row["rownum"];
+
+		    			}
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = row["paymentId"];//

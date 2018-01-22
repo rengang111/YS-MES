@@ -88,8 +88,15 @@
 				"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row,meta){
 		                    var startIndex = meta.settings._iDisplayStart; 
-							return startIndex + meta.row + 1 + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["YSId"] + "' />";
-			    		}},
+		                    var requisitionId = row["requisitionId"];
+		                    if(requisitionId == ""){
+		                    	return startIndex + meta.row + 1 + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["YSId"] + "' />";
+					    		
+		                    }else{
+		                    	return startIndex + meta.row + 1 ;
+					    		
+		                    }
+						}},
 			    		{"targets":1,"render":function(data, type, row){
 			    			var rtn = row["requisitionId"];//
 			    			if(rtn == ""){
