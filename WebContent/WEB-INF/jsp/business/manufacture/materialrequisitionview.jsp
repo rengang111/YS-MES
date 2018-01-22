@@ -2,7 +2,8 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>直接出库申请-查看</title>
+<!-- 直接出库申请-查看 -->
+<title></title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -64,7 +65,7 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">申请单编号：</td>					
-				<td width="300px">${requisition.requisitionId }</td>
+				<td width="200px">${requisition.requisitionId }</td>
 														
 				<td width="100px" class="label">申请日期：</td>
 				<td width="150px">${requisition.requisitionDate }</td>
@@ -99,7 +100,7 @@
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >编辑</a>
 		<a class="DTTT_button DTTT_button_text" id="doDelete" >删除</a>
-		<a class="DTTT_button DTTT_button_text" id="doPrint" >打印</a>
+		<a class="DTTT_button DTTT_button_text" id="doPrint" onclick="doPrint();return false;" >打印</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 </form:form>
@@ -108,4 +109,16 @@
 </div>
 </body>
 
+<script  type="text/javascript">
+
+function doPrint(){
+	
+	var headstr = "<html><head><title></title></head><body>";  
+	var footstr = "</body>";
+	$("#DTTT_container").hide();
+	window.print();
+	$("#DTTT_container").show();
+	
+}
+</script>
 </html>
