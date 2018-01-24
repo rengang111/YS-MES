@@ -23,9 +23,9 @@ public class Constants {
 	public static final String FORM_ARRIVAL = "arrival";//到货登记
 	public static final String FORM_REQUISITION = "requisition";//领料申请
 	public static final String FORM_REQUISITION_M = "requisitionmateiral";//直接领料申请
-	public static final String FORM_REQUISITION_C = "requisitionzz";//吹塑领料申请
-	public static final String FORM_REQUISITION_Z = "requisitionzz";//注塑领料申请
-	public static final String FORM_REQUISITION_X = "requisitionzz";//吸塑领料申请
+	public static final String FORM_REQUISITION_C = "requisitionzz_C";//吹塑领料申请
+	public static final String FORM_REQUISITION_Z = "requisitionzz_Z";//注塑领料申请
+	public static final String FORM_REQUISITION_X = "requisitionzz_X";//吸塑领料申请
 	public static final String FORM_CONTRACT = "contract";//采购合同
 	public static final String FORM_CONTRACTZZ = "contractzz";//采购合同
 	public static final String FORM_PRODUCT= "product";//成品管理

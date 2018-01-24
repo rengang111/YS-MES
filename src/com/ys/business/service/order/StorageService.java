@@ -300,10 +300,38 @@ public class StorageService extends CommonService {
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 
+		String approvalY = getJsonData(data, "approvalStatusY");
+		String approvalN = getJsonData(data, "approvalStatusN");
+		String makeTypeL = getJsonData(data, "makeTypeL");
+		String makeTypeG = getJsonData(data, "makeTypeG");
+		
+		//查询全部
+		if(notEmpty(approvalY) && notEmpty(approvalN)){
+			userDefinedSearchCase.put("approvalStatusY", "");
+			userDefinedSearchCase.put("approvalStatusN", "");			
+		}else{
+			userDefinedSearchCase.put("approvalStatusY", approvalY);
+			userDefinedSearchCase.put("approvalStatusN", approvalN);	
+			
+		}
+		
+		//查询全部
+		if(notEmpty(makeTypeL) && notEmpty(makeTypeG)){
+			userDefinedSearchCase.put("makeTypeL", "");
+			userDefinedSearchCase.put("makeTypeG", "");
+		}else{
+			if(notEmpty(makeTypeL)){
+				userDefinedSearchCase.put("makeTypeL", makeTypeL);
+				userDefinedSearchCase.put("makeTypeG", "");				
+			}else{
+				userDefinedSearchCase.put("makeTypeL", "");
+				userDefinedSearchCase.put("makeTypeG", makeTypeG);	
+			}
+		}
+				
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	
-		
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -314,14 +342,12 @@ public class StorageService extends CommonService {
 		modelMap.put("data", dataModel.getYsViewData());	
 		modelMap.put("keyword1",key1);	
 		modelMap.put("keyword2",key2);	
-		
 		ArrayList<HashMap<String, String>> hashmap = 
 				baseQuery.getYsFullData(sql);	
 		ArrayList<Float> list = setStockinCountData(hashmap);
 		modelMap.put("baozhuang",list.get(0));	
 		modelMap.put("zhuangpei",list.get(1));	
 		modelMap.put("zongji",list.get(2));	
-		
 		return modelMap;		
 
 	}
@@ -413,22 +439,14 @@ public class StorageService extends CommonService {
 	
 	}
 	
-	public void showStockIn() throws Exception {
+	public void receiptListPrint() throws Exception {
 
-		String contractId = request.getParameter("contractId");
-		String arrivalId = request.getParameter("arrivalId");
+		String contractIds = request.getParameter("contractIds");
 		
-		B_PurchaseStockInData  stock = checkStockInExsit(contractId);
-		
-		if(stock !=null)
-			model.addAttribute("receiptId",stock.getReceiptid());//已入库
-		
-		//合同信息
-		getContractDetail(contractId);
-		//取得该到货编号下的物料信息
-		//getReceivInspectionById(arrivalId);
-
-		//model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+		//B_PurchaseStockInData  stock = checkStockInExsit(contractId);
+				
+		//合同信息列表
+		getContractList(contractIds);
 	
 	}
 
@@ -1185,12 +1203,24 @@ public class StorageService extends CommonService {
 		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() >0){
-			model.addAttribute("contract",dataModel.getYsViewData().get(0));
-			//model.addAttribute("material",dataModel.getYsViewData());			
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));	
 		}		
 	}	
 	
+	public void getContractList(String contractIds) throws Exception {
+		
+		dataModel.setQueryName("getContractListAndGroupContractId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractIds", contractIds);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
 
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));
+			model.addAttribute("contractList",dataModel.getYsViewData());
+		}		
+	}
+	
 	private void getReceivInspectionById(String arrivalId) throws Exception {
 		
 		dataModel.setQueryName("getMaterialCheckInList");		
@@ -1307,19 +1337,12 @@ public class StorageService extends CommonService {
 		return modelMap;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void stockinDownloadExcelForfinance() throws Exception{
 		
 		//设置响应头，控制浏览器下载该文件
 				
 		//baseBom数据取得
-		String key1 = request.getParameter("key1");
-		String key2 = request.getParameter("key2");
-		String makeType = request.getParameter("makeType");
-		
-
-		List<Map<Integer, Object>>  datalist = getStockinList( key1, key2 ,makeType);
-		
+		List<Map<Integer, Object>>  datalist = getStockinList();		
 		
 		String fileName = CalendarUtil.timeStempDate()+".xls";
 		String dest = session
@@ -1340,16 +1363,13 @@ public class StorageService extends CommonService {
         Workbook wbModule = excel.getTempWorkbook(tempFilePath);
         //数据填充的sheet
         int sheetNo=0;
-       // Sheet wsheet = wbModule.getSheetAt(sheetNo);
         //title
         Map<String, Object> dataMap = new HashMap<String, Object>();
-        //dataMap.put("D1", materialId);
-        //dataMap.put("H1", mateiralName);
         wbModule = excel.writeData(wbModule, dataMap, sheetNo);        
-        
         //detail
         //必须为列表头部所有位置集合,输出 数据单元格样式和头部单元格样式保持一致
-        String[] heads = new String[]{"A2","B2","C2","D2","E2","J2","K2","L2","M2","N2","O2","P2","Q2"};  
+		String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "stockinForFinanceExcel");
+		String[] heads = title.split(",",-1);
         excel.writeDateList(wbModule,heads,datalist,sheetNo);
          
         //写到输出流并移除资源
@@ -1363,22 +1383,44 @@ public class StorageService extends CommonService {
 	}
 
 
-	public List<Map<Integer, Object>> getStockinList(
-			String key1,String key2,String makeType) throws Exception {
+	public List<Map<Integer, Object>> getStockinList() throws Exception {
 		
 		dataModel.setQueryName("getPurchaseStockInById");
 		baseQuery = new BaseQuery(request, dataModel);
+
+		String key1 = request.getParameter("key1");
+		String key2 = request.getParameter("key2");
+		String approvalY = request.getParameter("approvalStatusY");
+		String approvalN = request.getParameter("approvalStatusN");
+		String makeTypeL = request.getParameter("makeTypeL");
+		String makeTypeG = request.getParameter("makeTypeG");
+
+		//查询全部
+		if(notEmpty(approvalY) && notEmpty(approvalN)){
+			userDefinedSearchCase.put("approvalStatusY", "");
+			userDefinedSearchCase.put("approvalStatusN", "");			
+		}else{
+			userDefinedSearchCase.put("approvalStatusY", approvalY);
+			userDefinedSearchCase.put("approvalStatusN", approvalN);
+			
+		}		
+		//查询全部
+		if(notEmpty(makeTypeL) && notEmpty(makeTypeG)){
+			userDefinedSearchCase.put("makeTypeL", "");
+			userDefinedSearchCase.put("makeTypeG", "");
+		}else{
+
+			if(notEmpty(makeTypeL)){
+				userDefinedSearchCase.put("makeTypeL", makeTypeL);
+				userDefinedSearchCase.put("makeTypeG", "");				
+			}else{
+				userDefinedSearchCase.put("makeTypeL", "");
+				userDefinedSearchCase.put("makeTypeG", makeTypeG);	
+			}		
+		}
+
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		//userDefinedSearchCase.put("status", "030");
-
-		if(("G").equals(makeType)){
-			userDefinedSearchCase.put("makeTypeG", "G");
-			userDefinedSearchCase.put("makeTypeL", "");
-		}else{
-			userDefinedSearchCase.put("makeTypeG", "");
-			userDefinedSearchCase.put("makeTypeL", "G");			
-		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 
@@ -1386,11 +1428,11 @@ public class StorageService extends CommonService {
 		ArrayList<HashMap<String, String>>  hashMap = baseQuery.getYsFullData();	
 		
 		for(int i=0;i<hashMap.size();i++){
-			
-			String[] title = {"rownum","receiptId","checkInDate","materialId","materialName","unit","supplierName","YSId","contractQuantity","contractPrice","taxPrice","taxTotal",""};
+			String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "stockinForFinanceTitle");
+			String[] titles = title.split(",",-1);
 			Map<Integer, Object> excel = new HashMap<Integer, Object>();
-			for(int j=0;j<title.length;j++){
-				excel.put(j,hashMap.get(i).get(title[j]));		
+			for(int j=0;j<titles.length;j++){
+				excel.put(j,hashMap.get(i).get(titles[j]));		
 			}
 			listMap.add(excel);
 		}
@@ -1410,8 +1452,10 @@ public class StorageService extends CommonService {
 			String materialId = map.get("materialId");
 			String taxTotal = map.get("taxTotal");
 
-			zongji += stringToFloat(taxTotal);
+			if(isNullOrEmpty(materialId))
+				continue;
 			
+			zongji += stringToFloat(taxTotal);
 			if(("G").equals(materialId.substring(0, 1))){
 				
 				baozhuang += stringToFloat(taxTotal);				

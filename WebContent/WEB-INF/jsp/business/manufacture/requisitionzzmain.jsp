@@ -37,7 +37,7 @@
 				"sAjaxSource" : url,
 				"scrollY":scrollHeight,
 				"scrollCollapse":true,
-				 "aaSorting": [[2, "asc" ]],
+				// "aaSorting": [[2, "asc" ]],
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();

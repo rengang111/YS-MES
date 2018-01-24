@@ -83,10 +83,10 @@ public class RequisitionZZAction extends BaseAction {
 				break;
 			case "searchOrderList":
 				String formId = Constants.FORM_REQUISITION_Z;//注塑
-				if(Constants.REQUISITION_INJECT.equals(makeType)){
-					formId = Constants.FORM_REQUISITION_C;//吹塑
-				}else if (Constants.REQUISITION_BLOW.equals(makeType)){
+				if(Constants.REQUISITION_BLISTE.equals(makeType)){
 					formId = Constants.FORM_REQUISITION_X;//吸塑
+				}else if (Constants.REQUISITION_BLOW.equals(makeType)){
+					formId = Constants.FORM_REQUISITION_C;//吹塑
 				}
 				dataMap = doSearch(makeType,data,formId);
 				printOutJsonObj(response, dataMap);

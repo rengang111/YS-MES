@@ -250,6 +250,24 @@
 		callProductDesignView("打印合同",url);	
 
 	}
+	//显示入库单信息
+	function receiptView(contractId) {
+
+		var url = '${ctx}/business/storage?methodtype=showHistory&openFlag=newWindow&contractId=' + contractId;
+		
+		callProductDesignView("显示入库单",url);
+	}
+	
+	//批量打印入库单
+	function doPrintReceiptList() {
+		var contractId = "";
+		$(".contractid").each(function(){			
+			contractId += $(this).val() + ",";			
+		});
+		var url = '${ctx}/business/storage?methodtype=receiptListPrint&contractIds=' + contractId;
+		
+		callProductDesignView("打印入库单",url);
+	}
 </script>
 <script type="text/javascript">
 
@@ -380,6 +398,7 @@ function photoView(id, tdTable, count, data) {
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
 		<a class="DTTT_button DTTT_button_text" id="update" >修改</a>
+		<a class="DTTT_button DTTT_button_text" id="insert" onclick="doPrintReceiptList();return false;">打印入库单</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
@@ -404,17 +423,16 @@ function photoView(id, tdTable, count, data) {
 					<tr>
 						<td>${status.index+1 }</td>
 						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a></td>
-						<td><a href="###" onClick="doShowStockin('${list.contractId }')">${list.receiptId }</a></td>
+						<td><a href="###" onClick="receiptView('${list.contractId }')">${list.receiptId }</a></td>
 						<td>${list.YSId }</td>
 						<td>${list.agreementDate }</td>
 						<td>${list.totalPrice }</td>
 						<td>0</td>
 						<td>${list.totalPrice }</td>
 						<td class="td-center">
-							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>&nbsp;&nbsp;
-							<a href="###" onClick="doShowStockin('${list.contractId }')">打印入库单</a>
+							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>
 						</td>
-							<form:hidden path="paymentList[${status.index }].contractid"  value="${list.contractId }" />
+							<form:hidden path="paymentList[${status.index }].contractid"  value="${list.contractId }"   class="contractid" />
 							<form:hidden path="paymentList[${status.index }].payable"  value="${list.total }" />
 					</tr>
 				</c:forEach>

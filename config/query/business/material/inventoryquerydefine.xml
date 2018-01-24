@@ -199,6 +199,7 @@
     <name value="getContractById" />
     <where>
     	<w name="a.contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.contractId" des="" reqName="contractIds" dtype="ch" oper="in" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.recordId" alias="productRecordId" ctype="" />
@@ -404,6 +405,8 @@
    	  	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="C.approvalStatus" des=""  reqName="approvalStatusY" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="C.approvalStatus" des=""  reqName="approvalStatusN" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
         </where>
@@ -414,6 +417,7 @@
       <f name="A.receiptId" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="C.approvalStatus" alias="" ctype="审核结果view" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
@@ -437,8 +441,8 @@
       <f name="format((replace(A.contractPrice,',','') / 1.17),6)" alias="taxPrice" ctype="" />
       <f name="format((replace(A.contractPrice,',','') / 1.17) * replace(A.quantity,',',''),2)" alias="taxTotal" ctype="" />
     </select>
-    <from>v_purchaseStockInById a  LEFT JOIN b_pricereference b ON b.materialId=a.materialId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
-    <orderby>A.receiptId ,a.materialId</orderby>
+    <from>v_purchaseStockInById a  LEFT JOIN b_pricereference b ON b.materialId=a.materialId AND b.deleteFlag='0' LEFT JOIN v_paymentdetail c ON c.contractId=a.contractId AND c.deleteFlag = '0' WHERE a.deleteFlag = '0' </from>
+    <orderby>A.receiptId ,A.contractId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -627,4 +631,43 @@
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="getContractListAndGroupContractId" />
+    <where>
+    	<w name="a.contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.contractId" des="" reqName="contractIds" dtype="ch" oper="in" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.recordId" alias="productRecordId" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="IFNULL(a.productId,'')" alias="productId" ctype="" />
+      <f name="a.productName" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.quantity" alias="" ctype="" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="shortName" ctype="" />
+      <f name="a.supplierName" alias="fullName" ctype="" />
+      <f name="a.purchaseDate" alias="" ctype="" />
+      <f name="a.deliveryDate" alias="" ctype="" />
+      <f name="a.total" alias="" ctype="" />
+      <f name="a.memo" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="contractStorage" alias="" ctype="" />
+      <f name="a.surplus" alias="" ctype="" />
+      <f name="a.accumulated" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_purchaseorderdetail a WHERE a.deleteFlag='0' </from>
+    <orderby>a.materialId</orderby>
+    <groupby>a.contractId</groupby>
+    <having></having>
+	<power></power>    
+  </query> 
 </root>

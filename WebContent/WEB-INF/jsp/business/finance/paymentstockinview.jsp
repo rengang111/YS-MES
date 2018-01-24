@@ -1,17 +1,14 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-
 <!DOCTYPE HTML>
 <html>
-
 <head>
 <title>入库单查看(付款用)</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
-	function ajax() {
+	function receiptView(index,contractId) {
 
-		var contractId = $("#stock\\.contractid").val();
-		var t = $('#example').DataTable({
+		var t = $('#example'+index).DataTable({
 			
 			"paging": true,
 			"lengthChange":false,
@@ -26,12 +23,11 @@
 			dom : '<"clear">rt',
 			"sAjaxSource" : "${ctx}/business/storage?methodtype=getStockInDetail&contractId="+contractId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
-				var param = {};
-				var formData = $("#condition").serializeArray();
-				formData.forEach(function(e) {
-					aoData.push({"name":e.name, "value":e.value});
-				});
-
+				//var param = {};
+				//var formData = $("#condition").serializeArray();
+				//formData.forEach(function(e) {
+				//	aoData.push({"name":e.name, "value":e.value});
+				//});
 				$.ajax({
 					"url" : sSource,
 					"datatype": "json", 
@@ -41,8 +37,6 @@
 					success: function(data){
 						fnCallback(data);
 
-						$('#checkInDate').text(data['data'][0]["checkInDate"]);
-						$('#materialNumber').text(data['data'][0]["materialNumber"]);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 						 alert(errorThrown)
@@ -106,38 +100,22 @@
 	
 	$(document).ready(function() {
 
-		ajax();
+		//循环显示入库单
+		var index = 0; 
+		$(".receipt").each(function(){
+			var supplierId = $('#supplierId'+index).val();
+			var contractId = $('#contractId'+index).val();
+			//alert("sup--con:"+supplierId+"----"+contractId)
+			
+			receiptView(index,contractId)
+
+			productPhotoView(index,supplierId,contractId);
+			
+			index++;
+		});
 		
-		productPhotoView();
 		
 	});
-	
-	function doEdit(contractId,receiptId) {
-
-		var makeType=$('#makeType').val();
-		var url = "${ctx}/business/storage?methodtype=edit&receiptId="+receiptId
-				+ "&contractId="+contractId+ "&makeType="+makeType;
-		location.href = url;
-	}
-
-	function doPrint(contractId,receiptId) {
-		var url = '${ctx}/business/storage?methodtype=printReceipt';
-		url = url +'&contractId='+contractId;
-		url = url +'&receiptId='+receiptId;
-			
-		layer.open({
-			offset :[10,''],
-			type : 2,
-			title : false,
-			area : [ '1100px', '520px' ], 
-			scrollbar : false,
-			title : false,
-			content : url,
-			cancel: function(index){			
-			}    
-		});		
-
-	};
 	
 </script>
 
@@ -146,62 +124,58 @@
 <div id="container">
 <!--主工作区,编辑页面或查询显示页面-->
 <div id="main">
-		<div id="printBtn">
-			<button type="button" id="print" onclick="doPrint();"class="DTTT_button " style="float: right;margin: 15px 20px -50px 0px;height: 40px;width: 70px;">打印</button>
-		</div>
+<div id="printBtn">
+	<button type="button" id="print" onclick="doPrint();"
+	class="DTTT_button " style="float: right;margin: 24px 50px -50px 0px;width: 70px;">打印</button>
+</div>
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 	
-	<input type="hidden" id="makeType" value="${makeType }" />
-	<input type="hidden" id="addFlag"  value="${addFlag}"/>
-	<input type="hidden" id="arrivalId"  value="${arrivalId}"/>
-	<form:hidden path="stock.receiptid"  value="${receiptId}"/>
-	<form:hidden path="stock.ysid"  value="${contract.YSId }"/>
-	<form:hidden path="stock.supplierid"  value="${contract.supplierId }"/>
-	<form:hidden path="stock.contractid"  value="${contract.contractId }"/>
+	<c:forEach var="detail" items="${contractList}" varStatus='status'>
+		
+		<input type="hidden" id="YSId${status.index}" value="${detail.YSId }"/>
+		<input type="hidden" id="supplierId${status.index}" value="${detail.supplierId }"/>
+		<input type="hidden" id="contractId${status.index}" value="${detail.contractId }"/>
 	
-	<fieldset>
-		<legend> 基本信息</legend>
-		<table class="form" id="table_form">
-			<tr>							
-				<td class="label">合同编号：</td>					
-				<td>${contract.contractId }</td>								 	
-				<td class="label">供应商：</td>					
-				<td colspan="3">${contract.supplierId }（${contract.shortName }）${contract.fullName }</td>	
-			</tr>
-										
-		</table>
-	</fieldset>
-	<fieldset>
-		<legend> 入库记录</legend>
-		<div class="list">
-			<table class="display" id="example">	
-				<thead>		
-					<tr>
-						<th style="width:1px">No</th>
-						<th style="width:65px">入库单编号</th>
-						<th style="width:100px">物料编号</th>
-						<th>物料名称</th>
-						<th style="width:65px">合同数量</th>
-						<th style="width:65px">合同金额</th>
-						<th style="width:65px">入库数量</th>
-						<th style="width:60px">入库时间</th>
-						<th style="width:35px">包装</th>
-						<th style="width:40px">库位</th>	
-					</tr>
-				</thead>										
+		<fieldset>
+			<table class="form" id="table_form">
+				<tr>							
+					<td class="label" width="100px">合同编号：</td>					
+					<td width="150px">${detail.contractId }</td>								 	
+					<td class="label" width="100px">供应商：</td>					
+					<td>${detail.supplierId }（${detail.shortName }）${detail.fullName }</td>	
+				</tr>
+											
 			</table>
-		</div>
-	</fieldset>
-
-
+			<div class="list">
+				<table class="display receipt" id="example${status.index}">	
+					<thead>		
+						<tr>
+							<th style="width:1px">No</th>
+							<th style="width:65px">入库单编号</th>
+							<th style="width:100px">物料编号</th>
+							<th>物料名称</th>
+							<th style="width:65px">合同数量</th>
+							<th style="width:65px">合同金额</th>
+							<th style="width:65px">入库数量</th>
+							<th style="width:60px">入库时间</th>
+							<th style="width:35px">包装</th>
+							<th style="width:40px">库位</th>	
+						</tr>
+					</thead>										
+				</table>
+			</div>
+		</fieldset>
+		
 		<div class="" id="subidDiv" style="min-height: 300px;">
-			<table id="productPhoto" class="phototable">
+			<table id="productPhoto${status.index }" class="phototable">
 				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
 			</table>
 		</div>
-
-
+		
+		<div style="page-break-before:always;"></div>
+		
+	</c:forEach>
 </form:form>
 
 </div>
@@ -209,14 +183,10 @@
 </body>
 <script type="text/javascript">
 
-function productPhotoView() {
-
-	var contractId = $("#stock\\.contractid").val();
-	var YSId = $("#stock\\.ysid").val();
-	var supplierId = $("#stock\\.supplierid").val();
+function productPhotoView(index,supplierId,contractId) {
 
 	$.ajax({
-		"url" :"${ctx}/business/storage?methodtype=getProductPhoto&YSId="+YSId+"&supplierId="+supplierId+"&contractId="+contractId,	
+		"url" :"${ctx}/business/storage?methodtype=getProductPhoto"+"&supplierId="+supplierId+"&contractId="+contractId,	
 		"datatype": "json", 
 		"contentType": "application/json; charset=utf-8",
 		"type" : "POST",
@@ -225,7 +195,7 @@ function productPhotoView() {
 				
 			var countData = data["productFileCount"];
 			//alert(countData)
-			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+			photoView('productPhoto'+index,'uploadProductPhoto',countData,data['productFileList'])		
 		},
 		 error:function(XMLHttpRequest, textStatus, errorThrown){
          	alert(errorThrown)
@@ -236,13 +206,11 @@ function productPhotoView() {
 
 function photoView(id, tdTable, count, data) {
 
-	//alert("id:"+id+"--count:"+count+"--countView:"+countView)	
 	var row = 0;
 	for (var index = 0; index < count; index++) {
 
 		var path = '${ctx}' + data[index];
 		var pathDel = data[index];
-		//alert(index+"::::::::::::"+path)
 		var trHtml = '';
 
 		trHtml += '<tr style="text-align: center;" class="photo">';
@@ -250,7 +218,6 @@ function photoView(id, tdTable, count, data) {
 		trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
 		trHtml += '<tr><td>';
 		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
-		//trHtml += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
 		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
 		trHtml += '</a>';
 		trHtml += '</td>';
@@ -272,7 +239,6 @@ function photoView(id, tdTable, count, data) {
 			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="form">';
 			trHtmlOdd += '<tr><td>';
 			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
-			//trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="###" onclick="bigImage2(' + '\'' + tdTable + '\'' + ',' + '\''+ index + '\'' + ','+ '\'' + path + '\'' + ');">';
 			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
 			trHtmlOdd += '</a>'
 			trHtmlOdd += '</td></tr>';

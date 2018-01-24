@@ -124,9 +124,9 @@ public class PaymentService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		if(notEmpty(key1) || notEmpty(key2)){
-			userDefinedSearchCase.put("finishStatus", "");
-		}
+		//if(notEmpty(key1) || notEmpty(key2)){
+		//	userDefinedSearchCase.put("finishStatus", "");
+		//}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
@@ -652,6 +652,7 @@ public class PaymentService extends CommonService {
 			copyProperties(payment,commData);
 			guid = BaseDAO.getGuId();
 			payment.setRecordid(guid);
+			payment.setApprovalstatus("010");//未审核
 			payment.setApplicant(userInfo.getUserId());//默认为登陆者
 			
 			new B_PaymentDao().Create(payment);

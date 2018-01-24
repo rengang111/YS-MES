@@ -191,6 +191,20 @@
 		materialzzAjax();
 		productPhotoView();
 		
+		//产品图片添加位置                                                                                                                                                                                    
+		var productIndex = 1;
+		$("#addProductPhoto").click(function() {
+			
+			var path='${ctx}';
+			var cols = $("#productPhoto tbody tr.photo").length - 1;
+			//从 1 开始			
+			var trHtml = addPhotoRow('productPhoto','uploadProductPhoto',productIndex,path);		
+
+			$('#productPhoto tr.photo:eq('+0+')').after(trHtml);	
+			productIndex++;		
+			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
+		});
+		
 		var contract = contractSum(5);
 		var minis = contractSum(6);
 		var payment = contractSum(7);
@@ -257,7 +271,7 @@
 function productPhotoView() {
 
 	var paymentId = $("#payment\\.paymentid").val();
-	var supplierId = '${supplier.supplierId }';
+	var supplierId = $("#payment\\.supplierid").val();
 
 	$.ajax({
 		"url" :"${ctx}/business/payment?methodtype=getProductPhoto&paymentId="+paymentId+"&supplierId="+supplierId,	
@@ -268,8 +282,8 @@ function productPhotoView() {
 		success: function(data){
 				
 			var countData = data["productFileCount"];
-			//alert(countData)
-			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+			
+			photoView1('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
 		},
 		 error:function(XMLHttpRequest, textStatus, errorThrown){
          	alert(errorThrown)
@@ -278,7 +292,8 @@ function productPhotoView() {
 	
 }//产品图片
 
-function photoView(id, tdTable, count, data) {
+
+function photoView1(id, tdTable, count, data) {
 
 	var row = 0;
 	for (var index = 0; index < count; index++) {
@@ -290,7 +305,15 @@ function photoView(id, tdTable, count, data) {
 		trHtml += '<tr style="text-align: center;" class="photo">';
 		trHtml += '<td>';
 		trHtml += '<table style="width:400px;height:300px;margin: auto;" class="form" id="tb'+index+'">';
-		trHtml += '<tr><td>';
+		
+		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+		trHtml += '<td></td>';
+		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
+				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+		trHtml += "</tr>";
+
+		trHtml += '<tr><td colspan="2"  style="height:300px;">';
+		
 		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
 		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
 		trHtml += '</a>';
@@ -310,7 +333,15 @@ function photoView(id, tdTable, count, data) {
 			pathDel = data[index];
 
 			var trHtmlOdd = '<table style="width:400px;height:300px;margin: auto;" class="form">';
-			trHtmlOdd += '<tr><td>';
+			
+			trHtmlOdd += '<tr style="background: #d4d0d0;height: 35px;">';
+			trHtmlOdd += '<td></td>';
+			trHtmlOdd += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
+					'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+			trHtmlOdd += "</tr>";
+
+			trHtmlOdd += '<tr><td colspan="2"  style="height:300px;">';
+			
 			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
 			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
 			trHtmlOdd += '</a>'
@@ -323,9 +354,90 @@ function photoView(id, tdTable, count, data) {
 		trHtml += "</tr>";
 
 		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		
 		row++;
 
 	}
+}
+
+
+function deletePhoto(tableId,tdTable,path) {
+	
+	var url = '${ctx}/business/payment?methodtype='+tableId+'Delete';
+	url+='&tabelId='+tableId+"&path="+path;
+	    
+	if(!(confirm("确定要删除该图片吗？"))){
+		return;
+	}
+    $("#formModel").ajaxSubmit({
+		type: "POST",
+		url:url,	
+		data:$('#formModel').serialize(),// 你的formid
+		dataType: 'json',
+	    success: function(data){
+	    	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//删除后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView1(tableId, tdTable, countData, photo);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片删除失败,请重试。")
+		}
+	});
+}
+
+function uploadPhoto(tableId,tdTable, id) {
+
+	var url = '${ctx}/business/paymentBillUpload'
+			+ '?methodtype=uploadPhoto' + '&id=' + id;
+	
+	var paymentId = $('#payment\\.paymentid').val();
+	if(paymentId == '（保存后自动生成）')
+		$('#payment\\.paymentid').val('');//清除非正常ID
+
+	$("#formModel").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#formModel').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
+	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					$('#payment\\.paymentid').val(data["paymentId"]);//设置新的ID
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//添加后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView1(tableId, tdTable, countData, photo);
+			}
+			
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片上传失败,请重试。")
+		}
+	});
 }
 
 </script>
@@ -342,6 +454,7 @@ function photoView(id, tdTable, count, data) {
 	<form:hidden path="payment.subid"  />
 	<form:hidden path="payment.recordid"  value="${payment.recordId }"/>
 	<form:hidden path="payment.paymentid" value="${payment.paymentId }"/>
+	<form:hidden path="payment.supplierid" value="${supplier.supplierId }" />
 	<fieldset>
 		<legend> 付款申请单</legend>
 		<table class="form" id="table_form">
@@ -461,7 +574,7 @@ function photoView(id, tdTable, count, data) {
 		</div>
 	</fieldset>
 	<fieldset>
-		<legend> 发票 </legend>
+		<span class="tablename">发票收据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加发票</button>
 		<div class="list">
 			<div class="" id="subidDiv" style="min-height: 300px;">
 				<table id="productPhoto" class="phototable">

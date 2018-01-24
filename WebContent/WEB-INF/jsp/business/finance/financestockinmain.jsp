@@ -34,7 +34,7 @@
 			"ordering "	:true,
 			"searching" : false,
 			"pagingType" : "full_numbers",
-         	"aaSorting": [[ 1, "ASC" ]],
+         	//"aaSorting": [[ 1, "ASC" ]],
 			"retrieve" : true,
 			"sAjaxSource" : url,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -62,6 +62,7 @@
 						fnCallback(data);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
+					 alert("数据加载失败.")
 					 }
 				})
 			},
@@ -71,47 +72,41 @@
 			"columns": [
 				{"data": null,"className" : 'td-center'},
 				{"data": "receiptId","className" : 'td-left'},
-				{"data": "checkInDate","className" : 'td-left'},
+				{"data": "contractId"},
 				{"data": "materialId"},
 				{"data": "materialName"},
 				{"data": "unit","className" : 'td-center'},
-				{"data": "supplierId"},
 				{"data": "YSId"},//6
 				{"data": "quantity","className" : 'td-right'},
 				{"data": "contractPrice","className" : 'td-right'},
 				{"data": "taxPrice","className" : 'td-right'},//9
 				{"data": "taxTotal","className" : 'td-right'},//10
+				{"data": "checkInDate","className" : 'td-center'},//11
+				{"data": "approvalStatus","className" : 'td-center', "defaultContent" : '未审核'},//12
 		
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                 }},
-	    		{"targets":3,"render":function(data, type, row){
-
-	    			var contractId = row["contractId"];	
-	    			var arrivalId = row["arrivalId"];		    			
-	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + contractId + "','" + arrivalId + "','" + row["receiptId"] + "')\">"+row["materialId"]+"</a>";
-	    			return data;
-	    		}},
 	    		{"targets":4,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
-	    			name = jQuery.fixedWidth(name,35);				    			
+	    			name = jQuery.fixedWidth(name,32);				    			
 	    			return name;
 	    		}},
 	    		{"targets":8,"render":function(data, type, row){
 	    				    			
 	    			return floatToCurrency( data );;
 	    		}},
-	    		{"targets":10,"render":function(data, type, row){
+	    		{"targets":9,"render":function(data, type, row){
 	    			
 	    			var price = currencyToFloat(row["contractPrice"]);
 	    			var newPrice = floatToCurrency( price / 1.17 );
 	    				    			
 	    			return data;
 	    		}},
-	    		{"targets":11,"render":function(data, type, row){
+	    		{"targets":10,"render":function(data, type, row){
 	    			
 	    			var price = currencyToFloat(row["contractPrice"]);
 	    			var newPrice = ( price / 1.17 );
@@ -119,9 +114,18 @@
 	    			var sum = floatToCurrency( newPrice * quantity );
 	    			return sum;
 	    		}},
+	    		{"targets":12,"render":function(data, type, row){
+	    			if(data == null || data == ""){
+	    				return "未审核";
+	    			}else{
+		    			return data;
+	    			}
+
+	
+	    		}},
 	    		{
 					"visible" : false,
-					"targets" : []
+					"targets" : [5]
 				}
 	           
 	         ] 
@@ -151,12 +155,13 @@
 	
 	function doSearch() {	
 
+		$('#baozhuang').val('');
+		$('#zhuangpei').val('');
+		$('#zongji').val('');
 		//false:不使用session
 		ajax("ALL","false");
 
 	}
-	
-	
 	
 	function doShow(contractId,arrivalId,receiptId) {
 
@@ -164,8 +169,6 @@
 		callProductDesignView('入库信息',url);
 		//location.href = url;
 	}
-
-	
 	
 	function selectContractByDate(type){
 		
@@ -178,9 +181,29 @@
  
 		var key1 = $("#keyword1").val();
 		var key2 = $("#keyword2").val();
-		var makeType = $("#makeType").val();
+		var approvalStatusY = "";
+		var approvalStatusN = "";
+		var makeTypeL = "";
+		var makeTypeG = "";
+		
+		if ($("#approvalStatusY").prop('checked')) {
+			 approvalStatusY = $("#approvalStatusY").val();
+		}
+		if ($("#approvalStatusN").prop('checked')) {
+			approvalStatusN = $("#approvalStatusN").val();
+		}
+		if ($("#makeTypeL").prop('checked')) {
+			makeTypeL = $("#makeTypeL").val();
+		}
+		if ($("#makeTypeG").prop('checked')) {
+			makeTypeG = $("#makeTypeG").val();
+		}
+		
 		var url = '${ctx}/business/storage?methodtype=downloadExcel'
-				 + "&makeType=" + makeType
+				 + "&approvalStatusY=" + approvalStatusY
+				 + "&approvalStatusN=" + approvalStatusN
+				 + "&makeTypeL=" + makeTypeL
+				 + "&makeTypeG=" + makeTypeG
 				 + "&key1=" + key1
 				 + "&key2=" + key2;
 		
@@ -189,28 +212,7 @@
 		location.href = url;
 	}
 	
-	//列合计
-	function productCostSum(){
-/*
-		var baozhuang = 0;
-		var zhuangpei = 0;
-		var zongji = 0;
-		$('#TMaterial tbody tr').each (function (){
-			
-			var vtotal = $(this).find("td").eq(10).text();
-			var materilId = $(this).find("td").eq(3).text();
-			
-			zongji = currencyToFloat(zongji) + currencyToFloat(vtotal);
 
-			if(materilId.substring(0,1) =='G'){
-				baozhuang = currencyToFloat(baozhuang) + currencyToFloat(vtotal);
-			}else{
-				zhuangpei = currencyToFloat(zhuangpei) + currencyToFloat(vtotal);
-				
-			}
-		})
-	*/
-	}
 </script>
 </head>
 
@@ -225,18 +227,29 @@
 				<tr>
 					<td width="10%"></td> 
 					<td class="label">关键字1：</td>
-					<td class="condition">
-						<input type="text" id="keyword1" name="keyword1" class="middle"/>
-					</td>
-					<td class="label">关键字2：</td> 
-					<td class="condition">
-						<input type="text" id="keyword2" name="keyword2" class="middle"/>
-					</td>
+					<td>
+						<input type="text" id="keyword1" name="keyword1" class="middle"/></td>
+					<td class="label" width="100px">关键字2：</td> 
+					<td>
+						<input type="text" id="keyword2" name="keyword2" class="middle"/></td>
 					<td>
 						<button type="button" id="retrieve" class="DTTT_button" 
-							style="width:50px" value="查询" onclick="doSearch();">查询</button>
-					</td>
+							style="width:50px" value="查询" onclick="doSearch();">查询</button></td>
 					<td width="10%"></td> 
+				</tr>
+				<tr>
+					<td width="10%"></td> 
+					<td class="label">付款申请审核：</td>
+					<td>
+						<label><input type="checkbox" name="approvalStatusY" id="approvalStatusY"  value="020" />已审核</label>
+						<label><input type="checkbox" name="approvalStatusN" id="approvalStatusN" value="010" />未审核</label>
+					</td>
+					<td class="label">物料类别：</td>
+					<td>
+						<label><input type="checkbox" name="makeTypeL" id="makeTypeL" value="G" />装配件</label>
+						<label><input type="checkbox" name="makeTypeG" id="makeTypeG" value="G" />包装件</label>&nbsp;
+					</td>
+					<td ></td> 
 				</tr>
 			</table>
 		</form>
@@ -244,10 +257,12 @@
 	<div  style="height:10px"></div>
 
 	<div class="list">
+	<!-- 
 		<div id="DTTT_container" align="left" style="height:40px;width:20%;float: left;">
 			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('L');">装配件</a>
 			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('G');">包装件</a>
 		</div>
+		 -->
 		<div id="DTTT_container3" align="left" style="height:40px;width:70%;float: left;">
 			装配件合计:	<input type="text" id="zhuangpei" class="read-only num"/>
 			包装件合计:	<input type="text" id="baozhuang" class="read-only num"/>
@@ -259,18 +274,19 @@
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						
 				<tr>
-					<th style="width: 1px;">No</th>
-					<th style="width: 70px;">入库单编号</th>
-					<th style="width: 60px;">入库时间</th>
-					<th style="width: 120px;">物料编号</th>
+					<th width=" 25px">No</th>
+					<th style="width: 60px;">入库单编号</th>
+					<th style="width: 80px;">合同编号</th>
+					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 40px;">单位</th>
-					<th style="width: 60px;">供应商</th>
 					<th style="width: 50px;">耀升编号</th>
-					<th style="width: 60px;">入库数量</th>
-					<th style="width: 50px;">合同单价</th>
+					<th style="width: 50px;">入库数量</th>
+					<th style="width: 40px;">合同价</th>
 					<th style="width: 50px;">税前价</th>
 					<th style="width: 50px;">税前金额</th>
+					<th style="width: 50px;">入库时间</th>
+					<th style="width: 50px;">付款审核</th>
 				</tr>
 			</thead>
 		</table>

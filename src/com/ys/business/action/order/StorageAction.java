@@ -170,8 +170,8 @@ public class StorageAction extends BaseAction {
 			case "downloadExcel":
 				downloadExcel();
 				break;
-			case "showStockInByContractId":
-				showStockIn();
+			case "receiptListPrint"://批量打印入库单
+				receiptListPrint();
 				rtnUrl = "/business/finance/paymentstockinview";
 				break;
 			case "materialStockinMainInit"://直接入库一览
@@ -356,7 +356,7 @@ public class StorageAction extends BaseAction {
 			}
 		}
 		catch(Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			dataMap.put(INFO, ERRMSG);
 		}
 		
@@ -406,10 +406,10 @@ public class StorageAction extends BaseAction {
 		return rtnUrl;
 	}
 
-	public void showStockIn(){
+	public void receiptListPrint(){
 		
 		try{
-			service.showStockIn();
+			service.receiptListPrint();
 
 		}catch(Exception e){
 			System.out.println(e.getMessage());

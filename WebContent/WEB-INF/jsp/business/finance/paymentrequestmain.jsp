@@ -157,11 +157,11 @@
 	
 	function doSearch2(colNum,type) {	
 
-		$("#keyword1").val("");
-		$("#keyword2").val("");
+		//$("#keyword1").val("");
+		//$("#keyword2").val("");
 		var scrollHeight = $(document).height() - 200; 
 		
-		ajax("false",type,scrollHeight,"false");
+		ajax("false",type,scrollHeight,"true");
 
 	}
 	
