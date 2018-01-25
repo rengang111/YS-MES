@@ -15,11 +15,13 @@
 		}
 
 		var makeType = $("#makeType").val();
+		var usedType = $("#usedType").val();
 
 		var actionUrl = "${ctx}/business/stockout?methodtype=search";
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
 		actionUrl = actionUrl + "&requisitionSts=" + status;
 		actionUrl = actionUrl + "&makeType=" + makeType;
+		actionUrl = actionUrl + "&usedType=" + usedType;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -165,8 +167,9 @@
 	function showHistory(YSId,requisitionId) {
 
 		var makeType=$('#makeType').val();
+		var usedType=$('#usedType').val();
 		var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId
-		+"&requisitionId="+requisitionId+"&makeType="+makeType;
+			+"&requisitionId="+requisitionId+"&makeType="+makeType+"&usedType="+usedType;
 		location.href = url;
 	}
 	
@@ -174,8 +177,9 @@
 	function doCreate(YSId,requisitionId) {
 
 		var makeType=$('#makeType').val();
+		var usedType=$('#usedType').val();
 		var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId
-			+"&requisitionId="+requisitionId+"&makeType="+makeType;
+			+"&requisitionId="+requisitionId+"&makeType="+makeType+"&usedType="+usedType;
 		location.href = url;
 	}
 	
@@ -195,6 +199,7 @@
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 			<input type="hidden" id="makeType" value="${makeType }" />
+			<input type="hidden" id="usedType" value="${usedType }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 

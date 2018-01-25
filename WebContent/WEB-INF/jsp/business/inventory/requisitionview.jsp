@@ -49,7 +49,7 @@
 			        	{"data": null,"className":"dt-body-center"
 					}, {"data": "requisitionId","className":"dt-body-center"
 					}, {"data": "requisitionDate","className":"dt-body-center"
-					}, {"data": "requisitionUserId","className":"dt-body-center"
+					}, {"data": "requisitionUser","className":"dt-body-center"
 					}, {"data": "requisitionSts","className":"dt-body-center"
 					}, {"data": null,"className":"td-center","defaultContent" : ''
 					}, {"data": null,"className":"td-center","defaultContent" : ''
@@ -57,9 +57,14 @@
 				] ,
 				"columnDefs":[
 		    		{"targets":5,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
-		    			rtn = rtn + "&nbsp;" + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
+		    			var contractId = row["contractId"];
+		    			var status = row["requisitionStsId"];
+		    			var rtn = "";
+		    			if(status != '030'){//已出库
+			    			rtn = "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
+			    			rtn = rtn + "&nbsp;" + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
+		    				
+		    			}
 						return rtn;
 		    		}},{"targets":6,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			

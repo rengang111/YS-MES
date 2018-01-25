@@ -812,7 +812,7 @@ public class RequisitionZZService extends CommonService {
 	public HashMap<String, Object> getRequisitionHistory(
 			String taskId,String makeType) throws Exception {
 		
-		dataModel.setQueryName("getRequisitionZZById");		
+		dataModel.setQueryName("getRequisitionById");		
 		baseQuery = new BaseQuery(request, dataModel);
 		//自制品一次关联多个耀升编号,所以,领料单里的耀升编号实际存放的是任务编号
 		userDefinedSearchCase.put("YSId", taskId);

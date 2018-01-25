@@ -73,7 +73,7 @@
 		                    }},
 				    		{"targets":1,"render":function(data, type, row){
 				    			var rtn = "";
-				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["requisitionId"] +"')\">" + data + "</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"')\">" + data + "</a>";
 				    			return rtn;
 				    		}},
 				    		{"targets":3,"render":function(data, type, row){
@@ -113,10 +113,10 @@
 
 	}
 	
-	function doShow(requisitionId) {
+	function doShow(recordId) {
 
 		var url = '${ctx}/business/requisition?methodtype=materialRequisitionView'
-				+"&requisitionId="+requisitionId;
+				+"&recordId="+recordId;
 
 		location.href = url;
 	}

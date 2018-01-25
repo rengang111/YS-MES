@@ -54,6 +54,7 @@ public class StockOutAction extends BaseAction {
 		
 		String type = request.getParameter("methodtype");
 		String makeType = request.getParameter("makeType");
+		String usedType = request.getParameter("usedType");
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
@@ -66,6 +67,7 @@ public class StockOutAction extends BaseAction {
 		this.response = response;
 		this.session = session;
 		model.addAttribute("makeType",makeType);
+		model.addAttribute("usedType",usedType);//研发和一般之分
 		
 		if (type == null) {
 			type = "";
@@ -83,7 +85,7 @@ public class StockOutAction extends BaseAction {
 				rtnUrl = "/business/manufacture/stockoutmain";
 				break;
 			case "search":
-				dataMap = doSearch(data,makeType);
+				dataMap = doSearch(data,makeType,Constants.FORM_MATERIALSTOCKOUT);
 				printOutJsonObj(response, dataMap);
 				return null;
 			case "addinit":
@@ -169,6 +171,13 @@ public class StockOutAction extends BaseAction {
 				dataMap = getProductStockoutDetail();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "developSearchInit":
+				rtnUrl = "/business/manufacture/stockoutmain";
+				break;
+			case "developSearch":
+				dataMap = doSearch(data,makeType,Constants.FORM_DEVELOPSTOCKOUT);
+				printOutJsonObj(response, dataMap);
+				return null;
 				
 		}
 		
@@ -227,17 +236,17 @@ public class StockOutAction extends BaseAction {
 	
 	
 	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doSearch(String data,String makeType){
+	public HashMap<String, Object> doSearch(String data,String makeType,String formId){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
 		String sessionFlag = request.getParameter("sessionFlag");
 		if(("false").equals(sessionFlag)){
-			session.removeAttribute(Constants.FORM_MATERIALSTOCKOUT+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_MATERIALSTOCKOUT+Constants.FORM_KEYWORD2);			
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);			
 		}
 		
 		try {
-			dataMap = service.doSearch(data,makeType);
+			dataMap = service.doSearch(data,makeType,formId);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

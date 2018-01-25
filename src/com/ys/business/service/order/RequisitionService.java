@@ -393,7 +393,26 @@ public class RequisitionService extends CommonService {
 		detailDao.Create(stock);
 	}
 	
+	private void updateRequisitionDetail(
+			B_RequisitionDetailData stock) throws Exception {
 		
+		//update
+		B_RequisitionDetailData db = new B_RequisitionDetailDao(stock).beanData;
+		
+		if(db == null || ("").equals(db)){
+			//insert
+			insertRequisitionDetail(stock);
+		}else{
+			copyProperties(db,stock);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"materialRequisitionUpdate",userInfo);
+			copyProperties(db,commData);
+			
+			detailDao.Store(db);
+		}
+	}
+		
+	
 	@SuppressWarnings("unchecked")
 	private void updateOrderDetail(
 			String ysid) throws Exception{
@@ -423,7 +442,9 @@ public class RequisitionService extends CommonService {
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"RequisitionUpdate",userInfo);
 		copyProperties(db,commData);
-		db.setRequisitiondate(CalendarUtil.fmtYmdDate());		
+		db.setRequisitionuserid(userInfo.getUserId());//默认为登陆者
+		db.setRequisitiondate(CalendarUtil.fmtYmdDate());
+		db.setRemarks(replaceTextArea(db.getRemarks()));//换行符转换	
 		
 		new B_RequisitionDao().Store(db);
 	}
@@ -643,11 +664,11 @@ public class RequisitionService extends CommonService {
 	}
 	
 	public void getRequisitionByRequisitionId(
-			String requisitionId) throws Exception {
+			String recordId) throws Exception {
 		
 		dataModel.setQueryName("getRequisitionDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("requisitionId", requisitionId);
+		userDefinedSearchCase.put("recordId", recordId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 
@@ -655,28 +676,33 @@ public class RequisitionService extends CommonService {
 				
 	}
 	
-	public void materialStockoutAddInit() throws Exception {
+	public void materialRequisitionAddInit() throws Exception {
 
-		String recordid = request.getParameter("recordId");
-				
-		B_MaterialData mate = new B_MaterialData();
-		mate.setRecordid(recordid);
 		
-		mate = new B_MaterialDao(mate).beanData;
+		//设置领料用途下拉框	
+		model.addAttribute("usedType",util.getListOption(DicUtil.DIC_REQUISITION_USEDTYPE, ""));
 		
-		model.addAttribute("materialId",mate.getMaterialid());
-		model.addAttribute("materialName",mate.getMaterialname());
-		model.addAttribute("materialQty",mate.getQuantityonhand());
-		model.addAttribute("UnitNmae",DicUtil.getCodeValue("计量单位"+mate.getUnit()));
 	
 	}
 
+	public void materialRequisitionEdit() throws Exception {
+
+		String recordId = request.getParameter("recordId");
+		//申请单详情
+		getRequisitionByRequisitionId(recordId);
+		
+		//设置领料用途下拉框	
+		model.addAttribute("usedType",util.getListOption(DicUtil.DIC_REQUISITION_USEDTYPE, ""));
+
+		model.addAttribute("editFlag","edit");//编辑标识
+	}
+	
 	public void materialRquisitionView() throws Exception {
 
-		String requisitionid = request.getParameter("requisitionId");
+		String recordId = request.getParameter("recordId");
 
 		//申请单详情
-		getRequisitionByRequisitionId(requisitionid);
+		getRequisitionByRequisitionId(recordId);
 	}
 	
 	
@@ -688,6 +714,10 @@ public class RequisitionService extends CommonService {
 		getRequisitionByRequisitionId(requisitionid);
 	}
 	
+	/**
+	 * 新增 单独领料
+	 * @return
+	 */
 	private String insertMaterialRquisition(){
 		
 		String requisitionid = "";
@@ -700,19 +730,30 @@ public class RequisitionService extends CommonService {
 			B_RequisitionDetailData detail = reqModel.getReqDetail();
 
 			//取得领料单编号
-			reqData = getRequisitionId(reqData);
-			requisitionid = reqData.getRequisitionid();
 		
 			float quantity = stringToFloat(detail.getQuantity());
 			
 			if(quantity <= 0)
 				return requisitionid;
-			
-			detail.setRequisitionid(requisitionid);
-			insertRequisitionDetail(detail);
+			String recordid = reqData.getRecordid();
+			if(isNullOrEmpty(recordid)){
+				//insert
+				reqData = getRequisitionId(reqData);
+				detail.setRequisitionid(requisitionid);
+				
+				insertRequisitionDetail(detail);//领料明细
 
-			//领料申请insert
-			insertRequisition(reqData,Constants.REQUISITION_5);//直接领料			
+				//领料申请insert
+				insertRequisition(reqData,Constants.REQUISITION_5);//直接领料	
+			}else{
+				//update				
+				updateRequisitionDetail(detail);//领料明细
+
+				//领料申请
+				updateRequisition(reqData);//直接领料	
+			}
+
+			requisitionid = reqData.getRequisitionid();
 			
 			ts.commit();			
 			

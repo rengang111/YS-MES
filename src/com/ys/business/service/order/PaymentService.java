@@ -559,12 +559,17 @@ public class PaymentService extends CommonService {
 			reqData.setFinishstatus(paymentStatus);//待审核
 			insertPayment(reqData);			
 
-			//关联合同
-			for(B_PaymentDetailData data:reqDataList ){				
-				
-				data.setPaymentid(paymentid);
-				insertPaymentDetail(data);			
-			}			
+			//检查关联合同是否存在
+			String where = " paymentid='" + paymentid +"' AND deleteFlag='0' ";
+			if ( checkPaymentExsit(where) == null){
+
+				//关联合同
+				for(B_PaymentDetailData data:reqDataList ){				
+					
+					data.setPaymentid(paymentid);
+					insertPaymentDetail(data);			
+				}	
+			}		
 			
 			ts.commit();			
 			
@@ -634,18 +639,21 @@ public class PaymentService extends CommonService {
 		return paymentid;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void insertPayment(
 			B_PaymentData payment) throws Exception {
 		
 		B_PaymentData db = null;
+		List<B_PaymentData> list = null;
 		try {
-			db = new B_PaymentDao(payment).beanData;
+			String where = " paymentId ='" + payment.getPaymentid() + "' AND deleteFlag='0'";
+			list = new B_PaymentDao().Find(where);
 
 		} catch (Exception e) {
 			// nothing
 		}		
 		
-		if(db == null || db.equals("")){
+		if(list == null || list.size() == 0){
 			//插入新数据
 			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 					"paymentRequestInsert",userInfo);
@@ -658,6 +666,7 @@ public class PaymentService extends CommonService {
 			new B_PaymentDao().Create(payment);
 		}else{
 			//更新
+			db = list.get(0);		
 			copyProperties(db,payment);
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"paymentRequestUpdate",userInfo);

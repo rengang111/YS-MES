@@ -273,7 +273,7 @@
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(1,'010');"><span>待申请</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>待审核</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>待付款</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'040');"><span>已完成</span></a>
+					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'050');"><span>已完成</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'060');"><span>审核未通过</span></a>
 				</div>
 				<div style="height: 40px;margin-bottom: -15px;float:right">

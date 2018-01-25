@@ -37,6 +37,7 @@ public class Constants {
 	public static final String FORM_RECEIVEINSPECTION= "receiveinspection";//进料报检
 	public static final String FORM_MATERIALSTORAGE= "materialstorage";//料检入库登记
 	public static final String FORM_MATERIALSTOCKOUT= "materialstockout";//料检出库
+	public static final String FORM_DEVELOPSTOCKOUT= "developstockout";//研发出库
 	public static final String FORM_PRODUCTSTORAGE= "productstorage";//成品入库登记
 	public static final String FORM_PRODUCTDETAIL= "productdetail";//做单资料
 	public static final String FORM_SUPPLIER= "supplier";//供应商

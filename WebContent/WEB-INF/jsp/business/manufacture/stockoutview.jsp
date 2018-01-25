@@ -171,17 +171,12 @@
 		$(".goBack").click(
 				function() {
 					var makeType=$('#makeType').val();
-					var url = "${ctx}/business/stockout?makeType="+makeType;
+					var usedType=$('#usedType').val();
+					var url = "${ctx}/business/stockout?makeType="
+							+makeType+"&usedType="+usedType;
 					location.href = url;		
-				});
-		
-		$("#insert").click(
-				function() {
-					var YSId='${order.YSId }';
-					var makeType=$('#makeType').val();
-					var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId+"&makeType="+makeType;
-					location.href = url;
 		});
+		
 		
 		$('#example2').DataTable().on('click', 'tr', function() {
 			
@@ -209,9 +204,10 @@
 	function doEdit(YSId,stockoutid) {
 
 		var makeType=$('#makeType').val();
+		var usedType=$('#usedType').val();
 		var url = '${ctx}/business/stockout?methodtype=updateInit&YSId='
 				+YSId+'&stockoutId='+stockoutid
-				+'&makeType='+makeType;
+				+'&makeType='+makeType+"&usedType="+usedType;
 		location.href = url;
 	}
 	
@@ -227,6 +223,7 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<input type="hidden" id="makeType" value="${makeType }" />
+	<input type="hidden" id="usedType" value="${usedType }" />
 	<form:hidden path="stockout.ysid"  />
 	<!-- 
 	<fieldset>

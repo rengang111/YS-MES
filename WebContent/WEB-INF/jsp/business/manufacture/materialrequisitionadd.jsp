@@ -13,7 +13,7 @@ function materialAjax(sessionFlag) {
 		table.fnDestroy();
 	}
 	var url = "${ctx}/business/material?methodtype=search&sessionFlag="+sessionFlag;
-	var scrollHeight = 185;//$(document).height() - 400; 
+	var scrollHeight = "185px";//$(document).height() - 400; 
 	var t = $('#TMaterial').DataTable({
 			"paging": true,
 			 "iDisplayLength" : 50,
@@ -26,7 +26,7 @@ function materialAjax(sessionFlag) {
 			"searching" : false,
 			"pagingType" : "full_numbers",
 			"scrollY":scrollHeight,
-			"scrollCollapse":true,
+			"scrollCollapse":false,
 			"retrieve" : true,
 			"sAjaxSource" : url,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -80,9 +80,7 @@ function materialAjax(sessionFlag) {
 	$(document).ready(function() {
 		
 		//日期
-		$("#requisition\\.requisitiondate").val(shortToday());
-		
-		//ajax(scrollHeight);
+		$("#requisition\\.requisitiondate").val(shortToday());		
 		
 		$("#requisition\\.requisitiondate").datepicker({
 				dateFormat:"yy-mm-dd",
@@ -90,31 +88,29 @@ function materialAjax(sessionFlag) {
 				changeMonth: true,
 				selectOtherMonths:true,
 				showOtherMonths:true,
-			}); 
+		}); 
 		
 		
 		$(".goBack").click(
 				function() {
 					var url = "${ctx}/business/requisition?methodtype=materialRequisitionMain";
 					location.href = url;
-				});
+		});
 
 		
 		$("#insert").click(
 				function() {
 
-					var quantity = $('#reqDetail\\.quantity').val();
-					quantity = myTrim(quantity);
-					quantity = currencyToFloat(quantity);
-					if(quantity<=0){
-						$().toastmessage('showWarningToast', "申请数量必须大于零,请重试。");
-						return;
-					}
+			var quantity = $('#reqDetail\\.quantity').val();
+			quantity = myTrim(quantity);
+			quantity = currencyToFloat(quantity);
+			if(quantity<=0){
+				$().toastmessage('showWarningToast', "申请数量必须大于零,请重试。");
+				return;
+			}
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=materialRequisitionInsert");
 			$('#formModel').submit();
-		});
-		
-	
+		});	
 				
 		foucsInit();
 
@@ -130,7 +126,7 @@ function materialAjax(sessionFlag) {
 	            $(this).addClass('selected');
 	            
 	            var d = $('#TMaterial').DataTable().row(this).data();				
-//alert(d["materialId"])
+				//alert(d["materialId"])
 				$('#reqDetail\\.materialid').val(d["materialId"]);
 				$('#materialName').text(d["materialName"]);
 				$('#quantity').text(d["quantityOnHand"]);
@@ -141,6 +137,15 @@ function materialAjax(sessionFlag) {
 		});
 	
 		materialAjax();
+		
+		//编辑模式
+		var editFlag = '${editFlag}';
+		if(editFlag == 'edit'){
+			$('#requisition\\.requisitionid').val('${requisition.requisitionId}');
+			$('#requisition\\.usedtype').val('${requisition.usedTypeId}');
+			$('#requisition\\.remarks').val(replaceTextarea('${requisition.remarks}'));
+			$('#materialName').text('${requisition.materialName}');
+		}
 		
 	});
 
@@ -200,7 +205,8 @@ function materialAjax(sessionFlag) {
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 	
-	<input type="hidden" id="makeType" value="${makeType }" />
+	<form:hidden path="requisition.recordid" value="${requisition.recordId }" />
+	<form:hidden path="reqDetail.recordid"   value="${requisition.detailRecordId }" />
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;width: 50%;float: right;margin-bottom: -35px;margin-top: 5px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >确认申请</a>
@@ -225,7 +231,7 @@ function materialAjax(sessionFlag) {
 
 			<tr> 				
 				<td class="label" width="100px">物料编号：</td>					
-				<td width="200px"><form:input path="reqDetail.materialid" class="read-only middle" value="" /></td>
+				<td width="200px"><form:input path="reqDetail.materialid" class="read-only middle" value="${requisition.materialId }" /></td>
 														
 				<td width="100px" class="label">物料名称：</td>
 				<td colspan="3">&nbsp;<span id="materialName"></span></td>
@@ -233,10 +239,16 @@ function materialAjax(sessionFlag) {
 			</tr>
 			<tr> 				
 				<td class="label">申请数量：</td>
-				<td><form:input path="reqDetail.quantity" class="num " value="" /></td>
+				<td><form:input path="reqDetail.quantity" class="num " value="${requisition.quantity }" /></td>
 				<td class="label">现有库存：</td>					
-				<td colspan="3">&nbsp;<span class="font16"><span id="quantity"></span></span>（<span id="unit"></span>）</td>
-				
+				<td>&nbsp;<span class="font16"><span id="quantity"></span></span>（<span id="unit"></span>）</td>
+								
+				<td class="label" width="100px">领料用途：</td>
+				<td>
+					<form:select path="requisition.usedtype" style="width: 100px;">
+							<form:options items="${usedType}" 
+							  itemValue="key" itemLabel="value" />
+					</form:select></td>
 			</tr>
 			<tr> 				
 				<td class="label">申请事由：</td>					

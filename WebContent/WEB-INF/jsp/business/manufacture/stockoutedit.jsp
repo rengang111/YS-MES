@@ -136,7 +136,9 @@
 		$(".goBack").click(
 				function() {
 					var makeType=$('#makeType').val();
-					var url = "${ctx}/business/stockout?makeType="+makeType;
+					var usedType=$('#usedType').val();
+					var url = "${ctx}/business/stockout?makeType="
+							+makeType+"&usedType="+usedType;
 					location.href = url;		
 				});
 
@@ -144,8 +146,9 @@
 				function() {
 					var YSId=$('#stockout\\.ysid').val();
 					var makeType=$('#makeType').val();
+					var usedType=$('#usedType').val();
 					var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId
-					+"&makeType="+makeType;
+					+"&makeType="+makeType+"&usedType="+usedType;
 					location.href = url;		
 				});
 		
@@ -153,7 +156,8 @@
 				function() {
 
 					var makeType=$('#makeType').val();
-			$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=update"+"&makeType="+makeType);
+					var usedType=$('#usedType').val();
+			$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=update"+"&makeType="+makeType+"&usedType="+usedType);
 			$('#formModel').submit();
 		});
 		
@@ -196,6 +200,7 @@
 	id="formModel" name="formModel"  autocomplete="off">
 	
 	<input type="hidden" id="makeType" value="${makeType }" />
+	<input type="hidden" id="usedType" value="${usedType }" />
 	<form:hidden path="stockout.ysid" />
 	<form:hidden path="stockout.requisitionid"  />
 	<form:hidden path="stockout.recordid"  />

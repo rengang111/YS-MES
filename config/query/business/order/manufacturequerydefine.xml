@@ -5,13 +5,15 @@
     <name value="getRequisitionById" />
      <where>
        <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
-       <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="A.requisitionId"   des=""  reqName="requisitionId"   dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="A.requisitionType" des=""  reqName="requisitionType" dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   <select>
       <f name="A.YSId" alias="" ctype="" />
       <f name="a.recordId" alias="" ctype="" />
       <f name="a.requisitionId" alias="" ctype="" />
       <f name="a.requisitionDate" alias="" ctype="" />
+      <f name="A.collectYsid" alias="" ctype="" />
       <f name="a.storeUserId" alias="" ctype="" />
       <f name="a.requisitionUserId" alias="" ctype="" />
       <f name="a.requisitionSts" alias="" ctype="料件出库状态" />
@@ -26,37 +28,7 @@
     <orderby>a.requisitionId </orderby>
     <groupby></groupby>
     <having></having>
-	<power>
-	</power>    
-  </query>
-  <query>
-    <pool></pool>    
-    <name value="getRequisitionZZById" />
-     <where>
-       <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
-       <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
-       <w name="A.requisitionType" des=""  reqName="requisitionType" dtype="ch" oper="="  lg="AND" bt="" />
-    </where>
-  <select>
-      <f name="a.recordId" alias="" ctype="" />
-      <f name="A.YSId" alias="" ctype="" />
-      <f name="A.collectYsid" alias="" ctype="" />
-      <f name="a.requisitionId" alias="" ctype="" />
-      <f name="a.requisitionDate" alias="" ctype="" />
-      <f name="a.storeUserId" alias="" ctype="" />
-      <f name="a.requisitionUserId" alias="" ctype="" />      
-      <f name="b.loginName" alias="storeUser" ctype="" />  
-      <f name="c.loginName" alias="requisitionUser" ctype="" />
-      <f name="a.deleteFlag" alias="" ctype="" />
-  </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_requisition a LEFT JOIN s_user b ON a.storeUserId=b.UserID AND b.deleteFlag='0' LEFT JOIN s_user c ON a.requisitionUserId=c.UserID AND c.deleteFlag='0'  where a.deleteFlag='0'</from>
-    <orderby>a.requisitionId </orderby>
-    <groupby></groupby>
-    <having></having>
-	<power>
-	</power>    
+	<power></power>    
   </query>
   <query>
     <pool></pool>    
@@ -195,9 +167,11 @@
     <name value="getRequisitionDetailById" />
      <where>
         <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
+        <w name="A.recordId" des=""  reqName="recordId" dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   <select>
       <f name="a.recordId" alias="" ctype="" />
+      <f name="a.detailRecordId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.purchaseType" alias="" ctype="物料采购类别" />
@@ -205,6 +179,8 @@
       <f name="a.requisitionId" alias="" ctype="" />
       <f name="a.requisitionDate" alias="" ctype="" />
       <f name="a.requisitionSts" alias="" ctype="料件出库状态" />
+      <f name="a.usedType" alias="" ctype="单独领料用途" />
+      <f name="a.usedType" alias="usedTypeId" ctype="" />
       <f name="format(replace(a.quantity,',',''),2)" alias="quantity" ctype="" />
       <f name="IFNULL(a.overQuantity,0)" alias="overQuantity" ctype="" />
       <f name="a.deleteFlag" alias="" ctype="" />
@@ -403,6 +379,7 @@
    	  <w name="B.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="B.YSId"      des=""  reqName="YSId"     dtype="ch" oper="="     lg="AND" bt="" />
    	  <w name="B.requisitionSts" des=""  reqName="requisitionSts" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="B.usedType" des=""  reqName="usedType" dtype="ch" oper="="  lg="AND" bt="" />
   	  <!--w name="left(b.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" /-->
    	  <!--w name="left(b.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" /-->
      </where>

@@ -60,11 +60,16 @@
 				] ,
 				"columnDefs":[
 		    		{"targets":6,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
-		    			rtn = rtn + "&nbsp;&nbsp;";	    			
-		    			rtn = rtn + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
-		    			rtn = rtn + "&nbsp;&nbsp;";
+		    			var contractId = row["contractId"];
+		    			var status = row["requisitionStsId"];
+		    			var rtn = "";
+		    			if(status != '030'){//已出库
+			    			rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
+			    			rtn = rtn + "&nbsp;&nbsp;";	    			
+			    			rtn = rtn + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
+			    			rtn = rtn + "&nbsp;&nbsp;";		    				
+		    			}
+		    			
 		    			rtn = rtn +  "<a href=\"###\" onClick=\"doPrint('" + row["requisitionId"] + "')\">打印领料单</a>";
 		    			return rtn;
 		    		}},

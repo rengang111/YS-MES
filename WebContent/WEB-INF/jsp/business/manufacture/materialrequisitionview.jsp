@@ -31,18 +31,15 @@
 				});
 
 		
-		$("#insert").click(
+		$("#doEdit").click(
 				function() {
 
-			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=materialRequisitionInsert");
+			var recordId = '${requisition.recordId }';
+			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=materialRequisitionEdit"+"&recordId="+recordId);
 			$('#formModel').submit();
 		});
-		
-	
 				
-		foucsInit();
-
-		
+		foucsInit();		
 		
 	});
 
@@ -84,7 +81,10 @@
 			</tr>
 			<tr> 				
 				<td class="label">申请数量：</td>
-				<td colspan="5">${requisition.quantity }</td>
+				<td>${requisition.quantity }</td>
+				
+				<td width="100px" class="label">领料用途：</td>
+				<td colspan="3">${requisition.usedType }</td>
 				
 			</tr>
 			<tr> 				
@@ -98,7 +98,7 @@
 	<div style="clear: both"></div>
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >编辑</a>
+		<a class="DTTT_button DTTT_button_text" id="doEdit" >编辑</a>
 		<a class="DTTT_button DTTT_button_text" id="doDelete" >删除</a>
 		<a class="DTTT_button DTTT_button_text" id="doPrint" onclick="doPrint();return false;" >打印</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>

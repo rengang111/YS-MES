@@ -131,7 +131,7 @@ public class RequisitionAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "materialReqeuisitionAddInit":
-				materialStockoutAddInit();
+				materialRequisitionAddInit();
 				rtnUrl = "/business/manufacture/materialrequisitionadd";
 				break;
 			case "materialRequisitionInsert":
@@ -141,6 +141,10 @@ public class RequisitionAction extends BaseAction {
 			case "materialRequisitionView":
 				materialStockoutView();
 				rtnUrl = "/business/manufacture/materialrequisitionview";
+				break;
+			case "materialRequisitionEdit":
+				materialRequisitionEdit();
+				rtnUrl = "/business/manufacture/materialrequisitionadd";
 				break;
 				
 		}
@@ -332,10 +336,10 @@ public class RequisitionAction extends BaseAction {
 	}
 	
 
-	public void materialStockoutAddInit(){
+	public void materialRequisitionAddInit(){
 
 		try{
-			//service.materialStockoutAddInit();			
+			service.materialRequisitionAddInit();			
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
@@ -361,5 +365,17 @@ public class RequisitionAction extends BaseAction {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+
+	public void materialRequisitionEdit(){
+
+		try{
+			service.materialRequisitionEdit();			
+			model.addAttribute("userName", userInfo.getUserName());
+		}catch(Exception e){
+			e.printStackTrace();;
+		}
+	}
+	
 		
 }

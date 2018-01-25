@@ -297,6 +297,7 @@ function uploadPhoto(tableId,tdTable, id) {
 			switch (type) {
 				case "productPhoto":
 					$('#payment\\.paymentid').val(data["paymentId"]);//设置新的ID
+					$('#payment\\.recordid').val(data["recordId"]);//设置新的ID
 					countData = data["productFileCount"];
 					photo = data['productFileList'];
 					break;

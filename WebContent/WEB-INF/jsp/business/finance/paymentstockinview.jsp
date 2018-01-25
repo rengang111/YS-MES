@@ -139,9 +139,11 @@
 	
 		<fieldset>
 			<table class="form" id="table_form">
-				<tr>							
+				<tr>
+					<td class="label" width="100px">耀升编号：</td>					
+					<td width="100px">${detail.YSId }</td>
 					<td class="label" width="100px">合同编号：</td>					
-					<td width="150px">${detail.contractId }</td>								 	
+					<td width="100px">${detail.contractId }</td>								 	
 					<td class="label" width="100px">供应商：</td>					
 					<td>${detail.supplierId }（${detail.shortName }）${detail.fullName }</td>	
 				</tr>

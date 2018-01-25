@@ -99,7 +99,7 @@ public class StockOutService extends CommonService {
 		
 	}
 	
-	public HashMap<String, Object> doSearch( String data,String makeType) throws Exception {
+	public HashMap<String, Object> doSearch( String data,String makeType,String formId) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		int iStart = 0;
@@ -110,7 +110,7 @@ public class StockOutService extends CommonService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 		
-		String[] keyArr = getSearchKey(Constants.FORM_MATERIALSTOCKOUT,data,session);
+		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -538,7 +538,7 @@ public class StockOutService extends CommonService {
 		data.setRequisitionsts(Constants.STOCKOUT_3);//已出库		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"StockOutInsert",userInfo);
+				"RequisitionUpdate",userInfo);
 		copyProperties(data,commData);
 		
 		new B_RequisitionDao().Store(data);
@@ -569,7 +569,7 @@ public class StockOutService extends CommonService {
 		}else{
 			//更新
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"StockOutInsert",userInfo);
+					"StockOutUpdate",userInfo);
 			copyProperties(stock,commData);
 			stock.setKeepuser(userInfo.getUserId());//默认为登陆者
 			

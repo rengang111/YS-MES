@@ -22,6 +22,15 @@
 		}else if(type == 'L'){
 			url += "&makeTypeG=&makeTypeL=G";
 		}
+		
+		var approval = $('#approvalStatusY').val();
+		if ($("#approvalStatusY").prop('checked')) {
+
+			var start = $('#approvalDateStart').val();
+			var end = $('#approvalDateEnd').val();
+			url += "&approvalDateStart=" + start;
+			url += "&approvalDateEnd=" + end;
+		}
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -75,14 +84,14 @@
 				{"data": "contractId"},
 				{"data": "materialId"},
 				{"data": "materialName"},
-				{"data": "unit","className" : 'td-center'},
+				{"data": "supplierId","className" : 'td-left'},
 				{"data": "YSId"},//6
 				{"data": "quantity","className" : 'td-right'},
 				{"data": "contractPrice","className" : 'td-right'},
 				{"data": "taxPrice","className" : 'td-right'},//9
 				{"data": "taxTotal","className" : 'td-right'},//10
 				{"data": "checkInDate","className" : 'td-center'},//11
-				{"data": "approvalStatus","className" : 'td-center', "defaultContent" : '未审核'},//12
+				{"data": "approvalStatus","className" : 'td-center', "defaultContent" : ''},//12
 		
 			],
 			"columnDefs":[
@@ -120,12 +129,11 @@
 	    			}else{
 		    			return data;
 	    			}
-
 	
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : [5]
+					"targets" : [12]
 				}
 	           
 	         ] 
@@ -137,6 +145,23 @@
 
 
 	$(document).ready(function() {
+		
+		//日期
+		//$("#payment\\.requestdate").val(shortToday());
+		$("#approvalDateStart").datepicker({
+				dateFormat:"yy-mm-dd",
+				changeYear: true,
+				changeMonth: true,
+				selectOtherMonths:true,
+				showOtherMonths:true,
+		}); 
+		$("#approvalDateEnd").datepicker({
+			dateFormat:"yy-mm-dd",
+			changeYear: true,
+			changeMonth: true,
+			selectOtherMonths:true,
+			showOtherMonths:true,
+		}); 
 		
 		//010:默认显示未处理的数据
 		ajax("ALL","true");
@@ -198,6 +223,13 @@
 		if ($("#makeTypeG").prop('checked')) {
 			makeTypeG = $("#makeTypeG").val();
 		}
+
+		var start = '';
+		var end = '';
+		if ($("#approvalStatusY").prop('checked')) {
+			start = $('#approvalDateStart').val();
+			end = $('#approvalDateEnd').val();
+		}
 		
 		var url = '${ctx}/business/storage?methodtype=downloadExcel'
 				 + "&approvalStatusY=" + approvalStatusY
@@ -205,7 +237,9 @@
 				 + "&makeTypeL=" + makeTypeL
 				 + "&makeTypeG=" + makeTypeG
 				 + "&key1=" + key1
-				 + "&key2=" + key2;
+				 + "&key2=" + key2
+				 + "&approvalDateStart=" + start
+				 + "&approvalDateEnd=" + end;
 		
 		url =encodeURI(encodeURI(url));//中文两次转码
 
@@ -251,18 +285,21 @@
 					</td>
 					<td ></td> 
 				</tr>
+				<tr>
+					<td width="10%"></td> 
+					<td class="label">审核时间：</td>
+					<td>
+						<input type="text" name="approvalDateStart" id="approvalDateStart"  value=""  class="short"/>&nbsp;至
+						<input type="text" name="approvalDateEnd" id="approvalDateEnd" value=""  class="short"/>
+					</td>
+					<td ></td> 
+				</tr>
 			</table>
 		</form>
 	</div>
 	<div  style="height:10px"></div>
 
 	<div class="list">
-	<!-- 
-		<div id="DTTT_container" align="left" style="height:40px;width:20%;float: left;">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('L');">装配件</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('G');">包装件</a>
-		</div>
-		 -->
 		<div id="DTTT_container3" align="left" style="height:40px;width:70%;float: left;">
 			装配件合计:	<input type="text" id="zhuangpei" class="read-only num"/>
 			包装件合计:	<input type="text" id="baozhuang" class="read-only num"/>
@@ -279,7 +316,7 @@
 					<th style="width: 80px;">合同编号</th>
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
-					<th style="width: 40px;">单位</th>
+					<th style="width: 50px;">供应商</th>
 					<th style="width: 50px;">耀升编号</th>
 					<th style="width: 50px;">入库数量</th>
 					<th style="width: 40px;">合同价</th>
