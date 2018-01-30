@@ -546,5 +546,18 @@ public class BusinessService {
 		return contractId+"-"+ ft;
 	 }
 			
-		 
+
+	/**
+	 * @return 入库申请编号
+	 * 
+	 */
+	public static String getStockInApplyId(String parentId,int code2,boolean blAdd )
+	{
+		//格式化成2位流水号,并且+1
+		String ft = BusinessService.getFormat3Code(code2,blAdd);
+		
+		//
+		return parentId + "-" + ft;
+	}	
+		
 }
