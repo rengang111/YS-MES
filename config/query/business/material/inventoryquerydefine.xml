@@ -667,9 +667,44 @@
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
    <from>v_purchaseorderdetail a WHERE a.deleteFlag='0' </from>
-    <orderby>a.materialId</orderby>
+    <orderby>a.contractId,a.materialId</orderby>
     <groupby>a.contractId</groupby>
     <having></having>
 	<power></power>    
   </query> 
+  <query>
+    <pool></pool>     
+    <name value="stockInApplyList" />
+    <where>
+   		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.stockInApplyId" des=""  reqName="stockInApplyId" dtype="ch" oper="="  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.stockInApplyId" alias="" ctype="" />
+      <f name="A.receiptId" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="a.stockinStatus" alias="" ctype="料件入库状态" />
+      <f name="a.stockinStatus" alias="stockinStatusId" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+      <f name="A.requestDate" alias="" ctype="" />
+      <f name="A.stockinType" alias="" ctype="入库类别" />
+      <f name="A.stockinType" alias="stockinTypeId" ctype="" />
+      <f name="A.checkInDate" alias="" ctype="" />
+      <f name="A.requisitionUserId" alias="" ctype="" />
+      <f name="A.keepUser" alias="" ctype="" />
+      <f name="b.LoginName" alias="applyName" ctype="" />
+      <f name="c.LoginName" alias="storageName" ctype="" />
+    </select>
+    <!-- stockinType='010' 直接入库;020:料件入库;030:成品入库 -->
+    <from>v_stockinapplylist a LEFT JOIN s_user b ON b.userId=a.keepUser AND b.deleteFlag='0' LEFT JOIN s_user c ON c.userId=a.requisitionUserId AND c.deleteFlag='0' WHERE a.deleteFlag = '0' AND a.stockinType='010' </from>
+    <orderby>a.receiptId DESC,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>

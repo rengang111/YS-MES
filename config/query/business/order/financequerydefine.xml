@@ -66,7 +66,7 @@
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>v_paymentapprovallist a where a.deleteFlag='0'</from>
     <orderby>a.paymentId</orderby>
-    <groupby></groupby>
+    <groupby>a.paymentId</groupby>
     <having></having>
 	<power></power>
   </query>
@@ -102,8 +102,8 @@
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>v_paymenthistorylist a where a.deleteFlag='0'</from>
-    <orderby>a.paymentHistoryId</orderby>
-    <groupby></groupby>
+    <orderby>a.paymentHistoryId,a.paymentId</orderby>
+    <groupby>a.paymentId</groupby>
     <having></having>
 	<power></power>
   </query>

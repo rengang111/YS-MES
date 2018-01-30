@@ -197,6 +197,13 @@
 
 	}
 	
+	function doShowStockin(contractId) {
+
+		var url = '${ctx}/business/storage?methodtype=showStockInByContractId&openFlag=newWindow&contractId=' + contractId;
+		
+		callProductDesignView("入库单",url);
+	}
+	
 </script>
 <script type="text/javascript">
 
@@ -374,7 +381,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >提交申请</a>
-		<a class="DTTT_button DTTT_button_text" id="insert" onclick="doPrintReceiptList();return false;">打印入库单</a>
+		<a class="DTTT_button DTTT_button_text" id="insert" onclick="doPrintReceiptList();return false;">批量打印入库单</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
@@ -406,7 +413,8 @@ function uploadPhoto(tableId,tdTable, id) {
 						<td class="td-right">0</td>
 						<td class="td-right">${list.totalPrice }</td>
 						<td class="td-center">
-							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>
+							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>&nbsp;&nbsp;
+							<a href="###" onClick="doShowStockin('${list.contractId }')">打印入库单</a>
 						</td>
 							<form:hidden path="paymentList[${status.index }].recordid"    value="${list.detailRecordId }" />
 							<form:hidden path="paymentList[${status.index }].contractid"  value="${list.contractId }"  class="contractid" />

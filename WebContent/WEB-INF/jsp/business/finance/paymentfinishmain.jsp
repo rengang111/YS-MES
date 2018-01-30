@@ -34,7 +34,7 @@
 				"sAjaxSource" : url,
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":false,
-				 "aaSorting": [[ 1, "DESC" ]],
+				// "aaSorting": [[ 1, "DESC" ]],
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -66,16 +66,17 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-					{"data": null,"className" : 'td-right'},//0
+					{"data": null,"className" : 'td-center'},//0
 					{"data": "paymentHistoryId", "defaultContent" : '', "className" : 'td-left'},//1 付款编号
-					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//2
-					{"data": "supplierName", "defaultContent" : '', "className" : 'td-left'},//3		
-					{"data": "requestDate", "defaultContent" : '0', "className" : 'td-right'},//5
-					{"data": "approvalDate", "defaultContent" : '', "className" : 'td-right'},//6
+					{"data": "paymentId", "defaultContent" : '', "className" : 'td-left'},//2 申请单编号
+					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//3
+					{"data": "supplierName", "defaultContent" : '', "className" : 'td-left'},//4		
+					{"data": "requestDate", "defaultContent" : '0', "className" : 'td-center'},//5
+					{"data": "approvalDate", "defaultContent" : '', "className" : 'td-center'},//6
 					{"data": "finishDate", "defaultContent" : '（未付款）', "className" : 'td-center'},//7
 					{"data": "paymentAmount", "defaultContent" : '0', "className" : 'td-right'},//8			
-					{"data": "totalPayable", "defaultContent" : '', "className" : 'td-right'},//4	
-					{"data": "finishStatus", "className" : 'td-center'},//9
+					{"data": "totalPayable", "defaultContent" : '', "className" : 'td-right'},//9	
+					{"data": "finishStatus", "className" : 'td-center'},//10
 				
 				],
 				"columnDefs":[
@@ -94,7 +95,7 @@
 					    return rtn;
 					    
 		    		}},
-		    		{"targets":3,"render":function(data, type, row){
+		    		{"targets":4,"render":function(data, type, row){
 		    			return jQuery.fixedWidth(data,35);		
 		    		}},
 		    		{ "bSortable": false, "aTargets": [ 0 ] },
@@ -106,20 +107,22 @@
 	         ] 
 		});
 		
-		t.on('click', 'tr', function() {
-
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-		});
 	}
 
 	$(document).ready(function() {
 		ajax("030","true");
+		
+		$('#TMaterial').DataTable().on('click', 'tr', function() {
+			
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	        	$('#TMaterial').DataTable().$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }
+		});
+		
 	})	
 	
 
@@ -204,14 +207,15 @@
 					<thead>						
 						<tr>
 							<th width="20px">No</th>
-							<th width="90px">付款单编号</th>
+							<th width="80px">付款单</th>
+							<th width="70px">申请单</th>
 							<th width="70px">供应商</th>
 							<th>供应商名称</th>
-							<th width="70px">申请日期</th>
-							<th width="70px">审核日期</th>
-							<th width="70px">付款日期</th>
-							<th width="70px">付款金额</th>
-							<th width="80px">应付款总额</th>
+							<th width="60px">申请日期</th>
+							<th width="60px">审核日期</th>
+							<th width="60px">付款日期</th>
+							<th width="60px">付款金额</th>
+							<th width="70px">应付款</th>
 							<th width="50px">状态</th>
 						</tr>
 					</thead>

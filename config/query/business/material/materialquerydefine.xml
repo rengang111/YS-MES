@@ -80,6 +80,9 @@
       <f name="A.shareModel" alias="" ctype="" />
       <f name="A.subId" alias="" ctype="" />
       <f name="A.subIdDes" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />>
+      <f name="A.quantityOnHand" alias="" ctype="" />
       <f name="A.originalId" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />

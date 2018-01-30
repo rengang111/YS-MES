@@ -34,7 +34,7 @@
 				"sAjaxSource" : url,
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":false,
-				 "aaSorting": [[ 1, "DESC" ]],
+				"aaSorting": [[ 1, "ASC" ]],
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -66,13 +66,13 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-					{"data": null,"className" : 'td-right'},//0
-					{"data": "paymentId", "defaultContent" : '', "className" : 'td-center'},//1 付款申请编号
+					{"data": null,"className" : 'td-center'},//0
+					{"data": "paymentId", "defaultContent" : '', "className" : 'td-left'},//1 付款申请编号
 					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//2
 					{"data": "supplierName", "defaultContent" : '', "className" : 'td-left'},//3				
 					{"data": "contractIds", "defaultContent" : '', "className" : 'td-left'},//4		
 					{"data": "totalPayable", "defaultContent" : '0', "className" : 'td-right'},//5
-					{"data": "requestDate", "defaultContent" : '', "className" : 'td-right'},//6
+					{"data": "requestDate", "defaultContent" : '', "className" : 'td-center'},//6
 					{"data": "approvalDate", "defaultContent" : '（待审核）', "className" : 'td-center'},//7
 					{"data": "approvalStatus", "className" : 'td-center'},//8
 					
@@ -92,29 +92,29 @@
 		    		{"targets":4,"render":function(data, type, row){
 		    			return jQuery.fixedWidth(data,20);		
 		    		}},
-		    		{ "bSortable": false, "aTargets": [ 0 ] },
+		    		{ "bSortable": false, "aTargets": [ 0,4 ] },
 		    		{
 						"visible" : false,
-						"targets" : []
+						"targets" : [8]
 					}
 	           
 	         ] 
-		});
-		
-		t.on('click', 'tr', function() {
-
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
 		});
 	}
 
 	$(document).ready(function() {
 		ajax("010","true");
+		
+		$('#TMaterial').DataTable().on('click', 'tr', function() {
+			
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	        	$('#TMaterial').DataTable().$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }
+		});
 	})	
 	
 
@@ -203,10 +203,10 @@
 							<th width="80px">付款申请编号</th>
 							<th width="70px">供应商</th>
 							<th>供应商名称</th>
-							<th width="100px">关联合同</th>
-							<th width="60px">应付款总额</th>
-							<th width="70px">申请日期</th>
-							<th width="70px">审核日期</th>
+							<th width="120px">关联合同</th>
+							<th width="70px">应付款</th>
+							<th width="60px">申请日期</th>
+							<th width="60px">审核日期</th>
 							<th width="50px">审核结果</th>
 						</tr>
 					</thead>

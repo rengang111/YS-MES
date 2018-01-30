@@ -869,7 +869,7 @@ public class PaymentService extends CommonService {
 	private B_PaymentHistoryData getPaymentHistoryId(String paymentid) throws Exception{
 
 		dataModel.setQueryName("paymentHistoryMAXId");
-		userDefinedSearchCase.put("paymentid", paymentid);
+		userDefinedSearchCase.put("parentId", paymentid);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();

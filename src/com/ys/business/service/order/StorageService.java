@@ -56,6 +56,7 @@ public class StorageService extends CommonService {
 	
 	private HttpServletRequest request;
 	private HttpServletResponse response;
+	private HttpSession session;	
 	
 	private B_PurchaseStockInDao dao;
 	private B_PurchaseStockInDetailDao detaildao;
@@ -66,7 +67,6 @@ public class StorageService extends CommonService {
 	private HashMap<String, String> userDefinedSearchCase;
 	private BaseQuery baseQuery;
 	HashMap<String, Object> modelMap = null;
-	HttpSession session;	
 
 	public StorageService(){
 		
@@ -1527,5 +1527,14 @@ public class StorageService extends CommonService {
 		}
 		
 		return ysid;
+	}
+	
+	public void showStockIn() throws Exception {
+
+		String contractId = request.getParameter("contractId");
+		
+		//合同信息
+		getContractDetail(contractId);
+	
 	}
 }

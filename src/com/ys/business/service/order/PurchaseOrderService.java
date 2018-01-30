@@ -1153,20 +1153,22 @@ public class PurchaseOrderService extends CommonService {
 		try {
 			ts.begin();			
 			
+			B_PurchaseOrderData contract = reqModel.getContract();
+			//创建合同编号
+			String YSId = contract.getYsid();
+			String shortName = reqModel.getShortName();
+			String purchaseType = Constants.CONTRACT_TYPE_D;//统一设置为订购件
+			contract = geRoutinePurchaseContractId(contract,YSId,shortName,purchaseType);
+			contractId = contract.getContractid();
+			
+			//新增常规采购合同
+			insertPurchaseOrder(contract);
+			
 			//合同明细:因为是从物料信息过来的,所以只有一条数据
 			List<B_PurchaseOrderDetailData> reqDetail = reqModel.getDetailList();
 			for(B_PurchaseOrderDetailData d:reqDetail){
 
-				B_PurchaseOrderData contract = reqModel.getContract();
-				//创建合同编号
-				String YSId = contract.getYsid();
-				String shortName = reqModel.getShortName();
-				String purchaseType = d.getContractid();//页面端借用Contractid传值物料特性
-				contract = geRoutinePurchaseContractId(contract,YSId,shortName,purchaseType);
-				contractId = contract.getContractid();
 				
-				//新增常规采购合同
-				insertPurchaseOrder(contract);
 				
 				//合同明细
 				d.setYsid(YSId);

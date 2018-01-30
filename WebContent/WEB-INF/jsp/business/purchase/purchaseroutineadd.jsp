@@ -7,6 +7,52 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 		
+	var counter = 0;
+	var moduleNum = 0;
+	
+	$.fn.dataTable.TableTools.buttons.add_row = $
+	.extend(
+		true,
+		{},
+		$.fn.dataTable.TableTools.buttonBase,
+		{
+			"fnClick" : function(button) {
+
+				for (var i=0;i<1;i++){
+							
+					var orderQuantity = '${order.totalQuantity}';
+					var trhtml = "";
+					var rowIndex = counter + 1;
+					var hidden =	'<input type="hidden" name="detailList['+counter+'].subbomid" id="detailList'+counter+'.subbomid" value=""/>'+
+								 	'<input type="hidden" name="detailList['+counter+'].subbomserial" id="detailList'+counter+'.subbomserial" value=""/>' 	
+
+				 	var rowNode = $('#example')
+					.DataTable()
+					.row
+					.add(
+					  [
+'<td>'+rowIndex+'</td>',
+'<td><input type="text" name="detailList['+counter+'].materialid" id="detailList'+counter+'.materialid" class="materialid"/></td>',
+'<td><span></span></td>',
+'<td><span></span><input type="hidden" name="detailList['+counter+'].contractid" id="detailList'+counter+'.contractid" /></td>',
+'<td><span></span></td>',
+'<td><input type="text" name="detailList['+counter+'].quantity" id="detailList'+counter+'.quantity"  class="quantity num short" /></td>',
+'<td><span></span><input type="hidden" name="detailList['+counter+'].price"      id="detailList'+counter+'.price"/></td>',
+'<td><span></span><input type="hidden"   name="detailList['+counter+'].totalprice" id="detailList'+counter+'.totalprice"/></td>',				
+				
+					]).draw();
+					
+					$("#detailList" + counter + "\\.materialid").focus();
+					counter ++;			
+				}
+				
+				autocomplete();
+					
+				foucsInit();
+				
+			}
+		});
+		
 	$.fn.dataTable.TableTools.buttons.reset = $
 	.extend(
 			true,
@@ -49,18 +95,21 @@
 			"tableTools" : {
 				"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
 				"aButtons" : [
-				{
-					"sExtends" : "reset",
-					"sButtonText" : "删除行"
-				}],
+					{
+						"sExtends" : "add_row",
+						"sButtonText" : "追加行"
+					},
+					{
+						"sExtends" : "reset",
+						"sButtonText" : "删除行"
+					}],
 			},			
 			"columns" : [ 
 			           {"className":"dt-body-center"
-					}, {
+					}, {"className":"td-left"
 					}, {							
 					}, {"className":"td-center"
-					}, {"className":"td-right"				
-					}, {"className":"td-right"				
+					}, {"className":"td-right"		
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
@@ -69,20 +118,20 @@
 			
 		}).draw();
 		
-		t.on('blur', 'tr td:nth-child(7)',function() {
+		t.on('blur', 'tr td:nth-child(6)',function() {
 			
 	           $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
 
 		});
 			
-		t.on('change', 'tr td:nth-child(7)',function() {
+		t.on('change', 'tr td:nth-child(6)',function() {
 			
             var $tds = $(this).parent().find("td");
 			
-            var $oQuantity  = $tds.eq(6).find("input");
-			var $oThisPrice = $tds.eq(7).find("input");
-			var $oAmounti   = $tds.eq(8).find("input:hidden");
-			var $oAmounts   = $tds.eq(8).find("span");
+            var $oQuantity  = $tds.eq(5).find("input");
+			var $oThisPrice = $tds.eq(6).find("input");
+			var $oAmounti   = $tds.eq(7).find("input:hidden");
+			var $oAmounts   = $tds.eq(7).find("span");
 			
 			var fPrice    = currencyToFloat($oThisPrice.val());		
 			var fQuantity = currencyToFloat($oQuantity.val());			
@@ -221,7 +270,7 @@
 		var sum = 0;
 		$('#example tbody tr').each (function (){
 			
-			var vtotal = $(this).find("td").eq(8).find("span").text();
+			var vtotal = $(this).find("td").eq(7).find("span").text();
 			var ftotal = currencyToFloat(vtotal);
 			
 			sum = currencyToFloat(sum) + ftotal;
@@ -373,9 +422,8 @@ $(".supplierid").autocomplete({
 			<th>物料名称</th>
 			<th style="width:30px">单位</th>
 			<th style="width:60px">当前库存</th>
-			<th style="width:60px">虚拟库存</th>
 			<th style="width:80px">采购数量</th>
-			<th style="width:50px">单价</th>
+			<th style="width:60px">单价</th>
 			<th style="width:70px">总价</th>
 		</tr>
 		</thead>		
@@ -383,26 +431,26 @@ $(".supplierid").autocomplete({
 			<c:forEach var="detail" items="${detail}" varStatus='status' >	
 				<tr>
 					<td><c:out value="${status.index}"/></td>
-					<td>
-						<a href="###" onClick="doShowMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
+					<td>&nbsp;${detail.materialId}
 						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}"  class="materialid"/>
 						<form:hidden path="detailList[${status.index}].contractid" value="${detail.purchaseType}" /><!-- 临时借用contractid --></td>								
 					<td><span id="name${status.index}">${detail.materialName}</span></td>					
 					<td>${ detail.unit }</td>				
-					<td>${ detail.accountingQuantity }</td>				
-					<td>${ detail.availabelToPromise }</td>
+					<td>${ detail.accountingQuantity }</td>
 					<td><form:input path="detailList[${status.index}].quantity" value="" class="quantity num short"/></td>							
 					<td><span class="price1">${detail.price}</span><form:hidden  path="detailList[${status.index}].price" value="${detail.price}"  class="price" /></td>
 					<td><span class="total1">${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice}" class="total"/></td>								
 					
 				</tr>
-					
+					<script type="text/javascript">
+						
+						counter++;
+					</script>
 			</c:forEach>
 			
 		</tbody>
 		<tfoot>
 			<tr>
-				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>
@@ -421,7 +469,7 @@ $(".supplierid").autocomplete({
 	
 	<fieldset class="action" style="text-align: right;">
 		<button type="button" id="insert" class="DTTT_button">生成采购合同</button>
-		<button type="button" id="goBack" class="DTTT_button">返回</button>
+	<!-- 	<button type="button" id="goBack" class="DTTT_button">返回</button> -->
 	</fieldset>		
 		
 </form:form>
@@ -431,6 +479,69 @@ $(".supplierid").autocomplete({
 </body>
 <script type="text/javascript">
 function autocomplete(){
+	$(".materialid").autocomplete({
+		minLength : 2,
+		autoFocus : false,
+		source : function(request, response) {
+			//alert(888);
+			$
+			.ajax({
+				type : "POST",
+				url : "${ctx}/business/order?methodtype=getMaterialList",
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					//alert(777);
+					response($
+						.map(
+							data.data,
+							function(item) {
+
+								return {
+									label : item.viewList,
+									value : item.materialId,
+									name : item.materialName,
+									price : item.price,
+									quantityOnHand : item.quantityOnHand,
+									purchaseType : item.purchaseType,
+									unit : item.dicName
+								}
+							}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					//alert(XMLHttpRequest.status);
+					//alert(XMLHttpRequest.readyState);
+					//alert(textStatus);
+					//alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
+
+		select : function(event, ui) {
+			
+			 var $tds = $(this).parent().parent().find("td");
+			 
+			//产品名称
+			 $tds.eq(2).find("span").html(jQuery.fixedWidth(ui.item.name,50));
+			 $tds.eq(3).find("span").html(ui.item.unit);
+			 $tds.eq(3).find("input").val(ui.item.purchaseType);
+			 $tds.eq(4).find("span").html(ui.item.quantityOnHand);
+			 $tds.eq(6).find("span").html(ui.item.price);//单价
+			 $tds.eq(6).find("input").val(ui.item.price);//单价
+			 
+			//产品名称
+			//$(this).parent().parent().find("td").eq(2).find("span").html(jQuery.fixedWidth(ui.item.name,50));
+
+			//产品编号
+			//$(this).parent().find("input:hidden").val(ui.item.materialId);
+			
+		},
+	});
+	
 	
 	$("#contract\\.ysid").autocomplete({
 		minLength : 2,

@@ -183,7 +183,7 @@
 		//goBackFlag:区别采购入口是物料还是供应商
 		var url = '${ctx}/business/contract?methodtype=createRoutineContractInit&goBackFlag=';
 		url = url + '&supplierId=' + supplierId;
-		location.href = url;
+		callProductDesignView('采购下单',url);
 		
 	}
 	

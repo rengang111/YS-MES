@@ -49,6 +49,7 @@ public class Constants {
 	public static final String FORM_PAYMENTAPPROVAL= "paymentapproval";//应付款审核
 	public static final String FORM_FINANCESTOCKIN= "financestockin";//财务入库管理
 	public static final String FORM_MATERIALSTOCKIN= "materialstockin";//直接入库
+	public static final String FORM_STOCKINAPPLY= "stockinapply";//直接入库申请
 	public static final String FORM_PRODUCTSTOCKOUT= "productstockout";//成品出库
 	
 	

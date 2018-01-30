@@ -193,6 +193,10 @@ public class StorageAction extends BaseAction {
 				materialStockinDetailView();
 				rtnUrl = "/business/inventory/materialstockinview";
 				break;
+			case "showStockInByContractId":
+				showStockIn();
+				rtnUrl = "/business/finance/paymentstockinprint";
+				break;
 				
 		}
 		
@@ -600,6 +604,17 @@ public class StorageAction extends BaseAction {
 
 		try{	
 			service.materialStockinDetailView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	public void showStockIn(){
+		
+		try{
+			service.showStockIn();
+
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
