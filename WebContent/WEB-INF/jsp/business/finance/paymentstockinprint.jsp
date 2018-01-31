@@ -164,10 +164,12 @@
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr>							
-				<td class="label">合同编号：</td>					
-				<td>${contract.contractId }</td>								 	
-				<td class="label">供应商：</td>					
-				<td colspan="3">${contract.supplierId }（${contract.shortName }）${contract.fullName }</td>	
+				<td class="label" width="100px">耀升编号：</td>					
+				<td width="100px">${contract.YSId }</td>	
+				<td class="label" width="100px">合同编号：</td>					
+				<td width="100px">${contract.contractId }</td>								 	
+				<td class="label" width="100px">供应商：</td>					
+				<td>${contract.supplierId }（${contract.shortName }）${contract.fullName }</td>	
 			</tr>
 										
 		</table>
@@ -193,17 +195,12 @@
 			</table>
 		</div>
 	</fieldset>
-
-
 		<div class="" id="subidDiv" style="min-height: 300px;">
 			<table id="productPhoto" class="phototable">
 				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
 			</table>
 		</div>
-
-
 </form:form>
-
 </div>
 </div>
 </body>

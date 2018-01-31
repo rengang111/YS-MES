@@ -388,7 +388,7 @@
       <f name="format((replace(A.price,',','') / 1.17) * replace(A.contractQuantity,',',''),2)" alias="total" ctype="" />
     </select>
     <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
-    <orderby>a.YSId DESC,a.contractId,a.arrivalId,a.materialId</orderby>
+    <orderby>a.YSId,a.contractId,a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power>
@@ -553,7 +553,7 @@
       <f name="A.contractId" alias="" ctype="" />
       <f name="ifnull(B.recordId,'0')" alias="recordId" ctype="" />
     </select>
-    <from>b_receiveinspection  a LEFT JOIN b_purchasestockin b ON a.contractId=b.contractId AND a.arrivalId=b.arrivelId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
+    <from>v_receiveinspection  a LEFT JOIN v_purchasestockindetail b ON a.contractId=b.contractId AND a.materialId=b.materialId AND a.arrivalId=b.arrivelId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
     <orderby>a.contractId</orderby>
     <groupby></groupby>
     <having>recordId = '0'</having>

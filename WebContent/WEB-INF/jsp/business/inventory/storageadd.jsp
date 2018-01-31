@@ -225,7 +225,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<c:forEach var="list" items="${material}" varStatus='status' >			
+				<c:forEach var="list" items="${material}" varStatus='status' >					
 					<tr>
 						<td></td>
 						<td>${list.materialId }
@@ -233,7 +233,7 @@
 						<td>${list.materialName }</td>
 						<td>${list.contractQuantity }</td>
 						<td>${list.contractStorage }</td>
-						<td><form:input path="stockList[${status.index}].quantity"  value="${list.quantityQualified }" class="num short quantity" /></td>
+						<td><form:input path="stockList[${status.index}].quantity"  value="" class="num short quantity" /></td>
 						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
 								<form:options items="${packagingList}" 
 									itemValue="key" itemLabel="value"/></form:select></td>
@@ -241,7 +241,12 @@
 					</tr>
 					<script type="text/javascript">
 							var index = '${status.index}';
-					</script>
+							var contractQuantity = currencyToFloat('${list.contractQuantity }');
+							var contractStorage  = currencyToFloat('${list.contractStorage }');
+							var curren = floatToCurrency( contractQuantity - contractStorage );
+							
+							$('#stockList'+index+'\\.quantity').val(curren);
+					</script>	
 				
 				</c:forEach>
 			
