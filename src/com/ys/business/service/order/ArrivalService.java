@@ -230,9 +230,12 @@ public class ArrivalService extends CommonService {
 		
 		if (hash) {
 			rtnFlag = "新建";
+			getContractForArrivalById(contractId);
+		}else{
+			getContractDetail(contractId);
+			
 		}
 		
-		getContractDetail(contractId);
 	
 		return rtnFlag;
 	}
@@ -488,15 +491,25 @@ public class ArrivalService extends CommonService {
 		}
 	}
 	
+	private void getContractForArrivalById(String contractId) throws Exception {
+		 
+		dataModel.setQueryName("contractForArrivalById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contractId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));
+			model.addAttribute("material",dataModel.getYsViewData());
+		}
+	}
 	public boolean checkContractDetail(String contractId) throws Exception {
 
 		boolean rtnFlag = false; 
-		dataModel.setQueryName("checkContractExsitById");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("contractId", contractId);
-		
+		dataModel.setQueryName("getContractListForNoArrival");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contractId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 
@@ -523,19 +536,21 @@ public class ArrivalService extends CommonService {
 		
 	}
 	
-	
-	public void getContractByArrivalId() throws Exception {
-
-		String contractId = request.getParameter("contractId");
+	public void doEdit() throws Exception{
+		
 		String arrivalId = request.getParameter("arrivalId");
 		
-		dataModel.setQueryName("getContractByArrivalId");		
+		getContractByArrivalId(arrivalId);		
+		
+	}
+	
+	private void getContractByArrivalId(String arrivalId) throws Exception {
+		
+		dataModel.setQueryName("getArrivaListByContractId");		
 		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("contractId", contractId);		
+		userDefinedSearchCase.put("arrivalId", arrivalId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = baseQuery.getSql();
-		sql = sql.replace("#", arrivalId);
-		baseQuery.getYsFullData(sql);
+		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() >0){
 			model.addAttribute("contract",dataModel.getYsViewData().get(0));

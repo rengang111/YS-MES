@@ -188,7 +188,7 @@ public class ArrivalAction extends BaseAction {
 	public void doEdit(){
 		try{
 			model.addAttribute("userName", userInfo.getUserName());
-			service.getContractByArrivalId();
+			service.doEdit();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

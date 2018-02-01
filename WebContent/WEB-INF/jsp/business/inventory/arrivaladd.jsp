@@ -45,18 +45,22 @@
 
 			var $td = $(this).parent().find("td");
 
-			var $oArrival = $td.eq(4).find("input");
-			var $oQuantity= $td.eq(5).find("span");
-			var $oRecorde = $td.eq(7).find("span");
-			var $oSurplus = $td.eq(8).find("span");
+			var $oArrival = $td.eq(4).find("input");//本次收货
+			var $oQuantity= $td.eq(5).find("span");//合同
+			var $oSumArra = $td.eq(6).find("span");//累计收货
+			var $oRecorde = $td.eq(7).find("span");//累计退货
+			var $oSurplus = $td.eq(8).find("span");//剩余
 
 			var fArrival  = currencyToFloat($oArrival.val());
-			var fRecorde  = currencyToFloat($oRecorde.html());
-			var fquantity = currencyToFloat($oQuantity.html());	
+			var fquantity = currencyToFloat($oQuantity.html());
+			var foSumArra = currencyToFloat($oSumArra.html());
+			var fRecorde  = currencyToFloat($oRecorde.html());	
 			
-			if(fArrival > (fquantity-fRecorde)){
+			var surplus = fquantity - foSumArra + fRecorde  
+			
+			if( fArrival > surplus ){
 
-				$().toastmessage('showWarningToast', "登记数大于剩余数了。");
+				$().toastmessage('showWarningToast', "收货数大于剩余数了。");
 		        $(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
            	 	$(this).find("input:text").addClass('error');
 				return;
@@ -65,7 +69,7 @@
 			}
 			
 			//剩余数量
-			var fsurplus = floatToCurrency(fquantity - fRecorde - fArrival);	
+			var fsurplus = floatToCurrency( surplus - fArrival );	
 			$oSurplus.html(fsurplus);
 			$oArrival.val(floatToCurrency(fArrival))
 
@@ -261,12 +265,14 @@
 			$('#example tbody tr').each (function (){
 				
 				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
-				var vreceive  = $(this).find("td").eq(7).find("span").text();//已收货
+				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
+				var vreturn   = $(this).find("td").eq(7).find("span").text();//已退货
 				var vsurplus  = $(this).find("td").eq(8).find("span").text();//剩余
 
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
-				var fsurplus = floatToCurrency(fcontract - freceive);
+				var freturn  = currencyToFloat(vreturn);
+				var fsurplus = floatToCurrency( fcontract - freceive + freturn );
 				
 
 				if(fsurplus > "0"){
@@ -285,12 +291,14 @@
 
 				var varrival  = $(this).find("td").eq(4).find("input").val();////本次收货
 				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
-				var vreceive  = $(this).find("td").eq(7).find("span").text();//已收货
+				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
+				var vreturn   = $(this).find("td").eq(7).find("span").text();//已退货
 				var vsurplus  = $(this).find("td").eq(8).find("span").text();//剩余
 
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
-				var fsurplus = floatToCurrency(fcontract - freceive);
+				var freturn  = currencyToFloat(vreturn);
+				var fsurplus = floatToCurrency( fcontract - freceive + freturn );
 
 				if(varrival > "0"){
 					$(this).find("td").eq(8).find("span").text(fsurplus);//剩余数
@@ -381,9 +389,9 @@
 				<th class="dt-center" width="80px">
 					<input type="checkbox" name="selectall" id="selectall" /><label for="selectall">全部到货</label> 
 					<input type="checkbox" name="reverse" id="reverse" /><label for="reverse">全部清空</label></th>
-				<th class="dt-center" width="60px">合同总数</th>
-				<th class="dt-center" width="60px">累计入库</th>
+				<th class="dt-center" width="60px">合同数量</th>
 				<th class="dt-center" width="60px">累计收货</th>
+				<th class="dt-center" width="60px">累计退货</th>
 				<th class="dt-center" width="60px">剩余数量</th>
 			</tr>
 		</thead>
@@ -399,15 +407,16 @@
 					<td><span>${list.unit }</span></td>
 					<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
 					<td><span>${list.quantity }</span></td>
-					<td><span>${list.contractStorage }</span></td>
-					<td><span>${list.accumulated }</span></td>
+					<td><span>${list.sumArrivalQty }</span></td>
+					<td><span>${list.sumReturnQty }</span></td>
 					<td><span id="surplus${ status.index}"></span></td>
 				</tr>
 				<script type="text/javascript">
 						var index = '${status.index}';
 						var quantity = currencyToFloat('${list.quantity}');
-						var contractStorage = currencyToFloat('${list.accumulated}');
-						var surplus = quantity - contractStorage;
+						var sumArrivalQty = currencyToFloat('${list.sumArrivalQty}');
+						var sumReturn = currencyToFloat('${list.sumReturnQty}');
+						var surplus = quantity - sumArrivalQty + sumReturn;
 						
 						$('#surplus'+index).html(floatToCurrency( surplus ))
 				</script>

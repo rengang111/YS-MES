@@ -7,9 +7,6 @@
 <title>库存管理-到货修改</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
-
-	var counter = 5;
-	var shortYear = ""; 
 	
 	function ajax() {
 
@@ -32,41 +29,12 @@
 					}, {"className":"dt-body-center"
 					}, {"className":"dt-body-center"
 					}, {"className":"td-right"	
-					}, {"className":"td-right"
-					}, {"className":"td-right"
 					}
 			]
 			
 		}).draw();
 
-		
-		t.on('change', 'tr td:nth-child(5)',function() {
-
-			var $td = $(this).parent().find("td");
-
-			var $oArrival = $td.eq(4).find("input");
-			var $oRecorde = $td.eq(6).find("span");
-			var $oQuantity= $td.eq(5).find("span");
-			var $oSurplus = $td.eq(7).find("span");
-
-			var fArrival  = currencyToFloat($oArrival.val());
-			var fRecorde  = currencyToFloat($oRecorde.html());
-			var fquantity = currencyToFloat($oQuantity.html());	
-			
-			if(fArrival > (fquantity-fRecorde)){
-
-				$().toastmessage('showWarningToast', "登记数不能大于剩余数");
-				return;
-			}
-			
-			//剩余数量
-			var fsurplus = floatToCurrency(fquantity - fRecorde - fArrival);	
-			$oSurplus.html(fsurplus);
-			$oArrival.val(floatToCurrency(fArrival))
-
-		});
-		
-						
+								
 		t.on('click', 'tr', function() {
 			
 			var rowIndex = $(this).context._DT_RowIndex; //行号			
@@ -93,110 +61,13 @@
 
 	};
 
-	function historyAjax() {
-		var contractId = '${contract.contractId }';
-		var t = $('#example2').DataTable({
-			
-			"paging": true,
-			"lengthChange":false,
-			"lengthMenu":[50,100,200],//设置一页展示20条记录
-			"processing" : false,
-			"serverSide" : false,
-			"stateSave" : false,
-			"ordering "	:true,
-			"searching" : false,
-			"retrieve" : true,
-			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/arrival?methodtype=getArrivalHistory&contractId="+contractId,
-			"fnServerData" : function(sSource, aoData, fnCallback) {
-				var param = {};
-				var formData = $("#condition").serializeArray();
-				formData.forEach(function(e) {
-					aoData.push({"name":e.name, "value":e.value});
-				});
-
-				$.ajax({
-					"url" : sSource,
-					"datatype": "json", 
-					"contentType": "application/json; charset=utf-8",
-					"type" : "POST",
-					"data" : JSON.stringify(aoData),
-					success: function(data){							
-						fnCallback(data);
-					},
-					 error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				})
-			},
-        	"language": {
-        		"url":"${ctx}/plugins/datatables/chinese.json"
-        	},
-			
-			"columns" : [
-			        	{"data": null,"className":"dt-body-center"
-					}, {"data": "arrivalId","className":"dt-body-center"
-					}, {"data": "arriveDate","className":"dt-body-center"
-					}, {"data": "materialId"
-					}, {"data": "materialName"
-					}, {"data": "unit","className":"dt-body-center"
-					}, {"data": "quantity","className":"td-right"	
-					}, {"data": "status","className":"td-center"
-					}, {"data": null,"className":"td-center"
-					}
-				] ,
-				"columnDefs":[
-		    		{"targets":8,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["contractId"] + "','" + row["arrivalId"] + "')\">编辑</a>";
-		    			return rtn;
-		    		}},
-		    	]          
-			
-		}).draw();
-						
-		t.on('click', 'tr', function() {
-			
-			var rowIndex = $(this).context._DT_RowIndex; //行号			
-			//alert(rowIndex);
-
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-			
-		});
-		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
-
-	};
 	
 	$(document).ready(function() {
 
-		//设置光标项目
-		//$("#attribute1").focus();
-		//$("#order\\.piid").attr('readonly', "true");
-
 		//日期
-		var mydate = new Date();
-		var number = mydate.getFullYear();
-		shortYear = String(number).substr(2); 
 		$("#arrival\\.arrivedate").val(shortToday());
 		
 		ajax();
-
-		//historyAjax();//到货登记历史记录
-
-		autocomplete();
 		
 		//$('#example').DataTable().columns.adjust().draw();
 		
@@ -232,52 +103,7 @@
 			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert"+ "&makeType="+makeType);
 			$('#formModel').submit();
 		});
-		
-		$("#selectall").click(function () { 
-			
-			$('#example tbody tr').each (function (){
-				
-				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
-				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
-				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
 
-				var fcontract= currencyToFloat(vcontract);
-				var freceive = currencyToFloat(vreceive);
-				var fsurplus = floatToCurrency(fcontract - freceive);
-				
-
-				if(vsurplus > "0"){
-					$(this).find("td").eq(4).find("input").val(fsurplus);//本次到货
-					$(this).find("td").eq(7).find("span").text("0")//剩余数清零
-				}
-							
-			})
-
-		});
-		
-
-		$("#reverse").click(function () { 
-			
-			$('#example tbody tr').each (function (){
-
-				var varrival  = $(this).find("td").eq(4).find("input").val();////本次收货
-				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
-				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
-				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
-
-				var fcontract= currencyToFloat(vcontract);
-				var freceive = currencyToFloat(vreceive);
-				var fsurplus = floatToCurrency(fcontract - freceive);
-
-				if(varrival > "0"){
-					$(this).find("td").eq(7).find("span").text(fsurplus);//剩余数
-					$(this).find("td").eq(4).find("input").val("0");//本次到货清零
-				}
-							
-			})
-
-		});
-		
 		foucsInit();
 		
 		
@@ -324,7 +150,7 @@
 					<form:hidden path="arrival.contractid"  value="${contract.contractId }"/></td>
 							
 				<td class="label"><label>供应商：</label></td>					
-				<td>&nbsp;${contract.supplierId }（${contract.shortName }）${contract.fullName}
+				<td>&nbsp;${contract.supplierId } | ${contract.supplierName}
 					<form:hidden path="arrival.supplierid"  value="${contract.supplierId }"/></td>	
 			</tr>
 										
@@ -347,12 +173,8 @@
 				<th class="dt-center" width="175px">物料编号</th>
 				<th class="dt-center" >物料名称</th>
 				<th class="dt-center" width="30px">单位</th>
-				<th class="dt-center" width="80px">
-					<input type="checkbox" name="selectall" id="selectall" /><label for="selectall">全部到货</label> 
-					<input type="checkbox" name="reverse" id="reverse" /><label for="reverse">全部清空</label></th>
-				<th class="dt-center" width="60px">合同总数</th>
-				<th class="dt-center" width="60px">累计收货</th>
-				<th class="dt-center" width="60px">剩余数量</th>
+				<th class="dt-center" width="80px">本次收货</th>
+				<th class="dt-center" width="60px">合同数量</th>
 			</tr>
 		</thead>
 		
@@ -365,11 +187,10 @@
 				<td><span>${list.materialName }</span></td>
 				<td><span>${list.unit }</span></td>
 				<td><form:input path="arrivalList[${status.index}].quantity" class="num mini"  value="${list.quantity }"/></td>
-				<td><span>${list.contractQuantity }</span></td>
-				<td><span id="arrivalSum${ status.index}"></span></td>
-				<td><span id="surplus${ status.index}"></span></td>
+				<td><span>${list.total }</span></td>
 			</tr>
 			<script type="text/javascript">
+			/*
 					var index = '${status.index}';
 					var contractQuantity = currencyToFloat('${list.contractQuantity}');
 					var arrivalSum = currencyToFloat('${list.arrivalSum}');
@@ -380,6 +201,7 @@
 					
 					$('#arrivalSum'+index).html(floatToCurrency( arrivalSum ))
 					$('#surplus'+index).html(floatToCurrency( surplus ))
+					*/
 			</script>
 			
 		</c:forEach>
@@ -388,84 +210,9 @@
 </table>
 </div>
 </fieldset>	
-<!-- 
-<div style="clear: both"></div>
-
-<fieldset>
-	<legend>收货记录</legend>
-	<div class="list">	
-	<table id="example2" class="display" >
-		<thead>				
-			<tr>
-				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">收货编号</th>
-				<th class="dt-center" width="100px">到货日期</th>
-				<th class="dt-center" width="150px">物料编号</th>
-				<th class="dt-center" >物料名称</th>
-				<th class="dt-center" width="40px">单位</th>
-				<th class="dt-center" width="80px">到货数量</th>
-				<th class="dt-center" width="60px">状态</th>
-				<th class="dt-center" width="30px"></th>
-			</tr>
-		</thead>
-</table>
-</div>
-</fieldset>
- -->
 </form:form>
 
 </div>
 </div>
 </body>
-
-<script type="text/javascript">
-
-function autocomplete(){
-	
-	//合同编号自动提示
-	$("#arrival\\.contractid").autocomplete({
-		minLength : 2,
-		autoFocus : false,
-	
-		source : function(request, response) {
-			//alert(888);
-			var supplierId = $("#attribute1").val();
-			$.ajax({
-				type : "POST",
-				url : "${ctx}/business/contract?methodtype=getContractId",
-				dataType : "json",
-				data : {
-					contractId : request.term,
-					supplierId : supplierId
-				},
-				success : function(data) {
-					//alert(777);
-					response($
-						.map(
-							data.data,
-							function(item) {
-
-								return {
-									label : item.contractId,
-									value : item.contractId,
-									id : item.contractId
-								}
-							}));
-				},
-				error : function(XMLHttpRequest,
-						textStatus, errorThrown) {
-					alert(XMLHttpRequest.status);
-					alert(XMLHttpRequest.readyState);
-					alert(textStatus);
-					alert(errorThrown);
-					alert("系统异常，请再试或和系统管理员联系。");
-				}
-			});
-		},
-		
-	});//attributeList1	
-}
-
-</script>
-
 </html>
