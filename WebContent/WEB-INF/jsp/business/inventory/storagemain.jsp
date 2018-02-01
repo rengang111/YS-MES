@@ -36,7 +36,7 @@
 			"stateSave" : false,
 			"ordering "	:true,
 			"searching" : false,
-			"aaSorting": [[ 9, "ASC" ]],
+			"aaSorting": [[ 10, "ASC" ]],
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
 			"sAjaxSource" : url,
@@ -80,9 +80,10 @@
 				{"data": "supplierId"},
 				{"data": "YSId"},
 				{"data": "contractQuantity","className" : 'td-right'},
-				{"data": "contractStorage","className" : 'td-right'},
-				{"data": "checkDate","className" : 'td-right'},
-				{"data": "checkInDate","className" : 'td-right'},
+				{"data": "stockinQty","className" : 'td-right'},
+				{"data": "quantityQualified","className" : 'td-right'},
+				{"data": "checkDate","className" : 'td-center'},
+				{"data": "checkInDate","className" : 'td-center'},
 				
 				
 			],
@@ -239,16 +240,17 @@
 			<thead>						
 				<tr>
 					<th style="width: 1px;" class="dt-middle ">No</th>
-					<th style="width: 80px;" class="dt-middle">入库单编号</th>
+					<th style="width: 70px;" class="dt-middle">入库单编号</th>
 					<th style="width: 100px;" class="dt-middle ">物料编号</th>
 					<th class="dt-middle">物料名称</th>
 					<th style="width: 50px;" class="dt-middle">单位</th>
 					<th style="width: 70px;" class="dt-middle">供应商</th>
 					<th style="width: 50px;" class="dt-middle">耀升编号</th>
 					<th style="width: 60px;" class="dt-middle">合同数量</th>
-					<th style="width: 60px;" class="dt-middle">入库数量</th>
-					<th style="width: 60px;" class="dt-middle">质检日期</th>
-					<th style="width: 60px;" class="dt-middle">入库时间</th>
+					<th style="width: 60px;" class="dt-middle">已入库数</th>
+					<th style="width: 60px;" class="dt-middle">质检数量</th>
+					<th style="width: 50px;" class="dt-middle">质检日期</th>
+					<th style="width: 50px;" class="dt-middle">入库时间</th>
 				</tr>
 			</thead>
 		</table>

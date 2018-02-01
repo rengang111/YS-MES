@@ -14,10 +14,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.order.ArrivalModel;
+import com.ys.business.action.model.order.PaymentModel;
 import com.ys.business.action.model.order.RequisitionModel;
 import com.ys.business.service.order.ArrivalService;
+import com.ys.business.service.order.PaymentService;
 import com.ys.business.service.order.RequisitionService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
@@ -146,12 +150,53 @@ public class RequisitionAction extends BaseAction {
 				materialRequisitionEdit();
 				rtnUrl = "/business/manufacture/materialrequisitionadd";
 				break;
+			case "getProductPhoto"://显示附件
+				dataMap = getProductPhoto();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "productPhotoDelete"://删除附件
+				dataMap = deletePhoto("product","productFileList","productFileCount");
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
 		return rtnUrl;
 	}	
 	
+	//单据上传
+	@RequestMapping(value="materialRequisitionUpload")
+	public String doInit(
+			@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
+			@RequestBody String data,
+			@ModelAttribute("formModel")RequisitionModel dataModel,
+			BindingResult result, Model model, HttpSession session, 
+			HttpServletRequest request, HttpServletResponse response){
+
+		this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		this.service = new RequisitionService(model,request,session,dataModel,userInfo);;
+		this.reqModel = dataModel;
+		this.model = model;
+		this.response = response;
+		this.session = session;
+		HashMap<String, Object> dataMap = null;
+
+		String type = request.getParameter("methodtype");
+		
+		switch(type) {
+		case "":
+			break;
+		case "uploadPhoto":
+			dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
+			printOutJsonObj(response, dataMap);
+			break;
+	
+		}
+		
+		
+		return null;
+	}
+		
 	public void doInit(){	
 
 	}	
@@ -377,5 +422,50 @@ public class RequisitionAction extends BaseAction {
 		}
 	}
 	
+
+	public HashMap<String, Object> getProductPhoto(){	
 		
+		try {
+			modelMap = service.getProductPhoto();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> deletePhoto(
+			String folderName,String fileList,String fileCount){	
+		
+		try {
+			modelMap = service.deletePhotoAndReload(folderName,fileList,fileCount);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+	
+	private HashMap<String, Object> uploadPhoto(
+		MultipartFile[] headPhotoFile,
+		String folderName,String fileList,String fileCount) {
+	
+	HashMap<String, Object> map = null;
+	
+	try {
+		 map = service.uploadPhotoAndReload(headPhotoFile,folderName,fileList,fileCount);
+	}
+	catch(Exception e) {
+		System.out.println(e.getMessage());
+	}
+	
+	return map;
+}
 }

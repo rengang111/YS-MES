@@ -69,6 +69,10 @@
 	    			name = jQuery.fixedWidth(name,40);				    			
 	    			return name;
 	    		}},
+	    		{"targets":6,"render":function(data, type, row){
+	    						    			
+	    			return floatToCurrency(data);
+	    		}},
 	    		{"targets":10,"render":function(data, type, row){
 	    			var text="";
 	    			text += "<a href=\"###\" onClick=\"doEdit('"  + row["contractId"] + "','"  + row["receiptId"] + "')\">编辑</a>";

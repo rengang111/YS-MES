@@ -398,8 +398,8 @@ public class StorageAction extends BaseAction {
 
 		String rtnUrl = "/business/inventory/storageadd";
 		try{
-			boolean viewFlag = service.addInit();
-			if(viewFlag){
+			String viewFlag = service.addInit();
+			if(("查看").equals(viewFlag)){
 				rtnUrl = "/business/inventory/storageview";
 			}
 			model.addAttribute("userName", userInfo.getUserName());

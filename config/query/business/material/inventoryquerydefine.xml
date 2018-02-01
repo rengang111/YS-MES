@@ -148,20 +148,18 @@
     <having></having>
 	<power>
 	</power>    
-  </query>
-  
+  </query>  
   <query>
     <pool></pool>     
     <name value="getArrivaList" />
     <where>
    		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  	<w name="A.purchaseDate" des=""  reqName="purchaseDate1" dtype="ch" oper="&lt;"  lg="AND" bt="" />
-   	  	<w name="A.purchaseDate" des=""  reqName="purchaseDate2" dtype="ch" oper="&gt;"  lg="AND" bt="" />
-   	  	<w name="A.arrivalQty"  des=""  reqName="accumulated1"   dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.arrivalQty"  des=""  reqName="accumulated2"   dtype="ch" oper="&gt;"  lg="AND" bt="" />
-   	  	<w name="A.supplierId"  des=""  reqName="supplierId1"     dtype="ch" oper="="  lg="AND" bt="" />
-   	  	<w name="A.supplierId"  des=""  reqName="supplierId2"     dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId11"     dtype="ch" oper="="  lg="OR" bt="(" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId12"     dtype="ch" oper="="  lg="AND" bt=")" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId21"     dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId22"     dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
        </where>
@@ -351,8 +349,7 @@
     <having></having>
 	<power>
 	</power>    
-  </query>
-   
+  </query>   
   <query>
     <pool></pool>     
     <name value="getMaterialCheckInList" />
@@ -384,13 +381,14 @@
       <f name="A.receiptId" alias="" ctype="" />
       <f name="A.checkInDate" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
+      <f name="IFNULL(A.stockinQty,0)" alias="stockinQty" ctype="" />
       <f name="format((replace(A.price,',','') / 1.17),2)" alias="taxPrice" ctype="" />
       <f name="format((replace(A.price,',','') / 1.17) * replace(A.contractQuantity,',',''),2)" alias="total" ctype="" />
     </select>
     <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
     <orderby>a.YSId,a.contractId,a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
-    <having></having>
+    <having>#</having>
 	<power>
 	</power>    
   </query>
@@ -754,5 +752,82 @@
     <groupby></groupby>
     <having></having>
 	<power></power>    
+  </query> 
+  <query>
+    <pool></pool>     
+    <name value="receiveInspectionToStockinById" />
+    <where>
+   	  	<w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.status"     des=""  reqName="status"     dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.arrivalId" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.purchaseType" alias="" ctype="物料采购类别" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.quantityQualified" alias="" ctype="" />
+      <f name="A.contractStorage" alias="" ctype="" />
+      <f name="A.checkDate" alias="" ctype="" />
+      <f name="A.checkerId" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.supplierName" alias="" ctype="" />
+      <f name="A.contractQuantity" alias="" ctype="" />
+      <f name="A.receiptId" alias="" ctype="" />
+      <f name="A.checkInDate" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="IFNULL(A.stockinQty,0)" alias="stockinQty" ctype="" />
+      <f name="format((replace(A.price,',','') / 1.17),2)" alias="taxPrice" ctype="" />
+      <f name="format((replace(A.price,',','') / 1.17) * replace(A.contractQuantity,',',''),2)" alias="total" ctype="" />
+    </select>
+    <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
+    <orderby>a.YSId,a.contractId,a.arrivalId,a.materialId</orderby>
+    <groupby></groupby>
+    <having>replace(stockinQty,',','') &lt; replace(A.contractQuantity,',','')</having>
+	<power>
+	</power>    
+  </query>  
+  <query>
+    <pool></pool>     
+    <name value="getContractListForNoArrival" />
+    <where>
+   		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.deliveryDate" des=""  reqName="deliveryDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId11"     dtype="ch" oper="="  lg="OR" bt="(" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId12"     dtype="ch" oper="="  lg="AND" bt=")" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId21"     dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+   	  	<w name="A.supplierId"  des=""  reqName="supplierId22"     dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+  	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.purchaseDate" alias="" ctype="" />
+      <f name="A.surplus" alias="" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.customerShortName" alias="" ctype="" />
+      <f name="A.accumulated" alias="" ctype="" />
+      <f name="replace(A.quantity,',','')" alias="quantity" ctype="" />
+      <f name="replace(A.arrivalQty,',','')" alias="arrivalQty" ctype="" />
+      <f name="''" alias="arriveDate" ctype="" />
+    </select>
+    <from>v_arrivalfrompurchaseorder a  WHERE a.deleteFlag = '0' AND left(a.materialId,1) &lt;&gt;'H' </from>
+    <orderby>deliveryDate,A.YSId,a.materialId</orderby>
+    <groupby></groupby>
+    <having> quantity+0  &gt; arrivalQty+0 </having>
+	<power>
+	</power>    
   </query>
 </root>

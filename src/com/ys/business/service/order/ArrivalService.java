@@ -146,42 +146,63 @@ public class ArrivalService extends CommonService {
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}
-	
-		dataModel.setQueryName("getArrivaList");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
+
 		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
+		String actionType = request.getParameter("actionType");
+		String deliveryDate = request.getParameter("deliveryDate");//合同交期
+		
+		if(notEmpty(key1) || notEmpty(key2)){
+			actionType = "";//忽略其状态
+		}
+		if(("0").equals(actionType) ){
+			dataModel.setQueryName("getContractListForNoArrival");//逾期未到货
+		}else if (("1").equals(actionType)){
+			dataModel.setQueryName("getContractListForNoArrival");//未到货
+			deliveryDate = "";//清空时间条件
+		}else{
+			dataModel.setQueryName("getArrivaList");//已到货 或者 忽略 是否到货			
+		}
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		if((key1 !=null && !("").equals(key1)) || 
-				(key2 !=null && !("").equals(key2))){
-			userDefinedSearchCase.put("accumulated1", "");
-		}
+		userDefinedSearchCase.put("deliveryDate",deliveryDate);
+		//if(notEmpty(key1) || notEmpty(key2)){
+			//userDefinedSearchCase.put("accumulated1", "");
+		//}
 		//包装到货,或者是料件到货
 		if(("G").equals(makeType)){//包装
 			userDefinedSearchCase.put("makeTypeG", "G");
 			userDefinedSearchCase.put("makeTypeL", "");
-			userDefinedSearchCase.put("supplierId1", "");
-			userDefinedSearchCase.put("supplierId2", Constants.SUPPLIER_YZ);
+			userDefinedSearchCase.put("supplierId11", "");
+			userDefinedSearchCase.put("supplierId12", "");
+			userDefinedSearchCase.put("supplierId21", Constants.SUPPLIER_YZ);
+			userDefinedSearchCase.put("supplierId22", Constants.SUPPLIER_YS);
 		}else if(("L").equals(makeType)){//料件
 			userDefinedSearchCase.put("makeTypeG", "");
 			userDefinedSearchCase.put("makeTypeL", "G");
-			userDefinedSearchCase.put("supplierId1", "");
-			userDefinedSearchCase.put("supplierId2", Constants.SUPPLIER_YZ);
+			userDefinedSearchCase.put("supplierId11", "");
+			userDefinedSearchCase.put("supplierId12", "");
+			userDefinedSearchCase.put("supplierId21", Constants.SUPPLIER_YZ);
+			userDefinedSearchCase.put("supplierId22", Constants.SUPPLIER_YS);
 		}else{//自制件
 			userDefinedSearchCase.put("makeTypeG", "");
 			userDefinedSearchCase.put("makeTypeL", "");	
-			userDefinedSearchCase.put("supplierId1", Constants.SUPPLIER_YZ);
-			userDefinedSearchCase.put("supplierId2", "");
+			userDefinedSearchCase.put("supplierId11", Constants.SUPPLIER_YZ);
+			userDefinedSearchCase.put("supplierId12", Constants.SUPPLIER_YS);
+			userDefinedSearchCase.put("supplierId21", "");
+			userDefinedSearchCase.put("supplierId22", "");
 			
 		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){

@@ -232,7 +232,7 @@
 							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
 						<td>${list.materialName }</td>
 						<td>${list.contractQuantity }</td>
-						<td>${list.contractStorage }</td>
+						<td>${list.stockinQty }</td>
 						<td><form:input path="stockList[${status.index}].quantity"  value="" class="num short quantity" /></td>
 						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
 								<form:options items="${packagingList}" 
@@ -241,11 +241,11 @@
 					</tr>
 					<script type="text/javascript">
 							var index = '${status.index}';
-							var contractQuantity = currencyToFloat('${list.contractQuantity }');
-							var contractStorage  = currencyToFloat('${list.contractStorage }');
+							var contractQuantity = currencyToFloat('${list.quantityQualified }');
+							var contractStorage  = currencyToFloat('${list.stockinQty }');
 							var curren = floatToCurrency( contractQuantity - contractStorage );
 							
-							$('#stockList'+index+'\\.quantity').val(curren);
+							$('#stockList'+index+'\\.quantity').val(contractQuantity);
 					</script>	
 				
 				</c:forEach>

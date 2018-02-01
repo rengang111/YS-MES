@@ -1,12 +1,15 @@
 package com.ys.business.service.order;
 
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.ys.business.action.model.common.FilePath;
 import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.RequisitionModel;
 import com.ys.business.db.dao.B_ArrivalDao;
@@ -21,6 +24,7 @@ import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
@@ -770,4 +774,94 @@ public class RequisitionService extends CommonService {
 		return requisitionid;
 	}
 
+
+	public HashMap<String, Object> uploadPhotoAndReload(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		String requisitionId = request.getParameter("requisitionId");
+
+		FilePath file = getPath(requisitionId);
+		String savePath = file.getSave();						
+		String viewPath = file.getView();
+		String webPath = file.getWeb();
+
+
+		String photoName  = requisitionId + "-" + CalendarUtil.timeStempDate(); 
+		
+		uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
+
+		ArrayList<String> list = getFiles(savePath,webPath);
+		modelMap.put(fileList, list);
+		modelMap.put(fileCount, list.size());
+	
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> deletePhotoAndReload(
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		String path = request.getParameter("path");
+		String requisitionId = request.getParameter("requisitionId");
+
+		deletePhoto(path);//删除图片
+
+		getPhoto(requisitionId,folderName,fileList,fileCount);
+		
+		return modelMap;
+	}
+	
+	
+	public HashMap<String, Object> getProductPhoto() throws Exception {
+		
+		String requisitionId = request.getParameter("requisitionId");
+
+		getPhoto(requisitionId,"product","productFileList","productFileCount");
+	
+		return modelMap;
+	}
+	
+
+	private void getPhoto(
+			String requisitionId,
+			String folderName,String fileList,String fileCount) {
+
+		
+		FilePath file = getPath(requisitionId);
+		String savePath = file.getSave();						
+		String viewPath = file.getWeb();
+		
+		try {
+
+			ArrayList<String> list = getFiles(savePath,viewPath);
+			modelMap.put(fileList, list);
+			modelMap.put(fileCount, list.size());
+							
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+	}
+	
+	private FilePath getPath(String key1){
+		FilePath filePath = new FilePath();
+		
+		filePath.setSave(
+				session.getServletContext().
+				getRealPath(BusinessConstants.PATH_MATERIALREQUISITIONFILE)
+				+"/"+key1
+				);	
+		filePath.setView(
+				session.getServletContext().
+				getRealPath(BusinessConstants.PATH_MATERIALREQUISITIONVIEW)
+				+"/"+key1
+				);	
+
+		filePath.setWeb(BusinessConstants.PATH_MATERIALREQUISITIONVIEW
+				+key1+"/"
+				);	
+		
+		return filePath;
+	}
 }

@@ -19,12 +19,13 @@
 		url = url + "&makeType="+makeType;
 		
 		if(type == '0'){			
-			url += "&accumulated1=0"+"&purchaseDate1="+shortToday();//逾期未到货
+			url += "&accumulated1=0"+"&deliveryDate="+shortToday();//逾期未到货
 		}else if(type == '1'){			
 			url += "&accumulated1=0";//未到货			
 		}else if(type == '2'){			
 			url += "&accumulated2=0";//已到货			
 		}
+		url += "&actionType="+type;//
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -38,7 +39,7 @@
 			"autoWidth"	:false,
 			"searching" : false,
 			"pagingType" : "full_numbers",
-			"aaSorting": [[ 7, "ASC" ]],
+			// "aaSorting": [[ 7, "ASC" ]],
 			//"retrieve" : true,
 			"sAjaxSource" : url,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -82,7 +83,7 @@
 				{"data": "deliveryDate","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
 				{"data": "arrivalQty","className" : 'td-right'}, // 10
-				{"data": "contractStorage","className" : 'td-right'},
+				{"data": null,"className" : 'td-right', "defaultContent" : '-'},
 				{"data": "arriveDate","className" : 'td-center'},// 11
 
 			],
@@ -90,18 +91,6 @@
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                 }},
-	    		{"targets":1,"render":function(data, type, row){
-	    			
-	    			var rtn = "<a href=\"###\" onClick=\"showYS('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";
-    			
-	    			return data;
-	    		}},
-	    		{"targets":2,"render":function(data, type, row){
-	    			
-	    			var rtn = "<a href=\"###\" onClick=\"showContract('" + row["contractId"] + "')\">"+row["contractId"]+"</a>";
-    			
-	    			return data;
-	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var mateid= data;
 	    			if(data.length>25)
@@ -123,7 +112,7 @@
 	    		}},
 	    		{
 	    			"visible":false,
-	    			"targets":[2]
+	    			"targets":[10]
 	    		}
 	           
 	         ] 
@@ -274,10 +263,10 @@
 					<th style="width: 30px;">客户</th>
 					<th style="width: 50px;">供应商</th>
 					<th style="width: 50px;">合同交期</th>
-					<th style="width: 50px;">合同数量</th>
-					<th style="width: 50px;">到货数量</th>
+					<th style="width: 50px;">合同数</th>
+					<th style="width: 50px;">累计收货</th>
 					<th style="width: 50px;">累计入库</th>
-					<th width="50px">到货日期</th>
+					<th width="50px">收货日期</th>
 				</tr>
 			</thead>
 		</table>

@@ -128,10 +128,7 @@ public class StorageService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		if((key1 !=null && !("").equals(key1)) || 
-				(key2 !=null && !("").equals(key2))){
-			userDefinedSearchCase.put("status", "");
-		}
+		
 		//包装,或者是料件入库
 		if(("G").equals(makeType)){//包装
 			userDefinedSearchCase.put("makeTypeG", "G");
@@ -140,10 +137,23 @@ public class StorageService extends CommonService {
 			userDefinedSearchCase.put("makeTypeG", "");
 			userDefinedSearchCase.put("makeTypeL", "G");			
 		}
-				
+
+		String status = request.getParameter("status");	
+		if( notEmpty(key1) || notEmpty(key2)){
+			status = "";//关键字查询时,不考虑其状态;
+		}
+		userDefinedSearchCase.put("status", status);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		String sql = getSortKeyFormWeb(data,baseQuery);
+
+		String where = "1=1";
+		if(("020").equals(status)){			
+			where = "REPLACE(stockinQty,',','') <= 0";//未入库
+		}else if(("030").equals(status)){			
+			where = "REPLACE(stockinQty,',','') > 0";//已入库		
+		}
+		sql = sql.replace("#", where);
+		baseQuery.getYsQueryData(sql,where,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -412,8 +422,8 @@ public class StorageService extends CommonService {
 	
 	}
 	
-	public boolean addInit() throws Exception {
-		boolean viewFlag=true;
+	public String addInit() throws Exception {
+		String viewFlag="查看";
 		String contractId = request.getParameter("contractId");
 		String arrivalId = request.getParameter("arrivalId");
 		//String receiptId = request.getParameter("receiptId");
@@ -421,7 +431,7 @@ public class StorageService extends CommonService {
 		boolean flag = checkStockInDataById(contractId);
 		//确认是否已经入库
 		if(flag){
-			viewFlag = false;//有未入库的数据
+			viewFlag = "新增";//有未入库的数据
 			model.addAttribute("arrivalId",arrivalId);
 		}else{
 			model.addAttribute("addFlag","false");//没有需要入库的数据
@@ -1223,7 +1233,7 @@ public class StorageService extends CommonService {
 	
 	private void getReceivInspectionById(String arrivalId) throws Exception {
 		
-		dataModel.setQueryName("getMaterialCheckInList");		
+		dataModel.setQueryName("receiveInspectionToStockinById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("arrivalId", arrivalId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
