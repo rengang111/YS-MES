@@ -41,7 +41,7 @@
       <f name="a.YSId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
-      <f name="contractId" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
       <f name="a.contractStorage" alias="" ctype="" />

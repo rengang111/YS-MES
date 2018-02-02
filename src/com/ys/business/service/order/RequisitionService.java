@@ -712,10 +712,10 @@ public class RequisitionService extends CommonService {
 	
 	public void materialRquisitionInsert() throws Exception {
 
-		String requisitionid = insertMaterialRquisition();
+		String recordId = insertMaterialRquisition();
 
 		//申请单详情
-		getRequisitionByRequisitionId(requisitionid);
+		getRequisitionByRequisitionId(recordId);
 	}
 	
 	/**
@@ -724,7 +724,7 @@ public class RequisitionService extends CommonService {
 	 */
 	private String insertMaterialRquisition(){
 		
-		String requisitionid = "";
+		String recordId = "";
 		ts = new BaseTransaction();
 
 		try {
@@ -738,26 +738,25 @@ public class RequisitionService extends CommonService {
 			float quantity = stringToFloat(detail.getQuantity());
 			
 			if(quantity <= 0)
-				return requisitionid;
-			String recordid = reqData.getRecordid();
-			if(isNullOrEmpty(recordid)){
+				return recordId;
+			recordId = reqData.getRecordid();
+			if(isNullOrEmpty(recordId)){
 				//insert
 				reqData = getRequisitionId(reqData);
+				String requisitionid = reqData.getRequisitionid();
 				detail.setRequisitionid(requisitionid);
 				
 				insertRequisitionDetail(detail);//领料明细
 
 				//领料申请insert
 				insertRequisition(reqData,Constants.REQUISITION_5);//直接领料	
+				recordId = reqData.getRecordid();
 			}else{
 				//update				
 				updateRequisitionDetail(detail);//领料明细
-
 				//领料申请
-				updateRequisition(reqData);//直接领料	
+				updateRequisition(reqData);
 			}
-
-			requisitionid = reqData.getRequisitionid();
 			
 			ts.commit();			
 			
@@ -771,7 +770,7 @@ public class RequisitionService extends CommonService {
 			}
 		}
 		
-		return requisitionid;
+		return recordId;
 	}
 
 
