@@ -35,7 +35,7 @@
 			"columns": [
 				{"className" : 'td-center'},//
 				{"className" : 'td-left'},//
-				{"className" : 'td-center'},//
+				{"className" : ''},//
 				{"className" : 'td-left'},//
 				{"className" : 'td-center'},//
 				{"className" : 'td-right'},//

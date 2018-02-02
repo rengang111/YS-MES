@@ -294,7 +294,7 @@
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>v_paymentlistfromcontract a LEFT JOIN b_purchasestockin b ON b.contractId=a.contractId AND b.deleteFlag='0' where a.deleteFlag='0' AND a.supplierId != '0574YZ00'</from>
-    <orderby>a.contractId </orderby>
+    <orderby>A.YSId </orderby>
     <groupby>a.contractId</groupby>
     <having></having>
 	<power>
