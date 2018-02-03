@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.order.StorageModel;
+import com.ys.business.db.dao.B_BeginningInventoryHistoryDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
@@ -22,6 +23,7 @@ import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseStockInDao;
 import com.ys.business.db.dao.B_PurchaseStockInDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
+import com.ys.business.db.data.B_BeginningInventoryHistoryData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
@@ -169,6 +171,54 @@ public class StorageService extends CommonService {
 
 	}
 
+	public HashMap<String, Object> beginningInventorySearch(
+			String data,String formId) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}
+
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("materialquerydefine_search");		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		String[] keyArr = getSearchKey(formId,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);
+		baseQuery.getYsQueryData(sql,iStart, iEnd);
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}		
+		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);
+		modelMap.put("keyword2",key2);
+		
+		return modelMap;
+	}
 
 	public HashMap<String, Object> doSearchYszz(
 			String data,String formId,String makeType) throws Exception {
@@ -806,9 +856,10 @@ public class StorageService extends CommonService {
 		
 		return ysid;
 	}
+	
 	//更新当前库存:成品入库时，减少“待入库”，增加“当前库存”
 	@SuppressWarnings("unchecked")
-	private void updateMaterial(
+	private B_MaterialData updateMaterial(
 			String materialId,
 			String reqQuantity,String reqPrice) throws Exception{
 	
@@ -821,7 +872,7 @@ public class StorageService extends CommonService {
 				(List<B_MaterialData>)dao.Find(where);
 		
 		if(list ==null || list.size() == 0){
-			return ;
+			return null;
 		}
 
 		data = list.get(0);
@@ -860,6 +911,8 @@ public class StorageService extends CommonService {
 		copyProperties(data,commData);
 		
 		dao.Store(data);
+		
+		return data;
 		
 	}
 	
@@ -1228,6 +1281,19 @@ public class StorageService extends CommonService {
 		}		
 	}	
 	
+	public void getMaterialDetail(String recordid) throws Exception {
+		
+		B_MaterialData mate = new B_MaterialData();
+		mate.setRecordid(recordid);
+		
+		mate = new B_MaterialDao(mate).beanData;
+		
+		if(!(mate == null))
+			mate.setUnit(DicUtil.getCodeValue("计量单位" + mate.getUnit()));
+		
+		reqModel.setMaterial(mate);
+	}	
+	
 	public void getContractList(String contractIds) throws Exception {
 		
 		dataModel.setQueryName("getContractListAndGroupContractId");		
@@ -1557,5 +1623,111 @@ public class StorageService extends CommonService {
 		//合同信息
 		getContractDetail(contractId);
 	
+	}
+	
+
+	public void setBeginningInventory() throws Exception {
+
+		String recordId = request.getParameter("recordId");		
+		//合同信息
+		getMaterialDetail(recordId);
+	
+	}
+	
+
+	public void beginningInventoryAdd() throws Exception {
+
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+
+			
+			//更新物料信息
+			B_MaterialData mate = updateMaterialBeginningInventory();
+			
+			//保存当前数据
+			insertBeginningInventoryHisotry(mate);
+			
+			
+			ts.commit();			
+		
+		}
+		catch(Exception e) {
+			e.printStackTrace();		
+			ts.rollback();			
+		}		
+	
+	}
+	
+	//更新
+	private B_MaterialData updateMaterialBeginningInventory() throws Exception{
+	
+		B_MaterialData mate = new B_MaterialData();
+		B_MaterialDao dao = new B_MaterialDao();
+		
+		B_MaterialData reqMeterial = reqModel.getMaterial();	
+		
+		mate = new B_MaterialDao(reqMeterial).beanData;	
+		
+		if(mate ==null){
+			return null;
+		}
+		B_MaterialData rtnVal = new B_MaterialData();
+		rtnVal.setQuantityonhand(mate.getQuantityonhand());
+		rtnVal.setMaprice(mate.getMaprice());
+		
+
+		float iQuantity = stringToFloat(reqMeterial.getBeginninginventory());
+		//待入库数量
+		float istockin = stringToFloat(mate.getWaitstockin());		
+		//float iNewStockIn = istockin - iQuantity;
+		
+		//虚拟库存=当前库存 + 待入库 - 待出库
+		float iwaitstockout = stringToFloat(mate.getWaitstockout());//待出库	
+		float availabeltopromise = iQuantity + istockin - iwaitstockout;		
+		
+		mate.setQuantityonhand(reqMeterial.getBeginninginventory());
+		mate.setAvailabeltopromise(floatToString(availabeltopromise));
+		mate.setMaprice(reqMeterial.getBeginningprice());
+		mate.setBeginninginventory(reqMeterial.getBeginninginventory());
+		mate.setBeginningprice(reqMeterial.getBeginningprice());		
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"updateMaterialBeginningInventory",userInfo);
+		copyProperties(mate,commData);
+		
+		dao.Store(mate);
+		
+		return rtnVal;
+		
+	}
+	
+	//更新
+	private void insertBeginningInventoryHisotry(
+			B_MaterialData material) throws Exception{
+	
+		B_BeginningInventoryHistoryData inventory = new B_BeginningInventoryHistoryData();
+		B_BeginningInventoryHistoryDao dao = new B_BeginningInventoryHistoryDao();
+
+		B_MaterialData reqMeterial = reqModel.getMaterial();
+		//
+		inventory.setMaterialid(reqMeterial.getMaterialid());
+		inventory.setBeginninginventory(reqMeterial.getBeginninginventory());
+		inventory.setBeginningprice(reqMeterial.getBeginningprice());
+		inventory.setOrigininventory(material.getQuantityonhand());
+		inventory.setOriginprice(material.getMaprice());
+		
+		//新增DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"BeginningInventoryInsert",userInfo);
+		copyProperties(inventory,commData);
+		String guid = BaseDAO.getGuId();
+		inventory.setRecordid(guid);
+		
+		dao.Create(inventory);
+		
+		
 	}
 }

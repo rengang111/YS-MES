@@ -18,12 +18,17 @@
       <f name="A.categoryName" alias="" ctype="" />
       <f name="A.parentId" alias="" ctype="" />
       <f name="A.viewList" alias="" ctype="" />
-      <f name="A.shareModel" alias="" ctype="" />
-      <f name="A.availabelToPromise" alias="" ctype="" />
-      <f name="A.safetyInventory" alias="" ctype="" />
+      <f name="A.shareModel" alias="" ctype="" />>
       <f name="price" alias="price" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="IFNULL(A.quantityOnHand,0)" alias="quantityOnHand" ctype="" />
+      <f name="IFNULL(A.waitStockIn,0)" alias="waitStockIn" ctype="" />
+      <f name="IFNULL(A.waitStockOut,0)" alias="waitStockOut" ctype="" />
+      <f name="IFNULL(A.availabelToPromise,0)" alias="availabelToPromise" ctype="" />
+      <f name="IFNULL(A.MAPrice,0)" alias="MAPrice" ctype="" />
+      <f name="IFNULL(A.beginningInventory,0)" alias="beginningInventory" ctype="" />
+      <f name="IFNULL(A.beginningPrice,0)" alias="beginningPrice" ctype="" />
+      <f name="IFNULL(A.safetyInventory,0)" alias="safetyInventory" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.purchaseType" alias="" ctype="" />

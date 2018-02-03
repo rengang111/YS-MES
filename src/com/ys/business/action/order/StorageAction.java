@@ -195,6 +195,20 @@ public class StorageAction extends BaseAction {
 				showStockIn();
 				rtnUrl = "/business/finance/paymentstockinprint";
 				break;
+			case "beginningInventoryMainInit":
+				rtnUrl = "/business/inventory/beginninginventorymain";
+				break;
+			case "beginningInventorySearch":
+				dataMap = doBeginningInventorySearch(data,Constants.FORM_BEGINNINGINVENTROY);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "setBeginningInventory":
+				setBeginningInventory();
+				rtnUrl = "/business/inventory/beginninginventoryadd";
+				break;
+			case "beginningInventoryAdd":
+				beginningInventoryAdd();
+				break;
 				
 		}
 		
@@ -282,6 +296,32 @@ public class StorageAction extends BaseAction {
 	}
 	
 
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doBeginningInventorySearch(String data,String formId){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.beginningInventorySearch(data,formId);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearchYszz(String data,String makeType){
@@ -612,11 +652,29 @@ public class StorageAction extends BaseAction {
 		
 		try{
 			service.showStockIn();
-
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 		
 	}
 	
+	public void setBeginningInventory(){
+		
+		try{
+			service.setBeginningInventory();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	public void beginningInventoryAdd(){
+		
+		try{
+			service.beginningInventoryAdd();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
 }

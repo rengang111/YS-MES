@@ -51,6 +51,7 @@ public class Constants {
 	public static final String FORM_MATERIALSTOCKIN= "materialstockin";//直接入库
 	public static final String FORM_STOCKINAPPLY= "stockinapply";//直接入库申请
 	public static final String FORM_PRODUCTSTOCKOUT= "productstockout";//成品出库
+	public static final String FORM_BEGINNINGINVENTROY= "beginninginventroy";//期初库存
 	
 	
 	/*
