@@ -749,6 +749,7 @@ public class RequisitionService extends CommonService {
 				insertRequisitionDetail(detail);//领料明细
 
 				//领料申请insert
+				reqData.setYsid(reqData.getRequisitionid());//单独领料申请编号
 				insertRequisition(reqData,Constants.REQUISITION_5);//直接领料	
 				recordId = reqData.getRecordid();
 			}else{

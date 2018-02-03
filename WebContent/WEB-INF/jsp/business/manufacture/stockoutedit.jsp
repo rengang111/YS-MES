@@ -354,7 +354,7 @@ function deletePhoto(tableId,tdTable,path) {
 function uploadPhoto(tableId,tdTable, id) {
 
 	var url = '${ctx}/business/ODOUpload?methodtype=uploadPhoto';
-	alert(url)
+	
 	$("#formModel").ajaxSubmit({
 		type : "POST",
 		url : url,

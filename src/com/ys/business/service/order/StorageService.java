@@ -666,7 +666,7 @@ public class StorageService extends CommonService {
 				data.setReceiptid(receiptid);
 				insertPurchaseStockInDetail(data);
 									
-				updateMaterial(materialid,quantity);//更新库存
+				updateMaterial(materialid,quantity,data.getPrice());//更新库存
 				
 				//更新合同的累计入库数量,收货状态
 				updateContractStorage(reqData.getContractid(),materialid,quantity);					
@@ -810,7 +810,7 @@ public class StorageService extends CommonService {
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
 			String materialId,
-			String reqQuantity) throws Exception{
+			String reqQuantity,String reqPrice) throws Exception{
 	
 		B_MaterialData data = new B_MaterialData();
 		B_MaterialDao dao = new B_MaterialDao();
@@ -828,7 +828,8 @@ public class StorageService extends CommonService {
 		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());
-		float ireqQuantity = stringToFloat(reqQuantity);				
+		float ireqQuantity = stringToFloat(reqQuantity);	
+		float ireqPrice = stringToFloat(reqPrice);
 		float iNewQuantiy = iQuantity + ireqQuantity;		
 		
 		//待入库数量
@@ -837,11 +838,21 @@ public class StorageService extends CommonService {
 		
 		//虚拟库存=当前库存 + 待入库 - 待出库
 		float waitstockout = stringToFloat(data.getWaitstockout());//待出库	
-		float availabeltopromise = iNewQuantiy + iNewStockIn - waitstockout;
+		float availabeltopromise = iNewQuantiy + iNewStockIn - waitstockout;		
 		
-		data.setQuantityonhand(String.valueOf(iNewQuantiy));
-		data.setWaitstockin(String.valueOf(iNewStockIn));
-		data.setAvailabeltopromise(String.valueOf(availabeltopromise));
+		//计算移动平均单价
+		float fMAPrice = stringToFloat(data.getMaprice());//移动平均单价
+		
+		if(fMAPrice <= 0)
+			fMAPrice = ireqPrice;//采用当前合同的单价
+		
+		float fnewPrice = 
+				(iQuantity * fMAPrice + ireqQuantity * ireqPrice) / iNewQuantiy;	
+		
+		data.setQuantityonhand(floatToString(iNewQuantiy));
+		data.setWaitstockin(floatToString(iNewStockIn));
+		data.setAvailabeltopromise(floatToString(availabeltopromise));
+		data.setMaprice(floatToString(fnewPrice));
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,

@@ -238,6 +238,8 @@
 								<form:options items="${packagingList}" 
 									itemValue="key" itemLabel="value"/></form:select></td>
 						<td><form:input path="stockList[${status.index}].areanumber" class="short" /></td>
+						
+							<form:hidden path="stockList[${status.index}].price" value="${list.price }"/>
 					</tr>
 					<script type="text/javascript">
 							var index = '${status.index}';

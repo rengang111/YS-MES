@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -671,6 +672,30 @@ public class CommonService extends BaseService {
 			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
+		}
+		
+		return rtn;		
+	}
+	
+
+	/**
+	 * float转字符串(两位小数)
+	 * @param f
+	 * @return	
+	 */
+	public static String floatToString(float f){
+
+		String rtn = "";
+		
+		try{
+			//构造方法的字符格式这里如果小数不足2位,会以0补足.
+			DecimalFormat decimalFormat=new DecimalFormat();
+			decimalFormat.applyPattern("#,###.00");
+			//format 返回的是字符串
+			rtn=decimalFormat.format(f);
+			
+		}catch(NumberFormatException e){
+			e.printStackTrace();
 		}
 		
 		return rtn;		
