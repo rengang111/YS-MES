@@ -114,10 +114,6 @@
 	    			name = jQuery.fixedWidth(name,32);				    			
 	    			return name;
 	    		}},
-	    		{"targets":8,"render":function(data, type, row){
-	    				    			
-	    			return floatToCurrency( data );;
-	    		}},
 	    		{"targets":9,"render":function(data, type, row){
 	    			
 	    			var price = currencyToFloat(row["contractPrice"]);
