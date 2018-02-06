@@ -71,7 +71,7 @@
 	        	},
 				"columns": [
 					{"data": null,"className" : 'td-left'},//0
-					{"data": null, "defaultContent" : '', "className" : 'td-center'},//1 付款申请编号
+					{"data": null, "defaultContent" : '', "className" : 'td-left'},//1 付款申请编号
 					{"data": "contractId", "defaultContent" : '', "className" : 'td-left'},//2
 					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//3				
 					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//4		
@@ -231,6 +231,31 @@
 		callProductDesignView("采购合同",url);
 	}	
 	
+
+	function fnselectall() { 
+		if($("#selectall").prop("checked")){
+			$("input[name='numCheck']").each(function() {
+				$(this).prop("checked", true);
+				$(this).parent().parent().addClass("selected");
+			});
+				
+		}else{
+			$("input[name='numCheck']").each(function() {
+				if($(this).prop("checked")){
+					$(this).removeAttr("checked");
+					$(this).parent().parent().removeClass('selected');
+				}
+			});
+		}
+	};
+	
+	function fnreverse() { 
+		$("input[name='numCheck']").each(function () {  
+	        $(this).prop("checked", !$(this).prop("checked"));  
+			$(this).parent().parent().toggleClass("selected");
+	    });
+	};
+	
 </script>
 </head>
 
@@ -282,7 +307,9 @@
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						
 						<tr>					
-							<th width="15px">No</th>
+							<th width="50px">
+								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
+								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
 							<th width="65px">付款编号</th>
 							<th width="70px">合同编号</th>
 							<th width="60px">耀升编号</th>							

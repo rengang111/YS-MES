@@ -593,6 +593,7 @@
       <f name="b.unit" alias="" ctype="计量单位" />
       <f name="b.materialName" alias="" ctype="" />
       <f name="b.stockOutId" alias="" ctype="" />
+      <f name="b.collectYsid" alias="" ctype="" />
       <f name="format(replace(b.quantity,',',''),2)" alias="quantity" ctype="" />
       <f name="b.fullField" alias="" ctype="" />
     </select>

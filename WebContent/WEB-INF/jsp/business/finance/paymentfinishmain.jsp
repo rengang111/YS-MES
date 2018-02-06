@@ -76,7 +76,8 @@
 					{"data": "finishDate", "defaultContent" : '（未付款）', "className" : 'td-center'},//7
 					{"data": "paymentAmount", "defaultContent" : '0', "className" : 'td-right'},//8			
 					{"data": "totalPayable", "defaultContent" : '', "className" : 'td-right'},//9	
-					{"data": "finishStatus", "className" : 'td-center'},//10
+					{"data": "paymentMethodName", "defaultContent" : '', "className" : 'td-right'},//10		
+					{"data": "finishStatus", "className" : 'td-center'},//11
 				
 				],
 				"columnDefs":[
@@ -101,7 +102,7 @@
 		    		{ "bSortable": false, "aTargets": [ 0 ] },
 		    		{
 						"visible" : false,
-						"targets" : []
+						"targets" : [2]
 					}
 	           
 	         ] 
@@ -216,7 +217,8 @@
 							<th width="60px">付款日期</th>
 							<th width="60px">付款金额</th>
 							<th width="70px">应付款</th>
-							<th width="50px">状态</th>
+							<th width="50px">付款方式</th>
+							<th width="40px">状态</th>
 						</tr>
 					</thead>
 				</table>

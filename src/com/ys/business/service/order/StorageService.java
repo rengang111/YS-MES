@@ -364,6 +364,7 @@ public class StorageService extends CommonService {
 		String approvalN = getJsonData(data, "approvalStatusN");
 		String makeTypeL = getJsonData(data, "makeTypeL");
 		String makeTypeG = getJsonData(data, "makeTypeG");
+		String makeTypeI = getJsonData(data, "makeTypeI");
 		
 		//查询全部
 		if(notEmpty(approvalY) && notEmpty(approvalN)){
@@ -376,17 +377,38 @@ public class StorageService extends CommonService {
 		}
 		
 		//查询全部
-		if(notEmpty(makeTypeL) && notEmpty(makeTypeG)){
-			userDefinedSearchCase.put("makeTypeL", "");
+		if(notEmpty(makeTypeL) && notEmpty(makeTypeG) && notEmpty(makeTypeI)){
+			userDefinedSearchCase.put("makeTypeL_NOT", "");
+			userDefinedSearchCase.put("makeTypeL_IN", "");
 			userDefinedSearchCase.put("makeTypeG", "");
-		}else{
+			userDefinedSearchCase.put("makeTypeI", "");
+		}else if(notEmpty(makeTypeL) && notEmpty(makeTypeG)){
+			userDefinedSearchCase.put("makeTypeL_NOT", "I");
+			userDefinedSearchCase.put("makeTypeL_IN", "");
+			userDefinedSearchCase.put("makeTypeG", "");
+			userDefinedSearchCase.put("makeTypeI", "");
+		}else if(notEmpty(makeTypeL) && notEmpty(makeTypeI)){
+			userDefinedSearchCase.put("makeTypeL_NOT", "G");
+			userDefinedSearchCase.put("makeTypeL_IN", "");
+			userDefinedSearchCase.put("makeTypeG", "");
+			userDefinedSearchCase.put("makeTypeI", "");
+		}else if(notEmpty(makeTypeG) && notEmpty(makeTypeI)){
+			userDefinedSearchCase.put("makeTypeL_IN", "G,I");
+			userDefinedSearchCase.put("makeTypeL_NOT", "");
+			userDefinedSearchCase.put("makeTypeG", "");
+			userDefinedSearchCase.put("makeTypeI", "");
+			
+		}else{	
 			if(notEmpty(makeTypeL)){
-				userDefinedSearchCase.put("makeTypeL", makeTypeL);
-				userDefinedSearchCase.put("makeTypeG", "");				
+				userDefinedSearchCase.put("makeTypeL_NOT", "G,I");
+				userDefinedSearchCase.put("makeTypeG", "");
+				userDefinedSearchCase.put("makeTypeI", "");				
 			}else{
-				userDefinedSearchCase.put("makeTypeL", "");
-				userDefinedSearchCase.put("makeTypeG", makeTypeG);	
-			}
+				userDefinedSearchCase.put("makeTypeL_NOT", "");
+				userDefinedSearchCase.put("makeTypeL_IN", "");
+				userDefinedSearchCase.put("makeTypeG", makeTypeG);			
+				userDefinedSearchCase.put("makeTypeI", makeTypeI);					
+			}		
 		}
 				
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

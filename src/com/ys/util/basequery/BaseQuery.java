@@ -831,6 +831,19 @@ public class BaseQuery {
 						sql.append("'");
 					}
 					sql.append(")");
+					break;
+				case "not in":
+					sql.append("not in (");
+					String valueList2[] = value.split(",");
+					for (int i = 0; i < valueList2.length; i++) {
+						if (i > 0) {
+							sql.append(", ");
+						}
+						sql.append("'");
+						sql.append(valueList2[i]);
+						sql.append("'");
+					}
+					sql.append(")");
 				}
 			}
 			sql.append(" ");

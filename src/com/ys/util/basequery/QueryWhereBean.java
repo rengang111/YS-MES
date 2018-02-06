@@ -87,6 +87,9 @@ public class QueryWhereBean {
 				case "in":
 					sql.append(BaseQuery.processDataType(value, dType, "in"));
 					break;
+				case "not in":
+					sql.append(BaseQuery.processDataType(value, dType, "not in"));
+					break;
 				}
 				if (!sql.toString().equals("")) {
 					sql.append(subWhereSuffix);

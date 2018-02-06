@@ -95,6 +95,7 @@
       <f name="a.paymentHistoryId" alias="" ctype="" />
       <f name="format(IFNULL(a.paymentAmount,0),2)" alias="paymentAmount" ctype="" />
       <f name="a.paymentMethod" alias="" ctype="" />
+      <f name="a.paymentMethod" alias="paymentMethodName" ctype="付款方式" />
       <f name="a.finishUser" alias="" ctype="" />
       <f name="a.finishStatus" alias="" ctype="应付款状态" />
       <f name="a.finishStatus" alias="finishStatusId" ctype="" />

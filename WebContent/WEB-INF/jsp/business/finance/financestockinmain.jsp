@@ -16,11 +16,21 @@
 
 		var url = "${ctx}/business/storage?methodtype=financeSearch"+"&sessionFlag="+sessionFlag;
 		url += "&status=030";
-
+/*
 		if(type == 'G'){
 			url += "&makeTypeG=G&makeTypeL=";
 		}else if(type == 'L'){
-			url += "&makeTypeG=&makeTypeL=G";
+			url += "&makeTypeG=&makeTypeL=G&makeTypeI=G";
+		}
+		*/
+		if ($("#makeTypeI").prop('checked')) {
+			$("#makeTypeI").val('I');
+		}
+		if ($("#makeTypeG").prop('checked')) {
+			$("#makeTypeG").val('G');
+		}
+		if ($("#makeTypeL").prop('checked')) {
+			$("#makeTypeL").val('I,G');
 		}
 		
 		var approval = $('#approvalStatusY').val();
@@ -280,8 +290,9 @@
 					</td>
 					<td class="label">物料类别：</td>
 					<td>
-						<label><input type="checkbox" name="makeTypeL" id="makeTypeL" value="G" />装配件</label>
-						<label><input type="checkbox" name="makeTypeG" id="makeTypeG" value="G" />包装件</label>&nbsp;
+						<label><input type="checkbox" name="makeTypeL" id="makeTypeL" value="" />装配件</label>
+						<label><input type="checkbox" name="makeTypeG" id="makeTypeG" value="" />包装件</label>
+						<label><input type="checkbox" name="makeTypeI" id="makeTypeI" value="" />成品</label>
 					</td>
 					<td ></td> 
 				</tr>

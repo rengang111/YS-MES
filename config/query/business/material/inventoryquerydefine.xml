@@ -369,8 +369,12 @@
    	  	<w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="C.approvalStatus" des=""  reqName="approvalStatusY" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="C.approvalStatus" des=""  reqName="approvalStatusN" dtype="ch" oper="="  lg="AND" bt="" />
-   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+   	  	
+   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL_IN"  dtype="ch" oper="in"  lg="AND" bt="" />
+   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL_NOT"  dtype="ch" oper="not in"  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeI"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	
    	  	<w name="C.approvalDate" des=""  reqName="approvalDateStart" dtype="ch" oper="&gt;"  lg="AND" bt="" />
    	  	<w name="C.approvalDate" des=""  reqName="approvalDateEnd" dtype="ch" oper="&lt;"  lg="AND" bt="" />
       </where>
