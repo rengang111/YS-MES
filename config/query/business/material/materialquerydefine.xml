@@ -577,4 +577,48 @@
 	<power>
 	</power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="materialinventory_search" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" /> 
+  	  <w name="A.purchaseType"     des=""  reqName="purchaseType1"  dtype="ch" oper="="  lg="OR" bt="(" />
+  	  <w name="A.purchaseType"     des=""  reqName="purchaseType2"  dtype="ch" oper="="  lg="AND" bt=")" />
+  	  <w name="A.purchaseType"     des=""  reqName="purchaseType"  dtype="ch" oper="="  lg="AND" bt="" />  
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.categoryId" alias="" ctype="" />
+      <f name="A.categoryName" alias="" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.viewList" alias="" ctype="" />
+      <f name="A.shareModel" alias="" ctype="" />>
+      <f name="price" alias="price" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="IFNULL(A.quantityOnHand,0)" alias="quantityOnHand" ctype="" />
+      <f name="IFNULL(A.waitStockIn,0)" alias="waitStockIn" ctype="" />
+      <f name="IFNULL(A.waitStockOut,0)" alias="waitStockOut" ctype="" />
+      <f name="IFNULL(A.availabelToPromise,0)" alias="availabelToPromise" ctype="" />
+      <f name="IFNULL(A.MAPrice,0)" alias="MAPrice" ctype="" />
+      <f name="IFNULL(A.beginningInventory,0)" alias="beginningInventory" ctype="" />
+      <f name="IFNULL(A.beginningPrice,0)" alias="beginningPrice" ctype="" />
+      <f name="IFNULL(A.safetyInventory,0)" alias="safetyInventory" ctype="" />
+      <f name="FORMAT(IFNULL(b1.contractQty,0),2)" alias="contractQty" ctype="" />
+      <f name="FORMAT(IFNULL(c1.stockinQtiy,0),2)" alias="stockinQtiy" ctype="" />
+      <f name="FORMAT(IFNULL(d1.stockoutQty,0),2)" alias="stockoutQty" ctype="" />
+      <f name="A.unit" alias="" ctype="" />
+      <f name="A.unit" alias="dicName" ctype="计量单位" />
+      <f name="A.purchaseType" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_materiallist AS A LEFT JOIN  (SELECT b.materialId,SUM(replace(b.quantity,',','')) contractQty FROM b_purchaseorderdetail b WHERE b.deleteFlag='0' GROUP BY b.materialId) b1 ON a.materialId=b1.materialId LEFT JOIN  (SELECT c.materialId,SUM(replace(c.quantity,',','')) stockinQtiy FROM b_purchasestockindetail c WHERE c.deleteFlag='0' GROUP BY c.materialId) c1 ON a.materialId=c1.materialId	LEFT JOIN  (SELECT d.materialId,SUM(replace(d.quantity,',','')) stockoutQty FROM b_stockoutdetail d WHERE d.deleteFlag='0' GROUP BY d.materialId) d1 ON a.materialId=d1.materialId where a.deleteFlag = '0' </from>
+    <orderby>A.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>

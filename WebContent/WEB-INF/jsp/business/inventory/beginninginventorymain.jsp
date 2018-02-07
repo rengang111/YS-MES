@@ -13,7 +13,7 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/material?methodtype=search&sessionFlag="+sessionFlag;
+		var url = "${ctx}/business/storage?methodtype=beginningInventorySearch&sessionFlag="+sessionFlag;
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -25,6 +25,7 @@
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
+				"bAutowidth":false,
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
 				"sAjaxSource" : url,
@@ -59,14 +60,17 @@
 					{"data": "materialId"},
 					{"data": "materialName"},
 					{"data": "dicName","className" : 'td-center'},
+					{"data": "beginningInventory","className" : 'td-right'},//4
+					{"data": "beginningPrice","className" : 'td-right'},//
+					{"data": "MAPrice","className" : 'td-right'},
+					{"data": "contractQty","className" : 'td-right'},//	7
+					{"data": "stockinQtiy","className" : 'td-right'},//
+					{"data": "stockoutQty","className" : 'td-right'},//9
+					{"data": "quantityOnHand","className" : 'td-right'},//10
+					{"data": "availabelToPromise","className" : 'td-right'},
 					{"data": "waitStockIn","className" : 'td-right'},
 					{"data": "waitStockOut","className" : 'td-right'},
-					{"data": "availabelToPromise","className" : 'td-right'},
-					{"data": "quantityOnHand","className" : 'td-right'},
-					{"data": "MAPrice","className" : 'td-right'},
-					{"data": "beginningInventory","className" : 'td-right'},//9
-					{"data": "beginningPrice","className" : 'td-right'}//10					
-					
+				
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
@@ -83,7 +87,43 @@
 		    			name = jQuery.fixedWidth(name,40);				    			
 		    			return name;
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){		    			
+		    		{"targets":5,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":6,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":7,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":8,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":9,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":10,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":11,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":12,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":13,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":4,"render":function(data, type, row){		    			
 		    			var inventory = currencyToFloat(data);
 		    			var val =data;
 		    			if(inventory <= 0 )
@@ -92,7 +132,7 @@
 		    		}},
 		    		{
 		    			"visible":false,
-		    			"targets":[4,5]
+		    			"targets":[4,5,6]
 		    		}
 	        	] 
 			}
@@ -203,16 +243,19 @@
 			<thead>			
 				<tr >
 					<th style="width: 10px;">No</th>
-					<th style="width: 120px;">物料编号</th>
+					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 25px;">单位</th>
-					<th style="width: 60px;">待入</th>
-					<th style="width: 60px;">待出</th>
+					<th style="width: 50px;">期初库存</th>
+					<th style="width: 50px;">期初单价</th>
+					<th style="width: 50px;">移动<br>平均单价</th>
+					<th style="width: 50px;">总合同数</th>
+					<th style="width: 50px;">总到货数</th>
+					<th style="width: 50px;">总领料数</th>
+					<th style="width: 50px;">实际库存</th>
 					<th style="width: 50px;">虚拟库存</th>
-					<th style="width: 70px;">实际库存</th>
-					<th style="width: 70px;">移动<br>平均单价</th>
-					<th style="width: 70px;">期初库存</th>
-					<th style="width: 70px;">期初单价</th>
+					<th style="width: 50px;">待入</th>
+					<th style="width: 50px;">待出</th>
 				</tr>
 			</thead>
 		</table>

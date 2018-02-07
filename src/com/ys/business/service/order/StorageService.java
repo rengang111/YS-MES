@@ -191,8 +191,8 @@ public class StorageService extends CommonService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}
 
-		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
-		dataModel.setQueryName("materialquerydefine_search");		
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("materialinventory_search");		
 		baseQuery = new BaseQuery(request, dataModel);
 		
 		String[] keyArr = getSearchKey(formId,data,session);

@@ -88,14 +88,15 @@
 				"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row,meta){
 		                    var startIndex = meta.settings._iDisplayStart; 
-		                    var requisitionId = row["requisitionId"];
-		                    if(requisitionId == ""){
-		                    	return startIndex + meta.row + 1 + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["YSId"] + "' />";
+		                    //var requisitionId = row["requisitionId"];
+		                    //if(requisitionId == ""){
+		                    //	return startIndex + meta.row + 1 + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["YSId"] + "' />";
 					    		
-		                    }else{
-		                    	return startIndex + meta.row + 1 ;
-					    		
-		                    }
+		                    //}else{
+		                    //	return startIndex + meta.row + 1 ;					    		
+		                    //}
+		                    
+		                    return startIndex + meta.row + 1 ;			
 						}},
 			    		{"targets":1,"render":function(data, type, row){
 			    			var rtn = row["requisitionId"];//
@@ -340,17 +341,20 @@
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>待领料</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>已出库</span></a>
 				</div>
+				<!-- 
 				<div style="height: 40px;margin-bottom: -15px;float:right">
 					<button type="button" id="zzcreate" class="DTTT_button" 
 						style="width:120px" onclick="doCreate();">自制件领料申请</button>
 				</div>
+				 -->
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						
 						<tr>					
-							<th width="50px">
+							<th width="20px">No</th>
+							<!-- 
 								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
 								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
-							
+							-->
 							<th style="width: 70px;">领料单编号</th>
 							<th style="width: 70px;">耀升编号</th>
 							<th style="width: 120px;">产品编号</th>
