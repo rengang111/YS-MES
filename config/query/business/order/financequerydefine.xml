@@ -149,6 +149,7 @@
       <f name="a.requestDate" alias="" ctype="" />
       <f name="a.totalPayable" alias="" ctype="" />
       <f name="a.finishStatus" alias="" ctype="应付款状态" />
+      <f name="a.finishStatus" alias="finishStatusId" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.contractIds" alias="" ctype="" />
       <f name="b.contractId" alias="" ctype="" />

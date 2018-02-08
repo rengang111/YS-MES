@@ -370,11 +370,27 @@ public class PaymentService extends CommonService {
 
 	public void applyUpdateInit() throws Exception {
 		B_PaymentData payment = reqModel.getPayment();
-		model.addAttribute("payment",payment);
+		
+		String recordId=payment.getRecordid();
+		getPaymentDetailDB(recordId);
+		
 		//供应商
 		getContractDetail(payment.getContractids());
 	}
 
+	private void getPaymentDetailDB(String recordId) throws Exception {
+
+		B_PaymentData payment = reqModel.getPayment();
+		
+		try{
+			payment = new B_PaymentDao(payment).beanData;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		if( payment == null || ("").equals(payment) )
+			return;
+		reqModel.setPayment(payment);
+	}
 	
 	public void editProduct() throws Exception {
 		String YSId = request.getParameter("YSId");
@@ -556,7 +572,12 @@ public class PaymentService extends CommonService {
 				paymentid = reqData.getPaymentid();//重新取值
 			}	
 			//付款单
-			reqData.setFinishstatus(paymentStatus);//待审核
+			String status = reqData.getFinishstatus();
+			if((isNullOrEmpty(status) || 
+					(Constants.payment_060).equals(status))){
+				reqData.setFinishstatus(paymentStatus);//待审核				
+			}
+			
 			insertPayment(reqData);			
 
 			//检查关联合同是否存在

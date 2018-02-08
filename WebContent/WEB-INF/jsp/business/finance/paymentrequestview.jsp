@@ -357,6 +357,7 @@ function photoView(id, tdTable, count, data) {
 
 	<form:hidden path="payment.parentid"  />
 	<form:hidden path="payment.subid"  />
+	<form:hidden path="payment.finishstatus" value="${payment.finishStatusId }"/>
 	<form:hidden path="payment.recordid"     value="${payment.recordId }"/>
 	<form:hidden path="payment.contractids"  value="${payment.contractIds }"/>
 	<form:hidden path="payment.paymentid"    value="${payment.paymentId }"/>

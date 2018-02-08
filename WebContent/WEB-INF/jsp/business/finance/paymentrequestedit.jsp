@@ -424,6 +424,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	<form:hidden path="payment.parentid"  />
 	<form:hidden path="payment.subid"  />
 	<form:hidden path="payment.recordid"  />
+	<form:hidden path="payment.finishstatus"  />
 	<form:hidden path="payment.contractids"  value="${contractIds }"/>
 	<form:hidden path="payment.supplierid" value="${supplier.supplierId }" />
 	<fieldset>

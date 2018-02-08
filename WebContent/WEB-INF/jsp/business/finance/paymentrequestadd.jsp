@@ -83,7 +83,8 @@
 		}); 
 		
 		//申请单编号
-		var paymentId = '${payment.paymentid}';
+		var paymentId = $('#paymentId').val();
+		alert(paymentId)
 		if(paymentId == '' || paymentId == null){
 			$('#payment\\.paymentid').val('（保存后自动生成）');
 		}else{	
@@ -336,8 +337,10 @@ function uploadPhoto(tableId,tdTable, id) {
 	<form:hidden path="payment.parentid" />
 	<form:hidden path="payment.subid"  />
 	<form:hidden path="payment.recordid"  />
+	<form:hidden path="payment.finishstatus"  />
 	<form:hidden path="payment.contractids"  value="${contractIds }"/>
 	<form:hidden path="payment.supplierid" value="${supplier.supplierId }" />
+	<input type="hidden" id="paymentId" value="${formModel.payment.paymentid }">
 	<fieldset>
 		<legend> 付款申请单</legend>
 		<table class="form" id="table_form">
