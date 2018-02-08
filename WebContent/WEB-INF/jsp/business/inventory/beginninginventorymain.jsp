@@ -15,6 +15,7 @@
 		}
 		var url = "${ctx}/business/storage?methodtype=beginningInventorySearch&sessionFlag="+sessionFlag;
 
+		var scrollHeight = $(document).height() - 170; 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				 "iDisplayLength" : 50,
@@ -25,7 +26,9 @@
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
-				"bAutowidth":false,
+				"bAutoWidth":false,
+				"scrollY":scrollHeight,
+				"scrollCollapse":true,
 				"pagingType" : "full_numbers",
 				"retrieve" : true,
 				"sAjaxSource" : url,
@@ -239,10 +242,10 @@
 	</div>
 	<div  style="height:10px"></div>
 	<div class="list">
-		<table  style="width: 100%;" id="TMaterial" class="display">
+		<table  id="TMaterial" class="display">
 			<thead>			
 				<tr >
-					<th style="width: 10px;">No</th>
+					<th style="width: 1px;">No</th>
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 25px;">单位</th>

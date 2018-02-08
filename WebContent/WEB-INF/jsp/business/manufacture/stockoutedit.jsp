@@ -72,6 +72,7 @@
 	    			var name =  jQuery.fixedWidth( row["materialName"],40);
 					var inputTxt = '';
 	    			inputTxt= inputTxt + '<input type="hidden" id="stockList'+index+'.materialid" name="stockList['+index+'].materialid" value="'+row["materialId"]+'"/>';
+	    			inputTxt= inputTxt + '<input type="hidden" id="stockList'+index+'.price" name="stockList['+index+'].price" value="'+row["MAPrice"]+'"/>';
 	    			
 	    			return name + inputTxt;
                 }},
