@@ -1197,11 +1197,30 @@ public class StorageService extends CommonService {
 		}	
 		
 	}
+	public void getStockinDetailByMaterialId() throws Exception{
+
+		String materialId = request.getParameter("materialId");
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("materialStockInList");
+		userDefinedSearchCase.put("materialId", materialId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0 ){
+			model.addAttribute("material", dataModel.getYsViewData().get(0));
+			model.addAttribute("stockinList", dataModel.getYsViewData());
+		}
+		
+	}
+	
 	private boolean checkStockInDataById(
 			String contractId) throws Exception{
 		
 		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
-		dataModel.setQueryName("checkStockInDataById");
+		dataModel.setQueryName("stockInListBymaterialId");
 		userDefinedSearchCase.put("contractId", contractId);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

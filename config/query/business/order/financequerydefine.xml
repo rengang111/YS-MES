@@ -302,4 +302,53 @@
 	<power>
 	</power>    
   </query>
+	<query>
+		<pool></pool>    
+    	<name value="financeReprotForDaybook" />
+     	<where>
+	    	<w name="A.checkInDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
+	        <w name="A.checkInDate"   des="" reqName="endDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+    	</where>
+	  	<select>
+	      <f name="IFNULL(A.YSId,a.contractId)" alias="YSId" ctype="" />
+	      <f name="a.contractId" alias="" ctype="" />
+	      <f name="a.receiptId" alias="receiptId" ctype="" />
+	      <f name="a.checkInDate" alias="" ctype="" />
+	      <f name="a.checkInDate" alias="sortDate" ctype="" />
+	      <f name="a.stockinType" alias="" ctype="" />
+	      <f name="a.materialId" alias="" ctype="" />
+      	  <f name="a.materialName" alias="" ctype="" />
+      	  <f name="a.unit" alias="" ctype="计量单位" />
+	      <f name="a.quantity" alias="" ctype="" />
+	      <f name="b.price" alias="" ctype="" />
+      	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17),6)" alias="newPrice" ctype="" />
+      	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17 * ifnull(replace(a.quantity,',',''),0)),2)" alias="total" ctype="" />
+	  	</select>
+	    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+	    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+	    <from>v_purchasestockindetail a LEFT JOIN v_purchaseorderdetail b ON a.contractId=b.contractId AND a.materialId=b.materialId AND b.deleteFlag='0'</from>
+	<union>
+	    <where>
+        	<w name="b.checkOutDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
+        	<w name="b.checkOutDate"   des="" reqName="endDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+	    </where>	    
+	    <select>
+	      <f name="b.YSId" alias="YSId" ctype="" />
+	      <f name="b.YSId" alias="contractId" ctype="" />
+	      <f name="b.stockOutId" alias="receiptId" ctype="" />
+	      <f name="b.checkOutDate" alias="" ctype="" />
+	      <f name="b.checkOutDate" alias="sortDate" ctype="" />
+	      <f name="b.stockoutType" alias="" ctype="" />
+      	  <f name="b.materialId" alias="" ctype="" />
+      	  <f name="c.materialName" alias="" ctype="" />
+      	  <f name="c.unit" alias="" ctype="计量单位" />
+      	  <f name="b.quantity" alias="" ctype="" />
+      	  <f name="b.price" alias="" ctype="" />
+      	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17),6)" alias="newPrice" ctype="" />
+      	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17 * ifnull(replace(b.quantity,',',''),0)),2)" alias="total" ctype="" />
+	    </select>
+	    <from>v_stockout b LEFT JOIN b_material c ON b.materialId=c.materialId  AND c.deleteFlag='0'</from>	
+    </union>
+    <orderby>sortDate</orderby>
+  </query>
 </root>

@@ -103,12 +103,17 @@
 		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
-		    						    			
-		    			return floatToCurrency(data);
+		    			var rtn = "";
+		    			var qty= floatToCurrency(data);
+		    			rtn= "<a href=\"###\" onClick=\"doShowStockIn('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			return rtn;		    			
 		    		}},
 		    		{"targets":9,"render":function(data, type, row){
+		    			var rtn = "";
+		    			var qty= floatToCurrency(data);
+		    			rtn= "<a href=\"###\" onClick=\"doShowStockOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
-		    			return floatToCurrency(data);
+		    			return rtn;
 		    		}},
 		    		{"targets":10,"render":function(data, type, row){
 		    						    			
@@ -173,6 +178,20 @@
 		
 	}
 
+
+	function doShowStockIn(materialId) {
+
+		var url = '${ctx}/business/storage?methodtype=getStockInByMaterialId&materialId=' + materialId;
+		callProductDesignView("物料信息",url);
+		
+	}
+
+	function doShowStockOut(materialId) {
+
+		var url = '${ctx}/business/stockout?methodtype=getStockoutByMaterialId&materialId=' + materialId;
+		callProductDesignView("物料信息",url);
+		
+	}
 	function doEdit(recordId,parentId) {
 		var str = '';
 		var isFirstRow = true;

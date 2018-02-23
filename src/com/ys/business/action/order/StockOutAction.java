@@ -126,6 +126,10 @@ public class StockOutAction extends BaseAction {
 				dataMap = getStockoutHistory();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "getStockoutByMaterialId":
+				getStockoutByMaterialId();
+				rtnUrl = "/business/inventory/beginninginventorystockout";
+				break;
 			case "getStockoutDetail":
 				dataMap = getStockoutDetail();
 				printOutJsonObj(response, dataMap);
@@ -374,6 +378,20 @@ public class StockOutAction extends BaseAction {
 		}
 		
 		return dataMap;
+	}
+	
+
+	@SuppressWarnings({ "unchecked" })
+	public void getStockoutByMaterialId(){	
+		
+		try {
+			 service.getStockoutByMaterialId();		
+		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
 	}
 	
 	public HashMap<String, Object> getProductPhoto(){	

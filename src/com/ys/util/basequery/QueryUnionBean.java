@@ -56,6 +56,10 @@ public class QueryUnionBean {
 		}
 		sql.append(queryFrom.getSql());
 		queryWhere.setRequest(request);
+		//rengang:18.2.22追加 start
+		if (queryWhere.whereList.size() > 0) {
+			sql.append(" WHERE ");
+		}//end
 		sql.append(queryWhere.getSql(userDefinedSearchCase));
 		if(!sql.toString().equals("")) {
 			sql.append(powerSql);

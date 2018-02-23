@@ -691,6 +691,19 @@ public class StockOutService extends CommonService {
 		
 	}
 	
+	public void getStockoutByMaterialId() throws Exception {
+		String materialId = request.getParameter("materialId");
+		dataModel.setQueryName("stockoutHistory");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("materialId", materialId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0 ){
+			model.addAttribute("material", dataModel.getYsViewData().get(0));
+			model.addAttribute("stockoutList", dataModel.getYsViewData());
+		}	
+	}
 	
 	public HashMap<String, Object> getStockoutDetail() throws Exception {
 		String stockOutId = request.getParameter("stockOutId");

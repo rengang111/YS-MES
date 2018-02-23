@@ -113,6 +113,10 @@ public class StorageAction extends BaseAction {
 				dataMap = doShowDetail();
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "getStockInByMaterialId":
+				getStockInByMaterialId();
+				rtnUrl = "/business/inventory/beginninginventorystockin";
+				break;
 			case "orderSearchInit":
 				doInit();
 				rtnUrl = "/business/inventory/productstoragemain";
@@ -677,4 +681,15 @@ public class StorageAction extends BaseAction {
 		}
 		
 	}
+	
+	public void getStockInByMaterialId(){			
+		try {
+			service.getStockinDetailByMaterialId();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
 }
