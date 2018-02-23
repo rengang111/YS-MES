@@ -99,8 +99,10 @@
 		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
-		    						    			
-		    			return floatToCurrency(data);
+		     			var rtn = "";
+		    			var qty= floatToCurrency(data);
+		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			return rtn;		    			
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
 		    			var rtn = "";
@@ -128,8 +130,11 @@
 		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":13,"render":function(data, type, row){
+		    			var rtn = "";
+		    			var qty= floatToCurrency(data);
+		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
-		    			return floatToCurrency(data);
+		    			return rtn;
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){		    			
 		    			var inventory = currencyToFloat(data);
@@ -178,18 +183,32 @@
 		
 	}
 
+	function doShowPlan(materialId) {
+
+		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanByMaterialId&materialId=' + materialId;
+		callProductDesignView("合同明细",url);
+		
+	}
+
+
+	function doShowContract(materialId) {
+
+		var url = '${ctx}/business/contract?methodtype=contractListByMaterialId&materialId=' + materialId;
+		callProductDesignView("合同明细",url);
+		
+	}
 
 	function doShowStockIn(materialId) {
 
 		var url = '${ctx}/business/storage?methodtype=getStockInByMaterialId&materialId=' + materialId;
-		callProductDesignView("物料信息",url);
+		callProductDesignView("入库明细",url);
 		
 	}
 
 	function doShowStockOut(materialId) {
 
 		var url = '${ctx}/business/stockout?methodtype=getStockoutByMaterialId&materialId=' + materialId;
-		callProductDesignView("物料信息",url);
+		callProductDesignView("领料明细",url);
 		
 	}
 	function doEdit(recordId,parentId) {

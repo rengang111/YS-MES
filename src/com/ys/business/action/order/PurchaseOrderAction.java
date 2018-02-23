@@ -136,6 +136,10 @@ public class PurchaseOrderAction extends BaseAction {
 				dataMap = doSearch(data,Constants.FORM_CONTRACTZZ);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "contractListByMaterialId":
+				getContractListByMaterialId();
+				rtnUrl = "/business/inventory/beginninginventorycontract";
+				break;
 		}
 		
 		return rtnUrl;		
@@ -271,5 +275,15 @@ public class PurchaseOrderAction extends BaseAction {
 	 
 	}
 	
+	public void getContractListByMaterialId(){	
+		
+		try {
+			 service.getContractListByMaterialId();		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
 
 }

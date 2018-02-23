@@ -94,6 +94,7 @@
     <name value="getPurchaseDetail" />
     <where>
     	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.recordId" alias="" ctype="" />
@@ -122,6 +123,7 @@
       <f name="a.bomCost" alias="" ctype="" />
       <f name="a.managementCost" alias="" ctype="" />
       <f name="a.managementCostRate" alias="" ctype="" />
+      <f name="a.productId" alias="" ctype="" />
       <f name="a.productCost" alias="" ctype="" />
       <f name="a.materialCost" alias="" ctype="" />
       <f name="a.laborCost" alias="" ctype="" />
@@ -163,6 +165,34 @@
    <from>v_purchaseplan a  WHERE a.deleteFlag = '0' </from>
     <orderby>a.supplierId</orderby>
     <groupby>a.supplierId</groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="purchasePlanByMaterialId" />
+    <where>
+    	<w name="a.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.productId" alias="" ctype="" />
+      <f name="b.materialName" alias="productName" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="a.planDate" alias="" ctype="" />
+      <f name="a.purchaseType" alias="" ctype="" />
+      <f name="a.supplierShortName" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_purchaseplan a  LEFT JOIN b_material b ON b.materialId=a.productId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
+    <orderby>planDate</orderby>
+    <groupby></groupby>
     <having></having>
 	<power></power>    
   </query>
@@ -294,6 +324,7 @@
       <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
       <w name="A.supplierId" des=""  reqName="supplierId" dtype="ch" oper="="  lg="AND" bt="" />
       <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
       </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />

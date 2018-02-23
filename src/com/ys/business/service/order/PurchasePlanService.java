@@ -1205,6 +1205,23 @@ public class PurchasePlanService extends CommonService {
 		return HashMap;
 	}
 	
+	public void getPurchasePlanByMaterialId() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("purchasePlanByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("materialId", materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			model.addAttribute("material",dataModel.getYsViewData().get(0));
+			model.addAttribute("planList",dataModel.getYsViewData());
+		}
+	}
+	
 	public HashMap<String, Object> getPurchaseMaterialList(String materialRecord) throws Exception {
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
@@ -1342,19 +1359,7 @@ public class PurchasePlanService extends CommonService {
 		data.setStatus(Constants.CONTRACT_STS_1);
 		
 		dao.Create(data);	
-	}
-
-	public ArrayList<HashMap<String, String>> getSupplierList(String YSId) throws Exception {		
-
-		dataModel.setQueryFileName("/business/order/purchasequerydefine");
-		dataModel.setQueryName("getContractSupplierList");		
-		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("YSId", YSId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		return baseQuery.getYsFullData();
-		
-	}
-	
+	}	
 
 	public ArrayList<HashMap<String, String>> getMaterialGroupList(
 			String YSId,String supplierId) throws Exception {		

@@ -1429,4 +1429,19 @@ public class PurchaseOrderService extends CommonService {
 		return (List<B_PurchaseOrderDetailData>) new B_PurchaseOrderDetailDao().Find(where);
 				
 	}
+	
+	public void getContractListByMaterialId() throws Exception {
+		String materialId = request.getParameter("materialId");
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getRequriementBySupplier");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("materialId", materialId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0 ){
+			model.addAttribute("material", dataModel.getYsViewData().get(0));
+			model.addAttribute("contractList", dataModel.getYsViewData());
+		}	
+	}
 }
