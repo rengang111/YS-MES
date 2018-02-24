@@ -48,6 +48,10 @@ public class StorageAction extends BaseAction {
 		
 		String type = request.getParameter("methodtype");
 		String makeType = request.getParameter("makeType");
+		String materialType = request.getParameter("materialType");
+		String materialTypeZZ = request.getParameter("materialTypeZZ");
+		String materialTypeYS1 = request.getParameter("materialTypeYS1");
+		String materialTypeYS2 = request.getParameter("materialTypeYS2");
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
@@ -60,6 +64,10 @@ public class StorageAction extends BaseAction {
 		this.response = response;
 		this.session = session;
 		model.addAttribute("makeType",makeType);
+		model.addAttribute("materialType",materialType);
+		model.addAttribute("materialTypeZZ",materialTypeZZ);
+		model.addAttribute("materialTypeYS1",materialTypeYS1);
+		model.addAttribute("materialTypeYS2",materialTypeYS2);
 		
 		if (type == null) {
 			type = "";

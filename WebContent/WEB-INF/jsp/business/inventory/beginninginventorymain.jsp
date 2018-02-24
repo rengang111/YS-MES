@@ -13,8 +13,16 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		var materialType = $("#materialType").val();
+		var materialTypeZZ = $("#materialTypeZZ").val();
+		var materialTypeYS1 = $("#materialTypeYS1").val();
+		var materialTypeYS2 = $("#materialTypeYS2").val();
 		var url = "${ctx}/business/storage?methodtype=beginningInventorySearch&sessionFlag="+sessionFlag;
-
+		url = url + "&materialType="+materialType;
+		url = url + "&materialTypeZZ="+materialTypeZZ;
+		url = url + "&materialTypeYS1="+materialTypeYS1;
+		url = url + "&materialTypeYS2="+materialTypeYS2;
+		
 		var scrollHeight = $(document).height() - 170; 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -257,6 +265,10 @@
 
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
+			<input type="hidden" id="materialType" value="${materialType }" />
+			<input type="hidden" id="materialTypeZZ" value="${materialTypeZZ }" />
+			<input type="hidden" id="materialTypeYS1" value="${materialTypeYS1 }" />
+			<input type="hidden" id="materialTypeYS2" value="${materialTypeYS2 }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 
