@@ -175,7 +175,7 @@
 
 	$(document).ready(function() {
 		
-		searchAjax("true","1");
+		searchAjax("true","3");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -195,13 +195,13 @@
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		searchAjax("false","");
+		searchAjax("false","3");
 
 	}
 	
 
 	function doSearchCustomer(type) {	
-
+		$('#searchType').val(type);
 		searchAjax("false",type);
 
 	}
@@ -320,6 +320,42 @@
 
 	};
 	
+	
+	function downloadExcel() {
+		
+		var recordsTotal = $('#recordsTotal').val();
+		if(recordsTotal <=0){
+			$().toastmessage('showWarningToast', "没有可以导出的数据。");	
+			return;
+		}
+		var searchType = $('#searchType').val();
+		var keyword1 = $("#keyword1").val();
+		var keyword2 = $("#keyword2").val();
+
+		var materialType = $("#materialType").val();
+		var materialTypeZZ = $("#materialTypeZZ").val();
+		var materialTypeYS1 = $("#materialTypeYS1").val();
+		var materialTypeYS2 = $("#materialTypeYS2").val();
+		
+		if(myTrim(keyword1) == '' && myTrim(keyword2) == '' ){
+			//
+		}else{
+			searchType = '3';//不区分正常与否
+		}
+		var url = '${ctx}/business/financereport?methodtype=downloadExcel';
+			url = url + "&searchType="+searchType;
+			url = url + "&keyword1="+keyword1;
+			url = url + "&keyword2="+keyword2;
+			url = url + "&materialType="+materialType;
+			url = url + "&materialTypeZZ="+materialTypeZZ;
+			url = url + "&materialTypeYS1="+materialTypeYS1;
+			url = url + "&materialTypeYS2="+materialTypeYS2;
+		
+		url =encodeURI(encodeURI(url));//中文两次转码
+
+		location.href = url;
+	}
+	
 </script>
 </head>
 
@@ -334,6 +370,8 @@
 			<input type="hidden" id="materialTypeZZ" value="${materialTypeZZ }" />
 			<input type="hidden" id="materialTypeYS1" value="${materialTypeYS1 }" />
 			<input type="hidden" id="materialTypeYS2" value="${materialTypeYS2 }" />
+			<input type="hidden" id="searchType" value="" />
+			
 			<table>
 				<tr>
 					<td width="10%"></td> 
@@ -357,9 +395,12 @@
 	</div>
 	<div class="list">
 			<div style="height:40px;float: left">
+				<a  class="DTTT_button box" onclick="doSearchCustomer('3');"><span>全部</span></a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer('1');"><span>库存为负数</span></a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer('2');"><span>库存 ≠ 总到货－总领料</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('3');"><span>正常库存</span></a>
+			</div>
+			<div style="height:40px;float: right">
+				<a  class="DTTT_button box" onclick="downloadExcel('3');"><span>EXCEL导出</span></a>
 			</div>
 		<table  id="TMaterial" class="display">
 			<thead>			

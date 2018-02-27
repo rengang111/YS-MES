@@ -177,7 +177,7 @@ public class FinanceReportAction extends BaseAction {
 	private void downloadExcel() {		
 		
 		try {
-			service.excelForReportfordaybook();
+			service.excelForInvertory();
 		}
 		catch(Exception e) {
 			e.printStackTrace();

@@ -201,7 +201,7 @@ public class StorageService extends CommonService {
 			//库存 ≠ 总到货－总领料
 			dataModel.setQueryName("materialinventory_search2");	
 		}else{
-			//正常库存
+			//全部
 			dataModel.setQueryName("materialinventoryForNormal_search");	
 		}	
 		baseQuery = new BaseQuery(request, dataModel);

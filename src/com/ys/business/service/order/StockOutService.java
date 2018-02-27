@@ -991,8 +991,30 @@ public class StockOutService extends CommonService {
 			userDefinedSearchCase.put("requisitionSts", "");
 		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		String status = request.getParameter("status");
+		if(notEmpty(key2) || notEmpty(key1)){
+			status = "";//有查询key,忽略其状态值
+		}
+		StringBuffer sb = new StringBuffer();
+		sb.append(" AND ");
+		if(("040").equals(status)){
+			//未出库
+			sb.append(" a.stockoutQty+0 <= 0 AND a.stockinQty+0 > 0 ");
+		}else if(("050").equals(status)){
+			//已出库
+			sb.append(" a.stockoutQty+0 = a.orderQty+0 ");			
+		}else if(("051").equals(status)){
+			//部分出库
+			sb.append(" a.stockoutQty+0 > 0 AND a.stockoutQty+0 < a.orderQty+0 ");			
+		}else{
+			//普通查询
+			sb.append(" 1=1 ");
+		}
+
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);
+		sql = sql.replace("#", sb.toString());
+		baseQuery.getYsQueryData(sql,sb.toString(),iStart, iEnd);
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -1034,7 +1056,11 @@ public class StockOutService extends CommonService {
 		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+		String sql = baseQuery.getSql(); 
+		StringBuffer sb = new StringBuffer();
+		sb.append(" AND 1=1 ");
+		sql = sql.replace("#", sb);
+		baseQuery.getYsFullData(sql,sb.toString());
 
 		if(dataModel.getRecordCount() > 0) {
 			model.addAttribute("stockin",dataModel.getYsViewData().get(0));
