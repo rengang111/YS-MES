@@ -463,17 +463,17 @@ public class StockOutService extends CommonService {
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());		
 		float iNewQuantiy = iQuantity - reqQuantity;		
-		
-		//待入库数量
-		float istockin = stringToFloat(data.getWaitstockin());		
-		float iNewStockIn = istockin - reqQuantity;
+		//待入库
+		float waitstockin = stringToFloat(data.getWaitstockin());
+		//待出库
+		float istockout = stringToFloat(data.getWaitstockout());		
+		float iNewStockOut = istockout - reqQuantity;
 		
 		//虚拟库存=当前库存 + 待入库 - 待出库
-		float waitstockout = stringToFloat(data.getWaitstockout());//待出库	
-		float availabeltopromise = iNewQuantiy + iNewStockIn - waitstockout;
+		float availabeltopromise = iNewQuantiy + waitstockin - iNewStockOut;
 		
 		data.setQuantityonhand(String.valueOf(iNewQuantiy));
-		data.setWaitstockin(String.valueOf(iNewStockIn));
+		data.setWaitstockout(String.valueOf(iNewStockOut));
 		data.setAvailabeltopromise(String.valueOf(availabeltopromise));
 		
 		//更新DB

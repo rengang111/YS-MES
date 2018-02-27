@@ -84,7 +84,7 @@
 		
 		//申请单编号
 		var paymentId = $('#paymentId').val();
-		alert(paymentId)
+
 		if(paymentId == '' || paymentId == null){
 			$('#payment\\.paymentid').val('（保存后自动生成）');
 		}else{	

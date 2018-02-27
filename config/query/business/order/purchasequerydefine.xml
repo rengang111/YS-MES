@@ -94,7 +94,6 @@
     <name value="getPurchaseDetail" />
     <where>
     	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
-    	<w name="a.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.recordId" alias="" ctype="" />

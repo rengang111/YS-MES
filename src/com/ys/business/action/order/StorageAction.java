@@ -221,6 +221,16 @@ public class StorageAction extends BaseAction {
 			case "beginningInventoryAdd":
 				beginningInventoryAdd();
 				break;
+			case "setQuantityOnHand":
+				setQuantityOnHand();
+				rtnUrl = "/business/inventory/quantityonhandadd";
+				break;
+			case "quantityOnHandAdd":
+				quantityOnHandAdd();
+				break;
+			case "confirmQuantityOnHand":
+				confirmQuantityOnHand();
+				break;
 				
 		}
 		
@@ -684,6 +694,37 @@ public class StorageAction extends BaseAction {
 		
 		try{
 			service.beginningInventoryAdd();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	public void setQuantityOnHand(){
+		
+		try{
+			service.setQuantityOnHand();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	public void quantityOnHandAdd(){
+		
+		try{
+			service.quantityOnHandAdd();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+
+	public void confirmQuantityOnHand(){
+		
+		try{
+			service.confirmQuantityOnHand();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

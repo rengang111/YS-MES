@@ -7,7 +7,7 @@
 <title>库存一览页面</title>
 <script type="text/javascript">
 
-	function ajax(sessionFlag) {
+	function searchAjax(sessionFlag,searchType) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -22,8 +22,9 @@
 		url = url + "&materialTypeZZ="+materialTypeZZ;
 		url = url + "&materialTypeYS1="+materialTypeYS1;
 		url = url + "&materialTypeYS2="+materialTypeYS2;
+		url = url + "&searchType="+searchType;
 		
-		var scrollHeight = $(document).height() - 170; 
+		var scrollHeight = $(document).height() - 195; 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				 "iDisplayLength" : 50,
@@ -72,8 +73,8 @@
 					{"data": "materialName"},
 					{"data": "dicName","className" : 'td-center'},
 					{"data": "beginningInventory","className" : 'td-right'},//4
-					{"data": "beginningPrice","className" : 'td-right'},//
-					{"data": "MAPrice","className" : 'td-right'},
+					{"data": "beginningPrice","className" : 'td-right'},//5
+					{"data": "MAPrice","className" : 'td-right'},//6
 					{"data": "contractQty","className" : 'td-right'},//	7
 					{"data": "stockinQtiy","className" : 'td-right'},//
 					{"data": "stockoutQty","className" : 'td-right'},//9
@@ -81,6 +82,7 @@
 					{"data": "availabelToPromise","className" : 'td-right'},
 					{"data": "waitStockIn","className" : 'td-right'},
 					{"data": "waitStockOut","className" : 'td-right'},
+					{"data": null,"className" : 'td-center'},//14
 				
 				],
 				"columnDefs":[
@@ -95,7 +97,7 @@
 		    		{"targets":2,"render":function(data, type, row){
 		    			
 		    			var name = row["materialName"];				    			
-		    			name = jQuery.fixedWidth(name,40);				    			
+		    			name = jQuery.fixedWidth(name,36);				    			
 		    			return name;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
@@ -144,12 +146,22 @@
 		    						    			
 		    			return rtn;
 		    		}},
-		    		{"targets":4,"render":function(data, type, row){		    			
+		    		{"targets":4,"render":function(data, type, row){
+		    			//期初值设定
 		    			var inventory = currencyToFloat(data);
 		    			var val =data;
 		    			if(inventory <= 0 )
 		    				val=  "设置";		    			
 		    			return  "<a href=\"###\" onClick=\"setBeginningInventory('" + row["recordId"] +"')\">" + val + "</a>";	    			
+		    		}},
+		    		{"targets":14,"render":function(data, type, row){
+		    			//实际库存修正
+		    			var txt = "";
+		    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "修改" + "</a>";
+		    			txt += "&nbsp;";
+		    			txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"')\">" + "确认" + "</a>";
+		    					    			
+		    			return  txt;	    			
 		    		}},
 		    		{
 		    			"visible":false,
@@ -163,7 +175,7 @@
 
 	$(document).ready(function() {
 		
-		ajax("true");
+		searchAjax("true","1");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -175,12 +187,22 @@
 	            $(this).addClass('selected');
 	        }
 		});		
+		
+
+		buttonSelectedEvent();//按钮选择式样
 	})	
 	
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("false");
+		searchAjax("false","");
+
+	}
+	
+
+	function doSearchCustomer(type) {	
+
+		searchAjax("false",type);
 
 	}
 	
@@ -230,10 +252,11 @@
 	function reload() {
 		
 		$('#TMaterial').DataTable().ajax.reload(null,false);
+		$().toastmessage('showNoticeToast', "修改成功。");
 		
 		return true;
 	}	
-
+	
 	function setBeginningInventory(recordid) {
 		var url = '${ctx}/business/storage?methodtype=setBeginningInventory';
 		url = url +'&recordId='+recordid;
@@ -252,6 +275,48 @@
 			  	return false; 
 			}    
 		});		
+
+	};
+	
+	function setQuantityOnHand(recordid) {
+		var url = '${ctx}/business/storage?methodtype=setQuantityOnHand';
+		url = url +'&recordId='+recordid;
+		
+		layer.open({
+			offset	:[30,''],
+			type 	: 2,
+			title 	: false,
+			area 	: [ '800px', '300px' ], 
+			scrollbar : false,
+			title 	: false,
+			content : url,
+			cancel	: function(index){				
+			    layer.close(index);
+			},
+			
+		});		
+
+	};
+	
+	function confirmQuantityOnHand(recordid) {
+		var url = "${ctx}/business/storage?methodtype=confirmQuantityOnHand";
+		url = url +'&recordId='+recordid;
+		if(confirm('确定要修正吗?')){
+			$.ajax({
+				type : "post",
+				url : url,
+				//async : false,
+				//data : null,
+				dataType : "text",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
+				success : function(data) {			
+					reload();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					//alert(textStatus)
+				}
+			});
+		}
 
 	};
 	
@@ -290,8 +355,12 @@
 
 		</form>
 	</div>
-	<div  style="height:10px"></div>
 	<div class="list">
+			<div style="height:40px;float: left">
+				<a  class="DTTT_button box" onclick="doSearchCustomer('1');"><span>库存为负数</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('2');"><span>库存 ≠ 总到货－总领料</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('3');"><span>正常库存</span></a>
+			</div>
 		<table  id="TMaterial" class="display">
 			<thead>			
 				<tr >
@@ -309,6 +378,7 @@
 					<th style="width: 50px;">虚拟库存</th>
 					<th style="width: 50px;">待入</th>
 					<th style="width: 50px;">待出</th>
+					<th style="width: 50px;">操作</th>
 				</tr>
 			</thead>
 		</table>

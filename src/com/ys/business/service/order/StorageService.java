@@ -192,7 +192,18 @@ public class StorageService extends CommonService {
 		}
 
 		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("materialinventory_search");		
+		
+		String searchType = request.getParameter("searchType");
+		if(("1").equals(searchType)){
+			//库存为负数
+			dataModel.setQueryName("materialinventory_search");	
+		}else if(("2").equals(searchType)){
+			//库存 ≠ 总到货－总领料
+			dataModel.setQueryName("materialinventory_search2");	
+		}else{
+			//正常库存
+			dataModel.setQueryName("materialinventoryForNormal_search");	
+		}	
 		baseQuery = new BaseQuery(request, dataModel);
 		
 		String[] keyArr = getSearchKey(formId,data,session);
@@ -203,8 +214,9 @@ public class StorageService extends CommonService {
 		userDefinedSearchCase.put("keyword2", key2);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);
-		baseQuery.getYsQueryData(sql,iStart, iEnd);
+		
+		//String sql = getSortKeyFormWeb(data,baseQuery);
+		baseQuery.getYsQueryData(iStart, iEnd);
 		
 		if ( iEnd > dataModel.getYsViewData().size()){
 			iEnd = dataModel.getYsViewData().size();
@@ -1701,6 +1713,62 @@ public class StorageService extends CommonService {
 	
 	}
 	
+
+	public void setQuantityOnHand() throws Exception {
+
+		String recordId = request.getParameter("recordId");		
+		//合同信息
+		getMaterialDetail(recordId);
+	
+	}
+	
+
+	public void quantityOnHandAdd() throws Exception {
+
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+
+			
+			//更新物料信息
+			B_MaterialData mate = updateMaterialQuantityOnHand();
+			
+			//保存当前数据
+			//insertBeginningInventoryHisotry(mate);
+			
+			
+			ts.commit();			
+		
+		}
+		catch(Exception e) {
+			e.printStackTrace();		
+			ts.rollback();			
+		}		
+	
+	}
+
+	public void confirmQuantityOnHand() throws Exception {
+	
+		B_MaterialData mate = new B_MaterialData();
+		
+		String id = request.getParameter("recordId");
+		mate.setRecordid(id);
+		
+		mate = new B_MaterialDao(mate).beanData;	
+		
+		if(mate ==null){
+			return ;
+		}	
+		mate.setQuantityeditflag("1");//库存修改已确认
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"confirmQuantityOnHand",userInfo);
+		copyProperties(mate,commData);
+		new B_MaterialDao().Store(mate);
+	
+	}
+	
 	//更新
 	private B_MaterialData updateMaterialBeginningInventory() throws Exception{
 	
@@ -1769,6 +1837,45 @@ public class StorageService extends CommonService {
 		
 		dao.Create(inventory);
 		
+		
+	}
+	
+	//更新
+	private B_MaterialData updateMaterialQuantityOnHand() throws Exception{
+	
+		B_MaterialData mate = new B_MaterialData();
+		B_MaterialDao dao = new B_MaterialDao();
+		
+		B_MaterialData reqMeterial = reqModel.getMaterial();	
+		
+		mate = new B_MaterialDao(reqMeterial).beanData;	
+		
+		if(mate ==null){
+			return null;
+		}
+		B_MaterialData rtnVal = new B_MaterialData();
+		rtnVal.setQuantityonhand(reqMeterial.getQuantityonhand());
+
+		float iQuantity = stringToFloat(reqMeterial.getQuantityonhand());
+		
+		float istockin = stringToFloat(mate.getWaitstockin());	//待入库
+		float istockout = stringToFloat(mate.getWaitstockout());//待出库	
+		
+		//虚拟库存=当前库存 + 待入库 - 待出库
+		float availabeltopromise = iQuantity + istockin - istockout;		
+		
+		mate.setQuantityonhand(reqMeterial.getQuantityonhand());
+		mate.setAvailabeltopromise(floatToString(availabeltopromise));	
+		mate.setQuantityeditflag(reqMeterial.getQuantityeditflag());//库存修改标识
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"updateMaterialQuantityOnHand",userInfo);
+		copyProperties(mate,commData);
+		
+		dao.Store(mate);
+		
+		return rtnVal;
 		
 	}
 }
