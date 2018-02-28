@@ -368,23 +368,23 @@
 		<table id="example" class="display" style="width:100%">
 			<thead>				
 				<tr>
-					<th class="dt-center"  width="100px">0物料编号</th>
-					<th width="30px">1模块<br>编号</th>
+					<th class="dt-center"  width="100px">物料编号</th>
+					<th width="30px">模块<br>编号</th>
 					<th width="50px">
 						<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
 						<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
-					<th class="dt-center" style="width:100px">3更换物料</th>
-					<th class="dt-center" >4物料名称</th>
-					<th class="dt-center" style="width:30px">5物料特性</th>
-					<th class="dt-center" width="60px">6用量</th>
-					<th class="dt-center" width="60px">7生产需求量</th>
-					<th class="dt-center" width="60px">8总量</th>
-					<th class="dt-center" width="60px">9当前库存</th>
-					<th class="dt-center" width="60px">10建议采购量</th>
-					<th class="dt-center" style="width:80px">11供应商</th>
-					<th class="dt-center" width="60px">12本次单价</th>
-					<th class="dt-center" width="80px">13总价</th>
-					<th class="dt-center" width="60px">14当前价格</th>
+					<th class="dt-center" style="width:100px">更换物料</th>
+					<th class="dt-center" >物料名称</th>
+					<th class="dt-center" style="width:30px">物料特性</th>
+					<th class="dt-center" width="60px">用量</th>
+					<th class="dt-center" width="60px">生产需求量</th>
+					<th class="dt-center" width="60px">总量</th>
+					<th class="dt-center" width="60px">虚拟库存</th>
+					<th class="dt-center" width="60px">建议采购量</th>
+					<th class="dt-center" style="width:80px">供应商</th>
+					<th class="dt-center" width="60px">本次单价</th>
+					<th class="dt-center" width="80px">总价</th>
+					<th class="dt-center" width="60px">当前价格</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -433,8 +433,8 @@
 		var contractQty = currencyToFloat('${bom.contractQty}');
 		var fPlanQuantity =  currencyToFloat( '${bom.manufactureQuantity}' ) ;
 		//虚拟库存=实际库存 + 待入库 - 待出库,这里做反向操作: 页面显示的虚拟库存 = 实际库存 - 待入库 + 待出库
-		var newStock =  floatToCurrency( currencyToFloat(stock) - contractQty + fPlanQuantity );
-		var fpurchase = setPurchaseQuantity(newStock,totalQuantity);
+		//var newStock =  floatToCurrency( currencyToFloat(stock) - contractQty + fPlanQuantity );
+		var fpurchase = setPurchaseQuantity(stock,totalQuantity);
 		//alert("newStock:::"+stock+":::"+contractQty+":::"+fPlanQuantity)
 		if(type=="020"){//通用件单独采购
 			fpurchase = "0";
@@ -444,7 +444,7 @@
 		var vprice = formatNumber(price);
 		var shortName = getLetters(supplierId);
 
-		$('#availabelToPromise'+index).html(newStock);
+		//$('#availabelToPromise'+index).html(newStock);
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$('#totalQuantity'+index).html(totalQuantity);
 		$("#planDetailList"+index+"\\.manufacturequantity").val(totalQuantity);

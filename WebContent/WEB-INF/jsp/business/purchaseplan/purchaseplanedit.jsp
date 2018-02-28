@@ -242,20 +242,20 @@
 	       	},
 			"columns": [
 				{"className" : 'td-left'},//0
-				{"className" : 'td-center', "defaultContent" : ''},//0
 				{"className" : 'td-center', "defaultContent" : ''},//1
-				{"defaultContent" : ''},//2.物料编号
-				{"defaultContent" : ''},//3.物料名称
-				{"className" : 'td-center', "defaultContent" : ''},//4.单位:物料
-				{"className" : 'td-right', "defaultContent" : ''},//5.单位使用量:baseBom
-				{"className" : 'td-right'},//6.生产需求量:订单
-				{"className" : 'td-right'},//7.总量= 单位使用量 * 生产需求量
-				{"className" : 'td-right'},//8.当前库存(虚拟库存):物料
-				{"className" : 'td-right'},//9.建议采购量:输入
-				{"defaultContent" : '0'},//10.供应商,可修改:baseBom
-				{"className" : 'td-right', "defaultContent" : ''},//11.本次单价,可修改:baseBom
-				{"className" : 'td-right', "defaultContent" : ''},//12.总价=本次单价*采购量
-				{"className" : 'td-right', "defaultContent" : ''},//13.当前价格:baseBom
+				{"className" : 'td-center', "defaultContent" : ''},//2
+				{"defaultContent" : ''},//3.物料编号
+				{"defaultContent" : ''},//4.物料名称
+				{"className" : 'td-center', "defaultContent" : ''},//5.单位:物料
+				{"className" : 'td-right', "defaultContent" : ''},//6.单位使用量:baseBom
+				{"className" : 'td-right'},//7.生产需求量:订单
+				{"className" : 'td-right'},//8.总量= 单位使用量 * 生产需求量
+				{"className" : 'td-right'},//9.当前库存(虚拟库存):物料
+				{"className" : 'td-right'},//10.建议采购量:输入
+				{"defaultContent" : '0'},//11.供应商,可修改:baseBom
+				{"className" : 'td-right', "defaultContent" : ''},//12.本次单价,可修改:baseBom
+				{"className" : 'td-right', "defaultContent" : ''},//13.总价=本次单价*采购量
+				{"className" : 'td-right', "defaultContent" : ''},//14.当前价格:baseBom
 			 ],
 		
 			"columnDefs":[
@@ -391,23 +391,23 @@
 		<table id="example" class="display" style="width:100%">
 			<thead>				
 				<tr>
-					<th class="dt-center"  width="100px">0物料编号</th>
-					<th width="30px">1模块<br>编号</th>
+					<th class="dt-center"  width="100px">物料编号</th>
+					<th width="30px">模块<br>编号</th>
 					<th width="50px">
 						<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
 						<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
-					<th class="dt-center" style="width:100px">3更换物料</th>
-					<th class="dt-center" >4物料名称</th>
-					<th class="dt-center" style="width:30px">5物料特性</th>
-					<th class="dt-center" width="60px">6用量</th>
-					<th class="dt-center" width="60px">7生产需求量</th>
-					<th class="dt-center" width="60px">8总量</th>
-					<th class="dt-center" width="60px">9当前库存</th>
-					<th class="dt-center" width="60px">10建议采购量</th>
-					<th class="dt-center" style="width:80px">11供应商</th>
-					<th class="dt-center" width="60px">12本次单价</th>
-					<th class="dt-center" width="80px">13总价</th>
-					<th class="dt-center" width="60px">14当前价格</th>
+					<th class="dt-center" style="width:100px">更换物料</th>
+					<th class="dt-center" >物料名称</th>
+					<th class="dt-center" style="width:30px">物料特性</th>
+					<th class="dt-center" width="60px">用量</th>
+					<th class="dt-center" width="60px">生产需求量</th>
+					<th class="dt-center" width="60px">总量</th>
+					<th class="dt-center" width="60px">虚拟库存</th>
+					<th class="dt-center" width="60px">建议采购量</th>
+					<th class="dt-center" style="width:80px">供应商</th>
+					<th class="dt-center" width="60px">本次单价</th>
+					<th class="dt-center" width="80px">总价</th>
+					<th class="dt-center" width="60px">当前价格</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -469,7 +469,7 @@
 		var contractId = '${bom.contractId}';
 		var contractPrice = currencyToFloat('${bom.contractPrice}');
 		var contractQty = currencyToFloat('${bom.contractQty}');
-		//虚拟库存=实际库存 + 待入库 - 待出库,这里做反向操作: 页面显示的虚拟库存 = 实际库存 - 待入库 + 待出库
+		//虚拟库存=虚拟库存 + 本次订单计划用量 - 本次合同,这里做反向操作: 页面显示的虚拟库存 = 实际库存 - 待入库 + 待出库
 		var newStock =  floatToCurrency( stock - contractQty + fPlanQuantity );
 		//alert("newStock:---"+stock+"---"+contractQty+"---"+ftotalQuantity)
 		if(type=="020"){//通用件单独采购
