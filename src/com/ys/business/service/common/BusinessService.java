@@ -199,11 +199,11 @@ public class BusinessService {
 
 		int icode1 = Integer.parseInt(typesubid);
 		int icode2 = Integer.parseInt(suppliersubid);
-		//格式化成3位流水号,并且+1
-		String num1 = getFormatCode(icode1,false);
-		String num2 = getFormatCode(icode2,false);
+		//格式化成5位流水号,并且+1
+		String num1 = getFormat5Code(icode1,false);
+		String num2 = getFormat5Code(icode2,false);
 		
-		//采购合同编号:16D001-WL001
+		//采购合同编号:16D00001-WL001
 		return getshortYearcode() + type + num1 + "-" + shortname + num2;
 	}
 	

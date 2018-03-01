@@ -231,6 +231,14 @@ public class StorageAction extends BaseAction {
 			case "confirmQuantityOnHand":
 				confirmQuantityOnHand();
 				break;
+			case "showInventoryHistoryInit":
+				showInventoryHistoryInit();
+				rtnUrl = "/business/inventory/beginninginventoryhistory";
+				break;
+			case "showInventoryHistory":
+				dataMap = showInventoryHistory();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -739,6 +747,19 @@ public class StorageAction extends BaseAction {
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
+	}
+	
+
+	public void showInventoryHistoryInit() throws Exception{
+		
+		service.showInventoryHistoryInit();
+		
+	}
+	
+	public HashMap<String, Object> showInventoryHistory() throws Exception{
+		
+		return service.showInventoryHistory();
+		
 	}
 	
 }

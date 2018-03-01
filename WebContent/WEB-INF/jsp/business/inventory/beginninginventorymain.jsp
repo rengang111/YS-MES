@@ -160,6 +160,8 @@
 		    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "修改" + "</a>";
 		    			txt += "&nbsp;";
 		    			txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"')\">" + "确认" + "</a>";
+		    			txt += "&nbsp;";
+		    			txt +=  "<a href=\"###\" onClick=\"showInventoryHistory('" + row["materialId"] +"')\">" + "查看" + "</a>";
 		    					    			
 		    			return  txt;	    			
 		    		}},
@@ -320,6 +322,13 @@
 
 	};
 	
+
+	function showInventoryHistory(materialId) {
+
+		var url = '${ctx}/business/storage?methodtype=showInventoryHistoryInit&materialId=' + materialId;
+		callProductDesignView("库存修改历史记录",url);
+		
+	}
 	
 	function downloadExcel() {
 		

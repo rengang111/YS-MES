@@ -28,6 +28,11 @@
 
 			}
 
+			var qantity = $('#material\\.beginninginventory').val();
+			var origin = '${formModel.material.quantityonhand}';
+			$('#invetoryHistory.quantity').val(qantity);
+			$('#invetoryHistory.originquantity').val(origin);
+			
 			$("#submit").attr("disabled", true);
 
 			$.ajax({
@@ -77,6 +82,9 @@
 		<form:hidden path="material.recordid" />
 		<form:hidden path="material.materialid"  value="${formModel.material.materialid}"/>
 
+		<form:hidden path="invetoryHistory.quantity" />
+		<form:hidden path="invetoryHistory.originquantity" />
+		
 		<fieldset>
 			<legend> 期初库存设置</legend>
 			<table class="form">

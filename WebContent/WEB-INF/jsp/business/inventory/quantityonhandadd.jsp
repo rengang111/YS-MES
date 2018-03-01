@@ -27,9 +27,12 @@
 				//return;
 
 			//}
-
+			var qantity = $('#material\\.quantityonhand').val();
+			var origin = '${formModel.material.quantityonhand}';
+			$('#invetoryHistory\\.quantity').val(qantity);
+			$('#invetoryHistory\\.originquantity').val(origin);
 			$("#submit").attr("disabled", true);
-
+			
 			$.ajax({
 				async:false,
 				type : "POST",
@@ -77,7 +80,9 @@
 		<form:hidden path="material.recordid" />
 		<form:hidden path="material.materialid"  value="${formModel.material.materialid}"/>
 		<form:hidden path="material.quantityeditflag"  value="0" /><!-- 0:修正未确认 -->
-
+		<form:hidden path="invetoryHistory.materialid" value="${formModel.material.materialid}"/>
+		<form:hidden path="invetoryHistory.quantity" />
+		<form:hidden path="invetoryHistory.originquantity" />
 		<fieldset>
 			<legend> 实际库存修正</legend>
 			<table class="form">

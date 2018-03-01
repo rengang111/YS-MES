@@ -220,9 +220,10 @@ public class RequisitionZZService extends CommonService {
 	
 		B_ProductionTaskData task = new B_ProductionTaskData();
 		String ysids = request.getParameter("data");
+		/*
 		String newYsid = "";
+		boolean taskIdFlag = true;		
 		String[] list = ysids.split(",");
-		boolean taskIdFlag = true;
 		for(String ysid:list){
 			String where = "collectYsid like '%" + ysid + "%'"; 
 			task = checkTaskIdExsit(where);
@@ -230,11 +231,12 @@ public class RequisitionZZService extends CommonService {
 				taskIdFlag = false;				
 				break;
 			}				
-		}
+		}		
 		if(taskIdFlag){
 			task = new B_ProductionTaskData();
 			task = getTaskId(task);
 			newYsid = ysids;
+			
 		}else{
 			newYsid = ysids +","+ task.getCollectysid();
 			String[] newList = newYsid.split(",");
@@ -247,8 +249,11 @@ public class RequisitionZZService extends CommonService {
 			//去掉首位的括号和中间的空格
 			newYsid = StringUtils.strip(listTmp.toString().replaceAll(" +", ""),"[]");
 		}
-		
-		task.setCollectysid(newYsid);	
+		*/
+
+		task = new B_ProductionTaskData();
+		task = getTaskId(task);
+		task.setCollectysid(ysids);	
 		reqModel.setTask(task);
 		model.addAttribute("currentYsids",ysids);
 		model.addAttribute("task",task);	
@@ -439,6 +444,7 @@ public class RequisitionZZService extends CommonService {
 
 			//生产任务处理开始*******************
 			//取得任务编号
+			task = getTaskId(task);//重新取得任务编号,防止与他人重复;
 			String recordId = task.getRecordid();
 			if(isNullOrEmpty(recordId)){	
 				insertProductionTask(task);				

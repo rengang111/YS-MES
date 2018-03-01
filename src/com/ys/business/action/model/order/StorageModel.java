@@ -4,6 +4,7 @@ import com.ys.util.basequery.common.BaseModel;
 
 import java.util.List;
 
+import com.ys.business.db.data.B_InventoryHistoryData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_PurchaseStockInDetailData;
@@ -20,7 +21,14 @@ public class StorageModel extends BaseModel {
 	private B_PurchaseStockInData stock;
 	private B_PurchaseStockInDetailData stockDetail;
 	private List<B_PurchaseStockInDetailData> stockList;
+	private B_InventoryHistoryData invetoryHistory;
 	
+	public B_InventoryHistoryData getInvetoryHistory() {
+		return this.invetoryHistory;
+	}
+	public void setInvetoryHistory(B_InventoryHistoryData invetoryHistory) {
+		this.invetoryHistory = invetoryHistory;
+	}	
 	
 	public B_PurchaseStockInDetailData getStockDetail() {
 		return this.stockDetail;

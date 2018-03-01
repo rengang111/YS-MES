@@ -15,7 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.order.StorageModel;
-import com.ys.business.db.dao.B_BeginningInventoryHistoryDao;
+import com.ys.business.db.dao.B_InventoryHistoryDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
@@ -23,7 +23,7 @@ import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseStockInDao;
 import com.ys.business.db.dao.B_PurchaseStockInDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
-import com.ys.business.db.data.B_BeginningInventoryHistoryData;
+import com.ys.business.db.data.B_InventoryHistoryData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
@@ -1700,7 +1700,7 @@ public class StorageService extends CommonService {
 			B_MaterialData mate = updateMaterialBeginningInventory();
 			
 			//保存当前数据
-			insertBeginningInventoryHisotry(mate);
+			insertBeginningInventoryHisotry();
 			
 			
 			ts.commit();			
@@ -1735,7 +1735,7 @@ public class StorageService extends CommonService {
 			B_MaterialData mate = updateMaterialQuantityOnHand();
 			
 			//保存当前数据
-			//insertBeginningInventoryHisotry(mate);
+			insertBeginningInventoryHisotry();
 			
 			
 			ts.commit();			
@@ -1814,19 +1814,19 @@ public class StorageService extends CommonService {
 	}
 	
 	//更新
-	private void insertBeginningInventoryHisotry(
-			B_MaterialData material) throws Exception{
+	private void insertBeginningInventoryHisotry() throws Exception{
 	
-		B_BeginningInventoryHistoryData inventory = new B_BeginningInventoryHistoryData();
-		B_BeginningInventoryHistoryDao dao = new B_BeginningInventoryHistoryDao();
+		//B_InventoryHistoryData inventory = new B_InventoryHistoryData();
+		B_InventoryHistoryDao dao = new B_InventoryHistoryDao();
 
-		B_MaterialData reqMeterial = reqModel.getMaterial();
-		//
+		B_InventoryHistoryData inventory = reqModel.getInvetoryHistory();
+		/*
 		inventory.setMaterialid(reqMeterial.getMaterialid());
-		inventory.setBeginninginventory(reqMeterial.getBeginninginventory());
+		inventory.setBeginninginventory(reqMeterial.getBeginninginventory());//
 		inventory.setBeginningprice(reqMeterial.getBeginningprice());
-		inventory.setOrigininventory(material.getQuantityonhand());
+		inventory.setOrigininventory(material.getQuantityonhand());//修改前
 		inventory.setOriginprice(material.getMaprice());
+		*/
 		
 		//新增DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
@@ -1877,5 +1877,25 @@ public class StorageService extends CommonService {
 		
 		return rtnVal;
 		
+	}
+	
+	public void showInventoryHistoryInit() throws Exception{
+		String materialId = request.getParameter("materialId");
+		model.addAttribute("materialId",materialId);
+	
+	}
+
+	public HashMap<String, Object> showInventoryHistory() throws Exception{
+		String materialId = request.getParameter("materialId");
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("inventoryHistoryById");
+		userDefinedSearchCase.put("materialId", materialId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
 	}
 }
