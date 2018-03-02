@@ -96,7 +96,7 @@
 	    		}},
 	    		{"targets":1,"render":function(data, type, row){
 	    			
-	    			return "<a href=\"###\" onClick=\"doShowControct('" + row["contractId"] + "')\">"+row["contractId"]+"</a>";			    			
+	    			return "<a href=\"###\" onClick=\"doShowControct('" + row["contractId"] + "','" + row["quantity"] + "','" + row["arrivalQty"] + "','" + row["contractStorage"] + "')\">"+row["contractId"]+"</a>";			    			
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var name = row["materialName"];				    			
@@ -159,9 +159,15 @@
 		location.href = url;
 	}
 
-	function doShowControct(contractId) {
+	function doShowControct(contractId,quantity,arrivalQty,stockinQty) {
 
-		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
+		var deleteFlag = '1';
+		var editFlag = '1';
+		if(currencyToFloat(arrivalQty) > 0){
+			deleteFlag = '0';//已经在执行中,不能删除
+		}
+
+		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId+'&deleteFlag=' + deleteFlag;
 		location.href = url;
 	}
 	

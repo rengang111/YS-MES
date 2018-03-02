@@ -346,9 +346,10 @@ public class PurchasePlanService extends CommonService {
 				
 				//更新虚拟库存
 				String purchase = "0";//采购量
-				//int convertUnit = stringToFloat(map2.get("convertUnit"));//换算单位
+				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
+				float funit = stringToFloat(unit);
 				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
-				String requirement = String.valueOf(-1 * totalQuantity);
+				String requirement = String.valueOf(-1 * totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						
 			}
@@ -472,7 +473,10 @@ public class PurchasePlanService extends CommonService {
 				//更新虚拟库存
 				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
 				String purchase = "0";//采购量
-				String requirement = map2.get("totalQuantity");//需求量
+				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
+				float funit = stringToFloat(unit);
+				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
+				String requirement = String.valueOf( totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						
 			}	

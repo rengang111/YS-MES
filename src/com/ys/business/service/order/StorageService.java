@@ -1760,7 +1760,7 @@ public class StorageService extends CommonService {
 		if(mate ==null){
 			return ;
 		}	
-		mate.setQuantityeditflag("1");//库存修改已确认
+		mate.setQuantityeditflag("0");//库存修改已确认
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"confirmQuantityOnHand",userInfo);
@@ -1866,7 +1866,7 @@ public class StorageService extends CommonService {
 		
 		mate.setQuantityonhand(reqMeterial.getQuantityonhand());
 		mate.setAvailabeltopromise(floatToString(availabeltopromise));	
-		mate.setQuantityeditflag(reqMeterial.getQuantityeditflag());//库存修改标识
+		mate.setQuantityeditflag("1");//库存修改标识
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,

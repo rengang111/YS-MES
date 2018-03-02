@@ -475,7 +475,7 @@
 		if(type=="020"){//通用件单独采购
 			ftotalQuantity = "0";
 		}	
-		$('#availabelToPromise'+index).html(newStock);
+		$('#availabelToPromise'+index).html(floatToCurrency(stock));
 		
 		$('#totalPrice'+index).html(vtotalPrice);
 		$("#planDetailList"+index+"\\.totalprice").val(vtotalPrice);	

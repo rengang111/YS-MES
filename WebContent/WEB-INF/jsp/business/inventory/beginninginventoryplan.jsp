@@ -28,6 +28,7 @@
 					{"className" : 'td-left'},//
 					{"className" : ''},
 					{"className" : 'td-right'},//
+					{"className" : 'td-right'},//
 				
 				]
 				
@@ -51,7 +52,9 @@
 	        }
 		});		
 		
-		sumFn();
+		sumFn(5);
+		sumFn(6);
+		$('#totalValue7').html(floatToCurrency( currencyToFloat($('#totalValue5').html()) - currencyToFloat($('#totalValue6').html()) ))
 	})	
 	
 	function doSearch() {	
@@ -61,19 +64,19 @@
 
 	}
 
-	function sumFn(){
+	function sumFn(num){
 		
 		var sum7 = 0;
 		$('#TMaterial tbody tr').each (function (){
 			
-			var contractValue = $(this).find("td").eq(5).text();////合同
+			var contractValue = $(this).find("td").eq(num).text();////合同
 			contractValue= currencyToFloat(contractValue);
 			
 			sum7 = sum7 + contractValue;
 						
 		});	
 		
-		$('#totalValue').html(floatToCurrency(sum7));
+		$('#totalValue'+num).html(floatToCurrency(sum7));
 	}
 	
 </script>
@@ -88,13 +91,17 @@
 		
 		<fieldset>
 			<legend> 合同明细</legend>
-			<table height="30px">
+			<table width="100%">
 				<tr>
-					<td width="10%"></td> 
-					<td class="label">物料编号：</td>
-					<td width="150px">${material.materialId }</td>
-					<td class="label">物料名称：</td> 
-					<td>${material.materialName }</td>					
+					<td class="label" width="100px">物料编号：</td>
+					<td width="120px">${material.materialId }</td>
+					<td class="label" width="70px">物料名称：</td> 
+					<td>${material.materialName }</td>		
+					<td class="label" width="100px">剩余待出库数量：</td>
+					<td width="100px"><span id="totalValue7"></span></td>				
+				</tr>
+				<tr>
+					<td width="10%"></td> 			
 				</tr>
 			</table>		
 			<div class="list">
@@ -107,6 +114,7 @@
 							<th style="width: 120px;">产品编号</th>
 							<th>产品名称</th>
 							<th style="width: 60px;">生产需求量</th>
+							<th style="width: 60px;">已领料</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -118,6 +126,7 @@
 								<td>${list.productId }</td>
 								<td>${list.productName }</td>
 								<td>${list.manufactureQuantity }</td>
+								<td>${list.stockoutQty }</td>
 						</c:forEach>
 					</tbody>
 					<tfoot>
@@ -127,7 +136,8 @@
 							<th></th>
 							<th></th>
 							<th>合计：</th>
-							<th style="text-align: right;"><span id="totalValue"></span></th>
+							<th style="text-align: right;"><span id="totalValue5"></span></th>
+							<th style="text-align: right;"><span id="totalValue6"></span></th>
 						</tr>
 					</tfoot>
 				</table>

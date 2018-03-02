@@ -224,8 +224,11 @@ public class PurchaseOrderAction extends BaseAction {
 
 		String contractId = request.getParameter("contractId");
 		String openFlag = request.getParameter("openFlag");
+		String deleteFlag = request.getParameter("deleteFlag");
 
 		model.addAttribute("openFlag",openFlag);//新窗口模式,不显示返回按钮
+		model.addAttribute("deleteFlag",deleteFlag);//删除标识
+		
 		service.getContractDetailList(contractId);
 		
 	}

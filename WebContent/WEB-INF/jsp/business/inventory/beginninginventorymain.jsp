@@ -7,7 +7,7 @@
 <title>库存一览页面</title>
 <script type="text/javascript">
 
-	function searchAjax(sessionFlag,searchType) {
+	function searchAjax(sessionFlag,searchType,confirmFlag,editFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -23,6 +23,9 @@
 		url = url + "&materialTypeYS1="+materialTypeYS1;
 		url = url + "&materialTypeYS2="+materialTypeYS2;
 		url = url + "&searchType="+searchType;
+		url = url + "&quantityEditFlag="+confirmFlag;
+		
+		
 		
 		var scrollHeight = $(document).height() - 195; 
 		var t = $('#TMaterial').DataTable({
@@ -72,17 +75,18 @@
 					{"data": "materialId"},
 					{"data": "materialName"},
 					{"data": "dicName","className" : 'td-center'},
-					{"data": "beginningInventory","className" : 'td-right'},//4
-					{"data": "beginningPrice","className" : 'td-right'},//5
-					{"data": "MAPrice","className" : 'td-right'},//6
-					{"data": "contractQty","className" : 'td-right'},//	7
-					{"data": "stockinQtiy","className" : 'td-right'},//
-					{"data": "stockoutQty","className" : 'td-right'},//9
-					{"data": "quantityOnHand","className" : 'td-right'},//10
+					{"data": null,"className" : 'td-center'},//4
+					{"data": "beginningInventory","className" : 'td-right'},//5
+					{"data": "beginningPrice","className" : 'td-right'},//6
+					{"data": "MAPrice","className" : 'td-right'},//7
+					{"data": "contractQty","className" : 'td-right'},//	8
+					{"data": "stockinQtiy","className" : 'td-right'},//9
+					{"data": "stockoutQty","className" : 'td-right'},//10
+					{"data": "quantityOnHand","className" : 'td-right'},//11
 					{"data": "availabelToPromise","className" : 'td-right'},
 					{"data": "waitStockIn","className" : 'td-right'},
 					{"data": "waitStockOut","className" : 'td-right'},
-					{"data": null,"className" : 'td-center'},//14
+					{"data": null,"className" : 'td-center'},//15
 				
 				],
 				"columnDefs":[
@@ -100,6 +104,55 @@
 		    			name = jQuery.fixedWidth(name,36);				    			
 		    			return name;
 		    		}},
+		    		{"targets":4,"render":function(data, type, row){
+		    			//实际库存修正
+		    			var confirmFlag = row["quantityEditFlag"];
+		    			var quantityOnHand = currencyToFloat(row["quantityOnHand"]);
+		    			var stockinQtiy = currencyToFloat(row["stockinQtiy"]);
+		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
+		    			var totalQty = stockoutQty + quantityOnHand;
+		    			if(row["materialId"] == "B01.A001001.000"){
+
+		    				//alert("hand:in:out:"+quantityOnHand+"---"+stockinQtiy+"---"+stockoutQty+"---"+totalQty+"---"+editFlag)
+		    			}
+		    			var txt = "";	
+		    			
+		    			if(quantityOnHand < 0 || stockinQtiy != totalQty ){//库存为负数
+		    				
+		    				if(confirmFlag == "0"){
+		    					//已确认,但是还有问题
+		    					if(editFlag == 'edit'){
+		    						//再次编辑
+					    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "再次修改" + "</a>";	
+			    				}else{
+				    				txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"') \" style=\"color: red;\">" + "还有问题" + "</a>";		    				
+			    				}
+			    			
+			    			}else{
+		    					//未修改
+				    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "未修改" + "</a>";			    				
+			    			}		    				
+		    			}else{
+		    				if((confirmFlag) == "1"){
+		    					//待确认
+			    				txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"') \" style=\"color: red;\">" + "待确认" + "</a>";		    				
+			    			}else if((confirmFlag) == "0"){
+			    				if(editFlag == 'edit'){
+
+					    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "再次修改" + "</a>";	
+			    				}else{
+
+				    				txt = "已确认";
+			    				}
+			    			}
+		    			}			
+		    			return  txt;
+		    			
+		    			//txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "修改" + "</a>";
+		    			//txt += "&nbsp;";
+		    			//txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"')\">" + "确认" + "</a>";
+		    					    	    			
+		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    						    			
 		    			return floatToCurrency(data);
@@ -108,28 +161,24 @@
 		    						    			
 		    			return floatToCurrency(data);
 		    		}},
-		    		{"targets":7,"render":function(data, type, row){
+		    		{"targets":8,"render":function(data, type, row){
 		     			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["materialId"] +"')\">" + qty + "</a>";
 		    			return rtn;		    			
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowStockIn('" + row["materialId"] +"')\">" + qty + "</a>";
 		    			return rtn;		    			
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
+		    		{"targets":10,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowStockOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
 		    			return rtn;
-		    		}},
-		    		{"targets":10,"render":function(data, type, row){
-		    						    			
-		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":11,"render":function(data, type, row){
 		    						    			
@@ -140,13 +189,17 @@
 		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":13,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":14,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
 		    			return rtn;
 		    		}},
-		    		{"targets":4,"render":function(data, type, row){
+		    		{"targets":5,"render":function(data, type, row){
 		    			//期初值设定
 		    			var inventory = currencyToFloat(data);
 		    			var val =data;
@@ -154,20 +207,16 @@
 		    				val=  "设置";		    			
 		    			return  "<a href=\"###\" onClick=\"setBeginningInventory('" + row["recordId"] +"')\">" + val + "</a>";	    			
 		    		}},
-		    		{"targets":14,"render":function(data, type, row){
+		    		{"targets":15,"render":function(data, type, row){
 		    			//实际库存修正
 		    			var txt = "";
-		    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "修改" + "</a>";
-		    			txt += "&nbsp;";
-		    			txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"')\">" + "确认" + "</a>";
-		    			txt += "&nbsp;";
-		    			txt +=  "<a href=\"###\" onClick=\"showInventoryHistory('" + row["materialId"] +"')\">" + "查看" + "</a>";
+		    			txt +=  "<a href=\"###\" onClick=\"showInventoryHistory('" + row["materialId"] +"')\">" + "修改记录" + "</a>";
 		    					    			
 		    			return  txt;	    			
 		    		}},
 		    		{
 		    			"visible":false,
-		    			"targets":[4,5,6]
+		    			"targets":[5,6,7]
 		    		}
 	        	] 
 			}
@@ -177,7 +226,7 @@
 
 	$(document).ready(function() {
 		
-		searchAjax("true","3");
+		searchAjax("true","3","");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -197,14 +246,14 @@
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		searchAjax("false","3");
+		searchAjax("false","3","");
 
 	}
 	
 
-	function doSearchCustomer(type) {	
+	function doSearchCustomer(type,confirmFlag,editFlag) {	
 		$('#searchType').val(type);
-		searchAjax("false",type);
+		searchAjax("false",type,confirmFlag,editFlag);
 
 	}
 	
@@ -404,9 +453,12 @@
 	</div>
 	<div class="list">
 			<div style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCustomer('3');"><span>全部</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('1');"><span>库存为负数</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('2');"><span>库存 ≠ 总到货－总领料</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('3','');">全部</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('1','');">库存为负数</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('2','');">库存 ≠ 总到货－总领料</a>&nbsp;&nbsp;
+				<a  class="DTTT_button box" onclick="doSearchCustomer('3','1');">修改未确认</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0');">已确认</a>&nbsp;&nbsp;
+				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0','edit');">再次编辑</a>
 			</div>
 			<div style="height:40px;float: right">
 				<a  class="DTTT_button box" onclick="downloadExcel('3');"><span>EXCEL导出</span></a>
@@ -418,6 +470,7 @@
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 25px;">单位</th>
+					<th style="width: 50px;">操作</th>
 					<th style="width: 50px;">期初库存</th>
 					<th style="width: 50px;">期初单价</th>
 					<th style="width: 50px;">移动<br>平均单价</th>
@@ -428,7 +481,7 @@
 					<th style="width: 50px;">虚拟库存</th>
 					<th style="width: 50px;">待入</th>
 					<th style="width: 50px;">待出</th>
-					<th style="width: 50px;">操作</th>
+					<th style="width: 40px;">操作</th>
 				</tr>
 			</thead>
 		</table>

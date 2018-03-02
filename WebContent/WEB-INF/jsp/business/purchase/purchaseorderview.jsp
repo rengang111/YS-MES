@@ -98,18 +98,29 @@
 		
 		$("#doEdit").click(
 				function() {
+					var deleteFlag = $('#deleteFlag').val();
+					if(deleteFlag == '0'){
+						$().toastmessage('showWarningToast', "该合同已经有收货了,不能编辑。");
+						return false;
+					}		
 			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=edit");
 			$('#attrForm').submit();
 		});	
 		
 		$("#doDelete").click(
 				function() {
+					var deleteFlag = $('#deleteFlag').val();
+			if(deleteFlag == '0'){
+				$().toastmessage('showWarningToast', "该合同已经有收货了,不能删除。");
+				return false;
+			}		
 			if(confirm("采购合同删除后不能恢复,\n\n        确定要删除吗？")) {
 				$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=delete");
 				$('#attrForm').submit();
 			}else{
 				return false;
 			}
+			
 		});
 		
 		sumFn();//合计值计算
@@ -215,6 +226,8 @@
 		id="attrForm" name="attrForm"  autocomplete="off">
 			
 		<form:hidden path="contract.recordid" value="${contract.contractRecordId }"/>
+		<input type="hidden" id="deleteFlag" value="${deleteFlag }" />
+		
 		<fieldset>
 			<legend> 采购合同</legend>
 			<table class="form" id="table_form">

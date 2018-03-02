@@ -186,10 +186,11 @@
       <f name="a.planDate" alias="" ctype="" />
       <f name="a.purchaseType" alias="" ctype="" />
       <f name="a.supplierShortName" alias="" ctype="" />
+      <f name="c.quantity" alias="stockoutQty" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseplan a  LEFT JOIN b_material b ON b.materialId=a.productId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
+   <from>v_purchaseplan a  LEFT JOIN b_material b ON b.materialId=a.productId AND b.deleteFlag='0' LEFT JOIN v_stockout c ON c.YSId = a.YSId AND c.materialId = a.materialId  WHERE a.deleteFlag = '0' </from>
     <orderby>planDate</orderby>
     <groupby></groupby>
     <having></having>
@@ -615,6 +616,8 @@
       <f name="a.manufactureQuantity" alias="" ctype="" />
       <f name="a.totalQuantity" alias="" ctype="" />
       <f name="a.rawMaterialId" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="" />
+      <f name="a.zzunit" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
