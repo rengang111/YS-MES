@@ -46,7 +46,7 @@ public class ArrivalAction extends BaseAction {
 		
 		String type = request.getParameter("methodtype");
 		String makeType = request.getParameter("makeType");
-		String rtnUrl = "";
+		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
 		this.userInfo = (UserInfo)session.getAttribute(
@@ -97,7 +97,7 @@ public class ArrivalAction extends BaseAction {
 			case "delete":
 				doDelete(data);
 				printOutJsonObj(response, reqModel.getEndInfoMap());
-				return null;
+				break;
 			case "detailView":
 				doShowDetail();
 				//printOutJsonObj(response, viewModel.getEndInfoMap());
@@ -106,10 +106,14 @@ public class ArrivalAction extends BaseAction {
 			case "getArrivalHistory":
 				dataMap = getArrivalHistory();
 				printOutJsonObj(response, dataMap);
-				return null;
+				break;
 			case "gotoArrivalView":
 				gotoArrivalView();
 				rtnUrl = "/business/inventory/arrivalview";
+				break;
+			case "getArrivalByYSId":
+				dataMap = getArrivalByYSId();
+				printOutJsonObj(response, dataMap);
 				break;
 				
 		}
@@ -225,6 +229,20 @@ public class ArrivalAction extends BaseAction {
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+
+	public HashMap<String, Object> getArrivalByYSId(){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
+		try {
+			dataMap = service.getArrivalByYsid();		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());			
 		}
 		
 		return dataMap;

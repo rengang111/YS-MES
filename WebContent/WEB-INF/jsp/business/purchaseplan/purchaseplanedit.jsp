@@ -114,13 +114,18 @@
 	};
 	
 	$(document).ready(function() {		
-		
-		//$(".loading").hide();
-		//$(".loading").attr("top","80%");
-		
+				
 		baseBomView();//基础BOM
 		
 		autocomplete();		
+		
+		$(".goBack").click(
+				function() {
+			var YSId = '${order.YSId}';
+			var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
+	
+			location.href = url;		
+		});
 		
 		$(".goBack").click(
 				function() {
@@ -143,32 +148,7 @@
 			
 			$('#attrForm').attr("action","${ctx}/business/purchasePlan?methodtype=purchasePlanUpdate&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity+"&backFlag="+backFlag);
 			$('#attrForm').submit();
-			/*
-			var actionUrl = "${ctx}/business/purchasePlan?methodtype=purchasePlanUpdate&YSId="+YSId+"&materialId="+materialId+"&quantity="+quantity;
-			$.ajax({
-				type : "POST",
-				contentType : 'application/json',
-				dataType : 'json',
-				url : actionUrl,
-				data : JSON.stringify($('#attrForm').serializeArray()),// 要提交的表单
-				beforeSend:function(){
-					$('#warning').text('正在处理，请稍等！');
-				},
-				success : function(d) {
-					if (d.message != "") {
-						
-					}
-					alert(d.message);	
-					
-				},
-				error : function(XMLHttpRequest, textStatus, errorThrown) {
-					//alert(XMLHttpRequest.status);					
-					//alert(XMLHttpRequest.readyState);					
-					//alert(textStatus);					
-					alert(errorThrown);
-				}
-			});
-			*/
+			
 		});
 			
 		
@@ -267,7 +247,26 @@
 	        ]
 	     
 		});
-		
+		/*
+		t.on('change', 'tr td:nth-child(11),tr td:nth-child(13)',function() {
+			
+			var currValue = $(this).find("input:text").val().trim();
+			var oldValue  = $(this).find("input:text").attr("oldValue");
+	        var fcurrValue = currencyToFloat(currValue);
+	        var foldValue = currencyToFloat(oldValue);
+
+	        //检查是否已生成合同
+	        if(fcurrValue == foldValue){
+	        	//
+	        }else{
+	        	//
+	        	$(this).find("input:text").val(oldValue);
+	        	alert("该物料的合同已做成，修改请到[ 合同管理 ]。");	        	
+	        	//$().toastmessage('showWarningToast', "该物料的合同已经做成,请到合同管理修改采购数量。");
+	        }
+			
+		});
+*/
 		/*
 		t.on('blur', 'tr td:nth-child(4),tr td:nth-child(7)',function() {
 			
@@ -434,9 +433,9 @@
 	     <!-- 当前库存 -->
 	    <td><span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></td>
 	     <!-- 建议采购量 -->
-	    <td><form:input value="${bom.purchaseQuantity }" path="planDetailList[${status.index}].purchasequantity"  class="num mini"  /></td>
+	    <td><form:input value="${bom.purchaseQuantity }" oldValue="${bom.purchaseQuantity }" path="planDetailList[${status.index}].purchasequantity"  class="num mini"  /></td>
 	    <td><form:input value="${bom.supplierId }"  path="planDetailList[${status.index}].supplierid"  class="supplierid short" /></td>
-	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }" /></td>
+	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }"  oldValue="${bom.price }" /></td>
 	    <td><span id="totalPrice${status.index}">${bom.totalPrice }</span>
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  value="${bom.totalPrice }" /></td>
 	    <td><span id="price${status.index}">${bom.lastPrice }</span>
@@ -486,28 +485,7 @@
 		
 		counter++;
 		
-		/*
-		if(planMaterialId == null || planMaterialId == ""){//基础BOM有物料发生变更
-			
-			vtotalPrice = floatToCurrency( price * fpurchase );
-			
-			$("#planDetailList"+index+"\\.manufacturequantity").val(vtotalQuantity);
-			$('#totalQuantity'+index).html(vtotalQuantity);
-			$("#planDetailList"+index+"\\.purchasequantity").val(vtotalQuantity);
-			
-			$('#tr'+index).css('color','red');
-			$("#planDetailList"+index+"\\.materialid").css('color','red');
-			
-			
-		}else{
-			if(totalPrice =="" || totalPrice == '0'){//已有的方案计算有误的情况
-				vtotalPrice = floatToCurrency( price * fpurchase );
-			}else{
-				vtotalPrice = floatToCurrency(totalPrice);
-			}
-				
-		}
-		*/
+		
 	</script>	
 </c:forEach>
 			</tbody>
@@ -626,7 +604,6 @@ $(".attributeList1").autocomplete({
 		var $oTotalQuty = $td.eq(8).find("span");
 		var $oStock     = $td.eq(9).find("span");
 		var $oPurchase  = $td.eq(10).find("input:text");
-		var $oPurchaseH = $td.eq(10).find("input:hidden");
 		var $oSupplier  = $td.eq(11).find("input");
 		var $oThisPrice = $td.eq(12).find("input");
 		var $oTotPriceS = $td.eq(13).find("span");
@@ -810,7 +787,7 @@ function purchasePlanCompute(obj,flg){
 	var $oTotalQuty = $td.eq(8).find("span");
 	var $oTotalQutyI= $td.eq(8).find("input");
 	var $oStock     = $td.eq(9).find("span");
-	var $oPurchase  = $td.eq(10).find("input");
+	var $oPurchase  = $td.eq(10).find("input:text");
 	var $oSupplier  = $td.eq(11).find("input");
 	var $oThisPrice = $td.eq(12).find("input");
 	var $oTotPriceS = $td.eq(13).find("span");

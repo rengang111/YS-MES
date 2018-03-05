@@ -416,6 +416,10 @@ public class PurchasePlanService extends CommonService {
 				float contractPrice = stringToFloat(contract.getPrice());
 				float quantity = contractQty - purchaseQty;
 				
+				boolean arrivalFlag = checkContractArrival(contract);
+				if(!(arrivalFlag)){
+					continue;
+				}
 				if(quantity <= 0){//
 
 					String where2 = " YSId = '" + YSId +"' AND contractId = '" + contractId  +"' AND deleteflag = '0'";
@@ -426,42 +430,42 @@ public class PurchasePlanService extends CommonService {
 						//一份合同有多个物料,仅删除合同明细
 						
 						//判断改合同是否已经在执行,否则不能删除
-						boolean arrivalFlag = checkContractArrival(contract);
-						if(arrivalFlag){
+						//boolean arrivalFlag = checkContractArrival(contract);
+						//if(arrivalFlag){
 							deletePurchaseOrderDetail(contract);
-						}
+						//}
 					}else{
 						//一份合同只有一个物料,删除明细和头表
 						List<B_PurchaseOrderData> contractDBList =  
 								getPurchaseOrderFromDB(YSId,contractId);						
 
 						//判断改合同是否已经在执行,否则不能删除
-						boolean arrivalFlag = checkContractArrival(contract);
-						if(arrivalFlag){
+						//boolean arrivalFlag = checkContractArrival(contract);
+						//if(arrivalFlag){
 							deletePurchaseOrder(contractDBList.get(0));
 							deletePurchaseOrderDetail(contract);
-						}
+						//}
 					}
 				}else{//套件产品,同一个物料重复出现,只删除其中一个的话,更新剩下的数量
 					contract.setQuantity(String.valueOf(quantity));
 					contract.setTotalprice(String.valueOf(quantity * contractPrice));
 					//判断改合同是否已经在执行,否则不能删除
-					boolean arrivalFlag = checkContractArrival(contract);
-					if(arrivalFlag){
+					//boolean arrivalFlag = checkContractArrival(contract);
+					//if(arrivalFlag){
 						updatePurchaseOrderDetail(contract);	
-					}
+					//}
 				}
 				
 				//退换物料的库存
 				//if(supplierFlag.equals("1")){//只处理被删除的物料
 				//判断改合同是否已经在执行,否则不能删除
-				boolean arrivalFlag = checkContractArrival(contract);
-					if(arrivalFlag){
+				//boolean arrivalFlag = checkContractArrival(contract);
+					//if(arrivalFlag){
 						updateMaterial(
 								materialId, 
 								String.valueOf((-1) * purchaseQty),
 								"0");
-				}
+				//}
 				//}
 			}
 

@@ -536,6 +536,21 @@ public class ArrivalService extends CommonService {
 		
 	}
 	
+
+	public HashMap<String, Object> getArrivalByYsid( ) throws Exception {
+		String YSId = request.getParameter("YSId");
+		dataModel.setQueryName("getArrivaListByContractId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("recordCount", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+	}
+	
 	public void doEdit() throws Exception{
 		
 		String arrivalId = request.getParameter("arrivalId");

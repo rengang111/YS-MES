@@ -168,20 +168,47 @@ function initEvent(){
 			}
 		});
 				
-		$(".goBack").click(
-				function() {
-					
-			var YSId = '${order.YSId}';
+		$(".goBack").click(function() {
+
+			var YSId ="${order.YSId}";
 			var url = '${ctx}/business/purchasePlan?keyBackup=' + YSId;
 	
 			location.href = url;		
 		});
 		
-		$("#editPurchasePlan").click(
-				function() {
+		$("#editPurchasePlan").click(function() {
 
-			var materialId='${order.materialId}';
 			var YSId ="${order.YSId}";
+			var actionUrl = "${ctx}/business/arrival?methodtype=getArrivalByYSId&YSId="+YSId;
+
+			var editFlag = true;
+
+			jQuery.ajax({
+				type : 'POST',
+				async: false,
+				contentType : 'application/json',
+				dataType : 'json',
+				data : null,
+				url : actionUrl,
+				async: false, //同步请求，默认情况下是异步（true）
+				success : function(data) {
+					var record = data["recordCount"];
+					if(record > '0'){
+						editFlag = false;						
+					}
+					
+				},									
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+	            	alert("error:"+errorThrown);
+				}
+			});
+			
+			if(editFlag == false){			
+				$().toastmessage('showWarningToast', "采购方案已经开始执行了,不能修改。");
+				return false;
+			}		
+						
+			var materialId='${order.materialId}';
 			var quantity ="${order.quantity}";
 			var backFlag = $("#backFlag").val();
 			$('#attrForm').attr("action",
@@ -1069,7 +1096,7 @@ function ZZmaterialView() {
 		
 		<fieldset class="action" style="text-align: right;">
 			<button type="button" id="editPurchasePlan" class="DTTT_button">修改采购方案</button>
-			<button type="button" id="deletePurchasePlan" class="DTTT_button warning">重置采购方案</button>
+	<!-- 		<button type="button" id="deletePurchasePlan" class="DTTT_button warning">重置采购方案</button> -->
 			<button type="button" id="resetYszz" class="DTTT_button warning">重置自制品</button>
 			<button type="button" id="resetPackage" class="DTTT_button warning">重置包装件</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>

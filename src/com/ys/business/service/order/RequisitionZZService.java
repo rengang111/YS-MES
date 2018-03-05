@@ -119,27 +119,8 @@ public class RequisitionZZService extends CommonService {
 			
 			blow.add(map);
 			
-			
-			/*
-			//过滤数据
-			if(("A14").equals(subid)){//吹塑:A14
-				blow.add(map);
-			}else if( ("A03").equals(subid) ){//吸塑:A03
-				blister.add(map);
-			}else{//以外
-				injection.add(map);
-			}
-			*/
 		}
-		/*
-		if( ("blow").equals(makeType) ){//吹塑:A14	
-			return blow;
-		}else if( ("blister").equals(makeType) ){//吸塑:A03
-			return blister;			 
-		}else{//以外
-			return injection;			 
-		}
-		*/
+	
 		return blow;
 	}
 	
@@ -300,10 +281,10 @@ public class RequisitionZZService extends CommonService {
 		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
 		
 		for(HashMap<String, String>map:list){
-			 
-			 String subid = map.get("materialId").substring(0, 3);	
+			 	
 			 String subMat = map.get("parentMaterialId").substring(0, 3);
-			 if(("A14").equals(subid) || ("A16").equals(subid)){//吹塑:A14
+
+			 if( ("F02").equals(subMat)){//吹塑:F02
 				 blow.add(map);
 			 }else if( ("F01").equals(subMat)){//吸塑:F01
 				 blister.add(map);
@@ -311,7 +292,7 @@ public class RequisitionZZService extends CommonService {
 				 injection.add(map);
 			 }
 		}
-		if( Constants.REQUISITION_BLOW.equals(makeType) ){//吹塑:A14	
+		if( Constants.REQUISITION_BLOW.equals(makeType) ){//吹塑:F02	
 			modelMap.put("data", blow);
 		}else if( Constants.REQUISITION_BLISTE.equals(makeType) ){//吸塑:F01
 			modelMap.put("data", blister);			 
@@ -335,16 +316,15 @@ public class RequisitionZZService extends CommonService {
 		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
 		
 		for(HashMap<String, String>map:list){
-			 String rawmaterialId = map.get("rawmaterialId");			
-			 String subid = "";
+			 String rawmaterialId = map.get("rawmaterialId");	
+			 String materialId = map.get("materialId");		
+			 String subMat = "";
 			 if(isNullOrEmpty(rawmaterialId)){
 				 continue;
 			 }else{
-				 subid = rawmaterialId.substring(0, 3);	
+				 subMat = materialId.substring(0, 3);
 			 }
-			 String materialId = map.get("materialId");
-			 String subMat = materialId.substring(0, 3);
-			 if(("A14").equals(subid) || ("A16").equals(subid)){//吹塑:A14
+			 if( ("F02").equals(subMat)){//吹塑:F02
 				 blow.add(map);
 			 }else if( ("F01").equals(subMat) ){//吸塑:F01
 				 blister.add(map);
@@ -352,7 +332,7 @@ public class RequisitionZZService extends CommonService {
 				 injection.add(map);
 			 }
 		}
-		if( Constants.REQUISITION_BLOW.equals(makeType) ){//吹塑:A14	
+		if( Constants.REQUISITION_BLOW.equals(makeType) ){//吹塑:F02	
 			modelMap.put("data", blow);
 		}else if( Constants.REQUISITION_BLISTE.equals(makeType) ){//吸塑:F01
 			modelMap.put("data", blister);			 

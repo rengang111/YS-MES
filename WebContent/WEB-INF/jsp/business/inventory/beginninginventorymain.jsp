@@ -71,21 +71,21 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-					{"data": null,"className" : 'td-center'},
-					{"data": "materialId"},
-					{"data": "materialName"},
-					{"data": "dicName","className" : 'td-center'},
-					{"data": null,"className" : 'td-center'},//4
-					{"data": "beginningInventory","className" : 'td-right'},//5
-					{"data": "beginningPrice","className" : 'td-right'},//6
-					{"data": "MAPrice","className" : 'td-right'},//7
-					{"data": "contractQty","className" : 'td-right'},//	8
-					{"data": "stockinQtiy","className" : 'td-right'},//9
-					{"data": "stockoutQty","className" : 'td-right'},//10
-					{"data": "quantityOnHand","className" : 'td-right'},//11
+					{"data": null,"className" : 'td-center'},//0
+					{"data": "materialId"},//1
+					{"data": "materialName"},//2
+					{"data": "dicName","className" : 'td-center'},//3
+					{"data": "beginningInventory","className" : 'td-right'},//4
+					{"data": "beginningPrice","className" : 'td-right'},//5
+					{"data": "MAPrice","className" : 'td-right'},//6
+					{"data": "contractQty","className" : 'td-right'},//	7
+					{"data": "stockinQtiy","className" : 'td-right'},//8
+					{"data": "stockoutQty","className" : 'td-right'},//9
+					{"data": "quantityOnHand","className" : 'td-right'},//10
 					{"data": "availabelToPromise","className" : 'td-right'},
 					{"data": "waitStockIn","className" : 'td-right'},
 					{"data": "waitStockOut","className" : 'td-right'},
+					{"data": null,"className" : 'td-center'},//14
 					{"data": null,"className" : 'td-center'},//15
 				
 				],
@@ -104,7 +104,7 @@
 		    			name = jQuery.fixedWidth(name,36);				    			
 		    			return name;
 		    		}},
-		    		{"targets":4,"render":function(data, type, row){
+		    		{"targets":14,"render":function(data, type, row){
 		    			//实际库存修正
 		    			var confirmFlag = row["quantityEditFlag"];
 		    			var quantityOnHand = currencyToFloat(row["quantityOnHand"]);
@@ -161,24 +161,28 @@
 		    						    			
 		    			return floatToCurrency(data);
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":7,"render":function(data, type, row){
 		     			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["materialId"] +"')\">" + qty + "</a>";
 		    			return rtn;		    			
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
+		    		{"targets":8,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowStockIn('" + row["materialId"] +"')\">" + qty + "</a>";
 		    			return rtn;		    			
 		    		}},
-		    		{"targets":10,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowStockOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
 		    			return rtn;
+		    		}},
+		    		{"targets":10,"render":function(data, type, row){
+		    						    			
+		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":11,"render":function(data, type, row){
 		    						    			
@@ -189,17 +193,13 @@
 		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":13,"render":function(data, type, row){
-		    						    			
-		    			return floatToCurrency(data);
-		    		}},
-		    		{"targets":14,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
 		    			return rtn;
 		    		}},
-		    		{"targets":5,"render":function(data, type, row){
+		    		{"targets":4,"render":function(data, type, row){
 		    			//期初值设定
 		    			var inventory = currencyToFloat(data);
 		    			var val =data;
@@ -216,7 +216,7 @@
 		    		}},
 		    		{
 		    			"visible":false,
-		    			"targets":[5,6,7]
+		    			"targets":[4,5,6]
 		    		}
 	        	] 
 			}
@@ -470,7 +470,6 @@
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 25px;">单位</th>
-					<th style="width: 50px;">操作</th>
 					<th style="width: 50px;">期初库存</th>
 					<th style="width: 50px;">期初单价</th>
 					<th style="width: 50px;">移动<br>平均单价</th>
@@ -481,7 +480,8 @@
 					<th style="width: 50px;">虚拟库存</th>
 					<th style="width: 50px;">待入</th>
 					<th style="width: 50px;">待出</th>
-					<th style="width: 40px;">操作</th>
+					<th style="width: 50px;">修改</th>
+					<th style="width: 40px;">查看</th>
 				</tr>
 			</thead>
 		</table>
