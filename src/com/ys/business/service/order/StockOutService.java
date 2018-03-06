@@ -693,7 +693,7 @@ public class StockOutService extends CommonService {
 	
 	public void getStockoutByMaterialId() throws Exception {
 		String materialId = request.getParameter("materialId");
-		dataModel.setQueryName("stockoutHistory");
+		dataModel.setQueryName("stockoutByMaterialId");
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("materialId", materialId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

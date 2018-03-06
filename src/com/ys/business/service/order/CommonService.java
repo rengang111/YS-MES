@@ -703,6 +703,31 @@ public class CommonService extends BaseService {
 		
 		return rtn;		
 	}
+	/**
+	 * float转字符串(六位小数)
+	 * @param f
+	 * @return	
+	 */
+	public static String priceToString(float f){
+
+		String rtn = "";
+		
+		if(f == 0)
+			return "0.000000";
+		
+		try{
+			//构造方法的字符格式这里如果小数不足6位,会以0补足
+			DecimalFormat decimalFormat=new DecimalFormat();
+			decimalFormat.applyPattern("#,##0.000000");
+			//format 返回的是字符串
+			rtn=decimalFormat.format(f);
+			
+		}catch(NumberFormatException e){
+			e.printStackTrace();
+		}
+		
+		return rtn;		
+	}
 	
 	
 	/**

@@ -937,7 +937,7 @@ public class StorageService extends CommonService {
 		data.setQuantityonhand(floatToString(iNewQuantiy));
 		data.setWaitstockin(floatToString(iNewStockIn));
 		data.setAvailabeltopromise(floatToString(availabeltopromise));
-		data.setMaprice(floatToString(fnewPrice));
+		data.setMaprice(priceToString(fnewPrice));
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
