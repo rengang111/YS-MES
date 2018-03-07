@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ys.business.action.model.common.ListOption;
+import com.ys.business.db.data.B_InventoryMonthlyReportData;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PaymentDetailData;
 import com.ys.business.db.data.B_PaymentHistoryData;
@@ -22,8 +23,16 @@ public class FinanceReportModel extends BaseModel {
 	private B_PaymentHistoryData history;
 	private List<B_PaymentDetailData> paymentList;
 	private List<B_PaymentHistoryData> historyList;
+	private List<B_InventoryMonthlyReportData> monthlyList;
 	private ArrayList<ListOption> approvalOption = new ArrayList<ListOption>();
 		
+	public List<B_InventoryMonthlyReportData> getMonthlyList() {
+		return this.monthlyList;
+	}
+	public void setMonthlyList(List<B_InventoryMonthlyReportData> list) {
+		this.monthlyList = list;
+	}
+	
 	public B_PaymentData getPayment() {
 		return this.payment;
 	}

@@ -3,7 +3,9 @@ package com.ys.business.service.order;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import com.ys.business.action.model.common.FinanceMouthly;
 import com.ys.business.action.model.order.FinanceReportModel;
+import com.ys.business.db.dao.B_InventoryMonthlyReportDao;
 import com.ys.business.db.dao.B_StockOutDao;
+import com.ys.business.db.data.B_InventoryMonthlyReportData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
@@ -109,7 +113,7 @@ public class FinanceReportService extends CommonService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		dataModel.setQueryName("financeReprotForDaybook");//领料单一览
+		dataModel.setQueryName("financeReprotForDaybook");//流水账
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("startDate", monthly.getStartDate());
 		userDefinedSearchCase.put("endDate", monthly.getEndDate());
@@ -130,7 +134,7 @@ public class FinanceReportService extends CommonService {
 
 	}
 	
-	public HashMap<String, Object> approvalSearch( String data) throws Exception {
+	public HashMap<String, Object> inventoryMonthlySearch( String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		int iStart = 0;
@@ -141,9 +145,9 @@ public class FinanceReportService extends CommonService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 		
-		String[] keyArr = getSearchKey(Constants.FORM_PAYMENTAPPROVAL,data,session);
-		String key1 = keyArr[0];
-		String key2 = keyArr[1];
+
+		String strMonthly = getJsonData(data, "monthly");
+		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
 		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		
@@ -158,14 +162,11 @@ public class FinanceReportService extends CommonService {
 		
 		dataModel.setQueryName("paymenRequestList");//申请单一览
 		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		if(notEmpty(key1) || notEmpty(key2)){
-			userDefinedSearchCase.put("approvalStatus", "");
-		}
+		userDefinedSearchCase.put("startDate", monthly.getStartDate());
+		userDefinedSearchCase.put("endDate", monthly.getEndDate());
+
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		baseQuery.getYsQueryData(iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -173,13 +174,45 @@ public class FinanceReportService extends CommonService {
 		modelMap.put("sEcho", sEcho); 		
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
-		modelMap.put("data", dataModel.getYsViewData());	
-		modelMap.put("keyword1",key1);	
-		modelMap.put("keyword2",key2);		
+		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;		
 
 	}
+	
+	public HashMap<String, Object> inventoryReportSearch(String data) throws Exception{
+		
+		//确认该月的报表是否做成
+		data = URLDecoder.decode(data, "UTF-8");
+		String monthly = getJsonData(data, "monthly");
+		
+		//查询既存报表
+		//getInventoryMonthly(data);
+				
+		return modelMap;
+		
+	}
+	
+
+	public HashMap<String, Object> createInventoryReport(String data) throws Exception{
+		
+		//确认该月的报表是否做成
+		data = URLDecoder.decode(data, "UTF-8");
+		String monthly = getJsonData(data, "monthly");
+		int record = checkInventoryMonthlyReport(monthly);
+		
+		if(record <= 0 ){
+			//新建报表
+			createInventoryReport(data);
+		}else{
+			//查询既存报表
+			//getInventoryMonthly(data);
+		}
+		
+		return modelMap;
+		
+	}
+	
 	
 	public HashMap<String, Object> finishSearch( String data) throws Exception {
 
@@ -230,6 +263,17 @@ public class FinanceReportService extends CommonService {
 		
 		return modelMap;		
 
+	}
+	
+	@SuppressWarnings("unchecked")
+	private int checkInventoryMonthlyReport(
+			String monthly) throws Exception{
+		
+		String astr_Where = " monthly ='"+ monthly +"' And deleteFlag='0' ";
+		List<B_InventoryMonthlyReportData> list =
+				new B_InventoryMonthlyReportDao().Find(astr_Where);
+		
+		return list.size();
 	}
 	
 	public List<Map<Integer, Object>> getDaybookList() throws Exception {

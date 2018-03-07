@@ -77,7 +77,7 @@
 					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//4		
 					{"data": "supplierName", "defaultContent" : ''},//5
 					{"data": "totalPrice", "defaultContent" : '0', "className" : 'td-right'},//6合同金额
-					{"data": "totalPrice", "defaultContent" : '0', "className" : 'td-right'},//7应付款
+					{"data": "chargeback", "defaultContent" : '0', "className" : 'td-right'},//7合同扣款
 					{"data": "stockInDate", "className" : 'td-center'},//8约定付款日
 					{"data": "agreementDate", "className" : 'td-center'},//9约定付款日
 					{"data": "finishDate", "className" : 'td-center'},//10实际付款日
@@ -109,6 +109,9 @@
 		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + row["contractId"] + "</a>";
 		    			//rtn=  row["YSId"];
 		    			return rtn;
+		    		}},
+		    		{"targets":7,"render":function(data, type, row){
+		    			return floatToCurrency(data);
 		    		}},
 		    		{ "bSortable": false, "aTargets": [ 0 ] },
 		    		{
@@ -316,7 +319,7 @@
 							<th width="70px">供应商编号</th>						
 							<th>供应商名称</th>
 							<th width="60px">合同金额</th>
-							<th width="60px">应付款</th>
+							<th width="60px">合同扣款</th>
 							<th width="60px">入库日期</th>
 							<th width="60px">约定付款日</th>
 							<th width="60px">实际付款日</th>

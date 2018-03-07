@@ -53,7 +53,7 @@ public class Constants {
 	public static final String FORM_PRODUCTSTOCKOUT= "productstockout";//成品出库
 	public static final String FORM_BEGINNINGINVENTROY= "beginninginventroy";//期初库存
 	public static final String FORM_REPORTFORDAYBOOK= "reportForDaybook";//财务流水账
-	public static final String FORM_BEGINNINGINVENTROY2= "reportForDaybook2";//财务明细账
+	public static final String FORM_REPORTFORINVENTORY= "reportForInventoryMonthly";//收发存总表
 	public static final String FORM_BEGINNINGINVENTROY3= "reportForDaybook3";//收发存总表
 	
 	

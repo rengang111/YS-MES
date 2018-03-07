@@ -12,6 +12,7 @@
   <select>
       <f name="A.YSId" alias="" ctype="" />
       <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.chargeback" alias="" ctype="" />
       <f name="a.contractId" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.shortName" alias="" ctype="" />
@@ -251,7 +252,7 @@
       <f name="a.paymentHistoryId" alias="" ctype="" />
       <f name="a.paymentId" alias="" ctype="" />
       <f name="a.paymentMethod" alias="" ctype="付款方式" />
-      <f name="format(IFNULL(a.paymentAmount,0),2)" alias="paymentAmount" ctype="" />
+      <f name="IFNULL(format(REPLACE(a.paymentAmount,',',''),2),0)" alias="paymentAmount" ctype="" />
       <f name="a.finishDate" alias="" ctype="" />
       <f name="a.currency" alias="" ctype="币种" />
       <f name="c.loginName" alias="finishUser" ctype="" />
@@ -273,6 +274,7 @@
   <select>
       <f name="A.YSId" alias="" ctype="" />
       <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.chargeback" alias="" ctype="" />
       <f name="a.contractId" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.shortName" alias="" ctype="" />

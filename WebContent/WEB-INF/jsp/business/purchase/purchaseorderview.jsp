@@ -30,7 +30,6 @@
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
-					}, {"className":"td-right"				
 					}			
 				]
 			
@@ -168,9 +167,9 @@
 		var sum9 = 0;
 		$('#example tbody tr').each (function (){
 			
-			var contractValue = $(this).find("td").eq(6).text();////合同
-			var returnValue  = $(this).find("td").eq(7).text();//退货
-			var payValue   = $(this).find("td").eq(8).text();//应付
+			var contractValue = $(this).find("td").eq(5).text();////合同
+			var returnValue  = $(this).find("td").eq(6).text();//退货
+			var payValue   = $(this).find("td").eq(7).text();//应付
 			
 			contractValue= currencyToFloat(contractValue);
 			returnValue = currencyToFloat(returnValue);
@@ -295,10 +294,9 @@
 			<th style="width:130px">物料编码</th>
 			<th>物料名称</th>
 			<th style="width:50px">合同数</th>
-			<th style="width:40px">退货数</th>
 			<th style="width:50px">单价</th>
-			<th style="width:60px">合同额</th>
-			<th style="width:50px">退货额</th>
+			<th style="width:60px">合同金额</th>
+			<th style="width:50px">合同退款</th>
 			<th style="width:60px">应付款</th>
 		</tr>
 		</thead>		
@@ -311,7 +309,7 @@
 					<td><span id="name${status.index}"></span></td>					
 				
 					<td>${ detail.quantity}   </td>								
-					<td><span id="returnQty${status.index }">${ detail.returnQty }</span></td>		
+				<!-- 	<td><span id="returnQty${status.index }">${ detail.returnQty }</span></td>	 -->	
 					<td><span id="price${status.index }">${ detail.price }</span></td>
 					<td><span id="total${status.index }">${ detail.totalPrice }</span></td>					
 					<td><span id="returnValue${status.index }"></span></td>				
@@ -325,15 +323,15 @@
 					var materialName = '${detail.materialName}';
 					var index = '${status.index}';
 					var contractQty = currencyToFloat('${detail.quantity}');
-					var returnQty = currencyToFloat('{${detail.returnQty}');
+					var chargeback = currencyToFloat('{${detail.chargeback}');
 					var price = currencyToFloat('${detail.price}');
 //alert("合同数量+退货数量+单价"+contractQty+"---"+returnQty+"---"+price)
 					var contractValue = contractQty * price;
-					var returnValue = floatToCurrency( returnQty * price );
-					var pay = floatToCurrency( contractValue - returnValue );
+					
+					var pay = floatToCurrency( contractValue + chargeback );
 					
 					$('#name'+index).html(jQuery.fixedWidth(materialName,45));
-					$('#returnValue'+index).html(returnValue);
+					$('#returnValue'+index).html(floatToCurrency( chargeback ));
 					$('#pay'+index).html(pay);
 					$('#price'+index).html(formatNumber(price));
 					$('#total'+index).html(floatToCurrency(contractValue));
@@ -345,7 +343,6 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>
