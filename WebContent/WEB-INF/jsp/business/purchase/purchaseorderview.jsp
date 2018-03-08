@@ -323,9 +323,9 @@
 					var materialName = '${detail.materialName}';
 					var index = '${status.index}';
 					var contractQty = currencyToFloat('${detail.quantity}');
-					var chargeback = currencyToFloat('{${detail.chargeback}');
+					var chargeback = currencyToFloat('${detail.chargeback}');
 					var price = currencyToFloat('${detail.price}');
-//alert("合同数量+退货数量+单价"+contractQty+"---"+returnQty+"---"+price)
+//alert("合同数量+退货数量+单价"+contractQty+"---"+chargeback+"---"+price)
 					var contractValue = contractQty * price;
 					
 					var pay = floatToCurrency( contractValue + chargeback );

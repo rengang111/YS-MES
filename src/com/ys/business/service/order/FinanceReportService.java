@@ -146,8 +146,8 @@ public class FinanceReportService extends CommonService {
 		data = URLDecoder.decode(data, "UTF-8");
 		
 
-		String strMonthly = getJsonData(data, "monthly");
-		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
+		String monthday = getJsonData(data, "monthday");
+		FinanceMouthly monthly = new FinanceMouthly(monthday);
 		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		
@@ -160,13 +160,24 @@ public class FinanceReportService extends CommonService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 		
-		dataModel.setQueryName("paymenRequestList");//申请单一览
+		dataModel.setQueryName("financeReprotForMonthly");//申请单一览
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("startDate", monthly.getStartDate());
 		userDefinedSearchCase.put("endDate", monthly.getEndDate());
 
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
+		String strMonthly= getJsonData(data, "monthly");;
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#0", strMonthly.replace("-", ""))
+				.replace("#1", monthly.getStartDate())
+				.replace("#2", monthly.getEndDate());
+		
+		List<String> list = new ArrayList<>();
+		list.add(strMonthly.replace("-", ""));
+		list.add(monthly.getStartDate());
+		list.add(monthly.getEndDate());
+		
+		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			

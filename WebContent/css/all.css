@@ -33,6 +33,9 @@ td.td-right {
     white-space:nowrap;/* 不换行 */
 }
 
+td.td-bg-f2 {
+	background: #d1c8a5;
+}
 body{
     /* background-color: floralwhite; */
     font-size:12px;

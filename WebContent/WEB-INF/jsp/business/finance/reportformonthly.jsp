@@ -16,16 +16,12 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-
-		var key1 = $("#keyword1").val();
-		var key2 = $("#keyword2").val();
 		
 
 		var actionUrl = "${ctx}/business/financereport?methodtype=inventoryReportSearch";
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
-		//actionUrl = actionUrl + "&key1=" + key1;
-		//actionUrl = actionUrl + "&key2=" + key2;
-		
+
+		var scrollHeight = $(document).height() - 170;
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				"lengthChange":false,
@@ -37,9 +33,10 @@
 				"searching" : false,
 				"autoWidth"	:false,
 				"pagingType" : "full_numbers",
-	         	"aaSorting": [[ 1, "ASC" ]],
-				//"scrollY":scrollHeight,
-				//"scrollCollapse":true,
+				"scrollY":scrollHeight,
+		        "sScrollX": true,
+				"scrollCollapse":false,
+		       	"fixedColumns":   { leftColumns: 2 },
 				"retrieve" : true,
 				"sAjaxSource" : actionUrl,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -68,23 +65,23 @@
 	        	},
 				"columns": [
 					{"data": null, "defaultContent" : '',"className" : 'td-center'},
-					{"data": "sortDate", "defaultContent" : '', "className" : 'td-center'},//时间
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//
-					{"data": "materialName", "defaultContent" : ''},//
-					{"data": "receiptId", "defaultContent" : '', "className" : 'td-left'},
-					{"data": "YSId", "defaultContent" : ''},//
-					{"data": "quantity", "defaultContent" : '', "className" : 'td-right'},// 
-					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
-					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
-					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
-					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
-					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
-					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
-					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
-					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
-					{"data": null, "defaultContent" : '0', "className" : 'td-right'},//
+					{"data": "materialName", "defaultContent" : '',"className" : 'td-left'},//
+					{"data": "unit", "defaultContent" : '', "className" : 'td-center'},
+					{"data": "beginningQty", "defaultContent" : '0', "className" : 'td-right td-bg-f2'},//4期初值
+					{"data": "beginningPrice", "defaultContent" : '0', "className" : 'td-right td-bg-f2'},// 5
+					{"data": null, "defaultContent" : '0', "className" : 'td-right td-bg-f2'},//6
+					{"data": "stockinQty", "defaultContent" : '0', "className" : 'td-right'},//7
+					{"data": "stockinPrice", "defaultContent" : '0', "className" : 'td-right'},//8单价
+					{"data": "stockinAmount", "defaultContent" : '0', "className" : 'td-right'},//9
+					{"data": "stockoutQty", "defaultContent" : '0', "className" : 'td-right td-bg-f2'},//10
+					{"data": "stockoutPrice", "defaultContent" : '0', "className" : 'td-right td-bg-f2'},//11单价
+					{"data": "stockoutAmount", "defaultContent" : '0', "className" : 'td-right td-bg-f2'},//12
+					{"data": null, "defaultContent" : '0', "className" : 'td-right'},//13
+					{"data": "MAPrice", "defaultContent" : '0', "className" : 'td-right'},//14单价
+					{"data": null, "defaultContent" : '', "className" : 'td-right'},//	15				
 					
-					],
+				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 		    			return row["rownum"] ;				    			 
@@ -97,20 +94,51 @@
 		    			}
 		    			return data;
 		    		}},
-		    		{"targets":3,"render":function(data, type, row){	    			
-		    			return jQuery.fixedWidth(data,45);
+		    		{"targets":2,"render":function(data, type, row){
+		    			return jQuery.fixedWidth(data,40);	    			 
+                    }},
+		    		{"targets":6,"render":function(data, type, row){//期初总价
+		    			var quantity = currencyToFloat(row["beginningQty"]);//期初
+		    			var price = currencyToFloat(row["MAPrice"]);
+		    			var total = quantity * price;
+		    			
+		    			return floatToCurrency(total);
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
-		    			var price = currencyToFloat(row["price"]);
-		    			var newPrice = float6ToCurrency( price / 1.17 );
-		    			return newPrice;
+		    		{"targets":8,"render":function(data, type, row){//入库单价
+		    			if(data == 0 )
+		    				data = '0';
+		    			return floatToCurrency(data);
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
-		    			var price = currencyToFloat(row["price"]);
-		    			var quantity = currencyToFloat(row["quantity"]);
-		    			var newPrice = ( price / 1.17 );
-		    			var total = floatToCurrency( newPrice * quantity )
-		    			return total;
+		    		{"targets":11,"render":function(data, type, row){//发货单价
+		    			if(data == 0 )
+		    				data = currencyToFloat( row["MAPrice"] );
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":12,"render":function(data, type, row){//发货总价
+		    			var outprice = currencyToFloat( row["stockoutPrice"] );
+		    			var maprice = currencyToFloat( row["MAPrice"] )
+		    			var stockout = currencyToFloat(row["stockoutQty"]);
+		    			if(outprice == 0 )
+		    				outprice = maprice;
+		    			return floatToCurrency( outprice * stockout );
+		    		}},
+		    		{"targets":13,"render":function(data, type, row){//结存数量
+		    			var begin = currencyToFloat(row["beginningQty"]);//期初
+		    			var stockin = currencyToFloat(row["stockinQty"]);
+		    			var stockout = currencyToFloat(row["stockoutQty"]);
+		    			var quantity =  begin + stockin - stockout;
+		    			
+		    			return floatToCurrency(quantity);
+		    		}},
+		    		{"targets":15,"render":function(data, type, row){//结存总价
+		    			var begin = currencyToFloat(row["beginningQty"]);//期初
+		    			var stockin = currencyToFloat(row["stockinQty"]);
+		    			var stockout = currencyToFloat(row["stockoutQty"]);
+		    			var price = currencyToFloat(row["MAPrice"]);
+		    			var quantity =  begin + stockin - stockout;
+		    			var total = quantity * price;
+		    			
+		    			return floatToCurrency(total);;
 		    		}},
 		    		{
 		    			"orderable":false,"targets":[0]
@@ -123,7 +151,7 @@
 			}
 		);
 		
-
+/*
 		t.on('click', 'tr', function() {
 
 			if ( $(this).hasClass('selected') ) {
@@ -134,6 +162,7 @@
 	            $(this).addClass('selected');
 	        }
 		});
+		*/
 
 	}
 
@@ -142,7 +171,7 @@
 
 		//日期
 		//$("#payment\\.requestdate").val(shortToday());
-		$("#keyword1").datepicker({
+		$("#monthly").datepicker({
 			language: "zh-CN",
 			 changeMonth: true,
 		        changeYear: true,
@@ -155,7 +184,7 @@
 		            if(month < 10){
 		                month = "0" + month;
 		            }
-		            $('#keyword1').val(year + '-' + month);
+		            $('#monthly').val(year + '-' + month);
 		        }
 		}); 
 		
@@ -166,12 +195,12 @@
 	
 	function doSearch() {	
 
-		var key = myTrim($('#keyword1').val());
+		var key = myTrim($('#monthly').val());
 		if(key == "" ){
 			$().toastmessage('showWarningToast', "请选择要查询的月份。");	
 			return;
 		}
-		$('#monthly').val(key + '-' + '01');
+		$('#monthday').val(key + '-' + '01');
 		ajax("","false");
 	}
 
@@ -225,8 +254,8 @@
 					<td width="10%"></td> 
 					<td class="label">月份选择：</td>
 					<td>
-						<input type="text" id="keyword1" name="keyword1" class=""/>
-						<input type="hidden" id="monthly" name="monthly"  />
+						<input type="text" id="monthly" name="monthly" class=""/>
+						<input type="hidden" id="monthday" name="monthday"  />
 						<input type="hidden" id="recordsTotal" name="recordsTotal"  />
 					</td>
 					<!-- 
@@ -265,21 +294,21 @@
 			<thead>						
 				<tr>
 					<th style="width: 30px;">No</th>
-					<th style="width: 100px;">物料编号</th>
+					<th style="width: 120px;">物料编号</th>
 					<th>物料名称</th>
-					<th style="width: 40px;">单位</th>
-					<th style="width: 50px;">期初数量</th>
-					<th style="width: 50px;">期初价格</th>
-					<th style="width: 60px;">总价</th>
-					<th style="width: 50px;">入库数量</th>
-					<th style="width: 50px;">入库价格</th>
-					<th style="width: 60px;">总价</th>
-					<th style="width: 50px;">发货数量</th>
-					<th style="width: 50px;">发货价格</th>
-					<th style="width: 60px;">总价</th>
-					<th style="width: 50px;">结存数量</th>
-					<th style="width: 50px;">结存价格</th>
-					<th style="width: 60px;">总价</th>
+					<th style="width: 40px;word-break: keep-all">单位</th>
+					<th style="width: 60px;word-break: keep-all">期初数</th>
+					<th style="width: 60px;word-break: keep-all">期初价</th>
+					<th style="width: 60px;word-break: keep-all">总价</th>
+					<th style="width: 60px;word-break: keep-all">入库数</th>
+					<th style="width: 60px;word-break: keep-all">入库价</th>
+					<th style="width: 60px;word-break: keep-all">总价</th>
+					<th style="width: 70px;word-break: keep-all">发货数</th>
+					<th style="width: 60px;word-break: keep-all">发货价</th>
+					<th style="width: 60px;word-break: keep-all">总价</th>
+					<th style="width: 70px;word-break: keep-all">结存数</th>
+					<th style="width: 60px;word-break: keep-all">结存价</th>
+					<th style="width: 60px;word-break: keep-all">总价</th>
 				</tr>
 			</thead>
 		</table>

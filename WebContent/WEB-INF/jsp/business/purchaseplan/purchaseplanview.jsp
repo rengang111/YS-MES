@@ -182,7 +182,7 @@ function initEvent(){
 			var actionUrl = "${ctx}/business/arrival?methodtype=getArrivalByYSId&YSId="+YSId;
 
 			var editFlag = true;
-
+/*
 			jQuery.ajax({
 				type : 'POST',
 				async: false,
@@ -207,7 +207,7 @@ function initEvent(){
 				$().toastmessage('showWarningToast', "采购方案已经开始执行了,不能修改。");
 				return false;
 			}		
-						
+				*/		
 			var materialId='${order.materialId}';
 			var quantity ="${order.quantity}";
 			var backFlag = $("#backFlag").val();

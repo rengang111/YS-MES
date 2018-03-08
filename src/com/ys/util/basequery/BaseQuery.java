@@ -3,6 +3,7 @@ package com.ys.util.basequery;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -139,8 +140,15 @@ public class BaseQuery {
     	
     	return recordCount;
     }
+    
     public int getRecodCount(String where) throws Exception {
     	int recordCount = getRecordCount(sqlCount, getQueryConnectionDefine(commonModel.getQueryName()),where);
+    	pageBean.setCount(recordCount);
+    	
+    	return recordCount;
+    }
+    public int getRecodCount(List<String> key) throws Exception {
+    	int recordCount = getRecordCount(sqlCount, getQueryConnectionDefine(commonModel.getQueryName()),key);
     	pageBean.setCount(recordCount);
     	
     	return recordCount;
@@ -244,6 +252,23 @@ public class BaseQuery {
 		commonModel.setYsViewData(ysViewData);
 		commonModel.setRecordCount(recordCount);
 		//commonModel.setTurnPageHtml(this.getTurnPageHtml());
+
+		return ysViewData;
+
+	}
+	
+
+	public ArrayList<HashMap<String, String>> getYsQueryData(
+			String sql,List<String> key, int iStart, int iEnd) throws Exception {
+
+		ArrayList<HashMap<String, String>> ysViewData = null;
+		this.sql = sql;
+		int recordCount = getRecodCount(key);
+		
+		ysViewData = getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), iStart, iEnd, true);
+		
+		commonModel.setYsViewData(ysViewData);
+		commonModel.setRecordCount(recordCount);
 
 		return ysViewData;
 
@@ -455,6 +480,18 @@ public class BaseQuery {
 		
 		return recordCount;
 	}	
+	
+	private int getRecordCount(String sqlCount, String dataSourceName,List<String> key) throws Exception {
+		int recordCount = 0;
+		for(int i=0; i < key.size(); i++){
+			sqlCount = sqlCount.replace("#"+i, key.get(i));
+		}
+		ArrayList<ArrayList<String>> result = execQuery(sqlCount, dataSourceName);
+		recordCount = Integer.parseInt(result.get(0).get(0));
+		
+		return recordCount;
+	}	
+	
 	
 	private void getQueryInfo(String queryName, HttpServletRequest request) {
 		try {
