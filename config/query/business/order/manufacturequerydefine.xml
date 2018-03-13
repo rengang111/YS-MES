@@ -702,10 +702,12 @@
     <where>
       <w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  <w name="a.YSId"  des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="a.YSId"  	  des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="a.stockOutId"  des=""  reqName="stockOutId" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.YSId" alias="" ctype="" />
+      <f name="A.stockOutId" alias="" ctype="" />
       <f name="A.PIId" alias="" ctype="" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="A.materialName" alias="" ctype="" />
@@ -732,6 +734,7 @@
     <name value="stockoutHistory" />
     <where>
    	  <w name="a.YSId"  des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="a.stockOutId"  des=""  reqName="stockOutId" dtype="ch" oper="="  lg="AND" bt="" />
     </where>
     <select>
       <f name="A.YSId" alias="" ctype="" />
@@ -749,7 +752,7 @@
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <from>v_stockout a  LEFT JOIN s_user b ON a.keepUser=b.UserID AND b.deleteFlag='0' WHERE a.deleteFlag='0' </from>
     <orderby>a.stockOutId</orderby>
-    <groupby>A.YSId</groupby>
+    <groupby>A.stockOutId</groupby>
     <having></having>
 	<power></power>
   </query>

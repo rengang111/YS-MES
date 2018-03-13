@@ -4,11 +4,16 @@
 <html>
 <head>
 <%@ include file="../../common/common2.jsp"%>
-<title>期初库存--实际库存修正</title>
+<title>期初库存--实际库存查看</title>
 <script type="text/javascript">
 
 	$(document).ready(function() {
 
+		//隐藏编辑区域
+		$(".edit").hide();
+		$("#doSave").hide();
+		$("#console").hide();
+		
 		foucsInit();
 		$(".num") .blur(function(){
 			$(this).val(floatToCurrency($(this).val()));
@@ -16,56 +21,44 @@
 		//设置光标项目
 		$("#attribute1").focus();
 		
-		$("#submit").click(function() {
+		$("#doEdit").click(function() {
 
-			//if ($("#price\\.supplierid").val() == "") {
-
-				//alert("请输入期初值。");	
-
-				//$("#attribute1").focus();
-
-				//return;
-
-			//}
-			var qantity = $('#material\\.quantityonhand').val();
-			var origin = '${formModel.material.quantityonhand}';
-			$('#invetoryHistory\\.quantity').val(qantity);
-			$('#invetoryHistory\\.originquantity').val(origin);
-			$("#submit").attr("disabled", true);
+			$('.edit').show();
+			$('#doSave').show();
+			$("#console").show();
+			$("#doEdit").hide();
 			
-			$.ajax({
-				async:false,
-				type : "POST",
-				url : "${ctx}/business/storage?methodtype=quantityOnHandAdd",
-				data : $('#material').serialize(),// 要提交的表单
-				success : function(d) {
-					//不管成功还是失败都刷新父窗口，关闭子窗口
-					var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
-					parent.reload();
-					parent.layer.close(index); //执行关闭	
-				},
-				error : function(
-						XMLHttpRequest,
-						textStatus,
-						errorThrown) {
-					alert(XMLHttpRequest.status);							
+			return false;
+		});
+		
 
-					if (XMLHttpRequest.status == "800") {
-						alert("800"); //请不要重复提交！
-					} else {
-						alert("发生系统异常，请再试或者联系系统管理员。"); 
-					}
-					//关闭窗口
-					var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引						
-					//parent.reloadSupplier();
-					parent.layer.close(index); //执行关闭					
+		$("#console").click(function() {
 
-				}
-			});
-			
+			$('.edit').hide();
+			$('#doSave').hide();
+			$("#console").hide();
+			$('#doEdit').show();
 		});
 
 	});
+	
+
+	function doSaveFn() {
+		
+		var recordId = $('#material\\.recordid').val();
+		var qantity = $('#material\\.quantityonhand').val();
+		var origin = '${formModel.material.quantityonhand}';
+		$('#invetoryHistory\\.quantity').val(qantity);
+		$('#invetoryHistory\\.originquantity').val(origin);
+		
+		$("#doSave").attr("disabled", true);
+		
+		$('#material').attr("action", "${ctx}/business/storage?methodtype=quantityOnHandAdd");
+		$('#material').submit();
+		
+		//var url = '${ctx}/business/storage?methodtype=quantityOnHandAdd&recordId=' + recordId+'&recordId='+recordId;
+		//location.href = url;
+	}
 	
 </script>
 
@@ -101,18 +94,22 @@
 					<td class="label" width="100px" >计量单位：</td>
 					<td width="50px" >${formModel.material.unit}</td>
 				
-					<td class="label" width="100px" >当前库存：</td>
+					<td class="label" width="100px" >当前实际库存：</td>
 					<td width="100px" style="text-align: right;">${formModel.material.quantityonhand}</td>
 					
-					<td class="label" width="100px" >修正后库存：</td>
-					<td><form:input path="material.quantityonhand" class="required num attribute1" /></td>
+						<td class="label edit" width="100px" >修正后库存：</td>
+						<td><form:input path="material.quantityonhand" class="required num attribute1 edit" />
+						</td>
 					
 				</tr>
 			</table>
 		</fieldset>
 
-		<fieldset class="action">
-			<button type="submit" id="submit" class="DTTT_button">保存</button>
+		<fieldset style="text-align: right;">
+			<button type="button" id="doEdit"  class="DTTT_button">修改库存</button>		
+			<button type="button" id="console" class="DTTT_button">取消修改</button>			
+			<button type="button" id="doSave"  class="DTTT_button" 
+				onclick="doSaveFn();">保存</button>		
 		</fieldset>
 
 	</form:form>

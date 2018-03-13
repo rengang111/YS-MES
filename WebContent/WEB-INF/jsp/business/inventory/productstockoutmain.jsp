@@ -75,7 +75,7 @@
 
 	    			var contractId = row["contractId"];	
 	    			var arrivalId = row["arrivalId"];		    			
-	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + row["YSId"] + "')\">"+row["YSId"]+"</a>";
+	    			var rtn= "<a href=\"###\" onClick=\"doShow('" + row["YSId"] + "','" + row["stockOutId"] + "')\">"+row["YSId"]+"</a>";
 	    			return rtn;
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
@@ -113,9 +113,9 @@
 		ajax("","false");
 	}
 		
-	function doShow(YSId) {
+	function doShow(YSId,stockOutId) {
 
-		var url = '${ctx}/business/stockout?methodtype=productStockoutAddInit&YSId=' + YSId;
+		var url = '${ctx}/business/stockout?methodtype=productStockoutAddInit&YSId=' + YSId+'&stockOutId='+stockOutId;
 
 		location.href = url;
 	}

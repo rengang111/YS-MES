@@ -221,15 +221,25 @@ public class StorageAction extends BaseAction {
 			case "beginningInventoryAdd":
 				beginningInventoryAdd();
 				break;
-			case "setQuantityOnHand":
-				setQuantityOnHand();
-				rtnUrl = "/business/inventory/quantityonhandadd";
+			case "quantityOnHandView"://修改库存(查看)
+				quantityOnHandView();
+				rtnUrl = "/business/inventory/quantityonhandview";
 				break;
-			case "quantityOnHandAdd":
+			case "quantityOnHandEdit"://修改库存(修改)
+				quantityOnHandEdit();
+				rtnUrl = "/business/inventory/quantityonhandedit";
+				break;
+			case "quantityOnHandAdd"://修改库存(保存)
 				quantityOnHandAdd();
+				rtnUrl = "/business/inventory/quantityonhandconfirm";
 				break;
-			case "confirmQuantityOnHand":
-				confirmQuantityOnHand();
+			case "quantityOnHandConfirmInit"://修改库存(直接进入确认)
+				quantityOnHandView();
+				rtnUrl = "/business/inventory/quantityonhandconfirm";
+				break;
+			case "quantityOnHandConfirm"://修改库存(确认)
+				dataMap = confirmQuantityOnHand();
+				printOutJsonObj(response, dataMap);
 				break;
 			case "showInventoryHistoryInit":
 				showInventoryHistoryInit();
@@ -708,15 +718,26 @@ public class StorageAction extends BaseAction {
 		
 	}
 	
-	public void setQuantityOnHand(){
+	public void quantityOnHandView(){
 		
 		try{
-			service.setQuantityOnHand();
+			service.quantityOnHandView();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 		
 	}
+
+	public void quantityOnHandEdit(){
+		
+		try{
+			service.quantityOnHandView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
 
 	public void quantityOnHandAdd(){
 		
@@ -728,15 +749,19 @@ public class StorageAction extends BaseAction {
 		
 	}
 	
+	
+	public HashMap<String, Object> confirmQuantityOnHand(){
 
-	public void confirmQuantityOnHand(){
-		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		try{
 			service.confirmQuantityOnHand();
+			dataMap.put(INFO, SUCCESSMSG);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
 		}
 		
+		return dataMap;
 	}
 	
 	public void getStockInByMaterialId(){			

@@ -364,7 +364,8 @@ public class StockOutAction extends BaseAction {
 		
 		try {
 			String YSId = request.getParameter("YSId");
-			dataMap = service.getStockoutHistory(YSId);
+			String stockOutId = request.getParameter("stockOutId");
+			dataMap = service.getStockoutHistory(YSId,stockOutId);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

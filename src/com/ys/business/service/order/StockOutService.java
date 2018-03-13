@@ -174,11 +174,11 @@ public class StockOutService extends CommonService {
 	public void stockoutHistoryInit() throws Exception {
 
 		String YSId = request.getParameter("YSId");
-		String requisitionId = request.getParameter("requisitionId");
+		String stockOutId = request.getParameter("stockOutId");
 				
 		B_StockOutData stock = new B_StockOutData();
 		stock.setYsid(YSId);
-		stock.setRequisitionid(requisitionId);
+		stock.setStockoutid(stockOutId);
 		reqModel.setStockout(stock);
 	
 	}
@@ -677,11 +677,12 @@ public class StockOutService extends CommonService {
 	}
 	
 	public HashMap<String, Object> getStockoutHistory(
-			String YSId) throws Exception {
+			String YSId,String stockOutId) throws Exception {
 		
 		dataModel.setQueryName("stockoutHistory");
 		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("YSId", YSId);		
+		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("stockOutId", stockOutId);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 
@@ -1032,11 +1033,12 @@ public class StockOutService extends CommonService {
 
 	public void productStockoutAddInit() throws Exception {
 		String YSId = request.getParameter("YSId");
+		String stockOutId = request.getParameter("stockOutId");
 		
 		//取得订单信息
 		getOrderDetail(YSId);
 		//取得入库信息
-		getStockinDetail(YSId);//入库明细
+		getStockinDetail(YSId,stockOutId);//入库明细
 
 	
 	}
@@ -1044,16 +1046,18 @@ public class StockOutService extends CommonService {
 	public HashMap<String, Object> getProductStockoutDetail() throws Exception {
 		
 		String YSId = request.getParameter("YSId");	
+		String stockOutId = request.getParameter("stockOutId");	
 		
-		return getStockoutHistory(YSId);//出库明细	
+		return getStockoutHistory(YSId,stockOutId);//出库明细	
 		
 	}
 
-	public void getStockinDetail(String YSId) throws Exception {
+	public void getStockinDetail(String YSId,String stockOutId) throws Exception {
 
 		dataModel.setQueryFileName("/business/order/manufacturequerydefine");
 		dataModel.setQueryName("stockoutforproduct");
 		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("stockOutId", stockOutId);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = baseQuery.getSql(); 

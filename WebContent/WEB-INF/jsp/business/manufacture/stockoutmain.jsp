@@ -81,7 +81,7 @@
 		    			return row["rownum"] ;				    			 
                     }},
 		    		{"targets":1,"render":function(data, type, row){
-		    			var  rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "','"+ row["requisitionId"] + "')\">"+row["stockOutId"]+"</a>";
+		    			var  rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "','"+ row["stockOutId"] + "')\">"+row["stockOutId"]+"</a>";
 		    			if(data == ""){
 		    				rtn= "<a href=\"###\" onClick=\"doCreate('"+ row["YSId"] + "','"+ row["requisitionId"] + "')\">"+"（待出库）"+"</a>";
 		    			
@@ -164,12 +164,12 @@
 	}
 
 	
-	function showHistory(YSId,requisitionId) {
+	function showHistory(YSId,stockOutId) {
 
 		var makeType=$('#makeType').val();
 		var usedType=$('#usedType').val();
 		var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId
-			+"&requisitionId="+requisitionId+"&makeType="+makeType+"&usedType="+usedType;
+			+"&stockOutId="+stockOutId+"&makeType="+makeType+"&usedType="+usedType;
 		location.href = url;
 	}
 	

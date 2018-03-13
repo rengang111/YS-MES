@@ -1714,10 +1714,10 @@ public class StorageService extends CommonService {
 	}
 	
 
-	public void setQuantityOnHand() throws Exception {
+	public void quantityOnHandView() throws Exception {
 
 		String recordId = request.getParameter("recordId");		
-		//合同信息
+		//物料信息
 		getMaterialDetail(recordId);
 	
 	}
@@ -1732,14 +1732,18 @@ public class StorageService extends CommonService {
 
 			
 			//更新物料信息
-			B_MaterialData mate = updateMaterialQuantityOnHand();
+			B_MaterialData material = updateMaterialQuantityOnHand();
 			
 			//保存当前数据
-			insertBeginningInventoryHisotry();
+			B_InventoryHistoryData history = insertBeginningInventoryHisotry();
 			
+			ts.commit();
 			
-			ts.commit();			
-		
+			if(!(material == null))
+				material.setUnit(DicUtil.getCodeValue("计量单位" + material.getUnit()));
+			reqModel.setMaterial(material);
+			
+			reqModel.setInvetoryHistory(history);
 		}
 		catch(Exception e) {
 			e.printStackTrace();		
@@ -1814,7 +1818,7 @@ public class StorageService extends CommonService {
 	}
 	
 	//更新
-	private void insertBeginningInventoryHisotry() throws Exception{
+	private B_InventoryHistoryData insertBeginningInventoryHisotry() throws Exception{
 	
 		//B_InventoryHistoryData inventory = new B_InventoryHistoryData();
 		B_InventoryHistoryDao dao = new B_InventoryHistoryDao();
@@ -1837,7 +1841,7 @@ public class StorageService extends CommonService {
 		
 		dao.Create(inventory);
 		
-		
+		return inventory;
 	}
 	
 	//更新
@@ -1853,8 +1857,6 @@ public class StorageService extends CommonService {
 		if(mate ==null){
 			return null;
 		}
-		B_MaterialData rtnVal = new B_MaterialData();
-		rtnVal.setQuantityonhand(reqMeterial.getQuantityonhand());
 
 		float iQuantity = stringToFloat(reqMeterial.getQuantityonhand());
 		
@@ -1875,7 +1877,7 @@ public class StorageService extends CommonService {
 		
 		dao.Store(mate);
 		
-		return rtnVal;
+		return mate;
 		
 	}
 	

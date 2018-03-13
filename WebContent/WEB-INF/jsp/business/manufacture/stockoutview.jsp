@@ -8,6 +8,7 @@
 
 	function historyAjax() {
 		var YSId = $('#stockout\\.ysid').val();
+		var stockOutId = $('#stockout\\.stockoutid').val();
 		var t = $('#example2').DataTable({
 			
 			"paging": true,
@@ -20,7 +21,7 @@
 			"searching" : false,
 			"retrieve" : true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/stockout?methodtype=getStockoutHistory&YSId="+YSId,
+			"sAjaxSource" : "${ctx}/business/stockout?methodtype=getStockoutHistory&YSId="+YSId+"&stockOutId="+stockOutId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -53,7 +54,7 @@
 					}, {"data": "YSId"
 					}, {"data": "requisitionId","className":"dt-body-center"
 					}, {"data": "loginName"
-					}, {"data": null,"className":"dt-body-center"
+					}, {"data": null,"className":"dt-body-center","defaultContent" : ''
 					}, {"data": null,"className":"td-center","defaultContent" : ''
 					}
 				] ,
@@ -64,9 +65,9 @@
 		    			return rtn;
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doPrint('" + row["stockOutId"] + "')\">打印出库单</a>";
-		    			return rtn;
+		    			//var contractId = row["contractId"];		    			
+		    			//var rtn= "<a href=\"###\" onClick=\"doPrint('" + row["stockOutId"] + "')\">打印出库单</a>";
+		    			//return rtn;
 		    		}},
 		    	]        
 			
@@ -225,6 +226,7 @@
 	<input type="hidden" id="makeType" value="${makeType }" />
 	<input type="hidden" id="usedType" value="${usedType }" />
 	<form:hidden path="stockout.ysid"  />
+	<form:hidden path="stockout.stockoutid"  />
 	<!-- 
 	<fieldset>
 		<legend> 出库单</legend>
