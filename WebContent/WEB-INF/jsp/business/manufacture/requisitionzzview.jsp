@@ -403,11 +403,11 @@
 		</table>
 </fieldset>
 <div style="clear: both"></div>
-	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >继续领料</a>
+	<div id="DTTT_container" align="right" style="margin-right: 30px;margin-top: -15px;">
+	<!-- 	<a class="DTTT_button DTTT_button_text" id="insert" >继续领料</a> -->
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
-	<fieldset>
+	<fieldset style="margin-top: -20px;">
 		<legend> 领料记录</legend>
 		<div class="list">
 			<table id="example2" class="display" style="width:100%">

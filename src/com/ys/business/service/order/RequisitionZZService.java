@@ -604,7 +604,8 @@ public class RequisitionZZService extends CommonService {
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"RequisitionUpdate",userInfo);
 		copyProperties(db,commData);
-		db.setRequisitiondate(CalendarUtil.fmtYmdDate());		
+		db.setRequisitiondate(CalendarUtil.fmtYmdDate());	
+		db.setRequisitionuserid(userInfo.getUserId());
 		
 		new B_RequisitionDao().Store(db);
 	}

@@ -307,8 +307,9 @@
 		
 		$("#insert").click(
 				function() {
-					
-			$('#formModel').attr("action", "${ctx}/business/requisitionzz?methodtype=update");
+
+					var makeType = $('#makeType').val();
+			$('#formModel').attr("action", "${ctx}/business/requisitionzz?methodtype=update"+"&makeType="+makeType);
 			$('#formModel').submit();
 		});
 
