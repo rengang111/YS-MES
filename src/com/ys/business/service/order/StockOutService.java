@@ -692,6 +692,23 @@ public class StockOutService extends CommonService {
 		
 	}
 	
+
+	public HashMap<String, Object> getStockoutHistoryForProduct(
+			String YSId,String materialId) throws Exception {
+		
+		dataModel.setQueryName("stockoutHistoryForProduct");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("materialId", materialId);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+		
+	}
+	
 	public void getStockoutByMaterialId() throws Exception {
 		String materialId = request.getParameter("materialId");
 		dataModel.setQueryName("stockoutByMaterialId");
@@ -1033,12 +1050,12 @@ public class StockOutService extends CommonService {
 
 	public void productStockoutAddInit() throws Exception {
 		String YSId = request.getParameter("YSId");
-		String stockOutId = request.getParameter("stockOutId");
+		//String stockOutId = request.getParameter("stockOutId");
 		
 		//取得订单信息
 		getOrderDetail(YSId);
 		//取得入库信息
-		getStockinDetail(YSId,stockOutId);//入库明细
+		getStockinDetail(YSId,"");//入库明细
 
 	
 	}
@@ -1046,9 +1063,9 @@ public class StockOutService extends CommonService {
 	public HashMap<String, Object> getProductStockoutDetail() throws Exception {
 		
 		String YSId = request.getParameter("YSId");	
-		String stockOutId = request.getParameter("stockOutId");	
+		String materialId = request.getParameter("materialId");	
 		
-		return getStockoutHistory(YSId,stockOutId);//出库明细	
+		return getStockoutHistoryForProduct(YSId,materialId);//出库明细	
 		
 	}
 

@@ -103,9 +103,9 @@
 	function ajaxHistory() {
 
 		var YSId = '${order.YSId }';
-		var stockOutId = '${stockin.stockOutId }';
+		var materialId = '${order.materialId }';
 		var actionUrl = "${ctx}/business/stockout?methodtype=getProductStockoutDetail";
-		actionUrl = actionUrl + "&YSId="+YSId+"&stockOutId="+stockOutId;
+		actionUrl = actionUrl + "&YSId="+YSId+"&materialId="+materialId;
 		
 		var t = $('#history').DataTable({
 			
