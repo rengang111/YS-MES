@@ -270,38 +270,6 @@ public class OrderService extends CommonService  {
 		return dbList;
 	}
 	
-	public String  getNewYsid() throws Exception{
-		
-		String paternId = BusinessService.getYSCommCode();
-		int YSMaxid = getYSIdByParentId(paternId);
-		return BusinessService.getYSFormatCode(YSMaxid,true);
-			
-	}
-	
-	/*
-	public ArrayList<HashMap<String, String>> getOrderDetailByPIId(
-			HttpServletRequest request,
-			String PIId ) throws Exception {
-		
-		ArrayList<HashMap<String, String>> modelMap = null;
-		HashMap<String, String> userDefinedSearchCase = new HashMap<String, String>();
-		BaseModel dataModel = new BaseModel();
-		BaseQuery baseQuery = null;
-
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderDetailByPIId");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-
-
-		userDefinedSearchCase.put("keywords1", PIId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		modelMap = baseQuery.getYsQueryData(0, 0);
-		
-		return modelMap;
-	}
-	*/
-	
 	public HashMap<String, Object> getCustomer(HttpServletRequest request, 
 			String data) throws Exception {
 		

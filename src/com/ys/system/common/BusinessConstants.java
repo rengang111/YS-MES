@@ -57,6 +57,7 @@ public class BusinessConstants {
 	public static final String SHORTNAME_RW = "RW";
 	public static final String SHORTNAME_RKSQ = "RKSQ";//入库申请
 	public static final String FORMAT_000 = "000";
+	public static final String FORMAT_0000 = "0000";
 	public static final String FORMAT_00000 = "00000";
 	public static final String FORMAT_00 = "00";
 	public static final String CUSTOMER_MUN = "000";

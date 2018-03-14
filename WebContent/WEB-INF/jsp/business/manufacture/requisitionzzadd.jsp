@@ -64,7 +64,7 @@
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": null,"className":"td-center"		//3单位
-				}, {"data": "manufactureQuantity","className":"td-right"//4
+				}, {"data": "purchaseQuantity","className":"td-right"//4manufactureQuantity
 				}, {"data": "requisitionQty","className":"td-right", "defaultContent" : '0'//5
 				}, {"data": "totalRequisition","className":"td-right", "defaultContent" : '0'//6
 				}, {"data": "quantityOnHand","className":"td-right"	//7 可用库存
@@ -99,7 +99,7 @@
 	    			var vrawunit = row["unit"];
 	    			var vzzunit = row["zzunit"]; 			
 	    			
-	    			var qty = currencyToFloat(row["manufactureQuantity"]);
+	    			var qty = currencyToFloat(row["purchaseQuantity"]);//生产数量
 	    			var value = '0';
 	    			
 	    			//原材料的购买单位			
@@ -237,7 +237,7 @@
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": "unit","className":"td-center"		//3单位
-				}, {"data": "manufactureQuantity","className":"td-right"//4
+				}, {"data": "purchaseQuantity","className":"td-right"//4
 				}, {"data": null, "defaultContent" : ''	//6 
 				}
 			],
@@ -255,8 +255,7 @@
                 }},
 				{"targets":5,"render":function(data, type, row){	    			
 	    			
-	    			var qty = floatToCurrency(row["manufactureQuantity"]);			
-	    			return qty;				 
+	    			return floatToCurrency(data);				 
                 }}
 			]
 			
@@ -457,7 +456,7 @@
 						<th width="120px">物料编号</th>
 						<th >物料名称</th>
 						<th width="50px">领料单位</th>				
-						<th width="60px">计划用量</th>
+						<th width="60px">生产用量</th>
 						<th width="60px">已申请数量</th>
 						<th width="60px">已出库数量</th>
 						<th width="80px">可用库存</th>

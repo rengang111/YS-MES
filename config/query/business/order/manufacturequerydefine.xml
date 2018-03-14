@@ -300,6 +300,7 @@
 	      <f name="b.materialId" alias="parentMaterialId" ctype="" />
 	      <f name="b.materialName" alias="" ctype="" />
 	      <f name="SUM(REPLACE(b.totalQuantity,',',''))" alias="manufactureQuantity" ctype="" />
+	      <f name="SUM(REPLACE(b.purchaseQuantity,',',''))" alias="purchaseQuantity" ctype="" />
 	      <f name="b.quantityOnHand" alias="" ctype="" />
 	      <f name="b.availabelToPromise" alias="" ctype="" />
 	      <f name="IFNULL(c.quantity,'0')" alias="totalRequisition" ctype="" />
@@ -313,7 +314,7 @@
    <from>v_purchaseplandetailzz b LEFT JOIN v_stockoutdetailgroup c ON b.rawMaterialId = c.materialId AND c.YSId='#' AND c.deleteFlag = '0' LEFT JOIN v_requisitiondetailgroup d ON b.rawMaterialId=d.materialId AND d.YSId = '#' AND d.deleteFlag = '0' </from>
     <orderby>b.rawMaterialId</orderby>
     <groupby>b.rawMaterialId</groupby>
-    <having></having>
+    <having>cast(purchaseQuantity AS DECIMAL (10, 0)) > 0</having>
 	<power></power>    
   </query>
   <query>
@@ -505,6 +506,7 @@
       <f name="c.materialName" alias="" ctype="" /> 
       <f name="d.rawmaterialId" alias="" ctype="" />
       <f name="b.manufactureQuantity" alias="" ctype="" />
+      <f name="b.purchaseQuantity" alias="" ctype="" />
       <f name="c.unit" alias="" ctype="计量单位" />
       <f name="b.purchaseType" alias="" ctype="" />
       <f name="b.deleteFlag" alias="" ctype="" />
@@ -514,7 +516,7 @@
     <from> v_purchaseplandetailgroup b LEFT JOIN  b_material c ON b.materialId=c.materialId AND c.deleteFlag='0' LEFT JOIN b_zzrawmaterial d ON d.materialId=b.materialId AND d.deleteFlag='0' WHERE b.supplierId='0574YZ00' AND LEFT(b.materialId,1) != 'H' AND b.deleteFlag='0' </from>
     <orderby>b.YSId,b.materialId </orderby>
     <groupby>b.YSId,b.materialId</groupby>
-    <having></having>
+    <having>cast(b.purchaseQuantity AS DECIMAL (10, 0)) > 0</having>
 	<power></power>    
   </query>
   <query>

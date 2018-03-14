@@ -59,13 +59,13 @@ public class BusinessService {
 	/**
 	 * @param 流水号
 	 * @param blAdd:是否要递增 true:要,false:不要
-	 * @return 耀升编号,3位流水号格式化处理
+	 * @return 耀升编号,4位流水号格式化处理
 	 */
 	public static String getYSFormatCode(int id,boolean blAdd)
 	{
 		//
 		String ys = getYSCommCode();
-		String yscode = getFormatCode(id,blAdd);
+		String yscode = getFormat4Code(id,blAdd);
 		
 		String ysfullcode = ys + yscode;
 
@@ -87,6 +87,25 @@ public class BusinessService {
 		//格式化成3位流水号
 		DecimalFormat df = new DecimalFormat(
 				BusinessConstants.FORMAT_000);		
+		String rtnCode = df.format(code);
+
+		return rtnCode;
+	}
+
+	/**
+	 * 3位流水号格式化处理
+	 * blAdd:是否要递增
+	 */
+	public static String getFormat4Code(int code,boolean blAdd)
+	{
+		//流水号递增
+		if(blAdd){
+			code++;
+		}
+		
+		//格式化成3位流水号
+		DecimalFormat df = new DecimalFormat(
+				BusinessConstants.FORMAT_0000);		
 		String rtnCode = df.format(code);
 
 		return rtnCode;

@@ -121,10 +121,10 @@
 			    			return name;
 			    		}},
 			    		{"targets":5,"render":function(data, type, row){
-			    			var rtn = data;
-			    			if(data == null || data == "")
-			    				rtn = "（未领料）"			    			
-			    			return rtn;
+			    			//var rtn = data;
+			    			//if(data == null || data == "")
+			    			//	rtn = "（未领料）"			    			
+			    			return data;
 			    		}},
 			    		{"targets":7,"render":function(data, type, row){
 			    			var rtn = "";
