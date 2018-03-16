@@ -130,16 +130,19 @@
 		    				
 		    				if(confirmFlag == "0"){
 		    					//已确认,但是还有问题,再次编辑
-					    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "再次修改" + "</a>";	    			
-			    			}else{
+					    			//txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "再次修改" + "</a>";	    			
+		    					txt = "已确认";
+		    				}else{
 		    					//未修改
-				    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "未修改" + "</a>";
+				    			//txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "未修改" + "</a>";
+			    				txt = "未修改";
 			    			}		    				
 		    			}else{
 		    				if((confirmFlag) == "1"){
 		    					//待确认
-			    				txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"') \" style=\"color: red;\">" + "待确认" + "</a>";
-			    			}else if((confirmFlag) == "0"){	
+			    				//txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"') \" style=\"color: red;\">" + "待确认" + "</a>";
+		    					txt = "待确认";
+		    				}else if((confirmFlag) == "0"){	
 			    				
 				    			txt = "已确认";
 			    			}
@@ -209,8 +212,11 @@
 		    			return rtn;
 		    		}},
 		    		{"targets":12,"render":function(data, type, row){
+		    			var rtn = "";
+		    			var qty= floatToCurrency(data);
+		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
-		    			return floatToCurrency(data);
+		    			return rtn;
 		    		}},
 		    		{"targets":13,"render":function(data, type, row){
 		    						    			
@@ -291,7 +297,7 @@
 	function doShowPlan(materialId) {
 
 		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanByMaterialId&materialId=' + materialId;
-		callProductDesignView("合同明细",url);
+		callProductDesignView("采购方案",url);
 		
 	}
 

@@ -27,8 +27,10 @@
 					{"className" : 'td-left'},//
 					{"className" : 'td-left'},//
 					{"className" : ''},
-					{"className" : 'td-right'},//
-					{"className" : 'td-right'},//
+					{"className" : 'td-right',"defaultContent" : '0'},//
+					{"className" : 'td-right',"defaultContent" : '0'},//
+					{"className" : 'td-right',"defaultContent" : '0'},//
+					{"className" : 'td-right',"defaultContent" : '0'},//
 				
 				]
 				
@@ -54,7 +56,9 @@
 		
 		sumFn(5);
 		sumFn(6);
-		$('#totalValue7').html(floatToCurrency( currencyToFloat($('#totalValue5').html()) - currencyToFloat($('#totalValue6').html()) ))
+		sumFn(7);
+		sumFn(8);
+		$('#waitout').html(floatToCurrency( currencyToFloat($('#totalValue5').html()) - currencyToFloat($('#totalValue8').html()) ))
 	})	
 	
 	function doSearch() {	
@@ -90,7 +94,7 @@
 		id="formModel" name="formModel"  autocomplete="off">
 		
 		<fieldset>
-			<legend> 合同明细</legend>
+			<legend> 采购方案</legend>
 			<table width="100%">
 				<tr>
 					<td class="label" width="100px">物料编号：</td>
@@ -98,7 +102,7 @@
 					<td class="label" width="70px">物料名称：</td> 
 					<td>${material.materialName }</td>		
 					<td class="label" width="100px">剩余待出库数量：</td>
-					<td width="100px"><span id="totalValue7"></span></td>				
+					<td width="100px"><span id="waitout"></span></td>				
 				</tr>
 				<tr>
 					<td width="10%"></td> 			
@@ -109,11 +113,13 @@
 					<thead>	
 						<tr >
 							<th style="width: 1px;">No</th>
-							<th style="width: 80px;">方案做成日</th>
+							<th style="width: 60px;">方案做成日</th>
 							<th style="width: 80px;">耀升编号</th>
 							<th style="width: 120px;">产品编号</th>
 							<th>产品名称</th>
-							<th style="width: 60px;">生产需求量</th>
+							<th style="width: 60px;">生产需求</th>
+							<th style="width: 60px;">合同数</th>
+							<th style="width: 60px;">入库数</th>
 							<th style="width: 60px;">已领料</th>
 						</tr>
 					</thead>
@@ -124,9 +130,18 @@
 								<td>${list.planDate }</td>
 								<td>${list.YSId }</td>
 								<td>${list.productId }</td>
-								<td>${list.productName }</td>
+								<td><span id="shortName${status.index }">${list.productName }</span></td>
 								<td>${list.manufactureQuantity }</td>
+								<td>${list.contractQty }</td>
+								<td>${list.stockinQty }</td>
 								<td>${list.stockoutQty }</td>
+							</tr>
+							
+							<script type="text/javascript">
+								var materialName = '${list.productName}';
+								var index = '${status.index}';						
+								$('#shortName'+index).html(jQuery.fixedWidth(materialName,24));
+							</script>	
 						</c:forEach>
 					</tbody>
 					<tfoot>
@@ -138,6 +153,8 @@
 							<th>合计：</th>
 							<th style="text-align: right;"><span id="totalValue5"></span></th>
 							<th style="text-align: right;"><span id="totalValue6"></span></th>
+							<th style="text-align: right;"><span id="totalValue7"></span></th>
+							<th style="text-align: right;"><span id="totalValue8"></span></th>
 						</tr>
 					</tfoot>
 				</table>

@@ -183,14 +183,16 @@
       <f name="a.price" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="IFNULL(d.quantity,'0')" alias="contractQty" ctype="" />
+      <f name="IFNULL(e.quantity,'0')" alias="stockinQty" ctype="" />
+      <f name="IFNULL(c.quantity,'0')" alias="stockoutQty" ctype="" />
       <f name="a.planDate" alias="" ctype="" />
       <f name="a.purchaseType" alias="" ctype="" />
       <f name="a.supplierShortName" alias="" ctype="" />
-      <f name="c.quantity" alias="stockoutQty" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseplan a  LEFT JOIN b_material b ON b.materialId=a.productId AND b.deleteFlag='0' LEFT JOIN v_stockout c ON c.YSId = a.YSId AND c.materialId = a.materialId  WHERE a.deleteFlag = '0' </from>
+   <from>v_purchaseplan a  LEFT JOIN b_material b ON b.materialId=a.productId AND b.deleteFlag='0' LEFT JOIN v_stockout c ON c.YSId = a.YSId AND c.materialId = a.materialId LEFT JOIN v_purchaseorderdetail d ON d.YSId=a.YSId AND d.materialId=a.materialId LEFT JOIN v_purchasestockindetail e ON e.YSId=a.YSId AND e.materialId=a.materialId  WHERE a.deleteFlag = '0' AND  ((a.planDate &lt;='2017-12-31' AND REPLACE(a.purchaseQuantity,',','')+0 > 0 AND (d.quantity >= 0) ) OR  a.planDate &gt;='2018-01-01')</from>
     <orderby>planDate</orderby>
     <groupby></groupby>
     <having></having>

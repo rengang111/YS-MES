@@ -495,13 +495,13 @@ function initEvent(){
 	    			var stock =  row["availabelToPromise"] ;
 	    			var fstock = currencyToFloat( stock );
 					var rtn = "";
-					if(fstock < 0){
-						rtn = '<div style="color:red">' + stock + '</div>';
-					}else {
+					//if(fstock < 0){
+					//	rtn = '<div style="color:red">' + stock + '</div>';
+					//}else {
 						//price = '<div style="font-weight:bold;color:green">' + price + '</div>';
-						rtn = stock;
-					}
-	    			return rtn;
+					//	rtn = stock;
+					//}
+	    			return stock;
 	    		}},
 	    		{"targets":8,"render":function(data, type, row){
 	    			
@@ -522,7 +522,7 @@ function initEvent(){
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : [3, 5,7,13]
+					"targets" : [3,4, 5,13]
 				},
 	    		{ "bSortable": false, "aTargets": [ 0 ,12] }
 	          
@@ -1133,7 +1133,7 @@ function ZZmaterialView() {
 					<th width="60px">基本用量</th>
 					<th width="60px">需求量</th>
 					<th width="60px">计划用量</th>
-					<th width="60px">当前库存</th>
+					<th width="60px">虚拟库存</th>
 					<th width="60px">采购量</th>
 					<th>供应商</th>
 					<th width="60px">单价</th>
