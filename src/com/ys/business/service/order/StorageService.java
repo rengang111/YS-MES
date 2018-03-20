@@ -506,21 +506,10 @@ public class StorageService extends CommonService {
 	
 	}
 	
-	public String addInit() throws Exception {
-		String viewFlag="查看";
+	public void showStockinDetail() throws Exception {
+		
 		String contractId = request.getParameter("contractId");
 		String arrivalId = request.getParameter("arrivalId");
-		//String receiptId = request.getParameter("receiptId");
-		
-		boolean flag = checkStockInDataById(contractId);
-		//确认是否已经入库
-		if(flag){
-			viewFlag = "新增";//有未入库的数据
-			model.addAttribute("arrivalId",arrivalId);
-		}else{
-			model.addAttribute("addFlag","false");//没有需要入库的数据
-			
-		}
 		
 		//合同信息
 		getContractDetail(contractId);
@@ -529,7 +518,35 @@ public class StorageService extends CommonService {
 
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
 	
-		return viewFlag;
+	
+	}
+	
+	public void addInit() throws Exception {
+		//String viewFlag="查看";
+		String contractId = request.getParameter("contractId");
+		String arrivalId = request.getParameter("arrivalId");
+		//String receiptId = request.getParameter("receiptId");
+		
+		//boolean flag = checkStockInDataById(contractId);
+		//确认是否已经入库
+		//if(flag){
+			//viewFlag = "新增";//有未入库的数据
+			model.addAttribute("arrivalId",arrivalId);
+		//}else{
+		//	model.addAttribute("addFlag","false");//没有需要入库的数据
+			
+		//}
+		
+		//合同信息
+		if(notEmpty(contractId)){
+			getContractDetail(contractId);			
+		}
+		//取得该到货编号下的物料信息
+		getReceivInspectionById(arrivalId);
+
+		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+	
+		//return viewFlag;
 	
 	}
 	
@@ -559,8 +576,10 @@ public class StorageService extends CommonService {
 		String contractId = request.getParameter("contractId");
 		String receiptId = request.getParameter("receiptId");
 		
-		getContractDetail(contractId);//合同信息
-		getArrivaRecord(contractId,receiptId);//入库明细
+		if(notEmpty(contractId)){
+			getContractDetail(contractId);//合同信息
+		}
+		getArrivaRecord(contractId,receiptId,"");//入库明细
 
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
 		model.addAttribute("receiptId",receiptId);//已入库
@@ -574,7 +593,7 @@ public class StorageService extends CommonService {
 		
 		//取得订单信息
 		getOrderDetail(YSId);
-		getArrivaRecord("",receiptId);//入库明细
+		getArrivaRecord("",receiptId,"");//入库明细
 
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
 		model.addAttribute("receiptId",receiptId);//已入库
@@ -587,7 +606,7 @@ public class StorageService extends CommonService {
 		
 		//取得订单信息
 		getContractDetail(contractId);//合同信息
-		getArrivaRecord(contractId,receiptId);//入库明细	
+		getArrivaRecord(contractId,receiptId,"");//入库明细	
 	}
 
 
@@ -609,8 +628,9 @@ public class StorageService extends CommonService {
 	public HashMap<String, Object> getStockInDetail() throws Exception {
 
 		String contractId = request.getParameter("contractId");
+		String arrivelId = request.getParameter("arrivelId");
 		
-		return getArrivaRecord(contractId,"");
+		return getArrivaRecord(contractId,"",arrivelId);
 	}
 
 	public HashMap<String, Object> getProductStockInDetail() {
@@ -623,14 +643,18 @@ public class StorageService extends CommonService {
 
 		String contractId = insertStorage();
 
-		getContractDetail(contractId);
-		
-		boolean flag = checkStockInDataById(contractId);
-		//确认是否已经入库
-		if(!flag){
-			model.addAttribute("addFlag","false");//没有需要入库的数据
-		}
+		if(notEmpty(contractId)){
+
+			getContractDetail(contractId);
 			
+			boolean flag = checkStockInDataById(contractId);
+			//确认是否已经入库
+			if(!flag){
+				model.addAttribute("addFlag","false");//没有需要入库的数据
+			}
+		}
+		
+		model.addAttribute("arrivalId",reqModel.getStock().getArrivelid());
 		model.addAttribute("receiptId",reqModel.getStock().getReceiptid());//返回到页面
 	}
 	
@@ -1171,7 +1195,7 @@ public class StorageService extends CommonService {
 	
 	
 	private HashMap<String, Object> getArrivaRecord(
-			String contractId,String receiptId) throws Exception{
+			String contractId,String receiptId,String arrivelId) throws Exception{
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
@@ -1179,6 +1203,7 @@ public class StorageService extends CommonService {
 		dataModel.setQueryName("getPurchaseStockInById");
 		userDefinedSearchCase.put("contractId", contractId);
 		userDefinedSearchCase.put("receiptId", receiptId);
+		userDefinedSearchCase.put("arrivelId", arrivelId);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
@@ -1824,13 +1849,11 @@ public class StorageService extends CommonService {
 		B_InventoryHistoryDao dao = new B_InventoryHistoryDao();
 
 		B_InventoryHistoryData inventory = reqModel.getInvetoryHistory();
-		/*
-		inventory.setMaterialid(reqMeterial.getMaterialid());
-		inventory.setBeginninginventory(reqMeterial.getBeginninginventory());//
-		inventory.setBeginningprice(reqMeterial.getBeginningprice());
-		inventory.setOrigininventory(material.getQuantityonhand());//修改前
-		inventory.setOriginprice(material.getMaprice());
-		*/
+
+		float quantity = stringToFloat(inventory.getQuantity());
+		float origin = stringToFloat(inventory.getOriginquantity());
+		float newQty = quantity - origin;
+		inventory.setQuantity(floatToString(newQty));
 		
 		//新增DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,

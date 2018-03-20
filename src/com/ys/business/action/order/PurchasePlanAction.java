@@ -146,9 +146,13 @@ public class PurchasePlanAction extends BaseAction {
 				//printOutJsonObj(response, dataMap);
 				rtnUrl = "/business/purchase/purchaseordermain";
 				break;
-			case "purchasePlanByMaterialId"://采购方案一览(物料单位)
+			case "purchasePlanByMaterialId"://采购方案一览(采购件)
 				getPurchasePlanByMaterialId();
 				rtnUrl = "/business/inventory/beginninginventoryplan";
+				break;
+			case "purchasePlanForRawByMaterialId"://采购方案一览(原材料)
+				getPurchasePlanForRawByMaterialId();
+				rtnUrl = "/business/inventory/beginninginventoryplanraw";
 				break;
 				
 		}
@@ -340,4 +344,14 @@ public class PurchasePlanAction extends BaseAction {
 	}
 
 	
+	public void getPurchasePlanForRawByMaterialId(){	
+		
+		try {
+			purchaseService.getPurchasePlanForRawByMaterialId();		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
 }

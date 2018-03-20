@@ -77,9 +77,9 @@
 				{"data": "materialId"},
 				{"data": "materialName"},
 				{"data": "unit","className" : 'td-center'},
-				{"data": "supplierId"},
-				{"data": "YSId"},
-				{"data": "contractQuantity","className" : 'td-right'},
+				{"data": "supplierId", "defaultContent" : '***'},
+				{"data": "YSId", "defaultContent" : '***'},
+				{"data": "contractQuantity","className" : 'td-right', "defaultContent" : '***'},
 				{"data": "stockinQty","className" : 'td-right'},
 				{"data": "quantityQualified","className" : 'td-right'},
 				{"data": "checkDate","className" : 'td-center'},
@@ -96,7 +96,7 @@
 	    			var contractId = row["contractId"];	
 	    			var arrivalId = row["arrivalId"];	
 	    			if(data == ''){
-		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + contractId + "','" + arrivalId + "','" + row["receiptId"] + "')\">"+"（未入库）"+"</a>";
+		    			var rtn= "<a href=\"###\" onClick=\"doAdd('" + contractId + "','" + arrivalId + "','" + row["receiptId"] + "')\">"+"（未入库）"+"</a>";
     				
 	    			}else{
 		    			var rtn= "<a href=\"###\" onClick=\"doShow('" + contractId + "','" + arrivalId + "','" + row["receiptId"] + "')\">"+data+"</a>";
@@ -109,6 +109,20 @@
 	    			var name = row["materialName"];				    			
 	    			name = jQuery.fixedWidth(name,35);				    			
 	    			return name;
+	    		}},
+	    		{"targets":5,"render":function(data, type, row){
+	    			
+	    			var rtn = data;
+	    			if(data == null || data == "")
+	    				rtn = "***";				    			
+	    			return rtn;
+	    		}},
+	    		{"targets":6,"render":function(data, type, row){
+	    			
+	    			var rtn = data;
+	    			if(data == null || data == "")
+	    				rtn = "***";				    			
+	    			return rtn;
 	    		}},
 	    		{
 					"visible" : false,
@@ -149,7 +163,7 @@
 	
 	
 	
-	function doShow(contractId,arrivalId,receiptId) {
+	function doAdd(contractId,arrivalId,receiptId) {
 
 		var makeType=$('#makeType').val();
 		var url = '${ctx}/business/storage?methodtype=addinit&contractId=' 
@@ -161,7 +175,19 @@
 		location.href = url;
 	}
 
-			
+	
+
+	function doShow(contractId,arrivalId,receiptId) {
+
+		var makeType=$('#makeType').val();
+		var url = '${ctx}/business/storage?methodtype=showStockinDetail&contractId=' 
+				+ contractId
+				+"&arrivalId="+arrivalId
+				+"&receiptId="+receiptId
+				+"&makeType="+makeType;
+
+		location.href = url;
+	}
 	function doDelete() {
 
 		var str = '';

@@ -23,9 +23,6 @@
 					var orderQuantity = '${order.totalQuantity}';
 					var trhtml = "";
 					var rowIndex = counter + 1;
-					var hidden =	'<input type="hidden" name="applyDetailList['+counter+'].subbomid" id="applyDetailList'+counter+'.subbomid" value=""/>'+
-								 	'<input type="hidden" name="applyDetailList['+counter+'].subbomserial" id="applyDetailList'+counter+'.subbomserial" value=""/>' 	
-
 				 	var rowNode = $('#example')
 					.DataTable()
 					.row
@@ -171,8 +168,8 @@
 
 		autocomplete();
 		
-		$("#stockinApply\\.requestdate").val(shortToday());		
-		$("#stockinApply\\.requestdate").datepicker({
+		$("#stockinApply\\.arrivedate").val(shortToday());		
+		$("#stockinApply\\.arrivedate").datepicker({
 			dateFormat:"yy-mm-dd",
 			changeYear: true,
 			changeMonth: true,
@@ -348,18 +345,14 @@ function autocomplete(){
 		<fieldset>
 			<legend> 直接入库申请</legend>
 			<table class="form" id="table_form">				
-				<tr> 				
-					<td class="label" width="100px">申请单编号：</td>					
-					<td width="150px">
-						<form:input path="stockinApply.stockinapplyid" class="required read-only " value="保存后自动生成" /></td>
-															
+				<tr>															
 					<td width="100px" class="label">申请日期：</td>
 					<td width="100px">
-						<form:input path="stockinApply.requestdate" class="short read-only" /></td>
+						<form:input path="stockinApply.arrivedate" class="short read-only" /></td>
 					
 					<td width="100px" class="label">申请人：</td>
 					<td colspan="3">
-						<form:input path="stockinApply.requestuserid" class="short read-only" value="${userName }" /></td>
+						<form:input path="stockinApply.userid" class="short read-only" value="${userName }" /></td>
 				</tr>
 			</table>
 			

@@ -247,26 +247,35 @@
 	        ]
 	     
 		});
-		/*
-		t.on('change', 'tr td:nth-child(11),tr td:nth-child(13)',function() {
+		
+		t.on('change', 'tr td:nth-child(11)',function() {
 			
-			var currValue = $(this).find("input:text").val().trim();
-			var oldValue  = $(this).find("input:text").attr("oldValue");
-	        var fcurrValue = currencyToFloat(currValue);
-	        var foldValue = currencyToFloat(oldValue);
+			var arrivalCount  = $(this).find("input:text").attr("oldValue");
+	        var farrivalCount = currencyToFloat(arrivalCount);
 
 	        //检查是否已生成合同
-	        if(fcurrValue == foldValue){
+	        if(farrivalCount > 0){
 	        	//
-	        }else{
-	        	//
-	        	$(this).find("input:text").val(oldValue);
-	        	alert("该物料的合同已做成，修改请到[ 合同管理 ]。");	        	
-	        	//$().toastmessage('showWarningToast', "该物料的合同已经做成,请到合同管理修改采购数量。");
+	        	$(this).find("input:text").val(arrivalCount);
+	        	//alert("该物料的合同已收货，不能修改。");	        	
+	        	$().toastmessage('showWarningToast', "该物料的合同已收货，不能修改合同数量。");
 	        }
 			
 		});
-*/
+
+		t.on('change', 'tr td:nth-child(13)',function() {
+			
+			var stockinQty  = $(this).find("input:text").attr("oldValue");
+	        var quantity = currencyToFloat(stockinQty);
+
+	        //检查是否已生成合同
+	        if(quantity > 0){
+	        	$(this).find("input:text").val(stockinQty);	        	
+	        	$().toastmessage('showWarningToast', "该物料已入库，不能修改单价。");
+	        }
+			
+		});
+
 		/*
 		t.on('blur', 'tr td:nth-child(4),tr td:nth-child(7)',function() {
 			
@@ -433,9 +442,9 @@
 	     <!-- 当前库存 -->
 	    <td><span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></td>
 	     <!-- 建议采购量 -->
-	    <td><form:input value="${bom.purchaseQuantity }" oldValue="${bom.purchaseQuantity }" path="planDetailList[${status.index}].purchasequantity"  class="num mini"  /></td>
+	    <td><form:input value="${bom.purchaseQuantity }" oldValue="${bom.arrivalCount }" path="planDetailList[${status.index}].purchasequantity"  class="num mini"  /></td>
 	    <td><form:input value="${bom.supplierId }"  path="planDetailList[${status.index}].supplierid"  class="supplierid short" /></td>
-	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }"  oldValue="${bom.price }" /></td>
+	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }"  oldValue="${bom.stockinQty }" /></td>
 	    <td><span id="totalPrice${status.index}">${bom.totalPrice }</span>
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  value="${bom.totalPrice }" /></td>
 	    <td><span id="price${status.index}">${bom.lastPrice }</span>

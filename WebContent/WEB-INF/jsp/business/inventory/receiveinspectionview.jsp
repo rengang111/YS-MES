@@ -161,8 +161,8 @@
 							<form:hidden path="inspectList[${status.index}].materialid" value="${list.materialId }"/></td>
 						<td><span>${list.materialName }</span></td>
 						<td><span>${list.unit }</span></td>
-						<td><span>${list.quantity }</span></td>
-						<td><span>${list.contractQuantity }</span></td>					
+						<td><span>${list.contractQuantity }</span></td>
+						<td><span>${list.quantity }</span></td>					
 						<td>${list.checkResult }</td>
 						<td><span>${list.quantityQualified }</span></td>
 					</tr>

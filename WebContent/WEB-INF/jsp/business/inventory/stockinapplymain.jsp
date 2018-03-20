@@ -57,14 +57,14 @@
 	        	},
 				"columns": [
 							{"data": null,"className" : 'td-center'},
-							{"data": "stockInApplyId","className" : 'td-left'},
+							{"data": "arrivalId","className" : 'td-left'},
 							{"data": "materialId","className" : 'td-left'},
 							{"data": "materialName"},
 							{"data": "unit","className" : 'td-center'},
 							{"data": "quantity","className" : 'td-right'},
-							{"data": "requestDate","className" : 'td-center', "defaultContent" : ''},
+							{"data": "arriveDate","className" : 'td-center', "defaultContent" : ''},
 							{"data": "checkInDate","className" : 'td-center', "defaultContent" : '-'},
-							{"data": "stockinStatus","className" : 'td-center', "defaultContent" : '（待入库）'},
+							{"data": null,"className" : 'td-center', "defaultContent" : ''},
 							
 						],
 				"columnDefs":[
@@ -73,12 +73,27 @@
 		                    }},
 				    		{"targets":1,"render":function(data, type, row){
 				    			var rtn = "";
-				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["stockInApplyId"] +"')\">" + data + "</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["arrivalId"] +"')\">" + data + "</a>";
 				    			return rtn;
 				    		}},
 				    		{"targets":3,"render":function(data, type, row){
 				    			return jQuery.fixedWidth(data,46);		
-				    		}}			    		
+				    		}},
+				    		{"targets":8,"render":function(data, type, row){
+				    			var check = row["checkDate"];
+				    			var stockin = row["checkInDate"];
+				    			var rtn = "";
+				    			if(check  == null || check == ""){
+				    				rtn = "待检验";
+				    			}else if(stockin  == null || stockin == ""){
+				    				rtn = "待入库";
+				    			}else{
+				    				rtn = "已入库";
+				    				
+				    			}				    			
+				    			return rtn;
+				    		}}		
+				    	
 			           
 			         ] 
 			}

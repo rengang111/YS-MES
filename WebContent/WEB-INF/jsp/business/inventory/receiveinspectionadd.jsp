@@ -265,7 +265,7 @@
 						<td><form:select path="inspectList[${status.index}].checkresult" style="width: 100px;">
 								<form:options items="${resultList}" 
 									itemValue="key" itemLabel="value"/></form:select></td>
-						<td><span><form:input path="inspectList[${status.index}].quantityqualified" value="${list.quantityQualified }" class="num short quantity"/></span></td>
+						<td><span><form:input path="inspectList[${status.index}].quantityqualified" value="${list.quantity }" class="num short quantity"/></span></td>
 					</tr>
 					<script type="text/javascript">
 							var index = '${status.index}';

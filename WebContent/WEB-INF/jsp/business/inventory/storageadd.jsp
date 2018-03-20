@@ -143,6 +143,13 @@
 		var maxW = $("#container").width();
 		var DivWidth = maxW -80 + "px";
 		$(".showPhotoDiv").css("width",DivWidth);
+		
+		//是否是直接入库处理
+		var ysid='${contract.YSId }';
+		if(ysid == null || ysid == ''){
+			$('.viewFlag').hide();
+		}
+		
 	});
 	
 	function doEdit(contractId,arrivalId) {
@@ -173,7 +180,7 @@
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
-			<tr> 				
+			<tr class="viewFlag"> 				
 				<td class="label" width="100px">耀升编号：</td>					
 				<td width="200px">&nbsp;${contract.YSId }</td>
 							
@@ -182,7 +189,7 @@
 				<td width="100px" class="label">成品名称：</td>
 				<td>${contract.productName }</td>
 			</tr>
-			<tr>							
+			<tr class="viewFlag">							
 				<td class="label">合同编号：</td>					
 				<td>&nbsp;<a href="#" onClick="showContract('${contract.contractId }')">${contract.contractId }</a></td>								 	
 				<td class="label">供应商：</td>					
@@ -205,7 +212,7 @@
 		
 	<fieldset class="action" style="text-align: right;margin-top:-20px">
 		<button type="button" id="insert" class="DTTT_button">确认入库</button>
-		<button type="button" id="showStockin" class="DTTT_button">查看入库记录</button>
+	<!-- 	<button type="button" id="showStockin" class="DTTT_button">查看入库记录</button> -->
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
 	<fieldset style="margin-top: -40px;">

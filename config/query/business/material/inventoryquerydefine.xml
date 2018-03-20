@@ -365,6 +365,7 @@
    		<w name="A.fullField" des=""  reqName="keyword1"  dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.fullField" des=""  reqName="keyword2"  dtype="ch" oper="like"  lg="AND" bt="" />
   	  	<w name="A.receiptId" des=""  reqName="receiptId" dtype="ch" oper="="  lg="AND" bt="" />
+  	  	<w name="A.arrivelId" des=""  reqName="arrivelId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
@@ -392,7 +393,7 @@
       <f name="A.quantity" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
-      <f name="A.contractQuantity" alias="" ctype="" />
+      <f name="IFNULL(A.contractQuantity,'***')" alias="contractQuantity" ctype="" />
       <f name="A.contractStorage" alias="" ctype="" />
       <f name="A.packagNumber" alias="" ctype="" />
       <f name="A.areaNumber" alias="" ctype="" />
@@ -684,31 +685,28 @@
     <where>
    		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  	<w name="A.stockinStatus"  des=""  reqName="stockinStatus"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.arrivalId"  des=""  reqName="arrivalId"  dtype="ch" oper="="  lg="AND" bt="" />
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
-      <f name="A.stockInApplyId" alias="" ctype="" />
+      <f name="A.arrivalId" alias="" ctype="" />
       <f name="A.receiptId" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
-      <f name="a.stockinStatus" alias="" ctype="料件入库状态" />
-      <f name="a.stockinStatus" alias="stockinStatusId" ctype="" />
+      <f name="a.checkResult" alias="" ctype="收货状态" />
+      <f name="a.checkResult" alias="checkResultId" ctype="" />
       <f name="A.remarks" alias="" ctype="" />
-      <f name="A.requestDate" alias="" ctype="" />
-      <f name="A.stockinType" alias="" ctype="" />
+      <f name="A.arriveDate" alias="" ctype="" />
+      <f name="A.checkDate" alias="" ctype="" />
       <f name="A.checkInDate" alias="" ctype="" />
-      <f name="A.requestUserId" alias="" ctype="" />
-      <f name="A.keepUser" alias="" ctype="" />
-      <f name="b.LoginName" alias="applyName" ctype="" />
-      <f name="c.LoginName" alias="storageName" ctype="" />
+      <f name="A.userId" alias="" ctype="" />
+      <f name="c.LoginName" alias="" ctype="" />
     </select>
-    <!--  -->
-    <from>v_stockinapplylist a LEFT JOIN s_user b ON b.userId=a.keepUser AND b.deleteFlag='0' LEFT JOIN s_user c ON c.userId=a.requestUserId AND c.deleteFlag='0' WHERE a.deleteFlag = '0' AND a.stockinType='010' </from>
-    <orderby>a.stockInApplyId,a.materialId</orderby>
-    <groupby>A.stockInApplyId</groupby>
+    <from>v_stockinapplylist a LEFT JOIN s_user c ON c.userId=a.userId AND c.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
+    <orderby>a.arrivalId,a.materialId</orderby>
+    <groupby></groupby>
     <having></having>
 	<power></power>    
   </query>
@@ -731,32 +729,26 @@
   </query>
   <query>
     <pool></pool>     
-    <name value="stockInApplyDetailList" />
+    <name value="getArrivaListByArrivalId" />
     <where>
-   	  	<w name="A.stockInApplyId" des=""  reqName="stockInApplyId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
-      <f name="A.stockInApplyId" alias="" ctype="" />
-      <f name="A.receiptId" alias="" ctype="" />
-      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.arrivalId" alias="" ctype="" />
+      <f name="a.arriveDate" alias="" ctype="" />
+      <f name="a.status" alias="" ctype="收货状态" />
+      <f name="a.status" alias="statusId" ctype="" />
+      <f name="b.unit" alias="" ctype="计量单位" />
       <f name="A.materialId" alias="" ctype="" />
-      <f name="a.materialName" alias="" ctype="" />
+      <f name="B.materialName" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
-      <f name="a.stockinStatus" alias="" ctype="料件入库状态" />
-      <f name="a.stockinStatus" alias="stockinStatusId" ctype="" />
       <f name="A.remarks" alias="" ctype="" />
-      <f name="A.requestDate" alias="" ctype="" />
-      <f name="A.stockinType" alias="" ctype="" />
-      <f name="A.checkInDate" alias="" ctype="" />
-      <f name="A.requestUserId" alias="" ctype="" />
-      <f name="A.keepUser" alias="" ctype="" />
-      <f name="b.LoginName" alias="applyName" ctype="" />
-      <f name="c.LoginName" alias="storageName" ctype="" />
+      <f name="c.LoginName" alias="" ctype="" />
     </select>
     <!--  -->
-    <from>v_stockinapplylist a LEFT JOIN s_user b ON b.userId=a.keepUser AND b.deleteFlag='0' LEFT JOIN s_user c ON c.userId=a.requestUserId AND c.deleteFlag='0' WHERE a.deleteFlag = '0' AND a.stockinType='010' </from>
-    <orderby>a.stockInApplyId,a.materialId</orderby>
+    <from>b_arrival a LEFT JOIN b_material b ON b.materialId=a.materialId AND b.deleteFlag='0' LEFT JOIN s_user c ON c.userId=a.userId AND c.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
+    <orderby>a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    
@@ -784,7 +776,7 @@
       <f name="A.checkerId" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
-      <f name="A.contractQuantity" alias="" ctype="" />
+      <f name="IFNULL(A.contractQuantity,'***')" alias="contractQuantity" ctype="" />
       <f name="A.receiptId" alias="" ctype="" />
       <f name="A.checkInDate" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
@@ -795,7 +787,7 @@
     <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
     <orderby>a.YSId,a.contractId,a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
-    <having>replace(stockinQty,',','') &lt; replace(A.contractQuantity,',','')</having>
+    <having></having>
 	<power>
 	</power>    
   </query>  

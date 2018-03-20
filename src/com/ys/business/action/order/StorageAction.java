@@ -95,9 +95,14 @@ public class StorageAction extends BaseAction {
 				dataMap = doSearchYszz(data,makeType);
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "showStockinDetail":
+				showStockinDetail();
+				rtnUrl = "/business/inventory/storageview";
+				break;
 			case "addinit":
-				rtnUrl = doAddInit();
-				return rtnUrl;
+				doAddInit();
+				rtnUrl = "/business/inventory/storageadd";
+				break;
 			case "edit":
 				doEdit();
 				rtnUrl = "/business/inventory/storageedit";
@@ -472,20 +477,27 @@ public class StorageAction extends BaseAction {
 		return dataMap;
 	}
 		
-	public String doAddInit(){
+	public void doAddInit(){
 
-		String rtnUrl = "/business/inventory/storageadd";
 		try{
-			String viewFlag = service.addInit();
-			if(("查看").equals(viewFlag)){
-				rtnUrl = "/business/inventory/storageview";
-			}
+			service.addInit();
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 		
-		return rtnUrl;
+	}
+	
+	
+	public void showStockinDetail(){
+
+		
+		try{
+			service.addInit();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
 	}
 
 	public void receiptListPrint(){

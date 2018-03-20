@@ -1230,6 +1230,23 @@ public class PurchasePlanService extends CommonService {
 		}
 	}
 	
+	public void getPurchasePlanForRawByMaterialId() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("purchasePlanForRawByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("rawMaterialId", materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			model.addAttribute("material",dataModel.getYsViewData().get(0));
+			model.addAttribute("planList",dataModel.getYsViewData());
+		}
+	}
+	
 	public HashMap<String, Object> getPurchaseMaterialList(String materialRecord) throws Exception {
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 

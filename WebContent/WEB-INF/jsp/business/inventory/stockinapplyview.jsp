@@ -67,39 +67,13 @@
 		
 		$("#doEdit").click(
 				function() {
-					var applyId = $('#stockinApply\\.stockinapplyid').val();
+					var applyId = $('#stockinApply\\.arrivalid').val();
 					var url = "${ctx}/business/stockinapply?methodtype=stockInApplyEdit"+"&applyId="+applyId;
 			location.href = url;
 		});
 		
 	});	
 	
-	
-	function doShowMaterial(recordid,parentid) {
-		//var height = setScrollTop();
-		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
-		var url = '${ctx}/business/material?methodtype=detailView';
-		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
-
-		layer.open({
-			offset :[10,''],
-			type : 2,
-			title : false,
-			area : [ '1100px', '520px' ], 
-			scrollbar : false,
-			title : false,
-			content : url,
-			//只有当点击confirm框的确定时，该层才会关闭
-			cancel: function(index){ 
-			 // if(confirm('确定要关闭么')){
-			    layer.close(index)
-			 // }
-			  $('#baseBomTable').DataTable().ajax.reload(null,false);
-			  return false; 
-			}    
-		});		
-
-	};
 	
 </script>
 
@@ -113,19 +87,19 @@
 	<form:form modelAttribute="formModel" method="POST"
 		id="formModel" name="formModel"  autocomplete="off">
 			
-		<form:hidden path="stockinApply.stockinapplyid" class="required read-only " value="${apply.stockInApplyId }" />
+		<form:hidden path="stockinApply.arrivalid" class="required read-only " value="${apply.arrivalId }" />
 		<fieldset>
 			<legend> 直接入库申请</legend>
 			<table class="form" id="table_form">				
 				<tr> 				
 					<td class="label" width="100px">申请单编号：</td>					
-					<td width="150px">${apply.stockInApplyId }</td>
+					<td width="150px">${apply.arrivalId }</td>
 															
 					<td width="100px" class="label">申请日期：</td>
-					<td width="150px">${apply.requestDate }</td>
+					<td width="150px">${apply.arriveDate }</td>
 					
 					<td width="100px" class="label">申请人：</td>
-					<td>${apply.storageName }</td>
+					<td>${apply.LoginName }</td>
 				</tr>
 			</table>			
 		</fieldset>	

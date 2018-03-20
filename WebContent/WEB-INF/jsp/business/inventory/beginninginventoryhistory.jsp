@@ -37,6 +37,19 @@
 				<th style="width:50px;" >修改人</th>
 			</tr>
 		</thead>
+		<tfoot>
+			<tr>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th>合计：</th>
+				<th style="text-align: right;"><span id="totalValue"></span></th>
+				<th></th>
+				
+			</tr>
+		</tfoot>
 	</table>
 </div>
 </fieldset>
@@ -50,6 +63,8 @@ $(document).ready(function() {
 	supplierPriceView();
 	//供应商列表点击颜色变化
 	selectedColor();
+	
+	
     	
 });
 
@@ -91,6 +106,7 @@ function supplierPriceView() {
 					$("#keyword1").val(data["keyword1"]);
 					$("#keyword2").val(data["keyword2"]);						
 					fnCallback(data);
+					sumFn();
 
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -172,6 +188,20 @@ function doDelete(recordId){
 	}else{
 		//
 	}
+}
+function sumFn(){
+	
+	var sum7 = 0;
+	$('#TSupplier tbody tr').each (function (){
+		
+		var contractValue = $(this).find("td").eq(6).text();////合同
+		contractValue= currencyToFloat(contractValue);
+		
+		sum7 = sum7 + contractValue;
+					
+	});	
+	
+	$('#totalValue').html(floatToCurrency(sum7));
 }
 </script>
 </body>

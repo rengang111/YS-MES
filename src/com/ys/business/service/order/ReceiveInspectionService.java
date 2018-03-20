@@ -304,7 +304,7 @@ public class ReceiveInspectionService extends CommonService  {
 		
 		B_ArrivalData dt = new B_ArrivalData();
 		String where = "arrivalId ='"+arrivalId +
-				"' AND materialId ='"+ materialId+"'";
+				"' AND materialId ='"+ materialId+"' AND deleteFlag='0' ";
 		
 		List list = new B_ArrivalDao().Find(where);
 		
@@ -313,7 +313,7 @@ public class ReceiveInspectionService extends CommonService  {
 		
 		dt = (B_ArrivalData) list.get(0);		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ReceiveInspctionInsert",userInfo);
+				"ArrivalUpdate",userInfo);
 		copyProperties(dt,commData);
 		dt.setStatus(Constants.ARRIVAL_STS_2);//已检验
 		

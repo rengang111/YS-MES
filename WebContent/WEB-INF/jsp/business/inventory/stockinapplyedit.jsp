@@ -23,8 +23,6 @@
 					var orderQuantity = '${order.totalQuantity}';
 					var trhtml = "";
 					var rowIndex = counter + 1;
-					var hidden =	'<input type="hidden" name="applyDetailList['+counter+'].subbomid" id="applyDetailList'+counter+'.subbomid" value=""/>'+
-								 	'<input type="hidden" name="applyDetailList['+counter+'].subbomserial" id="applyDetailList'+counter+'.subbomserial" value=""/>' 	
 
 				 	var rowNode = $('#example')
 					.DataTable()
@@ -199,6 +197,8 @@
 		foucsInit();
 
 		$(".DTTT_container").css('float','left');
+		
+		$('#stockinApply\\.remarks').val(replaceTextarea('${apply.remarks}'));
 	});	
 	
 	
@@ -345,20 +345,20 @@ function autocomplete(){
 	<form:form modelAttribute="formModel" method="POST"
 		id="formModel" name="formModel"  autocomplete="off">
 			
-		<form:hidden path="stockinApply.stockinapplyid" value="${apply.stockInApplyId }" />
-		<form:hidden path="stockinApply.recordid" value="${apply.recordId }" />
+		<form:hidden path="stockinApply.arrivalid" value="${apply.arrivalId }" />
+		
 		<fieldset>
 			<legend> 直接入库申请</legend>
 			<table class="form" id="table_form">				
 				<tr>
 					<td class="label" width="100px">申请单编号：</td>
-					<td width="150px">${apply.stockInApplyId }</td>
+					<td width="150px">${apply.arrivalId }</td>
 
 					<td width="100px" class="label">申请日期：</td>
-					<td width="150px">${apply.requestDate }</td>
+					<td width="150px">${apply.arrivedate }</td>
 
 					<td width="100px" class="label">申请人：</td>
-					<td>${apply.storageName }</td>
+					<td>${apply.LoginName }</td>
 				</tr>
 			</table>			
 		</fieldset>	
@@ -389,7 +389,10 @@ function autocomplete(){
 								<td><span>${detail.materialName }</span></td>					
 								<td><span>${detail.unit }</span></td>
 								<td><form:input path="applyDetailList[${status.index}].quantity" value="${detail.quantity }" class="quantity num short"/></td>
+							
+									<form:hidden path="applyDetailList[${status.index}].recordid" value="${detail.recordId }" />
 							</tr>
+							
 								<script type="text/javascript">
 									
 									counter++;
@@ -404,9 +407,7 @@ function autocomplete(){
 			<legend> 备注信息</legend>
 			<table>
 				<tr>				
-					<td>
-						<form:textarea path="stockinApply.remarks" rows="3" cols="80" /></td>
-					
+					<td><form:textarea path="stockinApply.remarks" rows="3" cols="80" /></td>					
 				</tr>		
 			</table>
 		</fieldset>

@@ -194,6 +194,10 @@ public class Constants {
 	
 	public static final String ARRIVAL_STS_1 = "010";//待报检
 	public static final String ARRIVAL_STS_2 = "020";//已报检
+
+	public static final String ARRIVAL_TYPE_1 = "010";//合同收货
+	public static final String ARRIVAL_TYPE_2 = "020";//直接入库
+	
 	/**
 	 * 进料报检结果
 	 */

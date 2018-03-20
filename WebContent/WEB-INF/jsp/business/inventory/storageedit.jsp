@@ -118,6 +118,13 @@
 			
 		});
 		
+
+		//是否是直接入库处理
+		var ysid='${contract.YSId }';
+		if(ysid == null || ysid == ''){
+			$('.viewFlag').hide();
+		}
+		
 	});
 	
 	
@@ -145,7 +152,7 @@
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
-			<tr> 				
+			<tr class="viewFlag">	
 				<td class="label" width="100px">耀升编号：</td>					
 				<td width="200px">&nbsp;${contract.YSId }</td>
 							
@@ -154,7 +161,7 @@
 				<td width="100px" class="label">成品名称：</td>
 				<td>${contract.productName }</td>
 			</tr>
-			<tr>							
+			<tr class="viewFlag">
 				<td class="label">合同编号：</td>					
 				<td>&nbsp;${contract.contractId }</td>								 	
 				<td class="label">供应商：</td>					
@@ -202,7 +209,7 @@
 							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
 						<td>${list.materialName }</td>
 						<td>${list.contractQuantity }</td>
-						<td>${list.contractStorage }</td>
+						<td>${list.quantity }</td>
 						<td><form:input path="stockList[${status.index}].quantity"  value="${list.quantity }" class="num short quantity" /></td>
 						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
 								<form:options items="${packagingList}" 

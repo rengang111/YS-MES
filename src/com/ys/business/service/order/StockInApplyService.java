@@ -23,11 +23,13 @@ import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.QuotationModel;
 import com.ys.business.action.model.order.StockInApplyModel;
+import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_QuotationDao;
 import com.ys.business.db.dao.B_QuotationDetailDao;
 import com.ys.business.db.dao.B_StockInApplyDao;
 import com.ys.business.db.dao.B_StockInApplyDetailDao;
+import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_QuotationData;
@@ -140,30 +142,18 @@ public class StockInApplyService extends CommonService {
 	}
 
 	
-	private B_StockInApplyData getApplyIdByParentId(
-			B_StockInApplyData apply) throws Exception {
-		
-		String parentId = BusinessService.getshortYearcode()
-				+ BusinessConstants.SHORTNAME_RKSQ;
-		
-		dataModel = new BaseModel();
-		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
-		dataModel.setQueryName("getMAXStockinApplyId");		
-		baseQuery = new BaseQuery(request, dataModel);
-		//查询条件   
-		userDefinedSearchCase.put("parentId", parentId);		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();	 
-		
-		//取得已有的最大流水号(Sql已经加一)
-		int code =Integer.parseInt(dataModel.getYsViewData().get(0).get("MaxSubId"));				
-		String id = BusinessService.getStockInApplyId(parentId,code, false);
-		
-		apply.setStockinapplyid(id);
-		apply.setParentid(parentId);
-		apply.setSubid(String.valueOf(code));	
+	
+	public String getArriveId() throws Exception {
 
-		return apply;
+		String key = CalendarUtil.fmtYmdDate();
+		dataModel.setQueryName("getMAXArrivalId");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("arriveDate", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		baseQuery.getYsFullData();	
+		
+		String code = dataModel.getYsViewData().get(0).get("MaxSubId");		
+		return BusinessService.getArriveRecordId(code);			
 	}
 
 	//
@@ -228,29 +218,26 @@ public class StockInApplyService extends CommonService {
 			
 			ts.begin();
 					
-			B_StockInApplyData reqData = reqModel.getStockinApply();
+			B_ArrivalData reqData = reqModel.getStockinApply();
+			String remarks = reqData.getRemarks();
 			
-			String recordId = reqData.getRecordid();
-			if( isNullOrEmpty(recordId) ){
-				reqData = getApplyIdByParentId(reqData);//申请编号
-				//直接入库申请信息
-				insertStockInApply(reqData);
+			applyId = reqData.getArrivalid();
+			if( isNullOrEmpty(applyId) ){
+				applyId = getArriveId();//申请编号
 			}else{
-				updateStockInApply(reqData);
+				deleteArrivalById(applyId);
 			}			
 			
-			applyId = reqData.getStockinapplyid();
-			String where = " stockInApplyId = '"+applyId +"'";
-			deleteApplyDetail(where);
+			List<B_ArrivalData> reqDataList = reqModel.getApplyDetailList();
 			
-			List<B_StockInApplyDetailData> reqDataList = reqModel.getApplyDetailList();
-			
-			for(B_StockInApplyDetailData data:reqDataList ){
+			for(B_ArrivalData data:reqDataList ){
 				
 				String materId = data.getMaterialid();
+				String quantity = data.getQuantity();
 				//过滤空行或者被删除的数据
-				if(notEmpty(materId)){					
-					data.setStockinapplyid(applyId);
+				if(notEmpty(materId) && notEmpty(quantity)){					
+					data.setArrivalid(applyId);
+					data.setRemarks(remarks);
 					insertApplyDetail(data);
 				}
 			}
@@ -266,15 +253,24 @@ public class StockInApplyService extends CommonService {
 		
 	}	
 
-	/*
-	 * BOM详情删除处理
-	 */
-	private void deleteApplyDetail(String where) {
+	//删除待报检的记录
+	@SuppressWarnings("unchecked")
+	private void deleteArrivalById(String arrivalId) throws Exception {
+
+		String where = " arrivalId = '"+arrivalId+
+				"' AND deleteFlag='0' ";
 		
-		try{
-			new B_StockInApplyDetailDao().RemoveByWhere(where);
-		}catch(Exception e){
-			//nothing
+		List<B_ArrivalData> list = new B_ArrivalDao().Find(where);
+		if(list.size() > 0){
+			
+			for(B_ArrivalData data:list){
+
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"ArrivalDelete",userInfo);
+				copyProperties(data,commData);
+				new B_ArrivalDao().Store(data);				
+				
+			}
 		}		
 	}
 	
@@ -290,45 +286,27 @@ public class StockInApplyService extends CommonService {
 
 	}
 	
-	/**
-	 * 
-	 * 
-	 */
-	private void insertStockInApply(
-			B_StockInApplyData apply) throws Exception{
-			
-			
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"StockInApplyInsert",userInfo);
-		copyProperties(apply,commData);
-		
-		guid = BaseDAO.getGuId();
-		apply.setRecordid(guid);
-		apply.setStockintype("010");//直接入库
-		apply.setStockinstatus("020");//待入库
-		apply.setRequestuserid(userInfo.getUserId());
-		apply.setRequestdate(CalendarUtil.fmtYmdDate());
-		apply.setRemarks(replaceTextArea(apply.getRemarks()));//换行符转换
-		
-		new B_StockInApplyDao().Create(apply);
-
-	}
 	
 	private void insertApplyDetail(
-			B_StockInApplyDetailData detailData) throws Exception{
+			B_ArrivalData apply) throws Exception{
 			
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"StockInApplyDetailInsert",userInfo);
-		copyProperties(detailData,commData);
-		
+		copyProperties(apply,commData);
+
 		guid = BaseDAO.getGuId();
-		detailData.setRecordid(guid);
+		apply.setRecordid(guid);
+		apply.setStatus(Constants.ARRIVAL_STS_1);//待报检
+		apply.setArrivaltype(Constants.ARRIVAL_TYPE_2);//直接入库
+		apply.setUserid(userInfo.getUserId());
+		apply.setArrivedate(CalendarUtil.fmtYmdDate());
+		apply.setRemarks(replaceTextArea(apply.getRemarks()));//换行符转换
 		
-		new B_StockInApplyDetailDao().Create(detailData);
+		new B_ArrivalDao().Create(apply);
 
 	}	
 
-	private void updateStockInApply(B_StockInApplyData apply) 
+	private void updateStockInApply(B_ArrivalData apply) 
 			throws Exception{
 		
 		//取得更新前数据
@@ -339,7 +317,7 @@ public class StockInApplyService extends CommonService {
 			//
 		}
 		if(db == null){
-			insertStockInApply(apply);
+			getArriveId();
 		}else{
 			//处理共通信息
 			copyProperties(db,apply);
@@ -357,10 +335,10 @@ public class StockInApplyService extends CommonService {
 	
 	public void getStockInApplyDetail(String applyId) throws Exception {
 
-		dataModel.setQueryName("stockInApplyDetailList");		
+		dataModel.setQueryName("getArrivaListByArrivalId");		
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase = new HashMap<String, String>();
-		userDefinedSearchCase.put("stockInApplyId", applyId);
+		userDefinedSearchCase.put("arrivalId", applyId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();	
 			

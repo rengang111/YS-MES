@@ -4,8 +4,7 @@ import com.ys.util.basequery.common.BaseModel;
 
 import java.util.List;
 
-import com.ys.business.db.data.B_StockInApplyData;
-import com.ys.business.db.data.B_StockInApplyDetailData;
+import com.ys.business.db.data.B_ArrivalData;
 
 public class StockInApplyModel extends BaseModel {
 	/**
@@ -13,20 +12,20 @@ public class StockInApplyModel extends BaseModel {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private List<B_StockInApplyDetailData> applyDetailList;
-	private B_StockInApplyData stockinApply;
+	private List<B_ArrivalData> applyDetailList;
+	private B_ArrivalData stockinApply;
 
-	public B_StockInApplyData getStockinApply() {
+	public B_ArrivalData getStockinApply() {
 		return this.stockinApply;
 	}
-	public void setStockinApply(B_StockInApplyData apply) {
+	public void setStockinApply(B_ArrivalData apply) {
 		this.stockinApply = apply;
 	}
 	
-	public List<B_StockInApplyDetailData> getApplyDetailList() {
+	public List<B_ArrivalData> getApplyDetailList() {
 		return this.applyDetailList;
 	}
-	public void setApplyDetailList(List<B_StockInApplyDetailData> applyDetailList) {
+	public void setApplyDetailList(List<B_ArrivalData> applyDetailList) {
 		this.applyDetailList = applyDetailList;
 	}
 	

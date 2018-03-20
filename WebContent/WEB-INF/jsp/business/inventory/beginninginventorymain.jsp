@@ -75,10 +75,11 @@
 					{"data": "materialId"},//1
 					{"data": "materialName"},//2
 					{"data": "dicName","className" : 'td-center'},//3
-					{"data": null,"className" : 'td-center'},//4
+					{"data": "reviseQty","className" : 'td-right'},//4
 					{"data": "beginningInventory","className" : 'td-right'},//5
 					{"data": "beginningPrice","className" : 'td-right'},//6
 					{"data": "MAPrice","className" : 'td-right'},//7
+					{"data": "planQty","className" : 'td-right'},//	8
 					{"data": "contractQty","className" : 'td-right'},//	8
 					{"data": "stockinQtiy","className" : 'td-right'},//9
 					{"data": "stockoutQty","className" : 'td-right'},//10
@@ -104,7 +105,7 @@
 		    			name = jQuery.fixedWidth(name,36);				    			
 		    			return name;
 		    		}},
-		    		{"targets":15,"render":function(data, type, row){
+		    		{"targets":16,"render":function(data, type, row){
 		    			//实际库存修正
 		    			var confirmFlag = row["quantityEditFlag"];
 		    			var quantityOnHand = currencyToFloat(row["quantityOnHand"]);
@@ -189,40 +190,42 @@
 		    		{"targets":8,"render":function(data, type, row){
 		     			var rtn = "";
 		    			var qty= floatToCurrency(data);
-		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
 		    			return rtn;		    			
 		    		}},
 		    		{"targets":9,"render":function(data, type, row){
+		     			var rtn = "";
+		    			var qty= floatToCurrency(data);
+		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			return rtn;		    			
+		    		}},
+		    		{"targets":10,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowStockIn('" + row["materialId"] +"')\">" + qty + "</a>";
 		    			return rtn;		    			
 		    		}},
-		    		{"targets":10,"render":function(data, type, row){
+		    		{"targets":11,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowStockOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
 		    			return rtn;
 		    		}},
-		    		{"targets":11,"render":function(data, type, row){//实际库存
+		    		{"targets":12,"render":function(data, type, row){//实际库存
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + qty + "</a>";
 		    			return rtn;
 		    		}},
-		    		{"targets":12,"render":function(data, type, row){
+		    		{"targets":13,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
-		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowWaitOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
 		    			return rtn;
 		    		}},
-		    		{"targets":13,"render":function(data, type, row){
-		    						    			
-		    			return floatToCurrency(data);
-		    		}},
-		    		{"targets":14,"render":function(data, type, row){
+		    		{"targets":15,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
@@ -239,8 +242,9 @@
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 		    			//实际库存修正
+		    			var quantity = floatToCurrency(data);
 		    			var txt = "";
-		    			txt +=  "<a href=\"###\" onClick=\"showInventoryHistory('" + row["materialId"] +"')\">" + "修改记录" + "</a>";
+		    			txt +=  "<a href=\"###\" onClick=\"showInventoryHistory('" + row["materialId"] +"')\">" + quantity + "</a>";
 		    					    			
 		    			return  txt;	    			
 		    		}},
@@ -295,9 +299,24 @@
 	}
 
 	function doShowPlan(materialId) {
+		var materialType=$('#materialType').val();
+		alert(materialType)
+		if(materialType == 'A'){
+			var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanForRawByMaterialId&materialId=' + materialId;
+			callProductDesignView("采购方案",url);
+			
+		}else{
+			var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanByMaterialId&materialId=' + materialId;
+			callProductDesignView("待出数量",url);
+		}
+		
+	}
+
+
+	function doShowPlan2(materialId) {
 
 		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanByMaterialId&materialId=' + materialId;
-		callProductDesignView("采购方案",url);
+		callProductDesignView("待出数量",url);
 		
 	}
 
@@ -512,10 +531,11 @@
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 25px;">单位</th>
-					<th style="width: 40px;">查看</th>
+					<th style="width: 40px;">修改记录</th>
 					<th style="width: 50px;">期初库存</th>
 					<th style="width: 50px;">期初单价</th>
 					<th style="width: 50px;">移动<br>平均单价</th>
+					<th style="width: 50px;">总需求数</th>
 					<th style="width: 50px;">总合同数</th>
 					<th style="width: 50px;">总到货数</th>
 					<th style="width: 50px;">总领料数</th>
