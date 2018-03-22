@@ -582,7 +582,7 @@ public class StockOutService extends CommonService {
 			B_StockOutDetailData stock) throws Exception {
 
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"PurchaseStockInUpdate",userInfo);
+				"StockOutDetailInsert",userInfo);
 		copyProperties(stock,commData);
 		guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);

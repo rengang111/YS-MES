@@ -27,6 +27,7 @@ import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
+import com.ys.business.db.dao.B_StockOutCorrectionDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
@@ -35,6 +36,7 @@ import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
+import com.ys.business.db.data.B_StockOutCorrectionData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
@@ -345,11 +347,11 @@ public class PurchasePlanService extends CommonService {
 				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
 				
 				//更新虚拟库存
-				String purchase = "0";//采购量
+				float purchase = 0;//采购量
 				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
 				float funit = stringToFloat(unit);
 				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
-				String requirement = String.valueOf(-1 * totalQuantity / funit);
+				float requirement = (-1 * totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						
 			}
@@ -361,11 +363,11 @@ public class PurchasePlanService extends CommonService {
 
 				//旧数据物料的待出库"减少"处理
 				String purchase = String.valueOf(-1 * stringToFloat(old.getPurchasequantity()));
-				String requirement = String.valueOf(-1 * stringToFloat(old.getManufacturequantity()));
-				updateMaterial(oldmaterilid,"0",requirement);
+				float requirement = -1 * stringToFloat(old.getManufacturequantity());
+				updateMaterial(oldmaterilid,0,requirement);
 				
 				old.setPurchasequantity(purchase);
-				old.setManufacturequantity(requirement);
+				old.setManufacturequantity(String.valueOf(requirement));
 				
 				//旧数据的删除处理
 				deletePurchasePlanDetail(old);				
@@ -389,9 +391,9 @@ public class PurchasePlanService extends CommonService {
 				insertPurchasePlanDetail(detail);			
 
 				//更新虚拟库存
-				String requirement = detail.getManufacturequantity();
+				Float requirement = stringToFloat(detail.getManufacturequantity());
 
-				updateMaterial(materilid,"0",requirement);
+				updateMaterial(materilid,0,requirement);
 				
 			}//新数据:采购方案处理
 			
@@ -463,8 +465,8 @@ public class PurchasePlanService extends CommonService {
 					//if(arrivalFlag){
 						updateMaterial(
 								materialId, 
-								String.valueOf((-1) * purchaseQty),
-								"0");
+								((-1) * purchaseQty),
+								0);
 				//}
 				//}
 			}
@@ -476,11 +478,11 @@ public class PurchasePlanService extends CommonService {
 					
 				//更新虚拟库存
 				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
-				String purchase = "0";//采购量
+				float purchase = 0;//采购量
 				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
 				float funit = stringToFloat(unit);
 				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
-				String requirement = String.valueOf( totalQuantity / funit);
+				float requirement = ( totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						
 			}	
@@ -528,8 +530,8 @@ public class PurchasePlanService extends CommonService {
 				}
 				
 				//更新虚拟库存
-				String purchase = detail.getPurchasequantity();//采购量
-				String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
+				float purchase = stringToFloat(detail.getPurchasequantity());//采购量
+				float requirement = 0;//需求量:真实的需求量在订单采购时已经计算过
 				updateMaterial(materilid,purchase,requirement);
 			}
 			
@@ -705,9 +707,9 @@ public class PurchasePlanService extends CommonService {
 			for(B_PurchasePlanDetailData dt:list2){
 
 				//更新虚拟库存
-				String requirement = String.valueOf(-1 * stringToFloat(dt.getManufacturequantity()));//需求量
+				float requirement = (-1 * stringToFloat(dt.getManufacturequantity()));//需求量
 				
-				updateMaterial(dt.getMaterialid(),"0",requirement);
+				updateMaterial(dt.getMaterialid(),0,requirement);
 				
 				new B_PurchasePlanDetailDao().Remove(dt);
 			}
@@ -743,9 +745,10 @@ public class PurchasePlanService extends CommonService {
 			for(B_PurchaseOrderDetailData dt:list2){
 				
 				//更新虚拟库存
-				String purchase = String.valueOf(-1 * stringToFloat(dt.getQuantity()));//采购量
+				float purchase = (-1 * stringToFloat(dt.getQuantity()));//采购量
 				
-				updateMaterial(dt.getMaterialid(),purchase,"0");
+				updateMaterial(dt.getMaterialid(),purchase,0);
+				
 				new B_PurchaseOrderDetailDao().Remove(dt);
 			}
 			ts.commit();
@@ -806,8 +809,8 @@ public class PurchasePlanService extends CommonService {
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
 			String materialId,
-			String purchaseIn,
-			String requirementOut) throws Exception{
+			float purchaseIn,
+			float requirementOut) throws Exception{
 	
 		B_MaterialData data = new B_MaterialData();
 		B_MaterialDao dao = new B_MaterialDao();
@@ -828,8 +831,8 @@ public class PurchasePlanService extends CommonService {
 		float iWaitOut = stringToFloat(data.getWaitstockout());//待出库
 		float iWaitIn  = stringToFloat(data.getWaitstockin());//待入库
 		
-		iWaitOut = iWaitOut + stringToFloat(requirementOut);
-		iWaitIn = iWaitIn + stringToFloat(purchaseIn);
+		iWaitOut = iWaitOut + requirementOut;
+		iWaitIn = iWaitIn + purchaseIn;
 		
 		//虚拟库存 = 当前库存 + 待入库 - 待出库
 		float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		
@@ -1440,5 +1443,73 @@ public class PurchasePlanService extends CommonService {
 			rtnFlag = true;
 		
 		return rtnFlag;
+	}
+
+	/**
+	 * 保存领料的修正值
+	 * @return
+	 * @throws Exception
+	 */
+	public void insertStockoutCorrectionAndView() throws Exception {
+
+		//var materialId = request.getParameter("materialId");
+		
+		insertStockOutCorrection();//
+		
+		getPurchasePlanByMaterialId();
+		
+				
+	}
+	
+	private void insertStockOutCorrection(){
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+
+			String materialId = request.getParameter("materialId");
+			List<B_StockOutCorrectionData> reqList = reqModel.getCorrectionList();	
+
+			float quantityCount = 0;
+			for(B_StockOutCorrectionData stock:reqList){
+				float quantity = stringToFloat(stock.getQuantity());
+				
+				if(quantity == 0)
+					continue;
+				
+				insertStockOutCorrection(stock);
+
+				quantityCount = quantityCount + quantity;
+				
+			}
+			//更新虚拟库存
+			if(quantityCount > 0)
+				updateMaterial(materialId,0,(-1) * quantityCount);//减少"待出
+		
+			ts.commit();		
+			
+		}
+		catch(Exception e) {
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+
+	private void insertStockOutCorrection(
+			B_StockOutCorrectionData data) throws Exception{
+
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"StockOutCorrectionInsert",userInfo);
+		copyProperties(data,commData);		
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		new B_StockOutCorrectionDao().Create(data);	
 	}
 }

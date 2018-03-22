@@ -698,7 +698,7 @@
 <script type="text/javascript">
 	//包装描述
 	var packageCont = 0;
-	var dbCnt6 = '${labelCount}';
+	var dbCnt6 = '${packageCount}';
 	if(dbCnt6 >0 ){
 		packageCont = Number(dbCnt6)-1;
 	}

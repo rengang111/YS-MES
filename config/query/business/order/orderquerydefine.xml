@@ -202,7 +202,7 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_order AS A WHERE A.deleteFlag = '0'</from>
+    <from>b_order AS A </from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>
@@ -223,7 +223,7 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_orderdetail AS A WHERE A.deleteFlag = '0'</from>
+    <from>b_orderdetail AS A </from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>
@@ -241,7 +241,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_orderbom AS A WHERE  A.deleteFlag = '0'</from>
+    <from>b_orderbom AS A </from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>

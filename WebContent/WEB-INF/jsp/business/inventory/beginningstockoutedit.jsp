@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-<title>库存一览--采购方案</title>
+<title>领料修正</title>
 <script type="text/javascript">
 
 	function ajax(sessionFlag) {
@@ -41,17 +41,17 @@
 
 	$(document).ready(function() {
 		
-		ajax("true");
 		
-
-		$("#doEdit").click(
-				function() {
-					var materialId='${material.materialId }';
-					var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanByMaterialIdToEdit&materialId=' + materialId;
-
-					location.href = url;		
-		});
+		ajax("true");
 	
+		
+		$("#doSave").click(
+				function() {
+					var materialId = '${material.materialId }';
+					$('#attrForm').attr("action", "${ctx}/business/purchasePlan?methodtype=insertStockoutCorrection"+"&materialId="+materialId);
+					$('#attrForm').submit();
+		});
+		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
 			if ( $(this).hasClass('selected') ) {
@@ -62,12 +62,10 @@
 	            $(this).addClass('selected');
 	        }
 		});		
+
+		foucsInit();
 		
-		sumFn(5);
-		sumFn(6);
-		sumFn(7);
-		sumFn(8);
-		$('#waitout').html(floatToCurrency( currencyToFloat($('#totalValue5').html()) - currencyToFloat($('#totalValue8').html()) ))
+		//$('#waitout').html(floatToCurrency( currencyToFloat($('#totalValue5').html()) - currencyToFloat($('#totalValue8').html()) ))
 	})	
 	
 	function doSearch() {	
@@ -99,8 +97,8 @@
 <div id="container">
 <div id="main">
 
-	<form:form modelAttribute="formModel" method="POST"
-		id="formModel" name="formModel"  autocomplete="off">
+	<form:form modelAttribute="attrForm" method="POST"
+		id="attrForm" name="attrForm"  autocomplete="off">
 		
 		<fieldset>
 			<legend> 采购方案</legend>
@@ -109,12 +107,9 @@
 					<td class="label" width="100px">物料编号：</td>
 					<td width="120px">${material.materialId }</td>
 					<td class="label" width="70px">物料名称：</td> 
-					<td>${material.materialName }</td>		
-					<td class="label" width="100px">剩余待出库数量：</td>
-					<td width="100px"><span id="waitout"></span></td>
-					<td width="150px"><button type="button" id="doEdit" class="DTTT_button">修正领料数量</button></td> 			
-				</tr>
-			</table>
+					<td>${material.materialName }</td>
+					<td width="100px"><button type="button" id="doSave" class="DTTT_button">保存修正领料</button></td> 			
+			</table>		
 			<div class="list">
 				<table  id="TMaterial" class="display">
 					<thead>	
@@ -131,50 +126,59 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach var='list' items='${planList}' varStatus='status'>
-							<tr>
-								<td>${status.index +1 }</td>
-								<td>${list.planDate }</td>
-								<td>${list.YSId }</td>
-								<td>${list.productId }</td>
-								<td><span id="shortName${status.index }">${list.productName }</span></td>
-								<td>${list.manufactureQuantity }</td>
-								<td>${list.contractQty }</td>
-								<td>${list.stockinQty }</td>
-								<td class="td=right"><span id="stockoutQty${status.index }"></span></td>
-							</tr>
-							
-							<script type="text/javascript">
-								var materialName = '${list.productName}';
-								var index = '${status.index}';			
-								var stockoutQty = '${list.stockoutQty}';//实际出库数
-								var correctionQty = '${list.correctionQty}';//修正值
-								
-								var viewQty='0';
-								if (currencyToFloat(stockoutQty) == 0 && currencyToFloat(correctionQty) > 0 ){
-									viewQty = "(改)" + floatToCurrency( correctionQty);
-								}else{
-									viewQty = floatToCurrency( stockoutQty);
-								}
-								
-								$('#stockoutQty'+index).html(viewQty);
-								$('#shortName'+index).html(jQuery.fixedWidth(materialName,24));
-							</script>	
-						</c:forEach>
+					
+		<c:forEach var='list' items='${planList}' varStatus='status'>
+			<tr>
+				<td>${status.index +1 }</td>
+				<td>${list.planDate }</td>
+				<td>${list.YSId }
+					<form:hidden path="correctionList[${status.index}].ysid"  value="${list.YSId}"/>
+					<form:hidden path="correctionList[${status.index}].subbomno"  value="${list.subBomNo}"/>
+					<form:hidden path="correctionList[${status.index}].materialid"  value="${material.materialId}"/></td>
+				<td>${list.productId }</td>
+				<td><span id="shortName${status.index }">${list.productName }</span></td>
+				<td>${list.manufactureQuantity }</td>
+				<td>${list.contractQty }</td>
+				<td>${list.stockinQty }</td>
+				<td>
+					<div id="edit${status.index}">
+						<form:input path="correctionList[${status.index}].quantity"  
+							value="${list.stockoutQty}" class="short num"/>
+					</div>
+					<div id="view${status.index}">
+						${list.stockoutQty}					
+					</div>
+				</td>
+			</tr>
+			
+			<script type="text/javascript">
+				var index = '${status.index}';	
+				var materialName = '${list.productName}';
+				var stockoutQty = '${list.stockoutQty}';
+				var correctionQty = '${list.correctionQty}';//修正值
+				
+				correctionQty = currencyToFloat(correctionQty);
+				stockoutQty = 	currencyToFloat(stockoutQty);
+				if(stockoutQty > 0){
+					//$("#correctionList" + index + "\\.quantity").attr('readonly', "true");
+					$("#view"+index).html(floatToCurrency(stockoutQty) );
+					$("#edit"+index).remove();						
+					
+				}else{
+					if(correctionQty > 0 ){//修正值
+						$("#view"+index).html("(改)"+ floatToCurrency(correctionQty) );
+						$("#edit"+index).remove();						
+					}else{
+						$("#view"+index).remove();
+						$("#edit"+index).show();						
+					}					
+				}
+				$('#shortName'+index).html(jQuery.fixedWidth(materialName,24));
+				
+			</script>	
+		</c:forEach>		
+		
 					</tbody>
-					<tfoot>
-						<tr>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th></th>
-							<th>合计：</th>
-							<th style="text-align: right;"><span id="totalValue5"></span></th>
-							<th style="text-align: right;"><span id="totalValue6"></span></th>
-							<th style="text-align: right;"><span id="totalValue7"></span></th>
-							<th style="text-align: right;"><span id="totalValue8"></span></th>
-						</tr>
-					</tfoot>
 				</table>
 			</div>	
 	</fieldset>

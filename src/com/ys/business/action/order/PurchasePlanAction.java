@@ -154,6 +154,14 @@ public class PurchasePlanAction extends BaseAction {
 				getPurchasePlanForRawByMaterialId();
 				rtnUrl = "/business/inventory/beginninginventoryplanraw";
 				break;
+			case "purchasePlanByMaterialIdToEdit"://采购方案一览:修正领料数量
+				getPurchasePlanByMaterialId();
+				rtnUrl = "/business/inventory/beginningstockoutedit";
+				break;
+			case "insertStockoutCorrection"://采购方案一览:保存修正领料数量
+				insertStockoutCorrection();
+				rtnUrl = "/business/inventory/beginninginventoryplan";
+				break;
 				
 		}
 		
@@ -348,6 +356,18 @@ public class PurchasePlanAction extends BaseAction {
 		
 		try {
 			purchaseService.getPurchasePlanForRawByMaterialId();		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	
+	public void insertStockoutCorrection(){	
+		
+		try {
+			purchaseService.insertStockoutCorrectionAndView();		
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

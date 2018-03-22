@@ -338,7 +338,12 @@
 		
 		$("#insert").click(
 				function() {
-			if(ExFlagPI == 1){
+					var piid = $("#order\\.piid").val();
+			if(piid == ""){
+				$().toastmessage('showWarningToast', "请输入客户编号。");		
+				return;
+			}
+			if( ExFlagPI == 1){
 				$().toastmessage('showWarningToast', "PI编号已存在,请重新输入。");		
 				return;
 			}

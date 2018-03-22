@@ -254,6 +254,10 @@ public class StorageAction extends BaseAction {
 				dataMap = showInventoryHistory();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "stockOutCorrectionEditInit":
+				stockOutCorrectionEditInit();
+				rtnUrl = "/business/inventory/beginningstockoutcorrection";
+				break;
 				
 		}
 		
@@ -796,6 +800,14 @@ public class StorageAction extends BaseAction {
 	public HashMap<String, Object> showInventoryHistory() throws Exception{
 		
 		return service.showInventoryHistory();
+		
+	}
+	
+
+	public HashMap<String, Object> stockOutCorrectionEditInit() throws Exception{
+		
+		return null;
+		//return service.stockOutCorrectionEditInit();
 		
 	}
 	

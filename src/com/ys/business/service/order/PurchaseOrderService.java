@@ -312,51 +312,81 @@ public class PurchaseOrderService extends CommonService {
 			reqSupplierList = removeDuplicate(reqSupplier);
 			String materialId = request.getParameter("materialId");
 			String contractDelivery = request.getParameter("contractDelivery");
-
-			//更新采购方案,标识出本次创建合同的物料
-			//List<B_PurchasePlanDetailData> planDetail = getPurchasePlanDetail(YSId);
 			
 			//采购合同****************************************************
 			
 			//旧数据--开始↓:数据取得
 			List<B_PurchaseOrderData> contractDBList = 
 					getPurchaseOrderFromDB(YSId);
-			List<B_PurchaseOrderDetailData> contractDetailDBList = 
-					getPurchaseOrderDetailFromDB(YSId);
 			
-			//旧数据抵消处理:合同
-			List<String> reqContractList = new ArrayList<String>();
-			for(B_PurchaseOrderData db:contractDBList){
-
+			//旧数据抵消处理
+			///List<String> reqContractList = new ArrayList<String>();
+			///for(B_PurchaseOrderData db:contractDBList){
+			///	//只处理页面选择的供应商
+			///	if(isExsitCheck(db.getSupplierid(),reqSupplierList)){
+			///		reqContractList.add(db.getContractid());				
+			///	}
+			///}
+			
+			//旧数据抵消处理
+			for(B_PurchaseOrderData  contract:contractDBList){
+				String contractId = contract.getContractid();
+				String supplierId = contract.getSupplierid();
 				//只处理页面选择的供应商
-				if(isExsitCheck(db.getSupplierid(),reqSupplierList)){
-					boolean arrivalFlag = checkContractArrival(db.getContractid());
-					if(arrivalFlag){
-						//只有没有开始收货的合同可以删除
-						reqContractList.add(db.getContractid());
-						deletePurchaseOrder(db);
-						
-					}
+				if(!(isExsitCheck(supplierId,reqSupplierList))){
+					continue;
+				}
+				
+				List<B_PurchaseOrderDetailData> db = 
+						getPurchaseOrderDetailFromDB(YSId,contractId);
+				
+				int dbsize = db.size();
+				int deleteCnt = 0;
+				for(int i=0;i<dbsize;i++){
+
+					String materialdb = db.get(i).getMaterialid();
+					String quantity = db.get(i).getQuantity();
 					
-				}		
+					boolean arrivalFlag = checkContractArrival(contractId,materialdb);
+					
+					//没有收货记录
+					if(arrivalFlag){
+						deletePurchaseOrderDetail(db.get(i));
+						updateMaterial(
+								materialdb,
+								String.valueOf( (-1) * stringToFloat(quantity) ),
+								"0");//更新虚拟库存
+						
+						deleteCnt++;//处理件数
+					}
+				}
+				//该合同编号下的明细全部删除时,头信息也删除处理
+				if( dbsize > 0 && dbsize == deleteCnt ){
+					deletePurchaseOrder(YSId,contractId);
+				}
+				
 			}
 			
 			//旧数据抵消处理:合同明细
-			for(B_PurchaseOrderDetailData db:contractDetailDBList){
+			/*for(B_PurchaseOrderDetailData db:contractDetailDBList){
 				
 				//合同明细
 				//只处理页面选择的供应商
 				if(isExsitCheck(db.getContractid(),reqContractList)){
 
-					deletePurchaseOrderDetail(db);
+					boolean arrivalFlag = checkContractArrival(db.getContractid(),db.getMaterialid());
+					//没有收货记录
+					if(arrivalFlag){
+						deletePurchaseOrderDetail(db);
+						updateMaterial(
+								db.getMaterialid(),
+								String.valueOf( (-1) * stringToFloat(db.getQuantity()) ),
+								"0");//更新虚拟库存
+					}
 					
-					updateMaterial(
-							db.getMaterialid(),
-							String.valueOf( (-1) * stringToFloat(db.getQuantity()) ),
-							"0");//更新虚拟库存
 				}
 								
-			}
+			}*/
 			//旧数据处理--结束↑
 			
 			//新数据取得:从采购方案表中取得,集计单位:供应商
@@ -382,7 +412,6 @@ public class PurchaseOrderService extends CommonService {
 				if(!isExsitCheck(supplierId,reqSupplierList))
 					continue;
 				
-				//
 				B_PurchaseOrderData oldDb = getOldContractInfo(YSId,supplierId);
 				String contractId = "";
 				if(oldDb == null || ("").equals(oldDb)){//insert
@@ -396,8 +425,8 @@ public class PurchaseOrderService extends CommonService {
 					String typeSubId = getContractTypeCode(typeParentId);
 					String suplierSubId = getContractSupplierCode(supplierParentId);
 
-					//3位流水号格式化	
-					//采购合同编号:16D081-WL002
+					//5位流水号格式化	
+					//采购合同编号:16D00081-WL00002
 					contractId = BusinessService.getContractCode(type,typeSubId, suplierSubId,shortName);
 				
 					//新增采购合同*************
@@ -450,20 +479,23 @@ public class PurchaseOrderService extends CommonService {
 						d.setVersion(1);//默认为1
 						
 						insertPurchaseOrderDetail(d);
+
+						updateMaterial(materialId1,quantity,"0");//更新虚拟库存
 						
 					}else{//update
-						//因为有合同的累计入库数量,所以做更新处理
-						oldDb1.setPrice(dt.get("price"));
-						oldDb1.setQuantity(quantity);
-						oldDb1.setTotalprice(dt.get("totalPrice"));
-						oldDb1.setUnitquantity(dt.get("unitQuantity"));
-						updatePurchaseOrderDetail(oldDb1);
-					}					
-					
-
-					updateMaterial(materialId1,quantity,"0");//更新虚拟库存
-					
-					continue;					
+						//
+						boolean arrivalFlag = checkContractArrival(contractId,materialId1);						
+						//没有收货记录
+						if(arrivalFlag){
+							oldDb1.setPrice(dt.get("price"));
+							oldDb1.setQuantity(quantity);
+							oldDb1.setTotalprice(dt.get("totalPrice"));
+							oldDb1.setUnitquantity(dt.get("unitQuantity"));
+							updatePurchaseOrderDetail(oldDb1);
+							
+							updateMaterial(materialId1,quantity,"0");//更新虚拟库存
+						}
+					}										
 				}		
 			}	
 			
@@ -567,6 +599,26 @@ public class PurchaseOrderService extends CommonService {
 		copyProperties(db,commData);
 		
 		new B_PurchaseOrderDetailDao().Store(db);	
+
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	private void deletePurchaseOrder(String YSId,String contractId) throws Exception{
+		
+		String where = " YSId = '"+YSId +"'"+
+				" AND contractId = '"+contractId +"'" +
+				" AND deleteFlag = '0' ";
+		List<B_PurchaseOrderData> dbList = new B_PurchaseOrderDao().Find(where);
+		
+		if(dbList != null & dbList.size() > 0){
+			B_PurchaseOrderData db = dbList.get(0);
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"purchaseOrderdelete",userInfo);			
+			copyProperties(db,commData);
+
+			new B_PurchaseOrderDao().Store(db);
+		}
 
 	}
 	
@@ -1015,25 +1067,7 @@ public class PurchaseOrderService extends CommonService {
 	private B_PurchaseOrderData geRoutinePurchaseContractId(
 			B_PurchaseOrderData dt,
 			String YSId,String shortName,String purchaseType) throws Exception{
-		
-		//取得供应商的合同流水号
-		//父编号:年份+供应商简称
-		
-		//取得供应商的合同流水号
-		//父编号:年份+供应商简称
-		//String typeParentId = BusinessService.getshortYearcode()+Constants.PURCHASE_TYPE_T;
-		
-		//String supplierParentId = BusinessService.getshortYearcode() + shortName;
-		
-		//String typeSubId = getContractTypeCode(typeParentId);
-		//String suplierSubId = getContractSupplierCode(supplierParentId);
-
-		//3位流水号格式化	
-		//采购合同编号:16D081-WL002
-		//String contractId = BusinessService.getContractCodeD(typeSubId, suplierSubId,shortName);
-
-		
-		
+				
 		//3位流水号格式化	
 		//采购合同编号:16YS081-WL002
 		String type = getContractType(purchaseType);
@@ -1081,7 +1115,12 @@ public class PurchaseOrderService extends CommonService {
 			List<B_PurchaseOrderDetailData> reqDetail = reqModel.getDetailList();
 			for(B_PurchaseOrderDetailData d:reqDetail){
 
+
+				String purchase = d.getQuantity();//采购量
+				String materilid = d.getMaterialid();
 				
+				if(isNullOrEmpty(materilid) || isNullOrEmpty(purchase))
+					continue;//过滤无效数据
 				
 				//合同明细
 				d.setYsid(YSId);
@@ -1089,8 +1128,6 @@ public class PurchaseOrderService extends CommonService {
 				insertPurchaseOrderDetail(d);	
 				
 				//更新虚拟库存
-				String purchase = d.getQuantity();//采购量
-				String materilid = d.getMaterialid();
 				String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
 				updateMaterial(materilid,purchase,requirement);
 			}		
@@ -1164,21 +1201,6 @@ public class PurchaseOrderService extends CommonService {
 		try {
 			ts.begin();
 			
-			/*
-			if(!(YSId == null || ("").equals(YSId))){
-				String[] tmp = YSId.split("-");
-				if(tmp.length>1)
-					YSId = tmp[0];//配件订单的耀升编号形式:17YS001-1
-			}
-			*/
-			//B_PurchaseOrderData contract = reqModel.getContract();
-			//List<B_PurchaseOrderData> contractList = reqModel.getContractList();
-			//List<B_PurchaseOrderDetailData> detailList = reqModel.getDetailList();
-						
-			//String YSId = contract.getYsid();
-			//String purchaseDate = contract.getPurchasedate();
-			//String contractDelivery = contract.getDeliverydate();
-			
 			
 			//合同明细:因为是从物料信息过来的,所以只有一条数据
 			List<B_PurchaseOrderDetailData> reqDetail = reqModel.getDetailList();
@@ -1208,113 +1230,6 @@ public class PurchaseOrderService extends CommonService {
 
 			ts.commit();
 			
-			//删除既存合同信息
-			//deleteContract(YSId);
-			
-			//删除既存合同明细
-			//deleteContractDetail(YSId);			
-			
-			/*
-			//供应商集计
-			List<B_SupplierData> supplier = new ArrayList<B_SupplierData>();			
-			for(int j=0;j<contractList.size();j++){
-				
-				String supplierId = contractList.get(j).getSupplierid();
-				String shortName  = contractList.get(j).getTypeserial();//临时借用
-				String totalPrice = detailList.get(j).getTotalprice();//合同跟明细件数相同
-				float f1 = stringToFloat(totalPrice);
-				
-				if(supplierId == null || supplierId.equals("")){
-					continue;
-				}
-				
-				boolean repeatFlag = true;
-				for(int i=0;i<supplier.size();i++){
-					String id = supplier.get(i).getSupplierid();
-					String price = supplier.get(i).getSuppliername();//临时借用
-					
-					if(supplierId.equals(id)){//计算重复的供应商
-						float f2 = stringToFloat(price);
-						supplier.get(i).setSuppliername(String.valueOf(f1+f2));//相同供应商的价格合并
-						repeatFlag = false;
-						break;
-					}
-				}
-				
-				if(repeatFlag){//保存不一致的供应商
-					B_SupplierData s = new B_SupplierData();
-					s.setSupplierid(supplierId);
-					s.setShortname(shortName);
-					s.setSuppliername(totalPrice);//临时借用
-					supplier.add(s);
-				}
-				
-			}//供应商集计
-			
-			for(B_SupplierData sup: supplier){
-				
-				String supplierId = sup.getSupplierid();
-				String shortName  = sup.getShortname();
-				String total  = sup.getSuppliername();//临时借用
-								
-				float totalf = stringToFloat(total); 
-				if(totalf == 0){//采购数量为零的供应商不计入合同
-					continue;
-				}
-				//取得供应商的合同流水号
-				//父编号:年份+供应商简称
-				String parentId = "";
-				if(null != YSId && YSId.length() > 3 ){
-					parentId = YSId.substring(0,2);//耀升编号前两位是年份
-				}
-				parentId = parentId + shortName;
-
-				//取得供应商的合同流水号
-				//父编号:年份+供应商简称
-				String type = "D";//作为订购件处理
-				
-				String typeParentId = BusinessService.getshortYearcode()+type;				
-				String supplierParentId = BusinessService.getshortYearcode() + shortName;				
-				String typeSubId = getContractTypeCode(typeParentId);
-				String suplierSubId = getContractSupplierCode(supplierParentId);
-
-				//3位流水号格式化	
-				//采购合同编号:16D081-WL002
-				contractId = BusinessService.getContractCodeD(typeSubId, suplierSubId,shortName);
-				
-				//新增采购合同*************
-				B_PurchaseOrderData data = new B_PurchaseOrderData();
-				
-				data.setYsid(YSId);
-				//data.setMaterialid(materialId);//配件订单没有统一的产品
-				data.setContractid(contractId);
-				data.setTypeparentid(typeParentId);
-				data.setTypeserial(typeSubId);
-				data.setSupplierparentid(supplierParentId);
-				data.setSupplierserial(suplierSubId);
-				data.setSupplierid(supplierId);
-				data.setTotal(total);
-				data.setPurchasedate(purchaseDate);
-				data.setDeliverydate(contractDelivery);
-				data.setVersion(1);//默认为1
-				
-				insertPurchaseOrder(data);//新增合同头表
-
-				for(int i=0;i<detailList.size();i++){
-					B_PurchaseOrderDetailData detail = detailList.get(i);
-				
-					String id = contractList.get(i).getSupplierid();
-					if(supplierId.equals(id)){
-						//新增合同明细
-						detail.setYsid(YSId);
-						detail.setContractid(contractId);
-						insertPurchaseOrderDetail(detail);						
-					}
-				}
-				
-			}
-			*/
-			
 			
 		}catch(Exception e) {
 			ts.rollback();
@@ -1336,9 +1251,9 @@ public class PurchaseOrderService extends CommonService {
 	
 	@SuppressWarnings("unchecked")
 	public List<B_PurchaseOrderDetailData> getPurchaseOrderDetailFromDB(
-			String YSId) throws Exception {
+			String YSId,String contractId) throws Exception {
 
-		String where = " YSId = '" + YSId  +"' AND deleteflag = '0'";
+		String where = " YSId = '" + YSId  +"' AND contractId = '" + contractId  +"' AND deleteflag = '0' ";
 		return (List<B_PurchaseOrderDetailData>) new B_PurchaseOrderDetailDao().Find(where);
 				
 	}
@@ -1359,10 +1274,13 @@ public class PurchaseOrderService extends CommonService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean checkContractArrival(String contractId) throws Exception{
+	public boolean checkContractArrival(
+			String contractId,String materialId) throws Exception{
 		boolean rtnFlag = false;
 		
-		String where = " contractId='" + contractId +  "' AND deleteFlag='0' ";
+		String where = " contractId='" + contractId +  
+				"' AND materialId='" + materialId + 
+				"' AND deleteFlag='0' ";
 		
 		List<B_ArrivalData> list = new B_ArrivalDao().Find(where);
 		

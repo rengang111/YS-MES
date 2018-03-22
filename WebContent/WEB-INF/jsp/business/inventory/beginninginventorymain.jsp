@@ -300,7 +300,7 @@
 
 	function doShowPlan(materialId) {
 		var materialType=$('#materialType').val();
-		alert(materialType)
+
 		if(materialType == 'A'){
 			var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanForRawByMaterialId&materialId=' + materialId;
 			callProductDesignView("采购方案",url);
