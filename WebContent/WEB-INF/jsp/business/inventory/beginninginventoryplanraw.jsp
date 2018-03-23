@@ -29,6 +29,7 @@
 					{"className" : ''},
 					{"className" : 'td-right',"defaultContent" : '0'},//
 					{"className" : 'td-right',"defaultContent" : '0'},//
+					{"className" : 'td-right',"defaultContent" : '0'},//
 				
 				]
 				
@@ -52,9 +53,9 @@
 	        }
 		});		
 		
-		sumFn(5);
 		sumFn(6);
-		$('#waitout').html(floatToCurrency( currencyToFloat($('#totalValue5').html()) - currencyToFloat($('#totalValue8').html()) ))
+		sumFn(7);
+		$('#waitout').html(floatToCurrency( currencyToFloat($('#totalValue6').html()) - currencyToFloat($('#totalValue7').html()) ))
 	})	
 	
 	function doSearch() {	
@@ -94,9 +95,9 @@
 			<table width="100%">
 				<tr>
 					<td class="label" width="100px">物料编号：</td>
-					<td width="120px">${material.materialId }</td>
+					<td width="120px">${material.rawMaterialId }</td>
 					<td class="label" width="70px">物料名称：</td> 
-					<td>${material.materialName }</td>		
+					<td>${material.rawMaterialName }</td>		
 					<td class="label" width="100px">剩余待出库数量：</td>
 					<td width="100px"><span id="waitout"></span></td>				
 				</tr>
@@ -115,6 +116,7 @@
 							<th>产品名称</th>
 							<th style="width: 60px;">订单数量</th>
 							<th style="width: 60px;">生产需求量</th>
+							<th style="width: 60px;">领料数量</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -124,14 +126,52 @@
 								<td>${list.planDate }</td>
 								<td>${list.YSId }</td>
 								<td>${list.productId }</td>
-								<td><span id="shortName${status.index }">${list.productName }</span></td>
+								<td><span id="shortName${status.index }">${list.materialName }</span></td>
 								<td>${list.manufactureQuantity }</td>
-								<td>${list.rawOrderWeight }</td>
+								<td id="weight${status.index }"></td>
+								<td id="stockout${status.index }"></td>
 							</tr>
 							
 							<script type="text/javascript">
-								var materialName = '${list.productName}';
-								var index = '${status.index}';						
+								var materialName = '${list.materialName}';
+								var weight = '${list.rawOrderWeight}';
+								var stockout = '${list.stockOutQty}';
+								var index = '${status.index}';		
+
+								var vrawunit = '${list.unit}';
+								var unittext = '${list.zzunit}';
+								
+								var farwunit = '1';//初始值
+								//原材料的购买单位
+								//alert(unitAaary.length)
+								for(var i=0;i<unitAaary.length;i++){
+									var val = unitAaary[i][0];//取得计算单位:100,1000...
+									var key = unitAaary[i][1];//取得显示单位:克,吨...
+									if(vrawunit == key){
+										farwunit = val;
+										//alert('原材料的购买单位'+farwunit)
+										break;
+									}
+								}
+
+								//自制品的用量单位
+								var fchgunit = '1';//初始值
+								for(var i=0;i<unitAaary.length;i++){
+									var val = unitAaary[i][0];//取得计算单位:100,1000...
+									var key = unitAaary[i][1];//取得显示单位:克,吨...
+									if(unittext == key){
+										fchgunit = val;//只有在需要换算的时候,才设置换算单位
+										//alert('自制品的用量单位'+fchgunit)
+										break;
+									}
+								}	
+								
+								var fconvunit = fchgunit / farwunit;//换算单位
+								var newWeight = weight / fconvunit;
+								//alert('weight --newWeight'+weight +"--"+newWeight)
+								
+								$('#weight'+index).html(floatToCurrency(newWeight));
+								$('#stockout'+index).html(floatToCurrency(stockout));
 								$('#shortName'+index).html(jQuery.fixedWidth(materialName,32));
 							</script>	
 						</c:forEach>
@@ -142,9 +182,10 @@
 							<th></th>
 							<th></th>
 							<th></th>
+							<th></th>
 							<th>合计：</th>
-							<th style="text-align: right;"><span id="totalValue5"></span></th>
 							<th style="text-align: right;"><span id="totalValue6"></span></th>
+							<th style="text-align: right;"><span id="totalValue7"></span></th>
 						</tr>
 					</tfoot>
 				</table>

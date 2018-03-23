@@ -211,23 +211,24 @@
     	<w name="a.rawMaterialId" des="" reqName="rawMaterialId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
-      <f name="b.YSId" alias="" ctype="" />
-      <f name="b.productId" alias="" ctype="" />
-      <f name="c.materialName" alias="" ctype="" />
-      <f name="b.manufactureQuantity" alias="" ctype="" />
-      <f name="b.unitQuantity" alias="" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.productId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="a.unitQuantity" alias="" ctype="" />
       <f name="a.rawMaterialId" alias="" ctype="" />
       <f name="a.rawMaterialName" alias="" ctype="" />
-      <f name="sum(REPLACE ( b.manufactureQuantity,',','') * REPLACE ( b.unitQuantity,',','') * REPLACE ( a.weight,',',''))" alias="rawOrderWeight" ctype="" />
-      <f name="IFNULL(a.zzunit,a.unit)" alias="zzunit" ctype="" />
-      <f name="a.unit" alias="" ctype="" />
-      <f name="b.planDate" alias="" ctype="" />
+      <f name="a.rawOrderWeight" alias="" ctype="" />
+      <f name="a.zzunit" alias="zzunit" ctype="计量单位" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.planDate" alias="" ctype="" />
+      <f name="IFNULL(d.quantity,'0')" alias="stockOutQty" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseplan b JOIN v_zzrawmaterial a JOIN b_material c WHERE a.materialId = b.materialId AND  c.materialId = b.productId AND (a.deleteFlag = '0') AND (b.deleteFlag = '0') AND (c.deleteFlag = '0') </from>
-    <orderby>b.planDate,b.YSId</orderby>
-    <groupby>b.YSId ,a.rawMaterialId </groupby>
+   <from>v_rawmaterial_ysid_group a LEFT JOIN v_requisitiondetailgroup d ON d.collectYsid=a.ysid and a.rawMaterialId = d.materialId </from>
+    <orderby>a.planDate,a.YSId</orderby>
+    <groupby></groupby>
     <having></having>
 	<power></power>    
   </query>
