@@ -168,7 +168,7 @@
 								
 								var fconvunit = fchgunit / farwunit;//换算单位
 								var newWeight = weight / fconvunit;
-								//alert('weight --newWeight'+weight +"--"+newWeight)
+								//alert('weight --newWeight--fchgunit--farwunit'+weight +"--"+fchgunit+"--"+farwunit+"--"+newWeight)
 								
 								$('#weight'+index).html(floatToCurrency(newWeight));
 								$('#stockout'+index).html(floatToCurrency(stockout));
