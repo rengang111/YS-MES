@@ -21,7 +21,6 @@
 <script type="text/javascript" src="${ctx}/js/jquery.similar.msgbox.js"></script>
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="${ctx}/themes/icon.css">
-<link rel="stylesheet" type="text/css" href="${ctx}/css/main2.css">
 <!-- 
 <script type="text/javascript" src="${ctx}/js/jquery.min.js"></script>
  -->

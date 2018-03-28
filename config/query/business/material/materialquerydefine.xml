@@ -613,6 +613,7 @@
       <f name="contractQty" alias="" ctype="" />
       <f name="stockinQtiy" alias="" ctype="" />
       <f name="stockoutQty" alias="" ctype="" />
+      <f name="stockoutTotal" alias="" ctype="" />
       <f name="planQty" alias="" ctype="" />
       <f name="rawPlanQty" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
@@ -668,6 +669,7 @@
       <f name="contractQty" alias="" ctype="" />
       <f name="stockinQtiy" alias="" ctype="" />
       <f name="stockoutQty" alias="" ctype="" />
+      <f name="stockoutTotal" alias="" ctype="" />
       <f name="planQty" alias="" ctype="" />
       <f name="rawPlanQty" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
@@ -724,6 +726,7 @@
       <f name="contractQty" alias="" ctype="" />
       <f name="stockinQtiy" alias="" ctype="" />
       <f name="stockoutQty" alias="" ctype="" />
+      <f name="stockoutTotal" alias="" ctype="" />
       <f name="planQty" alias="" ctype="" />
       <f name="rawPlanQty" alias="" ctype="" />
       <f name="IFNULL(reviseQty,'0')" alias="reviseQty" ctype="" />

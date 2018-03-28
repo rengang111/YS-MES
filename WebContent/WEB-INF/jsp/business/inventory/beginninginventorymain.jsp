@@ -43,7 +43,7 @@ body{
 				"stateSave" : false,
 				"ordering "	:true,
 				"searching" : false,
-				"bAutoWidth":true,
+				"bAutoWidth":false,
 				"scrollY":scrollHeight,
 				"scrollCollapse":true,
 				"pagingType" : "full_numbers",
@@ -66,7 +66,7 @@ body{
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);						
 							fnCallback(data);
-
+							deleteRow();
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -103,12 +103,14 @@ body{
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
 		    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">" + row["materialId"] + "</a>";
-		    			return rtn;
+		    			var index = row["rownum"]; 
+		    			var text = '<input type="hidden" id="stockList'+index+'.materialid" value="'+data+'" />'
+		    			return  rtn + text;
 		    		}},
 		    		{"targets":2,"render":function(data, type, row){
 		    			
 		    			var name = row["materialName"];				    			
-		    			name = jQuery.fixedWidth(name,36);				    			
+		    			name = jQuery.fixedWidth(name,18);				    			
 		    			return name;
 		    		}},
 		    		{"targets":17,"render":function(data, type, row){
@@ -221,10 +223,10 @@ body{
 		    		}},
 		    		{"targets":11,"render":function(data, type, row){
 		    			var rtn = "";
-		    			var qty= floatToCurrency(data);
-		    			rtn= "<a href=\"###\" onClick=\"doShowStockOut('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			var qty= floatToCurrency(row["stockoutTotal"]);//包含正常出库 + 手修改出库
+		    			//rtn= "<a href=\"###\" onClick=\"doShowStockOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
-		    			return rtn;
+		    			return qty;
 		    		}},
 		    		{"targets":12,"render":function(data, type, row){//实际库存
 		    			var rtn = "";
@@ -243,17 +245,17 @@ body{
 		    		{"targets":14,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
-		    			rtn= "<a href=\"###\" onClick=\"doShowWaitOut('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			//rtn= "<a href=\"###\" onClick=\"doShowWaitOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
-		    			return rtn;
+		    			return qty;
 		    		}},
 		    		{"targets":16,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var mate = row["materialId"];
 		    			var qty= floatToCurrency(data);
-		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			//rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
-		    			return rtn;
+		    			return qty;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    			//期初值设定
@@ -294,11 +296,29 @@ body{
 	        	$('#TMaterial').DataTable().$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	        }
-		});		
-		
+		});			
 
 		buttonSelectedEvent();//按钮选择式样
+		
 	})	
+	
+	function deleteRow(){
+		
+		var sum7 = 0;
+		$('#TMaterial tbody tr').each (function (){
+			
+			var materialId = $(this).find("td").eq(1).find("input").val();//
+			//alert(materialId)
+
+
+			if(materialId == 'A02.02005.000'){
+				$(this).find("td").parent().addClass('delete')
+			}
+						
+		});	
+		
+		//$('#totalValue'+num).html(floatToCurrency(sum7));
+	}
 	
 	function doSearch() {	
 
