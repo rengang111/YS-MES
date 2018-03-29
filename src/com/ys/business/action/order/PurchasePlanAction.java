@@ -150,17 +150,25 @@ public class PurchasePlanAction extends BaseAction {
 				getPurchasePlanByMaterialId();
 				rtnUrl = "/business/inventory/beginninginventoryplan";
 				break;
-			case "purchasePlanForRawByMaterialId"://采购方案一览(原材料)
-				getPurchasePlanForRawByMaterialId();
-				rtnUrl = "/business/inventory/beginninginventoryplanraw";
-				break;
-			case "purchasePlanByMaterialIdToEdit"://采购方案一览:修正领料数量
+			case "purchasePlanByMaterialIdToEdit"://采购方案一览:修正
 				getPurchasePlanByMaterialId();
 				rtnUrl = "/business/inventory/beginningstockoutedit";
 				break;
 			case "insertStockoutCorrection"://采购方案一览:保存修正领料数量
 				insertStockoutCorrection();
 				rtnUrl = "/business/inventory/beginninginventoryplan";
+				break;
+			case "purchasePlanForRawByMaterialId"://采购方案一览(原材料)
+				getPurchasePlanForRawByMaterialId();
+				rtnUrl = "/business/inventory/beginninginventoryplanraw";
+				break;
+			case "purchasePlanForRawByMaterialIdToEdit"://采购方案一览(原材料):修正
+				getPurchasePlanForRawByMaterialId();
+				rtnUrl = "/business/inventory/beginninginventoryrawedit";
+				break;
+			case "insertStockoutCorrectionForRaw"://采购方案一览(原材料):保存修正领料数量
+				insertStockoutCorrection();
+				rtnUrl = "/business/inventory/beginninginventoryplanraw";
 				break;
 				
 		}

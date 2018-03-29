@@ -203,8 +203,12 @@ body{
 		    			var materialType=$('#materialType').val();
 		    			
 		    			if(materialType == 'A'){
-		    				if(unit == '千克')
+		    				if(unit == '千克'){
 		    					qty = floatToCurrency( currencyToFloat( row["rawPlanQty"] ) / 1000 );
+		    				}else{
+		    					qty = floatToCurrency( currencyToFloat( row["rawPlanQty"] ) );
+		    					
+		    				}
 		    			}
 		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
 		    			return rtn;		    			

@@ -215,6 +215,7 @@
       <f name="a.productId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="IFNULL(f.quantity,'0')" alias="correctionQty" ctype="" />
       <f name="a.unitQuantity" alias="" ctype="" />
       <f name="a.rawMaterialId" alias="" ctype="" />
       <f name="a.rawMaterialName" alias="" ctype="" />
@@ -226,7 +227,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_rawmaterial_ysid_group a LEFT JOIN v_stockout_and_requistion d ON locate(a.YSId,d.YSId)>0 AND a.rawMaterialId = d.materialId </from>
+   <from>v_rawmaterial_ysid_group a LEFT JOIN v_stockout_and_requistion d ON locate(a.YSId,d.YSId)>0 AND a.rawMaterialId = d.materialId LEFT JOIN b_stockoutcorrection f ON f.ysid=a.YSId AND f.materialId = a.rawMaterialId </from>
     <orderby>a.planDate,a.YSId</orderby>
     <groupby></groupby>
     <having></having>
