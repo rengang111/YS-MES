@@ -728,31 +728,57 @@ public class MaterialService extends CommonService implements I_BaseService{
 
 				String guid = BaseDAO.getGuId();
 				reqData.setRecordid(guid);
-				
-				//流水号编辑:由于存在手动改变流水号,所以不能自动增加
-				//String serNo = parentId.substring(0,parentId.length()-3);//3:3位流水号
-				
+								
 				//物料编码 = parentId +"."+ subid 
 				//物料:G01.D018.YAT001001.000
 				//分类:G01.D018.YAT001
 				
-				/************************/
-				
+				/************************/				
 				String materialId = parentId + "." + data.getSubid();
 				String categoryId = reqData.getCategoryid();
 				
 				//parentId = materialId.substring(0,materialId.length()-4);
-				String serialNumber = parentId.substring( categoryId.length());
+				String serialNumber = parentId.substring( categoryId.length());					
+				/************************/				
 				
-					
-				/************************/
+				//设置物料的库存类别
+				String type1 = materialId.substring(0,1);
+				String type3 = materialId.substring(0,3);
+				String stockType ="030";//采购件
 				
+				switch(type1) {
+				case "A":
+					stockType = "010";//原材料
+					if(("A13").equals(type3)){
+						stockType = "011";//色粉
+					}
+					break;
+				case "G":
+					stockType = "040";//包装件
+					break;
+				case "I":
+					stockType = "050";//成品
+					break;
+				case "B":
+					if(("B01").equals(type3)){
+						stockType = "020";//自制件
+					}
+					break;
+				case "F":
+					if(("F01").equals(type3) || 
+							("F02").equals(type3) || ("F03").equals(type3) ){
+						
+						stockType = "020";//自制件
+					}
+					break;					
+				}
 				
 				reqData.setMaterialid(materialId);
 				reqData.setParentid(parentId);
 				reqData.setSerialnumber(serialNumber);
 				reqData.setSubid(data.getSubid());
 				reqData.setSubiddes(data.getSubiddes());
+				reqData.setStocktype(stockType);
 				
 				//编辑产品型号,完整的产品编号:I.D008.WTR001.000 或者 I.BTR.D008.WTR001.000
 				reqData = editCustomerId(reqData,materialId);

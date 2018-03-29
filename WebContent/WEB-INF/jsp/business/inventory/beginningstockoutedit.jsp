@@ -90,6 +90,17 @@
 		$('#totalValue'+num).html(floatToCurrency(sum7));
 	}
 	
+	function setStockoutQty(index,quantity){
+		var txt = $("#correctionList"+index+"\\.quantity").val();
+		if( txt == '' || txt == '0'){
+			$("#correctionList"+index+"\\.quantity").val(quantity);
+			$("#btn_edit"+index).html('取消');
+		}else{
+			$("#correctionList"+index+"\\.quantity").val('0');
+			$("#btn_edit"+index).html('修正');
+		}
+	}
+	
 </script>
 </head>
 
@@ -115,9 +126,9 @@
 					<thead>	
 						<tr >
 							<th style="width: 1px;">No</th>
-							<th style="width: 60px;">方案做成日</th>
-							<th style="width: 80px;">耀升编号</th>
-							<th style="width: 120px;">产品编号</th>
+							<th style="width: 50px;">方案日期</th>
+							<th style="width: 70px;">耀升编号</th>
+							<th style="width: 100px;">产品编号</th>
 							<th>产品名称</th>
 							<th style="width: 60px;">生产需求</th>
 							<th style="width: 60px;">合同数</th>
@@ -143,7 +154,9 @@
 				<td>
 					<div id="edit${status.index}">
 						<form:input path="correctionList[${status.index}].quantity"  
-							value="${list.stockoutQty}" class="short num"/>
+							value="${list.stockoutQty}" class="mini num"/>
+						<button type="button" id="btn_edit${status.index}"  style="height: 26px;"
+							onclick="setStockoutQty('${status.index}','${list.manufactureQuantity }'); return false;" >修正</button>
 					</div>
 					<div id="view${status.index}">
 						${list.stockoutQty}					

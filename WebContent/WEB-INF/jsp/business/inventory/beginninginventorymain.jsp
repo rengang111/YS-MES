@@ -18,15 +18,9 @@ body{
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var materialType = $("#materialType").val();
-		var materialTypeZZ = $("#materialTypeZZ").val();
-		var materialTypeYS1 = $("#materialTypeYS1").val();
-		var materialTypeYS2 = $("#materialTypeYS2").val();
+		var stockType    = $("#stockType").val();
 		var url = "${ctx}/business/storage?methodtype=beginningInventorySearch&sessionFlag="+sessionFlag;
-		url = url + "&materialType="+materialType;
-		url = url + "&materialTypeZZ="+materialTypeZZ;
-		url = url + "&materialTypeYS1="+materialTypeYS1;
-		url = url + "&materialTypeYS2="+materialTypeYS2;
+		url = url + "&stockType="+stockType;
 		url = url + "&searchType="+searchType;
 		url = url + "&quantityEditFlag="+confirmFlag;
 		
@@ -200,9 +194,9 @@ body{
 		    			var qty= floatToCurrency(data);
 		    			var materialId = row["materialId"];	
 		    			var unit = row["dicName"];
-		    			var materialType=$('#materialType').val();
+		    			var stockType=$('#stockType').val();
 		    			
-		    			if(materialType == 'A'){
+		    			if(stockType == '010'){//原材料
 		    				if(unit == '千克'){
 		    					qty = floatToCurrency( currencyToFloat( row["rawPlanQty"] ) / 1000 );
 		    				}else{
@@ -346,15 +340,15 @@ body{
 	}
 
 	function doShowPlan(materialId) {
-		var materialType=$('#materialType').val();
+		var stockType=$('#stockType').val();
 
-		if(materialType == 'A'){
+		if(stockType == '010'){//
 			var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanForRawByMaterialId&materialId=' + materialId;
-			callProductDesignView("采购方案",url);
+			callProductDesignView("原材料采购方案",url);
 			
 		}else{
 			var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanByMaterialId&materialId=' + materialId;
-			callProductDesignView("待出数量",url);
+			callProductDesignView("采购件",url);
 		}
 		
 	}
@@ -497,10 +491,7 @@ body{
 		var keyword1 = $("#keyword1").val();
 		var keyword2 = $("#keyword2").val();
 
-		var materialType = $("#materialType").val();
-		var materialTypeZZ = $("#materialTypeZZ").val();
-		var materialTypeYS1 = $("#materialTypeYS1").val();
-		var materialTypeYS2 = $("#materialTypeYS2").val();
+		var stockType = $("#stockType").val();
 		
 		if(myTrim(keyword1) == '' && myTrim(keyword2) == '' ){
 			//
@@ -511,10 +502,7 @@ body{
 			url = url + "&searchType="+searchType;
 			url = url + "&keyword1="+keyword1;
 			url = url + "&keyword2="+keyword2;
-			url = url + "&materialType="+materialType;
-			url = url + "&materialTypeZZ="+materialTypeZZ;
-			url = url + "&materialTypeYS1="+materialTypeYS1;
-			url = url + "&materialTypeYS2="+materialTypeYS2;
+			url = url + "&stockType="+stockType;
 		
 		url =encodeURI(encodeURI(url));//中文两次转码
 
@@ -531,10 +519,7 @@ body{
 
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
-			<input type="hidden" id="materialType" value="${materialType }" />
-			<input type="hidden" id="materialTypeZZ" value="${materialTypeZZ }" />
-			<input type="hidden" id="materialTypeYS1" value="${materialTypeYS1 }" />
-			<input type="hidden" id="materialTypeYS2" value="${materialTypeYS2 }" />
+			<input type="hidden" id="stockType" value="${stockType }" />
 			<input type="hidden" id="searchType" value="" />
 			
 			<table>

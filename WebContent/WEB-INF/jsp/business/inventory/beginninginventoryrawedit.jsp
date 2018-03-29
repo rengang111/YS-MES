@@ -87,6 +87,18 @@
 		$('#totalValue'+num).html(floatToCurrency(sum7));
 	}
 	
+	function setStockoutQty(index,quantity){
+		var txt = $("#correctionList"+index+"\\.quantity").val();
+		if( txt == '' || txt == '0'){
+			$("#correctionList"+index+"\\.quantity").val(quantity);
+			$("#btn_edit"+index).html('取消');
+		}else{
+			$("#correctionList"+index+"\\.quantity").val('0');
+			$("#btn_edit"+index).html('修正');
+		}
+	}
+	
+	
 </script>
 </head>
 
@@ -139,6 +151,8 @@
 									<div id="edit${status.index}">
 										<form:input path="correctionList[${status.index}].quantity"  
 											value="${list.stockoutQty}" class="short num"/>
+										<button type="button" id="btn_edit${status.index}"  style="height: 26px;"
+											onclick="setStockoutQty('${status.index}','${list.manufactureQuantity }'); return false;" >修正</button>
 									</div>
 									<div id="view${status.index}"></div>					
 								</td>

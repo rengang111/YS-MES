@@ -586,10 +586,7 @@
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType1"  dtype="ch" oper="="  lg="OR" bt="(" />
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType2"  dtype="ch" oper="="  lg="AND" bt=")" />
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType"  dtype="ch" oper="="  lg="AND" bt="" />
-	  <w name="left(A.materialId,1)"  des=""  reqName="materialType"  dtype="ch" oper="="  lg="AND" bt="" />
-	  <w name="left(A.materialId,3)"  des=""  reqName="materialTypeZZ"  dtype="ch" oper="in"  lg="AND" bt="" />  
-	  <w name="left(A.materialId,1)"  des=""  reqName="materialTypeYS1"  dtype="ch" oper="not in"  lg="AND" bt="" />
-	  <w name="left(A.materialId,3)"  des=""  reqName="materialTypeYS2"  dtype="ch" oper="not in"  lg="AND" bt="" />  
+	  <w name="A.stockType"  des=""  reqName="stockType"  dtype="ch" oper="="  lg="AND" bt="" />  
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -642,10 +639,7 @@
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType1"  dtype="ch" oper="="  lg="OR" bt="(" />
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType2"  dtype="ch" oper="="  lg="AND" bt=")" />
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType"  dtype="ch" oper="="  lg="AND" bt="" />
-	  <w name="left(A.materialId,1)"  des=""  reqName="materialType"  dtype="ch" oper="="  lg="AND" bt="" />
-	  <w name="left(A.materialId,3)"  des=""  reqName="materialTypeZZ"  dtype="ch" oper="in"  lg="AND" bt="" />  
-	  <w name="left(A.materialId,1)"  des=""  reqName="materialTypeYS1"  dtype="ch" oper="not in"  lg="AND" bt="" />
-	  <w name="left(A.materialId,3)"  des=""  reqName="materialTypeYS2"  dtype="ch" oper="not in"  lg="AND" bt="" />  
+	  <w name="A.stockType"  des=""  reqName="stockType"  dtype="ch" oper="="  lg="AND" bt="" /> 
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -698,10 +692,7 @@
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType1"  dtype="ch" oper="="  lg="OR" bt="(" />
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType2"  dtype="ch" oper="="  lg="AND" bt=")" />
   	  <w name="A.purchaseType"     des=""  reqName="purchaseType"  dtype="ch" oper="="  lg="AND" bt="" />
-	  <w name="left(A.materialId,1)"  des=""  reqName="materialType"  dtype="ch" oper="="  lg="AND" bt="" />
-	  <w name="left(A.materialId,3)"  des=""  reqName="materialTypeZZ"  dtype="ch" oper="in"  lg="AND" bt="" />  
-	  <w name="left(A.materialId,1)"  des=""  reqName="materialTypeYS1"  dtype="ch" oper="not in"  lg="AND" bt="" />
-	  <w name="left(A.materialId,3)"  des=""  reqName="materialTypeYS2"  dtype="ch" oper="not in"  lg="AND" bt="" />  
+	  <w name="A.stockType"  des=""  reqName="stockType"  dtype="ch" oper="="  lg="AND" bt="" /> 
   	  <w name="A.quantityEditFlag"    des=""  reqName="quantityEditFlag" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
