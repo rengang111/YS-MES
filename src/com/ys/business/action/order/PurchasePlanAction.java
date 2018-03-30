@@ -167,7 +167,7 @@ public class PurchasePlanAction extends BaseAction {
 				rtnUrl = "/business/inventory/beginninginventoryrawedit";
 				break;
 			case "insertStockoutCorrectionForRaw"://采购方案一览(原材料):保存修正领料数量
-				insertStockoutCorrection();
+				insertStockoutCorrectionRaw();
 				rtnUrl = "/business/inventory/beginninginventoryplanraw";
 				break;
 				
@@ -376,6 +376,17 @@ public class PurchasePlanAction extends BaseAction {
 		
 		try {
 			purchaseService.insertStockoutCorrectionAndView();		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	public void insertStockoutCorrectionRaw(){	
+		
+		try {
+			purchaseService.insertStockoutCorrectionRawAndView();		
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

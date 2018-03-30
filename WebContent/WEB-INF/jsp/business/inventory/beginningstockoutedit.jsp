@@ -153,8 +153,11 @@
 				<td>${list.stockinQty }</td>
 				<td>
 					<div id="edit${status.index}">
-						<form:input path="correctionList[${status.index}].quantity"  
-							value="${list.stockoutQty}" class="mini num"/>
+						<span id="edit_Flag${status.index}"></span>
+						<form:input  path="correctionList[${status.index}].quantity"  
+							value="${list.correctionQty}" class="mini num"/>
+						<form:hidden path="correctionList[${status.index}].lastquantity"  
+							value="${list.correctionQty}"/>
 						<button type="button" id="btn_edit${status.index}"  style="height: 26px;"
 							onclick="setStockoutQty('${status.index}','${list.manufactureQuantity }'); return false;" >修正</button>
 					</div>
@@ -179,8 +182,10 @@
 					
 				}else{
 					if(correctionQty > 0 ){//修正值
-						$("#view"+index).html("(改)"+ floatToCurrency(correctionQty) );
-						$("#edit"+index).remove();						
+						$("#edit_Flag"+index).html("(改)");
+						$("#correctionList" + index + "\\.quantity").val( floatToCurrency(correctionQty) );
+						$("#view"+index).remove();
+						$("#edit"+index).show();
 					}else{
 						$("#view"+index).remove();
 						$("#edit"+index).show();						
@@ -190,7 +195,6 @@
 				
 			</script>	
 		</c:forEach>		
-		
 					</tbody>
 				</table>
 			</div>	

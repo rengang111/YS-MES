@@ -89,8 +89,9 @@
 	
 	function setStockoutQty(index,quantity){
 		var txt = $("#correctionList"+index+"\\.quantity").val();
+		var weight = $("#weight"+index).val();
 		if( txt == '' || txt == '0'){
-			$("#correctionList"+index+"\\.quantity").val(quantity);
+			$("#correctionList"+index+"\\.quantity").val(weight);
 			$("#btn_edit"+index).html('取消');
 		}else{
 			$("#correctionList"+index+"\\.quantity").val('0');
@@ -145,12 +146,18 @@
 								<td>${list.productId }</td>
 								<td><span id="shortName${status.index }">${list.materialName }</span></td>
 								<td>${list.manufactureQuantity }</td>
-								<td id="weight${status.index }"></td>
+								<td>
+									<span id="weight_view${status.index}"></span>
+									<input type="hidden" id="weight${status.index }" />
+								</td>
 								
 								<td>								
 									<div id="edit${status.index}">
+										<span id="edit_Flag${status.index}"></span>
 										<form:input path="correctionList[${status.index}].quantity"  
-											value="${list.stockoutQty}" class="short num"/>
+											value="${list.stockoutQty}" class="mini num"/>
+										<form:hidden path="correctionList[${status.index}].lastquantity"  
+											value="${list.correctionQty}"/>
 										<button type="button" id="btn_edit${status.index}"  style="height: 26px;"
 											onclick="setStockoutQty('${status.index}','${list.manufactureQuantity }'); return false;" >修正</button>
 									</div>
@@ -207,8 +214,10 @@
 									
 								}else{
 									if(correctionQty > 0 ){//修正值
-										$("#view"+index).html("(改)"+ floatToCurrency(correctionQty) );
-										$("#edit"+index).remove();						
+										$("#edit_Flag"+index).html("(改)");
+										$("#correctionList" + index + "\\.quantity").val( floatToCurrency(correctionQty) );
+										$("#view"+index).remove();
+										$("#edit"+index).show();						
 									}else{
 										$("#view"+index).remove();
 										$("#edit"+index).show();						
@@ -216,7 +225,8 @@
 								}
 								
 								
-								$('#weight'+index).html(floatToCurrency(newWeight));
+								$('#weight'+index).val(floatToCurrency(newWeight));
+								$('#weight_view'+index).html(floatToCurrency(newWeight));
 								$('#shortName'+index).html(jQuery.fixedWidth(materialName,32));
 							</script>	
 						</c:forEach>

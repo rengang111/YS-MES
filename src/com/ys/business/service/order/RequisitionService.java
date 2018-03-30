@@ -127,12 +127,26 @@ public class RequisitionService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		if(notEmpty(key1) || notEmpty(key2))
-				userDefinedSearchCase.put("requisitionSts", "");//有查询条件,不再限定其状态
+		//if(notEmpty(key1) || notEmpty(key2))
+		//		userDefinedSearchCase.put("requisitionSts", "");//有查询条件,不再限定其状态
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		
+		String requisitionSts = request.getParameter("requisitionSts");
+		String having = "1=1";
+		if(("010").equals(requisitionSts)){
+			//待申请
+			having = " requisitionQty=0 ";
+		}else if(("030").equals(requisitionSts)){
+			//已出库
+			having = " requisitionQty=manufactureQty ";
+		}else if(("020").equals(requisitionSts)){
+			//出库中
+			having = " requisitionQty> 0 AND requisitionQty < manufactureQty ";
+		}
+		sql = sql.replace("#", having);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			

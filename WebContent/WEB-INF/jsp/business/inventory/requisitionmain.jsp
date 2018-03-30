@@ -32,7 +32,7 @@
 				"searching" : false,
 				"autoWidth"	:false,
 				"pagingType" : "full_numbers",
-	         	"aaSorting": [[ 1, "DESC" ]],
+	         	//"aaSorting": [[ 1, "DESC" ]],
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				"retrieve" : true,
@@ -69,21 +69,21 @@
 							{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
 							{"data": "materialName", "defaultContent" : ''},//3
 							{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},
-							{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
-							{"data": "requisitionDate", "defaultContent" : '', "className" : 'td-center'},
-							{"data": "requisitionSts", "className" : 'td-center'},//8
+							{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},
+							{"data": "requisitionDate", "defaultContent" : '-', "className" : 'td-center'},
+							{"data": null, "className" : 'td-center'},//8
 						],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 		    			return row["rownum"] ;				    			 
                     }},
-		    		{"targets":1,"render":function(data, type, row){
+		    		{"targets":2,"render":function(data, type, row){
 		    			var rtn = "";
-		    			if(data == ""){
-			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+"（领料申请）"+"</a>";		    				
-		    			}else{
+		    			//if(data == ""){
+			    		//	rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+"（领料申请）"+"</a>";		    				
+		    			//}else{
 			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+data+"</a>";
-		    			}
+		    			//}
 		    			return rtn;
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
@@ -91,26 +91,31 @@
 		    			name = jQuery.fixedWidth(name,50);//true:两边截取,左边从汉字开始
 		    			return name;
 		    		}},
+		    		{"targets":6,"render":function(data, type, row){
+		    			return floatToCurrency(data);
+		    		}},
 		    		{
 		    			"orderable":false,"targets":[0]
 		    		},
 		    		{"targets":8,"render":function(data, type, row){
-		    			var rtn = "";
-		    			if(data == "010"){
+		    			var manufactureQty = currencyToFloat( row["manufactureQty"] );
+		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
+		    			var rtn="";
+		    			if(requisitionQty == '0'){
 		    				rtn = "待申请";
 		    				
-		    			}else if(data=="020"){
-		    				rtn = "待出库";
-		    				
-		    			}else{
+		    			}else if(requisitionQty == manufactureQty){
 		    				rtn = "已出库";
 		    				
-		    			}			    			
-		    			return data;
+		    			}else {
+		    				rtn = "出库中";
+		    				
+		    			}		    			
+		    			return rtn;
 		    		}},
 		    		{
 						"visible" : false,
-						"targets" : []
+						"targets" : [1]
 					}
 	         	]
 			}
@@ -194,7 +199,7 @@
 	<div class="list">					
 		<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
 			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(1,'010');"><span>待申请</span></a>
-			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>待领料</span></a>
+			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>出库中</span></a>
 			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>已出库</span></a>
 		</div>
 		<table id="TMaterial" class="display">

@@ -1446,21 +1446,32 @@ public class PurchasePlanService extends CommonService {
 	}
 
 	/**
-	 * 保存领料的修正值
+	 * 保存领料的修正值:原材料
+	 * @return
+	 * @throws Exception
+	 */
+	public void insertStockoutCorrectionRawAndView() throws Exception {
+		
+		insertStockOutCorrection();//
+		
+		getPurchasePlanForRawByMaterialId();
+		
+				
+	}
+
+	/**
+	 * 保存领料的修正值:采购件
 	 * @return
 	 * @throws Exception
 	 */
 	public void insertStockoutCorrectionAndView() throws Exception {
 
-		//var materialId = request.getParameter("materialId");
-		
 		insertStockOutCorrection();//
 		
 		getPurchasePlanByMaterialId();
 		
 				
 	}
-	
 	private void insertStockOutCorrection(){
 		ts = new BaseTransaction();
 		
@@ -1473,13 +1484,14 @@ public class PurchasePlanService extends CommonService {
 			float quantityCount = 0;
 			for(B_StockOutCorrectionData stock:reqList){
 				float quantity = stringToFloat(stock.getQuantity());
+				float lastQty = stringToFloat(stock.getLastquantity());
 				
-				if(quantity == 0)
+				if(quantity == lastQty)
 					continue;
 				
 				insertStockOutCorrection(stock);
 
-				quantityCount = quantityCount + quantity;
+				quantityCount = quantityCount + quantity - lastQty;
 				
 			}
 			//更新虚拟库存
@@ -1504,6 +1516,13 @@ public class PurchasePlanService extends CommonService {
 	private void insertStockOutCorrection(
 			B_StockOutCorrectionData data) throws Exception{
 
+		String where = " YSId = '" + data.getYsid() + "' ";
+		try {
+			new B_StockOutCorrectionDao().RemoveByWhere(where);	
+		} catch (Exception e1) {
+			//
+		}	
+
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"StockOutCorrectionInsert",userInfo);
 		copyProperties(data,commData);		
@@ -1511,5 +1530,6 @@ public class PurchasePlanService extends CommonService {
 		data.setRecordid(guid);
 		
 		new B_StockOutCorrectionDao().Create(data);	
+		
 	}
 }
