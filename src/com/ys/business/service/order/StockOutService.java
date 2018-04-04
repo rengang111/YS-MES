@@ -1003,31 +1003,38 @@ public class StockOutService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
 		if(notEmpty(key1) || notEmpty(key2)){
 			userDefinedSearchCase.put("requisitionSts", "");
 		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		String status = request.getParameter("status");
-		if(notEmpty(key2) || notEmpty(key1)){
-			status = "";//有查询key,忽略其状态值
-		}
+		//if(notEmpty(key2) || notEmpty(key1)){
+		//	status = "";//有查询key,忽略其状态值
+		//}
 		StringBuffer sb = new StringBuffer();
-		sb.append(" AND ");
-		if(("040").equals(status)){
-			//未出库
-			sb.append(" a.stockoutQty+0 <= 0 AND a.stockinQty+0 > 0 ");
+		sb.append(" AND ");;
+		if(("030").equals(status)){
+			//未入库
+			sb.append(" a.stockinQty+0 <= 0 ");
+			key1 = "";key2="";//清空关键字
+		}else if(("040").equals(status)){
+			//未出库(已入库)
+			sb.append(" a.stockoutQty+0 <= 0 AND a.stockinQty+0 > 0  ");
+			key1 = "";key2="";//清空关键字
 		}else if(("050").equals(status)){
 			//已出库
-			sb.append(" a.stockoutQty+0 = a.orderQty+0 ");			
+			sb.append(" a.stockoutQty+0 = a.orderQty+0 ");
+			key1 = "";key2="";//清空关键字		
 		}else if(("051").equals(status)){
 			//部分出库
-			sb.append(" a.stockoutQty+0 > 0 AND a.stockoutQty+0 < a.orderQty+0 ");			
+			sb.append(" a.stockoutQty+0 > 0 AND a.stockoutQty+0 < a.orderQty+0 ");
+			key1 = "";key2="";//清空关键字		
 		}else{
 			//普通查询
 			sb.append(" 1=1 ");
+			userDefinedSearchCase.put("keyword1", key1);
+			userDefinedSearchCase.put("keyword2", key2);
 		}
 
 		String sql = getSortKeyFormWeb(data,baseQuery);	

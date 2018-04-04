@@ -97,11 +97,11 @@
 		
 		$("#doEdit").click(
 				function() {
-					var deleteFlag = $('#deleteFlag').val();
-					if(deleteFlag == '0'){
-						$().toastmessage('showWarningToast', "该合同已经有收货了,不能编辑。");
-						return false;
-					}		
+					//var deleteFlag = $('#deleteFlag').val();
+					//if(deleteFlag == '0'){
+						//$().toastmessage('showWarningToast', "该合同已经有收货了,不能编辑。");
+						//return false;
+					//}		
 			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=edit");
 			$('#attrForm').submit();
 		});	
@@ -306,7 +306,7 @@
 					<td></td>
 					<td><a href="###" onClick="doEditMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
 						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
-					<td><span id="name${status.index}"></span></td>					
+					<td><span id="name${status.index}"></span>${ detail.description }</td>					
 				
 					<td>${ detail.quantity}   </td>								
 				<!-- 	<td><span id="returnQty${status.index }">${ detail.returnQty }</span></td>	 -->	
@@ -320,7 +320,7 @@
 				</tr>	
 								
 				<script type="text/javascript">
-					var materialName = '${detail.materialName}';
+					//var materialName = '${detail.materialName}';
 					var index = '${status.index}';
 					var contractQty = currencyToFloat('${detail.quantity}');
 					var chargeback = currencyToFloat('${detail.chargeback}');
@@ -330,7 +330,7 @@
 					
 					var pay = floatToCurrency( contractValue + chargeback );
 					
-					$('#name'+index).html(jQuery.fixedWidth(materialName,45));
+					//$('#name'+index).html(jQuery.fixedWidth(materialName,45));
 					$('#returnValue'+index).html(floatToCurrency( chargeback ));
 					$('#pay'+index).html(pay);
 					$('#price'+index).html(formatNumber(price));

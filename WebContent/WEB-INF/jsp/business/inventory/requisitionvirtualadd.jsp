@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>领料申请-领料单</title>
+<title>领料申请-虚拟领料</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -183,6 +183,9 @@
 	    								
 	    			return value;				 
                 }},
+                {"targets":5,"render":function(data, type, row,meta){
+					return floatToCurrency(data);
+	    		}},
 	    		{"targets":7,"render":function(data, type, row){	
 	    			
 					var index=row["rownum"];	
@@ -307,14 +310,16 @@
 		
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/requisition";
+					var virtualClass = $('#virtualClass').val();
+					var url = "${ctx}/business/requisition"+"?virtualClass="+virtualClass;
 					location.href = url;		
 				});
 
 		$("#showHistory").click(
 				function() {
 					var YSId='${order.YSId }';
-					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId;
+					var virtualClass = $('#virtualClass').val();
+					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
 					location.href = url;		
 				});
 		
@@ -344,7 +349,8 @@
 				return;
 				
 			}
-			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insert");
+			var virtualClass = $('#virtualClass').val();
+			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=virtualInsert"+"&virtualClass="+virtualClass);
 			$('#formModel').submit();
 		});
 		
@@ -387,14 +393,7 @@
 		    }			
 		});	
 	});
-	
-	function doEdit(contractId,arrivalId) {
 		
-		var url = '${ctx}/business/requisition?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
-		location.href = url;
-	}
-
-	
 </script>
 
 </head>
@@ -448,7 +447,7 @@
 <div style="clear: both"></div>
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >确认领料</a>
+		<a class="DTTT_button DTTT_button_text" id="insert" >虚拟领料</a>
 	<!-- 	<a class="DTTT_button DTTT_button_text" id="print" onclick="doPrint();return false;">打印领料单</a> -->
 		<a class="DTTT_button DTTT_button_text" id="showHistory" >查看领料记录</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>

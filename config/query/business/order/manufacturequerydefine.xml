@@ -20,6 +20,7 @@
       <f name="a.requisitionSts" alias="requisitionStsId" ctype="" />
       <f name="b.loginName" alias="storeUser" ctype="" />  
       <f name="c.loginName" alias="requisitionUser" ctype="" />
+      <f name="a.virtualClass" alias="" ctype="" />
       <f name="a.deleteFlag" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -223,11 +224,11 @@
       <f name="a.purchaseType" alias="" ctype="物料采购类别" />
       <f name="a.quantity" alias="" ctype="" />
       <f name="a.overQuantity" alias="" ctype="" />
-      <f name="a.subBomNo" alias="" ctype="" />
+      <f name="IFNULL(a.subBomNo,'0')" alias="subBomNo" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_requisitiondetail  AS A LEFT JOIN  b_purchaseplandetail c ON a.ysid = c.ysid AND  c.materialId = a.materialId AND c.subBomNo = a.subBomNo AND c.deleteFlag = '0' WHERE  A.deleteFlag = '0'</from>
+   <from>v_requisitiondetail  AS A LEFT JOIN  b_purchaseplandetail c ON a.ysid = c.ysid AND  c.materialId = a.materialId AND c.subBomNo = IFNULL(a.subBomNo,0) AND c.deleteFlag = '0' WHERE  A.deleteFlag = '0'</from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -437,7 +438,8 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_stockoutlist AS B WHERE b.deleteFlag='0'</from>
+    <!-- virtualClass:虚拟领料区分,010: 正常领料  -->
+    <from>v_stockoutlist AS B WHERE b.virtualClass='010'</from>
     <orderby>b.requisitionDate DESC,b.requisitionId ,b.materialId</orderby>
     <groupby></groupby>
     <having></having>

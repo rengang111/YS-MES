@@ -4,8 +4,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -362,12 +360,12 @@ public class PurchasePlanService extends CommonService {
 				String oldmaterilid = old.getMaterialid();				
 
 				//旧数据物料的待出库"减少"处理
-				String purchase = String.valueOf(-1 * stringToFloat(old.getPurchasequantity()));
+				//String purchase = String.valueOf(-1 * stringToFloat(old.getPurchasequantity()));
 				float requirement = -1 * stringToFloat(old.getManufacturequantity());
 				updateMaterial(oldmaterilid,0,requirement);
 				
-				old.setPurchasequantity(purchase);
-				old.setManufacturequantity(String.valueOf(requirement));
+				//old.setPurchasequantity(purchase);
+				//old.setManufacturequantity(String.valueOf(requirement));
 				
 				//旧数据的删除处理
 				deletePurchasePlanDetail(old);				
@@ -418,8 +416,8 @@ public class PurchasePlanService extends CommonService {
 				float contractPrice = stringToFloat(contract.getPrice());
 				float quantity = contractQty - purchaseQty;
 				
-				boolean arrivalFlag = checkContractArrival(contract);
-				if(!(arrivalFlag)){
+				String arrivalFlag = checkContractEnforcement(contractId,materialId);
+				if(("保留").equals(arrivalFlag)){
 					continue;
 				}
 				if(quantity <= 0){//
@@ -430,44 +428,29 @@ public class PurchasePlanService extends CommonService {
 					
 					if(detailList.size() > 1){
 						//一份合同有多个物料,仅删除合同明细
+						deletePurchaseOrderDetail(contract);
 						
-						//判断改合同是否已经在执行,否则不能删除
-						//boolean arrivalFlag = checkContractArrival(contract);
-						//if(arrivalFlag){
-							deletePurchaseOrderDetail(contract);
-						//}
 					}else{
 						//一份合同只有一个物料,删除明细和头表
 						List<B_PurchaseOrderData> contractDBList =  
-								getPurchaseOrderFromDB(YSId,contractId);						
-
-						//判断改合同是否已经在执行,否则不能删除
-						//boolean arrivalFlag = checkContractArrival(contract);
-						//if(arrivalFlag){
+								getPurchaseOrderFromDB(YSId,contractId);
+						
 							deletePurchaseOrder(contractDBList.get(0));
 							deletePurchaseOrderDetail(contract);
-						//}
 					}
 				}else{//套件产品,同一个物料重复出现,只删除其中一个的话,更新剩下的数量
 					contract.setQuantity(String.valueOf(quantity));
 					contract.setTotalprice(String.valueOf(quantity * contractPrice));
-					//判断改合同是否已经在执行,否则不能删除
-					//boolean arrivalFlag = checkContractArrival(contract);
-					//if(arrivalFlag){
-						updatePurchaseOrderDetail(contract);	
-					//}
+					
+					updatePurchaseOrderDetail(contract);
 				}
 				
 				//退换物料的库存
 				//if(supplierFlag.equals("1")){//只处理被删除的物料
-				//判断改合同是否已经在执行,否则不能删除
-				//boolean arrivalFlag = checkContractArrival(contract);
-					//if(arrivalFlag){
 						updateMaterial(
 								materialId, 
 								((-1) * purchaseQty),
-								0);
-				//}
+								0);				
 				//}
 			}
 
@@ -1431,20 +1414,65 @@ public class PurchasePlanService extends CommonService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean checkContractArrival(B_PurchaseOrderDetailData contract) throws Exception{
-		boolean rtnFlag = false;
-		
-		String contractId = contract.getContractid();
-		String where = " contractId='" + contractId +  "' AND deleteFlag='0' ";
+	public String checkContractEnforcement(
+			String contractId,String materialId) throws Exception{
+		String rtnFlag = "保留";
+
+		//1.判断合同是否收货
+		String where = " contractId='" + contractId +
+				"' AND materialId='" + materialId +
+				"' AND deleteFlag='0' ";
 		
 		List<B_ArrivalData> list = new B_ArrivalDao().Find(where);
 		
 		if(list == null || list.size() <= 0 )
-			rtnFlag = true;
+			return "删除";//未收货
+		
+		B_ArrivalData arrival = list.get(0);
+		//2.判断合同是否报检
+		String inspectSts = arrival.getStatus();//报检结果
+		if((Constants.ARRIVAL_STS_1).equals(inspectSts))
+			return rtnFlag;
+		
+		String arrvialId = arrival.getArrivalid();
+
+		//3.判断合同质检结果:合格/退货
+		HashMap<String, Object> map = 
+				getReceiveInspection(arrvialId,materialId);
+		
+		if (map == null)
+			return rtnFlag;//未检验
+		
+		HashMap<String, String> inspection = (HashMap<String, String>)map.get("inspection");
+		String checkResult = inspection.get("checkResult");
+		if ((Constants.ARRIVERECORD_3).equals(checkResult))
+			return "删除";//退货
 		
 		return rtnFlag;
 	}
-
+	
+	//进料报检
+	private HashMap<String, Object> getReceiveInspection(
+			String arrvialId,String materialId) throws Exception {
+		
+		HashMap<String, Object> hmap = new HashMap<String, Object>();
+		
+		this.dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("receiveInspectionByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("arrvialId", arrvialId);	
+		userDefinedSearchCase.put("materialId", materialId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0 ){
+			hmap.put("inspection", dataModel.getYsViewData().get(0));
+		}else{
+			hmap.put("inspection", null);			
+		}
+		return hmap;
+	}	
+	
 	/**
 	 * 保存领料的修正值:原材料
 	 * @return

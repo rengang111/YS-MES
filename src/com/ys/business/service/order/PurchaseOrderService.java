@@ -319,14 +319,6 @@ public class PurchaseOrderService extends CommonService {
 			List<B_PurchaseOrderData> contractDBList = 
 					getPurchaseOrderFromDB(YSId);
 			
-			//旧数据抵消处理
-			///List<String> reqContractList = new ArrayList<String>();
-			///for(B_PurchaseOrderData db:contractDBList){
-			///	//只处理页面选择的供应商
-			///	if(isExsitCheck(db.getSupplierid(),reqSupplierList)){
-			///		reqContractList.add(db.getContractid());				
-			///	}
-			///}
 			
 			//旧数据抵消处理
 			for(B_PurchaseOrderData  contract:contractDBList){
@@ -363,30 +355,8 @@ public class PurchaseOrderService extends CommonService {
 				//该合同编号下的明细全部删除时,头信息也删除处理
 				if( dbsize > 0 && dbsize == deleteCnt ){
 					deletePurchaseOrder(YSId,contractId);
-				}
-				
+				}				
 			}
-			
-			//旧数据抵消处理:合同明细
-			/*for(B_PurchaseOrderDetailData db:contractDetailDBList){
-				
-				//合同明细
-				//只处理页面选择的供应商
-				if(isExsitCheck(db.getContractid(),reqContractList)){
-
-					boolean arrivalFlag = checkContractArrival(db.getContractid(),db.getMaterialid());
-					//没有收货记录
-					if(arrivalFlag){
-						deletePurchaseOrderDetail(db);
-						updateMaterial(
-								db.getMaterialid(),
-								String.valueOf( (-1) * stringToFloat(db.getQuantity()) ),
-								"0");//更新虚拟库存
-					}
-					
-				}
-								
-			}*/
 			//旧数据处理--结束↑
 			
 			//新数据取得:从采购方案表中取得,集计单位:供应商
@@ -414,7 +384,7 @@ public class PurchaseOrderService extends CommonService {
 				
 				B_PurchaseOrderData oldDb = getOldContractInfo(YSId,supplierId);
 				String contractId = "";
-				if(oldDb == null || ("").equals(oldDb)){//insert
+				if(oldDb == null){//insert
 					
 					//取得供应商的合同流水号
 					//父编号:年份+供应商简称
@@ -467,11 +437,12 @@ public class PurchaseOrderService extends CommonService {
 					if(stringToFloat(quantity) == 0)
 						continue;
 					
-					if(oldDb1 == null || ("").equals(oldDb1)){//insert
+					if(oldDb1 == null){//insert
 						B_PurchaseOrderDetailData d = new B_PurchaseOrderDetailData();				
 						d.setYsid(YSId);
 						d.setContractid(contractId);
 						d.setMaterialid(dt.get("materialId"));
+						d.setDescription(dt.get("description"));
 						d.setQuantity(quantity);
 						d.setPrice(dt.get("price"));					
 						d.setTotalprice(dt.get("totalPrice"));
@@ -817,6 +788,7 @@ public class PurchaseOrderService extends CommonService {
 			db.setQuantity(data.getQuantity());
 			db.setPrice(data.getPrice());
 			db.setTotalprice(data.getTotalprice());
+			db.setDescription(data.getDescription());
 			
 			detailDao.Store(db);
 			

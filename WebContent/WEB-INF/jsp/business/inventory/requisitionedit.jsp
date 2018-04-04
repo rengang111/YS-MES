@@ -101,7 +101,7 @@
                 }},
 	    		{"targets":6,"render":function(data, type, row){	    			
 					var index=row["rownum"];
-					var totalRequisition = row["totalRequisition"];//已领数量
+					var totalRequisition = row["manufactureQuantity"];//需求量
 					var quantity = row["quantity"];//本次领料
 					var tmp = currencyToFloat(totalRequisition) - currencyToFloat(quantity);
 					
@@ -227,21 +227,24 @@
 		
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/requisition";
+					var virtualClass = $('#virtualClass').val();
+					var url = "${ctx}/business/requisition"+"?virtualClass="+virtualClass;
 					location.href = url;		
 				});
 
 		$("#showHistory").click(
 				function() {
 					var YSId='${order.YSId }';
-					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId;
+					var virtualClass = $('#virtualClass').val();
+					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
-					
-			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=update");
+
+			var virtualClass = $('#virtualClass').val();
+			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=update"+"&virtualClass="+virtualClass);
 			$('#formModel').submit();
 		});
 		
@@ -274,6 +277,8 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
+	<!-- 虚拟领料区分 -->
+	<input type="hidden" id="virtualClass" value="${virtualClass }" />
 	<input type="hidden" id="goBackFlag" />
 	<form:hidden path="requisition.recordid"  value="${detail.recordId }" />
 	<form:hidden path="requisition.ysid"  value="${detail.YSId }" />
@@ -327,9 +332,9 @@
 						<th class="dt-center" width="60px">计划用量</th>
 						<th class="dt-center" width="60px">已入库</th>
 						<th class="dt-center" width="60px">已领数量</th>
-						<th class="dt-center" width="60px">可用库存</th>
-						<th class="dt-center" width="80px">
-							<input type="checkbox" name="selectall" id="selectall" /><label for="selectall">本次领料</label></th>
+						<th class="dt-center" width="60px">虚拟库存</th>
+						<th class="dt-center" width="80px">本次领料
+						<!-- 	<input type="checkbox" name="selectall" id="selectall" /><label for="selectall"></label> --></th>
 						<th class="dt-center" width="60px">剩余数量</th>
 						<th class="dt-center" width="60px">物料特性</th>
 						<th class="dt-center" width="60px">供应商</th>

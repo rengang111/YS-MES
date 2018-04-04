@@ -50,6 +50,7 @@ public class RequisitionAction extends BaseAction {
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
+		String virtualClass = request.getParameter("virtualClass");//虚拟领料区分
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
@@ -61,6 +62,7 @@ public class RequisitionAction extends BaseAction {
 		this.model = model;
 		this.response = response;
 		this.session = session;
+		this.model.addAttribute("virtualClass",virtualClass);
 		
 		if (type == null) {
 			type = "";
@@ -157,6 +159,14 @@ public class RequisitionAction extends BaseAction {
 			case "productPhotoDelete"://删除附件
 				dataMap = deletePhoto("product","productFileList","productFileCount");
 				printOutJsonObj(response, dataMap);
+				break;
+			case "virtualInsert"://虚拟领料:保存
+				doVirtualInsert();
+				rtnUrl = "/business/inventory/requisitionview";
+				break;
+			case "virtualAddinit":
+				doAddInit();
+				rtnUrl = "/business/inventory/requisitionvirtualadd";
 				break;
 				
 		}
@@ -284,6 +294,16 @@ public class RequisitionAction extends BaseAction {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+
+	public void doVirtualInsert(){
+		try{
+			service.virtualInsertAndView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	
 	public void doUpdateInit(){
 		try{

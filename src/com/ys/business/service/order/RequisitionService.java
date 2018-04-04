@@ -126,14 +126,13 @@ public class RequisitionService extends CommonService {
 		dataModel.setQueryName("getOrderListForRequisition");	
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		//if(notEmpty(key1) || notEmpty(key2))
-		//		userDefinedSearchCase.put("requisitionSts", "");//有查询条件,不再限定其状态
-		
+		userDefinedSearchCase.put("keyword2", key2);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		
 		String requisitionSts = request.getParameter("requisitionSts");
+		if(notEmpty(key1) || notEmpty(key2))
+			requisitionSts = "";//有查询条件,不再限定其状态
 		String having = "1=1";
 		if(("010").equals(requisitionSts)){
 			//待申请
@@ -266,12 +265,27 @@ public class RequisitionService extends CommonService {
 	
 	public void insertAndView() throws Exception {
 
-		String YSId = insert();
+		String YSId = insert(
+				Constants.REQUISITION_NORMAL,//正常领料
+				Constants.STOCKOUT_2	//待出库
+				);
 
 		//订单详情
 		getOrderDetail(YSId);
 	}
 	
+	public void virtualInsertAndView() throws Exception {
+
+		String YSId = insert(
+				Constants.REQUISITION_VIRTUAL,//虚拟领料
+				Constants.STOCKOUT_3	//已出库
+				);
+
+		//订单详情
+		getOrderDetail(YSId);
+	}
+	
+
 
 	private String update(){
 		
@@ -322,7 +336,7 @@ public class RequisitionService extends CommonService {
 		return YSId;
 	}
 	
-	private String insert(){
+	private String insert(String virtualClass,String stockoutType){
 		
 		String YSId = "";
 		ts = new BaseTransaction();
@@ -339,7 +353,10 @@ public class RequisitionService extends CommonService {
 			String requisitionid = reqData.getRequisitionid();
 			
 			//领料申请insert
-			insertRequisition(reqData,Constants.REQUISITION_PARTS);
+			reqData.setVirtualclass(virtualClass);
+			reqData.setRequisitiontype(Constants.REQUISITION_PARTS);//装配领料
+			reqData.setRequisitionsts(stockoutType);//
+			insertRequisition(reqData);
 						
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
@@ -379,7 +396,7 @@ public class RequisitionService extends CommonService {
 	}
 	
 	private void insertRequisition(
-			B_RequisitionData stock,String type) throws Exception {
+			B_RequisitionData stock) throws Exception {
 		
 		//插入新数据
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
@@ -388,10 +405,8 @@ public class RequisitionService extends CommonService {
 
 		guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
-		stock.setRequisitiontype(type);//
 		stock.setRequisitionuserid(userInfo.getUserId());//默认为登陆者
 		stock.setRequisitiondate(CalendarUtil.fmtYmdDate());
-		stock.setRequisitionsts(Constants.STOCKOUT_2);//待出库
 		stock.setRemarks(replaceTextArea(stock.getRemarks()));//换行符转换
 		
 		dao.Create(stock);
@@ -764,7 +779,11 @@ public class RequisitionService extends CommonService {
 
 				//领料申请insert
 				reqData.setYsid(reqData.getRequisitionid());//单独领料申请编号
-				insertRequisition(reqData,Constants.REQUISITION_5);//直接领料	
+				reqData.setRequisitionsts(Constants.STOCKOUT_2);//待出库
+				reqData.setRequisitiontype(Constants.REQUISITION_5);//直接领料
+				
+				insertRequisition(reqData);//直接领料
+				
 				recordId = reqData.getRecordid();
 			}else{
 				//update				

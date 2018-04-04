@@ -105,10 +105,20 @@
 	            $(this).addClass('selected');
 	        }
 		});		
+		
+
+		buttonSelectedEvent();//按钮选择式样
+		
+		 $('#defutBtn').removeClass("start").addClass("end");
 	})	
 	
 	function doSearch() {	
 
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	        
 		//false:不使用session
 		ajax("","false");
 	}
@@ -160,9 +170,10 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('040');">未出库</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('051');">部分出库中</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('050');">已出库</a>
+			<a class="DTTT_button box" onclick="selectContractByDate('030');">未入库</a>
+			<a class="DTTT_button box" onclick="selectContractByDate('040');" id="defutBtn">未出库(已入库)</a>
+			<a class="DTTT_button box" onclick="selectContractByDate('051');">部分出库中</a>
+			<a class="DTTT_button box" onclick="selectContractByDate('050');">已出库</a>
 		</div>
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						

@@ -56,14 +56,28 @@
 					}
 				] ,
 				"columnDefs":[
-		    		{"targets":5,"render":function(data, type, row){
+		    		{"targets":4,"render":function(data, type, row){
+		    			var requisitionSts = row["requisitionSts"];	
+		    			var viralt = row["virtualClass"];
+		    			var rtn =requisitionSts;
+		    			if(viralt == '020'){
+		    				rtn = "虚拟领料";
+		    			}
+		    			return rtn;
+		    		}},{"targets":5,"render":function(data, type, row){
 		    			var contractId = row["contractId"];
 		    			var status = row["requisitionStsId"];
+		    			var viralt = row["virtualClass"];
 		    			var rtn = "";
 		    			if(status != '030'){//已出库
 			    			rtn = "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
 			    			rtn = rtn + "&nbsp;" + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
-		    				
+			    				
+		    			}else{
+		    				if(viralt == '020'){
+				    			rtn = "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
+				    			rtn = rtn + "&nbsp;" + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
+		    				}
 		    			}
 						return rtn;
 		    		}},{"targets":6,"render":function(data, type, row){
@@ -197,15 +211,21 @@
 		
 		$(".goBack").click(
 				function() {
-					var contractId='${contract.contractId }';
-					var url = "${ctx}/business/requisition";
+					var virtualClass = $('#virtualClass').val();
+					var url = "${ctx}/business/requisition"+"?virtualClass="+virtualClass;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
 					var YSId='${order.YSId }';
-					var url =  "${ctx}/business/requisition?methodtype=addinit&YSId="+YSId;
+					var virtualClass = $('#virtualClass').val();
+					var methodtype = "addinit"
+						if(virtualClass == '020'){			
+							methodtype = "virtualAddinit";//虚拟领料
+						}
+						var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&YSId="+YSId+"&virtualClass="+virtualClass;
+
 					location.href = url;
 		});
 		
@@ -231,11 +251,10 @@
 	});
 	
 	function doEdit(YSId,requisitionId) {
-		
+
+		var virtualClass = $('#virtualClass').val();
 		var url = '${ctx}/business/requisition?methodtype=updateInit&YSId='
-				+YSId+'&requisitionId='+requisitionId;
-		//alert("requisitionId"+requisitionId)
-		//callProductDesignView("requisition",url)
+				+YSId+'&requisitionId='+requisitionId+"&virtualClass="+virtualClass;
 		location.href = url;
 	}
 	
@@ -275,6 +294,8 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
+	<!-- 虚拟领料区分 -->
+	<input type="hidden" id="virtualClass" value="${virtualClass }" />
 	<input type="hidden" id="goBackFlag" />
 	<form:hidden path="requisition.ysid"  value="${order.YSId }" />
 	<fieldset>

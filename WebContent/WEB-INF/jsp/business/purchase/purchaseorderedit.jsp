@@ -318,7 +318,9 @@
 							<a href="###" onClick="doShowMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
 							<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
 						
-						<td><span id="name${status.index}"></span></td>					
+						<td>
+							<textarea id="detailList${status.index}.description" name="detailList[${status.index}].description" 
+								style="width: 400px; height: 80px;font-size: 12px;">${detail.description}</textarea></td>					
 						
 						<td>${ detail.unit }</td>
 						
@@ -336,10 +338,10 @@
 					</tr>	
 									
 					<script type="text/javascript">
-						var materialName = '${detail.materialName}';
-						var index = '${status.index}';
+						//var materialName = '${detail.materialName}';
+						//var index = '${status.index}';
 						
-						$('#name'+index).html(jQuery.fixedWidth(materialName,40));
+						//$('#name'+index).html(jQuery.fixedWidth(materialName,40));
 
 					</script>	
 						

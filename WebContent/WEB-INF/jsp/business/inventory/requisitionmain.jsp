@@ -78,12 +78,16 @@
 		    			return row["rownum"] ;				    			 
                     }},
 		    		{"targets":2,"render":function(data, type, row){
-		    			var rtn = "";
-		    			//if(data == ""){
-			    		//	rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+"（领料申请）"+"</a>";		    				
-		    			//}else{
+		    			var manufactureQty = currencyToFloat( row["manufactureQty"] );
+		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
+		    			var rtn="";
+		    			if(requisitionQty == manufactureQty){//已出库
+			    			rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "')\">"+data+"</a>";		    				
+		    			}else {
 			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+data+"</a>";
-		    			//}
+		    				
+		    			}		    			
+		    			
 		    			return rtn;
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
@@ -158,11 +162,22 @@
 	
 	
 	function doShowDetail(YSId) {
-		
-		var url =  "${ctx}/business/requisition?methodtype=addinit&YSId="+YSId;
+		var virtualClass = $('#virtualClass').val();
+		var methodtype = "addinit"
+		if(virtualClass == '020'){			
+			methodtype = "virtualAddinit";//虚拟领料
+		}
+		var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&YSId="+YSId+"&virtualClass="+virtualClass;
 		location.href = url;
 	}
 	
+
+	function showHistory(YSId) {
+		var virtualClass = $('#virtualClass').val();
+		var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
+		location.href = url;		
+	};
+
 	
 </script>
 </head>
@@ -173,6 +188,9 @@
 		
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
+			<!-- 虚拟领料区分 -->
+			<input type="hidden" id="virtualClass" value="${virtualClass }" />
+			
 			<table>
 				<tr>
 					<td width="10%"></td> 
