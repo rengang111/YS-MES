@@ -189,7 +189,7 @@ body{
 		    						    			
 		    			return floatToCurrency(data);
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":8,"render":function(data, type, row){//总需求量
 		     			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			var materialId = row["materialId"];	
@@ -204,10 +204,14 @@ body{
 		    					
 		    				}
 		    			}
-		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			var correctionQty = currencyToFloat(row["correctionQty"]);
+		    			var style = 'color: green;';
+		    			if(correctionQty>0)
+		    				style = '';
+		    			rtn= "<a href=\"###\" style=\""+style+"\"onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
 		    			return rtn;		    			
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){//总合同数
 		     			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["materialId"] +"')\">" + qty + "</a>";
@@ -222,9 +226,9 @@ body{
 		    		{"targets":11,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var qty= floatToCurrency(row["stockoutTotal"]);//包含正常出库 + 手修改出库
-		    			//rtn= "<a href=\"###\" onClick=\"doShowStockOut('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowStockOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
-		    			return qty;
+		    			return rtn;
 		    		}},
 		    		{"targets":12,"render":function(data, type, row){//实际库存
 		    			var rtn = "";
@@ -251,9 +255,9 @@ body{
 		    			var rtn = "";
 		    			var mate = row["materialId"];
 		    			var qty= floatToCurrency(data);
-		    			//rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
-		    			return qty;
+		    			return rtn;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    			//期初值设定

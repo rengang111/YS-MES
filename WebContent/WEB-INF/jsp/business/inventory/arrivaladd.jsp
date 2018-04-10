@@ -56,20 +56,24 @@
 			var foSumArra = currencyToFloat($oSumArra.html());
 			var fRecorde  = currencyToFloat($oRecorde.html());	
 			
-			var surplus = fquantity - foSumArra + fRecorde  
+			var surplus = fquantity - foSumArra + fRecorde;
 			
 			if( fArrival > surplus ){
 
-				$().toastmessage('showWarningToast', "收货数大于剩余数了。");
-		        $(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
-           	 	$(this).find("input:text").addClass('error');
-				return;
+				$().toastmessage('showWarningToast', "注意,收货数大于合同数量了。");
+		        //$(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
+           	 	//$(this).find("input:text").addClass('error');
+				//return;
 			}else{
 				$(this).find("input:text").removeClass('error')
 			}
 			
 			//剩余数量
-			var fsurplus = floatToCurrency( surplus - fArrival );	
+			var viewplus = surplus - fArrival;			
+			if(viewplus < 0){
+				viewplus = 0;
+			}				
+			var fsurplus = floatToCurrency( viewplus );	
 			$oSurplus.html(fsurplus);
 			$oArrival.val(floatToCurrency(fArrival))
 

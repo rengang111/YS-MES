@@ -669,6 +669,32 @@
   </query>
   <query>
     <pool></pool>     
+    <name value="getOrderListForRequisitionVirtual" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="left(A.YSId,2)" des=""  reqName="YsYear" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.virtualClass" des=""  reqName="virtualClass" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.orderQty" alias="" ctype="" />
+      <f name="A.manufactureQty" alias="" ctype="" />
+      <f name="A.requisitionQty" alias="" ctype="" />
+      <f name="A.requisitionDate" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.virtualClass" alias="" ctype="" />
+    </select>
+    <from>v_requisitionforzhuangpei a</from>
+    <orderby>A.YSId</orderby>
+    <groupby></groupby>
+    <having>#</having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
     <name value="getRequisitionAndStockout" />
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />

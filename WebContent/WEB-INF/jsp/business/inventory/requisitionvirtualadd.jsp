@@ -310,16 +310,16 @@
 		
 		$(".goBack").click(
 				function() {
-					var virtualClass = $('#virtualClass').val();
-					var url = "${ctx}/business/requisition"+"?virtualClass="+virtualClass;
+					var virtualType = $('#virtualType').val();
+					var url = "${ctx}/business/requisition?methodtype=virtualInit"+"&virtualType="+virtualType;
 					location.href = url;		
 				});
 
 		$("#showHistory").click(
 				function() {
 					var YSId='${order.YSId }';
-					var virtualClass = $('#virtualClass').val();
-					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
+					var virtualType = $('#virtualType').val();
+					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualType="+virtualType;
 					location.href = url;		
 				});
 		
@@ -349,8 +349,8 @@
 				return;
 				
 			}
-			var virtualClass = $('#virtualClass').val();
-			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=virtualInsert"+"&virtualClass="+virtualClass);
+			var virtualType = $('#virtualType').val();
+			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=virtualInsert"+"&virtualType="+virtualType);
 			$('#formModel').submit();
 		});
 		
@@ -406,7 +406,7 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<!-- 虚拟领料区分 -->
-	<input type="hidden" id="virtualClass" value="${virtualClass }" />
+	<input type="hidden" id="virtualType" value="${virtualType }" />
 	<input type="hidden" id="goBackFlag" />
 	<input type="hidden" id="requrisitionFlag" value="0"/>
 	<form:hidden path="requisition.ysid"  value="${order.YSId }" />

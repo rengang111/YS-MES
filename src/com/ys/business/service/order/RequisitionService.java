@@ -162,6 +162,71 @@ public class RequisitionService extends CommonService {
 
 	}
 	
+	public HashMap<String, Object> doVirtualSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITIONVIRTUAL,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+
+		dataModel.setQueryName("getOrderListForRequisitionVirtual");	
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
+		String requisitionSts = request.getParameter("requisitionSts");
+		if(notEmpty(key1) || notEmpty(key2))
+			requisitionSts = "";//有查询条件,不再限定其状态
+		String having = "1=1";
+		if(("010").equals(requisitionSts)){
+			//待出库
+			having = " requisitionQty=0 ";
+		}else if(("030").equals(requisitionSts)){
+			//已出库
+			having = " requisitionQty=manufactureQty ";
+		}else if(("020").equals(requisitionSts)){
+			//出库中
+			having = " requisitionQty> 0 AND requisitionQty+0 < manufactureQty+0 ";
+		}
+		sql = sql.replace("#", having);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}
+		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
 	public HashMap<String, Object> doMaterialRequisitionSearch(
 			String data) throws Exception {
 

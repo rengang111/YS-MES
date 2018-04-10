@@ -227,24 +227,27 @@
 		
 		$(".goBack").click(
 				function() {
-					var virtualClass = $('#virtualClass').val();
-					var url = "${ctx}/business/requisition"+"?virtualClass="+virtualClass;
-					location.href = url;		
+					var url = "${ctx}/business/requisition";
+					var virtualType = $('#virtualType').val();
+					if(virtualType == 'V')
+						url = "${ctx}/business/requisition?methodtype=virtualInit&virtualType="+virtualType;
+					
+					location.href = url;			
 				});
 
 		$("#showHistory").click(
 				function() {
 					var YSId='${order.YSId }';
-					var virtualClass = $('#virtualClass').val();
-					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
+					var virtualType = $('#virtualType').val();
+					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualType="+virtualType;
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
 
-			var virtualClass = $('#virtualClass').val();
-			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=update"+"&virtualClass="+virtualClass);
+			var virtualType = $('#virtualType').val();
+			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=update"+"&virtualType="+virtualType);
 			$('#formModel').submit();
 		});
 		
@@ -278,7 +281,7 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<!-- 虚拟领料区分 -->
-	<input type="hidden" id="virtualClass" value="${virtualClass }" />
+	<input type="hidden" id="virtualType" value="${virtualType }" />
 	<input type="hidden" id="goBackFlag" />
 	<form:hidden path="requisition.recordid"  value="${detail.recordId }" />
 	<form:hidden path="requisition.ysid"  value="${detail.YSId }" />

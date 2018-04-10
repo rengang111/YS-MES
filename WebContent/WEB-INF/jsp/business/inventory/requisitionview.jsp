@@ -211,20 +211,23 @@
 		
 		$(".goBack").click(
 				function() {
-					var virtualClass = $('#virtualClass').val();
-					var url = "${ctx}/business/requisition"+"?virtualClass="+virtualClass;
-					location.href = url;		
+					var url = "${ctx}/business/requisition";
+					var virtualType = $('#virtualType').val();
+					if(virtualType == 'V')
+						url = "${ctx}/business/requisition?methodtype=virtualInit"+"&=virtualType"+virtualType;
+					
+					location.href = url;			
 				});
 		
 		$("#insert").click(
 				function() {
 					var YSId='${order.YSId }';
-					var virtualClass = $('#virtualClass').val();
+					var virtualType = $('#virtualType').val();
 					var methodtype = "addinit"
-						if(virtualClass == '020'){			
+						if(virtualType == 'V'){			
 							methodtype = "virtualAddinit";//虚拟领料
 						}
-						var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&YSId="+YSId+"&virtualClass="+virtualClass;
+						var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&YSId="+YSId+"&virtualType="+virtualType;
 
 					location.href = url;
 		});
@@ -252,9 +255,9 @@
 	
 	function doEdit(YSId,requisitionId) {
 
-		var virtualClass = $('#virtualClass').val();
+		var virtualType = $('#virtualType').val();
 		var url = '${ctx}/business/requisition?methodtype=updateInit&YSId='
-				+YSId+'&requisitionId='+requisitionId+"&virtualClass="+virtualClass;
+				+YSId+'&requisitionId='+requisitionId+"&virtualType="+virtualType;
 		location.href = url;
 	}
 	
@@ -295,7 +298,7 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<!-- 虚拟领料区分 -->
-	<input type="hidden" id="virtualClass" value="${virtualClass }" />
+	<input type="hidden" id="virtualType" value="${virtualType }" />
 	<input type="hidden" id="goBackFlag" />
 	<form:hidden path="requisition.ysid"  value="${order.YSId }" />
 	<fieldset>

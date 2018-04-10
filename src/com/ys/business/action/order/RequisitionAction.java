@@ -50,7 +50,7 @@ public class RequisitionAction extends BaseAction {
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
-		String virtualClass = request.getParameter("virtualClass");//虚拟领料区分
+		String virtualType = request.getParameter("virtualType");//虚拟领料区分
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
@@ -62,7 +62,7 @@ public class RequisitionAction extends BaseAction {
 		this.model = model;
 		this.response = response;
 		this.session = session;
-		this.model.addAttribute("virtualClass",virtualClass);
+		this.model.addAttribute("virtualType",virtualType);
 		
 		if (type == null) {
 			type = "";
@@ -168,6 +168,14 @@ public class RequisitionAction extends BaseAction {
 				doAddInit();
 				rtnUrl = "/business/inventory/requisitionvirtualadd";
 				break;
+			case "virtualInit"://虚拟领料查询
+				doInit();
+				rtnUrl = "/business/inventory/requisitionvirtualmain";
+				break;
+			case "virtualSearch"://虚拟领料查询
+				dataMap = doVirtualSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -224,6 +232,34 @@ public class RequisitionAction extends BaseAction {
 		
 		try {
 			dataMap = service.doSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doVirtualSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_REQUISITIONVIRTUAL+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_REQUISITIONVIRTUAL+Constants.FORM_KEYWORD2);
+			
+		}
+		
+		try {
+			dataMap = service.doVirtualSearch(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

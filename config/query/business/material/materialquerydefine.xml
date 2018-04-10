@@ -613,6 +613,7 @@
       <f name="stockoutTotal" alias="" ctype="" />
       <f name="planQty" alias="" ctype="" />
       <f name="rawPlanQty" alias="" ctype="" />
+      <f name="correctionQty" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.purchaseType" alias="" ctype="" />
@@ -666,6 +667,7 @@
       <f name="stockoutTotal" alias="" ctype="" />
       <f name="planQty" alias="" ctype="" />
       <f name="rawPlanQty" alias="" ctype="" />
+      <f name="correctionQty" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.purchaseType" alias="" ctype="" />
@@ -720,6 +722,7 @@
       <f name="stockoutTotal" alias="" ctype="" />
       <f name="planQty" alias="" ctype="" />
       <f name="rawPlanQty" alias="" ctype="" />
+      <f name="correctionQty" alias="" ctype="" />
       <f name="IFNULL(reviseQty,'0')" alias="reviseQty" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />

@@ -5,10 +5,10 @@
 <head>
 <%@ include file="../../common/common.jsp"%>
 
-<title>领料申请--订单一览</title>
+<title>虚拟领料--订单一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,sessionFlag,requisitionSts) {
+	function ajaxSearch(virtualClass,sessionFlag,requisitionSts) {
 		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -16,9 +16,11 @@
 			table.fnDestroy();
 		}
 
-		var actionUrl = "${ctx}/business/requisition?methodtype=search";
+		var actionUrl = "${ctx}/business/requisition?methodtype=virtualSearch";
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
 		actionUrl = actionUrl + "&requisitionSts=" + requisitionSts;
+		actionUrl = actionUrl + "&YsYear=17";
+		actionUrl = actionUrl + "&virtualClass=" + virtualClass;
 		
 		
 		var t = $('#TMaterial').DataTable({
@@ -143,39 +145,35 @@
 
 	$(document).ready(function() {
 
-		ajax("","true","010");
+		ajaxSearch("","true","010");
 		
 	})	
 	
 	function doSearch() {	
 
-		ajax("purchaseplan","false","");
+		ajaxSearch("","false","");
 
 	}
-	function doSearch2(colNum,type) {	
+	function doSearch2(virtualClass,type) {	
 		
 		$("#keyword1").val("");
 		$("#keyword2").val("");
 		
-		ajax("","false",type);
+		ajaxSearch(virtualClass,"false",type);
 
 	}
 	
 	
 	function doShowDetail(YSId) {
-		var virtualClass = $('#virtualClass').val();
-		var methodtype = "addinit"
-		if(virtualClass == '020'){			
-			methodtype = "virtualAddinit";//虚拟领料
-		}
-		var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&YSId="+YSId+"&virtualClass="+virtualClass;
+		var virtualType = $('#virtualType').val();
+		var url =  "${ctx}/business/requisition?methodtype=virtualAddinit"+"&YSId="+YSId+"&virtualType=V";
 		location.href = url;
 	}
 	
 
 	function showHistory(YSId) {
-		var virtualClass = $('#virtualClass').val();
-		var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
+		var virtualType = $('#virtualType').val();
+		var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualType=V";
 		location.href = url;		
 	};
 
@@ -190,7 +188,7 @@
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 			<!-- 虚拟领料区分 -->
-			<input type="hidden" id="virtualClass" value="${virtualClass }" />
+			<input type="hidden" id="virtualType" value="${virtualType }" />
 			
 			<table>
 				<tr>
@@ -217,9 +215,9 @@
 
 	<div class="list">					
 		<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(1,'010');"><span>待申请</span></a>
-			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>出库中</span></a>
-			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>已出库</span></a>
+			<a class="DTTT_button DTTT_button_text" onclick="doSearch2('','010');"><span>待出库</span></a>
+			<a class="DTTT_button DTTT_button_text" onclick="doSearch2('020','020');"><span>部分出库</span></a>
+			<a class="DTTT_button DTTT_button_text" onclick="doSearch2('020','030');"><span>已出库</span></a>
 		</div>
 		<table id="TMaterial" class="display">
 			<thead>						
@@ -231,7 +229,7 @@
 						<th>产品名称</th>
 						<th style="width: 50px;">订单交期</th>
 						<th style="width: 60px;">订单数量</th>
-						<th style="width: 60px;">申请时间</th>
+						<th style="width: 60px;">出库时间</th>
 						<th style="width: 60px;">领料状态</th>
 				</tr>
 			</thead>
