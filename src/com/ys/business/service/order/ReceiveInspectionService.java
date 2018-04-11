@@ -10,13 +10,11 @@ import org.springframework.ui.Model;
 import com.ys.business.action.model.order.ReceiveInspectionModel;
 import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_InspectionProcessDao;
-import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_ReceiveInspectionDao;
 import com.ys.business.db.dao.B_ReceiveInspectionDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_InspectionProcessData;
-import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_ReceiveInspectionData;
 import com.ys.business.db.data.B_ReceiveInspectionDetailData;
@@ -25,8 +23,6 @@ import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-
-import jxl.write.DateTime;
 
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
@@ -137,11 +133,8 @@ public class ReceiveInspectionService extends CommonService  {
 
 	public String addInit() throws Exception {
 
-		//取得进料检报告编号
-		//getRecordId();
-		
+		//取得进料检报告编号		
 		String arrivalId = request.getParameter("arrivalId");
-		String materialId = request.getParameter("materialId");
 		
 		String inspectArrivalId = getReceiveInspection(arrivalId);
 		
@@ -156,7 +149,7 @@ public class ReceiveInspectionService extends CommonService  {
 		//取得到货信息
 		String arrivalId = reqModel.getInspect().getArrivalid() ;
 		//String materialId = reqModel.getInspect().getMaterialid();
-		String inspectArrivalId = getReceiveInspection(arrivalId);
+		getReceiveInspection(arrivalId);
 		
 		model.addAttribute("resultList",util.getListOption(DicUtil.RECEIVEINSPECTION, ""));
 	
@@ -179,7 +172,7 @@ public class ReceiveInspectionService extends CommonService  {
 	public void PMUpdateAndView() throws Exception {
 
 
-		String arrivalId = reqModel.getInspect().getArrivalid();
+		//String arrivalId = reqModel.getInspect().getArrivalid();
 		//String materialId = reqModel.getInspect().getMaterialid();
 		
 		//updateProcess2(arrivalId,materialId,true);
@@ -219,8 +212,7 @@ public class ReceiveInspectionService extends CommonService  {
 			reqData.setReport(replaceTextArea(reqData.getReport()));//字符转换
 			insertReceivInspection(reqData);
 			
-			String inspectionid = reqData.getInspectionid();			
-			String arrivalId = reqData.getArrivalid();
+			String inspectionid = reqData.getInspectionid();
 			contractId = reqData.getContractid();
 			
 			//删除历史数据
@@ -238,10 +230,10 @@ public class ReceiveInspectionService extends CommonService  {
 				insertReceivInspectionDetail(data);
 				
 				//更新收货状态
-				updateArrivlStatus(
-						arrivalId,
-						data.getMaterialid(),
-						data.getCheckresult());
+				//updateArrivlStatus(
+				//		arrivalId,
+				//		data.getMaterialid(),
+				//		data.getCheckresult());
 				
 				//更新执行状态
 				updateContractStatusById(
@@ -363,85 +355,6 @@ public class ReceiveInspectionService extends CommonService  {
 		new B_ReceiveInspectionDetailDao().Create(data);
 	}
 	
-	private void updateProcess(
-			B_ReceiveInspectionData inspect) throws Exception{
-	/*
-		B_InspectionProcessDao dao = new B_InspectionProcessDao();
-
-		B_InspectionProcessData process = reqModel.getProcess();
-		
-		String where = "arrivalId ='"+inspect.getArrivalid() +
-				"' AND materialId ='"+ inspect.getMaterialid()+"'";
-		try{
-			dao.RemoveByWhere(where);
-		}catch(Exception e){
-			//
-		}
-		copyProperties(process,inspect);
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"ArrivalInsert",userInfo);
-		copyProperties(process,commData);
-
-		String guid = BaseDAO.getGuId();
-		process.setRecordid(guid);
-		process.setCheckdate(CalendarUtil.fmtDate());
-		process.setCheckerid(userInfo.getUserId());
-		process.setResult(process.getCheckresult());//质检员的检验结果
-		process.setManagerfeedback(replaceTextArea(process.getManagerfeedback()));//字符转换
-		process.setGmfeedback(replaceTextArea(process.getGmfeedback()));//字符转换
-		dao.Create(process);
-		*/
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void updateProcess2(
-			String arrivalId,String materialId,
-			boolean flg) throws Exception{
-	
-		B_InspectionProcessData data = new B_InspectionProcessData();
-		B_InspectionProcessDao dao = new B_InspectionProcessDao();
-
-		B_InspectionProcessData process = reqModel.getProcess();
-		
-		String where = "arrivalId ='"+arrivalId +
-				"' AND materialId ='"+ materialId+"'";
-		
-		List<B_InspectionProcessData> list = 
-				(List<B_InspectionProcessData>)dao.Find(where);
-		
-		if( list.size() > 0){			
-			//更新DB
-			data = list.get(0);
-			process.setManagerfeedback(replaceTextArea(process.getManagerfeedback()));//字符转换
-			process.setGmfeedback(replaceTextArea(process.getGmfeedback()));//字符转换
-			copyProperties(data,process);
-			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"ArrivalUpdate",userInfo);
-			copyProperties(data,commData);
-			if(flg){
-				//品质部经理确认
-				data.setManagerdate(CalendarUtil.fmtDate());
-				data.setResult(process.getManagerresult());//品质部经理检验结果
-			}else{
-				//总经理确认
-				data.setGmdate(CalendarUtil.fmtDate());
-			}
-			
-			dao.Store(data);
-		}		
-	}
-	
-	
-	private void deleteArrivalById(String arrivalId,String materialId) {
-
-		String where = " arrivalId = '"+arrivalId+"' AND materialId='"+materialId+"'";
-		try {
-			dao.RemoveByWhere(where);
-		} catch (Exception e) {
-			// nothing
-		}
-		
-	}
 	
 	private void getArrivaRecord(String arrivalId){
 		
@@ -463,23 +376,23 @@ public class ReceiveInspectionService extends CommonService  {
 	}
 	
 		
-	public void doDelete(String recordId) throws Exception{
+	public void doDelete() throws Exception{
 		
-		B_ArrivalData data = new B_ArrivalData();	
 															
 		try {
 			
 			ts = new BaseTransaction();										
 			ts.begin();									
+
+			String inspectionId = reqModel.getInspect().getInspectionid() ;
+			String astr_Where = " inspectionId= '"+inspectionId+"' ";
 			
-			String removeData[] = recordId.split(",");									
-			for (String key:removeData) {									
-												
-				data.setRecordid(key);							
-				dao.Remove(data);	
-				
-			}
+			//删除头部信息
+			new B_ReceiveInspectionDao().RemoveByWhere(astr_Where);
 			
+			//删除明细
+			new B_ReceiveInspectionDetailDao().RemoveByWhere(astr_Where);
+						
 			ts.commit();
 		}
 		catch(Exception e) {
@@ -492,10 +405,9 @@ public class ReceiveInspectionService extends CommonService  {
 	
 	public String getReceiveInspection(String arrivalId) throws Exception {
 
-		dataModel.setQueryName("getReceiveInspectionList");
+		dataModel.setQueryName("getReceiveInspectionById");
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("arrivalId", arrivalId);
-		//userDefinedSearchCase.put("materialId", materialId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
 		baseQuery.getYsFullData();	
 		

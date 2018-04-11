@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.ReceiveInspectionModel;
-import com.ys.business.service.order.ArrivalService;
 import com.ys.business.service.order.ReceiveInspectionService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
@@ -97,8 +95,8 @@ public class ReceiveInspectionAction extends BaseAction {
 				break;
 			case "delete":
 				doDelete(data);
-				printOutJsonObj(response, reqModel.getEndInfoMap());
-				return null;
+				rtnUrl = "/business/inventory/receiveinspectionmain";
+				break;
 			case "detailView":
 				doShowDetail();
 				//printOutJsonObj(response, viewModel.getEndInfoMap());
@@ -229,7 +227,7 @@ public class ReceiveInspectionAction extends BaseAction {
 	
 	public void doDelete(@RequestBody String data) throws Exception{
 		
-		service.doDelete(data);
+		service.doDelete();
 
 	}
 	

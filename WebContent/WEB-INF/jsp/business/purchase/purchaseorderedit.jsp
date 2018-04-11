@@ -320,7 +320,7 @@
 						
 						<td>
 							<textarea id="detailList${status.index}.description" name="detailList[${status.index}].description" 
-								style="width: 400px; height: 80px;font-size: 12px;">${detail.description}</textarea></td>					
+								style="width: 350px; height: 40px;font-size: 12px;">${detail.description}</textarea></td>					
 						
 						<td>${ detail.unit }</td>
 						

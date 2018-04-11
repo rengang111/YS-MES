@@ -80,15 +80,29 @@
 					var keyBackup = $('#keyBackup').val();				
 					$('#formModel').attr("action", "${ctx}/business/receiveinspection?methodtype=updateInit"+"&keyBackup="+keyBackup);
 					$('#formModel').submit();
+		});
+		
+		$("#doDelete").click(function() {
+					
+			var stockinQty =  $("#stockinQty").val();
+			
+			if(stockinQty > '0'){
+				alert("该物料已入库,不能删除。")
+				return;
+			}
+			
+			if(!(confirm("删除后不能恢复,确定要删除吗？"))) {
+				return;
+			}
+			
+			//删除处理
+			$('#formModel').attr("action", "${ctx}/business/receiveinspection?methodtype=delete"+"&keyBackup="+keyBackup);
+			$('#formModel').submit();
+			
 		});		
 		
 	});
-	
-	function doEdit(contractId,arrivalId) {
-		
-		var url = '${ctx}/business/receiveinspection?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
-		location.href = url;
-	}
+
 	
 </script>
 
@@ -101,13 +115,15 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<form:hidden path="inspect.ysid" value=""/>
+	<form:hidden path="inspect.ysid" value="${arrived.YSId }"/>
 	<form:hidden path="inspect.parentid" value=""/>
 	<form:hidden path="inspect.subid" value=""/>
 	<form:hidden path="inspect.arrivedate" value="${arrived.arriveDate }"/>
 	<input type="hidden" id=report value="${arrived.report }" />
 	<input type="hidden" id="keyBackup" value="${keyBackup }" />
+	<input type="hidden" id=stockinQty value="${arrived.stockinQty }" />
 	<form:hidden path="inspect.contractid" value="${arrived.contractId }"/>
+	<form:hidden path="inspect.inspectionid" value="${arrived.inspectionId }"/>
 	<fieldset>
 		<legend> 报检信息</legend>
 		<table class="form" id="table_form">
@@ -134,6 +150,7 @@
 	<div style="clear: both"></div>
 	<fieldset class="action" style="text-align: right;">
 		<button type="button" id="doEdit" class="DTTT_button">编辑</button>
+		<button type="button" id="doDelete" class="DTTT_button">删除</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>
 	<fieldset style="margin-top: -25px;">

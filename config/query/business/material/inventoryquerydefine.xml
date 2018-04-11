@@ -13,8 +13,8 @@
       <f name="A.recordId" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
       <f name="a.arriveDate" alias="" ctype="" />
-      <f name="a.status" alias="" ctype="收货状态" />
-      <f name="a.status" alias="statusId" ctype="" />
+      <f name="a.checkResult" alias="" ctype="收货状态" />
+      <f name="a.checkResult" alias="statusId" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="A.YSId" alias="" ctype="" />
       <f name="A.materialId" alias="" ctype="" />
@@ -280,6 +280,44 @@
    		<w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.checkResult" des=""  reqName="checkResult" dtype="ch" oper="="  lg="AND" bt="" />
+       </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.inspectionRecordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.inspectionId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.arrivalId" alias="" ctype="" />
+      <f name="A.arriveDate" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="FORMAT(b.quantity,2)" alias="contractQuantity" ctype="" />
+      <f name="a.quantityQualified" alias="" ctype="" />
+      <f name="A.report" alias="" ctype="" />
+      <f name="A.LossAndCisposal" alias="" ctype="" />
+      <f name="A.memo" alias="" ctype="" />
+      <f name="A.inspectArrivalId" alias="" ctype="" />
+      <f name="A.checkResult" alias="" ctype="收货状态" />
+      <f name="A.checkResult" alias="checkResultId" ctype="" />
+      <f name="A.checkDate" alias="" ctype="" />
+      <f name="A.checkerId" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.supplierName" alias="" ctype="" />
+    </select>
+    <from>v_receiveinspetionList a LEFT JOIN b_purchaseorderdetail b ON b.contractId=a.contractId AND b.materialId=a.materialId AND b.deleteFlag='0'  WHERE a.deleteFlag = '0' </from>
+    <orderby>a.arriveDate DESC,a.arrivalId,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>  
+  
+  <query>
+    <pool></pool>     
+    <name value="getReceiveInspectionById" />
+    <where>
    	  	<w name="A.arrivalId" des=""  reqName="arrivalId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
        </where>
@@ -295,7 +333,7 @@
       <f name="A.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
-      <f name="b.quantity" alias="contractQuantity" ctype="" />
+      <f name="FORMAT(b.quantity,2)" alias="contractQuantity" ctype="" />
       <f name="a.quantityQualified" alias="" ctype="" />
       <f name="A.report" alias="" ctype="" />
       <f name="A.LossAndCisposal" alias="" ctype="" />
@@ -307,8 +345,9 @@
       <f name="A.checkerId" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
+      <f name="IFNULL(d.quantity,'0')" alias="stockinQty" ctype="" />
     </select>
-    <from>v_receiveinspetionList a LEFT JOIN b_purchaseorderdetail b ON b.contractId=a.contractId AND b.materialId=a.materialId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
+    <from>v_receiveinspetionList a LEFT JOIN b_purchaseorderdetail b ON b.contractId=a.contractId AND b.materialId=a.materialId AND b.deleteFlag='0' LEFT JOIN v_purchasestockindetail d ON d.arrivelId = a.arrivalId AND  d.materialId = a.materialId WHERE a.deleteFlag = '0' </from>
     <orderby>a.arriveDate DESC,a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>

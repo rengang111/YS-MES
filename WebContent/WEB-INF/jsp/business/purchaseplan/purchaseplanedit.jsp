@@ -265,12 +265,13 @@
 
 		t.on('change', 'tr td:nth-child(13)',function() {
 			
-			var stockinQty  = $(this).find("input:text").attr("oldValue");
+			var contractPrice  = $(this).find("input:text").attr("contractPrice");
+			var stockinQty  = $(this).find("input:text").attr("stockinQty");
 	        var quantity = currencyToFloat(stockinQty);
 
 	        //检查是否已生成合同
 	        if(quantity > 0){
-	        	$(this).find("input:text").val(stockinQty);	        	
+	        	$(this).find("input:text").val(contractPrice);	        	
 	        	$().toastmessage('showWarningToast', "该物料已入库，不能修改单价。");
 	        }
 			
@@ -443,10 +444,14 @@
 	    <td><span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></td>
 	     <!-- 建议采购量 -->
 	    <td><form:input value="${bom.purchaseQuantity }" oldValue="${bom.arrivalCount }" path="planDetailList[${status.index}].purchasequantity"  class="num mini"  /></td>
+	     <!-- 供应商 -->
 	    <td><form:input value="${bom.supplierId }"  path="planDetailList[${status.index}].supplierid"  class="supplierid short" /></td>
-	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }"  oldValue="${bom.stockinQty }" /></td>
+	     <!-- 本次单价 -->
+	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="${bom.price }"  contractPrice="${bom.contractPrice }" stockinQty="${bom.stockinQty }"/></td>
+	     <!-- 总价 -->
 	    <td><span id="totalPrice${status.index}">${bom.totalPrice }</span>
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  value="${bom.totalPrice }" /></td>
+	     <!-- 当前价格 -->
 	    <td><span id="price${status.index}">${bom.lastPrice }</span>
 	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" /></td>
 	    

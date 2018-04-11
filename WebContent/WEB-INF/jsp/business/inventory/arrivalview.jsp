@@ -58,7 +58,7 @@
 					}, {"data": "unit","className":"dt-body-center"
 					}, {"data": "quantity","className":"td-right"
 					}, {"data": "LoginName","className":"dt-body-center"
-					}, {"data": "status","className":"dt-body-center"
+					}, {"data": "checkResult","className":"dt-body-center"
 					}, {"data":null,"className":"dt-body-center"
 					}
 				],
@@ -208,12 +208,12 @@
 					<th width="1px">No</th>
 					<th class="dt-center" style="width:60px">收货编号</th>
 					<th class="dt-center" style="width:60px">到货日期</th>
-					<th class="dt-center" width="100px">物料编号</th>
+					<th class="dt-center" width="120px">物料编号</th>
 					<th class="dt-center" >物料名称</th>
 					<th class="dt-center" width="40px">单位</th>
 					<th class="dt-center" width="60px">到货数量</th>
 					<th class="dt-center" width="60px">仓管员</th>
-					<th class="dt-center" style="width:30px">状态</th>
+					<th class="dt-center" style="width:50px">报检结果</th>
 					<th class="dt-center" style="width:50px"></th>
 				</tr>
 			</thead>
