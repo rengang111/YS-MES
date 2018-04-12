@@ -77,54 +77,6 @@ public class ArrivalService extends CommonService {
 		super.session = session;
 		
 	}
-	public HashMap<String, Object> doSearch( String data) throws Exception {
-
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		int iStart = 0;
-		int iEnd =0;
-		String sEcho = "";
-		String start = "";
-		String length = "";
-		
-		data = URLDecoder.decode(data, "UTF-8");
-
-		String[] keyArr = getSearchKey(Constants.FORM_ARRIVAL,data,session);
-		String key1 = keyArr[0];
-		String key2 = keyArr[1];
-		
-		sEcho = getJsonData(data, "sEcho");	
-		start = getJsonData(data, "iDisplayStart");		
-		if (start != null && !start.equals("")){
-			iStart = Integer.parseInt(start);			
-		}
-		
-		length = getJsonData(data, "iDisplayLength");
-		if (length != null && !length.equals("")){			
-			iEnd = iStart + Integer.parseInt(length);			
-		}		
-		
-		dataModel.setQueryName("getArrivaList");
-		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
-				
-		if ( iEnd > dataModel.getYsViewData().size()){			
-			iEnd = dataModel.getYsViewData().size();			
-		}
-		
-		modelMap.put("sEcho", sEcho); 		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
-		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
-		modelMap.put("data", dataModel.getYsViewData());	
-		modelMap.put("keyword1",key1);	
-		modelMap.put("keyword2",key2);		
-		
-		return modelMap;		
-
-	}
 	
 
 	public HashMap<String, Object> contractArrivalSearch(
@@ -163,18 +115,14 @@ public class ArrivalService extends CommonService {
 			dataModel.setQueryName("getContractListForNoArrival");//未到货
 			deliveryDate = "";//清空时间条件
 		}else{
-			dataModel.setQueryName("getArrivaList");//已到货 或者 忽略 是否到货			
+			dataModel.setQueryName("getContractListForArrival");//已到货 或者 忽略 是否到货			
 		}
 		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		
+		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		userDefinedSearchCase.put("deliveryDate",deliveryDate);
-		//if(notEmpty(key1) || notEmpty(key2)){
-			//userDefinedSearchCase.put("accumulated1", "");
-		//}
+
 		//包装到货,或者是料件到货
 		if(("G").equals(makeType)){//包装
 			userDefinedSearchCase.put("makeTypeG", "G");
@@ -196,8 +144,7 @@ public class ArrivalService extends CommonService {
 			userDefinedSearchCase.put("supplierId11", Constants.SUPPLIER_YZ);
 			userDefinedSearchCase.put("supplierId12", Constants.SUPPLIER_YS);
 			userDefinedSearchCase.put("supplierId21", "");
-			userDefinedSearchCase.put("supplierId22", "");
-			
+			userDefinedSearchCase.put("supplierId22", "");			
 		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -205,11 +152,9 @@ public class ArrivalService extends CommonService {
 		
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 		
-		if ( iEnd > dataModel.getYsViewData().size()){
-			
-			iEnd = dataModel.getYsViewData().size();			
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();
 		}		
-		
 		modelMap.put("sEcho", sEcho); 		
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());			

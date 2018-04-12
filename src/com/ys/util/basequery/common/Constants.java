@@ -179,6 +179,7 @@ public class Constants {
 	public static final String CONTRACT_STS_1 = "010";//未执行
 	public static final String CONTRACT_STS_2 = "020";//收货中
 	public static final String CONTRACT_STS_3 = "030";//已清
+	public static final String CONTRACT_STS_4 = "040";//强制结束
 	
 	/**
 	 * 合同执行流程状态

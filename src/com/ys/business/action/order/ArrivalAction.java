@@ -73,11 +73,7 @@ public class ArrivalAction extends BaseAction {
 			case "init":
 				doInit();
 				rtnUrl = "/business/inventory/arrivalmain";
-				break;
-			case "search":
-				//dataMap = doSearch(data);
-				//printOutJsonObj(response, dataMap);
-				return null;				
+				break;			
 			case "contractArrivalSearch":
 				dataMap = contractArrivalSearch(makeType,data);
 				printOutJsonObj(response, dataMap);
