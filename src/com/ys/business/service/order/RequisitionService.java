@@ -583,8 +583,7 @@ public class RequisitionService extends CommonService {
 																	
 		try {
 			
-			ts = new BaseTransaction();										
-			ts.begin();									
+			ts = new BaseTransaction();					
 			
 			String recordid = request.getParameter("recordId");
 			B_RequisitionData req = new B_RequisitionData();
@@ -592,7 +591,8 @@ public class RequisitionService extends CommonService {
 			req = new B_RequisitionDao(req).beanData;
 			if(req ==null || ("").equals(req))
 				return;
-
+			
+			ts.begin();	
 			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 					"RequisitionDelete",userInfo);
 			copyProperties(req,commData);
@@ -601,7 +601,8 @@ public class RequisitionService extends CommonService {
 			String requisitionId = req.getRequisitionid();
 			String astr_Where = " requisitionId='" +requisitionId+"' AND deleteFlag='0' ";
 			List<B_RequisitionDetailData> list = new B_RequisitionDetailDao().Find(astr_Where);					
-
+			
+			
 			for(B_RequisitionDetailData dt:list){
 				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 						"RequisitionDelete",userInfo);

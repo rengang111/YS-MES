@@ -7,7 +7,7 @@
 <title>采购合同一览</title>
 <script type="text/javascript">
 
-	function ajax(where,sessionFlag) {
+	function searchAjax(where,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -119,38 +119,55 @@
 	}	
 
 	$(document).ready(function() {
-		
-		ajax("010","true");
+
+		var where = "&supplierId2=0574YZ00&materialId2=G&status=030&purchaseType=010";
+		searchAjax(where,"true");
 		
 		buttonSelectedEvent();//按钮选择式样
+
+		var key1 = $("#keyword1").val();
+		var key2 = $("#keyword2").val();
+		if(myTrim(key1) == "" && myTrim(key2) == "")
+		 	$('#defutBtn').removeClass("start").addClass("end");
 		
 	})	
 	
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("","false");
+		searchAjax("","false");
+		
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
 	}
 
-	//合同状态
+	//显示全部
 	function doSearchCustomer(){
-		ajax("","false");
+		searchAjax("","false");
 	}
 	
 	//自制品未到货
 	function doSearchCustomer2(){
+		$("#keyword1").val('');
+		$("#keyword2").val('');
 		var where = "&supplierId=0574YZ00&status=030";
-		ajax(where,"false");
+		searchAjax(where,"false");
 	}
 	//订购件未到货
 	function doSearchCustomer3(){
+		$("#keyword1").val('');
+		$("#keyword2").val('');
 		var where = "&supplierId2=0574YZ00&materialId2=G&status=030&purchaseType=010";
-		ajax(where,"false");
+		searchAjax(where,"false");
 	}
 	//包装品未到货
 	function doSearchCustomer4(){
+		$("#keyword1").val('');
+		$("#keyword2").val('');
 		var where = "&materialId=G&status=030";
-		ajax(where,"false");
+		searchAjax(where,"false");
 	}
 	function doShowYS(YSId) {
 
@@ -209,7 +226,7 @@
 		<div id="DTTT_container2" style="height:40px;float: left">
 			<a  class="DTTT_button box" onclick="doSearchCustomer();"><span>显示全部</span></a>&nbsp;&nbsp;
 			<a  class="DTTT_button box" onclick="doSearchCustomer2();"><span>自制品未到货</span></a>
-			<a  class="DTTT_button box" onclick="doSearchCustomer3();"><span>订购件未到货</span></a>
+			<a  class="DTTT_button box" onclick="doSearchCustomer3();" id="defutBtn"><span>订购件未到货</span></a>
 			<a  class="DTTT_button box" onclick="doSearchCustomer4();"><span>包装品未到货</span></a>
 		</div>
 		<table id="TMaterial" class="display" >

@@ -238,6 +238,16 @@
 		});		
 
 	};
+	
+	function doDeleteContract(obj){
+		var txt = myTrim($(obj).text());
+
+		if(confirm(txt+'后不能恢复,确定要'+txt+'吗?')){
+			$(obj).parent().parent().remove();
+			//$().toastmessage('showWarningToast', '请保存数据。');
+		}
+		weightsum();
+	}
 </script>
 
 </head>
@@ -307,11 +317,12 @@
 				<th style="width:160px">数量</th>
 				<th style="width:160px">单价</th>
 				<th style="width:70px">总价</th>
-				<td></td>
+				<td style="width:50px">操作</td>
 			</tr>
 			</thead>		
 			<tbody>
 				<c:forEach var="detail" items="${detail}" varStatus='status' >	
+					<c:if test="${detail.deleteFlag eq '0'}">
 					<tr>
 						<td></td>
 						<td>
@@ -320,7 +331,7 @@
 						
 						<td>
 							<textarea id="detailList${status.index}.description" name="detailList[${status.index}].description" 
-								style="width: 350px; height: 40px;font-size: 12px;">${detail.description}</textarea></td>					
+								style="width: 300px; height: 40px;font-size: 12px;">${detail.description}</textarea></td>					
 						
 						<td>${ detail.unit }</td>
 						
@@ -332,19 +343,41 @@
 							<form:input path="detailList[${status.index}].price" value="${detail.price}"  class="cash short" />
 							<input type="image" name="priceBtn${status.index}" src="${ctx}/images/action_edit.png" class="imgbtn" style="border: 0;"></td>
 						
-						<td><span>${ detail.totalPrice}</span><form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice}"/></td>				
-						<td></td>				
-						<form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" />
+						<td><span id="totalPrice${status.index }"></span>
+							<form:hidden  path="detailList[${status.index}].totalprice" value="${detail.totalPrice}"/></td>				
+						<td>
+							<a href="###" onClick="doDeleteContract(this);return false;">
+								<span id="delete${status.index }"></span></a>
+						</td>
+							<form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" />
 					</tr>	
 									
 					<script type="text/javascript">
-						//var materialName = '${detail.materialName}';
-						//var index = '${status.index}';
+						var index = '${status.index}';
+						var materialName = '${detail.materialName}';
+						var text = "";
 						
-						//$('#name'+index).html(jQuery.fixedWidth(materialName,40));
+						var arrivalQty = '${detail.arrivalQty}';//收货数量
+						var ReturnQty = '${detail.contractReturnQty}';//退货数量
+						
+						if(arrivalQty > '0'){
+							if(ReturnQty > '0'){
+								text = "结束合同";
+							}
+						}else{
+							text = "删除";
+						}					
+						$('#delete'+index).html(text);
+						
+						var price = currencyToFloat('${detail.price}');
+						var quantity = currencyToFloat('${detail.quantity}');						
+						var totalPrice = floatToCurrency( price * quantity );
+						$('#totalPrice'+index).html(totalPrice);
+						$('#detailList'+index+'\\.totalprice').val(totalPrice);
 
 					</script>	
 						
+					</c:if>
 				</c:forEach>
 				
 			</tbody>

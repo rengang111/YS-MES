@@ -62,19 +62,16 @@
 	$(document).ready(function() {
 
 		var YSId = '${ contract.YSId }';
-		var productid = '${ contract.productId }';
+		//var productid = '${ contract.productId }';
 		if(YSId == null || YSId == ""){
 			$('#ysid00').attr("style","display:none");
 						
 		}else{
-			if(productid == null || productid == ""){
+			//if(productid == null || productid == ""){
 				$('#ysidLink').contents().unwrap();			
-			}
+			//}
 		}
 		
-		if(productid == null || productid == ""){
-			$('#product00').attr("style","display:none");			
-		}
 		
 		//返回按钮
 		var goBactkBt = '${openFlag}';
@@ -239,15 +236,6 @@
 					
 				</tr>
 				
-				<tr id="product00"> 		
-									
-					<td class="label" width="100px">产品编号：</td>					
-					<td width="150px">
-						<a href="#" onClick="doEditMaterial('${contract.productRecordId}','${contract.productParentId}')">${ contract.productId }</a></td>
-						
-					<td class="label" width="100px">产品名称：</td>
-					<td colspan="5">${ contract.productName } </td>
-				</tr>
 				<tr> 		
 					<td class="label"><label>供应商编号：</label></td>					
 					<td>${ contract.supplierId }
@@ -296,20 +284,19 @@
 			<th style="width:50px">合同数</th>
 			<th style="width:50px">单价</th>
 			<th style="width:60px">合同金额</th>
-			<th style="width:50px">合同退款</th>
+			<th style="width:50px">退款</th>
 			<th style="width:60px">应付款</th>
 		</tr>
 		</thead>		
 		<tbody>
 			<c:forEach var="detail" items="${detail}" varStatus='status' >	
-				<tr>
+				<tr id="detailTr${status.index }">
 					<td></td>
-					<td><a href="###" onClick="doEditMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
+					<td><a href="###" id="meteLink${status.index }" onClick="doEditMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
 						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
 					<td><span id="name${status.index}"></span>${ detail.description }</td>					
 				
 					<td>${ detail.quantity}   </td>								
-				<!-- 	<td><span id="returnQty${status.index }">${ detail.returnQty }</span></td>	 -->	
 					<td><span id="price${status.index }">${ detail.price }</span></td>
 					<td><span id="total${status.index }">${ detail.totalPrice }</span></td>					
 					<td><span id="returnValue${status.index }"></span></td>				
@@ -325,17 +312,27 @@
 					var contractQty = currencyToFloat('${detail.quantity}');
 					var chargeback = currencyToFloat('${detail.chargeback}');
 					var price = currencyToFloat('${detail.price}');
-//alert("合同数量+退货数量+单价"+contractQty+"---"+chargeback+"---"+price)
+					//alert("合同数量+退货数量+单价"+contractQty+"---"+chargeback+"---"+price)
 					var contractValue = contractQty * price;
 					
 					var pay = floatToCurrency( contractValue + chargeback );
+					
+					
+					
 					
 					//$('#name'+index).html(jQuery.fixedWidth(materialName,45));
 					$('#returnValue'+index).html(floatToCurrency( chargeback ));
 					$('#pay'+index).html(pay);
 					$('#price'+index).html(formatNumber(price));
 					$('#total'+index).html(floatToCurrency(contractValue));
-										
+
+					var deleteFlag = '${detail.deleteFlag}';
+					if( deleteFlag == 1 ) {
+						$('#detailTr'+index).addClass('delete');
+						$('#meteLink'+index).contents().unwrap();	
+						$('#total'+index).html('0');
+						$('#pay'+index).html('0');
+	 				}				
 				</script>	
 					
 			</c:forEach>

@@ -637,8 +637,7 @@ public class RequisitionZZService extends CommonService {
 		
 		try {
 			
-			ts = new BaseTransaction();										
-			ts.begin();									
+			ts = new BaseTransaction();					
 			
 			String recordid = request.getParameter("recordId");
 			B_RequisitionData req = new B_RequisitionData();
@@ -655,7 +654,8 @@ public class RequisitionZZService extends CommonService {
 			String requisitionId = req.getRequisitionid();
 			String astr_Where = " requisitionId='" +requisitionId+"' AND deleteFlag='0' ";
 			List<B_RequisitionDetailData> list = new B_RequisitionDetailDao().Find(astr_Where);					
-
+			
+			ts.begin();	
 			for(B_RequisitionDetailData dt:list){
 				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 						"RequisitionDelete",userInfo);

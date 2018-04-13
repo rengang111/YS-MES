@@ -119,8 +119,18 @@ public class PurchaseOrderService extends CommonService {
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		String sql = getSortKeyFormWeb(data,baseQuery);
+		
+		String status = request.getParameter("status");
+		String having = "1=1";
+		if(notEmpty(key1) || notEmpty(key2)){
+			status = "";//关键字查询,忽略其状态
+		}
+		if(notEmpty(status)){
+			having = "((REPLACE(quantity,',','')+0) - (REPLACE(arrivalQty,',','')+0) + (REPLACE(returnQty,',','')+0) ) > 0 ";
+		}
+		sql = sql.replace("#", having);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -593,6 +603,29 @@ public class PurchaseOrderService extends CommonService {
 
 	}
 	
+
+	@SuppressWarnings("unchecked")
+	private void deletePurchaseOrderDetail(String contractId) throws Exception{
+		
+		String where = " contractId = '"+contractId +"'" +
+				" AND deleteFlag = '0' ";
+		List<B_PurchaseOrderDetailData> dbList = new B_PurchaseOrderDetailDao().Find(where);
+		
+		for(int i=0; i < dbList.size();i++){
+			B_PurchaseOrderDetailData db = dbList.get(i);
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"purchaseOrderDetaildelete",userInfo);			
+			copyProperties(db,commData);
+
+			new B_PurchaseOrderDetailDao().Store(db);
+						
+			//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面
+			String newQty = String.valueOf(-1 * stringToFloat(db.getQuantity()));
+			updateMaterial(db.getMaterialid(),newQty,"0");
+		}
+
+	}
+	
 	@SuppressWarnings("unchecked")
 	public B_PurchaseOrderData getOldContractInfo(
 			String YSId ,String supplierId) throws Exception {
@@ -687,45 +720,30 @@ public class PurchaseOrderService extends CommonService {
 			
 			//合同基本信息
 			B_PurchaseOrderData orderData = reqModel.getContract();
-			
-			updateOrder(orderData);
-
-			String ysid = orderData.getYsid();
-			
-			//合同详情 更新 处理			
+			//合同详情
 			List<B_PurchaseOrderDetailData> newDetailList = reqModel.getDetailList();
-						
-			//页面数据的recordId与DB匹配			
-			for(B_PurchaseOrderDetailData data:newDetailList ){
-				
-				//更新处理
-				B_PurchaseOrderDetailData dbDt = updateOrderDetail(data);
-
-				float oldQty = stringToFloat(dbDt.getQuantity());
-				//float oldPrice = stringToFloat(dbDt.getPrice());
-				float reqQty = stringToFloat(data.getQuantity());
-				//float reqPrice = stringToFloat(data.getPrice());
-				
-				
-				//数量有变动才更新库存
-				if(!("").equals(dbDt) && oldQty != reqQty) {
-					String newQty = String.valueOf(reqQty - oldQty);					
-					//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面
-					updateMaterial(data.getMaterialid(),newQty,"0");
-				}
 			
-				/*
-				//同步采购方案:单价,数量
-				if(isNullOrEmpty(ysid))
-					continue;
+			//删除明细
+			deletePurchaseOrderDetail(orderData.getContractid());
+			
+			if(newDetailList == null){
+				//删除合同头信息		
+				deletePurchaseOrder(orderData);		
+			}else{
 				
-				if(!("").equals(dbDt) && 
-						(oldQty != reqQty || oldPrice != reqPrice)){
+				//更新合同头信息
+				updateOrder(orderData);
+						
+				//更新明细
+				for(B_PurchaseOrderDetailData data:newDetailList ){
 					
-					updatePurchasePlanDetail(ysid,data.getMaterialid(),reqPrice,reqQty);
+					//合同明细
+					updateOrderDetail(data);
+					
+					//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面			
+					String newQty = data.getQuantity();			
+					updateMaterial(data.getMaterialid(),newQty,"0");			
 				}
-				
-				*/
 			}
 			
 			ts.commit();
@@ -771,15 +789,14 @@ public class PurchaseOrderService extends CommonService {
 	/*
 	 * 订单详情更新处理
 	 */
-	private B_PurchaseOrderDetailData updateOrderDetail(
+	private void updateOrderDetail(
 			B_PurchaseOrderDetailData data) throws Exception{
 		
 		B_PurchaseOrderDetailData rtnDt= new B_PurchaseOrderDetailData();
 		try{
 
 			B_PurchaseOrderDetailData db = new B_PurchaseOrderDetailDao(data).beanData;
-			
-			copyProperties(rtnDt,db);//返回值
+
 			//处理共通信息
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"PurchaseOrderDetailUpdate",userInfo);
@@ -796,7 +813,6 @@ public class PurchaseOrderService extends CommonService {
 			
 		}
 		
-		return rtnDt;
 	}
 	
 	
