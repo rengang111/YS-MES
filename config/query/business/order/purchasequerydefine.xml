@@ -186,11 +186,12 @@
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="a.price" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
-      <f name="a.manufactureQuantity" alias="" ctype="" />
-      <f name="IFNULL(d.quantity,'0')" alias="contractQty" ctype="" />
-      <f name="IFNULL(e.quantity,'0')" alias="stockinQty" ctype="" />
-      <f name="IFNULL(c.quantity,'0')" alias="stockoutQty" ctype="" />
+      <f name="format(replace(a.manufactureQuantity,',',''),2)" alias="manufactureQuantity" ctype="" />
+      <f name="IFNULL(format(replace(d.quantity,',',''),2),'0')" alias="contractQty" ctype="" />
+      <f name="IFNULL(format(replace(e.quantity,',',''),2),'0')" alias="stockinQty" ctype="" />
+      <f name="IFNULL(format(replace(c.quantity,',',''),2),'0')" alias="stockoutQty" ctype="" />
       <f name="IFNULL(f.quantity,'0')" alias="correctionQty" ctype="" />
+      <f name="format(IFNULL(replace(f.quantity,',',''),'0') + IFNULL(replace(c.quantity,',',''),'0'),2)" alias="stackoutCountQty" ctype="" />
       <f name="a.planDate" alias="" ctype="" />
       <f name="a.purchaseType" alias="" ctype="" />
       <f name="a.supplierShortName" alias="" ctype="" />
@@ -651,7 +652,6 @@
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.purchaseQuantity" alias="" ctype="" />
-      <f name="a.totalQuantity" alias="" ctype="" />
       <f name="a.rawMaterialId" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="" />
       <f name="a.zzunit" alias="" ctype="" />
@@ -674,12 +674,11 @@
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.purchaseQuantity" alias="" ctype="" />
-      <f name="a.totalQuantity" alias="" ctype="" />
       <f name="c.price" alias="" ctype="" />
       <f name="a.rawMaterialId" alias="" ctype="" />
       <f name="b.materialName" alias="" ctype="" />
       <f name="b.unit" alias="" ctype="计量单位" />
-      <f name="format(replace(ifnull(c.price,0),',','') * a.totalQuantity,2)" alias="total" ctype="" />
+      <f name="format(replace(ifnull(c.price,0),',','') * a.purchaseQuantity,2)" alias="total" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->

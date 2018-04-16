@@ -115,17 +115,20 @@ public class PurchaseOrderService extends CommonService {
 		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
+		String status = request.getParameter("status");
+		String having = "1=1";
+		if(notEmpty(key1) || notEmpty(key2)){
+			status = "";//关键字查询,忽略其状态
+			userDefinedSearchCase.put("purchaseType", "");//关键字查询,忽略其类型(订购件)
+			userDefinedSearchCase.put("supplierId2", "");//关键字查询,忽略其类型(自制件)
+			userDefinedSearchCase.put("materialId2", "");//关键字查询,忽略其类型(包装件)
+		}
 		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);
 		
-		String status = request.getParameter("status");
-		String having = "1=1";
-		if(notEmpty(key1) || notEmpty(key2)){
-			status = "";//关键字查询,忽略其状态
-		}
 		if(notEmpty(status)){
 			having = "((REPLACE(quantity,',','')+0) - (REPLACE(arrivalQty,',','')+0) + (REPLACE(returnQty,',','')+0) ) > 0 ";
 		}

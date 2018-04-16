@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<%@ include file="../../common/common.jsp"%>
+<%@ include file="../../common/common2.jsp"%>
 <title>库存一览页面</title>
 <style>
 body{
@@ -56,10 +56,18 @@ body{
 						"contentType": "application/json; charset=utf-8",
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
-						success: function(data){	
-							$("#keyword1").val(data["keyword1"]);
-							$("#keyword2").val(data["keyword2"]);						
+						success: function(data){		
 							fnCallback(data);
+							var key1 = data["keyword1"]
+							var key2 = data["keyword2"]
+							$("#keyword1").val(key1);
+							$("#keyword2").val(key2);
+							
+							if(myTrim(key1) == "" && myTrim(key2) == ""){
+							 	$('#defutBtn').removeClass("start").addClass("end");							
+							}else{							
+							 	$('#defutBtn').removeClass("end").addClass("start");
+							}					
 							deleteRow();
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -205,11 +213,24 @@ body{
 		    				}
 		    			}
 		    			var correctionQty = currencyToFloat(row["correctionQty"]);
-		    			var style = 'color: green;';
-		    			if(correctionQty>0)
-		    				style = '';
-		    			rtn= "<a href=\"###\" style=\""+style+"\"onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
-		    			return rtn;		    			
+		    			var style = 'color: green;font-weight: bold;font-size: 11px;';//未修改
+		    			if(correctionQty>0){//修改数量
+		    				style = '';//修改过
+		    			}else{
+		    				//正常数据
+		    				var quantityOnHand = currencyToFloat(row["quantityOnHand"]);
+		    				var availabelToPromise = currencyToFloat(row["availabelToPromise"]);
+		    				if(quantityOnHand >= 0 && availabelToPromise >= 0 ){
+		    					style = '';
+		    				}
+		    			}
+		    			
+		    			rtn= "<a href=\"###\" style=\""+style+"\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
+		    				    			
+		    			return rtn;	
+		    			
+		    			
+		    			
 		    		}},
 		    		{"targets":9,"render":function(data, type, row){//总合同数
 		     			var rtn = "";
@@ -230,10 +251,10 @@ body{
 		    						    			
 		    			return rtn;
 		    		}},
-		    		{"targets":12,"render":function(data, type, row){//实际库存
+		    		{"targets":12,"render":function(data, type, row){//计算库存
 		    			var rtn = "";
 		    			var stockin= currencyToFloat(row["stockinQtiy"]);
-		    			var stockout= currencyToFloat(row["stockoutQty"]);
+		    			var stockout= currencyToFloat(row["stockoutTotal"]);
 		    			var quantity = floatToCurrency( stockin - stockout );
 		    			
 		    			return quantity;
@@ -241,21 +262,38 @@ body{
 		    		{"targets":13,"render":function(data, type, row){//实际库存
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
-		    			rtn +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + qty + "</a>";
+		    			var style = '';
+		    			if(currencyToFloat(data) < 0){
+		    				style = 'color: green;font-weight: bold;font-size: 11px;';//负数
+		    			}
+		    			rtn +=  "<a href=\"###\" style=\""+style+"\"  onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + qty + "</a>";
 		    			return rtn;
 		    		}},
-		    		{"targets":14,"render":function(data, type, row){
+		    		{"targets":14,"render":function(data, type, row){//虚拟库存
 		    			var rtn = "";
+		    			var style = '';
+		    			if(currencyToFloat(data) < 0){
+		    				style = 'color: green;font-weight: bold;font-size: 11px;';//负数
+		    			}
 		    			var qty= floatToCurrency(data);
+		    			rtn = "<span style=\""+style+"\" >"+qty+"</span>";
 		    			//rtn= "<a href=\"###\" onClick=\"doShowWaitOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
-		    			return qty;
+		    			return rtn;
 		    		}},
-		    		{"targets":16,"render":function(data, type, row){
+		    		{"targets":15,"render":function(data, type, row){//待入
 		    			var rtn = "";
 		    			var mate = row["materialId"];
 		    			var qty= floatToCurrency(data);
-		    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowWaitIn('" + row["materialId"] +"')\">" + qty + "</a>";
+		    						    			
+		    			return rtn;
+		    		}},
+		    		{"targets":16,"render":function(data, type, row){//待出
+		    			var rtn = "";
+		    			var mate = row["materialId"];
+		    			var qty= floatToCurrency(data);
+		    			rtn= "<a href=\"###\" onClick=\"doShowWaitOut('" + row["materialId"] +"')\">" + qty + "</a>";
 		    						    			
 		    			return rtn;
 		    		}},
@@ -287,7 +325,7 @@ body{
 
 	$(document).ready(function() {
 		
-		searchAjax("true","3","");
+		searchAjax("true","1","");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -301,6 +339,7 @@ body{
 		});			
 
 		buttonSelectedEvent();//按钮选择式样
+	 	$('#defutBtn').removeClass("start").addClass("end");
 		
 	})	
 	
@@ -325,7 +364,7 @@ body{
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		searchAjax("false","3","");
+		searchAjax("false","","");
 
 	}
 	
@@ -348,23 +387,46 @@ body{
 
 		if(stockType == '010'){//
 			var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanForRawByMaterialId&materialId=' + materialId;
-			callProductDesignView("原材料采购方案",url);
+			//callProductDesignView("原材料采购方案",url);
 			
 		}else{
 			var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanByMaterialId&materialId=' + materialId;
-			callProductDesignView("采购件",url);
+			//callProductDesignView("采购件",url);
 		}
+		
+		layer.open({
+			offset :[30,''],
+			type : 2,
+			title : false,
+			area : [ '1000px', '500px' ], 
+			scrollbar : false,
+			title : false,
+			content : url,
+			//只有当点击confirm框的确定时，该层才会关闭
+			cancel: function(index){ 
+			 // if(confirm('确定要关闭么')){
+			    layer.close(index)
+			 // }
+			  $('#TMaterial').DataTable().ajax.reload(null,false);
+			  return false; 
+			}    
+		});		
 		
 	}
 
 
-	function doShowPlan2(materialId) {
+	function doShowWaitOut(materialId) {
 
-		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanByMaterialId&materialId=' + materialId;
+		var url = '${ctx}/business/purchasePlan?methodtype=purchaseWaitOutByMaterialId&materialId=' + materialId;
 		callProductDesignView("待出数量",url);
 		
 	}
+	function doShowWaitIn(materialId) {
 
+		var url = '${ctx}/business/purchasePlan?methodtype=purchaseWaitInByMaterialId&materialId=' + materialId;
+		callProductDesignView("待入数量",url);
+		
+	}
 
 	function doShowContract(materialId) {
 
@@ -549,11 +611,11 @@ body{
 	</div>
 	<div class="list">
 			<div style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCustomer('3','');">全部</a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('1','');">库存为负数</a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('2','');">库存 ≠ 总到货－总领料</a>&nbsp;&nbsp;
+				<a  class="DTTT_button box" onclick="doSearchCustomer('','');">全部</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('1','');">实库为负</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('2','');"  id="defutBtn">虚库为负</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('3','');">实库 ≠ 总到货－总领料</a>&nbsp;&nbsp;
 				<!-- 
-				<a  class="DTTT_button box" onclick="doSearchCustomer('3','1');">修改未确认</a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0');">已确认</a>&nbsp;&nbsp;
 				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0','edit');">再次编辑</a> -->
 			</div>

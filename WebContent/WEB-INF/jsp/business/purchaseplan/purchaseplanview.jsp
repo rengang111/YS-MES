@@ -887,7 +887,7 @@ function ZZmaterialView() {
 			{"data": null,},
 			{"data": null,},
 			{"data": "unit","className" : 'td-center'},
-			{"data": "totalQuantity","defaultContent" : '0',"className" : 'td-right'},
+			{"data": "purchaseQuantity","defaultContent" : '0',"className" : 'td-right'},
 			{"data": "price","defaultContent" : '0',"className" : 'td-right'},
 			{"data": "total","defaultContent" : '0',"className" : 'td-right'},
 		 ],
@@ -920,7 +920,7 @@ function ZZmaterialView() {
     			return unit;
     		}},
     		{"targets":4,"render":function(data, type, row){
-      			var total = row["totalQuantity"];
+      			var total = row["purchaseQuantity"];
       			var unit = row["unit"];
       			var chanegVal = "";
     			if(unit == "吨"){//换算成千克

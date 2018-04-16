@@ -13,6 +13,7 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		
 		var actionUrl = "${ctx}/business/contract?methodtype=search";
 		actionUrl = actionUrl +	"&sessionFlag="+sessionFlag;
 		actionUrl = actionUrl +	where;
@@ -46,8 +47,16 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){							
 						fnCallback(data);
-						$("#keyword1").val(data["keyword1"]);
-						$("#keyword2").val(data["keyword2"]);
+						var key1 = data["keyword1"]
+						var key2 = data["keyword2"]
+						$("#keyword1").val(key1);
+						$("#keyword2").val(key2);
+						
+						if(myTrim(key1) == "" && myTrim(key2) == ""){
+						 	$('#defutBtn').removeClass("start").addClass("end");							
+						}else{							
+						 	$('#defutBtn').removeClass("end").addClass("start");
+						}
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -125,10 +134,7 @@
 		
 		buttonSelectedEvent();//按钮选择式样
 
-		var key1 = $("#keyword1").val();
-		var key2 = $("#keyword2").val();
-		if(myTrim(key1) == "" && myTrim(key2) == "")
-		 	$('#defutBtn').removeClass("start").addClass("end");
+		$('#defutBtn').removeClass("start").addClass("end");
 		
 	})	
 	

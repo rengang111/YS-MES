@@ -150,6 +150,14 @@ public class PurchasePlanAction extends BaseAction {
 				getPurchasePlanByMaterialId();
 				rtnUrl = "/business/inventory/beginninginventoryplan";
 				break;
+			case "purchaseWaitOutByMaterialId"://待出物料一览
+				getPurchasePlanByMaterialId();
+				rtnUrl = "/business/inventory/beginninginventorywaitout";
+				break;
+			case "purchaseWaitInByMaterialId"://待入物料一览
+				getPurchasePlanByMaterialId();
+				rtnUrl = "/business/inventory/beginninginventorywaitin";
+				break;
 			case "purchasePlanByMaterialIdToEdit"://采购方案一览:修正
 				getPurchasePlanByMaterialId();
 				rtnUrl = "/business/inventory/beginningstockoutedit";

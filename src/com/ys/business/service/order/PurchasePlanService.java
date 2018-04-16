@@ -348,7 +348,7 @@ public class PurchasePlanService extends CommonService {
 				float purchase = 0;//采购量
 				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
 				float funit = stringToFloat(unit);
-				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
+				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//需求量
 				float requirement = (-1 * totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						
@@ -464,7 +464,7 @@ public class PurchasePlanService extends CommonService {
 				float purchase = 0;//采购量
 				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
 				float funit = stringToFloat(unit);
-				float totalQuantity = stringToFloat(map2.get("totalQuantity"));//需求量
+				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//需求量
 				float requirement = ( totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						

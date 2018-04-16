@@ -579,114 +579,6 @@
   </query>
   <query>
     <pool></pool>     
-    <name value="materialinventory_search" />
-    <where>
-      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" /> 
-  	  <w name="A.purchaseType"     des=""  reqName="purchaseType1"  dtype="ch" oper="="  lg="OR" bt="(" />
-  	  <w name="A.purchaseType"     des=""  reqName="purchaseType2"  dtype="ch" oper="="  lg="AND" bt=")" />
-  	  <w name="A.purchaseType"     des=""  reqName="purchaseType"  dtype="ch" oper="="  lg="AND" bt="" />
-	  <w name="A.stockType"  des=""  reqName="stockType"  dtype="ch" oper="="  lg="AND" bt="" />  
-     </where>
-    <select>
-      <f name="A.recordId" alias="" ctype="" />
-      <f name="A.materialId" alias="" ctype="" />
-      <f name="A.materialName" alias="" ctype="" />
-      <f name="A.categoryId" alias="" ctype="" />
-      <f name="A.categoryName" alias="" ctype="" />
-      <f name="A.parentId" alias="" ctype="" />
-      <f name="A.viewList" alias="" ctype="" />
-      <f name="A.shareModel" alias="" ctype="" />>
-      <f name="price" alias="price" ctype="" />
-      <f name="A.supplierId" alias="" ctype="" />
-      <f name="quantityOnHand" alias="" ctype="" />
-      <f name="waitStockIn" alias="" ctype="" />
-      <f name="waitStockOut" alias="" ctype="" />
-      <f name="availabelToPromise" alias="" ctype="" />
-      <f name="MAPrice" alias="" ctype="" />
-      <f name="beginningInventory" alias="" ctype="" />
-      <f name="beginningPrice" alias="" ctype="" />
-      <f name="safetyInventory" alias="" ctype="" />
-      <f name="contractQty" alias="" ctype="" />
-      <f name="stockinQtiy" alias="" ctype="" />
-      <f name="stockoutQty" alias="" ctype="" />
-      <f name="stockoutTotal" alias="" ctype="" />
-      <f name="planQty" alias="" ctype="" />
-      <f name="rawPlanQty" alias="" ctype="" />
-      <f name="correctionQty" alias="" ctype="" />
-      <f name="A.unit" alias="" ctype="" />
-      <f name="A.unit" alias="dicName" ctype="计量单位" />
-      <f name="A.purchaseType" alias="" ctype="" />
-      <f name="waitin" alias="waitin" ctype="" />
-      <f name="waitout" alias="waitout" ctype="" />
-      <f name="inventory" alias="" ctype="" />
-      <f name="availabel" alias="" ctype="" />
-      <f name="quantityEditFlag" alias="" ctype="" />
-    </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_beginninginventorysearch AS A  where a.deleteFlag = '0' </from>
-    <orderby>A.materialId</orderby>
-    <groupby></groupby>
-    <having></having>
-	<power></power>    
-  </query>
-  <query>
-    <pool></pool>     
-    <name value="materialinventory_search2" />
-    <where>
-      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" /> 
-  	  <w name="A.purchaseType"     des=""  reqName="purchaseType1"  dtype="ch" oper="="  lg="OR" bt="(" />
-  	  <w name="A.purchaseType"     des=""  reqName="purchaseType2"  dtype="ch" oper="="  lg="AND" bt=")" />
-  	  <w name="A.purchaseType"     des=""  reqName="purchaseType"  dtype="ch" oper="="  lg="AND" bt="" />
-	  <w name="A.stockType"  des=""  reqName="stockType"  dtype="ch" oper="="  lg="AND" bt="" /> 
-     </where>
-    <select>
-      <f name="A.recordId" alias="" ctype="" />
-      <f name="A.materialId" alias="" ctype="" />
-      <f name="A.materialName" alias="" ctype="" />
-      <f name="A.categoryId" alias="" ctype="" />
-      <f name="A.categoryName" alias="" ctype="" />
-      <f name="A.parentId" alias="" ctype="" />
-      <f name="A.viewList" alias="" ctype="" />
-      <f name="A.shareModel" alias="" ctype="" />>
-      <f name="price" alias="price" ctype="" />
-      <f name="A.supplierId" alias="" ctype="" />
-      <f name="quantityOnHand" alias="" ctype="" />
-      <f name="waitStockIn" alias="" ctype="" />
-      <f name="waitStockOut" alias="" ctype="" />
-      <f name="availabelToPromise" alias="" ctype="" />
-      <f name="MAPrice" alias="" ctype="" />
-      <f name="beginningInventory" alias="" ctype="" />
-      <f name="beginningPrice" alias="" ctype="" />
-      <f name="safetyInventory" alias="" ctype="" />
-      <f name="contractQty" alias="" ctype="" />
-      <f name="stockinQtiy" alias="" ctype="" />
-      <f name="stockoutQty" alias="" ctype="" />
-      <f name="stockoutTotal" alias="" ctype="" />
-      <f name="planQty" alias="" ctype="" />
-      <f name="rawPlanQty" alias="" ctype="" />
-      <f name="correctionQty" alias="" ctype="" />
-      <f name="A.unit" alias="" ctype="" />
-      <f name="A.unit" alias="dicName" ctype="计量单位" />
-      <f name="A.purchaseType" alias="" ctype="" />
-      <f name="waitin" alias="waitin" ctype="" />
-      <f name="waitout" alias="waitout" ctype="" />
-      <f name="inventory" alias="" ctype="" />
-      <f name="availabel" alias="" ctype="" />
-      <f name="quantityEditFlag" alias="" ctype="" />
-    </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_beginninginventorysearch2 AS A  where a.deleteFlag = '0' </from>
-    <orderby>A.materialId</orderby>
-    <groupby></groupby>
-    <having></having>
-	<power></power>    
-  </query>
-  <query>
-    <pool></pool>     
     <name value="materialinventoryForNormal_search" />
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
@@ -738,7 +630,7 @@
     <from>v_beginninginventorysearchForNormal AS A  where a.deleteFlag = '0' </from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
-    <having></having>
+    <having>#</having>
 	<power></power>    
   </query>
 </root>

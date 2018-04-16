@@ -250,7 +250,7 @@
       <f name="A.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
-      <f name="FORMAT(b.quantity,2)" alias="contractQuantity" ctype="" />
+      <f name="FORMAT(replace(b.quantity,',',''),2)" alias="contractQuantity" ctype="" />
       <f name="a.quantityQualified" alias="" ctype="" />
       <f name="A.report" alias="" ctype="" />
       <f name="A.LossAndCisposal" alias="" ctype="" />

@@ -8,14 +8,6 @@
 	
 	function ajax(scrollHeight) {
 
-		var taskId = $('#task\\.taskid').val();
-		var YSId= $('#task\\.collectysid').val();
-		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getRawMaterialList";
-		actionUrl = actionUrl +"&YSId="+YSId;
-		actionUrl = actionUrl +"&taskId="+taskId;
-		
-		scrollHeight =$(document).height() - 250; 
-		
 		var t = $('#example').DataTable({
 			"paging": false,
 			"processing" : false,

@@ -192,17 +192,21 @@ public class StorageService extends CommonService {
 		}
 
 		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("materialinventoryForNormal_search");	
 		
 		String searchType = request.getParameter("searchType");
+		String having ="1=1";
 		if(("1").equals(searchType)){
-			//库存为负数
-			dataModel.setQueryName("materialinventory_search");	
+			//实际库存为负数
+			having = "((replace(quantityOnHand,',','')+0) < 0)";	
 		}else if(("2").equals(searchType)){
+			//虚拟库存为负数
+			having = "((replace(availabelToPromise,',','')+0) < 0)";	
+		}else if(("3").equals(searchType)){
 			//库存 ≠ 总到货－总领料
-			dataModel.setQueryName("materialinventory_search2");	
+			having = "(replace(stockinQtiy,',','')+0 <> ((replace(stockoutQty,',',''))+(replace(quantityOnHand,',','')))+0)";	
 		}else{
 			//全部
-			dataModel.setQueryName("materialinventoryForNormal_search");	
 		}	
 		baseQuery = new BaseQuery(request, dataModel);
 		
@@ -216,7 +220,9 @@ public class StorageService extends CommonService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		//String sql = getSortKeyFormWeb(data,baseQuery);
-		baseQuery.getYsQueryData(iStart, iEnd);
+		String sql =baseQuery.getSql(); 
+		sql = sql.replace("#", having);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	
 		
 		if ( iEnd > dataModel.getYsViewData().size()){
 			iEnd = dataModel.getYsViewData().size();

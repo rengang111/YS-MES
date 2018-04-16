@@ -294,13 +294,12 @@
     <pool></pool>    
     <name value="getRawMaterialList" />
     <where>
-    	<w name="b.YSId" des="" reqName="YSId" dtype="ch" oper="in" lg="AND" bt="" />
+    	<w name="b.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
 	      <f name="b.rawMaterialId" alias="materialId" ctype="" />
 	      <f name="b.materialId" alias="parentMaterialId" ctype="" />
 	      <f name="b.materialName" alias="" ctype="" />
-	      <f name="SUM(REPLACE(b.totalQuantity,',',''))" alias="manufactureQuantity" ctype="" />
 	      <f name="SUM(REPLACE(b.purchaseQuantity,',',''))" alias="purchaseQuantity" ctype="" />
 	      <f name="b.quantityOnHand" alias="" ctype="" />
 	      <f name="b.availabelToPromise" alias="" ctype="" />
@@ -347,7 +346,7 @@
       <f name="A.full_field" alias="" ctype="" />
     </select>
     <from>v_orderdetailforzz AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid AND b.deleteFlag='0'</from>
-    <orderby>A.YSId DESC </orderby>
+    <orderby>A.YSId </orderby>
     <groupby></groupby>
     <having>b.YSId > 0</having>
 	<power>
