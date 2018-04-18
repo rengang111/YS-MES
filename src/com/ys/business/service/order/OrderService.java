@@ -1,7 +1,6 @@
 package com.ys.business.service.order;
 
 import java.net.URLDecoder;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
-import com.ys.system.service.common.BaseService;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
@@ -23,13 +21,8 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.OrderModel;
-import com.ys.business.db.dao.B_CustomerDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
-import com.ys.business.db.dao.B_PurchaseOrderDao;
-import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
-import com.ys.business.db.dao.B_PurchasePlanDao;
-import com.ys.business.db.data.B_CustomerData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -251,23 +244,6 @@ public class OrderService extends CommonService  {
 		modelMap = baseQuery.getYsQueryData(0, 0);
 		
 		return modelMap;
-	}
-	
-	@SuppressWarnings("unchecked")
-	private List<B_OrderDetailData> getOrderDetailByPIId(String where){
-		B_OrderDetailDao dao = new B_OrderDetailDao();
-		List<B_OrderDetailData> dbList = new ArrayList<B_OrderDetailData>();
-				
-		try {
-
-			dbList = (List<B_OrderDetailData>)dao.Find(where);
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dbList = null;
-		}
-		
-		return dbList;
 	}
 	
 	public HashMap<String, Object> getCustomer(HttpServletRequest request, 
@@ -685,12 +661,12 @@ public class OrderService extends CommonService  {
 		B_OrderDetailData data = new B_OrderDetailData();
 
 		B_OrderDao odao = new B_OrderDao();	
-		B_OrderData odata = new B_OrderData();
+		//B_OrderData odata = new B_OrderData();
 		List<B_OrderData> list = null;		
 		
-		B_PurchasePlanDao purchaseplan = new B_PurchasePlanDao();
-		B_PurchaseOrderDao purOrder = new B_PurchaseOrderDao();
-		B_PurchaseOrderDetailDao purOrderDetail = new B_PurchaseOrderDetailDao();
+		//B_PurchasePlanDao purchaseplan = new B_PurchasePlanDao();
+		//B_PurchaseOrderDao purOrder = new B_PurchaseOrderDao();
+		//B_PurchaseOrderDetailDao purOrderDetail = new B_PurchaseOrderDetailDao();
 		
 		try {	
 			
@@ -705,8 +681,8 @@ public class OrderService extends CommonService  {
 				dao.Remove(data);
 				
 				
-				String Ysid = data.getYsid();
-				String purchaseStr = "Ysid = '" + Ysid +"'";
+				//String Ysid = data.getYsid();
+				//String purchaseStr = "Ysid = '" + Ysid +"'";
 				
 				try {
 					//purchaseplan.RemoveByWhere(purchaseStr);//采购订单
@@ -742,7 +718,6 @@ public class OrderService extends CommonService  {
 			try {
 				ts.rollback();
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}		
@@ -825,18 +800,6 @@ public class OrderService extends CommonService  {
 		model.addAttribute("orderForm", reqModel);
 	}
 
-	@SuppressWarnings("unchecked")
-	private B_CustomerData getCustomerInfo(String shortName) throws Exception{
-		B_CustomerData data = null;
-		B_CustomerDao dao = new B_CustomerDao();
-		
-		String where = " shortName ='" + shortName + "' AND deleteFlag='0' ";
-		List<B_CustomerData> list = dao.Find(where);
-		if(list != null && list.size() > 0)
-				data = list.get(0);
-		
-		return data;
-	}
 	
 	private B_OrderData getPiidByCustomer(String materialId) throws Exception{
 		
@@ -897,7 +860,7 @@ public class OrderService extends CommonService  {
 	 * 取得耀升编号的流水号
 	 */
 	@SuppressWarnings("unchecked")
-	public int getYSIdByParentId() 
+	private int getYSMaxIdByParentId() 
 			throws Exception {
 
 		String parentId = BusinessService.getYSCommCode();

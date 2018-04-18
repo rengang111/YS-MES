@@ -46,10 +46,8 @@
 					"type" : "POST",
 					//"data" : JSON.stringify(aoData),
 					success: function(data){					
-						fnCallback(data);
-						
-						foucsInit();
-						
+						fnCallback(data);						
+						foucsInit();						
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -63,7 +61,7 @@
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": null,"className":"td-center"		//3单位
-				}, {"data": "manufactureQuantity","className":"td-right"//4
+				}, {"data": "purchaseQuantity","className":"td-right"//4
 				}, {"data": "totalRequisition","className":"td-right", "defaultContent" : '0'//5
 				}, {"data": "quantityOnHand","className":"td-right"	//6 可用库存
 				}, {"data": null,"className":"td-right"		//7
@@ -97,7 +95,7 @@
 	    			var vrawunit = row["unit"];
 	    			var vzzunit = row["zzunit"]; 			
 	    			
-	    			var qty = currencyToFloat(row["manufactureQuantity"]);
+	    			var qty = currencyToFloat(row["purchaseQuantity"]);
 	    			var value = '0';
 	    			
 	    			//原材料的购买单位			
@@ -128,7 +126,7 @@
 					var vrawunit = row["unit"];
 	    			var vzzunit = row["zzunit"]; 			
 	    			
-	    			var qty = currencyToFloat(row["manufactureQuantity"]);
+	    			var qty = currencyToFloat(row["purchaseQuantity"]);
 	    			var value = '0';
 	    			
 	    			//原材料的购买单位			
@@ -383,9 +381,9 @@
 						<th width="120px">物料编号</th>
 						<th >物料名称</th>
 						<th width="50px">领料单位</th>				
-						<th width="60px">计划用量</th>
+						<th width="60px">生产用量</th>
 						<th width="60px">已领数量</th>
-						<th width="80px">可用库存</th>
+						<th width="80px">实际库存</th>
 						<th width="80px">本次领料</th>
 					</tr>
 				</thead>	

@@ -12,13 +12,11 @@
 	var YSSwift = "";
 	var PieYSId = ""
 	var YSSwiftPeiIndex = "0";
-	var totalPrice = "";
-	var shortYear = ""; 
-	var ExFlagPI = '';//PI编号重复check
+	var totalPrice = "0";
 	var ExFlagYS = '';//ys编号重复check
 	var ysidList = new Array();
 	var ysidPeiList = new Array();
-	
+
 	YSSwift = '${orderForm.YSMaxId}';
 	YSParentId = '${orderForm.YSParentId}';
 	
@@ -50,7 +48,6 @@
 				var rowIndex = counter;
 				for (var i=0;i<1;i++){
 					
-					//alert('YSSwift='+YSSwift); 
 					var fmtId = "";
 					var deleteFlag = false;
 					
@@ -67,10 +64,9 @@
 							break;
 						}
 					}
-
 					if(deleteFlag == false){
 						
-						YSSwift = YSSwift+1;						
+						YSSwift = parseInt(YSSwift)+1;
 						fmtId = YSParentId + PrefixInteger(YSSwift,4); 							
 						var i = ysidList.length;	
 						ysidList[i]=new Array()
@@ -96,7 +92,7 @@
 							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"   	 id="orderDetailLines'+rowIndex+'.extraquantity"   class="num mini" />'+
 								'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"        id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
 							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"           id="orderDetailLines'+rowIndex+'.price"           class="cash short" /></td>',
-							'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice"  readonly="readonly"/></td>',
+							'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice"  /></td>',
 							
 							]).draw();
 					
@@ -129,7 +125,6 @@
 			}else{
 				
 				var ysid = $('#example tbody tr').eq(rowIndex).find("td").eq(0).find("input").val();
-				//alert('['+amount+']:amount '+'---- totalPrice:'+totalPrice)
 				for(var i=0;i<ysidList.length;i++){
 					var tmp = ysidList[i][0];
 					//alert("tmp:"+tmp)
@@ -182,9 +177,9 @@
 			},
 			
 			"columns" : [ 
-			        {
-					}, {								
-					}, {				
+			        	{
+					}, {
+					}, {
 					}, {				
 					}, {				
 					}, {				
@@ -211,12 +206,10 @@
 			var fPrice = currencyToFloat($oPricei.val());	
 
 			var fQuantity = currencyToFloat($oQuantity.val());
-			//var fTotalOld = currencyToFloat($oAmount.val());
 
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 
 			var vPricei = floatToSymbol(fPrice,currency);
-			//var vPriceh = floatToCurrency(fPrice);
 			var vQuantity = floatToNumber($oQuantity.val());
 			var vTotalNew = floatToSymbol(fTotalNew,currency);
 			
@@ -228,21 +221,18 @@
 			$oAmounts.html(vTotalNew);
 
 			//临时计算该客户的销售总价
-			//首先减去旧的价格			
-			//totalPrice = currencyToFloat(totalPrice) - fTotalOld + fTotalNew;
-			totalPrice = floatToSymbol( saleTotalSum(),currency);			
-						
-			$('#order\\.totalprice').val(totalPrice);				
+			totalPrice = floatToSymbol( saleTotalSum(),currency);
+			$('#order\\.totalprice').val(totalPrice);
 
 		});
-		
+
 		t.on('change', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
 
 			var $td = $(this).parent().find("td");
 
 			var $oQuantity = $td.eq(4).find("input");
 			var $oExtraQua = $td.eq(5).find("input:text");
-			var $oTotalQua = $td.eq(5).find("input:hidden");			
+			var $oTotalQua = $td.eq(5).find("input:hidden");
 
 			var fQuantity = currencyToFloat($oQuantity.val());
 			var fExtraQua = currencyToFloat($oExtraQua.val());
@@ -251,7 +241,6 @@
 			var vPriceh = floatToCurrency(fExtraQua);
 			var vTotalNew = floatToCurrency(fTotalQua);			
 			//
-			//alert("fQuantity"+fQuantity+"fExtraQua"+fExtraQua+"vTotalNew"+vTotalNew)
 			$oExtraQua.val(vPriceh);
 			$oTotalQua.val(vTotalNew);
 			$oExtraQua.val(floatToNumber(fExtraQua));
@@ -274,7 +263,7 @@
 			
 		});
 
-	};
+	};//ajax()
 
 	//列合计:总价
 	function productCostSum(){
@@ -340,7 +329,7 @@
 				function() {
 					var piid = $("#order\\.piid").val();
 			if(piid == ""){
-				$().toastmessage('showWarningToast', "请输入客户编号。");		
+				$().toastmessage('showWarningToast', "PI编号不能为空,请重新输入。");		
 				return;
 			}
 			if( ExFlagPI == 1){
@@ -529,16 +518,16 @@
 	<button type="button" id="insert" class="DTTT_button">保存</button>
 </fieldset>
 <fieldset style="margin-top: -20px;">
-	<legend> 产品订单详情</legend>
+	<legend> 正常订单详情</legend>
 	<div class="list">
 	
 	<table id="example" class="display" >
 		<thead>				
 		<tr>
-			<th class="dt-center" width="100px">耀升编号</th>
-			<th class="dt-center" width="100px">产品编号</th>
+			<th class="dt-center" width="60px">耀升编号</th>
+			<th class="dt-center" width="60px">产品编号</th>
 			<th class="dt-center" >产品名称</th>
-			<th class="dt-center" width="90px">版本类别</th>
+			<th class="dt-center" width="60px">版本类别</th>
 			<th class="dt-center" width="60px">订单数量</th>
 			<th class="dt-center" width="60px">额外采购</th>
 			<th class="dt-center" width="60px">销售单价</th>
@@ -601,38 +590,34 @@
 
 <fieldset>
 	<legend> 配件订单详情</legend>
-	<div class="list">
+	<div class="list" style="margin-top: -4px;">
 	
-	<table id="example2" class="display" >
-		<thead>				
-		<tr>
-			<th class="dt-center" width="100px">耀升编号</th>
-			<th class="dt-center" width="100px">产品编号</th>
-			<th class="dt-center" width="210px">产品名称</th>
-			<th class="dt-center" width="90px">版本类别</th>
-			<th class="dt-center" width="60px">订单数量</th>
-			<th class="dt-center" width="60px">额外采购</th>
-			<th class="dt-center" width="60px">销售单价</th>
-			<th class="dt-center" width="90px">销售总价</th>
-		</tr>
-		</thead>
-		<tfoot>
-			<tr>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-				<th></th>
-			</tr>
-		</tfoot>
-	<tbody>
-		
-		
-	</tbody>
-</table>
+		<table id="example2" class="display" >
+			<thead>				
+				<tr>
+					<th class="dt-center" width="60px">耀升编号</th>
+					<th class="dt-center" width="60px">产品编号</th>
+						<th class="dt-center" >产品名称</th>
+					<th class="dt-center" width="60px">版本类别</th>
+					<th class="dt-center" width="60px">订单数量</th>
+					<th class="dt-center" width="60px">额外采购</th>
+					<th class="dt-center" width="60px">销售单价</th>
+					<th class="dt-center" width="90px">销售总价</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</tfoot>
+		</table>
 </div>
 </fieldset>
 </form:form>
@@ -798,6 +783,8 @@ function autocomplete(){
 			$(this).parent().find("input:hidden").val(ui.item.materialId);
 			
 		},
+
+		
 	});
 }
 
@@ -849,7 +836,7 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 	
 					YSSwiftPeiIndex++;
 					if(PieYSId ==""){
-						YSSwift = YSSwift+1;
+						YSSwift = parseInt(YSSwift)+1;
 						PieYSId = YSParentId + PrefixInteger(YSSwift,4);
 					}
 					fmtId = PieYSId+"-"+YSSwiftPeiIndex;
@@ -871,19 +858,16 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 				ysidPeiList[index][2] = "0";
 			}
 			
-			for (var i=0;i<1;i++){				
-				//alert('YSSwift='+YSSwift); 				
-				//var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
+			for (var i=0;i<1;i++){
 				var lineNo =  rowIndex+1;
 				var hidden = "";
-				ysidCheck(fmtId);//耀升编号重复check
 				
 				var rowNode = $('#example2')
 					.DataTable()
 					.row
 					.add(
 					  [
-						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="short read-only" /></td>',
+						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="short read-only ysidCheck" /></td>',
 						'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 							'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 						'<td><span></span></td>',
@@ -961,7 +945,7 @@ $.fn.dataTable.TableTools.buttons.reset2 = $.extend(true, {},
 
 			//销售总价	
 			var currency = $('#currency option:checked').text();// 选中项目的显示值
-			totalPrice = floatToSymbol( saleTotalSum(),currency);			
+			totalPrice = floatToSymbol( saleTotalSum(),currency);
 			$('#order\\.totalprice').val(totalPrice);
 		}
 					
@@ -1042,8 +1026,8 @@ function ajax2() {
 
 		//临时计算该客户的销售总价
 		//首先减去旧的价格			
-		totalPrice = floatToSymbol( saleTotalSum(),currency);					
-		$('#order\\.totalprice').val(totalPrice);				
+		totalPrice = floatToSymbol( saleTotalSum(),currency);
+		$('#order\\.totalprice').val(totalPrice);
 
 	});
 	
@@ -1141,6 +1125,5 @@ function ysidCheck(YSId){
 	}
 	
 }
-
 </script>
 </html>

@@ -69,7 +69,6 @@
 								break;
 							}
 						}
-						//alert("YSSwift:"+YSSwift)
 						if(deleteFlag == false){
 							
 							YSSwift = parseInt(YSSwift)+1;						
@@ -144,7 +143,7 @@
 					ysidList[i][1] = "1";
 				}
 				
-				$().toastmessage('showWarningToast', "删除后,[ PI编号 ]可能会发生变化。");	
+				$().toastmessage('showWarningToast', "删除后,[ 耀升编号 ]可能会发生变化。");	
 				t.row('.selected').remove().draw();
 
 				//销售总价	
@@ -189,7 +188,7 @@
 			"columns" : [ 
 			        	{
 					}, {
-					}, {								
+					}, {
 					}, {				
 					}, {				
 					}, {				
@@ -216,12 +215,10 @@
 			var fPrice = currencyToFloat($oPricei.val());	
 
 			var fQuantity = currencyToFloat($oQuantity.val());
-			var fTotalOld = currencyToFloat($oAmount.val());
 
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 
 			var vPricei = floatToSymbol(fPrice,currency);
-			//var vPriceh = floatToCurrency(fPrice);
 			var vQuantity = floatToNumber($oQuantity.val());
 			var vTotalNew = floatToSymbol(fTotalNew,currency);
 			
@@ -233,20 +230,18 @@
 			$oAmounts.html(vTotalNew);
 
 			//临时计算该客户的销售总价
-			//首先减去旧的价格			
-			//totalPrice = floatToSymbol(currencyToFloat(totalPrice) - fTotalOld + fTotalNew,currency);
 			totalPrice = floatToSymbol( saleTotalSum(),currency);
-			$('#order\\.totalprice').val(totalPrice);	
+			$('#order\\.totalprice').val(totalPrice);
 
-		});		
-			
+		});
+
 		t.on('change', 'tr td:nth-child(5),tr td:nth-child(6)',function() {
 
 			var $td = $(this).parent().find("td");
 
 			var $oQuantity = $td.eq(4).find("input");
 			var $oExtraQua = $td.eq(5).find("input:text");
-			var $oTotalQua = $td.eq(5).find("input:hidden");		
+			var $oTotalQua = $td.eq(5).find("input:hidden");
 
 			var fQuantity = currencyToFloat($oQuantity.val());
 			var fExtraQua = currencyToFloat($oExtraQua.val());
@@ -258,11 +253,10 @@
 			$oExtraQua.val(vPriceh);
 			$oTotalQua.val(vTotalNew);
 			$oExtraQua.val(floatToNumber(fExtraQua));
-			//alert("fQuantity"+fQuantity+"fExtraQua"+fExtraQua+"oTotalQua"+$oTotalQua.val())
 
 		});
 		
-		
+						
 		t.on('click', 'tr', function() {
 			
 			var rowIndex = $(this).context._DT_RowIndex; //行号			
@@ -307,8 +301,9 @@
 		var number = mydate.getFullYear();
 		shortYear = String(number).substr(2); 
 		
-		ajax();
-		ajax2();		
+		ajax();//正常订单
+		ajax2();//配件订单
+
 		
 		//$('#example').DataTable().columns.adjust().draw();
 		
@@ -574,7 +569,7 @@
 	</table>
 	</div>
 	</fieldset>
-<fieldset>
+	<fieldset>
 		<legend> 配件订单详情</legend>
 		<div class="list" style="margin-top: -4px;">
 		
@@ -648,8 +643,7 @@
 		</tbody>
 	</table>
 	</div>
-	</fieldset>	
-		
+	</fieldset>
 </form:form>
 
 </div>
@@ -709,7 +703,7 @@ function autocomplete(){
 			
 			//产品名称
 			$(this).parent().parent().find("td").eq(2).find("span")
-				.html(jQuery.fixedWidth(ui.item.name,35));
+				.html(jQuery.fixedWidth(ui.item.name,30));
 
 			//产品编号
 			$(this).parent().find("input:hidden").val(ui.item.materialId);
@@ -771,7 +765,7 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 	
 					YSSwiftPeiIndex++;
 					if(PieYSId ==""){
-						YSSwift = YSSwift+1;
+						YSSwift = parseInt(YSSwift)+1;
 						PieYSId = YSParentId + PrefixInteger(YSSwift,4);
 					}
 					fmtId = PieYSId+"-"+YSSwiftPeiIndex;
@@ -794,21 +788,15 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 			}
 			
 			for (var i=0;i<1;i++){
-				
-				//alert('YSSwift='+YSSwift); 
-				
-				//var fmtId = YSParentId + PrefixInteger(YSSwift,3); 
 				var lineNo =  rowIndex+1;
 				var hidden = "";
-				
-				hidden = '';
 				
 				var rowNode = $('#example2')
 					.DataTable()
 					.row
 					.add(
 					  [
-						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="short read-only" /></td>',
+						'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="short read-only ysidCheck" /></td>',
 						'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 							'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 						'<td><span></span></td>',
@@ -829,7 +817,7 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 				rowIndex ++;						
 			}					
 			counter += 1;				
-			
+
 			foucsInit();//设置新增行的基本属性
 			
 			autocomplete();//调用自动填充功能
@@ -896,7 +884,7 @@ $.fn.dataTable.TableTools.buttons.reset2 = $.extend(true, {},
 
 			//销售总价	
 			var currency = $('#currency option:checked').text();// 选中项目的显示值
-			totalPrice = floatToSymbol( saleTotalSum(),currency);					
+			totalPrice = floatToSymbol( saleTotalSum(),currency);
 			$('#order\\.totalprice').val(totalPrice);
 		}
 					
@@ -977,7 +965,7 @@ function ajax2() {
 
 		//临时计算该客户的销售总价
 		//首先减去旧的价格			
-		totalPrice = floatToSymbol( saleTotalSum(),currency);	
+		totalPrice = floatToSymbol( saleTotalSum(),currency);
 		$('#order\\.totalprice').val(totalPrice);
 
 	});
@@ -1045,7 +1033,6 @@ function saleTotalSum(){
 	return product+ product2;
 	
 }
-
 function ysidCheck(YSId){
 	
 	var url = "${ctx}/business/order?methodtype=ysidExistCheck&YSId="+YSId
@@ -1077,5 +1064,5 @@ function ysidCheck(YSId){
 	}
 	
 }
-</script>	
+</script>
 </html>
