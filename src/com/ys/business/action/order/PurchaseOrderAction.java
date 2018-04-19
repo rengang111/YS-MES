@@ -75,6 +75,14 @@ public class PurchaseOrderAction extends BaseAction {
 				dataMap = doSearch(data,Constants.FORM_CONTRACT);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "unfinishedInit":
+				doInit(Constants.FORM_CONTRACT_UNFINISHED);
+				rtnUrl = "/business/purchase/purchaseorderunfinishedmain";
+				break;		
+			case "unfinishedSearch":
+				dataMap = doUnfinishedSearch(data,Constants.FORM_CONTRACT_UNFINISHED);
+				printOutJsonObj(response, dataMap);
+				break;
 			case "creatPurchaseOrder":
 				dataMap = creatPurchaseOrder(data);
 				printOutJsonObj(response, dataMap);
@@ -174,6 +182,37 @@ public class PurchaseOrderAction extends BaseAction {
 		}
 		try {
 			dataMap = service.getContractList(data,formId);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doUnfinishedSearch(
+			String data,String formId){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+			
+		}
+		try {
+			dataMap = service.getUnfinishedContractList(data,formId);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {

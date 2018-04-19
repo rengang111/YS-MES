@@ -249,17 +249,22 @@
 		});
 		
 		t.on('change', 'tr td:nth-child(11)',function() {
-			
-			var arrivalCount  = $(this).find("input:text").attr("oldValue");
-	        var farrivalCount = currencyToFloat(arrivalCount);
 
-	        //检查是否已生成合同
-	        if(farrivalCount > 0){
-	        	//
-	        	$(this).find("input:text").val(arrivalCount);
-	        	//alert("该物料的合同已收货，不能修改。");	        	
-	        	$().toastmessage('showWarningToast', "该物料的合同已收货，不能修改合同数量。");
+			var contractQty   = currencyToFloat( $(this).find("input:text").attr("contractQty") );
+			var arrivalCount  = currencyToFloat( $(this).find("input:text").attr("arrivalCount") );
+			var stockinQty    = currencyToFloat( $(this).find("input:text").attr("stockinQty") );
+			var returnQty     = currencyToFloat( $(this).find("input:text").attr("returnQty") );
+
+	        //确认采购数量是否允许修改
+	        if(stockinQty > 0){
+	        	$(this).find("input:text").val(contractQty);       	
+	        	$().toastmessage('showWarningToast', "该物料的合同已入库，不能修改采购数量。");
+	        	return;
 	        }
+	        if(arrivalCount > 0 && returnQty <= 0){
+	        	$(this).find("input:text").val(contractQty);       	
+	        	$().toastmessage('showWarningToast', "该物料的合同已收货，不能修改采购数量。");
+	        }	        
 			
 		});
 
@@ -443,7 +448,12 @@
 	     <!-- 当前库存 -->
 	    <td><span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></td>
 	     <!-- 建议采购量 -->
-	    <td><form:input value="${bom.purchaseQuantity }" oldValue="${bom.arrivalCount }" path="planDetailList[${status.index}].purchasequantity"  class="num mini"  /></td>
+	    <td><form:input value="${bom.purchaseQuantity }" 	    
+	    		contractQty="${bom.contractQty }" 
+	    		arrivalCount="${bom.arrivalCount }" 
+	    		stockinQty="${bom.stockinQty }" 
+	    		returnQty="${bom.returnQty }" 
+	    		path="planDetailList[${status.index}].purchasequantity"  class="num mini"  /></td>
 	     <!-- 供应商 -->
 	    <td><form:input value="${bom.supplierId }"  path="planDetailList[${status.index}].supplierid"  class="supplierid short" /></td>
 	     <!-- 本次单价 -->

@@ -290,23 +290,29 @@ public class FinanceReportService extends CommonService {
 	public List<Map<Integer, Object>> getDaybookList() throws Exception {
 
 		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("materialinventoryForNormal_search");
 		
 		String searchType = request.getParameter("searchType");
+		String having ="1=1";
 		if(("1").equals(searchType)){
-			//库存为负数
-			dataModel.setQueryName("materialinventory_search");	
+			//实际库存为负数
+			having = "((replace(quantityOnHand,',','')+0) < 0)";	
 		}else if(("2").equals(searchType)){
+			//虚拟库存为负数
+			having = "((replace(availabelToPromise,',','')+0) < 0)";	
+		}else if(("3").equals(searchType)){
 			//库存 ≠ 总到货－总领料
-			dataModel.setQueryName("materialinventory_search2");	
+			having = "(replace(stockinQtiy,',','')+0 <> ((replace(stockoutQty,',',''))+(replace(quantityOnHand,',','')))+0)";	
 		}else{
 			//全部
-			dataModel.setQueryName("materialinventoryForNormal_search");	
-		}
+		}	
 		baseQuery = new BaseQuery(request, dataModel);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 
+		String sql =baseQuery.getSql(); 
+		sql = sql.replace("#", having);
 		List<Map<Integer, Object>> listMap = new ArrayList<Map<Integer, Object>>();
-		ArrayList<HashMap<String, String>>  hashMap = baseQuery.getYsFullData();	
+		ArrayList<HashMap<String, String>>  hashMap = baseQuery.getYsQueryData(sql,having,0,0);	
 		
 		for(int i=0;i<hashMap.size();i++){
 			String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "inventoryTitle");

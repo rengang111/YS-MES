@@ -149,6 +149,69 @@ public class PurchaseOrderService extends CommonService {
 		return modelMap;
 	}
 	
+
+	public HashMap<String, Object> getUnfinishedContractList(
+			String data,String formId) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}
+	
+		dataModel.setQueryName("unfinishedContractList");
+		
+		baseQuery = new BaseQuery(request, dataModel);		
+		
+		String[] keyArr = getSearchKey(formId,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		String status = request.getParameter("status");
+		String having = "1=1";
+		if(notEmpty(key1) || notEmpty(key2)){
+			status = "";//关键字查询,忽略其状态
+			userDefinedSearchCase.put("purchaseType", "");//关键字查询,忽略其类型(订购件)
+			userDefinedSearchCase.put("supplierId2", "");//关键字查询,忽略其类型(自制件)
+			userDefinedSearchCase.put("materialId2", "");//关键字查询,忽略其类型(包装件)
+		}
+		
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);
+		
+		if(notEmpty(status)){
+			having = "((REPLACE(quantity,',','')+0) - (REPLACE(arrivalQty,',','')+0) + (REPLACE(returnQty,',','')+0) ) > 0 ";
+		}
+		sql = sql.replace("#", having);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount());		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());			
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);
+		
+		return modelMap;
+	}
+	
+	
 	public void getZZOrderDetail( 
 			String YSId) throws Exception {
 

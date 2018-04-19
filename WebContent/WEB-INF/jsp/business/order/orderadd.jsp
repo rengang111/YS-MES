@@ -13,6 +13,8 @@
 	var PieYSId = ""
 	var YSSwiftPeiIndex = "0";
 	var totalPrice = "0";
+	var shortYear = ""; 
+	var ExFlagPI = '';//PI编号重复check
 	var ExFlagYS = '';//ys编号重复check
 	var ysidList = new Array();
 	var ysidPeiList = new Array();

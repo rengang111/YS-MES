@@ -325,7 +325,7 @@ body{
 
 	$(document).ready(function() {
 		
-		searchAjax("true","1","");
+		searchAjax("true","2","");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -559,10 +559,8 @@ body{
 
 		var stockType = $("#stockType").val();
 		
-		if(myTrim(keyword1) == '' && myTrim(keyword2) == '' ){
-			//
-		}else{
-			searchType = '3';//不区分正常与否
+		if(myTrim(keyword1) != '' || myTrim(keyword2) != '' ){
+			searchType = '';//不区分正常与否
 		}
 		var url = '${ctx}/business/financereport?methodtype=downloadExcel';
 			url = url + "&searchType="+searchType;
@@ -586,7 +584,7 @@ body{
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
 			<input type="hidden" id="stockType" value="${stockType }" />
-			<input type="hidden" id="searchType" value="" />
+			<input type="hidden" id="searchType" value="2" />
 			
 			<table>
 				<tr>
@@ -620,7 +618,7 @@ body{
 				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0','edit');">再次编辑</a> -->
 			</div>
 			<div style="height:40px;float: right">
-				<a  class="DTTT_button box" onclick="downloadExcel('3');"><span>EXCEL导出</span></a>
+				<a  class="DTTT_button" onclick="downloadExcel();"><span>EXCEL导出</span></a>
 			</div>
 		<table  id="TMaterial" class="display">
 			<thead>			

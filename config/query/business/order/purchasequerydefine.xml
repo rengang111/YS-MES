@@ -102,9 +102,7 @@
       <f name="a.YSId" alias="" ctype="" />
       <f name="IFNULL(c.supplierId,'')" alias="contractSupplierId" ctype="" />
       <f name="IFNULL(c.contractId,'')" alias="contractId" ctype="" />
-      <f name="IFNULL(c.quantity,'0')" alias="contractQty" ctype="" />
       <f name="IFNULL(c.price,'0')" alias="contractPrice" ctype="" />
-      <f name="IFNULL(d.purchaseQuantity,'0')" alias="planQty" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.materialParentId" alias="" ctype="" />
@@ -135,13 +133,16 @@
       <f name="a.unitQuantity" alias="" ctype="" />
       <f name="a.subbomno" alias="" ctype="" />
       <f name="e.materialId" alias="arrivalMaterialId" ctype="" />
-      <f name="IFNULL(e.arrivalCount,0)" alias="arrivalCount" ctype="" />
       <f name="f.materialId" alias="stockinMaterialId" ctype="" />
-      <f name="IFNULL(f.quantity,0)" alias="stockinQty" ctype="" />
+      <f name="IFNULL(c.quantity,'0')"         alias="contractQty" ctype="" />
+      <f name="IFNULL(d.purchaseQuantity,'0')" alias="planQty" ctype="" />
+      <f name="IFNULL(e.arrivalCount,0)" alias="arrivalCount" ctype="" />
+      <f name="IFNULL(f.quantity,0)"     alias="stockinQty" ctype="" />
+      <f name="IFNULL(g.sumReturnQty,0)" alias="returnQty" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.supplierId = c.supplierId AND a.materialId = c.materialId AND c.deleteFlag = '0' LEFT JOIN v_purchaseplandetailgroup d ON a.ysid = d.ysid  AND a.materialId = d.materialId AND d.deleteFlag = '0' LEFT JOIN v_arrival_groupby_ysid e ON a.YSId=e.YSId AND a.materialId=e.materialId LEFT JOIN v_purchasestockindetailgroup f ON a.YSId=f.YSId AND a.materialId=f.materialId where a.deleteFlag='0' </from>
+   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.supplierId = c.supplierId AND a.materialId = c.materialId AND c.deleteFlag = '0' LEFT JOIN v_purchaseplandetailgroup d ON a.ysid = d.ysid  AND a.materialId = d.materialId AND d.deleteFlag = '0' LEFT JOIN v_arrival_groupby_ysid e ON a.YSId=e.YSId AND a.materialId=e.materialId LEFT JOIN v_purchasestockindetailgroup f ON a.YSId=f.YSId AND a.materialId=f.materialId LEFT JOIN v_inspectionreturngroup g ON g.YSId=a.YSId AND a.materialId = g.materialId where a.deleteFlag='0' </from>
     <orderby>a.subBomNo+0,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -295,7 +296,7 @@
       <f name="IFNULL(c.quantityInspection,'0')" alias="quantityInspection" ctype="" />
       <f name="IFNULL(d.recodeSum,'0')" alias="arrivalQty" ctype="" />
     </select>
-    <from>v_purchaseorderdetail3 a  left join v_inspectionreturngroup b on a.contractId=b.contractId and a.materialId=b.materialId left join v_receiveinspectiongroup c ON c.contractId=a.contractId AND c.materialId=a.materialId LEFT JOIN v_arrivalquantitygroup d ON d.contractId=a.contractId AND d.materialId = a.materialId WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from>
+    <from>v_purchaseorderdetail3 a  left join v_inspectionreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId left join v_receiveinspectiongroup c ON c.contractId=a.contractId AND c.materialId=a.materialId LEFT JOIN v_arrivalquantitygroup d ON d.contractId=a.contractId AND d.materialId = a.materialId WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from>
     <orderby>A.deliveryDate,a.materialId</orderby>
     <groupby></groupby>
     <having>#</having>
@@ -450,7 +451,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>b_purchaseorderdetail a join  v_purchaseorder f on f.contractId = a.contractId left join v_workshopreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId and b.deleteFlag='0' LEFT JOIN v_orderexpanse_group_contract e ON a.contractId = e.contractId left join v_arrivalquantitygroup c on a.contractId=c.contractId and a.materialId=c.materialId left join v_inspectionreturngroup d on a.contractId=d.contractId and a.materialId=d.materialId left join b_material g on a.materialId=g.materialId and g.deleteFlag='0'</from>
+   <from>b_purchaseorderdetail a join  v_purchaseorder f on f.contractId = a.contractId left join v_workshopreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId and b.deleteFlag='0' LEFT JOIN v_orderexpanse_group_contract e ON a.contractId = e.contractId left join v_arrivalquantitygroup c on a.contractId=c.contractId and a.materialId=c.materialId left join v_inspectionreturngroup d on a.YSId=d.YSId and a.materialId=d.materialId left join b_material g on a.materialId=g.materialId and g.deleteFlag='0'</from>
     <orderby>a.deleteFlag+0,materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -912,5 +913,34 @@
     <groupby></groupby>
     <having></having>
 	<power></power>
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="unfinishedContractList" />
+    <where>
+    	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />
+       	<w name="A.fullField" des="" reqName="keyword2" dtype="ch" oper="like" lg="AND" bt="" />
+    	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.purchaseType" alias="" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="a.purchaseQuantity" alias="" ctype="" />
+      <f name="FORMAT(REPLACE(a.price,',','') * REPLACE(a.purchaseQuantity,',',''),2)" alias="totalPrice" ctype="" />
+      <f name="IFNULL(REPLACE(b.quantity,',',''),0)" alias="contractQty" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_purchaseplan a  LEFT JOIN v_purchaseorderdetail b ON b.YSId=a.YSId AND b.materialId=a.materialId WHERE LEFT(a.materialId,1) &lt;&gt; 'H' AND LEFT(a.materialId,1) &lt;&gt; 'I' AND purchaseQuantity >0 </from>
+    <orderby>a.YSId,a.materialId</orderby>
+    <groupby></groupby>
+    <having>contractQty = 0</having>
+	<power></power>    
   </query>
 </root>
