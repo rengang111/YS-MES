@@ -85,16 +85,15 @@ public class RequisitionZZService extends CommonService {
 		
 	}
 	
-	private ArrayList<HashMap<String, String>> getRequisitionZZData(
-			String makeType,String requisitionSts,
+	private HashMap<Object, Object> getRequisitionZZData(
+			String makeType,String requisitionSts,int viewSize,
 			ArrayList<HashMap<String, String>>  list) throws Exception{
 		
+		HashMap<Object, Object> hp = new HashMap<>();
 		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
-		//ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
-		//ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
 		
-
 		//String makeType = request.getParameter("makeType");
+		int size=0;
 		for(HashMap<String, String>map:list){
 			 
 			//String subid = map.get("rawMaterialId").substring(0, 3);	
@@ -115,15 +114,20 @@ public class RequisitionZZService extends CommonService {
 			}
 			
 			if(notEmpty(requisitionSts) && !requisitionSts.equals(map.get("requisitionSts")))
-				continue;//过滤页面传来的状态值
+				continue;//过滤页面传来的状态值			
 			
-			blow.add(map);
-			
+			if(size >= viewSize ){				
+				blow.add(map);//截取页面允许显示的最大条数					
+			}
+			size++;
 		}
-	
-		return blow;
+
+		hp.put("list", blow);
+		hp.put("recordCnt", size);
+		return hp;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doSearch(String makeType, String data,String formId) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -153,44 +157,65 @@ public class RequisitionZZService extends CommonService {
 		if(notEmpty(key1) || notEmpty(key2))
 			requisitionSts = "";//有指定查询条件时,不再限定其业务状态
 		
-		dataModel.setQueryName("getOrderListForZZ");	
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		userDefinedSearchCase.put("requisitionSts", requisitionSts);
+		//userDefinedSearchCase.put("requisitionSts", requisitionSts);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
-		
+		String having ="";
 		//替换数据源
 		if(makeType.equals(Constants.REQUISITION_BLISTE)){
-			//吸塑
-			sql = sql.replace("v_orderdetailforzz", "v_orderdetailforf01");
+			
+			dataModel.setQueryName("requisitionListForF01");//吸塑
 		}else if(makeType.equals(Constants.REQUISITION_BLOW)){
-			//吹塑
-			sql = sql.replace("v_orderdetailforzz", "v_orderdetailforf02");
 			
+			dataModel.setQueryName("requisitionListForF02");//吹塑		
 		}else{
-			//注塑
-			sql = sql.replace("v_orderdetailforzz", "v_orderdetailforb01");
+			
+			dataModel.setQueryName("requisitionListForB01");//注塑
 			
 		}
-		
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
-				
-		if ( iEnd > dataModel.getYsViewData().size()){			
-			iEnd = dataModel.getYsViewData().size();
+		if(("010").equals(requisitionSts)){
+			
+			having = " requisitionQty = 0 ";//未申请
+		}else if(("020").equals(requisitionSts)){
+			
+			having = " requisitionSts = '020' ";//待领料
+		}else{
+			
+			having = " requisitionSts = '030' ";//已出库
 		}
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		sql = sql.replace("#", having);
+		
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}		
+			
+		/*	
+		HashMap<Object, Object> hp = 
+				getRequisitionZZData(
+						makeType,
+						requisitionSts,
+						iEnd,
+						dataModel.getYsViewData());
 		
 		ArrayList<HashMap<String, String>> list = 
-				getRequisitionZZData(makeType,requisitionSts,dataModel.getYsViewData());
-		modelMap.put("sEcho", sEcho); 		
-		modelMap.put("recordsTotal", list.size()); 		
-		modelMap.put("recordsFiltered", list.size());	
-
-		modelMap.put("data", list);
-		modelMap.put("keyword1",key1);	
-		modelMap.put("keyword2",key2);		
+				(ArrayList<HashMap<String, String>>) hp.get("list");
+		int recordCnt = (int) hp.get("recordCnt");
+		if ( iEnd > list.size()){			
+			iEnd = list.size();
+		}	
+		*/	
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);
+		modelMap.put("keyword2",key2);	
 		
 		return modelMap;		
 

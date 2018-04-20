@@ -74,7 +74,7 @@
 	        	},
 				"columns": [
 					{"data": null,"className" : 'td-right'},
-					{"data": "requisitionId", "className" : 'td-left'},//1
+					{"data": null, "className" : 'td-left'},//1
 					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//2
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//3
 					{"data": "materialName", "defaultContent" : ''},//4
@@ -98,20 +98,14 @@
 		                    
 		                    return startIndex + meta.row + 1 ;			
 						}},
-			    		{"targets":1,"render":function(data, type, row){
-			    			var rtn = row["requisitionId"];//
+			    		{"targets":2,"render":function(data, type, row){
+			    			var rtn = row["requistionYsid"];//
 			    			if(rtn == ""){
-					    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "（快速领料）" + "</a>";
+					    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + row["YSId"] + "</a>";
 			    			}else{
-				    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["taskId"] + "')\">" + row["requisitionId"] + "</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["requistionYsid"] + "')\">" + row["YSId"] + "</a>";
 			    			}
 			    			
-			    			return rtn;
-			    		}},
-			    		{"targets":2,"render":function(data, type, row){
-			    			var rtn = "";
-			    			//rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">" + row["YSId"] + "</a>";
-			    			rtn=  row["YSId"];
 			    			return rtn;
 			    		}},
 			    		{"targets":4,"render":function(data, type, row){
@@ -150,7 +144,7 @@
 			    		{ "bSortable": false, "aTargets": [ 0,1 ] },
 			    		{
 							"visible" : false,
-							"targets" : [8]
+							"targets" : [1,8]
 						}
 		           
 		         ] 

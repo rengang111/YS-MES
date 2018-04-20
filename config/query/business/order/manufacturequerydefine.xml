@@ -354,7 +354,7 @@
   </query> 
   <query>
     <pool></pool>     
-    <name value="orderListForF02" />
+    <name value="requisitionListForF02" />
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
@@ -379,12 +379,99 @@
       <f name="b.rebateRate" alias="" ctype="" />
       <f name="a.rawMaterialId" alias="" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
+      <f name="IFNULL(c.requisitionSts,'010')" alias="requisitionSts" ctype="" />
+      <f name="IFNULL(c.quantity,0)" alias="requisitionQty" ctype="" />
+      <f name="IFNULL(c.YSId,'')" alias="taskId" ctype="" />
+      <f name="IFNULL(c.requistionYsid,'')" alias="requistionYsid" ctype="" />
+      <f name="IFNULL(c.collectYsid,'')" alias="collectYsid" ctype="" />
     </select>
     <!-- 吹塑待领料 -->
-    <from>v_orderdetailforf02 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN b_</from>
-    <orderby>A.YSId DESC </orderby>
+    <from>v_orderdetailforf02 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_f02 c ON a.YSId =c.collectYsid</from>
+    <orderby>A.YSId </orderby>
     <groupby></groupby>
-    <having>b.YSId > 0</having>
+    <having>#</having>
+	<power>
+	</power>    
+  </query> 
+  <query>
+    <pool></pool>     
+    <name value="requisitionListForF01" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="B.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="b.materialId" alias="" ctype="" />
+      <f name="b.materialName" alias="" ctype="" />
+      <f name="b.PIId" alias="" ctype="" />
+      <f name="b.YSId" alias="" ctype="" />
+      <f name="b.quantity" alias="" ctype="" />
+      <f name="b.price" alias="" ctype="" />
+      <f name="b.totalprice" alias="" ctype="" />
+      <f name="b.totalQuantity" alias="" ctype="" />
+      <f name="b.status" alias="statusName" ctype="订单状态" />
+      <f name="b.status" alias="" ctype="" />
+      <f name="b.returnQuantity" alias="" ctype="" />
+      <f name="b.orderCost" alias="" ctype="" />
+      <f name="b.orderDate" alias="" ctype="" />
+      <f name="b.deliveryDate" alias="" ctype="" />
+      <f name="b.storageDate" alias="" ctype="" />
+      <f name="b.rebateRate" alias="" ctype="" />
+      <f name="a.rawMaterialId" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+      <f name="IFNULL(c.requisitionSts,'010')" alias="requisitionSts" ctype="" />
+      <f name="IFNULL(c.quantity,0)" alias="requisitionQty" ctype="" />
+      <f name="IFNULL(c.YSId,'')" alias="taskId" ctype="" />
+      <f name="IFNULL(c.requistionYsid,'')" alias="requistionYsid" ctype="" />
+      <f name="IFNULL(c.collectYsid,'')" alias="collectYsid" ctype="" />
+    </select>
+    <!-- 吹塑待领料 -->
+    <from>v_orderdetailforf01 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_f01 c ON a.YSId =c.collectYsid</from>
+    <orderby>A.YSId </orderby>
+    <groupby></groupby>
+    <having>#</having>
+	<power>
+	</power>    
+  </query> 
+  <query>
+    <pool></pool>     
+    <name value="requisitionListForB01" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="B.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="b.materialId" alias="" ctype="" />
+      <f name="b.materialName" alias="" ctype="" />
+      <f name="b.PIId" alias="" ctype="" />
+      <f name="b.YSId" alias="" ctype="" />
+      <f name="b.quantity" alias="" ctype="" />
+      <f name="b.price" alias="" ctype="" />
+      <f name="b.totalprice" alias="" ctype="" />
+      <f name="b.totalQuantity" alias="" ctype="" />
+      <f name="b.status" alias="statusName" ctype="订单状态" />
+      <f name="b.status" alias="" ctype="" />
+      <f name="b.returnQuantity" alias="" ctype="" />
+      <f name="b.orderCost" alias="" ctype="" />
+      <f name="b.orderDate" alias="" ctype="" />
+      <f name="b.deliveryDate" alias="" ctype="" />
+      <f name="b.storageDate" alias="" ctype="" />
+      <f name="b.rebateRate" alias="" ctype="" />
+      <f name="a.rawMaterialId" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+      <f name="IFNULL(c.requisitionSts,'010')" alias="requisitionSts" ctype="" />
+      <f name="IFNULL(c.quantity,0)" alias="requisitionQty" ctype="" />
+      <f name="IFNULL(c.YSId,'')" alias="taskId" ctype="" />
+      <f name="IFNULL(c.requistionYsid,'')" alias="requistionYsid" ctype="" />
+      <f name="IFNULL(c.collectYsid,'')" alias="collectYsid" ctype="" />
+    </select>
+    <!-- 吹塑待领料 -->
+    <from>v_orderdetailforb01 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_b01 c ON a.YSId =c.collectYsid</from>
+    <orderby>A.YSId </orderby>
+    <groupby></groupby>
+    <having>#</having>
 	<power>
 	</power>    
   </query> 

@@ -1006,8 +1006,13 @@ public class StorageService extends CommonService {
 		float oldQuan = stringToFloat(oldQuantity);
 		float iNewQuantiy = iQuantity + ireqQuantity - oldQuan;
 		
+		float waitin = stringToFloat(data.getWaitstockin());
+		float waitout= stringToFloat(data.getWaitstockout());
+		
+		float avail  = iNewQuantiy + waitin - waitout;
 				
-		data.setQuantityonhand(String.valueOf(iNewQuantiy));
+		data.setQuantityonhand(String.valueOf(iNewQuantiy));//实际库存
+		data.setAvailabeltopromise(String.valueOf(avail));//重新计算虚拟库存
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
