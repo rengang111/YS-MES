@@ -23,7 +23,16 @@ public class PaymentModel extends BaseModel {
 	private List<B_PaymentDetailData> paymentList;
 	private List<B_PaymentHistoryData> historyList;
 	private ArrayList<ListOption> approvalOption = new ArrayList<ListOption>();
+	private ArrayList<ListOption> invoiceTypeOption = new ArrayList<ListOption>();
 		
+
+	public ArrayList<ListOption> getInvoiceTypeOption() {
+		return this.invoiceTypeOption;
+	}
+	public void setInvoiceTypeOption(ArrayList<ListOption> list) {
+		this.invoiceTypeOption = list;
+	}	
+	
 	public B_PaymentData getPayment() {
 		return this.payment;
 	}

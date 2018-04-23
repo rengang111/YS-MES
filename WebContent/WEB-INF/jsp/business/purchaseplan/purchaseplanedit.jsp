@@ -470,7 +470,7 @@
 	</tr>
 	<script type="text/javascript">
 		var index = '${status.index}';
-		var materialName = '${bom.materialName}';
+		var materialName = "${bom.materialName}";
 		var planMaterialId = '${bom.planMaterialId}';
 		var order = currencyToFloat( '${order.totalQuantity}' );
 		var unitQuantity = currencyToFloat( '${bom.unitQuantity}' );

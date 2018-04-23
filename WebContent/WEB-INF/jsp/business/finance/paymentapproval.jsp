@@ -435,9 +435,13 @@ function uploadPhoto(tableId,tdTable, id) {
 					<form:select path="payment.approvalstatus" style="width: 120px;">							
 					<form:options items="${formModel.approvalOption}" 
 						itemValue="key" itemLabel="value" /></form:select> </td>
+				<td width="250px">发票类型： 
+					<form:select path="payment.invoicetype" style="width: 120px;">							
+					<form:options items="${formModel.invoiceTypeOption}" 
+						itemValue="key" itemLabel="value" /></form:select> </td>
 			
 				<td>发票编号： 
-					<form:input path="payment.invoicenumber"  class="long" /></td>
+					<form:input path="payment.invoicenumber"  class="middle" /></td>
 			
 				<td style="width:200px" >
 					<button type="button" id="submit12"  onclick="doInsert();"

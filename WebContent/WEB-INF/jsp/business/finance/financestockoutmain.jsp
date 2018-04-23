@@ -23,6 +23,11 @@
 		actionUrl = actionUrl + "&key1=" + key1;
 		actionUrl = actionUrl + "&key2=" + key2;
 		
+		var start = $('#stockOutDateStart').val();
+		var end = $('#stockOutDateEnd').val();
+		actionUrl += "&stockOutDateStart=" + start;
+		actionUrl += "&stockOutDateEnd=" + end;
+		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				"lengthChange":false,
@@ -122,6 +127,21 @@
 
 	$(document).ready(function() {
 
+		$("#stockOutDateStart").datepicker({
+				dateFormat:"yy-mm-dd",
+				changeYear: true,
+				changeMonth: true,
+				selectOtherMonths:true,
+				showOtherMonths:true,
+		}); 
+		$("#stockOutDateEnd").datepicker({
+			dateFormat:"yy-mm-dd",
+			changeYear: true,
+			changeMonth: true,
+			selectOtherMonths:true,
+			showOtherMonths:true,
+		}); 
+		
 		ajax("020","true");
 
 	    buttonSelectedEvent();//按钮点击效果
@@ -190,6 +210,15 @@
 							style="width:50px" onclick="doSearch();">查询</button>
 					</td>
 					<td width="10%"></td> 
+				</tr>
+				<tr>
+					<td width="10%"></td> 
+					<td class="label">出库时间：</td>
+					<td>
+						<input type="text" name="stockOutDateStart" id="stockOutDateStart"  value=""  class="short"/>&nbsp;至
+						<input type="text" name="stockOutDateEnd" id="stockOutDateEnd" value=""  class="short"/>
+					</td>
+					<td ></td> 
 				</tr>
 			</table>
 

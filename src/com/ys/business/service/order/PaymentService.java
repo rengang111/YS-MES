@@ -286,6 +286,7 @@ public class PaymentService extends CommonService {
 		}
 		
 		reqModel.setApprovalOption(util.getListOption(DicUtil.DIC_APPROVL, ""));
+		reqModel.setInvoiceTypeOption(util.getListOption(DicUtil.DIC_INVOICETYPE, ""));
 
 		return rtnFlg;
 	}
@@ -752,6 +753,7 @@ public class PaymentService extends CommonService {
 		db.setApprovaldate(CalendarUtil.fmtYmdDate());
 		db.setApprovalstatus(payment.getApprovalstatus());
 		db.setApprovalfeedback(replaceTextArea(payment.getApprovalfeedback()));
+		db.setInvoicetype(payment.getInvoicetype());//发票类型
 		db.setInvoicenumber(payment.getInvoicenumber());//发票编号
 		
 		//审核结果:020同意;030不同意;010未审核

@@ -484,7 +484,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-	<!--	<a class="DTTT_button DTTT_button_text" id="update" >修改</a> -->
+		<a class="DTTT_button DTTT_button_text" id="update" >修改</a>
 		<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a>
 	</div>
 
@@ -498,6 +498,8 @@ function uploadPhoto(tableId,tdTable, id) {
 				<td width="100px" >${payment.approvalStatus }</td>
 				<td width="100px" class="label">审核日期：</td>
 				<td width="100px" >${payment.approvalDate }</td>
+				<td width="100px" class="label">发票类型：</td>
+				<td width="100px">${payment.invoiceType }</td>
 				<td width="100px" class="label">发票编号：</td>
 				<td>${payment.invoiceNumber }</td>
 			</tr>

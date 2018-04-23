@@ -359,6 +359,8 @@ function photoView(id, tdTable, count, data) {
 				<td width="100px" >${payment.approvalStatus }</td>
 				<td width="100px" class="label">审核日期：</td>
 				<td width="100px" >${payment.approvalDate }</td>
+				<td width="100px" class="label">发票类型：</td>
+				<td width="100px">${payment.invoiceType }</td>
 				<td width="100px" class="label">发票编号：</td>
 				<td>${payment.invoiceNumber }</td>
 			</tr>

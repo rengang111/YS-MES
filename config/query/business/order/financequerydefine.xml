@@ -153,6 +153,7 @@
       <f name="a.finishStatus" alias="finishStatusId" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.contractIds" alias="" ctype="" />
+      <f name="a.invoiceType" alias="" ctype="发票类型" />
       <f name="b.contractId" alias="" ctype="" />
       <f name="b.payable" alias="" ctype="" />
       <f name="a.invoiceNumber" alias="" ctype="" />

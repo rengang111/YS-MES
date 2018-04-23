@@ -33,14 +33,14 @@
 			$("#makeTypeL").val('I,G');
 		}
 		
-		var approval = $('#approvalStatusY').val();
-		if ($("#approvalStatusY").prop('checked')) {
+		//var approval = $('#approvalStatusY').val();
+		//if ($("#approvalStatusY").prop('checked')) {
 
 			var start = $('#approvalDateStart').val();
 			var end = $('#approvalDateEnd').val();
 			url += "&approvalDateStart=" + start;
 			url += "&approvalDateEnd=" + end;
-		}
+		//}
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -294,7 +294,7 @@
 				</tr>
 				<tr>
 					<td width="10%"></td> 
-					<td class="label">审核时间：</td>
+					<td class="label">入库时间：</td>
 					<td>
 						<input type="text" name="approvalDateStart" id="approvalDateStart"  value=""  class="short"/>&nbsp;至
 						<input type="text" name="approvalDateEnd" id="approvalDateEnd" value=""  class="short"/>

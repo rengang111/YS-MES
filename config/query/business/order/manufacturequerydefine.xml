@@ -703,6 +703,10 @@
    	  <w name="B.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="B.YSId"      des=""  reqName="YSId"     dtype="ch" oper="="     lg="AND" bt="" />
    	  <w name="B.requisitionSts" des=""  reqName="requisitionSts" dtype="ch" oper="="  lg="AND" bt="" />
+
+   	  <w name="b.checkOutDate" des=""  reqName="stockOutDateStart" dtype="ch" oper="&gt;="  lg="AND" bt="" />
+   	  <w name="b.checkOutDate" des=""  reqName="stockOutDateEnd" dtype="ch" oper="&lt;="  lg="AND" bt="" />
+
      </where>
     <select>
     
