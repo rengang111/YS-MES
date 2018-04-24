@@ -10,9 +10,9 @@
 
 		var t = $('#example'+index).DataTable({
 			
-			"paging": true,
+			"paging": false,
 			"lengthChange":false,
-			"lengthMenu":[50,100,200],//设置一页展示20条记录
+			//"lengthMenu":[50,100,200],//设置一页展示20条记录
 			"processing" : false,
 			"serverSide" : false,
 			"stateSave" : false,
@@ -126,7 +126,7 @@
 <div id="main">
 <div id="printBtn">
 	<button type="button" id="print" onclick="doPrint();"
-	class="DTTT_button " style="float: right;margin: 24px 50px -50px 0px;width: 70px;">打印</button>
+	class="DTTT_button " style="float: right;margin: 15px 50px -50px 0px;width: 70px;">打印</button>
 </div>
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
@@ -137,14 +137,14 @@
 		<input type="hidden" id="supplierId${status.index}" value="${detail.supplierId }"/>
 		<input type="hidden" id="contractId${status.index}" value="${detail.contractId }"/>
 	
-		<fieldset>
-			<table class="form" id="table_form">
+
+			<table class="form" >
 				<tr>
-					<td class="label" width="100px">耀升编号：</td>					
+					<td class="label" width="80px">耀升编号：</td>					
 					<td width="100px">${detail.YSId }</td>
-					<td class="label" width="100px">合同编号：</td>					
-					<td width="100px">${detail.contractId }</td>								 	
-					<td class="label" width="100px">供应商：</td>					
+					<td class="label" width="80px">合同编号：</td>					
+					<td width="150px">${detail.contractId }</td>								 	
+					<td class="label" width="80px">供应商：</td>					
 					<td>${detail.supplierId }（${detail.shortName }）${detail.fullName }</td>	
 				</tr>
 											
@@ -167,7 +167,7 @@
 					</thead>										
 				</table>
 			</div>
-		</fieldset>
+		
 		
 		<div class="" id="subidDiv" style="min-height: 300px;">
 			<table id="productPhoto${status.index }" class="phototable">
@@ -175,7 +175,7 @@
 			</table>
 		</div>
 		
-		<div style="page-break-before:always;"></div>
+		 <div style="page-break-before:always;"></div>
 		
 	</c:forEach>
 </form:form>

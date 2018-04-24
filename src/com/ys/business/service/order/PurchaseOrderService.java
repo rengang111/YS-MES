@@ -464,16 +464,15 @@ public class PurchaseOrderService extends CommonService {
 					
 					//取得供应商的合同流水号
 					//父编号:年份+供应商简称
-					String type = getContractType(purchaseType);
-					
-					String typeParentId = BusinessService.getshortYearcode()+type;				
-					String supplierParentId = BusinessService.getshortYearcode() + shortName;				
-					String typeSubId = getContractTypeCode(typeParentId);
+					//String type = getContractType(purchaseType);					
+					//String typeParentId = BusinessService.getshortYearcode()+type;			
+					//String typeSubId = getContractTypeCode(typeParentId);				
+					String supplierParentId = BusinessService.getshortYearcode() + shortName;	
 					String suplierSubId = getContractSupplierCode(supplierParentId);
 
 					//5位流水号格式化	
 					//采购合同编号:16D00081-WL00002
-					contractId = BusinessService.getContractCode(type,typeSubId, suplierSubId,shortName);
+					contractId = BusinessService.getContractCode(YSId,suplierSubId,shortName);
 				
 					//新增采购合同*************
 					B_PurchaseOrderData data = new B_PurchaseOrderData();
@@ -481,8 +480,8 @@ public class PurchaseOrderService extends CommonService {
 					data.setYsid(YSId);
 					data.setMaterialid(materialId);
 					data.setContractid(contractId);
-					data.setTypeparentid(typeParentId);
-					data.setTypeserial(typeSubId);
+					//data.setTypeparentid(typeParentId);
+					//data.setTypeserial(typeSubId);
 					data.setSupplierparentid(supplierParentId);
 					data.setSupplierserial(suplierSubId);
 					data.setSupplierid(supplierId);
@@ -1124,22 +1123,21 @@ public class PurchaseOrderService extends CommonService {
 				
 		//3位流水号格式化	
 		//采购合同编号:16YS081-WL002
-		String type = getContractType(purchaseType);
-		
-		String typeParentId = BusinessService.getshortYearcode()+type;				
-		String supplierParentId = BusinessService.getshortYearcode() + shortName;				
-		String typeSubId = getContractTypeCode(typeParentId);
+		//String type = getContractType(purchaseType);		
+		//String typeParentId = BusinessService.getshortYearcode()+type;				
+		//String typeSubId = getContractTypeCode(typeParentId);				
+		String supplierParentId = BusinessService.getshortYearcode() + shortName;
 		String suplierSubId = getContractSupplierCode(supplierParentId);
 
 		//3位流水号格式化	
 		//采购合同编号:16D081-WL002
-		String contractId = BusinessService.getContractCode(type,typeSubId, suplierSubId,shortName);
+		String contractId = BusinessService.getContractCode(YSId, suplierSubId,shortName);
 
 
 		dt.setYsid(YSId);
 		dt.setContractid(contractId);
-		dt.setTypeparentid(typeParentId);
-		dt.setTypeserial(typeSubId);
+		//dt.setTypeparentid(typeParentId);
+		//dt.setTypeserial(typeSubId);
 		dt.setSupplierparentid(supplierParentId);
 		dt.setSupplierserial(suplierSubId);
 		
@@ -1159,6 +1157,9 @@ public class PurchaseOrderService extends CommonService {
 			String YSId = contract.getYsid();
 			String shortName = reqModel.getShortName();
 			String purchaseType = Constants.CONTRACT_TYPE_D;//统一设置为订购件
+			
+			if(isNullOrEmpty(YSId))
+				YSId = BusinessService.getYSCommCode()+"****";
 			contract = geRoutinePurchaseContractId(contract,YSId,shortName,purchaseType);
 			contractId = contract.getContractid();
 			

@@ -124,7 +124,7 @@ public class BusinessService {
 		
 		//格式化成5位流水号
 		DecimalFormat df = new DecimalFormat(
-				BusinessConstants.FORMAT_00000);		
+				BusinessConstants.FORMAT_0000);		
 		String rtnCode = df.format(code);
 
 		return rtnCode;
@@ -186,44 +186,16 @@ public class BusinessService {
 		return rtnCode;
 	}
 	
-	/**
-	 * @return 订购件采购合同编号
-	 * 
-	 */
-	public static String getContractCodeD(String type,String supllier,String shortName)
-	{
-		return getContractCode("D",type,supllier,shortName);
-	}
-	
-	/**
-	 * @return 通用件采购合同编号
-	 * 
-	 */
-	public static String getContractCodeT(String type,String supllier,String shortName)
-	{
-		return getContractCode("T",type,supllier,shortName);
-	}
-	/**
-	 * @return 原材料采购合同编号
-	 * 
-	 */
-	public static String getContractCodeY(String type,String supllier,String shortName)
-	{
-		return getContractCode("Y",type,supllier,shortName);
-	}
-	
 	public static String getContractCode(
-			String type,String typesubid,String suppliersubid,String shortname)
+			String YSId,String suppliersubid,String shortname)
 	{
 
-		int icode1 = Integer.parseInt(typesubid);
 		int icode2 = Integer.parseInt(suppliersubid);
 		//格式化成5位流水号,并且+1
-		String num1 = getFormat5Code(icode1,false);
 		String num2 = getFormat5Code(icode2,false);
 		
-		//采购合同编号:16D00001-WL001
-		return getshortYearcode() + type + num1 + "-" + shortname + num2;
+		//采购合同编号:18YS1234-WL0001
+		return YSId + "-" + shortname + num2;
 	}
 	
 	/**

@@ -232,10 +232,10 @@
 
 		var start = '';
 		var end = '';
-		if ($("#approvalStatusY").prop('checked')) {
+		//if ($("#approvalStatusY").prop('checked')) {
 			start = $('#approvalDateStart').val();
 			end = $('#approvalDateEnd').val();
-		}
+		//}
 		
 		var url = '${ctx}/business/storage?methodtype=downloadExcel'
 				 + "&approvalStatusY=" + approvalStatusY

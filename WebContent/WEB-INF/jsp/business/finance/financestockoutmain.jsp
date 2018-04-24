@@ -176,9 +176,14 @@
 		 
 		var key1 = $("#keyword1").val();
 		var key2 = $("#keyword2").val();
+		var start = $("#stockOutDateStart").val();
+		var end   = $("#stockOutDateEnd").val();	
+		
 		var url = '${ctx}/business/stockout?methodtype=downloadExcel'
 				 + "&key1=" + key1
-				 + "&key2=" + key2;
+				 + "&key2=" + key2
+				 + "&stockOutDateStart=" + start
+				 + "&stockOutDateEnd=" + end;
 		
 		url =encodeURI(encodeURI(url));//中文两次转码
 

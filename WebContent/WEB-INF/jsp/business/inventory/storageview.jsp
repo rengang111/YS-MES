@@ -14,9 +14,9 @@
 		var arrivalId = '${arrivalId}';
 		var t = $('#example').DataTable({
 			
-			"paging": true,
+			"paging": false,
 			"lengthChange":false,
-			"lengthMenu":[50,100,200],//设置一页展示20条记录
+			//"lengthMenu":[50,100,200],//设置一页展示20条记录
 			"processing" : false,
 			"serverSide" : false,
 			"stateSave" : false,

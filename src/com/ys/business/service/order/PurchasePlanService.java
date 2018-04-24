@@ -571,7 +571,7 @@ public class PurchasePlanService extends CommonService {
 
 				//3位流水号格式化	
 				//采购合同编号:16D081-WL002
-				String contractId = BusinessService.getContractCode(type,typeSubId, suplierSubId,shortName);
+				String contractId = BusinessService.getContractCode(YSId, suplierSubId,shortName);
 				
 				//新增采购合同*************
 				B_PurchaseOrderData data = new B_PurchaseOrderData();
