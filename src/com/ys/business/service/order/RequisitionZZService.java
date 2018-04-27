@@ -182,9 +182,11 @@ public class RequisitionZZService extends CommonService {
 		}else if(("020").equals(requisitionSts)){
 			
 			having = " requisitionSts = '020' ";//待领料
-		}else{
+		}else if(("030").equals(requisitionSts)){
 			
 			having = " requisitionSts = '030' ";//已出库
+		}else{
+			having = " 1=1 ";
 		}
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		sql = sql.replace("#", having);

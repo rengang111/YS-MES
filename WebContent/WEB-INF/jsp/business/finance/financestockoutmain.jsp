@@ -232,6 +232,13 @@
 	<div  style="height:10px"></div>
 
 	<div class="list">
+	<!-- 
+		<div id="DTTT_container2" style="height:40px;float: left">
+			<a  class="DTTT_button box" onclick="doSearchCustomer('010',9);">原材料</a>
+			<a  class="DTTT_button box" onclick="doSearchCustomer('020',9);">包装件</a>
+			<a  class="DTTT_button box" onclick="doSearchCustomer('030',9);">采购件</a>
+		</div>
+		 -->
 		<div id="DTTT_container" align="right" style="height:40px;width:50%;float: right">
 			<a class="DTTT_button DTTT_button_text" onclick="downloadExcel();">EXCEL导出</a>
 		</div>

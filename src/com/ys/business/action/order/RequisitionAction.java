@@ -87,6 +87,10 @@ public class RequisitionAction extends BaseAction {
 				doAddInit();
 				rtnUrl = "/business/inventory/requisitionadd";
 				break;
+			case "peiAddinit":
+				doAddPeiInit();
+				rtnUrl = "/business/inventory/requisitionadd";
+				break;
 			case "updateInit":
 				doUpdateInit();
 				rtnUrl = "/business/inventory/requisitionedit";
@@ -306,6 +310,14 @@ public class RequisitionAction extends BaseAction {
 	public void doAddInit(){
 		try{
 			service.addInit();
+			model.addAttribute("userName", userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	public void doAddPeiInit(){
+		try{
+			service.addPeiInit();
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());

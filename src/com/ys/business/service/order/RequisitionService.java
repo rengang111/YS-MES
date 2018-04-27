@@ -10,27 +10,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.common.FilePath;
-import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.RequisitionModel;
-import com.ys.business.db.dao.B_ArrivalDao;
-import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
-import com.ys.business.db.dao.B_PurchaseOrderDao;
-import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
-import com.ys.business.db.dao.B_PurchasePlanDao;
-import com.ys.business.db.dao.B_PurchasePlanDetailDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
-import com.ys.business.db.data.B_ArrivalData;
-import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
-import com.ys.business.db.data.B_PaymentData;
-import com.ys.business.db.data.B_PurchaseOrderData;
-import com.ys.business.db.data.B_PurchaseOrderDetailData;
-import com.ys.business.db.data.B_PurchasePlanData;
-import com.ys.business.db.data.B_PurchasePlanDetailData;
-import com.ys.business.db.data.B_PurchaseStockInData;
-import com.ys.business.db.data.B_PurchaseStockInDetailData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -294,6 +278,18 @@ public class RequisitionService extends CommonService {
 	
 	}
 
+	public void addPeiInit() throws Exception {
+
+		String YSId = request.getParameter("YSId");
+		String requisitionId = request.getParameter("requisitionId");
+		if(YSId== null || ("").equals(YSId))
+			return;
+		
+		//订单详情
+		getOrderDetail("",YSId);
+		model.addAttribute("requisitionId",requisitionId);
+	
+	}
 
 	public void updateInit() throws Exception {
 
@@ -317,7 +313,9 @@ public class RequisitionService extends CommonService {
 			return getPurchasePlan(YSId);//物料需求表
 		}else{
 			//配件订单
-			return getPartsOrderDetail(YSId);//装配品信息
+			String[] list = YSId.split("-");
+			String peiYsid = list[0]+"P";
+			return getPartsOrderDetail(peiYsid);//装配品信息
 		}
 	}
 	public void updateAndView() throws Exception {
@@ -662,7 +660,7 @@ public class RequisitionService extends CommonService {
 		return modelMap;		
 	}
 	
-	public HashMap<String, Object> getPartsOrderDetail(String YSId) throws Exception {
+	public HashMap<String, Object> getPartsOrderDetail(String peiYsid) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
@@ -670,7 +668,7 @@ public class RequisitionService extends CommonService {
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("peiYsid", peiYsid);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
@@ -732,14 +730,19 @@ public class RequisitionService extends CommonService {
 		
 		return modelMap;		
 	}
-	
 	public HashMap<String, Object> getOrderDetail(
 			String YSId) throws Exception {
+		
+		return getOrderDetail(YSId,"");
+	}
+	public HashMap<String, Object> getOrderDetail(
+			String YSId,String peiYsid) throws Exception {
 		
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderViewByPIId");		
 		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("YSId", YSId);		
+		userDefinedSearchCase.put("YSId", YSId);	
+		userDefinedSearchCase.put("peiYsid", peiYsid);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 		model.addAttribute("order",dataModel.getYsViewData().get(0));

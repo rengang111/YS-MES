@@ -124,7 +124,7 @@ public class BusinessService {
 		
 		//格式化成5位流水号
 		DecimalFormat df = new DecimalFormat(
-				BusinessConstants.FORMAT_0000);		
+				BusinessConstants.FORMAT_00000);		
 		String rtnCode = df.format(code);
 
 		return rtnCode;
@@ -191,8 +191,8 @@ public class BusinessService {
 	{
 
 		int icode2 = Integer.parseInt(suppliersubid);
-		//格式化成5位流水号,并且+1
-		String num2 = getFormat5Code(icode2,false);
+		//格式化成4位流水号,并且+1
+		String num2 = getFormat4Code(icode2,false);
 		
 		//采购合同编号:18YS1234-WL0001
 		return YSId + "-" + shortname + num2;

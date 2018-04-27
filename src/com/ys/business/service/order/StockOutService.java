@@ -167,6 +167,8 @@ public class StockOutService extends CommonService {
 		stock.setYsid(YSId);
 		stock.setRequisitionid(requisitionId);
 		reqModel.setStockout(stock);
+
+		model.addAttribute("depotList",util.getListOption(DicUtil.DIC_DEPOTLIST, ""));
 	
 	}
 	
@@ -190,6 +192,8 @@ public class StockOutService extends CommonService {
 		String where = " stockoutId='"+stockoutId+"' ";
 		B_StockOutData data = checkStcokoutExsit(where);
 		reqModel.setStockout(data);	
+
+		model.addAttribute("depotList",util.getListOption(DicUtil.DIC_DEPOTLIST, ""));
 	}
 
 	
@@ -603,8 +607,8 @@ public class StockOutService extends CommonService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 
-		modelMap.put("data", dataModel.getYsViewData());	
-	
+		modelMap.put("data", dataModel.getYsViewData());
+		
 		return modelMap;
 	}
 	

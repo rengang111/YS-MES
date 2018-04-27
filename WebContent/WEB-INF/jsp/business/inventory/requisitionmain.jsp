@@ -168,6 +168,10 @@
 		if(virtualClass == '020'){			
 			methodtype = "virtualAddinit";//虚拟领料
 		}
+		var peiYsid = YSId.indexOf("P");
+		if(peiYsid > 0){
+			methodtype =  "peiAddinit";
+		}
 		var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&YSId="+YSId+"&virtualClass="+virtualClass;
 		location.href = url;
 	}

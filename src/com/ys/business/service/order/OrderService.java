@@ -379,15 +379,17 @@ public class OrderService extends CommonService  {
 					data.getMaterialid() != null && 
 					data.getMaterialid() != ""){
 
-					insertOrderDetail(data,piId);
-					
-								
-				}	
-			
+					String orderType = data.getOrdertype();
+					//配件订单的统一耀升编号处理
+					if(("020").equals(orderType)){
+						
+						String[] list = data.getYsid().split("-");
+						String peiYsid = list[0]+"P";
+						data.setPeiysid(peiYsid);
+					}
+					insertOrderDetail(data,piId);								
+				}			
 			}
-			
-			//重新查询,回到查看页面
-			//rtnModel = view(request,rtnModel,selectedRecord,parentId);
 			
 			reqFormBean.setEndInfoMap(NORMAL, "suc001", "");
 			
@@ -514,6 +516,14 @@ public class OrderService extends CommonService  {
 					
 					//更新处理
 					newData.setPiid(piId);
+					String orderType = newData.getOrdertype();
+					//配件订单的统一耀升编号处理
+					if(("020").equals(orderType)){
+						
+						String[] list = newData.getYsid().split("-");
+						String peiYsid = list[0]+"P";
+						newData.setPeiysid(peiYsid);
+					}
 					updateOrderDetail(newData);						
 					
 				}

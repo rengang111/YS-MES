@@ -411,7 +411,8 @@
 	</div>
 	</fieldset>
 	<fieldset>
-		<legend> 配件订单详情</legend>
+		<span class="tablename"> 配件订单详情</span>
+		<button type="button" id="createPurchasePlan" class="DTTT_button">生成采购方案</button>
 		<div class="list" style="margin-top: -4px;">
 		
 		<table id="example2" class="display" style="width:100%">

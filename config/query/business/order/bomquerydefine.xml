@@ -292,6 +292,41 @@
   </query>
   <query>
     <pool></pool>    
+    <name value="getOrderPeijianByPIId" />
+     <where>
+       <w name="a.PIId" 	 des=""  reqName="PIId" 	 dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="a.orderType" des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="a.PIId" alias="" ctype="" />
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.totalQuantity" alias="" ctype="" />
+      <f name="c.materialName" alias="" ctype="" />
+      <f name="c.materialName" alias="materialNameView" ctype="" />
+      <f name="b.lastsupplierId" alias="supplierId" ctype="" />
+      <f name="'1'" alias="quantity" ctype="" />
+      <f name="b.lastPrice" alias="price" ctype="" />
+      <f name="format((REPLACE (b.lastPrice, ',', '') * a.quantity),4)" alias="totalPrice" ctype="" />
+      <f name="c.unit" alias="" ctype="计量单位" />
+      <f name="format(ifnull(REPLACE(c.availabelToPromise,',',''),'0'),2)" alias="availabelToPromise" ctype="" />
+      <f name="format(ifnull(REPLACE(c.quantityOnHand,',',''), '0'),2)" alias="quantityOnHand" ctype="" />
+      <f name="c.purchaseType" alias="" ctype="物料采购类别" />
+      <f name="c.purchaseType" alias="purchaseTypeId" ctype="" />
+      <f name="'0'" alias="subbomno" ctype="" />
+      <f name="c.recordId" alias="materialRecordId" ctype="" />
+      <f name="c.parentId" alias="materialParentId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>v_orderdetail a LEFT JOIN b_pricereference b ON a.materialId = b.materialId  AND b.deleteFlag = '0' LEFT JOIN b_material c ON c.materialId = a.materialId AND (c.deleteFlag = '0') </from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
     <name value="getCopyBomList" />
      <where>
     	<w name="A.fullField" des="" reqName="keyword1" dtype="ch" oper="like" lg="AND" bt="" />

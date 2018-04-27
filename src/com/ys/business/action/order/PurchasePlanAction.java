@@ -84,24 +84,33 @@ public class PurchasePlanAction extends BaseAction {
 				dataMap = doSearchPurchase(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "showPurchasePlan"://查看方案
+				showPurchasePlan();
+				rtnUrl = "/business/purchaseplan/purchaseplanview";
+				break;
+			case "showPurchasePlanPei"://查看配件订单方案
+				showPurchasePlan();
+				rtnUrl = "/business/purchaseplan/purchaseplanpeiview";
+				break;
 			case "purchasePlanAddInit"://订单采购
-				rtnUrl = purchasePlanAddInit();
+				purchasePlanAddInit();
+				rtnUrl = "/business/purchaseplan/purchaseplanadd";
 				break;
 			case "purchasePlanAdd"://保存采购方案
 				doPurchasePlanAdd();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
 				break;
-			case "detailView":
-				doShowPurchaseDetail();
-				rtnUrl = "/business/purchaseplan/purchaseplanview";
-				break;				
+			case "purchasePlanPeiAddInit"://配件订单采购
+				purchasePlanPeiAddInit();
+				rtnUrl = "/business/purchaseplan/purchaseplanpeiadd";
+				break;
+			case "purchasePlanPeiAdd"://保存配件采购方案
+				doPurchasePlanPeiAdd();
+				rtnUrl = "/business/purchaseplan/purchaseplanpeiview";
+				break;
 			case "purchasePlanView":
 				dataMap = purchasePlanView();
 				printOutJsonObj(response, dataMap);
-				break;
-			case "PurchaseView":
-				doShowPurchaseDetail();
-				rtnUrl = "/business/purchase/purchaseplan";
 				break;
 			case "purchasePlanEdit":
 				doEdit();
@@ -252,21 +261,34 @@ public class PurchasePlanAction extends BaseAction {
 	}
 
 
-	public String purchasePlanAddInit() throws Exception{
+	public void purchasePlanAddInit() throws Exception{
 
-		String rtnUrl = "/business/purchaseplan/purchaseplanadd";
-		String flag = purchaseService.createBomPlan();
+		purchaseService.createBomPlan();		
 		
-		if(flag.equals("查看"))
-			rtnUrl = "/business/purchaseplan/purchaseplanview";
+	}
+	
+	public void purchasePlanPeiAddInit() throws Exception{
+
+		purchaseService.createPeijianPlan();		
 		
-		return rtnUrl;
+	}
+	
+
+	public void showPurchasePlan() throws Exception{
+
+		purchaseService.showPurchasePlan();		
+
 	}
 	
 	public void doPurchasePlanAdd() throws Exception {
 
 		model = purchaseService.insertAndView();
 
+	}	
+	
+	public void doPurchasePlanPeiAdd() throws Exception {
+
+		model = purchaseService.insertPeiAndView();
 	}		
 	
 	
@@ -327,13 +349,6 @@ public class PurchasePlanAction extends BaseAction {
 		
 		return purchaseService.getRawMaterialList();			
 
-	}
-
-
-	public void doShowPurchaseDetail() throws Exception{
-		
-		purchaseService.showPurchaseDetail();
-			
 	}
 	
 	public HashMap<String, Object> purchaseRoutineAddInit(String data) throws Exception{

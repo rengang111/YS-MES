@@ -59,6 +59,7 @@
 				}, {"data": "contractTotalPrice","className":"td-right", "defaultContent" : '***'
 				}, {"data": "quantity","className":"td-right"	
 				}, {"data": "checkInDate","className":"td-right"
+				}, {"data": "depotName","className":"td-left"	
 				}, {"data": "packaging","className":"td-center"
 				}, {"data": "areaNumber",
 				}
@@ -74,7 +75,7 @@
 	    						    			
 	    			return floatToCurrency(data);
 	    		}},
-	    		{"targets":10,"render":function(data, type, row){
+	    		{"targets":11,"render":function(data, type, row){
 	    			var text="";
 	    			text += "<a href=\"###\" onClick=\"doEdit('"  + row["contractId"] + "','"  + row["receiptId"] + "')\">编辑</a>";
 	    			text += "&nbsp;"
@@ -238,6 +239,7 @@
 					<th style="width:65px">合同金额</th>
 					<th style="width:65px">入库数量</th>
 					<th style="width:60px">入库时间</th>
+					<th style="width:65px">仓库位置</th>
 					<th style="width:35px">包装</th>
 					<th style="width:40px">库位</th>	
 					<th style="width:35px">操作</th>	

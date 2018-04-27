@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common2.jsp"%>
-<title>采购方案--订单基本数据</title>
+<title>订单跟踪--订单基本数据</title>
 <script type="text/javascript">
 
 	function ajax(sqlFlag,materialType,sessionFlag,col_no,status) {
@@ -21,18 +21,27 @@
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
 			"lengthChange":false,
-			"lengthMenu"  :[50,100,200],//每页显示条数设置
+			"lengthMenu":[50,100,200],//每页显示条数设置
 			"processing" : true,
 			"serverSide" : true,
-			"stateSave"  : false,
-			"ordering"	 : true,
-			"searching"  : false,
-			"pagingType" : "full_numbers",
-			"sAjaxSource" : url,
+			"stateSave" : false,
 			//"bSort":true,
 			// "bFilter": false, //列筛序功能
+			"ordering"	:true,
+			"searching" : false,
 			// "Info": true,//页脚信息
-			// "bPaginate": true, //翻页功能			
+			// "bPaginate": true, //翻页功能
+			"pagingType" : "full_numbers",
+			"sAjaxSource" : url,
+			"fnPreDrawCallback": function (oSettings) {
+				//alert('2222222222');
+	        },
+			"fnInitComplete": function (oSettings, json) {
+		           // alert('DataTables has finished its initialisation.');
+		    },
+			"fnDrawCallback": function (oSettings) {
+		            //alert('DataTables 重绘了');
+		    },
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -48,7 +57,6 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){							
 						fnCallback(data);
-						
 						$("#keyword1").val(data["keyword1"]);
 						$("#keyword2").val(data["keyword2"]);
 					},
@@ -74,12 +82,7 @@
 	    		}},
 	    		{"targets":1,"render":function(data, type, row){
 	    			var rtn = "";
-	    			rtn= "<a href=\"###\" onClick=\"doShow('"+ 
-	    					row["YSId"] 		+ "','"+ 
-	    					row["materialId"] 	+ "','"+ 
-	    					row["PIId"] 		+ "','"+ 
-	    					row["orderType"] 	+ "','"+ 
-	    					row["planYsid"] + "')\">"	+ row["YSId"]+"</a>";
+	    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "','"+ row["materialId"] + "')\">"+row["YSId"]+"</a>";
 	    			return rtn;
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
@@ -133,33 +136,18 @@
 	}
 	
 
-	function doShow(YSId,materialId,PIId,orderType,planYsid) {
+	function doShow(YSId,materialId) {
 
 		var backFlag = 'purchasePlan';
-		var action = 'purchasePlanAddInit';
-		if(orderType == '020'){//配件订单
-			if(planYsid == ''){
-				action = 'purchasePlanPeiAddInit';//没有采购方案
-			}else{
-				action = 'showPurchasePlanPei';//已有采购方案
-			}
-		}else{//常规订单
-			if(planYsid == ''){
-				action = 'purchasePlanAddInit';//没有采购方案
-			}else{
-				action = 'showPurchasePlan';//已有采购方案
-			}
-		}			
-				
-		var url = '${ctx}/business/purchasePlan?methodtype='+action
-				+'&YSId=' + YSId
-				+'&materialId='+materialId
-				+'&PIId='+PIId
-				+'&orderType='+orderType
+		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanAddInit&YSId=' 
+				+ YSId+'&materialId='+materialId
 				+'&backFlag='+backFlag;
 
 		location.href = url;
 	}
+
+	
+	
 	
 </script>
 </head>
@@ -213,7 +201,7 @@
 								<th style="width: 150px;" class="dt-middle ">产品编号</th>
 								<th class="dt-middle ">产品名称</th>
 								<th style="width: 60px;" class="dt-middle ">订单交期</th>
-								<th style="width: 80px;" class="dt-middle ">需求数量</th>
+								<th style="width: 80px;" class="dt-middle ">订单数量</th>
 								<th style="width: 30px;" class="dt-middle "></th>
 							</tr>
 						</thead>

@@ -6,7 +6,7 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
-	
+	var options ="";	
 	var shortYear = ""; 
 	
 	function ajax(scrollHeight) {
@@ -48,6 +48,8 @@
 						
 						foucsInit();
 						
+						setDepotId();//设置物料的默认仓库						
+						
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -62,16 +64,23 @@
 				}, {"data": "materialName",						//2
 				}, {"data": "quantityOnHand","className":"td-right"	//3
 				}, {"data": null,"className":"td-right"//4
-				}, {"data": "areaNumber","className":"td-right"//5
+				}, {"data": null,"className":"td-right"//5
+				}, {"data": "areaNumber","className":""//6
 				}
 			],
 			"columnDefs":[
-	    		
+
+				{"targets":1,"render":function(data, type, row){ 					
+					var index=row["rownum"]	
+					var inputTxt = '';
+					inputTxt= inputTxt + row["materialId"];
+					inputTxt= inputTxt + '<input type="hidden" id="stockList'+index+'.materialid" name="stockList['+index+'].materialid" value="'+row["materialId"]+'"/>';					
+					return name + inputTxt;
+				}},
 	    		{"targets":2,"render":function(data, type, row){ 					
 					var index=row["rownum"]	
 	    			var name =  jQuery.fixedWidth( row["materialName"],40);
 					var inputTxt = '';
-	    			inputTxt= inputTxt + '<input type="hidden" id="stockList'+index+'.materialid" name="stockList['+index+'].materialid" value="'+row["materialId"]+'"/>';
 	    			inputTxt= inputTxt + '<input type="hidden" id="stockList'+index+'.price" name="stockList['+index+'].price" value="'+row["MAPrice"]+'"/>';
 	    			
 	    			return name + inputTxt;
@@ -81,6 +90,14 @@
 					var index=row["rownum"];
 					var quantity = (row["quantity"]);
 					var inputTxt = '<input type="text" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" class="quantity num "  value="'+quantity+'"/>';
+				
+					return inputTxt;
+                }},
+	    		{"targets":5,"render":function(data, type, row){	
+	    			
+					var index=row["rownum"];
+					var quantity = (row["quantity"]);
+					var inputTxt = '<select  id="stockList'+index+'.depotid" name="stockList['+index+'].depotid"    class="short depotid"></select>';
 				
 					return inputTxt;
                 }},
@@ -186,6 +203,13 @@
 			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
 		});
 		
+		//设置物料的仓库类别列表
+		var i = 0;	
+		<c:forEach var="list" items="${depotList}">
+			i++;
+			options += '<option value="${list.key}">${list.value}</option>';
+		</c:forEach>
+		
 	});
 
 	
@@ -257,6 +281,7 @@
 						<th >物料名称</th>
 						<th width="60px">可用库存</th>
 						<th width="80px">本次领料</th>
+						<th width="80px">仓库</th>
 						<th width="160px">库位</th>
 					</tr>
 				</thead>	
@@ -385,6 +410,28 @@ function uploadPhoto(tableId,tdTable, id) {
 			alert("图片上传失败,请重试。")
 		}
 	});
+}
+
+function setDepotId(){
+	
+	$('#example tbody tr').each (function (){
+
+		$(this).find("td").eq(5).find("select").html(options);
+		
+		var materialId = $(this).find("td").eq(1).find("input").val();
+		var depotid='010';//采购件
+		if(materialId.substring(0,1) == 'A'){								
+			depotid='030';//原材料	
+		}else if(materialId.substring(0,1) == 'G'){
+			depotid='040';//包装件								
+		}else if(materialId.substring(0,3) == 'B01'){
+			depotid='020';//自制件								
+		}
+		
+		$(this).find("td").eq(5).find("select").val(depotid);
+					
+	});	
+	
 }
 
 </script>

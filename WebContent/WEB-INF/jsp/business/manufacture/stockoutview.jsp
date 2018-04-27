@@ -53,13 +53,13 @@
 					}, {"data": "checkOutDate","className":"dt-body-center"
 					}, {"data": "YSId"
 					}, {"data": "requisitionId","className":"dt-body-center"
-					}, {"data": "loginName"
+					}, {"data": "loginName","className":"dt-body-center"
 					}, {"data": null,"className":"dt-body-center","defaultContent" : ''
 					}, {"data": null,"className":"td-center","defaultContent" : ''
 					}
 				] ,
 				"columnDefs":[
-		    		{"targets":5,"render":function(data, type, row){
+		    		{"targets":6,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["stockOutId"] + "')\">编辑</a>";
 		    			return rtn;
@@ -263,7 +263,7 @@
 					<tr>
 						<th width="30px">No</th>
 						<th class="dt-center" style="width:150px">出库单编号</th>
-						<th class="dt-center" width="150px">出库日期</th>
+						<th class="dt-center" width="100px">出库日期</th>
 						<th class="dt-center" width="100px">耀升编号</th>
 						<th class="dt-center" width="100px">领料单编号</th>
 						<th class="dt-center" width="100px">仓管员</th>

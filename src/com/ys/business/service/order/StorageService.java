@@ -551,6 +551,7 @@ public class StorageService extends CommonService {
 		getReceivInspectionById(arrivalId);
 
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+		model.addAttribute("depotList",util.getListOption(DicUtil.DIC_DEPOTLIST, ""));
 	
 		//return viewFlag;
 	
@@ -588,6 +589,7 @@ public class StorageService extends CommonService {
 		getArrivaRecord(contractId,receiptId,"");//入库明细
 
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+		model.addAttribute("depotList",util.getListOption(DicUtil.DIC_DEPOTLIST, ""));
 		model.addAttribute("receiptId",receiptId);//已入库
 	
 	}

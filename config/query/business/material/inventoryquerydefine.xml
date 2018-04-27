@@ -404,6 +404,8 @@
       <f name="b.lastPrice" alias="price" ctype="" />  
       <f name="A.contractTotalPrice" alias="" ctype="" />
       <f name="A.contractPrice" alias="" ctype="" />
+      <f name="A.depotId" alias="depotName" ctype="仓库分类" />
+      <f name="IFNULL(A.depotId,'')" alias="depotId" ctype="" />
       <f name="format((replace(A.contractPrice,',','') / 1.17),6)" alias="taxPrice" ctype="" />
       <f name="format((replace(A.contractPrice,',','') / 1.17) * replace(A.quantity,',',''),2)" alias="taxTotal" ctype="" />
     </select>
@@ -772,6 +774,8 @@
       <f name="A.checkerId" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
+      <f name="A.depotId" alias="" ctype="" />
+      <f name="A.depotId" alias="depotName" ctype="仓库分类" />
       <f name="IFNULL(A.contractQuantity,'***')" alias="contractQuantity" ctype="" />
       <f name="A.receiptId" alias="" ctype="" />
       <f name="A.checkInDate" alias="" ctype="" />

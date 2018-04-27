@@ -781,6 +781,7 @@
       <f name="C.YSId" alias="planYsid" ctype="" />
       <f name="C.contractFlag" alias="" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
+      <f name="A.orderType" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
@@ -832,10 +833,12 @@
       <f name="A.storageDate" alias="" ctype="" />
       <f name="A.rebateRate" alias="" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
+      <f name="A.orderType" alias="" ctype="" />
+      <f name="IFNULL(B.YSId,IFNULL(C.YSId,''))" alias="planYsid" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_orderlist AS A where A.orderType='010' AND A.deleteFlag = '0'</from>
+    <from>v_orderlist AS A LEFT JOIN b_purchaseplan b ON a.YSId=b.YSId AND b.deleteFlag='0' LEFT JOIN b_purchaseplan c ON a.peiYsid = c.YSId AND c.deleteFlag = '0' </from>
     <orderby>A.YSId DESC </orderby>
     <groupby></groupby>
     <having></having>
@@ -882,6 +885,7 @@
       <f name="C.YSId" alias="planYsid" ctype="" />
       <f name="C.contractFlag" alias="" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
+      <f name="A.orderType" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
