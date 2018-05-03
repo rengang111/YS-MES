@@ -823,6 +823,7 @@
    	  <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="a.YSId"  	  des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="a.stockOutId"  des=""  reqName="stockOutId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="a.status"  des=""  reqName="status" dtype="ch" oper="not in"  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.YSId" alias="" ctype="" />

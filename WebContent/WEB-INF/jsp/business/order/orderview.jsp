@@ -203,7 +203,7 @@
 
 	function ShowBomPlan(YSId,materialId) {
 		var backFlag = 'orderView';
-		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanAddInit&YSId=' 
+		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanAddInitFromOrder&YSId=' 
 				+ YSId+'&materialId='+materialId+'&backFlag='+backFlag;
 
 		callProductDesignView("采购方案",url);

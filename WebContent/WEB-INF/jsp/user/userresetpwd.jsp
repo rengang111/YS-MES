@@ -1,51 +1,47 @@
-<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
 <!DOCTYPE html>
 <%@ include file="../common/common.jsp"%>
-<script type="text/javascript" src="${ctx}/js/ajaxfileupload.js"></script>
-<script type="text/javascript" src="${ctx}/js/jquery-form.js"></script>
 <html>
 <head>
-	 密码修改
+<title>	 密码修改</title>
 </head>
 <body>
-	<form name="form" id="form" modelAttribute="dataModels" action="" method="post">
-		<table>
+<div id="container">
+<!--主工作区,编辑页面或查询显示页面-->
+<div id="main">
+	<form:form name="form" id="form" modelAttribute="dataModels" action="" method="post" autocomplete="off">
+		<fieldset>
+		<legend> 密码修改</legend>
+		<table  class="form" style="height: 200px;">
 			<tr>
-				<td>
-					现在的密码：
-				</td>
-				<td>
-					<input type=password name="nowPwd" id="nowPwd" value=""/>
-				</td>
+				<td class="label" width="100px">现在的密码：</td>
+				<td><input type="password" name="nowPwd" id="nowPwd" value="" autocomplete="off" /></td>
 			</tr>		
 			<tr>
-				<td>
-					密码：
-				</td>
-				<td>
-					<input type=password name="wantPwd" id="wantPwd" value=""/>
-				</td>
+				<td class="label" width="100px">新密码：</td>
+				<td><input type="password" name="wantPwd" id="wantPwd" value="" class="" /></td>
 			</tr>
 			<tr>
-				<td>
-					确认密码：
-				</td>
-				<td>
-					<input type=password name="loginpwdConfirm" id="loginpwdConfirm" value=""/>
-				</td>
+				<td class="label" width="100px">确认新密码：</td>
+				<td><input type="password" name="loginpwdConfirm" id="loginpwdConfirm" value=""/></td>
 			</tr>				
 			<tr>
-				<td colspan=2>
-					<input type=button name="save" id="save" value="保存" onClick="saveUpdate()"/>
-					<input type=button name="save" id="save" value="找回密码" onClick=""/>					
-					<input type=button name="close" id="close"" value="关闭" onClick="closeWindow('')"/>
+				<td colspan=2 style="text-align: end;">
+						<button type="button" id="save" class="DTTT_button" 
+							style="width:50px" onclick="saveUpdate();">保存</button>
+						<button type="button" id="close" class="DTTT_button" 
+							style="width:50px" onclick="closeWindow('');">关闭</button>
+					
+				<!-- 	<input type=button name="save" id="save" value="找回密码" onClick=""/>	 -->				
+					
 				</td>
 			</tr>
 
 		</table>
-		<br>
-	</form>
-
+		</fieldset>
+	</form:form>
+</div>
+</div>
 </body>
 
 <script>

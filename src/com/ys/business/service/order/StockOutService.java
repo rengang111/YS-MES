@@ -433,7 +433,7 @@ public class StockOutService extends CommonService {
 				"ProductStockOutUpdate",userInfo);
 		copyProperties(data,commData);
 	
-		if(orderQty == totalQuan){
+		if(totalQuan >= orderQty){
 			data.setStatus(Constants.ORDER_STS_5);//已出库
 		}else{
 			data.setStatus(Constants.ORDER_STS_51);//出库中			
@@ -1006,10 +1006,7 @@ public class StockOutService extends CommonService {
 		String[] keyArr = getSearchKey(Constants.FORM_PRODUCTSTOCKOUT,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
-		
-		if(notEmpty(key1) || notEmpty(key2)){
-			userDefinedSearchCase.put("requisitionSts", "");
-		}
+
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		String status = request.getParameter("status");
@@ -1021,10 +1018,12 @@ public class StockOutService extends CommonService {
 		if(("030").equals(status)){
 			//未入库
 			sb.append(" a.stockinQty+0 <= 0 ");
+			userDefinedSearchCase.put("status", "050");
 			key1 = "";key2="";//清空关键字
 		}else if(("040").equals(status)){
 			//未出库(已入库)
 			sb.append(" a.stockoutQty+0 <= 0 AND a.stockinQty+0 > 0  ");
+			userDefinedSearchCase.put("status", "050");
 			key1 = "";key2="";//清空关键字
 		}else if(("050").equals(status)){
 			//已出库

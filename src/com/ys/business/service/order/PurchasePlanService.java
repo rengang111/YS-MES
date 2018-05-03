@@ -1303,6 +1303,26 @@ public class PurchasePlanService extends CommonService {
 		return null;
 	}
 	
+	public String createBomPlanFromOrder() throws Exception {
+
+		String rtnFlag = "新建";
+		String YSId = request.getParameter("YSId");
+		String materialId = request.getParameter("materialId");
+		String bomId = BusinessService.getBaseBomId(materialId)[1];
+
+		getOrderDetailByYSId(YSId);
+		//确认采购方案是否存在
+		String where = " YSId='" + YSId + "'";
+		List<B_PurchasePlanDetailData> detail = getPurchasePlanDetail(where);
+		if(detail.size() > 0){
+			rtnFlag = "查看";
+		}else{			
+			getBomDetailView(bomId);	
+		}
+		
+		return rtnFlag;
+	}
+	
 	public void createBomPlan() throws Exception {
 		
 		String YSId = request.getParameter("YSId");

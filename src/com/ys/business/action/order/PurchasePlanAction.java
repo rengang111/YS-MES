@@ -84,6 +84,9 @@ public class PurchasePlanAction extends BaseAction {
 				dataMap = doSearchPurchase(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "purchasePlanAddInitFromOrder"://订单采购
+				rtnUrl = purchasePlanAddInitFromOrder();
+				break;
 			case "showPurchasePlan"://查看方案
 				showPurchasePlan();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
@@ -259,8 +262,8 @@ public class PurchasePlanAction extends BaseAction {
 		
 		return dataMap;
 	}
-
-
+	
+	
 	public void purchasePlanAddInit() throws Exception{
 
 		purchaseService.createBomPlan();		
@@ -415,5 +418,16 @@ public class PurchasePlanAction extends BaseAction {
 			System.out.println(e.getMessage());
 		}
 		
+	}
+	
+	public String purchasePlanAddInitFromOrder() throws Exception{
+
+		String rtnUrl = "/business/purchaseplan/purchaseplanadd";
+		String flag = purchaseService.createBomPlanFromOrder();
+		
+		if(flag.equals("查看"))
+			rtnUrl = "/business/purchaseplan/purchaseplanview";
+		
+		return rtnUrl;
 	}
 }

@@ -121,7 +121,7 @@
       <f name="c.materialName" alias="productName" ctype="" />
       <f name="c.deliveryDate" alias="" ctype="" />
     </select>
-    <from>v_purchaseorderdetail a LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON a.materialId = b.materialId AND a.ysid=b.ysid JOIN v_orderdetail c ON c.YSId=a.YSId AND c.deleteFlag='0' AND c.status not in('050','051')</from>
+    <from>v_purchaseorderdetail a LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON a.materialId = b.materialId AND a.ysid=b.ysid JOIN v_orderdetail c ON c.YSId=a.YSId AND c.deleteFlag='0' AND c.status not in('040','041','050','051') AND LEFT(c.materialId,1) = 'I'</from>
     <orderby>A.YSId </orderby>
     <groupby>A.YSId</groupby>
     <having>#</having>
