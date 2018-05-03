@@ -7,41 +7,29 @@
 <title>订单跟踪--订单基本数据</title>
 <script type="text/javascript">
 
-	function ajax(sqlFlag,materialType,sessionFlag,col_no,status) {
+	function ajax(sqlFlag,sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/purchasePlan?methodtype=search&sessionFlag="+sessionFlag
+		var url = "${ctx}/business/order?methodtype=orderTrackingSearch&sessionFlag="+sessionFlag
 					+"&sqlFlag="+sqlFlag
-					+"&status="+status
-					+"&materialType="+materialType;
+					+"&sessionFlag="+sessionFlag;
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
+			 "iDisplayLength" : 50,
 			"lengthChange":false,
-			"lengthMenu":[50,100,200],//每页显示条数设置
+			//"lengthMenu":[10,150,200],//设置一页展示20条记录
 			"processing" : true,
 			"serverSide" : true,
 			"stateSave" : false,
-			//"bSort":true,
-			// "bFilter": false, //列筛序功能
-			"ordering"	:true,
+			"ordering "	:true,
 			"searching" : false,
-			// "Info": true,//页脚信息
-			// "bPaginate": true, //翻页功能
 			"pagingType" : "full_numbers",
+			"retrieve" : true,
 			"sAjaxSource" : url,
-			"fnPreDrawCallback": function (oSettings) {
-				//alert('2222222222');
-	        },
-			"fnInitComplete": function (oSettings, json) {
-		           // alert('DataTables has finished its initialisation.');
-		    },
-			"fnDrawCallback": function (oSettings) {
-		            //alert('DataTables 重绘了');
-		    },
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -57,8 +45,16 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){							
 						fnCallback(data);
-						$("#keyword1").val(data["keyword1"]);
-						$("#keyword2").val(data["keyword2"]);
+						var key1 = data["keyword1"]
+						var key2 = data["keyword2"]
+						$("#keyword1").val(key1);
+						$("#keyword2").val(key2);
+						
+						if(myTrim(key1) == "" && myTrim(key2) == ""){
+						 	$('#defutBtn').removeClass("start").addClass("end");							
+						}else{							
+						 	$('#defutBtn').removeClass("end").addClass("start");
+						}			
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -70,10 +66,10 @@
 			"columns": [
 				{"data": null, "defaultContent" : '',"className" : 'td-center'},
 				{"data": "YSId", "defaultContent" : '',"className" : 'td-left'},
-				{"data": "materialId", "defaultContent" : '',"className" : 'td-left'},
-				{"data": "materialName", "defaultContent" : ''},
+				{"data": "productId", "defaultContent" : '',"className" : 'td-left'},
+				{"data": "productName", "defaultContent" : ''},
 				{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},
-				{"data": "totalQuantity", "defaultContent" : '0', "className" : 'td-right'},
+				{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},
 				{"data": null, "className" : 'td-center', "defaultContent" : ''},
 			],
 			"columnDefs":[	    		
@@ -95,9 +91,9 @@
 				{"bSortable": false, "aTargets": [ 0,6 ] 
                 }
          	] ,
-         	"aaSorting": [[ 1, "DESC" ]]
+         	"aaSorting": [[ 1, "ASC" ]]
 	    		
-		}).draw();
+		});
 		
 		t.on('click', 'tr', function() {
 
@@ -116,39 +112,34 @@
 
 	$(document).ready(function() {
 
-		ajax("new","","true",8,"010");
+		ajax("1","true");
 
 	    buttonSelectedEvent();//按钮点击效果
+	 	$('#defutBtn').removeClass("start").addClass("end");
 		
 	})	
 	
 	//订单状态
-	function doSearchCustomer(sqlFlag,type,col_no){
+	function doSearchCustomer(sqlFlag){
 		$("#keyword1").val('');
 		$("#keyword2").val('');
-		ajax(sqlFlag,type,'false',col_no,'010');
+		ajax(sqlFlag,'false');
 	}
 	
 	function doSearch() {	
 		$('.box').removeClass('end');
-		ajax('new','','false',8,'');
+		ajax('','false');
 
 	}
 	
 
 	function doShow(YSId,materialId) {
 
-		var backFlag = 'purchasePlan';
-		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanAddInit&YSId=' 
-				+ YSId+'&materialId='+materialId
-				+'&backFlag='+backFlag;
+		var url = '${ctx}/business/order?methodtype=orderTrackingShow&YSId=' 
+				+ YSId+'&materialId='+materialId;
 
 		location.href = url;
 	}
-
-	
-	
-	
 </script>
 </head>
 
@@ -183,29 +174,25 @@
 
 				</form>
 			</div>
-			<div  style="height:10px"></div>
-		
-			<div class="list">
+			<div  style="height:10px"></div>		
+			<div class="list">			
 				<div id="DTTT_container2" style="height:40px;float: left">
-					<a  class="DTTT_button DTTT_button_text box" onclick="doSearchCustomer('new','',8);">新合同</a>&nbsp;&nbsp;
-					<a  class="DTTT_button box" onclick="doSearchCustomer('','yszz',8);">待自制品合同</a>
-					<a  class="DTTT_button box" onclick="doSearchCustomer('','order',8);">待订购件合同</a>
-					<a  class="DTTT_button box" onclick="doSearchCustomer('','package',8);">待包装品合同</a>&nbsp;&nbsp;
-					<a  class="DTTT_button box" onclick="doSearchCustomer('contract','',8);">合同全部完成</a>
-				</div>
-					<table id="TMaterial" class="display"  style="width:100%">
-						<thead>						
-							<tr>
-								<th style="width: 30px;" class="dt-middle ">No</th>
-								<th style="width: 90px;" class="dt-middle ">耀升编号</th>
-								<th style="width: 150px;" class="dt-middle ">产品编号</th>
-								<th class="dt-middle ">产品名称</th>
-								<th style="width: 60px;" class="dt-middle ">订单交期</th>
-								<th style="width: 80px;" class="dt-middle ">订单数量</th>
-								<th style="width: 30px;" class="dt-middle "></th>
-							</tr>
-						</thead>
-					</table>
+					<a  class="DTTT_button box" onclick="doSearchCustomer('0');">货已备齐</a>
+					<a  class="DTTT_button box" onclick="doSearchCustomer('1'); " id="defutBtn">未齐</a>
+				</div>				
+				<table id="TMaterial" class="display"  style="width:100%">
+					<thead>						
+						<tr>
+							<th style="width: 30px;" class="dt-middle ">No</th>
+							<th style="width: 90px;" class="dt-middle ">耀升编号</th>
+							<th style="width: 150px;" class="dt-middle ">产品编号</th>
+							<th class="dt-middle ">产品名称</th>
+							<th style="width: 60px;" class="dt-middle ">订单交期</th>
+							<th style="width: 80px;" class="dt-middle ">订单数量</th>
+							<th style="width: 30px;" class="dt-middle "></th>
+						</tr>
+					</thead>
+				</table>
 			</div>
 		</div>
 	</div>

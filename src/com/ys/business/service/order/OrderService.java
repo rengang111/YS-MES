@@ -126,6 +126,65 @@ public class OrderService extends CommonService  {
 		return modelMap;
 	}
 	
+	public HashMap<String, Object> getOrderTrackingList(String formId,String data) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");	
+		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		String[] keyArr = getSearchKey(formId,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];		
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("orderTrackingList");	
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2))
+			userDefinedSearchCase.put("status", "");
+		
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		String having = "1=1";
+		String sqlFlag = request.getParameter("sqlFlag");
+		if(("0").equals(sqlFlag)){
+			//货已备齐
+			having = "CAST(contractQty AS DECIMAL) = CAST(stockinQty AS DECIMAL)";
+		}else if(("1").equals(sqlFlag)){
+			//未齐
+			having = "CAST(contractQty AS DECIMAL) > CAST(stockinQty AS DECIMAL)";
+		}
+		sql = sql.replace("#", having);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;
+	}
+
 	public HashMap<String, Object> getOrderListDemand(String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -1061,4 +1120,58 @@ public class OrderService extends CommonService  {
 		return ExFlag;		
 	}
 	
+
+	public void getOrderDetail() throws Exception{
+			
+		String YSId = request.getParameter("YSId");	
+
+		getOrderDetailByYSId(YSId);
+		//return getPurchaseDetail(YSId);
+	}
+	
+	public HashMap<String, Object> getOrderDetailByYSId(
+			String YSId) throws Exception{
+
+		return getOrderDetailByYSId(YSId,"");
+		
+	}
+	
+	public HashMap<String, Object> getOrderDetailByYSId(
+			String YSId,String peiYsid) throws Exception{
+
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderList");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("peiYsid", peiYsid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		model.addAttribute("order", dataModel.getYsViewData().get(0));	
+		HashMap.put("data", dataModel.getYsViewData());
+		return HashMap;
+		
+	}
+	
+	
+	
+	public HashMap<String, Object> getOrderTrackingDetail() throws Exception {
+
+		String YSId = request.getParameter("YSId");
+		
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("orderTrackingDetail");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		HashMap.put("data", dataModel.getYsViewData());
+		
+		return HashMap;
+	}
 }

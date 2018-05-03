@@ -79,6 +79,21 @@ public class OrderAction extends BaseAction {
 				dataMap = doSearchOrderList(Constants.FORM_ORDER,data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "orderTrackingSearchInit"://订单跟踪查询
+				rtnUrl = "/business/order/ordertrackingmain";
+				break;
+			case "orderTrackingSearch"://订单跟踪查询
+				dataMap = doSearchOrderTrackingList(Constants.FORM_ORDERTRACKING,data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "orderTrackingShow"://订单跟踪详情
+				 doShowOrderTracking();
+				rtnUrl = "/business/order/ordertrackingview";
+				break;
+			case "orderTrackingDetail"://订单跟踪详情
+				dataMap = purchasePlanView();
+				printOutJsonObj(response, dataMap);
+				break;
 			case "create":
 				doCreate(request,reqModel,model);
 				rtnUrl = "/business/order/orderadd";
@@ -211,6 +226,37 @@ public class OrderAction extends BaseAction {
 				
 		try {
 			dataMap = orderService.getOrderList(formId,data);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doSearchOrderTrackingList(String formId, String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+			
+		}
+				
+		try {
+			dataMap = orderService.getOrderTrackingList(formId,data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {
@@ -538,5 +584,15 @@ public class OrderAction extends BaseAction {
 	  return dataMap;
 	}
 	
+	public void doShowOrderTracking() throws Exception
+	{
+	    this.orderService.getOrderDetail();
+	 
+	}	
 	
+	public HashMap<String, Object> purchasePlanView() throws Exception {
+		
+		return orderService.getOrderTrackingDetail();		
+		
+	}
 }

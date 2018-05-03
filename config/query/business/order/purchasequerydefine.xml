@@ -94,6 +94,7 @@
     <name value="getPurchaseDetail" />
     <where>
     	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="LEFT(a.materialId,1)" des="" reqName="materialH" dtype="ch" oper="&lt;&gt;" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.recordId" alias="" ctype="" />
@@ -126,6 +127,9 @@
       <f name="a.laborCost" alias="" ctype="" />
       <f name="a.totalCost" alias="" ctype="" />
       <f name="a.availabelToPromise" alias="" ctype="" />
+      <f name="a.waitStockIn" alias="" ctype="" />
+      <f name="a.waitStockOut" alias="" ctype="" />
+      <f name="a.quantityOnHand" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
       <f name="a.priceStatus" alias="" ctype="" />
       <f name="a.purchaseType" alias="" ctype="物料采购类别" />

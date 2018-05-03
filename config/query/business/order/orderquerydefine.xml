@@ -99,6 +99,37 @@
   </query>
   <query>
     <pool></pool>     
+    <name value="orderTrackingList" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.status"  des=""  reqName="status" dtype="ch" oper="in"  lg="AND" bt="" />
+   	  <w name="A.orderNature"  des=""  reqName="orderNature" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.quantity" alias="contractQty" ctype="" />
+      <f name="IFNULL(b.quantity,0)" alias="stockinQty" ctype="" />
+      <f name="IFNULL(c.quantity,0)" alias="orderQty" ctype="" />
+      <f name="c.materialParentId" alias="productParentId" ctype="" />
+      <f name="c.materialRecordId" alias="productRecordId" ctype="" />
+      <f name="c.materialId" alias="productId" ctype="" />
+      <f name="c.materialName" alias="productName" ctype="" />
+      <f name="c.deliveryDate" alias="" ctype="" />
+    </select>
+    <from>v_purchaseorderdetail a LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON a.materialId = b.materialId AND a.ysid=b.ysid JOIN v_orderdetail c ON c.YSId=a.YSId AND c.deleteFlag='0' AND c.status not in('050','051')</from>
+    <orderby>A.YSId </orderby>
+    <groupby>A.YSId</groupby>
+    <having>#</having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
     <name value="getOrderViewByPIId" />
     <where>
       <w name="A.PIId" des=""  reqName="keywords1" dtype="ch" oper="="  lg="AND" bt="" />
@@ -416,5 +447,67 @@
     <having></having>
 	<power>
 	</power>    
+  </query>  
+  <query>
+    <pool></pool>    
+    <name value="orderTrackingDetail" />
+    <where>
+    	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="LEFT(a.materialId,1)" des="" reqName="materialH" dtype="ch" oper="&lt;&gt;" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.purchaseId" alias="" ctype="" />
+      <f name="a.planRecordId" alias="" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="IFNULL(c.supplierId,'')" alias="contractSupplierId" ctype="" />
+      <f name="IFNULL(c.contractId,'')" alias="contractId" ctype="" />
+      <f name="IFNULL(c.price,'0')" alias="contractPrice" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.materialParentId" alias="" ctype="" />
+      <f name="a.materialRecordId" alias="" ctype="" />
+      <f name="a.unit" alias="unitName" ctype="计量单位" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="lastPrice" alias="lastPrice" ctype="" />
+      <f name="b.lastSupplierId" alias="" ctype="" />
+      <f name="minPrice" alias="minPrice" ctype="" />
+      <f name="b.minSupplierId" alias="" ctype="" />
+      <f name="a.purchaseQuantity" alias="" ctype="" />
+      <f name="a.planDate" alias="" ctype="" />
+      <f name="a.bomCost" alias="" ctype="" />
+      <f name="a.managementCost" alias="" ctype="" />
+      <f name="a.managementCostRate" alias="" ctype="" />
+      <f name="a.productId" alias="" ctype="" />
+      <f name="a.productCost" alias="" ctype="" />
+      <f name="a.materialCost" alias="" ctype="" />
+      <f name="a.laborCost" alias="" ctype="" />
+      <f name="a.totalCost" alias="" ctype="" />
+      <f name="a.availabelToPromise" alias="" ctype="" />
+      <f name="a.waitStockIn" alias="" ctype="" />
+      <f name="a.waitStockOut" alias="" ctype="" />
+      <f name="a.quantityOnHand" alias="" ctype="" />
+      <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="a.priceStatus" alias="" ctype="" />
+      <f name="a.purchaseType" alias="" ctype="物料采购类别" />
+      <f name="a.purchaseType" alias="purchaseTypeId" ctype="" />
+      <f name="a.unitQuantity" alias="" ctype="" />
+      <f name="a.subbomno" alias="" ctype="" />
+      <f name="e.materialId" alias="arrivalMaterialId" ctype="" />
+      <f name="f.materialId" alias="stockinMaterialId" ctype="" />
+      <f name="IFNULL(c.quantity,'0')"         alias="contractQty" ctype="" />
+      <f name="IFNULL(e.arrivalCount,0)" alias="arrivalCount" ctype="" />
+      <f name="IFNULL(f.quantity,0)"     alias="stockinQty" ctype="" />
+      <f name="IFNULL(g.sumReturnQty,0)" alias="returnQty" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.supplierId = c.supplierId AND a.materialId = c.materialId AND c.deleteFlag = '0'  LEFT JOIN v_arrival_groupby_ysid e ON a.YSId=e.YSId AND a.materialId=e.materialId LEFT JOIN v_purchasestockindetailgroup f ON a.YSId=f.YSId AND a.materialId=f.materialId LEFT JOIN v_inspectionreturngroup g ON g.YSId=a.YSId AND a.materialId = g.materialId where a.deleteFlag='0' </from>
+    <orderby>a.subBomNo+0,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
   </query>
 </root>
