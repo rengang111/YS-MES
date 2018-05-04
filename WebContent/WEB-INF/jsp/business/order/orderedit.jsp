@@ -628,10 +628,11 @@
 						$("#orderDetailLines"+index+"\\.productclassify").val(productclassify);
 
 						var ysid = '${order.YSId}';
-						ysidPeiList[index] = new Array();
-						ysidPeiList[0] = ysid;
-						ysidPeiList[1] = ysid.split("-")[0];
-						ysidPeiList[2] = "0";
+						var idx = ysidPeiList.length;
+						ysidPeiList[idx] = new Array();						
+						ysidPeiList[idx][0] = ysid;
+						ysidPeiList[idx][1] = ysid.split("-")[0];
+						ysidPeiList[idx][2] = "0";
 						PieYSId = ysid.split("-")[0]
 						YSSwiftPeiIndex++;
 						

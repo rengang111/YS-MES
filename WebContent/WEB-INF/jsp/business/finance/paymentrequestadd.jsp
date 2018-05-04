@@ -74,6 +74,13 @@
 				showOtherMonths:true,
 		}); 
 		
+		var paymentTypeId='${paymentTypeId}';
+		var name="正常付款";
+		if(paymentTypeId == '020'){
+			name="预付款";
+		}
+		$("#paymentType").text(name);
+		
 		//申请单编号
 		var paymentId = $('#paymentId').val();
 
@@ -85,7 +92,11 @@
 		
 		$(".goBack").click(
 				function() {
+					var paymentTypeId=$("#paymentTypeId").val();
 					var url = "${ctx}/business/payment";
+					if( paymentTypeId == '020')
+						url = "${ctx}/business/payment"+"?methodtype=beforehandMainInit";
+						
 					location.href = url;		
 		});
 
@@ -94,10 +105,11 @@
 				function() {
 					
 			var paymentId = $('#payment\\.paymentid').val();
+			var paymentTypeId =$("#paymentTypeId").val();
 			if(paymentId == '（保存后自动生成）')
 				$('#payment\\.paymentid').val('');//清除非正常ID
 
-			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert");
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert"+"&paymentTypeId="+paymentTypeId);
 			$('#formModel').submit();
 		});
 		
@@ -332,6 +344,8 @@ function uploadPhoto(tableId,tdTable, id) {
 	<form:hidden path="payment.finishstatus"  />
 	<form:hidden path="payment.contractids"  value="${contractIds }"/>
 	<form:hidden path="payment.supplierid" value="${supplier.supplierId }" />
+	<form:hidden path="payment.paymenttype"  value="${paymentTypeId }"/><!-- 1:正常；2：预付 -->
+	<input type="hidden" id="paymentTypeId"  value="${paymentTypeId }"/><!-- 1:正常；2：预付 -->
 	<input type="hidden" id="paymentId" value="${formModel.payment.paymentid }">
 	<fieldset>
 		<legend> 付款申请单</legend>
@@ -367,9 +381,8 @@ function uploadPhoto(tableId,tdTable, id) {
 				<td class="label" width="100px">供应商付款条件：</td>					
 				<td width="150px">&nbsp;入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
 														
-				<td width="100px" class="label">合同付款条件：</td>
-				<td>
-					<form:input path="payment.paymentterms" class="long"  /></td>
+				<td width="100px" class="label">付款类别：</td>
+				<td>&nbsp;<span id="paymentType"></span></td>
 			</tr>										
 		</table>
 	</fieldset>

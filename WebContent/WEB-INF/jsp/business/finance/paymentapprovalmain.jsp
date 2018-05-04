@@ -125,7 +125,9 @@
 	}
 	
 	function doSearch2(type) {	
-		
+
+		$("#keyword1").val("");
+		$("#keyword2").val("");
 		ajax(type,"false");
 
 	}
@@ -164,7 +166,6 @@
 
 				<form id="condition"  style='padding: 0px; margin: 10px;' >
 					
-					<input type="hidden" id="makeType" value="${makeType }" />
 
 					<table>
 						<tr>

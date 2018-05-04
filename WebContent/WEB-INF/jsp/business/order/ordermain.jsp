@@ -153,7 +153,7 @@
 						"targets" : [col_no]
 					}
 	         	],
-	         	"aaSorting": [[ 1, "DESC" ]]
+	         	//"aaSorting": [[ 1, "DESC" ]]
 	         	/*
 	         	
 	         	"fnInitComplete": function () {//列筛选

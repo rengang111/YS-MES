@@ -51,6 +51,7 @@ public class PaymentAction extends BaseAction {
 			HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		String type = request.getParameter("methodtype");
+		String paymentTypeId = request.getParameter("paymentTypeId");
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
@@ -62,6 +63,7 @@ public class PaymentAction extends BaseAction {
 		this.model = model;
 		this.response = response;
 		this.session = session;
+		this.model.addAttribute("paymentTypeId",paymentTypeId);
 		
 		if (type == null) {
 			type = "";
@@ -95,6 +97,17 @@ public class PaymentAction extends BaseAction {
 				break;
 			case "addinit"://付款申请初始化
 				doApplyAddInit();
+				rtnUrl = "/business/finance/paymentrequestadd";
+				return rtnUrl;
+			case "beforehandMainInit"://预付款查询初始化
+				rtnUrl = "/business/finance/paymentrequestbeformain";
+				break;
+			case "beforehandSearch"://预付款查询
+				dataMap = doBeforhandSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "beforeAddinit"://预付款申请初始化
+				doApplyBeforeAddInit();
 				rtnUrl = "/business/finance/paymentrequestadd";
 				return rtnUrl;
 			case "applyInsert"://付款申请
@@ -228,7 +241,7 @@ public class PaymentAction extends BaseAction {
 		}
 		
 		try {
-			dataMap = service.doSearch(data);
+			dataMap = service.doSearch(data,"after");
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
@@ -244,6 +257,33 @@ public class PaymentAction extends BaseAction {
 		return dataMap;
 	}
 	
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doBeforhandSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_PAYMENTREQUEST+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PAYMENTREQUEST+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.doSearch(data,"before");
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> approvalSearch(String data){
@@ -304,7 +344,8 @@ public class PaymentAction extends BaseAction {
 
 		try{
 			service.applyAddInit();
-			
+
+			//model.addAttribute("paymentTypeId", "010");//正常付款
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
@@ -312,6 +353,18 @@ public class PaymentAction extends BaseAction {
 		
 	}
 
+	public void doApplyBeforeAddInit(){
+
+		try{
+			service.applyAddInit();
+
+			//model.addAttribute("paymentTypeId", "020");//预付款
+			model.addAttribute("userName", userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
 	
 	public String approvalInit(){
 

@@ -63,13 +63,11 @@
 	
 	function materialzzAjax() {
 
-		var makeType = $('#makeType').val();
 		var taskId = $('#task\\.taskid').val();
 		var YSId= $('#task\\.collectysid').val();
 		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getMaterialZZList";
 		actionUrl = actionUrl +"&YSId="+YSId;
 		actionUrl = actionUrl +"&taskId="+taskId;
-		actionUrl = actionUrl +"&makeType="+makeType;
 				
 		var t = $('#example2').DataTable({
 			"paging": false,
@@ -178,15 +176,19 @@
 		
 		$(".goBack").click(
 				function() {
+					var paymentTypeId=$("#paymentTypeId").val();
 					var url = "${ctx}/business/payment";
-					location.href = url;		
+					if( paymentTypeId == '020')
+						url = "${ctx}/business/payment"+"?methodtype=beforehandMainInit";
+						
+					location.href = url;	
 		});
 
 		
 		$("#insert").click(
 				function() {
-					
-			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert");
+					var beforeFlag=$("#beforeFlag").val();		
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert"+"&paymentTypeId="+paymentTypeId);
 			$('#formModel').submit();
 		});
 		
@@ -419,6 +421,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	<form:hidden path="payment.finishstatus"  />
 	<form:hidden path="payment.contractids"  value="${contractIds }"/>
 	<form:hidden path="payment.supplierid" value="${supplier.supplierId }" />
+	<input type="hidden" id="paymentTypeId" value="${paymentTypeId }">
 	<fieldset>
 		<legend> 付款申请单</legend>
 		<table class="form" id="table_form">

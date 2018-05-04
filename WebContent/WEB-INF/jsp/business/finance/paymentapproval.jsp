@@ -416,6 +416,9 @@ function uploadPhoto(tableId,tdTable, id) {
 				<td class="label" width="100px">付款条件：</td>					
 				<td width="150px">入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
 														
+				<td width="100px" class="label">付款类别：</td>
+				<td width="150px">${payment.paymentType }</td>
+				
 				<td width="100px" class="label">付款状态：</td>
 				<td class="bold">${payment.finishStatus }</td>
 			</tr>										

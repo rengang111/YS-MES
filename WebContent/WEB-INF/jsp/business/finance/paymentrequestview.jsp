@@ -62,13 +62,11 @@
 	
 	function materialzzAjax() {
 
-		var makeType = $('#makeType').val();
 		var taskId = $('#task\\.taskid').val();
 		var YSId= $('#task\\.collectysid').val();
 		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getMaterialZZList";
 		actionUrl = actionUrl +"&YSId="+YSId;
 		actionUrl = actionUrl +"&taskId="+taskId;
-		actionUrl = actionUrl +"&makeType="+makeType;
 				
 		var t = $('#payment').DataTable({
 			"paging": false,
@@ -166,15 +164,20 @@
 		
 		$(".goBack").click(
 				function() {
+					var paymentTypeId=$("#paymentTypeId").val();
 					var url = "${ctx}/business/payment";
-					location.href = url;		
+					if( paymentTypeId == '020')
+						url = "${ctx}/business/payment"+"?methodtype=beforehandMainInit";
+						
+					location.href = url;	
 		});
 
 		
 		$("#update").click(
 				function() {
-					
-			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyUpdateInit");
+
+					var paymentTypeId=$("#paymentTypeId").val();
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyUpdateInit"+"&paymentTypeId="+paymentTypeId);
 			$('#formModel').submit();
 		});
 		
@@ -353,6 +356,8 @@ function photoView(id, tdTable, count, data) {
 	<form:hidden path="payment.recordid"     value="${payment.recordId }"/>
 	<form:hidden path="payment.contractids"  value="${payment.contractIds }"/>
 	<form:hidden path="payment.paymentid"    value="${payment.paymentId }"/>
+	<input type="hidden" id="paymentTypeId"  value="${paymentTypeId }"/><!-- 1:正常；2：预付 -->
+	
 	<fieldset>
 		<legend> 付款申请单</legend>
 		<table class="form" id="table_form">
@@ -364,7 +369,7 @@ function photoView(id, tdTable, count, data) {
 				<td width="150px">${payment.applicantName }</td>
 														
 				<td width="100px" class="label">申请日期：</td>
-				<td>${payment.requestDate }</td>				
+				<td colspan="3">${payment.requestDate }</td>				
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">供应商编号：</td>					
@@ -374,7 +379,7 @@ function photoView(id, tdTable, count, data) {
 				<td width="150px">${supplier.shortName }</td>
 														
 				<td width="100px" class="label">供应商名称：</td>
-				<td>${supplier.supplierName }</td>
+				<td colspan="3">${supplier.supplierName }</td>
 			</tr>
 			<tr>			
 				<td class="label" width="100px">申请付款总额：</td>					
@@ -383,7 +388,9 @@ function photoView(id, tdTable, count, data) {
 				<td class="label" width="100px">付款条件：</td>					
 				<td width="150px">入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
 														
-				<td width="100px" class="label">申请付款状态：</td>
+				<td width="100px" class="label">付款类别：</td>
+				<td width="150px">${payment.paymentType }</td>
+				<td width="100px" class="label">付款状态：</td>
 				<td class="bold">${payment.finishStatus }</td>
 			</tr>										
 		</table>

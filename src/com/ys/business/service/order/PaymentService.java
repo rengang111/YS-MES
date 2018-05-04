@@ -11,32 +11,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.common.FilePath;
 import com.ys.business.action.model.order.PaymentModel;
-import com.ys.business.action.model.order.StockOutModel;
-import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PaymentDao;
 import com.ys.business.db.dao.B_PaymentDetailDao;
 import com.ys.business.db.dao.B_PaymentHistoryDao;
-import com.ys.business.db.dao.B_RequisitionDao;
-import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.dao.B_StockOutDao;
-import com.ys.business.db.dao.B_StockOutDetailDao;
-import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PaymentDetailData;
 import com.ys.business.db.data.B_PaymentHistoryData;
-import com.ys.business.db.data.B_PurchaseStockInData;
-import com.ys.business.db.data.B_RequisitionData;
-import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.B_StockOutData;
-import com.ys.business.db.data.B_StockOutDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-
-import antlr.collections.impl.Vector;
 
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
@@ -94,7 +82,8 @@ public class PaymentService extends CommonService {
 		
 	}
 	
-	public HashMap<String, Object> doSearch( String data) throws Exception {
+	public HashMap<String, Object> doSearch(
+			String data,String searchFlag) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		int iStart = 0;
@@ -124,12 +113,15 @@ public class PaymentService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		//if(notEmpty(key1) || notEmpty(key2)){
-		//	userDefinedSearchCase.put("finishStatus", "");
-		//}
+
+		String having = "stockinQty >= contractQty ";
+		if(("before").equals(searchFlag)){
+			having = "stockinQty < contractQty ";
+		}
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		sql = sql.replace("#", having);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -408,7 +400,6 @@ public class PaymentService extends CommonService {
 
 	public void printReceipt() throws Exception {
 		String YSId = request.getParameter("YSId");
-		String stockOutId = request.getParameter("stockOutId");
 		
 		//取得订单信息
 		getOrderDetail(YSId);
