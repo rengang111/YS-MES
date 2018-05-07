@@ -1,9 +1,4 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -46,14 +41,14 @@
 <script type="text/javascript">
 
 
-	function ajax(pageFlg,status,sessionFlag,col_no) {
+	function ajax(orderNature,status,sessionFlag,col_no) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 		var url = "${ctx}/business/order?methodtype=search&sessionFlag="+sessionFlag
-				+"&status="+status;
+				+"&status="+status+"&orderNature="+orderNature;
 		
 		//$(".addselect").remove();
 		//var scrollHeight = $(document).height() - 197; 
@@ -118,8 +113,8 @@
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-		    			return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
-		    			 
+		    			return row["rownum"];
+		    			//return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
@@ -235,12 +230,21 @@
 			}
 			return false; 
 		}); 
+		
+
+		buttonSelectedEvent();//按钮选择式样
+		
+		$('#defutBtn').removeClass("start").addClass("end");
 	})	
 	
 	function doSearch() {	
 
-		ajax('orderMain','','false',9);
-
+		ajax('','','false',9);
+		
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
 	}
 	
 	function doCreate(type) {
@@ -250,11 +254,11 @@
 	}
 	//订单状态
 	function doSearchCustomer(type,col_no){
-		ajax('orderMain',type,'false',col_no);
+		ajax('',type,'false',col_no);
 	}
 	//常规订单OR库存
-	function doSearchCustomer2(type,col_no){
-		ajax('orderMain','false',type,col_no);
+	function doSearchCustomer2(orderNature,col_no){
+		ajax(orderNature,'','false',col_no);
 	}	
 	
 	function doCreateZZ() {
@@ -282,37 +286,6 @@
 		var url = '${ctx}/business/order?methodtype=edit&parentId=' + parentId+'&recordId='+recordId;
 
 		location.href = url;
-	}
-		
-	function doDelete() {
-
-		var str = '';
-		$("input[name='numCheck']").each(function(){
-			if ($(this).prop('checked')) {
-				str += $(this).val() + ",";
-			}
-		});
-
-		if (str != '') {
-			if(confirm("删除后不能恢复,\n\n确定要删除订单吗？")) {
-				jQuery.ajax({
-					type : 'POST',
-					async: false,
-					contentType : 'application/json',
-					dataType : 'json',
-					data : str,
-					url : "${ctx}/business/order?methodtype=delete",
-					success : function(data) {
-						reload();						
-					},
-					error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				});
-			}
-		} else {
-			alert("请至少选择一条数据");
-		}
-		
 	}
 
 	function reload() {
@@ -407,16 +380,16 @@
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 			<div id="DTTT_container2" style="height:40px;float: left">
-				<a  class="DTTT_button " onclick="doSearchCustomer('010',9);"><span>待合同</span></a>
-				<a  class="DTTT_button " onclick="doSearchCustomer('020',9);"><span>待到料</span></a>
-				<a  class="DTTT_button " onclick="doSearchCustomer('030',9);"><span>待交货</span></a>
-				<a  class="DTTT_button " onclick="doSearchCustomer('040',7);"><span>已入库</span></a>&nbsp;&nbsp;
-				<a  class="DTTT_button " onclick="doSearchCustomer2('010',9);"><span>常规订单</span></a>
-				<a  class="DTTT_button " onclick="doSearchCustomer2('020',9);"><span>库存订单</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('010',9);" id="defutBtn"><span>待合同</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('020',9);"><span>待到料</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('030',9);"><span>待交货</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('040',7);"><span>已入库</span></a>&nbsp;&nbsp;
+			<!--	<a  class="DTTT_button box" onclick="doSearchCustomer2('010',9);"><span>常规订单</span></a> -->
+				<a  class="DTTT_button box" onclick="doSearchCustomer2('020',9);"><span>库存订单</span></a>
 			</div>
 			<div id="DTTT_container" style="height:40px;float: right">
 				<a  class="DTTT_button " onclick="doCreate(1);"><span>订单录入</span></a>
-				<a  class="DTTT_button " onclick="doDelete();"><span>删除订单</span></a>
+			<!-- 	<a  class="DTTT_button " onclick="doDelete();"><span>删除订单</span></a> -->
 			</div>
 			<div id="clear"></div>
 			<table id="TMaterial" class="display" >

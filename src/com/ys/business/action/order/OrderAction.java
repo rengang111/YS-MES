@@ -120,7 +120,7 @@ public class OrderAction extends BaseAction {
 			case "delete":
 				doDelete(data);
 				printOutJsonObj(response, reqModel.getEndInfoMap());
-				return null;
+				rtnUrl = "/business/order/ordermain";
 			case "customerSearch"://客户编号查询
 				dataMap = doCustomerSearch(data, request);
 				printOutJsonObj(response, dataMap);

@@ -197,7 +197,14 @@
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=edit");
 			$('#orderForm').submit();
 		});
-
+		
+		$("#doDelete").click(
+				function() {
+			if(confirm("删除后不能恢复,\n\n确定要删除订单吗？")) {	
+				$('#orderForm').attr("action", "${ctx}/business/order?methodtype=delete");
+				$('#orderForm').submit();	
+			}		
+		});
 
 	});
 
@@ -274,7 +281,7 @@
 			}    
 		});		
 
-	};
+	};	
 </script>
 
 </head>
@@ -334,19 +341,17 @@
 					<td>${order.team}</td>
 					
 					<td class="label">销售总价：</td>
-					<td>${order.total}</td>
-												
+					<td>${order.total}</td>												
 				</tr>							
 			</table>
-			
-
 	</fieldset>
 		
-	<fieldset class="action" style="text-align: right;">
+	<fieldset  style="text-align: right;margin-top: -20px;">
 		<button type="button" id="edit" class="DTTT_button">编辑</button>
+	 	<button type="button" id="doDelete" class="DTTT_button">删除</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
-	<fieldset style="margin-top: -20px;">
+	<fieldset style="margin-top: -30px;">
 		<legend>正常订单详情</legend>
 		<div class="list" style="margin-top: -4px;">
 		

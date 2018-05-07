@@ -684,25 +684,20 @@ public class OrderService extends CommonService  {
 	}
 	
 	/*
-	 * 订单详情删除处理
+	 * 详情删除处理
 	 */
-	public void deleteOrderDetail(List<B_OrderDetailData> oldDetailList,UserInfo userInfo) 
-			throws Exception{
-
-		B_OrderDetailDao dao = new B_OrderDetailDao();
+	@SuppressWarnings("unchecked")
+	private void deleteOrder(String piid) throws Exception {
+		String where = " piid = '"+piid +"'" ;
+		List<B_OrderData> list = new B_OrderDao().Find(where);
 		
-		for(B_OrderDetailData detail:oldDetailList){
-			
-			if(null != detail){
-				
-				//处理共通信息
-				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,"OrderDetailDelete",userInfo);
-
-				copyProperties(detail,commData);
-				
-				dao.Store(detail);
-			}
+		for(B_OrderData detail:list){
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"OrderDelete",userInfo);
+			copyProperties(detail,commData);			
+			new B_OrderDao().Store(detail);
 		}
+		
 	}
 	
 	/*
@@ -723,64 +718,18 @@ public class OrderService extends CommonService  {
 	}
 	
 	
-	@SuppressWarnings("unchecked")
 	public Model delete(String delData){
-
-		B_OrderDetailDao dao = new B_OrderDetailDao();	
-		B_OrderDetailData data = new B_OrderDetailData();
-
-		B_OrderDao odao = new B_OrderDao();	
-		//B_OrderData odata = new B_OrderData();
-		List<B_OrderData> list = null;		
-		
-		//B_PurchasePlanDao purchaseplan = new B_PurchasePlanDao();
-		//B_PurchaseOrderDao purOrder = new B_PurchaseOrderDao();
-		//B_PurchaseOrderDetailDao purOrderDetail = new B_PurchaseOrderDetailDao();
-		
-		try {	
-			
+	
+		B_OrderData order = reqModel.getOrder();
+		String piid = order.getPiid();
+		try {				
 			ts = new BaseTransaction();										
-			ts.begin();									
-			String removeData[] = delData.split(",");									
-			for (String key:removeData) {									
-
-				data.setRecordid(key);				
-				data = (B_OrderDetailData)dao.FindByPrimaryKey(data);
-
-				dao.Remove(data);
-				
-				
-				//String Ysid = data.getYsid();
-				//String purchaseStr = "Ysid = '" + Ysid +"'";
-				
-				try {
-					//purchaseplan.RemoveByWhere(purchaseStr);//采购订单
-				} catch (Exception e1) {
-					//
-				}
-				try {
-					//purOrder.RemoveByWhere(purchaseStr);//采购合同
-				} catch (Exception e1) {
-					//
-				}
-				
-				try {
-					//purOrderDetail.RemoveByWhere(purchaseStr);//采购合同明细
-				} catch (Exception e1) {
-					//
-				}
-
-				//判断是否要删除PI信息				
-				String Piid = data.getPiid();
-				String where = "PIId = '" + Piid +"' AND deleteFlag='0'";
-				list = odao.Find(where);
-				
-				if(list !=null && list.size() == 1){
-					//一个PI下只有一个产品时,删除YS时,同时删除PI信息
-					odao.Remove(list.get(0));
-				}
-												
-			}
+			ts.begin();
+			
+			deleteOrder(piid);
+			
+			deleteOrderDetail(piid);			
+			
 			ts.commit();
 		}
 		catch(Exception e) {
