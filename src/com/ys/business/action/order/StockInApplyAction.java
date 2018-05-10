@@ -23,7 +23,11 @@ import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.Constants;
-
+/**
+ * 直接入库申请
+ * @author rengang
+ *
+ */
 @Controller
 @RequestMapping("/business")
 public class StockInApplyAction extends BaseAction {

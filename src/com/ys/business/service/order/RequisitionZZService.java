@@ -5,19 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.business.action.model.order.RequisitionModel;
-import com.ys.business.db.dao.B_MaterialDao;
-import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_ProductionTaskDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
-import com.ys.business.db.data.B_ArrivalData;
-import com.ys.business.db.data.B_MaterialData;
-import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_ProductionTaskData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_RequisitionDetailData;
@@ -127,7 +121,6 @@ public class RequisitionZZService extends CommonService {
 		return hp;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doSearch(String makeType, String data,String formId) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -276,7 +269,7 @@ public class RequisitionZZService extends CommonService {
 
 	public void updateInit() throws Exception {
 
-		String YSId = request.getParameter("YSId");
+		//String YSId = request.getParameter("YSId");
 		//String requisitionId = request.getParameter("requisitionId");
 		
 		//订单详情
@@ -551,76 +544,7 @@ public class RequisitionZZService extends CommonService {
 				copyProperties(stock,commData);
 		new B_ProductionTaskDao().Store(stock);		
 	}
-	
-	//更新当前库存:领料时，减少“当前库存”,减少“待出库”,
-	@SuppressWarnings("unchecked")
-	private void updateMaterialStock(
-			String materialId,
-			float reqQuantity,
-			float overQuantity) throws Exception{
-	
-		B_MaterialData data = new B_MaterialData();
-		B_MaterialDao dao = new B_MaterialDao();
-		
-		String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
-		
-		List<B_MaterialData> list = 
-				(List<B_MaterialData>)dao.Find(where);
-		
-		if(list ==null || list.size() == 0){
-			return ;
-		}
-
-		data = list.get(0);
-		
-		//当前库存数量
-		float iQuantity = stringToFloat(data.getQuantityonhand());
-		//float ireqQuantity = stringToFloat(reqQuantity);				
-		float iNewQuantiy = iQuantity - reqQuantity;		
-		
-		//待入库数量
-		float istockin = stringToFloat(data.getWaitstockin());		
-		//float iNewStockIn = istockin - reqQuantity;
-		
-		//待出库
-		float waitstockout = stringToFloat(data.getWaitstockout());
-		waitstockout = waitstockout - reqQuantity + overQuantity;//超领部分不计入
-		
-		//虚拟库存=当前库存 + 待入库 - 待出库
-		float availabeltopromise = iNewQuantiy + istockin - waitstockout;
-		
-		data.setQuantityonhand(String.valueOf(iNewQuantiy));
-		data.setWaitstockout(String.valueOf(waitstockout));
-		data.setAvailabeltopromise(String.valueOf(availabeltopromise));
-		
-		//更新DB
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
-		copyProperties(data,commData);
-		
-		dao.Store(data);
-		
-	}
-		
-	@SuppressWarnings("unchecked")
-	private void updateOrderDetail(
-			String ysid) throws Exception{
-		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
-		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
-		if(list ==null || list.size() == 0)
-			return ;	
-		
-		//更新DB
-		B_OrderDetailData data = list.get(0);
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
-		copyProperties(data,commData);
-		data.setStatus(Constants.ORDER_STS_3);//待交货	
-		
-		new B_OrderDetailDao().Store(data);
-	}
-	
-	
+			
 	private void updateRequisition(
 			B_RequisitionData data) throws Exception{
 		

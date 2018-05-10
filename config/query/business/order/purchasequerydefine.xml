@@ -146,7 +146,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.supplierId = c.supplierId AND a.materialId = c.materialId AND c.deleteFlag = '0' LEFT JOIN v_purchaseplandetailgroup d ON a.ysid = d.ysid  AND a.materialId = d.materialId AND d.deleteFlag = '0' LEFT JOIN v_arrival_groupby_ysid e ON a.YSId=e.YSId AND a.materialId=e.materialId LEFT JOIN v_purchasestockindetailgroup f ON a.YSId=f.YSId AND a.materialId=f.materialId LEFT JOIN v_inspectionreturngroup g ON g.YSId=a.YSId AND a.materialId = g.materialId where a.deleteFlag='0' </from>
+   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.supplierId = c.supplierId AND a.materialId = c.materialId AND c.deleteFlag = '0'AND c.productId is not null LEFT JOIN v_purchaseplandetailgroup d ON a.ysid = d.ysid  AND a.materialId = d.materialId AND d.deleteFlag = '0' LEFT JOIN v_arrival_groupby_ysid e ON a.YSId=e.YSId AND a.materialId=e.materialId LEFT JOIN v_purchasestockindetailgroup f ON a.YSId=f.YSId AND a.materialId=f.materialId LEFT JOIN v_inspectionreturngroup g ON g.YSId=a.YSId AND a.materialId = g.materialId where a.deleteFlag='0' </from>
     <orderby>a.subBomNo+0,a.materialId</orderby>
     <groupby></groupby>
     <having></having>

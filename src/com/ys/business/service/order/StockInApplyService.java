@@ -238,6 +238,7 @@ public class StockInApplyService extends CommonService {
 				if(notEmpty(materId) && notEmpty(quantity)){					
 					data.setArrivalid(applyId);
 					data.setRemarks(remarks);
+					data.setStockintype(Constants.STOCKINTYPE_1);//入库类别：直接入库
 					insertApplyDetail(data);
 				}
 			}

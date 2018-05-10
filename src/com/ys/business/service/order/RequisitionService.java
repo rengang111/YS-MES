@@ -817,7 +817,7 @@ public class RequisitionService extends CommonService {
 	}
 	
 	/**
-	 * 新增 单独领料
+	 * 新增 单独领料申请
 	 * @return
 	 */
 	private String insertMaterialRquisition(){
@@ -849,7 +849,7 @@ public class RequisitionService extends CommonService {
 				//领料申请insert
 				reqData.setYsid(reqData.getRequisitionid());//单独领料申请编号
 				reqData.setRequisitionsts(Constants.STOCKOUT_2);//待出库
-				reqData.setRequisitiontype(Constants.REQUISITION_5);//直接领料
+				reqData.setRequisitiontype(reqData.getUsedtype());//直接，研发领料申请
 				
 				insertRequisition(reqData);//直接领料
 				

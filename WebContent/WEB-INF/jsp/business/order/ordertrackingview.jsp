@@ -32,7 +32,7 @@ $('#example').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    		if(typeof( val3) != 'undefined')
 	    			var tmp3 = val3.substring(0,1);
 	    		
-	    		if(contract != '***' && tmp3 != 'G' ){
+	    		if(contract != '***' ){
 	    			return true;
 	    		}	    		
 	    		
@@ -87,6 +87,7 @@ var GcontractStatusFlag="false";
 		
 	    buttonSelectedEvent();//按钮点击效果
 
+	    $('#dg').trigger('click');//默认点击事件
 	});
 
 	
@@ -123,7 +124,7 @@ var GcontractStatusFlag="false";
 					success: function(data){
 						fnCallback(data);
 						
-						deleteRow();
+						//deleteRow();
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		            	alert(errorThrown)
@@ -138,7 +139,7 @@ var GcontractStatusFlag="false";
 				{"data": null,"className" : 'td-center',"sWidth": "15px"},//0
 				{"data": "materialId","className" : 'td-left',"sWidth": "100px"},//1.物料编号
 				{"data": null,"defaultContent" : ''},//2.物料名称
-				{"data": "contractId","className" : 'td-left', "defaultContent" : ''},//3.合同编号
+				{"data": "deliveryDate","className" : 'td-left', "defaultContent" : ''},//3.合同编号
 				{"data": "contractSupplierId","className" : '', "defaultContent" : ''},//4.供应商
 				{"data": "contractQty","className" : 'td-right'},//5.合同数量
 				{"data": "stockinQty","className" : 'td-right'},//6.入库数量
@@ -150,13 +151,13 @@ var GcontractStatusFlag="false";
 				],
 			"columnDefs":[
 	    		{"targets":2,"render":function(data, type, row){	 			
-	    			return jQuery.fixedWidth(row["materialName"],32);	
+	    			return jQuery.fixedWidth(row["materialName"],48);	
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			if(data == ''){
 	    				return '<div style="text-align: center;">***</div>';
 	    			}else{
-	    				return data;
+	    				return "<a href=\"###\" onClick=\"doShowContract('"+ row["contractId"] + "')\">"+data+"</a>";
 	    			}	    			
 	    		}},
 	    		{"targets":4,"render":function(data, type, row){
@@ -204,7 +205,7 @@ var GcontractStatusFlag="false";
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : [3]
+					"targets" : [7,8,10]
 				},
 	    		{ "bSortable": false, "aTargets": [0] }
 	          
@@ -256,6 +257,13 @@ var GcontractStatusFlag="false";
 		
 	}
 	
+	function doShowContract(contractId) {
+		
+		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
+		
+		callProductDesignView("采购合同",url);
+	};
+	
 </script>
 
 
@@ -302,10 +310,8 @@ var GcontractStatusFlag="false";
 				<a class="DTTT_button  box" id="all" data-id="4">显示全部</a>
 				<a class="DTTT_button  box" id="dg" data-id="1">装配件</a>
 				<a class="DTTT_button  box" id="yz" data-id="0">非采购件</a>
-				<a class="DTTT_button  box" id="bz" data-id="3">包装采购件</a>
+			<!-- 	<a class="DTTT_button  box" id="bz" data-id="3">包装采购件</a> -->
 				<input type="hidden" id="selectedPurchaseType" />
-			<!--	<a class="DTTT_button  box" id="yz" data-id="0">自制品</a> -->
-			<!-- 	<a class="DTTT_button  box" id="ty" data-id="2">通用件</a> -->
 			</div>
 			<div id="DTTT_container"  style="float:right;height:40px;width: 40%;margin: 15px 10px 0px 1px;text-align: end;">
 				<a class="DTTT_button  " id="goBack" >返回</a>
@@ -318,7 +324,7 @@ var GcontractStatusFlag="false";
 							<th width="20px">No</th>
 							<th width="100px">物料编码</th>
 							<th>物料名称</th>
-							<th width="80px">合同编号</th>
+							<th width="80px">合同交期</th>
 							<th width="60px">供应商</th>
 							<th width="60px">合同数量</th>
 							<th width="60px">入库数量</th>

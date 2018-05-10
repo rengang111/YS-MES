@@ -236,7 +236,8 @@ public class Constants {
 	public static final String REQUISITION_BLOW = "020";//吹塑
 	public static final String REQUISITION_BLISTE = "030";//吸塑
 	public static final String REQUISITION_INJECT = "040";//注塑
-	public static final String REQUISITION_5 = "050";//直接领料
+	public static final String REQUISITION_51 = "051";//直接领料
+	public static final String REQUISITION_52 = "052";//研发领料
 
 	public static final String REQUISITION_NORMAL = "010";//正常领料
 	public static final String REQUISITION_VIRTUAL = "020";//虚拟领料
@@ -255,7 +256,10 @@ public class Constants {
 	 * 入库类别
 	 */
 	public static final String STOCKINTYPE_1 = "010";//直接入库
-	public static final String STOCKINTYPE_2 = "020";//料件入库
+	public static final String STOCKINTYPE_21 = "021";//原材料入库
+	public static final String STOCKINTYPE_22 = "022";//自制件入库
+	public static final String STOCKINTYPE_23 = "023";//装配件入库
+	public static final String STOCKINTYPE_24 = "024";//包装品入库
 	public static final String STOCKINTYPE_3 = "030";//成品入库
 	
 	/**
@@ -263,5 +267,8 @@ public class Constants {
 	 */
 	public static final String STOCKOUTTYPE_1 = "010";//料件出库
 	public static final String STOCKOUTTYPE_2 = "020";//成品出库
+	public static final String STOCKOUTTYPE_3 = "030";//原材料出库
+	public static final String STOCKOUTTYPE_51 = "051";//单独出库
+	public static final String STOCKOUTTYPE_52 = "052";//研发出库
 
 }

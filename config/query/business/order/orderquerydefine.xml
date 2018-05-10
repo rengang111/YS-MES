@@ -101,8 +101,8 @@
     <pool></pool>     
     <name value="orderTrackingList" />
     <where>
-      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+      <w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="A.status"  des=""  reqName="status" dtype="ch" oper="in"  lg="AND" bt="" />
@@ -463,6 +463,7 @@
       <f name="IFNULL(c.supplierId,'')" alias="contractSupplierId" ctype="" />
       <f name="IFNULL(c.contractId,'')" alias="contractId" ctype="" />
       <f name="IFNULL(c.price,'0')" alias="contractPrice" ctype="" />
+      <f name="IFNULL(c.deliveryDate,'')" alias="deliveryDate" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.materialParentId" alias="" ctype="" />
@@ -507,7 +508,7 @@
    <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.supplierId = c.supplierId AND a.materialId = c.materialId AND c.deleteFlag = '0'  LEFT JOIN v_arrival_groupby_ysid e ON a.YSId=e.YSId AND a.materialId=e.materialId LEFT JOIN v_purchasestockindetailgroup f ON a.YSId=f.YSId AND a.materialId=f.materialId LEFT JOIN v_inspectionreturngroup g ON g.YSId=a.YSId AND a.materialId = g.materialId where a.deleteFlag='0' </from>
     <orderby>a.subBomNo+0,a.materialId</orderby>
     <groupby></groupby>
-    <having></having>
+    <having>stockinQty &lt; contractQty OR contractId =''</having>
 	<power></power>    
   </query>
 </root>

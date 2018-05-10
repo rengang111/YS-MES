@@ -207,6 +207,7 @@ public class ArrivalService extends CommonService {
 			
 			B_ArrivalData reqData = (B_ArrivalData)reqModel.getArrival();
 			List<B_ArrivalData> reqDataList = reqModel.getArrivalList();
+			String makeType = request.getParameter("makeType");
 			
 			contractId = reqData.getContractid();
 
@@ -223,6 +224,25 @@ public class ArrivalService extends CommonService {
 				if(q == null || q.equals("") || q.equals("0"))
 					continue;
 				
+				//入库类别
+				String stockinType = "";
+				if(("Y").equals(makeType)){
+					
+					stockinType = Constants.STOCKINTYPE_22;//自制件到货
+				}else if(("G").equals(makeType)){
+					
+					stockinType = Constants.STOCKINTYPE_24;//包装到货
+				}else if(("L").equals(makeType)){
+					//采购件到货
+					String mateId = data.getMaterialid();
+					if(("A").equals(mateId.substring(0, 1))){
+						
+						stockinType = Constants.STOCKINTYPE_21;//原材料到货
+					}else{						
+						stockinType = Constants.STOCKINTYPE_23;//装配件到货
+					}					
+				}
+				data.setStockintype(stockinType);//入库类别
 				data.setArrivalid(arrivalId);
 				data.setYsid(reqData.getYsid());
 				data.setContractid(reqData.getContractid());

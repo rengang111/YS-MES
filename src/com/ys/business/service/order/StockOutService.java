@@ -23,10 +23,7 @@ import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.dao.B_StockOutDetailDao;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
-import com.ys.business.db.data.B_PurchaseStockInData;
-import com.ys.business.db.data.B_PurchaseStockInDetailData;
 import com.ys.business.db.data.B_RequisitionData;
-import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.B_StockOutDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -35,8 +32,6 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-
-import antlr.collections.impl.Vector;
 
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
@@ -212,7 +207,7 @@ public class StockOutService extends CommonService {
 
 	public void printReceipt() throws Exception {
 		String YSId = request.getParameter("YSId");
-		String stockOutId = request.getParameter("stockOutId");
+		//String stockOutId = request.getParameter("stockOutId");
 		
 		//取得订单信息
 		getOrderDetail(YSId);
@@ -327,7 +322,9 @@ public class StockOutService extends CommonService {
 			String requisitionId = reqData.getRequisitionid();
 	
 			//出库记录
-			reqData.setStockouttype(Constants.STOCKOUTTYPE_1);
+			//取得出库类别（单据类型）
+			String stockoutType = getStockoutTypeFromRequisition(requisitionId);
+			reqData.setStockouttype(stockoutType);
 			insertStockOut(reqData);
 			
 
@@ -487,46 +484,7 @@ public class StockOutService extends CommonService {
 		
 		dao.Store(data);
 		
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void updateProductStock(
-			String materialId,
-			String reqQuantity,
-			String oldQuantity) throws Exception{
-	
-		B_MaterialData data = new B_MaterialData();
-		B_MaterialDao dao = new B_MaterialDao();
-		
-		String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
-		
-		List<B_MaterialData> list = 
-				(List<B_MaterialData>)dao.Find(where);
-		
-		if(list ==null || list.size() == 0){
-			return ;
-		}
-
-		data = list.get(0);
-		
-		//当前库存数量
-		float iQuantity = stringToFloat(data.getQuantityonhand());
-		float ireqQuantity = stringToFloat(reqQuantity);				
-		float oldQuan = stringToFloat(oldQuantity);
-		float iNewQuantiy = iQuantity + ireqQuantity - oldQuan;
-		
-				
-		data.setQuantityonhand(String.valueOf(iNewQuantiy));
-		
-		//更新DB
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
-		copyProperties(data,commData);
-		
-		dao.Store(data);
-		
-	}
-	
+	}	
 
 	@SuppressWarnings("unchecked")
 	private void updateRequisition(
@@ -1096,6 +1054,28 @@ public class StockOutService extends CommonService {
 		if(dataModel.getRecordCount() > 0) {
 			model.addAttribute("stockin",dataModel.getYsViewData().get(0));
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String getStockoutTypeFromRequisition(String requisitionId) throws Exception{
+		
+		String stockoutType = Constants.STOCKOUTTYPE_1;
+		String where = " requisitionId='"+requisitionId+"' AND deleteFlag='0'";
+		List<B_RequisitionData> list = new B_RequisitionDao().Find(where);
+		
+		if(list == null || list.size() == 0)
+			return stockoutType;
+		
+		String requisitionType = list.get(0).getRequisitiontype();
+		if((Constants.REQUISITION_BLOW).equals(requisitionType)
+				|| (Constants.REQUISITION_BLISTE).equals(requisitionType)
+				|| (Constants.REQUISITION_INJECT).equals(requisitionType)){
+			stockoutType = Constants.STOCKOUTTYPE_3;
+		}else{
+			stockoutType = requisitionType;
+		}
+		
+		return stockoutType;
 	}
 	
 }

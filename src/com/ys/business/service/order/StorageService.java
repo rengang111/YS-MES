@@ -15,10 +15,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.order.StorageModel;
+import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_InventoryHistoryDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
-import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseStockInDao;
 import com.ys.business.db.dao.B_PurchaseStockInDetailDao;
@@ -26,7 +26,6 @@ import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_InventoryHistoryData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
-import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_PurchaseStockInDetailData;
@@ -752,6 +751,10 @@ public class StorageService extends CommonService {
 		return contractId;
 	}
 	
+	/**
+	 * 采购件入库
+	 * @return
+	 */
 	private String insertStorage(){
 		String contractId = "";
 		ts = new BaseTransaction();		
@@ -769,7 +772,9 @@ public class StorageService extends CommonService {
 			contractId = reqData.getContractid();
 			
 			//料件入库记录
-			reqData.setStockintype(Constants.STOCKINTYPE_2);
+			//取得入库类别
+			String stokinType = getStokinType(reqData.getArrivelid());
+			reqData.setStockintype(stokinType);
 			insertPurchaseStockIn(reqData);
 			
 			//采购入库记录明细
@@ -812,6 +817,10 @@ public class StorageService extends CommonService {
 	}
 	
 
+	/**
+	 * 成品入库
+	 * @return
+	 */
 	private String insertStorageProduct(){
 		String ysid = "";
 		ts = new BaseTransaction();		
@@ -1081,19 +1090,6 @@ public class StorageService extends CommonService {
 		
 	}
 	
-	@SuppressWarnings("unchecked")
-	private B_PurchaseStockInData  checkStockInExsit(
-			String contractId) throws Exception{
-
-		String where =  " contractId = '" + contractId  +"' "
-				+ " AND deleteFlag = '0' ";
-		List<B_PurchaseStockInData> list  = new B_PurchaseStockInDao().Find(where);
-		if(list ==null || list.size() == 0){
-			return null;	
-		}else{
-			return list.get(0);	
-		}		
-	}
 	
 	@SuppressWarnings("unchecked")
 	private void updateOrderDetail(
@@ -1109,7 +1105,7 @@ public class StorageService extends CommonService {
 		//更新DB
 		B_OrderDetailData data = list.get(0);
 	
-		float orderQuan = stringToFloat(data.getTotalquantity());//生产数量
+		//float orderQuan = stringToFloat(data.getTotalquantity());//生产数量
 		float quantity = stringToFloat(data.getCompletedquantity());//已完成数量
 		int number = stringToInteger(data.getCompletednumber());//已完成件数
 		
@@ -1161,7 +1157,7 @@ public class StorageService extends CommonService {
 		B_PurchaseStockInData db = new B_PurchaseStockInDao(stock).beanData;
 		
 		if(db == null || ("").equals(db)){
-			stock.setStockintype(Constants.STOCKINTYPE_2);
+			stock.setStockintype(getStokinType(stock.getArrivelid()));
 			insertPurchaseStockIn(stock);
 		}
 
@@ -1232,8 +1228,6 @@ public class StorageService extends CommonService {
 
 	private void getStockinDetail(
 			String receiptId) throws Exception{
-
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
 		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
 		dataModel.setQueryName("materialStockInList");
@@ -1250,7 +1244,6 @@ public class StorageService extends CommonService {
 	public void getStockinDetailByMaterialId() throws Exception{
 
 		String materialId = request.getParameter("materialId");
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
 		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
 		dataModel.setQueryName("materialStockInList");
@@ -1663,6 +1656,10 @@ public class StorageService extends CommonService {
 		getStockinDetail(receiptId);
 	}
 	
+	/**
+	 * 直接入库
+	 * @return
+	 */
 	private String insertStorageMaterial(){
 		String ysid = "";
 		ts = new BaseTransaction();		
@@ -1735,7 +1732,7 @@ public class StorageService extends CommonService {
 
 			
 			//更新物料信息
-			B_MaterialData mate = updateMaterialBeginningInventory();
+			updateMaterialBeginningInventory();
 			
 			//保存当前数据
 			insertBeginningInventoryHisotry();
@@ -1935,5 +1932,40 @@ public class StorageService extends CommonService {
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String getStokinType(String arrivalId) throws Exception{
+
+		String stokinType = Constants.STOCKINTYPE_23;//默认值：装配件入库
+		String where = "arrivalId='"+arrivalId+"' AND deleteFlag='0' ";
+		List<B_ArrivalData> list = new B_ArrivalDao().Find(where);
+		if(list == null || list.size() == 0)
+			return stokinType;
+		
+		B_ArrivalData data = list.get(0);//同批次的类别是一样的，所以只取其中一条就行
+		stokinType = data.getStockintype();//收货时的入库类别
+		
+		if(isNullOrEmpty(stokinType)){//处理式样变更前的数据
+
+			String materialId = data.getMaterialid();
+			String supplierId = data.getSupplierid();
+			
+			if(("A").equals(materialId.substring(0, 1))){
+				
+				stokinType = Constants.STOCKINTYPE_21;//原材料到货
+				
+			}else if(("G").equals(materialId.substring(0, 1))){
+				
+				stokinType = Constants.STOCKINTYPE_24;//包装到货
+				
+			}else if((Constants.SUPPLIER_YS).equals(supplierId)){		
+				
+				stokinType = Constants.STOCKINTYPE_22;//自制件到货		
+			}else{		
+				stokinType = Constants.STOCKINTYPE_23;//装配件到货				
+			}
+		}		
+		return stokinType;
 	}
 }
