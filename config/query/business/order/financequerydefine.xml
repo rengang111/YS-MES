@@ -315,12 +315,17 @@
 	        <w name="A.checkInDate"   des="" reqName="endDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
     	</where>
 	  	<select>
+	      <f name="'I'" alias="dataFlag" ctype="" />
 	      <f name="IFNULL(A.YSId,a.contractId)" alias="YSId" ctype="" />
 	      <f name="a.contractId" alias="" ctype="" />
+	      <f name="a.supplierName" alias="" ctype="" />
+	      <f name="a.depotId" alias="" ctype="仓库分类" />
 	      <f name="a.receiptId" alias="receiptId" ctype="" />
 	      <f name="a.checkInDate" alias="" ctype="" />
 	      <f name="a.checkInDate" alias="sortDate" ctype="" />
-	      <f name="a.stockinType" alias="" ctype="" />
+	      <f name="a.stockinType" alias="" ctype="入库单据类型" />
+	      <f name="'0'" alias="stockoutType" ctype="出库单据类型" />
+	      <f name="IFNULL('','060')" alias="requisitionType" ctype="领料类别" />
 	      <f name="a.materialId" alias="" ctype="" />
       	  <f name="a.materialName" alias="" ctype="" />
       	  <f name="a.unit" alias="" ctype="计量单位" />
@@ -338,21 +343,26 @@
         	<w name="b.checkOutDate"   des="" reqName="endDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
 	    </where>	    
 	    <select>
+	      <f name="'O'" alias="dataFlag" ctype="" />
 	      <f name="b.YSId" alias="YSId" ctype="" />
-	      <f name="b.YSId" alias="contractId" ctype="" />
+	      <f name="''" alias="contractId" ctype="" />
+	      <f name="''" alias="supplierName" ctype="" />
+	      <f name="b.depotId" alias="" ctype="仓库分类" />
 	      <f name="b.stockOutId" alias="receiptId" ctype="" />
 	      <f name="b.checkOutDate" alias="" ctype="" />
 	      <f name="b.checkOutDate" alias="sortDate" ctype="" />
-	      <f name="b.stockoutType" alias="" ctype="" />
+	      <f name="'0'" alias="stockinType" ctype="" />
+	      <f name="b.stockoutType" alias="" ctype="出库单据类型" />
+	      <f name="IFNULL(c.requisitionType,'060')" alias="requisitionType" ctype="领料类别" />
       	  <f name="b.materialId" alias="" ctype="" />
-      	  <f name="c.materialName" alias="" ctype="" />
-      	  <f name="c.unit" alias="" ctype="计量单位" />
+      	  <f name="b.materialName" alias="" ctype="" />
+      	  <f name="b.unit" alias="" ctype="计量单位" />
       	  <f name="b.quantity" alias="" ctype="" />
       	  <f name="b.price" alias="" ctype="" />
       	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17),6)" alias="newPrice" ctype="" />
       	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17 * ifnull(replace(b.quantity,',',''),0)),2)" alias="total" ctype="" />
 	    </select>
-	    <from>v_stockout b LEFT JOIN b_material c ON b.materialId=c.materialId  AND c.deleteFlag='0'</from>	
+	    <from>v_stockout b LEFT JOIN v_requisitiondetail c ON  b.requisitionId=c.requisitionId AND b.materialId = c.materialId AND c.deleteFlag = '0' </from>	
     </union>
     <orderby>sortDate</orderby>
   </query>

@@ -55,7 +55,7 @@
 					}, {"data": "collectYsid","className":""
 					}, {"data": "requisitionUser","className":"dt-body-center"
 					}, {"data": "storeUser","className":"dt-body-center"
-					}, {"data": null,"className":"td-center","defaultContent" : ''
+					}, {"data": null,"className":"td-right","defaultContent" : ''
 					}
 				] ,
 				"columnDefs":[
@@ -211,9 +211,12 @@
 		
 		$("#insert").click(
 				function() {
+					var taskId = '${formModel.task.taskid }';
 					var YSId='${formModel.task.collectysid  }';
 					var makeType = $('#makeType').val();
-					var url =  "${ctx}/business/requisitionzz?methodtype=addinit&data="+YSId+"&makeType="+makeType;
+					//addFlag=1:继续领料
+					var url =  "${ctx}/business/requisitionzz?methodtype=addinit&data="+YSId
+							+"&makeType="+makeType+"&taskId="+taskId+"&addFlag=1";
 
 					location.href = url;
 		});
@@ -404,7 +407,7 @@
 </fieldset>
 <div style="clear: both"></div>
 	<div id="DTTT_container" align="right" style="margin-right: 30px;margin-top: -15px;">
-	<!-- 	<a class="DTTT_button DTTT_button_text" id="insert" >继续领料</a> -->
+	 	<a class="DTTT_button DTTT_button_text" id="insert" >继续领料</a> 
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset style="margin-top: -20px;">

@@ -347,7 +347,9 @@
 				return;
 			}
 			var makeType = $('#makeType').val();
-			$('#formModel').attr("action", "${ctx}/business/requisitionzz?methodtype=insert"+"&makeType="+makeType);
+			var addFlag = $('#addFlag').val();
+			$('#formModel').attr("action", "${ctx}/business/requisitionzz?methodtype=insert"+
+					"&makeType="+makeType+"&addFlag="+addFlag);
 			$('#formModel').submit();
 		});
 		
@@ -401,6 +403,7 @@
 
 	<input type="hidden" id="goBackFlag" />
 	<input type="hidden" id="makeType" value="${makeType }" />
+	<input type="hidden" id="addFlag" value="${addFlag }" /><!-- 1:继续领料；0：第一次领料 -->
 	
 	<form:hidden path="requisition.requisitiontype" value="${makeType}"/>
 	<form:hidden path="task.parentid"  />

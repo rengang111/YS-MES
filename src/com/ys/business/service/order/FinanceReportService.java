@@ -97,8 +97,7 @@ public class FinanceReportService extends CommonService {
 		data = URLDecoder.decode(data, "UTF-8");
 		
 		//String[] keyArr = getSearchKey(Constants.FORM_PAYMENTREQUEST,data,session);
-		String strMonthly = getJsonData(data, "monthly");
-		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
+
 		
 
 		
@@ -115,6 +114,9 @@ public class FinanceReportService extends CommonService {
 		
 		dataModel.setQueryName("financeReprotForDaybook");//流水账
 		baseQuery = new BaseQuery(request, dataModel);
+		
+		String strMonthly = getJsonData(data, "monthly");
+		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
 		userDefinedSearchCase.put("startDate", monthly.getStartDate());
 		userDefinedSearchCase.put("endDate", monthly.getEndDate());
 
@@ -289,37 +291,37 @@ public class FinanceReportService extends CommonService {
 	
 	public List<Map<Integer, Object>> getDaybookList() throws Exception {
 
-		dataModel.setQueryFileName("/business/material/materialquerydefine");
-		dataModel.setQueryName("materialinventoryForNormal_search");
+		dataModel.setQueryName("financeReprotForDaybook");//流水账
 		
-		String searchType = request.getParameter("searchType");
-		String having ="1=1";
-		if(("1").equals(searchType)){
-			//实际库存为负数
-			having = "((replace(quantityOnHand,',','')+0) < 0)";	
-		}else if(("2").equals(searchType)){
-			//虚拟库存为负数
-			having = "((replace(availabelToPromise,',','')+0) < 0)";	
-		}else if(("3").equals(searchType)){
-			//库存 ≠ 总到货－总领料
-			having = "(replace(stockinQtiy,',','')+0 <> ((replace(stockoutQty,',',''))+(replace(quantityOnHand,',','')))+0)";	
-		}else{
-			//全部
-		}	
+		String strMonthly = request.getParameter("monthly");
+		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
+		userDefinedSearchCase.put("startDate", monthly.getStartDate());
+		userDefinedSearchCase.put("endDate", monthly.getEndDate());
+		
 		baseQuery = new BaseQuery(request, dataModel);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 
-		String sql =baseQuery.getSql(); 
-		sql = sql.replace("#", having);
 		List<Map<Integer, Object>> listMap = new ArrayList<Map<Integer, Object>>();
-		ArrayList<HashMap<String, String>>  hashMap = baseQuery.getYsQueryData(sql,having,0,0);	
-		
+		ArrayList<HashMap<String, String>>  hashMap = baseQuery.getYsQueryData(0,0);	
+
+		String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "dayBookTitle");
+		String[] titles = title.split(",",-1);
 		for(int i=0;i<hashMap.size();i++){
-			String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "inventoryTitle");
-			String[] titles = title.split(",",-1);
+			HashMap<String, String> map = hashMap.get(i);
+			String flag = map.get("dataFlag");
 			Map<Integer, Object> excel = new HashMap<Integer, Object>();
 			for(int j=0;j<titles.length;j++){
-				excel.put(j,hashMap.get(i).get(titles[j]));		
+			
+				if(j == 2){//取得入出库的单据类型
+					
+					if(("I").equals(flag)){//入库
+						excel.put(j,map.get("stockinType"));
+					}else{//出库
+						excel.put(j,map.get("stockoutType"));
+					}
+				}else{
+					excel.put(j,map.get(titles[j]));
+				}
 			}
 			listMap.add(excel);
 		}
@@ -328,14 +330,19 @@ public class FinanceReportService extends CommonService {
 
 	}
 	
+	/**
+	 * 流水账 EXCEL导出
+	 * @throws Exception
+	 */
 	public void excelForInvertory() throws Exception{
 		
 		//设置响应头，控制浏览器下载该文件
 				
-		//baseBom数据取得
+		//数据取得
 		List<Map<Integer, Object>>  datalist = getDaybookList( );		
-		
-		String fileName = "inventory_" + CalendarUtil.timeStempDate()+".xls";
+
+		String monthly = request.getParameter("monthly");
+		String fileName = "accountsDetail_" +monthly+"_"+ CalendarUtil.timeStempDate()+".xls";
 		String dest = session
 				.getServletContext()
 				.getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)
@@ -343,7 +350,7 @@ public class FinanceReportService extends CommonService {
        
 		String tempFilePath = session
 				.getServletContext()
-				.getRealPath(BusinessConstants.PATH_EXCELTEMPLATE)+File.separator+"inventory.xls";
+				.getRealPath(BusinessConstants.PATH_EXCELTEMPLATE)+File.separator+"daybookreport.xls";
         File file = new File(dest);
        
         OutputStream out = new FileOutputStream(file);         
@@ -359,7 +366,7 @@ public class FinanceReportService extends CommonService {
         
         //detail
         //必须为列表头部所有位置集合,输出 数据单元格样式和头部单元格样式保持一致
-		String head = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "inventoryExcel");
+		String head = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "dayBookExcel");
         String[] heads = head.split(",");  
         excel.writeDateList(wbModule,heads,datalist,sheetNo);
          

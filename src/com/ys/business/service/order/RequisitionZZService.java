@@ -221,43 +221,21 @@ public class RequisitionZZService extends CommonService {
 	
 		B_ProductionTaskData task = new B_ProductionTaskData();
 		String ysids = request.getParameter("data");
-		/*
-		String newYsid = "";
-		boolean taskIdFlag = true;		
-		String[] list = ysids.split(",");
-		for(String ysid:list){
-			String where = "collectYsid like '%" + ysid + "%'"; 
-			task = checkTaskIdExsit(where);
-			if(task != null){
-				taskIdFlag = false;				
-				break;
-			}				
-		}		
-		if(taskIdFlag){
-			task = new B_ProductionTaskData();
-			task = getTaskId(task);
-			newYsid = ysids;
-			
-		}else{
-			newYsid = ysids +","+ task.getCollectysid();
-			String[] newList = newYsid.split(",");
-			List<String> listTmp =  new ArrayList<String>();
-			for(String str:newList){
-				listTmp.add(str.trim());
-			}
-            //去掉重复项
-			listTmp = removeDuplicate((ArrayList<String>) listTmp);
-			//去掉首位的括号和中间的空格
-			newYsid = StringUtils.strip(listTmp.toString().replaceAll(" +", ""),"[]");
-		}
-		*/
-
+		String taskId = request.getParameter("taskId");
+	
 		task = new B_ProductionTaskData();
-		task = getTaskId(task);
+		if(isNullOrEmpty(taskId)){
+			task = getNewTaskId(task);			
+		}else{
+			String where = " taskId='" + taskId + "' AND deleteFlag='0' ";
+			task = checkTaskIdExsit(where);
+		}
+			
 		task.setCollectysid(ysids);	
 		reqModel.setTask(task);
 		model.addAttribute("currentYsids",ysids);
 		model.addAttribute("task",task);	
+		
 	}
 
 	public void getRequisitionHistoryInit() throws Exception {
@@ -444,7 +422,9 @@ public class RequisitionZZService extends CommonService {
 
 			//生产任务处理开始*******************
 			//取得任务编号
-			task = getTaskId(task);//重新取得任务编号,防止与他人重复;
+			String addFlag = request.getParameter("addFlag");
+			if(!("1").equals(addFlag))
+				task = getNewTaskId(task);//重新取得任务编号,防止与他人重复;
 			String recordId = task.getRecordid();
 			if(isNullOrEmpty(recordId)){	
 				insertProductionTask(task);				
@@ -642,7 +622,7 @@ public class RequisitionZZService extends CommonService {
 	}
 	
 
-	public B_ProductionTaskData getTaskId(
+	public B_ProductionTaskData getNewTaskId(
 			B_ProductionTaskData data) throws Exception {
 		
 		String parentId = BusinessService.getshortYearcode()
@@ -675,7 +655,7 @@ public class RequisitionZZService extends CommonService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public B_ProductionTaskData checkTaskIdExsit(String where) throws Exception{
+	private B_ProductionTaskData checkTaskIdExsit(String where) throws Exception{
 
 		B_ProductionTaskData rtnDt= null;
 		List<B_ProductionTaskData> list = new B_ProductionTaskDao().Find(where);	

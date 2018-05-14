@@ -212,6 +212,7 @@ public class RequisitionZZAction extends BaseAction {
 		try{
 			service.addInit();
 
+			model.addAttribute("addFlag", request.getParameter("addFlag"));
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
