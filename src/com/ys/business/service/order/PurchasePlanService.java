@@ -535,21 +535,25 @@ public class PurchasePlanService extends CommonService {
 	private String updatePeiJian(){
 		
 		ts = new BaseTransaction();
-		String  YSId="";
+		//String  YSId="";
+		String peiYsid = request.getParameter("peiYsid");
+		String YSId = request.getParameter("YSId");
+		if(isNullOrEmpty(peiYsid))
+			peiYsid = YSId.split("-")[0]+"P";//重新设值配件订单的耀升编号
 		
 		try {
 			ts.begin();
 
-			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();	
+			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();
+			reqPlan.setYsid(peiYsid);
 
-			//采购方案****************************************************
-			YSId = reqPlan.getYsid();		
+			//采购方案****************************************************	
 			String purchaseId = updatePurchasePlan(reqPlan);
 			int line=0;
 				System.out.println("****:"+line++);
 				
 			//更新前数据取得
-			String where = " YSId = '" +YSId + "' ";
+			String where = " YSId = '" +peiYsid + "' ";
 			List<B_PurchasePlanDetailData> DBList = getPurchasePlanDetail(where);	
 			System.out.println("****:"+line++);
 			
@@ -562,7 +566,7 @@ public class PurchasePlanService extends CommonService {
 			//找出页面被删除的数据
 			for(B_PurchasePlanDetailData db:DBList){
 				String reqMate = db.getMaterialid();
-				String reqSubNo = db.getSubbomno();
+				//String reqSubNo = db.getSubbomno();
 				String reqSupp = db.getSupplierid();
 				if(isNullOrEmpty(reqMate))
 					continue;
@@ -571,11 +575,11 @@ public class PurchasePlanService extends CommonService {
 				for(B_PurchasePlanDetailData web:webList){
 					
 					String dbMate = web.getMaterialid();
-					String dbSubNo = web.getSubbomno();  
+					//String dbSubNo = web.getSubbomno();  
 					String dbSupp = web.getSupplierid();
 					
 					if( reqMate.equals(dbMate)  && 
-						reqSubNo.equals(dbSubNo) &&
+						//reqSubNo.equals(dbSubNo) &&
 						reqSupp.equals(dbSupp) ){
 						
 						web.setContractflag(db.getContractflag());//
@@ -597,7 +601,7 @@ public class PurchasePlanService extends CommonService {
 
 			System.out.println("****:"+line++);
 			//旧数据:二级BOM(原材料)的待出库"减少"处理
-			ArrayList<HashMap<String, String>> list2 = getRawMaterialGroupList(YSId);	
+			ArrayList<HashMap<String, String>> list2 = getRawMaterialGroupList(peiYsid);	
 
 			System.out.println("****:"+line++);
 			for(HashMap<String, String> map2:list2){
@@ -643,7 +647,7 @@ public class PurchasePlanService extends CommonService {
 					detail.setContractflag(0);//人工成本不做合同
 				
 				detail.setPurchaseid(purchaseId);
-				detail.setYsid(YSId);
+				detail.setYsid(peiYsid);
 				insertPurchasePlanDetail(detail);			
 
 				//更新虚拟库存
@@ -662,7 +666,7 @@ public class PurchasePlanService extends CommonService {
 				String materialId = dt.getMaterialid();
 				float purchaseQty = stringToFloat(dt.getPurchasequantity());
 				
-				String strwhere = " YSId = '" + YSId +"' AND materialId = '" + materialId  +"' AND deleteflag = '0'";
+				String strwhere = " YSId = '" + peiYsid +"' AND materialId = '" + materialId  +"' AND deleteflag = '0'";
 				List<B_PurchaseOrderDetailData> detail = 
 						getPurchaseOrderDetailFromDB(strwhere);
 				
@@ -681,7 +685,7 @@ public class PurchasePlanService extends CommonService {
 				}
 				if(quantity <= 0){//
 
-					String where2 = " YSId = '" + YSId +"' AND contractId = '" + contractId  +"' AND deleteflag = '0'";
+					String where2 = " YSId = '" + peiYsid +"' AND contractId = '" + contractId  +"' AND deleteflag = '0'";
 					List<B_PurchaseOrderDetailData> detailList = 
 							getPurchaseOrderDetailFromDB(where2);
 					
@@ -692,7 +696,7 @@ public class PurchasePlanService extends CommonService {
 					}else{
 						//一份合同只有一个物料,删除明细和头表
 						List<B_PurchaseOrderData> contractDBList =  
-								getPurchaseOrderFromDB(YSId,contractId);
+								getPurchaseOrderFromDB(peiYsid,contractId);
 						
 							deletePurchaseOrder(contractDBList.get(0));
 							deletePurchaseOrderDetail(contract);
@@ -715,7 +719,7 @@ public class PurchasePlanService extends CommonService {
 
 			System.out.println("****:"+line++);
 			//二级BOM(原材料)物料需求表
-			ArrayList<HashMap<String, String>> list3 = getRawMaterialGroupList(YSId);	
+			ArrayList<HashMap<String, String>> list3 = getRawMaterialGroupList(peiYsid);	
 
 			System.out.println("****:"+line++);
 			for(HashMap<String, String> map2:list3){
@@ -741,10 +745,10 @@ public class PurchasePlanService extends CommonService {
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		
-		return YSId;
+		return peiYsid;
 	}
 		
 		
@@ -1354,12 +1358,27 @@ public class PurchasePlanService extends CommonService {
 		
 	}
 
+	public void showPurchasePlanPei() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		String peiYsid = request.getParameter("peiYsid");
+
+		getOrderDetailByYSId(YSId,peiYsid);	
+		
+	}
+
+
 	public void editPurchasePlan() throws Exception {
 
 		String YSId = request.getParameter("YSId");
-
-		getOrderDetailByYSId(YSId);
+		String peiYsid = request.getParameter("peiYsid");
+		String orderType = request.getParameter("orderType");
 		
+		//getOrderDetailByYSId(YSId);
+		getOrderDetailByYSId(YSId,peiYsid);
+		
+		if(("020").equals(orderType))
+			YSId = peiYsid;//配件订单
 		getPurchaseDetail(YSId);
 		
 	}
@@ -1427,6 +1446,16 @@ public class PurchasePlanService extends CommonService {
 		where.append(" YSId = '" +YSId + "' ");
 		update(where.toString());
 		getOrderDetailByYSId(YSId);
+		
+		return model;
+		
+	}
+	
+	public Model updatePeiAndView() throws Exception {
+		
+		String YSId = updatePeiJian();//更新采购方案
+		
+		getOrderDetailByYSId("",YSId);
 		
 		return model;
 		

@@ -92,7 +92,7 @@ public class PurchasePlanAction extends BaseAction {
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
 				break;
 			case "showPurchasePlanPei"://查看配件订单方案
-				showPurchasePlan();
+				showPurchasePlanPei();
 				rtnUrl = "/business/purchaseplan/purchaseplanpeiview";
 				break;
 			case "purchasePlanAddInit"://订单采购
@@ -118,10 +118,18 @@ public class PurchasePlanAction extends BaseAction {
 			case "purchasePlanEdit":
 				doEdit();
 				rtnUrl = "/business/purchaseplan/purchaseplanedit";
+				break;	
+			case "purchasePlanEditPei"://配件订单的采购方案编辑
+				doEditPei();
+				rtnUrl = "/business/purchaseplan/purchaseplanpeiedit";
 				break;				
 			case "purchasePlanUpdate":
 				doUpdate();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
+				break;				
+			case "purchasePlanUpdatePei"://配件订单的采购方案更新
+				doUpdatePei();
+				rtnUrl = "/business/purchaseplan/purchaseplanpeiview";
 				break;	
 			case "purchasePlanDeleteInit"://重置采购
 				doDeleteInit();
@@ -283,6 +291,13 @@ public class PurchasePlanAction extends BaseAction {
 
 	}
 	
+
+	public void showPurchasePlanPei() throws Exception{
+
+		purchaseService.showPurchasePlanPei();		
+
+	}
+	
 	public void doPurchasePlanAdd() throws Exception {
 
 		model = purchaseService.insertAndView();
@@ -296,6 +311,13 @@ public class PurchasePlanAction extends BaseAction {
 	
 	
 	public void doEdit() throws Exception{
+		
+		purchaseService.editPurchasePlan();
+
+	}	
+	
+
+	public void doEditPei() throws Exception{
 		
 		purchaseService.editPurchasePlan();
 
@@ -338,6 +360,12 @@ public class PurchasePlanAction extends BaseAction {
 	public void doUpdate() throws Exception {
 		
 		purchaseService.updateAndView();			
+
+	}
+
+	public void doUpdatePei() throws Exception {
+		
+		purchaseService.updatePeiAndView();			
 
 	}
 

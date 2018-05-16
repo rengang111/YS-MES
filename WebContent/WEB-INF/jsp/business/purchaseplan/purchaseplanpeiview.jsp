@@ -64,11 +64,15 @@ function initEvent(){
 			});
 			var materialId='${order.materialId}';
 			var YSId ="${order.YSId}";
+			var peiYsid ="${order.peiYsid}";
 			var quantity ="${order.quantity}";
 			var contractDelivery=$('#contractDelivery').val();
-			var actionUrl = "${ctx}/business/contract?methodtype=creatPurchaseOrder&YSId="
-			+YSId+"&materialId="+materialId+"&contractDelivery="+contractDelivery
-			+"&quantity="+quantity;
+			var actionUrl = "${ctx}/business/contract?methodtype=creatPurchaseOrder"
+				+"&YSId="+YSId
+				+"&materialId="+materialId
+				+"&contractDelivery="+contractDelivery
+				+"&peiYsid="+peiYsid
+				+"&quantity="+quantity;
 
 			if (str != '') {
 
@@ -113,41 +117,21 @@ function initEvent(){
 		$("#editPurchasePlan").click(function() {
 
 			var YSId ="${order.YSId}";
-			var actionUrl = "${ctx}/business/arrival?methodtype=getArrivalByYSId&YSId="+YSId;
+			var peiYsid ="${order.peiYsid}";
+			var orderType = "${order.orderType}";
 
-			var editFlag = true;
-/*
-			jQuery.ajax({
-				type : 'POST',
-				async: false,
-				contentType : 'application/json',
-				dataType : 'json',
-				data : null,
-				url : actionUrl,
-				async: false, //同步请求，默认情况下是异步（true）
-				success : function(data) {
-					var record = data["recordCount"];
-					if(record > '0'){
-						editFlag = false;						
-					}
-					
-				},									
-				error:function(XMLHttpRequest, textStatus, errorThrown){
-	            	alert("error:"+errorThrown);
-				}
-			});
-			
-			if(editFlag == false){			
-				$().toastmessage('showWarningToast', "采购方案已经开始执行了,不能修改。");
-				return false;
-			}		
-				*/		
+			var action = "purchasePlanEdit";
+			if(orderType == '020')
+				action = "purchasePlanEditPei";
+				
 			var materialId='${order.materialId}';
 			var quantity ="${order.quantity}";
 			var backFlag = $("#backFlag").val();
 			$('#attrForm').attr("action",
-					"${ctx}/business/purchasePlan?methodtype=purchasePlanEdit"
+					"${ctx}/business/purchasePlan?methodtype=" + action
 							+"&YSId="+YSId
+							+"&peiYsid="+peiYsid
+							+"&orderType="+orderType							
 							+"&materialId="+materialId
 							+"&backFlag="+backFlag
 							+"&quantity="+quantity);
@@ -406,6 +390,10 @@ function initEvent(){
 function contractTableView() {
 
 	var YSId='${order.YSId}';
+	var peiYsid='${order.peiYsid}';//配件订单
+
+	if(myTrim(peiYsid) != "")
+		YSId = peiYsid;
 	var table = $('#contractTable').dataTable();
 	if(table) {
 		table.fnDestroy();

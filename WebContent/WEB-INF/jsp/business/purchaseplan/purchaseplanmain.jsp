@@ -74,8 +74,15 @@
 	    		}},
 	    		{"targets":1,"render":function(data, type, row){
 	    			var rtn = "";
+	    			var ysid = row["YSId"];
+	    			var peiYsid = row["peiYsid"];
+	    			var orderType = row["orderType"];
+	    			//if(orderType == '020'){
+	    			//	ysid = peiYsid;
+	    			//}
 	    			rtn= "<a href=\"###\" onClick=\"doShow('"+ 
-	    					row["YSId"] 		+ "','"+ 
+	    					ysid 				+ "','"+ 
+	    					peiYsid				+ "','"+ 
 	    					row["materialId"] 	+ "','"+ 
 	    					row["PIId"] 		+ "','"+ 
 	    					row["orderType"] 	+ "','"+ 
@@ -133,7 +140,7 @@
 	}
 	
 
-	function doShow(YSId,materialId,PIId,orderType,planYsid) {
+	function doShow(YSId,peiYsid,materialId,PIId,orderType,planYsid) {
 
 		var backFlag = 'purchasePlan';
 		var action = 'purchasePlanAddInit';
@@ -153,6 +160,7 @@
 				
 		var url = '${ctx}/business/purchasePlan?methodtype='+action
 				+'&YSId=' + YSId
+				+'&peiYsid='+peiYsid
 				+'&materialId='+materialId
 				+'&PIId='+PIId
 				+'&orderType='+orderType

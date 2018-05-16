@@ -74,7 +74,14 @@
 			],
 			"columnDefs":[	    		
 	    		{"targets":0,"render":function(data, type, row){
-	    				return row["rownum"];
+	    			var followFlag = row["status"];
+	    			var YSId = row["YSId"];
+	    			
+	    			var imgName = "follow1";
+	    			if(followFlag == '0'){
+	    				imgName = "follow2";
+	    			}
+	    				return row["rownum"]+'<input type="image" style="border: 0px;" src="${ctx}/images/'+imgName+'.png" onclick="setFollow('+YSId+');return false;"/>';
 	    		}},
 	    		{"targets":1,"render":function(data, type, row){
 	    			var rtn = "";
@@ -83,7 +90,7 @@
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var name = row["materialName"];		    			
-	    			name = jQuery.fixedWidth(name,60);		    			
+	    			name = jQuery.fixedWidth(name,60);
 	    			return name;
 	    		}},
 	    		{"visible" : false,"targets" : [ ]
@@ -105,8 +112,6 @@
 	            $(this).addClass('selected');
 	        }
 		});
-		
-		
 	}
 
 
@@ -139,6 +144,30 @@
 				+ YSId+'&materialId='+materialId;
 
 		location.href = url;
+	}
+	
+	function setFollow(YSId){
+		
+		$.ajax({
+			type : "post",
+			url : "${ctx}/business/order?methodtype=setOrderFollow"+"&YSId="+YSId,
+			async : false,
+			data : 'key=' + YSId,
+			dataType : "json",
+			contentType: "application/x-www-form-urlencoded; charset=utf-8",
+			success : function(data) {
+				var jsonObj = data;
+				
+				$().toastmessage('showNoticeToast', "重点关注成功。");
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+			}
+		});
+		
+		$('#example').DataTable().ajax.reload(false);
 	}
 </script>
 </head>

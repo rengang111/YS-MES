@@ -955,7 +955,9 @@ public class PurchaseOrderService extends CommonService {
 	public void creatPurchaseOrder(String inData) throws Exception {
 		
 		String YSId = request.getParameter("YSId");
-		//String supplierId = request.getParameter("supplierId");
+		String peiYsid = request.getParameter("peiYsid");
+		if(notEmpty(peiYsid))
+			YSId = peiYsid;
 		
 		insert(YSId,inData);
 		

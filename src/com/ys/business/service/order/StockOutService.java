@@ -785,8 +785,7 @@ public class StockOutService extends CommonService {
 		B_StockOutDetailDao dao = new B_StockOutDetailDao();
 		//
 		String where = "stockoutId = '" + stockoutId  +"' AND deleteFlag = '0' ";
-		List<B_StockOutDetailData> list  = 
-				new B_RequisitionDetailDao().Find(where);
+		List<B_StockOutDetailData> list  = dao.Find(where);
 		if(list ==null || list.size() == 0)
 			return ;
 		

@@ -133,9 +133,15 @@
 		        	{"data": null,"className":"dt-body-center"
 				}, {"data": "materialId","className":"td-left"
 				}, {"data": "materialName"
-				}, {"data": "quantity","className":"td-center"
+				}, {"data": "quantity","className":"td-right"
+				}, {"data": null,"className":"td-right","defaultContent" : ''
 				}
-			] 
+			] ,
+			"columnDefs":[
+				    		{"targets":3,"render":function(data, type, row){
+				    			return floatToCurrency(data);
+				    		}},
+				    	]     
 			
 			
 		}).draw();
@@ -285,6 +291,7 @@
 						<th class="dt-center" width="200px">物料编号</th>
 						<th class="dt-center" >物料名称</th>	
 						<th class="dt-center" width="150px">当前出库数量</th>
+						<th class="dt-center" width="50px"></th>
 					</tr>
 				</thead>
 			</table>
