@@ -143,7 +143,7 @@ var GcontractStatusFlag="false";
 				{"data": "contractSupplierId","className" : '', "defaultContent" : ''},//4.供应商
 				{"data": "contractQty","className" : 'td-right'},//5.合同数量
 				{"data": "stockinQty","className" : 'td-right'},//6.入库数量
-				{"data": "waitStockIn","className" : 'td-right'},//7.待入库
+				{"data": "arrivalCount","className" : 'td-right'},//7.到货未检
 				{"data": "waitStockOut","className" : 'td-right'},//8.待出库
 				{"data": "quantityOnHand","className" : 'td-right', "defaultContent" : '0'},//9.当前库存
 				{"data": "availabelToPromise","className" : 'td-right', "defaultContent" : '0'},//10.虚拟库存
@@ -151,7 +151,7 @@ var GcontractStatusFlag="false";
 				],
 			"columnDefs":[
 	    		{"targets":2,"render":function(data, type, row){	 			
-	    			return jQuery.fixedWidth(row["materialName"],48);	
+	    			return jQuery.fixedWidth(row["materialName"],32);	
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			if(data == ''){
@@ -205,7 +205,7 @@ var GcontractStatusFlag="false";
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : [7,8,10]
+					"targets" : [8,10]
 				},
 	    		{ "bSortable": false, "aTargets": [0] }
 	          
@@ -328,7 +328,7 @@ var GcontractStatusFlag="false";
 							<th width="60px">供应商</th>
 							<th width="60px">合同数量</th>
 							<th width="60px">入库数量</th>
-							<th width="60px">待入库</th>
+							<th width="60px">到货未检</th>
 							<th width="60px">待出库</th>
 							<th width="60px">实际库存</th>
 							<th width="60px">虚拟库存</th>

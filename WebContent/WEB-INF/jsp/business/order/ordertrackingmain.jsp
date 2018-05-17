@@ -25,7 +25,7 @@
 			"processing" : true,
 			"serverSide" : true,
 			"stateSave" : false,
-			//"ordering "	:true,
+			"ordering "	:true,
 			"searching" : false,
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
@@ -78,9 +78,9 @@
 	    			var YSId = row["YSId"];	var imgName = "follow1"; var altMsg="重点关注";
 	    			if(followFlag == '0'){
 	    				imgName = "follow2";
-	    				var altMsg="已关注";
+	    				var altMsg="取消关注";
 	    			}
-	    			return row["rownum"]+'<input type="image" alt="'+altMsg+'" style="border: 0px;" src="${ctx}/images/'+imgName+'.png" onclick="setFollow(\''+YSId+'\');return false;"/>';
+	    			return row["rownum"]+'<input type="image" title="'+altMsg+'" style="border: 0px;" src="${ctx}/images/'+imgName+'.png" onclick="setFollow(\''+YSId+'\');return false;"/>';
 	    		}},
 	    		{"targets":1,"render":function(data, type, row){
 	    			var rtn = "";
@@ -92,9 +92,19 @@
 	    			name = jQuery.fixedWidth(name,60);
 	    			return name;
 	    		}},
+	    		{"targets":6,"render":function(data, type, row){//备货状态
+	    			var contractQty = currencyToFloat(row["contractQty"]);
+	    			var stockinQty  = currencyToFloat(row["stockinQty"]);
+
+	    			var rtn = "已备齐";
+	    			if(stockinQty < contractQty){
+	    				rtn = "未齐";
+	    			}
+	    			return rtn;
+	    		}},
 	    		{"visible" : false,"targets" : [ ]
 				},
-				{"bSortable": false, "aTargets": [ 0,6 ] 
+				{"bSortable": false, "aTargets": [ ] 
                 }
          	] ,
          	//"aaSorting": [[ 1, "ASC" ]]
@@ -142,7 +152,7 @@
 		var url = '${ctx}/business/order?methodtype=orderTrackingShow&YSId=' 
 				+ YSId+'&materialId='+materialId;
 
-		location.href = url;
+		callProductDesignView("订单跟踪",url);
 	}
 	
 	function setFollow(YSId){
@@ -189,29 +199,37 @@
 						<tr>
 							<td width="10%"></td> 
 							<td class="label">关键字1：</td>
-							<td class="condition">
-								<input type="text" id="keyword1" name="keyword1" class="middle"/>
-							</td>
-							<td class="label">关键字2：</td> 
-							<td class="condition">
-								<input type="text" id="keyword2" name="keyword2" class="middle"/>
-							</td>
+							<td>
+								<input type="text" id="keyword1" name="keyword1" class="middle"/></td>
+							<td class="label" width="100px">关键字2：</td> 
+							<td>
+								<input type="text" id="keyword2" name="keyword2" class="middle"/></td>
 							<td>
 								<button type="button" id="retrieve" class="DTTT_button" 
-									style="width:50px" value="查询" onclick="doSearch();">查询</button>
-							</td>
+									style="width:50px" value="查询" onclick="doSearch();">查询</button></td>
 							<td width="10%"></td> 
+						</tr>
+						<tr style="height: 25px;">
+							<td width="10%"></td> 
+							<td class="label">备货情况：</td>
+							<td>
+								<label><input type="radio" name="stockUp"  value="0" />全部</label>
+								<label><input type="radio" name="stockUp"  value="1" />已备齐</label>
+								<label><input type="radio" name="stockUp"  value="2" checked/>未齐</label>
+							</td>
+							<td class="label">重点关注：</td>
+							<td>
+								<label><input type="radio" name="orderFollow"  value="" checked />全部</label>
+								<label><input type="radio" name="orderFollow"  value="0" />重点关注</label>
+							</td>
+							<td ></td> 
 						</tr>
 					</table>
 
 				</form>
 			</div>
 			<div  style="height:10px"></div>		
-			<div class="list">			
-				<div id="DTTT_container2" style="height:40px;float: left">
-					<a  class="DTTT_button box" onclick="doSearchCustomer('0');">货已备齐</a>
-					<a  class="DTTT_button box" onclick="doSearchCustomer('1'); " id="defutBtn">未齐</a>
-				</div>				
+			<div class="list">	
 				<table id="TMaterial" class="display"  style="width:100%">
 					<thead>						
 						<tr>
@@ -221,7 +239,7 @@
 							<th class="dt-middle ">产品名称</th>
 							<th style="width: 60px;" class="dt-middle ">订单交期</th>
 							<th style="width: 80px;" class="dt-middle ">订单数量</th>
-							<th style="width: 30px;" class="dt-middle "></th>
+							<th style="width: 60px;" class="dt-middle ">备货状态</th>
 						</tr>
 					</thead>
 				</table>

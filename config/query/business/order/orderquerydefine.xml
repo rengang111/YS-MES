@@ -108,6 +108,7 @@
    	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="A.status"  des=""  reqName="status" dtype="ch" oper="in"  lg="AND" bt="" />
    	  <w name="A.orderNature"  des=""  reqName="orderNature" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="d.status"  des=""  reqName="follow" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.materialId" alias="" ctype="" />
@@ -507,7 +508,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.supplierId = c.supplierId AND a.materialId = c.materialId AND c.deleteFlag = '0'  LEFT JOIN v_arrival_groupby_ysid e ON a.YSId=e.YSId AND a.materialId=e.materialId LEFT JOIN v_purchasestockindetailgroup f ON a.YSId=f.YSId AND a.materialId=f.materialId LEFT JOIN v_inspectionreturngroup g ON g.YSId=a.YSId AND a.materialId = g.materialId where a.deleteFlag='0' </from>
+   <from>v_purchaseplan a LEFT JOIN b_PriceReference b ON a.materialId = b.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.ysid = c.ysid  AND a.supplierId = c.supplierId AND a.materialId = c.materialId AND c.deleteFlag = '0'  LEFT JOIN ( SELECT a.YSId,a.materialId, sum( REPLACE (a.quantity, ',', '') ) AS arrivalCount FROM b_arrival a WHERE (a.deleteFlag = '0') AND a.status = '010' GROUP BY a.YSId,a.materialId ) e ON a.YSId=e.YSId AND a.materialId=e.materialId LEFT JOIN v_purchasestockindetailgroup f ON a.YSId=f.YSId AND a.materialId=f.materialId LEFT JOIN v_inspectionreturngroup g ON g.YSId=a.YSId AND a.materialId = g.materialId where a.deleteFlag='0' </from>
     <orderby>a.subBomNo+0,a.materialId</orderby>
     <groupby></groupby>
     <having>stockinQty &lt; contractQty OR contractId =''</having>

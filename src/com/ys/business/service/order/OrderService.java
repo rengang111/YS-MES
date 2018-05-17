@@ -151,26 +151,32 @@ public class OrderService extends CommonService  {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];		
 
+		String having = "1=1";
+		String follow = "";
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("orderTrackingList");	
+		dataModel.setQueryName("orderTrackingList");
+		
+		if(isNullOrEmpty(key1) && isNullOrEmpty(key2)){
+			follow  = getJsonData(data, "orderFollow");//重点关注
+			String stockUp = getJsonData(data, "stockUp");//备货情况
+			if(("1").equals(stockUp)){
+				//货已备齐
+				having = "CAST(contractQty AS DECIMAL) = CAST(stockinQty AS DECIMAL)";
+			}else if(("2").equals(stockUp)){
+				//未齐
+				having = "CAST(contractQty AS DECIMAL) > CAST(stockinQty AS DECIMAL)";
+			}
+		}
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		if(notEmpty(key1) || notEmpty(key2))
-			userDefinedSearchCase.put("status", "");
+		userDefinedSearchCase.put("follow", follow);
 		
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = baseQuery.getSql();//getSortKeyFormWeb(data,baseQuery);	
-		String having = "1=1";
-		String sqlFlag = request.getParameter("sqlFlag");
-		if(("0").equals(sqlFlag)){
-			//货已备齐
-			having = "CAST(contractQty AS DECIMAL) = CAST(stockinQty AS DECIMAL)";
-		}else if(("1").equals(sqlFlag)){
-			//未齐
-			having = "CAST(contractQty AS DECIMAL) > CAST(stockinQty AS DECIMAL)";
-		}
+		
+		String sql = getSortKeyFormWeb(data,baseQuery);	
 		sql = sql.replace("#", having);
+		System.out.println("订单跟踪:"+sql);
 		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
