@@ -21,8 +21,10 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.OrderModel;
+import com.ys.business.db.dao.B_FollowDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
+import com.ys.business.db.data.B_FollowData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -158,7 +160,7 @@ public class OrderService extends CommonService  {
 		
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
+		String sql = baseQuery.getSql();//getSortKeyFormWeb(data,baseQuery);	
 		String having = "1=1";
 		String sqlFlag = request.getParameter("sqlFlag");
 		if(("0").equals(sqlFlag)){
@@ -1121,6 +1123,60 @@ public class OrderService extends CommonService  {
 		
 		HashMap.put("data", dataModel.getYsViewData());
 		
+		return HashMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> setOrderFollow() throws Exception {
+	
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		String followStatus = "";
+
+		String YSId = request.getParameter("YSId");
+		String where = " YSId='"+ YSId +"' and followType='"+Constants.FOLLOWTYPE_1+"' ";
+		List<B_FollowData> list = new B_FollowDao().Find(where);
+		if(list.size() > 0){
+			
+			B_FollowData data = list.get(0);		
+			String status = data.getStatus();
+			
+			if((Constants.FOLLOWSTATUS_0).equals(status)){
+				//取消关注
+				data.setStatus(Constants.FOLLOWSTATUS_1);//取消关注
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"OrderFollowDelete",userInfo);
+			}else{
+				//再次关注
+				data.setStatus(Constants.FOLLOWSTATUS_0);//关注
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"OrderFollowInsert",userInfo);
+			}
+			copyProperties(data,commData);
+			
+			
+			new B_FollowDao().Store(data);
+			
+			followStatus = data.getStatus();
+		}else{
+			//首次关注
+			B_FollowData data = new B_FollowData();		
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"OrderFollowInsert",userInfo);
+			copyProperties(data,commData);
+			
+			guid = BaseDAO.getGuId();
+			data.setRecordid(guid);
+			data.setYsid(YSId);
+			data.setFollowtype(Constants.FOLLOWTYPE_1);//订单
+			data.setStatus(Constants.FOLLOWSTATUS_0);//关注
+			
+			new B_FollowDao().Create(data);
+
+			followStatus = data.getStatus();
+		}
+
+		HashMap.put("status", followStatus);
 		return HashMap;
 	}
 }

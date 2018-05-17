@@ -1869,7 +1869,8 @@ public class PurchasePlanService extends CommonService {
 	private void insertStockOutCorrection(
 			B_StockOutCorrectionData data) throws Exception{
 
-		String where = " YSId = '" + data.getYsid() + "' ";
+		String where = " YSId = '" + data.getYsid() + "' " +
+				" materialId = '" + data.getMaterialid() + "' ";
 		try {
 			new B_StockOutCorrectionDao().RemoveByWhere(where);	
 		} catch (Exception e1) {

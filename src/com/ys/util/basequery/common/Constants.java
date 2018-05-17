@@ -270,5 +270,13 @@ public class Constants {
 	public static final String STOCKOUTTYPE_3 = "030";//原材料出库
 	public static final String STOCKOUTTYPE_51 = "051";//单独出库
 	public static final String STOCKOUTTYPE_52 = "052";//研发出库
+	
+	/**
+	 * 重点关注对象
+	 */
+	public static final String FOLLOWTYPE_1 = "1";//订单
+	
+	public static final String FOLLOWSTATUS_0 = "0";//关注
+	public static final String FOLLOWSTATUS_1 = "1";//取消关注
 
 }

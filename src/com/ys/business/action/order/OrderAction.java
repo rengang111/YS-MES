@@ -164,6 +164,10 @@ public class OrderAction extends BaseAction {
 				dataMap = getYsidList();
 				printOutJsonObj(response, dataMap);
 				return null;
+			case "setOrderFollow"://设置重点关注订单
+				dataMap = setOrderFollow();
+				printOutJsonObj(response, dataMap);
+				return null;
 				
 		}
 		
@@ -593,6 +597,12 @@ public class OrderAction extends BaseAction {
 	public HashMap<String, Object> purchasePlanView() throws Exception {
 		
 		return orderService.getOrderTrackingDetail();		
+		
+	}
+	
+	public HashMap<String, Object> setOrderFollow() throws Exception {
+		
+		return orderService.setOrderFollow();		
 		
 	}
 }

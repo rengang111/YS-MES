@@ -25,7 +25,7 @@
 			"processing" : true,
 			"serverSide" : true,
 			"stateSave" : false,
-			"ordering "	:true,
+			//"ordering "	:true,
 			"searching" : false,
 			"pagingType" : "full_numbers",
 			"retrieve" : true,
@@ -50,7 +50,7 @@
 						$("#keyword1").val(key1);
 						$("#keyword2").val(key2);
 						
-						if(myTrim(key1) == "" && myTrim(key2) == ""){
+						if(key1 == "" && key2 == ""){
 						 	$('#defutBtn').removeClass("start").addClass("end");							
 						}else{							
 						 	$('#defutBtn').removeClass("end").addClass("start");
@@ -74,14 +74,13 @@
 			],
 			"columnDefs":[	    		
 	    		{"targets":0,"render":function(data, type, row){
-	    			var followFlag = row["status"];
-	    			var YSId = row["YSId"];
-	    			
-	    			var imgName = "follow1";
+	    			var followFlag = row["followStatus"];
+	    			var YSId = row["YSId"];	var imgName = "follow1"; var altMsg="重点关注";
 	    			if(followFlag == '0'){
 	    				imgName = "follow2";
+	    				var altMsg="已关注";
 	    			}
-	    				return row["rownum"]+'<input type="image" style="border: 0px;" src="${ctx}/images/'+imgName+'.png" onclick="setFollow('+YSId+');return false;"/>';
+	    			return row["rownum"]+'<input type="image" alt="'+altMsg+'" style="border: 0px;" src="${ctx}/images/'+imgName+'.png" onclick="setFollow(\''+YSId+'\');return false;"/>';
 	    		}},
 	    		{"targets":1,"render":function(data, type, row){
 	    			var rtn = "";
@@ -98,7 +97,7 @@
 				{"bSortable": false, "aTargets": [ 0,6 ] 
                 }
          	] ,
-         	"aaSorting": [[ 1, "ASC" ]]
+         	//"aaSorting": [[ 1, "ASC" ]]
 	    		
 		});
 		
@@ -156,9 +155,13 @@
 			dataType : "json",
 			contentType: "application/x-www-form-urlencoded; charset=utf-8",
 			success : function(data) {
-				var jsonObj = data;
-				
-				$().toastmessage('showNoticeToast', "重点关注成功。");
+				//var jsonObj = data;
+				status = data["status"];
+				if(status == '0'){
+					$().toastmessage('showNoticeToast', "重点关注成功。");
+				}else{
+					$().toastmessage('showNoticeToast', "取消关注。");
+				}
 			},
 			error : function(
 					XMLHttpRequest,
@@ -167,7 +170,7 @@
 			}
 		});
 		
-		$('#example').DataTable().ajax.reload(false);
+		$('#TMaterial').DataTable().ajax.reload(false);
 	}
 </script>
 </head>
