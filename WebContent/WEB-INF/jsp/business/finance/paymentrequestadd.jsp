@@ -34,12 +34,42 @@
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
-			
-				
+				{"className" : 'td-right'},//
+				{"className" : 'td-right'},//
+				{"className" : 'td-left'},//
 			],	
 			
 		});		
-						
+			
+		t.on('change', 'tr td:nth-child(9)',function() {
+
+			var $td = $(this).parent().find("td");
+
+			var $oPayment = $td.eq(7).find("span");//应付款
+			var $oTaxRate = $td.eq(8).find("option:checked");//退税率
+			var $oTaxesS = $td.eq(9).find("span");//税
+			var $oTaxesI = $td.eq(9).find("input");//税
+			var $oTaxExcludedS = $td.eq(10).find("span");//价
+			var $oTaxExcludedI = $td.eq(10).find("input");//价
+			
+			var fPayment = currencyToFloat($oPayment.text());
+			var fTaxRate = currencyToFloat($oTaxRate.val());
+			
+			var fTaxes = fPayment * (fTaxRate / 100);//税
+			var fTaxExcluded = fPayment - fTaxes;//价
+
+			var vTaxes = floatToCurrency(fTaxes);
+			var vTaxExcluded = floatToCurrency(fTaxExcluded);
+			
+			$oTaxesS.text(vTaxes);
+			$oTaxesI.val(vTaxes);
+			$oTaxExcludedS.text(vTaxExcluded);
+			$oTaxExcludedI.val(vTaxExcluded);
+			//
+			doComputeTax();//价税计算
+
+		});
+		
 		t.on('click', 'tr', function() {
 			if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
@@ -130,15 +160,25 @@
 			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
 		});
 		
-		var contract = contractSum(5);
-		var minis = contractSum(6);
-		var payment = contractSum(7);
-		$('#contractTotal').html(floatToCurrency(contract));
-		$('#minisTotal').html(floatToCurrency(minis));
-		$('#paymentTotal').html(floatToCurrency(payment));		
-		$('#payment\\.totalpayable').val(floatToCurrency(payment));
+		doComputeTax();//价税计算
+		
 		
 	});
+	
+	function doComputeTax(){
+		
+		var contract = contractSum(5);//合同总金额
+		var minis = contractSum(6);//增加项
+		var payment = contractSum(7);//应付款
+		var taxes = contractSum(9);//税
+		var taxExcluded = contractSum(10);//价
+		$('#contractTotal').html(floatToCurrency(contract));
+		$('#minisTotal').html(floatToCurrency(minis));
+		$('#paymentTotal').html(floatToCurrency(payment));
+		$('#taxesTotal').html(floatToCurrency(taxes));
+		$('#taxExcludedTotal').html(floatToCurrency(taxExcluded));
+		$('#payment\\.totalpayable').val(floatToCurrency(payment));
+	}
 	
 	function doEdit(contractId,arrivalId) {
 		
@@ -389,7 +429,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >提交申请</a>
-		<a class="DTTT_button DTTT_button_text" id="insert" onclick="doPrintReceiptList();return false;">批量打印入库单</a>
+		<a class="DTTT_button DTTT_button_text" onclick="doPrintReceiptList();return false;">批量打印入库单</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
@@ -398,14 +438,17 @@ function uploadPhoto(tableId,tdTable, id) {
 		<table id="example" class="display" >
 			<thead>				
 				<tr>
-					<th width="30px">No</th>
+					<th width="10px">No</th>
 					<th width="100px">合同编号</th>
-					<th width="120px">入库单号</th>
+					<th width="80px">入库单号</th>
 					<th width="80px">耀升编号</th>
-					<th width="80px">约定付款日</th>
-					<th width="90px">合同金额</th>
-					<th width="80px">增减项总额</th>
-					<th width="90px">应付款金额</th>
+					<th width="70px">约定付款日</th>
+					<th width="60px">合同金额</th>
+					<th width="50px">增减项</th>
+					<th width="60px">应付款</th>
+					<th width="50px">退税率</th>
+					<th width="50px">税</th>
+					<th width="60px">价</th>
 					<th>操作</th>
 				</tr>
 			</thead>
@@ -413,15 +456,24 @@ function uploadPhoto(tableId,tdTable, id) {
 				<c:forEach var='list' items='${contract}' varStatus='status'>	
 					<tr>
 						<td class="td-center">${status.index+1 }</td>
-						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a></td>
+						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a>
+							<form:hidden path="contractList[${status.index}].contractid"  value="${list.contractId }" /></td>
 						<td><a href="###" onClick="receiptView('${list.contractId }')">${list.receiptId }</a></td>
 						<td>${list.YSId }</td>
 						<td class="td-center">${list.agreementDate }</td>
 						<td class="td-right">${list.totalPrice }</td>
 						<td class="td-right"><span id="chargeback${status.index }"></span></td>
 						<td class="td-right"><span id="payment${status.index }"></span></td>
+						<td class="td-right">
+							<form:select path="contractList[${status.index}].taxrate">
+								<form:options items="${taxRateList}"  itemValue="key" itemLabel="value" />
+							</form:select></td>
+						<td class="td-right"><span id="taxes${status.index}"></span>
+							<form:hidden path="contractList[${status.index}].taxes" /></td>
+						<td class="td-right"><span id="taxexcluded${status.index}"></span>
+							<form:hidden path="contractList[${status.index}].taxexcluded" /></td>
 						<td class="td-center">
-							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>&nbsp;&nbsp;
+							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a><br>
 							<a href="###" onClick="doShowStockin('${list.contractId }')">打印入库单</a>
 						</td>
 							<form:hidden path="paymentList[${status.index }].recordid"    value="${list.detailRecordId }" />
@@ -431,11 +483,24 @@ function uploadPhoto(tableId,tdTable, id) {
 					<script type="text/javascript">
 						var contract = currencyToFloat('${list.totalPrice }');
 						var chargeback = currencyToFloat('${list.chargeback }');
-						var payment = floatToCurrency( contract + chargeback );
-						var index = ${status.index }
-						//alert('payment--chargeback:'+chargeback+'---'+payment)
-						$('#payment'+index).html(payment);
+						var payment = contract + chargeback;
+						var index = ${status.index };
+						
+						var taxrate =  $("#contractList" + index + "\\.taxrate").val() / 100;//退税率
+						var taxes = payment * taxrate;//应付款 * 税率 = 税
+						var taxexcluded =  payment - taxes ; //应付款 - 税 = 价
+						
+						var vtaxes = floatToCurrency(taxes);
+						var vtaxexcluded = floatToCurrency(taxexcluded);
+						
+						//alert("payment-taxrate-taxes-taxexcluded："+payment+"--"+taxrate+"--"+taxes+"--"+taxexcluded)
+						$("#contractList" + index + "\\.taxes").val(vtaxes);
+						$('#taxes'+index).html(vtaxes);
+						$("#contractList" + index + "\\.taxexcluded").val(vtaxexcluded);
+						$('#taxexcluded'+index).html(vtaxexcluded);
+						$('#payment'+index).html(floatToCurrency(payment));
 						$('#chargeback'+index).html(floatToCurrency(chargeback));
+						
 					</script>
 				</c:forEach>
 			</tbody>
@@ -449,6 +514,9 @@ function uploadPhoto(tableId,tdTable, id) {
 					<td><span id="contractTotal" style="font-weight: bold;"></span></td>
 					<td><span id="minisTotal" style="font-weight: bold;"></span></td>
 					<td><span id="paymentTotal" style="font-weight: bold;"></span></td>
+					<td></td>
+					<td><span id="taxesTotal" style="font-weight: bold;"></span></td>
+					<td><span id="taxExcludedTotal" style="font-weight: bold;"></span></td>
 					<td></td>
 				</tr>
 			</tfoot>

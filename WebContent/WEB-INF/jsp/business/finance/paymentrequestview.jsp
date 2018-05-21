@@ -33,7 +33,10 @@
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
-				{"className" : 'td-right'},//			
+				{"className" : 'td-right'},//
+				{"className" : 'td-right'},//
+				{"className" : 'td-right'},//
+				{"className" : 'td-left'},//			
 				
 			],	
 			
@@ -186,15 +189,24 @@
 		materialzzAjax();
 		productPhotoView();
 		
-		var contract = contractSum(5);
-		var minis = contractSum(6);
-		var payment = contractSum(7);
-		$('#contractTotal').html(floatToCurrency(contract));
-		$('#minisTotal').html(floatToCurrency(minis));
-		$('#paymentTotal').html(floatToCurrency(payment));		
-		$('#payment\\.totalpayable').val(floatToCurrency(payment));
+		doComputeTax();
 		
 	});
+	
+	function doComputeTax(){
+		
+		var contract = contractSum(5);//合同总金额
+		var minis = contractSum(6);//增加项
+		var payment = contractSum(7);//应付款
+		var taxes = contractSum(9);//税
+		var taxExcluded = contractSum(10);//价
+		$('#contractTotal').html(floatToCurrency(contract));
+		$('#minisTotal').html(floatToCurrency(minis));
+		$('#paymentTotal').html(floatToCurrency(payment));
+		$('#taxesTotal').html(floatToCurrency(taxes));
+		$('#taxExcludedTotal').html(floatToCurrency(taxExcluded));
+		$('#payment\\.totalpayable').val(floatToCurrency(payment));
+	}
 	
 	function doEdit(contractId,arrivalId) {
 		
@@ -397,7 +409,7 @@ function photoView(id, tdTable, count, data) {
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="update" >修改</a>
+	<!-- 	<a class="DTTT_button DTTT_button_text" id="update" >修改</a> -->
 		<a class="DTTT_button DTTT_button_text" id="insert" onclick="doPrintReceiptList();return false;">打印入库单</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
@@ -407,14 +419,17 @@ function photoView(id, tdTable, count, data) {
 		<table id="example" class="display" >
 			<thead>				
 				<tr>
-					<th width="30px">No</th>
-					<th width="120px">合同编号</th>
-					<th width="120px">入库单号</th>
+					<th width="10px">No</th>
+					<th width="100px">合同编号</th>
+					<th width="80px">入库单号</th>
 					<th width="80px">耀升编号</th>
-					<th width="80px">约定付款日</th>
-					<th width="100px">合同金额</th>
-					<th width="100px">增减项总额</th>
-					<th width="100px">应付款金额</th>
+					<th width="70px">约定付款日</th>
+					<th width="60px">合同金额</th>
+					<th width="50px">增减项</th>
+					<th width="60px">应付款</th>
+					<th width="50px">退税率</th>
+					<th width="50px">税</th>
+					<th width="60px">价</th>
 					<th>操作</th>
 				</tr>
 			</thead>
@@ -429,6 +444,9 @@ function photoView(id, tdTable, count, data) {
 						<td>${list.totalPrice }</td>
 						<td class="td-right"><span id="chargeback${status.index }"></span></td>
 						<td class="td-right"><span id="payment${status.index }"></span></td>
+						<td class="td-right">${list.taxRate }</td>
+						<td class="td-right">${list.taxes }</td>
+						<td class="td-right">${list.taxExcluded }</td>
 						<td class="td-center">
 							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>
 						</td>
@@ -456,6 +474,9 @@ function photoView(id, tdTable, count, data) {
 					<td><span id="contractTotal" style="font-weight: bold;"></span></td>
 					<td><span id="minisTotal" style="font-weight: bold;"></span></td>
 					<td><span id="paymentTotal" style="font-weight: bold;"></span></td>
+					<td></td>
+					<td><span id="taxesTotal" style="font-weight: bold;"></span></td>
+					<td><span id="taxExcludedTotal" style="font-weight: bold;"></span></td>
 					<td></td>
 				</tr>
 			</tfoot>

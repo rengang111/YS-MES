@@ -203,9 +203,11 @@
 		if (str == '') {
 			alert("请至少选择一条数据");
 			return;
-		}		
+		}	
+		var paymentTypeId = $("#paymentTypeId").val();	
 		var url = '${ctx}/business/payment?methodtype=addinit';
 		url = url +"&contractIds="+str;
+		url = url +"&paymentTypeId="+paymentTypeId;
 		location.href = url;
 		
 	}

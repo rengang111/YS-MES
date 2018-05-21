@@ -313,9 +313,11 @@
 					<td class="label">客户名称：</td>				
 					<td colspan="3">${order.customerId}（${order.shortName}）${order.fullName}</td>
 					<td class="label">下单公司：</td>				
-					<td colspan="3">${order.orderCompanyName}</td>
-						
-
+					<td>${order.orderCompanyName}</td>
+					<!-- 
+					<td class="label" width="100px">退税率：</td>				
+					<td>${order.rebateRate}</td>
+						 -->
 				</tr>						
 				<tr> 
 					<td class="label">付款条件：</td>

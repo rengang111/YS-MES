@@ -38,7 +38,16 @@ public class OrderModel extends BaseModel {
 	private String attribute3 = "";
 	private String attributeList1 = "";
 	private String currency;
+	private String rebateRate;//退税率
 
+
+	public String getRebateRate() {
+		return this.rebateRate;
+	}
+	public void setRebateRate(String rebateRate) {
+		this.rebateRate = rebateRate;
+	}
+	
 	public ArrayList<ListOption> getOrderNatureList() {
 		return this.orderNatureList;
 	}

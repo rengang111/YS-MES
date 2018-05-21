@@ -20,6 +20,7 @@ import com.ys.business.action.model.order.PurchaseOrderModel;
 import com.ys.business.service.order.PurchaseOrderService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.DicUtil;
 import com.ys.util.basequery.common.Constants;
 
 @Controller
@@ -281,9 +282,7 @@ public class PurchaseOrderAction extends BaseAction {
 	
 	public void editPurchaseOrder() throws Exception {
 		
-		String contractId = reqModel.getContract().getContractid();
-		
-		service.getContractDetailList(contractId);			
+		service.editPurchaseOrder();
 		
 	}
 	

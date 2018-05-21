@@ -438,12 +438,13 @@
 				<tr>
 					<td class="label">&nbsp;客户名称：</td>				
 					<td colspan="3">${order.customerId }（${order.shortName }）${order.fullName }</td>
-					<td class="label">下单公司：</td>				
+					<td class="label" width="100px">下单公司：</td>				
 					<td colspan="3">
 						<form:select path="order.ordercompany">
 								<form:options items="${orderForm.ordercompanyList}" 
 								  itemValue="key" itemLabel="value" />
 						</form:select></td>	
+					
 				</tr>				
 				<tr> 
 					<td class="label">付款条件：</td>
@@ -463,12 +464,13 @@
 							<form:options items="${orderForm.loadingPortList}"
 							  itemValue="key" itemLabel="value" />
 						</form:select></td>
-
+							
 					<td class="label" width="100px">目的港：</td>
 					<td><form:select path="order.deliveryport" >
 							<form:options items="${orderForm.deliveryPortList}" 
 							 itemValue="key" itemLabel="value" />
-						</form:select></td>							
+						</form:select></td>	
+				
 				</tr>
 				<tr>
 					<td class="label">业务组：</td>
@@ -484,6 +486,13 @@
 						订单交期：</td>
 					<td>
 						<form:input path="order.deliverydate" class="short required"  value="${order.deliveryDate }" /></td>
+					<!-- 
+					<td width="100px" class="label">退税率：</td>
+					<td>
+						<form:select path="rebateRate">
+							<form:options items="${rebateRateList}" 
+							  itemValue="key" itemLabel="value" />
+						</form:select></td>	 -->	
 				</tr>
 				<tr>
 					<td class="label">币种：</td>

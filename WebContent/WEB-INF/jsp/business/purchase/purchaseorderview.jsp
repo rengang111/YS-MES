@@ -29,7 +29,7 @@
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
-					}, {"className":"td-right"				
+					}, {"className":"td-right"		
 					}			
 				]
 			
@@ -230,22 +230,20 @@
 			
 				<tr id="ysid00"> 		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td colspan="7">
+					<td colspan="9">
 						<a href="#" id="ysidLink" onClick="doShowYS('${contract.YSId}')">${contract.YSId }</a>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
-					
 				</tr>
-				
 				<tr> 		
 					<td class="label"><label>供应商编号：</label></td>					
-					<td>${ contract.supplierId }
+					<td width="150px">${ contract.supplierId }
 						<form:hidden path="contract.supplierid" value="${contract.supplierId }"/></td>
 									
-					<td class="label"><label>供应商简称：</label></td>					
+					<td class="label" width="100px"><label>供应商简称：</label></td>					
 					<td width="100px">${ contract.shortName }</td>
 						
 					<td class="label" width="100px"><label>供应商名称：</label></td>
-					<td colspan="3">${ contract.fullName }</td>
+					<td colspan="5">${ contract.fullName }</td>
 				</tr>	
 				<tr> 		
 					<td class="label"><label>合同编号：</label></td>					
@@ -254,9 +252,11 @@
 					<td class="label" width="100px">付款条件：</td>
 					<td>入库后&nbsp;${ contract.paymentTerm }&nbsp;天</td>
 					<td class="label"><label>下单日期：</label></td>
-					<td>${ contract.purchaseDate }</td>
-					<td class="label"><label>合同交期：</label></td>
-					<td>${ contract.deliveryDate }</td>
+					<td width="100px">${ contract.purchaseDate }</td>
+					<td class="label" width="100px"><label>合同交期：</label></td>
+					<td width="100px">${ contract.deliveryDate }</td>
+					<td class="label" width="100px"></td>
+					<td></td>
 				</tr>									
 			</table>
 			
@@ -272,86 +272,98 @@
 	</fieldset>
 	<div style="clear: both"></div>		
 	<fieldset style="margin-top: -30px;">
-	<legend> 合同详情</legend>
-	
-	<div class="list">
-	<table id="example" class="display" >	
-		<thead>
-		<tr>
-			<th style="width:10px">No</th>
-			<th style="width:130px">物料编码</th>
-			<th>物料名称</th>
-			<th style="width:50px">合同数</th>
-			<th style="width:50px">单价</th>
-			<th style="width:60px">合同金额</th>
-			<th style="width:50px">退款</th>
-			<th style="width:60px">应付款</th>
-		</tr>
-		</thead>		
-		<tbody>
-			<c:forEach var="detail" items="${detail}" varStatus='status' >	
-				<tr id="detailTr${status.index }">
-					<td></td>
-					<td><a href="###" id="meteLink${status.index }" onClick="doEditMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
-						<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
-					<td><span id="name${status.index}"></span>${ detail.description }</td>					
-				
-					<td>${ detail.quantity}   </td>								
-					<td><span id="price${status.index }">${ detail.price }</span></td>
-					<td><span id="total${status.index }">${ detail.totalPrice }</span></td>					
-					<td><span id="returnValue${status.index }"></span></td>				
-					<td><span id="pay${status.index }"></span></td>			
+		<legend> 合同详情</legend>
+		<div class="list">
+			<table id="example" class="display" >	
+				<thead>
+				<tr>
+					<th style="width:10px">No</th>
+					<th style="width:130px">物料编码</th>
+					<th>物料名称</th>
+					<th style="width:50px">合同数</th>
+					<th style="width:50px">单价</th>
+					<th style="width:60px">合同金额</th>
+					<th style="width:50px">退款</th>
+					<th style="width:60px">应付款</th>
+				</tr>
+				</thead>		
+				<tbody>
+					<c:forEach var="detail" items="${detail}" varStatus='status' >	
+						<tr id="detailTr${status.index }">
+							<td></td>
+							<td><a href="###" id="meteLink${status.index }" onClick="doEditMaterial('${detail.materialRecordId}','${detail.materialParentId}')">${detail.materialId}</a>
+								<form:hidden path="detailList[${status.index}].materialid" value="${detail.materialId}" /></td>								
+							<td><span id="name${status.index}"></span>${ detail.description }</td>					
 						
-						<form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" />	
-						<form:hidden path="detailList[${status.index}].quantity" value="${detail.quantity}" />	
-				</tr>	
+							<td>${ detail.quantity}   </td>								
+							<td><span id="price${status.index }">${ detail.price }</span></td>
+							<td><span id="total${status.index }">${ detail.totalPrice }</span></td>					
+							<td><span id="returnValue${status.index }"></span></td>				
+							<td><span id="pay${status.index }"></span></td>
 								
-				<script type="text/javascript">
-					//var materialName = '${detail.materialName}';
-					var index = '${status.index}';
-					var contractQty = currencyToFloat('${detail.quantity}');
-					var chargeback = currencyToFloat('${detail.chargeback}');
-					var price = currencyToFloat('${detail.price}');
-					//alert("合同数量+退货数量+单价"+contractQty+"---"+chargeback+"---"+price)
-					var contractValue = contractQty * price;
+								<form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" />	
+								<form:hidden path="detailList[${status.index}].quantity" value="${detail.quantity}" />	
+						</tr>	
+										
+						<script type="text/javascript">
+							//var materialName = '${detail.materialName}';
+							var index = '${status.index}';
+							var contractQty = currencyToFloat('${detail.quantity}');
+							var chargeback = currencyToFloat('${detail.chargeback}');
+							var price = currencyToFloat('${detail.price}');
+							//alert("合同数量+退货数量+单价"+contractQty+"---"+chargeback+"---"+price)
+							var contractValue = contractQty * price;
+							
+							var pay = floatToCurrency( contractValue + chargeback );
+							
+							//$('#name'+index).html(jQuery.fixedWidth(materialName,45));
+							$('#returnValue'+index).html(floatToCurrency( chargeback ));
+							$('#pay'+index).html(pay);
+							$('#price'+index).html(formatNumber(price));
+							$('#total'+index).html(floatToCurrency(contractValue));
+		
+							var deleteFlag = '${detail.deleteFlag}';
+							if( deleteFlag == 1 ) {
+								$('#detailTr'+index).addClass('delete');
+								$('#meteLink'+index).contents().unwrap();	
+								$('#total'+index).html('0');
+								$('#pay'+index).html('0');
+			 				}				
+						</script>	
+							
+					</c:forEach>
 					
-					var pay = floatToCurrency( contractValue + chargeback );
-					
-					
-					
-					
-					//$('#name'+index).html(jQuery.fixedWidth(materialName,45));
-					$('#returnValue'+index).html(floatToCurrency( chargeback ));
-					$('#pay'+index).html(pay);
-					$('#price'+index).html(formatNumber(price));
-					$('#total'+index).html(floatToCurrency(contractValue));
-
-					var deleteFlag = '${detail.deleteFlag}';
-					if( deleteFlag == 1 ) {
-						$('#detailTr'+index).addClass('delete');
-						$('#meteLink'+index).contents().unwrap();	
-						$('#total'+index).html('0');
-						$('#pay'+index).html('0');
-	 				}				
-				</script>	
-					
-			</c:forEach>
-			
-		</tbody>
-		<tfoot>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td class="font16">合计：</td>
-				<td class="font16"><div id="contractValue"></div></td>
-				<td class="font16"><div id="returnValue"></div></td>
-				<td class="font16"><div id="payValue"></div></td>
-			</tr>
-		</tfoot>
-	</table>
-	</div>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td >合计：</td>
+						<td ><div id="contractValue"></div></td>
+						<td ><div id="returnValue"></div></td>
+						<td ><div id="payValue"></div></td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</fieldset>
+	<fieldset>
+	<legend> 合同付款</legend>
+		<table class="form" >	
+			<tr> 		
+				<td width="100px" class="label"><label>应付款：</label></td>					
+				<td width="100px">${ contract.total }</td>
+				<td width="100px" class="label"><label>退税率：</label></td>
+				<td width="100px">${ contract.taxRate }</td>
+				<td width="100px" class="label">退税额：</td>
+				<td width="100px">${ contract.taxes }</td>
+				<td width="100px" class="label"><label>税前价：</label></td>
+				<td>${ contract.taxExcluded }</td>
+			</tr>	
+		</table>
+	
 	</fieldset>
 	<fieldset>
 	<legend> 合同注意事项</legend>

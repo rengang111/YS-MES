@@ -401,9 +401,18 @@ $(".supplierid").autocomplete({
 									
 					<td class="label" style="width:120px">供应商简称：</td>					
 					<td style="width:200px">&nbsp;<span id="shortName1">${ contract.shortName }</span></td>
-						
+					<!-- 			
+					<td class="label" style="width:100px">退税率：</td>
+					<td><form:select path="contract.taxrate" style="width: 100px;">
+							<form:options items="${rebateRateList}" 
+							  itemValue="key" itemLabel="value" />
+						</form:select></td>
+						 -->
+				</tr>		
+				<tr> 		
+				
 					<td class="label" style="width:120px">供应商名称：</td>
-					<td><span id="fullName">${ contract.supplierName }</span></td>
+					<td colspan="5"><span id="fullName">${ contract.supplierName }</span></td>
 				</tr>							
 			</table>
 			

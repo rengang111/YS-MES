@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>应付款申请-新建</title>
+<title>应付款申请-修改</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	

@@ -17,7 +17,8 @@
 	        "paging"    : false,
 	        "pageLength": 50,
 	        "ordering"  : false,
-			dom : 'T<"clear">',
+	      	"aaSorting"	: [[ 2, "ASC" ]],
+			"dom" 		: 'T<"clear">',
 	        	"language": {
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},

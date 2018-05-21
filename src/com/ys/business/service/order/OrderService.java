@@ -425,7 +425,6 @@ public class OrderService extends CommonService  {
 		ts = new BaseTransaction();
 
 		try {
-
 			
 			ts.begin();
 					
@@ -439,6 +438,9 @@ public class OrderService extends CommonService  {
 			
 			String piId = reqData.getPiid();
 			
+			boolean peiYsidCheckFlag = true;			
+			B_OrderDetailData tmpData = new B_OrderDetailData();
+			int peiIndex = 1;
 			for(B_OrderDetailData data:reqDataList ){
 				
 				//过滤空行或者被删除的数据
@@ -449,12 +451,55 @@ public class OrderService extends CommonService  {
 					String orderType = data.getOrdertype();
 					//配件订单的统一耀升编号处理
 					if(("020").equals(orderType)){
+
+						String list[] = data.getYsid().split("-");
+						String ysid = list[0];
+						String peiYsid = ysid + "P";
 						
-						String[] list = data.getYsid().split("-");
-						String peiYsid = list[0]+"P";
-						data.setPeiysid(peiYsid);
-					}
-					insertOrderDetail(data,piId);								
+						if(peiYsidCheckFlag){
+							
+							String where = " peiYsid ='"+peiYsid +"' AND deleteFlag='0' " ;
+							
+							String existFlag = ysidExistCheck(where);
+							
+							//如果重复的话,重新设置
+							if(("1").equals(existFlag)){
+						        String paternId = BusinessService.getYSCommCode();
+								int YSMaxid = getYSIdByParentId(paternId);
+								ysid = BusinessService.getYSFormatCode(YSMaxid,true);
+								
+								data.setYsid(ysid + "-" + peiIndex);
+								data.setParentid(paternId);
+								data.setSubid(String.valueOf(YSMaxid+1));
+								data.setPeiysid(ysid+"P");
+								
+							}else{
+								data.setYsid(ysid + "-" + peiIndex);
+								data.setParentid(ysid.substring(0, 4));
+								data.setSubid(ysid.substring(4));
+								data.setPeiysid(peiYsid);
+							}
+							tmpData.setYsid(ysid);
+							tmpData.setParentid(data.getParentid());
+							tmpData.setSubid(data.getSubid());
+							tmpData.setPeiysid(data.getPeiysid());
+							
+							peiYsidCheckFlag = false;
+						}else{
+							data.setYsid(tmpData.getYsid() + "-" + peiIndex);
+							data.setParentid(tmpData.getParentid());
+							data.setSubid(tmpData.getSubid());
+							data.setPeiysid(tmpData.getPeiysid());
+						}
+												
+						insertOrderDetailPei(data,piId);
+						
+						peiIndex++;
+						
+					}else{
+						//正常订单
+						insertOrderDetail(data,piId);						
+					}							
 				}			
 			}
 			
@@ -504,26 +549,21 @@ public class OrderService extends CommonService  {
 
 		String ysid = newData.getYsid();
 		//耀升编号重复check
-		String existFlag = ysidExistCheck(ysid);
+		String where = " YSId ='"+ysid +"' AND deleteFlag='0' " ;
+		String existFlag = ysidExistCheck(where);
 		
 		//如果重复的话,重新设置
 		if(("1").equals(existFlag)){
 	        String paternId = BusinessService.getYSCommCode();
 			int YSMaxid = getYSIdByParentId(paternId);
 			ysid = BusinessService.getYSFormatCode(YSMaxid,true);
-
+			
 			newData.setYsid(ysid);
 			newData.setParentid(paternId);
 			newData.setSubid(String.valueOf(YSMaxid+1));
 		}else{
-			//newData.setYsid(ysid);
 			newData.setParentid(ysid.substring(0, 4));
-			String subid = newData.getYsid().substring(4);
-			String split[] = ysid.split("-");
-			if(split != null && split.length >1){
-				subid = split[0].substring(4);
-			}
-			newData.setSubid(subid);
+			newData.setSubid(newData.getYsid().substring(4));
 		}
 			
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
@@ -534,6 +574,32 @@ public class OrderService extends CommonService  {
 	
 		newData.setPiid(piId);
 		newData.setCurrency(reqModel.getCurrency());
+		newData.setRebaterate(reqModel.getRebateRate());//退税率
+		newData.setStatus(Constants.ORDER_STS_1);
+		newData.setReturnquantity(Constants.ORDER_RETURNQUANTY);
+		
+		dao.Create(newData);
+
+	}	
+	
+	/*
+	 * 订单详情插入处理
+	 */
+	private void insertOrderDetailPei(
+			B_OrderDetailData newData,
+			String piId) throws Exception{
+
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"OrderDetailInsert",userInfo);
+		copyProperties(newData,commData);
+		guid = BaseDAO.getGuId();
+		newData.setRecordid(guid);
+	
+		newData.setPiid(piId);
+		newData.setCurrency(reqModel.getCurrency());
+		newData.setRebaterate(reqModel.getRebateRate());//退税率
 		newData.setStatus(Constants.ORDER_STS_1);
 		newData.setReturnquantity(Constants.ORDER_RETURNQUANTY);
 		
@@ -556,8 +622,6 @@ public class OrderService extends CommonService  {
 		try {
 			
 			ts.begin();
-			
-			//int YSMaxid = getYSIdByParentId(request);
 				
 			B_OrderData reqOrder = (B_OrderData)reqForm.getOrder();
 			
@@ -590,9 +654,10 @@ public class OrderService extends CommonService  {
 						String[] list = newData.getYsid().split("-");
 						String peiYsid = list[0]+"P";
 						newData.setPeiysid(peiYsid);
+						newData.setParentid(list[0].substring(0,4));
+						newData.setSubid(list[0].substring(4));
 					}
-					updateOrderDetail(newData);						
-					
+					updateOrderDetail(newData);
 				}
 			}
 			
@@ -677,15 +742,21 @@ public class OrderService extends CommonService  {
 		}		
 		if(dbData == null || ("").equals(dbData)){
 			//insert
-			insertOrderDetail(newData,newData.getPiid());
+			if(("020").equals(newData.getOrdertype())){
+
+				insertOrderDetailPei(newData,newData.getPiid());
+			}else{
+				insertOrderDetail(newData,newData.getPiid());
+				
+			}
 		}else{
-			//update
 			//获取页面数据
 			copyProperties(dbData,newData);
 			//处理共通信息
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"OrderDetailUpdate",userInfo);
 			copyProperties(dbData,commData);
+			dbData.setRebaterate(reqModel.getRebateRate());//退税率
 			
 			new B_OrderDetailDao().Store(dbData);
 		}
@@ -781,6 +852,8 @@ public class OrderService extends CommonService  {
 					util.getListOption(DicUtil.PRODUCTCLASSIFY, ""));
 			reqModel.setOrderNatureList(
 					util.getListOption(DicUtil.ORDERNATURE,""));
+			model.addAttribute("rebateRateList",
+					util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
 			
 			reqModel.setEndInfoMap(NORMAL, "", "");
 			
@@ -1063,10 +1136,9 @@ public class OrderService extends CommonService  {
 	
 	
 	@SuppressWarnings("unchecked")
-	public String ysidExistCheck(String YSId) throws Exception{
+	public String ysidExistCheck(String where) throws Exception{
 
 		String ExFlag = "";
-		String where = " ysid = '"+YSId +"' AND deleteFlag='0' " ;
 		B_OrderDetailDao dao = new B_OrderDetailDao();
 		List<B_OrderData> list; 
 		list = (List<B_OrderData>)dao.Find(where);	

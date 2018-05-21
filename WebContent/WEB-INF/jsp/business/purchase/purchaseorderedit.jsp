@@ -264,7 +264,7 @@
 			<table class="form" id="table_form">
 				<tr id="ysid00">		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="150px">${contract.YSId }
+					<td width="100px">${contract.YSId }
 						<form:hidden path="contract.recordid" value="${contract.contractRecordId }"/>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
 									
@@ -286,15 +286,21 @@
 					<td>&nbsp;${ contract.fullName }</td>
 				</tr>	
 				<tr> 		
-					<td class="label"><label>采购合同编号：</label></td>					
-					<td>${ contract.contractId }
+					<td class="label" width="100px"><label>采购合同编号：</label></td>					
+					<td width="100px">${ contract.contractId }
 						<form:hidden path="contract.contractid" value="${contract.contractId }"/></td>
 					<td class="label"><label>下单日期：</label></td>
-					<td>
+					<td width="100px">
 						<form:input path="contract.purchasedate" value="${ contract.purchaseDate }"/></td>
 					<td class="label"><label>合同交期：</label></td>
-					<td>
+					<td width="100px">
 						<form:input path="contract.deliverydate" value="${ contract.deliveryDate }"/></td>
+					<td class="label" width="100px"><label>退税率：</label></td>
+					<td>
+						<form:select path="contract.taxrate" style="width: 100px;">
+							<form:options items="${rebateRateList}" 
+							  itemValue="key" itemLabel="value" />
+						</form:select></td>
 				</tr>									
 			</table>
 			

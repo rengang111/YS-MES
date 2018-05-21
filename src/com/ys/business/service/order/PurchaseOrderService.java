@@ -796,8 +796,6 @@ public class PurchaseOrderService extends CommonService {
 				deletePurchaseOrder(orderData);		
 			}else{
 				
-				//更新合同头信息
-				updateOrder(orderData);
 						
 				//更新明细
 				for(B_PurchaseOrderDetailData data:newDetailList ){
@@ -806,9 +804,22 @@ public class PurchaseOrderService extends CommonService {
 					updateOrderDetail(data);
 					
 					//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面			
-					String newQty = data.getQuantity();			
+					String newQty = data.getQuantity();	
 					updateMaterial(data.getMaterialid(),newQty,"0");			
-				}
+				}				
+
+				//计算退税
+				float total = stringToFloat(orderData.getTotal());//合同总金额
+				float taxRate = stringToFloat(orderData.getTaxrate());//税率
+				float taxes = total * taxRate / 100;//税
+				float taxExcluded = total - taxes;//价
+				
+				orderData.setTaxes(String.valueOf(taxes));
+				orderData.setTaxrate(String.valueOf(taxRate));
+				orderData.setTaxexcluded(String.valueOf(taxExcluded));
+				
+				//更新合同头信息
+				updateOrder(orderData);
 			}
 			
 			ts.commit();
@@ -1106,6 +1117,8 @@ public class PurchaseOrderService extends CommonService {
 		model.addAttribute("goBackFlag",goBackFlag);
 		model.addAttribute("quantity",quantity);
 		model.addAttribute("YSId",YSId);
+		model.addAttribute("rebateRateList",
+				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
 	}
 	
 
@@ -1345,5 +1358,15 @@ public class PurchaseOrderService extends CommonService {
 			rtnFlag = true;
 		
 		return rtnFlag;
+	}
+	
+	public void editPurchaseOrder() throws Exception{
+
+		String contractId = reqModel.getContract().getContractid();
+		
+		getContractDetailList(contractId);	
+
+		model.addAttribute("rebateRateList",
+				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
 	}
 }

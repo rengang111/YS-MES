@@ -492,9 +492,15 @@
 					<form:input path="order.orderdate" class="short required" /></td>
 				
 				<td width="100px" class="label">订单交期：</td>
-				<td colspan="3">
+				<td>
 					<form:input path="order.deliverydate" class="short required" /></td>
-											
+				<!-- 
+				<td width="100px" class="label">退税率：</td>
+				<td>
+					<form:select path="rebateRate">
+							<form:options items="${rebateRateList}" 
+							  itemValue="key" itemLabel="value" />
+					</form:select></td>	 -->						
 			</tr>
 			<tr>
 				<td class="label">币种：</td>

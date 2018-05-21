@@ -14,10 +14,12 @@ import com.ys.business.action.model.order.PaymentModel;
 import com.ys.business.db.dao.B_PaymentDao;
 import com.ys.business.db.dao.B_PaymentDetailDao;
 import com.ys.business.db.dao.B_PaymentHistoryDao;
+import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PaymentDetailData;
 import com.ys.business.db.data.B_PaymentHistoryData;
+import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
@@ -257,6 +259,8 @@ public class PaymentService extends CommonService {
 		getContractDetail(contractIds);
 		
 		model.addAttribute("contractIds",contractIds);
+		model.addAttribute("taxRateList",
+				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
 	
 	}
 	
@@ -556,6 +560,7 @@ public class PaymentService extends CommonService {
 			
 			B_PaymentData reqData = reqModel.getPayment();
 			List<B_PaymentDetailData> reqDataList = reqModel.getPaymentList();
+			List<B_PurchaseOrderData> contractList = reqModel.getContractList();
 
 			//取得付款编号
 			paymentid = reqData.getPaymentid();
@@ -580,7 +585,13 @@ public class PaymentService extends CommonService {
 				for(B_PaymentDetailData data:reqDataList ){				
 					
 					data.setPaymentid(paymentid);
-					insertPaymentDetail(data);			
+					insertPaymentDetail(data);					
+				}
+				
+				//保存退税率
+				for(B_PurchaseOrderData data:contractList ){				
+					
+					updateContractTaxRate(data);
 				}	
 			}		
 			
@@ -592,7 +603,7 @@ public class PaymentService extends CommonService {
 			try {
 				ts.rollback();
 			} catch (Exception e1) {
-				System.out.println(e1.getMessage());
+				e1.printStackTrace();
 			}
 		}
 		
@@ -780,6 +791,34 @@ public class PaymentService extends CommonService {
 		db.setFinishdate(CalendarUtil.fmtYmdDate());		
 
 		new B_PaymentDao().Store(db);
+		
+	}
+	
+
+	@SuppressWarnings({ "unchecked" })
+	private void updateContractTaxRate(
+			B_PurchaseOrderData contract) throws Exception {
+		
+		String where = " contractId ='" + contract.getContractid() + "' AND deleteFlag='0' ";
+		List<B_PurchaseOrderData> list = null;
+		try {
+			list = new B_PurchaseOrderDao().Find(where);
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		if(list.size()<= 0)
+			return;
+		
+		//更新
+		B_PurchaseOrderData db = list.get(0);
+		copyProperties(db,contract);
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"ContractTaxRateUpdate",userInfo);
+		copyProperties(db,commData);		
+
+		new B_PurchaseOrderDao().Store(db);
 		
 	}
 	

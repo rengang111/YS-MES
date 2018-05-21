@@ -114,28 +114,12 @@
 	    			name = jQuery.fixedWidth(name,32);				    			
 	    			return name;
 	    		}},
-	    		{"targets":9,"render":function(data, type, row){
-	    			
-	    			var price = currencyToFloat(row["contractPrice"]);
-	    			var newPrice = floatToCurrency( price / 1.17 );
-	    				    			
-	    			return data;
-	    		}},
-	    		{"targets":10,"render":function(data, type, row){
-	    			
-	    			var price = currencyToFloat(row["contractPrice"]);
-	    			var newPrice = ( price / 1.17 );
-	    			var quantity = currencyToFloat( row["quantity"] ); 
-	    			var sum = floatToCurrency( newPrice * quantity );
-	    			return sum;
-	    		}},
 	    		{"targets":12,"render":function(data, type, row){
 	    			if(data == null || data == ""){
 	    				return "未审核";
 	    			}else{
 		    			return data;
-	    			}
-	
+	    			}	
 	    		}},
 	    		{
 					"visible" : false,

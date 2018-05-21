@@ -406,10 +406,10 @@
       <f name="A.contractPrice" alias="" ctype="" />
       <f name="A.depotId" alias="depotName" ctype="仓库分类" />
       <f name="IFNULL(A.depotId,'')" alias="depotId" ctype="" />
-      <f name="format((replace(A.contractPrice,',','') / 1.17),6)" alias="taxPrice" ctype="" />
-      <f name="format((replace(A.contractPrice,',','') / 1.17) * replace(A.quantity,',',''),2)" alias="taxTotal" ctype="" />
+      <f name="format((replace(A.contractPrice,',','') / (a.taxRate/100+1)),6)" alias="taxPrice" ctype="" />
+      <f name="format((replace(A.contractPrice,',','') / (a.taxRate/100+1)) * replace(A.quantity,',',''),2)" alias="taxTotal" ctype="" />
     </select>
-    <from>v_purchaseStockInById a  LEFT JOIN b_pricereference b ON b.materialId=a.materialId AND b.deleteFlag='0' LEFT JOIN v_paymentdetail c ON c.contractId=a.contractId AND c.deleteFlag = '0' WHERE a.deleteFlag = '0' </from>
+    <from>v_purchaseStockInById a LEFT JOIN b_pricereference b ON b.materialId=a.materialId AND b.deleteFlag='0' LEFT JOIN v_paymentdetail c ON c.contractId=a.contractId AND c.deleteFlag = '0' WHERE a.deleteFlag = '0' </from>
     <orderby>A.receiptId ,A.contractId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
