@@ -185,6 +185,25 @@
 		});
 		
 
+		$("#doDelete").click(function() {
+					
+			var status = '${payment.finishStatusId}';//付款状态
+			status = parseInt(status)
+
+			if(status > 20 ){
+				alert("该申请已审核，如要删除，请先弃审。");
+				return;
+			}
+					
+			if(!(confirm("删除后，需要重新申请，确定要删除吗？"))){
+				return;
+			}
+					
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyDelete"+"&paymentTypeId="+paymentTypeId);
+			$('#formModel').submit();
+		});
+		
+
 		ajax();
 		materialzzAjax();
 		productPhotoView();
@@ -411,6 +430,8 @@ function photoView(id, tdTable, count, data) {
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
 	 	<a class="DTTT_button DTTT_button_text" id="update" >修改</a>
 		<a class="DTTT_button DTTT_button_text" id="insert" onclick="doPrintReceiptList();return false;">打印入库单</a>
+		
+	 	<a class="DTTT_button DTTT_button_text" id="doDelete" >删除申请</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>

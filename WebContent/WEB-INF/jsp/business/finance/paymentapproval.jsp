@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>应付款-审核</title>
+<title>应付款-审核（编辑）</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -219,8 +219,8 @@
 	}
 	
 	function doInsert() {
-				
-		$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalInsert");
+			var insertFlag = $("#insertFlag").val();	
+		$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalInsert"+"&insertFlag="+insertFlag);
 		$('#formModel').submit();
 	};
 	
@@ -386,6 +386,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	<form:hidden path="payment.recordid"  value="${payment.recordId }"/>
 	<form:hidden path="payment.paymentid" value="${payment.paymentId }"/>
 	<form:hidden path="payment.supplierid" value="${supplier.supplierId }" />
+	<input type="hidden" id="insertFlag" value="${insertFlag }">
 	<fieldset>
 		<legend> 付款申请单</legend>
 		<table class="form" id="table_form">
@@ -439,12 +440,12 @@ function uploadPhoto(tableId,tdTable, id) {
 					<form:options items="${formModel.approvalOption}" 
 						itemValue="key" itemLabel="value" /></form:select> </td>
 				<td width="250px">发票类型： 
-					<form:select path="payment.invoicetype" style="width: 120px;">							
+					<form:select path="payment.invoicetype" style="width: 120px;" value="${payment.invoiceType }">							
 					<form:options items="${formModel.invoiceTypeOption}" 
 						itemValue="key" itemLabel="value" /></form:select> </td>
 			
 				<td>发票编号： 
-					<form:input path="payment.invoicenumber"  class="middle" /></td>
+					<form:input path="payment.invoicenumber"  class="middle"  value="${payment.invoiceNumber }"/></td>
 			
 				<td style="width:200px" >
 					<button type="button" id="submit12"  onclick="doInsert();"

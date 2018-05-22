@@ -114,12 +114,24 @@ public class PaymentAction extends BaseAction {
 				doApplyInsert();
 				rtnUrl = "/business/finance/paymentrequestview";
 				break;
+			case "applyDelete"://删除付款申请
+				doApplyDelete();
+				rtnUrl = "/business/finance/paymentrequestmain";
+				break;
 			case "approvalInit"://审核初始化
 				rtnUrl = approvalInit();
 				break;
 			case "approvalInsert"://审核确认
 				doApprovalUpdate();
 				rtnUrl = "/business/finance/paymentapprovalview";
+				break;
+			case "approvalEdit"://审核编辑
+				doApprovalUpdateInit();
+				rtnUrl = "/business/finance/paymentapproval";
+				break;
+			case "approvalDelete"://审核删除（弃审）
+				doApprovalDelete();
+				rtnUrl = "/business/finance/paymentapprovalmain";
 				break;
 			case "paymentView":
 				paymentView();
@@ -345,7 +357,6 @@ public class PaymentAction extends BaseAction {
 		try{
 			service.applyAddInit();
 
-			//model.addAttribute("paymentTypeId", "010");//正常付款
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
@@ -375,6 +386,7 @@ public class PaymentAction extends BaseAction {
 				rtnUrl = "/business/finance/paymentapprovalview";
 			
 			model.addAttribute("userName", userInfo.getUserName());
+			model.addAttribute("insertFlag","insert");
 			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
@@ -450,6 +462,16 @@ public class PaymentAction extends BaseAction {
 		}
 	}
 	
+	public void doApprovalUpdateInit(){
+		try{
+			service.approvalUpdateInit();
+			model.addAttribute("insertFlag","update");
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	
 	public void doApprovalUpdate(){
 		try{
 			service.approvalUpdateAndReturn();
@@ -458,6 +480,22 @@ public class PaymentAction extends BaseAction {
 		}
 	}
 
+	public void doApprovalDelete(){
+		try{
+			service.approvalDelete();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void doApplyDelete(){
+		try{
+			service.applyDelete();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	public void paymentView(){
 		try{
 			service.paymentView();

@@ -171,10 +171,29 @@
 		});
 
 		
-		$("#update").click(
+		$("#doUpdate").click(
 				function() {
 					
 			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalEdit");
+			$('#formModel').submit();
+		});
+		
+
+		$("#doDelete").click(
+				function() {
+				
+			var status = '${payment.finishStatusId}';//付款状态
+			status = parseInt(status)
+
+			if(status > 30 ){
+				alert("该申请已付款，不能弃审。");
+				return;
+			}
+					
+			if(!(confirm("弃审后，需要重新审核，确定要弃审吗？"))){
+				return;
+			}
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalDelete");
 			$('#formModel').submit();
 		});
 		
@@ -353,84 +372,7 @@ function photoView1(id, tdTable, count, data) {
 }
 
 
-function deletePhoto(tableId,tdTable,path) {
-	
-	var url = '${ctx}/business/payment?methodtype='+tableId+'Delete';
-	url+='&tabelId='+tableId+"&path="+path;
-	    
-	if(!(confirm("确定要删除该图片吗？"))){
-		return;
-	}
-    $("#formModel").ajaxSubmit({
-		type: "POST",
-		url:url,	
-		data:$('#formModel').serialize(),// 你的formid
-		dataType: 'json',
-	    success: function(data){
-	    	
-			var type = tableId;
-			var countData = "0";
-			var photo="";
-			var flg="true";
-			switch (type) {
-				case "productPhoto":
-					countData = data["productFileCount"];
-					photo = data['productFileList'];
-					break;
-			}
-			
-			//删除后,刷新现有图片
-			$("#" + tableId + " td:gt(0)").remove();
-			if(flg =="true"){
-				photoView1(tableId, tdTable, countData, photo);
-			}
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("图片删除失败,请重试。")
-		}
-	});
-}
 
-function uploadPhoto(tableId,tdTable, id) {
-
-	var url = '${ctx}/business/paymentBillUpload'
-			+ '?methodtype=uploadPhoto' + '&id=' + id;
-	
-	var paymentId = $('#payment\\.paymentid').val();
-	if(paymentId == '（保存后自动生成）')
-		$('#payment\\.paymentid').val('');//清除非正常ID
-
-	$("#formModel").ajaxSubmit({
-		type : "POST",
-		url : url,
-		data : $('#formModel').serialize(),// 你的formid
-		dataType : 'json',
-		success : function(data) {
-	
-			var type = tableId;
-			var countData = "0";
-			var photo="";
-			var flg="true";
-			switch (type) {
-				case "productPhoto":
-					$('#payment\\.paymentid').val(data["paymentId"]);//设置新的ID
-					countData = data["productFileCount"];
-					photo = data['productFileList'];
-					break;
-			}
-			
-			//添加后,刷新现有图片
-			$("#" + tableId + " td:gt(0)").remove();
-			if(flg =="true"){
-				photoView1(tableId, tdTable, countData, photo);
-			}
-			
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("图片上传失败,请重试。")
-		}
-	});
-}
 
 </script>
 </head>
@@ -485,9 +427,9 @@ function uploadPhoto(tableId,tdTable, id) {
 			</tr>										
 		</table>
 	</fieldset>
-	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="update" >修改</a>
+		<a class="DTTT_button DTTT_button_text" id="doUpdate" >编辑</a>
+		<a class="DTTT_button DTTT_button_text" id="doDelete" >弃审</a>
 		<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a>
 	</div>
 

@@ -439,6 +439,29 @@ public class PaymentService extends CommonService {
 	}
 
 	/**
+	 * 付款审核:编辑初始化
+	 * @throws Exception
+	 */
+	public void approvalUpdateInit() throws Exception {
+		
+		B_PaymentData reqData = reqModel.getPayment();
+	
+		String paymentid = reqData.getPaymentid();
+			
+		//付款申请详情
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);				
+		}
+
+		reqModel.setApprovalOption(util.getListOption(DicUtil.DIC_APPROVL, ""));
+		reqModel.setInvoiceTypeOption(util.getListOption(DicUtil.DIC_INVOICETYPE, ""));
+
+	}
+	
+	/**
 	 * 付款审核
 	 * @throws Exception
 	 */
@@ -462,7 +485,48 @@ public class PaymentService extends CommonService {
 
 	}
 	
+	/**
+	 * 付款审核:弃审
+	 * @throws Exception
+	 */
+	public void approvalDelete() throws Exception {
+
+		
+		B_PaymentData reqData = reqModel.getPayment();
 	
+		//付款单审核
+		updatePaymentForApprolval(reqData);	
+
+	}
+	
+
+	/**
+	 * 删除付款申请
+	 * @throws Exception
+	 */
+	public void applyDelete() throws Exception {
+
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+			B_PaymentData reqData = reqModel.getPayment();
+			String paymentId = reqData.getPaymentid();
+		
+			//删除付款信息
+			deletePayment(paymentId);
+			
+			//删除付款明细（关联合同）
+			deletePaymentDetail(paymentId);
+			
+			ts.commit();
+		
+		}catch(Exception e){
+			ts.rollback();
+			e.printStackTrace();
+		}
+
+	}
 	public void finishInsertAndReturn() throws Exception {
 
 		String paymentid = insertFinish();
@@ -754,19 +818,54 @@ public class PaymentService extends CommonService {
 				"paymentRequestUpdate",userInfo);
 		copyProperties(db,commData);
 		
-		db.setApprovaluser(userInfo.getUserId());//默认为登陆者
-		db.setApprovaldate(CalendarUtil.fmtYmdDate());
-		db.setApprovalstatus(payment.getApprovalstatus());
 		db.setApprovalfeedback(replaceTextArea(payment.getApprovalfeedback()));
 		db.setInvoicetype(payment.getInvoicetype());//发票类型
 		db.setInvoicenumber(payment.getInvoicenumber());//发票编号
 		
-		//审核结果:020同意;030不同意;010未审核
-		if(("020").equals(payment.getApprovalstatus())){
-			db.setFinishstatus(Constants.payment_030);//待付款
-		}else{
-			db.setFinishstatus(Constants.payment_060);//审核未通过			
+		String insertFlag = request.getParameter("insertFlag");
+		if( ("insert").equals(insertFlag)){
+			db.setApprovaluser(userInfo.getUserId());//默认为登陆者
+			db.setApprovaldate(CalendarUtil.fmtYmdDate());
+			db.setApprovalstatus(payment.getApprovalstatus());
+			//审核结果:020同意;030不同意;010未审核
+			if(("020").equals(payment.getApprovalstatus())){
+				db.setFinishstatus(Constants.payment_030);//待付款
+			}else{
+				db.setFinishstatus(Constants.payment_060);//审核未通过			
+			}
 		}
+		new B_PaymentDao().Store(db);
+		
+	}
+	
+
+	private void updatePaymentForApprolval(
+			B_PaymentData payment) throws Exception {
+		
+		B_PaymentData db = null;
+		try {
+			db = new B_PaymentDao(payment).beanData;
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		if(db == null || db.equals(""))
+			return;
+		
+		//更新
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"paymentApprolvalDelete",userInfo);
+		copyProperties(db,commData);
+		
+		db.setApprovaluser("");//登陆者
+		db.setApprovaldate("");
+		db.setApprovalstatus("");//审核结果：未审核
+		db.setApprovalfeedback("");
+		db.setInvoicetype("");//发票类型
+		db.setInvoicenumber("");//发票编号		
+		db.setFinishstatus(Constants.payment_020);//付款状态：待审核
+
 		new B_PaymentDao().Store(db);
 		
 	}
@@ -1168,5 +1267,55 @@ public class PaymentService extends CommonService {
 				);	
 		
 		return filePath;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	private void deletePayment(String paymentId) throws Exception {
+		
+		String where = " paymentId ='" + paymentId + "' AND deleteFlag='0' ";
+		List<B_PaymentData> list = null;
+		try {
+			list = new B_PaymentDao().Find(where);
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		if(list.size()<= 0)
+			return;
+		
+		//更新
+		B_PaymentData db = list.get(0);
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"PaymentDelete",userInfo);
+		copyProperties(db,commData);		
+
+		new B_PaymentDao().Store(db);
+		
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	private void deletePaymentDetail(String paymentId) throws Exception {
+		
+		String where = " paymentId ='" + paymentId + "' AND deleteFlag='0' ";
+		List<B_PaymentDetailData> list = null;
+		try {
+			list = new B_PaymentDetailDao().Find(where);
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		if(list.size()<= 0)
+			return;
+		
+		//更新
+		for(B_PaymentDetailData db:list){
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"PaymentDetailDelete",userInfo);
+			copyProperties(db,commData);		
+
+			new B_PaymentDetailDao().Store(db);
+		}
+		
 	}
 }
