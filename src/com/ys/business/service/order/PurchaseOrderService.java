@@ -811,12 +811,12 @@ public class PurchaseOrderService extends CommonService {
 				//计算退税
 				float total = stringToFloat(orderData.getTotal());//合同总金额
 				float taxRate = stringToFloat(orderData.getTaxrate());//税率
-				float taxes = total * taxRate / 100;//税
-				float taxExcluded = total - taxes;//价
+				float taxExcluded = total / (taxRate / 100 + 1 );//价=合同 / 税率
+				float taxes = total - taxExcluded;//税= 合同 - 价
 				
-				orderData.setTaxes(String.valueOf(taxes));
-				orderData.setTaxrate(String.valueOf(taxRate));
-				orderData.setTaxexcluded(String.valueOf(taxExcluded));
+				orderData.setTaxes(floatToString(taxes));
+				orderData.setTaxrate(floatToString(taxRate));
+				orderData.setTaxexcluded(floatToString(taxExcluded));
 				
 				//更新合同头信息
 				updateOrder(orderData);

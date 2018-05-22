@@ -154,6 +154,7 @@ public class StorageService extends CommonService {
 			where = "REPLACE(stockinQty,',','') > 0";//已入库		
 		}
 		sql = sql.replace("#", where);
+		System.out.println("库存:"+sql);
 		baseQuery.getYsQueryData(sql,where,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
@@ -1553,6 +1554,55 @@ public class StorageService extends CommonService {
         excel.downloadFile(dest,fileName);
 	}
 
+	/**
+	 * 库存管理：物料库存信息下载
+	 * @throws Exception
+	 */
+	public void stockinDownloadExcelForInventory() throws Exception{
+		
+		//设置响应头，控制浏览器下载该文件
+				
+		//物料库存数据取得
+		List<Map<Integer, Object>>  datalist = getInventory();		
+		
+		String fileName = CalendarUtil.timeStempDate()+".xls";
+		String dest = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)
+				+"/"+File.separator+fileName;
+       
+		String tempFilePath = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_EXCELTEMPLATE)+File.separator+"inventory.xls";
+        File file = new File(dest);
+       
+        OutputStream out = new FileOutputStream(file);         
+        ExcelUtil excel = new ExcelUtil(response);
+
+
+        //读取模板
+        Workbook wbModule = excel.getTempWorkbook(tempFilePath);
+        //数据填充的sheet
+        int sheetNo=0;
+        //title
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        wbModule = excel.writeData(wbModule, dataMap, sheetNo);        
+        //detail
+        //必须为列表头部所有位置集合,输出 数据单元格样式和头部单元格样式保持一致
+		String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "inventoryExcel");
+		String[] heads = title.split(",",-1);
+        excel.writeDateList(wbModule,heads,datalist,sheetNo);
+         
+        //写到输出流并移除资源
+        excel.writeAndClose(tempFilePath, out);
+        System.out.println("导出成功");
+        out.flush();
+        out.close();
+        
+      //***********************Excel下载************************//
+        excel.downloadFile(dest,fileName);
+	}
+
 
 	public List<Map<Integer, Object>> getStockinList() throws Exception {
 		
@@ -1967,5 +2017,57 @@ public class StorageService extends CommonService {
 			}
 		}		
 		return stokinType;
+	}
+	
+	public List<Map<Integer, Object>> getInventory() throws Exception {
+		
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("materialinventoryForNormal_search");	
+
+		String key1 = request.getParameter("keyword1");
+		String key2 = request.getParameter("keyword2");
+		String searchType = request.getParameter("searchType");
+		
+		String having ="1=1";
+		if(notEmpty(key1) || notEmpty(key2))
+			searchType = "";//有关键字，不再区分状态
+		if(("1").equals(searchType)){
+			//实际库存为负数
+			having = "((replace(quantityOnHand,',','')+0) < 0)";	
+		}else if(("2").equals(searchType)){
+			//虚拟库存为负数
+			having = "((replace(availabelToPromise,',','')+0) < 0)";	
+		}else if(("3").equals(searchType)){
+			//库存 ≠ 总到货－总领料
+			having = "(replace(stockinQtiy,',','')+0 <> ((replace(stockoutQty,',',''))+(replace(quantityOnHand,',','')))+0)";	
+		}else{
+			//全部
+		}	
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		String sql =baseQuery.getSql(); 
+		sql = sql.replace("#", having);
+		System.out.println("库存EXCEL:"+sql);
+		
+		List<Map<Integer, Object>> listMap = new ArrayList<Map<Integer, Object>>();
+		ArrayList<HashMap<String, String>>  hashMap = baseQuery.getYsFullData(sql);	
+		
+		for(int i=0;i<hashMap.size();i++){
+			String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "inventoryTitle");
+			String[] titles = title.split(",",-1);
+			Map<Integer, Object> excel = new HashMap<Integer, Object>();
+			for(int j=0;j<titles.length;j++){
+				excel.put(j,hashMap.get(i).get(titles[j]));		
+			}
+			listMap.add(excel);
+		}
+		
+		return  listMap;
 	}
 }

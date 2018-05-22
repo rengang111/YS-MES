@@ -54,9 +54,9 @@
 			
 			var fPayment = currencyToFloat($oPayment.text());
 			var fTaxRate = currencyToFloat($oTaxRate.val());
-			
-			var fTaxes = fPayment * (fTaxRate / 100);//税
-			var fTaxExcluded = fPayment - fTaxes;//价
+
+			var fTaxExcluded = fPayment / (fTaxRate / 100 + 1 );//价
+			var fTaxes = fPayment - fTaxExcluded;//税
 
 			var vTaxes = floatToCurrency(fTaxes);
 			var vTaxExcluded = floatToCurrency(fTaxExcluded);
@@ -487,8 +487,8 @@ function uploadPhoto(tableId,tdTable, id) {
 						var index = ${status.index };
 						
 						var taxrate =  $("#contractList" + index + "\\.taxrate").val() / 100;//退税率
-						var taxes = payment * taxrate;//应付款 * 税率 = 税
-						var taxexcluded =  payment - taxes ; //应付款 - 税 = 价
+						var taxexcluded =  payment / (taxrate + 1 ) ; //应付款 / 税率 = 价
+						var taxes = payment - taxexcluded;//应付款 - 价 = 税
 						
 						var vtaxes = floatToCurrency(taxes);
 						var vtaxexcluded = floatToCurrency(taxexcluded);

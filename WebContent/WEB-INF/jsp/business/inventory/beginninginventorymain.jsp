@@ -559,10 +559,10 @@ body{
 
 		var stockType = $("#stockType").val();
 		
-		if(myTrim(keyword1) != '' || myTrim(keyword2) != '' ){
+		if(keyword1 != '' || keyword2 != '' ){
 			searchType = '';//不区分正常与否
 		}
-		var url = '${ctx}/business/financereport?methodtype=downloadExcel';
+		var url = '${ctx}/business/storage?methodtype=downloadExcelForInventory';
 			url = url + "&searchType="+searchType;
 			url = url + "&keyword1="+keyword1;
 			url = url + "&keyword2="+keyword2;

@@ -176,8 +176,11 @@ public class StorageAction extends BaseAction {
 				dataMap = financeSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "downloadExcel":
-				downloadExcel();
+			case "downloadExcel"://财务入库数据下载
+				downloadExcelFromStockin();
+				break;
+			case "downloadExcelForInventory"://物料库存数据下载
+				downloadExcelForInventory();
 				break;
 			case "receiptListPrint"://批量打印入库单
 				receiptListPrint();
@@ -654,14 +657,25 @@ public class StorageAction extends BaseAction {
 	}
 	
 
-	private void downloadExcel() {
+	private void downloadExcelFromStockin() {
 				
 		try {
 			service.stockinDownloadExcelForfinance();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-			//System.out.println(e.getMessage());
+		}
+		
+	}
+	
+
+	private void downloadExcelForInventory() {
+				
+		try {
+			service.stockinDownloadExcelForInventory();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
 		}
 		
 	}

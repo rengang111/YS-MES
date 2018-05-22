@@ -373,6 +373,9 @@ public class PaymentService extends CommonService {
 		
 		//供应商
 		getContractDetail(payment.getContractids());
+		
+		model.addAttribute("taxRateList",
+				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
 	}
 
 	private void getPaymentDetailDB(String recordId) throws Exception {
@@ -586,14 +589,14 @@ public class PaymentService extends CommonService {
 					
 					data.setPaymentid(paymentid);
 					insertPaymentDetail(data);					
-				}
+				}				
+			}
+			
+			//保存退税率
+			for(B_PurchaseOrderData data:contractList ){				
 				
-				//保存退税率
-				for(B_PurchaseOrderData data:contractList ){				
-					
-					updateContractTaxRate(data);
-				}	
-			}		
+				updateContractTaxRate(data);
+			}
 			
 			ts.commit();			
 			
