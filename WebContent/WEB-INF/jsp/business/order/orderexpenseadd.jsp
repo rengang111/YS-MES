@@ -87,6 +87,82 @@
 			}
 		});
 	
+	$.fn.dataTable.TableTools.buttons.save1 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doSave('D');
+			}
+		});
+	
+	$.fn.dataTable.TableTools.buttons.return1 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doBack();
+			}
+		});
+	$.fn.dataTable.TableTools.buttons.save2 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doSave('C');
+			}
+		});
+	
+	$.fn.dataTable.TableTools.buttons.return2 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doBack();
+			}
+		});
+	$.fn.dataTable.TableTools.buttons.save3 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doSave('S');
+			}
+		});
+	
+	$.fn.dataTable.TableTools.buttons.return3 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doBack();
+			}
+		});
+	$.fn.dataTable.TableTools.buttons.save4 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doSave('W');
+			}
+		});
+	
+	$.fn.dataTable.TableTools.buttons.return4 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doBack();
+			}
+		});
+	$.fn.dataTable.TableTools.buttons.save5 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doSave('E');
+			}
+		});
+	
+	$.fn.dataTable.TableTools.buttons.return5 = $.extend(true, {},
+			$.fn.dataTable.TableTools.buttonBase, {
+			"fnClick" : function(button) {
+				
+				doBack();
+			}
+		});
+		
 	$.fn.dataTable.TableTools.buttons.add_rows2 = $
 	.extend(
 		true,
@@ -406,7 +482,7 @@
 						counter1 = data['recordsTotal'];//记录总件数
 						
 						fnCallback(data);
-						$(".DTTT_container").css('float','left');
+						//$(".DTTT_container").css('float','left');
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {
 						alert(textStatus)
@@ -422,6 +498,14 @@
 				{
 					"sExtends" : "reset1",
 					"sButtonText" : "删除行"
+				},
+				{
+					"sExtends" : "save1",
+					"sButtonText" : "保存"
+				},
+				{
+					"sExtends" : "return1",
+					"sButtonText" : "返回"
 				}],
 			},
         	"language": {
@@ -491,7 +575,7 @@
 	    			}else{
 	    				rtn = "已确认";//不可修改
 	    			}
-	    			return rtn;
+	    			return "";
                 }},               
 		           
 		     ] ,			
@@ -520,8 +604,7 @@
 
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/order?methodtype=expenseInit";
-					location.href = url;		
+							
 				});
 
 		
@@ -529,10 +612,17 @@
 		    $(this).select();
 		});
 		
-		$(".DTTT_container").css('float','left');
+		//$(".DTTT_container").css('float','left');
 		
 	});
 
+</script>
+
+<script type="text/javascript">
+	function doBack(){
+		var url = "${ctx}/business/order?methodtype=expenseInit";
+		location.href = url;
+	}
 </script>
 
 <script type="text/javascript">
@@ -570,7 +660,7 @@ function expenseAjax2() {//客户增减费用
 						counter2 = data['recordsTotal'];//记录总件数
 						
 						fnCallback(data);
-						$(".DTTT_container").css('float','left');
+						//$(".DTTT_container").css('float','left');
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {
 						alert(textStatus)
@@ -588,6 +678,14 @@ function expenseAjax2() {//客户增减费用
 				{
 					"sExtends" : "reset2",
 					"sButtonText" : "删除行"
+				},
+				{
+					"sExtends" : "save2",
+					"sButtonText" : "保存"
+				},
+				{
+					"sExtends" : "return2",
+					"sButtonText" : "返回"
 				}],
 			},
         	"language": {
@@ -660,7 +758,7 @@ function expenseAjax2() {//客户增减费用
 	    			}else{
 	    				rtn = "已确认";//不可修改
 	    			}
-	    			return rtn;
+	    			return "";
                 }},               
 		           
 		     ] ,
@@ -716,7 +814,7 @@ function expenseAjax3() {//工厂（供应商）增减费用
 						counter3 = data['recordsTotal'];//记录总件数
 						
 						fnCallback(data);
-						$(".DTTT_container").css('float','left');
+						//$(".DTTT_container").css('float','left');
 						
 						autocomplete();
 					},
@@ -736,6 +834,14 @@ function expenseAjax3() {//工厂（供应商）增减费用
 				{
 					"sExtends" : "reset3",
 					"sButtonText" : "删除行"
+				},
+				{
+					"sExtends" : "save3",
+					"sButtonText" : "保存"
+				},
+				{
+					"sExtends" : "return3",
+					"sButtonText" : "返回"
 				}],
 			},
         	"language": {
@@ -829,7 +935,7 @@ function expenseAjax3() {//工厂（供应商）增减费用
 	    			}else{
 	    				rtn = "已确认";//不可修改
 	    			}
-	    			return rtn;
+	    			return "";
                 }},               
 		           
 		     ] ,
@@ -883,7 +989,7 @@ function expenseAjax4() {//车间增减费用
 					counter4 = data['recordsTotal'];//记录总件数
 					
 					fnCallback(data);
-					$(".DTTT_container").css('float','left');
+					//$(".DTTT_container").css('float','left');
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
 					alert(textStatus)
@@ -901,6 +1007,14 @@ function expenseAjax4() {//车间增减费用
 			{
 				"sExtends" : "reset4",
 				"sButtonText" : "删除行"
+			},
+			{
+				"sExtends" : "save4",
+				"sButtonText" : "保存"
+			},
+			{
+				"sExtends" : "return4",
+				"sButtonText" : "返回"
 			}],
 		},
     	"language": {
@@ -982,7 +1096,7 @@ function expenseAjax4() {//车间增减费用
     			}else{
     				rtn = "已确认";//不可修改
     			}
-    			return rtn;
+    			return "";
             }},               
 	           
 	     ] ,
@@ -1038,7 +1152,7 @@ function expenseAjax5() {//检验费用
 						counter5 = data['recordsTotal'];//记录总件数
 						
 						fnCallback(data);
-						$(".DTTT_container").css('float','left');
+						//$(".DTTT_container").css('float','left');
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {
 						alert(textStatus)
@@ -1056,6 +1170,14 @@ function expenseAjax5() {//检验费用
 				{
 					"sExtends" : "reset5",
 					"sButtonText" : "删除行"
+				},
+				{
+					"sExtends" : "save5",
+					"sButtonText" : "保存"
+				},
+				{
+					"sExtends" : "return5",
+					"sButtonText" : "返回"
 				}],
 			},
         	"language": {
@@ -1136,7 +1258,7 @@ function expenseAjax5() {//检验费用
 	    			}else{
 	    				rtn = "已确认";//不可修改
 	    			}
-	    			return rtn;
+	    			return "";
                 }},               
 		           
 		     ] ,
@@ -1220,11 +1342,13 @@ function expenseAjax5() {//检验费用
 		</fieldset>
 			
 		<fieldset>
-			<legend> 车间增减费用</legend>
-				<div class="action" style="text-align: right;width: 50%;float: right;margin-top: -30px;">
-					<button type="button" id="insert4" onclick="doSave('W');" class="DTTT_button">保存</button>
-					<button type="button" id="goBack4" class="goBack DTTT_button">返回</button>
-				</div>
+			<span class="tablename"> 车间增减费用</span>
+			<!-- 
+			<span class="action" style="text-align: right;width: 50%;margin-top: -30px;">
+				<button type="button" id="insert4" onclick="doSave('W');" class="DTTT_button">保存</button>
+				<button type="button" id="goBack4" class="goBack DTTT_button">返回</button>
+			</span>
+			 -->
 			<div class="list">	
 				<table id="workshop" class="display" >
 					<thead>				
@@ -1244,11 +1368,12 @@ function expenseAjax5() {//检验费用
 		
 		
 		<fieldset>
-			<legend> 工厂（供应商）增减费用</legend>
-			<div class="action" style="text-align: right;width: 50%;float: right;margin-top: -30px;">
+			<span class="tablename"> 工厂（供应商）增减费用</span>
+			<!-- 
+			<span class="action" style="text-align: right;width: 50%;margin-top: -30px;">
 				<button type="button" id="insert3" onclick="doSave('S');" class="DTTT_button">保存</button>
 				<button type="button" id="goBack3" class="goBack DTTT_button">返回</button>
-			</div>	
+			</span>	 -->
 			<div class="list">		
 				<table id="supplier" class="display" >
 					<thead>				
@@ -1267,11 +1392,12 @@ function expenseAjax5() {//检验费用
 		</fieldset>		
 		
 		<fieldset>
-			<legend> 客户增减费用</legend>
-				<div class="action" style="text-align: right;width: 50%;float: right;margin-top: -30px;">
-					<button type="button" id="insert2" onclick="doSave('C');" class="DTTT_button">保存</button>
-					<button type="button" id="goBack2" class=" goBack DTTT_button">返回</button>
-				</div>	
+			<span class="tablename"> 客户增减费用</span>
+			<!-- 
+			<span class="action" style="text-align: right;width: 50%;margin-top: -30px;">
+				<button type="button" id="insert2" onclick="doSave('C');" class="DTTT_button">保存</button>
+				<button type="button" id="goBack2" class=" goBack DTTT_button">返回</button>
+			</span>	 -->
 			<div class="list">
 				<table id="custmer" class="display" >
 					<thead>				
@@ -1288,11 +1414,12 @@ function expenseAjax5() {//检验费用
 		</fieldset>	
 		
 		<fieldset>
-			<legend> 检验费用</legend>
-				<div class="action" style="text-align: right;width: 50%;float: right;margin-top: -30px;">
-					<button type="button" id="insert1" onclick="doSave('E');" class="DTTT_button">保存</button>
-					<button type="button" id="goBack" class="goBack DTTT_button">返回</button>
-				</div>	
+			<span class="tablename"> 检验费用</span>
+			<!-- 
+			<span class="action" style="text-align: right;width: 50%;margin-top: -30px;">
+				<button type="button" id="insert1" onclick="doSave('E');" class="DTTT_button">保存</button>
+				<button type="button" id="goBack" class="goBack DTTT_button">返回</button>
+			</span>	-->
 			<div class="list">
 				<table id="inspection" class="display" >
 					<thead>				
@@ -1311,13 +1438,13 @@ function expenseAjax5() {//检验费用
 		</fieldset>	
 		
 		<fieldset>
-			<legend> 跟单费用</legend>
-						
-				<div class="action" style="text-align: right;width: 50%;float: right;margin-top: -30px;">
-					<button type="button" id="insert1" onclick="doSave('D');" class="DTTT_button">保存</button>
-					<!-- button type="button" id="check1" onclick="doCheck1();" class="DTTT_button">确认</button-->
-					<button type="button" id="goBack" class="goBack DTTT_button">返回</button>
-				</div>	
+			<span class="tablename"> 跟单费用</span>
+			<!-- 
+			<span class="action" style="text-align: right;width: 50%;margin-top: -30px;">
+				<button type="button" id="insert1" onclick="doSave('D');" class="DTTT_button">保存</button>
+				 button type="button" id="check1" onclick="doCheck1();" class="DTTT_button">确认</button>
+				<button type="button" id="goBack" class="goBack DTTT_button">返回</button>
+			</span>	-->
 			<div class="list">
 				<table id="documentary" class="display" >
 					<thead>				
