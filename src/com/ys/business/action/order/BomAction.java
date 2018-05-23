@@ -83,6 +83,10 @@ public class BomAction extends BaseAction {
 				doCreateBaseBom();
 				//printOutJsonObj(response, dataMap);
 				rtnUrl = "/business/bom/basebomadd";
+				break;
+			case "createSemiBaseBom"://新建半成品BOM
+				doCreateSemiBaseBom();
+				rtnUrl = "/business/bom/basebomadd";
 				break;	
 			case "editBaseBom":
 				doEditBaseBom();
@@ -166,7 +170,10 @@ public class BomAction extends BaseAction {
 			case "getBaseBom":
 				dataMap = doShowBaseBom();
 				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/bom/productview";
+				break;
+			case "getSemitBaseBom"://半成品BOM
+				dataMap = doShowSemiBaseBom();
+				printOutJsonObj(response, dataMap);
 				break;
 			case "createQuotation":
 				createQuotation();
@@ -331,6 +338,12 @@ public class BomAction extends BaseAction {
 		bomService.createBaseBom();
 		
 	}
+	public void doCreateSemiBaseBom() throws Exception{
+
+		model.addAttribute("keyBackup", request.getParameter("keyBackup"));	
+		bomService.createSemiBaseBom();
+		
+	}
 	public void doEditBaseBom() throws Exception{
 
 		model.addAttribute("keyBackup", request.getParameter("keyBackup"));	
@@ -437,6 +450,31 @@ public class BomAction extends BaseAction {
 		
 		try {
 			dataMap =  bomService.showBaseBomDetail();
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData == null || dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+			
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> doShowSemiBaseBom() throws Exception{
+		
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		try {
+			dataMap =  bomService.showSemiBaseBomDetail();
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData == null || dbData.size() == 0) {

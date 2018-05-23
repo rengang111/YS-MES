@@ -552,7 +552,7 @@ public class MaterialAction extends BaseAction {
 		try {
 			String keyBackup = request.getParameter("keyBackup");
 			
-			if(keyBackup!=null && keyBackup.equals("K")){
+			if(("K").equals(keyBackup)){
 				
 				materialService.getProductSemiDeital();	
 				rtnUrl = "/business/material/productsemiview";

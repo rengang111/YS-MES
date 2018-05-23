@@ -1184,6 +1184,26 @@ public class BomService extends CommonService {
 		
 	}
 
+
+	public Model createSemiBaseBom() throws Exception {
+
+		String materialId = request.getParameter("materialId");	
+		//取得该产品的新BOM编号
+		String parentId = BusinessService.getSemiBaseBomId(materialId)[0];
+		String bomId = BusinessService.getSemiBaseBomId(materialId)[1];
+		
+		//新建
+		bomPlanData.setBomid(bomId);
+		bomPlanData.setSubid(BusinessConstants.FORMAT_00);
+		bomPlanData.setParentid(parentId);		
+		reqModel.setBomPlan(bomPlanData);
+
+		//取得产品信息
+		getProductById(materialId);
+		
+		return model;
+		
+	}
 	public void editBaseBom() throws Exception{
 
 		String materialId = request.getParameter("materialId");	
@@ -1322,6 +1342,15 @@ public class BomService extends CommonService {
 		
 		return getBaseBomDetail(bomId,true);		
 	}
+	
+	public HashMap<String, Object> showSemiBaseBomDetail() throws Exception {
+
+		String materialId = request.getParameter("materialId");
+		String bomId = BusinessService.getSemiBaseBomId(materialId)[1];
+		
+		return getBaseBomDetail(bomId,true);		
+	}
+	
 	public HashMap<String, Object> showQuotationBomDetail() throws Exception {
 
 		String materialId = request.getParameter("materialId");

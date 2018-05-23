@@ -241,7 +241,7 @@ function doCreateBaseBom() {
 		var url = '${ctx}/business/bom?methodtype=editBaseBom&materialId=' + materialId+'&model='+productModel+'&keyBackup='+keyBackup;
 
 	}else{
-		var url = '${ctx}/business/bom?methodtype=createBaseBom&materialId=' + materialId+'&model='+productModel+'&keyBackup='+keyBackup;	
+		var url = '${ctx}/business/bom?methodtype=createSemiBaseBom&materialId=' + materialId+'&model='+productModel+'&keyBackup='+keyBackup;	
 	}
 	location.href = url;
 	
@@ -266,7 +266,7 @@ function baseBomView() {
 		"retrieve" : false,
 		"bSort":false,
 		"async" : false,
-		"sAjaxSource" : "${ctx}/business/bom?methodtype=getBaseBom&materialId="+materialId,	
+		"sAjaxSource" : "${ctx}/business/bom?methodtype=getSemitBaseBom&materialId="+materialId,	
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
 				"url" : sSource,

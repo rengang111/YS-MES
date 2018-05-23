@@ -251,6 +251,21 @@ public class BusinessService {
 		return rtn;
 	}	
 	
+
+	/**
+	 * @return 半成品BOM编号:BK.IW03.WTR001.00-00
+	 * @param I.IW03.WTR001.00
+	 */
+	public static String[] getSemiBaseBomId(String code1 )
+	{
+		String[] rtn = new String[2];
+		String tmp2 = code1.substring(2);
+		//
+		rtn[0] = BusinessConstants.BASEBOM_BK + "."+tmp2;
+		rtn[1] = BusinessConstants.BASEBOM_BK + "."+tmp2 + "-"+BusinessConstants.FORMAT_00;
+		return rtn;
+	}	
+	
 	
 	/**
 	 * @return 报价BOM编号
