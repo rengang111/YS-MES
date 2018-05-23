@@ -102,6 +102,10 @@
 		    			//rtn=  row["YSId"];
 		    			return rtn;
 		    		}},
+		    		{"targets":5,"render":function(data, type, row){
+		    					    			
+		    			return jQuery.fixedWidth(data,18);
+		    		}},
 		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);
 		    		}},
