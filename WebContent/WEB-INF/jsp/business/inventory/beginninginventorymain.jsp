@@ -324,8 +324,8 @@ body{
 	}
 
 	$(document).ready(function() {
-		
-		searchAjax("true","2","");
+		var searchType = $('#searchType').val();
+		searchAjax("true",searchType,"");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -584,14 +584,14 @@ body{
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
 			<input type="hidden" id="stockType" value="${stockType }" />
-			<input type="hidden" id="searchType" value="2" />
+			<input type="hidden" id="searchType" value="${searchType }" />
 			
 			<table>
 				<tr>
 					<td width="10%"></td> 
 					<td class="label">关键字1：</td>
 					<td class="condition">
-						<input type="text" id="keyword1" name="keyword1" class="middle"/>
+						<input type="text" id="keyword1" name="keyword1" class="middle" value="${keyword1 }"/>
 					</td>
 					<td class="label">关键字2：</td> 
 					<td class="condition">

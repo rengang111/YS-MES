@@ -404,7 +404,10 @@
 	    <td><span id="orderQuantity${status.index}">${order.totalQuantity}</span></td>
 	    <td><span id="totalQuantity${status.index}"></span>
 	    	<form:hidden path="planDetailList[${status.index}].manufacturequantity" value="" /></td>
-	    <td><span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></td>
+	    	
+	    <td><a href="###" onClick="doShowInventory('${bom.materialId }')">
+	    	<span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></a></td>
+	    
 	    <td><form:input path="planDetailList[${status.index}].purchasequantity"  class="num mini" value="" /></td>
 	    <td><form:input path="planDetailList[${status.index}].supplierid"  class="supplierid short" value="${bom.supplierId }" /></td>
 	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="" /></td>
@@ -857,6 +860,12 @@ function laborCostSum(){
 	return sum;
 }
 
+function doShowInventory(materialId){
+
+	var url = "${ctx}/business/storage?methodtype=beginningInventoryNewWindowSearch";
+	url = url + "&keyword1="+materialId;
+	callProductDesignView("库存确认",url);
+}
 
 </script>
 </body>

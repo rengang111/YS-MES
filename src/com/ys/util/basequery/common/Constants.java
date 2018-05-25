@@ -58,6 +58,7 @@ public class Constants {
 	public static final String FORM_REPORTFORDAYBOOK= "reportForDaybook";//财务流水账
 	public static final String FORM_REPORTFORINVENTORY= "reportForInventoryMonthly";//收发存总表
 	public static final String FORM_BEGINNINGINVENTROY3= "reportForDaybook3";//收发存总表
+	public static final String FORM_DEPOTRETURN= "depotReturn";//仓库退货
 	
 	
 	/*
@@ -279,4 +280,10 @@ public class Constants {
 	public static final String FOLLOWSTATUS_0 = "0";//关注
 	public static final String FOLLOWSTATUS_1 = "1";//取消关注
 
+
+	/**
+	 * 退货类别
+	 */	
+	public static final String RETURNTYPE_1 = "010";//检验退货
+	public static final String RETURNTYPE_2 = "020";//入库退货
 }

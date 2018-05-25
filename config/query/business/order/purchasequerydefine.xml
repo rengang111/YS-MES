@@ -289,6 +289,8 @@
       <f name="A.YSId" alias="" ctype="" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="A.materialName" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.quantityOnHand" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.purchaseDate" alias="" ctype="" />

@@ -402,7 +402,7 @@
 		
 	<tbody>
 		<c:forEach var="list" items="${material}" varStatus='status' >
-			<c:if test="${list.surplus > '0'}">
+		
 				<tr>
 					<td></td>
 					<td>${list.materialId }
@@ -424,7 +424,7 @@
 						
 						$('#surplus'+index).html(floatToCurrency( surplus ))
 				</script>
-			</c:if>
+		
 		</c:forEach>
 		
 	</tbody>

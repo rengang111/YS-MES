@@ -210,6 +210,11 @@ public class StorageAction extends BaseAction {
 				rtnUrl = "/business/finance/paymentstockinprint";
 				break;
 			case "beginningInventoryMainInit":
+				beginningInventoryMainInit();
+				rtnUrl = "/business/inventory/beginninginventorymain";
+				break;
+			case "beginningInventoryNewWindowSearch"://无固定页面，新窗口查询库存信息
+				beginningInventoryNewWindowSearch();
 				rtnUrl = "/business/inventory/beginninginventorymain";
 				break;
 			case "beginningInventorySearch":
@@ -819,4 +824,14 @@ public class StorageAction extends BaseAction {
 		
 	}
 	
+	public void beginningInventoryMainInit(){
+		model.addAttribute("searchType","2");//默认查询“虚拟库存是负数的”数据
+	}
+	
+	public void beginningInventoryNewWindowSearch(){
+
+		String keyword1 = request.getParameter("keyword1");
+		model.addAttribute("keyword1",keyword1);
+		model.addAttribute("searchType","");//
+	}
 }
