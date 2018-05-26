@@ -84,7 +84,13 @@
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-		    			return row["rownum"];
+		    			var paymentId = row["paymentId"];
+		    			if(paymentId == ""){
+							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["contractId"] + "' />";		    				
+		    			}else{
+							return row["rownum"];
+
+		    			}
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = row["paymentId"];//
@@ -164,6 +170,51 @@
 
 	}
 	
+	function doCreate() {
+		var str = '';
+		var supplierId = '';
+		var supplierId_next = '';
+	    var flag = true;
+	    var rtnValue = true;
+		$("input[name='numCheck']").each(function(){
+			if ($(this).prop('checked')) {
+				str += $(this).val() + ",";	
+								
+				if(flag){
+					supplierId = $(this).parent().parent().find('td').eq(4).text();
+					supplierId_next = $(this).parent().parent().find('td').eq(4).text();
+					flag = false;
+				}else{
+					supplierId_next = $(this).parent().parent().find('td').eq(4).text();
+					//alert(supplierId+"---"+supplierId_next)
+					if(supplierId != supplierId_next){
+					
+						$().toastmessage('showWarningToast', "请选择同一个供应商。");
+
+						rtnValue = false;
+						return false;
+					}
+				}
+			
+			
+			}
+		});
+
+		
+		if(!rtnValue)
+			return;
+		
+		if (str == '') {
+			alert("请至少选择一条数据");
+			return;
+		}	
+		var paymentTypeId = $("#paymentTypeId").val();	
+		var url = '${ctx}/business/payment?methodtype=addinit';
+		url = url +"&contractIds="+str;
+		url = url +"&paymentTypeId="+paymentTypeId;
+		location.href = url;
+		
+	}
 	
 	function doCreate2(contractId) {
 	
@@ -190,6 +241,29 @@
 		callProductDesignView("采购合同",url);
 	}	
 	
+	function fnselectall() { 
+		if($("#selectall").prop("checked")){
+			$("input[name='numCheck']").each(function() {
+				$(this).prop("checked", true);
+				$(this).parent().parent().addClass("selected");
+			});
+				
+		}else{
+			$("input[name='numCheck']").each(function() {
+				if($(this).prop("checked")){
+					$(this).removeAttr("checked");
+					$(this).parent().parent().removeClass('selected');
+				}
+			});
+		}
+	};
+	
+	function fnreverse() { 
+		$("input[name='numCheck']").each(function () {  
+	        $(this).prop("checked", !$(this).prop("checked"));  
+			$(this).parent().parent().toggleClass("selected");
+	    });
+	};
 	
 </script>
 </head>
@@ -235,11 +309,16 @@
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>待付款</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'050');"><span>已完成</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'060');"><span>审核未通过</span></a>
+				</div>
+				<div style="height: 40px;margin-bottom: -15px;float:right">
+					<a class="DTTT_button DTTT_button_text" onclick="doCreate();">付款申请</a>
 				</div>				
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						
 						<tr>					
-							<th width="10px">No</th>
+							<th width="50px">
+								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
+								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
 							<th width="65px">付款编号</th>
 							<th width="70px">合同编号</th>
 							<th width="60px">耀升编号</th>							

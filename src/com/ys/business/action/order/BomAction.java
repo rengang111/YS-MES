@@ -346,8 +346,10 @@ public class BomAction extends BaseAction {
 	}
 	public void doEditBaseBom() throws Exception{
 
-		model.addAttribute("keyBackup", request.getParameter("keyBackup"));	
-		bomService.editBaseBom();
+		String keyBackup = request.getParameter("keyBackup");
+		model.addAttribute("keyBackup", keyBackup);	
+		
+		bomService.editBaseBom(keyBackup);
 		
 	}
 	public void doCreateOrderBom() throws Exception{
@@ -365,8 +367,9 @@ public class BomAction extends BaseAction {
 	public String doInsertBaseBom() throws Exception {
 		
 		String rtnUrl = "/business/material/productview";
-		bomService.insertBaseBomAndView();
 		String keyBackup = request.getParameter("keyBackup");
+		
+		bomService.insertBaseBomAndView(keyBackup);
 		
 		if(keyBackup!=null && keyBackup.equals("K")){
 				

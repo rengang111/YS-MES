@@ -1204,18 +1204,23 @@ public class BomService extends CommonService {
 		return model;
 		
 	}
-	public void editBaseBom() throws Exception{
+	public void editBaseBom(String keyBackup) throws Exception{
 
 		String materialId = request.getParameter("materialId");	
-		getBaseBom(materialId);
+		getBaseBom(materialId,keyBackup);
 	}
 	
 	
-	private void getBaseBom(String materialId) throws Exception {
+	private void getBaseBom(String materialId,String keyBackup) throws Exception {
 
 		//取得该产品的新BOM编号
 		String parentId = BusinessService.getBaseBomId(materialId)[0];
 		String bomId = BusinessService.getBaseBomId(materialId)[1];
+		
+		if(("K").equals(keyBackup)){
+			parentId = BusinessService.getSemiBaseBomId(materialId)[0];
+			bomId = BusinessService.getSemiBaseBomId(materialId)[1];			
+		}
 		
 		//新建
 		bomPlanData = new B_BomPlanData();
@@ -1383,10 +1388,16 @@ public class BomService extends CommonService {
 		String materialId = request.getParameter("materialId");
 		String oldBomId = request.getParameter("bomId");
 		String keyBackup = request.getParameter("keyBackup");
-
+		
 		//取得该产品的新BOM编号
+		//成品
 		String parentId = BusinessService.getBaseBomId(materialId)[0];
 		String newBomId = BusinessService.getBaseBomId(materialId)[1];
+		//半成品
+		if(("K").equals(keyBackup)){
+			parentId = BusinessService.getSemiBaseBomId(materialId)[0];
+			newBomId = BusinessService.getSemiBaseBomId(materialId)[1];			
+		}
 		
 		//取得所选BOM的详细信息
 		getBaseBomDetail(oldBomId,false);
@@ -1536,7 +1547,7 @@ public class BomService extends CommonService {
 		
 	}
 	
-	public Model insertBaseBomAndView() throws Exception {
+	public Model insertBaseBomAndView(String keyBackup) throws Exception {
 	
 		insertBaseBom();
 		
@@ -1545,7 +1556,7 @@ public class BomService extends CommonService {
 		//取得产品信息
 		//getProductDetail(materialId);
 		
-		getBaseBom(materialId);
+		getBaseBom(materialId,keyBackup);
 		
 		return model;
 		
