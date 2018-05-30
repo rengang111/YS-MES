@@ -29,7 +29,6 @@
 					{"className" : ''},
 					{"className" : 'td-right',"defaultContent" : '0'},//
 					{"className" : 'td-right',"defaultContent" : '0'},//
-					{"className" : 'td-right',"defaultContent" : '0'},//
 				
 				],
 				"columnDefs":[
@@ -68,11 +67,9 @@
 	        }
 		});		
 		
-		//sumFn(5);
-		sumFn(6);
-		//sumFn(7);
-		//sumFn(8);
-		$('#waitout').html($('#totalValue6').html());
+		var contract = sumFn(5);
+		var stockin = sumFn(6);
+		$('#waitout').html(floatToCurrency( contract - stockin) );
 	})	
 	
 	function doSearch() {	
@@ -95,6 +92,8 @@
 		});	
 		
 		$('#totalValue'+num).html(floatToCurrency(sum7));
+		
+		return sum7;
 	}
 	
 </script>
@@ -124,36 +123,31 @@
 					<thead>	
 						<tr >
 							<th style="width: 1px;">No</th>
-							<th style="width: 60px;">方案做成日</th>
+							<th style="width: 90px;">合同编号</th>
 							<th style="width: 80px;">耀升编号</th>
 							<th style="width: 120px;">产品编号</th>
 							<th>产品名称</th>
-							<th style="width: 60px;">生产需求</th>
 							<th style="width: 60px;">合同数</th>
 							<th style="width: 60px;">入库数</th>
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach var='list' items='${planList}' varStatus='status'>
-							<c:if test="${list.contractQty  > '0' && list.stockinQty < list.contractQty }">
-							
+						<c:forEach var='list' items='${contractList}' varStatus='status'>							
 							<tr>
 								<td>${status.index +1 }</td>
-								<td>${list.planDate }</td>
+								<td>${list.contractId }</td>
 								<td>${list.YSId }</td>
 								<td>${list.productId }</td>
 								<td><span id="shortName${status.index }">${list.productName }</span></td>
-								<td>${list.manufactureQuantity }</td>
 								<td>${list.contractQty }</td>
 								<td>${list.stockinQty }</td>
 							</tr>
 							
 							<script type="text/javascript">
-								var materialName = '${list.productName}';
+								var materialName = '${list.productName	}';
 								var index = '${status.index}';
 								$('#shortName'+index).html(jQuery.fixedWidth(materialName,48));
-							</script>	
-							</c:if>
+							</script>
 						</c:forEach>
 					</tbody>
 					<tfoot>
@@ -165,7 +159,6 @@
 							<th>合计：</th>
 							<th style="text-align: right;"><span id="totalValue5"></span></th>
 							<th style="text-align: right;"><span id="totalValue6"></span></th>
-							<th style="text-align: right;"><span id="totalValue7"></span></th>
 						</tr>
 					</tfoot>
 				</table>

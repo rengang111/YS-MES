@@ -7,7 +7,7 @@
 <title>库存一览页面</title>
 <style>
 body{
-    font-size:10px;
+  /*  font-size:10px;*/
 }
 </style>
 <script type="text/javascript">
@@ -63,7 +63,7 @@ body{
 							$("#keyword1").val(key1);
 							$("#keyword2").val(key2);
 							
-							if(myTrim(key1) == "" && myTrim(key2) == ""){
+							if((key1) == "" && (key2) == ""){
 							 	$('#defutBtn').removeClass("start").addClass("end");							
 							}else{							
 							 	$('#defutBtn').removeClass("end").addClass("start");
@@ -80,22 +80,33 @@ body{
 				"columns": [
 					{"data": null,"className" : 'td-center'},//0
 					{"data": "materialId"},//1
-					{"data": "materialName"},//2
+					{"data": "materialName","className" : 'td-left'},//2
 					{"data": "dicName","className" : 'td-center'},//3
 					{"data": "reviseQty","className" : 'td-right'},//4
+					
 					{"data": "beginningInventory","className" : 'td-right'},//5
 					{"data": "beginningPrice","className" : 'td-right'},//6
 					{"data": "MAPrice","className" : 'td-right'},//7
-					{"data": "planQty","className" : 'td-right'},//	8
-					{"data": "contractQty","className" : 'td-right'},//	9
-					{"data": "stockinQtiy","className" : 'td-right'},//10
-					{"data": "stockoutQty","className" : 'td-right'},//11
-					{"data": null,"className" : 'td-right'},//12计算库存
-					{"data": "quantityOnHand","className" : 'td-right'},//13
-					{"data": "availabelToPromise","className" : 'td-right'},//14
-					{"data": "waitStockIn","className" : 'td-right'},//15
-					{"data": "waitStockOut","className" : 'td-right'},//16
-					{"data": null,"className" : 'td-center'},//17
+										
+					{"data": "waitStockIn","className" : 'td-right'},//8待入
+					{"data": "waitStockOut","className" : 'td-right'},//12待出
+					{"data": null,"className" : 'td-right'},//9当前增量
+					{"data": "quantityOnHand","className" : 'td-right'},//10实际库存
+					{"data": "availabelToPromise","className" : 'td-right'},//11虚拟库存
+					{"data": null,"className" : 'td-center'},//13状态
+					
+					
+					//{"data": "planQty","className" : 'td-right'},//	8
+					//{"data": "contractQty","className" : 'td-right'},//	9
+					//{"data": "stockinQtiy","className" : 'td-right'},//10
+					//{"data": "stockoutQty","className" : 'td-right'},//11
+					//{"data": null,"className" : 'td-right'},//12计算库存
+					//{"data": "quantityOnHand","className" : 'td-right'},//13
+					//{"data": "availabelToPromise","className" : 'td-right'},//14
+					//{"data": "waitStockIn","className" : 'td-right'},//15
+					//{"data": "waitStockOut","className" : 'td-right'},//16
+					//{"data": null,"className" : 'td-center'},//17
+
 				
 				],
 				"columnDefs":[
@@ -112,10 +123,10 @@ body{
 		    		{"targets":2,"render":function(data, type, row){
 		    			
 		    			var name = row["materialName"];				    			
-		    			name = jQuery.fixedWidth(name,18);				    			
+		    			name = jQuery.fixedWidth(name,24);				    			
 		    			return name;
 		    		}},
-		    		{"targets":17,"render":function(data, type, row){
+		    		{"targets":13,"render":function(data, type, row){
 		    			//实际库存修正
 		    			var confirmFlag = row["quantityEditFlag"];
 		    			var quantityOnHand = currencyToFloat(row["quantityOnHand"]);
@@ -127,16 +138,8 @@ body{
 		    				//alert("hand:in:out:"+quantityOnHand+"---"+stockinQtiy+"---"+stockoutQty+"---"+totalQty+"---"+editFlag)
 		    			}
 		    			var txt = "";	
-		    			/*
-		    			if((confirmFlag) == "1"){
-	    					//待确认
-		    				txt +=  "<span style=\"color: red;\">" + "待确认" + "</span>";		    				
-		    			}else if((confirmFlag) == "0"){
-		    				txt += "已确认";
-		    			}else{
-		    				txt += "";
-		    			}
-		    			*/
+
+		   
 						if(quantityOnHand < 0 || stockinQtiy != totalQty ){//库存为负数
 		    				
 		    				if(confirmFlag == "0"){
@@ -161,105 +164,24 @@ body{
 
 						return  txt;
 						
-		    			/*
-		    			if(quantityOnHand < 0 || stockinQtiy != totalQty ){//库存为负数
-		    				
-		    				if(confirmFlag == "0"){
-		    					//已确认,但是还有问题
-		    					if(editFlag == 'edit'){
-		    						//再次编辑
-					    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "再次修改" + "</a>";	
-			    				}else{
-				    				txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"') \" style=\"color: red;\">" + "还有问题" + "</a>";		    				
-			    				}
-			    			
-			    			}else{
-		    					//未修改
-				    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "未修改" + "</a>";			    				
-			    			}		    				
-		    			}else{
-		    				if((confirmFlag) == "1"){
-		    					//待确认
-			    				txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"') \" style=\"color: red;\">" + "待确认" + "</a>";		    				
-			    			}else if((confirmFlag) == "0"){
-			    				if(editFlag == 'edit'){
-
-					    			txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "再次修改" + "</a>";	
-			    				}else{
-
-				    				txt = "已确认";
-			    				}
-			    			}
-		    			}	
-		    			*/		    					    	    			
+		     					    	    			
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
 		    						    			
 		    			return floatToCurrency(data);
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){//总需求量
-		     			var rtn = "";
-		    			var qty= floatToCurrency(data);
-		    			var materialId = row["materialId"];	
-		    			var unit = row["dicName"];
-		    			var stockType=$('#stockType').val();
-		    			
-		    			if(stockType == '010'){//原材料
-		    				if(unit == '千克'){
-		    					qty = floatToCurrency( currencyToFloat( row["rawPlanQty"] ) / 1000 );
-		    				}else{
-		    					qty = floatToCurrency( currencyToFloat( row["rawPlanQty"] ) );
-		    					
-		    				}
-		    			}
-		    			var correctionQty = currencyToFloat(row["correctionQty"]);
-		    			var style = 'color: green;font-weight: bold;font-size: 11px;';//未修改
-		    			if(correctionQty>0){//修改数量
-		    				style = '';//修改过
-		    			}else{
-		    				//正常数据
-		    				var quantityOnHand = currencyToFloat(row["quantityOnHand"]);
-		    				var availabelToPromise = currencyToFloat(row["availabelToPromise"]);
-		    				if(quantityOnHand >= 0 && availabelToPromise >= 0 ){
-		    					style = '';
-		    				}
-		    			}
-		    			
-		    			rtn= "<a href=\"###\" style=\""+style+"\" onClick=\"doShowPlan('" + row["materialId"] +"')\">" + qty + "</a>";
-		    				    			
-		    			return rtn;	
-		    			
-		    			
-		    			
-		    		}},
-		    		{"targets":9,"render":function(data, type, row){//总合同数
-		     			var rtn = "";
-		    			var qty= floatToCurrency(data);
-		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["materialId"] +"')\">" + qty + "</a>";
-		    			return rtn;		    			
-		    		}},
-		    		{"targets":10,"render":function(data, type, row){
+	
+		    		{"targets":10,"render":function(data, type, row){//当前增量
 		    			var rtn = "";
-		    			var qty= floatToCurrency(data);
-		    			rtn= "<a href=\"###\" onClick=\"doShowStockIn('" + row["materialId"] +"')\">" + qty + "</a>";
-		    			return rtn;		    			
-		    		}},
-		    		{"targets":11,"render":function(data, type, row){
-		    			var rtn = "";
-		    			var qty= floatToCurrency(row["stockoutTotal"]);//包含正常出库 + 手修改出库
-		    			rtn= "<a href=\"###\" onClick=\"doShowStockOut('" + row["materialId"] +"')\">" + qty + "</a>";
-		    						    			
-		    			return rtn;
-		    		}},
-		    		{"targets":12,"render":function(data, type, row){//计算库存
-		    			var rtn = "";
-		    			var stockin= currencyToFloat(row["stockinQtiy"]);
-		    			var stockout= currencyToFloat(row["stockoutTotal"]);
+		    			var stockin= currencyToFloat(row["waitStockIn"]);
+		    			var stockout= currencyToFloat(row["waitStockOut"]);
 		    			var quantity = floatToCurrency( stockin - stockout );
+
+		    			//rtn= "<a href=\"###\"  onClick=\"doShowPlan('" + row["materialId"] +"')\">" + quantity + "</a>";
 		    			
 		    			return quantity;
 		    		}},
-		    		{"targets":13,"render":function(data, type, row){//实际库存
+		    		{"targets":11,"render":function(data, type, row){//实际库存
 		    			var rtn = "";
 		    			var qty= floatToCurrency(data);
 		    			var style = '';
@@ -269,7 +191,7 @@ body{
 		    			rtn +=  "<a href=\"###\" style=\""+style+"\"  onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + qty + "</a>";
 		    			return rtn;
 		    		}},
-		    		{"targets":14,"render":function(data, type, row){//虚拟库存
+		    		{"targets":12,"render":function(data, type, row){//虚拟库存
 		    			var rtn = "";
 		    			var style = '';
 		    			if(currencyToFloat(data) < 0){
@@ -281,7 +203,7 @@ body{
 		    						    			
 		    			return rtn;
 		    		}},
-		    		{"targets":15,"render":function(data, type, row){//待入
+		    		{"targets":8,"render":function(data, type, row){//待入
 		    			var rtn = "";
 		    			var mate = row["materialId"];
 		    			var qty= floatToCurrency(data);
@@ -289,7 +211,7 @@ body{
 		    						    			
 		    			return rtn;
 		    		}},
-		    		{"targets":16,"render":function(data, type, row){//待出
+		    		{"targets":9,"render":function(data, type, row){//待出
 		    			var rtn = "";
 		    			var mate = row["materialId"];
 		    			var qty= floatToCurrency(data);
@@ -417,13 +339,13 @@ body{
 
 	function doShowWaitOut(materialId) {
 
-		var url = '${ctx}/business/purchasePlan?methodtype=purchaseWaitOutByMaterialId&materialId=' + materialId;
+		var url = '${ctx}/business/inventory?methodtype=planAndStockOut&materialId=' + materialId;
 		callProductDesignView("待出数量",url);
 		
 	}
 	function doShowWaitIn(materialId) {
 
-		var url = '${ctx}/business/purchasePlan?methodtype=purchaseWaitInByMaterialId&materialId=' + materialId;
+		var url = '${ctx}/business/inventory?methodtype=contractAndStockIn&materialId=' + materialId;
 		callProductDesignView("待入数量",url);
 		
 	}
@@ -623,24 +545,23 @@ body{
 		<table  id="TMaterial" class="display">
 			<thead>			
 				<tr >
-					<th style="width: 1px;font-size: 10px;">No</th>
-					<th style="width: 100px;font-size: 10px;">物料编号</th>
+					<th style="width: 1px;">No</th>
+					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 25px;">单位</th>
-					<th style="width: 40px;font-size: 10px;">修改记录<br>E</th>
-					<th style="width: 50px;font-size: 10px;">期初库存</th>
-					<th style="width: 50px;font-size: 10px;">期初单价</th>
-					<th style="width: 50px;font-size: 10px;">移动<br>平均单价</th>
-					<th style="width: 50px;font-size: 10px;">总需求数<br>A</th>
-					<th style="width: 50px;font-size: 10px;">总合同数<br>B</th>
-					<th style="width: 50px;font-size: 10px;">总到货数<br>C</th>
-					<th style="width: 50px;font-size: 10px;">总领料数<br>D</th>
-					<th style="width: 50px;font-size: 10px;">计算库存<br>F=C-D</th>
-					<th style="width: 50px;font-size: 10px;">实际库存<br>G=F+E</th>
-					<th style="width: 50px;font-size: 10px;">虚拟库存<br>H=G+K-J</th>
-					<th style="width: 50px;font-size: 10px;">待入<br>K=B-C</th>
-					<th style="width: 50px;font-size: 10px;">待出<br>J=A-D</th>
-					<th style="width: 40px;font-size: 10px;">状态</th>
+					<th style="width: 40px;">修改记录<br>E</th>
+					
+					<th style="width: 50px;">期初库存</th>
+					<th style="width: 50px;">期初单价</th>
+					<th style="width: 50px;">移动<br>平均单价</th>
+					
+					<th style="width: 50px;">待入<br>K</th>
+					<th style="width: 50px;">待出<br>J</th>
+					<th style="width: 50px;">当前增量<br>F=K-J</th>
+					<th style="width: 50px;">实际库存<br>G</th>
+					<th style="width: 50px;">虚拟库存<br>H=G+F</th>
+					
+					<th style="width: 40px;">状态</th>
 				</tr>
 			</thead>
 		</table>

@@ -2,8 +2,6 @@ package com.ys.business.service.order;
 
 import java.net.URLDecoder;
 import java.util.HashMap;
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -17,7 +15,6 @@ import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
-import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
@@ -156,71 +153,11 @@ public class InventoryService extends CommonService {
 	
 	public void insertArrival() {
 
-		String arrivalId = insertAndView();
+		//String arrivalId = insertAndView();
 		//getArrivaRecord(arrivalId);
 	}
 	
-	private String insertAndView(){
-		String arrivalId = "";
-		ts = new BaseTransaction();
-		
-		/*
-		try {
-			ts.begin();
-			
-			B_ArrivalData reqData = (B_ArrivalData)reqModel.getArrival();
-			List<B_ArrivalData> reqDataList = reqModel.getArrivalList();
-			
-			//删除旧数据
-			arrivalId = reqData.getArrivalid();
-			deleteArrivalById(arrivalId);
-			
-			for(B_ArrivalData data:reqDataList ){
-				String contract = data.getContractid();
-				if(contract == null || contract.equals(""))
-					continue;
-				
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-						"ArrivalInsert",userInfo);
 
-				copyProperties(data,commData);
-
-				String guid = BaseDAO.getGuId();
-				data.setRecordid(guid);
-				data.setArrivalid(arrivalId);
-				data.setUserid(userInfo.getUserId());
-				data.setArrivedate(reqData.getArrivedate());
-				data.setStatus(Constants.ARRIVERECORD_0);//未报检
-				
-				dao.Create(data);			
-			
-			}
-			
-			ts.commit();			
-			
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			try {
-				ts.rollback();
-			} catch (Exception e1) {
-				System.out.println(e1.getMessage());
-			}
-		}
-		*/
-		return arrivalId;
-	}
-	
-	private void deleteArrivalById(String arrivalId) {
-
-		String where = " arrivalId = '"+arrivalId+"' AND deleteFlag='0' ";
-		try {
-			dao.RemoveByWhere(where);
-		} catch (Exception e) {
-			// nothing
-		}
-		
-	}
 	
 	private HashMap<String, Object> getProductStock(String type){
 
@@ -290,6 +227,45 @@ public class InventoryService extends CommonService {
 			System.out.println(e.getMessage());
 			reqModel.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
+		
+	}
+	
+	public void contractAndStockIn() throws Exception{
+
+		String materialId = request.getParameter("materialId");
+			
+		dataModel.setQueryName("contractAndStockInForInventory");
+		userDefinedSearchCase.put("materialId", materialId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		String having = " stockinQty < contractQty ";//未到合同
+		sql = sql.replace("#", having);
+		System.out.println("未到合同："+sql);
+		baseQuery.getYsFullData(sql,having);
+
+		model.addAttribute("material", dataModel.getYsViewData().get(0));
+		model.addAttribute("contractList", dataModel.getYsViewData());
+		
+	}
+	
+
+	public void planAndStockOut() throws Exception{
+
+		String materialId = request.getParameter("materialId");
+			
+		dataModel.setQueryName("planAndStockOutForInventory");
+		userDefinedSearchCase.put("materialId", materialId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		String having = " stockoutQty < manufactureQuantity ";//未到合同
+		sql = sql.replace("#", having);
+		System.out.println("未到合同："+sql);
+		baseQuery.getYsFullData(sql,having);
+
+		model.addAttribute("material", dataModel.getYsViewData().get(0));
+		model.addAttribute("contractList", dataModel.getYsViewData());
 		
 	}
 	

@@ -72,9 +72,8 @@
 				{"data": "YSId"},
 				{"data": "materialId"},
 				{"data": "materialName"},
-				{"data": "totalQuantity","className" : 'td-right'},
-				{"data": "completedQuantity","className" : 'td-right'},
-				{"data": "completedNumber","className" : 'td-right'},
+				{"data": "orderQty","className" : 'td-right'},
+				{"data": "stockinQty","className" : 'td-right'},
 				{"data": "storageDate","className" : 'td-center',"defaultContent" : '（未入库）'},
 								
 			],
@@ -92,8 +91,16 @@
 	    		{"targets":3,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
-	    			name = jQuery.fixedWidth(name,40);				    			
+	    			name = jQuery.fixedWidth(name,48);				    			
 	    			return name;
+	    		}},
+	    		{"targets":4,"render":function(data, type, row){
+	    						    			
+	    			return floatToCurrency(data);
+	    		}},
+	    		{"targets":5,"render":function(data, type, row){
+	    						    			
+	    			return floatToCurrency(data);
 	    		}}
 	           
 	         ] 
@@ -182,8 +189,7 @@
 					<th style="width: 150px;">产品编号</th>
 					<th>产品名称</th>
 					<th style="width: 80px;">订单数量</th>
-					<th style="width: 80px;">已入库数量</th>
-					<th style="width: 80px;">已入库件数</th>
+					<th style="width: 80px;">入库数量</th>
 					<th style="width: 80px;">入库时间</th>
 				</tr>
 			</thead>

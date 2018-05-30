@@ -227,14 +227,14 @@ function initEvent(){
 			var YSId ="${order.YSId}";
 			var quantity ="${order.quantity}";
 			var backFlag = $("#backFlag").val();
-			if(GcontractStatusFlag == "true"){
-				alert("该方案有部分合同已经收货,不允许重置！");
+			if(GcontractStatusFlag == true){
+				alert("该方案已生成合同,不能删除！");
 				return;					
 			}
-			if(confirm("重置采购方案,会清空现有的采购方案,\n\n        确定要重置吗？")) {
+			if(confirm("删除采购方案后不能恢复,确定要删除吗？")) {
 				
 				$('#attrForm').attr("action",
-						"${ctx}/business/purchasePlan?methodtype=purchasePlanDeleteInit"
+						"${ctx}/business/purchasePlan?methodtype=purchasePlanDelete"
 								+"&YSId="+YSId
 								+"&productId="+productId
 								+"&backFlag="+backFlag
@@ -472,6 +472,7 @@ function initEvent(){
 								txt = txt + "采购有变化"
 							}
 						}
+						GcontractStatusFlag = true;//只要有一个合同存在，就不能删除采购方案
 					}
 					
 					return txt;
@@ -658,10 +659,6 @@ function contractTableView() {
       			totalPrice = floatToCurrency(total);
       			
       			//合同执行状况确认:如已有收货,则不能重置采购方案
-      			var status = row["status"];
-      			if(status == "050"){
-      				GcontractStatusFlag = "true";
-      			}
       			
       			return totalPrice;
       		}},
@@ -1099,6 +1096,7 @@ function ZZmaterialView() {
 	<!-- 		<button type="button" id="deletePurchasePlan" class="DTTT_button warning">重置采购方案</button> -->
 			<button type="button" id="resetYszz" class="DTTT_button warning">重置自制品</button>
 			<button type="button" id="resetPackage" class="DTTT_button warning">重置包装件</button>
+	 		<button type="button" id="deletePurchasePlan" class="DTTT_button">删除采购方案</button> 
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
 		

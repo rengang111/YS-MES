@@ -92,6 +92,14 @@ public class InventoryAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/inventory/arrivalview";
 				return null;
+			case "contractAndStockIn"://合同及入库信息
+				contractAndStockIn();
+				rtnUrl = "/business/inventory/beginninginventorywaitin";
+				break;
+			case "planAndStockOut"://合同及入库信息
+				planAndStockOut();
+				rtnUrl = "/business/inventory/beginninginventorywaitout";
+				break;
 				
 		}
 		
@@ -152,6 +160,18 @@ public class InventoryAction extends BaseAction {
 	public HashMap<String, Object> getSemiProductStock() throws Exception{
 		
 		return service.getSemiProductStock();
+
+	}
+	
+	public void contractAndStockIn() throws Exception{
+		
+		service.contractAndStockIn();
+
+	}
+	
+	public void planAndStockOut() throws Exception{
+		
+		service.planAndStockOut();
 
 	}
 

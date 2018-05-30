@@ -969,4 +969,49 @@
     <having></having>
 	<power></power>    
   </query>
+  
+  <query>
+    <pool></pool>     
+    <name value="contractAndStockInForInventory" />
+    <where>
+       <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="replace(a.quantity,',','')" alias="contractQty" ctype="" />
+      <f name="IFNULL(b.quantity,0)" alias="stockinQty" ctype="" />
+      <f name="c.materialId" alias="productId" ctype="" />
+      <f name="c.materialName" alias="productName" ctype="" />
+    </select>
+    <from>v_purchaseorderdetail a LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON a.YSId=b.ysid AND a.materialId=b.materialId LEFT JOIN v_orderdetail c ON a.YSId=c.YSId </from>
+    <orderby>A.YSId</orderby>
+    <groupby></groupby>
+    <having>#</having>
+	<power>
+	</power>    
+  </query> <query>
+    <pool></pool>     
+    <name value="planAndStockOutForInventory" />
+    <where>
+       <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="IFNULL(b.quantity,0)" alias="stockoutQty" ctype="" />
+      <f name="c.materialId" alias="productId" ctype="" />
+      <f name="c.materialName" alias="productName" ctype="" />
+    </select>
+    <from>v_purchaseplandetailgroup a LEFT JOIN v_stockoutdetailgroup b ON a.materialId=b.materialId AND  instr(b.ysid,left(a.ysid,8)) > 0   LEFT JOIN v_orderdetail c ON a.YSId=c.YSId </from>
+    <orderby>A.YSId</orderby>
+    <groupby></groupby>
+    <having>#</having>
+	<power>
+	</power>    
+  </query>
 </root>

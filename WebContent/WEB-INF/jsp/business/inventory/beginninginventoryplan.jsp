@@ -132,6 +132,7 @@
 					</thead>
 					<tbody>
 						<c:forEach var='list' items='${planList}' varStatus='status'>
+							<c:if test="${list.stackoutCountQty  < list.manufactureQuantity  }">
 							<tr>
 								<td>${status.index +1 }</td>
 								<td>${list.planDate }</td>
@@ -159,7 +160,8 @@
 								
 								$('#stockoutQty'+index).html(viewQty);
 								$('#shortName'+index).html(jQuery.fixedWidth(materialName,24));
-							</script>	
+							</script>
+							</c:if>	
 						</c:forEach>
 					</tbody>
 					<tfoot>

@@ -33,16 +33,15 @@ public class FinanceMouthly {
 		Calendar c = Calendar.getInstance();//
 		c.setTime(date);
 		
-		//上月26号
+		//上月25号
 		c.add(Calendar.MONTH, -1);//今天的时间月份-1支持1月的上月
-		c.set(Calendar.DAY_OF_MONTH, 26);//设置上月26号
+		c.set(Calendar.DAY_OF_MONTH, 25);//设置上月25号
 		startDate = formatter.format(c.getTime());
 		
-		//当月25号
+		//当月26号
 		c.clear();
 		c.setTime(date);
-		//c.add(Calendar.MONTH, -1);//今天的时间月份-1支持1月的上月
-		c.set(Calendar.DAY_OF_MONTH, 25);//设置上月26号
+		c.set(Calendar.DAY_OF_MONTH, 26);//设置当月26号
 		endDate = formatter.format(c.getTime());
 		
 	}

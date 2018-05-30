@@ -477,19 +477,37 @@ public class StorageService extends CommonService {
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
 
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderList");	
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");
+		dataModel.setQueryName("stockoutforproduct");
 		
 		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		if((key1 !=null && !("").equals(key1)) || 
-				(key2 !=null && !("").equals(key2))){
-			userDefinedSearchCase.put("status", "");
+
+		String status = request.getParameter("status");
+
+		StringBuffer sb = new StringBuffer();
+		sb.append(" AND ");;
+		if(("030").equals(status)){
+			//未入库
+			sb.append(" a.stockinQty+0 <= 0 ");
+			userDefinedSearchCase.put("status", "050");
+			key1 = "";key2="";//清空关键字
+		}else if(("040").equals(status)){
+			//已入库
+			sb.append(" a.stockoutQty+0 <= 0 AND a.stockinQty+0 > 0  ");
+			userDefinedSearchCase.put("status", "050");
+			key1 = "";key2="";//清空关键字
+		}else{
+			//普通查询
+			sb.append(" 1=1 ");
+			userDefinedSearchCase.put("keyword1", key1);
+			userDefinedSearchCase.put("keyword2", key2);
 		}
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		sql = sql.replace("#", sb.toString());
+		System.out.println("成品入库："+sql);
+		baseQuery.getYsQueryData(sql,sb.toString(),iStart, iEnd); 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			

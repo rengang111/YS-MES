@@ -131,6 +131,10 @@ public class PurchasePlanAction extends BaseAction {
 				doUpdatePei();
 				rtnUrl = "/business/purchaseplan/purchaseplanpeiview";
 				break;	
+			case "purchasePlanDelete"://删除采购
+				doDeletePurchasePlan();
+				rtnUrl = "/business/purchaseplan/purchaseplanmain";
+				break;	
 			case "purchasePlanDeleteInit"://重置采购
 				doDeleteInit();
 				rtnUrl = "/business/purchaseplan/purchaseplanadd";
@@ -457,5 +461,14 @@ public class PurchasePlanAction extends BaseAction {
 			rtnUrl = "/business/purchaseplan/purchaseplanview";
 		
 		return rtnUrl;
+	}
+	
+	public void doDeletePurchasePlan(){
+		try {
+			purchaseService.deletePurchasePlan();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

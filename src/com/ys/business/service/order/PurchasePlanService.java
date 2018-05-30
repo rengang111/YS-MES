@@ -392,7 +392,7 @@ public class PurchasePlanService extends CommonService {
 				float purchase = 0;//采购量
 				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
 				float funit = stringToFloat(unit);
-				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//需求量
+				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
 				float requirement = (-1 * totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						
@@ -508,7 +508,7 @@ public class PurchasePlanService extends CommonService {
 				float purchase = 0;//采购量
 				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
 				float funit = stringToFloat(unit);
-				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//需求量
+				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
 				float requirement = ( totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						
@@ -612,7 +612,7 @@ public class PurchasePlanService extends CommonService {
 				float purchase = 0;//采购量
 				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
 				float funit = stringToFloat(unit);
-				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//需求量
+				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
 				float requirement = (-1 * totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						
@@ -729,7 +729,7 @@ public class PurchasePlanService extends CommonService {
 				float purchase = 0;//采购量
 				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
 				float funit = stringToFloat(unit);
-				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//需求量
+				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
 				float requirement = ( totalQuantity / funit);
 				
 				updateMaterial(rawmater2,purchase,requirement);						
@@ -895,7 +895,7 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * delete处理
 	 */
-	public void deletePurchaseOrder(B_PurchaseOrderData db) throws Exception{
+	private void deletePurchaseOrder(B_PurchaseOrderData db) throws Exception{
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 				"purchaseOrderdelete",userInfo);			
@@ -908,7 +908,7 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * delete处理
 	 */
-	public void deletePurchaseOrderDetail(B_PurchaseOrderDetailData db) throws Exception{
+	private void deletePurchaseOrderDetail(B_PurchaseOrderDetailData db) throws Exception{
 
 		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 				"purchaseOrderDetaildelete",userInfo);			
@@ -929,15 +929,14 @@ public class PurchasePlanService extends CommonService {
 		copyProperties(db,commData);
 		db.setVersion(db.getVersion()+1);
 
-		planDetailDao.Store(db);
+		planDao.Store(db);
 
 	}
 	
 	/*
 	 * delete处理
 	 */
-	@SuppressWarnings({ "unchecked" })
-	public void deletePurchasePlan(String YSId) throws Exception{
+	public void deletePurchasePlan() throws Exception{
 		
 		//
 		ts = new BaseTransaction();
@@ -945,25 +944,51 @@ public class PurchasePlanService extends CommonService {
 
 			ts.begin();
 			
-			String where = "YSId = '" + YSId +"'";
-			List<B_PurchasePlanData> list = new B_PurchasePlanDao().Find(where);
-			
-			for(B_PurchasePlanData dt:list){
-				new B_PurchasePlanDao().Remove(dt);
-			}
-			
-			List<B_PurchasePlanDetailData> list2 = new B_PurchasePlanDetailDao().Find(where);
-			
-			for(B_PurchasePlanDetailData dt:list2){
+			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();	
 
+			//check采购方案是否可以删除
+			
+			//采购方案
+			String YSId = reqPlan.getYsid();		
+			deletePurchasePlan(reqPlan);			
+						
+			//更新前数据取得
+			String where = " YSId='" + YSId + "'";
+			List<B_PurchasePlanDetailData> DBList = getPurchasePlanDetail(where);	
+			
+			//旧数据:二级BOM(原材料)的待出库"减少"处理
+			ArrayList<HashMap<String, String>> list2 = getRawMaterialGroupList(YSId);	
+			
+			for(HashMap<String, String> map2:list2){
+				
+				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
+				
 				//更新虚拟库存
-				float requirement = (-1 * stringToFloat(dt.getManufacturequantity()));//需求量
+				float purchase = 0;//采购量
+				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
+				float funit = stringToFloat(unit);
+				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
+				float requirement = (-1 * totalQuantity / funit);
 				
-				updateMaterial(dt.getMaterialid(),0,requirement);
-				
-				new B_PurchasePlanDetailDao().Remove(dt);
+				updateMaterial(rawmater2,purchase,requirement);						
 			}
+			
+			//旧数据:采购方案,的待出库"减少"处理
+			for(B_PurchasePlanDetailData old:DBList){
+
+				String oldmaterilid = old.getMaterialid();				
+
+				//旧数据物料的待出库"减少"处理
+				float requirement = -1 * stringToFloat(old.getManufacturequantity());
+				updateMaterial(oldmaterilid,0,requirement);
+				
+				//旧数据的删除处理
+				deletePurchasePlanDetail(old);				
+				
+			}
+			
 			ts.commit();
+			
 		}catch(Exception e){
 			ts.rollback();
 			e.printStackTrace();
@@ -975,45 +1000,7 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * delete处理
 	 */
-	@SuppressWarnings({ "unchecked" })
-	public void deletePurchaseOrder(String YSId) throws Exception{
-		
-		//
-		ts = new BaseTransaction();
-		try{
-
-			ts.begin();
-			String where = "YSId = '" + YSId +"'";
-			List<B_PurchaseOrderData> list = new B_PurchaseOrderDao().Find(where);
-			
-			for(B_PurchaseOrderData dt:list){
-				new B_PurchaseOrderDao().Remove(dt);
-			}
-			
-			List<B_PurchaseOrderDetailData> list2 = new B_PurchaseOrderDetailDao().Find(where);
-			
-			for(B_PurchaseOrderDetailData dt:list2){
-				
-				//更新虚拟库存
-				float purchase = (-1 * stringToFloat(dt.getQuantity()));//采购量
-				
-				updateMaterial(dt.getMaterialid(),purchase,0);
-				
-				new B_PurchaseOrderDetailDao().Remove(dt);
-			}
-			ts.commit();
-			
-		}catch(Exception e){
-			ts.rollback();
-			e.printStackTrace();
-		}		
-
-
-	}
-	/*
-	 * delete处理
-	 */
-	public void deletePurchasePlanDetail(B_PurchasePlanDetailData db) throws Exception{
+	private void deletePurchasePlanDetail(B_PurchasePlanDetailData db) throws Exception{
 		
 		//update处理			
 		planDetailDao.Remove(db);
@@ -1183,18 +1170,6 @@ public class PurchasePlanService extends CommonService {
 				
 	}
 	
-	/*
-	 * BOM详情删除处理
-	 */
-	public void deletePlanDetail(String where) 
-			throws Exception{
-		
-		try{
-			planDao.RemoveByWhere(where);
-		}catch(Exception e){
-			//nothing
-		}	
-	}
 
 	/*
 	 * 更新

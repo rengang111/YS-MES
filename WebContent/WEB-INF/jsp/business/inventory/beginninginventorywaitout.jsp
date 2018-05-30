@@ -25,10 +25,7 @@
 					{"className" : 'td-center'},
 					{"className" : ''},
 					{"className" : 'td-left'},//
-					{"className" : 'td-left'},//
 					{"className" : ''},
-					{"className" : 'td-right',"defaultContent" : '0'},//
-					{"className" : 'td-right',"defaultContent" : '0'},//
 					{"className" : 'td-right',"defaultContent" : '0'},//
 					{"className" : 'td-right',"defaultContent" : '0'},//
 				
@@ -66,11 +63,9 @@
 	        }
 		});		
 		
+		sumFn(4);
 		sumFn(5);
-		sumFn(6);
-		sumFn(7);
-		sumFn(8);
-		$('#waitout').html(floatToCurrency( currencyToFloat($('#totalValue5').html()) - currencyToFloat($('#totalValue8').html()) ))
+		$('#waitout').html(floatToCurrency( currencyToFloat($('#totalValue4').html()) - currencyToFloat($('#totalValue5').html()) ))
 	})	
 	
 	function doSearch() {	
@@ -122,49 +117,42 @@
 					<thead>	
 						<tr >
 							<th style="width: 1px;">No</th>
-							<th style="width: 60px;">方案做成日</th>
 							<th style="width: 80px;">耀升编号</th>
 							<th style="width: 120px;">产品编号</th>
 							<th>产品名称</th>
 							<th style="width: 60px;">生产需求</th>
-							<th style="width: 60px;">合同数</th>
-							<th style="width: 60px;">入库数</th>
-							<th style="width: 60px;">已领料</th>
+							<th style="width: 60px;">领料数量</th>
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach var='list' items='${planList}' varStatus='status'>
-							<c:if test="${list.stackoutCountQty  < list.manufactureQuantity  }">
-							
+						<c:forEach var='list' items='${contractList}' varStatus='status'>							
 							<tr>
 								<td>${status.index +1 }</td>
-								<td>${list.planDate }</td>
 								<td>${list.YSId }</td>
 								<td>${list.productId }</td>
 								<td><span id="shortName${status.index }">${list.productName }</span></td>
 								<td>${list.manufactureQuantity }</td>
-								<td>${list.contractQty }</td>
-								<td>${list.stockinQty }</td>
-								<td class="td=right"><span id="stockoutQty${status.index }"></span></td>
+								<td>${list.stockoutQty }</td>
 							</tr>
 							
 							<script type="text/javascript">
 								var materialName = '${list.productName}';
 								var index = '${status.index}';			
+								/*
 								var stockoutQty = '${list.stockoutQty}';//实际出库数
 								var correctionQty = '${list.correctionQty}';//修正值
 								//alert("m--o"+'${list.manufactureQuantity }'+"---"+stockoutQty)
+								
 								var viewQty='0';
 								if (currencyToFloat(stockoutQty) == 0 && currencyToFloat(correctionQty) > 0 ){
 									viewQty = "(改)" + floatToCurrency( correctionQty);
 								}else{
 									viewQty = floatToCurrency( stockoutQty);
 								}
-								
-								$('#stockoutQty'+index).html(viewQty);
-								$('#shortName'+index).html(jQuery.fixedWidth(materialName,24));
+								*/
+								//$('#stockoutQty'+index).html(viewQty);
+								$('#shortName'+index).html(jQuery.fixedWidth(materialName,48));
 							</script>	
-							</c:if>
 						</c:forEach>
 					</tbody>
 					<tfoot>
@@ -172,12 +160,9 @@
 							<th></th>
 							<th></th>
 							<th></th>
-							<th></th>
 							<th>合计：</th>
+							<th style="text-align: right;"><span id="totalValue4"></span></th>
 							<th style="text-align: right;"><span id="totalValue5"></span></th>
-							<th style="text-align: right;"><span id="totalValue6"></span></th>
-							<th style="text-align: right;"><span id="totalValue7"></span></th>
-							<th style="text-align: right;"><span id="totalValue8"></span></th>
 						</tr>
 					</tfoot>
 				</table>
