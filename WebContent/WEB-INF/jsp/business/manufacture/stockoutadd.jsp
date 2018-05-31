@@ -83,6 +83,14 @@
 	    			
 	    			return name + inputTxt;
                 }},
+	    		{"targets":3,"render":function(data, type, row){//当前库存
+					var quantityOnHand=row["quantityOnHand"]	
+					var materialId=row["materialId"]	
+					var inputTxt = '';
+					inputTxt= inputTxt +'<a href="###" onClick="doShowInventory(\''+materialId+'\')">'+quantityOnHand+'</a>';
+	    			
+	    			return inputTxt;
+                }},
 	    		{"targets":4,"render":function(data, type, row){	
 	    			
 					var index=row["rownum"];
@@ -278,7 +286,7 @@
 						<th style="width:1px">No</th>
 						<th width="120px">物料编号</th>
 						<th >物料名称</th>
-						<th width="60px">可用库存</th>
+						<th width="60px">当前库存</th>
 						<th width="80px">本次领料</th>
 						<th width="80px">仓库分类</th>
 						<th width="160px">库位</th>
@@ -432,6 +440,14 @@ function setDepotId(){
 					
 	});	
 	
+}
+
+
+function doShowInventory(materialId){
+
+	var url = "${ctx}/business/storage?methodtype=beginningInventoryNewWindowSearch";
+	url = url + "&keyword1="+materialId;
+	callProductDesignView("库存确认",url);
 }
 
 </script>
