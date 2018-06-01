@@ -96,7 +96,7 @@
 		actionUrl = actionUrl +"&YSId="+YSId;
 		actionUrl = actionUrl +"&orderType="+orderType;
 		
-		scrollHeight =$(document).height() - 200; 
+		//scrollHeight =$(document).height() - 220; 
 		
 		var t = $('#example').DataTable({
 			"paging": false,
@@ -165,6 +165,7 @@
 	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.materialid" name="requisitionList['+index+'].materialid" value="'+row["materialId"]+'"/>';
 	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.contractid" name="requisitionList['+index+'].contractid" value="'+row["contractId"]+'"/>';
 	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.supplierid" name="requisitionList['+index+'].supplierid" value="'+row["supplierId"]+'"/>';
+	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.subbomno" name="requisitionList['+index+'].subbomno" value="'+row["subBomNo"]+'"/>';
 	    			
 	    			return name + inputTxt;
                 }},
@@ -241,45 +242,34 @@
 			
 		}).draw();
 
-		
-		t.on('change', 'tr td:nth-child(9)',function() {
+		t.on('change', 'tr td:nth-child(8)',function() {
 
 			var $td = $(this).parent().find("td");
+			
+			$td.eq(7).find("input").removeClass('error');
 
 			var $oArrival = $td.eq(4);//计划
-			var $oOverQty = $td.eq(2).find("input");//超领
-			var $oyiling  = $td.eq(6);//已领料
-			var $oTotalQt = $td.eq(7);//总库存
-			var $oCurrQty = $td.eq(8).find("input");//本次领料
-			var $oSurplus = $td.eq(9);//剩余
+			var $oyiling  = $td.eq(5);//已领料
+			var $oTotalQt = $td.eq(6);//总库存
+			var $oCurrQty = $td.eq(7).find("input");//本次领料
 
 			var fArrival  = currencyToFloat($oArrival.text());
 			var fYiling   = currencyToFloat($oyiling.text());
 			var fCurrQty  = currencyToFloat($oCurrQty.val());	
-			var fTotalQt  = currencyToFloat($oTotalQt.text());	
-			var fOverQty  = currencyToFloat($oOverQty.val());	
+			var fTotalQt  = currencyToFloat($oTotalQt.text());
 			
 			//最多允许领料数量 = 计划 - 已领料
 		 	var fMaxQuanty = fArrival - fYiling;
 			if(fMaxQuanty < 0)
 				fMaxQuanty = 0;
-			if ( fTotalQt >= fCurrQty ){//总库存充足
-				if(fCurrQty > fMaxQuanty){//超领
-					fOverQty = fCurrQty - fMaxQuanty
-					$().toastmessage('showWarningToast', "领料数量超出需求量！");
-				}				
-			}else{//领料数大于可用库存
-				fCurrQty = fTotalQt;
-				$().toastmessage('showWarningToast', "实际库存不足！");
+			//alert("fArrival--fYiling--fMaxQuanty--fCurrQty:"+fArrival+"---"+fYiling+"--"+fMaxQuanty+"---"+fCurrQty)
+			if ( fCurrQty > fMaxQuanty ){//总库存充足
+				
+				fCurrQty = fMaxQuanty;
+				$().toastmessage('showWarningToast', "领料数量不能超出需求量！");
 			}
 			
-			//剩余数量=计划 - 本次 - 已领
-			var fSurplus = fArrival - fYiling - fCurrQty;
-			if (fSurplus < 0)
-				fSurplus = 0;
-			$oSurplus.html(formatNumber(fSurplus));
-			$oCurrQty.val(fCurrQty);
-			$oOverQty.val(formatNumber(fOverQty));
+			$oCurrQty.val(floatToCurrency(fCurrQty));
 
 		});
 
@@ -320,30 +310,40 @@
 		
 		$("#insert").click(function() {
 				
+			var str1 = '';
+			$("input[name='numCheck']").each(function(){
+				if ($(this).prop('checked')) {
+					str1 += $(this).val();
+				}
+			});
+			if (str1 == '') {
+				$().toastmessage('showWarningToast', "请选择要领取的配件。");
+				return;
+			}
 			var str = '';
 			var val = '';
+			var inputFlag=true;
 			$("input[name='numCheck']").each(function(){
 				if ($(this).prop('checked')) {
 					str += $(this).val() + ",";
 					var qty = $(this).parent().parent().find('td').eq(7).find("input").val();
-					val += currencyToFloat(qty);
+					qty = currencyToFloat(qty);
+					if(qty<=0){
+						inputFlag = false;
+						$(this).parent().parent().find('td').eq(7).find("input").addClass('error');
+					}	
+					val += qty;
 				}else{
 					//未选中物料的领料数量恢复为0
-					$(this).parent().parent().find('td').eq(7).find("input").val('0');			
-					
+					$(this).parent().parent().find('td').eq(7).find("input").val('0');
 				}
 			});
-			
-			if (str == '') {
-				$().toastmessage('showWarningToast', "请选择要领取的配件。");
-				return;
-			}
-			
-			if(currencyToFloat(val) == 0){
+						
+			if(inputFlag == false){
 				$().toastmessage('showWarningToast', "选择的配件没有领料数量。");
-				return;
-				
+				return;				
 			}
+			
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insert");
 			$('#formModel').submit();
 		});
@@ -447,15 +447,14 @@
 </fieldset>
 <div style="clear: both"></div>
 	
-	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
+	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;margin-top: -15px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >确认领料</a>
 	<!-- 	<a class="DTTT_button DTTT_button_text" id="print" onclick="doPrint();return false;">打印领料单</a> -->
 		<a class="DTTT_button DTTT_button_text" id="showHistory" >查看领料记录</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 
-	<fieldset style="margin-top: -30px;">
-		<legend> 物料需求表</legend>
+	<fieldset style="margin-top: -15px;">
 		<div class="list">
 			<div id="DTTT_container" align="left" style="height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
 				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
@@ -476,7 +475,7 @@
 						<th width="60px">基本用量</th>
 						<th width="60px">计划用量</th>
 						<th width="60px">已领数量</th>
-						<th width="60px">可用库存</th>
+						<th width="60px">当前库存</th>
 						<th width="80px">
 								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
 								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>

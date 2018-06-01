@@ -128,6 +128,56 @@ public class OrderService extends CommonService  {
 		return modelMap;
 	}
 	
+
+	public HashMap<String, Object> getOrderCancelList(String formId,String data) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");	
+		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		String[] keyArr = getSearchKey(formId,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];		
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderCancelList");	
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2))
+			userDefinedSearchCase.put("status", "");
+		
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;
+	}
+	
 	public HashMap<String, Object> getOrderTrackingList(String formId,String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -161,10 +211,10 @@ public class OrderService extends CommonService  {
 			String stockUp = getJsonData(data, "stockUp");//备货情况
 			if(("1").equals(stockUp)){
 				//货已备齐
-				having = "CAST(contractQty AS DECIMAL) = CAST(stockinQty AS DECIMAL)";
+				having = "replace(IFNULL(contractQty,0),',','')+0 <= replace(IFNULL(stockinQty,0),',','')";
 			}else if(("2").equals(stockUp)){
 				//未齐
-				having = "CAST(contractQty AS DECIMAL) > CAST(stockinQty AS DECIMAL)";
+				having = "replace(IFNULL(contractQty,0),',','')+0 > replace(IFNULL(stockinQty,0),',','')";
 			}
 		}
 		userDefinedSearchCase.put("keyword1", key1);

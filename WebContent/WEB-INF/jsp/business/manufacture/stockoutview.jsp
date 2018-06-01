@@ -233,7 +233,7 @@
 	<input type="hidden" id="usedType" value="${usedType }" />
 	<form:hidden path="stockout.ysid"  />
 	<form:hidden path="stockout.stockoutid"  />
-	<!-- 
+
 	<fieldset>
 		<legend> 出库单</legend>
 		<table class="form" id="table_form">
@@ -255,7 +255,7 @@
 		</table>
 		
 	</fieldset>
- -->
+
 <div style="clear: both"></div>
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
 	<!-- 	<a class="DTTT_button DTTT_button_text" id="insert" >继续出库</a> -->

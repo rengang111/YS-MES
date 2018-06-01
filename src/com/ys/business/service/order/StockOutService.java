@@ -162,7 +162,9 @@ public class StockOutService extends CommonService {
 		stock.setYsid(YSId);
 		stock.setRequisitionid(requisitionId);
 		reqModel.setStockout(stock);
-
+		
+		getOrderDetail(YSId);//订单信息
+		
 		model.addAttribute("depotList",util.getListOption(DicUtil.DIC_DEPOTLIST, ""));
 	
 	}

@@ -62,7 +62,9 @@
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": "quantityOnHand","className":"td-right"	//3
-				}, {"data": null,"className":"td-right"//4
+				}, {"data": "planQty","className":"td-right"//4生产需求量
+				}, {"data": "stockoutQty","className":"td-right","defaultContent" : '0'//已出库数量
+				}, {"data": null,"className":"td-right"//本次领料
 				}, {"data": null,"className":"td-right"//5
 				}, {"data": "areaNumber","className":""//6
 				}
@@ -91,15 +93,23 @@
 	    			
 	    			return inputTxt;
                 }},
-	    		{"targets":4,"render":function(data, type, row){	
+	    		{"targets":4,"render":function(data, type, row){//生产需求
+	    			
+	    			return floatToCurrency(data);
+                }},
+	    		{"targets":5,"render":function(data, type, row){//已出库数
+	    			
+	    			return floatToCurrency(data);
+                }},
+	    		{"targets":6,"render":function(data, type, row){//本次领料
 	    			
 					var index=row["rownum"];
-					var quantity = (row["quantity"]);
-					var inputTxt = '<input type="text" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" class="quantity num "  value="'+quantity+'"/>';
+					var quantity = floatToCurrency(row["requisitionQty"]);
+					var inputTxt = '<input type="hidden" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+quantity+'"/>';
 				
-					return inputTxt;
+					return quantity + inputTxt;
                 }},
-	    		{"targets":5,"render":function(data, type, row){	
+	    		{"targets":7,"render":function(data, type, row){	
 	    			
 					var index=row["rownum"];
 					var quantity = (row["quantity"]);
@@ -253,7 +263,7 @@
 				<td>
 					<form:input path="stockout.keepuser" class="short read-only" value="${userName }" /></td>
 			</tr>
-			<!-- 
+			 
 			<tr> 				
 				<td class="label">耀升编号：</td>					
 				<td>&nbsp;${order.YSId }</td>
@@ -264,7 +274,7 @@
 				<td class="label">产品名称：</td>					
 				<td>&nbsp;${order.materialName }</td>
 			</tr>
-			 -->
+			 
 										
 		</table>
 </fieldset>
@@ -287,9 +297,11 @@
 						<th width="120px">物料编号</th>
 						<th >物料名称</th>
 						<th width="60px">当前库存</th>
-						<th width="80px">本次领料</th>
+						<th width="60px">生产需求</th>
+						<th width="60px">已出库数</th>
+						<th width="60px">本次领料</th>
 						<th width="80px">仓库分类</th>
-						<th width="160px">库位</th>
+						<th width="100px">库位</th>
 					</tr>
 				</thead>	
 			</table>
@@ -423,7 +435,7 @@ function setDepotId(){
 	
 	$('#example tbody tr').each (function (){
 
-		$(this).find("td").eq(5).find("select").html(options);
+		$(this).find("td").eq(7).find("select").html(options);
 		
 		var materialId = $(this).find("td").eq(1).find("input").val();
 		
@@ -436,7 +448,7 @@ function setDepotId(){
 			depotid='020';//自制件								
 		}
 		
-		$(this).find("td").eq(5).find("select").val(depotid);
+		$(this).find("td").eq(7).find("select").val(depotid);
 					
 	});	
 	

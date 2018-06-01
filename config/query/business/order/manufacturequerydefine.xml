@@ -54,6 +54,7 @@
       <f name="a.contractMaterialId" alias="" ctype="" />
       <f name="a.purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
       <f name="a.purchaseType" alias="" ctype="" />
+      <f name="a.subBomNo" alias="" ctype="" />
       <f name="b.areaNumber" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -539,29 +540,22 @@
         <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   	<select>
-      <f name="a.recordId" alias="" ctype="" />
-      <f name="a.detailRecordId" alias="" ctype="" />
       <f name="a.requisitionId" alias="" ctype="" />
       <f name="a.requisitionDate" alias="" ctype="" />
       <f name="a.YSId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
-      <f name="a.materialName" alias="" ctype="" />
-      <f name="a.contractId" alias="" ctype="" />
-      <f name="a.supplierId" alias="" ctype="" />
-      <f name="a.quantityOnHand" alias="" ctype="" />
-      <f name="a.availabelToPromise" alias="" ctype="" />
-      <f name="a.unit" alias="" ctype="计量单位" />
-      <f name="a.purchaseType" alias="" ctype="物料采购类别" />
-      <f name="a.quantity" alias="" ctype="" />
-      <f name="a.overQuantity" alias="" ctype="" />
-      <f name="a.subBomNo" alias="" ctype="" />
-      <f name="a.MAPrice" alias="" ctype="" />
+      <f name="e.materialName" alias="" ctype="" />
+      <f name="e.quantityOnHand" alias="" ctype="" />
+      <f name="e.availabelToPromise" alias="" ctype="" />
+      <f name="a.quantity" alias="requisitionQty" ctype="" />
       <f name="b.areaNumber" alias="" ctype="" />
+      <f name="c.manufactureQuantity" alias="planQty" ctype="" />
+      <f name="IFNULL(d.quantity,'0')" alias="stockoutQty" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_requisitiondetail  AS A LEFT JOIN v_purchasestockindetailgroup b ON b.YSId=a.YSId AND b.materialId=a.materialId  WHERE  A.deleteFlag = '0'</from>
-    <orderby>A.subBomNo+0,A.materialId</orderby>
+   <from>v_requisitiondetailgroup  AS A LEFT JOIN v_purchasestockindetailgroup b ON b.YSId=a.YSId AND b.materialId=a.materialId  LEFT JOIN v_purchaseplandetailgroup c ON c.YSId=a.YSId AND c.materialId = a.materialId  LEFT JOIN v_stockoutdetailgroup d ON d.YSId=a.YSId AND d.materialId=a.materialId LEFT JOIN b_material e ON e.materialId=a.materialId AND e.deleteFlag='0'</from>
+    <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    

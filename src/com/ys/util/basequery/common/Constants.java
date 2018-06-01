@@ -33,6 +33,7 @@ public class Constants {
 	public static final String FORM_PRODUCT= "product";//成品管理
 	public static final String FORM_PRODUCTSEMI = "productsemi";//让步接收
 	public static final String FORM_ORDER = "order";//订单管理
+	public static final String FORM_ORDERCANCEL = "ordercancel";//订单管理
 	public static final String FORM_ORDERTRACKING = "ordertracking";//订单跟踪
 	public static final String FORM_ORDERBOM= "orderbom";//订单BOM管理
 	public static final String FORM_PURCHASEPLAN= "purchaseplan";//采购方案
