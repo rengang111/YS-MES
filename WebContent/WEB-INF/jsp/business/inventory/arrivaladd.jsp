@@ -60,7 +60,8 @@
 			
 			if( fArrival > surplus ){
 
-				$().toastmessage('showWarningToast', "注意,收货数大于合同数量了。");
+				$().toastmessage('showWarningToast', "注意,收货数量不能大于合同。");
+				fArrival = surplus;//最大收货数量
 		        //$(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
            	 	//$(this).find("input:text").addClass('error');
 				//return;
