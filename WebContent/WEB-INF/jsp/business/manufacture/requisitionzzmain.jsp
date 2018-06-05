@@ -103,7 +103,7 @@
 			    			if(rtn == ""){
 					    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + row["YSId"] + "</a>";
 			    			}else{
-				    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["requistionYsid"] + "')\">" + row["YSId"] + "</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">" + row["YSId"] + "</a>";
 			    			}
 			    			
 			    			return rtn;
@@ -254,10 +254,10 @@
 		
 	}
 	
-	function doShowDetail(taskId) {
+	function doShowDetail(YSId) {
 
 		var makeType = $("#makeType").val();
-		var url = '${ctx}/business/requisitionzz?methodtype=detailView&taskId=' + taskId+'&makeType='+makeType;
+		var url = '${ctx}/business/requisitionzz?methodtype=detailView&YSId=' + YSId+'&makeType='+makeType;
 		
 		location.href = url;
 	}

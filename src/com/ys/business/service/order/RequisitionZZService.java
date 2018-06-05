@@ -10,9 +10,11 @@ import org.springframework.ui.Model;
 
 import com.ys.business.action.model.order.RequisitionModel;
 import com.ys.business.db.dao.B_ProductionTaskDao;
+import com.ys.business.db.dao.B_RawRequirementDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.data.B_ProductionTaskData;
+import com.ys.business.db.data.B_RawRequirementData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -219,39 +221,55 @@ public class RequisitionZZService extends CommonService {
 
 	public void addInit() throws Exception {
 	
+		String ysid = request.getParameter("data");
+		model.addAttribute("YSId",ysid);
+		
+		getOrderDetail(ysid);
+		
+		/*
 		B_ProductionTaskData task = new B_ProductionTaskData();
 		String ysids = request.getParameter("data");
-		String taskId = request.getParameter("taskId");
-	
+		String taskId = request.getParameter("taskId");	
 		task = new B_ProductionTaskData();
 		if(isNullOrEmpty(taskId)){
 			task = getNewTaskId(task);			
 		}else{
 			String where = " taskId='" + taskId + "' AND deleteFlag='0' ";
 			task = checkTaskIdExsit(where);
-		}
-			
+		}			
 		task.setCollectysid(ysids);	
 		reqModel.setTask(task);
 		model.addAttribute("currentYsids",ysids);
 		model.addAttribute("task",task);	
-		
+		*/
 	}
 
 	public void getRequisitionHistoryInit() throws Exception {
-		String taskId  = request.getParameter("taskId");
-		getTaskDetail(taskId);
+		
+		String YSId  = request.getParameter("YSId");
+		
+		getOrderDetail(YSId);
+	}
+	
+
+	public B_RequisitionData checkRequisition() throws Exception {
+		
+		String YSId  = request.getParameter("YSId");
+		String makeType  = request.getParameter("makeType");
+		String where = " YSId='"+YSId+"' "+" AND requisitionType='"+makeType+"' AND deleteFlag='0' ";
+		return checkRequisitionExsit(where);
+		//getTaskDetail(taskId);
 	}
 	
  
 
 	public void updateInit() throws Exception {
 
-		//String YSId = request.getParameter("YSId");
+		String YSId = request.getParameter("YSId");
 		//String requisitionId = request.getParameter("requisitionId");
 		
 		//订单详情
-		//getOrderDetail(YSId);
+		getOrderDetail(YSId);
 		//领料单
 		getRequisitionDetailForEdit();
 	
@@ -259,21 +277,31 @@ public class RequisitionZZService extends CommonService {
 	
 	public void getRequisitionZZDetail() throws Exception {
 
-		String taskId = request.getParameter("taskId");
-		//任务详情
-		getTaskDetail(taskId);
+		String YSId = request.getParameter("YSId");
+		//订单详情
+		getOrderDetail(YSId);
 	
 	}
 	
+	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> getRawMaterial(String makeType) throws Exception {
 
-		String taskId = request.getParameter("taskId");	
-		String ysids = request.getParameter("YSId");			
-		model.addAttribute("ysids",ysids);//选中的耀升编号
-	
-		//物料
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> list = getRawMaterialList(ysids,taskId);
+		
+		String ysid = request.getParameter("YSId");	
+	
+		//直接从原材料需求表中取值
+		modelMap = getRawRequirement(ysid,makeType);
+		
+		ArrayList<HashMap<String, String>> dbData = 
+				(ArrayList<HashMap<String, String>>)modelMap.get("data");
+		if (dbData.size() > 0) {
+			return modelMap;
+		}
+		
+		//原材料需求表未找到时，从采购方案重新组合，并插入原材料需求表
+		ArrayList<HashMap<String, String>> list = getRawMaterialList(ysid);
+		
 		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
 		ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
 		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
@@ -281,15 +309,21 @@ public class RequisitionZZService extends CommonService {
 		for(HashMap<String, String>map:list){
 			 	
 			 String subMat = map.get("parentMaterialId").substring(0, 3);
-
+			 String type = "";
 			 if( ("F02").equals(subMat)){//吹塑:F02
 				 blow.add(map);
+				 type = Constants.REQUISITION_BLOW;
 			 }else if( ("F01").equals(subMat)){//吸塑:F01
 				 blister.add(map);
+				 type = Constants.REQUISITION_BLISTE;
 			 }else{//以外
 				 injection.add(map);
+				 type = Constants.REQUISITION_INJECT;
 			 }
+
+			insertRawRequirement(map,ysid,type);
 		}
+		/*
 		if( Constants.REQUISITION_BLOW.equals(makeType) ){//吹塑:F02	
 			modelMap.put("data", blow);
 		}else if( Constants.REQUISITION_BLISTE.equals(makeType) ){//吸塑:F01
@@ -297,17 +331,72 @@ public class RequisitionZZService extends CommonService {
 		}else{//以外
 			modelMap.put("data", injection);			 
 		}
-		 
+		*/
+		
+		//再次取得
+		modelMap = getRawRequirement(ysid,makeType);
+		
 		return modelMap;
 	}
 	
+	private void insertRawRequirement(
+			HashMap<String, String> map,
+			String YSId,
+			String type) throws Exception{
+		
+		B_RawRequirementData raw = new B_RawRequirementData();
+
+		//String unit = map.get("unitId");
+		String unit = DicUtil.getCodeValue("换算单位" + map.get("unitId"));
+		float funit = stringToFloat(unit);
+		float quantity = stringToFloat(map.get("purchaseQuantity"));
+		String compute = floatToString( quantity / funit );
+		//String zzunit = map.get("zzunitId");
+		//float fzzunit = stringToFloat(DicUtil.getCodeValue(zzunit));
+
+		raw.setQuantity(compute);
+		raw.setYsid(YSId);
+		raw.setMaterialid(map.get("materialId"));
+		raw.setRawtype(type);
+		
+		//插入新数据
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"RawRequirementInsert",userInfo);
+		copyProperties(raw,commData);
+
+		String guid = BaseDAO.getGuId();
+		raw.setRecordid(guid);
+		
+		new B_RawRequirementDao().Create(raw);
+		
+	}
+	
+	private HashMap<String, Object> getRawRequirement(
+			String ysid,String type) throws Exception{
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		dataModel.setQueryName("getRawRequirementById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", ysid);	
+		userDefinedSearchCase.put("rawType", type);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data",dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+	
+	
 	public HashMap<String, Object> getMaterialZZ(String makeType) throws Exception {
 
-		String ysids = request.getParameter("YSId");;			
+		String ysid = request.getParameter("YSId");;			
 			
 		//自制品
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> list = getMaterialZZList(ysids);
+		
+		ArrayList<HashMap<String, String>> list = getMaterialZZList(ysid);
 		
 		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
 		ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
@@ -343,25 +432,25 @@ public class RequisitionZZService extends CommonService {
 	
 	public void updateAndView() throws Exception {
 
-		String taskId = update();
+		String ysid = update();
 
 		//任务详情
-		getTaskDetail(taskId);
+		getOrderDetail(ysid);
 	}
 	
 	public void insertAndView() throws Exception {
 
 		
-		String taskId = insert();
+		String ysid = insert();
 
 		//任务详情
-		getTaskDetail(taskId);
+		getOrderDetail(ysid);
 	}
 	
 
 	private String update(){
 		
-		String taskId = "";
+		String ysid = "";
 		ts = new BaseTransaction();
 
 		try {
@@ -369,9 +458,9 @@ public class RequisitionZZService extends CommonService {
 			
 			B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
 			List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
-			B_ProductionTaskData task = reqModel.getTask();
+			//B_ProductionTaskData task = reqModel.getTask();
 
-			taskId = task.getTaskid();
+			ysid = reqData.getYsid();
 			
 			//领料单更新处理
 			String requisitionid = reqData.getRequisitionid();
@@ -397,7 +486,7 @@ public class RequisitionZZService extends CommonService {
 			
 		}
 		catch(Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			try {
 				ts.rollback();
 			} catch (Exception e1) {
@@ -405,38 +494,22 @@ public class RequisitionZZService extends CommonService {
 			}
 		}
 		
-		return taskId;
+		return ysid;
 	}
 	
 	private String insert(){
 		
-		String taskId = "";
+		String ysid = "";
 		ts = new BaseTransaction();
 
 		try {
 			ts.begin();
 			B_RequisitionData reqData  = reqModel.getRequisition();
-			B_ProductionTaskData task = reqModel.getTask();
-			//B_RequisitionData reqData = new B_RequisitionData();
+			ysid = reqData.getYsid();
 			List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
 
-			//生产任务处理开始*******************
-			//取得任务编号
-			String addFlag = request.getParameter("addFlag");
-			if(!("1").equals(addFlag))
-				task = getNewTaskId(task);//重新取得任务编号,防止与他人重复;
-			String recordId = task.getRecordid();
-			if(isNullOrEmpty(recordId)){	
-				insertProductionTask(task);				
-			}else{
-				updateProductionTask(task);
-			}				
-			//生产任务处理结束*******************
-			
-			taskId = task.getTaskid();
 			reqData = getRequisitionZZId(reqData);
 			String requisitionId = reqData.getRequisitionid();
-			reqData.setYsid(taskId);
 			reqData.setRequisitionsts(Constants.STOCKOUT_2);//待出库
 			
 			insertRequisition(reqData);//领料申请insert
@@ -444,24 +517,19 @@ public class RequisitionZZService extends CommonService {
 			//领料明细
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
-				//float overQuty = stringToFloat(data.getOverquantity());//超领
 				
 				if(quantity <= 0)
 					continue;
 				
 				data.setRequisitionid(requisitionId);
 				insertRequisitionDetail(data);
-				
-				//更新库存
-				//updateMaterialStock(data.getMaterialid(),quantity,overQuty);
-			
 			}
 			
 			ts.commit();			
 			
 		}
 		catch(Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			try {
 				ts.rollback();
 			} catch (Exception e1) {
@@ -469,7 +537,7 @@ public class RequisitionZZService extends CommonService {
 			}
 		}
 		
-		return taskId;
+		return ysid;
 	}
 	
 	private void insertRequisition(
@@ -484,6 +552,7 @@ public class RequisitionZZService extends CommonService {
 		String guid = BaseDAO.getGuId();
 		stock.setRecordid(guid);
 		stock.setRequisitiondate(CalendarUtil.fmtYmdDate());
+		stock.setRequisitionuserid(userInfo.getUserId());
 		
 		dao.Create(stock);
 	}
@@ -654,17 +723,7 @@ public class RequisitionZZService extends CommonService {
 		reqModel.setTask(dt);	
 	}
 
-	@SuppressWarnings("unchecked")
-	private B_ProductionTaskData checkTaskIdExsit(String where) throws Exception{
 
-		B_ProductionTaskData rtnDt= null;
-		List<B_ProductionTaskData> list = new B_ProductionTaskDao().Find(where);	
-		if(list != null && list.size() > 0){
-			rtnDt = list.get(0);
-		}
-			
-		return rtnDt;		
-	}
 	
 	@SuppressWarnings("unchecked")
 	public B_RequisitionData checkRequisitionExsit(String where) throws Exception{
@@ -701,16 +760,14 @@ public class RequisitionZZService extends CommonService {
 	}
 	
 	public ArrayList<HashMap<String, String>> getRawMaterialList(
-			String ysids,
-			String taskId) throws Exception {
+			String ysid) throws Exception {
 				
 		dataModel.setQueryName("getRawMaterialList");		
 		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("YSId", ysids);		
+		userDefinedSearchCase.put("YSId", ysid);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = baseQuery.getSql().replace("#", taskId);
 		
-		baseQuery.getYsFullData(sql);
+		baseQuery.getYsFullData();
 
 		return dataModel.getYsViewData();		
 	}
@@ -728,12 +785,12 @@ public class RequisitionZZService extends CommonService {
 	}
 	
 	public HashMap<String, Object> getRequisitionHistory(
-			String taskId,String makeType) throws Exception {
+			String YSId,String makeType) throws Exception {
 		
 		dataModel.setQueryName("getRequisitionById");		
 		baseQuery = new BaseQuery(request, dataModel);
-		//自制品一次关联多个耀升编号,所以,领料单里的耀升编号实际存放的是任务编号
-		userDefinedSearchCase.put("YSId", taskId);
+
+		userDefinedSearchCase.put("YSId", YSId);
 		userDefinedSearchCase.put("requisitionType", makeType);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();

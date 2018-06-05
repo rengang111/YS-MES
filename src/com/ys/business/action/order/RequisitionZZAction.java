@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.ys.business.action.model.order.ArrivalModel;
 import com.ys.business.action.model.order.RequisitionModel;
 import com.ys.business.db.data.B_ProductionTaskData;
+import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.service.order.ArrivalService;
 import com.ys.business.service.order.RequisitionService;
 import com.ys.business.service.order.RequisitionZZService;
@@ -53,7 +54,7 @@ public class RequisitionZZAction extends BaseAction {
 		
 		String type = request.getParameter("methodtype");
 		String makeType = request.getParameter("makeType");
-		String rtnUrl = "";
+		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
 		
 		this.userInfo = (UserInfo)session.getAttribute(
@@ -124,15 +125,15 @@ public class RequisitionZZAction extends BaseAction {
 			case "getRequisitionHistory":
 				dataMap = getRequisitionHistory();
 				printOutJsonObj(response, dataMap);
-				return null;
+				break;
 			case "checkRequisitionHistory":
 				dataMap = checkRequisitionHistory();
 				printOutJsonObj(response, dataMap);
-				return null;
+				break;
 			case "getRequisitionDetail":
 				dataMap = getRequisitionDetail();
 				printOutJsonObj(response, dataMap);
-				return null;
+				break;
 			case "print"://领料单打印
 				doPrint(makeType);
 				rtnUrl = "/business/manufacture/requisitionzzprint";
@@ -144,7 +145,6 @@ public class RequisitionZZAction extends BaseAction {
 				break;
 			case "detailView"://领料单查看
 				getRequisitionZZDetail();
-				printOutJsonObj(response, dataMap);
 				rtnUrl = "/business/manufacture/requisitionzzview";
 				break;
 				
@@ -185,14 +185,12 @@ public class RequisitionZZAction extends BaseAction {
 		return dataMap;
 	}
 	
-	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> checkRequisitionHistory(){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
 		try {
-			service.getRequisitionHistoryInit();
+			B_RequisitionData data = service.checkRequisition();
 			
-			B_ProductionTaskData data = reqModel.getTask();
 		
 			if (("").equals(data) || data == null) {
 				dataMap.put(INFO, "false");
@@ -301,9 +299,9 @@ public class RequisitionZZAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
 		
 		try {
-			String taskId = request.getParameter("taskId");
+			String YSId = request.getParameter("YSId");
 			String makeType = request.getParameter("makeType");
-			dataMap = service.getRequisitionHistory(taskId,makeType);
+			dataMap = service.getRequisitionHistory(YSId,makeType);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

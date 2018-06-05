@@ -489,6 +489,8 @@ public class PurchaseOrderService extends CommonService {
 					data.setPurchasedate(CalendarUtil.fmtYmdDate());
 					data.setDeliverydate(contractDelivery);
 					data.setVersion(1);//默认为1
+					String taxRate = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "taxRate");
+					data.setTaxrate(taxRate);
 					
 					insertPurchaseOrder(data);//新增合同头表
 					

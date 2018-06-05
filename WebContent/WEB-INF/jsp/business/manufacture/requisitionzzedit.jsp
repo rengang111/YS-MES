@@ -2,18 +2,16 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>自制件领料申请-领料单</title>
+<title>自制件领料申请-领料单编辑(暂时未使用)</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
 	function ajax(scrollHeight) {
 
 		var makeType = $('#makeType').val();
-		var taskId = $('#task\\.taskid').val();
-		var YSId= $('#task\\.collectysid').val();
-		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getRawMaterialList";
+		var YSId= $('#requisition\\.ysid').val();
+		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getRequisitionListForUpdate";
 		actionUrl = actionUrl +"&YSId="+YSId;
-		actionUrl = actionUrl +"&taskId="+taskId;
 		actionUrl = actionUrl +"&makeType="+makeType;
 		
 		scrollHeight =$(document).height() - 250; 
@@ -33,12 +31,6 @@
 			"dom"		: '<"clear">rt',
 			"sAjaxSource" : actionUrl,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
-				//var param = {};
-				//var formData = $("#condition").serializeArray();
-				//formData.forEach(function(e) {
-				//	aoData.push({"name":e.name, "value":e.value});
-				//});
-
 				$.ajax({
 					"url" : sSource,
 					"datatype": "json", 
@@ -74,8 +66,6 @@
 	    			var name =  jQuery.fixedWidth( row["materialName"],40);
 					var inputTxt =       '<input type="hidden" id="requisitionList'+index+'.overquantity" name="requisitionList['+index+'].overquantity" value=""/>';
 	    			inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.materialid" name="requisitionList['+index+'].materialid" value="'+row["materialId"]+'"/>';
-	    			//inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.contractid" name="requisitionList['+index+'].contractid" value="'+row["contractId"]+'"/>';
-	    			//inputTxt= inputTxt + '<input type="hidden" id="requisitionList'+index+'.supplierid" name="requisitionList['+index+'].supplierid" value="'+row["supplierId"]+'"/>';
 	    			
 	    			return name + inputTxt;
                 }},
@@ -150,7 +140,38 @@
 			]
 			
 		}).draw();		
-						
+					
+		t.on('change', 'tr td:nth-child(9)',function() {
+
+			var $td = $(this).parent().find("td");
+			
+			$td.eq(8).find("input").removeClass('error');
+
+			var $oArrival = $td.eq(4);//计划
+			var $oyiling  = $td.eq(5);//已领料
+			var $oTotalQt = $td.eq(7);//总库存
+			var $oCurrQty = $td.eq(8).find("input");//本次领料
+
+			var fArrival  = currencyToFloat($oArrival.text());
+			var fYiling   = currencyToFloat($oyiling.text());
+			var fCurrQty  = currencyToFloat($oCurrQty.val());	
+			var fTotalQt  = currencyToFloat($oTotalQt.text());
+			
+			//最多允许领料数量 = 计划 - 已领料
+		 	var fMaxQuanty = fArrival - fYiling;
+			if(fMaxQuanty < 0)
+				fMaxQuanty = 0;
+			//alert("fArrival--fYiling--fMaxQuanty--fCurrQty:"+fArrival+"---"+fYiling+"--"+fMaxQuanty+"---"+fCurrQty)
+			if ( fCurrQty > fMaxQuanty ){//总库存充足
+				
+				fCurrQty = fMaxQuanty;
+				$().toastmessage('showWarningToast', "领料数量不能超出需求量！");
+			}
+			
+			$oCurrQty.val(floatToCurrency(fCurrQty));
+
+		});
+		
 		t.on('click', 'tr', function() {
 			if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
@@ -175,11 +196,9 @@
 	function materialzzAjax() {
 
 		var makeType = $('#makeType').val();
-		var taskId = $('#task\\.taskid').val();
-		var YSId= $('#task\\.collectysid').val();
+		var YSId= $('#requisition\\.ysid').val();
 		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getMaterialZZList";
 		actionUrl = actionUrl +"&YSId="+YSId;
-		actionUrl = actionUrl +"&taskId="+taskId;
 		actionUrl = actionUrl +"&makeType="+makeType;
 				
 		var t = $('#example2').DataTable({
@@ -293,13 +312,10 @@
 
 		$("#showHistory").click(
 				function() {
-					var taskId=$("#task\\.taskid").val();
+					var YSId= $('#requisition\\.ysid').val();
 					var makeType = $('#makeType').val();
-					if(taskId ==''){
-						$().toastmessage('showWarningToast', "还没有领料记录。");
-						return;
-					}
-					var url = "${ctx}/business/requisitionzz?methodtype=getRequisitionHistoryInit&taskId="+taskId+"&makeType="+makeType;
+
+					var url = "${ctx}/business/requisitionzz?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&makeType="+makeType;
 					location.href = url;		
 				});
 		
@@ -333,8 +349,6 @@
 	<input type="hidden" id="makeType" value="${makeType }" />
 	<form:hidden path="requisition.recordid" value="${detail.recordId }" />
 	<form:hidden path="requisition.requisitionid"  value="${detail.requisitionId }" />
-	<form:hidden path="task.collectysid" value="${detail.collectYsid }" />
-	<form:hidden path="task.taskid"  value="${detail.taskId }"/>
 	
 	<fieldset>
 		<legend> 自制品原材料领料单</legend>
@@ -352,10 +366,15 @@
 					<form:input path="requisition.requisitionuserid" class="short read-only" value="${userName }" /></td>
 			</tr>
 			<tr> 				
-				<td class="label" width="100px">任务编号：</td>					
-				<td width="150px">${detail.taskId }</td>				
-				<td class="label">关联耀升编号：</td>				
-				<td colspan="3">${detail.collectYsid }</td>
+				<td class="label" width="100px">耀升编号：</td>					
+				<td width="150px">${order.YSId }
+					<form:hidden path="requisition.ysid"  value="${order.YSId }"/></td>
+														
+				<td width="100px" class="label">产品编号：</td>
+				<td width="150px">${order.materialId }</td>
+														
+				<td width="100px" class="label">产品名称：</td>
+				<td>${order.materialName }</td>
 			</tr>
 										
 		</table>

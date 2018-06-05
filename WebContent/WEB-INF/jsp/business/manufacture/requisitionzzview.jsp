@@ -8,7 +8,7 @@
 
 	function historyAjax() {
 		
-		var taskId = '${formModel.task.taskid }';
+		var YSId = '${order.YSId }';
 		var makeType = '${makeType }';
 		var t = $('#example2').DataTable({
 			
@@ -22,7 +22,7 @@
 			"searching" : false,
 			"retrieve" : true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/requisitionzz?methodtype=getRequisitionHistory&taskId="+taskId+"&makeType="+makeType,
+			"sAjaxSource" : "${ctx}/business/requisitionzz?methodtype=getRequisitionHistory&YSId="+YSId+"&makeType="+makeType,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -64,8 +64,8 @@
 		    			var status = row["requisitionStsId"];
 		    			var rtn = "";
 		    			if(status != '030'){//已出库
-			    			rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
-			    			rtn = rtn + "&nbsp;&nbsp;";	    			
+			    			//rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
+			    			//rtn = rtn + "&nbsp;&nbsp;";	    			
 			    			rtn = rtn + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
 			    			rtn = rtn + "&nbsp;&nbsp;";		    				
 		    			}
@@ -73,6 +73,10 @@
 		    			rtn = rtn +  "<a href=\"###\" onClick=\"doPrint('" + row["requisitionId"] + "')\">打印领料单</a>";
 		    			return rtn;
 		    		}},
+	                {
+						"visible" : false,
+						"targets" : [3]
+					}
 		    	]        
 			
 		}).draw();
@@ -211,12 +215,11 @@
 		
 		$("#insert").click(
 				function() {
-					var taskId = '${formModel.task.taskid }';
-					var YSId='${formModel.task.collectysid  }';
+					var YSId='${order.YSId }';
 					var makeType = $('#makeType').val();
 					//addFlag=1:继续领料
 					var url =  "${ctx}/business/requisitionzz?methodtype=addinit&data="+YSId
-							+"&makeType="+makeType+"&taskId="+taskId+"&addFlag=1";
+							+"&makeType="+makeType+"&addFlag=1";
 
 					location.href = url;
 		});
@@ -282,11 +285,9 @@
 	function materialzzAjax() {
 
 		var makeType = $('#makeType').val();
-		var taskId = '${formModel.task.taskid }';
-		var YSId= '${formModel.task.collectysid }';
+		var YSId= '${order.YSId }';
 		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getMaterialZZList";
 		actionUrl = actionUrl +"&YSId="+YSId;
-		actionUrl = actionUrl +"&taskId="+taskId;
 		actionUrl = actionUrl +"&makeType="+makeType;
 				
 		var t = $('#example3').DataTable({
@@ -391,16 +392,19 @@
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<input type="hidden" id="makeType" value="${makeType }" />
-	<form:hidden path="task.taskid" />
 	<fieldset>
 		<legend> 自制品领料单</legend>
 		<table class="form" id="table_form">
-			<tr>
-				<td class="label" width="100px">任务编号：</td>					
-				<td width="150px">${formModel.task.taskid }</td>
-									
-				<td class="label" width="100px">关联耀升编号：</td>					
-				<td>${formModel.task.collectysid }</td>
+			<tr> 				
+				<td class="label" width="100px">耀升编号：</td>					
+				<td width="150px">${order.YSId }
+					<form:hidden path="requisition.ysid"  value="${order.YSId }"/></td>
+														
+				<td width="100px" class="label">产品编号：</td>
+				<td width="150px">${order.materialId }</td>
+														
+				<td width="100px" class="label">产品名称：</td>
+				<td>${order.materialName }</td>
 			</tr>
 										
 		</table>

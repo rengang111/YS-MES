@@ -2,18 +2,16 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>自制件领料申请-领料单</title>
+<title>自制件领料申请-领料单申请</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
 	function ajax(scrollHeight) {
 
 		var makeType = $('#makeType').val();
-		var taskId = $('#task\\.taskid').val();
-		var YSId= $('#task\\.collectysid').val();
+		var YSId= $('#requisition\\.ysid').val();
 		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getRawMaterialList";
 		actionUrl = actionUrl +"&YSId="+YSId;
-		actionUrl = actionUrl +"&taskId="+taskId;
 		actionUrl = actionUrl +"&makeType="+makeType;
 		
 		scrollHeight =$(document).height() - 250; 
@@ -95,7 +93,7 @@
 	    			return unit;				 
                 }},
 	    		{"targets":4,"render":function(data, type, row){	    			
-	    			
+	    			/*
 	    			var vrawunit = row["unit"];
 	    			var vzzunit = row["zzunit"]; 			
 	    			
@@ -112,6 +110,9 @@
 	    				farwunit = farwunit *1000;//换算成千克
 	    				
 	    			return floatToCurrency( qty * farwunit / fchgunit );
+	    			
+	    			*/
+	    			return floatToCurrency( row["quantity"] );
 	    										 
                 }},
 	    		{"targets":5,"render":function(data, type, row){	    			
@@ -162,6 +163,37 @@
 			
 		}).draw();		
 						
+		t.on('change', 'tr td:nth-child(9)',function() {
+
+			var $td = $(this).parent().find("td");
+			
+			$td.eq(8).find("input").removeClass('error');
+
+			var $oArrival = $td.eq(4);//计划
+			var $oyiling  = $td.eq(5);//已领料
+			var $oTotalQt = $td.eq(7);//总库存
+			var $oCurrQty = $td.eq(8).find("input");//本次领料
+
+			var fArrival  = currencyToFloat($oArrival.text());
+			var fYiling   = currencyToFloat($oyiling.text());
+			var fCurrQty  = currencyToFloat($oCurrQty.val());	
+			var fTotalQt  = currencyToFloat($oTotalQt.text());
+			
+			//最多允许领料数量 = 计划 - 已领料
+		 	var fMaxQuanty = fArrival - fYiling;
+			if(fMaxQuanty < 0)
+				fMaxQuanty = 0;
+			//alert("fArrival--fYiling--fMaxQuanty--fCurrQty:"+fArrival+"---"+fYiling+"--"+fMaxQuanty+"---"+fCurrQty)
+			if ( fCurrQty > fMaxQuanty ){//总库存充足
+				
+				fCurrQty = fMaxQuanty;
+				$().toastmessage('showWarningToast', "领料数量不能超出需求量！");
+			}
+			
+			$oCurrQty.val(floatToCurrency(fCurrQty));
+
+		});
+		
 		t.on('click', 'tr', function() {
 			if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
@@ -186,11 +218,9 @@
 	function materialzzAjax() {
 
 		var makeType = $('#makeType').val();
-		var taskId = $('#task\\.taskid').val();
-		var YSId= $('#task\\.collectysid').val();
+		var YSId= $('#requisition\\.ysid').val();
 		var actionUrl = "${ctx}/business/requisitionzz?methodtype=getMaterialZZList";
 		actionUrl = actionUrl +"&YSId="+YSId;
-		actionUrl = actionUrl +"&taskId="+taskId;
 		actionUrl = actionUrl +"&makeType="+makeType;
 				
 		var t = $('#example2').DataTable({
@@ -310,8 +340,8 @@
 				});
 
 		$("#showHistory").click(function() {
-			
-			var taskId=$("#task\\.taskid").val();
+
+			var YSId= $('#requisition\\.ysid').val();
 			var makeType = $('#makeType').val();
 
 			$.ajax({
@@ -320,13 +350,13 @@
 				contentType : 'application/json',
 				dataType : 'json',
 				data : '',
-				url : "${ctx}/business/requisitionzz?methodtype=checkRequisitionHistory"+"&taskId="+taskId,
+				url : "${ctx}/business/requisitionzz?methodtype=checkRequisitionHistory"+"&YSId="+YSId+"&makeType="+makeType,
 				success : function(data) {
 	
 					var rtnFlag = data["message"];
 					if(rtnFlag == "true"){
 
-						var url = "${ctx}/business/requisitionzz?methodtype=getRequisitionHistoryInit&taskId="+taskId+"&makeType="+makeType;
+						var url = "${ctx}/business/requisitionzz?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&makeType="+makeType;
 						location.href = url;
 					}else{
 						$().toastmessage('showWarningToast', "还没有领料记录。");
@@ -406,33 +436,29 @@
 	<input type="hidden" id="addFlag" value="${addFlag }" /><!-- 1:继续领料；0：第一次领料 -->
 	
 	<form:hidden path="requisition.requisitiontype" value="${makeType}"/>
-	<form:hidden path="task.parentid"  />
-	<form:hidden path="task.subid"  />
-	<form:hidden path="task.recordid"  />
-	<form:hidden path="task.collectysid" class="long read-only" />
+	<form:hidden path="requisition.requisitionid" value=""/>
 	<fieldset>
 		<legend> 自制品原材料领料单</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px">任务编号：</td>					
-				<td width="150px">
-					<form:input path="task.taskid" class="short required read-only" /></td>
+				<td class="label" width="100px">耀升编号：</td>					
+				<td width="150px">${order.YSId }
+					<form:hidden path="requisition.ysid"  value="${order.YSId }"/></td>
 														
-				<td width="100px" class="label">领料单编号：</td>
-				<td width="150px">
-					<form:input path="requisition.requisitionid" class="read-only"  value="（保存后自动生成）"/></td>
+				<td width="100px" class="label">产品编号：</td>
+				<td width="150px">${order.materialId }</td>
 														
+				<td width="100px" class="label">产品名称：</td>
+				<td>${order.materialName }</td>
+			</tr>
+			<tr>							
 				<td width="100px" class="label">领料日期：</td>
 				<td width="150px">
 					<form:input path="requisition.requisitiondate" class="short read-only" /></td>
 				
-				<td width="100px" class="label">领料人：</td>
-				<td>
+				<td width="100px" class="label">申请人：</td>
+				<td colspan="3">
 					<form:input path="requisition.requisitionuserid" class="short read-only" value="${userName }" /></td>
-			</tr>
-			<tr> 				
-				<td class="label">关联耀升编号：</td>				
-				<td colspan="7"><form:input path="requisition.collectysid" value="${currentYsids}" class="long read-only" /></td>
 			</tr>
 										
 		</table>
@@ -463,8 +489,7 @@
 						<th width="60px">已申请数量</th>
 						<th width="60px">已出库数量</th>
 						<th width="80px">可用库存</th>
-						<th width="80px">
-							<input type="checkbox" name="selectall" id="selectall"  checked="checked"/><label for="selectall">本次领料</label></th>
+						<th width="80px">本次领料</th>
 					</tr>
 				</thead>	
 			</table>			
@@ -527,46 +552,6 @@ function reloadFn(){
 		
 	});	
 
-	
-	
-	$("#selectall").click(function () { 
-		
-		var sltFlag = $(this).prop("checked");
-			
-		$('#example tbody tr').each (function (){
-		
-			var vcontract = $(this).find("td").eq(4).text();////计划用量
-			var vreceive  = $(this).find("td").eq(5).text();//已领量:table初始化时,第五列被隐藏了
-			var vstocks   = $(this).find("td").eq(6).text();//库存
-			var fcontract= currencyToFloat(vcontract);
-			var freceive = currencyToFloat(vreceive);
-			var fstocks  = currencyToFloat(vstocks);
-			//alert("计划用量+已领量+库存:"+fcontract+"---"+freceive+"---"+fstocks)
-			var fsurplus = fcontract - freceive;
-			if(fsurplus < 0)
-				fsurplus = 0;
-			var vsurplus = formatNumber(fsurplus);
-
-			if(sltFlag){//一次性全部领料
-				
-				if(fsurplus > "0"){//未领完的场合下
-					//if(fstocks >= fsurplus){//库存大于需求量
-						$(this).find("td").eq(7).find("input").val(vsurplus);//本次领料
-						//$(this).find("td").eq(8).html("0")//剩余数清零
-					//}else{
-					//	$(this).find("td").eq(7).find("input").val(fstocks);//本次领料
-						//$(this).find("td").eq(8).html(formatNumber( fsurplus - fstocks ));//剩余数清零							
-					//}
-				}else{//超领
-					
-				}
-			
-			}else{//取消一次性全部领料
-				$(this).find("td").eq(7).find("input").val("0");//本次领料清零
-				//$(this).find("td").eq(8).html(vsurplus);//剩余数
-			}
-		})
-	});
 	
 }
 

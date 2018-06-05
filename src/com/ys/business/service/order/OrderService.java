@@ -508,7 +508,7 @@ public class OrderService extends CommonService  {
 						
 						if(peiYsidCheckFlag){
 							
-							String where = " peiYsid ='"+peiYsid +"' AND deleteFlag='0' " ;
+							String where = " YSId like '%"+ysid +"%' AND deleteFlag='0' " ;
 							
 							String existFlag = ysidExistCheck(where);
 							
@@ -599,7 +599,7 @@ public class OrderService extends CommonService  {
 
 		String ysid = newData.getYsid();
 		//耀升编号重复check
-		String where = " YSId ='"+ysid +"' AND deleteFlag='0' " ;
+		String where = " YSId like'%"+ysid +"%' AND deleteFlag='0' " ;
 		String existFlag = ysidExistCheck(where);
 		
 		//如果重复的话,重新设置

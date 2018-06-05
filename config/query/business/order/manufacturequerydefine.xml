@@ -313,10 +313,36 @@
 	      <f name="b.zzunit" alias="zzunitId" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-   <from>v_purchaseplandetailzz b LEFT JOIN v_stockoutdetailgroup c ON b.rawMaterialId = c.materialId AND c.YSId='#' AND c.deleteFlag = '0' LEFT JOIN v_requisitiondetailgroup d ON b.rawMaterialId=d.materialId AND d.YSId = '#' AND d.deleteFlag = '0' </from>
+   <from>v_purchaseplandetailzz b LEFT JOIN v_stockoutdetailgroup c ON b.rawMaterialId = c.materialId AND c.YSId=b.YSId  LEFT JOIN v_requisitiondetailgroup d ON b.rawMaterialId=d.materialId AND d.YSId = b.YSId </from>
     <orderby>b.rawMaterialId</orderby>
     <groupby>b.rawMaterialId</groupby>
     <having>cast(purchaseQuantity AS DECIMAL (10, 0)) > 0</having>
+	<power></power>    
+  </query>
+   <query>
+    <pool></pool>    
+    <name value="getRawRequirementById" />
+    <where>
+    	<w name="b.YSId"    des="" reqName="YSId"    dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="b.rawType" des="" reqName="rawType" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+	      <f name="b.materialId" alias="" ctype="" />
+	      <f name="b.materialName" alias="" ctype="" />
+	      <f name="b.rawType" alias="" ctype="" />
+	      <f name="b.quantity" alias="" ctype="" />
+	      <f name="b.quantityOnHand" alias="" ctype="" />
+	      <f name="b.availabelToPromise" alias="" ctype="" />
+	      <f name="IFNULL(c.quantity,'0')" alias="totalRequisition" ctype="" />
+	      <f name="IFNULL(d.quantity,'0')" alias="requisitionQty" ctype="" />
+	      <f name="b.unit" alias="" ctype="计量单位" />
+	      <f name="b.unit" alias="unitId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+   <from>v_rawrequirement b LEFT JOIN v_stockoutdetailgroup c ON b.materialId = c.materialId AND c.YSId=b.YSId  LEFT JOIN v_requisitiondetailgroup d ON b.materialId=d.materialId AND d.YSId = b.YSId </from>
+    <orderby>b.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
 	<power></power>    
   </query>
   <query>
@@ -388,7 +414,7 @@
       <f name="IFNULL(c.collectYsid,'')" alias="collectYsid" ctype="" />
     </select>
     <!-- 吹塑待领料 -->
-    <from>v_orderdetailforf02 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_f02 c ON FIND_IN_SET(a.YSId,c.collectYsid)</from>
+    <from>v_orderdetailforf02 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_f02 c ON a.YSId=c.Ysid </from>
     <orderby>A.YSId </orderby>
     <groupby></groupby>
     <having>#</having>
@@ -429,7 +455,7 @@
       <f name="IFNULL(c.collectYsid,'')" alias="collectYsid" ctype="" />
     </select>
     <!-- 吹塑待领料 -->
-    <from>v_orderdetailforf01 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_f01 c ON FIND_IN_SET(a.YSId,c.collectYsid)</from>
+    <from>v_orderdetailforf01 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_f01 c ON a.YSId=c.YSId </from>
     <orderby>A.YSId </orderby>
     <groupby></groupby>
     <having>#</having>
@@ -470,7 +496,7 @@
       <f name="IFNULL(c.collectYsid,'')" alias="collectYsid" ctype="" />
     </select>
     <!-- 吹塑待领料 -->
-    <from>v_orderdetailforb01 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_b01 c ON FIND_IN_SET(a.YSId,c.collectYsid)</from>
+    <from>v_orderdetailforb01 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_b01 c ON a.YSId=c.Ysid </from>
     <orderby>A.YSId </orderby>
     <groupby></groupby>
     <having>#</having>
@@ -550,11 +576,13 @@
       <f name="a.quantity" alias="requisitionQty" ctype="" />
       <f name="b.areaNumber" alias="" ctype="" />
       <f name="c.manufactureQuantity" alias="planQty" ctype="" />
+      <f name="c.purchaseQuantity" alias="contractQty" ctype="" />
       <f name="IFNULL(d.quantity,'0')" alias="stockoutQty" ctype="" />
+      <f name="IFNULL(f.quantity,'0')" alias="rawQty" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_requisitiondetailgroup  AS A LEFT JOIN v_purchasestockindetailgroup b ON b.YSId=a.YSId AND b.materialId=a.materialId  LEFT JOIN v_purchaseplandetailgroup c ON c.YSId=a.YSId AND c.materialId = a.materialId  LEFT JOIN v_stockoutdetailgroup d ON d.YSId=a.YSId AND d.materialId=a.materialId LEFT JOIN b_material e ON e.materialId=a.materialId AND e.deleteFlag='0'</from>
+   <from>v_requisitiondetail  AS A LEFT JOIN b_rawrequirement f ON f.YSId=a.YSId AND f.materialId=a.materialId LEFT JOIN v_purchasestockindetailgroup b ON b.YSId=a.YSId AND b.materialId=a.materialId  LEFT JOIN v_purchaseplandetailgroup c ON c.YSId=a.YSId AND c.materialId = a.materialId  LEFT JOIN v_stockoutdetailgroup d ON d.YSId=a.YSId AND d.materialId=a.materialId LEFT JOIN b_material e ON e.materialId=a.materialId AND e.deleteFlag='0'</from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -614,7 +642,7 @@
     <pool></pool>    
     <name value="zzmaterialFromPlan" />
      <where>
-       <w name="b.YSId" des=""  reqName="YSId" dtype="ch" oper="in"  lg="AND" bt="" />
+       <w name="b.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   <select>
       <f name="b.YSId" alias="" ctype="" />

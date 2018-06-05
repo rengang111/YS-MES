@@ -62,9 +62,10 @@
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": "quantityOnHand","className":"td-right"	//3
-				}, {"data": "planQty","className":"td-right"//4生产需求量
+				}, {"data": "planQty","className":"td-right","defaultContent" : '***'//4生产需求量
 				}, {"data": "stockoutQty","className":"td-right","defaultContent" : '0'//已出库数量
 				}, {"data": null,"className":"td-right"//本次领料
+				}, {"data": null,"className":"td-right"//剩余数量
 				}, {"data": null,"className":"td-right"//5
 				}, {"data": "areaNumber","className":""//6
 				}
@@ -86,7 +87,7 @@
 	    			return name + inputTxt;
                 }},
 	    		{"targets":3,"render":function(data, type, row){//当前库存
-					var quantityOnHand=row["quantityOnHand"]	
+					var quantityOnHand= floatToCurrency( row["quantityOnHand"] );	
 					var materialId=row["materialId"]	
 					var inputTxt = '';
 					inputTxt= inputTxt +'<a href="###" onClick="doShowInventory(\''+materialId+'\')">'+quantityOnHand+'</a>';
@@ -94,22 +95,42 @@
 	    			return inputTxt;
                 }},
 	    		{"targets":4,"render":function(data, type, row){//生产需求
-	    			
-	    			return floatToCurrency(data);
+	    			var materialId = row["materialId"];
+					var total = floatToCurrency(row["planQty"]);//订单生产需求量
+	    			if(materialId.substring(0,1) == 'A'){
+						total = floatToCurrency(row["rawQty"]);//采购数量
+						
+	    			}
+	    			//alert(floatToCurrency(row["planQty"])+"---"+total)
+	    			return total;
                 }},
 	    		{"targets":5,"render":function(data, type, row){//已出库数
 	    			
 	    			return floatToCurrency(data);
                 }},
+	    		{"targets":7,"render":function(data, type, row){//剩余数量
+	    			
+					var index=row["rownum"];
+	    			var materialId = row["materialId"];
+					var total = currencyToFloat(row["planQty"]);//订单生产需求量
+	    			if(materialId.substring(0,1) == 'A'){
+						total = currencyToFloat(row["rawQty"]);//采购数量
+	    			}
+					var stockoutQty = currencyToFloat(row["stockoutQty"]);
+					var quantity = currencyToFloat(row["requisitionQty"]);
+					var inputTxt = floatToCurrency( total - stockoutQty - quantity );
+				
+					return inputTxt;
+                }},
 	    		{"targets":6,"render":function(data, type, row){//本次领料
 	    			
 					var index=row["rownum"];
 					var quantity = floatToCurrency(row["requisitionQty"]);
-					var inputTxt = '<input type="hidden" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+quantity+'"/>';
+					var inputTxt = '<input type="text" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+quantity+'" class="num mini"/>';
 				
-					return quantity + inputTxt;
+					return inputTxt;
                 }},
-	    		{"targets":7,"render":function(data, type, row){	
+	    		{"targets":8,"render":function(data, type, row){	
 	    			
 					var index=row["rownum"];
 					var quantity = (row["quantity"]);
@@ -298,10 +319,11 @@
 						<th >物料名称</th>
 						<th width="60px">当前库存</th>
 						<th width="60px">生产需求</th>
-						<th width="60px">已出库数</th>
+						<th width="60px">已领数量</th>
 						<th width="60px">本次领料</th>
+						<th width="60px">剩余数量</th>
 						<th width="80px">仓库分类</th>
-						<th width="100px">库位</th>
+						<th width="80px">库位</th>
 					</tr>
 				</thead>	
 			</table>
@@ -435,7 +457,7 @@ function setDepotId(){
 	
 	$('#example tbody tr').each (function (){
 
-		$(this).find("td").eq(7).find("select").html(options);
+		$(this).find("td").eq(8).find("select").html(options);
 		
 		var materialId = $(this).find("td").eq(1).find("input").val();
 		
@@ -448,7 +470,7 @@ function setDepotId(){
 			depotid='020';//自制件								
 		}
 		
-		$(this).find("td").eq(7).find("select").val(depotid);
+		$(this).find("td").eq(8).find("select").val(depotid);
 					
 	});	
 	
