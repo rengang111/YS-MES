@@ -109,7 +109,7 @@
 		    			if(requisitionQty == '0'){
 		    				rtn = "待申请";
 		    				
-		    			}else if(requisitionQty == manufactureQty){
+		    			}else if(requisitionQty >= manufactureQty){
 		    				rtn = "已出库";
 		    				
 		    			}else {

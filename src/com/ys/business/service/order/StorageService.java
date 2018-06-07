@@ -493,7 +493,7 @@ public class StorageService extends CommonService {
 			key1 = "";key2="";//清空关键字
 		}else if(("040").equals(status)){
 			//已入库
-			sb.append(" a.stockoutQty+0 <= 0 AND a.stockinQty+0 > 0  ");
+			sb.append(" ( a.stockoutQty + 0 <= 0 AND a.stockinQty + 0 > 0 ) || REPLACE(a.completedQuantity,',','')+0 > 0 ");
 			userDefinedSearchCase.put("status", "050");
 			key1 = "";key2="";//清空关键字
 		}else{
@@ -1138,7 +1138,7 @@ public class StorageService extends CommonService {
 		int totalNum = number+thisNum - oldNum;//累计完成件数
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
+				"成品入库Update",userInfo);
 		copyProperties(data,commData);
 	
 		//if(orderQuan == totalQuan){

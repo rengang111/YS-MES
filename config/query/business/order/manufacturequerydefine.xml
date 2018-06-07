@@ -853,6 +853,7 @@
       <f name="A.stockoutQty" alias="" ctype="" />
       <f name="A.orderQty" alias="" ctype="" />
       <f name="A.stockinQty" alias="" ctype="" />
+      <f name="A.completedQuantity" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="计量单位" />
       <f name="A.storageDate" alias="" ctype="" />
       <f name="DATE_FORMAT(c.createTime,'%Y-%m-%d')" alias="stockoutDate" ctype="" />

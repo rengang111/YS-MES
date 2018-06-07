@@ -73,7 +73,7 @@
 				{"data": "materialId"},
 				{"data": "materialName"},
 				{"data": "orderQty","className" : 'td-right'},
-				{"data": "stockinQty","className" : 'td-right'},
+				{"data": null,"className" : 'td-right'},
 				{"data": "storageDate","className" : 'td-center',"defaultContent" : '（未入库）'},
 								
 			],
@@ -99,8 +99,41 @@
 	    			return floatToCurrency(data);
 	    		}},
 	    		{"targets":5,"render":function(data, type, row){
-	    						    			
-	    			return floatToCurrency(data);
+	    			//入库数量
+	    			var orderQty = floatToCurrency(row["orderQty"]);
+	    			var stockin = currencyToFloat(row["stockinQty"]);
+	    			var virtualin = currencyToFloat(row["completedQuantity"]);//订单表里的入库数量（虚拟入库使用）
+	    			var ysid=row["YSId"];
+	    			var viewQty = stockin;
+	    			var span_s = '',span_e='</span>';
+	    			if(stockin > 0){
+	    				span_s = '<span>';
+	    			}else{
+	    				if(virtualin > 0){
+	    					viewQty = orderQty;
+	    					span_s = '<span style="color: red;">';
+	    				}
+	    			}
+	    			var rtn = span_s + viewQty + span_e;
+	    			
+	    			if(ysid == '17YS1005'){
+		    		//	alert('s---v:'+orderQty+"---"+virtualin+'--'+rtn );	    				
+	    			}
+	    			return rtn;
+	    		}},
+	    		{"targets":6,"render":function(data, type, row){
+	    			//入库时间
+	    			var storageDate = (row["storageDate"]);
+	    			var stockin = currencyToFloat(row["stockinQty"]);
+	    			var virtualin = currencyToFloat(row["completedQuantity"]);
+	    			if(storageDate == null || storageDate == ''){
+	    				if(virtualin > 0 && stockin <=0 ){
+		    				storageDate = '（手动修正）';
+	    				}else{
+		    				storageDate="（未入库）";	    					
+	    				}
+	    			}
+	    			return storageDate;
 	    		}}
 	           
 	         ] 

@@ -11,9 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.common.FilePath;
 import com.ys.business.action.model.order.RequisitionModel;
+import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
+import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_RequisitionDetailData;
@@ -123,10 +125,10 @@ public class RequisitionService extends CommonService {
 			having = " requisitionQty=0 ";
 		}else if(("030").equals(requisitionSts)){
 			//已出库
-			having = " requisitionQty=manufactureQty ";
+			having = " REPLACE(requisitionQty,',','')+0 = REPLACE(manufactureQty,',','')+0 ";
 		}else if(("020").equals(requisitionSts)){
 			//出库中
-			having = " requisitionQty> 0 AND requisitionQty < manufactureQty ";
+			having = "requisitionQty+0 > 0 AND REPLACE(requisitionQty,',','')+0 < REPLACE(manufactureQty,',','')+0 ";
 		}
 		sql = sql.replace("#", having);
 		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
@@ -423,25 +425,19 @@ public class RequisitionService extends CommonService {
 						
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
-				//float overQuty = stringToFloat(data.getOverquantity());//超领
 				
 				if(quantity <= 0)
 					continue;
 				
 				data.setRequisitionid(requisitionid);
 				insertRequisitionDetail(data);
-								
-				//更新累计领料数量
-				//updatePurchasePlan(YSId,data.getMaterialid(),quantity);
 				
 				//更新库存
-				//updateMaterialStock(data.getMaterialid(),quantity,overQuty);
+				updateMaterial(data.getMaterialid(),quantity);
 			
 			}
-			
 			//更新订单状态:待交货
 			updateOrderDetail(YSId);
-			
 			
 			ts.commit();			
 			
@@ -456,6 +452,49 @@ public class RequisitionService extends CommonService {
 		}
 		
 		return YSId;
+	}
+	
+	//虚拟领料:减少“待出库”
+	@SuppressWarnings("unchecked")
+	private void updateMaterial(
+			String materialId,
+			float reqQuantity) throws Exception{
+	
+		B_MaterialData data = new B_MaterialData();
+		B_MaterialDao dao = new B_MaterialDao();
+		
+		String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
+		
+		List<B_MaterialData> list = 
+				(List<B_MaterialData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
+
+		data = list.get(0);
+		
+		//当前库存数量
+		float iQuantity = stringToFloat(data.getQuantityonhand());	
+		//待入库
+		float waitstockin = stringToFloat(data.getWaitstockin());
+		//待出库
+		float istockout = stringToFloat(data.getWaitstockout());		
+		float iNewStockOut = istockout - reqQuantity;
+		
+		//虚拟库存=当前库存 + 待入库 - 待出库
+		float availabeltopromise = iQuantity + waitstockin - iNewStockOut;
+		
+		data.setWaitstockout(String.valueOf(iNewStockOut));
+		data.setAvailabeltopromise(String.valueOf(availabeltopromise));
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"虚拟出库Update",userInfo);
+		copyProperties(data,commData);
+		
+		dao.Store(data);
+		
 	}
 	
 	private void insertRequisition(
@@ -522,7 +561,7 @@ public class RequisitionService extends CommonService {
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"PurchaseStockInUpdate",userInfo);
 		copyProperties(data,commData);
-		data.setStatus(Constants.ORDER_STS_3);//待交货	
+		data.setStatus(Constants.ORDER_STS_5);//待交货	
 		
 		new B_OrderDetailDao().Store(data);
 	}

@@ -335,7 +335,7 @@
 						<th class="dt-center" width="60px">计划用量</th>
 						<th class="dt-center" width="60px">已入库</th>
 						<th class="dt-center" width="60px">已领数量</th>
-						<th class="dt-center" width="60px">虚拟库存</th>
+						<th class="dt-center" width="60px">当前库存</th>
 						<th class="dt-center" width="80px">本次领料
 						<!-- 	<input type="checkbox" name="selectall" id="selectall" /><label for="selectall"></label> --></th>
 						<th class="dt-center" width="60px">剩余数量</th>
