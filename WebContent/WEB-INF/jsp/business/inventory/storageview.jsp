@@ -80,6 +80,8 @@
 	    			text += "<a href=\"###\" onClick=\"doEdit('"  + row["contractId"] + "','"  + row["receiptId"] + "')\">编辑</a>";
 	    			text += "&nbsp;"
 	    			text += "<a href=\"###\" onClick=\"doPrint('" + row["contractId"] + "','" + row["receiptId"] + "')\">打印</a>";
+	    			text += "<br>"
+	    			text += "<a href=\"###\" onClick=\"doPrintLabel('" + row["materialId"] + "','" + row["receiptId"] + "')\">标贴</a>";
 
 	    			return text;
 	    		}}
@@ -171,6 +173,26 @@
 			type : 2,
 			title : false,
 			area : [ '1100px', '520px' ], 
+			scrollbar : false,
+			title : false,
+			content : url,
+			cancel: function(index){			
+			}    
+		});		
+
+	};
+	
+
+	function doPrintLabel(materialId,receiptId) {
+		var url = '${ctx}/business/storage?methodtype=printReceiptLabel';
+		url = url +'&materialId='+materialId;
+		url = url +'&receiptId='+receiptId;
+			
+		layer.open({
+			offset :[10,''],
+			type : 2,
+			title : false,
+			area : [ '500px', '200px' ], 
 			scrollbar : false,
 			title : false,
 			content : url,

@@ -156,6 +156,10 @@ public class StorageAction extends BaseAction {
 				doPrintReceipt();
 				rtnUrl = "/business/inventory/storageprint";
 				break;
+			case "printReceiptLabel"://打印标贴
+				doPrintReceiptLabel();
+				rtnUrl = "/business/inventory/storageprintlabel";
+				break;
 			case "getProductPhoto"://显示供应商的入库单
 				dataMap = getProductPhoto();
 				printOutJsonObj(response, dataMap);
@@ -583,6 +587,14 @@ public class StorageAction extends BaseAction {
 	public void doPrintReceipt(){
 		try{
 			service.printReceipt();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void doPrintReceiptLabel(){
+		try{
+			service.doPrintReceiptLabel();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

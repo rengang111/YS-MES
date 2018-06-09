@@ -26,6 +26,7 @@
 <script type="text/javascript" src="${ctx}/js/main.js"></script>
 <script type="text/javascript" src="${ctx}/js/all.js"></script>
 <script type="text/javascript" src="${ctx}/js/inputcheck.js"></script>
+<script type="text/javascript" src="${ctx}/js/clipboard.min.js"></script>
 <!-- 
 <script type="text/javascript" src="${ctx}/js/browser.js"></script>
  -->

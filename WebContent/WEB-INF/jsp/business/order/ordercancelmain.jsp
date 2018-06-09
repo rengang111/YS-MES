@@ -156,7 +156,7 @@
 	
 	function doCreate(type) {
 		
-		var url = '${ctx}/business/order?methodtype=create'+'&orderNature='+ type;
+		var url = '${ctx}/business/order?methodtype=orderCancelAddInit'+'&orderNature='+ type;
 		location.href = url;
 	}
 	//订单状态

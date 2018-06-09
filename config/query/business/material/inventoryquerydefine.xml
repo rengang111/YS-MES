@@ -1016,5 +1016,31 @@
     <having>#</having>
 	<power>
 	</power>    
+  </query>   
+  <query>
+    <pool></pool>     
+    <name value="stockinAndContractById" />
+    <where>
+       <w name="A.receiptId" des=""  reqName="receiptId" dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="IF(IFNULL(A.YSId,'')='','***',A.YSId)" alias="YSId" ctype="" />
+      <f name="IF(IFNULL(A.contractId,'')='','***',A.contractId)" alias="contractId" ctype="" />
+      <f name="A.receiptId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.checkInDate" alias="" ctype="" />
+      <f name="FORMAT(REPLACE(a.quantity,',',''),2)" alias="quantity" ctype="" />
+      <f name="FORMAT(REPLACE(IFNULL(b.quantity,0),',',''),2)" alias="stockinQty" ctype="" />
+      <f name="IFNULL(FORMAT(REPLACE(c.quantity,',',''),2),'***')" alias="contractQty" ctype="" />
+
+    </select>
+    <from>v_purchasestockindetail a LEFT JOIN v_purchasestockindetailgroup b ON a.YSId=b.YSId AND a.contractId=b.contractId AND a.materialId=b.materialId LEFT JOIN v_purchaseorderdetail c ON c.contractId =a.contractId AND c.materialId=a.materialId </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
   </query>
 </root>

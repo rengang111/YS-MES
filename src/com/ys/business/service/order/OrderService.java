@@ -22,9 +22,11 @@ import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.business.db.dao.B_FollowDao;
+import com.ys.business.db.dao.B_OrderCancelDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.data.B_FollowData;
+import com.ys.business.db.data.B_OrderCancelData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
@@ -723,6 +725,39 @@ public class OrderService extends CommonService  {
 		return rtnModel;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public void updataOrderTotalPrice(
+			String piid,
+			float newtotal,
+			float oldtotal) throws Exception{
+	
+		B_OrderDao dao = new B_OrderDao();
+		
+		//取得更新前数据	
+		String where = " PIId ='" + piid + "' AND deleteFlag='0'";
+		List<B_OrderData> list = dao.Find(where);					
+		
+		if(null == list || ("").equals(list)){
+			return;
+		}
+			
+		B_OrderData dbData  = list.get(0);
+		//处理共通信息
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"OrderCancelUpdate",userInfo);
+		copyProperties(dbData,commData);
+		//获取页面数据
+		float fdbTtoal = stringToFloat(dbData.getTotalprice());
+		
+		float fnewTotalprice = fdbTtoal - oldtotal + newtotal;
+		
+		dbData.setTotalprice(floatToString(fnewTotalprice));
+		
+		dao.Store(dbData);
+			
+		
+	}
+	
 	/*
 	 * 订单基本信息更新处理
 	 */
@@ -846,6 +881,44 @@ public class OrderService extends CommonService  {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void updateOrderDetail(
+			String ysid,
+			String quantity) throws Exception{
+		
+		B_OrderDetailData dbData = null;
+		String where = " YSId ='" + ysid + "' AND deleteFlag='0' ";
+		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
+			
+		if(list == null || list.size() == 0){
+			return;
+		}else{
+			//处理共通信息
+			dbData = list.get(0);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderCancelUpdate",userInfo);
+			copyProperties(dbData,commData);
+			
+			float fcancel = stringToFloat(quantity);
+			float foldQty = stringToFloat(dbData.getQuantity());//销售数量
+			float flotTotal = stringToFloat(dbData.getTotalquantity());//销售数量+额外订单
+			float fprice = stringToFloat(dbData.getPrice());
+			float foldTotalPrice = stringToFloat(dbData.getTotalprice());
+			
+			float fnewQty = foldQty - fcancel;//新的销售数量
+			float fnewTotal = flotTotal -fcancel;//销售数量+额外订单
+			float fnewtotalPrice = fnewQty * fprice;//新的销售总计
+			
+			dbData.setQuantity(floatToString(fnewQty));
+			dbData.setTotalquantity(floatToString(fnewTotal));
+			dbData.setTotalprice(floatToString(fnewtotalPrice));
+			
+			new B_OrderDetailDao().Store(dbData);
+			
+			//更新整个PI的销售总价
+			updataOrderTotalPrice(dbData.getPiid(),fnewtotalPrice,foldTotalPrice);
+		}
+	}
 	
 	public Model delete(String delData){
 	
@@ -1253,7 +1326,11 @@ public class OrderService extends CommonService  {
 		
 		return HashMap;
 	}
-	
+	/**
+	 * 订单关注
+	 * @return
+	 * @throws Exception
+	 */
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> setOrderFollow() throws Exception {
 	
@@ -1306,5 +1383,120 @@ public class OrderService extends CommonService  {
 
 		HashMap.put("status", followStatus);
 		return HashMap;
+	}
+	
+	public void orderCancelAddInit(){
+		
+	}
+	
+	public void orderCancelInsertAndView() throws Exception{
+		String ysid = orderCancelInsert();
+		
+		getOrderCancelDetail(ysid);
+	}
+	
+	private String orderCancelInsert() throws Exception{
+		ts = new BaseTransaction();
+		String ysid="";
+		try {
+			
+			ts.begin();
+					
+			B_OrderCancelData reqData = reqModel.getOrderCancel();
+			
+			//插入订单退货
+			insertOrderCancel(reqData);
+			
+			//更新订单信息	
+			ysid = reqData.getYsid();
+			updateOrderDetail(
+					reqData.getYsid(),
+					reqData.getCancelquantity());
+
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			ts.rollback();
+		}
+		
+		return ysid;
+		
+	}
+	
+	private void insertOrderCancel(B_OrderCancelData reqData) throws Exception{
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"OrderCancelInsert",userInfo);
+		copyProperties(reqData,commData);
+		guid = BaseDAO.getGuId();
+		
+		reqData.setRecordid(guid);
+		reqData.setRemarks(replaceTextArea(reqData.getRemarks()));//字符转换
+		reqData.setCanceldate(CalendarUtil.fmtYmdDate());
+		
+		new B_OrderCancelDao().Create(reqData);
+	}
+	
+	public HashMap<String, Object> getContractDetail(String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null){			
+			iEnd = iStart + Integer.parseInt(length);		
+		}	
+		String key1 = getJsonData(data, "keyword1").trim().toUpperCase();
+		String key2 = getJsonData(data, "keyword2").trim().toUpperCase();
+				
+		BaseModel dataModel = new BaseModel();
+		BaseQuery baseQuery = new BaseQuery(request, dataModel);
+
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getContractList");
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		String having = "1=1";
+		sql = sql.replace("#", having);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}		
+		
+		modelMap.put("sEcho", sEcho);		
+		modelMap.put("recordsTotal", dataModel.getRecordCount());		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);
+		
+		return modelMap;
+	}
+	
+	private void getOrderCancelDetail(String ysid) throws Exception{
+		
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("orderCancelDetail");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", ysid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0){
+			model.addAttribute("order", dataModel.getYsViewData().get(0));	
+		}
 	}
 }

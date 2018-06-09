@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_CustomerData;
+import com.ys.business.db.data.B_OrderCancelData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.util.basequery.common.BaseModel;
@@ -27,6 +28,7 @@ public class OrderModel extends BaseModel {
 	private B_OrderData order = new B_OrderData();
 	private B_OrderDetailData orderDetail = new B_OrderDetailData();
 	private B_CustomerData customer = new B_CustomerData();
+	private B_OrderCancelData orderCancel = new B_OrderCancelData();
 	private List<B_OrderDetailData> orderDetailLines;
 	private String shortName;
 	private String fullName;
@@ -130,6 +132,12 @@ public class OrderModel extends BaseModel {
 		this.order = order;
 	}
 	
+	public B_OrderCancelData getOrderCancel() {
+		return this.orderCancel;
+	}
+	public void setOrderCancel(B_OrderCancelData orderCancel) {
+		this.orderCancel = orderCancel;
+	}
 	public B_OrderDetailData getOrderDetail() {
 		return this.orderDetail;
 	}

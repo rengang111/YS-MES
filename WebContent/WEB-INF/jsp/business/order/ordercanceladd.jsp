@@ -12,7 +12,7 @@ function materialAjax(sessionFlag) {
 		table.fnClearTable(false);
 		table.fnDestroy();
 	}
-	var url = "${ctx}/business/depotReturn?methodtype=getContractDetail&sessionFlag="+sessionFlag;
+	var url = "${ctx}/business/order?methodtype=search&sessionFlag="+sessionFlag;
 	var scrollHeight = "185px";//$(document).height() - 400; 
 	var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -58,19 +58,23 @@ function materialAjax(sessionFlag) {
 			"columns": [
 						{"data": null,"className" : 'td-center'},
 						{"data": "YSId"},
-						{"data": "contractId"},
-						{"data": "supplierId"},
 						{"data": "materialId"},
 						{"data": "materialName"},
-						{"data": "unit","className" : 'td-center'},
+						{"data": "quantity","className" : 'td-right'},
 						{"data": "quantityOnHand","className" : 'td-right'},
 					],
 			"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row){
 							return row["rownum"];
 	                    }},
+			    		{"targets":3,"render":function(data, type, row){
+			    			return jQuery.fixedWidth(data,64);		
+			    		}},
+			    		{"targets":4,"render":function(data, type, row){
+			    			return floatToCurrency(data);		
+			    		}},
 			    		{"targets":5,"render":function(data, type, row){
-			    			return jQuery.fixedWidth(data,32);		
+			    			return floatToCurrency(data);		
 			    		}}
 			    		
 		         ] 
@@ -82,9 +86,9 @@ function materialAjax(sessionFlag) {
 	$(document).ready(function() {
 		
 		//日期
-		$("#depotReturn\\.returndate").val(shortToday());		
+		$("#orderCancel\\.canceldate").val(shortToday());		
 		
-		$("#depotReturn\\.returndate").datepicker({
+		$("#orderCancel\\.canceldate").datepicker({
 				dateFormat:"yy-mm-dd",
 				changeYear: true,
 				changeMonth: true,
@@ -95,7 +99,7 @@ function materialAjax(sessionFlag) {
 		
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/depotReturn";
+					var url = "${ctx}/business/order?methodtype=";
 					location.href = url;
 		});
 
@@ -103,15 +107,15 @@ function materialAjax(sessionFlag) {
 		$("#insert").click(
 				function() {
 
-			var quantity = $('#depotReturn\\.returnquantity').val();
+			var quantity = $('#orderCancel\\.cancelquantity').val();
 			
 			quantity = currencyToFloat(quantity);
 			if(quantity<=0){
-				$().toastmessage('showWarningToast', "申请数量必须大于零。");
+				$().toastmessage('showWarningToast', "退货数量必须大于零。");
 				return;
 			}
-			$('#formModel').attr("action", "${ctx}/business/depotReturn?methodtype=materialRequisitionInsert");
-			$('#formModel').submit();
+			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=orderCancelAdd");
+			$('#orderForm').submit();
 		});	
 				
 		foucsInit();
@@ -130,10 +134,8 @@ function materialAjax(sessionFlag) {
 	            var d = $('#TMaterial').DataTable().row(this).data();				
 				//alert(d["materialId"])
 				$('#materialName').text(d["materialName"]);
-				$('#depotReturn\\.materialid').val(d["materialId"]);
-				$('#depotReturn\\.ysid').val(d["YSId"]);
-				$('#depotReturn\\.contractid').val(d["contractId"]);
-				$('#depotReturn\\.supplierid').val(d["supplierId"]);
+				$('#materialId').text(d["materialId"]);
+				$('#orderCancel\\.ysid').val(d["YSId"]);
 					            
 	        }
 			
@@ -144,10 +146,10 @@ function materialAjax(sessionFlag) {
 		//编辑模式
 		var editFlag = '${editFlag}';
 		if(editFlag == 'edit'){
-			$('#depotReturn\\.requisitionid').val('${depotReturn.requisitionId}');
-			$('#depotReturn\\.usedtype').val('${depotReturn.usedTypeId}');
-			$('#depotReturn\\.remarks').val(replaceTextarea('${depotReturn.remarks}'));
-			$('#materialName').text('${depotReturn.materialName}');
+			$('#orderCancel\\.requisitionid').val('${orderCancel.requisitionId}');
+			$('#orderCancel\\.usedtype').val('${orderCancel.usedTypeId}');
+			$('#orderCancel\\.remarks').val(replaceTextarea('${orderCancel.remarks}'));
+			$('#materialName').text('${orderCancel.materialName}');
 		}
 		
 	});
@@ -192,76 +194,57 @@ function materialAjax(sessionFlag) {
 		</form>			
 		<table style="width: 100%;" id="TMaterial" class="display">
 			<thead>						
-				<tr class="selected">
+				<tr>
 					<th style="width: 30px;">No</th>
 					<th style="width: 100px;">耀升编号</th>
-					<th style="width: 100px;">合同编号</th>
-					<th style="width: 100px;">供应商</th>
-					<th style="width: 200px;">物料编号</th>
-					<th>物料名称</th>
-					<th style="width: 40px;">单位</th>
-					<th style="width: 100px;">库存</th>
+					<th style="width: 200px;">产品编号</th>
+					<th>产品名称</th>
+					<th style="width: 100px;">订单数量</th>
+					<th style="width: 100px;">当前库存</th>
 				</tr>
 			</thead>
 		</table>
 	</div>
 			
-		
-			
-<form:form modelAttribute="formModel" method="POST"
-	id="formModel" name="formModel"  autocomplete="off">
+<form:form modelAttribute="orderForm" method="POST"
+	id="orderForm" name="orderForm"  autocomplete="off">
 	
-	<form:hidden path="depotReturn.recordid"  />
+	<form:hidden path="orderCancel.recordid"  />
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;width: 50%;float: right;margin-bottom: -35px;margin-top: 5px;">
 		<a class="DTTT_button" id="insert" >确认退货</a>
 		<a class="DTTT_button goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
-		<legend> 退货申请单</legend>
+		<legend> 订单退货</legend>
 		<table class="form" id="table_form">
-			<tr> 				
-				<td class="label" width="100px">申请单编号：</td>					
-				<td width="300px">
-					<form:input path="depotReturn.inspectionreturnid" class="required read-only " value="保存后自动生成" /></td>
-														
-				<td width="100px" class="label">申请日期：</td>
-				<td width="150px">
-					<form:input path="depotReturn.returndate" class="short read-only" /></td>
-				
-				<td width="100px" class="label">申请人：</td>
-				<td>
-					<form:input path="depotReturn.checkerid" class="short read-only" value="${userName }" /></td>
-			</tr>
-			<tr> 				
+		
+			<tr> 	
 				<td class="label" width="100px">耀升编号：</td>					
-				<td width="300px">
-					<form:input path="depotReturn.ysid" class="required read-only"  /></td>
+				<td width="100px">
+					<form:input path="orderCancel.ysid" class="required short read-only"  /></td>			
+				<td class="label" width="100px">产品编号：</td>					
+				<td width="100px"><span id="materialId"></span></td>
 														
-				<td width="100px" class="label">合同编号：</td>
-				<td width="150px">
-					<form:input path="depotReturn.contractid" class="read-only" /></td>
-				
-				<td width="100px" class="label">供应商：</td>
-				<td>
-					<form:input path="depotReturn.supplierid" class="short read-only"  /></td>
-			</tr>
-			<tr> 				
-				<td class="label" width="100px">物料编号：</td>					
-				<td width="200px"><form:input path="depotReturn.materialid" class="read-only middle"  /></td>
-														
-				<td width="100px" class="label">物料名称：</td>
+				<td width="100px" class="label">产品名称：</td>
 				<td colspan="3">&nbsp;<span id="materialName"></span></td>
 			</tr>
 			<tr> 				
 				<td class="label">退货数量：</td>
-				<td colspan="5"><form:input path="depotReturn.returnquantity" class="num "  /></td>
+				<td><form:input path="orderCancel.cancelquantity" class="num short"  /></td>
+														
+				<td width="100px" class="label">退货日期：</td>
+				<td width="100px">
+					<form:input path="orderCancel.canceldate" class="short read-only" /></td>
 				
+				<td width="100px" class="label">退货人：</td>
+				<td>
+					<form:input path="orderCancel.modifyperson" class="short read-only" value="${userName }" /></td>
 			</tr>
 			<tr> 				
-				<td class="label">申请事由：</td>					
+				<td class="label">退货事由：</td>					
 				<td colspan="5">
-					<form:textarea path="depotReturn.remarks" rows="2" cols="80" /></td>
+					<form:textarea path="orderCancel.remarks" rows="2" cols="80" /></td>
 				
 			</tr>										
 		</table>

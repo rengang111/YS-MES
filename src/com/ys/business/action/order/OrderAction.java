@@ -177,11 +177,11 @@ public class OrderAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "orderCancelAddInit":
-				dataMap = doSearchOrderList(Constants.FORM_ORDER,data);
-				printOutJsonObj(response, dataMap);
+				doOrderCancelAddInit();
+				rtnUrl = "/business/order/ordercanceladd";
 				break;
 			case "orderCancelAdd":
-				dataMap = doSearchOrderList(Constants.FORM_ORDER,data);
+				doOrderCancelAdd();
 				printOutJsonObj(response, dataMap);
 				break;
 				
@@ -646,6 +646,25 @@ public class OrderAction extends BaseAction {
 	public HashMap<String, Object> setOrderFollow() throws Exception {
 		
 		return orderService.setOrderFollow();		
+		
+	}
+	
+	private void doOrderCancelAddInit(){
+		
+		orderService.orderCancelAddInit();
+		
+		model.addAttribute("userName",userInfo.getUserName());
+	}
+
+
+	private void doOrderCancelAdd(){
+		
+		try {
+			orderService.orderCancelInsertAndView();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	

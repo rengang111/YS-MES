@@ -2088,4 +2088,23 @@ public class StorageService extends CommonService {
 		
 		return  listMap;
 	}
+	
+	public void doPrintReceiptLabel() throws Exception{
+
+		String receiptId = request.getParameter("receiptId");
+		String materialId = request.getParameter("materialId");
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("stockinAndContractById");
+		userDefinedSearchCase.put("materialId", materialId);
+		userDefinedSearchCase.put("receiptId", receiptId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0 ){
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));
+			//model.addAttribute("stockin",dataModel.getYsViewData());			
+		}	
+	}
 }

@@ -494,7 +494,7 @@ function showYS(YSId) {
 function doPrint(requisitionId) {
 	var makeType = $('#makeType').val();
 	var taskId = '${formModel.task.taskid }';
-	var YSId= '${formModel.task.collectysid }';
+	var YSId= '${order.YSId }';;
 	var url = '${ctx}/business/requisitionzz?methodtype=print';
 	url = url +'&YSId='+YSId;
 	url = url +'&makeType='+makeType;
