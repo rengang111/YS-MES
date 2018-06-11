@@ -182,7 +182,23 @@ public class OrderAction extends BaseAction {
 				break;
 			case "orderCancelAdd":
 				doOrderCancelAdd();
-				printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/order/ordercancelview";
+				break;
+			case "orderCancelView":
+				doOrderCancelView();
+				rtnUrl = "/business/order/ordercancelview";
+				break;
+			case "orderCancelEdit":
+				doOrderCancelEdit();
+				rtnUrl = "/business/order/ordercanceledit";
+				break;
+			case "orderCancelUpdate":
+				doOrderCancelUpdate();
+				rtnUrl = "/business/order/ordercancelview";
+				break;
+			case "orderCancelDelete":
+				doOrderCancelDelete();
+				rtnUrl = "/business/order/ordercancelmain";
 				break;
 				
 		}
@@ -661,6 +677,54 @@ public class OrderAction extends BaseAction {
 		
 		try {
 			orderService.orderCancelInsertAndView();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+
+	private void doOrderCancelUpdate(){
+		
+		try {
+			orderService.orderCancelUpdateAndView();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+
+	private void doOrderCancelView(){
+		
+		try {
+			orderService.orderCancelView();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+
+	private void doOrderCancelEdit(){
+		
+		try {
+			orderService.orderCancelEdit();
+			model.addAttribute("userName",userInfo.getUserName());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void doOrderCancelDelete(){
+		
+		try {
+			orderService.orderCancelDelete();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

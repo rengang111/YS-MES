@@ -1395,6 +1395,67 @@ public class OrderService extends CommonService  {
 		getOrderCancelDetail(ysid);
 	}
 	
+	
+	public void orderCancelUpdateAndView() throws Exception{
+		String ysid = orderCancelUpdate();
+		
+		getOrderCancelDetail(ysid);
+	}
+	
+	
+	public void orderCancelView() throws Exception{
+		String ysid = request.getParameter("YSId");
+		getOrderCancelDetail(ysid);
+	}
+	
+	public void orderCancelEdit() throws Exception{
+		String ysid = reqModel.getOrderCancel().getYsid();
+		getOrderCancelDetail(ysid);
+	}
+	
+	public void orderCancelDelete() throws Exception{
+
+		ts = new BaseTransaction();	
+		try {
+			
+			ts.begin();
+			
+			//删除退货
+			B_OrderCancelData reqData = reqModel.getOrderCancel();
+			String record = reqData.getRecordid();
+			
+			if(notEmpty(record)){
+
+				B_OrderCancelData db = (B_OrderCancelData) new B_OrderCancelDao()
+						.FindByPrimaryKey(reqData);
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"OrderCancelDelete",userInfo);
+				copyProperties(db,commData);
+				
+				new B_OrderCancelDao().Store(db);
+
+				
+				//还原订单信息
+				float quantity = stringToFloat(reqData.getCancelquantity()) * (-1);
+				updateOrderDetail(
+						reqData.getYsid(),
+						floatToString(quantity));
+			
+			}
+				
+			
+
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			ts.rollback();
+		}
+
+	}
+	
 	private String orderCancelInsert() throws Exception{
 		ts = new BaseTransaction();
 		String ysid="";
@@ -1425,20 +1486,120 @@ public class OrderService extends CommonService  {
 		
 	}
 	
-	private void insertOrderCancel(B_OrderCancelData reqData) throws Exception{
+	private String orderCancelUpdate() throws Exception{
+		ts = new BaseTransaction();
+		String ysid="";
+		try {
+			
+			ts.begin();
+					
+			B_OrderCancelData reqData = reqModel.getOrderCancel();
+			
+			//插入订单退货
+			String oldQty = updateOrderCancel(reqData);
+			
+			//更新订单信息	
+			ysid = reqData.getYsid();
+			float reqQty = stringToFloat(reqData.getCancelquantity());
+			float dbQty = stringToFloat(oldQty);
+			float newQty = reqQty - dbQty;
+			updateOrderDetail(
+					ysid,
+					floatToString(newQty));
+
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			ts.rollback();
+		}
 		
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"OrderCancelInsert",userInfo);
-		copyProperties(reqData,commData);
-		guid = BaseDAO.getGuId();
+		return ysid;
 		
-		reqData.setRecordid(guid);
-		reqData.setRemarks(replaceTextArea(reqData.getRemarks()));//字符转换
-		reqData.setCanceldate(CalendarUtil.fmtYmdDate());
-		
-		new B_OrderCancelDao().Create(reqData);
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void insertOrderCancel(B_OrderCancelData reqData) throws Exception{
+		
+		String ysid = reqData.getYsid();
+		String where = " YSId ='" + ysid + "' AND deleteFlag='0' ";
+		List<B_OrderCancelData> list = new B_OrderCancelDao().Find(where);
+		
+		if(list == null || list.size() == 0 ){
+
+			//新增处理
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"OrderCancelInsert",userInfo);
+			copyProperties(reqData,commData);
+			guid = BaseDAO.getGuId();
+			
+			reqData.setRecordid(guid);
+			reqData.setRemarks(replaceTextArea(reqData.getRemarks()));//字符转换
+			reqData.setCanceldate(CalendarUtil.fmtYmdDate());
+			
+			new B_OrderCancelDao().Create(reqData);
+		}else{
+			//更新处理
+			B_OrderCancelData db = list.get(0);
+			
+			float dbQty = stringToFloat(db.getCancelquantity());
+			float reqQty = stringToFloat(reqData.getCancelquantity());
+			String newQty = floatToString( dbQty + reqQty );
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderCancelUpdate",userInfo);
+			copyProperties(reqData,commData);
+			
+			db.setCancelquantity(newQty);
+			db.setRemarks(replaceTextArea(reqData.getRemarks()));//字符转换
+			db.setCanceldate(CalendarUtil.fmtYmdDate());
+			
+			new B_OrderCancelDao().Store(db);
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String updateOrderCancel(B_OrderCancelData reqData) throws Exception{
+		String rtnQty = "";
+		String ysid = reqData.getYsid();
+		String where = " YSId ='" + ysid + "' AND deleteFlag='0' ";
+		List<B_OrderCancelData> list = new B_OrderCancelDao().Find(where);
+		
+		if(list == null || list.size() == 0 ){
+
+			//新增处理
+			rtnQty = reqData.getCancelquantity();
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"OrderCancelInsert",userInfo);
+			copyProperties(reqData,commData);
+			guid = BaseDAO.getGuId();
+			
+			reqData.setRecordid(guid);
+			reqData.setRemarks(replaceTextArea(reqData.getRemarks()));//字符转换
+			reqData.setCanceldate(CalendarUtil.fmtYmdDate());
+			
+			new B_OrderCancelDao().Create(reqData);
+		}else{
+			//更新处理
+			B_OrderCancelData db = list.get(0);
+			rtnQty = db.getCancelquantity();
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderCancelUpdate",userInfo);
+			copyProperties(reqData,commData);
+			
+			db.setCancelquantity(reqData.getCancelquantity());
+			db.setRemarks(replaceTextArea(reqData.getRemarks()));//字符转换
+			db.setCanceldate(CalendarUtil.fmtYmdDate());
+			
+			new B_OrderCancelDao().Store(db);
+		}
+		
+		return rtnQty;
+		
+	}
 	public HashMap<String, Object> getContractDetail(String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();

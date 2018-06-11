@@ -34,12 +34,13 @@
 					}, {"className":"td-right"	
 					}, {"className":"td-left"
 					}, {
+					}, {"className":"td-center"
 					}
 				],
 			"columnDefs":[
     			{"targets":2,"render":function(data, type, row){
 	    			var name = data;				    			
-	    			name = jQuery.fixedWidth(name,35);				    			
+	    			name = jQuery.fixedWidth(name,32);				    			
 	    			return name;
     			}}           
         	] 
@@ -160,6 +161,25 @@
 		location.href = url;
 	}
 		
+	function doPrintLabel(){
+		var arrivalId = '${head.arrivalId}';
+		var contractId = '${contract.contractId}';
+		var url = '${ctx}/business/storage?methodtype=printReceiptLabel2';
+		url = url +'&contractId='+contractId;
+		url = url +'&arrivalId='+arrivalId;
+			
+		layer.open({
+			offset :[10,''],
+			type : 2,
+			title : false,
+			area : [ '500px', '200px' ], 
+			scrollbar : false,
+			title : false,
+			content : url,
+			cancel: function(index){			
+			}    
+		});	
+	}
 </script>
 
 </head>
@@ -231,6 +251,7 @@
 					<th style="width:65px">仓库位置</th>
 					<th style="width:55px">包装方式</th>
 					<th style="width:60px">库位编号</th>	
+					<th style="width:30px"></th>	
 				</tr>
 			</thead>
 			<tbody>
@@ -250,6 +271,9 @@
 								<form:options items="${packagingList}" 
 									itemValue="key" itemLabel="value"/></form:select></td>
 						<td><form:input path="stockList[${status.index}].areanumber" class="short" /></td>
+						<!-- 标贴 -->
+						<td>
+							<a href="###" onClick="doPrintLabel();return false;">标贴</a></td>
 						
 							<form:hidden path="stockList[${status.index}].price" value="${list.price }"/>
 					</tr>
@@ -265,9 +289,8 @@
 								depotid='040';//包装件								
 							}else if(materialId.substring(0,3) == 'B01'){
 								depotid='020';//自制件								
-							}							
-							var curren = floatToCurrency( contractQuantity - contractStorage );
-
+							}
+							
 							$('#stockList'+index+'\\.depotid').val(depotid);
 							$('#stockList'+index+'\\.quantity').val(contractQuantity);
 					</script>	

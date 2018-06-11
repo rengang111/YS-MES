@@ -575,6 +575,24 @@ public class StorageService extends CommonService {
 	
 	}
 	
+	/**
+	 * 标贴输出（待入库）
+	 * @throws Exception
+	 */
+	public void doPrintReceiptLabel2() throws Exception {
+		
+		String contractId = request.getParameter("contractId");
+		String arrivalId = request.getParameter("arrivalId");
+		
+		//合同信息
+		if(notEmpty(contractId)){
+			getContractDetail(contractId);			
+		}
+		//取得该到货编号下的物料信息
+		getReceivInspectionById(arrivalId);
+	
+	}
+	
 	public void receiptListPrint() throws Exception {
 
 		String contractIds = request.getParameter("contractIds");

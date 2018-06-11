@@ -633,6 +633,16 @@ public class CommonService extends BaseService {
 	/**
 	 * 字符串转float
 	 * @param s
+	 * 
+		Unicode 编码并不只是为某个字符简单定义了一个编码，而且还将其进行了归类。
+		/pP 其中的小写 p 是 property 的意思，表示 Unicode 属性，用于 Unicode 正表达式的前缀。
+		P：标点字符
+		L：字母；
+		M：标记符号（一般不会单独出现）；
+		Z：分隔符（比如空格、换行等）；
+		S：符号（比如数学符号、货币符号等）；
+		N：数字（比如阿拉伯数字、罗马数字等）；
+		C：其他字符
 	 * @return
 	 */
 	public static float stringToFloat(String s){
@@ -643,7 +653,7 @@ public class CommonService extends BaseService {
 			if(s == null || s.trim().equals(""))
 				return rtn;
 			
-			rtn = Float.parseFloat(s.replace(",",""));
+			rtn = Float.parseFloat(s.replaceAll("[\\pS\\pZ]", "").replaceAll(",", ""));
 			
 			if(Float.isInfinite(rtn) || Float.isNaN(rtn))
 				rtn = 0;

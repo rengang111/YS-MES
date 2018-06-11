@@ -75,7 +75,7 @@
 					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
 					{"data": "cancelQuantity", "defaultContent" : '0', "className" : 'td-right'},
 					{"data": "OriginalQuantity", "defaultContent" : '0', "className" : 'td-right'},
-					{"data": "storageDate", "className" : 'td-center'},//9
+					{"data": "cancelDate", "className" : 'td-center'},//9
 
 				],
 				"columnDefs":[
@@ -85,7 +85,7 @@
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["PIId"] + "')\">"+row["YSId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
 		    			return rtn;
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
@@ -168,9 +168,9 @@
 		ajax(orderNature,'','false',col_no);
 	}	
 		
-	function doShow(PIId) {
+	function doShow(YSId) {
 
-		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+		var url = '${ctx}/business/order?methodtype=orderCancelView&YSId=' + YSId;
 
 		location.href = url;
 	}
@@ -220,15 +220,16 @@
 
 	<div class="list">
 
-		<div id="TSupplier_wrapper" class="dataTables_wrapper">
+		<!--
 			<div id="DTTT_container2" style="height:40px;float: left">
 				<a  class="DTTT_button box" onclick="doSearchCustomer('010',9);" id="defutBtn"><span>待合同</span></a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer('020',9);"><span>待到料</span></a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer('030',9);"><span>待交货</span></a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer('040',7);"><span>已入库</span></a>&nbsp;&nbsp;
-			<!--	<a  class="DTTT_button box" onclick="doSearchCustomer2('010',9);"><span>常规订单</span></a> -->
+				<a  class="DTTT_button box" onclick="doSearchCustomer2('010',9);"><span>常规订单</span></a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer2('020',9);"><span>库存订单</span></a>
 			</div>
+			 -->
 			<div id="DTTT_container" style="height:40px;float: right">
 				<a  class="DTTT_button " onclick="doCreate(1);"><span>订单取消录入</span></a>
 			</div>
@@ -245,11 +246,10 @@
 						<th style="width: 60px;">发货数量</th>
 						<th style="width: 60px;">取消数量</th>
 						<th style="width: 60px;">初始订单</th>
-						<th style="width: 50px;">入库时间</th>
+						<th style="width: 50px;">退货日期</th>
 					</tr>
 				</thead>
 			</table>
-		</div>
 	</div>
 </div>
 </div>

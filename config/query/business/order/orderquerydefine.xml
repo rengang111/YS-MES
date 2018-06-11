@@ -581,7 +581,7 @@
       <f name="a.cancelDate" alias="" ctype="" />
       <f name="a.remarks" alias="" ctype="" />
       <f name="a.cancelStatus" alias="" ctype="" />
-      <f name="a.recordId" alias="cancelRecordId" ctype="" />
+      <f name="a.cancelRecordId" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <from>v_ordercancellist AS A  </from>

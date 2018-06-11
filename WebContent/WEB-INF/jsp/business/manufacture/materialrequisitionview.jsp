@@ -271,6 +271,9 @@ function uploadPhoto(tableId,tdTable, id) {
 				<td class="label">申请数量：</td>
 				<td>${requisition.quantity }</td>
 				
+				<td width="100px" class="label">耀升编号：</td>
+				<td width="150px">${requisition.YSId }</td>
+				
 				<td width="100px" class="label">领料用途：</td>
 				<td colspan="3">${requisition.usedType }</td>
 				

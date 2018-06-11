@@ -102,8 +102,25 @@ function materialAjax(sessionFlag) {
 				function() {
 
 			var quantity = $('#reqDetail\\.quantity').val();
+			var materialid = $('#reqDetail\\.materialid').val();
+			var ysid = $('#requisition\\.ysid').val();
 			quantity = myTrim(quantity);
 			quantity = currencyToFloat(quantity);
+			/*
+			if(ysid == '' || ysid == null){
+				if(confirm("未输入耀升编号，要关联吗？")){
+					return;
+				}
+			}
+			*/
+			if(ysid == '' || ysid == null){
+				$().toastmessage('showWarningToast', "请输入耀升编号。");
+				return;
+			}
+			if(materialid == '' || materialid == null){
+				$().toastmessage('showWarningToast', "请选择物料。");
+				return;
+			}
 			if(quantity<=0){
 				$().toastmessage('showWarningToast', "申请数量必须大于零,请重试。");
 				return;
@@ -136,7 +153,7 @@ function materialAjax(sessionFlag) {
 			
 		});
 	
-		materialAjax();
+		//materialAjax();
 		
 		//编辑模式
 		var editFlag = '${editFlag}';
@@ -147,6 +164,9 @@ function materialAjax(sessionFlag) {
 			$('#materialName').text('${requisition.materialName}');
 		}
 		
+
+		autocomplete();
+		
 	});
 
 
@@ -156,6 +176,9 @@ function materialAjax(sessionFlag) {
 		materialAjax("false");
 
 	}
+	
+	
+	
 	
 </script>
 
@@ -199,9 +222,7 @@ function materialAjax(sessionFlag) {
 			</thead>
 		</table>
 	</div>
-			
-		
-			
+					
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 	
@@ -217,24 +238,24 @@ function materialAjax(sessionFlag) {
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">申请单编号：</td>					
-				<td width="300px">
-					<form:input path="requisition.requisitionid" class="required read-only middle" value="保存后自动生成" /></td>
+				<td width="150px">
+					<form:input path="requisition.requisitionid" class="required read-only " value="保存后自动生成" /></td>
 														
 				<td width="100px" class="label">申请日期：</td>
 				<td width="150px">
 					<form:input path="requisition.requisitiondate" class="short read-only" /></td>
 				
 				<td width="100px" class="label">申请人：</td>
-				<td>
+				<td colspan="3">
 					<form:input path="requisition.requisitionuserid" class="short read-only" value="${userName }" /></td>
 			</tr>
 
 			<tr> 				
 				<td class="label" width="100px">物料编号：</td>					
-				<td width="200px"><form:input path="reqDetail.materialid" class="read-only middle" value="${requisition.materialId }" /></td>
+				<td><form:input path="reqDetail.materialid" class="read-only" value="${requisition.materialId }" /></td>
 														
 				<td width="100px" class="label">物料名称：</td>
-				<td colspan="3">&nbsp;<span id="materialName"></span></td>
+				<td colspan="5">&nbsp;<span id="materialName"></span></td>
 				
 			</tr>
 			<tr> 				
@@ -243,6 +264,9 @@ function materialAjax(sessionFlag) {
 				<td class="label">现有库存：</td>					
 				<td>&nbsp;<span class="font16"><span id="quantity"></span></span>（<span id="unit"></span>）</td>
 								
+				<td class="label">关联耀升编号：</td>
+				<td style="width: 150px;"><form:input path="requisition.ysid" class="short" value="${requisition.YSId }" /></td>
+				
 				<td class="label" width="100px">领料用途：</td>
 				<td>
 					<form:select path="requisition.usedtype" style="width: 100px;">
@@ -252,14 +276,56 @@ function materialAjax(sessionFlag) {
 			</tr>
 			<tr> 				
 				<td class="label">申请事由：</td>					
-				<td colspan="5">
+				<td colspan="7">
 					<form:textarea path="requisition.remarks" rows="3" cols="80" /></td>
 				
 			</tr>										
 		</table>
 </fieldset>
 </form:form>
+<script>
+function autocomplete(){
+	
+	$("#requisition\\.ysid").autocomplete({
+		minLength : 2,
+		autoFocus : false,
+		source : function(request, response) {
+			//alert(888);
+			$
+			.ajax({
+				type : "POST",
+				url : "${ctx}/business/order?methodtype=getYsidList",
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					//alert(777);
+					response($
+						.map(
+							data.data,
+							function(item) {
 
+								return {
+									label : item.YSId +" | "+ item.materialId +" | "+ item.materialName,
+									value : item.YSId,
+								}
+							}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					//alert(XMLHttpRequest.status);
+					//alert(XMLHttpRequest.readyState);
+					//alert(textStatus);
+					//alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
+	
+	});
+}
+</script>
 </div>
 </div>
 </body>

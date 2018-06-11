@@ -136,6 +136,7 @@ function materialAjax(sessionFlag) {
 				$('#materialName').text(d["materialName"]);
 				$('#materialId').text(d["materialId"]);
 				$('#orderCancel\\.ysid').val(d["YSId"]);
+				$('#orderCancel\\.originalquantity').val(d["quantity"]);
 					            
 	        }
 			
@@ -210,7 +211,7 @@ function materialAjax(sessionFlag) {
 	id="orderForm" name="orderForm"  autocomplete="off">
 	
 	<form:hidden path="orderCancel.recordid"  />
-	
+	<form:hidden path="orderCancel.originalquantity"  />
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;width: 50%;float: right;margin-bottom: -35px;margin-top: 5px;">
 		<a class="DTTT_button" id="insert" >确认退货</a>
 		<a class="DTTT_button goBack" id="goBack" >返回</a>

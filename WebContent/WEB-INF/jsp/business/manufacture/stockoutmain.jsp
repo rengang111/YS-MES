@@ -91,15 +91,16 @@
 		    		{"targets":4,"render":function(data, type, row){
 		    			var name = row["materialId"];
 		    			var type = row["requisitionTypeId"];
+		    			/*
 		    			if(name == null){
-		    				if(type == '050'){
+		    				if(type == '051'){
 			    				name="（单独领料）";
 		    				}else{
 			    				name="（自制件领料）";
 		    					
 		    				}
 		    			}
-		    			
+		    			*/
 		    			return name;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
