@@ -77,7 +77,7 @@
 				{"data": "arrivalQty", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "quantityInspection", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "contractStorage", "defaultContent" : '',"className" : 'td-right'},
-				{"data": "returnQty", "defaultContent" : '0',"className" : 'td-right'},
+				{"data": "stockinRtnQty", "defaultContent" : '0',"className" : 'td-right'},
 			
 			],
 			"columnDefs":[
@@ -111,6 +111,28 @@
 	    			var name = row["materialName"];				    			
 	    			if(name != null) name = jQuery.fixedWidth(name,35);
 	    			return name;
+	    		}},
+	    		{"targets":8,"render":function(data, type, row){
+	    			//累计收货
+	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
+	    			var returnQty = currencyToFloat(row["returnQty"]);				    			
+	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );		
+	    			return newQty;
+	    		}},
+	    		{"targets":9,"render":function(data, type, row){
+	    			//已检数
+	    			var arrivalQty = currencyToFloat(row["quantityInspection"]);	
+	    			var returnQty = currencyToFloat(row["returnQty"]);				    			
+	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );		
+	    			return newQty;
+	    		}},
+	    		{"targets":10,"render":function(data, type, row){
+	    			//入库数
+	    			var arrivalQty = currencyToFloat(row["contractStorage"]);	
+	    			var returnQty = currencyToFloat(row["returnQty"]);			    			
+	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );	
+	    			
+	    			return newQty;
 	    		}}
          	] 
 		});

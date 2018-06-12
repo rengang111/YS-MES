@@ -1181,6 +1181,16 @@ public class PurchaseOrderService extends CommonService {
 			contractId = contract.getContractid();
 			
 			//新增常规采购合同
+			//计算退税
+			float total = stringToFloat(contract.getTotal());//合同总金额
+			float taxRate = stringToFloat(contract.getTaxrate());//税率
+			float taxExcluded = total / (taxRate / 100 + 1 );//价=合同 / 税率
+			float taxes = total - taxExcluded;//税= 合同 - 价
+			
+			contract.setTaxes(floatToString(taxes));
+			contract.setTaxrate(floatToString(taxRate));
+			contract.setTaxexcluded(floatToString(taxExcluded));
+			
 			insertPurchaseOrder(contract);
 			
 			//合同明细:因为是从物料信息过来的,所以只有一条数据

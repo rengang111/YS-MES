@@ -103,6 +103,13 @@
 	    			name = jQuery.fixedWidth(name,32);				    			
 	    			return name;
 	    		}},
+	    		{"targets":9,"render":function(data, type, row){
+	    			//累计收货
+	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
+	    			var returnQty = currencyToFloat(row["sumReturnQty"]);	    			
+	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );		
+	    			return newQty;
+	    		}},
 	    		{"targets":11,"render":function(data, type, row){
 	    			if(data ==''){
 	    				return '（未到货）';   				

@@ -301,8 +301,9 @@
       <f name="IFNULL(b.sumReturnQty,'0')" alias="returnQty" ctype="" />
       <f name="IFNULL(c.quantityInspection,'0')" alias="quantityInspection" ctype="" />
       <f name="IFNULL(d.recodeSum,'0')" alias="arrivalQty" ctype="" />
+      <f name="IFNULL(e.stockinRtnQty,'0')" alias="stockinRtnQty" ctype="" />
     </select>
-    <from>v_purchaseorderdetail3 a  left join v_inspectionreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId left join v_receiveinspectiongroup c ON c.contractId=a.contractId AND c.materialId=a.materialId LEFT JOIN v_arrivalquantitygroup d ON d.contractId=a.contractId AND d.materialId = a.materialId WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from>
+    <from>v_purchaseorderdetail3 a  left join v_inspectionreturngroupbytype e on a.YSId=e.YSId and a.materialId=e.materialId left join v_inspectionreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId left join v_receiveinspectiongroup c ON c.contractId=a.contractId AND c.materialId=a.materialId LEFT JOIN v_arrivalquantitygroup d ON d.contractId=a.contractId AND d.materialId = a.materialId WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from>
     <orderby>A.deliveryDate,a.materialId</orderby>
     <groupby></groupby>
     <having>#</having>

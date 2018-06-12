@@ -56,7 +56,7 @@
 			var foSumArra = currencyToFloat($oSumArra.html());
 			var fRecorde  = currencyToFloat($oRecorde.html());	
 			
-			var surplus = fquantity - foSumArra + fRecorde;
+			var surplus = fquantity - foSumArra;
 			
 			if( fArrival > surplus ){
 
@@ -277,7 +277,7 @@
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
 				var freturn  = currencyToFloat(vreturn);
-				var fsurplus = floatToCurrency( fcontract - freceive + freturn );
+				var fsurplus = floatToCurrency( fcontract - freceive );
 				
 
 				if(fsurplus > "0"){
@@ -303,7 +303,7 @@
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
 				var freturn  = currencyToFloat(vreturn);
-				var fsurplus = floatToCurrency( fcontract - freceive + freturn );
+				var fsurplus = floatToCurrency( fcontract - freceive );
 
 				if(varrival > "0"){
 					$(this).find("td").eq(8).find("span").text(fsurplus);//剩余数
@@ -412,18 +412,21 @@
 					<td><span>${list.unit }</span></td>
 					<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
 					<td><span>${list.quantity }</span></td>
-					<td><span>${list.sumArrivalQty }</span></td>
-					<td><span>${list.sumReturnQty }</span></td>
+					<td><span id="arrival${ status.index}"></span></td>
+					<td><span>${list.stockinRtnQty }</span></td>
 					<td><span id="surplus${ status.index}"></span></td>
 				</tr>
 				<script type="text/javascript">
-						var index = '${status.index}';
-						var quantity = currencyToFloat('${list.quantity}');
-						var sumArrivalQty = currencyToFloat('${list.sumArrivalQty}');
-						var sumReturn = currencyToFloat('${list.sumReturnQty}');
-						var surplus = quantity - sumArrivalQty + sumReturn;
+					var index = '${status.index}';
+					var quantity = currencyToFloat('${list.quantity}');
+					var sumArrivalQty = currencyToFloat('${list.sumArrivalQty}');
+					var sumReturn = currencyToFloat('${list.sumReturnQty}'); 			
+	    			var arrival = setPurchaseQuantity(sumReturn,sumArrivalQty );
+					var surplus = quantity - currencyToFloat(arrival);
+					
+					$('#arrival'+index).html(floatToCurrency( arrival ))
+					$('#surplus'+index).html(floatToCurrency( surplus ))
 						
-						$('#surplus'+index).html(floatToCurrency( surplus ))
 				</script>
 		
 		</c:forEach>

@@ -289,7 +289,8 @@ public class RequisitionZZService extends CommonService {
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
 		String ysid = request.getParameter("YSId");	
-	
+
+		/*
 		//直接从原材料需求表中取值
 		modelMap = getRawRequirement(ysid,makeType);
 		
@@ -298,6 +299,10 @@ public class RequisitionZZService extends CommonService {
 		if (dbData.size() > 0) {
 			return modelMap;
 		}
+		*/
+
+		//删除现有原材料需求表
+		deleteRawRequirement(ysid);
 		
 		//原材料需求表未找到时，从采购方案重新组合，并插入原材料需求表
 		ArrayList<HashMap<String, String>> list = getRawMaterialList(ysid);
@@ -368,6 +373,17 @@ public class RequisitionZZService extends CommonService {
 		raw.setRecordid(guid);
 		
 		new B_RawRequirementDao().Create(raw);
+		
+	}
+	
+	private void deleteRawRequirement(String YSId) throws Exception{
+		
+		String where = " YSId ='" + YSId + "' ";
+		try{
+			new B_RawRequirementDao().RemoveByWhere(where);			
+		}catch(Exception e){
+			
+		}
 		
 	}
 	
