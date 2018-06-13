@@ -63,7 +63,7 @@ function materialAjax(sessionFlag) {
 						{"data": "materialId"},
 						{"data": "materialName"},
 						{"data": "unit","className" : 'td-center'},
-						{"data": "quantityOnHand","className" : 'td-right'},
+						{"data": "quantity","className" : 'td-right'},
 					],
 			"columnDefs":[
 			    		{"targets":0,"render":function(data, type, row){
@@ -104,12 +104,20 @@ function materialAjax(sessionFlag) {
 				function() {
 
 			var quantity = $('#detail\\.quantity').val();
-			
+			var contractQty = $('#contractQty').val();
 			quantity = currencyToFloat(quantity);
+			contractQty = currencyToFloat(contractQty);
+			
 			if(quantity<=0){
 				$().toastmessage('showWarningToast', "取消数量必须大于零。");
 				return;
 			}
+
+			if(contractQty < quantity){
+				$().toastmessage('showWarningToast', "取消数量不能大于合同数。");
+				return;
+			}
+			
 			$('#formModel').attr("action", "${ctx}/business/depotReturn?methodtype=materialRequisitionInsert");
 			$('#formModel').submit();
 		});	
@@ -129,6 +137,8 @@ function materialAjax(sessionFlag) {
 	            
 	            var d = $('#TMaterial').DataTable().row(this).data();				
 				//alert(d["materialId"])
+				
+				$('#contractQty').val(d["quantity"]);
 				$('#materialName').text(d["materialName"]);
 				$('#detail\\.materialid').val(d["materialId"]);
 				$('#stockin\\.ysid').val(d["YSId"]);
@@ -189,10 +199,10 @@ function materialAjax(sessionFlag) {
 					<th style="width: 100px;">耀升编号</th>
 					<th style="width: 100px;">合同编号</th>
 					<th style="width: 100px;">供应商</th>
-					<th style="width: 200px;">物料编号</th>
+					<th style="width: 150px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 40px;">单位</th>
-					<th style="width: 100px;">库存</th>
+					<th style="width: 100px;">合同数量</th>
 				</tr>
 			</thead>
 		</table>
@@ -204,6 +214,7 @@ function materialAjax(sessionFlag) {
 	id="formModel" name="formModel"  autocomplete="off">
 	
 	<form:hidden path="stockin.recordid"  />
+	<input type="hidden" id="contractQty" value="0">
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;width: 50%;float: right;margin-bottom: -35px;margin-top: 5px;">
 		<a class="DTTT_button" id="insert" >确认退货</a>
