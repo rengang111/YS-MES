@@ -156,7 +156,7 @@ public class DepotReturnAction extends BaseAction {
 
 			
 		try {
-			service.insert();
+			service.insertAndView();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

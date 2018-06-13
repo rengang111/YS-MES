@@ -8,26 +8,33 @@
 <script type="text/javascript">
 	
 	$(document).ready(function() {
-				
-		$("#depotReturn\\.remarks").val(replaceTextarea('${depot.remarks }'));
+		
+		var quantity = '${depot.quantity }';
+		quantity = currencyToFloat(quantity) * (-1);//转换为正数
+		quantity = floatToCurrency(quantity);
+		$('#oldQuantity').val(quantity);
+		$('#detail\\.quantity').val(quantity);
+		
+		$("#stockin\\.remarks").val(replaceTextarea('${depot.remarks }'));
 
 		$("#doUpdate").click(function() {
 		
-			var url =  "${ctx}/business/depotReturn?methodtype=depotRentunUpdate";
+			var oldQuantity = $('#oldQuantity').val();
+			
+			var quantity = $('#detail\\.quantity').val();			
+			quantity = currencyToFloat(quantity);
+			if(quantity<=0){
+				$().toastmessage('showWarningToast', "取消数量必须大于零。");
+				return;
+			}
+			var url =  "${ctx}/business/depotReturn?methodtype=depotRentunUpdate"+"&oldQuantity="+oldQuantity;
+			
 
 			$('#formModel').attr("action", url);
 			$('#formModel').submit();
 		});
 
-		$("#doDelete").click(function() {
-			if(confirm("删除后不能恢复，确定要删除吗")){
-				var recordid = $('#depotReturn\\.recordid').val();
-				var url = '${ctx}/business/depotReturn?methodtype=depotRentunDelete&recordid='+recordid;
-				location.href = url;
-				
-			}	
-		});
-		
+			
 
 		$("#goBack").click(function() {
 			var url = '${ctx}/business/depotReturn';
@@ -47,10 +54,10 @@
 	<form:form modelAttribute="formModel" method="POST"
 		id="formModel" name="formModel"  autocomplete="off">
 			
-		<form:hidden path="depotReturn.recordid" value="${depot.recordId }"/>
-		<form:hidden path="depotReturn.materialid" value="${depot.materialId }"/>
-		
-		<fieldset>
+		<form:hidden path="stockin.receiptid" value="${depot.receiptId }"/>
+		<form:hidden path="detail.materialid" value="${depot.materialId }"/>
+		<input type="hidden" id="oldQuantity" value="${depot.quantity }" >
+ 		<fieldset>
 			<legend> 采购合同</legend>
 			<table class="form" id="table_form">
 				<tr id="">		
@@ -64,8 +71,8 @@
 					<td>（${ depot.supplierId }）${ depot.supplierName }</td>						
 				</tr>
 				<tr id="">	
-					<td class="label" width="100px"><label>退货数量：</label></td>
-					<td><form:input path="depotReturn.returnquantity" class="num" value="${depot.returnQuantity }" /> </td>
+					<td class="label" width="100px"><label>取消数量：</label></td>
+					<td><form:input path="detail.quantity" class="num" value="${depot.quantity }" /> </td>
 						
 					<td class="label" width="100px"><label>物料编号：</label></td>					
 					<td width="150px">${depot.materialId }</td>
@@ -74,15 +81,15 @@
 					<td>${ depot.materialName }</td>						
 				</tr>
 				<tr>
-					<td class="label">退货日期：</td>
+					<td class="label">取消日期：</td>
 					<td>${ depot.returnDate }</td>
-					<td class="label">申请人：</td>
+					<td class="label">操作员：</td>
 					<td colspan="3">${ depot.LoginName }</td>
 				</tr>
 				<tr style="height:100px">
-					<td class="label" width="100px">退货事由：</td>
+					<td class="label" width="100px">取消事由：</td>
 					<td colspan="5">
-						<form:textarea path="depotReturn.remarks" rows="5" cols="80" value="${depot.remarks }" /></td>
+						<form:textarea path="stockin.remarks" rows="5" cols="80" /></td>
 				</tr>									
 			</table>
 			

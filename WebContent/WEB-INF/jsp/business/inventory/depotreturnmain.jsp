@@ -70,8 +70,8 @@
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "materialName", "defaultContent" : ''},//3
 					{"data": "supplierId", "defaultContent" : ''},
-					{"data": "returnQuantity", "defaultContent" : '0', "className" : 'td-right'},
-					{"data": "returnDate", "className" : 'td-center'},//7
+					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
+					{"data": "checkInDate", "className" : 'td-center'},//7
 					
 				],
 				"columnDefs":[
@@ -80,7 +80,7 @@
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["inspectionReturnId"] + "')\">"+row["YSId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["receiptId"] + "')\">"+row["YSId"]+"</a>";
 		    			return rtn;
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
@@ -92,7 +92,7 @@
 		    			return floatToCurrency(data);
 		    		}},
 		    		{
-		    			"orderable":false,"targets":[0]
+		    			"orderable":false,"targets":[]
 		    		},
 		    		{
 						"visible" : false,
@@ -195,8 +195,8 @@
 					<th style="width: 150px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 70px;">供应商</th>
-					<th style="width: 80px;">退货数量</th>
-					<th style="width: 70px;">退货日期</th>
+					<th style="width: 80px;">取消数量</th>
+					<th style="width: 70px;">取消日期</th>
 				</tr>
 			</thead>
 		</table>

@@ -11,16 +11,16 @@
 
 		$("#doEdit").click(function() {
 		
-			var depotId = $('#depotReturn\\.inspectionreturnid').val();
-			var url = "${ctx}/business/depotReturn?methodtype=depotRentunEdit&inspectionReturnId="+depotId;
+			var receiptId = $('#stockin\\.receiptid').val();
+			var url = "${ctx}/business/depotReturn?methodtype=depotRentunEdit&receiptId="+receiptId;
 
 			location.href = url;	
 		});
 
 		$("#doDelete").click(function() {
 			if(confirm("删除后不能恢复，确定要删除吗")){
-				var recordid = $('#depotReturn\\.recordid').val();
-				var url = '${ctx}/business/depotReturn?methodtype=depotRentunDelete&recordid='+recordid;
+				var receiptId = $('#stockin\\.receiptid').val();
+				var url = '${ctx}/business/depotReturn?methodtype=depotRentunDelete&receiptId='+receiptId;
 				location.href = url;
 				
 			}	
@@ -45,8 +45,7 @@
 	<form:form modelAttribute="formModel" method="POST"
 		id="formModel" name="formModel"  autocomplete="off">
 			
-		<form:hidden path="depotReturn.recordid" value="${depot.recordId }"/>
-		<form:hidden path="depotReturn.inspectionreturnid" value="${depot.inspectionReturnId }"/>
+		<form:hidden path="stockin.receiptid" value="${depot.receiptId }"/>
 		
 		<fieldset>
 			<legend> 采购合同</legend>
@@ -62,8 +61,8 @@
 					<td>（${ depot.supplierId }）${ depot.supplierName }</td>						
 				</tr>
 				<tr id="">	
-					<td class="label" width="100px"><label>退货数量：</label></td>
-					<td>${ depot.returnQuantity } </td>
+					<td class="label" width="100px"><label>取消数量：</label></td>
+					<td>${ depot.quantity } </td>
 						
 					<td class="label" width="100px"><label>物料编号：</label></td>					
 					<td width="150px">${depot.materialId }</td>
@@ -72,13 +71,13 @@
 					<td>${ depot.materialName }</td>						
 				</tr>
 				<tr>
-					<td class="label">退货日期：</td>
-					<td>${ depot.returnDate }</td>
-					<td class="label">申请人：</td>
+					<td class="label">取消日期：</td>
+					<td>${ depot.checkInDate }</td>
+					<td class="label">操作员：</td>
 					<td colspan="3">${ depot.LoginName }</td>
 				</tr>
 				<tr style="height:100px">
-					<td class="label" width="100px">退货事由：</td>
+					<td class="label" width="100px">取消事由：</td>
 					<td colspan="5">${ depot.remarks }</td>
 				</tr>									
 			</table>

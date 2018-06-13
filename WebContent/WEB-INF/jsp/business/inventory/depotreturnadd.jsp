@@ -82,9 +82,9 @@ function materialAjax(sessionFlag) {
 	$(document).ready(function() {
 		
 		//日期
-		$("#depotReturn\\.returndate").val(shortToday());		
+		$("#stockin\\.checkindate").val(shortToday());		
 		
-		$("#depotReturn\\.returndate").datepicker({
+		$("#stockin\\.checkindate").datepicker({
 				dateFormat:"yy-mm-dd",
 				changeYear: true,
 				changeMonth: true,
@@ -103,11 +103,11 @@ function materialAjax(sessionFlag) {
 		$("#insert").click(
 				function() {
 
-			var quantity = $('#depotReturn\\.returnquantity').val();
+			var quantity = $('#detail\\.quantity').val();
 			
 			quantity = currencyToFloat(quantity);
 			if(quantity<=0){
-				$().toastmessage('showWarningToast', "申请数量必须大于零。");
+				$().toastmessage('showWarningToast', "取消数量必须大于零。");
 				return;
 			}
 			$('#formModel').attr("action", "${ctx}/business/depotReturn?methodtype=materialRequisitionInsert");
@@ -130,10 +130,10 @@ function materialAjax(sessionFlag) {
 	            var d = $('#TMaterial').DataTable().row(this).data();				
 				//alert(d["materialId"])
 				$('#materialName').text(d["materialName"]);
-				$('#depotReturn\\.materialid').val(d["materialId"]);
-				$('#depotReturn\\.ysid').val(d["YSId"]);
-				$('#depotReturn\\.contractid').val(d["contractId"]);
-				$('#depotReturn\\.supplierid').val(d["supplierId"]);
+				$('#detail\\.materialid').val(d["materialId"]);
+				$('#stockin\\.ysid').val(d["YSId"]);
+				$('#stockin\\.contractid').val(d["contractId"]);
+				$('#stockin\\.supplierid').val(d["supplierId"]);
 					            
 	        }
 			
@@ -141,14 +141,6 @@ function materialAjax(sessionFlag) {
 	
 		//materialAjax();
 		
-		//编辑模式
-		var editFlag = '${editFlag}';
-		if(editFlag == 'edit'){
-			$('#depotReturn\\.requisitionid').val('${depotReturn.requisitionId}');
-			$('#depotReturn\\.usedtype').val('${depotReturn.usedTypeId}');
-			$('#depotReturn\\.remarks').val(replaceTextarea('${depotReturn.remarks}'));
-			$('#materialName').text('${depotReturn.materialName}');
-		}
 		
 	});
 
@@ -211,57 +203,57 @@ function materialAjax(sessionFlag) {
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 	
-	<form:hidden path="depotReturn.recordid"  />
+	<form:hidden path="stockin.recordid"  />
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;width: 50%;float: right;margin-bottom: -35px;margin-top: 5px;">
 		<a class="DTTT_button" id="insert" >确认退货</a>
 		<a class="DTTT_button goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
-		<legend> 退货申请单</legend>
+		<legend> 入库退货</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">申请单编号：</td>					
 				<td width="300px">
-					<form:input path="depotReturn.inspectionreturnid" class="required read-only " value="保存后自动生成" /></td>
+					<form:input path="stockin.receiptid" class="required read-only " value="保存后自动生成" /></td>
 														
-				<td width="100px" class="label">申请日期：</td>
+				<td width="100px" class="label">取消日期：</td>
 				<td width="150px">
-					<form:input path="depotReturn.returndate" class="short read-only" /></td>
+					<form:input path="stockin.checkindate" class="short read-only" /></td>
 				
-				<td width="100px" class="label">申请人：</td>
+				<td width="100px" class="label">处理人：</td>
 				<td>
-					<form:input path="depotReturn.checkerid" class="short read-only" value="${userName }" /></td>
+					<form:input path="stockin.keepuser" class="short read-only" value="${userName }" /></td>
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">耀升编号：</td>					
 				<td width="300px">
-					<form:input path="depotReturn.ysid" class="required read-only"  /></td>
+					<form:input path="stockin.ysid" class="required read-only"  /></td>
 														
 				<td width="100px" class="label">合同编号：</td>
 				<td width="150px">
-					<form:input path="depotReturn.contractid" class="read-only" /></td>
+					<form:input path="stockin.contractid" class="read-only" /></td>
 				
 				<td width="100px" class="label">供应商：</td>
 				<td>
-					<form:input path="depotReturn.supplierid" class="short read-only"  /></td>
+					<form:input path="stockin.supplierid" class="short read-only"  /></td>
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">物料编号：</td>					
-				<td width="200px"><form:input path="depotReturn.materialid" class="read-only middle"  /></td>
+				<td width="200px"><form:input path="detail.materialid" class="read-only middle"  /></td>
 														
 				<td width="100px" class="label">物料名称：</td>
 				<td colspan="3">&nbsp;<span id="materialName"></span></td>
 			</tr>
 			<tr> 				
-				<td class="label">退货数量：</td>
-				<td colspan="5"><form:input path="depotReturn.returnquantity" class="num "  /></td>
+				<td class="label">取消数量：</td>
+				<td colspan="5"><form:input path="detail.quantity" class="num "  /></td>
 				
 			</tr>
 			<tr> 				
-				<td class="label">申请事由：</td>					
+				<td class="label">取消事由：</td>					
 				<td colspan="5">
-					<form:textarea path="depotReturn.remarks" rows="2" cols="80" /></td>
+					<form:textarea path="stockin.remarks" rows="2" cols="80" /></td>
 				
 			</tr>										
 		</table>
