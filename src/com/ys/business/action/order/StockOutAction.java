@@ -167,7 +167,11 @@ public class StockOutAction extends BaseAction {
 				break;
 			case "productStockoutAdd"://成品出库保存
 				productStockoutAdd();
-				rtnUrl = "/business/inventory/productstockoutview";
+				rtnUrl = "/business/inventory/productstockoutadd";
+				break;
+			case "productStockoutDelete"://成品出库删除
+				productStockoutDelete();
+				rtnUrl = "/business/inventory/productstockoutadd";
 				break;
 			case "getProductStockoutDetail"://成品出库记录
 				dataMap = getProductStockoutDetail();
@@ -481,6 +485,18 @@ public class StockOutAction extends BaseAction {
 		
 		try {
 			service.insertProductAndReturn();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void productStockoutDelete() {		
+		
+		try {
+			service.productStockoutDelete();
+			model.addAttribute("userName",userInfo.getUserName());
 		}
 		catch(Exception e) {
 			e.printStackTrace();

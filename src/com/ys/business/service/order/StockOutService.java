@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
@@ -255,6 +256,8 @@ public class StockOutService extends CommonService {
 		String YSId = insertProductStorage();
 
 		getOrderDetail(YSId);
+		//取得入库信息
+		getStockinDetail(YSId,"");//入库明细
 
 	}
 	
@@ -696,6 +699,7 @@ public class StockOutService extends CommonService {
 		baseQuery.getYsFullData();
 
 		modelMap.put("data", dataModel.getYsViewData());
+		model.addAttribute("detail",dataModel.getYsViewData().get(0));
 		
 		return modelMap;
 		
@@ -792,8 +796,12 @@ public class StockOutService extends CommonService {
 			return ;
 		
 		for(B_StockOutDetailData dt:list){
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"PurchaseStockInUpdate",userInfo);
+			copyProperties(dt,commData);
 			
-			dao.Remove(dt);
+			dao.Store(dt);
 
 			//更新库存(恢复)
 			String mateId = dt.getMaterialid();
@@ -1019,7 +1027,6 @@ public class StockOutService extends CommonService {
 
 	public void productStockoutAddInit() throws Exception {
 		String YSId = request.getParameter("YSId");
-		//String stockOutId = request.getParameter("stockOutId");
 		
 		//取得订单信息
 		getOrderDetail(YSId);
@@ -1028,6 +1035,63 @@ public class StockOutService extends CommonService {
 
 	
 	}
+	
+
+	public void productStockoutDelete() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		String stockOutId = request.getParameter("stockOutId");
+
+		//删除成品入库数据
+		deleteStockoutData(stockOutId);
+
+		//取得订单信息
+		getOrderDetail(YSId);
+		//取得入库信息
+		getStockinDetail(YSId,"");//入库明细
+
+	
+	}
+	private void deleteStockoutData(String stockOutId) throws Exception{
+		
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			String where = " stockOutId='" + stockOutId +"' AND deleteFlag='0'";
+			
+			deleteStockout(where);
+			
+			deleteStockoutDetail(stockOutId);
+			
+			ts.commit();
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			ts.rollback();
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	private void deleteStockout(String where) throws Exception{
+		
+		Vector list = new B_StockOutDao().Find(where);
+		
+		if(list == null || list.size() == 0)
+			return;
+		
+		B_StockOutData db = (B_StockOutData) list.get(0);
+
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"删除成品出库",userInfo);
+		copyProperties(db,commData);
+		
+		new B_StockOutDao().Store(db);
+	}
+
+	
 	
 	public HashMap<String, Object> getProductStockoutDetail() throws Exception {
 		

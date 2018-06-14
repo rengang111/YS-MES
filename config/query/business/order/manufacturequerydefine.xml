@@ -622,17 +622,20 @@
     </where>
   <select>
       <f name="a.recordId" alias="" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
       <f name="a.stockOutId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
-      <f name="b.materialName" alias="" ctype="" /> 
+      <f name="a.materialName" alias="" ctype="" /> 
       <f name="a.quantity" alias="" ctype="" />
       <f name="a.price" alias="" ctype="" />
       <f name="a.totalPrice" alias="" ctype="" />
-      <f name="a.deleteFlag" alias="" ctype="" />
+      <f name="a.checkOutDate" alias="" ctype="" />
+      <f name="a.keepUser" alias="" ctype="" />
+      <f name="b.loginName" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>b_stockoutdetail a LEFT JOIN b_material b ON a.materialId=b.materialId where a.deleteFlag='0'</from>
+    <from>v_stockout a LEFT JOIN s_user b ON a.keepUser=b.userId AND b.deleteFlag='0'</from>
     <orderby>a.materialId </orderby>
     <groupby></groupby>
     <having></having>
