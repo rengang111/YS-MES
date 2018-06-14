@@ -124,6 +124,25 @@
 	    				rtn = "***";				    			
 	    			return rtn;
 	    		}},
+	    		{"targets":8,"render":function(data, type, row){
+	    			
+	    			var reverse = row["reverse"];
+	    			var rtn = floatToCurrency(data);
+	    			if(reverse == '1'){
+	    				var txt = '<span style="color: red;font-weight: bolder;">'
+	    				rtn = txt + floatToCurrency(currencyToFloat(data) * (-1)) +'</span>';
+	    			}				    			
+	    			return rtn;
+	    		}},
+	    		{"targets":9,"render":function(data, type, row){
+	    			
+	    			var reverse = row["reverse"];
+	    			var rtn = floatToCurrency(data);
+	    			if(reverse == '1'){	    				
+	    				rtn = '(退货)';
+	    			}				    			
+	    			return rtn;
+	    		}},
 	    		{
 					"visible" : false,
 					"targets" : [4]

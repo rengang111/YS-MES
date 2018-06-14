@@ -106,9 +106,10 @@
 	    		{"targets":9,"render":function(data, type, row){
 	    			//累计收货
 	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
-	    			var returnQty = currencyToFloat(row["sumReturnQty"]);	    			
-	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );		
-	    			return newQty;
+	    			var returnQty = currencyToFloat(row["stockinRtnQty"]);	    			
+	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );	
+	    			
+	    			return floatToCurrency(newQty);
 	    		}},
 	    		{"targets":11,"render":function(data, type, row){
 	    			if(data ==''){

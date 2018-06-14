@@ -254,15 +254,15 @@ public class DepotReturnService extends CommonService {
 			//入库记录明细
 			receiptid = reqData.getReceiptid();	
 			float freqQty = stringToFloat(detail.getQuantity());//更新后
-			float dbQty = freqQty * (-1) ;
+			//float dbQty = freqQty * (-1) ;
 			detail.setReceiptid(receiptid);
-			detail.setQuantity(floatToString(dbQty));//db以负数形式存储，便于财务计算
+			detail.setQuantity(floatToString(freqQty));//便于财务计算
 			updatePurchaseStockInDetail(detail);
 
 			//更新库存
 			String materialId = detail.getMaterialid();
 			float foldQty = stringToFloat(oldQty);//更新前
-			String  newQty = floatToString( foldQty - freqQty );//前后差值
+			String newQty = floatToString( foldQty - freqQty );//前后差值
 			updateMaterial(materialId,newQty,"0");
 			
 			ts.commit();
@@ -360,7 +360,7 @@ public class DepotReturnService extends CommonService {
 			detail.setDepotid(dbDetail.getDepotid());
 			detail.setPrice(price);
 			
-			float fquantity = stringToFloat( detail.getQuantity() ) * (-1);//冲账处理
+			float fquantity = stringToFloat(detail.getQuantity());//冲账处理
 			String quantity = floatToString(fquantity);
 			
 			detail.setQuantity(quantity);
@@ -573,7 +573,7 @@ public class DepotReturnService extends CommonService {
 	}
 
 	
-	//更新当前库存:增加“当前库存”（入库数为负数，所以，实际上是减少库存）
+	//更新当前库存:减少“当前库存”
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
 			String materialId,
@@ -596,8 +596,8 @@ public class DepotReturnService extends CommonService {
 		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());
-		//考虑到退货的更新处理，库存=库存+本次退货+修改前的退货数（还原）
-		float iNewQuantiy = iQuantity + stringToFloat(newQuantity) + stringToFloat(oldQuantity);		
+		//退货的更新处理，库存=库存 - 本次退货 + 修改前的退货数（还原）
+		float iNewQuantiy = iQuantity - stringToFloat(newQuantity) + stringToFloat(oldQuantity);		
 		//待入库
 		float waitstockin = stringToFloat(data.getWaitstockin());
 		//待出库

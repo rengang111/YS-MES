@@ -12,7 +12,7 @@
 		$("#doEdit").click(function() {
 		
 			var receiptId = $('#stockin\\.receiptid').val();
-			var url = "${ctx}/business/depotReturn?methodtype=depotRentunEdit&receiptId="+receiptId;
+			var url = "${ctx}/business/depotReturn?methodtype=depotRentunEdit&inspectionReturnId="+receiptId;
 
 			location.href = url;	
 		});

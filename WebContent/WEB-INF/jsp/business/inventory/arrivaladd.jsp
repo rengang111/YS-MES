@@ -420,7 +420,7 @@
 					var index = '${status.index}';
 					var quantity = currencyToFloat('${list.quantity}');
 					var sumArrivalQty = currencyToFloat('${list.sumArrivalQty}');
-					var sumReturn = currencyToFloat('${list.sumReturnQty}'); 			
+					var sumReturn = currencyToFloat('${list.stockinRtnQty}'); 			
 	    			var arrival = setPurchaseQuantity(sumReturn,sumArrivalQty );
 					var surplus = quantity - currencyToFloat(arrival);
 					

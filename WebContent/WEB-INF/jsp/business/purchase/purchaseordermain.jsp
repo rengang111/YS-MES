@@ -115,24 +115,24 @@
 	    		{"targets":8,"render":function(data, type, row){
 	    			//累计收货
 	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
-	    			var returnQty = currencyToFloat(row["returnQty"]);				    			
-	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );		
-	    			return newQty;
+	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);				    			
+	    			var newQty = setPurchaseQuantity(stockinRtnQty,arrivalQty );		
+	    			return floatToCurrency(newQty);
 	    		}},
 	    		{"targets":9,"render":function(data, type, row){
 	    			//已检数
 	    			var arrivalQty = currencyToFloat(row["quantityInspection"]);	
-	    			var returnQty = currencyToFloat(row["returnQty"]);				    			
-	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );		
-	    			return newQty;
+	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);				    			
+	    			var newQty = setPurchaseQuantity(stockinRtnQty,arrivalQty );		
+	    			return floatToCurrency(newQty);
 	    		}},
 	    		{"targets":10,"render":function(data, type, row){
 	    			//入库数
 	    			var arrivalQty = currencyToFloat(row["contractStorage"]);	
-	    			var returnQty = currencyToFloat(row["returnQty"]);			    			
-	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );	
+	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);			    			
+	    			var newQty = setPurchaseQuantity(stockinRtnQty,arrivalQty );	
 	    			
-	    			return newQty;
+	    			return floatToCurrency(newQty);
 	    		}}
          	] 
 		});

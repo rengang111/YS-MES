@@ -10,7 +10,6 @@
 	$(document).ready(function() {
 		
 		var quantity = '${depot.quantity }';
-		quantity = currencyToFloat(quantity) * (-1);//转换为正数
 		quantity = floatToCurrency(quantity);
 		$('#oldQuantity').val(quantity);
 		$('#detail\\.quantity').val(quantity);

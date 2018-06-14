@@ -161,12 +161,14 @@
 		location.href = url;
 	}
 		
-	function doPrintLabel(){
+	function doPrintLabel(materialId){
 		var arrivalId = '${head.arrivalId}';
 		var contractId = '${contract.contractId}';
 		var url = '${ctx}/business/storage?methodtype=printReceiptLabel2';
 		url = url +'&contractId='+contractId;
 		url = url +'&arrivalId='+arrivalId;
+		url = url +'&materialId='+materialId;
+		
 			
 		layer.open({
 			offset :[10,''],
@@ -273,7 +275,7 @@
 						<td><form:input path="stockList[${status.index}].areanumber" class="short" /></td>
 						<!-- 标贴 -->
 						<td>
-							<a href="###" onClick="doPrintLabel();return false;">标贴</a></td>
+							<a href="###" onClick="doPrintLabel('${list.materialId }');return false;">标贴</a></td>
 						
 							<form:hidden path="stockList[${status.index}].price" value="${list.price }"/>
 					</tr>
