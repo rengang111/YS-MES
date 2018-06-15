@@ -180,6 +180,14 @@ public class RequisitionAction extends BaseAction {
 				dataMap = doVirtualSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "excessInit"://超领查询
+				//excessInit();
+				rtnUrl = "/business/inventory/requisitionexcessmain";
+				break;
+			case "excessAddInit"://超领申请
+				//excessAddInit();
+				rtnUrl = "/business/inventory/requisitionexcessadd";
+				break;
 				
 		}
 		

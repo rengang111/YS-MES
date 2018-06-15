@@ -130,7 +130,7 @@ public class PurchaseOrderService extends CommonService {
 		String sql = getSortKeyFormWeb(data,baseQuery);
 		
 		if(notEmpty(status)){
-			having = "((REPLACE(quantity,',','')+0) - (REPLACE(arrivalQty,',','')+0) + (REPLACE(returnQty,',','')+0) ) > 0 ";
+			having = "((REPLACE(quantity, ',', '') + 0) - (REPLACE (arrivalQty, ',', '') + 0) + (REPLACE (stockinRtnQty, ',', '') + 0) + (REPLACE(inspectRtnQty,',','') + 0) ) > 0";
 		}
 		sql = sql.replace("#", having);
 		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
