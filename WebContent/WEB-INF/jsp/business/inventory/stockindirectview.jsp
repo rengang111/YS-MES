@@ -3,7 +3,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>直接入库(申请)-查看</title>
+<title>直接入库-查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -19,7 +19,7 @@
 	        "pageLength": 500,
 	        "ordering"  : false,
 			"dom" 		: '<"clear">rt',
-			"columns" : [
+			"columns" : [ 
 			           {"className":"dt-body-center"
 					}, {"className":"td-left"
 					}, {							
@@ -61,7 +61,7 @@
 		
 		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/stockinapply";					
+					var url = "${ctx}/business/stockinapply?methodtype=stockinDirect";					
 					location.href = url;
 				});
 		
@@ -92,20 +92,20 @@
 			<legend> 直接入库申请</legend>
 			<table class="form" id="table_form">				
 				<tr> 				
-					<td class="label" width="100px">申请单编号：</td>					
-					<td width="150px">${apply.arrivalId }</td>
+					<td class="label" width="100px">入库单编号：</td>					
+					<td width="150px">${stockin.receiptId }</td>
 															
-					<td width="100px" class="label">申请日期：</td>
-					<td width="150px">${apply.arriveDate }</td>
+					<td width="100px" class="label">入库日期：</td>
+					<td width="150px">${stockin.checkInDate }</td>
 					
 					<td width="100px" class="label">申请人：</td>
-					<td>${apply.LoginName }</td>
+					<td>${stockin.stockInName }</td>
 				</tr>
 			</table>			
 		</fieldset>	
 		<div style="clear: both"></div>	
 		<fieldset class="action" style="text-align: right;">
-			<button type="button" id="doEdit" class="DTTT_button">编辑</button>
+		<!-- 	<button type="button" id="doEdit" class="DTTT_button">编辑</button> -->
 			<button type="button" id="goBack" class="DTTT_button">返回</button>
 		</fieldset>
 		<fieldset>
@@ -122,7 +122,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach var='detail' items='${applyDetail}' varStatus='status'>
+						<c:forEach var='detail' items='${DirectDetail}' varStatus='status'>
 							<tr>
 								<td><c:out value="${i+1 }"/></td>
 								<td>${detail.materialId }</td>								
@@ -135,14 +135,6 @@
 				</table>
 			</div>
 		</fieldset>
-		<fieldset>
-			<legend> 备注信息</legend>
-			<table class="form">
-				<tr>				
-					<td><pre>${apply.remarks }</pre></td>					
-				</tr>		
-			</table>
-		</fieldset>		
 </form:form>
 </div>
 </div>

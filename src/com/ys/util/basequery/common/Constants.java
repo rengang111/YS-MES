@@ -257,7 +257,8 @@ public class Constants {
 	/**
 	 * 入库类别
 	 */
-	public static final String STOCKINTYPE_1 = "010";//直接入库
+	public static final String STOCKINTYPE_1 = "010";//直接入库申请
+	public static final String STOCKINTYPE_11 = "011";//直接入库
 	public static final String STOCKINTYPE_21 = "021";//原材料入库
 	public static final String STOCKINTYPE_22 = "022";//自制件入库
 	public static final String STOCKINTYPE_23 = "023";//装配件入库

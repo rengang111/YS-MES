@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-<title>直接入库（申请）一览页面</title>
+<title>直接入库一览页面</title>
 <script type="text/javascript">
 
 	function ajax(stockinStatus,sessionFlag) {
@@ -13,8 +13,10 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/stockinapply?methodtype=search"
-				+"&sessionFlag="+sessionFlag+"&stockinStatus="+stockinStatus;
+		var url = "${ctx}/business/stockinapply?methodtype=stockinDirectSearch"
+				+"&sessionFlag="+sessionFlag
+				+"&stockinStatus="+stockinStatus
+				+"&stockinType=011";//直接入库
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -57,14 +59,12 @@
 	        	},
 				"columns": [
 							{"data": null,"className" : 'td-center'},
-							{"data": "arrivalId","className" : 'td-left'},
+							{"data": "receiptId","className" : 'td-left'},
 							{"data": "materialId","className" : 'td-left'},
 							{"data": "materialName"},
 							{"data": "unit","className" : 'td-center'},
 							{"data": "quantity","className" : 'td-right'},
-							{"data": "arriveDate","className" : 'td-center', "defaultContent" : ''},
 							{"data": "checkInDate","className" : 'td-center', "defaultContent" : '-'},
-							{"data": null,"className" : 'td-center', "defaultContent" : ''},
 							
 						],
 				"columnDefs":[
@@ -73,26 +73,12 @@
 		                    }},
 				    		{"targets":1,"render":function(data, type, row){
 				    			var rtn = "";
-				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["arrivalId"] +"')\">" + data + "</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["receiptId"] +"')\">" + data + "</a>";
 				    			return rtn;
 				    		}},
 				    		{"targets":3,"render":function(data, type, row){
 				    			return jQuery.fixedWidth(data,46);		
-				    		}},
-				    		{"targets":8,"render":function(data, type, row){
-				    			var check = row["checkDate"];
-				    			var stockin = row["checkInDate"];
-				    			var rtn = "";
-				    			if(check  == null || check == ""){
-				    				rtn = "待检验";
-				    			}else if(stockin  == null || stockin == ""){
-				    				rtn = "待入库";
-				    			}else{
-				    				rtn = "已入库";
-				    				
-				    			}				    			
-				    			return rtn;
-				    		}}		
+				    		}}
 				    	
 			           
 			         ] 
@@ -125,17 +111,17 @@
 
 	}
 	
-	function doShow(applyId) {
+	function doShow(receiptId) {
 
-		var url = '${ctx}/business/stockinapply?methodtype=showStockinApply'
-				+"&applyId="+applyId;
+		var url = '${ctx}/business/stockinapply?methodtype=showStockinDirect'
+				+"&receiptId="+receiptId;
 
 		location.href = url;
 	}
 
 	function doCreate() {
 
-		var url = '${ctx}/business/stockinapply?methodtype=stockinApplyAddInit';
+		var url = '${ctx}/business/stockinapply?methodtype=stockinDirectAddInit';
 
 		location.href = url;
 	}
@@ -183,27 +169,27 @@
 				</form>
 			</div>
 			<div  style="height:10px"></div>
-			<div class="list">					
+			<div class="list">	
+			<!-- 				
 		 		<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('020');"><span>待入库</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('030');"><span>已入库</span></a> 
 				</div>
+				 -->
 				<div style="height: 40px;margin-bottom: -15px;float:right">
 					<button type="button" id="zzcreate" class="DTTT_button" 
-						style="width:120px" onclick="doCreate();">直接入库申请</button>
+						style="width:120px" onclick="doCreate();">直接入库录入</button>
 				</div>
 				<table  style="width: 100%;" id="TMaterial" class="display dataTable">
 					<thead>						
 						<tr>
 							<th style="width: 30px;">No</th>
-							<th style="width: 80px;">申请编号</th>
-							<th style="width: 120px;">物料编号</th>
+							<th style="width: 100px;">入库单编号</th>
+							<th style="width: 150px;">物料编号</th>
 							<th>物料名称</th>
 							<th style="width: 50px;">单位</th>
-							<th style="width: 70px;">入库数量</th>
-							<th style="width: 70px;">申请日期</th>
-							<th style="width: 70px;">入库日期</th>
-							<th style="width: 50px;">状态</th>
+							<th style="width: 100px;">入库数量</th>
+							<th style="width: 80px;">入库日期</th>
 						</tr>
 					</thead>
 				</table>

@@ -3,7 +3,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>直接入库(申请)-新建申请</title>
+<title>直接入库-新建</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 		
@@ -29,14 +29,14 @@
 					.add(
 					  [
 '<td>'+rowIndex+'</td>',
-'<td><input type="text" name="applyDetailList['+counter+'].materialid" id="applyDetailList'+counter+'.materialid" class="materialid"/></td>',
+'<td><input type="text" name="detailList['+counter+'].materialid" id="detailList'+counter+'.materialid" class="materialid"/></td>',
 '<td><span></span></td>',
 '<td><span></span></td>',
-'<td><input type="text" name="applyDetailList['+counter+'].quantity" id="applyDetailList'+counter+'.quantity"  class="quantity num short" /></td>',
+'<td><input type="text" name="detailList['+counter+'].quantity" id="detailList'+counter+'.quantity"  class="quantity num short" /></td>',
 				
 					]).draw();
 					
-					$("#applyDetailList" + counter + "\\.materialid").focus();
+					$("#detailList" + counter + "\\.materialid").focus();
 					counter ++;			
 				}
 				
@@ -168,8 +168,8 @@
 
 		autocomplete();
 		
-		$("#stockinApply\\.arrivedate").val(shortToday());		
-		$("#stockinApply\\.arrivedate").datepicker({
+		$("#stockin\\.checkindate").val(shortToday());		
+		$("#stockin\\.checkindate").datepicker({
 			dateFormat:"yy-mm-dd",
 			changeYear: true,
 			changeMonth: true,
@@ -181,14 +181,14 @@
 		
 		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/stockinapply";					
+					var url = "${ctx}/business/stockinapply?methodtype=stockinDirect";					
 					location.href = url;		
 				});
 		
 		$("#insert").click(
 				function() {
 			$('#formModel').attr("action",
-					"${ctx}/business/stockinapply?methodtype=stockInApplyInsert");
+					"${ctx}/business/stockinapply?methodtype=stockInDirectInsert");
 			$('#formModel').submit();
 		});
 				
@@ -343,16 +343,16 @@ function autocomplete(){
 		id="formModel" name="formModel"  autocomplete="off">
 			
 		<fieldset>
-			<legend> 直接入库申请</legend>
+			<legend> 直接入库</legend>
 			<table class="form" id="table_form">				
 				<tr>															
 					<td width="100px" class="label">申请日期：</td>
 					<td width="100px">
-						<form:input path="stockinApply.arrivedate" class="short read-only" /></td>
+						<form:input path="stockin.checkindate" class="short read-only" /></td>
 					
 					<td width="100px" class="label">申请人：</td>
 					<td colspan="3">
-						<form:input path="stockinApply.userid" class="short read-only" value="${userName }" /></td>
+						<form:input path="stockin.keepuser" class="short read-only" value="${userName }" /></td>
 				</tr>
 			</table>
 			
@@ -361,7 +361,7 @@ function autocomplete(){
 	<div style="clear: both"></div>
 	
 	<fieldset class="action" style="text-align: right;">
-		<button type="button" id="insert" class="DTTT_button">确认申请</button>
+		<button type="button" id="insert" class="DTTT_button">确认入库</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>
 	<fieldset>
@@ -382,10 +382,10 @@ function autocomplete(){
 					<c:forEach var="i" begin="0" end="2" step="1">
 						<tr>
 							<td><c:out value="${i+1 }"/></td>
-							<td><form:input path="applyDetailList[${i}].materialid" value=""  class="materialid"/></td>								
+							<td><form:input path="detailList[${i}].materialid" value=""  class="materialid"/></td>								
 							<td><span></span></td>					
 							<td><span></span></td>
-							<td><form:input path="applyDetailList[${i}].quantity" value="" class="quantity num short"/></td>
+							<td><form:input path="detailList[${i}].quantity" value="" class="quantity num short"/></td>
 						</tr>
 							<script type="text/javascript">
 								
@@ -396,16 +396,6 @@ function autocomplete(){
 				</tbody>
 			</table>
 		</div>
-	</fieldset>
-	<fieldset>
-		<legend> 备注信息</legend>
-		<table>
-			<tr>				
-				<td>
-					<form:textarea path="stockinApply.remarks" rows="3" cols="80" /></td>
-				
-			</tr>		
-		</table>
 	</fieldset>
 		
 </form:form>

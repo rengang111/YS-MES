@@ -107,6 +107,26 @@ public class StockInApplyAction extends BaseAction {
 				showStockinApply();
 				rtnUrl = "/business/inventory/stockinapplyview";
 				break;
+			case "stockinDirect":
+				doInit();
+				rtnUrl = "/business/inventory/stockindirectmain";
+				break;
+			case "stockinDirectSearch":
+				dataMap = doDirectSearch(data,makeType);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "stockinDirectAddInit"://直接入库（无需申请）
+				doDirectAddInit();
+				rtnUrl = "/business/inventory/stockindirectadd";
+				break;
+			case "stockInDirectInsert":
+				doDirectInsert();
+				rtnUrl = "/business/inventory/stockindirectview";
+				break;
+			case "showStockinDirect":
+				showStockinDirect();
+				rtnUrl = "/business/inventory/stockindirectview";
+				break;
 				
 		}
 		
@@ -193,9 +213,46 @@ public class StockInApplyAction extends BaseAction {
 		return dataMap;
 	}
 	
-
-
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doDirectSearch(String data,String makeType){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_STOCKINAPPLY+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_STOCKINAPPLY+Constants.FORM_KEYWORD2);			
+		}
 		
+		try {
+			dataMap = service.doDirectSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+
+	
+	public void doDirectAddInit(){
+
+		try{
+			service.stockinDirectAddInit();
+			
+			model.addAttribute("userName", userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}	
 	public void doAddInit(){
 
 		try{
@@ -229,6 +286,14 @@ public class StockInApplyAction extends BaseAction {
 	}
 
 	
+	public void doDirectInsert(){
+		try{
+			service.stockInDirectInsert();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
 	
 	public void stockInApplyUpdate(){
 		try{
@@ -262,6 +327,15 @@ public class StockInApplyAction extends BaseAction {
 	public void showStockinApply(){
 		try{
 			service.showStockinApply();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+
+	public void showStockinDirect(){
+		try{
+			service.showStockinDirect();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
