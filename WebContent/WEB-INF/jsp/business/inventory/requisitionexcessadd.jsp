@@ -5,95 +5,20 @@
 <title>超领申请-领料单</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
-	
-	/* Custom filtering function which will search data in column four between two values */
-	$.fn.dataTable.ext.search.push(function( settings, data, dataIndex ) {
-		       
-		var type =  $('#selectedPurchaseType').val();
-		       	
-		    	
-		    	var data11=data[10];
-		    	var data01=data[1];
-		        var data011 = data01.substring(0,1)
-			   
-			    		
-		    	if (type =='' || type == 'all')		    		
-		    	{		    		
-		    		return true;
-		    		
-		    	}else if(type=='dg'){//订购件
-		    		var val1=data[9];
-		    		var val2=data[10];
-		    		var val3=data[1];
-		    		var tmp3 = val3.substring(0,1);
-		    		var tmp2 = val2.substring(6,4);
-		    		var tmp1 = val1.substring(3,0);
-		    		//alert(tmp)
-		    		if(tmp1 == '010' && tmp2 != 'YZ' && tmp3 != 'G' ){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='ty'){//通用件(包装品以外的)
-		    		var val=data[1];
-		    		var tmp = val.substring(0,1);
-		    		
-		    		if(tmp == 'C' || tmp == 'E' ||tmp == 'F' ||tmp == 'G' ){
-		    			return false;
-		    		}else{
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='bz'){//包装品(C,E,F,G)
-		    		var val=data[1];
-		    		var tmp = val.substring(0,1);
-		    		
-		    		if(tmp == 'C' || tmp == 'E' ||tmp == 'F' ||tmp == 'G' ){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='yz'){//自制品
-		    		var val=data[10];
-		    		var tmp = val.substring(6,4);
-		    		
-		    		if(tmp == 'YZ'){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='ycl'){//原材料
-		    		var val=data[9];
-		    		var tmp = val.substring(3,0);
-		    		
-		    		if(tmp == '040'){
-		    			return true;
-		    		}
-		    		
-		    	}else if(type=='wll'){//未领物料
-		    		var val5=data[5];//已领数量
-		    		var val4=data[4];//计划用量
-		    		var jihua = currencyToFloat(val4);
-		    		var yiling = currencyToFloat(val5);
-		    		
-		    		if(yiling < jihua){
-		    			return true;
-		    		}
-		    		
-		    	}else{
-
-			    	return false;
-		    		
-		    	}
-	 
-	});
-	
-	var shortYear = ""; 
-	
-	function planAjax(scrollHeight) {
 		
-		var YSId= '${order.YSId}';
-		var orderType= '${order.orderType}';
+	function planAjax(scrollHeight) {
+
+		var table = $('#example').dataTable();
+		if(table) {
+			table.fnClearTable(false);
+			table.fnDestroy();
+		}
+		
+		var YSId= $('#requisition\\.ysid').val();
+		
 		var actionUrl = "${ctx}/business/requisition?methodtype=detailView";
 		actionUrl = actionUrl +"&YSId="+YSId;
-		actionUrl = actionUrl +"&orderType="+orderType;
+		actionUrl = actionUrl +"&orderType=010";
 			
 		var t = $('#example').DataTable({
 			"paging": false,
@@ -114,7 +39,7 @@
 				//formData.forEach(function(e) {
 				//	aoData.push({"name":e.name, "value":e.value});
 				//});
- 					alert(2222)
+ 					
 				$.ajax({
 					"url" : sSource,
 					"datatype": "json", 
@@ -123,13 +48,14 @@
 					//"data" : JSON.stringify(aoData),
 					success: function(data){					
 						fnCallback(data);
-						 alert(1111)
-						//reloadFn();
+						
+						checkBoxSelectFn();
+						
 						foucsInit();
 						
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
-						 alert(textStatus)	
+						 alert("加载有误，请重试！")	
 		             }
 				})
 			},
@@ -148,13 +74,15 @@
 				}, {"data": null,"className":"td-right","defaultContent" : '0'		//8
 				}, {"data": "purchaseType","className":"td-right"		//9
 				}, {"data": "supplierId","className":"td-right"		//10
-				}, {"data": "areaNumber"		//11
+				}, {"data":  "purchaseType","className":"td-right"		//11
 				}
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row,meta){
                     var startIndex = meta.settings._iDisplayStart; 
-					return startIndex + meta.row + 1 + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["materialId"] + "' />";
+                    var idx = startIndex + meta.row + 1 ;
+					//return '<label for="numCheck'+idx+'">'+ idx +"</label>"+ "<input type='checkbox' class='numCheck1' name='numCheck' id='numCheck"+idx+"' value='" + row["materialId"] + "' />";
+					return  idx + "<input type='checkbox' class='numCheck1' name='numCheck' id='numCheck"+idx+"' value='" + row["materialId"] + "' />";
 	    		}},
 	    		{"targets":2,"render":function(data, type, row){ 					
 					var index=row["rownum"]	
@@ -193,7 +121,15 @@
 					}else{
 						currValue = floatToCurrency(currValue);
 					}
-					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="'+currValue+'"/>';
+					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="0"/>';
+				
+					return inputTxt;
+                }},
+	    		{"targets":11,"render":function(data, type, row){	
+	    			
+					var index=row["rownum"];
+
+					var inputTxt = '<input type="text" id="requisitionList'+index+'.scrapquantity" name="requisitionList['+index+'].scrapquantity" class="quantity num mini"  value=""/>';
 				
 					return inputTxt;
                 }},
@@ -205,34 +141,24 @@
 			
 		}).draw();
 
+		t.on('change', 'tr td:nth-child(7)',function() {
+
+			var $td = $(this).parent().find("td");
+			
+			var $oCurrQty = $td.eq(6).find("input");//本次领料
+
+			$oCurrQty.removeClass('error');
+			$oCurrQty.val(floatToCurrency($.trim($oCurrQty.val())));
+
+		});
 		t.on('change', 'tr td:nth-child(8)',function() {
 
 			var $td = $(this).parent().find("td");
 			
-			$td.eq(7).find("input").removeClass('error');
-
-			var $oArrival = $td.eq(4);//计划
-			var $oyiling  = $td.eq(5);//已领料
-			var $oTotalQt = $td.eq(6);//总库存
 			var $oCurrQty = $td.eq(7).find("input");//本次领料
 
-			var fArrival  = currencyToFloat($oArrival.text());
-			var fYiling   = currencyToFloat($oyiling.text());
-			var fCurrQty  = currencyToFloat($oCurrQty.val());	
-			var fTotalQt  = currencyToFloat($oTotalQt.text());
-			
-			//最多允许领料数量 = 计划 - 已领料
-		 	var fMaxQuanty = fArrival - fYiling;
-			if(fMaxQuanty < 0)
-				fMaxQuanty = 0;
-			//alert("fArrival--fYiling--fMaxQuanty--fCurrQty:"+fArrival+"---"+fYiling+"--"+fMaxQuanty+"---"+fCurrQty)
-			if ( fCurrQty > fMaxQuanty ){//总库存充足
-				
-				fCurrQty = fMaxQuanty;
-				$().toastmessage('showWarningToast', "领料数量不能超出需求量！");
-			}
-			
-			$oCurrQty.val(floatToCurrency(fCurrQty));
+			$oCurrQty.removeClass('error');
+			$oCurrQty.val(floatToCurrency($.trim($oCurrQty.val())));
 
 		});
 
@@ -242,13 +168,10 @@
 		
 		//autocomplete();//
 		//日期
-		var mydate = new Date();
-		var number = mydate.getFullYear();
-		shortYear = String(number).substr(2); 
 		$("#requisition\\.requisitiondate").val(shortToday());
 
-		var scrollHeight =$(parent).height() - 200; 
-		planAjax(scrollHeight);
+		//var scrollHeight =$(parent).height() - 200; 
+		//planAjax(scrollHeight);
 		
 		$("#requisition\\.requisitiondate").datepicker({
 				dateFormat:"yy-mm-dd",
@@ -261,7 +184,7 @@
 		
 		$(".goBack").click(
 				function() {
-					var url = "${ctx}/business/requisition";
+					var url = "${ctx}/business/requisition?methodtype=excessInit";
 					location.href = url;		
 				});
 
@@ -270,7 +193,7 @@
 					var YSId='${order.YSId }';
 					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId;
 					location.href = url;		
-				});
+		});
 		
 		$("#insert").click(function() {
 				
@@ -287,33 +210,53 @@
 			var str = '';
 			var val = '';
 			var inputFlag=true;
+			var scraFlag=true;
 			$("input[name='numCheck']").each(function(){
 				if ($(this).prop('checked')) {
 					str += $(this).val() + ",";
-					var qty = $(this).parent().parent().find('td').eq(7).find("input").val();
-					qty = currencyToFloat(qty);
-					if(qty<=0){
+					var excess = $(this).parent().parent().find('td').eq(6).find("input").val();
+					var scra = $(this).parent().parent().find('td').eq(7).find("input").val();
+					excess = currencyToFloat(excess);
+					
+					if(excess<=0){
 						inputFlag = false;
+						$(this).parent().parent().find('td').eq(6).find("input").addClass('error');
+					}
+					if(scra=="" || $.trim(scra) == ""){
+						scraFlag = false;
 						$(this).parent().parent().find('td').eq(7).find("input").addClass('error');
-					}	
-					val += qty;
+					}else{
+						scra = currencyToFloat(scra);
+						if(scra<=0){
+							scraFlag = false;
+							$(this).parent().parent().find('td').eq(7).find("input").addClass('error');
+						}
+					}		
+					//val += qty;
 				}else{
 					//未选中物料的领料数量恢复为0
-					$(this).parent().parent().find('td').eq(7).find("input").val('0');
+					$(this).parent().parent().find('td').eq(6).find("input").val('0');
+					$(this).parent().parent().find('td').eq(7).find("input").val('');
 				}
 			});
 						
 			if(inputFlag == false){
-				$().toastmessage('showWarningToast', "选择的配件没有领料数量。");
+				$().toastmessage('showWarningToast', "请输入领料数量。");
 				return;				
 			}
 			
-			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insert");
+			if(scraFlag == false){
+				$().toastmessage('showWarningToast', "请输入退还的报废物料数量。");
+				return;				
+			}
+			
+			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=excessAdd");
 			$('#formModel').submit();
 		});
 		
 		foucsInit();
 		
+		/*
 		var table = $('#example').DataTable();
 		// Event listener to the two range filtering inputs to redraw on input
 	    $('#yz, #ty, #dg, #bz, #all, #ycl, #wll').click( function() {	    	
@@ -338,18 +281,11 @@
             $(this).removeClass("start");
             $(this).addClass("end");
         });
+		*/
 		
-		$('#example').DataTable().on('click', 'tr', function() {
-			
-			$(this).toggleClass("selected");
-		    if($(this).hasClass("selected")){//如果有某个样式则表明，这一行已经被选中
-		        
-		    	$(this).children().first().children().prop("checked", true);
-		    }else{//如果没有被选中
-
-		    	$(this).children().first().children().prop("checked", false);
-		    }			
-		});	
+		
+		
+		
 	});
 
 	
@@ -368,7 +304,7 @@
 	<input type="hidden" id="virtualClass" value="${virtualClass }" />
 	<input type="hidden" id="goBackFlag" />
 	<input type="hidden" id="requrisitionFlag" value="0"/>
-	<form:hidden path="requisition.ysid"  value="${order.YSId }" />
+	<form:hidden path="requisition.excesstype"  value="020" /><!-- 超领物料 -->
 	<fieldset>
 		<legend> 领料单</legend>
 		<table class="form" id="table_form">
@@ -389,6 +325,12 @@
 				<td class="label" width="100px">产品名称：</td>					
 				<td><span id="materialName"></span></td>
 			</tr>
+			<tr> 				
+				<td class="label" width="100px">超领原由：</td>					
+				<td colspan="5">
+					<form:textarea path="requisition.remarks" rows="2" cols="80" /></td>
+									
+			</tr>
 										
 		</table>
 </fieldset>
@@ -401,15 +343,17 @@
 
 	<fieldset style="margin-top: -15px;">
 		<div class="list">
+		<!--
 			<div id="DTTT_container" align="left" style="height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
 				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
-		<!-- 		<a class="DTTT_button DTTT_button_text box" id="wll" data-id="5">未领物料</a> -->
+		 		<a class="DTTT_button DTTT_button_text box" id="wll" data-id="5">未领物料</a>
 	 			<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a>
 	 			<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
 				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">装配品</a>
 				<a class="DTTT_button DTTT_button_text box" id="bz" data-id="3">包装品</a>
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
+			 -->
 			<table id="example" class="display" >
 				<thead>				
 					<tr>
@@ -420,13 +364,14 @@
 						<th width="60px">计划用量</th>
 						<th width="60px">已领数量</th>
 						<th width="60px">当前库存</th>
-						<th width="80px">
+						<th width="80px">超领数量</th>
+						<!-- 
 								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
-								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
+								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label> -->
 						<th width="60px">剩余数量</th>
 						<th width="1px"></th>
 						<th width="1px"></th>
-						<th width="80px">库位</th>
+						<th width="60px">退货数</th>
 					</tr>
 				</thead>	
 			</table>
@@ -465,86 +410,6 @@ function fnreverse() {
 };
 
 
-
-function reloadFn(){
-	
-	var countValue = '0';
-
-	//alert("countValue1:"+countValue)
-	$('#example tbody tr').each (function (){
-		
-		var jihua = $(this).find("td").eq(4).text();////计划用量
-		var yiling  = $(this).find("td").eq(5).text();//已领量:table初始化时,第五列被隐藏了
-		var kucun   = $(this).find("td").eq(6).text();//库存
-		var fjihua= currencyToFloat(jihua);
-		var fyiling = currencyToFloat(yiling);
-		var fkucun  = currencyToFloat(kucun);
-		//alert("计划用量+已领量+库存:"+fjihua+"---"+fyiling+"---"+fkucun)
-		var fsurplus = fjihua - fyiling;
-				
-		if(fsurplus > 0){//未领完的场合下
-			if(fkucun >= fsurplus){//库存大于需求量
-				$(this).find("td").eq(7).find("input").val(formatNumber(fsurplus));//本次领料
-				//$(this).find("td").eq(8).html("0")//剩余数清零
-				countValue++;//累计未领完的物料
-			}else{
-				$(this).find("td").eq(7).find("input").val("0");//本次领料
-				//$(this).find("td").eq(8).html(formatNumber( fsurplus - fkucun ));//剩余数清零							
-			}
-		}else{
-			fsurplus = 0;
-			$(this).find("td").eq(7).find("input").val(fsurplus);//本次领料清零
-			//$(this).find("td").eq(8).html(fsurplus);//剩余数清零
-		}
-		
-		
-	});	
-
-	if(countValue > '0')
-		$('#requrisitionFlag').val('1');//是否可以继续领料标识
-	
-	$("#selectall").click(function () { 
-		
-		var sltFlag = $(this).prop("checked");
-			
-		$('#example tbody tr').each (function (){
-		
-			var vcontract = $(this).find("td").eq(4).text();////计划用量
-			var vreceive  = $(this).find("td").eq(5).text();//已领量:table初始化时,第五列被隐藏了
-			var vstocks   = $(this).find("td").eq(6).text();//库存
-			var fcontract= currencyToFloat(vcontract);
-			var freceive = currencyToFloat(vreceive);
-			var fstocks  = currencyToFloat(vstocks);
-			//alert("计划用量+已领量+库存:"+fcontract+"---"+freceive+"---"+fstocks)
-			var fsurplus = fcontract - freceive;
-			if(fsurplus < 0)
-				fsurplus = 0;
-			var vsurplus = formatNumber(fsurplus);
-
-			if(sltFlag){//一次性全部领料
-				
-				if(fsurplus > "0"){//未领完的场合下
-					if(fstocks >= fsurplus){//库存大于需求量
-						$(this).find("td").eq(7).find("input").val(vsurplus);//本次领料
-						//$(this).find("td").eq(8).html("0")//剩余数清零
-					}else{
-						$(this).find("td").eq(7).find("input").val("0");//本次领料
-						//$(this).find("td").eq(8).html(formatNumber( fsurplus - fstocks ));//剩余数清零							
-					}
-				}else{//超领
-					
-				}
-			
-			}else{//取消一次性全部领料
-				$(this).find("td").eq(7).find("input").val("0");//本次领料清零
-				//$(this).find("td").eq(8).html(vsurplus);//剩余数
-			}		
-		})			
-	
-
-	});
-	
-}
 
 
 </script>
@@ -596,13 +461,13 @@ $("#requisition\\.ysid").autocomplete({
 		$("#materialId").html(ui.item.materialId);
 		$("#materialName").html(ui.item.name);
 		$("#quantity").html(ui.item.quantity);
-		var scrollHeight =$(parent).height() - 200; 
+		$('#requisition\\.ysid').val(ui.item.value);
 		
+		var scrollHeight =$(parent).height() - 200;
 		planAjax(scrollHeight);
 		
-		alert(333)
 
-	},//select		
+	},//select
 	
 	
 	minLength : 5,
@@ -611,4 +476,74 @@ $("#requisition\\.ysid").autocomplete({
 
 
 </script>
+<script type="text/javascript">
+   function checkBoxSelectFn(){
+	   /*
+	   //input 单击事件  
+       $(".numCheck1").click(function () {  
+           //获取checkbox选中项  
+           if ($(this).prop("checked") == true) {  
+               $(this).parent().parent().css("background", "#b2dba1");  
+           } else {  
+               $(this).parent().parent().css("background", "");  
+           }  
+       });  
+	   */
+   
+	   
+   }
+   $('#example').DataTable().on('click', 'tr td:nth-child(1)', function() {
+		//alert(1111)
+		$(this).parent().toggleClass("selected");
+	    /*
+		if($(this).hasClass("selected")){//如果有某个样式则表明，这一行已经被选中
+	        
+	    	//$(this).children().first().children().prop("checked", true);
+	    	$(this).children().prop("checked", true);
+	    }else{//如果没有被选中
+
+	    	$(this).children().first().children().prop("checked", false);
+	    }	
+	    */
+	    var checkbox  = $(this).find("input[type='checkbox']");
+	    var isChecked = checkbox.is(":checked");
+	    
+	    //alert(isChecked)
+	    if (isChecked) {
+	        checkbox.prop("checked", false)
+	        checkbox.removeAttr("checked");
+	    } else {
+	        checkbox.prop("checked", true)
+	        checkbox.attr("checked","true");
+	    }
+	});	
+	   
+   $('#example').DataTable().on('click', 'tr td:nth-child(2),tr td:nth-child(3),tr td:nth-child(4),tr td:nth-child(5),tr td:nth-child(6)', function() {
+		//alert(1111)
+		$(this).parent().toggleClass("selected");
+	    /*
+		if($(this).hasClass("selected")){//如果有某个样式则表明，这一行已经被选中
+	        
+	    	//$(this).children().first().children().prop("checked", true);
+	    	$(this).children().prop("checked", true);
+	    }else{//如果没有被选中
+
+	    	$(this).children().first().children().prop("checked", false);
+	    }	
+	    */
+	    var checkbox  = $(this).parent().children().first().find("input[type='checkbox']");
+	    var isChecked = checkbox.is(":checked");
+	    
+	    //alert(isChecked)
+	    if (isChecked) {
+	        checkbox.prop("checked", false)
+	        checkbox.removeAttr("checked");
+	    } else {
+	        checkbox.prop("checked", true)
+	        checkbox.attr("checked","true");
+	    }
+	});	
+
+</script> 
+
 </html>

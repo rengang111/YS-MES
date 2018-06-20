@@ -16,9 +16,9 @@
 			table.fnDestroy();
 		}
 
-		var actionUrl = "${ctx}/business/requisition?methodtype=search";
+		var actionUrl = "${ctx}/business/requisition?methodtype=excessSearch";
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
-		actionUrl = actionUrl + "&requisitionSts=" + requisitionSts;
+		actionUrl = actionUrl + "&excessType=020" ;//超领区分
 		
 		
 		var t = $('#TMaterial').DataTable({
@@ -77,17 +77,10 @@
 		    		{"targets":0,"render":function(data, type, row){
 		    			return row["rownum"] ;				    			 
                     }},
-		    		{"targets":2,"render":function(data, type, row){
-		    			var manufactureQty = currencyToFloat( row["manufactureQty"] );
-		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
-		    			var rtn="";
-		    			if(requisitionQty == manufactureQty){//已出库
-			    			rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "')\">"+data+"</a>";		    				
-		    			}else {
-			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+data+"</a>";
-		    				
-		    			}		    			
+		    		{"targets":1,"render":function(data, type, row){
 		    			
+		    			var rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["requisitionId"] + "')\">"+data+"</a>";
+	    			
 		    			return rtn;
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
@@ -120,7 +113,7 @@
 		    		}},
 		    		{
 						"visible" : false,
-						"targets" : [1]
+						"targets" : [8]
 					}
 	         	]
 			}
@@ -162,17 +155,11 @@
 	}
 	
 	
-	function doShowDetail(YSId) {
+	function doShowDetail(requisitionId) {
 		var virtualClass = $('#virtualClass').val();
-		var methodtype = "addinit"
-		if(virtualClass == '020'){			
-			methodtype = "virtualAddinit";//虚拟领料
-		}
-		var peiYsid = YSId.indexOf("P");
-		if(peiYsid > 0){
-			methodtype =  "peiAddinit";
-		}
-		var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&YSId="+YSId+"&virtualClass="+virtualClass;
+		var methodtype = "excessDetail";
+		
+		var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&requisitionId="+requisitionId+"&virtualClass="+virtualClass;
 		location.href = url;
 	}
 	
@@ -238,7 +225,7 @@
 						<th>产品名称</th>
 						<th style="width: 50px;">订单交期</th>
 						<th style="width: 60px;">订单数量</th>
-						<th style="width: 60px;">申请时间</th>
+						<th style="width: 60px;">超领时间</th>
 						<th style="width: 60px;">领料状态</th>
 				</tr>
 			</thead>

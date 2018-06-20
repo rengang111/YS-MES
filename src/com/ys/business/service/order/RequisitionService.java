@@ -213,6 +213,58 @@ public class RequisitionService extends CommonService {
 
 	}
 	
+	public HashMap<String, Object> doExcessSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITIOEXCESS,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+
+		dataModel.setQueryName("getRequisitionListForExcess");	
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
+		//String requisitionSts = request.getParameter("requisitionSts");
+		
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}
+		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
 	public HashMap<String, Object> doMaterialRequisitionSearch(
 			String data) throws Exception {
 
@@ -328,33 +380,81 @@ public class RequisitionService extends CommonService {
 		getOrderDetail(YSId);
 	}
 	
-	public void insertAndView() throws Exception {
 
-		String YSId = insert(
+	/**
+	 * 超领物料保存
+	 * @throws Exception
+	 */
+	public void showExcessDetail() throws Exception {
+
+		String YSId = request.getParameter("YSId");
+		String requisitionId = request.getParameter("requisitionId");
+
+		//订单详情
+		//getOrderDetail(YSId);
+		
+		getExcessDetail(requisitionId);
+	}
+	
+	/**
+	 * 超领物料保存
+	 * @throws Exception
+	 */
+	public void updateExcessAndView() throws Exception {
+
+		String requisitionId = update();
+
+		//订单详情
+
+		getExcessDetail(requisitionId);
+	}
+	
+	/**
+	 * 超领物料保存
+	 * @throws Exception
+	 */
+	public void insertExcessAndView() throws Exception {
+
+		B_RequisitionData reqData = insert(
 				Constants.REQUISITION_NORMAL,//正常领料
 				Constants.STOCKOUT_2	//待出库
 				);
 
 		//订单详情
-		getOrderDetail(YSId);
+		getExcessDetail(reqData.getRequisitionid());
+	}
+	
+	/**
+	 * 正常领料
+	 * @throws Exception
+	 */
+	public void insertAndView() throws Exception {
+
+		B_RequisitionData reqData = insert(
+				Constants.REQUISITION_NORMAL,//正常领料
+				Constants.STOCKOUT_2	//待出库
+				);
+
+		//订单详情
+		getOrderDetail(reqData.getYsid());
 	}
 	
 	public void virtualInsertAndView() throws Exception {
 
-		String YSId = insert(
+		B_RequisitionData reqData = insert(
 				Constants.REQUISITION_VIRTUAL,//虚拟领料
 				Constants.STOCKOUT_3	//已出库
 				);
 
 		//订单详情
-		getOrderDetail(YSId);
+		getOrderDetail(reqData.getYsid());
 	}
 	
 
 
 	private String update(){
 		
-		String YSId = "";
+		String requisitionid = "";
 		ts = new BaseTransaction();
 
 		try {
@@ -363,18 +463,14 @@ public class RequisitionService extends CommonService {
 			B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
 			List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
 
-			YSId = reqData.getYsid();
-			//旧的领料单号
-			String oldId = reqData.getRequisitionid();
 			
 			//领料单更新处理
-			reqData = getRequisitionId(reqData);
-			String requisitionid = reqData.getRequisitionid();//新的单号
-			reqData.setOriginalrequisitionid(oldId);
+			requisitionid = reqData.getRequisitionid();//新的单号
+			reqData.setOriginalrequisitionid(requisitionid);
 			updateRequisition(reqData);
 
 			//旧的明细删除处理
-			deleteRequisitionDetail(YSId,oldId);
+			deleteRequisitionDetail(requisitionid);
 			
 			//新的领料单明细						
 			for(B_RequisitionDetailData data:reqDataList ){
@@ -390,34 +486,33 @@ public class RequisitionService extends CommonService {
 			
 		}
 		catch(Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			try {
 				ts.rollback();
 			} catch (Exception e1) {
-				System.out.println(e1.getMessage());
+				e.printStackTrace();
 			}
 		}
 		
-		return YSId;
+		return requisitionid;
 	}
 	
-	private String insert(String virtualClass,String stockoutType){
+	private B_RequisitionData insert(String virtualClass,String stockoutType){
+
+		B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
+		List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
 		
-		String YSId = "";
 		ts = new BaseTransaction();
 
 		try {
 			ts.begin();
-			
-			B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
-			List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
 
 			//取得领料单编号
-			YSId = reqData.getYsid();
+			String YSId = reqData.getYsid();
 			reqData = getRequisitionId(reqData);
 			String requisitionid = reqData.getRequisitionid();
 			
-			//领料申请insert
+			//新增领料申请
 			reqData.setVirtualclass(virtualClass);
 			reqData.setRequisitiontype(Constants.REQUISITION_PARTS);//装配领料
 			reqData.setRequisitionsts(stockoutType);//
@@ -432,26 +527,31 @@ public class RequisitionService extends CommonService {
 				data.setRequisitionid(requisitionid);
 				insertRequisitionDetail(data);
 				
-				//更新库存
-				updateMaterial(data.getMaterialid(),quantity);
-			
+				//虚拟出库，直接更新库存
+				if((Constants.REQUISITION_VIRTUAL).equals(virtualClass)){
+					
+					updateMaterial(data.getMaterialid(),quantity);//更新库存
+				}
 			}
-			//更新订单状态:待交货
-			updateOrderDetail(YSId);
+			
+			if((Constants.REQUISITION_NORMAL).equals(virtualClass)){
+				
+				updateOrderDetail(YSId);//更新订单状态:待交货
+			}
 			
 			ts.commit();			
 			
 		}
 		catch(Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			try {
 				ts.rollback();
 			} catch (Exception e1) {
-				System.out.println(e1.getMessage());
+				e.printStackTrace();
 			}
 		}
 		
-		return YSId;
+		return reqData;
 	}
 	
 	//虚拟领料:减少“待出库”
@@ -535,7 +635,7 @@ public class RequisitionService extends CommonService {
 		B_RequisitionDetailData db = new B_RequisitionDetailDao(stock).beanData;
 		
 		if(db == null || ("").equals(db)){
-			//insert
+			//
 			insertRequisitionDetail(stock);
 		}else{
 			copyProperties(db,stock);
@@ -559,7 +659,7 @@ public class RequisitionService extends CommonService {
 		//更新DB
 		B_OrderDetailData data = list.get(0);
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
+				"领料申请Update",userInfo);
 		copyProperties(data,commData);
 		data.setStatus(Constants.ORDER_STS_5);//待交货	
 		
@@ -570,7 +670,6 @@ public class RequisitionService extends CommonService {
 	private void updateRequisition(
 			B_RequisitionData data) throws Exception{
 		
-		//
 		B_RequisitionData db = new B_RequisitionDao(data).beanData;
 
 		copyProperties(db,data);
@@ -578,40 +677,19 @@ public class RequisitionService extends CommonService {
 				"RequisitionUpdate",userInfo);
 		copyProperties(db,commData);
 		db.setRequisitionuserid(userInfo.getUserId());//默认为登陆者
-		db.setRequisitiondate(CalendarUtil.fmtYmdDate());
 		db.setRemarks(replaceTextArea(db.getRemarks()));//换行符转换	
 		
 		new B_RequisitionDao().Store(db);
 	}
 	
 
-	@SuppressWarnings("unchecked")
 	private void deleteRequisitionDetail(
-			String YSId,
 			String requisitionId) throws Exception{
 		
-		B_RequisitionDetailDao dao = new B_RequisitionDetailDao();
 		//
 		String where = "requisitionId = '" + requisitionId  +"' AND deleteFlag = '0' ";
-		List<B_RequisitionDetailData> list  = 
-				new B_RequisitionDetailDao().Find(where);
-		if(list ==null || list.size() == 0)
-			return ;
 		
-		for(B_RequisitionDetailData dt:list){
-			
-			dao.Remove(dt);
-			
-			//更新累计领料数量(恢复)
-			//String mateId = dt.getMaterialid();
-			//float quantity = (-1) * stringToFloat(dt.getQuantity());
-			//updatePurchasePlan(YSId,mateId,quantity);
-			
-			//更新库存(恢复)
-			//float overQuty = (-1) * stringToFloat(dt.getOverquantity());
-			//updateMaterialStock(mateId,quantity,overQuty);
-		}
-		
+		new B_RequisitionDetailDao().RemoveByWhere(where);
 	}
 
 		
@@ -693,6 +771,26 @@ public class RequisitionService extends CommonService {
 		if(dataModel.getRecordCount() >0){
 			model.addAttribute("order",dataModel.getYsViewData().get(0));
 			model.addAttribute("material",dataModel.getYsViewData());
+			modelMap.put("data", dataModel.getYsViewData());
+		}
+		
+		return modelMap;		
+	}
+	
+	public HashMap<String, Object> getExcessDetail(String requisitionId) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");
+		dataModel.setQueryName("getRequisitionDetailForExcess");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("requisitionId", requisitionId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("detail",dataModel.getYsViewData().get(0));
+			model.addAttribute("detailList",dataModel.getYsViewData());
 			modelMap.put("data", dataModel.getYsViewData());
 		}
 		
@@ -878,7 +976,7 @@ public class RequisitionService extends CommonService {
 				return recordId;
 			recordId = reqData.getRecordid();
 			if(isNullOrEmpty(recordId)){
-				//insert
+				//
 				reqData = getRequisitionId(reqData);
 				String requisitionid = reqData.getRequisitionid();
 				detail.setRequisitionid(requisitionid);

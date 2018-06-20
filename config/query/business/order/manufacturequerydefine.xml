@@ -227,6 +227,10 @@
       <f name="a.purchaseType" alias="" ctype="物料采购类别" />
       <f name="a.quantity" alias="" ctype="" />
       <f name="a.overQuantity" alias="" ctype="" />
+      <f name="a.scrapQuantity" alias="" ctype="" />
+      <f name="a.excessType" alias="excessTypeId" ctype="" />
+      <f name="a.excessType" alias="" ctype="超领区分" />
+      <f name="a.virtualClass" alias="" ctype="虚拟领料区分" />
       <f name="IFNULL(a.subBomNo,'0')" alias="subBomNo" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
@@ -779,6 +783,63 @@
     <orderby>A.YSId</orderby>
     <groupby></groupby>
     <having>#</having>
+	<power></power>    
+  </query>  
+  <query>
+    <pool></pool>     
+    <name value="getRequisitionListForExcess" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.excessType" des=""  reqName="excessType" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="b.materialId" alias="" ctype="" />
+      <f name="b.materialName" alias="" ctype="" />
+      <f name="A.requisitionId" alias="" ctype="" />
+      <f name="A.excessType" alias="" ctype="超领区分" />
+      <f name="A.virtualClass" alias="" ctype="虚拟领料区分" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+      <f name="A.requisitionDate" alias="" ctype="" />
+      <f name="b.totalQuantity" alias="orderQty" ctype="" />
+      <f name="b.deliveryDate" alias="" ctype="" />
+    </select>
+    <from>b_requisition a left join v_orderdetail b on a.ysid=b.ysid</from>
+    <orderby>A.YSId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query> 
+  <query>
+    <pool></pool>     
+    <name value="getRequisitionDetailForExcess" />
+    <where>
+   	  <w name="A.excessType" des=""  reqName="excessType" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="a.recordId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.requisitionId" alias="" ctype="" />
+      <f name="A.excessType" alias="" ctype="超领区分" />
+      <f name="A.virtualClass" alias="" ctype="虚拟领料区分" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="FORMAT(A.scrapQuantity,2)" alias="scrapQuantity" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+      <f name="FORMAT(A.quantity,2)" alias="quantity" ctype="" />
+      <f name="A.requisitionDate" alias="" ctype="" />
+      <f name="FORMAT(b.totalQuantity,2)" alias="orderQty" ctype="" />
+      <f name="b.deliveryDate" alias="" ctype="" />
+      <f name="b.materialId" alias="productId" ctype="" />
+      <f name="b.materialName" alias="productName" ctype="" />
+    </select>
+    <from>v_requisitiondetail a left join v_orderdetail b on a.ysid=b.ysid</from>
+    <orderby>A.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
 	<power></power>    
   </query>
   <query>

@@ -17,11 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ys.business.action.model.order.ArrivalModel;
-import com.ys.business.action.model.order.PaymentModel;
 import com.ys.business.action.model.order.RequisitionModel;
-import com.ys.business.service.order.ArrivalService;
-import com.ys.business.service.order.PaymentService;
 import com.ys.business.service.order.RequisitionService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
@@ -181,12 +177,31 @@ public class RequisitionAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "excessInit"://超领查询
-				//excessInit();
 				rtnUrl = "/business/inventory/requisitionexcessmain";
+				break;
+			case "excessSearch"://超领查询
+				dataMap = doExcessSearch(data);
+				printOutJsonObj(response, dataMap);
 				break;
 			case "excessAddInit"://超领申请
 				//excessAddInit();
 				rtnUrl = "/business/inventory/requisitionexcessadd";
+				break;
+			case "excessAdd"://超领申请保存
+				doExcessInsert();
+				rtnUrl = "/business/inventory/requisitionexcessview";
+				break;
+			case "excessDetail"://超领申请查看
+				doShowExcessDetail();
+				rtnUrl = "/business/inventory/requisitionexcessview";
+				break;
+			case "excessEdit"://超领申请编辑
+				doShowExcessDetail();
+				rtnUrl = "/business/inventory/requisitionexcessedit";
+				break;
+			case "excessUpdate"://超领申请编辑保存
+				doExcessUpdate();
+				rtnUrl = "/business/inventory/requisitionexcessview";
 				break;
 				
 		}
@@ -288,6 +303,34 @@ public class RequisitionAction extends BaseAction {
 	}
 	
 	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doExcessSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_REQUISITIOEXCESS+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_REQUISITIOEXCESS+Constants.FORM_KEYWORD2);
+			
+		}
+		
+		try {
+			dataMap = service.doExcessSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> materialRequisitionSearch(String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
@@ -338,6 +381,7 @@ public class RequisitionAction extends BaseAction {
 			service.addInit();
 			model.addAttribute("userName", userInfo.getUserName());
 			model.addAttribute("requisitionId", request.getParameter("requisitionId"));
+			model.addAttribute("excessType", request.getParameter("excessType"));
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -351,6 +395,29 @@ public class RequisitionAction extends BaseAction {
 		}
 	}
 	
+	public void doExcessInsert(){
+		try{
+			service.insertExcessAndView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void doExcessUpdate(){
+		try{
+			service.updateExcessAndView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public void doShowExcessDetail(){
+		try{
+			service.showExcessDetail();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
 
 	public void doVirtualInsert(){
 		try{

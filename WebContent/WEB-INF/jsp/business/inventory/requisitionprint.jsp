@@ -28,6 +28,13 @@ function ajaxFn(scrollHeight) {
 		var actionUrl = "${ctx}/business/requisition?methodtype=requisitionPrint";
 		actionUrl = actionUrl +"&requisitionId="+requisitionId;		
 		
+		var hidCol = 5;
+		var excessType = '${excessType}';
+		if(excessType == '020'){
+			//超领
+			hidCol = '';
+		}
+		
 		var t = $('#example').DataTable({
 			"paging": false,
 			"processing" : false,
@@ -61,6 +68,7 @@ function ajaxFn(scrollHeight) {
 				}, {"data": "materialName",						//2
 				}, {"data": "unit","className":"td-center"	//3
 				}, {"data": "quantity","className":"td-right"	//4
+				}, {"data": "scrapQuantity","className":"td-right"	,"defaultContent" : '0'//5
 				}, {"data": null,"className":"td-right"	,"defaultContent" : ''//5
 				}
 			],
@@ -75,9 +83,15 @@ function ajaxFn(scrollHeight) {
 	    			}	    								
 	    			return unit;						 
                 }},
+                {"targets":4,"render":function(data, type, row){
+	    			return floatToCurrency(data);
+                }},
+                {"targets":5,"render":function(data, type, row){
+	    			return floatToCurrency(data);
+                }},
                 {
 					"visible" : false,
-					"targets" : [5]
+					"targets" : [hidCol]
 				}
 			]
 			
@@ -173,6 +187,7 @@ function ajaxFn(scrollHeight) {
 						<th >物料名称</th>				
 						<th width="60px">单位</th>
 						<th width="80px">领料数量</th>
+						<th width="80px">退还数量</th>
 						<th width="20px"></th>
 					</tr>
 	
