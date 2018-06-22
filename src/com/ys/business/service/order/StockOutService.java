@@ -247,6 +247,18 @@ public class StockOutService extends CommonService {
 		getOrderDetail(YSId);
 
 	}
+	
+
+	public void deleteAndReturn() throws Exception {
+
+
+		//删除成品入库数据
+		String stockOutId = request.getParameter("stockOutId");
+		deleteStockoutData(stockOutId);
+
+
+	}
+	
 	/**
 	 * 成品出库
 	 * @throws Exception
@@ -363,6 +375,7 @@ public class StockOutService extends CommonService {
 		
 		return YSId;
 	}
+	
 	
 	/**
 	 * 成品出库

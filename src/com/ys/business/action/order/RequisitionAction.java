@@ -187,6 +187,10 @@ public class RequisitionAction extends BaseAction {
 				//excessAddInit();
 				rtnUrl = "/business/inventory/requisitionexcessadd";
 				break;
+			case "excessInitYsidSelected"://超领申请:耀升编号选择
+				excessInitYsidSelected();
+				rtnUrl = "/business/inventory/requisitionexcessadd";
+				break;
 			case "excessAdd"://超领申请保存
 				doExcessInsert();
 				rtnUrl = "/business/inventory/requisitionexcessview";
@@ -202,6 +206,10 @@ public class RequisitionAction extends BaseAction {
 			case "excessUpdate"://超领申请编辑保存
 				doExcessUpdate();
 				rtnUrl = "/business/inventory/requisitionexcessview";
+				break;
+			case "excessDelete"://超领删除
+				doExcessDelete();
+				rtnUrl = "/business/inventory/requisitionexcessmain";
 				break;
 				
 		}
@@ -387,6 +395,16 @@ public class RequisitionAction extends BaseAction {
 		}
 	}
 	
+
+	public void excessInitYsidSelected(){
+		try{
+			service.excessSearchByYsid();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	
 	public void doInsert(){
 		try{
 			service.insertAndView();
@@ -406,6 +424,14 @@ public class RequisitionAction extends BaseAction {
 	public void doExcessUpdate(){
 		try{
 			service.updateExcessAndView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public void doExcessDelete(){
+		try{
+			service.deleteExcessAndReturn();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

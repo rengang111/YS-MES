@@ -106,6 +106,10 @@ public class StockOutAction extends BaseAction {
 				doInsert();
 				rtnUrl = "/business/manufacture/stockoutview";
 				break;
+			case "stockoutDelete":
+				doDelete();
+				rtnUrl = "/business/manufacture/stockoutmain";
+				break;
 			case "orderSearchInit":
 				doInit();
 				rtnUrl = "/business/manufacture/productstoragemain";
@@ -313,7 +317,14 @@ public class StockOutAction extends BaseAction {
 		}
 	}
 
-	
+
+	public void doDelete(){
+		try{
+			service.deleteAndReturn();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
 	
 	public void doUpdate(){
 		try{

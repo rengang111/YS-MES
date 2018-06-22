@@ -47,6 +47,7 @@
       <f name="A.lastPrice" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="A.availabelToPromise" alias="" ctype="" />
+      <f name="A.quantityOnHand" alias="" ctype="" />
       <f name="A.purchaseType" alias="" ctype="物料采购类别" />
       <f name="A.purchaseType" alias="purchaseTypeId" ctype="" />
       <f name="A.unit" alias="" ctype="" />

@@ -62,12 +62,9 @@
 		    		{"targets":6,"render":function(data, type, row){
 		    			var contractId = row["contractId"];		    			
 		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["stockOutId"] + "')\">编辑</a>";
+		    			rtn = rtn + "&nbsp;&nbsp;";
+		    			rtn = rtn + "<a href=\"###\" onClick=\"doDelete('" + row["YSId"] + "','" + row["stockOutId"] + "')\">删除</a>";
 		    			return rtn;
-		    		}},
-		    		{"targets":6,"render":function(data, type, row){
-		    			//var contractId = row["contractId"];		    			
-		    			//var rtn= "<a href=\"###\" onClick=\"doPrint('" + row["stockOutId"] + "')\">打印出库单</a>";
-		    			//return rtn;
 		    		}},
 		    	]        
 			
@@ -218,6 +215,18 @@
 		location.href = url;
 	}
 	
+	function doDelete(YSId,stockoutid) {
+
+		var makeType=$('#makeType').val();
+		var usedType=$('#usedType').val();
+		if(confirm("删除后不能恢复，确定要删除吗？")){
+
+			var url = '${ctx}/business/stockout?methodtype=stockoutDelete&YSId='
+					+YSId+'&stockOutId='+stockoutid
+					+'&makeType='+makeType+"&usedType="+usedType;
+			location.href = url;	
+		}
+	}
 </script>
 
 </head>

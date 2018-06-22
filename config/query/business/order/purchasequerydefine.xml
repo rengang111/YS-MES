@@ -314,7 +314,8 @@
     <pool></pool>     
     <name value="getContractByYSId" />
     <where>
-      	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="AND" />
+      	<w name="A.YSId"       des=""  reqName="YSId"       dtype="ch" oper="="  lg="AND" bt="AND" />
+      	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="AND" />
       </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />

@@ -11,6 +11,13 @@
 <script type="text/javascript">
 
 	$(document).ready(function() {
+		
+		var excessType = '${excessType}';
+		if(excessType == '020'){
+			$('#excess').show();
+		}else{
+			$('#excess').hide();
+		}
 		//日期
 		var mydate = new Date();
 		var number = mydate.getFullYear();
@@ -51,8 +58,11 @@ function ajaxFn(scrollHeight) {
 					"contentType": "application/json; charset=utf-8",
 					"type" : "POST",
 					//"data" : JSON.stringify(aoData),
-					success: function(data){					
-						fnCallback(data);		
+					success: function(data){
+						//data['data'][0]['productRecord'];
+						var remarks = data["data"][0]["remarks"];
+						$('#remarks').html(remarks);	
+						fnCallback(data);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             alert(errorThrown)
@@ -163,6 +173,11 @@ function ajaxFn(scrollHeight) {
 							
 				<td width="100px" class="label">打印时间：</td>				
 				<td colspan="3"><span id="today"></span></td>		
+			</tr>
+			<tr id="excess">				
+				<td class="label" width="100px">超领原由：</td>					
+				<td colspan="5"><pre><span id="remarks"></span></pre></td>
+							
 			</tr>
 										
 		</table>

@@ -113,10 +113,10 @@ function materialAjax(sessionFlag) {
 				}
 			}
 			*/
-			if(ysid == '' || ysid == null){
-				$().toastmessage('showWarningToast', "请输入耀升编号。");
-				return;
-			}
+			//if(ysid == '' || ysid == null){
+			//	$().toastmessage('showWarningToast', "请输入耀升编号。");
+			//	return;
+			//}
 			if(materialid == '' || materialid == null){
 				$().toastmessage('showWarningToast', "请选择物料。");
 				return;

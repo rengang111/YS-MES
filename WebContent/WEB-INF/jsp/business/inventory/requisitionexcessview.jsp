@@ -79,14 +79,24 @@
 
 	function doDelete() {
 		
-		var stockout = 
-		if(confirm("删除后不能恢复,\n\n确定要删除吗？")) {
+		var stockOutId = $('#stockOutId').val();
+		
+		if(stockOutId == "" || stockOutId == null){
 
-			var requisitionId = $('#requisition\\.requisitionid').val();
-			var methodtype = "excessEdit"
-			var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&requisitionId="+requisitionId;
+			if(confirm("删除后不能恢复,\n\n确定要删除吗？")) {
 
-			location.href = url;
+				var requisitionId = $('#requisition\\.requisitionid').val();
+				var YSId = $('#requisition\\.ysid').val();
+				var methodtype = "excessDelete"
+				var url =  "${ctx}/business/requisition?methodtype="+methodtype
+						+"&YSId="+YSId
+						+"&requisitionId="+requisitionId;
+
+				location.href = url;
+			}
+		}else{
+			$().toastmessage('showWarningToast', "该申请已出库，不能删除。");
+			return;
 		}
 		
 	}
@@ -106,7 +116,7 @@
 	<input type="hidden" id="goBackFlag" />
 	<form:hidden path="requisition.ysid"  value="${detail.YSId }" />
 	<form:hidden path="requisition.requisitionid"  value="${detail.requisitionId }" />
-	<input type="hidden" id="stockout"  value="${detail.requisitionId }"/>
+	<input type="hidden" id="stockOutId"  value="${detail.stockOutId }"/>
 	<fieldset>
 		<legend> 领料单</legend>
 		<table class="form" id="table_form">

@@ -232,6 +232,7 @@
       <f name="a.excessType" alias="" ctype="超领区分" />
       <f name="a.virtualClass" alias="" ctype="虚拟领料区分" />
       <f name="IFNULL(a.subBomNo,'0')" alias="subBomNo" ctype="" />
+      <f name="a.remarks" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
@@ -632,7 +633,6 @@
       <f name="a.materialName" alias="" ctype="" /> 
       <f name="a.quantity" alias="" ctype="" />
       <f name="a.price" alias="" ctype="" />
-      <f name="a.totalPrice" alias="" ctype="" />
       <f name="a.checkOutDate" alias="" ctype="" />
       <f name="a.keepUser" alias="" ctype="" />
       <f name="b.loginName" alias="" ctype="" />
@@ -827,16 +827,18 @@
       <f name="A.excessType" alias="" ctype="超领区分" />
       <f name="A.virtualClass" alias="" ctype="虚拟领料区分" />
       <f name="A.YSId" alias="" ctype="" />
-      <f name="FORMAT(A.scrapQuantity,2)" alias="scrapQuantity" ctype="" />
+      <f name="FORMAT(replace(A.scrapQuantity,',',''),2)" alias="scrapQuantity" ctype="" />
       <f name="A.remarks" alias="" ctype="" />
-      <f name="FORMAT(A.quantity,2)" alias="quantity" ctype="" />
+      <f name="FORMAT(replace(A.quantity,',',''),2)" alias="quantity" ctype="" />
       <f name="A.requisitionDate" alias="" ctype="" />
-      <f name="FORMAT(b.totalQuantity,2)" alias="orderQty" ctype="" />
+      <f name="FORMAT(replace(b.totalQuantity,',',''),2)" alias="orderQty" ctype="" />
       <f name="b.deliveryDate" alias="" ctype="" />
       <f name="b.materialId" alias="productId" ctype="" />
       <f name="b.materialName" alias="productName" ctype="" />
+      <f name="IFNULL(c.stockOutId,'')" alias="stockOutId" ctype="" />
+      <f name="FORMAT(IFNULL(replace(c.quantity,',',''),'0'),2)" alias="stockoutQty" ctype="" />
     </select>
-    <from>v_requisitiondetail a left join v_orderdetail b on a.ysid=b.ysid</from>
+    <from>v_requisitiondetail a left join v_stockout c on a.requisitionId=c.requisitionId AND a.materialId=c.materialId left join v_orderdetail b on a.ysid=b.ysid</from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -1015,5 +1017,55 @@
     <groupby></groupby>
     <having></having>
 	<power></power>
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getMAXContractByMaterialId" />
+     <where>
+       <w name="e.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name="e.YSId" alias="" ctype="" />
+      <f name="e.contractId" alias="" ctype="" />
+      <f name="e.supplierId" alias="" ctype="" />
+      <f name="e.materialId" alias="" ctype="" />
+      <f name="e.quantity" alias="" ctype="" />
+      <f name="e.purchaseDate" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <from>v_purchaseorderdetail e ,	(	SELECT	c.contractId,	max(c.purchaseDate) purchaseDate	FROM	(		SELECT		a.contractId,		a.purchaseDate,		b.paymentId		FROM		v_purchaseorderdetail a LEFT JOIN v_paymentdetail b ON a.contractId=b.contractId		WHERE a.materialId='#' 		 ORDER BY a.materialId,a.purchaseDate DESC	) c	WHERE c.paymentId IS NULL ) d WHERE e.contractId=d.contractId </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="purchasePlanForExcess" />
+    <where>
+    	<w name="A.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.quantityOnHand" alias="" ctype="" />
+      <f name="a.availabelToPromise" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="a.purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
+      <f name="a.purchaseType" alias="" ctype="" />
+      <f name="a.subBomNo" alias="" ctype="" />
+      <f name="b.materialId" alias="productId" ctype="" />
+      <f name="b.materialName" alias="productName" ctype="" />
+      <f name="b.totalQuantity" alias="orderQty" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <from>v_purchaseplan AS A LEFT JOIN v_orderdetail b ON a.ysid=b.ysid</from>
+    <groupby></groupby>
+    <having></having>
+    <orderby>a.materialId</orderby>
+	<power></power>    
   </query>
 </root>
