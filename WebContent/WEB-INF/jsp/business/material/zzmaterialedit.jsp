@@ -348,7 +348,7 @@ $(document).ready(function() {
 		var fkwprice = currencyToFloat(vkwprice);
 				
 		//每小时耗电 = 机器功率(KW) * 1
-		var fhourpwer = fkwatt * 1;
+		var fhourpwer = fkwatt * 0.6;
 		var vhourpwer = floatToCurrency(fhourpwer);
 		$('#hourpower').html(vhourpwer);
 		$('#price\\.hourpower').val(vhourpwer);

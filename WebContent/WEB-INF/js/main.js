@@ -883,7 +883,12 @@ function buttonSelectedEvent(){
 }
 
 function myTrim(x) {
-    return x.replace(/^\s+|\s+$/gm,'');
+	if(x == null || x == "" || $.trim(x) == ""){
+		return "";
+	}else{
+    	return x.replace(/^\s+|\s+$/gm,'');
+	}
+	
 }
 
  

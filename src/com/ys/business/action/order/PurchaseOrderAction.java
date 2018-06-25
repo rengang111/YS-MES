@@ -148,6 +148,10 @@ public class PurchaseOrderAction extends BaseAction {
 			case "contractListByMaterialId":
 				getContractListByMaterialId();
 				rtnUrl = "/business/inventory/beginninginventorycontract";
+				break;		
+			case "getContractDeduct"://取得合同扣款明细
+				dataMap = getContractDeduct();
+				printOutJsonObj(response, dataMap);
 				break;
 		}
 		
@@ -315,7 +319,7 @@ public class PurchaseOrderAction extends BaseAction {
 		service.createAcssoryContractAndView();
 	 
 	}
-	
+
 	public void getContractListByMaterialId(){	
 		
 		try {
@@ -325,6 +329,10 @@ public class PurchaseOrderAction extends BaseAction {
 			System.out.println(e.getMessage());
 		}
 		
+	}
+	public HashMap<String, Object> getContractDeduct() throws Exception{	
+		
+		return service.getContractDeduct();		
 	}
 
 }

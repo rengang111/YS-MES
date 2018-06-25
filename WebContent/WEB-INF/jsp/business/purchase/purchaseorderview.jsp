@@ -7,6 +7,116 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
+function deductAjax() {
+	
+	var table = $('#example2').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
+
+	var contractId = $('#contract\\.contractid').val();
+	var actionUrl = "${ctx}/business/contract?methodtype=getContractDeduct";
+	actionUrl = actionUrl + "&contractId=" + contractId;
+	
+	
+	var t = $('#example2').DataTable({
+			"paging": false,
+			"lengthChange":false,
+			"lengthMenu":[50,100,200],//设置一页展示20条记录
+			"processing" : true,
+			"serverSide" : true,
+			"stateSave" : false,
+			"ordering "	:false,
+			"autoWidth"	:false,
+			"searching" : false,
+			"retrieve"  : true,
+			"sAjaxSource" : actionUrl,
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				var param = {};
+				var formData = $("#condition").serializeArray();
+				formData.forEach(function(e) {
+					aoData.push({"name":e.name, "value":e.value});
+				});
+
+				$.ajax({
+					"url" : sSource,
+					"datatype": "json", 
+					"contentType": "application/json; charset=utf-8",
+					"type" : "POST",
+					"data" : JSON.stringify(aoData),
+					success: function(data){
+
+						fnCallback(data);
+						
+						var delay = currencyToFloat( data["delay"] );
+						sumFn(delay);
+						
+					},
+					 error:function(XMLHttpRequest, textStatus, errorThrown){
+		             }
+				})
+			},
+        	"language": {
+        		"url":"${ctx}/plugins/datatables/chinese.json"
+        	},
+			"columns": [
+						{"data": null, "defaultContent" : '',"className" : 'td-center'},
+						{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
+						{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
+						{"data": "materialName", "defaultContent" : ''},//3
+						{"data": "contractQty", "defaultContent" : '', "className" : 'td-right'},
+						{"data": "deductQty", "defaultContent" : '', "className" : 'td-right'},
+						{"data": "price", "defaultContent" : '0', "className" : 'td-right'},
+						{"data": null, "defaultContent" : '0', "className" : 'td-right'},
+						
+						],
+			"columnDefs":[
+	    		{"targets":0,"render":function(data, type, row){
+	    			return row["rownum"] ;				    			 
+                }},
+	    		{"targets":3,"render":function(data, type, row){
+	    			var name = row["materialName"];
+	    			name = jQuery.fixedWidth(name,46);//true:两边截取,左边从汉字开始
+	    			return name;
+	    		}},
+	    		{"targets":4,"render":function(data, type, row){
+	    			
+	    			return floatToCurrency(data);
+	    		}},
+	    		{"targets":5,"render":function(data, type, row){
+	    			
+	    			return floatToCurrency(data);
+	    		}},
+	    		{"targets":7,"render":function(data, type, row){
+	    			var deduct = currencyToFloat( row["deductQty"] );
+	    			var price = currencyToFloat( row["price"] );
+	    			var rtn="";
+
+	    			rtn = floatToCurrency(deduct * price);
+	    			return rtn;
+	    		}},
+	    		{
+					"visible" : false,
+					"targets" : []
+				}
+         	]
+		}
+	);
+	
+
+	t.on('click', 'tr', function() {
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+	});
+
+}
 	function ajaxRawGroup() {
 		
 		var t = $('#example').DataTable({
@@ -28,10 +138,14 @@
 					}, {"className":"td-center"					
 					}, {"className":"td-right"				
 					}, {"className":"td-right"				
-					}, {"className":"td-right"				
-					}, {"className":"td-right"		
 					}			
-				]
+				],
+			"columnDefs":[
+    			{
+					"visible" : false,
+					"targets" : []
+				}
+	    	]
 			
 		}).draw();
 		
@@ -119,7 +233,11 @@
 			
 		});
 		
-		sumFn();//合计值计算
+		deductAjax();
+		
+		contractSum();//合同计算
+		
+		
 		
 	});	
 	
@@ -157,31 +275,53 @@
 
 	};
 	
-	function sumFn(){
+	function contractSum(){
 		
-		var sum7 = 0;
-		var sum8 = 0;
-		var sum9 = 0;
+		var contract = 0;
 		$('#example tbody tr').each (function (){
 			
 			var contractValue = $(this).find("td").eq(5).text();////合同
-			var returnValue  = $(this).find("td").eq(6).text();//退货
-			var payValue   = $(this).find("td").eq(7).text();//应付
 			
 			contractValue= currencyToFloat(contractValue);
-			returnValue = currencyToFloat(returnValue);
-			payValue  = currencyToFloat(payValue);
 			//alert("计划用量+已领量+库存:"+fjihua+"---"+fyiling+"---"+fkucun)
 			
-			sum7 = sum7 + contractValue;
-			sum8 = sum8 + returnValue;
-			sum9 = sum9 + payValue;
+			contract = contract + contractValue;
 						
 		});	
 		
-		$('#contractValue').html(floatToCurrency(sum7));
-		$('#returnValue').html(floatToCurrency(sum8));
-		$('#payValue').html(floatToCurrency(sum9));
+		$('#contractCount').html(floatToCurrency(contract));
+	}
+	
+	function sumFn(delay){
+	
+		var deduct = 0;
+		$('#example2 tbody tr').each (function (){
+			
+			var contractValue = $(this).find("td").eq(7).text();//扣款金额
+			
+			contractValue= currencyToFloat(contractValue);
+			//alert("计划用量+已领量+库存:"+fjihua+"---"+fyiling+"---"+fkucun)
+			
+			deduct = deduct + contractValue;
+						
+		});	
+		
+		var contract = currencyToFloat($('#contractCount').text());
+
+		var taxExcluded,taxes,payment;
+		var taxRate = '${ contract.taxRate }';
+		taxRate = currencyToFloat(taxRate)/100;
+		
+		payment = contract - deduct - delay;//应付款
+		taxExcluded = payment * (1 - taxRate);
+		taxes = payment - taxExcluded;
+
+		$('#deductCount').html(floatToCurrency(deduct));
+		$('#deductCount1').html(floatToCurrency(deduct));
+		$('#deductCount2').html(floatToCurrency(delay));
+		$('#payment').html(floatToCurrency(payment));
+		$('#taxExcluded').html(floatToCurrency(taxExcluded));
+		$('#taxes').html(floatToCurrency(taxes));
 	}
 	
 
@@ -270,8 +410,28 @@
 		<button type="button" id="doPrint" class="DTTT_button" onclick="showContract();">打印</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>
-	<div style="clear: both"></div>		
 	<fieldset style="margin-top: -30px;">
+	<legend> 合同付款</legend>
+		<table class="form" style="font-weight: bold;font-size: 13px;">	
+			<tr> 		
+				<td width="80px" class="label"><label>合同总金额：</label></td>					
+				<td width="100px">${ contract.total }</td>
+				<td width="70px" class="label"><label style="color: red;">报废扣款：</label></td>					
+				<td width="70px"><span id="deductCount1" style="color: red;"></span></td>
+				<td width="70px" class="label"><label style="color: red;">延迟扣款：</label></td>					
+				<td width="70px"><span id="deductCount2" style="color: red;"></span></td>
+				<td width="70px" class="label"><label>应付款：</label></td>					
+				<td width="100px"><span id="payment"></span></td>
+				<td width="70px" class="label"><label>退税率：</label></td>
+				<td width="40px">${ contract.taxRate }</td>
+				<td width="70px" class="label">退税额：</td>
+				<td width="70px"><span id="taxes"></span></td>
+				<td width="70px" class="label"><label>税前价：</label></td>
+				<td><span id="taxExcluded"></span></td>
+			</tr>	
+		</table>
+	</fieldset>
+	<fieldset style="margin-top: -10px;">
 		<legend> 合同详情</legend>
 		<div class="list">
 			<table id="example" class="display" >	
@@ -280,11 +440,9 @@
 					<th style="width:10px">No</th>
 					<th style="width:130px">物料编码</th>
 					<th>物料名称</th>
-					<th style="width:50px">合同数</th>
-					<th style="width:50px">单价</th>
+					<th style="width:60px">合同数</th>
+					<th style="width:60px">单价</th>
 					<th style="width:60px">合同金额</th>
-					<th style="width:50px">退款</th>
-					<th style="width:60px">应付款</th>
 				</tr>
 				</thead>		
 				<tbody>
@@ -297,9 +455,7 @@
 						
 							<td>${ detail.quantity}   </td>								
 							<td><span id="price${status.index }">${ detail.price }</span></td>
-							<td><span id="total${status.index }">${ detail.totalPrice }</span></td>					
-							<td><span id="returnValue${status.index }"></span></td>				
-							<td><span id="pay${status.index }"></span></td>
+							<td><span id="total${status.index }">${ detail.totalPrice }</span></td>
 								
 								<form:hidden path="detailList[${status.index}].recordid" value="${detail.recordId}" />	
 								<form:hidden path="detailList[${status.index}].quantity" value="${detail.quantity}" />	
@@ -316,9 +472,10 @@
 							
 							var pay = floatToCurrency( contractValue + chargeback );
 							
-							//$('#name'+index).html(jQuery.fixedWidth(materialName,45));
-							$('#returnValue'+index).html(floatToCurrency( chargeback ));
-							$('#pay'+index).html(pay);
+							//$('#name'+index).html(jQuery.fixedWidth(materialName,64));
+							
+							//$('#returnValue'+index).html(floatToCurrency( chargeback ));
+							//$('#pay'+index).html(pay);
 							$('#price'+index).html(formatNumber(price));
 							$('#total'+index).html(floatToCurrency(contractValue));
 		
@@ -327,7 +484,7 @@
 								$('#detailTr'+index).addClass('delete');
 								$('#meteLink'+index).contents().unwrap();	
 								$('#total'+index).html('0');
-								$('#pay'+index).html('0');
+								//$('#pay'+index).html('0');
 			 				}				
 						</script>	
 							
@@ -341,29 +498,42 @@
 						<td></td>
 						<td></td>
 						<td >合计：</td>
-						<td ><div id="contractValue"></div></td>
-						<td ><div id="returnValue"></div></td>
-						<td ><div id="payValue"></div></td>
+						<td ><div id="contractCount"></div></td>
 					</tr>
 				</tfoot>
 			</table>
 		</div>
 	</fieldset>
-	<fieldset>
-	<legend> 合同付款</legend>
-		<table class="form" >	
-			<tr> 		
-				<td width="100px" class="label"><label>应付款：</label></td>					
-				<td width="100px">${ contract.total }</td>
-				<td width="100px" class="label"><label>退税率：</label></td>
-				<td width="100px">${ contract.taxRate }</td>
-				<td width="100px" class="label">退税额：</td>
-				<td width="100px">${ contract.taxes }</td>
-				<td width="100px" class="label"><label>税前价：</label></td>
-				<td>${ contract.taxExcluded }</td>
-			</tr>	
-		</table>
-	
+	<fieldset style="margin-top: -10px;">
+		<legend> 合同扣款明细</legend>
+		<div class="list">
+			<table id="example2" class="display" >	
+				<thead>
+				<tr>
+					<th style="width:10px">No</th>
+					<th style="width:80px">退还耀升编号</th>
+					<th style="width:130px">物料编码</th>
+					<th>物料名称</th>
+					<th style="width:50px">合同数量</th>
+					<th style="width:50px">退还数量</th>
+					<th style="width:50px">单价</th>
+					<th style="width:60px">扣款金额</th>
+				</tr>
+				</thead>		
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td ></td>
+						<td ></td>
+						<td >扣款合计：</td>
+						<td ><div id="deductCount"></div></td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
 	</fieldset>
 	<fieldset>
 	<legend> 合同注意事项</legend>

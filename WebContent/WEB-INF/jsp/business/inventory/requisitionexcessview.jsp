@@ -28,6 +28,8 @@
 		        	{"className":"dt-body-center"
 				}, {"className":"td-left"
 				}, {
+				}, {"className":"td-left"
+				}, {"className":"td-left"
 				}, {"className":"td-right","defaultContent" : '0'
 				}, {"className":"td-right","defaultContent" : '0'//退还数量
 				}, {"className":"td-center"
@@ -100,6 +102,16 @@
 		}
 		
 	}
+	
+	function showContract(contractId) {
+		
+		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
+		
+		callProductDesignView("采购合同",url);
+
+		
+	}
+	
 </script>
 
 </head>
@@ -166,9 +178,11 @@
 						<th style="width:1px">No</th>
 						<th class="dt-center" width="150px">物料编号</th>
 						<th class="dt-center" >物料名称</th>	
-						<th class="dt-center" width="80px">超领数量</th>
-						<th class="dt-center" width="80px">退还数量</th>
-						<th width="60px"></th>
+						<th class="dt-center" width="100px">退款合同</th>	
+						<th class="dt-center" width="80px">供应商</th>	
+						<th class="dt-center" width="60px">超领数量</th>
+						<th class="dt-center" width="60px">退还数量</th>
+						<th width="10px"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -177,6 +191,8 @@
 							<td>${status.index + 1}</td>
 							<td>${detail.materialId}</td>
 							<td>${detail.materialName}</td>
+							<td><a href="###" id="meteLink${status.index }" onClick="showContract('${detail.contractId}')">${detail.contractId}</a></td>
+							<td>&nbsp;${detail.supplierId}</td>
 							<td>${detail.quantity}</td>
 							<td>${detail.scrapQuantity}</td>
 							<td></td>

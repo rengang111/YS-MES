@@ -449,7 +449,7 @@
       <f name="f.memo" alias="" ctype="" />
       <f name="f.paymentTerm" alias="" ctype="" />
       <f name="IFNULL(b.quantity,'0')" alias="returnQty" ctype="" />
-      <f name="e.cost" alias="chargeback" ctype="" />
+      <f name="e.chargeback" alias="" ctype="" />
       <f name="IFNULL(a.description,g.materialName)" alias="description" ctype="" />
       <f name="g.unit" alias="" ctype="计量单位" />
       <f name="g.recordId" alias="materialRecordId" ctype="" />
@@ -959,6 +959,48 @@
     <orderby>a.YSId,a.materialId</orderby>
     <groupby></groupby>
     <having>contractQty = 0</having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="contractListDeductById" />
+    <where>
+   	  <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="IFNULL(A.quantity,'0')" alias="deductQty" ctype="" />
+      <f name="b.quantity" alias="contractQty" ctype="" />
+      <f name="b.price" alias="" ctype="" />  
+      <f name="b.materialName" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+    </select>
+    <from>b_PurchaseOrderdDeduct a join v_purchaseorderdetail b on a.contractId=b.contractId AND a.materialId=b.materialId WHERE a.deleteFlag='0' </from>
+    <orderby>b.YSId,b.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="contractDelayDeduct" />
+    <where>
+   	  <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="sum(REPLACE(a.quantity, ',', ''))" alias="contractQty" ctype="" />
+      <f name="sum(REPLACE(IFNULL(b.quantity, 0), ',', '' ))" alias="stockinQty" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.deliveryDate" alias="" ctype="" />
+      <f name="max(b.checkInDate)" alias="checkInDate" ctype="" />
+    </select>
+    <from>v_purchaseorderdetail a left join v_purchasestockindetailgroup b on a.contractId=b.contractId AND a.materialId=b.materialId WHERE a.deleteFlag='0' </from>
+    <orderby>b.YSId,b.materialId</orderby>
+    <groupby>a.contractId</groupby>
+    <having></having>
 	<power></power>    
   </query>
 </root>

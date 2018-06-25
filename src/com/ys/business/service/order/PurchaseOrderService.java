@@ -1355,6 +1355,65 @@ public class PurchaseOrderService extends CommonService {
 		}	
 	}
 	
+
+
+	public HashMap<String, Object> getContractDeduct() throws Exception {
+
+		getContractDelayDeduct();//合同延期扣款
+		
+		return getContractScrapDeduct();//物料报废扣款
+	}
+
+	private void getContractDelayDeduct() throws Exception {
+		
+		String contractId = request.getParameter("contractId");
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("contractDelayDeduct");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("materialId", contractId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0 ){
+
+			String contractQty =  dataModel.getYsViewData().get(0).get("contractQty");
+			//String stockinQty =  dataModel.getYsViewData().get(0).get("stockinQty");
+			String deliveryDate =  dataModel.getYsViewData().get(0).get("deliveryDate");
+			String checkInDate =  dataModel.getYsViewData().get(0).get("checkInDate");
+			
+			float fcontractQty = stringToFloat(contractQty);
+			//float fstockinQty = stringToFloat(stockinQty);
+			//延期判断
+			int days = Integer.parseInt(CalendarUtil.getDayBetween(deliveryDate,checkInDate));
+			if(days > 30){
+				//合同入库超期
+				double delay = (fcontractQty * 0.01);//合同总金额的百分之一
+				model.addAttribute("delay",String.valueOf(delay));
+				model.addAttribute("contractId",contractId);
+			}else{
+				model.addAttribute("delay","0");
+			}
+		}
+	}
+	
+	
+	private HashMap<String, Object> getContractScrapDeduct() throws Exception {
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		String contractId = request.getParameter("contractId");
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("contractListDeductById");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("materialId", contractId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("recordCount", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		
+		return modelMap;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public boolean checkContractArrival(
 			String contractId,String materialId) throws Exception{
