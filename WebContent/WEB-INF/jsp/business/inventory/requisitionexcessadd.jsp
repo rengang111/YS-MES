@@ -198,7 +198,7 @@ $.fn.dataTable.TableTools.buttons.reset = $.extend(true, {},
 						$(this).parent().parent().find('td').eq(5).find("input").addClass('error');
 					}else{
 						scra = currencyToFloat(scra);
-						if(scra<=0){
+						if(scra<0){
 							scraFlag = false;
 							$(this).parent().parent().find('td').eq(5).find("input").addClass('error');
 						}

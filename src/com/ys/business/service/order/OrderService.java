@@ -22,13 +22,23 @@ import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.business.db.dao.B_FollowDao;
+import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderCancelDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
+import com.ys.business.db.dao.B_PurchasePlanDetailDao;
+import com.ys.business.db.dao.B_RequisitionDetailDao;
+import com.ys.business.db.dao.B_StockOutDao;
+import com.ys.business.db.dao.B_StockOutDetailDao;
 import com.ys.business.db.data.B_FollowData;
+import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderCancelData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_PurchasePlanDetailData;
+import com.ys.business.db.data.B_RequisitionDetailData;
+import com.ys.business.db.data.B_StockOutData;
+import com.ys.business.db.data.B_StockOutDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 
@@ -297,6 +307,25 @@ public class OrderService extends CommonService  {
 		return modelMap;
 	}
 	
+	public HashMap<String, Object> getOrderViewByPIId() throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderViewByPIId");
+		baseQuery = new BaseQuery(request, dataModel);
+
+		String key = request.getParameter("key").toUpperCase();
+		userDefinedSearchCase.put("key", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+	
+
 	public ArrayList<HashMap<String, String>> getOrderViewByPIId(
 			String PIId ) throws Exception {
 
@@ -317,8 +346,6 @@ public class OrderService extends CommonService  {
 		
 		return modelMap;
 	}
-	
-
 	public ArrayList<HashMap<String, String>> createOrderFromProduct(
 			String materialId ) throws Exception {
 
@@ -463,7 +490,7 @@ public class OrderService extends CommonService  {
 		return modelMap;
 	}
 	
-	
+
 	/*
 	 * 1.物料新增处理(一条数据)
 	 * 2.子编码新增处理(N条数据)
@@ -550,6 +577,7 @@ public class OrderService extends CommonService  {
 						
 					}else{
 						//正常订单
+						data.setStatus(Constants.ORDER_STS_1);
 						insertOrderDetail(data,piId);						
 					}							
 				}			
@@ -566,6 +594,216 @@ public class OrderService extends CommonService  {
 		
 		return rtnModel;
 	}	
+	
+	
+	/**
+	 * 订单转移
+	 * 
+	 */
+	public Model insertTransfer(
+			OrderModel reqFormBean,
+			Model rtnModel,
+			HttpServletRequest request,
+			UserInfo userInfo) throws Exception  {
+
+		ts = new BaseTransaction();
+
+		try {
+			
+			ts.begin();
+					
+			B_OrderData reqData = (B_OrderData)reqFormBean.getOrder();
+			B_OrderDetailData reqOrderDetail = reqFormBean.getOrderDetail();
+			B_OrderDetailData reqOrderTransfer = reqFormBean.getOrderTransfer();
+			
+			String newYsid = reqOrderDetail.getYsid();
+			String trfsYsid = reqOrderTransfer.getYsid();
+			String piId = reqData.getPiid();
+		
+			//过滤空行或者被删除的数据
+			if(reqOrderDetail.getMaterialid() != null && 
+				reqOrderDetail.getMaterialid() != ""){
+
+				//新订单:新增订单基本信息
+				insertOrder(reqData,userInfo);
+			
+				//新订单:新增详情
+				reqOrderTransfer.setTotalquantity(reqOrderTransfer.getQuantity());
+				reqOrderDetail.setStatus(Constants.ORDER_STS_4);//已入库
+				insertOrderDetail(reqOrderDetail,piId);						
+						
+				//转移目标的订单：更新订单数量
+				updateOrderDetail2(reqOrderTransfer);
+				
+				//转移目标的订单：更新总价
+				B_OrderDetailData transfer = getOrderDetailById(trfsYsid);
+				String transferPiid = transfer.getPiid();
+				
+				float price = stringToFloat( transfer.getPrice() );
+				float quantity = stringToFloat( transfer.getTotalquantity() );
+				float oldTotal = price * quantity;
+				float cutQty = stringToFloat( reqOrderDetail.getTotalquantity() );
+				float newTotal = price * (quantity - cutQty);
+				
+				updateOrder(transferPiid,userInfo,newTotal,oldTotal);
+
+				List<B_PurchasePlanDetailData> planList = getPurchasePlanDetail(trfsYsid);
+				
+				//******转移目标的订单:负数出库******
+				String cutQuantity = floatToString( cutQty * (-1));
+
+				insertStockOutData(planList,trfsYsid,cutQuantity);
+				
+				//******新订单:增加出库******
+				//出库数量: cutQty
+				insertStockOutData(planList,newYsid,floatToString(cutQty));
+			}
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			ts.rollback();
+		}
+		
+		return rtnModel;
+	}
+	
+	private void insertStockOutData(
+			List<B_PurchasePlanDetailData> planList,
+			String ysid,
+			String cutQuantity) throws Exception{
+		
+
+		B_StockOutData out = new B_StockOutData();
+		out = getStorageRecordId(out);	
+		String stockoutid = out.getStockoutid();
+		
+
+		//出库单做成
+		for(B_PurchasePlanDetailData plan : planList){
+
+			B_StockOutDetailData outDetail = new B_StockOutDetailData();
+			
+			String materialId = plan.getMaterialid();	
+			
+			outDetail.setStockoutid(stockoutid);//出库单编号
+			outDetail.setMaterialid(materialId);
+			outDetail.setDepotid(getDepotId(materialId));
+
+			String outPrice = getMAPrice(materialId);
+			float total = stringToFloat(outPrice) * stringToFloat(cutQuantity);
+			outDetail.setPrice(outPrice);
+			outDetail.setQuantity(cutQuantity);
+			outDetail.setTotalprice(floatToString(total));
+			
+			insertStockOutDetail(outDetail);
+			
+		}
+		//出库单
+		out.setYsid(ysid);
+		insertStockOut(out);
+	}
+	
+	private void insertStockOut(
+			B_StockOutData stock) throws Exception {
+		
+	
+		//插入新数据
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"订单转移",userInfo);
+		copyProperties(stock,commData);
+		guid = BaseDAO.getGuId();
+		stock.setRecordid(guid);
+		stock.setKeepuser(userInfo.getUserId());//默认为登陆者
+		stock.setCheckoutdate(CalendarUtil.fmtYmdDate());
+		stock.setStockouttype(Constants.REQUISITION_PARTS);//装配领料
+		
+		new B_StockOutDao().Create(stock);
+		
+		
+	}
+
+	private void insertStockOutDetail(
+			B_StockOutDetailData stock) throws Exception {
+
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"订单转移",userInfo);
+		copyProperties(stock,commData);
+		guid = BaseDAO.getGuId();
+		stock.setRecordid(guid);
+				
+		new B_StockOutDetailDao().Create(stock);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String getMAPrice(
+			String materialId) throws Exception{
+		String price="0";
+		String where = " materialId ='" + materialId + "' AND deleteFlag='0'";
+		List<B_MaterialData> list = new B_MaterialDao().Find(where);
+		
+		if(list.size() > 0)
+			price = list.get(0).getMaprice();
+				
+		return price; 
+	}
+
+	
+	/**
+	 * 设置默认的仓库分类
+	 * @return
+	 */
+	public String getDepotId(String materialId){
+		
+		String depotid="010";//采购件
+		
+		if(materialId.substring(0,1).equals("A")){
+			depotid="030";//原材料	
+		}else if(materialId.substring(0,1).equals("G")){
+			depotid="040";//包装件								
+		}else if(materialId.substring(0,3).equals("B01")){
+			depotid="020";//自制件								
+		}		
+		return depotid;
+	}
+	
+	private B_StockOutData getStorageRecordId(
+			B_StockOutData data) throws Exception {
+	
+		String parentId = BusinessService.getshortYearcode()+
+				BusinessConstants.SHORTNAME_CK;
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");
+		dataModel.setQueryName("getMAXStockOutId");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("parentId", parentId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		baseQuery.getYsFullData();	
+		
+		//查询出的流水号已经在最大值上 " 加一 "了
+		String code = dataModel.getYsViewData().get(0).get("MaxSubId");	
+		
+		String id = BusinessService.getStockOutId(
+						parentId,
+						code,
+						false);	
+		
+		data.setStockoutid(id);
+		data.setParentid(parentId);
+		data.setSubid(code);			
+		
+		return data;
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<B_PurchasePlanDetailData> getPurchasePlanDetail(
+			String ysid) throws Exception{
+		String where = " YSId ='" + ysid + "' AND left(materialId,1) <> 'H' AND deleteFlag='0'";
+		List<B_PurchasePlanDetailData> list = new B_PurchasePlanDetailDao().Find(where);
+				
+		return list; 
+	}
 
 	/*
 	 * 订单详情插入处理
@@ -626,8 +864,8 @@ public class OrderService extends CommonService  {
 	
 		newData.setPiid(piId);
 		newData.setCurrency(reqModel.getCurrency());
-		newData.setRebaterate(reqModel.getRebateRate());//退税率
-		newData.setStatus(Constants.ORDER_STS_1);
+		//newData.setRebaterate(reqModel.getRebateRate());//退税率
+		//newData.setStatus(Constants.ORDER_STS_1);
 		newData.setReturnquantity(Constants.ORDER_RETURNQUANTY);
 		
 		dao.Create(newData);
@@ -758,6 +996,42 @@ public class OrderService extends CommonService  {
 		
 	}
 	
+
+	/*
+	 * 订单基本信息更新处理
+	 */
+	@SuppressWarnings("unchecked")
+	public void updateOrder(
+			String piid,
+			UserInfo userInfo,
+			float newTotal,
+			float oldTotal) throws Exception{
+		
+		B_OrderDao dao = new B_OrderDao();
+		
+		//取得更新前数据		
+		String astr_Where = " piid='" + piid +"' AND deleteFlag='0' ";
+		List<B_OrderData> list = dao.Find(astr_Where);					
+		
+		if(null != list && list.size() > 0){
+			
+			B_OrderData dbData = list.get(0);
+
+			//处理共通信息
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"订单转移金额修正",userInfo);
+
+			copyProperties(dbData,commData);
+			//获取页面数据
+			float dbTotal = stringToFloat( dbData.getTotalprice() );
+			String total = floatToString(dbTotal - oldTotal + newTotal);
+			dbData.setTotalprice(total);
+			
+			dao.Store(dbData);
+			
+		}
+	}
+	
 	/*
 	 * 订单基本信息更新处理
 	 */
@@ -816,6 +1090,32 @@ public class OrderService extends CommonService  {
 	/*
 	 * 订单详情更新处理
 	 */
+	private void updateOrderDetail2(
+			B_OrderDetailData newData) throws Exception{
+		
+		String where = " YSId ='" + newData.getYsid() +"' AND deleteFlag='0'";
+		B_OrderDetailData dbData = null;
+		List<B_OrderDetailData> list = new B_OrderDetailDao().Find(where);
+				
+		if(list != null && list.size() > 0){
+			
+			//获取页面数据
+			dbData = list.get(0);
+			
+			copyProperties(dbData,newData);
+			//处理共通信息
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"订单转移",userInfo);
+			copyProperties(dbData,commData);
+			dbData.setTotalprice(newData.getTotalprice());//销售总价
+			
+			new B_OrderDetailDao().Store(dbData);
+		}
+	}
+	
+	/*
+	 * 订单详情更新处理
+	 */
 	private void updateOrderDetail(
 			B_OrderDetailData newData) throws Exception{
 		
@@ -831,6 +1131,7 @@ public class OrderService extends CommonService  {
 
 				insertOrderDetailPei(newData,newData.getPiid());
 			}else{
+				newData.setStatus(Constants.ORDER_STS_1);
 				insertOrderDetail(newData,newData.getPiid());
 				
 			}
@@ -1257,14 +1558,28 @@ public class OrderService extends CommonService  {
 		return modelMap;		
 	}
 	
+	@SuppressWarnings("unchecked")
+	public B_OrderDetailData getOrderDetailById(String YSId) throws Exception{
+		B_OrderDetailData data = new B_OrderDetailData();
+		String where = " YSId='"+YSId+"' AND deleteFlag='0'";
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+		List<B_OrderDetailData> list; 
+		list = (List<B_OrderDetailData>)dao.Find(where);	
+		if(list != null && list.size() > 0){
+			data = list.get(0);
+		}
+			
+		return data;		
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public String ysidExistCheck(String where) throws Exception{
 
 		String ExFlag = "";
 		B_OrderDetailDao dao = new B_OrderDetailDao();
-		List<B_OrderData> list; 
-		list = (List<B_OrderData>)dao.Find(where);	
+		List<B_OrderDetailDao> list; 
+		list = (List<B_OrderDetailDao>)dao.Find(where);	
 		if(list != null && list.size() > 0){
 			ExFlag = "1";
 		}

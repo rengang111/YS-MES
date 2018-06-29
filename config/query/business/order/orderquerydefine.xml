@@ -139,6 +139,7 @@
       <w name="A.PIId" des=""  reqName="keywords1" dtype="ch" oper="="  lg="AND" bt="" />
       <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
       <w name="A.peiYsid" des=""  reqName="peiYsid" dtype="ch" oper="="  lg="AND" bt="" />
+      <w name="A.YSId" des=""  reqName="key" dtype="ch" oper="like"  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.orderRecordId" alias="" ctype="" />

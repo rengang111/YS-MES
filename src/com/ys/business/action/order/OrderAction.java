@@ -200,6 +200,18 @@ public class OrderAction extends BaseAction {
 				doOrderCancelDelete();
 				rtnUrl = "/business/order/ordercancelmain";
 				break;
+			case "orderTransfer":
+				doOrderTransfer();
+				rtnUrl = "/business/order/ordertransferadd";
+				break;
+			case "orderDetailSearch":
+				dataMap = orderDetailSearch();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "insertTransfer":
+				doInsertTransfer(reqModel,model, request);
+				rtnUrl = "/business/order/orderview";
+				break;
 				
 		}
 		
@@ -510,6 +522,27 @@ public class OrderAction extends BaseAction {
 		
 	}		
 	
+	public void doInsertTransfer(
+			OrderModel reqModel,
+			Model model,
+			HttpServletRequest request) throws Exception {
+
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		model = orderService.insertTransfer(reqModel,model, request,userInfo);
+		
+		//返回到明细查看页面
+		String PIId = reqModel.getOrder().getPiid();
+		dbData = orderService.getOrderViewByPIId(PIId);
+
+		String goBackFlag = request.getParameter("goBackFlag");
+		model.addAttribute("order",  dbData.get(0));
+		model.addAttribute("detail", dbData);
+		model.addAttribute("goBackFlag",goBackFlag);
+		
+	}		
+	
 	
 	public void doEdit(
 			OrderModel reqModel, 
@@ -614,6 +647,12 @@ public class OrderAction extends BaseAction {
 	 
 	}	
 
+	public HashMap<String, Object>  orderDetailSearch() throws Exception
+	{
+	    return this.orderService.getOrderViewByPIId();
+	 
+	}
+	
 	public HashMap<String, Object>  ysidExistCheck() throws Exception
 	{
 		String YSId = request.getParameter("YSId");
@@ -731,6 +770,15 @@ public class OrderAction extends BaseAction {
 		}
 		
 	}
+		
+
+	public void doOrderTransfer(){
+		
+		reqModel = orderService.createOrder();
+		model.addAttribute("orderForm", reqModel);
+		
+	}
+	
 	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doOrderCancelSearch(String formId, String data){

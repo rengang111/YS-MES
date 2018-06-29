@@ -123,8 +123,7 @@
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
 		    			
-		    			var v = row["quantity"],id = row["YSId"];
-		    			return YSKcheck(v,id);
+		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
@@ -281,9 +280,13 @@
 	}
 
 	function doEdit(recordId,parentId) {
-		var str = '';
-		var isFirstRow = true;
 		var url = '${ctx}/business/order?methodtype=edit&parentId=' + parentId+'&recordId='+recordId;
+
+		location.href = url;
+	}	
+
+	function doTransfer() {
+		var url = '${ctx}/business/order?methodtype=orderTransfer';
 
 		location.href = url;
 	}
@@ -389,7 +392,7 @@
 			</div>
 			<div id="DTTT_container" style="height:40px;float: right">
 				<a  class="DTTT_button " onclick="doCreate(1);"><span>订单录入</span></a>
-			<!-- 	<a  class="DTTT_button " onclick="doDelete();"><span>删除订单</span></a> -->
+			 	<a  class="DTTT_button " onclick="doTransfer();"><span>订单转移</span></a> 
 			</div>
 			<div id="clear"></div>
 			<table id="TMaterial" class="display" >

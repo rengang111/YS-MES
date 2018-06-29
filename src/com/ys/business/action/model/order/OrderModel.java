@@ -27,6 +27,7 @@ public class OrderModel extends BaseModel {
 	private ArrayList<ListOption> orderNatureList;//订单性质
 	private B_OrderData order = new B_OrderData();
 	private B_OrderDetailData orderDetail = new B_OrderDetailData();
+	private B_OrderDetailData orderTransfer = new B_OrderDetailData();
 	private B_CustomerData customer = new B_CustomerData();
 	private B_OrderCancelData orderCancel = new B_OrderCancelData();
 	private List<B_OrderDetailData> orderDetailLines;
@@ -143,6 +144,13 @@ public class OrderModel extends BaseModel {
 	}
 	public void setOrderDetail(B_OrderDetailData orderDetail) {
 		this.orderDetail = orderDetail;
+	}
+
+	public B_OrderDetailData getOrderTransfer() {
+		return this.orderTransfer;
+	}
+	public void setOrderTransfer(B_OrderDetailData orderTransfer) {
+		this.orderTransfer = orderTransfer;
 	}
 	
 	public B_CustomerData getCustomer() {

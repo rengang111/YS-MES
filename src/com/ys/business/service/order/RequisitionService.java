@@ -624,7 +624,7 @@ public class RequisitionService extends CommonService {
 			for(B_RequisitionDetailData data:reqDataList ){
 				float quantity = stringToFloat(data.getQuantity());
 				
-				if(quantity <= 0)
+				if(quantity == 0)
 					continue;
 				
 				data.setRequisitionid(requisitionid);
