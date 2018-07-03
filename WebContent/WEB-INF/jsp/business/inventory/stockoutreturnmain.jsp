@@ -5,7 +5,7 @@
 <head>
 <%@ include file="../../common/common.jsp"%>
 
-<title>入库退货--一览</title>
+<title>领料退货--一览</title>
 <script type="text/javascript">
 
 	function ajax(pageFlg,sessionFlag,stateSave) {
@@ -15,9 +15,8 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var status = '';
-		var actionUrl =  "${ctx}/business/depotReturn?methodtype=search&sessionFlag="
-				+sessionFlag+"&status="+status,
+		
+		var actionUrl =  "${ctx}/business/requisition?methodtype=stockoutReturnSearch&excessType=030",
 
 		actionUrl = actionUrl + "&keyBackup=" + pageFlg;
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
@@ -66,12 +65,11 @@
 				"columns": [
 					{"data": null, "defaultContent" : '',"className" : 'td-center'},
 					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
-					{"data": "contractId", "defaultContent" : '', "className" : 'td-left'},
+					{"data": "requisitionId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "materialName", "defaultContent" : ''},//3
-					{"data": "supplierId", "defaultContent" : ''},
-					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
-					{"data": "checkInDate", "className" : 'td-center'},//7
+					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},
+					{"data": "requisitionDate", "className" : 'td-center'},//7
 					
 				],
 				"columnDefs":[
@@ -80,7 +78,7 @@
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["receiptId"] + "')\">"+row["YSId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["requisitionId"] + "')\">"+row["YSId"]+"</a>";
 		    			return rtn;
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
@@ -88,7 +86,7 @@
 		    			name = jQuery.fixedWidth(name,46);//true:两边截取,左边从汉字开始
 		    			return name;
 		    		}},
-		    		{"targets":6,"render":function(data, type, row){
+		    		{"targets":5,"render":function(data, type, row){
 		    			return floatToCurrency(data);
 		    		}},
 		    		{
@@ -136,16 +134,16 @@
 
 	}
 	
-	function doShowDetail(inspectionReturnId) {
+	function doShowDetail(requisitionId) {
 		
-		var url =  "${ctx}/business/depotReturn?methodtype=showDepotRentunDeital&inspectionReturnId="+inspectionReturnId;
+		var url =  "${ctx}/business/requisition?methodtype=stockoutReturnDetail&requisitionId="+requisitionId;
 		location.href = url;
 	}
 	
 
 	function doCreate() {
 		
-		var url = '${ctx}/business/depotReturn?methodtype=create';
+		var url = '${ctx}/business/requisition?methodtype=stockoutReturnAddInit';
 		location.href = url;
 	}
 	
@@ -184,19 +182,18 @@
 
 	<div class="list">
 		<div id="DTTT_container" style="height:40px;float: right">
-			<a  class="DTTT_button " onclick="doCreate();"><span>退货录入</span></a>
+			<a  class="DTTT_button " onclick="doCreate();"><span>领料退货录入</span></a>
 		</div>
 		<table id="TMaterial" class="display" >
 			<thead>						
 				<tr>
 					<th style="width: 10px;">No</th>
 					<th style="width: 70px;">耀升编号</th>
-					<th style="width: 100px;">合同编号</th>
-					<th style="width: 150px;">物料编号</th>
-					<th>物料名称</th>
-					<th style="width: 70px;">供应商</th>
-					<th style="width: 80px;">取消数量</th>
-					<th style="width: 70px;">取消日期</th>
+					<th style="width: 100px;">领料单编号</th>
+					<th style="width: 150px;">产品编号</th>
+					<th>产品名称</th>
+					<th style="width: 80px;">订单数量</th>
+					<th style="width: 70px;">退还日期</th>
 				</tr>
 			</thead>
 		</table>

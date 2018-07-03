@@ -176,7 +176,7 @@ public class RequisitionAction extends BaseAction {
 				dataMap = doVirtualSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "excessInit"://超领查询
+			case "excessInit"://超领查询*********************
 				rtnUrl = "/business/inventory/requisitionexcessmain";
 				break;
 			case "excessSearch"://超领查询
@@ -210,6 +210,29 @@ public class RequisitionAction extends BaseAction {
 			case "excessDelete"://超领删除
 				doExcessDelete();
 				rtnUrl = "/business/inventory/requisitionexcessmain";
+				break;
+			case "stockoutReturnInit"://领料退货初始化*********************
+				rtnUrl = "/business/inventory/stockoutreturnmain";
+				break;
+			case "stockoutReturnSearch"://领料退货查询
+				dataMap = stockoutReturnSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "stockoutReturnAddInit"://领料退货申请
+				stockoutReturnAddInit();
+				rtnUrl = "/business/inventory/stockoutreturnadd";
+				break;
+			case "stockoutReturnInsert"://领料退货保存
+				stockoutReturnInsert();
+				rtnUrl = "/business/inventory/stockoutreturnview";
+				break;
+			case "stockoutReturnDelete"://领料退货保存
+				stockoutReturnDelete();
+				rtnUrl = "/business/inventory/stockoutreturnmain";
+				break;
+			case "stockoutReturnDetail"://领料退货详情
+				stockoutReturnDetail();
+				rtnUrl = "/business/inventory/stockoutreturnview";
 				break;
 				
 		}
@@ -338,6 +361,34 @@ public class RequisitionAction extends BaseAction {
 		return dataMap;
 	}
 	
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> stockoutReturnSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_STOCKOUTRETURN+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_STOCKOUTRETURN+Constants.FORM_KEYWORD2);
+		}
+		
+		try {
+			dataMap = service.stockoutReturnSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> materialRequisitionSearch(String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -437,6 +488,49 @@ public class RequisitionAction extends BaseAction {
 		}
 	}
 
+
+
+	public void stockoutReturnAddInit(){
+		try{
+
+			model.addAttribute("userName",userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+
+	public void stockoutReturnInsert(){
+		try{
+
+			service.stockoutReturnInsertAndView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+
+	public void stockoutReturnDelete(){
+		try{
+
+			service.stockoutReturnDelete();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+
+	public void stockoutReturnDetail(){
+		try{
+
+			service.showExcessDetail();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
+	
+	
 	public void doShowExcessDetail(){
 		try{
 			service.showExcessDetail();

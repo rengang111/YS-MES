@@ -24,6 +24,7 @@ public class Constants {
 	public static final String FORM_REQUISITION = "requisition";//领料申请
 	public static final String FORM_REQUISITIONVIRTUAL = "requisitionvirtual";//虚拟领料
 	public static final String FORM_REQUISITIOEXCESS= "requisitionexcess";//超领申请
+	public static final String FORM_STOCKOUTRETURN= "stockoutreturn";//领料退货
 	public static final String FORM_REQUISITION_M = "requisitionmateiral";//直接领料申请
 	public static final String FORM_REQUISITION_C = "requisitionzz_C";//吹塑领料申请
 	public static final String FORM_REQUISITION_Z = "requisitionzz_Z";//注塑领料申请
@@ -244,6 +245,7 @@ public class Constants {
 
 	public static final String REQUISITION_NORMAL = "010";//正常领料
 	public static final String REQUISITION_VIRTUAL = "020";//虚拟领料
+	public static final String REQUISITION_MINUS = "030";//负数领料
 	
 	/**
 	 * 付款状态

@@ -27,6 +27,7 @@
 	       // "scrollCollapse": false,
 	        "paging"    : false,
 	        //"pageLength": 50,
+	        "width"  : false,
 	        "ordering"  : false,
 			"dom"		: '<"clear">rt',
 			"sAjaxSource" : actionUrl,
@@ -138,6 +139,11 @@
 				
 					return inputTxt;
                 }},
+	    		{"targets":9,"render":function(data, type, row){ 					
+			
+					return  jQuery.fixedWidth( data,18);
+					
+                }},
                 {
 					"visible" : false,
 					"targets" : []
@@ -198,15 +204,6 @@
 					location.href = url;		
 				});
 
-		$("#showHistory").click(
-				function() {
-					var YSId='${order.YSId }';
-					var makeType=$('#makeType').val();
-					var usedType=$('#usedType').val();
-					var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId
-							+"&makeType="+makeType+"&usedType="+usedType;
-					location.href = url;		
-				});
 		
 		$("#insert").click(
 				function() {

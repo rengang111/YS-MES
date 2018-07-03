@@ -251,7 +251,7 @@
 				<td width="150px">${order.YSId }</td>
 									
 				<td class="label" width="100px">生产数量：</td>					
-				<td colspan="3">${order.manufactureQuantity }&nbsp;(订单数量+额外采购)</td>
+				<td colspan="3">${order.totalQuantity }&nbsp;(订单数量+额外采购)</td>
 			</tr>
 			<tr>							
 				<td class="label">产品编号：</td>					

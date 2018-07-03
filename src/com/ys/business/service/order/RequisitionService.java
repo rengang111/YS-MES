@@ -215,6 +215,59 @@ public class RequisitionService extends CommonService {
 
 	}
 	
+	public HashMap<String, Object> stockoutReturnSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		String[] keyArr = getSearchKey(Constants.FORM_STOCKOUTRETURN,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+
+		dataModel.setQueryName("getRequisitionListForExcess");	
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
+		//String requisitionSts = request.getParameter("requisitionSts");
+		
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}
+		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
+	
 	public HashMap<String, Object> doExcessSearch( String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -266,6 +319,7 @@ public class RequisitionService extends CommonService {
 		return modelMap;		
 
 	}
+	
 	
 	public HashMap<String, Object> doMaterialRequisitionSearch(
 			String data) throws Exception {
@@ -453,6 +507,49 @@ public class RequisitionService extends CommonService {
 		//订单详情
 
 		getExcessDetail(requisitionId);
+	}
+
+	/**
+	 * 领料退还删除
+	 * @throws Exception
+	 */
+	public void stockoutReturnDelete() throws Exception {
+
+		ts = new BaseTransaction();
+
+		try {
+			ts.begin();
+			
+			String requisitionId = request.getParameter("requisitionId");
+			
+			deleteRequisition(requisitionId);
+			
+			deleteRequisitionDetail(requisitionId);
+		
+		
+			ts.commit();
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			ts.rollback();
+		}
+		
+	}
+	
+
+	/**
+	 * 领料退还保存（负数领料）
+	 * @throws Exception
+	 */
+	public void stockoutReturnInsertAndView() throws Exception {
+
+		B_RequisitionData reqData = insertStockOutReturn(
+				Constants.REQUISITION_NORMAL,//正常领料
+				Constants.STOCKOUT_2	//待出库
+				);
+
+		//订单详情
+		getExcessDetail(reqData.getRequisitionid());
 	}
 	
 	/**
@@ -657,6 +754,58 @@ public class RequisitionService extends CommonService {
 		return reqData;
 	}
 	
+
+	private B_RequisitionData insertStockOutReturn(
+			String virtualClass,String stockoutType){
+
+		B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
+		List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
+		
+		ts = new BaseTransaction();
+
+		try {
+			ts.begin();
+
+			//取得领料单编号
+			reqData = getRequisitionId(reqData);
+			String requisitionid = reqData.getRequisitionid();
+			
+			//新增领料申请
+			reqData.setVirtualclass(virtualClass);
+			reqData.setRequisitiontype(Constants.REQUISITION_PARTS);//装配领料
+			reqData.setRequisitionsts(stockoutType);//
+			reqData.setExcesstype(Constants.REQUISITION_MINUS);//退还（负数领料）
+			insertRequisition(reqData);
+						
+			for(B_RequisitionDetailData data:reqDataList ){
+				float quantity = stringToFloat(data.getQuantity());
+
+				if(quantity == 0)
+					continue;
+				
+				quantity = quantity * (-1);//退换处理，所以是负数
+				
+				data.setRequisitionid(requisitionid);
+				data.setQuantity(floatToString(quantity));
+				insertRequisitionDetail(data);
+				
+			}
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e.printStackTrace();
+			}
+		}
+		
+		return reqData;
+	}
+	
 	private B_PurchaseOrderdDeductData getContractUnpaidById(
 			String YSId,
 			String materialId) throws Exception{
@@ -755,7 +904,7 @@ public class RequisitionService extends CommonService {
 		return reqData;
 	}
 	
-	//虚拟领料:减少“待出库”
+	//库存处理:减少“待出库”
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
 			String materialId,

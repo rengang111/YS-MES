@@ -180,6 +180,8 @@ public class StockOutService extends CommonService {
 		stock.setYsid(YSId);
 		stock.setStockoutid(stockOutId);
 		reqModel.setStockout(stock);
+		
+		getOrderDetail(YSId);
 	
 	}
 	
@@ -491,9 +493,9 @@ public class StockOutService extends CommonService {
 		//虚拟库存=当前库存 + 待入库 - 待出库
 		float availabeltopromise = iNewQuantiy + waitstockin - iNewStockOut;
 		
-		data.setQuantityonhand(String.valueOf(iNewQuantiy));
-		data.setWaitstockout(String.valueOf(iNewStockOut));
-		data.setAvailabeltopromise(String.valueOf(availabeltopromise));
+		data.setQuantityonhand(floatToString(iNewQuantiy));
+		data.setWaitstockout(floatToString(iNewStockOut));
+		data.setAvailabeltopromise(floatToString(availabeltopromise));
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
