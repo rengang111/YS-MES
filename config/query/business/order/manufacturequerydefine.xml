@@ -579,6 +579,7 @@
       <f name="e.materialName" alias="" ctype="" />
       <f name="e.quantityOnHand" alias="" ctype="" />
       <f name="e.availabelToPromise" alias="" ctype="" />
+      <f name="e.MAPrice" alias="" ctype="" />
       <f name="a.quantity" alias="requisitionQty" ctype="" />
       <f name="b.areaNumber" alias="" ctype="" />
       <f name="c.manufactureQuantity" alias="planQty" ctype="" />
