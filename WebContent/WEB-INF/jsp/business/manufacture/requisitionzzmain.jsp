@@ -333,7 +333,8 @@
 				<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(1,'010');"><span>待申请</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>待领料</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>已出库</span></a>
+					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>已出库</span></a>&nbsp;&nbsp;
+					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'040');"><span>成品已入库但未领料</span></a>
 				</div>
 				<!-- 
 				<div style="height: 40px;margin-bottom: -15px;float:right">

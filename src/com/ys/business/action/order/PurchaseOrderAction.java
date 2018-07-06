@@ -152,6 +152,10 @@ public class PurchaseOrderAction extends BaseAction {
 			case "getContractDeduct"://取得合同扣款明细
 				dataMap = getContractDeduct();
 				printOutJsonObj(response, dataMap);
+				break;		
+			case "updateContractDeduct"://更新合同的协商扣款
+				updateContractDeduct();
+				printOutJsonObj(response, dataMap);
 				break;
 		}
 		
@@ -330,9 +334,23 @@ public class PurchaseOrderAction extends BaseAction {
 		}
 		
 	}
+	
 	public HashMap<String, Object> getContractDeduct() throws Exception{	
 		
 		return service.getContractDeduct();		
 	}
+	
+	
+	public void updateContractDeduct(){	
+		
+		try {
+			 service.updateContractDeduct();		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
 
 }

@@ -224,6 +224,7 @@
 			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(1,'010');"><span>待申请</span></a>
 			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>出库中</span></a>
 			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>已出库</span></a>
+			<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'040');"><span>成品已入库但未领料</span></a>
 		</div>
 		<table id="TMaterial" class="display">
 			<thead>						

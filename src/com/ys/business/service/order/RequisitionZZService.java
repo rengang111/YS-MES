@@ -180,6 +180,9 @@ public class RequisitionZZService extends CommonService {
 		}else if(("030").equals(requisitionSts)){
 			
 			having = " requisitionSts = '030' ";//已出库
+		}else if(("040").equals(requisitionSts)){
+			
+			having = " bstockinQty > 0 AND requisitionQty = 0 ";//成品已入库但未领料
 		}else{
 			having = " 1=1 ";
 		}

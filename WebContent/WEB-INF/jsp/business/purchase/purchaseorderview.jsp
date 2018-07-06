@@ -175,6 +175,58 @@ function deductAjax() {
 	
 	$(document).ready(function() {
 
+		$("#costDeduct").attr('readonly',true);
+		$("#costDeduct").addClass('read-only');
+		$("#doSaveDeduct").hide();
+		$("#doCancelDeduct").hide();
+		
+		$("#doEditDeduct").click(function() {
+			$("#costDeduct").attr('readonly',false);
+			$("#costDeduct").removeClass('read-only');
+			$("#doSaveDeduct").show();
+			$("#doCancelDeduct").show();
+			$("#doEditDeduct").hide();
+		});
+		
+
+		$("#doCancelDeduct").click(function() {
+			$("#costDeduct").attr('readonly',true);
+			$("#costDeduct").addClass('read-only');
+			$("#doSaveDeduct").hide();
+			$("#doCancelDeduct").hide();
+			$("#doEditDeduct").show();
+			$("#costDeduct").val($("#oldDeduct").val());
+		});
+		
+		$("#doSaveDeduct").click(function() {
+			var deduct  = $('#costDeduct').val();
+			var contractId  = '${ contract.contractId }';
+			var url = "${ctx}/business/contract?methodtype=updateContractDeduct";
+			url = url + "&deduct="+deduct+"&contractId="+contractId;
+
+			$.ajax({
+				type : "post",
+				url : url,
+				//async : false,
+				//data : null,
+				dataType : "text",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
+				success : function(data) {			
+
+					$().toastmessage('showNoticeToast', "保存成功。");
+					$("#costDeduct").val(floatToCurrency(deduct));
+					$("#costDeduct").attr('readonly',true);
+					$("#costDeduct").addClass('read-only');
+					$("#doSaveDeduct").hide();
+					$("#doEditDeduct").show();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					//alert(textStatus)
+				}
+			});		
+
+		});
+		
 		var YSId = '${ contract.YSId }';
 		//var productid = '${ contract.productId }';
 		if(YSId == null || YSId == ""){
@@ -311,8 +363,9 @@ function deductAjax() {
 		var taxExcluded,taxes,payment;
 		var taxRate = '${ contract.taxRate }';
 		taxRate = currencyToFloat(taxRate)/100;
+		var deductCnt = deduct + delay
 		
-		payment = contract - deduct - delay;//应付款
+		payment = contract - deductCnt;//应付款
 		taxExcluded = payment * (1 - taxRate);
 		taxes = payment - taxExcluded;
 
@@ -322,6 +375,9 @@ function deductAjax() {
 		$('#payment').html(floatToCurrency(payment));
 		$('#taxExcluded').html(floatToCurrency(taxExcluded));
 		$('#taxes').html(floatToCurrency(taxes));
+		$('#costDeduct').val(floatToCurrency(deductCnt));
+		$('#oldDeduct').val(floatToCurrency(deductCnt));
+	
 	}
 	
 
@@ -414,19 +470,29 @@ function deductAjax() {
 	<legend> 合同付款</legend>
 		<table class="form" style="font-weight: bold;font-size: 13px;">	
 			<tr> 		
-				<td width="80px" class="label"><label>合同总金额：</label></td>					
+				<td width="100px" class="label"><label>合同总金额：</label></td>					
 				<td width="100px">${ contract.total }</td>
-				<td width="70px" class="label"><label style="color: red;">报废扣款：</label></td>					
-				<td width="70px"><span id="deductCount1" style="color: red;"></span></td>
-				<td width="70px" class="label"><label style="color: red;">延迟扣款：</label></td>					
-				<td width="70px"><span id="deductCount2" style="color: red;"></span></td>
-				<td width="70px" class="label"><label>应付款：</label></td>					
-				<td width="100px"><span id="payment"></span></td>
-				<td width="70px" class="label"><label>退税率：</label></td>
-				<td width="40px">${ contract.taxRate }</td>
-				<td width="70px" class="label">退税额：</td>
-				<td width="70px"><span id="taxes"></span></td>
-				<td width="70px" class="label"><label>税前价：</label></td>
+				<td width="100px" class="label"><label style="color: red;">报废扣款：</label></td>					
+				<td width="100px"><span id="deductCount1" style="color: red;"></span></td>
+				<td width="100px" class="label"><label style="color: red;">延迟扣款：</label></td>					
+				<td width="100px"><span id="deductCount2" style="color: red;"></span></td>
+				<td width="100px" class="label"><label>最终协商扣款：</label></td>					
+				<td width="">
+					<input type="text" id="costDeduct" class="num mini" value="" />
+					<input type="hidden" id="oldDeduct"  />
+					<button type="button" id="doEditDeduct" class="DTTT_button" >修改扣款</button>
+					<button type="button" id="doSaveDeduct" class="DTTT_button" >保存</button>
+					<button type="button" id="doCancelDeduct" class="DTTT_button" >取消修改</button>
+				</td>
+			</tr>
+			<tr>
+				<td width="" class="label"><label>应付款：</label></td>					
+				<td width=""><span id="payment"></span></td>
+				<td width="" class="label"><label>退税率：</label></td>
+				<td width="">${ contract.taxRate }</td>
+				<td width="" class="label">退税额：</td>
+				<td width=""><span id="taxes"></span></td>
+				<td width="" class="label"><label>税前价：</label></td>
 				<td><span id="taxExcluded"></span></td>
 			</tr>	
 		</table>

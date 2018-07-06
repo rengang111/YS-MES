@@ -1440,4 +1440,32 @@ public class PurchaseOrderService extends CommonService {
 		model.addAttribute("rebateRateList",
 				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
 	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public void updateContractDeduct() throws Exception{
+
+		String contractId = request.getParameter("contractId");
+		String deduct = request.getParameter("deduct");
+		
+		String where = " contractId='" + contractId +"' AND deleteFlag='0' ";
+		
+		List<B_PurchaseOrderData> list = new B_PurchaseOrderDao().Find(where);
+		
+		if(list != null && list.size() > 0) {
+			
+			B_PurchaseOrderData db = list.get(0);
+			db.setDeduct(deduct);
+			db.setDeductflag("1");//有协商扣款
+			
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"协商扣款Update",userInfo);
+			copyProperties(db,commData);
+			
+			new B_PurchaseOrderDao().Store(db);
+			
+		}
+
+	}
 }

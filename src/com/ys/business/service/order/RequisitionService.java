@@ -131,8 +131,12 @@ public class RequisitionService extends CommonService {
 		}else if(("020").equals(requisitionSts)){
 			//出库中
 			having = "requisitionQty+0 > 0 AND REPLACE(requisitionQty,',','')+0 < REPLACE(manufactureQty,',','')+0 ";
+		}else if(("040").equals(requisitionSts)){
+			//成品已入库，但未领料,包括虚拟入库
+			having = "bstockinQty+0 > 0 AND REPLACE(requisitionQty,',','')+0 < REPLACE(manufactureQty,',','')+0 ";
 		}
 		sql = sql.replace("#", having);
+		System.out.println("装配领料申请SQL："+sql);
 		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			

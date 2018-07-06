@@ -459,9 +459,12 @@
       <f name="IFNULL(c.YSId,'')" alias="taskId" ctype="" />
       <f name="IFNULL(c.requistionYsid,'')" alias="requistionYsid" ctype="" />
       <f name="IFNULL(c.collectYsid,'')" alias="collectYsid" ctype="" />
+      <f name="b.virtualQty" alias="" ctype="" />
+      <f name="d.quantity" alias="stockinQty" ctype="" />
+      <f name="IFNULL(IFNULL(b.virtualQty,d.quantity),0)" alias="bstockinQty" ctype="" />
     </select>
-    <!-- 吹塑待领料 -->
-    <from>v_orderdetailforf01 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_f01 c ON a.YSId=c.YSId </from>
+    <!-- 吸塑 -->
+    <from>v_orderdetailforf01 AS A LEFT JOIN v_orderdetail b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_f01 c ON a.YSId=c.YSId LEFT JOIN v_purchasestockindetail d ON d.YSId=a.YSId AND left(d.materialId,1)='I' </from>
     <orderby>A.YSId </orderby>
     <groupby></groupby>
     <having>#</having>
@@ -500,9 +503,12 @@
       <f name="IFNULL(c.YSId,'')" alias="taskId" ctype="" />
       <f name="IFNULL(c.requistionYsid,'')" alias="requistionYsid" ctype="" />
       <f name="IFNULL(c.collectYsid,'')" alias="collectYsid" ctype="" />
+      <f name="b.virtualQty" alias="" ctype="" />
+      <f name="d.quantity" alias="stockinQty" ctype="" />
+      <f name="IFNULL(IFNULL(b.virtualQty,d.quantity),0)" alias="bstockinQty" ctype="" />
     </select>
     <!-- 吹塑待领料 -->
-    <from>v_orderdetailforb01 AS A LEFT JOIN v_orderlist b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_b01 c ON a.YSId=c.Ysid </from>
+    <from>v_orderdetailforb01 AS A LEFT JOIN v_orderdetail b ON a.YSId=b.ysid LEFT JOIN v_requisition_group_ysid_b01 c ON a.YSId=c.Ysid LEFT JOIN v_purchasestockindetail d ON d.YSId=a.YSId AND left(d.materialId,1)='I' </from>
     <orderby>A.YSId </orderby>
     <groupby></groupby>
     <having>#</having>
@@ -779,6 +785,9 @@
       <f name="A.requisitionQty" alias="" ctype="" />
       <f name="A.requisitionDate" alias="" ctype="" />
       <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.stockinQty" alias="" ctype="" />
+      <f name="A.virtualQty" alias="" ctype="" />
+      <f name="IFNULL(IFNULL(A.virtualQty,A.stockinQty),0)" alias="bstockinQty" ctype="" />
     </select>
     <from>v_requisitionforzhuangpei a</from>
     <orderby>A.YSId</orderby>
@@ -807,7 +816,7 @@
       <f name="b.totalQuantity" alias="orderQty" ctype="" />
       <f name="b.deliveryDate" alias="" ctype="" />
     </select>
-    <from>b_requisition a left join v_orderdetail b on a.ysid=b.ysid</from>
+    <from>v_requisitiondetail a left join v_orderdetail b on a.ysid=b.ysid</from>
     <orderby>A.YSId</orderby>
     <groupby></groupby>
     <having></having>
