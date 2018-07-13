@@ -88,6 +88,24 @@ public class FinanceReportAction extends BaseAction {
 				dataMap = inventoryReportSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "accountingInit":
+				rtnUrl = "/business/finance/costaccoutingmain";
+				break;
+			case "costAccountingSsearch":
+				dataMap = costAccountingSsearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "costAccountingYsid":
+				rtnUrl = "/business/finance/costaccoutingadd";
+				break;
+			case "costConfirm":
+				getOrderDetail();
+				rtnUrl = "/business/finance/costaccoutingadd";
+				break;
+			case "getStockoutByMaterialId":
+				dataMap = getStockoutByMaterialId();
+				printOutJsonObj(response, dataMap);
+			break;
 				
 		}
 		
@@ -186,6 +204,50 @@ public class FinanceReportAction extends BaseAction {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> costAccountingSsearch(String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_COSTACCOUTING+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_COSTACCOUTING+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.reportForDaybookSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+
+	private void getOrderDetail() {		
+		
+		try {
+			service.getOrderDetailByYSId();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private HashMap<String, Object> getStockoutByMaterialId() throws Exception {		
+		
+		return	service.getStockoutByMaterialId();
 		
 	}
 }

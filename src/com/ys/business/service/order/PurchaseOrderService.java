@@ -1359,9 +1359,33 @@ public class PurchaseOrderService extends CommonService {
 
 	public HashMap<String, Object> getContractDeduct() throws Exception {
 
-		getContractDelayDeduct();//合同延期扣款
+		//getContractDelayDeduct();//合同延期扣款
+		
+		getOrderExpanseByContractId();//订单过程扣款
 		
 		return getContractScrapDeduct();//物料报废扣款
+	}
+	
+	private void getOrderExpanseByContractId() throws Exception {
+		
+		String contractId = request.getParameter("contractId");
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("orderExpanseGroupByContractId");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contractId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0 ){
+
+			String orderExpanseQty =  dataModel.getYsViewData().get(0).get("orderExpanseQty");
+
+			model.addAttribute("orderExpanseQty",orderExpanseQty);
+			
+		}else{
+
+			model.addAttribute("orderExpanseQty","0");
+		}
 	}
 
 	private void getContractDelayDeduct() throws Exception {
@@ -1370,7 +1394,7 @@ public class PurchaseOrderService extends CommonService {
 		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		dataModel.setQueryName("contractDelayDeduct");
 		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("materialId", contractId);		
+		userDefinedSearchCase.put("contractId", contractId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 		

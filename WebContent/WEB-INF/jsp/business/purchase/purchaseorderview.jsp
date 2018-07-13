@@ -49,8 +49,8 @@ function deductAjax() {
 
 						fnCallback(data);
 						
-						var delay = currencyToFloat( data["delay"] );
-						sumFn(delay);
+						var orderExpanseQty = currencyToFloat( data["orderExpanseQty"] );
+						sumFn(orderExpanseQty);
 						
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -344,7 +344,7 @@ function deductAjax() {
 		$('#contractCount').html(floatToCurrency(contract));
 	}
 	
-	function sumFn(delay){
+	function sumFn(orderExpanseQty){
 	
 		var deduct = 0;
 		$('#example2 tbody tr').each (function (){
@@ -363,7 +363,8 @@ function deductAjax() {
 		var taxExcluded,taxes,payment;
 		var taxRate = '${ contract.taxRate }';
 		taxRate = currencyToFloat(taxRate)/100;
-		var deductCnt = deduct + delay
+		orderExpanseQty = currencyToFloat(orderExpanseQty);
+		var deductCnt = deduct + orderExpanseQty
 		
 		payment = contract - deductCnt;//应付款
 		taxExcluded = payment * (1 - taxRate);
@@ -371,7 +372,7 @@ function deductAjax() {
 
 		$('#deductCount').html(floatToCurrency(deduct));
 		$('#deductCount1').html(floatToCurrency(deduct));
-		$('#deductCount2').html(floatToCurrency(delay));
+		$('#deductCount2').html(floatToCurrency(orderExpanseQty));
 		$('#payment').html(floatToCurrency(payment));
 		$('#taxExcluded').html(floatToCurrency(taxExcluded));
 		$('#taxes').html(floatToCurrency(taxes));
@@ -474,7 +475,7 @@ function deductAjax() {
 				<td width="100px">${ contract.total }</td>
 				<td width="100px" class="label"><label style="color: red;">报废扣款：</label></td>					
 				<td width="100px"><span id="deductCount1" style="color: red;"></span></td>
-				<td width="100px" class="label"><label style="color: red;">延迟扣款：</label></td>					
+				<td width="120px" class="label"><label style="color: red;">订单过程扣款：</label></td>					
 				<td width="100px"><span id="deductCount2" style="color: red;"></span></td>
 				<td width="100px" class="label"><label>最终协商扣款：</label></td>					
 				<td width="">

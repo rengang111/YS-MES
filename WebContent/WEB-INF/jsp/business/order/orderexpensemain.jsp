@@ -34,7 +34,7 @@
 			// "Info": true,//页脚信息
 			// "bPaginate": true, //翻页功能
 			"pagingType" : "full_numbers",
-				"sAjaxSource" : "${ctx}/business/order?methodtype=search",
+				"sAjaxSource" : "${ctx}/business/order?methodtype=orderExpenseSearch",
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -65,8 +65,8 @@
 					{"data": "materialId", "defaultContent" : ''},
 					{"data": "materialName", "defaultContent" : ''},
 					{"data": "quantity", "className" : 'td-right'},
-					{"data": null, "defaultContent" : '',"className" : 'td-center'},
-					{"data": "statusName", "defaultContent" : '',"className" : 'td-center'}
+					{"data": "cost", "defaultContent" : '',"className" : 'td-right'},
+					{"data": "status", "defaultContent" : '',"className" : 'td-center'}
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
@@ -81,6 +81,9 @@
 		    			var name = row["materialName"];
 		    			name = jQuery.fixedWidth(name,40);
 		    			return name;
+		    		}},
+		    		{"targets":5,"render":function(data, type, row){
+		    			return floatToCurrency(data);
 		    		}}				           
 	         	] 
 			}
@@ -129,17 +132,17 @@
 	
 	function doShow(YSId,materialId) {
 
-		var url = '${ctx}/business/bom?methodtype=orderexpenseadd&YSId=' + YSId+'&materialId='+materialId;
+		var url = '${ctx}/business/bom?methodtype=orderexpenseview&YSId=' + YSId+'&materialId='+materialId;
 
 		location.href = url;
 	}
 
 
-	function reload() {
-		
-		$('#TMaterial').DataTable().ajax.reload(null,false);
-		
-		return true;
+	function doCreate() {
+
+		var url = '${ctx}/business/order?methodtype=orderExpenseYsid';
+
+		location.href = url;
 	}
 	
 	
@@ -181,6 +184,9 @@
 			<div class="list">
 
 				<div id="TSupplier_wrapper" class="dataTables_wrapper">
+					<div id="DTTT_container2" style="height:40px;float: right">
+						<a  class="DTTT_button box" onclick="doCreate();" ><span>订单过程录入</span></a>
+					</div>
 					<table id="TMaterial" class="display dataTable" cellspacing="0">
 						<thead>						
 							<tr>

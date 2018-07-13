@@ -635,3 +635,7 @@ pre{
 .bg-yellow{
     background:yellow !important;
 }
+.error {
+	color: red;
+	font-style: italic;
+}

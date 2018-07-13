@@ -37,6 +37,40 @@
   </query>
   <query>
     <pool></pool>     
+    <name value="getOrderExpenseList" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />   
+     </where>
+    <select>
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.status" alias="" ctype="订单状态" />
+      <f name="A.orderType" alias="" ctype="" />
+      <f name="b.type" alias="" ctype="" />
+      <f name="sum(ABS(REPLACE(b.cost,',','')))" alias="cost" ctype="" />
+      <f name="b.YSId" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+    </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <from>b_orderexpensedetail b JOIN v_orderlist AS A ON a.YSId=b.YSId WHERE A.deleteFlag = '0'</from>
+    <orderby>b.YSId DESC</orderby>
+    <groupby>b.YSId</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
     <name value="getOrderList" />
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />

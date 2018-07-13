@@ -72,9 +72,6 @@ public class OrderAction extends BaseAction {
 				doInit(Constants.FORM_ORDER,session);
 				rtnUrl = "/business/order/ordermain";
 				break;
-			case "expenseInit":
-				rtnUrl = "/business/order/orderexpensemain";
-				break;
 			case "search":
 				dataMap = doSearchOrderList(Constants.FORM_ORDER,data);
 				printOutJsonObj(response, dataMap);
@@ -212,6 +209,16 @@ public class OrderAction extends BaseAction {
 				doInsertTransfer(reqModel,model, request);
 				rtnUrl = "/business/order/orderview";
 				break;
+			case "orderExpenseInit"://订单过程初始化
+				rtnUrl = "/business/order/orderexpensemain";
+				break;
+			case "orderExpenseSearch"://订单过程查询
+				dataMap = doSearchOrderExpenseList(Constants.FORM_ORDEREXPENSE,data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "orderExpenseYsid"://选择订单（耀升编号）
+				rtnUrl = "/business/order/orderexpenseysid";
+				break;
 				
 		}
 		
@@ -304,6 +311,36 @@ public class OrderAction extends BaseAction {
 				
 		try {
 			dataMap = orderService.getOrderCancelList(formId,data);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doSearchOrderExpenseList(String formId, String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+		}
+				
+		try {
+			dataMap = orderService.getOrderExpenseList(formId,data);
 			
 			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
 			if (dbData.size() == 0) {

@@ -207,7 +207,7 @@ public class BomAction extends BaseAction {
 				CheckOrderCost1(data);;
 				printOutJsonObj(response, dataMap);
 				break;
-			case "insertOrderCost1":
+			case "insertOrderCost1"://保存订单过程（订单相关费用增加）
 				insertOrderCost1(data);
 				printOutJsonObj(response, dataMap);
 				break;

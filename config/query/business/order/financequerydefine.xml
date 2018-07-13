@@ -395,4 +395,27 @@
 	    <having>c1.stockinQty > 0  OR	d1.stockoutQty > 0</having>	
 	    <orderby>a.materialId</orderby>
   	</query>
+	<query>
+		<pool></pool>    
+    	<name value="stockoutDetailGroupByYsid" />
+     	<where>
+        	<w name="a.YSId"   des="" reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+    	</where>
+	  	<select>
+	      <f name="a.YSId" alias="" ctype="" />
+	      <f name="a.materialId" alias="" ctype="" />
+      	  <f name="c.materialName" alias="" ctype="" />
+      	  <f name="a.countQty" alias="" ctype="" />
+      	  <f name="a.quantity" alias="" ctype="" />
+      	  <f name="IF(IFNULL(a.price, c.MAPrice)='0',d.price,IFNULL(a.price, c.MAPrice))" alias="price" ctype="" />
+      	  <f name="a.quantity * IF(IFNULL(a.price, c.MAPrice)='0',IFNULL(d.price,0),IFNULL(a.price, c.MAPrice))" alias="totalPrice" ctype="" />
+      	  <f name="c.unit" alias="" ctype="计量单位" />
+	      <f name="c.MAPrice" alias="" ctype="" />
+	  	</select>
+	    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+	    <from>v_stockoutdetailgroup a LEFT JOIN b_material c ON a.materialId=c.materialid AND c.deleteFlag='0' LEFT JOIN (SELECT c.materialId, MAX(c.purchaseDate) purchaseDate,c.price FROM v_purchaseorderdetail c GROUP BY c.materialId ) d ON d.materialId=a.materialId  WHERE left(a.materialId,1) &lt;&gt; 'A'</from>
+	    <groupby></groupby>
+	    <having></having>	
+	    <orderby>a.materialId</orderby>
+  	</query>
 </root>

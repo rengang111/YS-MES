@@ -1003,4 +1003,20 @@
     <having></having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="orderExpanseGroupByContractId" />
+    <where>
+   	  <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.cost" alias="orderExpanseQty" ctype="" />
+    </select>
+    <from>v_orderexpansegroup a  </from>
+    <orderby></orderby>
+    <groupby>a.contractId</groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>

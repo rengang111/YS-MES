@@ -86,7 +86,7 @@
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["PIId"] + "')\">"+row["YSId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
 		    			return rtn;
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
@@ -152,20 +152,7 @@
 	$(document).ready(function() {
 
 		initEvent();
-		
-		$("#showText").click(function(){ 
-			$("#panel").slideToggle("slow"); 
-			$(this).toggleClass("active"); 
-			var text = $("#showText").text();
-			if(text == "展开"){
-				$("#showText").text("收起");
-			}else{
-				$("#showText").text("展开");
-			}
-			return false; 
-		}); 
-		
-
+	
 		buttonSelectedEvent();//按钮选择式样
 		
 		$('#defutBtn').removeClass("start").addClass("end");
@@ -183,48 +170,22 @@
 	
 	function doCreate(type) {
 		
-		var url = '${ctx}/business/order?methodtype=create'+'&orderNature='+ type;
+		var url = '${ctx}/business/financereport?methodtype=costAccountingYsid';
 		location.href = url;
 	}
 	//订单状态
 	function doSearchCustomer(type,col_no){
 		ajax('',type,'false',col_no);
 	}
-	//常规订单OR库存
-	function doSearchCustomer2(orderNature,col_no){
-		ajax(orderNature,'','false',col_no);
-	}	
+
 	
-	function doCreateZZ() {
-		
-		var url = '${ctx}/business/zzorder?methodtype=create';
-		location.href = url;
-	}
-	
-	function doCreateZP() {
-		
-		var url = '${ctx}/business/zporder?methodtype=create';
-		location.href = url;
-	}
-	
-	function doShow(PIId) {
+	function doShow(YSId) {
 
-		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+		var url = '${ctx}/business/financereport?methodtype=costsearchysid';
 
 		location.href = url;
 	}
 
-	function doEdit(recordId,parentId) {
-		var url = '${ctx}/business/order?methodtype=edit&parentId=' + parentId+'&recordId='+recordId;
-
-		location.href = url;
-	}	
-
-	function doTransfer() {
-		var url = '${ctx}/business/order?methodtype=orderTransfer';
-
-		location.href = url;
-	}
 
 	function reload() {
 		
@@ -271,10 +232,11 @@
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 			<div id="DTTT_container2" style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCustomer('010',9);" id="defutBtn"><span>待合同</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('020',9);"><span>待到料</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('030',9);"><span>待交货</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('040',7);"><span>已入库</span></a>&nbsp;&nbsp;
+				<a  class="DTTT_button box" onclick="doSearchCustomer('010',9);" id="defutBtn"><span>最近一个月的订单</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('020',9);"><span>三个月内的订单</span></a>
+			</div>
+			<div id="DTTT_container2" style="height:40px;float: right">
+				<a  class="DTTT_button box" onclick="doCreate();" ><span>订单核算</span></a>
 			</div>
 			<div id="clear"></div>
 			<table id="TMaterial" class="display" >

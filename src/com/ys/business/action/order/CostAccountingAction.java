@@ -78,6 +78,10 @@ public class CostAccountingAction extends BaseAction {
 				dataMap = costAccountingSsearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "costConfirm":
+				getOrderDetail();
+				rtnUrl = "/business/finance/costaccoutingview";
+				break;
 			case "downloadExcel":
 				downloadExcel();
 				break;
@@ -182,6 +186,18 @@ public class CostAccountingAction extends BaseAction {
 		
 		try {
 			service.excelForInvertory();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+
+	private void getOrderDetail() {		
+		
+		try {
+			service.getOrderDetailByYSId();
 		}
 		catch(Exception e) {
 			e.printStackTrace();

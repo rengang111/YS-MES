@@ -380,6 +380,42 @@ public class FinanceReportService extends CommonService {
         excel.downloadFile(dest,fileName);
 	}
 	
+	public HashMap<String, Object> getOrderDetailByYSId(
+			) throws Exception{
+
+		String YSId = request.getParameter("YSId");
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderList");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		model.addAttribute("order", dataModel.getYsViewData().get(0));
+		return HashMap;
+		
+	}
 	
+
+	public HashMap<String, Object> getStockoutByMaterialId(
+			) throws Exception{
+
+		String YSId = request.getParameter("YSId");
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+
+		dataModel.setQueryFileName("/business/order/financequerydefine");
+		dataModel.setQueryName("stockoutDetailGroupByYsid");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		HashMap.put("data", dataModel.getYsViewData());
+		
+		return HashMap;
+		
+	}
 
 }

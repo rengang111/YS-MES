@@ -620,7 +620,7 @@
 
 <script type="text/javascript">
 	function doBack(){
-		var url = "${ctx}/business/order?methodtype=expenseInit";
+		var url = "${ctx}/business/order?methodtype=orderExpenseInit";
 		location.href = url;
 	}
 </script>

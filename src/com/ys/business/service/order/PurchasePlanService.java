@@ -1288,6 +1288,12 @@ public class PurchasePlanService extends CommonService {
 		String YSId = request.getParameter("YSId");
 		String materialId = request.getParameter("materialId");
 		String bomId = BusinessService.getBaseBomId(materialId)[1];
+		
+		if(notEmpty(materialId)){
+			//半成品的BOM编号规则
+			if(("K").equals(materialId.substring(0, 1)))
+				bomId = BusinessService.getSemiBaseBomId(materialId)[1];
+		}
 
 		getOrderDetailByYSId(YSId);
 		//确认采购方案是否存在
@@ -1306,7 +1312,14 @@ public class PurchasePlanService extends CommonService {
 		
 		String YSId = request.getParameter("YSId");
 		String materialId = request.getParameter("materialId");
+		
 		String bomId = BusinessService.getBaseBomId(materialId)[1];
+		if(notEmpty(materialId)){
+			//半成品的BOM编号规则
+			if(("K").equals(materialId.substring(0, 1)))
+				bomId = BusinessService.getSemiBaseBomId(materialId)[1];
+			
+		}
 
 		getOrderDetailByYSId(YSId);
 		

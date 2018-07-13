@@ -522,11 +522,14 @@ public class BomService extends CommonService {
 		    if (isNullOrEmpty(name))
 		    	continue;
 	      
+		    float fcost = stringToFloat(cost);
+		    fcost = Math.abs(fcost);//防止页面输入负数，方便计算，统一成正数。
+		    
 			  order.setYsid(ysid);
 			  order.setSupplierid(supplierid);
 			  order.setContractid(contractid);
 			  order.setCostname(name);
-			  order.setCost(cost);
+			  order.setCost(floatToString(fcost));
 			  order.setPerson(person);
 			  order.setQuotationdate(date);
 			  order.setRemarks(remarks);
