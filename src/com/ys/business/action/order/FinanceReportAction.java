@@ -88,24 +88,37 @@ public class FinanceReportAction extends BaseAction {
 				dataMap = inventoryReportSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "accountingInit":
+			case "accountingInit"://财务核算初始化
 				rtnUrl = "/business/finance/costaccoutingmain";
 				break;
-			case "costAccountingSsearch":
+			case "costAccountingSsearch"://财务核算查询
 				dataMap = costAccountingSsearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "costAccountingYsid":
-				rtnUrl = "/business/finance/costaccoutingadd";
+				rtnUrl = "/business/finance/costaccoutingysid";
 				break;
-			case "costConfirm":
+			case "costAccountingAdd":
 				getOrderDetail();
 				rtnUrl = "/business/finance/costaccoutingadd";
+				break;
+			case "costAccountingSave":
+				costAccountingSave();
+				rtnUrl = "/business/finance/costaccoutingview";
+				break;
+			case "costBomDetailView":
+				costBomDetailView();
+				rtnUrl = "/business/finance/costaccoutingview";
 				break;
 			case "getStockoutByMaterialId":
 				dataMap = getStockoutByMaterialId();
 				printOutJsonObj(response, dataMap);
-			break;
+				break;
+			case "getCostBomDetail":
+				dataMap = getCostBomDetail();
+				printOutJsonObj(response, dataMap);
+				break;
+				
 				
 		}
 		
@@ -218,7 +231,7 @@ public class FinanceReportAction extends BaseAction {
 		}
 		
 		try {
-			dataMap = service.reportForDaybookSearch(data);
+			dataMap = service.costAccountingSearch(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
@@ -237,7 +250,8 @@ public class FinanceReportAction extends BaseAction {
 	private void getOrderDetail() {		
 		
 		try {
-			service.getOrderDetailByYSId();
+			String YSId = request.getParameter("YSId");
+			service.getOrderDetailByYSId(YSId);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -245,9 +259,32 @@ public class FinanceReportAction extends BaseAction {
 		
 	}
 	
+	private void costAccountingSave() {		
+		
+		try {
+			service.insertCostBomAndView();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void costBomDetailView() throws Exception {		
+		
+		service.getOrderDetail();
+		
+	}
+	
 	private HashMap<String, Object> getStockoutByMaterialId() throws Exception {		
 		
 		return	service.getStockoutByMaterialId();
+		
+	}
+
+	private HashMap<String, Object> getCostBomDetail() throws Exception {		
+		
+		return	service.getCostBomDetail();
 		
 	}
 }

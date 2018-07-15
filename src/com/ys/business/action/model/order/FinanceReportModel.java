@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ys.business.action.model.common.ListOption;
+import com.ys.business.db.data.B_CostBomDetailData;
+import com.ys.business.db.data.B_CostBomData;
 import com.ys.business.db.data.B_InventoryMonthlyReportData;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PaymentDetailData;
 import com.ys.business.db.data.B_PaymentHistoryData;
-import com.ys.business.db.data.B_StockOutData;
-import com.ys.business.db.data.B_StockOutDetailData;
 
 public class FinanceReportModel extends BaseModel {
 	/**
@@ -24,8 +24,25 @@ public class FinanceReportModel extends BaseModel {
 	private List<B_PaymentDetailData> paymentList;
 	private List<B_PaymentHistoryData> historyList;
 	private List<B_InventoryMonthlyReportData> monthlyList;
+	private List<B_CostBomDetailData> costBomList;
+	private B_CostBomData costBom;
 	private ArrayList<ListOption> approvalOption = new ArrayList<ListOption>();
 		
+	public List<B_CostBomDetailData> getCostBomList() {
+		return this.costBomList;
+	}
+	public void setCostBomList(List<B_CostBomDetailData> list) {
+		this.costBomList = list;
+	}
+	
+
+	public B_CostBomData getCostBom() {
+		return this.costBom;
+	}
+	public void setCostBom(B_CostBomData costBom) {
+		this.costBom = costBom;
+	}
+	
 	public List<B_InventoryMonthlyReportData> getMonthlyList() {
 		return this.monthlyList;
 	}

@@ -3,9 +3,7 @@ package com.ys.business.service.order;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,10 +14,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import com.ys.business.action.model.common.FinanceMouthly;
 import com.ys.business.action.model.order.FinanceReportModel;
+import com.ys.business.db.dao.B_CostBomDao;
+import com.ys.business.db.dao.B_CostBomDetailDao;
 import com.ys.business.db.dao.B_InventoryMonthlyReportDao;
 import com.ys.business.db.dao.B_StockOutDao;
+import com.ys.business.db.data.B_CostBomData;
+import com.ys.business.db.data.B_CostBomDetailData;
 import com.ys.business.db.data.B_InventoryMonthlyReportData;
 import com.ys.business.db.data.CommFieldsData;
+import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
@@ -28,6 +31,7 @@ import com.ys.util.basequery.common.Constants;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.ExcelUtil;
+import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
@@ -47,7 +51,6 @@ public class FinanceReportService extends CommonService {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	
-	private B_StockOutDao dao;
 	private FinanceReportModel reqModel;
 	private UserInfo userInfo;
 	private BaseModel dataModel;
@@ -68,7 +71,6 @@ public class FinanceReportService extends CommonService {
 			FinanceReportModel reqModel,
 			UserInfo userInfo){
 		
-		this.dao = new B_StockOutDao();
 		this.model = model;
 		this.reqModel = reqModel;
 		this.request = request;
@@ -277,6 +279,55 @@ public class FinanceReportService extends CommonService {
 		return modelMap;		
 
 	}
+	public HashMap<String, Object> costAccountingSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_COSTACCOUTING,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryName("costAccountingList");//
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
 	
 	@SuppressWarnings("unchecked")
 	private int checkInventoryMonthlyReport(
@@ -380,11 +431,8 @@ public class FinanceReportService extends CommonService {
         excel.downloadFile(dest,fileName);
 	}
 	
-	public HashMap<String, Object> getOrderDetailByYSId(
-			) throws Exception{
-
-		String YSId = request.getParameter("YSId");
-		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+	public void getOrderDetailByYSId(
+		String YSId	) throws Exception{
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderList");		
@@ -394,7 +442,6 @@ public class FinanceReportService extends CommonService {
 		baseQuery.getYsFullData();
 		
 		model.addAttribute("order", dataModel.getYsViewData().get(0));
-		return HashMap;
 		
 	}
 	
@@ -417,5 +464,149 @@ public class FinanceReportService extends CommonService {
 		return HashMap;
 		
 	}
+	
+	public void insertCostBomAndView() throws Exception{
+		
+		String YSId = insertCostBomData();
+		
+		getOrderDetailByYSId(YSId);
+	}
 
+	private String insertCostBomData(){
+		
+		String YSId = "";
+		ts = new BaseTransaction();
+				
+		try {
+			ts.begin();
+
+			System.out.println("***********111");
+			
+			B_CostBomData reqData = reqModel.getCostBom();
+			List<B_CostBomDetailData> reqDataList = reqModel.getCostBomList();
+
+			//取得BOM编号
+			YSId = reqData.getYsid();
+			String materialId = reqData.getMaterialid();
+			reqData = setCostBomId(materialId,reqData);
+			String bomId = reqData.getBomid();
+
+			insertCostBom(reqData);
+						
+			for(B_CostBomDetailData data:reqDataList ){
+				
+				//物料明细
+				if(isNullOrEmpty(data.getMaterialid()))
+					continue;
+				
+				data.setBomid(bomId);
+				insertCostBomDetail(data);
+								
+			}
+			System.out.println("***********222");
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		return YSId;
+	}
+	
+	private void insertCostBom(B_CostBomData data) {
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"财务核算BomInsert",userInfo);
+
+		try {
+			copyProperties(data,commData);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		try {
+			new B_CostBomDao().Create(data);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("eeee"+e.getMessage());
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	private void insertCostBomDetail(B_CostBomDetailData data) {
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"财务核算BomInsert",userInfo);
+
+		try {
+			copyProperties(data,commData);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		guid = BaseDAO.getGuId();
+		data.setRecordid(guid);
+		
+		try {
+			new B_CostBomDetailDao().Create(data);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	public B_CostBomData setCostBomId(
+			String materialId,
+			B_CostBomData reqData) throws Exception {
+
+		//取得该产品的新BOM编号
+		String parentId = BusinessService.getCostBomId(materialId)[0];
+		String bomId = BusinessService.getCostBomId(materialId)[1];
+		
+		//新建
+		reqData.setBomid(bomId);
+		reqData.setSubid(BusinessConstants.FORMAT_00);
+		reqData.setParentid(parentId);	
+		
+		return reqData;
+		
+	}
+
+	public void getOrderDetail() throws Exception{
+		
+		String YSId = request.getParameter("YSId");
+
+		getOrderDetailByYSId(YSId);
+	}
+
+	public HashMap<String, Object> getCostBomDetail() throws Exception{
+		String YSId = request.getParameter("YSId");
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+
+		dataModel.setQueryFileName("/business/order/financequerydefine");
+		dataModel.setQueryName("costBomDetailByYsid");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+
+		HashMap.put("cost", dataModel.getYsViewData().get(0));
+		HashMap.put("data", dataModel.getYsViewData());
+		
+		return HashMap;
+	}
 }

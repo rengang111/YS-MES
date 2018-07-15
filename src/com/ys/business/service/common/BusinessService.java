@@ -236,7 +236,21 @@ public class BusinessService {
 		//
 		return code1 + "." +  ft;
 	}
-
+	
+	/**
+	 * @return 财务核算BOM编号:BF.IW03.WTR001.00-00
+	 * @param I.IW03.WTR001.00
+	 */
+	public static String[] getCostBomId(String code1 )
+	{
+		String[] rtn = new String[2];
+		String tmp2 = code1.substring(2);
+		//
+		rtn[0] = BusinessConstants.BASEBOM_BF + "."+tmp2;
+		rtn[1] = BusinessConstants.BASEBOM_BF + "."+tmp2 + "-"+BusinessConstants.FORMAT_00;
+		return rtn;
+	}	
+	
 	/**
 	 * @return BaseBOM编号:BM.IW03.WTR001.00-00
 	 * @param I.IW03.WTR001.00

@@ -62,6 +62,7 @@ public class BusinessConstants {
 	public static final String FORMAT_00 = "00";
 	public static final String CUSTOMER_MUN = "000";
 	public static final String BASEBOM_BM = "BM";
+	public static final String BASEBOM_BF = "BF";//财务核算
 	public static final String BASEBOM_BK = "BK";
 	public static final String ORDERBOM_BD = "BD";
 	public static final int ORDERNO_MAX = 9999;

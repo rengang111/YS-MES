@@ -4,14 +4,14 @@
 <html>
 
 <head>
-<title>财务核算-成本确认</title>
+<title>财务核算-成本查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
 	
 	function historyAjax(scrollHeight) {
 		
-		var YSId = '${order.YSId }';
+		var YSId = '${YSId }';
 
 		var t = $('#example2').DataTable({			
 			"paging": false,
@@ -26,7 +26,7 @@
 			"scrollY":scrollHeight,
 			"scrollCollapse":true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/financereport?methodtype=getStockoutByMaterialId&YSId="+YSId,
+			"sAjaxSource" : "${ctx}/business/financereport?methodtype=getCostBomDetail&YSId="+YSId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -42,7 +42,8 @@
 					"data" : JSON.stringify(aoData),
 					success: function(data){							
 						fnCallback(data);
-						
+						var mateCost = data["cost"]["cost"];
+						$('#mateCost').html(mateCost);
 						errorCheckAndCostCount();
 						
 					},
@@ -61,13 +62,13 @@
 					}, {"data": "unit","className":"td-center"
 					}, {"data": "quantity","className":"td-right"
 					}, {"data": "totalPrice","className":"td-right"
-					}, {"data": "quantity","className":"td-right"
-					}, {"data": "countQty","className":"td-right"
+					}, {"data": "price","className":"td-right"
+					}, {"data": null, "defaultContent" : '',
 					}
 				],
 				"columnDefs":[
 		    		{"targets":2,"render":function(data, type, row){
-		    			return jQuery.fixedWidth(data,48);
+		    			return jQuery.fixedWidth(data,64);
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 		    			return floatToCurrency(data);
@@ -76,11 +77,6 @@
 		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
-		    			var quantity = currencyToFloat(row["quantity"]);
-		    			var total = currencyToFloat(row["totalPrice"]);
-		    			return floatToCurrency(total / quantity);
-		    		}},
-		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);
 		    		}}
 		    	] 
@@ -165,7 +161,7 @@
 						
 		});	
 		
-		$('#mateCost').html(floatToCurrency(cost));
+		//$('#mateCost').html(floatToCurrency(cost));
 		
 	}
 	
@@ -188,11 +184,13 @@
 				<td class="label" style="width:100px"><label>耀升编号：</label></td>					
 				<td style="width:200px">${order.YSId }</td>
 				<td class="label" style="width:100px"><label>产品编号：</label></td>					
-				<td>${order.materialId}</td>	
+				<td style="width:200px">${order.materialId}</td>	
+				<td class="label" style="width:100px"><label>订单数量：</label></td>					
+				<td>${order.totalQuantity}</td>	
 			</tr>
 			<tr>
 				<td class="label" style="width:100px"><label>产品名称：</label></td>	
-				<td colspan="3">${order.materialName }</td>	
+				<td colspan="5">${order.materialName }</td>	
 			</tr>									
 		</table>
 		<table class="form" id="table_form">
@@ -206,7 +204,6 @@
 				<td class="label" style="width:100px"><label>利润：</label></td>	
 				<td style="width:150px" class="font16"><span id="profit"></span></td>	
 				<td style="text-align: right;">
-					<button type="button" id="doCreate" class="DTTT_button">成本确认</button>
 					<button type="button" id=goBack class="DTTT_button">返回</button></td>	
 			</tr>									
 		</table>
@@ -222,10 +219,10 @@
 						<th class="dt-center" width="120px">物料编号</th>
 						<th class="dt-center" >物料名称</th>
 						<th class="dt-center" width="40px">单位</th>
-						<th class="dt-center" width="60px">领料数量</th>
-						<th class="dt-center" width="60px">合计金额</th>
-						<th class="dt-center" width="60px">平均单价</th>
-						<th class="dt-center" width="60px">领料次数</th>
+						<th class="dt-center" width="80px">领料数量</th>
+						<th class="dt-center" width="80px">合计金额</th>
+						<th class="dt-center" width="80px">平均单价</th>
+						<th class="dt-center" width="10px"></th>
 					</tr>
 				</thead>
 			</table>

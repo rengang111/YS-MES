@@ -197,7 +197,8 @@ public class CostAccountingAction extends BaseAction {
 	private void getOrderDetail() {		
 		
 		try {
-			service.getOrderDetailByYSId();
+			String YSId = request.getParameter("YSId");
+			service.getOrderDetailByYSId(YSId);
 		}
 		catch(Exception e) {
 			e.printStackTrace();

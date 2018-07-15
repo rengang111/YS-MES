@@ -418,4 +418,65 @@
 	    <having></having>	
 	    <orderby>a.materialId</orderby>
   	</query>
+  <query>
+    <pool></pool>    
+    <name value="costAccountingList" />
+     <where>
+        <w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	    <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+     </where>
+  <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="a.bomId" alias="" ctype="" />
+      <f name="a.cost" alias="" ctype="" />
+      <f name="a.accountingDate" alias="" ctype="" />
+      <f name="a.productId" alias="" ctype="" />
+      <f name="a.productName" alias="" ctype="" />
+      <f name="a.currency" alias="" ctype="" />
+      <f name="a.exchangeRate" alias="" ctype="" />
+      <f name="a.rebate" alias="" ctype="" />
+      <f name="a.rebateRate" alias="" ctype="" />
+      <f name="a.profit" alias="" ctype="" />
+      <f name="b.deliveryDate" alias="" ctype="" />
+      <f name="b.totalQuantity" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <from>v_costbomlist a left join v_orderlist b on a.ysid=b.ysid  </from>
+    <orderby>a.ysid </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="costBomDetailByYsid" />
+     <where>
+        <w name="A.YSId"   des="" reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="a.bomId" alias="" ctype="" />
+      <f name="a.cost" alias="" ctype="" />
+      <f name="a.accountingDate" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="c.materialName" alias="" ctype="" />
+      <f name="c.unit" alias="" ctype="计量单位" />
+      <f name="a.currency" alias="" ctype="" />
+      <f name="a.exchangeRate" alias="" ctype="" />
+      <f name="a.rebate" alias="" ctype="" />
+      <f name="a.rebateRate" alias="" ctype="" />
+      <f name="a.profit" alias="" ctype="" />
+      <f name="a.price" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.quantity" alias="" ctype="" />
+      <f name="b.deliveryDate" alias="" ctype="" />
+      <f name="b.totalQuantity" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <from>v_costbomdetail a left join v_orderlist b on a.ysid=b.ysid LEFT JOIN b_material c ON c.materialId=a.materialId</from>
+    <orderby>a.materialId </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>

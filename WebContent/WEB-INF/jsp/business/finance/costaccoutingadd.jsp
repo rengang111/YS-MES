@@ -61,7 +61,7 @@
 					}, {"data": "unit","className":"td-center"
 					}, {"data": "quantity","className":"td-right"
 					}, {"data": "totalPrice","className":"td-right"
-					}, {"data": "quantity","className":"td-right"
+					}, {"data": "price","className":"td-right"
 					}, {"data": "countQty","className":"td-right"
 					}
 				],
@@ -69,16 +69,33 @@
 		    		{"targets":2,"render":function(data, type, row){
 		    			return jQuery.fixedWidth(data,48);
 		    		}},
+		    		{"targets":1,"render":function(data, type, row){
+		    			var rowIndex = row["rownum"];
+		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].materialid" id="costBomList'+rowIndex+'.materialid"  value="'+data+'"a />';
+		    			
+		    			return data + text;
+		    		}},
 		    		{"targets":4,"render":function(data, type, row){
-		    			return floatToCurrency(data);
+		    			var rowIndex = row["rownum"];
+		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].quantity" id="costBomList'+rowIndex+'.quantity"  value="'+data+'" />';
+		    			
+		    			return floatToCurrency(data) + text;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
-		    			return floatToCurrency(data);
+		    			var rowIndex = row["rownum"];
+		    			var total = floatToCurrency(data);
+		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].totalprice" id="costBomList'+rowIndex+'.totalprice"  value="'+total+'" />';
+		    			
+		    			return total + text;
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
+		    			var rowIndex = row["rownum"];
 		    			var quantity = currencyToFloat(row["quantity"]);
 		    			var total = currencyToFloat(row["totalPrice"]);
-		    			return floatToCurrency(total / quantity);
+		    			var price = floatToCurrency(total / quantity);
+		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].price" id="costBomList'+rowIndex+'.price"  value="'+price+'" />';
+		    			
+		    			return price + text;
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);
@@ -116,6 +133,8 @@
 	
 	$(document).ready(function() {
 
+		$("#costBom\\.accountingdate").val(shortToday());
+		
 		var scrollHeight = $(document).height() - 275; 
 		historyAjax(scrollHeight);//领料统计
 
@@ -126,25 +145,18 @@
 		});
 		
 		
-		$("#doCreate2").click(
+		$("#doCreate").click(
 				function() {
-				var contractId = '${order.contractId}'
-				var makeType=$('#makeType').val();
-				var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId+"&makeType="+makeType;
-				location.href = url;
+
+				$('#formModel').attr("action", "${ctx}/business/financereport?methodtype=costAccountingSave");
+				$('#formModel').submit();
 	
 		});
 		
 		
 	});
 	
-	function doEdit(contractId,arrivalId) {
 
-		var makeType=$('#makeType').val();
-		var url = '${ctx}/business/arrival?methodtype=edit&contractId='+contractId
-				+'&arrivalId='+arrivalId+'&makeType='+makeType;
-		location.href = url;
-	}
 	
 	function errorCheckAndCostCount(){
 		
@@ -165,7 +177,7 @@
 						
 		});	
 		
-		$('#mateCost').html(floatToCurrency(cost));
+		$('#costBom\\.cost').val(floatToCurrency(cost));
 		
 	}
 	
@@ -181,24 +193,30 @@
 	id="formModel" name="formModel"  autocomplete="off">
 	
 	<input type="hidden" id="makeType" value="${makeType }" />
+	<form:hidden path="costBom.accountingdate"  />
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr>
 				<td class="label" style="width:100px"><label>耀升编号：</label></td>					
-				<td style="width:200px">${order.YSId }</td>
+				<td style="width:200px">${order.YSId }
+					<form:hidden path="costBom.ysid" value="${order.YSId }"/></td>
 				<td class="label" style="width:100px"><label>产品编号：</label></td>					
-				<td>${order.materialId}</td>	
+				<td>${order.materialId}
+					<form:hidden path="costBom.materialid" value="${order.materialId }"/></td>	
+				<td class="label" style="width:100px"><label>订单数量：</label></td>					
+				<td>${order.totalQuantity}</td>		
 			</tr>
 			<tr>
 				<td class="label" style="width:100px"><label>产品名称：</label></td>	
-				<td colspan="3">${order.materialName }</td>	
+				<td colspan="5">${order.materialName }</td>	
 			</tr>									
 		</table>
 		<table class="form" id="table_form">
 			<tr>
 				<td class="label" style="width:100px"><label>材料成本总计：</label></td>	
-				<td style="width:150px" class="font16"><span id="mateCost" ></span></td>
+				<td style="width:150px" class="font16">
+					<form:input path="costBom.cost"  class="read-only num" style="font-size: 14px;font-weight: bold;"/></td>
 				
 				<td class="label" style="width:100px"><label>人工成本：</label></td>	
 				<td style="width:150px" class="font16"><span id="labolCost"></span></td>	
