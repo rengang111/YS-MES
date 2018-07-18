@@ -147,6 +147,18 @@ function pad(num, n) {
     return num;  
 }
 
+function getYear() {
+	var mydate = new Date();
+	var y = format(mydate.getFullYear());
+	return y;
+};
+
+function getMonth() {
+	var mydate = new Date();
+	var m = format((mydate.getMonth() + 1));
+	return m;
+};
+
 function today() {
 	var mydate = new Date();
 	var y = format(mydate.getFullYear());
@@ -882,6 +894,25 @@ function buttonSelectedEvent(){
     });
 }
 
+function buttonSelectedEvent2(){
+	//加载事件
+    $(function () {
+        var collection = $(".box2");
+        $.each(collection, function () {
+            $(this).addClass("start");
+        });
+    });
+    //单击事件
+    $(".box2").click(function () { 
+        var collection = $(".box2");
+        $.each(collection, function () {
+            $(this).removeClass("end");
+            $(this).addClass("start");
+        });
+        $(this).removeClass("start");
+        $(this).addClass("end");
+    });
+}
 function myTrim(x) {
 	if(x == null || x == "" || $.trim(x) == ""){
 		return "";

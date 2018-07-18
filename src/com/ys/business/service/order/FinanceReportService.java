@@ -294,6 +294,13 @@ public class FinanceReportService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
+		String monthday = request.getParameter("monthday");
+		if(isNullOrEmpty(monthday)){
+			monthday = CalendarUtil.getToDay();
+		}
+		FinanceMouthly monthly = new FinanceMouthly(monthday);
+
+		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		
 		if (start != null && !start.equals("")){
@@ -310,10 +317,30 @@ public class FinanceReportService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
+		userDefinedSearchCase.put("startDate", monthly.getStartDate());
+		userDefinedSearchCase.put("endDate", monthly.getEndDate());
 
+		String statusFlag = request.getParameter("statusFlag");
+		String having = "1=1";
+		
+		if(notEmpty(key1) || notEmpty(key2))
+			statusFlag = "";//有查询key，则忽略其状态
+		
+		if(("010").equals(statusFlag)){
+			having=" stockinQty < quantity ";//待入库
+			
+		}else if(("020").equals(statusFlag)){
+			having=" stockinQty >= quantity and accountingDate='' ";//待核算
+			
+		}else if(("030").equals(statusFlag)){
+			having=" accountingDate!='' ";//已核算
+		}
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		sql = sql.replace("#", having);
+		System.out.println("财务核算SQL："+sql);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			

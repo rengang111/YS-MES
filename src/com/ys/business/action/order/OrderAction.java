@@ -694,7 +694,8 @@ public class OrderAction extends BaseAction {
 	{
 		String YSId = request.getParameter("YSId");
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		String ExFlag = orderService.ysidExistCheck(YSId);
+		String where = " YSId like '%"+YSId +"%' AND deleteFlag='0' " ;
+		String ExFlag = orderService.ysidExistCheck(where);
 		dataMap.put("ExFlag",ExFlag);
 	    return dataMap;
 	 

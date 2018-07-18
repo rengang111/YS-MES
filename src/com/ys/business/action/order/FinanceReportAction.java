@@ -19,6 +19,7 @@ import com.ys.business.service.order.FinanceReportService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.CalendarUtil;
 import com.ys.util.basequery.common.Constants;
 /**
  * 财务报表
@@ -89,6 +90,7 @@ public class FinanceReportAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "accountingInit"://财务核算初始化
+				accountingInit();
 				rtnUrl = "/business/finance/costaccoutingmain";
 				break;
 			case "costAccountingSsearch"://财务核算查询
@@ -106,7 +108,7 @@ public class FinanceReportAction extends BaseAction {
 				costAccountingSave();
 				rtnUrl = "/business/finance/costaccoutingview";
 				break;
-			case "costBomDetailView":
+			case "costBomDetailView"://查看核算详情
 				costBomDetailView();
 				rtnUrl = "/business/finance/costaccoutingview";
 				break;
@@ -244,6 +246,9 @@ public class FinanceReportAction extends BaseAction {
 			dataMap.put(INFO, ERRMSG);
 		}
 		
+		String monthday = request.getParameter("monthday");
+		model.addAttribute("monthday",monthday);
+		
 		return dataMap;
 	}
 
@@ -272,6 +277,11 @@ public class FinanceReportAction extends BaseAction {
 	
 	private void costBomDetailView() throws Exception {		
 		
+		String monthday = request.getParameter("monthday");
+		String statusFlag = request.getParameter("statusFlag");
+		session.setAttribute("monthday", monthday);
+		session.setAttribute("statusFlag", statusFlag);
+		
 		service.getOrderDetail();
 		
 	}
@@ -287,4 +297,20 @@ public class FinanceReportAction extends BaseAction {
 		return	service.getCostBomDetail();
 		
 	}
+	
+	private void accountingInit() throws Exception {		
+		
+		String monthday = (String) session.getAttribute("monthday");
+		if(monthday == null || monthday == "")
+			monthday = CalendarUtil.getLastDate();
+		
+		String statusFlag = (String) session.getAttribute("statusFlag");
+		if(statusFlag == null || statusFlag == "")
+			statusFlag = "020";//默认是待核算
+
+		model.addAttribute("monthday",monthday);
+		model.addAttribute("statusFlag",statusFlag);
+		
+	}
+	
 }

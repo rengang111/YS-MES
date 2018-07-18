@@ -58,7 +58,7 @@ public class CalendarUtil {
 	 *
 	 * @return	String	两位数的当前月份
 	 */	
-	public String getMonthOfYear() {
+	public static String getMonthOfYear() {
 		SimpleDateFormat sdf = new SimpleDateFormat(
   				BusinessConstants.SHORTNAME_YEAR_MM);
   	    Date date = new Date();
@@ -316,5 +316,19 @@ public class CalendarUtil {
 		}
 		
 		return String.valueOf(dayBetween);
+	}
+	
+	// 使用当前月份,得到上一个月的月份:月份的格式是:yyyy-MM
+	public static String getLastDate() {
+ 
+		Date date = new Date();
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date); // 设置为当前时间
+		calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1); // 设置为上一个月
+		date = calendar.getTime();
+
+		return CalendarUtil.fmtDate(date, "yyyy-MM-dd");
+ 
 	}
 }

@@ -405,7 +405,7 @@ public class BusinessService {
 	    sb.append(sdf.format(date));
 	    sb.append(BusinessConstants.SHORTNAME_IQC);
 	  //当前的2位月份取得	  	    
-	    String month = new CalendarUtil().getMonthOfYear();
+	    String month = CalendarUtil.getMonthOfYear();
 	    month = getFormat2Code(Integer.parseInt(month),false);
 		sb.append(month);		
 		

@@ -23,7 +23,6 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.CalendarUtil;
 import com.ys.util.XmlUtil;
-import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.Constants;
 
@@ -261,6 +260,8 @@ public class BaseService {
 	public String[] getSearchKey(String formId,String data,HttpSession session){
 		
 		String[] rtnAarry = new String[2];
+		rtnAarry[0] = "";
+		rtnAarry[1] = "";
 			
 		try{
 			String reqkey1 = getJsonData(data, "keyword1").trim().toUpperCase();

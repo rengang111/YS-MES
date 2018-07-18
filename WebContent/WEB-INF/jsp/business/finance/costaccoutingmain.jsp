@@ -9,14 +9,15 @@
 <script type="text/javascript">
 
 
-	function ajax(orderNature,status,sessionFlag,col_no) {
+	function ajax(orderNature,monthday,sessionFlag,status) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/financereport?methodtype=costAccountingSsearch&sessionFlag="+sessionFlag
-				
+		var url = "${ctx}/business/financereport?methodtype=costAccountingSsearch&sessionFlag="+sessionFlag;
+		url = url + "&monthday=" +monthday;
+		url = url + "&statusFlag=" +status;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -47,6 +48,17 @@
 							fnCallback(data);
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
+							
+							if(data["keyword1"] != '' || data["keyword2"] != ''){
+								var collection = $(".box");
+							    $.each(collection, function () {
+							    	$(this).removeClass("end");
+							    });
+							    var collection = $(".box2");
+							    $.each(collection, function () {
+							    	$(this).removeClass("end");
+							    });
+							}
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -60,12 +72,13 @@
 					{"data": "YSId", "defaultContent" : ''},
 					{"data": "productId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "productName", "defaultContent" : ''},//3
-					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},
+					{"data": "orderDate", "defaultContent" : '', "className" : 'td-center'},
+					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
+					{"data": "cost", "className" : 'td-right'},//8
+					{"data": "rebate", "className" : 'td-right'},//8
+					{"data": "profit", "className" : 'td-right'},//9
 					{"data": "accountingDate", "className" : 'td-center'},//7
-					{"data": "totalQuantity", "defaultContent" : '0', "className" : 'td-right'},
-					{"data": "cost", "className" : 'td-center'},//8
-					{"data": "rebate", "className" : 'td-center'},//8
-					{"data": "profit", "className" : 'td-center'},//9
+					{"data": null, "className" : 'td-center'},//7
 				
 				],
 				"columnDefs":[
@@ -79,9 +92,24 @@
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["productName"];
-		    			name = jQuery.fixedWidth(name,42);//true:两边截取,左边从汉字开始
+		    			name = jQuery.fixedWidth(name,32);//true:两边截取,左边从汉字开始
 		    			
 		    			return name;
+		    		}},
+		    		{"targets":10,"render":function(data, type, row){
+		    			var stockinQty = currencyToFloat(row["stockinQty"]);
+		    			var orderQty = currencyToFloat(row["quantity"]);
+		    			var accountingDate = currencyToFloat(row["accountingDate"]);
+		    			var rtn="";
+		    			if(stockinQty >= orderQty){
+		    				rtn="待核算";
+		    				if(accountingDate != '' )
+		    					rtn="已核算";
+		    			}else{
+		    				rtn = "待入库";
+		    			}
+		    			
+		    			return rtn;
 		    		}},
 		    		{
 		    			"orderable":false,"targets":[0]
@@ -101,7 +129,9 @@
 	
 	function initEvent(){
 
-		ajax("","010","true",9);
+		var monthday = $('#monthday').val();
+		var statusFlag = $('#statusFlag').val();
+		ajax("",monthday,"true",statusFlag);
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -120,15 +150,30 @@
 		initEvent();
 	
 		buttonSelectedEvent();//按钮选择式样
+		buttonSelectedEvent2();//按钮选择式样2
 		
-		$('#defutBtn').removeClass("start").addClass("end");
+		var month = "";
+		var monthday = $('#monthday').val();
+		var statusFlag = $('#statusFlag').val();
+		if(monthday == '' || monthday == null){
+			month = getMonth();
+		}else{
+			month = monthday.split("-")[1];
+		}
+	
+		$('#defutBtn'+month).removeClass("start").addClass("end");
+		$('#defutBtn'+statusFlag).removeClass("start").addClass("end");
 	})	
 	
 	function doSearch() {	
 
-		ajax('','','false',9);
+		ajax('','','false','');
 		
 		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    var collection = $(".box2");
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });
@@ -139,15 +184,38 @@
 		var url = '${ctx}/business/financereport?methodtype=costAccountingYsid';
 		location.href = url;
 	}
+	//订单月份
+	function doSearchCustomer(monthday){
+		$('#keyword1').val('');
+		$('#keyword2').val('');
+		var year = getYear();
+		if(monthday == '12'){
+			year = year - 1;//去年的12月
+		}
+		var todaytmp = year +"-"+monthday+"-"+"01";
+		$('#monthday').val(todaytmp);
+		
+		var statusFlag = $('#statusFlag').val();
+		ajax('',todaytmp,'false',statusFlag);
+	}
+	
+
 	//订单状态
-	function doSearchCustomer(type,col_no){
-		ajax('',type,'false',col_no);
+	function doSearchCustomer2(status){
+		var monthday = $('#monthday').val();
+
+		$('#statusFlag').val(status);
+		ajax('',monthday,'false',status);
 	}
 
 	
 	function doShow(YSId) {
 
-		var url = '${ctx}/business/financereport?methodtype=costBomDetailView';
+		var monthday = $('#monthday').val();
+		var statusFlag = $('#statusFlag').val();
+		var url = '${ctx}/business/financereport?methodtype=costBomDetailView'
+				+"&monthday="+monthday
+				+"&statusFlag="+statusFlag;
 
 		location.href = url;
 	}
@@ -170,7 +238,8 @@
 		
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
-			<input type="hidden" id="keyBackup" value="${keyBackup }" />
+			<input type="hidden" id="monthday"  value="${monthday }"/>
+			<input type="hidden" id="statusFlag"  value="${statusFlag }"/>
 			<table>
 				<tr>
 					<td width="10%"></td> 
@@ -187,6 +256,37 @@
 					</td> 
 					<td width="10%"></td> 
 				</tr>
+				<tr style="height: 40px;">
+					<td width="10%"></td> 
+					<td class="label" style="width:100px">快捷查询：</td>
+					
+					<td colspan="6">
+						<a id="defutBtn12" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('12');">
+						<span>去年12月份</span></a>
+						<a id="defutBtn01"  style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('01');">
+						<span>1月份</span></a>
+						<a id="defutBtn02" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('02');">
+						<span>2月份</span></a>
+						<a id="defutBtn03" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('03');">
+						<span>3月份</span></a>
+						<a id="defutBtn04" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('04');">
+						<span>4月份</span></a>
+						<a id="defutBtn05" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('05');">
+						<span>5月份</span></a>
+						<a id="defutBtn06" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('06');">
+						<span>6月份</span></a>
+						<a id="defutBtn07" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('07');">
+						<span>7月份</span></a>
+						<a id="defutBtn08" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('08');">
+						<span>8月份</span></a>
+						<a id="defutBtn09" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('09');">
+						<span>9月份</span></a>
+						<a id="defutBtn10" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('10');">
+						<span>10月份</span></a>
+						<a id="defutBtn11" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('11');">
+						<span>11月份</span></a>
+					</td> 
+				</tr>
 				
 			</table>
 
@@ -196,13 +296,17 @@
 	<div class="list">
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
+		
 			<div id="DTTT_container2" style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCustomer('010');" id="defutBtn"><span>最近一个月的订单</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('020');"><span>三个月内的订单</span></a>
+				<a  class="DTTT_button box2" onclick="doSearchCustomer2('010');" id="defutBtn010"><span>待入库</span></a>
+				<a  class="DTTT_button box2" onclick="doSearchCustomer2('020');" id="defutBtn020"><span>待审核</span></a>
+				<a  class="DTTT_button box2" onclick="doSearchCustomer2('030');" id="defutBtn030"><span>已审核</span></a>
 			</div>
+			<!-- 
 			<div id="DTTT_container2" style="height:40px;float: right">
 				<a  class="DTTT_button box" onclick="doCreate();" ><span>订单核算</span></a>
 			</div>
+			 -->
 			<div id="clear"></div>
 			<table id="TMaterial" class="display" >
 				<thead>						
@@ -211,12 +315,13 @@
 						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 100px;">产品编号</th>
 						<th>产品名称</th>
-						<th style="width: 70px;">订单交期</th>
-						<th style="width: 70px;">核算日期</th>
+						<th style="width: 70px;">下单日期</th>
 						<th style="width: 60px;">订单数量</th>
 						<th style="width: 60px;">核算成本</th>
 						<th style="width: 60px;">退税</th>
 						<th style="width: 60px;">利润</th>
+						<th style="width: 70px;">核算日期</th>
+						<th style="width: 40px;">状态</th>
 					</tr>
 				</thead>
 			</table>
