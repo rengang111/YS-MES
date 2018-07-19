@@ -327,10 +327,10 @@ public class FinanceReportService extends CommonService {
 			statusFlag = "";//有查询key，则忽略其状态
 		
 		if(("010").equals(statusFlag)){
-			having=" stockinQty < quantity ";//待入库
+			having=" stockinQty+0 < quantity+0 ";//待入库
 			
 		}else if(("020").equals(statusFlag)){
-			having=" stockinQty >= quantity and accountingDate='' ";//待核算
+			having=" stockinQty+0 >= quantity+0 and accountingDate='' ";//待核算
 			
 		}else if(("030").equals(statusFlag)){
 			having=" accountingDate!='' ";//已核算

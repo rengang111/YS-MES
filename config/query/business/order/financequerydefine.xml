@@ -424,8 +424,8 @@
      <where>
         <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	    <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
-      	<w name="a.orderDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
-        <w name="a.orderDate"   des="" reqName="endDate"   dtype="ch" oper="&lt;"  lg="AND" bt="" />
+      	<w name="a.checkInDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
+        <w name="a.checkInDate"   des="" reqName="endDate"   dtype="ch" oper="&lt;"  lg="AND" bt="" />
 </where>
   <select>
       <f name="A.YSId" alias="" ctype="" />
