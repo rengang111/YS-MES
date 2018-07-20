@@ -6,85 +6,10 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
-	function historyAjax() {
-		var YSId = $('#stockout\\.ysid').val();
-		var stockOutId = $('#stockout\\.stockoutid').val();
-		var t = $('#example2').DataTable({
-			
-			"paging": true,
-			"lengthChange":false,
-			"lengthMenu":[50,100,200],//设置一页展示20条记录
-			"processing" : false,
-			"serverSide" : false,
-			"stateSave" : false,
-			"ordering "	:true,
-			"searching" : false,
-			"retrieve" : true,
-			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/stockout?methodtype=getStockoutHistory&YSId="+YSId+"&stockOutId="+stockOutId,
-			"fnServerData" : function(sSource, aoData, fnCallback) {
-				var param = {};
-				var formData = $("#condition").serializeArray();
-				formData.forEach(function(e) {
-					aoData.push({"name":e.name, "value":e.value});
-				});
-
-				$.ajax({
-					"url" : sSource,
-					"datatype": "json", 
-					"contentType": "application/json; charset=utf-8",
-					"type" : "POST",
-					"data" : JSON.stringify(aoData),
-					success: function(data){							
-						fnCallback(data);
-						$('#example2 tbody tr:first').trigger('click');
-					},
-					 error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				})
-			},
-        	"language": {
-        		"url":"${ctx}/plugins/datatables/chinese.json"
-        	},
-			
-			"columns" : [
-			        	{"data": null,"className":"dt-body-center"
-					}, {"data": "stockOutId","className":"dt-body-center"
-					}, {"data": "checkOutDate","className":"dt-body-center"
-					}, {"data": "YSId"
-					}, {"data": "requisitionId","className":"dt-body-center"
-					}, {"data": "loginName","className":"dt-body-center"
-					}, {"data": null,"className":"dt-body-center","defaultContent" : ''
-					}, {"data": null,"className":"td-center","defaultContent" : ''
-					}
-				] ,
-				"columnDefs":[
-		    		{"targets":6,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["stockOutId"] + "')\">编辑</a>";
-		    			rtn = rtn + "&nbsp;&nbsp;";
-		    			rtn = rtn + "<a href=\"###\" onClick=\"doDelete('" + row["YSId"] + "','" + row["stockOutId"] + "')\">删除</a>";
-		    			return rtn;
-		    		}},
-		    	]        
-			
-		}).draw();
-						
+	function detailAjax() {
+	
+		var stockOutId = '${order.stockOutId }';
 		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
-
-	};
-	
-
-	function detailAjax(stockOutId) {
-	
 		var table = $('#example').dataTable();
 		if(table) {
 			table.fnDestroy();
@@ -170,7 +95,10 @@
 	};
 	$(document).ready(function() {
 				
-		historyAjax();//出库记录
+		var width = $(window).width();
+		$(".showPhotoDiv").width(width - 100);
+		
+		//historyAjax();//出库记录
 				
 		$(".goBack").click(
 				function() {
@@ -181,44 +109,50 @@
 					location.href = url;		
 		});
 		
+		detailAjax();
 		
-		$('#example2').DataTable().on('click', 'tr', function() {
-			
-			//$(this).toggleClass('selected');
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	        	
-	        	$('#example2').DataTable().$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	            
-	            var d = $('#example2').DataTable().row(this).data();				
-				$('#example').DataTable().destroy();
-				detailAjax(d["stockOutId"]);
-					            
-	        }
-			
-		});
 		
 
-		productPhotoView();
+		productPhotoView();//出库单附件
+		
+		//产品图片添加位置,                                                                                                                                                                                        
+		var productIndex = 1;
+		$("#addProductPhoto").click(function() {
+			
+			var path='${ctx}';
+			var cols = $("#productPhoto tbody td.photo").length - 1;
+			//从 1 开始
+			var trHtml = addPhotoRow('productPhoto','uploadProductPhoto',productIndex,path);		
+
+			$('#productPhoto td.photo:eq('+0+')').after(trHtml);	
+			productIndex++;		
+			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
+		});
 	});
 	
-	function doEdit(YSId,stockoutid) {
+	function doEdit() {
 
 		var makeType=$('#makeType').val();
 		var usedType=$('#usedType').val();
+		
+		var YSId= '${order.YSId }';
+		var stockoutid= '${order.stockOutId }';
+		
 		var url = '${ctx}/business/stockout?methodtype=updateInit&YSId='
 				+YSId+'&stockoutId='+stockoutid
 				+'&makeType='+makeType+"&usedType="+usedType;
+		
 		location.href = url;
 	}
 	
-	function doDelete(YSId,stockoutid) {
+	function doDelete() {
 
 		var makeType=$('#makeType').val();
 		var usedType=$('#usedType').val();
+
+		var YSId= '${order.YSId }';
+		var stockoutid= '${order.stockOutId }';
+		
 		if(confirm("删除后不能恢复，确定要删除吗？")){
 
 			var url = '${ctx}/business/stockout?methodtype=stockoutDelete&YSId='
@@ -242,55 +176,44 @@
 	<input type="hidden" id="usedType" value="${usedType }" />
 	<form:hidden path="stockout.ysid"  />
 	<form:hidden path="stockout.stockoutid"  />
+	<form:hidden path="stockout.requisitionid"  value="${order.requisitionId }"/>
 
 	<fieldset>
 		<legend> 出库单</legend>
 		<table class="form" id="table_form">
 			<tr> 				
+				<td class="label" width="100px">出库单编号：</td>					
+				<td width="150px">${order.requisitionId }</td>
+				<td class="label">出库日期：</td>					
+				<td>${order.checkOutDate }</td>
+									
+				<td class="label" width="100px">仓管员：</td>					
+				<td colspan="5">${order.loginName }</td>
+			</tr>
+			<tr> 				
 				<td class="label" width="100px">耀升编号：</td>					
 				<td width="150px">${order.YSId }</td>
+				<td class="label" width="100px">产品编号：</td>					
+				<td width="100px">${order.productId }</td>
 									
 				<td class="label" width="100px">生产数量：</td>					
-				<td colspan="3">${order.totalQuantity }&nbsp;(订单数量+额外采购)</td>
-			</tr>
-			<tr>							
-				<td class="label">产品编号：</td>					
-				<td>${order.materialId }</td>
-							
-				<td class="label">产品名称：</td>					
-				<td colspan="3">${order.materialName }</td>
+				<td width="100px">${order.orderQty }</td>
+		
+				<td class="label" width="100px">产品名称：</td>					
+				<td colspan="5">${order.productName }</td>
 			</tr>
 										
 		</table>
 		
 	</fieldset>
 
-<div style="clear: both"></div>
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-	<!-- 	<a class="DTTT_button DTTT_button_text" id="insert" >继续出库</a> -->
+	 	<!-- <a class="DTTT_button DTTT_button_text" id="doEdit"  onclick="doEdit();">编辑</a> -->
+	 	<a class="DTTT_button DTTT_button_text" id="doDelete"  onclick="doDelete();">删除</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" > 返回 </a>
 	</div>
-	<fieldset>
-		<legend> 出库记录</legend>
-		<div class="list">
-			<table id="example2" class="display" style="width:100%">
-				<thead>				
-					<tr>
-						<th width="30px">No</th>
-						<th class="dt-center" style="width:150px">出库单编号</th>
-						<th class="dt-center" width="100px">出库日期</th>
-						<th class="dt-center" width="100px">耀升编号</th>
-						<th class="dt-center" width="100px">领料单编号</th>
-						<th class="dt-center" width="100px">仓管员</th>
-						<th class="dt-center" width="150px">操作</th>
-						<th class="dt-center" ></th>
-					</tr>
-				</thead>
-			</table>
-			</div>
-	</fieldset>
 	
-	<fieldset>
+	<fieldset style="margin-top: -20px;">
 		<legend> 物料详情</legend>
 		<div class="list">		
 			<table id="example" class="display" style="width:100%">
@@ -307,11 +230,11 @@
 		</div>
 	</fieldset>
 	<fieldset>
-		<legend>收据清单</legend>
+		<span class="tablename">附件清单</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
 		<div class="list">
-			<div class="" id="subidDiv" style="min-height: 300px;">
-				<table id="productPhoto" class="phototable">
-					<tbody><tr class="photo"><td></td><td></td></tr></tbody>
+			<div class="showPhotoDiv" style="overflow: auto;width: 1024px;">
+				<table id="productPhoto" style="width:100%;">
+					<tbody><tr><td class="photo"></td></tr></tbody>
 				</table>
 			</div>
 		</div>	
@@ -336,9 +259,11 @@ function doPrint(stockOutId) {
 
 function productPhotoView() {
 
-	var YSId = $('#stockout\\.ysid').val();
+	var YSId = '${order.YSId }';
+	var requisitionId = '${order.requisitionId }';
+	
 	$.ajax({
-		"url" :"${ctx}/business/stockout?methodtype=getProductPhoto&YSId="+YSId,	
+		"url" :"${ctx}/business/stockout?methodtype=getProductPhoto&YSId="+YSId+"&requisitionId="+requisitionId,	
 		"datatype": "json", 
 		"contentType": "application/json; charset=utf-8",
 		"type" : "POST",
@@ -356,56 +281,97 @@ function productPhotoView() {
 	
 }//产品图片
 
-function photoView(id, tdTable, count, data) {
 
+</script>
+
+<script type="text/javascript">
+
+function photoView(id, tdTable, count, data) {
+	
 	var row = 0;
 	for (var index = 0; index < count; index++) {
-
 		var path = '${ctx}' + data[index];
-		var pathDel = data[index];
-		var trHtml = '';
-		trHtml += '<tr style="text-align: center;" class="photo">';
-		trHtml += '<td>';
-		trHtml += '<table style="width:400px;height:300px;margin: auto;" class="form" id="tb'+index+'">';
-		trHtml += '<tr><td>';
-		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
-		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
-		trHtml += '</a>';
-		trHtml += '</td>';
-		trHtml += '</tr>';
-		trHtml += '</table>';
-		trHtml += '</td>';
-
-		index++;
-		if (index == count) {
-			//因为是偶数循环,所以奇数张图片的最后一张为空
-
-			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
-			trHtmlOdd += '<tr><td></td></tr>';	
-			trHtmlOdd += '</table>';
-		} else {
-			path = '${ctx}' + data[index];
-			pathDel = data[index];
-
-			var trHtmlOdd = '<table style="width:400px;height:300px;margin: auto;" class="form">';
-			trHtmlOdd += '<tr><td>';
-			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
-			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
-			trHtmlOdd += '</a>'
-			trHtmlOdd += '</td></tr>';
-			trHtmlOdd += '</table>';
-		}
-
-		trHtml += '<td>';
-		trHtml += trHtmlOdd;
-		trHtml += '</td>';
-		trHtml += "</tr>";
-
-		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		var pathDel = data[index];		
+		var trHtml = showPhotoRow(id,tdTable,path,pathDel,index);		
+		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
 		row++;
-
 	}
 }
+
+
+function deletePhoto(tableId,tdTable,path) {
+	
+	var url = '${ctx}/business/stockout?methodtype='+tableId+'Delete';
+	url+='&tabelId='+tableId+"&path="+path;
+	    
+	if(!(confirm("确定要删除该图片吗？"))){
+		return;
+	}
+    $("#formModel").ajaxSubmit({
+		type: "POST",
+		url:url,	
+		data:$('#formModel').serialize(),// 你的formid
+		dataType: 'json',
+	    success: function(data){
+	    	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//删除后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片删除失败,请重试。")
+		}
+	});
+}
+
+function uploadPhoto(tableId,tdTable, id) {
+
+	var url = '${ctx}/business/ODOUpload?methodtype=uploadPhoto';
+	
+	$("#formModel").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#formModel').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
+	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//添加后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+			
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片上传失败,请重试。")
+		}
+	});
+}
+
 
 </script>
 </html>

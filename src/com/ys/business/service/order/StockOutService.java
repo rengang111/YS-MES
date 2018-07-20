@@ -181,7 +181,8 @@ public class StockOutService extends CommonService {
 		stock.setStockoutid(stockOutId);
 		reqModel.setStockout(stock);
 		
-		getOrderDetail(YSId);
+		getStockoutHistory(YSId,stockOutId);
+		//getOrderDetail(YSId);
 	
 	}
 	
@@ -670,6 +671,9 @@ public class StockOutService extends CommonService {
 
 		modelMap.put("data", dataModel.getYsViewData());
 		
+		model.addAttribute("order",dataModel.getYsViewData().get(0));
+		model.addAttribute("stockout",dataModel.getYsViewData());
+		
 		return modelMap;
 		
 	}
@@ -741,16 +745,17 @@ public class StockOutService extends CommonService {
 
 		B_StockOutData reqDt = reqModel.getStockout();
 		String YSId = reqDt.getYsid();
+		String requisitionId = reqDt.getRequisitionid();
 
 		String viewPath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_STOCKOUTVIEW)+"/"+YSId;	
+				getRealPath(BusinessConstants.PATH_STOCKOUTVIEW)+"/"+YSId+"/"+requisitionId;	
 
 		String savePath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;	
+				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId+"/"+requisitionId;	
 						
-		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
+		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId+"/"+requisitionId;
 		
-		String photoName  = YSId  + "-" + CalendarUtil.timeStempDate(); 
+		String photoName  = YSId  +"_"+requisitionId+ "_" + CalendarUtil.timeStempDate(); 
 		
 		uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
 
@@ -767,9 +772,11 @@ public class StockOutService extends CommonService {
 		String path = request.getParameter("path");
 		B_StockOutData reqDt = reqModel.getStockout();
 		String YSId = reqDt.getYsid();		
+		String requisitionId = reqDt.getRequisitionid();
+		
 		String savePath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;							
-		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
+				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId+"/"+requisitionId;							
+		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId+"/"+requisitionId;
 
 		deletePhoto(path);//删除图片
 		
@@ -785,10 +792,21 @@ public class StockOutService extends CommonService {
 	public HashMap<String, Object> getProductPhoto() throws Exception {
 		
 		String YSId = request.getParameter("YSId");
-
+		String requisitionId = request.getParameter("requisitionId");
+		
 		String savePath = session.getServletContext().
-				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;							
-		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
+				getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId+"/"+requisitionId;							
+		String webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId+"/"+requisitionId;
+
+		//判断目录是否存在:2018.7.19之前的图片以耀升编号为单位显示，之后以出库单为单位显示
+		//以下处理目的是为了显示之前的数据
+		File dirname = new File(savePath);
+		if (!dirname.isDirectory())
+		{ 
+			savePath = session.getServletContext().
+					getRealPath(BusinessConstants.PATH_STOCKOUTFILE)+"/"+YSId;							
+			webPath = BusinessConstants.PATH_STOCKOUTVIEW +YSId;
+		}  
 		
 		ArrayList<String> list = getFiles(savePath,webPath);//获取图片
 

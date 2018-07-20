@@ -263,15 +263,14 @@
 	<input type="hidden" id="makeType" value="${makeType }" />
 	<input type="hidden" id="usedType" value="${usedType }" />
 	<form:hidden path="stockout.ysid" />
-	<form:hidden path="stockout.requisitionid"  />
+	<form:hidden path="stockout.requisitionid" />
 	
 	<fieldset>
 		<legend> 出库单</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">出库单编号：</td>					
-				<td width="150px">
-					<form:input path="stockout.stockoutid" class="short required read-only" value="保存后自动生成" /></td>
+				<td width="150px">${formModel.stockout.requisitionid }</td>
 														
 				<td width="100px" class="label">出库日期：</td>
 				<td>
@@ -284,7 +283,7 @@
 			 
 			<tr> 				
 				<td class="label">耀升编号：</td>					
-				<td>&nbsp;${order.YSId }</td>
+				<td>${order.YSId }</td>
 																
 				<td class="label">产品编号：</td>					
 				<td>&nbsp;${order.materialId }</td>
@@ -329,7 +328,7 @@
 	<fieldset>
 		<span class="tablename">附件清单</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
 		<div class="list">
-			<div class="showPhotoDiv" style="overflow: auto;">
+			<div class="showPhotoDiv" style="overflow: auto;width: 1024px;">
 				<table id="productPhoto" style="width:100%;height:335px">
 					<tbody><tr><td class="photo"></td></tr></tbody>
 				</table>
@@ -345,8 +344,9 @@
 
 function productPhotoView() {
 	var YSId = $('#stockout\\.ysid').val();
+	var requisitionId = $('#stockout\\.requisitionid').val();
 	$.ajax({
-		"url" :"${ctx}/business/stockout?methodtype=getProductPhoto"+"&YSId="+YSId,	
+		"url" :"${ctx}/business/stockout?methodtype=getProductPhoto"+"&YSId="+YSId+"&requisitionId="+requisitionId,	
 		"datatype": "json", 
 		"contentType": "application/json; charset=utf-8",
 		"type" : "GET",
@@ -364,6 +364,7 @@ function productPhotoView() {
 	
 }//产品图片
 
+/*
 function photoView(id, tdTable, count, data) {
 	
 	var row = 0;
@@ -375,7 +376,7 @@ function photoView(id, tdTable, count, data) {
 		row++;
 	}
 }
-
+*/
 
 function deletePhoto(tableId,tdTable,path) {
 	

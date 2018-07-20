@@ -235,7 +235,7 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">出库单编号：</td>					
-				<td width="150px">${ formModel.stockout.stockoutid}
+				<td width="150px">${ formModel.stockout.requisitionid}
 					<form:hidden path="stockout.stockoutid"  /></td>
 														
 				<td width="100px" class="label">出库日期：</td>
