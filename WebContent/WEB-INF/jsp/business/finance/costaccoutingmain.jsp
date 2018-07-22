@@ -72,12 +72,12 @@
 					{"data": "YSId", "defaultContent" : ''},
 					{"data": "productId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "productName", "defaultContent" : ''},//3
-					{"data": "orderDate", "defaultContent" : '', "className" : 'td-center'},
-					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
+					{"data": "quantity", "defaultContent" : '', "className" : 'td-right'},
+					{"data": "orderTotalPrice", "className" : 'td-right'},//7
+					{"data": "checkInDate", "defaultContent" : '0', "className" : 'td-right'},
 					{"data": "cost", "className" : 'td-right'},//8
 					{"data": "rebate", "className" : 'td-right'},//8
 					{"data": "profit", "className" : 'td-right'},//9
-					{"data": "accountingDate", "className" : 'td-center'},//7
 					{"data": null, "className" : 'td-center'},//7
 				
 				],
@@ -86,9 +86,17 @@
 		    			return row["rownum"];
                     }},
 		    		{"targets":1,"render":function(data, type, row){
-		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
-		    			return rtn;
+
+		    			var accountingDate = currencyToFloat(row["accountingDate"]);
+		    			var rtn="";
+	    				if(accountingDate != '' ){
+			    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
+    					
+	    				}else{
+			    			rtn= "<a href=\"###\" onClick=\"doCreate('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
+	    				}
+	    				return rtn;
+		    			
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["productName"];
@@ -179,11 +187,17 @@
 	    });
 	}
 	
-	function doCreate(type) {
+	function doCreate(YSId) {
 		
-		var url = '${ctx}/business/financereport?methodtype=costAccountingYsid';
-		location.href = url;
+		//var url = '${ctx}/business/financereport?methodtype=costAccountingYsid';
+		//location.href = url;
+
+		var actionUrl = "${ctx}/business/financereport?methodtype=costAccountingAdd";
+		actionUrl = actionUrl +"&YSId="+YSId;
+
+		location.href = actionUrl;
 	}
+	
 	//订单月份
 	function doSearchCustomer(monthday){
 		$('#keyword1').val('');
@@ -315,12 +329,12 @@
 						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 100px;">产品编号</th>
 						<th>产品名称</th>
-						<th style="width: 70px;">下单日期</th>
 						<th style="width: 60px;">订单数量</th>
+						<th style="width: 70px;">销售金额</th>
+						<th style="width: 70px;">入库日期</th>
 						<th style="width: 60px;">核算成本</th>
 						<th style="width: 60px;">退税</th>
 						<th style="width: 60px;">利润</th>
-						<th style="width: 70px;">核算日期</th>
 						<th style="width: 40px;">状态</th>
 					</tr>
 				</thead>

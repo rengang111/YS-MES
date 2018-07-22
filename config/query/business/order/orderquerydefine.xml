@@ -41,31 +41,32 @@
     <where>
       <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />   
-     </where>
+      <w name="a.checkInDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
+      <w name="a.checkInDate"   des="" reqName="endDate"   dtype="ch" oper="&lt;"  lg="AND" bt="" />
+    </where>
     <select>
-      <f name="A.materialId" alias="" ctype="" />
-      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.productId" alias="" ctype="" />
+      <f name="A.productName" alias="" ctype="" />
       <f name="A.PIId" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
-      <f name="A.price" alias="" ctype="" />
       <f name="A.totalprice" alias="" ctype="" />
-      <f name="A.shippingCase" alias="" ctype="" />
-      <f name="A.loadingPort" alias="" ctype="" />
       <f name="A.orderDate" alias="" ctype="" />
-      <f name="A.orderId" alias="" ctype="" />
-      <f name="A.deliveryDate" alias="" ctype="" />
-      <f name="A.status" alias="" ctype="订单状态" />
-      <f name="A.orderType" alias="" ctype="" />
-      <f name="b.type" alias="" ctype="" />
-      <f name="sum(ABS(REPLACE(b.cost,',','')))" alias="cost" ctype="" />
-      <f name="b.YSId" alias="" ctype="" />
+      <f name="A.checkInDate" alias="" ctype="" />
+      <f name="a.cost" alias="cost" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.stockinQty" alias="" ctype="" />
+      <f name="c.cost" alias="kehuCost" ctype="" />
+      <f name="e.cost" alias="jianyanCost" ctype="" />
+      <f name="s.cost" alias="gongyingshangCost" ctype="" />
+      <f name="w.cost" alias="chejianCost" ctype="" />
+      <f name="d.cost" alias="gendanCost" ctype="" />
       <f name="A.full_field" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <from>b_orderexpensedetail b JOIN v_orderlist AS A ON a.YSId=b.YSId WHERE A.deleteFlag = '0'</from>
-    <orderby>b.YSId DESC</orderby>
-    <groupby>b.YSId</groupby>
-    <having></having>
+    <from>v_orderexpanselist a LEFT JOIN v_orderexpanse_groupby_type d ON a.YSId=d.YSId AND d.type='D' LEFT JOIN v_orderexpanse_groupby_type s ON a.YSId=s.YSId AND s.type='S' LEFT JOIN v_orderexpanse_groupby_type w ON a.YSId=w.YSId AND w.type='W' LEFT JOIN v_orderexpanse_groupby_type e ON a.YSId=e.YSId AND e.type='E' LEFT JOIN v_orderexpanse_groupby_type c ON a.YSId=c.YSId AND c.type='C'</from>
+    <orderby>a.YSId</orderby>
+    <groupby></groupby>
+    <having>#</having>
 	<power>
 	</power>    
   </query>

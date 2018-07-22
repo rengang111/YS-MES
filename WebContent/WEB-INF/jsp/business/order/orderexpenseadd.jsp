@@ -1322,6 +1322,7 @@ function expenseAjax5() {//检验费用
 				</tr>							
 			</table>
 		</fieldset>
+		<!-- 
 		<fieldset style="margin-top: -20px;">
 			<table class="form" id="table_form2">
 				<tr>
@@ -1340,7 +1341,7 @@ function expenseAjax5() {//检验费用
 				</tr>								
 			</table>
 		</fieldset>
-			
+			 -->
 		<fieldset>
 			<span class="tablename"> 车间增减费用</span>
 			<!-- 

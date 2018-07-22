@@ -153,6 +153,30 @@
 	
 		});
 		
+		//外汇报价换算
+		$(".exchange").change(function() {
+			
+			var exchang  = currencyToFloat($('#bomPlan\\.exchangerate').val());
+			var exRebate = currencyToFloat($('#bomPlan\\.rebaterate').val());
+			var exprice  = currencyToFloat($('#bomPlan\\.exchangeprice').val());
+			var mateCost = currencyToFloat($('#bomPlan\\.materialcost').val());
+			var baseCost = currencyToFloat($('#bomPlan\\.productcost').val());
+			var discount = currencyToFloat($('#bomPlan\\.discount').val());
+			var commissi = currencyToFloat($('#bomPlan\\.commission').val());
+			//利润 = 原币价格+退税-基础成本-因子-折扣
+			//原币价格 = 汇率*报价
+			//利润率= 利润/基础成本
+			var rmb = exchang * exprice;
+			var rebate = mateCost * exRebate / 1.17 / 100;
+			var profit = rmb + rebate - baseCost - baseCost*(discount+commissi)/100;
+			var profitRate = profit / baseCost * 100;
+			//alert('p='+(rmb - baseCost)+'profit='+profit)
+			$('#bomPlan\\.rebate').val(floatToCurrency(rebate));
+			$('#bomPlan\\.rmbprice').val(floatToCurrency(rmb));
+			$('#bomPlan\\.profit').val(floatToCurrency(profit));
+			$('#bomPlan\\.profitrate').val(floatToCurrency(profitRate));
+		});
+		
 		
 	});
 	
@@ -193,41 +217,73 @@
 	id="formModel" name="formModel"  autocomplete="off">
 	
 	<input type="hidden" id="makeType" value="${makeType }" />
+	<input type="hidden" id="currencyId" value="${order.currencyId }" />
 	<form:hidden path="costBom.accountingdate"  />
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr>
-				<td class="label" style="width:100px"><label>耀升编号：</label></td>					
+				<td class="label" style="width:100px">耀升编号：</td>					
 				<td style="width:200px">${order.YSId }
 					<form:hidden path="costBom.ysid" value="${order.YSId }"/></td>
-				<td class="label" style="width:100px"><label>产品编号：</label></td>					
+				<td class="label" style="width:100px">产品编号：</td>					
 				<td>${order.materialId}
 					<form:hidden path="costBom.materialid" value="${order.materialId }"/></td>	
-				<td class="label" style="width:100px"><label>订单数量：</label></td>					
+				<td class="label" style="width:100px">订单数量：</td>					
 				<td>${order.totalQuantity}</td>		
 			</tr>
 			<tr>
-				<td class="label" style="width:100px"><label>产品名称：</label></td>	
+				<td class="label" style="width:100px">产品名称：</td>	
 				<td colspan="5">${order.materialName }</td>	
 			</tr>									
 		</table>
-		<table class="form" id="table_form">
+		<table class="form" id="table_form" width="100%">
+			<tr>			
+				<td class="label" style="width:100px">成本总计：</td>	
+				<td style="width:100px" class="font16"><span id="totalCost"></span></td>	
+				
+				<td class="label" style="width:100px">材料成本：</td>	
+				<td style="width:100px" class="font16">
+					<form:input path="costBom.cost"  class="read-only num short" style="font-size: 14px;font-weight: bold;"/></td>
+				
+				<td class="label" style="width:100px">人工成本：</td>	
+				<td style="width:100px" class="font16"><span id="labolCost"></span></td>	
+				
+				<td class="font16" colspan="2"><span id=""></span></td>	
+			</tr>
+			<tr class="td-center">
+				<td class="td-center" >销售总额</td>
+				<td class="td-center" width="100px">销售币种</td>
+				<td class="td-center" style="width:100px">汇率</td>	
+				<td class="td-center" style="width:100px">原币金额</td>	
+				<td class="td-center" style="width:100px">退税率</td>	
+				<td class="td-center" style="width:100px">退税</td>
+				<td class="td-center" style="width:100px">利润</td>
+				<td class="td-center" style="width:100px">利润率</td>
+				
+			</tr>
 			<tr>
-				<td class="label" style="width:100px"><label>材料成本总计：</label></td>	
-				<td style="width:150px" class="font16">
-					<form:input path="costBom.cost"  class="read-only num" style="font-size: 14px;font-weight: bold;"/></td>
+				<td class="td-center">${order.totalPrice }</td>
+				<td class="td-center">${order.currency }</td>
+				<td class="td-center">
+					<form:input path="costBom.exchangerate"  class="num short exchange"  /></td>	
+				<td class="td-center">
+					<form:input path="costBom.rmbprice"  class="num short read-only"  /></td>
+				<td class="td-center">
+					<form:input path="costBom.rebaterate"  class="num mini exchange"  />%</td>
+				<td class="td-center">
+					<form:input path="costBom.rebate"  class="num short read-only"  /></td>
+				<td class="td-center">
+					<form:input path="costBom.profit"  class="num short read-only"  /></td>
+				<td class="td-center">
+					<form:input path="costBom.profitrate"  class="num short read-only" /></td>
 				
-				<td class="label" style="width:100px"><label>人工成本：</label></td>	
-				<td style="width:150px" class="font16"><span id="labolCost"></span></td>	
-				
-				<td class="label" style="width:100px"><label>利润：</label></td>	
-				<td style="width:150px" class="font16"><span id="profit"></span></td>	
-				<td style="text-align: right;">
-					<button type="button" id="doCreate" class="DTTT_button">成本确认</button>
-					<button type="button" id=goBack class="DTTT_button">返回</button></td>	
-			</tr>									
+			</tr>
 		</table>
+	</fieldset>
+	<fieldset class="action" style="text-align: right;">
+		<button type="button" id="doCreate" class="DTTT_button">成本确认</button>
+		<button type="button" id=goBack class="DTTT_button">返回</button>
 	</fieldset>
 	
 	<fieldset>

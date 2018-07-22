@@ -32,6 +32,7 @@ public class BomAction extends BaseAction {
 	UserInfo userInfo = new UserInfo();
 	BomModel reqModel = new BomModel();
 	Model model;
+	HttpSession session;
 	
 	@RequestMapping(value="/bom")
 	public String init(
@@ -50,6 +51,7 @@ public class BomAction extends BaseAction {
 		bomService = new BomService(model,request,response,session,bom,userInfo);
 		reqModel = bom;
 		this.model = model;
+		this.session = session;
 		
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
@@ -198,6 +200,10 @@ public class BomAction extends BaseAction {
 			case "getDocumentary":
 				dataMap = getDocumentary();
 				printOutJsonObj(response, dataMap);
+				break;
+			case "orderexpenseview":
+				orderExpenseView();
+				rtnUrl = "/business/order/orderexpenseview";
 				break;
 			case "orderexpenseadd":
 				doShowOrder();
@@ -606,7 +612,19 @@ public class BomAction extends BaseAction {
 	}
 
 	public void doShowOrder() throws Exception {
-	  this.model = this.bomService.getOrderInfo();
+		
+		  this.model = this.bomService.getOrderInfo();
+	}
+
+	
+	public void orderExpenseView() throws Exception {
+
+		String monthday = request.getParameter("monthday");
+		String statusFlag = request.getParameter("statusFlag");
+		session.setAttribute("monthday", monthday);
+		session.setAttribute("statusFlag", statusFlag);
+		
+		this.model = this.bomService.getOrderInfo();
 	}
 
 	private void downloadExcelForBaseBom() {

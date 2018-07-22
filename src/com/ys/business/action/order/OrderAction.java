@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.CalendarUtil;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.service.order.OrderService;
 import com.ys.system.action.model.login.UserInfo;
@@ -210,6 +211,7 @@ public class OrderAction extends BaseAction {
 				rtnUrl = "/business/order/orderview";
 				break;
 			case "orderExpenseInit"://订单过程初始化
+				orderExpenseInit();
 				rtnUrl = "/business/order/orderexpensemain";
 				break;
 			case "orderExpenseSearch"://订单过程查询
@@ -844,5 +846,20 @@ public class OrderAction extends BaseAction {
 		}
 		
 		return dataMap;
+	}
+	
+	private void orderExpenseInit() throws Exception {		
+		
+		String monthday = (String) session.getAttribute("monthday");
+		if(monthday == null || monthday == "")
+			monthday = CalendarUtil.getLastDate();
+		
+		String statusFlag = (String) session.getAttribute("statusFlag");
+		if(statusFlag == null || statusFlag == "")
+			statusFlag = "020";//默认是已入库
+
+		model.addAttribute("monthday",monthday);
+		model.addAttribute("statusFlag",statusFlag);
+		
 	}
 }

@@ -176,6 +176,9 @@
 	
 	$(document).ready(function() {
 
+
+		var width = $(window).width();
+		$(".showPhotoDiv").width(width - 100);
 		
 		var scrollHeight =$(parent).height() - 200; 
 		//日期
@@ -364,7 +367,7 @@ function productPhotoView() {
 	
 }//产品图片
 
-/*
+
 function photoView(id, tdTable, count, data) {
 	
 	var row = 0;
@@ -376,7 +379,7 @@ function photoView(id, tdTable, count, data) {
 		row++;
 	}
 }
-*/
+
 
 function deletePhoto(tableId,tdTable,path) {
 	

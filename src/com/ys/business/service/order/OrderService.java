@@ -20,6 +20,7 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+import com.ys.business.action.model.common.FinanceMouthly;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.business.db.dao.B_FollowDao;
 import com.ys.business.db.dao.B_MaterialDao;
@@ -211,17 +212,44 @@ public class OrderService extends CommonService  {
 		}		
 		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
-		String key2 = keyArr[1];		
+		String key2 = keyArr[1];	
+		
+		String monthday = request.getParameter("monthday");
+		if(isNullOrEmpty(monthday)){
+			monthday = CalendarUtil.getToDay();
+		}
+		FinanceMouthly monthly = new FinanceMouthly(monthday);
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderExpenseList");	
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
+		userDefinedSearchCase.put("startDate", monthly.getStartDate());
+		userDefinedSearchCase.put("endDate", monthly.getEndDate());
+
+		String statusFlag = request.getParameter("statusFlag");
+		String having = "1=1";
+		
+		if(notEmpty(key1) || notEmpty(key2)){
+			statusFlag = "";//有查询key，则忽略其状态
+			userDefinedSearchCase.put("startDate", "");//忽略其时间段
+			userDefinedSearchCase.put("endDate", "");//忽略其时间段
+			
+		}
+		
+		if(("010").equals(statusFlag)){
+			having=" stockinQty+0 < quantity+0 ";//待入库
+			
+		}else if(("020").equals(statusFlag)){
+			having=" stockinQty+0 >= quantity+0 ";//已入库			
+		}
 		
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		sql = sql.replace("#", having);
+		System.out.println("订单过程查询SQL："+sql);	
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			

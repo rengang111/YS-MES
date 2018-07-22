@@ -204,6 +204,7 @@
 				<td class="label" style="width:100px"><label>利润：</label></td>	
 				<td style="width:150px" class="font16"><span id="profit"></span></td>	
 				<td style="text-align: right;">
+					<button type="button" id="doEdit" class="DTTT_button">核算</button>
 					<button type="button" id=goBack class="DTTT_button">返回</button></td>	
 			</tr>									
 		</table>

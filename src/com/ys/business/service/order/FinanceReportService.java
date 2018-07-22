@@ -323,8 +323,12 @@ public class FinanceReportService extends CommonService {
 		String statusFlag = request.getParameter("statusFlag");
 		String having = "1=1";
 		
-		if(notEmpty(key1) || notEmpty(key2))
+		if(notEmpty(key1) || notEmpty(key2)){
 			statusFlag = "";//有查询key，则忽略其状态
+			userDefinedSearchCase.put("startDate", "");//忽略其时间段
+			userDefinedSearchCase.put("endDate", "");//忽略其时间段
+			
+		}
 		
 		if(("010").equals(statusFlag)){
 			having=" stockinQty+0 < quantity+0 ";//待入库
