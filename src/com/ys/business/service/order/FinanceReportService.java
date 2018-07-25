@@ -501,14 +501,45 @@ public class FinanceReportService extends CommonService {
 	}
 	
 
-	public HashMap<String, Object> getStockoutByMaterialId(
-			) throws Exception{
+	public HashMap<String, Object> getStockoutDetail() throws Exception{
 
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		
 		String YSId = request.getParameter("YSId");
+		//check StockOutDate
+		int outCount = checkStockOut(YSId);
+		
+		if(outCount > 0 ){
+			HashMap = getStockoutByMaterialId(YSId);
+		}else{
+			HashMap = getPlanBomDetail(YSId);
+		}		
+		return HashMap;			
+	}
+	
+	private int checkStockOut(String YSId) throws Exception{
+		
+		int rtn = 0;
+
+		dataModel.setQueryFileName("/business/order/financequerydefine");
+		dataModel.setQueryName("checkStockOutById");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		rtn = dataModel.getRecordCount();
+		
+		return rtn;
+	}
+	
+	private HashMap<String, Object> getPlanBomDetail(
+		String YSId	) throws Exception{
+
 		HashMap<String, Object> HashMap = new HashMap<String, Object>();
 
 		dataModel.setQueryFileName("/business/order/financequerydefine");
-		dataModel.setQueryName("stockoutDetailGroupByYsid");		
+		dataModel.setQueryName("planBomDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
@@ -519,6 +550,25 @@ public class FinanceReportService extends CommonService {
 		return HashMap;
 		
 	}
+	
+	private HashMap<String, Object> getStockoutByMaterialId(
+			String YSId	) throws Exception{
+
+			HashMap<String, Object> HashMap = new HashMap<String, Object>();
+
+			dataModel.setQueryFileName("/business/order/financequerydefine");
+			dataModel.setQueryName("stockoutDetailGroupByYsid");		
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("YSId", YSId);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+			baseQuery.getYsFullData();
+			
+			HashMap.put("data", dataModel.getYsViewData());
+			
+			return HashMap;
+			
+	}
+		
 	
 	public void insertCostBomAndView() throws Exception{
 		

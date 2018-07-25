@@ -523,7 +523,7 @@ public class BomService extends CommonService {
 		    	continue;
 	      
 		    float fcost = stringToFloat(cost);
-		    fcost = Math.abs(fcost);//防止页面输入负数，方便计算，统一成正数。
+		    //fcost = Math.abs(fcost);//防止页面输入负数，方便计算，统一成正数。
 		    
 			  order.setYsid(ysid);
 			  order.setSupplierid(supplierid);

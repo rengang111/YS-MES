@@ -483,7 +483,7 @@ function uploadPhoto(tableId,tdTable, id) {
 					<script type="text/javascript">
 						var contract = currencyToFloat('${list.totalPrice }');
 						var chargeback = currencyToFloat('${list.chargeback }');
-						var payment = contract - chargeback;
+						var payment = contract + chargeback;
 						var index = ${status.index };
 						
 						var taxrate =  $("#contractList" + index + "\\.taxrate").val() / 100;//退税率

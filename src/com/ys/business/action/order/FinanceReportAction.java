@@ -291,7 +291,7 @@ public class FinanceReportAction extends BaseAction {
 	
 	private HashMap<String, Object> getStockoutByMaterialId() throws Exception {		
 		
-		return	service.getStockoutByMaterialId();
+		return	service.getStockoutDetail();
 		
 	}
 

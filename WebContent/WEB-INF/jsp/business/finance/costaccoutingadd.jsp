@@ -238,13 +238,13 @@
 		var rebate = 0;//退税
 		var rmbprice = 0;
 		var profitrate = 0;//利润率
-		
+		var zeng = 0;
 		if(currency == '035'){
 			
 			if(rebaterate == 0){
 				//纯内销
 				//增值税
-				var zeng = (totalPrice - mateCost) / 1.16 * 0.16 ;
+				zeng = (totalPrice - mateCost) / 1.16 * 0.16 ;
 				profit = totalPrice - cost - zeng;
 				rmbprice = totalPrice;
 				
@@ -258,7 +258,7 @@
 				exchange = 1;//外销人民币的汇率默认：1
 				rebate = mateCost * rebaterate / (1 + rebaterate);//退税
 				rmbprice = totalPrice * exchange;
-				profit = rmbprice - cost - rebate;
+				profit = rmbprice - cost + rebate;
 				
 				$('#costBom\\.exchangerate').val('1');
 				$('#costBom\\.exchangerate').addClass('read-only');						
@@ -269,7 +269,7 @@
 			//退税
 			rebate = mateCost * rebaterate / (1 + rebaterate);
 			rmbprice = totalPrice * exchange;
-			profit = rmbprice - cost - rebate;
+			profit = rmbprice - cost + rebate;
 		}
 		profitrate = profit / cost * 100
 		
@@ -279,6 +279,7 @@
 		$('#costBom\\.rebate').val(floatToCurrency(rebate));//退税
 		$('#costBom\\.profit').val(floatToCurrency(profit));//利润
 		$('#costBom\\.profitrate').val(floatToCurrency(profitrate));//利润率
+		$('#costBom\\.vat').val(floatToCurrency(zeng));//增值税
 		
 	}
 		
@@ -335,7 +336,8 @@
 				<td class="td-center" style="width:100px">汇率</td>	
 				<td class="td-center" style="width:100px">原币金额</td>	
 				<td class="td-center" style="width:100px">退税率</td>	
-				<td class="td-center" style="width:100px">退税</td>
+				<td class="td-center" style="width:100px">退税</td>	
+				<td class="td-center" style="width:100px">增值税</td>
 				<td class="td-center" style="width:100px">利润</td>
 				<td class="td-center" style="width:100px">利润率</td>
 				
@@ -351,6 +353,8 @@
 					<form:input path="costBom.rebaterate"  value="16" class="num mini exchange"  />%</td>
 				<td class="td-center">
 					<form:input path="costBom.rebate"  class="num short read-only"  /></td>
+				<td class="td-center">
+					<form:input path="costBom.vat"  class="num short read-only"  /></td>
 				<td class="td-center">
 					<form:input path="costBom.profit"  class="num short read-only"  /></td>
 				<td class="td-center">
