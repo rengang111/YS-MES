@@ -101,7 +101,7 @@ public class FinanceReportAction extends BaseAction {
 				rtnUrl = "/business/finance/costaccoutingysid";
 				break;
 			case "costAccountingAdd":
-				getOrderDetail();
+				costAccountingAdd();
 				rtnUrl = "/business/finance/costaccoutingadd";
 				break;
 			case "costAccountingSave":
@@ -119,7 +119,11 @@ public class FinanceReportAction extends BaseAction {
 			case "getCostBomDetail":
 				dataMap = getCostBomDetail();
 				printOutJsonObj(response, dataMap);
-				break;
+				break;		
+			case "updateExchangeRate":
+				dataMap = updateExchangeRate();
+				printOutJsonObj(response, dataMap);
+				break;	
 				
 				
 		}
@@ -252,11 +256,10 @@ public class FinanceReportAction extends BaseAction {
 		return dataMap;
 	}
 
-	private void getOrderDetail() {		
+	private void costAccountingAdd() {		
 		
 		try {
-			String YSId = request.getParameter("YSId");
-			service.getOrderDetailByYSId(YSId);
+			service.costAccountingAdd();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -313,4 +316,9 @@ public class FinanceReportAction extends BaseAction {
 		
 	}
 	
+	public HashMap<String, Object> updateExchangeRate() throws Exception {
+		
+		return service.updateExchangeRate();			
+
+	}
 }

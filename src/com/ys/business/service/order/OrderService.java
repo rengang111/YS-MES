@@ -224,24 +224,33 @@ public class OrderService extends CommonService  {
 		dataModel.setQueryName("getOrderExpenseList");	
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		userDefinedSearchCase.put("startDate", monthly.getStartDate());
-		userDefinedSearchCase.put("endDate", monthly.getEndDate());
-
+		
 		String statusFlag = request.getParameter("statusFlag");
 		String having = "1=1";
 		
 		if(notEmpty(key1) || notEmpty(key2)){
 			statusFlag = "";//有查询key，则忽略其状态
-			userDefinedSearchCase.put("startDate", "");//忽略其时间段
-			userDefinedSearchCase.put("endDate", "");//忽略其时间段
-			
+			//userDefinedSearchCase.put("startDate", "");//忽略其时间段
+			//userDefinedSearchCase.put("endDate", "");//忽略其时间段			
 		}
 		
 		if(("010").equals(statusFlag)){
-			having=" stockinQty+0 < quantity+0 ";//待入库
+			having=" stockinQty+0 > 0 AND (stockinQty+0 < quantity+0) ";//部分入库
+
+			userDefinedSearchCase.put("orderStartDate", monthly.getStartDate());
+			userDefinedSearchCase.put("orderEndDate", monthly.getEndDate());
 			
 		}else if(("020").equals(statusFlag)){
-			having=" stockinQty+0 >= quantity+0 ";//已入库			
+			having=" stockinQty+0 >= quantity+0 ";//已入库	
+
+			userDefinedSearchCase.put("startDate", monthly.getStartDate());
+			userDefinedSearchCase.put("endDate", monthly.getEndDate());
+			
+		}else if(("030").equals(statusFlag)){
+			having=" stockinQty<=0 ";//未入库	
+			
+			userDefinedSearchCase.put("orderStartDate", monthly.getStartDate());
+			userDefinedSearchCase.put("orderEndDate", monthly.getEndDate());			
 		}
 		
 		baseQuery = new BaseQuery(request, dataModel);	

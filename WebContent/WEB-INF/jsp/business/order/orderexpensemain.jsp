@@ -15,7 +15,7 @@
 <title>订单基本数据一览页面(订单过程)</title>
 <script type="text/javascript">
 
-function ajax(monthday,sessionFlag,status) {
+function ajax(monthday,sessionFlag,status,hiden_col) {
 	
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -34,7 +34,7 @@ function ajax(monthday,sessionFlag,status) {
 			"processing" : true,
 			"serverSide" : true,
 			"stateSave" : false,
-			//"bSort":true,
+			"bWidth"	:false,
 			// "bFilter": false, //列筛序功能
 			"ordering"	:true,
 			"searching" : false,
@@ -85,22 +85,29 @@ function ajax(monthday,sessionFlag,status) {
 				{"data": "YSId", "defaultContent" : ''},
 				{"data": "productId", "defaultContent" : ''},
 				{"data": "productName", "defaultContent" : ''},
-				{"data": "quantity", "className" : 'td-right'},
+				{"data": "quantity", "className" : 'td-right'},//4
+				{"data": "deliveryDate", "defaultContent" : '',"className" : 'td-center'},
+				{"data": "stockinQty", "className" : 'td-right'},//6
 				{"data": "checkInDate", "defaultContent" : '',"className" : 'td-center'},
-				{"data": "chejianCost", "defaultContent" : '0',"className" : 'td-right'},//7
+				{"data": "chejianCost", "defaultContent" : '0',"className" : 'td-right'},//8
 				{"data": "gongyingshangCost", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "kehuCost", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "jianyanCost", "defaultContent" : '0',"className" : 'td-right'},
-				{"data": "gendanCost", "defaultContent" : '0',"className" : 'td-right'},//11
+				{"data": "gendanCost", "defaultContent" : '0',"className" : 'td-right'},//12
 				
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 	    			return row["rownum"];			    			 
-                   }},
+                }},
 	    		{"targets":1,"render":function(data, type, row){
 	    			var rtn = "";
 	    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["YSId"] +"','"+ row["materialId"] + "')\">"+ row["YSId"] +"</a>";
+	    			return rtn;
+	    		}},
+	    		{"targets":2,"render":function(data, type, row){
+	    			var rtn = "";
+	    			rtn= "<a href=\"###\" onClick=\"doShowPlan('" + row["YSId"] +"')\">"+ row["productId"] +"</a>";
 	    			return rtn;
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
@@ -112,7 +119,10 @@ function ajax(monthday,sessionFlag,status) {
 	    		{"targets":6,"render":function(data, type, row){
 	    			return floatToCurrency(data);
 	    		}},
-	    		{"targets":7,"render":function(data, type, row){
+	    		{"targets":11,"render":function(data, type, row){
+	    			return floatToCurrency(data);
+	    		}},
+	    		{"targets":12,"render":function(data, type, row){
 	    			return floatToCurrency(data);
 	    		}},
 	    		{"targets":8,"render":function(data, type, row){
@@ -126,7 +136,7 @@ function ajax(monthday,sessionFlag,status) {
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : []
+					"targets" : [hiden_col]
 				}				           
          	] 
 		});
@@ -147,7 +157,8 @@ function ajax(monthday,sessionFlag,status) {
 
 		var monthday = $('#monthday').val();
 		var statusFlag = $('#statusFlag').val();
-		ajax(monthday,"true",statusFlag);
+		var hiddenCol = $('#hiddenCol').val();
+		ajax(monthday,"true",statusFlag,hiddenCol);
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -185,7 +196,7 @@ function ajax(monthday,sessionFlag,status) {
 	
 	function doSearch() {	
 
-		ajax('','false','');
+		ajax('','false','','');
 		
 		var collection = $(".box");
 	    $.each(collection, function () {
@@ -208,6 +219,13 @@ function ajax(monthday,sessionFlag,status) {
 
 		location.href = url;
 	}
+	
+	function doShowPlan(YSId) {
+
+		var url = '${ctx}/business/purchasePlan?methodtype=showPurchasePlan&YSId=' + YSId;
+		callProductDesignView('采购方案',url);
+		//location.href = url;
+	}
 
 
 	function doCreate() {
@@ -229,17 +247,19 @@ function ajax(monthday,sessionFlag,status) {
 		$('#monthday').val(todaytmp);
 		
 		var statusFlag = $('#statusFlag').val();
-		ajax(todaytmp,'false',statusFlag);
+		var hiddenCol = Number($('#hiddenCol').val());
+		ajax(todaytmp,'false',statusFlag,hiddenCol);
 	}
 	
 
 	//订单状态
-	function doSearchCustomer2(status){
+	function doSearchCustomer2(status,hidden_col){
 		
 		var monthday = $('#monthday').val();
 
 		$('#statusFlag').val(status);
-		ajax(monthday,'false',status);
+		$('#hiddenCol').val(hidden_col);
+		ajax(monthday,'false',status,hidden_col);
 	}
 	
 </script>
@@ -253,6 +273,7 @@ function ajax(monthday,sessionFlag,status) {
 
 					<input type="hidden" id="monthday"  value="${monthday }"/>
 					<input type="hidden" id="statusFlag"  value="${statusFlag }"/>
+					<input type="hidden" id="hiddenCol"  value="${hiddenCol }"/>
 					
 					<table>
 						<tr>
@@ -311,27 +332,30 @@ function ajax(monthday,sessionFlag,status) {
 			<div class="list">
 
 				<div id="DTTT_container2" style="height:40px;float: left">
-					<a  class="DTTT_button box2" onclick="doSearchCustomer2('');" id="defutBtn010"><span>ALL</span></a>
-					<a  class="DTTT_button box2" onclick="doSearchCustomer2('010');" id="defutBtn010"><span>待入库</span></a>
-					<a  class="DTTT_button box2" onclick="doSearchCustomer2('020');" id="defutBtn020"><span>已入库</span></a>
+				<!--	<a  class="DTTT_button box2" onclick="doSearchCustomer2('');" id="defutBtn010"><span>ALL</span></a> -->
+					<a  class="DTTT_button box2" onclick="doSearchCustomer2('030',7);" id="defutBtn030"><span>未入库</span></a>
+					<a  class="DTTT_button box2" onclick="doSearchCustomer2('010',7);" id="defutBtn010"><span>部分入库</span></a>
+					<a  class="DTTT_button box2" onclick="doSearchCustomer2('020',5);" id="defutBtn020"><span>已入库</span></a>
 				</div>
 				<!-- <div id="DTTT_container2" style="height:40px;float: right">
 					<a  class="DTTT_button box" onclick="doCreate();" ><span>订单过程录入</span></a>
 				</div> -->
-				<table id="TMaterial" class="display dataTable" cellspacing="0">
+				<table id="TMaterial" class="display dataTable" cellspacing="0" style="width:100%">
 					<thead>						
 						<tr>
-							<th style="width: 10px;" class="dt-middle ">No</th>
+							<th style="width: 1px;" class="dt-middle ">No</th>
 							<th style="width: 60px;" class="dt-middle ">耀升编号</th>
 							<th style="width: 100px;" class="dt-middle ">产品编号</th>
 							<th class="dt-middle ">产品名称</th>
 							<th style="width: 60px;" class="dt-middle ">订单数量</th>
-							<th style="width: 70px;" class="dt-middle ">入库时间</th>
-							<th style="width: 60px;" class="dt-middle ">车间费用</th>
-							<th style="width: 60px;" class="dt-middle ">供应商<br/>费用</th>
-							<th style="width: 60px;" class="dt-middle ">客户费用</th>
-							<th style="width: 60px;" class="dt-middle ">检验费用</th>
-							<th style="width: 60px;" class="dt-middle ">跟单费用</th>
+							<th style="width: 60px;" class="dt-middle ">订单交期</th>
+							<th style="width: 60px;" class="dt-middle ">入库数量</th>
+							<th style="width: 50px;" class="dt-middle ">入库时间</th>
+							<th style="width: 50px;" class="dt-middle ">车间费用</th>
+							<th style="width: 50px;" class="dt-middle ">供应商<br/>费用</th>
+							<th style="width: 50px;" class="dt-middle ">客户费用</th>
+							<th style="width: 50px;" class="dt-middle ">检验费用</th>
+							<th style="width: 50px;" class="dt-middle ">跟单费用</th>
 						</tr>
 					</thead>
 				</table>

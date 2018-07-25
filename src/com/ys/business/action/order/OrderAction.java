@@ -857,9 +857,14 @@ public class OrderAction extends BaseAction {
 		String statusFlag = (String) session.getAttribute("statusFlag");
 		if(statusFlag == null || statusFlag == "")
 			statusFlag = "020";//默认是已入库
+		
+		String hiddenCol = (String) session.getAttribute("hiddenCol");
+		if(statusFlag == null || statusFlag == "")
+			statusFlag = "5";//默认是隐藏订单交期列
 
 		model.addAttribute("monthday",monthday);
 		model.addAttribute("statusFlag",statusFlag);
+		model.addAttribute("hiddenCol",hiddenCol);
 		
 	}
 }

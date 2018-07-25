@@ -147,6 +147,8 @@
 		if(orderType == '020'){//配件订单
 			if(planYsid == ''){
 				action = 'purchasePlanPeiAddInit';//没有采购方案
+				YSId="";
+				peiYsid="";
 			}else{
 				action = 'showPurchasePlanPei';//已有采购方案
 			}
@@ -157,7 +159,7 @@
 				action = 'showPurchasePlan';//已有采购方案
 			}
 		}			
-				
+
 		var url = '${ctx}/business/purchasePlan?methodtype='+action
 				+'&YSId=' + YSId
 				+'&peiYsid='+peiYsid

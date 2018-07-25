@@ -17,10 +17,12 @@ import com.ys.business.action.model.order.FinanceReportModel;
 import com.ys.business.db.dao.B_CostBomDao;
 import com.ys.business.db.dao.B_CostBomDetailDao;
 import com.ys.business.db.dao.B_InventoryMonthlyReportDao;
+import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.data.B_CostBomData;
 import com.ys.business.db.data.B_CostBomDetailData;
 import com.ys.business.db.data.B_InventoryMonthlyReportData;
+import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
@@ -462,6 +464,28 @@ public class FinanceReportService extends CommonService {
         excel.downloadFile(dest,fileName);
 	}
 	
+	public void costAccountingAdd() throws Exception{
+
+		String YSId = request.getParameter("YSId");
+		getOrderDetailByYSId(YSId);
+		
+		getLaborCost(YSId);
+		
+	}
+	
+	private void getLaborCost(
+			String YSId	) throws Exception{
+
+			dataModel.setQueryFileName("/business/order/financequerydefine");
+			dataModel.setQueryName("getLabolCostByYsid");		
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("YSId", YSId);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+			baseQuery.getYsFullData();
+			
+			model.addAttribute("LaborCost",dataModel.getYsViewData().get(0).get("labolCost"));
+		}
+	
 	public void getOrderDetailByYSId(
 		String YSId	) throws Exception{
 
@@ -510,8 +534,6 @@ public class FinanceReportService extends CommonService {
 				
 		try {
 			ts.begin();
-
-			System.out.println("***********111");
 			
 			B_CostBomData reqData = reqModel.getCostBom();
 			List<B_CostBomDetailData> reqDataList = reqModel.getCostBomList();
@@ -534,7 +556,6 @@ public class FinanceReportService extends CommonService {
 				insertCostBomDetail(data);
 								
 			}
-			System.out.println("***********222");
 			ts.commit();			
 			
 		}
@@ -550,56 +571,31 @@ public class FinanceReportService extends CommonService {
 		return YSId;
 	}
 	
-	private void insertCostBom(B_CostBomData data) {
+	private void insertCostBom(B_CostBomData data) throws Exception {
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"财务核算BomInsert",userInfo);
-
-		try {
-			copyProperties(data,commData);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		copyProperties(data,commData);
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
-		
-		try {
-			new B_CostBomDao().Create(data);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("eeee"+e.getMessage());
-			e.printStackTrace();
-		}
-		
+		data.setAccountingdate(CalendarUtil.fmtYmdDate());
+	
+		new B_CostBomDao().Create(data);
 	}
 	
 	
 	
-	private void insertCostBomDetail(B_CostBomDetailData data) {
+	private void insertCostBomDetail(B_CostBomDetailData data) throws Exception {
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"财务核算BomInsert",userInfo);
-
-		try {
-			copyProperties(data,commData);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		copyProperties(data,commData);
 		guid = BaseDAO.getGuId();
 		data.setRecordid(guid);
-		
-		try {
-			new B_CostBomDetailDao().Create(data);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+	
+		new B_CostBomDetailDao().Create(data);		
 	}
+	
 	public B_CostBomData setCostBomId(
 			String materialId,
 			B_CostBomData reqData) throws Exception {
@@ -639,5 +635,21 @@ public class FinanceReportService extends CommonService {
 		HashMap.put("data", dataModel.getYsViewData());
 		
 		return HashMap;
+	}
+	
+	public HashMap<String, Object> updateExchangeRate() throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		//更新汇率
+		String currencyId = request.getParameter("currencyId");
+		String exRate = request.getParameter("exRate");
+		
+		updateExchangeRate(currencyId,exRate);
+		
+		modelMap.put("message", NORMAL);	
+		
+		return modelMap;
+		
 	}
 }

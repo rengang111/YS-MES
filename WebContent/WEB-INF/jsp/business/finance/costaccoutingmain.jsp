@@ -109,12 +109,15 @@
 		    			var orderQty = currencyToFloat(row["quantity"]);
 		    			var accountingDate = currencyToFloat(row["accountingDate"]);
 		    			var rtn="";
-		    			if(stockinQty >= orderQty){
-		    				rtn="待核算";
-		    				if(accountingDate != '' )
-		    					rtn="已核算";
+		    			if(accountingDate != '' ){
+		    				rtn="已核算";
 		    			}else{
-		    				rtn = "待入库";
+		    				if(stockinQty >= orderQty){
+			    				rtn="待核算";
+			    					
+			    			}else{
+			    				rtn = "待入库";
+			    			}
 		    			}
 		    			
 		    			return rtn;
