@@ -300,6 +300,7 @@
       <f name="a.taxExcluded" alias="" ctype="" />
       <f name="a.taxes" alias="" ctype="" />
       <f name="concat( a.taxRate*100/100,'%')" alias="taxRate" ctype="" />
+      <f name="a.chargeType" alias="" ctype="扣款方式" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
@@ -531,10 +532,10 @@
 	      <f name="a.YSId" alias="" ctype="" />
 	      <f name="a.materialId" alias="" ctype="" />
       	  <f name="c.materialName" alias="" ctype="" />
-      	  <f name="a.countQty" alias="" ctype="" />
-      	  <f name="a.quantity" alias="" ctype="" />
+      	  <f name="'0'" alias="countQty" ctype="" />
+      	  <f name="a.manufactureQuantity" alias="quantity" ctype="" />
       	  <f name="IFNULL(a.price,0)" alias="price" ctype="" />
-      	  <f name="REPLACE(IFNULL(a.manufactureQuantity), ',', '') * IFNULL(REPLACE(a.price, ',', ''), 0)" alias="totalPrice" ctype="" />
+      	  <f name="IFNULL(REPLACE(a.manufactureQuantity, ',', ''),0) * IFNULL(REPLACE(a.price, ',', ''), 0)" alias="totalPrice" ctype="" />
       	  <f name="c.unit" alias="" ctype="计量单位" />
 	      <f name="c.MAPrice" alias="" ctype="" />
 	  	</select>

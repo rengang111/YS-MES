@@ -16,6 +16,7 @@
 			"pagingType" : "full_numbers",
 			//"scrollY"    : scrollHeight,
 	       // "scrollCollapse": false,
+	        "bWidth"	: false,
 	        "paging"    : false,
 	        //"pageLength": 50,
 	        "ordering"  : false,
@@ -36,21 +37,69 @@
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
+				{"className" : 'td-right'},//
 				{"className" : 'td-left'},//
 			],	
 			
 		});		
 			
-		t.on('change', 'tr td:nth-child(9)',function() {
+		t.on('change', 'tr td:nth-child(8)',function() {
 
 			var $td = $(this).parent().find("td");
 
-			var $oPayment = $td.eq(7).find("span");//应付款
-			var $oTaxRate = $td.eq(8).find("option:checked");//退税率
-			var $oTaxesS = $td.eq(9).find("span");//税
-			var $oTaxesI = $td.eq(9).find("input");//税
-			var $oTaxExcludedS = $td.eq(10).find("span");//价
-			var $oTaxExcludedI = $td.eq(10).find("input");//价
+			var $oChargeType = $td.eq(7).find("option:checked");//扣款方式
+			var $oContract = $td.eq(5).find("span");//合同款
+			var $oCharge   = $td.eq(6).find("span");//增减项
+			var $oPayment  = $td.eq(8).find("span");//应付款
+			var $oPaymentI = $td.eq(8).find("input");//应付款
+			var $oTaxRate = $td.eq(9).find("option:checked");//退税率
+			var $oTaxesS  = $td.eq(10).find("span");//税
+			var $oTaxesI  = $td.eq(10).find("input");//税
+			var $oTaxExcludedS = $td.eq(11).find("span");//价
+			var $oTaxExcludedI = $td.eq(11).find("input");//价
+			
+
+			var chargeType = $oChargeType.val();		
+			var fContract = currencyToFloat($oContract.text());	
+			var fCharge = currencyToFloat($oCharge.text());	
+			var fPayment = currencyToFloat($oPayment.text());
+			var fTaxRate = currencyToFloat($oTaxRate.val());
+//alert(chargeType+"---"+fPayment)
+			if(chargeType == '020'){
+				//外扣
+				fPayment = fContract;//直接采用合同金额
+			}else{
+				fPayment = fContract + fCharge;//直接采用合同金额
+			}
+			
+			var fTaxExcluded = fPayment / (fTaxRate / 100 + 1 );//价
+			var fTaxes = fPayment - fTaxExcluded;//税
+
+			var vTaxes = floatToCurrency(fTaxes);
+			var vTaxExcluded = floatToCurrency(fTaxExcluded);
+			var vPayment = floatToCurrency(fPayment);
+
+			$oPayment.text(vPayment);
+			$oPaymentI.val(vPayment);
+			$oTaxesS.text(vTaxes);
+			$oTaxesI.val(vTaxes);
+			$oTaxExcludedS.text(vTaxExcluded);
+			$oTaxExcludedI.val(vTaxExcluded);
+			//
+			doComputeTax();//价税计算
+
+		});
+		
+		t.on('change', 'tr td:nth-child(10)',function() {
+
+			var $td = $(this).parent().find("td");
+
+			var $oPayment = $td.eq(8).find("span");//应付款
+			var $oTaxRate = $td.eq(9).find("option:checked");//退税率
+			var $oTaxesS = $td.eq(10).find("span");//税
+			var $oTaxesI = $td.eq(10).find("input");//税
+			var $oTaxExcludedS = $td.eq(11).find("span");//价
+			var $oTaxExcludedI = $td.eq(11).find("input");//价
 			
 			var fPayment = currencyToFloat($oPayment.text());
 			var fTaxRate = currencyToFloat($oTaxRate.val());
@@ -169,9 +218,9 @@
 		
 		var contract = contractSum(5);//合同总金额
 		var minis = contractSum(6);//增加项
-		var payment = contractSum(7);//应付款
-		var taxes = contractSum(9);//税
-		var taxExcluded = contractSum(10);//价
+		var payment = contractSum(8);//应付款
+		var taxes = contractSum(10);//税
+		var taxExcluded = contractSum(11);//价
 		$('#contractTotal').html(floatToCurrency(contract));
 		$('#minisTotal').html(floatToCurrency(minis));
 		$('#paymentTotal').html(floatToCurrency(payment));
@@ -445,10 +494,11 @@ function uploadPhoto(tableId,tdTable, id) {
 					<th width="70px">约定付款日</th>
 					<th width="60px">合同金额</th>
 					<th width="50px">增减项</th>
+					<th width="50px">扣款方式</th>
 					<th width="60px">应付款</th>
 					<th width="50px">退税率</th>
-					<th width="50px">税</th>
-					<th width="60px">价</th>
+					<th width="40px">税</th>
+					<th width="50px">价</th>
 					<th>操作</th>
 				</tr>
 			</thead>
@@ -458,12 +508,22 @@ function uploadPhoto(tableId,tdTable, id) {
 						<td class="td-center">${status.index+1 }</td>
 						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a>
 							<form:hidden path="contractList[${status.index}].contractid"  value="${list.contractId }" /></td>
-						<td><a href="###" onClick="receiptView('${list.contractId }')">${list.receiptId }</a></td>
+						<td><a href="###" onClick="receiptView('${list.contractId }')"><span id="receipt${status.index }">${list.receiptId }</span></a></td>
 						<td>${list.YSId }</td>
 						<td class="td-center">${list.agreementDate }</td>
-						<td class="td-right">${list.totalPrice }</td>
+						<td class="td-right"><span id="contract${status.index }">${list.totalPrice }</span></td>
 						<td class="td-right"><span id="chargeback${status.index }"></span></td>
-						<td class="td-right"><span id="payment${status.index }"></span></td>
+						
+						<!-- 扣款方式 -->
+						<td class="td-right">
+							<form:select path="paymentList[${status.index}].chargetype">
+								<form:options items="${chargetypeList}"  itemValue="key" itemLabel="value" />
+							</form:select></td>
+						<!-- 应付款 -->
+						<td class="td-right">
+							<span id="payment${status.index }"></span>
+							<form:hidden path="paymentList[${status.index }].payable" /></td>
+							
 						<td class="td-right">
 							<form:select path="contractList[${status.index}].taxrate">
 								<form:options items="${taxRateList}"  itemValue="key" itemLabel="value" />
@@ -478,7 +538,7 @@ function uploadPhoto(tableId,tdTable, id) {
 						</td>
 							<form:hidden path="paymentList[${status.index }].recordid"    value="${list.detailRecordId }" />
 							<form:hidden path="paymentList[${status.index }].contractid"  value="${list.contractId }"  class="contractid" />
-							<form:hidden path="paymentList[${status.index }].payable"     value="${list.total }" />
+						
 					</tr>
 					<script type="text/javascript">
 						var contract = currencyToFloat('${list.totalPrice }');
@@ -499,7 +559,10 @@ function uploadPhoto(tableId,tdTable, id) {
 						$("#contractList" + index + "\\.taxexcluded").val(vtaxexcluded);
 						$('#taxexcluded'+index).html(vtaxexcluded);
 						$('#payment'+index).html(floatToCurrency(payment));
+						$("#paymentList" + index + "\\.payable").val(payment);
 						$('#chargeback'+index).html(floatToCurrency(chargeback));
+						var receipt = '${list.receiptId }';
+						$('#receipt'+index).html(jQuery.fixedWidth(receipt,12)); 
 						
 					</script>
 				</c:forEach>
@@ -513,6 +576,7 @@ function uploadPhoto(tableId,tdTable, id) {
 					<td>合计：</td>
 					<td><span id="contractTotal" style="font-weight: bold;"></span></td>
 					<td><span id="minisTotal" style="font-weight: bold;"></span></td>
+					<td></td>
 					<td><span id="paymentTotal" style="font-weight: bold;"></span></td>
 					<td></td>
 					<td><span id="taxesTotal" style="font-weight: bold;"></span></td>

@@ -261,6 +261,8 @@ public class PaymentService extends CommonService {
 		model.addAttribute("contractIds",contractIds);
 		model.addAttribute("taxRateList",
 				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
+		model.addAttribute("chargetypeList",
+				util.getListOption(DicUtil.CHARGETYPE,""));//扣款方式
 	
 	}
 	
@@ -376,6 +378,8 @@ public class PaymentService extends CommonService {
 		
 		model.addAttribute("taxRateList",
 				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
+		model.addAttribute("chargetypeList",
+				util.getListOption(DicUtil.CHARGETYPE,""));//扣款方式
 	}
 
 	private void getPaymentDetailDB(String recordId) throws Exception {
@@ -645,8 +649,8 @@ public class PaymentService extends CommonService {
 			insertPayment(reqData);			
 
 			//检查关联合同是否存在
-			String where = " paymentid='" + paymentid +"' AND deleteFlag='0' ";
-			if ( checkPaymentExsit(where) == null){
+			//String where = " paymentid='" + paymentid +"' AND deleteFlag='0' ";
+			//if ( checkPaymentExsit(where) == null){
 
 				//关联合同
 				for(B_PaymentDetailData data:reqDataList ){				
@@ -654,7 +658,7 @@ public class PaymentService extends CommonService {
 					data.setPaymentid(paymentid);
 					insertPaymentDetail(data);					
 				}				
-			}
+			//}
 			
 			//保存退税率
 			for(B_PurchaseOrderData data:contractList ){				

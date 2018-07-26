@@ -45,8 +45,8 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getPaymentid());			statement.setString( 3,beanData.getContractid());			statement.setString( 4,beanData.getPayable());			statement.setString( 5,beanData.getDeptguid());			statement.setString( 6,beanData.getCreatetime());			statement.setString( 7,beanData.getCreateperson());			statement.setString( 8,beanData.getCreateunitid());			statement.setString( 9,beanData.getModifytime());			statement.setString( 10,beanData.getModifyperson());			statement.setString( 11,beanData.getDeleteflag());			statement.setString( 12,beanData.getFormid());
+			statement = connection.prepareStatement("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,chargetype,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getPaymentid());			statement.setString( 3,beanData.getContractid());			statement.setString( 4,beanData.getPayable());			statement.setString( 5,beanData.getChargetype());			statement.setString( 6,beanData.getDeptguid());			statement.setString( 7,beanData.getCreatetime());			statement.setString( 8,beanData.getCreateperson());			statement.setString( 9,beanData.getCreateunitid());			statement.setString( 10,beanData.getModifytime());			statement.setString( 11,beanData.getModifyperson());			statement.setString( 12,beanData.getDeleteflag());			statement.setString( 13,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -54,7 +54,7 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,chargetype,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -72,8 +72,8 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 		StringBuffer bufSQL = new StringBuffer();
 		try
 		{
-			bufSQL.append("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
-			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getPaymentid()) + "',");			bufSQL.append("'" + nullString(beanData.getContractid()) + "',");			bufSQL.append("'" + nullString(beanData.getPayable()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,chargetype,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
+			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getPaymentid()) + "',");			bufSQL.append("'" + nullString(beanData.getContractid()) + "',");			bufSQL.append("'" + nullString(beanData.getPayable()) + "',");			bufSQL.append("'" + nullString(beanData.getChargetype()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(")");
 
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -101,8 +101,8 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getPaymentid());			statement.setString( 3,beanData.getContractid());			statement.setString( 4,beanData.getPayable());			statement.setString( 5,beanData.getDeptguid());			statement.setString( 6,beanData.getCreatetime());			statement.setString( 7,beanData.getCreateperson());			statement.setString( 8,beanData.getCreateunitid());			statement.setString( 9,beanData.getModifytime());			statement.setString( 10,beanData.getModifyperson());			statement.setString( 11,beanData.getDeleteflag());			statement.setString( 12,beanData.getFormid());
+			statement = connection.prepareStatement("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,chargetype,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getPaymentid());			statement.setString( 3,beanData.getContractid());			statement.setString( 4,beanData.getPayable());			statement.setString( 5,beanData.getChargetype());			statement.setString( 6,beanData.getDeptguid());			statement.setString( 7,beanData.getCreatetime());			statement.setString( 8,beanData.getCreateperson());			statement.setString( 9,beanData.getCreateunitid());			statement.setString( 10,beanData.getModifytime());			statement.setString( 11,beanData.getModifyperson());			statement.setString( 12,beanData.getDeleteflag());			statement.setString( 13,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -110,7 +110,7 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO B_PaymentDetail( recordid,paymentid,contractid,payable,chargetype,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -213,19 +213,19 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT recordid,paymentid,contractid,payable,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PaymentDetail WHERE  recordid =?");
+			statement = connection.prepareStatement("SELECT recordid,paymentid,contractid,payable,chargetype,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PaymentDetail WHERE  recordid =?");
 			statement.setString( 1,beanData.getRecordid());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
 				throw new Exception(" Row Not does;");
 			}
-			returnData.setRecordid( resultSet.getString( 1));			returnData.setPaymentid( resultSet.getString( 2));			returnData.setContractid( resultSet.getString( 3));			returnData.setPayable( resultSet.getString( 4));			returnData.setDeptguid( resultSet.getString( 5));			returnData.setCreatetime( resultSet.getString( 6));			returnData.setCreateperson( resultSet.getString( 7));			returnData.setCreateunitid( resultSet.getString( 8));			returnData.setModifytime( resultSet.getString( 9));			returnData.setModifyperson( resultSet.getString( 10));			returnData.setDeleteflag( resultSet.getString( 11));			returnData.setFormid( resultSet.getString( 12));
+			returnData.setRecordid( resultSet.getString( 1));			returnData.setPaymentid( resultSet.getString( 2));			returnData.setContractid( resultSet.getString( 3));			returnData.setPayable( resultSet.getString( 4));			returnData.setChargetype( resultSet.getString( 5));			returnData.setDeptguid( resultSet.getString( 6));			returnData.setCreatetime( resultSet.getString( 7));			returnData.setCreateperson( resultSet.getString( 8));			returnData.setCreateunitid( resultSet.getString( 9));			returnData.setModifytime( resultSet.getString( 10));			returnData.setModifyperson( resultSet.getString( 11));			returnData.setDeleteflag( resultSet.getString( 12));			returnData.setFormid( resultSet.getString( 13));
 			return returnData;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT recordid,paymentid,contractid,payable,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PaymentDetail  WHERE  "+e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,paymentid,contractid,payable,chargetype,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PaymentDetail  WHERE  "+e.toString());
 		}
 		finally
 		{
@@ -251,19 +251,19 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 			str_Where=str_Where.trim(); 
 			if(!str_Where.equals(""))
 				str_Where=" WHERE " + str_Where ; 
-			statement = connection.prepareStatement("SELECT recordid,paymentid,contractid,payable,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PaymentDetail"+str_Where);
+			statement = connection.prepareStatement("SELECT recordid,paymentid,contractid,payable,chargetype,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PaymentDetail"+str_Where);
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next())
 			{
 				B_PaymentDetailData returnData=new B_PaymentDetailData();
-				returnData.setRecordid( resultSet.getString( 1));				returnData.setPaymentid( resultSet.getString( 2));				returnData.setContractid( resultSet.getString( 3));				returnData.setPayable( resultSet.getString( 4));				returnData.setDeptguid( resultSet.getString( 5));				returnData.setCreatetime( resultSet.getString( 6));				returnData.setCreateperson( resultSet.getString( 7));				returnData.setCreateunitid( resultSet.getString( 8));				returnData.setModifytime( resultSet.getString( 9));				returnData.setModifyperson( resultSet.getString( 10));				returnData.setDeleteflag( resultSet.getString( 11));				returnData.setFormid( resultSet.getString( 12));
+				returnData.setRecordid( resultSet.getString( 1));				returnData.setPaymentid( resultSet.getString( 2));				returnData.setContractid( resultSet.getString( 3));				returnData.setPayable( resultSet.getString( 4));				returnData.setChargetype( resultSet.getString( 5));				returnData.setDeptguid( resultSet.getString( 6));				returnData.setCreatetime( resultSet.getString( 7));				returnData.setCreateperson( resultSet.getString( 8));				returnData.setCreateunitid( resultSet.getString( 9));				returnData.setModifytime( resultSet.getString( 10));				returnData.setModifyperson( resultSet.getString( 11));				returnData.setDeleteflag( resultSet.getString( 12));				returnData.setFormid( resultSet.getString( 13));
 				v_1.add(returnData);
 			}
 			return v_1;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT recordid,paymentid,contractid,payable,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PaymentDetail" + astr_Where +e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,paymentid,contractid,payable,chargetype,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM B_PaymentDetail" + astr_Where +e.toString());
 		}
 		finally
 		{
@@ -282,15 +282,15 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_PaymentDetail SET recordid= ? , paymentid= ? , contractid= ? , payable= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getPaymentid());			statement.setString( 3,beanData.getContractid());			statement.setString( 4,beanData.getPayable());			statement.setString( 5,beanData.getDeptguid());			statement.setString( 6,beanData.getCreatetime());			statement.setString( 7,beanData.getCreateperson());			statement.setString( 8,beanData.getCreateunitid());			statement.setString( 9,beanData.getModifytime());			statement.setString( 10,beanData.getModifyperson());			statement.setString( 11,beanData.getDeleteflag());			statement.setString( 12,beanData.getFormid());
-			statement.setString( 13,beanData.getRecordid());
+			statement = connection.prepareStatement("UPDATE B_PaymentDetail SET recordid= ? , paymentid= ? , contractid= ? , payable= ? , chargetype= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getPaymentid());			statement.setString( 3,beanData.getContractid());			statement.setString( 4,beanData.getPayable());			statement.setString( 5,beanData.getChargetype());			statement.setString( 6,beanData.getDeptguid());			statement.setString( 7,beanData.getCreatetime());			statement.setString( 8,beanData.getCreateperson());			statement.setString( 9,beanData.getCreateunitid());			statement.setString( 10,beanData.getModifytime());			statement.setString( 11,beanData.getModifyperson());			statement.setString( 12,beanData.getDeleteflag());			statement.setString( 13,beanData.getFormid());
+			statement.setString( 14,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_PaymentDetail SET recordid= ? , paymentid= ? , contractid= ? , payable= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_PaymentDetail SET recordid= ? , paymentid= ? , contractid= ? , payable= ? , chargetype= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -308,7 +308,7 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("UPDATE B_PaymentDetail SET ");
-			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Paymentid = " + "'" + nullString(beanData.getPaymentid()) + "',");			bufSQL.append("Contractid = " + "'" + nullString(beanData.getContractid()) + "',");			bufSQL.append("Payable = " + "'" + nullString(beanData.getPayable()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Paymentid = " + "'" + nullString(beanData.getPaymentid()) + "',");			bufSQL.append("Contractid = " + "'" + nullString(beanData.getContractid()) + "',");			bufSQL.append("Payable = " + "'" + nullString(beanData.getPayable()) + "',");			bufSQL.append("Chargetype = " + "'" + nullString(beanData.getChargetype()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(" WHERE ");
 			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -335,15 +335,15 @@ public class B_PaymentDetailDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE B_PaymentDetail SET recordid= ? , paymentid= ? , contractid= ? , payable= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getPaymentid());			statement.setString( 3,beanData.getContractid());			statement.setString( 4,beanData.getPayable());			statement.setString( 5,beanData.getDeptguid());			statement.setString( 6,beanData.getCreatetime());			statement.setString( 7,beanData.getCreateperson());			statement.setString( 8,beanData.getCreateunitid());			statement.setString( 9,beanData.getModifytime());			statement.setString( 10,beanData.getModifyperson());			statement.setString( 11,beanData.getDeleteflag());			statement.setString( 12,beanData.getFormid());
-			statement.setString( 13,beanData.getRecordid());
+			statement = connection.prepareStatement("UPDATE B_PaymentDetail SET recordid= ? , paymentid= ? , contractid= ? , payable= ? , chargetype= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getPaymentid());			statement.setString( 3,beanData.getContractid());			statement.setString( 4,beanData.getPayable());			statement.setString( 5,beanData.getChargetype());			statement.setString( 6,beanData.getDeptguid());			statement.setString( 7,beanData.getCreatetime());			statement.setString( 8,beanData.getCreateperson());			statement.setString( 9,beanData.getCreateunitid());			statement.setString( 10,beanData.getModifytime());			statement.setString( 11,beanData.getModifyperson());			statement.setString( 12,beanData.getDeleteflag());			statement.setString( 13,beanData.getFormid());
+			statement.setString( 14,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE B_PaymentDetail SET recordid= ? , paymentid= ? , contractid= ? , payable= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE B_PaymentDetail SET recordid= ? , paymentid= ? , contractid= ? , payable= ? , chargetype= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{

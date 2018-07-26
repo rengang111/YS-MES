@@ -104,13 +104,18 @@
 		    		}},
 		    		{"targets":2,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + row["contractId"] + "</a>";
+		    			var contractId = jQuery.fixedWidth(row["contractId"],16);  
+		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + contractId + "</a>";
 		    			//rtn=  row["YSId"];
 		    			return rtn;
 		    		}},
+		    		{"targets":3,"render":function(data, type, row){
+		    					    			
+		    			return jQuery.fixedWidth(data,12);
+		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    					    			
-		    			return jQuery.fixedWidth(data,18);
+		    			return jQuery.fixedWidth(data,24);
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);

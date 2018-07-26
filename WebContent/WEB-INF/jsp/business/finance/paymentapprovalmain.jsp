@@ -86,6 +86,9 @@
 			    		rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["paymentId"] + "')\">" + row["paymentId"] + "</a>";		    			
 		    			return rtn;
 		    		}},
+		    		{"targets":2,"render":function(data, type, row){
+		    			return jQuery.fixedWidth(data,16);		
+		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			return jQuery.fixedWidth(data,35);		
 		    		}},

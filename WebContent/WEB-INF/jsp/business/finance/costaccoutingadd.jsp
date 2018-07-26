@@ -370,8 +370,8 @@
 	
 	<fieldset style="margin-top: -40px;">
 		<legend>领料统计</legend>
-		<div class="list">
-			<table id="example2" class="display" width="100%">
+		<div class="list" style="width:98%">
+			<table id="example2" class="display" >
 				<thead>
 					<tr>
 						<th width="1px">No</th>

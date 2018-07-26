@@ -485,7 +485,7 @@ function photoView1(id, tdTable, count, data) {
 						<td>${list.agreementDate }</td>
 						<td>${list.totalPrice }</td>
 						<td class="td-right"><span id="chargeback${status.index }"></span></td>
-						<td class="td-right"><span id="payment${status.index }"></span></td>
+						<td class="td-right"><span id="payment${status.index }">${list.payable }</span></td>
 						<td class="td-center">
 							<a href="###" onClick="doPrintContract('${list.contractId }')">打印合同</a>&nbsp;&nbsp;
 							<a href="###" onClick="doShowStockin('${list.contractId }')">打印入库单</a>
@@ -494,12 +494,12 @@ function photoView1(id, tdTable, count, data) {
 							<form:hidden path="paymentList[${status.index }].payable"  value="${list.total }" />
 					</tr>
 					<script type="text/javascript">
-						var contract = currencyToFloat('${list.totalPrice }');
+						//var contract = currencyToFloat('${list.totalPrice }');
 						var chargeback = currencyToFloat('${list.chargeback }');
-						var payment = floatToCurrency( contract + chargeback );
+						//var payment = floatToCurrency( contract + chargeback );
 						var index = ${status.index }
 						//alert('payment--chargeback:'+chargeback+'---'+payment)
-						$('#payment'+index).html(payment);
+						//$('#payment'+index).html(payment);
 						$('#chargeback'+index).html(floatToCurrency(chargeback));
 					</script>
 				</c:forEach>

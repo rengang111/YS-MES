@@ -348,6 +348,8 @@ function doSubDetail(recordid , parentid) {
 
 $(document).ready(function() {
 
+	$(".read-only").attr('readonly', "true");
+	
 	$("#material :input.required").each(function(){
         var $required = $("<strong class='high'> *</strong>"); //创建元素
         $(this).parent().append($required); //然后将它追加到文档中

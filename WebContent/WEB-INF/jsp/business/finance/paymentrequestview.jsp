@@ -36,6 +36,7 @@
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
 				{"className" : 'td-right'},//
+				{"className" : 'td-right'},//
 				{"className" : 'td-left'},//			
 				
 			],	
@@ -216,9 +217,9 @@
 		
 		var contract = contractSum(5);//合同总金额
 		var minis = contractSum(6);//增加项
-		var payment = contractSum(7);//应付款
-		var taxes = contractSum(9);//税
-		var taxExcluded = contractSum(10);//价
+		var payment = contractSum(8);//应付款
+		var taxes = contractSum(10);//税
+		var taxExcluded = contractSum(11);//价
 		$('#contractTotal').html(floatToCurrency(contract));
 		$('#minisTotal').html(floatToCurrency(minis));
 		$('#paymentTotal').html(floatToCurrency(payment));
@@ -447,6 +448,7 @@ function photoView(id, tdTable, count, data) {
 					<th width="70px">约定付款日</th>
 					<th width="60px">合同金额</th>
 					<th width="50px">增减项</th>
+					<th width="50px">扣款方式</th>
 					<th width="60px">应付款</th>
 					<th width="50px">退税率</th>
 					<th width="50px">税</th>
@@ -464,7 +466,8 @@ function photoView(id, tdTable, count, data) {
 						<td>${list.agreementDate }</td>
 						<td>${list.totalPrice }</td>
 						<td class="td-right"><span id="chargeback${status.index }"></span></td>
-						<td class="td-right"><span id="payment${status.index }"></span></td>
+						<td class="td-right"><span id="type${status.index }">${list.chargeType }</span></td>
+						<td class="td-right"><span id="payment${status.index }">${list.payable }</span></td>
 						<td class="td-right">${list.taxRate }</td>
 						<td class="td-right">${list.taxes }</td>
 						<td class="td-right">${list.taxExcluded }</td>
@@ -475,12 +478,12 @@ function photoView(id, tdTable, count, data) {
 							<form:hidden path="paymentList[${status.index }].payable"  value="${list.total }" />
 					</tr>
 					<script type="text/javascript">
-						var contract = currencyToFloat('${list.totalPrice }');
+						//var contract = currencyToFloat('${list.totalPrice }');
 						var chargeback = currencyToFloat('${list.chargeback }');
-						var payment = floatToCurrency( contract + chargeback );
+						//var payment = floatToCurrency( contract + chargeback );
 						var index = ${status.index }
 						//alert('payment--chargeback:'+chargeback+'---'+payment)
-						$('#payment'+index).html(payment);
+						//$('#payment'+index).html(payment);
 						$('#chargeback'+index).html(floatToCurrency(chargeback));
 					</script>
 				</c:forEach>
@@ -494,6 +497,7 @@ function photoView(id, tdTable, count, data) {
 					<td>合计：</td>
 					<td><span id="contractTotal" style="font-weight: bold;"></span></td>
 					<td><span id="minisTotal" style="font-weight: bold;"></span></td>
+					<td></td>
 					<td><span id="paymentTotal" style="font-weight: bold;"></span></td>
 					<td></td>
 					<td><span id="taxesTotal" style="font-weight: bold;"></span></td>
