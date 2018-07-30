@@ -461,7 +461,7 @@ function photoView(id, tdTable, count, data) {
 					<tr>
 						<td>${status.index+1 }</td>
 						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a></td>
-						<td><a href="###" onClick="receiptView('${list.contractId }')">${list.receiptId }</a></td>
+						<td><a href="###" onClick="receiptView('${list.contractId }')"><span id="receipt${status.index }">${list.receiptId }</span></a></td>
 						<td>${list.YSId }</td>
 						<td>${list.agreementDate }</td>
 						<td>${list.totalPrice }</td>
@@ -484,7 +484,9 @@ function photoView(id, tdTable, count, data) {
 						var index = ${status.index }
 						//alert('payment--chargeback:'+chargeback+'---'+payment)
 						//$('#payment'+index).html(payment);
+						var receipt = '${list.receiptId }';
 						$('#chargeback'+index).html(floatToCurrency(chargeback));
+						$('#receipt'+index).html(jQuery.fixedWidth(receipt,12));
 					</script>
 				</c:forEach>
 			</tbody>

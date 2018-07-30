@@ -477,7 +477,7 @@ function uploadPhoto(tableId,tdTable, id) {
 					<tr>
 						<td>${status.index+1 }</td>
 						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a></td>
-						<td><a href="###" onClick="doShowStockin('${list.contractId }')">${list.receiptId }</a></td>
+						<td><a href="###" onClick="doShowStockin('${list.contractId }')"><span id="receipt${status.index }">${list.receiptId }</span></a></td>
 						<td>${list.YSId }</td>
 						<td>${list.agreementDate }</td>
 						<td>${list.totalPrice }</td>
@@ -497,6 +497,8 @@ function uploadPhoto(tableId,tdTable, id) {
 						var index = ${status.index }
 						//alert('payment--chargeback:'+chargeback+'---'+payment)
 						//$('#payment'+index).html(payment);
+						var receipt = '${list.receiptId }';
+						$('#receipt'+index).html(jQuery.fixedWidth(receipt,12)); 
 						$('#chargeback'+index).html(floatToCurrency(chargeback));
 					</script>
 				</c:forEach>

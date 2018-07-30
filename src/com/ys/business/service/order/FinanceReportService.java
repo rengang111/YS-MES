@@ -328,8 +328,13 @@ public class FinanceReportService extends CommonService {
 		if(notEmpty(key1) || notEmpty(key2)){
 			statusFlag = "";//有查询key，则忽略其状态
 			userDefinedSearchCase.put("startDate", "");//忽略其时间段
-			userDefinedSearchCase.put("endDate", "");//忽略其时间段
-			
+			userDefinedSearchCase.put("endDate", "");//忽略其时间段			
+		}
+
+		//040：查询部分入库，不再区分月份
+		if(("040").equals(statusFlag)){
+			userDefinedSearchCase.put("startDate", "");//忽略其时间段
+			userDefinedSearchCase.put("endDate", "");//忽略其时间段			
 		}
 		
 		if(("010").equals(statusFlag)){
@@ -340,6 +345,9 @@ public class FinanceReportService extends CommonService {
 			
 		}else if(("030").equals(statusFlag)){
 			having=" accountingDate!='' ";//已核算
+			
+		}else if(("040").equals(statusFlag)){
+			having="stockinQty+0 > 0 AND stockinQty+0 < quantity+0 ";//部分入库
 		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

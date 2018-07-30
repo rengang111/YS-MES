@@ -773,17 +773,19 @@ public class PaymentService extends CommonService {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void insertPaymentDetail(
 			B_PaymentDetailData detail) throws Exception {
 
 		B_PaymentDetailData db = null;
-		try {
-			db = new B_PaymentDetailDao(detail).beanData;
+		String where = " paymentId='"+detail.getPaymentid() + 
+				"' AND contractId='"+detail.getContractid()+
+				"' AND deleteFlag='0' ";
+		
+		List<B_PaymentDetailData> list = new B_PaymentDetailDao().Find(where);
 
-		} catch (Exception e) {
-			// nothing
-		}		
-		if(db == null || db.equals("")){
+		if(list == null || list.size() <= 0 ){ 
+			
 			//插入新数据
 			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 			"paymentRequestInsert",userInfo);
@@ -794,6 +796,7 @@ public class PaymentService extends CommonService {
 			new B_PaymentDetailDao().Create(detail);
 		}else{
 			//更新
+			db = list.get(0);
 			copyProperties(db,detail);
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"paymentRequestUpdate",userInfo);

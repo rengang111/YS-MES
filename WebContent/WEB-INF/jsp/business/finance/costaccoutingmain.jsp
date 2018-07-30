@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
 
-<title>订单基本数据一览页面</title>
+<title>财务核算一览页面</title>
 <script type="text/javascript">
 
 
@@ -73,6 +73,7 @@
 					{"data": "productId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "productName", "defaultContent" : ''},//3
 					{"data": "quantity", "defaultContent" : '', "className" : 'td-right'},
+					{"data": "stockinQty", "defaultContent" : '', "className" : 'td-right'},
 					{"data": "orderTotalPrice", "className" : 'td-right'},//7
 					{"data": "checkInDate", "defaultContent" : '0', "className" : 'td-right'},
 					{"data": "cost", "className" : 'td-right'},//8
@@ -104,7 +105,7 @@
 		    			
 		    			return name;
 		    		}},
-		    		{"targets":10,"render":function(data, type, row){
+		    		{"targets":11,"render":function(data, type, row){
 		    			var stockinQty = currencyToFloat(row["stockinQty"]);
 		    			var orderQty = currencyToFloat(row["quantity"]);
 		    			var accountingDate = currencyToFloat(row["accountingDate"]);
@@ -216,6 +217,13 @@
 		ajax('',todaytmp,'false',statusFlag);
 	}
 	
+	//部分入库
+	function doSearchCustomer3(status){
+		$('#keyword1').val('');
+		$('#keyword2').val('');
+			
+		ajax('','','false',status);
+	}
 
 	//订单状态
 	function doSearchCustomer2(status){
@@ -302,7 +310,9 @@
 						<span>10月份</span></a>
 						<a id="defutBtn11" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('11');">
 						<span>11月份</span></a>
-					</td> 
+				 		&nbsp;&nbsp;<a id="defutBtn13" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer3('040');">
+						<span>部分入库</span></a> 	
+					</td>
 				</tr>
 				
 			</table>
@@ -315,7 +325,7 @@
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 		
 			<div id="DTTT_container2" style="height:40px;float: left">
-				<a  class="DTTT_button box2" onclick="doSearchCustomer2('010');" id="defutBtn010"><span>待入库</span></a>
+			<!--  	<a  class="DTTT_button box2" onclick="doSearchCustomer2('010');" id="defutBtn010"><span>待入库</span></a>-->
 				<a  class="DTTT_button box2" onclick="doSearchCustomer2('020');" id="defutBtn020"><span>待审核</span></a>
 				<a  class="DTTT_button box2" onclick="doSearchCustomer2('030');" id="defutBtn030"><span>已审核</span></a>
 			</div>
@@ -333,6 +343,7 @@
 						<th style="width: 100px;">产品编号</th>
 						<th>产品名称</th>
 						<th style="width: 60px;">订单数量</th>
+						<th style="width: 60px;">入库累计</th>
 						<th style="width: 70px;">销售金额</th>
 						<th style="width: 70px;">入库日期</th>
 						<th style="width: 60px;">核算成本</th>
