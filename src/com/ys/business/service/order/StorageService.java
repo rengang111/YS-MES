@@ -481,26 +481,29 @@ public class StorageService extends CommonService {
 		dataModel.setQueryName("stockoutforproduct");
 		
 		baseQuery = new BaseQuery(request, dataModel);
+		
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
 
 		String status = request.getParameter("status");
 
+		if(notEmpty(key1) || notEmpty(key2)){
+			status = "";//有关键字，忽略其状态
+		}
+		
 		StringBuffer sb = new StringBuffer();
-		sb.append(" AND ");;
+		sb.append(" AND ");
 		if(("030").equals(status)){
 			//未入库
 			sb.append(" a.stockinQty+0 <= 0 ");
 			userDefinedSearchCase.put("status", "050");
-			key1 = "";key2="";//清空关键字
 		}else if(("040").equals(status)){
 			//已入库
 			sb.append(" ( a.stockoutQty + 0 <= 0 AND a.stockinQty + 0 > 0 ) || REPLACE(a.completedQuantity,',','')+0 > 0 ");
 			userDefinedSearchCase.put("status", "050");
-			key1 = "";key2="";//清空关键字
 		}else{
 			//普通查询
 			sb.append(" 1=1 ");
-			userDefinedSearchCase.put("keyword1", key1);
-			userDefinedSearchCase.put("keyword2", key2);
 		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

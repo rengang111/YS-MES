@@ -22,18 +22,7 @@
 	        "pageLength": 50,
 	        "ordering"  : false,
 			dom : '<"clear">rt',		
-			"columns" : [
-			        	{"className":"dt-body-center"
-					}, {"className":"td-right"
-					}, {"className":"td-right"
-					}, {"className":"td-right"
-					}, {"className":"td-right"
-					}, {"className":"td-right"	
-					}, {"className":"td-left"
-					}, {"className":"td-left"
-					}, {
-					}
-				],
+			
 		"columnDefs":[
     		{"targets":2,"render":function(data, type, row){
     			
@@ -62,14 +51,6 @@
 			
 		});
 		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
 
 	};
 
@@ -262,11 +243,9 @@
 		<table class="display" id="example">	
 			<thead>		
 				<tr>
-					<th style="width:1px">No</th>
 					<th style="width:80px">订单数量</th>
 					<th style="width:80px">生产数量</th>
 					<th style="width:80px">已入库数量</th>
-					<th style="width:80px">已入库件数</th>
 					<th style="width:80px">本次入库数量</th>
 					<th style="width:55px">包装方式</th>
 					<th style="width:40px">件数</th>
@@ -275,13 +254,11 @@
 			</thead>
 			<tbody>
 				<c:forEach var="list" items="${orderDetail}" varStatus='status' >			
-					<tr>
-						<td></td>
+					<tr style="text-align: center;">
 						<td>${list.quantity }
 							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
 						<td>${list.totalQuantity }</td>
-						<td>${list.completedQuantity }</td>
-						<td>${list.completedNumber }</td>
+						<td>${list.stockinQty }</td>
 						<td><form:input path="stockList[${status.index}].quantity"  value="${list.surplus }" class="num short quantity" /></td>
 						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
 								<form:options items="${packagingList}" 

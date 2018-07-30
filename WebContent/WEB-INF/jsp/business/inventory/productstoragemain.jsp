@@ -16,13 +16,14 @@
 
 		var url = "${ctx}/business/storage?methodtype=orderSearch"+"&sessionFlag="+sessionFlag;
 		
-		if(status != ''){
-			//默认是质检合格或者让步接收
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			url += "&status="+status;
+		var key1 = $("#keyword1").val();
+		var key2 = $("#keyword2").val();
+		if(key1 != '' || key2 != ''){
+			//
+			status = '';
 			
 		}
+		url += "&status="+status;
 		url += "&keyBackup="+status;
 
 		var t = $('#TMaterial').DataTable({
@@ -51,7 +52,7 @@
 					"contentType": "application/json; charset=utf-8",
 					"type" : "POST",
 					"data" : JSON.stringify(aoData),
-					success: function(data){	
+					success: function(data){
 						$("#keyword1").val(data["keyword1"]);
 						$("#keyword2").val(data["keyword2"]);
 						fnCallback(data);

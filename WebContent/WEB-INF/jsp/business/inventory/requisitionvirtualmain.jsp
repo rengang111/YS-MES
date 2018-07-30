@@ -19,7 +19,8 @@
 		var actionUrl = "${ctx}/business/requisition?methodtype=virtualSearch";
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
 		actionUrl = actionUrl + "&requisitionSts=" + requisitionSts;
-		actionUrl = actionUrl + "&YsYear=17";
+		//actionUrl = actionUrl + "&YsYear=17";
+		actionUrl = actionUrl + "&YsYear=";//临时开发所有数据2018.7.30
 		actionUrl = actionUrl + "&virtualClass=" + virtualClass;
 		
 		
