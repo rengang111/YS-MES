@@ -615,6 +615,7 @@ public class StorageService extends CommonService {
 		getOrderDetail(YSId);
 
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+		model.addAttribute("storageFinishList",util.getListOption(DicUtil.DIC_STORAGEFINISH, ""));
 				
 	}
 	
@@ -643,6 +644,7 @@ public class StorageService extends CommonService {
 		getArrivaRecord("",receiptId,"");//入库明细
 
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
+		model.addAttribute("storageFinishList",util.getListOption(DicUtil.DIC_STORAGEFINISH, ""));
 		model.addAttribute("receiptId",receiptId);//已入库
 	
 	}
@@ -992,6 +994,8 @@ public class StorageService extends CommonService {
 
 		data = list.get(0);
 		
+		insertStorageHistory(data);//保留更新前的数据
+		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());
 		float ireqQuantity = stringToFloat(reqQuantity);	
@@ -1199,14 +1203,16 @@ public class StorageService extends CommonService {
 		if(db == null || ("").equals(db)){
 			stock.setStockintype(getStokinType(stock.getArrivelid()));
 			insertPurchaseStockIn(stock);
+		}else{
+			copyProperties(db,stock);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"PurchaseStockInUpdate",userInfo);
+			copyProperties(db,commData);
+			db.setKeepuser(userInfo.getUserId());
+					
+			dao.Store(db);
 		}
 
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"PurchaseStockInUpdate",userInfo);
-		copyProperties(db,commData);
-		db.setPackagnumber(stock.getPackagnumber());
-				
-		dao.Store(db);
 	}
 	
 	private void insertPurchaseStockInDetail(
@@ -1910,6 +1916,9 @@ public class StorageService extends CommonService {
 		if(mate ==null){
 			return null;
 		}
+
+		insertStorageHistory(mate);//保留更新前的数据
+		
 		B_MaterialData rtnVal = new B_MaterialData();
 		rtnVal.setQuantityonhand(mate.getQuantityonhand());
 		rtnVal.setMaprice(mate.getMaprice());
@@ -1980,6 +1989,8 @@ public class StorageService extends CommonService {
 			return null;
 		}
 
+		insertStorageHistory(mate);//保留更新前的数据
+		
 		float iQuantity = stringToFloat(reqMeterial.getQuantityonhand());
 		
 		float istockin = stringToFloat(mate.getWaitstockin());	//待入库

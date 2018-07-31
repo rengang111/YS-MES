@@ -6,95 +6,13 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
-	var shortYear = ""; 
 	
-	function ajax() {
-
-		var t = $('#example').DataTable({
-			
-			"processing" : false,
-			"retrieve"   : true,
-			"stateSave"  : true,
-			"pagingType" : "full_numbers",
-			//"scrollY"    : "160px",
-	        "scrollCollapse": false,
-	        "paging"    : false,
-	        "pageLength": 50,
-	        "ordering"  : false,
-			dom : '<"clear">rt',		
-			"columns" : [
-			        	{"className":"dt-body-center"
-					}, {"className":"td-center"
-					}, {"className":"td-left"
-					}, {"className":"td-right"
-					}, {"className":"td-right"
-					}, {"className":"td-right"	
-					}, {"className":"td-left"
-					}
-				],
-		"columnDefs":[
-    		{"targets":2,"render":function(data, type, row){
-    			
-    			var name = data;				    			
-    			name = jQuery.fixedWidth(name,35);				    			
-    			return name;
-    		}}
-           
-         ] 
-	
-		}).draw();
-
-						
-		t.on('click', 'tr', function() {
-			
-			var rowIndex = $(this).context._DT_RowIndex; //行号			
-			//alert(rowIndex);
-
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-			
-		});
-		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
-
-	};
-
 		
 	$(document).ready(function() {
 
-		//设置光标项目
-		//$("#attribute1").focus();
-		//$("#order\\.piid").attr('readonly', "true");
-
-		//日期
-		var mydate = new Date();
-		var number = mydate.getFullYear();
-		shortYear = String(number).substr(2); 
-		$("#stock\\.checkindate").val(shortToday());
 		
-		ajax();//产品
 		ajaxHistory();//入库记录
-		
-		$("#stock\\.checkindate").datepicker({
-				dateFormat:"yy-mm-dd",
-				changeYear: true,
-				changeMonth: true,
-				selectOtherMonths:true,
-				showOtherMonths:true,
-			}); 
-		
+			
 		
 		$("#goBack").click(
 				function() {
@@ -105,18 +23,48 @@
 		
 		$("#insert").click(
 				function() {
-					
+					var surplus = currencyToFloat( $("#surplus").val() );
+					var orderQty = currencyToFloat( '${order.totalQuantity}');
+					var tmp = surplus / orderQty;
+					var sts = $("#stock\\.storagefinish").val();
+				
+					if(tmp <= 0.1 && sts == '010'){
+						if(confirm("剩余入库数量小于订单的10%，是否要选择入库完结处理")){
+							return;
+						}
+					}
 			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=updateProduct");
 			$('#formModel').submit();
 		});
 				
+		//计算剩余数量
+		$(".quantity").change(function() {
+			
+			quantitySum();
+		});
+		
 		foucsInit();
 
-		//$(".quantity").attr('readonly', "true");
-		//$(".quantity").addClass('read-only');
-		//$(".quantity").removeClass('bgnone');
+		quantitySum();
 		
 	});
+	
+	function quantitySum(){
+
+		var order = currencyToFloat( '${order.totalQuantity}');
+		var curr = currencyToFloat($(".quantity").val());
+		var stockin = currencyToFloat('${order.stockinQty}');
+		
+		stockin = stockin - currencyToFloat ('${head.quantity }');//累计入库：扣除当前入库数量
+
+		var shengyu = order - stockin;//剩余总量
+		
+		var currShenyu = shengyu - curr;//当前剩余数量
+		
+		$('#surplus').val(floatToCurrency(currShenyu));
+		$('.quantity').val(floatToCurrency(curr));
+		$('#stockinQty').text(floatToCurrency(stockin));
+	}
 	
 	function doEdit(contractId,arrivalId) {
 		
@@ -220,7 +168,7 @@
 	<form:hidden path="stock.ysid"  value="${order.YSId }"/>
 	
 	<fieldset>
-		<legend> 基本信息</legend>
+		<legend> 成品信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">耀升编号：</td>					
@@ -234,11 +182,53 @@
 			<tr> 				
 				<td class="label" width="100px">入库时间：</td>					
 				<td width="200px">
-					<form:input path="stock.checkindate" class="read-only" /></td>
+					<form:input path="stock.checkindate" class="read-only" value="${head.checkInDate }" /></td>
 							
 				<td width="100px" class="label">仓管员：</td>
 				<td width="200px">
 					<form:input path="stock.keepuser" class="short read-only" value="${userName }" /></td>							
+				<td class="label"></td>
+				<td></td>
+			</tr>
+			<tr style="height: 40px;vertical-align: bottom;"> 				
+				<td class="label" >本次入库数量：</td>					
+				<td>
+					<form:input path="stockList[0].quantity"  value="${head.quantity }" class="num quantity font16" style="width: 130px;"/>
+					<form:hidden path="stockList[0].materialid" value="${head.materialId }"/>
+					<form:hidden path="stockList[0].receiptid" value="${head.receiptId }"/>
+					<form:hidden path="stockList[0].recordid" value="${head.recordId }"/>
+					<form:hidden path="stock.receiptid" value="${head.receiptId }"/>
+					<form:hidden path="stock.recordid" value="${head.stockRcordId }"/>
+					<form:hidden path="oldQuantity" value="${head.quantity }"/>
+					<form:hidden path="oldPackagNumber" value="${head.packagNumber }"/></td>
+					
+				<td class="label">累计入库数量：</td>
+				<td class="font16">&nbsp;<span id="stockinQty">${order.stockinQty }</span></td>							
+				<td class="label">订单数量：</td>
+				<td class="font16">&nbsp;${order.totalQuantity }</td>
+			</tr>
+			<tr> 				
+				<td class="label" >包装方式：</td>					
+				<td>
+					<form:select path="stockList[0].packaging" style="width: 140px;">
+								<form:options items="${packagingList}" 
+									itemValue="key" itemLabel="value"/></form:select></td>
+							
+				<td class="label">入库件数：</td>
+				<td>
+					<form:input path="stockList[0].packagnumber" class="" value="${head.packagNumber }"/></td>							
+				<td class="label">库位编号：</td>
+				<td><form:input path="stockList[0].areanumber" class="" value="${head.areaNumber }"/></td>
+			</tr>
+			<tr> 				
+				<td class="label" >剩余入库数量：</td>					
+				<td>
+					<input type="text" id="surplus" value="0" class="read-only num font16" style="width: 130px;"/></td>
+							
+				<td class="label">入库完结处理：</td>
+				<td><form:select path="stock.storagefinish" style="width: 140px;">
+								<form:options items="${storageFinishList}" 
+									itemValue="key" itemLabel="value"/></form:select></td>							
 				<td class="label"></td>
 				<td></td>
 			</tr>
@@ -249,50 +239,6 @@
 	<fieldset class="action" style="text-align: right;margin-top:-20px">
 		<button type="button" id="insert" class="DTTT_button">确认入库</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
-	</fieldset>	
-	<fieldset style="margin-top: -40px;">
-		<legend> 成品信息</legend>
-		<div class="list">
-		<table class="display" id="example">	
-			<thead>		
-				<tr>
-						<th style="width:1px">No</th>
-						<th style="width:80px">入库时间</th>
-						<th style="width:120px">入库单号</th>
-						<th style="width:80px">入库数量</th>
-						<th style="width:55px">包装方式</th>
-						<th style="width:80px">入库件数</th>
-						<th style="width:60px">库位编号</th>	
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach var="list" items="${material}" varStatus='status' >			
-					<tr>
-						<td></td>
-						<td>${list.checkInDate }
-							<form:hidden path="stockList[${status.index}].receiptid" value="${list.receiptId }"/>
-							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/>
-							<form:hidden path="stockList[${status.index}].recordid" value="${list.recordId }"/>
-							<form:hidden path="stock.receiptid" value="${list.receiptId }"/>
-							<form:hidden path="stock.recordid" value="${list.stockRcordId }"/>
-							<form:hidden path="oldQuantity" value="${list.quantity }"/>
-							<form:hidden path="oldPackagNumber" value="${list.packagNumber }"/></td>
-						<td>${list.receiptId }</td>
-						<td><form:input path="stockList[${status.index}].quantity"  value="${list.quantity }" class="num short quantity" /></td>
-						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
-								<form:options items="${packagingList}" 
-									itemValue="key" itemLabel="value"/></form:select></td>
-						<td><form:input path="stockList[${status.index}].packagnumber" class="mini" value="${list.packagNumber }" /></td>
-						<td><form:input path="stockList[${status.index}].areanumber" class="short" value="${list.areaNumber }" /></td>
-					</tr>
-				
-				</c:forEach>
-			
-		</tbody>
-										
-		</table>
-
-		</div>
 	</fieldset>
 	<fieldset>
 	<legend> 入库记录</legend>

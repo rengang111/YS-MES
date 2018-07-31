@@ -67,7 +67,7 @@
 		shortYear = String(number).substr(2); 
 		$("#stock\\.checkindate").val(shortToday());
 		
-		ajax();//产品
+		//ajax();//产品
 		ajaxHistory();//入库记录
 		
 		$("#stock\\.checkindate").datepicker({
@@ -89,13 +89,65 @@
 		$("#insert").click(
 				function() {
 					
+					var surplus = currencyToFloat( $("#surplus").val() );
+					var orderQty = currencyToFloat( '${order.totalQuantity}');
+					var stockinQty = currencyToFloat( '${order.stockinQty}');
+					var curr = currencyToFloat($(".quantity").val());
+					var tmp = surplus / orderQty;
+					var sts = $("#stock\\.storagefinish").val();
+				
+					if(tmp <= 0.1 && sts == '010'){
+						if(confirm("剩余入库数量小于订单的10%，是否要选择入库完结处理")){
+							return;
+						}
+					}
+					if(surplus == 0 && sts == '010'){
+						$("#stock\\.storagefinish").val('020');
+					}
+					
+					if( (curr + stockinQty) > orderQty ){
+
+						$().toastmessage('showWarningToast', "入库数量不能超过订单数。");
+						return;
+					}
+					
 			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insertProduct");
 			$('#formModel').submit();
 		});
 				
+		//计算剩余数量
+		$(".quantity").change(function() {
+			
+			quantitySum();
+		});
+		
 		foucsInit();
-
+		
+		quantitySum();
 	});
+	
+	function quantitySum(){
+		var surplus = currencyToFloat( '${order.surplus}');
+		var curr = currencyToFloat($(".quantity").val());
+		var orderQty = currencyToFloat( '${order.totalQuantity}');
+		var stockinQty = currencyToFloat( '${order.stockinQty}');
+		
+		var shengyu = surplus - curr;
+		if(shengyu < 0){
+			$().toastmessage('showWarningToast', "入库数量不能超过订单数。");
+			shengyu = 0;
+			curr = surplus;
+		}
+		
+		$('#surplus').val(floatToCurrency(shengyu));
+		$('.quantity').val(floatToCurrency(curr));
+		
+		if(shengyu == 0){
+			$("#stock\\.storagefinish").val('020');
+		}else{
+			$("#stock\\.storagefinish").val('010');
+		}
+	}
 	
 	function doEdit(YSId,receiptId) {
 		var url = "${ctx}/business/storage?methodtype=editProduct"
@@ -207,7 +259,7 @@
 	<form:hidden path="stock.ysid"  value="${order.YSId }"/>
 	
 	<fieldset>
-		<legend> 基本信息</legend>
+		<legend> 成品信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">耀升编号：</td>					
@@ -229,6 +281,42 @@
 				<td class="label"></td>
 				<td></td>
 			</tr>
+			<tr style="height: 40px;vertical-align: bottom;"> 				
+				<td class="label" >本次入库数量：</td>					
+				<td>
+					<form:input path="stockList[0].quantity"  value="${order.surplus }" class="num quantity font16" style="width: 130px;"/>
+					<form:hidden path="stockList[0].materialid" value="${order.materialId }"/></td>
+							
+				<td class="label">累计入库数量：</td>
+				<td class="font16">&nbsp;${order.stockinQty }</td>							
+				<td class="label">订单数量：</td>
+				<td class="font16">&nbsp;${order.totalQuantity }</td>
+			</tr>
+			<tr> 				
+				<td class="label" >包装方式：</td>					
+				<td>
+					<form:select path="stockList[0].packaging" style="width: 140px;">
+								<form:options items="${packagingList}" 
+									itemValue="key" itemLabel="value"/></form:select></td>
+							
+				<td class="label">入库件数：</td>
+				<td>
+					<form:input path="stockList[0].packagnumber" class="" /></td>							
+				<td class="label">库位编号：</td>
+				<td><form:input path="stockList[0].areanumber" class="" /></td>
+			</tr>
+			<tr> 				
+				<td class="label" >剩余入库数量：</td>					
+				<td>
+					<input type="text" id="surplus" value="0" class="read-only num font16" style="width: 130px;"/></td>
+							
+				<td class="label">入库完结处理：</td>
+				<td><form:select path="stock.storagefinish" style="width: 140px;">
+								<form:options items="${storageFinishList}" 
+									itemValue="key" itemLabel="value"/></form:select></td>							
+				<td class="label"></td>
+				<td></td>
+			</tr>	
 										
 		</table>
 	</fieldset>
@@ -237,47 +325,6 @@
 		<button type="button" id="insert" class="DTTT_button">确认入库</button>
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
-	<fieldset style="margin-top: -40px;">
-		<legend> 成品信息</legend>
-		<div class="list">
-		<table class="display" id="example">	
-			<thead>		
-				<tr>
-					<th style="width:80px">订单数量</th>
-					<th style="width:80px">生产数量</th>
-					<th style="width:80px">已入库数量</th>
-					<th style="width:80px">本次入库数量</th>
-					<th style="width:55px">包装方式</th>
-					<th style="width:40px">件数</th>
-					<th style="width:60px">库位编号</th>		
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach var="list" items="${orderDetail}" varStatus='status' >			
-					<tr style="text-align: center;">
-						<td>${list.quantity }
-							<form:hidden path="stockList[${status.index}].materialid" value="${list.materialId }"/></td>
-						<td>${list.totalQuantity }</td>
-						<td>${list.stockinQty }</td>
-						<td><form:input path="stockList[${status.index}].quantity"  value="${list.surplus }" class="num short quantity" /></td>
-						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
-								<form:options items="${packagingList}" 
-									itemValue="key" itemLabel="value"/></form:select></td>
-						<td><form:input path="stockList[${status.index}].packagnumber" class="mini" /></td>
-						<td><form:input path="stockList[${status.index}].areanumber" class="short" /></td>
-					</tr>
-					<script type="text/javascript">
-							var index = '${status.index}';
-					</script>
-				
-				</c:forEach>
-			
-		</tbody>
-										
-		</table>
-
-		</div>
-	</fieldset>
 	<fieldset>
 	<legend> 入库记录</legend>
 	<div class="list">
@@ -287,14 +334,14 @@
 		<table class="display" id="history" >	
 			<thead>		
 				<tr>
-							<th style="width:15px">No</th>
-							<th style="width:80px">入库时间</th>
-							<th style="width:120px">入库单号</th>
-							<th style="width:80px">入库数量</th>
-							<th style="width:60px">入库件数</th>
-							<th style="width:55px">包装方式</th>
-							<th style="width:80px">库位编号</th>	
-							<th style="width:30px"></th>	
+					<th style="width:15px">No</th>
+					<th style="width:80px">入库时间</th>
+					<th style="width:120px">入库单号</th>
+					<th style="width:80px">入库数量</th>
+					<th style="width:60px">入库件数</th>
+					<th style="width:55px">包装方式</th>
+					<th style="width:80px">库位编号</th>	
+					<th style="width:30px"></th>	
 				</tr>
 			</thead>		
 									

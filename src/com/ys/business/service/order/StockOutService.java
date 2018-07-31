@@ -482,6 +482,8 @@ public class StockOutService extends CommonService {
 
 		data = list.get(0);
 		
+		insertStorageHistory(data);//保留更新前的数据
+		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());		
 		float iNewQuantiy = iQuantity - reqQuantity;		

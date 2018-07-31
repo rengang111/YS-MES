@@ -560,66 +560,7 @@ public class PaymentService extends CommonService {
 			getContractDetail(contractId);				
 		}	
 
-	}
-	
-	public void updateAndReturn() throws Exception {
-
-		String YSId = updateStorage();
-
-		getOrderDetail(YSId);
-
-	}
-
-	
-	private String updateStorage(){
-		String YSId = "";
-		ts = new BaseTransaction();		
-		
-		try {
-			ts.begin();
-			/*
-			B_StockOutData reqData = reqModel.getStockout();
-			List<B_StockOutDetailData> reqDataList = reqModel.getStockList();
-
-			//取得出库单编号
-			YSId= reqData.getYsid();		
-			String stockoutId = reqData.getStockoutid();
-	
-			//出库记录
-			insertStockOut(reqData);
-			
-			//删除既存数据
-			deleteStockoutDetail(stockoutId);
-			
-			for(B_StockOutDetailData data:reqDataList ){
-				float quantity = stringToFloat(data.getQuantity());
-				
-				if(quantity <= 0)
-					continue;
-				
-				data.setStockoutid(stockoutId);
-				insertStockOutDetail(data);								
-				
-				//更新库存
-				updateMaterial(data.getMaterialid(),quantity);//更新库存
-			
-			}
-			*/
-			ts.commit();			
-			
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			try {
-				ts.rollback();
-			} catch (Exception e1) {
-				System.out.println(e1.getMessage());
-			}
-		}
-		
-		return YSId;
-	}
-	
+	}	
 		
 	//新建付款申请
 	private String insertApply(String paymentStatus){

@@ -449,6 +449,7 @@
       <f name="a.quantity" alias="" ctype="" />
       <f name="a.stockinQty" alias="" ctype="" />
       <f name="a.checkInDate" alias="" ctype="" />
+      <f name="IFNULL(a.storageFinish,'010')" alias="storageFinish" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <from>v_costaccountinglist a   </from>

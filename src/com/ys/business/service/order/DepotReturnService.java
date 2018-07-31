@@ -594,6 +594,8 @@ public class DepotReturnService extends CommonService {
 
 		data = list.get(0);
 		
+		insertStorageHistory(data);//保留更新前的数据
+		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());
 		//退货的更新处理，库存=库存 - 本次退货 + 修改前的退货数（还原）

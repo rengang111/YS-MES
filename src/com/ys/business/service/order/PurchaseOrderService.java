@@ -579,6 +579,8 @@ public class PurchaseOrderService extends CommonService {
 
 		data = list.get(0);
 		
+		insertStorageHistory(data);//保留更新前的数据
+		
 		//当前库存数量
 		float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
 		float iWaitOut = stringToFloat(data.getWaitstockout());//待出库

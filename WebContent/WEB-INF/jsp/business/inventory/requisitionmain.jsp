@@ -66,9 +66,9 @@
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
 							{"data": "requisitionId", "defaultContent" : '', "className" : 'td-left'},
 							{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
-							{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
-							{"data": "materialName", "defaultContent" : ''},//3
-							{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},
+							{"data": "materialId", "defaultContent" : '***', "className" : 'td-left'},
+							{"data": "materialName", "defaultContent" : '***'},//3
+							{"data": "deliveryDate", "defaultContent" : '***', "className" : 'td-center'},
 							{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},
 							{"data": "requisitionDate", "defaultContent" : '-', "className" : 'td-center'},
 							{"data": null, "className" : 'td-center'},//8

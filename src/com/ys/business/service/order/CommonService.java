@@ -32,6 +32,7 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.order.MaterialModel;
+import com.ys.business.db.dao.B_MaterialStorageHistoryDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PriceReferenceDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
@@ -41,6 +42,7 @@ import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
 import com.ys.business.db.dao.S_systemConfigDao;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_MaterialStorageHistoryData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
@@ -479,6 +481,24 @@ public class CommonService extends BaseService {
 			
 		return pricedt;
 	}
+	
+
+	/**
+	 * 保留库存信息（修改前的信息）
+	 */
+	public void insertStorageHistory(
+			B_MaterialData history) throws Exception{
+		
+		if(history != null){				
+			B_MaterialStorageHistoryData dt = new B_MaterialStorageHistoryData();
+			
+			copyProperties(dt,history);
+			
+			new B_MaterialStorageHistoryDao().Create(dt);				
+		}	
+
+	}
+	
 	
 	/**
 	 * 更新订单状态

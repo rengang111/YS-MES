@@ -224,10 +224,10 @@
       <f name="A.status" alias="statusName" ctype="订单状态" />
       <f name="A.status" alias="" ctype="" />
       <f name="A.returnQuantity" alias="" ctype="" />
-      <f name="replace(a.totalQuantity,',','') - replace(b.quantity,',','')" alias="surplus" ctype="" />
+      <f name="replace(a.totalQuantity,',','') - IFNULL(replace(b.quantity,',',''),0)" alias="surplus" ctype="" />
       <f name="A.peiYsid" alias="" ctype="" />
       <f name="concat( a.rebateRate*100/100,'%')" alias="rebateRate" ctype="" />
-      <f name="b.quantity" alias="stockinQty" ctype="" />
+      <f name="IFNULL(b.quantity,'0')" alias="stockinQty" ctype="" />
       <f name="b.checkInDate" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->

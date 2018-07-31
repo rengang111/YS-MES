@@ -341,13 +341,13 @@ public class FinanceReportService extends CommonService {
 			having=" stockinQty+0 < quantity+0 ";//待入库
 			
 		}else if(("020").equals(statusFlag)){
-			having=" stockinQty+0 >= quantity+0 and accountingDate='' ";//待核算
+			having=" storageFinish ='020' and accountingDate='' ";//待核算
 			
 		}else if(("030").equals(statusFlag)){
 			having=" accountingDate!='' ";//已核算
 			
 		}else if(("040").equals(statusFlag)){
-			having="stockinQty+0 > 0 AND stockinQty+0 < quantity+0 ";//部分入库
+			having="stockinQty+0 > 0 AND storageFinish ='010' ";//部分入库
 		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

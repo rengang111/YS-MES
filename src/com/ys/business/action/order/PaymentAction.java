@@ -91,10 +91,6 @@ public class PaymentAction extends BaseAction {
 				applyUpdateInit();
 				rtnUrl = "/business/finance/paymentrequestadd";
 				break;
-			case "applyUpdate"://付款申请修改
-				doUpdate();
-				rtnUrl = "/business/finance/paymentrequestview";
-				break;
 			case "addinit"://付款申请初始化
 				doApplyAddInit();
 				rtnUrl = "/business/finance/paymentrequestadd";
@@ -504,17 +500,6 @@ public class PaymentAction extends BaseAction {
 		}
 	}
 
-	
-	public void doUpdate(){
-		try{
-			service.updateAndReturn();
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	
-	
 	
 	public void applyUpdateInit(){
 		try{
