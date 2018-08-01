@@ -332,6 +332,7 @@ public class PurchasePlanService extends CommonService {
 		try {
 			ts.begin();
 
+			System.out.println("采购方案更新处理：①开始");
 			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();	
 
 			//采购方案****************************************************
@@ -382,6 +383,7 @@ public class PurchasePlanService extends CommonService {
 			}//找出页面被删除的数据
 			
 			//旧数据:二级BOM(原材料)的待出库"减少"处理
+			System.out.println("采购方案更新处理：②二级BOM(原材料)的待出库减少处理（旧数据）");
 			ArrayList<HashMap<String, String>> list2 = getRawMaterialGroupList(YSId);	
 			
 			for(HashMap<String, String> map2:list2){
@@ -399,6 +401,7 @@ public class PurchasePlanService extends CommonService {
 			}
 			
 			//旧数据:采购方案,的待出库"减少"处理
+			System.out.println("采购方案更新处理：③采购方案（旧数据删除）");	
 			for(B_PurchasePlanDetailData old:DBList){
 
 				String oldmaterilid = old.getMaterialid();				
@@ -416,7 +419,8 @@ public class PurchasePlanService extends CommonService {
 				
 			}//旧数据:采购方案,的待出库"减少"处理
 						
-			//新数据:采购方案处理			
+			//新数据:采购方案处理
+			System.out.println("采购方案更新处理：④采购方案（新数据追加）");					
 			for(B_PurchasePlanDetailData detail:webList){
 				String materilid = detail.getMaterialid();
 				float purchase = stringToFloat(detail.getPurchasequantity());
@@ -440,7 +444,8 @@ public class PurchasePlanService extends CommonService {
 			}//新数据:采购方案处理
 			
 			
-			//采购合同****************************************************			
+			//采购合同****************************************************
+			System.out.println("采购方案更新处理：⑤需要删除的采购合同");			
 			//旧数据:
 			for(B_PurchasePlanDetailData dt:deleteList){
 				
@@ -499,6 +504,7 @@ public class PurchasePlanService extends CommonService {
 			}
 
 			//二级BOM(原材料)物料需求表
+			System.out.println("采购方案更新处理：⑥二级BOM(原材料)物料需求表更新");
 			ArrayList<HashMap<String, String>> list3 = getRawMaterialGroupList(YSId);	
 			
 			for(HashMap<String, String> map2:list3){
@@ -514,7 +520,8 @@ public class PurchasePlanService extends CommonService {
 				updateMaterial(rawmater2,purchase,requirement);						
 			}	
 			
-			ts.commit();		
+			ts.commit();	
+			System.out.println("采购方案更新处理：⑦正常结束");
 			
 		}
 		catch(Exception e) {
@@ -523,7 +530,9 @@ public class PurchasePlanService extends CommonService {
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-			System.out.println(e.getMessage());
+
+			System.out.println("采购方案更新处理：异常结束。");
+			e.printStackTrace();
 		}
 		
 		return YSId;

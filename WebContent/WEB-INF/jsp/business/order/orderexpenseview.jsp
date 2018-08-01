@@ -230,7 +230,12 @@ function expenseAjax3() {//工厂（供应商）增减费用
 	    		{"targets":0,"render":function(data, type, row){	
 	    			var rownum = row["rownum"];
 	    			return rownum;
-	    		}}              
+	    		}},
+	    		{"targets":2,"render":function(data, type, row){
+	    			var rtn = "";
+	    			rtn= "<a href=\"###\" onClick=\"doShowContract('"+ row["contractId"] + "')\">"+row["contractId"]+"</a>";
+	    			return rtn;
+	    		}}           
 		           
 		     ] ,
 			
@@ -488,7 +493,7 @@ function expenseAjax5() {//检验费用
 					</thead>					
 				</table>
 			</div>
-		</fieldset>		
+		</fieldset>
 		
 		<fieldset>
 			<span class="tablename"> 客户增减费用</span>
@@ -596,6 +601,14 @@ function inspectionSum(){
 	});	
 	$('#inspectionSum').html(floatToCurrency(contract));
 }
+
+function doShowContract(contractId) {
+
+	var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
+	callProductDesignView("合同明细",url);
+	
+}
+
 </script>
 
 </div>

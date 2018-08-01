@@ -59,9 +59,13 @@ function ajaxFn(scrollHeight) {
 					"type" : "POST",
 					//"data" : JSON.stringify(aoData),
 					success: function(data){
-						//data['data'][0]['productRecord'];
+
 						var remarks = data["data"][0]["remarks"];
+						var loginName = data["data"][0]["LoginName"];
+						
 						$('#remarks').html(remarks);	
+						$('#loginName').html(loginName);
+						
 						fnCallback(data);
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -169,7 +173,7 @@ function ajaxFn(scrollHeight) {
 				<td width="180px">${requisitionId }</td>
 							
 				<td width="100px" class="label">制单人：</td>					
-				<td width="180px">${userName }</td>
+				<td width="180px"><span id="loginName"></span></td>
 							
 				<td width="100px" class="label">打印时间：</td>				
 				<td colspan="3"><span id="today"></span></td>		

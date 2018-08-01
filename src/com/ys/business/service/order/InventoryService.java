@@ -266,9 +266,12 @@ public class InventoryService extends CommonService {
 		sql = sql.replace("#", having);
 		System.out.println("未到合同："+sql);
 		baseQuery.getYsFullData(sql,having);
+		
+		if(dataModel.getRecordCount() > 0){
 
-		model.addAttribute("material", dataModel.getYsViewData().get(0));
-		model.addAttribute("contractList", dataModel.getYsViewData());
+			model.addAttribute("material", dataModel.getYsViewData().get(0));
+			model.addAttribute("contractList", dataModel.getYsViewData());
+		}
 		
 	}
 	

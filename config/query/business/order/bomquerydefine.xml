@@ -485,6 +485,7 @@
      <where>
     	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
     	<w name="a.type" des="" reqName="type" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.YSId" alias="" ctype="" />

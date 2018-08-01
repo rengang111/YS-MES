@@ -233,10 +233,11 @@
       <f name="a.virtualClass" alias="" ctype="虚拟领料区分" />
       <f name="IFNULL(a.subBomNo,'0')" alias="subBomNo" ctype="" />
       <f name="a.remarks" alias="" ctype="" />
+      <f name="d.LoginName" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_requisitiondetail  AS A LEFT JOIN  b_purchaseplandetail c ON a.ysid = c.ysid AND  c.materialId = a.materialId AND c.subBomNo = IFNULL(a.subBomNo,0) AND c.deleteFlag = '0' WHERE  A.deleteFlag = '0'</from>
+   <from>v_requisitiondetail  AS A LEFT JOIN s_user d ON a.requisitionUserId=d.UserId LEFT JOIN  b_purchaseplandetail c ON a.ysid = c.ysid AND  c.materialId = a.materialId AND c.subBomNo = IFNULL(a.subBomNo,0) AND c.deleteFlag = '0' WHERE  A.deleteFlag = '0'</from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>

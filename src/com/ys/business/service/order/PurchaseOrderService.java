@@ -1360,16 +1360,19 @@ public class PurchaseOrderService extends CommonService {
 
 
 	public HashMap<String, Object> getContractDeduct() throws Exception {
-
-		//getContractDelayDeduct();//合同延期扣款
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
-		getOrderExpanseByContractId();//订单过程扣款
+		String orderExpanseQty = getOrderExpanseByContractId();//订单过程扣款
 		
-		return getContractScrapDeduct();//物料报废扣款
+		modelMap =  getContractScrapDeduct();//物料报废扣款
+		modelMap.put("orderExpanseQty", orderExpanseQty);
+		
+		return modelMap;
 	}
 	
-	private void getOrderExpanseByContractId() throws Exception {
+	private String getOrderExpanseByContractId() throws Exception {
 		
+		String orderExpanseQty = "0";
 		String contractId = request.getParameter("contractId");
 		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		dataModel.setQueryName("orderExpanseGroupByContractId");
@@ -1380,14 +1383,9 @@ public class PurchaseOrderService extends CommonService {
 		
 		if(dataModel.getRecordCount() > 0 ){
 
-			String orderExpanseQty =  dataModel.getYsViewData().get(0).get("orderExpanseQty");
-
-			model.addAttribute("orderExpanseQty",orderExpanseQty);
-			
-		}else{
-
-			model.addAttribute("orderExpanseQty","0");
+			orderExpanseQty =  dataModel.getYsViewData().get(0).get("orderExpanseQty");			
 		}
+		return orderExpanseQty;
 	}
 
 	private void getContractDelayDeduct() throws Exception {
@@ -1424,8 +1422,8 @@ public class PurchaseOrderService extends CommonService {
 	
 	
 	private HashMap<String, Object> getContractScrapDeduct() throws Exception {
-		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		String contractId = request.getParameter("contractId");
 		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		dataModel.setQueryName("contractListDeductById");
