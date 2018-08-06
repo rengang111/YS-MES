@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
@@ -20,6 +21,7 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+import com.ys.business.action.model.common.FilePath;
 import com.ys.business.action.model.common.FinanceMouthly;
 import com.ys.business.action.model.order.OrderModel;
 import com.ys.business.db.dao.B_FollowDao;
@@ -36,6 +38,7 @@ import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderCancelData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.B_StockOutData;
@@ -61,6 +64,7 @@ public class OrderService extends CommonService  {
 	private HashMap<String, String> userDefinedSearchCase;
 	private BaseQuery baseQuery;
 	ArrayList<HashMap<String, String>> modelMap = null;	
+	HashMap<String, Object> hashMap = null;	
 	HttpSession session;
 	
 	public OrderService(){
@@ -86,6 +90,7 @@ public class OrderService extends CommonService  {
 		this.session = session;
 		this.dataModel = new BaseModel();
 		this.userDefinedSearchCase = new HashMap<String, String>();
+		this.hashMap = new HashMap<>();
 		super.request = request;
 		super.userInfo = userInfo;
 		super.session = session;
@@ -2058,5 +2063,98 @@ public class OrderService extends CommonService  {
 		if(dataModel.getRecordCount() > 0){
 			model.addAttribute("order", dataModel.getYsViewData().get(0));	
 		}
+	}
+	
+	public HashMap<String, Object> uploadPhotoAndReload(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		//判断是否有申请编号
+		String ysid = request.getParameter("YSId");
+				
+		FilePath file = getPath(ysid);
+		String savePath = file.getSave();						
+		String viewPath = file.getView();
+		String webPath = file.getWeb();
+
+
+		String photoName  =  ysid + "-" + CalendarUtil.timeStempDate(); 
+		
+		uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
+
+		ArrayList<String> list = getFiles(savePath,webPath);
+		hashMap.put(fileList, list);
+		hashMap.put(fileCount, list.size());
+	
+		return hashMap;
+	}
+	
+	public HashMap<String, Object> deletePhotoAndReload(
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		String path = request.getParameter("path");
+		String ysid = request.getParameter("YSId");
+
+		deletePhoto(path);//删除图片
+
+
+		getPhoto(ysid,folderName,fileList,fileCount);
+		
+		return hashMap;
+	}
+	
+	
+	public HashMap<String, Object> getProductPhoto() throws Exception {
+
+		
+		String ysid = request.getParameter("YSId");
+
+		getPhoto(ysid,"product","productFileList","productFileCount");
+	
+		return hashMap;
+	}
+	
+
+	private void getPhoto(
+			String ysid,
+			String folderName,String fileList,String fileCount) {
+
+		
+		FilePath file = getPath(ysid);
+		String savePath = file.getSave();						
+		String viewPath = file.getWeb();
+		
+		try {
+
+			ArrayList<String> list = getFiles(savePath,viewPath);
+			hashMap.put(fileList, list);
+			hashMap.put(fileCount, list.size());
+							
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+
+		}
+	}
+	
+	private FilePath getPath(String key1){
+		FilePath filePath = new FilePath();
+		
+		filePath.setSave(
+				session.getServletContext().
+				getRealPath(BusinessConstants.PATH_ORDEREXPENSEFILE)
+				+"/"+key1
+				);	
+		filePath.setView(
+				session.getServletContext().
+				getRealPath(BusinessConstants.PATH_ORDEREXPENSEVIEW)
+				+"/"+key1
+				);	
+
+		filePath.setWeb(BusinessConstants.PATH_ORDEREXPENSEVIEW
+				+key1+"/"
+				);	
+		
+		return filePath;
 	}
 }

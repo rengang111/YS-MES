@@ -217,7 +217,11 @@ public class StorageAction extends BaseAction {
 				showStockIn();
 				rtnUrl = "/business/finance/paymentstockinprint";
 				break;
-			case "beginningInventoryMainInit":
+			case "beginningInventoryMainInitRaw"://库存管理：原材料
+				beginningInventoryMainInit();
+				rtnUrl = "/business/inventory/beginninginventorymainraw";
+				break;
+			case "beginningInventoryMainInit"://库存管理：原材料以外
 				beginningInventoryMainInit();
 				rtnUrl = "/business/inventory/beginninginventorymain";
 				break;

@@ -1216,6 +1216,8 @@ public class PurchasePlanService extends CommonService {
 			if(list.size() > 0){	
 				//update处理	
 				dbPlan = list.get(0);	
+				copyProperties(dbPlan,reqPlan);
+				
 				purchaseId = dbPlan.getPurchaseid();
 				if(isNullOrEmpty(purchaseId))
 					purchaseId = getPurchaseId(YSId);

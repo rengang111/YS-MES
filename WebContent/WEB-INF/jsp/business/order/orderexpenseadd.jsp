@@ -614,6 +614,23 @@
 		
 		//$(".DTTT_container").css('float','left');
 		
+		
+		productPhotoView();//附件
+		
+		//产品图片添加位置,                                                                                                                                                                                        
+		var productIndex = 1;
+		$("#addProductPhoto").click(function() {
+			
+			var path='${ctx}';
+			var cols = $("#productPhoto tbody td.photo").length - 1;
+			//从 1 开始
+			var trHtml = addPhotoRow('productPhoto','uploadProductPhoto',productIndex,path);		
+
+			$('#productPhoto td.photo:eq('+0+')').after(trHtml);	
+			productIndex++;		
+			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
+		});
+		
 	});
 
 </script>
@@ -1461,7 +1478,16 @@ function expenseAjax5() {//检验费用
 			</div>
 		</fieldset>	
 		
-<div style="clear: both"></div>		
+		<fieldset>
+			<span class="tablename">附件</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
+			<div class="list">
+				<div class="showPhotoDiv" style="overflow: auto;width: 1024px;">
+					<table id="productPhoto" style="width:100%;height:335px">
+						<tbody><tr><td class="photo"></td></tr></tbody>
+					</table>
+				</div>
+			</div>	
+		</fieldset>	
 </form:form>
 
 </div>
@@ -1603,6 +1629,116 @@ function doSave(type) {
 		}
 	});
 
+}
+
+function productPhotoView() {
+	var YSId = $('#bomPlan\\.ysid').val();
+	$.ajax({
+		"url" :"${ctx}/business/order?methodtype=orderExpenseProductPhoto"+"&YSId="+YSId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "GET",
+		data : null,// 你的formid
+		success: function(data){
+				
+			var countData = data["productFileCount"];
+			//alert(countData)
+			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+         	//alert(errorThrown)
+		 }
+	});
+	
+}//产品图片
+
+
+function photoView(id, tdTable, count, data) {
+	
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];		
+		var trHtml = showPhotoRow(id,tdTable,path,pathDel,index);		
+		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
+		row++;
+	}
+}
+
+
+function deletePhoto(tableId,tdTable,path) {
+
+	var YSId = $('#bomPlan\\.ysid').val();
+	var url = '${ctx}/business/order?methodtype='+tableId+'Delete';
+	url+='&tabelId='+tableId+"&path="+path+"&YSId="+YSId;
+	    
+	if(!(confirm("确定要删除该图片吗？"))){
+		return;
+	}
+    $("#bomForm").ajaxSubmit({
+		type: "POST",
+		url:url,	
+		data:$('#bomForm').serialize(),// 你的formid
+		dataType: 'json',
+	    success: function(data){
+	    	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//删除后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片删除失败,请重试。")
+		}
+	});
+}
+
+function uploadPhoto(tableId,tdTable, id) {
+
+	var YSId = $('#bomPlan\\.ysid').val();
+	var url = '${ctx}/business/orderExpensePhoto?methodtype=uploadPhoto'+'&YSId='+YSId;
+
+	$("#bomForm").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#bomForm').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
+	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//添加后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+			
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片上传失败,请重试。")
+		}
+	});
 }
 
 </script>

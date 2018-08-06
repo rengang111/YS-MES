@@ -29,14 +29,14 @@
 					.add(
 					  [
 '<td>'+rowIndex+'</td>',
-'<td><input type="text" name="detailList['+counter+'].materialid" id="detailList'+counter+'.materialid" class="materialid"/></td>',
+'<td><input type="text" name="requisitionList['+counter+'].materialid" id="requisitionList'+counter+'.materialid" class="materialid"/></td>',
 '<td><span></span></td>',
 '<td><span></span></td>',
-'<td><input type="text" name="detailList['+counter+'].quantity" id="detailList'+counter+'.quantity"  class="quantity num short" /></td>',
+'<td><input type="text" name="requisitionList['+counter+'].quantity" id="requisitionList'+counter+'.quantity"  class="quantity num short" /></td>',
 				
 					]).draw();
 					
-					$("#detailList" + counter + "\\.materialid").focus();
+					$("#requisitionList" + counter + "\\.materialid").focus();
 					counter ++;			
 				}
 				

@@ -136,11 +136,11 @@
 		var usedType=$('#usedType').val();
 		
 		var YSId= '${order.YSId }';
-		var stockoutid= '${order.stockOutId }';
-		
-		var url = '${ctx}/business/stockout?methodtype=updateInit&YSId='
-				+YSId+'&stockoutId='+stockoutid
-				+'&makeType='+makeType+"&usedType="+usedType;
+		var requisitionId= '${order.requisitionId }';
+
+		var usedType=$('#usedType').val();
+		var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId
+			+"&requisitionId="+requisitionId+"&makeType="+makeType+"&usedType="+usedType;
 		
 		location.href = url;
 	}
@@ -183,7 +183,7 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">出库单编号：</td>					
-				<td width="150px">${order.requisitionId }</td>
+				<td width="150px">${order.stockOutId }</td>
 				<td class="label">出库日期：</td>					
 				<td>${order.checkOutDate }</td>
 									
@@ -208,7 +208,7 @@
 	</fieldset>
 
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-	 	<!-- <a class="DTTT_button DTTT_button_text" id="doEdit"  onclick="doEdit();">编辑</a> -->
+	 	<a class="DTTT_button DTTT_button_text" id="doEdit"  onclick="doEdit();">继续领料</a>
 	 	<a class="DTTT_button DTTT_button_text" id="doDelete"  onclick="doDelete();">删除</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" > 返回 </a>
 	</div>

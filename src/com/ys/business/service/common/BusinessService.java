@@ -434,10 +434,30 @@ public class BusinessService {
 		
 	 
 	 /**
+	 * 料件出库单编号
+	 * @return 17LL-00001-01
+	 */
+	 public static String getStockOutId(
+			 String parent,String code,boolean addFlag) {
+
+		StringBuffer sb = new StringBuffer();
+	    sb.append(parent);
+	    sb.append("-");
+	    		
+		//格式化成2位流水号
+		int num = 1;
+		if(!(code ==null || ("").equals(code)))
+			num = Integer.parseInt(code);
+		sb.append(getFormat2Code(num,addFlag));
+		
+		return sb.toString();
+	 }
+	 
+	 /**
 	 * 出库单编号
 	 * @return 17CK-00001 5位流水号
 	 */
-	 public static String getStockOutId(
+	 public static String getStockOutIdForProduct(
 			 String parent,String code,boolean addFlag) {
 
 		StringBuffer sb = new StringBuffer();
@@ -485,7 +505,7 @@ public class BusinessService {
 	    sb.append(parent);
 	    sb.append("-");
 	    		
-		//格式化成5位流水号
+		//格式化成2位流水号
 		int num = 1;
 		if(!(code ==null || ("").equals(code)))
 			num = Integer.parseInt(code);

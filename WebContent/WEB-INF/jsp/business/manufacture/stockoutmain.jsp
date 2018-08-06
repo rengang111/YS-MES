@@ -69,8 +69,8 @@
 					{"data": "stockOutId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "requisitionId", "defaultContent" : '', "className" : 'td-center'},
 					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
-					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//4
-					{"data": "materialName", "defaultContent" : ''},//5
+					{"data": "materialId", "defaultContent" : '***', "className" : 'td-left'},//4
+					{"data": "materialName", "defaultContent" : '***'},//5
 					{"data": "requisitionType", "defaultContent" : '', "className" : 'td-center'},//6 
 					{"data": "requisitionUserName", "defaultContent" : '', "className" : ''},//7 领料申请者
 					{"data": "checkOutDate", "defaultContent" : '', "className" : 'td-right'},//8出库时间
@@ -81,7 +81,7 @@
 		    			return row["rownum"] ;				    			 
                     }},
 		    		{"targets":1,"render":function(data, type, row){
-		    			var  rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "','"+ row["stockOutId"] + "')\">"+row["requisitionId"]+"</a>";
+		    			var  rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "','"+ row["stockOutId"] + "')\">"+row["stockOutId"]+"</a>";
 		    			if(data == ""){
 		    				rtn= "<a href=\"###\" onClick=\"doCreate('"+ row["YSId"] + "','"+ row["requisitionId"] + "')\">"+row["requisitionId"]+"</a>";
 		    			

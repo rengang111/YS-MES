@@ -248,6 +248,7 @@
 	     
 		});
 		
+		//采购量
 		t.on('change', 'tr td:nth-child(11)',function() {
 
 			var contractQty   = currencyToFloat( $(this).find("input:text").attr("contractQty") );
@@ -268,6 +269,7 @@
 			
 		});
 
+		//单价
 		t.on('change', 'tr td:nth-child(13)',function() {
 			
 			var contractPrice  = $(this).find("input:text").attr("contractPrice");
@@ -282,29 +284,6 @@
 			
 		});
 
-		/*
-		t.on('blur', 'tr td:nth-child(4),tr td:nth-child(7)',function() {
-			
-			var currValue = $(this).find("input:text").val().trim();
-
-	        $(this).find("input:text").removeClass('bgwhite');
-	        
-	        if(currValue =="" ){
-	        	
-	        	 $(this).find("input:text").addClass('error');
-	        }else{
-	        	 $(this).find("input:text").addClass('bgnone');
-	        }
-			
-		});
-
-		
-		t.on('blur', 'tr td:nth-child(7)',function() {
-			
-	       $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
-
-		});
-		*/		
 
 		t.on('change', 'tr td:nth-child(7)',function() {
 						
@@ -365,7 +344,6 @@
 				</tr>							
 			</table>
 		</fieldset>
-<div id="warning"></div>
 		<fieldset>
 			<legend> 采购成本核算</legend>
 			<table class="form" id="table_form2">
@@ -420,7 +398,7 @@
 					<th class="dt-center" width="60px">建议采购量</th>
 					<th class="dt-center" style="width:80px">供应商</th>
 					<th class="dt-center" width="60px">本次单价</th>
-					<th class="dt-center" width="80px">总价</th>
+					<th class="dt-center" width="80px">本次成本</th>
 					<th class="dt-center" width="60px">当前价格</th>
 				</tr>
 			</thead>
@@ -822,14 +800,16 @@ function purchasePlanCompute(obj,flg){
 	var fOrder    = currencyToFloat( $oOrder.text() );
 	var fTotalQuty= fUnitQuty * fOrder;
 	var fStock = currencyToFloat( $oStock.text() );
+	
 	if(flg == '1'){
 		var fPurchase = setPurchaseQuantity(fStock,fTotalQuty);//建议采购量:自动计算		
 		
 	}else if (flg == '2'){
 		var fPurchase = currencyToFloat( $oPurchase.val() );//建议采购量	:直接输入	
 	}
+	
 	var fPrice    = currencyToFloat($oThisPrice.val());//计算用单价
-	var fTotalNew = currencyToFloat(fPrice * fPurchase);//合计
+	var fTotalNew = currencyToFloat(fPrice * fTotalQuty);//合计
 	
 	//var materialId = $oMaterial.val();	
 	var vPurchase = floatToCurrency(fPurchase);	

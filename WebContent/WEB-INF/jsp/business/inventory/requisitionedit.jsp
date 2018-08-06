@@ -89,12 +89,8 @@
 	    			var name =  jQuery.fixedWidth( row["materialName"],30); 	    			
 	    			return name + inputTxt;
                 }},
-	    		{"render":function(data, type, row){	    			
-	    			var val = row["contractMaterialId"];
-	    			var storage = row["contractStorage"];
-	    			var index=row["rownum"]
-	    			if(val == null || val =='')
-	    				storage='-';
+	    		{"targets":5,"render":function(data, type, row){	    			
+	    			
 	    			var inputTxt = '<input type="hidden" id="requisitionList'+index+'.materialid" name="requisitionList['+index+'].materialid" value="'+row["materialId"]+'"/>';
 				
 	    			return storage + inputTxt;				 

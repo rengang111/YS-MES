@@ -14,12 +14,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.order.OrderModel;
+import com.ys.business.action.model.order.OrderReviewModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.CalendarUtil;
 import com.ys.util.basequery.common.Constants;
+import com.ys.business.service.order.OrderReviewService;
 import com.ys.business.service.order.OrderService;
 import com.ys.system.action.model.login.UserInfo;
 
@@ -35,6 +39,7 @@ public class OrderAction extends BaseAction {
 	UserInfo userInfo = new UserInfo();
 	Model model;
 	HttpSession session;
+	HttpServletResponse response;
 	
 	@RequestMapping(value="/order")
 	public String init(
@@ -220,6 +225,14 @@ public class OrderAction extends BaseAction {
 				break;
 			case "orderExpenseYsid"://选择订单（耀升编号）
 				rtnUrl = "/business/order/orderexpenseysid";
+				break;
+			case "orderExpenseProductPhoto"://显示订单过程的附件
+				dataMap = getProductPhoto();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "productPhotoDelete"://删除订单过程的附件
+				dataMap = deletePhoto("product","productFileList","productFileCount");
+				printOutJsonObj(response, dataMap);
 				break;
 				
 		}
@@ -867,4 +880,83 @@ public class OrderAction extends BaseAction {
 		model.addAttribute("hiddenCol",hiddenCol);
 		
 	}
+	
+	public HashMap<String, Object> getProductPhoto(){	
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		try {
+			modelMap = orderService.getProductPhoto();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> deletePhoto(
+			String folderName,String fileList,String fileCount){	
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		try {
+			modelMap = orderService.deletePhotoAndReload(folderName,fileList,fileCount);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+	//出库单上传
+		@RequestMapping(value="orderExpensePhoto")
+		public String doInit(
+				@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
+				@RequestBody String data,
+				@ModelAttribute("orderForm") OrderModel order, 
+				BindingResult result, Model model, HttpSession session, 
+				HttpServletRequest request, HttpServletResponse response){
+
+				this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+				orderService = new OrderService(model,request,response,session,order,userInfo);
+				this.reqModel = order;
+				this.model = model;
+				this.response = response;
+				this.session = session;
+				HashMap<String, Object> dataMap = null;
+
+				String type = request.getParameter("methodtype");
+				
+				switch(type) {
+				case "":
+					break;
+				case "uploadPhoto":
+					dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
+					printOutJsonObj(response, dataMap);
+					break;
+				}
+				return null;
+			}
+			
+			private HashMap<String, Object> uploadPhoto(
+					MultipartFile[] headPhotoFile,
+					String folderName,String fileList,String fileCount) {
+				
+				HashMap<String, Object> map = null;
+				
+				try {
+					 map = orderService.uploadPhotoAndReload(headPhotoFile,folderName,fileList,fileCount);
+				}
+				catch(Exception e) {
+					System.out.println(e.getMessage());
+				}
+				
+				return map;
+			}
 }

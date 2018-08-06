@@ -283,6 +283,10 @@
 							var index = '${status.index}';
 							var contractQuantity = currencyToFloat('${list.quantityQualified }');
 							var contractStorage  = currencyToFloat('${list.stockinQty }');
+							var storage = contractQuantity - contractStorage;
+							if(storage < 0)
+								storage = 0;
+							
 							var materialId='${list.materialId }';
 							var depotid='010';//采购件
 							if(materialId.substring(0,1) == 'A'){								
@@ -294,7 +298,7 @@
 							}
 							
 							$('#stockList'+index+'\\.depotid').val(depotid);
-							$('#stockList'+index+'\\.quantity').val(contractQuantity);
+							$('#stockList'+index+'\\.quantity').val(floatToCurrency(storage));
 					</script>	
 				
 				</c:forEach>

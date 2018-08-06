@@ -262,7 +262,7 @@ public class InventoryService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = baseQuery.getSql();
-		String having = " stockoutQty < manufactureQuantity ";//未到合同
+		String having = " stockoutQty+0 < REPLACE(manufactureQuantity,',','')+0 ";//未到合同
 		sql = sql.replace("#", having);
 		System.out.println("未到合同："+sql);
 		baseQuery.getYsFullData(sql,having);

@@ -63,12 +63,12 @@
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": "quantityOnHand","className":"td-right"	//3
-				}, {"data": "planQty","className":"td-right","defaultContent" : '***'//4生产需求量
-				}, {"data": "stockoutQty","className":"td-right","defaultContent" : '0'//已出库数量
-				}, {"data": null,"className":"td-right"//本次领料
-				}, {"data": null,"className":"td-right"//剩余数量
-				}, {"data": null,"className":"td-right"//5
-				}, {"data": "areaNumber","className":""//6
+				}, {"data": null,"className":"td-right","defaultContent" : '0'//4生产需求量
+				}, {"data": null,"className":"td-right","defaultContent" : '0'//5 已出库数量
+				}, {"data": null,"className":"td-right"//6  本次领料
+				}, {"data": null,"className":"td-right"//7 剩余数量
+				}, {"data": null,"className":"td-right"//8
+				}, {"data": "areaNumber","className":""//9
 				}
 			],
 			"columnDefs":[
@@ -95,6 +95,7 @@
 	    			
 	    			return inputTxt;
                 }},
+                /*
 	    		{"targets":4,"render":function(data, type, row){//生产需求
 	    			var materialId = row["materialId"];
 					var total = floatToCurrency(row["planQty"]);//订单生产需求量
@@ -105,10 +106,12 @@
 	    			//alert(floatToCurrency(row["planQty"])+"---"+total)
 	    			return total;
                 }},
+                
 	    		{"targets":5,"render":function(data, type, row){//已出库数
 	    			
 	    			return floatToCurrency(data);
                 }},
+                */
 	    		{"targets":7,"render":function(data, type, row){//剩余数量
 	    			
 					var index=row["rownum"];
@@ -119,15 +122,20 @@
 	    			}
 					var stockoutQty = currencyToFloat(row["stockoutQty"]);
 					var quantity = currencyToFloat(row["requisitionQty"]);
-					var inputTxt = floatToCurrency( total - stockoutQty - quantity );
+					var shengyu = total - stockoutQty - quantity
+					if(shengyu < 0)
+						shengyu = 0;
+					var inputTxt = floatToCurrency( shengyu );
 				
 					return inputTxt;
                 }},
 	    		{"targets":6,"render":function(data, type, row){//本次领料
 	    			
 					var index=row["rownum"];
-					var quantity = floatToCurrency(row["requisitionQty"]);
-					var inputTxt = '<input type="text" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+quantity+'" class="num mini"/>';
+					var quantity = currencyToFloat(row["requisitionQty"]);
+					var stockoutQty = currencyToFloat(row["stockoutQty"]);
+					var shengyu = floatToCurrency( quantity - stockoutQty );
+					var inputTxt = '<input type="text" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+shengyu+'" class="num mini"/>';
 				
 					return inputTxt;
                 }},
@@ -213,8 +221,9 @@
 
 					var makeType=$('#makeType').val();
 					var usedType=$('#usedType').val();
+					var YSId = '${order.YSId }';
 			$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=insert"
-					+"&makeType="+makeType+"&usedType="+usedType);
+					+"&makeType="+makeType+"&usedType="+usedType+"&YSId="+YSId);
 			$('#formModel').submit();
 		});
 		

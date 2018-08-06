@@ -176,10 +176,10 @@ public class StockOutService extends CommonService {
 		String YSId = request.getParameter("YSId");
 		String stockOutId = request.getParameter("stockOutId");
 				
-		B_StockOutData stock = new B_StockOutData();
-		stock.setYsid(YSId);
-		stock.setStockoutid(stockOutId);
-		reqModel.setStockout(stock);
+		//B_StockOutData stock = new B_StockOutData();
+		//stock.setYsid(YSId);
+		//stock.setStockoutid(stockOutId);
+		//reqModel.setStockout(stock);
 		
 		getStockoutHistory(YSId,stockOutId);
 		//getOrderDetail(YSId);
@@ -237,9 +237,13 @@ public class StockOutService extends CommonService {
 	
 	public void insertAndReturn() throws Exception {
 
-		String YSId = insertStorage();
+		String YSId = request.getParameter("YSId");
+		
+		String stockoutId = insertStorage();
 
-		getOrderDetail(YSId);
+		getStockoutHistory(YSId,stockoutId);
+		
+		//getOrderDetail(YSId);
 
 	}
 
@@ -324,9 +328,12 @@ public class StockOutService extends CommonService {
 		
 		return YSId;
 	}
-	
+	/**
+	 * 料件出库
+	 * @return
+	 */
 	private String insertStorage(){
-		String YSId = "";
+		String stockoutId = "";
 		ts = new BaseTransaction();		
 		
 		try {
@@ -336,10 +343,9 @@ public class StockOutService extends CommonService {
 			List<B_StockOutDetailData> reqDataList = reqModel.getStockList();
 
 			//取得出库单编号
-			YSId= reqData.getYsid();
-			reqData = getStorageRecordId(reqData);			
-			String id = reqData.getStockoutid();
 			String requisitionId = reqData.getRequisitionid();
+			reqData = getStorageRecordId(reqData);			
+			stockoutId = reqData.getStockoutid();
 	
 			//出库记录
 			//取得出库类别（单据类型）
@@ -354,7 +360,7 @@ public class StockOutService extends CommonService {
 				if(quantity == 0)
 					continue;
 				
-				data.setStockoutid(id);
+				data.setStockoutid(stockoutId);
 				insertStockOutDetail(data);								
 				
 				//更新库存
@@ -375,8 +381,7 @@ public class StockOutService extends CommonService {
 				System.out.println(e1.getMessage());
 			}
 		}
-		
-		return YSId;
+		return stockoutId;
 	}
 	
 	
@@ -396,8 +401,9 @@ public class StockOutService extends CommonService {
 
 			//取得出库单编号
 			YSId= reqData.getYsid();
-			reqData = getStorageRecordId(reqData);			
+			reqData = getStorageRecordIdForProduct(reqData);			
 			String id = reqData.getStockoutid();
+			reqData.setRequisitionid(id);
 	
 			//出库记录
 			reqData.setStockouttype(Constants.STOCKOUTTYPE_2);
@@ -410,7 +416,7 @@ public class StockOutService extends CommonService {
 			insertStockOutDetail(detail);								
 			
 			//更新库存
-			updateMaterial(detail.getMaterialid(),quantity);			
+			//updateMaterial(detail.getMaterialid(),quantity);			
 			
 			//更新订单状态->出库
 			updateOrderDetail(YSId,quantity);
@@ -616,9 +622,46 @@ public class StockOutService extends CommonService {
 		return modelMap;
 	}
 	
-
 	
+	/**
+	 * 	料件出库编号
+	 * @param data
+	 * @return
+	 * @throws Exception
+	 */
 	public B_StockOutData getStorageRecordId(
+			B_StockOutData data) throws Exception {
+	
+		String requisitionId = data.getRequisitionid();
+		dataModel.setQueryName("getMAXStockOutId");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("parentId",requisitionId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		baseQuery.getYsFullData();	
+		
+		//查询出的流水号已经在最大值上 " 加一 "了
+		String code = dataModel.getYsViewData().get(0).get("MaxSubId");	
+		
+		String id = BusinessService.getStockOutId(
+				requisitionId,
+				code,
+				false);	
+		
+		data.setStockoutid(id);
+		data.setParentid(requisitionId);
+		data.setSubid(code);			
+		
+		return data;
+		
+	}
+	
+	/**
+	 * 成品出库编号
+	 * @param data
+	 * @return
+	 * @throws Exception
+	 */
+	public B_StockOutData getStorageRecordIdForProduct(
 			B_StockOutData data) throws Exception {
 	
 		String parentId = BusinessService.getshortYearcode()+
@@ -632,11 +675,11 @@ public class StockOutService extends CommonService {
 		//查询出的流水号已经在最大值上 " 加一 "了
 		String code = dataModel.getYsViewData().get(0).get("MaxSubId");	
 		
-		String id = BusinessService.getStockOutId(
+		String id = BusinessService.getStockOutIdForProduct(
 						parentId,
 						code,
 						false);	
-		
+
 		data.setStockoutid(id);
 		data.setParentid(parentId);
 		data.setSubid(code);			
@@ -644,6 +687,7 @@ public class StockOutService extends CommonService {
 		return data;
 		
 	}
+	
 	
 
 	public void getOrderDetail(String YSId) throws Exception {
@@ -713,6 +757,9 @@ public class StockOutService extends CommonService {
 	
 	public HashMap<String, Object> getStockoutDetail() throws Exception {
 		String stockOutId = request.getParameter("stockOutId");
+		if(isNullOrEmpty(stockOutId))
+			return modelMap;
+		
 		dataModel.setQueryName("stockoutdetail");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("stockOutId", stockOutId);		

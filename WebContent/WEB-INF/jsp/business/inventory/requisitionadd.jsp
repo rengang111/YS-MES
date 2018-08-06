@@ -212,7 +212,12 @@
 					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="'+currValue+'"/>';
 				
 					return inputTxt;
-                }},/*
+                }},
+	    		{"targets":11,"render":function(data, type, row){ 	
+	    			return jQuery.fixedWidth( data,18);
+		    			
+                }},
+                /*
 	    		{"targets":9,"render":function(data, type, row){	    			
 
 					var qtyManuf  = currencyToFloat(row["manufactureQuantity"]);

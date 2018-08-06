@@ -42,16 +42,13 @@
       <f name="a.YSId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
-      <f name="a.contractId" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
-      <f name="a.contractStorage" alias="" ctype="" />
       <f name="a.quantityOnHand" alias="" ctype="" />
       <f name="a.availabelToPromise" alias="" ctype="" />
       <f name="a.totalRequisition" alias="" ctype="" />
       <f name="a.unitQuantity" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
-      <f name="a.contractMaterialId" alias="" ctype="" />
       <f name="a.purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
       <f name="a.purchaseType" alias="" ctype="" />
       <f name="a.subBomNo" alias="" ctype="" />
@@ -59,7 +56,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_createrequisitionfromplan AS A LEFT JOIN v_purchasestockindetailgroup b ON b.YSId=a.YSId AND b.materialId=a.materialId  WHERE  A.deleteFlag = '0'</from>
+   <from>v_createrequisitionfromplan AS A LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON b.YSId=a.YSId AND b.materialId=a.materialId  WHERE  A.deleteFlag = '0'</from>
   
     <groupby></groupby>
     <having></having>
@@ -596,7 +593,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_requisitiondetail  AS A LEFT JOIN b_rawrequirement f ON f.YSId=a.YSId AND f.materialId=a.materialId LEFT JOIN v_purchasestockindetailgroup b ON b.YSId=a.YSId AND b.materialId=a.materialId  LEFT JOIN v_purchaseplandetailgroup c ON c.YSId=a.YSId AND c.materialId = a.materialId  LEFT JOIN v_stockoutdetailgroup d ON d.YSId=a.YSId AND d.materialId=a.materialId LEFT JOIN b_material e ON e.materialId=a.materialId AND e.deleteFlag='0'</from>
+   <from>v_requisitiondetail  AS A LEFT JOIN b_rawrequirement f ON f.YSId=a.YSId AND f.materialId=a.materialId LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON b.YSId=a.YSId AND b.materialId=a.materialId  LEFT JOIN v_purchaseplandetailgroup c ON c.YSId=a.YSId AND c.materialId = a.materialId  LEFT JOIN v_stockoutdetailgroup d ON d.YSId=a.YSId AND d.materialId=a.materialId LEFT JOIN b_material e ON e.materialId=a.materialId AND e.deleteFlag='0'</from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>

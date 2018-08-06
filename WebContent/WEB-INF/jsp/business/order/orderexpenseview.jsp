@@ -81,6 +81,8 @@
 		expenseAjax4();		//车间增减费用
 		expenseAjax5();		//检验费用
 		
+
+		productPhotoView();//附件显示
 		
 	});
 
@@ -547,6 +549,16 @@ function expenseAjax5() {//检验费用
 				</table>
 			</div>
 		</fieldset>	
+	<fieldset>
+	<legend> 附件 </legend>
+	<div class="list">
+		<div class="" id="subidDiv" style="min-height: 300px;">
+			<table id="productPhoto" class="phototable">
+				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
+			</table>
+		</div>
+	</div>	
+</fieldset>
 		
 </form:form>
 
@@ -610,7 +622,81 @@ function doShowContract(contractId) {
 }
 
 </script>
+<script type="text/javascript">
 
+function productPhotoView() {
+
+	var YSId = $('#bomPlan\\.ysid').val();
+	$.ajax({
+		"url" :"${ctx}/business/order?methodtype=orderExpenseProductPhoto"+"&YSId="+YSId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+				
+			var countData = data["productFileCount"];
+			//alert(countData)
+			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+         	alert(errorThrown)
+		 }
+	});
+	
+}//产品图片
+
+function photoView(id, tdTable, count, data) {
+
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];
+		var trHtml = '';
+
+		trHtml += '<tr style="text-align: center;" class="photo">';
+		trHtml += '<td>';
+		trHtml += '<table style="width:400px;height:300px;margin: auto;" class="form" id="tb'+index+'">';
+		trHtml += '<tr><td>';
+		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+		trHtml += '</a>';
+		trHtml += '</td>';
+		trHtml += '</tr>';
+		trHtml += '</table>';
+		trHtml += '</td>';
+
+		index++;
+		if (index == count) {
+			//因为是偶数循环,所以奇数张图片的最后一张为空
+			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
+			trHtmlOdd += '<tr><td></td></tr>';	
+			trHtmlOdd += '</table>';
+		} else {
+			path = '${ctx}' + data[index];
+			pathDel = data[index];
+
+			var trHtmlOdd = '<table style="width:400px;height:300px;margin: auto;" class="form">';
+			trHtmlOdd += '<tr><td>';
+			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+			trHtmlOdd += '</a>'
+			trHtmlOdd += '</td></tr>';
+			trHtmlOdd += '</table>';
+		}
+		trHtml += '<td>';
+		trHtml += trHtmlOdd;
+		trHtml += '</td>';
+		trHtml += "</tr>";
+
+		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		row++;
+
+	}
+}
+
+</script>
 </div>
 </div>
 

@@ -560,8 +560,8 @@ function supplierSum(){
 				<td width="100px"><span id="deductCount2" style="color: red;"></span></td>
 				<td width="100px" class="label"><label>最终协商扣款：</label></td>					
 				<td width="">
-					<input type="text" id="costDeduct" class="num mini" value="" />
-					<input type="hidden" id="oldDeduct"  />
+					<input type="text" id="costDeduct" class="num mini" value="${ contract.deduct }" />
+					<input type="hidden" id="oldDeduct"   />
 					<button type="button" id="doEditDeduct" class="DTTT_button" >修改扣款</button>
 					<button type="button" id="doSaveDeduct" class="DTTT_button" >保存</button>
 					<button type="button" id="doCancelDeduct" class="DTTT_button" >取消修改</button>
