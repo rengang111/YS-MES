@@ -27,6 +27,7 @@
 		total = Arabia_to_Chinese(total);
 		$('.total').html(total);
 		
+		expenseAjax3();//订单过程扣款明细
 		
 	});
 	
@@ -168,6 +169,34 @@
 		
 	</c:forEach>
 	
+	<fieldset>
+	<legend> 订单过程扣款明细</legend>
+		
+	 <div class="list">
+		<table id="supplier" class="display" >
+			<thead>				
+				<tr>
+					<th width="20px">No</th>
+					<th class="dt-center" width="100px">供应商</th>
+					<th class="dt-center" width="150px">合同编号</th>
+					<th class="dt-center" width="200px">增减内容</th>
+					<th class="dt-center" width="100px">金额</th>
+					<th class="dt-center">备注</th>
+				</tr>
+				</thead>	
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td style="text-align: right;">扣款合计：</td>
+						<td ><div id="supplierSum"></div></td>
+						<td ></td>
+					</tr>
+				</tfoot>
+		</table>
+	</div>
+	</fieldset>
 	
 	</form:form>
 </div>
@@ -395,6 +424,91 @@ function doPrint(){
 
         }
     </script>
+    
+<script type="text/javascript">
+
+function expenseAjax3() {//工厂（供应商）增减费用
+
+	var table = $('#supplier').dataTable();
+		if(table) {
+			table.fnDestroy();
+		}
+		var YSId = '${contract.YSId}';
+		var contractId = '${contract.contractId}';
+		var actionUrl = "${ctx}/business/bom?methodtype=getDocumentary&type=S&YSId="+YSId+"&contractId="+contractId;
+
+		var t = $('#supplier').DataTable({
+			
+			"processing" : false,
+			"retrieve"   : true,
+			"stateSave"  : true,
+			"pagingType" : "full_numbers",
+	        "paging"    : false,
+	        "pageLength": 50,
+			"async"		: false,
+	        "ordering"  : false,
+			"sAjaxSource" : actionUrl,
+			dom : '<"clear">lt',
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"type" : "POST",
+					"contentType": "application/json; charset=utf-8",
+					"dataType" : 'json',
+					"url" : sSource,
+					"data" : JSON.stringify($('#bomForm').serializeArray()),// 要提交的表单
+					success : function(data) {
+						
+						fnCallback(data);
+
+						supplierSum();
+						
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown) {
+						alert(textStatus)
+					}
+				})
+			},
+        	"language": {
+        		"url":"${ctx}/plugins/datatables/chinese.json"
+        	},
+			
+			"columns" : [
+			    {"data": null,"className" : 'td-center'},
+			    {"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},//供应商
+			    {"data": "contractId", "defaultContent" : '',"className" : 'td-center'},//合同编号
+			    {"data": "costName", "defaultContent" : '',"className" : 'td-left'},//增减内容3
+			    {"data": "cost", "defaultContent" : '',"className" : 'td-right'},//金额4
+			    {"data": "remarks", "defaultContent" : ''},//备注5
+			],
+			"columnDefs":[
+	    		{"targets":0,"render":function(data, type, row){	
+	    			var rownum = row["rownum"];
+	    			return rownum;
+	    		}}
+		     ] ,
+		})
+		
+		t.on('change', 'tr td:nth-child(5)',function() {
+			
+			var $tds = $(this).parent().find("td");
+			var $cost = $tds.eq(4).find("input");//金额			
+			$cost.val(floatToCurrency($cost.val()));
+		});
+	
+};//供应商
+
+//供应商
+function supplierSum(){	
+	var contract = 0;	
+	$('#supplier tbody tr').each (function (){
+		var contractValue = $(this).find("td").eq(4).text();//
+		contractValue= currencyToFloat(contractValue);
+		contract = contract + contractValue;
+	});	
+	$('#supplierSum').html(floatToCurrency(contract));
+}
+</script>
+
 </body>
 	
 </html>
