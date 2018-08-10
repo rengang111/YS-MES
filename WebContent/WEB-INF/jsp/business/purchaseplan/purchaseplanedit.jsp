@@ -464,7 +464,7 @@
 		var price = currencyToFloat ('${bom.price}');
 		var vprice = formatNumber(price);
 
-		vtotalPrice = floatToCurrency( price * ftotalQuantity );
+		vtotalPrice = floatToCurrency( price * fPlanQuantity );
 		
 		//虚拟库存回退处理		
 		var contractId = '${bom.contractId}';

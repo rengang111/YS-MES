@@ -168,7 +168,7 @@
 	<div style="page-break-before:always;"></div>
 		
 	</c:forEach>
-	
+	<div id="expense">
 	<fieldset>
 	<legend> 订单过程扣款明细</legend>
 		
@@ -197,7 +197,7 @@
 		</table>
 	</div>
 	</fieldset>
-	
+	</div>
 	</form:form>
 </div>
 </div>
@@ -457,6 +457,13 @@ function expenseAjax3() {//工厂（供应商）增减费用
 					"url" : sSource,
 					"data" : JSON.stringify($('#bomForm').serializeArray()),// 要提交的表单
 					success : function(data) {
+						
+						var recordsTotal = data["recordsTotal"];
+						if(recordsTotal <= 0 ){
+							$('#expense').hide();
+						}else{
+							$('#expense').show();
+						}
 						
 						fnCallback(data);
 

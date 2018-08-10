@@ -1046,5 +1046,26 @@
     <having></having>
 	<power>
 	</power>    
+  </query> 
+  <query>
+    <pool></pool>     
+    <name value="materialStockOutCountById" />
+    <where>
+       <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.requisitionQty" alias="" ctype="" />
+      <f name="a.manufactureQty" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.virtualQty" alias="" ctype="" />
+
+    </select>
+    <from>v_requisitionforzhuangpei a  </from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
   </query>
 </root>

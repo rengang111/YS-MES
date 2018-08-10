@@ -614,6 +614,9 @@ public class StorageService extends CommonService {
 		//取得订单信息
 		getOrderDetail(YSId);
 
+		//取得料件的领料信息
+		getMaterialStockOut(YSId);
+		
 		model.addAttribute("packagingList",util.getListOption(DicUtil.DIC_PACKAGING, ""));
 		model.addAttribute("storageFinishList",util.getListOption(DicUtil.DIC_STORAGEFINISH, ""));
 				
@@ -2137,6 +2140,20 @@ public class StorageService extends CommonService {
 		if(dataModel.getRecordCount() > 0 ){
 			model.addAttribute("contract",dataModel.getYsViewData().get(0));
 			//model.addAttribute("stockin",dataModel.getYsViewData());			
+		}	
+	}
+	
+	private void getMaterialStockOut(String YSId) throws Exception{
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("materialStockOutCountById");
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0 ){
+			model.addAttribute("stockout",dataModel.getYsViewData().get(0));	
 		}	
 	}
 }

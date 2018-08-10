@@ -123,7 +123,8 @@
 		
 		var contract = contractSum(4);
 		var minis = contractSum(5);
-		var payment = contractSum(6);
+		var payment = currencyToFloat('${payment.totalPayable}');
+		
 		$('#contractTotal').html(floatToCurrency(contract));
 		$('#minisTotal').html(floatToCurrency(minis));
 		$('#paymentTotal').html(floatToCurrency(payment));		
