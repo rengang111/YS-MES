@@ -4,7 +4,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-
+<style>
+body{
+ /*  font-size:10px;*/
+}
+</style>
 <title>财务核算一览页面</title>
 <script type="text/javascript">
 
@@ -72,14 +76,16 @@
 					{"data": "YSId", "defaultContent" : ''},
 					{"data": "productId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "productName", "defaultContent" : ''},//3
-					{"data": "quantity", "defaultContent" : '', "className" : 'td-right'},
+					{"data": "customerShort", "defaultContent" : '', "className" : 'td-center'},
+					{"data": "quantity", "defaultContent" : '', "className" : 'td-right'},//5
 					{"data": "stockinQty", "defaultContent" : '', "className" : 'td-right'},
 					{"data": "orderTotalPrice", "className" : 'td-right'},//7
 					{"data": "checkInDate", "defaultContent" : '0', "className" : 'td-right'},
-					{"data": "cost", "className" : 'td-right'},//8
-					{"data": "rebate", "className" : 'td-right'},//8
-					{"data": "profit", "className" : 'td-right'},//9
-					{"data": null, "className" : 'td-center'},//7
+					{"data": "cost", "className" : 'td-right'},//9
+					{"data": "rebate", "className" : 'td-right'},//
+					{"data": "profit", "className" : 'td-right'},//11
+					{"data": "team", "defaultContent" : ''},
+					{"data": null, "className" : 'td-center'},//13
 				
 				],
 				"columnDefs":[
@@ -101,11 +107,14 @@
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["productName"];
-		    			name = jQuery.fixedWidth(name,32);//true:两边截取,左边从汉字开始
+		    			name = jQuery.fixedWidth(name,24);//true:两边截取,左边从汉字开始
 		    			
 		    			return name;
 		    		}},
-		    		{"targets":11,"render":function(data, type, row){
+		    		{"targets":12,"render":function(data, type, row){
+		    			return jQuery.fixedWidth(row["team"],8);
+		    		}},
+		    		{"targets":13,"render":function(data, type, row){
 		    			var stockinQty = currencyToFloat(row["stockinQty"]);
 		    			var orderQty = currencyToFloat(row["quantity"]);
 		    			var accountingDate = currencyToFloat(row["accountingDate"]);
@@ -128,7 +137,7 @@
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : []
+						"targets" : [10]
 					}
 	         	],
 	         	
@@ -342,6 +351,7 @@
 						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 100px;">产品编号</th>
 						<th>产品名称</th>
+						<th style="width: 30px;">客户简称</th>
 						<th style="width: 60px;">订单数量</th>
 						<th style="width: 60px;">入库累计</th>
 						<th style="width: 70px;">销售金额</th>
@@ -349,6 +359,7 @@
 						<th style="width: 60px;">核算成本</th>
 						<th style="width: 60px;">退税</th>
 						<th style="width: 60px;">利润</th>
+						<th style="width: 40px;">业务组</th>
 						<th style="width: 40px;">状态</th>
 					</tr>
 				</thead>

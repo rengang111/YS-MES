@@ -155,25 +155,27 @@ function goBack() {
 			<legend>客户-综合信息</legend>
 				
 				<input type="hidden" id="keyBackup" name="keyBackup" value="${formModel.keyBackup}"/>
-				<table class="form" style="height:120px">
+				<table class="form" style="width:100%;height: 200px;">
 					<tr>
-						<td class="label" style="widht:100px">客户编号：</td>
-						<td style="widht:120px">
+						<td class="label" style="width:100px">客户编号：</td>
+						<td style="width:200px">
 							<form:input path="customer.customerid" class="short read-only"/>
 							<form:hidden path="customer.parentid"/>
-							<form:hidden path="customer.subid" />
-						</td>
-						<td class="label" style="widht:100px">客户简称：</td> 
-						<td>
-							<form:input path="customer.shortname" class="short" style="text-transform:uppercase;"/>
-						</td>
+							<form:hidden path="customer.subid" /></td>
+						<td class="label" style="width:100px">客户简称：</td> 
+						<td colspan="3">
+							<form:input path="customer.shortname" class="short" style="text-transform:uppercase;"/></td>
 					
-						<td class="label" style="widht:100px">客户名称：</td> 
-						<td>
-							<form:input path="customer.customername" class="middle"/>
+					</tr>
+					<tr>
+					
+						<td class="label">客户名称：</td> 
+						<td colspan="5">
+							<form:input path="customer.customername" class="long"/>
 						</td>
 					</tr>
-					<tr><td class="label" >国家：</td>
+					<tr>
+						<td class="label" >国家：</td>
 						<td>
 							<form:select path="customer.country">
 								<form:options items="${formModel.countryList}" itemValue="key"
@@ -181,7 +183,7 @@ function goBack() {
 							</form:select></td>
 						<td class="label" >
 							计价货币：</td>
-						<td> 
+						<td style="width:200px"> 
 							<form:select path="customer.currency">
 								<form:options items="${formModel.currencyList}" itemValue="key"
 									itemLabel="value" />
@@ -198,7 +200,7 @@ function goBack() {
 							</form:select></td>
 						<td  class="label" >
 							出运港：</td>
-						<td width="100px">
+						<td>
 							<form:select path="customer.shippiingport">
 								<form:options items="${formModel.shippiingPortList}" itemValue="key"
 									itemLabel="value" />
@@ -209,6 +211,14 @@ function goBack() {
 								<form:options items="${formModel.destinationPortList}" itemValue="key"
 									itemLabel="value" />
 							</form:select></td>								
+					</tr>
+					<tr>					
+						<td class="label" >客户折扣：</td> 
+						<td>
+							<form:input path="customer.rebate" class=" num" />%</td>
+						<td class="label">客户佣金：</td> 
+						<td colspan="3">
+							<form:input path="customer.commission" class=" num" />%</td>
 					</tr>
 				</table>
 

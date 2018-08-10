@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<!DOCTYPE HTML>
 
-<%@ include file="../../common/common.jsp"%>
+<html>
+<head>
+
+<%@ include file="../../common/common2.jsp"%>
 
 <title>客户基本数据</title>
 <script type="text/javascript">
@@ -385,13 +385,13 @@ function goBack() {
 				
 				<table class="form">
 					<tr>
-						<td class="label" style="widht:150px">客户编号：</td>
-						<td style="widht:120px">${customer.customerId }
+						<td class="label" style="width:100px">客户编号：</td>
+						<td style="width:150px">${customer.customerId }
 							<form:hidden path="customer.recordid" value="${customer.recordId }"/></td>
-						<td class="label" style="widht:150px">客户简称：</td> 
-						<td>${customer.shortName }</td>
+						<td class="label" style="width:100px">客户简称：</td> 
+						<td style="width:150px">${customer.shortName }</td>
 					
-						<td class="label" style="widht:150px">客户名称：</td> 
+						<td class="label" style="width:100px">客户名称：</td> 
 						<td>${customer.customerName }</td>
 					</tr>
 					<tr><td class="label" >所在国家：</td>
@@ -412,6 +412,13 @@ function goBack() {
 						<td>${customer.destinationPort }</td>
 								
 					</tr>
+					<tr>
+						<td class="label" >客户折扣：</td>
+						<td> ${customer.rebate }&nbsp;%</td>
+						<td  class="label" >客户佣金：</td>
+						<td>${customer.commission }&nbsp;%</td>
+								
+					</tr>
 				</table>
 
 		</fieldset>				
@@ -420,7 +427,7 @@ function goBack() {
 			<button type="button" class="DTTT_button" onclick="goBack();">返回</button>
 		</fieldset>
 						
-		<fieldset>	
+		<fieldset style="margin-top: -40px;">	
 			<legend> 地址</legend>
 			<div class="list">
 			<button type="button" style="margin-top: -50px;margin-left: 80px;" class="DTTT_button" onClick="doDeleteCustomerAddr();"

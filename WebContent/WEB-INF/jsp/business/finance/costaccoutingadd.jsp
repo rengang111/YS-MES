@@ -315,40 +315,68 @@
 				<td colspan="5">${order.materialName }</td>	
 			</tr>									
 		</table>
-		<table class="form" id="table_form" width="100%" style="border-spacing:  0;">
-			<tr style="height: 40px;">			
-				<td class="label" style="width:100px;border-bottom: 1px solid #ccc;">成本总计：</td>	
-				<td style="width:100px;border-bottom: 1px solid #ccc;" class="font16">
-					<form:input path="costBom.cost"  class="read-only num short" style="font-size: 14px;font-weight: bold;"/></td>	
-				
-				<td class="label" style="width:100px;border-bottom: 1px solid #ccc;">材料成本：</td>	
-				<td style="width:100px;border-bottom: 1px solid #ccc;" class="font16">
-					<form:input path="costBom.materialcost"  class="read-only num short" style="font-size: 14px;font-weight: bold;"/></td>
-				
-				<td class="label" style="width:100px;border-bottom: 1px solid #ccc;">人工成本：</td>	
-				<td colspan="3" style="width:100px;border-bottom: 1px solid #ccc;" class="font16">
-					<form:input path="costBom.labolcost" value="${LaborCost}" class="read-only num short" style="font-size: 14px;font-weight: bold;"/></td>	
-				
+		<table class="form" id="table_form"  style="border-spacing:  0;width:100%">
+			<tr style="height: 40px;">		
+				<td colspan="8">
+					<table>
+						<tr>
+							<td class="label" style="width:100px;">成本总计：</td>	
+							<td >
+								<form:input path="costBom.cost"  class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>	
+							
+							<td class="label" style="width:100px;">材料成本：</td>	
+							<td >
+								<form:input path="costBom.materialcost"  class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>
+						
+							<td class="label" style="width:100px;">人工成本：</td>	
+							<td >
+								<form:input path="costBom.labolcost" value="${LaborCost}" class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>	
+						
+						</tr>
+					</table>
+				</td>				
 			</tr>
 			<tr class="td-center">
-				<td class="td-center" >销售总额</td>
-				<td class="td-center" width="100px">销售币种</td>
-				<td class="td-center" style="width:100px">汇率</td>	
-				<td class="td-center" style="width:100px">原币金额</td>	
-				<td class="td-center" style="width:100px">退税率</td>	
-				<td class="td-center" style="width:100px">退税</td>	
-				<td class="td-center" style="width:100px">增值税</td>
-				<td class="td-center" style="width:100px">利润</td>
-				<td class="td-center" style="width:100px">利润率</td>
+				<td class="td-center" style="width:120px">销售总额</td>
+				<td class="td-center" style="width:120px">客户折扣</td>	
+				<td class="td-center" style="width:120px">客户佣金</td>	
+				<td class="td-center" style="width:170px">实际销售额</td>
+				<td class="td-center" width="120px">销售币种</td>
+				<td class="td-center" style="width:120px">汇率</td>	
+				<td class="td-center" style="width:170px" >原币金额</td>	
+				<td class="td-center" ></td>	
 				
 			</tr>
 			<tr>
 				<td class="td-center">${order.totalPrice }</td>
+			
+				<td class="td-center">
+					<form:input path="costBom.discount"  class="num short read-only"  /></td>
+				<td class="td-center">
+					<form:input path="costBom.commission"  class="num short read-only"  /></td>
+				<td class="td-center">
+					<form:input path="costBom.actualsales"  class="num short read-only"  /></td>
+					
 				<td class="td-center">${order.currency }</td>
 				<td class="td-center">
 					<form:input path="costBom.exchangerate"  class="num mini exchange" value="${order.sysValue }" /></td>	
 				<td class="td-center">
 					<form:input path="costBom.rmbprice"  class="num short read-only"  /></td>
+				<td class="td-center"></td>
+				
+				
+			</tr>
+			<tr class="td-center">
+				
+				<td class="td-center" style="width:100px">退税率</td>	
+				<td class="td-center" style="width:100px">退税</td>	
+				<td class="td-center" style="width:100px">增值税</td>
+				<td class="td-center" style="width:100px">利润</td>
+				<td class="td-center" >利润率</td>
+				<td class="td-center" colspan="3"></td>
+			</tr>
+			<tr>
+				
 				<td class="td-center">
 					<form:input path="costBom.rebaterate"  value="16" class="num mini exchange"  />%</td>
 				<td class="td-center">
@@ -357,8 +385,9 @@
 					<form:input path="costBom.vat"  class="num short read-only"  /></td>
 				<td class="td-center">
 					<form:input path="costBom.profit"  class="num short read-only"  /></td>
-				<td class="td-center">
+				<td class="td-center" >
 					<form:input path="costBom.profitrate"  class="num mini read-only" />%</td>
+				<td class="td-center" colspan="3"></td>
 				
 			</tr>
 		</table>

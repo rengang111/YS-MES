@@ -71,12 +71,13 @@
 		        ],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-						return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
+						//return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />";
+						return row["rownum"];
                     }},
 		    		{"targets":3,"render":function(data, type, row){
 		    			
 		    			var name = row["customerName"];				    			
-		    			name = jQuery.fixedWidth(name,40);				    			
+		    			name = jQuery.fixedWidth(name,48);				    			
 		    			return name;
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
@@ -232,9 +233,9 @@
 							<th class="dt-middle ">客户名称</th>
 							<th style="width: 80px;" class="dt-middle ">所在国家</th>
 							<th style="width: 30px;" class="dt-middle ">付款条件</th>
-							<th style="width: 30px;" class="dt-middle ">计价货币</th>
-							<th style="width: 30px;" class="dt-middle ">出运条件</th>
-							<th style="width: 140px;" class="dt-middle ">出运港/目的港</th>
+							<th style="width: 60px;" class="dt-middle ">计价货币</th>
+							<th style="width: 60px;" class="dt-middle ">出运条件</th>
+							<th style="width: 150px;" class="dt-middle ">出运港/目的港</th>
 						</tr>
 					</thead>
 
