@@ -226,13 +226,19 @@
 	function lirunjisuan(){
 		
 		var cost = currencyToFloat( $('#costBom\\.cost').val() );//总成本
+		var discount = currencyToFloat( $('#costBom\\.discount').val() );//客户折扣
+		var commission = currencyToFloat( $('#costBom\\.commission').val() );//客户佣金
+		
 		var mateCost  = currencyToFloat( $('#costBom\\.materialcost').val() );//材料成本
 		var labolcost = currencyToFloat( $('#costBom\\.labolcost').val() );//人工成本
 		var totalPrice = currencyToFloat( '${order.totalPrice }' );	//销售额
 		var currency = $('#costBom\\.currency').val();//币种
 		var exchange = currencyToFloat( $('#costBom\\.exchangerate').val() );//汇率
 		var rebaterate = currencyToFloat( $('#costBom\\.rebaterate').val() );//退税率
-		rebaterate = rebaterate / 100;
+		
+		var actualSales = totalPrice * (1 - discount/100) * (1-commission/100);
+		rebaterate = rebaterate / 100;		
+		cost = mateCost + labolcost;//总成本=材料+人工；人工有可能是手动输入，因此重新计算
 		
 		var profit = 0;//利润
 		var rebate = 0;//退税
@@ -244,9 +250,9 @@
 			if(rebaterate == 0){
 				//纯内销
 				//增值税
-				zeng = (totalPrice - mateCost) / 1.16 * 0.16 ;
-				profit = totalPrice - cost - zeng;
-				rmbprice = totalPrice;
+				zeng = (actualSales - mateCost) / 1.16 * 0.16 ;
+				profit = actualSales - cost - zeng;
+				rmbprice = actualSales;
 				
 				$('#costBom\\.exchangerate').val('');
 				$('#costBom\\.exchangerate').addClass('read-only');	
@@ -257,7 +263,7 @@
 				//人民币外销
 				exchange = 1;//外销人民币的汇率默认：1
 				rebate = mateCost * rebaterate / (1 + rebaterate);//退税
-				rmbprice = totalPrice * exchange;
+				rmbprice = actualSales * exchange;
 				profit = rmbprice - cost + rebate;
 				
 				$('#costBom\\.exchangerate').val('1');
@@ -268,13 +274,14 @@
 			//纯外销			
 			//退税
 			rebate = mateCost * rebaterate / (1 + rebaterate);
-			rmbprice = totalPrice * exchange;
+			rmbprice = actualSales * exchange;
 			profit = rmbprice - cost + rebate;
 		}
 		profitrate = profit / cost * 100
 		
 		$(".read-only").attr('readonly', "true");
-		
+
+		$('#costBom\\.actualsales').val(floatToCurrency(actualSales));//实际销售额
 		$('#costBom\\.rmbprice').val(floatToCurrency(rmbprice));//原币金额
 		$('#costBom\\.rebate').val(floatToCurrency(rebate));//退税
 		$('#costBom\\.profit').val(floatToCurrency(profit));//利润
@@ -298,44 +305,43 @@
 	<form:hidden path="costBom.accountingdate"  />
 	<form:hidden path="costBom.currency"  value="${order.currencyId }"/>
 	<fieldset>
-		<legend> 基本信息</legend>
+		<legend> 财务核算</legend>
 		<table class="form" id="table_form">
 			<tr>
 				<td class="label" style="width:100px">耀升编号：</td>					
 				<td style="width:150px">${order.YSId }
 					<form:hidden path="costBom.ysid" value="${order.YSId }"/></td>
 				<td class="label" style="width:100px">产品编号：</td>					
-				<td style="width:200px">${order.materialId}
+				<td style="width:150px">${order.materialId}
 					<form:hidden path="costBom.materialid" value="${order.materialId }"/></td>	
-				<td class="label" style="width:100px">订单数量：</td>					
-				<td>${order.totalQuantity}</td>		
+
+				<td class="label" style="width:100px">产品名称：</td>	
+				<td>${order.materialName }</td>	
 			</tr>
 			<tr>
-				<td class="label" style="width:100px">产品名称：</td>	
-				<td colspan="5">${order.materialName }</td>	
+				<td class="label" style="width:100px">订单数量：</td>					
+				<td>${order.totalQuantity}</td>	
+				<td class="label" style="width:100px">客户：</td>	
+				<td colspan="3">${order.customerFullName }</td>		
 			</tr>									
 		</table>
-		<table class="form" id="table_form"  style="border-spacing:  0;width:100%">
-			<tr style="height: 40px;">		
-				<td colspan="8">
-					<table>
-						<tr>
-							<td class="label" style="width:100px;">成本总计：</td>	
-							<td >
-								<form:input path="costBom.cost"  class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>	
-							
-							<td class="label" style="width:100px;">材料成本：</td>	
-							<td >
-								<form:input path="costBom.materialcost"  class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>
-						
-							<td class="label" style="width:100px;">人工成本：</td>	
-							<td >
-								<form:input path="costBom.labolcost" value="${LaborCost}" class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>	
-						
-						</tr>
-					</table>
-				</td>				
+		<table  class="form">
+			<tr>
+				<td class="label" style="width:100px;">成本总计：</td>	
+				<td >
+					<form:input path="costBom.cost"  class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>	
+				
+				<td class="label" style="width:100px;">材料成本：</td>	
+				<td >
+					<form:input path="costBom.materialcost"  class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>
+			
+				<td class="label" style="width:100px;">人工成本：</td>	
+				<td >
+					<form:input path="costBom.labolcost" value="${LaborCost}" class=" num exchange" style="font-size: 14px;font-weight: bold;"/></td>	
+			
 			</tr>
+		</table>
+		<table class="form" id="table_form"  style="width:100%">
 			<tr class="td-center">
 				<td class="td-center" style="width:120px">销售总额</td>
 				<td class="td-center" style="width:120px">客户折扣</td>	
@@ -351,9 +357,9 @@
 				<td class="td-center">${order.totalPrice }</td>
 			
 				<td class="td-center">
-					<form:input path="costBom.discount"  class="num short read-only"  /></td>
+					<form:input path="costBom.discount"  class="num exchange" value="${order.discount }" style="width: 30px;"/>%</td>
 				<td class="td-center">
-					<form:input path="costBom.commission"  class="num short read-only"  /></td>
+					<form:input path="costBom.commission"  class="num exchange"  value="${order.commission }" style="width: 30px;"/>%</td>
 				<td class="td-center">
 					<form:input path="costBom.actualsales"  class="num short read-only"  /></td>
 					
