@@ -110,15 +110,15 @@
 						$().toastmessage('showWarningToast', "入库数量不能超过订单数。");
 						return;
 					}
-					
+				
 					var flag = checkMaterialStockOut();
-					alert(flag)
+					
 					if(flag == false){
 
 						$().toastmessage('showWarningToast', "物料未领完，不能入库。");
 						return;
 					}
-					return;
+					
 					
 			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insertProduct");
 			$('#formModel').submit();
@@ -136,14 +136,15 @@
 	});
 	
 	function checkMaterialStockOut(){
-		var plan = currencyToFloat( '{stockout.manufactureQty}'	);
-		var requisitionQty = currencyToFloat( '{stockout.requisitionQty}');
+		var plan = currencyToFloat( '${stockout.manufactureQty}'	);
+		var requisitionQty = currencyToFloat( '${stockout.requisitionQty}');
 		var tmp = requisitionQty  - plan;
 		if(tmp >= 0){
 			return true;
 		}else{
 			return false;
 		}
+		alert("plan -- requisitionQty"+plan+"--"+requisitionQty)
 	}
 	
 	function quantitySum(){

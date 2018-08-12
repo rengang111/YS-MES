@@ -61,9 +61,10 @@
 					}, {"data": "materialId"
 					}, {"data": "materialName"
 					}, {"data": "unit","className":"td-center"
-					}, {"data": "quantity","className":"td-right"
-					}, {"data": "totalPrice","className":"td-right"
-					}, {"data": "price","className":"td-right"
+					}, {"data": "orderQty","className":"td-right"//4
+					}, {"data": "stockoutQty","className":"td-right"//5
+					}, {"data": "price","className":"td-right" //6
+					}, {"data": "totalPrice","className":"td-right" //7
 					}, {"data": "countQty","className":"td-right"
 					}
 				],
@@ -81,9 +82,12 @@
 		    			var rowIndex = row["rownum"];
 		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].quantity" id="costBomList'+rowIndex+'.quantity"  value="'+data+'" />';
 		    			
-		    			return floatToCurrency(data) + text;
+		    			return data + text;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
+			    		return floatToCurrency(data);
+		    		}},
+		    		{"targets":7,"render":function(data, type, row){
 		    			var rowIndex = row["rownum"];
 		    			var total = floatToCurrency(data);
 		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].totalprice" id="costBomList'+rowIndex+'.totalprice"  value="'+total+'" />';
@@ -92,15 +96,10 @@
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
 		    			var rowIndex = row["rownum"];
-		    			var quantity = currencyToFloat(row["quantity"]);
-		    			var total = currencyToFloat(row["totalPrice"]);
-		    			var price = floatToCurrency(total / quantity);
+		    			var price = currencyToFloat(data);
 		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].price" id="costBomList'+rowIndex+'.price"  value="'+price+'" />';
 		    			
 		    			return price + text;
-		    		}},
-		    		{"targets":7,"render":function(data, type, row){
-		    			return floatToCurrency(data);
 		    		}}
 		    	] 
 			
@@ -193,20 +192,32 @@
 	});
 	
 
+	function doShowOrder(PIId,YSId){
+		var url = '${ctx}/business/order?methodtype=getOrderDetailByYSId&openFlag=newWindow&YSId=' + YSId+'&PIId=' + PIId;
+		
+		callProductDesignView("订单信息",url);
+	}
+	
+	function doShowPlan(YSId){
+		var url = '${ctx}/business/purchasePlan?methodtype=showPurchasePlan&YSId=' + YSId;
+		callProductDesignView('采购方案',url);
+	}
+	
 	
 	function errorCheckAndCostCount(){
 		
-		var mateCost = 0;
+		var cost = 0;
 		$('#example2 tbody tr').each (function (){
 			
-			var contractValue = $(this).find("td").eq(5).text();//领料金额
+			var stockOutQty = $(this).find("td").eq(5).text();//领料数量
+			var contractValue = $(this).find("td").eq(7).text();//领料金额
 			
+			stockOutQty = currencyToFloat(stockOutQty);
 			contractValue= currencyToFloat(contractValue);
-			//alert("计划用量+已领量+库存:"+fjihua+"---"+fyiling+"---"+fkucun)
 			
-			mateCost = mateCost + contractValue;
+			cost = cost + contractValue;
 			
-			if( contractValue == 0){
+			if( stockOutQty == 0){
 				
 				$(this).addClass('error');
 			}
@@ -216,7 +227,8 @@
 
 		var labolCost = $('#costBom\\.labolcost').val();
 		
-		var cost = currencyToFloat(labolCost) + mateCost;
+		//var cost = currencyToFloat(labolCost) + mateCost;
+		var mateCost = cost - currencyToFloat(labolCost);
 		
 		$('#costBom\\.materialcost').val(floatToCurrency(mateCost));
 		$('#costBom\\.cost').val(floatToCurrency(cost));
@@ -309,10 +321,12 @@
 		<table class="form" id="table_form">
 			<tr>
 				<td class="label" style="width:100px">耀升编号：</td>					
-				<td style="width:150px">${order.YSId }
+				<td style="width:150px">
+					<a href="###" onClick="doShowOrder('${order.PIId }','${order.YSId }')">${order.YSId }</a>
 					<form:hidden path="costBom.ysid" value="${order.YSId }"/></td>
 				<td class="label" style="width:100px">产品编号：</td>					
-				<td style="width:150px">${order.materialId}
+				<td style="width:150px">
+					<a href="###" onClick="doShowPlan('${order.YSId }')">${order.materialId}</a>
 					<form:hidden path="costBom.materialid" value="${order.materialId }"/></td>	
 
 				<td class="label" style="width:100px">产品名称：</td>	
@@ -337,7 +351,7 @@
 			
 				<td class="label" style="width:100px;">人工成本：</td>	
 				<td >
-					<form:input path="costBom.labolcost" value="${LaborCost}" class=" num exchange" style="font-size: 14px;font-weight: bold;"/></td>	
+					<form:input path="costBom.labolcost" value="${LaborCost}" class=" num exchange" style="font-size: 14px;font-weight: bold;" /></td>	
 			
 			</tr>
 		</table>
@@ -413,9 +427,10 @@
 						<th class="dt-center" width="120px">物料编号</th>
 						<th class="dt-center" >物料名称</th>
 						<th class="dt-center" width="40px">单位</th>
+						<th class="dt-center" width="60px">订单用量</th>
 						<th class="dt-center" width="60px">领料数量</th>
+						<th class="dt-center" width="60px">BOM单价</th>
 						<th class="dt-center" width="60px">合计金额</th>
-						<th class="dt-center" width="60px">平均单价</th>
 						<th class="dt-center" width="60px">领料次数</th>
 					</tr>
 				</thead>

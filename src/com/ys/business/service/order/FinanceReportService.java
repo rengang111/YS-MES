@@ -515,13 +515,13 @@ public class FinanceReportService extends CommonService {
 		
 		String YSId = request.getParameter("YSId");
 		//check StockOutDate
-		int outCount = checkStockOut(YSId);
+		//int outCount = checkStockOut(YSId);
 		
-		if(outCount > 0 ){
-			HashMap = getStockoutByMaterialId(YSId);
-		}else{
+		//if(outCount > 0 ){
+		//	HashMap = getStockoutByMaterialId(YSId);
+		//}else{
 			HashMap = getPlanBomDetail(YSId);
-		}		
+		//}		
 		return HashMap;			
 	}
 	

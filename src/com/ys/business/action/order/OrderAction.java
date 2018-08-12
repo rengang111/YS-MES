@@ -234,6 +234,9 @@ public class OrderAction extends BaseAction {
 				dataMap = deletePhoto("product","productFileList","productFileCount");
 				printOutJsonObj(response, dataMap);
 				break;
+			case "getOrderDetailByYSId":
+				getOrderDetailByYSId();
+				rtnUrl = "/business/order/orderview";
 				
 		}
 		
@@ -915,48 +918,60 @@ public class OrderAction extends BaseAction {
 	}
 	
 	//出库单上传
-		@RequestMapping(value="orderExpensePhoto")
-		public String doInit(
-				@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
-				@RequestBody String data,
-				@ModelAttribute("orderForm") OrderModel order, 
-				BindingResult result, Model model, HttpSession session, 
-				HttpServletRequest request, HttpServletResponse response){
+	@RequestMapping(value="orderExpensePhoto")
+	public String doInit(
+			@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
+			@RequestBody String data,
+			@ModelAttribute("orderForm") OrderModel order, 
+			BindingResult result, Model model, HttpSession session, 
+			HttpServletRequest request, HttpServletResponse response){
 
-				this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-				orderService = new OrderService(model,request,response,session,order,userInfo);
-				this.reqModel = order;
-				this.model = model;
-				this.response = response;
-				this.session = session;
-				HashMap<String, Object> dataMap = null;
+			this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			orderService = new OrderService(model,request,response,session,order,userInfo);
+			this.reqModel = order;
+			this.model = model;
+			this.response = response;
+			this.session = session;
+			HashMap<String, Object> dataMap = null;
 
-				String type = request.getParameter("methodtype");
-				
-				switch(type) {
-				case "":
-					break;
-				case "uploadPhoto":
-					dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
-					printOutJsonObj(response, dataMap);
-					break;
-				}
-				return null;
-			}
+			String type = request.getParameter("methodtype");
 			
-			private HashMap<String, Object> uploadPhoto(
-					MultipartFile[] headPhotoFile,
-					String folderName,String fileList,String fileCount) {
-				
-				HashMap<String, Object> map = null;
-				
-				try {
-					 map = orderService.uploadPhotoAndReload(headPhotoFile,folderName,fileList,fileCount);
-				}
-				catch(Exception e) {
-					System.out.println(e.getMessage());
-				}
-				
-				return map;
+			switch(type) {
+			case "":
+				break;
+			case "uploadPhoto":
+				dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
+				printOutJsonObj(response, dataMap);
+				break;
 			}
+			return null;
+		}
+		
+	private HashMap<String, Object> uploadPhoto(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) {
+		
+		HashMap<String, Object> map = null;
+		
+		try {
+			 map = orderService.uploadPhotoAndReload(headPhotoFile,folderName,fileList,fileCount);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return map;
+	}
+	
+	public void getOrderDetailByYSId() throws Exception {
+
+		//返回到明细查看页面
+		String PIId = request.getParameter("PIId");
+
+		ArrayList<HashMap<String, String>> dbData =  
+				orderService.getOrderViewByPIId(PIId);		
+
+		model.addAttribute("order",  dbData.get(0));
+		model.addAttribute("detail", dbData);
+	}	
 }
