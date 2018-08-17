@@ -11,7 +11,7 @@
 	
 	function historyAjax(scrollHeight) {
 		
-		var YSId = '${YSId }';
+		var YSId = '${order.YSId }';
 
 		var t = $('#example2').DataTable({			
 			"paging": false,
@@ -134,6 +134,17 @@
 		
 	});
 	
+	function doShowOrder(PIId,YSId){
+		var url = '${ctx}/business/order?methodtype=getOrderDetailByYSId&openFlag=newWindow&YSId=' + YSId+'&PIId=' + PIId;
+		
+		callProductDesignView("订单信息",url);
+	}
+	
+	function doShowPlan(YSId){
+		var url = '${ctx}/business/purchasePlan?methodtype=showPurchasePlan&YSId=' + YSId;
+		callProductDesignView('采购方案',url);
+	}
+	
 	function doEdit(contractId,arrivalId) {
 
 		var makeType=$('#makeType').val();
@@ -177,39 +188,91 @@
 	id="formModel" name="formModel"  autocomplete="off">
 	
 	<input type="hidden" id="makeType" value="${makeType }" />
+	
 	<fieldset>
-		<legend> 基本信息</legend>
+		<legend> 财务核算</legend>
 		<table class="form" id="table_form">
 			<tr>
-				<td class="label" style="width:100px"><label>耀升编号：</label></td>					
-				<td style="width:200px">${order.YSId }</td>
-				<td class="label" style="width:100px"><label>产品编号：</label></td>					
-				<td style="width:200px">${order.materialId}</td>	
-				<td class="label" style="width:100px"><label>订单数量：</label></td>					
-				<td>${order.totalQuantity}</td>	
+				<td class="label" style="width:100px">耀升编号：</td>					
+				<td style="width:150px">
+					<a href="###" onClick="doShowOrder('${order.PIId }','${order.YSId }')">${order.YSId }</a>
+					<form:hidden path="costBom.ysid" value="${order.YSId }"/></td>
+				<td class="label" style="width:100px">产品编号：</td>					
+				<td style="width:150px">
+					<a href="###" onClick="doShowPlan('${order.YSId }')">${order.materialId}</a>
+					<form:hidden path="costBom.materialid" value="${order.materialId }"/></td>	
+
+				<td class="label" style="width:100px">产品名称：</td>	
+				<td>${order.materialName }</td>	
 			</tr>
 			<tr>
-				<td class="label" style="width:100px"><label>产品名称：</label></td>	
-				<td colspan="5">${order.materialName }</td>	
+				<td class="label" style="width:100px">订单数量：</td>					
+				<td>${order.totalQuantity}</td>	
+				<td class="label" style="width:100px">客户：</td>	
+				<td colspan="3">${order.customerFullName }</td>		
 			</tr>									
 		</table>
-		<table class="form" id="table_form">
+		<table  class="form">
 			<tr>
-				<td class="label" style="width:100px"><label>材料成本总计：</label></td>	
-				<td style="width:150px" class="font16"><span id="mateCost" ></span></td>
+				<td class="label" style="width:100px;">成本总计：</td>	
+				<td >${cost.cost}</td>	
 				
-				<td class="label" style="width:100px"><label>人工成本：</label></td>	
-				<td style="width:150px" class="font16"><span id="labolCost"></span></td>	
+				<td class="label" style="width:100px;">材料成本：</td>	
+				<td >${cost.materialCost}</td>
+			
+				<td class="label" style="width:100px;">人工成本：</td>	
+				<td >${cost.labolCost}</td>	
+			
+			</tr>
+		</table>
+		<table class="form" id="table_form"  style="width:100%">
+			<tr class="td-center">
+				<td class="td-center" style="width:120px">销售总额</td>
+				<td class="td-center" style="width:120px">客户折扣</td>	
+				<td class="td-center" style="width:120px">客户佣金</td>	
+				<td class="td-center" style="width:170px">实际销售额</td>
 				
-				<td class="label" style="width:100px"><label>利润：</label></td>	
-				<td style="width:150px" class="font16"><span id="profit"></span></td>	
-				<td style="text-align: right;">
-					<button type="button" id="doEdit" class="DTTT_button">核算</button>
-					<button type="button" id=goBack class="DTTT_button">返回</button></td>	
-			</tr>									
+				<td class="td-center" width="120px">销售币种</td>
+				<td class="td-center" style="width:120px">汇率</td>	
+				<td class="td-center" style="width:170px" >原币金额</td>	
+				<td class="td-center" ></td>	
+				
+			</tr>
+			<tr>
+				<td class="td-center">${order.totalPrice }</td>
+			
+				<td class="td-center">${cost.discount }%</td>
+				<td class="td-center">${cost.commission }%</td>
+				<td class="td-center">${cost.actualSales }</td>
+					
+				<td class="td-center">${cost.currency }</td>
+				<td class="td-center">${cost.exchangeRate }</td>	
+				<td class="td-center">${cost.RMBPrice }</td>
+				<td class="td-center"></td>
+				
+				
+			</tr>
+			<tr class="td-center">
+				
+				<td class="td-center" style="width:100px">退税率</td>	
+				<td class="td-center" style="width:100px">退税</td>	
+				<td class="td-center" style="width:100px">增值税</td>
+				<td class="td-center" style="width:100px">利润</td>
+				<td class="td-center" >利润率</td>
+				<td class="td-center" colspan="3"></td>
+			</tr>
+			<tr>
+				
+				<td class="td-center">${cost.rebateRate }%</td>
+				<td class="td-center">${cost.rebate }</td>
+				<td class="td-center">${cost.vat }</td>
+				<td class="td-center">${cost.profit }</td>
+				<td class="td-center">${cost.profitRate }%</td>
+				<td class="td-center" colspan="3"></td>
+				
+			</tr>
 		</table>
 	</fieldset>
-	
 	<fieldset>
 		<legend>领料统计</legend>
 		<div class="list">

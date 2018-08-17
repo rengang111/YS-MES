@@ -310,7 +310,7 @@ public class StockOutService extends CommonService {
 				insertStockOutDetail(data);								
 				
 				//更新库存
-				updateMaterial(data.getMaterialid(),quantity);//更新库存
+				updateMaterial("领料更新处理",data.getMaterialid(),quantity);//更新库存
 			
 			}
 			
@@ -364,7 +364,7 @@ public class StockOutService extends CommonService {
 				insertStockOutDetail(data);								
 				
 				//更新库存
-				updateMaterial(data.getMaterialid(),quantity);//更新库存
+				updateMaterial("领料新增处理",data.getMaterialid(),quantity);//更新库存
 			
 			}
 			
@@ -471,6 +471,7 @@ public class StockOutService extends CommonService {
 	//更新当前库存:出库时，减少“当前库存”，减少“待出库“
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
+			String action,
 			String materialId,
 			float reqQuantity) throws Exception{
 	
@@ -488,7 +489,7 @@ public class StockOutService extends CommonService {
 
 		data = list.get(0);
 		
-		insertStorageHistory(data);//保留更新前的数据
+		insertStorageHistory(data,action,String.valueOf(reqQuantity));//保留更新前的数据
 		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());		
@@ -559,6 +560,7 @@ public class StockOutService extends CommonService {
 			dao.Create(stock);
 		}else{
 			//更新
+			copyProperties(db,stock);
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"StockOutUpdate",userInfo);
 			copyProperties(stock,commData);
@@ -889,7 +891,7 @@ public class StockOutService extends CommonService {
 			String mateId = dt.getMaterialid();
 			float quantity = (-1) * stringToFloat(dt.getQuantity());
 			
-			updateMaterial(mateId,quantity);
+			updateMaterial("领料删除处理",mateId,quantity);
 			
 		}		
 	}

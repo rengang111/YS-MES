@@ -332,7 +332,7 @@ public class PurchasePlanService extends CommonService {
 		try {
 			ts.begin();
 
-			System.out.println("采购方案更新处理：①开始");
+			System.out.println("采购方案更新处理：①开始,找出页面被删除的物料");
 			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();	
 
 			//采购方案****************************************************
@@ -397,7 +397,7 @@ public class PurchasePlanService extends CommonService {
 				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
 				float requirement = (-1 * totalQuantity / funit);
 				
-				updateMaterial(rawmater2,purchase,requirement);						
+				updateMaterial("二级BOM(原材料)的待出库减少处理（旧数据）",rawmater2,purchase,requirement);						
 			}
 			
 			//旧数据:采购方案,的待出库"减少"处理
@@ -409,7 +409,7 @@ public class PurchasePlanService extends CommonService {
 				//旧数据物料的待出库"减少"处理
 				//String purchase = String.valueOf(-1 * stringToFloat(old.getPurchasequantity()));
 				float requirement = -1 * stringToFloat(old.getManufacturequantity());
-				updateMaterial(oldmaterilid,0,requirement);
+				updateMaterial("采购方案（旧数据删除）",oldmaterilid,0,requirement);
 				
 				//old.setPurchasequantity(purchase);
 				//old.setManufacturequantity(String.valueOf(requirement));
@@ -439,7 +439,7 @@ public class PurchasePlanService extends CommonService {
 				//更新虚拟库存
 				Float requirement = stringToFloat(detail.getManufacturequantity());
 
-				updateMaterial(materilid,0,requirement);
+				updateMaterial("采购方案（新数据追加）",materilid,0,requirement);
 				
 			}//新数据:采购方案处理
 			
@@ -494,13 +494,14 @@ public class PurchasePlanService extends CommonService {
 					updatePurchaseOrderDetail(contract);
 				}
 				
-				//退换物料的库存
-				//if(supplierFlag.equals("1")){//只处理被删除的物料
-						updateMaterial(
-								materialId, 
-								((-1) * purchaseQty),
-								0);				
-				//}
+				//退还物料库存
+				/*
+				updateMaterial(
+						materialId, 
+						((-1) * purchaseQty),
+						0);
+				*///8.16 页面删除的物料不需要再次退还待出量，
+				//因为，该物料已经在DB旧数据处理时退还过了。
 			}
 
 			//二级BOM(原材料)物料需求表
@@ -517,7 +518,7 @@ public class PurchasePlanService extends CommonService {
 				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
 				float requirement = ( totalQuantity / funit);
 				
-				updateMaterial(rawmater2,purchase,requirement);						
+				updateMaterial("二级BOM(原材料)物料需求表更新",rawmater2,purchase,requirement);						
 			}	
 			
 			ts.commit();	
@@ -624,7 +625,7 @@ public class PurchasePlanService extends CommonService {
 				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
 				float requirement = (-1 * totalQuantity / funit);
 				
-				updateMaterial(rawmater2,purchase,requirement);						
+				updateMaterial("配件订单,二级BOM(原材料)的待出库减少处理",rawmater2,purchase,requirement);						
 			}
 
 			System.out.println("****:"+line++);
@@ -635,7 +636,7 @@ public class PurchasePlanService extends CommonService {
 
 				//旧数据物料的待出库"减少"处理
 				float requirement = -1 * stringToFloat(old.getManufacturequantity());
-				updateMaterial(oldmaterilid,0,requirement);				
+				updateMaterial("配件订单,采购方案,的待出库减少处理",oldmaterilid,0,requirement);				
 				
 				//旧数据的删除处理
 				deletePurchasePlanDetail(old);				
@@ -662,7 +663,7 @@ public class PurchasePlanService extends CommonService {
 				//更新虚拟库存
 				Float requirement = stringToFloat(detail.getManufacturequantity());
 
-				updateMaterial(materilid,0,requirement);
+				updateMaterial("配件订单,新数据:采购方案处理",materilid,0,requirement);
 				
 			}//新数据:采购方案处理
 			
@@ -720,6 +721,7 @@ public class PurchasePlanService extends CommonService {
 				//退换物料的库存
 				//if(supplierFlag.equals("1")){//只处理被删除的物料
 						updateMaterial(
+								"配件订单，被删除的物料库存处理",
 								materialId, 
 								((-1) * purchaseQty),
 								0);				
@@ -741,7 +743,7 @@ public class PurchasePlanService extends CommonService {
 				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
 				float requirement = ( totalQuantity / funit);
 				
-				updateMaterial(rawmater2,purchase,requirement);						
+				updateMaterial("配件订单，二级BOM(原材料)物料需求表",rawmater2,purchase,requirement);						
 			}	
 
 			System.out.println("****:"+line++);
@@ -791,7 +793,7 @@ public class PurchasePlanService extends CommonService {
 				//更新虚拟库存
 				float purchase = stringToFloat(detail.getPurchasequantity());//采购量
 				float requirement = 0;//需求量:真实的需求量在订单采购时已经计算过
-				updateMaterial(materilid,purchase,requirement);
+				updateMaterial("insertRoutineContract",materilid,purchase,requirement);
 			}
 			
 			//采购合同****************************************************
@@ -979,7 +981,7 @@ public class PurchasePlanService extends CommonService {
 				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
 				float requirement = (-1 * totalQuantity / funit);
 				
-				updateMaterial(rawmater2,purchase,requirement);						
+				updateMaterial("采购方案删除处理",rawmater2,purchase,requirement);						
 			}
 			
 			//旧数据:采购方案,的待出库"减少"处理
@@ -989,7 +991,7 @@ public class PurchasePlanService extends CommonService {
 
 				//旧数据物料的待出库"减少"处理
 				float requirement = -1 * stringToFloat(old.getManufacturequantity());
-				updateMaterial(oldmaterilid,0,requirement);
+				updateMaterial("采购方案删除处理",oldmaterilid,0,requirement);
 				
 				//旧数据的删除处理
 				deletePurchasePlanDetail(old);				
@@ -1054,6 +1056,7 @@ public class PurchasePlanService extends CommonService {
 	//更新虚拟库存:生成物料需求时增加“待出库”
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
+			String action,
 			String materialId,
 			float purchaseIn,
 			float requirementOut) throws Exception{
@@ -1072,7 +1075,7 @@ public class PurchasePlanService extends CommonService {
 
 		data = list.get(0);
 		
-		insertStorageHistory(data);//保留更新前的数据
+		insertStorageHistory(data,action,String.valueOf(requirementOut));//保留更新前的数据
 		
 		//当前库存数量
 		float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
@@ -1850,7 +1853,8 @@ public class PurchasePlanService extends CommonService {
 			}
 			//更新虚拟库存
 			if(quantityCount > 0)
-				updateMaterial(materialId,0,(-1) * quantityCount);//减少"待出
+				updateMaterial("库存修改处理",
+						materialId,0,(-1) * quantityCount);//减少"待出
 		
 			ts.commit();		
 			

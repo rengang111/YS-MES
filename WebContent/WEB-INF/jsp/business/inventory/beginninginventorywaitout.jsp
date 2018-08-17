@@ -28,6 +28,8 @@
 					{"className" : ''},
 					{"className" : 'td-right',"defaultContent" : '0'},//
 					{"className" : 'td-right',"defaultContent" : '0'},//
+					{"className" : 'td-right',"defaultContent" : '0'},//
+					{"className" : 'td-right',"defaultContent" : '0'},//
 				
 				],
 			"columnDefs":[
@@ -120,6 +122,8 @@
 							<th style="width: 80px;">耀升编号</th>
 							<th style="width: 120px;">产品编号</th>
 							<th>产品名称</th>
+							<th style="width: 60px;">订单数量</th>
+							<th style="width: 60px;">成品入库</th>
 							<th style="width: 60px;">生产需求</th>
 							<th style="width: 60px;">领料数量</th>
 						</tr>
@@ -131,6 +135,8 @@
 								<td>${list.YSId }</td>
 								<td>${list.productId }</td>
 								<td><span id="shortName${status.index }">${list.productName }</span></td>
+								<td>${list.orderQty }</td>
+								<td>${list.stockinQty }</td>
 								<td>${list.manufactureQuantity }</td>
 								<td>${list.stockoutQty }</td>
 							</tr>
@@ -157,6 +163,8 @@
 					</tbody>
 					<tfoot>
 						<tr>
+							<th></th>
+							<th></th>
 							<th></th>
 							<th></th>
 							<th></th>

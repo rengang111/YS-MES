@@ -487,12 +487,17 @@ public class CommonService extends BaseService {
 	 * 保留库存信息（修改前的信息）
 	 */
 	public void insertStorageHistory(
-			B_MaterialData history) throws Exception{
+			B_MaterialData history,
+			String action,
+			String quantity) throws Exception{
 		
 		if(history != null){				
 			B_MaterialStorageHistoryData dt = new B_MaterialStorageHistoryData();
 			
 			copyProperties(dt,history);
+			dt.setActioncontent(action);
+			dt.setChangequantity(quantity);
+			dt.setCopytime(CalendarUtil.fmtDate());
 			
 			new B_MaterialStorageHistoryDao().Create(dt);				
 		}	

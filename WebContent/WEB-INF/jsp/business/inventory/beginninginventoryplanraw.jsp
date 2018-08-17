@@ -23,10 +23,10 @@
 	        	},
 				"columns": [
 					{"className" : 'td-center'},
-					{"className" : ''},
 					{"className" : 'td-left'},//
 					{"className" : 'td-left'},//
 					{"className" : ''},
+					{"className" : 'td-right',"defaultContent" : '0'},//
 					{"className" : 'td-right',"defaultContent" : '0'},//
 					{"className" : 'td-right',"defaultContent" : '0'},//
 					{"className" : 'td-right',"defaultContent" : '0'},//
@@ -116,11 +116,11 @@
 					<thead>	
 						<tr >
 							<th style="width: 1px;">No</th>
-							<th style="width: 60px;">方案做成日</th>
 							<th style="width: 80px;">耀升编号</th>
 							<th style="width: 120px;">产品编号</th>
 							<th>产品名称</th>
 							<th style="width: 60px;">订单数量</th>
+							<th style="width: 60px;">入库数量</th>
 							<th style="width: 60px;">生产需求量</th>
 							<th style="width: 60px;">领料数量</th>
 						</tr>
@@ -129,11 +129,13 @@
 						<c:forEach var='list' items='${planList}' varStatus='status'>
 							<tr>
 								<td>${status.index +1 }</td>
-								<td>${list.planDate }</td>
 								<td>${list.YSId }</td>
 								<td>${list.productId }</td>
 								<td><span id="shortName${status.index }">${list.materialName }</span></td>
 								<td>${list.manufactureQuantity }</td>
+								
+								<td id="stockin${status.index }">${list.stockinQty }</td>
+								
 								<td id="weight${status.index }"></td>
 								<td id="stockout${status.index }"></td>
 							</tr>
@@ -175,6 +177,7 @@
 								//alert('weight --newWeight--fchgunit--farwunit'+weight +"--"+fchgunit+"--"+farwunit+"--"+newWeight)
 								
 								
+								var stockinQty = '${list.stockinQty}';//入库数
 								var stockoutQty = '${list.stockOutQty}';//实际出库数
 								var correctionQty = '${list.correctionQty}';//修正值
 								
@@ -188,6 +191,7 @@
 								
 								$('#weight'+index).html(floatToCurrency(newWeight));
 								$('#stockout'+index).html(viewQty);
+								$('#stockin'+index).html(floatToCurrency(stockinQty));
 								$('#shortName'+index).html(jQuery.fixedWidth(materialName,32));
 							</script>	
 						</c:forEach>

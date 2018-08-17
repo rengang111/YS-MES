@@ -928,7 +928,7 @@ public class RequisitionService extends CommonService {
 
 		data = list.get(0);
 		
-		insertStorageHistory(data);//保留更新前的数据
+		insertStorageHistory(data,"虚拟出库，计算库存",String.valueOf(reqQuantity));//保留更新前的数据
 		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());	

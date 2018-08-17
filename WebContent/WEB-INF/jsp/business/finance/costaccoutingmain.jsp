@@ -6,7 +6,7 @@
 <%@ include file="../../common/common.jsp"%>
 <style>
 body{
- /*  font-size:10px;*/
+   font-size:10px;
 }
 </style>
 <title>财务核算一览页面</title>
@@ -24,7 +24,7 @@ body{
 		url = url + "&statusFlag=" +status;
 		
 		var t = $('#TMaterial').DataTable({
-				"paging": true,
+				"paging": false,
 				"lengthChange":false,
 				"lengthMenu":[50,100,200],//每页显示条数设置
 				"processing" : true,
@@ -63,6 +63,10 @@ body{
 							    	$(this).removeClass("end");
 							    });
 							}
+							
+							//核算成本合计，利润合计
+							costCountByCurrency();
+							
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -82,10 +86,11 @@ body{
 					{"data": "orderTotalPrice", "className" : 'td-right'},//7
 					{"data": "checkInDate", "defaultContent" : '0', "className" : 'td-right'},
 					{"data": "cost", "className" : 'td-right'},//9
-					{"data": "rebate", "className" : 'td-right'},//
+					{"data": "currency", "className" : 'td-right'},//10
 					{"data": "profit", "className" : 'td-right'},//11
+					{"data": null, "className" : 'td-right',"defaultContent" : ''},//12
 					{"data": "team", "defaultContent" : ''},
-					{"data": null, "className" : 'td-center'},//13
+					{"data": null, "className" : 'td-center'},//14
 				
 				],
 				"columnDefs":[
@@ -111,10 +116,90 @@ body{
 		    			
 		    			return name;
 		    		}},
+		    		{"targets":9,"render":function(data, type, row){
+		    			var index = row["rownum"];
+		    			var cost = row["cost"];
+		    			var costA = row["costAcounting"]; 
+		    			var currency = row["currency"];
+		    			var rate = row["exchange_rate"];
+		    			var lastPrice = currencyToFloat(row["lastPrice"]);
+		    			var quantity = currencyToFloat(row["quantity"]);
+		    			if(cost == 0)
+		    				cost = floatToCurrency(costA);
+		    			if(costA == 0){
+		    				cost = floatToCurrency(lastPrice * quantity);//装配品
+		    			}
+		    				
+		    			var text = '<input type="hidden" name="cost" id="cost'+index + '" value="'+cost+'" >';
+		    			text = text + '<input type="hidden" name="currency" id="currency'+index + '" value="'+currency+'" >';
+		    			text = text + '<input type="hidden" name="rate" id="rate'+index + '" value="'+rate+'" >';
+		    			return text + cost;
+		    		}},
+		    		{"targets":11,"render":function(data, type, row){
+		    			var index = row["rownum"];
+		    			var orderType = row["orderType"];
+		    			var cost = currencyToFloat(row["cost"]);
+		    			var costA = currencyToFloat(row["costAcounting"]); 
+		    			var currency = row["currency"];
+		    			var profit = currencyToFloat(row["profit"]);
+		    			var orderCnt = currencyToFloat(row["orderTotalPrice"]);
+		    			var rate = currencyToFloat(row["exchange_rate"]);
+		    			var lastPrice = currencyToFloat(row["lastPrice"]);
+		    			var quantity = currencyToFloat(row["quantity"]);
+		    			if(cost == 0){
+		    				if(orderType == '020'){
+			    				cost = lastPrice * quantity;//装配品的成本
+		    				}else{
+		    					cost = costA;//未领料的从BOM计算
+		    				}
+		    			}
+    					profit = floatToCurrency(rate * orderCnt - cost);//利润
+    					
+		    			return profit;
+		    			//return rate +" -- "+ orderCnt  +" -- "+  cost;
+		    		}},
 		    		{"targets":12,"render":function(data, type, row){
-		    			return jQuery.fixedWidth(row["team"],8);
+		    			var index = row["rownum"];
+		    			var orderType = row["orderType"];
+		    			var cost = currencyToFloat(row["cost"]);
+		    			var costA = currencyToFloat(row["costAcounting"]); 
+		    			var rate = row["exchange_rate"];
+		    			var profit = currencyToFloat(row["profit"]);
+		    			var orderCnt = currencyToFloat(row["orderTotalPrice"]);
+		    			var profitRate = row["profitRate"];
+		    			var lastPrice = currencyToFloat(row["lastPrice"]);
+		    			var quantity = currencyToFloat(row["quantity"]);
+		    			/*
+		    			if(profitRate <=0){
+		    				if(costA > 0){
+			    				profitRate = floatToCurrency((rate * orderCnt - costA) / costA * 100);
+	    					
+		    				}else{
+		    					profitRate = 0;
+		    				}
+		    			}    			
+		    			*/
+		    			if(cost == 0){
+		    				if(orderType == '020'){
+			    				cost = lastPrice * quantity;//装配品的成本
+		    				}else{
+		    					cost = costA;//未领料的从BOM计算
+		    				}
+
+		    				if(cost == 0){
+		    					profitRate = 0;
+		    				}else{
+				    			profitRate = floatToCurrency((rate * orderCnt - cost) / cost * 100);//利润
+		    				}
+		    			}
+    					
+		    			return profitRate+"%";
+		    			//return rate +" -- "+ orderCnt +" -- "+ cost;
 		    		}},
 		    		{"targets":13,"render":function(data, type, row){
+		    			return jQuery.fixedWidth(row["team"],8);
+		    		}},
+		    		{"targets":14,"render":function(data, type, row){
 		    			var stockinQty = currencyToFloat(row["stockinQty"]);
 		    			var orderQty = currencyToFloat(row["quantity"]);
 		    			var accountingDate = currencyToFloat(row["accountingDate"]);
@@ -202,11 +287,14 @@ body{
 	
 	function doCreate(YSId) {
 		
-		//var url = '${ctx}/business/financereport?methodtype=costAccountingYsid';
-		//location.href = url;
+
+		var monthday = $('#monthday').val();
+		var statusFlag = $('#statusFlag').val();
 
 		var actionUrl = "${ctx}/business/financereport?methodtype=costAccountingAdd";
 		actionUrl = actionUrl +"&YSId="+YSId;
+		actionUrl = actionUrl +"&monthday="+monthday;
+		actionUrl = actionUrl +"&statusFlag="+statusFlag;
 
 		location.href = actionUrl;
 	}
@@ -242,6 +330,14 @@ body{
 		ajax('',monthday,'false',status);
 	}
 
+	//月度统计
+	function doShowContract(contractId) {
+
+		var url = '${ctx}/business/financereport?methodtype=monthlyStatistics&contractId=' + contractId;
+		
+		callProductDesignView("月度统计",url);
+	}	
+	
 	
 	function doShow(YSId) {
 
@@ -249,7 +345,8 @@ body{
 		var statusFlag = $('#statusFlag').val();
 		var url = '${ctx}/business/financereport?methodtype=costBomDetailView'
 				+"&monthday="+monthday
-				+"&statusFlag="+statusFlag;
+				+"&statusFlag="+statusFlag
+				+"&YSId="+YSId;
 
 		location.href = url;
 	}
@@ -262,6 +359,71 @@ body{
 		return true;
 	}
 	
+	function costCountByCurrency(){
+
+		var rmb = 0;
+		var rmbCount = 0;
+		var us = 0;
+		var eur = 0;
+		var gbp = 0;
+		var jpy = 0;
+		var costSum = 0;
+		$('#TMaterial tbody tr').each (function (){
+
+			var sales        = $(this).find("td").eq(7).text();//销售额
+			var currencyType = $(this).find("td").eq(9).find("input[name=currency]").val();//币种
+			var cost         = $(this).find("td").eq(9).find("input[name=cost]").val();//核算成本
+			var rate         = $(this).find("td").eq(9).find("input[name=rate]").val();//汇率
+			
+			sales = currencyToFloat(sales);
+			cost = currencyToFloat(cost);
+			rmbCount = rmbCount + rate * sales;//人民币总计
+			costSum = costSum + cost;//核算成本合计
+			
+			if(currencyType == 'RMB'){
+				rmb = rmb + sales;//
+			}else if(currencyType == 'USD'){
+				us = us + sales;//
+			}else if(currencyType == 'EURO'){
+				eur = eur + sales;//
+			}else if(currencyType == 'GBP'){
+				gbp = gbp + sales;//
+			}else if(currencyType == 'JPY'){
+				jpy = jpy + sales;//
+			}
+						
+		});	
+		//alert("rmb:"+rmb)
+
+		var textView="";
+		if(rmb > 0){
+			textView = "销售额：¥"+floatToCurrency(rmb);
+		}
+		if(us > 0){			
+			textView = textView + "; $"+floatToCurrency(us);			
+		}
+		if(eur > 0){
+			textView = textView + "; €"+floatToCurrency(eur);			
+		}
+		if(gbp > 0){
+			textView = textView + "; ￡"+floatToCurrency(gbp);			
+		}
+		if(jpy > 0){
+			textView = textView + "; ¥"+floatToCurrency(jpy);			
+		}
+		
+		textView = textView +"&nbsp;&nbsp;RMB销售总计：¥ " + floatToCurrency(rmbCount);
+		
+		textView = textView + "&nbsp;&nbsp;成本总计：¥ "+ floatToCurrency(costSum);
+		
+		var profit = rmbCount - costSum;//利润
+		var profitm = profit / costSum * 100;//利润率
+		
+		textView = textView + "&nbsp;&nbsp;利润总计：¥ "+ floatToCurrency(profit)+"（"+floatToCurrency(profitm)+"%）";
+		
+		$('#costCount').html(textView);
+		
+	}
 	
 </script>
 </head>
@@ -296,29 +458,31 @@ body{
 					
 					<td colspan="6">
 						<a id="defutBtn12" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('12');">
-						<span>去年12月份</span></a>
+						<span>12月</span></a>
 						<a id="defutBtn01"  style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('01');">
-						<span>1月份</span></a>
+						<span>1月</span></a>
 						<a id="defutBtn02" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('02');">
-						<span>2月份</span></a>
+						<span>2月</span></a>
 						<a id="defutBtn03" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('03');">
-						<span>3月份</span></a>
+						<span>3月</span></a>
 						<a id="defutBtn04" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('04');">
-						<span>4月份</span></a>
+						<span>4月</span></a>
 						<a id="defutBtn05" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('05');">
-						<span>5月份</span></a>
+						<span>5月</span></a>
 						<a id="defutBtn06" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('06');">
-						<span>6月份</span></a>
+						<span>6月</span></a>
 						<a id="defutBtn07" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('07');">
-						<span>7月份</span></a>
+						<span>7月</span></a>
 						<a id="defutBtn08" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('08');">
-						<span>8月份</span></a>
+						<span>8月</span></a>
 						<a id="defutBtn09" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('09');">
-						<span>9月份</span></a>
+						<span>9月</span></a>
 						<a id="defutBtn10" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('10');">
-						<span>10月份</span></a>
+						<span>10月</span></a>
 						<a id="defutBtn11" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('11');">
-						<span>11月份</span></a>
+						<span>11月</span></a>
+				 		<a id="defutBtn14" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer4('050');">
+						<span>月度统计</span></a> 
 				 		&nbsp;&nbsp;<a id="defutBtn13" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer3('040');">
 						<span>部分入库</span></a> 	
 					</td>
@@ -334,33 +498,34 @@ body{
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 		
 			<div id="DTTT_container2" style="height:40px;float: left">
-			<!--  	<a  class="DTTT_button box2" onclick="doSearchCustomer2('010');" id="defutBtn010"><span>待入库</span></a>-->
+			  	<a  class="DTTT_button box2" onclick="doSearchCustomer2('010');" id="defutBtn010"><span>ALL</span></a>
 				<a  class="DTTT_button box2" onclick="doSearchCustomer2('020');" id="defutBtn020"><span>待审核</span></a>
 				<a  class="DTTT_button box2" onclick="doSearchCustomer2('030');" id="defutBtn030"><span>已审核</span></a>
 			</div>
-			<!-- 
+			
 			<div id="DTTT_container2" style="height:40px;float: right">
-				<a  class="DTTT_button box" onclick="doCreate();" ><span>订单核算</span></a>
+				<span id="costCount" style="font-size: 12px;font-weight: bold;"></span>
 			</div>
-			 -->
+			 
 			<div id="clear"></div>
 			<table id="TMaterial" class="display" >
 				<thead>						
 					<tr>
 						<th style="width: 10px;">No</th>
-						<th style="width: 70px;">耀升编号</th>
-						<th style="width: 100px;">产品编号</th>
+						<th style="width: 60px;">耀升编号</th>
+						<th style="width: 80px;">产品编号</th>
 						<th>产品名称</th>
-						<th style="width: 30px;">客户简称</th>
-						<th style="width: 60px;">订单数量</th>
-						<th style="width: 60px;">入库累计</th>
-						<th style="width: 70px;">销售金额</th>
-						<th style="width: 70px;">入库日期</th>
-						<th style="width: 60px;">核算成本</th>
-						<th style="width: 60px;">退税</th>
-						<th style="width: 60px;">利润</th>
-						<th style="width: 40px;">业务组</th>
-						<th style="width: 40px;">状态</th>
+						<th style="width: 30px;">客户<br/>简称</th>
+						<th style="width: 40px;">订单<br/>数量</th>
+						<th style="width: 40px;">入库<br/>累计</th>
+						<th style="width: 50px;">销售金额</th>
+						<th style="width: 50px;">入库日期</th>
+						<th style="width: 40px;">核算成本</th>
+						<th style="width: 40px;">退税</th>
+						<th style="width: 40px;">利润</th>
+						<th style="width: 30px;">利润率</th>
+						<th style="width: 30px;">业务组</th>
+						<th style="width: 20px;">状态</th>
 					</tr>
 				</thead>
 			</table>

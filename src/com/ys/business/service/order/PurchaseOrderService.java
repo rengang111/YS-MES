@@ -421,6 +421,7 @@ public class PurchaseOrderService extends CommonService {
 					if(arrivalFlag){
 						deletePurchaseOrderDetail(db.get(i));
 						updateMaterial(
+								"合同抵消处理",
 								materialdb,
 								String.valueOf( (-1) * stringToFloat(quantity) ),
 								"0");//更新虚拟库存
@@ -528,7 +529,7 @@ public class PurchaseOrderService extends CommonService {
 						
 						insertPurchaseOrderDetail(d);
 
-						updateMaterial(materialId1,quantity,"0");//更新虚拟库存
+						updateMaterial("合同新建处理",materialId1,quantity,"0");//更新虚拟库存
 						
 					}else{//update
 						//
@@ -541,7 +542,7 @@ public class PurchaseOrderService extends CommonService {
 							oldDb1.setUnitquantity(dt.get("unitQuantity"));
 							updatePurchaseOrderDetail(oldDb1);
 							
-							updateMaterial(materialId1,quantity,"0");//更新虚拟库存
+							updateMaterial("合同更新处理",materialId1,quantity,"0");//更新虚拟库存
 						}
 					}										
 				}		
@@ -561,6 +562,7 @@ public class PurchaseOrderService extends CommonService {
 	//更新虚拟库存:生成合同时增加“待入库”
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
+			String action,
 			String materialId,
 			String purchaseIn,
 			String requirementOut) throws Exception{
@@ -579,7 +581,7 @@ public class PurchaseOrderService extends CommonService {
 
 		data = list.get(0);
 		
-		insertStorageHistory(data);//保留更新前的数据
+		insertStorageHistory(data,action,purchaseIn);//保留更新前的数据
 		
 		//当前库存数量
 		float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
@@ -690,7 +692,7 @@ public class PurchaseOrderService extends CommonService {
 						
 			//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面
 			String newQty = String.valueOf(-1 * stringToFloat(db.getQuantity()));
-			updateMaterial(db.getMaterialid(),newQty,"0");
+			updateMaterial("合同删除处理",db.getMaterialid(),newQty,"0");
 		}
 
 	}
@@ -809,7 +811,7 @@ public class PurchaseOrderService extends CommonService {
 					
 					//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面			
 					String newQty = data.getQuantity();	
-					updateMaterial(data.getMaterialid(),newQty,"0");			
+					updateMaterial("合同更新处理",data.getMaterialid(),newQty,"0");			
 				}				
 
 				//计算退税
@@ -1094,6 +1096,7 @@ public class PurchaseOrderService extends CommonService {
 				
 				//恢复库存"待入数量"
 				updateMaterial(
+						"合同删除处理",
 						data.getMaterialid(),
 						String.valueOf(-1 * stringToFloat(data.getQuantity())),
 						"0");//合同只处理待入数量,待出在采购方案里面
@@ -1213,7 +1216,7 @@ public class PurchaseOrderService extends CommonService {
 				
 				//更新虚拟库存
 				String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
-				updateMaterial(materilid,purchase,requirement);
+				updateMaterial("常规采购合同新建处理",materilid,purchase,requirement);
 			}		
 			
 
@@ -1309,7 +1312,7 @@ public class PurchaseOrderService extends CommonService {
 				String purchase = d.getQuantity();//采购量
 				String materilid = d.getMaterialid();
 				String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
-				updateMaterial(materilid,purchase,requirement);
+				updateMaterial("单独采购合同新建处理",materilid,purchase,requirement);
 			}	
 
 			ts.commit();

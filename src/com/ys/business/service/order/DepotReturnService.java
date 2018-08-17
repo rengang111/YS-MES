@@ -172,6 +172,7 @@ public class DepotReturnService extends CommonService {
 
 					//更新库存
 					updateMaterial(
+							"直接入库删除处理",
 							detail.getMaterialid(),
 							String.valueOf(stringToFloat(detail.getQuantity()) * (-1)),//退货数是负数，还原处理，所以 * -1
 							"0");
@@ -263,7 +264,7 @@ public class DepotReturnService extends CommonService {
 			String materialId = detail.getMaterialid();
 			float foldQty = stringToFloat(oldQty);//更新前
 			String newQty = floatToString( foldQty - freqQty );//前后差值
-			updateMaterial(materialId,newQty,"0");
+			updateMaterial("直接入库更新处理",materialId,newQty,"0");
 			
 			ts.commit();
 			
@@ -367,7 +368,7 @@ public class DepotReturnService extends CommonService {
 			insertPurchaseStockInDetail(detail);
 
 			//更新库存
-			updateMaterial(materialId,quantity,"0");
+			updateMaterial("直接入库新增处理",materialId,quantity,"0");
 			
 			ts.commit();
 			
@@ -576,6 +577,7 @@ public class DepotReturnService extends CommonService {
 	//更新当前库存:减少“当前库存”
 	@SuppressWarnings("unchecked")
 	private void updateMaterial(
+			String action,
 			String materialId,
 			String newQuantity,
 			String oldQuantity) throws Exception{
@@ -594,7 +596,7 @@ public class DepotReturnService extends CommonService {
 
 		data = list.get(0);
 		
-		insertStorageHistory(data);//保留更新前的数据
+		insertStorageHistory(data,action,newQuantity);//保留更新前的数据
 		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());

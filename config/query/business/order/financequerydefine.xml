@@ -434,7 +434,7 @@
   <select>
       <f name="A.YSId" alias="" ctype="" />
       <f name="IFNULL(a.bomId,'')" alias="bomId" ctype="" />
-      <f name="a.cost" alias="" ctype="" />
+      <f name="IFNULL(a.cost,'0')" alias="cost" ctype="" />
       <f name="IFNULL(a.accountingDate,'')" alias="accountingDate" ctype="" />
       <f name="a.productId" alias="" ctype="" />
       <f name="a.productName" alias="" ctype="" />
@@ -443,6 +443,7 @@
       <f name="a.rebate" alias="" ctype="" />
       <f name="a.rebateRate" alias="" ctype="" />
       <f name="a.profit" alias="" ctype="" />
+      <f name="IFNULL(a.profitRate,'0')" alias="profitRate" ctype="" />
       <f name="a.deliveryDate" alias="" ctype="" />
       <f name="a.orderDate" alias="" ctype="" />
       <f name="a.totalPrice" alias=" orderTotalPrice" ctype="" />
@@ -452,9 +453,13 @@
       <f name="IFNULL(a.storageFinish,'010')" alias="storageFinish" ctype="" />
       <f name="a.team" alias="" ctype="业务组" />
       <f name="b.shortName" alias="customerShort" ctype="" />
+      <f name="IFNULL(a.costAcounting,'0')" alias="costAcounting" ctype="" />
+      <f name="IFNULL(c.exchange_rate,'1')" alias="exchange_rate" ctype="" />
+      <f name="a.lastPrice" alias="" ctype="" />
+      <f name="a.orderType" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <from>v_costaccountinglist a left join b_Customer b on b.customerId=a.customerId and b.deleteFlag='0'  </from>
+    <from>v_costaccountinglist a left join t_exchange_rate c ON c.rate_day = a.checkInDate AND c.currency = a.currency left join b_Customer b on b.customerId=a.customerId and b.deleteFlag='0'  </from>
     <orderby>a.ysid </orderby>
     <groupby></groupby>
     <having>#</having>

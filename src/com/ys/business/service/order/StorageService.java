@@ -832,7 +832,7 @@ public class StorageService extends CommonService {
 				data.setReceiptid(receiptid);
 				insertPurchaseStockInDetail(data);
 									
-				updateMaterial(materialid,quantity,data.getPrice());//更新库存
+				updateMaterial("采购件入库",materialid,quantity,data.getPrice());//更新库存
 				
 				//更新合同的累计入库数量,收货状态
 				updateContractStorage(reqData.getContractid(),materialid,quantity);					
@@ -980,6 +980,7 @@ public class StorageService extends CommonService {
 	//更新当前库存:成品入库时，减少“待入库”，增加“当前库存”
 	@SuppressWarnings("unchecked")
 	private B_MaterialData updateMaterial(
+			String action,
 			String materialId,
 			String reqQuantity,String reqPrice) throws Exception{
 	
@@ -997,7 +998,7 @@ public class StorageService extends CommonService {
 
 		data = list.get(0);
 		
-		insertStorageHistory(data);//保留更新前的数据
+		insertStorageHistory(data,action,reqQuantity);//保留更新前的数据
 		
 		//当前库存数量
 		float iQuantity = stringToFloat(data.getQuantityonhand());
@@ -1920,7 +1921,7 @@ public class StorageService extends CommonService {
 			return null;
 		}
 
-		insertStorageHistory(mate);//保留更新前的数据
+		insertStorageHistory(mate,"修改初始值",reqMeterial.getBeginninginventory());//保留更新前的数据
 		
 		B_MaterialData rtnVal = new B_MaterialData();
 		rtnVal.setQuantityonhand(mate.getQuantityonhand());
@@ -1992,7 +1993,7 @@ public class StorageService extends CommonService {
 			return null;
 		}
 
-		insertStorageHistory(mate);//保留更新前的数据
+		insertStorageHistory(mate,"直接修改实际库存",reqMeterial.getQuantityonhand());//保留更新前的数据
 		
 		float iQuantity = stringToFloat(reqMeterial.getQuantityonhand());
 		

@@ -258,8 +258,15 @@ public class FinanceReportAction extends BaseAction {
 
 	private void costAccountingAdd() {		
 		
-		try {
+		try {			
+
+			String monthday = request.getParameter("monthday");
+			String statusFlag = request.getParameter("statusFlag");
+			session.setAttribute("monthday", monthday);
+			session.setAttribute("statusFlag", statusFlag);
+			
 			service.costAccountingAdd();
+			
 		}
 		catch(Exception e) {
 			e.printStackTrace();

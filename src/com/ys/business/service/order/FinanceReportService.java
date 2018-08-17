@@ -338,7 +338,7 @@ public class FinanceReportService extends CommonService {
 		}
 		
 		if(("010").equals(statusFlag)){
-			having=" stockinQty+0 < quantity+0 ";//待入库
+			//having=" stockinQty+0 < quantity+0 ";//ALL
 			
 		}else if(("020").equals(statusFlag)){
 			having=" storageFinish ='020' and accountingDate='' ";//待核算
@@ -583,6 +583,8 @@ public class FinanceReportService extends CommonService {
 		String YSId = insertCostBomData();
 		
 		getOrderDetailByYSId(YSId);
+		
+		getCostBomDetail(YSId);
 	}
 
 	private String insertCostBomData(){
@@ -680,6 +682,13 @@ public class FinanceReportService extends CommonService {
 
 	public HashMap<String, Object> getCostBomDetail() throws Exception{
 		String YSId = request.getParameter("YSId");
+		
+		return getCostBomDetail(YSId);
+	}
+	
+
+	public HashMap<String, Object> getCostBomDetail(String YSId) throws Exception{
+		
 		HashMap<String, Object> HashMap = new HashMap<String, Object>();
 
 		dataModel.setQueryFileName("/business/order/financequerydefine");
@@ -694,7 +703,6 @@ public class FinanceReportService extends CommonService {
 		
 		return HashMap;
 	}
-	
 	public HashMap<String, Object> updateExchangeRate() throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();

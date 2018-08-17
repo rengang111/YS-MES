@@ -4,7 +4,7 @@
 <html>
 
 <head>
-<title>财务核算-成本确认</title>
+<title>财务核算-编辑</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 

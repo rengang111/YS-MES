@@ -1011,10 +1011,12 @@
       <f name="IFNULL(d.quantity, 0)" alias="virtualQty" ctype="" />
       <f name="c.materialId" alias="productId" ctype="" />
       <f name="c.materialName" alias="productName" ctype="" />
+      <f name="IFNULL(c.quantity,0)" alias="stockinQty" ctype="" />
+      <f name="IFNULL(c.orderQty,0)" alias="orderQty" ctype="" />
       <f name="(IFNULL(REPLACE(b.quantity,',',''),0)+0) + (IFNULL(REPLACE(d.quantity,',',''), 0)+0)" alias="stockoutQty" ctype="" />
 
     </select>
-    <from>v_purchaseplandetailgroup a LEFT JOIN v_requisitiondetailgroup_virtual d ON d.ysid=a.YSId AND a.materialId = d.materialId LEFT JOIN v_stockoutdetailgroup b ON a.materialId=b.materialId AND  instr(b.ysid,left(a.ysid,8)) > 0   LEFT JOIN v_orderdetail c ON a.YSId=c.YSId </from>
+    <from>v_purchaseplandetailgroup a LEFT JOIN v_requisitiondetailgroup_virtual d ON d.ysid=a.YSId AND a.materialId = d.materialId LEFT JOIN v_stockoutdetailgroup b ON a.materialId=b.materialId AND  instr(b.ysid,left(a.ysid,8)) > 0   LEFT JOIN v_stockin_for_product c ON a.YSId=c.YSId </from>
     <orderby>A.YSId</orderby>
     <groupby></groupby>
     <having>#</having>

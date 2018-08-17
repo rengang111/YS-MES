@@ -890,7 +890,7 @@ $.fn.dataTable.TableTools.buttons.add_rows2 = $
 						]).draw();
 				
 				$("#orderDetailLines" + rowIndex + "\\.productclassify").html(options);
-				$("#orderDetailLines" + rowIndex + "\\.productclassify").val('035');
+				$("#orderDetailLines" + rowIndex + "\\.productclassify").val('RMB');
 				$("#orderDetailLines" + rowIndex + "\\.ysid").val(fmtId);
 				
 				rowIndex ++;						
