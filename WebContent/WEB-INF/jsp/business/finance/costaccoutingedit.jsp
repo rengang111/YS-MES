@@ -26,7 +26,7 @@
 			"scrollY":scrollHeight,
 			"scrollCollapse":true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/financereport?methodtype=getStockoutByMaterialId&YSId="+YSId,
+			"sAjaxSource" : "${ctx}/business/financereport?methodtype=getCostBomDetail&YSId="+YSId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -43,9 +43,9 @@
 					success: function(data){							
 						fnCallback(data);
 						
-						errorCheckAndCostCount();
+						//errorCheckAndCostCount();
 						
-						lirunjisuan();
+						//lirunjisuan();
 						
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -61,47 +61,26 @@
 					}, {"data": "materialId"
 					}, {"data": "materialName"
 					}, {"data": "unit","className":"td-center"
-					}, {"data": "orderQty","className":"td-right"//4
-					}, {"data": "stockoutQty","className":"td-right"//5
+					}, {"data": "quantity","className":"td-right"//5
 					}, {"data": "price","className":"td-right" //6
 					}, {"data": "totalPrice","className":"td-right" //7
-					}, {"data": "countQty","className":"td-right"
 					}
+					
 				],
 				"columnDefs":[
-		    		{"targets":2,"render":function(data, type, row){
-		    			return jQuery.fixedWidth(data,48);
-		    		}},
-		    		{"targets":1,"render":function(data, type, row){
-		    			var rowIndex = row["rownum"];
-		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].materialid" id="costBomList'+rowIndex+'.materialid"  value="'+data+'"a />';
-		    			
-		    			return data + text;
-		    		}},
-		    		{"targets":4,"render":function(data, type, row){
-		    			var rowIndex = row["rownum"];
-		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].quantity" id="costBomList'+rowIndex+'.quantity"  value="'+data+'" />';
-		    			
-		    			return data + text;
-		    		}},
-		    		{"targets":5,"render":function(data, type, row){
-			    		return floatToCurrency(data);
-		    		}},
-		    		{"targets":7,"render":function(data, type, row){
-		    			var rowIndex = row["rownum"];
-		    			var total = floatToCurrency(data);
-		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].totalprice" id="costBomList'+rowIndex+'.totalprice"  value="'+total+'" />';
-		    			
-		    			return total + text;
-		    		}},
-		    		{"targets":6,"render":function(data, type, row){
-		    			var rowIndex = row["rownum"];
-		    			var price = currencyToFloat(data);
-		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].price" id="costBomList'+rowIndex+'.price"  value="'+price+'" />';
-		    			
-		    			return price + text;
-		    		}}
-		    	] 
+					    		{"targets":2,"render":function(data, type, row){
+					    			return jQuery.fixedWidth(data,64);
+					    		}},
+					    		{"targets":4,"render":function(data, type, row){
+					    			return floatToCurrency(data);
+					    		}},
+					    		{"targets":5,"render":function(data, type, row){
+					    			return floatToCurrency(data);
+					    		}},
+					    		{"targets":6,"render":function(data, type, row){
+					    			return floatToCurrency(data);
+					    		}}
+					    	] 
 			
 		}).draw();
 						
@@ -156,7 +135,7 @@
 		$("#doCreate").click(
 				function() {
 
-				$('#formModel').attr("action", "${ctx}/business/financereport?methodtype=costAccountingSave");
+				$('#formModel').attr("action", "${ctx}/business/financereport?methodtype=costAccountingUpdate");
 				$('#formModel').submit();
 	
 		});
@@ -209,19 +188,12 @@
 		var cost = 0;
 		$('#example2 tbody tr').each (function (){
 			
-			var stockOutQty = $(this).find("td").eq(5).text();//领料数量
-			var contractValue = $(this).find("td").eq(7).text();//领料金额
+			var contractValue = $(this).find("td").eq(6).text();//领料金额
 			
-			stockOutQty = currencyToFloat(stockOutQty);
 			contractValue= currencyToFloat(contractValue);
 			
 			cost = cost + contractValue;
-			
-			if( stockOutQty == 0){
-				
-				$(this).addClass('error');
-			}
-						
+					
 		});	
 		
 
@@ -293,12 +265,14 @@
 		
 		$(".read-only").attr('readonly', "true");
 
+		$('#costBom\\.cost').val(floatToCurrency(cost));//成本总计
 		$('#costBom\\.actualsales').val(floatToCurrency(actualSales));//实际销售额
 		$('#costBom\\.rmbprice').val(floatToCurrency(rmbprice));//原币金额
 		$('#costBom\\.rebate').val(floatToCurrency(rebate));//退税
 		$('#costBom\\.profit').val(floatToCurrency(profit));//利润
 		$('#costBom\\.profitrate').val(floatToCurrency(profitrate));//利润率
 		$('#costBom\\.vat').val(floatToCurrency(zeng));//增值税
+		
 		
 	}
 		
@@ -316,6 +290,9 @@
 	<input type="hidden" id="makeType" value="${makeType }" />
 	<form:hidden path="costBom.accountingdate"  />
 	<form:hidden path="costBom.currency"  value="${order.currencyId }"/>
+	<form:hidden path="costBom.bomid"  value="${cost.bomId }"/>
+	<form:hidden path="costBom.recordid"  value="${cost.recordId }"/>
+	<form:hidden path="costBom.ysid"  value="${cost.YSId }"/>
 	<fieldset>
 		<legend> 财务核算</legend>
 		<table class="form" id="table_form">
@@ -323,7 +300,6 @@
 				<td class="label" style="width:100px">耀升编号：</td>					
 				<td style="width:150px">
 					<a href="###" onClick="doShowOrder('${order.PIId }','${order.YSId }')">${order.YSId }</a>
-					<form:hidden path="costBom.ysid" value="${order.YSId }"/></td>
 				<td class="label" style="width:100px">产品编号：</td>					
 				<td style="width:150px">
 					<a href="###" onClick="doShowPlan('${order.YSId }')">${order.materialId}</a>
@@ -343,15 +319,18 @@
 			<tr>
 				<td class="label" style="width:100px;">成本总计：</td>	
 				<td >
-					<form:input path="costBom.cost"  class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>	
+					<form:input path="costBom.cost"  class="read-only num " style="font-size: 14px;font-weight: bold;" 
+					value="${cost.cost }" /></td>	
 				
 				<td class="label" style="width:100px;">材料成本：</td>	
 				<td >
-					<form:input path="costBom.materialcost"  class="read-only num " style="font-size: 14px;font-weight: bold;"/></td>
+					<form:input path="costBom.materialcost"  class="read-only num " style="font-size: 14px;font-weight: bold;" 
+					value="${cost.materialCost }" /></td>
 			
 				<td class="label" style="width:100px;">人工成本：</td>	
 				<td >
-					<form:input path="costBom.labolcost" value="${LaborCost}" class=" num exchange" style="font-size: 14px;font-weight: bold;" /></td>	
+					<form:input path="costBom.labolcost" class=" num exchange" style="font-size: 14px;font-weight: bold;" 
+					value="${cost.labolCost }" /></td>	
 			
 			</tr>
 		</table>
@@ -371,17 +350,17 @@
 				<td class="td-center">${order.totalPrice }</td>
 			
 				<td class="td-center">
-					<form:input path="costBom.discount"  class="num exchange" value="${order.discount }" style="width: 30px;"/>%</td>
+					<form:input path="costBom.discount"  class="num exchange" value="${cost.discount }" style="width: 30px;"/>%</td>
 				<td class="td-center">
-					<form:input path="costBom.commission"  class="num exchange"  value="${order.commission }" style="width: 30px;"/>%</td>
+					<form:input path="costBom.commission"  class="num exchange"  value="${cost.commission }" style="width: 30px;"/>%</td>
 				<td class="td-center">
-					<form:input path="costBom.actualsales"  class="num short read-only"  /></td>
+					<form:input path="costBom.actualsales"  class="num short read-only"  value="${cost.actualSales }" /></td>
 					
 				<td class="td-center">${order.currency }</td>
 				<td class="td-center">
-					<form:input path="costBom.exchangerate"  class="num mini exchange" value="${order.sysValue }" /></td>	
+					<form:input path="costBom.exchangerate"  class="num mini exchange" value="${cost.exchangeRate }" /></td>	
 				<td class="td-center">
-					<form:input path="costBom.rmbprice"  class="num short read-only"  /></td>
+					<form:input path="costBom.rmbprice"  class="num short read-only"  value="${cost.RMBPrice }" /></td>
 				<td class="td-center"></td>
 				
 				
@@ -398,15 +377,15 @@
 			<tr>
 				
 				<td class="td-center">
-					<form:input path="costBom.rebaterate"  value="16" class="num mini exchange"  />%</td>
+					<form:input path="costBom.rebaterate" class="num mini exchange"   value="${cost.rebateRate }" />%</td>
 				<td class="td-center">
-					<form:input path="costBom.rebate"  class="num short read-only"  /></td>
+					<form:input path="costBom.rebate"  class="num short read-only"   value="${cost.rebate }" /></td>
 				<td class="td-center">
-					<form:input path="costBom.vat"  class="num short read-only"  /></td>
+					<form:input path="costBom.vat"  class="num short read-only"   value="${cost.vat }" /></td>
 				<td class="td-center">
-					<form:input path="costBom.profit"  class="num short read-only"  /></td>
+					<form:input path="costBom.profit"  class="num short read-only"   value="${cost.profit }" /></td>
 				<td class="td-center" >
-					<form:input path="costBom.profitrate"  class="num mini read-only" />%</td>
+					<form:input path="costBom.profitrate"  class="num mini read-only"  value="${cost.profitRate }" />%</td>
 				<td class="td-center" colspan="3"></td>
 				
 			</tr>
@@ -427,11 +406,9 @@
 						<th class="dt-center" width="120px">物料编号</th>
 						<th class="dt-center" >物料名称</th>
 						<th class="dt-center" width="40px">单位</th>
-						<th class="dt-center" width="60px">订单用量</th>
 						<th class="dt-center" width="60px">领料数量</th>
-						<th class="dt-center" width="60px">BOM单价</th>
+						<th class="dt-center" width="80px">BOM单价</th>
 						<th class="dt-center" width="60px">合计金额</th>
-						<th class="dt-center" width="60px">领料次数</th>
 					</tr>
 				</thead>
 			</table>

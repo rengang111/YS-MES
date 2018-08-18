@@ -122,14 +122,15 @@
 		});
 		
 		
-		$("#doCreate2").click(
+		$("#doCreate").click(
 				function() {
-				var contractId = '${order.contractId}'
-				var makeType=$('#makeType').val();
-				var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId+"&makeType="+makeType;
-				location.href = url;
+			
+				var YSId = '${order.YSId }';
+				var url = "${ctx}/business/financereport?methodtype=costAccountingEdit"+"&YSId="+YSId;
+				location.href = url;	
 	
 		});
+		
 		
 		
 	});
@@ -272,6 +273,10 @@
 				
 			</tr>
 		</table>
+	</fieldset>
+	<fieldset class="action" style="text-align: right;right;margin-top: -20px;">
+		<button type="button" id="doCreate" class="DTTT_button">编辑</button>
+		<button type="button" id=goBack class="DTTT_button">返回</button>
 	</fieldset>
 	<fieldset>
 		<legend>领料统计</legend>

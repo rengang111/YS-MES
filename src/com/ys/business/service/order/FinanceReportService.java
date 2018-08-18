@@ -587,6 +587,46 @@ public class FinanceReportService extends CommonService {
 		getCostBomDetail(YSId);
 	}
 
+		
+	public void updateCostBomAndView() throws Exception{
+		
+		String YSId = updateCostBomData();
+		
+		getOrderDetailByYSId(YSId);
+		
+		getCostBomDetail(YSId);
+	}
+	
+	
+	private String updateCostBomData(){
+		
+		String YSId = "";
+		ts = new BaseTransaction();
+				
+		try {
+			ts.begin();
+			
+			B_CostBomData reqData = reqModel.getCostBom();
+
+			YSId = reqData.getYsid();
+
+			updateCostBom(reqData);
+						
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		return YSId;
+	}
+	
 	private String insertCostBomData(){
 		
 		String YSId = "";
@@ -643,7 +683,27 @@ public class FinanceReportService extends CommonService {
 		new B_CostBomDao().Create(data);
 	}
 	
+	private void updateCostBom(B_CostBomData data) throws Exception {
+		
+		B_CostBomData db = new B_CostBomDao(data).beanData;
+		
+		if(db == null || ("").equals(db)){
+			
+			insertCostBom(data);//新增
+			
+		}else{
+
+			copyProperties(db,data);
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"财务核算BomUpdate",userInfo);
+			copyProperties(data,commData);
+			
+			new B_CostBomDao().Store(db);
+		}
+			
 	
+	}
 	
 	private void insertCostBomDetail(B_CostBomDetailData data) throws Exception {
 		
@@ -673,11 +733,13 @@ public class FinanceReportService extends CommonService {
 		
 	}
 
-	public void getOrderDetail() throws Exception{
+	public void getOrderAndCostBomDetail() throws Exception{
 		
 		String YSId = request.getParameter("YSId");
 
 		getOrderDetailByYSId(YSId);
+		
+		getCostBomDetail(YSId);
 	}
 
 	public HashMap<String, Object> getCostBomDetail() throws Exception{
@@ -700,6 +762,8 @@ public class FinanceReportService extends CommonService {
 
 		HashMap.put("cost", dataModel.getYsViewData().get(0));
 		HashMap.put("data", dataModel.getYsViewData());
+		
+		model.addAttribute("cost",dataModel.getYsViewData().get(0));
 		
 		return HashMap;
 	}

@@ -119,6 +119,14 @@ public class FinanceReportAction extends BaseAction {
 			case "getCostBomDetail":
 				dataMap = getCostBomDetail();
 				printOutJsonObj(response, dataMap);
+				break;	
+			case "costAccountingEdit"://财务核算：编辑costAccountingUpdate
+				 costAccountingEdit();
+				rtnUrl = "/business/finance/costaccoutingedit";
+				break;	
+			case "costAccountingUpdate"://财务核算：编辑
+				costAccountingUpdate();
+				rtnUrl = "/business/finance/costaccoutingview";
 				break;		
 			case "updateExchangeRate":
 				dataMap = updateExchangeRate();
@@ -292,7 +300,7 @@ public class FinanceReportAction extends BaseAction {
 		session.setAttribute("monthday", monthday);
 		session.setAttribute("statusFlag", statusFlag);
 		
-		service.getOrderDetail();
+		service.getOrderAndCostBomDetail();
 		
 	}
 	
@@ -308,6 +316,21 @@ public class FinanceReportAction extends BaseAction {
 		
 	}
 	
+
+	private void costAccountingEdit() throws Exception {		
+		
+		service.getOrderAndCostBomDetail();
+		
+	}
+	
+
+	private void costAccountingUpdate() throws Exception {		
+		
+		service.updateCostBomAndView();
+		
+	}
+	
+	
 	private void accountingInit() throws Exception {		
 		
 		String monthday = (String) session.getAttribute("monthday");
@@ -316,7 +339,7 @@ public class FinanceReportAction extends BaseAction {
 		
 		String statusFlag = (String) session.getAttribute("statusFlag");
 		if(statusFlag == null || statusFlag == "")
-			statusFlag = "020";//默认是待核算
+			statusFlag = "010";//默认是ALL
 
 		model.addAttribute("monthday",monthday);
 		model.addAttribute("statusFlag",statusFlag);

@@ -459,7 +459,7 @@
       <f name="a.orderType" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <from>v_costaccountinglist a left join t_exchange_rate c ON c.rate_day = a.checkInDate AND c.currency = a.currency left join b_Customer b on b.customerId=a.customerId and b.deleteFlag='0'  </from>
+    <from>v_costaccountinglist a left join t_exchange_rate c ON c.rate_day = a.checkInDate AND c.currency = a.currency left join b_Customer b on b.customerId=a.customerId and b.deleteFlag='0' where a.payment='0' </from>
     <orderby>a.ysid </orderby>
     <groupby></groupby>
     <having>#</having>
@@ -472,6 +472,7 @@
         <w name="A.YSId"   des="" reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   <select>
+      <f name="a.recordId" alias="" ctype="" />
       <f name="A.YSId" alias="" ctype="" />
       <f name="a.bomId" alias="" ctype="" />
       <f name="a.cost" alias="" ctype="" />
@@ -486,6 +487,14 @@
       <f name="a.profit" alias="" ctype="" />
       <f name="a.price" alias="" ctype="" />
       <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.vat" alias="" ctype="" />
+      <f name="a.RMBPrice" alias="" ctype="" />
+      <f name="a.profitRate" alias="" ctype="" />
+      <f name="a.materialCost" alias="" ctype="" />
+      <f name="a.labolCost" alias="" ctype="" />
+      <f name="a.actualSales" alias="" ctype="" />
+      <f name="IFNULL(a.discount,0)" alias="discount" ctype="" />
+      <f name="IFNULL(a.commission,0)" alias="commission" ctype="" />
       <f name="a.quantity" alias="" ctype="" />
       <f name="b.deliveryDate" alias="" ctype="" />
       <f name="b.totalQuantity" alias="" ctype="" />
