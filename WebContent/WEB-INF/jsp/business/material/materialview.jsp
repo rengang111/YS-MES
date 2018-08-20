@@ -40,27 +40,29 @@
 
 	<table class="form" >		
 		<tr>
-			<td class="label" style="width: 100px;"><label>物料(ERP)编号：</label></td>
+			<td class="label" style="width: 100px;"><label>物料编码：</label></td>
 			<td style="width: 150px;">
 				<label>${material.material.materialid}</label></td>	
-				
+		
+			<td class="label" style="width: 100px;"><label>原物料编码：</label></td>
+			<td style="width: 100px;">${material.material.originalid}</td>
+			
+			<td class="label" style="width: 100px;"><label>计量单位：</label></td>
+			<td >${material.unitname}</td>	
+														
+		</tr>
+		<tr>		
 			<td class="label" style="width: 100px;"><label>分类编码：</label></td>
 			<td>${material.attribute2}</td>
-			<td class="label" style="width: 100px;"><label>计量单位：</label></td>
-			<td style="width: 50px;text-align: center;">${material.unitname}</td>	
-														
+			<td class="label" style="width: 100px;">采购类别：</td>
+			<td>${material.purchaseTypeName}</td>					
+		
+			<td class="label" style="width: 100px;"><label>核算成本：</label></td>
+			<td><div id="cost"></div></td>	
 		</tr>
 		<tr>
 			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
-			<td colspan="3">${material.material.materialname}</td>			
-								
-			<td class="label" style="width: 100px;">采购类别：</td>
-			<td style="width: 50px;text-align: center;">${material.purchaseTypeName}</td>					
-		</tr>
-		<tr>
-			<td class="label" style="width: 100px;"><label>原物料编码：</label></td>
-			<td colspan="5">${material.material.originalid}</td>			
-												
+			<td colspan="5">${material.material.materialname}</td>		
 		</tr>
 		<tr>
 			<td class="label"><label>通用型号：</label></td>
@@ -208,9 +210,10 @@ function supplierPriceView() {
 		"serverSide" : false,
 		"stateSave" : false,
 		"searching" : false,
-		"pagingType" : "full_numbers",
+		//"pagingType" : "full_numbers",
 		//"bJQueryUI": true,
 		"retrieve" : false,
+		dom : '<"clear">lt',
 		"sAjaxSource" : "${ctx}/business/material?methodtype=supplierPriceView",				
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 				
