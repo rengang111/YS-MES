@@ -139,7 +139,7 @@
 			
 			var fTotalNew = currencyToFloat(fPrice * fQuantity);
 
-			var vQuantity = floatToNumber(fQuantity);
+			var vQuantity = floatToCurrency(fQuantity);
 			var vTotalNew = floatToCurrency(fTotalNew);
 					
 			//详情列表显示新的价格					

@@ -7,6 +7,7 @@
 <script type="text/javascript">
 
 	var shortYear = ""; 
+	var validator;
 	
 	function ajax() {
 
@@ -119,9 +120,11 @@
 						//return;
 					//}
 					
-					
-			$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insertProduct");
-			$('#formModel').submit();
+					if (validator.form()) {
+						$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insertProduct");
+						$('#formModel').submit();
+						
+					}
 		});
 				
 		//计算剩余数量
@@ -133,6 +136,23 @@
 		foucsInit();
 		
 		quantitySum();
+		
+		validator = $("#formModel").validate({
+			rules: {
+				"stockList[0].packagnumber": {
+					required: true,	
+					number: true,
+				},
+			},
+			errorPlacement: function(error, element) {
+			    if (element.is(":radio"))
+			        error.appendTo(element.parent().next().next());
+			    else if (element.is(":checkbox"))											    	
+			    	error.insertAfter(element.parent().parent());
+			    else
+			    	error.insertAfter(element);
+			}
+		});	
 	});
 	
 	function checkMaterialStockOut(){

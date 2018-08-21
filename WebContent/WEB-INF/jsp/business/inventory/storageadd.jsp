@@ -9,6 +9,7 @@
 <script type="text/javascript">
 
 	var shortYear = ""; 
+	var validator;
 	
 	function ajax() {
 
@@ -114,11 +115,16 @@
 							+"&arrivalId="+arrivelId+"&makeType="+makeType;
 					location.href = url;		
 				});
+		
 		$("#insert").click(
-				function() {	
-					var makeType=$('#makeType').val();		
-			$('#form').attr("action", "${ctx}/business/storage?methodtype=insert"+"&makeType="+makeType);
-			$('#form').submit();
+				function() {
+					
+					if (validator.form()) {
+
+						$('#form').attr("action", "${ctx}/business/storage?methodtype=insert"+"&makeType="+makeType);
+						$('#form').submit();
+					};
+					
 		});
 		
 		//产品图片添加位置,                                                                                                                                                                                        
@@ -152,6 +158,22 @@
 			$('.viewFlag').hide();
 		}
 		
+		validator = $("#form").validate({
+			rules: {
+				"stock.packagnumber": {
+					required: true,	
+					number: true,
+				},
+			},
+			errorPlacement: function(error, element) {
+			    if (element.is(":radio"))
+			        error.appendTo(element.parent().next().next());
+			    else if (element.is(":checkbox"))											    	
+			    	error.insertAfter(element.parent().parent());
+			    else
+			    	error.insertAfter(element);
+			}
+		});	
 	});
 	
 	function doEdit(contractId,arrivalId) {

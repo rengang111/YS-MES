@@ -9,6 +9,7 @@
 		
 	var counter = 0;
 	var moduleNum = 0;
+	var validator;
 	
 	$.fn.dataTable.TableTools.buttons.add_row = $
 	.extend(
@@ -187,15 +188,35 @@
 		
 		$("#insert").click(
 				function() {
-			$('#formModel').attr("action",
-					"${ctx}/business/stockinapply?methodtype=stockInDirectInsert");
-			$('#formModel').submit();
+					
+
+						$('#formModel').attr("action",
+								"${ctx}/business/stockinapply?methodtype=stockInDirectInsert");
+						$('#formModel').submit();
+					
 		});
 				
 		//input格式化
 		foucsInit();
 
 		$(".DTTT_container").css('float','left');
+		
+		validator = $("#formModel").validate({
+			rules: {
+				"stock.packagnumber": {
+					required: true,	
+					number: true,
+				},
+			},
+			errorPlacement: function(error, element) {
+			    if (element.is(":radio"))
+			        error.appendTo(element.parent().next().next());
+			    else if (element.is(":checkbox"))											    	
+			    	error.insertAfter(element.parent().parent());
+			    else
+			    	error.insertAfter(element);
+			}
+		});	
 	});	
 	
 	

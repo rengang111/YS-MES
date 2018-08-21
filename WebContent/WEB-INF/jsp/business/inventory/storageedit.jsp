@@ -8,6 +8,8 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
+	var validator;
+	
 	function ajax() {
 
 		var receiptId = $("#stock\\.receiptid").val();
@@ -92,8 +94,10 @@
 				function() {
 				var receiptId = $("#receiptid").val();	
 				var makeType=$('#makeType').val();
-			$('#form').attr("action", "${ctx}/business/storage?methodtype=update&receiptId="+receiptId+"&receiptId="+receiptId);
-			$('#form').submit();
+				if (validator.form()) {
+					$('#form').attr("action", "${ctx}/business/storage?methodtype=update&receiptId="+receiptId+"&receiptId="+receiptId);
+					$('#form').submit();
+				}
 		});
 		
 
@@ -126,6 +130,22 @@
 			$('.viewFlag').hide();
 		}
 		
+		validator = $("#form").validate({
+			rules: {
+				"stock.packagnumber": {
+					required: true,	
+					number: true,
+				},
+			},
+			errorPlacement: function(error, element) {
+			    if (element.is(":radio"))
+			        error.appendTo(element.parent().next().next());
+			    else if (element.is(":checkbox"))											    	
+			    	error.insertAfter(element.parent().parent());
+			    else
+			    	error.insertAfter(element);
+			}
+		});	
 	});
 	
 	
