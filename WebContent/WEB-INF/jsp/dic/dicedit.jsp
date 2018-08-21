@@ -198,48 +198,7 @@
 		$(ctl).attr('readonly', flag);		
 	}
 	
-	function inputCheck() {
-		var str = '';
 
-		str = $('#dicTypeName').val();
-		if (!inputStrCheck(str, "代码类", 10, 7, false, true)) {
-			return false;
-		}
-		str = $('#dicid').val();
-		if (!inputStrCheck(str, "代码ID", 120, 3, false, true)) {
-			return false;
-		}
-		if (str.length < 3) {
-			$('#dicid').val(pad(str, 3));
-		} else {
-			if (str.length % 3 != 0) {
-				alert("编码规则：每一段的编码应为3位，如001");
-				return;
-			}
-		}
-		str = $('#dicname').val();
-		if (!inputStrCheck(str, "代码名称", 60, 7, false, true)) {
-			return false;
-		}
-		str = $('#jianpin').val();
-		if (!inputStrCheck(str, "简拼", 30, 7, true, true)) {
-			return false;
-		}		
-		str = $('#dicParentName').val();
-		if (!inputStrCheck(str, "上级代码", 120, 7, true, true)) {
-			return false;
-		}		
-		str = $('#dicisleaf').val();
-		if (!inputStrCheck(str, "是否叶子节点", 1, 3, false, true)) {
-			return false;
-		}
-		str = $('#sortno').val();
-		if (!inputStrCheck(str, "序号", 2, 3, true, true)) {
-			return false;
-		}
-
-		return true;	
-	}
 
 	function saveUpdate() {
 		if (validatorBaseInfo.form()) {
