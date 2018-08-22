@@ -31,8 +31,8 @@ $(document).ready(function() {
 	
 	var height = $(window).height(); 
 	var width = $(window).width()
-	 $("#photo").height(height - 60);
-	 $("#photo").width(width - 10);
+	 $("#photo").height(height - 80);
+	 $("#photo").width(width - 30);
 	 
 });
 
@@ -119,11 +119,11 @@ $(document).ready(function() {
 	function closeWindow(){
 		//if (confirm("确认关闭窗口吗？")) {
 			
-			var index = parent.layer
-			.getFrameIndex(window.name); //获取当前窗体索引
-			//parent.$('#events').DataTable().destroy();/
-			//parent.refresh();
-			//alert(777);
+			var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引
+              var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			//alert(888);
+			
+            //  parent.refresh();
 			parent.layer.close(index); //执行关闭
 			
 		//}
@@ -143,28 +143,32 @@ $(document).ready(function() {
 			$.ajax({
 				type : "GET",
 				url : url,
+				dataType : "text",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
 				data : {key:"${key}", fileName:"${fileName}", className:"${className}", index:"${index}", albumCount:"${albumCount}"},// 要提交的表单
-				success : function(d) {													
+				success : function(data) {													
 
-					var retValue = d['retValue'];
-					
-					//alert(999);
-					
+					//var retValue = d['retValue'];
+										
 					//alert(retValue);
 					
-					if (retValue =="failure"){
+					//if (retValue =="failure"){
 						//alert(d['exName']);
-						$().toastmessage('showWarningToast', "请联系系统管理员。</br>请联系系统管理员。");	
+					//	$().toastmessage('showWarningToast', "请联系系统管理员。</br>请联系系统管理员。");	
 						
 						//$("submit").attr("disabled",true); 
-					}	
+					//}	
 					
 					var index = parent.layer
 					.getFrameIndex(window.name); //获取当前窗体索引
 					//parent.$('#events').DataTable().destroy();/
 					parent.refresh();
 					//alert(777);
+					//$('#photo').html("图片已删除。");
+					// $('#deleteFlag').val("1");
+					// alert($('#deleteFlag').val())
 					parent.layer.close(index); //执行关闭
+					
 					
 				},
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -183,9 +187,11 @@ $(document).ready(function() {
 
 </head>
 <body>	
+
+	<input type="hidden" id="deleteFlag" value="">
 	<table  class="form">
 		<tr>
-			<td style="text-align:center">
+			<td style="text-align:center">path：${path}
 			<div id="photo" style="overflow: auto;">
 				<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" />
 			</div>

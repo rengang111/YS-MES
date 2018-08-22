@@ -189,6 +189,14 @@ public class MaterialAction extends BaseAction {
 				dataMap = doSearch(data,Constants.FORM_PURCHASEROUTINE );
 				printOutJsonObj(response, dataMap);
 				break;
+			case "materialCostView"://查看物料的核算成本
+				materialCostView();
+				rtnUrl = "/business/material/materialcostedit";
+				break;
+			case "insertMaterialCost"://查看物料的核算成本
+				insertMaterialCost(data);
+				rtnUrl = "/business/material/materialcostview";
+				break;
 		}
 		
 		return rtnUrl;		
@@ -585,21 +593,27 @@ public class MaterialAction extends BaseAction {
 
 		String recordId = request.getParameter("recordId");
 		String parentId = request.getParameter("parentId");
+		String materialId = request.getParameter("materialId");
 		String keyBackup = this.request.getParameter("keyBackup");
-		model = materialService.MaterailDetail(recordId,parentId);
+		model = materialService.MaterailDetail(recordId,parentId,materialId);
 		
 		MaterialModel.setKeyBackup(recordId);
 		model.addAttribute("DisplayData",MaterialModel);
-		this.model.addAttribute("keyBackup", keyBackup);
+		model.addAttribute("keyBackup", keyBackup);
+		
+		//图片路径等信息:文件夹名称 + 物料编号 + Class名
+		String albumInfo = "material" +"," + materialId +","  + MaterialModel.className;
+		model.addAttribute("albumInfo",albumInfo);
 
 	}	
 	public void doEdit(){
 
 		String recordId = request.getParameter("recordId");
 		String parentId = request.getParameter("parentId");
+		String materialId = request.getParameter("materialId");
 		String keyBackup = this.request.getParameter("keyBackup");
 		
-		model = materialService.MaterailDetail(recordId,parentId);
+		model = materialService.MaterailDetail(recordId,parentId,materialId);
 		this.model.addAttribute("keyBackup", keyBackup);
 
 	}	
@@ -610,6 +624,17 @@ public class MaterialAction extends BaseAction {
 		String materialId = request.getParameter("materialId");
 		model = materialService.editPrice(recordId,materialId);
 
+	}
+	
+	public void materialCostView() throws Exception{
+
+		materialService.materialCostView();
+
 	}	
+	
+	public void insertMaterialCost(String data) throws Exception
+	{
+	  this.materialService.insertMaterialCost(data);
+	}
 	
 }

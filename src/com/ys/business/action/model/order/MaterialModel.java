@@ -12,7 +12,7 @@ import com.ys.business.db.data.B_PriceSupplierData;
 
 @Repository
 public class MaterialModel extends BaseModel {
-	private final String className = "com.ys.business.service.order.MaterialService";
+	public final String className = "com.ys.business.service.order.MaterialService";
 	private String recordId = "";
 	private String attribute1 = "";
 	private String attribute2 = "";
@@ -30,7 +30,7 @@ public class MaterialModel extends BaseModel {
 	private ArrayList<ListOption> unitList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> currencyList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> purchaseTypeList = new ArrayList<ListOption>();
-	private B_MaterialData material;
+	private B_MaterialData material = new B_MaterialData();
 	private String[] shareModelList;
 	private String shareModel;
 	private String subid;
@@ -39,7 +39,23 @@ public class MaterialModel extends BaseModel {
 	private List<B_MaterialData> materialLines;
 	private String paymentTerm="";
 	private B_PriceSupplierData price;
+	private String counter1;
+	private String counter5;
 
+	public String getCounter1() {
+		return this.counter1;
+	}
+	public void setCounter1(String counter1) {
+		this.counter1 = counter1;
+	}	
+	
+	public String getCounter5() {
+		return this.counter5;
+	}
+	public void setCounter5(String counter5) {
+		this.counter5 = counter5;
+	}	
+	
 	public String getClassName() {
 		return this.className;
 	}

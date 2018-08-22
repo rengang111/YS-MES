@@ -29,6 +29,7 @@
 	<input type="hidden" id="suppliershortname" />
 	<input type="hidden" id="supplierfullname" />
 	<input type="hidden" id="keyBackup" value="${keyBackup }"/>
+	<input type="hidden" id="albumInfo"  value="${albumInfo }"/>
 	<input type="hidden" id="price" />
 	<input type="hidden" id="purchaseType" value="${material.purchaseType}"/>
 	
@@ -58,7 +59,7 @@
 			<td>${material.purchaseTypeName}</td>					
 		
 			<td class="label" style="width: 100px;"><label>核算成本：</label></td>
-			<td><div id="cost"></div></td>	
+			<td><a href="#" onClick="doCostUpdate()"><span id="cost">14,253.78</span></a></td>	
 		</tr>
 		<tr>
 			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
@@ -332,6 +333,7 @@ function autoAddSubid() {
 		var subid = '${sub.subid}';
 		var des = '${sub.subiddes}';
 		var parentid = '${sub.parentid}';
+		var materialid = '${sub.materialid}';
 		var i = '${status.index}';	
 		
 		var trHtml = '';
@@ -340,7 +342,7 @@ function autoAddSubid() {
 		trHtml+="<td width='60px'>";
 		trHtml+="</td>";
 		trHtml+="<td class='td-center'>";		  
-		trHtml+="<label><a href=\"#\" onClick=\"doSubDetail('" + recordid +"','"+ parentid + "')\">"+subid+"</a></label>";
+		trHtml+="<label><a href=\"#\" onClick=\"doSubDetail('" + recordid +"','" + parentid +"','"+ materialid + "')\">"+subid+"</a></label>";
 		trHtml+="<input name='materialLines["+i+"].recordid'    id='materialLines"+i+".recordid'   type='hidden' value='"+recordid+"' />";
 		trHtml+="</td>";
 		trHtml+="<td class='td-center'>";
@@ -366,10 +368,11 @@ function autoAddSubid() {
 	$('#subidTab tr:eq('+selectedTR+')').addClass('selected');
 	$('#subidTab tr:eq('+selectedTR+') td').eq(0).html('本条记录');
 }
-function doSubDetail(recordid , parentid) {
+function doSubDetail(recordid , parentid,materialId) {
 	var str = recordid + parentid;
 	var url = '${ctx}/business/material?methodtype=detailView';
 	url = url + '&parentId=' + parentid+'&recordId='+recordid;
+	url = url + '&materialId=' + materialId;
 	location.href = url;
 	
 }
@@ -516,6 +519,27 @@ function doDelete(recordId){
 	}else{
 		//
 	}
+}
+
+function reload(){
+	window.location.reload();
+}
+
+function doCostUpdate(){
+
+	var materialId= '${material.material.materialid}';
+	
+	var url = "${ctx}/business/material?methodtype=materialCostView";
+	url = url + "&materialId="+materialId;
+	layer.open({
+		offset :[20,''],
+		type : 2,
+		title : false,
+		area : [ '1024px', '500px' ], 
+		scrollbar : [true,false],
+		title : false,
+		content : url,
+	});
 }
 </script>
 </body>

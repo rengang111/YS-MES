@@ -73,7 +73,7 @@
 		                    }},
 				    		{"targets":1,"render":function(data, type, row){
 				    			var rtn = "";
-				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','"+ row["parentId"] + "')\">" + row["materialId"] + "</a>";
+				    			rtn= "<a href=\"###\" onClick=\"doShow('" + row["recordId"] +"','" + row["parentId"] +"','"+ row["materialId"] + "')\">" + row["materialId"] + "</a>";
 				    			return rtn;
 				    		}},
 				    		{"targets":2,"render":function(data, type, row){
@@ -139,9 +139,10 @@
 		location.href = url;
 	}
 	
-	function doShow(recordId,parentId) {
+	function doShow(recordId,parentId,materialId) {
 
-		var url = '${ctx}/business/material?methodtype=detailView&parentId=' + parentId+'&recordId='+recordId;
+		var url = '${ctx}/business/material?methodtype=detailView&parentId='
+				+ parentId+'&recordId='+recordId+'&materialId='+materialId;
 
 		location.href = url;
 	}

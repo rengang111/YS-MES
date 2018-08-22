@@ -18,7 +18,7 @@ public class BusinessConstants {
 	public static final String ENABLEFLG_DISABLED = "1";
 	public static final String UNITIDLENGTH = "6";
 	public static final String BUSINESSSMALLPHOTOPATH = "/small/";
-	public static final String BUSINESSPHOTOPATH = "/img/businessphoto/";
+	public static final String BUSINESSPHOTOPATH = "/img/businessphoto/material/";//物料图片路径
 	public static final String USERHEADPHOTOPATH = "/img/headphoto/";
 	public static final String USERHEADPHOTOTEMPPATH = "/img/headphototemp/";
 	public static final String PATH_PRODUCTDESIGNTEMP = "/temp/";

@@ -28,11 +28,13 @@
 			<div class="fcon" style="display: none;">
 	            <a  href="#"><img src="${pageContext.request.contextPath}/${DisplayData.path}${DisplayData.imageKey}/small/${filename}" 
 	            			onclick = "showRealPhoto('${DisplayData.imageKey}', '${filename}');" />
+	            			<!-- 
 	            			<span style="position: absolute; top: 3; left: 3;">
 	            				<c:if test="${filename eq DisplayData.nowUseImage}">
 									<img src="${pageContext.request.contextPath}/images/now_use.jpg"/>
 								</c:if>
 							</span> 
+							 -->
 	           	</a>
 	        
 	        </div>
@@ -59,9 +61,10 @@
         
     </div>  
     </div>  
+    <!-- 
     <span class="prev"></span>   
     <span class="next"></span>  
-    
+     -->
 </div>  
 
  <div id="l1" style="">					
@@ -95,29 +98,50 @@
 		if (fileName.indexOf('blankDemo')>0)
 			return;
 		
-		var index = parent.layer.open({
+		var index = layer.open({
 			type : 2,
 			title : false,
-			area : [ '90%', '90%' ],
+			area : [ '1024px', '500px' ],
 			//maxmin: true,
-			scrollbar:false,
-			content : '${pageContext.request.contextPath}/album/album-photo-show?className=' + '${DisplayData.className}' + '&key=' + key + '&fileName=' + fileName
+			//scrollbar:false,
+			scrollbar : false,
+			content : '${pageContext.request.contextPath}/album/album-photo-show?className=' + '${DisplayData.className}' + '&key=' + key + '&fileName=' + fileName,
+			/*
+			cancel: function(index){ 
+
+				var body = layer.getChildFrame('body', index);  //加载目标页面的内容
+				var flag = body.find('#deleteFlag').val();
+				alert('flag'+flag)
+				if(flag == '1')
+					window.location.refresh();
+				layer.close(index); 
+
+				return false; 
+			},
+			end: function(index){ 	
+
+				var body = layer.getChildFrame('body', index);  //加载目标页面的内容
+				var flag = body.find('#deleteFlag').val();
+				alert('flag'+flag)
+				if(flag == '1')
+					refresh();
+				return false; 
+			},*/
 		});
-		layer.full(index);
+		//layer.full(index);
 		
 	}
 	
 	function showLayer(){
 		
-		//alert('keyBack:'+'${DisplayData.keyBackup}');
-		
+		var info = '${albumInfo}'
 		layer.open({
 			type : 2,
 			title : false,
 			area : [ '1000px', '400px' ],
 			scrollbar : false,
 			title : false,
-			content : '${pageContext.request.contextPath}/album/album-upload-init?key=' + '${DisplayData.keyBackup}'
+			content : '${pageContext.request.contextPath}/album/album-upload-init?key=' + '${DisplayData.keyBackup}'+'&index='+info,
 		});
 		
 	}	

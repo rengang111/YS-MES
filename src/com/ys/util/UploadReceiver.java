@@ -110,7 +110,8 @@ public class UploadReceiver extends HttpServlet
 		            projectId = info[0];
 		            folderName = info[1];
 		            className = info[2];
-		            dir = projectId + File.separator + folderName;
+		           // dir = projectId + File.separator + folderName;
+		            dir = folderName;
 	            } else {
 	            	dir += File.separator + info[0];
 	            }
@@ -125,7 +126,8 @@ public class UploadReceiver extends HttpServlet
             { 
                 String path = myfile.getOriginalFilename();
                 //System.out.println(path);
-                String fileName = path;
+                String fileName = folderName+"_"+CalendarUtil.timeStempDate()+".jpg";
+                
                 InputStream is = myfile.getInputStream();
                 
                 String ctxPath = req.getSession().getServletContext().getRealPath("/")

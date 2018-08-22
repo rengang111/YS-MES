@@ -58,8 +58,10 @@
         
     </div>  
     </div>  
+    <!-- 
     <span class="prev"></span>   
     <span class="next"></span>  
+     -->
     
 </div>  
 

@@ -28,13 +28,16 @@ import com.ys.util.basequery.common.Constants;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.MaterialModel;
 import com.ys.business.db.dao.B_MaterialCategoryDao;
+import com.ys.business.db.dao.B_MaterialCostDetailDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_MouldBaseInfoDao;
+import com.ys.business.db.dao.B_OrderExpenseDetailDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
 import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_MouldBaseInfoData;
+import com.ys.business.db.data.B_OrderExpenseDetailData;
 import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
@@ -473,11 +476,11 @@ public class MaterialService extends CommonService implements I_BaseService{
 		
 	}
 	
-	public Model MaterailDetail(String recordId,String parentId){
+	public Model MaterailDetail(String recordId,String parentId,String materialId){
 		
 		String fileName = getMaterialDetail(recordId,parentId);
 		
-		getFileList(fileName,recordId);
+		getFileList(fileName,materialId);
 		
 		return model;
 		
@@ -541,11 +544,13 @@ public class MaterialService extends CommonService implements I_BaseService{
 						shareModel = map.get("shareModel");
 						unitName = map.get("dicName");
 						purchaseTypeName = map.get("purchaseTypeName");
+						fileName = map.get("image_filename");
 					}
 					db.setRecordid(map.get("recordId"));
 					db.setSubid(map.get("subId"));
 					db.setSubiddes(map.get("subIdDes"));
 					db.setParentid(map.get("parentId"));
+					db.setMaterialid(map.get("materialId"));
 					list.add(db);
 				}	
 					
@@ -1272,11 +1277,11 @@ public class MaterialService extends CommonService implements I_BaseService{
 		return rtn;
 	}
 	
-	public void getFileList(String nowUseImage,String id) {
+	public void getFileList(String nowUseImage,String materialId) {
 		UploadReceiver uploadReceiver = new UploadReceiver();
 		//int arraySize = 0;
-		String path = BusinessConstants.BUSINESSPHOTOPATH;
-		String dir = request.getSession().getServletContext().getRealPath("/") + path + id ; 
+		String path = BusinessConstants.BUSINESSPHOTOPATH ;
+		String dir = request.getSession().getServletContext().getRealPath("/") + path + materialId ; 
 		
 		//String nowUseImage = nowFileName;
 		
@@ -1309,27 +1314,33 @@ public class MaterialService extends CommonService implements I_BaseService{
 		}
 				
 		reqModel.setFileNames(filenames);
-		reqModel.setImageKey(id);
+		reqModel.setImageKey(materialId);
 		reqModel.setPath(path);
 		reqModel.setNowUseImage(nowUseImage);
 		
 		//return model;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setNowUseImage(String key, String fileName) throws Exception {
 		
 		B_MaterialData dbData = new B_MaterialData();
 		
-		dbData.setRecordid(key);
-		dbData = new B_MaterialDao(dbData).beanData;
-
-		commData = commFiledEdit(
-				Constants.ACCESSTYPE_UPD,"AlbumUpdate",userInfo);
-		copyProperties(dbData,commData);
-		dbData.setImage_filename(fileName);		
+		String where =  " materialId ='" + key +"' AND deleteFlag='0'";
 		
-		new B_MaterialDao().Store(dbData);
+		List<B_MaterialData> list = new B_MaterialDao().Find(where);
+		if(list != null && list.size() > 0){
+			
+			dbData = list.get(0);
+			commData = commFiledEdit(
+					Constants.ACCESSTYPE_UPD,"AlbumUpdate",userInfo);
+			copyProperties(dbData,commData);
+			dbData.setImage_filename(fileName);		
+			
+			new B_MaterialDao().Store(dbData);
+		}
+
 	}
 
 	@Override
@@ -1349,4 +1360,121 @@ public class MaterialService extends CommonService implements I_BaseService{
 		
 		return nowUseImage;
 	}
+	
+	public void materialCostView() throws Exception {		
+
+		String materialid = request.getParameter("materialId");
+		
+		//基本信息	
+		dataModel.setQueryName("getMaterialByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("materialid", materialid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		modelMap = baseQuery.getYsFullData();
+
+		model.addAttribute("material",dataModel.getYsViewData().get(0));
+
+	}
+	
+	public Model insertMaterialCost(String data) throws Exception
+	{
+	  String type = this.request.getParameter("type");
+	  String counter1 = getJsonData(data, "counter1");
+	  String counter5 = getJsonData(data, "counter5");
+
+	  switch (type){
+		  case "M"://材料成本
+			  insertCost1(data, 1, counter1, type); break;
+		  case "P"://加工描述
+			  insertCost1(data, 5, counter5, type); break;
+	  }
+
+	  	return this.model;
+	}
+	
+	private String insertCost1(String data, int index, String counter, String type)
+			  throws Exception{
+		
+	  if ((data == null) || (data.trim() == "")) return null;
+
+	  String ysid = "";
+	  String materialId = "";
+	  this.ts = new BaseTransaction();
+	  try
+	  {
+	    this.ts.begin();
+
+	    B_OrderExpenseDetailData order = new B_OrderExpenseDetailData();
+
+	    materialId = request.getParameter("materialId");
+	    String where = " materialId = '" + materialId + 
+	      "' AND type = '" + type + 
+	      "' AND deleteFlag = " + "0";
+	    deleteDocumentary(where);
+
+	    int counterInt = 0;
+	    if (notEmpty(counter)) {
+	      counterInt = Integer.parseInt(counter);
+	    }
+	    for (int i = 0; i < counterInt; ++i) {
+
+	    	String name 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].costname");
+	    	String supplierid = getJsonData(data, "documentaryLines" + index + "[" + i + "].supplierid");
+	    	String contractid = getJsonData(data, "documentaryLines" + index + "[" + i + "].contractid");
+		    String cost 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].cost");
+		    String person     = getJsonData(data, "documentaryLines" + index + "[" + i + "].person");
+		    String date 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].quotationdate");
+		    String remarks 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].remarks");
+
+		    if (isNullOrEmpty(name))
+		    	continue;
+	      
+		    float fcost = stringToFloat(cost);
+		    //fcost = Math.abs(fcost);//防止页面输入负数，方便计算，统一成正数。
+		    
+			  order.setYsid(ysid);
+			  order.setSupplierid(supplierid);
+			  order.setContractid(contractid);
+			  order.setCostname(name);
+			  order.setCost(floatToString(fcost));
+			  order.setPerson(person);
+			  order.setQuotationdate(date);
+			  order.setRemarks(remarks);
+			  order.setType(type);
+			  order.setStatus("0");
+			  insertDocumentary(order);
+	    }
+
+	    	this.ts.commit();
+	  }
+	  catch (Exception e) {
+		  e.printStackTrace();
+		  this.ts.rollback();
+	  }
+
+	  return ysid;
+	}
+	
+
+	private void insertDocumentary(
+			B_OrderExpenseDetailData detailData)throws Exception{
+
+		this.commData = commFiledEdit(Constants.ACCESSTYPE_INS, 
+				"DocumentaryInsert", userInfo);
+		copyProperties(detailData, commData);
+		guid = BaseDAO.getGuId();
+		detailData.setRecordid(guid);
+
+		new B_OrderExpenseDetailDao().Create(detailData);
+	}
+	
+	private void deleteDocumentary(String where){
+
+		try {
+			new B_MaterialCostDetailDao().RemoveByWhere(where);
+		}catch (Exception e){
+			//e.printStackTrace();
+		}
+	}
+		
 }

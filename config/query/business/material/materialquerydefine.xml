@@ -89,6 +89,7 @@
       <f name="A.supplierId" alias="" ctype="" />>
       <f name="A.quantityOnHand" alias="" ctype="" />
       <f name="A.originalId" alias="" ctype="" />
+      <f name="A.image_filename" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.purchaseType" alias="" ctype="" />

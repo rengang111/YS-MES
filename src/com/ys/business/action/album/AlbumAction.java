@@ -265,7 +265,7 @@ public class AlbumAction extends BaseAction {
 	/**
 	 * 
 	 * @Title: imageRemove
-	 * @Description: TODO
+	 * @Description: 
 	 * @param request
 	 * @param boardIds
 	 * @throws NumberFormatException
@@ -273,8 +273,9 @@ public class AlbumAction extends BaseAction {
 	 */
 	@RequestMapping(value = "/image-remove", method = RequestMethod.GET)
 	@ResponseBody
-	public void imageRemove(HttpServletRequest request) throws NumberFormatException, Exception {
-		
+	public Map<String, Object> imageRemove(HttpServletRequest request) throws NumberFormatException, Exception {
+
+		Map<String, Object> map = new HashMap<String, Object>(1); 
 		UploadReceiver uploadReceiver = new UploadReceiver();
 		
 		//获得参数
@@ -284,7 +285,7 @@ public class AlbumAction extends BaseAction {
 		String index = request.getParameter("index");
 		String albumCount = request.getParameter("albumCount");
 		String nowImage = "";
-		
+		System.out.println("key:"+key+"::fileName:"+fileName);
 		if (albumCount != null && !albumCount.equals("")) {
 			uploadReceiver.deleteFile(request, key + File.separator + index, fileName);
 			I_MultiAlbumService mBaseService = (I_MultiAlbumService)Class.forName(className).newInstance();
@@ -301,13 +302,17 @@ public class AlbumAction extends BaseAction {
 			}
 		}
 
+		map.put("retValue", "success"); 		
+		
+		return map;
+		
 		//uploadReceiver.deleteFolder(request, key);
 	}
 	
 	/**
 	 * 
 	 * @Title: getFirstFilename
-	 * @Description: TODO
+	 * @Description: 
 	 * @param request
 	 * @return
 	 * @throws NumberFormatException
