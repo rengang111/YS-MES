@@ -124,17 +124,19 @@ public class UploadReceiver extends HttpServlet
             
             for (MultipartFile myfile : files)
             { 
-                String path = myfile.getOriginalFilename();
-                //System.out.println(path);
-                String fileName = folderName+"_"+CalendarUtil.timeStempDate()+".jpg";
+                String fileName = myfile.getOriginalFilename();
+                
+                String suffix = fileName.substring(fileName.lastIndexOf("."));
+
+                String newFileName = folderName+"_"+CalendarUtil.timeStempDate() + suffix;
                 
                 InputStream is = myfile.getInputStream();
                 
                 String ctxPath = req.getSession().getServletContext().getRealPath("/")
         				+ BusinessConstants.BUSINESSPHOTOPATH + File.separator + dir + File.separator;  
                 
-                writeFile(is, new File(ctxPath, fileName), null);
-                ImageUtil.scale(ctxPath, fileName, 280, 210, "small");
+                writeFile(is, new File(ctxPath, newFileName), null);
+                ImageUtil.scale(ctxPath, newFileName, 280, 210, "small");
                 //path = FileManager.T_MAIL_ATTACHMENT_PATH + folder + File.separator + fileName;
                 //uploadfiles(path, is);// �ϴ��ļ�
                 

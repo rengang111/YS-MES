@@ -191,7 +191,7 @@ $(document).ready(function() {
 	<input type="hidden" id="deleteFlag" value="">
 	<table  class="form">
 		<tr>
-			<td style="text-align:center">path：${path}
+			<td style="text-align:center">
 			<div id="photo" style="overflow: auto;">
 				<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" />
 			</div>

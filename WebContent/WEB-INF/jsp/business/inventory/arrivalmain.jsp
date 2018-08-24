@@ -102,7 +102,7 @@
 	    			var mateid= data;
 	    			if(data.length>24)
 						mateid= '<div style="font-size: 11px;">' + data + '</div>';
-	    			return  "<a href=\"###\" onClick=\"doShow('" + row["materialParentId"] + "','" + row["materialRecordId"] + "')\">"+mateid+"</a>";	    			
+	    			return  "<a href=\"###\" onClick=\"doShow('" + row["materialParentId"] + "','" + row["materialRecordId"] + "','" + row["materialId"] + "')\">"+mateid+"</a>";	    			
 	    		}},
 	    		{"targets":4,"render":function(data, type, row){
 	    			
@@ -171,11 +171,11 @@
 	}
 	
 
-	function doShow(parentid,recordid) {
+	function doShow(parentid,recordid,materialId) {
 
 		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
 		var url = '${ctx}/business/material?methodtype=detailView';
-		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
+		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&materialId='+materialId+'&keyBackup=1';
 		
 		callProductDesignView("物料信息",url);
 	}
