@@ -23,6 +23,7 @@ public class MaterialModel extends BaseModel {
 	private String parentid="";
 	private String categoryname="";
 	private String purchaseTypeName="";
+	private String purchaserName;
 	private String unit="";
 	private String purchaseType="";
 	private String unitname="";
@@ -41,7 +42,23 @@ public class MaterialModel extends BaseModel {
 	private B_PriceSupplierData price;
 	private String counter1;
 	private String counter5;
+	private String cost;
 
+
+	public String getPurchaserName() {
+		return this.purchaserName;
+	}
+	public void setPurchaserName(String purchaserName) {
+		this.purchaserName = purchaserName;
+	}
+	
+	public String getCost() {
+		return this.cost;
+	}
+	public void setCost(String cost) {
+		this.cost = cost;
+	}	
+	
 	public String getCounter1() {
 		return this.counter1;
 	}

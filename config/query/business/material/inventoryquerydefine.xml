@@ -827,6 +827,8 @@
       <f name="replace(A.sumReturnQty,',','')" alias="sumReturnQty" ctype="" />
       <f name="replace(A.stockinRtnQty,',','')" alias="stockinRtnQty" ctype="" />
       <f name="arriveDate" alias="" ctype="" />
+      <f name="materialRecordId" alias="" ctype="" />
+      <f name="materialParentId" alias="" ctype="" />
     </select>
     <from>v_arrivalfrompurchaseorder a  WHERE a.deleteFlag = '0' AND left(a.materialId,1) &lt;&gt;'H' </from>
     <orderby>deliveryDate,A.YSId,a.materialId</orderby>
@@ -867,6 +869,8 @@
       <f name="replace(A.sumReturnQty,',','')" alias="sumReturnQty" ctype="" />
       <f name="replace(A.stockinRtnQty,',','')" alias="stockinRtnQty" ctype="" />
       <f name="A.arriveDate" alias="" ctype="" />
+      <f name="materialRecordId" alias="" ctype="" />
+      <f name="materialParentId" alias="" ctype="" />
     </select>
     <from>v_arrivalfrompurchaseorder a  WHERE a.deleteFlag = '0' AND left(a.materialId,1) &lt;&gt;'H' </from>
     <orderby>deliveryDate,A.YSId,a.materialId</orderby>

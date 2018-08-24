@@ -28,10 +28,10 @@
 				var checkbox = "<input type=checkbox name='numCheck' id='numCheck' value='" + rowIndex + "' />";
 				trHtml+="<tr>";	
 				trHtml+='<td class="td-left">'+ rownum + checkbox +'</td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].describe"      id="documentaryLines1'+rowIndex+'.describe" class="costname middle" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].costname"      id="documentaryLines1'+rowIndex+'.costname" class="costname middle" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].quantity"      id="documentaryLines1'+rowIndex+'.quantity" class="num mini" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].price"         id="documentaryLines1'+rowIndex+'.price" class="cash mini" /></td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].cost"          id="documentaryLines1'+rowIndex+'.cost" class="cash short" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].cost"          id="documentaryLines1'+rowIndex+'.cost" class="cash read-only" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines1['+rowIndex+'].remarks" id="documentaryLines1'+rowIndex+'.remarks" class="" /></td>';
 				trHtml+="</tr>";	
 
@@ -134,7 +134,7 @@
 				var checkbox = "<input type=checkbox name='numCheck5' id='numCheck5' value='" + rowIndex + "' />";
 				trHtml+="<tr>";	
 				trHtml+='<td class="td-center">'+ rownum + checkbox +'</td>';
-				trHtml+='<td class="td-center"><input type="text" name="documentaryLines5['+rowIndex+'].describe"      id="documentaryLines5'+rowIndex+'.describe" class="costname long" /></td>';
+				trHtml+='<td class="td-center"><input type="text" name="documentaryLines5['+rowIndex+'].costname"      id="documentaryLines5'+rowIndex+'.costname" class="costname long" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines5['+rowIndex+'].cost"          id="documentaryLines5'+rowIndex+'.cost" class="cash short" /></td>';
 				trHtml+='<td class="td-center"><input type="text" name="documentaryLines5['+rowIndex+'].remarks"       id="documentaryLines5'+rowIndex+'.remarks" class="" /></td>';
 				trHtml+="</tr>";	
@@ -192,8 +192,8 @@
 		if(table) {
 			table.fnDestroy();
 		}
-		var YSId = '${order.YSId}';
-		var actionUrl = "${ctx}/business/bom?methodtype=getDocumentary&type=D&YSId="+YSId;
+		var materialId = '${material.materialId}';
+		var actionUrl = "${ctx}/business/material?methodtype=getMaterialCostList&type=M&materialId="+materialId;
 
 		var t = $('#documentary').DataTable({
 			
@@ -221,6 +221,8 @@
 						fnCallback(data);
 
 						foucsInit();
+
+						costComputer();
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {
 						alert(textStatus)
@@ -252,7 +254,7 @@
 			
 			"columns" : [
 			    {"data": null,"className" : 'td-left'},
-			    {"data": "describe", "defaultContent" : '',"className" : 'td-center'},
+			    {"data": "costName", "defaultContent" : '',"className" : 'td-center'},
 			    {"data": "quantity", "defaultContent" : '',"className" : 'td-center'},
 			    {"data": "price", "defaultContent" : '',"className" : 'td-center'},
 			    {"data": "cost", "defaultContent" : '',"className" : 'td-center'},
@@ -270,7 +272,7 @@
 	    		{"targets":1,"render":function(data, type, row){
 	    			var rownum = row["rownum"] - 1;
 	    			var rtnVal = "";
-	    				rtnVal = "<input type='text' name='documentaryLines1["+ rownum +"].describe' id='documentaryLines1"+ rownum +".describe' value='" + data + "' class='middle' />"
+	    				rtnVal = "<input type='text' name='documentaryLines1["+ rownum +"].costname' id='documentaryLines1"+ rownum +".costname' value='" + data + "' class='middle' />"
 	    			
 	    			return rtnVal;
                 }},
@@ -291,7 +293,7 @@
 	    		{"targets":4,"render":function(data, type, row){
 	    			var rownum = row["rownum"] - 1;
 	    			var rtnVal = "";
-	       			rtnVal = "<input type='text' name='documentaryLines1["+ rownum +"].cost'   id='documentaryLines1"+ rownum +".cost'  value='" + data + "' class='cash' />"
+	       			rtnVal = "<input type='text' name='documentaryLines1["+ rownum +"].cost'   id='documentaryLines1"+ rownum +".cost'  value='" + data + "' class='cash read-only' />"
     			
 	    			return rtnVal;
                 }},
@@ -309,12 +311,47 @@
 		
 		t.on('change', 'tr td:nth-child(3),tr td:nth-child(4)',function() {			
 			var $tds = $(this).parent().find("td");
-			var $cost = $tds.eq(2).find("input");//金额	
-			$cost.val(floatToCurrency($cost.val()));
+			var $quantity = $tds.eq(2).find("input");//用量	
+			var $price = $tds.eq(3).find("input");//单价
+			var $cost = $tds.eq(4).find("input");//合计
 			
+			var quantity = currencyToFloat($quantity.val());
+			var price = currencyToFloat($price.val());
+			var cost = quantity * price;
+			
+			$quantity.val(floatToCurrency(quantity));
+			$price.val(floatToCurrency(price));
+			$cost.val(floatToCurrency(cost));
+			
+			costComputer();
 		});
 		
 	};//材料成本
+	
+	function costComputer(){
+		
+		var materailCost = 0;	
+		$('#documentary tbody tr').each (function (){
+			var contractValue = $(this).find("td").eq(4).find("input").val();//
+			contractValue= currencyToFloat(contractValue);
+			materailCost = materailCost + contractValue;
+		});	
+		
+		var processCost = 0;	
+		$('#inspection tbody tr').each (function (){
+			var contractValue = $(this).find("td").eq(2).find("input").val();//
+			contractValue= currencyToFloat(contractValue);
+			processCost = processCost + contractValue;
+		});	
+		
+		var cost = materailCost + processCost;
+	//	alert("materailCost:"+materailCost+" processCost:"+processCost+" cost:"+cost)
+		$('#materailCost').text(floatToCurrency(materailCost));
+		$('#processCost').text(floatToCurrency(processCost));
+		$('#costView').text(floatToCurrency(cost));
+		$('#cost').val(floatToCurrency(cost));
+				
+	}
 	
 	$(document).ready(function() {
 		
@@ -354,8 +391,8 @@ function expenseAjax5() {//加工描述
 		if(table) {
 			table.fnDestroy();
 		}
-		var YSId = '${order.YSId}';
-		var actionUrl = "${ctx}/business/bom?methodtype=getDocumentary&type=E&YSId="+YSId;
+		var materialId = '${material.materialId}';
+		var actionUrl = "${ctx}/business/material?methodtype=getProcessCostList&type=P&materialId="+materialId;
 
 		var t = $('#inspection').DataTable({
 			
@@ -381,6 +418,8 @@ function expenseAjax5() {//加工描述
 						counter5 = data['recordsTotal'];//记录总件数
 						
 						fnCallback(data);
+
+						costComputer();
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {
 						alert(textStatus)
@@ -415,7 +454,7 @@ function expenseAjax5() {//加工描述
 			
 			"columns" : [
 			    {"data": null,"className" : 'td-center'},
-			    {"data": "describe", "defaultContent" : '',"className" : 'td-center'},
+			    {"data": "costName", "defaultContent" : '',"className" : 'td-center'},
 			    {"data": "cost", "defaultContent" : '',"className" : 'td-center'},
 			    {"data": "remarks", "defaultContent" : '',"className" : 'td-center'},
 				
@@ -432,7 +471,7 @@ function expenseAjax5() {//加工描述
 	    		{"targets":1,"render":function(data, type, row){
 	    			var rownum = row["rownum"] - 1;
 	    			var rtnVal = "";
-	    			rtnVal = "<input type='text' name='documentaryLines5["+ rownum +"].describe'   id='documentaryLines5"+ rownum +".describe'  value='" + data + "' class='long' />"
+	    			rtnVal = "<input type='text' name='documentaryLines5["+ rownum +"].costname'   id='documentaryLines5"+ rownum +".costname'  value='" + data + "' class='long' />"
 	    			
 	    			return rtnVal;
                 }},
@@ -461,7 +500,8 @@ function expenseAjax5() {//加工描述
 			var $tds = $(this).parent().find("td");
 			var $cost = $tds.eq(2).find("input");//金额			
 			$cost.val(floatToCurrency($cost.val()));
-			
+									
+			costComputer();			
 			
 		});
 
@@ -515,56 +555,77 @@ function doSave(type) {
 	<form:form modelAttribute="material" method="POST" 
 		id="material" name="material"   autocomplete="off">
 		
-	<input type="hidden" id="counter1" name="counter1"/>
+	<input type="hidden" id="counter1" name="counter1" />
 	<input type="hidden" id="counter5" name="counter5"/>
-		<fieldset>
-			<table class="form" id="table_form">
-				<tr> 				
-					<td class="label" style="width:100px;"><label>物料编号：</label></td>					
-					<td style="width:120px;">${material.materialId}
+	
+	<fieldset style="margin-top: -20px;">
+		<table class="form" id="table_form">
+			<tr> 				
+				<td class="label" style="width:100px;"><label>物料编号：</label></td>					
+				<td style="width:120px;">${material.materialId}
+			
+				<td class="label" style="width:100px;"><label>核算成本：</label></td>					
+				<td  style="width:100px;">
+					<span id="costView">${material.materialCost}</span>
+					<input type="hidden" id="cost" name="cost" value="${material.materialCost}"/></td>
 				
-					<td class="label" style="width:100px;"><label>核算成本：</label></td>					
-					<td  style="width:100px;"><div id="cost"></div>
-					
-					<td class="label" style="width:100px;"><label>物料名称：</label></td>				
-					<td>${material.materialName}</td>
-				</tr>						
+				<td class="label" style="width:100px;"><label>物料名称：</label></td>				
+				<td>${material.materialName}</td>
+			</tr>						
+		</table>
+	</fieldset>
+	
+	<fieldset style="margin-top: -20px;">
+		<span class="tablename"> 材料成本</span>
+		<div class="list">
+			<table id="documentary" class="display" >
+				<thead>				
+					<tr>
+						<th width="10px">No</th>
+						<th class="dt-center" width="300px">材料名称</th>
+						<th class="dt-center" width="100px">材质用量</th>
+						<th class="dt-center" width="100px">材质单价</th>
+						<th class="dt-center" width="100px">总价</th>
+						<th class="dt-center" >备注</th>
+					</tr>
+				</thead>
+				<tfoot>			
+					<tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<td style="text-align: right;"><div id="materailCost"></div></td>
+						<td></td>
+					</tr>
+				</tfoot>
 			</table>
-		</fieldset>
-		
-		<fieldset>
-			<span class="tablename"> 材料成本</span>
-			<div class="list">
-				<table id="documentary" class="display" >
-					<thead>				
-						<tr>
-							<th width="10px">No</th>
-							<th class="dt-center" width="300px">材料名称</th>
-							<th class="dt-center" width="100px">材质用量</th>
-							<th class="dt-center" width="100px">材质单价</th>
-							<th class="dt-center" width="100px">总价</th>
-							<th class="dt-center" >备注</th>
-						</tr>
-					</thead>
-				</table>
-			</div>
-		</fieldset>	
-		<fieldset>
-			<span class="tablename"> 加工描述</span>
-			<div class="list">
-				<table id="inspection" class="display" >
-					<thead>				
-						<tr>
-							<th width="20px">No</th>
-							<th class="dt-center" width="300px">描述</th>
-							<th class="dt-center" width="150px">成本</th>
-							<th class="dt-center">备注</th>
-						</tr>
-					</thead>
-				</table>
-						
-			</div>
-		</fieldset>	
+		</div>
+	</fieldset>	
+	<fieldset>
+		<span class="tablename"> 加工描述</span>
+		<div class="list">
+			<table id="inspection" class="display" >
+				<thead>				
+					<tr>
+						<th width="20px">No</th>
+						<th class="dt-center" width="300px">描述</th>
+						<th class="dt-center" width="150px">成本</th>
+						<th class="dt-center">备注</th>
+					</tr>
+				</thead>
+				<tfoot>			
+					<tr>
+						<th></th>
+						<th></th>
+						<th style="text-align: right;"><div id="processCost"></div></th>
+						<th></th>
+					</tr>
+				</tfoot>
+			</table>
+					
+		</div>
+	</fieldset>	
 		
 </form:form>
 

@@ -191,12 +191,25 @@ public class MaterialAction extends BaseAction {
 				break;
 			case "materialCostView"://查看物料的核算成本
 				materialCostView();
-				rtnUrl = "/business/material/materialcostedit";
-				break;
-			case "insertMaterialCost"://查看物料的核算成本
-				insertMaterialCost(data);
 				rtnUrl = "/business/material/materialcostview";
 				break;
+			case "materialCostEdit"://编辑物料的核算成本
+				materialCostEdit();
+				rtnUrl = "/business/material/materialcostedit";
+				break;
+			case "insertMaterialCost"://保存物料的核算成本
+				insertMaterialCost(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getMaterialCostList"://取得物料的材料成本
+				dataMap = getMaterialCostList();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getProcessCostList"://取得物料的加工描述
+				dataMap = getProcessCostList();
+				printOutJsonObj(response, dataMap);
+				break;
+		
 		}
 		
 		return rtnUrl;		
@@ -632,9 +645,26 @@ public class MaterialAction extends BaseAction {
 
 	}	
 	
+	public void materialCostEdit() throws Exception{
+
+		materialService.materialCostView();
+
+	}	
+	
 	public void insertMaterialCost(String data) throws Exception
 	{
 	  this.materialService.insertMaterialCost(data);
 	}
+	
+	public HashMap<String, Object> getMaterialCostList() throws Exception{
+						
+		return materialService.getMaterialCostList();
+	}
+	
+	public HashMap<String, Object> getProcessCostList() throws Exception{
+		
+		return materialService.getProcessCostList();
+	}
+	
 	
 }

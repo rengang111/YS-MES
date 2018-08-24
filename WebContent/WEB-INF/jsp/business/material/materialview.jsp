@@ -36,7 +36,7 @@
 	
 	<input id="handle_status" value="1133" hidden="hidden">
 	
-<fieldset style="float: left;width: 65%;">
+<fieldset style="float: left;width: 68%;">
 	<legend>物料基本信息</legend>
 
 	<table class="form" >		
@@ -48,32 +48,37 @@
 			<td class="label" style="width: 100px;"><label>原物料编码：</label></td>
 			<td style="width: 100px;">${material.material.originalid}</td>
 			
-			<td class="label" style="width: 100px;"><label>计量单位：</label></td>
-			<td >${material.unitname}</td>	
+			<td class="label" style="width: 60px;"><label>计量单位：</label></td>
+			<td style="width: 50px;">${material.unitname}</td>	
+
+			<td class="label" style="width: 100px;"><label>核算成本：</label></td>
+			<td><a href="#" onClick="doCostUpdate()"><span id="cost">${material.material.materialcost}</span></a></td>	
 														
 		</tr>
 		<tr>		
 			<td class="label" style="width: 100px;"><label>分类编码：</label></td>
 			<td>${material.attribute2}</td>
+			
 			<td class="label" style="width: 100px;">采购类别：</td>
-			<td>${material.purchaseTypeName}</td>					
+			<td style="width: 100px;">${material.purchaseTypeName}</td>	
+			
+			<td class="label" style="width: 60px;">采购人员：</td>
+			<td colspan="3" >${material.purchaserName}</td>				
 		
-			<td class="label" style="width: 100px;"><label>核算成本：</label></td>
-			<td><a href="#" onClick="doCostUpdate()"><span id="cost">14,253.78</span></a></td>	
 		</tr>
 		<tr>
 			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
-			<td colspan="5">${material.material.materialname}</td>		
+			<td colspan="7">${material.material.materialname}</td>		
 		</tr>
 		<tr>
 			<td class="label"><label>通用型号：</label></td>
-			<td colspan="5" style="word-break:break-all;"><form:hidden path="material.sharemodel" value=""/>	
+			<td colspan="7" style="word-break:break-all;"><form:hidden path="material.sharemodel" value=""/>	
 				<div class="" id="coupon">
 					<table id="ShareTab"><tr><td></td></tr></table></div></td>							
 		</tr>	
 		<tr>
 			<td class="label" style="vertical-align: text-top;">中文描述：</td>
-			<td colspan="5" style="vertical-align: text-top;"><pre>${material.material.description}</pre></td></tr>	
+			<td colspan="7" style="vertical-align: text-top;"><pre>${material.material.description}</pre></td></tr>	
 	</table>
 	<div class="action" style="text-align: right;">			
 		<button type="button" id="return" class="DTTT_button">返回</button>
@@ -88,7 +93,7 @@
 		</div>
 
 	
-	<table style="width: 66%;">
+	<table style="width: 69%;">
 		<tr>
 			<td>
 				<table id="subidTab" class="dataTable list" style="width:98%;margin-bottom: 20px;">
@@ -539,6 +544,15 @@ function doCostUpdate(){
 		scrollbar : [true,false],
 		title : false,
 		content : url,
+		cancel: function(index){ 
+
+			var body = layer.getChildFrame('body', index);  //加载目标页面的内容
+			var cost = body.find('#cost').val();			
+			$('#cost').text(cost)
+
+			layer.close(index)			
+			return false; 
+		}
 	});
 }
 </script>

@@ -17,6 +17,7 @@
 		var makeType = $("#makeType").val();
 		var url = "${ctx}/business/arrival?methodtype=contractArrivalSearch"+"&sessionFlag="+sessionFlag;
 		url = url + "&makeType="+makeType;
+		url = url + "&searchSts="+type;
 		
 		if(type == '0'){			
 			url += "&accumulated1=0"+"&deliveryDate="+shortToday();//逾期未到货
@@ -91,11 +92,17 @@
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                 }},
-	    		{"targets":3,"render":function(data, type, row){
+	    		{"targets":2,"render":function(data, type, row){
 	    			var mateid= data;
-	    			if(data.length>25)
+	    			if(data.length>18)
 						mateid= '<div style="font-size: 11px;">' + data + '</div>';
 	    			return  "<a href=\"###\" onClick=\"doCreate('" + row["contractId"] + "')\">"+mateid+"</a>";	    			
+	    		}},
+	    		{"targets":3,"render":function(data, type, row){
+	    			var mateid= data;
+	    			if(data.length>24)
+						mateid= '<div style="font-size: 11px;">' + data + '</div>';
+	    			return  "<a href=\"###\" onClick=\"doShow('" + row["materialParentId"] + "','" + row["materialRecordId"] + "')\">"+mateid+"</a>";	    			
 	    		}},
 	    		{"targets":4,"render":function(data, type, row){
 	    			
@@ -135,7 +142,9 @@
 
 	$(document).ready(function() {
 
-		ajax("0","true");//逾期未到货
+		var searchSts = $('#searchSts').val();
+		
+		ajax(searchSts,"true");//逾期未到货
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -147,6 +156,10 @@
 	            $(this).addClass('selected');
 	        }
 		});		
+
+		buttonSelectedEvent();//按钮选择式样
+
+		$('#defutBtn'+searchSts).removeClass("start").addClass("end");
 	})	
 	
 	function doCreate(contractId) {
@@ -157,6 +170,15 @@
 		location.href = url;
 	}
 	
+
+	function doShow(parentid,recordid) {
+
+		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
+		var url = '${ctx}/business/material?methodtype=detailView';
+		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
+		
+		callProductDesignView("物料信息",url);
+	}
 
 	function doDelete() {
 
@@ -232,6 +254,7 @@
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
 		<input type="hidden" id="makeType" value="${makeType }" />
+		<input type="hidden" id="searchSts" value="${searchSts }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 
@@ -256,9 +279,9 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('1','false');">未到货</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('0','false');">逾期未到货</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('2','false');">已收货</a>
+			<a id="defutBtn1" class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('1','false');">未到货</a>
+			<a id="defutBtn0" class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('0','false');">逾期未到货</a>
+			<a id="defutBtn2" class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('2','false');">已收货</a>
 		</div>
 
 		<div id="clear"></div>

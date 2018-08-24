@@ -35,6 +35,7 @@ import com.ys.business.db.dao.B_OrderExpenseDetailDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
 import com.ys.business.db.data.B_MaterialCategoryData;
+import com.ys.business.db.data.B_MaterialCostDetailData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_OrderExpenseDetailData;
@@ -503,6 +504,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 		String shareModel = "";
 		String unitName = "";
 		String purchaseTypeName = "";
+		String purchaserName = "";
 		
 		try {
 			
@@ -539,11 +541,15 @@ public class MaterialService extends CommonService implements I_BaseService{
 						FormDetail.setUnit(map.get("unit"));
 						FormDetail.setPurchasetype(map.get("purchaseType"));
 						FormDetail.setOriginalid(map.get("originalId"));
+						FormDetail.setMaterialcost(map.get("materialCost"));
+						FormDetail.setPurchaser(map.get("purchaser"));
+						
 						Matmodel.setAttribute1(map.get("categoryId"));
 						Matmodel.setAttribute2(map.get("categoryName"));
 						shareModel = map.get("shareModel");
 						unitName = map.get("dicName");
 						purchaseTypeName = map.get("purchaseTypeName");
+						purchaserName = map.get("purchaserName");
 						fileName = map.get("image_filename");
 					}
 					db.setRecordid(map.get("recordId"));
@@ -563,10 +569,12 @@ public class MaterialService extends CommonService implements I_BaseService{
 			//计量单位
 			Matmodel.setUnitname(unitName);
 			Matmodel.setPurchaseTypeName(purchaseTypeName);
+			Matmodel.setPurchaserName(purchaserName);
 			Matmodel.setUnit(FormDetail.getUnit());
 			Matmodel.setPurchaseType(FormDetail.getPurchasetype());
 			Matmodel.setUnitList(util.getListOption(DicUtil.MEASURESTYPE, ""));
 			Matmodel.setPurchaseTypeList(util.getListOption(DicUtil.PURCHASETYPE, ""));
+			model.addAttribute("PurchaserList",util.getListOption(DicUtil.PURCHASE_USER, ""));
 				
 			Matmodel.setShareModelList(shareModel.split(","));
 			Matmodel.setEndInfoMap("098", "0001", "");
@@ -1086,19 +1094,20 @@ public class MaterialService extends CommonService implements I_BaseService{
 	 */
 	public MaterialModel createMaterial() {
 
-		MaterialModel model = new MaterialModel();
+		MaterialModel model2 = new MaterialModel();
 
 		try {			
-			model.setUnitList(util.getListOption(DicUtil.MEASURESTYPE, ""));
-			model.setPurchaseTypeList(util.getListOption(DicUtil.PURCHASETYPE, ""));
-			model.setEndInfoMap("098", "0001", "");
+			model2.setUnitList(util.getListOption(DicUtil.MEASURESTYPE, ""));
+			model2.setPurchaseTypeList(util.getListOption(DicUtil.PURCHASETYPE, ""));
+			model.addAttribute("PurchaserList",util.getListOption(DicUtil.PURCHASE_USER, ""));
+			model2.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			model.setEndInfoMap(SYSTEMERROR, "err001", "");
+			model2.setEndInfoMap(SYSTEMERROR, "err001", "");
 		}
 		
-		return model;
+		return model2;
 	
 	}
 
@@ -1378,86 +1387,84 @@ public class MaterialService extends CommonService implements I_BaseService{
 	
 	public Model insertMaterialCost(String data) throws Exception
 	{
-	  String type = this.request.getParameter("type");
-	  String counter1 = getJsonData(data, "counter1");
-	  String counter5 = getJsonData(data, "counter5");
-
-	  switch (type){
-		  case "M"://材料成本
-			  insertCost1(data, 1, counter1, type); break;
-		  case "P"://加工描述
-			  insertCost1(data, 5, counter5, type); break;
-	  }
-
-	  	return this.model;
+		  String type = this.request.getParameter("type");
+		  String counter1 = getJsonData(data, "counter1");
+		  String counter5 = getJsonData(data, "counter5");
+		  String cost = getJsonData(data, "cost");
+		  String materialId = request.getParameter("materialId");
+		
+		  this.ts = new BaseTransaction();
+		  
+		  try
+		  {
+			  this.ts.begin();
+			  
+			  switch (type){
+				  case "M"://材料成本
+					  insertCost1(data, 1, counter1, type); break;
+				  case "P"://加工描述
+					  insertCost1(data, 5, counter5, type); break;
+			  }
+			  
+			  updateMaterialCost(materialId,cost);
+			  
+			  this.ts.commit();
+			  
+		  }catch (Exception e) {
+			  e.printStackTrace();
+			  this.ts.rollback();
+		  }
+		  
+		  return this.model;
 	}
 	
-	private String insertCost1(String data, int index, String counter, String type)
+	private void insertCost1(String data, int index, String counter, String type)
 			  throws Exception{
 		
-	  if ((data == null) || (data.trim() == "")) return null;
+		if ((data == null) || (data.trim() == "")) return;
 
-	  String ysid = "";
-	  String materialId = "";
-	  this.ts = new BaseTransaction();
-	  try
-	  {
-	    this.ts.begin();
+	  	B_MaterialCostDetailData order = new B_MaterialCostDetailData();
 
-	    B_OrderExpenseDetailData order = new B_OrderExpenseDetailData();
-
-	    materialId = request.getParameter("materialId");
+	  	String  materialId = request.getParameter("materialId");
 	    String where = " materialId = '" + materialId + 
-	      "' AND type = '" + type + 
+	      "' AND costType = '" + type + 
 	      "' AND deleteFlag = " + "0";
 	    deleteDocumentary(where);
 
 	    int counterInt = 0;
-	    if (notEmpty(counter)) {
+	    if (notEmpty(counter)) 
 	      counterInt = Integer.parseInt(counter);
-	    }
+	   
+	    
 	    for (int i = 0; i < counterInt; ++i) {
 
-	    	String name 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].costname");
-	    	String supplierid = getJsonData(data, "documentaryLines" + index + "[" + i + "].supplierid");
-	    	String contractid = getJsonData(data, "documentaryLines" + index + "[" + i + "].contractid");
+	    	String costName   = getJsonData(data, "documentaryLines" + index + "[" + i + "].costname");
+	    	String quantity   = getJsonData(data, "documentaryLines" + index + "[" + i + "].quantity");
+	    	String price      = getJsonData(data, "documentaryLines" + index + "[" + i + "].price");
 		    String cost 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].cost");
-		    String person     = getJsonData(data, "documentaryLines" + index + "[" + i + "].person");
-		    String date 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].quotationdate");
 		    String remarks 	  = getJsonData(data, "documentaryLines" + index + "[" + i + "].remarks");
 
-		    if (isNullOrEmpty(name))
+		    if (isNullOrEmpty(costName))
 		    	continue;
 	      
-		    float fcost = stringToFloat(cost);
-		    //fcost = Math.abs(fcost);//防止页面输入负数，方便计算，统一成正数。
+		    //float fcost = stringToFloat(cost);
 		    
-			  order.setYsid(ysid);
-			  order.setSupplierid(supplierid);
-			  order.setContractid(contractid);
-			  order.setCostname(name);
-			  order.setCost(floatToString(fcost));
-			  order.setPerson(person);
-			  order.setQuotationdate(date);
+			  order.setMaterialid(materialId);
+			  order.setCostname(costName);
+			  order.setCost(cost);
+			  order.setPrice(price);
+			  order.setQuantity(quantity);
 			  order.setRemarks(remarks);
-			  order.setType(type);
-			  order.setStatus("0");
+			  order.setCosttype(type);
+			  order.setSortno(String.valueOf(i));
 			  insertDocumentary(order);
 	    }
 
-	    	this.ts.commit();
-	  }
-	  catch (Exception e) {
-		  e.printStackTrace();
-		  this.ts.rollback();
-	  }
-
-	  return ysid;
 	}
 	
 
 	private void insertDocumentary(
-			B_OrderExpenseDetailData detailData)throws Exception{
+			B_MaterialCostDetailData detailData)throws Exception{
 
 		this.commData = commFiledEdit(Constants.ACCESSTYPE_INS, 
 				"DocumentaryInsert", userInfo);
@@ -1465,7 +1472,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 		guid = BaseDAO.getGuId();
 		detailData.setRecordid(guid);
 
-		new B_OrderExpenseDetailDao().Create(detailData);
+		new B_MaterialCostDetailDao().Create(detailData);
 	}
 	
 	private void deleteDocumentary(String where){
@@ -1476,5 +1483,75 @@ public class MaterialService extends CommonService implements I_BaseService{
 			//e.printStackTrace();
 		}
 	}
+	
+	public HashMap<String, Object> getMaterialCostList() throws Exception {		
+
+		String materialid = request.getParameter("materialId");
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		//基本信息	
+		dataModel.setQueryName("getMaterialCostByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("materialid", materialid);
+		userDefinedSearchCase.put("costType", "M");
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
 		
+		return modelMap;
+
+	}
+	
+	
+	public HashMap<String, Object> getProcessCostList() throws Exception {		
+
+		String materialid = request.getParameter("materialId");
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		//基本信息	
+		dataModel.setQueryName("getMaterialCostByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("materialid", materialid);
+		userDefinedSearchCase.put("costType", "P");
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		
+		return modelMap;
+
+	}
+	
+	
+	//更新核算成本
+	@SuppressWarnings("unchecked")
+	private void updateMaterialCost(
+			String materialId,
+			String cost) throws Exception{
+	
+		B_MaterialData data = new B_MaterialData();
+		B_MaterialDao dao = new B_MaterialDao();
+		
+		String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
+		
+		List<B_MaterialData> list = 
+				(List<B_MaterialData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return;
+		}
+		data = list.get(0);		
+		//当前库存数量	
+		data.setMaterialcost(cost);		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"更新核算成本",userInfo);
+		copyProperties(data,commData);
+		
+		dao.Store(data);		
+		
+	}
 }

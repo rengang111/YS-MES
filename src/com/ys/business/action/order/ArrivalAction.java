@@ -118,16 +118,10 @@ public class ArrivalAction extends BaseAction {
 	}	
 	
 	public void doInit(){	
-			/*
-		String keyBackup = request.getParameter("keyBackup");
-		//没有物料编号,说明是初期显示,清空保存的查询条件
-		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD1);
-			session.removeAttribute(Constants.FORM_ARRIVAL+Constants.FORM_KEYWORD2);
-		}else{
-			model.addAttribute("keyBackup",keyBackup);
-		}
-		*/
+		String searchSts = (String) session.getAttribute("searchSts");
+		if(searchSts == null || ("").equals(searchSts))
+				searchSts = "0";//设置默认值：待申请
+		model.addAttribute("searchSts",searchSts);
 	}
 	
 
@@ -157,6 +151,9 @@ public class ArrivalAction extends BaseAction {
 			System.out.println(e.getMessage());
 			dataMap.put(INFO, ERRMSG);
 		}
+
+		String searchSts = request.getParameter("searchSts");
+		session.setAttribute("searchSts", searchSts);
 		
 		return dataMap;
 	}
