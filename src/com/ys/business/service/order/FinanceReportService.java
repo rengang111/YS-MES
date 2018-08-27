@@ -497,7 +497,7 @@ public class FinanceReportService extends CommonService {
 	public void getOrderDetailByYSId(
 		String YSId	) throws Exception{
 
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		//dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderList");		
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("YSId", YSId);

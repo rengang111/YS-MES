@@ -978,8 +978,10 @@
       <f name="b.materialName" alias="" ctype="" />
       <f name="a.contractId" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
+      <f name="d.requisitionId" alias="" ctype="" />
+      <f name="d.remarks" alias="" ctype="" />
     </select>
-    <from>b_PurchaseOrderdDeduct a join v_purchaseorderdetail b on a.contractId=b.contractId AND a.materialId=b.materialId WHERE a.deleteFlag='0' </from>
+    <from>b_PurchaseOrderdDeduct a join v_purchaseorderdetail b on a.contractId=b.contractId AND a.materialId=b.materialId LEFT JOIN v_requisitiondetail d ON a.requisitionId = d.requisitionId AND a.materialId = d.materialId WHERE a.deleteFlag='0' </from>
     <orderby>b.YSId,b.materialId</orderby>
     <groupby></groupby>
     <having></having>

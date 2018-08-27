@@ -62,9 +62,8 @@ function deductAjax() {
 			"columns": [
 						{"data": null, "defaultContent" : '',"className" : 'td-center'},
 						{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
-						{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
-						{"data": "materialName", "defaultContent" : ''},//3
-						{"data": "contractQty", "defaultContent" : '', "className" : 'td-right'},
+						{"data": "requisitionId", "defaultContent" : '', "className" : 'td-left'},
+						{"data": "remarks", "defaultContent" : ''},//3
 						{"data": "deductQty", "defaultContent" : '', "className" : 'td-right'},
 						{"data": "price", "defaultContent" : '0', "className" : 'td-right'},
 						{"data": null, "defaultContent" : '0', "className" : 'td-right'},
@@ -74,9 +73,14 @@ function deductAjax() {
 	    		{"targets":0,"render":function(data, type, row){
 	    			return row["rownum"] ;				    			 
                 }},
+	    		{"targets":2,"render":function(data, type, row){
+	    			
+	    			var rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["requisitionId"] + "')\">"+data+"</a>";
+    			
+	    			return rtn;
+	    		}},
 	    		{"targets":3,"render":function(data, type, row){
-	    			var name = row["materialName"];
-	    			name = jQuery.fixedWidth(name,46);//true:两边截取,左边从汉字开始
+	    			var name = jQuery.fixedWidth(data,46);//true:两边截取,左边从汉字开始
 	    			return name;
 	    		}},
 	    		{"targets":4,"render":function(data, type, row){
@@ -87,7 +91,7 @@ function deductAjax() {
 	    			
 	    			return floatToCurrency(data);
 	    		}},
-	    		{"targets":7,"render":function(data, type, row){
+	    		{"targets":6,"render":function(data, type, row){
 	    			var deduct = currencyToFloat( row["deductQty"] );
 	    			var price = currencyToFloat( row["price"] );
 	    			var rtn="";
@@ -348,7 +352,7 @@ function deductAjax() {
 		var deduct = 0;
 		$('#example2 tbody tr').each (function (){
 			
-			var contractValue = $(this).find("td").eq(7).text();//扣款金额
+			var contractValue = $(this).find("td").eq(6).text();//扣款金额
 			
 			contractValue= currencyToFloat(contractValue);
 			//alert("计划用量+已领量+库存:"+fjihua+"---"+fyiling+"---"+fkucun)
@@ -489,6 +493,16 @@ function supplierSum(){
 	});	
 	$('#supplierSum').html(floatToCurrency(contract));
 }
+
+function doShowDetail(requisitionId) {
+	var virtualClass = $('#virtualClass').val();
+	var methodtype = "excessDetail";
+	
+	var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&requisitionId="+requisitionId+"&virtualClass="+virtualClass;
+	
+	callProductDesignView("超领详情",url);
+}
+
 </script>
 </head>
 <body>
@@ -653,16 +667,15 @@ function supplierSum(){
 		</div>
 	</fieldset>
 	<fieldset style="margin-top: -10px;">
-		<legend> 合同入库扣款明细</legend>
+		<legend> 超领扣款明细</legend>
 		<div class="list">
 			<table id="example2" class="display" >	
 				<thead>
 				<tr>
 					<th style="width:10px">No</th>
 					<th style="width:80px">退还耀升编号</th>
-					<th style="width:130px">物料编码</th>
-					<th>物料名称</th>
-					<th style="width:50px">合同数量</th>
+					<th style="width:80px">超领单号</th>
+					<th>超领原由</th>
 					<th style="width:50px">退还数量</th>
 					<th style="width:50px">单价</th>
 					<th style="width:60px">扣款金额</th>
@@ -674,10 +687,9 @@ function supplierSum(){
 						<td></td>
 						<td></td>
 						<td></td>
-						<td ></td>
-						<td ></td>
-						<td >扣款合计：</td>
-						<td ><div id="deductCount"></div></td>
+						<td></td>
+						<td></td>
+						<td><div id="deductCount"></div></td>
 					</tr>
 				</tfoot>
 			</table>

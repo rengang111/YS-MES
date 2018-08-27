@@ -69,10 +69,49 @@
 
  <div id="l1" style="">					
 	<div> 
+		<!-- 
 		<a href="#" class="a-btn-green" style="height:25px;" onclick="return showLayer()">
 			<img src="${pageContext.request.contextPath}/images/action_add.png" height="16px" style="top:5px;"/>
 			<span class="a-btn-text" >图片上传</span> 
 		</a>
+		 -->
+		 
+		<a href="#" class="DTTT_button" style="" onclick="return showLayer()">
+			<span class="" >上传</span> 
+		</a>
+		 
+		
+		
+			<c:forEach var="filename" items="${DisplayData.fileNames}">
+		
+			<div class="fcon" style="display: none;">
+	            <a href="#" class="DTTT_button" style="" onclick = "showRealPhoto('${DisplayData.imageKey}', '${filename}');" >
+					<span class="" >编辑</span> 
+				</a>
+	        
+	        </div>
+	        
+		</c:forEach>
+		
+		<c:forEach var="filename" items="${DisplayData.fileNames}">
+		
+			<div class="fcon" style="display: none;">
+	            <a  href="#"><img src="${pageContext.request.contextPath}/${DisplayData.path}${DisplayData.imageKey}/small/${filename}" 
+	            			onclick = "showRealPhoto('${DisplayData.imageKey}', '${filename}');" />
+	            			<!-- 
+	            			<span style="position: absolute; top: 3; left: 3;">
+	            				<c:if test="${filename eq DisplayData.nowUseImage}">
+									<img src="${pageContext.request.contextPath}/images/now_use.jpg"/>
+								</c:if>
+							</span> 
+							 -->
+	           	</a>
+	        
+	        </div>
+	        
+		</c:forEach>
+		
+		
 	</div>
 				
 </div>  
@@ -156,7 +195,7 @@
 			conCn: '.fcon', //** 大图域配置class       
 			auto: 0,   //自动播放 1或0
 			//effect: 'fade',   //效果配置
-			eType: 'click', //** 鼠标事件
+			eType: 'mouseover', //** 鼠标事件 click
 			pageBt:true,//是否有按钮切换页码
 			bns: ['.prev', '.next'],//** 前后按钮配置class                          
 			interval: 3000  //** 停顿时间  

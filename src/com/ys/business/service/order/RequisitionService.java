@@ -133,7 +133,7 @@ public class RequisitionService extends CommonService {
 			having = "requisitionQty+0 > 0 AND REPLACE(requisitionQty,',','')+0 < REPLACE(manufactureQty,',','')+0 ";
 		}else if(("040").equals(requisitionSts)){
 			//成品已入库，但未领料,包括虚拟入库
-			having = "bstockinQty+0 > 0 AND REPLACE(requisitionQty,',','')+0 < REPLACE(manufactureQty,',','')+0 ";
+			having = "REPLACE (bstockinQty, ',', '') + 0 > REPLACE (orderQty, ',', '')+0 AND REPLACE(requisitionQty,',','')+0 < REPLACE(manufactureQty,',','')+0 ";
 		}
 		sql = sql.replace("#", having);
 		System.out.println("装配领料申请SQL："+sql);
@@ -488,7 +488,7 @@ public class RequisitionService extends CommonService {
 			
 			deleteRequisitionDetail(requisitionId);
 		
-			deleteContractDeDetail(YSId);
+			deleteContractDeDetail(YSId,requisitionId);
 		
 			ts.commit();
 			
@@ -619,7 +619,7 @@ public class RequisitionService extends CommonService {
 			
 			//旧的合同扣款删除处理
 			String YSId = reqData.getYsid();
-			deleteContractDeDetail(YSId);
+			deleteContractDeDetail(YSId,requisitionid);
 			
 			//新的领料单明细						
 			for(B_RequisitionDetailData data:reqDataList ){
@@ -636,6 +636,7 @@ public class RequisitionService extends CommonService {
 				deduct = getContractUnpaidById(YSId,data.getMaterialid());
 				deduct.setQuantity(data.getQuantity());
 				deduct.setYsid(YSId);
+				deduct.setRequisitionid(requisitionid);
 				
 				insertPurchaseOrderdDeduct(deduct);
 			}
@@ -827,7 +828,6 @@ public class RequisitionService extends CommonService {
 		if(dataModel.getRecordCount() >0){
 			detail.setContractid(dataModel.getYsViewData().get(0).get("contractId"));
 			detail.setSupplierid(dataModel.getYsViewData().get(0).get("supplierId"));
-			detail.setMaterialid(materialId);
 			
 			return detail;
 		}
@@ -846,9 +846,8 @@ public class RequisitionService extends CommonService {
 		if(dataModel.getRecordCount() >0){
 			detail.setContractid(dataModel.getYsViewData().get(0).get("contractId"));
 			detail.setSupplierid(dataModel.getYsViewData().get(0).get("supplierId"));
-			detail.setMaterialid(materialId);
 		}
-		
+		detail.setMaterialid(materialId);
 		return detail;
 		
 	}
@@ -888,6 +887,7 @@ public class RequisitionService extends CommonService {
 				deduct = getContractUnpaidById(YSId,data.getMaterialid());
 				deduct.setQuantity(data.getQuantity());
 				deduct.setYsid(YSId);
+				deduct.setRequisitionid(data.getRequisitionid());
 				
 				insertPurchaseOrderdDeduct(deduct);
 			}
@@ -1081,10 +1081,12 @@ public class RequisitionService extends CommonService {
 	}
 
 	private void deleteContractDeDetail(
-			String YSId) throws Exception{
+			String YSId,String requisitionId) throws Exception{
 		
 		//
-		String where = "YSId = '" + YSId  +"' AND deleteFlag = '0' ";
+		String where = "YSId = '" + YSId  +
+				"' AND requisitionId = '" + requisitionId+
+				"' AND deleteFlag = '0' ";
 		try{
 			new B_PurchaseOrderdDeductDao().RemoveByWhere(where);
 			

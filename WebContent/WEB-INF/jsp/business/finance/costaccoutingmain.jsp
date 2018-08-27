@@ -112,9 +112,16 @@ body{
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["productName"];
-		    			name = jQuery.fixedWidth(name,24);//true:两边截取,左边从汉字开始
+		    			name = jQuery.fixedWidth(name,36);//true:两边截取,左边从汉字开始
 		    			
 		    			return name;
+		    		}},
+		    		{"targets":5,"render":function(data, type, row){
+		    			var order = floatToCurrency(row["quantity"]);
+		    			var manu = floatToCurrency(row["totalQuantity"]);
+		    			 
+		    			
+		    			return order +"<br>"+manu;
 		    		}},
 		    		{"targets":9,"render":function(data, type, row){
 		    			var index = row["rownum"];
@@ -516,7 +523,7 @@ body{
 						<th style="width: 80px;">产品编号</th>
 						<th>产品名称</th>
 						<th style="width: 30px;">客户<br/>简称</th>
-						<th style="width: 40px;">订单<br/>数量</th>
+						<th style="width: 40px;">订单量/<br/>生产量</th>
 						<th style="width: 40px;">入库<br/>累计</th>
 						<th style="width: 50px;">销售金额</th>
 						<th style="width: 50px;">入库日期</th>

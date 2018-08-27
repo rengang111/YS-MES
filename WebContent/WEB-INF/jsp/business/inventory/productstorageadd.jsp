@@ -112,13 +112,16 @@
 						return;
 					}
 				
-					//var flag = checkMaterialStockOut();
+					var flag = checkMaterialStockOut();
 					
-					//if(flag == false){
+					if(flag == false){
 
-						//$().toastmessage('showWarningToast', "物料未领完，不能入库。");
-						//return;
-					//}
+						if( (curr + stockinQty) >= orderQty ){
+
+							$().toastmessage('showWarningToast', "物料未领完，不能全部入库。");
+							return;
+						}
+					}
 					
 					if (validator.form()) {
 						$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insertProduct");

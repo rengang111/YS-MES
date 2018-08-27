@@ -448,6 +448,7 @@
       <f name="a.orderDate" alias="" ctype="" />
       <f name="a.totalPrice" alias=" orderTotalPrice" ctype="" />
       <f name="a.quantity" alias="" ctype="" />
+      <f name="a.totalQuantity" alias="" ctype="" />
       <f name="a.stockinQty" alias="" ctype="" />
       <f name="a.checkInDate" alias="" ctype="" />
       <f name="IFNULL(a.storageFinish,'010')" alias="storageFinish" ctype="" />
@@ -563,4 +564,35 @@
 	    <having></having>	
 	    <orderby>a.materialId</orderby>
   	</query>
+  <query>
+    <pool></pool>     
+    <name value="getOrderList" />
+    <where>
+   	  <w name="A.YSId"       des=""  reqName="YSId"      dtype="ch" oper="="  lg="AND" bt="" />
+   	</where>
+    <select>
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.fullName" alias="customerFullName" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.checkInDate" alias="" ctype="" />
+      <f name="IFNULL(A.rebate,'0')" alias="discount" ctype="" />
+      <f name="IFNULL(A.commission,'0')" alias="commission" ctype="" />
+      <f name="b.exchange_rate" alias="" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="b.rate_day" alias="" ctype="" />
+    </select>
+    <from>v_stockin_for_product AS A LEFT JOIN t_exchange_rate b ON a.currency = b.currency AND a.checkInDate=b.rate_day </from>
+    <orderby>left(A.YSId,8) DESC,mid(A.YSId,LOCATE('-',A.YSId)+1,2)+0</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>  
+  </query>
 </root>

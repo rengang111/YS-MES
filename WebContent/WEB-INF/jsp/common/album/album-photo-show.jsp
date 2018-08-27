@@ -27,14 +27,14 @@ top: -30px; left: 0; bottom: 0; right: 0;
 
 <script type="text/javascript">
 
-$(document).ready(function() {
-	
-	var height = $(window).height(); 
-	var width = $(window).width()
-	 $("#photo").height(height - 80);
-	 $("#photo").width(width - 30);
-	 
-});
+	$(document).ready(function() {
+		
+		var height = $(window).height(); 
+		var width = $(window).width()
+		 $("#photo").height(height - 80);
+		 $("#photo").width(width - 30);
+		 
+	});
 
 	//alert("${src}");
 
@@ -193,7 +193,9 @@ $(document).ready(function() {
 		<tr>
 			<td style="text-align:center">
 			<div id="photo" style="overflow: auto;">
-				<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" />
+				<a id="" href="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" target="_blank">
+					<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" />
+				</a>
 			</div>
 			</td>
 		</tr>

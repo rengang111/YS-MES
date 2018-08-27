@@ -848,7 +848,7 @@
       <f name="d.contractId" alias="" ctype="" />
       <f name="d.supplierId" alias="" ctype="" />
     </select>
-    <from>v_requisitiondetail a left join b_PurchaseOrderdDeduct d on a.YSId=d.YSId AND a.materialId=d.materialId left join v_stockout c on a.requisitionId=c.requisitionId AND a.materialId=c.materialId left join v_orderdetail b on a.ysid=b.ysid</from>
+    <from>v_requisitiondetail a left join v_purchaseorderddeduct_group d on a.YSId=d.YSId AND a.materialId=d.materialId left join v_stockout c on a.requisitionId=c.requisitionId AND a.materialId=c.materialId left join v_orderdetail b on a.ysid=b.ysid</from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>

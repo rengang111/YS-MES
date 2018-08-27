@@ -331,12 +331,19 @@
 
 				<td class="label" style="width:100px">产品名称：</td>	
 				<td>${order.materialName }</td>	
+				
+				
 			</tr>
 			<tr>
 				<td class="label" style="width:100px">订单数量：</td>					
 				<td>${order.totalQuantity}</td>	
+				
+				<td class="label" style="width:100px">入库时间：</td>	
+				<td>${order.checkInDate }</td>	
+				
 				<td class="label" style="width:100px">客户：</td>	
-				<td colspan="3">${order.customerFullName }</td>		
+				<td>${order.customerFullName }</td>	
+					
 			</tr>									
 		</table>
 		<table  class="form">
@@ -379,7 +386,7 @@
 					
 				<td class="td-center">${order.currency }</td>
 				<td class="td-center">
-					<form:input path="costBom.exchangerate"  class="num mini exchange" value="${order.sysValue }" /></td>	
+					<form:input path="costBom.exchangerate"  class="num mini exchange" value="${order.exchange_rate }" /></td>	
 				<td class="td-center">
 					<form:input path="costBom.rmbprice"  class="num short read-only"  /></td>
 				<td class="td-center"></td>
