@@ -227,14 +227,14 @@ public class StockOutService extends CommonService {
 		getOrderDetail(YSId);	
 	}
 	
-	
+	/*
 	public HashMap<String, Object> getProductStockInDetail() {
 
 		String YSId = request.getParameter("YSId");
 		String materialId = request.getParameter("materialId");
 		return getOrderAndStockDetail(YSId,materialId);
 	}
-	
+	*/
 	public void insertAndReturn() throws Exception {
 
 		String YSId = request.getParameter("YSId");
@@ -601,6 +601,7 @@ public class StockOutService extends CommonService {
 		return modelMap;
 	}
 	
+	/*
 	private HashMap<String, Object> getOrderAndStockDetail(
 			String YSId,String materialId){
 
@@ -623,7 +624,7 @@ public class StockOutService extends CommonService {
 
 		return modelMap;
 	}
-	
+	*/
 	
 	/**
 	 * 	料件出库编号

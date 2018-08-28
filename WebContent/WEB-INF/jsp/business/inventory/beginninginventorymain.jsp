@@ -62,13 +62,14 @@ body{
 							var key2 = data["keyword2"]
 							$("#keyword1").val(key1);
 							$("#keyword2").val(key2);
-							
+							/*
 							if((key1) == "" && (key2) == ""){
 							 	$('#defutBtn').removeClass("start").addClass("end");							
 							}else{							
 							 	$('#defutBtn').removeClass("end").addClass("start");
-							}					
-							deleteRow();
+							}	
+							*/
+							//deleteRow();
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -81,7 +82,7 @@ body{
 					{"data": null,"className" : 'td-center'},//0
 					{"data": "materialId"},//1
 					{"data": "materialName","className" : 'td-left'},//2
-					{"data": "dicName","className" : 'td-center'},//3
+					{"data": "reviseDate","className" : 'td-center', "defaultContent" : '***'},//3
 					{"data": "reviseQty","className" : 'td-right'},//4
 					
 					{"data": "beginningInventory","className" : 'td-right'},//5
@@ -129,17 +130,17 @@ body{
 		    		{"targets":13,"render":function(data, type, row){
 		    			//实际库存修正
 		    			var confirmFlag = row["quantityEditFlag"];
-		    			var quantityOnHand = currencyToFloat(row["quantityOnHand"]);
-		    			var stockinQtiy = currencyToFloat(row["stockinQtiy"]);
-		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
-		    			var totalQty = stockoutQty + quantityOnHand;
-		    			if(row["materialId"] == "B01.A001001.000"){
+		    			//var quantityOnHand = currencyToFloat(row["quantityOnHand"]);
+		    			//var stockinQtiy = currencyToFloat(row["stockinQtiy"]);
+		    			//var stockoutQty = currencyToFloat(row["stockoutQty"]);
+		    			//var totalQty = stockoutQty + quantityOnHand;
+		    			//if(row["materialId"] == "B01.A001001.000"){
 
 		    				//alert("hand:in:out:"+quantityOnHand+"---"+stockinQtiy+"---"+stockoutQty+"---"+totalQty+"---"+editFlag)
-		    			}
+		    			//}
 		    			var txt = "";	
 
-		   
+		   				/*
 						if(quantityOnHand < 0 || stockinQtiy != totalQty ){//库存为负数
 		    				
 		    				if(confirmFlag == "0"){
@@ -151,7 +152,7 @@ body{
 				    			//txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "未修改" + "</a>";
 			    				txt = "未修改";
 			    			}		    				
-		    			}else{
+		    		*///	}else{
 		    				if((confirmFlag) == "1"){
 		    					//待确认
 			    				//txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"') \" style=\"color: red;\">" + "待确认" + "</a>";
@@ -160,7 +161,7 @@ body{
 			    				
 				    			txt = "已确认";
 			    			}
-		    			}	
+		    		//	}	
 
 						return  txt;
 						
@@ -548,7 +549,7 @@ body{
 					<th style="width: 1px;">No</th>
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
-					<th style="width: 25px;">单位</th>
+					<th style="width: 25px;">修改时间</th>
 					<th style="width: 40px;">修改记录<br>E</th>
 					
 					<th style="width: 50px;">期初库存</th>

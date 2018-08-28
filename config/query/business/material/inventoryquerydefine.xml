@@ -366,8 +366,8 @@
    	  	<w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
-   	  	<w name="C.approvalStatus" des=""  reqName="approvalStatusY" dtype="ch" oper="="  lg="AND" bt="" />
-   	  	<w name="C.approvalStatus" des=""  reqName="approvalStatusN" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <!--	<w name="C.approvalStatus" des=""  reqName="approvalStatusY" dtype="ch" oper="="  lg="AND" bt="" / -->
+   	  <!--	<w name="C.approvalStatus" des=""  reqName="approvalStatusN" dtype="ch" oper="="  lg="AND" bt="" / -->
    	  	
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL_IN"  dtype="ch" oper="in"  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL_NOT"  dtype="ch" oper="not in"  lg="AND" bt="" />
@@ -384,7 +384,7 @@
       <f name="A.receiptId" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
-      <f name="C.approvalStatus" alias="" ctype="审核结果view" />
+     <!-- <f name="C.approvalStatus" alias="" ctype="审核结果view" / -->
       <f name="A.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
@@ -411,7 +411,8 @@
       <f name="format((replace(A.contractPrice,',','') / (a.taxRate/100+1)),6)" alias="taxPrice" ctype="" />
       <f name="format((replace(A.contractPrice,',','') / (a.taxRate/100+1)) * replace(A.quantity,',',''),2)" alias="taxTotal" ctype="" />
     </select>
-    <from>v_purchaseStockInById a LEFT JOIN b_pricereference b ON b.materialId=a.materialId AND b.deleteFlag='0' LEFT JOIN v_paymentdetail c ON c.contractId=a.contractId AND c.deleteFlag = '0' WHERE a.deleteFlag = '0' </from>
+<!--    <from>v_purchaseStockInById a LEFT JOIN b_pricereference b ON b.materialId=a.materialId AND b.deleteFlag='0' LEFT JOIN v_paymentdetail c ON c.contractId=a.contractId AND c.deleteFlag = '0' WHERE a.deleteFlag = '0' </from -->
+    <from>v_purchaseStockInById a LEFT JOIN b_pricereference b ON b.materialId=a.materialId AND b.deleteFlag='0' WHERE a.deleteFlag = '0' </from>
     <orderby>A.receiptId ,A.contractId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>

@@ -548,7 +548,7 @@ body{
 					<th style="width: 1px;">No</th>
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
-					<th style="width: 25px;">单位</th>
+					<th style="width: 40px;">修改时间</th>
 					<th style="width: 40px;">修改记录<br>E</th>
 					
 					<th style="width: 50px;">期初库存</th>
