@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<%@ include file="../../common/common.jsp"%>
+<%@ include file="../../common/common2.jsp"%>
 <title>进料报检一览(报检前)</title>
 <script type="text/javascript">
 
@@ -102,8 +102,11 @@
 		    		{"targets":2,"render":function(data, type, row){
 		    			
 		    			var name = row["materialName"];				    			
-		    			name = jQuery.fixedWidth(name,40);				    			
-		    			return name;
+		    			name = jQuery.fixedWidth(name,40);	
+		    			
+		    			var rtn= "<a href=\"###\" onClick=\"doShowMaterial('" + row["materialParentId"] + "','" + row["materialRecordId"] + "','" + row["materialId"] + "')\">"+name+"</a>";
+
+		    			return rtn;
 		    		}},
 		    		{
 						"visible" : false,
@@ -147,6 +150,16 @@
 				+'&arrivalId='+arrivalId+'&keyBackup='+keyBackup;
 		location.href = url;
 		
+	}
+	
+
+	function doShowMaterial(parentid,recordid,materialId) {
+
+		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
+		var url = '${ctx}/business/material?methodtype=detailView';
+		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&materialId='+materialId+'&keyBackup=1';
+		
+		callWindowFullView("物料信息",url);
 	}
 
 	

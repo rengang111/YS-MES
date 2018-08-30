@@ -81,7 +81,7 @@ body{
 					{"data": null,"className" : 'td-center'},//0
 					{"data": "materialId"},//1
 					{"data": "materialName","className" : 'td-left'},//2
-					{"data": "dicName","className" : 'td-center'},//3
+					{"data": "reviseDate","className" : 'td-center', "defaultContent" : '***'},//3
 					{"data": "reviseQty","className" : 'td-right'},//4
 					
 					{"data": "beginningInventory","className" : 'td-right'},//5
@@ -133,25 +133,8 @@ body{
 		    			var stockinQtiy = currencyToFloat(row["stockinQtiy"]);
 		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
 		    			var totalQty = stockoutQty + quantityOnHand;
-		    			if(row["materialId"] == "B01.A001001.000"){
-
-		    				//alert("hand:in:out:"+quantityOnHand+"---"+stockinQtiy+"---"+stockoutQty+"---"+totalQty+"---"+editFlag)
-		    			}
-		    			var txt = "";	
-
+		    		
 		   
-						if(quantityOnHand < 0 || stockinQtiy != totalQty ){//库存为负数
-		    				
-		    				if(confirmFlag == "0"){
-		    					//已确认,但是还有问题,再次编辑
-					    			//txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "再次修改" + "</a>";	    			
-		    					txt = "已确认";
-		    				}else{
-		    					//未修改
-				    			//txt +=  "<a href=\"###\" onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + "未修改" + "</a>";
-			    				txt = "未修改";
-			    			}		    				
-		    			}else{
 		    				if((confirmFlag) == "1"){
 		    					//待确认
 			    				//txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"') \" style=\"color: red;\">" + "待确认" + "</a>";
@@ -160,7 +143,7 @@ body{
 			    				
 				    			txt = "已确认";
 			    			}
-		    			}	
+		    			
 
 						return  txt;
 						

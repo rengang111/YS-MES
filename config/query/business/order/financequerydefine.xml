@@ -458,6 +458,7 @@
       <f name="IFNULL(c.exchange_rate,'1')" alias="exchange_rate" ctype="" />
       <f name="a.lastPrice" alias="" ctype="" />
       <f name="a.orderType" alias="" ctype="" />
+      <f name="a.labolCost" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <from>v_costaccountinglist a left join t_exchange_rate c ON c.rate_day = a.checkInDate AND c.currency = a.currency left join b_Customer b on b.customerId=a.customerId and b.deleteFlag='0' where a.payment='0' </from>
@@ -595,4 +596,27 @@
     <having></having>
 	<power></power>  
   </query>
+  <query>
+		<pool></pool>    
+    	<name value="orderDetailPeiForCostAccouting" />
+     	<where>
+        	<w name="a.YSId"   des="" reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+    	</where>
+	  	<select>
+	      <f name="a.YSId" alias="" ctype="" />
+	      <f name="a.materialId" alias="" ctype="" />
+	      <f name="a.materialName" alias="" ctype="" />
+      	  <f name="a.totalQuantity" alias="orderQty" ctype="" />
+      	  <f name="IFNULL(c.quantity,'0')" alias="stockoutQty" ctype="" />
+      	  <f name="IFNULL(e.lastPrice,0)" alias="lastPrice" ctype="" />
+      	  <f name="IFNULL(ff.price,0)" alias="contractPrice" ctype="" />
+      	  <f name="IFNULL(c.countQty,0)" alias="countQty" ctype="" />
+      	  <f name="a.unit" alias="" ctype="计量单位" />
+	  	</select>
+	    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+	    <from>v_orderdetail a LEFT JOIN b_costbom b ON a.YSId=b.YSId AND b.deleteFlag='0' LEFT JOIN v_stockoutdetailgroup c ON a.YSId=c.YSId AND a.materialId=c.materialId   LEFT JOIN b_pricereference e ON e.materialId = a.materialId  LEFT JOIN (select f1.price,f1.materialId,f1.createTime  FROM v_purchaseorderdetail f1 , (SELECT g.createTime,g.materialId FROM  v_contract_createtime_max g) f WHERE f.createTime = f1.createTime AND f.materialId = f1.materialId ) ff ON  ff.materialId = a.materialId WHERE a.orderType='020'  </from>
+	    <groupby></groupby>
+	    <having></having>	
+	    <orderby>a.materialId</orderby>
+  	</query>
 </root>

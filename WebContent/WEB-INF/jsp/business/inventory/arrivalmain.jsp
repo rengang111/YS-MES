@@ -177,7 +177,7 @@
 		var url = '${ctx}/business/material?methodtype=detailView';
 		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&materialId='+materialId+'&keyBackup=1';
 		
-		callProductDesignView("物料信息",url);
+		callWindowFullView("物料信息",url);
 	}
 
 	function doDelete() {

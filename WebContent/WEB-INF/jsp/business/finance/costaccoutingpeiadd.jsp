@@ -4,7 +4,7 @@
 <html>
 
 <head>
-<title>财务核算-成本确认</title>
+<title>财务核算-成本确认(配件订单)</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -26,7 +26,7 @@
 			"scrollY":scrollHeight,
 			"scrollCollapse":true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/financereport?methodtype=getStockoutByMaterialId&YSId="+YSId,
+			"sAjaxSource" : "${ctx}/business/financereport?methodtype=getOrderPeiByMaterialId&YSId="+YSId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -64,7 +64,7 @@
 					}, {"data": "orderQty","className":"td-right"//4
 					}, {"data": "stockoutQty","className":"td-right"//5
 					}, {"data": null,"className":"td-right"//6 核算数量
-					}, {"data": "price","className":"td-right" //7
+					}, {"data": null,"className":"td-right" //7 单价
 					}, {"data": "totalPrice","className":"td-right" //8
 					}, {"data": "countQty","className":"td-right"
 					}
@@ -105,7 +105,6 @@
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
 		    			var rowIndex = row["rownum"];
-		    			var price = currencyToFloat(row["price"]);
 		    			var orderQty = currencyToFloat(row["orderQty"]);
 		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
 		    			var quantity = 0;
@@ -115,6 +114,13 @@
 		    			}else{
 		    				quantity = orderQty;
 		    			}
+
+		    			var price = currencyToFloat(row["contractPrice"]);
+		    			var lastPrice = currencyToFloat(row["lastPrice"]);
+		    			
+		    			if(price <= 0)
+		    				price = lastPrice;
+		    			
 		    			var total = floatToCurrency( quantity * price );
 		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].totalprice" id="costBomList'+rowIndex+'.totalprice"  value="'+total+'" />';
 		    			
@@ -122,7 +128,11 @@
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
 		    			var rowIndex = row["rownum"];
-		    			var price = currencyToFloat(data);
+		    			var price = currencyToFloat(row["contractPrice"]);
+		    			var lastPrice = currencyToFloat(row["lastPrice"]);
+		    			
+		    			if(price <= 0)
+		    				price = lastPrice;
 		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].price" id="costBomList'+rowIndex+'.price"  value="'+price+'" />';
 		    			
 		    			return price + text;
@@ -242,12 +252,6 @@
 			contractValue= currencyToFloat(contractValue);
 			
 			cost = cost + contractValue;
-			
-			if( stockOutQty == 0){
-				
-				$(this).addClass('error');
-			}
-						
 		});	
 		
 
@@ -343,7 +347,7 @@
 	<form:hidden path="costBom.accountingdate"  />
 	<form:hidden path="costBom.currency"  value="${order.currencyId }"/>
 	<fieldset>
-		<legend> 财务核算</legend>
+		<legend> 财务核算（配件订单）</legend>
 		<table class="form" id="table_form">
 			<tr>
 				<td class="label" style="width:100px">耀升编号：</td>					
@@ -384,7 +388,7 @@
 			
 				<td class="label" style="width:100px;">人工成本：</td>	
 				<td >
-					<form:input path="costBom.labolcost" value="${LaborCost}" class=" num exchange" style="font-size: 14px;font-weight: bold;" /></td>	
+					<form:input path="costBom.labolcost" value="0" class=" num exchange" style="font-size: 14px;font-weight: bold;" /></td>	
 			
 			</tr>
 		</table>

@@ -31,7 +31,7 @@ top: -30px; left: 0; bottom: 0; right: 0;
 		
 		var height = $(window).height(); 
 		var width = $(window).width()
-		 $("#photo").height(height - 80);
+		 $("#photo").height(height - 60);
 		 $("#photo").width(width - 30);
 		 
 	});
@@ -194,7 +194,7 @@ top: -30px; left: 0; bottom: 0; right: 0;
 			<td style="text-align:center">
 			<div id="photo" style="overflow: auto;">
 				<a id="" href="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" target="_blank">
-					<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" />
+					<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}"  style="width:100%;height:100%"/>
 				</a>
 			</div>
 			</td>

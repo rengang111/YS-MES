@@ -481,6 +481,16 @@ public class FinanceReportService extends CommonService {
 		
 	}
 	
+	/**
+	 * 配件订单
+	 * @throws Exception
+	 */
+	public void costAccountingPeiAdd() throws Exception{
+
+		String YSId = request.getParameter("YSId");
+		getOrderDetailByYSId(YSId);		
+	}
+	
 	private void getLaborCost(
 			String YSId	) throws Exception{
 
@@ -525,6 +535,17 @@ public class FinanceReportService extends CommonService {
 		return HashMap;			
 	}
 	
+
+	public HashMap<String, Object> getOrderPeiByMaterialId() throws Exception{
+
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		
+		String YSId = request.getParameter("YSId");
+	
+		HashMap = getOrderPeiDetail(YSId);
+		
+		return HashMap;			
+	}
 	private int checkStockOut(String YSId) throws Exception{
 		
 		int rtn = 0;
@@ -557,6 +578,24 @@ public class FinanceReportService extends CommonService {
 		
 		return HashMap;
 		
+	}
+	
+	private HashMap<String, Object> getOrderPeiDetail(
+			String YSId	) throws Exception{
+
+			HashMap<String, Object> HashMap = new HashMap<String, Object>();
+
+			dataModel.setQueryFileName("/business/order/financequerydefine");
+			dataModel.setQueryName("orderDetailPeiForCostAccouting");		
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("YSId", YSId);
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+			baseQuery.getYsFullData();
+			
+			HashMap.put("data", dataModel.getYsViewData());
+			
+			return HashMap;
+			
 	}
 	
 	private HashMap<String, Object> getStockoutByMaterialId(

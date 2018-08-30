@@ -262,6 +262,8 @@
       <f name="A.checkerId" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
+      <f name="A.materialRecordId" alias="" ctype="" />
+      <f name="A.materialParentId" alias="" ctype="" />
     </select>
     <from>v_receiveinspetionList a LEFT JOIN b_purchaseorderdetail b ON b.contractId=a.contractId AND b.materialId=a.materialId AND b.deleteFlag='0'  WHERE a.deleteFlag = '0' </from>
     <orderby>a.arriveDate DESC,a.arrivalId,a.materialId</orderby>

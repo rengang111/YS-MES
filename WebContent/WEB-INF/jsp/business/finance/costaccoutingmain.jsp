@@ -105,7 +105,7 @@ body{
 			    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
     					
 	    				}else{
-			    			rtn= "<a href=\"###\" onClick=\"doCreate('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
+			    			rtn= "<a href=\"###\" onClick=\"doCreate('"+ row["YSId"] + "','"+ row["orderType"] + "')\">"+row["YSId"]+"</a>";
 	    				}
 	    				return rtn;
 		    			
@@ -130,7 +130,7 @@ body{
 		    			var currency = row["currency"];
 		    			var rate = row["exchange_rate"];
 		    			var lastPrice = currencyToFloat(row["lastPrice"]);
-		    			var quantity = currencyToFloat(row["quantity"]);
+		    			var quantity = currencyToFloat(row["totalQuantity"]);
 		    			if(cost == 0)
 		    				cost = floatToCurrency(costA);
 		    			if(costA == 0){
@@ -146,62 +146,58 @@ body{
 		    			var index = row["rownum"];
 		    			var orderType = row["orderType"];
 		    			var cost = currencyToFloat(row["cost"]);
-		    			var costA = currencyToFloat(row["costAcounting"]); 
+		    			var mateCost = currencyToFloat(row["costAcounting"]); 
 		    			var currency = row["currency"];
-		    			var profit = currencyToFloat(row["profit"]);
-		    			var orderCnt = currencyToFloat(row["orderTotalPrice"]);
-		    			var rate = currencyToFloat(row["exchange_rate"]);
+		    			var profit = currencyToFloat(row["profit"]);//利润
+		    			var profitrate = currencyToFloat(row["profitRate"]);//利润率
+		    			var actualSales = currencyToFloat(row["orderTotalPrice"]);
+		    			var exchange = currencyToFloat(row["exchange_rate"]);//汇率
 		    			var lastPrice = currencyToFloat(row["lastPrice"]);
-		    			var quantity = currencyToFloat(row["quantity"]);
+		    			var quantity = currencyToFloat(row["totalQuantity"]);
+		    			var labolCost = currencyToFloat(row["labolCost"]);//人工成本
+						var rebaterate = 0.16;//退税率
+						
 		    			if(cost == 0){
 		    				if(orderType == '020'){
 			    				cost = lastPrice * quantity;//装配品的成本
+			    				mateCost = cost;
 		    				}else{
-		    					cost = costA;//未领料的从BOM计算
+		    					cost = mateCost + labolCost;//未领料的从BOM计算
 		    				}
-		    			}
-    					profit = floatToCurrency(rate * orderCnt - cost);//利润
-    					
-		    			return profit;
-		    			//return rate +" -- "+ orderCnt  +" -- "+  cost;
-		    		}},
-		    		{"targets":12,"render":function(data, type, row){
-		    			var index = row["rownum"];
-		    			var orderType = row["orderType"];
-		    			var cost = currencyToFloat(row["cost"]);
-		    			var costA = currencyToFloat(row["costAcounting"]); 
-		    			var rate = row["exchange_rate"];
-		    			var profit = currencyToFloat(row["profit"]);
-		    			var orderCnt = currencyToFloat(row["orderTotalPrice"]);
-		    			var profitRate = row["profitRate"];
-		    			var lastPrice = currencyToFloat(row["lastPrice"]);
-		    			var quantity = currencyToFloat(row["quantity"]);
-		    			/*
-		    			if(profitRate <=0){
-		    				if(costA > 0){
-			    				profitRate = floatToCurrency((rate * orderCnt - costA) / costA * 100);
-	    					
-		    				}else{
-		    					profitRate = 0;
-		    				}
-		    			}    			
-		    			*/
-		    			if(cost == 0){
-		    				if(orderType == '020'){
-			    				cost = lastPrice * quantity;//装配品的成本
-		    				}else{
-		    					cost = costA;//未领料的从BOM计算
-		    				}
+		    			}else{
 
-		    				if(cost == 0){
-		    					profitRate = 0;
-		    				}else{
-				    			profitRate = floatToCurrency((rate * orderCnt - cost) / cost * 100);//利润
-		    				}
+			    			return floatToCurrency(profit)+"&nbsp;（"+floatToCurrency(profitrate)+"%）";
 		    			}
-    					
-		    			return profitRate+"%";
-		    			//return rate +" -- "+ orderCnt +" -- "+ cost;
+		    			
+		    			//*****************************************************///
+		    			if(currency == 'RMB'){
+		    				
+		    			//	if(rebaterate == 0){
+		    					//纯内销
+		    					//增值税
+		    					zeng = (actualSales - mateCost) / 1.16 * 0.16 ;
+		    					profit = actualSales - cost - zeng;
+		    					rmbprice = actualSales;		    					
+		    					
+		    			//	}else{
+		    			//		//人民币外销
+		    			//		exchange = 1;//外销人民币的汇率默认：1
+		    			//		rebate = mateCost * rebaterate / (1 + rebaterate);//退税
+		    			//		rmbprice = actualSales * exchange;
+		    			//		profit = rmbprice - cost + rebate;		    									
+		    			//	}
+		    						
+		    			}else{
+		    				//纯外销			
+		    				//退税
+		    				rebate = mateCost * rebaterate / (1 + rebaterate);
+		    				rmbprice = actualSales * exchange;
+		    				profit = rmbprice - cost + rebate;
+		    			}
+		    			profitrate = profit / cost * 100
+		    			
+		    			return floatToCurrency(profit)+"&nbsp;（"+floatToCurrency(profitrate)+"%）";//+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
+		    			//return cost+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
 		    		}},
 		    		{"targets":13,"render":function(data, type, row){
 		    			return jQuery.fixedWidth(row["team"],8);
@@ -229,7 +225,7 @@ body{
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : [10]
+						"targets" : [10,12]
 					}
 	         	],
 	         	
@@ -292,13 +288,17 @@ body{
 	    });
 	}
 	
-	function doCreate(YSId) {
+	function doCreate(YSId,orderType) {
 		
 
 		var monthday = $('#monthday').val();
 		var statusFlag = $('#statusFlag').val();
 
 		var actionUrl = "${ctx}/business/financereport?methodtype=costAccountingAdd";
+		if(orderType == '020'){
+			//配件订单
+			actionUrl = "${ctx}/business/financereport?methodtype=costAccountingPeiAdd";
+		}
 		actionUrl = actionUrl +"&YSId="+YSId;
 		actionUrl = actionUrl +"&monthday="+monthday;
 		actionUrl = actionUrl +"&statusFlag="+statusFlag;

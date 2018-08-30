@@ -104,6 +104,10 @@ public class FinanceReportAction extends BaseAction {
 				costAccountingAdd();
 				rtnUrl = "/business/finance/costaccoutingadd";
 				break;
+			case "costAccountingPeiAdd"://配件订单
+				costAccountingPeiAdd();
+				rtnUrl = "/business/finance/costaccoutingpeiadd";
+				break;
 			case "costAccountingSave":
 				costAccountingSave();
 				rtnUrl = "/business/finance/costaccoutingview";
@@ -114,6 +118,10 @@ public class FinanceReportAction extends BaseAction {
 				break;
 			case "getStockoutByMaterialId":
 				dataMap = getStockoutByMaterialId();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getOrderPeiByMaterialId":
+				dataMap = getOrderPeiByMaterialId();
 				printOutJsonObj(response, dataMap);
 				break;
 			case "getCostBomDetail":
@@ -282,6 +290,26 @@ public class FinanceReportAction extends BaseAction {
 		
 	}
 	
+	
+	private void costAccountingPeiAdd() {		
+		
+		try {			
+
+			String monthday = request.getParameter("monthday");
+			String statusFlag = request.getParameter("statusFlag");
+			session.setAttribute("monthday", monthday);
+			session.setAttribute("statusFlag", statusFlag);
+			
+			service.costAccountingPeiAdd();
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
 	private void costAccountingSave() {		
 		
 		try {
@@ -310,6 +338,11 @@ public class FinanceReportAction extends BaseAction {
 		
 	}
 
+	private HashMap<String, Object> getOrderPeiByMaterialId() throws Exception {		
+		
+		return	service.getOrderPeiByMaterialId();
+		
+	}
 	private HashMap<String, Object> getCostBomDetail() throws Exception {		
 		
 		return	service.getCostBomDetail();
