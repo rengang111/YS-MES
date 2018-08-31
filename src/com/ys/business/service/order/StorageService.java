@@ -1252,6 +1252,47 @@ public class StorageService extends CommonService {
 		}	
 	}
 	
+	@SuppressWarnings("unchecked")
+	private B_PurchaseStockInDetailData deletePurchaseStockInDetail(
+			String receiptid,String materialId) throws Exception {
+		
+		//删除处理
+		String astr_Where = "receiptid='"+ receiptid +"' AND materialId='"+materialId+"' AND deleteFlag='0' ";
+		
+		List<B_PurchaseStockInDetailData> list = detaildao.Find(astr_Where);
+		B_PurchaseStockInDetailData stock = new B_PurchaseStockInDetailData();
+		if(list.size() > 0){
+			stock = list.get(0);
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"已入库数据删除",userInfo);
+			copyProperties(stock,commData);
+			
+			detaildao.Store(stock);
+		}
+		
+		return stock;
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	private void deletePurchaseStockIn(
+			String receiptid) throws Exception {
+		
+		//删除处理
+		String astr_Where = "receiptid='"+ receiptid +"' AND deleteFlag='0' ";
+		
+		List<B_PurchaseStockInData> list = dao.Find(astr_Where);
+		B_PurchaseStockInData stock = new B_PurchaseStockInData();
+		if(list.size() > 0){
+			stock = list.get(0);
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"已入库数据删除",userInfo);
+			copyProperties(stock,commData);
+			
+			dao.Store(stock);
+		}
+		
+	}
 	
 	private HashMap<String, Object> getArrivaRecord(
 			String contractId,String receiptId,String arrivelId) throws Exception{
@@ -1349,28 +1390,49 @@ public class StorageService extends CommonService {
 		return modelMap;
 	}
 	
-	public void doDelete(String recordId) throws Exception{
+	@SuppressWarnings("unchecked")
+	public String deleteStockinData() throws Exception{
 		
-		B_ArrivalData data = new B_ArrivalData();	
+		String rtnFlag = "当前";
 															
 		try {
 			
-			ts = new BaseTransaction();										
-			ts.begin();									
+			ts = new BaseTransaction();
+			ts.begin();
 			
-			String removeData[] = recordId.split(",");									
-			for (String key:removeData) {									
-												
-				data.setRecordid(key);							
-				dao.Remove(data);	
-				
+			String materialId = request.getParameter("materialId");
+			String receiptId = request.getParameter("receiptId");
+		
+			//check 入库明细是否只有一条记录
+			String astr_Where = "receiptid='"+ receiptId +"' AND deleteFlag='0' ";
+			List<B_PurchaseStockInDetailData> list = detaildao.Find(astr_Where);
+			B_PurchaseStockInDetailData stock = new B_PurchaseStockInDetailData();
+			String quantity = "0";
+			String price = "0";
+			if(list.size() > 0 ){
+
+				stock = deletePurchaseStockInDetail(receiptId,materialId);
+				quantity = floatToString(stringToFloat(stock.getQuantity()) * -1 ); 
+				price = floatToString(stringToFloat(stock.getPrice()) * -1 );
+				if(list.size() > 1 ){
+					//多条明细，只删除明细
+				}else{
+					//一条明细，同时删除头部信息
+					deletePurchaseStockIn(receiptId);
+					rtnFlag = "返回";
+				}
 			}
+				
+			//更新库存
+			updateMaterial("已入库数据删除",materialId,quantity,price);
 			
 			ts.commit();
 		}
 		catch(Exception e) {
 			ts.rollback();
 		}
+		
+		return rtnFlag;
 	}
 		
 	

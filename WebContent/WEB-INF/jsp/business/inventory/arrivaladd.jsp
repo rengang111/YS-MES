@@ -58,16 +58,16 @@
 			
 			var surplus = fquantity - foSumArra;
 			
-			if( fArrival > surplus ){
+			//if( fArrival > surplus ){
 
-				$().toastmessage('showWarningToast', "注意,收货数量不能大于合同。");
-				fArrival = surplus;//最大收货数量
+			//	$().toastmessage('showWarningToast', "注意,收货数量不能大于合同。");
+			//	fArrival = surplus;//最大收货数量
 		        //$(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
            	 	//$(this).find("input:text").addClass('error');
 				//return;
-			}else{
-				$(this).find("input:text").removeClass('error')
-			}
+			//}else{
+			//	$(this).find("input:text").removeClass('error')
+			//}
 			
 			//剩余数量
 			var viewplus = surplus - fArrival;			

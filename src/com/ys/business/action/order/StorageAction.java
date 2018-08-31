@@ -109,9 +109,10 @@ public class StorageAction extends BaseAction {
 				doInsert();
 				rtnUrl = "/business/inventory/storageview";
 				break;
-			case "delete":
-				doDelete(data);
-				return null;
+			case "deleteStockinData":
+				rtnUrl = deleteStockinData();
+				printOutJsonObj(response, dataMap);
+				break;
 			case "showHistory":
 				showHistory();
 				rtnUrl = "/business/inventory/storageview";
@@ -625,10 +626,15 @@ public class StorageAction extends BaseAction {
 		}
 	}
 	
-	public void doDelete(@RequestBody String data) throws Exception{
-		
-		service.doDelete(data);
+	public String deleteStockinData() throws Exception{
+	
+		String rtnUrl = null;
+		String rtnFlag = service.deleteStockinData();
 
+		if(("返回").equals(rtnFlag))
+			rtnUrl = "/business/inventory/storagemain";
+
+		return rtnUrl;
 	}
 	
 	public HashMap<String, Object> doShowDetail() throws Exception{

@@ -9,7 +9,11 @@
 <script type="text/javascript">
 
 	function ajax() {
-		
+		var table = $('#example').dataTable();
+		if(table) {
+			table.fnClearTable(false);
+			table.fnDestroy();
+		}
 		var contractId = $("#stock\\.contractid").val();
 		var arrivalId = '${arrivalId}';
 		var t = $('#example').DataTable({
@@ -57,7 +61,6 @@
 				}, {"data": "materialName",
 				}, {"data": "contractQuantity","className":"td-right", "defaultContent" : '***'
 				}, {"data": "contractTotalPrice","className":"td-right", "defaultContent" : '***'
-				}, {"data": "quantity","className":"td-right"	
 				}, {"data": "checkInDate","className":"td-right"
 				}, {"data": "depotName","className":"td-left"	
 				}, {"data": "packaging","className":"td-center"
@@ -71,16 +74,18 @@
 	    			name = jQuery.fixedWidth(name,40);				    			
 	    			return name;
 	    		}},
-	    		{"targets":6,"render":function(data, type, row){
+	    		{"targets":4,"render":function(data, type, row){
 	    						    			
-	    			return floatToCurrency(data);
+	    			return floatToCurrency(row["contractQuantity"]) + "<br />" + floatToCurrency(row["quantity"]);
 	    		}},
-	    		{"targets":11,"render":function(data, type, row){
+	    		{"targets":10,"render":function(data, type, row){
 	    			var text="";
 	    			text += "<a href=\"###\" onClick=\"doEdit('"  + row["contractId"] + "','"  + row["receiptId"] + "')\">编辑</a>";
 	    			text += "&nbsp;"
+	    			text += "<a href=\"###\" onClick=\"doDelete('"  + row["materialId"] + "','"  + row["receiptId"] + "')\">删除</a>";
+	    			text += "<br />"
 	    			text += "<a href=\"###\" onClick=\"doPrint('" + row["contractId"] + "','" + row["receiptId"] + "')\">打印</a>";
-	    			text += "<br>"
+	    			text += "&nbsp;"
 	    			text += "<a href=\"###\" onClick=\"doPrintLabel('" + row["materialId"] + "','" + row["receiptId"] + "')\">标贴</a>";
 
 	    			return text;
@@ -161,6 +166,29 @@
 		var url = "${ctx}/business/storage?methodtype=edit&receiptId="+receiptId
 				+ "&contractId="+contractId+ "&makeType="+makeType;
 		location.href = url;
+	}
+	
+	function doDelete(materialId,receiptId){
+		
+		if (confirm("删除后不能恢复，确定要删除吗？")){ //
+			$.ajax({
+				type : "post",
+				url : "${ctx}/business/storage?methodtype=deleteStockinData&receiptId="+receiptId+"&materialId="+materialId,
+				async : false,
+				data : null,
+				dataType : "text",
+				success : function(data) {
+					//$('#TQuotation').DataTable().ajax.reload(null,true);
+					ajax();
+					$().toastmessage('showNoticeToast', "删除成功。");	
+				},
+				error : function(
+						XMLHttpRequest,
+						textStatus,
+						errorThrown) {				
+				}
+			});
+		}
 	}
 
 	function doPrint(contractId,receiptId) {
@@ -257,9 +285,8 @@
 					<th style="width:65px">入库单编号</th>
 					<th style="width:100px">物料编号</th>
 					<th>物料名称</th>
-					<th style="width:65px">合同数量</th>
+					<th style="width:65px">合同数/<br />入库数</th>
 					<th style="width:65px">合同金额</th>
-					<th style="width:65px">入库数量</th>
 					<th style="width:60px">入库时间</th>
 					<th style="width:65px">仓库位置</th>
 					<th style="width:35px">包装</th>
