@@ -258,18 +258,22 @@
 				<td class="td-center" style="width:100px">退税率</td>	
 				<td class="td-center" style="width:100px">退税</td>	
 				<td class="td-center" style="width:100px">增值税</td>
-				<td class="td-center" style="width:100px">利润</td>
+				<td class="td-center" style="width:100px">毛利</td>
+				<td class="td-center" style="width:100px">跟单费用</td>
+				<td class="td-center" style="width:100px">净利</td>
 				<td class="td-center" >利润率</td>
-				<td class="td-center" colspan="3"></td>
+				<td class="td-center"></td>
 			</tr>
 			<tr>
 				
 				<td class="td-center">${cost.rebateRate }%</td>
 				<td class="td-center">${cost.rebate }</td>
 				<td class="td-center">${cost.vat }</td>
+				<td class="td-center">${cost.gross }</td>
+				<td class="td-center">${cost.deduct }</td>
 				<td class="td-center">${cost.profit }</td>
 				<td class="td-center">${cost.profitRate }%</td>
-				<td class="td-center" colspan="3"></td>
+				<td class="td-center"></td>
 				
 			</tr>
 		</table>

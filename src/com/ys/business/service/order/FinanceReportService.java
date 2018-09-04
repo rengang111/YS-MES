@@ -481,6 +481,8 @@ public class FinanceReportService extends CommonService {
 		
 		getLaborCost(YSId);
 		
+		getOrderProcess(YSId);//取得订单过程的跟单费用
+		
 	}
 	
 	/**
@@ -502,8 +504,28 @@ public class FinanceReportService extends CommonService {
 			userDefinedSearchCase.put("YSId", YSId);
 			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
 			baseQuery.getYsFullData();
-			
-			model.addAttribute("LaborCost",dataModel.getYsViewData().get(0).get("labolCost"));
+			if(dataModel.getRecordCount() > 0 ){		
+				model.addAttribute("LaborCost",dataModel.getYsViewData().get(0).get("labolCost"));
+			}else{
+				model.addAttribute("LaborCost","0");
+			}
+	}
+	
+	private void getOrderProcess(
+			String YSId	) throws Exception{
+
+			dataModel.setQueryFileName("/business/order/financequerydefine");
+			dataModel.setQueryName("orderProcessByYsid");		
+			baseQuery = new BaseQuery(request, dataModel);
+			userDefinedSearchCase.put("YSId", YSId);
+			userDefinedSearchCase.put("type", "D");//跟单费用
+			baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+			baseQuery.getYsFullData();
+			if(dataModel.getRecordCount() > 0 ){
+				model.addAttribute("deductCost",dataModel.getYsViewData().get(0).get("cost"));				
+			}else{
+				model.addAttribute("deductCost","0");
+			}
 		}
 	
 	public void getOrderDetailByYSId(
@@ -516,7 +538,9 @@ public class FinanceReportService extends CommonService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
 		baseQuery.getYsFullData();
 		
-		model.addAttribute("order", dataModel.getYsViewData().get(0));
+		if(dataModel.getRecordCount() > 0 ){
+			model.addAttribute("order", dataModel.getYsViewData().get(0));
+		}
 		
 	}
 	
@@ -781,6 +805,8 @@ public class FinanceReportService extends CommonService {
 		getOrderDetailByYSId(YSId);
 		
 		getCostBomDetail(YSId);
+
+		getOrderProcess(YSId);//取得订单过程的跟单费用
 	}
 
 	public HashMap<String, Object> getCostBomDetail() throws Exception{

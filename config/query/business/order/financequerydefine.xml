@@ -495,6 +495,8 @@
       <f name="a.materialCost" alias="" ctype="" />
       <f name="a.labolCost" alias="" ctype="" />
       <f name="a.actualSales" alias="" ctype="" />
+      <f name="a.gross" alias="" ctype="" />
+      <f name="a.deduct" alias="" ctype="" />
       <f name="IFNULL(a.discount,0)" alias="discount" ctype="" />
       <f name="IFNULL(a.commission,0)" alias="commission" ctype="" />
       <f name="a.quantity" alias="" ctype="" />
@@ -618,5 +620,23 @@
 	    <groupby></groupby>
 	    <having></having>	
 	    <orderby>a.materialId</orderby>
+  	</query>
+    <query>
+		<pool></pool>    
+    	<name value="orderProcessByYsid" />
+     	<where>
+        	<w name="a.YSId"   des="" reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+        	<w name="a.type"   des="" reqName="type" dtype="ch" oper="="  lg="AND" bt="" />
+    	</where>
+	  	<select>
+	      <f name="a.YSId" alias="" ctype="" />
+	      <f name="a.cost" alias="" ctype="" />
+	      <f name="a.type" alias="" ctype="" />
+	  	</select>
+	    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+	    <from>v_orderexpanse_groupby_type a  </from>
+	    <groupby></groupby>
+	    <having></having>	
+	    <orderby></orderby>
   	</query>
 </root>

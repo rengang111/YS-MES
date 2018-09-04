@@ -37,7 +37,7 @@ body{
 				"sAjaxSource" : url,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
-					var formData = $("#condition").serializeArray();
+					var formData = $("#formModel").serializeArray();
 					formData.forEach(function(e) {
 						aoData.push({"name":e.name, "value":e.value});
 					});

@@ -273,12 +273,14 @@
 		var currency = $('#costBom\\.currency').val();//币种
 		var exchange = currencyToFloat( $('#costBom\\.exchangerate').val() );//汇率
 		var rebaterate = currencyToFloat( $('#costBom\\.rebaterate').val() );//退税率
+		var deductCost = currencyToFloat( $('#costBom\\.deduct').val() );//跟单费用
 		
 		var actualSales = totalPrice * (1 - discount/100) * (1-commission/100);
 		rebaterate = rebaterate / 100;		
 		cost = mateCost + labolcost;//总成本=材料+人工；人工有可能是手动输入，因此重新计算
 		
-		var profit = 0;//利润
+		var gross = 0;//毛利
+		var profit = 0;//净利
 		var rebate = 0;//退税
 		var rmbprice = 0;
 		var profitrate = 0;//利润率
@@ -289,10 +291,10 @@
 				//纯内销
 				//增值税
 				zeng = (actualSales - mateCost) / 1.16 * 0.16 ;
-				profit = actualSales - cost - zeng;
+				gross = actualSales - cost - zeng;
 				rmbprice = actualSales;
 				
-				$('#costBom\\.exchangerate').val('');
+				$('#costBom\\.exchangerate').val('1');
 				$('#costBom\\.exchangerate').addClass('read-only');	
 				$('#costBom\\.rebaterate').val('0')
 				$('#costBom\\.rebaterate').addClass('read-only')
@@ -302,7 +304,7 @@
 				exchange = 1;//外销人民币的汇率默认：1
 				rebate = mateCost * rebaterate / (1 + rebaterate);//退税
 				rmbprice = actualSales * exchange;
-				profit = rmbprice - cost + rebate;
+				gross = rmbprice - cost + rebate;
 				
 				$('#costBom\\.exchangerate').val('1');
 				$('#costBom\\.exchangerate').addClass('read-only');						
@@ -313,8 +315,9 @@
 			//退税
 			rebate = mateCost * rebaterate / (1 + rebaterate);
 			rmbprice = actualSales * exchange;
-			profit = rmbprice - cost + rebate;
+			gross = rmbprice - cost + rebate;
 		}
+		profit = gross - deductCost;//毛利-跟单费用
 		profitrate = profit / cost * 100
 		
 		$(".read-only").attr('readonly', "true");
@@ -322,6 +325,7 @@
 		$('#costBom\\.actualsales').val(floatToCurrency(actualSales));//实际销售额
 		$('#costBom\\.rmbprice').val(floatToCurrency(rmbprice));//原币金额
 		$('#costBom\\.rebate').val(floatToCurrency(rebate));//退税
+		$('#costBom\\.gross').val(floatToCurrency(gross));//毛利
 		$('#costBom\\.profit').val(floatToCurrency(profit));//利润
 		$('#costBom\\.profitrate').val(floatToCurrency(profitrate));//利润率
 		$('#costBom\\.vat').val(floatToCurrency(zeng));//增值税
@@ -424,9 +428,11 @@
 				<td class="td-center" style="width:100px">退税率</td>	
 				<td class="td-center" style="width:100px">退税</td>	
 				<td class="td-center" style="width:100px">增值税</td>
-				<td class="td-center" style="width:100px">利润</td>
+				<td class="td-center" style="width:100px">毛利</td>
+				<td class="td-center" style="width:100px">跟单费用</td>
+				<td class="td-center" style="width:100px">净利</td>
 				<td class="td-center" >利润率</td>
-				<td class="td-center" colspan="3"></td>
+				<td class="td-center" ></td>
 			</tr>
 			<tr>
 				
@@ -437,10 +443,14 @@
 				<td class="td-center">
 					<form:input path="costBom.vat"  class="num short read-only"  /></td>
 				<td class="td-center">
+					<form:input path="costBom.gross"  class="num short read-only"  /></td>
+				<td class="td-center">
+					<form:input path="costBom.deduct"  class="num short read-only" value="${deductCost }" /></td>
+				<td class="td-center">
 					<form:input path="costBom.profit"  class="num short read-only"  /></td>
 				<td class="td-center" >
 					<form:input path="costBom.profitrate"  class="num mini read-only" />%</td>
-				<td class="td-center" colspan="3"></td>
+				<td class="td-center"></td>
 				
 			</tr>
 		</table>
