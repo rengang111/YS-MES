@@ -11,11 +11,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -31,6 +34,10 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import com.ys.business.action.model.order.MaterialModel;
 import com.ys.business.db.dao.B_MaterialStorageHistoryDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
@@ -1076,6 +1083,36 @@ public class CommonService extends BaseService {
 		}		
 		
 		return jsonObj;
+	}
+	
+
+	/**
+	 * JSON 数据 转换成 Map 对象
+	 * @param jsonStr
+	 * @return Map
+	 * @throws Exception
+	 */
+    @SuppressWarnings("rawtypes")
+	public Map parseJSON2Map(String jsonStr) throws Exception{
+    	ListOrderedMap map = new ListOrderedMap();
+    	//最外层解析
+    	JSONObject json = JSONObject.fromObject(jsonStr);
+    	for(Object k : json.keySet()){
+	    	Object v = json.get(k);
+	    	//如果内层还是数组的话，继续解析
+	    	if(v instanceof JSONArray){
+		    	List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+		    	Iterator<JSONObject> it = ((JSONArray)v).iterator();
+		    	while(it.hasNext()){
+			    	JSONObject json2 = it.next();
+			    	list.add(parseJSON2Map(json2.toString()));
+		    	}
+		    	map.put(k.toString(), list);
+	    	} else {
+	    		map.put(k.toString(), v);
+	    	}
+    	}
+    	return map;
 	}
 
 }

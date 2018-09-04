@@ -286,7 +286,6 @@ public class RequisitionZZService extends CommonService {
 	
 	}
 	
-	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> getRawMaterial(String makeType) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();

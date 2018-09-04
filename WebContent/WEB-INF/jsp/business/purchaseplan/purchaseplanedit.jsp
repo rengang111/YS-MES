@@ -459,8 +459,8 @@
 		
 		var vtotalPrice = '0';//初始化		
 		var shortName = getLetters(supplierId);		
+		var fPlanQuantity = order * unitQuantity;
 		var ftotalQuantity =  currencyToFloat( '${bom.purchaseQuantity}' ) ;
-		var fPlanQuantity =  currencyToFloat( '${bom.manufactureQuantity}' ) ;
 		var price = currencyToFloat ('${bom.price}');
 		var vprice = formatNumber(price);
 
@@ -484,6 +484,13 @@
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
 		$("#price"+index).html(vprice);
+
+		//重新计算生产总量
+		var total = floatToCurrency(fPlanQuantity);		
+		$("#planDetailList"+index+"\\.manufacturequantity").val(total);//总量
+		$("#totalQuantity"+index).html(total);//总量 
+		
+		
 		
 		counter++;
 		

@@ -140,6 +140,9 @@ public class FinanceReportAction extends BaseAction {
 				dataMap = updateExchangeRate();
 				printOutJsonObj(response, dataMap);
 				break;	
+			case "downloadExcelForCostAccounting"://财务核算数据下载
+				downloadExcelForCostAccounting(data);
+				break;
 				
 				
 		}
@@ -242,6 +245,17 @@ public class FinanceReportAction extends BaseAction {
 		
 	}
 	
+	
+	private void downloadExcelForCostAccounting(String data) {		
+		
+		try {
+			service.downloadExcelForAccounting(data);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> costAccountingSsearch(String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();

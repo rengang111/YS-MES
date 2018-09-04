@@ -1231,6 +1231,7 @@ public class OrderService extends CommonService  {
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"OrderDetailUpdate",userInfo);
 			copyProperties(dbData,commData);
+			dbData.setCurrency(reqModel.getCurrency());
 			dbData.setRebaterate(reqModel.getRebateRate());//退税率
 			
 			new B_OrderDetailDao().Store(dbData);

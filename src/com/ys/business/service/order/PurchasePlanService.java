@@ -383,18 +383,18 @@ public class PurchasePlanService extends CommonService {
 			}//找出页面被删除的数据
 			
 			//旧数据:二级BOM(原材料)的待出库"减少"处理
-			System.out.println("采购方案更新处理：②二级BOM(原材料)的待出库减少处理（旧数据）");
-			ArrayList<HashMap<String, String>> list2 = getRawMaterialGroupList(YSId);	
+			System.out.println("采购方案更新处理：②删除原材料的物料需求表（更新前）");
+			ArrayList<HashMap<String, String>> list2 = getRawRequirement(YSId);	
 			
 			for(HashMap<String, String> map2:list2){
 				
-				String rawmater2 = map2.get("rawMaterialId");//二级物料名称(原材料)
+				String rawmater2 = map2.get("materialId");//二级物料名称(原材料)
 				
 				//更新虚拟库存
 				float purchase = 0;//采购量
-				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unit"));
+				String unit = DicUtil.getCodeValue("换算单位" + map2.get("unitId"));
 				float funit = stringToFloat(unit);
-				float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
+				float totalQuantity = stringToFloat(map2.get("quantity"));//配件的采购量作为原材料的需求量
 				float requirement = (-1 * totalQuantity / funit);
 				
 				updateMaterial("二级BOM(原材料)的待出库减少处理（旧数据）",rawmater2,purchase,requirement);						
@@ -1714,6 +1714,30 @@ public class PurchasePlanService extends CommonService {
 	}
 	
 
+	public ArrayList<HashMap<String, String>> getRawMaterialList(
+			String YSId ) throws Exception {		
+		
+		dataModel.setQueryName("getRawMaterialGroupList");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		return baseQuery.getYsFullData();
+		
+	}
+	
+	private ArrayList<HashMap<String, String>> getRawRequirement(
+			String ysid) throws Exception{
+
+		dataModel.setQueryName("getRawRequirementById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", ysid);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		return baseQuery.getYsFullData();
+
+	}
+	
+	
+
 	public ArrayList<HashMap<String, String>> getRawMaterialGroupList(
 			String YSId ) throws Exception {		
 		
@@ -1724,6 +1748,7 @@ public class PurchasePlanService extends CommonService {
 		return baseQuery.getYsFullData();
 		
 	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public List<B_PurchaseOrderData> getPurchaseOrderFromDB(

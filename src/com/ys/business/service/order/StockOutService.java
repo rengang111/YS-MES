@@ -368,7 +368,7 @@ public class StockOutService extends CommonService {
 			
 			}
 			
-			updateRequisition(requisitionId);
+			updateRequisition(requisitionId,Constants.STOCKOUT_3);
 			
 			ts.commit();			
 			
@@ -518,7 +518,7 @@ public class StockOutService extends CommonService {
 
 	@SuppressWarnings("unchecked")
 	private void updateRequisition(
-			String id) throws Exception{
+			String id,String status) throws Exception{
 
 		String where = "requisitionId = '" + id  +"' AND deleteFlag = '0' ";
 		List<B_RequisitionData> list  = new B_RequisitionDao().Find(where);
@@ -527,10 +527,10 @@ public class StockOutService extends CommonService {
 
 		B_RequisitionData data = list.get(0);		
 		//更新状态
-		data.setRequisitionsts(Constants.STOCKOUT_3);//已出库		
+		data.setRequisitionsts(status);//已出库		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"RequisitionUpdate",userInfo);
+				"更新申请状态",userInfo);
 		copyProperties(data,commData);
 		
 		new B_RequisitionDao().Store(data);
@@ -1146,9 +1146,11 @@ public class StockOutService extends CommonService {
 			
 			String where = " stockOutId='" + stockOutId +"' AND deleteFlag='0'";
 			
-			deleteStockout(where);
+			String requistionId = deleteStockout(where);
 			
 			deleteStockoutDetail(stockOutId);
+			
+			updateRequisition(requistionId,Constants.STOCKOUT_2);
 			
 			ts.commit();
 			
@@ -1159,21 +1161,24 @@ public class StockOutService extends CommonService {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private void deleteStockout(String where) throws Exception{
-		
+	private String deleteStockout(String where) throws Exception{
+		String requistionId ="";
 		Vector list = new B_StockOutDao().Find(where);
 		
 		if(list == null || list.size() == 0)
-			return;
+			return requistionId;
 		
 		B_StockOutData db = (B_StockOutData) list.get(0);
-
+		requistionId = db.getRequisitionid();
+		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 				"删除成品出库",userInfo);
 		copyProperties(db,commData);
 		
 		new B_StockOutDao().Store(db);
+		
+		return requistionId;
 	}
 
 	

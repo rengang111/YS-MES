@@ -27,6 +27,14 @@ public class FinanceReportModel extends BaseModel {
 	private List<B_CostBomDetailData> costBomList;
 	private B_CostBomData costBom;
 	private ArrayList<ListOption> approvalOption = new ArrayList<ListOption>();
+	private String jsonData;
+	
+	public String getJsonData() {
+		return this.jsonData;
+	}
+	public void setJsonData(String jsonData) {
+		this.jsonData = jsonData;
+	}
 		
 	public List<B_CostBomDetailData> getCostBomList() {
 		return this.costBomList;

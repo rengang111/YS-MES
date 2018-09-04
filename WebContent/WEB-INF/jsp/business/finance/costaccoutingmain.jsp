@@ -6,7 +6,7 @@
 <%@ include file="../../common/common.jsp"%>
 <style>
 body{
-   font-size:10px;
+  /* font-size:10px;*/
 }
 </style>
 <title>财务核算一览页面</title>
@@ -117,32 +117,43 @@ body{
 		    			return name;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
+		    			var index = row["rownum"];
 		    			var order = floatToCurrency(row["quantity"]);
-		    			var manu = floatToCurrency(row["totalQuantity"]);
-		    			 
-		    			
-		    			return order +"<br>"+manu;
+		    			var manuf = floatToCurrency(row["totalQuantity"]);
+		    			var text='';
+		    			text +=	'<input type="hidden" name="order" 	id="order'+index + '" 	value="'+order+'" >';
+		    			text +=	'<input type="hidden" name="manuf" 	id="manuf'+index + '" 	value="'+manuf+'" >';
+
+		    			return order +"<br>"+manuf + text;
 		    		}},
 		    		{"targets":9,"render":function(data, type, row){
 		    			var index = row["rownum"];
-		    			var cost = row["cost"];
-		    			var costA = row["costAcounting"]; 
+		    			var orderType = row["orderType"];
+		    			var cost = currencyToFloat(row["cost"]);
+		    			var mateCost = currencyToFloat(row["costAcounting"]); 
 		    			var currency = row["currency"];
 		    			var rate = row["exchange_rate"];
 		    			var lastPrice = currencyToFloat(row["lastPrice"]);
 		    			var quantity = currencyToFloat(row["totalQuantity"]);
-		    			if(cost == 0)
-		    				cost = floatToCurrency(costA);
-		    			if(costA == 0){
-		    				cost = floatToCurrency(lastPrice * quantity);//装配品
+		    			var labolCost = currencyToFloat(row["labolCost"]);//人工成本
+		    			
+		    			if(cost == 0){
+		    				if(orderType == '020'){
+			    				cost = lastPrice * quantity;//装配品的成本
+			    				mateCost = cost;
+		    				}else{
+		    					cost = mateCost + labolCost;//未领料的从BOM计算
+		    				}
 		    			}
-		    				
-		    			var text = '<input type="hidden" name="cost" id="cost'+index + '" value="'+cost+'" >';
-		    			text = text + '<input type="hidden" name="currency" id="currency'+index + '" value="'+currency+'" >';
-		    			text = text + '<input type="hidden" name="rate" id="rate'+index + '" value="'+rate+'" >';
-		    			return text + cost;
+		    			cost = floatToCurrency(cost)
+		    			labolCost = floatToCurrency(labolCost)
+		    			var text = '';
+		    			text = text + '<input type="hidden" name="cost" 		id="cost'+index + '" 		value="'+cost+'" >';
+		    			text = text + '<input type="hidden" name="labolCost" 	id="labolCost'+index + '" 	value="'+labolCost+'" >';
+		    			return cost + "<br />" + labolCost + text;
 		    		}},
 		    		{"targets":11,"render":function(data, type, row){
+		    			var rtnValue="";
 		    			var index = row["rownum"];
 		    			var orderType = row["orderType"];
 		    			var cost = currencyToFloat(row["cost"]);
@@ -155,7 +166,9 @@ body{
 		    			var lastPrice = currencyToFloat(row["lastPrice"]);
 		    			var quantity = currencyToFloat(row["totalQuantity"]);
 		    			var labolCost = currencyToFloat(row["labolCost"]);//人工成本
+		    			var rmbprice = currencyToFloat(row["RMBPrice"]);//原币金额
 						var rebaterate = 0.16;//退税率
+						var rebate = floatToCurrency(row["rebate"]);//退税
 						
 		    			if(cost == 0){
 		    				if(orderType == '020'){
@@ -166,7 +179,19 @@ body{
 		    				}
 		    			}else{
 
-			    			return floatToCurrency(profit)+"&nbsp;（"+floatToCurrency(profitrate)+"%）";
+		    				profit =  floatToCurrency(profit);
+		    				profitrate =  floatToCurrency(profitrate);
+
+			    			var text =	'<input type="hidden" name="rmbprice" 	id="rmbprice'+index + '" 	value="'+rmbprice+'" >';
+			    			text +=	  	'<input type="hidden" name="cost" 		id="cost'+index + '" 		value="'+cost+'" >';
+			    		  	text +=   	'<input type="hidden" name="rebate" 	id="rebate'+index + '" 		value="'+rebate+'" >';
+			    			text +=   	'<input type="hidden" name="labolCost" 	id="labolCost'+index + '" 	value="'+labolCost+'" >';
+			    			text +=		'<input type="hidden" name="currency" 	id="currency'+index + '" 	value="'+currency+'" >';
+			    			text +=		'<input type="hidden" name="exchange" 	id="exchange'+index + '" 	value="'+exchange+'" >';
+			    			text +=		'<input type="hidden" name="profit" 	id="profit'+index + '" 		value="'+profit+'" >';
+			    			text +=		'<input type="hidden" name="profitrate"	id="profitrate'+index + '" 	value="'+profitrate+'" >';
+
+			    			return profit + "<br />" + profitrate +"%"+ text;
 		    			}
 		    			
 		    			//*****************************************************///
@@ -194,9 +219,21 @@ body{
 		    				rmbprice = actualSales * exchange;
 		    				profit = rmbprice - cost + rebate;
 		    			}
-		    			profitrate = profit / cost * 100
+		    			profitrate = floatToCurrency(profit / cost * 100);
+		    			profit = floatToCurrency(profit);
+
+		    			var text =	'<input type="hidden" name="rmbprice" 	id="rmbprice'+index + '" 	value="'+rmbprice+'" >';
+		    			text +=	  	'<input type="hidden" name="cost" 		id="cost'+index + '" 		value="'+cost+'" >';
+		    			text +=   	'<input type="hidden" name="rebate" 	id="rebate'+index + '" 		value="'+rebate+'" >';
+		    			text +=   	'<input type="hidden" name="labolCost" 	id="labolCost'+index + '" 	value="'+labolCost+'" >';
+		    			text +=		'<input type="hidden" name="currency" 	id="currency'+index + '" 	value="'+currency+'" >';
+		    			text +=		'<input type="hidden" name="exchange" 	id="exchange'+index + '" 	value="'+exchange+'" >';
+		    			text +=		'<input type="hidden" name="profit" 	id="profit'+index + '" 		value="'+profit+'" >';
+		    			text +=		'<input type="hidden" name="profitrate"	id="profitrate'+index + '" 	value="'+profitrate+'" >';
 		    			
-		    			return floatToCurrency(profit)+"&nbsp;（"+floatToCurrency(profitrate)+"%）";//+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
+		    			return profit + "<br />" + profitrate +"%" + text;
+		    			
+		    			//return floatToCurrency(profit)+"<br />+"+"（"+floatToCurrency(profitrate)+"%）";//+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
 		    			//return cost+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
 		    		}},
 		    		{"targets":13,"render":function(data, type, row){
@@ -375,18 +412,22 @@ body{
 		var gbp = 0;
 		var jpy = 0;
 		var costSum = 0;
+		var labolCnt = 0;
 		$('#TMaterial tbody tr').each (function (){
 
 			var sales        = $(this).find("td").eq(7).text();//销售额
-			var currencyType = $(this).find("td").eq(9).find("input[name=currency]").val();//币种
-			var cost         = $(this).find("td").eq(9).find("input[name=cost]").val();//核算成本
-			var rate         = $(this).find("td").eq(9).find("input[name=rate]").val();//汇率
+			var currencyType = $(this).find("td").eq(10).find("input[name=currency]").val();//币种
+			var cost         = $(this).find("td").eq(10).find("input[name=cost]").val();//核算成本
+			var labolCost    = $(this).find("td").eq(10).find("input[name=labolCost]").val();//人工成本
+			var rate         = $(this).find("td").eq(10).find("input[name=exchange]").val();//汇率
 			
 			sales = currencyToFloat(sales);
 			cost = currencyToFloat(cost);
+			labolCost = currencyToFloat(labolCost);
 			rmbCount = rmbCount + rate * sales;//人民币总计
 			costSum = costSum + cost;//核算成本合计
-			
+			labolCnt = labolCnt + labolCost;//人工成本合计
+			//alert("labolCnt+labolCost"+labolCnt+"::::"+labolCost)
 			if(currencyType == 'RMB'){
 				rmb = rmb + sales;//
 			}else if(currencyType == 'USD'){
@@ -402,9 +443,9 @@ body{
 		});	
 		//alert("rmb:"+rmb)
 
-		var textView="";
+		var textView="销售额：";
 		if(rmb > 0){
-			textView = "销售额：¥"+floatToCurrency(rmb);
+			textView = textView + "¥"+floatToCurrency(rmb);
 		}
 		if(us > 0){			
 			textView = textView + "; $"+floatToCurrency(us);			
@@ -421,17 +462,158 @@ body{
 		
 		textView = textView +"&nbsp;&nbsp;RMB销售总计：¥ " + floatToCurrency(rmbCount);
 		
-		textView = textView + "&nbsp;&nbsp;成本总计：¥ "+ floatToCurrency(costSum);
+		textView = textView + "&nbsp;&nbsp;总成本：¥ "+ floatToCurrency(costSum);
+		textView = textView + "&nbsp;&nbsp;人工成本：¥ "+ floatToCurrency(labolCnt);
 		
 		var profit = rmbCount - costSum;//利润
 		var profitm = profit / costSum * 100;//利润率
 		
-		textView = textView + "&nbsp;&nbsp;利润总计：¥ "+ floatToCurrency(profit)+"（"+floatToCurrency(profitm)+"%）";
+		textView = textView + "&nbsp;&nbsp;总利润：¥ "+ floatToCurrency(profit)+"（"+floatToCurrency(profitm)+"%）";
 		
 		$('#costCount').html(textView);
 		
 	}
 	
+	function downloadExcel() {
+		 
+		var key1 = $("#keyword1").val();
+		var key2 = $("#keyword2").val();
+		var monthday = $("#monthday").val()
+		var statusFlag = $("#statusFlag").val()
+		
+		var html = HtmlTableToJson(TMaterial);
+		$("#jsonData").val(JSON.stringify(html));
+		
+		//return;
+		var url = '${ctx}/business/financereport?methodtype=downloadExcelForCostAccounting'
+				 + "&key1=" + key1
+				 + "&key2=" + key2
+				// + "&html=" + JSON.stringify(html)
+				 + "&monthday=" + monthday
+				 + "&statusFlag=" + statusFlag;
+				
+		//url =encodeURI(encodeURI(url));//中文两次转码
+		
+		//location.href = url;
+		
+		$('#formModel').attr("action", url);
+		$('#formModel').submit();
+		
+/*
+		$.ajax({
+			type : "post",
+			url : url,
+			//async : false,
+			data : JSON.stringify(html),//$("#TMaterial").serializeArray(),//
+			"datatype": "json", 
+			"contentType": "application/json; charset=utf-8",
+			success : function(data) {			
+				window.location.href 
+				$().toastmessage('showNoticeToast', "保存成功。");
+			},
+			 error:function(XMLHttpRequest, textStatus, errorThrown){
+				//alert(textStatus)
+			}
+		});		
+		*/
+	}
+	
+	  function HtmlTableToJson(tableid){
+		    // table need set thead and tbody
+		    // talbe head need set name attr
+		    // value control need set josnval attr or will get null string
+		    var jsondata = [];
+		    // table head
+		    var heads = [];
+		   
+		    $('#TMaterial thead tr').each(function(index,item){
+		    		
+			      heads.push("No");
+			      heads.push("ysid");
+			      heads.push("productId");
+			      heads.push("name");
+			      heads.push("customer");
+			      heads.push("orderQty");
+			      heads.push("totalQty");
+			      heads.push("stockinQty");//7
+			      heads.push("salse");
+			      heads.push("stockinDate");
+			      heads.push("cost");//10
+			      heads.push("labolCost");//11
+			      heads.push("profit");
+			      heads.push("profitrate");	
+			      heads.push("team");		
+		    	
+				//heads.push($(item).text());
+		    	
+		    });
+		  // alert(heads)
+		    // tbody
+		    $('#TMaterial tbody tr').each(function(index, item){
+		    	
+		      	var rowdata = {};
+		      	var y=0;
+		     	//$(item).find('td').each(function(index,item){
+		       		// if($(item).find('[josnval]').size()>0){
+		     	 //    console.log("have json val");
+		      
+				//var sales        = $(this).find("td").eq(7).text();//销售额
+				//var currencyType = $(this).find("td").eq(10).find("input[name=currency]").val();//币种
+
+
+				rowdata[heads[0]] = $(item).find("td").eq(0).text();
+				rowdata[heads[1]] = $(item).find("td").eq(1).text();
+				rowdata[heads[2]] = $(item).find("td").eq(2).text();
+				rowdata[heads[3]] = $(item).find("td").eq(3).text();
+				rowdata[heads[4]] = $(item).find("td").eq(4).text();
+			   // if(index == 5){
+	
+			    	 var order = $(item).find("td").eq(5).find('input[name=order]').val();
+			    	 var manuf = $(item).find("td").eq(5).find('input[name=manuf]').val();
+			    	 
+			    	  rowdata[heads[5]] = order;
+			    	  rowdata[heads[6]] = manuf;
+
+						rowdata[heads[7]] = $(item).find("td").eq(6).text();
+						rowdata[heads[8]] = $(item).find("td").eq(7).text();
+						rowdata[heads[9]] = $(item).find("td").eq(8).text();
+						
+
+			     // }else if (index == 9){
+			    	  
+						var cost 		= $(item).find("td").eq(9).find('input[name=cost]').val();
+				    	var labolCost	= $(item).find("td").eq(9).find('input[name=labolCost]').val();
+				    	 
+				    	rowdata[heads[10]] = cost;
+				    	rowdata[heads[11]] = labolCost;
+			    	  
+			     // }else if (index == 10){
+				    	var profit 		= $(item).find("td").eq(10).find('input[name=profit]').val();
+				    	var profitrate 	= $(item).find("td").eq(10).find('input[name=profitrate]').val();
+				    	
+				    	rowdata[heads[12]] = profit;
+				    	rowdata[heads[13]] = profitrate;
+				    	
+						rowdata[heads[14]] = $(item).find("td").eq(11).text();
+						
+						
+			    //  }else{
+			    	 // rowdata[heads[y]] = $(item).text();
+			     // }
+			    
+			   // y++;
+			    
+			    
+		       // }else{
+		      //    console.log("no jsonval");
+		       //   rowdata[heads[index]] = "";
+		      //  }
+		     // });
+
+		      jsondata.push(rowdata);
+		    });
+		    return jsondata;
+		  };
 </script>
 </head>
 
@@ -439,18 +621,22 @@ body{
 <div id="container">
 <div id="main">
 		
-	<div id="search">
-		<form id="condition"  style='padding: 0px; margin: 10px;' >
+	<form:form modelAttribute="formModel" method="POST"
+	id="formModel" name="formModel"  autocomplete="off">
+		<div id="search">
+		
 			<input type="hidden" id="monthday"  value="${monthday }"/>
 			<input type="hidden" id="statusFlag"  value="${statusFlag }"/>
+			<input type="hidden" id="jsonData"  name = "jsonData"  />
+			
 			<table>
 				<tr>
 					<td width="10%"></td> 
 					<td class="label" style="width:100px">关键字1：</td>
-					<td class="condition">
+					<td class="">
 						<input type="text" id="keyword1" name="keyword1" class="middle"/></td>
 					<td class="label" style="width:100px">关键字2：</td> 
-					<td class="condition">
+					<td class="">
 						<input type="text" id="keyword2" name="keyword2" class="middle"/></td>
 					<td>
 						<button type="button" id="retrieve" class="DTTT_button" 
@@ -497,7 +683,7 @@ body{
 				
 			</table>
 
-		</form>
+		
 	</div>
 	<div  style="height:10px"></div>
 	<div class="list">
@@ -510,6 +696,9 @@ body{
 				<a  class="DTTT_button box2" onclick="doSearchCustomer2('030');" id="defutBtn030"><span>已审核</span></a>
 			</div>
 			
+			<div id="DTTT_container2" style="height:40px;float: right">
+			  	<a  class="DTTT_button" onclick="downloadExcel();return false;" ><span>EXCEL</span></a>
+			</div>
 			<div id="DTTT_container2" style="height:40px;float: right">
 				<span id="costCount" style="font-size: 12px;font-weight: bold;"></span>
 			</div>
@@ -527,7 +716,7 @@ body{
 						<th style="width: 40px;">入库<br/>累计</th>
 						<th style="width: 50px;">销售金额</th>
 						<th style="width: 50px;">入库日期</th>
-						<th style="width: 40px;">核算成本</th>
+						<th style="width: 40px;">核算成本<br/>人工成本</th>
 						<th style="width: 40px;">退税</th>
 						<th style="width: 40px;">利润</th>
 						<th style="width: 30px;">利润率</th>
@@ -538,6 +727,7 @@ body{
 			</table>
 		</div>
 	</div>
+	</form:form>
 </div>
 </div>
 </body>

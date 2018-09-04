@@ -6,9 +6,11 @@ import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -17,18 +19,18 @@ import com.ys.business.action.model.order.FinanceReportModel;
 import com.ys.business.db.dao.B_CostBomDao;
 import com.ys.business.db.dao.B_CostBomDetailDao;
 import com.ys.business.db.dao.B_InventoryMonthlyReportDao;
-import com.ys.business.db.dao.B_OrderDetailDao;
-import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.data.B_CostBomData;
 import com.ys.business.db.data.B_CostBomDetailData;
 import com.ys.business.db.data.B_InventoryMonthlyReportData;
-import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
@@ -338,7 +340,7 @@ public class FinanceReportService extends CommonService {
 		}
 		
 		if(("010").equals(statusFlag)){
-			//having=" stockinQty+0 < quantity+0 ";//ALL
+			having=" stockinQty+0 >= quantity+0 ";//ALL(待核算 + 已核算)
 			
 		}else if(("020").equals(statusFlag)){
 			having=" storageFinish ='020' and accountingDate='' ";//待核算
@@ -821,4 +823,87 @@ public class FinanceReportService extends CommonService {
 		return modelMap;
 		
 	}
+	
+	/**
+	 * 财务核算导出
+	 * @throws Exception
+	 */
+	public void downloadExcelForAccounting(String data) throws Exception{
+		
+		//设置响应头，控制浏览器下载该文件
+				
+		//数据取得
+		//List<Map<Integer, Object>>  datalist = getDownloadList();	
+		List<Map<Integer, Object>>  datalist = getDownloadList(data);			
+		
+		String fileName = CalendarUtil.timeStempDate()+".xls";
+		String dest = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)
+				+"/"+File.separator+fileName;
+       
+		String tempFilePath = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_EXCELTEMPLATE)+File.separator+"costaccounting.xls";
+        File file = new File(dest);
+       
+        OutputStream out = new FileOutputStream(file);         
+        ExcelUtil excel = new ExcelUtil(response);
+
+        //读取模板
+        Workbook wbModule = excel.getTempWorkbook(tempFilePath);
+        //数据填充的sheet
+        int sheetNo=0;
+        //title
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        wbModule = excel.writeData(wbModule, dataMap, sheetNo);        
+        //detail
+        //必须为列表头部所有位置集合,输出 数据单元格样式和头部单元格样式保持一致
+		String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "costAccoutingExcel");
+		String[] heads = title.split(",",-1);
+        excel.writeDateList(wbModule,heads,datalist,sheetNo);
+         
+        //写到输出流并移除资源
+        excel.writeAndClose(tempFilePath, out);
+        System.out.println("导出成功");
+        out.flush();
+        out.close();
+        
+      //***********************Excel下载************************//
+        excel.downloadFile(dest,fileName);
+	}
+	
+	@SuppressWarnings({ "unused", "rawtypes" })
+	public List<Map<Integer, Object>> getDownloadList(String jsonStr) throws Exception {
+
+		 List<Map<Integer, Object>> listMap = new ArrayList<Map<Integer, Object>>();
+		 
+		 dataModel.setQueryName("getPurchaseStockInById");
+		 baseQuery = new BaseQuery(request, dataModel);
+
+		 String htmlStr = reqModel.getJsonData();
+		 
+		 //String htmlStr = URLDecoder.decode(request.getParameter("html"), "UTF-8");
+		 JSONArray jsonArray = JSONArray.fromObject(htmlStr);
+		 Object[] list = (Object[]) JSONArray.toArray(jsonArray);
+
+		// Map<String,Object> map1 = (Map<String,Object>)JSON.parse(jsonStr); 
+	      
+		 for(int i=0;i<jsonArray.size();i++){
+			String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "costAccoutingTitle");
+			String[] titles = title.split(",",-1);
+			Map<Integer, Object> excel = new HashMap<Integer, Object>();
+
+			Map map = parseJSON2Map(jsonArray.get(i).toString());
+			 
+			for(int j=0;j<titles.length;j++){
+				excel.put(j,map.get(titles[j]));		
+			}
+			listMap.add(excel);
+		 }
+		
+		 return  listMap;
+
+	}
+
 }
