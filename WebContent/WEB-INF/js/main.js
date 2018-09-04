@@ -913,6 +913,27 @@ function buttonSelectedEvent2(){
         $(this).addClass("end");
     });
 }
+
+function buttonSelectedEvent3(){
+	//加载事件
+    $(function () {
+        var collection = $(".box3");
+        $.each(collection, function () {
+            $(this).addClass("start");
+        });
+    });
+    //单击事件
+    $(".box3").click(function () { 
+        var collection = $(".box3");
+        $.each(collection, function () {
+            $(this).removeClass("end");
+            $(this).addClass("start");
+        });
+        $(this).removeClass("start");
+        $(this).addClass("end");
+    });
+}
+
 function myTrim(x) {
 	if(x == null || x == "" || $.trim(x) == ""){
 		return "";

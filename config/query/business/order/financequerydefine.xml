@@ -430,6 +430,7 @@
    	    <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
       	<w name="a.checkInDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
         <w name="a.checkInDate"   des="" reqName="endDate"   dtype="ch" oper="&lt;"  lg="AND" bt="" />
+        <w name="A.orderType"     des="" reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
 </where>
   <select>
       <f name="A.YSId" alias="" ctype="" />
@@ -459,6 +460,7 @@
       <f name="a.lastPrice" alias="" ctype="" />
       <f name="a.orderType" alias="" ctype="" />
       <f name="a.labolCost" alias="" ctype="" />
+      <f name="a.orderDeduct" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <from>v_costaccountinglist a left join t_exchange_rate c ON c.rate_day = a.checkInDate AND c.currency = a.currency left join b_Customer b on b.customerId=a.customerId and b.deleteFlag='0' where a.payment='0' </from>
@@ -560,9 +562,11 @@
       	  <f name="IFNULL(REPLACE(IFNULL(b.quantity,a.manufactureQuantity), ',', ''),0) * IFNULL(REPLACE(a.price, ',', ''), 0)" alias="totalPrice" ctype="" />
       	  <f name="c.unit" alias="" ctype="计量单位" />
 	      <f name="c.MAPrice" alias="" ctype="" />
+	      <f name="a.unitQuantity" alias="" ctype="" />
+	      <f name="d.totalQuantity" alias="" ctype="" />
 	  	</select>
 	    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-	    <from>v_purchaseplandetailgroup  a  LEFT JOIN v_stockoutdetailgroup b ON a.YSId=b.YSId AND a.materialId=b.materialId LEFT JOIN b_material c ON a.materialId=c.materialid AND c.deleteFlag='0'  WHERE left(a.materialId,1) &lt;&gt; 'A' AND LEFT (a.materialId, 1) &lt;&gt; 'I' </from>
+	    <from>v_purchaseplandetailgroup  a LEFT JOIN b_orderdetail d ON a.YSId = d.YSId AND d.deleteFlag='0' LEFT JOIN v_stockoutdetailgroup b ON a.YSId=b.YSId AND a.materialId=b.materialId LEFT JOIN b_material c ON a.materialId=c.materialid AND c.deleteFlag='0'  WHERE left(a.materialId,1) &lt;&gt; 'A' AND LEFT (a.materialId, 1) &lt;&gt; 'I' </from>
 	    <groupby></groupby>
 	    <having></having>	
 	    <orderby>a.materialId</orderby>

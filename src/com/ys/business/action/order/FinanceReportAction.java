@@ -150,7 +150,9 @@ public class FinanceReportAction extends BaseAction {
 		return rtnUrl;
 	}	
 		
-	
+	public void doInit(){	
+		
+	}
 		
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> reportForDaybookSearch(String data){
@@ -281,7 +283,12 @@ public class FinanceReportAction extends BaseAction {
 		}
 		
 		String monthday = request.getParameter("monthday");
-		model.addAttribute("monthday",monthday);
+		String statusFlag = request.getParameter("statusFlag");
+		String orderType = request.getParameter("orderType");
+		
+		session.setAttribute("monthday",monthday);
+		session.setAttribute("statusFlag",statusFlag);
+		session.setAttribute("orderType",orderType);
 		
 		return dataMap;
 	}
@@ -290,10 +297,10 @@ public class FinanceReportAction extends BaseAction {
 		
 		try {			
 
-			String monthday = request.getParameter("monthday");
-			String statusFlag = request.getParameter("statusFlag");
-			session.setAttribute("monthday", monthday);
-			session.setAttribute("statusFlag", statusFlag);
+			//String monthday = request.getParameter("monthday");
+			//String statusFlag = request.getParameter("statusFlag");
+			//session.setAttribute("monthday", monthday);
+			//session.setAttribute("statusFlag", statusFlag);
 			
 			service.costAccountingAdd();
 			
@@ -309,10 +316,10 @@ public class FinanceReportAction extends BaseAction {
 		
 		try {			
 
-			String monthday = request.getParameter("monthday");
-			String statusFlag = request.getParameter("statusFlag");
-			session.setAttribute("monthday", monthday);
-			session.setAttribute("statusFlag", statusFlag);
+			//String monthday = request.getParameter("monthday");
+			//String statusFlag = request.getParameter("statusFlag");
+			//session.setAttribute("monthday", monthday);
+			//session.setAttribute("statusFlag", statusFlag);
 			
 			service.costAccountingPeiAdd();
 			
@@ -337,10 +344,10 @@ public class FinanceReportAction extends BaseAction {
 	
 	private void costBomDetailView() throws Exception {		
 		
-		String monthday = request.getParameter("monthday");
-		String statusFlag = request.getParameter("statusFlag");
-		session.setAttribute("monthday", monthday);
-		session.setAttribute("statusFlag", statusFlag);
+		//String monthday = request.getParameter("monthday");
+		//String statusFlag = request.getParameter("statusFlag");
+		//session.setAttribute("monthday", monthday);
+		//session.setAttribute("statusFlag", statusFlag);
 		
 		service.getOrderAndCostBomDetail();
 		
@@ -382,12 +389,18 @@ public class FinanceReportAction extends BaseAction {
 		
 		String monthday = (String) session.getAttribute("monthday");
 		if(monthday == null || monthday == "")
-			monthday = CalendarUtil.getLastDate();
+			monthday = CalendarUtil.getLastDate();//默认是前一月
 		
 		String statusFlag = (String) session.getAttribute("statusFlag");
 		if(statusFlag == null || statusFlag == "")
-			statusFlag = "010";//默认是ALL
+			statusFlag = "A";//默认是ALL
+		
 
+		String orderType = (String) session.getAttribute("orderType");//常规OR配件
+		if(orderType == null || ("").equals(orderType))
+			orderType = "010";//设置默认值：常规
+		
+		model.addAttribute("orderType",orderType);
 		model.addAttribute("monthday",monthday);
 		model.addAttribute("statusFlag",statusFlag);
 		

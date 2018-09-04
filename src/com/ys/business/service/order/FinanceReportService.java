@@ -334,21 +334,21 @@ public class FinanceReportService extends CommonService {
 		}
 
 		//040：查询部分入库，不再区分月份
-		if(("040").equals(statusFlag)){
+		if(("B").equals(statusFlag)){
 			userDefinedSearchCase.put("startDate", "");//忽略其时间段
 			userDefinedSearchCase.put("endDate", "");//忽略其时间段			
 		}
 		
-		if(("010").equals(statusFlag)){
+		if(("A").equals(statusFlag)){
 			having=" stockinQty+0 >= quantity+0 ";//ALL(待核算 + 已核算)
 			
-		}else if(("020").equals(statusFlag)){
+		}else if(("D").equals(statusFlag)){
 			having=" storageFinish ='020' and accountingDate='' ";//待核算
 			
-		}else if(("030").equals(statusFlag)){
+		}else if(("Y").equals(statusFlag)){
 			having=" accountingDate!='' ";//已核算
 			
-		}else if(("040").equals(statusFlag)){
+		}else if(("B").equals(statusFlag)){
 			having="stockinQty+0 > 0 AND storageFinish ='010' ";//部分入库
 		}
 		
@@ -705,9 +705,10 @@ public class FinanceReportService extends CommonService {
 
 			//取得BOM编号
 			YSId = reqData.getYsid();
-			String materialId = reqData.getMaterialid();
-			reqData = setCostBomId(materialId,reqData);
-			String bomId = reqData.getBomid();
+			reqData.setBomid(YSId);
+			//String materialId = reqData.getMaterialid();
+			//reqData = setCostBomId(materialId,reqData);
+			//String bomId = reqData.getBomid();
 
 			insertCostBom(reqData);
 						
@@ -717,7 +718,7 @@ public class FinanceReportService extends CommonService {
 				if(isNullOrEmpty(data.getMaterialid()))
 					continue;
 				
-				data.setBomid(bomId);
+				data.setBomid(YSId);
 				insertCostBomDetail(data);
 								
 			}
@@ -781,7 +782,7 @@ public class FinanceReportService extends CommonService {
 		new B_CostBomDetailDao().Create(data);		
 	}
 	
-	public B_CostBomData setCostBomId(
+	private B_CostBomData setCostBomId(
 			String materialId,
 			B_CostBomData reqData) throws Exception {
 

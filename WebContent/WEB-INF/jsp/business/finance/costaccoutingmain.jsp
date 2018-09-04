@@ -13,7 +13,7 @@ body{
 <script type="text/javascript">
 
 
-	function ajax(orderNature,monthday,sessionFlag,status) {
+	function ajax(orderType,monthday,sessionFlag,status) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -22,6 +22,7 @@ body{
 		var url = "${ctx}/business/financereport?methodtype=costAccountingSsearch&sessionFlag="+sessionFlag;
 		url = url + "&monthday=" +monthday;
 		url = url + "&statusFlag=" +status;
+		url = url + "&orderType=" +orderType;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": false,
@@ -53,12 +54,17 @@ body{
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
 							
+							
 							if(data["keyword1"] != '' || data["keyword2"] != ''){
 								var collection = $(".box");
 							    $.each(collection, function () {
 							    	$(this).removeClass("end");
 							    });
 							    var collection = $(".box2");
+							    $.each(collection, function () {
+							    	$(this).removeClass("end");
+							    });
+							    var collection = $(".box3");
 							    $.each(collection, function () {
 							    	$(this).removeClass("end");
 							    });
@@ -168,7 +174,10 @@ body{
 		    			var labolCost = currencyToFloat(row["labolCost"]);//人工成本
 		    			var rmbprice = currencyToFloat(row["RMBPrice"]);//原币金额
 						var rebaterate = 0.16;//退税率
-						var rebate = floatToCurrency(row["rebate"]);//退税
+						var rebate = currencyToFloat(row["rebate"]);//退税
+						var gendan = currencyToFloat(row["orderDeduct"]);//跟单费用（订单过程中以负数录入）
+
+						var gross = 0;//毛利
 						
 		    			if(cost == 0){
 		    				if(orderType == '020'){
@@ -201,7 +210,7 @@ body{
 		    					//纯内销
 		    					//增值税
 		    					zeng = (actualSales - mateCost) / 1.16 * 0.16 ;
-		    					profit = actualSales - cost - zeng;
+		    					gross = actualSales - cost - zeng;
 		    					rmbprice = actualSales;		    					
 		    					
 		    			//	}else{
@@ -217,9 +226,15 @@ body{
 		    				//退税
 		    				rebate = mateCost * rebaterate / (1 + rebaterate);
 		    				rmbprice = actualSales * exchange;
-		    				profit = rmbprice - cost + rebate;
+		    				gross = rmbprice - cost + rebate;
 		    			}
-		    			profitrate = floatToCurrency(profit / cost * 100);
+		    			profit = gross + gendan;
+		    			if(cost <= 0){
+
+			    			profitrate = 0;
+		    			}else{
+			    			profitrate = floatToCurrency(profit / cost * 100);
+		    			}
 		    			profit = floatToCurrency(profit);
 
 		    			var text =	'<input type="hidden" name="rmbprice" 	id="rmbprice'+index + '" 	value="'+rmbprice+'" >';
@@ -230,8 +245,8 @@ body{
 		    			text +=		'<input type="hidden" name="exchange" 	id="exchange'+index + '" 	value="'+exchange+'" >';
 		    			text +=		'<input type="hidden" name="profit" 	id="profit'+index + '" 		value="'+profit+'" >';
 		    			text +=		'<input type="hidden" name="profitrate"	id="profitrate'+index + '" 	value="'+profitrate+'" >';
-		    			
-		    			return profit + "<br />" + profitrate +"%" + text;
+
+		    			return profit + "<br />" + profitrate +"%"+ text;
 		    			
 		    			//return floatToCurrency(profit)+"<br />+"+"（"+floatToCurrency(profitrate)+"%）";//+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
 		    			//return cost+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
@@ -242,6 +257,7 @@ body{
 		    		{"targets":14,"render":function(data, type, row){
 		    			var stockinQty = currencyToFloat(row["stockinQty"]);
 		    			var orderQty = currencyToFloat(row["quantity"]);
+		    			var storageFinish = currencyToFloat(row["storageFinish"]);
 		    			var accountingDate = currencyToFloat(row["accountingDate"]);
 		    			var rtn="";
 		    			if(accountingDate != '' ){
@@ -251,7 +267,13 @@ body{
 			    				rtn="待核算";
 			    					
 			    			}else{
-			    				rtn = "待入库";
+			    				if(storageFinish == '020'){
+
+				    				rtn="待核算";
+			    				}else{
+
+				    				rtn = "待入库";
+			    				}
 			    			}
 		    			}
 		    			
@@ -277,7 +299,9 @@ body{
 
 		var monthday = $('#monthday').val();
 		var statusFlag = $('#statusFlag').val();
-		ajax("",monthday,"true",statusFlag);
+		var orderType = $('#orderType').val();
+		
+		ajax(orderType,monthday,"true",statusFlag);
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -297,10 +321,13 @@ body{
 	
 		buttonSelectedEvent();//按钮选择式样
 		buttonSelectedEvent2();//按钮选择式样2
+		buttonSelectedEvent3();//按钮选择式样3
 		
 		var month = "";
 		var monthday = $('#monthday').val();
 		var statusFlag = $('#statusFlag').val();
+		var orderType = $('#orderType').val();
+		
 		if(monthday == '' || monthday == null){
 			month = getMonth();
 		}else{
@@ -309,6 +336,7 @@ body{
 	
 		$('#defutBtn'+month).removeClass("start").addClass("end");
 		$('#defutBtn'+statusFlag).removeClass("start").addClass("end");
+		$('#defutBtn'+orderType).removeClass("start").addClass("end");
 	})	
 	
 	function doSearch() {	
@@ -355,7 +383,8 @@ body{
 		$('#monthday').val(todaytmp);
 		
 		var statusFlag = $('#statusFlag').val();
-		ajax('',todaytmp,'false',statusFlag);
+		var orderType = $('#orderType').val();
+		ajax(orderType,todaytmp,'false',statusFlag);
 	}
 	
 	//部分入库
@@ -369,9 +398,21 @@ body{
 	//订单状态
 	function doSearchCustomer2(status){
 		var monthday = $('#monthday').val();
+		var orderType = $('#orderType').val();
 
 		$('#statusFlag').val(status);
-		ajax('',monthday,'false',status);
+		
+		ajax(orderType,monthday,'false',status);
+	}
+	
+	//订单分类
+	function doSearchCustomer5(orderType){
+		var monthday = $('#monthday').val();
+		var statusFlag = $('#statusFlag').val()
+
+		$('#orderType').val(orderType);
+		
+		ajax(orderType,monthday,'false',statusFlag);
 	}
 
 	//月度统计
@@ -385,11 +426,14 @@ body{
 	
 	function doShow(YSId) {
 
-		var monthday = $('#monthday').val();
+		var monthday   = $('#monthday').val();
 		var statusFlag = $('#statusFlag').val();
+		var orderType  = $('#orderType').val();
+		
 		var url = '${ctx}/business/financereport?methodtype=costBomDetailView'
 				+"&monthday="+monthday
 				+"&statusFlag="+statusFlag
+				+"&orderType="+orderType
 				+"&YSId="+YSId;
 
 		location.href = url;
@@ -413,6 +457,8 @@ body{
 		var jpy = 0;
 		var costSum = 0;
 		var labolCnt = 0;
+		var ysCnt = 0;//订单个数
+		var profitCnt = 0;
 		$('#TMaterial tbody tr').each (function (){
 
 			var sales        = $(this).find("td").eq(7).text();//销售额
@@ -420,13 +466,16 @@ body{
 			var cost         = $(this).find("td").eq(10).find("input[name=cost]").val();//核算成本
 			var labolCost    = $(this).find("td").eq(10).find("input[name=labolCost]").val();//人工成本
 			var rate         = $(this).find("td").eq(10).find("input[name=exchange]").val();//汇率
+			var profit       = $(this).find("td").eq(10).find("input[name=profit]").val();//利润
 			
 			sales = currencyToFloat(sales);
 			cost = currencyToFloat(cost);
 			labolCost = currencyToFloat(labolCost);
+			profit = currencyToFloat(profit);
 			rmbCount = rmbCount + rate * sales;//人民币总计
 			costSum = costSum + cost;//核算成本合计
 			labolCnt = labolCnt + labolCost;//人工成本合计
+			profitCnt = profitCnt + profit;//利润合计
 			//alert("labolCnt+labolCost"+labolCnt+"::::"+labolCost)
 			if(currencyType == 'RMB'){
 				rmb = rmb + sales;//
@@ -439,6 +488,8 @@ body{
 			}else if(currencyType == 'JPY'){
 				jpy = jpy + sales;//
 			}
+			
+			ysCnt++;
 						
 		});	
 		//alert("rmb:"+rmb)
@@ -463,12 +514,12 @@ body{
 		textView = textView +"&nbsp;&nbsp;RMB销售总计：¥ " + floatToCurrency(rmbCount);
 		
 		textView = textView + "&nbsp;&nbsp;总成本：¥ "+ floatToCurrency(costSum);
-		textView = textView + "&nbsp;&nbsp;人工成本：¥ "+ floatToCurrency(labolCnt);
+		textView = textView + "&nbsp;&nbsp;人工：¥ "+ floatToCurrency(labolCnt);
 		
-		var profit = rmbCount - costSum;//利润
-		var profitm = profit / costSum * 100;//利润率
+		//var profit = rmbCount - costSum;//利润
+		var profitm = profitCnt / costSum * 100;//利润率
 		
-		textView = textView + "&nbsp;&nbsp;总利润：¥ "+ floatToCurrency(profit)+"（"+floatToCurrency(profitm)+"%）";
+		textView = textView + "&nbsp;&nbsp;利润：¥ "+ floatToCurrency(profitCnt)+"（"+floatToCurrency(profitm)+"%）";
 		
 		$('#costCount').html(textView);
 		
@@ -547,62 +598,41 @@ body{
 				//heads.push($(item).text());
 		    	
 		    });
-		  // alert(heads)
+
 		    // tbody
 		    $('#TMaterial tbody tr').each(function(index, item){
 		    	
 		      	var rowdata = {};
 		      	var y=0;
-		     	//$(item).find('td').each(function(index,item){
-		       		// if($(item).find('[josnval]').size()>0){
-		     	 //    console.log("have json val");
-		      
-				//var sales        = $(this).find("td").eq(7).text();//销售额
-				//var currencyType = $(this).find("td").eq(10).find("input[name=currency]").val();//币种
-
-
 				rowdata[heads[0]] = $(item).find("td").eq(0).text();
 				rowdata[heads[1]] = $(item).find("td").eq(1).text();
 				rowdata[heads[2]] = $(item).find("td").eq(2).text();
 				rowdata[heads[3]] = $(item).find("td").eq(3).text();
 				rowdata[heads[4]] = $(item).find("td").eq(4).text();
-			   // if(index == 5){
 	
-			    	 var order = $(item).find("td").eq(5).find('input[name=order]').val();
-			    	 var manuf = $(item).find("td").eq(5).find('input[name=manuf]').val();
-			    	 
-			    	  rowdata[heads[5]] = order;
-			    	  rowdata[heads[6]] = manuf;
+	    	 	var order = $(item).find("td").eq(5).find('input[name=order]').val();
+	    	 	var manuf = $(item).find("td").eq(5).find('input[name=manuf]').val();
+	    	 
+		    	rowdata[heads[5]] = order;
+		    	rowdata[heads[6]] = manuf;
 
-						rowdata[heads[7]] = $(item).find("td").eq(6).text();
-						rowdata[heads[8]] = $(item).find("td").eq(7).text();
-						rowdata[heads[9]] = $(item).find("td").eq(8).text();
-						
-
-			     // }else if (index == 9){
-			    	  
-						var cost 		= $(item).find("td").eq(9).find('input[name=cost]').val();
-				    	var labolCost	= $(item).find("td").eq(9).find('input[name=labolCost]').val();
-				    	 
-				    	rowdata[heads[10]] = cost;
-				    	rowdata[heads[11]] = labolCost;
-			    	  
-			     // }else if (index == 10){
-				    	var profit 		= $(item).find("td").eq(10).find('input[name=profit]').val();
-				    	var profitrate 	= $(item).find("td").eq(10).find('input[name=profitrate]').val();
-				    	
-				    	rowdata[heads[12]] = profit;
-				    	rowdata[heads[13]] = profitrate;
-				    	
-						rowdata[heads[14]] = $(item).find("td").eq(11).text();
-						
-						
-			    //  }else{
-			    	 // rowdata[heads[y]] = $(item).text();
-			     // }
-			    
-			   // y++;
-			    
+				rowdata[heads[7]] = $(item).find("td").eq(6).text();
+				rowdata[heads[8]] = $(item).find("td").eq(7).text();
+				rowdata[heads[9]] = $(item).find("td").eq(8).text();
+							    	  
+				var cost 		= $(item).find("td").eq(9).find('input[name=cost]').val();
+		    	var labolCost	= $(item).find("td").eq(9).find('input[name=labolCost]').val();
+		    	 
+		    	rowdata[heads[10]] = cost;
+		    	rowdata[heads[11]] = labolCost;
+	    	  
+		    	var profit 		= $(item).find("td").eq(10).find('input[name=profit]').val();
+		    	var profitrate 	= $(item).find("td").eq(10).find('input[name=profitrate]').val();
+		    	
+		    	rowdata[heads[12]] = profit;
+		    	rowdata[heads[13]] = profitrate;
+		    	
+				rowdata[heads[14]] = $(item).find("td").eq(11).text();
 			    
 		       // }else{
 		      //    console.log("no jsonval");
@@ -627,6 +657,7 @@ body{
 		
 			<input type="hidden" id="monthday"  value="${monthday }"/>
 			<input type="hidden" id="statusFlag"  value="${statusFlag }"/>
+			<input type="hidden" id="orderType"  value="${orderType }"/>
 			<input type="hidden" id="jsonData"  name = "jsonData"  />
 			
 			<table>
@@ -641,6 +672,25 @@ body{
 					<td>
 						<button type="button" id="retrieve" class="DTTT_button" 
 							style="width:50px" value="查询" onclick="doSearch();"/>查询</td>
+					<td style="vertical-align: bottom;width: 150px;">
+					</td> 
+					<td width="10%"></td> 
+				</tr>
+				<tr>
+					<td width="10%"></td> 
+					<td class="label" style="width:100px">订单分类：</td>
+					<td class="">
+						<a id="defutBtn010"  class="DTTT_button box3" onclick="doSearchCustomer5('010');">
+						<span>常规订单</span></a> 
+				 		<a id="defutBtn020"  class="DTTT_button box3" onclick="doSearchCustomer5('020');">
+						<span>装配品</span></a> 					</td>
+					<td class="label" style="width:100px">审核状态：</td> 
+					<td class="">
+						<a  class="DTTT_button box2" onclick="doSearchCustomer2('A');" id="defutBtnA"><span>ALL</span></a>
+						<a  class="DTTT_button box2" onclick="doSearchCustomer2('D');" id="defutBtnD"><span>待审</span></a>
+						<a  class="DTTT_button box2" onclick="doSearchCustomer2('Y');" id="defutBtnY"><span>已审</span></a>
+					</td>
+					<td></td>
 					<td style="vertical-align: bottom;width: 150px;">
 					</td> 
 					<td width="10%"></td> 
@@ -676,7 +726,7 @@ body{
 						<span>11月</span></a>
 				 		<a id="defutBtn14" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer4('050');">
 						<span>月度统计</span></a> 
-				 		&nbsp;&nbsp;<a id="defutBtn13" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer3('040');">
+				 		&nbsp;&nbsp;<a id="defutBtnB" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer3('B');">
 						<span>部分入库</span></a> 	
 					</td>
 				</tr>
@@ -689,13 +739,7 @@ body{
 	<div class="list">
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
-		
-			<div id="DTTT_container2" style="height:40px;float: left">
-			  	<a  class="DTTT_button box2" onclick="doSearchCustomer2('010');" id="defutBtn010"><span>ALL</span></a>
-				<a  class="DTTT_button box2" onclick="doSearchCustomer2('020');" id="defutBtn020"><span>待审核</span></a>
-				<a  class="DTTT_button box2" onclick="doSearchCustomer2('030');" id="defutBtn030"><span>已审核</span></a>
-			</div>
-			
+					
 			<div id="DTTT_container2" style="height:40px;float: right">
 			  	<a  class="DTTT_button" onclick="downloadExcel();return false;" ><span>EXCEL</span></a>
 			</div>

@@ -60,7 +60,7 @@
 			        	{"data": null,"className":"dt-body-center"
 					}, {"data": "materialId"
 					}, {"data": "materialName"
-					}, {"data": "unit","className":"td-center"
+					}, {"data": "unitQuantity","className":"td-right"
 					}, {"data": "orderQty","className":"td-right"//4
 					}, {"data": "stockoutQty","className":"td-right"//5
 					}, {"data": null,"className":"td-right"//6 核算数量
@@ -81,18 +81,25 @@
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 		    			var rowIndex = row["rownum"];
-		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].quantity" id="costBomList'+rowIndex+'.quantity"  value="'+data+'" />';
+		    			var unit = currencyToFloat(row["unitQuantity"]);
+		    			var order = currencyToFloat(row["totalQuantity"]);
+		    			var orderQty = floatToCurrency(unit * order);
+		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].quantity" id="costBomList'+rowIndex+'.quantity"  value="'+orderQty+'" />';
 		    			
-		    			return data + text;
+		    			return orderQty + text;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 			    		return floatToCurrency(data);
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){//核算数量
 		    			var rowIndex = row["rownum"];
-		    			var orderQty = currencyToFloat(row["orderQty"]);
+		    			//var orderQty = currencyToFloat(row["orderQty"]);
+		    			var unit = currencyToFloat(row["unitQuantity"]);
+		    			var order = currencyToFloat(row["totalQuantity"]);
 		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
 		    			var quantity = 0;
+		    			var orderQty = unit * order;
+		    			
 		    			//领料 >= 需求，取领料，否则取需求
 		    			if(stockoutQty >= orderQty){
 		    				quantity = stockoutQty;
@@ -106,8 +113,11 @@
 		    		{"targets":8,"render":function(data, type, row){
 		    			var rowIndex = row["rownum"];
 		    			var price = currencyToFloat(row["price"]);
-		    			var orderQty = currencyToFloat(row["orderQty"]);
+		    			//var orderQty = currencyToFloat(row["orderQty"]);
 		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
+		    			var unit = currencyToFloat(row["unitQuantity"]);
+		    			var order = currencyToFloat(row["totalQuantity"]);
+		    			var orderQty = unit * order;
 		    			var quantity = 0;
 		    			//领料 >= 需求，取领料，否则取需求
 		    			if(stockoutQty >= orderQty){
@@ -317,7 +327,7 @@
 			rmbprice = actualSales * exchange;
 			gross = rmbprice - cost + rebate;
 		}
-		profit = gross - deductCost;//毛利-跟单费用
+		profit = gross + deductCost;//毛利-跟单费用（订单过程中，扣除费用是负数录入的）
 		profitrate = profit / cost * 100
 		
 		$(".read-only").attr('readonly', "true");
@@ -469,8 +479,8 @@
 						<th width="1px">No</th>
 						<th class="dt-center" width="120px">物料编号</th>
 						<th class="dt-center" >物料名称</th>
-						<th class="dt-center" width="30px">单位</th>
-						<th class="dt-center" width="50px">订单用量</th>
+						<th class="dt-center" width="30px">单位量</th>
+						<th class="dt-center" width="50px">订单数量</th>
 						<th class="dt-center" width="50px">领料数量</th>
 						<th class="dt-center" width="50px">核算数量</th>
 						<th class="dt-center" width="60px">BOM单价</th>
