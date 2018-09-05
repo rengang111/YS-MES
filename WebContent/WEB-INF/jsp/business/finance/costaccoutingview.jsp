@@ -59,11 +59,11 @@
 			        	{"data": null,"className":"dt-body-center"
 					}, {"data": "materialId"
 					}, {"data": "materialName"
-					}, {"data": "unit","className":"td-center"
+					}, {"data": "unitQuantity","className":"td-center"
+					}, {"data": "orderQty","className":"td-right", "defaultContent" : '',
 					}, {"data": "quantity","className":"td-right"
 					}, {"data": "totalPrice","className":"td-right"
 					}, {"data": "price","className":"td-right"
-					}, {"data": null, "defaultContent" : '',
 					}
 				],
 				"columnDefs":[
@@ -77,6 +77,9 @@
 		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);
 		    		}}
 		    	] 
@@ -291,11 +294,11 @@
 						<th width="1px">No</th>
 						<th class="dt-center" width="120px">物料编号</th>
 						<th class="dt-center" >物料名称</th>
-						<th class="dt-center" width="40px">单位</th>
+						<th class="dt-center" width="40px">单位用量</th>
+						<th class="dt-center" width="50px">订单数量</th>
 						<th class="dt-center" width="80px">领料数量</th>
 						<th class="dt-center" width="80px">合计金额</th>
 						<th class="dt-center" width="80px">平均单价</th>
-						<th class="dt-center" width="10px"></th>
 					</tr>
 				</thead>
 			</table>

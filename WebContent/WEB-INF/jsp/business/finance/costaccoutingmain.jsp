@@ -643,7 +643,32 @@ body{
 		      jsondata.push(rowdata);
 		    });
 		    return jsondata;
-		  };
+	};
+		  
+		  
+	function errorCheckAndCostCount(){
+			
+			var cost = 0;
+			$('#example2 tbody tr').each (function (){
+				
+				var stockOutQty = $(this).find("td").eq(5).text();//领料数量
+				var contractValue = $(this).find("td").eq(8).text();//领料金额
+				
+				stockOutQty = currencyToFloat(stockOutQty);
+				contractValue= currencyToFloat(contractValue);
+				
+				cost = cost + contractValue;
+				
+				if( stockOutQty == 0){
+					
+					$(this).addClass('error');
+				}
+							
+			});	
+			
+	}
+	
+	
 </script>
 </head>
 

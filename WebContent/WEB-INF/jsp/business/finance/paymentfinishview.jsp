@@ -133,6 +133,7 @@
 		ajax();
 		history();
 		productPhotoView();//付款单据
+		paymentSum();//已付款合计
 		
 		var contract = contractSum(4);
 		var minis = contractSum(5);
@@ -162,6 +163,22 @@
 			sum = currencyToFloat(sum) + ftotal;			
 		})
 		return sum;
+	}
+	
+	//列合计
+	function paymentSum(){
+
+		var sum = 0;
+		$('#history tbody tr').each (function (){
+			
+			var vtotal = $(this).find("td").eq(6).text();
+			var ftotal = currencyToFloat(vtotal);
+			
+			sum = currencyToFloat(sum) + ftotal;			
+		})
+
+		$('#paymentCount').html(floatToCurrency(sum));	
+		$('#paymentCount2').html(floatToCurrency(sum));		
 	}
 	
 	function doShowContract(contractId) {
@@ -278,7 +295,10 @@ function photoView(id, tdTable, count, data) {
 				<td width="150px">${payment.applicantName }</td>
 														
 				<td width="100px" class="label">申请日期：</td>
-				<td>${payment.requestDate }</td>				
+				<td width="150px">${payment.requestDate }</td>	
+				
+				<td width="100px" class="label">付款类别：</td>
+				<td>${payment.paymentType }</td>			
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">供应商编号：</td>					
@@ -288,17 +308,18 @@ function photoView(id, tdTable, count, data) {
 				<td width="150px">${supplier.shortName }</td>
 														
 				<td width="100px" class="label">供应商名称：</td>
-				<td>${supplier.supplierName }</td>
+				<td colspan="3">${supplier.supplierName }</td>
 			</tr>
-			<tr>			
+			<tr>	
+				<td width="100px" class="label">已付款合计：</td>
+				<td class="font16" ><div id="paymentCount"></div></td>
+						
 				<td class="label" width="100px">申请付款总额：</td>					
 				<td class="font16" width="150px">${payment.totalPayable }</td>
 								
 				<td class="label" width="100px">付款条件：</td>					
 				<td width="150px">入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
 														
-				<td width="100px" class="label">付款类别：</td>
-				<td width="150px">${payment.paymentType }</td>
 				
 				<td width="100px" class="label">付款状态：</td>
 				<td class="bold">${payment.finishStatus }</td>
@@ -312,7 +333,7 @@ function photoView(id, tdTable, count, data) {
 	</div>
 	<fieldset>
 		<legend> 付款信息</legend>
-		<table class="form" id="history">
+		<table class="display" id="history">
 			<thead>
 				<tr> 
 					<th width="30px">No</th>				
@@ -338,42 +359,19 @@ function photoView(id, tdTable, count, data) {
 					<td></td>
 				</tr>
 			</c:forEach>
-			</tbody>										
-		</table>
-	</fieldset>
-	<fieldset>
-		<legend>收据清单</legend>
-		<div class="list">
-			<div class="" id="subidDiv" style="min-height: 300px;">
-				<table id="productPhoto" class="phototable">
-					<tbody><tr class="photo"><td></td><td></td></tr></tbody>
-				</table>
-			</div>
-		</div>	
-	</fieldset>
-	
-	<fieldset>
-		<legend> 审核结果</legend>
-		<table class="form" id="table_form2">
-			<tr>
-				<td width="100px" class="label">审核人：</td>
-				<td width="100px" >${payment.approvalUser }</td>
-				<td width="100px" class="label">审核结果：</td>
-				<td width="100px" >${payment.approvalStatus }</td>
-				<td width="100px" class="label">审核日期：</td>
-				<td width="100px" >${payment.approvalDate }</td>
-				<td width="100px" class="label">发票类型：</td>
-				<td width="100px">${payment.invoiceType }</td>
-				<td width="100px" class="label">发票编号：</td>
-				<td>${payment.invoiceNumber }</td>
-			</tr>
-			<!-- 	
-			<tr>	
-				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
-				<td colspan="7" >
-					<pre>${payment.approvalFeedback }</pre></td>
-			</tr>	
-			 -->					
+			</tbody>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>合计：</td>
+					<td><span id="paymentCount2" style="font-weight: bold;"></span></td>
+					<td></td>
+				</tr>
+			</tfoot>										
 		</table>
 	</fieldset>
 	<fieldset>
@@ -426,13 +424,47 @@ function photoView(id, tdTable, count, data) {
 					<td>合计：</td>
 					<td><span id="contractTotal" style="font-weight: bold;"></span></td>
 					<td><span id="minisTotal" style="font-weight: bold;"></span></td>
-					<td></td>
 					<td><span id="paymentTotal" style="font-weight: bold;"></span></td>
 					<td></td>
 				</tr>
 			</tfoot>
 		</table>
 		</div>
+	</fieldset>
+	<fieldset>
+		<legend>收据清单</legend>
+		<div class="list">
+			<div class="" id="subidDiv" style="min-height: 300px;">
+				<table id="productPhoto" class="phototable">
+					<tbody><tr class="photo"><td></td><td></td></tr></tbody>
+				</table>
+			</div>
+		</div>	
+	</fieldset>
+	
+	<fieldset>
+		<legend> 审核结果</legend>
+		<table class="form" id="table_form2">
+			<tr>
+				<td width="100px" class="label">审核人：</td>
+				<td width="100px" >${payment.approvalUser }</td>
+				<td width="100px" class="label">审核结果：</td>
+				<td width="100px" >${payment.approvalStatus }</td>
+				<td width="100px" class="label">审核日期：</td>
+				<td width="100px" >${payment.approvalDate }</td>
+				<td width="100px" class="label">发票类型：</td>
+				<td width="100px">${payment.invoiceType }</td>
+				<td width="100px" class="label">发票编号：</td>
+				<td>${payment.invoiceNumber }</td>
+			</tr>
+			<!-- 	
+			<tr>	
+				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
+				<td colspan="7" >
+					<pre>${payment.approvalFeedback }</pre></td>
+			</tr>	
+			 -->					
+		</table>
 	</fieldset>
 </form:form>
 

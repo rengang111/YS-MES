@@ -87,11 +87,13 @@
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";//
 		    			var paymentId=row["paymentId"];
-		    			var id = data;
+		    			var id = row["paymentHistoryId"];
 		    			if(data =="" || data == null){
-		    				id= "（未付款）";		    			 				
+			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ paymentId + "')\">" + paymentId + "</a>";		    					    				
+		    			}else{
+			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ paymentId + "')\">" + id + "</a>";		    					    				
+		    				
 		    			}
-		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ paymentId + "')\">" + id + "</a>";		    					    				
 		    			
 					    return rtn;
 					    

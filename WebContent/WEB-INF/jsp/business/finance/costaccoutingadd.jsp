@@ -84,9 +84,8 @@
 		    			var unit = currencyToFloat(row["unitQuantity"]);
 		    			var order = currencyToFloat(row["totalQuantity"]);
 		    			var orderQty = floatToCurrency(unit * order);
-		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].quantity" id="costBomList'+rowIndex+'.quantity"  value="'+orderQty+'" />';
 		    			
-		    			return orderQty + text;
+		    			return orderQty;
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 			    		return floatToCurrency(data);
@@ -98,6 +97,10 @@
 		    			var order = currencyToFloat(row["totalQuantity"]);
 		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
 		    			var quantity = 0;
+		    			
+		    			if(unit==0)
+		    				unit = 1;//默认设置单位使用量：1
+		    				
 		    			var orderQty = unit * order;
 		    			
 		    			//领料 >= 需求，取领料，否则取需求
@@ -107,8 +110,10 @@
 		    				quantity = orderQty;
 		    			}
 		    			quantity = floatToCurrency(quantity);
-		     			
-		    			return quantity;
+
+		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].quantity" id="costBomList'+rowIndex+'.quantity"  value="'+quantity+'" />';
+
+		    			return quantity + text;
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
 		    			var rowIndex = row["rownum"];
@@ -117,6 +122,9 @@
 		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
 		    			var unit = currencyToFloat(row["unitQuantity"]);
 		    			var order = currencyToFloat(row["totalQuantity"]);
+		    			
+		    			if(unit==0)
+		    				unit = 1;//默认设置单位使用量：1
 		    			var orderQty = unit * order;
 		    			var quantity = 0;
 		    			//领料 >= 需求，取领料，否则取需求
@@ -371,8 +379,6 @@
 
 				<td class="label" style="width:100px">产品名称：</td>	
 				<td>${order.materialName }</td>	
-				
-				
 			</tr>
 			<tr>
 				<td class="label" style="width:100px">订单数量：</td>					
