@@ -954,17 +954,22 @@
     	<w name="A.fullField" des=""  reqName="keyword1"  dtype="ch" oper="like"  lg="AND" bt="" />
    	  	<w name="A.fullField" des=""  reqName="keyword2"  dtype="ch" oper="like"  lg="AND" bt="" />
 
-    	<w name="a.receiptId" des="" reqName="receiptId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.receiptId"  des="" reqName="receiptId"  dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.YSId"       des="" reqName="YSId"       dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.recordId" alias="" ctype="" />
       <f name="a.receiptId" alias="" ctype="" />
+      <f name="a.reverse" alias="" ctype="" />
+      <f name="a.reverseValid" alias="" ctype="" />
       <f name="a.YSId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.contractId" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.remarks" alias="" ctype="" />
       <f name="a.quantity" alias="" ctype="" />
+      <f name="a.price" alias="" ctype="" />
       <f name="DATE_FORMAT(a.checkInDate,'%Y-%m-%d')" alias="checkInDate" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />

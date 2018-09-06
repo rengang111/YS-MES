@@ -172,7 +172,7 @@ public class DepotReturnService extends CommonService {
 
 					//更新库存
 					updateMaterial(
-							"直接入库删除处理",
+							"入库退货删除处理",
 							detail.getMaterialid(),
 							String.valueOf(stringToFloat(detail.getQuantity()) * (-1)),//退货数是负数，还原处理，所以 * -1
 							"0");
@@ -264,7 +264,7 @@ public class DepotReturnService extends CommonService {
 			String materialId = detail.getMaterialid();
 			float foldQty = stringToFloat(oldQty);//更新前
 			String newQty = floatToString( foldQty - freqQty );//前后差值
-			updateMaterial("直接入库更新处理",materialId,newQty,"0");
+			updateMaterial("入库退货更新处理",materialId,newQty,"0");
 			
 			ts.commit();
 			
@@ -360,15 +360,14 @@ public class DepotReturnService extends CommonService {
 			detail.setPackaging(dbDetail.getPackaging());
 			detail.setDepotid(dbDetail.getDepotid());
 			detail.setPrice(price);
-			
-			float fquantity = stringToFloat(detail.getQuantity());//冲账处理
-			String quantity = floatToString(fquantity);
+
+			String quantity = detail.getQuantity();//
 			
 			detail.setQuantity(quantity);
 			insertPurchaseStockInDetail(detail);
 
 			//更新库存
-			updateMaterial("直接入库新增处理",materialId,quantity,"0");
+			updateMaterial("入库退货更新处理",materialId,quantity,"0");
 			
 			ts.commit();
 			
@@ -632,5 +631,51 @@ public class DepotReturnService extends CommonService {
 		
 	}
 	
+	public HashMap<String, Object> getDepotReturnByContract() throws Exception{
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String contractId = request.getParameter("contractId");				
+
+		dataModel.setQueryName("getDepotReturnList");
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("contractId", contractId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
+		baseQuery.getYsFullData();	
+
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> CansolDepotReturnByStockinId() throws Exception{
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String stockinId = request.getParameter("stockinId");
+		//String materialId = request.getParameter("materialId");								
+
+		String where =" receiptId='" + stockinId 
+			//	+"’AND materialId='" + materialId 
+				+"' AND deleteFlag='0'";
+		
+		List<B_PurchaseStockInData> list = new B_PurchaseStockInDao().Find(where);
+		
+		if( list.size() > 0 ){
+			B_PurchaseStockInData data = list.get(0);
+			data.setReversevalid("1");//取消扣款
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"取消扣款",userInfo);
+			copyProperties(data,commData);
+			
+			new B_PurchaseStockInDao().Store(data);
+			
+		}
+		
+
+		modelMap.put("returnCode", "SUCCESS");
+		
+		return modelMap;
+	}
 	
 }

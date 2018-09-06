@@ -107,6 +107,14 @@ public class DepotReturnAction extends BaseAction {
 				getDepotRentunDeital();
 				rtnUrl = "/business/inventory/depotreturnview";
 				break;
+			case "getDepotReturnByContract":
+				dataMap = getDepotReturnByContract();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "CansolDepotReturnByStockinId":
+				dataMap = CansolDepotReturnByStockinId();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -229,4 +237,17 @@ public class DepotReturnAction extends BaseAction {
 			e.printStackTrace();
 		}
 	}
+	
+	public HashMap<String, Object> getDepotReturnByContract() throws Exception{
+
+		return service.getDepotReturnByContract();
+	}
+	
+	public HashMap<String, Object> CansolDepotReturnByStockinId() throws Exception{
+
+		return service.CansolDepotReturnByStockinId();
+	}
+	
+	
+	
 }

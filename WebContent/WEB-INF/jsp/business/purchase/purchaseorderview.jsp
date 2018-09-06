@@ -7,6 +7,8 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
+var orderExpanseQty='0';
+
 function deductAjax() {
 	
 	var table = $('#example2').dataTable();
@@ -48,7 +50,7 @@ function deductAjax() {
 					success: function(data){
 
 						fnCallback(data);
-						var orderExpanseQty = currencyToFloat( data["orderExpanseQty"] );
+						orderExpanseQty = currencyToFloat( data["orderExpanseQty"] );
 						sumFn(orderExpanseQty);
 						
 					},
@@ -288,11 +290,15 @@ function deductAjax() {
 			
 		});
 		
-		deductAjax();
 		
 		contractSum();//合同计算
 		
 		expenseAjax3();//订单过程扣款明细
+		
+		stockinAjax();//入库退货
+		
+
+		deductAjax();
 		
 	});	
 	
@@ -362,12 +368,13 @@ function deductAjax() {
 		});	
 		
 		var contract = currencyToFloat($('#contractCount').text());
+		var stockin = currencyToFloat(stockinSum());
 
 		var taxExcluded,taxes,payment;
 		var taxRate = '${ contract.taxRate }';
 		taxRate = currencyToFloat(taxRate)/100;
 		orderExpanseQty = currencyToFloat(orderExpanseQty);
-		var deductCnt = deduct + orderExpanseQty
+		var deductCnt = deduct + orderExpanseQty + stockin;
 		
 		payment = contract - deductCnt;//应付款
 		taxExcluded = payment * (1 - taxRate);
@@ -376,6 +383,8 @@ function deductAjax() {
 		$('#deductCount').html(floatToCurrency(deduct));
 		$('#deductCount1').html(floatToCurrency(deduct));
 		$('#deductCount2').html(floatToCurrency(orderExpanseQty));
+		$('#deductCount3').html(floatToCurrency(stockin));
+		
 		$('#payment').html(floatToCurrency(payment));
 		$('#taxExcluded').html(floatToCurrency(taxExcluded));
 		$('#taxes').html(floatToCurrency(taxes));
@@ -504,6 +513,164 @@ function doShowDetail(requisitionId) {
 }
 
 </script>
+<script type="text/javascript">
+
+function stockinAjax() {//入库退货
+
+	var table = $('#stockin').dataTable();
+		if(table) {
+			table.fnDestroy();
+		}
+		var YSId = '${contract.YSId}';
+		var contractId = '${contract.contractId}';
+		var actionUrl = "${ctx}/business/depotReturn?methodtype=getDepotReturnByContract&&YSId="+YSId+"&contractId="+contractId;
+
+		var t = $('#stockin').DataTable({
+			
+			"processing" : false,
+			"retrieve"   : true,
+			"stateSave"  : true,
+			"pagingType" : "full_numbers",
+	        "paging"    : false,
+	        "pageLength": 50,
+			"async"		: false,
+	        "ordering"  : false,
+			"sAjaxSource" : actionUrl,
+			dom : '<"clear">lt',
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"type" : "POST",
+					"contentType": "application/json; charset=utf-8",
+					"dataType" : 'json',
+					"url" : sSource,
+					"data" : null,//JSON.stringify($('#bomForm').serializeArray()),// 要提交的表单
+					success : function(data) {
+						
+						fnCallback(data);
+
+						stockinSum();
+						
+						sumFn();
+						
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown) {
+						alert(textStatus)
+					}
+				})
+			},
+        	"language": {
+        		"url":"${ctx}/plugins/datatables/chinese.json"
+        	},
+			
+			"columns" : [
+			    {"data": null,"className" : 'td-center'},
+			    {"data": null,"className" : 'td-center'},
+			    {"data": "receiptId", "defaultContent" : '',"className" : 'td-left'},//入库单号
+			    {"data": "contractId", "defaultContent" : '',"className" : 'td-left'},//合同编号
+			    {"data": "quantity", "defaultContent" : '',"className" : 'td-right'},//数量
+			    {"data": "price", "defaultContent" : '',"className" : 'td-right'},//单价
+			    {"data": "cost", "defaultContent" : '',"className" : 'td-right'},//预计扣款
+			    {"data": null, "defaultContent" : '',"className" : 'td-right'},//实际扣款
+			    {"data": "remarks", "defaultContent" : ''},//备注6
+			],
+			"columnDefs":[
+	    		{"targets":0,"render":function(data, type, row){	
+	    			var rownum = row["rownum"];
+	    			return rownum;
+	    		}},
+	    		{"targets":1,"render":function(data, type, row){	
+	    			var reverseValid = currencyToFloat(row["reverseValid"]);//扣款是否有效标识
+	    			var rtn="";
+	    			if(reverseValid == '1'){
+	    				rtn = '已取消';
+	    			}else{
+	    				rtn= "<a href=\"###\" onClick=\"doDeleteStockin('"+ row["receiptId"] + "')\">"+"取消"+"</a>";	        			
+	    			}
+	    			
+	    			return rtn;
+	    		}},
+	    		{"targets":6,"render":function(data, type, row){	
+	    			var quantity = currencyToFloat(row["quantity"]);
+	    			var price = currencyToFloat(row["price"]);
+	    			var cost = quantity * price;
+	    			
+	    			return floatToCurrency(cost);
+	    		}},
+	    		{"targets":7,"render":function(data, type, row){	
+	    			var quantity = currencyToFloat(row["quantity"]);
+	    			var price = currencyToFloat(row["price"]);
+	    			var reverseValid = currencyToFloat(row["reverseValid"]);
+	    			
+	    			var cost = quantity * price;
+	    			
+	    			if(reverseValid == '1')
+	    				cost = 0;//取消该扣款
+	    			
+	    			return floatToCurrency(cost);
+	    		}}
+		     ] ,
+		})
+		
+	
+};//供应商
+
+//供应商
+function stockinSum(){	
+	var contract = 0;	
+	var actualCnt = 0;	
+	$('#stockin tbody tr').each (function (){
+		var contractValue = $(this).find("td").eq(6).text();//
+		var actual = $(this).find("td").eq(7).text();//
+		
+		contractValue= currencyToFloat(contractValue);
+		actual= currencyToFloat(actual);
+		
+		contract = contract + contractValue;
+		actualCnt = actualCnt + actual;
+	});	
+	$('#stockinSum').html(floatToCurrency(contract));
+	$('#stockinActual').html(floatToCurrency(actualCnt));
+	
+	return actualCnt;
+}
+
+function doDeleteStockin(id){
+
+	if(confirm('取消后不能恢复,确定要取消吗?')){
+		
+		var url = "${ctx}/business/depotReturn?methodtype=CansolDepotReturnByStockinId&stockinId="+id;					
+		
+		$.ajax({
+			type : "post",
+			url : url,
+			async : false,
+			data : 'key=',
+			dataType : "json",
+			success : function(data) {
+
+				var returnCode = data["returnCode"];
+				if(returnCode == 'SUCCESS'){
+					//$("#supplier\\.shortname").addClass('error');
+					//$().toastmessage('showWarningToast', "该简称已存在，请重新输入。");
+				
+					$().toastmessage('showNoticeToast', "操作成功。");						
+					
+					stockinAjax();
+				}
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+				
+				alert('取消失败。');
+			}
+		});
+		
+	};
+}
+
+</script>
 </head>
 <body>
 <div id="container">
@@ -569,9 +736,11 @@ function doShowDetail(requisitionId) {
 				<td width="100px" class="label"><label>合同总金额：</label></td>					
 				<td width="100px">${ contract.total }</td>
 				<td width="100px" class="label"><label style="color: red;">报废扣款：</label></td>					
-				<td width="100px"><span id="deductCount1" style="color: red;"></span></td>
-				<td width="120px" class="label"><label style="color: red;">订单过程扣款：</label></td>					
-				<td width="100px"><span id="deductCount2" style="color: red;"></span></td>
+				<td width="60px"><span id="deductCount1" style="color: red;"></span></td>
+				<td width="100px" class="label"><label style="color: red;">订单过程扣款：</label></td>					
+				<td width="60px"><span id="deductCount2" style="color: red;"></span></td>
+				<td width="100px" class="label"><label style="color: red;">入库退货：</label></td>					
+				<td width="60px"><span id="deductCount3" style="color: red;"></span></td>
 				<td width="100px" class="label"><label>最终协商扣款：</label></td>					
 				<td width="">
 					<input type="text" id="costDeduct" class="num mini" value="${ contract.deduct }" />
@@ -590,6 +759,8 @@ function doShowDetail(requisitionId) {
 				<td width=""><span id="taxes"></span></td>
 				<td width="" class="label"><label>税前价：</label></td>
 				<td><span id="taxExcluded"></span></td>
+				<td></td>
+				<td></td>
 			</tr>	
 		</table>
 	</fieldset>
@@ -716,6 +887,39 @@ function doShowDetail(requisitionId) {
 						<td></td>
 						<td style="text-align: right;">扣款合计：</td>
 						<td ><div id="supplierSum"></div></td>
+						<td ></td>
+					</tr>
+				</tfoot>					
+			</table>
+		</div>
+	</fieldset>
+	<fieldset>
+		<span class="tablename"> 合同入库扣款明细</span>（点击【取消】，该条记录可以修改为“不扣款”）
+		<div class="list">		
+		<table id="stockin" class="display" >
+			<thead>				
+				<tr>
+					<th width="20px">No</th>
+					<th class="dt-center" width="60px">是否扣款</th>
+					<th class="dt-center" width="60px">入库单号</th>
+					<th class="dt-center" width="150px">合同编号</th>
+					<th class="dt-center" width="100px">退货数量</th>
+					<th class="dt-center" width="100px">单价</th>
+					<th class="dt-center" width="100px">预计扣款</th>
+					<th class="dt-center" width="100px">实际扣款</th>
+					<th class="dt-center">备注</th>
+				</tr>
+				</thead>	
+				<tfoot>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td style="text-align: right;">扣款合计：</td>
+						<td ><div id="stockinSum"></div></td>
+						<td ><div id="stockinActual"></div></td>
 						<td ></td>
 					</tr>
 				</tfoot>					
