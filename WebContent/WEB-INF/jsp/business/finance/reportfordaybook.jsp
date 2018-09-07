@@ -79,8 +79,8 @@
 					{"data": "YSId", "defaultContent" : ''},//
 					{"data": "quantity", "defaultContent" : '', "className" : 'td-right'},// 
 					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
-					{"data": "price", "defaultContent" : '0', "className" : 'td-right'},//
 					{"data": null, "defaultContent" : '0', "className" : 'td-right'},//
+					{"data": "depotId", "defaultContent" : '', "className" : 'td-left'},//
 					
 					],
 				"columnDefs":[
@@ -98,12 +98,12 @@
 		    		{"targets":3,"render":function(data, type, row){	    			
 		    			return jQuery.fixedWidth(data,45);
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":7,"render":function(data, type, row){
 		    			var price = currencyToFloat(row["price"]);
 		    			var newPrice = float6ToCurrency( price / 1.17 );
-		    			return newPrice;
+		    			return price +"<br />"+newPrice;
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
+		    		{"targets":8,"render":function(data, type, row){
 		    			var price = currencyToFloat(row["price"]);
 		    			var quantity = currencyToFloat(row["quantity"]);
 		    			var newPrice = ( price / 1.17 );
@@ -264,9 +264,9 @@
 					<th style="width: 50px;">出/入库单号</th>
 					<th style="width: 80px;">耀升/合同编号</th>
 					<th style="width: 60px;">数量</th>
-					<th style="width: 60px;">单价</th>
-					<th style="width: 60px;">不含税价</th>
+					<th style="width: 60px;">单价<br />不含税价</th>
 					<th style="width: 60px;">金额</th>
+					<th style="width: 60px;">仓库位置</th>
 				</tr>
 			</thead>
 		</table>

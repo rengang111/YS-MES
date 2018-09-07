@@ -79,6 +79,7 @@
 					{"data": "YSId", "defaultContent" : ''},//
 					{"data": "supplierId", "defaultContent" : '（集中采购）', "className" : 'td-left'},//
 					{"data": "quantity", "defaultContent" : '', "className" : 'td-right'},// 领料申请者
+					{"data": "depotName", "defaultContent" : '', "className" : 'td-right'},// 仓库位置
 					
 					],
 				"columnDefs":[
@@ -255,6 +256,7 @@
 					<th style="width: 80px;">耀升编号</th>
 					<th style="width: 70px;">供应商</th>
 					<th style="width: 100px;">出库数量</th>
+					<th style="width: 60px;">仓库位置</th>
 				</tr>
 			</thead>
 		</table>

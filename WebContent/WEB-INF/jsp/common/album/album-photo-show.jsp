@@ -18,9 +18,16 @@
 
 html { overflow: auto; }
 .aligncenter {
-margin: auto;
-position: absolute;
-top: -30px; left: 0; bottom: 0; right: 0;
+	margin: auto;
+	position: absolute;
+	top: -30px; left: 0; bottom: 0; right: 0;
+}
+
+img{
+ width:auto;
+ height:auto;
+ max-width:100%;
+ max-height:100%;
 }
 
 </style>
@@ -194,7 +201,7 @@ top: -30px; left: 0; bottom: 0; right: 0;
 			<td style="text-align:center">
 			<div id="photo" style="overflow: auto;">
 				<a id="" href="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" target="_blank">
-					<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}"  style="width:100%;height:100%"/>
+					<img alt="" src="${pageContext.request.contextPath}/${path}${key}/${index}/${fileName}" />
 				</a>
 			</div>
 			</td>

@@ -55,15 +55,25 @@
 		        	{"data": null,"className":"dt-body-center"
 				}, {"data": "materialId","className":"td-left"
 				}, {"data": "materialName"
+				}, {"data": "unitQuantity","className":"td-right","defaultContent" : ''
+				}, {"data": "totalQuantity","className":"td-right","defaultContent" : ''
+				}, {"data": "orderCount","className":"td-right","defaultContent" : ''
 				}, {"data": "quantity","className":"td-right"
-				}, {"data": null,"className":"td-right","defaultContent" : ''
+				}, {"data": "depotId","className":"td-right"
 				}
+				
 			] ,
 			"columnDefs":[
-				    		{"targets":3,"render":function(data, type, row){
-				    			return floatToCurrency(data);
-				    		}},
-				    	]     
+		    		{"targets":4,"render":function(data, type, row){
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":5,"render":function(data, type, row){
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":6,"render":function(data, type, row){
+		    			return floatToCurrency(data);
+		    		}},
+		    ]     
 			
 			
 		}).draw();
@@ -220,10 +230,13 @@
 				<thead>				
 					<tr>
 						<th style="width:30px">No</th>
-						<th class="dt-center" width="200px">物料编号</th>
+						<th class="dt-center" width="150px">物料编号</th>
 						<th class="dt-center" >物料名称</th>	
-						<th class="dt-center" width="150px">当前出库数量</th>
-						<th class="dt-center" width="50px"></th>
+						<th class="dt-center" width="50px">单位量</th>
+						<th class="dt-center" width="60px">订单数量</th>
+						<th class="dt-center" width="60px">需求合计</th>
+						<th class="dt-center" width="60px">当前出库</th>
+						<th class="dt-center" width="60px">仓库位置</th>
 					</tr>
 				</thead>
 			</table>

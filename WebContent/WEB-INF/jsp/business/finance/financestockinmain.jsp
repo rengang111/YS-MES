@@ -91,47 +91,46 @@
 			"columns": [
 				{"data": null,"className" : 'td-center'},
 				{"data": "receiptId","className" : 'td-left'},
-				{"data": "contractId"},
+				{"data": null},
 				{"data": "materialId"},
+				{"data": "depotName","className" : 'td-left'},
 				{"data": "materialName"},
-				{"data": "supplierId","className" : 'td-left'},
 				{"data": "YSId"},//6
 				{"data": "quantity","className" : 'td-right'},
 				{"data": "contractPrice","className" : 'td-right'},
-				{"data": "taxPrice","className" : 'td-right'},//9
-				{"data": "taxTotal","className" : 'td-right'},//10
-				{"data": "checkInDate","className" : 'td-center'},//11
-				{"data": "approvalStatus","className" : 'td-center', "defaultContent" : ''},//12
+				{"data": null,"className" : 'td-right'},//9
+				{"data": "checkInDate","className" : 'td-center'}//10
 		
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
                 }},
-	    		{"targets":4,"render":function(data, type, row){
+	    		{"targets":2,"render":function(data, type, row){
+	    			
+	    			var contractId = row["contractId"];		
+	    			var supplierId = row["supplierId"];				    			
+	    			return contractId + "<br />" + supplierId;
+	    		}},
+	    		{"targets":5,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
 	    			name = jQuery.fixedWidth(name,32);				    			
 	    			return name;
 	    		}},
-	    		{"targets":12,"render":function(data, type, row){
-	    			if(data == null || data == ""){
-	    				return "未审核";
-	    			}else{
-		    			return data;
-	    			}	
+	    		{"targets":9,"render":function(data, type, row){
+	    			
+	    			var contractId = row["taxPrice"];		
+	    			var supplierId = row["taxTotal"];				    			
+	    			return contractId + "<br />" + supplierId;
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : [12]
-				}
-	           
+					"targets" : []
+				}	           
 	         ] 
 		});
-
 	}
-
-	
 
 
 	$(document).ready(function() {
@@ -304,17 +303,15 @@
 				<tr>
 					<th width=" 25px">No</th>
 					<th style="width: 60px;">入库单编号</th>
-					<th style="width: 80px;">合同编号</th>
+					<th style="width: 80px;">合同编号<br />供应商</th>
 					<th style="width: 100px;">物料编号</th>
+					<th style="width: 50px;">仓库位置</th>
 					<th>物料名称</th>
-					<th style="width: 50px;">供应商</th>
 					<th style="width: 50px;">耀升编号</th>
 					<th style="width: 50px;">入库数量</th>
 					<th style="width: 40px;">合同价</th>
-					<th style="width: 50px;">税前价</th>
-					<th style="width: 50px;">税前金额</th>
+					<th style="width: 50px;">税前价<br />税前金额</th>
 					<th style="width: 50px;">入库时间</th>
-					<th style="width: 50px;">付款审核</th>
 				</tr>
 			</thead>
 		</table>
