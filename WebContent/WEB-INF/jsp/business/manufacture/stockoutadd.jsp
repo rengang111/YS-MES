@@ -63,10 +63,10 @@
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": "quantityOnHand","className":"td-right"	//3
-				}, {"data": null,"className":"td-right","defaultContent" : '0'//4生产需求量
-				}, {"data": null,"className":"td-right","defaultContent" : '0'//5 已出库数量
-				}, {"data": null,"className":"td-right"//6  本次领料
-				}, {"data": null,"className":"td-right"//7 剩余数量
+				}, {"data": "unitQuantity","className":"td-right"	//4
+				}, {"data": null,"className":"td-right","defaultContent" : '0'//5生产需求量
+				}, {"data": "stockoutQty","className":"td-right","defaultContent" : '0'//6 已出库数量
+				}, {"data": null,"className":"td-right"//7  本次领料
 				}, {"data": null,"className":"td-right"//8
 				}, {"data": "areaNumber","className":""//9
 				}
@@ -94,9 +94,13 @@
 					inputTxt= inputTxt +'<a href="###" onClick="doShowInventory(\''+materialId+'\')">'+quantityOnHand+'</a>';
 	    			
 	    			return inputTxt;
+                }},                
+	    		{"targets":4,"render":function(data, type, row){//单位使用量
+	    			
+	    			return parseFloat(data);
                 }},
-                /*
-	    		{"targets":4,"render":function(data, type, row){//生产需求
+                
+	    		{"targets":5,"render":function(data, type, row){//生产需求
 	    			var materialId = row["materialId"];
 					var total = floatToCurrency(row["planQty"]);//订单生产需求量
 	    			if(materialId.substring(0,1) == 'A'){
@@ -107,11 +111,11 @@
 	    			return total;
                 }},
                 
-	    		{"targets":5,"render":function(data, type, row){//已出库数
+	    		{"targets":6,"render":function(data, type, row){//已出库数
 	    			
 	    			return floatToCurrency(data);
                 }},
-                */
+                /*
 	    		{"targets":7,"render":function(data, type, row){//剩余数量
 	    			
 					var index=row["rownum"];
@@ -129,12 +133,15 @@
 				
 					return inputTxt;
                 }},
-	    		{"targets":6,"render":function(data, type, row){//本次领料
+                */
+	    		{"targets":7,"render":function(data, type, row){//本次领料
 	    			
 					var index=row["rownum"];
 					var quantity = currencyToFloat(row["requisitionQty"]);
 					var stockoutQty = currencyToFloat(row["stockoutQty"]);
 					var shengyu = floatToCurrency( quantity - stockoutQty );
+					if(shengyu < 0)
+						shengyu = 0;
 					var inputTxt = '<input type="text" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+shengyu+'" class="num mini"/>';
 				
 					return inputTxt;
@@ -160,17 +167,33 @@
 			
 		}).draw();
 
-		/*				
-		t.on('click', 'tr', function() {
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }			
+		t.on('change', 'tr td:nth-child(8)',function() {
+
+			var $td = $(this).parent().find("td");
+			
+			var $oArrival = $td.eq(5);//计划
+			var $oyiling  = $td.eq(6);//已领料
+			var $oCurrQty = $td.eq(7).find("input");//本次领料
+
+			var fArrival  = currencyToFloat($oArrival.text());
+			var fYiling   = currencyToFloat($oyiling.text());
+			var fCurrQty  = currencyToFloat($oCurrQty.val());	
+			
+			//最多允许领料数量 = 计划 - 已领料
+		 	var fMaxQuanty = fArrival - fYiling;
+			if(fMaxQuanty < 0)
+				fMaxQuanty = 0;
+			//alert("fArrival--fYiling--fMaxQuanty--fCurrQty:"+fArrival+"---"+fYiling+"--"+fMaxQuanty+"---"+fCurrQty)
+			if ( fCurrQty > fMaxQuanty + 1 ){//允许小数位往上收
+				
+				fCurrQty = fMaxQuanty;
+				$().toastmessage('showWarningToast', "领料数量不能超出需求量！");
+			}
+			
+			$oCurrQty.val(floatToCurrency(fCurrQty));
+
 		});
-		*/
+		
 		t.on('order.dt search.dt draw.dt', function() {
 			t.column(0, {
 				search : 'applied',
@@ -227,11 +250,6 @@
 			$('#formModel').submit();
 		});
 		
-		$("#reverse").click(function () { 
-			$("input[name='numCheck']").each(function () {  
-		        $(this).prop("checked", !$(this).prop("checked"));  
-		    });
-		});
 				
 		foucsInit();
 
@@ -282,10 +300,12 @@
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">出库单编号：</td>					
-				<td width="150px">${formModel.stockout.requisitionid }</td>
-														
+				<td width="100px">${formModel.stockout.requisitionid }</td>
+					
+				<td width="100px" class="label">耀升编号：</td>
+				<td width="150px">${order.YSId }</td>									
 				<td width="100px" class="label">出库日期：</td>
-				<td>
+				<td width="150px">
 					<form:input path="stockout.checkoutdate" class="short read-only" /></td>
 				
 				<td width="100px" class="label">仓管员：</td>
@@ -294,14 +314,14 @@
 			</tr>
 			 
 			<tr> 				
-				<td class="label">耀升编号：</td>					
-				<td>${order.YSId }</td>
+				<td class="label">订单数量：</td>					
+				<td>${order.totalQuantity }</td>
 																
 				<td class="label">产品编号：</td>					
-				<td>&nbsp;${order.materialId }</td>
+				<td>${order.materialId }</td>
 							
 				<td class="label">产品名称：</td>					
-				<td>&nbsp;${order.materialName }</td>
+				<td colspan="3">&nbsp;${order.materialName }</td>
 			</tr>
 			 
 										
@@ -326,10 +346,10 @@
 						<th width="120px">物料编号</th>
 						<th >物料名称</th>
 						<th width="60px">当前库存</th>
+						<th width="60px">单位用量</th>
 						<th width="60px">生产需求</th>
 						<th width="60px">已领数量</th>
 						<th width="60px">本次领料</th>
-						<th width="60px">剩余数量</th>
 						<th width="80px">仓库分类</th>
 						<th width="80px">库位</th>
 					</tr>

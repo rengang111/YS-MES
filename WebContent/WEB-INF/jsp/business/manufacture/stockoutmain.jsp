@@ -154,9 +154,12 @@
 
 	$(document).ready(function() {
 
-		ajax("020","true");
+		var requisitionSts = $('#requisitionSts').val();
+		ajax(requisitionSts,"true");
 
 	    buttonSelectedEvent();//按钮点击效果
+
+		$('#defutBtn'+requisitionSts).removeClass("start").addClass("end");
 	})	
 	
 	function doSearch() {	
@@ -201,6 +204,7 @@
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 			<input type="hidden" id="makeType" value="${makeType }" />
 			<input type="hidden" id="usedType" value="${usedType }" />
+			<input type="hidden" id="requisitionSts" value="${requisitionSts }" />
 			<table>
 				<tr>
 					<td width="10%"></td> 
@@ -226,8 +230,8 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('020');">待出库</a>
-			<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('030');">已出库</a>
+			<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('020');" id="defutBtn020">待出库</a>
+			<a class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('030');" id="defutBtn030">已出库</a>
 		</div>
 	
 		<table id="TMaterial" class="display">

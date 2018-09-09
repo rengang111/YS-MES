@@ -242,6 +242,10 @@ public class StockOutAction extends BaseAction {
 	
 	
 	public void doInit(){
+		String requisitionSts = (String) session.getAttribute("requisitionSts");
+		if(requisitionSts == null || ("").equals(requisitionSts))
+			requisitionSts = "020";//设置默认值：待出库
+		model.addAttribute("requisitionSts",requisitionSts);
 	}
 	
 	
@@ -268,6 +272,9 @@ public class StockOutAction extends BaseAction {
 			System.out.println(e.getMessage());
 			dataMap.put(INFO, ERRMSG);
 		}
+		
+		String requisitionSts = request.getParameter("requisitionSts");
+		session.setAttribute("requisitionSts", requisitionSts);
 		
 		return dataMap;
 	}

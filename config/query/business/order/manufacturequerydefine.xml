@@ -586,6 +586,7 @@
       <f name="e.MAPrice" alias="" ctype="" />
       <f name="a.quantity" alias="requisitionQty" ctype="" />
       <f name="b.areaNumber" alias="" ctype="" />
+      <f name="IFNULL(c.unitQuantity,'1')" alias="unitQuantity" ctype="" />
       <f name="c.manufactureQuantity" alias="planQty" ctype="" />
       <f name="c.purchaseQuantity" alias="contractQty" ctype="" />
       <f name="IFNULL(d.quantity,'0')" alias="stockoutQty" ctype="" />

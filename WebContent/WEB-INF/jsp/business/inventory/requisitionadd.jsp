@@ -142,7 +142,7 @@
 		        	{"data": null,"className":"dt-body-center"//0
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
-				}, {"data": "unitQuantity","className":"td-right"	//3
+				}, {"data": "unitQuantity","className":"td-right","defaultContent" : '1'	//3
 				}, {"data": "manufactureQuantity","className":"td-right"//4
 				}, {"data": "totalRequisition","className":"td-right"//5
 				}, {"data": "quantityOnHand","className":"td-right","defaultContent" : '0'	//6 可用库存
@@ -156,7 +156,7 @@
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row,meta){
                     var startIndex = meta.settings._iDisplayStart; 
-					return startIndex + meta.row + 1 + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["materialId"] + "' />";
+					return startIndex + meta.row + 1 + "<input type=checkbox  name='numCheck' id='numCheck' value='" + row["materialId"] + "'   />";
 	    		}},
 	    		{"targets":2,"render":function(data, type, row){ 					
 					var index=row["rownum"]	
@@ -169,6 +169,9 @@
 	    			
 	    			return name + inputTxt;
                 }},
+                {"targets":3,"render":function(data, type, row,meta){
+ 					return  parseFloat(data);
+	    		}},
 	    		{"targets":4,"render":function(data, type, row){	    			
 	    			
 	    			var unit = row["unit"];	    			
@@ -201,9 +204,11 @@
 					}
 					currValue = formatNumber(currValue);
 					*/
+					var materialId=row["materialId"];
 					var totalRequ = currencyToFloat(row["totalRequisition"]);
 					var qtyManuf = currencyToFloat(row["manufactureQuantity"]);
 					var currValue = qtyManuf - totalRequ;
+					//if(materialId.subString(1) =="G"
 					if(currValue <= 0 ){
 						currValue = 0
 					}else{
@@ -268,7 +273,7 @@
 			if(fMaxQuanty < 0)
 				fMaxQuanty = 0;
 			//alert("fArrival--fYiling--fMaxQuanty--fCurrQty:"+fArrival+"---"+fYiling+"--"+fMaxQuanty+"---"+fCurrQty)
-			if ( fCurrQty > fMaxQuanty ){//总库存充足
+			if ( fCurrQty > fMaxQuanty +1 ){//允许小数进位
 				
 				fCurrQty = fMaxQuanty;
 				$().toastmessage('showWarningToast', "领料数量不能超出需求量！");
@@ -310,7 +315,8 @@
 				function() {
 					var YSId='${order.YSId }';
 					var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId;
-					location.href = url;		
+
+					callProductDesignView("申请记录",url);	
 				});
 		
 		$("#insert").click(function() {
@@ -380,6 +386,7 @@
             $(this).addClass("end");
         });
 		
+        /*
 		$('#example').DataTable().on('click', 'tr', function() {
 			
 			$(this).toggleClass("selected");
@@ -391,6 +398,43 @@
 		    	$(this).children().first().children().prop("checked", false);
 		    }			
 		});	
+		
+
+		$('#example').DataTable().on('click', 'tr td:nth-child(1)', function() {
+
+			$(this).parent().toggleClass("selected");
+
+		    var checkbox  = $(this).find("input[type='checkbox']");
+		    var isChecked = checkbox.is(":checked");
+		    
+
+		    if (isChecked) {
+		        checkbox.prop("checked", false)
+		        checkbox.removeAttr("checked");
+		    } else {
+		        checkbox.prop("checked", true)
+		        checkbox.attr("checked","true");
+		    }
+		});	
+		*/	
+		 $('#example').DataTable().on(
+				 'click', 
+				 'tr td:nth-child(2),td:nth-child(3),tr td:nth-child(4),tr td:nth-child(5),tr td:nth-child(6),tr td:nth-child(7),tr td:nth-child(9)', function() {
+
+				$(this).parent().toggleClass("selected");
+			    var checkbox  = $(this).parent().children().first().find("input[type='checkbox']");
+			    var isChecked = checkbox.is(":checked");
+			    
+
+			    if (isChecked) {
+			        checkbox.prop("checked", false)
+			        checkbox.removeAttr("checked");
+			    } else {
+			        checkbox.prop("checked", true)
+			        checkbox.attr("checked","true");
+			    }
+			});	
+		
 	});
 	
 	function doEdit(contractId,arrivalId) {
@@ -619,6 +663,44 @@ function reloadFn(){
 	
 }
 
+//复选后单元格变色
+function chkRow(obj){
+	
+	var r = obj.parentElement.parentElement;
+	if(obj.checked){ 
+		r.toggleClass("selected");
+	}else if(r.rowIndex%2==1){
+		r.style.backgroundColor="";
+	}else{
+		r.toggleClass("selected");
+	}
+	
+	/*
+	var r = obj.parentElement.parentElement;
+	if(obj.checked){ 
+		r.style.backgroundColor="#E6E9F2";
+	}else if(r.rowIndex%2==1){
+		r.style.backgroundColor="";
+	}else{
+		r.style.backgroundColor="#F5F5F5";
+	}
+	*/
+	
+	
+
+   // var checkbox  = $(this).find("input[type='checkbox']");
+   // var isChecked = checkbox.is(":checked");
+    
+/*
+    if (obj.checked) {
+        checkbox.prop("checked", false)
+        checkbox.removeAttr("checked");
+    } else {
+        checkbox.prop("checked", true)
+        checkbox.attr("checked","true");
+    }
+*/
+}
 
 </script>
 </html>

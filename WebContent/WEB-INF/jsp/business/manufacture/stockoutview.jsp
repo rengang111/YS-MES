@@ -64,6 +64,9 @@
 				
 			] ,
 			"columnDefs":[
+		    		{"targets":3,"render":function(data, type, row){
+		    			return parseFloat(data);
+		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 		    			return floatToCurrency(data);
 		    		}},

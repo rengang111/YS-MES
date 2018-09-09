@@ -395,7 +395,7 @@
 			<a href="###" onClick="doEditMaterial('${status.index}','${bom.materialRecordId }','${bom.materialParentId }')">${bom.materialId }</a></span></td>
 		<td><form:input path="planDetailList[${status.index}].subbomno" class="cash" style="width:20px" value="${bom.subbomno }" /></td>
 	    <td>
-			<span id="index${status.index}">${bom.rownum }</span><input type="checkbox" id="numCheck" name="numCheck" value="" /></td>
+			<span id="index${status.index}">${bom.rownum }</span><input type="checkbox" id="numCheck" name="numCheck" value=""  onclick="javascript:chkRow(this);" /></td>
    		<td>
 	    	<form:input path="planDetailList[${status.index}].materialid" class="attributeList1"  value="${bom.materialId }" /></td>
 	    <td><span id="name${status.index}"></span></td>
@@ -427,7 +427,10 @@
 		var order = '${order.totalQuantity}';
 		var stock = '${bom.availabelToPromise}';
 		var type = '${bom.purchaseTypeId}';
-		var supplierId = '${bom.supplierId}'
+		var supplierId = '${bom.supplierId}';
+		var unitQuanity = '${bom.quantity }';
+	
+		unitQuanity = parseFloat(unitQuanity);
 
 		var totalQuantity = floatToCurrency(currencyToFloat(quantity) * currencyToFloat(order));
 		//虚拟库存回退处理		
@@ -457,6 +460,7 @@
 		$("#planDetailList"+index+"\\.purchasequantity").val(vpurchase);
 		$("#planDetailList"+index+"\\.suppliershortname").val(shortName);
 		$("#price"+index).html(vprice);
+		$("#planDetailList"+index+"\\.unitquantity").val(unitQuanity);
 		
 		counter++;
 	</script>	
@@ -774,7 +778,7 @@ function purchasePlanCompute(obj,flg){
 	var vPurchase = floatToCurrency(fPurchase);	
 	var vTotalQuty= floatToCurrency(fTotalQuty);	
 	var vTotalNew = floatToCurrency(fTotalNew);
-	var vUnitQuty = formatNumber(fUnitQuty);
+	var vUnitQuty = parseFloat(fUnitQuty);
 	var vPrice = formatNumber(fPrice);
 			
 	//详情列表显示
