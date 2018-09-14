@@ -169,11 +169,12 @@
 	}
 	
 	function doDelete(materialId,receiptId){
-		
+
+		var contractId='${contract.contractId }';
 		if (confirm("删除后不能恢复，确定要删除吗？")){ //
 			$.ajax({
 				type : "post",
-				url : "${ctx}/business/storage?methodtype=deleteStockinData&receiptId="+receiptId+"&materialId="+materialId,
+				url : "${ctx}/business/storage?methodtype=deleteStockinData&receiptId="+receiptId+"&materialId="+materialId+"&contractId="+contractId,
 				async : false,
 				data : null,
 				dataType : "text",

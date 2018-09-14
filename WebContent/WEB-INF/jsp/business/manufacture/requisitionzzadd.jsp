@@ -62,7 +62,7 @@
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": null,"className":"td-center"		//3单位
-				}, {"data": "purchaseQuantity","className":"td-right"//4manufactureQuantity
+				}, {"data": "quantity","className":"td-right"//4manufactureQuantity
 				}, {"data": "requisitionQty","className":"td-right", "defaultContent" : '0'//5
 				}, {"data": "totalRequisition","className":"td-right", "defaultContent" : '0'//6
 				}, {"data": "quantityOnHand","className":"td-right"	//7 可用库存
@@ -92,29 +92,6 @@
 	    								
 	    			return unit;				 
                 }},
-	    		{"targets":4,"render":function(data, type, row){	    			
-	    			/*
-	    			var vrawunit = row["unit"];
-	    			var vzzunit = row["zzunit"]; 			
-	    			
-	    			var qty = currencyToFloat(row["purchaseQuantity"]);//生产数量
-	    			var value = '0';
-	    			
-	    			//原材料的购买单位			
-	    			var farwunit = getUnitChange(vrawunit)
-	    			//自制品的用量单位
-	    			var fchgunit = getUnitChange(vzzunit)	    			
-	    			//alert("materialId:"+row["materialId"]+"购买:"+farwunit+"用量:"+fchgunit)
-
-	    			if(vrawunit == '吨')
-	    				farwunit = farwunit *1000;//换算成千克
-	    				
-	    			return floatToCurrency( qty * farwunit / fchgunit );
-	    			
-	    			*/
-	    			return floatToCurrency( row["quantity"] );
-	    										 
-                }},
 	    		{"targets":5,"render":function(data, type, row){	    			
 	    			
 	    			var qty = floatToCurrency(row["requisitionQty"]);			
@@ -131,7 +108,7 @@
 	    			return qty;				 
                 }},
 	    		{"targets":8,"render":function(data, type, row){	
-	    			
+	    			/*
 					var index=row["rownum"];	
 					//var currValue = currencyToFloat(row["manufactureQuantity"]);
 					var vrawunit = row["unit"];
@@ -149,8 +126,12 @@
 	    			if(vrawunit == '吨')
 	    				farwunit = farwunit *1000;//换算成千克
 
-		    		var requisitionQty = (row["requisitionQty"]);	
-	    			var currValue =  floatToCurrency( qty * farwunit / fchgunit -requisitionQty);
+	    			*/				
+					var index=row["rownum"];
+	    			var quantity = currencyToFloat(row["requisitionQty"]);
+		    		var requisitionQty = currencyToFloat(row["requisitionQty"]);	
+	    			//var currValue =  floatToCurrency( qty * farwunit / fchgunit -requisitionQty);
+	    			var currValue = floatToCurrency(quantity - requisitionQty);
 					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="'+currValue+'"/>';
 				
 					return inputTxt;

@@ -145,23 +145,21 @@
 	
 	function doEdit() {
 
-		var makeType=$('#makeType').val();
-		var usedType=$('#usedType').val();
+		var requisitionType=$('#requisitionType').val();
 		
 		var YSId= '${order.YSId }';
 		var requisitionId= '${order.requisitionId }';
 
 		var usedType=$('#usedType').val();
 		var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId
-			+"&requisitionId="+requisitionId+"&makeType="+makeType+"&usedType="+usedType;
+			+"&requisitionId="+requisitionId+"&requisitionType="+requisitionType;
 		
 		location.href = url;
 	}
 	
 	function doDelete() {
 
-		var makeType=$('#makeType').val();
-		var usedType=$('#usedType').val();
+		var requisitionType=$('#requisitionType').val();
 
 		var YSId= '${order.YSId }';
 		var stockoutid= '${order.stockOutId }';
@@ -170,7 +168,7 @@
 
 			var url = '${ctx}/business/stockout?methodtype=stockoutDelete&YSId='
 					+YSId+'&stockOutId='+stockoutid
-					+'&makeType='+makeType+"&usedType="+usedType;
+					+'&requisitionType='+requisitionType;
 			location.href = url;	
 		}
 	}
@@ -187,6 +185,8 @@
 
 	<input type="hidden" id="makeType" value="${makeType }" />
 	<input type="hidden" id="usedType" value="${usedType }" />
+	<input type="hidden" id="requisitionType" value="${requisitionType }" />
+	
 	<form:hidden path="stockout.ysid"  />
 	<form:hidden path="stockout.stockoutid"  />
 	<form:hidden path="stockout.requisitionid"  value="${order.requisitionId }"/>

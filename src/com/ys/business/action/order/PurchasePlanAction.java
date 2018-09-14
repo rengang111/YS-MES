@@ -202,6 +202,9 @@ public class PurchasePlanAction extends BaseAction {
 				insertStockoutCorrectionRaw();
 				rtnUrl = "/business/inventory/beginninginventoryplanraw";
 				break;
+			case "rawRequirementALLAdd"://原材料物料需求表做成
+				rawRequirementALLAdd();
+				break;
 				
 		}
 		
@@ -471,4 +474,9 @@ public class PurchasePlanAction extends BaseAction {
 			e.printStackTrace();
 		}
 	}
+	
+	private void rawRequirementALLAdd() throws Exception{
+		purchaseService.rawRequirementALLAdd();
+	}
+	
 }

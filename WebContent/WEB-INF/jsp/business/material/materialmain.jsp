@@ -69,7 +69,7 @@
 						],
 				"columnDefs":[
 				    		{"targets":0,"render":function(data, type, row){
-								return row["rownum"];
+								return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
 		                    }},
 				    		{"targets":1,"render":function(data, type, row){
 				    			var rtn = "";

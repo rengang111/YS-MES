@@ -81,9 +81,9 @@
 		    			return row["rownum"] ;				    			 
                     }},
 		    		{"targets":1,"render":function(data, type, row){
-		    			var  rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "','"+ row["stockOutId"] + "')\">"+row["stockOutId"]+"</a>";
+		    			var  rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "','"+ row["stockOutId"] + "','"+ row["requisitionTypeId"] + "')\">"+row["stockOutId"]+"</a>";
 		    			if(data == ""){
-		    				rtn= "<a href=\"###\" onClick=\"doCreate('"+ row["YSId"] + "','"+ row["requisitionId"] + "')\">"+row["requisitionId"]+"</a>";
+		    				rtn= "<a href=\"###\" onClick=\"doCreate('"+ row["YSId"] + "','"+ row["requisitionId"] + "','"+ row["requisitionTypeId"] + "')\">"+row["requisitionId"]+"</a>";
 		    			
 		    			}
 		    			return rtn;
@@ -168,22 +168,23 @@
 	}
 
 	
-	function showHistory(YSId,stockOutId) {
+	function showHistory(YSId,stockOutId,requisitionType) {
 
-		var makeType=$('#makeType').val();
-		var usedType=$('#usedType').val();
 		var url = "${ctx}/business/stockout?methodtype=stockoutHistoryInit&YSId="+YSId
-			+"&stockOutId="+stockOutId+"&makeType="+makeType+"&usedType="+usedType;
+			+"&stockOutId="+stockOutId+"&requisitionType="+requisitionType;
 		location.href = url;
 	}
 	
 
-	function doCreate(YSId,requisitionId) {
+	function doCreate(YSId,requisitionId,requisitionType) {
 
-		var makeType=$('#makeType').val();
-		var usedType=$('#usedType').val();
 		var url =  "${ctx}/business/stockout?methodtype=addinit&YSId="+YSId
-			+"&requisitionId="+requisitionId+"&makeType="+makeType+"&usedType="+usedType;
+			+"&requisitionId="+requisitionId+"&requisitionType="+requisitionType;
+	
+		//if(requisitionType == '020' || requisitionType == '030' || requisitionType == '040')
+		//	url =  "${ctx}/business/stockout?methodtype=addinitRaw&YSId="+YSId
+		//	+"&requisitionId="+requisitionId+"&requisitionType="+requisitionType;
+			
 		location.href = url;
 	}
 	

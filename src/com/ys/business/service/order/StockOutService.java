@@ -18,12 +18,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ys.business.action.model.order.StockOutModel;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
+import com.ys.business.db.dao.B_RawRequirementDao;
 import com.ys.business.db.dao.B_RequisitionDao;
-import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.dao.B_StockOutDetailDao;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_RawRequirementData;
 import com.ys.business.db.data.B_RequisitionData;
 import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.B_StockOutDetailData;
@@ -286,7 +287,7 @@ public class StockOutService extends CommonService {
 		
 		try {
 			ts.begin();
-			
+			/*
 			B_StockOutData reqData = reqModel.getStockout();
 			List<B_StockOutDetailData> reqDataList = reqModel.getStockList();
 
@@ -313,7 +314,7 @@ public class StockOutService extends CommonService {
 				updateMaterial("领料更新处理",data.getMaterialid(),quantity);//更新库存
 			
 			}
-			
+			*/
 			ts.commit();			
 			
 		}
@@ -338,11 +339,13 @@ public class StockOutService extends CommonService {
 		
 		try {
 			ts.begin();
+			String requisitionType = request.getParameter("requisitionType");
 			
 			B_StockOutData reqData = reqModel.getStockout();
 			List<B_StockOutDetailData> reqDataList = reqModel.getStockList();
 
 			//取得出库单编号
+			String ysid = reqData.getYsid();
 			String requisitionId = reqData.getRequisitionid();
 			reqData = getStorageRecordId(reqData);			
 			stockoutId = reqData.getStockoutid();
@@ -364,7 +367,13 @@ public class StockOutService extends CommonService {
 				insertStockOutDetail(data);								
 				
 				//更新库存
-				updateMaterial("领料新增处理",data.getMaterialid(),quantity);//更新库存
+				updateMaterial("领料新增处理",data.getMaterialid(),quantity);
+				
+				//更新待出:针对自制件的原材料
+				if (    ("020").equals(requisitionType) || 
+						("030").equals(requisitionType) ||
+						("040").equals(requisitionType) )
+					updateRawRequirement(ysid,data.getMaterialid(),quantity);
 			
 			}
 			
@@ -499,6 +508,8 @@ public class StockOutService extends CommonService {
 		//待出库
 		float istockout = stringToFloat(data.getWaitstockout());		
 		float iNewStockOut = istockout - reqQuantity;
+		if(iNewStockOut < 0 )
+			iNewStockOut = 0;//待出不能为负
 		
 		//虚拟库存=当前库存 + 待入库 - 待出库
 		float availabeltopromise = iNewQuantiy + waitstockin - iNewStockOut;
@@ -534,6 +545,41 @@ public class StockOutService extends CommonService {
 		copyProperties(data,commData);
 		
 		new B_RequisitionDao().Store(data);
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	private void updateRawRequirement(
+			String ysid,
+			String materialId,
+			float curr) throws Exception{
+
+		String where = "ysid = '" + ysid +"' AND materialId='"+materialId+"' AND deleteFlag = '0' ";
+		List<B_RawRequirementData> list  = new B_RawRequirementDao().Find(where);
+		if(list ==null || list.size() == 0)
+			return ;	
+
+		B_RawRequirementData data = list.get(0);
+		
+		//更新状态
+		float plan = stringToFloat(data.getQuantity());
+		float out = stringToFloat(data.getStockoutqty());
+		
+		float fnew = curr + out;
+		
+		if(fnew > plan )
+			return;//待出不能超过计划用量：待出=计划-领料
+		
+		if(out < 0 ||  fnew < 0 )
+			fnew = 0;
+		
+		data.setStockoutqty(floatToString(fnew));//已出库		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"料件出库",userInfo);
+		copyProperties(data,commData);
+		
+		new B_RawRequirementDao().Store(data);
 		
 	}
 
@@ -589,12 +635,15 @@ public class StockOutService extends CommonService {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		String requisitionId = request.getParameter("requisitionId");
+		String ysid = request.getParameter("YSId");
 		
 		dataModel.setQueryName("requisitionDetailById");
 		userDefinedSearchCase.put("requisitionId", requisitionId);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+		String sql = baseQuery.getSql().replace("#", ysid);
+		System.out.println("料件出库："+sql);
+		baseQuery.getYsFullData(sql);
 
 		modelMap.put("data", dataModel.getYsViewData());
 		
@@ -871,7 +920,9 @@ public class StockOutService extends CommonService {
 
 	@SuppressWarnings("unchecked")
 	private void deleteStockoutDetail(
-			String stockoutId) throws Exception{
+			String stockoutId,
+			String ysid,
+			String requisitionType) throws Exception{
 		
 		B_StockOutDetailDao dao = new B_StockOutDetailDao();
 		//
@@ -894,6 +945,11 @@ public class StockOutService extends CommonService {
 			
 			updateMaterial("领料删除处理",mateId,quantity);
 			
+
+			if (    ("020").equals(requisitionType) || 
+					("030").equals(requisitionType) ||
+					("040").equals(requisitionType) )
+				updateRawRequirement(ysid,mateId,quantity);
 		}		
 	}
 	
@@ -1143,14 +1199,17 @@ public class StockOutService extends CommonService {
 		
 		try {
 			ts.begin();
-			
+
+			String ysid = request.getParameter("YSId");
+			String requisitionType = request.getParameter("requisitionType");
 			String where = " stockOutId='" + stockOutId +"' AND deleteFlag='0'";
 			
 			String requistionId = deleteStockout(where);
 			
-			deleteStockoutDetail(stockOutId);
+			deleteStockoutDetail(stockOutId,ysid,requisitionType);
 			
 			updateRequisition(requistionId,Constants.STOCKOUT_2);
+			
 			
 			ts.commit();
 			

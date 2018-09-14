@@ -343,7 +343,8 @@
 	      <f name="b.unit" alias="unitId" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-   <from>v_rawrequirement b LEFT JOIN v_stockoutdetailgroup c ON b.materialId = c.materialId AND c.YSId=b.YSId  LEFT JOIN v_requisitiondetailgroup d ON b.materialId=d.materialId AND d.YSId = b.YSId </from>
+   <!--from>v_rawrequirement b LEFT JOIN v_stockoutdetailgroup c ON b.materialId = c.materialId AND c.YSId=b.YSId  LEFT JOIN v_requisitiondetailgroup d ON b.materialId=d.materialId AND d.YSId = b.YSId </from -->
+   <from>v_rawrequirement b LEFT JOIN  ( SELECT 	a.stockOutId AS stockoutid, 	b.requisitionId AS requisitionId, 	b.YSId AS YSId, 	a.materialId AS materialId, 	COUNT(a.materialId) countQty, 	sum(REPLACE (ifnull(a.quantity, 0),',','')) AS quantity, 	a.price, 	max(b.checkOutDate) checkOutDate, 	b.keepUser, 	a.deleteFlag AS deleteFlag FROM  		b_stockoutdetail a 		LEFT JOIN b_stockout b ON a.stockOutId = b.stockOutId AND (b.deleteFlag = '0')    WHERE a.deleteFlag = '0' AND b.YSId='#' GROUP BY 	a.materialId  )   c ON b.materialId = c.materialId AND c.YSId = b.YSId    LEFT JOIN   ( SELECT 	a.requisitionId AS detailRequisitionId, 	b.requisitionId AS requisitionId, 	b.YSId AS YSId, 	b.YSId AS requistionYsid, 	a.materialId AS materialId, 	IFNULL(b.collectYsid,b.YSId) collectYsid, 	b.requisitionDate, 	sum( 		REPLACE ( 			ifnull(a.quantity, 0), 			',', 			'' 		) 	) AS quantity, 	sum( 		REPLACE ( 			ifnull(a.overQuantity, 0), 			',', 			'' 		) 	) AS overQuantity, 	a.deleteFlag AS deleteFlag FROM  		b_requisitiondetail a 		JOIN b_requisition b ON a.requisitionId = b.requisitionId AND b.deleteFlag='0' 			 WHERE 	a.deleteFlag = '0' AND b.YSId='#' GROUP BY a.materialId  ) d ON b.materialId = d.materialId AND d.YSId = b.YSId where b.deleteFlag='0'</from>
     <orderby>b.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -581,7 +582,7 @@
       <f name="a.YSId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="e.materialName" alias="" ctype="" />
-      <f name="e.quantityOnHand" alias="" ctype="" />
+      <f name="IFNULL(e.quantityOnHand,'0')" alias="quantityOnHand" ctype="" />
       <f name="e.availabelToPromise" alias="" ctype="" />
       <f name="e.MAPrice" alias="" ctype="" />
       <f name="a.quantity" alias="requisitionQty" ctype="" />
@@ -594,7 +595,8 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_requisitiondetail  AS A LEFT JOIN b_rawrequirement f ON f.YSId=a.YSId AND f.materialId=a.materialId LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON b.YSId=a.YSId AND b.materialId=a.materialId  LEFT JOIN v_purchaseplandetailgroup c ON c.YSId=a.YSId AND c.materialId = a.materialId  LEFT JOIN v_stockout_groupby_requisitionid d ON d.requisitionId=a.requisitionId AND d.materialId=a.materialId LEFT JOIN b_material e ON e.materialId=a.materialId AND e.deleteFlag='0'</from>
+   <!-- from>v_requisitiondetail  AS A LEFT JOIN b_rawrequirement f ON f.YSId=a.YSId AND f.materialId=a.materialId LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON b.YSId=a.YSId AND b.materialId=a.materialId  LEFT JOIN v_purchaseplandetailgroup c ON c.YSId=a.YSId AND c.materialId = a.materialId  LEFT JOIN v_stockout_groupby_requisitionid d ON d.requisitionId=a.requisitionId AND d.materialId=a.materialId LEFT JOIN b_material e ON e.materialId=a.materialId AND e.deleteFlag='0'</from -->
+  <from> v_requisitiondetail AS A LEFT JOIN b_rawrequirement f ON f.YSId = a.YSId AND f.materialId = a.materialId LEFT JOIN  ( SELECT 	c.materialId, 	c.ysid, 	SUM(REPLACE(c.quantity, ',', '')) quantity, 	max(c.checkInDate) AS checkInDate, 	max(c.storageFinish) storageFinish, 	group_concat( c.areaNumber SEPARATOR ',' ) AS areaNumber FROM 	v_purchasestockindetail c WHERE 	c.deleteFlag = '0' AND c.ysid='#' GROUP BY  	c.materialId  )  b ON  b.YSId = a.YSId AND b.materialId = a.materialId LEFT JOIN  ( SELECT 	a.recordId AS recordId, 	a.purchaseId AS purchaseId, 	a.YSId AS YSId, 	a.materialId AS materialId, 	 	sum(a.unitQuantity) AS unitQuantity, 	a.supplierId AS supplierId, 	a.supplierShortName AS supplierShortName, 	IFNULL(a.price,0) AS price, 	a.priceStatus AS priceStatus, 	format( 		sum( 			REPLACE ( 				a.manufactureQuantity, 				',', 				'' 			) 		), 		2 	) AS manufactureQuantity,   	sum( REPLACE ( a.manufactureQuantity, ',', '' ) ) AS manufactureQty, 	format(sum(REPLACE (a.purchaseQuantity,',','')),2) AS purchaseQuantity, 	if(sum(a.unitQuantity)=0,1,sum(a.unitQuantity)) * REPLACE(c.totalQuantity, ',', '' ) AS orderQty,  c.totalQuantity, 	a.totalRequisition AS totalRequisition FROM  		b_purchaseplandetail a 		LEFT JOIN b_orderdetail c ON c.ysid=a.ysid AND (c.deleteFlag = '0')  WHERE a.deleteFlag='0' AND a.ysid='#'  GROUP BY  	a.materialId  )  c ON c.YSId = a.YSId AND c.materialId = a.materialId LEFT JOIN   ( SELECT 	a.stockOutId AS stockoutid, 	b.requisitionId AS requisitionId, 	b.YSId AS YSId, 	a.materialId AS materialId, 	COUNT(a.materialId) countQty, 	sum(REPLACE (ifnull(a.quantity, 0),',','')) AS quantity, 	a.price, 	max(b.checkOutDate) checkOutDate, 	b.keepUser, 	a.deleteFlag AS deleteFlag FROM  		b_stockoutdetail a 		JOIN b_stockout b ON a.stockOutId = b.stockOutId AND (b.deleteFlag = '0')   WHERE (a.deleteFlag = '0') AND 	b.YSId='#'  GROUP BY 	a.materialId  )  d ON d.requisitionId = a.requisitionId AND d.materialId = a.materialId LEFT JOIN b_material e ON e.materialId = a.materialId AND e.deleteFlag = '0' WHERE a.deleteFlag='0'</from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having></having>

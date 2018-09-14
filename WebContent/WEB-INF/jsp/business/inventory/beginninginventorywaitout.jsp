@@ -65,9 +65,9 @@
 	        }
 		});		
 		
-		sumFn(4);
-		sumFn(5);
-		$('#waitout').html(floatToCurrency( currencyToFloat($('#totalValue4').html()) - currencyToFloat($('#totalValue5').html()) ))
+		sumFn(6);
+		sumFn(7);
+		$('#waitout').html(floatToCurrency( currencyToFloat($('#totalValue6').html()) - currencyToFloat($('#totalValue7').html()) ))
 	})	
 	
 	function doSearch() {	
@@ -169,8 +169,8 @@
 							<th></th>
 							<th></th>
 							<th>合计：</th>
-							<th style="text-align: right;"><span id="totalValue4"></span></th>
-							<th style="text-align: right;"><span id="totalValue5"></span></th>
+							<th style="text-align: right;"><span id="totalValue6"></span></th>
+							<th style="text-align: right;"><span id="totalValue7"></span></th>
 						</tr>
 					</tfoot>
 				</table>

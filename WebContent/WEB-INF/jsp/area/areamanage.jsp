@@ -358,6 +358,13 @@
 			content : url,
 		});
 	}
+	function rawRequirementAdd(){
+var YSId= $('#keyword1').val();
+		var url = '${ctx}/business/purchasePlan?methodtype=rawRequirementALLAdd&YSId='+YSId ;
+
+		location.href = url;
+	}
+	
 </script>
 </head>
 <body>
@@ -383,6 +390,9 @@
 							<td>
 								<button type="button" id="retrieve" class="DTTT_button" />
 								查询</button>
+								
+								<button type="button" id="" onclick="rawRequirementAdd();return false;"class="DTTT_button" />
+								物料需求表做成</button>
 							</td>
 						</tr>
 					</table>

@@ -103,12 +103,12 @@
 			<table width="100%">
 				<tr>
 					<td class="label" width="100px">物料编号：</td>
-					<td width="120px">${material.rawMaterialId }</td>
+					<td width="120px">${material.materialId }</td>
 					<td class="label" width="70px">物料名称：</td> 
-					<td>${material.rawMaterialName }</td>		
+					<td>${material.materialName }</td>		
 					<td class="label" width="100px">剩余待出库数量：</td>
 					<td width="100px"><span id="waitout"></span></td>				
-					<td width="150px"><button type="button" id="doEdit" class="DTTT_button">修正领料数量</button></td> 			
+					<!-- td width="150px"><button type="button" id="doEdit" class="DTTT_button">修正领料数量</button></td> --> 			
 				</tr>
 			</table>		
 			<div class="list">
@@ -131,22 +131,22 @@
 								<td>${status.index +1 }</td>
 								<td>${list.YSId }</td>
 								<td>${list.productId }</td>
-								<td><span id="shortName${status.index }">${list.materialName }</span></td>
-								<td>${list.manufactureQuantity }</td>
+								<td><span id="shortName${status.index }"></span></td>
+								<td>${list.orderQty }</td>
 								
 								<td id="stockin${status.index }">${list.stockinQty }</td>
 								
-								<td id="weight${status.index }"></td>
-								<td id="stockout${status.index }"></td>
+								<td id="weight${status.index }">${list.manufactureQuantity }</td>
+								<td id="stockout${status.index }">${list.stockoutQty }</td>
 							</tr>
 							
 							<script type="text/javascript">
-								var materialName = '${list.materialName}';
+								var materialName = '${list.productName}';
 								var weight = '${list.rawOrderWeight}';
 								var index = '${status.index}';
 								var vrawunit = '${list.unit}';
 								var unittext = '${list.zzunit}';
-								
+								/*
 								var farwunit = '1';//初始值
 								//原材料的购买单位
 								//alert(unitAaary.length)
@@ -192,7 +192,9 @@
 								$('#weight'+index).html(floatToCurrency(newWeight));
 								$('#stockout'+index).html(viewQty);
 								$('#stockin'+index).html(floatToCurrency(stockinQty));
-								$('#shortName'+index).html(jQuery.fixedWidth(materialName,32));
+								*/
+								
+								$('#shortName'+index).html(jQuery.fixedWidth(materialName,40));
 							</script>	
 						</c:forEach>
 					</tbody>

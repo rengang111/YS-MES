@@ -733,11 +733,17 @@ public class CommonService extends BaseService {
 			return "0.00";
 		
 		try{
-			//构造方法的字符格式这里如果小数不足2位,会以0补足.
-			DecimalFormat decimalFormat=new DecimalFormat();
-			decimalFormat.applyPattern("#,###.00");
-			//format 返回的是字符串
-			rtn=decimalFormat.format(f);
+			if( f * 100 < 1 ){
+				rtn = String.format("%f", f);
+			}else{
+					
+				//构造方法的字符格式这里如果小数不足2位,会以0补足.
+				DecimalFormat decimalFormat=new DecimalFormat();
+				decimalFormat.applyPattern("#,##0.0#");
+				//format 返回的是字符串
+				rtn=decimalFormat.format(f);
+			}
+			
 			
 		}catch(NumberFormatException e){
 			e.printStackTrace();

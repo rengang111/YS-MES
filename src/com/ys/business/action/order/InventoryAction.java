@@ -96,7 +96,7 @@ public class InventoryAction extends BaseAction {
 				contractAndStockIn();
 				rtnUrl = "/business/inventory/beginninginventorywaitin";
 				break;
-			case "planAndStockOut"://合同及入库信息
+			case "planAndStockOut"://库存信息：待出
 				planAndStockOut();
 				rtnUrl = "/business/inventory/beginninginventorywaitout";
 				break;

@@ -832,7 +832,7 @@ public class StorageService extends CommonService {
 				data.setReceiptid(receiptid);
 				insertPurchaseStockInDetail(data);
 									
-				updateMaterial("采购件入库",materialid,quantity,data.getPrice());//更新库存
+				updateMaterial("采购件入库",contractId,materialid,quantity,data.getPrice());//更新库存
 				
 				//更新合同的累计入库数量,收货状态
 				updateContractStorage(reqData.getContractid(),materialid,quantity);					
@@ -981,6 +981,7 @@ public class StorageService extends CommonService {
 	@SuppressWarnings("unchecked")
 	private B_MaterialData updateMaterial(
 			String action,
+			String contractId,
 			String materialId,
 			String reqQuantity,String reqPrice) throws Exception{
 	
@@ -1007,8 +1008,14 @@ public class StorageService extends CommonService {
 		float iNewQuantiy = iQuantity + ireqQuantity;		
 		
 		//待入库数量
-		float istockin = stringToFloat(data.getWaitstockin());		
-		float iNewStockIn = istockin - ireqQuantity;
+		float istockin = stringToFloat(data.getWaitstockin());	
+		float iNewStockIn = istockin;
+		
+		if(notEmpty(contractId))
+			iNewStockIn = istockin - ireqQuantity;//只有合同有“待入”
+		
+		if(iNewStockIn > 0)
+			iNewStockIn = 0;
 		
 		//虚拟库存=当前库存 + 待入库 - 待出库
 		float waitstockout = stringToFloat(data.getWaitstockout());//待出库	
@@ -1399,7 +1406,8 @@ public class StorageService extends CommonService {
 			
 			ts = new BaseTransaction();
 			ts.begin();
-			
+
+			String contractId = request.getParameter("contractId");
 			String materialId = request.getParameter("materialId");
 			String receiptId = request.getParameter("receiptId");
 		
@@ -1407,13 +1415,13 @@ public class StorageService extends CommonService {
 			String astr_Where = "receiptid='"+ receiptId +"' AND deleteFlag='0' ";
 			List<B_PurchaseStockInDetailData> list = detaildao.Find(astr_Where);
 			B_PurchaseStockInDetailData stock = new B_PurchaseStockInDetailData();
-			String quantity = "0";
-			String price = "0";
+			
 			if(list.size() > 0 ){
 
 				stock = deletePurchaseStockInDetail(receiptId,materialId);
-				quantity = floatToString(stringToFloat(stock.getQuantity()) * -1 ); 
-				price = floatToString(stringToFloat(stock.getPrice()) * -1 );
+
+				String quantity = floatToString(stringToFloat(stock.getQuantity()) * -1 ); 
+				String price = floatToString(stringToFloat(stock.getPrice()) * -1 );
 				if(list.size() > 1 ){
 					//多条明细，只删除明细
 				}else{
@@ -1421,10 +1429,12 @@ public class StorageService extends CommonService {
 					deletePurchaseStockIn(receiptId);
 					rtnFlag = "返回";
 				}
+
+				//更新库存
+				if(notEmpty(contractId))
+					updateMaterial("已入库数据删除",contractId,materialId,quantity,price);
 			}
 				
-			//更新库存
-			updateMaterial("已入库数据删除",materialId,quantity,price);
 			
 			ts.commit();
 		}

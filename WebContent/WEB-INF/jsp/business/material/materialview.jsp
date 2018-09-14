@@ -36,38 +36,38 @@
 	
 	<input id="handle_status" value="1133" hidden="hidden">
 	
-<fieldset style="float: left;width: 68%;">
+<fieldset style="float: left;width: 63%;">
 	<legend>物料基本信息</legend>
 
 	<table class="form" >		
 		<tr>
-			<td class="label" style="width: 100px;"><label>物料编码：</label></td>
-			<td style="width: 150px;">
+			<td class="label" style="width: 60px;"><label>物料编码：</label></td>
+			<td style="width: 120px;">
 				<label>${material.material.materialid}</label></td>	
 		
-			<td class="label" style="width: 100px;"><label>原物料编码：</label></td>
-			<td style="width: 100px;">${material.material.originalid}</td>
+			<td class="label" style="width: 80px;"><label>原物料编码：</label></td>
+			<td style="width: 80px;">${material.material.originalid}</td>
 			
 			<td class="label" style="width: 60px;"><label>计量单位：</label></td>
 			<td style="width: 50px;">${material.unitname}</td>	
 
-			<td class="label" style="width: 100px;"><label>核算成本：</label></td>
+			<td class="label" style="width: 60px;"><label>核算成本：</label></td>
 			<td><a href="#" onClick="doCostUpdate()"><span id="cost">${material.material.materialcost}</span></a></td>	
 														
 		</tr>
 		<tr>		
-			<td class="label" style="width: 100px;"><label>分类编码：</label></td>
+			<td class="label" ><label>分类编码：</label></td>
 			<td>${material.attribute2}</td>
 			
-			<td class="label" style="width: 100px;">采购类别：</td>
-			<td style="width: 100px;">${material.purchaseTypeName}</td>	
+			<td class="label">采购类别：</td>
+			<td>${material.purchaseTypeName}</td>	
 			
-			<td class="label" style="width: 60px;">采购人员：</td>
+			<td class="label">采购人员：</td>
 			<td colspan="3" >${material.purchaserName}</td>				
 		
 		</tr>
 		<tr>
-			<td class="label" style="width: 100px;"><label>物料名称：</label></td>
+			<td class="label"><label>物料名称：</label></td>
 			<td colspan="7">${material.material.materialname}</td>		
 		</tr>
 		<tr>
@@ -93,7 +93,7 @@
 		</div>
 
 	
-	<table style="width: 69%;">
+	<table style="width: 64%;">
 		<tr>
 			<td>
 				<table id="subidTab" class="dataTable list" style="width:98%;margin-bottom: 20px;">

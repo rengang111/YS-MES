@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.business.action.model.order.RequisitionModel;
+import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_ProductionTaskDao;
 import com.ys.business.db.dao.B_RawRequirementDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
+import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_ProductionTaskData;
 import com.ys.business.db.data.B_RawRequirementData;
 import com.ys.business.db.data.B_RequisitionData;
@@ -286,29 +288,33 @@ public class RequisitionZZService extends CommonService {
 	
 	}
 	
+	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> getRawMaterial(String makeType) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
 		String ysid = request.getParameter("YSId");	
 
-		/*
+		
 		//直接从原材料需求表中取值
 		modelMap = getRawRequirement(ysid,makeType);
+		
 		
 		ArrayList<HashMap<String, String>> dbData = 
 				(ArrayList<HashMap<String, String>>)modelMap.get("data");
 		if (dbData.size() > 0) {
 			return modelMap;
 		}
-		*/
+		
+		addRawRequirement(ysid);
 
 		//删除现有原材料需求表
-		deleteRawRequirement(ysid);
+		//deleteRawRequirement(ysid);
 		
 		//原材料需求表未找到时，从采购方案重新组合，并插入原材料需求表
-		ArrayList<HashMap<String, String>> list = getRawMaterialList(ysid);
+		//ArrayList<HashMap<String, String>> list = getRawMaterialList(ysid);
 		
+		/*
 		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
 		ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
 		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
@@ -330,6 +336,8 @@ public class RequisitionZZService extends CommonService {
 
 			insertRawRequirement(map,ysid,type);
 		}
+		*/
+		
 		/*
 		if( Constants.REQUISITION_BLOW.equals(makeType) ){//吹塑:F02	
 			modelMap.put("data", blow);
@@ -346,6 +354,137 @@ public class RequisitionZZService extends CommonService {
 		return modelMap;
 	}
 	
+	private void addRawRequirement(String YSId) throws Exception{
+		
+		ArrayList<HashMap<String, String>> list3 = getRawMaterialGroupList(YSId);	
+		
+		for(HashMap<String, String> map2:list3){
+
+			 String parentMat = map2.get("materialId").substring(0, 3);
+			 String type = "";
+			 if( ("F02").equals(parentMat)){//吹塑:F02
+				 type = Constants.REQUISITION_BLOW;
+			 }else if( ("F01").equals(parentMat)){//吸塑:F01
+				 type = Constants.REQUISITION_BLISTE;
+			 }else{//以外
+				 type = Constants.REQUISITION_INJECT;
+			 }
+			 
+			String rawmater = map2.get("rawMaterialId");//二级物料名称(原材料)
+			float purchase = 0;//采购量
+			String unit = DicUtil.getCodeValue("换算单位" + map2.get("rawUnit"));
+			float funit = stringToFloat(unit);
+			float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
+			float requirement = ( totalQuantity / funit);
+			
+			B_RawRequirementData raw = new B_RawRequirementData();
+			raw.setYsid(YSId);
+			raw.setMaterialid(rawmater);
+			raw.setSupplierid(map2.get("supplierId"));
+			raw.setQuantity(floatToString(requirement));
+			raw.setRawtype(type);
+			
+			insertRawRequirement(raw);
+			
+			//更新虚拟库存
+			updateMaterial("原材料领料时做成物料需求表",rawmater,purchase,requirement);						
+		}
+		
+	}
+	
+	//更新虚拟库存:生成物料需求时增加“待出库”
+	@SuppressWarnings("unchecked")
+	private void updateMaterial(
+			String action,
+			String materialId,
+			float purchaseIn,
+			float requirementOut) throws Exception{
+	
+		B_MaterialData data = new B_MaterialData();
+		B_MaterialDao dao = new B_MaterialDao();
+		
+		String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
+		
+		List<B_MaterialData> list = 
+				(List<B_MaterialData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
+
+		data = list.get(0);
+		
+		insertStorageHistory(data,action,String.valueOf(requirementOut));//保留更新前的数据
+		
+		//当前库存数量
+		float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
+		float iWaitOut = stringToFloat(data.getWaitstockout());//待出库
+		float iWaitIn  = stringToFloat(data.getWaitstockin());//待入库
+		
+		iWaitOut = iWaitOut + requirementOut;
+		iWaitIn = iWaitIn + purchaseIn;
+		
+		//虚拟库存 = 当前库存 + 待入库 - 待出库
+		float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchasePlanInsert",userInfo);
+		copyProperties(data,commData);
+		
+		data.setAvailabeltopromise(String.valueOf(availabeltopromise));//虚拟库存
+		data.setWaitstockout(String.valueOf(iWaitOut));//待出库
+		data.setWaitstockin(String.valueOf(iWaitIn));//待入库
+		
+		dao.Store(data);
+		
+	}
+		
+	@SuppressWarnings("unchecked")
+	private void insertRawRequirement(B_RawRequirementData raw) throws Exception{
+		
+		String where = "YSId = '" + raw.getYsid() +"' AND materialId='" + raw.getMaterialid() +"' ";
+		
+		List<B_RawRequirementData> list = new B_RawRequirementDao().Find(where);
+		
+		if(list.size() > 0 ){
+			//update
+			B_RawRequirementData db = list.get(0);
+	
+			copyProperties(db,raw);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"更新采购方案物料",userInfo);
+			copyProperties(db,commData);
+			
+			new B_RawRequirementDao().Store(db);	
+			
+		}else{
+			//insert
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"新增采购方案物料",userInfo);
+			copyProperties(raw,commData);
+	
+			guid = BaseDAO.getGuId();
+			raw.setRecordid(guid);
+			
+			new B_RawRequirementDao().Create(raw);	
+		}		
+	}
+	
+	public ArrayList<HashMap<String, String>> getRawMaterialGroupList(
+			String YSId ) throws Exception {		
+
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getRawMaterialFromPlan");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		return baseQuery.getYsFullData(sql);
+		
+	}
+	
 	private void insertRawRequirement(
 			HashMap<String, String> map,
 			String YSId,
@@ -353,13 +492,10 @@ public class RequisitionZZService extends CommonService {
 		
 		B_RawRequirementData raw = new B_RawRequirementData();
 
-		//String unit = map.get("unitId");
 		String unit = DicUtil.getCodeValue("换算单位" + map.get("unitId"));
 		float funit = stringToFloat(unit);
 		float quantity = stringToFloat(map.get("purchaseQuantity"));
 		String compute = floatToString( quantity / funit );
-		//String zzunit = map.get("zzunitId");
-		//float fzzunit = stringToFloat(DicUtil.getCodeValue(zzunit));
 
 		raw.setQuantity(compute);
 		raw.setYsid(YSId);
@@ -368,7 +504,7 @@ public class RequisitionZZService extends CommonService {
 		
 		//插入新数据
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"RawRequirementInsert",userInfo);
+				"采购方案做成需求表",userInfo);
 		copyProperties(raw,commData);
 
 		String guid = BaseDAO.getGuId();
@@ -399,7 +535,11 @@ public class RequisitionZZService extends CommonService {
 		userDefinedSearchCase.put("YSId", ysid);	
 		userDefinedSearchCase.put("rawType", type);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", ysid);
+		System.out.println("自制件领料："+sql);
+		
+		baseQuery.getYsFullData(sql);
 
 		modelMap.put("data",dataModel.getYsViewData());
 		

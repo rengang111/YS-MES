@@ -214,30 +214,28 @@
     <pool></pool>    
     <name value="purchasePlanForRawByMaterialId" />
     <where>
-    	<w name="a.rawMaterialId" des="" reqName="rawMaterialId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
-  	<select>
-      <f name="a.YSId" alias="" ctype="" />
-      <f name="a.productId" alias="" ctype="" />
+    <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
-      <f name="IFNULL(f.quantity,'0')" alias="correctionQty" ctype="" />
-      <f name="a.unitQuantity" alias="" ctype="" />
-      <f name="a.rawMaterialId" alias="" ctype="" />
-      <f name="a.rawMaterialName" alias="" ctype="" />
-      <f name="a.rawOrderWeight" alias="" ctype="" />
-      <f name="a.zzunit" alias="zzunit" ctype="计量单位" />
-      <f name="a.unit" alias="" ctype="计量单位" />
-      <f name="a.planDate" alias="" ctype="" />
-      <f name="IFNULL(d.quantity,'0')" alias="stockOutQty" ctype="" />
-      <f name="IFNULL(c.quantity,'0')" alias="stockinQty" ctype="" />
+      <f name="IFNULL(b.quantity,0)" alias="actualQty" ctype="" />
+      <f name="e.materialId" alias="productId" ctype="" />
+      <f name="e.materialName" alias="productName" ctype="" />
+      <f name="REPLACE(IFNULL(e.stockinQty, 0),',','')" alias="stockinQty" ctype="" />
+      <f name="IFNULL(e.quantity,0)" alias="orderQty" ctype="" />
+      <f name="IF(REPLACE(IFNULL(e.stockinQty, 0),',','') >= REPLACE(IFNULL(e.quantity, 0),',',''),a.manufactureQuantity,b.quantity)" alias="requirementQty" ctype="" />
+      <f name="IFNULL(REPLACE (b.quantity, ',', ''),0)" alias="stockoutQty" ctype="" />
+      <f name="IF (	REPLACE (IFNULL(e.stockinQty, 0),',','') >= REPLACE (IFNULL(e.quantity, 0),',',''),	0,		IF(a.manufactureQty - IFNULL(b.quantity,0) &lt; 0,0,a.manufactureQty - IFNULL(b.quantity,0)))" alias="waitout" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_rawmaterial_ysid_group a LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON c.ysid=a.YSId AND c.materialId = a.productId LEFT JOIN v_stockout_and_requistion d ON locate(a.YSId,d.YSId)>0 AND a.rawMaterialId = d.materialId LEFT JOIN b_stockoutcorrection f ON f.ysid=a.YSId AND f.materialId = a.rawMaterialId </from>
+   <from>  ( SELECT 	a.YSId AS YSId, 	a.materialId AS materialId, 	b.materialName AS materialName, 	a.deleteFlag, sum(	REPLACE (a.quantity,	',',''	)) manufactureQty, 	format(sum(	REPLACE (a.quantity,',',''	)),2) AS manufactureQuantity  FROM  		b_rawrequirement a 		JOIN b_material b ON  b.materialId = a.materialId AND (b.deleteFlag = '0')  WHERE a.deleteFlag='0' AND A.materialId = '#'  GROUP BY 	a.YSId )	  a LEFT JOIN  ( SELECT 	b.YSId AS YSId, 	a.materialId AS materialId, 	COUNT(a.materialId) countQty, 	sum( 		REPLACE ( 			ifnull(a.quantity, 0), 			',', 			'' 		) 	) AS quantity FROM  		b_stockoutdetail a 		LEFT JOIN b_stockout b ON a.stockOutId = b.stockOutId AND b.deleteFlag = '0'    WHERE (a.deleteFlag = '0') AND a.materialId = '#' GROUP BY 	b.YSId )  b ON a.materialId = b.materialId AND instr(b.ysid, LEFT(a.ysid, 8)) > 0 LEFT JOIN  ( SELECT a.YSId, a.materialId, b.materialName,a.completedQuantity, if(IFNULL(c.quantity,0)&lt;=0,ifNULL(a.completedQuantity,0),IFNULL(c.quantity,0)) stockinQty,  a.quantity FROM b_orderdetail a JOIN b_material b ON a.materialId=b.materialId LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.ysid=c.ysid AND  a.materialId = c.materialId)  e ON e.ysid=a.ysid   WHERE 	A.deleteFlag = '0'  </from>
     <orderby>a.YSId</orderby>
     <groupby></groupby>
-    <having></having>
+    <having>waitout + 0 > 0</having>
 	<power></power>    
   </query>
   <query>
@@ -1042,9 +1040,53 @@
 	      <f name="b.unit" alias="" ctype="计量单位" />
 	      <f name="b.unit" alias="unitId" ctype="" />
   </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-   <from>v_rawrequirement b LEFT JOIN v_stockoutdetailgroup c ON b.materialId = c.materialId AND c.YSId=b.YSId  LEFT JOIN v_requisitiondetailgroup d ON b.materialId=d.materialId AND d.YSId = b.YSId </from>
+   <!--from>v_rawrequirement b LEFT JOIN v_stockoutdetailgroup c ON b.materialId = c.materialId AND c.YSId=b.YSId  LEFT JOIN v_requisitiondetailgroup d ON b.materialId=d.materialId AND d.YSId = b.YSId </from -->
+   <from>SELECT 	b.materialId, 	b.materialName, 	b.rawType, 	b.quantity, 	b.quantityOnHand, 	b.availabelToPromise, 	IFNULL(c.quantity, '0') totalRequisition, 	IFNULL(d.quantity, '0') requisitionQty, 	b.unit, 	b.unit unitId FROM 	v_rawrequirement b LEFT JOIN  ( SELECT 	a.stockOutId AS stockoutid, 	b.requisitionId AS requisitionId, 	b.YSId AS YSId, 	a.materialId AS materialId, 	COUNT(a.materialId) countQty, 	sum(REPLACE (ifnull(a.quantity, 0),',','')) AS quantity, 	a.price, 	max(b.checkOutDate) checkOutDate, 	b.keepUser, 	a.deleteFlag AS deleteFlag FROM  		b_stockoutdetail a 		LEFT JOIN b_stockout b ON a.stockOutId = b.stockOutId AND (b.deleteFlag = '0')    WHERE a.deleteFlag = '0' AND b.YSId='#' GROUP BY 	a.materialId  )   c ON b.materialId = c.materialId AND c.YSId = b.YSId    LEFT JOIN   ( SELECT 	a.requisitionId AS detailRequisitionId, 	b.requisitionId AS requisitionId, 	b.YSId AS YSId, 	b.YSId AS requistionYsid, 	a.materialId AS materialId, 	IFNULL(b.collectYsid,b.YSId) collectYsid, 	b.requisitionDate, 	sum( 		REPLACE ( 			ifnull(a.quantity, 0), 			',', 			'' 		) 	) AS quantity, 	sum( 		REPLACE ( 			ifnull(a.overQuantity, 0), 			',', 			'' 		) 	) AS overQuantity, 	a.deleteFlag AS deleteFlag FROM  		b_requisitiondetail a 		JOIN b_requisition b ON a.requisitionId = b.requisitionId AND b.deleteFlag='0' 			 WHERE 	a.deleteFlag = '0' AND b.YSId='#' GROUP BY a.materialId  ) d ON b.materialId = d.materialId AND d.YSId = b.YSId </from>
     <orderby>b.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getRawMaterialFromPlan" />
+    <where>
+    	<w name="a1.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a1.materialId" alias="" ctype="" />
+      <f name="a1.rawMaterialId" alias="" ctype="" />
+      <f name="a1.supplierId" alias="" ctype="" />
+      <f name="a1.unit" alias="" ctype="" />
+      <f name="a1.rawUnit" alias="" ctype="" />
+      <f name="a1.purchaseQuantity" alias="" ctype="" />
+      <f name="IFNULL(e.quantity,'0')" alias="stockoutQty" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+   <!--from>b_purchaseplandetail b JOIN b_zzrawmaterial a	 JOIN b_material c WHERE a.materialId = b.materialId AND  c.materialId = a.rawMaterialId AND  b.supplierId = '0574YZ00' AND (a.deleteFlag = '0') AND (b.deleteFlag = '0') AND (c.deleteFlag = '0')  </from -->
+   <from> (SELECT b.ysid,a.materialId, a.rawMaterialId, a.supplierId, a.unit, c.unit rawUnit,sum(REPLACE (b.purchaseQuantity, ',', '') * REPLACE (a.weight, ',', '')) purchaseQuantity FROM 	b_purchaseplandetail b JOIN b_zzrawmaterial a JOIN b_material c WHERE 	a.materialId = b.materialId AND c.materialId = a.rawMaterialId AND b.supplierId = '0574YZ00' AND (a.deleteFlag = '0') AND (b.deleteFlag = '0') AND (c.deleteFlag = '0') AND b.YSId = '#'   GROUP BY a.rawMaterialId ) a1  left JOIN  ( SELECT 	b2.YSId AS YSId, 	a2.materialId AS materialId, 	COUNT(a2.materialId) countQty, 	sum(REPLACE (ifnull(a2.quantity, 0),',','')) AS quantity FROM b_stockoutdetail a2 LEFT JOIN b_stockout b2 ON a2.stockOutId = b2.stockOutId AND (b2.deleteFlag = '0') WHERE b2.ysid='#' GROUP BY b2.YSId,a2.materialId  )    e ON a1.ysid=e.ysid AND  e.materialId=a1.rawMaterialId </from>
+    <orderby>a1.rawMaterialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getPlanAndStockin" />
+    <where>
+    	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="IFNULL(c.completedQuantity,'0')" alias="completedQuantity" ctype="" />
+      <f name="c.totalQuantity" alias="" ctype="" />
+      <f name="c.quantity" alias="orderQty" ctype="" />
+      <f name="IFNULL(b.quantity,'0')" alias="stockInQty" ctype="" />
+  </select>
+   <from> b_purchaseplan a  LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON a.ysid=b.ysid AND a.materialId=b.materialId LEFT JOIN b_orderdetail c ON a.YSId=c.YSId AND c.deleteFlag='0' WHERE a.deleteFlag = '0'  </from>
+    <orderby>a.YSId</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    

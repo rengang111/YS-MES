@@ -1165,8 +1165,16 @@ public class MaterialService extends CommonService implements I_BaseService{
 			String removeData[] = delData.split(",");									
 			for (String key:removeData) {									
 												
-				data.setRecordid(key);							
-				dao.Remove(data);	
+				data.setRecordid(key);		
+				
+				data = new B_MaterialDao(data).beanData;
+
+				//逻辑删除
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"物料删除处理",userInfo);
+				copyProperties(data,commData);	
+				
+				dao.Store(data);	
 				
 			}
 			

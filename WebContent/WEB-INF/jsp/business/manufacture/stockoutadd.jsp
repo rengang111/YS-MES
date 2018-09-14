@@ -12,8 +12,10 @@
 	function ajax(scrollHeight) {
 		
 		var requisitionid= $("#stockout\\.requisitionid").val();
+		var YSId= '${order.YSId }';
 		var actionUrl = "${ctx}/business/stockout?methodtype=getRequisitionDetail";
 		actionUrl = actionUrl +"&requisitionId="+requisitionid;
+		actionUrl = actionUrl +"&YSId="+YSId;
 		
 		//scrollHeight =$(document).height() - 200; 
 		
@@ -231,7 +233,6 @@
 		
 		$(".goBack").click(
 				function() {
-					var makeType=$('#makeType').val();
 					var usedType=$('#usedType').val();
 					var url = "${ctx}/business/stockout?makeType="
 							+makeType+"&usedType="+usedType;
@@ -242,11 +243,10 @@
 		$("#insert").click(
 				function() {
 
-					var makeType=$('#makeType').val();
-					var usedType=$('#usedType').val();
+					var requisitionType=$('#requisitionType').val();
 					var YSId = '${order.YSId }';
 			$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=insert"
-					+"&makeType="+makeType+"&usedType="+usedType+"&YSId="+YSId);
+					+"&requisitionType="+requisitionType+"&YSId="+YSId);
 			$('#formModel').submit();
 		});
 		
@@ -292,6 +292,7 @@
 	
 	<input type="hidden" id="makeType" value="${makeType }" />
 	<input type="hidden" id="usedType" value="${usedType }" />
+	<input type="hidden" id="requisitionType" value="${requisitionType }" />
 	<form:hidden path="stockout.ysid" />
 	<form:hidden path="stockout.requisitionid" />
 	

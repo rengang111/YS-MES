@@ -285,6 +285,7 @@ public class StockOutAction extends BaseAction {
 		try{
 			service.addInitOrView();			
 			model.addAttribute("userName", userInfo.getUserName());
+			model.addAttribute("requisitionType", request.getParameter("requisitionType"));
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -296,6 +297,7 @@ public class StockOutAction extends BaseAction {
 
 		try{
 			service.stockoutHistoryInit();
+			model.addAttribute("requisitionType", request.getParameter("requisitionType"));
 			
 		}catch(Exception e){
 			System.out.println(e.getMessage());

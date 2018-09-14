@@ -1020,18 +1020,19 @@
       <f name="a.materialName" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
       <f name="IFNULL(b.quantity,0)" alias="actualQty" ctype="" />
-      <f name="IFNULL(d.quantity, 0)" alias="virtualQty" ctype="" />
-      <f name="c.materialId" alias="productId" ctype="" />
-      <f name="c.materialName" alias="productName" ctype="" />
-      <f name="IFNULL(c.quantity,0)" alias="stockinQty" ctype="" />
-      <f name="IFNULL(c.orderQty,0)" alias="orderQty" ctype="" />
-      <f name="(IFNULL(REPLACE(b.quantity,',',''),0)+0) + (IFNULL(REPLACE(d.quantity,',',''), 0)+0)" alias="stockoutQty" ctype="" />
+      <f name="e.materialId" alias="productId" ctype="" />
+      <f name="e.materialName" alias="productName" ctype="" />
+      <f name="REPLACE(IFNULL(e.stockinQty, 0),',','')" alias="stockinQty" ctype="" />
+      <f name="IFNULL(e.quantity,0)" alias="orderQty" ctype="" />
+      <f name="IF(REPLACE(IFNULL(e.stockinQty, 0),',','') >= REPLACE(IFNULL(e.quantity, 0),',',''),0,IF( REPLACE(IFNULL(a.manufactureQuantity, 0),',','') - REPLACE(IFNULL(b.quantity, 0),',','') &lt; 0,0, REPLACE(IFNULL(a.manufactureQuantity, 0),',','') - REPLACE(IFNULL(b.quantity, 0),',','')) )" alias="waitout" ctype="" />
+      <f name="IF(REPLACE(IFNULL(e.stockinQty, 0),',','') >= REPLACE(IFNULL(e.quantity, 0),',',''),a.manufactureQuantity,b.quantity)" alias="requirementQty" ctype="" />
+      <f name="IFNULL(REPLACE (b.quantity, ',', ''),0)" alias="stockoutQty" ctype="" />
 
     </select>
-    <from>v_purchaseplandetailgroup a LEFT JOIN v_requisitiondetailgroup_virtual d ON d.ysid=a.YSId AND a.materialId = d.materialId LEFT JOIN v_stockoutdetailgroup b ON a.materialId=b.materialId AND  instr(b.ysid,left(a.ysid,8)) > 0   LEFT JOIN v_stockin_for_product c ON a.YSId=c.YSId </from>
+    <from>  ( SELECT 	a.YSId AS YSId, 	a.materialId AS materialId, 	b.materialName AS materialName, 	a.deleteFlag, 	format(sum(	REPLACE (a.manufactureQuantity,	',',''	)),2) AS manufactureQuantity  FROM  		b_purchaseplandetail a 		JOIN b_material b ON  b.materialId = a.materialId AND (b.deleteFlag = '0')  WHERE a.deleteFlag='0' AND A.materialId = '#'  GROUP BY 	a.YSId )	  a LEFT JOIN  ( SELECT 	b.YSId AS YSId, 	a.materialId AS materialId, 	COUNT(a.materialId) countQty, 	sum( 		REPLACE ( 			ifnull(a.quantity, 0), 			',', 			'' 		) 	) AS quantity FROM  		b_stockoutdetail a 		LEFT JOIN b_stockout b ON a.stockOutId = b.stockOutId AND b.deleteFlag = '0'    WHERE (a.deleteFlag = '0') AND a.materialId = '#' GROUP BY 	b.YSId )  b ON a.materialId = b.materialId AND instr(b.ysid, LEFT(a.ysid, 8)) > 0 LEFT JOIN  ( SELECT a.YSId, a.materialId, b.materialName,a.completedQuantity, if(IFNULL(c.quantity,0)&lt;=0,ifNULL(a.completedQuantity,0),IFNULL(c.quantity,0)) stockinQty,  a.quantity FROM b_orderdetail a JOIN b_material b ON a.materialId=b.materialId LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.ysid=c.ysid AND  a.materialId = c.materialId)  e ON e.ysid=a.ysid   WHERE 	A.deleteFlag = '0'  </from>
     <orderby>A.YSId</orderby>
     <groupby></groupby>
-    <having>#</having>
+    <having>waitout + 0 > 0 </having>
 	<power>
 	</power>    
   </query>   

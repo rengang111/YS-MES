@@ -25,6 +25,7 @@ import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
+import com.ys.business.db.dao.B_RawRequirementDao;
 import com.ys.business.db.dao.B_StockOutCorrectionDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
@@ -34,6 +35,7 @@ import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
+import com.ys.business.db.data.B_RawRequirementData;
 import com.ys.business.db.data.B_StockOutCorrectionData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PurchaseOrderData;
@@ -351,6 +353,7 @@ public class PurchasePlanService extends CommonService {
 				String reqMate = db.getMaterialid();
 				String reqSubNo = db.getSubbomno();
 				String reqSupp = db.getSupplierid();
+				String reqPurchaseQty = db.getPurchasequantity();//采购量
 				if(isNullOrEmpty(reqMate))
 					continue;
 				
@@ -360,10 +363,13 @@ public class PurchasePlanService extends CommonService {
 					String dbMate = web.getMaterialid();
 					String dbSubNo = web.getSubbomno();  
 					String dbSupp = web.getSupplierid();
+					String dbPurch = web.getPurchasequantity();
 					
-					if( reqMate.equals(dbMate)  && 
-						reqSubNo.equals(dbSubNo) &&
-						reqSupp.equals(dbSupp) ){
+					if( reqMate.equals(dbMate)  	&& 
+						reqSubNo.equals(dbSubNo) 	&&
+						reqSupp.equals(dbSupp) 		&&
+						reqPurchaseQty.equals(dbPurch)
+					){
 						
 						web.setContractflag(db.getContractflag());//
 						web.setPurchasetype(db.getPurchasetype());
@@ -1039,17 +1045,38 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * insert处理
 	 */
+	@SuppressWarnings("unchecked")
 	public void insertPurchasePlanDetail(
 			B_PurchasePlanDetailData data) throws Exception{
-		
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"PurchasePlanDetailInsert",userInfo);
-		copyProperties(data,commData);
 
-		guid = BaseDAO.getGuId();
-		data.setRecordid(guid);
+		String where = " YSId='" + data.getYsid() + 
+					"' AND materialId='" + data.getMaterialid() +"' ";
+					
+		List<B_PurchasePlanDetailData> list = new B_PurchasePlanDetailDao().Find(where);
 		
-		planDetailDao.Create(data);	
+		if(list.size() > 0 ){
+			//update
+			B_PurchasePlanDetailData db = list.get(0);
+
+			copyProperties(db,data);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"更新采购方案物料",userInfo);
+			copyProperties(db,commData);
+			
+			planDetailDao.Store(db);	
+			
+		}else{
+			//insert
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"新增采购方案物料",userInfo);
+			copyProperties(data,commData);
+
+			guid = BaseDAO.getGuId();
+			data.setRecordid(guid);
+			
+			planDetailDao.Create(data);	
+		}
+		
 
 	}	
 		
@@ -1211,36 +1238,31 @@ public class PurchasePlanService extends CommonService {
 		String purchaseId = "";
 		String YSId = reqPlan.getYsid();
 		B_PurchasePlanData dbPlan = null;		
-		//确认数据是否存在	
-		try{			
-			String where = " YSId = '" + YSId + "' AND deleteflag = '0'";
-			List<B_PurchasePlanData> list = new B_PurchasePlanDao().Find(where);			
-		
-			if(list.size() > 0){	
-				//update处理	
-				dbPlan = list.get(0);	
-				copyProperties(dbPlan,reqPlan);
-				
-				purchaseId = dbPlan.getPurchaseid();
-				if(isNullOrEmpty(purchaseId))
-					purchaseId = getPurchaseId(YSId);
-				dbPlan.setPurchaseid(purchaseId);
-				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-						"purchasePlanUpdate",userInfo);			
-				copyProperties(dbPlan,commData);
-
-				planDao.Store(dbPlan);
+					
+		String where = " YSId = '" + YSId + "' AND deleteflag = '0'";
+		List<B_PurchasePlanData> list = new B_PurchasePlanDao().Find(where);			
 	
-			}else{
-				//insert处理
-				purchaseId = getPurchaseId(YSId);
-				reqPlan.setPurchaseid(purchaseId);
-				insertPurchasePlan(reqPlan);
-			}
-		}catch(Exception e){
+		if(list.size() > 0){	
+			//update处理	
+			dbPlan = list.get(0);	
+			copyProperties(dbPlan,reqPlan);
 			
-		}
-		
+			purchaseId = dbPlan.getPurchaseid();
+			if(isNullOrEmpty(purchaseId))
+				purchaseId = getPurchaseId(YSId);
+			dbPlan.setPurchaseid(purchaseId);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"purchasePlanUpdate",userInfo);			
+			copyProperties(dbPlan,commData);
+
+			planDao.Store(dbPlan);
+
+		}else{
+			//insert处理
+			purchaseId = getPurchaseId(YSId);
+			reqPlan.setPurchaseid(purchaseId);
+			insertPurchasePlan(reqPlan);
+		}		
 		return purchaseId;
 	}	
 		
@@ -1421,7 +1443,7 @@ public class PurchasePlanService extends CommonService {
 			
 		}
 		
-		update(where.toString());//更新采购方案
+		updatePurchasePlan(where.toString());//更新采购方案
 		
 		getOrderDetailByYSId(YSId);
 		
@@ -1448,7 +1470,7 @@ public class PurchasePlanService extends CommonService {
 		String YSId  = request.getParameter("YSId");
 		StringBuffer where = new StringBuffer();
 		where.append(" YSId = '" +YSId + "' ");
-		update(where.toString());
+		updatePurchasePlan(where.toString());
 		getOrderDetailByYSId(YSId);
 		
 		return model;
@@ -1552,9 +1574,11 @@ public class PurchasePlanService extends CommonService {
 		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		dataModel.setQueryName("purchasePlanForRawByMaterialId");		
 		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("rawMaterialId", materialId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
-		baseQuery.getYsFullData();
+		userDefinedSearchCase.put("materialId", materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);	
+		String sql = baseQuery.getSql().replace("#", materialId);
+		System.out.println("原材料未领料："+sql);
+		baseQuery.getYsFullData(sql);
 		
 		if(dataModel.getRecordCount() > 0){
 			model.addAttribute("material",dataModel.getYsViewData().get(0));
@@ -1714,10 +1738,10 @@ public class PurchasePlanService extends CommonService {
 	}
 	
 
-	public ArrayList<HashMap<String, String>> getRawMaterialList(
+	private ArrayList<HashMap<String, String>> getRawMaterialList(
 			String YSId ) throws Exception {		
 		
-		dataModel.setQueryName("getRawMaterialGroupList");		
+		dataModel.setQueryName("getRawMaterialList");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -1741,11 +1765,13 @@ public class PurchasePlanService extends CommonService {
 	public ArrayList<HashMap<String, String>> getRawMaterialGroupList(
 			String YSId ) throws Exception {		
 		
-		dataModel.setQueryName("getRawMaterialGroupList");		
+		dataModel.setQueryName("getRawMaterialFromPlan");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		return baseQuery.getYsFullData();
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		return baseQuery.getYsFullData(sql);
 		
 	}
 	
@@ -1916,4 +1942,467 @@ public class PurchasePlanService extends CommonService {
 		new B_StockOutCorrectionDao().Create(data);	
 		
 	}
+	
+	/**
+	 * update处理
+	 */
+	private String updatePurchasePlan(String where){
+		
+		ts = new BaseTransaction();
+		String  YSId="";
+		
+		try {
+			ts.begin();
+
+			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();	
+
+			YSId = reqPlan.getYsid();		
+			String purchaseId = updatePurchasePlan(reqPlan);			
+						
+			//更新前DB数据取得
+			List<B_PurchasePlanDetailData> DBList = getPurchasePlanDetail(where);	
+			
+			//新数据:采购方案处理
+			List<B_PurchasePlanDetailData> webList = reqModel.getPlanDetailList();		
+
+			System.out.println("采购方案更新处理：① 开始,找出页面被删除的物料");
+			List<B_PurchasePlanDetailData> deleteList = FindDeleteMaterial(DBList,webList);
+			
+			//旧数据:二级BOM(原材料)的待出库"减少"处理
+			System.out.println("采购方案更新处理：② 删除旧的原材料物料需求表（更新前）");
+			deleteOldRawRequirment(YSId);
+			
+			//旧数据:采购方案,的待出库"减少"处理
+			System.out.println("采购方案更新处理：③ 删除旧的采购方案（更新前）");	
+			deleteOldPurchasePlan(DBList);
+						
+			//采购方案
+			System.out.println("采购方案更新处理：④ 新增采购方案（更新）");	
+			addPurchasePlan(YSId,purchaseId,webList);
+			
+			//采购合同：针对页面被删除的物料，如果已做成合同 且未执行
+			System.out.println("采购方案更新处理：⑤ 删除采购合同");	
+			deleteContract(YSId,deleteList);
+
+			//原材料物料需求表
+			System.out.println("采购方案更新处理：⑥ 新增原材料物料需求表（更新）");
+			addRawRequirement(YSId);
+				
+			
+			ts.commit();	
+			
+			System.out.println("采购方案更新处理：⑦ 正常结束");
+			
+		}
+		catch(Exception e) {
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			System.out.println("采购方案更新处理：异常结束。");
+
+			e.printStackTrace();
+		}
+		
+		return YSId;
+	}
+	
+	private List<B_PurchasePlanDetailData> FindDeleteMaterial(
+			List<B_PurchasePlanDetailData> dbList,
+			List<B_PurchasePlanDetailData> webList) throws Exception{
+		
+		List<B_PurchasePlanDetailData> deleteList = new ArrayList<B_PurchasePlanDetailData>();	
+		
+		
+		//找出页面被删除的数据
+		for(B_PurchasePlanDetailData db:dbList){
+			String reqMate = db.getMaterialid();
+			String reqSubNo = db.getSubbomno();
+			String reqSupp = db.getSupplierid();
+			String reqPurchaseQty = db.getPurchasequantity();//采购量
+			if(isNullOrEmpty(reqMate))
+				continue;
+			
+			boolean exflg = true;
+			for(B_PurchasePlanDetailData web:webList){
+				
+				String dbMate = web.getMaterialid();
+				String dbSubNo = web.getSubbomno();  
+				String dbSupp = web.getSupplierid();
+				String dbPurch = web.getPurchasequantity();
+				
+				if( reqMate.equals(dbMate)  	&& 
+					reqSubNo.equals(dbSubNo) 	&&
+					reqSupp.equals(dbSupp) 		&&
+					reqPurchaseQty.equals(dbPurch)
+				){
+					
+					web.setContractflag(db.getContractflag());//
+					web.setPurchasetype(db.getPurchasetype());
+					
+					exflg = false;
+					break;
+					
+				}//物料是否存在判定
+			}
+			
+			if(exflg){
+				B_PurchasePlanDetailData d = new B_PurchasePlanDetailData();
+				copyProperties(d,db);					
+				deleteList.add(d);
+			}
+			
+		}//找出页面被删除的数据
+		
+		return deleteList;
+		
+	}
+	
+	/**
+	 * 删除原材料物料需求表
+	 * @param YSId
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	private void deleteOldRawRequirment(String YSId) throws Exception{
+		
+		String where = "YSId = '" + YSId +"' AND deleteFlag='0' ";
+		
+		List<B_RawRequirementData> list = new B_RawRequirementDao().Find(where);
+		
+		for(B_RawRequirementData db:list){
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"删除采购方案（更新前）",userInfo);
+			copyProperties(db,commData);
+			new B_RawRequirementDao().Store(db);
+
+			String materialId = db.getMaterialid();
+			float requirement = stringToFloat(db.getQuantity()) * (-1);//还原到更新前
+			float purchase = 0;//采购量
+			updateMaterial("二级BOM(原材料)的待出库减少处理（旧数据）",materialId,purchase,requirement);
+		}
+		
+	}
+	
+	/**
+	 * 删除采购方案
+	 * @param YSId
+	 * @throws Exception
+	 */
+	private void deleteOldPurchasePlan(List<B_PurchasePlanDetailData> list) throws Exception{
+		
+		
+		for(B_PurchasePlanDetailData db:list){
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"删除采购方案（更新前）",userInfo);
+			copyProperties(db,commData);
+			new B_PurchasePlanDetailDao().Store(db);//旧数据的删除处理
+
+			String materialId = db.getMaterialid();
+			float purchase = 0;//采购量
+			float requirement = -1 * stringToFloat(db.getManufacturequantity());
+			updateMaterial("采购方案（旧数据删除）",materialId,purchase,requirement);
+		}
+		
+	}
+	
+	/**
+	 * 删除采购合同
+	 * @param list
+	 * @throws Exception
+	 */
+	private void deleteContract(
+			String YSId,
+			List<B_PurchasePlanDetailData> deleteList) throws Exception{
+		
+		for(B_PurchasePlanDetailData dt:deleteList){
+			
+			String materialId = dt.getMaterialid();
+			float purchaseQty = stringToFloat(dt.getPurchasequantity());
+			
+			String strwhere = " YSId = '" + YSId +"' AND materialId = '" + materialId  +"' AND deleteflag = '0'";
+			List<B_PurchaseOrderDetailData> detail = 
+					getPurchaseOrderDetailFromDB(strwhere);
+			
+			if(detail == null || detail.size() == 0)
+				continue;
+
+			B_PurchaseOrderDetailData contract = detail.get(0);
+			String contractId = contract.getContractid();
+			float contractQty = stringToFloat(contract.getQuantity());
+			float contractPrice = stringToFloat(contract.getPrice());
+			float quantity = contractQty - purchaseQty;
+			
+			String arrivalFlag = checkContractEnforcement(contractId,materialId);
+			if(("保留").equals(arrivalFlag)){
+				continue;
+			}
+			if(quantity <= 0){//
+
+				String where2 = " YSId = '" + YSId +"' AND contractId = '" + contractId  +"' AND deleteflag = '0'";
+				List<B_PurchaseOrderDetailData> detailList = 
+						getPurchaseOrderDetailFromDB(where2);
+				
+				if(detailList.size() > 1){
+					//一份合同有多个物料,仅删除合同明细
+					deletePurchaseOrderDetail(contract);
+					
+				}else{
+					//一份合同只有一个物料,删除明细和头表
+					List<B_PurchaseOrderData> contractDBList =  
+							getPurchaseOrderFromDB(YSId,contractId);
+					
+						deletePurchaseOrder(contractDBList.get(0));
+						deletePurchaseOrderDetail(contract);
+				}
+			}else{//套件产品,同一个物料重复出现,只删除其中一个的话,更新剩下的数量
+				contract.setQuantity(String.valueOf(quantity));
+				contract.setTotalprice(String.valueOf(quantity * contractPrice));
+				
+				updatePurchaseOrderDetail(contract);
+			}
+		
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void insertRawRequirement(B_RawRequirementData raw) throws Exception{
+		
+		String where = "YSId = '" + raw.getYsid() +"' AND materialId='" + raw.getMaterialid() +"' ";
+		
+		List<B_RawRequirementData> list = new B_RawRequirementDao().Find(where);
+		
+		if(list.size() > 0 ){
+			//update
+			B_RawRequirementData db = list.get(0);
+
+			copyProperties(db,raw);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"更新采购方案物料",userInfo);
+			copyProperties(db,commData);
+			
+			new B_RawRequirementDao().Store(db);	
+			
+		}else{
+			//insert
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"新增采购方案物料",userInfo);
+			copyProperties(raw,commData);
+
+			guid = BaseDAO.getGuId();
+			raw.setRecordid(guid);
+			
+			new B_RawRequirementDao().Create(raw);	
+		}		
+	}
+	
+	private void addPurchasePlan(
+			String YSId,
+			String purchaseId,
+			List<B_PurchasePlanDetailData> webList) throws Exception{
+		
+		for(B_PurchasePlanDetailData detail:webList){
+			
+			String materilid = detail.getMaterialid();
+			float purchase = stringToFloat(detail.getPurchasequantity());
+			
+			if(isNullOrEmpty(materilid))
+				continue;		
+			
+			if(purchase == 0)
+				detail.setContractflag(0);//不采购的不做合同				
+			if(materilid.substring(0,1).equals(Constants.PURCHASETYPE_H))
+				detail.setContractflag(0);//人工成本不做合同
+			
+			detail.setPurchaseid(purchaseId);
+			detail.setYsid(YSId);
+			insertPurchasePlanDetail(detail);			
+
+			//更新虚拟库存
+			float requirement = stringToFloat(detail.getManufacturequantity());
+			updateMaterial("采购方案（新数据追加）",materilid,0,requirement);
+			
+		}//新数据:采购方案处理
+	}
+	
+	private void addRawRequirement(String YSId) throws Exception{
+		
+		ArrayList<HashMap<String, String>> list3 = getRawMaterialGroupList(YSId);	
+		
+		for(HashMap<String, String> map2:list3){
+
+			 String parentMat = map2.get("materialId").substring(0, 3);
+			 String type = "";
+			 if( ("F02").equals(parentMat)){//吹塑:F02
+				 type = Constants.REQUISITION_BLOW;
+			 }else if( ("F01").equals(parentMat)){//吸塑:F01
+				 type = Constants.REQUISITION_BLISTE;
+			 }else{//以外
+				 type = Constants.REQUISITION_INJECT;
+			 }
+			 
+			String rawmater = map2.get("rawMaterialId");//二级物料名称(原材料)
+			float purchase = 0;//采购量
+			String unit = DicUtil.getCodeValue("换算单位" + map2.get("rawUnit"));
+			float funit = stringToFloat(unit);
+			float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
+			float requirement = ( totalQuantity / funit);
+			
+			B_RawRequirementData raw = new B_RawRequirementData();
+			raw.setYsid(YSId);
+			raw.setMaterialid(rawmater);
+			raw.setSupplierid(map2.get("supplierId"));
+			raw.setQuantity(floatToString(requirement));
+			raw.setRawtype(type);
+			
+			insertRawRequirement(raw);
+			
+			//更新虚拟库存
+			updateMaterial("二级BOM(原材料)物料需求表更新",rawmater,purchase,requirement);						
+		}
+		
+	}
+	
+	public void rawRequirementALLAdd() throws Exception{
+		
+		//循环所有的耀升编号，及成品入库情况
+
+		ArrayList<HashMap<String, String>> list3 = getPlanYSId();	
+		System.out.println("耀升数量："+list3.size());
+		
+		//追加原材料物料需求表，及领料数量
+		//成品已入库：领料数量=需求量
+		//成品未入库：领料数量=实际出库量，如果 > 需求量，取需求量
+		int index = 0;
+		for(HashMap<String, String> map2:list3){
+			
+			String YSId = map2.get("YSId");
+			String orderQty = map2.get("orderQty");
+			String stockInQty = map2.get("stockInQty");
+			String completedQty = map2.get("completedQuantity");//虚拟入库数
+
+			float forderQty = stringToFloat(orderQty);
+			float fstockInQty = stringToFloat(stockInQty);
+			float fcompletedQty = stringToFloat(completedQty);
+			
+			//
+			deleteRawRequirment(YSId);			
+
+			//原材料物料需求表
+			if(fstockInQty >= forderQty){
+
+				addRawRequirement(YSId,true);
+			}else{
+
+				if(fcompletedQty >= forderQty)
+					addRawRequirement(YSId,true);
+				else
+					addRawRequirement(YSId,false);
+			}
+			
+
+			System.out.println("耀升编号："+YSId+"，No:"+index);
+			index++;
+		}
+		
+	}
+	
+	/**
+	 * 删除原材料物料需求表
+	 * @param YSId
+	 * @throws Exception
+	 */
+	private void deleteRawRequirment(String YSId) {
+		
+		String where = "YSId = '" + YSId +"' AND deleteFlag='0' ";
+		
+		 try {
+			new B_RawRequirementDao().RemoveByWhere(where);
+		} catch (Exception e) {
+			//e.printStackTrace();
+		}
+	}
+	
+	private void addRawRequirement(String YSId,boolean stockinFlag) throws Exception{
+		
+		ArrayList<HashMap<String, String>> list3 = getRawMaterialGroupList(YSId);
+		
+		for(HashMap<String, String> map2:list3){
+
+			 String parentMat = map2.get("materialId").substring(0, 3);
+			 String type = "";
+			 if( ("F02").equals(parentMat)){//吹塑:F02
+				 type = Constants.REQUISITION_BLOW;
+			 }else if( ("F01").equals(parentMat)){//吸塑:F01
+				 type = Constants.REQUISITION_BLISTE;
+			 }else{//以外
+				 type = Constants.REQUISITION_INJECT;
+			 }
+			 
+			String rawmater = map2.get("rawMaterialId");//二级物料名称(原材料)
+			String unit = DicUtil.getCodeValue("换算单位" + map2.get("rawUnit"));
+			float funit = stringToFloat(unit);
+			float totalQuantity = stringToFloat(map2.get("purchaseQuantity"));//采购量
+			String requirement = floatToString( totalQuantity / funit);
+			
+			
+			B_RawRequirementData raw = new B_RawRequirementData();
+			raw.setYsid(YSId);
+			raw.setMaterialid(rawmater);
+			raw.setSupplierid(map2.get("supplierId"));
+			raw.setQuantity(requirement);
+			raw.setRawtype(type);
+			
+			if(stockinFlag){
+				raw.setStockoutqty(requirement);//成品已入库，默认已领料
+			}else{
+				//实际领料数量
+				float out = stringToFloat(map2.get("stockoutQty"));
+				float order = stringToFloat(requirement);
+				if(out > order){
+					raw.setStockoutqty( requirement);//如果多领了，不计入待出
+				}else{
+					raw.setStockoutqty( map2.get("stockoutQty"));//实际领料数
+				}					
+			}
+			
+			insertRawRequirement(raw);
+								
+		}
+	}
+	/*
+	private String getRawStockoutQuantity(
+			String YSId,String materialId) throws Exception{
+
+		dataModel.setQueryName("rawStockoutQuantity");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);	
+		userDefinedSearchCase.put("materialId", materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		String rtnValue="0";
+		if(dataModel.getRecordCount() >0){
+			rtnValue = dataModel.getYsViewData().get(0).get("quantity");
+		}
+		
+		return rtnValue;
+	}
+	*/
+	
+	private ArrayList<HashMap<String, String>> getPlanYSId() throws Exception{
+
+		String YSId = request.getParameter("YSId");
+		dataModel.setQueryName("getPlanAndStockin");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		return baseQuery.getYsFullData();
+		
+	}
+	
 }
