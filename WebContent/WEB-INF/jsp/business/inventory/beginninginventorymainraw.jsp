@@ -514,11 +514,12 @@ body{
 	</div>
 	<div class="list">
 			<div style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCustomer('','');">全部</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('','');" id="defutBtn">全部</a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer('1','');">实库为负</a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('2','');"  id="defutBtn">虚库为负</a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('3','');">实库 ≠ 总到货－总领料</a>&nbsp;&nbsp;
 				<!-- 
+				<a  class="DTTT_button box" onclick="doSearchCustomer('2','');"  >虚库为负</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('3','');">实库 ≠ 总到货－总领料</a>&nbsp;&nbsp;
+				 
 				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0');">已确认</a>&nbsp;&nbsp;
 				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0','edit');">再次编辑</a> -->
 			</div>
