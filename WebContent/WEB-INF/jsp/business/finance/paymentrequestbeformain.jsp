@@ -76,8 +76,8 @@
 					{"data": "supplierName", "defaultContent" : ''},//5
 					{"data": "totalPrice", "defaultContent" : '0', "className" : 'td-right'},//6合同金额
 					{"data": "chargeback", "defaultContent" : '0', "className" : 'td-right'},//7合同扣款
-					{"data": "stockInDate", "className" : 'td-center'},//8约定付款日
-					{"data": "agreementDate", "className" : 'td-center'},//9约定付款日
+					{"data": "stockInDate", "className" : 'td-center', "defaultContent" : '***'},//8入库日期
+					{"data": "agreementDate", "className" : 'td-center', "defaultContent" : '***'},//9约定付款日
 					{"data": "finishDate", "className" : 'td-center'},//10实际付款日
 					{"data": "finishStatus", "className" : 'td-center'},//11
 					
@@ -104,9 +104,14 @@
 		    		}},
 		    		{"targets":2,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + row["contractId"] + "</a>";
+		    			var contractId = jQuery.fixedWidth(row["contractId"],16);
+		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + contractId + "</a>";
 		    			//rtn=  row["YSId"];
 		    			return rtn;
+		    		}},
+		    		{"targets":3,"render":function(data, type, row){
+		    					    			
+		    			return jQuery.fixedWidth(data,12);
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    					    			

@@ -249,7 +249,7 @@
 
 		});
 		
-						
+		/*				
 		t.on('click', 'tr', function() {
 			
 			var rowIndex = $(this).context._DT_RowIndex; //行号			
@@ -264,7 +264,8 @@
 	        }
 			
 		});
-
+*/
+		
 	};//ajax()
 
 	//列合计:总价
@@ -359,6 +360,19 @@
 
 			$().toastmessage('showWarningToast', "货币符号发生变化,请重新输入销售单价。");	
 		});
+		
+		//下单公司选择
+		$("#order\\.ordercompany").change(function() {
+			var id = $(this).val();
+			if(id=='010'){
+				$('#priceType').html('销售单价');
+			}else{
+				$('#priceType').html('下单价格');
+				
+			}
+			
+		});
+		
 		
 		$("#order\\.piid").change(function() {
 
@@ -537,8 +551,8 @@
 			<th class="dt-center" >产品名称</th>
 			<th class="dt-center" width="60px">版本类别</th>
 			<th class="dt-center" width="60px">订单数量</th>
-			<th class="dt-center" width="60px">额外采购</th>
-			<th class="dt-center" width="60px">销售单价</th>
+			<th class="dt-center" width="30px">额外<br />采购</th>
+			<th class="dt-center" width="60px"><div id="priceType">销售单价</div></th>
 			<th class="dt-center" width="90px">销售总价</th>
 		</tr>
 		</thead>
@@ -557,7 +571,7 @@
 	<tbody>
 		<c:forEach var="i" begin="0" end="0" step="1">		
 			<tr>
-				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" class="short read-only ysidCheck"  /></td>
+				<td><input type="text" name="orderDetailLines[${i}].ysid" id="orderDetailLines${i}.ysid" class="mini read-only ysidCheck"  /></td>
 				<td><input type="text" name="attributeList1" class="attributeList1">
 					<form:hidden path="orderDetailLines[${i}].materialid" /></td>
 				<td><span></span></td>
@@ -565,8 +579,8 @@
 					<form:select path="orderDetailLines[${i}].productclassify" >							
 						<form:options items="${orderForm.productClassifyList}" 
 							itemValue="key" itemLabel="value" /></form:select></td>
-				<td><form:input path="orderDetailLines[${i}].quantity" class="num mini" /></td>
-				<td><input id="extraquantiry${i}" class="num mini"  />
+				<td><form:input path="orderDetailLines[${i}].quantity" class="num mini"  /></td>
+				<td><input id="extraquantiry${i}" class="num " style="width:30px;height: 20px;" />
 					<form:hidden path="orderDetailLines[${i}].totalquantity" /></td>
 				<td><form:input path="orderDetailLines[${i}].price"  class="cash short"  /></td>
 				<td><span></span><input type="hidden" name="orderDetailLines[${i}].totalprice" id="orderDetailLines${i}.totalprice"  readonly="readonly"/></td>

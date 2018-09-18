@@ -8,6 +8,7 @@
    	    <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
     	<w name="A.finishStatus" des="" reqName="finishStatus" dtype="ch" oper="=" lg="AND" bt="" />
         <w name="A.contractId"   des="" reqName="contractId" dtype="ch" oper="in"  lg="AND" bt="" />
+        <w name="A.agreementDate"   des="" reqName="agreementDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
     </where>
   <select>
       <f name="A.YSId" alias="" ctype="" />

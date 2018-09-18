@@ -58,7 +58,8 @@ public class PaymentAction extends BaseAction {
 		this.userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		this.service = new 	PaymentService(model,request,session,dataModel,userInfo);
+		this.service = new 	PaymentService(model,request,
+				 response,session,dataModel,userInfo);
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -77,6 +78,7 @@ public class PaymentAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
+				doInit();
 				rtnUrl = "/business/finance/paymentrequestmain";
 				break;
 			case "search":
@@ -182,11 +184,24 @@ public class PaymentAction extends BaseAction {
 				finishHistoryView();
 				rtnUrl = "/business/finance/paymentfinishview";
 				break;
+			case "downloadExcelForPayment"://EXCEL导出
+				downloadExcelForPayment();
+				break;
 				
 		}
 		
 		return rtnUrl;
 	}	
+	
+	public void doInit(){	
+		
+		String searchType = (String) session.getAttribute("searchType");
+		if(searchType == null || ("").equals(searchType))
+			searchType = "010";//设置默认值：待申请
+		model.addAttribute("searchType",searchType);
+
+	}	
+	
 		
 	private HashMap<String, Object> uploadPhoto(
 			MultipartFile[] headPhotoFile,
@@ -214,7 +229,7 @@ public class PaymentAction extends BaseAction {
 			HttpServletRequest request, HttpServletResponse response){
 
 		this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-		this.service = new PaymentService(model,request,session,dataModel,userInfo);;
+		this.service = new PaymentService(model,request,response,session,dataModel,userInfo);;
 		this.reqModel = dataModel;
 		this.model = model;
 		this.response = response;
@@ -261,6 +276,10 @@ public class PaymentAction extends BaseAction {
 			System.out.println(e.getMessage());
 			dataMap.put(INFO, ERRMSG);
 		}
+		
+
+		String searchType = request.getParameter("searchType");
+		session.setAttribute("searchType", searchType);
 		
 		return dataMap;
 	}
@@ -416,6 +435,18 @@ public class PaymentAction extends BaseAction {
 	
 		try{
 			service.finishView();
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	public void downloadExcelForPayment(){
+
+		
+		try{
+			service.downloadExcelForPayment();
 			
 		}catch(Exception e){
 			System.out.println(e.getMessage());

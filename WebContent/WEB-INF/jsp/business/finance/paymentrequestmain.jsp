@@ -18,7 +18,10 @@
 		url = url + "&sessionFlag="+sessionFlag;
 		url = url + "&finishStatus="+type;
 
-		
+		var colSort = 4;
+		if(type == '070')
+			colSort = 8;
+			
 		//var scrollHeight = $(document).height(); 
 		var t = $('#TMaterial').DataTable({
 				"paging": action,
@@ -36,7 +39,7 @@
 				"sAjaxSource" : url,
 				"scrollY":scrollHeight,
 				"scrollCollapse":false,
-				 "aaSorting": [[ 4, "asc" ]],
+				 "aaSorting": [[ colSort, "asc" ]],
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -104,9 +107,8 @@
 		    		}},
 		    		{"targets":2,"render":function(data, type, row){
 		    			var rtn = "";
-		    			var contractId = jQuery.fixedWidth(row["contractId"],16);  
+		    			var contractId = jQuery.fixedWidth(row["contractId"],16);
 		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + contractId + "</a>";
-		    			//rtn=  row["YSId"];
 		    			return rtn;
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
@@ -146,7 +148,10 @@
 		    	$(this).children().first().children().prop("checked", false);
 		    }			
 		});	
-		
+
+		var searchType = $('#searchType').val();
+		buttonSelectedEvent();//按钮选择式样
+		$('#defutBtn'+searchType).removeClass("start").addClass("end");
 
 	})	
 	
@@ -270,6 +275,24 @@
 	    });
 	};
 	
+	function downloadExcel(finishStatus) {
+		 
+		var key1 = $("#keyword1").val();
+		var key2 = $("#keyword2").val();
+		var searchType = $("#searchType").val();
+		
+		var url = '${ctx}/business/payment?methodtype=downloadExcelForPayment'
+				
+				 + "&key1=" + key1
+				 + "&key2=" + key2
+				 + "&finishStatus=070";
+				 + "&searchType=" + searchType;
+		
+		url =encodeURI(encodeURI(url));//中文两次转码
+
+		location.href = url;
+	}
+	
 </script>
 </head>
 
@@ -283,6 +306,7 @@
 				<form id="condition"  style='padding: 0px; margin: 10px;' >
 										
 					<input type="hidden" id="paymentTypeId" value="010"><!-- 正常付款 -->
+					<input type="hidden" id="searchType" value="${searchType }"><!-- 快速查询按钮 -->
 
 					<table>
 						<tr>
@@ -309,11 +333,13 @@
 		
 			<div class="list">					
 				<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(1,'010');"><span>待申请</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'020');"><span>待审核</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'030');"><span>待付款</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'050');"><span>已完成</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2(8,'060');"><span>审核未通过</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(1,'010');" id="defutBtn010"><span>待申请</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'020');" id="defutBtn020"><span>待审核</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>待付款</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'050');" id="defutBtn050"><span>已完成</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'060');" id="defutBtn060"><span>审核未通过</span></a>&nbsp;&nbsp;
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'070');" id="defutBtn070"><span>逾期未付款</span></a>
+					<a class="DTTT_button DTTT_button_text" onclick="downloadExcel('080');" ><span>EXCEL导出</span></a>
 				</div>
 				<div style="height: 40px;margin-bottom: -15px;float:right">
 					<a class="DTTT_button DTTT_button_text" onclick="doCreate();">付款申请</a>

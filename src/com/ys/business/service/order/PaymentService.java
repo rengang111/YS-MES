@@ -1,10 +1,15 @@
 package com.ys.business.service.order;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,13 +33,17 @@ import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 
+import javassist.bytecode.stackmap.TypeData.UninitData;
+
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
+import com.ys.util.ExcelUtil;
 import com.ys.util.basedao.BaseDAO;
 import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Service
@@ -47,6 +56,7 @@ public class PaymentService extends CommonService {
 	private CommFieldsData commData;
 	
 	private HttpServletRequest request;
+	private HttpServletResponse response;
 	
 	private B_StockOutDao dao;
 	private PaymentModel reqModel;
@@ -64,6 +74,7 @@ public class PaymentService extends CommonService {
 
 	public PaymentService(Model model,
 			HttpServletRequest request,
+			HttpServletResponse response,
 			HttpSession session,
 			PaymentModel reqModel,
 			UserInfo userInfo){
@@ -72,6 +83,7 @@ public class PaymentService extends CommonService {
 		this.model = model;
 		this.reqModel = reqModel;
 		this.request = request;
+		this.response = response;
 		this.userInfo = userInfo;
 		this.session = session;
 		dataModel = new BaseModel();
@@ -120,9 +132,18 @@ public class PaymentService extends CommonService {
 		if(("before").equals(searchFlag)){
 			having = "stockinQty < contractQty ";
 		}
+		String finishStatus = request.getParameter("finishStatus");
+		if(("070").equals(finishStatus)){
+			finishStatus = "010";//逾期未付款
+			userDefinedSearchCase.put("agreementDate", CalendarUtil.fmtYmdDate());
+			userDefinedSearchCase.put("finishStatus", finishStatus);
+			
+		}
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		sql = sql.replace("#", having);
+		System.out.println("付款申请："+sql);
 		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
@@ -1265,5 +1286,93 @@ public class PaymentService extends CommonService {
 			new B_PaymentDetailDao().Store(db);
 		}
 		
+	}
+	
+	
+	public void downloadExcelForPayment() throws Exception{
+		
+		//设置响应头，控制浏览器下载该文件
+				
+		//baseBom数据取得
+		List<Map<Integer, Object>>  datalist = getStockinList();		
+		
+		String fileName = CalendarUtil.timeStempDate()+".xls";
+		String dest = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)
+				+"/"+File.separator+fileName;
+       
+		String tempFilePath = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_EXCELTEMPLATE)+File.separator+"overduePaymen.xls";
+        File file = new File(dest);
+       
+        OutputStream out = new FileOutputStream(file);         
+        ExcelUtil excel = new ExcelUtil(response);
+
+
+        //读取模板
+        Workbook wbModule = excel.getTempWorkbook(tempFilePath);
+        //数据填充的sheet
+        int sheetNo=0;
+        //title
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        wbModule = excel.writeData(wbModule, dataMap, sheetNo);        
+        //detail
+        //必须为列表头部所有位置集合,输出 数据单元格样式和头部单元格样式保持一致
+		String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "overduePaymenExcel");
+		String[] heads = title.split(",",-1);
+        excel.writeDateList(wbModule,heads,datalist,sheetNo);
+         
+        //写到输出流并移除资源
+        excel.writeAndClose(tempFilePath, out);
+        System.out.println("导出成功");
+        out.flush();
+        out.close();
+        
+      //***********************Excel下载************************//
+        excel.downloadFile(dest,fileName);
+	}
+	
+	public List<Map<Integer, Object>> getStockinList() throws Exception {
+			
+		String key1 = request.getParameter("key1");
+		String key2 = request.getParameter("key2");
+		String searchType = request.getParameter("searchType");
+		
+		dataModel.setQueryName("contractListForPaymenRequest");//领料单一览
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+	
+		String having = "stockinQty >= contractQty ";
+		if(("before").equals(searchType)){
+			having = "stockinQty < contractQty ";
+		}
+		String finishStatus = request.getParameter("finishStatus");
+		if(("070").equals(finishStatus)){
+			finishStatus = "010";//逾期未付款
+			userDefinedSearchCase.put("agreementDate", CalendarUtil.fmtYmdDate());
+			userDefinedSearchCase.put("finishStatus", finishStatus);
+		}
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql().replace("#", having);
+		System.out.println("付款申请EXCEL导出："+sql);
+		ArrayList<HashMap<String, String>>  hashMap = baseQuery.getYsFullData(sql,having);	
+
+		List<Map<Integer, Object>> listMap = new ArrayList<Map<Integer, Object>>();
+		for(int i=0;i<hashMap.size();i++){
+			String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "overduePaymenTitle");
+			String[] titles = title.split(",",-1);
+			Map<Integer, Object> excel = new HashMap<Integer, Object>();
+			for(int j=0;j<titles.length;j++){
+				excel.put(j,hashMap.get(i).get(titles[j]));		
+			}
+			listMap.add(excel);
+		}
+		
+		return  listMap;
+
 	}
 }
