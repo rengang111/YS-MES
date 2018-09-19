@@ -639,3 +639,11 @@ pre{
 	color: red;
 	font-style: italic;
 }
+.text-green {
+	color: green;
+	font-weight: bold
+}
+.text-red {
+	color: red;
+	font-weight: bold
+}

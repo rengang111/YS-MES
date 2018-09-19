@@ -74,11 +74,6 @@ public class QuotationAction extends BaseAction {
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "getBaseBom":
-				dataMap = doShowBaseBom();
-				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/bom/productview";
-				break;
 			case "createQuotation":
 				createQuotation();
 				rtnUrl = "/business/bom/bombidadd";
@@ -98,6 +93,10 @@ public class QuotationAction extends BaseAction {
 			case "getQuotationBom":
 				dataMap = doShowQuotationBom();
 				printOutJsonObj(response, dataMap);
+				break;
+			case "showBomDiff"://报价BOM与基础BOM对比
+				bomDiff();
+				rtnUrl = "/business/bom/bompricediff";
 				break;
 		}
 		
@@ -148,13 +147,6 @@ public class QuotationAction extends BaseAction {
 		return dataMap;
 	}
 
-
-	public HashMap<String, Object> doShowBaseBom() throws Exception{
-		
-		return  service.showBaseBomDetail();
-			
-	}
-	
 	public void createQuotation() throws Exception {
 
 		service.createQuotation();
@@ -176,6 +168,12 @@ public class QuotationAction extends BaseAction {
 		service.deleteQuotation();
 		
 	}	
+
+	public void bomDiff() throws Exception {
+
+		service.getBomDiff();
+		
+	}
 	
 	
 	@SuppressWarnings("unchecked")

@@ -1,6 +1,8 @@
 package com.ys.business.service.order;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +30,7 @@ import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 
 @Service
-public class QuotationService extends BaseService {
+public class QuotationService extends CommonService {
 
 	DicUtil util = new DicUtil();
 
@@ -166,10 +168,10 @@ public class QuotationService extends BaseService {
 	}
 
 	//
-	public HashMap<String, Object> getBaseBomDetail(
+	public ArrayList<HashMap<String, String>> getBaseBomDetail(
 			String bomId) throws Exception {
 
-		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> HashMap = new ArrayList<HashMap<String, String>>();
 		dataModel = new BaseModel();		
 		dataModel.setQueryFileName("/business/order/bomquerydefine");
 		dataModel.setQueryName("getBaseBomDetailByBomId");
@@ -179,7 +181,7 @@ public class QuotationService extends BaseService {
 		userDefinedSearchCase.put("bomId", bomId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
-		baseQuery.getYsFullData();
+		HashMap = baseQuery.getYsFullData();
 		
 		if(dataModel.getRecordCount() > 0){
 			model.addAttribute("material",dataModel.getYsViewData().get(0));
@@ -192,10 +194,10 @@ public class QuotationService extends BaseService {
 	}
 	
 	//
-	public HashMap<String, Object> getQuotationDetail(
+	public ArrayList<HashMap<String, String>> getQuotationDetail(
 			String bomId) throws Exception {
 
-		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> HashMap = new ArrayList<HashMap<String, String>>();
 		dataModel = new BaseModel();		
 		dataModel.setQueryFileName("/business/order/bomquerydefine");
 		dataModel.setQueryName("getQuotationDetail");
@@ -205,7 +207,7 @@ public class QuotationService extends BaseService {
 		userDefinedSearchCase.put("bomId", bomId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
-		baseQuery.getYsFullData();
+		HashMap = baseQuery.getYsFullData();
 		
 		if(dataModel.getRecordCount() > 0){
 			model.addAttribute("material",dataModel.getYsViewData().get(0));
@@ -499,13 +501,126 @@ public class QuotationService extends BaseService {
 		
 		return modelMap;
 	}
-	
-	public HashMap<String, Object> showBaseBomDetail() throws Exception {
 
-		String materialId = request.getParameter("materialId");
-		String bomId = BusinessService.getBaseBomId(materialId)[1];
+
+	@SuppressWarnings("unchecked")
+	public void getBomDiff() throws Exception {
+
+		String bomId = request.getParameter("bomId");
+		String baseBomId = request.getParameter("baseBomId");
+
+		//取得基础BOM
+		ArrayList<HashMap<String, String>> baselist = getBaseBomDetail(baseBomId);
 		
-		return getBaseBomDetail(bomId);	
+		//取得报价BOM
+		ArrayList<HashMap<String, String>> quotlist = getQuotationDetail(bomId);
+		
+		//找出差分
+		ArrayList<HashMap<String, String>> difflist = new ArrayList<HashMap<String, String>>();
+		for(HashMap<String, String> quot:quotlist){
+			
+			String t_materid = quot.get("materialId");
+			String t_price = quot.get("price");
+			String t_quantity = quot.get("quantity");
+			String t_supplier = quot.get("supplierId");//供应商
+			
+			float f_t_price = stringToFloat(t_price);
+			float f_t_quantity = stringToFloat(t_quantity);
+			
+			boolean quotOnly = true;
+			for(HashMap<String, String> base:baselist){
+				
+				String b_materid = base.get("materialId");
+				String b_price = base.get("price");//单价
+				String b_quantity = base.get("quantity");//基础用量
+				String b_supplier = base.get("supplierId");//供应商				
+
+				float f_b_price = stringToFloat(b_price);
+				float f_b_quantity = stringToFloat(b_quantity);
+				
+				if(b_materid.equals(t_materid)){
+					
+					boolean addFlag = false;
+					if( !(f_t_price == f_b_price) ){
+								
+						quot.put("basePrice", b_price);	
+						quot.put("priceFlag", "1");
+
+						if( !b_supplier.equals(t_supplier) )
+							quot.put("baseSupplier", b_supplier);
+						else
+							quot.put("baseSupplier", "***");							
+						
+						addFlag = true;
+					}else{
+						base.put("priceFlag", "0");
+						quot.put("basePrice", "***");
+					}
+
+					if( !(f_t_quantity == f_b_quantity) ){
+
+						quot.put("baseUnit", String.valueOf(f_b_quantity));	
+						quot.put("unitFlag", "1");	
+						addFlag = true;				
+					}else{
+						quot.put("unitFlag", "0");
+						quot.put("baseUnit", "***");
+					}
+					
+					if(addFlag){
+						quot.put("quantity",String.valueOf(f_t_quantity));
+						difflist.add(quot);
+					}
+					
+					baselist.remove(base);
+					quotOnly = false;
+					break;
+				}
+			}//for:baseliset
+			
+			if(quotOnly){
+
+				quot.put("baseOnly", "0");
+				quot.put("baseSupplier", "***");
+				quot.put("basePrice", "***");
+				quot.put("baseUnit", "***");
+				quot.put("quantity",String.valueOf(stringToFloat(quot.get("quantity"))));
+				difflist.add(quot);
+			}			
+		}//for:qutoliset
+		
+		if(baselist.size() > 0 ){
+			for(HashMap<String, String> base:baselist){
+
+				base.put("baseOnly", "1");
+				
+				base.put("baseSupplier", base.get("supplierId"));
+				base.put("basePrice", base.get("price"));
+				base.put("baseUnit",String.valueOf(stringToFloat(base.get("quantity"))));
+				
+				base.put("supplierId", "***");
+				base.put("price", "***");
+				base.put("quantity", "***");
+
+				difflist.add(base);
+			}
+		}
+		
+		Collections.sort(difflist, new SortByName());
+		
+		model.addAttribute("difflist",difflist);
+		model.addAttribute("difflistHead",difflist.get(0));
+		
 	}
+	
+	class SortByName implements Comparator {
+         @SuppressWarnings("unchecked")
+		public int compare(Object o1, Object o2) {
+        	 HashMap<String, String> s1 = (HashMap<String, String>) o1;
+        	 HashMap<String, String> s2 = (HashMap<String, String>) o2;
+          return s1.get("materialId").compareTo(s2.get("materialId"));
+         }
+	 }
+	
 }
 

@@ -127,7 +127,7 @@
 		<table id="TQuotation"  class="display dataTable">
 			<thead>				
 				<tr>
-					<th style="width: 1px;"  class="dt-middle ">No</th>
+					<th style="width:  1px;"  class="dt-middle ">No</th>
 					<th style="width: 80px;"  class="dt-middle ">报价时间</th>
 					<th style="width:120px;"  class="dt-middle ">BOM编号</th>
 					<th style="width: 80px;"  class="dt-middle ">材料成本</th>
@@ -135,11 +135,11 @@
 					<th style="width: 80px;"  class="dt-middle ">退税额</th>
 					<th style="width: 80px;"  class="dt-middle ">报价</th>
 					<th style="width: 60px;"  class="dt-middle ">换汇</th>
-					<th style="width:90px;"  class="dt-middle ">原币价格</th>
+					<th style="width: 60px;"  class="dt-middle ">原币价格</th>
 					<th style="width: 50px;"  class="dt-middle ">折扣</th>
 					<th style="width: 50px;"  class="dt-middle ">因子</th>
-					<th style="width:60px;"  class="dt-middle ">利润率</th>
-					<th style="width:1px;"  class="dt-middle "></th>
+					<th style="width: 60px;"  class="dt-middle ">利润率</th>
+					<th style="width:  1px;"  class="dt-middle "></th>
 				</tr>
 			</thead>
 		</table>
@@ -561,7 +561,10 @@ function quotationView() {
       			return rate + "%";
       		}},
       		{"targets":12,"render":function(data, type, row){
-      			rtn= "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";	    		
+      			var rtn="";
+      			rtn += "<a href=\"###\" onClick=\"doBomDiff('" + row["bomId"] + "')\">BOM比对</a>";
+      			rtn += "<br />"
+      			rtn += "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";	    		
       			return rtn;
       		}}
         ] 
@@ -649,6 +652,18 @@ function doEditQuotation(bomId,materialId,subId) {
 	location.href = url;
 
 };
+
+function doBomDiff(bomId) {
+
+	var baseBomId = $('#bomId').text();
+
+	var url = "${ctx}/business/quotation?methodtype=showBomDiff";
+	url = url + "&bomId="+bomId +"&baseBomId="+baseBomId;
+	
+	callWindowFullView("BOM对比",url);	
+
+}
+
 function doDelete(recordId){
 	
 	
