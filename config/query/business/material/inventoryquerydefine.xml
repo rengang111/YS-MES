@@ -836,7 +836,7 @@
     <from>v_arrivalfrompurchaseorder a  WHERE a.deleteFlag = '0' AND left(a.materialId,1) &lt;&gt;'H' </from>
     <orderby>deliveryDate,A.YSId,a.materialId</orderby>
     <groupby></groupby>
-    <having> (quantity+0)  &gt; ( ( arrivalQty+0 ) - (sumReturnQty+0) - (stockinRtnQty+0) ) </having>
+    <having> (quantity+0)  &gt; ( ( arrivalQty+0 ) -  (stockinRtnQty+0) ) </having>
 	<power></power>    
   </query> 
   <query>

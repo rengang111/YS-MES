@@ -190,6 +190,13 @@ function shortToday() {
 	return y+'-'+m+'-'+d;
 };
 
+function getYearMonth() {
+	var mydate = new Date();
+	var y = format(mydate.getFullYear());
+	var m = format((mydate.getMonth() + 1));
+	return y+'-'+m;
+};
+
 function formatTime(date) {
   var year = date.getFullYear();
   var month = date.getMonth()+1, month = month < 10 ? '0' + month : month;

@@ -374,8 +374,7 @@ function deductAjax() {
 		var taxRate = '${ contract.taxRate }';
 		taxRate = currencyToFloat(taxRate)/100;
 		orderExpanseQty = currencyToFloat(orderExpanseQty);
-		var deductCnt = deduct + orderExpanseQty + stockin;
-		
+		var deductCnt = Math.abs(deduct) + Math.abs(orderExpanseQty) + Math.abs(stockin);
 		payment = contract - deductCnt;//应付款
 		taxExcluded = payment * (1 - taxRate);
 		taxes = payment - taxExcluded;

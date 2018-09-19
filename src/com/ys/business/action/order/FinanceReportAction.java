@@ -73,6 +73,7 @@ public class FinanceReportAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "reportForDaybookInit":
+				doInit();
 				rtnUrl = "/business/finance/reportfordaybook";
 				break;
 			case "reportForDaybookSsearch":
@@ -151,9 +152,13 @@ public class FinanceReportAction extends BaseAction {
 	}	
 		
 	public void doInit(){	
-		
+		String materialId = request.getParameter("materialId");
+		if(materialId == null)
+			materialId = "";
+		model.addAttribute("materialId",materialId);
 	}
-		
+	
+	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> reportForDaybookSearch(String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();

@@ -83,6 +83,7 @@
 	<div class="action" style="text-align: right;">			
 		<button type="button" id="return" class="DTTT_button">返回</button>
 		<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
+		<button type="button" id="storageHistory" class="DTTT_button" >出入库历史</button>
 		<button type="button" id="doCreate" class="DTTT_button" onclick="doCreateBOMZZ()">新建二级BOM</button>
 	</div>
 	</fieldset>	
@@ -173,6 +174,7 @@ $(document).ready(function() {
 			var url = "${ctx}/business/material?keyBackup="+materialId;
 			location.href = url;		
 		});
+	
 	$("#doEdit").click(
 			function() {				
 				var recordid = $('#material\\.recordid').val();
@@ -182,11 +184,22 @@ $(document).ready(function() {
 				url = url + '&parentId=' + parentid+'&recordId='+recordid+"&keyBackup="+keyBackup;
 				location.href = url;			
 	});
+;
+	
+	$("#storageHistory").click(
+			function() {				
+				var materialId = '${material.material.materialid}';
+				var url = '${ctx}/business/financereport?methodtype=reportForDaybookInit';
+				url = url + '&materialId=' + materialId;
+
+				callWindowFullView("出入库历史",url);			
+	});
 	
 	var keyBackup = $('#keyBackup').val();
 	if(keyBackup == '1'){
 		$('#return').css('display', 'none');//弹窗方式下,不显示返回按钮
 	}
+	
 	/*
 	$("#doCreate").click(
 			function() {				

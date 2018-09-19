@@ -121,7 +121,7 @@
 				function() {
 				var contractId = '${contract.contractId}'
 				var makeType=$('#makeType').val();
-				var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId+"&makeType="+makeType;
+				var url = '${ctx}/business/arrival?methodtype=addAgainInit&contractId='+contractId+"&makeType="+makeType;
 				location.href = url;
 	
 		});

@@ -81,6 +81,10 @@ public class ArrivalAction extends BaseAction {
 			case "addinit":
 				rtnUrl = doAddInit();
 				//rtnUrl = "/business/inventory/arrivaladd";
+				break;	
+			case "addAgainInit":
+				rtnUrl = doAddInit();
+				rtnUrl = "/business/inventory/arrivaladd";
 				break;
 			case "edit":
 				doEdit();
@@ -174,6 +178,16 @@ public class ArrivalAction extends BaseAction {
 		return rtnUrl;
 	}
 
+	public void addAgainInit(){
+
+		try{
+			service.addAgainInit();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
 	public void doInsert(){
 		try{
 			service.insertAndViewArrival();

@@ -157,7 +157,11 @@
 		        }
 		}); 
 		
-		//ajax("020","true");
+		var strToday = shortToday();
+		
+		$('#keyword1').val(getYearMonth());
+		$('#monthly').val(strToday);
+		ajax("","false");
 
 	    //buttonSelectedEvent();//按钮点击效果
 	})	
@@ -218,6 +222,9 @@
 		
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
+		
+			<input type="hidden" id="materialId" name="materialId"  value="${materialId }"/>
+			
 			<table>
 				<tr>
 					<td width="10%"></td> 
@@ -261,8 +268,8 @@
 					<th style="width: 70px;">日期</th>
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
-					<th style="width: 50px;">出/入库单号</th>
-					<th style="width: 80px;">耀升/合同编号</th>
+					<th style="width: 50px;">出/入库<br />单号</th>
+					<th style="width: 80px;">耀升<br />/合同编号</th>
 					<th style="width: 60px;">数量</th>
 					<th style="width: 60px;">单价<br />不含税价</th>
 					<th style="width: 60px;">金额</th>

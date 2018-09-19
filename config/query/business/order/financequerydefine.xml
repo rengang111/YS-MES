@@ -316,8 +316,9 @@
 		<pool></pool>    
     	<name value="financeReprotForDaybook" />
      	<where>
-	    	<w name="A.checkInDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
-	        <w name="A.checkInDate"   des="" reqName="endDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+	    	<w name="A.checkInDate"   des="" reqName="startDate"  dtype="ch" oper="&gt;"  lg="AND" bt="" />
+	        <w name="A.checkInDate"   des="" reqName="endDate"    dtype="ch" oper="&lt;"  lg="AND" bt="" />
+        	<w name="A.materialId"    des="" reqName="materialId" dtype="ch" oper="="     lg="AND" bt="" />
     	</where>
 	  	<select>
 	      <f name="'I'" alias="dataFlag" ctype="" />
@@ -344,8 +345,9 @@
 	    <from>v_purchasestockindetail a LEFT JOIN v_purchaseorderdetail b ON a.contractId=b.contractId AND a.materialId=b.materialId AND b.deleteFlag='0'</from>
 	<union>
 	    <where>
-        	<w name="b.checkOutDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
-        	<w name="b.checkOutDate"   des="" reqName="endDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+        	<w name="b.checkOutDate"   des="" reqName="startDate"  dtype="ch" oper="&gt;"  lg="AND" bt="" />
+        	<w name="b.checkOutDate"   des="" reqName="endDate"    dtype="ch" oper="&lt;"  lg="AND" bt="" />
+        	<w name="b.materialId"     des="" reqName="materialId" dtype="ch" oper="="     lg="AND" bt="" />
 	    </where>	    
 	    <select>
 	      <f name="'O'" alias="dataFlag" ctype="" />

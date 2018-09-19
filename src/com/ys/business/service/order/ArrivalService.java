@@ -184,6 +184,15 @@ public class ArrivalService extends CommonService {
 	
 		return rtnFlag;
 	}
+	
+	public void addAgainInit() throws Exception {
+
+		//取得该合同编号下的物料信息
+		String contractId = request.getParameter("contractId");
+		
+		getContractForArrivalById(contractId);
+	
+	}
 
 	public void showArrivalDetail() {
 

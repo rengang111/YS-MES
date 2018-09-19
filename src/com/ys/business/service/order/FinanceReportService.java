@@ -6,11 +6,9 @@ import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -30,8 +28,6 @@ import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.ExcelUtil;
@@ -102,11 +98,6 @@ public class FinanceReportService extends CommonService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 		
-		//String[] keyArr = getSearchKey(Constants.FORM_PAYMENTREQUEST,data,session);
-
-		
-
-		
 		sEcho = getJsonData(data, "sEcho");	
 		start = getJsonData(data, "iDisplayStart");		
 		if (start != null && !start.equals("")){
@@ -120,11 +111,13 @@ public class FinanceReportService extends CommonService {
 		
 		dataModel.setQueryName("financeReprotForDaybook");//流水账
 		baseQuery = new BaseQuery(request, dataModel);
-		
+
+		String materialId = getJsonData(data, "materialId");
 		String strMonthly = getJsonData(data, "monthly");
 		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
 		userDefinedSearchCase.put("startDate", monthly.getStartDate());
 		userDefinedSearchCase.put("endDate", monthly.getEndDate());
+		userDefinedSearchCase.put("materialId", materialId);
 
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		//String sql = getSortKeyFormWeb(data,baseQuery);	
@@ -141,6 +134,7 @@ public class FinanceReportService extends CommonService {
 		return modelMap;		
 
 	}
+	
 	
 	public HashMap<String, Object> inventoryMonthlySearch( String data) throws Exception {
 
