@@ -22,6 +22,7 @@ public class Constants {
 	public static final String FORM_MATERIAL = "material";//
 	public static final String FORM_ARRIVAL = "arrival";//到货登记
 	public static final String FORM_REQUISITION = "requisition";//领料申请
+	public static final String FORM_REQUISITIONPARTS = "requisitionparts";//配件订单领料申请
 	public static final String FORM_REQUISITIONVIRTUAL = "requisitionvirtual";//虚拟领料
 	public static final String FORM_REQUISITIOEXCESS= "requisitionexcess";//超领申请
 	public static final String FORM_STOCKOUTRETURN= "stockoutreturn";//领料退货

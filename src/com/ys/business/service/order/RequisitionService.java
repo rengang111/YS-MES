@@ -154,6 +154,74 @@ public class RequisitionService extends CommonService {
 
 	}
 	
+	
+	public HashMap<String, Object> doPartsSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+
+		dataModel.setQueryName("getOrderListForRequisitionParts");	
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
+		String requisitionSts = request.getParameter("requisitionSts");
+		if(notEmpty(key1) || notEmpty(key2))
+			requisitionSts = "";//有查询条件,不再限定其状态
+		String having = "1=1";
+		if(("010").equals(requisitionSts)){
+			//待申请
+			having = " requisitionQty=0 ";
+		}else if(("030").equals(requisitionSts)){
+			//已出库
+			having = " REPLACE(stockoutQty,',','')+0 >= REPLACE(totalQuantity,',','')+0 ";
+		}else if(("020").equals(requisitionSts)){
+			//待出库
+			having = " requisitionQty > 0 AND REPLACE(stockoutQty,',','')+0 < REPLACE(totalQuantity,',','')+0 ";
+		}
+		sql = sql.replace("#", having);
+		System.out.println("装配领料申请SQL："+sql);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}
+		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
+	
 	public HashMap<String, Object> doVirtualSearch( String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -400,22 +468,58 @@ public class RequisitionService extends CommonService {
 			return;
 		
 		//订单详情
-		getOrderDetail("",YSId);
+		//getOrderDetail("",YSId);
+
+		model.addAttribute("peiYsid",YSId);
 		model.addAttribute("requisitionId",requisitionId);
 	
 	}
+	
 
+	public void viewPeiInit() throws Exception {
+
+		String YSId = request.getParameter("YSId");
+
+		model.addAttribute("peiYsid",YSId);
+	
+	}
+
+
+	public HashMap<String, Object> viewPeiRequisitionDetail() throws Exception {
+
+		String YSId = request.getParameter("YSId");
+	
+				
+		return getRequisitionHistoryForParts(YSId);
+		
+	
+	}
+	
 	public void updateInit() throws Exception {
 
 		String YSId = request.getParameter("YSId");
 		//String requisitionId = request.getParameter("requisitionId");
 		
 		//订单详情
-		getOrderDetail(YSId);
+		getOrderDetail("",YSId);
 		//领料单
 		getRequisitionDetail();
 	
 	}
+	
+	public void updateInitParts() throws Exception {
+
+		String YSId = request.getParameter("YSId");
+		//String requisitionId = request.getParameter("requisitionId");
+		
+		//订单详情
+		getOrderDetail("",YSId);
+		//领料单
+		getRequisitionDetail();
+	
+	}
+	
+	
 	
 	public HashMap<String, Object> showDetail() throws Exception {
 
@@ -435,6 +539,15 @@ public class RequisitionService extends CommonService {
 	}
 	
 
+	public HashMap<String, Object> showRquisitionPartsDetail() throws Exception {
+
+		String YSId = request.getParameter("YSId");
+		//配件订单
+		return getPartsOrderDetail(YSId);//装配品信息
+		
+	}
+	
+
 	public void excessSearchByYsid() throws Exception {
 
 		String YSId = request.getParameter("YSId");
@@ -451,6 +564,15 @@ public class RequisitionService extends CommonService {
 
 		//订单详情
 		getOrderDetail(YSId);
+	}
+	
+	
+	public void updatePartsAndView() throws Exception {
+
+		String YSId = update();
+
+		//订单详情
+		getOrderDetail("",YSId);
 	}
 	
 
@@ -579,19 +701,34 @@ public class RequisitionService extends CommonService {
 
 		B_RequisitionData reqData = insert(
 				Constants.REQUISITION_NORMAL,//正常领料
-				Constants.STOCKOUT_2	//待出库
-				);
+				Constants.STOCKOUT_2,	//待出库
+				"N");
 
 		//订单详情
 		getOrderDetail(reqData.getYsid());
+	}
+	
+
+	/**
+	 * 配件订单领料
+	 * @throws Exception
+	 */
+	public void insertPartsAndView() throws Exception {
+
+		B_RequisitionData reqData = insert(
+				Constants.REQUISITION_NORMAL,//正常领料
+				Constants.STOCKOUT_2,	//待出库
+				"P");
+
+		model.addAttribute("peiYsid",reqData.getYsid());
 	}
 	
 	public void virtualInsertAndView() throws Exception {
 
 		B_RequisitionData reqData = insert(
 				Constants.REQUISITION_VIRTUAL,//虚拟领料
-				Constants.STOCKOUT_3	//已出库
-				);
+				Constants.STOCKOUT_3,	//已出库
+				"N");
 
 		//订单详情
 		getOrderDetail(reqData.getYsid());
@@ -702,7 +839,10 @@ public class RequisitionService extends CommonService {
 	}
 	
 
-	private B_RequisitionData insert(String virtualClass,String stockoutType){
+	private B_RequisitionData insert(
+			String virtualClass,
+			String stockoutType,
+			String orderType){
 
 		B_RequisitionData reqData = (B_RequisitionData)reqModel.getRequisition();
 		List<B_RequisitionDetailData> reqDataList = reqModel.getRequisitionList();
@@ -741,7 +881,12 @@ public class RequisitionService extends CommonService {
 			
 			if((Constants.REQUISITION_NORMAL).equals(virtualClass)){
 				
-				updateOrderDetail(YSId);//更新订单状态:待交货
+				if(("N").equals(orderType)){//常规订单
+					updateOrderDetail(YSId);//更新订单状态:待交货
+					
+				}else{//配件订单
+					updateOrderDetailForParts(YSId);
+				}
 			}
 			
 			ts.commit();			
@@ -1033,7 +1178,26 @@ public class RequisitionService extends CommonService {
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"领料申请Update",userInfo);
 		copyProperties(data,commData);
-		data.setStatus(Constants.ORDER_STS_5);//待交货	
+		data.setStatus(Constants.ORDER_STS_3);//待交货	
+		
+		new B_OrderDetailDao().Store(data);
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private void updateOrderDetailForParts(
+			String ysid) throws Exception{
+		String where = "peiYsid = '" + ysid  +"' AND deleteFlag = '0' ";
+		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
+		if(list ==null || list.size() == 0)
+			return ;	
+		
+		//更新DB
+		B_OrderDetailData data = list.get(0);
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"领料申请Update",userInfo);
+		copyProperties(data,commData);
+		data.setStatus(Constants.ORDER_STS_3);//待交货	
 		
 		new B_OrderDetailDao().Store(data);
 	}
@@ -1251,7 +1415,8 @@ public class RequisitionService extends CommonService {
 	
 	public HashMap<String, Object> getRequisitionHistory(
 			String YSId) throws Exception {
-		
+
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");	
 		dataModel.setQueryName("getRequisitionById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);		
@@ -1259,8 +1424,28 @@ public class RequisitionService extends CommonService {
 		baseQuery.getYsFullData();
 
 		modelMap.put("data", dataModel.getYsViewData());
-		
+				
 		return modelMap;
+		
+	}
+	
+	private HashMap<String, Object> getRequisitionHistoryForParts(
+			String YSId) throws Exception {
+
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");	
+		dataModel.setQueryName("getOrderListForRequisitionParts");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("peiYsid", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		String having = "1=1";
+		String sql = baseQuery.getSql().replace("#", having);
+		
+		baseQuery.getYsFullData(sql,having);
+
+		modelMap.put("data", dataModel.getYsViewData());
+
+		return modelMap;	
 		
 	}
 	public HashMap<String, Object> getRequisitionDetail() throws Exception {

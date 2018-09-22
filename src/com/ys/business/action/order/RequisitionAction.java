@@ -85,19 +85,31 @@ public class RequisitionAction extends BaseAction {
 				break;
 			case "peiAddinit":
 				doAddPeiInit();
-				rtnUrl = "/business/inventory/requisitionadd";
+				rtnUrl = "/business/inventory/requisitionpartsadd";
 				break;
 			case "updateInit":
 				doUpdateInit();
 				rtnUrl = "/business/inventory/requisitionedit";
 				break;
+			case "updateInitParts":
+				doUpdateInitParts();
+				rtnUrl = "/business/inventory/requisitionpartsedit";
+				break;
 			case "update":
 				doUpdate();
 				rtnUrl = "/business/inventory/requisitionview";
 				break;
+			case "updateParts":
+				doUpdateParts();
+				rtnUrl = "/business/inventory/requisitionpartsview";
+				break;
 			case "insert":
 				doInsert();
 				rtnUrl = "/business/inventory/requisitionview";
+				break;
+			case "insertParts":
+				doInsertParts();
+				rtnUrl = "/business/inventory/requisitionpartsview";
 				break;
 			case "delete":
 				doDelete(data);
@@ -106,25 +118,37 @@ public class RequisitionAction extends BaseAction {
 			case "detailView":
 				dataMap = doShowDetail();
 				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/inventory/requisitionview";
+				rtnUrl = null;
+				break;
+			case "detailViewForParts":
+				dataMap = doShowDetailForParts();
+				printOutJsonObj(response, dataMap);
 				rtnUrl = null;
 				break;
 			case "getRequisitionHistoryInit":
 				doAddInit();
 				rtnUrl = "/business/inventory/requisitionview";
 				break;
+			case "getRequisitionHistoryInitParts":
+				doViewPeiInit();
+				rtnUrl = "/business/inventory/requisitionpartsview";
+				break;
+			case "getRequisitionHistoryParts":
+				dataMap = getRequisitionHistoryParts();
+				printOutJsonObj(response, dataMap);
+				break;
 			case "getRequisitionHistory":
 				dataMap = getRequisitionHistory();
 				printOutJsonObj(response, dataMap);
-				return null;
+				break;
 			case "getRequisitionDetail":
 				dataMap = getRequisitionDetail();
 				printOutJsonObj(response, dataMap);
-				return null;
+				break;
 			case "requisitionPrint":
 				dataMap = requisitionPrint();
 				printOutJsonObj(response, dataMap);
-				return null;
+				break;
 			case "print"://领料单打印
 				doPrintInit();
 				rtnUrl = "/business/inventory/requisitionprint";
@@ -234,6 +258,14 @@ public class RequisitionAction extends BaseAction {
 				stockoutReturnDetail();
 				rtnUrl = "/business/inventory/stockoutreturnview";
 				break;
+			case "partsMainInit"://配件订单领料
+				doInit();
+				rtnUrl = "/business/inventory/requisitionpartsmain";
+				break;
+			case "partsMainSearch"://配件订单领料查询
+				dataMap = doPartsSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -295,6 +327,38 @@ public class RequisitionAction extends BaseAction {
 		
 		try {
 			dataMap = service.doSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+
+		String requisitionSts = request.getParameter("requisitionSts");
+		session.setAttribute("requisitionSts", requisitionSts);
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doPartsSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_REQUISITIONPARTS+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_REQUISITIONPARTS+Constants.FORM_KEYWORD2);
+			
+		}
+		
+		try {
+			dataMap = service.doPartsSearch(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
@@ -434,6 +498,7 @@ public class RequisitionAction extends BaseAction {
 			System.out.println(e.getMessage());
 		}
 	}
+	
 	public void doAddPeiInit(){
 		try{
 			service.addPeiInit();
@@ -443,6 +508,21 @@ public class RequisitionAction extends BaseAction {
 		}
 	}
 
+
+	public void doViewPeiInit(){
+		try{
+			service.viewPeiInit();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+
+	public HashMap<String, Object> getRequisitionHistoryParts() throws Exception{
+	
+		return service.viewPeiRequisitionDetail();
+		
+	}
 
 	public void doPrintInit(){
 		try{
@@ -468,6 +548,14 @@ public class RequisitionAction extends BaseAction {
 	public void doInsert(){
 		try{
 			service.insertAndView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void doInsertParts(){
+		try{
+			service.insertPartsAndView();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -567,6 +655,16 @@ public class RequisitionAction extends BaseAction {
 	}
 	
 
+	public void doUpdateInitParts(){
+		try{
+			model.addAttribute("userName", userInfo.getUserName());
+			service.updateInitParts();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+
 	public void doUpdate(){
 		try{
 			model.addAttribute("userName", userInfo.getUserName());
@@ -576,6 +674,15 @@ public class RequisitionAction extends BaseAction {
 		}
 	}
 	
+
+	public void doUpdateParts(){
+		try{
+			model.addAttribute("userName", userInfo.getUserName());
+			service.updateAndView();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
 	
 	public void doDelete(@RequestBody String data) throws Exception{
 		
@@ -588,7 +695,13 @@ public class RequisitionAction extends BaseAction {
 		return service.showDetail();
 
 	}
+	
 
+	public HashMap<String, Object> doShowDetailForParts() throws Exception{
+		
+		return service.showRquisitionPartsDetail();
+
+	}
 
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> getRequisitionHistory(){
@@ -611,6 +724,8 @@ public class RequisitionAction extends BaseAction {
 		
 		return dataMap;
 	}
+
+
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> getRequisitionDetail(){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();		

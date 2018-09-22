@@ -102,6 +102,7 @@
   	<select>
       <f name="a.recordId" alias="" ctype="" />
       <f name="a.YSId" alias="" ctype="" />
+      <f name="a.PIId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
       <f name="c.contractId" alias="" ctype="" />
@@ -121,10 +122,10 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_orderdetail AS A LEFT JOIN v_purchasestockindetailgroup b ON b.YSId = a.YSId AND b.materialId = a.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.YSId=c.YSId AND c.materialId=a.materialId AND c.deleteFlag='0' LEFT JOIN v_requisitiondetailgroup d ON  a.materialId = d.materialId AND d.YSId = a.YSId AND (d.deleteFlag = '0') WHERE  A.deleteFlag = '0'</from>
+   <from>v_orderdetail AS A LEFT JOIN v_purchasestockindetailgroup b ON b.YSId = a.peiYsid AND b.materialId = a.materialId AND b.deleteFlag='0' LEFT JOIN v_purchaseorderdetail c ON a.YSId=c.YSId AND c.materialId=a.materialId AND c.deleteFlag='0' LEFT JOIN v_requisitiondetailgroup d ON  a.materialId = d.materialId AND d.YSId = a.peiYsid  WHERE  A.deleteFlag = '0'</from>
     <groupby></groupby>
     <having></having>
-    <orderby>a.materialId</orderby>
+    <orderby>mid(A.YSId,LOCATE('-', A.YSId) + 1,2) + 0</orderby>
 	<power></power>    
   </query>
   <query>
@@ -793,14 +794,81 @@
       <f name="A.deliveryDate" alias="" ctype="" />
       <f name="A.stockinQty" alias="" ctype="" />
       <f name="A.virtualQty" alias="" ctype="" />
+      <f name="A.orderType" alias="" ctype="" />
       <f name="IFNULL(IFNULL(A.virtualQty,A.stockinQty),0)" alias="bstockinQty" ctype="" />
     </select>
-    <from>v_requisitionforzhuangpei a</from>
+    <from>v_requisitionforzhuangpei a WHERE a.orderType='010'</from>
     <orderby>A.YSId</orderby>
     <groupby></groupby>
     <having>#</having>
 	<power></power>    
-  </query>  
+  </query>
+  
+  <query>
+    <pool></pool>     
+    <name value="getOrderListForRequisitionParts" /><where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.peiYsid"    des=""  reqName="peiYsid"   dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.status"     des=""  reqName="status" dtype="ch" oper="in"  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.peiYsid" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="b.requisitionId" alias="" ctype="" />
+      <f name="(IFNULL(REPLACE(b.quantity,',',''),0))" alias="requisitionQty" ctype="" />
+      <f name="(b.requisitionDate)" alias="requisitionDate" ctype="" />
+      <f name="(IFNULL(REPLACE(c.quantity,',',''),0))" alias="stockoutQty" ctype="" />
+      <f name="(c.checkOutDate)" alias="checkOutDate" ctype="" />
+      <f name="b.recordId" alias="requisitionRecordId" ctype="" />
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.detailRecordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.orderRecordId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.customerFullName" alias="" ctype="" />
+      <f name="A.sysValue" alias="" ctype="" />
+      <f name="A.team" alias="" ctype="业务组" />
+      <f name="A.orderCompany" alias="" ctype="" />
+      <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
+      <f name="A.productClassify" alias="" ctype="" />
+      <f name="A.orderType" alias="" ctype="" />
+      <f name="A.orderNature" alias="orderNatureName" ctype="订单性质" />
+      <f name="A.orderNature" alias="" ctype="" />
+      <f name="A.status" alias="statusName" ctype="订单状态" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.returnQuantity" alias="" ctype="" />
+      <f name="A.orderCost" alias="" ctype="" />
+      <f name="A.storageDate" alias="" ctype="" />
+      <f name="A.rebateRate" alias="" ctype="" />
+      <f name="A.completedQuantity" alias="" ctype="" />
+      <f name="A.completedNumber" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+      <f name="A.quantityOnHand" alias="" ctype="" />
+      <f name="A.discount" alias="" ctype="" />
+      <f name="A.commission" alias="" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+    </select>
+    <from>( SELECT 	A.recordId, 	A.detailRecordId, 	A.materialId, 	A.materialName, 	A.PIId, 	A.YSId, 	A.quantity, 	A.price, 	A.totalprice, 	A.totalQuantity, 	A.shippingCase, 	A.loadingPort, 	A.orderDate, 	A.orderId, 	A.orderRecordId, 	A.deliveryDate, 	A.unit, 	A.currency, A.customerFullName, 	A.sysValue, 	A.team, 	A.orderCompany, A.productClassify, 	A.orderType, A.orderNature, 	A. STATUS, 	A.returnQuantity, 	A.orderCost, 	A.storageDate, 	A.rebateRate, 	A.completedQuantity, 	A.completedNumber, 	A.full_field, 	A.peiYsid, 	A.quantityOnHand, 	IFNULL(A.rebate, '0') discount, 	IFNULL(A.commission, '0') commission, 	A.customerId, 	A.shortName FROM 	v_orderlist AS A WHERE 	orderType = '020'  ) a  LEFT JOIN v_requisitiondetail b ON a.peiYsid=b.YSId AND a.materialId=b.materialId LEFT JOIN v_stockout c ON a.peiYsid=c.YSId AND a.materialId=c.materialId where 1=1 </from>
+    <orderby>LEFT(A.YSId, 8) DESC,	mid(A.YSId,	LOCATE('-', A.YSId) + 1,2) + 0</orderby>
+    <groupby></groupby>
+    <having>#</having>
+	<power></power>    
+  </query> 
   <query>
     <pool></pool>     
     <name value="getRequisitionListForExcess" />

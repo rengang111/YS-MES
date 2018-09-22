@@ -571,7 +571,7 @@
 	      <f name="d.totalQuantity" alias="" ctype="" />
 	  	</select>
 	    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-	    <from>v_purchaseplandetailgroup  a LEFT JOIN b_orderdetail d ON a.YSId = d.YSId AND d.deleteFlag='0' LEFT JOIN v_stockoutdetailgroup b ON a.YSId=b.YSId AND a.materialId=b.materialId LEFT JOIN b_material c ON a.materialId=c.materialid AND c.deleteFlag='0'  WHERE left(a.materialId,1) &lt;&gt; 'A' AND LEFT (a.materialId, 1) &lt;&gt; 'I' </from>
+	    <from>v_purchaseplandetailgroup  a LEFT JOIN b_orderdetail d ON a.YSId = d.YSId AND d.deleteFlag='0' LEFT JOIN v_stockoutdetailgroup b ON a.YSId=b.YSId AND a.materialId=b.materialId LEFT JOIN b_material c ON a.materialId=c.materialid AND c.deleteFlag='0'   </from>
 	    <groupby></groupby>
 	    <having></having>	
 	    <orderby>a.materialId</orderby>
