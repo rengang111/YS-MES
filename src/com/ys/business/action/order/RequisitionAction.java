@@ -153,6 +153,14 @@ public class RequisitionAction extends BaseAction {
 				doPrintInit();
 				rtnUrl = "/business/inventory/requisitionprint";
 				break;
+			case "printParts"://领料单打印：配件订单
+				doPrintInitParts();
+				rtnUrl = "/business/inventory/requisitionpartsprint";
+				break;
+			case "requisitionPrintParts":
+				dataMap = requisitionPrintParts();
+				printOutJsonObj(response, dataMap);
+				break;
 			case "materialRequisitionMain":
 				rtnUrl = "/business/manufacture/materialrequisitionmain";
 				break;
@@ -536,6 +544,16 @@ public class RequisitionAction extends BaseAction {
 	}
 	
 
+	public void doPrintInitParts(){
+		try{
+			model.addAttribute("userName", userInfo.getUserName());
+			model.addAttribute("YSId", request.getParameter("YSId"));
+			model.addAttribute("excessType", request.getParameter("excessType"));
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+
 	public void excessInitYsidSelected(){
 		try{
 			service.excessSearchByYsid();
@@ -746,6 +764,7 @@ public class RequisitionAction extends BaseAction {
 		
 		return dataMap;
 	}
+	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> requisitionPrint(){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
@@ -767,6 +786,29 @@ public class RequisitionAction extends BaseAction {
 		return dataMap;
 	}
 	
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> requisitionPrintParts(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
+		
+		try {
+			dataMap = service.requisitionPrintParts();
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+
 
 	public void materialRequisitionAddInit(){
 

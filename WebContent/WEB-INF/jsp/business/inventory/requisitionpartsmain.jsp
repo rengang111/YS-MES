@@ -81,6 +81,7 @@
 		    		{"targets":2,"render":function(data, type, row){
 		    			var status = currencyToFloat( row["status"] );
 		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
+		    			var stockoutQty    = currencyToFloat( row["stockoutQty"] );
 		    			var rtn="";
 		    			if(requisitionQty > 0 ){//已申请
 			    			rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["peiYsid"] + "')\">"+data+"</a>";		    				
@@ -97,6 +98,20 @@
 		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);
 		    		}},
+		    		{"targets":8,"render":function(data, type, row){
+		    			var manufactureQty = currencyToFloat( row["totalQuantity"] );
+		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
+		    			var stockoutQty    = currencyToFloat( row["stockoutQty"] );
+		    			var rtn="";
+		    			if(stockoutQty >= manufactureQty){
+		    				rtn = stockoutQty;
+		    				
+		    			}else{
+		    				rtn = "0";
+		    				
+		    			}		    			
+		    			return floatToCurrency(rtn);
+		    		}},
 		    		{
 		    			"orderable":false,"targets":[0]
 		    		},
@@ -105,13 +120,13 @@
 		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
 		    			var stockoutQty    = currencyToFloat( row["stockoutQty"] );
 		    			var rtn="";
-		    			if(requisitionQty == '0'){
-		    				rtn = "待申请";
-		    				
-		    			}else if(stockoutQty >= manufactureQty){
+		    			if(stockoutQty >= manufactureQty){
 		    				rtn = "已出库";
 		    				
-		    			}else {
+		    			}else if(requisitionQty == '0'){
+		    				rtn = "待申请";
+		    				
+		    			} else {
 		    				rtn = "待出库";
 		    			}		    			
 		    			return rtn;

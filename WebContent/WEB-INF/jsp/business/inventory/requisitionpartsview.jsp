@@ -187,6 +187,15 @@ function historyAjax() {
 		}
 		
 	}
+	
+	function doPrint() {
+		var YSId = '${peiYsid }';
+		var url = '${ctx}/business/requisition?methodtype=printParts';
+		url = url +'&YSId='+YSId;
+			
+		callProductDesignView("print",url);
+
+	};
 </script>
 
 </head>
@@ -199,7 +208,7 @@ function historyAjax() {
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<input type="hidden" id="goBackFlag" />
-	<form:hidden path="requisition.ysid"  value="${order.YSId }" />
+	<form:hidden path="requisition.ysid"  value="" />
 	<!-- <fieldset>
 		<legend> 领料单</legend>
 		<table class="form" id="table_form">
@@ -225,8 +234,9 @@ function historyAjax() {
 	-->
 <div style="clear: both"></div>
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 20px;">
-		<a class="DTTT_button DTTT_button_text" id="doAdd" >继续领料</a>
-		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
+		<a class="DTTT_button " id="doAdd" >继续领料</a>
+		<a class="DTTT_button " id="doPrint"  onclick="doPrint();return false;">打印领料单</a>
+		<a class="DTTT_button  goBack" id="goBack" >返回</a>
 	</div>
 	
 	<fieldset>
@@ -266,11 +276,10 @@ function showContract(contractId) {
 };
 
 
-function doPrint(requisitionId) {
-	var YSId = '${head.YSId }';
-	var url = '${ctx}/business/requisition?methodtype=print';
+function doPrint() {
+	var YSId = '${peiYsid }';
+	var url = '${ctx}/business/requisition?methodtype=printParts';
 	url = url +'&YSId='+YSId;
-	url = url +'&requisitionId='+requisitionId;
 		
 	callProductDesignView("print",url);
 

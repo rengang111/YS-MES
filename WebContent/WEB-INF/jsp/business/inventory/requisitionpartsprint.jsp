@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<title></title>
+<title>配件订单--打印</title>
 <!-- 领料单打印 -->
 <%@ include file="../../common/common2.jsp"%>
 <link rel="stylesheet" type="text/css" href="${ctx}/css/print.css" />
@@ -31,17 +31,16 @@
 	
 function ajaxFn(scrollHeight) {
 		
-		var requisitionId= '${requisitionId}';
-		var actionUrl = "${ctx}/business/requisition?methodtype=requisitionPrint";
-		actionUrl = actionUrl +"&requisitionId="+requisitionId;		
-		
+		var YSId= '${YSId}';
+		var actionUrl = "${ctx}/business/requisition?methodtype=requisitionPrintParts";
+		actionUrl = actionUrl +"&YSId="+YSId;		
 		var hidCol = 5;
 		var excessType = '${excessType}';
 		if(excessType == '020'){
 			//超领
 			hidCol = '';
 		}
-		
+
 		var t = $('#example').DataTable({
 			"paging": false,
 			"processing" : false,
@@ -61,10 +60,7 @@ function ajaxFn(scrollHeight) {
 					success: function(data){
 
 						var remarks = data["data"][0]["remarks"];
-						var loginName = data["data"][0]["LoginName"];
 						
-						$('#remarks').html(remarks);	
-						$('#loginName').html(loginName);
 						
 						fnCallback(data);
 					},
@@ -78,34 +74,29 @@ function ajaxFn(scrollHeight) {
         	},
 			"columns" : [
 		        	{"data": null,"className":"dt-body-center"//0
+				}, {"data": "requisitionId","className":"td-center"	//1
+				}, {"data": "YSId","className":"td-center"	//2
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
-				}, {"data": "unit","className":"td-center"	//3
-				}, {"data": "quantity","className":"td-right"	//4
-				}, {"data": "scrapQuantity","className":"td-right"	,"defaultContent" : '0'//5
+				}, {"data": "totalQuantity","className":"td-right"	//4
+				}, {"data": "requisitionQty","className":"td-right"	,"defaultContent" : '0'//5
 				}, {"data": null,"className":"td-right"	,"defaultContent" : ''//5
 				}
+				
 			],
 			"columnDefs":[                
 	    		{"targets":2,"render":function(data, type, row){
-	    			return "&nbsp;&nbsp;"+data;
+	    			return "&nbsp;"+data;
                 }},
-	    		{"targets":3,"render":function(data, type, row){	    			
-	    			var unit = row["unit"];		
-	    			if(unit == '吨'){
-	    				unit = '千克';//转换成公斤
-	    			}	    								
-	    			return unit;						 
-                }},
-                {"targets":4,"render":function(data, type, row){
-	    			return floatToCurrency(data);
+                {"targets":3,"render":function(data, type, row){
+	    			return "&nbsp;"+data;
                 }},
                 {"targets":5,"render":function(data, type, row){
 	    			return floatToCurrency(data);
                 }},
                 {
 					"visible" : false,
-					"targets" : [hidCol]
+					"targets" : [7]
 				}
 			]
 			
@@ -152,23 +143,10 @@ function ajaxFn(scrollHeight) {
 		</table>
 		<table>
 		
-			<tr> 				
-				<td class="label">耀升编号：</td>					
-				<td>${order.peiYsid }</td>
-							
-				<td width="100px" class="label">产品编号：</td>					
-				<td width="180px">${order.materialId }</td>
-							
-				<td width="100px" class="label">产品名称：</td>			
-				<td>${order.materialName }</td>	
-			</tr>
-			
 			<tr>
-				<td width="100px" class="label">领料单编号：</td>					
-				<td width="180px">${requisitionId }</td>
 							
 				<td width="100px" class="label">制单人：</td>					
-				<td width="180px"><span id="loginName"></span></td>
+				<td width="180px"><span id="loginName">${userName}</span></td>
 							
 				<td width="100px" class="label">打印时间：</td>				
 				<td><span id="today"></span></td>		
@@ -182,26 +160,25 @@ function ajaxFn(scrollHeight) {
 		</table>
 		
 		<div class="list">
-			<table id="example" class="display" width="100%">
+			<table id="example" class="display" style="width:100%">
 				<thead>				
 					<tr>
-						<th style="width:3px">No</th>
+						<th style="width:1px">No</th>
+						<th width="80px">领料单编号</th>
+						<th width="70px">耀升编号</th>
 						<th width="120px">物料编号</th>
-						<th >物料名称</th>				
-						<th width="60px">单位</th>
-						<th width="80px">领料数量</th>
-						<th width="80px">退还数量</th>
-						<th width="20px"></th>
+						<th >物料名称</th>
+						<th width="60px">订单数</th>
+						<th width="60px">领料数</th>
+						<th width="60px">退还数</th>
 					</tr>
-	
+
 			</table>
-		</div>		
-	
-	
+		</div>
+
 	</form:form>
 </div>
 </div>
-
 
 <script  type="text/javascript">
 
@@ -211,13 +188,7 @@ function doPrint(){
 	var footstr = "</body>";
 	$("#printBtn").hide();
     $("#DTTT_container").hide();
-	//var newstr = document.getElementById("main").innerHTML;
-	//var cont = document.body.innerHTML;    
-	//$("#print").addClass('noprint');
-	//var oldstr = window.document.body.innerHTML;
-	//document.body.innerHTML = headstr+newstr+footstr;  
 	window.print();
-	//document.body.innerHTML = oldstr;  
 
 	$("#printBtn").show();
 	$("#DTTT_container").show();

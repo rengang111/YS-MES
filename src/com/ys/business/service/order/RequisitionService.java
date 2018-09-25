@@ -1482,6 +1482,15 @@ public class RequisitionService extends CommonService {
 		
 		return modelMap;		
 	}
+	
+
+	public HashMap<String, Object> requisitionPrintParts() throws Exception {
+
+		String YSId = request.getParameter("YSId");
+		return getRequisitionHistoryForParts(YSId);
+			
+	}
+	
 	public HashMap<String, Object> getOrderDetail(
 			String YSId) throws Exception {
 		

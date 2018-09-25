@@ -326,6 +326,7 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * update处理
 	 */
+	/*
 	private String update(String where){
 		
 		ts = new BaseTransaction();
@@ -501,12 +502,12 @@ public class PurchasePlanService extends CommonService {
 				}
 				
 				//退还物料库存
-				/*
+				
 				updateMaterial(
 						materialId, 
 						((-1) * purchaseQty),
 						0);
-				*///8.16 页面删除的物料不需要再次退还待出量，
+				//8.16 页面删除的物料不需要再次退还待出量，
 				//因为，该物料已经在DB旧数据处理时退还过了。
 			}
 
@@ -544,6 +545,7 @@ public class PurchasePlanService extends CommonService {
 		
 		return YSId;
 	}
+	*/
 	
 	/*
 	 * 配件订单的采购方案
@@ -1426,7 +1428,7 @@ public class PurchasePlanService extends CommonService {
 		String materialFlag = request.getParameter("materialFlag");
 		String YSId  = request.getParameter("YSId");
 		StringBuffer where = new StringBuffer();
-		where.append(" YSId = '" +YSId + "' ");
+		where.append(" YSId = '" +YSId + "' AND deleteFlag='0' ");
 		switch(materialFlag){
 			case "yszz"://重置自制品
 				where.append(" AND ");
@@ -1443,7 +1445,7 @@ public class PurchasePlanService extends CommonService {
 			
 		}
 		
-		updatePurchasePlan(where.toString());//更新采购方案
+		updatePurchasePlanByWhere(where.toString());//更新采购方案
 		
 		getOrderDetailByYSId(YSId);
 		
@@ -1469,8 +1471,8 @@ public class PurchasePlanService extends CommonService {
 	public Model updateAndView() throws Exception {
 		String YSId  = request.getParameter("YSId");
 		StringBuffer where = new StringBuffer();
-		where.append(" YSId = '" +YSId + "' ");
-		updatePurchasePlan(where.toString());
+		where.append(" YSId = '" +YSId + "' AND deleteFlag='0' ");
+		updatePurchasePlanByWhere(where.toString());
 		getOrderDetailByYSId(YSId);
 		
 		return model;
@@ -1946,7 +1948,7 @@ public class PurchasePlanService extends CommonService {
 	/**
 	 * update处理
 	 */
-	private String updatePurchasePlan(String where){
+	private String updatePurchasePlanByWhere(String where){
 		
 		ts = new BaseTransaction();
 		String  YSId="";
