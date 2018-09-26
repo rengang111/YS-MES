@@ -94,10 +94,12 @@
 								'<td><select  name="orderDetailLines['+rowIndex+'].productclassify"   id="orderDetailLines'+rowIndex+'.productclassify" class="short"></select>'+
 							    '<input type="hidden" name="orderDetailLines['+rowIndex+'].ordertype"  id="orderDetailLines'+rowIndex+'.ordertype"  value="010"/></td>',
 								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num mini" /></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"    id="orderDetailLines'+rowIndex+'.extraquantity"   class="num mini" />'+
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"    id="orderDetailLines'+rowIndex+'.extraquantity"   class="num" style="width:30px;height: 20px;" />'+
 									'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"    id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
-								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      id="orderDetailLines'+rowIndex+'.price"      class="cash short" /></td>',
-								'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" /></td>',				
+								'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"      		 id="orderDetailLines'+rowIndex+'.price"      class="cash short" /></td>'+
+									'<input type="text"   name="orderDetailLines['+rowIndex+'].rmbprice"         id="orderDetailLines'+rowIndex+'.rmbprice"   class="cash short rmb" style="margin-top: 5px;"/></td>',
+								'<td><span></span><input type="text"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice"  class="cash short" /></td>'+
+									'<span></span><input type="text"   name="orderDetailLines['+rowIndex+'].ordercost"  id="orderDetailLines'+rowIndex+'.ordercost"   class="cash short rmb" style="margin-top: 5px;"/></td>',				
 								
 								]).draw();
 
@@ -148,8 +150,8 @@
 
 				//销售总价	
 				var currency = $('#currency option:checked').text();// 选中项目的显示值
-				totalPrice = floatToSymbol( saleTotalSum(),currency);			
-				$('#order\\.totalprice').val(totalPrice);
+				//totalPrice = floatToSymbol( saleTotalSum(),currency);			
+				//$('#order\\.totalprice').val(totalPrice);
 			}
 						
 		}
@@ -205,33 +207,42 @@
 			var $td = $(this).parent().find("td");
 
 			var $oQuantity = $td.eq(4).find("input");
-			var $oPricei  = $td.eq(6).find("input:text");
-			//var $oPriceh  = $td.eq(6).find("input:hidden");
-			var $oAmount  = $td.eq(7).find("input");
-			var $oAmounts = $td.eq(7).find("span");
+			var $oPricei   = $td.eq(6).find("input").eq(0);
+			var $oPriceo   = $td.eq(6).find("input").eq(1);
+			var $oAmounti  = $td.eq(7).find("input").eq(0);
+			var $oAmounto  = $td.eq(7).find("input").eq(1);
 			
-			var currency = $('#currency option:checked').text();// 选中项目的显示值
-
-			var fPrice = currencyToFloat($oPricei.val());	
+			var currency = $('#currency option:checked').text();// 选中项目的显示值：币种
+			var company  = $('#order\\.ordercompany option:checked').val();// 选中项目的显示值:下单公司
 
 			var fQuantity = currencyToFloat($oQuantity.val());
+			var fPricei = currencyToFloat($oPricei.val());
+			var fPriceo = currencyToFloat($oPriceo.val());
 
-			var fTotalNew = currencyToFloat(fPrice * fQuantity);
+			var fTotalOrder = '0';
+			var fPriceo     = '0';
+			if(company != '010'){
+				fPriceo     = currencyToFloat($oPriceo.val());
+				fTotalOrder = currencyToFloat(fPriceo * fQuantity)
+			}
 
-			var vPricei = floatToSymbol(fPrice,currency);
+			var fTotalNew = currencyToFloat(fPricei * fQuantity);
+
 			var vQuantity = floatToNumber($oQuantity.val());
+			
+			var vPricei = floatToSymbol(fPricei,currency);
 			var vTotalNew = floatToSymbol(fTotalNew,currency);
 			
+			var vTotalOrder = floatToSymbol(fTotalOrder,'人民币');
+			var vPriceo =     floatToSymbol(fPriceo,'人民币');
+			//alert("vPriceo"+fPriceo+"----"+vPriceo)
+			
 			//详情列表显示新的价格
-			$oPricei.val(vPricei);
-			//$oPriceh.val(vPriceh);
 			$oQuantity.val(vQuantity);
-			$oAmount.val(vTotalNew);
-			$oAmounts.html(vTotalNew);
-
-			//临时计算该客户的销售总价
-			totalPrice = floatToSymbol( saleTotalSum(),currency);
-			$('#order\\.totalprice').val(totalPrice);
+			$oPricei.val(vPricei);
+			$oPriceo.val(vPriceo);
+			$oAmounti.val(vTotalNew);
+			$oAmounto.val(vTotalOrder);
 
 		});
 
@@ -247,10 +258,10 @@
 			var fExtraQua = currencyToFloat($oExtraQua.val());
 			var fTotalQua = currencyToFloat(fExtraQua + fQuantity);
 
-			var vPriceh = floatToCurrency(fExtraQua);
+			//var vPriceh = floatToCurrency(fExtraQua);
 			var vTotalNew = floatToCurrency(fTotalQua);			
 			//
-			$oExtraQua.val(vPriceh);
+			//$oExtraQua.val(vPriceh);
 			$oTotalQua.val(vTotalNew);
 			$oExtraQua.val(floatToNumber(fExtraQua));
 
@@ -388,8 +399,8 @@
 		
 		$(".cash") .blur(function(){
 			
-			var currency = $('#currency option:checked').text();// 选中项目的显示值
-			$(this).val(floatToSymbol($(this).val(),currency));
+			//var currency = $('#currency option:checked').text();// 选中项目的显示值
+			//$(this).val(floatToSymbol($(this).val(),currency));
 		});
 		
 		$('select').css('width','107px');
@@ -478,6 +489,14 @@
 						<form:select path="order.team"  >
 							<form:options items="${orderForm.teamList}" itemValue="key" itemLabel="value" />
 						</form:select></td>			
+						
+						
+					<td class="label">币种：</td>
+					<td>
+						<form:select path="currency"  >
+							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
+						</form:select></td>	
+						
 					<td class="label">
 						下单日期：</td>
 					<td>
@@ -494,17 +513,14 @@
 							  itemValue="key" itemLabel="value" />
 						</form:select></td>	 -->	
 				</tr>
-				<tr>
-					<td class="label">币种：</td>
-					<td>
-						<form:select path="currency"  >
-							<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
-						</form:select></td>			
+				<!-- 
+				<tr>		
 					<td class="label">
 						销售总价：</td>
 					<td colspan="5">
 						<form:input path="order.totalprice" value="${order.total}" class="read-only cash"  style="width:150px"/></td>																	
-				</tr>						
+				</tr>	
+				 -->					
 			</table>
 	</fieldset>
 	<fieldset class="action" style="text-align: right;">
@@ -521,11 +537,11 @@
 				<th class="dt-center" width="60px">耀升编号</th>
 				<th class="dt-center" width="100px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="90px">版本类别</th>
+				<th class="dt-center" width="60px">版本类别</th>
 				<th class="dt-center" width="60px">订单数量</th>
-				<th class="dt-center" width="60px">额外<br>采购数量</th>
-				<th class="dt-center" width="60px">销售单价</th>
-				<th class="dt-center" width="60px">销售总价</th>
+				<th class="dt-center" width="30px">额外<br />采购</th>
+				<th class="dt-center" width="60px"><div id="priceType">销售单价<br />下单价格</div></th>
+				<th class="dt-center" width="90px">销售总价<br />下单总价</th>
 			</tr>
 			</thead>
 			<tfoot>
@@ -554,10 +570,16 @@
 								itemValue="key" itemLabel="value" /></form:select>
 						<form:hidden path="orderDetailLines[${status.index}].ordertype" value="${order.orderType}" /></td>
 					<td><form:input path="orderDetailLines[${status.index}].quantity" class="num mini" value="${order.quantity}"/></td>
-				<td><input id="extraquantiry${status.index}" class="num mini"  value="${order.extraQuantity}"/>
+					<td><input id="extraquantiry${status.index}" class="num"  value="${order.extraQuantity}" style="width:30px;height: 20px;" />
 					<form:hidden path="orderDetailLines[${status.index}].totalquantity" value="${order.totalQuantity}"/></td>
-					<td><form:input path="orderDetailLines[${status.index}].price" class="cash short"  value="${order.price}"/></td>
+					<!-- <td><form:input path="orderDetailLines[${status.index}].price" class="cash short"  value="${order.price}"/></td>
 					<td><span>${order.totalPrice}</span><input type="hidden" name="orderDetailLines[${status.index}].totalprice" id="orderDetailLines${status.index}.totalprice" value="${order.totalPrice}" /></td>
+					 -->
+				<td><form:input path="orderDetailLines[${status.index}].price"     class="cash short"  value="${order.price}"  /><br />
+					<form:input path="orderDetailLines[${status.index}].rmbprice"  class="cash short rmb"  value="${order.RMBPrice}"  style="margin-top: 5px;"/></td>
+				<td>
+					<form:input path="orderDetailLines[${status.index}].totalprice"  class="cash"      readonly="readonly" value="${order.totalPrice}"  />
+					<form:input path="orderDetailLines[${status.index}].ordercost"   class="cash rmb"  readonly="readonly" value="${order.orderCost}"  style="margin-top: 5px;"/></td>
 					
 					<form:hidden path="orderDetailLines[${status.index}].recordid" value="${order.detailRecordId }"/>
 				</tr>
@@ -588,11 +610,11 @@
 				<th class="dt-center" width="60px">耀升编号</th>
 				<th class="dt-center" width="100px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="90px">版本类别</th>
+				<th class="dt-center" width="60px">版本类别</th>
 				<th class="dt-center" width="60px">订单数量</th>
-				<th class="dt-center" width="60px">额外<br>采购数量</th>
+				<th class="dt-center" width="30px">额外<br />采购</th>
 				<th class="dt-center" width="60px">销售单价</th>
-				<th class="dt-center" width="60px">销售总价</th>
+				<th class="dt-center" width="90px">销售总价</th>
 			</tr>
 			</thead>
 			<tfoot>
@@ -621,7 +643,7 @@
 								itemValue="key" itemLabel="value" /></form:select>
 								<form:hidden path="orderDetailLines[${status.index}].ordertype" value="${order.orderType }"/></td>
 					<td><form:input path="orderDetailLines[${status.index}].quantity" class="num mini" value="${order.quantity}"/></td>
-				<td><input id="extraquantiry${status.index}" class="num mini"  value="${order.extraQuantity}"/>
+					<td><input id="extraquantiry${status.index}" class="num mini"  value="${order.extraQuantity}"/>
 					<form:hidden path="orderDetailLines[${status.index}].totalquantity" value="${order.totalQuantity}"/></td>
 					<td><form:input path="orderDetailLines[${status.index}].price" class="cash short"  value="${order.price}"/></td>
 					<td><span>${order.totalPrice}</span><input type="hidden" name="orderDetailLines[${status.index}].totalprice" id="orderDetailLines${status.index}.totalprice" value="${order.totalPrice}" /></td>
@@ -669,6 +691,13 @@ function autocomplete(){
 	$('.ysidCheck').removeClass('bgnone');
 	$(".ysidCheck").attr('readonly', "true");
 	
+	var company = $('#order\\.ordercompany option:checked').val();// 选中项目的显示值:下单公司
+	if(company == '010'){
+		$('.rmb').removeClass('bgnone').addClass('read-only');
+		$('.rmb').val('0');
+		
+	}
+	
 	$(".attributeList1").autocomplete({
 		minLength : 2,
 		autoFocus : false,
@@ -712,8 +741,8 @@ function autocomplete(){
 		select : function(event, ui) {
 			
 			//产品名称
-			$(this).parent().parent().find("td").eq(2).find("span")
-				.html(jQuery.fixedWidth(ui.item.name,30));
+			//$(this).parent().parent().find("td").eq(2).find("span").html(jQuery.fixedWidth(ui.item.name,30));
+			$(this).parent().parent().find("td").eq(2).find("span").html(ui.item.name,30);
 
 			//产品编号
 			$(this).parent().find("input:hidden").val(ui.item.materialId);
@@ -893,9 +922,9 @@ $.fn.dataTable.TableTools.buttons.reset2 = $.extend(true, {},
 			t.row('.selected').remove().draw();
 
 			//销售总价	
-			var currency = $('#currency option:checked').text();// 选中项目的显示值
-			totalPrice = floatToSymbol( saleTotalSum(),currency);
-			$('#order\\.totalprice').val(totalPrice);
+			//var currency = $('#currency option:checked').text();// 选中项目的显示值
+			//totalPrice = floatToSymbol( saleTotalSum(),currency);
+			//$('#order\\.totalprice').val(totalPrice);
 		}
 					
 	}
@@ -975,8 +1004,8 @@ function ajax2() {
 
 		//临时计算该客户的销售总价
 		//首先减去旧的价格			
-		totalPrice = floatToSymbol( saleTotalSum(),currency);
-		$('#order\\.totalprice').val(totalPrice);
+		//totalPrice = floatToSymbol( saleTotalSum(),currency);
+		//$('#order\\.totalprice').val(totalPrice);
 
 	});
 	

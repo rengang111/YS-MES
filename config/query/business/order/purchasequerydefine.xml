@@ -303,7 +303,7 @@
       <f name="IFNULL(f.sumReturnQty,'0')" alias="inspectRtnQty" ctype="" />
     </select>
     <from>v_purchaseorderdetail3 a  left join v_inspectionreturngroupbytype e on a.YSId=e.YSId and a.materialId=e.materialId  left join v_receiveinspectiongroup c ON c.contractId=a.contractId AND c.materialId=a.materialId LEFT JOIN v_arrivalquantitygroup d ON d.contractId=a.contractId AND d.materialId = a.materialId left join v_inspectionreturngroup f ON f.YSId = a.YSId AND f.materialId = a.materialId  WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from>
-    <orderby>A.deliveryDate,a.materialId</orderby>
+    <orderby>A.YSId,a.materialId</orderby>
     <groupby></groupby>
     <having>#</having>
 	<power>
@@ -851,7 +851,7 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_orderlist AS A LEFT JOIN b_purchaseplan b ON a.YSId=b.YSId AND b.deleteFlag='0' LEFT JOIN b_purchaseplan c ON a.peiYsid = c.YSId AND c.deleteFlag = '0' </from>
+    <from>v_orderlist AS A LEFT JOIN b_purchaseplan b ON a.YSId=b.YSId AND b.deleteFlag='0' LEFT JOIN b_purchaseplan c ON a.peiYsid = c.YSId AND c.deleteFlag = '0' where a.orderType='010' </from>
     <orderby>A.YSId DESC </orderby>
     <groupby></groupby>
     <having></having>

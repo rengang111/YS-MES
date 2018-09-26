@@ -164,6 +164,11 @@
 
 	
 	$(document).ready(function() {
+		
+		var company = $('#company').val();		
+		if(company == '010'){
+			$('.order').hide();
+		}
 
 		//设置光标项目
 		$("#attribute1").attr('readonly', "true");
@@ -205,7 +210,8 @@
 				$('#orderForm').submit();	
 			}		
 		});
-
+		
+		
 	});
 
 	function ShowBomPlan(YSId,materialId) {
@@ -313,7 +319,8 @@
 					<td class="label">客户名称：</td>				
 					<td colspan="3">${order.customerId}（${order.shortName}）${order.fullName}</td>
 					<td class="label">下单公司：</td>				
-					<td>${order.orderCompanyName}</td>
+					<td  colspan="3">${order.orderCompanyName}
+						<input type="hidden" id="company" value="${order.orderCompany }"></td>
 					<!-- 
 					<td class="label" width="100px">退税率：</td>				
 					<td>${order.rebateRate}</td>
@@ -327,9 +334,9 @@
 					<td >${order.shippingCase}</td>
 					
 					<td class="label">出运港：</td>
-					<td>${order.loadingPort}</td>
+					<td  width="100px">${order.loadingPort}</td>
 
-					<td class="label">目的港：</td>
+					<td class="label"  width="100px">目的港：</td>
 					<td>${order.deliveryPort}</td>							
 				</tr>			
 				<tr>
@@ -340,10 +347,10 @@
 					<td>${order.deliveryDate}</td>
 					
 					<td class="label">业务组：</td>
-					<td>${order.team}</td>
-					
+					<td colspan="3">${order.team}</td>
+					<!-- 
 					<td class="label">销售总价：</td>
-					<td>${order.total}</td>												
+					<td>${order.total}</td>		 -->										
 				</tr>							
 			</table>
 	</fieldset>
@@ -367,8 +374,8 @@
 				<th class="dt-center" width="55px">销售数量</th>
 				<th class="dt-center" width="60px">生产数量</th>
 				<th class="dt-center" width="30px">返还<BR>数量</th>
-				<th class="dt-center" width="50px">销售单价</th>
-				<th class="dt-center" width="80px">销售总价</th>
+				<th class="dt-center" width="50px">销售单价<span class="order"><br />下单价格</span></th>
+				<th class="dt-center" width="80px">销售总价<span class="order"><br />下单总价</span></th>
 				<th class="dt-center" width="50px">订单状态</th>
 				<th class="dt-center" width="30px">操作</th>
 			</tr>
@@ -399,16 +406,20 @@
 					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>	
 					<td class="cash" style="padding-right: 20px;">${order.totalQuantity}</td>
 					<td class="cash" style="padding-right: 20px;">${order.returnQuantity}</td>					
-					<td class="cash" style="padding-right: 20px;">${order.price}</td>
-					<td class="cash" style="padding-right: 20px;">${order.totalPrice}</td>
+					<td class="cash" style="padding-right: 20px;">${order.price}
+						<span class="order"><br />${order.RMBPrice}</span>
+						</td>
+					<td class="cash" style="padding-right: 20px;">${order.totalPrice}
+						<span class="order"><br />${order.orderCost}</span></td>
 					<td>${order.statusName}</td>
 					<td>
 						<a href="###" onClick="ShowProductDesign('${order.PIId}','${order.YSId}','${order.materialId}','${order.productClassify}')">做单资料</a><br>						
-						<a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">采购方案</a></td>
-
-				
-	    														
+						<a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">采购方案</a></td>										
 				</tr>
+				<script type="text/javascript" >
+	
+
+				</script>
 			</c:if>
 					
 			</c:forEach>

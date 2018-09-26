@@ -91,10 +91,12 @@
 							'<td><select  name="orderDetailLines['+rowIndex+'].productclassify"   id="orderDetailLines'+rowIndex+'.productclassify" class="short"></select>'+
 							    '<input type="hidden" name="orderDetailLines['+rowIndex+'].ordertype"  id="orderDetailLines'+rowIndex+'.ordertype"  value="010"/></td>',
 							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity"   class="num mini" /></td>',
-							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"   	 id="orderDetailLines'+rowIndex+'.extraquantity"   class="num mini" />'+
+							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"   	 id="orderDetailLines'+rowIndex+'.extraquantity"   class="num" style="width:30px;height: 20px;"/>'+
 								'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"        id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
-							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"           id="orderDetailLines'+rowIndex+'.price"           class="cash short" /></td>',
-							'<td><span></span><input type="hidden"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice"  /></td>',
+							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"                id="orderDetailLines'+rowIndex+'.price"     class="cash short" />'+
+								'<input type="text"   name="orderDetailLines['+rowIndex+'].rmbprice"             id="orderDetailLines'+rowIndex+'.rmbprice"  class="cash short rmb" style="margin-top: 5px;"/></td>',
+							'<td><span></span><input type="text"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short" />'+
+								'<span></span><input type="text"   name="orderDetailLines['+rowIndex+'].ordercost"  id="orderDetailLines'+rowIndex+'.ordercost"  class="cash short rmb" style="margin-top: 5px;"/></td>',
 							
 							]).draw();
 					
@@ -140,9 +142,9 @@
 				t.row('.selected').remove().draw();
 
 				//销售总价	
-				var currency = $('#currency option:checked').text();// 选中项目的显示值
-				totalPrice = floatToSymbol( saleTotalSum(),currency);			
-				$('#order\\.totalprice').val(totalPrice);
+				//var currency = $('#currency option:checked').text();// 选中项目的显示值
+				//totalPrice = floatToSymbol( saleTotalSum(),currency);			
+				//$('#order\\.totalprice').val(totalPrice);
 			}
 						
 		}
@@ -198,33 +200,46 @@
 			var $td = $(this).parent().find("td");
 
 			var $oQuantity = $td.eq(4).find("input");
-			var $oPricei  = $td.eq(6).find("input:text");
-			//var $oPriceh  = $td.eq(6).find("input:hidden");
-			var $oAmount  = $td.eq(7).find("input");
-			var $oAmounts = $td.eq(7).find("span");
+			var $oPricei   = $td.eq(6).find("input").eq(0);
+			var $oPriceo   = $td.eq(6).find("input").eq(1);
+			var $oAmounti  = $td.eq(7).find("input").eq(0);
+			var $oAmounto  = $td.eq(7).find("input").eq(1);
 			
-			var currency = $('#currency option:checked').text();// 选中项目的显示值
-
-			var fPrice = currencyToFloat($oPricei.val());	
+			var currency = $('#currency option:checked').text();// 选中项目的显示值：币种
+			var company  = $('#order\\.ordercompany option:checked').val();// 选中项目的显示值:下单公司
 
 			var fQuantity = currencyToFloat($oQuantity.val());
+			var fPricei = currencyToFloat($oPricei.val());
+			var fPriceo = currencyToFloat($oPriceo.val());
 
-			var fTotalNew = currencyToFloat(fPrice * fQuantity);
+			var fTotalOrder = '0';
+			var fPriceo     = '0';
+			if(company != '010'){
+				fPriceo     = currencyToFloat($oPriceo.val());
+				fTotalOrder = currencyToFloat(fPriceo * fQuantity)
+			}
 
-			var vPricei = floatToSymbol(fPrice,currency);
+			var fTotalNew = currencyToFloat(fPricei * fQuantity);
+
 			var vQuantity = floatToNumber($oQuantity.val());
+			
+			var vPricei = floatToSymbol(fPricei,currency);
 			var vTotalNew = floatToSymbol(fTotalNew,currency);
 			
+			var vTotalOrder = floatToSymbol(fTotalOrder,'人民币');
+			var vPriceo =     floatToSymbol(fPriceo,'人民币');
+			//alert("vPriceo"+fPriceo+"----"+vPriceo)
+			
 			//详情列表显示新的价格
-			$oPricei.val(vPricei);
-			//$oPriceh.val(vPriceh);
 			$oQuantity.val(vQuantity);
-			$oAmount.val(vTotalNew);
-			$oAmounts.html(vTotalNew);
+			$oPricei.val(vPricei);
+			$oPriceo.val(vPriceo);
+			$oAmounti.val(vTotalNew);
+			$oAmounto.val(vTotalOrder);
 
 			//临时计算该客户的销售总价
-			totalPrice = floatToSymbol( saleTotalSum(),currency);
-			$('#order\\.totalprice').val(totalPrice);
+			//totalPrice = floatToSymbol( saleTotalSum(),currency);
+			//$('#order\\.totalprice').val(totalPrice);
 
 		});
 
@@ -240,10 +255,10 @@
 			var fExtraQua = currencyToFloat($oExtraQua.val());
 			var fTotalQua = currencyToFloat(fExtraQua + fQuantity);
 
-			var vPriceh = floatToCurrency(fExtraQua);
+			//var vPriceh = floatToCurrency(fExtraQua);
 			var vTotalNew = floatToCurrency(fTotalQua);			
 			//
-			$oExtraQua.val(vPriceh);
+			//$oExtraQua.val(vPriceh);
 			$oTotalQua.val(vTotalNew);
 			$oExtraQua.val(floatToNumber(fExtraQua));
 
@@ -365,10 +380,10 @@
 		$("#order\\.ordercompany").change(function() {
 			var id = $(this).val();
 			if(id=='010'){
-				$('#priceType').html('销售单价');
+				$('.rmb').removeClass('bgnone').addClass('read-only');
+				$('.rmb').val('0');
 			}else{
-				$('#priceType').html('下单价格');
-				
+				$('.rmb').removeClass('read-only').addClass('bgnone');
 			}
 			
 		});
@@ -420,7 +435,14 @@
 		$(".cash") .blur(function(){
 			
 			var currency = $('#currency option:checked').text();// 选中项目的显示值
-			$(this).val(floatToSymbol($(this).val(),currency));
+			var company  = $('#order\\.ordercompany option:checked').val();// 选中项目的显示值:下单公司
+			if(company == '010'){
+				
+			}else{
+				
+			}
+			//$(this).val(floatToSymbol($(this).val(),currency));
+			//$('.rmb').val(floatToSymbol($(this).val(),'人民币'));
 		});
 			
 		$(".DTTT_container").css('float','left');
@@ -523,14 +545,15 @@
 						<form:options items="${orderForm.currencyList}" itemValue="key" itemLabel="value" />
 					</form:select></td>	
 				<td class="label">下单公司：</td>				
-				<td colspan="3">
+				<td colspan="5">
 					<form:select path="order.ordercompany">
 							<form:options items="${orderForm.ordercompanyList}" 
 							  itemValue="key" itemLabel="value" />
 					</form:select></td>	
+					<!--  
 				<td class="label">销售总价：</td>
 				<td>
-					<form:input path="order.totalprice" class="read-only cash" style="width:150px"/></td>											
+					<form:input path="order.totalprice" class="read-only cash" style="width:150px"/></td>		-->									
 			</tr>							
 		</table>
 </fieldset>
@@ -552,8 +575,8 @@
 			<th class="dt-center" width="60px">版本类别</th>
 			<th class="dt-center" width="60px">订单数量</th>
 			<th class="dt-center" width="30px">额外<br />采购</th>
-			<th class="dt-center" width="60px"><div id="priceType">销售单价</div></th>
-			<th class="dt-center" width="90px">销售总价</th>
+			<th class="dt-center" width="60px"><div id="priceType">销售单价<br />下单价格</div></th>
+			<th class="dt-center" width="90px">销售总价<br />下单总价</th>
 		</tr>
 		</thead>
 		<tfoot>
@@ -582,8 +605,11 @@
 				<td><form:input path="orderDetailLines[${i}].quantity" class="num mini"  /></td>
 				<td><input id="extraquantiry${i}" class="num " style="width:30px;height: 20px;" />
 					<form:hidden path="orderDetailLines[${i}].totalquantity" /></td>
-				<td><form:input path="orderDetailLines[${i}].price"  class="cash short"  /></td>
-				<td><span></span><input type="hidden" name="orderDetailLines[${i}].totalprice" id="orderDetailLines${i}.totalprice"  readonly="readonly"/></td>
+				<td><form:input path="orderDetailLines[${i}].price"     class="cash short"  /><br />
+					<form:input path="orderDetailLines[${i}].rmbprice"  class="cash short rmb"  style="margin-top: 5px;"/></td>
+				<td>
+					<form:input path="orderDetailLines[${i}].totalprice"  class="cash"      readonly="readonly"/>
+					<form:input path="orderDetailLines[${i}].ordercost"   class="cash rmb"  readonly="readonly" style="margin-top: 5px;"/></td>
 				
 				<form:hidden path="orderDetailLines[${i}].parentid" />
 				<form:hidden path="orderDetailLines[${i}].subid" />
@@ -749,11 +775,18 @@ $("#attribute1").autocomplete({
 
 
 function autocomplete(){
-
+	
 	$('select').css('width','100px');	
 	$('#order\\.ordercompany').css('width','300px');
 	$('.ysidCheck').removeClass('bgnone');
 	$(".ysidCheck").attr('readonly', "true");
+
+	var company = $('#order\\.ordercompany option:checked').val();// 选中项目的显示值:下单公司
+	if(company == '010'){
+		$('.rmb').removeClass('bgnone').addClass('read-only');
+		$('.rmb').val('0');
+		
+	}
 	
 	$(".attributeList1").autocomplete({
 		minLength : 2,
@@ -798,8 +831,8 @@ function autocomplete(){
 		select : function(event, ui) {
 			
 			//产品名称
-			$(this).parent().parent().find("td").eq(2).find("span")
-				.html(jQuery.fixedWidth(ui.item.name,30));
+			//$(this).parent().parent().find("td").eq(2).find("span").html(jQuery.fixedWidth(ui.item.name,64));
+			$(this).parent().parent().find("td").eq(2).find("span").html(ui.item.name,64);
 
 			//产品编号
 			$(this).parent().find("input:hidden").val(ui.item.materialId);
@@ -966,9 +999,9 @@ $.fn.dataTable.TableTools.buttons.reset2 = $.extend(true, {},
 			t.row('.selected').remove().draw();
 
 			//销售总价	
-			var currency = $('#currency option:checked').text();// 选中项目的显示值
-			totalPrice = floatToSymbol( saleTotalSum(),currency);
-			$('#order\\.totalprice').val(totalPrice);
+			//var currency = $('#currency option:checked').text();// 选中项目的显示值
+			//totalPrice = floatToSymbol( saleTotalSum(),currency);
+			//$('#order\\.totalprice').val(totalPrice);
 		}
 					
 	}
@@ -1048,8 +1081,8 @@ function ajax2() {
 
 		//临时计算该客户的销售总价
 		//首先减去旧的价格			
-		totalPrice = floatToSymbol( saleTotalSum(),currency);
-		$('#order\\.totalprice').val(totalPrice);
+		//totalPrice = floatToSymbol( saleTotalSum(),currency);
+		//$('#order\\.totalprice').val(totalPrice);
 
 	});
 	
@@ -1065,11 +1098,11 @@ function ajax2() {
 		var fExtraQua = currencyToFloat($oExtraQua.val());
 		var fTotalQua = currencyToFloat(fExtraQua + fQuantity);
 
-		var vPriceh = floatToCurrency(fExtraQua);
+		//var vPriceh = floatToCurrency(fExtraQua);
 		var vTotalNew = floatToCurrency(fTotalQua);			
 		//
 		//alert("fQuantity"+fQuantity+"fExtraQua"+fExtraQua+"vTotalNew"+vTotalNew)
-		$oExtraQua.val(vPriceh);
+		//$oExtraQua.val(vPriceh);
 		$oTotalQua.val(vTotalNew);
 		$oExtraQua.val(floatToNumber(fExtraQua));
 

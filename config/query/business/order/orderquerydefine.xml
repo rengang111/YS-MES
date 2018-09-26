@@ -210,6 +210,8 @@
       <f name="A.completedNumber" alias="" ctype="" />
       <f name="A.price" alias="" ctype="" />
       <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.RMBPrice" alias="" ctype="" />
+      <f name="A.orderCost" alias="" ctype="" />
       <f name="A.orderDate" alias="" ctype="" />
       <f name="A.orderId" alias="" ctype="" />
       <f name="A.deliveryDate" alias="" ctype="" />
