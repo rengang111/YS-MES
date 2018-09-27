@@ -84,7 +84,7 @@
 						.row
 						.add(
 						  [
-							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="short read-only ysidCheck" /></td>',
+							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid"  class="mini  read-only ysidCheck" /></td>',
 							'<td><input type="text"   name="attributeList1"  class="attributeList1">'+
 								'<input type="hidden" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" /></td>',
 							'<td><span></span></td>',
@@ -94,9 +94,9 @@
 							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].extraquantity"   	 id="orderDetailLines'+rowIndex+'.extraquantity"   class="num" style="width:30px;height: 20px;"/>'+
 								'<input type="hidden" name="orderDetailLines['+rowIndex+'].totalquantity"        id="orderDetailLines'+rowIndex+'.totalquantity" /></td>',
 							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].price"                id="orderDetailLines'+rowIndex+'.price"     class="cash short" />'+
-								'<input type="text"   name="orderDetailLines['+rowIndex+'].rmbprice"             id="orderDetailLines'+rowIndex+'.rmbprice"  class="cash short rmb" style="margin-top: 5px;"/></td>',
-							'<td><span></span><input type="text"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short" />'+
-								'<span></span><input type="text"   name="orderDetailLines['+rowIndex+'].ordercost"  id="orderDetailLines'+rowIndex+'.ordercost"  class="cash short rmb" style="margin-top: 5px;"/></td>',
+								'<span class="order"><input type="text"   name="orderDetailLines['+rowIndex+'].rmbprice"             id="orderDetailLines'+rowIndex+'.rmbprice"  class="cash short rmb" style="margin-top: 5px;"/></span></td>',
+							'<td><input type="text"   name="orderDetailLines['+rowIndex+'].totalprice" id="orderDetailLines'+rowIndex+'.totalprice" class="cash short" />'+
+								'<span class="order"><input type="text"   name="orderDetailLines['+rowIndex+'].ordercost"  id="orderDetailLines'+rowIndex+'.ordercost"  class="cash short rmb" style="margin-top: 5px;"/></span></td>',
 							
 							]).draw();
 					
@@ -382,8 +382,10 @@
 			if(id=='010'){
 				$('.rmb').removeClass('bgnone').addClass('read-only');
 				$('.rmb').val('0');
+				$('.order').hide();		
 			}else{
 				$('.rmb').removeClass('read-only').addClass('bgnone');
+				$('.order').show();		
 			}
 			
 		});
@@ -575,8 +577,8 @@
 			<th class="dt-center" width="60px">版本类别</th>
 			<th class="dt-center" width="60px">订单数量</th>
 			<th class="dt-center" width="30px">额外<br />采购</th>
-			<th class="dt-center" width="60px"><div id="priceType">销售单价<br />下单价格</div></th>
-			<th class="dt-center" width="90px">销售总价<br />下单总价</th>
+			<th class="dt-center" width="60px">销售单价<span class="order"><br />下单价格</span></th>
+			<th class="dt-center" width="90px">销售总价<span class="order"><br />下单总价</span></th>
 		</tr>
 		</thead>
 		<tfoot>
@@ -606,10 +608,14 @@
 				<td><input id="extraquantiry${i}" class="num " style="width:30px;height: 20px;" />
 					<form:hidden path="orderDetailLines[${i}].totalquantity" /></td>
 				<td><form:input path="orderDetailLines[${i}].price"     class="cash short"  /><br />
-					<form:input path="orderDetailLines[${i}].rmbprice"  class="cash short rmb"  style="margin-top: 5px;"/></td>
+					<span class="order">
+					<form:input path="orderDetailLines[${i}].rmbprice"  class="cash short rmb"  style="margin-top: 5px;"/>
+					</span></td>
 				<td>
 					<form:input path="orderDetailLines[${i}].totalprice"  class="cash"      readonly="readonly"/>
-					<form:input path="orderDetailLines[${i}].ordercost"   class="cash rmb"  readonly="readonly" style="margin-top: 5px;"/></td>
+					<span class="order">
+					<form:input path="orderDetailLines[${i}].ordercost"   class="cash rmb"  readonly="readonly" style="margin-top: 5px;"/>
+					</span></td>
 				
 				<form:hidden path="orderDetailLines[${i}].parentid" />
 				<form:hidden path="orderDetailLines[${i}].subid" />
@@ -785,7 +791,7 @@ function autocomplete(){
 	if(company == '010'){
 		$('.rmb').removeClass('bgnone').addClass('read-only');
 		$('.rmb').val('0');
-		
+		$('.order').hide();		
 	}
 	
 	$(".attributeList1").autocomplete({
