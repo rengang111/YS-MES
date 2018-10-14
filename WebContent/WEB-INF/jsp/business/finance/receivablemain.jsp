@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-<title>应付款--申请一览</title>
+<title>应收款--一览</title>
 <script type="text/javascript">
 
 	function ajax(action,type,scrollHeight,sessionFlag) {
@@ -14,16 +14,16 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		var searchType = $("#searchType").val();
 		
-		var url = "${ctx}/business/payment?methodtype=search";
+		var url = "${ctx}/business/receivable?methodtype=search";
 		url = url + "&sessionFlag="+sessionFlag;
-		url = url + "&finishStatus="+type;
+		url = url + "&status="+type;
 		url = url + "&searchType=" + type;
 
-
-		var colSort = 4;
-		if(type == '070')
-			colSort = 8;
+		var colSort = 8;
+		//if(type == '070')
+		//	colSort = 8;
 			
 		//var scrollHeight = $(document).height(); 
 		var t = $('#TMaterial').DataTable({
@@ -61,9 +61,9 @@
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
 
-							$("input[aria-controls='TMaterial']").css("height","25px");
-							$("input[aria-controls='TMaterial']").css("width","200px");
-							$("#TMaterial_filter").css("float","left");
+							//$("input[aria-controls='TMaterial']").css("height","25px");
+							//$("input[aria-controls='TMaterial']").css("width","200px");
+							//$("#TMaterial_filter").css("float","left");
 
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -74,53 +74,50 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-					{"data": null,"className" : 'td-left'},//0
-					{"data": null, "defaultContent" : '', "className" : 'td-left'},//1 付款申请编号
-					{"data": "contractId", "defaultContent" : '', "className" : 'td-left'},//2
-					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//3				
-					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//4		
-					{"data": "supplierName", "defaultContent" : ''},//5
-					{"data": "totalPrice", "defaultContent" : '0', "className" : 'td-right'},//6合同金额
-					{"data": "chargeback", "defaultContent" : '0', "className" : 'td-right'},//7合同扣款
-					{"data": "stockInDate", "className" : 'td-center'},//8约定付款日
-					{"data": "agreementDate", "className" : 'td-center'},//9约定付款日
-					{"data": "finishDate", "className" : 'td-center'},//10实际付款日
-					{"data": "finishStatus", "className" : 'td-center'},//11
+					{"data": null,"className" : 'td-center'},//0
+					{"data": null, "defaultContent" : '', "className" : 'td-left'},//1 收款编号
+					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//2
+					{"data": "productId", "defaultContent" : '', "className" : 'td-left'},//3				
+					{"data": "productName", "defaultContent" : '', "className" : ''},//4		
+					{"data": "orderPrice", "defaultContent" : '0', "className" : 'td-right'},//5 应收金额
+					{"data": "bankDeductionCnt", "defaultContent" : '0', "className" : 'td-right'},//6银行扣款
+					{"data": "actualAmountCnt", "defaultContent" : '0', "className" : 'td-right'},//7实收金额
+					{"data": "reserveDate", "className" : 'td-center', "defaultContent" : '***'},//8 约定收款日
+					{"data": "collectionDate", "className" : 'td-center', "defaultContent" : '***'},//9 实际收款日
+					{"data": "status", "className" : 'td-center'},//10 收款状态
 					
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-		    			var paymentId = row["paymentId"];
-		    			if(paymentId == ""){
-							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["contractId"] + "' />";		    				
-		    			}else{
-							return row["rownum"];
-
-		    			}
+						return row["rownum"];
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
-		    			var rtn = row["paymentId"];//
+		    			var rtn = row["receivableId"];//
 		    			if(rtn == ""){
-				    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["contractId"] +"')\">" + "快速申请" + "</a>";
+				    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "（未收款）" + "</a>";
 		    			}else{
-			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["contractId"] + "','"+ row["paymentId"] + "')\">" + row["paymentId"] + "</a>";
+			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "','"+ row["receivableId"] + "')\">" + row["receivableId"] + "</a>";
 		    			}
 		    			
 		    			return rtn;
 		    		}},
 		    		{"targets":2,"render":function(data, type, row){
 		    			var rtn = "";
-		    			var contractId = jQuery.fixedWidth(row["contractId"],16);
-		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + contractId + "</a>";
-		    			return rtn;
+		    			var contractId = jQuery.fixedWidth(row["YSId"],10);
+		    			//rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + contractId + "</a>";
+		    			return contractId;
 		    		}},
-		    		{"targets":3,"render":function(data, type, row){
+		    		{"targets":4,"render":function(data, type, row){
 		    					    			
-		    			return jQuery.fixedWidth(data,12);
+		    			return jQuery.fixedWidth(data,32);
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    					    			
-		    			return jQuery.fixedWidth(data,24);
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":6,"render":function(data, type, row){
+		    					    			
+		    			return floatToCurrency(data);
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);
@@ -128,7 +125,7 @@
 		    		{ "bSortable": false, "aTargets": [ 0 ] },
 		    		{
 						"visible" : false,
-						"targets" : [10]
+						"targets" : []
 					}
 	           
 	         ] 
@@ -138,8 +135,9 @@
 	$(document).ready(function() {
 	
 		var scrollHeight = $(document).height() - 200; 
-		ajax("true","010",scrollHeight,"true");
-	
+		var type = $('#searchType').val();
+		ajax("true",type,scrollHeight,"true");
+	/*
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
 			$(this).toggleClass("selected");
@@ -151,7 +149,7 @@
 		    	$(this).children().first().children().prop("checked", false);
 		    }			
 		});	
-
+*/
 		var searchType = $('#searchType').val();
 		buttonSelectedEvent();//按钮选择式样
 		$('#defutBtn'+searchType).removeClass("start").addClass("end");
@@ -229,19 +227,17 @@
 		
 	}
 	
-	function doCreate2(contractId) {
+	function doCreate2(YSId) {
 
-		var paymentTypeId = $("#paymentTypeId").val();
-		var url = '${ctx}/business/payment?methodtype=addinit';
-		url = url +"&contractIds="+contractId;
-		url = url +"&paymentTypeId="+paymentTypeId;
+		var url = '${ctx}/business/receivable?methodtype=addInit';
+		url = url +"&YSId="+YSId;
 		location.href = url;
 		
 	}
 	
-	function doShowDetail(contractId,paymentId) {
+	function doShowDetail(YSId,receivableId) {
 
-		var url = '${ctx}/business/payment?methodtype=paymentView&contractId=' + contractId+'&paymentId='+paymentId;
+		var url = '${ctx}/business/receivable?methodtype=receivableDetailInit&receivableId=' + receivableId+'&YSId='+YSId;
 		
 		location.href = url;
 	}
@@ -336,34 +332,30 @@
 		
 			<div class="list">					
 				<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(1,'010');" id="defutBtn010"><span>待申请</span></a>
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'020');" id="defutBtn020"><span>待审核</span></a>
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>待付款</span></a>
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'050');" id="defutBtn050"><span>已完成</span></a>
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'060');" id="defutBtn060"><span>审核未通过</span></a>&nbsp;&nbsp;
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'070');" id="defutBtn070"><span>逾期未付款</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(1,'010');" id="defutBtn010"><span>待收款</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'020');" id="defutBtn020"><span>部分收款</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>已收款</span></a>&nbsp;&nbsp;
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'070');" id="defutBtn070"><span>逾期未收款</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="downloadExcel('080');" ><span>EXCEL导出</span></a>
 				</div>
+				<!-- 
 				<div style="height: 40px;margin-bottom: -15px;float:right">
 					<a class="DTTT_button DTTT_button_text" onclick="doCreate();">付款申请</a>
-				</div>
+				</div> -->
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						
 						<tr>					
-							<th width="50px">
-								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
-								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
-							<th width="65px">付款编号</th>
-							<th width="70px">合同编号</th>
+							<th width="1px"></th>
+							<th width="60px">收款编号</th>
 							<th width="60px">耀升编号</th>							
-							<th width="70px">供应商编号</th>						
-							<th>供应商名称</th>
-							<th width="60px">合同金额</th>
-							<th width="60px">合同扣款</th>
-							<th width="60px">入库日期</th>
-							<th width="60px">约定付款日</th>
-							<th width="60px">实际付款日</th>
-							<th width="50px">付款状态</th>
+							<th width="70px">产品编号</th>						
+							<th>产品名称</th>
+							<th width="60px">应收金额</th>
+							<th width="50px">银行扣款</th>
+							<th width="60px">实收金额</th>
+							<th width="60px">约定收款日</th>
+							<th width="60px">实际收款日</th>
+							<th width="50px">收款状态</th>
 						</tr>
 					</thead>
 				</table>

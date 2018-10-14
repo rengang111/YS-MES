@@ -24,7 +24,7 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.Constants;
 /**
- * 料件出库
+ * 应付款管理
  * @author rengang
  *
  */

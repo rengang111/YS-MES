@@ -83,7 +83,7 @@ public class ArrivalAction extends BaseAction {
 				//rtnUrl = "/business/inventory/arrivaladd";
 				break;	
 			case "addAgainInit":
-				rtnUrl = doAddInit();
+				addAgainInit();
 				rtnUrl = "/business/inventory/arrivaladd";
 				break;
 			case "edit":
@@ -181,6 +181,7 @@ public class ArrivalAction extends BaseAction {
 	public void addAgainInit(){
 
 		try{
+			model.addAttribute("userName", userInfo.getUserName());
 			service.addAgainInit();
 		}catch(Exception e){
 			System.out.println(e.getMessage());

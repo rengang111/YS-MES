@@ -53,6 +53,7 @@ public class Constants {
 	public static final String FORM_WORKSHOPRETURN = "workshopreturn";//车间退货
 	public static final String FORM_INSPECTIONRETURN = "inspectionreturn";//报检退货
 	public static final String FORM_PURCHASEROUTINE = "purchaseroutine";//日常采购
+	public static final String FORM_RECEIVABLE= "receivable";//应收款管理
 	public static final String FORM_PAYMENTREQUEST= "paymentrequest";//应付款申请
 	public static final String FORM_PAYMENTAPPROVAL= "paymentapproval";//应付款审核
 	public static final String FORM_FINANCESTOCKIN= "financestockin";//财务入库管理
@@ -259,6 +260,13 @@ public class Constants {
 	public static final String payment_040 = "040";//部分付款
 	public static final String payment_050 = "050";//完成
 	public static final String payment_060 = "060";//审核未通过
+
+	/**
+	 * 收款状态
+	 */
+	public static final String RECEIVABLE_010 = "010";//代收款
+	public static final String RECEIVABLE_020 = "020";//部分收款
+	public static final String RECEIVABLE_030 = "030";//已收款
 
 	/**
 	 * 入库类别

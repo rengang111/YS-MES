@@ -107,7 +107,8 @@
       <f name="a.materialName" alias="" ctype="" />
       <f name="c.contractId" alias="" ctype="" />
       <f name="c.supplierId" alias="" ctype="" />
-      <f name="a.quantity" alias="manufactureQuantity" ctype="" />
+      <f name="a.quantity" alias="" ctype="" />
+      <f name="a.totalQuantity" alias="manufactureQuantity" ctype="" />
       <f name="c.contractStorage" alias="" ctype="" />
       <f name="a.quantityOnHand" alias="" ctype="" />
       <f name="a.availabelToPromise" alias="" ctype="" />

@@ -55,7 +55,7 @@
 				}, {"data": "materialId","className":"td-left"
 				}, {"data": "materialName",
 				}, {"data": "contractQuantity","className":"td-right"
-				}, {"data": "contractTotalPrice","className":"td-right"
+				}, {"data": "total","className":"td-right"
 				}, {"data": "quantity","className":"td-right"	
 				}, {"data": "checkInDate","className":"td-right"
 				}, {"data": "packaging","className":"td-center"

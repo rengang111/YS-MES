@@ -83,7 +83,7 @@
 							<td><div id="name${status.index }" >${detail.materialName }</div></td>
 							<td>${detail.contractQuantity }</td>
 							<td>${detail.price }</td>
-							<td>${detail.contractTotalPrice }</td>
+							<td>${detail.total }</td>
 							<td>${detail.quantity }</td>
 							<td>${detail.packaging }</td>
 							<td>${detail.areaNumber }</td>

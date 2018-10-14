@@ -56,6 +56,7 @@ public class BusinessConstants {
 	public static final String SHORTNAME_RK = "RK";//入库
 	public static final String SHORTNAME_CK = "CK";//出库
 	public static final String SHORTNAME_FK = "FK";//付款单
+	public static final String SHORTNAME_SK = "SK";//收款单
 	public static final String SHORTNAME_RW = "RW";
 	public static final String SHORTNAME_RKSQ = "RKSQ";//入库申请
 	public static final String FORMAT_000 = "000";

@@ -1113,6 +1113,12 @@ public class PurchasePlanService extends CommonService {
 		
 		iWaitOut = iWaitOut + requirementOut;
 		iWaitIn = iWaitIn + purchaseIn;
+
+		if(iWaitOut < 0)
+			iWaitOut = 0;
+		
+		if(iWaitIn < 0)
+			iWaitIn = 0;
 		
 		//虚拟库存 = 当前库存 + 待入库 - 待出库
 		float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		

@@ -648,4 +648,127 @@
 	    <having></having>	
 	    <orderby></orderby>
   	</query>
+  <query>
+    <pool></pool>    
+    <name value="orderListForReceivabel" />
+     <where>
+        <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	    <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+        <w name="b.receivableId" des=""  reqName="receivableId"     dtype="ch" oper="="     lg="AND" bt="" />
+        <w name="a.YSId"         des=""  reqName="YSId"             dtype="ch" oper="="     lg="AND" bt="" />
+        <w name="date_add(c.checkInDate,INTERVAL a.paymentTerm DAY)"   des="" reqName="reserveDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+</where>
+  <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="IFNULL(b.receivableId,'')" alias="receivableId" ctype="" />
+      <f name="IFNULL(b.actualAmountCnt,'0')" alias="actualAndBankCnt" ctype="" />
+      <f name="IFNULL(b.actualAmount,'0')" alias="actualAmountCnt" ctype="" />
+      <f name="IFNULL(b.bankDeduction,'0')" alias="bankDeductionCnt" ctype="" />
+      <f name="IFNULL(b.bankDeduction,0) + IFNULL(b.actualAmount,0)" alias="actualCnt" ctype="" />
+      <f name="REPLACE(a.totalPrice,',','') - IFNULL(b.bankDeduction,0) - IFNULL(b.actualAmount,'0')" alias="surplus" ctype="" />
+      <f name="IFNULL(c.quantity,'')" alias="stockinQty" ctype="" />
+      <f name="a.materialId" alias="productId" ctype="" />
+      <f name="a.materialName" alias="productName" ctype="" />
+      <f name="c.checkInDate" alias="" ctype="" />
+      <f name="b.collectionDate" alias="" ctype="" />
+      <f name="IFNULL(b.status,'010')" alias="status" ctype="收款状态" />
+      <f name="a.quantity" alias="" ctype="" />
+      <f name="a.totalQuantity" alias="" ctype="" />
+      <f name="REPLACE(a.quantity, ',', '') * right(a.price,LENGTH(a.price)-2)" alias="orderPrice" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.paymentTerm" alias="" ctype="" />
+      <f name="a.customerFullName" alias="" ctype="" />
+      <f name="a.customerId" alias="" ctype="" />
+      <f name="date_add(c.checkInDate, interval a.paymentTerm day)" alias="reserveDate" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <from>v_orderlist a LEFT JOIN (SELECT c.YSId,c.receivableId,c.status,c1.actualAmountCnt,c1.actualAmount,c1.bankDeduction,c1.customerDeduction ,c1.collectionDate FROM b_receivable c,v_receivabledetailgroup c1 WHERE c.receivableId=c1.receivableId)  b ON a.YSId=b.YSId LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.YSId=c.YSId AND a.materialId=c.materialId  WHERE c.quantity+0 >= REPLACE(a.quantity,',','')+0  </from>
+    <orderby>a.ysid </orderby>
+    <groupby></groupby>
+    <having>#</having>
+	<power></power>    
+  </query>
+  
+  <query>
+    <pool></pool>    
+    <name value="receivableDetailById" />
+     <where>
+        <w name="a.receivableId" des=""  reqName="receivableId"     dtype="ch" oper="="     lg="AND" bt="" />
+        <w name="a.YSId"         des=""  reqName="YSId"             dtype="ch" oper="="     lg="AND" bt="" />
+ </where>
+  <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="IFNULL(a.receivableId,'')" alias="receivableId" ctype="" />
+      <f name="IFNULL(b.actualAmount,'0')" alias="actualAmount" ctype="" />
+      <f name="IFNULL(b.bankDeduction,'0')" alias="bankDeduction" ctype="" />
+      <f name="IFNULL(b.customerDeduction,'0')" alias="customerDeduction" ctype="" />
+      <f name="b.receivableSerialId" alias="" ctype="" />
+      <f name="b.collectionDate" alias="" ctype="" />
+      <f name="IFNULL(a.status,'010')" alias="status" ctype="收款状态" />
+      <f name="a.amountReceivable" alias="" ctype="" />
+      <f name="a.customerId" alias="" ctype="" />
+      <f name="b.remarks" alias="" ctype="" />
+      <f name="c.LoginName" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <from>b_receivable a,b_receivabledetail b LEFT JOIN s_user c ON c.UserID = b.payee where a.receivableId=b.receivableId and a.deleteFlag='0' and b.deleteFlag='0' </from>
+    <orderby>b.collectionDate </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getMAXReceivableId" />
+     <where>
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name=" IFNULL(MAX(a.subId+1),1)" alias="MaxSubId" ctype="" />
+  </select>
+    <from>b_Receivable a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query> 
+  <query>
+    <pool></pool>    
+    <name value="getMAXReceivableDetailId" />
+     <where>
+       <w name="A.receivableId" des=""  reqName="receivableId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name=" IFNULL(MAX(a.subId+1),1)" alias="MaxSubId" ctype="" />
+  </select>
+    <from>b_Receivable a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>  
+  <query>
+    <pool></pool>    
+    <name value="getReceivableCountById" />
+     <where>
+       <w name="A.receivableId" des=""  reqName="receivableId" dtype="ch" oper="="  lg="" bt="" />
+    </where>
+  <select>
+      <f name=" receivableId" alias="" ctype="" />
+      <f name=" actualAmount" alias="" ctype="" />
+      <f name=" bankDeduction" alias="" ctype="" />
+      <f name=" actualAmount + bankDeduction" alias="actualAmountCnt" ctype="" />
+      <f name=" customerDeduction" alias="" ctype="" />
+      <f name=" collectionDate" alias="" ctype="" />
+  </select>
+    <from>v_receivabledetailgroup a</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query> 
 </root>

@@ -114,29 +114,45 @@
 	    		}},
 	    		{"targets":8,"render":function(data, type, row){
 	    			//累计收货
+	    			var contractQty = currencyToFloat(row["quantity"]);	
+	    			var stockinQty = currencyToFloat(row["stockinQty"]);	
 	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
 	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);
 	    			var inspectRtnQty = currencyToFloat(row["inspectRtnQty"]);
-	    			var sumRtnQty = stockinRtnQty + inspectRtnQty;
-	    			var newQty = setPurchaseQuantity(sumRtnQty,arrivalQty );		
+	    			var sumRtnQty = stockinRtnQty + inspectRtnQty;	
+	    			var newQty1 = stockinQty - stockinRtnQty - stockinRtnQty;
+	    			if(newQty1 >= contractQty){
+	    				var newQty = contractQty;	
+	    			}else{
+	    				var newQty = setPurchaseQuantity(sumRtnQty,arrivalQty );	
+	    			}		
 	    			return floatToCurrency(newQty);
 	    		}},
 	    		{"targets":9,"render":function(data, type, row){
 	    			//已检数
+	    			var contractQty = currencyToFloat(row["quantity"]);	
+	    			var stockinQty = currencyToFloat(row["stockinQty"]);
 	    			var arrivalQty = currencyToFloat(row["quantityInspection"]);	
 	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);	
 	    			var inspectRtnQty = currencyToFloat(row["inspectRtnQty"]);
 	    			var sumRtnQty = stockinRtnQty + inspectRtnQty;
-	    			var newQty = setPurchaseQuantity(sumRtnQty,arrivalQty );			
+	    			var newQty1 = stockinQty - stockinRtnQty - stockinRtnQty;
+	    			if(newQty1 >= contractQty){
+	    				var newQty = contractQty;	
+	    			}else{
+	    				var newQty = setPurchaseQuantity(sumRtnQty,arrivalQty );	
+	    			}			
 	    			return floatToCurrency(newQty);
 	    		}},
 	    		{"targets":10,"render":function(data, type, row){
 	    			//入库数
 	    			var arrivalQty = currencyToFloat(row["contractStorage"]);	
-	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);			    			
+	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);	
+	    			var stockinQty = currencyToFloat(row["stockinQty"]);			    			
 	    			var newQty = setPurchaseQuantity(stockinRtnQty,arrivalQty );	
-	    			
+	    			newQty = stockinQty - stockinRtnQty - stockinRtnQty;
 	    			return floatToCurrency(newQty);
+	    			//return floatToCurrency(newQty);
 	    		}}
          	] 
 		});

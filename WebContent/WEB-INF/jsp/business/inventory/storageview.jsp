@@ -60,7 +60,7 @@
 				}, {"data": "materialId","className":"td-left"
 				}, {"data": "materialName",
 				}, {"data": "contractQuantity","className":"td-right", "defaultContent" : '***'
-				}, {"data": "contractTotalPrice","className":"td-right", "defaultContent" : '***'
+				}, {"data": "total","className":"td-right", "defaultContent" : '***'
 				}, {"data": "checkInDate","className":"td-right"
 				}, {"data": "depotName","className":"td-left"	
 				}, {"data": "packaging","className":"td-center"

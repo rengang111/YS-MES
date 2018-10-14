@@ -437,7 +437,8 @@ public class ArrivalService extends CommonService {
 	
 	public String getArriveId() throws Exception {
 
-		String key = CalendarUtil.fmtYmdDate();
+		String key = CalendarUtil.timeStempDate();
+		/*
 		dataModel.setQueryName("getMAXArrivalId");
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("arriveDate", key);
@@ -445,7 +446,10 @@ public class ArrivalService extends CommonService {
 		baseQuery.getYsFullData();	
 		
 		String code = dataModel.getYsViewData().get(0).get("MaxSubId");		
-		return BusinessService.getArriveRecordId(code);			
+		return BusinessService.getArriveRecordId(code);		
+		*/
+		
+		return key;
 	}
 	
 	public void getContractDetail(String contractId) throws Exception {

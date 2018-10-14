@@ -425,6 +425,8 @@
 					var sumReturn = stockinRtnQty + inspectRtnQty;
 	    			var arrival = setPurchaseQuantity(sumReturn,sumArrivalQty );
 					var surplus = quantity - currencyToFloat(arrival);
+					if(surplus < 0)
+						surplus = 0;
 					
 					$('#arrival'+index).html(floatToCurrency( arrival ))
 					$('#surplus'+index).html(floatToCurrency( surplus ))
