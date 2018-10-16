@@ -15,30 +15,24 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.common.FilePath;
-import com.ys.business.action.model.order.PaymentModel;
 import com.ys.business.action.model.order.ReceivableModel;
 import com.ys.business.db.dao.B_PaymentDao;
 import com.ys.business.db.dao.B_PaymentDetailDao;
 import com.ys.business.db.dao.B_PaymentHistoryDao;
-import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_ReceivableDao;
 import com.ys.business.db.dao.B_ReceivableDetailDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PaymentDetailData;
 import com.ys.business.db.data.B_PaymentHistoryData;
-import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_ReceivableData;
 import com.ys.business.db.data.B_ReceivableDetailData;
-import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-
-import javassist.bytecode.stackmap.TypeData.UninitData;
 
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
@@ -189,11 +183,57 @@ public class ReceivableService extends CommonService {
 		}	
 	}
 	
+
+	public void receivableEditInit() throws Exception{
+		String YSId = request.getParameter("YSId");
+		String receivableSerialId = request.getParameter("receivableSerialId");
+		
+		getReceivableDetail(YSId,receivableSerialId);
+		
+		getRecivableFromOrder(YSId);//
+	}
 	
 	public void receivableAddInit() throws Exception{
 		String YSId = request.getParameter("YSId");
 
+		getRecivableFromOrder(YSId);//
+		
+		B_ReceivableData receivable = new  B_ReceivableData();
+		receivable = getReceivableRecordId(receivable);
+		receivable.setYsid(YSId);
+		
+		B_ReceivableDetailData reqDataDetail = new B_ReceivableDetailData();
+		reqDataDetail.setReceivableid(receivable.getReceivableid());
+		reqDataDetail = getReceivableDetailRecordId(reqDataDetail);
+		
+		reqModel.setReceivable(receivable);
+		reqModel.setReceivableDetail(reqDataDetail);
+		
+	}
+	
+	/**
+	 * 继续收款
+	 * @throws Exception
+	 */
+	public void receivableAddContinueInit() throws Exception{
+		String YSId = request.getParameter("YSId");
+
 		getRecivableFromOrder(YSId);
+		
+		B_ReceivableData receivable = getReceivable(YSId);
+		if(receivable == null){
+			receivable = new  B_ReceivableData();
+			receivable = getReceivableRecordId(receivable);
+			receivable.setYsid(YSId);
+		}
+		
+		B_ReceivableDetailData reqDataDetail = new B_ReceivableDetailData();
+		reqDataDetail.setReceivableid(receivable.getReceivableid());
+		reqDataDetail = getReceivableDetailRecordId(reqDataDetail);
+		
+		reqModel.setReceivable(receivable);
+		reqModel.setReceivableDetail(reqDataDetail);
+		
 	}
 	
 	public void receivableInsertAndView() throws Exception{
@@ -206,18 +246,34 @@ public class ReceivableService extends CommonService {
 		
 	}
 	
-	public HashMap<String, Object> getReceivableDetail() throws Exception{
+
+	public void receivableUpdateAndView() throws Exception{
+
+		String YSId = request.getParameter("YSId");
+		
+		receivableInsert(YSId);
+		
+		getRecivableFromOrder(YSId);
+		
+	}
+	
+	
+	public HashMap<String, Object> getReceivableDetail(
+			String YSId,
+			String receivableSerialId) throws Exception{
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		String YSId = request.getParameter("YSId");
+		
 		dataModel.setQueryName("receivableDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("receivableSerialId", receivableSerialId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 	
 		baseQuery.getYsFullData();
 
 		if(dataModel.getRecordCount() >0){
+			model.addAttribute("detail",dataModel.getYsViewData().get(0));
 			modelMap.put("data",dataModel.getYsViewData());			
 		}
 		
@@ -233,23 +289,34 @@ public class ReceivableService extends CommonService {
 	
 
 	/**
-	 * 删除付款申请
+	 * 删除收款记录
 	 * @throws Exception
 	 */
-	public void applyDelete() throws Exception {
+	public void receivableDelete() throws Exception {
 
 		ts = new BaseTransaction();
 		
 		try {
 			ts.begin();
-			B_PaymentData reqData = null;//reqModel.getPayment();
-			String paymentId = reqData.getPaymentid();
-		
-			//删除付款信息
-			deletePayment(paymentId);
+			String receivableId = request.getParameter("receivableId");
+			String detailid = request.getParameter("receivableSerialId");
+
+			//删除收款明细
+			deleteReceivableDetail(detailid);
 			
-			//删除付款明细（关联合同）
-			deletePaymentDetail(paymentId);
+			//check是否还有收款记录，否则删除头表
+			B_ReceivableDetailData existFlag = checkReceivableExist(receivableId);
+			
+			//删除付款信息
+			if(existFlag == null){
+				deleteReceivable(receivableId);
+			}else{
+
+				B_ReceivableData dt = new B_ReceivableData();
+				dt.setReceivableid(receivableId);
+				dt.setStatus(Constants.RECEIVABLE_020);
+				insertPayment(dt);	
+			}			
 			
 			ts.commit();
 		
@@ -260,14 +327,38 @@ public class ReceivableService extends CommonService {
 
 	}
 	
+	@SuppressWarnings("unchecked")
+	private B_ReceivableDetailData checkReceivableExist(String receivableId) throws Exception{
+		B_ReceivableDetailData rtn = null;
+		String where = " receivableId ='" + receivableId + "' AND deleteFlag='0' ";
+		List<B_ReceivableDetailData> list = new B_ReceivableDetailDao().Find(where); 
+		
+		if(list.size() > 0)
+			rtn = list.get(0);
+		
+		return rtn;
+	}
+	
+
+	@SuppressWarnings("unchecked")
+	private B_ReceivableData getReceivable(String ysid) throws Exception{
+		B_ReceivableData rtn = null;
+		String where = " ysid ='" + ysid + "' AND deleteFlag='0' ";
+		List<B_ReceivableData> list = new B_ReceivableDao().Find(where); 
+		
+		if(list.size() > 0)
+			rtn = list.get(0);
+		
+		return rtn;
+	}
 		
 	/**
 	 * 
 	 * @param paymentStatus
 	 * @return
 	 */
-	private void receivableInsert(String YSId){
-		String receivableid = "";
+	private String receivableInsert(String YSId){
+		String detailid = "";
 		ts = new BaseTransaction();		
 		
 		try {
@@ -277,7 +368,7 @@ public class ReceivableService extends CommonService {
 			B_ReceivableDetailData reqDataDetail = reqModel.getReceivableDetail();
 
 			//取得收款编号
-			receivableid = reqData.getReceivableid();
+			String receivableid = reqData.getReceivableid();
 			if(isNullOrEmpty(receivableid)){
 				reqData = getReceivableRecordId(reqData);	
 				receivableid = reqData.getReceivableid();//重新取值
@@ -302,7 +393,13 @@ public class ReceivableService extends CommonService {
 
 			//收款明细
 			reqDataDetail.setReceivableid(reqData.getReceivableid());
-			reqDataDetail = getReceivableDetailRecordId(reqDataDetail);
+			
+			detailid = reqDataDetail.getReceivableserialid();
+			if(isNullOrEmpty(detailid)){
+				reqDataDetail = getReceivableDetailRecordId(reqDataDetail);//重新设置流水号
+				detailid = reqDataDetail.getReceivableserialid();
+			}	
+			
 			insertPaymentDetail(reqDataDetail);					
 							
 			
@@ -317,6 +414,8 @@ public class ReceivableService extends CommonService {
 				e1.printStackTrace();
 			}
 		}
+		
+		return detailid;
 		
 	}
 		
@@ -338,7 +437,7 @@ public class ReceivableService extends CommonService {
 		if(list == null || list.size() == 0){
 			//插入新数据
 			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-					"paymentRequestInsert",userInfo);
+					"ReceivableInsert",userInfo);
 			copyProperties(payment,commData);
 			guid = BaseDAO.getGuId();
 			payment.setRecordid(guid);
@@ -349,7 +448,7 @@ public class ReceivableService extends CommonService {
 			db = list.get(0);		
 			copyProperties(db,payment);
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"paymentRequestUpdate",userInfo);
+					"ReceivableUpdate",userInfo);
 			copyProperties(db,commData);
 			
 			new B_ReceivableDao().Store(db);
@@ -372,7 +471,7 @@ public class ReceivableService extends CommonService {
 			
 			//插入新数据
 			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-			"paymentRequestInsert",userInfo);
+			"ReceivableInsert",userInfo);
 			copyProperties(detail,commData);
 			guid = BaseDAO.getGuId();
 			detail.setRecordid(guid);
@@ -384,7 +483,7 @@ public class ReceivableService extends CommonService {
 			db = list.get(0);
 			copyProperties(db,detail);
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"paymentRequestUpdate",userInfo);
+					"ReceivableUpdate",userInfo);
 			copyProperties(db,commData);
 			db.setPayee(userInfo.getUserId());
 			
@@ -392,165 +491,6 @@ public class ReceivableService extends CommonService {
 		}		
 	}
 	
-	private void updatePayment(
-			B_PaymentData payment) throws Exception {
-		
-		B_PaymentData db = null;
-		try {
-			db = new B_PaymentDao(payment).beanData;
-
-		} catch (Exception e) {
-			// nothing
-		}		
-		
-		if(db == null || db.equals(""))
-			return;
-		
-		//更新
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"paymentRequestUpdate",userInfo);
-		copyProperties(db,commData);
-		
-		db.setApprovalfeedback(replaceTextArea(payment.getApprovalfeedback()));
-		db.setInvoicetype(payment.getInvoicetype());//发票类型
-		db.setInvoicenumber(payment.getInvoicenumber());//发票编号
-		
-		String insertFlag = request.getParameter("insertFlag");
-		if( ("insert").equals(insertFlag)){
-			db.setApprovaluser(userInfo.getUserId());//默认为登陆者
-			db.setApprovaldate(CalendarUtil.fmtYmdDate());
-			db.setApprovalstatus(payment.getApprovalstatus());
-			//审核结果:020同意;030不同意;010未审核
-			if(("020").equals(payment.getApprovalstatus())){
-				db.setFinishstatus(Constants.payment_030);//待付款
-			}else{
-				db.setFinishstatus(Constants.payment_060);//审核未通过			
-			}
-		}
-		new B_PaymentDao().Store(db);
-		
-	}
-	
-
-	private void updatePaymentForApprolval(
-			B_PaymentData payment) throws Exception {
-		
-		B_PaymentData db = null;
-		try {
-			db = new B_PaymentDao(payment).beanData;
-
-		} catch (Exception e) {
-			// nothing
-		}		
-		
-		if(db == null || db.equals(""))
-			return;
-		
-		//更新
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"paymentApprolvalDelete",userInfo);
-		copyProperties(db,commData);
-		
-		db.setApprovaluser("");//登陆者
-		db.setApprovaldate("");
-		db.setApprovalstatus("");//审核结果：未审核
-		db.setApprovalfeedback("");
-		db.setInvoicetype("");//发票类型
-		db.setInvoicenumber("");//发票编号		
-		db.setFinishstatus(Constants.payment_020);//付款状态：待审核
-
-		new B_PaymentDao().Store(db);
-		
-	}
-	
-	private void updatePaymentFinishSts(
-			B_PaymentData payment) throws Exception {
-		
-		B_PaymentData db = null;
-		try {
-			db = new B_PaymentDao(payment).beanData;
-
-		} catch (Exception e) {
-			// nothing
-		}		
-		
-		if(db == null || db.equals(""))
-			return;
-		
-		//更新
-		copyProperties(db,payment);
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"paymentRequestUpdate",userInfo);
-		copyProperties(db,commData);
-		
-		db.setFinishdate(CalendarUtil.fmtYmdDate());		
-
-		new B_PaymentDao().Store(db);
-		
-	}
-	
-
-	@SuppressWarnings({ "unchecked" })
-	private void updateContractTaxRate(
-			B_PurchaseOrderData contract) throws Exception {
-		
-		String where = " contractId ='" + contract.getContractid() + "' AND deleteFlag='0' ";
-		List<B_PurchaseOrderData> list = null;
-		try {
-			list = new B_PurchaseOrderDao().Find(where);
-
-		} catch (Exception e) {
-			// nothing
-		}		
-		
-		if(list.size()<= 0)
-			return;
-		
-		//更新
-		B_PurchaseOrderData db = list.get(0);
-		copyProperties(db,contract);
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"ContractTaxRateUpdate",userInfo);
-		copyProperties(db,commData);		
-
-		new B_PurchaseOrderDao().Store(db);
-		
-	}
-	
-	private void insertPaymentHistory(
-			B_PaymentHistoryData payment) throws Exception {
-		
-		B_PaymentData db = null;
-		try {
-			db = new B_PaymentDao(payment).beanData;
-
-		} catch (Exception e) {
-			// nothing
-		}		
-		
-		if(db == null || db.equals("")){
-			//插入新数据
-			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-					"paymentRequestInsert",userInfo);
-			copyProperties(payment,commData);
-			guid = BaseDAO.getGuId();
-			payment.setRecordid(guid);
-			payment.setFinishuser(userInfo.getUserId());//默认为登陆者
-			payment.setFinishdate(CalendarUtil.fmtYmdDate());
-			
-			new B_PaymentHistoryDao().Create(payment);
-		}else{
-			//更新
-			copyProperties(db,payment);
-			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"paymentRequestUpdate",userInfo);
-			copyProperties(db,commData);
-			db.setApplicant(userInfo.getUserId());//默认为登陆者
-			
-			new B_PaymentHistoryDao().Store(db);
-		}
-		
-	}
 	public HashMap<String, String>  getPaymentDetail(String paymentid) throws Exception{
 
 		HashMap<String, String> payment = null;
@@ -690,9 +630,9 @@ public class ReceivableService extends CommonService {
 	
 		String parentId = data.getReceivableid();
 		
-		dataModel.setQueryName("getMAXReceivableId");
+		dataModel.setQueryName("getMAXReceivableDetailId");
 		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("parentId", parentId);
+		userDefinedSearchCase.put("receivableId", parentId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);			
 		baseQuery.getYsFullData();	
 		
@@ -732,26 +672,23 @@ public class ReceivableService extends CommonService {
 			MultipartFile[] headPhotoFile,
 			String folderName,String fileList,String fileCount) throws Exception {
 
-		B_PaymentData payment = null;//reqModel.getPayment();
-		//B_PaymentHistoryData history = reqModel.getHistory();
+		B_ReceivableData head = reqModel.getReceivable();
 
-		//判断是否有申请编号
-		String paymentId = payment.getPaymentid();
-		if(isNullOrEmpty(paymentId)){			
-			paymentId = null;//insertApply(Constants.payment_010);//待申请
+		//判断是否有编号
+		String detailid = head.getReceivableid();
+		if(isNullOrEmpty(detailid)){			
+			head = getReceivableRecordId(head);//
 		}
-		modelMap.put("paymentId", paymentId);//返回到申请页面显示
 		
-		String supplierId = payment.getSupplierid();
-		//String paymentId = history.getPaymentid();
+		String ysid = head.getYsid();
 
-		FilePath file = getPath(supplierId,paymentId);
+		FilePath file = getPath(ysid,detailid);
 		String savePath = file.getSave();						
 		String viewPath = file.getView();
 		String webPath = file.getWeb();
 
 
-		String photoName  = supplierId+ "-" + paymentId + "-" + CalendarUtil.timeStempDate(); 
+		String photoName  = ysid+ "-" + detailid + "-" + CalendarUtil.timeStempDate(); 
 		
 		uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
 
@@ -766,14 +703,15 @@ public class ReceivableService extends CommonService {
 			String folderName,String fileList,String fileCount) throws Exception {
 
 		String path = request.getParameter("path");
-		B_PaymentData payment = null;//reqModel.getPayment();
-		//B_PaymentHistoryData history = reqModel.getHistory();
-		String supplierId = payment.getSupplierid();
-		String paymentId = payment.getPaymentid();
+		
+		B_ReceivableData head = reqModel.getReceivable();
+		;
+		String ysid = head.getYsid();
+		String detailid = head.getReceivableid();
 
 		deletePhoto(path);//删除图片
 
-		getPhoto(supplierId,paymentId,folderName,fileList,fileCount);
+		getPhoto(ysid,detailid,folderName,fileList,fileCount);
 		
 		return modelMap;
 	}
@@ -781,10 +719,10 @@ public class ReceivableService extends CommonService {
 	
 	public HashMap<String, Object> getProductPhoto() throws Exception {
 		
-		String supplierId = request.getParameter("supplierId");
-		String paymentId = request.getParameter("paymentId");
+		String ysid = request.getParameter("YSId");
+		String detailid = request.getParameter("detailId");
 
-		getPhoto(supplierId,paymentId,"product","productFileList","productFileCount");
+		getPhoto(ysid,detailid,"product","productFileList","productFileCount");
 	
 		return modelMap;
 	}
@@ -817,16 +755,16 @@ public class ReceivableService extends CommonService {
 		
 		filePath.setSave(
 				session.getServletContext().
-				getRealPath(BusinessConstants.PATH_PAYMENTFILE)
+				getRealPath(BusinessConstants.PATH_RECEIVABLEFILE)
 				+"/"+key1+"/"+key2
 				);	
 		filePath.setView(
 				session.getServletContext().
-				getRealPath(BusinessConstants.PATH_PAYMENTVIEW)
+				getRealPath(BusinessConstants.PATH_RECEIVABLEVIEW)
 				+"/"+key1+"/"+key2
 				);	
 
-		filePath.setWeb(BusinessConstants.PATH_PAYMENTVIEW
+		filePath.setWeb(BusinessConstants.PATH_RECEIVABLEVIEW
 				+key1+"/"+key2+"/"
 				);	
 		
@@ -834,12 +772,12 @@ public class ReceivableService extends CommonService {
 	}
 	
 	@SuppressWarnings({ "unchecked" })
-	private void deletePayment(String paymentId) throws Exception {
+	private void deleteReceivable(String detailId) throws Exception {
 		
-		String where = " paymentId ='" + paymentId + "' AND deleteFlag='0' ";
-		List<B_PaymentData> list = null;
+		String where = " receivableId ='" + detailId + "' AND deleteFlag='0' ";
+		List<B_ReceivableData> list = null;
 		try {
-			list = new B_PaymentDao().Find(where);
+			list = new B_ReceivableDao().Find(where);
 
 		} catch (Exception e) {
 			// nothing
@@ -848,22 +786,22 @@ public class ReceivableService extends CommonService {
 			return;
 		
 		//更新
-		B_PaymentData db = list.get(0);
+		B_ReceivableData db = list.get(0);
 		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 				"PaymentDelete",userInfo);
 		copyProperties(db,commData);		
 
-		new B_PaymentDao().Store(db);
+		new B_ReceivableDao().Store(db);
 		
 	}
 	
 	@SuppressWarnings({ "unchecked" })
-	private void deletePaymentDetail(String paymentId) throws Exception {
-		
-		String where = " paymentId ='" + paymentId + "' AND deleteFlag='0' ";
-		List<B_PaymentDetailData> list = null;
+	private void deleteReceivableDetail(String detailId) throws Exception {
+
+		String where = " receivableSerialId ='" + detailId + "' AND deleteFlag='0' ";
+		List<B_ReceivableDetailData> list = null;
 		try {
-			list = new B_PaymentDetailDao().Find(where);
+			list = new B_ReceivableDetailDao().Find(where);
 
 		} catch (Exception e) {
 			// nothing
@@ -872,14 +810,13 @@ public class ReceivableService extends CommonService {
 			return;
 		
 		//更新
-		for(B_PaymentDetailData db:list){
-			
-			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-					"PaymentDetailDelete",userInfo);
-			copyProperties(db,commData);		
+		B_ReceivableDetailData dt = list.get(0);
 
-			new B_PaymentDetailDao().Store(db);
-		}
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"ReceivableDelete",userInfo);
+		copyProperties(dt,commData);	
+		new B_ReceivableDetailDao().Store(dt);
+		
 		
 	}
 	

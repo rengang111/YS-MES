@@ -92,6 +92,10 @@ public class ReceivableAction extends BaseAction {
 				doAddInit();
 				rtnUrl = "/business/finance/receivableadd";
 				break;
+			case "addContinueInit"://继续收款初始化
+				doAddContinueInit();
+				rtnUrl = "/business/finance/receivableadd";
+				break;
 			case "receivableInsert"://收款保存
 				doReceivableInsert();
 				rtnUrl = "/business/finance/receivableview";
@@ -108,10 +112,60 @@ public class ReceivableAction extends BaseAction {
 				receivableUpdateInit();
 				rtnUrl = "/business/finance/receivableedit";
 				break;
+			case "getProductPhoto"://显示出库单附件
+				dataMap = getProductPhoto();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "productPhotoDelete"://删除出库单附件
+				dataMap = deletePhoto("product","productFileList","productFileCount");
+				printOutJsonObj(response, dataMap);
+				break;
+			case "editInit"://更新收款初始化
+				doEditInit();
+				rtnUrl = "/business/finance/receivableedit";
+				break;
+			case "receivableUpdate"://收款更新
+				doReceivableUpdate();
+				rtnUrl = "/business/finance/receivableview";
+				break;
+			case "receivableDelete"://收款删除
+				dataMap = doReceivableDelete();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/finance/receivableview";
+				break;
 		}
 		
 		return rtnUrl;
 	}	
+	
+	public HashMap<String, Object> getProductPhoto(){	
+		
+		try {
+			modelMap = service.getProductPhoto();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> deletePhoto(
+			String folderName,String fileList,String fileCount){	
+		
+		try {
+			modelMap = service.deletePhotoAndReload(folderName,fileList,fileCount);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
 	
 	public void doInit(){	
 		
@@ -121,12 +175,37 @@ public class ReceivableAction extends BaseAction {
 		model.addAttribute("searchType",searchType);
 
 	}	
+
+	public void doEditInit(){	
+		
+		try {
+			model.addAttribute("userName",userInfo.getUserName());
+			service.receivableEditInit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}	
 	
 	public void doAddInit(){	
 		
 		try {
 			model.addAttribute("userName",userInfo.getUserName());
 			service.receivableAddInit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}	
+	
+
+	public void doAddContinueInit(){	
+		
+		try {
+			model.addAttribute("userName",userInfo.getUserName());
+			service.receivableAddContinueInit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -144,13 +223,39 @@ public class ReceivableAction extends BaseAction {
 		}
 
 	}	
+
+	public void doReceivableUpdate(){	
+		
+		try {
+			service.receivableUpdateAndView();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}	
+	
+
+	public HashMap<String, Object> doReceivableDelete(){	
+		
+		HashMap<String, Object> dataMap = new HashMap<>();
+		try {
+			service.receivableDelete();
+			dataMap.put(INFO, NODATAMSG);
+		} catch (Exception e) {
+			dataMap.put(INFO, ERRMSG);
+			e.printStackTrace();
+		}
+		
+		return dataMap;
+	}	
 	
 
 
 	public HashMap<String, Object> getReceivableDetailById() throws Exception{	
 
-		
-		return service.getReceivableDetail();
+		String YSId = request.getParameter("YSId");
+		return service.getReceivableDetail(YSId,"");
 
 	}	
 	
@@ -196,7 +301,7 @@ public class ReceivableAction extends BaseAction {
 		return map;
 	}
 	
-	//付款单上传
+	//收款单上传
 	@RequestMapping(value="receivabelUpload")
 	public String doInit(
 			@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,

@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>应收款-收款</title>
+<title>应收款-收款编辑</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -93,6 +93,7 @@ function historyAjax() {
 	$(document).ready(function() {
 		
 		//日期
+		/*
 		$("#receivableDetail\\.collectiondate").val(shortToday());
 		$("#receivableDetail\\.collectiondate").datepicker({
 				dateFormat:"yy-mm-dd",
@@ -101,7 +102,7 @@ function historyAjax() {
 				selectOtherMonths:true,
 				showOtherMonths:true,
 		}); 
-		
+		*/
 	
 		$(".goBack").click(
 				function() {
@@ -126,7 +127,7 @@ function historyAjax() {
 			$('#receivableDetail\\.bankdeduction').val(bankdeduction);
 			$('#receivableDetail\\.actualamount').val(actualamount);
 			
-			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=receivableInsert"+"&YSId="+YSId);
+			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=receivableUpdate"+"&YSId="+YSId);
 			$('#formModel').submit();
 		});
 		
@@ -154,7 +155,7 @@ function historyAjax() {
 			var orderPrice = currencyToFloat('${order.orderPrice }');
 			var currency = '${order.currency}';//币种
 			var bank  = currencyToFloat($('#receivableDetail\\.bankdeduction').val());
-			var surplus = orderPrice - actualCnt;
+			var surplus = currencyToFloat($('#dangqianMax').val()) ;//当前可以收款的最大数;
 
 			if(bank >= surplus){
 				$().toastmessage('showWarningToast', "扣款金额不能超过应收款。");	
@@ -188,7 +189,7 @@ function historyAjax() {
 			var currency = '${order.currency}';//币种
 			var bank  = currencyToFloat($('#receivableDetail\\.bankdeduction').val());
 			var shiji = currencyToFloat($('#receivableDetail\\.actualamount').val());
-			var surplus = orderPrice - actualCnt;
+			var surplus = currencyToFloat($('#dangqianMax').val()) ;//当前可以收款的最大数;
 			
 			if(shiji > surplus - bank){
 				$().toastmessage('showWarningToast', "收款金额不能超过应收款。");				
@@ -205,21 +206,25 @@ function historyAjax() {
 		});
 	
 
-		var orderPrice ='${order.orderPrice}';
-		var actualCnt =  currencyToFloat('${order.actualCnt }');
-		var orderPrice = currencyToFloat('${order.orderPrice }');
-		var currency = '${order.currency}';//币种
-		var surplus = orderPrice - actualCnt;
 		
-		$('#surplus').text(floatToSymbol(surplus,currency));
-		$('#receivableDetail\\.bankdeduction').val('0');
-		$('#receivableDetail\\.actualamount').val(floatToSymbol(surplus,currency));
+		var orderPrice ='${order.orderPrice}';
+		var bankDeduction =  currencyToFloat('${detail.bankDeduction }');
+		var actualAmount  =  currencyToFloat('${detail.actualAmount }');
+		var actualCnt  =  currencyToFloat('${order.actualCnt }');
+		var currency = '${order.currency}';//币种
+		var dangqian = orderPrice - actualCnt + bankDeduction + actualAmount ;//当前可以收款的最大数
+		
+		$('#dangqianMax').val(dangqian);
+		$('#actualCnt').text(floatToSymbol(actualCnt,currency));
+		$('#receivableDetail\\.bankdeduction').val(floatToSymbol(bankDeduction,currency));
+		$('#receivableDetail\\.actualamount').val(floatToSymbol(actualAmount,currency));
 		$('#orderPrice').text(floatToSymbol(orderPrice,currency))
 		$('#receivable\\.amountreceivable').val(floatToCurrency(orderPrice));
 		
 		
 	});
 	
+
 	
 	function doEdit(contractId,arrivalId) {
 		
@@ -400,20 +405,15 @@ function uploadPhoto(tableId,tdTable, id) {
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<input type="hidden" id="paymentId" value="">
-	<form:hidden path="receivable.receivableid"  value="${formModel.receivable.receivableid }"/>
-	<form:hidden path="receivable.parentid"      value="${formModel.receivable.parentid }"/>
-	<form:hidden path="receivable.subid"         value="${formModel.receivable.subid }"/>
-	<form:hidden path="receivable.currency"    value="${order.currencyId }"/>
-	<form:hidden path="receivable.productid"   value="${order.productId }"/>
-	<form:hidden path="receivable.customerid"  value="${order.customerId }"/>
+	<input type="hidden" id="dangqianMax" value="">
+	<form:hidden path="receivable.receivableid"  value="${detail.receivableId }"/>
+	<form:hidden path="receivable.ysid"          value="${order.YSId }"/>
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">耀升编号：</td>					
-				<td width="150px">${order.YSId }
-					<form:hidden path="receivable.ysid" class="read-only"  value="${order.YSId }"/></td>	
+				<td width="150px">${order.YSId }</td>	
 
 				<td class="label" width="100px">产品编号：</td>					
 				<td width="150px">${order.productId }</td>
@@ -438,14 +438,10 @@ function uploadPhoto(tableId,tdTable, id) {
 				<td class="font16">
 					<span id="orderPrice">${order.orderPrice }</span>
 					<form:hidden path="receivable.amountreceivable" class="short num read-only" value="${order.orderPrice }"/></td>
-									
-				<td class="label">本次预计收款：</td>
-				<td class="font16">
-					<span id="surplus"></span></td>		
 					
 				<td class="label">已收款合计：</td>
-				<td class="font16">
-					${order.actualCnt }</td>		
+				<td class="font16" colspan="3">
+					<span id="actualCnt">${order.actualCnt }</span>（包含本次收款）</td>		
 			</tr>	
 			
 		</table>
@@ -465,22 +461,20 @@ function uploadPhoto(tableId,tdTable, id) {
 			<tr style="text-align: center;">
 				
 				<td><form:input path="receivableDetail.receivableserialid" class="short required read-only" 
-					 	value="${formModel.receivableDetail.receivableserialid }"/>
-					 <form:hidden path="receivableDetail.subid" class="short required read-only" 
-					 	value="${formModel.receivableDetail.subid }"/></td>
-				<td><form:input path="receivableDetail.collectiondate" class="short required read-only"  /></td>
+					 	 value="${detail.receivableSerialId }" /></td>
+				<td><form:input path="receivableDetail.collectiondate" class="short required read-only"  value="${detail.collectionDate }" /></td>
 				<td><form:input path="receivableDetail.payee" class="short required read-only"  value="${userName }"/></td>
 				<td>
-					<form:input path="receivableDetail.bankdeduction" class="short num font16 bank" value="0"/></td>
+					<form:input path="receivableDetail.bankdeduction" class="short num font16 bank" value="${detail.bankDeduction }"/></td>
 					
 				<td>
-					<form:input path="receivableDetail.actualamount" class="num font16 bank" value=""/></td>
+					<form:input path="receivableDetail.actualamount" class="num font16 bank" value="${detail.actualAmount }"/></td>
 				
 				<!-- 
 				<td class="font16">
 					<span id="lastSurplus">0</span></td> -->
 					
-				<td><form:input path="receivableDetail.remarks" class="middle" value=""/></td>
+				<td><form:input path="receivableDetail.remarks" class="middle" value="${detail.remarks }"/></td>
 														
 			</tr>
 		</table>

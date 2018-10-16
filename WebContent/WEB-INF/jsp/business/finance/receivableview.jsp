@@ -8,6 +8,11 @@
 	
 function historyAjax() {
 	
+	var table = $('#history').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
 	var YSId = '${order.YSId }';
 
 	var t = $('#history').DataTable({			
@@ -39,7 +44,7 @@ function historyAjax() {
 				"data" : JSON.stringify(aoData),
 				success: function(data){							
 					fnCallback(data);
-					
+					doComputeTax();
 					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -75,8 +80,9 @@ function historyAjax() {
 	    			return floatToCurrency(data);
 	    		}},
 	    		{"targets":8,"render":function(data, type, row){
-	    			var text= "<a href=\"###\" onClick=\"doEdit('"+ row["receivableSerialId"] + "')\">" + "编辑" + "</a>";
-	    			return "";
+	    			var text= "<a href=\"###\" onClick=\"doEdit('"+ row["YSId"] + "','"+ row["receivableSerialId"] + "')\">" + "编辑" + "</a>";
+	    			var text= "<a href=\"###\" onClick=\"doDelete('"+ row["receivableId"] + "','"+ row["receivableSerialId"] + "')\">" + "删除" + "</a>";
+	    			return text;
 	    		}}
 	    	] 
 		
@@ -126,15 +132,14 @@ function historyAjax() {
 		
 		$("#insert").click(
 				function() {
-	
-			var YSId = '${order.YSId }';
-			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=addInit"+"&YSId="+YSId);
+
+			var ysid = $("#receivable\\.ysid").val();
+			var detailid = $("#receivable\\.receivableid").val();
+			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=addContinueInit"+"&YSId="+ysid+"&detailId="+detailid);
 			$('#formModel').submit();
 		});
 		
-
-		//ajax();
-		//productPhotoView();//付款单
+		productPhotoView();//收款单
 		//产品图片添加位置,                                                                                                                                                                                        
 		var productIndex = 1;
 		$("#addProductPhoto").click(function() {
@@ -153,51 +158,58 @@ function historyAjax() {
 		
 	});
 	
-	function doComputeBank(){
-		
-		//计算本次最大收款金额
-		var actualCnt =  currencyToFloat('${order.actualCnt }');
-		var orderPrice = currencyToFloat('${order.orderPrice }');
-		var currency = '${order.currency}';//币种
-		var bank  = currencyToFloat($('#receivableDetail\\.bankdeduction').val());
-		var surplus = orderPrice - actualCnt;
-		
-		var lastSurplus = surplus - bank - shiji
-		var shiji = currencyToFloat($('#receivableDetail\\.actualamount').val());
-		
-		$('#surplus').text(floatToSymbol(surplus,currency));
-
-		$('#receivableDetail\\.actualamount').val(floatToSymbol(shiji,currency));
-		$('#receivableDetail\\.bankdeduction').val(floatToSymbol(bank,currency));
-		$('#lastSurplus').text(floatToSymbol(lastSurplus,currency));
-	}
 	
 	function doComputeTax(){
 		
-		var contract = contractSum(5);//合同总金额
-		var minis = contractSum(6);//增加项
-		var payment = contractSum(8);//应付款
-		var taxes = contractSum(10);//税
-		var taxExcluded = contractSum(11);//价
-		$('#contractTotal').html(floatToCurrency(contract));
-		$('#minisTotal').html(floatToCurrency(minis));
-		$('#paymentTotal').html(floatToCurrency(payment));
-		$('#taxesTotal').html(floatToCurrency(taxes));
-		$('#taxExcludedTotal').html(floatToCurrency(taxExcluded));
-		$('#receivable\\.totalpayable').val(floatToCurrency(payment));
+		var bank = contractSum(5);//银行扣款
+		var shiji = contractSum(6);//实际收款
+		var heji = bank + shiji;
+		
+		$('#bank').html(floatToCurrency(bank));
+		$('#tbank').html(floatToCurrency(bank));
+		$('#shiji').html(floatToCurrency(shiji));
+		$('#tshiji').html(floatToCurrency(shiji));
+		$('#heji').html(floatToCurrency(heji));
 	}
 	
-	function doEdit(receivableSerialId) {
+	function doEdit(YSId,receivableSerialId) {
 		
-		var url = '${ctx}/business/requisition?methodtype=edit&receivableSerialId='+receivableSerialId;
+		var url = '${ctx}/business/receivable?methodtype=editInit&receivableSerialId='+receivableSerialId+"&YSId="+YSId;
 		location.href = url;
+	}
+	
+	function doDelete(receivableId,recordId){
+		
+		if (confirm("删除后不能恢复，确定要删除吗？")){ //
+			$.ajax({
+				type : "post",
+				url : "${ctx}/business/receivable?methodtype=receivableDelete&receivableSerialId="+recordId+"&receivableId="+receivableId,
+				async : false,
+				data : 'key=',
+				dataType : "json",
+				success : function(data) {
+					$().toastmessage('showWarningToast', "收款记录删除成功。");	
+					
+					historyAjax();//
+				},
+				error : function(
+						XMLHttpRequest,
+						textStatus,
+						errorThrown) {
+					
+					
+				}
+			});
+		}else{
+			//
+		}
 	}
 
 	//列合计
 	function contractSum(col){
 
 		var sum = 0;
-		$('#example tbody tr').each (function (){
+		$('#history tbody tr').each (function (){
 			
 			var vtotal = $(this).find("td").eq(col).text();
 			var ftotal = currencyToFloat(vtotal);
@@ -261,11 +273,11 @@ function historyAjax() {
 
 function productPhotoView() {
 
-	var paymentId = $("#receivable\\.paymentid").val();
-	var supplierId = '${supplier.supplierId }';
+	var ysid = $("#receivable\\.ysid").val();
+	var detailid = $("#receivable\\.receivableid").val();
 
 	$.ajax({
-		"url" :"${ctx}/business/receivable?methodtype=getProductPhoto&paymentId="+paymentId+"&supplierId="+supplierId,	
+		"url" :"${ctx}/business/receivable?methodtype=getProductPhoto&YSId="+ysid+"&detailId="+detailid,	
 		"datatype": "json", 
 		"contentType": "application/json; charset=utf-8",
 		"type" : "POST",
@@ -335,13 +347,9 @@ function deletePhoto(tableId,tdTable,path) {
 
 function uploadPhoto(tableId,tdTable, id) {
 
-	var url = '${ctx}/business/paymentBillUpload'
+	var url = '${ctx}/business/receivabelUpload'
 			+ '?methodtype=uploadPhoto' + '&id=' + id;
 	
-	var paymentId = $('#receivable\\.paymentid').val();
-	if(paymentId == '（保存后自动生成）')
-		$('#receivable\\.paymentid').val('');//清除非正常ID
-
 	$("#formModel").ajaxSubmit({
 		type : "POST",
 		url : url,
@@ -355,8 +363,6 @@ function uploadPhoto(tableId,tdTable, id) {
 			var flg="true";
 			switch (type) {
 				case "productPhoto":
-					$('#receivable\\.paymentid').val(data["paymentId"]);//设置新的ID
-					$('#receivable\\.recordid').val(data["recordId"]);//设置新的ID
 					countData = data["productFileCount"];
 					photo = data['productFileList'];
 					break;
@@ -385,7 +391,7 @@ function uploadPhoto(tableId,tdTable, id) {
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<input type="hidden" id="paymentId" value="">
+	<input type="hidden" id="currency" value="${order.currency }">
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
@@ -396,7 +402,10 @@ function uploadPhoto(tableId,tdTable, id) {
 					<form:hidden path="receivable.receivableid" class="read-only"  value="${order.receivableId }"/></td>	
 																						
 				<td width="100px" class="label">预定收款日：</td>
-				<td   colspan="3">${order.reserveDate } </td>				
+				<td>${order.reserveDate } </td>	
+				
+				<td width="100px" class="label">客户名称：</td>
+				<td colspan="3">${order.customerFullName }</td>			
 			</tr>
 			<tr>
 				<td class="label" width="100px">耀升编号：</td>					
@@ -406,17 +415,21 @@ function uploadPhoto(tableId,tdTable, id) {
 				<td width="150px">${order.productId }</td>
 														
 				<td width="100px" class="label">产品名称：</td>
-				<td>${order.productName }</td>
+				<td colspan="3">${order.productName }</td>
 			</tr>
 			<tr>
 				<td class="label" width="100px">应收款总额：</td>					
 				<td width="150px"><span id="orderPrice"></span></td>
-														
-				<td width="100px" class="label">付款条件：</td>
-				<td width="150px">出运后&nbsp;${order.paymentTerm }&nbsp;天</td>
-														
-				<td width="100px" class="label">客户名称：</td>
-				<td>${order.customerFullName }</td>
+													
+				<td width="100px" class="label">已收款合计：</td>
+				<td width="150px"><span id="heji"></span></td>
+							
+				<td width="100px" class="label">实收金额合计：</td>
+				<td width="150px"><span id="shiji"></span></td>
+				
+				<td width="100px" class="label">银行扣款合计：</td>
+				<td><span id="bank"></span></td>
+													
 			</tr>										
 		</table>
 	</fieldset>
@@ -429,7 +442,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	</div>
 	<fieldset>
 		<legend> 收款记录</legend>
-		<table class="form" id="history">
+		<table class="display" id="history">
 			<thead>
 				<tr> 
 					<th width="30px">No</th>				
@@ -443,12 +456,24 @@ function uploadPhoto(tableId,tdTable, id) {
 					<th width="40px">操作</th>
 				</tr>
 			</thead>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td id="tbank"></td>
+					<td id="tshiji"></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tfoot>
 		</table>
 	</fieldset>		
 
-	<!-- 
 	<fieldset>
-		<span class="tablename">付款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
+		<span class="tablename">收款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
 		<div class="list">
 			<div class="showPhotoDiv" style="overflow: auto;">
 				<table id="productPhoto" style="width:100%;height:335px">
@@ -457,7 +482,7 @@ function uploadPhoto(tableId,tdTable, id) {
 			</div>
 		</div>	
 	</fieldset>
-	 -->
+
 </form:form>
 
 </div>
