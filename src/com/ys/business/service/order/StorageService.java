@@ -1014,7 +1014,7 @@ public class StorageService extends CommonService {
 		if(notEmpty(contractId))
 			iNewStockIn = istockin - ireqQuantity;//只有合同有“待入”
 		
-		if(iNewStockIn > 0)
+		if(iNewStockIn < 0)
 			iNewStockIn = 0;
 		
 		//虚拟库存=当前库存 + 待入库 - 待出库

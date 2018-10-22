@@ -27,7 +27,7 @@
 			
 		//var scrollHeight = $(document).height(); 
 		var t = $('#TMaterial').DataTable({
-				"paging": action,
+				"paging": false,//action,
 				"iDisplayLength" : 300,
 				"lengthChange":false,
 				//"lengthMenu":[10,150,200],//设置一页展示20条记录

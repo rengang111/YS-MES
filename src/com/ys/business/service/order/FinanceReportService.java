@@ -315,8 +315,8 @@ public class FinanceReportService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		userDefinedSearchCase.put("startDate", monthly.getStartDate());
-		userDefinedSearchCase.put("endDate", monthly.getEndDate());
+		//userDefinedSearchCase.put("startDate", monthly.getStartDate());
+		//userDefinedSearchCase.put("endDate", monthly.getEndDate());
 
 		String statusFlag = request.getParameter("statusFlag");
 		String having = "1=1";
@@ -347,10 +347,15 @@ public class FinanceReportService extends CommonService {
 		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
-		sql = sql.replace("#", having);
+		String sql = getSortKeyFormWeb(data,baseQuery);
+		
+		
+		
+		sql = sql.replace("#1", monthly.getStartDate());
+		sql = sql.replace("#2", monthly.getEndDate());
 		System.out.println("财务核算SQL："+sql);
-		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+		baseQuery.getYsQueryDataNoPage(sql);	
+		//baseQuery.getYsQueryData(sql,having,iStart, iEnd); 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -363,7 +368,102 @@ public class FinanceReportService extends CommonService {
 		modelMap.put("keyword2",key2);		
 		
 		return modelMap;		
+		/*
+		StringBuffer bfsql = new StringBuffer();
+		bfsql.append("SELECT ");
+		bfsql.append("a.YSId,");
+		bfsql.append("a.materialId,A.orderType");
+		bfsql.append("FROM");
+		bfsql.append("(");
+		bfsql.append("SELECT");
+		bfsql.append("a.YSId,");
+		bfsql.append("c.checkInDate,");
+		bfsql.append("a.PIId,");
+		bfsql.append("a.materialId,");
+		bfsql.append("A.orderType");
+		bfsql.append("FROM v_orderlist a");
 
+		bfsql.append(" JOIN ");
+		bfsql.append("(");
+		bfsql.append("SELECT");
+		bfsql.append("	b.YSId AS YSId,");
+		bfsql.append("	b.contractId,");
+		bfsql.append("	a.materialId AS materialId,");
+		bfsql.append("	a.depotId,");
+		bfsql.append("	a.deleteFlag AS deleteFlag,");
+		bfsql.append("	sum( REPLACE (a.quantity, ',', '') ) AS quantity,");
+		bfsql.append("	max(b.checkInDate) AS checkInDate");
+		bfsql.append("FROM");
+		 b_purchasestockindetail a JOIN b_purchaseStockIn b ON a.receiptId = b.receiptId
+		 WHERE a.deleteFlag='0' and checkInDate > '2018-05-25' AND checkInDate < '2018-06-26'
+		 GROUP BY	b.YSId, 	b.contractId,	a.materialId 
+		  
+		)
+		 c 		ON c.materialId=a.materialId AND c.YSId=a.YSId AND c.deleteFlag='0'  
+
+		WHERE A.orderType = '010'
+		) a
+
+		LEFT JOIN b_costbom b  ON a.YSId=b.YSId AND b.deleteFlag='0' 
+		left join 
+		(
+		SELECT
+			a.YSId,	SUM(IF(IFNULL(b.quantity,0)+0>a.orderQty+0,b.quantity,a.orderQty) * a.price) costSum
+		FROM
+
+			(
+			SELECT
+				a.YSId,	a.materialId,	a.price,
+				if(sum(a.unitQuantity)=0,1,sum(a.unitQuantity)) * REPLACE(c.totalQuantity, ',', '' ) AS orderQty
+			FROM
+					b_purchaseplandetail a
+					LEFT JOIN b_orderdetail c ON c.ysid=a.ysid AND (c.deleteFlag = '0')
+					JOIN (
+						SELECT
+							b.YSId AS YSId,
+							b.contractId,
+							a.materialId AS materialId,
+							a.depotId,
+							a.deleteFlag AS deleteFlag,
+							sum( REPLACE (a.quantity, ',', '') ) AS quantity,
+							max(b.checkInDate) AS checkInDate
+						FROM
+						 b_purchasestockindetail a JOIN b_purchaseStockIn b ON a.receiptId = b.receiptId
+						 WHERE a.deleteFlag='0' and checkInDate > '2018-05-25' AND checkInDate < '2018-06-26'
+						GROUP BY b.ysid
+					) c1 ON c1.ysid=a.ysid
+			WHERE a.deleteFlag='0'
+			GROUP BY	a.YSId,	a.materialId 
+			)	 a
+
+		LEFT JOIN v_stockoutdetailgroup b ON a.YSId = b.YSId AND a.materialId = b.materialId
+		WHERE LEFT (a.materialId, 1) <> 'H'
+		GROUP BY a.ysid 
+		)
+		 d 	ON d.ysid=a.ysid 
+
+		LEFT JOIN 
+
+		(
+		SELECT
+			a.YSId,
+			SUM(IFNULL(REPLACE (a.manufactureQuantity,',',''),0) * IFNULL(REPLACE(a.price, ',', ''), 0)) costSum
+		FROM
+			v_purchaseplandetailgroup a,(SELECT * FROM v_mouthday_checkin_ysid b GROUP BY b.ysid) b1 
+		WHERE LEFT (a.materialId, 1) = 'H' AND a.ysid=b1.ysid
+
+		GROUP BY a.ysid 
+		)
+		 f ON f.ysid=a.ysid
+		LEFT JOIN b_pricereference e 													ON e.materialId = a.materialId  AND a.orderType='020' 
+		LEFT JOIN v_orderexpanse_groupby_type g 							ON g.ysid=a.ysid AND g.type='D' 
+
+
+
+
+		ORDER BY a.ysid
+
+*/
 	}
 	
 	@SuppressWarnings("unchecked")

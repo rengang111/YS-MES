@@ -258,6 +258,21 @@ public class BaseQuery {
 	}
 	
 
+	public ArrayList<HashMap<String, String>> getYsQueryDataNoPage(
+			String sql) throws Exception {
+
+		ArrayList<HashMap<String, String>> ysViewData = null;
+		this.sql = sql;
+		
+		ysViewData = getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), 0, 0, true);
+		
+		commonModel.setYsViewData(ysViewData);
+
+		return ysViewData;
+
+	}
+	
+
 	public ArrayList<HashMap<String, String>> getYsQueryData(
 			String sql,List<String> key, int iStart, int iEnd) throws Exception {
 
