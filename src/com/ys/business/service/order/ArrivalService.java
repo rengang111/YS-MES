@@ -223,7 +223,7 @@ public class ArrivalService extends CommonService {
 			//取得到货编号"yyMMdd01"
 			String arrivalId = reqData.getArrivalid();
 			if(isNullOrEmpty(arrivalId)){
-				arrivalId = getArriveId();//重新取得到货编号
+				arrivalId = getNewArriveId();//重新取得到货编号
 			}else{
 				deleteArrivalById(arrivalId);//删除旧数据
 			}
@@ -287,9 +287,18 @@ public class ArrivalService extends CommonService {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	private void insertArrival(
 			B_ArrivalData data) throws Exception{
 			
+		String where = " arrivalId='"+data.getArrivalid() + "' AND deleteFlag='0' ";
+		List<B_ArrivalData> list = dao.Find(where);
+		if(list.size() > 0){
+			//收货编号存在的情况，重新设置ID
+			String arrivalId = getNewArriveId();//重新取得到货编号
+			data.setArrivalid(arrivalId);			
+		}
+
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"ArrivalInsert",userInfo);
 
@@ -299,6 +308,7 @@ public class ArrivalService extends CommonService {
 		data.setRecordid(guid);
 		
 		dao.Create(data);
+		
 	}
 	
 	
@@ -435,9 +445,9 @@ public class ArrivalService extends CommonService {
 	
 	
 	
-	public String getArriveId() throws Exception {
+	public String getNewArriveId() throws Exception {
 
-		String key = CalendarUtil.timeStempDate();
+		String key = CalendarUtil.getCurrentTimeMillis();
 		/*
 		dataModel.setQueryName("getMAXArrivalId");
 		baseQuery = new BaseQuery(request, dataModel);

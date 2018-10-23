@@ -174,6 +174,17 @@ public class CalendarUtil {
 		return sd.format(getSystemDate()); 
 	}	
 
+
+	/**
+	 * 当前时间的日期格式
+	 *
+	 * @return	String	yyyyMMddHHmmssSSS
+	 */
+	public static String getCurrentTimeMillis() {
+		SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		return sd.format(getSystemDate()); 
+	}	
+
 	/**
 	 * ���ڸ�ʽ��
 	 *

@@ -215,14 +215,9 @@ public class ReceiveInspectionService extends CommonService  {
 			String inspectionid = reqData.getInspectionid();
 			contractId = reqData.getContractid();
 			
-			//删除历史数据
-			String where = " inspectionid = '"+inspectionid+"'";
-			try {
-				new B_ReceiveInspectionDetailDao().RemoveByWhere(where);
-			} catch (Exception e) {
-				//e.printStackTrace();
-				// nothing
-			}
+			//删除历史数据		
+			deleteReceivInspectionDetail(inspectionid);
+			
 			//新增进料报检明细
 			for(B_ReceiveInspectionDetailData data:reqList){
 				
@@ -342,18 +337,59 @@ public class ReceiveInspectionService extends CommonService  {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void insertReceivInspectionDetail(
 			B_ReceiveInspectionDetailData data) throws Exception{
-			
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"ReceiveInspctionDetailInsert",userInfo);
-		copyProperties(data,commData);
 
-		guid = BaseDAO.getGuId();
-		data.setRecordid(guid);
+		String where = " inspectionid = '"+data.getInspectionid()
+			+"' AND  materialId='" + data.getMaterialid() + "'";
+			
+		List<B_ReceiveInspectionDetailData> list = 
+				new B_ReceiveInspectionDetailDao().Find(where);
 		
-		new B_ReceiveInspectionDetailDao().Create(data);
+		if(list.size() > 0 ){
+			B_ReceiveInspectionDetailData db = list.get(0);
+			copyProperties(db,data);
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"ReceiveInspctionDetailUpdate",userInfo);
+			copyProperties(db,commData);
+			
+			new B_ReceiveInspectionDetailDao().Store(db);
+		}else{
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"ReceiveInspctionDetailInsert",userInfo);
+			copyProperties(data,commData);
+
+			guid = BaseDAO.getGuId();
+			data.setRecordid(guid);
+			
+			new B_ReceiveInspectionDetailDao().Create(data);
+		}
 	}
+	
+
+	@SuppressWarnings("unchecked")
+	private void deleteReceivInspectionDetail(
+			String inspectionid) throws Exception{
+
+		String where = " inspectionid = '"+inspectionid+"'";	
+		List<B_ReceiveInspectionDetailData> list = 
+				new B_ReceiveInspectionDetailDao().Find(where);
+		
+		if(list.size() > 0 ){
+			for(B_ReceiveInspectionDetailData dt:list){
+
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"ReceiveInspctionDetailInsert",userInfo);
+				copyProperties(dt,commData);
+				
+				new B_ReceiveInspectionDetailDao().Store(dt);
+			}
+		}
+	}
+	
 	
 	
 	private void getArrivaRecord(String arrivalId){
