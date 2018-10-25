@@ -550,6 +550,7 @@ public class PurchasePlanService extends CommonService {
 	/*
 	 * 配件订单的采购方案
 	 */
+	/*
 	private String updatePeiJian(){
 		
 		ts = new BaseTransaction();
@@ -769,7 +770,7 @@ public class PurchasePlanService extends CommonService {
 		
 		return peiYsid;
 	}
-		
+	*/	
 		
 	/*
 	 * insert处理
@@ -1111,14 +1112,17 @@ public class PurchasePlanService extends CommonService {
 		float iWaitOut = stringToFloat(data.getWaitstockout());//待出库
 		float iWaitIn  = stringToFloat(data.getWaitstockin());//待入库
 		
-		iWaitOut = iWaitOut + requirementOut;
-		iWaitIn = iWaitIn + purchaseIn;
-
+		//先判断待入待出，是否为负数
 		if(iWaitOut < 0)
 			iWaitOut = 0;
 		
 		if(iWaitIn < 0)
 			iWaitIn = 0;
+		
+		iWaitOut = iWaitOut + requirementOut;
+		iWaitIn = iWaitIn + purchaseIn;
+
+		
 		
 		//虚拟库存 = 当前库存 + 待入库 - 待出库
 		float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		
@@ -1461,9 +1465,9 @@ public class PurchasePlanService extends CommonService {
 	
 	public Model insertPeiAndView() throws Exception {
 		
-		String YSId = updatePeiJian();//更新采购方案
+		//String YSId = updatePeiJian();//更新采购方案
 		
-		getOrderDetailByYSId("",YSId);
+		//getOrderDetailByYSId("",YSId);
 		
 		return model;
 		
@@ -1487,9 +1491,9 @@ public class PurchasePlanService extends CommonService {
 	
 	public Model updatePeiAndView() throws Exception {
 		
-		String YSId = updatePeiJian();//更新采购方案
+		//String YSId = updatePeiJian();//更新采购方案
 		
-		getOrderDetailByYSId("",YSId);
+		//getOrderDetailByYSId("",YSId);
 		
 		return model;
 		
@@ -2109,6 +2113,7 @@ public class PurchasePlanService extends CommonService {
 			copyProperties(db,commData);
 			new B_PurchasePlanDetailDao().Store(db);//旧数据的删除处理
 
+			//是否需要
 			String materialId = db.getMaterialid();
 			float purchase = 0;//采购量
 			float requirement = -1 * stringToFloat(db.getManufacturequantity());

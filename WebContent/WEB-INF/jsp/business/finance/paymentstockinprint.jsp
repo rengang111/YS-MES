@@ -174,8 +174,9 @@
 										
 		</table>
 	</fieldset>
-	<fieldset>
-		<legend> 入库记录</legend>
+	<div style="clear: both"></div>	
+	<div>
+		<span class="tablename"> 入库记录</span>
 		<div class="list">
 			<table class="display" id="example">	
 				<thead>		
@@ -194,7 +195,7 @@
 				</thead>										
 			</table>
 		</div>
-	</fieldset>
+	</div>
 		<div class="" id="subidDiv" style="min-height: 300px;">
 			<table id="productPhoto" class="phototable">
 				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
