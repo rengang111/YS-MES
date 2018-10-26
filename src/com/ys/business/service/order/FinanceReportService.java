@@ -353,6 +353,7 @@ public class FinanceReportService extends CommonService {
 		
 		sql = sql.replace("#1", monthly.getStartDate());
 		sql = sql.replace("#2", monthly.getEndDate());
+		sql = sql.replace("#3", having);
 		System.out.println("财务核算SQL："+sql);
 		baseQuery.getYsQueryDataNoPage(sql);	
 		//baseQuery.getYsQueryData(sql,having,iStart, iEnd); 

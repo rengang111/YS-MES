@@ -113,7 +113,7 @@
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    					    			
-		    			return floatToCurrency(data);
+		    			return floatToSymbol(data,row["currency"]);
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
 		    					    			

@@ -933,8 +933,8 @@ public class StockOutService extends CommonService {
 		
 		for(B_StockOutDetailData dt:list){
 			//更新DB
-			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"PurchaseStockInUpdate",userInfo);
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"PurchaseStockInDelete",userInfo);
 			copyProperties(dt,commData);
 			
 			dao.Store(dt);
@@ -1232,7 +1232,7 @@ public class StockOutService extends CommonService {
 		
 		//更新DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-				"删除成品出库",userInfo);
+				"删除领料",userInfo);
 		copyProperties(db,commData);
 		
 		new B_StockOutDao().Store(db);
