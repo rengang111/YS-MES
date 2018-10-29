@@ -2032,7 +2032,7 @@ public class PurchasePlanService extends CommonService {
 			String reqMate = db.getMaterialid();
 			String reqSubNo = db.getSubbomno();
 			String reqSupp = db.getSupplierid();
-			String reqPurchaseQty = db.getPurchasequantity();//采购量
+		//	String reqPurchaseQty = db.getPurchasequantity();//采购量 10.28采购量的变化不应该作为删除对象
 			if(isNullOrEmpty(reqMate))
 				continue;
 			
@@ -2042,12 +2042,12 @@ public class PurchasePlanService extends CommonService {
 				String dbMate = web.getMaterialid();
 				String dbSubNo = web.getSubbomno();  
 				String dbSupp = web.getSupplierid();
-				String dbPurch = web.getPurchasequantity();
+				//String dbPurch = web.getPurchasequantity();
 				
 				if( reqMate.equals(dbMate)  	&& 
 					reqSubNo.equals(dbSubNo) 	&&
-					reqSupp.equals(dbSupp) 		&&
-					reqPurchaseQty.equals(dbPurch)
+					reqSupp.equals(dbSupp) 	//	&&
+					//reqPurchaseQty.equals(dbPurch)
 				){
 					
 					web.setContractflag(db.getContractflag());//
@@ -2177,6 +2177,12 @@ public class PurchasePlanService extends CommonService {
 				
 				updatePurchaseOrderDetail(contract);
 			}
+			
+			updateMaterial(
+					"采购方案删除合同（页面被删除的物料且未执行）",
+					materialId, 
+					((-1) * quantity),
+					0);
 		
 		}
 		

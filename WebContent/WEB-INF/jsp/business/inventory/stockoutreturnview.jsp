@@ -112,11 +112,7 @@
 		
 		$("#doEdit").click(function() {
 			
-			var ysid = $('#requisition\\.ysid').val();
-			if(ysid == '' || $.trim(ysid) == ''){
-				$().toastmessage('showWarningToast', "请选择要退还的耀升编号。");
-				return;
-			}
+		
 			$('#formModel').attr("action",
 					"${ctx}/business/requisition?methodtype=stockoutReturnInsert");
 			//$('#formModel').submit();

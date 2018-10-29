@@ -67,37 +67,7 @@
 					location.href = url;		
 		});
 
-		$("#doEdit").click(function() {
-			var YSId = '${order.YSId}';
-			var bomId=$('#bomId').text();
-			var url = "${ctx}/business/requirement?methodtype=editRequirement&YSId="+YSId+"&bomId="+bomId;
-			location.href = url;		
-		});
-		
-		$("#doContract").click(function() {
-			var YSId = '${order.YSId}';
-			var materialId='${order.materialId}';
-			var url = "${ctx}/business/contract?methodtype=creatPurchaseOrder&YSId="+YSId+"&materialId="+materialId;
-			//location.href = url;
-			$.ajax({
-				type : "post",
-				url : url,
-				//async : false,
-				//data : null,
-				dataType : "text",
-				"contentType": "application/json; charset=utf-8",
-				success : function(data) {			
-
-					$().toastmessage('showNoticeToast', "保存成功。");
-					contractTableView();//					
-		  			//$('#contractTable').DataTable().ajax.reload(null,false);
-				},
-				 error:function(XMLHttpRequest, textStatus, errorThrown){
-					alert(textStatus)
-				}
-			});	
-		});
-		
+	
 		$("#print").click(function() {
 			var YSId = '${order.YSId}';
 			var bomId=$('#bomId').text();

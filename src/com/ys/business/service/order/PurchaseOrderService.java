@@ -536,13 +536,18 @@ public class PurchaseOrderService extends CommonService {
 						boolean arrivalFlag = checkContractArrival(contractId,materialId1);						
 						//没有收货记录
 						if(arrivalFlag){
+							
+							//String oldDb1Qty = oldDb1.getQuantity();
+							//float quantity2 = stringToFloat(quantity) - stringToFloat(oldDb1Qty);									
+							//if(quantity2 != 0)
+							
+							updateMaterial("合同更新处理",materialId1,quantity,"0");//更新虚拟库存
+							
 							oldDb1.setPrice(dt.get("price"));
 							oldDb1.setQuantity(quantity);
 							oldDb1.setTotalprice(dt.get("totalPrice"));
 							oldDb1.setUnitquantity(dt.get("unitQuantity"));
 							updatePurchaseOrderDetail(oldDb1);
-							
-							updateMaterial("合同更新处理",materialId1,quantity,"0");//更新虚拟库存
 						}
 					}										
 				}		

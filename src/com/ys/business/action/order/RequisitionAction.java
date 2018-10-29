@@ -266,6 +266,10 @@ public class RequisitionAction extends BaseAction {
 				stockoutReturnDetail();
 				rtnUrl = "/business/inventory/stockoutreturnview";
 				break;
+			case "stockoutReturnEditInit"://领料退货编辑
+				stockoutReturnAddInit();
+				rtnUrl = "/business/inventory/stockoutreturnadd";
+				break;
 			case "partsMainInit"://配件订单领料
 				doInit();
 				rtnUrl = "/business/inventory/requisitionpartsmain";
