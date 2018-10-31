@@ -128,11 +128,11 @@
 		    			var orderQty = unit * order;
 		    			var quantity = 0;
 		    			//领料 >= 需求，取领料，否则取需求
-		    			if(stockoutQty >= orderQty){
-		    				quantity = stockoutQty;
-		    			}else{
+		    			//if(stockoutQty >= orderQty){
+		    			//	quantity = stockoutQty;
+		    			//}else{
 		    				quantity = orderQty;
-		    			}
+		    			//}
 		    			var total = floatToCurrency( quantity * price );
 		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].totalprice" id="costBomList'+rowIndex+'.totalprice"  value="'+total+'" />';
 		    			
@@ -253,12 +253,16 @@
 		var cost = 0;
 		$('#example2 tbody tr').each (function (){
 			
-			var stockOutQty = $(this).find("td").eq(5).text();//领料数量
-			var orderQty = $(this).find("td").eq(4).text();//订单数量
+			var stockOutQty   = $(this).find("td").eq(5).text();//领料数量
+			var orderQty      = $(this).find("td").eq(4).text();//订单数量
+			var contractValue = $(this).find("td").eq(8).text();//领料金额
 			
 			stockOutQty = currencyToFloat(stockOutQty);
 			orderQty= currencyToFloat(orderQty);
-						
+
+			contractValue= currencyToFloat(contractValue);
+			cost = cost + contractValue;
+			
 			if( stockOutQty > orderQty){
 				
 				$(this).addClass('error');
@@ -268,7 +272,7 @@
 		
 
 		var labolCost = $('#costBom\\.labolcost').val();
-		
+
 		//var cost = currencyToFloat(labolCost) + mateCost;
 		var mateCost = cost - currencyToFloat(labolCost);
 		

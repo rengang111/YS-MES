@@ -6,7 +6,8 @@
 <title>日常采购-新建(从物料管理进入)</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
-		
+
+	var ysidValue=true;
 	var counter = 0;
 	var moduleNum = 0;
 	
@@ -239,6 +240,11 @@
 		
 		$("#insert").click(
 				function() {
+					
+					if(ysidValue == false){
+						$().toastmessage('showWarningToast', "请修正输入错误再提交。");
+						return;				
+					}
 			$('#attrForm').attr("action",
 					"${ctx}/business/contract?methodtype=createRoutineContract");
 			$('#attrForm').submit();
@@ -261,6 +267,32 @@
 
 		//列合计
 		weightsum();
+		
+		$("#contract\\.ysid").change(function() {
+			
+			var ysid = $(this).val();
+			if(!checkEnglishNumber(ysid)){
+				$(this).addClass('error');
+				$().toastmessage('showWarningToast', "耀升编号只能是入英数字。");
+				ysidValue = false;
+				return false;;
+			}else{
+				$(this).val($(this).val().toUpperCase());
+				ysidValue = true;
+				$(this).removeClass('error');
+			}
+			if (ysid.length > 12) {
+				$().toastmessage('showWarningToast', "耀升编号不应超过 12 个英数字。");
+				ysidValue = false;
+				$(this).addClass('error');
+				return false;;
+			}else{
+				$(this).val($(this).val().toUpperCase());
+				ysidValue = true;
+				$(this).removeClass('error');
+				
+			}
+		});
 
 	});	
 	

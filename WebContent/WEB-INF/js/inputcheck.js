@@ -175,9 +175,9 @@
 		return reg.test(str);
 	}
 	
-	//英数字(_.,:)
+	//英数字(_.,:-)
 	function checkEnglishNumber(str) {
-		var reg = /^(?![_,])[a-zA-Z0-9_.,:]+$/;
+		var reg = /^(?![_,])[a-zA-Z0-9_.,:-]+$/;
 		return reg.test(str);
 	}
 	

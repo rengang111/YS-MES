@@ -6,6 +6,8 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
+var ysidValue=true;
+
 function materialAjax(sessionFlag) {
 	var table = $('#TMaterial').dataTable();
 	if(table) {
@@ -90,6 +92,30 @@ function materialAjax(sessionFlag) {
 				showOtherMonths:true,
 		}); 
 		
+		$("#requisition\\.ysid").change(function() {
+			
+			var ysid = $(this).val();
+			if(!checkEnglishNumber(ysid)){
+				$(this).addClass('error');
+				$().toastmessage('showWarningToast', "耀升编号只能是入英数字。");
+				ysidValue = false;
+				return false;;
+			}else{
+				$(this).val($(this).val().toUpperCase());
+				ysidValue = true;
+				$(this).removeClass('error');
+			}
+			if (ysid.length > 12) {
+				$().toastmessage('showWarningToast', "耀升编号不应超过 12 个英数字。");			ysidValue = false;
+				$(this).addClass('error');
+				return false;;
+			}else{
+				$(this).val($(this).val().toUpperCase());
+				ysidValue = true;
+				$(this).removeClass('error');
+				
+			}
+		});
 		
 		$(".goBack").click(
 				function() {
@@ -106,13 +132,12 @@ function materialAjax(sessionFlag) {
 			var ysid = $('#requisition\\.ysid').val();
 			quantity = myTrim(quantity);
 			quantity = currencyToFloat(quantity);
-			/*
-			if(ysid == '' || ysid == null){
-				if(confirm("未输入耀升编号，要关联吗？")){
-					return;
-				}
+			
+			if(ysidValue == false){
+				$().toastmessage('showWarningToast', "请修正输入错误再提交。");
+				return;				
 			}
-			*/
+			
 			//if(ysid == '' || ysid == null){
 			//	$().toastmessage('showWarningToast', "请输入耀升编号。");
 			//	return;
@@ -165,7 +190,7 @@ function materialAjax(sessionFlag) {
 		}
 		
 
-		autocomplete();
+		//autocomplete();
 		
 	});
 
@@ -284,6 +309,7 @@ function materialAjax(sessionFlag) {
 </fieldset>
 </form:form>
 <script>
+/*
 function autocomplete(){
 	
 	$("#requisition\\.ysid").autocomplete({
@@ -325,6 +351,7 @@ function autocomplete(){
 	
 	});
 }
+*/
 </script>
 </div>
 </div>
