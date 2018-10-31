@@ -76,7 +76,14 @@
 				});
 		
 		$("#doEdit").click(
+				
 				function() {
+					var stockinQty =  $("#stockinQty").val();
+					
+					if(stockinQty > '0'){
+						$().toastmessage('showWarningToast', "该物料已入库,不能修改。");
+						return;
+					}
 					var keyBackup = $('#keyBackup').val();				
 					$('#formModel').attr("action", "${ctx}/business/receiveinspection?methodtype=updateInit"+"&keyBackup="+keyBackup);
 					$('#formModel').submit();
@@ -87,7 +94,7 @@
 			var stockinQty =  $("#stockinQty").val();
 			
 			if(stockinQty > '0'){
-				alert("该物料已入库,不能删除。")
+				$().toastmessage('showWarningToast', "该物料已入库,不能删除。");
 				return;
 			}
 			

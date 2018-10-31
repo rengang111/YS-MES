@@ -114,7 +114,7 @@
 	    			//累计收货
 	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
 	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);	
-	    			var inspectRtnQty = currencyToFloat(row["sumReturnQty"]);	 
+	    			var inspectRtnQty = 0;//currencyToFloat(row["sumReturnQty"]);	 
 	    			var returnQty = stockinRtnQty + inspectRtnQty;
 	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );	
 	    			

@@ -254,14 +254,12 @@
 		$('#example2 tbody tr').each (function (){
 			
 			var stockOutQty = $(this).find("td").eq(5).text();//领料数量
-			var contractValue = $(this).find("td").eq(8).text();//领料金额
+			var orderQty = $(this).find("td").eq(4).text();//订单数量
 			
 			stockOutQty = currencyToFloat(stockOutQty);
-			contractValue= currencyToFloat(contractValue);
-			
-			cost = cost + contractValue;
-			
-			if( stockOutQty == 0){
+			orderQty= currencyToFloat(orderQty);
+						
+			if( stockOutQty > orderQty){
 				
 				$(this).addClass('error');
 			}

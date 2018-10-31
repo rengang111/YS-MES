@@ -162,14 +162,16 @@
 		var cost = 0;
 		$('#example2 tbody tr').each (function (){
 			
-			var contractValue = $(this).find("td").eq(5).text();//领料金额
+			var stockValue = $(this).find("td").eq(5).text();//领料金额
+			var orderValue = $(this).find("td").eq(4).text();//订单数量
+			//var contractValue = $(this).find("td").eq(5).text();//订单数量
 			
-			contractValue= currencyToFloat(contractValue);
+			stockValue= currencyToFloat(stockValue);
+			orderValue= currencyToFloat(orderValue);
 			//alert("计划用量+已领量+库存:"+fjihua+"---"+fyiling+"---"+fkucun)
 			
-			cost = cost + contractValue;
 			
-			if( contractValue == 0){
+			if( stockValue > orderValue){
 				
 				$(this).addClass('error');
 			}
