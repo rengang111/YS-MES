@@ -1120,5 +1120,18 @@ public class CommonService extends BaseService {
     	}
     	return map;
 	}
+    
+    public boolean isGBK(String str) {
+    	boolean rtn = true;
+    	if(!(java.nio.charset.Charset.forName("GBK").newEncoder().canEncode(str))){
+			try {
+				new String(str.getBytes("ISO-8859-1"),"UTF-8");
+			} catch (Exception e) {
+				rtn = false;
+			}
+		}
+    	
+    	return rtn;
+    }
 
 }

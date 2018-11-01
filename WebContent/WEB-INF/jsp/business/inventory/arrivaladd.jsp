@@ -253,7 +253,8 @@
 				$().toastmessage('showWarningToast', "请先修正页面中的错误输入，再保存。");
 				return
 			}
-			
+
+			$("#insert").attr("disabled", "disabled");
 			var makeType=$('#makeType').val();	
 			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert"+ "&makeType="+makeType);
 			$('#formModel').submit();

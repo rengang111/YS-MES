@@ -200,6 +200,7 @@
 		$("#doCreate").click(
 				function() {
 
+					$("#doCreate").attr("disabled", "disabled");
 				$('#formModel').attr("action", "${ctx}/business/financereport?methodtype=costAccountingSave");
 				$('#formModel').submit();
 	

@@ -590,7 +590,7 @@ public class PaymentService extends CommonService {
 		
 		try {
 			ts.begin();
-			
+			System.out.println("新建付款申请："+CalendarUtil.getSystemDate());
 			B_PaymentData reqData = reqModel.getPayment();
 			List<B_PaymentDetailData> reqDataList = reqModel.getPaymentList();
 			List<B_PurchaseOrderData> contractList = reqModel.getContractList();
@@ -650,6 +650,7 @@ public class PaymentService extends CommonService {
 		
 		try {
 			ts.begin();
+			System.out.println("付款完成："+CalendarUtil.getSystemDate());
 			
 			B_PaymentData reqData = reqModel.getPayment();
 			B_PaymentHistoryData history = reqModel.getHistory();
@@ -719,8 +720,9 @@ public class PaymentService extends CommonService {
 			payment.setRecordid(guid);
 			payment.setApprovalstatus("010");//未审核
 			payment.setApplicant(userInfo.getUserId());//默认为登陆者
-			
+			System.out.println("付款Insert前："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 			new B_PaymentDao().Create(payment);
+			System.out.println("付款Insert后："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 		}else{
 			//更新
 			db = list.get(0);		
@@ -729,8 +731,10 @@ public class PaymentService extends CommonService {
 					"paymentRequestUpdate",userInfo);
 			copyProperties(db,commData);
 			db.setApplicant(userInfo.getUserId());//默认为登陆者
-			
+
+			System.out.println("付款Update前："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 			new B_PaymentDao().Store(db);
+			System.out.println("付款Update后："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 		}
 		
 	}
@@ -754,8 +758,10 @@ public class PaymentService extends CommonService {
 			copyProperties(detail,commData);
 			guid = BaseDAO.getGuId();
 			detail.setRecordid(guid);
-					
+
+			System.out.println("付款明细Insert前："+detail.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 			new B_PaymentDetailDao().Create(detail);
+			System.out.println("付款明细Insert后："+detail.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 		}else{
 			//更新
 			db = list.get(0);
@@ -763,8 +769,10 @@ public class PaymentService extends CommonService {
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"paymentRequestUpdate",userInfo);
 			copyProperties(db,commData);
-			
+
+			System.out.println("付款明细Update前："+detail.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 			new B_PaymentDetailDao().Store(db);
+			System.out.println("付款明细Update后："+detail.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 		}		
 	}
 	

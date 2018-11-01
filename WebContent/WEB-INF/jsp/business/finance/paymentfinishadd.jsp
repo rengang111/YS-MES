@@ -86,6 +86,7 @@
 		
 		$("#insert").click(
 				function() {
+					$("#insert").attr("disabled", "disabled");
 			var suplus = $('#suplus').val();
 			var paymentamount = $('#history\\.paymentamount').val();
 			paymentamount = currencyToFloat(paymentamount);
@@ -342,7 +343,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	</fieldset>	
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >确认付款</a>
+		<button class="DTTT_button" id="insert" >确认付款</button>
 		<a class="DTTT_button DTTT_button_text" id="history" >查看付款记录</a>
 		<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a>
 	</div>

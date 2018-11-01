@@ -219,6 +219,7 @@
 	}
 	
 	function doInsert() {
+		$("#submit12").attr("disabled", "disabled");
 			var insertFlag = $("#insertFlag").val();	
 		$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalInsert"+"&insertFlag="+insertFlag);
 		$('#formModel').submit();

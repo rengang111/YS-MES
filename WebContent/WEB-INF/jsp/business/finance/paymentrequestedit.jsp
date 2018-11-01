@@ -187,6 +187,7 @@
 		
 		$("#insert").click(
 				function() {
+					$("#insert").attr("disabled", "disabled");
 					var beforeFlag=$("#beforeFlag").val();		
 			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert"+"&paymentTypeId="+paymentTypeId);
 			$('#formModel').submit();
@@ -464,8 +465,8 @@ function uploadPhoto(tableId,tdTable, id) {
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >提交申请</a>
-		<a class="DTTT_button DTTT_button_text" id="insert" onclick="doPrintReceiptList();return false;">打印入库单</a>		
+		<button class="DTTT_button DTTT_button_text" id="insert" >提交申请</button>
+		<a class="DTTT_button DTTT_button_text" onclick="doPrintReceiptList();return false;">打印入库单</a>		
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>

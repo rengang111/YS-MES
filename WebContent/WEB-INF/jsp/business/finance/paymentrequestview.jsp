@@ -430,7 +430,7 @@ function photoView(id, tdTable, count, data) {
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
 	 	<a class="DTTT_button DTTT_button_text" id="update" >修改</a>
-		<a class="DTTT_button DTTT_button_text" id="insert" onclick="doPrintReceiptList();return false;">打印入库单</a>
+		<a class="DTTT_button DTTT_button_text" id="printbtn" onclick="doPrintReceiptList();return false;">打印入库单</a>
 		
 	 	<a class="DTTT_button DTTT_button_text" id="doDelete" >删除申请</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
