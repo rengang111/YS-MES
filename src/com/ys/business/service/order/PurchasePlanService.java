@@ -1082,6 +1082,95 @@ public class PurchasePlanService extends CommonService {
 		
 
 	}	
+	
+	/**
+	 * 更新虚拟库存:生成物料需求时增加“待出库”,
+	 * 配合采购方案更新时的删除，新增，成对出现，
+	 * 所以，此时不需要判断待出数的负数关系
+	 * @param action D:删除，I:新增
+	 * @param action
+	 * @param materialId
+	 * @param purchaseIn
+	 * @param requirementOut
+	 * @throws Exception
+	 */
+		@SuppressWarnings("unchecked")
+		private void updateMaterial2(
+				String ysid,
+				String actinFlag,
+				String action,
+				String materialId,
+				float purchaseIn,
+				float requirementOut) throws Exception{
+		
+			B_MaterialData data = new B_MaterialData();
+			B_MaterialDao dao = new B_MaterialDao();
+			
+			String where = "materialId ='"+ materialId + "' AND deleteFlag='0' ";
+			
+			List<B_MaterialData> list = 
+					(List<B_MaterialData>)dao.Find(where);
+			
+			if(list ==null || list.size() == 0){
+				return ;
+			}
+
+			data = list.get(0);
+			
+			insertStorageHistory(data,action,"YSId:"+ysid+",待入【"+String.valueOf(purchaseIn) +"】待出【"+ String.valueOf(requirementOut)+"】");//保留更新前的数据
+			
+			//当前库存数量
+			float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
+			float iWaitOut = stringToFloat(data.getWaitstockout());//待出库
+			float iWaitIn  = stringToFloat(data.getWaitstockin());//待入库
+			
+			
+			
+			iWaitOut = iWaitOut + requirementOut;
+			iWaitIn = iWaitIn + purchaseIn;
+
+			//采购方案处理完后，确认其待出库是否为负数，如是，重新计算
+			if(("I").equals(actinFlag)){
+				if(iWaitOut < 0){
+					//重新计算正确的待出量
+					float dbWaitout = resetWatiOutQuantityFromPlan(materialId);
+					System.out.println("重新计算待出量："+CalendarUtil.fmtDate()+",耀升："+ysid+",物料："+materialId+" 修正前数量："+iWaitOut+" 修正后数量："+dbWaitout);
+					iWaitOut = dbWaitout;
+				}
+			}
+			
+			//虚拟库存 = 当前库存 + 待入库 - 待出库
+			float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		
+			
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"PurchasePlanInsert",userInfo);
+			copyProperties(data,commData);
+			
+			data.setAvailabeltopromise(String.valueOf(availabeltopromise));//虚拟库存
+			data.setWaitstockout(String.valueOf(iWaitOut));//待出库
+			data.setWaitstockin(String.valueOf(iWaitIn));//待入库
+			
+			dao.Store(data);
+			
+		}
+		
+	private float resetWatiOutQuantityFromPlan(String materialId) throws Exception{
+		
+		float rtnValue = 0;
+		this.dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getWatiOutQuantityFromPlan");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("materialId", materialId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0 ){
+			String out = dataModel.getYsViewData().get(0).get("waitout");
+			rtnValue = stringToFloat(out);					
+		}
+		return rtnValue;
+	}
 		
 	//更新虚拟库存:生成物料需求时增加“待出库”
 	@SuppressWarnings("unchecked")
@@ -1105,24 +1194,23 @@ public class PurchasePlanService extends CommonService {
 
 		data = list.get(0);
 		
-		insertStorageHistory(data,action,String.valueOf(requirementOut));//保留更新前的数据
+		insertStorageHistory(data,action,"待入【"+String.valueOf(purchaseIn) +"】待出【"+ String.valueOf(requirementOut)+"】");//保留更新前的数据
 		
 		//当前库存数量
 		float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
 		float iWaitOut = stringToFloat(data.getWaitstockout());//待出库
 		float iWaitIn  = stringToFloat(data.getWaitstockin());//待入库
 		
+		iWaitOut = iWaitOut + requirementOut;
+		iWaitIn = iWaitIn + purchaseIn;
+
 		//先判断待入待出，是否为负数
 		if(iWaitOut < 0)
 			iWaitOut = 0;
 		
 		if(iWaitIn < 0)
 			iWaitIn = 0;
-		
-		iWaitOut = iWaitOut + requirementOut;
-		iWaitIn = iWaitIn + purchaseIn;
-
-		
+				
 		
 		//虚拟库存 = 当前库存 + 待入库 - 待出库
 		float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		
@@ -2093,7 +2181,7 @@ public class PurchasePlanService extends CommonService {
 			String materialId = db.getMaterialid();
 			float requirement = stringToFloat(db.getQuantity()) * (-1);//还原到更新前
 			float purchase = 0;//采购量
-			updateMaterial("二级BOM(原材料)的待出库减少处理（旧数据）",materialId,purchase,requirement);
+			updateMaterial2(YSId,"D","二级BOM(原材料)的待出库减少处理（旧数据）",materialId,purchase,requirement);
 		}
 		
 	}
@@ -2117,7 +2205,7 @@ public class PurchasePlanService extends CommonService {
 			String materialId = db.getMaterialid();
 			float purchase = 0;//采购量
 			float requirement = -1 * stringToFloat(db.getManufacturequantity());
-			updateMaterial("采购方案（旧数据删除）",materialId,purchase,requirement);
+			updateMaterial2(db.getYsid(),"D","采购方案（旧数据删除）",materialId,purchase,requirement);
 		}
 		
 	}
@@ -2131,57 +2219,60 @@ public class PurchasePlanService extends CommonService {
 			String YSId,
 			List<B_PurchasePlanDetailData> deleteList) throws Exception{
 		
-		for(B_PurchasePlanDetailData dt:deleteList){
+		for(B_PurchasePlanDetailData delete:deleteList){
 			
-			String materialId = dt.getMaterialid();
-			float purchaseQty = stringToFloat(dt.getPurchasequantity());
+			String materialId = delete.getMaterialid();			
+			String strwhere = " YSId = '" + YSId +"' AND materialId = '" 
+					+ materialId  +"' AND deleteflag = '0'";
 			
-			String strwhere = " YSId = '" + YSId +"' AND materialId = '" + materialId  +"' AND deleteflag = '0'";
-			List<B_PurchaseOrderDetailData> detail = 
+			List<B_PurchaseOrderDetailData> detailDB = 
 					getPurchaseOrderDetailFromDB(strwhere);
 			
-			if(detail == null || detail.size() == 0)
+			if(detailDB == null || detailDB.size() == 0)
 				continue;
 
-			B_PurchaseOrderDetailData contract = detail.get(0);
-			String contractId = contract.getContractid();
-			float contractQty = stringToFloat(contract.getQuantity());
-			float contractPrice = stringToFloat(contract.getPrice());
-			float quantity = contractQty - purchaseQty;
+			B_PurchaseOrderDetailData contractDB = detailDB.get(0);
+			String contractDbId = contractDB.getContractid();
+			float contractDbQty = stringToFloat(contractDB.getQuantity());
+			//float contractPrice = stringToFloat(contractDB.getPrice());
+			//float quantityDiff = contractDbQty - purchaseWebQty;//差分:页面入力与DB的差分
 			
-			String arrivalFlag = checkContractEnforcement(contractId,materialId);
+			String arrivalFlag = checkContractEnforcement(contractDbId,materialId);
 			if(("保留").equals(arrivalFlag)){
 				continue;
 			}
-			if(quantity <= 0){//
+			//if(quantityDiff <= 0){//
 
-				String where2 = " YSId = '" + YSId +"' AND contractId = '" + contractId  +"' AND deleteflag = '0'";
-				List<B_PurchaseOrderDetailData> detailList = 
-						getPurchaseOrderDetailFromDB(where2);
+			String where2 = " YSId = '" + YSId +"' AND contractId = '" 
+					+ contractDbId  +"' AND deleteflag = '0'";
+			
+			List<B_PurchaseOrderDetailData> detailList = 
+					getPurchaseOrderDetailFromDB(where2);
+			
+			if(detailList.size() > 1){
+				//一份合同有多个物料,仅删除合同明细
+				deletePurchaseOrderDetail(contractDB);
 				
-				if(detailList.size() > 1){
-					//一份合同有多个物料,仅删除合同明细
-					deletePurchaseOrderDetail(contract);
-					
-				}else{
-					//一份合同只有一个物料,删除明细和头表
-					List<B_PurchaseOrderData> contractDBList =  
-							getPurchaseOrderFromDB(YSId,contractId);
-					
-						deletePurchaseOrder(contractDBList.get(0));
-						deletePurchaseOrderDetail(contract);
-				}
-			}else{//套件产品,同一个物料重复出现,只删除其中一个的话,更新剩下的数量
-				contract.setQuantity(String.valueOf(quantity));
-				contract.setTotalprice(String.valueOf(quantity * contractPrice));
+			}else{
+				//一份合同只有一个物料,删除明细和头表
+				List<B_PurchaseOrderData> contractDBList =  
+						getPurchaseOrderFromDB(YSId,contractDbId);
 				
-				updatePurchaseOrderDetail(contract);
+				deletePurchaseOrder(contractDBList.get(0));
+				deletePurchaseOrderDetail(contractDB);
 			}
+			
+			//}else{//套件产品,同一个物料重复出现,只删除其中一个的话,更新剩下的数量
+			//	contractDB.setQuantity(String.valueOf(quantity));
+			//	contractDB.setTotalprice(String.valueOf(quantity * contractPrice));
+				
+			//	updatePurchaseOrderDetail(contractDB);
+			//}
 			
 			updateMaterial(
 					"采购方案删除合同（页面被删除的物料且未执行）",
 					materialId, 
-					((-1) * quantity),
+					((-1) * contractDbQty),
 					0);
 		
 		}
@@ -2243,7 +2334,7 @@ public class PurchasePlanService extends CommonService {
 
 			//更新虚拟库存
 			float requirement = stringToFloat(detail.getManufacturequantity());
-			updateMaterial("采购方案（新数据追加）",materilid,0,requirement);
+			updateMaterial2(detail.getYsid(),"I","采购方案（新数据追加）",materilid,0,requirement);
 			
 		}//新数据:采购方案处理
 	}
@@ -2281,7 +2372,7 @@ public class PurchasePlanService extends CommonService {
 			insertRawRequirement(raw);
 			
 			//更新虚拟库存
-			updateMaterial("二级BOM(原材料)物料需求表更新",rawmater,purchase,requirement);						
+			updateMaterial2(YSId,"I","二级BOM(原材料)物料需求表更新",rawmater,purchase,requirement);						
 		}
 		
 	}

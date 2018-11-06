@@ -385,8 +385,11 @@ public class PurchaseOrderService extends CommonService {
 			}
 			updatePurchasePlanDetail(reqMaterail);//更新采购方案,标识出本次创建合同的物料
 
+			//过滤掉重复的供应商
 			reqSupplierList = removeDuplicate(reqSupplier);
 			String materialId = request.getParameter("materialId");
+			
+			//取得页面录入的合同交期
 			String contractDelivery = request.getParameter("contractDelivery");
 			
 			//采购合同****************************************************
@@ -400,6 +403,7 @@ public class PurchaseOrderService extends CommonService {
 			for(B_PurchaseOrderData  contract:contractDBList){
 				String contractId = contract.getContractid();
 				String supplierId = contract.getSupplierid();
+				
 				//只处理页面选择的供应商
 				if(!(isExsitCheck(supplierId,reqSupplierList))){
 					continue;

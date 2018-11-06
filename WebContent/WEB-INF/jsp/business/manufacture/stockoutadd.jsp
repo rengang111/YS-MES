@@ -49,7 +49,7 @@
 					success: function(data){					
 						fnCallback(data);
 						
-						foucsInit();
+						//foucsInit();
 						
 						setDepotId();//设置物料的默认仓库
 					},
@@ -139,12 +139,33 @@
 	    		{"targets":7,"render":function(data, type, row){//本次领料
 	    			
 					var index=row["rownum"];
-					var quantity = currencyToFloat(row["requisitionQty"]);
-					var stockoutQty = currencyToFloat(row["stockoutQty"]);
-					var shengyu = floatToCurrency( quantity - stockoutQty );
-					if(shengyu < 0)
-						shengyu = 0;
-					var inputTxt = '<input type="text" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+shengyu+'" class="num mini"/>';
+					var quantity       = currencyToFloat(row["requisitionQty"]);
+					var stockoutQty    = currencyToFloat(row["stockoutQty"]);
+					var quantityOnHand = currencyToFloat(row["quantityOnHand"] );	
+					var shengyu        = currencyToFloat(quantity - stockoutQty );
+					var benCi = 0;
+					
+					if(quantityOnHand <= 0){
+						benCi = 0;
+					}else if(quantityOnHand <= shengyu){
+						benCi = quantityOnHand;
+					}else{
+						benCi = shengyu;
+					}
+					var className="num mini";
+					if(benCi <= 0){
+						benCi = 0;
+						if(shengyu > 0)
+							className="num mini error";// class="num mini"
+					}
+					var inputTxt = '';
+					if(benCi == 0){
+						inputTxt = '0' + '<input class="'+className+'" type="hidden" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+benCi+'" />';												
+					}else if(benCi == 0 && quantityOnHand <= 0){
+						inputTxt = '0' + '<input class="'+className+'" type="hidden" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+benCi+'" />';							
+					}else{
+						inputTxt = '<input class="'+className+'" type="text" id="stockList'+index+'.quantity" name="stockList['+index+'].quantity" value="'+benCi+'" />';							
+					}
 				
 					return inputTxt;
                 }},
@@ -172,27 +193,52 @@
 		t.on('change', 'tr td:nth-child(8)',function() {
 
 			var $td = $(this).parent().find("td");
-			
+
+			var $oOnhand  = $td.eq(3);//库存
 			var $oArrival = $td.eq(5);//计划
 			var $oyiling  = $td.eq(6);//已领料
 			var $oCurrQty = $td.eq(7).find("input");//本次领料
 
+			var fOnhand = currencyToFloat($oOnhand.text());
 			var fArrival  = currencyToFloat($oArrival.text());
 			var fYiling   = currencyToFloat($oyiling.text());
-			var fCurrQty  = currencyToFloat($oCurrQty.val());	
-			
+			var benCi  = currencyToFloat($oCurrQty.val());	
+
 			//最多允许领料数量 = 计划 - 已领料
-		 	var fMaxQuanty = fArrival - fYiling;
-			if(fMaxQuanty < 0)
-				fMaxQuanty = 0;
+		 	var shengyu = fArrival - fYiling;
+			//var benCi = 0;
+			
+			if(fOnhand <= 0){
+				$().toastmessage('showWarningToast', "当前没有库存数！");
+				benCi = 0;
+			}else if(fOnhand >= shengyu ){
+				if(benCi > shengyu){
+					$().toastmessage('showWarningToast', "领料数量不能超过需求量！");
+					benCi = shengyu;
+				}
+			}else if(fOnhand < shengyu ){
+				if(benCi > shengyu || benCi > fOnhand){
+					$().toastmessage('showWarningToast', "领料数量不能超过库存数！");
+					benCi = fOnhand;
+				}
+			}
+			
+			//var className="num mini";
+			//if(benCi <= 0){
+			//	benCi = 0;
+			//	if(shengyu > 0)
+			//		className="num mini error";// class="num mini"
+			//}
+			
+			
 			//alert("fArrival--fYiling--fMaxQuanty--fCurrQty:"+fArrival+"---"+fYiling+"--"+fMaxQuanty+"---"+fCurrQty)
-			if ( fCurrQty > fMaxQuanty + 1 ){//允许小数位往上收
+			if ( benCi > shengyu + 1 ){//允许小数位往上收
 				
-				fCurrQty = fMaxQuanty;
+				benCi = shengyu;
 				$().toastmessage('showWarningToast', "领料数量不能超出需求量！");
 			}
 			
-			$oCurrQty.val(floatToCurrency(fCurrQty));
+			$oCurrQty.val(floatToCurrency(benCi));
 
 		});
 		
@@ -242,16 +288,29 @@
 		
 		$("#insert").click(
 				function() {
-
+					
 					var requisitionType=$('#requisitionType').val();
 					var YSId = '${order.YSId }';
-			$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=insert"
-					+"&requisitionType="+requisitionType+"&YSId="+YSId);
-			$('#formModel').submit();
+					
+					var checkFlag = stockoutQuantityCheck();
+					checkFlag = true;//11.2临时开放
+					if(checkFlag == true){
+						if(confirm("个别物料的出库量为零，确定要继续出库吗？")){
+
+							$("#insert").attr("disabled", "disabled");
+							$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=insert"
+									+"&requisitionType="+requisitionType+"&YSId="+YSId);
+							$('#formModel').submit();
+						}else{
+
+							return false;
+						}
+					}
+					
 		});
 		
 				
-		foucsInit();
+		//foucsInit();
 
 		productPhotoView();//出库单附件
 		
@@ -278,7 +337,26 @@
 		
 	});
 
-	
+	//领料数量Check
+	function stockoutQuantityCheck(){
+
+		var checkFlag = false;
+		$('#example tbody tr').each (function (){
+
+			var vtotal5 = $(this).find("td").eq(5).text();//需求量
+			var vtotal6 = $(this).find("td").eq(6).text();//已领料
+			var vtotal7 = $(this).find("td").eq(7).text();//本次领料
+			vtotal5 = currencyToFloat(vtotal5);
+			vtotal6 = currencyToFloat(vtotal6);
+			vtotal7 = currencyToFloat(vtotal7);
+			
+			if(vtotal7 == 0 && vtotal6 < vtotal5){
+				checkFlag = true;
+				return false; //跳出循环
+			}			
+		})
+		return checkFlag;
+	}
 </script>
 
 </head>
@@ -331,7 +409,7 @@
 <div style="clear: both"></div>
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >确认出库</a>
+		<button class="DTTT_button " id="insert" >确认出库</button>
 	<!-- 	<a class="DTTT_button DTTT_button_text" id="print" onclick="doPrint();return false;">打印领料单</a> -->
 	<!--	<a class="DTTT_button DTTT_button_text" id="showHistory" >查看出库记录</a>-->
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>

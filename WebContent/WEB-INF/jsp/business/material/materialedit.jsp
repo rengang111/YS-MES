@@ -361,11 +361,6 @@ $(document).ready(function() {
         $(this).parent().append($required); //然后将它追加到文档中
     });
 	
-
-	//var material = $('#material\\.materialname').val();
-	 //material= material.replace("&quot;","\"");
-	 //material= material.replace("&#39","\'");
-	// $('#material\\.materialname').val(material);
 	 
 	//通用型号 初始化时,5 个输入框,注意:编号从 0 开始
 	autoAddShareModel();
@@ -373,11 +368,6 @@ $(document).ready(function() {
 	//子编码 初始化时,5 个输入框,注意:编号从 0 开始
 	autoAddSubid();
 
-	//设置光标项目
-	//$("#attribute1").focus();
-	//$("#attribute1").attr('readonly', "true");
-	//$("#attribute2").attr('readonly', "true");
-	//$("#material\\.materialid").attr('readonly', "true");
 
 	$("#attribute1").autocomplete({		
 		source : function(request, response) {

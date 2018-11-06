@@ -1091,5 +1091,23 @@
     <groupby></groupby>
     <having></having>
 	<power></power>    
+  </query>  
+  <query>
+    <pool></pool>    
+    <name value="getWatiOutQuantityFromPlan" />
+    <where>
+    	<w name="a.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="sum(if(REPLACE(IFNULL(c.quantity,0),',','') &gt;= REPLACE(IFNULL(a.quantity,0),',',''),0,if( REPLACE(a.quantity,',','') - IFNULL(b.quantity,0) &lt; 0,0,(IF(REPLACE(d.completedQuantity,',','')+0 &gt;= a.quantity+0,0,a.manufactureQty - IFNULL(b.quantity,0))))))" alias="waitout" ctype="" />
+      <f name="sum( REPLACE(a.manufactureQuantity,',',''))" alias="planQty" ctype="" />
+      <f name="sum( REPLACE(b.quantity,',',''))" alias="requisitionQty" ctype="" />
+  </select>
+   <from>v_purchaseplandetailgroup a	LEFT JOIN v_stockoutdetailgroup b ON a.YSId=b.YSId AND a.materialId=b.materialId	LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.ysid= c.ysid  AND a.productId=c.materialId 	LEFT JOIN v_orderdetail d ON d.ysid=a.ysid AND a.productId=d.materialId </from>
+    <orderby></orderby>
+    <groupby>a.materialId </groupby>
+    <having></having>
+	<power></power>    
   </query>
 </root>

@@ -305,7 +305,7 @@ $(document).ready(function() {
 	//设置光标项目
 	$("#attribute1").focus();
 	$("#attribute2").attr('readonly', "true");
-	//$("#material\\.materialid").attr('readonly', "true");
+	$("#material\\.materialid").attr('readonly', "true");
 
 	$("#attribute1").autocomplete({		
 		source : function(request, response) {
