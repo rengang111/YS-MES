@@ -205,6 +205,49 @@
 				$('#formModel').submit();
 	
 		});
+		$("#doCansolCost").click(
+				function() {
+
+					//$("#doCreate").attr("disabled", "disabled");
+					if( confirm("取消核算，不可恢复，确定要取消吗？") ){
+						var ysid = '${order.YSId }';
+						var url = '${ctx}/business/financereport?methodtype=cancelCostInit'+"&YSId="+ysid;
+						
+						layer.open({
+							offset :[30,''],
+							type : 2,
+							title : false,
+							area : [ '340px', '160px' ], 
+							scrollbar : false,
+							title : false,
+							content : url,
+							//只有当点击confirm框的确定时，该层才会关闭
+							cancel: function(index){ 
+							    layer.close(index)
+								//$('#TMaterial').DataTable().ajax.reload(null,false);
+							  	return false; 
+							},
+							end: function(index){ 	
+								//var body = layer.getChildFrame('body', index);  //加载目标页面的内容
+								//var cost = body.find('#costFlag').val();//body.find('#purchaseType').val();
+								var flag = $('#costConcelFlag').val();
+								
+								if(flag == 'F'){
+									$('#doCreate').removeClass('DTTT_button');
+									$('#doCreate').attr('disabled',true);
+									$('#doCansolCost').removeClass('DTTT_button');
+									$('#doCansolCost').attr('disabled',true);
+									$().toastmessage('showWarningToast', "数据更新成功，请稍等片刻。");	
+								  	$('#TMaterial').DataTable().ajax.reload(null,false);
+								}else{
+									//$().toastmessage('showWarningToast', "数据更新失败，请重试。");
+								}
+								return false; 
+							}   
+						});		
+					}
+	
+		});
 		
 		$("#costBom\\.exchangerate").change(function() {
 			var currencyId  = $('#costBom\\.currency').val();
@@ -364,6 +407,7 @@
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 	
+	<input type="hidden" id="costConcelFlag"  value=""/>
 	<input type="hidden" id="makeType" value="${makeType }" />
 	<form:hidden path="costBom.accountingdate"  />
 	<form:hidden path="costBom.currency"  value="${order.currencyId }"/>
@@ -372,7 +416,7 @@
 		<table class="form" id="table_form">
 			<tr>
 				<td class="label" style="width:100px">耀升编号：</td>					
-				<td style="width:150px">
+				<td style="width:100px">
 					<a href="###" onClick="doShowOrder('${order.PIId }','${order.YSId }')">${order.YSId }</a>
 					<form:hidden path="costBom.ysid" value="${order.YSId }"/></td>
 				<td class="label" style="width:100px">产品编号：</td>					
@@ -381,11 +425,16 @@
 					<form:hidden path="costBom.materialid" value="${order.materialId }"/></td>	
 
 				<td class="label" style="width:100px">产品名称：</td>	
-				<td>${order.materialName }</td>	
+				<td colspan="3">${order.materialName }</td>	
 			</tr>
-			<tr>
+			
+			<tr>			
+				<td class="label" style="width:100px">业务组：</td>	
+				<td>${order.team }</td>	
+				
 				<td class="label" style="width:100px">订单数量：</td>					
 				<td>${order.totalQuantity}</td>	
+				
 				
 				<td class="label" style="width:100px">入库时间：</td>	
 				<td>${order.checkInDate }</td>	
@@ -476,6 +525,7 @@
 	</fieldset>
 	<fieldset class="action" style="text-align: right;right;margin-top: -20px;">
 		<button type="button" id="doCreate" class="DTTT_button">成本确认</button>
+		<button type="button" id="doCansolCost" class="DTTT_button">取消成本核算</button>
 		<button type="button" id=goBack class="DTTT_button">返回</button>
 	</fieldset>
 	

@@ -149,9 +149,9 @@ public class FinanceReportAction extends BaseAction {
 				rtnUrl = "/business/finance/costconceladd";
 				break;	
 			case "cancelCost"://不参与核算
-				cancelCost();
-				printOutJsonObj(response, reqModel.getEndInfoMap());
-				rtnUrl = "/business/finance/costconceladd";
+				dataMap = cancelCost();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/finance/costconceladd";
 				break;	
 				
 				
@@ -431,12 +431,17 @@ public class FinanceReportAction extends BaseAction {
 		model.addAttribute("YSId",ysid);
 	}
 	
-	public void cancelCost(){
+	public HashMap<String, Object> cancelCost(){
+		HashMap<String, Object> map = new HashMap<>();
 		try {
 			service.updateOrderDetailForCostConcel();
+			map.put(INFO, SUCCESSMSG);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			map.put(INFO, ERRMSG);
 		}
+		
+		return map;
 	}
 }

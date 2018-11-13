@@ -18,6 +18,11 @@
 		<input type="hidden" id="costFlag" name="costFlag" value="11" >		
 			
 		<div style="text-align: center;">
+			请输入确认码：
+			<input type="password" id="pwd" class=""  />
+		</div>
+		<br><br>
+		<div style="text-align: center;">
 			<button type="button" id="concelCost" class="DTTT_button">不参与核算</button>
 			<button type="button" id="close" class="DTTT_button" >关闭</button>
 		</div>
@@ -30,9 +35,20 @@ $(document).ready( function () {
     //提交，最终验证。
      $("#concelCost").click(function() {
 
-    	 $("#concelCost").attr("disabled", true);
 			
 			var ysid = $('#YSId').val();
+			//var url = "${ctx}/business/financereport?methodtype=cancelCost"+"&YSId="+ysid;
+
+			var pwd = $('#pwd').val();
+			
+			if(pwd == '123456'){
+
+		    	 $("#concelCost").attr("disabled", true);
+			}else{
+				$().toastmessage('showWarningToast', "确认码不正确，请重试。");
+				return;
+			}
+			
 			$.ajax({
 				async:false,
 				type : "POST",
@@ -40,7 +56,11 @@ $(document).ready( function () {
 				data : $('#form').serialize(),// 要提交的表单
 				success : function(d) {
 					
-					parent.$('#costConcelFlag').val('F');//取消核算
+					var rtnMsg = d['message'];
+					
+					if(rtnMsg == '操作成功'){
+						parent.$('#costConcelFlag').val('F');//取消核算						
+					}
 
 					//不管成功还是失败都刷新父窗口，关闭子窗口
 					var index = parent.layer.getFrameIndex(window.name); //获取当前窗体索引	
@@ -67,6 +87,7 @@ $(document).ready( function () {
 					parent.layer.close(index); //执行关闭
 			}
 		});
+			
 			
 	});
     

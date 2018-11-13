@@ -137,7 +137,7 @@
 		    			return name;
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
-		    			return jQuery.fixedWidth(row["team"],8);
+		    			return jQuery.fixedWidth(row["team"],10);
 		    		}},
 		    		{
 		    			"orderable":false,"targets":[0]

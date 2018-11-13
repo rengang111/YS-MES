@@ -602,6 +602,7 @@
       <f name="A.currency" alias="" ctype="币种" />
       <f name="A.currency" alias="currencyId" ctype="" />
       <f name="b.rate_day" alias="" ctype="" />
+      <f name="a.team" alias="" ctype="业务组" />
     </select>
     <from>v_stockin_for_product AS A LEFT JOIN t_exchange_rate b ON a.currency = b.currency AND a.checkInDate=b.rate_day </from>
     <orderby>left(A.YSId,8) DESC,mid(A.YSId,LOCATE('-',A.YSId)+1,2)+0</orderby>

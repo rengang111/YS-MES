@@ -284,12 +284,12 @@ body{
 		    				rtn="已核算";
 		    			}else{
 		    				if(stockinQty >= orderQty){
-			    				rtn="待核算1";
+			    				rtn="待核算";
 			    					
 			    			}else{
 			    				if(storageFinish == '020'){
 
-				    				rtn="待核算2";
+				    				rtn="待核算";
 			    				}else{
 
 				    				rtn = "部分入库";
@@ -297,9 +297,9 @@ body{
 			    			}
 		    			}
 		    			
-		    			var noComputer = "<a href=\"###\" onClick=\"doCancelCost('"+ row["YSId"] + "')\">"+"取消核算"+"</a>";
-		    			
-		    			return rtn + "<br />" + noComputer;
+		    		//	var noComputer = "<a href=\"###\" onClick=\"doCancelCost('"+ row["YSId"] + "')\">"+"取消核算"+"</a>";
+		    					    			
+		    			return rtn;
 		    		}},
 		       		{"targets":11,"createdCell":function(td, cellData, rowData, row, col){
 
