@@ -64,11 +64,12 @@
 	        	},
 				"columns": [
 					{"data": null, "defaultContent" : '',"className" : 'td-center'},
-					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "requisitionId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "materialName", "defaultContent" : ''},//3
-					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},
+					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
+					{"data": "productId", "defaultContent" : '', "className" : 'td-left'},
+					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
 					{"data": "requisitionDate", "className" : 'td-center'},//7
 					
 				],
@@ -78,15 +79,15 @@
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
-		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["requisitionId"] + "')\">"+row["YSId"]+"</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["requisitionId"] + "')\">"+row["requisitionId"]+"</a>";
 		    			return rtn;
 		    		}},
-		    		{"targets":4,"render":function(data, type, row){
+		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["materialName"];
 		    			name = jQuery.fixedWidth(name,46);//true:两边截取,左边从汉字开始
 		    			return name;
 		    		}},
-		    		{"targets":5,"render":function(data, type, row){
+		    		{"targets":6,"render":function(data, type, row){
 		    			return floatToCurrency(data);
 		    		}},
 		    		{
@@ -188,10 +189,11 @@
 			<thead>						
 				<tr>
 					<th style="width: 10px;">No</th>
+					<th style="width: 80px;">领料单编号</th>
+					<th style="width: 100px;">物料编号</th>
+					<th>物料名称</th>
 					<th style="width: 70px;">耀升编号</th>
-					<th style="width: 100px;">领料单编号</th>
-					<th style="width: 150px;">产品编号</th>
-					<th>产品名称</th>
+					<th style="width: 100px;">产品编号</th>
 					<th style="width: 80px;">订单数量</th>
 					<th style="width: 70px;">退还日期</th>
 				</tr>

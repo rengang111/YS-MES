@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<%@ include file="../../common/common.jsp"%>
+<%@ include file="../../common/common2.jsp"%>
 <style>
 body{
   /* font-size:10px;*/
@@ -92,8 +92,8 @@ body{
 					{"data": "orderTotalPrice", "className" : 'td-right'},//7
 					{"data": "checkInDate", "defaultContent" : '0', "className" : 'td-right'},
 					{"data": "cost", "className" : 'td-right'},//9
-					{"data": "currency", "className" : 'td-right'},//10
-					{"data": "profit", "className" : 'td-right'},//11
+					{"data": "receipt", "className" : 'td-right'},//10
+					{"data": "receipt", "className" : 'td-right'},//11
 					{"data": null, "className" : 'td-right',"defaultContent" : ''},//12
 					{"data": "team", "defaultContent" : ''},
 					{"data": null, "className" : 'td-center'},//14
@@ -105,14 +105,20 @@ body{
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 
+		    			var receipt = row["receipt"];//是否参与核算标识
 		    			var accountingDate = currencyToFloat(row["accountingDate"]);
 		    			var rtn="";
-	    				if(accountingDate != '' ){
-			    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
-    					
-	    				}else{
-			    			rtn= "<a href=\"###\" onClick=\"doCreate('"+ row["YSId"] + "','"+ row["orderType"] + "')\">"+row["YSId"]+"</a>";
-	    				}
+		    			if(receipt == 'F'){
+		    				rtn = row["YSId"];
+		    			}else{
+
+		    				if(accountingDate != '' ){
+				    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
+	    					
+		    				}else{
+				    			rtn= "<a href=\"###\" onClick=\"doCreate('"+ row["YSId"] + "','"+ row["orderType"] + "')\">"+row["YSId"]+"</a>";
+		    				}
+		    			}
 	    				return rtn;
 		    			
 		    		}},
@@ -132,8 +138,9 @@ body{
 
 		    			return order +"<br>"+manuf + text;
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){//核算成本，人工成本
 		    			var index = row["rownum"];
+		    			var receipt = row["receipt"];//是否参与核算标识
 		    			var orderType = row["orderType"];
 		    			var cost = currencyToFloat(row["cost"]);
 		    			var mateCost = currencyToFloat(row["costAcounting"]); 
@@ -142,6 +149,9 @@ body{
 		    			var lastPrice = currencyToFloat(row["lastPrice"]);
 		    			var quantity = currencyToFloat(row["totalQuantity"]);
 		    			var labolCost = currencyToFloat(row["labolCost"]);//人工成本
+		    			
+		    			if(receipt == 'F')
+		    				return '***';
 		    			
 		    			if(cost == 0){
 		    				if(orderType == '020'){
@@ -161,6 +171,7 @@ body{
 		    		{"targets":11,"render":function(data, type, row){
 		    			var rtnValue="";
 		    			var index = row["rownum"];
+		    			var receipt = row["receipt"];//是否参与核算标识
 		    			var orderType = row["orderType"];
 		    			var cost = currencyToFloat(row["cost"]);
 		    			var mateCost = currencyToFloat(row["costAcounting"]); 
@@ -179,6 +190,10 @@ body{
 
 						var gross = 0;//毛利
 						
+						if(receipt == 'F'){				 				
+							return "***";
+						}
+							
 		    			if(cost == 0){
 		    				if(orderType == '020'){
 			    				cost = lastPrice * quantity;//装配品的成本
@@ -255,30 +270,44 @@ body{
 		    			return jQuery.fixedWidth(row["team"],8);
 		    		}},
 		    		{"targets":14,"render":function(data, type, row){
+		    			var receipt = row["receipt"];//是否参与核算标识
 		    			var stockinQty = currencyToFloat(row["stockinQty"]);
 		    			var orderQty = currencyToFloat(row["quantity"]);
 		    			var storageFinish = currencyToFloat(row["storageFinish"]);
 		    			var accountingDate = currencyToFloat(row["accountingDate"]);
 		    			var rtn="";
+
+		    			if(receipt == 'F')
+							return "不参与核算";
+							
 		    			if(accountingDate != '' ){
 		    				rtn="已核算";
 		    			}else{
 		    				if(stockinQty >= orderQty){
-			    				rtn="待核算";
+			    				rtn="待核算1";
 			    					
 			    			}else{
 			    				if(storageFinish == '020'){
 
-				    				rtn="待核算";
+				    				rtn="待核算2";
 			    				}else{
 
-				    				rtn = "待入库";
+				    				rtn = "部分入库";
 			    				}
 			    			}
 		    			}
 		    			
-		    			return rtn;
+		    			var noComputer = "<a href=\"###\" onClick=\"doCancelCost('"+ row["YSId"] + "')\">"+"取消核算"+"</a>";
+		    			
+		    			return rtn + "<br />" + noComputer;
 		    		}},
+		       		{"targets":11,"createdCell":function(td, cellData, rowData, row, col){
+
+		    			if( cellData == 'F' ) {
+		       				$(td).parent().addClass('delete');
+		 				}
+		       			
+		       		}},
 		    		{
 		    			"orderable":false,"targets":[0]
 		    		},
@@ -668,6 +697,40 @@ body{
 			
 	}
 	
+
+	function doCancelCost(ysid) {
+
+		var url = '${ctx}/business/financereport?methodtype=cancelCostInit'+"&YSId="+ysid;
+		//url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
+		
+		layer.open({
+			offset :[30,''],
+			type : 2,
+			title : false,
+			area : [ '340px', '160px' ], 
+			scrollbar : false,
+			title : false,
+			content : url,
+			//只有当点击confirm框的确定时，该层才会关闭
+			cancel: function(index){ 
+			    layer.close(index)
+				//$('#TMaterial').DataTable().ajax.reload(null,false);
+			  	return false; 
+			},
+			end: function(index){ 	
+				//var body = layer.getChildFrame('body', index);  //加载目标页面的内容
+				//var cost = body.find('#costFlag').val();//body.find('#purchaseType').val();
+				var flag = $('#costConcelFlag').val();
+				
+				if(flag == 'F'){
+					$().toastmessage('showWarningToast', "数据更新成功，请稍等片刻。");	
+				  	$('#TMaterial').DataTable().ajax.reload(null,false);
+				}
+				return false; 
+			}   
+		});		
+
+	};
 	
 </script>
 </head>
@@ -680,6 +743,7 @@ body{
 	id="formModel" name="formModel"  autocomplete="off">
 		<div id="search">
 		
+			<input type="hidden" id="costConcelFlag"  value=""/>
 			<input type="hidden" id="monthday"  value="${monthday }"/>
 			<input type="hidden" id="statusFlag"  value="${statusFlag }"/>
 			<input type="hidden" id="orderType"  value="${orderType }"/>

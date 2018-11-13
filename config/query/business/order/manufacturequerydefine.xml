@@ -880,8 +880,11 @@
    	  <w name="A.requisitionId" des=""  reqName="requisitionId" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
-      <f name="b.materialId" alias="" ctype="" />
-      <f name="b.materialName" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.quantity" alias="" ctype="" />
+      <f name="b.materialId" alias="productId" ctype="" />
+      <f name="b.materialName" alias="productName" ctype="" />
       <f name="A.requisitionId" alias="" ctype="" />
       <f name="A.excessType" alias="" ctype="超领区分" />
       <f name="A.virtualClass" alias="" ctype="虚拟领料区分" />

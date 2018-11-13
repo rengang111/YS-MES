@@ -145,18 +145,24 @@
 					var shengyu        = currencyToFloat(quantity - stockoutQty );
 					var benCi = 0;
 					
-					if(quantityOnHand <= 0){
-						benCi = 0;
-					}else if(quantityOnHand <= shengyu){
-						benCi = quantityOnHand;
+					if(quantity < 0){
+						//退货申请
+						benCi = quantity;
 					}else{
-						benCi = shengyu;
-					}
-					var className="num mini";
-					if(benCi <= 0){
-						benCi = 0;
-						if(shengyu > 0)
-							className="num mini error";// class="num mini"
+						if(quantityOnHand <= 0){
+							benCi = 0;
+						}else if(quantityOnHand <= shengyu){
+							benCi = quantityOnHand;
+						}else{
+							benCi = shengyu;
+						}
+						var className="num mini";
+						if(benCi <= 0){
+							benCi = 0;
+							if(shengyu > 0)
+								className="num mini error";// class="num mini"
+						}
+						
 					}
 					var inputTxt = '';
 					if(benCi == 0){
@@ -295,16 +301,16 @@
 					var checkFlag = stockoutQuantityCheck();
 					checkFlag = true;//11.2临时开放
 					if(checkFlag == true){
-						if(confirm("个别物料的出库量为零，确定要继续出库吗？")){
+						//if(confirm("个别物料的出库量为零，确定要继续出库吗？")){
 
 							$("#insert").attr("disabled", "disabled");
 							$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=insert"
 									+"&requisitionType="+requisitionType+"&YSId="+YSId);
 							$('#formModel').submit();
-						}else{
+						//}else{
 
-							return false;
-						}
+						//	return false;
+						//}
 					}
 					
 		});

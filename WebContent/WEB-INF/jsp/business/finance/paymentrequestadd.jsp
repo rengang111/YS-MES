@@ -144,6 +144,7 @@
 	$(document).ready(function() {
 		
 		//日期
+		$('.read-only').attr('readonly', "true");
 		$("#payment\\.requestdate").val(shortToday());
 		$("#payment\\.requestdate").datepicker({
 				dateFormat:"yy-mm-dd",

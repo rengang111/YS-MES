@@ -287,17 +287,16 @@ public class ArrivalService extends CommonService {
 	}
 	
 
-	@SuppressWarnings("unchecked")
 	private void insertArrival(
 			B_ArrivalData data) throws Exception{
 			
-		String where = " arrivalId='"+data.getArrivalid() + "' AND deleteFlag='0' ";
-		List<B_ArrivalData> list = dao.Find(where);
-		if(list.size() > 0){
+		//String where = " arrivalId='"+data.getArrivalid() + "' AND deleteFlag='0' ";
+		//List<B_ArrivalData> list = dao.Find(where);
+		//if(list.size() > 0){
 			//收货编号存在的情况，重新设置ID
-			String arrivalId = getNewArriveId();//重新取得到货编号
-			data.setArrivalid(arrivalId);			
-		}
+		//	String arrivalId = getNewArriveId();//重新取得到货编号
+		//	data.setArrivalid(arrivalId);			
+		//}
 
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 				"ArrivalInsert",userInfo);

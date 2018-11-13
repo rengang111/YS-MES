@@ -17,9 +17,11 @@ import com.ys.business.action.model.order.FinanceReportModel;
 import com.ys.business.db.dao.B_CostBomDao;
 import com.ys.business.db.dao.B_CostBomDetailDao;
 import com.ys.business.db.dao.B_InventoryMonthlyReportDao;
+import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.data.B_CostBomData;
 import com.ys.business.db.data.B_CostBomDetailData;
 import com.ys.business.db.data.B_InventoryMonthlyReportData;
+import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
@@ -320,6 +322,9 @@ public class FinanceReportService extends CommonService {
 
 		String statusFlag = request.getParameter("statusFlag");
 		String having = "1=1";
+		String monthDay1 = " AND checkInDate > '" + monthly.getStartDate()
+				+"' AND checkInDate < '"+monthly.getEndDate()+"' ";
+		String monthDay2 = " AND a.orderDate < '" + monthly.getEndDate() +"' ";
 		
 		if(notEmpty(key1) || notEmpty(key2)){
 			statusFlag = "";//有查询key，则忽略其状态
@@ -343,16 +348,22 @@ public class FinanceReportService extends CommonService {
 			having=" accountingDate!='' ";//已核算
 			
 		}else if(("B").equals(statusFlag)){
-			having="stockinQty+0 > 0 AND storageFinish ='010' ";//部分入库
+			monthDay1 = "";
+			monthDay2 = "";
+			having="stockinQty+0 > 0 AND stockinQty+0 < quantity+0 AND storageFinish ='010'";//部分入库
+			//having="stockinQty+0 > 0 AND storageFinish ='010' ";//部分入库
+		}else{
+			monthDay1 = "";
+			monthDay2 = "";			
 		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);
 		
 		
-		
-		sql = sql.replace("#1", monthly.getStartDate());
-		sql = sql.replace("#2", monthly.getEndDate());
+		//sql = sql.replace("#1", monthly.getStartDate());
+		sql = sql.replace("#1", monthDay1);
+		sql = sql.replace("#2", monthDay2);
 		sql = sql.replace("#3", having);
 		System.out.println("财务核算SQL："+sql);
 		baseQuery.getYsQueryDataNoPage(sql);	
@@ -1026,6 +1037,26 @@ public class FinanceReportService extends CommonService {
 		
 		 return  listMap;
 
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void updateOrderDetailForCostConcel() throws Exception{
+		String YSId = request.getParameter("YSId");
+		
+		String where = "YSId ='" + YSId + "' AND deleteFlag='0' ";
+		List<B_OrderDetailData> list = new B_OrderDetailDao().Find(where);
+		
+		if(list.size() > 0 ){
+			B_OrderDetailData dt = list.get(0);			
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"不参与财务核算",userInfo);
+			copyProperties(dt,commData);
+			dt.setReceipt("F");//不参与核算
+			
+			new B_OrderDetailDao().Store(dt);
+		}
+		
 	}
 
 }

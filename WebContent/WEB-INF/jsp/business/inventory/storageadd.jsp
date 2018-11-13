@@ -121,6 +121,7 @@
 					
 					if (validator.form()) {
 
+						var makeType=$('#makeType').val();
 						$('#form').attr("action", "${ctx}/business/storage?methodtype=insert"+"&makeType="+makeType);
 						$('#form').submit();
 					};

@@ -10,7 +10,17 @@
 	var counter = 0;
 	var moduleNum = 0;
 	
-	
+
+	function doPrint() {
+		var YSId = '${detail.YSId }';
+		var requisitionId = '${detail.requisitionId }';
+		var url = '${ctx}/business/requisition?methodtype=print';
+		url = url +'&YSId='+YSId;
+		url = url +'&requisitionId='+requisitionId;
+		
+		callProductDesignView("print",url);
+
+	};
 	
 	function ajaxRawGroup() {
 		
@@ -129,7 +139,6 @@
 	});	
 	
 	
-	
 </script>
 
 </head>
@@ -180,6 +189,7 @@
 	<fieldset class="action" style="text-align: right;">
 		<button type="button" id="doEdit"   class="DTTT_button">编辑</button>
 		<button type="button" id="doDelete" class="DTTT_button">删除</button>
+		<button type="button" id="" onclick="doPrint();return false;" class="DTTT_button">打印领料单</button>
 		<button type="button" id="goBack"   class="DTTT_button">返回</button>
 	</fieldset>
 	<fieldset style="margin-top: -40px;">

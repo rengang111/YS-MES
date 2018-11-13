@@ -832,7 +832,7 @@ public class PaymentService extends CommonService {
 		
 		//更新
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"paymentApprolvalDelete",userInfo);
+				"paymentApprolvalUpdate",userInfo);
 		copyProperties(db,commData);
 		
 		db.setApprovaluser("");//登陆者

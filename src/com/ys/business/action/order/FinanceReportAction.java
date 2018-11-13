@@ -144,6 +144,15 @@ public class FinanceReportAction extends BaseAction {
 			case "downloadExcelForCostAccounting"://财务核算数据下载
 				downloadExcelForCostAccounting(data);
 				break;
+			case "cancelCostInit"://不参与核算
+				cancelCostInit();
+				rtnUrl = "/business/finance/costconceladd";
+				break;	
+			case "cancelCost"://不参与核算
+				cancelCost();
+				printOutJsonObj(response, reqModel.getEndInfoMap());
+				rtnUrl = "/business/finance/costconceladd";
+				break;	
 				
 				
 		}
@@ -415,5 +424,19 @@ public class FinanceReportAction extends BaseAction {
 		
 		return service.updateExchangeRate();			
 
+	}
+	
+	public void cancelCostInit(){
+		String ysid = request.getParameter("YSId");
+		model.addAttribute("YSId",ysid);
+	}
+	
+	public void cancelCost(){
+		try {
+			service.updateOrderDetailForCostConcel();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

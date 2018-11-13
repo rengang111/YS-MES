@@ -138,8 +138,11 @@
 	    	  { "targets":9,"render":function(data, type, row){
 	    			var YSId = row[0];
 	    			var type=row[10];
-	    			var rtn = "<a href=\"#\" onClick=\"doPurchasePlan('"
-	    					+ YSId + "')\">采购合同</a>";
+	    			var piid = $('#order\\.piid').val();
+	    			var rtn = "<a href=\"###\" onClick=\"doDeleteOrder('"
+    					+ piid + "','"+ YSId +"')\">删除</a>"+"<br />";		
+	    			rtn += "<a href=\"###\" onClick=\"doPurchasePlan('"
+	    				+ YSId + "')\">采购合同</a>";
 	    			return rtn;
 	    	  }},
 	    	  {
@@ -213,6 +216,14 @@
 		
 		
 	});
+	
+	function doDeleteOrder(piid,ysid){
+
+		if(confirm("删除后不能恢复,\n\n确定要删除订单吗？")) {	
+			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=delete"+"&PIId="+piid+"&YSId="+ysid);
+			$('#orderForm').submit();	
+		}
+	}
 
 	function ShowBomPlan(YSId,materialId) {
 		var backFlag = 'orderView';
@@ -357,7 +368,7 @@
 		
 	<fieldset  style="text-align: right;margin-top: -20px;">
 		<button type="button" id="edit" class="DTTT_button">编辑</button>
-	 	<button type="button" id="doDelete" class="DTTT_button">删除</button>
+	 <!-- 	<button type="button" id="doDelete" class="DTTT_button">删除</button> -->
 		<button type="button" id="goBack" class="DTTT_button">返回</button>
 	</fieldset>	
 	<fieldset style="margin-top: -30px;">
@@ -377,7 +388,7 @@
 				<th class="dt-center" width="50px">销售单价<span class="order"><br />下单价格</span></th>
 				<th class="dt-center" width="80px">销售总价<span class="order"><br />下单总价</span></th>
 				<th class="dt-center" width="50px">订单状态</th>
-				<th class="dt-center" width="30px">操作</th>
+				<th class="dt-center" width="50px">操作</th>
 			</tr>
 			</thead>
 			<tfoot>
@@ -413,6 +424,8 @@
 						<span class="order"><br />${order.orderCost}</span></td>
 					<td>${order.statusName}</td>
 					<td>
+					<!-- 	<a href="###" onClick="doEditOrder('${order.PIId}','${order.YSId}','${order.materialId}','${order.productClassify}')">编辑</a>&nbsp; -->
+						<a href="###" onClick="doDeleteOrder('${order.PIId}','${order.YSId}')">删除</a><br>		
 						<a href="###" onClick="ShowProductDesign('${order.PIId}','${order.YSId}','${order.materialId}','${order.productClassify}')">做单资料</a><br>						
 						<a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">采购方案</a></td>										
 				</tr>

@@ -899,7 +899,8 @@ public class StorageService extends CommonService {
 				updateProductStock(materialid,quantity,"0");//更新库存
 				
 				//更新订单的累计完成数量,累计件数
-				updateOrderDetail(data,ysid,"0","0");					
+				String storagefinish = reqData.getStoragefinish();//入库完结标识
+				updateOrderDetail(data,ysid,"0","0",storagefinish);					
 							
 			}			
 
@@ -956,7 +957,8 @@ public class StorageService extends CommonService {
 				updateProductStock(materialid,quantity,oldQuantity);//更新库存
 				
 				//更新订单的累计完成数量,累计件数
-				updateOrderDetail(data,ysid,oldQuantity,oldNumber);					
+				String finishFlag = reqData.getStoragefinish();
+				updateOrderDetail(data,ysid,oldQuantity,oldNumber,finishFlag);					
 							
 			}			
 
@@ -1151,7 +1153,9 @@ public class StorageService extends CommonService {
 			B_PurchaseStockInDetailData stock,
 			String ysid,
 			String oldQuantity,
-			String oldNumber) throws Exception{
+			String oldNumber,
+			String storagefinish) throws Exception{
+		
 		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
 		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
 		if(list ==null || list.size() == 0)
@@ -1160,31 +1164,37 @@ public class StorageService extends CommonService {
 		//更新DB
 		B_OrderDetailData data = list.get(0);
 	
-		//float orderQuan = stringToFloat(data.getTotalquantity());//生产数量
-		float quantity = stringToFloat(data.getCompletedquantity());//已完成数量
+		float orderQty = stringToFloat(data.getQuantity());//生产数量
+		float dbQuantity = stringToFloat(data.getCompletedquantity());//已完成数量
 		int number = stringToInteger(data.getCompletednumber());//已完成件数
 		
-		float thisQuan = stringToFloat(stock.getQuantity());//本次入库数
+		float thisQty = stringToFloat(stock.getQuantity());//本次入库数
 		int thisNum = stringToInteger(stock.getPackagnumber());//本次入库件数
 		
-		float oldQuan = stringToFloat(oldQuantity);//本次入库数
+		float oldQty = stringToFloat(oldQuantity);//本次入库数
 		int oldNum = stringToInteger(oldNumber);//本次入库件数
 		
-		float totalQuan = quantity+thisQuan - oldQuan;//累计完成数量
+		float totalQty = dbQuantity+thisQty - oldQty;//累计完成数量
 		int totalNum = number+thisNum - oldNum;//累计完成件数
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"成品入库Update",userInfo);
+				"成品入库",userInfo);
 		copyProperties(data,commData);
 	
-		//if(orderQuan == totalQuan){
+		if(totalQty >= orderQty ){
 			data.setStoragedate(CalendarUtil.fmtYmdDate());
 			data.setStatus(Constants.ORDER_STS_4);//已入库
-		//}else{
-			//data.setStatus(Constants.ORDER_STS_41);//入库中			
-		//}
+		}else{
+			if(("020").equals(storagefinish)){//入库完结标识：020，强制完结
+
+				data.setStoragedate(CalendarUtil.fmtYmdDate());
+				data.setStatus(Constants.ORDER_STS_4);//已入库
+			}else{
+				data.setStatus(Constants.ORDER_STS_41);//入库中		
+			}	
+		}
 		
-		data.setCompletedquantity(String.valueOf(totalQuan));
+		data.setCompletedquantity(String.valueOf(totalQty));
 		data.setCompletednumber(String.valueOf(totalNum));
 		data.setStoragedate(CalendarUtil.fmtYmdDate());//入库时间
 		new B_OrderDetailDao().Store(data);

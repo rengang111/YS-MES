@@ -1243,7 +1243,7 @@ public class OrderService extends CommonService  {
 	 */
 	@SuppressWarnings("unchecked")
 	private void deleteOrder(String piid) throws Exception {
-		String where = " piid = '"+piid +"'" ;
+		String where = " piid = '"+piid +"'AND deleteFlag='0' " ;
 		List<B_OrderData> list = new B_OrderDao().Find(where);
 		
 		for(B_OrderData detail:list){
@@ -1259,8 +1259,8 @@ public class OrderService extends CommonService  {
 	 * 详情删除处理
 	 */
 	@SuppressWarnings("unchecked")
-	private void deleteOrderDetail(String oldPiId) throws Exception {
-		String where = " piid = '"+oldPiId +"'" ;
+	private void deleteOrderDetail(String ysid) throws Exception {
+		String where = " ysid = '"+ysid +"'AND deleteFlag='0' " ;
 		List<B_OrderDetailData> list = new B_OrderDetailDao().Find(where);
 		
 		for(B_OrderDetailData detail:list){
@@ -1313,15 +1313,22 @@ public class OrderService extends CommonService  {
 	
 	public Model delete(String delData){
 	
-		B_OrderData order = reqModel.getOrder();
-		String piid = order.getPiid();
 		try {				
 			ts = new BaseTransaction();										
 			ts.begin();
 			
-			deleteOrder(piid);
+			String piid = request.getParameter("PIId");
+			String ysid = request.getParameter("YSId");
 			
-			deleteOrderDetail(piid);			
+			int ysidNum = checkYsidMultiple(piid);
+
+			deleteOrderDetail(ysid);
+			
+			if(ysidNum == 1){
+
+				deleteOrder(piid);
+			}
+						
 			
 			ts.commit();
 		}
@@ -1646,6 +1653,22 @@ public class OrderService extends CommonService  {
 		modelMap.put("ExFlag",ExFlag);
 			
 		return modelMap;		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private int checkYsidMultiple(String PIId) throws Exception{
+
+		int rtnVlaue=0;
+
+		String where = " piid = '"+PIId +"' AND deleteFlag='0' " ;
+		B_OrderDetailDao dao = new B_OrderDetailDao();
+
+		List<B_OrderDetailData> list = (List<B_OrderDetailData>)dao.Find(where);	
+		if(list.size() > 0){
+			rtnVlaue = list.size();
+		}	
+
+		return rtnVlaue;		
 	}
 	
 	@SuppressWarnings("unchecked")
