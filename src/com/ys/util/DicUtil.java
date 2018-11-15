@@ -230,4 +230,20 @@ public class DicUtil {
 		
 		return rtnData;
 	}
+	
+	public ArrayList<ListOption> getListOptionAddDefault(String type, String parentCode) throws Exception {
+		DicUtil util = new DicUtil();
+		ArrayList<ArrayList<String>> dicList = null;
+		ArrayList<ListOption> rtnData = new ArrayList<ListOption>();
+		
+		dicList = util.getSameParentGroupValue(type, parentCode, false);
+		ListOption option = new ListOption("ALL","ALL");
+		rtnData.add(option);
+		for(ArrayList<String>rowData:dicList) {
+			option = new ListOption(rowData.get(0), rowData.get(1));
+			rtnData.add(option);
+		}
+		
+		return rtnData;
+	}
 }

@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import com.ys.business.action.model.common.FinanceMouthly;
+import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.FinanceReportModel;
 import com.ys.business.db.dao.B_CostBomDao;
 import com.ys.business.db.dao.B_CostBomDetailDao;
@@ -321,40 +322,45 @@ public class FinanceReportService extends CommonService {
 		//userDefinedSearchCase.put("endDate", monthly.getEndDate());
 
 		String statusFlag = request.getParameter("statusFlag");
+		String unFinished = request.getParameter("unFinished");
 		String having = "1=1";
 		String monthDay1 = " AND checkInDate > '" + monthly.getStartDate()
 				+"' AND checkInDate < '"+monthly.getEndDate()+"' ";
 		String monthDay2 = " AND a.orderDate < '" + monthly.getEndDate() +"' ";
 		
+		//查询：关键字，不再区分月份
 		if(notEmpty(key1) || notEmpty(key2)){
 			statusFlag = "";//有查询key，则忽略其状态
-			userDefinedSearchCase.put("startDate", "");//忽略其时间段
-			userDefinedSearchCase.put("endDate", "");//忽略其时间段			
-		}
-
-		//040：查询部分入库，不再区分月份
-		if(("B").equals(statusFlag)){
-			userDefinedSearchCase.put("startDate", "");//忽略其时间段
-			userDefinedSearchCase.put("endDate", "");//忽略其时间段			
-		}
-		
-		if(("A").equals(statusFlag)){
-			having=" stockinQty+0 >= quantity+0 ";//ALL(待核算 + 已核算)
-			
-		}else if(("D").equals(statusFlag)){
-			having=" storageFinish ='020' and accountingDate='' ";//待核算
-			
-		}else if(("Y").equals(statusFlag)){
-			having=" accountingDate!='' ";//已核算
-			
-		}else if(("B").equals(statusFlag)){
-			monthDay1 = "";
-			monthDay2 = "";
-			having="stockinQty+0 > 0 AND stockinQty+0 < quantity+0 AND storageFinish ='010'";//部分入库
-			//having="stockinQty+0 > 0 AND storageFinish ='010' ";//部分入库
-		}else{
 			monthDay1 = "";
 			monthDay2 = "";			
+		}
+
+		//查询：部分入库，不再区分月份
+		if(("B").equals(unFinished)){
+			statusFlag = "";//不再区分审核状态
+			monthDay1 = "";
+			monthDay2 = "";
+			having="stockinQty+0 > 0 AND stockinQty+0 < quantity+0 AND storageFinish ='010'";		
+		}
+		
+		//查询：审核状态
+		if(("A").equals(statusFlag)){//ALL(待核算 + 已核算)
+			having=" stockinQty+0 >= quantity+0 ";
+			
+		}else if(("D").equals(statusFlag)){//待核算
+			having=" storageFinish ='020' and accountingDate='' ";
+			
+		}else if(("Y").equals(statusFlag)){//已核算
+			having=" accountingDate!='' ";
+			
+		}
+		
+		//查询：业务组
+		String team = request.getParameter("team");
+		if(("ALL").equals(team)){//全部
+			userDefinedSearchCase.put("team", "");
+		}else{
+			userDefinedSearchCase.put("team", team);
 		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -1058,5 +1064,11 @@ public class FinanceReportService extends CommonService {
 		}
 		
 	}
+	public void costAccountingInit() throws Exception{
+
+		model.addAttribute("team",util.getListOptionAddDefault(DicUtil.BUSINESSTEAM, ""));
+		
+	}
+	
 
 }

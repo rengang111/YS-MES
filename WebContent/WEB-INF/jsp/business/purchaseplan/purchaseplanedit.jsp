@@ -460,6 +460,13 @@
 		var vtotalPrice = '0';//初始化		
 		var shortName = getLetters(supplierId);		
 		var fPlanQuantity = order * unitQuantity;
+		
+		//包装件进位
+		var materialId = '${bom.materialId }';
+		var tmp3 = materialId.substring(0,1);
+		if(tmp3 == 'G')
+			fPlanQuantity = Math.ceil(fPlanQuantity);
+		
 		var ftotalQuantity =  currencyToFloat( '${bom.purchaseQuantity}' ) ;
 		var price = currencyToFloat ('${bom.price}');
 		var vprice = formatNumber(price);
@@ -808,8 +815,12 @@ function purchasePlanCompute(obj,flg){
 	var fTotalQuty= fUnitQuty * fOrder;
 	var fStock = currencyToFloat( $oStock.text() );
 	
+	var tmp3 =  $.trim($oMaterIdV.text()).substring(0,1);//包装件进位
+	if(tmp3 == 'G')
+		fTotalQuty = Math.ceil(fTotalQuty);
+	
 	if(flg == '1'){
-		var fPurchase = setPurchaseQuantity(fStock,fTotalQuty);//建议采购量:自动计算		
+		var fPurchase = setPurchaseQuantity(fStock,fTotalQuty);//建议采购量:自动计算			
 		
 	}else if (flg == '2'){
 		var fPurchase = currencyToFloat( $oPurchase.val() );//建议采购量	:直接输入	

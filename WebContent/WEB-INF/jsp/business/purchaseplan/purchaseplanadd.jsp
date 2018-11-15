@@ -411,8 +411,10 @@
 	    <td><form:input path="planDetailList[${status.index}].purchasequantity"  class="num mini" value="" /></td>
 	    <td><form:input path="planDetailList[${status.index}].supplierid"  class="supplierid short" value="${bom.supplierId }" /></td>
 	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="" /></td>
+	    <!-- 总价 -->
 	    <td><span id="totalPrice${status.index}"></span>
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  class="num short" value="" /></td>
+	     <!-- 当前价格 -->
 	    <td><span id="price${status.index}">${bom.price }</span>
 	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" /></td>
 	    
@@ -422,9 +424,9 @@
 	<script type="text/javascript">
 		var index = '${status.index}';
 		var materialName = '${bom.materialNameView}';
-		var price = '${bom.price}';
-		var quantity = '${bom.quantity}';
-		var order = '${order.totalQuantity}';
+		var price    = currencyToFloat('${bom.price}');
+		var quantity = currencyToFloat('${bom.quantity}');
+		var order    = currencyToFloat('${order.totalQuantity}');
 		var stock = '${bom.availabelToPromise}';
 		var type = '${bom.purchaseTypeId}';
 		var supplierId = '${bom.supplierId}';
@@ -432,28 +434,28 @@
 	
 		unitQuanity = parseFloat(unitQuanity);
 
-		var totalQuantity = floatToCurrency(currencyToFloat(quantity) * currencyToFloat(order));
-		//虚拟库存回退处理		
-		var contractId = '${bom.contractId}';
-		var contractPrice = currencyToFloat('${bom.contractPrice}');
-		var contractQty = currencyToFloat('${bom.contractQty}');
-		var fPlanQuantity =  currencyToFloat( '${bom.manufactureQuantity}' ) ;
-		//虚拟库存=实际库存 + 待入库 - 待出库,这里做反向操作: 页面显示的虚拟库存 = 实际库存 - 待入库 + 待出库
-		//var newStock =  floatToCurrency( currencyToFloat(stock) - contractQty + fPlanQuantity );
+		var totalQuantity = quantity * order;
+
+		//包装件进位
+		var materialId = '${bom.materialId }';
+		var tmp3 = materialId.substring(0,1);
+		if(tmp3 == 'G')
+			totalQuantity = Math.ceil(totalQuantity);
+		
 		var fpurchase = setPurchaseQuantity(stock,totalQuantity);
-		//alert("newStock:::"+stock+":::"+contractQty+":::"+fPlanQuantity)
+		
 		if(type=="020"){//通用件单独采购
 			fpurchase = "0";
 		}
 		var vpurchase = floatToCurrency(fpurchase);
-		var totalPrice = floatToCurrency( currencyToFloat(price) * fpurchase );
+		var totalPrice = floatToCurrency( price * totalQuantity );
 		var vprice = formatNumber(price);
 		var shortName = getLetters(supplierId);
 
-		//$('#availabelToPromise'+index).html(newStock);
+		var vTotalQuantity = floatToCurrency(totalQuantity);
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
-		$('#totalQuantity'+index).html(totalQuantity);
-		$("#planDetailList"+index+"\\.manufacturequantity").val(totalQuantity);
+		$('#totalQuantity'+index).html(vTotalQuantity);
+		$("#planDetailList"+index+"\\.manufacturequantity").val(vTotalQuantity);
 		$('#totalPrice'+index).html(totalPrice);
 		$("#planDetailList"+index+"\\.totalprice").val(totalPrice);
 		$("#planDetailList"+index+"\\.price").val(vprice);
@@ -765,6 +767,11 @@ function purchasePlanCompute(obj,flg){
 	var fOrder    = currencyToFloat( $oOrder.text() );
 	var fTotalQuty= fUnitQuty * fOrder;
 	var fStock = currencyToFloat( $oStock.text() );
+	
+	var tmp3 =  $.trim($oMaterIdV.text()).substring(0,1);//包装件进位
+	if(tmp3 == 'G')
+		fTotalQuty = Math.ceil(fTotalQuty);
+	
 	if(flg == '1'){
 		var fPurchase = setPurchaseQuantity(fStock,fTotalQuty);//建议采购量:自动计算		
 		
@@ -772,7 +779,7 @@ function purchasePlanCompute(obj,flg){
 		var fPurchase = currencyToFloat( $oPurchase.val() );//建议采购量	:直接输入	
 	}
 	var fPrice    = currencyToFloat($oThisPrice.val());//计算用单价
-	var fTotalNew = currencyToFloat(fPrice * fPurchase);//合计
+	var fTotalNew = currencyToFloat(fPrice * fTotalQuty);//合计
 	
 	//var materialId = $oMaterial.val();	
 	var vPurchase = floatToCurrency(fPurchase);	

@@ -486,9 +486,10 @@ function initEvent(){
 	    			return jQuery.fixedWidth(row["materialName"],35);	
 	    		}},
 	    		{"targets":6,"render":function(data, type, row){
-	    			var order = currencyToFloat( '${order.totalQuantity}' );
-	    			var price = currencyToFloat( row["unitQuantity"] );				    			
-	    			var total = floatToCurrency( price * order );			    			
+	    			//var order = currencyToFloat( '${order.totalQuantity}' );
+	    			//var price = currencyToFloat( row["unitQuantity"] );				    			
+	    			//var total = floatToCurrency( price * order );		
+	    			var total = floatToCurrency(row["manufactureQuantity"]);
 	    			return total;
 	    		}},
 	    		{"targets":7,"render":function(data, type, row){

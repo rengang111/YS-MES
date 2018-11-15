@@ -434,6 +434,7 @@
       	<w name="a.checkInDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
         <w name="a.checkInDate"   des="" reqName="endDate"   dtype="ch" oper="&lt;"  lg="AND" bt="" />
         <w name="A.orderType"     des="" reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
+        <w name="A.team"     	  des="" reqName="team" 	 dtype="ch" oper="="  lg="AND" bt="" />
 </where>
   <select>
       <f name="A.YSId" alias="" ctype="" />

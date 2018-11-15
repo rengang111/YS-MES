@@ -26,8 +26,16 @@ public class FinanceReportModel extends BaseModel {
 	private List<B_InventoryMonthlyReportData> monthlyList;
 	private List<B_CostBomDetailData> costBomList;
 	private B_CostBomData costBom;
-	private ArrayList<ListOption> approvalOption = new ArrayList<ListOption>();
+	private ArrayList<ListOption> teamOption = new ArrayList<ListOption>();
 	private String jsonData;
+	private String team;
+	
+	public String getTeam() {
+		return this.team;
+	}
+	public void setTeam(String team) {
+		this.team = team;
+	}
 	
 	public String getJsonData() {
 		return this.jsonData;
@@ -77,11 +85,11 @@ public class FinanceReportModel extends BaseModel {
 	public void setPaymentList(List<B_PaymentDetailData> list) {
 		this.paymentList = list;
 	}
-	public ArrayList<ListOption> getApprovalOption() {
-		return this.approvalOption;
+	public ArrayList<ListOption> getTeamOption() {
+		return this.teamOption;
 	}
-	public void setApprovalOption(ArrayList<ListOption> list) {
-		this.approvalOption = list;
+	public void setTeamOption(ArrayList<ListOption> list) {
+		this.teamOption = list;
 	}	
 	
 	public List<B_PaymentHistoryData> getHistoryList() {

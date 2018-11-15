@@ -165,6 +165,7 @@ public class FinanceReportAction extends BaseAction {
 		if(materialId == null)
 			materialId = "";
 		model.addAttribute("materialId",materialId);
+		
 	}
 	
 	
@@ -417,6 +418,13 @@ public class FinanceReportAction extends BaseAction {
 		model.addAttribute("orderType",orderType);
 		model.addAttribute("monthday",monthday);
 		model.addAttribute("statusFlag",statusFlag);
+		
+
+		try {
+			service.costAccountingInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 	

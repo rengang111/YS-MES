@@ -13,7 +13,7 @@ body{
 <script type="text/javascript">
 
 
-	function ajax(orderType,monthday,sessionFlag,status) {
+	function ajaxSearch(orderType,monthday,sessionFlag,status,team,unFinished) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -23,6 +23,8 @@ body{
 		url = url + "&monthday=" +monthday;
 		url = url + "&statusFlag=" +status;
 		url = url + "&orderType=" +orderType;
+		url = url + "&team=" +team;
+		url = url + "&unFinished=" +unFinished;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": false,
@@ -267,7 +269,7 @@ body{
 		    			//return cost+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
 		    		}},
 		    		{"targets":13,"render":function(data, type, row){
-		    			return jQuery.fixedWidth(row["team"],8);
+		    			return jQuery.fixedWidth(row["team"],10);
 		    		}},
 		    		{"targets":14,"render":function(data, type, row){
 		    			var receipt = row["receipt"];//是否参与核算标识
@@ -278,7 +280,7 @@ body{
 		    			var rtn="";
 
 		    			if(receipt == 'F')
-							return "不参与核算";
+							return "不参与";
 							
 		    			if(accountingDate != '' ){
 		    				rtn="已核算";
@@ -326,11 +328,11 @@ body{
 	
 	function initEvent(){
 
-		var monthday = $('#monthday').val();
+		var monthday   = $('#monthday').val();
 		var statusFlag = $('#statusFlag').val();
-		var orderType = $('#orderType').val();
+		var orderType  = $('#orderType').val();
 		
-		ajax(orderType,monthday,"true",statusFlag);
+		ajaxSearch('010',monthday,"true",'A','ALL','');
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -362,6 +364,16 @@ body{
 		}else{
 			month = monthday.split("-")[1];
 		}
+		
+		$("#team").change(function() {
+
+			var monthday = $('#monthday').val();
+			var orderType = $('#orderType').val();
+			var statusFlag = $('#statusFlag').val();
+			var team = $(this).val();
+			
+			ajaxSearch(orderType,monthday,'false',statusFlag,team,'');	
+		});
 	
 		$('#defutBtn'+month).removeClass("start").addClass("end");
 		$('#defutBtn'+statusFlag).removeClass("start").addClass("end");
@@ -370,7 +382,7 @@ body{
 	
 	function doSearch() {	
 
-		ajax('','','false','');
+		ajaxSearch('','','false','','ALL','');
 		
 		var collection = $(".box");
 	    $.each(collection, function () {
@@ -413,25 +425,28 @@ body{
 		
 		var statusFlag = $('#statusFlag').val();
 		var orderType = $('#orderType').val();
-		ajax(orderType,todaytmp,'false',statusFlag);
+		var team = $('#team').val();
+		ajaxSearch(orderType,todaytmp,'false',statusFlag,team,'');
 	}
 	
 	//部分入库
 	function doSearchCustomer3(status){
 		$('#keyword1').val('');
 		$('#keyword2').val('');
+		var statusFlag = $('#statusFlag').val();
 			
-		ajax('','','false',status);
+		ajaxSearch('','','false',statusFlag,'ALL',status);
 	}
 
-	//订单状态
+	//审核状态
 	function doSearchCustomer2(status){
 		var monthday = $('#monthday').val();
 		var orderType = $('#orderType').val();
 
 		$('#statusFlag').val(status);
-		
-		ajax(orderType,monthday,'false',status);
+
+		var team = $('#team').val();
+		ajaxSearch(orderType,monthday,'false',status,team,'');
 	}
 	
 	//订单分类
@@ -440,8 +455,9 @@ body{
 		var statusFlag = $('#statusFlag').val()
 
 		$('#orderType').val(orderType);
-		
-		ajax(orderType,monthday,'false',statusFlag);
+
+		var team = $('#team').val();
+		ajaxSearch(orderType,monthday,'false',team,statusFlag);
 	}
 
 	//月度统计
@@ -468,13 +484,6 @@ body{
 		location.href = url;
 	}
 
-
-	function reload() {
-		
-		$('#TMaterial').DataTable().ajax.reload(null,false);
-		
-		return true;
-	}
 	
 	function costCountByCurrency(){
 
@@ -579,23 +588,6 @@ body{
 		$('#formModel').attr("action", url);
 		$('#formModel').submit();
 		
-/*
-		$.ajax({
-			type : "post",
-			url : url,
-			//async : false,
-			data : JSON.stringify(html),//$("#TMaterial").serializeArray(),//
-			"datatype": "json", 
-			"contentType": "application/json; charset=utf-8",
-			success : function(data) {			
-				window.location.href 
-				$().toastmessage('showNoticeToast', "保存成功。");
-			},
-			 error:function(XMLHttpRequest, textStatus, errorThrown){
-				//alert(textStatus)
-			}
-		});		
-		*/
 	}
 	
 	  function HtmlTableToJson(tableid){
@@ -696,42 +688,7 @@ body{
 			});	
 			
 	}
-	
-
-	function doCancelCost(ysid) {
-
-		var url = '${ctx}/business/financereport?methodtype=cancelCostInit'+"&YSId="+ysid;
-		//url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
 		
-		layer.open({
-			offset :[30,''],
-			type : 2,
-			title : false,
-			area : [ '340px', '160px' ], 
-			scrollbar : false,
-			title : false,
-			content : url,
-			//只有当点击confirm框的确定时，该层才会关闭
-			cancel: function(index){ 
-			    layer.close(index)
-				//$('#TMaterial').DataTable().ajax.reload(null,false);
-			  	return false; 
-			},
-			end: function(index){ 	
-				//var body = layer.getChildFrame('body', index);  //加载目标页面的内容
-				//var cost = body.find('#costFlag').val();//body.find('#purchaseType').val();
-				var flag = $('#costConcelFlag').val();
-				
-				if(flag == 'F'){
-					$().toastmessage('showWarningToast', "数据更新成功，请稍等片刻。");	
-				  	$('#TMaterial').DataTable().ajax.reload(null,false);
-				}
-				return false; 
-			}   
-		});		
-
-	};
-	
 </script>
 </head>
 
@@ -761,8 +718,7 @@ body{
 					<td>
 						<button type="button" id="retrieve" class="DTTT_button" 
 							style="width:50px" value="查询" onclick="doSearch();"/>查询</td>
-					<td style="vertical-align: bottom;width: 150px;">
-					</td> 
+					<td style="vertical-align: bottom;width: 150px;"></td> 
 					<td width="10%"></td> 
 				</tr>
 				<tr>
@@ -779,9 +735,10 @@ body{
 						<a  class="DTTT_button box2" onclick="doSearchCustomer2('D');" id="defutBtnD"><span>待审</span></a>
 						<a  class="DTTT_button box2" onclick="doSearchCustomer2('Y');" id="defutBtnY"><span>已审</span></a>
 					</td>
-					<td></td>
-					<td style="vertical-align: bottom;width: 150px;">
-					</td> 
+					<td style="text-align: right;">业务组：</td>
+					<td><form:select path="team" style="width: 100px;">
+						<form:options items="${team}" itemValue="key" itemLabel="value" />
+						</form:select></td> 
 					<td width="10%"></td> 
 				</tr>
 				<tr style="height: 40px;">
@@ -854,7 +811,7 @@ body{
 						<th style="width: 40px;">利润</th>
 						<th style="width: 30px;">利润率</th>
 						<th style="width: 30px;">业务组</th>
-						<th style="width: 20px;">状态</th>
+						<th style="width: 20px;">核算</th>
 					</tr>
 				</thead>
 			</table>
