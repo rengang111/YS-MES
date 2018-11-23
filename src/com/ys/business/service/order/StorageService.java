@@ -881,6 +881,7 @@ public class StorageService extends CommonService {
 			reqData = getStorageRecordId(reqData);
 			String receiptid = reqData.getReceiptid();
 			ysid = reqData.getYsid();
+			String stockinDate = reqData.getCheckindate();
 			
 			//成品入库记录
 			reqData.setStockintype(Constants.STOCKINTYPE_3);
@@ -900,7 +901,7 @@ public class StorageService extends CommonService {
 				
 				//更新订单的累计完成数量,累计件数
 				String storagefinish = reqData.getStoragefinish();//入库完结标识
-				updateOrderDetail(data,ysid,"0","0",storagefinish);					
+				updateOrderDetail(data,ysid,"0","0",storagefinish,stockinDate);					
 							
 			}			
 
@@ -936,8 +937,9 @@ public class StorageService extends CommonService {
 			String receiptid = reqData.getReceiptid();
 			ysid = reqData.getYsid();
 			
+			
 			//采购入库记录
-			updatePurchaseStockIn(reqData);
+			String checkinDate = updatePurchaseStockIn(reqData);
 			
 			
 			//采购入库记录明细
@@ -958,7 +960,7 @@ public class StorageService extends CommonService {
 				
 				//更新订单的累计完成数量,累计件数
 				String finishFlag = reqData.getStoragefinish();
-				updateOrderDetail(data,ysid,oldQuantity,oldNumber,finishFlag);					
+				updateOrderDetail(data,ysid,oldQuantity,oldNumber,finishFlag,checkinDate);					
 							
 			}			
 
@@ -1154,7 +1156,8 @@ public class StorageService extends CommonService {
 			String ysid,
 			String oldQuantity,
 			String oldNumber,
-			String storagefinish) throws Exception{
+			String storagefinish,
+			String stockinDate) throws Exception{
 		
 		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
 		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
@@ -1164,7 +1167,8 @@ public class StorageService extends CommonService {
 		//更新DB
 		B_OrderDetailData data = list.get(0);
 	
-		float orderQty = stringToFloat(data.getQuantity());//生产数量
+		float orderQty = stringToFloat(data.getQuantity());//订单数量
+		float orderTotalQty = stringToFloat(data.getTotalquantity());//生产数量
 		float dbQuantity = stringToFloat(data.getCompletedquantity());//已完成数量
 		int number = stringToInteger(data.getCompletednumber());//已完成件数
 		
@@ -1175,6 +1179,9 @@ public class StorageService extends CommonService {
 		int oldNum = stringToInteger(oldNumber);//本次入库件数
 		
 		float totalQty = dbQuantity+thisQty - oldQty;//累计完成数量
+		if(totalQty > orderTotalQty)
+			totalQty = orderTotalQty;//累计入库数不能超过生产数
+		
 		int totalNum = number+thisNum - oldNum;//累计完成件数
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
@@ -1182,21 +1189,19 @@ public class StorageService extends CommonService {
 		copyProperties(data,commData);
 	
 		if(totalQty >= orderQty ){
-			data.setStoragedate(CalendarUtil.fmtYmdDate());
 			data.setStatus(Constants.ORDER_STS_4);//已入库
 		}else{
 			if(("020").equals(storagefinish)){//入库完结标识：020，强制完结
 
-				data.setStoragedate(CalendarUtil.fmtYmdDate());
 				data.setStatus(Constants.ORDER_STS_4);//已入库
 			}else{
 				data.setStatus(Constants.ORDER_STS_41);//入库中		
 			}	
 		}
-		
+
+		data.setStoragedate(stockinDate);//入库时间
 		data.setCompletedquantity(String.valueOf(totalQty));
 		data.setCompletednumber(String.valueOf(totalNum));
-		data.setStoragedate(CalendarUtil.fmtYmdDate());//入库时间
 		new B_OrderDetailDao().Store(data);
 	}
 	
@@ -1215,24 +1220,31 @@ public class StorageService extends CommonService {
 		dao.Create(stock);
 	}
 	
-	private void updatePurchaseStockIn(
+	private String updatePurchaseStockIn(
 			B_PurchaseStockInData stock) throws Exception {
 
+		String stockinDate = "";
 		//删除旧数据,防止数据重复
 		B_PurchaseStockInData db = new B_PurchaseStockInDao(stock).beanData;
 		
 		if(db == null || ("").equals(db)){
 			stock.setStockintype(getStokinType(stock.getArrivelid()));
+			stockinDate = stock.getCheckindate();
+			
 			insertPurchaseStockIn(stock);
 		}else{
+			stockinDate = db.getCheckindate();
 			copyProperties(db,stock);
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"PurchaseStockInUpdate",userInfo);
 			copyProperties(db,commData);
 			db.setKeepuser(userInfo.getUserId());
+			
 					
 			dao.Store(db);
 		}
+		
+		return stockinDate;
 
 	}
 	

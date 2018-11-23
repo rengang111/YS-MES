@@ -29,6 +29,7 @@ public class FinanceReportModel extends BaseModel {
 	private ArrayList<ListOption> teamOption = new ArrayList<ListOption>();
 	private String jsonData;
 	private String team;
+	private String year;
 	
 	public String getTeam() {
 		return this.team;
@@ -36,6 +37,14 @@ public class FinanceReportModel extends BaseModel {
 	public void setTeam(String team) {
 		this.team = team;
 	}
+	
+	public String getYear() {
+		return this.year;
+	}
+	public void setYear(String year) {
+		this.year = year;
+	}
+	
 	
 	public String getJsonData() {
 		return this.jsonData;

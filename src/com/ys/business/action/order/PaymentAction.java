@@ -135,10 +135,10 @@ public class PaymentAction extends BaseAction {
 				paymentView();
 				rtnUrl = "/business/finance/paymentrequestview";
 				break;
-			case "print"://打印出库单
-				doPrintReceipt();
-				rtnUrl = "/business/finance/stockoutprint";
-				break;
+			//case "print"://打印出库单
+			//	doPrintReceipt();
+			//	rtnUrl = "/business/finance/stockoutprint";
+			//	break;
 			case "printProductReceipt"://打印成品入库单
 				doPrintProductReceipt();
 				rtnUrl = "/business/finance/productstorageprint";
@@ -550,13 +550,13 @@ public class PaymentAction extends BaseAction {
 		}
 	}
 	
-	public void doPrintReceipt(){
-		try{
-			service.printReceipt();
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-	}
+	//public void doPrintReceipt(){
+	//	try{
+	//		service.printReceipt();
+	//	}catch(Exception e){
+	//		System.out.println(e.getMessage());
+	//	}
+	//}
 
 	public void doPrintProductReceipt(){
 		try{

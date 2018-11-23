@@ -92,7 +92,7 @@
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){//核算数量
 		    			var rowIndex = row["rownum"];
-		    			//var orderQty = currencyToFloat(row["orderQty"]);
+		    			var materialId = row["materialId"];
 		    			var unit = currencyToFloat(row["unitQuantity"]);
 		    			var order = currencyToFloat(row["totalQuantity"]);
 		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
@@ -103,12 +103,16 @@
 		    				
 		    			var orderQty = unit * order;
 		    			
-		    			//领料 >= 需求，取领料，否则取需求
-		    			if(stockoutQty >= orderQty){
-		    				quantity = stockoutQty;
-		    			}else{
-		    				quantity = orderQty;
+		    			if(materialId != '' &&  materialId.substring(0,1) == 'G'){
+		    				orderQty = Math.ceil(orderQty);
 		    			}
+		    			
+		    			//领料 >= 需求，取领料，否则取需求
+		    			//if(stockoutQty >= orderQty){
+		    			//	quantity = stockoutQty;
+		    			//}else{
+		    				quantity = orderQty;
+		    			//}
 		    			quantity = floatToCurrency(quantity);
 
 		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].quantity" id="costBomList'+rowIndex+'.quantity"  value="'+quantity+'" />';
@@ -118,7 +122,7 @@
 		    		{"targets":8,"render":function(data, type, row){
 		    			var rowIndex = row["rownum"];
 		    			var price = currencyToFloat(row["price"]);
-		    			//var orderQty = currencyToFloat(row["orderQty"]);
+		    			var materialId = row["materialId"];
 		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
 		    			var unit = currencyToFloat(row["unitQuantity"]);
 		    			var order = currencyToFloat(row["totalQuantity"]);
@@ -126,6 +130,11 @@
 		    			if(unit==0)
 		    				unit = 1;//默认设置单位使用量：1
 		    			var orderQty = unit * order;
+		    				
+		    			if(materialId != '' &&  materialId.substring(0,1) == 'G'){
+		    				orderQty = Math.ceil(orderQty);
+		    			}
+		    			
 		    			var quantity = 0;
 		    			//领料 >= 需求，取领料，否则取需求
 		    			//if(stockoutQty >= orderQty){
@@ -382,7 +391,8 @@
 			gross = rmbprice - cost + rebate;
 		}
 		profit = gross + deductCost;//毛利-跟单费用（订单过程中，扣除费用是负数录入的）
-		profitrate = profit / cost * 100
+		profitrate = profit / rmbprice * 100;//利润率
+		//profitrate = profit / cost * 100;//利润率
 		
 		$(".read-only").attr('readonly', "true");
 

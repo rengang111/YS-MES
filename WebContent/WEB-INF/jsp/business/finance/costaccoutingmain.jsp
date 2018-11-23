@@ -108,13 +108,13 @@ body{
 		    		{"targets":1,"render":function(data, type, row){
 
 		    			var receipt = row["receipt"];//是否参与核算标识
-		    			var accountingDate = currencyToFloat(row["accountingDate"]);
+		    			var ysidAlready = currencyToFloat(row["ysidAlready"]);
 		    			var rtn="";
 		    			if(receipt == 'F'){
 		    				rtn = row["YSId"];
 		    			}else{
 
-		    				if(accountingDate != '' ){
+		    				if(ysidAlready != '' ){
 				    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["YSId"] + "')\">"+row["YSId"]+"</a>";
 	    					
 		    				}else{
@@ -144,16 +144,16 @@ body{
 		    			var index = row["rownum"];
 		    			var receipt = row["receipt"];//是否参与核算标识
 		    			var orderType = row["orderType"];
-		    			var cost = currencyToFloat(row["cost"]);
+		    			var cost = currencyToFloat(row["cost_view"]);
 		    			var mateCost = currencyToFloat(row["costAcounting"]); 
 		    			var currency = row["currency"];
 		    			var rate = row["exchange_rate"];
 		    			var lastPrice = currencyToFloat(row["lastPrice"]);
 		    			var quantity = currencyToFloat(row["totalQuantity"]);
-		    			var labolCost = currencyToFloat(row["labolCost"]);//人工成本
+		    			var labolCost = currencyToFloat(row["labolCost_view"]);//人工成本
 		    			
 		    			if(receipt == 'F')
-		    				return '***';
+		    				return '0';
 		    			
 		    			if(cost == 0){
 		    				if(orderType == '020'){
@@ -175,84 +175,27 @@ body{
 		    			var index = row["rownum"];
 		    			var receipt = row["receipt"];//是否参与核算标识
 		    			var orderType = row["orderType"];
-		    			var cost = currencyToFloat(row["cost"]);
-		    			var mateCost = currencyToFloat(row["costAcounting"]); 
+		    			var cost = currencyToFloat(row["cost_view"]);
+		    			var mateCost = currencyToFloat(row["materialCost_view"]); 
 		    			var currency = row["currency"];
-		    			var profit = currencyToFloat(row["profit"]);//利润
-		    			var profitrate = currencyToFloat(row["profitRate"]);//利润率
+		    			var profit = floatToCurrency(row["profit_view"]);//利润
+		    			var profitrate = row["profitRate_view"];//利润率
 		    			var actualSales = currencyToFloat(row["orderTotalPrice"]);
 		    			var exchange = currencyToFloat(row["exchange_rate"]);//汇率
 		    			var lastPrice = currencyToFloat(row["lastPrice"]);
 		    			var quantity = currencyToFloat(row["totalQuantity"]);
-		    			var labolCost = currencyToFloat(row["labolCost"]);//人工成本
+		    			var labolCost = currencyToFloat(row["labolCost_view"]);//人工成本
 		    			var rmbprice = currencyToFloat(row["RMBPrice"]);//原币金额
 						var rebaterate = 0.16;//退税率
 						var rebate = currencyToFloat(row["rebate"]);//退税
-						var gendan = currencyToFloat(row["orderDeduct"]);//跟单费用（订单过程中以负数录入）
+						//var gendan = currencyToFloat(row["orderDeduct"]);//跟单费用（订单过程中以负数录入）
 
 						var gross = 0;//毛利
 						
 						if(receipt == 'F'){				 				
-							return "***";
+							return "0";
 						}
-							
-		    			if(cost == 0){
-		    				if(orderType == '020'){
-			    				cost = lastPrice * quantity;//装配品的成本
-			    				mateCost = cost;
-		    				}else{
-		    					cost = mateCost + labolCost;//未领料的从BOM计算
-		    				}
-		    			}else{
-
-		    				profit =  floatToCurrency(profit);
-		    				profitrate =  floatToCurrency(profitrate);
-
-			    			var text =	'<input type="hidden" name="rmbprice" 	id="rmbprice'+index + '" 	value="'+rmbprice+'" >';
-			    			text +=	  	'<input type="hidden" name="cost" 		id="cost'+index + '" 		value="'+cost+'" >';
-			    		  	text +=   	'<input type="hidden" name="rebate" 	id="rebate'+index + '" 		value="'+rebate+'" >';
-			    			text +=   	'<input type="hidden" name="labolCost" 	id="labolCost'+index + '" 	value="'+labolCost+'" >';
-			    			text +=		'<input type="hidden" name="currency" 	id="currency'+index + '" 	value="'+currency+'" >';
-			    			text +=		'<input type="hidden" name="exchange" 	id="exchange'+index + '" 	value="'+exchange+'" >';
-			    			text +=		'<input type="hidden" name="profit" 	id="profit'+index + '" 		value="'+profit+'" >';
-			    			text +=		'<input type="hidden" name="profitrate"	id="profitrate'+index + '" 	value="'+profitrate+'" >';
-
-			    			return profit + "<br />" + profitrate +"%"+ text;
-		    			}
-		    			
-		    			//*****************************************************///
-		    			if(currency == 'RMB'){
-		    				
-		    			//	if(rebaterate == 0){
-		    					//纯内销
-		    					//增值税
-		    					zeng = (actualSales - mateCost) / 1.16 * 0.16 ;
-		    					gross = actualSales - cost - zeng;
-		    					rmbprice = actualSales;		    					
-		    					
-		    			//	}else{
-		    			//		//人民币外销
-		    			//		exchange = 1;//外销人民币的汇率默认：1
-		    			//		rebate = mateCost * rebaterate / (1 + rebaterate);//退税
-		    			//		rmbprice = actualSales * exchange;
-		    			//		profit = rmbprice - cost + rebate;		    									
-		    			//	}
-		    						
-		    			}else{
-		    				//纯外销			
-		    				//退税
-		    				rebate = mateCost * rebaterate / (1 + rebaterate);
-		    				rmbprice = actualSales * exchange;
-		    				gross = rmbprice - cost + rebate;
-		    			}
-		    			profit = gross + gendan;
-		    			if(cost <= 0){
-
-			    			profitrate = 0;
-		    			}else{
-			    			profitrate = floatToCurrency(profit / cost * 100);
-		    			}
-		    			profit = floatToCurrency(profit);
+						
 
 		    			var text =	'<input type="hidden" name="rmbprice" 	id="rmbprice'+index + '" 	value="'+rmbprice+'" >';
 		    			text +=	  	'<input type="hidden" name="cost" 		id="cost'+index + '" 		value="'+cost+'" >';
@@ -263,7 +206,7 @@ body{
 		    			text +=		'<input type="hidden" name="profit" 	id="profit'+index + '" 		value="'+profit+'" >';
 		    			text +=		'<input type="hidden" name="profitrate"	id="profitrate'+index + '" 	value="'+profitrate+'" >';
 
-		    			return profit + "<br />" + profitrate +"%"+ text;
+		    			return profit + "<br />" + profitrate + text;
 		    			
 		    			//return floatToCurrency(profit)+"<br />+"+"（"+floatToCurrency(profitrate)+"%）";//+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
 		    			//return cost+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
@@ -276,13 +219,14 @@ body{
 		    			var stockinQty = currencyToFloat(row["stockinQty"]);
 		    			var orderQty = currencyToFloat(row["quantity"]);
 		    			var storageFinish = currencyToFloat(row["storageFinish"]);
-		    			var accountingDate = currencyToFloat(row["accountingDate"]);
+		    			var ysidAlready = currencyToFloat(row["ysidAlready"]);
 		    			var rtn="";
 
 		    			if(receipt == 'F')
 							return "不参与";
 							
-		    			if(accountingDate != '' ){
+		    			alert('ysidAlready:'+ysidAlready)
+		    			if(ysidAlready != '' ){
 		    				rtn="已核算";
 		    			}else{
 		    				if(stockinQty >= orderQty){
@@ -325,6 +269,17 @@ body{
 
 	}
 
+	function addPreZero(num){
+		 if(num<10){
+		  return '000'+num;
+		 }else if(num<100){
+		  return '00'+num;
+		 }else if(num<1000){
+		  return '0'+num;
+		 }else{
+		  return num;
+		 }
+		}
 	
 	function initEvent(){
 
@@ -332,7 +287,20 @@ body{
 		var statusFlag = $('#statusFlag').val();
 		var orderType  = $('#orderType').val();
 		
-		ajaxSearch('010',monthday,"true",'A','ALL','');
+		var year = getYear();
+		var mounth = getMonth() ;//前移一个月
+		mounth = mounth -1;
+		if(mounth<10){
+			  return '0'+mounth;
+		}
+		if(monthday == '12'){
+			year = year - 1;//去年的12月
+		}
+		var todaytmp = year +''+mounth;
+		
+		//alert('todaytmp:'+todaytmp)
+		$('#monthday').val(todaytmp);
+		ajaxSearch('010',todaytmp,"true",'A','ALL','');
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -362,8 +330,10 @@ body{
 		if(monthday == '' || monthday == null){
 			month = getMonth();
 		}else{
-			month = monthday.split("-")[1];
+			month = monthday.substring(4,6);
 		}
+		
+		//alert('month:'+month+'--------'+monthday)
 		
 		$("#team").change(function() {
 
@@ -420,7 +390,7 @@ body{
 		if(monthday == '12'){
 			year = year - 1;//去年的12月
 		}
-		var todaytmp = year +"-"+monthday+"-"+"01";
+		var todaytmp = year +monthday;
 		$('#monthday').val(todaytmp);
 		
 		var statusFlag = $('#statusFlag').val();
@@ -461,9 +431,9 @@ body{
 	}
 
 	//月度统计
-	function doShowContract(contractId) {
+	function doShowMonthly(contractId) {
 
-		var url = '${ctx}/business/financereport?methodtype=monthlyStatistics&contractId=' + contractId;
+		var url = '${ctx}/business/financereport?methodtype=monthlyStatisticsInit&contractId=' + contractId;
 		
 		callProductDesignView("月度统计",url);
 	}	
@@ -556,6 +526,7 @@ body{
 		
 		//var profit = rmbCount - costSum;//利润
 		var profitm = profitCnt / costSum * 100;//利润率
+		//var profitm = profitCnt / costSum * 100;//利润率
 		
 		textView = textView + "&nbsp;&nbsp;利润：¥ "+ floatToCurrency(profitCnt)+"（"+floatToCurrency(profitm)+"%）";
 		
@@ -770,7 +741,7 @@ body{
 						<span>10月</span></a>
 						<a id="defutBtn11" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('11');">
 						<span>11月</span></a>
-				 		<a id="defutBtn14" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer4('050');">
+				 		<a id="defutBtn14" style="height: 15px;" class="DTTT_button box" onclick="doShowMonthly('050');">
 						<span>月度统计</span></a> 
 				 		&nbsp;&nbsp;<a id="defutBtnB" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer3('B');">
 						<span>部分入库</span></a> 	

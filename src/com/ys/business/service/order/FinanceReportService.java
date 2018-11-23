@@ -295,11 +295,11 @@ public class FinanceReportService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
-		String monthday = request.getParameter("monthday");
-		if(isNullOrEmpty(monthday)){
-			monthday = CalendarUtil.getToDay();
-		}
-		FinanceMouthly monthly = new FinanceMouthly(monthday);
+		//String monthday = request.getParameter("monthday");
+		//if(isNullOrEmpty(monthday)){
+		//	monthday = CalendarUtil.getToDay();
+		//}
+		//FinanceMouthly monthly = new FinanceMouthly(monthday);
 
 		
 		sEcho = getJsonData(data, "sEcho");	
@@ -323,35 +323,39 @@ public class FinanceReportService extends CommonService {
 
 		String statusFlag = request.getParameter("statusFlag");
 		String unFinished = request.getParameter("unFinished");
-		String having = "1=1";
-		String monthDay1 = " AND checkInDate > '" + monthly.getStartDate()
-				+"' AND checkInDate < '"+monthly.getEndDate()+"' ";
-		String monthDay2 = " AND a.orderDate < '" + monthly.getEndDate() +"' ";
+		String monthday = request.getParameter("monthday");
+
+		userDefinedSearchCase.put("groupFlag", monthday);
+		
+		//String having = "1=1";
+		//String monthDay1 = " AND checkInDate > '" + monthly.getStartDate()
+		//		+"' AND checkInDate < '"+monthly.getEndDate()+"' ";
+		//String monthDay2 = " AND a.orderDate < '" + monthly.getEndDate() +"' ";
 		
 		//查询：关键字，不再区分月份
 		if(notEmpty(key1) || notEmpty(key2)){
 			statusFlag = "";//有查询key，则忽略其状态
-			monthDay1 = "";
-			monthDay2 = "";			
+			//monthDay1 = "";
+			//monthDay2 = "";			
 		}
 
 		//查询：部分入库，不再区分月份
 		if(("B").equals(unFinished)){
 			statusFlag = "";//不再区分审核状态
-			monthDay1 = "";
-			monthDay2 = "";
-			having="stockinQty+0 > 0 AND stockinQty+0 < quantity+0 AND storageFinish ='010'";		
+			//monthDay1 = "";
+			//monthDay2 = "";
+			//having="stockinQty+0 > 0 AND stockinQty+0 < quantity+0 AND storageFinish ='010'";		
 		}
 		
 		//查询：审核状态
 		if(("A").equals(statusFlag)){//ALL(待核算 + 已核算)
-			having=" stockinQty+0 >= quantity+0 ";
+			//having=" stockinQty+0 >= quantity+0 ";
 			
 		}else if(("D").equals(statusFlag)){//待核算
-			having=" storageFinish ='020' and accountingDate='' ";
+			//having=" storageFinish ='020' and accountingDate='' ";
 			
 		}else if(("Y").equals(statusFlag)){//已核算
-			having=" accountingDate!='' ";
+			//having=" accountingDate!='' ";
 			
 		}
 		
@@ -368,9 +372,9 @@ public class FinanceReportService extends CommonService {
 		
 		
 		//sql = sql.replace("#1", monthly.getStartDate());
-		sql = sql.replace("#1", monthDay1);
-		sql = sql.replace("#2", monthDay2);
-		sql = sql.replace("#3", having);
+		//sql = sql.replace("#1", monthDay1);
+		//sql = sql.replace("#2", monthDay2);
+		//sql = sql.replace("#3", having);
 		System.out.println("财务核算SQL："+sql);
 		baseQuery.getYsQueryDataNoPage(sql);	
 		//baseQuery.getYsQueryData(sql,having,iStart, iEnd); 
@@ -1070,5 +1074,37 @@ public class FinanceReportService extends CommonService {
 		
 	}
 	
+	public void monthlyStatisticsInit() throws Exception{
+
+		model.addAttribute("team",util.getListOptionAddDefault(DicUtil.BUSINESSTEAM, ""));
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
+		
+	}
+	
+	public HashMap<String, Object> monthlyStatistics() throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		
+		dataModel.setQueryName("costAccountingGroupByYear");//月度统计
+		baseQuery = new BaseQuery(request, dataModel);
+
+		String yearFlag = request.getParameter("yearFlag");
+		String team = request.getParameter("team");
+		if(("ALL").equals(team)){//全部
+			userDefinedSearchCase.put("team", "");
+		}else{
+			userDefinedSearchCase.put("team", team);
+		}
+		userDefinedSearchCase.put("yearFlag", yearFlag);
+
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+				
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
+	}
 
 }

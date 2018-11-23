@@ -48,7 +48,7 @@
 	
 		<table class="" id="table_form"  style="margin-top: -10px;">
 			<tr> 				
-				<td class="td-center" colspan="6" style="font-size: 26px;height: 50px;">采购订单</td>
+				<td class="td-center" colspan="6" style="font-size: 24px;">采购订单</td>
 			</tr>
 			<tr> 				
 				<td class="label" style="width:100px;">耀升编号：</td>					
@@ -155,8 +155,7 @@
 四、结算方式及期限：凭本合同正本，送货单，在全部到货并经需方抽样检验合格的前提下，自需方收到供方开具正确的增值税发票后60天结算。<br>
 五、解决合同纠纷方式：按合同法协商解决，协商不成立由需方所在地法院判决。合同制定地为法律管辖地。<br>
 六、合同的生效：合同自供方收到3天之内生效。任何修改需要盖章书面确认。<br>
-七、具体约束内容，详见《供应商尽责条例》。<br>
-		
+七、具体约束内容，详见《供应商尽责条例》。<br>		
 		</pre>
 		<br>
 		<table style="width: 100%;">

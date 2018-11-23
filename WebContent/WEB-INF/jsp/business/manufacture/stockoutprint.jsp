@@ -11,16 +11,19 @@
 <script type="text/javascript">
 
 	$(document).ready(function() {
-			
+		
+		$("#today").text(today());	
 		ajaxFn();		
 	
 	});
 	
 	function ajaxFn() {
 		
-		var requisitionId= '${requisitionId}';
-		var actionUrl = "${ctx}/business/stockout?methodtype=stockoutdetail";
-		actionUrl = actionUrl +"&requisitionId="+requisitionId;
+		var stockOutId= '${stockOutId}';
+		var YSId= '${order.YSId}';
+		var actionUrl = "${ctx}/business/stockout?methodtype=getPrintData";
+		actionUrl = actionUrl +"&YSId="+YSId;
+		actionUrl = actionUrl +"&stockOutId="+stockOutId;
 				
 		var t = $('#example').DataTable({
 			"paging": false,
@@ -39,10 +42,15 @@
 					"type" : "POST",
 					//"data" : JSON.stringify(aoData),
 					success: function(data){					
-						fnCallback(data);		
+						
+						fnCallback(data);
+						
+						var detail = data['detailData']['checkOutDate'];
+			            $("#outdate").text(detail);	
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             alert(errorThrown)
+		             
 					 }
 				})
 			},
@@ -53,14 +61,9 @@
 		        	{"data": null,"className":"dt-body-center"//0
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
-				}, {"data": "unitQuantity","className":"td-right"	//3
 				}, {"data": "manufactureQuantity","className":"td-right"//4
-				}, {"data": "totalRequisition","className":"td-right"//5
-				}, {"data": "quantityOnHand","className":"td-right"	//6 可用库存
-				}, {"data": "areaNumber"		//7
-				}, {"data": null,"className":"td-right","defaultContent" : '0'//8
-				}, {"data": "purchaseType","className":"td-right"		//9
-				}, {"data": "supplierId","className":"td-right"		//10
+				}, {"data": "totalQuantity","className":"td-right"//5
+				}, {"data": "depotId"		//7
 				}
 			],
 			"columnDefs":[
@@ -73,7 +76,7 @@
 	    			return "&nbsp;&nbsp;"+data;
                 }},
 	    		{"targets":4,"render":function(data, type, row){	    			
-	    			
+	    			/*
 	    			var unit = row["unit"];	    			
 	    			var index=row["rownum"]
 	    			var qty = currencyToFloat(row["manufactureQuantity"]);
@@ -84,12 +87,12 @@
 	    			}else{
 	    				value = formatNumber(qty);
 	    			}
-	    								
-	    			return value;				 
+	    			*/					
+	    			return row["totalQuantity"];				 
                 }},
                 {
 					"visible" : false,
-					"targets" : [3,6,8,9,10]
+					"targets" : []
 				}
 			]
 			
@@ -140,7 +143,8 @@
 				<td>&nbsp;${order.YSId }</td>
 									
 				<td class="label">生产数量：</td>					
-				<td colspan="3">&nbsp;${order.totalQuantity }</td>
+				<td  colspan="5">&nbsp;${order.totalQuantity }</td>
+				
 			</tr>
 			<tr>
 							
@@ -148,15 +152,22 @@
 				<td width="180px">&nbsp;${order.materialId }</td>
 							
 				<td width="100px" class="label">产品名称：</td>			
-				<td colspan="3">&nbsp;${order.materialName }</td>	
+				<td colspan="5">&nbsp;${order.materialName }</td>	
 			</tr>
 			<tr>
 							
 				<td width="100px" class="label">制单人：</td>					
 				<td width="180px">&nbsp;${userName }</td>
 							
+				
+				<td class="label" width="100px" >出库单号：</td>					
+				<td  width="100px">&nbsp;${stockOutId}</td>
+				
+				<td width="100px" class="label">出库时间：</td>				
+				<td  width="100px">&nbsp;<span id="outdate"></span></td>		
+				
 				<td width="100px" class="label">打印时间：</td>				
-				<td colspan="3">&nbsp;<span id="today"></span></td>		
+				<td>&nbsp;<span id="today"></span></td>		
 			</tr>
 										
 		</table>
@@ -167,15 +178,10 @@
 					<tr>
 						<th style="width:1px">No</th>
 						<th width="120px">物料编号</th>
-						<th >物料名称</th>				
-						<th width="60px">基本用量</th>
-						<th width="60px">计划用量</th>
-						<th width="80px">已领数量</th>
-						<th width="80px">可用库存</th>
+						<th >物料名称</th>
+						<th width="80px">计划用量</th>
+						<th width="80px">出库数量</th>
 						<th width="100px">库位</th>
-						<th width="60px">剩余数量</th>
-						<th width="1px"></th>
-						<th width="1px"></th>
 					</tr>
 	
 			</table>

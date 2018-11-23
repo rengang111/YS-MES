@@ -216,10 +216,11 @@ public class StockOutService extends CommonService {
 
 	public void printReceipt() throws Exception {
 		String YSId = request.getParameter("YSId");
-		//String stockOutId = request.getParameter("stockOutId");
+		String stockOutId = request.getParameter("stockOutId");
 		
 		//取得订单信息
 		getOrderDetail(YSId);
+		model.addAttribute("stockOutId",stockOutId);
 		//getArrivaRecord(receiptId);//入库明细	
 	}
 
@@ -821,6 +822,7 @@ public class StockOutService extends CommonService {
 		baseQuery.getYsFullData();
 
 		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("detailData", dataModel.getYsViewData().get(0));
 		model.addAttribute("detail",dataModel.getYsViewData().get(0));
 		
 		return modelMap;

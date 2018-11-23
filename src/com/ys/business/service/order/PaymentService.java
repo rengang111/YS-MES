@@ -430,13 +430,13 @@ public class PaymentService extends CommonService {
 	
 	}
 
-	public void printReceipt() throws Exception {
-		String YSId = request.getParameter("YSId");
+	//public void printReceipt() throws Exception {
+	//	String YSId = request.getParameter("YSId");
 		
 		//取得订单信息
-		getOrderDetail(YSId);
+	//	getOrderDetail(YSId);
 		//getArrivaRecord(receiptId);//入库明细	
-	}
+	//}
 
 	public void printProductReceipt() throws Exception {
 		String YSId = request.getParameter("YSId");

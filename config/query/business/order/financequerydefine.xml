@@ -429,52 +429,80 @@
     <pool></pool>    
     <name value="costAccountingList" />
      <where>
-        <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	    <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
-      	<w name="a.checkInDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
-        <w name="a.checkInDate"   des="" reqName="endDate"   dtype="ch" oper="&lt;"  lg="AND" bt="" />
-        <w name="A.orderType"     des="" reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
-        <w name="A.team"     	  des="" reqName="team" 	 dtype="ch" oper="="  lg="AND" bt="" />
+        <w name="m.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	    <w name="m.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+      	<!--w name="m.checkInDate"   des="" reqName="startDate" dtype="ch" oper="&gt;"  lg="AND" bt="" /-->
+        <!--w name="m.checkInDate"   des="" reqName="endDate"   dtype="ch" oper="&lt;"  lg="AND" bt="" /-->
+        <w name="m.orderType"     des="" reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
+        <w name="m.team"     	  des="" reqName="team" 	 dtype="ch" oper="="  lg="AND" bt="" />
+        <w name="m.groupFlag"     des="" reqName="groupFlag" dtype="ch" oper="="  lg="AND" bt="" />
 </where>
   <select>
-      <f name="A.YSId" alias="" ctype="" />
-      <f name="A.receipt" alias="" ctype="" />
-      <f name="IFNULL(b.bomId,'')" alias="bomId" ctype="" />
-      <f name="IFNULL(b.cost,'0')" alias="cost" ctype="" />
-      <f name="IFNULL(b.accountingDate,'')" alias="accountingDate" ctype="" />
-      <f name="a.productId" alias="" ctype="" />
-      <f name="a.productName" alias="" ctype="" />
-      <f name="a.currency" alias="" ctype="" />
-      <f name="b.exchangeRate" alias="" ctype="" />
-      <f name="b.rebate" alias="" ctype="" />
-      <f name="b.rebateRate" alias="" ctype="" />
-      <f name="b.profit" alias="" ctype="" />
-      <f name="IFNULL(b.profitRate,'0')" alias="profitRate" ctype="" />
-      <f name="a.deliveryDate" alias="" ctype="" />
-      <f name="a.orderDate" alias="" ctype="" />
-      <f name="a.totalPrice" alias=" orderTotalPrice" ctype="" />
-      <f name="REPLACE(a.quantity,',','')" alias="quantity" ctype="" />
-      <f name="a.totalQuantity" alias="" ctype="" />
-      <f name="IFNULL(REPLACE(a.stockinQty,',',''),'0')" alias="stockinQty" ctype="" />
-      <f name="a.checkInDate" alias="" ctype="" />
-      <f name="IFNULL(a.storageFinish,'010')" alias="storageFinish" ctype="" />
-      <f name="a.team" alias="" ctype="业务组" />
-      <f name="a.shortName" alias="customerShort" ctype="" />
-      <f name="IFNULL(d.costSum, '0')" alias="costAcounting" ctype="" />
-      <f name="IFNULL(c1.exchange_rate,'1')" alias="exchange_rate" ctype="" />
-      <f name="e.lastPrice" alias="" ctype="" />
-      <f name="a.orderType" alias="" ctype="" />
-      <f name="f.costSum" alias="labolCost" ctype="" />
-      <f name="g.cost" alias="orderDeduct" ctype="" />
+      <f name="m.YSId" alias="" ctype="" />
+      <f name="m.ysidAlready" alias="" ctype="" />
+      <f name="m.groupFlag" alias="" ctype="" />
+      <f name="m.orderType" alias="" ctype="" />
+      <f name="m.xiaoshou" alias="RMBPrice" ctype="" />
+      <f name="m.receipt" alias="" ctype="" />
+      <f name="if(ISNULL(m.ysidAlready),m.cost,m.costAlready)" alias="cost_view" ctype="" />
+      <f name="if(ISNULL(m.ysidAlready),m.labolCost,m.labolCostAlready)" alias="labolCost_view" ctype="" />
+      <f name="if(ISNULL(m.ysidAlready),m.materialCost,m.materialCostAlready)" alias="materialCost_view" ctype="" />
+      <f name="m.exchange_rate" alias="" ctype="" />
+      <f name="m.receipt" alias="" ctype="" />
+      <f name="m.materialId" alias="productId" ctype="" />
+      <f name="m.materialName" alias="productName" ctype="" />
+      <f name="m.currency" alias="" ctype="" />
+      <f name="m.tuishui" alias="rebate" ctype="" />
+      <f name="if(ISNULL(m.ysidAlready),m.xiaoshou - m.cost - zengzhishui + tuishui + m.gengdan,m.profitAlready)" alias="profit_view" ctype="" />
+      <f name="if(ISNULL(m.ysidAlready),CONCAT(IFNULL(CONVERT((m.xiaoshou - m.cost - zengzhishui + tuishui + m.gengdan) / xiaoshou * 100 ,DECIMAL(32,2)),0) , '%'),CONCAT(m.profitRateAlready,'%'))" alias="profitRate_view" ctype="" />
+      <f name="m.deliveryDate" alias="" ctype="" />
+      <f name="m.orderDate" alias="" ctype="" />
+      <f name="m.totalPrice_org" alias=" orderTotalPrice" ctype="" />
+      <f name="REPLACE(m.quantity,',','')" alias="quantity" ctype="" />
+      <f name="m.totalQuantity" alias="" ctype="" />
+      <f name="IFNULL(REPLACE(m.completedQuantity,',',''),'0')" alias="stockinQty" ctype="" />
+      <f name="m.storageDate" alias="checkInDate" ctype="" />
+      <!--f name="IFNULL(a.storageFinish,'010')" alias="storageFinish" ctype="" /-->
+      <f name="m.team" alias="" ctype="业务组" />
+      <f name="m.shortName" alias="customerShort" ctype="" />
+      <!--f name="IFNULL(d.costSum, '0')" alias="costAcounting" ctype="" /-->
+      <f name="IFNULL(m.exchange_rate,'1')" alias="exchange_rate" ctype="" />
+      <!--f name="e.lastPrice" alias="" ctype="" /-->
+      <!--f name="f.costSum" alias="labolCost" ctype="" /-->
+      <!--f name="g.cost" alias="orderDeduct" ctype="" /-->
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- from>( SELECT a.YSId, A.receipt,c.checkInDate, a.PIId, a.materialId, a.deliveryDate, a.totalPrice, a.quantity, a.totalQuantity, c.quantity stockinQty, c.storageFinish, a.team, b1.shortName, a.orderDate, a.materialId productId, a.materialName productName, a.currency, A.orderType, a.full_field FROM v_orderlist a LEFT JOIN b_Customer b1 ON b1.customerId = a.customerId AND b1.deleteFlag = '0' JOIN ( SELECT  a.YSId,  a.materialId,  a.depotId,  sum(REPLACE(a.quantity, ',', '')) AS quantity,  max(a.storageFinish) AS storageFinish,  max(a.checkInDate) AS checkInDate FROM  v_purchasestockindetail a JOIN ( SELECT a.YSId, a.materialId  FROM v_purchasestockindetail a  WHERE checkInDate &gt; '#1'  AND checkInDate &lt; '#2' AND a.stockintype='030'  GROUP BY a.YSId,a.materialId ) b ON a.ysid = b.ysid AND a.materialId = b.materialId AND a.stockintype='030'  GROUP BY  b.YSId,b.materialId ) c ON c.materialId = a.materialId AND c.YSId = a.YSId WHERE A.orderType = '010' AND a.orderDate&lt;'#2' HAVING stockinQty + 0 &gt;= quantity + 0  ) a  LEFT JOIN b_costbom b ON a.YSId = b.YSId AND b.deleteFlag = '0' LEFT JOIN (  SELECT a.YSId, SUM( IF (  IFNULL(b.quantity, 0) + 0 &gt; a.orderQty + 0,  b.quantity,  a.orderQty ) * a.price ) costSum  FROM ( SELECT  a.YSId,  a.materialId,  a.price, IF ( sum(a.unitQuantity) = 0, 1, sum(a.unitQuantity)  ) * REPLACE (c.totalQuantity, ',', '') AS orderQty FROM  b_purchaseplandetail a LEFT JOIN b_orderdetail c ON c.ysid = a.ysid AND (c.deleteFlag = '0') JOIN ( SELECT a.YSId  FROM b_purchasestockin a  WHERE checkInDate &gt; '#1' AND checkInDate &lt; '#2' AND a.stockintype='030'  AND a.deleteFlag='0'  GROUP BY a.ysid ) c1 ON c1.ysid = a.ysid WHERE  a.deleteFlag = '0'  GROUP BY  a.YSId, a.materialId ) a  LEFT JOIN v_stockoutdetailgroup b ON a.YSId = b.YSId AND a.materialId = b.materialId  WHERE LEFT (a.materialId, 1) &lt;&gt; 'H'  GROUP BY a.ysid ) d ON d.ysid = a.ysid  LEFT JOIN (  SELECT f2.YSId, SUM(IFNULL( f2.manufactureQty,0) * IFNULL(REPLACE(f2.price, ',', ''), 0)) costSum  FROM v_purchaseplandetailgroup f2, ( SELECT  f1.YSId FROM  b_purchasestockin f1 WHERE  f1.checkInDate &gt; '#2' AND f1.checkInDate &lt; '#2' AND f1.stockintype='030'  AND f1.deleteFlag='0' GROUP BY  f1.ysid  ) f3  WHERE LEFT (f2.materialId, 1) = 'H' AND f2.ysid = f3.ysid  GROUP BY f2.ysid ) f ON f.ysid = a.ysid  LEFT JOIN b_pricereference e ON e.materialId = a.materialId AND a.orderType = '020' LEFT JOIN v_orderexpanse_groupby_type g ON g.ysid = a.ysid AND g.type = 'D' LEFT JOIN t_exchange_rate c1 ON c1.rate_day = a.checkInDate AND c1.currency = a.currency WHERE  1 = 1</from -->
-    <from>( SELECT a.YSId, A.receipt,c.checkInDate, a.PIId, a.materialId, a.deliveryDate, a.totalPrice, a.quantity, a.totalQuantity, c.quantity stockinQty, c.storageFinish, a.team, b1.shortName, a.orderDate, a.materialId productId, a.materialName productName, a.currency, A.orderType, a.full_field FROM v_orderlist a LEFT JOIN b_Customer b1 ON b1.customerId = a.customerId AND b1.deleteFlag = '0' JOIN ( SELECT  a.YSId,  a.materialId,  a.depotId,  sum(REPLACE(a.quantity, ',', '')) AS quantity,  max(IFNULL(a.storageFinish,'010')) AS storageFinish,  max(a.checkInDate) AS checkInDate FROM  v_purchasestockindetail a JOIN ( SELECT a.YSId, a.materialId  FROM v_purchasestockindetail a  WHERE a.stockintype='030' #1    GROUP BY a.YSId,a.materialId ) b ON a.ysid = b.ysid AND a.materialId = b.materialId AND a.stockintype='030'  GROUP BY  b.YSId,b.materialId ) c ON c.materialId = a.materialId AND c.YSId = a.YSId WHERE A.orderType = '010' #2 HAVING #3  ) a  LEFT JOIN b_costbom b ON a.YSId = b.YSId AND b.deleteFlag = '0' LEFT JOIN (  SELECT a.YSId, SUM( IF (  IFNULL(b.quantity, 0) + 0 &gt; a.orderQty + 0,  b.quantity,  a.orderQty ) * a.price ) costSum  FROM ( SELECT  a.YSId,  a.materialId,  a.price, IF ( sum(a.unitQuantity) = 0, 1, sum(a.unitQuantity)  ) * REPLACE (c.totalQuantity, ',', '') AS orderQty FROM  b_purchaseplandetail a LEFT JOIN b_orderdetail c ON c.ysid = a.ysid AND (c.deleteFlag = '0') JOIN ( SELECT a.YSId  FROM b_purchasestockin a  WHERE a.stockintype='030' #1   AND a.deleteFlag='0'  GROUP BY a.ysid ) c1 ON c1.ysid = a.ysid WHERE  a.deleteFlag = '0'  GROUP BY  a.YSId, a.materialId ) a  LEFT JOIN v_stockoutdetailgroup b ON a.YSId = b.YSId AND a.materialId = b.materialId  WHERE LEFT (a.materialId, 1) &lt;&gt; 'H'  GROUP BY a.ysid ) d ON d.ysid = a.ysid  LEFT JOIN (  SELECT f2.YSId, SUM(IFNULL( f2.manufactureQty,0) * IFNULL(REPLACE(f2.price, ',', ''), 0)) costSum  FROM v_purchaseplandetailgroup f2, ( SELECT  f1.YSId FROM  b_purchasestockin f1 WHERE  f1.stockintype='030' #1  AND f1.deleteFlag='0' GROUP BY  f1.ysid  ) f3  WHERE LEFT (f2.materialId, 1) = 'H' AND f2.ysid = f3.ysid  GROUP BY f2.ysid ) f ON f.ysid = a.ysid  LEFT JOIN b_pricereference e ON e.materialId = a.materialId AND a.orderType = '020' LEFT JOIN v_orderexpanse_groupby_type g ON g.ysid = a.ysid AND g.type = 'D' LEFT JOIN t_exchange_rate c1 ON c1.rate_day = a.checkInDate AND c1.currency = a.currency WHERE  1 = 1</from>
-    <orderby>a.ysid </orderby>
+    <!-- from>( SELECT a.YSId, A.receipt,c.checkInDate, a.PIId, a.materialId, a.deliveryDate, a.totalPrice, a.quantity, a.totalQuantity, c.quantity stockinQty, c.storageFinish, a.team, b1.shortName, a.orderDate, a.materialId productId, a.materialName productName, a.currency, A.orderType, a.full_field FROM v_orderlist a LEFT JOIN b_Customer b1 ON b1.customerId = a.customerId AND b1.deleteFlag = '0' JOIN ( SELECT  a.YSId,  a.materialId,  a.depotId,  sum(REPLACE(a.quantity, ',', '')) AS quantity,  max(IFNULL(a.storageFinish,'010')) AS storageFinish,  max(a.checkInDate) AS checkInDate FROM  v_purchasestockindetail a JOIN ( SELECT a.YSId, a.materialId  FROM v_purchasestockindetail a  WHERE a.stockintype='030' #1    GROUP BY a.YSId,a.materialId ) b ON a.ysid = b.ysid AND a.materialId = b.materialId AND a.stockintype='030'  GROUP BY  b.YSId,b.materialId ) c ON c.materialId = a.materialId AND c.YSId = a.YSId WHERE A.orderType = '010' #2 HAVING #3  ) a  LEFT JOIN b_costbom b ON a.YSId = b.YSId AND b.deleteFlag = '0' LEFT JOIN (  SELECT a.YSId, SUM( IF (  IFNULL(b.quantity, 0) + 0 &gt; a.orderQty + 0,  b.quantity,  a.orderQty ) * a.price ) costSum  FROM ( SELECT  a.YSId,  a.materialId,  a.price, IF ( sum(a.unitQuantity) = 0, 1, sum(a.unitQuantity)  ) * REPLACE (c.totalQuantity, ',', '') AS orderQty FROM  b_purchaseplandetail a LEFT JOIN b_orderdetail c ON c.ysid = a.ysid AND (c.deleteFlag = '0') JOIN ( SELECT a.YSId  FROM b_purchasestockin a  WHERE a.stockintype='030' #1   AND a.deleteFlag='0'  GROUP BY a.ysid ) c1 ON c1.ysid = a.ysid WHERE  a.deleteFlag = '0'  GROUP BY  a.YSId, a.materialId ) a  LEFT JOIN v_stockoutdetailgroup b ON a.YSId = b.YSId AND a.materialId = b.materialId  WHERE LEFT (a.materialId, 1) &lt;&gt; 'H'  GROUP BY a.ysid ) d ON d.ysid = a.ysid  LEFT JOIN (  SELECT f2.YSId, SUM(IFNULL( f2.manufactureQty,0) * IFNULL(REPLACE(f2.price, ',', ''), 0)) costSum  FROM v_purchaseplandetailgroup f2, ( SELECT  f1.YSId FROM  b_purchasestockin f1 WHERE  f1.stockintype='030' #1  AND f1.deleteFlag='0' GROUP BY  f1.ysid  ) f3  WHERE LEFT (f2.materialId, 1) = 'H' AND f2.ysid = f3.ysid  GROUP BY f2.ysid ) f ON f.ysid = a.ysid  LEFT JOIN b_pricereference e ON e.materialId = a.materialId AND a.orderType = '020' LEFT JOIN v_orderexpanse_groupby_type g ON g.ysid = a.ysid AND g.type = 'D' LEFT JOIN t_exchange_rate c1 ON c1.rate_day = a.checkInDate AND c1.currency = a.currency WHERE  1 = 1</from -->
+    <from>v_costAccounting_m m</from>
+    <orderby>m.ysid </orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    
   </query>
+	<query>
+		<pool></pool>    
+    	<name value="costAccountingGroupByYear" />
+     	<where>
+        	<w name="m.team"       des="" reqName="team"     dtype="ch" oper="="  lg="AND" bt="" />
+        	<w name="m.yearFlag"   des="" reqName="yearFlag" dtype="ch" oper="="  lg="AND" bt="" />
+    	</where>
+	  	<select>
+	      <f name="m.groupFlag" alias="" ctype="" />
+	      <f name="FORMAT(sum(REPLACE(IFNULL(IF (	ISNULL(m.ysidAlready),	m.cost,	m.costAlready),0),',','')),2)" alias="cost_group" ctype="" />
+	      <f name="FORMAT(sum(REPLACE(IFNULL(IF (	ISNULL(m.ysidAlready),	m.labolCost,	m.labolCostAlready),0),',','')),2)" alias="labol_group" ctype="" />
+	      <f name="FORMAT(sum(REPLACE(IFNULL(IF (	ISNULL(m.ysidAlready),	m.materialCost,	m.materialCostAlready),0),',','')),2)" alias="materail_group" ctype="" />
+	      <f name="FORMAT(sum(REPLACE(IFNULL(IF (	ISNULL(m.ysidAlready),	m.xiaoshou - m.cost - zengzhishui + tuishui + m.gengdan,	m.profitAlready),0),',','')),2)" alias="profit_group" ctype="" />
+	      <f name="FORMAT(sum(REPLACE(IFNULL(m.xiaoshou,0),',','')),2)" alias="xiaoshou_group" ctype="" />
+	      <f name="ROUND(sum(REPLACE(IFNULL(IF (	ISNULL(m.ysidAlready),	m.xiaoshou - m.cost - zengzhishui + tuishui + m.gengdan,	m.profitAlready),0),',','')) / sum(REPLACE(IFNULL(m.xiaoshou,0),',',''))*100,2)" alias="profit_rate" ctype="" />
+	      <f name="ROUND(sum(REPLACE(IFNULL(IF (	ISNULL(m.ysidAlready),	m.xiaoshou - m.cost - zengzhishui + tuishui + m.gengdan,	m.profitAlready),0),',','')) / sum(REPLACE(IFNULL(IF (	ISNULL(m.ysidAlready),	m.cost,	m.costAlready),0),',','')) * 100,2) " alias="profit_rate_old" ctype="" />
+
+	  	</select>
+	    <from>v_costAccounting_m m WHERE m.receipt &lt;&gt; 'F' AND m.orderType = '010' </from>
+	    <groupby>m.groupFlag</groupby>
+	    <having></having>	
+	    <orderby>m.groupFlag</orderby>
+  	</query>
   <query>
     <pool></pool>    
     <name value="costBomDetailByYsid" />

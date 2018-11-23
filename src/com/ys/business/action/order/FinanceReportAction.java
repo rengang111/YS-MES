@@ -153,6 +153,15 @@ public class FinanceReportAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/finance/costconceladd";
 				break;	
+			case "monthlyStatisticsInit"://月度统计初始化
+				monthlyStatisticsInit();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/finance/costaccoutingstatistics";
+				break;	
+			case "monthlyStatistics"://月度统计
+				dataMap = monthlyStatistics();
+				printOutJsonObj(response, dataMap);
+				break;	
 				
 				
 		}
@@ -443,6 +452,30 @@ public class FinanceReportAction extends BaseAction {
 		HashMap<String, Object> map = new HashMap<>();
 		try {
 			service.updateOrderDetailForCostConcel();
+			map.put(INFO, SUCCESSMSG);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			map.put(INFO, ERRMSG);
+		}
+		
+		return map;
+	}
+	
+	public void monthlyStatisticsInit(){
+		try {
+			service.monthlyStatisticsInit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public HashMap<String, Object> monthlyStatistics(){
+		HashMap<String, Object> map = new HashMap<>();
+		try {
+			map = service.monthlyStatistics();
 			map.put(INFO, SUCCESSMSG);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

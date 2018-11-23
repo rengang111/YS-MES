@@ -118,6 +118,10 @@ public class StockOutAction extends BaseAction {
 				doPrintReceipt();
 				rtnUrl = "/business/manufacture/stockoutprint";
 				break;
+			case "getPrintData"://打印出库单
+				dataMap = getStockoutDetail();
+				printOutJsonObj(response, dataMap);;
+				break;
 			case "printProductReceipt"://打印成品入库单
 				doPrintProductReceipt();
 				rtnUrl = "/business/manufacture/productstorageprint";
@@ -367,6 +371,7 @@ public class StockOutAction extends BaseAction {
 	public void doPrintReceipt(){
 		try{
 			service.printReceipt();
+			model.addAttribute("userName",userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

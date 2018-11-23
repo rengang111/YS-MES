@@ -221,9 +221,10 @@
 	</fieldset>
 
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-	 	<a class="DTTT_button DTTT_button_text" id="doEdit"  onclick="doEdit();">继续领料</a>
-	 	<a class="DTTT_button DTTT_button_text" id="doDelete"  onclick="doDelete();">删除</a>
-		<a class="DTTT_button DTTT_button_text goBack" id="goBack" > 返回 </a>
+	 	<a class="DTTT_button " id="doEdit"  onclick="doEdit();">继续领料</a>
+	 	<a class="DTTT_button " id="doPrint"  onclick="doPrint();">打印出库单</a>
+	 	<a class="DTTT_button " id="doDelete"  onclick="doDelete();">删除</a>
+		<a class="DTTT_button  goBack" id="goBack" > 返回 </a>
 	</div>
 	
 	<fieldset style="margin-top: -20px;">
@@ -264,12 +265,14 @@
 <script type="text/javascript">
 
 function doPrint(stockOutId) {
-	var YSId = '${order.YSId }';
+	var YSId 		= '${order.YSId }';
+	var stockOutId  = '${order.stockOutId }';
+	
 	var url = '${ctx}/business/stockout?methodtype=print';
 	url = url +'&YSId='+YSId;
 	url = url +'&stockOutId='+stockOutId;
 		
-	callProductDesignView("print",url);
+	callWindowFullView("print",url);
 
 };
 
