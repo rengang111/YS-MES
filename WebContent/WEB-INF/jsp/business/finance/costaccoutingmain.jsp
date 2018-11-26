@@ -93,7 +93,7 @@ body{
 					{"data": "stockinQty", "defaultContent" : '', "className" : 'td-right'},
 					{"data": "orderTotalPrice", "className" : 'td-right'},//7
 					{"data": "checkInDate", "defaultContent" : '0', "className" : 'td-right'},
-					{"data": "cost", "className" : 'td-right'},//9
+					{"data": "cost_view", "className" : 'td-right'},//9
 					{"data": "receipt", "className" : 'td-right'},//10
 					{"data": "receipt", "className" : 'td-right'},//11
 					{"data": null, "className" : 'td-right',"defaultContent" : ''},//12
@@ -193,7 +193,14 @@ body{
 						var gross = 0;//毛利
 						
 						if(receipt == 'F'){				 				
-							return "0";
+							rmbprice = 0;		 				
+							cost = 0;		 				
+							rebate = 0;		 				
+							labolCost = 0;		 				
+							currency = 0;		 				
+							exchange = 0;
+							profit = 0;
+							profitrate = 0;
 						}
 						
 
@@ -206,7 +213,11 @@ body{
 		    			text +=		'<input type="hidden" name="profit" 	id="profit'+index + '" 		value="'+profit+'" >';
 		    			text +=		'<input type="hidden" name="profitrate"	id="profitrate'+index + '" 	value="'+profitrate+'" >';
 
-		    			return profit + "<br />" + profitrate + text;
+		    			if(receipt == 'F'){
+		    				return profit + text;
+		    			}else{	
+		    				return profit + "<br />" + profitrate + text;
+		    			}
 		    			
 		    			//return floatToCurrency(profit)+"<br />+"+"（"+floatToCurrency(profitrate)+"%）";//+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
 		    			//return cost+":::"+profitrate+":::"+exchange+":::"+mateCost+":::"+labolCost;
@@ -220,17 +231,20 @@ body{
 		    			var orderQty = currencyToFloat(row["quantity"]);
 		    			var storageFinish = currencyToFloat(row["storageFinish"]);
 		    			var ysidAlready = currencyToFloat(row["ysidAlready"]);
+		    			var cost = currencyToFloat(row["cost_view"]);//总成本
 		    			var rtn="";
 
 		    			if(receipt == 'F')
 							return "不参与";
-							
-		    			alert('ysidAlready:'+ysidAlready)
+		    			
+						if(cost == 0)
+							return '无方案';
+		    			
 		    			if(ysidAlready != '' ){
 		    				rtn="已核算";
 		    			}else{
 		    				if(stockinQty >= orderQty){
-			    				rtn="待核算";
+			    				rtn="<span class='text-red'>待确认</span>";
 			    					
 			    			}else{
 			    				if(storageFinish == '020'){
@@ -247,6 +261,13 @@ body{
 		    					    			
 		    			return rtn;
 		    		}},
+		       		{"targets":9,"createdCell":function(td, cellData, rowData, row, col){
+
+		    			if( cellData == 0 ) {
+		       				$(td).parent().addClass('error');
+		 				}
+		       			
+		       		}},
 		       		{"targets":11,"createdCell":function(td, cellData, rowData, row, col){
 
 		    			if( cellData == 'F' ) {
@@ -427,7 +448,7 @@ body{
 		$('#orderType').val(orderType);
 
 		var team = $('#team').val();
-		ajaxSearch(orderType,monthday,'false',team,statusFlag);
+		ajaxSearch(orderType,monthday,'false',status,team,'');
 	}
 
 	//月度统计
@@ -525,7 +546,13 @@ body{
 		textView = textView + "&nbsp;&nbsp;人工：¥ "+ floatToCurrency(labolCnt);
 		
 		//var profit = rmbCount - costSum;//利润
-		var profitm = profitCnt / costSum * 100;//利润率
+		if(rmbCount == 0){
+			var profitm = 0;//利润率
+		}else{
+			var profitm = profitCnt / rmbCount * 100;//利润率
+			
+		}
+			
 		//var profitm = profitCnt / costSum * 100;//利润率
 		
 		textView = textView + "&nbsp;&nbsp;利润：¥ "+ floatToCurrency(profitCnt)+"（"+floatToCurrency(profitm)+"%）";
@@ -741,7 +768,7 @@ body{
 						<span>10月</span></a>
 						<a id="defutBtn11" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('11');">
 						<span>11月</span></a>
-				 		<a id="defutBtn14" style="height: 15px;" class="DTTT_button box" onclick="doShowMonthly('050');">
+				 		<a id="defutBtn14" style="height: 15px;" class="DTTT_button" onclick="doShowMonthly('050');">
 						<span>月度统计</span></a> 
 				 		&nbsp;&nbsp;<a id="defutBtnB" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer3('B');">
 						<span>部分入库</span></a> 	

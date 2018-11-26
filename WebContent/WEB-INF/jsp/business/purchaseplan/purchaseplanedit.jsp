@@ -844,6 +844,7 @@ function purchasePlanCompute(obj,flg){
 	$oTotPriceS.html(vTotalNew);
 	$oTotPriceI.val(vTotalNew);
 	$oThisPrice.val(vPrice);
+	$oSupplier.val($.trim($oSupplier.val()));
 	
 	costAcount();//成本核算
 }

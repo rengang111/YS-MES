@@ -60,7 +60,7 @@ body{
 							
 							
 							//核算成本合计，利润合计
-							//costCountByCurrency();
+							costCountByCurrency();
 							
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -73,7 +73,6 @@ body{
 				"columns": [
 					{"data": null, "defaultContent" : '',"className" : 'td-center'},
 					{"data": "groupFlag", "defaultContent" : ''},
-					{"data": "xiaoshou_group", "defaultContent" : '', "className" : 'td-right'},
 					{"data": "xiaoshou_group", "defaultContent" : '', "className" : 'td-right'},//3
 					{"data": "cost_group", "defaultContent" : '', "className" : 'td-right'},
 					{"data": "materail_group", "defaultContent" : '', "className" : 'td-right'},//5
@@ -86,7 +85,7 @@ body{
 		    		{"targets":0,"render":function(data, type, row){
 		    			return row["rownum"];
                     }},
-                    {"targets":8,"render":function(data, type, row){
+                    {"targets":7,"render":function(data, type, row){
 		    			return data+'%';
                     }}
 		    		
@@ -102,11 +101,13 @@ body{
 	
 	function initEvent(){
 
+		var year = getYear();
+		$('#year').val(year);
+		
 		var monthday   = $('#monthday').val();
 		var statusFlag = $('#statusFlag').val();
 		var orderType  = $('#orderType').val();
 		
-		var year = getYear();
 		var mounth = getMonth() ;//前移一个月
 		mounth = mounth -1;
 		if(mounth<10){
@@ -136,10 +137,6 @@ body{
 	$(document).ready(function() {
 
 		initEvent();
-	
-		//buttonSelectedEvent();//按钮选择式样
-		//buttonSelectedEvent2();//按钮选择式样2
-		//buttonSelectedEvent3();//按钮选择式样3
 		
 		var month = "";
 		var monthday = $('#monthday').val();
@@ -160,32 +157,10 @@ body{
 			var statusFlag = $('#statusFlag').val();
 			var team = $(this).val();
 			
-			ajaxSearch(orderType,monthday,'false',statusFlag,team,'');	
+			ajaxSearch(monthday,team);	
 		});
 	
-		//$('#defutBtn'+month).removeClass("start").addClass("end");
-		//$('#defutBtn'+statusFlag).removeClass("start").addClass("end");
-		//$('#defutBtn'+orderType).removeClass("start").addClass("end");
 	})	
-	
-	function doSearch() {	
-
-		ajaxSearch('','','false','','ALL','');
-		
-		var collection = $(".box");
-	    $.each(collection, function () {
-	    	$(this).removeClass("end");
-	    });
-	    var collection = $(".box2");
-	    $.each(collection, function () {
-	    	$(this).removeClass("end");
-	    });
-	}
-	
-	
-	
-
-
 	
 	
 	function doShow(YSId) {
@@ -214,72 +189,42 @@ body{
 		var jpy = 0;
 		var costSum = 0;
 		var labolCnt = 0;
-		var ysCnt = 0;//订单个数
+		var materCnt = 0;//订单个数
 		var profitCnt = 0;
 		$('#TMaterial tbody tr').each (function (){
 
-			var sales        = $(this).find("td").eq(7).text();//销售额
-			var currencyType = $(this).find("td").eq(10).find("input[name=currency]").val();//币种
-			var cost         = $(this).find("td").eq(10).find("input[name=cost]").val();//核算成本
-			var labolCost    = $(this).find("td").eq(10).find("input[name=labolCost]").val();//人工成本
-			var rate         = $(this).find("td").eq(10).find("input[name=exchange]").val();//汇率
-			var profit       = $(this).find("td").eq(10).find("input[name=profit]").val();//利润
+			var sales        = $(this).find("td").eq(2).text();//销售额
+			var cost         = $(this).find("td").eq(3).text();//核算成本
+			var materCost    = $(this).find("td").eq(4).text();//材料成本
+			var labolCost    = $(this).find("td").eq(5).text();//人工成本
+			var profit       = $(this).find("td").eq(6).text();//利润
 			
-			sales = currencyToFloat(sales);
-			cost = currencyToFloat(cost);
+			sales     = currencyToFloat(sales);
+			cost      = currencyToFloat(cost);
+			materCost = currencyToFloat(materCost);
 			labolCost = currencyToFloat(labolCost);
-			profit = currencyToFloat(profit);
-			rmbCount = rmbCount + rate * sales;//人民币总计
-			costSum = costSum + cost;//核算成本合计
+			profit   = currencyToFloat(profit);
+			
+			rmbCount = rmbCount + sales;//人民币总计
+			costSum  = costSum + cost;//核算成本合计
+			materCnt = materCnt + materCost;//材料成本合计
 			labolCnt = labolCnt + labolCost;//人工成本合计
 			profitCnt = profitCnt + profit;//利润合计
 			//alert("labolCnt+labolCost"+labolCnt+"::::"+labolCost)
-			if(currencyType == 'RMB'){
-				rmb = rmb + sales;//
-			}else if(currencyType == 'USD'){
-				us = us + sales;//
-			}else if(currencyType == 'EURO'){
-				eur = eur + sales;//
-			}else if(currencyType == 'GBP'){
-				gbp = gbp + sales;//
-			}else if(currencyType == 'JPY'){
-				jpy = jpy + sales;//
-			}
 			
-			ysCnt++;
 						
 		});	
 		//alert("rmb:"+rmb)
 
-		var textView="销售额：";
-		if(rmb > 0){
-			textView = textView + "¥"+floatToCurrency(rmb);
-		}
-		if(us > 0){			
-			textView = textView + "; $"+floatToCurrency(us);			
-		}
-		if(eur > 0){
-			textView = textView + "; €"+floatToCurrency(eur);			
-		}
-		if(gbp > 0){
-			textView = textView + "; ￡"+floatToCurrency(gbp);			
-		}
-		if(jpy > 0){
-			textView = textView + "; ¥"+floatToCurrency(jpy);			
-		}
-		
-		textView = textView +"&nbsp;&nbsp;RMB销售总计：¥ " + floatToCurrency(rmbCount);
-		
-		textView = textView + "&nbsp;&nbsp;总成本：¥ "+ floatToCurrency(costSum);
-		textView = textView + "&nbsp;&nbsp;人工：¥ "+ floatToCurrency(labolCnt);
-		
-		//var profit = rmbCount - costSum;//利润
-		var profitm = profitCnt / costSum * 100;//利润率
-		//var profitm = profitCnt / costSum * 100;//利润率
-		
-		textView = textView + "&nbsp;&nbsp;利润：¥ "+ floatToCurrency(profitCnt)+"（"+floatToCurrency(profitm)+"%）";
-		
-		$('#costCount').html(textView);
+			var rate = profitCnt / rmbCount * 100;
+
+			//alert("rmbCount+labolCost"+rmbCount+"::::"+costSum+"::::"+materCnt+"::::"+labolCnt+"::::"+profitCnt+"::::"+rate)
+			$('#rmb').text(floatToCurrency(rmbCount));
+			$('#cost').text(floatToCurrency(costSum));
+			$('#mater').text(floatToCurrency(materCnt));
+			$('#labol').text(floatToCurrency(labolCnt));
+			$('#profit').text(floatToCurrency(profitCnt));
+			$('#rate').text(floatToCurrency(rate)+''+'%');
 		
 	}
 	
@@ -294,7 +239,7 @@ body{
 		$("#jsonData").val(JSON.stringify(html));
 		
 		//return;
-		var url = '${ctx}/business/financereport?methodtype=downloadExcelForCostAccounting'
+		var url = '${ctx}/business/financereport?methodtype=downloadExcelForCostStatistics'
 				 + "&key1=" + key1
 				 + "&key2=" + key2
 				// + "&html=" + JSON.stringify(html)
@@ -321,22 +266,14 @@ body{
 		    $('#TMaterial thead tr').each(function(index,item){
 		    		
 			      heads.push("No");
-			      heads.push("ysid");
-			      heads.push("productId");
-			      heads.push("name");
-			      heads.push("customer");
-			      heads.push("orderQty");
-			      heads.push("totalQty");
-			      heads.push("stockinQty");//7
-			      heads.push("salse");
-			      heads.push("stockinDate");
-			      heads.push("cost");//10
-			      heads.push("labolCost");//11
+			      heads.push("year");
+			      heads.push("rmb");
+			      heads.push("cost");
+			      heads.push("matercost");
+			      heads.push("labolcost");
 			      heads.push("profit");
-			      heads.push("profitrate");	
-			      heads.push("team");		
+			      heads.push("profitrate");
 		    	
-				//heads.push($(item).text());
 		    	
 		    });
 
@@ -350,37 +287,27 @@ body{
 				rowdata[heads[2]] = $(item).find("td").eq(2).text();
 				rowdata[heads[3]] = $(item).find("td").eq(3).text();
 				rowdata[heads[4]] = $(item).find("td").eq(4).text();
-	
-	    	 	var order = $(item).find("td").eq(5).find('input[name=order]').val();
-	    	 	var manuf = $(item).find("td").eq(5).find('input[name=manuf]').val();
-	    	 
-		    	rowdata[heads[5]] = order;
-		    	rowdata[heads[6]] = manuf;
+				rowdata[heads[5]] = $(item).find("td").eq(5).text();	
+				rowdata[heads[6]] = $(item).find("td").eq(6).text();	
+				rowdata[heads[7]] = $(item).find("td").eq(7).text();
+						      
+		      jsondata.push(rowdata);
+		    });
 
-				rowdata[heads[7]] = $(item).find("td").eq(6).text();
-				rowdata[heads[8]] = $(item).find("td").eq(7).text();
-				rowdata[heads[9]] = $(item).find("td").eq(8).text();
-							    	  
-				var cost 		= $(item).find("td").eq(9).find('input[name=cost]').val();
-		    	var labolCost	= $(item).find("td").eq(9).find('input[name=labolCost]').val();
-		    	 
-		    	rowdata[heads[10]] = cost;
-		    	rowdata[heads[11]] = labolCost;
-	    	  
-		    	var profit 		= $(item).find("td").eq(10).find('input[name=profit]').val();
-		    	var profitrate 	= $(item).find("td").eq(10).find('input[name=profitrate]').val();
+		    // tfoot
+		    $('#TMaterial tfoot tr').each(function(index, item){
 		    	
-		    	rowdata[heads[12]] = profit;
-		    	rowdata[heads[13]] = profitrate;
-		    	
-				rowdata[heads[14]] = $(item).find("td").eq(11).text();
-			    
-		       // }else{
-		      //    console.log("no jsonval");
-		       //   rowdata[heads[index]] = "";
-		      //  }
-		     // });
-
+		      	var rowdata = {};
+		      	var y=0;
+				rowdata[heads[0]] = $(item).find("td").eq(0).text();
+				rowdata[heads[1]] = $(item).find("td").eq(1).text();
+				rowdata[heads[2]] = $(item).find("td").eq(2).text();
+				rowdata[heads[3]] = $(item).find("td").eq(3).text();
+				rowdata[heads[4]] = $(item).find("td").eq(4).text();
+				rowdata[heads[5]] = $(item).find("td").eq(5).text();	
+				rowdata[heads[6]] = $(item).find("td").eq(6).text();
+				rowdata[heads[7]] = $(item).find("td").eq(7).text();
+						      
 		      jsondata.push(rowdata);
 		    });
 		    return jsondata;
@@ -452,7 +379,7 @@ body{
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 					
 			<div id="DTTT_container2" style="height:40px;float: right">
-			  	<!-- a  class="DTTT_button" onclick="downloadExcel();return false;" ><span>EXCEL</span></a-->
+			  	<a  class="DTTT_button" onclick="downloadExcel();return false;" ><span>EXCEL</span></a>
 			</div>
 			<div id="DTTT_container2" style="height:40px;float: right">
 				<span id="costCount" style="font-size: 12px;font-weight: bold;"></span>
@@ -464,7 +391,6 @@ body{
 					<tr>
 						<th style="width: 10px;">No</th>
 						<th style="width: 60px;">年月</th>
-						<th style="width: 120px;">销售额</th>
 						<th style="width: 150px;">RMB销售总计</th>
 						<th style="width: 150px;">核算成本</th>
 						<th style="width: 150px;">材料成本</th>
@@ -473,6 +399,18 @@ body{
 						<th style="width: 70px;">利润率</th>
 					</tr>
 				</thead>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td>合计：</td>
+						<td id="rmb"></td>
+						<td id="cost"></td>
+						<td id="mater"></td>
+						<td id="labol"></td>
+						<td id="profit"></td>
+						<td id="rate"></td>
+					</tr>
+				</tfoot>
 			</table>
 		</div>
 	</div>

@@ -327,13 +327,15 @@ public class FinanceReportService extends CommonService {
 
 		userDefinedSearchCase.put("groupFlag", monthday);
 		
-		//String having = "1=1";
+		String having = "1=1";
 		//String monthDay1 = " AND checkInDate > '" + monthly.getStartDate()
 		//		+"' AND checkInDate < '"+monthly.getEndDate()+"' ";
 		//String monthDay2 = " AND a.orderDate < '" + monthly.getEndDate() +"' ";
 		
+		String str_table=" v_costAccounting_m ";
 		//查询：关键字，不再区分月份
 		if(notEmpty(key1) || notEmpty(key2)){
+			str_table = " v_costAccounting_m_no_where ";
 			statusFlag = "";//有查询key，则忽略其状态
 			//monthDay1 = "";
 			//monthDay2 = "";			
@@ -344,6 +346,8 @@ public class FinanceReportService extends CommonService {
 			statusFlag = "";//不再区分审核状态
 			//monthDay1 = "";
 			//monthDay2 = "";
+			str_table = " v_costAccounting_m_no_where ";
+			having = " REPLACE(completedQuantity,',','')+0 > 0 AND REPLACE(completedQuantity,',','')+0  < REPLACE(quantity,',','')+0 ";		
 			//having="stockinQty+0 > 0 AND stockinQty+0 < quantity+0 AND storageFinish ='010'";		
 		}
 		
@@ -352,6 +356,9 @@ public class FinanceReportService extends CommonService {
 			//having=" stockinQty+0 >= quantity+0 ";
 			
 		}else if(("D").equals(statusFlag)){//待核算
+			str_table = " v_costAccounting_m_no_where ";
+			having = "  REPLACE(completedQuantity,',','')+0  >= REPLACE(quantity,',','')+0  AND ysidAlready IS NULL";
+			
 			//having=" storageFinish ='020' and accountingDate='' ";
 			
 		}else if(("Y").equals(statusFlag)){//已核算
@@ -370,7 +377,8 @@ public class FinanceReportService extends CommonService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);
 		
-		
+		sql = sql.replace("#1", str_table);
+		sql = sql.replace("#2", having);
 		//sql = sql.replace("#1", monthly.getStartDate());
 		//sql = sql.replace("#1", monthDay1);
 		//sql = sql.replace("#2", monthDay2);
@@ -390,102 +398,7 @@ public class FinanceReportService extends CommonService {
 		modelMap.put("keyword2",key2);		
 		
 		return modelMap;		
-		/*
-		StringBuffer bfsql = new StringBuffer();
-		bfsql.append("SELECT ");
-		bfsql.append("a.YSId,");
-		bfsql.append("a.materialId,A.orderType");
-		bfsql.append("FROM");
-		bfsql.append("(");
-		bfsql.append("SELECT");
-		bfsql.append("a.YSId,");
-		bfsql.append("c.checkInDate,");
-		bfsql.append("a.PIId,");
-		bfsql.append("a.materialId,");
-		bfsql.append("A.orderType");
-		bfsql.append("FROM v_orderlist a");
-
-		bfsql.append(" JOIN ");
-		bfsql.append("(");
-		bfsql.append("SELECT");
-		bfsql.append("	b.YSId AS YSId,");
-		bfsql.append("	b.contractId,");
-		bfsql.append("	a.materialId AS materialId,");
-		bfsql.append("	a.depotId,");
-		bfsql.append("	a.deleteFlag AS deleteFlag,");
-		bfsql.append("	sum( REPLACE (a.quantity, ',', '') ) AS quantity,");
-		bfsql.append("	max(b.checkInDate) AS checkInDate");
-		bfsql.append("FROM");
-		 b_purchasestockindetail a JOIN b_purchaseStockIn b ON a.receiptId = b.receiptId
-		 WHERE a.deleteFlag='0' and checkInDate > '2018-05-25' AND checkInDate < '2018-06-26'
-		 GROUP BY	b.YSId, 	b.contractId,	a.materialId 
-		  
-		)
-		 c 		ON c.materialId=a.materialId AND c.YSId=a.YSId AND c.deleteFlag='0'  
-
-		WHERE A.orderType = '010'
-		) a
-
-		LEFT JOIN b_costbom b  ON a.YSId=b.YSId AND b.deleteFlag='0' 
-		left join 
-		(
-		SELECT
-			a.YSId,	SUM(IF(IFNULL(b.quantity,0)+0>a.orderQty+0,b.quantity,a.orderQty) * a.price) costSum
-		FROM
-
-			(
-			SELECT
-				a.YSId,	a.materialId,	a.price,
-				if(sum(a.unitQuantity)=0,1,sum(a.unitQuantity)) * REPLACE(c.totalQuantity, ',', '' ) AS orderQty
-			FROM
-					b_purchaseplandetail a
-					LEFT JOIN b_orderdetail c ON c.ysid=a.ysid AND (c.deleteFlag = '0')
-					JOIN (
-						SELECT
-							b.YSId AS YSId,
-							b.contractId,
-							a.materialId AS materialId,
-							a.depotId,
-							a.deleteFlag AS deleteFlag,
-							sum( REPLACE (a.quantity, ',', '') ) AS quantity,
-							max(b.checkInDate) AS checkInDate
-						FROM
-						 b_purchasestockindetail a JOIN b_purchaseStockIn b ON a.receiptId = b.receiptId
-						 WHERE a.deleteFlag='0' and checkInDate > '2018-05-25' AND checkInDate < '2018-06-26'
-						GROUP BY b.ysid
-					) c1 ON c1.ysid=a.ysid
-			WHERE a.deleteFlag='0'
-			GROUP BY	a.YSId,	a.materialId 
-			)	 a
-
-		LEFT JOIN v_stockoutdetailgroup b ON a.YSId = b.YSId AND a.materialId = b.materialId
-		WHERE LEFT (a.materialId, 1) <> 'H'
-		GROUP BY a.ysid 
-		)
-		 d 	ON d.ysid=a.ysid 
-
-		LEFT JOIN 
-
-		(
-		SELECT
-			a.YSId,
-			SUM(IFNULL(REPLACE (a.manufactureQuantity,',',''),0) * IFNULL(REPLACE(a.price, ',', ''), 0)) costSum
-		FROM
-			v_purchaseplandetailgroup a,(SELECT * FROM v_mouthday_checkin_ysid b GROUP BY b.ysid) b1 
-		WHERE LEFT (a.materialId, 1) = 'H' AND a.ysid=b1.ysid
-
-		GROUP BY a.ysid 
-		)
-		 f ON f.ysid=a.ysid
-		LEFT JOIN b_pricereference e 													ON e.materialId = a.materialId  AND a.orderType='020' 
-		LEFT JOIN v_orderexpanse_groupby_type g 							ON g.ysid=a.ysid AND g.type='D' 
-
-
-
-
-		ORDER BY a.ysid
-
-*/
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -967,6 +880,55 @@ public class FinanceReportService extends CommonService {
 		
 	}
 	
+
+	/**
+	 * 财务核算月度统计导出
+	 * @throws Exception
+	 */
+	public void downloadExcelForAStatistics(String data) throws Exception{
+		
+		//设置响应头，控制浏览器下载该文件
+				
+		//数据取得
+		List<Map<Integer, Object>>  datalist = getDownloadListForStatistics(data);			
+		
+		String fileName = CalendarUtil.timeStempDate()+".xls";
+		String dest = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_PRODUCTDESIGNTEMP)
+				+"/"+File.separator+fileName;
+       
+		String tempFilePath = session
+				.getServletContext()
+				.getRealPath(BusinessConstants.PATH_EXCELTEMPLATE)+File.separator+"costStatistics.xls";
+        File file = new File(dest);
+       
+        OutputStream out = new FileOutputStream(file);         
+        ExcelUtil excel = new ExcelUtil(response);
+
+        //读取模板
+        Workbook wbModule = excel.getTempWorkbook(tempFilePath);
+        //数据填充的sheet
+        int sheetNo=0;
+        //title
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        wbModule = excel.writeData(wbModule, dataMap, sheetNo);        
+        //detail
+        //必须为列表头部所有位置集合,输出 数据单元格样式和头部单元格样式保持一致
+		String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "costStatisticsExcel");
+		String[] heads = title.split(",",-1);
+        excel.writeDateList(wbModule,heads,datalist,sheetNo);
+         
+        //写到输出流并移除资源
+        excel.writeAndClose(tempFilePath, out);
+        System.out.println("导出成功");
+        out.flush();
+        out.close();
+        
+      //***********************Excel下载************************//
+        excel.downloadFile(dest,fileName);
+	}
+	
 	/**
 	 * 财务核算导出
 	 * @throws Exception
@@ -1014,6 +976,39 @@ public class FinanceReportService extends CommonService {
         
       //***********************Excel下载************************//
         excel.downloadFile(dest,fileName);
+	}
+	
+	@SuppressWarnings({ "unused", "rawtypes" })
+	public List<Map<Integer, Object>> getDownloadListForStatistics(String jsonStr) throws Exception {
+
+		 List<Map<Integer, Object>> listMap = new ArrayList<Map<Integer, Object>>();
+		 
+		 dataModel.setQueryName("getPurchaseStockInById");
+		 baseQuery = new BaseQuery(request, dataModel);
+
+		 String htmlStr = reqModel.getJsonData();
+		 
+		 //String htmlStr = URLDecoder.decode(request.getParameter("html"), "UTF-8");
+		 JSONArray jsonArray = JSONArray.fromObject(htmlStr);
+		 Object[] list = (Object[]) JSONArray.toArray(jsonArray);
+
+		// Map<String,Object> map1 = (Map<String,Object>)JSON.parse(jsonStr); 
+	      
+		 for(int i=0;i<jsonArray.size();i++){
+			String title = BaseQuery.getContent(Constants.SYSTEMPROPERTYFILENAME, "costStatisticsTitle");
+			String[] titles = title.split(",",-1);
+			Map<Integer, Object> excel = new HashMap<Integer, Object>();
+
+			Map map = parseJSON2Map(jsonArray.get(i).toString());
+			 
+			for(int j=0;j<titles.length;j++){
+				excel.put(j,map.get(titles[j]));		
+			}
+			listMap.add(excel);
+		 }
+		
+		 return  listMap;
+
 	}
 	
 	@SuppressWarnings({ "unused", "rawtypes" })

@@ -143,6 +143,9 @@ public class FinanceReportAction extends BaseAction {
 				break;	
 			case "downloadExcelForCostAccounting"://财务核算数据下载
 				downloadExcelForCostAccounting(data);
+				break;	
+			case "downloadExcelForCostStatistics"://财务月度统计数据下载
+				downloadExcelForCostStatistics(data);
 				break;
 			case "cancelCostInit"://不参与核算
 				cancelCostInit();
@@ -282,6 +285,19 @@ public class FinanceReportAction extends BaseAction {
 		}
 		
 	}
+	
+
+	private void downloadExcelForCostStatistics(String data) {		
+		
+		try {
+			service.downloadExcelForAStatistics(data);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> costAccountingSsearch(String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
