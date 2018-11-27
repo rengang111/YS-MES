@@ -25,6 +25,8 @@ body{
 		url = url + "&orderType=" +orderType;
 		url = url + "&team=" +team;
 		url = url + "&unFinished=" +unFinished;
+
+		$("#jsonData").val('');//清空表格数据
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": false,
@@ -44,7 +46,6 @@ body{
 					formData.forEach(function(e) {
 						aoData.push({"name":e.name, "value":e.value});
 					});
-
 					$.ajax({
 						"url" : sSource,
 						"datatype": "json", 
@@ -74,6 +75,8 @@ body{
 							
 							//核算成本合计，利润合计
 							costCountByCurrency();
+							
+							errorCheckAndCostCount();
 							
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -238,7 +241,7 @@ body{
 							return "不参与";
 		    			
 						if(cost == 0)
-							return '无方案';
+							return '无方案<br>仅参考';
 		    			
 		    			if(ysidAlready != '' ){
 		    				rtn="已核算";
@@ -668,25 +671,89 @@ body{
 	function errorCheckAndCostCount(){
 			
 			var cost = 0;
-			$('#example2 tbody tr').each (function (){
-				
-				var stockOutQty = $(this).find("td").eq(5).text();//领料数量
+			
+			$('#TMaterial tbody tr').each (function (){
+
+				var ysid     = $(this).find("td").eq(1).text();//耀升编号
+				var foreign  = $(this).find("td").eq(7).text();//外币金额
+				var status   = $(this).find("td").eq(12).text();//状态
+	    	 	var rmbprice = $(this).find("td").eq(10).find('input[name=rmbprice]').val();
+	    	 	var currency = $(this).find("td").eq(10).find('input[name=currency]').val();
 				var contractValue = $(this).find("td").eq(8).text();//领料金额
 				
-				stockOutQty = currencyToFloat(stockOutQty);
-				contractValue= currencyToFloat(contractValue);
-				
-				cost = cost + contractValue;
-				
-				if( stockOutQty == 0){
+				if(status.indexOf('无方案') > -1){
+
+					foreign = currencyToFloat(foreign);
+					rmbprice = currencyToFloat(rmbprice);
 					
-					$(this).addClass('error');
-				}
+					var list = ajaxBomSearch(ysid,rmbprice,currency,foreign);
+					//alert('list'+list)
+					//result =  cost+','+labolCost+','+profit;
+					var cost  = floatToCurrency(list.split(',')[0]);
+					var labol = floatToCurrency(list.split(',')[1]);
+					var profit = floatToCurrency(list.split(',')[2]);
+					var rate   = floatToCurrency(list.split(',')[3]);
+					$(this).find("td").eq(9).html(cost+'<br>' +labol);
+					//$(cost+"--" +labol).appendTo($(this).find("td").eq(9))
+					$(this).find("td").eq(10).html(profit +'<br>'+rate+'%');
+				}				
 							
 			});	
 			
 	}
 		
+	function ajaxBomSearch(ysid,rmbprice,currency,foreign) {
+		
+		var result;
+		
+		var url = "${ctx}/business/financereport?methodtype=costAccountingFromBom";
+		url = url + "&YSId=" +ysid;
+		
+		$.ajax({
+			type : "post",
+			url : url,
+			async : false,
+			data : 'key=',
+			dataType : "json",
+			contentType: "application/x-www-form-urlencoded; charset=utf-8",
+			success : function(data) {
+				var mateCost  = data['data'][0]['materCost'];		
+				var labolCost = data['data'][0]['labolCost'];		
+				var cost      = data['data'][0]['cost'];
+				//alert('cost:'+cost)
+				
+				var zeng = 0;
+				var profit = 0;//利润
+				var rebaterate = 0.16;//退税率
+				
+				if(currency == 'RMB'){
+    				zeng = (rmbprice - mateCost) / 1.16 * 0.16 ;
+					profit = rmbprice - cost - zeng;
+								    						
+    			}else{
+    				//纯外销			
+    				//退税
+    				rebate = mateCost * rebaterate / (1 + rebaterate);
+    				
+    				profit = rmbprice - cost + rebate;
+    			}
+				
+				var rate = profit / rmbprice * 100;
+				
+				result =  cost+','+labolCost+','+profit+','+rate;
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+			}
+		});
+		
+		
+		return result;
+
+
+	}
 </script>
 </head>
 

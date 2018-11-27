@@ -1079,7 +1079,7 @@ public class CommonService extends BaseService {
 		catch(Exception e) {
 			jsonObj.put("result", "1");
 			jsonObj.put("message", "图片上传失败");
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 
 		}		
 		

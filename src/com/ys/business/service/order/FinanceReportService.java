@@ -864,6 +864,26 @@ public class FinanceReportService extends CommonService {
 		
 		return HashMap;
 	}
+	
+
+	public HashMap<String, Object> getBaseBomCostByYsid(String data) throws Exception{
+		
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+
+		String YSId = request.getParameter("YSId");
+		
+		dataModel.setQueryFileName("/business/order/financequerydefine");
+		dataModel.setQueryName("getBaseBomCostByYsid");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+
+		HashMap.put("data", dataModel.getYsViewData());		
+		
+		return HashMap;
+	}
+	
 	public HashMap<String, Object> updateExchangeRate() throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();

@@ -158,6 +158,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		       // }
 		        
 		      //request对象封装的参数是以Map的形式存储的
+		        /*
 		         Map<String, String[]> paramMap = request.getParameterMap();
 		         for(Map.Entry<String, String[]> entry :paramMap.entrySet()){
 		             String paramName = entry.getKey();
@@ -173,6 +174,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		             RequestLog.requestLog(logger,MessageFormat.format("{0}={1}", paramName,paramValue));
 		             //System.out.println(MessageFormat.format("{0}={1}", paramName,paramValue));
 		         }
+		        */
 		        
 		        if (targetMenuId == null) {
 		        	//菜单表中无对应的action

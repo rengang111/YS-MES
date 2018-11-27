@@ -1163,11 +1163,15 @@ public class PaymentService extends CommonService {
 		String viewPath = file.getView();
 		String webPath = file.getWeb();
 
-
+		System.out.println("paymentId:"+paymentId);
+		System.out.println("savePath:"+savePath);
+		System.out.println("viewPath:"+savePath);
 		String photoName  = supplierId+ "-" + paymentId + "-" + CalendarUtil.timeStempDate(); 
 		
-		uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
+		HashMap<String, Object> jsonObj = 
+				uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
 
+		System.out.println("viewPath:"+jsonObj.get("message"));
 		ArrayList<String> list = getFiles(savePath,webPath);
 		modelMap.put(fileList, list);
 		modelMap.put(fileCount, list.size());

@@ -386,7 +386,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	var paymentId = $('#payment\\.paymentid').val();
 	if(paymentId == '（保存后自动生成）')
 		$('#payment\\.paymentid').val('');//清除非正常ID
-
+		//alert('url:'+url)	
 	$("#formModel").ajaxSubmit({
 		type : "POST",
 		url : url,

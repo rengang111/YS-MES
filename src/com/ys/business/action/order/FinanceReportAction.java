@@ -80,6 +80,10 @@ public class FinanceReportAction extends BaseAction {
 				dataMap = reportForDaybookSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "costAccountingFromBom"://没有采购方案，从BOM核算
+				dataMap = costSearchFromBom(data);
+				printOutJsonObj(response, dataMap);
+				break;
 			case "downloadExcel":
 				downloadExcel();
 				break;
@@ -208,7 +212,6 @@ public class FinanceReportAction extends BaseAction {
 		return dataMap;
 	}
 	
-
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> inventoryReportSearch(String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -221,6 +224,27 @@ public class FinanceReportAction extends BaseAction {
 		
 		try {
 			dataMap = service.inventoryMonthlySearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> costSearchFromBom(String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+				
+		try {
+			dataMap = service.getBaseBomCostByYsid(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
