@@ -211,6 +211,19 @@
 		
 		doComputeTax();
 		
+		//产品图片添加位置,                                                                                                                                                                                        
+		var productIndex = 1;
+		$("#addProductPhoto").click(function() {
+			
+			var path='${ctx}';
+			var cols = $("#productPhoto tbody td.photo").length - 1;
+			//从 1 开始
+			var trHtml = addPhotoRow('productPhoto','uploadProductPhoto',productIndex,path);		
+
+			$('#productPhoto td.photo:eq('+0+')').after(trHtml);	
+			productIndex++;		
+			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
+		});
 	});
 	
 	function doComputeTax(){
@@ -312,8 +325,9 @@ function productPhotoView() {
 		success: function(data){
 				
 			var countData = data["productFileCount"];
-			//alert(countData)
-			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+			//alert('countData:'+ countData);
+			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])	
+			
 		},
 		 error:function(XMLHttpRequest, textStatus, errorThrown){
          	alert(errorThrown)
@@ -323,53 +337,102 @@ function productPhotoView() {
 }//产品图片
 
 function photoView(id, tdTable, count, data) {
-
+	
 	var row = 0;
 	for (var index = 0; index < count; index++) {
-
 		var path = '${ctx}' + data[index];
-		var pathDel = data[index];
-		var trHtml = '';
-
-		trHtml += '<tr style="text-align: center;" class="photo">';
-		trHtml += '<td>';
-		trHtml += '<table style="width:400px;height:300px;margin: auto;" class="form" id="tb'+index+'">';
-		trHtml += '<tr><td>';
-		trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
-		trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
-		trHtml += '</a>';
-		trHtml += '</td>';
-		trHtml += '</tr>';
-		trHtml += '</table>';
-		trHtml += '</td>';
-
-		index++;
-		if (index == count) {
-			//因为是偶数循环,所以奇数张图片的最后一张为空
-			var trHtmlOdd = '<table style="width:400px;margin: auto;" class="">';
-			trHtmlOdd += '<tr><td></td></tr>';	
-			trHtmlOdd += '</table>';
-		} else {
-			path = '${ctx}' + data[index];
-			pathDel = data[index];
-
-			var trHtmlOdd = '<table style="width:400px;height:300px;margin: auto;" class="form">';
-			trHtmlOdd += '<tr><td>';
-			trHtmlOdd += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
-			trHtmlOdd += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
-			trHtmlOdd += '</a>'
-			trHtmlOdd += '</td></tr>';
-			trHtmlOdd += '</table>';
-		}
-		trHtml += '<td>';
-		trHtml += trHtmlOdd;
-		trHtml += '</td>';
-		trHtml += "</tr>";
-
-		$('#' + id + ' tr.photo:eq(' + row + ')').after(trHtml);
+		var pathDel = data[index];		
+		var trHtml = showPhotoRow(id,tdTable,path,pathDel,index);		
+		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
 		row++;
-
 	}
+}
+
+</script>
+
+<script type="text/javascript">
+
+
+function deletePhoto(tableId,tdTable,path) {
+	
+	var url = '${ctx}/business/payment?methodtype='+tableId+'Delete';
+	url+='&tabelId='+tableId+"&path="+path;
+	    
+	if(!(confirm("确定要删除该图片吗？"))){
+		return;
+	}
+    $("#formModel").ajaxSubmit({
+		type: "POST",
+		url:url,	
+		data:$('#formModel').serialize(),// 你的formid
+		dataType: 'json',
+	    success: function(data){
+	    	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//删除后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片删除失败,请重试。")
+		}
+	});
+}
+
+function uploadPhoto(tableId,tdTable, id) {
+
+	var url = '${ctx}/business/paymentBillUpload'
+			+ '?methodtype=uploadPhoto' + '&id=' + id;
+	
+	var paymentId = $('#payment\\.paymentid').val();
+	if(paymentId == '（保存后自动生成）')
+		$('#payment\\.paymentid').val('');//清除非正常ID
+		//alert('url:'+url)	
+	$("#formModel").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#formModel').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
+	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			
+			switch (type) {
+				case "productPhoto":
+					//$('#payment\\.paymentid').val(data["paymentId"]);//设置新的ID
+					//$('#payment\\.recordid').val(data["recordId"]);//设置新的ID
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//添加后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+			
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片上传失败,请重试。")
+		}
+	});
 }
 
 </script>
@@ -388,6 +451,7 @@ function photoView(id, tdTable, count, data) {
 	<form:hidden path="payment.recordid"     value="${payment.recordId }"/>
 	<form:hidden path="payment.contractids"  value="${payment.contractIds }"/>
 	<form:hidden path="payment.paymentid"    value="${payment.paymentId }"/>
+	<form:hidden path="payment.supplierid"    value="${supplier.supplierId }"/>
 	<input type="hidden" id="paymentTypeId"  value="${paymentTypeId }"/><!-- 1:正常；2：预付 -->
 	
 	<fieldset>
@@ -435,6 +499,16 @@ function photoView(id, tdTable, count, data) {
 	 	<a class="DTTT_button DTTT_button_text" id="doDelete" >删除申请</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
+	<fieldset>
+		<span class="tablename">付款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
+		<div class="list">
+			<div class="showPhotoDiv" style="overflow: auto;width: 1024px;">
+				<table id="productPhoto" style="width:100%;height:335px">
+					<tbody><tr><td class="photo"></td></tr></tbody>
+				</table>
+			</div>
+		</div>	
+	</fieldset>
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">
@@ -510,17 +584,6 @@ function photoView(id, tdTable, count, data) {
 		</table>
 		</div>
 	</fieldset>
-	<fieldset>
-	<legend> 发票 </legend>
-	<div class="list">
-		<div class="" id="subidDiv" style="min-height: 300px;">
-			<table id="productPhoto" class="phototable">
-				<tbody><tr class="photo"><td></td><td></td></tr></tbody>
-			</table>
-		</div>
-	</div>	
-</fieldset>
-	
 	
 </form:form>
 

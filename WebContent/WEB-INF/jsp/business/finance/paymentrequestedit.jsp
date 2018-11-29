@@ -531,7 +531,7 @@ function uploadPhoto(tableId,tdTable, id) {
 		</table>
 		</div>
 	</fieldset>
-	
+	<!-- 
 	<fieldset>
 		<span class="tablename">付款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
 		<div class="list">
@@ -542,6 +542,7 @@ function uploadPhoto(tableId,tdTable, id) {
 			</div>
 		</div>	
 	</fieldset>
+	 -->
 </form:form>
 
 </div>

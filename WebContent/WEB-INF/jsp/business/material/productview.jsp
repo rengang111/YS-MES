@@ -81,6 +81,16 @@
 				<input type="hidden" id="totalCost"/></td>
 		</tr>									
 	</table>
+	<table class="form" >		
+		<tr>
+			<td class="label" style="width: 100px;">效率指标：</td>
+			<td style="width: 70px;">
+				<span id="efficiency"></span></td>
+								
+			<td style="color: blue">（效率指标 = 核算成本*12.2%*14/工价）</td>
+			<td></td>												
+		</tr>
+	</table>
 	<div class="action" style="text-align: right;">
 		<button type="button" id="doProductDesign" class="DTTT_button" >做单资料</button>
 		<button type="button" id="doOrderEdit" class="DTTT_button" >订单录入</button>
@@ -509,6 +519,15 @@ function quotationView() {
 						$('#baseCost1').html(floatToCurrency( baseCost1 ));
 						$('#totalSpan1').html(floatToCurrency( totalCost1 ));
 						$('#costRate1').html(costRote1);
+						
+						laborCost1 = currencyToFloat(laborCost1);
+						totalCost1 = currencyToFloat(totalCost1);
+						//效指公式 = 核算成本x12.2%x14/总工价
+						var efficiency = totalCost1 * 0.122 * 14 / laborCost1;
+						efficiency = floatToCurrency(efficiency);
+
+						$('#efficiency').text(efficiency);
+
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	                 //alert(XMLHttpRequest.status);
