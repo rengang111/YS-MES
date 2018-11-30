@@ -60,6 +60,8 @@
 						{"data": null,"className" : 'td-center'},
 						{"data": "materialId"},
 						{"data": "materialName"},
+						{"data": "efficiency", "defaultContent" : '0',"className" : 'td-right'},
+						{"data": "laborCost", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "totalCost", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "exchangePrice", "defaultContent" : '0',"className" : 'td-right'},
 						{"data": "currency", "defaultContent" : '0',"className" : 'td-center'},
@@ -80,17 +82,23 @@
 	    			name = jQuery.fixedWidth(name,45);				    			
 	    			return name;
 	    		}},
-	    		{"targets":4,"render":function(data, type, row){
+	    		{"targets":3,"render":function(data, type, row){//效率指标
+	    			
+	    			//var totalCost = currencyToFloat(row["totalCost"]);
+	    			//var laborCost = currencyToFloat(row["laborCost"]);	
+					//var efficiency = totalCost * 0.122 * 14 / laborCost;			    			
+	    			return floatToCurrency(row["efficiency"]);
+	    		}},
+	    		{"targets":6,"render":function(data, type, row){
 	    			var rate = row["exchangePrice"];
 	    			var c = row["currency"];
 	    			if(rate == null || rate == ""){
 		    			return "0";
 	    			}else{
-	    				return floatToSymbol(rate,c);
-		    			 //return row["profitRate"] + "%";	    				
+	    				return floatToSymbol(rate,c);   				
 	    			}	    				
 	    		}},
-	    		{"targets":6,"render":function(data, type, row){
+	    		{"targets":8,"render":function(data, type, row){
 	    			var rate = row["profitRate"];
 	    			if(rate == null || rate == ""){
 		    			return "0";
@@ -229,6 +237,8 @@
 					<th style="width: 10px;"class="dt-middle ">No</th>
 					<th style="width: 180px;" class="dt-middle ">成品编号</th>
 					<th class="dt-middle">产品名称</th>
+					<th style="width: 60px;">效率指标</th>
+					<th style="width: 60px;">工价</th>
 					<th style="width: 80px;" class="dt-middle">核算成本</th>
 					<th style="width: 80px;" class="dt-middle">客户报价</th>
 					<th style="width: 60px;" class="dt-middle">币种</th>

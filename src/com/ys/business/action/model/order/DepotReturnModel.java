@@ -1,6 +1,5 @@
 package com.ys.business.action.model.order;
 
-import com.ys.business.db.data.B_InspectionReturnData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_PurchaseStockInDetailData;
 import com.ys.util.basequery.common.BaseModel;

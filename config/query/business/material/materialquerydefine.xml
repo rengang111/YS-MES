@@ -343,6 +343,8 @@
       <f name="b.exchangePrice" alias="" ctype="" />
       <f name="b.profitRate" alias="" ctype="" />
       <f name="b.bomCost" alias="" ctype="" />
+      <f name="ifnull(b.totalCost, c.totalCost) * 0.122 * 14 / IF(	ifnull(b.laborCost, c.laborCost) = 0,1,ifnull(b.laborCost, c.laborCost))" alias="efficiency" ctype="" />
+      <f name="ifnull(b.laborCost,c.laborCost)" alias="laborCost" ctype="" />
       <f name="ifnull(b.totalCost,c.totalCost)" alias="totalCost" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->

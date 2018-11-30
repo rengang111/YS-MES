@@ -364,9 +364,9 @@ function baseBomView() {
 					var bomId     = data['data'][0]['bomId'];
 					var parentId  = data['data'][0]['productParentId'];
 					var costRote  = data['data'][0]['managementCostRate'];
+					alert('costRote'+costRote)
 					if(costRote == null || costRote =='')
 						costRote = '5.00';//默认值设定
-					
 					var laborCost = laborCostSum();
 					var bomCost   = productCostSum();
 					var mateCost  = bomCost - laborCost;
@@ -389,6 +389,18 @@ function baseBomView() {
 					$('#totalSpan').html(totalCost);
 					$('#costRate').val(floatToCurrency(costRote));
 					$('#productRecordId').val(recordId);
+					
+
+					laborCost1 = currencyToFloat(laborCost);
+					totalCost1 = currencyToFloat(totalCost);
+					//alert('ssss:'+totalCost1+'----'+laborCost1)
+					//效指公式 = 核算成本x12.2%x14/总工价
+					if(laborCost1  == 0)
+						laborCost1 = 1;
+					var efficiency = totalCost1 * 0.122 * 14 / laborCost1;
+					efficiency = floatToCurrency(efficiency);
+
+					$('#efficiency').text(efficiency);
 					
 					subIndex = '0';
 					
@@ -520,13 +532,6 @@ function quotationView() {
 						$('#totalSpan1').html(floatToCurrency( totalCost1 ));
 						$('#costRate1').html(costRote1);
 						
-						laborCost1 = currencyToFloat(laborCost1);
-						totalCost1 = currencyToFloat(totalCost1);
-						//效指公式 = 核算成本x12.2%x14/总工价
-						var efficiency = totalCost1 * 0.122 * 14 / laborCost1;
-						efficiency = floatToCurrency(efficiency);
-
-						$('#efficiency').text(efficiency);
 
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
