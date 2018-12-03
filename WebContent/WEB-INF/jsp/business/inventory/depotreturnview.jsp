@@ -31,6 +31,23 @@
 			var url = '${ctx}/business/depotReturn';
 			location.href = url;	
 		});
+		
+		productPhotoView();//出库单附件
+		
+		//产品图片添加位置,                                                                                                                                                                                        
+		var productIndex = 1;
+		$("#addProductPhoto").click(function() {
+			
+			var path='${ctx}';
+			var cols = $("#productPhoto tbody td.photo").length - 1;
+			//从 1 开始
+			var trHtml = addPhotoRow('productPhoto','uploadProductPhoto',productIndex,path);		
+
+			$('#productPhoto td.photo:eq('+0+')').after(trHtml);	
+			productIndex++;		
+			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
+		});
+		
 	});	
 	
 	
@@ -88,11 +105,152 @@
 		<button type="button" id="doEdit"   class="DTTT_button">编辑</button>
 		<button type="button" id="doDelete" class="DTTT_button">删除</button>
 		<button type="button" id="goBack"   class="DTTT_button">返回</button>
-	</fieldset>			
+	</fieldset>	
+	<fieldset>
+		<span class="tablename">附件清单</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
+		<div class="list">
+			<div class="showPhotoDiv" style="overflow: auto;width: 1024px;">
+				<table id="productPhoto" style="width:100%;">
+					<tbody><tr><td class="photo"></td></tr></tbody>
+				</table>
+			</div>
+		</div>	
+	</fieldset>		
 			
 	</form:form>
 
 </div>
 </div>
 </body>	
+<script type="text/javascript">
+
+function doPrint(stockOutId) {
+	var YSId 		= '${order.YSId }';
+	var stockOutId  = '${order.stockOutId }';
+	
+	var url = '${ctx}/business/stockout?methodtype=print';
+	url = url +'&YSId='+YSId;
+	url = url +'&stockOutId='+stockOutId;
+		
+	callWindowFullView("print",url);
+
+};
+
+function productPhotoView() {
+
+	var YSId = '${order.YSId }';
+	var requisitionId = '${order.requisitionId }';
+	
+	$.ajax({
+		"url" :"${ctx}/business/stockout?methodtype=getProductPhoto&YSId="+YSId+"&requisitionId="+requisitionId,	
+		"datatype": "json", 
+		"contentType": "application/json; charset=utf-8",
+		"type" : "POST",
+		"data" : null,
+		success: function(data){
+				
+			var countData = data["productFileCount"];
+			//alert(countData)
+			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
+		},
+		 error:function(XMLHttpRequest, textStatus, errorThrown){
+         	//alert(errorThrown)
+		 }
+	});
+	
+}//产品图片
+
+
+</script>
+
+<script type="text/javascript">
+
+function photoView(id, tdTable, count, data) {
+	
+	var row = 0;
+	for (var index = 0; index < count; index++) {
+		var path = '${ctx}' + data[index];
+		var pathDel = data[index];		
+		var trHtml = showPhotoRow(id,tdTable,path,pathDel,index);		
+		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
+		row++;
+	}
+}
+
+
+function deletePhoto(tableId,tdTable,path) {
+	
+	var url = '${ctx}/business/stockout?methodtype='+tableId+'Delete';
+	url+='&tabelId='+tableId+"&path="+path;
+	    
+	if(!(confirm("确定要删除该图片吗？"))){
+		return;
+	}
+    $("#formModel").ajaxSubmit({
+		type: "POST",
+		url:url,	
+		data:$('#formModel').serialize(),// 你的formid
+		dataType: 'json',
+	    success: function(data){
+	    	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//删除后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片删除失败,请重试。")
+		}
+	});
+}
+
+function uploadPhoto(tableId,tdTable, id) {
+
+	var url = '${ctx}/business/ODOUpload?methodtype=uploadPhoto';
+	
+	$("#formModel").ajaxSubmit({
+		type : "POST",
+		url : url,
+		data : $('#formModel').serialize(),// 你的formid
+		dataType : 'json',
+		success : function(data) {
+	
+			var type = tableId;
+			var countData = "0";
+			var photo="";
+			var flg="true";
+			switch (type) {
+				case "productPhoto":
+					countData = data["productFileCount"];
+					photo = data['productFileList'];
+					break;
+			}
+			
+			//添加后,刷新现有图片
+			$("#" + tableId + " td:gt(0)").remove();
+			if(flg =="true"){
+				photoView(tableId, tdTable, countData, photo);
+			}
+			
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			alert("图片上传失败,请重试。")
+		}
+	});
+}
+
+
+</script>
 </html>

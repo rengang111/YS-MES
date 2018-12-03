@@ -18,12 +18,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.order.StockOutModel;
+import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_RawRequirementDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.dao.B_StockOutDetailDao;
+import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_RawRequirementData;
@@ -427,8 +429,8 @@ public class StockOutService extends CommonService {
 			detail.setStockoutid(id);
 			insertStockOutDetail(detail);								
 			
-			//更新库存
-			//updateMaterial(detail.getMaterialid(),quantity);			
+			//更新出库标识
+			updateBaseBom(detail.getMaterialid(),reqData.getYsid());			
 			
 			//更新订单状态->出库
 			updateOrderDetail(YSId,quantity);
@@ -478,6 +480,26 @@ public class StockOutService extends CommonService {
 		data.setStockoutqty(String.valueOf(totalQuan));
 		data.setStockoutdate(CalendarUtil.fmtYmdDate());//出库时间
 		new B_OrderDetailDao().Store(data);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void updateBaseBom(
+			String materialId,
+			String ysid) throws Exception{
+		String where = "materialId = '" + materialId  +"' AND deleteFlag = '0' ";
+		List<B_BomPlanData> list  = new B_BomPlanDao().Find(where);
+		if(list ==null || list.size() == 0)
+			return ;	
+		
+		//更新DB
+		B_BomPlanData data = list.get(0);
+		data.setSourcebomid(ysid);
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"成品出库标识",userInfo);
+		copyProperties(data,commData);	
+		
+		new B_BomPlanDao().Store(data);
 	}
 	
 	//更新当前库存:出库时，减少“当前库存”，减少“待出库“

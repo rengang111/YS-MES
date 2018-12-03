@@ -16,13 +16,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.order.DepotReturnModel;
+import com.ys.business.action.model.order.PaymentModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.DicUtil;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.service.order.DepotReturnService;
 import com.ys.business.service.order.FinanceReportService;
+import com.ys.business.service.order.PaymentService;
 import com.ys.system.action.model.login.UserInfo;
 
 @Controller
@@ -247,7 +252,40 @@ public class DepotReturnAction extends BaseAction {
 
 		return service.CansolDepotReturnByStockinId();
 	}
-	
-	
+	/*
+	//付款单上传
+		@RequestMapping(value="paymentBillUpload")
+		public String doInit(
+				@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
+				@RequestBody String data,
+				@ModelAttribute("formModel")PaymentModel dataModel,
+				BindingResult result, Model model, HttpSession session, 
+				HttpServletRequest request, HttpServletResponse response){
+
+			this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+			this.service = new DepotReturnService(model,request,response,session,dataModel,userInfo);;
+			this.reqModel = dataModel;
+			this.model = model;
+			this.response = response;
+			this.session = session;
+			HashMap<String, Object> dataMap = null;
+
+			String type = request.getParameter("methodtype");
+			
+			switch(type) {
+			case "":
+				break;
+			case "uploadPhoto":
+				dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
+				printOutJsonObj(response, dataMap);
+				break;
+		
+			}
+			
+			
+			return null;
+		}
+		*/
+		
 	
 }

@@ -1171,7 +1171,7 @@ public class PaymentService extends CommonService {
 		HashMap<String, Object> jsonObj = 
 				uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
 
-		System.out.println("viewPath:"+jsonObj.get("message"));
+		System.out.println("message:"+jsonObj.get("message"));
 		ArrayList<String> list = getFiles(savePath,webPath);
 		modelMap.put(fileList, list);
 		modelMap.put(fileCount, list.size());

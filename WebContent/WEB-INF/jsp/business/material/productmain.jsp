@@ -86,8 +86,11 @@
 	    			
 	    			//var totalCost = currencyToFloat(row["totalCost"]);
 	    			//var laborCost = currencyToFloat(row["laborCost"]);	
-					//var efficiency = totalCost * 0.122 * 14 / laborCost;			    			
-	    			return floatToCurrency(row["efficiency"]);
+					//var efficiency = totalCost * 0.122 * 14 / laborCost;
+					var val = row["efficiency"];
+					if(val != '***')
+						val = floatToCurrency(row["efficiency"])
+	    			return val;
 	    		}},
 	    		{"targets":6,"render":function(data, type, row){
 	    			var rate = row["exchangePrice"];

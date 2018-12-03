@@ -341,9 +341,9 @@
       <f name="b.currency" alias="" ctype="币种" />
       <f name="b.RMBPrice" alias="" ctype="" />
       <f name="b.exchangePrice" alias="" ctype="" />
-      <f name="b.profitRate" alias="" ctype="" />
+      <f name="IFNULL(b.profitRate,0)" alias="profitRate" ctype="" />
       <f name="b.bomCost" alias="" ctype="" />
-      <f name="ifnull(b.totalCost, c.totalCost) * 0.122 * 14 / IF(	ifnull(b.laborCost, c.laborCost) = 0,1,ifnull(b.laborCost, c.laborCost))" alias="efficiency" ctype="" />
+      <f name="if(c.sourcebomId IS NULL,'***',	if(left(A.materialId,5) = 'I.CGR','***',	if(left(A.materialId,5) = 'I.BTR','***',	if(left(A.materialId,4) = 'I.PJ','***',	IF(IFNULL(b.profitRate,0) &lt;= 0,'***',if(IFNULL(b.profitRate,0)&lt;0.122,ifnull(b.totalCost, c.totalCost) * b.profitRate * 14 / IF(	ifnull(b.laborCost, c.laborCost) = 0,1,ifnull(b.laborCost, c.laborCost)), ifnull(b.totalCost, c.totalCost) * 0.122 * 14 / IF(	ifnull(b.laborCost, c.laborCost) = 0,1,ifnull(b.laborCost, c.laborCost)) ) )))))" alias="efficiency" ctype="" />
       <f name="ifnull(b.laborCost,c.laborCost)" alias="laborCost" ctype="" />
       <f name="ifnull(b.totalCost,c.totalCost)" alias="totalCost" ctype="" />
     </select>
