@@ -14,7 +14,7 @@
 		<f name="a.peopleNumber" alias="" ctype="" />
 		<f name="a.time" alias="" ctype="" />
 		<f name="a.hourYield" alias="" ctype="" />
-		<f name="IFNULL(a.hourPrice,11)" alias="hourPrice" ctype="" />
+		<f name="IFNULL(a.hourPrice,14)" alias="hourPrice" ctype="" />
 		<f name="a.laborPrice" alias="" ctype="" />
 		<f name="a.kilowatt" alias="" ctype="" />
 		<f name="a.managementCostRate" alias="" ctype="" />

@@ -9,6 +9,7 @@ import com.ys.util.basequery.common.BaseModel;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PriceSupplierData;
+import com.ys.business.db.data.B_ZZMaterialPriceData;
 
 @Repository
 public class MaterialModel extends BaseModel {
@@ -32,6 +33,7 @@ public class MaterialModel extends BaseModel {
 	private ArrayList<ListOption> currencyList = new ArrayList<ListOption>();
 	private ArrayList<ListOption> purchaseTypeList = new ArrayList<ListOption>();
 	private B_MaterialData material = new B_MaterialData();
+	private B_ZZMaterialPriceData zzprice = new B_ZZMaterialPriceData();
 	private String[] shareModelList;
 	private String shareModel;
 	private String subid;
@@ -43,7 +45,13 @@ public class MaterialModel extends BaseModel {
 	private String counter1;
 	private String counter5;
 	private String cost;
-
+	
+	public B_ZZMaterialPriceData getZzprice() {
+		return this.zzprice;
+	}
+	public void setZzprice(B_ZZMaterialPriceData zzprice) {
+		this.zzprice = zzprice;
+	}
 
 	public String getPurchaserName() {
 		return this.purchaserName;

@@ -344,10 +344,10 @@ function autoAddSubid() {
 
 function doSubDetail(recordid , parentid) {
 
-	var str = recordid + parentid;
-
+	var keyBackup = $('#keyBackup').val();
 	var url = '${ctx}/business/material?methodtype=edit';
 	url = url + '&parentId=' + parentid+'&recordId='+recordid;
+	url = url + '&keyBackup=' + keyBackup;
 	location.href = url;
 	
 }
@@ -462,7 +462,8 @@ $(document).ready(function() {
 	
 	$("#return").click(
 		function() {
-			var url = "${ctx}/business/material";
+			var keyBackup = $('#keyBackup').val();
+			var url = "${ctx}/business/material"+"?keyBackup="+keyBackup;
 			location.href = url;		
 		});
 
@@ -530,12 +531,6 @@ function inputCheck(){
 }
 
 function doSubmit(){
-
-	//var material = $('#material\\.materialname').val();
-	 //material= material.replace("\"","&quot;");
-	// material= material.replace("\'","&#39");
-	//alert(material)
-	// $('#material\\.materialname').val(material);
 	
 	var keyBackup = $("#keyBackup").val();
 	$('#material').attr("action", "${ctx}/business/material?methodtype=update"+"&keyBackup="+keyBackup);

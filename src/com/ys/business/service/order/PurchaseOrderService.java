@@ -815,12 +815,20 @@ public class PurchaseOrderService extends CommonService {
 				//更新明细
 				for(B_PurchaseOrderDetailData data:newDetailList ){
 					
-					//合同明细
-					updateOrderDetail(data);
-					
 					//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面			
-					String newQty = data.getQuantity();	
-					updateMaterial("合同更新处理",data.getMaterialid(),newQty,"0");			
+					String newQty = data.getQuantity();
+					float fqty = 0;
+					if(notEmpty(newQty))
+						fqty = stringToFloat(newQty.trim());
+					
+					if(fqty == 0){
+						data.setQuantity(newQty);
+						deletePurchaseOrderDetail(data);
+					}else{
+						updateOrderDetail(data);
+						
+						updateMaterial("合同更新处理",data.getMaterialid(),newQty,"0");	
+					}		
 				}				
 
 				//计算退税

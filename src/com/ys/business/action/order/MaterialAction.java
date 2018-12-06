@@ -71,8 +71,7 @@ public class MaterialAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				doInit(Constants.FORM_MATERIAL,session);
-				rtnUrl = "/business/material/materialmain";
+				rtnUrl = doInit(Constants.FORM_MATERIAL,session);
 				break;
 			case "search":
 				dataMap = doSearch(data, Constants.FORM_MATERIAL);
@@ -105,8 +104,7 @@ public class MaterialAction extends BaseAction {
 				rtnUrl = "/business/material/materialedit";
 				break;
 			case "insertReturn":
-				doInsert(reqModel,model, request);
-				rtnUrl = "/business/material/materialview";
+				rtnUrl = doInsert(reqModel,model, request);
 				break;
 			case "addSupplier":
 				doAddSupplier();
@@ -135,8 +133,8 @@ public class MaterialAction extends BaseAction {
 				printOutJsonObj(response, MaterialModel.getEndInfoMap());
 				break;
 			case "update":
-				doUpdate();
-				rtnUrl = "/business/material/materialview";
+				rtnUrl = doUpdate();
+				//rtnUrl = "/business/material/materialview";
 				break;
 			case "delete":
 				MaterialModel = doDelete(data);
@@ -209,23 +207,34 @@ public class MaterialAction extends BaseAction {
 				dataMap = getProcessCostList();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "materialPackSearchInit"://包装页面查询初始化
+				doInit(Constants.FORM_MATERIALPACK,session);
+				rtnUrl = "/business/material/materialpackmain";
+				break;
+			case "materialPackSearch"://包装页面查询
+				dataMap = doSearchPack(data, Constants.FORM_MATERIALPACK);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "detailViewPack"://包装详情页面
+				doDetailViewForPack();
+				rtnUrl = "/business/material/materialpackview";
+				break;
 		
 		}
 		
 		return rtnUrl;		
 	}
 	
-	public void doInit(String formId,HttpSession session){	
-			/*
+	public String doInit(String formId,HttpSession session){	
+			
 		String keyBackup = request.getParameter("keyBackup");
-		//没有物料编号,说明是初期显示,清空保存的查询条件
-		if(keyBackup == null || ("").equals(keyBackup)){
-			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
-			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
-		}else{
-			model.addAttribute("keyBackup",keyBackup);
+		//
+		String rtnUrl = "/business/material/materialmain";
+		if(("pack").equals(keyBackup)){
+			rtnUrl = "/business/material/materialpackmain";
 		}
-		*/
+		
+		return rtnUrl;
 	}
 
 
@@ -259,6 +268,37 @@ public class MaterialAction extends BaseAction {
 		return dataMap;
 	}
 
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doSearchPack(String data, 
+			String formId){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = new ArrayList<HashMap<String, String>>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);
+			
+		}
+		
+		try {
+			dataMap = materialService.searchPack(data,formId);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+
+	
 	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> doSupplierPriceView(@RequestBody String data, 
 			HttpServletRequest request){
@@ -457,16 +497,25 @@ public class MaterialAction extends BaseAction {
 	public void doCreate(Model model){
 		
 		MaterialModel = materialService.createMaterial();
+		String keyBackup = request.getParameter("keyBackup");
+		
 		model.addAttribute("DisplayData", MaterialModel);
+		model.addAttribute("keyBackup", keyBackup);
 		
 	}
 	
-	public void doInsert(MaterialModel reqModel,
+	public String doInsert(MaterialModel reqModel,
 			Model model,
 			HttpServletRequest request) throws Exception {
 
 		model = materialService.insert();
-		
+
+		String rtnUrl = "/business/material/materialview";
+		String keyBackup = request.getParameter("keyBackup");
+		if(("pack").equals(keyBackup))
+			rtnUrl = "/business/material/materialpackview";
+			
+		return rtnUrl;
 	}		
 
 	public void doInsertPrice(MaterialModel reqModel,
@@ -479,13 +528,18 @@ public class MaterialAction extends BaseAction {
 	}	
 
 	
-	public void doUpdate() throws Exception {
+	public String doUpdate() throws Exception {
 
+		String rtnUrl = "/business/material/materialview";
 		String keyBackup = this.request.getParameter("keyBackup");
 		this.model.addAttribute("keyBackup", keyBackup);
-		model = materialService.update();
 		
+		materialService.update(keyBackup);
 		
+		if(("pack").equals(keyBackup))
+			rtnUrl = "/business/material/materialpackview";//返回到包装页面
+		
+		return rtnUrl;
 	}	
 	
 	public MaterialModel doDelete(@RequestBody String data) throws Exception{
@@ -608,7 +662,12 @@ public class MaterialAction extends BaseAction {
 		String parentId = request.getParameter("parentId");
 		String materialId = request.getParameter("materialId");
 		String keyBackup = this.request.getParameter("keyBackup");
-		model = materialService.MaterailDetail(recordId,parentId,materialId);
+		try {
+			model = materialService.MaterailDetail(recordId,parentId,materialId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		MaterialModel.setKeyBackup(recordId);
 		model.addAttribute("DisplayData",MaterialModel);
@@ -618,7 +677,31 @@ public class MaterialAction extends BaseAction {
 		String albumInfo = "material" +"," + materialId +","  + MaterialModel.className;
 		model.addAttribute("albumInfo",albumInfo);
 
-	}	
+	}
+	
+	public void doDetailViewForPack(){
+
+		String recordId = request.getParameter("recordId");
+		String parentId = request.getParameter("parentId");
+		String materialId = request.getParameter("materialId");
+		String keyBackup = this.request.getParameter("keyBackup");
+		try {
+			model = materialService.MaterailDetailForPack(recordId,parentId,materialId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		MaterialModel.setKeyBackup(recordId);
+		model.addAttribute("DisplayData",MaterialModel);
+		model.addAttribute("keyBackup", keyBackup);
+		
+		//图片路径等信息:文件夹名称 + 物料编号 + Class名
+		String albumInfo = "material" +"," + materialId +","  + MaterialModel.className;
+		model.addAttribute("albumInfo",albumInfo);
+
+	}
+	
 	public void doEdit(){
 
 		String recordId = request.getParameter("recordId");
@@ -626,7 +709,12 @@ public class MaterialAction extends BaseAction {
 		String materialId = request.getParameter("materialId");
 		String keyBackup = this.request.getParameter("keyBackup");
 		
-		model = materialService.MaterailDetail(recordId,parentId,materialId);
+		try {
+			model = materialService.MaterailDetail(recordId,parentId,materialId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.model.addAttribute("keyBackup", keyBackup);
 
 	}	

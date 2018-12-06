@@ -20,6 +20,7 @@ public class Constants {
 	public static final String FORM_KEYWORD1 = "keyword1";//
 	public static final String FORM_KEYWORD2 = "keyword2";//
 	public static final String FORM_MATERIAL = "material";//
+	public static final String FORM_MATERIALPACK = "materiapack";//包装物料
 	public static final String FORM_ARRIVAL = "arrival";//到货登记
 	public static final String FORM_REQUISITION = "requisition";//领料申请
 	public static final String FORM_REQUISITIONPARTS = "requisitionparts";//配件订单领料申请

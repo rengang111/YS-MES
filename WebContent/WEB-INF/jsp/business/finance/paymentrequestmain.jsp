@@ -120,7 +120,7 @@
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    					    			
-		    			return jQuery.fixedWidth(data,24);
+		    			return jQuery.fixedWidth(data,16);
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);
@@ -313,7 +313,7 @@
 
 					<table>
 						<tr>
-							<td width="10%"></td> 
+							<td width="50px"></td> 
 							<td class="label">关键字1：</td>
 							<td class="condition">
 								<input type="text" id="keyword1" name="keyword1" class="middle"/>
@@ -359,7 +359,7 @@
 							<th width="70px">供应商编号</th>						
 							<th>供应商名称</th>
 							<th width="60px">合同金额</th>
-							<th width="60px">合同扣款</th>
+							<th width="40px">合同扣款</th>
 							<th width="60px">入库日期</th>
 							<th width="60px">约定付款日</th>
 							<th width="60px">实际付款日</th>

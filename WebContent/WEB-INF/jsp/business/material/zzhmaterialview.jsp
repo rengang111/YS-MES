@@ -41,14 +41,14 @@ $(document).ready(function() {
 
 	<table class="form">
 		<tr>
-			<td class="label" style="width: 120px;">产品编号：</td>
-			<td style="width: 150px;">${price.materialId }
+			<td class="label" style="width: 100px;">产品编号：</td>
+			<td style="width: 120px;">${price.materialId }
 				<form:hidden path="price.materialid" value="${price.materialId }"/></td>
 								
 			<td class="label" style="width: 120px;"><label>产品名称：</label></td>
-			<td style="width: 250px;"><span id="materialname">${price.materialName }</span></td>
-			<td class="label" style="width: 120px;"><label>计量单位：</label></td>
-			<td>&nbsp;<span id="unit">${price.dicName }</span></td>
+			<td><span id="materialname">${price.materialName }</span></td>
+			<!-- td class="label" style="width: 120px;"><label>计量单位：</label></td>
+			<td>&nbsp;<span id="unit">${price.dicName }</span></td -->
 	</table>
 	</fieldset>
 	
@@ -75,7 +75,7 @@ $(document).ready(function() {
 	
 	<fieldset class="action" style="text-align: right;">	
 		<button type="button" id="doEdit" class="DTTT_button">编辑</button>				
-		<button type="button" id="goBack" class="DTTT_button">返回</button>
+		<!-- button type="button" id="goBack" class="DTTT_button">返回</button -->
 	</fieldset>
 	
 </form:form>

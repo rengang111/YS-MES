@@ -471,6 +471,7 @@ public class ZZMaterialService extends BaseService {
 		
 		if(dataModel.getRecordCount() > 0){
 			model.addAttribute("price",  modelMap.get(0));
+			model.addAttribute("zzprice",  modelMap.get(0));
 			model.addAttribute("detail", modelMap);
 		}
 		return model;
@@ -488,6 +489,7 @@ public class ZZMaterialService extends BaseService {
 		modelMap = baseQuery.getYsQueryData(0, 0);
 
 		model.addAttribute("price",dataModel.getYsViewData().get(0));
+		model.addAttribute("material",dataModel.getYsViewData().get(0));
 		
 	}
 	/*
@@ -530,6 +532,8 @@ public class ZZMaterialService extends BaseService {
 
 		String materialId = request.getParameter("materialId");
 		getZZPriceDetailView(materialId);
+		
+		getMaterialByMaterialId(materialId);
 		
 		return model;
 		

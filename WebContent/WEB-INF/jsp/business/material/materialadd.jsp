@@ -31,6 +31,7 @@ input.middle{width:300px;}
 	<form:hidden path="material.serialnumber" />
 	<form:hidden path="material.categoryid" />
 	<form:hidden path="categoryname" />
+	<input type="hidden" id="keyBackup" value="${keyBackup }" />
 	
 <fieldset>
 	<legend>物料基本信息-新建</legend>
@@ -126,7 +127,7 @@ input.middle{width:300px;}
 	
 	<fieldset class="action" style="text-align: right;">					
 		<button type="button" id="return" class="DTTT_button">返回</button>
-		<button type="button" id="submitRefresh" class="DTTT_button">保存并继续添加</button>
+		<!-- button type="button" id="submitRefresh" class="DTTT_button">保存并继续添加</button-->
 		<button type="button" id="submitReturn" class="DTTT_button">保存</button>
 	</fieldset>
 	
@@ -398,7 +399,8 @@ $(document).ready(function() {
 	
 	$("#return").click(
 		function() {
-			var url = "${ctx}/business/material";
+			var keyBackup = $('#keyBackup').val();
+			var url = "${ctx}/business/material"+"?keyBackup="+keyBackup;
 			location.href = url;		
 		});
 
@@ -468,7 +470,9 @@ function inputCheck(){
 
 function doSubmitReturn(){
 		
-	$('#material').attr("action", "${ctx}/business/material?methodtype=insertReturn");
+	var keyBackup = $('#keyBackup').val();
+	
+	$('#material').attr("action", "${ctx}/business/material?methodtype=insertReturn"+"&keyBackup="+keyBackup);
 	$('#material').submit();
 }
 

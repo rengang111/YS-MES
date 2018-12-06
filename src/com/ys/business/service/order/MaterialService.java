@@ -34,6 +34,7 @@ import com.ys.business.db.dao.B_MouldBaseInfoDao;
 import com.ys.business.db.dao.B_OrderExpenseDetailDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
 import com.ys.business.db.dao.B_PriceSupplierHistoryDao;
+import com.ys.business.db.dao.B_ZZMaterialPriceDao;
 import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MaterialCostDetailData;
 import com.ys.business.db.data.B_MaterialData;
@@ -42,6 +43,7 @@ import com.ys.business.db.data.B_OrderExpenseDetailData;
 import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_PriceSupplierHistoryData;
+import com.ys.business.db.data.B_ZZMaterialPriceData;
 import com.ys.business.db.data.CommFieldsData;
 
 @Service
@@ -141,6 +143,55 @@ public class MaterialService extends CommonService implements I_BaseService{
 		return modelMap;
 	}
 	
+	public HashMap<String, Object> searchPack(
+			String data,String formId) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}
+		
+		dataModel.setQueryName("materialquerydefine_pack");		
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		String[] keyArr = getSearchKey(formId,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2) ){
+			userDefinedSearchCase.put("purchaseType", "");
+		}
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);
+		baseQuery.getYsQueryData(sql,iStart, iEnd);
+		
+		if ( iEnd > dataModel.getYsViewData().size()){
+			iEnd = dataModel.getYsViewData().size();
+		}		
+		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("keyword1",key1);
+		modelMap.put("keyword2",key2);
+		
+		return modelMap;
+	}
 	public HashMap<String, Object> getProductList(String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -477,11 +528,28 @@ public class MaterialService extends CommonService implements I_BaseService{
 		
 	}
 	
-	public Model MaterailDetail(String recordId,String parentId,String materialId){
+	public Model MaterailDetail(
+			String recordId,
+			String parentId,
+			String materialId) throws Exception{
 		
 		String fileName = getMaterialDetail(recordId,parentId);
 		
 		getFileList(fileName,materialId);
+				
+		return model;
+		
+	}
+	public Model MaterailDetailForPack(
+			String recordId,
+			String parentId,
+			String materialId) throws Exception{
+		
+		String fileName = getMaterialDetail(recordId,parentId);
+		
+		getFileList(fileName,materialId);
+		
+		getZZPriceDetailView(materialId);
 		
 		return model;
 		
@@ -825,20 +893,34 @@ public class MaterialService extends CommonService implements I_BaseService{
 		return model;
 	}	
 
+	public void update(String keyBackup) throws Exception  {
+		
+		String selectedRecord = updateOrInsertMaterial();
+		B_MaterialData reqData = (B_MaterialData)reqModel.getMaterial();
+		String selectMaterialId = reqData.getMaterialid();
+
+		//重新查询
+		String parentId = selectMaterialId.substring(0,selectMaterialId.length()-4);
+		getMaterialDetail(selectedRecord,parentId);	
+		
+		if(("pack").equals(keyBackup))
+			getZZPriceDetailView(selectMaterialId);
+			
+	}
 	/*
 	 * 1.物料基本信息更新处理(1条数据)
 	 * 2.子编码新增处理(N条数据)
 	 */
-	public Model update() throws Exception  {
+	public String updateOrInsertMaterial() throws Exception  {
 
 		ts = new BaseTransaction();
 		
+		String selectedRecord = "";
 		try {
 			
 			ts.begin();
 			
 			B_MaterialDao dao = new B_MaterialDao();
-			ArrayList<B_MaterialData> viewList = new ArrayList<B_MaterialData>();
 			
 			B_MaterialData reqData = (B_MaterialData)reqModel.getMaterial();
 			List<B_MaterialData> reqDataList = reqModel.getMaterialLines();
@@ -847,9 +929,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 			//物料编码 = parentId +"."+ subid 
 			//物料:G01.D018.YAT001001.000
 			//分类:G01.D018.YAT001
-			//String parentId = reqData.getParentid();
 			//画面被选中的数据
-			String selectedRecord = reqData.getRecordid();
+			selectedRecord = reqData.getRecordid();
 			
 			/************************/			
 			String selectMaterialId = reqData.getMaterialid();
@@ -874,21 +955,19 @@ public class MaterialService extends CommonService implements I_BaseService{
 					String recordid = data.getRecordid();	
 					String subId = data.getSubid();
 					String material = parentId + "." + subId;
-
 					
 					if(recordid ==null || recordid.equals("")){
-						//插入新的数据
-						commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
-						copyProperties(reqData,commData);
-										
-						String guid = BaseDAO.getGuId();
-						reqData.setRecordid(guid);
+						//插入新的数据						
 						reqData.setMaterialid(material);
 						reqData.setParentid(parentId);	
 						reqData.setSubid(subId);
 						reqData.setSubiddes(data.getSubiddes());
 
-						dao.Create(reqData);
+						insertMaterial(reqData);
+						
+						//复制工价
+						copyLaborFromSource(selectMaterialId,material);
+						
 						continue;
 					}
 
@@ -938,11 +1017,6 @@ public class MaterialService extends CommonService implements I_BaseService{
 							continue;
 						
 						//编辑状态下,新增子编码的处理
-						commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
-						copyProperties(reqData,commData);
-										
-						String guid = BaseDAO.getGuId();
-						reqData.setRecordid(guid);
 						reqData.setMaterialid(material);
 						reqData.setParentid(parentId);	
 						reqData.setSerialnumber(serialNumber);//
@@ -950,7 +1024,11 @@ public class MaterialService extends CommonService implements I_BaseService{
 						reqData.setSubiddes(subDes);
 						reqData = editCustomerId(reqData,parentId);
 						
-						dao.Create(reqData);
+						insertMaterial(reqData);
+						
+						//复制工价
+						copyLaborFromSource(selectMaterialId,material);
+						
 						continue;
 					}
 					
@@ -987,15 +1065,14 @@ public class MaterialService extends CommonService implements I_BaseService{
 			}
 			
 			ts.commit();
-			
-			//重新查询
-			getMaterialDetail(selectedRecord,parentId);		
+				
 		}
 		catch(Exception e) {
 			ts.rollback();
+			e.printStackTrace();
 		}
 				
-		return model;
+		return selectedRecord;
 	}
 	
 	
@@ -1003,24 +1080,28 @@ public class MaterialService extends CommonService implements I_BaseService{
 	 * 1.显示当前选中物料的基本信息
 	 * 2.显示相关的所有子编码信息(N条数据) 
 	 */
-	private B_PriceReferenceData getMixPriceInfo(
-			B_PriceReferenceData dt,
-			String materialid) throws Exception{
+	@SuppressWarnings("unchecked")
+	private void copyLaborFromSource(
+			String materialid,
+			String newId) throws Exception{
 		
-		dataModel.setQueryName("getMinPriceByMaterialId");
+		String where = " materialid ='" + materialid+ "' AND deleteFlag='0' ";
 		
-		baseQuery = new BaseQuery(request, dataModel);
+		List<B_ZZMaterialPriceData> list = (List<B_ZZMaterialPriceData>)new B_ZZMaterialPriceDao().Find(where);
+		
+		if(list.size() > 0){
+			B_ZZMaterialPriceData price = list.get(0);
+			price.setMaterialid(newId);
 
-		userDefinedSearchCase.put("materialid", materialid);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		modelMap = baseQuery.getYsFullData();
-		
-		if(dataModel.getRecordCount() > 0){
-			dt.setMinprice(dataModel.getYsViewData().get(0).get("price"));
-			dt.setMinsupplierid(dataModel.getYsViewData().get(0).get("supplierId"));
-			dt.setMindate(dataModel.getYsViewData().get(0).get("priceDate"));
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"复制工价信息",userInfo);
+			copyProperties(price,commData);
+			String guid = BaseDAO.getGuId();
+			price.setRecordid(guid);
+			
+			new B_ZZMaterialPriceDao().Create(price);
 		}
-		return dt;
+		
 	}
 	
 
@@ -1471,6 +1552,19 @@ public class MaterialService extends CommonService implements I_BaseService{
 	}
 	
 
+	private void insertMaterial(
+			B_MaterialData reqData)throws Exception{
+
+		//插入新的数据
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,"MaterialInsert",userInfo);
+		copyProperties(reqData,commData);
+						
+		String guid = BaseDAO.getGuId();
+		reqData.setRecordid(guid);
+
+		dao.Create(reqData);
+	}
+
 	private void insertDocumentary(
 			B_MaterialCostDetailData detailData)throws Exception{
 
@@ -1561,5 +1655,26 @@ public class MaterialService extends CommonService implements I_BaseService{
 		
 		dao.Store(data);		
 		
+	}
+	
+	private Model getZZPriceDetailView(String materialId) 
+			throws Exception {
+
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/material/zzmaterialquerydefine");
+		dataModel.setQueryName("getZZmaterialpriceByMaterialId");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("materialId", materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		modelMap = baseQuery.getYsQueryData(0, 0);
+		
+		if(dataModel.getRecordCount() > 0){
+			model.addAttribute("price",  modelMap.get(0));
+			model.addAttribute("detail", modelMap);
+		}
+		return model;
 	}
 }
