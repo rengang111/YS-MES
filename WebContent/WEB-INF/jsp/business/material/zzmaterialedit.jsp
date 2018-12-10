@@ -387,7 +387,7 @@ function costAcount(){
 	
 	//计算该自制品的合计单价=合计*经管费率
 	var ftotalPrice = (labor + pwer + raw) * (1 + frate / 100);
-	var vtotalPrice = formatNumber(ftotalPrice);
+	var vtotalPrice = floatToCurrency(ftotalPrice);
 	
 	$('#price\\.totalprice').val(vtotalPrice);
 	
@@ -567,7 +567,7 @@ function acountPowerPrice(){
 					
 					var price  = currencyToFloat( '${raw.price }' );
 					var convet = currencyToFloat( '${raw.convertUnit }' );
-					var vprice = formatNumber(price / convet);
+					var vprice = floatToCurrency(price / convet);
 					$('#price'+index).html(vprice);
 				</script>
 				

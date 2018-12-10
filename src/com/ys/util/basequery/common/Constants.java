@@ -256,7 +256,8 @@ public class Constants {
 	 * 付款状态
 	 */
 	public static final String payment_010 = "010";//待申请
-	public static final String payment_020 = "020";//待审核
+	public static final String payment_020 = "020";//待一级审核
+	public static final String payment_021 = "021";//待二级审核
 	public static final String payment_030 = "030";//待付款
 	public static final String payment_040 = "040";//部分付款
 	public static final String payment_050 = "050";//完成

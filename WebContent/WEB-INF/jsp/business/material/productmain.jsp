@@ -108,7 +108,11 @@
 	    			}else{
 		    			return row["profitRate"] + "%";	    				
 	    			}	    				
-	    		}}
+	    		}},
+	    		{
+					"visible" : false,
+					"targets" : [6,7,8]
+				}
          	] 
 		});
 	}
@@ -234,7 +238,7 @@
 	<div  style="height:10px"></div>
 
 	<div class="list">
-		<table id="TMaterial" class="display dataTable" >
+		<table id="TMaterial" class="display"  style="width: 100%;">
 			<thead>						
 				<tr>
 					<th style="width: 10px;"class="dt-middle ">No</th>

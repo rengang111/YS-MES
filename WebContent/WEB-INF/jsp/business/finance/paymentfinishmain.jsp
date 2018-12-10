@@ -76,7 +76,7 @@
 					{"data": "finishDate", "defaultContent" : '（未付款）', "className" : 'td-center'},//7
 					{"data": "paymentAmount", "defaultContent" : '0', "className" : 'td-right'},//8			
 					{"data": "totalPayable", "defaultContent" : '', "className" : 'td-right'},//9	
-					{"data": "paymentMethodName", "defaultContent" : '', "className" : 'td-right'},//10		
+					{"data": "paymentMethodName", "defaultContent" : '***', "className" : 'td-right'},//10		
 					{"data": "finishStatus", "className" : 'td-center'},//11
 				
 				],

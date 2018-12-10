@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>应付款审核-一级审核查看</title>
+<title>应付款审核-二级审核查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -166,7 +166,7 @@
 		
 		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/payment?methodtype=approvalMainL1";
+					var url = "${ctx}/business/payment?methodtype=approvalMainL2";
 					location.href = url;		
 		});
 
@@ -174,7 +174,7 @@
 		$("#doUpdate").click(
 				function() {
 					
-			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalEdit");
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalEdit2");
 			$('#formModel').submit();
 		});
 		
@@ -429,23 +429,30 @@ function photoView1(id, tdTable, count, data) {
 	</fieldset>
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
 		<a class="DTTT_button " id="doUpdate" >编辑</a>
-		<!-- a class="DTTT_button " id="doDelete" >弃审</a -->
+		<a class="DTTT_button " id="doDelete" >弃审</a>
 		<a class="DTTT_button " id="goBack" >返回</a>
 	</div>
 
 	<fieldset>
-		<legend> 发票信息</legend>
+		<legend> 审核结果</legend>
 		<table class="form" id="table_form2">
+			<tr>
+				<td width="100px" class="label">审核人：</td>
+				<td width="100px" >${payment.approvalUser }</td>
+				<td width="100px" class="label">审核结果：</td>
+				<td width="100px" >${payment.approvalStatus }</td>
+				<td width="100px" class="label">审核日期：</td>
+				<td width="100px" >${payment.approvalDate }</td>
+			</tr>
 			<tr>
 				<td width="100px" class="label">发票类型：</td>
 				<td width="100px">${payment.invoiceType }</td>
 				<td width="100px" class="label">发票编号：</td>
-				<td width="150px">${payment.invoiceNumber }</td>
+				<td>${payment.invoiceNumber }</td>
 				<td width="100px" class="label">填写人：</td>
 				<td width="100px" >${payment.invoiceUser }</td>
 				<td width="100px" class="label">填写日期：</td>
 				<td width="100px" >${payment.invoiceDate }</td>
-				<td></td>
 			</tr>
 			<!-- 	
 			<tr>	

@@ -50,7 +50,7 @@ $(document).ready(function() {
 			labor = fpeople * fhprice / vhyield;			
 		}
 		
-		var vlabor = formatNumber(labor);		
+		var vlabor = floatToCurrency(labor);		
 
 		$('#laborprice').html(vlabor);	
 		$("#price\\.laborprice").val(vlabor);

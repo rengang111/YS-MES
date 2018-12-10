@@ -81,7 +81,7 @@ public class PaymentAction extends BaseAction {
 				doInit();
 				rtnUrl = "/business/finance/paymentrequestmain";
 				break;
-			case "search":
+			case "search"://付款申请
 				dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
 				return null;
@@ -116,16 +116,27 @@ public class PaymentAction extends BaseAction {
 				doApplyDelete();
 				rtnUrl = "/business/finance/paymentrequestmain";
 				break;
-			case "approvalInit"://审核初始化
+			case "approvalInit"://一级审核初始化
 				rtnUrl = approvalInit();
 				break;
-			case "approvalInsert"://审核确认
+			case "approvalInit2"://二级审核初始化
+				rtnUrl = approvalInit2();
+				break;
+			case "approvalInsert"://一级审核确认
 				doApprovalUpdate();
 				rtnUrl = "/business/finance/paymentapprovalview";
 				break;
-			case "approvalEdit"://审核编辑
+			case "approvalInsert2"://二级审核确认
+				doApprovalUpdate2();
+				rtnUrl = "/business/finance/paymentapprovalview2";
+				break;
+			case "approvalEdit"://一级审核编辑
 				doApprovalUpdateInit();
 				rtnUrl = "/business/finance/paymentapproval";
+				break;
+			case "approvalEdit2"://二级审核编辑
+				doApprovalUpdateInit();
+				rtnUrl = "/business/finance/paymentapproval2";
 				break;
 			case "approvalDelete"://审核删除（弃审）
 				doApprovalDelete();
@@ -151,11 +162,18 @@ public class PaymentAction extends BaseAction {
 				dataMap = deletePhoto("product","productFileList","productFileCount");
 				printOutJsonObj(response, dataMap);
 				break;
-			case "approvalMain"://审核
+			case "approvalMainL1"://一级审核
 				rtnUrl = "/business/finance/paymentapprovalmain";
 				break;
-			case "approvalSearch":
+			case "approvalMainL2"://二级审核
+				rtnUrl = "/business/finance/paymentapprovalmain2";
+				break;
+			case "approvalSearch"://一级审核
 				dataMap = approvalSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "approvalSearch2"://二级审核
+				dataMap = approvalSearch2(data);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "finishMain"://付款完成
@@ -340,6 +358,34 @@ public class PaymentAction extends BaseAction {
 	}
 	
 	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> approvalSearch2(String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_PAYMENTAPPROVAL+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PAYMENTAPPROVAL+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.approvalSearch2(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	
+	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> finishSearch(String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
@@ -399,6 +445,24 @@ public class PaymentAction extends BaseAction {
 			String rtnFlag = service.approvalInit();
 			if(("查看").equals(rtnFlag))
 				rtnUrl = "/business/finance/paymentapprovalview";
+			
+			model.addAttribute("userName", userInfo.getUserName());
+			model.addAttribute("insertFlag","insert");
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+		return rtnUrl;
+	}
+	
+	public String approvalInit2(){
+
+		String  rtnUrl = "/business/finance/paymentapproval2";
+		try{
+			String rtnFlag = service.approvalInit2();
+			if(("查看").equals(rtnFlag))
+				rtnUrl = "/business/finance/paymentapprovalview2";
 			
 			model.addAttribute("userName", userInfo.getUserName());
 			model.addAttribute("insertFlag","insert");
@@ -502,6 +566,14 @@ public class PaymentAction extends BaseAction {
 	public void doApprovalUpdate(){
 		try{
 			service.approvalUpdateAndReturn();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void doApprovalUpdate2(){
+		try{
+			service.approvalUpdateAndReturn2();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

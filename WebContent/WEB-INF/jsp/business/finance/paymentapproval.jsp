@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>应付款-审核（编辑）</title>
+<title>应付款-一级审核（编辑）</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -166,7 +166,7 @@
 		
 		$("#goBack").click(
 				function() {
-					var url = "${ctx}/business/payment?methodtype=approvalMain";
+					var url = "${ctx}/business/payment?methodtype=approvalMainL1";
 					location.href = url;		
 		});
 
@@ -219,6 +219,18 @@
 	}
 	
 	function doInsert() {
+		
+		var num  = $('#payment\\.invoicenumber').val();
+		var type = $('#payment\\.invoicetype').val();
+		if($.trim(num) ==''){
+			$().toastmessage('showWarningToast', "请输入发票编号。");
+			return;
+		}
+		if($.trim(num) !='' && type =='030'){
+			$().toastmessage('showWarningToast', "请选择发票类型。");
+			return;
+		}
+		
 		$("#submit12").attr("disabled", "disabled");
 			var insertFlag = $("#insertFlag").val();	
 		$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalInsert"+"&insertFlag="+insertFlag);
@@ -427,7 +439,7 @@ function uploadPhoto(tableId,tdTable, id) {
 		</table>
 	</fieldset>
 	<fieldset>
-		<legend> 审核意见</legend>
+		<legend> 发票内容</legend>
 		<table class="form" id="table_form2">
 		<!-- 
 			<tr>
@@ -436,22 +448,19 @@ function uploadPhoto(tableId,tdTable, id) {
 			</tr>
 			 -->
 			<tr>
-				<td width="250px">审核结果： 
-					<form:select path="payment.approvalstatus" style="width: 120px;">							
-					<form:options items="${formModel.approvalOption}" 
-						itemValue="key" itemLabel="value" /></form:select> </td>
-				<td width="250px">发票类型： 
+				<td class="label" width="100px">发票类型： </td>
+				<td width="150px">
 					<form:select path="payment.invoicetype" style="width: 120px;" value="${payment.invoiceType }">							
 					<form:options items="${formModel.invoiceTypeOption}" 
 						itemValue="key" itemLabel="value" /></form:select> </td>
 			
-				<td>发票编号： 
-					<form:input path="payment.invoicenumber"  class="middle"  value="${payment.invoiceNumber }"/></td>
+				<td class="label" width="100px">发票编号：</td> 
+				<td width="200px"><form:input path="payment.invoicenumber"  class="middle"  value="${payment.invoiceNumber }"/></td>
 			
-				<td style="width:200px" >
+				<td style="text-align: center;">
 					<button type="button" id="submit12"  onclick="doInsert();"
 						class="DTTT_button" style="margin-bottom: 5px;">确认提交</button>
-					<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a></td>
+					<a class="DTTT_button " id="goBack" >返回</a></td>
 			</tr>												
 		</table>
 	</fieldset>

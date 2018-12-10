@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-<title>应付款--审批一览</title>
+<title>应付款--二级审批一览</title>
 <script type="text/javascript">
 
 	function searchAjax(approvalStatus,sessionFlag,finishStatus) {
@@ -14,7 +14,7 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/payment?methodtype=approvalSearch";
+		var url = "${ctx}/business/payment?methodtype=approvalSearch2";
 		url = url + "&sessionFlag="+sessionFlag;
 		url = url + "&approvalStatus="+approvalStatus;
 		url = url + "&finishStatus="+finishStatus;
@@ -74,9 +74,8 @@
 					{"data": "contractIds", "defaultContent" : '', "className" : 'td-left'},//4		
 					{"data": "totalPayable", "defaultContent" : '0', "className" : 'td-right'},//5
 					{"data": "requestDate", "defaultContent" : '', "className" : 'td-center'},//6
-					{"data": "invoiceDate", "defaultContent" : '***', "className" : 'td-center'},//6
-					{"data": "invoiceType", "defaultContent" : '***', "className" : 'td-center'},//7
-					{"data": "invoiceNumber", "defaultContent" : '***', "className" : 'td-left'},//8
+					{"data": "approvalDate",  "defaultContent" : '（待审核）', "className" : 'td-center'},//7
+					{"data": "approvalStatus","defaultContent" : '***',"className" : 'td-center'},//8
 					
 				],
 				"columnDefs":[
@@ -97,9 +96,6 @@
 		    		{"targets":4,"render":function(data, type, row){
 		    			return jQuery.fixedWidth(data,20);		
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
-		    			return jQuery.fixedWidth(data,8);		
-		    		}},
 		    		{ "bSortable": false, "aTargets": [ 0,4 ] },
 		    		{
 						"visible" : false,
@@ -112,7 +108,7 @@
 
 	$(document).ready(function() {
 		
-		searchAjax("","true","020");//020：待一级审核
+		searchAjax("","true","021");//021：待二级审核
 		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -124,6 +120,11 @@
 	            $(this).addClass('selected');
 	        }
 		});
+		
+
+		buttonSelectedEvent();//按钮选择式样
+
+		$('#defutBtn').removeClass("start").addClass("end");
 	})	
 	
 
@@ -133,15 +134,13 @@
 
 	}
 	
-	
-	function doSearch2() {	
+	function doSearch2(approvalStatus,finishStatus) {	
 
 		$("#keyword1").val("");
 		$("#keyword2").val("");
-		searchAjax("","false","020");
+		searchAjax(approvalStatus,"false",finishStatus);
 
 	}
-	
 	
 	function doCreate2(contractId) {
 	
@@ -153,7 +152,7 @@
 	
 	function doShowDetail(paymentId) {
 
-		var url = '${ctx}/business/payment?methodtype=approvalInit' + '&paymentId='+ paymentId;
+		var url = '${ctx}/business/payment?methodtype=approvalInit2' + '&paymentId='+ paymentId;
 		
 		location.href = url;
 	}
@@ -203,9 +202,9 @@
 		
 			<div class="list">					
 				<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-					<a class="DTTT_button" onclick="doSearch2();"><span>一级待审</span></a>
-					<!-- a class="DTTT_button" onclick="doSearch2('020');"><span>&nbsp;已审&nbsp;</span></a>
-					<a class="DTTT_button" onclick="doSearch3('030');"><span>不同意</span></a -->
+					<a class="DTTT_button box"  onclick="doSearch2('','021');" id="defutBtn"><span>&nbsp;二级待审&nbsp;</span></a>
+					<!-- a class="DTTT_button" onclick="doSearch2('020');"><span>&nbsp;通过&nbsp;</span></a-->
+					<a class="DTTT_button box" onclick="doSearch2('030','060');"><span>&nbsp;不通过&nbsp;</span></a>
 				</div>
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						
@@ -218,8 +217,7 @@
 							<th width="70px">应付款</th>
 							<th width="60px">申请日期</th>
 							<th width="60px">审核日期</th>
-							<th width="50px">发票类型</th>
-							<th width="50px">发票编号</th>
+							<th width="50px">审核结果</th>
 						</tr>
 					</thead>
 				</table>

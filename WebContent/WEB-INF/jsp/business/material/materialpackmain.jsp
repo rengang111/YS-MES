@@ -64,6 +64,7 @@
 							{"data": "categoryName"},
 							{"data": "peopleNumber","className" : 'td-right', "defaultContent" : '0'},
 							{"data": "hourYield","className" : 'td-right', "defaultContent" : '0'},
+							{"data": "hourprice","className" : 'td-right', "defaultContent" : '0'},
 							{"data": "laborPrice","className" : 'td-right', "defaultContent" : '0'},
 						],
 				"columnDefs":[
@@ -234,7 +235,8 @@
 								<th style="width: 140px;" class="dt-middle">物料分类</th>
 								<th style="width: 70px;" class="dt-middle">作业人数</th>
 								<th style="width: 70px;" class="dt-middle">每小时产量</th>
-								<th style="width: 70px;" class="dt-middle">工价</th>
+								<th style="width: 70px;" class="dt-middle">工人工价</th>
+								<th style="width: 70px;" class="dt-middle">核算工价</th>
 							</tr>
 						</thead>
 					</table>

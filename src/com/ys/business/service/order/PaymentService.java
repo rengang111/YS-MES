@@ -139,6 +139,13 @@ public class PaymentService extends CommonService {
 			userDefinedSearchCase.put("finishStatus", finishStatus);
 			
 		}
+		//付款未完成
+		if(("U").equals(finishStatus)){
+			userDefinedSearchCase.put("agreementDate", "");
+			userDefinedSearchCase.put("finishStatus", "");
+			userDefinedSearchCase.put("finishStatusU", "050");
+			
+		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
@@ -160,7 +167,7 @@ public class PaymentService extends CommonService {
 
 	}
 	
-	public HashMap<String, Object> approvalSearch( String data) throws Exception {
+	public HashMap<String, Object> approvalSearch(String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		int iStart = 0;
@@ -188,11 +195,103 @@ public class PaymentService extends CommonService {
 		
 		dataModel.setQueryName("paymenRequestList");//申请单一览
 		baseQuery = new BaseQuery(request, dataModel);
+		//String approvalStatus = request.getParameter("approvalStatus");
+		String finishStatus   = request.getParameter("finishStatus");
+		
+		/*
+		if(notEmpty(approvalStatus)){
+			key1 = "";
+			key2 = "";
+			finishStatus = "";
+		}*/
+
+		if(notEmpty(key1) || notEmpty(key2)){
+			finishStatus = "";
+		}
+		
+
+		if(notEmpty(finishStatus)){
+			key1 = "";
+			key2 = "";
+		}		
+		
+
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		if(notEmpty(key1) || notEmpty(key2)){
-			userDefinedSearchCase.put("approvalStatus", "");
+		userDefinedSearchCase.put("finishStatus", finishStatus);
+		userDefinedSearchCase.put("approvalStatus", "");
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	/**
+	 * 二级审核查询
+	 * @param data
+	 * @return
+	 * @throws Exception
+	 */
+	public HashMap<String, Object> approvalSearch2(String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_PAYMENTAPPROVAL,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
 		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryName("paymenRequestList");//申请单一览
+		baseQuery = new BaseQuery(request, dataModel);
+		//String approvalStatus = request.getParameter("approvalStatus");
+		String finishStatus   = request.getParameter("finishStatus");
+		
+
+		if(notEmpty(key1) || notEmpty(key2)){
+			//approvalStatus = "";
+			finishStatus = "";
+		}
+
+		if(notEmpty(finishStatus)){
+			key1 = "";
+			key2 = "";
+			//finishStatus = "";
+		}
+		
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		userDefinedSearchCase.put("finishStatus", finishStatus);
+		userDefinedSearchCase.put("approvalStatus", "");
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
@@ -289,6 +388,28 @@ public class PaymentService extends CommonService {
 	
 
 	public String approvalInit() throws Exception {
+		
+		String rtnFlg = "";
+		String paymentid = request.getParameter("paymentId");
+		
+		//付款申请详情
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);
+			
+			if(notEmpty(map.get("invoiceDate")))
+				rtnFlg = "查看";
+		}
+		
+		reqModel.setApprovalOption(util.getListOption(DicUtil.DIC_APPROVL, ""));
+		reqModel.setInvoiceTypeOption(util.getListOption(DicUtil.DIC_INVOICETYPE, ""));
+
+		return rtnFlg;
+	}
+	
+	public String approvalInit2() throws Exception {
 		
 		String rtnFlg = "";
 		String paymentid = request.getParameter("paymentId");
@@ -451,7 +572,7 @@ public class PaymentService extends CommonService {
 	 */
 	public void applyInsertAndReturn() throws Exception {
 
-		String paymentid = insertApply(Constants.payment_020);//待审核
+		String paymentid = insertApply(Constants.payment_020);//待一级审核
 
 		//付款申请详情
 		HashMap<String, String> map = getPaymentDetail(paymentid);
@@ -487,7 +608,7 @@ public class PaymentService extends CommonService {
 	}
 	
 	/**
-	 * 付款审核
+	 * 一级审核
 	 * @throws Exception
 	 */
 	public void approvalUpdateAndReturn() throws Exception {
@@ -499,6 +620,29 @@ public class PaymentService extends CommonService {
 
 		//付款单审核
 		updatePayment(reqData);	
+			
+		//付款申请详情
+		HashMap<String, String> map = getPaymentDetail(paymentid);
+		if(!(map == null)){
+			String contractId = map.get("contractIds");
+			//供应商
+			getContractDetail(contractId);				
+		}
+
+	}
+	/**
+	 * 二级审核
+	 * @throws Exception
+	 */
+	public void approvalUpdateAndReturn2() throws Exception {
+
+		
+		B_PaymentData reqData = reqModel.getPayment();
+	
+		String paymentid = reqData.getPaymentid();
+
+		//付款单审核
+		updatePayment2(reqData);	
 			
 		//付款申请详情
 		HashMap<String, String> map = getPaymentDetail(paymentid);
@@ -605,7 +749,7 @@ public class PaymentService extends CommonService {
 			String status = reqData.getFinishstatus();
 			if((isNullOrEmpty(status) || 
 					(Constants.payment_060).equals(status))){
-				reqData.setFinishstatus(paymentStatus);//待审核				
+				reqData.setFinishstatus(paymentStatus);//待一级审核				
 			}
 			
 			insertPayment(reqData);			
@@ -776,6 +920,11 @@ public class PaymentService extends CommonService {
 		}		
 	}
 	
+	/**
+	 * 一级审核：填写发票
+	 * @param payment
+	 * @throws Exception
+	 */
 	private void updatePayment(
 			B_PaymentData payment) throws Exception {
 		
@@ -801,20 +950,67 @@ public class PaymentService extends CommonService {
 		
 		String insertFlag = request.getParameter("insertFlag");
 		if( ("insert").equals(insertFlag)){
-			db.setApprovaluser(userInfo.getUserId());//默认为登陆者
-			db.setApprovaldate(CalendarUtil.fmtYmdDate());
-			db.setApprovalstatus(payment.getApprovalstatus());
-			//审核结果:020同意;030不同意;010未审核
-			if(("020").equals(payment.getApprovalstatus())){
-				db.setFinishstatus(Constants.payment_030);//待付款
-			}else{
-				db.setFinishstatus(Constants.payment_060);//审核未通过			
-			}
+			db.setInvoiceuser(userInfo.getUserId());//默认为登陆者
+			db.setInvoicedate(CalendarUtil.fmtYmdDate());
+			db.setFinishstatus(Constants.payment_021);//待二级审核
+			
 		}
 		new B_PaymentDao().Store(db);
 		
 	}
 	
+
+	/**
+	 * 二级审核：通过、不通过
+	 * @param payment
+	 * @throws Exception
+	 */
+	private void updatePayment2(
+			B_PaymentData payment) throws Exception {
+		
+		B_PaymentData db = null;
+		try {
+			db = new B_PaymentDao(payment).beanData;
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		if(db == null || db.equals(""))
+			return;
+		
+		//更新
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"paymentRequestUpdate",userInfo);
+		copyProperties(db,commData);
+		
+		db.setApprovalfeedback(replaceTextArea(payment.getApprovalfeedback()));
+		//db.setInvoicetype(payment.getInvoicetype());//发票类型
+		//db.setInvoicenumber(payment.getInvoicenumber());//发票编号
+		
+		String insertFlag = request.getParameter("insertFlag");
+		db.setApprovalstatus(payment.getApprovalstatus());
+		db.setApprovaluser(userInfo.getUserId());//默认为登陆者
+		//审核结果:020同意;030不同意;
+		if(("020").equals(payment.getApprovalstatus())){
+			if(Constants.payment_040.equals(db.getFinishstatus())
+				|| Constants.payment_050.equals(db.getFinishstatus())){
+				//nothing
+			}else{
+				db.setFinishstatus(Constants.payment_030);//待付款
+			}
+			
+		}else{
+			db.setFinishstatus(Constants.payment_060);//审核未通过			
+		}
+		
+		if( ("insert").equals(insertFlag)){
+			db.setApprovaldate(CalendarUtil.fmtYmdDate());			
+		}
+		
+		new B_PaymentDao().Store(db);
+		
+	}
 
 	private void updatePaymentForApprolval(
 			B_PaymentData payment) throws Exception {
@@ -839,9 +1035,9 @@ public class PaymentService extends CommonService {
 		db.setApprovaldate("");
 		db.setApprovalstatus("");//审核结果：未审核
 		db.setApprovalfeedback("");
-		db.setInvoicetype("");//发票类型
-		db.setInvoicenumber("");//发票编号		
-		db.setFinishstatus(Constants.payment_020);//付款状态：待审核
+		//db.setInvoicetype("");//发票类型
+		//db.setInvoicenumber("");//发票编号		
+		db.setFinishstatus(Constants.payment_020);//付款状态：待一级审核
 
 		new B_PaymentDao().Store(db);
 		
@@ -1146,17 +1342,15 @@ public class PaymentService extends CommonService {
 			String folderName,String fileList,String fileCount) throws Exception {
 
 		B_PaymentData payment = reqModel.getPayment();
-		//B_PaymentHistoryData history = reqModel.getHistory();
 
 		//判断是否有申请编号
 		String paymentId = payment.getPaymentid();
 		if(isNullOrEmpty(paymentId)){			
-			paymentId = insertApply(Constants.payment_010);//待申请
+			paymentId = insertApply(Constants.payment_020);//待一级申请
 		}
 		modelMap.put("paymentId", paymentId);//返回到申请页面显示
 		
 		String supplierId = payment.getSupplierid();
-		//String paymentId = history.getPaymentid();
 
 		FilePath file = getPath(supplierId,paymentId);
 		String savePath = file.getSave();						
