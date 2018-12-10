@@ -88,6 +88,20 @@
 				    			var name = row["categoryName"];				    			
 				    			name = jQuery.fixedWidth(name,20);				    			
 				    			return name;
+				    		}},
+				    		{"targets":6,"render":function(data, type, row){
+				    			
+				    			//作业人数*每小时工价/每小时产量
+				    			var fpeople = currencyToFloat(row["peopleNumber"]);
+				    			var vhyield = currencyToFloat(row["hourYield"]);
+				    			var fhprice = 11;
+				    			var labor = 0;
+				    			if(vhyield <= 0)
+				    				labor = 0;
+				    			else
+				    				labor = fpeople * fhprice / vhyield;
+				    						    			
+				    			return floatToCurrency(row["workerPrice"]);
 				    		}}
 			           
 			         ] 

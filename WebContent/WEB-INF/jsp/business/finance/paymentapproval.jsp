@@ -223,8 +223,8 @@
 		var num  = $('#payment\\.invoicenumber').val();
 		var type = $('#payment\\.invoicetype').val();
 		if($.trim(num) ==''){
-			$().toastmessage('showWarningToast', "请输入发票编号。");
-			return;
+			//$().toastmessage('showWarningToast', "请输入发票编号。");
+			//return;
 		}
 		if($.trim(num) !='' && type =='030'){
 			$().toastmessage('showWarningToast', "请选择发票类型。");

@@ -127,7 +127,8 @@
 				<td style="width:200px">作业人数</td>
 				<td style="width:200px">每小时产量</td>
 				<td style="width:200px">每小时工价</td>
-				<td>单位产品工价</td>
+				<td>工人工价</td>
+				<td>核算工价</td>
 			</tr>
 		</thead>		
 		<tbody>
@@ -135,6 +136,7 @@
 				<td style="width:150px">${price.peopleNumber }</td>
 				<td style="width:150px">${price.hourYield }</td>				
 				<td style="width:150px">${price.hourPrice }</td>
+				<td style="width:150px">${price.workerPrice }</td>
 				<td style="width:150px"><span id="laborprice">${price.laborPrice }</span></td>				
 				<td></td>			
 			</tr>			
