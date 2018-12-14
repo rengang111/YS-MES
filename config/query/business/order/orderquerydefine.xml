@@ -144,7 +144,7 @@
   </query>
   <query>
     <pool></pool>     
-    <name value="orderTrackingList" />
+    <name value="orderTrackingList2" />
     <where>
       <w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
@@ -153,6 +153,8 @@
    	  <w name="A.status"  des=""  reqName="status" dtype="ch" oper="in"  lg="AND" bt="" />
    	  <w name="A.orderNature"  des=""  reqName="orderNature" dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="d.status"  des=""  reqName="follow" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="c.deliveryDate"  des=""  reqName="startDate" dtype="ch" oper="&gt;="  lg="AND" bt="" />
+   	  <w name="c.deliveryDate"  des=""  reqName="endDate"   dtype="ch" oper="&lt;="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.materialId" alias="" ctype="" />
@@ -169,11 +171,105 @@
       <f name="d.status" alias="followStatus" ctype="" />
     </select>
     <from>v_purchaseorderdetail a LEFT JOIN b_Follow d ON d.YSId=a.YSId AND d.followType='1' AND d.deleteFlag='0' LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON a.materialId = b.materialId AND a.ysid=b.ysid JOIN v_orderdetail c ON c.YSId=a.YSId AND c.deleteFlag='0' AND c.status not in('040','041','050','051') AND LEFT(c.materialId,1) = 'I'</from>
-    <orderby>d.status DESC,A.YSId </orderby>
-    <groupby>A.YSId</groupby>
+    <orderby>d.status DESC,a.YSId </orderby>
+    <groupby>a.YSId</groupby>
     <having>#</having>
 	<power>
 	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="orderTrackingList" />
+    <where>
+   	  <w name="d.status"  des=""  reqName="follow" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="c1.YSId"       alias="" ctype="" />
+      <f name="c1.contractQty"   alias="" ctype="" />
+      <f name="c1.orderQty"   alias="" ctype="" />
+      <f name="c1.productId" alias="" ctype="" />
+      <f name="c2.materialName"   alias="productName" ctype="" />
+      <f name="c1.deliveryDate"   alias="" ctype="" />
+      <f name="c3.status"         alias="followStatus" ctype="" />
+      <f name="SUM(c1.stockFlag)" alias="stockFlag" ctype="" />
+      <f name="round(sum(c1.manufactureQuantity),2)" alias="manufactureQuantity" ctype="" />
+      <f name="round(sum(c1.stockoutQty),2)" alias="stockoutQty" ctype="" />
+    </select>
+    <from>
+		(
+			SELECT
+				if( IFNULL(b3.stockoutQty,0) >= b1.manufactureQuantity,
+					0,
+					IF(b1.contractQty IS NULL,
+						IF(b1.quantityOnHand+0 >= (b1.manufactureQuantity - IFNULL(b3.stockoutQty,0)),0,1),
+						IF(b2.stockinQty >= b1.contractQty,0,1)
+					)
+				) stockFlag,
+				if( IFNULL(b3.stockoutQty,0) >= b1.manufactureQuantity,
+					0,
+					1
+				) stockoutEnd,
+				b1.YSId,
+				b1.productId,
+				b1.materialId,
+				b1.manufactureQuantity,
+				b1.contractQty,
+				b1.deliveryDate,
+				b1.orderQty,
+				b2.stockinQty,
+				b1.quantityOnHand,
+				b3.stockoutQty
+			FROM
+				(
+					SELECT
+					a1.YSId,
+					a1.productId,
+					a1.materialId,
+					a1.deliveryDate,
+					a1.orderQty,
+					REPLACE(a2.quantity,',','') AS contractQty,
+					a1.quantityOnHand,
+					a1.manufactureQuantity
+					FROM
+						(SELECT
+							c.YSId,c.productId,c.materialId,
+							c.unitQuantity * REPLACE(ord.quantity,',','') AS manufactureQuantity,
+							REPLACE(c.quantityOnHand,',','') AS quantityOnHand,
+							ord.deliveryDate,
+							ord.totalQuantity AS orderQty
+						FROM
+							v_purchaseplan  c
+							LEFT JOIN v_orderlist ord ON ord.YSId = c.YSId
+						WHERE 
+							#0
+						) a1
+						LEFT JOIN v_purchaseorderdetail a2 ON a2.YSId = a1.YSId  AND a2.materialId = a1.materialId
+				) b1
+					LEFT JOIN 
+					( SELECT b4.ysid,b4.materialId,
+					  	sum(replace(b4.quantity,',','')) stockinQty
+					  FROM v_purchasestockindetail b4,v_orderlist ord  
+					  WHERE b4.ysid = ord.ysid AND
+							#0 
+							GROUP BY b4.ysid,b4.materialId
+					) b2 ON b1.materialId = b2.materialId AND b2.ysid = b1.ysid
+					LEFT JOIN
+					( SELECT b4.ysid,b4.materialId,
+						sum(replace(b4.quantity,',','')) stockoutQty
+					  FROM v_stockout b4,v_orderlist ord  
+					  WHERE b4.ysid = ord.ysid AND
+							#0 
+							GROUP BY b4.ysid,b4.materialId
+					) b3 ON b1.materialId = b3.materialId AND b3.ysid = b1.ysid
+		) c1
+		LEFT JOIN b_material c2 ON c2.materialId = c1.productId 
+		LEFT JOIN b_Follow c3 ON c3.YSId = c1.YSId AND c3.followType = '1' AND c3.deleteFlag = '0'
+    	WHERE 1=1 
+    </from>
+    <orderby>c3.modifyTime DESC,c1.YSId </orderby>
+    <groupby>c1.YSId</groupby>
+    <having>#1</having>
+	<power></power>    
   </query>
   <query>
     <pool></pool>     

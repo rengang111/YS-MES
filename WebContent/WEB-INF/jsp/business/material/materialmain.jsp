@@ -97,7 +97,8 @@
 				    		{"targets":5,"render":function(data, type, row){
 				    			
 				    			var price = row["price"];				    			
-				    			return formatNumber(price);				    			
+				    			//return formatNumber(price);				    			
+				    			return floatToCurrency(price);
 				    			
 				    		}}
 			           

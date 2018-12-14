@@ -1,7 +1,10 @@
 package com.ys.business.service.order;
 
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -287,6 +290,16 @@ public class OrderService extends CommonService  {
 		
 		int iStart = 0;
 		int iEnd =0;
+		
+
+		String monthday = getJsonData(data, "monthday");
+		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
+		Date d = sd.parse(monthday);
+
+		String firstDay = monthday;
+		String lastDay = CalendarUtil.getlastDayOfMonth(d);
+		
+		
 		String sEcho = getJsonData(data, "sEcho");	
 		String start = getJsonData(data, "iDisplayStart");	
 		
@@ -300,35 +313,60 @@ public class OrderService extends CommonService  {
 		}		
 		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
-		String key2 = keyArr[1];		
-
+		String key2 = keyArr[1];	
+		
+		//"ord.status not in('040','041','050','051') " 
+		String whereMonthDay =  " LEFT(ord.materialId,1) <> 'H' " +
+							" AND LEFT(ord.materialId, 1) = 'I' ";
 		String having = "1=1";
 		String follow = "";
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("orderTrackingList");
 		
+		
 		if(isNullOrEmpty(key1) && isNullOrEmpty(key2)){
-			follow  = getJsonData(data, "orderFollow");//重点关注
-			String stockUp = getJsonData(data, "stockUp");//备货情况
-			if(("1").equals(stockUp)){
+			follow  = request.getParameter("follow");//重点关注
+			String orderSts = request.getParameter("orderSts");//备货情况
+			if(("1").equals(orderSts)){
 				//货已备齐
-				having = "replace(IFNULL(contractQty,0),',','')+0 <= replace(IFNULL(stockinQty,0),',','')";
-			}else if(("2").equals(stockUp)){
+				whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 = 0  ";
+				having = " stockFlag+0 = 0 ";
+			}else if(("2").equals(orderSts)){
 				//未齐
-				having = "replace(IFNULL(contractQty,0),',','')+0 > replace(IFNULL(stockinQty,0),',','')";
+				whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 = 0  ";
+				having = "stockFlag+0 > 0";
+			}else{
+				//已领料
+				whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 > 0 ";
+				whereMonthDay += " AND ord.deliveryDate >= '"+firstDay+"' AND ord.deliveryDate <= '"+lastDay+"' ";
+				//having = " stockoutEnd+0 =  0 ";
 			}
+		}else{
+			if(notEmpty(key1) && notEmpty(key2)){
+				whereMonthDay = "full_field  like '%"+key1+"%' AND fullField  like '%"+key2+"%' ";
+			}else if(notEmpty(key1))
+				whereMonthDay = "full_field  like '%"+key1+"%'";
+			else
+				whereMonthDay = "full_field  like '%"+key2+"%'";
 		}
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
+		
+		//userDefinedSearchCase.put("keyword1", key1);
+		//userDefinedSearchCase.put("keyword2", key2);
 		userDefinedSearchCase.put("follow", follow);
 		
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		sql = sql.replace("#", having);
+		sql = sql.replace("#0", whereMonthDay);
+		sql = sql.replace("#1", having);
 		System.out.println("订单跟踪:"+sql);
-		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+		
+		List<String> list = new ArrayList<String>();
+		list.add(whereMonthDay);
+		list.add(having);
+		
+		baseQuery.getYsQueryData(sql,list,iStart,iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -339,7 +377,7 @@ public class OrderService extends CommonService  {
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
 		modelMap.put("data", dataModel.getYsViewData());	
 		modelMap.put("keyword1",key1);	
-		modelMap.put("keyword2",key2);		
+		modelMap.put("keyword2",key2);
 		
 		return modelMap;
 	}
@@ -2180,5 +2218,10 @@ public class OrderService extends CommonService  {
 				);	
 		
 		return filePath;
+	}
+	
+	public void orderTrackingSearchInit() throws Exception{
+
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 }

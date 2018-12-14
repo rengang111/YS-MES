@@ -83,6 +83,7 @@ public class OrderAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "orderTrackingSearchInit"://订单跟踪查询
+				orderTrackingSearchInit();
 				rtnUrl = "/business/order/ordertrackingmain";
 				break;
 			case "orderTrackingSearch"://订单跟踪查询
@@ -973,5 +974,14 @@ public class OrderAction extends BaseAction {
 
 		model.addAttribute("order",  dbData.get(0));
 		model.addAttribute("detail", dbData);
-	}	
+	}
+	
+	public void orderTrackingSearchInit(){
+		try {
+			orderService.orderTrackingSearchInit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

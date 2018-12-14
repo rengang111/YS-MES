@@ -522,14 +522,32 @@ public class CommonService extends BaseService {
 		B_OrderDetailDao dao = new B_OrderDetailDao();
 		B_OrderDetailData dbData = getOrderByYSId(dao,YSId);
 		
-		if(dbData != null){				
-			//update处理
-			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"OrderStatusUpdate",userInfo);			
-			copyProperties(dbData,commData);
-			dbData.setStatus(status);
+		if(dbData != null){	
+			String dbsts = dbData.getStatus();
+			if(notEmpty(dbsts)){
+				float fdbsts = stringToFloat(dbsts);
+				float freqsts = stringToFloat(status);
+				if(freqsts > fdbsts){
 
-			dao.Store(dbData);				
+					//update处理
+					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+							"OrderStatusUpdate",userInfo);			
+					copyProperties(dbData,commData);
+					dbData.setStatus(status);
+
+					dao.Store(dbData);
+				}
+			}else{
+
+				//update处理
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"OrderStatusUpdate",userInfo);			
+				copyProperties(dbData,commData);
+				dbData.setStatus(status);
+
+				dao.Store(dbData);
+			}
+								
 		}	
 
 	}

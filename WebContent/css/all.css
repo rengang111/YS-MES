@@ -647,3 +647,6 @@ pre{
 	color: red;
 	font-weight: bold
 }
+.box {
+	height: 15px;
+}
