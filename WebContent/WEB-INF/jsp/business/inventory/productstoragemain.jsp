@@ -13,15 +13,13 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-
-		var url = "${ctx}/business/storage?methodtype=orderSearch"+"&sessionFlag="+sessionFlag;
+		var url = "${ctx}/business/storage?methodtype=productStockinSearch"+"&sessionFlag="+sessionFlag;
 		
 		var key1 = $("#keyword1").val();
 		var key2 = $("#keyword2").val();
 		if(key1 != '' || key2 != ''){
 			//
-			status = '';
-			
+			status = '';			
 		}
 		url += "&status="+status;
 		url += "&keyBackup="+status;
@@ -156,11 +154,19 @@
 	        	$('#TMaterial').DataTable().$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	        }
-		});		
+		});	
+
+		buttonSelectedEvent();//按钮选择式样
+	 	$('#defutBtn').removeClass("start").addClass("end");
 	})	
 	
 	function doSearch() {	
 
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+		
 		//false:不使用session
 		ajax("","false");
 	}
@@ -212,8 +218,8 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('030','false');">待交货</a>
-			<a class="DTTT_button DTTT_button_text" onclick="selectContractByDate('040','false');">已入库</a>
+			<a class="DTTT_button box" onclick="selectContractByDate('030','false');" id="defutBtn">待交货</a>
+			<a class="DTTT_button box" onclick="selectContractByDate('040','false');" id="defutBtn1">已入库</a>
 		</div>
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						

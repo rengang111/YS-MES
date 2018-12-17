@@ -999,7 +999,7 @@
    	  <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
    	  <w name="a.YSId"  	  des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="a.stockOutId"  des=""  reqName="stockOutId" dtype="ch" oper="="  lg="AND" bt="" />
-   	  <w name="a.status"  des=""  reqName="status" dtype="ch" oper="not in"  lg="AND" bt="" />
+   	  <!--w name="a.status"  des=""  reqName="status" dtype="ch" oper="not in"  lg="AND" bt="" / -->
      </where>
     <select>
       <f name="A.YSId" alias="" ctype="" />
@@ -1021,6 +1021,50 @@
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
     <from>v_stockoutforproduct a LEFT JOIN v_stockout_createtime_max c ON c.YSId=a.YSId AND c.materialId=a.materialId WHERE a.deleteFlag='0' #</from>
+     <orderby>a.YSId </orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="stockinforproduct" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="a.YSId"  	  des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="a.stockOutId"  des=""  reqName="stockOutId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="a.status"  des=""  reqName="status" dtype="ch" oper="not in"  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.orderQty" alias="" ctype="" />
+      <f name="A.stockinQty" alias="" ctype="" />
+      <f name="A.completedQuantity" alias="" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.storageDate" alias="" ctype="" />
+      <f name="a.status" alias="" ctype="订单状态" />
+    </select>
+    <!--from>v_stockoutforproduct a LEFT JOIN v_stockout_createtime_max c ON c.YSId=a.YSId AND c.materialId=a.materialId WHERE a.deleteFlag='0' #</from -->
+    <from>
+    	( SELECT
+			a.YSId,
+			a.materialId,
+			a.materialName,
+			a.PIId,
+			IFNULL(REPLACE(a.quantity,',',''),'0') orderQty,
+			IFNULL(REPLACE(c.quantity,',',''),'0') stockinQty,
+			c.checkInDate AS storageDate,
+			a.unit,
+			IFNULL(a.completedQuantity,0) completedQuantity,
+			a.status,full_field
+		from v_orderlist a
+			LEFT JOIN v_purchasestockindetailgroup c ON c.materialId=a.materialId AND c.YSId=a.YSId 
+    ) a where 1=1 #0
+    </from>
     <orderby>a.YSId </orderby>
     <groupby></groupby>
     <having></having>

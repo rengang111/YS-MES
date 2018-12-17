@@ -101,7 +101,7 @@
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			var name = row["productName"];		    			
-	    			name = jQuery.fixedWidth(name,60);
+	    			name = jQuery.fixedWidth(name,48);
 	    			return name;
 	    		}},
 	    		{"targets":6,"render":function(data, type, row){//备货状态

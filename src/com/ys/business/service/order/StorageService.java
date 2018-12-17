@@ -451,7 +451,7 @@ public class StorageService extends CommonService {
 		return modelMap;		
 
 	}
-	public HashMap<String, Object> doOrderSearch( String data) throws Exception {
+	public HashMap<String, Object> productStockinSearch( String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		int iStart = 0;
@@ -478,7 +478,7 @@ public class StorageService extends CommonService {
 		}		
 
 		dataModel.setQueryFileName("/business/order/manufacturequerydefine");
-		dataModel.setQueryName("stockoutforproduct");
+		dataModel.setQueryName("stockinforproduct");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
@@ -492,25 +492,27 @@ public class StorageService extends CommonService {
 		}
 		
 		StringBuffer sb = new StringBuffer();
-		sb.append(" AND ");
+		sb.append(" ");
 		if(("030").equals(status)){
 			//未入库
-			sb.append(" a.stockinQty+0 <= 0 ");
-			userDefinedSearchCase.put("status", "050");
+			sb.append(" AND  REPLACE(IFNULL(a.completedQuantity,0),',','')+0 <= 0");
+			//userDefinedSearchCase.put("status", "050");
 		}else if(("040").equals(status)){
 			//已入库
-			sb.append(" ( a.stockoutQty + 0 <= 0 AND a.stockinQty + 0 > 0 ) || REPLACE(a.completedQuantity,',','')+0 > 0 ");
-			userDefinedSearchCase.put("status", "050");
+			sb.append(" AND ( REPLACE(IFNULL(a.completedQuantity,0),',','')+0 >= a.orderQty+0 ");
+			//userDefinedSearchCase.put("status", "050");
 		}else{
 			//普通查询
-			sb.append(" 1=1 ");
+			sb.append("  ");
 		}
-		
+		userDefinedSearchCase.put("status", "");
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		sql = sql.replace("#", sb.toString());
+		sql = sql.replace("#0", sb.toString());
 		System.out.println("成品入库："+sql);
-		baseQuery.getYsQueryData(sql,sb.toString(),iStart, iEnd); 
+		List<String> list = new ArrayList<String>();
+		list.add(sb.toString());
+		baseQuery.getYsQueryData(sql,list,iStart, iEnd); 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			

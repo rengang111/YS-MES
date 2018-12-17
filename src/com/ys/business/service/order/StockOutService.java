@@ -1231,6 +1231,7 @@ public class StockOutService extends CommonService {
 
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		sql = sql.replace("#", sb.toString());
+		System.out.println("成品出库："+sql);
 		baseQuery.getYsQueryData(sql,sb.toString(),iStart, iEnd);
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			

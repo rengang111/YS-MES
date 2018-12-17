@@ -11,6 +11,7 @@
 <script type="text/javascript">
 
 /* Custom filtering function which will search data in column four between two values */
+/*
 $('#example').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	       
 	var type =  $('#selectedPurchaseType').val();
@@ -62,7 +63,7 @@ $('#example').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    	  
  
 });
-
+*/
 var GcontractStatusFlag="false";
 
 	$(document).ready(function() {		
@@ -93,7 +94,7 @@ var GcontractStatusFlag="false";
 	
 	function baseBomView() {
 
-		var scrollHeight = $(window).height() - 230;
+		var scrollHeight = $(window).height() - 240;
 		var YSId='${order.YSId}';
 		//var table = $('#example').dataTable();
 		//if(table) {
@@ -106,11 +107,11 @@ var GcontractStatusFlag="false";
 			"processing" : false,
 			"retrieve"   : true,
 			"stateSave"  : false,
-	        "ordering"  : false,
+	        "ordering"  : true,
 	        "autoWidth": false,
 			"pagingType" : "full_numbers",
-			"scrollY"    : scrollHeight,
-	        "scrollCollapse": false,
+			//"scrollY"    : scrollHeight,
+	        //"scrollCollapse": false,
 	        //"fixedColumns":   { leftColumns: 2 },
 			"dom" 		: '<"clear">rt',
 			"sAjaxSource" : actionUrl,
@@ -139,25 +140,27 @@ var GcontractStatusFlag="false";
 				{"data": null,"className" : 'td-center',"sWidth": "15px"},//0
 				{"data": "materialId","className" : 'td-left',"sWidth": "100px"},//1.物料编号
 				{"data": null,"defaultContent" : ''},//2.物料名称
-				{"data": "deliveryDate","className" : 'td-left', "defaultContent" : ''},//3.合同编号
+				{"data": "manufactureQuantity","className" : '',"className" : 'td-right'},//3.订单数量
 				{"data": "contractSupplierId","className" : '', "defaultContent" : ''},//4.供应商
-				{"data": "contractQty","className" : 'td-right'},//5.合同数量
-				{"data": "stockinQty","className" : 'td-right'},//6.入库数量
-				{"data": "arrivalCount","className" : 'td-right'},//7.到货未检
-				{"data": "waitStockOut","className" : 'td-right'},//8.待出库
-				{"data": "quantityOnHand","className" : 'td-right', "defaultContent" : '0'},//9.当前库存
-				{"data": "availabelToPromise","className" : 'td-right', "defaultContent" : '0'},//10.虚拟库存
-				
+				{"data": "contractId","className" : ''},//5.合同编号
+				{"data": "deliveryDate","className" : 'td-center', "defaultContent" : ''},//6.合同交期
+				{"data": "contractQty","className" : 'td-right'},//7.合同数量
+				{"data": "sortFlag","className" : 'td-right'},//8.入库数量/当前库存
+				{"data": "stockoutQty","className" : 'td-right'},//9.出库
+				//{"data": "waitStockOut","className" : 'td-right'},//8.待出库
+				//{"data": "quantityOnHand","className" : 'td-right', "defaultContent" : '0'},//9.当前库存
+				//{"data": "availabelToPromise","className" : 'td-right', "defaultContent" : '0'},//10.虚拟库存				
 				],
 			"columnDefs":[
 	    		{"targets":2,"render":function(data, type, row){	 			
-	    			return jQuery.fixedWidth(row["materialName"],32);	
+	    			return jQuery.fixedWidth(row["materialName"],48);	
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
 	    			if(data == ''){
 	    				return '<div style="text-align: center;">***</div>';
 	    			}else{
-	    				return "<a href=\"###\" onClick=\"doShowContract('"+ row["contractId"] + "')\">"+data+"</a>";
+	    				return data;
+	    				//return "<a href=\"###\" onClick=\"doShowContract('"+ row["contractId"] + "')\">"+data+"</a>";
 	    			}	    			
 	    		}},
 	    		{"targets":4,"render":function(data, type, row){
@@ -168,46 +171,64 @@ var GcontractStatusFlag="false";
 	    			}	    			
 	    		}},
 	    		{"targets":5,"render":function(data, type, row){
-	    			if(data == '0'){
+	    			//
+	    			if(data == ''){
+	    				return '<div style="text-align: center;">***</div>';
+	    			}else{
+	    				return "<a href=\"###\" onClick=\"doShowStockin('"+ row["contractId"] + "')\">"+data+"</a>";;
+	    			}	    			
+	    		}},
+	    		{"targets":6,"render":function(data, type, row){
+	    			if(data == ''){
 	    				return '<div style="text-align: center;">***</div>';
 	    			}else{
 	    				return data;
 	    			}	    			
 	    		}},
-	    		{"targets":6,"render":function(data, type, row){//已入库数量
-	    			var contract = currencyToFloat( row["contractQty"] );
-	    			var stockin = currencyToFloat( row["stockinQty"] );
-	    			if(contract == '0'){
-	    				return '<div style="text-align: center;">***</div>';
+	    		{"targets":7,"render":function(data, type, row){
+	    			if(data == '0'){
+	    				return '***';
 	    			}else{
-	    				if( stockin < contract ){
-		    				return '<div style="color: red;font-weight: bold;">'+floatToCurrency(stockin)+'</div>';
-	    					
-	    				}else{
-		    				return floatToCurrency(stockin);
-	    				}
+	    				return data;
 	    			}	    			
 	    		}},
-	    		{"targets":7,"render":function(data, type, row){
-	    			
-	    			return floatToCurrency(data);
-	    			    			
+	    		{"targets":8,"render":function(data, type, row){//入库数量/当前库存
+	    			var contract = currencyToFloat( row["contractQty"] );
+	    			var stockin = currencyToFloat( row["stockinQty"] );
+	    			var manufactureQty = currencyToFloat( row["manufactureQuantity"] );//订单需求
+	    			var quantityOnHand = currencyToFloat( row["quantityOnHand"] );//库存
+
+	    			if(contract == '0'){
+	    				
+	    				//没有合同
+	    				return floatToCurrency(quantityOnHand);
+	    				//if( quantityOnHand < manufactureQty )
+		    			//	return '<div style="color: red;font-weight: bold;">'+floatToCurrency(quantityOnHand)+'</div>';	    					
+	    				//else	    					
+	    				//	return floatToCurrency(quantityOnHand);
+	    			}else{
+	    				//有合同,有收货
+	    				return floatToCurrency(stockin);
+	    				//if( stockin < contract ){
+		    			//	return '<div style="color: red;font-weight: bold;">'+floatToCurrency(stockin)+'</div>';
+	    				//	
+	    				//}else{
+		    			//	return floatToCurrency(stockin);
+	    				//}
+	    			}	    			
 	    		}},
-	    		{"targets":8,"render":function(data, type, row){
-	    			
-	    			return floatToCurrency(data);
-	    			    			
-	    		}},
-	    		{"targets":9,"render":function(data, type, row){
-	    			
-	    			return floatToCurrency(data);
-	    			    			
-	    		}},
+	       		{"targets":8,"createdCell":function(td, cellData, rowData, row, col){
+
+	    			if( cellData != 0 ) {
+	       				$(td).parent().addClass('error');
+	 				}
+	       			
+	       		}},
 	    		{
 					"visible" : false,
-					"targets" : [8,10]
+					"targets" : [4]
 				},
-	    		{ "bSortable": false, "aTargets": [0] }
+	    		//{ "bSortable": false, "aTargets": [0] }
 	          
 	        ] 
 	     
@@ -283,14 +304,13 @@ var GcontractStatusFlag="false";
 			<table class="form" id="table_form">
 				<tr> 				
 					<td class="label" style="width:100px;"><label>耀升编号：</label></td>					
-					<td style="width:150px;">${order.YSId}</td>
+					<td style="width:100px;">${order.YSId}</td>
 								
 					<td class="label" style="width:100px;"><label>产品编号：</label></td>					
-					<td style="width:150px;"><a href="###" onClick="doShowProduct()">${order.materialId}</a>
-				</td>
+					<td style="width:150px;"><a href="###" onClick="doShowProduct()">${order.materialId}</a></td>
 				
 					<td class="label" style="width:100px;"><label>产品名称：</label></td>				
-					<td>${order.materialName}</td>
+					<td colspan="2">${order.materialName}</td>
 				</tr>
 				<tr>
 					<td class="label"><label>ＰＩ编号：</label></td>
@@ -301,22 +321,23 @@ var GcontractStatusFlag="false";
 						
 					<td class="label"><label>客户名称：</label></td>
 					<td>${order.customerFullName}</td>
+					<td style="width:100px;">
+						<!-- a class="DTTT_button  " id="goBack" >返回</a--></td>
+
 				</tr>							
 			</table>
 		</fieldset>
 		
 		<fieldset style="margin-top: -20px;">
+		<!-- 
 			<div id="DTTT_container"  style="float:left;height:40px;margin-right: 30px;width: 50%;margin: 15px 0px -10px 10px;">
 				<a class="DTTT_button  box" id="all" data-id="4">显示全部</a>
 				<a class="DTTT_button  box" id="dg" data-id="1">装配件</a>
 				<a class="DTTT_button  box" id="yz" data-id="0">非采购件</a>
-			<!-- 	<a class="DTTT_button  box" id="bz" data-id="3">包装采购件</a> -->
+			 	<a class="DTTT_button  box" id="bz" data-id="3">包装采购件</a> 
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
-			<div id="DTTT_container"  style="float:right;height:40px;width: 40%;margin: 15px 10px 0px 1px;text-align: end;">
-				<a class="DTTT_button  " id="goBack" >返回</a>
-				<input type="hidden" id="selectedPurchaseType" />
-			</div>
+			 -->
 			<div class="list">
 				<table id="example" class="display" >
 					<thead>				
@@ -324,14 +345,13 @@ var GcontractStatusFlag="false";
 							<th width="20px">No</th>
 							<th width="100px">物料编码</th>
 							<th>物料名称</th>
-							<th width="80px">合同交期</th>
-							<th width="60px">供应商</th>
-							<th width="60px">合同数量</th>
-							<th width="60px">入库数量</th>
-							<th width="60px">到货未检</th>
-							<th width="60px">待出库</th>
-							<th width="60px">实际库存</th>
-							<th width="60px">虚拟库存</th>
+							<th width="70px">订单用量</th>
+							<th width="70px">供应商</th>
+							<th width="80px">合同编号</th>
+							<th width="70px">合同交期</th>
+							<th width="70px">合同数</th>
+							<th width="80px">入库数量/<br>当前库存</th>
+							<th width="70px">出库数</th>
 						</tr>
 					</thead>
 				</table>
@@ -393,6 +413,13 @@ function doEditMaterial(recordid,parentid) {
 			layer.close(index);
 		}    
 	});	
+}
+
+function doShowStockin(contractId) {
+
+	var url = '${ctx}/business/storage?methodtype=showStockInByContractId&openFlag=newWindow&contractId=' + contractId;
+	
+	callProductDesignView("入库单",url);
 }
 
 </script>

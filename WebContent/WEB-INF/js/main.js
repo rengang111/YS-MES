@@ -114,7 +114,8 @@ function popupWindow(name, url, width, height) {
     var iLeft = (window.screen.availWidth - 10 - width) / 2;	
 	
 	
-	window.open(url, name, 'height=' + height + ',width=' + width + ',top=' + iTop + ',left=' + iLeft + ',toolbar=no,menubar=no,scrollbars=yes, resizable=no,location=no,status=no');
+	myWindow =window.open(url, name, 'height=' + height + ',width=' + width + ',top=' + iTop + ',left=' + iLeft + ',toolbar=no,menubar=no,scrollbars=yes, resizable=no,location=no,status=no');
+	myWindow.focus(); 
 }
 
 var totalPages = $("#totalPages").val();
@@ -567,10 +568,10 @@ function inputCheck(){
 				//按字节数截取字符串,并附加后缀
 				str = substringB(str,length - lengthB(char)) + char;
 				//添加一个提示信息				
-				str =  '<div title="' + strFull + '" style="font-size: 11px;">' + str + '</div>';
+				str =  '<div title="' + strFull + '" style="font-size: 11px;">&nbsp;' + str + '</div>';
 				
 			}else{
-				str =  '<div title="' + strFull + '">' + str + '</div>';
+				str =  '<div title="' + strFull + '">&nbsp;' + str + '</div>';
 				
 			}
 			return str;

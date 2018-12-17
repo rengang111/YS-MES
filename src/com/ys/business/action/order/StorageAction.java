@@ -129,10 +129,10 @@ public class StorageAction extends BaseAction {
 				doInit();
 				rtnUrl = "/business/inventory/productstoragemain";
 				break;
-			case "orderSearch":
-				dataMap = doOrderSearch(data);
+			case "productStockinSearch"://成品入库查询
+				dataMap = doProductStockinSearch(data);
 				printOutJsonObj(response, dataMap);
-				return null;
+				break;
 			case "productAddInit":
 				doProductAddInit();
 				rtnUrl = "/business/inventory/productstorageadd";
@@ -470,7 +470,7 @@ public class StorageAction extends BaseAction {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doOrderSearch(@RequestBody String data){
+	public HashMap<String, Object> doProductStockinSearch(@RequestBody String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
 		String sessionFlag = request.getParameter("sessionFlag");
@@ -480,7 +480,7 @@ public class StorageAction extends BaseAction {
 		}
 		
 		try {
-			dataMap = service.doOrderSearch(data);
+			dataMap = service.productStockinSearch(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

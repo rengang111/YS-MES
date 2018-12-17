@@ -1786,7 +1786,9 @@ public class OrderService extends CommonService  {
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
-		baseQuery.getYsFullData();
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#1", YSId);
+		baseQuery.getYsQueryData(sql,YSId,0,0);
 		
 		HashMap.put("data", dataModel.getYsViewData());
 		
