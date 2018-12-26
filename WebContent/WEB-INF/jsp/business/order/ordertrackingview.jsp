@@ -145,7 +145,8 @@ var GcontractStatusFlag="false";
 				{"data": "contractId","className" : ''},//5.合同编号
 				{"data": "deliveryDate","className" : 'td-center', "defaultContent" : ''},//6.合同交期
 				{"data": "contractQty","className" : 'td-right'},//7.合同数量
-				{"data": "sortFlag","className" : 'td-right'},//8.入库数量/当前库存
+				{"data": "sortFlag","className" : 'td-right'},//8.入库数量
+				{"data": "sortFlag","className" : 'td-right'},//8.当前库存
 				{"data": "stockoutQty","className" : 'td-right'},//9.出库
 				//{"data": "waitStockOut","className" : 'td-right'},//8.待出库
 				//{"data": "quantityOnHand","className" : 'td-right', "defaultContent" : '0'},//9.当前库存
@@ -192,7 +193,7 @@ var GcontractStatusFlag="false";
 	    				return data;
 	    			}	    			
 	    		}},
-	    		{"targets":8,"render":function(data, type, row){//入库数量/当前库存
+	    		{"targets":8,"render":function(data, type, row){//入库数量
 	    			var contract = currencyToFloat( row["contractQty"] );
 	    			var stockin = currencyToFloat( row["stockinQty"] );
 	    			var manufactureQty = currencyToFloat( row["manufactureQuantity"] );//订单需求
@@ -201,7 +202,8 @@ var GcontractStatusFlag="false";
 	    			if(contract == '0'){
 	    				
 	    				//没有合同
-	    				return floatToCurrency(quantityOnHand);
+	    				return '***';
+	    				//return floatToCurrency(quantityOnHand);
 	    				//if( quantityOnHand < manufactureQty )
 		    			//	return '<div style="color: red;font-weight: bold;">'+floatToCurrency(quantityOnHand)+'</div>';	    					
 	    				//else	    					
@@ -216,6 +218,21 @@ var GcontractStatusFlag="false";
 		    			//	return floatToCurrency(stockin);
 	    				//}
 	    			}	    			
+	    		}},
+	    		{"targets":9,"render":function(data, type, row){//当前库存
+	    			var contract = currencyToFloat( row["contractQty"] );
+	    			var stockin = currencyToFloat( row["stockinQty"] );
+	    			var manufactureQty = currencyToFloat( row["manufactureQuantity"] );//订单需求
+	    			var quantityOnHand = currencyToFloat( row["quantityOnHand"] );//库存
+
+	    			//if(contract == '0'){
+	    				
+	    				//没有合同
+	    				return floatToCurrency(quantityOnHand);
+	    			//}else{
+	    				//有合同,有收货
+	    			//	return floatToCurrency(stockin);
+	    			//}	    			
 	    		}},
 	       		{"targets":8,"createdCell":function(td, cellData, rowData, row, col){
 
@@ -350,7 +367,8 @@ var GcontractStatusFlag="false";
 							<th width="80px">合同编号</th>
 							<th width="70px">合同交期</th>
 							<th width="70px">合同数</th>
-							<th width="80px">入库数量/<br>当前库存</th>
+							<th width="70px">入库数量</th>
+							<th width="70px">当前库存</th>
 							<th width="70px">出库数</th>
 						</tr>
 					</thead>

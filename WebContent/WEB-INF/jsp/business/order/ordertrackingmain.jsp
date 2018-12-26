@@ -376,7 +376,7 @@
 								<a  class="DTTT_button box2" onclick="doSearchCustomer2('0');" id="defutBtnz0">重点关注</a>
 							</td>
 							 -->
-							
+							<!-- 
 							<a  class="DTTT_button box3" onclick="doSearchCustomer4('3');" id="defutBtn3">已领料</a>
 		<span id="yearFlag">			
 			<select id="year" name="year" onchange="doSearchCustomer4();" style="width: 100px;vertical-align: bottom;"></select>
@@ -406,6 +406,7 @@
 			<a id="defutBtn11"  class="DTTT_button box" onclick="doSearchCustomer('11');">
 				11</a>
 		</span>
+		 -->
 		</td>
 						</tr>
 					</table>

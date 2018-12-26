@@ -189,7 +189,8 @@ body{
 		    			if(currencyToFloat(data) < 0){
 		    				style = 'color: green;font-weight: bold;font-size: 11px;';//负数
 		    			}
-		    			rtn +=  "<a href=\"###\" style=\""+style+"\"  onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + qty + "</a>";
+		    			//rtn +=  "<a href=\"###\" style=\""+style+"\"  onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + qty + "</a>";
+		    			rtn += "<a href=\"###\" style=\""+style+"\"  onClick=\"showMaterialHistory('" + row["materialId"] +"')\">" + qty + "</a>";
 		    			return rtn;
 		    		}},
 		    		{"targets":12,"render":function(data, type, row){//虚拟库存
@@ -372,6 +373,13 @@ body{
 		
 	}
 
+	function showMaterialHistory(materialId) {
+
+		var url = '${ctx}/business/financereport?methodtype=reportForDaybookByMaterialIdInit&materialId=' + materialId;
+		callProductDesignView("物料入出库明细",url);
+		
+	}
+	
 	function reload() {
 		
 		$('#TMaterial').DataTable().ajax.reload(null,false);

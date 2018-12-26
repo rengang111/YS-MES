@@ -421,6 +421,52 @@
 	<power>
 	</power>    
   </query>
+ <query>
+    <pool></pool>     
+    <name value="stockInByContractId" />
+    <where>
+   	  	<w name="A.arrivelId"  des=""  reqName="arrivelId"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+      </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.stockRcordId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.receiptId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="a.unit" alias="" ctype="计量单位" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.supplierName" alias="" ctype="" />
+      <f name="IFNULL(A.contractQuantity,'***')" alias="contractQuantity" ctype="" />
+      <f name="A.contractStorage" alias="" ctype="" />
+      <f name="A.packagNumber" alias="" ctype="" />
+      <f name="A.areaNumber" alias="" ctype="" />
+      <f name="A.packaging" alias="" ctype="包装方式" />
+      <f name="A.packaging" alias="packagingId" ctype="" />
+      <f name="A.LoginName" alias="" ctype="" />
+      <f name="A.checkInDate" alias="" ctype="" />
+      <f name="A.arrivelId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="A.materialNumber" alias="" ctype="" />
+      <f name="FORMAT((REPLACE(A.quantity,',','') * REPLACE(a.contractPrice,',','')),2)" alias="total" ctype="" />      
+      <f name="a.contractPrice" alias="price" ctype="" />  
+      <f name="A.contractTotalPrice" alias="" ctype="" />
+      <f name="A.contractPrice" alias="" ctype="" />
+      <f name="A.depotId" alias="depotName" ctype="仓库分类" />
+      <f name="IFNULL(A.depotId,'')" alias="depotId" ctype="" />
+      <f name="IFNULL(A.reverse,'')" alias="reverse" ctype="" />
+      <f name="format((replace(A.contractPrice,',','') / (a.taxRate/100+1)),6)" alias="taxPrice" ctype="" />
+      <f name="format((replace(A.contractPrice,',','') / (a.taxRate/100+1)) * replace(A.quantity,',',''),2)" alias="taxTotal" ctype="" />
+    </select>
+    <from>v_purchaseStockInById a  WHERE a.deleteFlag = '0' </from>
+    <orderby>A.contractId,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
   <query>
     <pool></pool>     
     <name value="getInspectionReturnList" />

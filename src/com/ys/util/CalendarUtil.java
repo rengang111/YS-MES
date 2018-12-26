@@ -73,8 +73,9 @@ public class CalendarUtil {
 	 *
 	 * @return	String		����
 	 */	
-	public String getDayOfYear() {
-		return String.valueOf(calendar_instance.get(Calendar.DAY_OF_YEAR));
+	public static String getDayOfYear() {
+		Calendar c = Calendar.getInstance();				
+		return String.valueOf(c.get(Calendar.DATE));
 	}
 	
 	/**
@@ -83,6 +84,7 @@ public class CalendarUtil {
 	 * @return	String		����
 	 */	
 	public String getWeekOfYear() {
+		
 		return String.valueOf(calendar_instance.get(Calendar.WEEK_OF_YEAR));
 	}
     
@@ -342,4 +344,18 @@ public class CalendarUtil {
 		return CalendarUtil.fmtDate(date, "yyyy-MM-dd");
  
 	}
+	
+	// 使用当前月份,得到下一个月的月份:月份的格式是:yyyy-MM
+		public static String getNextDate() {
+	 
+			Date date = new Date();
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date); // 设置为当前时间
+			calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1); // 设置为下一个月
+			date = calendar.getTime();
+
+			return CalendarUtil.fmtDate(date, "yyyy-MM-dd");
+	 
+		}
 }

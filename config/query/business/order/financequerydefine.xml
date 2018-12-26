@@ -832,5 +832,28 @@
     <groupby></groupby>
     <having></having>
 	<power></power>
+  </query>   
+  <query>
+    <pool></pool>    
+    <name value="getStorageValueFromMonth" />
+     <where>
+       <w name="LEFT(b.beginningDate,7)" des=""  reqName="beginningDate" dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="b.materialId"            des=""  reqName="materialId"    dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="b.materialId" alias="" ctype="" />
+      <f name="b.beginningDate" alias="" ctype="" />
+      <f name="b.beginningWaitIn" alias="" ctype="" />
+      <f name="b.beginningWaitOut" alias="" ctype="" />
+      <f name="b.beginningAvailabel" alias="" ctype="" />
+      <f name="b.beginningInventory" alias="" ctype="" />
+      <f name="b.beginningPrice" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+  </select>
+    <from>b_InventoryManagemen b LEFT JOIN b_material a ON a.materialId=b.materialId</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
   </query> 
 </root>

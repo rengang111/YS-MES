@@ -684,7 +684,7 @@ public class StorageService extends CommonService {
 		String contractId = request.getParameter("contractId");
 		String arrivelId = request.getParameter("arrivelId");
 		
-		return getArrivaRecord(contractId,"",arrivelId);
+		return getStockinByContract(contractId,arrivelId);
 	}
 
 	public HashMap<String, Object> getProductStockInDetail() {
@@ -1347,7 +1347,26 @@ public class StorageService extends CommonService {
 		return modelMap;
 	}
 	
+	private HashMap<String, Object> getStockinByContract(
+			String contractId,String arrivelId) throws Exception{
 
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("stockInByContractId");
+		userDefinedSearchCase.put("contractId", contractId);
+		userDefinedSearchCase.put("arrivelId", arrivelId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0 ){
+			modelMap.put("data", dataModel.getYsViewData());		
+		}	
+		return modelMap;
+	}
+	
+	
 	private void getStockinDetail(
 			String receiptId) throws Exception{
 		

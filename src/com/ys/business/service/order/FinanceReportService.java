@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -132,6 +133,31 @@ public class FinanceReportService extends CommonService {
 		modelMap.put("sEcho", sEcho); 		
 		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;		
+
+	}
+	
+	public HashMap<String, Object> reportForDaybookByMaterialIdSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+				
+		
+		dataModel.setQueryName("financeReprotForDaybook");//流水账
+		baseQuery = new BaseQuery(request, dataModel);
+
+		String materialId = request.getParameter("materialId");
+		String strMonthly = getJsonData(data, "monthly");
+		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
+		userDefinedSearchCase.put("startDate", monthly.getStartDate());
+		userDefinedSearchCase.put("endDate", monthly.getEndDate());
+		userDefinedSearchCase.put("materialId", materialId);
+
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		//String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsFullData();	 
+						
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;		
@@ -1120,6 +1146,42 @@ public class FinanceReportService extends CommonService {
 		
 		return modelMap;		
 
+	}
+	
+	public void reportForDaybookByMaterialIdInit() throws Exception{
+
+		String materialId = request.getParameter("materialId");
+		String strMonthly = request.getParameter("monthly");
+		if(isNullOrEmpty(strMonthly)){
+			strMonthly = CalendarUtil.fmtYmdDate();
+		}
+		//FinanceMouthly monthly = new FinanceMouthly(strMonthly);
+		//String start = monthly.getStartDate();
+		//String end = monthly.getEndDate();
+		
+		String day = CalendarUtil.getDayOfYear();
+		//String month = CalendarUtil.getMonthOfYear();
+		
+		//int imonth = Integer.parseInt(month);
+		int iday = Integer.parseInt(day);
+		if(iday > 26){
+			strMonthly = CalendarUtil.getNextDate();
+		}
+		
+		String strMonth = strMonthly.substring(0, 7);
+		
+
+		dataModel.setQueryFileName("/business/order/financequerydefine");
+		dataModel.setQueryName("getStorageValueFromMonth");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("materialId", materialId);
+		userDefinedSearchCase.put("beginningDate", strMonth);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0 )
+			model.addAttribute("storage",dataModel.getYsViewData().get(0));		
+		
 	}
 
 }

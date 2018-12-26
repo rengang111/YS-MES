@@ -1,5 +1,6 @@
 package com.ys.business.action.order;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -168,9 +169,16 @@ public class FinanceReportAction extends BaseAction {
 			case "monthlyStatistics"://月度统计
 				dataMap = monthlyStatistics();
 				printOutJsonObj(response, dataMap);
-				break;	
-				
-				
+				break;
+			case "reportForDaybookByMaterialIdInit":
+				reportForDaybookByMaterialIdInit();
+				rtnUrl = "/business/inventory/materialstoragehistory";
+				break;
+			case "reportForDaybookByMaterialIdSsearch":
+				dataMap = reportForDaybookByMaterialIdSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+
 		}
 		
 		return rtnUrl;
@@ -197,6 +205,28 @@ public class FinanceReportAction extends BaseAction {
 		
 		try {
 			dataMap = service.reportForDaybookSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> reportForDaybookByMaterialIdSearch(String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			dataMap = service.reportForDaybookByMaterialIdSearch(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
@@ -524,5 +554,11 @@ public class FinanceReportAction extends BaseAction {
 		}
 		
 		return map;
+	}
+	private void reportForDaybookByMaterialIdInit() throws Exception{
+		String materialId= request.getParameter("materialId");
+		model.addAttribute("materialId",materialId);
+		
+		service.reportForDaybookByMaterialIdInit();
 	}
 }

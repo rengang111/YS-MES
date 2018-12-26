@@ -348,6 +348,8 @@ public class OrderService extends CommonService  {
 				whereMonthDay = "full_field  like '%"+key1+"%'";
 			else
 				whereMonthDay = "full_field  like '%"+key2+"%'";
+
+			whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 = 0  ";
 		}
 		
 		//userDefinedSearchCase.put("keyword1", key1);
