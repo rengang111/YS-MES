@@ -189,7 +189,12 @@ public class FinanceReportAction extends BaseAction {
 		if(materialId == null)
 			materialId = "";
 		model.addAttribute("materialId",materialId);
-		
+		try {
+			service.reportForDaybookInit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

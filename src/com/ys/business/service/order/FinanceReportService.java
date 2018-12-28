@@ -117,15 +117,24 @@ public class FinanceReportService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);
 
 		String materialId = getJsonData(data, "materialId");
-		String strMonthly = getJsonData(data, "monthly");
+		String strMonthly = request.getParameter("monthday");
 		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
-		userDefinedSearchCase.put("startDate", monthly.getStartDate());
-		userDefinedSearchCase.put("endDate", monthly.getEndDate());
-		userDefinedSearchCase.put("materialId", materialId);
 
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		//String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#0", monthly.getStartDate());
+		sql = sql.replace("#1", monthly.getEndDate());
+		//sql = sql.replace("#2", materialId);
+		
+		List<String> list = new ArrayList<String>();
+		list.add(monthly.getStartDate());
+		list.add(monthly.getEndDate());
+		//list.add(materialId);
+		
+		System.out.println("日期别流水："+sql);
+		
+		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -144,19 +153,23 @@ public class FinanceReportService extends CommonService {
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 				
 		
-		dataModel.setQueryName("financeReprotForDaybook");//流水账
+		dataModel.setQueryName("financeReprotForDaybookBymaterialId");//物料别流水账
 		baseQuery = new BaseQuery(request, dataModel);
 
 		String materialId = request.getParameter("materialId");
-		String strMonthly = getJsonData(data, "monthly");
+		String strMonthly = request.getParameter("monthday");
+		
 		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
-		userDefinedSearchCase.put("startDate", monthly.getStartDate());
-		userDefinedSearchCase.put("endDate", monthly.getEndDate());
-		userDefinedSearchCase.put("materialId", materialId);
 
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		//String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsFullData();	 
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#0", monthly.getStartDate());
+		sql = sql.replace("#1", monthly.getEndDate());
+		sql = sql.replace("#2", materialId);
+		
+		System.out.println("物料别流水："+sql);
+		
+		baseQuery.getYsFullData(sql);	 
 						
 		modelMap.put("data", dataModel.getYsViewData());
 		
@@ -1122,6 +1135,12 @@ public class FinanceReportService extends CommonService {
 		
 	}
 	
+	public void reportForDaybookInit() throws Exception{
+
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
+		
+	}
+	
 	public HashMap<String, Object> monthlyStatistics() throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -1164,8 +1183,10 @@ public class FinanceReportService extends CommonService {
 		
 		//int imonth = Integer.parseInt(month);
 		int iday = Integer.parseInt(day);
-		if(iday > 26){
-			strMonthly = CalendarUtil.getNextDate();
+		if(iday > 25){
+			//strMonthly = CalendarUtil.getLastDate();
+		}else{
+			strMonthly = CalendarUtil.getLastDate();			
 		}
 		
 		String strMonth = strMonthly.substring(0, 7);
@@ -1181,7 +1202,8 @@ public class FinanceReportService extends CommonService {
 		
 		if(dataModel.getRecordCount() > 0 )
 			model.addAttribute("storage",dataModel.getYsViewData().get(0));		
-		
+
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 
 }

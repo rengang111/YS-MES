@@ -19,6 +19,7 @@ import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_InventoryHistoryDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
+import com.ys.business.db.dao.B_PriceReferenceDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseStockInDao;
 import com.ys.business.db.dao.B_PurchaseStockInDetailDao;
@@ -26,6 +27,7 @@ import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_InventoryHistoryData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_PriceReferenceData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_PurchaseStockInDetailData;
@@ -1946,10 +1948,10 @@ public class StorageService extends CommonService {
 
 			
 			//更新物料信息
-			updateMaterialBeginningInventory();
+			//updateMaterialBeginningInventory();
 			
 			//保存当前数据
-			insertBeginningInventoryHisotry();
+			//insertBeginningInventoryHisotry();
 			
 			
 			ts.commit();			
@@ -1980,11 +1982,16 @@ public class StorageService extends CommonService {
 			ts.begin();
 
 			
-			//更新物料信息
+			//更新当前库存
 			B_MaterialData material = updateMaterialQuantityOnHand();
 			
 			//保存当前数据
-			B_InventoryHistoryData history = insertBeginningInventoryHisotry();
+			String price = material.getMaprice();
+			if(isNullOrEmpty(price)){
+				String materialId = material.getMaterialid();
+				price = getPricereference(materialId);
+			}
+			B_InventoryHistoryData history = insertBeginningInventoryHisotry(price);
 			
 			ts.commit();
 			
@@ -1999,6 +2006,21 @@ public class StorageService extends CommonService {
 			ts.rollback();			
 		}		
 	
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String getPricereference(String materialId) throws Exception{
+		
+		String where = " materialId ='" + materialId + "' AND deleteFlag='0' ";	
+		
+		List<B_PriceReferenceData> list = new B_PriceReferenceDao().Find(where);	
+		
+		String rtnVlaue = "0";
+		if(list.size() > 0){
+			rtnVlaue = list.get(0).getLastprice();
+		}
+		
+		return rtnVlaue;
 	}
 
 	public void confirmQuantityOnHand() throws Exception {
@@ -2070,7 +2092,8 @@ public class StorageService extends CommonService {
 	}
 	
 	//更新
-	private B_InventoryHistoryData insertBeginningInventoryHisotry() throws Exception{
+	private B_InventoryHistoryData insertBeginningInventoryHisotry
+		(String price) throws Exception{
 	
 		//B_InventoryHistoryData inventory = new B_InventoryHistoryData();
 		B_InventoryHistoryDao dao = new B_InventoryHistoryDao();
@@ -2081,6 +2104,7 @@ public class StorageService extends CommonService {
 		float origin = stringToFloat(inventory.getOriginquantity());
 		float newQty = quantity - origin;
 		inventory.setQuantity(floatToString(newQty));
+		inventory.setPrice(price);
 		
 		//新增DB
 		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
@@ -2108,7 +2132,7 @@ public class StorageService extends CommonService {
 			return null;
 		}
 
-		insertStorageHistory(mate,"直接修改实际库存",reqMeterial.getQuantityonhand());//保留更新前的数据
+		insertStorageHistory(mate,"库存盘点",reqMeterial.getQuantityonhand());//保留更新前的数据
 		
 		float iQuantity = stringToFloat(reqMeterial.getQuantityonhand());
 		

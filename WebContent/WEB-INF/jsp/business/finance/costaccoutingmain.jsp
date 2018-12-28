@@ -375,7 +375,15 @@ body{
 	})	
 	
 	function doSearch() {	
+		var key1 = $('#keyword1').val();
+		var key2 = $('#keyword2').val();
 
+		if($.trim(key1) == '' && $.trim(key2) == ''){
+
+			$().toastmessage('showWarningToast', "请输入要查询的关键字。");	
+			return;
+		}
+		
 		ajaxSearch('','','false','','ALL','');
 		
 		var collection = $(".box");

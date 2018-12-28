@@ -95,19 +95,6 @@ body{
 					{"data": "quantityOnHand","className" : 'td-right'},//10实际库存
 					{"data": "availabelToPromise","className" : 'td-right'},//11虚拟库存
 					{"data": null,"className" : 'td-center'},//13状态
-					
-					
-					//{"data": "planQty","className" : 'td-right'},//	8
-					//{"data": "contractQty","className" : 'td-right'},//	9
-					//{"data": "stockinQtiy","className" : 'td-right'},//10
-					//{"data": "stockoutQty","className" : 'td-right'},//11
-					//{"data": null,"className" : 'td-right'},//12计算库存
-					//{"data": "quantityOnHand","className" : 'td-right'},//13
-					//{"data": "availabelToPromise","className" : 'td-right'},//14
-					//{"data": "waitStockIn","className" : 'td-right'},//15
-					//{"data": "waitStockOut","className" : 'td-right'},//16
-					//{"data": null,"className" : 'td-center'},//17
-
 				
 				],
 				"columnDefs":[
@@ -124,8 +111,10 @@ body{
 		    		{"targets":2,"render":function(data, type, row){
 		    			
 		    			var name = row["materialName"];				    			
-		    			name = jQuery.fixedWidth(name,24);				    			
-		    			return name;
+		    			name = jQuery.fixedWidth(name,24);
+		    			var rtn = "<a href=\"###\"  onClick=\"showMaterialHistory('" + row["materialId"] +"')\">" + name + "</a>";
+			    			
+		    			return rtn;
 		    		}},
 		    		{"targets":13,"render":function(data, type, row){
 		    			//实际库存修正
@@ -189,8 +178,7 @@ body{
 		    			if(currencyToFloat(data) < 0){
 		    				style = 'color: green;font-weight: bold;font-size: 11px;';//负数
 		    			}
-		    			//rtn +=  "<a href=\"###\" style=\""+style+"\"  onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + qty + "</a>";
-		    			rtn += "<a href=\"###\" style=\""+style+"\"  onClick=\"showMaterialHistory('" + row["materialId"] +"')\">" + qty + "</a>";
+		    			rtn +=  "<a href=\"###\" style=\""+style+"\"  onClick=\"setQuantityOnHand('" + row["recordId"] +"')\">" + qty + "</a>";
 		    			return rtn;
 		    		}},
 		    		{"targets":12,"render":function(data, type, row){//虚拟库存

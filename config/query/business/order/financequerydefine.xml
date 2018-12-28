@@ -323,62 +323,249 @@
 	<query>
 		<pool></pool>    
     	<name value="financeReprotForDaybook" />
-     	<where>
-	    	<w name="A.checkInDate"   des="" reqName="startDate"  dtype="ch" oper="&gt;"  lg="AND" bt="" />
-	        <w name="A.checkInDate"   des="" reqName="endDate"    dtype="ch" oper="&lt;"  lg="AND" bt="" />
-        	<w name="A.materialId"    des="" reqName="materialId" dtype="ch" oper="="     lg="AND" bt="" />
-    	</where>
+     	<where></where>
 	  	<select>
-	      <f name="'I'" alias="dataFlag" ctype="" />
-	      <f name="IFNULL(A.YSId,a.contractId)" alias="YSId" ctype="" />
+	      <f name="dataFlag" alias="" ctype="" />
+	      <f name="YSId" alias="" ctype="" />
 	      <f name="a.contractId" alias="" ctype="" />
 	      <f name="a.supplierName" alias="" ctype="" />
 	      <f name="a.depotId" alias="" ctype="仓库分类" />
 	      <f name="a.receiptId" alias="receiptId" ctype="" />
 	      <f name="a.checkInDate" alias="" ctype="" />
-	      <f name="a.checkInDate" alias="sortDate" ctype="" />
+	      <f name="a.sortDate" alias="" ctype="" />
 	      <f name="a.stockinType" alias="" ctype="入库单据类型" />
-	      <f name="'0'" alias="stockoutType" ctype="出库单据类型" />
-	      <f name="IFNULL('','060')" alias="requisitionType" ctype="领料类别" />
+	      <f name="stockoutType" alias="" ctype="出库单据类型" />
+	      <f name="requisitionType" alias="" ctype="领料类别" />
 	      <f name="a.materialId" alias="" ctype="" />
       	  <f name="a.materialName" alias="" ctype="" />
       	  <f name="a.unit" alias="" ctype="计量单位" />
 	      <f name="a.quantity" alias="" ctype="" />
-	      <f name="b.price" alias="" ctype="" />
-      	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17),6)" alias="newPrice" ctype="" />
-      	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17 * ifnull(replace(a.quantity,',',''),0)),2)" alias="total" ctype="" />
+	      <f name="a.price" alias="" ctype="" />
+      	  <f name="a.newPrice" alias="" ctype="" />
+      	  <f name="a.total" alias="" ctype="" />
+	  	</select>
+	    <from>
+	    	(
+	    	SELECT
+				'I' dataFlag,
+				IFNULL(A.YSId, a.contractId) YSId,
+				a.contractId,
+				a.supplierName,
+				a.depotId,
+				a.receiptId receiptId,
+				a.checkInDate,
+				a.checkInDate sortDate,
+				a.stockinType,
+				'0' stockoutType,
+				IFNULL('', '060') requisitionType,
+				a.materialId,
+				a.materialName,
+				a.unit,
+				a.quantity,
+				b.price,
+				format(	( ifnull(REPLACE(b.price, ',', ''), 0) / 1.17 ), 6 ) newPrice,
+				format( ( ifnull(REPLACE(b.price, ',', ''), 0) / 1.17 * ifnull( REPLACE (a.quantity, ',', ''), 0)),2) total
+			FROM
+				v_purchasestockindetail a
+			LEFT JOIN v_purchaseorderdetail b ON a.contractId = b.contractId
+			AND a.materialId = b.materialId
+			AND b.deleteFlag = '0'
+			WHERE
+				A.checkInDate &gt; '#0' AND A.checkInDate &lt; '#1' 
+			UNION
+				SELECT
+					'O' dataFlag,
+					b.YSId YSId,
+					'' contractId,
+					'' supplierName,
+					b.depotId,
+					b.stockOutId receiptId,
+					b.checkOutDate,
+					b.checkOutDate sortDate,
+					'0' stockinType,
+					b.stockoutType,
+					IFNULL(c.requisitionType, '060') requisitionType,
+					b.materialId,
+					b.materialName,
+					b.unit,
+					b.quantity,
+					b.price,
+					format((ifnull(REPLACE(b.price, ',', ''), 0) / 1.17),6) newPrice,
+					format((ifnull(REPLACE(b.price, ',', ''), 0) / 1.17 * ifnull(REPLACE (b.quantity, ',', ''),
+								0)),2) total
+				FROM
+					v_stockout b
+				LEFT JOIN v_requisitiondetail c ON b.requisitionId = c.requisitionId AND b.materialId = c.materialId 	AND c.deleteFlag = '0'
+				WHERE
+					b.checkOutDate &gt; '#0' 	AND b.checkOutDate &lt; '#1' 
+			
+			UNION
+				SELECT
+					'U' dataFlag,
+					'库存盘点' YSId,
+					'' contractId,
+					'' supplierName,
+					'***' depotId,
+					'*** ' receiptId,
+					DATE_FORMAT(b.createTime, '%Y-%m-%d') createTime,
+					DATE_FORMAT(b.createTime, '%Y-%m-%d') sortDate,
+					'0' stockinType,
+					'' stockoutType,
+					'' requisitionType,
+					b.materialId,
+					d.materialName,
+					'' unit,
+					b.quantity,
+					b.price,
+					format(
+						(
+							ifnull(REPLACE(b.price, ',', ''), 0) / 1.17
+						),
+						6
+					) newPrice,
+					format(
+						(
+							ifnull(REPLACE(b.price, ',', ''), 0) / 1.17 * ifnull(
+								REPLACE (b.quantity, ',', ''),
+								0
+							)
+						),
+						2
+					) total
+				FROM
+					b_inventoryhistory b
+				LEFT JOIN b_pricereference c ON b.materialId = c.materialId 	AND c.deleteFlag = '0'
+				LEFT JOIN b_material d ON b.materialId = d.materialId
+				WHERE
+					b.createTime &gt; '#0' 	AND b.createTime &lt; '#1'
+ 	    	) a
+	    	</from>
+	
+    <orderby>sortDate</orderby>
+	</query>
+	<query>
+		<pool></pool>    
+    	<name value="financeReprotForDaybookBymaterialId" />
+     	<where></where>
+	  	<select>
+	      <f name="dataFlag" alias="" ctype="" />
+	      <f name="YSId" alias="" ctype="" />
+	      <f name="a.contractId" alias="" ctype="" />
+	      <f name="a.supplierName" alias="" ctype="" />
+	      <f name="a.depotId" alias="" ctype="仓库分类" />
+	      <f name="a.receiptId" alias="receiptId" ctype="" />
+	      <f name="a.checkInDate" alias="" ctype="" />
+	      <f name="a.sortDate" alias="" ctype="" />
+	      <f name="a.stockinType" alias="" ctype="入库单据类型" />
+	      <f name="stockoutType" alias="" ctype="出库单据类型" />
+	      <f name="requisitionType" alias="" ctype="领料类别" />
+	      <f name="a.materialId" alias="" ctype="" />
+      	  <f name="a.materialName" alias="" ctype="" />
+      	  <f name="a.unit" alias="" ctype="计量单位" />
+	      <f name="a.quantity" alias="" ctype="" />
+	      <f name="a.price" alias="" ctype="" />
+      	  <f name="a.newPrice" alias="" ctype="" />
+      	  <f name="a.total" alias="" ctype="" />
 	  	</select>
 	    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
 	    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-	    <from>v_purchasestockindetail a LEFT JOIN v_purchaseorderdetail b ON a.contractId=b.contractId AND a.materialId=b.materialId AND b.deleteFlag='0'</from>
-	<union>
-	    <where>
-        	<w name="b.checkOutDate"   des="" reqName="startDate"  dtype="ch" oper="&gt;"  lg="AND" bt="" />
-        	<w name="b.checkOutDate"   des="" reqName="endDate"    dtype="ch" oper="&lt;"  lg="AND" bt="" />
-        	<w name="b.materialId"     des="" reqName="materialId" dtype="ch" oper="="     lg="AND" bt="" />
-	    </where>	    
-	    <select>
-	      <f name="'O'" alias="dataFlag" ctype="" />
-	      <f name="b.YSId" alias="YSId" ctype="" />
-	      <f name="''" alias="contractId" ctype="" />
-	      <f name="''" alias="supplierName" ctype="" />
-	      <f name="b.depotId" alias="" ctype="仓库分类" />
-	      <f name="b.stockOutId" alias="receiptId" ctype="" />
-	      <f name="b.checkOutDate" alias="" ctype="" />
-	      <f name="b.checkOutDate" alias="sortDate" ctype="" />
-	      <f name="'0'" alias="stockinType" ctype="" />
-	      <f name="b.stockoutType" alias="" ctype="出库单据类型" />
-	      <f name="IFNULL(c.requisitionType,'060')" alias="requisitionType" ctype="领料类别" />
-      	  <f name="b.materialId" alias="" ctype="" />
-      	  <f name="b.materialName" alias="" ctype="" />
-      	  <f name="b.unit" alias="" ctype="计量单位" />
-      	  <f name="b.quantity" alias="" ctype="" />
-      	  <f name="b.price" alias="" ctype="" />
-      	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17),6)" alias="newPrice" ctype="" />
-      	  <f name="format((ifnull(replace(b.price,',',''),0) / 1.17 * ifnull(replace(b.quantity,',',''),0)),2)" alias="total" ctype="" />
-	    </select>
-	    <from>v_stockout b LEFT JOIN v_requisitiondetail c ON  b.requisitionId=c.requisitionId AND b.materialId = c.materialId AND c.deleteFlag = '0' </from>	
-    </union>
+	    <from>
+	    	(
+	    	SELECT
+				'I' dataFlag,
+				IFNULL(A.YSId, a.contractId) YSId,
+				a.contractId,
+				a.supplierName,
+				a.depotId,
+				a.receiptId receiptId,
+				a.checkInDate,
+				a.checkInDate sortDate,
+				a.stockinType,
+				'0' stockoutType,
+				IFNULL('', '060') requisitionType,
+				a.materialId,
+				a.materialName,
+				a.unit,
+				a.quantity,
+				b.price,
+				format(	( ifnull(REPLACE(b.price, ',', ''), 0) / 1.17 ), 6 ) newPrice,
+				format( ( ifnull(REPLACE(b.price, ',', ''), 0) / 1.17 * ifnull( REPLACE (a.quantity, ',', ''), 0)),2) total
+			FROM
+				v_purchasestockindetail a
+			LEFT JOIN v_purchaseorderdetail b ON a.contractId = b.contractId
+			AND a.materialId = b.materialId
+			AND b.deleteFlag = '0'
+			WHERE
+				A.checkInDate &gt; '#0' AND A.checkInDate &lt; '#1' AND A.materialId = '#2'
+			UNION
+				SELECT
+					'O' dataFlag,
+					b.YSId YSId,
+					'' contractId,
+					'' supplierName,
+					b.depotId,
+					b.stockOutId receiptId,
+					b.checkOutDate,
+					b.checkOutDate sortDate,
+					'0' stockinType,
+					b.stockoutType,
+					IFNULL(c.requisitionType, '060') requisitionType,
+					b.materialId,
+					b.materialName,
+					b.unit,
+					b.quantity,
+					b.price,
+					format((ifnull(REPLACE(b.price, ',', ''), 0) / 1.17),6) newPrice,
+					format((ifnull(REPLACE(b.price, ',', ''), 0) / 1.17 * ifnull(REPLACE (b.quantity, ',', ''),
+								0)),2) total
+				FROM
+					v_stockout b
+				LEFT JOIN v_requisitiondetail c ON b.requisitionId = c.requisitionId AND b.materialId = c.materialId 	AND c.deleteFlag = '0'
+				WHERE
+					b.checkOutDate &gt; '#0' 	AND b.checkOutDate &lt; '#1' AND b.materialId = '#2'
+			
+			UNION
+				SELECT
+					'U' dataFlag,
+					'库存盘点' YSId,
+					'' contractId,
+					'' supplierName,
+					'***' depotId,
+					'*** ' receiptId,
+					DATE_FORMAT(b.createTime, '%Y-%m-%d') createTime,
+					DATE_FORMAT(b.createTime, '%Y-%m-%d') sortDate,
+					'0' stockinType,
+					'' stockoutType,
+					'' requisitionType,
+					b.materialId,
+					d.materialName,
+					'' unit,
+					b.quantity,
+					b.price,
+					format(
+						(
+							ifnull(REPLACE(b.price, ',', ''), 0) / 1.17
+						),
+						6
+					) newPrice,
+					format(
+						(
+							ifnull(REPLACE(b.price, ',', ''), 0) / 1.17 * ifnull(
+								REPLACE (b.quantity, ',', ''),
+								0
+							)
+						),
+						2
+					) total
+				FROM
+					b_inventoryhistory b
+				LEFT JOIN b_pricereference c ON b.materialId = c.materialId 	AND c.deleteFlag = '0'
+				LEFT JOIN b_material d ON b.materialId = d.materialId
+				WHERE
+					b.createTime &gt; '#0' 	AND b.createTime &lt; '#1' 	AND b.materialId = '#2'
+ 	    	) a
+	    	</from>
+	
     <orderby>sortDate</orderby>
   </query>
 	<query>
@@ -838,10 +1025,10 @@
     <name value="getStorageValueFromMonth" />
      <where>
        <w name="LEFT(b.beginningDate,7)" des=""  reqName="beginningDate" dtype="ch" oper="="  lg="AND" bt="" />
-       <w name="b.materialId"            des=""  reqName="materialId"    dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="a.materialId"            des=""  reqName="materialId"    dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   <select>
-      <f name="b.materialId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
       <f name="b.beginningDate" alias="" ctype="" />
       <f name="b.beginningWaitIn" alias="" ctype="" />
       <f name="b.beginningWaitOut" alias="" ctype="" />
@@ -850,7 +1037,7 @@
       <f name="b.beginningPrice" alias="" ctype="" />
       <f name="a.materialName" alias="" ctype="" />
   </select>
-    <from>b_InventoryManagemen b LEFT JOIN b_material a ON a.materialId=b.materialId</from>
+    <from>b_material a  LEFT JOIN b_InventoryManagemen b ON a.materialId=b.materialId</from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>

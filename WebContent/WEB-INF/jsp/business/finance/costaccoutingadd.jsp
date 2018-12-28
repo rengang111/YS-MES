@@ -391,9 +391,12 @@
 			gross = rmbprice - cost + rebate;
 		}
 		profit = gross + deductCost;//毛利-跟单费用（订单过程中，扣除费用是负数录入的）
-		profitrate = profit / rmbprice * 100;//利润率
-		//profitrate = profit / cost * 100;//利润率
 		
+		if(rmbprice == '0')
+			profitrate = 0;//利润率
+		else
+			profitrate = profit / rmbprice * 100;//利润率
+				
 		$(".read-only").attr('readonly', "true");
 
 		$('#costBom\\.actualsales').val(floatToCurrency(actualSales));//实际销售额
