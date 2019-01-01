@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common2.jsp"%>
-<title>库存一览页面(原材料)</title>
+<title>库存一览页面--采购件</title>
 <style>
 body{
   /*  font-size:10px;*/
@@ -12,7 +12,7 @@ body{
 </style>
 <script type="text/javascript">
 
-	function searchAjax(sessionFlag,searchType,confirmFlag,editFlag) {
+	function searchAjax(sessionFlag,searchType,confirmFlag,categoryId) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -22,7 +22,7 @@ body{
 		var url = "${ctx}/business/storage?methodtype=beginningInventorySearch&sessionFlag="+sessionFlag;
 		url = url + "&stockType="+stockType;
 		url = url + "&searchType="+searchType;
-		url = url + "&quantityEditFlag="+confirmFlag;
+		url = url + "&categoryId="+categoryId;
 		
 		
 		
@@ -62,13 +62,14 @@ body{
 							var key2 = data["keyword2"]
 							$("#keyword1").val(key1);
 							$("#keyword2").val(key2);
-							
+							/*
 							if((key1) == "" && (key2) == ""){
 							 	$('#defutBtn').removeClass("start").addClass("end");							
 							}else{							
 							 	$('#defutBtn').removeClass("end").addClass("start");
-							}					
-							deleteRow();
+							}	
+							*/
+							//deleteRow();
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -81,9 +82,8 @@ body{
 					{"data": null,"className" : 'td-center'},//0
 					{"data": "materialId"},//1
 					{"data": "materialName","className" : 'td-left'},//2
-					{"data": "reviseDate","className" : 'td-center', "defaultContent" : '***'},//3
-					{"data": "reviseQty","className" : 'td-right'},//4
-					
+					{"data": "categoryName","className" : 'td-left'},//3
+					{"data": "reviseDate","className" : 'td-right', "defaultContent" : '***'},//4					
 					{"data": "beginningInventory","className" : 'td-right'},//5
 					{"data": "beginningPrice","className" : 'td-right'},//6
 					{"data": "MAPrice","className" : 'td-right'},//7
@@ -94,19 +94,6 @@ body{
 					{"data": "quantityOnHand","className" : 'td-right'},//10实际库存
 					{"data": "availabelToPromise","className" : 'td-right'},//11虚拟库存
 					{"data": null,"className" : 'td-center'},//13状态
-					
-					
-					//{"data": "planQty","className" : 'td-right'},//	8
-					//{"data": "contractQty","className" : 'td-right'},//	9
-					//{"data": "stockinQtiy","className" : 'td-right'},//10
-					//{"data": "stockoutQty","className" : 'td-right'},//11
-					//{"data": null,"className" : 'td-right'},//12计算库存
-					//{"data": "quantityOnHand","className" : 'td-right'},//13
-					//{"data": "availabelToPromise","className" : 'td-right'},//14
-					//{"data": "waitStockIn","className" : 'td-right'},//15
-					//{"data": "waitStockOut","className" : 'td-right'},//16
-					//{"data": null,"className" : 'td-center'},//17
-
 				
 				],
 				"columnDefs":[
@@ -123,29 +110,37 @@ body{
 		    		{"targets":2,"render":function(data, type, row){
 		    			
 		    			var name = row["materialName"];				    			
-		    			name = jQuery.fixedWidth(name,24);		
+		    			name = jQuery.fixedWidth(name,24);
 		    			var rtn = "<a href=\"###\"  onClick=\"showMaterialHistory('" + row["materialId"] +"')\">" + name + "</a>";
 			    			
 		    			return rtn;
 		    		}},
+		    		{"targets":4,"render":function(data, type, row){
+		    			
+		    			var reviseDate = row["reviseDate"];	
+		    			var reviseQty = currencyToFloat(row["reviseQty"]);
+		    			if(reviseDate == '' || reviseDate == null)
+		    				return '***';
+		    			else
+		    				return reviseDate+'<br>' + reviseQty;
+		     			//txt +=  "<a href=\"###\" onClick=\"showInventoryHistory('" + row["materialId"] +"')\">" + quantity + "</a>";
+		     		      			
+		    		}},
+		    		{"targets":3,"render":function(data, type, row){
+		    			//物料分类名称		    					    			
+		    			return  data;	    			
+		    		}},
 		    		{"targets":13,"render":function(data, type, row){
 		    			//实际库存修正
 		    			var confirmFlag = row["quantityEditFlag"];
-		    			var quantityOnHand = currencyToFloat(row["quantityOnHand"]);
-		    			var stockinQtiy = currencyToFloat(row["stockinQtiy"]);
-		    			var stockoutQty = currencyToFloat(row["stockoutQty"]);
-		    			var totalQty = stockoutQty + quantityOnHand;
-		    		
-		   
+		    			var txt = "";
+	
 		    				if((confirmFlag) == "1"){
-		    					//待确认
-			    				//txt +=  "<a href=\"###\" onClick=\"confirmQuantityOnHand('" + row["recordId"] +"') \" style=\"color: red;\">" + "待确认" + "</a>";
 		    					txt = "待确认";
 		    				}else if((confirmFlag) == "0"){	
 			    				
 				    			txt = "已确认";
 			    			}
-		    			
 
 						return  txt;
 						
@@ -212,14 +207,6 @@ body{
 		    				val=  "设置";		    			
 		    			return  "<a href=\"###\" onClick=\"setBeginningInventory('" + row["recordId"] +"')\">" + val + "</a>";	    			
 		    		}},
-		    		{"targets":4,"render":function(data, type, row){
-		    			//实际库存修正
-		    			var quantity = floatToCurrency(data);
-		    			var txt = "";
-		    			txt +=  "<a href=\"###\" onClick=\"showInventoryHistory('" + row["materialId"] +"')\">" + quantity + "</a>";
-		    					    			
-		    			return  txt;	    			
-		    		}},
 		    		{
 		    			"visible":false,
 		    			"targets":[5,6,7]
@@ -232,7 +219,7 @@ body{
 
 	$(document).ready(function() {
 		var searchType = $('#searchType').val();
-		searchAjax("true",searchType,"");
+		searchAjax("true",searchType,"","B02");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -246,7 +233,7 @@ body{
 		});			
 
 		buttonSelectedEvent();//按钮选择式样
-	 	$('#defutBtn').removeClass("start").addClass("end");
+	 	$('#defutBtnB02').removeClass("start").addClass("end");
 		
 	})	
 	
@@ -271,17 +258,17 @@ body{
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		searchAjax("false","","");
+		searchAjax("false","","","");
 
 	}
 	
-
+/*
 	function doSearchCustomer(type,confirmFlag,editFlag) {	
 		$('#searchType').val(type);
 		searchAjax("false",type,confirmFlag,editFlag);
 
 	}
-	
+*/	
 	function doShow(recordId,parentId) {
 
 		var url = '${ctx}/business/material?methodtype=detailView&parentId=' + parentId+'&recordId='+recordId;
@@ -324,7 +311,7 @@ body{
 
 	function doShowWaitOut(materialId) {
 
-		var url = '${ctx}/business/purchasePlan?methodtype=purchasePlanForRawByMaterialId&materialId=' + materialId;
+		var url = '${ctx}/business/inventory?methodtype=planAndStockOut&materialId=' + materialId;
 		callProductDesignView("待出数量",url);
 		
 	}
@@ -356,6 +343,13 @@ body{
 		
 	}
 
+	function showMaterialHistory(materialId) {
+
+		var url = '${ctx}/business/financereport?methodtype=reportForDaybookByMaterialIdInit&materialId=' + materialId;
+		callProductDesignView("物料入出库明细",url);
+		
+	}
+	
 	function reload() {
 		
 		$('#TMaterial').DataTable().ajax.reload(null,false);
@@ -424,25 +418,7 @@ body{
 				$('#TMaterial').DataTable().ajax.reload(null,false);
 			  	return false; 
 			},
-			
 		});	
-		/*
-		$.ajax({
-			type : "post",
-			url : url,
-			//async : false,
-			//data : null,
-			dataType : "text",
-			contentType: "application/x-www-form-urlencoded; charset=utf-8",
-			success : function(data) {			
-				reload();
-			},
-			 error:function(XMLHttpRequest, textStatus, errorThrown){
-				//alert(textStatus)
-			}
-		});
-		*/
-
 	};
 	
 
@@ -480,13 +456,13 @@ body{
 		location.href = url;
 	}
 	
-	function showMaterialHistory(materialId) {
-
-		var url = '${ctx}/business/financereport?methodtype=reportForDaybookByMaterialIdInit&materialId=' + materialId;
-		callProductDesignView("物料入出库明细",url);
+	//物料分类
+	function doSearchCustomer(categoryId){
+		$('#keyword1').val('');
+		$('#keyword2').val('');
 		
+		searchAjax('false','','',categoryId);
 	}
-	
 </script>
 </head>
 
@@ -502,7 +478,7 @@ body{
 			
 			<table>
 				<tr>
-					<td width="10%"></td> 
+					<td width="50px"></td> 
 					<td class="label">关键字1：</td>
 					<td class="condition">
 						<input type="text" id="keyword1" name="keyword1" class="middle" value="${keyword1 }"/>
@@ -515,35 +491,51 @@ body{
 						<button type="button" id="retrieve" class="DTTT_button" 
 							style="width:50px" value="查询" onclick="doSearch();">查询</button>
 					</td>
-					<td width="10%"></td> 
+				<td width="100px"></td> 
+				</tr>
+			</table>
+			<table>
+				<tr>
+				<td width="50px"></td> 
+				<td width=""></td> 
+				<td width="50px"></td> 
+				<td colspan="2">
+				<c:forEach var='list' items='${category}' varStatus='status'>
+					<a id="defutBtn${list.categoryId }" style="height: 15px;margin-top: 5px;" 
+						class="DTTT_button box" onclick="doSearchCustomer('${list.categoryId }');">
+						<span>${list.categoryId }</span></a>
+				</c:forEach>
+				</td> 
+				<td width="100px"></td>
 				</tr>
 			</table>
 
 		</form>
 	</div>
 	<div class="list">
+		<!-- 
 			<div style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCustomer('','');" id="defutBtn">全部</a>
+				
+				<a  class="DTTT_button box" onclick="doSearchCustomer('','');"  id="defutBtn">全部</a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer('1','');">实库为负</a>
-				<!-- 
-				<a  class="DTTT_button box" onclick="doSearchCustomer('2','');"  >虚库为负</a>
+				
+				<a  class="DTTT_button box" onclick="doSearchCustomer('2','');">虚库为负</a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer('3','');">实库 ≠ 总到货－总领料</a>&nbsp;&nbsp;
-				 
+				
 				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0');">已确认</a>&nbsp;&nbsp;
-				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0','edit');">再次编辑</a> -->
+				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0','edit');">再次编辑</a>
 			</div>
 			<div style="height:40px;float: right">
-				<a  class="DTTT_button" onclick="downloadExcel();"><span>EXCEL导出111</span></a>
-			</div>
+				<a  class="DTTT_button" onclick="downloadExcel();"><span>EXCEL导出</span></a>
+			</div -->
 		<table  id="TMaterial" class="display">
 			<thead>			
 				<tr >
 					<th style="width: 1px;">No</th>
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
-					<th style="width: 40px;">修改时间</th>
-					<th style="width: 40px;">修改记录<br>E</th>
-					
+					<th style="width: 40px;">物料分类</th>
+					<th style="width: 45px;">修改时间<br>修改记录</th>
 					<th style="width: 50px;">期初库存</th>
 					<th style="width: 50px;">期初单价</th>
 					<th style="width: 50px;">移动<br>平均单价</th>

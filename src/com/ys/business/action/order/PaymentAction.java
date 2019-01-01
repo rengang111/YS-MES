@@ -294,9 +294,10 @@ public class PaymentAction extends BaseAction {
 			System.out.println(e.getMessage());
 			dataMap.put(INFO, ERRMSG);
 		}
-		
 
 		String searchType = request.getParameter("searchType");
+		
+		model.addAttribute("searchType",searchType);
 		session.setAttribute("searchType", searchType);
 		
 		return dataMap;
@@ -416,9 +417,11 @@ public class PaymentAction extends BaseAction {
 	public void doApplyAddInit(){
 
 		try{
+			String searchType = request.getParameter("searchType");
 			service.applyAddInit();
 
 			model.addAttribute("userName", userInfo.getUserName());
+			model.addAttribute("searchType",searchType);
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -598,6 +601,10 @@ public class PaymentAction extends BaseAction {
 	public void paymentView(){
 		try{
 			service.paymentView();
+			
+			String searchType = request.getParameter("searchType");
+			model.addAttribute("searchType",searchType);
+			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

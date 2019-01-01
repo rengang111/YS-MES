@@ -275,12 +275,6 @@
 		callProductDesignView("供应商",url);
 	}
 	
-	function doShowStockin(contractId) {
-
-		var url = '${ctx}/business/storage?methodtype=showStockInByContractId&openFlag=newWindow&contractId=' + contractId;
-		
-		callProductDesignView("入库单",url);
-	}
 	
 	function doPrintContract(contractId) {
 	

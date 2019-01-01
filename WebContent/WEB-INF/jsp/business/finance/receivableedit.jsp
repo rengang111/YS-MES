@@ -276,12 +276,6 @@ function historyAjax() {
 
 	}
 	
-	function doShowStockin(contractId) {
-
-		var url = '${ctx}/business/storage?methodtype=showStockInByContractId&openFlag=newWindow&contractId=' + contractId;
-		
-		callProductDesignView("入库单",url);
-	}
 	
 </script>
 <script type="text/javascript">

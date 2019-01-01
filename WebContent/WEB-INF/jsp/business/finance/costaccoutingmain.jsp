@@ -618,12 +618,13 @@ body{
 			      heads.push("totalQty");
 			      heads.push("stockinQty");//7
 			      heads.push("salse");
+			      heads.push("rmbprice");//9
 			      heads.push("stockinDate");
-			      heads.push("cost");//10
-			      heads.push("labolCost");//11
+			      heads.push("cost");//11
+			      heads.push("labolCost");//12
 			      heads.push("profit");
 			      heads.push("profitrate");	
-			      heads.push("team");		
+			      heads.push("team");	//15	
 		    	
 				//heads.push($(item).text());
 		    	
@@ -648,21 +649,25 @@ body{
 
 				rowdata[heads[7]] = $(item).find("td").eq(6).text();
 				rowdata[heads[8]] = $(item).find("td").eq(7).text();
-				rowdata[heads[9]] = $(item).find("td").eq(8).text();
+
+		    	var rmbprice	  = $(item).find("td").eq(10).find('input[name=rmbprice]').val();
+				rowdata[heads[9]] = rmbprice;//人民币销售金额
+		    	
+				rowdata[heads[10]] = $(item).find("td").eq(8).text();
 							    	  
 				var cost 		= $(item).find("td").eq(9).find('input[name=cost]').val();
 		    	var labolCost	= $(item).find("td").eq(9).find('input[name=labolCost]').val();
-		    	 
-		    	rowdata[heads[10]] = cost;
-		    	rowdata[heads[11]] = labolCost;
+
+		    	rowdata[heads[11]] = cost;
+		    	rowdata[heads[12]] = labolCost;
 	    	  
 		    	var profit 		= $(item).find("td").eq(10).find('input[name=profit]').val();
 		    	var profitrate 	= $(item).find("td").eq(10).find('input[name=profitrate]').val();
 		    	
-		    	rowdata[heads[12]] = profit;
-		    	rowdata[heads[13]] = profitrate;
+		    	rowdata[heads[13]] = profit;
+		    	rowdata[heads[14]] = profitrate;
 		    	
-				rowdata[heads[14]] = $(item).find("td").eq(11).text();
+				rowdata[heads[15]] = $(item).find("td").eq(11).text();
 			    
 		       // }else{
 		      //    console.log("no jsonval");

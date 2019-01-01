@@ -138,9 +138,8 @@ public class PaymentService extends CommonService {
 			userDefinedSearchCase.put("agreementDate", CalendarUtil.fmtYmdDate());
 			userDefinedSearchCase.put("finishStatus", finishStatus);
 			
-		}
-		//付款未完成
-		if(("U").equals(finishStatus)){
+		}else if(("010").equals(finishStatus)){
+			//付款未完成
 			userDefinedSearchCase.put("agreementDate", "");
 			userDefinedSearchCase.put("finishStatus", "");
 			userDefinedSearchCase.put("finishStatusU", "050");

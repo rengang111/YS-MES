@@ -138,7 +138,8 @@
 	$(document).ready(function() {
 	
 		var scrollHeight = $(document).height() - 200; 
-		ajax("true","010",scrollHeight,"true");
+		var type = $("#searchType").val();
+		ajax("true",type,scrollHeight,"true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -177,6 +178,8 @@
 
 		//$("#keyword1").val("");
 		//$("#keyword2").val("");
+		
+		$("#searchType").val(type);
 		var scrollHeight = $(document).height() - 200; 
 		
 		ajax("false",type,scrollHeight,"false");
@@ -232,9 +235,12 @@
 	function doCreate2(contractId) {
 
 		var paymentTypeId = $("#paymentTypeId").val();
+		var searchType = $("#searchType").val();
+		
 		var url = '${ctx}/business/payment?methodtype=addinit';
 		url = url +"&contractIds="+contractId;
 		url = url +"&paymentTypeId="+paymentTypeId;
+		url = url +"&searchType="+searchType;
 		location.href = url;
 		
 	}
@@ -242,12 +248,16 @@
 	function doShowDetail(contractId,paymentId) {
 
 		var url = '${ctx}/business/payment?methodtype=paymentView&contractId=' + contractId+'&paymentId='+paymentId;
+
+		url = url +"&searchType="+searchType;
 		
 		location.href = url;
 	}
 
 	function doShowContract(contractId) {
 
+		var searchType = $("#searchType").val();
+		
 		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
 		
 		callProductDesignView("采购合同",url);
@@ -339,7 +349,7 @@
 					<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(1,'010');" id="defutBtn010"><span>待申请</span></a>
 					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'020');" id="defutBtn020"><span>待审核</span></a>
 					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>待付款</span></a -->
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'U');" id="defutBtn030"><span>未完成</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'010');" id="defutBtn010"><span>未完成</span></a>
 					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'050');" id="defutBtn050"><span>已完成</span></a>
 					<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'060');" id="defutBtn060"><span>审核未通过</span></a>&nbsp;&nbsp; -->
 					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'070');" id="defutBtn070"><span>逾期未付款</span></a>

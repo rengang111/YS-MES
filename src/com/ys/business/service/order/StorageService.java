@@ -197,16 +197,24 @@ public class StorageService extends CommonService {
 		dataModel.setQueryName("materialinventoryForNormal_search");	
 		
 		String searchType = request.getParameter("searchType");
+		String categoryId = request.getParameter("categoryId");
 		String having ="1=1";
+		
+		if(notEmpty(categoryId)){
+			if(categoryId.length() > 1)
+				userDefinedSearchCase.put("materialId_B", categoryId);
+			else
+				userDefinedSearchCase.put("materialId_Other", categoryId);
+		}
 		if(("1").equals(searchType)){
 			//实际库存为负数
-			having = "((replace(quantityOnHand,',','')+0) < 0)";	
+			//having = "((replace(quantityOnHand,',','')+0) < 0)";	
 		}else if(("2").equals(searchType)){
 			//虚拟库存为负数
-			having = "((replace(availabelToPromise,',','')+0) < 0)";	
+			//having = "((replace(availabelToPromise,',','')+0) < 0)";	
 		}else if(("3").equals(searchType)){
 			//库存 ≠ 总到货－总领料
-			having = "(replace(stockinQtiy,',','')+0 <> ((replace(stockoutQty,',',''))+(replace(quantityOnHand,',','')))+0)";	
+			//having = "(replace(stockinQtiy,',','')+0 <> ((replace(stockoutQty,',',''))+(replace(quantityOnHand,',','')))+0)";	
 		}else{
 			//全部
 		}	
@@ -2295,5 +2303,17 @@ public class StorageService extends CommonService {
 		if(dataModel.getRecordCount() > 0 ){
 			model.addAttribute("stockout",dataModel.getYsViewData().get(0));	
 		}	
+	}
+	
+
+	public void getCategoryId() throws Exception{
+		dataModel.setQueryFileName("/business/material/materialquerydefine");
+		dataModel.setQueryName("getCategoryIdByGroup");
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		model.addAttribute("category",dataModel.getYsViewData());
+		
 	}
 }
