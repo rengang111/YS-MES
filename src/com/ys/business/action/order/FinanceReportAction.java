@@ -539,6 +539,9 @@ public class FinanceReportAction extends BaseAction {
 	
 	public void monthlyStatisticsInit(){
 		try {
+			String year = request.getParameter("year");
+			model.addAttribute("defulYear",year);
+			
 			service.monthlyStatisticsInit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

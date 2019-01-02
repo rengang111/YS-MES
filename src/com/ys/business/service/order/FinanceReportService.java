@@ -1172,6 +1172,7 @@ public class FinanceReportService extends CommonService {
 	public void costAccountingInit() throws Exception{
 
 		model.addAttribute("team",util.getListOptionAddDefault(DicUtil.BUSINESSTEAM, ""));
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 		
 	}
 	

@@ -313,16 +313,20 @@ body{
 		
 		var year = getYear();
 		var mounth = getMonth() ;//前移一个月
-		mounth = mounth -1;
-		if(mounth<10){
-			  return '0'+mounth;
+		if(mounth > 1){
+			mounth = mounth -1;
+		}else{
+			mounth = '12';//1月的话，上移至去年的12月
 		}
-		if(monthday == '12'){
+
+		if(monthday == '12' || mounth == '12'){
 			year = year - 1;//去年的12月
 		}
 		var todaytmp = year +''+mounth;
 		
 		//alert('todaytmp:'+todaytmp)
+		$('#year').val(year);
+		$('#month').val(mounth);
 		$('#monthday').val(todaytmp);
 		ajaxSearch('010',todaytmp,"true",'A','ALL','');
 	
@@ -367,6 +371,35 @@ body{
 			var team = $(this).val();
 			
 			ajaxSearch(orderType,monthday,'false',statusFlag,team,'');	
+		});
+		
+		$("#year").change(function() {
+
+			var year = $(this).val();
+			var month = $('#month').val();
+			
+			if(year == getYear()){
+				month = getMonth();
+				var monthday = year + ''+ month;
+
+			}else{
+				month = '11';
+				var monthday =year+month;				
+			}
+
+			//alert('monthday:'+month+'---------'+monthday)
+			var orderType = $('#orderType').val();
+			var statusFlag = $('#statusFlag').val();
+			var team = $('#team').val();
+			//alert(monthday+'-------'+team)
+			ajaxSearch(orderType,monthday,'false',statusFlag,team,'');	
+			
+			var collection = $(".box");
+			$.each(collection, function () {
+				$(this).removeClass("end");
+			});
+			$('#defutBtn'+month).removeClass("start").addClass("end");
+			
 		});
 	
 		$('#defutBtn'+month).removeClass("start").addClass("end");
@@ -418,11 +451,13 @@ body{
 	function doSearchCustomer(monthday){
 		$('#keyword1').val('');
 		$('#keyword2').val('');
-		var year = getYear();
-		if(monthday == '12'){
-			year = year - 1;//去年的12月
-		}
+		var year = $('#year').val();;
+		//if(monthday == '12'){
+		//	year = year - 1;//去年的12月
+		//}
 		var todaytmp = year +monthday;
+		$('#year').val(year);
+		$('#month').val(monthday);
 		$('#monthday').val(todaytmp);
 		
 		var statusFlag = $('#statusFlag').val();
@@ -463,9 +498,10 @@ body{
 	}
 
 	//月度统计
-	function doShowMonthly(contractId) {
-
-		var url = '${ctx}/business/financereport?methodtype=monthlyStatisticsInit&contractId=' + contractId;
+	function doShowMonthly() {
+		var year = $('#year').val();
+		
+		var url = '${ctx}/business/financereport?methodtype=monthlyStatisticsInit&year=' + year;
 		
 		callProductDesignView("月度统计",url);
 	}	
@@ -780,6 +816,7 @@ body{
 		
 			<input type="hidden" id="costConcelFlag"  value=""/>
 			<input type="hidden" id="monthday"  value="${monthday }"/>
+			<input type="hidden" id="month"  value=""/>
 			<input type="hidden" id="statusFlag"  value="${statusFlag }"/>
 			<input type="hidden" id="orderType"  value="${orderType }"/>
 			<input type="hidden" id="jsonData"  name = "jsonData"  />
@@ -824,6 +861,9 @@ body{
 					<td class="label" style="width:100px">快捷查询：</td>
 					
 					<td colspan="6">
+						<form:select path="year" style="width: 100px;">
+							<form:options items="${year}" itemValue="key" itemLabel="value" />
+						</form:select>
 						<a id="defutBtn12" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('12');">
 						<span>12月</span></a>
 						<a id="defutBtn01"  style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('01');">

@@ -2227,20 +2227,30 @@ public class StorageService extends CommonService {
 
 		String key1 = request.getParameter("keyword1");
 		String key2 = request.getParameter("keyword2");
+		
 		String searchType = request.getParameter("searchType");
+		String categoryId = request.getParameter("categoryId");
 		
 		String having ="1=1";
+		
 		if(notEmpty(key1) || notEmpty(key2))
 			searchType = "";//有关键字，不再区分状态
+		
+		if(notEmpty(categoryId)){
+			if(categoryId.length() > 1)
+				userDefinedSearchCase.put("materialId_B", categoryId);
+			else
+				userDefinedSearchCase.put("materialId_Other", categoryId);
+		}
 		if(("1").equals(searchType)){
 			//实际库存为负数
-			having = "((replace(quantityOnHand,',','')+0) < 0)";	
+			//having = "((replace(quantityOnHand,',','')+0) < 0)";	
 		}else if(("2").equals(searchType)){
 			//虚拟库存为负数
-			having = "((replace(availabelToPromise,',','')+0) < 0)";	
+			//having = "((replace(availabelToPromise,',','')+0) < 0)";	
 		}else if(("3").equals(searchType)){
 			//库存 ≠ 总到货－总领料
-			having = "(replace(stockinQtiy,',','')+0 <> ((replace(stockoutQty,',',''))+(replace(quantityOnHand,',','')))+0)";	
+			//having = "(replace(stockinQtiy,',','')+0 <> ((replace(stockoutQty,',',''))+(replace(quantityOnHand,',','')))+0)";	
 		}else{
 			//全部
 		}	

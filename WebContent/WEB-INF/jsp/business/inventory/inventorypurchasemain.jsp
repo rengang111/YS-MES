@@ -219,6 +219,8 @@ body{
 
 	$(document).ready(function() {
 		var searchType = $('#searchType').val();
+		$('#categoryId').val('B02');
+		
 		searchAjax("true",searchType,"","B02");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
@@ -261,14 +263,7 @@ body{
 		searchAjax("false","","","");
 
 	}
-	
-/*
-	function doSearchCustomer(type,confirmFlag,editFlag) {	
-		$('#searchType').val(type);
-		searchAjax("false",type,confirmFlag,editFlag);
-
-	}
-*/	
+		
 	function doShow(recordId,parentId) {
 
 		var url = '${ctx}/business/material?methodtype=detailView&parentId=' + parentId+'&recordId='+recordId;
@@ -436,6 +431,7 @@ body{
 			$().toastmessage('showWarningToast', "没有可以导出的数据。");	
 			return;
 		}
+		var categoryId = $('#categoryId').val();
 		var searchType = $('#searchType').val();
 		var keyword1 = $("#keyword1").val();
 		var keyword2 = $("#keyword2").val();
@@ -450,6 +446,7 @@ body{
 			url = url + "&keyword1="+keyword1;
 			url = url + "&keyword2="+keyword2;
 			url = url + "&stockType="+stockType;
+			url = url + "&categoryId="+categoryId;
 		
 		url =encodeURI(encodeURI(url));//中文两次转码
 
@@ -460,6 +457,7 @@ body{
 	function doSearchCustomer(categoryId){
 		$('#keyword1').val('');
 		$('#keyword2').val('');
+		$('#categoryId').val(categoryId);
 		
 		searchAjax('false','','',categoryId);
 	}
@@ -475,6 +473,7 @@ body{
 
 			<input type="hidden" id="stockType" value="${stockType }" />
 			<input type="hidden" id="searchType" value="${searchType }" />
+			<input type="hidden" id="categoryId" value="" />
 			
 			<table>
 				<tr>
@@ -524,10 +523,10 @@ body{
 				
 				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0');">已确认</a>&nbsp;&nbsp;
 				<a  class="DTTT_button box" onclick="doSearchCustomer('3','0','edit');">再次编辑</a>
-			</div>
+			</div>-->
 			<div style="height:40px;float: right">
 				<a  class="DTTT_button" onclick="downloadExcel();"><span>EXCEL导出</span></a>
-			</div -->
+			</div>
 		<table  id="TMaterial" class="display">
 			<thead>			
 				<tr >

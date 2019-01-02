@@ -96,30 +96,15 @@ body{
 
 
 	}
-
-
 	
 	function initEvent(){
 
-		var year = getYear();
+		var year = $('#defulYear').val();
+		
+		if(year == '' || year == null)
+			year = getYear();
+			
 		$('#year').val(year);
-		
-		var monthday   = $('#monthday').val();
-		var statusFlag = $('#statusFlag').val();
-		var orderType  = $('#orderType').val();
-		
-		var mounth = getMonth() ;//前移一个月
-		mounth = mounth -1;
-		if(mounth<10){
-			  return '0'+mounth;
-		}
-		if(monthday == '12'){
-			year = year - 1;//去年的12月
-		}
-		var todaytmp = year +''+mounth;
-		
-		//alert('todaytmp:'+todaytmp)
-		$('#monthday').val(year);
 		ajaxSearch(year,'ALL');
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
@@ -137,25 +122,20 @@ body{
 	$(document).ready(function() {
 
 		initEvent();
-		
-		var month = "";
-		var monthday = $('#monthday').val();
-		var statusFlag = $('#statusFlag').val();
-		var orderType = $('#orderType').val();
-		
-		if(monthday == '' || monthday == null){
-			month = getMonth();
-		}else{
-			month = monthday.substring(4,6);
-		}
-		
-		
+				
 		$("#team").change(function() {
 
-			var monthday = $('#monthday').val();
-			var orderType = $('#orderType').val();
-			var statusFlag = $('#statusFlag').val();
+			var monthday = $('#year').val();
 			var team = $(this).val();
+			
+			ajaxSearch(monthday,team);	
+		});
+		
+
+		$("#year").change(function() {
+
+			var monthday = $('#year').val();
+			var team = $('#team').val();
 			
 			ajaxSearch(monthday,team);	
 		});
@@ -352,6 +332,7 @@ body{
 			<input type="hidden" id="statusFlag"  value="${statusFlag }"/>
 			<input type="hidden" id="orderType"  value="${orderType }"/>
 			<input type="hidden" id="jsonData"  name = "jsonData"  />
+			<input type="hidden" id="defulYear"  value="${defulYear }" />
 			
 			<table>
 				<tr>

@@ -120,7 +120,7 @@
 				function() {
 					
 					if (validator.form()) {
-
+						checkDisable();
 						var makeType=$('#makeType').val();
 						$('#form').attr("action", "${ctx}/business/storage?methodtype=insert"+"&makeType="+makeType);
 						$('#form').submit();
@@ -146,7 +146,8 @@
 		$(".quantity").attr('readonly', "true");
 		$(".quantity").addClass('read-only');
 		$(".quantity").removeClass('bgnone');
-		
+
+		$(".depotid").attr('readonly', "true");
 
 		//横向滚动条宽度计算
 		var maxW = $("#container").width();
@@ -177,6 +178,16 @@
 		});	
 	});
 	
+	function checkDisable() {
+        $("select[disabled]").each(function() {
+            if (parseInt($(this).val()) != -1) {
+                $(this).attr("disabled", false);
+            }
+        });
+        return true;
+    }
+
+
 	function doEdit(contractId,arrivalId) {
 
 		var makeType=$('#makeType').val();
@@ -289,7 +300,7 @@
 						<td>${list.contractQuantity }</td>
 						<td>${list.stockinQty }</td>
 						<td><form:input path="stockList[${status.index}].quantity"  value="" class="num short quantity" /></td>
-						<td><form:select path="stockList[${status.index}].depotid" >
+						<td><form:select path="stockList[${status.index}].depotid"  disabled="true">
 								<form:options items="${depotList}" 
 									itemValue="key" itemLabel="value"/></form:select></td>
 						<td><form:select path="stockList[${status.index}].packaging" style="width:70px">
@@ -306,18 +317,19 @@
 							var index = '${status.index}';
 							var contractQuantity = currencyToFloat('${list.quantityQualified }');
 							var contractStorage  = currencyToFloat('${list.stockinQty }');
+							var contractId  = '${list.supplierId }';
 							var storage = contractQuantity - contractStorage;
 							if(storage < 0)
 								storage = 0;
 							
 							var materialId='${list.materialId }';
 							var depotid='010';//采购件
-							if(materialId.substring(0,1) == 'A'){								
+							if(contractId == '0574YZ00'){
+								depotid='020';//自制件
+							}else if(materialId.substring(0,1) == 'A'){								
 								depotid='030';//原材料	
 							}else if(materialId.substring(0,1) == 'G'){
 								depotid='040';//包装件								
-							}else if(materialId.substring(0,3) == 'B01'){
-								depotid='020';//自制件								
 							}
 							
 							$('#stockList'+index+'\\.depotid').val(depotid);
