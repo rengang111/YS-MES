@@ -148,10 +148,57 @@ public class FinanceReportService extends CommonService {
 
 	}
 	
-	public HashMap<String, Object> reportForDaybookByMaterialIdSearch( String data) throws Exception {
+	public HashMap<String, Object> getBeginingStorage() throws Exception{
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-				
+		
+		String materialId = request.getParameter("materialId");
+		String strMonthly = request.getParameter("monthday");
+		
+		FinanceMouthly monthly = new FinanceMouthly(strMonthly);
+		String start = monthly.getStartDate();
+		String end = monthly.getEndDate();
+		
+		end = CalendarUtil.dateAddToString(end,-1);//当月的期末就是下月的期初，so,期末的日期还是25号
+		
+		dataModel.setQueryName("getStorageValueByMonthly");//
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("materialId",materialId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#0", start);
+		sql = sql.replace("#1", end);
+		
+		List<String> list = new ArrayList<String>();
+		list.add(start);
+		list.add(end);
+		
+		System.out.println("期初期末值取得："+sql);
+		
+		baseQuery.getYsQueryData(sql,list,0,0);
+
+		modelMap.put("beginingRecord", dataModel.getRecordCount());
+		modelMap.put("begining", dataModel.getYsViewData());
+		
+		modelMap.put("startDate",CalendarUtil.dateAddToString(start,1));//页面显示用：上月26号期初
+		modelMap.put("endDate",end);//当月25号期末
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> reportForDaybookByMaterialId( String data) throws Exception {
+	
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		//重新取得期末期初值
+		modelMap = getBeginingStorage();
+		
+		modelMap = reportForDaybookByMaterialIdSearch(data,modelMap);
+		
+		return modelMap;
+	}
+	public HashMap<String, Object> reportForDaybookByMaterialIdSearch(
+			String data,HashMap<String, Object> modelMap) throws Exception {
 		
 		dataModel.setQueryName("financeReprotForDaybookBymaterialId");//物料别流水账
 		baseQuery = new BaseQuery(request, dataModel);

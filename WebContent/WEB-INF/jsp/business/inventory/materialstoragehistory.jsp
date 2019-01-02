@@ -59,9 +59,26 @@
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
 						success: function(data){
-							//$('#recordsTotal').val(data["recordsTotal"]);
+
+							var record = data['beginingRecord'];
+							
+							if(record > 0){
+								var start = data['begining'][0]['startValue'];
+								var end   = data['begining'][0]['endValue'];
+							}else{
+								var start = '***';
+								var end = '***';
+							}	
+							var startDate = data['startDate'];
+							var endDate = data['endDate'];					
+
+							$('#start').text(start);
+							$('#end').text(end);
+							$('#startDate').text(startDate);
+							$('#endDate').text(endDate);
+							
 							fnCallback(data);
-							sumFn();
+							sumFn(start);
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -91,6 +108,17 @@
 		    			}
 		    			return data;
 		    		}},
+		    		{"targets":4,"render":function(data, type, row){
+		    			var dataFlag = row["dataFlag"];
+		    			var quantity = currencyToFloat(row["quantity"]);
+		    			if(dataFlag == 'O'){
+		    				quantity = quantity * (-1);//出库为负数
+		    				return '<span class="text-red">'+floatToCurrency(quantity)+'</span>';
+		    			}else{
+		    				return '<span class="">'+floatToCurrency(quantity)+'</span>';
+		    			}
+		    			return floatToCurrency(quantity) ;	 
+                    }},
 		    		{
 		    			"orderable":false,"targets":[0]
 		    		},
@@ -123,7 +151,7 @@
 		var month = getMonth();
 		
 		if(month<10){
-			  return '0'+ month;
+			//month = '0'+ month;
 		}
 		//if(month == '12'){
 		//	year = year - 1;//去年的12月
@@ -181,18 +209,18 @@
 		location.href = url;
 	}
 	
-	function sumFn(){
+	function sumFn(start){
 		
-		var storage = currencyToFloat( $('#storage').text() );
+		var storage = currencyToFloat( start );
 		$('#TMaterial tbody tr').each (function (){
 			
 			var quantity = $(this).find("td").eq(4).text();//入出库数量	
 			var dataFlag = $(this).find("td").eq(5).text();//入出库标识
 			quantity = currencyToFloat(quantity);
 			
-			if(dataFlag == 'O'){
-				quantity = quantity * (-1);//出库为负数
-			}
+			//if(dataFlag == 'O'){
+			//	quantity = quantity * (-1);//出库为负数
+			//}
 			
 			storage = storage + quantity;
 			
@@ -266,12 +294,20 @@
 					<td width="100px">${storage.materialId }</td>
 					
 					<td class="label" width="80px">物料名称：</td>
-					<td>${storage.materialName }</td>
+					<td colspan="5">${storage.materialName }</td>
 					
-					<td class="label" width="80px">期初库存数：</td>
+				</tr>
+				<tr>
+					<td class="label" width="80px">期初日期：</td>
+					<td width="100px"><span id="startDate"></span></td>
+					<td class="label" width="80px">期初库存：</td>					
+					<td width="100px"><span id="start"></span></td>
 					
-					<td width="100px"><span id="storage">${storage.beginningInventory }</span></td>
-					<td width="50px"></td> 
+					<td class="label" width="80px">期末日期：</td>
+					<td width="100px"><span id="endDate"></span></td>
+					<td class="label" width="80px">期末库存：</td>					
+					<td><span id="end"></span></td>
+				 
 				</tr>
 			</table>
 

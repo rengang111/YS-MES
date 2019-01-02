@@ -231,7 +231,7 @@ public class FinanceReportAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		
 		try {
-			dataMap = service.reportForDaybookByMaterialIdSearch(data);
+			dataMap = service.reportForDaybookByMaterialId(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

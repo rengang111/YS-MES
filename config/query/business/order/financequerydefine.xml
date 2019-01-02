@@ -1043,4 +1043,43 @@
     <having></having>
 	<power></power>
   </query> 
+  <query>
+    <pool></pool>    
+    <name value="getStorageValueByMonthly" />
+     <where>
+       <w name="a.materialId"            des=""  reqName="materialId"    dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="IFNULL(a.beginningDate,'#0')" alias="startDate" ctype="" />
+      <f name="a.beginningInventory" alias="startValue" ctype="" />
+      <f name="IFNULL(b.beginningDate,'#1')" alias="endDate" ctype="" />
+      <f name="IFNULL(b.beginningInventory,'***')" alias="endValue" ctype="" />
+  </select>
+    <from>
+	(
+		SELECT
+			date_format(a.beginningDate ,'%Y-%m-%d') beginningDate,
+			a.materialId,
+			a.beginningInventory
+		FROM b_inventorymanagemen a
+		WHERE  date_format(a.beginningDate ,'%Y-%m-%d') = '#0'
+	) a 
+		LEFT JOIN
+	(
+		SELECT
+			date_format(a.beginningDate ,'%Y-%m-%d') beginningDate,
+			a.materialId,
+			a.beginningInventory
+		FROM b_inventorymanagemen a
+		WHERE  date_format(a.beginningDate ,'%Y-%m-%d') = '#1'
+	) b
+		ON a.materialId = b.materialId
+		WHERE 1=1
+	</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query> 
 </root>
