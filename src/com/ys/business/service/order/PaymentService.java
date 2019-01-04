@@ -130,7 +130,7 @@ public class PaymentService extends CommonService {
 
 		String having = "stockinQty >= contractQty ";
 		if(("before").equals(searchFlag)){
-			having = "stockinQty < contractQty ";
+			having = "stockinQty < contractQty ";//预付款
 		}
 		String finishStatus = request.getParameter("finishStatus");
 		if(("070").equals(finishStatus)){
@@ -138,13 +138,13 @@ public class PaymentService extends CommonService {
 			userDefinedSearchCase.put("agreementDate", CalendarUtil.fmtYmdDate());
 			userDefinedSearchCase.put("finishStatus", finishStatus);
 			
-		}else if(("010").equals(finishStatus)){
+		}//else if(("010").equals(finishStatus)){
 			//付款未完成
-			userDefinedSearchCase.put("agreementDate", "");
-			userDefinedSearchCase.put("finishStatus", "");
-			userDefinedSearchCase.put("finishStatusU", "050");
+			//userDefinedSearchCase.put("agreementDate", "");
+			//userDefinedSearchCase.put("finishStatus", "");
+			//userDefinedSearchCase.put("finishStatusU", "050");
 			
-		}
+		//}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
@@ -951,7 +951,13 @@ public class PaymentService extends CommonService {
 		if( ("insert").equals(insertFlag)){
 			db.setInvoiceuser(userInfo.getUserId());//默认为登陆者
 			db.setInvoicedate(CalendarUtil.fmtYmdDate());
-			db.setFinishstatus(Constants.payment_021);//待二级审核
+			if(Constants.payment_030.equals(db.getFinishstatus())
+					|| Constants.payment_040.equals(db.getFinishstatus())
+					|| Constants.payment_050.equals(db.getFinishstatus())){
+						//不更新状态，防止付款完成后，前面的流程有修改
+					}else{
+						db.setFinishstatus(Constants.payment_021);//待二级审核						
+					}
 			
 		}
 		new B_PaymentDao().Store(db);

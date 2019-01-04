@@ -40,6 +40,7 @@
 <title>订单基本数据一览页面</title>
 <script type="text/javascript">
 
+//var sortc = 0;
 
 	function ajax(orderNature,status,sessionFlag,col_no) {
 		var table = $('#TMaterial').dataTable();
@@ -60,7 +61,7 @@
 				"serverSide" : true,
 				"stateSave" : false,
 	         	"bAutoWidth":false,
-				//"bSort":true,
+				"bSort":true,
 				// "bFilter": false, //列筛序功能
 				"ordering"	:true,
 				"searching" : false,
@@ -89,6 +90,8 @@
 						"data" : JSON.stringify(aoData),
 						success: function(data){							
 							fnCallback(data);
+							//sortc = 5;//data["iSortCol_0"];
+							//alert(sortc)
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
 						},
@@ -145,9 +148,12 @@
 		    		{
 						"visible" : false,
 						"targets" : [col_no]
+					},
+					{
+						//"order": [[ 2, 'asc' ]]
 					}
 	         	],
-	         	//"aaSorting": [[ 1, "DESC" ]]
+	         	//"aaSorting": [[ sortc, "DESC" ]]
 	         	/*
 	         	
 	         	"fnInitComplete": function () {//列筛选
@@ -276,7 +282,7 @@
 
 		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
 
-		location.href = url;
+		callWindowFullView("订单详情",url);
 	}
 
 	function doEdit(recordId,parentId) {

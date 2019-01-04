@@ -139,16 +139,41 @@ public class OrderService extends CommonService  {
 			iEnd = dataModel.getYsViewData().size();			
 		}		
 		
+		//HashMap<String, String> listSort = getAndSetSortKey(data);
 		modelMap.put("sEcho", sEcho);
 		modelMap.put("recordsTotal", dataModel.getRecordCount());
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
 		modelMap.put("data", dataModel.getYsViewData());	
 		modelMap.put("keyword1",key1);	
-		modelMap.put("keyword2",key2);		
+		modelMap.put("keyword2",key2);	
+		//modelMap.put("iSortCol_0", listSort.get("iSortCol_0"));
+		//modelMap.put("sSortDir_0", listSort.get("sSortDir_0"));
+		
 		
 		return modelMap;
 	}
 	
+	public HashMap<String, String> getAndSetSortKey(String data){
+
+		HashMap<String, String> map = new HashMap<String, String>();
+		
+		String iSortCol_0 = (String) session.getAttribute("iSortCol_0");
+		String sSortDir_0 = (String) session.getAttribute("sSortDir_0");
+		
+		if(isNullOrEmpty(iSortCol_0)){
+
+			iSortCol_0 = getJsonData(data, "iSortCol_0");
+			sSortDir_0 = getJsonData(data, "sSortDir_0");
+		}
+		map.put("iSortCol_0",iSortCol_0);
+		map.put("sSortDir_0",sSortDir_0);
+		
+		//重新存储排序条件
+		session.setAttribute("iSortCol_0", iSortCol_0);
+		session.setAttribute("sSortDir_0", sSortDir_0);
+		
+		return map;
+	}
 
 	public HashMap<String, Object> getOrderCancelList(String formId,String data) throws Exception {
 		

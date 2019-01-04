@@ -74,6 +74,13 @@
 		popupWindow(formId, url, 1024, 600);
 	}
 	
+	//全屏显示
+	function callWindowFullView(formId,url) {
+		var xpwidth=window.screen.width-10;
+	    var xpheight=window.screen.height-35;
+		popupWindow(formId, url, xpwidth, xpheight);
+	}
+	
 	function openLayer(url, width, height, isParentOpen) {
 		if (typeof height == "undefined" || width == "") {
 			width = '1100px';

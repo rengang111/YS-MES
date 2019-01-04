@@ -929,10 +929,15 @@
       <f name="a.paymentTerm" alias="" ctype="" />
       <f name="a.customerFullName" alias="" ctype="" />
       <f name="a.customerId" alias="" ctype="" />
-      <f name="date_add(c.checkInDate, interval a.paymentTerm day)" alias="reserveDate" ctype="" />
+      <f name="date_add(ifNULL(c.checkInDate,a.deliveryDate), interval IFNULL(a.paymentTerm,60) day)" alias="reserveDate" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <from>v_orderlist a LEFT JOIN (SELECT c.YSId,c.receivableId,c.status,c1.actualAmountCnt,c1.actualAmount,c1.bankDeduction,c1.customerDeduction ,c1.collectionDate FROM b_receivable c,v_receivabledetailgroup c1 WHERE  c.deleteFlag='0' AND c.receivableId=c1.receivableId)  b ON a.YSId=b.YSId LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.YSId=c.YSId AND a.materialId=c.materialId  WHERE c.quantity+0 >= REPLACE(a.quantity,',','')+0  </from>
+    <from>
+    	v_orderlist a 
+    		LEFT JOIN (SELECT c.YSId,c.receivableId,c.status,c1.actualAmountCnt,c1.actualAmount,c1.bankDeduction,c1.customerDeduction ,c1.collectionDate FROM b_receivable c,v_receivabledetailgroup c1 WHERE  c.deleteFlag='0' AND c.receivableId=c1.receivableId 
+    			)b ON a.YSId=b.YSId 
+    		LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.YSId=c.YSId AND a.materialId=c.materialId  
+    	WHERE a.payment is NULL  </from>
     <orderby>a.ysid </orderby>
     <groupby></groupby>
     <having>#</having>

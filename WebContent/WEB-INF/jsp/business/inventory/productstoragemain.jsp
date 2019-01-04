@@ -74,6 +74,7 @@
 				{"data": "orderQty","className" : 'td-right'},
 				{"data": null,"className" : 'td-right'},
 				{"data": "storageDate","className" : 'td-center',"defaultContent" : '（未入库）'},
+				{"data": "team","className" : 'td-center'},
 								
 			],
 			"columnDefs":[
@@ -125,12 +126,15 @@
 	    			var storageDate = (row["storageDate"]);
 	    			var stockin = currencyToFloat(row["stockinQty"]);
 	    			var virtualin = currencyToFloat(row["completedQuantity"]);
-	    			if(storageDate == null || storageDate == ''){
-	    				if(virtualin > 0 && stockin <=0 ){
-		    				storageDate = '（手动修正）';
-	    				}else{
-		    				storageDate="（未入库）";	    					
-	    				}
+	    			if(stockin <=0 )
+	    				storageDate = "（未入库）";
+	    			else{
+		    			if(storageDate == null || storageDate == ''){
+		    				if(virtualin > 0 && stockin <=0 ){
+			    				storageDate = '（手动修正）';
+		    				}
+		    			}
+	    				
 	    			}
 	    			return storageDate;
 	    		}}
@@ -231,6 +235,7 @@
 					<th style="width: 80px;">订单数量</th>
 					<th style="width: 80px;">入库数量</th>
 					<th style="width: 80px;">入库时间</th>
+					<th style="width: 60px;">业务组</th>
 				</tr>
 			</thead>
 		</table>

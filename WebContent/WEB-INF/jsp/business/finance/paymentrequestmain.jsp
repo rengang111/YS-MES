@@ -346,13 +346,13 @@
 		
 			<div class="list">					
 				<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-					<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(1,'010');" id="defutBtn010"><span>待申请</span></a>
+					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(1,'010');" id="defutBtn010"><span>待申请</span></a>
 					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'020');" id="defutBtn020"><span>待审核</span></a>
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>待付款</span></a -->
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'010');" id="defutBtn010"><span>未完成</span></a>
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'050');" id="defutBtn050"><span>已完成</span></a>
+					<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>待付款</span></a -->
+					<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'010');" id="defutBtn010"><span>未完成</span></a -->
+					<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'050');" id="defutBtn050"><span>已完成</span></a -->
 					<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'060');" id="defutBtn060"><span>审核未通过</span></a>&nbsp;&nbsp; -->
-					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'070');" id="defutBtn070"><span>逾期未付款</span></a>
+					<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'070');" id="defutBtn070"><span>逾期未付款</span></a -->
 					<a class="DTTT_button DTTT_button_text" onclick="downloadExcel('080');" ><span>EXCEL导出</span></a>
 				</div>
 				<div style="height: 40px;margin-bottom: -15px;float:right">
