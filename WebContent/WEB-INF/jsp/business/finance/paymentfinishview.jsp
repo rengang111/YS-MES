@@ -318,7 +318,7 @@ function photoView(id, tdTable, count, data) {
 				<td class="font16" width="150px">${payment.totalPayable }</td>
 								
 				<td class="label" width="100px">付款条件：</td>					
-				<td width="150px">入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
+				<td width="150px">发票后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
 														
 				
 				<td width="100px" class="label">付款状态：</td>

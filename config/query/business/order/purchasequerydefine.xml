@@ -131,6 +131,8 @@
       <f name="a.waitStockOut" alias="" ctype="" />
       <f name="a.quantityOnHand" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="IFNULL(requisitionType,'0')" alias="requisitionType" ctype="领料方式" />
+      <f name="requisitionType" alias="requisitionTypeId" ctype="" />
       <f name="a.priceStatus" alias="" ctype="" />
       <f name="a.purchaseType" alias="" ctype="物料采购类别" />
       <f name="a.purchaseType" alias="purchaseTypeId" ctype="" />
@@ -1105,6 +1107,24 @@
       <f name="sum( REPLACE(b.quantity,',',''))" alias="requisitionQty" ctype="" />
   </select>
    <from>v_purchaseplandetailgroup a	LEFT JOIN v_stockoutdetailgroup b ON a.YSId=b.YSId AND a.materialId=b.materialId	LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.ysid= c.ysid  AND a.productId=c.materialId 	LEFT JOIN v_orderdetail d ON d.ysid=a.ysid AND a.productId=d.materialId </from>
+    <orderby></orderby>
+    <groupby>a.materialId </groupby>
+    <having></having>
+	<power></power>    
+  </query>  
+  <query>
+    <pool></pool>    
+    <name value="arrivalAndReceiveInspection" />
+    <where>
+    	<w name="a.contractId"  des="" reqName="contractId"  dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="b.checkResult" des="" reqName="checkResult" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="b.checkResult" alias="" ctype="" />
+  </select>
+   <from>b_arrival AS A LEFT JOIN v_receiveinspection b ON b.arrivalId = a.arrivalId AND b.materialId = a.materialId where a.deleteFlag='0' </from>
     <orderby></orderby>
     <groupby>a.materialId </groupby>
     <having></having>

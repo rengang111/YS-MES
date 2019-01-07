@@ -114,15 +114,16 @@
 	    			//累计收货
 	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
 	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);	
-	    			var inspectRtnQty = 0;//currencyToFloat(row["sumReturnQty"]);	 
+	    			var inspectRtnQty = currencyToFloat(row["sumReturnQty"]);	 
 	    			var returnQty = stockinRtnQty + inspectRtnQty;
+	    			//var newQty = arrivalQty - returnQty;
 	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );	
 	    			
 	    			return floatToCurrency(newQty);
 	    		}},
 	    		{"targets":11,"render":function(data, type, row){
 	    			if(data ==''){
-	    				return '（未到货）';   				
+	    				return '（未到货）'; 
 	    			}else{
 	    				return data;    				
 	    			}
@@ -297,7 +298,7 @@
 					<th style="width: 50px;">供应商</th>
 					<th style="width: 50px;">合同交期</th>
 					<th style="width: 50px;">合同数</th>
-					<th style="width: 50px;">累计收货</th>
+					<th style="width: 50px;">净收货</th>
 					<th style="width: 50px;">累计入库</th>
 					<th width="50px">收货日期</th>
 				</tr>

@@ -216,7 +216,7 @@ function doDelete() {
 					</form:select></td>
 					
 				<td class="label" width="100px">付款条件：</td>
-				<td>&nbsp;入库后<form:input path="supplier.paymentterm" class="small num" />天</td>
+				<td>&nbsp;发票后<form:input path="supplier.paymentterm" class="small num" />天</td>
 			</tr>
 			<tr>	
 				<td class="label" width="100px">物料分类：</td> 

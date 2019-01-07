@@ -287,26 +287,6 @@ function initEvent(){
 			
 		});
 		
-		/*
-		$('#example').DataTable().on('click', 'tr', function() {
-
-			var rowIndex = $(this).context._DT_RowIndex; //行号		
-			//rowNumber = $(this).index()
-			//alert(rowIndex)			
-			
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	        	$('#example').DataTable().$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	            
-	        }
-			$('.DTFC_Cloned').find('tr').removeClass('selected');
-			$('.DTFC_Cloned').find('tr').eq(rowIndex+2).addClass('selected');
-			
-		});
-		*/
 		
 		$('#example').DataTable().on('click', 'tr', function() {
 			
@@ -434,8 +414,8 @@ function initEvent(){
 				{"data": null,"defaultContent" : ''},//2.物料名称
 				{"data": "purchaseType","className" : 'td-center', "defaultContent" : ''},//3.物料特性:物料
 				{"data": "unitQuantity","className" : 'td-right', "defaultContent" : ''},//4.单位使用量:baseBom
-				{"data": null,"className" : 'td-right'},//5.生产需求量:订单
-				{"data": null,"className" : 'td-right'},//6.总量= 单位使用量 * 生产需求量
+				{"data": null,"className" : 'td-right'},//5.订单需求量
+				{"data": "requisitionType","className" : 'td-right'},//6.领料方式
 				{"data": "availabelToPromise","className" : 'td-right'},//7.当前库存(虚拟库存):物料
 				{"data": "purchaseQuantity","className" : 'td-right'},//8.建议采购量:输入
 				{"data": "supplierId","className" : 'td-left',"sWidth": "60px"},//9.供应商,可修改:baseBom
@@ -485,12 +465,9 @@ function initEvent(){
 	    		{"targets":2,"render":function(data, type, row){	 			
 	    			return jQuery.fixedWidth(row["materialName"],35);	
 	    		}},
-	    		{"targets":6,"render":function(data, type, row){
-	    			//var order = currencyToFloat( '${order.totalQuantity}' );
-	    			//var price = currencyToFloat( row["unitQuantity"] );				    			
-	    			//var total = floatToCurrency( price * order );		
-	    			var total = floatToCurrency(row["manufactureQuantity"]);
-	    			return total;
+	    		{"targets":5,"render":function(data, type, row){	
+	    			
+	    			return floatToCurrency(row["manufactureQuantity"]);
 	    		}},
 	    		{"targets":7,"render":function(data, type, row){
 	    			
@@ -524,7 +501,7 @@ function initEvent(){
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : [3,4, 5,13]
+					"targets" : [3,4,13]
 				},
 	    		{ "bSortable": false, "aTargets": [ 0 ,12] }
 	          
@@ -532,18 +509,6 @@ function initEvent(){
 	     
 		}).draw();	
 		
-		/*
-		t.on('click', 'tr', function() {
-
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-		});
-		*/
 		t.on('order.dt search.dt draw.dt', function() {
 			t.column(0, {
 				search : 'applied',
@@ -994,7 +959,7 @@ function ZZmaterialView() {
 					<td>${order.PIId}</td>
 
 					<td class="label"><label>订单数量：</label></td>
-					<td><span id="quantity">${order.quantity}</span>（${order.unit}）</td>
+					<td><span id="quantity">${order.totalQuantity}</span>（${order.unit}）</td>
 						
 					<td class="label"><label>客户名称：</label></td>
 					<td>${order.customerFullName}</td>
@@ -1129,14 +1094,14 @@ function ZZmaterialView() {
 					<th>物料编码</th>
 					<th>物料名称</th>
 					<th>物料特性</th>
-					<th width="60px">基本用量</th>
-					<th width="60px">需求量</th>
-					<th width="60px">计划用量</th>
+					<th width="40px">基本用量</th>
+					<th width="60px">订单需求</th>
+					<th width="50px">领料方式</th>
 					<th width="60px">虚拟库存</th>
 					<th width="60px">采购量</th>
 					<th>供应商</th>
 					<th width="60px">单价</th>
-					<th width="80px">总价</th>
+					<th width="70px">总价</th>
 					<th>合同做成<br>
 						<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
 					<th width="1px"></th>

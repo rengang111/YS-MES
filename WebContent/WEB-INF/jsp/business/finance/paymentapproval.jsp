@@ -164,6 +164,14 @@
 	};
 	$(document).ready(function() {
 		
+		$("#payment\\.invoicedate").datepicker({
+			dateFormat:"yy-mm-dd",
+			changeYear: true,
+			changeMonth: true,
+			selectOtherMonths:true,
+			showOtherMonths:true,
+		}); 
+		
 		$("#goBack").click(
 				function() {
 					var url = "${ctx}/business/payment?methodtype=approvalMainL1";
@@ -221,10 +229,35 @@
 	function doInsert() {
 		
 		var num  = $('#payment\\.invoicenumber').val();
+		var date = $('#payment\\.invoicedate').val();
 		var type = $('#payment\\.invoicetype').val();
-		if($.trim(num) ==''){
-			//$().toastmessage('showWarningToast', "请输入发票编号。");
-			//return;
+		
+		if( type !='030' ){//选择有发票
+			if($.trim(num) =='' ){
+				$().toastmessage('showWarningToast', "请输入发票编号。");
+				return;
+			}
+			if($.trim(date) ==''){
+				$().toastmessage('showWarningToast', "请输入发票日期。");
+				return;				
+			}
+		}else{
+			if($.trim(num) !='' ){
+				$().toastmessage('showWarningToast', "有发票编号，请选择发票类型。");
+				return;
+			}
+			if($.trim(num) !='' && $.trim(date) ==''){
+				$().toastmessage('showWarningToast', "有发票编号，请输入发票日期。");
+				return;				
+			}
+		}
+		
+		
+		if($.trim(num) !=''){
+			if($.trim(date) ==''){
+				$().toastmessage('showWarningToast', "请输入发票日期。");
+				return;				
+			}
 		}
 		if($.trim(num) !='' && type =='030'){
 			$().toastmessage('showWarningToast', "请选择发票类型。");
@@ -428,7 +461,7 @@ function uploadPhoto(tableId,tdTable, id) {
 				<td class="font16" width="150px">${payment.totalPayable }</td>
 								
 				<td class="label" width="100px">付款条件：</td>					
-				<td width="150px">入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
+				<td width="150px">发票后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
 														
 				<td width="100px" class="label">付款类别：</td>
 				<td width="150px">${payment.paymentType }</td>
@@ -456,6 +489,9 @@ function uploadPhoto(tableId,tdTable, id) {
 			
 				<td class="label" width="100px">发票编号：</td> 
 				<td width="200px"><form:input path="payment.invoicenumber"  class="middle"  value="${payment.invoiceNumber }"/></td>
+				
+				<td class="label" width="100px">发票日期：</td> 
+				<td width="200px"><form:input path="payment.invoicedate"  class="short"  value="${payment.invoiceDate }"/></td>
 			
 				<td style="text-align: center;">
 					<button type="button" id="submit12"  onclick="doInsert();"

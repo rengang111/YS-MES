@@ -455,7 +455,7 @@ function uploadPhoto(tableId,tdTable, id) {
 					<form:input path="payment.totalpayable" class="read-only num"  style="width: 130px;"/></td>
 								
 				<td class="label" width="100px">供应商付款条件：</td>					
-				<td width="150px">&nbsp;入库后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
+				<td width="150px">&nbsp;发票后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
 														
 				<td width="100px" class="label">合同付款条件：</td>
 				<td>

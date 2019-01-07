@@ -265,22 +265,50 @@ function deductAjax() {
 		
 		$("#doEdit").click(
 				function() {
-					//var deleteFlag = $('#deleteFlag').val();
-					//if(deleteFlag == '0'){
-						//$().toastmessage('showWarningToast', "该合同已经有收货了,不能编辑。");
-						//return false;
-					//}		
+					
 			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=edit");
 			$('#attrForm').submit();
 		});	
 		
-		$("#doDelete").click(
-				function() {
-					var deleteFlag = $('#deleteFlag').val();
-			if(deleteFlag == '0'){
-				$().toastmessage('showWarningToast', "该合同已经有收货了,不能删除。");
+		$("#doDelete").click(function() {
+			
+			var contrDelFlag = 'NG';	
+			var contractId  = '${ contract.contractId }';	
+			
+			var url = "${ctx}/business/contract?methodtype=checkContractDelete";
+			url = url + "&contractId="+contractId;
+
+			$.ajax({
+				type : "post",
+				url : url,
+				async : false,
+				data : 'key=',
+				dataType : "json",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
+				success : function(data) {			
+
+					var flag = data["deleteFlag"];
+					
+					if(flag == "OK"){
+						contrDelFlag = "OK";//未收货，可以删除
+					}else{
+						var checkResult  = data['data'][0]['checkResult'];	
+						
+						if(checkResult == '040'){
+							contrDelFlag = "OK";//退货后，可以删除
+						}	
+					}
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					alert("系统错误，请联系管理员。")
+				}
+			});	
+			
+			if(contrDelFlag == "NG"){
+				$().toastmessage('showWarningToast', "该合同已有收货,不能删除。");
 				return false;
-			}		
+			}
+			
 			if(confirm("采购合同删除后不能恢复,\n\n        确定要删除吗？")) {
 				$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=delete");
 				$('#attrForm').submit();
@@ -708,7 +736,7 @@ function doDeleteStockin(id){
 					<td>${ contract.contractId }
 						<form:hidden path="contract.contractid" value="${contract.contractId }"/></td>
 					<td class="label" width="100px">付款条件：</td>
-					<td>入库后&nbsp;${ contract.paymentTerm }&nbsp;天</td>
+					<td>发票后&nbsp;${ contract.paymentTerm }&nbsp;天</td>
 					<td class="label"><label>下单日期：</label></td>
 					<td width="100px">${ contract.purchaseDate }</td>
 					<td class="label" width="100px"><label>合同交期：</label></td>

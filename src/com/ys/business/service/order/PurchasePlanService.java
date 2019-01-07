@@ -1442,7 +1442,8 @@ public class PurchasePlanService extends CommonService {
 		}else{			
 			getBomDetailView(bomId);	
 		}
-		
+		model.addAttribute("requisitionType",util.getListOption(DicUtil.DIC_REQUISITIONTYPE, ""));
+
 		return rtnFlag;
 	}
 	
@@ -1458,6 +1459,7 @@ public class PurchasePlanService extends CommonService {
 				bomId = BusinessService.getSemiBaseBomId(materialId)[1];
 			
 		}
+		model.addAttribute("requisitionType",util.getListOption(DicUtil.DIC_REQUISITIONTYPE, ""));
 
 		getOrderDetailByYSId(YSId);
 		
@@ -1506,7 +1508,8 @@ public class PurchasePlanService extends CommonService {
 		if(("020").equals(orderType))
 			YSId = peiYsid;//配件订单
 		getPurchaseDetail(YSId);
-		
+
+		model.addAttribute("requisitionType",util.getListOption(DicUtil.DIC_REQUISITIONTYPE, ""));
 	}
 
 	public void deleteInitPurchasePlan() throws Exception {
@@ -1518,6 +1521,8 @@ public class PurchasePlanService extends CommonService {
 		getOrderDetailByYSId(YSId);
 			
 		getBomeDetailAndContract(bomId,YSId,productId);
+		
+		model.addAttribute("requisitionType",util.getListOption(DicUtil.DIC_REQUISITIONTYPE, ""));
 	
 	}
 	
@@ -1551,15 +1556,30 @@ public class PurchasePlanService extends CommonService {
 		
 	}
 	
-	public Model insertPeiAndView() throws Exception {
+	/**
+	 * 重置包装件
+	 * @return
+	 * @throws Exception
+	 */
+	public Model insertAndViewFromPackage() throws Exception {
+
+		String YSId  = request.getParameter("YSId");
+		StringBuffer where = new StringBuffer();
+		where.append(" YSId = '" +YSId + "' AND deleteFlag='0' ");
+		where.append(" AND ");
+		where.append(" left(materialId,1) ='");
+		where.append(Constants.PURCHASETYPE_G);
+		where.append("' ");
 		
-		//String YSId = updatePeiJian();//更新采购方案
+		updatePurchasePlanByWhere(where.toString());//更新采购方案
 		
-		//getOrderDetailByYSId("",YSId);
+		getOrderDetailByYSId(YSId);
 		
 		return model;
 		
 	}
+	
+
 	public void purchaseRoutineAdd() throws Exception {
 
 		insertRoutineContract();		

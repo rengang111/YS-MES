@@ -12,6 +12,7 @@
 
 	var counter = 0;
 	var moduleNum = 0;
+	var options = "";//领料方式选项
 	
 	$.fn.dataTable.TableTools.buttons.add_row = $
 	.extend(
@@ -34,26 +35,28 @@
 						.row
 						.add(
 						  [
-'<td><span></span></td>',
-'<td class="td-center"><input type="text"   name="planDetailList['+counter+'].subbomno"   id="planDetailList'+counter+'.subbomno" value="0" class="cash"  style="width:20px"/></td>',
-'<td class="td-center">'+rowIndex+'<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
-'<td><input type="text" name="planDetailList['+counter+'].materialid" id="planDetailList'+counter+'.materialid" class="attributeList1"/></td>',
-'<td><span></span></td>',
-'<td class="td-center"><span id="unit'+counter+'"></span></td>',
-'<td><input type="text" name="planDetailList['+counter+'].unitquantity" id="planDetailList'+counter+'.unitquantity"  class="num mini" /></td>',
-'<td class="td-right"><span>'+orderQuantity+'</span></td>',
-'<td class="td-center"><span></span><input type="hidden"   name="planDetailList['+counter+'].manufacturequantity" id="planDetailList'+counter+'.manufacturequantity"/></td>',
-'<td class="td-right"><span></span></td>',
-'<td><input type="text" name="planDetailList['+counter+'].purchasequantity" id="planDetailList'+counter+'.purchasequantity"  class="num mini" /></td>',
-'<td><input type="text" name="planDetailList['+counter+'].supplierid" id="planDetailList'+counter+'.supplierid"  class="supplierid short"/></td>',
-'<td class="td-right"><input type="text" name="planDetailList['+counter+'].price"      id="planDetailList'+counter+'.price" class="num mini" /></td>',
-'<td class="td-right"><span id="totalPrice'+counter+'"></span><input type="hidden"   name="planDetailList['+counter+'].totalprice" id="planDetailList'+counter+'.totalprice"/></td>',
-'<td class="td-right"><span></span>'+
-	'<input type="hidden"   name="planDetailList['+counter+'].suppliershortname" id="planDetailList'+counter+'.suppliershortname"/>'+
-	'<input type="hidden"   name="planDetailList['+counter+'].contractflag" id="planDetailList'+counter+'.contractflag" value="1" /></td>',
+	'<td><span></span></td>',
+	'<td class="td-center"><input type="text"   name="planDetailList['+counter+'].subbomno"   id="planDetailList'+counter+'.subbomno" value="0" class="cash"  style="width:20px"/></td>',
+	'<td class="td-center">'+rowIndex+'<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
+	'<td><input type="text" name="planDetailList['+counter+'].materialid" id="planDetailList'+counter+'.materialid" class="attributeList1"/></td>',
+	'<td><span></span></td>',
+	'<td class="td-center"><span id="unit'+counter+'"></span></td>',
+	'<td><input type="text" name="planDetailList['+counter+'].unitquantity" id="planDetailList'+counter+'.unitquantity"  class="num mini" /></td>',
+	'<td class="td-right"><span>'+orderQuantity+'</span></td>',
+	'<td class="td-center"><span></span><input type="hidden"   name="planDetailList['+counter+'].manufacturequantity" id="planDetailList'+counter+'.manufacturequantity"/></td>',
+	'<td class="td-right"><span></span></td>',
+	'<td><input type="text" name="planDetailList['+counter+'].purchasequantity" id="planDetailList'+counter+'.purchasequantity"  class="num mini" /></td>',
+	'<td><input type="text" name="planDetailList['+counter+'].supplierid" id="planDetailList'+counter+'.supplierid"  class="supplierid short"/></td>',
+	'<td class="td-right"><input type="text" name="planDetailList['+counter+'].price"      id="planDetailList'+counter+'.price" class="num mini" /></td>',
+	'<td class="td-right"><span id="totalPrice'+counter+'"></span><input type="hidden"   name="planDetailList['+counter+'].totalprice" id="planDetailList'+counter+'.totalprice"/></td>',
+	'<td class="td-right"><span></span>'+
+		'<input type="hidden"   name="planDetailList['+counter+'].suppliershortname" id="planDetailList'+counter+'.suppliershortname"/>'+
+		'<input type="hidden"   name="planDetailList['+counter+'].contractflag" id="planDetailList'+counter+'.contractflag" value="1" /></td>',
+	'<td><select  name="planDetailList['+counter+'].requisitiontype"   id="planDetailList'+rowIndex+'.requisitiontype" </select></td>',
 					
 						]).draw();
-						
+
+						$("#planDetailList" + rowIndex + "\\.requisitiontype").html(options);
 						$("#planDetailList" + counter + "\\.materialid").focus();
 						counter ++;			
 					}
@@ -115,6 +118,12 @@
 	
 	$(document).ready(function() {		
 
+		var i = 0;	
+		<c:forEach var="list" items="${requisitionType}">
+			i++;
+			options += '<option value="${list.key}">${list.value}</option>';
+		</c:forEach>
+		
 		baseBomView();//基础BOM
 		
 		autocomplete();		
@@ -232,6 +241,7 @@
 				{"className" : 'td-right', "defaultContent" : ''},//11.本次单价,可修改:baseBom
 				{"className" : 'td-right', "defaultContent" : ''},//12.总价=本次单价*采购量
 				{"className" : 'td-right', "defaultContent" : ''},//13.当前价格:baseBom
+				{"className" : 'td-right'},//14.总量= 单位使用量 * 生产需求量
 			 ],
 		
 			"columnDefs":[
@@ -243,30 +253,7 @@
 	        ]
 	     
 		});
-		
-		/*
-		t.on('blur', 'tr td:nth-child(4),tr td:nth-child(7)',function() {
-			
-			var currValue = $(this).find("input:text").val().trim();
-
-	        $(this).find("input:text").removeClass('bgwhite');
-	        
-	        if(currValue =="" ){
-	        	
-	        	 $(this).find("input:text").addClass('error');
-	        }else{
-	        	 $(this).find("input:text").addClass('bgnone');
-	        }
-			
-		});
-
-		
-		t.on('blur', 'tr td:nth-child(7)',function() {
-			
-	       $(this).find("input:text").removeClass('bgwhite').addClass('bgnone');
-
-		});
-		*/		
+	
 
 		t.on('change', 'tr td:nth-child(7)',function() {
 						
@@ -351,7 +338,6 @@
 		
 		</fieldset>	
 		<fieldset class="action" style="text-align: right;margin-top: -15px;">
-			<!-- <button type="button" id="createOrderBom" class="DTTT_button">确认并生成采购合同</button> -->
 			<button type="button" id="createOrderBom" class="DTTT_button">确认采购方案</button>
 			<button type="button" id="goBack" class="DTTT_button goBack">返回</button>
 		</fieldset>	
@@ -377,7 +363,7 @@
 					<th class="dt-center" >物料名称</th>
 					<th class="dt-center" style="width:30px">物料特性</th>
 					<th class="dt-center" width="60px">用量</th>
-					<th class="dt-center" width="60px">生产需求量</th>
+					<th class="dt-center" width="60px">生产数量</th>
 					<th class="dt-center" width="60px">总量</th>
 					<th class="dt-center" width="60px">虚拟库存</th>
 					<th class="dt-center" width="60px">建议采购量</th>
@@ -385,6 +371,7 @@
 					<th class="dt-center" width="60px">本次单价</th>
 					<th class="dt-center" width="80px">总价</th>
 					<th class="dt-center" width="60px">当前价格</th>
+					<th class="dt-center" width="60px">生产领料</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -417,6 +404,10 @@
 	     <!-- 当前价格 -->
 	    <td><span id="price${status.index}">${bom.price }</span>
 	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" /></td>
+	    <!-- 领料方式 -->
+	    <td><form:select path="planDetailList[${status.index}].requisitiontype" >							
+						<form:options items="${requisitionType}" 
+							itemValue="key" itemLabel="value" /></form:select></td>
 	    
 	    	<form:hidden path="planDetailList[${status.index}].purchasetype" value="${bom.purchaseTypeId }" />	    	
 	    	<form:hidden path="planDetailList[${status.index}].contractflag" value="1" />
@@ -456,6 +447,7 @@
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$('#totalQuantity'+index).html(vTotalQuantity);
 		$("#planDetailList"+index+"\\.manufacturequantity").val(vTotalQuantity);
+		//$("#planDetailList"+index+"\\.requisitiontype").val(vTotalQuantity);//生产领料数量，默认是需求量
 		$('#totalPrice'+index).html(totalPrice);
 		$("#planDetailList"+index+"\\.totalprice").val(totalPrice);
 		$("#planDetailList"+index+"\\.price").val(vprice);

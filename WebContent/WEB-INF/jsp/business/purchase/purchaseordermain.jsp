@@ -120,12 +120,12 @@
 	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);
 	    			var inspectRtnQty = currencyToFloat(row["inspectRtnQty"]);
 	    			var sumRtnQty = stockinRtnQty + inspectRtnQty;	
-	    			var newQty1 = stockinQty - stockinRtnQty - stockinRtnQty;
-	    			if(newQty1 >= contractQty){
-	    				var newQty = contractQty;	
-	    			}else{
+	    			var newQty1 = stockinQty - sumRtnQty;
+	    			//if(newQty1 >= contractQty){
+	    			//	var newQty = contractQty;	
+	    			//}else{
 	    				var newQty = setPurchaseQuantity(sumRtnQty,arrivalQty );	
-	    			}		
+	    			//}		
 	    			return floatToCurrency(newQty);
 	    		}},
 	    		{"targets":9,"render":function(data, type, row){
@@ -137,11 +137,13 @@
 	    			var inspectRtnQty = currencyToFloat(row["inspectRtnQty"]);
 	    			var sumRtnQty = stockinRtnQty + inspectRtnQty;
 	    			var newQty1 = stockinQty - stockinRtnQty - stockinRtnQty;
-	    			if(newQty1 >= contractQty){
+	    			if(stockinQty >= contractQty)
 	    				var newQty = contractQty;	
-	    			}else{
-	    				var newQty = setPurchaseQuantity(sumRtnQty,arrivalQty );	
-	    			}			
+	    			else
+	    				var newQty = arrivalQty;	
+	    			//}else{
+	    			//	var newQty = setPurchaseQuantity(sumRtnQty,arrivalQty );	
+	    			//}			
 	    			return floatToCurrency(newQty);
 	    		}},
 	    		{"targets":10,"render":function(data, type, row){
@@ -149,10 +151,9 @@
 	    			var arrivalQty = currencyToFloat(row["contractStorage"]);	
 	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);	
 	    			var stockinQty = currencyToFloat(row["stockinQty"]);			    			
-	    			var newQty = setPurchaseQuantity(stockinRtnQty,arrivalQty );	
-	    			newQty = stockinQty - stockinRtnQty - stockinRtnQty;
+	    			//var newQty = setPurchaseQuantity(stockinRtnQty,arrivalQty );	
+	    			newQty = stockinQty - stockinRtnQty;
 	    			return floatToCurrency(newQty);
-	    			//return floatToCurrency(newQty);
 	    		}}
          	] 
 		});

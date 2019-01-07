@@ -91,10 +91,6 @@ public class PurchasePlanAction extends BaseAction {
 				showPurchasePlan();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
 				break;
-			case "showPurchasePlanPei"://查看配件订单方案
-				showPurchasePlanPei();
-				rtnUrl = "/business/purchaseplan/purchaseplanpeiview";
-				break;
 			case "purchasePlanAddInit"://订单采购
 				purchasePlanAddInit();
 				rtnUrl = "/business/purchaseplan/purchaseplanadd";
@@ -103,13 +99,9 @@ public class PurchasePlanAction extends BaseAction {
 				doPurchasePlanAdd();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
 				break;
-			case "purchasePlanPeiAddInit"://配件订单采购
-				purchasePlanPeiAddInit();
-				rtnUrl = "/business/purchaseplan/purchaseplanpeiadd";
-				break;
-			case "purchasePlanPeiAdd"://保存配件采购方案
-				doPurchasePlanPeiAdd();
-				rtnUrl = "/business/purchaseplan/purchaseplanpeiview";
+			case "purchasePlanAddPackage"://保存采购方案：重置包装件
+				doPurchasePlanAddPackage();
+				rtnUrl = "/business/purchaseplan/purchaseplanview";
 				break;
 			case "purchasePlanView":
 				dataMap = purchasePlanView();
@@ -118,19 +110,11 @@ public class PurchasePlanAction extends BaseAction {
 			case "purchasePlanEdit":
 				doEdit();
 				rtnUrl = "/business/purchaseplan/purchaseplanedit";
-				break;	
-			case "purchasePlanEditPei"://配件订单的采购方案编辑
-				doEditPei();
-				rtnUrl = "/business/purchaseplan/purchaseplanpeiedit";
-				break;				
+				break;			
 			case "purchasePlanUpdate":
 				doUpdate();
 				rtnUrl = "/business/purchaseplan/purchaseplanview";
-				break;				
-			case "purchasePlanUpdatePei"://配件订单的采购方案更新
-				doUpdatePei();
-				rtnUrl = "/business/purchaseplan/purchaseplanpeiview";
-				break;	
+				break;
 			case "purchasePlanDelete"://删除采购
 				doDeletePurchasePlan();
 				rtnUrl = "/business/purchaseplan/purchaseplanmain";
@@ -141,7 +125,7 @@ public class PurchasePlanAction extends BaseAction {
 				break;		
 			case "resetPackageInit"://重置包装件
 				doResetPackageInit();
-				rtnUrl = "/business/purchaseplan/purchaseplanadd";
+				rtnUrl = "/business/purchaseplan/purchaseplanaddg";
 				break;		
 			case "resetYszzInit"://重置包装件
 				doResetYszzInit();
@@ -285,11 +269,7 @@ public class PurchasePlanAction extends BaseAction {
 		
 	}
 	
-	public void purchasePlanPeiAddInit() throws Exception{
-
-		purchaseService.createPeijianPlan();		
-		
-	}
+	
 	
 
 	public void showPurchasePlan() throws Exception{
@@ -299,11 +279,6 @@ public class PurchasePlanAction extends BaseAction {
 	}
 	
 
-	public void showPurchasePlanPei() throws Exception{
-
-		purchaseService.showPurchasePlanPei();		
-
-	}
 	
 	public void doPurchasePlanAdd() throws Exception {
 
@@ -311,10 +286,13 @@ public class PurchasePlanAction extends BaseAction {
 
 	}	
 	
-	public void doPurchasePlanPeiAdd() throws Exception {
 
-		model = purchaseService.insertPeiAndView();
-	}		
+	public void doPurchasePlanAddPackage() throws Exception {
+
+		model = purchaseService.insertAndViewFromPackage();
+
+	}	
+	
 	
 	
 	public void doEdit() throws Exception{
@@ -324,11 +302,6 @@ public class PurchasePlanAction extends BaseAction {
 	}	
 	
 
-	public void doEditPei() throws Exception{
-		
-		purchaseService.editPurchasePlan();
-
-	}	
 	
 	
 	public void doDeleteInit() throws Exception{
@@ -346,7 +319,7 @@ public class PurchasePlanAction extends BaseAction {
 
 			purchaseService.deleteInitPurchasePlan();
 
-			model.addAttribute("materialFlag","package");
+			//model.addAttribute("materialFlag","package");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -370,12 +343,7 @@ public class PurchasePlanAction extends BaseAction {
 
 	}
 
-	public void doUpdatePei() throws Exception {
-		
-		purchaseService.updatePeiAndView();			
-
-	}
-
+	
 	public HashMap<String, Object> doUpdateOrderCost() throws Exception {
 		
 		return purchaseService.updateOrderCost();			

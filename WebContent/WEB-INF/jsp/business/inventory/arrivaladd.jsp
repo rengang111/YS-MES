@@ -396,7 +396,7 @@
 					<input type="checkbox" name="selectall" id="selectall" /><label for="selectall">全部到货</label> 
 					<input type="checkbox" name="reverse" id="reverse" /><label for="reverse">全部清空</label></th>
 				<th class="dt-center" width="60px">合同数量</th>
-				<th class="dt-center" width="60px">累计收货</th>
+				<th class="dt-center" width="60px">净收货</th>
 				<th class="dt-center" width="60px">累计退货</th>
 				<th class="dt-center" width="60px">剩余数量</th>
 			</tr>

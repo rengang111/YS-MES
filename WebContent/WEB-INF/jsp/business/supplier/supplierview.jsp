@@ -345,7 +345,7 @@ function controlButtons(data) {
 				<td colspan=3>${formModel.supplier.address}</td>
 
 				<td class="label" width="100px">付款条件：</td>
-				<td>入库后&nbsp;${formModel.supplier.paymentterm}&nbsp;天</td>
+				<td>发票后&nbsp;${formModel.supplier.paymentterm}&nbsp;天</td>
 			</tr>
 		</table>
 

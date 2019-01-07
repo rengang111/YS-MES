@@ -1390,6 +1390,27 @@ public class PurchaseOrderService extends CommonService {
 		return modelMap;
 	}
 	
+
+	public HashMap<String, Object> checkContractDelete() throws Exception {
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		String contractId = request.getParameter("contractId");
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("arrivalAndReceiveInspection");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contractId);	
+		//userDefinedSearchCase.put("checkResult", "040");//退货		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		if(dataModel.getRecordCount() > 0 ){
+			modelMap.put("data",dataModel.getYsViewData());			
+		}else{
+			modelMap.put("deleteFlag", "OK");
+		}
+		return modelMap;
+	}
+	
 	private String getOrderExpanseByContractId() throws Exception {
 		
 		String orderExpanseQty = "0";
