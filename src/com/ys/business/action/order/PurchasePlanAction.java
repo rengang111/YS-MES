@@ -189,6 +189,10 @@ public class PurchasePlanAction extends BaseAction {
 			case "rawRequirementALLAdd"://原材料物料需求表做成
 				rawRequirementALLAdd();
 				break;
+			case "updateRequisitionType"://更新领料方式
+				dataMap = updateRequisitionType();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -445,6 +449,12 @@ public class PurchasePlanAction extends BaseAction {
 	
 	private void rawRequirementALLAdd() throws Exception{
 		purchaseService.rawRequirementALLAdd();
+	}
+	
+	
+	private HashMap<String, Object> updateRequisitionType(){
+		
+		return purchaseService.updateRequisitionType();
 	}
 	
 }

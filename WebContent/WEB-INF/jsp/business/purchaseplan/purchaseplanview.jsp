@@ -104,6 +104,50 @@ function initEvent(){
 
 	$(document).ready(function() {		
 
+		$("#requisitionType").attr('disabled',true);
+		$("#saveRequisitionType").hide();
+		
+		$("#editRequisitionType").click(function() {
+			$("#requisitionType").attr('disabled',false);
+			$("#saveRequisitionType").show();
+			$("#editRequisitionType").hide();
+		});
+		
+		//保存 领料方式
+		$("#saveRequisitionType").click(function() {
+			var requisitionType = $('#requisitionType').val();
+			var YSId ="${order.YSId}";
+			var url = "${ctx}/business/purchasePlan?methodtype=updateRequisitionType";
+			url = url + "&YSId="+YSId+"&requisitionType="+requisitionType;
+
+			$.ajax({
+				type : "post",
+				url : url,
+				//async : false,
+				//data : null,
+				dataType : "json",
+				contentType: "application/x-www-form-urlencoded; charset=utf-8",
+				success : function(data) {			
+
+					var returnCode = data['returnCode'];
+					
+					if(returnCode == 'S'){
+						$().toastmessage('showNoticeToast', "更新成功。");
+					}						
+					else{
+						$().toastmessage('showNoticeToast', "更新失败，请重试。");
+					}
+					
+					$("#requisitionType").attr('disabled',true);
+					$("#saveRequisitionType").hide();
+					$("#editRequisitionType").show();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					alert("系统错误，请联系管理员。")
+				}
+			});	
+		});///保存 领料方式
+		
 		$(".loading").hide();
 		$(".read-only").attr( 'readonly',true)
 		$( "#tabs" ).tabs();
@@ -397,10 +441,12 @@ function initEvent(){
 						$('#purchasePlan\\.recordid').val(data["data"][0]["planRecordId"]);
 						$('#orderDetail\\.productcost').val(data["data"][0]["productCost"]);
 						
+						$('#requisitionType').val(data["data"][0]["requisitionTypeId"]);
+						
 						costAcount();//初始化计算
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
-		            	alert(errorThrown)
+		            	alert("系统错误，请联系管理员。")
 					 }
 				})
 			},
@@ -943,15 +989,15 @@ function ZZmaterialView() {
 			<legend> 产品信息</legend>
 			<table class="form" id="table_form">
 				<tr> 				
-					<td class="label" style="width:100px;"><label>耀升编号：</label></td>					
-					<td style="width:150px;">${order.YSId}
+					<td class="label" style="width:80px;"><label>耀升编号：</label></td>					
+					<td style="width:100px;">${order.YSId}
 					<form:hidden path="purchasePlan.ysid"  value="${order.YSId}" /></td>
 								
-					<td class="label" style="width:100px;"><label>产品编号：</label></td>					
-					<td style="width:150px;"><a href="###" onClick="doShowProduct()">${order.materialId}</a>
+					<td class="label" style="width:80px;"><label>产品编号：</label></td>					
+					<td style="width:100px;"><a href="###" onClick="doShowProduct()">${order.materialId}</a>
 					<form:hidden path="purchasePlan.materialid"  value="${order.materialId}" /></td>
 				
-					<td class="label" style="width:100px;"><label>产品名称：</label></td>				
+					<td class="label" style="width:80px;"><label>产品名称：</label></td>				
 					<td>${order.materialName}</td>
 				</tr>
 				<tr>
@@ -963,6 +1009,14 @@ function ZZmaterialView() {
 						
 					<td class="label"><label>客户名称：</label></td>
 					<td>${order.customerFullName}</td>
+					
+					<td class="label" style="width:80px;"><label>领料方式：</label></td>
+					<td style="width:150px;">
+						<form:select path="requisitionType" >							
+						<form:options items="${requisitionType}" 
+							itemValue="key" itemLabel="value" /></form:select>&nbsp;
+						<a href="###"  id="editRequisitionType" >修改</a>
+						<a href="###"  id="saveRequisitionType" >保存</a></td>
 				</tr>							
 			</table>
 		</fieldset>

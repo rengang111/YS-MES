@@ -52,11 +52,9 @@
 	'<td class="td-right"><span></span>'+
 		'<input type="hidden"   name="planDetailList['+counter+'].suppliershortname" id="planDetailList'+counter+'.suppliershortname"/>'+
 		'<input type="hidden"   name="planDetailList['+counter+'].contractflag" id="planDetailList'+counter+'.contractflag" value="1" /></td>',
-	'<td><select  name="planDetailList['+counter+'].requisitiontype"   id="planDetailList'+rowIndex+'.requisitiontype" </select></td>',
 					
 						]).draw();
 
-						$("#planDetailList" + rowIndex + "\\.requisitiontype").html(options);
 						$("#planDetailList" + counter + "\\.materialid").focus();
 						counter ++;			
 					}
@@ -240,7 +238,6 @@
 				{"className" : 'td-right', "defaultContent" : ''},//11.本次单价,可修改:baseBom
 				{"className" : 'td-right', "defaultContent" : ''},//12.总价=本次单价*采购量
 				{"className" : 'td-right', "defaultContent" : ''},//13.当前价格:baseBom
-				{"className" : 'td-right'},//14.总量= 单位使用量 * 生产需求量
 			 ],
 		
 			"columnDefs":[
@@ -370,7 +367,6 @@
 					<th class="dt-center" width="60px">本次单价</th>
 					<th class="dt-center" width="80px">总价</th>
 					<th class="dt-center" width="60px">当前价格</th>
-					<th class="dt-center" width="60px">生产领料</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -403,10 +399,6 @@
 	     <!-- 当前价格 -->
 	    <td><span id="price${status.index}">${bom.price }</span>
 	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" /></td>
-	    <!-- 领料方式 -->
-	    <td><form:select path="planDetailList[${status.index}].requisitiontype" >							
-						<form:options items="${requisitionType}" 
-							itemValue="key" itemLabel="value" /></form:select></td>
 	    
 	    	<form:hidden path="planDetailList[${status.index}].purchasetype" value="${bom.purchaseTypeId }" />	    	
 	    	<form:hidden path="planDetailList[${status.index}].contractflag" value="1" />
@@ -446,7 +438,6 @@
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$('#totalQuantity'+index).html(vTotalQuantity);
 		$("#planDetailList"+index+"\\.manufacturequantity").val(vTotalQuantity);
-		//$("#planDetailList"+index+"\\.requisitiontype").val(vTotalQuantity);//生产领料数量，默认是需求量
 		$('#totalPrice'+index).html(totalPrice);
 		$("#planDetailList"+index+"\\.totalprice").val(totalPrice);
 		$("#planDetailList"+index+"\\.price").val(vprice);

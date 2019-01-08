@@ -20,6 +20,15 @@ public class PurchasePlanModel extends BaseModel {
 	private List<B_StockOutCorrectionData> correctionList;
 	private B_OrderDetailData orderDetail;
 	
+	private String requisitionType;
+	
+	public String getRequisitionType(){
+		return this.requisitionType;
+	}
+	
+	public void setRequisitionType(String requisitionType){
+		this.requisitionType = requisitionType;
+	}
 	
 	public B_OrderDetailData getOrderDetail() {
 		return this.orderDetail;

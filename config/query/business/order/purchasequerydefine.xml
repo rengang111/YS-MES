@@ -132,7 +132,7 @@
       <f name="a.quantityOnHand" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
       <f name="IFNULL(requisitionType,'0')" alias="requisitionType" ctype="领料方式" />
-      <f name="requisitionType" alias="requisitionTypeId" ctype="" />
+      <f name="IFNULL(requisitionType,'0')" alias="requisitionTypeId" ctype="" />
       <f name="a.priceStatus" alias="" ctype="" />
       <f name="a.purchaseType" alias="" ctype="物料采购类别" />
       <f name="a.purchaseType" alias="purchaseTypeId" ctype="" />

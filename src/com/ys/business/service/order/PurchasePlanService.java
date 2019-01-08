@@ -1484,6 +1484,9 @@ public class PurchasePlanService extends CommonService {
 
 		getOrderDetailByYSId(YSId);	
 		
+		model.addAttribute("requisitionType",util.getListOption(DicUtil.DIC_REQUISITIONTYPE, ""));
+
+		
 	}
 
 	public void showPurchasePlanPei() throws Exception {
@@ -2504,25 +2507,40 @@ public class PurchasePlanService extends CommonService {
 								
 		}
 	}
-	/*
-	private String getRawStockoutQuantity(
-			String YSId,String materialId) throws Exception{
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> updateRequisitionType() {
 
-		dataModel.setQueryName("rawStockoutQuantity");		
-		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("YSId", YSId);	
-		userDefinedSearchCase.put("materialId", materialId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
-		String rtnValue="0";
-		if(dataModel.getRecordCount() >0){
-			rtnValue = dataModel.getYsViewData().get(0).get("quantity");
+		String YSId = request.getParameter("YSId");
+		String requisitionType = request.getParameter("requisitionType");
+		
+		try {
+			String where = " YSId ='" + YSId +"' AND deleteFlag='0' ";
+			List<B_PurchasePlanData> list = new  B_PurchasePlanDao().Find(where);
+			
+			if( list.size() > 0 ){
+				B_PurchasePlanData dbData = list.get(0);
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"更新领料方式",userInfo);	
+				copyProperties(dbData,commData);
+				dbData.setRequisitiontype(requisitionType);		
+				
+				new  B_PurchasePlanDao().Store(dbData);		
+				
+				modelMap.put("returnCode", "S");
+			}
+		} catch (Exception e) {
+			modelMap.put("returnCode", "E");
+			e.printStackTrace();
 		}
+
 		
-		return rtnValue;
+		return modelMap;
 	}
-	*/
+	
 	
 	private ArrayList<HashMap<String, String>> getPlanYSId() throws Exception{
 
