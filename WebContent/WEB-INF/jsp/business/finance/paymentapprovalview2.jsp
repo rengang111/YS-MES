@@ -449,9 +449,7 @@ function photoView1(id, tdTable, count, data) {
 				<td width="100px">${payment.invoiceType }</td>
 				<td width="100px" class="label">发票编号：</td>
 				<td>${payment.invoiceNumber }</td>
-				<td width="100px" class="label">填写人：</td>
-				<td width="100px" >${payment.invoiceUser }</td>
-				<td width="100px" class="label">填写日期：</td>
+				<td width="100px" class="label">发票日期：</td>
 				<td width="100px" >${payment.invoiceDate }</td>
 			</tr>
 			<!-- 	

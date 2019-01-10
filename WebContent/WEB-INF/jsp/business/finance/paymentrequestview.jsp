@@ -494,6 +494,20 @@ function uploadPhoto(tableId,tdTable, id) {
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
+		<legend> 发票信息</legend>
+		<table class="form" id="table_form2">
+			<tr>
+				<td width="100px" class="label">发票类型：</td>
+				<td width="100px">${payment.invoiceType }</td>
+				<td width="100px" class="label">发票编号：</td>
+				<td width="150px">${payment.invoiceNumber }</td>
+				<td width="100px" class="label">发票日期：</td>
+				<td width="100px" >${payment.invoiceDate }</td>
+				<td></td>
+			</tr>				
+		</table>
+	</fieldset>
+	<fieldset>
 		<span class="tablename">付款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
 		<div class="list">
 			<div class="showPhotoDiv" style="overflow: auto;width: 1024px;">

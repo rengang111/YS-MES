@@ -144,6 +144,15 @@
 	$(document).ready(function() {
 		
 		//日期
+			
+		$("#payment\\.invoicedate").datepicker({
+			dateFormat:"yy-mm-dd",
+			changeYear: true,
+			changeMonth: true,
+			selectOtherMonths:true,
+			showOtherMonths:true,
+		}); 
+		
 		$('.read-only').attr('readonly', "true");
 		$("#payment\\.requestdate").val(shortToday());
 		$("#payment\\.requestdate").datepicker({
@@ -184,6 +193,30 @@
 		$("#insert").click(
 				function() {
 
+					var num  = $('#payment\\.invoicenumber').val();
+					var date = $('#payment\\.invoicedate').val();
+					var type = $('#payment\\.invoicetype').val();
+					
+					if( type !='030' ){//选择有发票
+						if($.trim(num) =='' ){
+							$().toastmessage('showWarningToast', "请输入发票编号。");
+							return;
+						}
+						if($.trim(date) ==''){
+							$().toastmessage('showWarningToast', "请输入发票日期。");
+							return;				
+						}
+					}else{
+						if($.trim(num) !='' ){
+							$().toastmessage('showWarningToast', "有发票编号，请选择发票类型。");
+							return;
+						}
+						if($.trim(num) !='' && $.trim(date) ==''){
+							$().toastmessage('showWarningToast', "有发票编号，请输入发票日期。");
+							return;				
+						}
+					}
+					
 					$("#insert").attr("disabled", "disabled");
 					
 					var paymentId = $('#payment\\.paymentid').val();
@@ -484,6 +517,24 @@ function uploadPhoto(tableId,tdTable, id) {
 		<a class="DTTT_button DTTT_button_text" onclick="doPrintReceiptList();return false;">批量打印入库单</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
+	<fieldset>
+		<legend> 发票内容</legend>
+		<table class="form" id="table_form2">
+			<tr>
+				<td class="label" width="100px">发票类型： </td>
+				<td width="150px">
+					<form:select path="payment.invoicetype" style="width: 120px;" value="">							
+					<form:options items="${invoiceTypeOption}" 
+						itemValue="key" itemLabel="value" /></form:select> </td>
+			
+				<td class="label" width="100px">发票编号：</td> 
+				<td width="200px"><form:input path="payment.invoicenumber"  class="middle"  value=""/></td>
+				
+				<td class="label" width="100px">发票日期：</td> 
+				<td width="200px"><form:input path="payment.invoicedate"  class="short"  value=""/></td>
+			</tr>												
+		</table>
+	</fieldset>
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">

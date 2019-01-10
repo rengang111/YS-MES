@@ -107,8 +107,10 @@
 	}
 
 	$(document).ready(function() {
+
+		var searchType = $('#searchType').val();
 		
-		searchAjax("","true","021");//021：待二级审核
+		searchAjax("","true",searchType);//021：待二级审核
 		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -123,8 +125,7 @@
 		
 
 		buttonSelectedEvent();//按钮选择式样
-
-		$('#defutBtn').removeClass("start").addClass("end");
+		$('#defutBtn'+searchType).removeClass("start").addClass("end");
 	})	
 	
 
@@ -134,34 +135,23 @@
 
 	}
 	
-	function doSearch2(approvalStatus,finishStatus) {	
+	function doSearch2(type) {	
 
 		$("#keyword1").val("");
 		$("#keyword2").val("");
-		searchAjax(approvalStatus,"false",finishStatus);
+		
+		$("#searchType").val(type);		
+		searchAjax("","false",type);
 
 	}
-	
-	function doCreate2(contractId) {
-	
-		var url = '${ctx}/business/payment?methodtype=addinit';
-		url = url +"&contractIds="+contractId;
-		location.href = url;
 		
-	}
-	
 	function doShowDetail(paymentId) {
 
+		var searchType = $("#searchType").val();
 		var url = '${ctx}/business/payment?methodtype=approvalInit2' + '&paymentId='+ paymentId;
+		url = url + "&searchType=" + searchType;
 		
 		location.href = url;
-	}
-
-	function doShowContract(contractId) {
-
-		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
-		
-		callProductDesignView("采购合同",url);
 	}	
 	
 </script>
@@ -176,6 +166,7 @@
 
 				<form id="condition"  style='padding: 0px; margin: 10px;' >
 					
+					<input type="hidden" id="searchType" value="${searchType }"><!-- 快速查询按钮 -->
 
 					<table>
 						<tr>
@@ -202,9 +193,9 @@
 		
 			<div class="list">					
 				<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-					<a class="DTTT_button box"  onclick="doSearch2('','021');" id="defutBtn"><span>&nbsp;二级待审&nbsp;</span></a>
-					<!-- a class="DTTT_button" onclick="doSearch2('020');"><span>&nbsp;通过&nbsp;</span></a-->
-					<a class="DTTT_button box" onclick="doSearch2('030','060');"><span>&nbsp;不通过&nbsp;</span></a>
+					<a class="DTTT_button box"  onclick="doSearch2('021');" id="defutBtn021"><span>&nbsp;二级待审&nbsp;</span></a>
+					<a class="DTTT_button box"  onclick="doSearch2('030');" id="defutBtn030"><span>审核通过</span></a>
+					<a class="DTTT_button box"  onclick="doSearch2('060');" id="defutBtn060"><span>未通过</span></a>
 				</div>
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						

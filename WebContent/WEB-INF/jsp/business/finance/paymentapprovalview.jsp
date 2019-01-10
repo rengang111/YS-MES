@@ -186,14 +186,14 @@
 			status = parseInt(status)
 
 			if(status > 30 ){
-				alert("该申请已付款，不能弃审。");
+				alert("该申请已进入下一流程，不能弃审。");
 				return;
 			}
 					
 			if(!(confirm("弃审后，需要重新审核，确定要弃审吗？"))){
 				return;
 			}
-			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalDelete");
+			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=invoiceCheckCancel");
 			$('#formModel').submit();
 		});
 		
@@ -428,8 +428,8 @@ function photoView1(id, tdTable, count, data) {
 		</table>
 	</fieldset>
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button " id="doUpdate" >编辑</a>
-		<!-- a class="DTTT_button " id="doDelete" >弃审</a -->
+		<!-- a class="DTTT_button " id="doUpdate" >编辑</a -->
+		<a class="DTTT_button " id="doDelete" >弃审</a>
 		<a class="DTTT_button " id="goBack" >返回</a>
 	</div>
 
@@ -441,19 +441,17 @@ function photoView1(id, tdTable, count, data) {
 				<td width="100px">${payment.invoiceType }</td>
 				<td width="100px" class="label">发票编号：</td>
 				<td width="150px">${payment.invoiceNumber }</td>
-				<td width="100px" class="label">填写人：</td>
-				<td width="100px" >${payment.invoiceUser }</td>
-				<td width="100px" class="label">填写日期：</td>
+				<td width="100px" class="label">发票日期：</td>
 				<td width="100px" >${payment.invoiceDate }</td>
 				<td></td>
 			</tr>
-			<!-- 	
+			 	
 			<tr>	
 				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
 				<td colspan="7" >
-					<pre>${payment.approvalFeedback }</pre></td>
+					<pre>${payment.invoiceCheckFeedback }</pre></td>
 			</tr>	
-			 -->					
+			 					
 		</table>
 	</fieldset>
 	

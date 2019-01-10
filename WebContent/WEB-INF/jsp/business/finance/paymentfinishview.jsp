@@ -332,6 +332,20 @@ function photoView(id, tdTable, count, data) {
 		<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a>
 	</div>
 	<fieldset>
+		<legend> 发票信息</legend>
+		<table class="form" id="table_form2">
+			<tr>
+				<td width="100px" class="label">发票类型：</td>
+				<td width="100px">${payment.invoiceType }</td>
+				<td width="100px" class="label">发票编号：</td>
+				<td width="150px">${payment.invoiceNumber }</td>
+				<td width="100px" class="label">发票日期：</td>
+				<td width="100px" >${payment.invoiceDate }</td>
+				<td></td>
+			</tr>				
+		</table>
+	</fieldset>
+	<fieldset>
 		<legend> 付款信息</legend>
 		<table class="display" id="history">
 			<thead>
@@ -441,7 +455,7 @@ function photoView(id, tdTable, count, data) {
 			</div>
 		</div>	
 	</fieldset>
-	
+	<!-- 
 	<fieldset>
 		<legend> 审核结果</legend>
 		<table class="form" id="table_form2">
@@ -457,15 +471,16 @@ function photoView(id, tdTable, count, data) {
 				<td width="100px" class="label">发票编号：</td>
 				<td>${payment.invoiceNumber }</td>
 			</tr>
-			<!-- 	
+				
 			<tr>	
 				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
 				<td colspan="7" >
 					<pre>${payment.approvalFeedback }</pre></td>
 			</tr>	
-			 -->					
+								
 		</table>
 	</fieldset>
+	 -->
 </form:form>
 
 </div>

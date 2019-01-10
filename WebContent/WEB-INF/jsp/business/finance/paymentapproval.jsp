@@ -164,6 +164,7 @@
 	};
 	$(document).ready(function() {
 		
+		/*
 		$("#payment\\.invoicedate").datepicker({
 			dateFormat:"yy-mm-dd",
 			changeYear: true,
@@ -171,6 +172,7 @@
 			selectOtherMonths:true,
 			showOtherMonths:true,
 		}); 
+		*/
 		
 		$("#goBack").click(
 				function() {
@@ -226,46 +228,13 @@
 		return sum;
 	}
 	
-	function doInsert() {
-		
-		var num  = $('#payment\\.invoicenumber').val();
-		var date = $('#payment\\.invoicedate').val();
-		var type = $('#payment\\.invoicetype').val();
-		
-		if( type !='030' ){//选择有发票
-			if($.trim(num) =='' ){
-				$().toastmessage('showWarningToast', "请输入发票编号。");
-				return;
-			}
-			if($.trim(date) ==''){
-				$().toastmessage('showWarningToast', "请输入发票日期。");
-				return;				
-			}
-		}else{
-			if($.trim(num) !='' ){
-				$().toastmessage('showWarningToast', "有发票编号，请选择发票类型。");
-				return;
-			}
-			if($.trim(num) !='' && $.trim(date) ==''){
-				$().toastmessage('showWarningToast', "有发票编号，请输入发票日期。");
-				return;				
-			}
-		}
-		
-		
-		if($.trim(num) !=''){
-			if($.trim(date) ==''){
-				$().toastmessage('showWarningToast', "请输入发票日期。");
-				return;				
-			}
-		}
-		if($.trim(num) !='' && type =='030'){
-			$().toastmessage('showWarningToast', "请选择发票类型。");
-			return;
-		}
+	function doInsert(sts) {
+				
+		$('#payment\\.invoicecheckstatus').val(sts);//审核结果
+		var insertFlag = $("#insertFlag").val();	
 		
 		$("#submit12").attr("disabled", "disabled");
-			var insertFlag = $("#insertFlag").val();	
+		
 		$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalInsert"+"&insertFlag="+insertFlag);
 		$('#formModel').submit();
 	};
@@ -474,33 +443,28 @@ function uploadPhoto(tableId,tdTable, id) {
 	<fieldset>
 		<legend> 发票内容</legend>
 		<table class="form" id="table_form2">
-		<!-- 
 			<tr>
-				<td rowspan="5" width="700">
-					<form:textarea path="payment.approvalfeedback" rows="5" cols="80" /></td>
+				<td width="100px" class="label">发票类型：</td>
+				<td width="100px">${payment.invoiceType }</td>
+				<td width="100px" class="label">发票编号：</td>
+				<td width="150px">${payment.invoiceNumber }</td>
+				<td width="100px" class="label">发票日期：</td>
+				<td width="100px" >${payment.invoiceDate }</td>
+				<td></td>
 			</tr>
-			 -->
 			<tr>
-				<td class="label" width="100px">发票类型： </td>
-				<td width="150px">
-					<form:select path="payment.invoicetype" style="width: 120px;" value="${payment.invoiceType }">							
-					<form:options items="${formModel.invoiceTypeOption}" 
-						itemValue="key" itemLabel="value" /></form:select> </td>
-			
-				<td class="label" width="100px">发票编号：</td> 
-				<td width="200px"><form:input path="payment.invoicenumber"  class="middle"  value="${payment.invoiceNumber }"/></td>
-				
-				<td class="label" width="100px">发票日期：</td> 
-				<td width="200px"><form:input path="payment.invoicedate"  class="short"  value="${payment.invoiceDate }"/></td>
-			
-				<td style="text-align: center;">
-					<button type="button" id="submit12"  onclick="doInsert();"
-						class="DTTT_button" style="margin-bottom: 5px;">确认提交</button>
+				<td colspan="6" width="700">
+					<form:textarea path="payment.invoicecheckfeedback" rows="5" cols="80" /></td>
+					<form:hidden path="payment.invoicecheckstatus" value="" />
+				<td style="text-align: left;vertical-align: bottom;" >
+					<button type="button" id="submit12"  onclick="doInsert('020');"
+						class="DTTT_button" style="margin-bottom: 5px;">确认通过</button>
+					<button type="button" id="submit12"  onclick="doInsert('030');"
+						class="DTTT_button" style="margin-bottom: 5px;">打回重新申请</button>
 					<a class="DTTT_button " id="goBack" >返回</a></td>
-			</tr>												
+			</tr>
 		</table>
 	</fieldset>
-	
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">

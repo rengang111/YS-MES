@@ -216,6 +216,58 @@ public class B_PaymentData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String invoicecheckuser;
+	public String getInvoicecheckuser()
+	{
+		return this.invoicecheckuser;
+	}
+	public void setInvoicecheckuser(String invoicecheckuser)
+	{
+		this.invoicecheckuser=invoicecheckuser;
+	}
+
+	/**
+	*
+	*/
+	private String invoicecheckdate;
+	public String getInvoicecheckdate()
+	{
+		return this.invoicecheckdate;
+	}
+	public void setInvoicecheckdate(String invoicecheckdate)
+	{
+		this.invoicecheckdate=invoicecheckdate;
+	}
+
+	/**
+	*
+	*/
+	private String invoicecheckstatus;
+	public String getInvoicecheckstatus()
+	{
+		return this.invoicecheckstatus;
+	}
+	public void setInvoicecheckstatus(String invoicecheckstatus)
+	{
+		this.invoicecheckstatus=invoicecheckstatus;
+	}
+
+	/**
+	*
+	*/
+	private String invoicecheckfeedback;
+	public String getInvoicecheckfeedback()
+	{
+		return this.invoicecheckfeedback;
+	}
+	public void setInvoicecheckfeedback(String invoicecheckfeedback)
+	{
+		this.invoicecheckfeedback=invoicecheckfeedback;
+	}
+
+	/**
+	*
+	*/
 	private String invoiceuser;
 	public String getInvoiceuser()
 	{
@@ -475,13 +527,13 @@ public class B_PaymentData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("paymentid = "+(paymentid == null ? "null" : paymentid)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("requestdate = "+(requestdate == null ? "null" : requestdate)+"\n");		sb.append("applicant = "+(applicant == null ? "null" : applicant)+"\n");		sb.append("deptid = "+(deptid == null ? "null" : deptid)+"\n");		sb.append("paymentterms = "+(paymentterms == null ? "null" : paymentterms)+"\n");		sb.append("paymentmethod = "+(paymentmethod == null ? "null" : paymentmethod)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("totalpayable = "+(totalpayable == null ? "null" : totalpayable)+"\n");		sb.append("approvaluser = "+(approvaluser == null ? "null" : approvaluser)+"\n");		sb.append("approvaldate = "+(approvaldate == null ? "null" : approvaldate)+"\n");		sb.append("approvalstatus = "+(approvalstatus == null ? "null" : approvalstatus)+"\n");		sb.append("approvalfeedback = "+(approvalfeedback == null ? "null" : approvalfeedback)+"\n");		sb.append("invoiceuser = "+(invoiceuser == null ? "null" : invoiceuser)+"\n");		sb.append("invoicedate = "+(invoicedate == null ? "null" : invoicedate)+"\n");		sb.append("invoicetype = "+(invoicetype == null ? "null" : invoicetype)+"\n");		sb.append("invoicenumber = "+(invoicenumber == null ? "null" : invoicenumber)+"\n");		sb.append("finishuser = "+(finishuser == null ? "null" : finishuser)+"\n");		sb.append("finishdate = "+(finishdate == null ? "null" : finishdate)+"\n");		sb.append("finishstatus = "+(finishstatus == null ? "null" : finishstatus)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("contractids = "+(contractids == null ? "null" : contractids)+"\n");		sb.append("paymenttype = "+(paymenttype == null ? "null" : paymenttype)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("paymentid = "+(paymentid == null ? "null" : paymentid)+"\n");		sb.append("parentid = "+(parentid == null ? "null" : parentid)+"\n");		sb.append("subid = "+(subid == null ? "null" : subid)+"\n");		sb.append("requestdate = "+(requestdate == null ? "null" : requestdate)+"\n");		sb.append("applicant = "+(applicant == null ? "null" : applicant)+"\n");		sb.append("deptid = "+(deptid == null ? "null" : deptid)+"\n");		sb.append("paymentterms = "+(paymentterms == null ? "null" : paymentterms)+"\n");		sb.append("paymentmethod = "+(paymentmethod == null ? "null" : paymentmethod)+"\n");		sb.append("currency = "+(currency == null ? "null" : currency)+"\n");		sb.append("totalpayable = "+(totalpayable == null ? "null" : totalpayable)+"\n");		sb.append("approvaluser = "+(approvaluser == null ? "null" : approvaluser)+"\n");		sb.append("approvaldate = "+(approvaldate == null ? "null" : approvaldate)+"\n");		sb.append("approvalstatus = "+(approvalstatus == null ? "null" : approvalstatus)+"\n");		sb.append("approvalfeedback = "+(approvalfeedback == null ? "null" : approvalfeedback)+"\n");		sb.append("invoicecheckuser = "+(invoicecheckuser == null ? "null" : invoicecheckuser)+"\n");		sb.append("invoicecheckdate = "+(invoicecheckdate == null ? "null" : invoicecheckdate)+"\n");		sb.append("invoicecheckstatus = "+(invoicecheckstatus == null ? "null" : invoicecheckstatus)+"\n");		sb.append("invoicecheckfeedback = "+(invoicecheckfeedback == null ? "null" : invoicecheckfeedback)+"\n");		sb.append("invoiceuser = "+(invoiceuser == null ? "null" : invoiceuser)+"\n");		sb.append("invoicedate = "+(invoicedate == null ? "null" : invoicedate)+"\n");		sb.append("invoicetype = "+(invoicetype == null ? "null" : invoicetype)+"\n");		sb.append("invoicenumber = "+(invoicenumber == null ? "null" : invoicenumber)+"\n");		sb.append("finishuser = "+(finishuser == null ? "null" : finishuser)+"\n");		sb.append("finishdate = "+(finishdate == null ? "null" : finishdate)+"\n");		sb.append("finishstatus = "+(finishstatus == null ? "null" : finishstatus)+"\n");		sb.append("supplierid = "+(supplierid == null ? "null" : supplierid)+"\n");		sb.append("contractids = "+(contractids == null ? "null" : contractids)+"\n");		sb.append("paymenttype = "+(paymenttype == null ? "null" : paymenttype)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		paymentid= (paymentid == null ?null : paymentid.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		requestdate= (requestdate == null ?null : requestdate.trim());		applicant= (applicant == null ?null : applicant.trim());		deptid= (deptid == null ?null : deptid.trim());		paymentterms= (paymentterms == null ?null : paymentterms.trim());		paymentmethod= (paymentmethod == null ?null : paymentmethod.trim());		currency= (currency == null ?null : currency.trim());		totalpayable= (totalpayable == null ?null : totalpayable.trim());		approvaluser= (approvaluser == null ?null : approvaluser.trim());		approvaldate= (approvaldate == null ?null : approvaldate.trim());		approvalstatus= (approvalstatus == null ?null : approvalstatus.trim());		approvalfeedback= (approvalfeedback == null ?null : approvalfeedback.trim());		invoiceuser= (invoiceuser == null ?null : invoiceuser.trim());		invoicedate= (invoicedate == null ?null : invoicedate.trim());		invoicetype= (invoicetype == null ?null : invoicetype.trim());		invoicenumber= (invoicenumber == null ?null : invoicenumber.trim());		finishuser= (finishuser == null ?null : finishuser.trim());		finishdate= (finishdate == null ?null : finishdate.trim());		finishstatus= (finishstatus == null ?null : finishstatus.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		contractids= (contractids == null ?null : contractids.trim());		paymenttype= (paymenttype == null ?null : paymenttype.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		paymentid= (paymentid == null ?null : paymentid.trim());		parentid= (parentid == null ?null : parentid.trim());		subid= (subid == null ?null : subid.trim());		requestdate= (requestdate == null ?null : requestdate.trim());		applicant= (applicant == null ?null : applicant.trim());		deptid= (deptid == null ?null : deptid.trim());		paymentterms= (paymentterms == null ?null : paymentterms.trim());		paymentmethod= (paymentmethod == null ?null : paymentmethod.trim());		currency= (currency == null ?null : currency.trim());		totalpayable= (totalpayable == null ?null : totalpayable.trim());		approvaluser= (approvaluser == null ?null : approvaluser.trim());		approvaldate= (approvaldate == null ?null : approvaldate.trim());		approvalstatus= (approvalstatus == null ?null : approvalstatus.trim());		approvalfeedback= (approvalfeedback == null ?null : approvalfeedback.trim());		invoicecheckuser= (invoicecheckuser == null ?null : invoicecheckuser.trim());		invoicecheckdate= (invoicecheckdate == null ?null : invoicecheckdate.trim());		invoicecheckstatus= (invoicecheckstatus == null ?null : invoicecheckstatus.trim());		invoicecheckfeedback= (invoicecheckfeedback == null ?null : invoicecheckfeedback.trim());		invoiceuser= (invoiceuser == null ?null : invoiceuser.trim());		invoicedate= (invoicedate == null ?null : invoicedate.trim());		invoicetype= (invoicetype == null ?null : invoicetype.trim());		invoicenumber= (invoicenumber == null ?null : invoicenumber.trim());		finishuser= (finishuser == null ?null : finishuser.trim());		finishdate= (finishdate == null ?null : finishdate.trim());		finishstatus= (finishstatus == null ?null : finishstatus.trim());		supplierid= (supplierid == null ?null : supplierid.trim());		contractids= (contractids == null ?null : contractids.trim());		paymenttype= (paymenttype == null ?null : paymenttype.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

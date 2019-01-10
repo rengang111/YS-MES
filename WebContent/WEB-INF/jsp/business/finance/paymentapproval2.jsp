@@ -443,17 +443,19 @@ function uploadPhoto(tableId,tdTable, id) {
 			
 				<td class="label" width="100px">发票编号： </td>
 				<td width="150px">${payment.invoiceNumber }</td>
+				<td class="label" width="100px">发票日期： </td>
+				<td width="150px">${payment.invoiceDate }</td>
 				<td></td>
 			</tr>
 			<tr>
-				<td colspan="4" width="700">
+				<td colspan="6" width="700">
 					<form:textarea path="payment.approvalfeedback" rows="5" cols="80" /></td>
 					
 				<td style="text-align: left;vertical-align: bottom;" >
 					<button type="button" id="submit12"  onclick="doInsert('020');"
-						class="DTTT_button" style="margin-bottom: 5px;">通过</button>
+						class="DTTT_button" style="margin-bottom: 5px;">确认通过</button>
 					<button type="button" id="submit12"  onclick="doInsert('030');"
-						class="DTTT_button" style="margin-bottom: 5px;">不通过</button>
+						class="DTTT_button" style="margin-bottom: 5px;">打回重审</button>
 					<a class="DTTT_button " id="goBack" >返回</a></td>
 			</tr>
 											

@@ -142,6 +142,10 @@ public class PaymentAction extends BaseAction {
 				doApprovalDelete();
 				rtnUrl = "/business/finance/paymentapprovalmain";
 				break;
+			case "invoiceCheckCancel"://审核删除（弃审）:一级审核，发票确认
+				doInvoiceCheckCancel();
+				rtnUrl = "/business/finance/paymentapprovalmain";
+				break;
 			case "paymentView":
 				paymentView();
 				rtnUrl = "/business/finance/paymentrequestview";
@@ -163,9 +167,11 @@ public class PaymentAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "approvalMainL1"://一级审核
+				approvalMainL1();
 				rtnUrl = "/business/finance/paymentapprovalmain";
 				break;
 			case "approvalMainL2"://二级审核
+				approvalMainL2();
 				rtnUrl = "/business/finance/paymentapprovalmain2";
 				break;
 			case "approvalSearch"://一级审核
@@ -220,6 +226,19 @@ public class PaymentAction extends BaseAction {
 
 	}	
 	
+	private void approvalMainL1(){
+		String searchType = (String) session.getAttribute("searchType");
+		if(searchType == null || ("").equals(searchType))
+			searchType = "020";//设置默认值：待一级审核
+		model.addAttribute("searchType",searchType);
+	}
+	
+	private void approvalMainL2(){
+		String searchType = (String) session.getAttribute("searchType");
+		if(searchType == null || ("").equals(searchType))
+			searchType = "021";//设置默认值：待二级审核
+		model.addAttribute("searchType",searchType);
+	}
 		
 	private HashMap<String, Object> uploadPhoto(
 			MultipartFile[] headPhotoFile,
@@ -355,6 +374,12 @@ public class PaymentAction extends BaseAction {
 			dataMap.put(INFO, ERRMSG);
 		}
 		
+
+		String searchType = request.getParameter("searchType");
+		
+		model.addAttribute("searchType",searchType);
+		session.setAttribute("searchType", searchType);
+		
 		return dataMap;
 	}
 	
@@ -381,6 +406,11 @@ public class PaymentAction extends BaseAction {
 			System.out.println(e.getMessage());
 			dataMap.put(INFO, ERRMSG);
 		}
+		
+		String searchType = request.getParameter("searchType");
+		
+		model.addAttribute("searchType",searchType);
+		session.setAttribute("searchType", searchType);
 		
 		return dataMap;
 	}
@@ -455,6 +485,11 @@ public class PaymentAction extends BaseAction {
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
+
+		String searchType = request.getParameter("searchType");
+		
+		model.addAttribute("searchType",searchType);
+		session.setAttribute("searchType", searchType);
 		
 		return rtnUrl;
 	}
@@ -473,6 +508,12 @@ public class PaymentAction extends BaseAction {
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
+
+
+		String searchType = request.getParameter("searchType");
+		
+		model.addAttribute("searchType",searchType);
+		session.setAttribute("searchType", searchType);
 		
 		return rtnUrl;
 	}
@@ -585,6 +626,13 @@ public class PaymentAction extends BaseAction {
 	public void doApprovalDelete(){
 		try{
 			service.approvalDelete();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	public void doInvoiceCheckCancel(){
+		try{
+			service.invoiceCheckCancel();
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

@@ -348,6 +348,20 @@ function uploadPhoto(tableId,tdTable, id) {
 		<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a>
 	</div>
 	<fieldset>
+		<legend> 发票信息</legend>
+		<table class="form" id="table_form2">
+			<tr>
+				<td width="100px" class="label">发票类型：</td>
+				<td width="100px">${payment.invoiceType }</td>
+				<td width="100px" class="label">发票编号：</td>
+				<td width="150px">${payment.invoiceNumber }</td>
+				<td width="100px" class="label">发票日期：</td>
+				<td width="100px" >${payment.invoiceDate }</td>
+				<td></td>
+			</tr>				
+		</table>
+	</fieldset>
+	<fieldset>
 		<legend> 付款信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
@@ -395,7 +409,7 @@ function uploadPhoto(tableId,tdTable, id) {
 			</div>
 		</div>	
 	</fieldset>
-	
+	<!-- 
 	<fieldset>
 		<legend> 审核结果</legend>
 		<table class="form" id="table_form2">
@@ -418,6 +432,7 @@ function uploadPhoto(tableId,tdTable, id) {
 			</tr>						
 		</table>
 	</fieldset>
+	 -->
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">

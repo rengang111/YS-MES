@@ -382,6 +382,8 @@ public class PaymentService extends CommonService {
 				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
 		model.addAttribute("chargetypeList",
 				util.getListOption(DicUtil.CHARGETYPE,""));//扣款方式
+		model.addAttribute("invoiceTypeOption",
+				util.getListOption(DicUtil.DIC_INVOICETYPE,""));//发票类型
 	
 	}
 	
@@ -398,8 +400,12 @@ public class PaymentService extends CommonService {
 			//供应商
 			getContractDetail(contractId);
 			
-			if(notEmpty(map.get("invoiceDate")))
+			String finishStatus = map.get("finishStatusId");
+			if((Constants.payment_020).equals(finishStatus)){
+				rtnFlg = "审核";
+			}else{
 				rtnFlg = "查看";
+			}
 		}
 		
 		reqModel.setApprovalOption(util.getListOption(DicUtil.DIC_APPROVL, ""));
@@ -418,10 +424,14 @@ public class PaymentService extends CommonService {
 		if(!(map == null)){
 			String contractId = map.get("contractIds");
 			//供应商
-			getContractDetail(contractId);
-			
-			if(notEmpty(map.get("approvalDate")))
+			getContractDetail(contractId);			
+
+			String finishStatus = map.get("finishStatusId");
+			if((Constants.payment_021).equals(finishStatus)){
+				rtnFlg = "审核";
+			}else{
 				rtnFlg = "查看";
+			}
 		}
 		
 		reqModel.setApprovalOption(util.getListOption(DicUtil.DIC_APPROVL, ""));
@@ -521,6 +531,8 @@ public class PaymentService extends CommonService {
 				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
 		model.addAttribute("chargetypeList",
 				util.getListOption(DicUtil.CHARGETYPE,""));//扣款方式
+		model.addAttribute("invoiceTypeOption",
+				util.getListOption(DicUtil.DIC_INVOICETYPE,""));//发票类型
 	}
 
 	private void getPaymentDetailDB(String recordId) throws Exception {
@@ -663,10 +675,24 @@ public class PaymentService extends CommonService {
 		B_PaymentData reqData = reqModel.getPayment();
 	
 		//付款单审核
-		updatePaymentForApprolval(reqData);	
+		updatePaymentForApprolval2(reqData);	
 
 	}
 	
+
+	/**
+	 * 付款审核:弃审,发票确认
+	 * @throws Exception
+	 */
+	public void invoiceCheckCancel() throws Exception {
+
+		
+		B_PaymentData reqData = reqModel.getPayment();
+	
+		//付款单审核
+		updatePaymentForApprolval(reqData);	
+
+	}
 
 	/**
 	 * 删除付款申请
@@ -943,14 +969,13 @@ public class PaymentService extends CommonService {
 				"paymentRequestUpdate",userInfo);
 		copyProperties(db,commData);
 		
-		db.setApprovalfeedback(replaceTextArea(payment.getApprovalfeedback()));
-		db.setInvoicetype(payment.getInvoicetype());//发票类型
-		db.setInvoicenumber(payment.getInvoicenumber());//发票编号
+		db.setInvoicecheckfeedback(replaceTextArea(payment.getInvoicecheckfeedback()));
+		db.setInvoicecheckstatus(payment.getInvoicecheckstatus());
 		
 		String insertFlag = request.getParameter("insertFlag");
 		if( ("insert").equals(insertFlag)){
-			db.setInvoiceuser(userInfo.getUserId());//默认为登陆者
-			db.setInvoicedate(CalendarUtil.fmtYmdDate());
+			db.setInvoicecheckuser(userInfo.getUserId());//默认为登陆者
+			db.setInvoicecheckdate(CalendarUtil.fmtYmdDate());
 			if(Constants.payment_030.equals(db.getFinishstatus())
 					|| Constants.payment_040.equals(db.getFinishstatus())
 					|| Constants.payment_050.equals(db.getFinishstatus())){
@@ -1036,13 +1061,41 @@ public class PaymentService extends CommonService {
 				"paymentApprolvalUpdate",userInfo);
 		copyProperties(db,commData);
 		
+		db.setInvoicecheckuser("");//登陆者
+		db.setInvoicecheckdate("");
+		db.setInvoicecheckstatus("");//审核结果：未审核
+		db.setInvoicecheckfeedback("");
+		db.setFinishstatus(Constants.payment_020);//付款状态：待一级审核
+
+		new B_PaymentDao().Store(db);
+		
+	}
+	
+
+	private void updatePaymentForApprolval2(
+			B_PaymentData payment) throws Exception {
+		
+		B_PaymentData db = null;
+		try {
+			db = new B_PaymentDao(payment).beanData;
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		if(db == null || db.equals(""))
+			return;
+		
+		//更新
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"paymentApprolvalUpdate",userInfo);
+		copyProperties(db,commData);
+		
 		db.setApprovaluser("");//登陆者
 		db.setApprovaldate("");
 		db.setApprovalstatus("");//审核结果：未审核
-		db.setApprovalfeedback("");
-		//db.setInvoicetype("");//发票类型
-		//db.setInvoicenumber("");//发票编号		
-		db.setFinishstatus(Constants.payment_020);//付款状态：待一级审核
+		db.setApprovalfeedback("");	
+		db.setFinishstatus(Constants.payment_021);//付款状态：待二级审核
 
 		new B_PaymentDao().Store(db);
 		
@@ -1149,7 +1202,6 @@ public class PaymentService extends CommonService {
 		if(dataModel.getRecordCount() > 0){
 			payment = dataModel.getYsViewData().get(0);
 			model.addAttribute("payment",payment);
-			//contractIds = dataModel.getYsViewData().get(0).get("contractIds");
 			modelMap.put("data", dataModel.getYsViewData());
 		}	
 	

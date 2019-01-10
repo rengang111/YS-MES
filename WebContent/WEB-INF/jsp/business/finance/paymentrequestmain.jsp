@@ -7,7 +7,7 @@
 <title>应付款--申请一览</title>
 <script type="text/javascript">
 
-	function ajax(action,type,scrollHeight,sessionFlag) {
+	function ajax(action,type,scrollHeight,sessionFlag,SearchFlag) {
 		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -20,12 +20,14 @@
 		url = url + "&finishStatus="+type;
 		url = url + "&searchType=" + type;
 
-
 		var colSort = 4;
 		if(type == '070')
 			colSort = 8;
+		
+		var hideCol = 10;
+		if(SearchFlag == "S")
+			hideCol = '';
 			
-		//var scrollHeight = $(document).height(); 
 		var t = $('#TMaterial').DataTable({
 				"paging": action,
 				"iDisplayLength" : 300,
@@ -82,9 +84,8 @@
 					{"data": "supplierName", "defaultContent" : ''},//5
 					{"data": "totalPrice", "defaultContent" : '0', "className" : 'td-right'},//6合同金额
 					{"data": "chargeback", "defaultContent" : '0', "className" : 'td-right'},//7合同扣款
-					{"data": "stockInDate", "className" : 'td-center'},//8约定付款日
-					{"data": "agreementDate", "className" : 'td-center'},//9约定付款日
-					{"data": "finishDate", "className" : 'td-center'},//10实际付款日
+					{"data": "stockInDate", "className" : 'td-center'},//8入库时间
+					{"data": "invoiceDate", "defaultContent" : '***',"className" : 'td-center'},//10发票日期
 					{"data": "finishStatus", "className" : 'td-center'},//11
 					
 				],
@@ -95,7 +96,6 @@
 							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["contractId"] + "' />";		    				
 		    			}else{
 							return row["rownum"];
-
 		    			}
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
@@ -120,7 +120,7 @@
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    					    			
-		    			return jQuery.fixedWidth(data,16);
+		    			return jQuery.fixedWidth(data,24);
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);
@@ -128,18 +128,17 @@
 		    		{ "bSortable": false, "aTargets": [ 0 ] },
 		    		{
 						"visible" : false,
-						"targets" : [10]
+						"targets" : [hideCol]
 					}
-	           
 	         ] 
-			});
+		});
 	}
 
 	$(document).ready(function() {
 	
 		var scrollHeight = $(document).height() - 200; 
 		var type = $("#searchType").val();
-		ajax("true",type,scrollHeight,"true");
+		ajax("true",type,scrollHeight,"true","R");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -170,7 +169,7 @@
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		var scrollHeight = $(document).height() - 200; 
 		
-		ajax("false","",scrollHeight,"false");
+		ajax("false","",scrollHeight,"false","S");
 
 	}
 	
@@ -182,7 +181,7 @@
 		$("#searchType").val(type);
 		var scrollHeight = $(document).height() - 200; 
 		
-		ajax("false",type,scrollHeight,"false");
+		ajax("false",type,scrollHeight,"false","C");
 
 	}
 	
@@ -370,10 +369,9 @@
 							<th width="70px">供应商编号</th>						
 							<th>供应商名称</th>
 							<th width="60px">合同金额</th>
-							<th width="40px">合同扣款</th>
+							<th width="50px">合同扣款</th>
 							<th width="60px">入库日期</th>
-							<th width="60px">约定付款日</th>
-							<th width="60px">实际付款日</th>
+							<th width="60px">发票日期</th>
 							<th width="50px">付款状态</th>
 						</tr>
 					</thead>
