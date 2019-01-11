@@ -823,36 +823,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 				/************************/				
 				
 				//设置物料的库存类别
-				String type1 = materialId.substring(0,1);
-				String type3 = materialId.substring(0,3);
-				String stockType ="030";//采购件
-				
-				switch(type1) {
-				case "A":
-					stockType = "010";//原材料
-					if(("A13").equals(type3)){
-						stockType = "011";//色粉
-					}
-					break;
-				case "G":
-					stockType = "040";//包装件
-					break;
-				case "I":
-					stockType = "050";//成品
-					break;
-				case "B":
-					if(("B01").equals(type3)){
-						stockType = "020";//自制件
-					}
-					break;
-				case "F":
-					if(("F01").equals(type3) || 
-							("F02").equals(type3) || ("F03").equals(type3) ){
-						
-						stockType = "020";//自制件
-					}
-					break;					
-				}
+				String stockType = getStockType(materialId);
 				
 				reqData.setMaterialid(materialId);
 				reqData.setParentid(parentId);
@@ -963,6 +934,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 						reqData.setSubid(subId);
 						reqData.setSubiddes(data.getSubiddes());
 
+						String stockType = getStockType(material);
+						reqData.setStocktype(stockType);
 						insertMaterial(reqData);
 						
 						//复制工价
@@ -1023,7 +996,9 @@ public class MaterialService extends CommonService implements I_BaseService{
 						reqData.setSubid(subId);
 						reqData.setSubiddes(subDes);
 						reqData = editCustomerId(reqData,parentId);
-						
+
+						String stockType = getStockType(material);
+						reqData.setStocktype(stockType);
 						insertMaterial(reqData);
 						
 						//复制工价
@@ -1075,7 +1050,45 @@ public class MaterialService extends CommonService implements I_BaseService{
 		return selectedRecord;
 	}
 	
-	
+	private String getStockType(String materialId){
+		
+		String stockType ="030";//采购件
+
+		if(isNullOrEmpty(materialId))
+				return stockType;
+		
+		String type1 = materialId.substring(0,1);
+		String type3 = materialId.substring(0,3);
+		
+		switch(type1) {
+		case "A":
+			stockType = "010";//原材料
+			if(("A13").equals(type3)){
+				stockType = "011";//色粉
+			}
+			break;
+		case "G":
+			stockType = "040";//包装件
+			break;
+		case "I":
+			stockType = "050";//成品
+			break;
+		case "B":
+			if(("B01").equals(type3)){
+				stockType = "020";//自制件
+			}
+			break;
+		case "F":
+			if(("F01").equals(type3) || 
+					("F02").equals(type3) || ("F03").equals(type3) ){
+				
+				stockType = "020";//自制件
+			}
+			break;					
+		} 
+		
+		return stockType;
+	}
 	/*
 	 * 1.显示当前选中物料的基本信息
 	 * 2.显示相关的所有子编码信息(N条数据) 
