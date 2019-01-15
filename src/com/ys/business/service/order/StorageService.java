@@ -509,7 +509,8 @@ public class StorageService extends CommonService {
 			//userDefinedSearchCase.put("status", "050");
 		}else if(("040").equals(status)){
 			//已入库
-			sb.append(" AND ( REPLACE(IFNULL(a.completedQuantity,0),',','')+0 >= a.orderQty+0 ");
+			sb.append(" AND ( REPLACE(IFNULL(a.completedQuantity,0),',','')+0 >= a.orderQty+0 ) ");
+			sb.append(" AND a.storageDate IS NOT NULL ");
 			//userDefinedSearchCase.put("status", "050");
 		}else{
 			//普通查询
@@ -2325,5 +2326,11 @@ public class StorageService extends CommonService {
 
 		model.addAttribute("category",dataModel.getYsViewData());
 		
+	}
+	
+
+	public void productStorageSearchInit() throws Exception{
+
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 }

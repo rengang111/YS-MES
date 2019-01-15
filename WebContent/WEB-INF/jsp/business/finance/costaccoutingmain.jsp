@@ -823,7 +823,7 @@ body{
 			
 			<table>
 				<tr>
-					<td width="10%"></td> 
+					<td width="50px"></td> 
 					<td class="label" style="width:100px">关键字1：</td>
 					<td class="">
 						<input type="text" id="keyword1" name="keyword1" class="middle"/></td>
@@ -834,10 +834,10 @@ body{
 						<button type="button" id="retrieve" class="DTTT_button" 
 							style="width:50px" value="查询" onclick="doSearch();"/>查询</td>
 					<td style="vertical-align: bottom;width: 150px;"></td> 
-					<td width="10%"></td> 
+					<td width=""></td> 
 				</tr>
 				<tr>
-					<td width="10%"></td> 
+					<td width=""></td> 
 					<td class="label" style="width:100px">订单分类：</td>
 					<td class="">
 						<a id="defutBtn010"  class="DTTT_button box3" onclick="doSearchCustomer5('010');">
@@ -854,10 +854,10 @@ body{
 					<td><form:select path="team" style="width: 100px;">
 						<form:options items="${team}" itemValue="key" itemLabel="value" />
 						</form:select></td> 
-					<td width="10%"></td> 
+					<td width=""></td> 
 				</tr>
 				<tr style="height: 40px;">
-					<td width="10%"></td> 
+					<td width=""></td> 
 					<td class="label" style="width:100px">快捷查询：</td>
 					
 					<td colspan="6">

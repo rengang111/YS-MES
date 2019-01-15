@@ -1045,6 +1045,7 @@
    	  <w name="a.YSId"  	  des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="a.stockOutId"  des=""  reqName="stockOutId" dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="a.status"  des=""  reqName="status" dtype="ch" oper="not in"  lg="AND" bt="" />
+   	  <w name="LEFT(a.storageDate,7)"  des=""  reqName="storageMonth" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.YSId" alias="" ctype="" />
@@ -1056,7 +1057,9 @@
       <f name="A.completedQuantity" alias="" ctype="" />
       <f name="A.unit" alias="" ctype="计量单位" />
       <f name="A.storageDate" alias="" ctype="" />
+      <f name="LEFT(a.storageDate,7)" alias="storageMonth" ctype="" />
       <f name="a.status" alias="" ctype="订单状态" />
+      <f name="a.status" alias="statusId" ctype="" />
       <f name="a.team" alias="" ctype="业务组" />
     </select>
     <!--from>v_stockoutforproduct a LEFT JOIN v_stockout_createtime_max c ON c.YSId=a.YSId AND c.materialId=a.materialId WHERE a.deleteFlag='0' #</from -->

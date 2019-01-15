@@ -126,7 +126,7 @@ public class StorageAction extends BaseAction {
 				rtnUrl = "/business/inventory/beginninginventorystockin";
 				break;
 			case "orderSearchInit":
-				doInit();
+				orderSearchInit();
 				rtnUrl = "/business/inventory/productstoragemain";
 				break;
 			case "productStockinSearch"://成品入库查询
@@ -881,5 +881,14 @@ public class StorageAction extends BaseAction {
 		String keyword1 = request.getParameter("keyword1");
 		model.addAttribute("keyword1",keyword1);
 		model.addAttribute("searchType","");//
+	}
+	
+	public void orderSearchInit(){
+		try {
+			service.productStorageSearchInit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
