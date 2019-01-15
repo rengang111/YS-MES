@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 
 import com.ys.business.action.model.order.RequisitionModel;
 import com.ys.business.db.dao.B_MaterialDao;
-import com.ys.business.db.dao.B_ProductionTaskDao;
 import com.ys.business.db.dao.B_RawRequirementDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
@@ -82,49 +81,7 @@ public class RequisitionZZService extends CommonService {
 		super.session = session;
 		
 	}
-	
-	private HashMap<Object, Object> getRequisitionZZData(
-			String makeType,String requisitionSts,int viewSize,
-			ArrayList<HashMap<String, String>>  list) throws Exception{
 		
-		HashMap<Object, Object> hp = new HashMap<>();
-		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
-		
-		//String makeType = request.getParameter("makeType");
-		int size=0;
-		for(HashMap<String, String>map:list){
-			 
-			//String subid = map.get("rawMaterialId").substring(0, 3);	
-			String ysid = map.get("YSId");
-
-			//确认领料状态
-			B_RequisitionData task = new B_RequisitionData();
-			String where = "collectYsid like '%" + ysid + "%'" +" AND requisitionType='"+makeType+"' AND deleteFlag='0' "; 
-			task = checkRequisitionExsit(where);
-			if(task == null){
-				map.put("requisitionSts", Constants.STOCKOUT_1);//待申请
-				map.put("requisitionId", "");//领料单编号
-			}else{
-				String sts = task.getRequisitionsts();
-				map.put("requisitionSts", sts);//待出库/已出库
-				map.put("requisitionId", task.getRequisitionid());//领料单编号
-				map.put("taskId", task.getYsid());//任务编号
-			}
-			
-			if(notEmpty(requisitionSts) && !requisitionSts.equals(map.get("requisitionSts")))
-				continue;//过滤页面传来的状态值			
-			
-			if(size >= viewSize ){				
-				blow.add(map);//截取页面允许显示的最大条数					
-			}
-			size++;
-		}
-
-		hp.put("list", blow);
-		hp.put("recordCnt", size);
-		return hp;
-	}
-	
 	public HashMap<String, Object> doSearch(String makeType, String data,String formId) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -189,29 +146,15 @@ public class RequisitionZZService extends CommonService {
 			having = " 1=1 ";
 		}
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		sql = sql.replace("#", having);
+		sql = sql.replace("#", having);		
+		System.out.println("自制件领料申请："+sql);
 		
 		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 
 		if ( iEnd > dataModel.getYsViewData().size()){
 			iEnd = dataModel.getYsViewData().size();
 		}		
-			
-		/*	
-		HashMap<Object, Object> hp = 
-				getRequisitionZZData(
-						makeType,
-						requisitionSts,
-						iEnd,
-						dataModel.getYsViewData());
 		
-		ArrayList<HashMap<String, String>> list = 
-				(ArrayList<HashMap<String, String>>) hp.get("list");
-		int recordCnt = (int) hp.get("recordCnt");
-		if ( iEnd > list.size()){			
-			iEnd = list.size();
-		}	
-		*/	
 		modelMap.put("sEcho", sEcho);
 		modelMap.put("recordsTotal", dataModel.getRecordCount());
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
@@ -231,22 +174,6 @@ public class RequisitionZZService extends CommonService {
 		
 		getOrderDetail(ysid);
 		
-		/*
-		B_ProductionTaskData task = new B_ProductionTaskData();
-		String ysids = request.getParameter("data");
-		String taskId = request.getParameter("taskId");	
-		task = new B_ProductionTaskData();
-		if(isNullOrEmpty(taskId)){
-			task = getNewTaskId(task);			
-		}else{
-			String where = " taskId='" + taskId + "' AND deleteFlag='0' ";
-			task = checkTaskIdExsit(where);
-		}			
-		task.setCollectysid(ysids);	
-		reqModel.setTask(task);
-		model.addAttribute("currentYsids",ysids);
-		model.addAttribute("task",task);	
-		*/
 	}
 
 	public void getRequisitionHistoryInit() throws Exception {
@@ -307,46 +234,6 @@ public class RequisitionZZService extends CommonService {
 		}
 		
 		addRawRequirement(ysid);
-
-		//删除现有原材料需求表
-		//deleteRawRequirement(ysid);
-		
-		//原材料需求表未找到时，从采购方案重新组合，并插入原材料需求表
-		//ArrayList<HashMap<String, String>> list = getRawMaterialList(ysid);
-		
-		/*
-		ArrayList<HashMap<String, String>> blow = new ArrayList<HashMap<String, String>>();
-		ArrayList<HashMap<String, String>> blister = new ArrayList<HashMap<String, String>>();
-		ArrayList<HashMap<String, String>> injection = new ArrayList<HashMap<String, String>>();
-		
-		for(HashMap<String, String>map:list){
-			 	
-			 String subMat = map.get("parentMaterialId").substring(0, 3);
-			 String type = "";
-			 if( ("F02").equals(subMat)){//吹塑:F02
-				 blow.add(map);
-				 type = Constants.REQUISITION_BLOW;
-			 }else if( ("F01").equals(subMat)){//吸塑:F01
-				 blister.add(map);
-				 type = Constants.REQUISITION_BLISTE;
-			 }else{//以外
-				 injection.add(map);
-				 type = Constants.REQUISITION_INJECT;
-			 }
-
-			insertRawRequirement(map,ysid,type);
-		}
-		*/
-		
-		/*
-		if( Constants.REQUISITION_BLOW.equals(makeType) ){//吹塑:F02	
-			modelMap.put("data", blow);
-		}else if( Constants.REQUISITION_BLISTE.equals(makeType) ){//吸塑:F01
-			modelMap.put("data", blister);			 
-		}else{//以外
-			modelMap.put("data", injection);			 
-		}
-		*/
 		
 		//再次取得
 		modelMap = getRawRequirement(ysid,makeType);
@@ -485,46 +372,8 @@ public class RequisitionZZService extends CommonService {
 		
 	}
 	
-	private void insertRawRequirement(
-			HashMap<String, String> map,
-			String YSId,
-			String type) throws Exception{
-		
-		B_RawRequirementData raw = new B_RawRequirementData();
 
-		String unit = DicUtil.getCodeValue("换算单位" + map.get("unitId"));
-		float funit = stringToFloat(unit);
-		float quantity = stringToFloat(map.get("purchaseQuantity"));
-		String compute = floatToString( quantity / funit );
 
-		raw.setQuantity(compute);
-		raw.setYsid(YSId);
-		raw.setMaterialid(map.get("materialId"));
-		raw.setRawtype(type);
-		
-		//插入新数据
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"采购方案做成需求表",userInfo);
-		copyProperties(raw,commData);
-
-		String guid = BaseDAO.getGuId();
-		raw.setRecordid(guid);
-		
-		new B_RawRequirementDao().Create(raw);
-		
-	}
-	
-	private void deleteRawRequirement(String YSId) throws Exception{
-		
-		String where = " YSId ='" + YSId + "' ";
-		try{
-			new B_RawRequirementDao().RemoveByWhere(where);			
-		}catch(Exception e){
-			
-		}
-		
-	}
-	
 	private HashMap<String, Object> getRawRequirement(
 			String ysid,String type) throws Exception{
 
@@ -728,29 +577,7 @@ public class RequisitionZZService extends CommonService {
 		
 		detailDao.Create(stock);
 	}
-	
 
-	private void insertProductionTask(
-			B_ProductionTaskData stock) throws Exception {
-		
-		//插入新数据
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"B_ProductionTaskInsert",userInfo);
-		copyProperties(stock,commData);
-		String guid = BaseDAO.getGuId();
-		stock.setRecordid(guid);
-				
-		new B_ProductionTaskDao().Create(stock);
-	}
-	
-	private void updateProductionTask(
-			B_ProductionTaskData stock) throws Exception{
-		//插入新数据
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-						"B_ProductionTaskUpdate",userInfo);
-				copyProperties(stock,commData);
-		new B_ProductionTaskDao().Store(stock);		
-	}
 			
 	private void updateRequisition(
 			B_RequisitionData data) throws Exception{
@@ -870,18 +697,6 @@ public class RequisitionZZService extends CommonService {
 		return data;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void getTaskDetail(String taskId) throws Exception{
-		String where = " taskid = '" + taskId + "' AND deleteFlag='0' ";
-		List<B_ProductionTaskData> list = new B_ProductionTaskDao().Find(where);
-		B_ProductionTaskData dt = null;
-		if(list.size() > 0)
-			dt = list.get(0);
-		
-		reqModel.setTask(dt);	
-	}
-
-
 	
 	@SuppressWarnings("unchecked")
 	public B_RequisitionData checkRequisitionExsit(String where) throws Exception{
