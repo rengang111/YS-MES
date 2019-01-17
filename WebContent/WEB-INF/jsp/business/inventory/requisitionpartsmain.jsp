@@ -71,7 +71,6 @@
 							{"data": "requisitionDate","defaultContent" : '-', "className" : 'td-center'},
 							{"data": "totalQuantity", "defaultContent" : '0', "className" : 'td-right'},
 							{"data": "requisitionQty", "defaultContent" : '0', "className" : 'td-right'},
-							{"data": "stockoutQty", "defaultContent" : '0', "className" : 'td-right'},
 							{"data": null, "className" : 'td-center'},//10
 						],
 				"columnDefs":[
@@ -96,34 +95,21 @@
 		    			return name;
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
-		    			return floatToCurrency(data);
+		    			return parseInt(data);
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
-		    			var manufactureQty = currencyToFloat( row["totalQuantity"] );
-		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
-		    			var stockoutQty    = currencyToFloat( row["stockoutQty"] );
-		    			var rtn="";
-		    			if(stockoutQty >= manufactureQty){
-		    				rtn = stockoutQty;
-		    				
-		    			}else{
-		    				rtn = "0";
-		    				
-		    			}		    			
-		    			return floatToCurrency(rtn);
+		    			
+		    			return parseInt(data);
 		    		}},
 		    		{
 		    			"orderable":false,"targets":[0]
 		    		},
-		    		{"targets":10,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){
 		    			var manufactureQty = currencyToFloat( row["totalQuantity"] );
 		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
 		    			var stockoutQty    = currencyToFloat( row["stockoutQty"] );
 		    			var rtn="";
-		    			if(stockoutQty >= manufactureQty){
-		    				rtn = "已出库";
-		    				
-		    			}else if(requisitionQty == '0'){
+		    			if(requisitionQty == '0'){
 		    				rtn = "待申请";
 		    				
 		    			} else {
@@ -234,8 +220,8 @@
 	<div class="list">					
 		<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
 			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(1,'010');" id="defutBtn010"><span>未申请</span></a>
-			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'020');" id="defutBtn020"><span>未出库</span></a>
-			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>已出库</span></a>
+			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'020');" id="defutBtn020"><span>待出库</span></a>
+			<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>已出库</span></a -->
 			<!-- 
 			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'040');" id="defutBtn040"><span>成品已入库但未领料</span></a> -->
 		</div>
@@ -250,8 +236,7 @@
 						<th style="width: 50px;">订单交期</th>
 						<th style="width: 50px;">申请时间</th>
 						<th style="width: 60px;">订单数量</th>
-						<th style="width: 60px;">申请数量</th>
-						<th style="width: 60px;">出库数量</th>
+						<th style="width: 60px;">领料数量</th>
 						<th style="width: 50px;">领料状态</th>
 				</tr>
 			</thead>

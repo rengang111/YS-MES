@@ -857,6 +857,7 @@
   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.contractId"  des=""  reqName="contractId"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.purchaser"  des=""  reqName="userId"  dtype="ch" oper="="  lg="AND" bt="" />
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -877,10 +878,15 @@
       <f name="replace(A.stockinRtnQty,',','')" alias="stockinRtnQty" ctype="" />
       <f name="arriveDate" alias="" ctype="" />
       <f name="materialRecordId" alias="" ctype="" />
-      <f name="materialParentId" alias="" ctype="" />
+      <f name="A.purchaser" alias="" ctype="" />
+      <f name="A.purchaser" alias="purchaserName" ctype="采购人员" />
+      <f name="A.materialParentId" alias="" ctype="" />
     </select>
-    <from>v_arrivalfrompurchaseorder a  WHERE a.deleteFlag = '0' AND left(a.materialId,1) &lt;&gt;'H' </from>
-    <orderby>deliveryDate,A.YSId,a.materialId</orderby>
+    <from>v_arrivalfrompurchaseorder a  
+    	WHERE a.deleteFlag = '0' 
+    		AND replace(a.contractStorage,',','')+0 &lt; replace(quantity,',','')+0
+    		AND left(a.materialId,1) &lt;&gt;'H' </from>
+    <orderby>A.YSId,a.materialId</orderby>
     <groupby></groupby>
     <having> (quantity+0)  &gt; ( ( arrivalQty+0 ) -  (stockinRtnQty+0) ) </having>
 	<power></power>    
@@ -1128,5 +1134,23 @@
     <having></having>
 	<power>
 	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getPuchaserByMaterialId" />
+    <where>
+       <w name="A.dicTypeId" des=""  reqName="dicTypeId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.dicId" alias="" ctype="" />
+      <f name="A.dicName" alias="" ctype="" />
+      <f name="a.SortNo" alias="" ctype="" />
+
+    </select>
+    <from>s_dic a WHERE EnableFlag='0' </from>
+    <orderby>a.SortNo</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
   </query>
 </root>

@@ -166,7 +166,7 @@ public class RequisitionService extends CommonService {
 		
 		data = URLDecoder.decode(data, "UTF-8");
 
-		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION,data,session);
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITIONPARTS,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
@@ -182,11 +182,6 @@ public class RequisitionService extends CommonService {
 		}		
 
 		dataModel.setQueryName("getOrderListForRequisitionParts");	
-		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);	
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
 		
 		String requisitionSts = request.getParameter("requisitionSts");
 		if(notEmpty(key1) || notEmpty(key2))
@@ -194,16 +189,25 @@ public class RequisitionService extends CommonService {
 		String having = "1=1";
 		if(("010").equals(requisitionSts)){
 			//待申请
-			having = " requisitionQty=0 ";
+			having = " requisitionQty=0 AND REPLACE(orderStockoutQty,',','')+0 <=0 ";
 		}else if(("030").equals(requisitionSts)){
 			//已出库
 			having = " REPLACE(stockoutQty,',','')+0 >= REPLACE(totalQuantity,',','')+0 ";
 		}else if(("020").equals(requisitionSts)){
 			//待出库
-			having = " requisitionQty > 0 AND REPLACE(stockoutQty,',','')+0 < REPLACE(totalQuantity,',','')+0 ";
+			dataModel.setQueryName("getRequisitionPartsAndWaitOut");	
+			//having = " requisitionQty > 0 AND REPLACE(stockoutQty,',','')+0 < REPLACE(totalQuantity,',','')+0 ";
 		}
+
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		String sql = getSortKeyFormWeb(data,baseQuery);			
 		sql = sql.replace("#", having);
 		System.out.println("装配领料申请SQL："+sql);
+		
 		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			

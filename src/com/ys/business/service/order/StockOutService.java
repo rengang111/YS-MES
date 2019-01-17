@@ -159,6 +159,66 @@ public class StockOutService extends CommonService {
 
 	}
 	
+	public HashMap<String, Object> doPartsStockoutSearch(
+			String data,String makeType,String formId) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(formId,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryName("requisitionPartsList");//配件单领料单一览
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		if(notEmpty(key1) || notEmpty(key2)){
+			userDefinedSearchCase.put("requisitionSts", "");
+		}
+		//包装,或者是料件入库
+		if(("G").equals(makeType)){//包装
+			userDefinedSearchCase.put("makeTypeG", "G");
+			userDefinedSearchCase.put("makeTypeL", "");
+		}else{//料件
+			userDefinedSearchCase.put("makeTypeG", "");
+			userDefinedSearchCase.put("makeTypeL", "G");			
+		}
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		baseQuery.getYsQueryData(sql,iStart, iEnd);
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
 	public void addInitOrView() throws Exception {
 
 		String YSId = request.getParameter("YSId");
@@ -180,14 +240,8 @@ public class StockOutService extends CommonService {
 
 		String YSId = request.getParameter("YSId");
 		String stockOutId = request.getParameter("stockOutId");
-				
-		//B_StockOutData stock = new B_StockOutData();
-		//stock.setYsid(YSId);
-		//stock.setStockoutid(stockOutId);
-		//reqModel.setStockout(stock);
-		
+
 		getStockoutHistory(YSId,stockOutId);
-		//getOrderDetail(YSId);
 	
 	}
 	
@@ -838,6 +892,26 @@ public class StockOutService extends CommonService {
 			return modelMap;
 		
 		dataModel.setQueryName("stockoutdetail");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("stockOutId", stockOutId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("detailData", dataModel.getYsViewData().get(0));
+		model.addAttribute("detail",dataModel.getYsViewData().get(0));
+		
+		return modelMap;
+		
+	}
+	
+	
+	public HashMap<String, Object> getStockoutDetailParts() throws Exception {
+		String stockOutId = request.getParameter("stockOutId");
+		if(isNullOrEmpty(stockOutId))
+			return modelMap;
+		
+		dataModel.setQueryName("stockoutDetailParts");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("stockOutId", stockOutId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

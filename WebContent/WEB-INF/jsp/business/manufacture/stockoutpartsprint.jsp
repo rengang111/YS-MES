@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <title></title>
-<!-- 领料单打印 -->
+<!-- 配件单 领料单打印 -->
 <%@ include file="../../common/common2.jsp"%>
 <link rel="stylesheet" type="text/css" href="${ctx}/css/print.css" />
 <script type="text/javascript">
@@ -21,7 +21,7 @@
 		
 		var stockOutId= '${stockOutId}';
 		var YSId= '${order.YSId}';
-		var actionUrl = "${ctx}/business/stockout?methodtype=getPrintData";
+		var actionUrl = "${ctx}/business/stockout?methodtype=getPartsPrintData";
 		actionUrl = actionUrl +"&YSId="+YSId;
 		actionUrl = actionUrl +"&stockOutId="+stockOutId;
 				
@@ -59,20 +59,30 @@
         	},
 			"columns" : [
 		        	{"data": null,"className":"dt-body-center"//0
+				}, {"data": "YSId","className":"td-left"//1
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
-				}, {"data": "manufactureQuantity","className":"td-right"//4
-				}, {"data": "totalQuantity","className":"td-right"//5
+				}, {"data": "totalQuantity","className":"td-right"//4
+				}, {"data": "quantity","className":"td-right"//5
 				}, {"data": "depotId"		//7
 				}
 			],
-			"columnDefs":[                
+			"columnDefs":[
+				
+                
 	    		{"targets":2,"render":function(data, type, row){ 					
+					//var index=row["rownum"]	
+	    			//var name =  jQuery.fixedWidth( row["materialName"],40);
+
 	    			return "&nbsp;&nbsp;"+data;
                 }},
 	    		{"targets":4,"render":function(data, type, row){	    			
-				
-	    			return row["totalQuantity"];				 
+	    						
+	    			return parseInt(currencyToFloat(data));				 
+                }},
+	    		{"targets":5,"render":function(data, type, row){	    			
+	    						
+	    			return parseInt(currencyToFloat(data));				 
                 }},
                 {
 					"visible" : false,
@@ -122,27 +132,10 @@
 			</tr>
 		</table>
 		<table>
-			<tr> 				
-				<td class="label">耀升编号：</td>					
-				<td>&nbsp;${order.YSId }</td>
-									
-				<td class="label">生产数量：</td>					
-				<td  colspan="5">&nbsp;${order.totalQuantity }</td>
-				
-			</tr>
-			<tr>
-							
-				<td width="100px" class="label">产品编号：</td>					
-				<td width="180px">&nbsp;${order.materialId }</td>
-							
-				<td width="100px" class="label">产品名称：</td>			
-				<td colspan="5">&nbsp;${order.materialName }</td>	
-			</tr>
 			<tr>
 							
 				<td width="100px" class="label">制单人：</td>					
 				<td width="180px">&nbsp;${userName }</td>
-							
 				
 				<td class="label" width="100px" >出库单号：</td>					
 				<td  width="100px">&nbsp;${stockOutId}</td>
@@ -161,9 +154,10 @@
 				<thead>				
 					<tr>
 						<th style="width:1px">No</th>
+						<th width="80px">耀升编号</th>
 						<th width="120px">物料编号</th>
 						<th >物料名称</th>
-						<th width="80px">计划用量</th>
+						<th width="80px">订单数量</th>
 						<th width="80px">出库数量</th>
 						<th width="100px">库位</th>
 					</tr>

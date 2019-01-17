@@ -2,14 +2,14 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>料件出库-查看</title>
+<title>料件出库-查看（配件单）</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
 	function detailAjax() {
 	
 		var stockOutId = '${order.stockOutId }';
-	
+		
 		var table = $('#example').dataTable();
 		if(table) {
 			table.fnDestroy();
@@ -26,7 +26,7 @@
 			"searching" : false,
 			"retrieve" : true,
 			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/stockout?methodtype=getStockoutDetail&stockOutId="+stockOutId,
+			"sAjaxSource" : "${ctx}/business/stockout?methodtype=getStockoutDetailParts&stockOutId="+stockOutId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {
 				var param = {};
 				var formData = $("#condition").serializeArray();
@@ -53,29 +53,22 @@
 			
 			"columns" : [
 		        	{"data": null,"className":"dt-body-center"
+				}, {"data": "YSId","className":"td-left"
 				}, {"data": "materialId","className":"td-left"
 				}, {"data": "materialName"
-				}, {"data": "unitQuantity","className":"td-right","defaultContent" : ''
-				}, {"data": "totalQuantity","className":"td-right","defaultContent" : ''
-				}, {"data": "orderCount","className":"td-right","defaultContent" : ''
+				}, {"data": "totalQuantity","className":"td-right","defaultContent" : '0'
 				}, {"data": "quantity","className":"td-right"
-				}, {"data": "depotId","className":"td-right"
 				}
 				
 			] ,
 			"columnDefs":[
-		    		{"targets":3,"render":function(data, type, row){
-		    			return parseFloat(data);
-		    		}},
+		    		
 		    		{"targets":4,"render":function(data, type, row){
-		    			return floatToCurrency(data);
+		    			return parseInt(data);
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
-		    			return floatToCurrency(data);
-		    		}},
-		    		{"targets":6,"render":function(data, type, row){
-		    			return floatToCurrency(data);
-		    		}},
+		    			return parseInt(data);
+		    		}}
 		    ]     
 			
 			
@@ -117,14 +110,12 @@
 				function() {
 					var makeType=$('#makeType').val();
 					var usedType=$('#usedType').val();
-					var url = "${ctx}/business/stockout?makeType="
+					var url = "${ctx}/business/stockout?methodtype=partsStockoutSearchInit&makeType="
 							+makeType+"&usedType="+usedType;
 					location.href = url;		
 		});
 		
 		detailAjax();
-		
-		
 
 		productPhotoView();//出库单附件
 		
@@ -197,23 +188,12 @@
 			<tr> 				
 				<td class="label" width="100px">出库单编号：</td>					
 				<td width="150px">${order.stockOutId }</td>
+				
 				<td class="label">出库日期：</td>					
 				<td>${order.checkOutDate }</td>
 									
 				<td class="label" width="100px">仓管员：</td>					
 				<td colspan="5">${order.loginName }</td>
-			</tr>
-			<tr> 				
-				<td class="label" width="100px">耀升编号：</td>					
-				<td width="150px">${order.YSId }</td>
-				<td class="label" width="100px">产品编号：</td>					
-				<td width="100px">${order.productId }</td>
-									
-				<td class="label" width="100px">生产数量：</td>					
-				<td width="100px">${order.orderQty }</td>
-		
-				<td class="label" width="100px">产品名称：</td>					
-				<td colspan="5">${order.productName }</td>
 			</tr>
 										
 		</table>
@@ -231,16 +211,14 @@
 		<legend> 物料详情</legend>
 		<div class="list">		
 			<table id="example" class="display" style="width:100%">
-				<thead>				
+				<thead>
 					<tr>
 						<th style="width:30px">No</th>
+						<th class="dt-center" width="150px">耀升编号</th>
 						<th class="dt-center" width="150px">物料编号</th>
 						<th class="dt-center" >物料名称</th>	
-						<th class="dt-center" width="50px">单位量</th>
 						<th class="dt-center" width="60px">订单数量</th>
-						<th class="dt-center" width="60px">需求合计</th>
 						<th class="dt-center" width="60px">当前出库</th>
-						<th class="dt-center" width="60px">仓库位置</th>
 					</tr>
 				</thead>
 			</table>
@@ -268,7 +246,7 @@ function doPrint(stockOutId) {
 	var YSId 		= '${order.YSId }';
 	var stockOutId  = '${order.stockOutId }';
 	
-	var url = '${ctx}/business/stockout?methodtype=print';
+	var url = '${ctx}/business/stockout?methodtype=partsPrint';
 	url = url +'&YSId='+YSId;
 	url = url +'&stockOutId='+stockOutId;
 		

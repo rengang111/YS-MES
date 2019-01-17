@@ -70,7 +70,6 @@
 				}, {"data": "totalRequisition","className":"td-right"//4 
 				}, {"data": "quantityOnHand","className":"td-right","defaultContent" : '0'	//5 可用库存 
 				}, {"data": null,"className":"td-right"		//6
-				}, {"data": "areaNumber"		//7
 				}
 			],
 			"columnDefs":[
@@ -110,11 +109,7 @@
 					var inputTxt = '<input type="text" id="requisitionList'+index+'.quantity" name="requisitionList['+index+'].quantity" class="quantity num mini"  value="'+currValue+'"/>';
 				
 					return inputTxt;
-                }},
-	    		{"targets":8,"render":function(data, type, row){ 	
-	    			return jQuery.fixedWidth( data,18);
-		    			
-                }},
+                }}
 			]
 			
 		}).draw();
@@ -316,7 +311,7 @@
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;margin-top: -15px;">
 		<a class="DTTT_button DTTT_button_text" id="insert" >确认领料</a>
-		<a class="DTTT_button DTTT_button_text" id="showHistory" >查看领料记录</a>
+		<!-- a class="DTTT_button DTTT_button_text" id="showHistory" >查看领料记录</a -->
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset style="margin-top: -15px;">
@@ -335,7 +330,6 @@
 								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
 								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
 
-						<th width="80px">库位</th>
 					</tr>
 				</thead>	
 			</table>

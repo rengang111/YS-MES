@@ -191,7 +191,39 @@ public class StockOutAction extends BaseAction {
 			case "developSearch":
 				dataMap = doSearch(data,makeType,Constants.FORM_DEVELOPSTOCKOUT);
 				printOutJsonObj(response, dataMap);
-				return null;
+				break;
+			case "partsStockoutSearchInit"://配件单出库查询初始化
+				partsStockoutSearchInit();
+				rtnUrl = "/business/manufacture/stockoutpartsmain";
+				break;
+			case "partsStockoutSearch":
+				dataMap = doPartsStockoutSearch(data,makeType,Constants.FORM_MATERIALPARTSSTOCKOUT);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "partsAddInit":
+				doPartsAddInit();
+				rtnUrl = "/business/manufacture/stockoutpartsadd";
+				break;
+			case "partsAdd":
+				doPartsAdd();
+				rtnUrl = "/business/manufacture/stockoutpartsview";
+				break;
+			case "getStockoutDetailParts"://配件单的出库详情
+				dataMap = getStockoutDetailParts();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "stockoutPartsHistoryInit":
+				stockoutPartsHistoryInit();
+				rtnUrl = "/business/manufacture/stockoutpartsview";
+				break;
+			case "partsPrint"://打印出库单
+				doPrintReceipt();
+				rtnUrl = "/business/manufacture/stockoutpartsprint";
+				break;
+			case "getPartsPrintData"://打印出库单
+				dataMap = getStockoutPartsDetail();
+				printOutJsonObj(response, dataMap);;
+				break;
 				
 		}
 		
@@ -252,6 +284,14 @@ public class StockOutAction extends BaseAction {
 		model.addAttribute("requisitionSts",requisitionSts);
 	}
 	
+
+	public void partsStockoutSearchInit(){
+		String requisitionSts = (String) session.getAttribute("requisitionSts");
+		if(requisitionSts == null || ("").equals(requisitionSts))
+			requisitionSts = "020";//设置默认值：待出库
+		model.addAttribute("requisitionSts",requisitionSts);
+	}
+	
 	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearch(String data,String makeType,String formId){
@@ -284,6 +324,37 @@ public class StockOutAction extends BaseAction {
 	}
 	
 
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doPartsStockoutSearch(
+			String data,String makeType,String formId){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.doPartsStockoutSearch(data,makeType,formId);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		String requisitionSts = request.getParameter("requisitionSts");
+		session.setAttribute("requisitionSts", requisitionSts);
+		
+		return dataMap;
+	}
+
 	public void doAddInit(){
 
 		try{
@@ -296,8 +367,31 @@ public class StockOutAction extends BaseAction {
 		
 	}
 	
+	public void doPartsAddInit(){
+
+		try{
+			service.addInitOrView();			
+			model.addAttribute("userName", userInfo.getUserName());
+			model.addAttribute("requisitionType", request.getParameter("requisitionType"));
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
 
 	public void stockoutHistoryInit(){
+
+		try{
+			service.stockoutHistoryInit();
+			model.addAttribute("requisitionType", request.getParameter("requisitionType"));
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	public void stockoutPartsHistoryInit(){
 
 		try{
 			service.stockoutHistoryInit();
@@ -321,6 +415,18 @@ public class StockOutAction extends BaseAction {
 		
 	}
 	
+
+	public HashMap<String, Object> getStockoutPartsDetail() throws Exception{
+
+		return service.getStockoutDetailParts();		
+		
+	}
+	
+	public HashMap<String, Object> getStockoutDetailParts() throws Exception{
+
+		return service.getStockoutDetailParts();		
+		
+	}
 	
 	public void doInsert(){
 		try{
@@ -330,6 +436,14 @@ public class StockOutAction extends BaseAction {
 		}
 	}
 
+
+	public void doPartsAdd(){
+		try{
+			service.insertAndReturn();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
 
 	public void doDelete(){
 		try{
