@@ -919,7 +919,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 			if(mater!=null && mater.getMaterialid() != null && 
 					!mater.getMaterialid().equals(selectMaterialId)){
 			
-				//物料编码更改的情况
+				//物料编码更改的情况，2019年以后，已禁止修改其编号，so，该逻辑已废弃
 				//循环处理子编码
 				for(B_MaterialData data:reqDataList ){
 
@@ -1031,6 +1031,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 						dbData.setSubiddes(data.getSubiddes());
 						dbData.setPurchasetype(reqData.getPurchasetype());
 						dbData.setOriginalid(reqData.getOriginalid());
+						dbData.setPurchaser(reqData.getPurchaser());//采购员
 						dbData = editCustomerId(dbData,material);
 
 						dao.Store(dbData);

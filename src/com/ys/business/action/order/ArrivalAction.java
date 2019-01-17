@@ -126,6 +126,12 @@ public class ArrivalAction extends BaseAction {
 		if(searchSts == null || ("").equals(searchSts))
 				searchSts = "0";//设置默认值：待申请
 		model.addAttribute("searchSts",searchSts);
+		
+		try {
+			service.contractArrivalSearchInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 

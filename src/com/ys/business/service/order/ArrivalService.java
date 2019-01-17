@@ -147,6 +147,11 @@ public class ArrivalService extends CommonService {
 			userDefinedSearchCase.put("supplierId22", "");			
 		}
 		
+		String userId = request.getParameter("userId");
+		if(("999").equals(userId)){
+			userDefinedSearchCase.put("userId", "");//999:查询全员
+		}
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		
@@ -560,6 +565,28 @@ public class ArrivalService extends CommonService {
 			model.addAttribute("arrivalId",arrivalId);
 		}
 		
+	}
+	
+	public void contractArrivalSearchInit() throws Exception{
+		
+		dataModel.setQueryName("getPuchaserByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("dicTypeId", "采购人员");		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			ArrayList<HashMap<String, String>> list = dataModel.getYsViewData();
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("rownum", String.valueOf(list.size()+1));
+			map.put("dicName", "ALL");
+			map.put("dicId", "999");
+			map.put("SortNo", "999");
+			list.add(map);
+			model.addAttribute("purchaser",list);
+			model.addAttribute("defUser",map);
+		
+		}
 	}
 
 }

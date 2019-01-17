@@ -7,7 +7,7 @@
 <title>到货登记一览(合同未到货)</title>
 <script type="text/javascript">
 
-	function ajax(type,sessionFlag) {
+	function searchAjax(type,sessionFlag,hideCol) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -15,9 +15,12 @@
 		}
 
 		var makeType = $("#makeType").val();
+		var userId = $("#userId").val();
+		
 		var url = "${ctx}/business/arrival?methodtype=contractArrivalSearch"+"&sessionFlag="+sessionFlag;
 		url = url + "&makeType="+makeType;
 		url = url + "&searchSts="+type;
+		url = url + "&userId="+userId;
 		
 		if(type == '0'){			
 			url += "&accumulated1=0"+"&deliveryDate="+shortToday();//逾期未到货
@@ -63,10 +66,7 @@
 
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
-							//alert(XMLHttpRequest.status);
-							//alert(XMLHttpRequest.readyState);
-							//alert(textStatus);
-							//alert(errorThrown);
+						alert('系统异常，请联系管理员。');
 					 }
 				})
 			},
@@ -77,6 +77,7 @@
 				{"data": null,"className" : 'td-center'},
 				{"data": "YSId"},
 				{"data": "contractId"},
+				{"data": "purchaserName","className" : 'td-right', "defaultContent" : '-'}, //10
 				{"data": "materialId"},
 				{"data": "materialName"},
 				{"data": "customerShortName", "defaultContent" : '-',"className" : 'td-center'},
@@ -84,7 +85,6 @@
 				{"data": "deliveryDate","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
 				{"data": "arrivalQty","className" : 'td-right'}, // 10
-				{"data": null,"className" : 'td-right', "defaultContent" : '-'},
 				{"data": "arriveDate","className" : 'td-center'},// 11
 
 			],
@@ -98,19 +98,19 @@
 						mateid= '<div style="font-size: 11px;">' + data + '</div>';
 	    			return  "<a href=\"###\" onClick=\"doCreate('" + row["contractId"] + "')\">"+mateid+"</a>";	    			
 	    		}},
-	    		{"targets":3,"render":function(data, type, row){
+	    		{"targets":4,"render":function(data, type, row){
 	    			var mateid= data;
 	    			if(data.length>24)
 						mateid= '<div style="font-size: 11px;">' + data + '</div>';
 	    			return  "<a href=\"###\" onClick=\"doShow('" + row["materialParentId"] + "','" + row["materialRecordId"] + "','" + row["materialId"] + "')\">"+mateid+"</a>";	    			
 	    		}},
-	    		{"targets":4,"render":function(data, type, row){
+	    		{"targets":5,"render":function(data, type, row){
 	    			
 	    			var name = row["materialName"];				    			
 	    			name = jQuery.fixedWidth(name,32);				    			
 	    			return name;
 	    		}},
-	    		{"targets":9,"render":function(data, type, row){
+	    		{"targets":10,"render":function(data, type, row){
 	    			//累计收货
 	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
 	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);	
@@ -130,7 +130,7 @@
 	    		}},
 	    		{
 	    			"visible":false,
-	    			"targets":[10]
+	    			"targets":[]
 	    		}
 	           
 	         ] 
@@ -142,10 +142,17 @@
 
 
 	$(document).ready(function() {
+		
+		$('#yearFlag').hide();
+		$('#userFlag').show();
+		$('#userShowFlag').val('1');
 
 		var searchSts = $('#searchSts').val();
+		var defUser = '${defUser.dicId}';
+		$('#userId').val(defUser);
 		
-		ajax(searchSts,"true");//逾期未到货
+		
+		searchAjax(searchSts,"true",11);//逾期未到货
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -158,9 +165,14 @@
 	        }
 		});		
 
-		buttonSelectedEvent();//按钮选择式样
 
-		$('#defutBtn'+searchSts).removeClass("start").addClass("end");
+		buttonSelectedEvent();//按钮选择式样
+		buttonSelectedEvent2();//按钮选择式样
+		buttonSelectedEvent3();//按钮选择式样
+
+		
+		$('#defutBtnm'+searchSts).removeClass("start").addClass("end");
+		$('#defutBtnu'+defUser).removeClass("start").addClass("end");
 	})	
 	
 	function doCreate(contractId) {
@@ -222,28 +234,108 @@
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		ajax("",'false');
+		searchAjax("",'false','');
 
 	}
 	
-	function selectContractByDate(type,sessionFlag){
+	function selectContractByDate(type,hideCol){
 
+		$('#yearShowFlag').val('');
+		$('#userShowFlag').val('');
+		
 		$("#keyword1").val("");
 		$("#keyword2").val("");
-		ajax(type,sessionFlag);
+		
+		$('#userFlag').hide();
+		$('#yearFlag').hide();
+		
+		searchAjax(type,'false',hideCol);
 	}
 	
-	function showYS(YSId){
-		var url = '${ctx}/business/order?methodtype=detailView&YSId=' + YSId;
+	//逾期未到货
+	function selectContractByDate2(type,hideCol){
 
-		openLayer(url);
+		$('#yearFlag').hide();
+		$('#yearShowFlag').val('');
+		
+		var yearShowFlag = $('#userShowFlag').val();
+		if(yearShowFlag == ''){
+			$('#userFlag').show();
+			$('#userShowFlag').val('1');	
+			
+			var month = getYearMonth();
+			var monthonly = getMonth();
+			
+			var collection = $(".box");
+		    $.each(collection, function () {
+		    	$(this).removeClass("end");
+		    });
+		    
+		 	$('#defutBtnm'+type).removeClass("start").addClass("end");
+
+			$("#searchSts").val(type);
+			
+			$("#keyword1").val("");
+			$("#keyword2").val("");
+			
+			searchAjax(type,'false',hideCol);
+		}
+		
+		
 	}
 	
-	function showContract(contractId) {
-		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId;
-		openLayer(url);
+	//已收货
+	function doSearchCustomer3(type,sessionFlag){
+		
+		$('#userFlag').hide();
+		$('#userShowFlag').val('');
+		
+		var yearShowFlag = $('#yearShowFlag').val();
+		if(yearShowFlag == ''){
+			///$('#yearFlag').show();
+			//$('#yearShowFlag').val('1');	
+			
+			var userId = $('#userId').val();
+			var monthonly = getMonth();
+			
+			var collection = $(".box");
+		    $.each(collection, function () {
+		    	$(this).removeClass("end");
+		    });
+		    
+		 	$('#defutBtn'+monthonly).removeClass("start").addClass("end");
+		 	
+		 	searchAjax(type,'false','');
+		}
+		
+	}
+	//采购员选择
+	function doSelectUserId(userId){
+		
+		$('#keyword1').val('');
+		$('#keyword2').val('');
+		
+		var year = $('#year').val();
+		
+		$('#userId').val(userId);
 
-	};
+		searchAjax('0','false','');
+	}
+	
+	//月份选择
+	function doSearchCustomer(month){
+		
+		$('#keyword1').val('');
+		$('#keyword2').val('');
+		
+		var year = $('#year').val();
+		
+		var monthday = year +"-"+month;
+		$('#monthday').val(monthday);
+		$('#month').val(month);
+				
+		ajax('040','false',monthday);
+	}
 	
 </script>
 </head>
@@ -256,6 +348,10 @@
 
 		<input type="hidden" id="makeType" value="${makeType }" />
 		<input type="hidden" id="searchSts" value="${searchSts }" />
+		<input type="hidden" id="yearShowFlag" value="" />
+		<input type="hidden" id="userShowFlag" value="" />
+		<input type="hidden" id="userId"  name="userId" value="" />
+		
 			<table>
 				<tr>
 					<td width="10%"></td> 
@@ -274,24 +370,81 @@
 					<td width="10%"></td> 
 				</tr>
 			</table>
+			
+			<table>
+				<tr>
+					<td width="50px"></td>
+					<td width="100px" class="label">一级条件&nbsp;</td>
+					<td colspan="">					
+						<a id="defutBtnm1" class="DTTT_button box2" onclick="selectContractByDate('1',11);">未到货</a>
+						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('0',11);">逾期未到货</a>
+						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2','');" >已收货</a>	
+					
+					</td> 
+					<td width="100px"></td>
+				</tr>
+				<tr style="height: 30px;">
+					<td></td>
+					<td class="label">二级条件&nbsp;</td>
+					<td colspan="">
+						<span id="userFlag">
+							<c:forEach var='list' items='${purchaser}' varStatus='status'>
+								<a id="defutBtnu${list.dicId }" style="height: 15px;margin-top: 5px;" 
+									class="DTTT_button box3" onclick="doSelectUserId('${list.dicId }');">
+									<span>${list.dicName }</span></a>
+							</c:forEach>
+						</span>			
+						<span id="yearFlag">			
+							<select id="year" name="year" onclick="doSearchCustomer4();"  style="width: 100px;vertical-align: bottom;"></select>
+							
+							<a id="defutBtn12"  class="DTTT_button box" onclick="doSearchCustomer('12');">
+								12</a>
+							<a id="defutBtn01"  class="DTTT_button box" onclick="doSearchCustomer('01');">
+								1</a>
+							<a id="defutBtn02"  class="DTTT_button box" onclick="doSearchCustomer('02');">
+								2</a>
+							<a id="defutBtn03"  class="DTTT_button box" onclick="doSearchCustomer('03');">
+								3</a>
+							<a id="defutBtn04"  class="DTTT_button box" onclick="doSearchCustomer('04');">
+								4</a>
+							<a id="defutBtn05"  class="DTTT_button box" onclick="doSearchCustomer('05');">
+								5</a>
+							<a id="defutBtn06"  class="DTTT_button box" onclick="doSearchCustomer('06');">
+								6</a>
+							<a id="defutBtn07"  class="DTTT_button box" onclick="doSearchCustomer('07');">
+								7</a>
+							<a id="defutBtn08"  class="DTTT_button box" onclick="doSearchCustomer('08');">
+								8</a>
+							<a id="defutBtn09"  class="DTTT_button box" onclick="doSearchCustomer('09');">
+								9</a>
+							<a id="defutBtn10"  class="DTTT_button box" onclick="doSearchCustomer('10');">
+								10</a>
+							<a id="defutBtn11"  class="DTTT_button box" onclick="doSearchCustomer('11');">
+								11</a>
+						</span>								 
+					</td>
+					<td width="100px"></td>
+				</tr>
+			</table>
 		</form>
 	</div>
 	<div  style="height:10px"></div>
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a id="defutBtn1" class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('1','false');">未到货</a>
-			<a id="defutBtn0" class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('0','false');">逾期未到货</a>
-			<a id="defutBtn2" class="DTTT_button DTTT_button_text box" onclick="selectContractByDate('2','false');">已收货</a>
+			<a id="defutBtn1" class="DTTT_button box" onclick="selectContractByDate('1',11);">未到货</a>
+			<a id="defutBtn0" class="DTTT_button box" onclick="selectContractByDate('0',11);">逾期未到货</a>
+			<a id="defutBtn2" class="DTTT_button box" onclick="selectContractByDate('2','');">已收货</a>
 		</div>
 
 		<div id="clear"></div>
-		<table id="TMaterial" class="display dataTable" style="width: 100%;">
+		<table id="TMaterial" class="display" style="width: 100%;">
 			<thead>						
 				<tr>
 					<th width="10px">No</th>
 					<th style="width: 50px;">耀升编号</th>
 					<th style="width: 90px;">合同编号</th>
+					<th style="width: 50px;">采购员</th>
 					<th style="width: 100px;">物料编号</th>
 					<th>物料名称</th>
 					<th style="width: 30px;">客户</th>
@@ -299,7 +452,6 @@
 					<th style="width: 50px;">合同交期</th>
 					<th style="width: 50px;">合同数</th>
 					<th style="width: 50px;">净收货</th>
-					<th style="width: 50px;">累计入库</th>
 					<th width="50px">收货日期</th>
 				</tr>
 			</thead>
