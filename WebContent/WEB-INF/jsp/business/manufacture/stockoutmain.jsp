@@ -34,7 +34,7 @@
 				"searching" : false,
 				"autoWidth"	:false,
 				"pagingType" : "full_numbers",
-	         	"aaSorting": [[ 1, "DESC" ]],
+	         	//"aaSorting": [[ 1, "DESC" ]],
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				"retrieve" : true,

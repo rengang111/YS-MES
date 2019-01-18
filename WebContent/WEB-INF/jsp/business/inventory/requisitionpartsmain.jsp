@@ -108,13 +108,13 @@
 		    			var manufactureQty = currencyToFloat( row["totalQuantity"] );
 		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
 		    			var stockoutQty    = currencyToFloat( row["stockoutQty"] );
-		    			var rtn="";
+		    			var rtn="已出库";
 		    			if(requisitionQty == '0'){
 		    				rtn = "待申请";
 		    				
-		    			} else {
+		    			} else if(stockoutQty == '0'){
 		    				rtn = "待出库";
-		    			}		    			
+		    			}	    			
 		    			return rtn;
 		    		}},
 		    		{
