@@ -905,6 +905,7 @@
   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.contractId"  des=""  reqName="contractId"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="LEFT(deliveryDate,7)"  des=""  reqName="month"  dtype="ch" oper="="  lg="AND" bt="" />
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -927,8 +928,12 @@
       <f name="materialRecordId" alias="" ctype="" />
       <f name="materialParentId" alias="" ctype="" />
     </select>
-    <from>v_arrivalfrompurchaseorder a  WHERE a.deleteFlag = '0' AND left(a.materialId,1) &lt;&gt;'H' </from>
-    <orderby>deliveryDate,A.YSId,a.materialId</orderby>
+    <from>v_arrivalfrompurchaseorder a  
+    	WHERE a.deleteFlag = '0' 
+    		AND left(a.materialId,1) &lt;&gt;'H' 
+    		#1
+    </from>
+    <orderby>A.YSId,A.contractId,A.materialId</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    

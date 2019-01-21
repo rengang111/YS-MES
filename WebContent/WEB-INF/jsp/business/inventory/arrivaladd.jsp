@@ -527,7 +527,6 @@ function showContract(contractId) {
 function showYS(YSId) {
 	var url = '${ctx}/business/order?methodtype=getPurchaseOrder&YSId=' + YSId;
 
-	//var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
 	openLayer(url);
 
 };

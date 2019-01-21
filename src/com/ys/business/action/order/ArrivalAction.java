@@ -79,8 +79,8 @@ public class ArrivalAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				return null;	
 			case "addinit":
-				rtnUrl = doAddInit();
-				//rtnUrl = "/business/inventory/arrivaladd";
+				doAddInit();
+				rtnUrl = "/business/inventory/arrivaladd";
 				break;	
 			case "addAgainInit":
 				addAgainInit();
@@ -123,9 +123,14 @@ public class ArrivalAction extends BaseAction {
 	
 	public void doInit(){	
 		String searchSts = (String) session.getAttribute("searchSts");
+		String userId = (String) session.getAttribute("userId");
 		if(searchSts == null || ("").equals(searchSts))
 				searchSts = "0";//设置默认值：待申请
 		model.addAttribute("searchSts",searchSts);
+
+		if(userId == null || ("").equals(userId))
+			userId = "999";//设置默认值：全员
+		model.addAttribute("userId",userId);
 		
 		try {
 			service.contractArrivalSearchInit();
@@ -163,25 +168,22 @@ public class ArrivalAction extends BaseAction {
 		}
 
 		String searchSts = request.getParameter("searchSts");
+		String userId = request.getParameter("userId");
 		session.setAttribute("searchSts", searchSts);
+		session.setAttribute("userId", userId);
 		
 		return dataMap;
 	}
 	
-	public String doAddInit(){
+	public void doAddInit(){
 
-		String rtnUrl = "/business/inventory/arrivaladd";
 		try{
-			String flag = service.addInit();
-			if(flag.equals("查看")){
-				rtnUrl = "/business/inventory/arrivalview";
-			}
+			service.addInit();
 			model.addAttribute("userName", userInfo.getUserName());
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
 		
-		return rtnUrl;
 	}
 
 	public void addAgainInit(){
@@ -221,8 +223,12 @@ public class ArrivalAction extends BaseAction {
 	
 	public void doShowDetail() throws Exception{
 		
-		service.showArrivalDetail();
-
+		try{
+			service.showArraivlDetail();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
 	}
 
 

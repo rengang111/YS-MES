@@ -7,7 +7,7 @@
 <title>到货登记一览(合同未到货)</title>
 <script type="text/javascript">
 
-	function searchAjax(type,sessionFlag,hideCol) {
+	function searchAjax(type,sessionFlag,hideCol,month) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -21,6 +21,7 @@
 		url = url + "&makeType="+makeType;
 		url = url + "&searchSts="+type;
 		url = url + "&userId="+userId;
+		url = url + "&month="+month;
 		
 		if(type == '0'){			
 			url += "&accumulated1=0"+"&deliveryDate="+shortToday();//逾期未到货
@@ -94,9 +95,16 @@
                 }},
 	    		{"targets":2,"render":function(data, type, row){
 	    			var mateid= data;
-	    			if(data.length>18)
-						mateid= '<div style="font-size: 11px;">' + data + '</div>';
-	    			return  "<a href=\"###\" onClick=\"doCreate('" + row["contractId"] + "')\">"+mateid+"</a>";	    			
+	    			var contractQty = currencyToFloat(row['quantity']);
+	    			var accumulated = currencyToFloat(row['accumulated']);//累计收货
+	    			if(data.length>18){
+						mateid= '<div style="font-size: 11px;">' + data + '</div>';	    				
+	    			}
+					if(accumulated >= contractQty ){
+		    			return  "<a href=\"###\" onClick=\"doShowDetail('" + row["contractId"] + "')\">"+mateid+"</a>";	 
+					}else{
+		    			return  "<a href=\"###\" onClick=\"doCreate('" + row["contractId"] + "')\">"+mateid+"</a>";						
+					}   			
 	    		}},
 	    		{"targets":4,"render":function(data, type, row){
 	    			var mateid= data;
@@ -110,6 +118,10 @@
 	    			name = jQuery.fixedWidth(name,32);				    			
 	    			return name;
 	    		}},
+	    		{"targets":9,"render":function(data, type, row){
+
+	    			return parseInt(currencyToFloat(data));
+	    		}},
 	    		{"targets":10,"render":function(data, type, row){
 	    			//累计收货
 	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
@@ -119,7 +131,7 @@
 	    			//var newQty = arrivalQty - returnQty;
 	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );	
 	    			
-	    			return floatToCurrency(newQty);
+	    			return parseInt((newQty));
 	    		}},
 	    		{"targets":11,"render":function(data, type, row){
 	    			if(data ==''){
@@ -130,7 +142,7 @@
 	    		}},
 	    		{
 	    			"visible":false,
-	    			"targets":[]
+	    			"targets":[1]
 	    		}
 	           
 	         ] 
@@ -139,20 +151,34 @@
 	}
 
 	
+	function hideAllSearch(){
 
+		$('#yearFlag').hide();
+		$('#userFlag').hide();
+	}
 
 	$(document).ready(function() {
-		
-		$('#yearFlag').hide();
-		$('#userFlag').show();
-		$('#userShowFlag').val('1');
 
+		hideAllSearch();
+
+		var defUser = $('#userId').val();
 		var searchSts = $('#searchSts').val();
-		var defUser = '${defUser.dicId}';
-		$('#userId').val(defUser);
+		var month = $('#month').val();
+		var monthday = $('#monthday').val();
 		
+		if(searchSts == '0'){//逾期未到货
+			$('#userFlag').show();
+		}else if(searchSts == '2'){//已收货
+			$('#yearFlag').show();
+		}
+
+		$('#defutBtn'+month).removeClass("start").addClass("end");
+		$('#defutBtnu'+defUser).removeClass("start").addClass("end");
+		$('#defutBtnm'+searchSts).removeClass("start").addClass("end");	
 		
-		searchAjax(searchSts,"true",11);//逾期未到货
+		$('#userId').val(defUser);		
+		
+		searchAjax(searchSts,"true",monthday);
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -163,17 +189,57 @@
 	        	$('#TMaterial').DataTable().$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	        }
-		});		
-
+		});
 
 		buttonSelectedEvent();//按钮选择式样
 		buttonSelectedEvent2();//按钮选择式样
-		buttonSelectedEvent3();//按钮选择式样
+		buttonSelectedEvent3();//按钮选择式样		
 
+		setYearList();
 		
-		$('#defutBtnm'+searchSts).removeClass("start").addClass("end");
-		$('#defutBtnu'+defUser).removeClass("start").addClass("end");
+		$("#year").change(function() {
+			
+			$('#keyword1').val('');
+			$('#keyword2').val('');
+			
+			var year  = $('#year').val();
+			var currYear = getYear();
+			
+			if(year == currYear){//当前年份
+
+				var month = $('#month').val();
+			}else{//其他年份
+
+				var month = '12';//默认是年末
+			}
+			
+			var monthday = year +"-"+month;
+			$('#monthday').val(monthday);
+
+			var collection = $(".box");
+		    $.each(collection, function () {
+		    	$(this).removeClass("end");
+		    });
+		    
+		 	$('#defutBtn'+month).removeClass("start").addClass("end");
+		 	
+		 	searchAjax('2','false','',monthday);
+	
+		});
 	})	
+	
+	function setYearList(){
+		var i = 0;	
+		var options = "";
+		<c:forEach var="list" items="${year}">
+			i++;
+			options += '<option value="${list.key}">${list.value}</option>';
+		</c:forEach>
+		
+		var curYear = getYear();
+		$('#year').html(options);
+		$('#year').val(curYear);//默认显示当前年
+	}
 	
 	function doCreate(contractId) {
 
@@ -183,6 +249,17 @@
 		location.href = url;
 	}
 	
+	
+	function doShowDetail(contractId) {
+
+		var makeType=$('#makeType').val();
+		var url = '${ctx}/business/arrival?methodtype=detailView&contractId='+contractId+
+			'&makeType='+makeType;
+		
+		callWindowFullView("收货详情",url);
+	}
+	
+
 
 	function doShow(parentid,recordid,materialId) {
 
@@ -233,35 +310,40 @@
 	
 	function doSearch() {	
 
+		hideAllSearch();
+		
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    var collection = $(".box2");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		searchAjax("",'false','');
+		searchAjax("",'false','','');
 
 	}
 	
 	function selectContractByDate(type,hideCol){
 
-		$('#yearShowFlag').val('');
-		$('#userShowFlag').val('');
+		hideAllSearch();
 		
 		$("#keyword1").val("");
 		$("#keyword2").val("");
 		
-		$('#userFlag').hide();
-		$('#yearFlag').hide();
-		
-		searchAjax(type,'false',hideCol);
+		searchAjax(type,'false',hideCol,'');
 	}
 	
 	//逾期未到货
 	function selectContractByDate2(type,hideCol){
 
-		$('#yearFlag').hide();
-		$('#yearShowFlag').val('');
+		hideAllSearch();
+		$('#userFlag').show();
 		
-		var yearShowFlag = $('#userShowFlag').val();
-		if(yearShowFlag == ''){
-			$('#userFlag').show();
-			$('#userShowFlag').val('1');	
+		//var searchSts = $('#searchSts').val();
+		//if(searchSts == '0'){
 			
 			var month = getYearMonth();
 			var monthonly = getMonth();
@@ -278,35 +360,32 @@
 			$("#keyword1").val("");
 			$("#keyword2").val("");
 			
-			searchAjax(type,'false',hideCol);
-		}
+			searchAjax(type,'false',hideCol,'');
+		//}
 		
 		
 	}
 	
 	//已收货
 	function doSearchCustomer3(type,sessionFlag){
+
+		hideAllSearch();
+		$('#yearFlag').show();
 		
-		$('#userFlag').hide();
-		$('#userShowFlag').val('');
-		
-		var yearShowFlag = $('#yearShowFlag').val();
-		if(yearShowFlag == ''){
-			///$('#yearFlag').show();
-			//$('#yearShowFlag').val('1');	
-			
-			var userId = $('#userId').val();
+		//var yearShowFlag = $('#yearShowFlag').val();
+		//if(yearShowFlag == ''){
+
+			var month = getYearMonth();
 			var monthonly = getMonth();
 			
 			var collection = $(".box");
 		    $.each(collection, function () {
 		    	$(this).removeClass("end");
-		    });
-		    
+		    });		    
 		 	$('#defutBtn'+monthonly).removeClass("start").addClass("end");
 		 	
-		 	searchAjax(type,'false','');
-		}
+		 	searchAjax(type,'false','',month);
+		//}
 		
 	}
 	//采购员选择
@@ -319,7 +398,37 @@
 		
 		$('#userId').val(userId);
 
-		searchAjax('0','false','');
+		searchAjax('0','false','','');
+	}
+	
+	//年份选择
+	function doSearchCustomer4(){
+		
+		$('#keyword1').val('');
+		$('#keyword2').val('');
+		
+		var year  = $('#year').val();
+		var currYear = getYear();
+		
+		if(year == currYear){//当前年份
+
+			var month = $('#month').val();
+		}else{//其他年份
+
+			var month = '12';//默认是年末
+		}
+		
+		var monthday = year +"-"+month;
+		$('#monthday').val(monthday);
+
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
+	 	$('#defutBtn'+month).removeClass("start").addClass("end");
+	 	
+	 	searchAjax('2','false','',monthday);
 	}
 	
 	//月份选择
@@ -333,8 +442,8 @@
 		var monthday = year +"-"+month;
 		$('#monthday').val(monthday);
 		$('#month').val(month);
-				
-		ajax('040','false',monthday);
+
+		searchAjax('2','false','',monthday);
 	}
 	
 </script>
@@ -346,11 +455,11 @@
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
-		<input type="hidden" id="makeType" value="${makeType }" />
+		<input type="hidden" id="makeType"  value="${makeType }" />
 		<input type="hidden" id="searchSts" value="${searchSts }" />
-		<input type="hidden" id="yearShowFlag" value="" />
-		<input type="hidden" id="userShowFlag" value="" />
-		<input type="hidden" id="userId"  name="userId" value="" />
+		<input type="hidden" id="userId"   name="userId"  value="${userId }" />
+		<input type="hidden" id="monthday" name="monthday" value="" />
+		<input type="hidden" id="month"    name="month"    value="" />
 		
 			<table>
 				<tr>
@@ -395,7 +504,7 @@
 							</c:forEach>
 						</span>			
 						<span id="yearFlag">			
-							<select id="year" name="year" onclick="doSearchCustomer4();"  style="width: 100px;vertical-align: bottom;"></select>
+							<select id="year" name="year"  style="width: 100px;vertical-align: bottom;"></select>
 							
 							<a id="defutBtn12"  class="DTTT_button box" onclick="doSearchCustomer('12');">
 								12</a>
@@ -431,13 +540,6 @@
 	<div  style="height:10px"></div>
 
 	<div class="list">
-		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a id="defutBtn1" class="DTTT_button box" onclick="selectContractByDate('1',11);">未到货</a>
-			<a id="defutBtn0" class="DTTT_button box" onclick="selectContractByDate('0',11);">逾期未到货</a>
-			<a id="defutBtn2" class="DTTT_button box" onclick="selectContractByDate('2','');">已收货</a>
-		</div>
-
-		<div id="clear"></div>
 		<table id="TMaterial" class="display" style="width: 100%;">
 			<thead>						
 				<tr>

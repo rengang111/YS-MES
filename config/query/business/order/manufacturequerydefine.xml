@@ -576,7 +576,7 @@
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <!-- virtualClass:虚拟领料区分,010: 正常领料  -->
     <from>v_stockoutlist AS B 
-    	JOIN b_orderdetail a ON a.YSId=b.YSId AND a.orderType='010'
+    	LEFT JOIN b_orderdetail a ON a.YSId=b.YSId AND a.orderType='010'
     	WHERE b.virtualClass='010'</from>
     <orderby>a.YSId</orderby>
     <groupby></groupby>

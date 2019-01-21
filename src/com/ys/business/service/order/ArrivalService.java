@@ -105,7 +105,7 @@ public class ArrivalService extends CommonService {
 		
 		String actionType = request.getParameter("actionType");
 		String deliveryDate = request.getParameter("deliveryDate");//合同交期
-		
+		String where ="AND 1=1";
 		if(notEmpty(key1) || notEmpty(key2)){
 			actionType = "";//忽略其状态
 		}
@@ -116,6 +116,10 @@ public class ArrivalService extends CommonService {
 			deliveryDate = "";//清空时间条件
 		}else{
 			dataModel.setQueryName("getContractListForArrival");//已到货 或者 忽略 是否到货			
+			if(("2").equals(actionType)){
+				where = "AND a.accumulated+0 >= a.quantity+0";//已收货
+			}
+			
 		}
 		
 		baseQuery = new BaseQuery(request, dataModel);		
@@ -154,7 +158,8 @@ public class ArrivalService extends CommonService {
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		
+		sql = sql.replace("#1", where);
+		System.out.println("收货查询："+sql);
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
@@ -170,24 +175,30 @@ public class ArrivalService extends CommonService {
 		return modelMap;
 	}
 
-	public String addInit() throws Exception {
+	public void addInit() throws Exception {
 
-		String rtnFlag = "查看";
 		//取得该合同编号下的物料信息
 		String contractId = request.getParameter("contractId");
 		
-		boolean hash = checkContractDetail(contractId);
+		//boolean hash = checkContractDetail(contractId);
 		
-		if (hash) {
-			rtnFlag = "新建";
+		//if (hash) {
+		//	rtnFlag = "新建";
 			getContractForArrivalById(contractId);
-		}else{
-			getContractDetail(contractId);
+		//}else{
+		//	getContractDetail(contractId);
 			
-		}
+		//}
 		
 	
-		return rtnFlag;
+	}
+	
+	public void showArraivlDetail() throws Exception {
+
+		String contractId = request.getParameter("contractId");
+		
+		getContractDetail(contractId);
+		
 	}
 	
 	public void addAgainInit() throws Exception {
@@ -587,6 +598,9 @@ public class ArrivalService extends CommonService {
 			model.addAttribute("defUser",map);
 		
 		}
+
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
+		
 	}
 
 }
