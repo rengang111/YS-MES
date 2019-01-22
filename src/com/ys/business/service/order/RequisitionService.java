@@ -729,6 +729,7 @@ public class RequisitionService extends CommonService {
 	
 	public void virtualInsertAndView() throws Exception {
 
+		/*
 		B_RequisitionData reqData = insert(
 				Constants.REQUISITION_VIRTUAL,//虚拟领料
 				Constants.STOCKOUT_3,	//已出库
@@ -736,6 +737,7 @@ public class RequisitionService extends CommonService {
 
 		//订单详情
 		getOrderDetail(reqData.getYsid());
+		*/
 	}
 	
 	private String updateExcess(){
@@ -863,7 +865,11 @@ public class RequisitionService extends CommonService {
 			
 			//新增领料申请
 			reqData.setVirtualclass(virtualClass);
-			reqData.setRequisitiontype(Constants.REQUISITION_PARTS);//装配领料
+			if(("N").equals(orderType)){//常规订单
+				reqData.setRequisitiontype(Constants.REQUISITION_PARTS);				
+			}else{//配件订单
+				reqData.setRequisitiontype(Constants.REQUISITION_ACCESSORY);
+			}
 			reqData.setRequisitionsts(stockoutType);//
 			insertRequisition(reqData);
 						

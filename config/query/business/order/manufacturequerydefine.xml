@@ -574,10 +574,10 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <!-- virtualClass:虚拟领料区分,010: 正常领料  -->
+    <!-- virtualClass:虚拟领料区分,060: 配件单领料  -->
     <from>v_stockoutlist AS B 
     	LEFT JOIN b_orderdetail a ON a.YSId=b.YSId AND a.orderType='010'
-    	WHERE b.virtualClass='010'</from>
+    	WHERE b.virtualClass='010' AND b.requisitionType &lt;&gt; '060'</from>
     <orderby>a.YSId</orderby>
     <groupby></groupby>
     <having></having>

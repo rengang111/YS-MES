@@ -248,6 +248,7 @@ public class Constants {
 	public static final String REQUISITION_INJECT = "040";//注塑
 	public static final String REQUISITION_51 = "051";//直接领料
 	public static final String REQUISITION_52 = "052";//研发领料
+	public static final String REQUISITION_ACCESSORY = "060";//配件单领料
 
 	public static final String REQUISITION_NORMAL = "010";//正常领料
 	public static final String REQUISITION_VIRTUAL = "020";//虚拟领料
