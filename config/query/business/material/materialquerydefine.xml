@@ -141,12 +141,20 @@
       <f name="A.purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
       <f name="A.materialCost" alias="" ctype="" />
       <f name="A.purchaser" alias="purchaserName" ctype="采购人员" />
+      <f name="B.personnelId" alias="invertoryName" ctype="仓管员" />
+      <f name="C.personnelId" alias="qualityName" ctype="质检员" />
+      <f name="A.purchaser" alias="purchaserId" ctype="" />
+      <f name="B.personnelId" alias="invertoryId" ctype="" />
+      <f name="C.personnelId" alias="qualityId" ctype="" />
       <f name="A.purchaser" alias="" ctype="" />
    	  <f name="A.viewList" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_materiallist AS A  	where a.deleteFlag = '0' </from>
+    <from>v_materiallist AS A
+    	LEFT JOIN b_MaterialRelatedPersonnel b ON a.materialId=b.materialId  AND b.personnelType='W' AND b.deleteFlag='0'
+    	LEFT JOIN b_MaterialRelatedPersonnel c ON a.materialId=c.materialId  AND c.personnelType='Q' AND c.deleteFlag='0'
+    	where a.deleteFlag = '0' </from>
     <orderby>A.materialId,A.subId</orderby>
     <groupby></groupby>
     <having></having>
@@ -644,6 +652,7 @@
   	  <w name="A.quantityEditFlag"      des=""  reqName="quantityEditFlag" dtype="ch" oper="="  lg="AND" bt="" />
   	  <w name="LEFT(A.materialId,3)"    des=""  reqName="materialId_B"     dtype="ch" oper="="  lg="AND" bt="" />
   	  <w name="LEFT(A.materialId,1)"    des=""  reqName="materialId_Other" dtype="ch" oper="="  lg="AND" bt="" />
+  	  <w name="A.inventoryId"     des=""  reqName="inventoryId"  dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -670,6 +679,8 @@
       <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.purchaseType" alias="" ctype="" />
       <f name="quantityEditFlag" alias="" ctype="" />
+      <f name="qualityId" alias="" ctype="" />
+      <f name="inventoryId" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->

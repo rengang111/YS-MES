@@ -198,7 +198,15 @@ public class StorageService extends CommonService {
 		
 		String searchType = request.getParameter("searchType");
 		String categoryId = request.getParameter("categoryId");
+		String inventoryId = request.getParameter("inventoryId");
 		String having ="1=1";
+		
+		if(("999").equals(inventoryId)){
+			//全员
+			inventoryId = "";
+		}
+
+		userDefinedSearchCase.put("inventoryId", inventoryId);
 		
 		if(notEmpty(categoryId)){
 			if(categoryId.length() > 1)
@@ -2317,7 +2325,37 @@ public class StorageService extends CommonService {
 	}
 	
 
-	public void getCategoryId() throws Exception{
+	public void beginningInventorySearchInit() throws Exception{
+		
+		getCategoryId();//物料分类
+		getPuchaserByMaterialId();//仓管员
+	}
+	
+	private void getPuchaserByMaterialId() throws Exception{
+
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("getPuchaserByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("dicTypeId", "仓管员");		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			ArrayList<HashMap<String, String>> list = dataModel.getYsViewData();
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("rownum", String.valueOf(list.size()+1));
+			map.put("dicName", "ALL");
+			map.put("dicId", "999");
+			map.put("SortNo", "999");
+			list.add(map);
+			model.addAttribute("purchaser",list);
+			model.addAttribute("defUser",map);
+		
+		}
+		
+	}
+	
+	private void getCategoryId() throws Exception{
 		dataModel.setQueryFileName("/business/material/materialquerydefine");
 		dataModel.setQueryName("getCategoryIdByGroup");
 		baseQuery = new BaseQuery(request, dataModel);

@@ -85,11 +85,29 @@ input.middle{width:300px;}
 					<form:options items="${material.purchaseTypeList}" 
 						itemValue="key" itemLabel="value" /></form:select></td>
 				
-			<td class="label">采购人员：</td>
-			<td style="width: 150px;">
+			<td class="label"></td>
+			<td style="width: 150px;"></td>						
+		</tr>
+		<tr>				
+			<td class="label" >采购员：</td>
+			<td>
 				<form:select path="material.purchaser" style="width: 120px;">							
 					<form:options items="${PurchaserList}" 
-						itemValue="key" itemLabel="value" /></form:select></td>						
+						itemValue="key" itemLabel="value" /></form:select></td>	
+				
+			<td class="label">质检员：</td>
+			<td><form:hidden path="personnel[0].materialid" value="${material.material.materialid }" />
+				<form:hidden path="personnel[0].personneltype" value="Q" />
+				<form:select path="personnel[0].personnelid" style="width: 120px;" class="qualityId">							
+					<form:options items="${QualityList}" 
+						itemValue="key" itemLabel="value" /></form:select></td>
+				
+			<td class="label">仓管员：</td>
+			<td><form:hidden path="personnel[1].materialid" value="${material.material.materialid }" />
+				<form:hidden path="personnel[1].personneltype" value="W" />
+				<form:select path="personnel[1].personnelid" style="width: 120px;" class="inventoryId" >							
+					<form:options items="${InventoryList}" 
+						itemValue="key" itemLabel="value" /></form:select></td>
 		</tr>
 				
 		
@@ -355,6 +373,14 @@ function doSubDetail(recordid , parentid) {
 $(document).ready(function() {
 
 	$(".read-only").attr('readonly', "true");
+
+	var purchaserId = '${purchaserId}';
+	var quality     = '${qualityId}';
+	var invertory   = '${invertoryId}';
+
+	$('#personnel0\\.personnelid').val(quality);
+	$('#personnel1\\.personnelid').val(invertory);
+	$('#material\\.purchaser').val(purchaserId);
 	
 	$("#material :input.required").each(function(){
         var $required = $("<strong class='high'> *</strong>"); //创建元素

@@ -142,7 +142,7 @@
 	    		}},
 	    		{
 	    			"visible":false,
-	    			"targets":[1]
+	    			"targets":[]
 	    		}
 	           
 	         ] 

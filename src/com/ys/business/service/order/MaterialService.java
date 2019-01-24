@@ -30,6 +30,7 @@ import com.ys.business.action.model.order.MaterialModel;
 import com.ys.business.db.dao.B_MaterialCategoryDao;
 import com.ys.business.db.dao.B_MaterialCostDetailDao;
 import com.ys.business.db.dao.B_MaterialDao;
+import com.ys.business.db.dao.B_MaterialRelatedPersonnelDao;
 import com.ys.business.db.dao.B_MouldBaseInfoDao;
 import com.ys.business.db.dao.B_OrderExpenseDetailDao;
 import com.ys.business.db.dao.B_PriceSupplierDao;
@@ -38,6 +39,7 @@ import com.ys.business.db.dao.B_ZZMaterialPriceDao;
 import com.ys.business.db.data.B_MaterialCategoryData;
 import com.ys.business.db.data.B_MaterialCostDetailData;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_MaterialRelatedPersonnelData;
 import com.ys.business.db.data.B_MouldBaseInfoData;
 import com.ys.business.db.data.B_OrderExpenseDetailData;
 import com.ys.business.db.data.B_PriceReferenceData;
@@ -614,6 +616,14 @@ public class MaterialService extends CommonService implements I_BaseService{
 						
 						Matmodel.setAttribute1(map.get("categoryId"));
 						Matmodel.setAttribute2(map.get("categoryName"));
+						
+						model.addAttribute("invertoryName",map.get("invertoryName"));
+						model.addAttribute("qualityName",map.get("qualityName"));
+;
+						model.addAttribute("qualityId",map.get("qualityId"));
+						model.addAttribute("invertoryId",map.get("invertoryId"));
+						model.addAttribute("purchaserId",map.get("purchaserId"));
+						
 						shareModel = map.get("shareModel");
 						unitName = map.get("dicName");
 						purchaseTypeName = map.get("purchaseTypeName");
@@ -643,6 +653,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 			Matmodel.setUnitList(util.getListOption(DicUtil.MEASURESTYPE, ""));
 			Matmodel.setPurchaseTypeList(util.getListOption(DicUtil.PURCHASETYPE, ""));
 			model.addAttribute("PurchaserList",util.getListOption(DicUtil.PURCHASE_USER, ""));
+			model.addAttribute("QualityList",util.getListOption(DicUtil.QUALITY_USER, ""));//质检员
+			model.addAttribute("InventoryList",util.getListOption(DicUtil.INVENTORY_USER, ""));//仓管员
 				
 			Matmodel.setShareModelList(shareModel.split(","));
 			Matmodel.setEndInfoMap("098", "0001", "");
@@ -1040,6 +1052,9 @@ public class MaterialService extends CommonService implements I_BaseService{
 				}
 			}
 			
+			//更新物料相关人员信息：仓管员，质检员等
+			updateMaterialPersonnel();
+			
 			ts.commit();
 				
 		}
@@ -1050,6 +1065,44 @@ public class MaterialService extends CommonService implements I_BaseService{
 				
 		return selectedRecord;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void updateMaterialPersonnel() throws Exception{
+		List<B_MaterialRelatedPersonnelData> reqList = reqModel.getPersonnel();
+		for(B_MaterialRelatedPersonnelData person :reqList){
+			
+			String mid = person.getMaterialid();
+			String type = person.getPersonneltype();
+			
+			String where = " materialId='" + mid + "' "+
+					" AND personnelType='" + type + "' AND deleteFlag='0' ";
+			
+			List<B_MaterialRelatedPersonnelData> list = new B_MaterialRelatedPersonnelDao().Find(where);
+			if(list.size() > 0 ){
+				//update
+				B_MaterialRelatedPersonnelData db = list.get(0);
+				db.setPersonnelid(person.getPersonnelid());
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"MaterialPersonUpdate",userInfo);
+				copyProperties(db,commData);
+				
+				new B_MaterialRelatedPersonnelDao().Store(db);
+				
+			}else{
+				//insert
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+						"MaterialPersonUpdate",userInfo);
+				copyProperties(person,commData);
+				String guid = BaseDAO.getGuId();
+				person.setRecordid(guid);
+				
+				new B_MaterialRelatedPersonnelDao().Create(person);
+			}
+			
+		}
+	}
+	
 	
 	private String getStockType(String materialId){
 		
@@ -1195,6 +1248,8 @@ public class MaterialService extends CommonService implements I_BaseService{
 			model2.setUnitList(util.getListOption(DicUtil.MEASURESTYPE, ""));
 			model2.setPurchaseTypeList(util.getListOption(DicUtil.PURCHASETYPE, ""));
 			model.addAttribute("PurchaserList",util.getListOption(DicUtil.PURCHASE_USER, ""));
+			model.addAttribute("QualityList",util.getListOption(DicUtil.QUALITY_USER, ""));//质检员
+			model.addAttribute("InventoryList",util.getListOption(DicUtil.INVENTORY_USER, ""));//仓管员
 			model2.setEndInfoMap("098", "0001", "");
 		}
 		catch(Exception e) {

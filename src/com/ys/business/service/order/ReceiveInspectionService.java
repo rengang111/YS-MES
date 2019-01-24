@@ -224,17 +224,18 @@ public class ReceiveInspectionService extends CommonService  {
 				data.setInspectionid(inspectionid);
 				insertReceivInspectionDetail(data);
 				
-				//更新收货状态
-				//updateArrivlStatus(
-				//		arrivalId,
+				//更新有效收货
+				//updateContract(contractId,
 				//		data.getMaterialid(),
-				//		data.getCheckresult());
+				//		data.getQuantityinspection());
 				
 				//更新执行状态
 				updateContractStatusById(
 						contractId,
 						data.getMaterialid(),
-						data.getCheckresult());
+						data.getCheckresult(),
+						data.getQuantityinspection(),
+						data.getQuantityqualified());
 			}
 	
 			ts.commit();			
@@ -251,11 +252,53 @@ public class ReceiveInspectionService extends CommonService  {
 		return contractId;
 	}
 	
+	//更新有效收货
+	@SuppressWarnings("unchecked")
+	private void updateContract(
+			String contractId,
+			String materialId,
+			String newQuantity) throws Exception{
+	
+		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+		
+		String where = "contractId ='"+ contractId + "' "+
+				" AND materialId ='"+ materialId + "' AND deleteFlag='0' ";
+		
+		List<B_PurchaseOrderDetailData> list = 
+				(List<B_PurchaseOrderDetailData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
+
+		data = list.get(0);
+		
+		float webQty = stringToFloat(newQuantity);
+
+		float iaccumtd = stringToFloat(data.getAccumulated());//收货数
+		
+		//有效库存减少
+		float iNewAccumtd = iaccumtd - webQty;
+				
+		data.setAccumulated(String.valueOf(iNewAccumtd));
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"质检退货",userInfo);
+		copyProperties(data,commData);
+		
+		dao.Store(data);
+		
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void updateContractStatusById(
 			String contractId,
 			String materialId,
-			String result) throws Exception{
+			String result,
+			String quantityInspection,
+			String quantityQualified) throws Exception{
 	
 		String where = "contractId ='"+contractId +
 				"' AND materialId ='"+ materialId +
@@ -272,12 +315,21 @@ public class ReceiveInspectionService extends CommonService  {
 				
 		//更新DB
 		data = list.get(0);
+		float iaccumtd = stringToFloat(data.getAccumulated());//收货数
+		float inspection = stringToFloat(quantityInspection);//报检数
+		float qualified  = stringToFloat(quantityQualified);//合格数
+
+		//有效收货数
+		float iNewAccumtd = iaccumtd - (inspection - qualified);
+
 		if(result != null && (Constants.ARRIVERECORD_3).equals(result)){
 
 			data.setStatus(Constants.CONTRACT_PROCESS_4);//完成(退货)
 		}else{
 			data.setStatus(Constants.CONTRACT_PROCESS_2);//待入库
 		}
+
+		data.setAccumulated(String.valueOf(iNewAccumtd));
 		
 		updateContractDetailStatus(data);
 		

@@ -4,7 +4,6 @@ package com.ys.business.service.order;
  * 仓库退货
  */
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,29 +23,17 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
-import com.mysql.jdbc.Util;
-import com.ys.business.action.model.common.ListOption;
-import com.ys.business.action.model.order.ContactModel;
 import com.ys.business.action.model.order.DepotReturnModel;
-import com.ys.business.action.model.order.OrganModel;
 import com.ys.business.db.dao.B_ArrivalDao;
-import com.ys.business.db.dao.B_ContactDao;
-import com.ys.business.db.dao.B_InspectionReturnDao;
 import com.ys.business.db.dao.B_MaterialDao;
-import com.ys.business.db.dao.B_OrganizationDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseStockInDao;
 import com.ys.business.db.dao.B_PurchaseStockInDetailDao;
-import com.ys.business.db.data.B_ArrivalData;
-import com.ys.business.db.data.B_ContactData;
 import com.ys.business.db.data.B_InspectionReturnData;
 import com.ys.business.db.data.B_MaterialData;
-import com.ys.business.db.data.B_OrganizationData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_PurchaseStockInDetailData;
-import com.ys.business.db.data.B_StockOutData;
-import com.ys.business.db.data.B_StockOutDetailData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 
@@ -61,7 +48,6 @@ public class DepotReturnService extends CommonService {
 	
 	private HttpServletRequest request;
 	
-	private B_ArrivalDao dao;
 	private DepotReturnModel reqModel;
 	private UserInfo userInfo;
 	private BaseModel dataModel;
@@ -82,7 +68,6 @@ public class DepotReturnService extends CommonService {
 			DepotReturnModel reqModel,
 			UserInfo userInfo){
 		
-		this.dao = new B_ArrivalDao();
 		this.model = model;
 		this.reqModel = reqModel;
 		this.request = request;
@@ -98,7 +83,6 @@ public class DepotReturnService extends CommonService {
 		
 	}
 
-	
 
 	public HashMap<String, Object> search(
 			String data,String formId) throws Exception {
@@ -163,7 +147,7 @@ public class DepotReturnService extends CommonService {
 
 			String receiptId = request.getParameter("receiptId");	
 				
-			deletePurchaseStockin(receiptId);
+			String contractId = deletePurchaseStockin(receiptId);
 		
 			List<B_PurchaseStockInDetailData> list = getPurchaseStockInDetail(receiptId);
 			
@@ -178,7 +162,17 @@ public class DepotReturnService extends CommonService {
 							"0");
 					
 					//删除明细
-					deletePurchaseStockInDetail(detail);
+					deletePurchaseStockInDetail(detail);					
+
+					//更新合同的有效入库，有点冗余，优先考虑性能
+					if(notEmpty(contractId)){
+						String quantity = String.valueOf(stringToFloat(detail.getQuantity()) * (-1));
+						updateContract("入库退货更新处理",
+								detail.getMaterialid(),
+								quantity,
+								contractId,
+								-1);
+					}
 				}
 			}
 				
@@ -204,23 +198,25 @@ public class DepotReturnService extends CommonService {
 		return list;
 	}
 
-	private void deletePurchaseStockin(String receiptId) throws Exception{
-		
+	@SuppressWarnings("rawtypes")
+	private String deletePurchaseStockin(String receiptId) throws Exception{
+		String contractId = "";
 		String where = " receiptId='" + receiptId +"' AND deleteFlag='0' ";
 		List list = new B_PurchaseStockInDao().Find(where);
 		
 		if(list == null || ("").equals(list))
-			return ;
+			return contractId;
 		
 		//更新DB
 		B_PurchaseStockInData data = (B_PurchaseStockInData) list.get(0);
-		
+		contractId = data.getContractid();
 		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 				"DepotReturnDelete",userInfo);
 		copyProperties(data,commData);
 		
 		new B_PurchaseStockInDao().Store(data);
 		
+		return contractId;
 		
 	}
 	
@@ -265,6 +261,10 @@ public class DepotReturnService extends CommonService {
 			float foldQty = stringToFloat(oldQty);//更新前
 			String newQty = floatToString( foldQty - freqQty );//前后差值
 			updateMaterial("入库退货更新处理",materialId,newQty,"0");
+			
+			//更新合同的有效入库，有点冗余，优先考虑性能
+			String contractId = reqData.getContractid();
+			updateContract("入库退货更新处理",materialId,newQty,contractId,0);
 			
 			ts.commit();
 			
@@ -368,6 +368,11 @@ public class DepotReturnService extends CommonService {
 
 			//更新库存
 			updateMaterial("入库退货更新处理",materialId,quantity,"0");
+			
+			//更新合同有效收货
+			if(notEmpty(contractId)){
+				updateContract("入库退货更新处理",materialId,quantity,contractId,1);
+			}
 			
 			ts.commit();
 			
@@ -623,6 +628,57 @@ public class DepotReturnService extends CommonService {
 		
 	}	
 	
+	//更新有效收货
+	@SuppressWarnings("unchecked")
+	private void updateContract(
+			String action,
+			String materialId,
+			String newQuantity,
+			String contractId,
+			int count) throws Exception{
+	
+		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
+		B_PurchaseOrderDetailDao dao = new B_PurchaseOrderDetailDao();
+		
+		String where = "contractId ='"+ contractId + "' "+
+				" AND materialId ='"+ materialId + "' AND deleteFlag='0' ";
+		
+		List<B_PurchaseOrderDetailData> list = 
+				(List<B_PurchaseOrderDetailData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
+
+		data = list.get(0);
+		
+		float webQty = stringToFloat(newQuantity);
+
+		float istorage = stringToFloat(data.getContractstorage());//入库数
+		float iaccumtd = stringToFloat(data.getAccumulated());//收货数
+		float ireturns = stringToFloat(data.getReturngoods());//退货数
+		float ireturnN = stringToFloat(data.getReturnnumber());//退货次数
+		
+		//有效库存减少
+		float iNewStorage = istorage - webQty;
+		float iNewAccumtd = iaccumtd - webQty;
+		float iNewReturns = ireturns + webQty;//退货数增加
+		float iNewReturnN = ireturnN + count;//累计
+				
+		data.setAccumulated(String.valueOf(iNewAccumtd));
+		data.setContractstorage(String.valueOf(iNewStorage));
+		data.setReturngoods(String.valueOf(iNewReturns));
+		data.setReturnnumber(String.valueOf(iNewReturnN));
+		
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				action,userInfo);
+		copyProperties(data,commData);
+		
+		dao.Store(data);
+		
+	}	
+		
 	public void getDepotRentunDeital() throws Exception{
 		
 		String depotId = request.getParameter("inspectionReturnId");				

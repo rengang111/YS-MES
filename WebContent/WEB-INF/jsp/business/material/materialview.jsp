@@ -9,135 +9,7 @@
 <title>物料基本数据-查看</title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common2.jsp"%>
-</head>
-<body>
-<div id="container">
-<div id="main">
-	
-<form:form modelAttribute="material" method="POST" 
-	id="material" name="material"   autocomplete="off">
-	
-	<form:hidden path="material.recordid" />
-	<form:hidden path="material.parentid" />
-	<form:hidden path="material.serialnumber" />
-	<form:hidden path="material.categoryid" />
-	<form:hidden path="materialid" value="${material.material.materialid}"/>
-	<form:hidden path="categoryname" value="${material.attribute2}" />
-	<form:hidden path="materialname" value="${material.material.materialname}" />
-	
-	<input type="hidden" id="supplierid" />
-	<input type="hidden" id="suppliershortname" />
-	<input type="hidden" id="supplierfullname" />
-	<input type="hidden" id="keyBackup" value="${keyBackup }"/>
-	<input type="hidden" id="albumInfo"  value="${albumInfo }"/>
-	<input type="hidden" id="price" />
-	<input type="hidden" id="purchaseType" value="${material.purchaseType}"/>
-	
-	
-	<input id="handle_status" value="1133" hidden="hidden">
-	
-<fieldset style="float: left;width: 63%;">
-	<legend>物料基本信息</legend>
 
-	<table class="form" >		
-		<tr>
-			<td class="label" style="width: 60px;"><label>物料编码：</label></td>
-			<td style="width: 120px;">
-				<label>${material.material.materialid}</label></td>	
-		
-			<td class="label" style="width: 80px;"><label>原物料编码：</label></td>
-			<td style="width: 80px;">${material.material.originalid}</td>
-			
-			<td class="label" style="width: 60px;"><label>计量单位：</label></td>
-			<td style="width: 50px;">${material.unitname}</td>	
-
-			<td class="label" style="width: 60px;"><label>核算成本：</label></td>
-			<td><a href="#" onClick="doCostUpdate()"><span id="cost">${material.material.materialcost}</span></a></td>	
-														
-		</tr>
-		<tr>		
-			<td class="label" ><label>分类编码：</label></td>
-			<td>${material.attribute2}</td>
-			
-			<td class="label">采购类别：</td>
-			<td>${material.purchaseTypeName}</td>	
-			
-			<td class="label">采购人员：</td>
-			<td colspan="3" >${material.purchaserName}</td>				
-		
-		</tr>
-		<tr>
-			<td class="label"><label>物料名称：</label></td>
-			<td colspan="7">${material.material.materialname}</td>		
-		</tr>
-		<tr>
-			<td class="label"><label>通用型号：</label></td>
-			<td colspan="7" style="word-break:break-all;"><form:hidden path="material.sharemodel" value=""/>	
-				<div class="" id="coupon">
-					<table id="ShareTab"><tr><td></td></tr></table></div></td>							
-		</tr>	
-		<tr>
-			<td class="label" style="vertical-align: text-top;">中文描述：</td>
-			<td colspan="7" style="vertical-align: text-top;"><pre>${material.material.description}</pre></td></tr>	
-	</table>
-	<div class="action" style="text-align: right;">			
-		<button type="button" id="return" class="DTTT_button">返回</button>
-		<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
-		<button type="button" id="storageHistory" class="DTTT_button" >出入库历史</button>
-		<button type="button" id="doCreate" class="DTTT_button" onclick="doCreateBOMZZ()">新建二级BOM</button>
-	</div>
-	</fieldset>	
-		<div id="tabs" style="float:right;margin: 10px 30px 0px 0px;">
-				<div id="tabs-1" title="图片">
-					<jsp:include page="../../common/album/album2.jsp"></jsp:include>
-				</div>
-		</div>
-
-	
-	<table style="width: 64%;">
-		<tr>
-			<td>
-				<table id="subidTab" class="dataTable list" style="width:98%;margin-bottom: 20px;">
-					<tr>
-						<td class="td-center"></td>
-						<td class="td-center" width="60px">子编码</td>
-						<td class="td-center">子编码解释</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-	</table>		
-
-<div style="clear: both"></div>			
-
-	
-
-<span class="tablename" style="margin: -30px 17px -7px 1px;padding: 5px;float: right;"> 供应商单价信息</span>	
-<a class="DTTT_button" onclick="doCreatePrice();" style="float: right;margin: -30px 130px;">新建</a>	
-<div class="list">
-
-	
-	<table id="TSupplier" style="width: 100%;" id="TOgran" class="display dataTable" >
-		<thead>				
-		<tr>
-			<th style="width:10px;"  class="dt-middle ">No</th>
-			<th style="width:70px;"  class="dt-middle ">供应商编码</th>
-			<th style="width:30px;"  class="dt-middle ">简称</th>
-			<th class="dt-middle ">供应商名称</th>
-			<th style="width:60px;"  class="dt-middle ">采购单价</th>
-			<th style="width:30px;"  class="dt-middle ">币种</th>
-			<th style="width:50px;"  class="dt-middle ">报价单位</th>
-			<th style="width:60px;" class="dt-middle ">报价日期</th>
-			<th style="width:50px;" class="dt-middle ">采购</th>
-			<th style="width:100px;" class="dt-middle ">操作</th>
-		</tr>
-		</thead>
-	</table>
-</div>
-
-</form:form>
-</div>
-</div>
 <script type="text/javascript">
 function reloadSupplier() {
 	//$('#TSupplier').DataTable().supplierPriceView.reload(null,false);
@@ -569,5 +441,145 @@ function doCostUpdate(){
 	});
 }
 </script>
+</head>
+<body>
+<div id="container">
+<div id="main">
+	
+<form:form modelAttribute="material" method="POST" 
+	id="material" name="material"   autocomplete="off">
+	
+	<form:hidden path="material.recordid" />
+	<form:hidden path="material.parentid" />
+	<form:hidden path="material.serialnumber" />
+	<form:hidden path="material.categoryid" />
+	<form:hidden path="materialid" value="${material.material.materialid}"/>
+	<form:hidden path="categoryname" value="${material.attribute2}" />
+	<form:hidden path="materialname" value="${material.material.materialname}" />
+	
+	<input type="hidden" id="supplierid" />
+	<input type="hidden" id="suppliershortname" />
+	<input type="hidden" id="supplierfullname" />
+	<input type="hidden" id="keyBackup" value="${keyBackup }"/>
+	<input type="hidden" id="albumInfo"  value="${albumInfo }"/>
+	<input type="hidden" id="price" />
+	<input type="hidden" id="purchaseType" value="${material.purchaseType}"/>
+	
+	
+	<input id="handle_status" value="1133" hidden="hidden">
+	
+<fieldset style="float: left;width: 63%;">
+	<legend>物料基本信息</legend>
+
+	<table class="form" >		
+		<tr>
+			<td class="label" style="width: 60px;"><label>物料编码：</label></td>
+			<td style="width: 120px;">
+				<label>${material.material.materialid}</label></td>	
+		
+			<td class="label" style="width: 80px;"><label>原物料编码：</label></td>
+			<td style="width: 80px;">${material.material.originalid}</td>
+			
+			<td class="label" style="width: 60px;"><label>计量单位：</label></td>
+			<td style="width: 50px;">${material.unitname}</td>	
+
+			<td class="label" style="width: 60px;"><label>核算成本：</label></td>
+			<td><a href="#" onClick="doCostUpdate()"><span id="cost">${material.material.materialcost}</span></a></td>	
+														
+		</tr>
+		<tr>		
+			<td class="label" ><label>分类编码：</label></td>
+			<td>${material.attribute2}</td>
+			
+			<td class="label">采购类别：</td>
+			<td>${material.purchaseTypeName}</td>	
+			
+			<td class="label"></td>
+			<td colspan="3" ></td>				
+		
+		</tr>
+		<tr>		
+			<td class="label" ><label>采购人员：</label></td>
+			<td>${material.purchaserName}</td>
+			
+			<td class="label">质检员：</td>
+			<td>${qualityName}</td>	
+			
+			<td class="label">仓管员：</td>
+			<td colspan="3" >${invertoryName}</td>				
+		
+		</tr>
+		<tr>
+			<td class="label"><label>物料名称：</label></td>
+			<td colspan="7">${material.material.materialname}</td>		
+		</tr>
+		<tr>
+			<td class="label"><label>通用型号：</label></td>
+			<td colspan="7" style="word-break:break-all;"><form:hidden path="material.sharemodel" value=""/>	
+				<div class="" id="coupon">
+					<table id="ShareTab"><tr><td></td></tr></table></div></td>							
+		</tr>	
+		<tr>
+			<td class="label" style="vertical-align: text-top;">中文描述：</td>
+			<td colspan="7" style="vertical-align: text-top;"><pre>${material.material.description}</pre></td></tr>	
+	</table>
+	<div class="action" style="text-align: right;">			
+		<button type="button" id="return" class="DTTT_button">返回</button>
+		<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
+		<button type="button" id="storageHistory" class="DTTT_button" >出入库历史</button>
+		<button type="button" id="doCreate" class="DTTT_button" onclick="doCreateBOMZZ()">新建二级BOM</button>
+	</div>
+	</fieldset>	
+		<div id="tabs" style="float:right;margin: 10px 30px 0px 0px;">
+				<div id="tabs-1" title="图片">
+					<jsp:include page="../../common/album/album2.jsp"></jsp:include>
+				</div>
+		</div>
+
+	
+	<table style="width: 64%;">
+		<tr>
+			<td>
+				<table id="subidTab" class="dataTable list" style="width:98%;margin-bottom: 20px;">
+					<tr>
+						<td class="td-center"></td>
+						<td class="td-center" width="60px">子编码</td>
+						<td class="td-center">子编码解释</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>		
+
+<div style="clear: both"></div>			
+
+	
+
+<span class="tablename" style="margin: -30px 17px -7px 1px;padding: 5px;float: right;"> 供应商单价信息</span>	
+<a class="DTTT_button" onclick="doCreatePrice();" style="float: right;margin: -30px 130px;">新建</a>	
+<div class="list">
+
+	
+	<table id="TSupplier" style="width: 100%;" id="TOgran" class="display dataTable" >
+		<thead>				
+		<tr>
+			<th style="width:10px;"  class="dt-middle ">No</th>
+			<th style="width:70px;"  class="dt-middle ">供应商编码</th>
+			<th style="width:30px;"  class="dt-middle ">简称</th>
+			<th class="dt-middle ">供应商名称</th>
+			<th style="width:60px;"  class="dt-middle ">采购单价</th>
+			<th style="width:30px;"  class="dt-middle ">币种</th>
+			<th style="width:50px;"  class="dt-middle ">报价单位</th>
+			<th style="width:60px;" class="dt-middle ">报价日期</th>
+			<th style="width:50px;" class="dt-middle ">采购</th>
+			<th style="width:100px;" class="dt-middle ">操作</th>
+		</tr>
+		</thead>
+	</table>
+</div>
+
+</form:form>
+</div>
+</div>
 </body>
 </html>

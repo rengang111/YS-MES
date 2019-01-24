@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_MaterialData;
+import com.ys.business.db.data.B_MaterialRelatedPersonnelData;
 import com.ys.business.db.data.B_PriceSupplierData;
 import com.ys.business.db.data.B_ZZMaterialPriceData;
 
@@ -45,6 +46,14 @@ public class MaterialModel extends BaseModel {
 	private String counter1;
 	private String counter5;
 	private String cost;
+	private List<B_MaterialRelatedPersonnelData> personnel;
+	
+	public List<B_MaterialRelatedPersonnelData> getPersonnel() {
+		return this.personnel;
+	}
+	public void setPersonnel(List<B_MaterialRelatedPersonnelData> personnel) {
+		this.personnel = personnel;
+	}
 	
 	public B_ZZMaterialPriceData getZzprice() {
 		return this.zzprice;

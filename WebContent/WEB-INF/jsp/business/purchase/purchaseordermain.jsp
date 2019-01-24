@@ -51,12 +51,12 @@
 						var key2 = data["keyword2"]
 						$("#keyword1").val(key1);
 						$("#keyword2").val(key2);
-						
+						/*
 						if(myTrim(key1) == "" && myTrim(key2) == ""){
 						 	$('#defutBtn').removeClass("start").addClass("end");							
 						}else{							
 						 	$('#defutBtn').removeClass("end").addClass("start");
-						}
+						}*/
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -74,10 +74,10 @@
 				{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
 				{"data": "deliveryDate", "defaultContent" : ''},
 				{"data": "quantity", "defaultContent" : '0',"className" : 'td-right'},
-				{"data": "arrivalQty", "defaultContent" : '0',"className" : 'td-right'},
-				{"data": "quantityInspection", "defaultContent" : '0',"className" : 'td-right'},
+				{"data": "accumulated", "defaultContent" : '0',"className" : 'td-right'},
+				//{"data": "quantityInspection", "defaultContent" : '0',"className" : 'td-right'},
 				{"data": "contractStorage", "defaultContent" : '',"className" : 'td-right'},
-				{"data": "stockinRtnQty", "defaultContent" : '0',"className" : 'td-right'},
+				{"data": "returnGoods", "defaultContent" : '0',"className" : 'td-right'},
 			
 			],
 			"columnDefs":[
@@ -114,46 +114,15 @@
 	    		}},
 	    		{"targets":8,"render":function(data, type, row){
 	    			//累计收货
-	    			var contractQty = currencyToFloat(row["quantity"]);	
-	    			var stockinQty = currencyToFloat(row["stockinQty"]);	
-	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
-	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);
-	    			var inspectRtnQty = currencyToFloat(row["inspectRtnQty"]);
-	    			var sumRtnQty = stockinRtnQty + inspectRtnQty;	
-	    			var newQty1 = stockinQty - sumRtnQty;
-	    			//if(newQty1 >= contractQty){
-	    			//	var newQty = contractQty;	
-	    			//}else{
-	    				var newQty = setPurchaseQuantity(sumRtnQty,arrivalQty );	
-	    			//}		
-	    			return floatToCurrency(newQty);
+	    			return floatToCurrency(data);
 	    		}},
 	    		{"targets":9,"render":function(data, type, row){
-	    			//已检数
-	    			var contractQty = currencyToFloat(row["quantity"]);	
-	    			var stockinQty = currencyToFloat(row["stockinQty"]);
-	    			var arrivalQty = currencyToFloat(row["quantityInspection"]);	
-	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);	
-	    			var inspectRtnQty = currencyToFloat(row["inspectRtnQty"]);
-	    			var sumRtnQty = stockinRtnQty + inspectRtnQty;
-	    			var newQty1 = stockinQty - stockinRtnQty - stockinRtnQty;
-	    			if(stockinQty >= contractQty)
-	    				var newQty = contractQty;	
-	    			else
-	    				var newQty = arrivalQty;	
-	    			//}else{
-	    			//	var newQty = setPurchaseQuantity(sumRtnQty,arrivalQty );	
-	    			//}			
-	    			return floatToCurrency(newQty);
+	    			//入库数
+	    			return floatToCurrency(data);
 	    		}},
 	    		{"targets":10,"render":function(data, type, row){
-	    			//入库数
-	    			var arrivalQty = currencyToFloat(row["contractStorage"]);	
-	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);	
-	    			var stockinQty = currencyToFloat(row["stockinQty"]);			    			
-	    			//var newQty = setPurchaseQuantity(stockinRtnQty,arrivalQty );	
-	    			newQty = stockinQty - stockinRtnQty;
-	    			return floatToCurrency(newQty);
+	    			//退货数
+	    			return floatToCurrency(data);
 	    		}}
          	] 
 		});
@@ -289,10 +258,10 @@
 					<th style="width: 60px;">供应商</th>
 					<th style="width: 60px;">合同交期</th>
 					<th style="width: 50px;">合同数</th>
-					<th style="width: 50px;">来货数</th>
-					<th style="width: 50px;">已检数</th>
-					<th style="width: 50px;">入库数</th>
-					<th style="width: 50px;">退货数</th>
+					<th style="width: 50px;">净收货</th>
+					<!-- th style="width: 50px;">已检数</th-->
+					<th style="width: 50px;">净入库</th>
+					<th style="width: 50px;">累计退货</th>
 				</tr>
 			</thead>
 		</table>

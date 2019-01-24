@@ -869,7 +869,7 @@ public class StorageAction extends BaseAction {
 	public void inventoryPurchaseMainInit(){
 		model.addAttribute("searchType","");//默认查询全部
 		try {
-			service.getCategoryId();
+			service.beginningInventorySearchInit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

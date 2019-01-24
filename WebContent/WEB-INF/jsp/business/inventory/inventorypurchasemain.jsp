@@ -12,7 +12,7 @@ body{
 </style>
 <script type="text/javascript">
 
-	function searchAjax(sessionFlag,searchType,confirmFlag,categoryId) {
+	function searchAjax(sessionFlag,searchType,confirmFlag,categoryId,userId) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -23,6 +23,7 @@ body{
 		url = url + "&stockType="+stockType;
 		url = url + "&searchType="+searchType;
 		url = url + "&categoryId="+categoryId;
+		url = url + "&inventoryId="+userId;
 		
 		
 		
@@ -221,7 +222,7 @@ body{
 		var searchType = $('#searchType').val();
 		$('#categoryId').val('B02');
 		
-		searchAjax("true",searchType,"","B02");
+		searchAjax("true",searchType,"","B02","999");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -235,7 +236,10 @@ body{
 		});			
 
 		buttonSelectedEvent();//按钮选择式样
+		buttonSelectedEvent3();//按钮选择式样
+		
 	 	$('#defutBtnB02').removeClass("start").addClass("end");
+	 	$('#defutBtn999').removeClass("start").addClass("end");
 		
 	})	
 	
@@ -260,7 +264,7 @@ body{
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		searchAjax("false","","","");
+		searchAjax("false","","","","999");
 
 	}
 		
@@ -457,10 +461,24 @@ body{
 	function doSearchCustomer(categoryId){
 		$('#keyword1').val('');
 		$('#keyword2').val('');
-		$('#categoryId').val(categoryId);
 		
-		searchAjax('false','','',categoryId);
+		$('#categoryId').val(categoryId);
+		var userId = $('#userId').val();
+		
+		searchAjax('false','','',categoryId,userId);
 	}
+	
+	//仓管员
+	function doSearchCustomer2(userId){
+		$('#keyword1').val('');
+		$('#keyword2').val('');
+		
+		$('#userId').val(userId);
+		var categoryId = $('#categoryId').val();
+		
+		searchAjax('false','','',categoryId,userId);
+	}
+	
 </script>
 </head>
 
@@ -478,7 +496,7 @@ body{
 			<table>
 				<tr>
 					<td width="50px"></td> 
-					<td class="label">关键字1：</td>
+					<td class="label" style="width: 100px;">关键字：</td>
 					<td class="condition">
 						<input type="text" id="keyword1" name="keyword1" class="middle" value="${keyword1 }"/>
 					</td>
@@ -495,17 +513,28 @@ body{
 			</table>
 			<table>
 				<tr>
-				<td width="50px"></td> 
-				<td width=""></td> 
-				<td width="50px"></td> 
-				<td colspan="2">
-				<c:forEach var='list' items='${category}' varStatus='status'>
-					<a id="defutBtn${list.categoryId }" style="height: 15px;margin-top: 5px;" 
-						class="DTTT_button box" onclick="doSearchCustomer('${list.categoryId }');">
-						<span>${list.categoryId }</span></a>
-				</c:forEach>
-				</td> 
-				<td width="100px"></td>
+					<td width="50px"></td> 
+					<td class="label" style="width: 100px;">物料分类：</td> 
+					<td colspan="2">
+						<c:forEach var='list' items='${category}' varStatus='status'>
+							<a id="defutBtn${list.categoryId }" style="height: 15px;margin-top: 5px;" 
+								class="DTTT_button box" onclick="doSearchCustomer('${list.categoryId }');">
+								<span>${list.categoryId }</span></a>
+						</c:forEach>
+					</td> 
+					<td width="100px"></td>
+				</tr>
+				<tr>
+					<td></td> 
+					<td class="label">仓管员：</td> 
+					<td colspan="2">
+					<c:forEach var='list' items='${purchaser}' varStatus='status'>
+						<a id="defutBtn${list.dicId }" style="height: 15px;margin-top: 5px;" 
+							class="DTTT_button box3" onclick="doSearchCustomer2('${list.dicId }');">
+							<span>${list.dicName }</span></a>
+					</c:forEach>
+					</td> 
+					<td width="100px"></td>
 				</tr>
 			</table>
 

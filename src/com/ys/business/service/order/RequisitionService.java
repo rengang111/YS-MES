@@ -1448,7 +1448,7 @@ public class RequisitionService extends CommonService {
 		userDefinedSearchCase.put("peiYsid", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 
-		String having = "1=1";
+		String having = "requisitionId IS NOT NULL";
 		String sql = baseQuery.getSql().replace("#", having);
 		
 		baseQuery.getYsFullData(sql,having);

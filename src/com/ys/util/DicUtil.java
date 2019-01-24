@@ -25,6 +25,8 @@ public class DicUtil {
 	public static final String MEASURESTYPE = "计量单位";
 	public static final String PURCHASETYPE = "物料采购类别";
 	public static final String PURCHASE_USER = "采购人员";
+	public static final String QUALITY_USER = "质检员";
+	public static final String INVENTORY_USER = "仓管员";
 	public static final String CURRENCY = "币种";
 	public static final String LOADINGPORT = "出运港";
 	public static final String DELIVERYPORT = "目的港";
