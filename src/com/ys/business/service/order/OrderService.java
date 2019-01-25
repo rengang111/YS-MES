@@ -354,15 +354,15 @@ public class OrderService extends CommonService  {
 			String orderSts = request.getParameter("orderSts");//备货情况
 			if(("1").equals(orderSts)){
 				//货已备齐
-				whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 = 0  ";
+				whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 >= REPLACE(ord.quantity,',','')+0  ";
 				having = " stockFlag+0 = 0 ";
 			}else if(("2").equals(orderSts)){
 				//未齐
-				whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 = 0  ";
+				whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 < REPLACE(ord.quantity,',','')+0  ";
 				having = "stockFlag+0 > 0";
 			}else{
 				//已领料
-				whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 > 0 ";
+				whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 >= REPLACE(ord.quantity,',','')+0 ";
 				whereMonthDay += " AND ord.deliveryDate >= '"+firstDay+"' AND ord.deliveryDate <= '"+lastDay+"' ";
 				//having = " stockoutEnd+0 =  0 ";
 			}
@@ -374,7 +374,7 @@ public class OrderService extends CommonService  {
 			else
 				whereMonthDay = "full_field  like '%"+key2+"%'";
 
-			whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 = 0  ";
+			//whereMonthDay += " AND REPLACE(ord.completedQuantity,',','')+0 = 0  ";
 		}
 		
 		//userDefinedSearchCase.put("keyword1", key1);

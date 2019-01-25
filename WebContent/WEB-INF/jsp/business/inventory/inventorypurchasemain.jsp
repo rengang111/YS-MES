@@ -263,6 +263,14 @@ body{
 	
 	function doSearch() {	
 
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    var collection = $(".box3");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		searchAjax("false","","","","999");
 
@@ -465,7 +473,12 @@ body{
 		$('#categoryId').val(categoryId);
 		var userId = $('#userId').val();
 		
-		searchAjax('false','','',categoryId,userId);
+		var collection = $(".box3");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
+		searchAjax('false','','',categoryId,'999');
 	}
 	
 	//仓管员
@@ -476,7 +489,12 @@ body{
 		$('#userId').val(userId);
 		var categoryId = $('#categoryId').val();
 		
-		searchAjax('false','','',categoryId,userId);
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
+		searchAjax('false','','','',userId);
 	}
 	
 </script>
