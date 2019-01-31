@@ -284,9 +284,9 @@
 					<th style="width:65px">合同数量</th>
 					<th style="width:65px">已入库数量</th>
 					<th style="width:65px">待入库数</th>
-					<th style="width:65px">仓库位置</th>
+					<th style="width:65px">仓库类型</th>
 					<th style="width:55px">包装方式</th>
-					<th style="width:60px">库位编号</th>	
+					<th style="width:60px">仓库位置</th>	
 					<th style="width:30px"></th>	
 				</tr>
 			</thead>
@@ -300,6 +300,7 @@
 						<td>${list.contractQuantity }</td>
 						<td>${list.stockinQty }</td>
 						<td><form:input path="stockList[${status.index}].quantity"  value="" class="num short quantity" /></td>
+						<!-- 仓库类型 -->
 						<td><form:select path="stockList[${status.index}].depotid"  disabled="true">
 								<form:options items="${depotList}" 
 									itemValue="key" itemLabel="value"/></form:select></td>

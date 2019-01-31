@@ -289,9 +289,9 @@
 					<th style="width:65px">合同数/<br />入库数</th>
 					<th style="width:65px">合同金额</th>
 					<th style="width:60px">入库时间</th>
-					<th style="width:65px">仓库位置</th>
+					<th style="width:65px">仓库类型</th>
 					<th style="width:35px">包装</th>
-					<th style="width:40px">库位</th>	
+					<th style="width:40px">仓库位置</th>	
 					<th style="width:35px">操作</th>	
 			</tr>
 		</thead>		
