@@ -364,7 +364,7 @@ function baseBomView() {
 					var bomId     = data['data'][0]['bomId'];
 					var parentId  = data['data'][0]['productParentId'];
 					var costRote  = data['data'][0]['managementCostRate'];
-					alert('costRote'+costRote)
+					
 					if(costRote == null || costRote =='')
 						costRote = '5.00';//默认值设定
 					var laborCost = laborCostSum();

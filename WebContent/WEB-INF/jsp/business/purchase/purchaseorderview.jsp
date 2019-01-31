@@ -258,8 +258,7 @@ function deductAjax() {
 		
 		$("#goBack").click(
 				function() {	
-					var keyBackup = '${contract.YSId}';
-					var url = '${ctx}/business/contract?keyBackup='+keyBackup;
+					var url = '${ctx}/business/contract?methodtype=goBackContractMainInit';
 					location.href = url;		
 				});
 		
@@ -707,6 +706,7 @@ function doDeleteStockin(id){
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">
 			
+		<input type="hidden" id="methodtype" value="${methodtype }" />
 		<form:hidden path="contract.recordid" value="${contract.contractRecordId }"/>
 		<input type="hidden" id="deleteFlag" value="${deleteFlag }" />
 		

@@ -31,7 +31,9 @@ public class Constants {
 	public static final String FORM_REQUISITION_C = "requisitionzz_C";//吹塑领料申请
 	public static final String FORM_REQUISITION_Z = "requisitionzz_Z";//注塑领料申请
 	public static final String FORM_REQUISITION_X = "requisitionzz_X";//吸塑领料申请
-	public static final String FORM_CONTRACT = "contract";//采购合同
+	public static final String FORM_CONTRACT_C = "purchaseSearch";//采购件合同
+	public static final String FORM_CONTRACT_Z = "yszzSearch";//自制件合同
+	public static final String FORM_CONTRACT_B = "partSearch";//包装件合同
 	public static final String FORM_CONTRACT_UNFINISHED = "contract";//未订合同
 	public static final String FORM_CONTRACTZZ = "contractzz";//采购合同
 	public static final String FORM_PRODUCT= "product";//成品管理

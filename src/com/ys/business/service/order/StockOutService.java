@@ -925,6 +925,26 @@ public class StockOutService extends CommonService {
 		
 	}
 	
+	
+	public HashMap<String, Object> getStockoutAndRequiztionDetailById() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		String materialId = request.getParameter("materialId");
+
+		dataModel.setQueryFileName("/business/order/manufacturequerydefine");
+		dataModel.setQueryName("getStockoutAndRequiztionDetailById");		
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("YSId", YSId);	
+		userDefinedSearchCase.put("materialId", materialId);				
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+		
+	}
+	
 
 	@SuppressWarnings("unchecked")
 	public B_StockOutData checkStcokoutExsit(String where) throws Exception {

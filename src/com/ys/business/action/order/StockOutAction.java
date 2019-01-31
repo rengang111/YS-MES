@@ -224,6 +224,14 @@ public class StockOutAction extends BaseAction {
 				dataMap = getStockoutPartsDetail();
 				printOutJsonObj(response, dataMap);;
 				break;
+			case "getStockoutAndRequiztionInit"://财务审核查看领料单
+				getStockoutAndRequiztionInit();
+				rtnUrl = "/business/finance/costaccountstockout";
+				break;
+			case "getStockoutAndRequiztionDetailById"://财务核算用领料单明细
+				dataMap = getStockoutAndRequiztionDetailById();
+				printOutJsonObj(response, dataMap);;
+				break;
 				
 		}
 		
@@ -422,6 +430,12 @@ public class StockOutAction extends BaseAction {
 		
 	}
 	
+	public HashMap<String, Object> getStockoutAndRequiztionDetailById() throws Exception{
+
+		return service.getStockoutAndRequiztionDetailById();		
+		
+	}
+	
 	public HashMap<String, Object> getStockoutDetailParts() throws Exception{
 
 		return service.getStockoutDetailParts();		
@@ -486,6 +500,18 @@ public class StockOutAction extends BaseAction {
 		try{
 			service.printReceipt();
 			model.addAttribute("userName",userInfo.getUserName());
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+
+	public void getStockoutAndRequiztionInit(){
+		try{
+
+			model.addAttribute("YSId",request.getParameter("YSId"));
+			model.addAttribute("materialId",request.getParameter("materialId"));
+			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

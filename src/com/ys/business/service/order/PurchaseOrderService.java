@@ -89,7 +89,7 @@ public class PurchaseOrderService extends CommonService {
 	}
 
 	public HashMap<String, Object> getContractList(
-			String data,String formId) throws Exception {
+			String data,String formId,String makeType) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 
@@ -100,7 +100,7 @@ public class PurchaseOrderService extends CommonService {
 		String sEcho = getJsonData(data, "sEcho");	
 		String start = getJsonData(data, "iDisplayStart");		
 		if (start != null && !start.equals("")){
-			iStart = Integer.parseInt(start);			
+			iStart = Integer.parseInt(start);
 		}
 		
 		String length = getJsonData(data, "iDisplayLength");
@@ -117,21 +117,57 @@ public class PurchaseOrderService extends CommonService {
 		String key2 = keyArr[1];
 		String status = request.getParameter("status");
 		String having = "1=1";
+		//
 		if(notEmpty(key1) || notEmpty(key2)){
 			status = "";//关键字查询,忽略其状态
+			makeType = "";
 			userDefinedSearchCase.put("purchaseType", "");//关键字查询,忽略其类型(订购件)
 			userDefinedSearchCase.put("supplierId2", "");//关键字查询,忽略其类型(自制件)
 			userDefinedSearchCase.put("materialId2", "");//关键字查询,忽略其类型(包装件)
 		}
 		
+		if(("G").equals(makeType)){
+			//包装件
+			key1 = "";
+			key2 = "";
+			//where = "&materialId=G&status=030";
+			userDefinedSearchCase.put("materialId", "G");
+			userDefinedSearchCase.put("status", "030");
+			
+			
+		}else if(("Z").equals(makeType)){
+			//自制件
+			key1 = "";
+			key2 = "";
+			//where = "&supplierId=0574YZ00&status=030";
+			userDefinedSearchCase.put("supplierId", "0574YZ00");
+			userDefinedSearchCase.put("status", "030");
+			
+		}else if(("C").equals(makeType)){
+			//采购件
+			key1 = "";
+			key2 = "";
+			//where = "&supplierId2=0574YZ00&materialId2=G&status=030&purchaseType=010";
+			userDefinedSearchCase.put("supplierId2", "0574YZ00");
+			userDefinedSearchCase.put("status", "030");
+			userDefinedSearchCase.put("materialId2", "G");
+			userDefinedSearchCase.put("purchaseType", "010");
+			
+		}
+		
+		if(notEmpty(status)){
+			if(("2").equals(status)){
+				having = " ((REPLACE(quantity, ',', '') + 0) <= (REPLACE (accumulated, ',', '') + 0)) ";
+			}else{
+				having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (accumulated, ',', '') + 0)) ";
+			}
+		}
+				
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);
 		
-		if(notEmpty(status)){
-			having = " ((REPLACE(quantity, ',', '') + 0) - (REPLACE (accumulated, ',', '') + 0)) > 0 ";
-		}
 		sql = sql.replace("#", having);
 		System.out.println("采购合同查询SQL："+sql);
 		
@@ -1534,5 +1570,10 @@ public class PurchaseOrderService extends CommonService {
 			
 		}
 
+	}
+	
+	public void purchaseOrderMainInit() throws Exception{
+
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 }

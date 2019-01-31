@@ -282,6 +282,9 @@
    	  	<w name="A.supplierId"     des="" reqName="supplierId"    dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.supplierId"     des="" reqName="supplierId2"   dtype="ch" oper="&lt;&gt;"   lg="AND" bt="" />
    	  	
+   	  	<w name="A.deliveryDate"   des="" reqName="deliveryDate"   dtype="ch" oper="&lt;"   lg="AND" bt="" />
+   	  	<w name="DATE_FORMAT(A.deliveryDate,'%Y-%m')"   des="" reqName="monthday"   dtype="ch" oper="="   lg="AND" bt="" />
+   	  	
    	  	<w name="left(A.materialId,1)"     des="" reqName="materialId"    dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="left(A.materialId,1)"     des="" reqName="materialId2"    dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
      </where>

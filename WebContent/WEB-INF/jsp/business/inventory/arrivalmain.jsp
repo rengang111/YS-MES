@@ -77,7 +77,7 @@
 			"columns": [
 				{"data": null,"className" : 'td-center'},
 				{"data": "YSId"},
-				{"data": "contractId"},
+				{"data": "contractId","className" : 'td-left'},
 				{"data": "purchaserName","className" : 'td-right', "defaultContent" : '-'}, //10
 				{"data": "materialId"},
 				{"data": "materialName"},
@@ -484,16 +484,13 @@
 				<tr>
 					<td width="50px"></td>
 					<td width="100px" class="label">一级条件&nbsp;</td>
-					<td colspan="">					
+					<td colspan="">
+						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('0',11);">逾期未到货</a>				
 						<a id="defutBtnm1" class="DTTT_button box2" onclick="selectContractByDate('1',11);">未到货</a>
-						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('0',11);">逾期未到货</a>
 						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2','');" >已收货</a>	
 					
 					</td> 
 					<td width="100px"></td>
-				</tr>
-				<tr style="height: 30px;">
-					<td></td>
 					<td class="label">二级条件&nbsp;</td>
 					<td colspan="">
 						<span id="userFlag">
@@ -532,7 +529,6 @@
 								11</a>
 						</span>								 
 					</td>
-					<td width="100px"></td>
 				</tr>
 			</table>
 		</form>

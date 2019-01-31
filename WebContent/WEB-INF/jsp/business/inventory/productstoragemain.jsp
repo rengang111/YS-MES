@@ -335,8 +335,8 @@
 				</tr>
 				<tr style="height: 25px;">
 					<td width=""></td> 
-					<td class="label">备货情况：
-					<td colspan="4">
+					<td class="label">备货情况：</td>
+					<td colspan="5">
 						<a  class="DTTT_button box2" onclick="selectContractByDate('030','false');" id="defutBtn030">待交货</a>
 						<a  class="DTTT_button box2" onclick="doSearchCustomer3('040','false');" id="defutBtn040">已入库</a>
 						

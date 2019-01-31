@@ -76,19 +76,6 @@
 			
 		});
 		
-		/*
-		t.on('click', 'tr', function() {
-			
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-			
-		});
-		*/
 		t.on('order.dt search.dt draw.dt', function() {
 			t.column(0, {
 				search : 'applied',
@@ -187,8 +174,6 @@
 		foucsInit();
 		
 		$(".short").hide();
-		//$(".num").attr( 'readonly',true);
-		//$(".cash").attr( 'readonly',true);
 		
 		//列合计
 		weightsum();
@@ -259,6 +244,7 @@
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">
 			
+		<input type="hidden" id="methodtype" value="${methodtype }" />
 		<fieldset>
 			<legend> 采购合同</legend>
 			<table class="form" id="table_form">

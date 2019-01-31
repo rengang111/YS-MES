@@ -71,7 +71,10 @@
 				],
 				"columnDefs":[
 		    		{"targets":2,"render":function(data, type, row){
-		    			return jQuery.fixedWidth(data,48);
+		    			var name=jQuery.fixedWidth(data,48)
+		    			var rtn= "<a href=\"###\" onClick=\"doShwoStockoutDetail('" + row["YSId"] +"','" + row["materialId"] +"')\">" + name + "</a>";
+				    	
+		    			return rtn;
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rowIndex = row["rownum"];
@@ -108,11 +111,11 @@
 		    			}
 		    			
 		    			//领料 >= 需求，取领料，否则取需求
-		    			//if(stockoutQty >= orderQty){
-		    			//	quantity = stockoutQty;
-		    			//}else{
+		    			if(stockoutQty >= orderQty){
+		    				quantity = stockoutQty;
+		    			}else{
 		    				quantity = orderQty;
-		    			//}
+		    			}
 		    			quantity = floatToCurrency(quantity);
 
 		    			var text = '<input type="hidden" name="costBomList['+rowIndex+'].quantity" id="costBomList'+rowIndex+'.quantity"  value="'+quantity+'" />';
@@ -288,7 +291,13 @@
 		
 	});
 	
+	function doShwoStockoutDetail(YSId,materialId){
+		var url = '${ctx}/business/stockout?methodtype=getStockoutAndRequiztionInit&YSId=' + YSId+'&materialId=' + materialId;
+		
+		callWindowFullView("领料单",url);
 
+	}
+	
 	function doShowOrder(PIId,YSId){
 		var url = '${ctx}/business/order?methodtype=getOrderDetailByYSId&openFlag=newWindow&YSId=' + YSId+'&PIId=' + PIId;
 		
