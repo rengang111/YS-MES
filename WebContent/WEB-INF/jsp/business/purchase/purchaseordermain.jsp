@@ -76,12 +76,9 @@
 				{"data": "YSId", "defaultContent" : ''},
 				{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
 				{"data": "deliveryDate", "defaultContent" : ''},
-				{"data": "quantity", "defaultContent" : '0',"className" : 'td-right'},
-				{"data": "accumulated", "defaultContent" : '0',"className" : 'td-right'},
-				//{"data": "quantityInspection", "defaultContent" : '0',"className" : 'td-right'},
-				{"data": "contractStorage", "defaultContent" : '',"className" : 'td-right'},
-				{"data": "returnGoods", "defaultContent" : '0',"className" : 'td-right'},
-			
+				{"data": "totalPrice", "defaultContent" : '0',"className" : 'td-right'},//合同金额
+				{"data": null, "defaultContent" : '0',"className" : 'td-center'},//收货状态
+				{"data": null, "defaultContent" : '0',"className" : 'td-center'},//付款状态
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
@@ -112,16 +109,27 @@
 	    			return name;
 	    		}},
 	    		{"targets":8,"render":function(data, type, row){
-	    			//累计收货
-	    			return floatToCurrency(data);
+	    			//收货状态
+	    			var contractQty = currencyToFloat(row['quantity']);
+	    			var storageQty  = currencyToFloat(row['contractStorage']);
+	    			var storageSts = '未收货';
+	    			if(storageQty >= contractQty){
+	    				storageSts = '已收货';
+	    			}else if(storageQty > 0){
+	    				storageSts = '部分收货';
+	    			}
+	    			return storageSts;
 	    		}},
 	    		{"targets":9,"render":function(data, type, row){
-	    			//入库数
-	    			return floatToCurrency(data);
-	    		}},
-	    		{"targets":10,"render":function(data, type, row){
-	    			//退货数
-	    			return floatToCurrency(data);
+	    			//付款状态
+	    			var finishStatus = row['paymentSts'];
+	    			var paymentSts = '未付款';
+	    			if(finishStatus == '050'){
+	    				paymentSts = '已付款';
+	    			}else if(finishStatus == '040'){
+	    				paymentSts = '部分付款';
+	    			}
+	    			return paymentSts;
 	    		}}
          	] 
 		});
@@ -222,6 +230,10 @@
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });
+	    collection = $(".box2");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
 	}
 
 	function doShowControct(contractId,quantity,arrivalQty,stockinQty) {
@@ -301,7 +313,7 @@
 		$("#keyword1").val("");
 		$("#keyword2").val("");
 		
-		searchAjax(status,sessionFlag,'','');
+		searchAjax(status,'false','','');
 	}
 		
 	//月份选择
@@ -356,7 +368,7 @@
 					<td width=""></td> 
 					<td class="label">到货情况：</td>
 					<td colspan="4">
-						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('0',11);">逾期未到货</a>
+						<!--a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('0',11);">逾期未到货</a-->
 						<a id="defutBtnm1" class="DTTT_button box2" onclick="selectContractByDate('1',11);">未到货</a>
 						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2','');" >已收货</a>
 						
@@ -407,10 +419,9 @@
 					<th style="width: 70px;">耀升编号</th>
 					<th style="width: 60px;">供应商</th>
 					<th style="width: 60px;">合同交期</th>
-					<th style="width: 50px;">合同数</th>
-					<th style="width: 50px;">净收货</th>
-					<th style="width: 50px;">净入库</th>
-					<th style="width: 50px;">累计退货</th>
+					<th style="width: 50px;">合同金额</th>
+					<th style="width: 50px;">收货状态</th>
+					<th style="width: 50px;">付款状态</th>
 				</tr>
 			</thead>
 		</table>

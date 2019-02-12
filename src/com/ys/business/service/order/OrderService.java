@@ -247,43 +247,54 @@ public class OrderService extends CommonService  {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];	
 		
-		String monthday = request.getParameter("monthday");
-		if(isNullOrEmpty(monthday)){
-			monthday = CalendarUtil.getToDay();
-		}
-		FinanceMouthly monthly = new FinanceMouthly(monthday);
+		//String monthday = request.getParameter("monthday");
+		//if(isNullOrEmpty(monthday)){
+		//	monthday = CalendarUtil.getToDay();
+		//}
+		//FinanceMouthly monthly = new FinanceMouthly(monthday);
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderExpenseList");	
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
 		
-		String statusFlag = request.getParameter("statusFlag");
+		String costType = request.getParameter("costType");
 		String having = "1=1";
 		
 		if(notEmpty(key1) || notEmpty(key2)){
-			statusFlag = "";//有查询key，则忽略其状态
-			//userDefinedSearchCase.put("startDate", "");//忽略其时间段
+			costType = "";//有查询key，则忽略其状态
+			userDefinedSearchCase.put("year", "");//忽略其时间段
 			//userDefinedSearchCase.put("endDate", "");//忽略其时间段			
 		}
 		
-		if(("010").equals(statusFlag)){
-			having=" stockinQty+0 > 0 AND (stockinQty+0 < quantity+0) ";//部分入库
+		
+		if(("C").equals(costType)){
+			having=" chejianCost < 0 ";//车间费用
 
-			userDefinedSearchCase.put("orderStartDate", monthly.getStartDate());
-			userDefinedSearchCase.put("orderEndDate", monthly.getEndDate());
+			//userDefinedSearchCase.put("orderStartDate", monthly.getStartDate());
+			//userDefinedSearchCase.put("orderEndDate", monthly.getEndDate());
 			
-		}else if(("020").equals(statusFlag)){
-			having=" stockinQty+0 >= quantity+0 ";//已入库	
+		}else if(("S").equals(costType)){
+			having=" gongyingshangCost > 0 ";//供应商费用
 
-			userDefinedSearchCase.put("startDate", monthly.getStartDate());
-			userDefinedSearchCase.put("endDate", monthly.getEndDate());
+			//userDefinedSearchCase.put("startDate", monthly.getStartDate());
+			//userDefinedSearchCase.put("endDate", monthly.getEndDate());
 			
-		}else if(("030").equals(statusFlag)){
-			having=" stockinQty<=0 ";//未入库	
+		}else if(("K").equals(costType)){
+			having=" kehuCost <> 0 ";//客户费用	
 			
-			userDefinedSearchCase.put("orderStartDate", monthly.getStartDate());
-			userDefinedSearchCase.put("orderEndDate", monthly.getEndDate());			
+			//userDefinedSearchCase.put("orderStartDate", monthly.getStartDate());
+			//userDefinedSearchCase.put("orderEndDate", monthly.getEndDate());			
+		}else if(("J").equals(costType)){
+			having=" jianyanCost <> 0 ";//检验费用
+			
+			//userDefinedSearchCase.put("orderStartDate", monthly.getStartDate());
+			//userDefinedSearchCase.put("orderEndDate", monthly.getEndDate());			
+		}else if(("G").equals(costType)){
+			having=" gendanCost < 0 ";//跟单费用
+			
+			//userDefinedSearchCase.put("orderStartDate", monthly.getStartDate());
+			//userDefinedSearchCase.put("orderEndDate", monthly.getEndDate());			
 		}
 		
 		baseQuery = new BaseQuery(request, dataModel);	

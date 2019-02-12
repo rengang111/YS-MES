@@ -217,7 +217,7 @@ public class PurchaseOrderAction extends BaseAction {
 		}
 
 		if(searchSts == null || ("").equals(searchSts)){
-			searchSts = "0";//设置默认值：逾期未到货
+			searchSts = "1";//设置默认值：未到货
 		}
 		model.addAttribute("makeType",makeType);
 		model.addAttribute("searchSts",searchSts);

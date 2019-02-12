@@ -1,21 +1,15 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-
-
 <%@ include file="../../common/common.jsp"%>
 
 <title>订单基本数据一览页面(订单过程)</title>
 <script type="text/javascript">
 
-function ajax(monthday,sessionFlag,status,hiden_col) {
+function ajax(year,sessionFlag,costType) {
 	
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -24,8 +18,8 @@ function ajax(monthday,sessionFlag,status,hiden_col) {
 		}
 
 		var url = "${ctx}/business/order?methodtype=orderExpenseSearch&sessionFlag="+sessionFlag;
-		url = url + "&monthday=" +monthday;
-		url = url + "&statusFlag=" +status;
+		url = url + "&year=" +year;
+		url = url + "&costType=" +costType;
 		
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -136,30 +130,33 @@ function ajax(monthday,sessionFlag,status,hiden_col) {
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : [hiden_col]
+					"targets" : [6,7]
 				}				           
          	] 
 		});
 
 	}
-	
-	function YSKcheck(v,id){
-		var zzFlag = "";
-		if(id != ''){
-			zzFlag = id.substr(2,3);
-		}
-		if(zzFlag == 'YSK') v = 0;//库存订单不显示明细内容
-		return v;
-		
-	}
+
 	
 	function initEvent(){
 
-		var monthday = $('#monthday').val();
-		var statusFlag = $('#statusFlag').val();
-		var hiddenCol = $('#hiddenCol').val();
-		ajax(monthday,"true",statusFlag,hiddenCol);
+		var year = $('#year').val();
+		var costType = $('#costType').val();
+		
+		if(year == '' || year == null){
+			year = getYear();
+		}
+		if(costType == '' || costType == null){
+			costType = 'C';
+		}
+		
+		
+		ajax(year,"true",costType);
 	
+
+		$('#defutBtn'+year).removeClass("start").addClass("end");
+		$('#defutBtn'+costType).removeClass("start").addClass("end");
+		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
 			if ( $(this).hasClass('selected') ) {
@@ -179,24 +176,18 @@ function ajax(monthday,sessionFlag,status,hiden_col) {
 		buttonSelectedEvent();//按钮选择式样
 		buttonSelectedEvent2();//按钮选择式样2
 		
-
-		var month = "";
-		var monthday = $('#monthday').val();
-		var statusFlag = $('#statusFlag').val();
-		if(monthday == '' || monthday == null){
-			month = getMonth();
-		}else{
-			month = monthday.split("-")[1];
-		}
-	
-		$('#defutBtn'+month).removeClass("start").addClass("end");
-		$('#defutBtn'+statusFlag).removeClass("start").addClass("end");
-		
 	})	
 	
 	function doSearch() {	
 
-		ajax('','false','','');
+		var key1 = $('#keyword1').val();
+		var key2 = $('#keyword2').val();
+		if($.trim(key1) =='' && $.trim(key2) ==''){
+			$().toastmessage('showWarningToast', "请输入关键字。");		
+			return;
+		}
+		
+		ajax('','false','');
 		
 		var collection = $(".box");
 	    $.each(collection, function () {
@@ -224,143 +215,116 @@ function ajax(monthday,sessionFlag,status,hiden_col) {
 
 		var url = '${ctx}/business/purchasePlan?methodtype=showPurchasePlan&YSId=' + YSId;
 		callProductDesignView('采购方案',url);
-		//location.href = url;
-	}
-
-
-	function doCreate() {
-
-		var url = '${ctx}/business/order?methodtype=orderExpenseYsid';
-
-		location.href = url;
 	}
 	
-	//订单月份
-	function doSearchCustomer(monthday){
+	//年份选择
+	function doSearchCustomer(year){
+		
 		$('#keyword1').val('');
 		$('#keyword2').val('');
-		var year = getYear();
-		if(monthday == '12'){
-			year = year - 1;//去年的12月
+		$('#year').val(year);
+				
+		var costType = $('#costType').val();
+
+		if(costType == '' || costType == null){
+			costType = 'C';
 		}
-		var todaytmp = year +"-"+monthday+"-"+"01";
-		$('#monthday').val(todaytmp);
+
+		$('#defutBtn'+year).removeClass("start").addClass("end");
+		$('#defutBtn'+costType).removeClass("start").addClass("end");
 		
-		var statusFlag = $('#statusFlag').val();
-		var hiddenCol = Number($('#hiddenCol').val());
-		ajax(todaytmp,'false',statusFlag,hiddenCol);
+		ajax(year,'false',costType);
 	}
 	
 
-	//订单状态
-	function doSearchCustomer2(status,hidden_col){
-		
-		var monthday = $('#monthday').val();
+	//费用类别
+	function doSearchCustomer2(type,hidden_col){
 
-		$('#statusFlag').val(status);
-		$('#hiddenCol').val(hidden_col);
-		ajax(monthday,'false',status,hidden_col);
+		$('#keyword1').val('');
+		$('#keyword2').val('');
+		$('#costType').val(type);
+		
+		var year = $('#year').val();
+		if(year == '' || year == null){
+			year = getYear();
+		}
+
+		$('#defutBtn'+year).removeClass("start").addClass("end");
+		$('#defutBtn'+type).removeClass("start").addClass("end");
+		
+		ajax(year,'false',type);
 	}
 	
 </script>
 </head>
 
 <body>
-	<div id="container">
-		<div id="main">
-			<div id="search">
-				<form id="condition"  style='padding: 0px; margin: 10px;' >
+<div id="container">
+<div id="main">
+	<div id="search">
+		<form id="condition"  style='padding: 0px; margin: 10px;' >
 
-					<input type="hidden" id="monthday"  value="${monthday }"/>
-					<input type="hidden" id="statusFlag"  value="${statusFlag }"/>
-					<input type="hidden" id="hiddenCol"  value="${hiddenCol }"/>
-					
-					<table>
-						<tr>
-							<td width="10%"></td> 
-							<td class="label">关键字1：</td>
-							<td class="condition">
-								<input type="text" id="keyword1" name="keyword1" class="middle"/>
-							</td>
-							<td class="label">关键字2：</td> 
-							<td class="condition">
-								<input type="text" id="keyword2" name="keyword2" class="middle"/>
-							</td>
-							<td>
-								<button type="button" id="retrieve" class="DTTT_button" 
-									style="width:50px" value="查询" onclick="doSearch();"/>查询
-							</td>
-							<td width="10%"></td> 
-						</tr>
-				<tr style="height: 40px;">
-					<td width="10%"></td> 
-					<td class="label" style="width:100px">快捷查询：</td>
-					
-					<td colspan="6">
-						<a id="defutBtn12" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('12');">
-						<span>去年12月份</span></a>
-						<a id="defutBtn01"  style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('01');">
-						<span>1月份</span></a>
-						<a id="defutBtn02" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('02');">
-						<span>2月份</span></a>
-						<a id="defutBtn03" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('03');">
-						<span>3月份</span></a>
-						<a id="defutBtn04" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('04');">
-						<span>4月份</span></a>
-						<a id="defutBtn05" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('05');">
-						<span>5月份</span></a>
-						<a id="defutBtn06" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('06');">
-						<span>6月份</span></a>
-						<a id="defutBtn07" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('07');">
-						<span>7月份</span></a>
-						<a id="defutBtn08" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('08');">
-						<span>8月份</span></a>
-						<a id="defutBtn09" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('09');">
-						<span>9月份</span></a>
-						<a id="defutBtn10" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('10');">
-						<span>10月份</span></a>
-						<a id="defutBtn11" style="height: 15px;" class="DTTT_button box" onclick="doSearchCustomer('11');">
-						<span>11月份</span></a>
-					</td> 
+			<input type="hidden" id="monthday"    value="${monthday }"/>
+			<input type="hidden" id="statusFlag"  value="${statusFlag }"/>
+			<input type="hidden" id="hiddenCol"  value="${hiddenCol }"/>
+			<input type="hidden" id="year"       value="${year }"/>
+			<input type="hidden" id="costType"   value="${costType }"/>
+			
+			<table>
+				<tr>
+					<td width="50px"></td> 
+					<td class="label">关键字1：</td>
+					<td class="condition"><input type="text" id="keyword1" name="keyword1" class="middle"/></td>
+					<td class="label">关键字2：</td> 
+					<td class="condition"><input type="text" id="keyword2" name="keyword2" class="middle"/></td>
+					<td><button type="button" id="retrieve" class="DTTT_button" 
+							style="width:50px" value="查询" onclick="doSearch();"/>查询</td>
+					<td width=""></td> 
 				</tr>
-					</table>
+				<tr>
+					<td width="50px"></td> 
+					<td class="label">年份选择：</td>			
+					<td class="condition"> 
+						<a class="DTTT_button box" onclick="doSearchCustomer('2018',7);" id="defutBtn2018">2018</a>
+						<a class="DTTT_button box" onclick="doSearchCustomer('2019',7);" id="defutBtn2019">2019</a></td> 
+			
+					<td class="label" >费用类别：</td>					
+					<td colspan="3"> 
+						<a class="DTTT_button box2" onclick="doSearchCustomer2('C',7);" id="defutBtnC">车间费用</a>
+						<a class="DTTT_button box2" onclick="doSearchCustomer2('S',7);" id="defutBtnS">供应商费用</a>
+						<a class="DTTT_button box2" onclick="doSearchCustomer2('K',5);" id="defutBtnK">客户费用</a>
+						<a class="DTTT_button box2" onclick="doSearchCustomer2('J',7);" id="defutBtnJ">检验费用</a>
+						<a class="DTTT_button box2" onclick="doSearchCustomer2('G',7);" id="defutBtnG">跟单费用</a>
+						<a class="DTTT_button box2" onclick="doSearchCustomer2('A',7);" id="defutBtnN">ALL</a></td> 
+				
+					</tr>
+			</table>
 
-				</form>
-			</div>
-			<div  style="height:10px"></div>
-		
-			<div class="list">
-
-				<div id="DTTT_container2" style="height:40px;float: left">
-				<!--	<a  class="DTTT_button box2" onclick="doSearchCustomer2('');" id="defutBtn010"><span>ALL</span></a> -->
-					<a  class="DTTT_button box2" onclick="doSearchCustomer2('030',7);" id="defutBtn030"><span>未入库</span></a>
-					<a  class="DTTT_button box2" onclick="doSearchCustomer2('010',7);" id="defutBtn010"><span>部分入库</span></a>
-					<a  class="DTTT_button box2" onclick="doSearchCustomer2('020',5);" id="defutBtn020"><span>已入库</span></a>
-				</div>
-				<!-- <div id="DTTT_container2" style="height:40px;float: right">
-					<a  class="DTTT_button box" onclick="doCreate();" ><span>订单过程录入</span></a>
-				</div> -->
-				<table id="TMaterial" class="display dataTable" cellspacing="0" style="width:100%">
-					<thead>						
-						<tr>
-							<th style="width: 1px;" class="dt-middle ">No</th>
-							<th style="width: 60px;" class="dt-middle ">耀升编号</th>
-							<th style="width: 100px;" class="dt-middle ">产品编号</th>
-							<th class="dt-middle ">产品名称</th>
-							<th style="width: 60px;" class="dt-middle ">订单数量</th>
-							<th style="width: 60px;" class="dt-middle ">订单交期</th>
-							<th style="width: 60px;" class="dt-middle ">入库数量</th>
-							<th style="width: 50px;" class="dt-middle ">入库时间</th>
-							<th style="width: 50px;" class="dt-middle ">车间费用</th>
-							<th style="width: 50px;" class="dt-middle ">供应商<br/>费用</th>
-							<th style="width: 50px;" class="dt-middle ">客户费用</th>
-							<th style="width: 50px;" class="dt-middle ">检验费用</th>
-							<th style="width: 50px;" class="dt-middle ">跟单费用</th>
-						</tr>
-					</thead>
-				</table>
-			</div>
-		</div>
+		</form>
 	</div>
+	<div  style="height:10px"></div>
+	<div class="list">
+		<table id="TMaterial" class="display dataTable" cellspacing="0" style="width:100%">
+			<thead>						
+				<tr>
+					<th style="width: 1px;" class="dt-middle ">No</th>
+					<th style="width: 60px;" class="dt-middle ">耀升编号</th>
+					<th style="width: 100px;" class="dt-middle ">产品编号</th>
+					<th class="dt-middle ">产品名称</th>
+					<th style="width: 60px;" class="dt-middle ">订单数量</th>
+					<th style="width: 60px;" class="dt-middle ">订单交期</th>
+					<th style="width: 60px;" class="dt-middle ">入库数量</th>
+					<th style="width: 50px;" class="dt-middle ">入库时间</th>
+					<th style="width: 50px;" class="dt-middle ">车间费用</th>
+					<th style="width: 50px;" class="dt-middle ">供应商<br/>费用</th>
+					<th style="width: 50px;" class="dt-middle ">客户费用</th>
+					<th style="width: 50px;" class="dt-middle ">检验费用</th>
+					<th style="width: 50px;" class="dt-middle ">跟单费用</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>
+</div>
 </body>
 </html>

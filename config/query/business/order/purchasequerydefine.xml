@@ -296,6 +296,7 @@
       <f name="A.unit" alias="" ctype="计量单位" />
       <f name="A.quantityOnHand" alias="" ctype="" />
       <f name="A.contractId" alias="" ctype="" />
+      <f name="A.totalPrice" alias="" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
       <f name="A.purchaseDate" alias="" ctype="" />
       <f name="A.contractStorage" alias="" ctype="" />
@@ -303,9 +304,15 @@
       <f name="A.deliveryDate" alias="" ctype="" />
       <f name="FORMAT(REPLACE(A.quantity,',',''),2)" alias="quantity" ctype="" />
       <f name="IFNULL(a.accumulated,'0')" alias="accumulated" ctype="" />
+      <f name="IFNULL(c.finishStatus,'030')" alias="paymentSts" ctype="" />
     </select>
     <!-- from>v_purchaseorderdetail3 a LEFT JOIN v_stockindetailgroupbymateiralid_from_contract g ON g.contractId = a.contractId AND g.materialId = a.materialId  left join v_inspectionreturngroupbytype e on a.YSId=e.YSId and a.materialId=e.materialId  left join v_receiveinspectiongroup c ON c.contractId=a.contractId AND c.materialId=a.materialId LEFT JOIN v_arrivalquantitygroup d ON d.contractId=a.contractId AND d.materialId = a.materialId left join v_inspectionreturngroup f ON f.YSId = a.YSId AND f.materialId = a.materialId  WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from -->
     <from>v_purchaseorderdetail3 a  
+    	LEFT JOIN 
+			(
+				SELECT c1.paymentId,c1.finishStatus,c2.contractId FROM b_payment c1,b_paymentdetail c2
+				WHERE c1.paymentId=c2.paymentId AND c1.deleteFlag='0' AND c2.deleteFlag='0' 
+			)c ON c.contractId = a. contractId
     	WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from>
     <orderby>A.YSId,A.contractId,a.materialId</orderby>
     <groupby></groupby>

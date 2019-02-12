@@ -887,8 +887,9 @@ public class PaymentService extends CommonService {
 			copyProperties(payment,commData);
 			guid = BaseDAO.getGuId();
 			payment.setRecordid(guid);
-			payment.setApprovalstatus("010");//未审核
-			payment.setApplicant(userInfo.getUserId());//默认为登陆者
+			//payment.setApprovalstatus("010");//未审核
+			payment.setApplicant(userInfo.getUserId());//申请人：默认为登陆者
+			payment.setInvoiceuser(userInfo.getUserId());//发票填写人：默认为登陆者
 			System.out.println("付款Insert前："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 			new B_PaymentDao().Create(payment);
 			System.out.println("付款Insert后："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
@@ -900,10 +901,11 @@ public class PaymentService extends CommonService {
 					"paymentRequestUpdate",userInfo);
 			copyProperties(db,commData);
 			db.setApplicant(userInfo.getUserId());//默认为登陆者
+			db.setInvoiceuser(userInfo.getUserId());//默认为登陆者
 
-			System.out.println("付款Update前："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
+			System.out.println("付款Update前："+db.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 			new B_PaymentDao().Store(db);
-			System.out.println("付款Update后："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
+			System.out.println("付款Update后："+db.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 		}
 		
 	}

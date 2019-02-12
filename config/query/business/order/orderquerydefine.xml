@@ -45,6 +45,7 @@
       <w name="a.checkInDate"    des="" reqName="endDate"   dtype="ch" oper="&lt;"  lg="AND" bt="" />
       <w name="a.deliveryDate"   des="" reqName="orderStartDate" dtype="ch" oper="&gt;"  lg="AND" bt="" />
       <w name="a.deliveryDate"   des="" reqName="orderEndDate"   dtype="ch" oper="&lt;"  lg="AND" bt="" />
+      <w name="LEFT(a.deliveryDate,4)"   des="" reqName="year"   dtype="ch" oper="="  lg="AND" bt="" />
     </where>
     <select>
       <f name="A.productId" alias="" ctype="" />
