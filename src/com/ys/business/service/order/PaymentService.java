@@ -1364,6 +1364,24 @@ public class PaymentService extends CommonService {
 		
 		return modelMap;
 		
+	}	
+
+	public HashMap<String, Object> contractPayment() throws Exception {
+		String contractId = request.getParameter("contractId");
+		dataModel.setQueryName("getPaymentDetailByContractId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#0", contractId);
+		System.out.println("付款记录："+sql);
+		
+		baseQuery.getYsFullData(sql);
+
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+		
 	}
 	
 

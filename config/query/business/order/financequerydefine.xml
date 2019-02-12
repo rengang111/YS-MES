@@ -1103,5 +1103,38 @@
     <groupby></groupby>
     <having></having>
 	<power></power>
-  </query> 
+  </query>    
+  <query>
+    <pool></pool>    
+    <name value="getPaymentDetailByContractId" />
+     <where>
+    </where>
+  <select>
+      <f name="e.paymentHistoryId" alias="" ctype="" />
+      <f name="e.paymentId" alias="" ctype="" />
+      <f name="e.paymentAmount" alias="" ctype="" />
+      <f name="e.finishDate" alias="" ctype="" />
+      <f name="d.contractId" alias="" ctype="" />
+  </select>
+    <from>
+		b_paymenthistory e, 
+		(
+			SELECT
+			b.paymentId,
+			group_concat(b.contractId SEPARATOR ','	) AS contractId
+			FROM b_paymentdetail b,
+			(
+				SELECT a.paymentId,a.contractId
+				FROM b_paymentdetail a
+				WHERE a.contractId='#0' AND a.deleteFlag='0'
+			) c
+			WHERE c.paymentId=b.paymentId AND b.deleteFlag='0'
+		) d 
+		WHERE d.paymentId=e.paymentId  AND e.deleteFlag='0'
+	</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
 </root>

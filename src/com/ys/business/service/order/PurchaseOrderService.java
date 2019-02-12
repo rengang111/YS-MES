@@ -156,9 +156,12 @@ public class PurchaseOrderService extends CommonService {
 		}
 		
 		if(notEmpty(status)){
-			if(("2").equals(status)){
+			if(("2").equals(status)){//已收货
 				having = " ((REPLACE(quantity, ',', '') + 0) <= (REPLACE (accumulated, ',', '') + 0)) ";
-			}else{
+			}else if(("3").equals(status)){//未到货已付款
+				having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (accumulated, ',', '') + 0)) ";
+				having += " AND ((paymentSts + 0) >  30) ";
+			}else{//未到货
 				having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (accumulated, ',', '') + 0)) ";
 			}
 		}

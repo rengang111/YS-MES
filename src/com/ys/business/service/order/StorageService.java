@@ -2194,6 +2194,21 @@ public class StorageService extends CommonService {
 		return modelMap;
 	}
 	
+
+	public HashMap<String, Object> getStockinListById() throws Exception{
+		String contractId = request.getParameter("contractId");
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("getStockinListById");
+		userDefinedSearchCase.put("contractId", contractId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
+	
 	@SuppressWarnings("unchecked")
 	private String getStokinType(String arrivalId) throws Exception{
 

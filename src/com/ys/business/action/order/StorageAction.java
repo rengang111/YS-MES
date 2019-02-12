@@ -277,6 +277,10 @@ public class StorageAction extends BaseAction {
 				stockOutCorrectionEditInit();
 				rtnUrl = "/business/inventory/beginningstockoutcorrection";
 				break;
+			case "getStockinListById"://合同详情页面：收货记录
+				dataMap = getStockinListById();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -854,6 +858,11 @@ public class StorageAction extends BaseAction {
 		
 	}
 	
+	public HashMap<String, Object> getStockinListById() throws Exception{
+		
+		return service.getStockinListById();
+		
+	}
 
 	public HashMap<String, Object> stockOutCorrectionEditInit() throws Exception{
 		

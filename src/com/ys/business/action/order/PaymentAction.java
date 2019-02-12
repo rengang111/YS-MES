@@ -211,6 +211,10 @@ public class PaymentAction extends BaseAction {
 			case "downloadExcelForPayment"://EXCEL导出
 				downloadExcelForPayment();
 				break;
+			case "contractPayment"://采购合同详情：付款记录
+				dataMap = contractPayment();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -585,6 +589,12 @@ public class PaymentAction extends BaseAction {
 	public HashMap<String, Object> getStockoutDetail() throws Exception{
 
 		return service.getStockoutDetail();		
+		
+	}
+	
+	public HashMap<String, Object> contractPayment() throws Exception{
+
+		return service.contractPayment();		
 		
 	}
 	

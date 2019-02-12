@@ -251,10 +251,10 @@ function deductAjax() {
 		}
 		
 		ajaxRawGroup();			
+				
+		stockinList();//收货记录	
 		
-		$( "#tabs" ).tabs();
-		
-		$('#example').DataTable().columns.adjust().draw();		
+		contractPayment();//付款记录
 		
 		$("#goBack").click(
 				function() {	
@@ -320,7 +320,7 @@ function deductAjax() {
 		
 		contractSum();//合同计算
 		
-		expenseAjax3();//订单过程扣款明细
+		//expenseAjax3();//订单过程扣款明细
 		
 		stockinAjax();//入库退货
 		
@@ -481,7 +481,7 @@ function expenseAjax3() {//工厂（供应商）增减费用
 						
 						fnCallback(data);
 
-						supplierSum();
+						//supplierSum();
 						
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -697,6 +697,163 @@ function doDeleteStockin(id){
 }
 
 </script>
+
+<script type="text/javascript">
+
+function stockinList() {//收货记录
+
+	var table = $('#contractStockin').dataTable();
+		if(table) {
+			table.fnDestroy();
+		}
+		var contractId = '${contract.contractId}';
+		var actionUrl = "${ctx}/business/storage?methodtype=getStockinListById&contractId="+contractId;
+
+		var t = $('#contractStockin').DataTable({
+			
+			"processing" : false,
+			"retrieve"   : true,
+			"stateSave"  : true,
+			"pagingType" : "full_numbers",
+	        "paging"    : false,
+	        "pageLength": 50,
+			"async"		: false,
+	        "ordering"  : false,
+			"sAjaxSource" : actionUrl,
+			dom : '<"clear">lt',
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"type" : "POST",
+					"contentType": "application/json; charset=utf-8",
+					"dataType" : 'json',
+					"url" : sSource,
+					"data" : JSON.stringify($('#bomForm').serializeArray()),// 要提交的表单
+					success : function(data) {
+						
+						fnCallback(data);
+						
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown) {
+						alert(textStatus)
+					}
+				})
+			},
+        	"language": {
+        		"url":"${ctx}/plugins/datatables/chinese.json"
+        	},
+			
+			"columns" : [
+			    {"data": null,"className" : 'td-center'},
+			    {"data": "receiptId", "defaultContent" : '',"className" : 'td-center'},//入库单号
+			    {"data": "checkInDate", "defaultContent" : '',"className" : 'td-center'},//入库时间
+			    {"data": "materialId", "defaultContent" : '',"className" : ''},//物料编号
+			    {"data": "materialName", "defaultContent" : '',"className" : ''},//物料名称
+			   // {"data": "remarks", "defaultContent" : ''},//合同数量
+			    {"data": "quantity", "defaultContent" : '0',"className" : 'td-right'},//入库数量
+				
+			],
+			"columnDefs":[
+	    		{"targets":0,"render":function(data, type, row){	
+	    			var rownum = row["rownum"];
+	    			return rownum;
+	    		}}
+		     ] ,
+		})
+		
+	
+};//收货
+
+//
+function supplierSum2(){	
+	var contract = 0;	
+	$('#supplier tbody tr').each (function (){
+		var contractValue = $(this).find("td").eq(4).text();//
+		contractValue= currencyToFloat(contractValue);
+		contract = contract + contractValue;
+	});	
+	$('#supplierSum').html(floatToCurrency(contract));
+}
+
+function doShowDetail2(requisitionId) {
+	var virtualClass = $('#virtualClass').val();
+	var methodtype = "excessDetail";
+	
+	var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&requisitionId="+requisitionId+"&virtualClass="+virtualClass;
+	
+	callProductDesignView("超领详情",url);
+}
+
+</script>
+
+<script type="text/javascript">
+
+function contractPayment() {//付款记录
+
+	var table = $('#contractPayment').dataTable();
+		if(table) {
+			table.fnDestroy();
+		}
+		var contractId = '${contract.contractId}';
+		var actionUrl = "${ctx}/business/payment?methodtype=contractPayment&contractId="+contractId;
+
+		var t = $('#contractPayment').DataTable({
+			
+			"processing" : false,
+			"retrieve"   : true,
+			"stateSave"  : true,
+			"pagingType" : "full_numbers",
+	        "paging"    : false,
+	        "pageLength": 50,
+			"async"		: false,
+	        "ordering"  : false,
+			"sAjaxSource" : actionUrl,
+			dom : '<"clear">lt',
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				$.ajax({
+					"type" : "POST",
+					"contentType": "application/json; charset=utf-8",
+					"dataType" : 'json',
+					"url" : sSource,
+					"data" : JSON.stringify($('#bomForm').serializeArray()),// 要提交的表单
+					success : function(data) {
+						
+						fnCallback(data);
+						
+					},
+					error : function(XMLHttpRequest, textStatus, errorThrown) {
+						alert(textStatus)
+					}
+				})
+			},
+        	"language": {
+        		"url":"${ctx}/plugins/datatables/chinese.json"
+        	},
+			
+			"columns" : [
+			    {"data": null,"className" : 'td-center'},
+			    {"data": "paymentHistoryId", "defaultContent" : '',"className" : 'td-center'},//付款单号
+			    {"data": "finishDate", "defaultContent" : '',"className" : 'td-center'},//付款时间
+			    {"data": "paymentAmount", "defaultContent" : '0',"className" : 'td-right'},//金额
+			    {"data": "contractId", "defaultContent" : '',"className" : ''},//关联合同
+				
+			],
+			"columnDefs":[
+	    		{"targets":0,"render":function(data, type, row){	
+	    			var rownum = row["rownum"];
+	    			return rownum;
+	    		}},
+	    		{"targets":3,"render":function(data, type, row){	
+	    			
+	    			return floatToCurrency(data);
+	    		}}
+		     ] ,
+		})
+		
+	
+};//
+
+
+</script>
 </head>
 <body>
 <div id="container">
@@ -864,6 +1021,40 @@ function doDeleteStockin(id){
 			</table>
 		</div>
 	</fieldset>
+	
+	<fieldset>
+		<span class="tablename"> 合同收货记录</span>
+		<div class="list">		
+			<table id="contractStockin" class="display" >
+				<thead>				
+					<tr>
+						<th width="20px">No</th>
+						<th class="dt-center" width="100px">入库单号</th>
+						<th class="dt-center" width="100px">入库时间</th>
+						<th class="dt-center" width="150px">物料编号</th>
+						<th class="dt-center" width="">物料名称</th>
+						<th class="dt-center" width="100px">入库数量</th>
+					</tr>
+				</thead>					
+			</table>
+		</div>
+	</fieldset>
+	<fieldset>
+		<span class="tablename"> 付款记录</span>
+		<div class="list">		
+			<table id="contractPayment" class="display" >
+				<thead>				
+					<tr>
+						<th width="20px">No</th>
+						<th class="dt-center" width="80px">付款单号</th>
+						<th class="dt-center" width="70px">付款时间</th>
+						<th class="dt-center" width="100px">付款金额</th>
+						<th class="dt-center" width="">关联合同</th>
+					</tr>
+				</thead>					
+			</table>
+		</div>
+	</fieldset>
 	<fieldset style="margin-top: -10px;">
 		<legend> 超领扣款明细</legend>
 		<div class="list">
@@ -893,6 +1084,7 @@ function doDeleteStockin(id){
 			</table>
 		</div>
 	</fieldset>
+	<!-- 
 	<fieldset>
 		<span class="tablename"> 订单过程扣款明细</span>
 		<div class="list">		
@@ -920,6 +1112,7 @@ function doDeleteStockin(id){
 			</table>
 		</div>
 	</fieldset>
+	 -->
 	<fieldset>
 		<span class="tablename"> 合同入库扣款明细</span>（点击【取消】，该条记录可以修改为“不扣款”）
 		<div class="list">		

@@ -282,7 +282,7 @@
 		//$('#userFlag').hide();
 	}
 	
-	//逾期未到货
+	//未到货已付款
 	function selectContractByDate2(searchSts,hideCol){
 
 		hideAllSearch();
@@ -301,7 +301,7 @@
 		$("#keyword1").val("");
 		$("#keyword2").val("");
 		
-		searchAjax(searchSts,'false',deliveryDate,'');
+		searchAjax(searchSts,'false','','');
 	
 		
 	}
@@ -370,6 +370,7 @@
 					<td colspan="4">
 						<!--a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('0',11);">逾期未到货</a-->
 						<a id="defutBtnm1" class="DTTT_button box2" onclick="selectContractByDate('1',11);">未到货</a>
+						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('3',11);">未到货已付款</a>
 						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2','');" >已收货</a>
 						
 						<span id="yearFlag">			
@@ -420,8 +421,8 @@
 					<th style="width: 60px;">供应商</th>
 					<th style="width: 60px;">合同交期</th>
 					<th style="width: 50px;">合同金额</th>
-					<th style="width: 50px;">收货状态</th>
-					<th style="width: 50px;">付款状态</th>
+					<th style="width: 55px;">收货状态</th>
+					<th style="width: 55px;">付款状态</th>
 				</tr>
 			</thead>
 		</table>
