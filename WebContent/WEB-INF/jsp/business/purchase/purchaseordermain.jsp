@@ -112,11 +112,11 @@
 	    			//收货状态
 	    			var contractQty = currencyToFloat(row['quantity']);
 	    			var storageQty  = currencyToFloat(row['contractStorage']);
-	    			var storageSts = '未收货';
+	    			var storageSts = '未入库';
 	    			if(storageQty >= contractQty){
-	    				storageSts = '已收货';
+	    				storageSts = '已入库';
 	    			}else if(storageQty > 0){
-	    				storageSts = '部分收货';
+	    				storageSts = '部分入库';
 	    			}
 	    			return storageSts;
 	    		}},
@@ -192,8 +192,8 @@
 		
 		$("#year").change(function() {
 			
-			$('#keyword1').val('');
-			$('#keyword2').val('');
+			//$('#keyword1').val('');
+			//$('#keyword2').val('');
 			
 			var year  = $('#year').val();
 			var currYear = getYear();
@@ -223,6 +223,8 @@
 	
 	function doSearch() {	
 
+		hideAllSearch();
+		
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		searchAjax("","false",'','');
 		
@@ -270,8 +272,8 @@
 		$("#monthday").val(monthday);	
 		$("#month").val(monthonly);	
 
-		$("#keyword1").val("");
-		$("#keyword2").val("");
+		//$("#keyword1").val("");
+		//$("#keyword2").val("");
 		
 	 	searchAjax(searchSts,'false','',monthday);		
 	}
@@ -298,8 +300,8 @@
 
 		$("#searchSts").val(searchSts);
 		
-		$("#keyword1").val("");
-		$("#keyword2").val("");
+		//$("#keyword1").val("");
+		//$("#keyword2").val("");
 		
 		searchAjax(searchSts,'false','','');
 	
@@ -310,8 +312,8 @@
 
 		hideAllSearch();
 		
-		$("#keyword1").val("");
-		$("#keyword2").val("");
+		//$("#keyword1").val("");
+		//$("#keyword2").val("");
 		
 		searchAjax(status,'false','','');
 	}
@@ -319,8 +321,8 @@
 	//月份选择
 	function doSearchCustomer(month){
 		
-		$('#keyword1').val('');
-		$('#keyword2').val('');
+		//$('#keyword1').val('');
+		//$('#keyword2').val('');
 		
 		var year = $('#year').val();
 		
@@ -369,9 +371,9 @@
 					<td class="label">到货情况：</td>
 					<td colspan="4">
 						<!--a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('0',11);">逾期未到货</a-->
-						<a id="defutBtnm1" class="DTTT_button box2" onclick="selectContractByDate('1',11);">未到货</a>
-						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('3',11);">未到货已付款</a>
-						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2','');" >已收货</a>
+						<a id="defutBtnm1" class="DTTT_button box2" onclick="selectContractByDate('1',11);">未入库</a>
+						<a id="defutBtnm3" class="DTTT_button box2" onclick="selectContractByDate2('3',11);">未入库已付款</a>
+						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2','');" >已入库</a>
 						
 						<span id="yearFlag">			
 							<select id="year" name="year"  style="width: 100px;vertical-align: bottom;height: 25px;"></select>

@@ -119,8 +119,8 @@ public class PurchaseOrderService extends CommonService {
 		String having = "1=1";
 		//
 		if(notEmpty(key1) || notEmpty(key2)){
-			status = "";//关键字查询,忽略其状态
-			makeType = "";
+			//status = "";//关键字查询,忽略其状态
+			//makeType = "";
 			userDefinedSearchCase.put("purchaseType", "");//关键字查询,忽略其类型(订购件)
 			userDefinedSearchCase.put("supplierId2", "");//关键字查询,忽略其类型(自制件)
 			userDefinedSearchCase.put("materialId2", "");//关键字查询,忽略其类型(包装件)
@@ -145,8 +145,8 @@ public class PurchaseOrderService extends CommonService {
 			
 		}else if(("C").equals(makeType)){
 			//采购件
-			key1 = "";
-			key2 = "";
+			//key1 = "";
+			//key2 = "";
 			//where = "&supplierId2=0574YZ00&materialId2=G&status=030&purchaseType=010";
 			userDefinedSearchCase.put("supplierId2", "0574YZ00");
 			userDefinedSearchCase.put("status", "030");
@@ -156,13 +156,13 @@ public class PurchaseOrderService extends CommonService {
 		}
 		
 		if(notEmpty(status)){
-			if(("2").equals(status)){//已收货
-				having = " ((REPLACE(quantity, ',', '') + 0) <= (REPLACE (accumulated, ',', '') + 0)) ";
-			}else if(("3").equals(status)){//未到货已付款
-				having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (accumulated, ',', '') + 0)) ";
+			if(("2").equals(status)){//已入库
+				having = " ((REPLACE(quantity, ',', '') + 0) <= (REPLACE (contractStorage, ',', '') + 0)) ";
+			}else if(("3").equals(status)){//未入库已付款
+				having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (contractStorage, ',', '') + 0)) ";
 				having += " AND ((paymentSts + 0) >  30) ";
-			}else{//未到货
-				having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (accumulated, ',', '') + 0)) ";
+			}else{//未入库
+				having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (contractStorage, ',', '') + 0)) ";
 			}
 		}
 				
