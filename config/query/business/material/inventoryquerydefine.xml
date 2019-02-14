@@ -927,6 +927,8 @@
       <f name="A.arriveDate" alias="" ctype="" />
       <f name="materialRecordId" alias="" ctype="" />
       <f name="materialParentId" alias="" ctype="" />
+      <f name="A.purchaser" alias="" ctype="" />
+      <f name="A.purchaser" alias="purchaserName" ctype="采购人员" />
     </select>
     <from>v_arrivalfrompurchaseorder a  
     	WHERE a.deleteFlag = '0' 

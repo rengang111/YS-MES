@@ -7,7 +7,7 @@
 <title>采购合同一览</title>
 <script type="text/javascript">
 
-	function searchAjax(status,sessionFlag,deliveryDate,monthday) {
+	function searchAjax(searchSts,sessionFlag,deliveryDate,monthday) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -15,12 +15,14 @@
 		}
 		var methodtype = $('#methodtype').val();
 		var makeType   = $('#makeType').val();
+		var userId     = $("#userId").val();
 		var actionUrl  = "${ctx}/business/contract?methodtype="+methodtype;
 		actionUrl = actionUrl +	"&sessionFlag="+sessionFlag;;
 		actionUrl = actionUrl + "&deliveryDate="+deliveryDate;
 		actionUrl = actionUrl + "&monthday="+monthday;
 		actionUrl = actionUrl + "&makeType="+makeType;
-		actionUrl = actionUrl + "&status="+status;
+		actionUrl = actionUrl + "&status="+searchSts;
+		actionUrl = actionUrl + "&userId="+userId;
 		
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -54,12 +56,6 @@
 						var key2 = data["keyword2"]
 						$("#keyword1").val(key1);
 						$("#keyword2").val(key2);
-						/*
-						if(myTrim(key1) == "" && myTrim(key2) == ""){
-						 	$('#defutBtn').removeClass("start").addClass("end");							
-						}else{							
-						 	$('#defutBtn').removeClass("end").addClass("start");
-						}*/
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		             }
@@ -72,8 +68,9 @@
 				{"data": null,"className" : 'td-center'},
 				{"data": "contractId", "defaultContent" : '',"className" : 'td-left'},
 				{"data": "materialId","className" : 'td-left'},
-				{"data": "materialName", "defaultContent" : ''},
-				{"data": "YSId", "defaultContent" : ''},
+				{"data": "purchaserName", "defaultContent" : '-',"className" : 'td-left'},//3
+				{"data": "materialName", "defaultContent" : ''},//4
+				{"data": "YSId", "defaultContent" : ''},//5
 				{"data": "supplierId", "defaultContent" : '',"className" : 'td-left'},
 				{"data": "deliveryDate", "defaultContent" : ''},
 				{"data": "totalPrice", "defaultContent" : '0',"className" : 'td-right'},//合同金额
@@ -91,7 +88,7 @@
 	    			}
 	    			return rtn;
 	    		}},
-	    		{"targets":4,"render":function(data, type, row){
+	    		{"targets":5,"render":function(data, type, row){
 	    			var rtn="";var ysid=row["YSId"];
 	    			if(ysid == ""){
 	    				return  "日常采购";	
@@ -103,12 +100,12 @@
 	    			
 	    			return "<a href=\"###\" onClick=\"doShowControct('" + row["contractId"] + "','" + row["quantity"] + "','" + row["arrivalQty"] + "','" + row["contractStorage"] + "')\">"+row["contractId"]+"</a>";			    			
 	    		}},
-	    		{"targets":3,"render":function(data, type, row){
+	    		{"targets":4,"render":function(data, type, row){
 	    			var name = row["materialName"];				    			
 	    			if(name != null) name = jQuery.fixedWidth(name,35);
 	    			return name;
 	    		}},
-	    		{"targets":8,"render":function(data, type, row){
+	    		{"targets":9,"render":function(data, type, row){
 	    			//收货状态
 	    			var contractQty = currencyToFloat(row['quantity']);
 	    			var storageQty  = currencyToFloat(row['contractStorage']);
@@ -120,7 +117,7 @@
 	    			}
 	    			return storageSts;
 	    		}},
-	    		{"targets":9,"render":function(data, type, row){
+	    		{"targets":10,"render":function(data, type, row){
 	    			//付款状态
 	    			var finishStatus = row['paymentSts'];
 	    			var paymentSts = '未付款';
@@ -166,8 +163,9 @@
 		setYearList();
 
 		var searchSts = $('#searchSts').val();
-		var month = $('#month').val();
-		var monthday = $('#monthday').val();
+		var userId    = $('#userId').val();
+		var month     = $('#month').val();
+		var monthday  = $('#monthday').val();
 		
 		if(searchSts == '2'){//已收货
 			$('#yearFlag').show();
@@ -175,26 +173,23 @@
 		}else{
 			 monthday = '';
 		}
+		//var deliveryDate = '';
+		//if(searchSts == '0'){//逾期未到货
+		//	 deliveryDate = shortToday();
+		//}
 
-		var deliveryDate = '';
-		if(searchSts == '0'){//逾期未到货
-			 deliveryDate = shortToday();
-		}
-
-
-		searchAjax(searchSts,"true",deliveryDate,monthday);
+		searchAjax(searchSts,"true",'',monthday);
 		
 		buttonSelectedEvent();//按钮选择式样
 		buttonSelectedEvent2();//按钮选择式样
+		buttonSelectedEvent3();//按钮选择式样
 
-		$('#defutBtnm'+searchSts).removeClass("start").addClass("end");	
 		$('#defutBtn'+month).removeClass("start").addClass("end");	
+		$('#defutBtnu'+userId).removeClass("start").addClass("end");	
+		$('#defutBtnm'+searchSts).removeClass("start").addClass("end");	
 		
 		$("#year").change(function() {
-			
-			//$('#keyword1').val('');
-			//$('#keyword2').val('');
-			
+						
 			var year  = $('#year').val();
 			var currYear = getYear();
 			
@@ -236,6 +231,10 @@
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });
+	    collection = $(".box3");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
 	}
 
 	function doShowControct(contractId,quantity,arrivalQty,stockinQty) {
@@ -250,9 +249,15 @@
 
 		callWindowFullView("合同详情",url);
 		//location.href = url;
+	}	
+
+	function hideAllSearch(){
+
+		$('#yearFlag').hide();
+		//$('#userFlag').hide();
 	}
 	
-	//已收货
+	//已入库
 	function doSearchCustomer3(searchSts,sessionFlag){
 
 		hideAllSearch();
@@ -260,38 +265,39 @@
 
 		var monthday = getYearMonth();
 		var monthonly = getMonth();
+		var userId = $('#userId').val();
 		
-		var collection = $(".box");
+		var collection = $(".box2");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    var collection = $(".box");
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });		    
+
 	 	$('#defutBtnm'+searchSts).removeClass("start").addClass("end");
 	 	$('#defutBtn'+monthonly).removeClass("start").addClass("end");
+	 	$('#defutBtnu'+userId).removeClass("start").addClass("end");
 
+
+		var curYear = getYear();
+		$('#year').val(curYear);//默认显示当前年
 		$("#searchSts").val(searchSts);	
 		$("#monthday").val(monthday);	
 		$("#month").val(monthonly);	
-
-		//$("#keyword1").val("");
-		//$("#keyword2").val("");
 		
 	 	searchAjax(searchSts,'false','',monthday);		
 	}
-	
-	function hideAllSearch(){
-
-		$('#yearFlag').hide();
-		//$('#userFlag').hide();
-	}
-	
-	//未到货已付款
+		
+	//未入库已付款
 	function selectContractByDate2(searchSts,hideCol){
 
 		hideAllSearch();
 
 		var deliveryDate = shortToday();
 		
-		var collection = $(".box");
+		var collection = $(".box2");
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });
@@ -299,31 +305,35 @@
 	 	$('#defutBtnm'+searchSts).removeClass("start").addClass("end");
 
 		$("#searchSts").val(searchSts);
-		
-		//$("#keyword1").val("");
-		//$("#keyword2").val("");
-		
+				
 		searchAjax(searchSts,'false','','');
 	
 		
 	}
-	//未到货
-	function selectContractByDate(status,sessionFlag){
+	//未入库
+	function selectContractByDate(searchSts,sessionFlag){
+		var collection = $(".box2");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+
+		var collection = $(".box3");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+
+		var userId = $('#userId').val();
+	 	$('#defutBtnu'+userId).removeClass("start").addClass("end");
+	 	$('#defutBtnm'+searchSts).removeClass("start").addClass("end");
 
 		hideAllSearch();
-		
-		//$("#keyword1").val("");
-		//$("#keyword2").val("");
-		
-		searchAjax(status,'false','','');
+				
+		searchAjax(searchSts,'false','','');
 	}
 		
 	//月份选择
 	function doSearchCustomer(month){
-		
-		//$('#keyword1').val('');
-		//$('#keyword2').val('');
-		
+				
 		var year = $('#year').val();
 		
 		var monthday = year +"-"+month;
@@ -331,6 +341,25 @@
 		$('#month').val(month);
 
 		searchAjax('2','false','',monthday);
+	}
+	
+	//采购员选择
+	function doSelectUserId(userId){
+
+		var monthday  = $('#monthday').val();
+		var searchSts = $('#searchSts').val();
+		
+		if(searchSts == '2'){
+			//已入库
+		}else{
+			
+		}
+	 	$('#defutBtnu'+userId).removeClass("start").addClass("end");
+	 	$('#defutBtnm'+searchSts).removeClass("start").addClass("end");
+	 	
+		$('#userId').val(userId);
+
+		searchAjax(searchSts,'false','',monthday);
 	}
 	
 </script>
@@ -346,6 +375,7 @@
 			<input type="hidden" id="methodtype" value="${methodtype }" />
 			<input type="hidden" id="makeType"   value="${makeType }" />
 			<input type="hidden" id="searchSts"  value="${searchSts }" />
+			<input type="hidden" id="userId"     value="${userId }" />
 			<input type="hidden" id="methodkey"  value="${methodkey }" />
 			<input type="hidden" id="monthday" name="monthday" value="" />
 			<input type="hidden" id="month"    name="month"    value="" />
@@ -407,6 +437,26 @@
 					</td>
 				</tr>
 			</table>
+			<table>
+				<tr>
+					<td width="50px"></td>
+					<td width="" class="label">采购人员：</td>
+					<td colspan="">
+						<span id="userFlag2">
+							<c:forEach var='list' items='${purchaser}' varStatus='status'>
+								<a id="defutBtnu${list.dicId }" style="height: 15px;margin-top: 5px;" 
+									class="DTTT_button box3" onclick="doSelectUserId('${list.dicId }');">
+									<span>${list.dicName }</span></a>
+							</c:forEach>
+						</span>			
+					</td> 
+					<td width="100px"></td>
+					<td class="label"></td>
+					<td colspan="">
+												 
+					</td>
+				</tr>
+			</table>
 
 		</form>
 	</div>
@@ -418,6 +468,7 @@
 					<th style="width: 1px;">No</th>
 					<th style="width: 80px;">合同编号</th>
 					<th style="width: 100px;">物料编号</th>
+					<th style="width: 55px;">采购员</th>
 					<th>物料名称</th>
 					<th style="width: 70px;">耀升编号</th>
 					<th style="width: 60px;">供应商</th>

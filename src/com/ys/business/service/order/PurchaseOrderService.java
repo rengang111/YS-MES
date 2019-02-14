@@ -23,6 +23,7 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.PurchaseOrderModel;
 import com.ys.business.db.dao.B_ArrivalDao;
 import com.ys.business.db.dao.B_MaterialDao;
@@ -116,20 +117,15 @@ public class PurchaseOrderService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		String status = request.getParameter("status");
+		String userId = request.getParameter("userId");
 		String having = "1=1";
-		//
-		if(notEmpty(key1) || notEmpty(key2)){
-			//status = "";//关键字查询,忽略其状态
-			//makeType = "";
-			userDefinedSearchCase.put("purchaseType", "");//关键字查询,忽略其类型(订购件)
-			userDefinedSearchCase.put("supplierId2", "");//关键字查询,忽略其类型(自制件)
-			userDefinedSearchCase.put("materialId2", "");//关键字查询,忽略其类型(包装件)
+		
+		if(("999").equals(userId)){
+			userDefinedSearchCase.put("userId", "");//999:查询全员
 		}
 		
 		if(("G").equals(makeType)){
 			//包装件
-			key1 = "";
-			key2 = "";
 			//where = "&materialId=G&status=030";
 			userDefinedSearchCase.put("materialId", "G");
 			userDefinedSearchCase.put("status", "030");
@@ -137,22 +133,24 @@ public class PurchaseOrderService extends CommonService {
 			
 		}else if(("Z").equals(makeType)){
 			//自制件
-			key1 = "";
-			key2 = "";
 			//where = "&supplierId=0574YZ00&status=030";
 			userDefinedSearchCase.put("supplierId", "0574YZ00");
 			userDefinedSearchCase.put("status", "030");
 			
 		}else if(("C").equals(makeType)){
 			//采购件
-			//key1 = "";
-			//key2 = "";
 			//where = "&supplierId2=0574YZ00&materialId2=G&status=030&purchaseType=010";
 			userDefinedSearchCase.put("supplierId2", "0574YZ00");
 			userDefinedSearchCase.put("status", "030");
 			userDefinedSearchCase.put("materialId2", "G");
-			userDefinedSearchCase.put("purchaseType", "010");
+			//userDefinedSearchCase.put("purchaseType", "010");
 			
+		}
+		//
+		if(notEmpty(key1) || notEmpty(key2)){
+			userDefinedSearchCase.put("purchaseType", "");//关键字查询,忽略其类型(订购件)
+			userDefinedSearchCase.put("supplierId2", "");//关键字查询,忽略其类型(自制件)
+			userDefinedSearchCase.put("materialId2", "");//关键字查询,忽略其类型(包装件)
 		}
 		
 		if(notEmpty(status)){
@@ -1577,6 +1575,11 @@ public class PurchaseOrderService extends CommonService {
 	
 	public void purchaseOrderMainInit() throws Exception{
 
+		ArrayList<HashMap<String, String>> list = getPurchaseUserById();
+
+		model.addAttribute("purchaser",list);
 		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
+	
+	
 }

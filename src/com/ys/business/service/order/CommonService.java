@@ -1146,5 +1146,31 @@ public class CommonService extends BaseService {
     	
     	return rtn;
     }
+    
+	public ArrayList<HashMap<String, String>> getPurchaseUserById() throws Exception{
+		ArrayList<HashMap<String, String>> list = null;
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("getPuchaserByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("dicTypeId", "采购人员");		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			list = dataModel.getYsViewData();
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("rownum", String.valueOf(list.size()+1));
+			map.put("dicName", "ALL");
+			map.put("dicId", "999");
+			map.put("SortNo", "999");
+			list.add(map);
+			//model.addAttribute("purchaser",list);
+			//model.addAttribute("defUser",map);
+		
+		}
+
+		return list;
+		
+	}
 
 }

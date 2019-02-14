@@ -207,6 +207,7 @@ public class PurchaseOrderAction extends BaseAction {
 	public void doInit(String formId){	
 
 		String searchSts = (String) session.getAttribute("searchSts");
+		String userId = (String) session.getAttribute("userId");
 		String methodtype = request.getParameter("methodtype");
 		String makeType = request.getParameter("makeType");
 		//没有物料编号,说明是初期显示,清空保存的查询条件
@@ -217,8 +218,13 @@ public class PurchaseOrderAction extends BaseAction {
 		}
 
 		if(searchSts == null || ("").equals(searchSts)){
-			searchSts = "1";//设置默认值：未到货
+			searchSts = "1";//设置默认值：未入库
 		}
+		if(userId == null || ("").equals(userId)){
+			userId = "999";//设置默认值：全员
+		}
+		
+		model.addAttribute("userId",userId);		
 		model.addAttribute("makeType",makeType);
 		model.addAttribute("searchSts",searchSts);
 		

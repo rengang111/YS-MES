@@ -287,6 +287,8 @@
    	  	
    	  	<w name="left(A.materialId,1)"     des="" reqName="materialId"    dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="left(A.materialId,1)"     des="" reqName="materialId2"    dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
+   	  	
+   	  	<w name="A.purchaser"  des=""  reqName="userId"  dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -305,6 +307,8 @@
       <f name="FORMAT(REPLACE(A.quantity,',',''),2)" alias="quantity" ctype="" />
       <f name="IFNULL(a.accumulated,'0')" alias="accumulated" ctype="" />
       <f name="IFNULL(c.finishStatus,'030')" alias="paymentSts" ctype="" />
+      <f name="A.purchaser" alias="" ctype="" />
+      <f name="A.purchaser" alias="purchaserName" ctype="采购人员" />
     </select>
     <!-- from>v_purchaseorderdetail3 a LEFT JOIN v_stockindetailgroupbymateiralid_from_contract g ON g.contractId = a.contractId AND g.materialId = a.materialId  left join v_inspectionreturngroupbytype e on a.YSId=e.YSId and a.materialId=e.materialId  left join v_receiveinspectiongroup c ON c.contractId=a.contractId AND c.materialId=a.materialId LEFT JOIN v_arrivalquantitygroup d ON d.contractId=a.contractId AND d.materialId = a.materialId left join v_inspectionreturngroup f ON f.YSId = a.YSId AND f.materialId = a.materialId  WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from -->
     <from>v_purchaseorderdetail3 a  

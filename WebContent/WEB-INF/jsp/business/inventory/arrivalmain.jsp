@@ -198,10 +198,7 @@
 		setYearList();
 		
 		$("#year").change(function() {
-			
-			$('#keyword1').val('');
-			$('#keyword2').val('');
-			
+						
 			var year  = $('#year').val();
 			var currYear = getYear();
 			
@@ -341,27 +338,24 @@
 
 		hideAllSearch();
 		$('#userFlag').show();
+			
+		var month = getYearMonth();
+		var monthonly = getMonth();
 		
-		//var searchSts = $('#searchSts').val();
-		//if(searchSts == '0'){
-			
-			var month = getYearMonth();
-			var monthonly = getMonth();
-			
-			var collection = $(".box");
-		    $.each(collection, function () {
-		    	$(this).removeClass("end");
-		    });
-		    
-		 	$('#defutBtnm'+type).removeClass("start").addClass("end");
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
+	 	$('#defutBtnm'+type).removeClass("start").addClass("end");
 
-			$("#searchSts").val(type);
-			
-			$("#keyword1").val("");
-			$("#keyword2").val("");
-			
-			searchAjax(type,'false',hideCol,'');
-		//}
+		$("#searchSts").val(type);
+		
+		//$("#keyword1").val("");
+		//$("#keyword2").val("");
+		
+		searchAjax(type,'false',hideCol,'');
+		
 		
 		
 	}
@@ -372,27 +366,24 @@
 		hideAllSearch();
 		$('#yearFlag').show();
 		
-		//var yearShowFlag = $('#yearShowFlag').val();
-		//if(yearShowFlag == ''){
-
-			var month = getYearMonth();
-			var monthonly = getMonth();
-			
-			var collection = $(".box");
-		    $.each(collection, function () {
-		    	$(this).removeClass("end");
-		    });		    
-		 	$('#defutBtn'+monthonly).removeClass("start").addClass("end");
-		 	
-		 	searchAjax(type,'false','',month);
-		//}
+		var month = getYearMonth();
+		var monthonly = getMonth();
 		
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });		    
+	 	$('#defutBtn'+monthonly).removeClass("start").addClass("end");
+	 	
+	 	searchAjax(type,'false','',month);
+			
 	}
+	
 	//采购员选择
 	function doSelectUserId(userId){
 		
-		$('#keyword1').val('');
-		$('#keyword2').val('');
+		//$('#keyword1').val('');
+		//$('#keyword2').val('');
 		
 		var year = $('#year').val();
 		
@@ -401,41 +392,13 @@
 		searchAjax('0','false','','');
 	}
 	
-	//年份选择
-	function doSearchCustomer4(){
-		
-		$('#keyword1').val('');
-		$('#keyword2').val('');
-		
-		var year  = $('#year').val();
-		var currYear = getYear();
-		
-		if(year == currYear){//当前年份
-
-			var month = $('#month').val();
-		}else{//其他年份
-
-			var month = '12';//默认是年末
-		}
-		
-		var monthday = year +"-"+month;
-		$('#monthday').val(monthday);
-
-		var collection = $(".box");
-	    $.each(collection, function () {
-	    	$(this).removeClass("end");
-	    });
-	    
-	 	$('#defutBtn'+month).removeClass("start").addClass("end");
-	 	
-	 	searchAjax('2','false','',monthday);
-	}
+	
 	
 	//月份选择
 	function doSearchCustomer(month){
 		
-		$('#keyword1').val('');
-		$('#keyword2').val('');
+		//$('#keyword1').val('');
+		//$('#keyword2').val('');
 		
 		var year = $('#year').val();
 		

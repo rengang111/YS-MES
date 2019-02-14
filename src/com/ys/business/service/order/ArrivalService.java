@@ -107,10 +107,11 @@ public class ArrivalService extends CommonService {
 		String deliveryDate = request.getParameter("deliveryDate");//合同交期
 		String where ="AND 1=1";
 		if(notEmpty(key1) || notEmpty(key2)){
-			actionType = "";//忽略其状态
+			//actionType = "";//忽略其状态
 		}
 		if(("0").equals(actionType) ){
 			dataModel.setQueryName("getContractListForNoArrival");//逾期未到货
+			
 		}else if (("1").equals(actionType)){
 			dataModel.setQueryName("getContractListForNoArrival");//未到货
 			deliveryDate = "";//清空时间条件
