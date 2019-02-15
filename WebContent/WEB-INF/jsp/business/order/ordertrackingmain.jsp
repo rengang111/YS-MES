@@ -65,7 +65,7 @@
         		"url":"${ctx}/plugins/datatables/chinese.json"
         	},
 			"columns": [
-				{"data": null, "defaultContent" : '',"className" : 'td-left'},
+				{"data": null, "defaultContent" : '',"className" : 'td-center'},
 				{"data": "YSId", "defaultContent" : '',"className" : 'td-left'},
 				{"data": "productId", "defaultContent" : '',"className" : 'td-left'},
 				{"data": "productName", "defaultContent" : ''},
@@ -80,8 +80,10 @@
 	    			var YSId = row["YSId"];	var imgName = "pixel"; var altMsg="置顶";
 	    			if(followFlag == '0'){
 	    				imgName = "icon-top";
+			    		return '<input type="image" title="'+altMsg+'" style="border: 0px;" src="${ctx}/images/'+imgName+'.png" />';
+	    			}else{
+			    		return row["rownum"];
 	    			}
-		    		return row["rownum"]+'<input type="image" title="'+altMsg+'" style="border: 0px;" src="${ctx}/images/'+imgName+'.png" />';
 	    			
 	    		}},
 	    		{"targets":7,"render":function(data, type, row){

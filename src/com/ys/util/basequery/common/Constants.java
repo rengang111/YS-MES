@@ -298,6 +298,7 @@ public class Constants {
 	 * 重点关注对象
 	 */
 	public static final String FOLLOWTYPE_1 = "1";//订单
+	public static final String FOLLOWTYPE_2 = "2";//合同
 	
 	public static final String FOLLOWSTATUS_0 = "0";//关注
 	public static final String FOLLOWSTATUS_1 = "1";//取消关注

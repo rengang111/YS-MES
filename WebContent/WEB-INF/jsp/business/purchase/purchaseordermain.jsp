@@ -5,6 +5,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common2.jsp"%>
 <title>采购合同一览</title>
+<style>
+body{
+	font-size:10px;
+}
+</style>
 <script type="text/javascript">
 
 	function searchAjax(searchSts,sessionFlag,deliveryDate,monthday) {
@@ -76,17 +81,32 @@
 				{"data": "totalPrice", "defaultContent" : '0',"className" : 'td-right'},//合同金额
 				{"data": null, "defaultContent" : '0',"className" : 'td-center'},//收货状态
 				{"data": null, "defaultContent" : '0',"className" : 'td-center'},//付款状态
+				{"data": null, "className" : 'td-center', "defaultContent" : ''},
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){
-					return row["rownum"];
-                }},
+	    			var followFlag = row["followStatus"];
+	    			var YSId = row["YSId"];	var imgName = "pixel"; var altMsg="置顶";
+	    			if(followFlag == '0'){
+	    				imgName = "icon-top";
+			    		return '<input type="image" title="'+altMsg+'" style="border: 0px;" src="${ctx}/images/'+imgName+'.png" />';
+	    			}else{
+			    		return row["rownum"];
+	    				
+	    			}
+	    			
+	    		}},
 	    		{"targets":2,"render":function(data, type, row){			
 	    			var rtn=data;
 	    			if(data.length > 20){
 	    				rtn = '<div  title="'+data+'" style="font-size: 9px;">'+data+'</div>';	
 	    			}
-	    			return rtn;
+	    			return  "<a href=\"###\" onClick=\"doShow('" + row["materialParentId"] + "','" + row["materialRecordId"] + "','" + row["materialId"] + "')\">"+data+"</a>";
+	    			//return rtn;
+	    		}},
+	    		{"targets":8,"render":function(data, type, row){	//金额		
+	    			
+	    			return '￥'+data;
 	    		}},
 	    		{"targets":5,"render":function(data, type, row){
 	    			var rtn="";var ysid=row["YSId"];
@@ -127,6 +147,16 @@
 	    				paymentSts = '部分付款';
 	    			}
 	    			return paymentSts;
+	    		}},
+	    		{"targets":11,"render":function(data, type, row){
+	    			var followFlag = row["followStatus"];var YSId = row["YSId"];var contractId = row["contractId"];
+	    			var text = "icon-top2"; var color = "red";
+	    			if(followFlag == '0'){
+						text = '撤销';
+	    			}else{
+						text = '置顶';color = "blue";
+	    			}
+	    			return '<a t href=\"###\"  onclick="setFollow(\''+YSId+'\',\''+contractId+'\');return false;" style="color: '+color+';">'+text+'</a>';
 	    		}}
          	] 
 		});
@@ -142,7 +172,43 @@
 	        }
 		});
 	}	
+	
+	function doShow(parentid,recordid,materialId) {
 
+		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
+		var url = '${ctx}/business/material?methodtype=detailView';
+		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&materialId='+materialId+'&keyBackup=1';
+		
+		callWindowFullView("物料信息",url);
+	}
+	
+	function setFollow(YSId,contractId){
+		
+		$.ajax({
+			type : "post",
+			url : "${ctx}/business/contract?methodtype=setContractFollow"+"&YSId="+YSId+"&contractId="+contractId,
+			async : false,
+			data : 'key=' + YSId,
+			dataType : "json",
+			contentType: "application/x-www-form-urlencoded; charset=utf-8",
+			success : function(data) {
+				//var jsonObj = data;
+				status = data["status"];
+				if(status == '0'){
+					$().toastmessage('showNoticeToast', "置顶成功。");
+				}else{
+					$().toastmessage('showNoticeToast', "取消置顶。");
+				}
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+			}
+		});
+		
+		$('#TMaterial').DataTable().ajax.reload(false);
+	}
 	function setYearList(){
 		var i = 0;	
 		var options = "";
@@ -468,7 +534,7 @@
 					<th style="width: 1px;">No</th>
 					<th style="width: 80px;">合同编号</th>
 					<th style="width: 100px;">物料编号</th>
-					<th style="width: 55px;">采购员</th>
+					<th style="width: 35px;">采购员</th>
 					<th>物料名称</th>
 					<th style="width: 70px;">耀升编号</th>
 					<th style="width: 60px;">供应商</th>
@@ -476,6 +542,7 @@
 					<th style="width: 50px;">合同金额</th>
 					<th style="width: 55px;">收货状态</th>
 					<th style="width: 55px;">付款状态</th>
+					<th style="width: 35px;">重点<br>关注</th>
 				</tr>
 			</thead>
 		</table>

@@ -185,6 +185,9 @@ public class PurchaseOrderAction extends BaseAction {
 				goBackContractMainInit();
 				rtnUrl = "/business/purchase/purchaseordermain";
 				break;
+			case "setContractFollow"://设置重点关注订单
+				dataMap = setContractFollow();
+				printOutJsonObj(response, dataMap);
 				
 		}
 		
@@ -422,5 +425,10 @@ public class PurchaseOrderAction extends BaseAction {
 		
 	}
 	
+	public HashMap<String, Object> setContractFollow() throws Exception {
+		
+		return service.setContractFollow();		
+		
+	}
 
 }
