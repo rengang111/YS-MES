@@ -8,8 +8,9 @@
    	    <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
     	<w name="A.finishStatus" des="" reqName="finishStatus"  dtype="ch" oper="=" lg="AND" bt="" />
     	<w name="A.finishStatus" des="" reqName="finishStatusU" dtype="ch" oper="&lt;&gt;" lg="AND" bt="" />
-        <w name="A.contractId"   des="" reqName="contractId" dtype="ch" oper="in"  lg="AND" bt="" />
+        <w name="A.contractId"   des="" reqName="contractId"    dtype="ch" oper="in"  lg="AND" bt="" />
         <w name="A.agreementDate"   des="" reqName="agreementDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+        <w name="A.supplierId"      des="" reqName="supplierId"    dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   <select>
       <f name="A.YSId" alias="" ctype="" />
@@ -39,9 +40,91 @@
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
     <from>v_paymentlistfromcontract a where a.deleteFlag='0' AND supplierId != '0574YZ00'</from>
-    <orderby>a.contractId </orderby>
+    <orderby>a.supplierId ,a.stockInDate</orderby>
     <groupby></groupby>
     <having>#</having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="forPaymenRequestByContractId" />
+     <where>
+    </where>
+  <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.chargeback" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="" ctype="" />
+      <f name="a.supplierName" alias="" ctype="" />
+      <f name="a.detailPaymentId" alias="" ctype="" />
+      <f name="IFNULL(a.paymentId,'')" alias="paymentId" ctype="" />
+      <f name="a.payable" alias="" ctype="" />
+      <f name="a.stockInDate" alias="" ctype="" />
+      <f name="a.requestDate" alias="" ctype="" />
+      <f name="a.finishDate" alias="" ctype="" />
+      <f name="a.agreementDate" alias="" ctype="" />
+      <f name="a.paymentTerm" alias="" ctype="" />
+      <f name="IFNULL(a.finishStatus,'010')" alias="finishStatus" ctype="应付款状态" />
+      <f name="IFNULL(a.finishStatus,'010')" alias="finishStatusId" ctype="" />
+      <f name="a.approvalDate" alias="" ctype="" />
+      <f name="a.approvalStatus" alias="" ctype="审核结果" />
+      <f name="a.approvalStatus" alias="approvalStatusId" ctype="" />
+      <f name="a.contractStorage" alias="" ctype="" />
+      <f name="a.contractQty" alias="" ctype="" />
+      <f name="a.invoiceDate" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>
+    	(
+    	SELECT
+			a.taxExcluded,
+			a.taxes,
+			a.taxRate,
+			IFNULL(sum(REPLACE (a.quantity, ',', '')),0) contractQty,
+		  g.quantity AS reverseQty,
+			a.YSId AS YSId,
+			format(sum(REPLACE (format((REPLACE (a.price, ',', '') * REPLACE (a.quantity, ',', '')),2	),',','')),2) AS totalPrice,
+			if(a.deductFlag='1',a.deduct,(IFNULL(f.cost,0) - IFNULL(e.chargeback,0) - IFNULL(g.quantity,0) * REPLACE(a.price,',',''))) chargeback,
+			a.contractId AS contractId,
+			a.supplierId AS supplierId,
+			a.supplierName AS supplierName,
+			c.shortName AS shortName,
+			a.status AS contractStatus,
+			b.detailPaymentId AS detailPaymentId,
+			ifnull(b.paymentId, '') AS paymentId,
+			b.payable AS payable,
+			b.chargeType,
+			b.requestDate AS requestDate,
+			b.approvalDate AS approvalDate,
+			b.approvalStatus AS approvalStatus,
+			b.approvalUser AS approvalUser,
+			b.invoiceNumber,
+			b.detailRecordId,
+			b.invoiceDate,
+			ifnull(b.finishDate, '-') AS finishDate,
+			ifnull(c.paymentTerm, '60') AS paymentTerm,
+			a.stockInDate AS stockInDate,
+			(a.stockInDate + INTERVAL ifnull(c.paymentTerm, 60) DAY) AS agreementDate,
+			ifnull(b.finishStatus, '010') AS finishStatus,
+			a.contractStorage,
+			a.deleteFlag AS deleteFlag
+		FROM
+				v_purchaseorderdetail a
+					LEFT JOIN v_paymentdetail b ON a.contractId = b.contractId AND (b.deleteFlag = '0')
+					LEFT JOIN b_supplier c ON a.supplierId = c.supplierId AND (c.deleteFlag = '0')
+					LEFT JOIN v_orderexpanse_group_contract e ON a.contractId = e.contractId
+					LEFT JOIN v_orderexpansegroup f ON a.contractId = f.contractId
+					LEFT JOIN v_stockin_reverse_groupbycontract g ON a.contractId = g.contractId
+		WHERE a.supplierId = '#0' AND REPLACE(a.contractStorage,',','')+0 > 0 AND b.paymentId is null
+		GROUP BY a.contractId 
+		) a 
+	</from>
+    <orderby>a.stockInDate</orderby>
+    <groupby></groupby>
+    <having></having>
 	<power></power>    
   </query>
   <query>

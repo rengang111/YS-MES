@@ -139,12 +139,24 @@ body{
 	    		}},
 	    		{"targets":10,"render":function(data, type, row){
 	    			//付款状态
+	    			var contractQty = currencyToFloat(row['quantity']);
+	    			var storageQty  = currencyToFloat(row['contractStorage']);
+	    			var storageSts = '0';
+	    			if(storageQty >= contractQty){
+	    				storageSts = '1';
+	    			}
+	    			
 	    			var finishStatus = row['paymentSts'];
 	    			var paymentSts = '未付款';
 	    			if(finishStatus == '050'){
 	    				paymentSts = '已付款';
 	    			}else if(finishStatus == '040'){
 	    				paymentSts = '部分付款';
+	    			}else{
+	    				if(storageQty >= contractQty){
+		    				//已入库
+		    				paymentSts = "<a href=\"###\" onClick=\"doPaymentRequest('" + row["supplierId"] + "','" + row["contractId"] + "')\">"+paymentSts+"</a>";
+		    			}
 	    			}
 	    			return paymentSts;
 	    		}},
@@ -312,9 +324,16 @@ body{
 		}
 		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId+'&deleteFlag=' + deleteFlag;
 		
-
 		callWindowFullView("合同详情",url);
-		//location.href = url;
+	}	
+	
+	function doPaymentRequest(supplierId,contractId) {
+
+		var url = '${ctx}/business/payment?methodtype=paymentRequestBySupplier'
+				+'&contractId=' + contractId
+				+'&supplierId=' + supplierId;
+		
+		callWindowFullView("付款申请",url);
 	}	
 
 	function hideAllSearch(){
@@ -534,14 +553,14 @@ body{
 					<th style="width: 1px;">No</th>
 					<th style="width: 80px;">合同编号</th>
 					<th style="width: 100px;">物料编号</th>
-					<th style="width: 35px;">采购员</th>
+					<th style="width: 20px;">采购</th>
 					<th>物料名称</th>
 					<th style="width: 70px;">耀升编号</th>
 					<th style="width: 60px;">供应商</th>
-					<th style="width: 60px;">合同交期</th>
+					<th style="width: 55px;">合同交期</th>
 					<th style="width: 50px;">合同金额</th>
-					<th style="width: 55px;">收货状态</th>
-					<th style="width: 55px;">付款状态</th>
+					<th style="width: 40px;">收货<br>状态</th>
+					<th style="width: 40px;">付款<br>状态</th>
 					<th style="width: 35px;">重点<br>关注</th>
 				</tr>
 			</thead>

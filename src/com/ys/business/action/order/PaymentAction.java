@@ -215,6 +215,14 @@ public class PaymentAction extends BaseAction {
 				dataMap = contractPayment();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "paymentRequestBySupplier":
+				paymentRequestBySupplierInit();
+				rtnUrl = "/business/finance/paymentrequestsupplier";
+				break;
+			case "searchBySupplierId"://付款申请
+				dataMap = doSearchBySupplierId(data);
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -229,6 +237,12 @@ public class PaymentAction extends BaseAction {
 		model.addAttribute("searchType",searchType);
 
 	}	
+	
+	public void paymentRequestBySupplierInit(){	
+		
+		String supplierId = request.getParameter("supplierId");
+		model.addAttribute("supplierId",supplierId);
+	}
 	
 	private void approvalMainL1(){
 		String searchType = (String) session.getAttribute("searchType");
@@ -306,6 +320,38 @@ public class PaymentAction extends BaseAction {
 		
 		try {
 			dataMap = service.doSearch(data,"after");
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+
+		String searchType = request.getParameter("searchType");
+		
+		model.addAttribute("searchType",searchType);
+		session.setAttribute("searchType", searchType);
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doSearchBySupplierId(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		//String sessionFlag = request.getParameter("sessionFlag");
+		//if(("false").equals(sessionFlag)){
+		//	session.removeAttribute(Constants.FORM_PAYMENTREQUEST+Constants.FORM_KEYWORD1);
+		//	session.removeAttribute(Constants.FORM_PAYMENTREQUEST+Constants.FORM_KEYWORD2);			
+		//}
+		
+		try {
+			dataMap = service.doSearchBySupplierId(data,"after");
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

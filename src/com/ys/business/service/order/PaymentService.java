@@ -166,6 +166,73 @@ public class PaymentService extends CommonService {
 
 	}
 	
+	public HashMap<String, Object> doSearchBySupplierId(
+			String data,String searchFlag) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_PAYMENTREQUEST,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryName("forPaymenRequestByContractId");//领料单一览
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+
+		String having = "stockinQty >= contractQty ";
+		if(("before").equals(searchFlag)){
+			having = "stockinQty < contractQty ";//预付款
+		}
+		String finishStatus = request.getParameter("finishStatus");
+		String supplierId = request.getParameter("supplierId");
+		if(("070").equals(finishStatus)){
+			finishStatus = "010";//逾期未付款
+			userDefinedSearchCase.put("agreementDate", CalendarUtil.fmtYmdDate());
+			userDefinedSearchCase.put("finishStatus", finishStatus);
+			
+		}
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		//sql = sql.replace("#", having);
+		sql = sql.replace("#0", supplierId);
+		
+		System.out.println("供应商别的付款申请："+sql);
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
 	public HashMap<String, Object> approvalSearch(String data) throws Exception {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
