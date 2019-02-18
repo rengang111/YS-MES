@@ -87,6 +87,11 @@ public class CalendarUtil {
 		
 		return String.valueOf(calendar_instance.get(Calendar.WEEK_OF_YEAR));
 	}
+	
+	public static String getYear() {
+		SimpleDateFormat sd = new SimpleDateFormat("yyyy");
+		return sd.format(getSystemDate()); 
+	}
     
     public static String getWeekOfSunday(){
 		Calendar c = Calendar.getInstance();
