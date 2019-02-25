@@ -12,6 +12,7 @@ import com.ys.business.db.data.B_PaymentHistoryData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_ReceivableData;
 import com.ys.business.db.data.B_ReceivableDetailData;
+import com.ys.business.db.data.B_ReceivableOrderData;
 import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.B_StockOutDetailData;
 
@@ -24,10 +25,17 @@ public class ReceivableModel extends BaseModel {
 	private B_ReceivableData receivable;
 	private B_ReceivableDetailData receivableDetail;
 	private List<B_ReceivableDetailData> receivableList;
+	private List<B_ReceivableOrderData> orderList;
 	private ArrayList<ListOption> approvalOption = new ArrayList<ListOption>();
 	private ArrayList<ListOption> invoiceTypeOption = new ArrayList<ListOption>();
 		
-
+	public List<B_ReceivableOrderData> getOrderList() {
+		return this.orderList;
+	}
+	public void setOrderList(List<B_ReceivableOrderData> list) {
+		this.orderList = list;
+	}
+	
 	public ArrayList<ListOption> getInvoiceTypeOption() {
 		return this.invoiceTypeOption;
 	}

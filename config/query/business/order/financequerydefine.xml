@@ -11,6 +11,7 @@
         <w name="A.contractId"   des="" reqName="contractId"    dtype="ch" oper="in"  lg="AND" bt="" />
         <w name="A.agreementDate"   des="" reqName="agreementDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
         <w name="A.supplierId"      des="" reqName="supplierId"    dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.purchaser"       des="" reqName="userId"        dtype="ch" oper="="  lg="AND" bt="" />
     </where>
   <select>
       <f name="A.YSId" alias="" ctype="" />
@@ -36,6 +37,8 @@
       <f name="a.stockinQty" alias="" ctype="" />
       <f name="a.contractQty" alias="" ctype="" />
       <f name="a.invoiceDate" alias="" ctype="" />
+      <f name="a.purchaser" alias="" ctype="" />
+      <f name="a.purchaser" alias="purchaserName" ctype="采购人员" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
@@ -1004,6 +1007,7 @@
    	    <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
         <w name="b.receivableId" des=""  reqName="receivableId"     dtype="ch" oper="="     lg="AND" bt="" />
         <w name="a.YSId"         des=""  reqName="YSId"             dtype="ch" oper="="     lg="AND" bt="" />
+        <w name="a.YSId"         des=""  reqName="ysids"            dtype="ch" oper="in"    lg="AND" bt="" />
         <w name="date_add(c.checkInDate,INTERVAL a.paymentTerm DAY)"   des="" reqName="reserveDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
 </where>
   <select>
@@ -1016,10 +1020,10 @@
       <f name="IFNULL(b.bankDeduction,'0')" alias="bankDeductionCnt" ctype="" />
       <f name="IFNULL(b.bankDeduction,0) + IFNULL(b.actualAmount,0)" alias="actualCnt" ctype="" />
       <f name="REPLACE(a.totalPrice,',','') - IFNULL(b.bankDeduction,0) - IFNULL(b.actualAmount,'0')" alias="surplus" ctype="" />
-      <f name="IFNULL(c.quantity,'')" alias="stockinQty" ctype="" />
+      <f name="IFNULL(a.completedQuantity,'')" alias="stockinQty" ctype="" />
       <f name="a.materialId" alias="productId" ctype="" />
       <f name="a.materialName" alias="productName" ctype="" />
-      <f name="c.checkInDate" alias="" ctype="" />
+      <f name="a.storageDate" alias="checkInDate" ctype="" />
       <f name="b.collectionDate" alias="" ctype="" />
       <f name="IFNULL(b.status,'010')" alias="status" ctype="收款状态" />
       <f name="a.quantity" alias="" ctype="" />
@@ -1029,15 +1033,18 @@
       <f name="a.paymentTerm" alias="" ctype="" />
       <f name="a.customerFullName" alias="" ctype="" />
       <f name="a.customerId" alias="" ctype="" />
-      <f name="date_add(ifNULL(c.checkInDate,a.deliveryDate), interval IFNULL(a.paymentTerm,60) day)" alias="reserveDate" ctype="" />
+      <f name="date_add(ifNULL(a.storageDate,a.deliveryDate), interval IFNULL(a.paymentTerm,60) day)" alias="reserveDate" ctype="" />
   </select>
-    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <from>
     	v_orderlist a 
-    		LEFT JOIN (SELECT c.YSId,c.receivableId,c.status,c1.actualAmountCnt,c1.actualAmount,c1.bankDeduction,c1.customerDeduction ,c1.collectionDate FROM b_receivable c,v_receivabledetailgroup c1 WHERE  c.deleteFlag='0' AND c.receivableId=c1.receivableId 
+    		LEFT JOIN (SELECT IFNULL(c2.YSId,c.YSId) YSId,c.receivableId,c.status,c1.actualAmountCnt,
+    					c1.actualAmount,c1.bankDeduction,c1.customerDeduction ,
+    					c1.collectionDate 
+    				   FROM b_receivable c,v_receivabledetailgroup c1 ,b_receivableorder c2
+    				   WHERE  c.deleteFlag='0' AND c.receivableId=c1.receivableId 
     			)b ON a.YSId=b.YSId 
-    		LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.YSId=c.YSId AND a.materialId=c.materialId  
-    	WHERE a.payment is NULL  </from>
+    	WHERE a.payment is NULL 
+    </from>
     <orderby>a.ysid </orderby>
     <groupby></groupby>
     <having>#</having>

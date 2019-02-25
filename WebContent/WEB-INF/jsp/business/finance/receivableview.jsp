@@ -114,7 +114,88 @@ function historyAjax() {
 
 };
 	
+
+function orderDetailAjax() {
 	
+	var ysids = '${ysids}';
+
+	var t = $('#detail').DataTable({			
+		"paging": false,
+		"lengthChange":false,
+		"lengthMenu":[50,100,200],//设置一页展示20条记录
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"ordering "	:true,
+		"searching" : false,
+		"retrieve" : true,
+		//"scrollY":scrollHeight,
+		//"scrollCollapse":true,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getOrderDetail&ysids="+ysids,
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#condition").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
+
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){							
+					fnCallback(data);
+					var supplier = data['data']['0']['customerFullName'];		
+					var currency = data['data']['0']['currency'];
+					$('#supplier').text(supplier);
+					
+					var cnt = orderSum();
+					var cnt2 = floatToSymbol(cnt,currency)
+					$('#orderPrice').text(cnt2);
+					$('#receivable\\.amountreceivable').val(cnt);
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+    	"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},
+		
+		"columns" : [
+		           {"data": null,"className":"td-center"
+					}, {"data": "YSId","className":"td-center"
+					}, {"data": "productId","className":"td-center"
+					}, {"data": "productName","className":"td-right"
+					}, {"data": "totalPrice","className":"td-right"
+					}, {"data":null,"className":""
+					}
+			],
+			"columnDefs":[
+				{"targets":0,"render":function(data, type, row){
+					return row["rownum"];
+				}},
+	    		{"targets":3,"render":function(data, type, row){
+	    			return floatToCurrency(data);
+	    		}},
+	    		{"targets":4,"render":function(data, type, row){
+	    			var rowIndex = row["rownum"] -1 ;
+	    			var txt = '<input type="hidden" name="orderList['+rowIndex+'].ysid"             id="orderList'+rowIndex+'.ysid"              value="'+row["YSId"]+'" />';
+	    			txt += '<input type="hidden" name="orderList['+rowIndex+'].productid"        id="orderList'+rowIndex+'.productid"         value="'+row["productId"]+'" />';
+	    			txt += '<input type="hidden" name="orderList['+rowIndex+'].amountreceivable" id="orderList'+rowIndex+'.amountreceivable"  value="'+row["totalPrice"]+'" />';
+	    			return floatToCurrency(data) + txt;
+	    		}},
+	    		{"targets":5,"render":function(data, type, row){
+	    			return "";
+	    		}}
+	    	] 
+		
+	}).draw();
+
+};	
 	$(document).ready(function() {
 		
 		historyAjax();
@@ -402,16 +483,6 @@ function uploadPhoto(tableId,tdTable, id) {
 				<td colspan="3">${order.customerFullName }</td>			
 			</tr>
 			<tr>
-				<td class="label" width="100px">耀升编号：</td>					
-				<td width="150px">${order.YSId }</td>
-				
-				<td class="label" width="100px">产品编号：</td>					
-				<td width="150px">${order.productId }</td>
-														
-				<td width="100px" class="label">产品名称：</td>
-				<td colspan="3">${order.productName }</td>
-			</tr>
-			<tr>
 				<td class="label" width="100px">应收款总额：</td>					
 				<td width="150px"><span id="orderPrice"></span></td>
 													
@@ -429,10 +500,8 @@ function uploadPhoto(tableId,tdTable, id) {
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-	<!-- 	<a class="DTTT_button DTTT_button_text" id="insert" >提交付款</a>
-		<a class="DTTT_button DTTT_button_text" onclick="doPrintReceiptList();return false;">批量打印入库单</a>-->
-		<a class="DTTT_button DTTT_button_text" id="insert" >继续收款</a> 
-		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
+		<a class="DTTT_button " id="insert" >继续收款</a> 
+		<a class="DTTT_button  goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
 		<legend> 收款记录</legend>
@@ -466,6 +535,21 @@ function uploadPhoto(tableId,tdTable, id) {
 		</table>
 	</fieldset>		
 
+	<fieldset>
+		<legend>汇票所含订单</legend>
+		<table class="display" id="detail">
+			<thead>
+				<tr> 		
+					<th width="100px">No</th>				
+					<th width="100px">耀升编号</th>
+					<th width="100px">产品编号</th>				
+					<th width="100px">产品名称</th>
+					<th width="100px">收款金额</th>	
+					<th></th>
+				</tr>
+			</thead>			
+		</table>
+	</fieldset>	
 	<fieldset>
 		<span class="tablename">收款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
 		<div class="list">

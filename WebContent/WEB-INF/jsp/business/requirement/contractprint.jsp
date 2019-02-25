@@ -23,9 +23,10 @@
 		
 		baseBomView();//订单BOM
 		
-		var total = productCostSum();
-		total = Arabia_to_Chinese(total);
-		$('.total').html(total);
+		var total2 = productCostSum();
+		$('#total2').html(floatToCurrency(total2));
+		var total = Arabia_to_Chinese(total2);
+		$('#total').html(total);
 		
 		expenseAjax3();//订单过程扣款明细
 		
@@ -138,10 +139,9 @@
 					<tr>
 						<th></th>
 						<th></th>
-						<th>金额总计</th>
-						<th></th>
-						<th>RMB</th>
-						<th colspan="3"><span id="total" class="total"></span></th>
+						<th colspan="2" style="text-align: right;">金额总计：<span id="total2" class="total"></span></th>
+						
+						<th colspan="4" style="text-align: left;"><span id="total" class="total"></span></th>
 					</tr>
 				</tfoot>			
 			</table>

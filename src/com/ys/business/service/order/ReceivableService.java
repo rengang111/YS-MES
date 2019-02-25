@@ -21,12 +21,14 @@ import com.ys.business.db.dao.B_PaymentDetailDao;
 import com.ys.business.db.dao.B_PaymentHistoryDao;
 import com.ys.business.db.dao.B_ReceivableDao;
 import com.ys.business.db.dao.B_ReceivableDetailDao;
+import com.ys.business.db.dao.B_ReceivableOrderDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PaymentDetailData;
 import com.ys.business.db.data.B_PaymentHistoryData;
 import com.ys.business.db.data.B_ReceivableData;
 import com.ys.business.db.data.B_ReceivableDetailData;
+import com.ys.business.db.data.B_ReceivableOrderData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.system.action.model.login.UserInfo;
@@ -168,13 +170,13 @@ public class ReceivableService extends CommonService {
 	public void getRecivableFromOrder(String YSId) throws Exception{
 
 		dataModel.setQueryName("orderListForReceivabel");		
-		baseQuery = new BaseQuery(request, dataModel);		
+		baseQuery = new BaseQuery(request, dataModel);	
 		userDefinedSearchCase.put("YSId", YSId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = baseQuery.getSql();
 		String having = "1=1";
 		sql = sql.replace("#",having);
-		System.out.println("收款明细查询："+sql);
+		System.out.println("款明细查询："+sql);
 		baseQuery.getYsFullData(sql,having);
 
 		if(dataModel.getRecordCount() >0){
@@ -193,14 +195,34 @@ public class ReceivableService extends CommonService {
 		getRecivableFromOrder(YSId);//
 	}
 	
+	/**
+	 * 单个订单收汇
+	 * @throws Exception
+	 */
 	public void receivableAddInit() throws Exception{
-		String YSId = request.getParameter("YSId");
+		//String YSId = request.getParameter("YSId");
 
-		getRecivableFromOrder(YSId);//
+		
+		String ysids = request.getParameter("ysids");
+
+		//确认是否有过收汇
+		//String[] list = ysids.split(",");
+		/*
+		for(String contractId:list){
+			String where = " contractId='" + contractId +"' AND deleteFlag='0' ";
+			B_PaymentDetailData payment = checkPaymentExsit(where);
+			if(!(payment == null)){
+				model.addAttribute("payment",payment );
+				break;				
+			}
+		}
+		*/
+		
+		getRecivableFromOrder(ysids);//
 		
 		B_ReceivableData receivable = new  B_ReceivableData();
 		receivable = getReceivableRecordId(receivable);
-		receivable.setYsid(YSId);
+		//receivable.setYsid(YSId);
 		
 		B_ReceivableDetailData reqDataDetail = new B_ReceivableDetailData();
 		reqDataDetail.setReceivableid(receivable.getReceivableid());
@@ -208,6 +230,46 @@ public class ReceivableService extends CommonService {
 		
 		reqModel.setReceivable(receivable);
 		reqModel.setReceivableDetail(reqDataDetail);
+		model.addAttribute("ysids",ysids);
+		
+	}
+	
+	/**
+	 * 合并收汇
+	 * @throws Exception
+	 */
+	public void receivableOrdersAddInit() throws Exception{
+		//String YSId = request.getParameter("YSId");
+
+		
+		String ysids = request.getParameter("ysids");
+
+		//确认付款申请是否存在
+		//String[] list = ysids.split(",");
+		/*
+		for(String contractId:list){
+			String where = " contractId='" + contractId +"' AND deleteFlag='0' ";
+			B_PaymentDetailData payment = checkPaymentExsit(where);
+			if(!(payment == null)){
+				model.addAttribute("payment",payment );
+				break;				
+			}
+		}
+		*/
+		
+		//getRecivableFromOrder(YSId);//
+		
+		B_ReceivableData receivable = new  B_ReceivableData();
+		receivable = getReceivableRecordId(receivable);
+		//receivable.setYsid(YSId);
+		
+		B_ReceivableDetailData reqDataDetail = new B_ReceivableDetailData();
+		reqDataDetail.setReceivableid(receivable.getReceivableid());
+		reqDataDetail = getReceivableDetailRecordId(reqDataDetail);
+		
+		reqModel.setReceivable(receivable);
+		reqModel.setReceivableDetail(reqDataDetail);
+		model.addAttribute("ysids",ysids);
 		
 	}
 	
@@ -389,7 +451,10 @@ public class ReceivableService extends CommonService {
 				status=Constants.RECEIVABLE_030;
 			}
 			reqData.setStatus(status);
-			insertPayment(reqData);			
+			insertPayment(reqData);		
+			
+			//订单明细
+			insertReceivableOrder(receivableid);
 
 			//收款明细
 			reqDataDetail.setReceivableid(reqData.getReceivableid());
@@ -418,7 +483,33 @@ public class ReceivableService extends CommonService {
 		return detailid;
 		
 	}
+
+
+	private void insertReceivableOrder(
+			String receivableid) throws Exception {
+
+		List<B_ReceivableOrderData> orderList = reqModel.getOrderList();
 		
+		try {
+			String where = " receivableId ='" + receivableid + "' AND deleteFlag='0'";
+			new B_ReceivableOrderDao().RemoveByWhere(where);
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		//插入新数据		
+		for(B_ReceivableOrderData order:orderList){
+			order.setReceivableid(receivableid);
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"ReceivableOrderInsert",userInfo);
+			copyProperties(order,commData);
+			guid = BaseDAO.getGuId();
+			order.setRecordid(guid);
+			
+			new B_ReceivableOrderDao().Create(order);
+		}
+	}
 	
 	@SuppressWarnings("unchecked")
 	private void insertPayment(
@@ -512,6 +603,28 @@ public class ReceivableService extends CommonService {
 	}
 	
 
+
+	public HashMap<String, Object>  getOrderDetail() throws Exception{
+
+		HashMap<String, Object> payment = new HashMap<String, Object>();
+		String ysids = request.getParameter("ysids");
+		
+		dataModel.setQueryName("orderListForReceivabel");
+		userDefinedSearchCase.put("ysids", ysids);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String having = "1=1";
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", having);
+		baseQuery.getYsFullData(sql,having);
+		
+		payment.put("data", dataModel.getYsViewData());
+		
+	
+		return payment;
+	}
+	
+	
 	public String  getPaymentSumAmount(String paymentid) throws Exception{
 
 		String payment = "0";

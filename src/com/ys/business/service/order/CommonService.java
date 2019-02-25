@@ -1172,5 +1172,22 @@ public class CommonService extends BaseService {
 		return list;
 		
 	}
+	
+	public ArrayList<HashMap<String, String>> getYearById() throws Exception{
+		ArrayList<HashMap<String, String>> list = null;
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("getPuchaserByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("dicTypeId", "年度");		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			list = dataModel.getYsViewData();		
+		}
+
+		return list;
+		
+	}
 
 }

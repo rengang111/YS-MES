@@ -942,6 +942,27 @@ function buttonSelectedEvent3(){
     });
 }
 
+function buttonSelectedEvent4(){
+	//加载事件
+    $(function () {
+        var collection = $(".box4");
+        $.each(collection, function () {
+            $(this).addClass("start");
+        });
+    });
+    //单击事件
+    $(".box4").click(function () { 
+        var collection = $(".box4");
+        $.each(collection, function () {
+            $(this).removeClass("end");
+            $(this).addClass("start");
+        });
+        $(this).removeClass("start");
+        $(this).addClass("end");
+    });
+}
+
+
 function myTrim(x) {
 	if(x == null || x == "" || $.trim(x) == ""){
 		return "";

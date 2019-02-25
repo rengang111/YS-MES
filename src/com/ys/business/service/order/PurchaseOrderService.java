@@ -118,13 +118,22 @@ public class PurchaseOrderService extends CommonService {
 		String[] keyArr = getSearchKey(formId,data,session);
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
+		String year   = request.getParameter("year");
 		String status = request.getParameter("status");
 		String userId = request.getParameter("userId");
+		String monthday = request.getParameter("monthday");
 		String having = "1=1";
 		
+		if(isNullOrEmpty(year)){//年份选择
+			year =  CalendarUtil.getYear();//当前年
+		}
 		if(("999").equals(userId)){
 			userDefinedSearchCase.put("userId", "");//999:查询全员
 		}
+		
+		//if(isNullOrEmpty(monthday) && ("2").equals(status)){//已入库：全年查询
+		userDefinedSearchCase.put("year", year);
+		//}
 		
 		if(("G").equals(makeType)){
 			//包装件
@@ -155,16 +164,22 @@ public class PurchaseOrderService extends CommonService {
 			userDefinedSearchCase.put("materialId2", "");//关键字查询,忽略其类型(包装件)
 		}
 		
-		if(notEmpty(status)){
-			if(("2").equals(status)){//已入库
-				having = " ((REPLACE(quantity, ',', '') + 0) <= (REPLACE (contractStorage, ',', '') + 0)) ";
-			}else if(("3").equals(status)){//未入库已付款
-				having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (contractStorage, ',', '') + 0)) ";
-				having += " AND ((paymentSts + 0) >  30) ";
-			}else{//未入库
-				having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (contractStorage, ',', '') + 0)) ";
-			}
+		
+		if(("2").equals(status)){//已入库
+			having = " ((REPLACE(quantity, ',', '') + 0) <= (REPLACE (contractStorage, ',', '') + 0)) ";
+		}else if(("3").equals(status)){//未入库已付款
+			having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (contractStorage, ',', '') + 0)) ";
+			having += " AND ((paymentSts + 0) >  30) ";
+			userDefinedSearchCase.put("deliveryDate", "");
+		}else if(("1").equals(status)){//未入库
+			having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (contractStorage, ',', '') + 0)) ";
+			userDefinedSearchCase.put("deliveryDate", "");
+		}else{//ALL
+			//having = " ((REPLACE(quantity, ',', '') + 0) >  (REPLACE (contractStorage, ',', '') + 0)) ";
+			userDefinedSearchCase.put("deliveryDate", "");
+			//userDefinedSearchCase.put("year", CalendarUtil.getYear());//当前年
 		}
+		
 				
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
@@ -1578,8 +1593,10 @@ public class PurchaseOrderService extends CommonService {
 	public void purchaseOrderMainInit() throws Exception{
 
 		ArrayList<HashMap<String, String>> list = getPurchaseUserById();
+		ArrayList<HashMap<String, String>> year = getYearById();
 
 		model.addAttribute("purchaser",list);
+		model.addAttribute("yearList",year);
 		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 	

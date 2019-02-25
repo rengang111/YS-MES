@@ -21,7 +21,7 @@
 		url = url + "&status="+type;
 		url = url + "&searchType=" + type;
 
-		var colSort = 8;
+		var colSort = 5;
 		//if(type == '070')
 		//	colSort = 8;
 			
@@ -79,8 +79,8 @@
 					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//2
 					{"data": "productId", "defaultContent" : '', "className" : 'td-left'},//3				
 					{"data": "productName", "defaultContent" : '', "className" : ''},//4		
+					{"data": "customerId", "defaultContent" : '0', "className" : 'td-right'},//6客户编号
 					{"data": "orderPrice", "defaultContent" : '0', "className" : 'td-right'},//5 应收金额
-					{"data": "bankDeductionCnt", "defaultContent" : '0', "className" : 'td-right'},//6银行扣款
 					{"data": "actualAmountCnt", "defaultContent" : '0', "className" : 'td-right'},//7实收金额
 					{"data": "reserveDate", "className" : 'td-center', "defaultContent" : '***'},//8 约定收款日
 					{"data": "collectionDate", "className" : 'td-center', "defaultContent" : '***'},//9 实际收款日
@@ -89,12 +89,17 @@
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-						return row["rownum"];
+		    			var paymentId = row["receivableId"];
+		    			if(paymentId == ""){
+							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["YSId"] + "' />";		    				
+		    			}else{
+							return row["rownum"];
+		    			}
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = row["receivableId"];//
 		    			if(rtn == ""){
-				    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "（未收款）" + "</a>";
+				    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["YSId"] +"')\">" + "（单项收款）" + "</a>";
 		    			}else{
 			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "','"+ row["receivableId"] + "')\">" + row["receivableId"] + "</a>";
 		    			}
@@ -111,13 +116,9 @@
 		    					    			
 		    			return jQuery.fixedWidth(data,32);
 		    		}},
-		    		{"targets":5,"render":function(data, type, row){
-		    					    			
-		    			return floatToSymbol(data,row["currency"]);
-		    		}},
 		    		{"targets":6,"render":function(data, type, row){
 		    					    			
-		    			return floatToCurrency(data);
+		    			return floatToSymbol(data,row["currency"]);
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
 		    			return floatToCurrency(data);
@@ -125,7 +126,7 @@
 		    		{ "bSortable": false, "aTargets": [ 0 ] },
 		    		{
 						"visible" : false,
-						"targets" : []
+						"targets" : [10]
 					}
 	           
 	         ] 
@@ -137,7 +138,11 @@
 		var scrollHeight = $(document).height() - 200; 
 		var type = $('#searchType').val();
 		ajax("true",type,scrollHeight,"true");
-	/*
+		
+		var searchType = $('#searchType').val();
+		buttonSelectedEvent();//按钮选择式样
+		$('#defutBtn'+searchType).removeClass("start").addClass("end");
+		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
 			$(this).toggleClass("selected");
@@ -149,10 +154,6 @@
 		    	$(this).children().first().children().prop("checked", false);
 		    }			
 		});	
-*/
-		var searchType = $('#searchType').val();
-		buttonSelectedEvent();//按钮选择式样
-		$('#defutBtn'+searchType).removeClass("start").addClass("end");
 
 	})	
 	
@@ -192,22 +193,20 @@
 				str += $(this).val() + ",";	
 								
 				if(flag){
-					supplierId = $(this).parent().parent().find('td').eq(4).text();
-					supplierId_next = $(this).parent().parent().find('td').eq(4).text();
+					supplierId      = $(this).parent().parent().find('td').eq(5).text();
+					supplierId_next = $(this).parent().parent().find('td').eq(5).text();
 					flag = false;
 				}else{
-					supplierId_next = $(this).parent().parent().find('td').eq(4).text();
+					supplierId_next = $(this).parent().parent().find('td').eq(5).text();
 					//alert(supplierId+"---"+supplierId_next)
 					if(supplierId != supplierId_next){
 					
-						$().toastmessage('showWarningToast', "请选择同一个供应商。");
+						$().toastmessage('showWarningToast', "请选择同一个客户。");
 
 						rtnValue = false;
 						return false;
 					}
-				}
-			
-			
+				}			
 			}
 		});
 
@@ -218,11 +217,9 @@
 		if (str == '') {
 			alert("请至少选择一条数据");
 			return;
-		}	
-		var paymentTypeId = $("#paymentTypeId").val();	
-		var url = '${ctx}/business/payment?methodtype=addinit';
-		url = url +"&contractIds="+str;
-		url = url +"&paymentTypeId="+paymentTypeId;
+		}		
+		var url = '${ctx}/business/receivable?methodtype=ordersAddInit';
+		url = url +"&ysids="+str;
 		location.href = url;
 		
 	}
@@ -230,7 +227,7 @@
 	function doCreate2(YSId) {
 
 		var url = '${ctx}/business/receivable?methodtype=addInit';
-		url = url +"&YSId="+YSId;
+		url = url +"&ysids="+YSId;
 		location.href = url;
 		
 	}
@@ -338,20 +335,22 @@
 					<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'070');" id="defutBtn070"><span>逾期未收款</span></a>
 					<a class="DTTT_button DTTT_button_text" onclick="downloadExcel('080');" ><span>EXCEL导出</span></a>
 				</div>
-				<!-- 
+				 
 				<div style="height: 40px;margin-bottom: -15px;float:right">
-					<a class="DTTT_button DTTT_button_text" onclick="doCreate();">付款申请</a>
-				</div> -->
+					<a class="DTTT_button DTTT_button_text" onclick="doCreate();">合并收款</a>
+				</div>
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						
 						<tr>					
-							<th width="1px"></th>
+							<th width="50px">
+								<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
+								<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
 							<th width="60px">收款编号</th>
 							<th width="60px">耀升编号</th>							
 							<th width="70px">产品编号</th>						
 							<th>产品名称</th>
+							<th width="50px">客户编号</th>
 							<th width="60px">应收金额</th>
-							<th width="50px">银行扣款</th>
 							<th width="60px">实收金额</th>
 							<th width="60px">约定收款日</th>
 							<th width="60px">实际收款日</th>

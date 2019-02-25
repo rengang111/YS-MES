@@ -232,10 +232,22 @@ public class PaymentAction extends BaseAction {
 	public void doInit(){	
 		
 		String searchType = (String) session.getAttribute("searchType");
+		String userId = (String) session.getAttribute("userId");
 		if(searchType == null || ("").equals(searchType))
 			searchType = "010";//设置默认值：待申请
+		
+		if(userId == null || ("").equals(userId)){
+			userId = "999";//设置默认值：全员
+		}
+		
+		try {
+			service.paymentRequestMainInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		model.addAttribute("searchType",searchType);
-
+		model.addAttribute("userId",userId);		
+		
 	}	
 	
 	public void paymentRequestBySupplierInit(){	

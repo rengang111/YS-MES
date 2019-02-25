@@ -1725,4 +1725,12 @@ public class PaymentService extends CommonService {
 		return  listMap;
 
 	}
+	
+	public void paymentRequestMainInit() throws Exception{
+
+		ArrayList<HashMap<String, String>> list = getPurchaseUserById();
+
+		model.addAttribute("purchaser",list);
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
+	}
 }

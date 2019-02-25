@@ -88,8 +88,12 @@ public class ReceivableAction extends BaseAction {
 				//dataMap = getRequisitionDetail();
 				printOutJsonObj(response, dataMap);
 				return null;
-			case "addInit"://收款初始化
+			case "addInit"://单项收款初始化
 				doAddInit();
+				rtnUrl = "/business/finance/receivableadd";
+				break;
+			case "ordersAddInit"://合并收款初始化
+				ordersAddInit();
 				rtnUrl = "/business/finance/receivableadd";
 				break;
 			case "addContinueInit"://继续收款初始化
@@ -130,6 +134,11 @@ public class ReceivableAction extends BaseAction {
 				break;
 			case "receivableDelete"://收款删除
 				dataMap = doReceivableDelete();
+				printOutJsonObj(response, dataMap);
+				//rtnUrl = "/business/finance/receivableview";
+				break;
+			case "getOrderDetail"://订单详情
+				dataMap = doGetOrderDetail();
 				printOutJsonObj(response, dataMap);
 				//rtnUrl = "/business/finance/receivableview";
 				break;
@@ -200,6 +209,17 @@ public class ReceivableAction extends BaseAction {
 
 	}	
 	
+	public void ordersAddInit(){	
+		
+		try {
+			model.addAttribute("userName",userInfo.getUserName());
+			service.receivableOrdersAddInit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}	
 
 	public void doAddContinueInit(){	
 		
@@ -248,8 +268,14 @@ public class ReceivableAction extends BaseAction {
 		}
 		
 		return dataMap;
-	}	
+	}
 	
+	public HashMap<String, Object> doGetOrderDetail() throws Exception{	
+		
+		
+		return service.getOrderDetail();
+		
+	}	
 
 
 	public HashMap<String, Object> getReceivableDetailById() throws Exception{	
