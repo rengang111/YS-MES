@@ -166,6 +166,102 @@ public class PaymentService extends CommonService {
 
 	}
 	
+	public HashMap<String, Object> paymentManageSearch(
+			String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_PAYMENTMANAGE,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		
+		dataModel.setQueryName("contractListForPaymenManage");//
+		baseQuery = new BaseQuery(request, dataModel);
+		//userDefinedSearchCase.put("keyword1", key1);
+		//userDefinedSearchCase.put("keyword2", key2);
+
+		//String having = "stockinQty >= contractQty ";
+		
+		String finishStatus = request.getParameter("finishStatus");
+		String year   = request.getParameter("year");
+		String monthday = request.getParameter("monthday");
+		String userId = request.getParameter("userId");
+		String where = "1=1";
+		if(notEmpty(key1) && notEmpty(key2)){
+			where += " AND A.fullField  like '%" + key1 + "%' "; 
+			where += " AND A.fullField  like '%" + key2 + "%' "; 
+		}else{
+			if(notEmpty(key1)){
+				where += " AND A.fullField  like '%" + key1 + "%' "; 
+			}else if(notEmpty(key2)){
+				where += " AND A.fullField  like '%" + key2 + "%' "; 
+			}
+		}
+		
+		if(isNullOrEmpty(year)){//年份选择
+			year =  CalendarUtil.getYear();//当前年
+		}
+		//userDefinedSearchCase.put("year", year);
+		where += " AND DATE_FORMAT(A.stockInDate,'%Y') = '" + year + "' "; 
+		
+		if(("999").equals(userId)){
+			//userDefinedSearchCase.put("userId", "");//999:查询全员
+		}else{
+			where += " AND a.purchaser = '" + userId + "' "; 
+		}
+		
+		if((Constants.payment_050).equals(finishStatus) && notEmpty(monthday)){
+			//userDefinedSearchCase.put("monthday", monthday);//已付款
+			where += " AND DATE_FORMAT(A.stockInDate,'%Y-%m') = '" + monthday + "' "; 
+		}else{
+			//userDefinedSearchCase.put("monthday", "");//未付款，不分月份			
+		}
+		
+		if(("0").equals(finishStatus)){
+			userDefinedSearchCase.put("finishStatus", "");//全部
+		}else{
+			userDefinedSearchCase.put("finishStatus", finishStatus);
+			//where += " AND finishStatus = '" + finishStatus + "' "; 			
+		}
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		sql = sql.replace("#", where);
+		System.out.println("付款管理："+sql);
+		baseQuery.getYsQueryData(sql,where,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
 	public HashMap<String, Object> doSearchBySupplierId(
 			String data,String searchFlag) throws Exception {
 
@@ -1729,8 +1825,10 @@ public class PaymentService extends CommonService {
 	public void paymentRequestMainInit() throws Exception{
 
 		ArrayList<HashMap<String, String>> list = getPurchaseUserById();
+		ArrayList<HashMap<String, String>> year = getYearById();
 
 		model.addAttribute("purchaser",list);
+		model.addAttribute("yearList",year);
 		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 }

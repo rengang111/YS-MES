@@ -1163,7 +1163,8 @@ public class CommonService extends BaseService {
 			map.put("dicName", "ALL");
 			map.put("dicId", "999");
 			map.put("SortNo", "999");
-			list.add(map);
+			//list.add(map);
+			list.add(0, map);
 			//model.addAttribute("purchaser",list);
 			//model.addAttribute("defUser",map);
 		

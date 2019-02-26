@@ -223,6 +223,14 @@ public class PaymentAction extends BaseAction {
 				dataMap = doSearchBySupplierId(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "paymentManageInit"://付款查询管理
+				paymentManageInit();
+				rtnUrl = "/business/finance/paymentmanagemain";
+				break;
+			case "paymentManageSearch"://付款申请
+				dataMap = doPaymentManageSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -250,6 +258,26 @@ public class PaymentAction extends BaseAction {
 		
 	}	
 	
+	public void paymentManageInit(){	
+		
+		String searchType = (String) session.getAttribute("searchType");//付款状态
+		String userId = (String) session.getAttribute("userId");
+		if(searchType == null || ("").equals(searchType))
+			searchType = "010";//设置默认值：待申请
+		
+		if(userId == null || ("").equals(userId)){
+			userId = "999";//设置默认值：全员
+		}
+		
+		try {
+			service.paymentRequestMainInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("searchType",searchType);
+		model.addAttribute("userId",userId);		
+		
+	}	
 	public void paymentRequestBySupplierInit(){	
 		
 		String supplierId = request.getParameter("supplierId");
@@ -319,7 +347,7 @@ public class PaymentAction extends BaseAction {
 		return null;
 	}
 		
-	
+
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearch(@RequestBody String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -332,6 +360,38 @@ public class PaymentAction extends BaseAction {
 		
 		try {
 			dataMap = service.doSearch(data,"after");
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+
+		String searchType = request.getParameter("searchType");
+		
+		model.addAttribute("searchType",searchType);
+		session.setAttribute("searchType", searchType);
+		
+		return dataMap;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doPaymentManageSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_PAYMENTMANAGE + Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_PAYMENTMANAGE + Constants.FORM_KEYWORD2);			
+		}
+		
+		try {
+			dataMap = service.paymentManageSearch(data);
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");
