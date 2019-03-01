@@ -87,6 +87,7 @@
    	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
    	  <w name="A.status"  des=""  reqName="status" dtype="ch" oper="in"  lg="AND" bt="" />
    	  <w name="A.orderNature"  des=""  reqName="orderNature" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.divertYsid"   des=""  reqName="divertYsid"  dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -132,6 +133,10 @@
       <f name="IFNULL(A.commission,'0')" alias="commission" ctype="" />
       <f name="A.customerId" alias="" ctype="" />
       <f name="A.shortName" alias="" ctype="" />
+      <f name="A.divertYsid" alias="" ctype="" />
+      <f name="A.divertQuantity" alias="" ctype="" />
+      <f name="A.diverFlag" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
@@ -331,6 +336,10 @@
       <f name="A.peiYsid" alias="" ctype="" />
       <f name="concat( a.rebateRate*100/100,'%')" alias="rebateRate" ctype="" />
       <f name="IFNULL(b.quantity,'0')" alias="stockinQty" ctype="" />
+      <f name="IFNULL(a.divertYsid,'')" alias="divertYsid" ctype="" />
+      <f name="IFNULL(a.divertQuantity,'0')" alias="divertQuantity" ctype="" />
+      <f name="IFNULL(a.diverFlag,'0')" alias="diverFlag" ctype="" />
+      <f name="a.remarks" alias="" ctype="" />
       <f name="b.checkInDate" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->

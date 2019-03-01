@@ -636,7 +636,7 @@ public class OrderService extends CommonService  {
 		BaseQuery baseQuery = null;
 
 
-		String key = request.getParameter("key").toUpperCase();
+		String key = request.getParameter("key").trim().toUpperCase();
 
 		dataModel.setQueryFileName("/business/material/materialquerydefine");
 		dataModel.setQueryName("materialList");
@@ -1349,16 +1349,16 @@ public class OrderService extends CommonService  {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void updateOrderDetail(
-			String ysid,
+	private B_OrderDetailData updateParentOrderDetail(
+			String divertysid,
 			String quantity) throws Exception{
 		
-		B_OrderDetailData dbData = null;
-		String where = " YSId ='" + ysid + "' AND deleteFlag='0' ";
+		B_OrderDetailData dbData = new B_OrderDetailData();
+		String where = " YSId ='" + divertysid + "' AND deleteFlag='0' ";
 		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
 			
 		if(list == null || list.size() == 0){
-			return;
+			return dbData;
 		}else{
 			//处理共通信息
 			dbData = list.get(0);
@@ -1366,16 +1366,22 @@ public class OrderService extends CommonService  {
 					"OrderCancelUpdate",userInfo);
 			copyProperties(dbData,commData);
 			
-			float fcancel = stringToFloat(quantity);
-			float foldQty = stringToFloat(dbData.getQuantity());//销售数量
+			String oldQty = dbData.getQuantity();
+			String oldDiverQty = dbData.getDivertquantity();
+			float fdiver = stringToFloat(quantity);
+			float foldQty = stringToFloat(oldQty);//销售数量
 			float flotTotal = stringToFloat(dbData.getTotalquantity());//销售数量+额外订单
 			float fprice = stringToFloat(dbData.getPrice());
-			float foldTotalPrice = stringToFloat(dbData.getTotalprice());
+			//float foldTotalPrice = stringToFloat(dbData.getTotalprice());
 			
-			float fnewQty = foldQty - fcancel;//新的销售数量
-			float fnewTotal = flotTotal -fcancel;//销售数量+额外订单
+			float fnewQty = foldQty - fdiver;//新的销售数量=原订单数 - 挪走的
+			float fnewTotal = flotTotal -fdiver;//销售总数
 			float fnewtotalPrice = fnewQty * fprice;//新的销售总计
 			
+			dbData.setDiverflag("1");//1：被挪用
+			if(isNullOrEmpty(oldDiverQty)){//如果已存在挪用前的订单数，就不更新，保留最初的订单数
+				dbData.setDivertquantity(oldQty);//被挪用前的订单数量,
+			}
 			dbData.setQuantity(floatToString(fnewQty));
 			dbData.setTotalquantity(floatToString(fnewTotal));
 			dbData.setTotalprice(floatToString(fnewtotalPrice));
@@ -1383,8 +1389,10 @@ public class OrderService extends CommonService  {
 			new B_OrderDetailDao().Store(dbData);
 			
 			//更新整个PI的销售总价
-			updataOrderTotalPrice(dbData.getPiid(),fnewtotalPrice,foldTotalPrice);
+			//updataOrderTotalPrice(dbData.getPiid(),fnewtotalPrice,foldTotalPrice);
 		}
+		
+		return dbData;
 	}
 	
 	public Model delete(String delData){
@@ -2263,5 +2271,124 @@ public class OrderService extends CommonService  {
 	public void orderTrackingSearchInit() throws Exception{
 
 		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
+	}
+	
+	public void insertDivertOrder(String data) throws Exception {
+
+		ts = new BaseTransaction();
+
+		try {			
+			ts.begin();
+					
+			//处理订单详情数据			
+			String counter = getJsonData(data, "keyBackup");
+			
+			int counterInt = 0;
+		    if (notEmpty(counter)) {
+		      counterInt = Integer.parseInt(counter);
+		    }
+		    for (int i = 0; i < counterInt; ++i) {
+
+		    	String divertysid = getJsonData(data, "orderDetailLines[" + i + "].divertysid");
+		    	String ysid       = getJsonData(data, "orderDetailLines[" + i + "].ysid");
+		    	String materialid = getJsonData(data, "orderDetailLines[" + i + "].materialid");
+			    String quantity   = getJsonData(data, "orderDetailLines[" + i + "].quantity");
+			    String remarks    = getJsonData(data, "orderDetailLines[" + i + "].remarks");
+
+			    if (isNullOrEmpty(divertysid))
+			    	continue;
+		      
+				//更新原订单
+				B_OrderDetailData oldDt = updateParentOrderDetail(divertysid,quantity);
+				
+				B_OrderDetailData newDt = new B_OrderDetailData();
+				newDt.setPrice(oldDt.getPrice());
+				newDt.setTotalprice(
+						floatToString(
+								stringToFloat(quantity) * stringToFloat(oldDt.getPrice())
+								));
+				
+				newDt.setYsid(ysid);
+				newDt.setDivertysid(divertysid);
+				newDt.setMaterialid(materialid);
+				newDt.setQuantity(quantity);
+				newDt.setRemarks(remarks);
+				newDt.setTotalquantity(quantity);
+				newDt.setProductclassify(oldDt.getProductclassify());//产品分类
+				newDt.setOrdertype(oldDt.getOrdertype());
+				newDt.setStatus(Constants.ORDER_STS_1);
+				newDt.setCurrency(oldDt.getCurrency());
+					
+				//正常订单
+				insertOrderDetail(newDt,oldDt.getPiid());				
+			  
+		    } 
+
+			ts.commit();
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			ts.rollback();
+		}	
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void updateOrderDetail(
+			String ysid,
+			String quantity) throws Exception{
+		
+		B_OrderDetailData dbData = null;
+		String where = " YSId ='" + ysid + "' AND deleteFlag='0' ";
+		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
+			
+		if(list == null || list.size() == 0){
+			return;
+		}else{
+			//处理共通信息
+			dbData = list.get(0);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderCancelUpdate",userInfo);
+			copyProperties(dbData,commData);
+			
+			float fcancel = stringToFloat(quantity);
+			float foldQty = stringToFloat(dbData.getQuantity());//销售数量
+			float flotTotal = stringToFloat(dbData.getTotalquantity());//销售数量+额外订单
+			float fprice = stringToFloat(dbData.getPrice());
+			float foldTotalPrice = stringToFloat(dbData.getTotalprice());
+			
+			float fnewQty = foldQty - fcancel;//新的销售数量
+			float fnewTotal = flotTotal -fcancel;//销售数量+额外订单
+			float fnewtotalPrice = fnewQty * fprice;//新的销售总计
+			
+			dbData.setQuantity(floatToString(fnewQty));
+			dbData.setTotalquantity(floatToString(fnewTotal));
+			dbData.setTotalprice(floatToString(fnewtotalPrice));
+			
+			new B_OrderDetailDao().Store(dbData);
+			
+			//更新整个PI的销售总价
+			updataOrderTotalPrice(dbData.getPiid(),fnewtotalPrice,foldTotalPrice);
+		}
+	}
+	
+	
+	public HashMap<String, Object> getDivertOrder() throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderList");
+		baseQuery = new BaseQuery(request, dataModel);
+
+		String divertYsid = request.getParameter("divertYsid");
+		userDefinedSearchCase.put("divertYsid", divertYsid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		
+		return modelMap;
 	}
 }

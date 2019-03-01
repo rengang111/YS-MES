@@ -238,7 +238,15 @@ public class OrderAction extends BaseAction {
 			case "getOrderDetailByYSId":
 				getOrderDetailByYSId();
 				rtnUrl = "/business/order/orderview";
-				
+
+			case "insertDivertOrder"://保存挪用订单
+				insertDivertOrder(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getDivertOrder"://显示挪用订单
+				dataMap = getDivertOrder();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -891,6 +899,39 @@ public class OrderAction extends BaseAction {
 		
 		try {
 			modelMap = orderService.getProductPhoto();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+
+	public HashMap<String, Object> insertDivertOrder(String data){	
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		try {
+			orderService.insertDivertOrder(data);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> getDivertOrder(){	
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		try {
+			modelMap = orderService.getDivertOrder();
 			
 		}
 		catch(Exception e) {

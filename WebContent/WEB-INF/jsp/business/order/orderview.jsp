@@ -14,25 +14,241 @@
 <title>订单管理-订单查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
-	
-	//Form序列化后转为AJAX可提交的JSON格式。
-	$.fn.serializeObject = function() {
-		var o = {};
-		var a = this.serializeArray();
-		$.each(a, function() {
-			if (o[this.name] !== undefined) {
-				if (!o[this.name].push) {
-					o[this.name] = [ o[this.name] ];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
+
+var counter1  = 0;
+
+$.fn.dataTable.TableTools.buttons.add_rows1 = $
+.extend(
+	true,
+	{},
+	$.fn.dataTable.TableTools.buttonBase,
+	{
+		"fnClick" : function(button) {
+			//var rowIndex = $("#documentary tbody tr").length -1 ;
+			var rowIndex = counter1  ;
+			var trHtml = "";
+			
+			//rowIndex++;
+			var rownum = rowIndex+1;
+			var checkbox = "<input type=checkbox name='numCheck' id='numCheck' value='" + rowIndex + "' />";
+			trHtml+="<tr>";	
+			trHtml+='<td class="td-left">'+ rownum + checkbox +'</td>';
+			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].divertysid" id="orderDetailLines'+rowIndex+'.divertysid" class="short" /></td>';
+			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid" class="short " /></td>';
+			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" class="attributeList1" /></td>';
+			trHtml+='<td class="td-center"><span id=""></span></td>';
+			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity" class="short" /></td>',
+			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].remarks"    id="orderDetailLines'+rowIndex+'.remarks" class="middle" /></td>',
+			trHtml+="</tr>";	
+
+			$('#documentary tbody tr:last').after(trHtml);
+			if(counter1 == 0){
+				$('#documentary tbody tr:eq(0)').hide();//删除无效行
 			}
-		});
-		return o;
-	};
+			counter1 += 1;//记录费用总行数
+			//alert(counter1+'::counter1')
+			autocomplete();
+				
+			foucsInit();
+			
+		}
+	});
+
+$.fn.dataTable.TableTools.buttons.reset1 = $.extend(true, {},
+		$.fn.dataTable.TableTools.buttonBase, {
+		"fnClick" : function(button) {
+			
+			var t=$('#documentary').DataTable();
+			
+			rowIndex = t.row('.selected').index();
+			
+			var str = true;
+			$("input[name='numCheck']").each(function(){
+				if ($(this).prop('checked')) {
+					var n = $(this).parents("tr").index();  // 获取checkbox所在行的顺序
+					$('#documentary tbody').find("tr:eq("+n+")").remove();
+					str = false;
+				}
+			});
+			
+			if(str){
+				$().toastmessage('showWarningToast', "请选择要 删除 的数据。");
+				return;
+			}else{
+				$().toastmessage('showWarningToast', "删除后,请保存");					
+			}
+
+			var rowCont = true;
+			$("input[name='numCheck']").each(function(){
+				rowCont = false;
+			});
+			
+			if(rowCont == true){
+				$('#documentary tbody tr:eq(0)').show();//显示无效行
+				counter1 = 0;
+			
+			}
+		}
+	});
+
+$.fn.dataTable.TableTools.buttons.save1 = $.extend(true, {},
+		$.fn.dataTable.TableTools.buttonBase, {
+		"fnClick" : function(button) {
+			
+			doSave('D');
+		}
+	});
+
+
+function doSave(type) {
+	var PIId = '${order.PIId}';
+	var actionUrl = "${ctx}/business/order?methodtype=insertDivertOrder&PIId="+PIId;
+
+	$('#keyBackup').val(counter1);
+
+	$.ajax({
+		type : "POST",
+		contentType : 'application/json',
+		dataType : 'text',
+		url : actionUrl,
+		data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
+		success : function(d) {
+			//alert(d)
+			switch(type){
+				case "D":
+					documentaryAjax();	//挪用订单
+					break;			
+			}			
+			
+			$().toastmessage('showWarningToast', "保存成功!");		
+			
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {				
+			//alert(textStatus);
+		}
+	});
+}
 	
+function documentaryAjax() {//挪用订单
+
+	var table = $('#documentary').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+	var YSId = '${order.YSId}';
+	var actionUrl = "${ctx}/business/order?methodtype=getDivertOrder&divertYsid="+YSId;
+
+	var t = $('#documentary').DataTable({
+		
+		"processing" : false,
+		"retrieve"   : true,
+		"stateSave"  : true,
+		"pagingType" : "full_numbers",
+        "paging"    : false,
+        "pageLength": 50,
+		"async"		: false,
+        "ordering"  : false,
+		"sAjaxSource" : actionUrl,
+		dom : 'T<"clear">lt',
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			$.ajax({
+				"type" : "POST",
+				"contentType": "application/json; charset=utf-8",
+				"dataType" : 'json',
+				"url" : sSource,
+				"data" : JSON.stringify($('#bomForm').serializeArray()),// 要提交的表单
+				success : function(data) {
+
+					counter1 = data['recordsTotal'];//记录总件数
+					
+					fnCallback(data);
+					//$(".DTTT_container").css('float','left');
+				},
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					alert(textStatus)
+				}
+			})
+		},
+		"tableTools" : {
+			"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
+			"aButtons" : [ {
+				"sExtends" : "add_rows1",
+				"sButtonText" : "追加新行"
+			},
+			{
+				"sExtends" : "reset1",
+				"sButtonText" : "删除行"
+			},
+			{
+				"sExtends" : "save1",
+				"sButtonText" : "保存"
+			}],
+		},
+    	"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},
+		
+		"columns" : [
+		    {"data": null,"className" : 'td-left'},
+		    {"data": "divertYsid", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "YSId", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "materialId", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "materialName", "defaultContent" : '',"className" : ''},
+		    {"data": "quantity", "className" : 'td-center'},
+		    {"data": "remarks", "className" : ''},
+		],
+		"columnDefs":[
+    		{"targets":0,"render":function(data, type, row){		
+				var status = row["status"];
+    			var rownum = row["rownum"];
+				var checkbox = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />";
+    			var cost = row["cost"];
+    		//	if (status != "1"){//可以修改
+    		//		return rownum + checkbox;
+    		//	}else{
+    				return rownum;
+    		//	}
+    		}},
+    		{"targets":2,"render":function(data, type, row){
+    			var status = row["status"];
+    			var rownum = row["rownum"] - 1;
+    			var rtnVal = "";
+    			//if (status == "1"){
+    				rtnVal = data + "<input type='hidden' name='orderDetailLines["+ rownum +"].ysid' id='orderDetailLines"+ rownum +".ysid' value='" + data + "' />"
+    			//}else{
+    			//	rtnVal = "<input type='text' name='orderDetailLines["+ rownum +"].ysid' id='orderDetailLines"+ rownum +".ysid' value='" + data + "' class='short' />"
+    			//}
+    			return rtnVal;
+            }},
+    		{"targets":3,"render":function(data, type, row){
+    			var status = row["status"];
+    			var rownum = row["rownum"] - 1;
+    			var rtnVal = "";
+    			//if (status == "1"){
+    				rtnVal = data +  "<input type='hidden' name='orderDetailLines["+ rownum +"].materialid'   id='orderDetailLines"+ rownum +".materialid'  value='" + data + "' class='cash' />"
+    			//}else{
+       			//	rtnVal = "<input type='text' name='orderDetailLines["+ rownum +"].materialid'   id='orderDetailLines"+ rownum +".materialid'  value='" + data + "' class='cash' />"
+    				
+    			//}
+    			return rtnVal;
+            }},
+    		{"targets":5,"render":function(data, type, row){
+    			var status = row["status"];
+    			var rownum = row["rownum"] - 1;
+    			var rtnVal = "";
+    			//if (status == "1"){
+    				rtnVal = data + "<input type='hidden' name='orderDetailLines["+ rownum +"].quantity' id='orderDetailLines"+ rownum +".quantity' value='" + data + "' />"
+    			//}else{
+    			//	rtnVal = "<input type='text' name='orderDetailLines["+ rownum +"].quantity' id='orderDetailLines"+ rownum +".quantity' value='" + data + "' class='middle' />"
+    			//}
+    			return rtnVal;
+            }}           
+	           
+	     ] ,			
+	})
 	
+};//挪用订单
+
 	function ajax() {
 
 		var t = $('#example').DataTable({
@@ -180,6 +396,9 @@
 		
 		ajax();
 		ajax2();
+
+		documentaryAjax();	//挪用订单
+		autocomplete();//
 		
 		//$('#example').DataTable().columns.adjust().draw();
 		
@@ -301,6 +520,66 @@
 	};	
 </script>
 
+<script type="text/javascript">
+
+function autocomplete(){
+	
+	$(".attributeList1").autocomplete({
+		minLength : 2,
+		autoFocus : false,
+		source : function(request, response) {
+			//alert(888);
+			$
+			.ajax({
+				type : "POST",
+				url : "${ctx}/business/order?methodtype=getMaterialList",
+				dataType : "json",
+				data : {
+					key : request.term
+				},
+				success : function(data) {
+					//alert(777);
+					response($
+						.map(
+							data.data,
+							function(item) {
+
+								return {
+									label : item.viewList,
+									value : item.materialId,
+									id : item.materialId,
+									name : item.materialName,
+									materialId : item.materialId
+								}
+							}));
+				},
+				error : function(XMLHttpRequest,
+						textStatus, errorThrown) {
+					alert(XMLHttpRequest.status);
+					alert(XMLHttpRequest.readyState);
+					alert(textStatus);
+					alert(errorThrown);
+					alert("系统异常，请再试或和系统管理员联系。");
+				}
+			});
+		},
+
+		select : function(event, ui) {
+			
+			//产品名称
+			//$(this).parent().parent().find("td").eq(2).find("span").html(jQuery.fixedWidth(ui.item.name,64));
+			$(this).parent().parent().find("td").eq(4).find("span").html(ui.item.name,64);
+
+			//产品编号
+			$(this).parent().find("input:hidden").val(ui.item.materialId);
+			
+		},
+
+		
+	});
+
+}
+</script>
 </head>
 <body>
 <div id="container">
@@ -313,6 +592,7 @@
 		<form:hidden path="order.piid" value="${order.PIId}"/>
 		<input type="hidden" id="goBackFlag" value="${goBackFlag }" />
 		<input type="hidden" id="materialId" value="${order.materialId }" />
+		<form:hidden path="keyBackup" />
 		
 		<fieldset>
 			<legend> 订单综合信息</legend>
@@ -408,7 +688,7 @@
 			</tfoot>
 		<tbody>
 			<c:forEach var='order' items='${detail}' varStatus='status'>	
-			<c:if test="${order.orderType eq '010' }">	
+			<c:if test="${order.orderType eq '010'  && order.divertYsid == ''}">	
 				<tr>
 					<td>${order.YSId}</td>
 					<td><a href="###" onClick="doShow('${order.materialId}')">${order.materialId}</a></td>								
@@ -500,6 +780,25 @@
 	</table>
 	</div>
 	</fieldset>
+		
+	<fieldset>
+		<span class="tablename"> 订单挪用</span>
+			<div class="list">
+				<table id="documentary" class="display" >
+					<thead>				
+					<tr>
+						<th width="20px">No</th>
+						<th class="dt-center" width="100px">被挪用的订单<br>耀升编号</th>
+						<th class="dt-center" width="100px">新订单<br>耀升编号</th>
+						<th class="dt-center" width="200px">产品编号</th>
+						<th class="dt-center" >产品名称</th>
+						<th class="dt-center" width="100px">挪用数量</th>
+						<th class="dt-center" width="150px">备注</th>
+					</tr>
+					</thead>
+				</table>
+			</div>
+	</fieldset>	
 </form:form>		
 
 </div>
