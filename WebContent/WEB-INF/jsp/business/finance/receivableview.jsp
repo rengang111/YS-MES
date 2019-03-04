@@ -13,7 +13,7 @@ function historyAjax() {
 		table.fnClearTable(false);
 		table.fnDestroy();
 	}
-	var YSId = '${order.YSId }';
+	var receivableId = '${receivableId }';
 
 	var t = $('#history').DataTable({			
 		"paging": false,
@@ -28,7 +28,7 @@ function historyAjax() {
 		//"scrollY":scrollHeight,
 		//"scrollCollapse":true,
 		dom : '<"clear">rt',
-		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getReceivableDetail&YSId="+YSId,
+		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getReceivableDetail&receivableId="+receivableId,
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			var param = {};
 			var formData = $("#condition").serializeArray();
@@ -117,8 +117,13 @@ function historyAjax() {
 
 function orderDetailAjax() {
 	
-	var ysids = '${ysids}';
-
+	var receivableId = '${receivableId}';
+	
+	var table = $('#detail').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
 	var t = $('#detail').DataTable({			
 		"paging": false,
 		"lengthChange":false,
@@ -132,7 +137,7 @@ function orderDetailAjax() {
 		//"scrollY":scrollHeight,
 		//"scrollCollapse":true,
 		dom : '<"clear">rt',
-		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getOrderDetail&ysids="+ysids,
+		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getOrderDetail&receivableId="+receivableId,
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			var param = {};
 			var formData = $("#condition").serializeArray();
@@ -150,6 +155,7 @@ function orderDetailAjax() {
 					fnCallback(data);
 					var supplier = data['data']['0']['customerFullName'];		
 					var currency = data['data']['0']['currency'];
+					//alert('supplier'+supplier)
 					$('#supplier').text(supplier);
 					
 					var cnt = orderSum();
@@ -167,9 +173,9 @@ function orderDetailAjax() {
 		
 		"columns" : [
 		           {"data": null,"className":"td-center"
-					}, {"data": "YSId","className":"td-center"
-					}, {"data": "productId","className":"td-center"
-					}, {"data": "productName","className":"td-right"
+					}, {"data": "YSId","className":"td-left"
+					}, {"data": "productId","className":"td-left"
+					}, {"data": "productName","className":""
 					}, {"data": "totalPrice","className":"td-right"
 					}, {"data":null,"className":""
 					}
@@ -178,16 +184,6 @@ function orderDetailAjax() {
 				{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
 				}},
-	    		{"targets":3,"render":function(data, type, row){
-	    			return floatToCurrency(data);
-	    		}},
-	    		{"targets":4,"render":function(data, type, row){
-	    			var rowIndex = row["rownum"] -1 ;
-	    			var txt = '<input type="hidden" name="orderList['+rowIndex+'].ysid"             id="orderList'+rowIndex+'.ysid"              value="'+row["YSId"]+'" />';
-	    			txt += '<input type="hidden" name="orderList['+rowIndex+'].productid"        id="orderList'+rowIndex+'.productid"         value="'+row["productId"]+'" />';
-	    			txt += '<input type="hidden" name="orderList['+rowIndex+'].amountreceivable" id="orderList'+rowIndex+'.amountreceivable"  value="'+row["totalPrice"]+'" />';
-	    			return floatToCurrency(data) + txt;
-	    		}},
 	    		{"targets":5,"render":function(data, type, row){
 	    			return "";
 	    		}}
@@ -199,10 +195,11 @@ function orderDetailAjax() {
 	$(document).ready(function() {
 		
 		historyAjax();
-
-		var currency = '${order.currency}';//币种
-		var orderPrice = currencyToFloat('${order.orderPrice }');
-		$('#orderPrice').text(floatToSymbol(orderPrice,currency))
+		orderDetailAjax();
+		
+		//var currency = '${order.currency}';//币种
+		//var orderPrice = currencyToFloat('${order.orderPrice }');
+		//$('#orderPrice').text(floatToSymbol(orderPrice,currency))
 		
 		$(".goBack").click(
 				function() {
@@ -214,9 +211,8 @@ function orderDetailAjax() {
 		$("#insert").click(
 				function() {
 
-			var ysid = $("#receivable\\.ysid").val();
 			var detailid = $("#receivable\\.receivableid").val();
-			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=addContinueInit"+"&YSId="+ysid+"&detailId="+detailid);
+			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=addContinueInit&detailId="+detailid);
 			$('#formModel').submit();
 		});
 		
@@ -235,10 +231,21 @@ function orderDetailAjax() {
 			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
 		});
 		
-		
-		
 	});
 	
+	//列合计
+	function orderSum(){
+
+		var sum = 0;
+		$('#detail tbody tr').each (function (){
+			
+			var vtotal = $(this).find("td").eq(4).text();
+			var ftotal = currencyToFloat(vtotal);
+			
+			sum = currencyToFloat(sum) + ftotal;			
+		})
+		return sum;
+	}
 	
 	function doComputeTax(){
 		
@@ -299,60 +306,16 @@ function orderDetailAjax() {
 		})
 		return sum;
 	}
-	
-	function doShowContract(contractId) {
-
-		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
 		
-		callProductDesignView("采购合同",url);
-	}
-
-	function doShowSupplier(supplierId) {
-
-		var url = '${ctx}/business/supplier?methodtype=showById&openFlag=newWindow&key=' + supplierId;
-		
-		callProductDesignView("供应商",url);
-	}
-	
-	//批量打印入库单
-	function doPrintReceiptList() {
-		var contractId = "";
-		$(".contractid").each(function(){			
-			contractId += $(this).val() + ",";			
-		});
-		var url = '${ctx}/business/storage?methodtype=receiptListPrint&contractIds=' + contractId;
-		
-		callProductDesignView("打印入库单",url);
-	}
-
-	//显示入库单信息
-	function receiptView(contractId) {
-
-		var url = '${ctx}/business/storage?methodtype=showHistory&openFlag=newWindow&contractId=' + contractId;
-		
-		callProductDesignView("显示入库单",url);
-	}
-	
-	function doPrintContract(contractId) {
-	
-		var url = '${ctx}/business/requirement?methodtype=contractPrint';
-		url = url +'&contractId='+contractId;
-		//alert(url)		
-		callProductDesignView("打印合同",url);	
-
-	}
-
-	
 </script>
 <script type="text/javascript">
 
 function productPhotoView() {
 
-	var ysid = $("#receivable\\.ysid").val();
 	var detailid = $("#receivable\\.receivableid").val();
 
 	$.ajax({
-		"url" :"${ctx}/business/receivable?methodtype=getProductPhoto&YSId="+ysid+"&detailId="+detailid,	
+		"url" :"${ctx}/business/receivable?methodtype=getProductPhoto&detailId="+detailid,	
 		"datatype": "json", 
 		"contentType": "application/json; charset=utf-8",
 		"type" : "POST",
@@ -472,15 +435,11 @@ function uploadPhoto(tableId,tdTable, id) {
 		<table class="form" id="table_form">
 			<tr> 				
 				<td class="label" width="100px">收款编号：</td>					
-				<td width="150px">${order.receivableId }
-					<form:hidden path="receivable.ysid" class="read-only"  value="${order.YSId }"/>
-					<form:hidden path="receivable.receivableid" class="read-only"  value="${order.receivableId }"/></td>	
-																						
-				<td width="100px" class="label">预定收款日：</td>
-				<td>${order.reserveDate } </td>	
-				
+				<td width="150px">${receivableId }
+					<form:hidden path="receivable.receivableid" class="read-only"  value="${receivableId }"/></td>	
+																										
 				<td width="100px" class="label">客户名称：</td>
-				<td colspan="3">${order.customerFullName }</td>			
+				<td colspan="5"><span id="supplier"></span></td>			
 			</tr>
 			<tr>
 				<td class="label" width="100px">应收款总额：</td>					
@@ -500,7 +459,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<a class="DTTT_button " id="insert" >继续收款</a> 
+		<!-- a class="DTTT_button " id="insert" >继续收款</a --> 
 		<a class="DTTT_button  goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
@@ -540,12 +499,12 @@ function uploadPhoto(tableId,tdTable, id) {
 		<table class="display" id="detail">
 			<thead>
 				<tr> 		
-					<th width="100px">No</th>				
+					<th width="50px">No</th>				
 					<th width="100px">耀升编号</th>
-					<th width="100px">产品编号</th>				
-					<th width="100px">产品名称</th>
+					<th width="150px">产品编号</th>				
+					<th width="">产品名称</th>
 					<th width="100px">收款金额</th>	
-					<th></th>
+					<th width="100px"></th>
 				</tr>
 			</thead>			
 		</table>

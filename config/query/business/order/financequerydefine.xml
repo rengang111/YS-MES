@@ -1132,7 +1132,7 @@
     					c1.actualAmount,c1.bankDeduction,c1.customerDeduction ,
     					c1.collectionDate 
     				   FROM b_receivable c,v_receivabledetailgroup c1 ,b_receivableorder c2
-    				   WHERE  c.deleteFlag='0' AND c.receivableId=c1.receivableId 
+    				   WHERE  c.deleteFlag='0' AND c.receivableId=c1.receivableId AND c.receivableId=c2.receivableId
     			)b ON a.YSId=b.YSId 
     	WHERE a.payment is NULL 
     </from>
@@ -1146,8 +1146,7 @@
     <pool></pool>    
     <name value="receivableDetailById" />
      <where>
-        <w name="a.receivableId" des=""  reqName="receivableId"     dtype="ch" oper="="     lg="AND" bt="" />
-        <w name="a.YSId"         des=""  reqName="YSId"             dtype="ch" oper="="     lg="AND" bt="" />
+        <w name="a.receivableId"       des=""  reqName="receivableId"     dtype="ch" oper="="     lg="AND" bt="" />
         <w name="b.receivableSerialId" des=""  reqName="receivableSerialId" dtype="ch" oper="=" lg="AND" bt="" />
  </where>
   <select>
@@ -1167,7 +1166,9 @@
       <f name="c.LoginName" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
-    <from>b_receivable a,b_receivabledetail b LEFT JOIN s_user c ON c.UserID = b.payee where a.receivableId=b.receivableId and a.deleteFlag='0' and b.deleteFlag='0' </from>
+    <from>b_receivable a,b_receivabledetail b 
+    	  LEFT JOIN s_user c ON c.UserID = b.payee 
+    	where a.receivableId=b.receivableId and a.deleteFlag='0' and b.deleteFlag='0' </from>
     <orderby>b.receivableSerialId </orderby>
     <groupby></groupby>
     <having></having>
@@ -1314,6 +1315,34 @@
 		WHERE d.paymentId=e.paymentId  AND e.deleteFlag='0'
 	</from>
     <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>    
+  <query>
+    <pool></pool>    
+    <name value="orderListForReceivabelById" />
+     <where>
+    </where>
+  <select>
+      <f name="b.YSId" alias="" ctype="" />
+      <f name="b.materialId" alias="productId" ctype="" />
+      <f name="b.materialName" alias="productName" ctype="" />
+      <f name="b.totalPrice" alias="" ctype="" />
+      <f name="b.customerFullName" alias="" ctype="" />
+      <f name="b.currency" alias="" ctype="" />
+  </select>
+    <from>
+		 v_orderlist b
+		JOIN
+			(
+				SELECT
+				a.ysid
+				FROM b_ReceivableOrder a
+				WHERE a.receivableId='#' AND a.deleteFlag='0' 
+			) b1 ON b.YSId=b1.ysid
+	</from>
+    <orderby>b.YSId</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>

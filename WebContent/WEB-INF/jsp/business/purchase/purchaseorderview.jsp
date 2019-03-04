@@ -898,7 +898,7 @@ function contractPayment() {//付款记录
 					<td width="100px">${ contract.purchaseDate }</td>
 					<td class="label" width="100px"><label>合同交期：</label></td>
 					<td width="100px">${ contract.deliveryDate }</td>
-					<td class="label" width="100px"></td>
+					<td class="label" width="100px">采购员：${ contract.purchaser }</td>
 					<td></td>
 				</tr>									
 			</table>

@@ -140,7 +140,10 @@ public class ReceivableAction extends BaseAction {
 			case "getOrderDetail"://订单详情
 				dataMap = doGetOrderDetail();
 				printOutJsonObj(response, dataMap);
-				//rtnUrl = "/business/finance/receivableview";
+				break;
+			case "getOrderDetailByYsids"://订单详情:新建
+				dataMap = doGetOrderDetailByYsids();
+				printOutJsonObj(response, dataMap);
 				break;
 		}
 		
@@ -272,16 +275,21 @@ public class ReceivableAction extends BaseAction {
 	
 	public HashMap<String, Object> doGetOrderDetail() throws Exception{	
 		
-		
 		return service.getOrderDetail();
+		
+	}	
+	
+	public HashMap<String, Object> doGetOrderDetailByYsids() throws Exception{	
+		
+		return service.getOrderDetailByYsids();
 		
 	}	
 
 
 	public HashMap<String, Object> getReceivableDetailById() throws Exception{	
 
-		String YSId = request.getParameter("YSId");
-		return service.getReceivableDetail(YSId,"");
+		String receivableId = request.getParameter("receivableId");
+		return service.getReceivableDetail(receivableId,"");
 
 	}	
 	
@@ -289,8 +297,10 @@ public class ReceivableAction extends BaseAction {
 		
 		try {
 
-			String YSId = request.getParameter("YSId");
-			service.receivableDetailViewInit(YSId);
+			String receivableId = request.getParameter("receivableId");
+			model.addAttribute("receivableId",receivableId);
+			
+			//service.receivableDetailViewInit(YSId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

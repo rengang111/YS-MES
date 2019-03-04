@@ -109,7 +109,7 @@ function orderDetailAjax() {
 		//"scrollY":scrollHeight,
 		//"scrollCollapse":true,
 		dom : '<"clear">rt',
-		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getOrderDetail&ysids="+ysids,
+		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getOrderDetailByYsids&ysids="+ysids,
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			var param = {};
 			var formData = $("#condition").serializeArray();
@@ -133,6 +133,11 @@ function orderDetailAjax() {
 					var cnt2 = floatToSymbol(cnt,currency)
 					$('#orderPrice').text(cnt2);
 					$('#receivable\\.amountreceivable').val(cnt);
+					//计算收款金额					
+					$('#receivableDetail\\.actualamount').val(cnt2);
+					$('#receivableDetail\\.bankdeduction').val('0');
+					
+					$('#thisCount').val(cnt2)
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	             }
@@ -146,7 +151,7 @@ function orderDetailAjax() {
 		           {"data": null,"className":"td-center"
 					}, {"data": "YSId","className":"td-left"
 					}, {"data": "productId","className":"td-left"
-					}, {"data": "productName","className":"td-left"
+					}, {"data": "productName","className":""
 					}, {"data": "totalPrice","className":"td-right"
 					}, {"data":null,"className":""
 					}
@@ -228,92 +233,69 @@ function orderSum(){
 		
 		orderDetailAjax();//订单明细
 		//historyAjax();//历史收款单
-		productPhotoView();//收款单
-		
-		//产品图片添加位置,                                                                                                                                                                                        
-		var productIndex = 1;
-		$("#addProductPhoto").click(function() {
-			
-			var path='${ctx}';
-			var cols = $("#productPhoto tbody td.photo").length - 1;
-			//从 1 开始
-			var trHtml = addPhotoRow('productPhoto','uploadProductPhoto',productIndex,path);		
-
-			$('#productPhoto td.photo:eq('+0+')').after(trHtml);	
-			productIndex++;		
-			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
-		});
-		
-		//银行扣款
-		
+				
+		//银行扣款		
 		$("#receivableDetail\\.bankdeduction") .blur(function(){
-			//计算本次最大收款金额
-			/*
-			var actualCnt =  currencyToFloat('${order.actualCnt }');
-			var orderPrice = currencyToFloat('${order.orderPrice }');
+			//计算本次最大收款金额			
+			var actualCnt =  currencyToFloat($('#receivable\\.amountreceivable').val());//预计收款合计（包含银行扣款）
 			var currency = '${order.currency}';//币种
-			var bank  = currencyToFloat($('#receivableDetail\\.bankdeduction').val());
-			var shiji = currencyToFloat($('#receivableDetail\\.actualamount').val());
-			var surplus = orderPrice - actualCnt;
+			var bank  = currencyToFloat($('#receivableDetail\\.bankdeduction').val());//本次银行扣款
+			var shiji = currencyToFloat($('#receivableDetail\\.actualamount').val());//本次实际收款	
+			var thisCount = bank + shiji
+			
+			if(bank < 0 ){
+				$().toastmessage('showWarningToast', "银行扣款不能为负数。");	
+				bank = 0;
+			}
 
-			if(bank + shiji > surplus){
-				$().toastmessage('showWarningToast', "扣款金额不能超过应收款。");	
-				$('#receivableDetail\\.bankdeduction').val('0');
-				return;
+			if(bank + shiji > actualCnt){
+				$().toastmessage('showWarningToast', "总收款不能超过应收款。");	
+				bank = actualCnt - shiji;
 			}
 			
-			if(surplus <= 0){
-
-				var shiji = '0';
-				var thisCount = '0';
-				$('#surplus').text('0');
-			}else{
-
-				var shiji = surplus - bank;
-				var thisCount = bank + shiji;
-				$('#surplus').text(floatToSymbol(surplus,currency));
+			if(bank > shiji){
+				$().toastmessage('showWarningToast', "银行扣款不能大于应收款");	
+				bank = actualCnt - shiji;
 			}
 			
-*/
+			thisCount = bank + shiji;//重新计算
 			//$('#receivableDetail\\.actualamount').val(floatToSymbol(shiji,currency));
-			//$('#receivableDetail\\.bankdeduction').val(floatToSymbol(bank,currency));
-			var bank = $('#receivableDetail\\.bankdeduction').val();
-			var shou = $('#receivableDetail\\.actualamount').val();
-			$('#thisCount').val(currencyToFloat(bank) + currencyToFloat(shou));
-			//$('#thisCount').val(floatToSymbol(thisCount,currency));
+			$('#receivableDetail\\.bankdeduction').val(floatToSymbol(bank,currency));
+			//var bank = $('#receivableDetail\\.bankdeduction').val();
+			//var shou = $('#receivableDetail\\.actualamount').val();
+			//$('#thisCount').val(currencyToFloat(bank) + currencyToFloat(shou));
+			$('#thisCount').val(floatToSymbol(thisCount,currency));
 		});
 		
 		//收款
 		$("#receivableDetail\\.actualamount") .blur(function(){
 			//计算本次最大收款金额
-			/*
-			var actualCnt =  currencyToFloat('${order.actualCnt }');
-			var orderPrice = currencyToFloat('${order.orderPrice }');
+			var actualCnt =  currencyToFloat($('#receivable\\.amountreceivable').val());//预计收款合计（包含银行扣款）
 			var currency = '${order.currency}';//币种
-			var bank  = currencyToFloat($('#receivableDetail\\.bankdeduction').val());
-			var shiji = currencyToFloat($('#receivableDetail\\.actualamount').val());
-			var surplus = orderPrice - actualCnt;
-			//alert("shiji:yu"+shiji+"---"+surplus)
-			if(shiji > surplus){
-				$().toastmessage('showWarningToast', "收款金额不能超过应收款。");				
-				shiji = surplus;
-			}
-			
+			var bank  = currencyToFloat($('#receivableDetail\\.bankdeduction').val());//本次银行扣款
+			var shiji = currencyToFloat($('#receivableDetail\\.actualamount').val());//本次实际收款			
 			var thisCount = bank + shiji
 			
-			$('#surplus').text(floatToSymbol(surplus,currency));
+			if(shiji < 0 ){
+				$().toastmessage('showWarningToast', "收款金额不能为负数。");	
+				$('#receivableDetail\\.actualamount').val('0');
+				return;
+			}
 
+			if(bank + shiji > actualCnt){
+				$().toastmessage('showWarningToast', "总收款不能超过应收款。");	
+				var tmp = actualCnt - bank;
+				$('#receivableDetail\\.actualamount').val(floatToSymbol(tmp,currency));
+				return;
+			}
+			
+			thisCount = bank + shiji;//重新计算
 			$('#receivableDetail\\.actualamount').val(floatToSymbol(shiji,currency));
 			//$('#receivableDetail\\.bankdeduction').val(floatToSymbol(bank,currency));
 			$('#thisCount').val(floatToSymbol(thisCount,currency));
-			*/
-
-			var bank = $('#receivableDetail\\.bankdeduction').val();
-			var shou = $('#receivableDetail\\.actualamount').val();
-			$('#thisCount').val(currencyToFloat(bank) + currencyToFloat(shou));
 		});
 	
-
+/*
 		var orderPrice ='${order.orderPrice}';
 		var actualCnt =  currencyToFloat('${order.actualCnt }');
 		var orderPrice = currencyToFloat('${order.orderPrice }');
@@ -326,124 +308,12 @@ function orderSum(){
 		//$('#receivableDetail\\.actualamount').val(floatToSymbol(surplus,currency));
 		$('#orderPrice').text(floatToSymbol(orderPrice,currency))
 		$('#receivable\\.amountreceivable').val(floatToCurrency(orderPrice));
-		
+		*/
 		
 	});
 	
 </script>
-<script type="text/javascript">
 
-function productPhotoView() {
-
-	var ysid = $("#receivable\\.ysid").val();
-	var detailid = $("#receivable\\.receivableid").val();
-
-	$.ajax({
-		"url" :"${ctx}/business/receivable?methodtype=getProductPhoto&detailId="+detailid+"&YSId="+ysid,	
-		"datatype": "json", 
-		"contentType": "application/json; charset=utf-8",
-		"type" : "POST",
-		"data" : null,
-		success: function(data){
-				
-			var countData = data["productFileCount"];
-
-			photoView('productPhoto','uploadProductPhoto',countData,data['productFileList'])		
-		},
-		 error:function(XMLHttpRequest, textStatus, errorThrown){
-         	alert("图片显示失败.")
-		 }
-	});
-	
-}//产品图片
-
-function photoView(id, tdTable, count, data) {
-	
-	var row = 0;
-	for (var index = 0; index < count; index++) {
-		var path = '${ctx}' + data[index];
-		var pathDel = data[index];		
-		var trHtml = showPhotoRow(id,tdTable,path,pathDel,index);		
-		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
-		row++;
-	}
-}
-
-function deletePhoto(tableId,tdTable,path) {
-	
-	var url = '${ctx}/business/receivable?methodtype='+tableId+'Delete';
-	url+='&tabelId='+tableId+"&path="+path;
-	    
-	if(!(confirm("确定要删除该图片吗？"))){
-		return;
-	}
-    $("#formModel").ajaxSubmit({
-		type: "POST",
-		url:url,	
-		data:$('#formModel').serialize(),// 你的formid
-		dataType: 'json',
-	    success: function(data){
-	    	
-			var type = tableId;
-			var countData = "0";
-			var photo="";
-			var flg="true";
-			switch (type) {
-				case "productPhoto":
-					countData = data["productFileCount"];
-					photo = data['productFileList'];
-					break;
-			}
-			
-			//删除后,刷新现有图片
-			$("#" + tableId + " td:gt(0)").remove();
-			if(flg =="true"){
-				photoView(tableId, tdTable, countData, photo);
-			}
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("图片删除失败,请重试。")
-		}
-	});
-}
-
-function uploadPhoto(tableId,tdTable, id) {
-
-	var url = '${ctx}/business/receivabelUpload'
-			+ '?methodtype=uploadPhoto' + '&id=' + id;
-		
-	$("#formModel").ajaxSubmit({
-		type : "POST",
-		url : url,
-		data : $('#formModel').serialize(),// 你的formid
-		dataType : 'json',
-		success : function(data) {
-	
-			var type = tableId;
-			var countData = "0";
-			var photo="";
-			var flg="true";
-			switch (type) {
-				case "productPhoto":
-					countData = data["productFileCount"];
-					photo = data['productFileList'];
-					break;
-			}
-			
-			//添加后,刷新现有图片
-			$("#" + tableId + " td:gt(0)").remove();
-			if(flg =="true"){
-				photoView(tableId, tdTable, countData, photo);
-			}
-			
-		},
-		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert("图片上传失败,请重试。")
-		}
-	});
-}
-
-</script>
 </head>
 <body>
 <div id="container">
@@ -464,25 +334,14 @@ function uploadPhoto(tableId,tdTable, id) {
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr>
-				<td class="label" width="100px">客户名称：</td>
-				<td colspan="5"><span id="supplier"></span></td>
-			</tr>
-			
-			<tr>
 				<td class="label" width="100px">应收款总金额：</td>
 				<td class="font16" width="150px">
 					<span id="orderPrice"></span>
-					<form:hidden path="receivable.amountreceivable" class="short num read-only" value=""/></td>
-					
-				<td class="label" width="100px">已收款合计：</td>
-				<td class="font16" width="150px">
-					${order.actualCnt }</td>	
-									
-				<td class="label" width="100px">本次预计收款：</td>
-				<td class="font16">
-					<span id="surplus"></span></td>	
-			</tr>	
-			
+					<form:hidden path="receivable.amountreceivable" class="" value=""/></td>
+				
+				<td class="label" width="100px">客户名称：</td>
+				<td colspan="5"><span id="supplier"></span></td>
+			</tr>
 		</table>
 	</fieldset>
 	<fieldset>
@@ -521,8 +380,8 @@ function uploadPhoto(tableId,tdTable, id) {
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<button class="DTTT_button DTTT_button_text" id="insert" >确认收款</button>
-		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
+		<button class="DTTT_button " id="insert" >确认收款</button>
+		<a class="DTTT_button  goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
 		<legend> 本次收汇所包含订单</legend>
@@ -531,10 +390,10 @@ function uploadPhoto(tableId,tdTable, id) {
 				<tr> 		
 					<th width="50px">No</th>				
 					<th width="100px">耀升编号</th>
-					<th width="100px">产品编号</th>				
-					<th width="200px">产品名称</th>
+					<th width="200px">产品编号</th>				
+					<th width="">产品名称</th>
 					<th width="100px">收款金额</th>	
-					<th></th>
+					<th width="100px"></th>
 				</tr>
 			</thead>			
 		</table>

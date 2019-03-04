@@ -132,7 +132,7 @@
 		    		{ "bSortable": false, "aTargets": [ 1 ] },
 		    		{
 						"visible" : false,
-						"targets" : [9]
+						"targets" : [8,9]
 					}
 	         ] 
 		});

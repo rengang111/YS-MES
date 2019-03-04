@@ -190,7 +190,7 @@ public class ReceivableService extends CommonService {
 		String YSId = request.getParameter("YSId");
 		String receivableSerialId = request.getParameter("receivableSerialId");
 		
-		getReceivableDetail(YSId,receivableSerialId);
+		getReceivableDetail("",receivableSerialId);
 		
 		getRecivableFromOrder(YSId);//
 	}
@@ -302,9 +302,10 @@ public class ReceivableService extends CommonService {
 
 		String YSId = request.getParameter("YSId");
 		
-		receivableInsert(YSId);
-		
-		getRecivableFromOrder(YSId);
+		String receivableId = receivableInsert();
+
+		model.addAttribute("receivableId",receivableId);
+		//getRecivableFromOrder(YSId);
 		
 	}
 	
@@ -313,7 +314,7 @@ public class ReceivableService extends CommonService {
 
 		String YSId = request.getParameter("YSId");
 		
-		receivableInsert(YSId);
+		receivableInsert();
 		
 		getRecivableFromOrder(YSId);
 		
@@ -321,14 +322,14 @@ public class ReceivableService extends CommonService {
 	
 	
 	public HashMap<String, Object> getReceivableDetail(
-			String YSId,
+			String receivableId,
 			String receivableSerialId) throws Exception{
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
 		dataModel.setQueryName("receivableDetailById");		
-		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery = new BaseQuery(request, dataModel);
+		userDefinedSearchCase.put("receivableId", receivableId);
 		userDefinedSearchCase.put("receivableSerialId", receivableSerialId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 	
@@ -342,10 +343,11 @@ public class ReceivableService extends CommonService {
 		return modelMap;
 	}
 	
-	public void receivableDetailViewInit(String YSId) throws Exception{
+	public void receivableDetailViewInit() throws Exception{
 
+		String receivableId = request.getParameter("receivableId");
 
-		getRecivableFromOrder(YSId);
+		getReceivableDetail(receivableId,"");
 	}
 	
 	
@@ -419,8 +421,8 @@ public class ReceivableService extends CommonService {
 	 * @param paymentStatus
 	 * @return
 	 */
-	private String receivableInsert(String YSId){
-		String detailid = "";
+	private String receivableInsert(){
+		String receivableid = "";
 		ts = new BaseTransaction();		
 		
 		try {
@@ -430,7 +432,7 @@ public class ReceivableService extends CommonService {
 			B_ReceivableDetailData reqDataDetail = reqModel.getReceivableDetail();
 
 			//取得收款编号
-			String receivableid = reqData.getReceivableid();
+			receivableid = reqData.getReceivableid();
 			if(isNullOrEmpty(receivableid)){
 				reqData = getReceivableRecordId(reqData);	
 				receivableid = reqData.getReceivableid();//重新取值
@@ -459,14 +461,13 @@ public class ReceivableService extends CommonService {
 			//收款明细
 			reqDataDetail.setReceivableid(reqData.getReceivableid());
 			
-			detailid = reqDataDetail.getReceivableserialid();
+			String detailid = reqDataDetail.getReceivableserialid();
 			if(isNullOrEmpty(detailid)){
 				reqDataDetail = getReceivableDetailRecordId(reqDataDetail);//重新设置流水号
 				detailid = reqDataDetail.getReceivableserialid();
 			}	
 			
-			insertPaymentDetail(reqDataDetail);					
-							
+			insertPaymentDetail(reqDataDetail);		
 			
 			ts.commit();			
 			
@@ -480,7 +481,7 @@ public class ReceivableService extends CommonService {
 			}
 		}
 		
-		return detailid;
+		return receivableid;
 		
 	}
 
@@ -603,8 +604,7 @@ public class ReceivableService extends CommonService {
 	}
 	
 
-
-	public HashMap<String, Object>  getOrderDetail() throws Exception{
+	public HashMap<String, Object>  getOrderDetailByYsids() throws Exception{
 
 		HashMap<String, Object> payment = new HashMap<String, Object>();
 		String ysids = request.getParameter("ysids");
@@ -613,13 +613,31 @@ public class ReceivableService extends CommonService {
 		userDefinedSearchCase.put("ysids", ysids);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
 		String having = "1=1";
 		String sql = baseQuery.getSql();
 		sql = sql.replace("#", having);
 		baseQuery.getYsFullData(sql,having);
 		
 		payment.put("data", dataModel.getYsViewData());
+	
+		return payment;
+	}
+
+	public HashMap<String, Object>  getOrderDetail() throws Exception{
+
+		HashMap<String, Object> payment = new HashMap<String, Object>();
+		String receivableId = request.getParameter("receivableId");
 		
+		dataModel.setQueryName("orderListForReceivabelById");
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", receivableId);
+		baseQuery.getYsFullData(sql,receivableId);
+		
+		payment.put("data", dataModel.getYsViewData());
 	
 		return payment;
 	}
@@ -793,7 +811,7 @@ public class ReceivableService extends CommonService {
 			head = getReceivableRecordId(head);//
 		}
 		
-		String ysid = head.getYsid();
+		String ysid = detailid;//之前是以耀升编号为单位收款，现在可以合并收款，简单对应
 
 		FilePath file = getPath(ysid,detailid);
 		String savePath = file.getSave();						
@@ -832,10 +850,10 @@ public class ReceivableService extends CommonService {
 	
 	public HashMap<String, Object> getProductPhoto() throws Exception {
 		
-		String ysid = request.getParameter("YSId");
+		//String ysid = request.getParameter("YSId");
 		String detailid = request.getParameter("detailId");
 
-		getPhoto(ysid,detailid,"product","productFileList","productFileCount");
+		getPhoto(detailid,detailid,"product","productFileList","productFileCount");//废掉耀升编号
 	
 		return modelMap;
 	}

@@ -453,6 +453,8 @@
   	<select>
   	  <f name="a.YSId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
+      <f name="g.purchaser" alias="" ctype="采购人员" />
+      <f name="g.purchaser" alias="purchaserId" ctype="" />
       <f name="a.recordId" alias="" ctype="" />
       <f name="a.contractId" alias="" ctype="" />
       <f name="a.quantity" alias="" ctype="" />
@@ -483,7 +485,13 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>b_purchaseorderdetail a join  v_purchaseorder f on f.contractId = a.contractId left join v_workshopreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId and b.deleteFlag='0' LEFT JOIN v_orderexpanse_group_contract e ON a.contractId = e.contractId left join v_arrivalquantitygroup c on a.contractId=c.contractId and a.materialId=c.materialId left join v_inspectionreturngroup d on a.YSId=d.YSId and a.materialId=d.materialId left join b_material g on a.materialId=g.materialId and g.deleteFlag='0'</from>
+   <from>b_purchaseorderdetail a 
+   			join  v_purchaseorder f on f.contractId = a.contractId 
+   			left join v_workshopreturngroup b on a.YSId=b.YSId and a.materialId=b.materialId and b.deleteFlag='0' 
+   			LEFT JOIN v_orderexpanse_group_contract e ON a.contractId = e.contractId 
+   			left join v_arrivalquantitygroup c on a.contractId=c.contractId and a.materialId=c.materialId 
+   			left join v_inspectionreturngroup d on a.YSId=d.YSId and a.materialId=d.materialId 
+   			left join b_material g on a.materialId=g.materialId and g.deleteFlag='0'</from>
     <orderby>a.deleteFlag+0,materialId</orderby>
     <groupby></groupby>
     <having></having>
