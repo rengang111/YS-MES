@@ -100,6 +100,11 @@
 				    			//return formatNumber(price);				    			
 				    			return floatToCurrency(price);
 				    			
+				    		}},
+				    		{"targets":6,"render":function(data, type, row){
+				    			var rtn = "";
+				    			rtn= "<a href=\"###\" onClick=\"doShowSupplier('" + data +"')\">" + data + "</a>";
+				    			return rtn;
 				    		}}
 			           
 			         ] 
@@ -148,6 +153,14 @@
 		location.href = url;
 	}
 
+	function doShowSupplier(supplierId) {
+
+		var url = '${ctx}/business/supplier?methodtype=showById&key='
+				+ supplierId;
+
+		callWindowFullView("供应商详情",url);
+	}
+	
 	function doEdit(recordId,parentId) {
 		var str = '';
 		var isFirstRow = true;

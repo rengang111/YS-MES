@@ -1125,17 +1125,34 @@
     <pool></pool>     
     <name value="materialStockOutCountById" />
     <where>
-       <w name="A.YSId" des=""  reqName="YSId" dtype="ch" oper="="  lg="AND" bt="" />
-     </where>
+    </where>
     <select>
       <f name="A.YSId" alias="" ctype="" />
-      <f name="A.requisitionQty" alias="" ctype="" />
-      <f name="a.manufactureQty" alias="" ctype="" />
-      <f name="a.materialId" alias="" ctype="" />
-      <f name="a.virtualQty" alias="" ctype="" />
-
+      <f name="SUM(A.requisitionQty)" alias="requisitionQty" ctype="" />
+      <f name="SUM(a.manufactureQty)" alias="manufactureQty" ctype="" />
     </select>
-    <from>v_requisitionforzhuangpei a  </from>
+    <from>
+    	(
+		SELECT
+		a.YSId,a.materialid,SUM(REPLACE(b.quantity,',','')) requisitionQty,
+		
+		IF(a.requisitionType = 1,
+					if(REPLACE(a.purchaseQuantity,',','') > REPLACE(a.manufactureQuantity,',',''),
+							REPLACE(a.manufactureQuantity,',',''),
+							REPLACE(a.purchaseQuantity,',','')
+					),
+					REPLACE(a.manufactureQuantity,',','')
+				) manufactureQty
+		
+		FROM
+			v_purchaseplan a
+			LEFT JOIN v_stockout b ON a.ysid=b.ysid AND a.materialid=b.materialid
+		WHERE 
+		a.supplierId &lt;&gt; '0574YH00' AND a.ysid='#'
+		group by a.ysid,a.materialid
+		order by a.materialid
+		) a
+   </from>
     <orderby></orderby>
     <groupby></groupby>
     <having></having>

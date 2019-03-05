@@ -113,7 +113,7 @@
 					}
 				
 					var flag = checkMaterialStockOut();
-					
+										
 					if(flag == false){
 
 						if( (curr + stockinQty) >= orderQty ){
@@ -122,12 +122,13 @@
 							return;
 						}
 					}
-					
+					/*
 					if (validator.form()) {
 						$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insertProduct");
 						$('#formModel').submit();
 						
 					}
+					*/
 		});
 				
 		//计算剩余数量
@@ -159,7 +160,8 @@
 	});
 	
 	function checkMaterialStockOut(){
-		var plan = currencyToFloat( '${stockout.manufactureQty}'	);
+		//alert("plan -- requisitionQty:"+'${stockout.manufactureQty}'+"--"+'${stockout.requisitionQty}')
+		var plan = currencyToFloat( '${stockout.manufactureQty}');
 		var requisitionQty = currencyToFloat( '${stockout.requisitionQty}');
 		var tmp = requisitionQty  - plan;
 		if(tmp >= 0){
@@ -167,7 +169,6 @@
 		}else{
 			return false;
 		}
-		alert("plan -- requisitionQty"+plan+"--"+requisitionQty)
 	}
 	
 	function quantitySum(){

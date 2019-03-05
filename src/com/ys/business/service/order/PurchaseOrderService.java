@@ -132,7 +132,7 @@ public class PurchaseOrderService extends CommonService {
 		}
 		
 		//if(isNullOrEmpty(monthday) && ("2").equals(status)){//已入库：全年查询
-		userDefinedSearchCase.put("year", year);
+		//	userDefinedSearchCase.put("year", year);
 		//}
 		
 		if(("G").equals(makeType)){
@@ -180,6 +180,13 @@ public class PurchaseOrderService extends CommonService {
 			//userDefinedSearchCase.put("year", CalendarUtil.getYear());//当前年
 		}
 		
+		if(("2").equals(status)){//已入库：全年查询
+			userDefinedSearchCase.put("year", year);
+			userDefinedSearchCase.put("monthday", monthday);
+		}else{
+			userDefinedSearchCase.put("year", "");
+			userDefinedSearchCase.put("monthday", "");			
+		}
 				
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);

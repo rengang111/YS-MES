@@ -2329,10 +2329,14 @@ public class StorageService extends CommonService {
 		
 		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
 		dataModel.setQueryName("materialStockOutCountById");
-		userDefinedSearchCase.put("YSId", YSId);
+		//userDefinedSearchCase.put("YSId", YSId);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		System.out.println("成品入库的出库查询："+sql);
+		
+		baseQuery.getYsFullData(sql,YSId);
 
 		if(dataModel.getRecordCount() > 0 ){
 			model.addAttribute("stockout",dataModel.getYsViewData().get(0));	

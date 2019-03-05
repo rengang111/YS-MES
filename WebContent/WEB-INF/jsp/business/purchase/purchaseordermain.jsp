@@ -252,7 +252,7 @@ body{
 		
 		hideAllSearch();
 
-		//setYearList();
+		setYearList();
 
 		var searchSts = $('#searchSts').val();
 		var userId    = $('#userId').val();
@@ -279,6 +279,32 @@ body{
 		$('#defutBtnm'+searchSts).removeClass("start").addClass("end");	
 		$('#defutBtny'+currYear).removeClass("start").addClass("end");	
 		
+		$("#year").change(function() {
+			
+			var year  = $('#year').val();
+			var currYear = getYear();
+			
+			if(year == currYear){//当前年份
+				var month = getMonth();//$('#month').val();
+			
+			}else{//其他年份
+
+				var month = '12';//默认是年末
+			}
+			
+			var monthday = year +"-"+month;
+			$('#monthday').val(monthday);
+
+			var collection = $(".box");
+		    $.each(collection, function () {
+		    	$(this).removeClass("end");
+		    });
+		    
+		 	$('#defutBtn'+month).removeClass("start").addClass("end");
+		 	
+		 	searchAjax('2','false','',monthday);
+	
+		});
 		
 	})	
 	
@@ -432,7 +458,7 @@ body{
 	function doSearchCustomer(month){
 				
 		var year = $('#year').val();
-		alert('year'+year)
+		
 		if(month == 'ALL'){
 			var monthday = '';
 		}else{
@@ -501,7 +527,6 @@ body{
 			<input type="hidden" id="methodkey"  value="${methodkey }" />
 			<input type="hidden" id="monthday" name="monthday" value="" />
 			<input type="hidden" id="month"    name="month"    value="" />
-			<input type="hidden" id="year"     name="year"     value="" />
 			<table>
 				<tr>
 					<td width="50px"></td> 
@@ -519,6 +544,7 @@ body{
 					</td>
 					<td width=""></td> 
 				</tr>
+				<!-- 
 				<tr style="height: 25px;">
 					<td width="50px"></td>
 					<td width="" class="label">年份选择：</td>
@@ -535,6 +561,7 @@ body{
 					<td class="label"></td>
 					<td colspan=""></td>
 				</tr>
+				 -->
 				<tr style="height: 25px;">
 					<td width=""></td> 
 					<td class="label">到货情况：</td>
@@ -545,7 +572,7 @@ body{
 						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2','');" >已入库</a>
 						
 						<span id="yearFlag">			
-							<!-- select id="year" name="year"  style="width: 100px;vertical-align: bottom;height: 25px;"></select -->
+							<select id="year" name="year"  style="width: 100px;vertical-align: bottom;height: 25px;"></select>
 							
 							<a id="defutBtn12"  class="DTTT_button box" onclick="doSearchCustomer('12');">
 								12</a>
