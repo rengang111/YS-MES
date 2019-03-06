@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-<title>应付款--付款管理</title>
+<title>应付款--付款查询管理</title>
 <style>
 body{
 	font-size:11px;
@@ -24,7 +24,7 @@ body{
 		var userId     = $("#userId").val();
 		var year       = $("#year").val();
 		var monthday   = $("#monthday").val();
-		var url = "${ctx}/business/payment?methodtype=paymentManageSearch";
+		var url = "${ctx}/business/payment?methodtype=paymentSearchMain";
 		url = url + "&sessionFlag="+sessionFlag;
 		url = url + "&finishStatus="+searchType;
 		url = url + "&monthday=" + monthday;
@@ -86,9 +86,9 @@ body{
 					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//4		
 					{"data": "supplierName", "defaultContent" : ''},//5	供应商名称
 					{"data": "purchaserName", "defaultContent" : '***', "className" : 'td-center'},//6 采购员
-					{"data": "totalPrice", "defaultContent" : '0', "className" : 'td-right'},//7合同金额
+					{"data": "contractPrice", "defaultContent" : '0', "className" : 'td-right'},//7合同金额
 					{"data": "deliveryDate", "defaultContent" : '0', "className" : 'td-right'},//8 合同交期
-					{"data": "stockInDate", "className" : 'td-center'},//9 入库时间
+					{"data": "", "className" : 'td-center'},//9 入库时间
 					{"data": "finishDate", "defaultContent" : '***',"className" : 'td-center'},//10 付款日期
 					{"data": "finishStatus", "className" : 'td-center'},//11 付款状态
 					
@@ -102,6 +102,7 @@ body{
 		    			var contractQty = currencyToFloat(row['contractQty']);
 		    			var text = row["rownum"];
 		    			//alert('['+key1+']:::'+'['+key2+']')
+		    			/*
 		    			if(key1 != '' || key2 != ''){
 			    			if(paymentId == ""){
 			    				if(stockinQty >= contractQty){
@@ -109,6 +110,7 @@ body{
 			    				}									    				
 			    			}
 		    			}
+		    			*/
 		    			return text;		    			
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
@@ -116,13 +118,13 @@ body{
 		    			var rtn = "待申请";
 		    			var stockinQty = currencyToFloat(row['stockinQty']);
 		    			var contractQty = currencyToFloat(row['contractQty']);
-		    			if(paymentId ==  "" || paymentId == null){
-		    				if(stockinQty >= contractQty){
-			    				rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["contractId"] +"')\">" + "待申请" + "</a>";
-			    			}
-		    			}else{
+		    			//if(paymentId ==  "" || paymentId == null){
+		    			//	if(stockinQty >= contractQty){
+			    		//		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["contractId"] +"')\">" + "待申请" + "</a>";
+			    		//	}
+		    			//}else{
 		    				rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["contractId"] + "','"+ row["paymentId"] + "')\">" + row["paymentId"] + "</a>";
-		    			}
+		    			//}
 		    					    			
 		    			return rtn;
 		    		}},
@@ -149,6 +151,7 @@ body{
 		    		}},
 		    		{"targets":9,"render":function(data, type, row){
 		    			//入库状态a.stockinQty >= a.contractQty
+		    			/*
 		    			var stockinQty = currencyToFloat(row['stockinQty']);
 		    			var contractQty = currencyToFloat(row['contractQty']);
 		    			var text = '未入库';
@@ -157,12 +160,13 @@ body{
 		    			}else if(stockinQty > 0){
 		    				text = '部分入库';
 		    			}
-		    			return text;
+		    			*/
+		    			return "";
 		    		}},
 		    		{ "bSortable": false, "aTargets": [ 0,1 ] },
 		    		{
 						"visible" : false,
-						"targets" : [10]
+						"targets" : [9]
 					}
 	         ] 
 		});
@@ -629,7 +633,7 @@ body{
 					<td class="label">付款情况：</td>
 					<td colspan="4">
 						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate('0');">ALL</a>
-						<a id="defutBtnm010" class="DTTT_button box2" onclick="selectContractByDate('010');">待申请</a>
+						<!-- a id="defutBtnm010" class="DTTT_button box2" onclick="selectContractByDate('010');">待申请</a-->
 						<a id="defutBtnm020" class="DTTT_button box2" onclick="selectContractByDate('020');">执行中</a>
 						<!-- a id="defutBtnm020" class="DTTT_button box2" onclick="selectContractByDate2('020');">待一审</a>
 						<a id="defutBtnm021" class="DTTT_button box2" onclick="selectContractByDate2('021');">待二审</a>
@@ -689,9 +693,11 @@ body{
 	<table>
 	</table>
 	<div class="list">
+	<!-- 
 		<div style="height: 40px;margin-bottom: -15px;float:right">
 			<a class="DTTT_button " onclick="doCreate();">付款申请</a>
 		</div>
+		 -->
 		<table style="width: 100%;" id="TMaterial" class="display">
 			<thead>
 				<tr>				

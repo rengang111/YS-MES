@@ -59,6 +59,7 @@ public class Constants {
 	public static final String FORM_PURCHASEROUTINE = "purchaseroutine";//日常采购
 	public static final String FORM_RECEIVABLE= "receivable";//应收款管理
 	public static final String FORM_PAYMENTMANAGE= "paymentmanage";//应付款管理
+	public static final String FORM_PAYMENTSEARCH= "paymentsearch";//应付款查询
 	public static final String FORM_PAYMENTREQUEST= "paymentrequest";//应付款申请
 	public static final String FORM_PAYMENTAPPROVAL= "paymentapproval";//应付款审核
 	public static final String FORM_FINANCESTOCKIN= "financestockin";//财务入库管理

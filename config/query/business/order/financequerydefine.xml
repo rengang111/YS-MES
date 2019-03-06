@@ -1349,4 +1349,100 @@
     <having></having>
 	<power></power>
   </query>
+  <query>
+    <pool></pool>    
+    <name value="PaymenListForSearch" />
+     <where>
+        <w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	    <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+    	<w name="A.finishStatus" des="" reqName="finishStatus" dtype="ch" oper="in" lg="AND" bt="" />
+    	
+   	    <w name="A.purchaser" des=""  reqName="purchaser" dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="DATE_FORMAT(A.finishDate,'%Y-%m')" des="" reqName="monthday"   dtype="ch" oper="="   lg="AND" bt="" />
+   	  	<w name="DATE_FORMAT(A.finishDate,'%Y')"    des="" reqName="year"       dtype="ch" oper="="   lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="a.paymentId" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.supplierName" alias="" ctype="" />
+      <f name="a.totalPayable" alias="" ctype="" />
+      <f name="a.deliveryDate" alias="" ctype="" />
+      <f name="a.contractPrice" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.finishDate" alias="" ctype="" />
+      <f name="a.paymentHistoryId" alias="" ctype="" />
+      <f name="format(IFNULL(a.paymentAmount,0),2)" alias="paymentAmount" ctype="" />
+      <f name="a.paymentMethod" alias="" ctype="" />
+      <f name="a.paymentMethod" alias="paymentMethodName" ctype="付款方式" />
+      <f name="a.purchaser" alias="purchaserName" ctype="采购人员" />
+      <f name="a.purchaser" alias="" ctype="" />
+      <f name="a.finishStatus" alias="" ctype="应付款状态" />
+      <f name="a.finishStatus" alias="finishStatusId" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>
+    	(
+			SELECT
+				a.paymentId,
+				a.contractId,
+				a.supplierId,
+				a.supplierName,
+				b.ysid,
+				b.purchaser,
+				b.quantity contractQty,
+				b.totalPrice contractPrice,
+				b.quantity,
+				b.deliveryDate,
+				a.payable,
+				a.finishStatus,
+				a.finishDate,
+				a.totalPayable,
+				a.paymentMethod,
+				a.paymentAmount,
+				a.paymentHistoryId,
+				ucase(
+					concat_ws(
+						',',
+						a.paymentId,
+						a.supplierId,
+						a.supplierName,
+						b.ysid,
+						a.contractId,
+						a.finishDate
+					)
+				) AS fullField
+			FROM
+				(
+					SELECT
+						a.paymentId AS paymentId,
+						a.totalPayable AS totalPayable,
+						a.requestDate AS requestDate,
+						b.contractId,
+						d.supplierId,
+						d.supplierName,
+						b.payable,
+						c.paymentHistoryId,
+						c.paymentAmount,
+						a.contractIds AS contractIds,
+						a.approvalDate AS approvalDate,a.paymentMethod,
+						a.finishDate,
+						a.finishStatus,
+						a.invoiceNumber
+					FROM
+						b_payment a
+						LEFT JOIN b_paymenthistory c ON  c.paymentId = a.paymentId AND (c.deleteFlag = '0') 
+						LEFT JOIN b_paymentdetail b ON b.paymentId=a.paymentId AND (b.deleteFlag = '0') 
+						LEFT JOIN b_supplier d ON  a.supplierId = d.supplierId AND (d.deleteFlag = '0') 
+				) a
+				LEFT JOIN v_purchaseorderdetail b ON a.contractId=b.contractId
+				GROUP BY a.contractId
+		) a
+	</from>
+    <orderby>a.finishStatus,a.paymentId,a.paymentHistoryId,a.contractId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>
 </root>
