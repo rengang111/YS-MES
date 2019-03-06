@@ -5,6 +5,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
 <title>应付款--付款管理</title>
+<style>
+body{
+	font-size:10px;
+}
+</style>
 <script type="text/javascript">
 
 	function searchAjax(scrollHeight,sessionFlag) {
@@ -80,39 +85,45 @@
 					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//3				
 					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//4		
 					{"data": "supplierName", "defaultContent" : ''},//5	供应商名称
-					{"data": "purchaserName", "defaultContent" : '***'},//6 采购员
+					{"data": "purchaserName", "defaultContent" : '***', "className" : 'td-center'},//6 采购员
 					{"data": "totalPrice", "defaultContent" : '0', "className" : 'td-right'},//7合同金额
-					{"data": "stockInDate", "className" : 'td-center'},//8 入库时间
-					{"data": "paymentAmount", "defaultContent" : '0', "className" : 'td-right'},//9 付款金额
+					{"data": "deliveryDate", "defaultContent" : '0', "className" : 'td-right'},//8 合同交期
+					{"data": "stockInDate", "className" : 'td-center'},//9 入库时间
 					{"data": "finishDate", "defaultContent" : '***',"className" : 'td-center'},//10 付款日期
-					{"data": "finishStatus", "className" : 'td-center'},//11 款状态
+					{"data": "finishStatus", "className" : 'td-center'},//11 付款状态
 					
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-		    			//var paymentId = row["paymentId"];
-		    			//if(paymentId == ""){
-						//	return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["contractId"] + "' />";		    				
-		    			//}else{
-						//	return row["rownum"];
-		    			//}
-		    			return row["rownum"];
+		    			var key1 = $('#keyword1').val();
+		    			var key2 = $('#keyword2').val();
+		    			var paymentId = row["paymentId"];
+		    			var stockinQty = currencyToFloat(row['stockinQty']);
+		    			var contractQty = currencyToFloat(row['contractQty']);
+		    			var text = row["rownum"];
+		    			//alert('['+key1+']:::'+'['+key2+']')
+		    			if(key1 != '' || key2 != ''){
+			    			if(paymentId == ""){
+			    				if(stockinQty >= contractQty){
+			    					text = "<input type=checkbox class='checkbox' name='numCheck' id='numCheck' value='" + row["contractId"] + "' />";	
+			    				}									    				
+			    			}
+		    			}
+		    			return text;		    			
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
-		    			var rtn = row["paymentId"];//
-		    			/*
-		    			if(rtn == ""){
-				    		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["contractId"] +"')\">" + "待申请" + "</a>";
+		    			var paymentId = row["paymentId"];//
+		    			var rtn = "待申请";
+		    			var stockinQty = currencyToFloat(row['stockinQty']);
+		    			var contractQty = currencyToFloat(row['contractQty']);
+		    			if(paymentId ==  "" || paymentId == null){
+		    				if(stockinQty >= contractQty){
+			    				rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["contractId"] +"')\">" + "待申请" + "</a>";
+			    			}
 		    			}else{
-			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["contractId"] + "','"+ row["paymentId"] + "')\">" + row["paymentId"] + "</a>";
-		    			}*/
-		    			
-		    			if(rtn == ""){
-				    		rtn=  "待申请" ;
-		    			}else{
-			    			rtn=  row["paymentId"] ;
+		    				rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["contractId"] + "','"+ row["paymentId"] + "')\">" + row["paymentId"] + "</a>";
 		    			}
-		    			
+		    					    			
 		    			return rtn;
 		    		}},
 		    		{"targets":2,"render":function(data, type, row){
@@ -127,21 +138,41 @@
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
 		    					    			
-		    			return jQuery.fixedWidth(data,24);
+		    			return jQuery.fixedWidth(data,18);
 		    		}},
-		    		{ "bSortable": false, "aTargets": [ 1 ] },
+		    		{"targets":6,"render":function(data, type, row){
+		    			
+		    			if(data == null || data == '')
+		    				return '-';
+		    			else
+		    				return data;
+		    		}},
+		    		{"targets":9,"render":function(data, type, row){
+		    			//入库状态a.stockinQty >= a.contractQty
+		    			var stockinQty = currencyToFloat(row['stockinQty']);
+		    			var contractQty = currencyToFloat(row['contractQty']);
+		    			var text = '未入库';
+		    			if(stockinQty >=  contractQty){
+		    				text = row['stockInDate'];
+		    			}else if(stockinQty > 0){
+		    				text = '部分入库';
+		    			}
+		    			return text;
+		    		}},
+		    		{ "bSortable": false, "aTargets": [ 0,1 ] },
 		    		{
 						"visible" : false,
-						"targets" : [8,9]
+						"targets" : [10]
 					}
 	         ] 
 		});
 	}
 
+	
 	$(document).ready(function() {
 	
 		hideAllSearch();
-		//setYearList();
+		setYearList();
 
 		var scrollHeight = $(document).height() - 200; 
 		var searchType = $("#searchType").val();
@@ -170,7 +201,8 @@
 
 		
 		searchAjax(scrollHeight,"true");
-			
+	
+		/*	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
 			$(this).toggleClass("selected");
@@ -180,10 +212,32 @@
 		    }else{//如果没有被选中
 
 		    	$(this).children().first().children().prop("checked", false);
-		    }			
+		    }	
+		    
 		});	
-
-		
+*/
+		  $(".checkbox").click(function () {
+			 // alert(111)
+              //获取checkbox选中项
+              if ($(this).prop("checked") == true) {
+                  $(this).parent().parent().css("background", "#b2dba1");
+              } else {
+                  $(this).parent().parent().css("background", "");
+              }
+          });
+          
+		  $(document).on('click','.checkbox',function(){
+			 // alert(222)
+              //获取checkbox选中项
+              if ($(this).prop("checked") == true) {
+            	  $(this).parent().parent().addClass("selected");
+                 // $(this).parent().parent().css("background", "selected");
+              } else {
+            	  $(this).parent().parent().removeClass("selected")
+                 // $(this).parent().parent().css("background", "");
+              }
+			  
+		  });
 
 	})	
 	
@@ -248,7 +302,8 @@
 		var url = '${ctx}/business/payment?methodtype=addinit';
 		url = url +"&contractIds="+str;
 		url = url +"&paymentTypeId="+paymentTypeId;
-		location.href = url;
+		//location.href = url;
+		callWindowFullView("批量付款",url);
 		
 	}
 	
@@ -261,7 +316,9 @@
 		url = url +"&contractIds="+contractId;
 		url = url +"&paymentTypeId="+paymentTypeId;
 		url = url +"&searchType="+searchType;
-		location.href = url;
+		//location.href = url;
+		
+		callWindowFullView("付款管理申请",url);
 		
 	}
 	
@@ -280,7 +337,7 @@
 		
 		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
 		
-		callProductDesignView("采购合同",url);
+		callWindowFullView("采购合同",url);
 	}	
 	
 
@@ -335,8 +392,8 @@
 		</c:forEach>
 		
 		var curYear = getYear();
-		$('#year').html(options);
-		$('#year').val(curYear);//默认显示当前年
+		$('#yearList').html(options);
+		$('#yearList').val(curYear);//默认显示当前年
 	}
 	
 	//已付款
@@ -345,6 +402,9 @@
 		hideAllSearch();
 		$('#yearFlag').show();
 
+		var monthday = getYearMonth();
+		var monthonly = getMonth();
+		var userId = $('#userId').val();
 		
 		var collection = $(".box2");
 	    $.each(collection, function () {
@@ -354,16 +414,14 @@
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });		    
-
-		var year = $('#year').val();
-		var monthonly = getMonth();
-		var userId = $('#userId').val();
-		var monthday = year + '-' + monthonly;
 		
 	 	$('#defutBtnm'+searchType).removeClass("start").addClass("end");
 	 	$('#defutBtn'+monthonly).removeClass("start").addClass("end");
 	 	$('#defutBtnu'+userId).removeClass("start").addClass("end");
 
+		var curYear = getYear();
+		$('#year').val(curYear);//默认显示当前年
+		$('#yearList').val(curYear);//默认显示当前年
 		$("#searchType").val(searchType);	
 		$("#monthday").val(monthday);	
 		$("#month").val(monthonly);	
@@ -427,14 +485,8 @@
 	//月份选择
 	function doSearchCustomer(month){
 				
-		var year = $('#year').val();
-		if(month == 'ALL'){
-			var monthday = '';
-		}else{
-			var monthday = year +"-"+month;
-		}
-		$('#monthday').val(monthday);
-		$('#month').val(month);
+		var year = $('#yearList').val();
+		var monthday = '';		
 
 		if(month == '12'){
 			var crrMonth = getMonth();
@@ -442,16 +494,32 @@
 				//当前就是12月				
 			}else{
 				var CurrYear = getYear();
-				CurrYear = CurrYear - 1;
-				monthday = CurrYear - 1 +"-"+month; 
-				$('#year').val(CurrYear);
+				if(year == CurrYear){
+					
+					var tmpYear = CurrYear - 1;
+					monthday = tmpYear +"-"+month; 
+					$('#year').val(tmpYear);
+					$('#yearList').val(getYear());					
+				}
+				
+				var collection = $(".box4");
+			    $.each(collection, function () {
+			    	$(this).removeClass("end");
+			    });
+				$('#defutBtny'+CurrYear).removeClass("start").addClass("end");
 			}
-			var collection = $(".box4");
-		    $.each(collection, function () {
-		    	$(this).removeClass("end");
-		    });
-			$('#defutBtny'+CurrYear).removeClass("start").addClass("end");
+			
+			
+		}else{
+			if(month != 'ALL'){
+				monthday = year +"-"+month; 
+			}
+			$('#year').val(year);
 		}
+
+		$('#monthday').val(monthday);
+		$('#month').val(month);
+		
 		searchAjax('false','');
 	}
 	
@@ -509,6 +577,7 @@
 					</td>
 					<td width=""></td> 
 				</tr>
+				<!-- 
 				<tr style="height: 25px;">
 					<td width=""></td>
 					<td width="" class="label">入库年份：</td>
@@ -525,19 +594,22 @@
 					<td class="label"></td>
 					<td colspan=""></td>
 				</tr>
+				 -->
 				<tr style="height: 25px;">
 					<td width=""></td> 
 					<td class="label">付款情况：</td>
 					<td colspan="4">
 						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate('0');">ALL</a>
 						<a id="defutBtnm010" class="DTTT_button box2" onclick="selectContractByDate('010');">待申请</a>
-						<a id="defutBtnm020" class="DTTT_button box2" onclick="selectContractByDate('020');">待一审</a>
-						<a id="defutBtnm021" class="DTTT_button box2" onclick="selectContractByDate('021');">待二审</a>
-						<a id="defutBtnm030" class="DTTT_button box2" onclick="selectContractByDate('030');">待付款</a>
-						<a id="defutBtnm040" class="DTTT_button box2" onclick="selectContractByDate('040');">部分付款</a>
+						<a id="defutBtnm020" class="DTTT_button box2" onclick="selectContractByDate('020');">执行中</a>
+						<!-- a id="defutBtnm020" class="DTTT_button box2" onclick="selectContractByDate2('020');">待一审</a>
+						<a id="defutBtnm021" class="DTTT_button box2" onclick="selectContractByDate2('021');">待二审</a>
+						<a id="defutBtnm030" class="DTTT_button box2" onclick="selectContractByDate2('030');">待付款</a>
+						<a id="defutBtnm040" class="DTTT_button box2" onclick="selectContractByDate2('040');">部分付款</a-->
 						<a id="defutBtnm050" class="DTTT_button box2" onclick="doSearchCustomer3('050');" >已付款</a>
 						
 						<span id="yearFlag">			
+							<select id="yearList" name="yearList"  style="width: 100px;vertical-align: bottom;height: 25px;"></select>
 						
 							<a id="defutBtn12"  class="DTTT_button box" onclick="doSearchCustomer('12');">
 								12</a>
@@ -588,19 +660,22 @@
 	<table>
 	</table>
 	<div class="list">
+		<div style="height: 40px;margin-bottom: -15px;float:right">
+			<a class="DTTT_button " onclick="doCreate();">付款申请</a>
+		</div>
 		<table style="width: 100%;" id="TMaterial" class="display">
 			<thead>
-				<tr>					
-					<th width="1px">No</th>
-					<th width="65px">付款编号</th>
+				<tr>				
+					<th width="10px">No</th>
+					<th width="40px">付款编号</th>
 					<th width="70px">合同编号</th>
 					<th width="60px">耀升编号</th>							
-					<th width="70px">供应商编号</th>						
+					<th width="60px">供应商编号</th>						
 					<th>供应商名称</th>
-					<th width="36px">采购</th>
-					<th width="60px">合同金额</th>
-					<th width="60px">入库日期</th>
-					<th width="60px">付款金额</th>
+					<th width="30px">采购</th>
+					<th width="50px">合同金额</th>
+					<th width="50px">合同交期</th>
+					<th width="50px">入库日期</th>
 					<th width="50px">付款日期</th>
 					<th width="50px">付款状态</th>
 				</tr>

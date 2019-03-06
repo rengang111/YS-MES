@@ -55,7 +55,7 @@
     <pool></pool>    
     <name value="contractListForPaymenManage" />
      <where>
-    	<w name="A.finishStatus" des="" reqName="finishStatus" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="A.finishStatus" des="" reqName="finishStatus" dtype="ch" oper="in" lg="AND" bt="" />
     </where>
   <select>
       <f name="A.YSId" alias="" ctype="" />
@@ -75,6 +75,7 @@
       <f name="a.contractQty" alias="" ctype="" />
       <f name="a.purchaser" alias="" ctype="" />
       <f name="a.purchaser" alias="purchaserName" ctype="采购人员" />
+      <f name="a.deliveryDate" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <from>
@@ -101,6 +102,7 @@
 			ifnull(b.finishStatus, '010') AS finishStatus,
 			a.deleteFlag AS deleteFlag,
 			a.purchaser,
+			a.deliveryDate,
 			ucase(
 				concat_ws(
 					',',
@@ -129,12 +131,12 @@
 				)
 				 b ON a.contractId = b.contractId
 			LEFT JOIN b_supplier c ON a.supplierId = c.supplierId AND (c.deleteFlag = '0')
-		WHERE  #
+		WHERE  #0
 		GROUP BY a.contractId 
 		) a
-		WHERE a.stockinQty >= a.contractQty
+		WHERE #1
 	</from>
-    <orderby>a.supplierId ,a.stockInDate</orderby>
+    <orderby>a.supplierId ,case when ifnull(stockInDate,'')='' then 0 else 1 end desc, stockInDate asc</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    

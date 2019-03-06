@@ -244,8 +244,9 @@ body{
 		</c:forEach>
 		
 		var curYear = getYear();
-		$('#year').html(options);
-		$('#year').val(curYear);//默认显示当前年
+		$('#yearList').html(options);
+		
+		$('#yearList').val(curYear);//默认显示当前年
 	}
 	
 	$(document).ready(function() {
@@ -279,12 +280,12 @@ body{
 		$('#defutBtnm'+searchSts).removeClass("start").addClass("end");	
 		$('#defutBtny'+currYear).removeClass("start").addClass("end");	
 		
-		$("#year").change(function() {
+		$("#yearList").change(function() {
 			
-			var year  = $('#year').val();
+			var yearList  = $('#yearList').val();
 			var currYear = getYear();
 			
-			if(year == currYear){//当前年份
+			if(yearList == currYear){//当前年份
 				var month = getMonth();//$('#month').val();
 			
 			}else{//其他年份
@@ -292,8 +293,10 @@ body{
 				var month = '12';//默认是年末
 			}
 			
-			var monthday = year +"-"+month;
+			var monthday = yearList +"-"+month;
 			$('#monthday').val(monthday);
+			$('#year').val(yearList);
+			
 
 			var collection = $(".box");
 		    $.each(collection, function () {
@@ -392,6 +395,7 @@ body{
 
 		var curYear = getYear();
 		$('#year').val(curYear);//默认显示当前年
+		$('#yearList').val(curYear);//默认显示当前年
 		$("#searchSts").val(searchSts);	
 		$("#monthday").val(monthday);	
 		$("#month").val(monthonly);	
@@ -457,15 +461,8 @@ body{
 	//月份选择
 	function doSearchCustomer(month){
 				
-		var year = $('#year').val();
-		
-		if(month == 'ALL'){
-			var monthday = '';
-		}else{
-			var monthday = year +"-"+month;
-		}
-		$('#monthday').val(monthday);
-		$('#month').val(month);
+		var year = $('#yearList').val();
+		var monthday = '';		
 
 		if(month == '12'){
 			var crrMonth = getMonth();
@@ -475,9 +472,10 @@ body{
 				var CurrYear = getYear();
 				if(year == CurrYear){
 					
-					CurrYear = CurrYear - 1;
-					monthday = CurrYear +"-"+month; 
-					$('#year').val(CurrYear);
+					var tmpYear = CurrYear - 1;
+					monthday = tmpYear +"-"+month; 
+					$('#year').val(tmpYear);
+					$('#yearList').val(getYear());					
 				}
 				
 				var collection = $(".box4");
@@ -486,7 +484,15 @@ body{
 			    });
 				$('#defutBtny'+CurrYear).removeClass("start").addClass("end");
 			}
+		}else{
+			if(month != 'ALL'){
+				monthday = year +"-"+month; 
+			}
+			$('#year').val(year);
 		}
+
+		$('#monthday').val(monthday);
+		$('#month').val(month);
 		
 		searchAjax('2','false','',monthday);
 	}
@@ -527,6 +533,7 @@ body{
 			<input type="hidden" id="methodkey"  value="${methodkey }" />
 			<input type="hidden" id="monthday" name="monthday" value="" />
 			<input type="hidden" id="month"    name="month"    value="" />
+			<input type="hidden" id="year"    name="year"    value="" />
 			<table>
 				<tr>
 					<td width="50px"></td> 
@@ -572,7 +579,7 @@ body{
 						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2','');" >已入库</a>
 						
 						<span id="yearFlag">			
-							<select id="year" name="year"  style="width: 100px;vertical-align: bottom;height: 25px;"></select>
+							<select id="yearList" name="yearList"  style="width: 100px;vertical-align: bottom;height: 25px;"></select>
 							
 							<a id="defutBtn12"  class="DTTT_button box" onclick="doSearchCustomer('12');">
 								12</a>

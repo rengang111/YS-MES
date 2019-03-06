@@ -195,16 +195,14 @@ public class PaymentService extends CommonService {
 		
 		dataModel.setQueryName("contractListForPaymenManage");//
 		baseQuery = new BaseQuery(request, dataModel);
-		//userDefinedSearchCase.put("keyword1", key1);
-		//userDefinedSearchCase.put("keyword2", key2);
-
-		//String having = "stockinQty >= contractQty ";
 		
 		String finishStatus = request.getParameter("finishStatus");
 		String year   = request.getParameter("year");
 		String monthday = request.getParameter("monthday");
 		String userId = request.getParameter("userId");
 		String where = "1=1";
+		
+		//*** 关键字查询
 		if(notEmpty(key1) && notEmpty(key2)){
 			where += " AND A.fullField  like '%" + key1 + "%' "; 
 			where += " AND A.fullField  like '%" + key2 + "%' "; 
@@ -219,34 +217,46 @@ public class PaymentService extends CommonService {
 		if(isNullOrEmpty(year)){//年份选择
 			year =  CalendarUtil.getYear();//当前年
 		}
-		//userDefinedSearchCase.put("year", year);
-		where += " AND DATE_FORMAT(A.stockInDate,'%Y') = '" + year + "' "; 
 		
-		if(("999").equals(userId)){
-			//userDefinedSearchCase.put("userId", "");//999:查询全员
-		}else{
+		//*** 采购员选择
+		if(!("999").equals(userId)){
 			where += " AND a.purchaser = '" + userId + "' "; 
 		}
+
+		String stockinWhere = " a.stockinQty >= a.contractQty ";
 		
-		if((Constants.payment_050).equals(finishStatus) && notEmpty(monthday)){
-			//userDefinedSearchCase.put("monthday", monthday);//已付款
-			where += " AND DATE_FORMAT(A.stockInDate,'%Y-%m') = '" + monthday + "' "; 
-		}else{
-			//userDefinedSearchCase.put("monthday", "");//未付款，不分月份			
-		}
-		
-		if(("0").equals(finishStatus)){
+		//*** 付款状态	
+		if(("0").equals(finishStatus)){			
 			userDefinedSearchCase.put("finishStatus", "");//全部
-		}else{
+			
+		}else if((Constants.payment_050).equals(finishStatus)){
+			//已付款
+			if(isNullOrEmpty(monthday)){
+
+				where += " AND DATE_FORMAT(A.stockInDate,'%Y') = '" + year + "' "; 
+			}else{
+				where += " AND DATE_FORMAT(A.stockInDate,'%Y-%m') = '" + monthday + "' "; 
+			}
+		}else if ((Constants.payment_010).equals(finishStatus)){
+			//待申请
 			userDefinedSearchCase.put("finishStatus", finishStatus);
-			//where += " AND finishStatus = '" + finishStatus + "' "; 			
+			stockinWhere = " 1=1 ";//待申请数据包含未入库部分
+		}else{
+			String statusList = "020,021,030,040,060";
+			userDefinedSearchCase.put("finishStatus", statusList);	
 		}
-		
+				
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		sql = sql.replace("#", where);
+		sql = sql.replace("#0", where);
+		sql = sql.replace("#1", stockinWhere);
 		System.out.println("付款管理："+sql);
-		baseQuery.getYsQueryData(sql,where,iStart, iEnd);	 
+		
+		List<String> keyList = new ArrayList<String>();
+		keyList.add(where);
+		keyList.add(stockinWhere);
+		
+		baseQuery.getYsQueryData(sql,keyList,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
