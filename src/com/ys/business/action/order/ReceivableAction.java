@@ -180,11 +180,23 @@ public class ReceivableAction extends BaseAction {
 	}
 	
 	public void doInit(){	
+
+		String searchSts = (String) session.getAttribute("searchSts");
+		String yewuzuId = (String) session.getAttribute("yewuzuId");
+		if(searchSts == null || ("").equals(searchSts))
+			searchSts = "010";//设置默认值：待申请
 		
-		String searchType = (String) session.getAttribute("searchType");
-		if(searchType == null || ("").equals(searchType))
-			searchType = "010";//设置默认值：待收款
-		model.addAttribute("searchType",searchType);
+		if(yewuzuId == null || ("").equals(yewuzuId)){
+			yewuzuId = "999";//设置默认值：全员
+		}
+		
+		try {
+			service.receivableSearchMainInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("searchSts",searchSts);
+		model.addAttribute("yewuzuId",yewuzuId);
 
 	}	
 

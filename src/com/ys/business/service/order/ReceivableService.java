@@ -130,22 +130,48 @@ public class ReceivableService extends CommonService {
 		userDefinedSearchCase.put("keyword2", key2);
 
 		String having = "1=1 ";
-		
+		String year   = request.getParameter("year");
 		String status = request.getParameter("status");
+		String yewuzuId = request.getParameter("yewuzuId");
+		String monthday = request.getParameter("monthday");
+						
+		//*** 收汇状态
 		if(("070").equals(status)){
 			userDefinedSearchCase.put("reserveDate", CalendarUtil.fmtYmdDate());
 			having = " REPLACE(actualAndBankCnt,',','')+0 <= 0 ";
 		}else if(("010").equals(status)){
 			//未收款
-			having = " REPLACE(actualAndBankCnt,',','')+0 <= 0 ";
-		}else if(("020").equals(status)){
+		//	having = " REPLACE(actualAndBankCnt,',','')+0 <= 0 ";
+		//}else if(("020").equals(status)){
 			//部分收款
-			having = " REPLACE(actualAndBankCnt,',','')+0 > 0 AND REPLACE(actualAndBankCnt,',','')+0 < REPLACE(format(orderPrice,2),',','')+0";
+			having = " REPLACE(actualAndBankCnt,',','')+0 < REPLACE(format(orderPrice,2),',','')+0";
+			//having = " REPLACE(actualAndBankCnt,',','')+0 > 0 AND REPLACE(actualAndBankCnt,',','')+0 < REPLACE(format(orderPrice,2),',','')+0";
 		}else if(("030").equals(status)){
 			//已收款
-			having = "REPLACE(actualAndBankCnt,',','')+0 > 0 AND REPLACE(actualAndBankCnt,',','')+0 >= REPLACE(format(orderPrice,2),',','')+0 ";
+			having = "REPLACE(actualAndBankCnt,',','')+0 > 0 AND REPLACE(actualAndBankCnt,',','')+0 >= REPLACE(format(orderPrice,2),',','')+0 ";			
 		}
-				
+		
+		//*** 月份筛选
+		if(("030").equals(status)){
+			if(isNullOrEmpty(monthday)){//ALL
+				monthday = "";
+				if(isNullOrEmpty(year)){//年份选择
+					year =  CalendarUtil.getYear();//当前年
+				}
+			}
+		}else{
+			year = "";
+			monthday = "";
+		}
+		userDefinedSearchCase.put("year", year);
+		userDefinedSearchCase.put("monthday", monthday);
+			
+		//*** 采购员选择
+		if(("999").equals(yewuzuId)){
+			userDefinedSearchCase.put("yewuzuId", "");				
+		}else{
+			userDefinedSearchCase.put("yewuzuId", yewuzuId);						
+		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
@@ -1037,5 +1063,15 @@ public class ReceivableService extends CommonService {
 		
 		return  listMap;
 
+	}
+	
+	public void receivableSearchMainInit() throws Exception{
+
+		ArrayList<HashMap<String, String>> list = getYewuzurById();
+		ArrayList<HashMap<String, String>> year = getYearById();
+
+		model.addAttribute("yewuzu",list);
+		model.addAttribute("yearList",year);
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 }

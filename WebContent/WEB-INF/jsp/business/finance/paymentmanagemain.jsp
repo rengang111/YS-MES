@@ -112,6 +112,7 @@ body{
 		    			return text;		    			
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
+		    			
 		    			var paymentId = row["paymentId"];//
 		    			var rtn = "待申请";
 		    			var stockinQty = currencyToFloat(row['stockinQty']);
@@ -119,6 +120,11 @@ body{
 		    			if(paymentId ==  "" || paymentId == null){
 		    				if(stockinQty >= contractQty){
 			    				rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["contractId"] +"')\">" + "待申请" + "</a>";
+			    			}else if(stockinQty > 0) {
+			    				var loginId = '${loginId}';
+			    				if(loginId == '000000'){
+				    				rtn= "<a href=\"###\" onClick=\"doCreate3('" + row["contractId"] +"')\">" + "待申请" + "</a>";
+			    				}
 			    			}
 		    			}else{
 		    				rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["contractId"] + "','"+ row["paymentId"] + "')\">" + row["paymentId"] + "</a>";
@@ -345,11 +351,32 @@ body{
 		url = url +"&contractIds="+contractId;
 		url = url +"&paymentTypeId="+paymentTypeId;
 		url = url +"&searchType="+searchType;
-		//location.href = url;
 		
 		callWindowFullView("付款管理申请",url);
 		
 	}
+	
+	function doCreate3(contractId) {
+
+		var name=prompt("请输入校验码：","aaaa"); //在页面上弹出提示对话框，
+
+		if(name != '123456'){
+			$().toastmessage('showWarningToast', "确认码有误，请重新输入！");	
+			return;
+		}
+		
+		var paymentTypeId = $("#paymentTypeId").val();
+		var searchType = $("#searchType").val();
+		
+		var url = '${ctx}/business/payment?methodtype=addinit';
+		url = url +"&contractIds="+contractId;
+		url = url +"&paymentTypeId="+paymentTypeId;
+		url = url +"&searchType="+searchType;
+		
+		callWindowFullView("付款管理申请",url);
+		
+	}
+	
 	
 	function doShowDetail(contractId,paymentId) {
 
@@ -431,8 +458,8 @@ body{
 		hideAllSearch();
 		$('#yearFlag').show();
 
-		var monthday = getYearMonth();
-		var monthonly = getMonth();
+		var monthday = '';//getYearMonth();
+		var monthonly = 'ALL';//getMonth();
 		var userId = $('#userId').val();
 		
 		var collection = $(".box2");

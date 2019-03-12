@@ -1101,7 +1101,12 @@
         <w name="b.receivableId" des=""  reqName="receivableId"     dtype="ch" oper="="     lg="AND" bt="" />
         <w name="a.YSId"         des=""  reqName="YSId"             dtype="ch" oper="="     lg="AND" bt="" />
         <w name="a.YSId"         des=""  reqName="ysids"            dtype="ch" oper="in"    lg="AND" bt="" />
-        <w name="date_add(c.checkInDate,INTERVAL a.paymentTerm DAY)"   des="" reqName="reserveDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+        <w name="date_add(ifNULL(a.storageDate,a.deliveryDate), interval IFNULL(a.paymentTerm,60) day)"   des="" reqName="reserveDate" dtype="ch" oper="&lt;"  lg="AND" bt="" />
+        
+        <w name="a.team"         des=""  reqName="yewuzuId"            dtype="ch" oper="="    lg="AND" bt="" />
+   	  	<w name="DATE_FORMAT(b.collectionDate,'%Y-%m')" des="" reqName="monthday"   dtype="ch" oper="="   lg="AND" bt="" />
+   	  	<w name="DATE_FORMAT(b.collectionDate,'%Y')"    des="" reqName="year"       dtype="ch" oper="="   lg="AND" bt="" />
+        
 </where>
   <select>
       <f name="A.YSId" alias="" ctype="" />
@@ -1126,6 +1131,8 @@
       <f name="a.paymentTerm" alias="" ctype="" />
       <f name="a.customerFullName" alias="" ctype="" />
       <f name="a.customerId" alias="" ctype="" />
+      <f name="a.team" alias="teamName" ctype="业务组" />
+      <f name="a.team" alias="" ctype="" />
       <f name="date_add(ifNULL(a.storageDate,a.deliveryDate), interval IFNULL(a.paymentTerm,60) day)" alias="reserveDate" ctype="" />
   </select>
     <from>

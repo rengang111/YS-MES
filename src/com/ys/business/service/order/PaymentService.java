@@ -228,6 +228,7 @@ public class PaymentService extends CommonService {
 		//*** 付款状态	
 		if(("0").equals(finishStatus)){			
 			userDefinedSearchCase.put("finishStatus", "");//全部
+			stockinWhere = " 1=1 ";//包含未入库部分
 			
 		}else if((Constants.payment_050).equals(finishStatus)){
 			//已付款
@@ -327,6 +328,7 @@ public class PaymentService extends CommonService {
 		if(("0").equals(finishStatus)){			
 			userDefinedSearchCase.put("finishStatus", "");//全部
 			userDefinedSearchCase.put("year", "");
+			userDefinedSearchCase.put("monthday", "");
 			
 		}else if((Constants.payment_050).equals(finishStatus)){
 			//已付款

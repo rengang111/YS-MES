@@ -1174,6 +1174,33 @@ public class CommonService extends BaseService {
 		
 	}
 	
+	public ArrayList<HashMap<String, String>> getYewuzurById() throws Exception{
+		ArrayList<HashMap<String, String>> list = null;
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("getPuchaserByMaterialId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("dicTypeId", "业务组");		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			list = dataModel.getYsViewData();
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("rownum", String.valueOf(list.size()+1));
+			map.put("dicName", "ALL");
+			map.put("dicId", "999");
+			map.put("SortNo", "999");
+			//list.add(map);
+			list.add(0, map);
+			//model.addAttribute("purchaser",list);
+			//model.addAttribute("defUser",map);
+		
+		}
+
+		return list;
+		
+	}
+	
 	public ArrayList<HashMap<String, String>> getYearById() throws Exception{
 		ArrayList<HashMap<String, String>> list = null;
 		dataModel.setQueryFileName("/business/material/inventoryquerydefine");

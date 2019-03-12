@@ -283,7 +283,9 @@ public class PaymentAction extends BaseAction {
 			e.printStackTrace();
 		}
 		model.addAttribute("searchType",searchType);
-		model.addAttribute("userId",userId);		
+		model.addAttribute("userId",userId);	
+		
+		model.addAttribute("loginId",userInfo.getUserId());	
 		
 	}	
 	
@@ -466,7 +468,6 @@ public class PaymentAction extends BaseAction {
 		}
 
 		String searchType = request.getParameter("searchType");
-		
 		model.addAttribute("searchType",searchType);
 		session.setAttribute("searchType", searchType);
 		
