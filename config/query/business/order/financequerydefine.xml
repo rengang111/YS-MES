@@ -1109,6 +1109,7 @@
         
 </where>
   <select>
+      <f name="A.PIId" alias="" ctype="" />
       <f name="A.YSId" alias="" ctype="" />
       <f name="A.currency" alias="" ctype="币种" />
       <f name="A.currency" alias="currencyId" ctype="" />

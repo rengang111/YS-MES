@@ -67,11 +67,6 @@ body{
 							fnCallback(data);
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
-
-							//$("input[aria-controls='TMaterial']").css("height","25px");
-							//$("input[aria-controls='TMaterial']").css("width","200px");
-							//$("#TMaterial_filter").css("float","left");
-
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -115,9 +110,9 @@ body{
 		    		}},
 		    		{"targets":2,"render":function(data, type, row){
 		    			var rtn = "";
-		    			var contractId = jQuery.fixedWidth(row["YSId"],10);
-		    			//rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + contractId + "</a>";
-		    			return contractId;
+		    			var YSId = jQuery.fixedWidth(row["YSId"],10);
+		    			rtn= "<a href=\"###\" onClick=\"doShowOrderDetail('" + row["PIId"] +"')\">" + YSId + "</a>";
+		    			return rtn;
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 		    					    			
@@ -252,7 +247,7 @@ body{
 
 		hideAllSearch();
 		
-		var collection = $(".box");
+		var collection = $(".box2");
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });
@@ -412,7 +407,7 @@ body{
 		var searchSts = $('#searchSts').val();
 		
 	 	$('#defutBtnu'+userId).removeClass("start").addClass("end");
-	 	$('#defutBtnm'+searchSts).removeClass("start").addClass("end");
+	 	//$('#defutBtnm'+searchSts).removeClass("start").addClass("end");
 	 	
 		$('#yewuzuId').val(userId);
 
@@ -457,6 +452,14 @@ body{
 		
 		searchAjax('030','false','',monthday);
 	}
+	
+
+	function doShowOrderDetail(PIId) {
+
+		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+
+		callWindowFullView("订单详情",url);
+	}
 		
 </script>
 </head>
@@ -500,7 +503,7 @@ body{
 			<td width=""></td> 
 			<td class="label">收汇情况：</td>
 			<td colspan="5">
-				<a id="defutBtnm0" class="DTTT_button box2" onclick="doSearch2('0');">ALL</a>
+				<a id="defutBtnm0"   class="DTTT_button box2" onclick="doSearch2('0');">ALL</a>
 				<a id="defutBtnm010" class="DTTT_button box2" onclick="doSearch2('010');">待收款</a>
 				<a id="defutBtnm020" class="DTTT_button box2" onclick="doSearch2('070');" >逾期未收款</a>
 				<a id="defutBtnm030" class="DTTT_button box2" onclick="doSearchCustomer3('030');">已收款</a>
