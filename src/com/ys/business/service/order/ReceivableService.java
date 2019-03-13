@@ -304,15 +304,15 @@ public class ReceivableService extends CommonService {
 	 * @throws Exception
 	 */
 	public void receivableAddContinueInit() throws Exception{
-		String YSId = request.getParameter("YSId");
+		String detailId = request.getParameter("detailId");
 
-		getRecivableFromOrder(YSId);
+		//getRecivableFromOrder(YSId);
 		
-		B_ReceivableData receivable = getReceivable(YSId);
+		B_ReceivableData receivable = getReceivableById(detailId);
 		if(receivable == null){
 			receivable = new  B_ReceivableData();
 			receivable = getReceivableRecordId(receivable);
-			receivable.setYsid(YSId);
+			//receivable.setYsid(YSId);
 		}
 		
 		B_ReceivableDetailData reqDataDetail = new B_ReceivableDetailData();
@@ -321,6 +321,8 @@ public class ReceivableService extends CommonService {
 		
 		reqModel.setReceivable(receivable);
 		reqModel.setReceivableDetail(reqDataDetail);
+		
+		model.addAttribute("receivableId",detailId);
 		
 	}
 	
@@ -335,6 +337,14 @@ public class ReceivableService extends CommonService {
 		
 	}
 	
+	public void receivableAginInsertAndView() throws Exception{
+
+		
+		String receivableId = receivableAginInsert();
+
+		model.addAttribute("receivableId",receivableId);
+		
+	}
 
 	public void receivableUpdateAndView() throws Exception{
 
@@ -431,9 +441,9 @@ public class ReceivableService extends CommonService {
 	
 
 	@SuppressWarnings("unchecked")
-	private B_ReceivableData getReceivable(String ysid) throws Exception{
+	private B_ReceivableData getReceivableById(String detailId) throws Exception{
 		B_ReceivableData rtn = null;
-		String where = " ysid ='" + ysid + "' AND deleteFlag='0' ";
+		String where = " receivableId ='" + detailId + "' AND deleteFlag='0' ";
 		List<B_ReceivableData> list = new B_ReceivableDao().Find(where); 
 		
 		if(list.size() > 0)
@@ -512,6 +522,75 @@ public class ReceivableService extends CommonService {
 	}
 
 
+	/**
+	 * 
+	 * @param paymentStatus
+	 * @return
+	 */
+	private String receivableAginInsert(){
+		String receivableid = "";
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			B_ReceivableData reqData = reqModel.getReceivable();
+			B_ReceivableDetailData reqDataDetail = reqModel.getReceivableDetail();
+
+			//取得收款编号
+			receivableid = reqData.getReceivableid();
+			if(isNullOrEmpty(receivableid)){
+				reqData = getReceivableRecordId(reqData);	
+				receivableid = reqData.getReceivableid();//重新取值
+			}	
+			//付款单状态
+			float amountReceivable = stringToFloat(reqData.getAmountreceivable());//应付款
+			float actualAmountCnt = getActualAmount(receivableid);
+			float actualAmount = stringToFloat(reqDataDetail.getActualamount());
+			float bankDeduction = stringToFloat(reqDataDetail.getBankdeduction());
+			
+			float amount = actualAmount + bankDeduction;//本次收款金额，包含扣款
+			float receCnt = actualAmountCnt + amount;//到目前，共收款金额，包含扣款
+
+			String status=Constants.RECEIVABLE_010;
+			if(receCnt < amountReceivable){
+				status=Constants.RECEIVABLE_020;
+			}else{
+				status=Constants.RECEIVABLE_030;
+			}
+			reqData.setStatus(status);
+			insertPayment(reqData);		
+			
+			//订单明细
+			//insertReceivableOrder(receivableid);
+
+			//收款明细
+			reqDataDetail.setReceivableid(reqData.getReceivableid());
+			
+			String detailid = reqDataDetail.getReceivableserialid();
+			if(isNullOrEmpty(detailid)){
+				reqDataDetail = getReceivableDetailRecordId(reqDataDetail);//重新设置流水号
+				detailid = reqDataDetail.getReceivableserialid();
+			}	
+			
+			insertPaymentDetail(reqDataDetail);		
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		return receivableid;
+		
+	}
+	
 	private void insertReceivableOrder(
 			String receivableid) throws Exception {
 

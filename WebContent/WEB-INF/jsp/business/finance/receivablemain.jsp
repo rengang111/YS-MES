@@ -128,7 +128,13 @@ body{
 		    			return floatToSymbol(data,row["currency"]);
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
-		    			return floatToCurrency(data);
+		    			var rtn = "0";
+		    			if(row['statusId'] == '030'){
+		    				rtn = floatToSymbol(row['totalPrice'],row["currency"]);
+		    			}else if(row['statusId'] == '020'){
+		    				rtn = floatToSymbol(row['actualCnt'],row["currency"]);
+		    			}
+		    			return rtn;
 		    		}},
 		    		{"targets":10,"render":function(data, type, row){
 		    			if(data == '已收款')
@@ -244,9 +250,15 @@ body{
 	
 	function doSearch2(type) {	
 
-		//$("#keyword1").val("");
-		//$("#keyword2").val("");
 		hideAllSearch();
+		
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
+	 	$('#defutBtm'+type).removeClass("start").addClass("end");
+	 	
 		
 		searchAjax(type,"false","");
 
@@ -305,15 +317,15 @@ body{
 	function doShowDetail(YSId,receivableId) {
 
 		var url = '${ctx}/business/receivable?methodtype=receivableDetailInit&receivableId=' + receivableId+'&YSId='+YSId;
-		
-		location.href = url;
+
+		callWindowFullView("收汇明细",url);
 	}
 
 	function doShowContract(contractId) {
 
 		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
 		
-		callProductDesignView("采购合同",url);
+		callWindowFullView("采购合同",url);
 	}	
 	
 

@@ -2,14 +2,19 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>应收款-收款</title>
+<title>应收款-继续收款</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
 
 function historyAjax() {
 	
-	var YSId = '${order.YSId }';
+	var table = $('#history').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
+	var receivableId = '${receivableId }';
 
 	var t = $('#history').DataTable({			
 		"paging": false,
@@ -24,7 +29,7 @@ function historyAjax() {
 		//"scrollY":scrollHeight,
 		//"scrollCollapse":true,
 		dom : '<"clear">rt',
-		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getReceivableDetail&YSId="+YSId,
+		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getReceivableDetail&receivableId="+receivableId,
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			var param = {};
 			var formData = $("#condition").serializeArray();
@@ -41,6 +46,7 @@ function historyAjax() {
 				success: function(data){							
 					fnCallback(data);
 					
+					doComputeTax();
 					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -92,9 +98,43 @@ function historyAjax() {
 };
 
 
-function orderDetailAjax() {
+function doComputeTax(){
 	
-	var ysids = '${ysids}';
+	var bank = contractSum(3);//银行扣款
+	var shiji = contractSum(4);//实际收款
+	var heji = bank + shiji;//实收合计
+	
+	$('#bankCnt').html(floatToCurrency(bank));
+	$('#actualAmountCnt').html(floatToCurrency(shiji));
+	$('#oreadyRecivable').html(floatToCurrency(heji));
+	
+	var cnt = currencyToFloat($('#receivable\\.amountreceivable').val());
+	var sup = cnt - heji;
+	var currency = $('#currency').val();//币种
+
+	$('#receivableDetail\\.actualamount').val(floatToSymbol(sup,currency));
+	$('#thisCount').val(floatToSymbol(sup,currency));
+	$('#currMax').val(sup);
+	
+}
+
+//列合计
+function contractSum(col){
+
+	var sum = 0;
+	$('#history tbody tr').each (function (){
+		
+		var vtotal = $(this).find("td").eq(col).text();
+		var ftotal = currencyToFloat(vtotal);
+		
+		sum = currencyToFloat(sum) + ftotal;			
+	})
+	return sum;
+}
+
+function orderDetailAjax() {
+
+	var receivableId = '${receivableId}';
 
 	var t = $('#detail').DataTable({			
 		"paging": false,
@@ -109,7 +149,7 @@ function orderDetailAjax() {
 		//"scrollY":scrollHeight,
 		//"scrollCollapse":true,
 		dom : '<"clear">rt',
-		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getOrderDetailByYsids&ysids="+ysids,
+		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getOrderDetail&receivableId="+receivableId,
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			var param = {};
 			var formData = $("#condition").serializeArray();
@@ -125,8 +165,17 @@ function orderDetailAjax() {
 				"data" : JSON.stringify(aoData),
 				success: function(data){							
 					fnCallback(data);
+					
+					//计算收款金额					
+					//$('#receivableDetail\\.actualamount').val(cnt2);
+					//$('#receivableDetail\\.bankdeduction').val('0');
+					
+					//$('#thisCount').val(cnt2)
+					
+					
 					var supplier = data['data']['0']['customerFullName'];		
-					var currency = data['data']['0']['currency'];
+					var currency = data['data']['0']['currencyName'];
+					//alert('currency:'+currency)
 					$('#supplier').text(supplier);
 					
 					var cnt = orderSum();
@@ -134,11 +183,9 @@ function orderDetailAjax() {
 					$('#orderPrice').text(cnt2);
 					$('#orderCnt').text(floatToCurrency(cnt));
 					$('#receivable\\.amountreceivable').val(cnt);
-					//计算收款金额					
-					$('#receivableDetail\\.actualamount').val(cnt2);
-					$('#receivableDetail\\.bankdeduction').val('0');
+					$('#currency').val(currency);
 					
-					$('#thisCount').val(cnt2)
+					historyAjax();//历史收款单
 					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -162,13 +209,6 @@ function orderDetailAjax() {
 				{"targets":0,"render":function(data, type, row){
 					return row["rownum"];
 				}},
-	    		{"targets":4,"render":function(data, type, row){
-	    			var rowIndex = row["rownum"] -1 ;
-	    			var txt = '<input type="hidden" name="orderList['+rowIndex+'].ysid"             id="orderList'+rowIndex+'.ysid"              value="'+row["YSId"]+'" />';
-	    			txt += '<input type="hidden" name="orderList['+rowIndex+'].productid"        id="orderList'+rowIndex+'.productid"         value="'+row["productId"]+'" />';
-	    			txt += '<input type="hidden" name="orderList['+rowIndex+'].amountreceivable" id="orderList'+rowIndex+'.amountreceivable"  value="'+row["totalPrice"]+'" />';
-	    			return floatToCurrency(data) + txt;
-	    		}},
 	    		{"targets":5,"render":function(data, type, row){
 	    			return "";
 	    		}}
@@ -193,6 +233,9 @@ function orderSum(){
 }
 
 	$(document).ready(function() {
+
+		orderDetailAjax();//订单明细
+		//historyAjax();//历史收款单
 		
 		//日期
 		$("#receivableDetail\\.collectiondate").val(shortToday());
@@ -215,8 +258,8 @@ function orderSum(){
 		$("#insert").click(
 				function() {
 
-					$("#insert").attr("disabled", "disabled");
  			var YSId = '${order.YSId}';
+ 			
 			var bankdeduction =	$('#receivableDetail\\.bankdeduction').val();
 			var actualamount  =	$('#receivableDetail\\.actualamount').val();
 			
@@ -229,19 +272,19 @@ function orderSum(){
 			}
 			$('#receivableDetail\\.bankdeduction').val(bankdeduction);
 			$('#receivableDetail\\.actualamount').val(actualamount);
+
+			$("#insert").attr("disabled", "disabled");
 			
-			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=receivableInsert"+"&YSId="+YSId);
+			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=receivableAginInsert"+"&YSId="+YSId);
 			$('#formModel').submit();
 		});
 		
-		orderDetailAjax();//订单明细
-		//historyAjax();//历史收款单
 				
 		//银行扣款		
 		$("#receivableDetail\\.bankdeduction") .blur(function(){
 			//计算本次最大收款金额			
-			var actualCnt =  currencyToFloat($('#receivable\\.amountreceivable').val());//预计收款合计（包含银行扣款）
-			var currency = '${order.currency}';//币种
+			var actualCnt =  $('#currMax').val();//currencyToFloat($('#receivable\\.amountreceivable').val());//预计收款合计（包含银行扣款）
+			var currency = $('#currency').val();//币种
 			var bank  = currencyToFloat($('#receivableDetail\\.bankdeduction').val());//本次银行扣款
 			var shiji = currencyToFloat($('#receivableDetail\\.actualamount').val());//本次实际收款	
 			var thisCount = bank + shiji
@@ -262,19 +305,15 @@ function orderSum(){
 			}
 			
 			thisCount = bank + shiji;//重新计算
-			//$('#receivableDetail\\.actualamount').val(floatToSymbol(shiji,currency));
 			$('#receivableDetail\\.bankdeduction').val(floatToSymbol(bank,currency));
-			//var bank = $('#receivableDetail\\.bankdeduction').val();
-			//var shou = $('#receivableDetail\\.actualamount').val();
-			//$('#thisCount').val(currencyToFloat(bank) + currencyToFloat(shou));
 			$('#thisCount').val(floatToSymbol(thisCount,currency));
 		});
 		
 		//收款
 		$("#receivableDetail\\.actualamount") .blur(function(){
 			//计算本次最大收款金额
-			var actualCnt =  currencyToFloat($('#receivable\\.amountreceivable').val());//预计收款合计（包含银行扣款）
-			var currency = '${order.currency}';//币种
+			var actualCnt =  $('#currMax').val();//currencyToFloat($('#receivable\\.amountreceivable').val());//预计收款合计（包含银行扣款）
+			var currency = $('#currency').val();//币种
 			var bank  = currencyToFloat($('#receivableDetail\\.bankdeduction').val());//本次银行扣款
 			var shiji = currencyToFloat($('#receivableDetail\\.actualamount').val());//本次实际收款			
 			var thisCount = bank + shiji
@@ -294,24 +333,8 @@ function orderSum(){
 			
 			thisCount = bank + shiji;//重新计算
 			$('#receivableDetail\\.actualamount').val(floatToSymbol(shiji,currency));
-			//$('#receivableDetail\\.bankdeduction').val(floatToSymbol(bank,currency));
 			$('#thisCount').val(floatToSymbol(thisCount,currency));
 		});
-	
-/*
-		var orderPrice ='${order.orderPrice}';
-		var actualCnt =  currencyToFloat('${order.actualCnt }');
-		var orderPrice = currencyToFloat('${order.orderPrice }');
-		var currency = '${order.currency}';//币种
-		var surplus = orderPrice - actualCnt;
-		
-		$('#surplus').text(floatToSymbol(surplus,currency));
-		$('#receivableDetail\\.bankdeduction').val('0');
-		$('#receivableDetail\\.actualamount').val('0');
-		//$('#receivableDetail\\.actualamount').val(floatToSymbol(surplus,currency));
-		$('#orderPrice').text(floatToSymbol(orderPrice,currency))
-		$('#receivable\\.amountreceivable').val(floatToCurrency(orderPrice));
-		*/
 		
 	});
 	
@@ -327,12 +350,11 @@ function orderSum(){
 	id="formModel" name="formModel"  autocomplete="off">
 
 	<input type="hidden" id="paymentId" value="">
+	<input type="hidden" id="currency"  value="${formModel.receivable.currency }"/>
+	<input type="hidden" id="currMax" value=""><!-- 本次最大收款金额 -->
 	<form:hidden path="receivable.receivableid"  value="${formModel.receivable.receivableid }"/>
 	<form:hidden path="receivable.parentid"      value="${formModel.receivable.parentid }"/>
 	<form:hidden path="receivable.subid"         value="${formModel.receivable.subid }"/>
-	<form:hidden path="receivable.currency"    value="${order.currencyId }"/>
-	<form:hidden path="receivable.productid"   value="${order.productId }"/>
-	<form:hidden path="receivable.customerid"  value="${order.customerId }"/>
 	<fieldset>
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
@@ -342,6 +364,10 @@ function orderSum(){
 					<span id="orderPrice"></span>
 					<form:hidden path="receivable.amountreceivable" class="" value=""/></td>
 				
+				<td class="label" width="100px">已收款金额：</td>
+				<td class="font16" width="150px">
+					<span id="oreadyRecivable"></span>
+					
 				<td class="label" width="100px">客户名称：</td>
 				<td colspan="5"><span id="supplier"></span></td>
 			</tr>
@@ -400,18 +426,17 @@ function orderSum(){
 				</tr>
 			</thead>
 			<tfoot>
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td><span id="orderCnt"></span></td>
-				<td></td>
-			</tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td><span id="orderCnt"></span></td>
+					<td></td>
+				</tr>
 			</tfoot>			
 		</table>
 	</fieldset>	
-	<!-- 
 	<fieldset>
 		<legend> 历史收款记录</legend>
 		<table class="display" id="history">
@@ -425,23 +450,20 @@ function orderSum(){
 					<th>备注</th>
 				</tr>
 			</thead>
-			
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td><span id="bankCnt"></span></td>
+					<td><span id="actualAmountCnt"></span></td>
+					<td></td>
+				</tr>
+			</tfoot>			
 			
 		</table>
 	</fieldset>		
-	 -->
-	 <!-- 
-	<fieldset>
-		<span class="tablename">收款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
-		<div class="list">
-			<div class="showPhotoDiv" style="overflow: auto;">
-				<table id="productPhoto" style="width:100%;height:335px">
-					<tbody><tr><td class="photo"></td></tr></tbody>
-				</table>
-			</div>
-		</div>	
-	</fieldset>
-	  -->
+
 </form:form>
 
 </div>

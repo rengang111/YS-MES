@@ -689,7 +689,7 @@ function autocomplete(){
 	$('select').css('width','100px');	
 	$('#order\\.ordercompany').css('width','300px');
 	$('.ysidCheck').removeClass('bgnone');
-	$(".ysidCheck").attr('readonly', "true");
+	//$(".ysidCheck").attr('readonly', "true");
 	
 	var company = $('#order\\.ordercompany option:checked').val();// 选中项目的显示值:下单公司
 	if(company == '010'){

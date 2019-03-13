@@ -154,13 +154,14 @@ function orderDetailAjax() {
 				success: function(data){							
 					fnCallback(data);
 					var supplier = data['data']['0']['customerFullName'];		
-					var currency = data['data']['0']['currency'];
+					var currency = data['data']['0']['currencyName'];
 					//alert('supplier'+supplier)
 					$('#supplier').text(supplier);
 					
 					var cnt = orderSum();
 					var cnt2 = floatToSymbol(cnt,currency)
 					$('#orderPrice').text(cnt2);
+					$('#orderCnt').text(floatToCurrency(cnt));
 					$('#receivable\\.amountreceivable').val(cnt);
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -459,7 +460,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	</fieldset>
 	<div style="clear: both"></div>	
 	<div id="DTTT_container" align="right" style="margin-right: 30px;">
-		<!-- a class="DTTT_button " id="insert" >继续收款</a --> 
+		<a class="DTTT_button " id="insert" >继续收款</a> 
 		<a class="DTTT_button  goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
@@ -506,7 +507,17 @@ function uploadPhoto(tableId,tdTable, id) {
 					<th width="100px">收款金额</th>	
 					<th width="100px"></th>
 				</tr>
-			</thead>			
+			</thead>
+			<tfoot>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td><span id="orderCnt"></span></td>
+				<td></td>
+			</tr>
+			</tfoot>			
 		</table>
 	</fieldset>	
 	<fieldset>

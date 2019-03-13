@@ -98,10 +98,14 @@ public class ReceivableAction extends BaseAction {
 				break;
 			case "addContinueInit"://继续收款初始化
 				doAddContinueInit();
-				rtnUrl = "/business/finance/receivableadd";
+				rtnUrl = "/business/finance/receivableaginadd";
 				break;
 			case "receivableInsert"://收款保存
 				doReceivableInsert();
+				rtnUrl = "/business/finance/receivableview";
+				break;
+			case "receivableAginInsert"://继续收款保存
+				doReceivableAginInsert();
 				rtnUrl = "/business/finance/receivableview";
 				break;
 			case "getReceivableDetail"://收款明细
@@ -252,6 +256,18 @@ public class ReceivableAction extends BaseAction {
 		
 		try {
 			service.receivableInsertAndView();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+
+	public void doReceivableAginInsert(){	
+		
+		try {
+			service.receivableAginInsertAndView();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

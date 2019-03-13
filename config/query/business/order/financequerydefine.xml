@@ -1124,6 +1124,7 @@
       <f name="a.storageDate" alias="checkInDate" ctype="" />
       <f name="b.collectionDate" alias="" ctype="" />
       <f name="IFNULL(b.status,'010')" alias="status" ctype="收款状态" />
+      <f name="IFNULL(b.status,'010')" alias="statusId" ctype="" />
       <f name="a.quantity" alias="" ctype="" />
       <f name="a.totalQuantity" alias="" ctype="" />
       <f name="REPLACE(a.quantity, ',', '') * right(a.price,LENGTH(a.price)-2)" alias="orderPrice" ctype="" />
@@ -1340,6 +1341,7 @@
       <f name="b.totalPrice" alias="" ctype="" />
       <f name="b.customerFullName" alias="" ctype="" />
       <f name="b.currency" alias="" ctype="" />
+      <f name="b.currency" alias="currencyName" ctype="币种" />
   </select>
     <from>
 		 v_orderlist b
