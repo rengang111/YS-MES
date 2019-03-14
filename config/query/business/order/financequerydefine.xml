@@ -1111,8 +1111,8 @@
   <select>
       <f name="A.PIId" alias="" ctype="" />
       <f name="A.YSId" alias="" ctype="" />
-      <f name="A.currency" alias="" ctype="币种" />
-      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="if(a.ordercost > 0,'RMB',a.currency)" alias="currency" ctype="币种" />
+      <f name="if(a.ordercost > 0,'RMB',a.currency)" alias="currencyId" ctype="" />
       <f name="IFNULL(b.receivableId,'')" alias="receivableId" ctype="" />
       <f name="IFNULL(b.actualAmountCnt,'0')" alias="actualAndBankCnt" ctype="" />
       <f name="IFNULL(b.actualAmount,'0')" alias="actualAmountCnt" ctype="" />
@@ -1128,8 +1128,9 @@
       <f name="IFNULL(b.status,'010')" alias="statusId" ctype="" />
       <f name="a.quantity" alias="" ctype="" />
       <f name="a.totalQuantity" alias="" ctype="" />
-      <f name="REPLACE(a.quantity, ',', '') * right(a.price,LENGTH(a.price)-2)" alias="orderPrice" ctype="" />
-      <f name="a.totalPrice" alias="" ctype="" />
+      <!-- f name="REPLACE(a.quantity, ',', '') * right(a.price,LENGTH(a.price)-2)" alias="orderPrice" ctype="" /-->
+      <f name="if(a.ordercost > 0,a.ordercost,REPLACE(a.quantity, ',', '') * right(a.price,LENGTH(a.price)-2))" alias="orderPrice" ctype="" />
+      <f name="if(a.ordercost > 0,a.ordercost,a.totalPrice)" alias="totalPrice" ctype="" />
       <f name="a.paymentTerm" alias="" ctype="" />
       <f name="a.customerFullName" alias="" ctype="" />
       <f name="a.customerId" alias="" ctype="" />
@@ -1339,10 +1340,10 @@
       <f name="b.YSId" alias="" ctype="" />
       <f name="b.materialId" alias="productId" ctype="" />
       <f name="b.materialName" alias="productName" ctype="" />
-      <f name="b.totalPrice" alias="" ctype="" />
       <f name="b.customerFullName" alias="" ctype="" />
-      <f name="b.currency" alias="" ctype="" />
-      <f name="b.currency" alias="currencyName" ctype="币种" />
+      <f name="if(b.ordercost > 0,b.ordercost,b.totalPrice)" alias="totalPrice" ctype="" />
+      <f name="if(b.ordercost > 0,'RMB',b.currency)" alias="currency" ctype="" />
+      <f name="if(b.ordercost > 0,'RMB',b.currency)" alias="currency" ctype="币种" />
   </select>
     <from>
 		 v_orderlist b

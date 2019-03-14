@@ -262,11 +262,7 @@ function orderSum(){
 			}
 			
 			thisCount = bank + shiji;//重新计算
-			//$('#receivableDetail\\.actualamount').val(floatToSymbol(shiji,currency));
 			$('#receivableDetail\\.bankdeduction').val(floatToSymbol(bank,currency));
-			//var bank = $('#receivableDetail\\.bankdeduction').val();
-			//var shou = $('#receivableDetail\\.actualamount').val();
-			//$('#thisCount').val(currencyToFloat(bank) + currencyToFloat(shou));
 			$('#thisCount').val(floatToSymbol(thisCount,currency));
 		});
 		
@@ -294,24 +290,8 @@ function orderSum(){
 			
 			thisCount = bank + shiji;//重新计算
 			$('#receivableDetail\\.actualamount').val(floatToSymbol(shiji,currency));
-			//$('#receivableDetail\\.bankdeduction').val(floatToSymbol(bank,currency));
 			$('#thisCount').val(floatToSymbol(thisCount,currency));
 		});
-	
-/*
-		var orderPrice ='${order.orderPrice}';
-		var actualCnt =  currencyToFloat('${order.actualCnt }');
-		var orderPrice = currencyToFloat('${order.orderPrice }');
-		var currency = '${order.currency}';//币种
-		var surplus = orderPrice - actualCnt;
-		
-		$('#surplus').text(floatToSymbol(surplus,currency));
-		$('#receivableDetail\\.bankdeduction').val('0');
-		$('#receivableDetail\\.actualamount').val('0');
-		//$('#receivableDetail\\.actualamount').val(floatToSymbol(surplus,currency));
-		$('#orderPrice').text(floatToSymbol(orderPrice,currency))
-		$('#receivable\\.amountreceivable').val(floatToCurrency(orderPrice));
-		*/
 		
 	});
 	

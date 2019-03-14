@@ -468,6 +468,16 @@ public class OrderAction extends BaseAction {
 
 			model.addAttribute("order",  dbData.get(0));
 			model.addAttribute("detail", dbData);
+			
+			String divertYsid = "";
+			for(HashMap<String, String> map:dbData){
+				String divertFlag = map.get("diverFlag");
+				if(("1").equals(divertFlag)){
+					divertYsid = map.get("YSId");
+					break;
+				}
+			}
+			model.addAttribute("divertYsid", divertYsid);
 	
 		}
 		catch(Exception e) {
@@ -915,8 +925,10 @@ public class OrderAction extends BaseAction {
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
 		try {
-			orderService.insertDivertOrder(data);
 			
+			String divertysid = orderService.insertDivertOrder(data);
+			
+			modelMap.put("divertysid", divertysid);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

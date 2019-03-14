@@ -740,6 +740,7 @@ public class ReceivableService extends CommonService {
 		
 		String sql = baseQuery.getSql();
 		sql = sql.replace("#", receivableId);
+		System.out.println("订单详情："+sql);
 		baseQuery.getYsFullData(sql,receivableId);
 		
 		payment.put("data", dataModel.getYsViewData());

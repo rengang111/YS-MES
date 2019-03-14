@@ -24,7 +24,6 @@ $.fn.dataTable.TableTools.buttons.add_rows1 = $
 	$.fn.dataTable.TableTools.buttonBase,
 	{
 		"fnClick" : function(button) {
-			//var rowIndex = $("#documentary tbody tr").length -1 ;
 			var rowIndex = counter1  ;
 			var trHtml = "";
 			
@@ -32,7 +31,7 @@ $.fn.dataTable.TableTools.buttons.add_rows1 = $
 			var rownum = rowIndex+1;
 			var checkbox = "<input type=checkbox name='numCheck' id='numCheck' value='" + rowIndex + "' />";
 			trHtml+="<tr>";	
-			trHtml+='<td class="td-left">'+ rownum + checkbox +'</td>';
+			trHtml+='<td class="td-left">' + checkbox +'</td>';
 			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].divertysid" id="orderDetailLines'+rowIndex+'.divertysid" class="short" /></td>';
 			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid" class="short " /></td>';
 			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" class="attributeList1" /></td>';
@@ -109,14 +108,17 @@ function doSave(type) {
 	$.ajax({
 		type : "POST",
 		contentType : 'application/json',
-		dataType : 'text',
+		dataType : 'json',
 		url : actionUrl,
 		data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
-		success : function(d) {
+		success : function(data) {
 			//alert(d)
 			switch(type){
 				case "D":
-					documentaryAjax();	//挪用订单
+					
+					var divertYsid = data['divertysid'];
+					alert('divertYsid'+divertYsid)
+					documentaryAjax(divertYsid);	//挪用订单
 					break;			
 			}			
 			
@@ -129,14 +131,14 @@ function doSave(type) {
 	});
 }
 	
-function documentaryAjax() {//挪用订单
+function documentaryAjax(divertYsid) {//挪用订单
 
 	var table = $('#documentary').dataTable();
 	if(table) {
 		table.fnDestroy();
 	}
-	var YSId = '${order.YSId}';
-	var actionUrl = "${ctx}/business/order?methodtype=getDivertOrder&divertYsid="+YSId;
+
+	var actionUrl = "${ctx}/business/order?methodtype=getDivertOrder&divertYsid="+divertYsid;
 
 	var t = $('#documentary').DataTable({
 		
@@ -214,7 +216,10 @@ function documentaryAjax() {//挪用订单
     			var rownum = row["rownum"] - 1;
     			var rtnVal = "";
     			//if (status == "1"){
-    				rtnVal = data + "<input type='hidden' name='orderDetailLines["+ rownum +"].ysid' id='orderDetailLines"+ rownum +".ysid' value='" + data + "' />"
+    				rtnVal = "<input type='text' name='orderDetailLines["+ rownum +"].ysid'          id='orderDetailLines"+ rownum +".ysid'       value='" + data + "' />"
+    				rtnVal += "<input type='hidden' name='orderDetailLines["+ rownum +"].divertysid' id='orderDetailLines"+ rownum +".divertysid' value='" + row["divertYsid"] + "' />"
+    				rtnVal += "<input type='hidden' name='orderDetailLines["+ rownum +"].remarks'    id='orderDetailLines"+ rownum +".remarks'    value='" + row["remarks"] + "' />"
+    				rtnVal += "<input type='hidden' name='orderDetailLines["+ rownum +"].peiysid'    id='orderDetailLines"+ rownum +".peiysid'    value='" + row["YSId"] + "' />";//临时借用字段，以区分新增，更新
     			//}else{
     			//	rtnVal = "<input type='text' name='orderDetailLines["+ rownum +"].ysid' id='orderDetailLines"+ rownum +".ysid' value='" + data + "' class='short' />"
     			//}
@@ -397,7 +402,10 @@ function documentaryAjax() {//挪用订单
 		ajax();
 		ajax2();
 
-		documentaryAjax();	//挪用订单
+
+		var divertYsid = '${divertYsid}';
+		documentaryAjax(divertYsid);	//挪用订单
+		
 		autocomplete();//
 		
 		//$('#example').DataTable().columns.adjust().draw();
@@ -688,7 +696,7 @@ function autocomplete(){
 			</tfoot>
 		<tbody>
 			<c:forEach var='order' items='${detail}' varStatus='status'>	
-			<c:if test="${order.orderType eq '010'  && order.divertYsid == ''}">	
+			<c:if test="${order.orderType eq '010' }">	
 				<tr>
 					<td>${order.YSId}</td>
 					<td><a href="###" onClick="doShow('${order.materialId}')">${order.materialId}</a></td>								

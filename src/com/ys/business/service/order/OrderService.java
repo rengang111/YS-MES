@@ -2273,8 +2273,9 @@ public class OrderService extends CommonService  {
 		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 	
-	public void insertDivertOrder(String data) throws Exception {
+	public String insertDivertOrder(String data) throws Exception {
 
+		String divertysid = "";
 		ts = new BaseTransaction();
 
 		try {			
@@ -2289,38 +2290,46 @@ public class OrderService extends CommonService  {
 		    }
 		    for (int i = 0; i < counterInt; ++i) {
 
-		    	String divertysid = getJsonData(data, "orderDetailLines[" + i + "].divertysid");
+		    	       divertysid = getJsonData(data, "orderDetailLines[" + i + "].divertysid");
 		    	String ysid       = getJsonData(data, "orderDetailLines[" + i + "].ysid");
 		    	String materialid = getJsonData(data, "orderDetailLines[" + i + "].materialid");
 			    String quantity   = getJsonData(data, "orderDetailLines[" + i + "].quantity");
 			    String remarks    = getJsonData(data, "orderDetailLines[" + i + "].remarks");
+			    String peiysid    = getJsonData(data, "orderDetailLines[" + i + "].peiysid");
 
 			    if (isNullOrEmpty(divertysid))
 			    	continue;
 		      
 				//更新原订单
-				B_OrderDetailData oldDt = updateParentOrderDetail(divertysid,quantity);
-				
-				B_OrderDetailData newDt = new B_OrderDetailData();
-				newDt.setPrice(oldDt.getPrice());
-				newDt.setTotalprice(
-						floatToString(
-								stringToFloat(quantity) * stringToFloat(oldDt.getPrice())
-								));
-				
-				newDt.setYsid(ysid);
-				newDt.setDivertysid(divertysid);
-				newDt.setMaterialid(materialid);
-				newDt.setQuantity(quantity);
-				newDt.setRemarks(remarks);
-				newDt.setTotalquantity(quantity);
-				newDt.setProductclassify(oldDt.getProductclassify());//产品分类
-				newDt.setOrdertype(oldDt.getOrdertype());
-				newDt.setStatus(Constants.ORDER_STS_1);
-				newDt.setCurrency(oldDt.getCurrency());
+			    if(notEmpty(peiysid) && !peiysid.equals(ysid)){
+			    	//说明该数据已存在，且耀升编号发生改变，但不需要再次更新原订单
+			    	updateOrderDetailForDivert(peiysid,ysid);	
+			    }else{
+
+					B_OrderDetailData oldDt = updateParentOrderDetail(divertysid,quantity);
 					
-				//正常订单
-				insertOrderDetail(newDt,oldDt.getPiid());				
+					B_OrderDetailData newDt = new B_OrderDetailData();
+					newDt.setPrice(oldDt.getPrice());
+					newDt.setTotalprice(
+							floatToString(
+									stringToFloat(quantity) * stringToFloat(oldDt.getPrice())
+									));
+					
+					newDt.setYsid(ysid);
+					newDt.setDivertysid(divertysid);
+					newDt.setMaterialid(materialid);
+					newDt.setQuantity(quantity);
+					newDt.setRemarks(remarks);
+					newDt.setTotalquantity(quantity);
+					newDt.setProductclassify(oldDt.getProductclassify());//产品分类
+					newDt.setOrdertype(oldDt.getOrdertype());
+					newDt.setStatus(Constants.ORDER_STS_1);
+					newDt.setCurrency(oldDt.getCurrency());
+						
+					//正常订单
+					insertOrderDetail(newDt,oldDt.getPiid());	
+			    }
+							
 			  
 		    } 
 
@@ -2331,6 +2340,8 @@ public class OrderService extends CommonService  {
 			e.printStackTrace();
 			ts.rollback();
 		}	
+		
+		return divertysid;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -2372,6 +2383,30 @@ public class OrderService extends CommonService  {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void updateOrderDetailForDivert(
+			String oldYsid,
+			String newYsid) throws Exception{
+		
+		B_OrderDetailData dbData = null;
+		String where = " YSId ='" + oldYsid + "' AND deleteFlag='0' ";
+		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
+			
+		if(list == null || list.size() == 0){
+			return;
+		}else{
+			//处理共通信息
+			dbData = list.get(0);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderCancelUpdate",userInfo);
+			copyProperties(dbData,commData);
+					
+			dbData.setYsid(newYsid);
+			
+			new B_OrderDetailDao().Store(dbData);
+			
+		}
+	}
 	
 	public HashMap<String, Object> getDivertOrder() throws Exception {
 		
@@ -2382,6 +2417,11 @@ public class OrderService extends CommonService  {
 		baseQuery = new BaseQuery(request, dataModel);
 
 		String divertYsid = request.getParameter("divertYsid");
+		if(isNullOrEmpty(divertYsid)){
+			modelMap.put("data","");
+			modelMap.put("recordsTotal", "0");
+			return modelMap;
+		}
 		userDefinedSearchCase.put("divertYsid", divertYsid);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
