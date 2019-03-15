@@ -31,12 +31,14 @@ import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_PurchaseOrderDetailDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
+import com.ys.business.db.dao.B_PurchaseStockInDetailDao;
 import com.ys.business.db.data.B_ArrivalData;
 import com.ys.business.db.data.B_FollowData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
+import com.ys.business.db.data.B_PurchaseStockInDetailData;
 import com.ys.business.db.data.B_SupplierData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
@@ -363,7 +365,8 @@ public class PurchaseOrderService extends CommonService {
 
 		if(null == contractId || ("").equals(contractId))
 			return;
-	
+
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
 		dataModel.setQueryName("getContractDetailList");		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("contractId", contractId);		
@@ -866,32 +869,62 @@ public class PurchaseOrderService extends CommonService {
 			//合同详情
 			List<B_PurchaseOrderDetailData> newDetailList = reqModel.getDetailList();
 			
+			String ysid = orderData.getYsid();
+			String contractid = orderData.getContractid();
+			
 			//删除明细
 			deletePurchaseOrderDetail(orderData.getContractid());
 			
 			if(newDetailList == null){
 				//删除合同头信息		
 				deletePurchaseOrder(orderData);		
-			}else{
-				
+			}else{				
 						
 				//更新明细
 				for(B_PurchaseOrderDetailData data:newDetailList ){
 					
+					data.setContractid(contractid);
 					//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面			
 					String newQty = data.getQuantity();
-					float fqty = 0;
+					float fnewqty = 0;
 					if(notEmpty(newQty))
-						fqty = stringToFloat(newQty.trim());
+						fnewqty = stringToFloat(newQty.trim());
 					
-					if(fqty == 0){
+					if(fnewqty == 0){
 						data.setQuantity(newQty);
 						deletePurchaseOrderDetail(data);
 					}else{
-						updateOrderDetail(data);
+						//取得原合同的数量，单价
+						B_PurchaseOrderDetailData oldDetail = 
+								getOldContractDetailInfo(data.getContractid(),data.getMaterialid());
 						
-						updateMaterial("合同更新处理",data.getMaterialid(),newQty,"0");	
-					}		
+						float oldQty   = stringToFloat(oldDetail.getQuantity());
+						float oldPrice = stringToFloat(oldDetail.getPrice());
+						float newPrice = stringToFloat(data.getPrice());
+
+						boolean planUpdateFlag = false;
+						//*** 合同数量
+						if(fnewqty != oldQty){//合同数量有变化
+							planUpdateFlag = true;
+							updateMaterial("合同更新处理",data.getMaterialid(),newQty,"0");	
+						}
+						
+
+						//*** 合同单价
+						if(newPrice != oldPrice){//单价有变化
+							planUpdateFlag = true;
+							updateStockinByMaterialId(data.getMaterialid(),data);
+						}
+						
+						//更新采购方案：此更新是单向的，方案有变化时，不会自动更新合同
+						if(planUpdateFlag){
+							updatePlanDetailByMaterialId(ysid,data);
+						}
+
+						updateOrderDetail(data);
+					}
+					
+					
 				}				
 
 				//计算退税
@@ -914,6 +947,81 @@ public class PurchaseOrderService extends CommonService {
 			ts.rollback();
 			System.out.println(e.getMessage());
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void updateStockinByMaterialId(
+			String materialId,
+			B_PurchaseOrderDetailData contract) throws Exception{
+	
+		//取得入库信息	
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("getStockinListById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contract.getContractid());	
+		userDefinedSearchCase.put("materialId", materialId);		
+	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, 0);			
+
+		//更新入库信息的单价
+		for(int i=0;i<dataModel.getRecordCount();i++){
+			HashMap<String, String> record = dataModel.getYsViewData().get(i);
+			
+			String where = " receiptId ='"+ record.get("receiptId") + "' " + 
+					" AND materialId ='"+ record.get("materialId") + "' " + 
+					" AND deleteFlag='0' ";
+			
+			List<B_PurchaseStockInDetailData> list = 
+					(List<B_PurchaseStockInDetailData>) new B_PurchaseStockInDetailDao().Find(where);
+			
+			if(list ==null || list.size() == 0){
+				return ;
+			}
+			B_PurchaseStockInDetailData data = list.get(0);
+			
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"PurchasePlanUpdate",userInfo);
+			copyProperties(data,commData);
+			
+			data.setPrice(contract.getPrice());
+			
+			new B_PurchaseStockInDetailDao().Store(data);
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void updatePlanDetailByMaterialId(
+			String ysid,
+			B_PurchaseOrderDetailData contract) throws Exception{
+	
+		B_PurchasePlanDetailData data = new B_PurchasePlanDetailData();
+		B_PurchasePlanDetailDao dao = new B_PurchasePlanDetailDao();
+		
+		String where = " ysid ='"+ ysid + "' " + 
+				" AND materialId ='"+ contract.getMaterialid() + "' " + 
+				" AND deleteFlag='0' ";
+		
+		List<B_PurchasePlanDetailData> list = 
+				(List<B_PurchasePlanDetailData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
+		data = list.get(0);
+				
+		//更新DB
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"PurchasePlanUpdate",userInfo);
+		copyProperties(data,commData);
+		
+		data.setPrice(contract.getPrice());
+		data.setPurchasequantity(contract.getQuantity());
+		
+		dao.Store(data);
+		
 	}
 	
 	/*

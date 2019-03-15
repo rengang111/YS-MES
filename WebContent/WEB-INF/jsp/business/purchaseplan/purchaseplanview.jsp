@@ -486,7 +486,8 @@ function initEvent(){
 							txt = txt + '新建合同';
 						}
 					}else{//做过合同
-						if(contractPrice == planPrice && contractQty == planQty){
+						//if(contractPrice == planPrice && contractQty == planQty){
+						if(contractQty == planQty){
 
 							txt = txt + "采购无变化"
 						}else{
