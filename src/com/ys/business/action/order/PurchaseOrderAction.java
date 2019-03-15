@@ -188,6 +188,14 @@ public class PurchaseOrderAction extends BaseAction {
 			case "setContractFollow"://设置重点关注订单
 				dataMap = setContractFollow();
 				printOutJsonObj(response, dataMap);
+			case "getUnStockinContractList"://供应商别未到货合同查询：展开
+				dataMap = getUnStockinContractList();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "unStockinListForRetract"://供应商别未到货合同查询:收起
+				dataMap = getUnStockinListForRetract();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -428,6 +436,18 @@ public class PurchaseOrderAction extends BaseAction {
 	public HashMap<String, Object> setContractFollow() throws Exception {
 		
 		return service.setContractFollow();		
+		
+	}
+	
+	public HashMap<String, Object> getUnStockinContractList() throws Exception {
+		
+		return service.getUnStockinContractListById();		
+		
+	}
+	
+	public HashMap<String, Object> getUnStockinListForRetract() throws Exception {
+		
+		return service.getUnStockinListForRetract();		
 		
 	}
 

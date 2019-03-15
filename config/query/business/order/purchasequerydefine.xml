@@ -1155,5 +1155,83 @@
     <groupby>a.materialId </groupby>
     <having></having>
 	<power></power>    
+  </query>  
+  <query>
+    <pool></pool>     
+    <name value="unStockinContractListById" />
+    <where>
+   	  <w name="A.supplierId" des=""  reqName="supplierId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="C.customerId" alias="" ctype="" />
+      <f name="C.shortName" alias="" ctype="" />
+      <f name="C.customerName" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.contractStorage" alias="" ctype="" />
+    </select>
+    <from>
+		v_purchaseorderdetail a
+		-- LEFT JOIN v_purchasestockindetail b ON a.contractId=b.contractId AND a.materialId=b.materialId
+		LEFT JOIN v_orderdetail c ON a.YSId=c.ysid
+		
+		WHERE a.quantity+0 > a.contractStorage+0
+	</from>
+    <orderby> a.materialId,a.YSId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="unStockinContractListForRetract" />
+    <where>
+     </where>
+    <select>
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.supplierId" alias="" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.customerName" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="sum(A.quantity)" alias="quantity" ctype="" />
+      <f name="sum(A.contractStorage) " alias="contractStorage" ctype="" />
+      <f name="sum(A.quantity) - sum(A.contractStorage)" alias="suplus" ctype="" />
+    </select>
+    <from>
+    	(
+    	select
+    	a.materialId,
+    	a.materialName,
+    	a.supplierId,
+    	a.quantity,
+    	a.contractStorage,
+    	'***' YSId,
+    	'***' contractId,
+    	'***' deliveryDate,
+    	'***' shortName,
+    	'***' customerName,
+    	'***' customerId
+    	from    	
+		v_purchaseorderdetail a
+		-- LEFT JOIN v_purchasestockindetail b ON a.contractId=b.contractId AND a.materialId=b.materialId
+		-- LEFT JOIN v_orderdetail c ON a.YSId=c.ysid
+		
+		WHERE a.quantity+0 > a.contractStorage+0 AND A.supplierId =  '#'
+		) a
+		group by a.materialId
+	</from>
+    <orderby> a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
   </query>
 </root>

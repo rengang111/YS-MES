@@ -1,15 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<!DOCTYPE>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-
-<%@ include file="../../common/common.jsp"%>
-
+<%@ include file="../../common/common2.jsp"%>
 <title>供应商基本数据</title>
 <script type="text/javascript">
-var validator;
+
 var layerHeight = "300";
 
 function ajax() {
@@ -19,67 +16,66 @@ function ajax() {
 	}
 
 	var t = $('#TContactList').DataTable({
-					//"paging": true,
-					//"lengthMenu":[50],//设置一页展示10条记录
-					"processing" : false,
-					"serverSide" : true,
-					"stateSave" : false,
-					"searching" : false,
-					"pagingType" : "full_numbers",
-					"retrieve" : true,
-					"sAjaxSource" : "${ctx}/business/contact?methodtype=contactsearch",
-					"fnServerData" : function(sSource, aoData, fnCallback) {
-						var param = {};
-						var formData = $("#supplierBasicInfo").serializeArray();
-						formData.forEach(function(e) {
-							aoData.push({"name":e.name, "value":e.value});
-						});
+		//"paging": true,
+		//"lengthMenu":[50],//设置一页展示10条记录
+		"processing" : false,
+		"serverSide" : true,
+		"stateSave" : false,
+		"searching" : false,
+		"pagingType" : "full_numbers",
+		"retrieve" : true,
+		"sAjaxSource" : "${ctx}/business/contact?methodtype=contactsearch",
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#supplierBasicInfo").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
 
-						$.ajax({
-							"url" : sSource,
-							"datatype": "json", 
-							"contentType": "application/json; charset=utf-8",
-							"type" : "POST",
-							"data" : JSON.stringify(aoData),
-							success: function(data){
-								fnCallback(data);
-							},
-							 error:function(XMLHttpRequest, textStatus, errorThrown){
-				             }
-						})
-					},
-						
-					"language": {
-		        		"url":"${ctx}/plugins/datatables/chinese.json"
-		        	},
-		        	
-		        	dom : '<"clear">rt',
-		        	
-					"columns" : [ 
-						{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
-						{"data" : "userName", "className" : 'td-left'}, 
-						{"data" : "sex", "className" : 'td-center'},
-						{"data" : "position", "className" : 'td-center'}, 
-						{"data" : "mobile", "className" : 'td-left'}, 
-						{"data" : "phone", "className" : 'td-left'}, 
-						{"data" : "fax", "className" : 'td-left'}, 
-						{"data" : "mail", "className" : 'td-left'}, 
-						{"data" : "qq", "className" : 'td-left'}
-					],
-					"columnDefs":[
-			    		{"targets":0,"render":function(data, type, row){
-							return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
-	                    }},
-			    		{"targets":1,"render":function(data, type, row){
-			    			return "<a href=\"#\" onClick=\"doUpdateContact('" + row["id"] + "')\">"+data+"</a>"
-	                    }}
-				    ] 						
-				});
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){
+					fnCallback(data);
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+			
+		"language": {
+       		"url":"${ctx}/plugins/datatables/chinese.json"
+       	},
+       	
+       	dom : '<"clear">rt',
+       	
+		"columns" : [ 
+			{"data": null, "defaultContent" : '', "className" : 'td-center'}, 
+			{"data" : "userName", "className" : 'td-left'}, 
+			{"data" : "sex", "className" : 'td-center'},
+			{"data" : "position", "className" : 'td-center'}, 
+			{"data" : "mobile", "className" : 'td-left'}, 
+			{"data" : "phone", "className" : 'td-left'}, 
+			{"data" : "fax", "className" : 'td-left'}, 
+			{"data" : "mail", "className" : 'td-left'}, 
+			{"data" : "qq", "className" : 'td-left'}
+		],
+		"columnDefs":[
+    		{"targets":0,"render":function(data, type, row){
+				return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["id"] + "' />"
+                  }},
+    		{"targets":1,"render":function(data, type, row){
+    			return "<a href=\"#\" onClick=\"doUpdateContact('" + row["id"] + "')\">"+data+"</a>"
+                  }}
+	    ] 						
+	});
 
 	t.on('click', 'tr', function() {
 		$(this).toggleClass('selected');
 	});
-
 	
 	
 	// Add event listener for opening and closing details
@@ -103,7 +99,90 @@ function ajax() {
 		}
 	});
 
-};
+};//ajax,联系人
+
+function unStockinListAjax(active) {
+	var table = $('#unStockinList').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+
+	var supplierId = "${formModel.supplier.supplierid}";
+	var t = $('#unStockinList').DataTable({
+		//"paging": true,
+		//"lengthMenu":[50],//设置一页展示10条记录
+		"processing" : false,
+		"serverSide" : true,
+		"stateSave" : false,
+		"searching" : false,
+		"pagingType": "full_numbers",
+		"retrieve" 	: true,
+       	"dom"		: '<"clear">rt',			
+		"language": {"url":"${ctx}/plugins/datatables/chinese.json" 	},
+		"sAjaxSource" : "${ctx}/business/contract?methodtype="+active+"&supplierId="+supplierId,
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#supplierBasicInfo").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){
+					fnCallback(data);
+					
+					contractSum();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},		        	
+		"columns" : [ 
+			{"data": null, "defaultContent" : '', "className" : 'td-center'}, //0
+			{"data" : "materialId", "className" : 'td-left'}, 
+			{"data" : "contractId", "className" : 'td-left'},// 2
+			{"data" : "YSId", "className" : 'td-left'}, // 3
+			{"data" : "materialName", "className" : ''}, // 4
+			{"data" : "shortName", "className" : 'td-left'}, // 5
+			{"data" : "deliveryDate", "className" : 'td-center'}, // 6
+			{"data" : "quantity", "className" : 'td-right'}, // 7
+			{"data" : "contractStorage", "className" : 'td-right'},// 8
+			{"data" : null, "className" : 'td-right'}// 9
+			
+		],
+		"columnDefs":[
+    		{"targets":0,"render":function(data, type, row){
+				return row["rownum"];
+            }},
+    		{
+				"visible" : false,
+				"targets" : [2]
+			},
+			{"targets":4,"render":function(data, type, row){
+				return jQuery.fixedWidth(data,36);
+            }},
+			{"targets":7,"render":function(data, type, row){
+				return floatToCurrency(data);
+            }},
+			{"targets":8,"render":function(data, type, row){
+				return floatToCurrency(data);
+            }},
+			{"targets":9,"render":function(data, type, row){
+				var quantity = currencyToFloat(row['quantity']);
+				var storage  = currencyToFloat(row['contractStorage']);
+				var tmp = quantity - storage ;
+				
+				return floatToCurrency(tmp);
+            }}
+	    ] 						
+	});
+
+
+};//未到货清单
 
 		
 function initEvent(){
@@ -127,115 +206,24 @@ function reloadContact() {
 
 	$('#TContactList').DataTable().ajax.reload(null,false);
 	
-	//reloadTabWindow();
-
 	return true;
 }
 
 $(document).ready(function() {
 	//返回按钮
+	
+	initEvent();
+	
+	unStockinListAjax('getUnStockinContractList');//
+
+	buttonSelectedEvent();//按钮选择式样
+	
+	$('#defutBtn').removeClass("start").addClass("end");
+	
 	var goBactkBt = '${openFlag}';
 	if(goBactkBt == "newWindow"){
 		$('#goBack').attr("style","display:none");			
 	}
-	initEvent();
-	
-	$("#country").change(function() {
-
-		var val = $("#country option:selected").val();
-
-		$.ajax({
-			type : "post",
-			url : "${ctx}/business/supplier?methodtype=optionChange",
-			async : false,
-			data : 'key=' + val,
-			dataType : "json",
-			success : function(data) {
-				var jsonObj = data;
-				
-				$("#province").val("");
-				$("#province").html("");
-				$("#city").val("");
-				$("#city").html("");				
-				
-				for (var i = 0; i < jsonObj.length; i++) {
-					$("#province").append(
-						"<option value="+jsonObj[i].key+">"
-						+ jsonObj[i].value
-						+ "</option>");
-				};
-
-			},
-			error : function(
-					XMLHttpRequest,
-					textStatus,
-					errorThrown) {
-				/*
-				alert(XMLHttpRequest.status);
-				alert(XMLHttpRequest.readyState);
-				alert(textStatus);
-				alert(errorThrown);
-				*/
-				$("#province").val("");
-				$("#province").html("");
-				$("#city").val("");
-				$("#city").html("");
-			}
-		});
-	});
-		
-	$("#province").change(function() {
-
-		var val = $("#province option:selected").val();
-		
-		$("#factoryCode").val("");
-											
-		if (val != "0"){ //
-			$.ajax({
-					type : "post",
-					url : "${ctx}/business/supplier?methodtype=optionChange",
-					async : false,
-					data : 'key=' + val,
-					dataType : "json",
-					success : function(data) {
-						$("#city").val("");	
-						$("#city").html("");	
-						var jsonObj = data;
-						
-						for (var i = 0; i < jsonObj.length; i++) {
-							$("#city").append(
-											"<option value="+jsonObj[i].key+">"
-													+ jsonObj[i].value
-													+ "</option>");
-						};
-
-					},
-					error : function(
-							XMLHttpRequest,
-							textStatus,
-							errorThrown) {
-						//alert(XMLHttpRequest.status);
-						//alert(XMLHttpRequest.readyState);
-						//alert(textStatus);
-						//alert(errorThrown);
-						
-						$("#city").html("");
-					}
-				});
-		}else{
-			//关联项目清空
-			$("#city")
-			.html("");
-			
-			$("#county")
-			.html("");
-			
-			$("#countyCode")
-			.val("");
-		}
-	});	
-	
-	
 
 	$("#country").val("${DisplayData.supplierBasicInfoData.country}");
 	$("#province").val("${DisplayData.supplierBasicInfoData.province}");
@@ -307,9 +295,78 @@ function doDeleteContact() {
 
 }
 
+//列合计
+function contractSum(){
 
-function controlButtons(data) {
+	var index = 0;	
+	var materialId = '';
+	var materialId_next = '';
+    var firstFlag = true;
+	var strageCnt = 0;
 	
+    var table = $('#unStockinList').dataTable();
+    
+	$('#unStockinList tbody tr').each (function (){
+
+		var $td = $('#unStockinList tbody tr:eq('+index+') td');
+		
+		//var $td = $('#unStockinList tbody tr:eq('+index+') td').eq(2).text();		
+		//test =  $('#unStockinList tbody tr:eq(1)').find("td").eq(1).text();
+		
+		var vtotal = $(this).find("td").eq(8).text();
+		var ftotal = currencyToFloat(vtotal);
+	
+		
+		if(firstFlag){
+			materialId      = $td.eq(1).text().trim();			
+			storageQty      = $td.eq(8).text().trim();			
+			storageQty      = currencyToFloat(storageQty);			
+			firstFlag = false;
+		}else{
+			materialId_next = $td.eq(1).text().trim();
+			storageQty_next = $td.eq(8).text().trim();			
+			storageQty_next = currencyToFloat(storageQty_next);
+
+			if(materialId == materialId_next){
+				
+				strageCnt = strageCnt + storageQty + storageQty_next;
+				
+				//rowspan++;
+				storageQty = 0;//上一行清空
+				var privt = index - 1;//上一行
+				
+		        $('#unStockinList tbody tr:eq('+privt+') td').eq(8).text(storageQty);
+				$('#unStockinList tbody tr:eq('+index+') td').eq(8).text(strageCnt);
+				
+				//$('#unStockinList tbody tr:eq('+privt+') td').eq(8).remove();;
+				//$('#unStockinList tbody tr:eq('+index+') td').eq(8).attr('rowspan');;
+				//$(this).find("td").eq(8).text(floatToCurrency(strageCnt));
+				
+			}else{
+
+				strageCnt = 0;//相同物料的合计值清空
+				storageQty = storageQty_next;//保存当前条作为下次的基数
+								
+			}			
+			materialId = materialId_next;			
+		}
+		index++;	
+		
+	})	
+}//列合计
+
+
+function developFn(){
+
+	var active = 'getUnStockinContractList';
+
+	unStockinListAjax(active);//
+}
+function retractFn(){
+	
+	var active = 'unStockinListForRetract';
+
+	unStockinListAjax(active);//
 }
 </script>
 
@@ -318,36 +375,37 @@ function controlButtons(data) {
 <body>
 <div id="container">
 
-	<form:form modelAttribute="formModel" id="supplierBasicInfo" >		
+	<form:form modelAttribute="formModel" id="supplierBasicInfo" >	
+		
 		<form:hidden path="keyBackup" value="${formModel.supplier.supplierid}" />		
 		<form:hidden path="supplier.recordid" />
-	<fieldset>		
+		<fieldset>		
 			<legend>供应商-综合信息</legend>
 				
-			<table class="form">
-			<tr>
-				<td class="label" width="100px">供应商编码：</td>
-				<td width="150px">${formModel.supplier.supplierid}</td>
-				<td class="label" width="100px">简称：</td> 
-				<td width="250px">${formModel.supplier.shortname}</td>
-
-				<td class="label" width="100px">名称：</td> 
-				<td>${formModel.supplier.suppliername}</td>
-			</tr>
-			<tr>	
-				<td class="label" width="100px">物料分类：</td> 
-				<td>${formModel.supplier.categoryid}</td>
-				<td class="label" width="100px">分类解释：</td> 
-				<td colspan=3>${formModel.supplier.categorydes}</td>				
-			</tr>
-			<tr>
-				<td class="label">详细地址： </td>
-				<td colspan=3>${formModel.supplier.address}</td>
-
-				<td class="label" width="100px">付款条件：</td>
-				<td>发票后&nbsp;${formModel.supplier.paymentterm}&nbsp;天</td>
-			</tr>
-		</table>
+			<table class="form" >
+				<tr>
+					<td class="label" width="100px">供应商编码：</td>
+					<td width="150px">${formModel.supplier.supplierid}</td>
+					<td class="label" width="100px">简称：</td> 
+					<td width="250px">${formModel.supplier.shortname}</td>
+	
+					<td class="label" width="100px">名称：</td> 
+					<td>${formModel.supplier.suppliername}</td>
+				</tr>
+				<tr>	
+					<td class="label" width="100px">物料分类：</td> 
+					<td>${formModel.supplier.categoryid}</td>
+					<td class="label" width="100px">分类解释：</td> 
+					<td colspan=3>${formModel.supplier.categorydes}</td>				
+				</tr>
+				<tr>
+					<td class="label">详细地址： </td>
+					<td colspan=3>${formModel.supplier.address}</td>
+	
+					<td class="label" width="100px">付款条件：</td>
+					<td>发票后&nbsp;${formModel.supplier.paymentterm}&nbsp;天</td>
+				</tr>
+			</table>
 
 		</fieldset>	
 		<fieldset class="action" style="text-align: right;">
@@ -355,18 +413,16 @@ function controlButtons(data) {
 		<button type="button" class="DTTT_button" onclick="doBack();" id="goBack">返回</button>
 		</fieldset>
 							
-		<fieldset>		
+		<fieldset style="margin-top: -30px;">		
 			<legend> 联系人</legend>
 			<div class="list">
-
-			<div id="TSupplier_wrapper" class="dataTables_wrapper">
 				<div id="DTTT_container" style="height:40px;align:right">
-					<button type="button" id="deletecontact" class="DTTT_button" onClick="doDeleteContact();"
+					<button type="button" id="deletecontact" class="DTTT_button " onClick="doDeleteContact();"
 						style="height:25px;" >删除</button>
-					<button type="button" id="addcontact" class="DTTT_button" onClick="doAddContact();"
+					<button type="button" id="addcontact" class="DTTT_button " onClick="doAddContact();"
 						style="height:25px;" >新建</button>
 				</div>
-				<table id="TContactList" class="display" >
+				<table id="TContactList" class="display" style="width:100%">
 					<thead>
 						<tr class="selected">
 							<th style="width: 10px;">No</th>
@@ -393,9 +449,35 @@ function controlButtons(data) {
 						</tr>
 					</tfoot>
 				</table>
-</div></div>
+			</div>
+		</fieldset>					
+		<fieldset>		
+			<legend> 未交货清单</legend>
+			<div class="list">
+				<div id="DTTT_container" align="right" style="height:40px">
+					<a aria-controls="TMaterial" tabindex="0" id="" 
+						class="DTTT_button  box" onclick="retractFn();"><span>收起</span></a>
+					<a id="defutBtn" 
+						class="DTTT_button  box" onclick="developFn();"><span>展开</span></a>
+				</div>
+				<table id="unStockinList" class="display"  style="width:100%">
+					<thead>
+						<tr class="selected">
+							<th style="width: 10px;">No</th>
+							<th style="width: 100px;">物料编码</th>
+							<th style="width: 30px;">合同编号</th>
+							<th style="width: 50px;">耀升编号</th>
+							<th>物料名称</th>
+							<th style="width: 50px;">客户</th>
+							<th style="width: 100px;">合同交期</th>
+							<th style="width: 50px;">数量</th>
+							<th style="width: 50px;">到货数</th>
+							<th style="width: 50px;">未到合计</th>
+					</thead>
+				</table>
+			</div>
 		</fieldset>
 	</form:form>
-	</div>
-	</body>
+</div>
+</body>
 </html>

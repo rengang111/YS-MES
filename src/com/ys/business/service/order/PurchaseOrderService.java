@@ -1778,4 +1778,49 @@ public class PurchaseOrderService extends CommonService {
 		HashMap.put("status", followStatus);
 		return HashMap;
 	}
+	
+
+	public HashMap<String, Object> getUnStockinContractListById() throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String supplierId = request.getParameter("supplierId");
+		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("unStockinContractListById");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("supplierId", supplierId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("recordCount", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		
+		return modelMap;
+	}
+	
+	/**
+	 * 未到合同：收起
+	 * @return
+	 * @throws Exception
+	 */
+	public HashMap<String, Object> getUnStockinListForRetract() throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String supplierId = request.getParameter("supplierId");
+		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("unStockinContractListForRetract");
+		baseQuery = new BaseQuery(request, dataModel);		
+		//userDefinedSearchCase.put("supplierId", supplierId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", supplierId);
+		System.out.println("未收货供应商别查询："+sql);
+		baseQuery.getYsFullData(sql,supplierId);
+
+		modelMap.put("recordCount", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		
+		return modelMap;
+	}
 }
