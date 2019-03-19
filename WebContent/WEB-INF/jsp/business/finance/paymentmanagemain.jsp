@@ -102,13 +102,13 @@ body{
 		    			var contractQty = currencyToFloat(row['contractQty']);
 		    			var text = row["rownum"];
 		    			//alert('['+key1+']:::'+'['+key2+']')
-		    			if(key1 != '' || key2 != ''){
+		    			//if(key1 != '' || key2 != ''){
 			    			if(paymentId == ""){
 			    				if(stockinQty >= contractQty){
 			    					text = "<input type=checkbox class='checkbox' name='numCheck' id='numCheck' value='" + row["contractId"] + "' />";	
 			    				}									    				
 			    			}
-		    			}
+		    			//}
 		    			return text;		    			
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){

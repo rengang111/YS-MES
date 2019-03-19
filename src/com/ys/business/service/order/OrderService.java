@@ -743,6 +743,12 @@ public class OrderService extends CommonService  {
 					}else{
 						//正常订单
 						data.setStatus(Constants.ORDER_STS_1);
+						//机器型号编辑
+						String id = data.getMaterialid();
+						int s = id.indexOf(".");
+						int e = id.indexOf(".",s+1);
+						String model = id.substring(s+1,e);
+						data.setMachinemodel(model);
 						insertOrderDetail(data,piId);						
 					}							
 				}			
@@ -1111,6 +1117,14 @@ public class OrderService extends CommonService  {
 						newData.setPeiysid(peiYsid);
 						newData.setParentid(list[0].substring(0,4));
 						newData.setSubid(list[0].substring(4));
+					}else{
+						//正常订单
+						//机器型号编辑
+						String id = newData.getMaterialid();
+						int s = id.indexOf(".");
+						int e = id.indexOf(".",s+1);
+						String model = id.substring(s+1,e);
+						newData.setMachinemodel(model);
 					}
 					updateOrderDetail(newData);
 				}
