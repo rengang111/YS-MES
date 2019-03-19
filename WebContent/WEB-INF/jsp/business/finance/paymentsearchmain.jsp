@@ -24,12 +24,14 @@ body{
 		var userId     = $("#userId").val();
 		var year       = $("#year").val();
 		var monthday   = $("#monthday").val();
+		var groupFlag  = $("#groupFlag").val();
 		var url = "${ctx}/business/payment?methodtype=paymentSearchMain";
-		url = url + "&sessionFlag="+sessionFlag;
-		url = url + "&finishStatus="+searchType;
-		url = url + "&monthday=" + monthday;
-		url = url + "&userId="+userId;
-		url = url + "&year="+year;
+		url = url + "&sessionFlag=" + sessionFlag;
+		url = url + "&finishStatus="+ searchType;
+		url = url + "&monthday="    + monthday;
+		url = url + "&groupFlag="   + groupFlag;
+		url = url + "&userId="+ userId;
+		url = url + "&year="  + year;
 	
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -69,6 +71,16 @@ body{
 							$("input[aria-controls='TMaterial']").css("height","25px");
 							$("input[aria-controls='TMaterial']").css("width","200px");
 							$("#TMaterial_filter").css("float","left");
+							
+							var  groupFlag = $('#groupFlag').val();
+							$('.box3').removeClass("end");
+							/*
+							var collection = $(".box");
+						    $.each(collection, function () {
+						    	$(this).removeClass("end");
+						    });
+						    */
+							$('#defutBtnF'+groupFlag).removeClass("start").addClass("end");
 
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -80,16 +92,16 @@ body{
 	        	},
 				"columns": [
 					{"data": null,"className" : 'td-center'},//0
-					{"data": null, "defaultContent" : '', "className" : 'td-left'},//1 付款申请编号
-					{"data": "contractId", "defaultContent" : '', "className" : 'td-left'},//2
-					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//3				
-					{"data": "supplierId", "defaultContent" : '', "className" : 'td-left'},//4		
+					{"data": null, "defaultContent" : '', "className" : 'td-'},//1 付款申请编号
+					{"data": "contractId", "defaultContent" : '', "className" : 'td-'},//2 合同编号
+					{"data": "YSId", "defaultContent" : '', "className" : 'td-'},//3 耀升编号
+					{"data": "supplierId", "defaultContent" : '', "className" : 'td-'},//4	供应商
 					{"data": "supplierName", "defaultContent" : ''},//5	供应商名称
-					{"data": "purchaserName", "defaultContent" : '***', "className" : 'td-center'},//6 采购员
-					{"data": "contractPrice", "defaultContent" : '0', "className" : 'td-right'},//7合同金额
-					{"data": "deliveryDate", "defaultContent" : '0', "className" : 'td-right'},//8 合同交期
-					{"data": "", "className" : 'td-center'},//9 入库时间
-					{"data": "finishDate", "defaultContent" : '***',"className" : 'td-center'},//10 付款日期
+					{"data": "YSId", "defaultContent" : '***', "className" : 'td-center'},//6 采购员
+					{"data": "totalPayable", "defaultContent" : '0', "className" : 'td-right'},//7应付款总金额
+					{"data": "paymentAmount", "defaultContent" : '0', "className" : 'td-right'},//8 已付款
+					{"data": "", "className" : 'td-center'},//9 剩余金额
+					{"data": "requestDate", "defaultContent" : '***',"className" : 'td-center'},//10 申请日期
 					{"data": "finishStatus", "className" : 'td-center'},//11 付款状态
 					
 				],
@@ -101,16 +113,7 @@ body{
 		    			var stockinQty = currencyToFloat(row['stockinQty']);
 		    			var contractQty = currencyToFloat(row['contractQty']);
 		    			var text = row["rownum"];
-		    			//alert('['+key1+']:::'+'['+key2+']')
-		    			/*
-		    			if(key1 != '' || key2 != ''){
-			    			if(paymentId == ""){
-			    				if(stockinQty >= contractQty){
-			    					text = "<input type=checkbox class='checkbox' name='numCheck' id='numCheck' value='" + row["contractId"] + "' />";	
-			    				}									    				
-			    			}
-		    			}
-		    			*/
+		    			
 		    			return text;		    			
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
@@ -131,16 +134,40 @@ body{
 		    		{"targets":2,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var contractId = jQuery.fixedWidth(row["contractId"],16);
-		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + contractId + "</a>";
+		    			rtn= "<a href=\"###\" onClick=\"doShowContract('" + row["contractId"] +"')\">" + data + "</a>";
+		    			
+		    			var groupFlag = $('#groupFlag').val();
+		    			if(groupFlag == 'S'){
+		    				rtn = '<div style="text-align: center;">***</div>';
+		    			}
 		    			return rtn;
 		    		}},
 		    		{"targets":3,"render":function(data, type, row){
-		    					    			
-		    			return jQuery.fixedWidth(data,12);
+
+		    			var groupFlag = $('#groupFlag').val();
+		    			if(groupFlag == 'S'){
+		    				return  '<div style="text-align: center;">***</div>';
+		    			}else{
+			    			return jQuery.fixedWidth(data,12);
+		    			}		    				
+		    		}},
+		    		{"targets":4,"render":function(data, type, row){
+
+		    			var groupFlag = $('#groupFlag').val();
+		    			if(groupFlag == 'S'){
+		    				return  '<div style="text-align: center;">***</div>';
+		    			}else{
+			    			return jQuery.fixedWidth(data,12);
+		    			}
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
-		    					    			
-		    			return jQuery.fixedWidth(data,24);
+
+		    			var groupFlag = $('#groupFlag').val();
+		    			if(groupFlag == 'S'){
+		    				return  '<div style="text-align: center;">***</div>';
+		    			}else{
+			    			return jQuery.fixedWidth(data,32);
+		    			}
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
 		    			
@@ -150,23 +177,28 @@ body{
 		    				return data;
 		    		}},
 		    		{"targets":9,"render":function(data, type, row){
-		    			//入库状态a.stockinQty >= a.contractQty
-		    			/*
-		    			var stockinQty = currencyToFloat(row['stockinQty']);
-		    			var contractQty = currencyToFloat(row['contractQty']);
-		    			var text = '未入库';
-		    			if(stockinQty >=  contractQty){
-		    				text = row['stockInDate'];
-		    			}else if(stockinQty > 0){
-		    				text = '部分入库';
-		    			}
-		    			*/
-		    			return "";
+		    			
+		    			var total   = currencyToFloat(row['totalPayable']);
+		    			var payment = currencyToFloat(row['paymentAmount']);		    			
+		    			var tmp = total - payment;
+		    			
+		    			return floatToCurrency(tmp);
 		    		}},
-		    		{ "bSortable": false, "aTargets": [ 0,1 ] },
+		    		{"targets":11,"render":function(data, type, row){
+		    			
+		    			var staN = row['finishStatus'];
+		    			var sts  = row['finishStatusId'];
+		    		
+		    			if(sts ==  '050'){
+		    				staN = row['finishDate'];
+		    			}
+		    			
+		    			return staN;
+		    		}},
+		    		{ "bSortable": false, "aTargets": [ 0 ] },
 		    		{
 						"visible" : false,
-						"targets" : [9]
+						"targets" : [6]
 					}
 	         ] 
 		});
@@ -199,7 +231,7 @@ body{
 		buttonSelectedEvent4();//按钮选择式样
 
 		$('#defutBtn'+month).removeClass("start").addClass("end");	
-		$('#defutBtnu'+userId).removeClass("start").addClass("end");	
+		$('#defutBtnFS').removeClass("start").addClass("end");	
 		$('#defutBtnm'+searchType).removeClass("start").addClass("end");
 		$('#defutBtny'+currYear).removeClass("start").addClass("end");		
 
@@ -357,11 +389,12 @@ body{
 	
 	function doShowDetail(contractId,paymentId) {
 
-		var url = '${ctx}/business/payment?methodtype=paymentView&contractId=' + contractId+'&paymentId='+paymentId;
+		//var url = '${ctx}/business/payment?methodtype=paymentView&contractId=' + contractId+'&paymentId='+paymentId;
+		var url = '${ctx}/business/payment?methodtype=finishAddOrView' + '&paymentId='+ paymentId;
 
 		url = url +"&searchType="+searchType;
 		
-		location.href = url;
+		callWindowFullView("付款管理详情",url);
 	}
 
 	function doShowContract(contractId) {
@@ -434,9 +467,9 @@ body{
 
 		hideAllSearch();
 		$('#yearFlag').show();
-
-		var monthday = getYearMonth();
-		var monthonly = getMonth();
+		
+		var monthday = '';//getYearMonth();
+		var monthonly = 'ALL';//getMonth();
 		var userId = $('#userId').val();
 		
 		var collection = $(".box2");
@@ -575,6 +608,15 @@ body{
 		searchAjax('false','');
 	}
 	
+
+	//展开，收起
+	function doGroupByContract(groupFlag){
+
+		$('#groupFlag').val(groupFlag);
+
+		searchAjax('false','');
+	}
+	
 	
 </script>
 </head>
@@ -585,7 +627,8 @@ body{
 		
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
-										
+						
+			<input type="hidden" id="groupFlag"     value="S" /><!-- 展开收起集计Flag,默认收起 -->				
 			<input type="hidden" id="paymentTypeId" value="010">		<!-- 正常付款 -->
 			<input type="hidden" id="searchType" value="${searchType }"><!-- 付款情况 -->
 			<input type="hidden" id="userId"     value="${userId }" />	<!-- 采购员 -->
@@ -673,6 +716,7 @@ body{
 						</span> 
 					</td>
 				</tr>
+				<!-- 
 				<tr>
 					<td width="50px"></td>
 					<td width="" class="label">采购人员：</td>
@@ -686,6 +730,7 @@ body{
 						</span>			
 					</td> 
 				</tr>
+				 -->
 			</table>
 
 		</form>
@@ -693,25 +738,26 @@ body{
 	<table>
 	</table>
 	<div class="list">
-	<!-- 
-		<div style="height: 40px;margin-bottom: -15px;float:right">
-			<a class="DTTT_button " onclick="doCreate();">付款申请</a>
+	
+		<div style="height: 40px;margin-bottom: -10px;float:right">
+			<a class="DTTT_button box3" onclick="doGroupByContract('Z');" id="defutBtnFZ">&nbsp;展开&nbsp;</a>
+			<a class="DTTT_button box3" onclick="doGroupByContract('S');" id="defutBtnFS">&nbsp;收起&nbsp;</a>
 		</div>
-		 -->
+		
 		<table style="width: 100%;" id="TMaterial" class="display">
 			<thead>
 				<tr>				
 					<th width="10px">No</th>
-					<th width="40px">付款编号</th>
-					<th width="70px">合同编号</th>
+					<th width="55px">付款编号</th>
+					<th width="80px">合同编号</th>
 					<th width="60px">耀升编号</th>							
 					<th width="60px">供应商编号</th>						
 					<th>供应商名称</th>
 					<th width="30px">采购</th>
-					<th width="50px">合同金额</th>
-					<th width="50px">合同交期</th>
-					<th width="50px">入库日期</th>
-					<th width="50px">付款日期</th>
+					<th width="50px">应付款</th>
+					<th width="50px">已付款</th>
+					<th width="50px">剩余金额</th>
+					<th width="50px">申请日期</th>
 					<th width="50px">付款状态</th>
 				</tr>
 			</thead>

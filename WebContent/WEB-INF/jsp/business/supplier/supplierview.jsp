@@ -214,7 +214,7 @@ $(document).ready(function() {
 	
 	initEvent();
 	
-	unStockinListAjax('getUnStockinContractList');//
+	unStockinListAjax('unStockinListForRetract');//
 
 	buttonSelectedEvent();//按钮选择式样
 	
@@ -455,9 +455,9 @@ function retractFn(){
 			<legend> 未交货清单</legend>
 			<div class="list">
 				<div id="DTTT_container" align="right" style="height:40px">
-					<a aria-controls="TMaterial" tabindex="0" id="" 
-						class="DTTT_button  box" onclick="retractFn();"><span>收起</span></a>
 					<a id="defutBtn" 
+						class="DTTT_button  box" onclick="retractFn();"><span>收起</span></a>
+					<a id="" 
 						class="DTTT_button  box" onclick="developFn();"><span>展开</span></a>
 				</div>
 				<table id="unStockinList" class="display"  style="width:100%">

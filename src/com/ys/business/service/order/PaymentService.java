@@ -299,14 +299,21 @@ public class PaymentService extends CommonService {
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
-		
-		dataModel.setQueryName("PaymenListForSearch");//
+
+		String groupFlag= request.getParameter("groupFlag");
+		//*** 展开:Z ，收起:S
+		if(("S").equals(groupFlag)){
+			//收起，使用 
+			dataModel.setQueryName("PaymenListForSearchAndGroup");//
+		}else{
+			dataModel.setQueryName("PaymenListForSearch");//			
+		}
 		baseQuery = new BaseQuery(request, dataModel);
 		
 		String finishStatus = request.getParameter("finishStatus");
-		String year   = request.getParameter("year");
+		String year     = request.getParameter("year");
 		String monthday = request.getParameter("monthday");
-		String userId = request.getParameter("userId");
+		String userId   = request.getParameter("userId");
 		
 		//*** 关键字查询
 		userDefinedSearchCase.put("keyword1", key1);
@@ -344,10 +351,10 @@ public class PaymentService extends CommonService {
 			userDefinedSearchCase.put("finishStatus", statusList);	
 			userDefinedSearchCase.put("year", "");
 		}
-				
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		String sql = getSortKeyFormWeb(data,baseQuery);	
-
+		String sql = getSortKeyFormWeb(data,baseQuery);
+		
 		System.out.println("付款查询："+sql);
 		
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
