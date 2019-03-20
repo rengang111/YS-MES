@@ -669,7 +669,7 @@ function autocomplete(){
 				<th class="dt-center" width="65px">耀升编号</th>
 				<th class="dt-center" width="120px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="50px">版本类别</th>
+				<th class="dt-center" width="50px">型号</th>
 				<th class="dt-center" width="55px">销售数量</th>
 				<th class="dt-center" width="60px">生产数量</th>
 				<th class="dt-center" width="30px">返还<BR>数量</th>
@@ -679,21 +679,6 @@ function autocomplete(){
 				<th class="dt-center" width="50px">操作</th>
 			</tr>
 			</thead>
-			<tfoot>
-				<tr>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-				</tr>
-			</tfoot>
 		<tbody>
 			<c:forEach var='order' items='${detail}' varStatus='status'>	
 			<c:if test="${order.orderType eq '010' }">	
@@ -701,7 +686,7 @@ function autocomplete(){
 					<td>${order.YSId}</td>
 					<td><a href="###" onClick="doShow('${order.materialId}')">${order.materialId}</a></td>								
 					<td>${order.materialName}</td>
-					<td>${order.productClassifyName}</td>
+					<td>${order.machineModel}</td>
 					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>	
 					<td class="cash" style="padding-right: 20px;">${order.totalQuantity}</td>
 					<td class="cash" style="padding-right: 20px;">${order.returnQuantity}</td>					
@@ -740,7 +725,7 @@ function autocomplete(){
 				<th class="dt-center" width="65px">耀升编号</th>
 				<th class="dt-center" width="120px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="60px">版本类别</th>
+				<th class="dt-center" width="40px">版本类别</th>
 				<th class="dt-center" width="60px">销售数量</th>
 				<th class="dt-center" width="60px">生产数量</th>
 				<th class="dt-center" width="50px">销售单价</th>

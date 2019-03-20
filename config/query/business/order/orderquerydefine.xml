@@ -339,6 +339,7 @@
       <f name="IFNULL(a.diverFlag,'0')" alias="diverFlag" ctype="" />
       <f name="a.remarks" alias="" ctype="" />
       <f name="b.checkInDate" alias="" ctype="" />
+      <f name="a.machineModel" alias="" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
