@@ -10,7 +10,10 @@ import org.springframework.ui.Model;
 
 import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.SupplierModel;
+import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_SupplierDao;
+import com.ys.business.db.data.B_PurchaseOrderData;
+import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_SupplierData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.ejb.BusinessDbUpdateEjb;
@@ -508,4 +511,58 @@ public class SupplierService extends CommonService {
 		
 		return rtn;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> updateContractDetail() throws Exception {
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		ts = new BaseTransaction();
+
+		try {
+			ts.begin();
+
+			String deliveryDate = request.getParameter("deliveryDate");
+			String materialId   = request.getParameter("materialId");
+			String contractId   =request.getParameter("contractId");
+			
+			if(isNullOrEmpty(deliveryDate) && 
+					isNullOrEmpty(materialId) && 
+					isNullOrEmpty(contractId)){
+				
+				return dataMap;
+			}else{
+
+				String where = " contractId ='" + contractId + "' "+
+						//" AND materialId ='" + materialId + "' " +
+						" AND deleteFlag = '0' ";
+				
+				List<B_PurchaseOrderData> list = new B_PurchaseOrderDao().Find(where);
+				
+				if(list.size() > 0 ){
+
+					//合同交期
+					B_PurchaseOrderData contract = list.get(0);
+					contract.setNewdeliverydate(deliveryDate);
+					
+					//更新处理					
+					commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+							"更新合同交期",userInfo);
+					copyProperties(contract,commData);
+					
+					new B_PurchaseOrderDao().Store(contract);
+				}				
+			}		
+				
+			dataMap.put("result", "success");
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			ts.rollback();
+			e.printStackTrace();
+		}
+		
+		return dataMap;
+	}	
 }

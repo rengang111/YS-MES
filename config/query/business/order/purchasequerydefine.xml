@@ -1172,6 +1172,7 @@
       <f name="C.shortName" alias="" ctype="" />
       <f name="C.customerName" alias="" ctype="" />
       <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.newDeliveryDate" alias="" ctype="" />
       <f name="A.quantity" alias="" ctype="" />
       <f name="A.contractStorage" alias="" ctype="" />
     </select>
@@ -1217,6 +1218,7 @@
     	'***' YSId,
     	'***' contractId,
     	'***' deliveryDate,
+    	'***' newDeliveryDate,
     	'***' shortName,
     	'***' customerName,
     	'***' customerId

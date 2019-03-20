@@ -129,8 +129,10 @@ public class SupplierAction extends BaseAction {
 				checkShortName();
 				printOutJsonObj(response, modelMap);
 				return null;
-				//printOutJsonObj(response, modelMap);
-				//rtnUrl = "/business/supplier/supplieradd2";
+			case "updateContractDetail":
+				doUpdateContractDetail();
+				printOutJsonObj(response, modelMap);
+				break;
 		}
 		
 		return rtnUrl;
@@ -284,5 +286,16 @@ public class SupplierAction extends BaseAction {
 		modelMap = service.checkShortName();
 
 	}
-
+	public HashMap<String, Object> doUpdateContractDetail(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			dataMap = service.updateContractDetail();			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}		
+		return dataMap;
+	}
 }
