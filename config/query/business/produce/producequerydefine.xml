@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <query>
+    <pool></pool>     
+    <name value="getOrderListForTask" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="IFNULL(A.machineModel,'')" alias="machineModel" ctype="" />
+      <f name="IFNULL(b.YSId,'')" alias="mergeYsid" ctype="" />
+      <f name="IF(b.mergeId IS NULL,'0','1')" alias="lastCheceked" ctype="" />
+      <f name="b.viewFlag" alias="" ctype="" />
+      <f name="b.mergeId" alias="" ctype="" />
+      <f name="IFNULL(c.YSId,'')" alias="hideYsid" ctype="" />
+      <f name="IFNULL(c.hideFlag,'F')" alias="hideFlag" ctype="" />
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.detailRecordId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.quantity" alias="" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.orderRecordId" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="MaxDeliveryDate" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.customerFullName" alias="" ctype="" />
+      <f name="A.sysValue" alias="" ctype="" />
+      <f name="A.team" alias="" ctype="业务组" />
+      <f name="A.orderCompany" alias="" ctype="" />
+      <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
+      <f name="A.productClassify" alias="" ctype="" />
+      <f name="A.orderType" alias="" ctype="" />
+      <f name="A.orderNature" alias="orderNatureName" ctype="订单性质" />
+      <f name="A.orderNature" alias="" ctype="" />
+      <f name="A.status" alias="statusName" ctype="订单状态" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.returnQuantity" alias="" ctype="" />
+      <f name="A.orderCost" alias="" ctype="" />
+      <f name="A.storageDate" alias="" ctype="" />
+      <f name="A.rebateRate" alias="" ctype="" />
+      <f name="A.completedQuantity" alias="" ctype="" />
+      <f name="A.completedNumber" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+      <f name="A.peiYsid" alias="" ctype="" />
+      <f name="A.quantityOnHand" alias="" ctype="" />
+      <f name="IFNULL(A.rebate,'0')" alias="discount" ctype="" />
+      <f name="IFNULL(A.commission,'0')" alias="commission" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.divertYsid" alias="" ctype="" />
+      <f name="A.divertQuantity" alias="" ctype="" />
+      <f name="A.diverFlag" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+    </select>
+    <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
+    <from>
+    	v_orderlist AS A 
+    	LEFT JOIN b_OrderMergeDetail b ON a.YSId=b.ysid AND b.deleteFlag = '0'
+    	LEFT JOIN b_OrderProduceHide c ON a.YSId=c.ysid AND c.deleteFlag = '0'
+    	WHERE A.deleteFlag = '0' AND a.status+0 &lt; 40
+    </from>
+    <orderby>IFNULL(b.mergeId,'0')  DESC,IFNULL(b.YSId,a.YSId),mid(A.YSId,LOCATE('-',A.YSId)+1,2)+0</orderby>
+    <groupby></groupby>
+    <having>#</having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getOrderListForTaskGroup" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="IFNULL(A.machineModel,'')" alias="machineModel" ctype="" />
+      <f name="IF(b.mergeId IS NULL,a.ysid,'***')" alias="YSId" ctype="" />
+      <f name="IF(b.mergeId IS NULL,a.materialId,'***')" alias="materialId" ctype="" />
+      <f name="IF(b.mergeId IS NULL,a.materialName,'***')" alias="materialName" ctype="" />
+      <f name="IF(b.mergeId IS NULL,a.team,'***')" alias="team" ctype="业务组" />
+      <f name="IF(b.mergeId IS NULL,a.status,'999') " alias="statusName" ctype="订单状态" />
+      <f name="IF(b.mergeId IS NULL,'0','1')" alias="lastCheceked" ctype="" />
+      <f name="b.viewFlag" alias="" ctype="" />
+      <f name="b.mergeId" alias="" ctype="" />
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.detailRecordId" alias="" ctype="" />
+      <f name="SUM(REPLACE(A.quantity,',',''))" alias="quantity" ctype="" />
+      <f name="A.price" alias="" ctype="" />
+      <f name="A.totalprice" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.shippingCase" alias="" ctype="" />
+      <f name="A.loadingPort" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.orderId" alias="" ctype="" />
+      <f name="A.orderRecordId" alias="" ctype="" />
+      <f name="MIN(A.deliveryDate)" alias="deliveryDate" ctype="" />
+      <f name="MAX(A.deliveryDate)" alias="MaxDeliveryDate" ctype="" />
+      <f name="A.unit" alias="" ctype="计量单位" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.customerFullName" alias="" ctype="" />
+      <f name="A.sysValue" alias="" ctype="" />
+      <f name="A.orderCompany" alias="" ctype="" />
+      <f name="A.productClassify" alias="productClassifyName" ctype="版本类别" />
+      <f name="A.productClassify" alias="" ctype="" />
+      <f name="A.orderType" alias="" ctype="" />
+      <f name="A.orderNature" alias="orderNatureName" ctype="订单性质" />
+      <f name="A.orderNature" alias="" ctype="" />
+      <f name="A.status" alias="" ctype="" />
+      <f name="A.returnQuantity" alias="" ctype="" />
+      <f name="A.orderCost" alias="" ctype="" />
+      <f name="A.storageDate" alias="" ctype="" />
+      <f name="A.rebateRate" alias="" ctype="" />
+      <f name="A.completedQuantity" alias="" ctype="" />
+      <f name="A.completedNumber" alias="" ctype="" />
+      <f name="A.full_field" alias="" ctype="" />
+      <f name="A.peiYsid" alias="" ctype="" />
+      <f name="A.quantityOnHand" alias="" ctype="" />
+      <f name="IFNULL(A.rebate,'0')" alias="discount" ctype="" />
+      <f name="IFNULL(A.commission,'0')" alias="commission" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.divertYsid" alias="" ctype="" />
+      <f name="A.divertQuantity" alias="" ctype="" />
+      <f name="A.diverFlag" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+    </select>
+    <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
+    <from>
+    	v_orderlist AS A 
+    	LEFT JOIN b_OrderMergeDetail b ON a.YSId=b.ysid AND b.deleteFlag = '0'
+    	
+    	WHERE A.deleteFlag = '0' AND a.status+0 &lt; 40    	
+    </from>
+    <orderby>IFNULL(b.mergeId,'0')  DESC,IFNULL(b.YSId,a.YSId)</orderby>
+    <groupby>IFNULL(b.mergeId,a.YSId)</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+</root>

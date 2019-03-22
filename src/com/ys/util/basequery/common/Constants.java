@@ -39,6 +39,7 @@ public class Constants {
 	public static final String FORM_PRODUCT= "product";//成品管理
 	public static final String FORM_PRODUCTSEMI = "productsemi";//让步接收
 	public static final String FORM_ORDER = "order";//订单管理
+	public static final String FORM_PRODUCETASK = "producetask";//订单管理
 	public static final String FORM_ORDEREXPENSE = "orderexpense";//订单过程
 	public static final String FORM_ORDERCANCEL = "ordercancel";//订单管理
 	public static final String FORM_ORDERTRACKING = "ordertracking";//订单跟踪
@@ -101,8 +102,8 @@ public class Constants {
 	public static final String ORDER_STS_1 = "010";//待合同
 	public static final String ORDER_STS_2 = "020";//待到料
 	public static final String ORDER_STS_3 = "030";//待交货
-	public static final String ORDER_STS_4 = "040";//已入库
-	public static final String ORDER_STS_41 = "041";//入库中
+	public static final String ORDER_STS_41 = "039";//入库中(部分入库)
+	public static final String ORDER_STS_4  = "040";//已入库
 	public static final String ORDER_STS_5  = "050";//已出库
 	public static final String ORDER_STS_51 = "051";//出库中
 	
