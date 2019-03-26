@@ -1117,7 +1117,7 @@ public class PurchasePlanService extends CommonService {
 
 			data = list.get(0);
 			
-			insertStorageHistory(data,action,"YSId:"+ysid+",待入【"+String.valueOf(purchaseIn) +"】待出【"+ String.valueOf(requirementOut)+"】");//保留更新前的数据
+			insertStorageHistory(data,action,"YSId:"+ysid+",待出【"+ String.valueOf(requirementOut)+"】");//保留更新前的数据
 			
 			//当前库存数量
 			float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
@@ -1325,6 +1325,23 @@ public class PurchasePlanService extends CommonService {
 		copyProperties(dbPlan,commData);
 		dbPlan.setVersion(version);
 		new B_PurchaseOrderDetailDao().Store(dbPlan);
+		
+		return version;
+	}
+	
+	/*
+	 * 更新
+	 */
+	private int updatePurchasePlanDetailDB(B_PurchasePlanDetailData dbPlan) throws Exception{
+		
+		//update处理	
+		int version = dbPlan.getVersion()+1;
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"purchasePlanUpdate",userInfo);			
+		copyProperties(dbPlan,commData);
+		dbPlan.setVersion(version);
+		new B_PurchasePlanDetailDao().Store(dbPlan);
 		
 		return version;
 	}
@@ -2069,7 +2086,7 @@ public class PurchasePlanService extends CommonService {
 	/**
 	 * update处理
 	 */
-	private String updatePurchasePlanByWhere(String where){
+	private String insertPurchasePlanByWhere(String where){
 		
 		ts = new BaseTransaction();
 		String  YSId="";
@@ -2095,13 +2112,17 @@ public class PurchasePlanService extends CommonService {
 			System.out.println("采购方案更新处理：② 删除旧的原材料物料需求表（更新前）");
 			deleteOldRawRequirment(YSId);
 			
+			
 			//旧数据:采购方案,的待出库"减少"处理
-			System.out.println("采购方案更新处理：③ 删除旧的采购方案（更新前）");	
-			deleteOldPurchasePlan(DBList);
-						
+			//System.out.println("采购方案更新处理：③ 删除旧的采购方案（更新前）");	
+			//deleteOldPurchasePlan(DBList);
+
+			
 			//采购方案
 			System.out.println("采购方案更新处理：④ 新增采购方案（更新）");	
-			addPurchasePlan(YSId,purchaseId,webList);
+			//addPurchasePlan(YSId,purchaseId,webList);
+
+			updatePurchasePlanDetail(YSId,purchaseId,DBList,webList);
 			
 			//采购合同：针对页面被删除的物料，如果已做成合同 且未执行
 			System.out.println("采购方案更新处理：⑤ 删除采购合同");	
@@ -2129,6 +2150,144 @@ public class PurchasePlanService extends CommonService {
 		}
 		
 		return YSId;
+	}
+	
+	/**
+	 * update处理
+	 */
+	private String updatePurchasePlanByWhere(String where){
+		
+		ts = new BaseTransaction();
+		String  YSId="";
+		
+		try {
+			ts.begin();
+
+			B_PurchasePlanData reqPlan = reqModel.getPurchasePlan();	
+
+			YSId = reqPlan.getYsid();		
+			String purchaseId = updatePurchasePlan(reqPlan);			
+						
+			//更新前DB数据取得
+			List<B_PurchasePlanDetailData> DBList = getPurchasePlanDetail(where);	
+			
+			//新数据:采购方案处理
+			List<B_PurchasePlanDetailData> webList = reqModel.getPlanDetailList();		
+
+			System.out.println("采购方案更新处理：① 开始,找出页面被删除的物料");
+			List<B_PurchasePlanDetailData> deleteList = FindDeleteMaterial(DBList,webList);
+			
+			//旧数据:二级BOM(原材料)的待出库"减少"处理
+			System.out.println("采购方案更新处理：② 删除旧的原材料物料需求表（更新前）");
+			deleteOldRawRequirment(YSId);
+			
+			
+			//旧数据:采购方案,的待出库"减少"处理
+			//System.out.println("采购方案更新处理：③ 删除旧的采购方案（更新前）");	
+			//deleteOldPurchasePlan(DBList);
+
+			
+			//采购方案
+			System.out.println("采购方案更新处理：④ 新增采购方案（更新）");	
+			//addPurchasePlan(YSId,purchaseId,webList);
+
+			updatePurchasePlanDetail(YSId,purchaseId,DBList,webList);
+			
+			//采购合同：针对页面被删除的物料，如果已做成合同 且未执行
+			System.out.println("采购方案更新处理：⑤ 删除采购合同");	
+			deleteContract(YSId,deleteList);
+
+			//原材料物料需求表
+			System.out.println("采购方案更新处理：⑥ 新增原材料物料需求表（更新）");
+			addRawRequirement(YSId);
+				
+			
+			ts.commit();	
+			
+			System.out.println("采购方案更新处理：⑦ 正常结束");
+			
+		}
+		catch(Exception e) {
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			System.out.println("采购方案更新处理：异常结束。");
+
+			e.printStackTrace();
+		}
+		
+		return YSId;
+	}
+	
+	/**
+	 * 删除采购方案
+	 * @param YSId
+	 * @throws Exception
+	 */
+	private void updatePurchasePlanDetail(
+			String YSId,
+			String purchaseId,
+			List<B_PurchasePlanDetailData> dbList,
+			List<B_PurchasePlanDetailData> webList) throws Exception{
+
+		//List<B_PurchasePlanDetailData> deleteList = new ArrayList<B_PurchasePlanDetailData>();	
+		
+		for(B_PurchasePlanDetailData web:webList){
+
+			String webPlanId = web.getPurchaseid();
+			String webMateId = web.getMaterialid();
+			String webSubId  = web.getSubbomno();
+			float webPlanQty = stringToFloat(web.getTotalrequisition());//领料数量
+			
+			boolean exflg = true;
+			for(B_PurchasePlanDetailData db:dbList){
+
+				String dbPlanId = db.getPurchaseid();  
+				String dbMateId = db.getMaterialid();
+				String dbSubId = db.getSubbomno();
+				float dbPlanQty = stringToFloat(db.getTotalrequisition());//领料数量
+				
+				if(isNullOrEmpty(webPlanId))
+					break;
+				
+				if(webPlanId.equals(dbPlanId) && 
+						webMateId.equals(dbMateId) &&
+						webSubId.equals(dbSubId)){
+					
+				    if( webPlanQty != dbPlanQty ){//领料数量发生变化时，更新待出量
+						
+						float newReqQty = webPlanQty - dbPlanQty;
+						updateMaterial2(db.getYsid(),"I","采购方案（领料数变更）",dbMateId,0,newReqQty);
+				    }
+				    
+				    //更新采购方案明细
+				    copyProperties(db,web);
+				    updatePurchasePlanDetailDB(db);
+				    
+				    //删除已处理过的数据				    
+				    dbList.remove(db);
+				    
+					exflg = false;
+					break;
+					
+				}//物料是否存在
+			}
+			
+			//删除DB中的记录：web端已被删除			
+			if(exflg){
+				addPurchasePlan(YSId,purchaseId,web);
+				
+			}
+			
+		}
+		//处理仅残留在DB的明细：删除
+		deleteOldPurchasePlan(dbList);
+		//for(B_PurchasePlanDetailData db:dbList){
+		//	deletePurchasePlanDetail(db);
+		//}
+		
 	}
 	
 	private List<B_PurchasePlanDetailData> FindDeleteMaterial(
@@ -2220,15 +2379,15 @@ public class PurchasePlanService extends CommonService {
 		for(B_PurchasePlanDetailData db:list){
 			//更新DB
 			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-					"删除采购方案（更新前）",userInfo);
+					"采购方案（旧数据删除）",userInfo);
 			copyProperties(db,commData);
 			new B_PurchasePlanDetailDao().Store(db);//旧数据的删除处理
 
 			//是否需要
 			String materialId = db.getMaterialid();
 			float purchase = 0;//采购量
-			float requirement = -1 * stringToFloat(db.getManufacturequantity());
-			updateMaterial2(db.getYsid(),"D","采购方案（旧数据删除）",materialId,purchase,requirement);
+			float requisition = -1 * stringToFloat(db.getTotalrequisition());
+			updateMaterial2(db.getYsid(),"D","采购方案（旧数据删除）",materialId,purchase,requisition);
 		}
 		
 	}
@@ -2336,15 +2495,15 @@ public class PurchasePlanService extends CommonService {
 	private void addPurchasePlan(
 			String YSId,
 			String purchaseId,
-			List<B_PurchasePlanDetailData> webList) throws Exception{
+			B_PurchasePlanDetailData detail) throws Exception{
 		
-		for(B_PurchasePlanDetailData detail:webList){
+		//for(B_PurchasePlanDetailData detail:webList){
 			
 			String materilid = detail.getMaterialid();
 			float purchase = stringToFloat(detail.getPurchasequantity());
 			
-			if(isNullOrEmpty(materilid))
-				continue;		
+			//if(isNullOrEmpty(materilid))
+			//	continue;		
 			
 			if(purchase == 0)
 				detail.setContractflag(0);//不采购的不做合同				
@@ -2356,10 +2515,10 @@ public class PurchasePlanService extends CommonService {
 			insertPurchasePlanDetail(detail);			
 
 			//更新虚拟库存
-			float requirement = stringToFloat(detail.getManufacturequantity());
-			updateMaterial2(detail.getYsid(),"I","采购方案（新数据追加）",materilid,0,requirement);
+			float requisition = stringToFloat(detail.getTotalrequisition());
+			updateMaterial2(detail.getYsid(),"I","采购方案（新数据追加）",materilid,0,requisition);
 			
-		}//新数据:采购方案处理
+		//}//新数据:采购方案处理
 	}
 	
 	private void addRawRequirement(String YSId) throws Exception{

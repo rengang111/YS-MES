@@ -39,18 +39,19 @@
 	'<td class="td-center">'+rowIndex+'<input type=checkbox name="numCheck" id="numCheck" value="" /></td>',
 	'<td><input type="text" name="planDetailList['+counter+'].materialid" id="planDetailList'+counter+'.materialid" class="attributeList1"/></td>',
 	'<td><span></span></td>',
-	'<td class="td-center"><span id="unit'+counter+'"></span></td>',
+	'<td class="td-center"><span id="unit'+counter+'"></span><input type="hidden"   name="planDetailList['+counter+'].purchasetype"      id="planDetailList'+counter+'.purchasetype"/></td>',
 	'<td><input type="text" name="planDetailList['+counter+'].unitquantity" id="planDetailList'+counter+'.unitquantity"  class="num mini" /></td>',
 	'<td class="td-right"><span>'+orderQuantity+'</span></td>',
 	'<td class="td-center"><span></span><input type="hidden"   name="planDetailList['+counter+'].manufacturequantity" id="planDetailList'+counter+'.manufacturequantity"/></td>',
 	'<td class="td-right"><span></span></td>',
 	'<td><input type="text" name="planDetailList['+counter+'].purchasequantity" id="planDetailList'+counter+'.purchasequantity"  class="num mini" /></td>',
+	'<td><input type="text" name="planDetailList['+counter+'].totalrequisition" id="planDetailList'+counter+'.totalrequisition"  class="num mini" /></td>',
 	'<td><input type="text" name="planDetailList['+counter+'].supplierid" id="planDetailList'+counter+'.supplierid"  class="supplierid short"/></td>',
 	'<td class="td-right"><input type="text" name="planDetailList['+counter+'].price"      id="planDetailList'+counter+'.price" class="num mini" /></td>',
 	'<td class="td-right"><span id="totalPrice'+counter+'"></span><input type="hidden"   name="planDetailList['+counter+'].totalprice" id="planDetailList'+counter+'.totalprice"/></td>',
 	'<td class="td-right"><span></span>'+
 		'<input type="hidden"   name="planDetailList['+counter+'].suppliershortname" id="planDetailList'+counter+'.suppliershortname"/>'+
-		'<input type="hidden"   name="planDetailList['+counter+'].contractflag" id="planDetailList'+counter+'.contractflag" value="1" /></td>',
+		'<input type="hidden"   name="planDetailList['+counter+'].contractflag"      id="planDetailList'+counter+'.contractflag" value="1" /></td>',
 					
 						]).draw();
 
@@ -218,20 +219,21 @@
 	       	},
 			"columns": [
 				{"className" : 'td-left'},//0
-				{"className" : 'td-center', "defaultContent" : ''},//0
 				{"className" : 'td-center', "defaultContent" : ''},//1
-				{"defaultContent" : ''},//2.物料编号
-				{"defaultContent" : ''},//3.物料名称
-				{"className" : 'td-center', "defaultContent" : ''},//4.单位:物料
-				{"className" : 'td-right', "defaultContent" : ''},//5.单位使用量:baseBom
-				{"className" : 'td-right'},//6.生产需求量:订单
-				{"className" : 'td-right'},//7.总量= 单位使用量 * 生产需求量
-				{"className" : 'td-right'},//8.当前库存(虚拟库存):物料
-				{"className" : 'td-right'},//9.建议采购量:输入
-				{"defaultContent" : '0'},//10.供应商,可修改:baseBom
-				{"className" : 'td-right', "defaultContent" : ''},//11.本次单价,可修改:baseBom
-				{"className" : 'td-right', "defaultContent" : ''},//12.总价=本次单价*采购量
-				{"className" : 'td-right', "defaultContent" : ''},//13.当前价格:baseBom
+				{"className" : 'td-center', "defaultContent" : ''},//2
+				{"defaultContent" : ''},//3.物料编号
+				{"defaultContent" : ''},//4.物料名称
+				{"className" : 'td-center', "defaultContent" : ''},//5.单位:物料
+				{"className" : 'td-right', "defaultContent" : ''},//6.单位使用量:baseBom
+				{"className" : 'td-right'},//7.生产需求量:订单
+				{"className" : 'td-right'},//8.总量= 单位使用量 * 生产需求量
+				{"className" : 'td-right'},//9.当前库存(虚拟库存):物料
+				{"className" : 'td-right'},//10.建议采购量:输入
+				{"className" : 'td-right'},//11.领料数量:默认是需求量，可以修改
+				{"defaultContent" : '0'},//12.供应商,可修改:baseBom
+				{"className" : 'td-right', "defaultContent" : ''},//13.本次单价,可修改:baseBom
+				{"className" : 'td-right', "defaultContent" : ''},//14.总价=本次单价*采购量
+				{"className" : 'td-right', "defaultContent" : ''},//15.当前价格:baseBom
 				
 			 ],
 		
@@ -253,7 +255,7 @@
 	        
 		});
 		
-		t.on('change', 'tr td:nth-child(11),tr td:nth-child(12),tr td:nth-child(13)',function() {
+		t.on('change', 'tr td:nth-child(12),tr td:nth-child(13),tr td:nth-child(14)',function() {
 					
 	        var $td = $(this).parent().find("td");
 	        purchasePlanCompute($td,'2');
@@ -300,11 +302,12 @@
 						
 					<td class="label"><label>客户名称：</label></td>
 					<td>${order.customerFullName}</td>
-					
+					<!-- 
 					<td class="label" style="width:80px;"><label>领料方式：</label></td>
 					<td style="width:100px;"><form:select path="purchasePlan.requisitiontype" >							
 						<form:options items="${requisitionType}" 
 							itemValue="key" itemLabel="value" /></form:select></td>
+							 -->
 				</tr>							
 			</table>
 		</fieldset>
@@ -362,8 +365,9 @@
 					<th class="dt-center" width="60px">生产数量</th>
 					<th class="dt-center" width="60px">总量</th>
 					<th class="dt-center" width="60px">虚拟库存</th>
-					<th class="dt-center" width="60px">建议采购量</th>
-					<th class="dt-center" style="width:80px">供应商</th>
+					<th class="dt-center" width="60px">采购量</th>
+					<th class="dt-center" width="60px">领料数量</th>
+					<th class="dt-center" width="60px">供应商</th>
 					<th class="dt-center" width="60px">本次单价</th>
 					<th class="dt-center" width="80px">总价</th>
 					<th class="dt-center" width="60px">当前价格</th>
@@ -381,7 +385,8 @@
    		<td>
 	    	<form:input path="planDetailList[${status.index}].materialid" class="attributeList1"  value="${bom.materialId }" /></td>
 	    <td><span id="name${status.index}"></span></td>
-	    <td><span id="unit${status.index}">${bom.purchaseType }</span></td>
+	    <td><form:hidden path="planDetailList[${status.index}].purchasetype" value="${bom.purchaseTypeId }" />
+	    	<span id="unit${status.index}">${bom.purchaseType }</span></td>
 	    <td><form:input path="planDetailList[${status.index}].unitquantity"  class="num mini" value="${bom.quantity }" /></td>
 	    <td><span id="orderQuantity${status.index}">${order.totalQuantity}</span></td>
 	    <td><span id="totalQuantity${status.index}"></span>
@@ -391,6 +396,8 @@
 	    	<span id="availabelToPromise${status.index}">${bom.availabelToPromise }</span></a></td>
 	    
 	    <td><form:input path="planDetailList[${status.index}].purchasequantity"  class="num mini" value="" /></td>
+	    <!-- 领料数量 -->
+	    <td><form:input path="planDetailList[${status.index}].totalrequisition"  class="num mini" value="" /></td>
 	    <td><form:input path="planDetailList[${status.index}].supplierid"  class="supplierid short" value="${bom.supplierId }" /></td>
 	    <td><form:input path="planDetailList[${status.index}].price"  class="num mini" value="" /></td>
 	    <!-- 总价 -->
@@ -398,8 +405,7 @@
 	    	<form:hidden path="planDetailList[${status.index}].totalprice"  class="num short" value="" /></td>
 	     <!-- 当前价格 -->
 	    <td><span id="price${status.index}">${bom.price }</span>
-	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" /></td>	    
-	    	<form:hidden path="planDetailList[${status.index}].purchasetype" value="${bom.purchaseTypeId }" />	    	
+	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" /></td>	        	
 	    	<form:hidden path="planDetailList[${status.index}].contractflag" value="1" />
 	</tr>
 	<script type="text/javascript">
@@ -437,6 +443,7 @@
 		$('#name'+index).html(jQuery.fixedWidth(materialName,30));
 		$('#totalQuantity'+index).html(vTotalQuantity);
 		$("#planDetailList"+index+"\\.manufacturequantity").val(vTotalQuantity);
+		$("#planDetailList"+index+"\\.totalrequisition").val(vTotalQuantity);
 		$('#totalPrice'+index).html(totalPrice);
 		$("#planDetailList"+index+"\\.totalprice").val(totalPrice);
 		$("#planDetailList"+index+"\\.price").val(vprice);
@@ -559,6 +566,7 @@ $(".attributeList1").autocomplete({
 		var $oMaterIdV  = $td.eq(0).find("span");
 		var $oMatName   = $td.eq(4).find("span");
 		var $oType      = $td.eq(5).find("span");
+		var $oTypeI     = $td.eq(5).find("input");
 		var $oUnitQuty  = $td.eq(6).find("input");
 		var $oOrder     = $td.eq(7).find("span");
 		var $oTotalQuty = $td.eq(8).find("span");
@@ -594,6 +602,7 @@ $(".attributeList1").autocomplete({
 		$oMaterIdV.html(idLink);
 		$oMatName.html(matName);
 		$oType.html(type);
+		$oTypeI.val(typeId);
 		$oStock.html(vStock)
 		$oSupplier.val(supplierId);
 		$oShortName.val(shortName);
@@ -738,10 +747,11 @@ function purchasePlanCompute(obj,flg){
 	var $oTotalQutyI= $td.eq(8).find("input");
 	var $oStock     = $td.eq(9).find("span");
 	var $oPurchase  = $td.eq(10).find("input");
-	var $oSupplier  = $td.eq(11).find("input");
-	var $oThisPrice = $td.eq(12).find("input");
-	var $oTotPriceS = $td.eq(13).find("span");
-	var $oTotPriceI = $td.eq(13).find("input");
+	var $oRequrtion = $td.eq(11).find("input");//领料数量
+	var $oSupplier  = $td.eq(12).find("input");
+	var $oThisPrice = $td.eq(13).find("input");
+	var $oTotPriceS = $td.eq(14).find("span");
+	var $oTotPriceI = $td.eq(14).find("input");
 
 	//开始计算
 	var fUnitQuty = currencyToFloat( $oUnitQuty.val() );
@@ -778,6 +788,7 @@ function purchasePlanCompute(obj,flg){
 	$oTotPriceI.val(vTotalNew);
 	$oThisPrice.val(vPrice);
 	$oSupplier.val($.trim($oSupplier.val()));
+	$oRequrtion.val(vTotalQuty);
 	
 	costAcount();//成本核算
 }
@@ -826,7 +837,7 @@ function bomCostSum(){
 	var sum = 0;
 	$('#example tbody tr').each (function (){
 		
-		var vtotal = $(this).find("td").eq(13).find("span").text();
+		var vtotal = $(this).find("td").eq(14).find("span").text();
 		var ftotal = currencyToFloat(vtotal);
 		
 		sum = currencyToFloat(sum) + ftotal;			
@@ -840,7 +851,7 @@ function laborCostSum(){
 	var sum = 0;
 	$('#example tbody tr').each (function (){
 		
-		var vtotal = $(this).find("td").eq(13).find("span").text();
+		var vtotal = $(this).find("td").eq(14).find("span").text();
 		var materialId = $(this).find("td").eq(3).find("input").val();
 		var ftotal = 0;
 		//判断是否是人工成本

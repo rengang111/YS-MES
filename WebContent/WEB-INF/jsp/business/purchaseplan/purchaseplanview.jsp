@@ -223,7 +223,6 @@ function initEvent(){
 		$("#editPurchasePlan").click(function() {
 
 			var YSId ="${order.YSId}";
-			var actionUrl = "${ctx}/business/arrival?methodtype=getArrivalByYSId&YSId="+YSId;
 
 			var editFlag = true;
 /*
@@ -461,9 +460,10 @@ function initEvent(){
 				{"data": "purchaseType","className" : 'td-center', "defaultContent" : ''},//3.物料特性:物料
 				{"data": "unitQuantity","className" : 'td-right', "defaultContent" : ''},//4.单位使用量:baseBom
 				{"data": null,"className" : 'td-right'},//5.订单需求量
-				{"data": "requisitionType","className" : 'td-right'},//6.领料方式
-				{"data": "availabelToPromise","className" : 'td-right'},//7.当前库存(虚拟库存):物料
-				{"data": "purchaseQuantity","className" : 'td-right'},//8.建议采购量:输入
+				// {"data": "requisitionType","className" : 'td-right'},//6.领料方式
+				{"data": "availabelToPromise","className" : 'td-right'},//6.当前库存(虚拟库存):物料
+				{"data": "purchaseQuantity","className" : 'td-right'},//7.建议采购量:输入
+				{"data": "totalRequisition","className" : 'td-right'},//8.领料数量
 				{"data": "supplierId","className" : 'td-left',"sWidth": "60px"},//9.供应商,可修改:baseBom
 				{"data": "price","className" : 'td-right', "defaultContent" : '0'},//10.本次单价,可修改:baseBom
 				{"data": "totalPrice","className" : 'td-right', "defaultContent" : '0'},//11.总价=本次单价*采购量
@@ -516,7 +516,7 @@ function initEvent(){
 	    			
 	    			return floatToCurrency(row["manufactureQuantity"]);
 	    		}},
-	    		{"targets":7,"render":function(data, type, row){
+	    		{"targets":6,"render":function(data, type, row){
 	    			
 	    			var stock =  row["availabelToPromise"] ;
 	    			var fstock = currencyToFloat( stock );
@@ -529,7 +529,7 @@ function initEvent(){
 					//}
 	    			return stock;
 	    		}},
-	    		{"targets":8,"render":function(data, type, row){
+	    		{"targets":7,"render":function(data, type, row){
 	    			
 	    			var stock =  row["purchaseQuantity"] ;
 	    			var fstock = currencyToFloat( stock );
@@ -1011,6 +1011,7 @@ function ZZmaterialView() {
 					<td class="label"><label>客户名称：</label></td>
 					<td>${order.customerFullName}</td>
 					
+					<!-- 
 					<td class="label" style="width:80px;"><label>领料方式：</label></td>
 					<td style="width:150px;">
 						<form:select path="requisitionType" >							
@@ -1018,6 +1019,7 @@ function ZZmaterialView() {
 							itemValue="key" itemLabel="value" /></form:select>&nbsp;
 						<a href="###"  id="editRequisitionType" >修改</a>
 						<a href="###"  id="saveRequisitionType" >保存</a></td>
+						 -->
 				</tr>							
 			</table>
 		</fieldset>
@@ -1150,10 +1152,10 @@ function ZZmaterialView() {
 					<th>物料名称</th>
 					<th>物料特性</th>
 					<th width="40px">基本用量</th>
-					<th width="60px">订单需求</th>
-					<th width="50px">领料方式</th>
+					<th width="60px">订单数</th>
 					<th width="60px">虚拟库存</th>
 					<th width="60px">采购量</th>
+					<th width="60px">领料量</th>
 					<th>供应商</th>
 					<th width="60px">单价</th>
 					<th width="70px">总价</th>

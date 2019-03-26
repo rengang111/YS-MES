@@ -131,6 +131,7 @@
       <f name="a.waitStockOut" alias="" ctype="" />
       <f name="a.quantityOnHand" alias="" ctype="" />
       <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="IFNULL(a.totalRequisition,a.manufactureQuantity)" alias="totalRequisition" ctype="" />
       <f name="IFNULL(requisitionType,'0')" alias="requisitionType" ctype="领料方式" />
       <f name="IFNULL(requisitionType,'0')" alias="requisitionTypeId" ctype="" />
       <f name="a.priceStatus" alias="" ctype="" />

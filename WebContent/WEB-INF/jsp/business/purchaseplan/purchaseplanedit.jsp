@@ -45,6 +45,7 @@
 	'<td class="td-center"><span></span><input type="hidden"   name="planDetailList['+counter+'].manufacturequantity" id="planDetailList'+counter+'.manufacturequantity"/></td>',
 	'<td class="td-right"><span></span></td>',
 	'<td><input type="text" name="planDetailList['+counter+'].purchasequantity" id="planDetailList'+counter+'.purchasequantity"  class="num mini" /></td>',
+	'<td><input type="text" name="planDetailList['+counter+'].totalrequisition" id="planDetailList'+counter+'.totalrequisition"  class="num mini" /></td>',
 	'<td><input type="text" name="planDetailList['+counter+'].supplierid" id="planDetailList'+counter+'.supplierid"  class="supplierid short"/></td>',
 	'<td class="td-right"><input type="text" name="planDetailList['+counter+'].price"      id="planDetailList'+counter+'.price" class="num mini" /></td>',
 	'<td class="td-right"><span id="totalPrice'+counter+'"></span><input type="hidden"   name="planDetailList['+counter+'].totalprice" id="planDetailList'+counter+'.totalprice"/></td>',
@@ -232,6 +233,7 @@
 				{"className" : 'td-right'},//8.总量= 单位使用量 * 生产需求量
 				{"className" : 'td-right'},//9.当前库存(虚拟库存):物料
 				{"className" : 'td-right'},//10.建议采购量:输入
+				{"className" : 'td-right'},//11.领料数量
 				{"defaultContent" : '0'},//11.供应商,可修改:baseBom
 				{"className" : 'td-right', "defaultContent" : ''},//12.本次单价,可修改:baseBom
 				{"className" : 'td-right', "defaultContent" : ''},//13.总价=本次单价*采购量
@@ -271,7 +273,7 @@
 		});
 
 		//单价
-		t.on('change', 'tr td:nth-child(13)',function() {
+		t.on('change', 'tr td:nth-child(14)',function() {
 			
 			var contractPrice  = $(this).find("input:text").attr("contractPrice");
 			var stockinQty  = $(this).find("input:text").attr("stockinQty");
@@ -293,7 +295,7 @@
 	        
 		});
 		
-		t.on('change', 'tr td:nth-child(11),tr td:nth-child(12),tr td:nth-child(13)',function() {
+		t.on('change', 'tr td:nth-child(11),tr td:nth-child(13),tr td:nth-child(14)',function() {
 					
 	        var $td = $(this).parent().find("td");
 	        purchasePlanCompute($td,'2');
@@ -343,10 +345,12 @@
 					<td class="label"><label>客户名称：</label></td>
 					<td>${order.customerFullName}</td>
 					
+					<!-- 
 					<td class="label" style="width:80px;"><label>领料方式：</label></td>
 					<td style="width:100px;"><form:select path="purchasePlan.requisitiontype" >							
 						<form:options items="${requisitionType}" 
 							itemValue="key" itemLabel="value" /></form:select></td>
+							 -->
 				</tr>							
 			</table>
 		</fieldset>
@@ -401,8 +405,9 @@
 					<th class="dt-center" width="60px">生产需求量</th>
 					<th class="dt-center" width="60px">总量</th>
 					<th class="dt-center" width="60px">虚拟库存</th>
-					<th class="dt-center" width="60px">建议采购量</th>
-					<th class="dt-center" style="width:80px">供应商</th>
+					<th class="dt-center" width="60px">采购量</th>
+					<th class="dt-center" width="60px">领料数量</th>
+					<th class="dt-center" width="60px">供应商</th>
 					<th class="dt-center" width="60px">本次单价</th>
 					<th class="dt-center" width="80px">本次成本</th>
 					<th class="dt-center" width="60px">当前价格</th>
@@ -421,7 +426,8 @@
 	    	<form:input path="planDetailList[${status.index}].materialid" class="attributeList1"  value="${bom.materialId }" /></td>
 	    <td><span id="name${status.index}"></span></td>
 	    <!-- 物料特性 -->
-	    <td><span id="unit${status.index}">${bom.purchaseType }</span></td>
+	    <td><span id="unit${status.index}">${bom.purchaseType }</span>
+	    	<form:hidden value="${bom.purchaseType }" path="planDetailList[${status.index}].purchasetype" /></td>
 	    <!-- 用量 -->
 	    <td><form:input value="${bom.unitQuantity }" path="planDetailList[${status.index}].unitquantity"  class="num mini"  /></td>
 	    <!-- 生产需求量 -->
@@ -438,6 +444,9 @@
 	    		stockinQty="${bom.stockinQty }" 
 	    		returnQty="${bom.returnQty }" 
 	    		path="planDetailList[${status.index}].purchasequantity"  class="num mini"  /></td>
+	     <!-- 领料数量 -->
+	    <td><form:input value="${bom.totalRequisition }" 
+	    		path="planDetailList[${status.index}].totalrequisition"  class="num mini"  /></td>
 	     <!-- 供应商 -->
 	    <td><form:input value="${bom.supplierId }"  path="planDetailList[${status.index}].supplierid"  class="supplierid short" /></td>
 	     <!-- 本次单价 -->
@@ -448,7 +457,8 @@
 	     <!-- 当前价格 -->
 	    <td><span id="price${status.index}">${bom.lastPrice }</span>
 	    	<form:hidden path="planDetailList[${status.index}].suppliershortname" value="" /></td>	   
-	    	<form:hidden path="planDetailList[${status.index}].recordid" value="${bom.recordId }" />	    	
+	    	<form:hidden path="planDetailList[${status.index}].recordid" value="${bom.recordId }" />
+	    	<form:hidden path="planDetailList[${status.index}].purchaseid" value="${bom.purchaseId }" />		
 	    	<form:hidden path="planDetailList[${status.index}].contractflag" value="1" />
 	</tr>
 	<script type="text/javascript">
@@ -617,23 +627,20 @@ $(".attributeList1").autocomplete({
 		var $oMaterIdV  = $td.eq(0).find("span");
 		var $oMatName   = $td.eq(4).find("span");
 		var $oType      = $td.eq(5).find("span");
+		var $oTypeI     = $td.eq(5).find("input");
 		var $oUnitQuty  = $td.eq(6).find("input");
 		var $oOrder     = $td.eq(7).find("span");
 		var $oTotalQuty = $td.eq(8).find("span");
 		var $oStock     = $td.eq(9).find("span");
 		var $oPurchase  = $td.eq(10).find("input:text");
-		var $oSupplier  = $td.eq(11).find("input");
-		var $oThisPrice = $td.eq(12).find("input");
-		var $oTotPriceS = $td.eq(13).find("span");
-		var $oTotPriceI = $td.eq(13).find("input");
-		var $oSourPrice = $td.eq(14).find("span");
-		var $oShortName = $td.eq(14).find("input");
-	
-		//开始计算
-		//var fPrice    = currencyToFloat(ui.item.price);//计算用单价
-		//var fQuantity = currencyToFloat($oQuantity.val());//计算用数量
-		//var fTotalNew = currencyToFloat(fPrice * fQuantity);//合计
-		
+		var $oRequition = $td.eq(11).find("input:text");//领料数量
+		var $oSupplier  = $td.eq(12).find("input");
+		var $oThisPrice = $td.eq(13).find("input");
+		var $oTotPriceS = $td.eq(14).find("span");
+		var $oTotPriceI = $td.eq(14).find("input");
+		var $oSourPrice = $td.eq(15).find("span");
+		var $oShortName = $td.eq(15).find("input");
+			
 		//格式化数据	
 		var rowNumber = $(this).parent().parent().index();
 		var idLink  = '<a href="###" onClick="doEditMaterial(\''+rowNumber+'\',\''+ui.item.recordId+'\',\''+ui.item.parentId+'\')">'+ui.item.materialId+'</a>';
@@ -647,12 +654,10 @@ $(".attributeList1").autocomplete({
 		
 		//显示到页面
 		$('.DTFC_Cloned tbody tr:eq('+rowNumber+') td').eq(0).html(idLink);//固定列是clone出来的,特殊处理
-		//s = $('.DTFC_Cloned tr:eq('+rowNumber+') td').eq(0).html();
-		//alert("rowNumber:"+$(this).index()+"---"+s);
 		$oMaterIdV.html(idLink);
-		//$(this).parent().parent().find("td").eq(0).find("span").html(idLink);
 		$oMatName.html(matName);
 		$oType.html(type);
+		$oTypeI.val(typeId);
 		$oStock.html(vStock)
 		$oSupplier.val(supplierId);
 		$oShortName.val(shortName);
@@ -806,10 +811,11 @@ function purchasePlanCompute(obj,flg){
 	var $oTotalQutyI= $td.eq(8).find("input");
 	var $oStock     = $td.eq(9).find("span");
 	var $oPurchase  = $td.eq(10).find("input:text");
-	var $oSupplier  = $td.eq(11).find("input");
-	var $oThisPrice = $td.eq(12).find("input");
-	var $oTotPriceS = $td.eq(13).find("span");
-	var $oTotPriceI = $td.eq(13).find("input");
+	var $oRequistion= $td.eq(11).find("input:text");//领料数量
+	var $oSupplier  = $td.eq(12).find("input");
+	var $oThisPrice = $td.eq(13).find("input");
+	var $oTotPriceS = $td.eq(14).find("span");
+	var $oTotPriceI = $td.eq(14).find("input");
 
 	//开始计算
 	var fUnitQuty = currencyToFloat( $oUnitQuty.val() );
@@ -843,6 +849,7 @@ function purchasePlanCompute(obj,flg){
 	$oPurchase.val(vPurchase);
 	$oTotalQuty.html(vTotalQuty);
 	$oTotalQutyI.val(vTotalQuty);
+	$oRequistion.val(vTotalQuty);
 	$oTotPriceS.html(vTotalNew);
 	$oTotPriceI.val(vTotalNew);
 	$oThisPrice.val(vPrice);
@@ -895,7 +902,7 @@ function bomCostSum(){
 	var sum = 0;
 	$('#example tbody tr').each (function (){
 		
-		var vtotal = $(this).find("td").eq(13).find("span").text();
+		var vtotal = $(this).find("td").eq(14).find("span").text();
 		var ftotal = currencyToFloat(vtotal);
 		
 		sum = currencyToFloat(sum) + ftotal;			
@@ -909,7 +916,7 @@ function laborCostSum(){
 	var sum = 0;
 	$('#example tbody tr').each (function (){
 		
-		var vtotal = $(this).find("td").eq(13).find("span").text();
+		var vtotal = $(this).find("td").eq(14).find("span").text();
 		var materialId = $(this).find("td").eq(3).find("input").val();
 		var ftotal = 0;
 		//判断是否是人工成本
