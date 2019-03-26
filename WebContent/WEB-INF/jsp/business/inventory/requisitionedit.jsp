@@ -65,9 +65,9 @@
 				}, {"data": "materialId","className":"td-left"
 				}, {"data": "materialName","className":"td-left"
 				}, {"data": "unitQuantity","className":"td-right"	//3
-				}, {"data": "manufactureQuantity","className":"td-right"
-				}, {"data": null,"className":"td-right"	//5
 				}, {"data": "totalRequisition","className":"td-right"
+				}, {"data": null,"className":"td-right"	//5
+				}, {"data": "requistionQty","className":"td-right"
 				}, {"data": "quantityOnHand","className":"td-right"	//7
 				}, {"data": null,"className":"td-right"		//8
 				}, {"data": null,"className":"td-right"	,	//9
@@ -120,8 +120,8 @@
                 }},
 	    		{"targets":9,"render":function(data, type, row){	    			
 
-					var quantity = currencyToFloat(row["manufactureQuantity"]);
-					var accumulated = currencyToFloat(row["totalRequisition"]);
+					var quantity = currencyToFloat(row["totalRequisition"]);
+					var accumulated = currencyToFloat(row["requistionQty"]);
 					
 					var surplus = (quantity - accumulated);	
 					if(surplus < 0)

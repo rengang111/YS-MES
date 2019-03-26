@@ -103,13 +103,14 @@
 		    			"orderable":false,"targets":[0]
 		    		},
 		    		{"targets":8,"render":function(data, type, row){
-		    			var manufactureQty = currencyToFloat( row["manufactureQty"] );
+		    			//var manufactureQty = currencyToFloat( row["manufactureQty"] );
+		    			var totalRequisition = currencyToFloat( row["totalRequisition"] );
 		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
 		    			var rtn="";
 		    			if(requisitionQty == '0'){
 		    				rtn = "待申请";
 		    				
-		    			}else if(requisitionQty >= manufactureQty){
+		    			}else if(requisitionQty >= totalRequisition){
 		    				rtn = "已出库";
 		    				
 		    			}else {

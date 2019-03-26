@@ -77,12 +77,18 @@
 		    				if(viralt == '020'){
 				    			rtn = "<a href=\"###\" onClick=\"doEdit('" + row["YSId"] + "','" + row["requisitionId"] + "')\">编辑</a>";
 				    			rtn = rtn + "&nbsp;" + "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "','" + row["requisitionId"] + "')\">删除</a>";
+		    				}else{
+		    					rtn ="***";
 		    				}
 		    			}
 						return rtn;
 		    		}},{"targets":6,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doPrint('" + row["requisitionId"] + "')\">打印领料单</a>";
+		    			var contractId = row["contractId"];		
+		    			var rtn = "<a href=\"###\" onClick=\"doPrint('" + row["requisitionId"] + "')\">打印领料单</a>";
+		    			var status = row["requisitionStsId"];
+		    			if(status == '030'){//已出库
+			    			rtn = "***";	
+		    			}
 		    			return rtn;
 		    		}},
 		    	]        
@@ -339,7 +345,7 @@
 						<th class="dt-center" width="150px">申请人</th>
 						<th class="dt-center" width="150px">是否出库</th>
 						<th class="dt-center" >操作</th>
-						<th class="dt-center" ></th>
+						<th class="dt-center" >打印</th>
 					</tr>
 				</thead>
 			</table>

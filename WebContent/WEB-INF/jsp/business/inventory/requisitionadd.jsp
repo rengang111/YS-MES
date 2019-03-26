@@ -143,8 +143,8 @@
 				}, {"data": "materialId","className":"td-left"//1
 				}, {"data": "materialName",						//2
 				}, {"data": "unitQuantity","className":"td-right","defaultContent" : '1'	//3
-				}, {"data": "manufactureQuantity","className":"td-right"//4
-				}, {"data": "totalRequisition","className":"td-right"//5
+				}, {"data": null,"className":"td-right"//4 计划用量
+				}, {"data": "requistionQty","className":"td-right"//5
 				}, {"data": "quantityOnHand","className":"td-right","defaultContent" : '0'	//6 可用库存
 				}, {"data": null,"className":"td-right"		//7
 				}, {"data": null,"className":"td-right","defaultContent" : '0'		//8
@@ -176,7 +176,7 @@
 	    			
 	    			var unit = row["unit"];	    			
 	    			var index=row["rownum"]
-	    			var qty = currencyToFloat(row["manufactureQuantity"]);
+	    			var qty = currencyToFloat(row["totalRequisition"]);
 	    			var value = '0';
 	    			//alert(unit)
 	    			if(unit == '吨'){
@@ -189,24 +189,10 @@
                 }},
 	    		{"targets":7,"render":function(data, type, row){	
 	    			
-					var index=row["rownum"];	
-					/*
-					var qtyManuf  = currencyToFloat(row["manufactureQuantity"]);
-					var totalRequ = currencyToFloat(row["totalRequisition"]);	
-					var qtyOnHand = currencyToFloat(row["quantityOnHand"]);
-					var currValue = qtyManuf - totalRequ;
-					
-					if(currValue > 0){//未领完
-						if(qtyOnHand <= currValue)//库存不够
-							currValue = qtyOnHand;
-					}else{//已超领
-						currValue = 0;
-					}
-					currValue = formatNumber(currValue);
-					*/
+					var index=row["rownum"];
 					var materialId=row["materialId"];
-					var totalRequ = currencyToFloat(row["totalRequisition"]);
-					var qtyManuf = currencyToFloat(row["manufactureQuantity"]);
+					var totalRequ = currencyToFloat(row["requistionQty"]);
+					var qtyManuf = currencyToFloat(row["totalRequisition"]);
 					var currValue = qtyManuf - totalRequ;
 					//if(materialId.subString(1) =="G"
 					if(currValue <= 0 ){
@@ -222,28 +208,7 @@
 	    			return jQuery.fixedWidth( data,18);
 		    			
                 }},
-                /*
-	    		{"targets":9,"render":function(data, type, row){	    			
-
-					var qtyManuf  = currencyToFloat(row["manufactureQuantity"]);
-					var totalRequ = currencyToFloat(row["totalRequisition"]);	
-					var qtyOnHand = currencyToFloat(row["quantityOnHand"]);
-					var currValue = qtyManuf - totalRequ;
-					
-					if(currValue > 0){//未领完
-						if(qtyOnHand <= currValue)//库存不够
-							currValue = qtyOnHand;
-					}else{//已超领
-						currValue = 0;
-					}
-					
-					var surplus = (qtyManuf - totalRequ - currValue);	
-
-					if(surplus < 0)
-						surplus = 0;
-					return formatNumber(surplus);
-					
-                }},*/
+              
                 {
 					"visible" : false,
 					"targets" : [8,9,10]

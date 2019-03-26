@@ -35,7 +35,6 @@
     <pool></pool>    
     <name value="getPurchasePlanByYSId" />
     <where>
-    	<w name="A.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.recordId" alias="" ctype="" />
@@ -47,6 +46,7 @@
       <f name="a.quantityOnHand" alias="" ctype="" />
       <f name="a.availabelToPromise" alias="" ctype="" />
       <f name="a.totalRequisition" alias="" ctype="" />
+      <f name="a.requistionQty" alias="" ctype="" />
       <f name="a.unitQuantity" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="a.purchaseType" alias="purchaseTypeName" ctype="物料采购类别" />
@@ -56,7 +56,67 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_createrequisitionfromplan AS A LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON b.YSId=a.YSId AND b.materialId=a.materialId  WHERE  A.deleteFlag = '0'</from>
+   <from>
+		(
+			SELECT
+				a.YSId AS YSId,
+				a.materialId AS materialId,
+				c.materialName AS materialName,
+				c.unit AS unit,
+				a.unitQuantity AS unitQuantity,
+				a.purchaseQuantity,
+				a.requisitionType,
+				a.supplierId AS supplierId,
+				REPLACE(IFNULL(a.totalRequisition,a.manufactureQuantity),',','') AS totalRequisition,
+				a.manufactureQuantity AS manufactureQuantity,
+				c.quantityOnHand AS quantityOnHand,
+				c.availabelToPromise AS availabelToPromise,
+				c.purchaseType AS purchaseType,
+				ifnull(d.quantity, '0') AS requistionQty,
+				a.deleteFlag AS deleteFlag,
+				a.subBomNo AS subBomNo,
+				a.recordId AS recordId
+			FROM
+			v_purchaseplan a
+				LEFT JOIN b_material c ON  a.materialId = c.materialId AND (c.deleteFlag = '0')  
+			  	LEFT JOIN 
+					(
+						SELECT
+							b.YSId AS YSId,
+							b.YSId AS requistionYsid,
+							a.materialId AS materialId,
+							IFNULL(b.collectYsid,b.YSId) collectYsid,
+							MAX(b.requisitionDate) requisitionDate,
+							sum(REPLACE(ifnull(a.quantity, 0),',','')) AS quantity
+						FROM
+								b_requisitiondetail a
+								JOIN b_requisition b ON a.requisitionId = b.requisitionId AND b.deleteFlag='0'
+						WHERE	a.deleteFlag = '0' AND b.YSId = '#'
+						GROUP BY
+							b.YSId,
+							a.materialId 
+					) d ON a.materialId = d.materialId AND (d.YSId = a.YSId)				
+			WHERE LEFT (a.materialId, 1) &lt;&gt; 'H' AND a.YSId='#'
+			having totalRequisition+0 >0
+		) AS A 
+		LEFT JOIN 
+			(
+			SELECT
+				c.materialId,
+				c.ysid,
+				SUM(REPLACE(c.quantity, ',', '')) quantity,
+				max(c.checkInDate) AS checkInDate,
+				max(c.storageFinish) storageFinish,
+				group_concat( c.areaNumber SEPARATOR ',' ) AS areaNumber
+			FROM
+				v_purchasestockindetail c
+			WHERE
+				c.deleteFlag = '0' AND c.YSId='#'
+			GROUP BY
+				c.ysid,
+				c.materialId 
+			) b ON b.YSId=a.YSId AND b.materialId=a.materialId  
+		WHERE  A.deleteFlag = '0'</from>
   
     <groupby></groupby>
     <having></having>
@@ -916,6 +976,7 @@
       <f name="A.materialName" alias="" ctype="" />
       <f name="A.YSId" alias="" ctype="" />
       <f name="A.orderQty" alias="" ctype="" />
+      <f name="A.totalRequisition" alias="" ctype="" />
       <f name="A.manufactureQty" alias="" ctype="" />
       <f name="A.requisitionQty" alias="" ctype="" />
       <f name="A.requisitionDate" alias="" ctype="" />

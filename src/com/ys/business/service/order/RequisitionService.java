@@ -1336,23 +1336,22 @@ public class RequisitionService extends CommonService {
 
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
-		dataModel.setQueryName("getPurchasePlanByYSId");
-		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("YSId", YSId);
-		
+		dataModel.setQueryName("getPurchasePlanByYSId");		
+		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#",YSId);
+		System.out.println("装配领料："+sql);
+		
+		baseQuery.getYsFullData(sql,YSId);
 
 		if(dataModel.getRecordCount() >0){
 			model.addAttribute("order",dataModel.getYsViewData().get(0));
 			model.addAttribute("material",dataModel.getYsViewData());
 			modelMap.put("data", dataModel.getYsViewData());
-			modelMap.put("recordCount", dataModel.getRecordCount());
-			
-		}
-		
+			modelMap.put("recordCount", dataModel.getRecordCount());			
+		}		
 		return modelMap;		
 	}
 	
