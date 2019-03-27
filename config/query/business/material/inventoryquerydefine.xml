@@ -181,6 +181,7 @@
       <f name="contractStorage" alias="" ctype="" />
       <f name="a.surplus" alias="" ctype="" />
       <f name="a.accumulated" alias="" ctype="" />
+      <f name="a.purchaser" alias="" ctype="采购人员" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
@@ -905,7 +906,10 @@
   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.contractId"  des=""  reqName="contractId"  dtype="ch" oper="="  lg="AND" bt="" />
-   	  	<w name="LEFT(deliveryDate,7)"  des=""  reqName="month"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	
+   	  	<w name="DATE_FORMAT(A.arriveDate,'%Y-%m')" des="" reqName="monthday"   dtype="ch" oper="="   lg="AND" bt="" />
+   	  	<w name="DATE_FORMAT(A.arriveDate,'%Y')"    des="" reqName="year"       dtype="ch" oper="="   lg="AND" bt="" />
+      
        </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -921,9 +925,6 @@
       <f name="A.customerShortName" alias="" ctype="" />
       <f name="A.accumulated" alias="" ctype="" />
       <f name="replace(A.quantity,',','')" alias="quantity" ctype="" />
-      <f name="replace(A.arrivalQty,',','')" alias="arrivalQty" ctype="" />
-      <f name="replace(A.sumReturnQty,',','')" alias="sumReturnQty" ctype="" />
-      <f name="replace(A.stockinRtnQty,',','')" alias="stockinRtnQty" ctype="" />
       <f name="A.arriveDate" alias="" ctype="" />
       <f name="materialRecordId" alias="" ctype="" />
       <f name="materialParentId" alias="" ctype="" />
@@ -933,7 +934,7 @@
     <from>v_arrivalfrompurchaseorder a  
     	WHERE a.deleteFlag = '0' 
     		AND left(a.materialId,1) &lt;&gt;'H' 
-    		#1
+    		#
     </from>
     <orderby>A.YSId,A.contractId,A.materialId</orderby>
     <groupby></groupby>
@@ -964,17 +965,17 @@
       <f name="a.purchaseDate" alias="" ctype="" />
       <f name="a.deliveryDate" alias="" ctype="" />
       <f name="a.total" alias="" ctype="" />
+      <f name="a.purchaser" alias="" ctype="" />
       <f name="a.memo" alias="" ctype="" />
       <f name="a.unit" alias="" ctype="计量单位" />
       <f name="contractStorage" alias="" ctype="" />
       <f name="a.surplus" alias="" ctype="" />
-      <f name="IFNULL(b.recodeSum,'0')" alias="sumArrivalQty" ctype="" />
-      <f name="IFNULL(e.stockinRtnQty,'0')" alias="stockinRtnQty" ctype="" />
-      <f name="IFNULL(c.sumReturnQty,'0')" alias="inspectRtnQty" ctype="" />
+      <f name="a.accumulated" alias="" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>v_purchaseorderdetail a left join v_inspectionreturngroupbytype e ON e.YSId = a.YSId AND e.materialId = a.materialId  left join v_arrivalquantitygroup b ON b.contractId = a.contractId AND b.materialId = a.materialId left join v_inspectionreturngroup c ON c.YSId = a.YSId AND c.materialId = a.materialId WHERE a.deleteFlag='0' </from>
+   <from>v_purchaseorderdetail a 
+   			WHERE a.deleteFlag='0' </from>
     <orderby>a.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -1199,4 +1200,59 @@
     <having></having>
 	<power></power>    
   </query> 
+  <query>
+    <pool></pool>     
+    <name value="getArrivaCountForContract" />
+    <where>
+       <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.materialParentId" alias="" ctype="" />
+      <f name="A.materialRecordId" alias="" ctype="" />
+      <f name="A.quantity" alias="contractQty" ctype="" />
+      <f name="IFNULL(b.refundQty,0)" alias="refundQty" ctype="" />
+      <f name="IFNULL(b.quantityInspection,0)" alias="quantityInspection" ctype="" />
+      <f name="IFNULL(b.quantityQualified,0)" alias="quantityQualified" ctype="" />
+      <f name="IFNULL(d.arrivalQty,0)" alias="arrivalQty" ctype="" />
+      <f name="IFNULL(d.arrivalQty,0) - IFNULL(b.refundQty,0)" alias="netArrivalQty" ctype="" />
+      <f name="IFNULL(a.quantity,0) - IFNULL(d.arrivalQty,0) + IFNULL(b.refundQty,0)" alias="surplusQty" ctype="" />
+      <f name="a.purchaser" alias="" ctype="采购员" />
+    </select>
+    <from>
+		v_purchaseorderdetail a
+			LEFT JOIN 
+				(	
+					SELECT 
+						e.contractId,
+						e.materialId,
+						SUM(REPLACE(e.quantityInspection,',','')) quantityInspection,
+						SUM(REPLACE(e.quantityQualified,',','')) quantityQualified,
+						SUM(IFNULL(REPLACE(e.quantityInspection,',',''),0) - IFNULL(REPLACE(e.quantityQualified,',',''),0)) refundQty
+					FROM 
+						v_receiveinspection e WHERE e.contractId = '#' 
+					GROUP BY e.contractId,e.materialId
+				) b ON b.contractId = a.contractId AND  b.materialId = a.materialId 
+			LEFT JOIN 
+				(
+					SELECT 
+						f.contractId,
+						f.materialId,
+						SUM(REPLACE(f.quantity,',','')) arrivalQty
+					FROM 
+						b_arrival f WHERE f.contractId = '#'  AND f.deleteFlag='0'
+						GROUP BY f.contractId,f.materialId					
+				) d ON  d.contractId = a.contractId AND  d.materialId = a.materialId
+			LEFT JOIN s_user c ON  c.UserID = a.purchaser AND (c.DeleteFlag = '0') 
+			WHERE 1=1
+	</from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>

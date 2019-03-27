@@ -103,25 +103,49 @@ public class ArrivalService extends CommonService {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];
 		
-		String actionType = request.getParameter("actionType");
-		String deliveryDate = request.getParameter("deliveryDate");//合同交期
+		String searchSts = request.getParameter("searchSts");
+		String deliveryDate = request.getParameter("deliveryDate"); //合同交期
+		String userId   = request.getParameter("userId");
+		String monthday = request.getParameter("monthday");
+		String year     = request.getParameter("year");
+		
 		String where ="AND 1=1";
-		if(notEmpty(key1) || notEmpty(key2)){
-			//actionType = "";//忽略其状态
-		}
-		if(("0").equals(actionType) ){
-			dataModel.setQueryName("getContractListForNoArrival");//逾期未到货
+
+		//*** 收货情况
+		if(("0").equals(searchSts) ){
+			where = "AND a.accumulated+0 < a.quantity+0";//逾期未到货
+			userDefinedSearchCase.put("deliveryDate", deliveryDate);
 			
-		}else if (("1").equals(actionType)){
-			dataModel.setQueryName("getContractListForNoArrival");//未到货
-			deliveryDate = "";//清空时间条件
 		}else{
-			dataModel.setQueryName("getContractListForArrival");//已到货 或者 忽略 是否到货			
-			if(("2").equals(actionType)){
-				where = "AND a.accumulated+0 >= a.quantity+0";//已收货
-			}
+			userDefinedSearchCase.put("deliveryDate", "");
 			
+			if (("1").equals(searchSts)){//未到货
+				
+				where = "AND a.accumulated+0 < a.quantity+0";
+				
+			}else if(("2").equals(searchSts)){	//已收货
+				
+				where = "AND a.accumulated+0 >= a.quantity+0";							
+			}
 		}
+		
+		//*** 月份选择
+		if(("2").equals(searchSts)){//已收货：全年查询
+			userDefinedSearchCase.put("year", year);
+			userDefinedSearchCase.put("monthday", monthday);
+		}else{
+			userDefinedSearchCase.put("year", "");
+			userDefinedSearchCase.put("monthday", "");			
+		}
+
+		//*** 采购员选择
+		if(("999").equals(userId)){
+			userDefinedSearchCase.put("userId", "");//999:查询全员
+		}else{
+			userDefinedSearchCase.put("userId", userId);//			
+		}
+		
+		dataModel.setQueryName("getContractListForArrival");//
 		
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("keyword1", key1);
@@ -152,16 +176,12 @@ public class ArrivalService extends CommonService {
 			userDefinedSearchCase.put("supplierId22", "");			
 		}
 		
-		String userId = request.getParameter("userId");
-		if(("999").equals(userId)){
-			userDefinedSearchCase.put("userId", "");//999:查询全员
-		}
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		sql = sql.replace("#1", where);
+		sql = sql.replace("#", where);
 		System.out.println("收货查询："+sql);
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		baseQuery.getYsQueryData(sql,where,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();
@@ -181,16 +201,9 @@ public class ArrivalService extends CommonService {
 		//取得该合同编号下的物料信息
 		String contractId = request.getParameter("contractId");
 		
-		//boolean hash = checkContractDetail(contractId);
-		
-		//if (hash) {
-		//	rtnFlag = "新建";
-			getContractForArrivalById(contractId);
-		//}else{
-		//	getContractDetail(contractId);
-			
-		//}
-		
+		getContractForArrivalById(contractId);			
+
+		model.addAttribute("purchaser",util.getListOption(DicUtil.PURCHASE_USER, ""));		
 	
 	}
 	
@@ -208,6 +221,8 @@ public class ArrivalService extends CommonService {
 		String contractId = request.getParameter("contractId");
 		
 		getContractForArrivalById(contractId);
+		
+		model.addAttribute("purchaser",util.getListOption(DicUtil.PURCHASE_USER, ""));	
 	
 	}
 
@@ -288,6 +303,10 @@ public class ArrivalService extends CommonService {
 								
 			}
 			
+			//更新采购员
+			String purchaser = request.getParameter("purchaser");
+			updatePurchaserOrder(contractId,purchaser);
+			
 			ts.commit();			
 			
 		}
@@ -301,8 +320,36 @@ public class ArrivalService extends CommonService {
 		}
 		
 		return contractId;
-	}
+	}	
 	
+	@SuppressWarnings("unchecked")
+	private void updatePurchaserOrder(
+			String contractId,
+			String purchaser) throws Exception{
+								
+		//更新到货数量
+		B_PurchaseOrderData data = new B_PurchaseOrderData();
+		B_PurchaseOrderDao dao = new B_PurchaseOrderDao();
+		String where = "contractId ='"+contractId +
+				"' AND deleteFlag='0' ";
+		List<B_PurchaseOrderData> list = 
+				(List<B_PurchaseOrderData>)dao.Find(where);
+		
+		if(list ==null || list.size() == 0){
+			return ;
+		}
+
+		data = list.get(0);
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"更新采购员",userInfo);
+
+		copyProperties(data,commData);
+		//更新DB
+		data.setPurchaser(purchaser);//采购员
+		data.setStatus(Constants.CONTRACT_STS_2);//更新合同状态
+		
+		dao.Store(data);	
+	}
 
 	private void insertArrival(
 			B_ArrivalData data) throws Exception{
@@ -333,11 +380,6 @@ public class ArrivalService extends CommonService {
 			String contractId,
 			String materialId,
 			String arrival) throws Exception{
-	
-
-		//更新合同状态
-		updateContractStatus(contractId,Constants.CONTRACT_STS_2);
-		
 					
 		//更新到货数量
 		B_PurchaseOrderDetailData data = new B_PurchaseOrderDetailData();
@@ -522,6 +564,7 @@ public class ArrivalService extends CommonService {
 		}
 		return rtnFlag;
 	}
+	
 	public HashMap<String, Object> getArrivalHistory(
 			String contractId) throws Exception {
 		
@@ -540,6 +583,24 @@ public class ArrivalService extends CommonService {
 		
 	}
 	
+	public HashMap<String, Object> getArrivalHistoryCount(
+			String contractId) throws Exception {
+		
+		dataModel.setQueryName("getArrivaCountForContract");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contractId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", contractId);
+		System.out.println("到货统计："+sql);
+		baseQuery.getYsFullData(sql,contractId);
+
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+		
+	}
 
 	public HashMap<String, Object> getArrivalByYsid( ) throws Exception {
 		String YSId = request.getParameter("YSId");
@@ -594,7 +655,7 @@ public class ArrivalService extends CommonService {
 			map.put("dicName", "ALL");
 			map.put("dicId", "999");
 			map.put("SortNo", "999");
-			list.add(map);
+			list.add(0,map);
 			model.addAttribute("purchaser",list);
 			model.addAttribute("defUser",map);
 		

@@ -107,6 +107,10 @@ public class ArrivalAction extends BaseAction {
 				dataMap = getArrivalHistory();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "getArrivalHistoryCount"://到货统计
+				dataMap = getArrivalHistoryCount();
+				printOutJsonObj(response, dataMap);
+				break;
 			case "gotoArrivalView":
 				gotoArrivalView();
 				rtnUrl = "/business/inventory/arrivalview";
@@ -254,6 +258,28 @@ public class ArrivalAction extends BaseAction {
 		return dataMap;
 	}
 	
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> getArrivalHistoryCount(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
+		
+		try {
+			String contractId = request.getParameter("contractId");
+			dataMap = service.getArrivalHistoryCount(contractId);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 
 	public HashMap<String, Object> getArrivalByYSId(){
 		

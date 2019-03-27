@@ -2497,28 +2497,26 @@ public class PurchasePlanService extends CommonService {
 			String purchaseId,
 			B_PurchasePlanDetailData detail) throws Exception{
 		
-		//for(B_PurchasePlanDetailData detail:webList){
-			
-			String materilid = detail.getMaterialid();
-			float purchase = stringToFloat(detail.getPurchasequantity());
-			
-			//if(isNullOrEmpty(materilid))
-			//	continue;		
-			
-			if(purchase == 0)
-				detail.setContractflag(0);//不采购的不做合同				
-			if(materilid.substring(0,1).equals(Constants.PURCHASETYPE_H))
-				detail.setContractflag(0);//人工成本不做合同
-			
-			detail.setPurchaseid(purchaseId);
-			detail.setYsid(YSId);
-			insertPurchasePlanDetail(detail);			
+		String materilid = detail.getMaterialid();
 
-			//更新虚拟库存
-			float requisition = stringToFloat(detail.getTotalrequisition());
-			updateMaterial2(detail.getYsid(),"I","采购方案（新数据追加）",materilid,0,requisition);
+		if(isNullOrEmpty(materilid))
+			return;		
+		
+		float purchase = stringToFloat(detail.getPurchasequantity());
+		
+		if(purchase == 0)
+			detail.setContractflag(0);//不采购的不做合同				
+		if(materilid.substring(0,1).equals(Constants.PURCHASETYPE_H))
+			detail.setContractflag(0);//人工成本不做合同
+		
+		detail.setPurchaseid(purchaseId);
+		detail.setYsid(YSId);
+		insertPurchasePlanDetail(detail);			
+
+		//更新虚拟库存
+		float requisition = stringToFloat(detail.getTotalrequisition());
+		updateMaterial2(detail.getYsid(),"I","采购方案（新数据追加）",materilid,0,requisition);
 			
-		//}//新数据:采购方案处理
 	}
 	
 	private void addRawRequirement(String YSId) throws Exception{

@@ -7,30 +7,34 @@
 <title>到货登记一览(合同未到货)</title>
 <script type="text/javascript">
 
-	function searchAjax(type,sessionFlag,hideCol,month) {
+	function searchAjax(sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 
-		var makeType = $("#makeType").val();
-		var userId = $("#userId").val();
-		
+		var makeType  = $("#makeType").val();//区分包装件，采购件，自制件
+		var userId    = $("#userId").val();
+		var searchSts = $("#searchSts").val();
+		var month     = $("#month").val();
+		var monthday  = $('#monthday').val();
+		var year      = $('#year').val();
 		var url = "${ctx}/business/arrival?methodtype=contractArrivalSearch"+"&sessionFlag="+sessionFlag;
 		url = url + "&makeType="+makeType;
-		url = url + "&searchSts="+type;
+		url = url + "&searchSts="+searchSts;
 		url = url + "&userId="+userId;
 		url = url + "&month="+month;
+		url = url + "&monthday="+monthday;
+		url = url + "&year="+year;
 		
-		if(type == '0'){			
-			url += "&accumulated1=0"+"&deliveryDate="+shortToday();//逾期未到货
-		}else if(type == '1'){			
-			url += "&accumulated1=0";//未到货			
-		}else if(type == '2'){			
-			url += "&accumulated2=0";//已到货			
+		if(searchSts == '0'){			
+			url += "&deliveryDate="+shortToday();//逾期未到货
+		}else if(searchSts == '1'){			
+			url += "&deliveryDate=";//未到货			
+		}else if(searchSts == '2'){			
+			url += "&deliveryDate=";//已到货			
 		}
-		url += "&actionType="+type;//
 
 		var t = $('#TMaterial').DataTable({
 			"paging": true,
@@ -78,14 +82,14 @@
 				{"data": null,"className" : 'td-center'},
 				{"data": "YSId"},
 				{"data": "contractId","className" : 'td-left'},
-				{"data": "purchaserName","className" : 'td-right', "defaultContent" : '-'}, //10
+				{"data": "purchaserName","className" : 'td-center', "defaultContent" : '-'}, //10
 				{"data": "materialId"},
 				{"data": "materialName"},
 				{"data": "customerShortName", "defaultContent" : '-',"className" : 'td-center'},
 				{"data": "supplierId"},
 				{"data": "deliveryDate","className" : 'td-right'},
 				{"data": "quantity","className" : 'td-right'},
-				{"data": "arrivalQty","className" : 'td-right'}, // 10
+				{"data": "accumulated","className" : 'td-right'}, // 10 净收货
 				{"data": "arriveDate","className" : 'td-center'},// 11
 
 			],
@@ -95,8 +99,8 @@
                 }},
 	    		{"targets":2,"render":function(data, type, row){
 	    			var mateid= data;
-	    			var contractQty = currencyToFloat(row['quantity']);
-	    			var accumulated = currencyToFloat(row['accumulated']);//累计收货
+	    			var contractQty = currencyToFloat(row['quantity']);//合同数
+	    			var accumulated = currencyToFloat(row['accumulated']);//净收货
 	    			if(data.length>18){
 						mateid= '<div style="font-size: 11px;">' + data + '</div>';	    				
 	    			}
@@ -123,19 +127,12 @@
 	    			return parseInt(currencyToFloat(data));
 	    		}},
 	    		{"targets":10,"render":function(data, type, row){
-	    			//累计收货
-	    			var arrivalQty = currencyToFloat(row["arrivalQty"]);	
-	    			var stockinRtnQty = currencyToFloat(row["stockinRtnQty"]);	
-	    			var inspectRtnQty = currencyToFloat(row["sumReturnQty"]);	 
-	    			var returnQty = stockinRtnQty + inspectRtnQty;
-	    			//var newQty = arrivalQty - returnQty;
-	    			var newQty = setPurchaseQuantity(returnQty,arrivalQty );	
-	    			
-	    			return parseInt((newQty));
+	    			//净收货
+	    			return parseInt(currencyToFloat(data));
 	    		}},
 	    		{"targets":11,"render":function(data, type, row){
 	    			if(data ==''){
-	    				return '（未到货）'; 
+	    				return '（未收货）'; 
 	    			}else{
 	    				return data;    				
 	    			}
@@ -159,17 +156,21 @@
 
 	$(document).ready(function() {
 
+		setYearList();
 		hideAllSearch();
 
 		var defUser = $('#userId').val();
 		var searchSts = $('#searchSts').val();
-		var month = $('#month').val();
+		var month = 'ALL';//$('#month').val();
 		var monthday = $('#monthday').val();
+		var currYear = getYear();
+		$('#year').val(currYear);
 		
-		if(searchSts == '0'){//逾期未到货
-			$('#userFlag').show();
-		}else if(searchSts == '2'){//已收货
+		if(searchSts == '2'){//已收货
 			$('#yearFlag').show();
+			monthday = shortToday();
+		}else{
+			 monthday = '';
 		}
 
 		$('#defutBtn'+month).removeClass("start").addClass("end");
@@ -178,7 +179,7 @@
 		
 		$('#userId').val(defUser);		
 		
-		searchAjax(searchSts,"true",monthday);
+		searchAjax("true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -195,7 +196,6 @@
 		buttonSelectedEvent2();//按钮选择式样
 		buttonSelectedEvent3();//按钮选择式样		
 
-		setYearList();
 		
 		$("#year").change(function() {
 						
@@ -220,7 +220,7 @@
 		    
 		 	$('#defutBtn'+month).removeClass("start").addClass("end");
 		 	
-		 	searchAjax('2','false','',monthday);
+		 	searchAjax('false');
 	
 		});
 	})	
@@ -243,7 +243,8 @@
 		var makeType=$('#makeType').val();
 		var url = '${ctx}/business/arrival?methodtype=addinit&contractId='+contractId+
 			'&makeType='+makeType;
-		location.href = url;
+		
+		callWindowFullView("收货",url);
 	}
 	
 	
@@ -309,6 +310,7 @@
 
 		hideAllSearch();
 		
+		/*
 		var collection = $(".box");
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
@@ -317,23 +319,24 @@
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });
+	    */
 	    
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		searchAjax("",'false','','');
+		searchAjax('false');
 
 	}
 	
+	//未收货
 	function selectContractByDate(type,hideCol){
 
 		hideAllSearch();
+
+		$("#searchSts").val(type);
 		
-		$("#keyword1").val("");
-		$("#keyword2").val("");
-		
-		searchAjax(type,'false',hideCol,'');
+		searchAjax('false');
 	}
 	
-	//逾期未到货
+	//逾期未收货
 	function selectContractByDate2(type,hideCol){
 
 		hideAllSearch();
@@ -350,11 +353,8 @@
 	 	$('#defutBtnm'+type).removeClass("start").addClass("end");
 
 		$("#searchSts").val(type);
-		
-		//$("#keyword1").val("");
-		//$("#keyword2").val("");
-		
-		searchAjax(type,'false',hideCol,'');
+				
+		searchAjax('false');
 		
 		
 		
@@ -366,24 +366,25 @@
 		hideAllSearch();
 		$('#yearFlag').show();
 		
-		var month = getYearMonth();
-		var monthonly = getMonth();
+		var month = '';//getYearMonth();
+		var monthday = 'ALL';//getMonth();
 		
 		var collection = $(".box");
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });		    
-	 	$('#defutBtn'+monthonly).removeClass("start").addClass("end");
-	 	
-	 	searchAjax(type,'false','',month);
+	 	$('#defutBtn'+monthday).removeClass("start").addClass("end");
+
+		$("#searchSts").val(type);
+		$("#month").val(month);
+		$("#monthday").val('');
+		
+	 	searchAjax('false');
 			
 	}
 	
 	//采购员选择
 	function doSelectUserId(userId){
-		
-		//$('#keyword1').val('');
-		//$('#keyword2').val('');
 		
 		var year = $('#year').val();
 		
@@ -396,17 +397,36 @@
 	
 	//月份选择
 	function doSearchCustomer(month){
-		
-		//$('#keyword1').val('');
-		//$('#keyword2').val('');
-		
+				
 		var year = $('#year').val();
-		
-		var monthday = year +"-"+month;
+		var monthday = '';		
+
+		if(month == '12'){
+			var crrMonth = getMonth();
+			if(month == crrMonth){
+				//当前就是12月				
+			}else{
+				var CurrYear = getYear();
+				if(year == CurrYear){
+					
+					var tmpYear = CurrYear - 1;
+					monthday = tmpYear +"-"+month; 
+					$('#year').val(tmpYear);
+					$('#yearList').val(getYear());					
+				}
+								
+			}
+		}else{
+			if(month != 'ALL'){
+				monthday = year +"-"+month; 
+			}
+			$('#year').val(year);
+		}
+
 		$('#monthday').val(monthday);
 		$('#month').val(month);
 
-		searchAjax('2','false','',monthday);
+		searchAjax('false');
 	}
 	
 </script>
@@ -426,7 +446,7 @@
 		
 			<table>
 				<tr>
-					<td width="10%"></td> 
+					<td width="50px"></td> 
 					<td class="label">关键字1：</td>
 					<td class="condition">
 						<input type="text" id="keyword1" name="keyword1" class="middle"/>
@@ -445,26 +465,18 @@
 			
 			<table>
 				<tr>
-					<td width="50px"></td>
-					<td width="100px" class="label">一级条件&nbsp;</td>
+					<td width="10px"></td>
+					<td width="80px" class="label">收货情况&nbsp;</td>
 					<td colspan="">
-						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('0',11);">逾期未到货</a>				
-						<a id="defutBtnm1" class="DTTT_button box2" onclick="selectContractByDate('1',11);">未到货</a>
-						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2','');" >已收货</a>	
+						<a id="defutBtnm3" class="DTTT_button box2" onclick="selectContractByDate2('3');">ALL</a>	
+						<a id="defutBtnm0" class="DTTT_button box2" onclick="selectContractByDate2('0');">逾期未收货</a>				
+						<a id="defutBtnm1" class="DTTT_button box2" onclick="selectContractByDate('1');">未收货</a>
+						<a id="defutBtnm2" class="DTTT_button box2" onclick="doSearchCustomer3('2');" >已收货</a>	
 					
 					</td> 
-					<td width="100px"></td>
-					<td class="label">二级条件&nbsp;</td>
-					<td colspan="">
-						<span id="userFlag">
-							<c:forEach var='list' items='${purchaser}' varStatus='status'>
-								<a id="defutBtnu${list.dicId }" style="height: 15px;margin-top: 5px;" 
-									class="DTTT_button box3" onclick="doSelectUserId('${list.dicId }');">
-									<span>${list.dicName }</span></a>
-							</c:forEach>
-						</span>			
+					<td colspan="">		
 						<span id="yearFlag">			
-							<select id="year" name="year"  style="width: 100px;vertical-align: bottom;"></select>
+							<select id="year" name="year"  style="width: 100px;vertical-align: bottom;height: 25px;"></select>
 							
 							<a id="defutBtn12"  class="DTTT_button box" onclick="doSearchCustomer('12');">
 								12</a>
@@ -490,6 +502,21 @@
 								10</a>
 							<a id="defutBtn11"  class="DTTT_button box" onclick="doSearchCustomer('11');">
 								11</a>
+							<a id="defutBtnALL" class="DTTT_button box" onclick="doSearchCustomer('ALL');">
+								ALL</a>
+						</span>								 
+					</td>
+				</tr>
+				<tr>
+					<td width=""></td>
+					<td width="" class="label">采购员&nbsp;</td>
+					<td colspan="">
+						<span id="">
+							<c:forEach var='list' items='${purchaser}' varStatus='status'>
+								<a id="defutBtnu${list.dicId }" style="height: 15px;margin-top: 5px;" 
+									class="DTTT_button box3" onclick="doSelectUserId('${list.dicId }');">
+									<span>${list.dicName }</span></a>
+							</c:forEach>
 						</span>								 
 					</td>
 				</tr>

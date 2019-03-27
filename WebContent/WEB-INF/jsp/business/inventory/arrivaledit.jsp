@@ -4,7 +4,7 @@
 <html>
 
 <head>
-<title>库存管理-到货修改</title>
+<title>库存管理-收货修改</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
@@ -128,11 +128,11 @@
 		<legend> 基本信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
-				<td class="label" width="100px"><label>到货编号：</label></td>					
+				<td class="label" width="100px"><label>收货编号：</label></td>					
 				<td>${arrivalId }
 					<form:hidden path="arrival.arrivalid"  value="${arrivalId }" /></td>
 														
-				<td width="100px" class="label">到货日期：</td>
+				<td width="100px" class="label">收货日期：</td>
 				<td>
 					<form:input path="arrival.arrivedate" class="short read-only"  value=""/></td>
 				
@@ -157,14 +157,9 @@
 		</table>
 </fieldset>
 
-<div style="clear: both"></div>
-<fieldset class="action" style="text-align: right;">
-	<button type="button" id="insert" class="DTTT_button">确认收货</button>
-	<button type="button" id="doView" class="DTTT_button">查看到货记录</button>
-	<button type="button" id="goBack" class="DTTT_button">返回</button>
-</fieldset>	
 <fieldset>
-	<legend>到货登记</legend>
+	<span class="tablename"> 收货登记</span>
+	<a id="doView" href="###" >收货详情</a>
 	<div class="list">	
 	<table id="example" class="display" >
 		<thead>				
@@ -189,26 +184,16 @@
 				<td><form:input path="arrivalList[${status.index}].quantity" class="num mini"  value="${list.quantity }"/></td>
 				<td><span>${list.total }</span></td>
 			</tr>
-			<script type="text/javascript">
-			/*
-					var index = '${status.index}';
-					var contractQuantity = currencyToFloat('${list.contractQuantity}');
-					var arrivalSum = currencyToFloat('${list.arrivalSum}');
-					var quantity = currencyToFloat('${list.quantity}');
-					
-					arrivalSum = arrivalSum - quantity;//剩余 - 刚登记的
-					var surplus = contractQuantity - arrivalSum - quantity;
-					
-					$('#arrivalSum'+index).html(floatToCurrency( arrivalSum ))
-					$('#surplus'+index).html(floatToCurrency( surplus ))
-					*/
-			</script>
 			
 		</c:forEach>
 		
 	</tbody>
 </table>
 </div>
+</fieldset>	
+
+<fieldset class="action" style="text-align: right;">
+	<button type="button" id="insert" class="DTTT_button">确认收货</button>
 </fieldset>	
 </form:form>
 

@@ -34,7 +34,6 @@
 					}, {"className":"td-right"	
 					}, {"className":"td-right"
 					}, {"className":"td-right"
-					}, {"className":"td-right"
 					}
 				]
 			
@@ -48,13 +47,13 @@
 			var $oArrival = $td.eq(4).find("input");//本次收货
 			var $oQuantity= $td.eq(5).find("span");//合同
 			var $oSumArra = $td.eq(6).find("span");//累计收货
-			var $oRecorde = $td.eq(7).find("span");//累计退货
-			var $oSurplus = $td.eq(8).find("span");//剩余
+			//var $oRecorde = $td.eq(7).find("span");//累计退货
+			var $oSurplus = $td.eq(7).find("span");//剩余
 
 			var fArrival  = currencyToFloat($oArrival.val());
 			var fquantity = currencyToFloat($oQuantity.html());
 			var foSumArra = currencyToFloat($oSumArra.html());
-			var fRecorde  = currencyToFloat($oRecorde.html());	
+			//var fRecorde  = currencyToFloat($oRecorde.html());	
 			
 			var surplus = fquantity - foSumArra;
 			
@@ -62,12 +61,8 @@
 
 				$().toastmessage('showWarningToast', "注意,收货数量不能大于合同。");
 				fArrival = surplus;//最大收货数量
-		       // $(this).find("input:text").removeClass('bgwhite').removeClass('bgnone');
-           	 	//$(this).find("input:text").addClass('error');
-				//return;
-			}//else{
-				//$(this).find("input:text").removeClass('error')
-			//}
+
+			}
 			
 			//剩余数量
 			var viewplus = surplus - fArrival;			
@@ -107,100 +102,12 @@
 
 	};
 
-	function historyAjax() {
-		var contractId = '${contract.contractId }';
-		var t = $('#example2').DataTable({
-			
-			"paging": true,
-			"lengthChange":false,
-			"lengthMenu":[50,100,200],//设置一页展示20条记录
-			"processing" : false,
-			"serverSide" : false,
-			"stateSave" : false,
-			"ordering "	:true,
-			"searching" : false,
-			"retrieve" : true,
-			dom : '<"clear">rt',
-			"sAjaxSource" : "${ctx}/business/arrival?methodtype=getArrivalHistory&contractId="+contractId,
-			"fnServerData" : function(sSource, aoData, fnCallback) {
-				var param = {};
-				var formData = $("#condition").serializeArray();
-				formData.forEach(function(e) {
-					aoData.push({"name":e.name, "value":e.value});
-				});
-
-				$.ajax({
-					"url" : sSource,
-					"datatype": "json", 
-					"contentType": "application/json; charset=utf-8",
-					"type" : "POST",
-					"data" : JSON.stringify(aoData),
-					success: function(data){							
-						fnCallback(data);
-					},
-					 error:function(XMLHttpRequest, textStatus, errorThrown){
-		             }
-				})
-			},
-        	"language": {
-        		"url":"${ctx}/plugins/datatables/chinese.json"
-        	},
-			
-			"columns" : [
-			        	{"data": null,"className":"dt-body-center"
-					}, {"data": "arrivalId","className":"dt-body-center"
-					}, {"data": "arriveDate","className":"dt-body-center"
-					}, {"data": "materialId"
-					}, {"data": "materialName"
-					}, {"data": "unit","className":"dt-body-center"
-					}, {"data": "quantity","className":"td-right"	
-					}, {"data": "status","className":"td-center"
-					}, {"data": null,"className":"td-center"
-					}
-				] ,
-				"columnDefs":[
-		    		{"targets":8,"render":function(data, type, row){
-		    			var contractId = row["contractId"];		    			
-		    			var rtn= "<a href=\"###\" onClick=\"doEdit('" + row["contractId"] + "','" + row["arrivalId"] + "')\">编辑</a>";
-		    			rtn = rtn +"&nbsp;&nbsp;"+ "<a href=\"###\" onClick=\"doDelete('" + row["recordId"] + "')\">删除</a>";
-		    			return rtn;
-		    		}},
-		    	]        
-			
-		}).draw();
-						
-		t.on('click', 'tr', function() {
-			
-			var rowIndex = $(this).context._DT_RowIndex; //行号			
-			//alert(rowIndex);
-
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-			
-		});
-		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
-
-	};
+	
 	
 	$(document).ready(function() {
 
-		//设置光标项目
-		//$("#attribute1").focus();
-		//$("#order\\.piid").attr('readonly', "true");
-
+		setPurchaserList();//设置采购员列表
+	
 		//日期
 		var mydate = new Date();
 		var number = mydate.getFullYear();
@@ -209,12 +116,6 @@
 		
 		ajax();
 
-		//historyAjax();//到货登记历史记录
-
-		//autocomplete();
-		
-		//$('#example').DataTable().columns.adjust().draw();
-		
 		$("#arrival\\.arrivedate").datepicker({
 				dateFormat:"yy-mm-dd",
 				changeYear: true,
@@ -256,7 +157,10 @@
 
 			$("#insert").attr("disabled", "disabled");
 			var makeType=$('#makeType').val();	
-			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert"+ "&makeType="+makeType);
+			var purchaser = $('#purchaserList').val();
+			var url = "${ctx}/business/arrival?methodtype=insert"+ "&makeType="+makeType+'&purchaser='+purchaser;
+			$('#formModel').attr("action", url);
+
 			$('#formModel').submit();
 		});
 		
@@ -272,18 +176,18 @@
 				
 				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
 				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
-				var vreturn   = $(this).find("td").eq(7).find("span").text();//已退货
-				var vsurplus  = $(this).find("td").eq(8).find("span").text();//剩余
+				//var vreturn   = $(this).find("td").eq(7).find("span").text();//已退货
+				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
 
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
-				var freturn  = currencyToFloat(vreturn);
+				//var freturn  = currencyToFloat(vreturn);
 				var fsurplus = floatToCurrency( fcontract - freceive );
 				
 
 				if(fsurplus > "0"){
 					$(this).find("td").eq(4).find("input").val(fsurplus);//本次到货
-					$(this).find("td").eq(8).find("span").text("0")//剩余数清零
+					$(this).find("td").eq(7).find("span").text("0")//剩余数清零
 				}
 							
 			})
@@ -298,16 +202,16 @@
 				var varrival  = $(this).find("td").eq(4).find("input").val();////本次收货
 				var vcontract = $(this).find("td").eq(5).find("span").text();////合同数
 				var vreceive  = $(this).find("td").eq(6).find("span").text();//已收货
-				var vreturn   = $(this).find("td").eq(7).find("span").text();//已退货
-				var vsurplus  = $(this).find("td").eq(8).find("span").text();//剩余
+				//var vreturn   = $(this).find("td").eq(7).find("span").text();//已退货
+				var vsurplus  = $(this).find("td").eq(7).find("span").text();//剩余
 
 				var fcontract= currencyToFloat(vcontract);
 				var freceive = currencyToFloat(vreceive);
-				var freturn  = currencyToFloat(vreturn);
+				//var freturn  = currencyToFloat(vreturn);
 				var fsurplus = floatToCurrency( fcontract - freceive );
 
 				if(varrival > "0"){
-					$(this).find("td").eq(8).find("span").text(fsurplus);//剩余数
+					$(this).find("td").eq(7).find("span").text(fsurplus);//剩余数
 					$(this).find("td").eq(4).find("input").val("0");//本次到货清零
 				}
 							
@@ -326,6 +230,20 @@
 		location.href = url;
 	}
 	
+	
+	function setPurchaserList(){
+		var i = 0;	
+		var options = "";
+		<c:forEach var="list" items="${purchaser}">
+			i++;
+			options += '<option value="${list.key}">${list.value}</option>';
+		</c:forEach>		
+		var purchase = '${contract.purchaser}'
+		
+		$('#purchaserList').html(options);		
+		$('#purchaserList').val(purchase);//默认值
+	}
+	
 </script>
 
 </head>
@@ -340,6 +258,7 @@
 	<input type="hidden" id="tmpMaterialId" />	
 	<input type="hidden" id="makeType" value="${makeType }" />
 	<form:hidden path="arrival.arrivalid"  value="${arrivalId }" />
+	
 	<fieldset>
 		<legend> 合同信息</legend>
 		<table class="form" id="table_form">
@@ -353,9 +272,6 @@
 				<td width="200px">
 					<form:input path="arrival.arrivedate" class="short read-only" /></td>
 				
-				<td width="100px" class="label">仓管员：</td>
-				<td>
-					<form:input path="arrival.userid" class="short read-only" value="${userName }" /></td>
 			</tr>
 			<tr> 				
 				<td class="label"><label>耀升编号：</label></td>					
@@ -373,17 +289,18 @@
 			 	
 				<td class="label"><label>合同交期：</label></td>					
 				<td>&nbsp;${contract.deliveryDate }</td>
+								
+				<td width="100px" class="label">采购员：</td>
+				<td>
+					<select id="purchaserList" name="purchaserList"  style="width: 100px;vertical-align: bottom;height: 25px;"></select></td>
+				
 			</tr>
 										
 		</table>
 </fieldset>
-<div style="clear: both"></div>
-<fieldset class="action" style="text-align: right;">
-	<button type="button" id="insert" class="DTTT_button">确认收货</button>
-	<button type="button" id="doView" class="DTTT_button">查看到货记录</button>
-	<button type="button" id="goBack" class="DTTT_button">返回</button>
-</fieldset>
-<fieldset style="margin-top: -25px;">
+<fieldset style="">
+	<span class="tablename"> 收货登记</span>
+	<a id="doView" href="###" >收货详情</a>
 	<div class="list">	
 	<table id="example" class="display" >
 		<thead>				
@@ -397,7 +314,6 @@
 					<input type="checkbox" name="reverse" id="reverse" /><label for="reverse">全部清空</label></th>
 				<th class="dt-center" width="60px">合同数量</th>
 				<th class="dt-center" width="60px">净收货</th>
-				<th class="dt-center" width="60px">累计退货</th>
 				<th class="dt-center" width="60px">剩余数量</th>
 			</tr>
 		</thead>
@@ -413,23 +329,17 @@
 					<td><span>${list.unit }</span></td>
 					<td><form:input path="arrivalList[${status.index}].quantity" class="quantity num mini"  value="0"/></td>
 					<td><span>${list.quantity }</span></td>
-					<td><span id="arrival${ status.index}"></span></td>
-					<td><span>${list.stockinRtnQty }</span></td>
+					<td><span id="arrival${ status.index}">${list.accumulated }</span></td>
 					<td><span id="surplus${ status.index}"></span></td>
 				</tr>
 				<script type="text/javascript">
 					var index = '${status.index}';
 					var quantity = currencyToFloat('${list.quantity}');
-					var sumArrivalQty = currencyToFloat('${list.sumArrivalQty}');
-					var stockinRtnQty = currencyToFloat('${list.stockinRtnQty}');
-					var inspectRtnQty = currencyToFloat('${list.inspectRtnQty}');
-					var sumReturn = stockinRtnQty + inspectRtnQty;
-	    			var arrival = setPurchaseQuantity(sumReturn,sumArrivalQty );
-					var surplus = quantity - currencyToFloat(arrival);
+					var accumulated = currencyToFloat('${list.accumulated}');//累计净收货
+					var surplus = quantity - accumulated;
 					if(surplus < 0)
 						surplus = 0;
 					
-					$('#arrival'+index).html(floatToCurrency( arrival ))
 					$('#surplus'+index).html(floatToCurrency( surplus ))
 						
 				</script>
@@ -439,31 +349,11 @@
 	</tbody>
 </table>
 </div>
-</fieldset>		
- <!-- 
-<div style="clear: both"></div>
+</fieldset>	
+<fieldset class="action" style="text-align: right;">
+	<button type="button" id="insert" class="DTTT_button" style="margin-right: 30px;">确认收货</button>
+</fieldset>	
 
-<fieldset>
-	<legend>收货记录</legend>
-	<div class="list">	
-	<table id="example2" class="display" >
-		<thead>				
-			<tr>
-				<th width="1px">No</th>
-				<th class="dt-center" style="width:60px">收货编号</th>
-				<th class="dt-center" width="100px">到货日期</th>
-				<th class="dt-center" width="150px">物料编号</th>
-				<th class="dt-center" >物料名称</th>
-				<th class="dt-center" width="40px">单位</th>
-				<th class="dt-center" width="80px">到货数量</th>
-				<th class="dt-center" width="60px">状态</th>
-				<th class="dt-center" width="30px"></th>
-			</tr>
-		</thead>
-</table>
-</div>
-</fieldset>
- -->
 </form:form>
 
 </div>
