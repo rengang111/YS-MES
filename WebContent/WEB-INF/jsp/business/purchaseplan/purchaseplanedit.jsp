@@ -295,7 +295,7 @@
 	        
 		});
 		
-		t.on('change', 'tr td:nth-child(11),tr td:nth-child(13),tr td:nth-child(14)',function() {
+		t.on('change', 'tr td:nth-child(12),tr td:nth-child(13),tr td:nth-child(14)',function() {
 					
 	        var $td = $(this).parent().find("td");
 	        purchasePlanCompute($td,'2');
@@ -822,6 +822,7 @@ function purchasePlanCompute(obj,flg){
 	var fOrder    = currencyToFloat( $oOrder.text() );
 	var fTotalQuty= fUnitQuty * fOrder;
 	var fStock = currencyToFloat( $oStock.text() );
+	var fRequistion = currencyToFloat( $oRequrtion.val() );
 	
 	var tmp3 =  $.trim($oMaterIdV.text()).substring(0,1);//包装件进位
 	if(tmp3 == 'G')
@@ -835,7 +836,7 @@ function purchasePlanCompute(obj,flg){
 	}
 	
 	var fPrice    = currencyToFloat($oThisPrice.val());//计算用单价
-	var fTotalNew = currencyToFloat(fPrice * fTotalQuty);//合计
+	var fTotalNew = currencyToFloat(fPrice * fRequistion);//合计
 	
 	//var materialId = $oMaterial.val();	
 	var vPurchase = floatToCurrency(fPurchase);	
@@ -845,11 +846,10 @@ function purchasePlanCompute(obj,flg){
 	var vPrice = formatNumber(fPrice);
 			
 	//详情列表显示
-	$oUnitQuty.val(vUnitQuty)
+	$oUnitQuty.val(vUnitQuty);
 	$oPurchase.val(vPurchase);
 	$oTotalQuty.html(vTotalQuty);
 	$oTotalQutyI.val(vTotalQuty);
-	$oRequistion.val(vTotalQuty);
 	$oTotPriceS.html(vTotalNew);
 	$oTotPriceI.val(vTotalNew);
 	$oThisPrice.val(vPrice);

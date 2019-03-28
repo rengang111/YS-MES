@@ -385,12 +385,10 @@
 	
 	//采购员选择
 	function doSelectUserId(userId){
-		
-		var year = $('#year').val();
-		
+				
 		$('#userId').val(userId);
 
-		searchAjax('0','false','','');
+		searchAjax('false');
 	}
 	
 	

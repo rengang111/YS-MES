@@ -906,6 +906,7 @@
   	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeL"  dtype="ch" oper="&lt;&gt;"  lg="AND" bt="" />
    	  	<w name="left(a.materialId,1)"  des=""  reqName="makeTypeG"  dtype="ch" oper="="  lg="AND" bt="" />
    	  	<w name="A.contractId"  des=""  reqName="contractId"  dtype="ch" oper="="  lg="AND" bt="" />
+   	  	<w name="A.purchaser"  des=""  reqName="userId"  dtype="ch" oper="="  lg="AND" bt="" />
    	  	
    	  	<w name="DATE_FORMAT(A.arriveDate,'%Y-%m')" des="" reqName="monthday"   dtype="ch" oper="="   lg="AND" bt="" />
    	  	<w name="DATE_FORMAT(A.arriveDate,'%Y')"    des="" reqName="year"       dtype="ch" oper="="   lg="AND" bt="" />

@@ -1169,7 +1169,7 @@
   background: -webkit-linear-gradient(top,#EFF5FF 0,#ffffff 100%);
   background: -moz-linear-gradient(top,#EFF5FF 0,#ffffff 100%);
   background: -o-linear-gradient(top,#EFF5FF 0,#ffffff 100%);
-  background: linear-gradient(to bottom,#EFF5FF 0,#ffffff 100%);
+  background: linear-gradient(to bottom,#1469F6  0,#ffffff 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#EFF5FF,endColorstr=#ffffff,GradientType=0);
 }

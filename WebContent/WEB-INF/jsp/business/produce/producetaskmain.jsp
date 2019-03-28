@@ -33,7 +33,7 @@
 				"ordering"	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",        
-				
+	         	"aaSorting": [[ 1, "ASC" ]],
 				"sAjaxSource" : url,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
@@ -148,7 +148,6 @@
 					{
 						//"order": [[ 2, 'asc' ]]
 					}
-	         	//"aaSorting": [[ sortc, "DESC" ]]
 	         	],
 	         		         	
 			});
@@ -192,7 +191,7 @@
 		buttonSelectedEvent();//按钮选择式样
 		buttonSelectedEvent2();//按钮选择式样
 		
-		$('#defutBtn').removeClass("start").addClass("end");
+		$('#defutBtn1').removeClass("start").addClass("end");
 		$('#defutBtnZ').removeClass("start").addClass("end");
 	})	
 	
@@ -293,11 +292,25 @@
 		}else{
 			return;
 		}
-		$('#searchFlag').val('Y');//合并收起
+		//$('#searchFlag').val('Y');//合并收起
 		//按钮显示规则
+		$('#defutBtnY').show();
 		$('#defutBtnH').hide();
-		$('#merge').hide();
-				
+		$('#merge').show();
+			
+		/*
+		var collection = $(".box2");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
+		$('#defutBtnH').removeClass("start").addClass("end");
+		$('#defutBtn3').removeClass("start").addClass("end");
+		*/
 		var str = '';
 		var supplierId = '';
 		var supplierId_next = '';
@@ -338,8 +351,6 @@
 			}
 					
 		});
-
-		alert("checkedList:"+checkedList);
 		
 		var actionUrl = "${ctx}/business/produce?methodtype=productTaskOrderHide&checkedList="+checkedList;
 
@@ -419,8 +430,6 @@
 			}
 					
 		});
-
-		alert("checkedList:"+checkedList);
 		
 		var actionUrl = "${ctx}/business/produce?methodtype=productTaskOrderShow&checkedList="+checkedList;
 
@@ -551,9 +560,9 @@
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 			<div id="" style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCustomer();" id="defutBtn"><span>常规订单</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer2();"><span>配件订单</span></a>
-				<a  class="DTTT_button box" onclick="doSearchViewHide();"><span>查看隐藏</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer();" id="defutBtn1"><span>常规订单</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer2();"id="defutBtn2"><span>配件订单</span></a>
+				<a  class="DTTT_button box" onclick="doSearchViewHide();" id="defutBtn3"><span>查看隐藏</span></a>
 			</div>
 			<div id="" style="height:40px;float: right">
 					<a  class="DTTT_button box2" onclick="doCreateY();" id="defutBtnY">&nbsp;隐藏&nbsp;</a>

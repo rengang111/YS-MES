@@ -70,7 +70,7 @@
     	v_orderlist AS A 
     	LEFT JOIN b_OrderMergeDetail b ON a.YSId=b.ysid AND b.deleteFlag = '0'
     	LEFT JOIN b_OrderProduceHide c ON a.YSId=c.ysid AND c.deleteFlag = '0'
-    	WHERE A.deleteFlag = '0' AND a.status+0 &lt; 40
+    	WHERE A.deleteFlag = '0' AND a.status+0 &lt; 40 AND SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) NOT IN ('BTR','BNC','CGR','PJ')
     </from>
     <orderby>IFNULL(b.mergeId,'0')  DESC,IFNULL(b.YSId,a.YSId),mid(A.YSId,LOCATE('-',A.YSId)+1,2)+0</orderby>
     <groupby></groupby>

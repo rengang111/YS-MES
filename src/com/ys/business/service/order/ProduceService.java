@@ -125,7 +125,7 @@ public class ProduceService extends CommonService  {
 		String key1 = keyArr[0];
 		String key2 = keyArr[1];		
 
-		dataModel.setQueryFileName("/business/produce/producequerydefine");
+		dataModel.setQueryFileName("/business/order/producequerydefine");
 		dataModel.setQueryName("getOrderListForTask");
 		String searchFlag = request.getParameter("searchFlag");
 		String orderType = request.getParameter("orderType");//订单类型

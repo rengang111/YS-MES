@@ -107,11 +107,11 @@
 		    			var totalRequisition = currencyToFloat( row["totalRequisition"] );
 		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
 		    			var rtn="";
-		    			if(requisitionQty == '0'){
-		    				rtn = "待申请";
-		    				
-		    			}else if(requisitionQty >= totalRequisition){
+		    			if(requisitionQty >= totalRequisition){
 		    				rtn = "已出库";
+		    				
+		    			}else if(requisitionQty == '0'){
+		    				rtn = "待申请";
 		    				
 		    			}else {
 		    				rtn = "出库中";

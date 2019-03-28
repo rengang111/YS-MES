@@ -388,10 +388,11 @@ body{
 	}
 	
 	function doShowDetail(contractId,paymentId) {
-
-		//var url = '${ctx}/business/payment?methodtype=paymentView&contractId=' + contractId+'&paymentId='+paymentId;
-		var url = '${ctx}/business/payment?methodtype=finishAddOrView' + '&paymentId='+ paymentId;
-
+		
+		var url = '${ctx}/business/payment?methodtype=paymentView&contractId=' + contractId+'&paymentId='+paymentId;
+		
+		var searchType = $("#searchType").val();
+		
 		url = url +"&searchType="+searchType;
 		
 		callWindowFullView("付款管理详情",url);

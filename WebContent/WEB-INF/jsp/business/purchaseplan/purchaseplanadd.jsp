@@ -758,6 +758,7 @@ function purchasePlanCompute(obj,flg){
 	var fOrder    = currencyToFloat( $oOrder.text() );
 	var fTotalQuty= fUnitQuty * fOrder;
 	var fStock = currencyToFloat( $oStock.text() );
+	var fRequistion = currencyToFloat( $oRequrtion.val() );
 	
 	var tmp3 =  $.trim($oMaterIdV.text()).substring(0,1);//包装件进位
 	if(tmp3 == 'G')
@@ -770,7 +771,7 @@ function purchasePlanCompute(obj,flg){
 		var fPurchase = currencyToFloat( $oPurchase.val() );//建议采购量	:直接输入	
 	}
 	var fPrice    = currencyToFloat($oThisPrice.val());//计算用单价
-	var fTotalNew = currencyToFloat(fPrice * fTotalQuty);//合计
+	var fTotalNew = currencyToFloat(fPrice * fRequistion);//合计
 	
 	//var materialId = $oMaterial.val();	
 	var vPurchase = floatToCurrency(fPurchase);	
@@ -780,7 +781,7 @@ function purchasePlanCompute(obj,flg){
 	var vPrice = formatNumber(fPrice);
 			
 	//详情列表显示
-	$oUnitQuty.val(vUnitQuty)
+	$oUnitQuty.val(vUnitQuty);
 	$oPurchase.val(vPurchase);
 	$oTotalQuty.html(vTotalQuty);
 	$oTotalQutyI.val(vTotalQuty);
@@ -788,7 +789,7 @@ function purchasePlanCompute(obj,flg){
 	$oTotPriceI.val(vTotalNew);
 	$oThisPrice.val(vPrice);
 	$oSupplier.val($.trim($oSupplier.val()));
-	$oRequrtion.val(vTotalQuty);
+	//$oRequrtion.val(vTotalQuty);
 	
 	costAcount();//成本核算
 }

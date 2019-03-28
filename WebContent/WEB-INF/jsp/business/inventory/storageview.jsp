@@ -82,7 +82,7 @@
 	    			var text="";
 	    			text += "<a href=\"###\" onClick=\"doEdit('"  + row["contractId"] + "','"  + row["receiptId"] + "')\">编辑</a>";
 	    			text += "&nbsp;"
-	    			text += "<a href=\"###\" onClick=\"doDelete('"  + row["materialId"] + "','"  + row["receiptId"] + "')\">删除</a>";
+	    			//text += "<a href=\"###\" onClick=\"doDelete('"  + row["materialId"] + "','"  + row["receiptId"] + "')\">删除</a>";
 	    			text += "<br />"
 	    			text += "<a href=\"###\" onClick=\"doPrint('" + row["contractId"] + "','" + row["receiptId"] + "')\">打印</a>";
 	    			text += "&nbsp;"
