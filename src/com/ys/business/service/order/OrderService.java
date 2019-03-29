@@ -32,6 +32,7 @@ import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderCancelDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
+import com.ys.business.db.dao.B_OrderDivertDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.dao.B_StockOutDao;
@@ -41,6 +42,7 @@ import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderCancelData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_OrderDivertData;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.B_RequisitionDetailData;
@@ -999,6 +1001,47 @@ public class OrderService extends CommonService  {
 		dao.Create(data);
 	}	
 	
+	/*
+	 * 订单详情插入处理
+	 */
+	@SuppressWarnings("unchecked")
+	private void insertOrderDivert(
+			B_OrderDivertData divert) throws Exception{
+
+		B_OrderDivertDao dao = new B_OrderDivertDao();
+
+		//存在check
+		String where = " divertFromYsid ='"+divert.getDivertfromysid() +"' "+
+						" AND diverToYsid ='"+divert.getDivertoysid()+"' "+
+						" AND deleteFlag='0' " ;
+		
+		List<B_OrderDivertData> list = new B_OrderDivertDao().Find(where);
+		if(list.size() > 0 ){
+
+			B_OrderDivertData db = list.get(0);
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"OrderDetailInsert",userInfo);
+			copyProperties(db,commData);
+			
+			dao.Store(db);
+			
+		}else{
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderDetailUpdate",userInfo);
+			copyProperties(divert,commData);
+			guid = BaseDAO.getGuId();
+			divert.setRecordid(guid);
+			
+			dao.Create(divert);
+		}
+		
+	
+	
+		
+
+	}	
 	/*
 	 * 订单详情插入处理
 	 */
@@ -2289,13 +2332,14 @@ public class OrderService extends CommonService  {
 	
 	public String insertDivertOrder(String data) throws Exception {
 
-		String divertysid = "";
+		String piid = "";
 		ts = new BaseTransaction();
 
 		try {			
 			ts.begin();
 					
 			//处理订单详情数据			
+			piid = request.getParameter("PIId");
 			String counter = getJsonData(data, "keyBackup");
 			
 			int counterInt = 0;
@@ -2304,46 +2348,30 @@ public class OrderService extends CommonService  {
 		    }
 		    for (int i = 0; i < counterInt; ++i) {
 
-		    	       divertysid = getJsonData(data, "orderDetailLines[" + i + "].divertysid");
-		    	String ysid       = getJsonData(data, "orderDetailLines[" + i + "].ysid");
-		    	String materialid = getJsonData(data, "orderDetailLines[" + i + "].materialid");
-			    String quantity   = getJsonData(data, "orderDetailLines[" + i + "].quantity");
-			    String remarks    = getJsonData(data, "orderDetailLines[" + i + "].remarks");
-			    String peiysid    = getJsonData(data, "orderDetailLines[" + i + "].peiysid");
+		    	String divertfromysid    = getJsonData(data, "orderDevertLines[" + i + "].divertfromysid");
+		    	String diverttoysid      = getJsonData(data, "orderDevertLines[" + i + "].diverttoysid");
+		    	//String materialid        = getJsonData(data, "orderDevertLines[" + i + "].materialid");
+			    String divertquantity    = getJsonData(data, "orderDevertLines[" + i + "].divertquantity");
+			    String shortname         = getJsonData(data, "orderDevertLines[" + i + "].shortname");
+			    String thisreductionqty  = getJsonData(data, "orderDevertLines[" + i + "].thisreductionqty");
 
-			    if (isNullOrEmpty(divertysid))
+			    if (isNullOrEmpty(diverttoysid))
 			    	continue;
 		      
 				//更新原订单
-			    if(notEmpty(peiysid) && !peiysid.equals(ysid)){
-			    	//说明该数据已存在，且耀升编号发生改变，但不需要再次更新原订单
-			    	updateOrderDetailForDivert(peiysid,ysid);	
-			    }else{
-
-					B_OrderDetailData oldDt = updateParentOrderDetail(divertysid,quantity);
+			    updateParentOrderDetail(divertfromysid,thisreductionqty);
 					
-					B_OrderDetailData newDt = new B_OrderDetailData();
-					newDt.setPrice(oldDt.getPrice());
-					newDt.setTotalprice(
-							floatToString(
-									stringToFloat(quantity) * stringToFloat(oldDt.getPrice())
-									));
+				B_OrderDivertData newDt = new B_OrderDivertData();
+				newDt.setDivertpiid(piid);
+				newDt.setDivertfromysid(divertfromysid);	
+				newDt.setDivertoysid(diverttoysid);
+				newDt.setDivertquantity(divertquantity);
+				newDt.setShortname(shortname);
+				newDt.setDivertquantity(divertquantity);
+				newDt.setThisreductionqty(thisreductionqty);
 					
-					newDt.setYsid(ysid);
-					newDt.setDivertysid(divertysid);
-					newDt.setMaterialid(materialid);
-					newDt.setQuantity(quantity);
-					newDt.setRemarks(remarks);
-					newDt.setTotalquantity(quantity);
-					newDt.setProductclassify(oldDt.getProductclassify());//产品分类
-					newDt.setOrdertype(oldDt.getOrdertype());
-					newDt.setStatus(Constants.ORDER_STS_1);
-					newDt.setCurrency(oldDt.getCurrency());
-						
-					//正常订单
-					insertOrderDetail(newDt,oldDt.getPiid());	
-			    }
-							
+				//挪用订单
+				insertOrderDivert(newDt);
 			  
 		    } 
 
@@ -2355,7 +2383,78 @@ public class OrderService extends CommonService  {
 			ts.rollback();
 		}	
 		
-		return divertysid;
+		return piid;
+	}
+	
+	public String deleteDivertOrder(String data) throws Exception {
+
+		String piid = "";
+		String ysidList = request.getParameter("ysidList");
+		
+		if(isNullOrEmpty(ysidList)){
+			return piid;
+		}
+		String[] list = ysidList.split(";");
+		try {	
+			ts = new BaseTransaction();		
+			ts.begin();
+					
+			//处理订单详情数据			
+			piid = request.getParameter("PIId");
+			
+		
+		    for (int i = 0; i < list.length; ++i) {
+
+		    	String divertoysid    = list[i].split(",")[0];
+		    	String divertfromysid = list[i].split(",")[1];
+
+			    if (isNullOrEmpty(divertoysid))
+			    	continue;
+		      
+			    //取得被删除订单的挪用数量
+			    B_OrderDivertData db = deleteDivertOrderDetail(divertfromysid,divertoysid);
+			    
+				//更新原订单
+			    String oldQty = db.getThisreductionqty();
+			    float foldQty = 0;
+			    if(notEmpty(oldQty)){
+			    	foldQty = stringToFloat(oldQty);			    	
+			    }
+			    if(foldQty > 0 ){
+			    	foldQty = foldQty * (-1);//删除处理，扣回订单数
+				    updateParentOrderDetail(divertfromysid,floatToString(foldQty));
+			    }
+		    } 
+
+			ts.commit();
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			ts.rollback();
+		}	
+		
+		return piid;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private B_OrderDivertData deleteDivertOrderDetail(
+			String divertfromysid,
+			String divertoysid) throws Exception{
+		
+		B_OrderDivertData dbData = new B_OrderDivertData();
+		String where = " divertfromysid ='" + divertfromysid +"' AND divertoysid ='" + divertoysid + "' AND deleteFlag='0' ";
+		List<B_OrderDivertData> list  = new B_OrderDivertDao().Find(where);
+			
+		if( list.size() > 0){
+			dbData = list.get(0);
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"OrderCancelDelete",userInfo);
+			copyProperties(dbData,commData);
+			
+			new B_OrderDivertDao().Store(dbData);
+		}
+		return dbData;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -2427,16 +2526,16 @@ public class OrderService extends CommonService  {
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderList");
+		dataModel.setQueryName("getOrderDevertList");
 		baseQuery = new BaseQuery(request, dataModel);
 
-		String divertYsid = request.getParameter("divertYsid");
-		if(isNullOrEmpty(divertYsid)){
+		String piid = request.getParameter("PIId");
+		if(isNullOrEmpty(piid)){
 			modelMap.put("data","");
 			modelMap.put("recordsTotal", "0");
 			return modelMap;
 		}
-		userDefinedSearchCase.put("divertYsid", divertYsid);
+		userDefinedSearchCase.put("divertPIid", piid);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 		

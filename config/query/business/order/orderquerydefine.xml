@@ -732,7 +732,34 @@
     <orderby>A.YSId </orderby>
     <groupby></groupby>
     <having></having>
-	<power>
-	</power>    
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getOrderDevertList" />
+    <where>
+   	  <w name="A.divertPIid"        des=""  reqName="divertPIid"      dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.divertFromYsid"    des=""  reqName="divertFromYsid"      dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="b.materialId" alias="" ctype="" />
+      <f name="b.materialName" alias="" ctype="" />
+      <f name="A.divertPIid" alias="" ctype="" />
+      <f name="A.divertFromYsid" alias="" ctype="" />
+      <f name="A.diverToYsid" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.divertQuantity" alias="" ctype="" />
+      <f name="A.thisReductionQty" alias="" ctype="" />
+    </select>
+    <from>
+    	b_OrderDivert AS a
+    	LEFT JOIN v_orderlist AS b ON b.PIId = a.divertPIid
+    	WHERE a.deleteFlag = '0'
+    </from>
+    <orderby>a.divertFromYsid</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
   </query>
 </root>

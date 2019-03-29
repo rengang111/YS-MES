@@ -238,13 +238,21 @@ public class OrderAction extends BaseAction {
 			case "getOrderDetailByYSId":
 				getOrderDetailByYSId();
 				rtnUrl = "/business/order/orderview";
-
+				break;
 			case "insertDivertOrder"://保存挪用订单
-				insertDivertOrder(data);
+				dataMap = insertDivertOrder(data);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "getDivertOrder"://显示挪用订单
 				dataMap = getDivertOrder();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getOrderDetailForDivert"://挪用订单录入用
+				dataMap = getOrderDetailForDivert();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "deleteDivertOrder"://删除挪用订单
+				dataMap = deleteDivertOrder(data);
 				printOutJsonObj(response, dataMap);
 				break;
 		}
@@ -767,6 +775,16 @@ public class OrderAction extends BaseAction {
 	 
 	}	
 	
+	public HashMap<String, Object> getOrderDetailForDivert() throws Exception
+	{
+		String ysid = request.getParameter("YSId");
+		if(ysid == null || ("").equals(ysid.trim())){
+			return null;
+		}
+		ysid = ysid.toUpperCase();
+	    return this.orderService.getOrderDetailByYSId(ysid,"");	 
+	}	
+	
 	public HashMap<String, Object> purchasePlanView() throws Exception {
 		
 		return orderService.getOrderTrackingDetail();		
@@ -926,9 +944,28 @@ public class OrderAction extends BaseAction {
 		
 		try {
 			
-			String divertysid = orderService.insertDivertOrder(data);
+			String PIId = orderService.insertDivertOrder(data);
 			
-			modelMap.put("divertysid", divertysid);
+			modelMap.put("PIId", PIId);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+
+	public HashMap<String, Object> deleteDivertOrder(String data){	
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		try {
+			
+			String PIId = orderService.deleteDivertOrder(data);
+			
+			modelMap.put("PIId", PIId);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

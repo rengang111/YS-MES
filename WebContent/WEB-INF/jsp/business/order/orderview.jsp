@@ -1,15 +1,8 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib prefix="sec"
-	uri="http://www.springframework.org/security/tags"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@ page isELIgnored="false" %>
+
 <!DOCTYPE HTML>
 <html>
-
 <head>
 <title>订单管理-订单查看</title>
 <%@ include file="../../common/common2.jsp"%>
@@ -32,12 +25,13 @@ $.fn.dataTable.TableTools.buttons.add_rows1 = $
 			var checkbox = "<input type=checkbox name='numCheck' id='numCheck' value='" + rowIndex + "' />";
 			trHtml+="<tr>";	
 			trHtml+='<td class="td-left">' + checkbox +'</td>';
-			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].divertysid" id="orderDetailLines'+rowIndex+'.divertysid" class="short" /></td>';
-			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].ysid"       id="orderDetailLines'+rowIndex+'.ysid" class="short " /></td>';
-			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].materialid" id="orderDetailLines'+rowIndex+'.materialid" class="attributeList1" /></td>';
+			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].diverttoysid"   id="orderDevertLines'+rowIndex+'.diverttoysid" class="short" /></td>';
+			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].divertfromysid" id="orderDevertLines'+rowIndex+'.divertfromysid" class="short attributeList1" /></td>';
+			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].materialid"     id="orderDevertLines'+rowIndex+'.materialid" class="attributeList1" /></td>';
 			trHtml+='<td class="td-center"><span id=""></span></td>';
-			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].quantity"   id="orderDetailLines'+rowIndex+'.quantity" class="short" /></td>',
-			trHtml+='<td class="td-center"><input type="text" name="orderDetailLines['+rowIndex+'].remarks"    id="orderDetailLines'+rowIndex+'.remarks" class="middle" /></td>',
+			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].shortname"        id="orderDevertLines'+rowIndex+'.shortname" class="" /></td>',
+			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].divertquantity"   id="orderDevertLines'+rowIndex+'.divertquantity" class="short" /></td>',
+			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].thisreductionqty" id="orderDevertLines'+rowIndex+'.thisreductionqty" class="short" /></td>',
 			trHtml+="</tr>";	
 
 			$('#documentary tbody tr:last').after(trHtml);
@@ -57,15 +51,26 @@ $.fn.dataTable.TableTools.buttons.reset1 = $.extend(true, {},
 		$.fn.dataTable.TableTools.buttonBase, {
 		"fnClick" : function(button) {
 			
+			if(confirm('删除后不能恢复，确定要删除吗？')){
+				
+			}else{
+				return;
+			}
 			var t=$('#documentary').DataTable();
 			
 			rowIndex = t.row('.selected').index();
 			
 			var str = true;
+			var ysidList = '';
 			$("input[name='numCheck']").each(function(){
 				if ($(this).prop('checked')) {
 					var n = $(this).parents("tr").index();  // 获取checkbox所在行的顺序
 					$('#documentary tbody').find("tr:eq("+n+")").remove();
+					
+					var fromysid = $(this).parents("tr").find('td').eq(1).text();
+					var toysid   = $(this).parents("tr").find('td').eq(2).text();
+					if(!fromysid == '')
+						ysidList += fromysid +','+toysid+';'
 					str = false;
 				}
 			});
@@ -74,21 +79,49 @@ $.fn.dataTable.TableTools.buttons.reset1 = $.extend(true, {},
 				$().toastmessage('showWarningToast', "请选择要 删除 的数据。");
 				return;
 			}else{
-				$().toastmessage('showWarningToast', "删除后,请保存");					
+				//$().toastmessage('showWarningToast', "删除后,请保存");					
 			}
-
 			var rowCont = true;
 			$("input[name='numCheck']").each(function(){
 				rowCont = false;
-			});
-			
+			});			
 			if(rowCont == true){
 				$('#documentary tbody tr:eq(0)').show();//显示无效行
 				counter1 = 0;
-			
 			}
+			
+			doDelete(ysidList);
 		}
 	});
+
+function doDelete(ysidList) {
+	
+	var PIId = '${order.PIId}';
+	var actionUrl = "${ctx}/business/order?methodtype=deleteDivertOrder&PIId="+PIId+"&ysidList="+ysidList;
+	
+
+	$('#keyBackup').val(counter1);
+
+	$.ajax({
+		type : "POST",
+		contentType : 'application/json',
+		dataType : 'json',
+		url : actionUrl,
+		data : ysidList,//
+		success : function(data) {
+
+								
+			var PIId = data['PIId'];
+			documentaryAjax(PIId);	//挪用订单
+			
+			$().toastmessage('showWarningToast', "保存成功!");		
+			
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {				
+			//alert(textStatus);
+		}
+	});
+}
 
 $.fn.dataTable.TableTools.buttons.save1 = $.extend(true, {},
 		$.fn.dataTable.TableTools.buttonBase, {
@@ -112,15 +145,10 @@ function doSave(type) {
 		url : actionUrl,
 		data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
 		success : function(data) {
-			//alert(d)
-			switch(type){
-				case "D":
-					
-					var divertYsid = data['divertysid'];
-					alert('divertYsid'+divertYsid)
-					documentaryAjax(divertYsid);	//挪用订单
-					break;			
-			}			
+
+								
+			var PIId = data['PIId'];
+			documentaryAjax(PIId);	//挪用订单
 			
 			$().toastmessage('showWarningToast', "保存成功!");		
 			
@@ -131,14 +159,14 @@ function doSave(type) {
 	});
 }
 	
-function documentaryAjax(divertYsid) {//挪用订单
+function documentaryAjax(PIId) {//挪用订单
 
 	var table = $('#documentary').dataTable();
 	if(table) {
 		table.fnDestroy();
 	}
 
-	var actionUrl = "${ctx}/business/order?methodtype=getDivertOrder&divertYsid="+divertYsid;
+	var actionUrl = "${ctx}/business/order?methodtype=getDivertOrder&PIId="+PIId;
 
 	var t = $('#documentary').DataTable({
 		
@@ -191,63 +219,33 @@ function documentaryAjax(divertYsid) {//挪用订单
     	},
 		
 		"columns" : [
-		    {"data": null,"className" : 'td-left'},
-		    {"data": "divertYsid", "defaultContent" : '',"className" : 'td-center'},
-		    {"data": "YSId", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": null,"className" : 'td-center'},
+		    {"data": "diverToYsid", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "divertFromYsid", "defaultContent" : '',"className" : 'td-center'},
 		    {"data": "materialId", "defaultContent" : '',"className" : 'td-center'},
 		    {"data": "materialName", "defaultContent" : '',"className" : ''},
-		    {"data": "quantity", "className" : 'td-center'},
-		    {"data": "remarks", "className" : ''},
+		    {"data": "shortName", "className" : 'td-center'},
+		    {"data": "divertQuantity", "className" : 'td-center'},
+		    {"data": "thisReductionQty", "className" : 'td-center'},
+		    
 		],
 		"columnDefs":[
     		{"targets":0,"render":function(data, type, row){		
 				var status = row["status"];
     			var rownum = row["rownum"];
 				var checkbox = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />";
-    			var cost = row["cost"];
-    		//	if (status != "1"){//可以修改
-    		//		return rownum + checkbox;
-    		//	}else{
-    				return rownum;
-    		//	}
+
+    			return checkbox ;
     		}},
     		{"targets":2,"render":function(data, type, row){
     			var status = row["status"];
     			var rownum = row["rownum"] - 1;
-    			var rtnVal = "";
-    			//if (status == "1"){
-    				rtnVal = "<input type='text' name='orderDetailLines["+ rownum +"].ysid'          id='orderDetailLines"+ rownum +".ysid'       value='" + data + "' />"
-    				rtnVal += "<input type='hidden' name='orderDetailLines["+ rownum +"].divertysid' id='orderDetailLines"+ rownum +".divertysid' value='" + row["divertYsid"] + "' />"
-    				rtnVal += "<input type='hidden' name='orderDetailLines["+ rownum +"].remarks'    id='orderDetailLines"+ rownum +".remarks'    value='" + row["remarks"] + "' />"
-    				rtnVal += "<input type='hidden' name='orderDetailLines["+ rownum +"].peiysid'    id='orderDetailLines"+ rownum +".peiysid'    value='" + row["YSId"] + "' />";//临时借用字段，以区分新增，更新
-    			//}else{
-    			//	rtnVal = "<input type='text' name='orderDetailLines["+ rownum +"].ysid' id='orderDetailLines"+ rownum +".ysid' value='" + data + "' class='short' />"
-    			//}
-    			return rtnVal;
-            }},
-    		{"targets":3,"render":function(data, type, row){
-    			var status = row["status"];
-    			var rownum = row["rownum"] - 1;
-    			var rtnVal = "";
-    			//if (status == "1"){
-    				rtnVal = data +  "<input type='hidden' name='orderDetailLines["+ rownum +"].materialid'   id='orderDetailLines"+ rownum +".materialid'  value='" + data + "' class='cash' />"
-    			//}else{
-       			//	rtnVal = "<input type='text' name='orderDetailLines["+ rownum +"].materialid'   id='orderDetailLines"+ rownum +".materialid'  value='" + data + "' class='cash' />"
-    				
-    			//}
-    			return rtnVal;
-            }},
-    		{"targets":5,"render":function(data, type, row){
-    			var status = row["status"];
-    			var rownum = row["rownum"] - 1;
-    			var rtnVal = "";
-    			//if (status == "1"){
-    				rtnVal = data + "<input type='hidden' name='orderDetailLines["+ rownum +"].quantity' id='orderDetailLines"+ rownum +".quantity' value='" + data + "' />"
-    			//}else{
-    			//	rtnVal = "<input type='text' name='orderDetailLines["+ rownum +"].quantity' id='orderDetailLines"+ rownum +".quantity' value='" + data + "' class='middle' />"
-    			//}
-    			return rtnVal;
-            }}           
+    			var rtnVal = data;
+   				rtnVal += "<input type='hidden' name='orderDevertLines["+ rownum +"].divertfromysid' id='orderDevertLines"+ rownum +".divertfromysid'  value='" + row["divertFromYsid"] + "' />"
+   				rtnVal += "<input type='hidden' name='orderDevertLines["+ rownum +"].divertoysid'    id='orderDevertLines"+ rownum +".divertoysid'     value='" + row["diverToYsid"] + "' />"
+     			
+      			return rtnVal;
+            }}         
 	           
 	     ] ,			
 	})
@@ -403,8 +401,8 @@ function documentaryAjax(divertYsid) {//挪用订单
 		ajax2();
 
 
-		var divertYsid = '${divertYsid}';
-		documentaryAjax(divertYsid);	//挪用订单
+		var PIId = '${order.PIId}';
+		documentaryAjax(PIId);	//挪用订单
 		
 		autocomplete();//
 		
@@ -533,17 +531,17 @@ function documentaryAjax(divertYsid) {//挪用订单
 function autocomplete(){
 	
 	$(".attributeList1").autocomplete({
-		minLength : 2,
+		minLength : 8,
 		autoFocus : false,
 		source : function(request, response) {
 			//alert(888);
 			$
 			.ajax({
 				type : "POST",
-				url : "${ctx}/business/order?methodtype=getMaterialList",
+				url : "${ctx}/business/order?methodtype=getOrderDetailForDivert",
 				dataType : "json",
 				data : {
-					key : request.term
+					YSId : request.term
 				},
 				success : function(data) {
 					//alert(777);
@@ -553,8 +551,8 @@ function autocomplete(){
 							function(item) {
 
 								return {
-									label : item.viewList,
-									value : item.materialId,
+									label : item.YSId + ' | ' + item.materialId +' | ' + item.materialName,
+									value : item.YSId,
 									id : item.materialId,
 									name : item.materialName,
 									materialId : item.materialId
@@ -575,11 +573,11 @@ function autocomplete(){
 		select : function(event, ui) {
 			
 			//产品名称
-			//$(this).parent().parent().find("td").eq(2).find("span").html(jQuery.fixedWidth(ui.item.name,64));
-			$(this).parent().parent().find("td").eq(4).find("span").html(ui.item.name,64);
-
+			$(this).parent().parent().find("td").eq(4).find("span").html(ui.item.name);
 			//产品编号
-			$(this).parent().find("input:hidden").val(ui.item.materialId);
+			$(this).parent().parent().find("td").eq(3).find("input").val(ui.item.materialId);
+
+			//$(this).parent().parent().find("td").eq(2).find("input").val(ui.item.YSId);
 			
 		},
 
@@ -779,15 +777,16 @@ function autocomplete(){
 			<div class="list">
 				<table id="documentary" class="display" >
 					<thead>				
-					<tr>
-						<th width="20px">No</th>
-						<th class="dt-center" width="100px">被挪用的订单<br>耀升编号</th>
-						<th class="dt-center" width="100px">新订单<br>耀升编号</th>
-						<th class="dt-center" width="200px">产品编号</th>
-						<th class="dt-center" >产品名称</th>
-						<th class="dt-center" width="100px">挪用数量</th>
-						<th class="dt-center" width="150px">备注</th>
-					</tr>
+						<tr>
+							<th width="20px">No</th>
+							<th class="dt-center" width="100px">当前利用订单</th>
+							<th class="dt-center" width="100px">被挪用订单编号</th>
+							<th class="dt-center" width="200px">产品编号</th>
+							<th class="dt-center" >产品名称</th>
+							<th class="dt-center" width="100px">挪用品名</th>
+							<th class="dt-center" width="100px">挪用数量</th>
+							<th class="dt-center" width="150px">本次减少数</th>
+						</tr>
 					</thead>
 				</table>
 			</div>

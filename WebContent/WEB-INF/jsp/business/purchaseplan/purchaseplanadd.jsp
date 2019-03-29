@@ -691,9 +691,9 @@ $(".supplierid").autocomplete({
 		var supplierId = ui.item.supplierId;
 		var shortName = getLetters(supplierId);
 		
-		$td.eq(12).find("input").val(ui.item.price);
-		$td.eq(14).find("span").html(ui.item.price);
-		$td.eq(14).find("input").val(shortName);
+		$td.eq(13).find("input").val(ui.item.price);
+		$td.eq(15).find("span").html(ui.item.price);
+		$td.eq(15).find("input").val(shortName);
 		
 		purchasePlanCompute($td,'2');
 		
@@ -747,7 +747,7 @@ function purchasePlanCompute(obj,flg){
 	var $oTotalQutyI= $td.eq(8).find("input");
 	var $oStock     = $td.eq(9).find("span");
 	var $oPurchase  = $td.eq(10).find("input");
-	var $oRequrtion = $td.eq(11).find("input");//领料数量
+	var $oRequistion= $td.eq(11).find("input");//领料数量
 	var $oSupplier  = $td.eq(12).find("input");
 	var $oThisPrice = $td.eq(13).find("input");
 	var $oTotPriceS = $td.eq(14).find("span");
@@ -758,7 +758,7 @@ function purchasePlanCompute(obj,flg){
 	var fOrder    = currencyToFloat( $oOrder.text() );
 	var fTotalQuty= fUnitQuty * fOrder;
 	var fStock = currencyToFloat( $oStock.text() );
-	var fRequistion = currencyToFloat( $oRequrtion.val() );
+	var fRequistion = currencyToFloat( $oRequistion.val() );
 	
 	var tmp3 =  $.trim($oMaterIdV.text()).substring(0,1);//包装件进位
 	if(tmp3 == 'G')
@@ -789,7 +789,6 @@ function purchasePlanCompute(obj,flg){
 	$oTotPriceI.val(vTotalNew);
 	$oThisPrice.val(vPrice);
 	$oSupplier.val($.trim($oSupplier.val()));
-	//$oRequrtion.val(vTotalQuty);
 	
 	costAcount();//成本核算
 }

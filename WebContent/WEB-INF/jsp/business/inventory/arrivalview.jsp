@@ -84,7 +84,8 @@
 			    		return floatToCurrency(data);
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
-		    			
+		    			if(data < 0 )
+		    				data = 0
 			    		return floatToCurrency(data);
 		    		}},
 		    	] 
