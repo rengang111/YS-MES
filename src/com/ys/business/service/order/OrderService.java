@@ -2350,7 +2350,7 @@ public class OrderService extends CommonService  {
 
 		    	String divertfromysid    = getJsonData(data, "orderDevertLines[" + i + "].divertfromysid");
 		    	String diverttoysid      = getJsonData(data, "orderDevertLines[" + i + "].diverttoysid");
-		    	//String materialid        = getJsonData(data, "orderDevertLines[" + i + "].materialid");
+		    	String divertfrompiid    = getJsonData(data, "orderDevertLines[" + i + "].divertfrompiid");
 			    String divertquantity    = getJsonData(data, "orderDevertLines[" + i + "].divertquantity");
 			    String shortname         = getJsonData(data, "orderDevertLines[" + i + "].shortname");
 			    String thisreductionqty  = getJsonData(data, "orderDevertLines[" + i + "].thisreductionqty");
@@ -2362,7 +2362,8 @@ public class OrderService extends CommonService  {
 			    updateParentOrderDetail(divertfromysid,thisreductionqty);
 					
 				B_OrderDivertData newDt = new B_OrderDivertData();
-				newDt.setDivertpiid(piid);
+				newDt.setDivertfrompiid(divertfrompiid);
+				newDt.setDiverttopiid(piid);
 				newDt.setDivertfromysid(divertfromysid);	
 				newDt.setDivertoysid(diverttoysid);
 				newDt.setDivertquantity(divertquantity);
@@ -2535,7 +2536,31 @@ public class OrderService extends CommonService  {
 			modelMap.put("recordsTotal", "0");
 			return modelMap;
 		}
-		userDefinedSearchCase.put("divertPIid", piid);
+		userDefinedSearchCase.put("divertToPIid", piid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> getDivertOrderFrom() throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("getOrderFromDevertList");
+		baseQuery = new BaseQuery(request, dataModel);
+
+		String piid = request.getParameter("PIId");
+		if(isNullOrEmpty(piid)){
+			modelMap.put("data","");
+			modelMap.put("recordsTotal", "0");
+			return modelMap;
+		}
+		userDefinedSearchCase.put("divertFromPIid", piid);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 		

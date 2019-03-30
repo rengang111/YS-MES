@@ -34,14 +34,27 @@ public class B_OrderDivertData implements java.io.Serializable
 	/**
 	*
 	*/
-	private String divertpiid;
-	public String getDivertpiid()
+	private String divertfrompiid;
+	public String getDivertfrompiid()
 	{
-		return this.divertpiid;
+		return this.divertfrompiid;
 	}
-	public void setDivertpiid(String divertpiid)
+	public void setDivertfrompiid(String divertfrompiid)
 	{
-		this.divertpiid=divertpiid;
+		this.divertfrompiid=divertfrompiid;
+	}
+
+	/**
+	*
+	*/
+	private String diverttopiid;
+	public String getDiverttopiid()
+	{
+		return this.diverttopiid;
+	}
+	public void setDiverttopiid(String diverttopiid)
+	{
+		this.diverttopiid=diverttopiid;
 	}
 
 	/**
@@ -267,13 +280,13 @@ public class B_OrderDivertData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("divertpiid = "+(divertpiid == null ? "null" : divertpiid)+"\n");		sb.append("divertfromysid = "+(divertfromysid == null ? "null" : divertfromysid)+"\n");		sb.append("divertoysid = "+(divertoysid == null ? "null" : divertoysid)+"\n");		sb.append("shortname = "+(shortname == null ? "null" : shortname)+"\n");		sb.append("divertquantity = "+(divertquantity == null ? "null" : divertquantity)+"\n");		sb.append("diverflag = "+(diverflag == null ? "null" : diverflag)+"\n");		sb.append("thisreductionqty = "+(thisreductionqty == null ? "null" : thisreductionqty)+"\n");		sb.append("remarks = "+(remarks == null ? "null" : remarks)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("divertfrompiid = "+(divertfrompiid == null ? "null" : divertfrompiid)+"\n");		sb.append("diverttopiid = "+(diverttopiid == null ? "null" : diverttopiid)+"\n");		sb.append("divertfromysid = "+(divertfromysid == null ? "null" : divertfromysid)+"\n");		sb.append("divertoysid = "+(divertoysid == null ? "null" : divertoysid)+"\n");		sb.append("shortname = "+(shortname == null ? "null" : shortname)+"\n");		sb.append("divertquantity = "+(divertquantity == null ? "null" : divertquantity)+"\n");		sb.append("diverflag = "+(diverflag == null ? "null" : diverflag)+"\n");		sb.append("thisreductionqty = "+(thisreductionqty == null ? "null" : thisreductionqty)+"\n");		sb.append("remarks = "+(remarks == null ? "null" : remarks)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		divertpiid= (divertpiid == null ?null : divertpiid.trim());		divertfromysid= (divertfromysid == null ?null : divertfromysid.trim());		divertoysid= (divertoysid == null ?null : divertoysid.trim());		shortname= (shortname == null ?null : shortname.trim());		divertquantity= (divertquantity == null ?null : divertquantity.trim());		diverflag= (diverflag == null ?null : diverflag.trim());		thisreductionqty= (thisreductionqty == null ?null : thisreductionqty.trim());		remarks= (remarks == null ?null : remarks.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		divertfrompiid= (divertfrompiid == null ?null : divertfrompiid.trim());		diverttopiid= (diverttopiid == null ?null : diverttopiid.trim());		divertfromysid= (divertfromysid == null ?null : divertfromysid.trim());		divertoysid= (divertoysid == null ?null : divertoysid.trim());		shortname= (shortname == null ?null : shortname.trim());		divertquantity= (divertquantity == null ?null : divertquantity.trim());		diverflag= (diverflag == null ?null : diverflag.trim());		thisreductionqty= (thisreductionqty == null ?null : thisreductionqty.trim());		remarks= (remarks == null ?null : remarks.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

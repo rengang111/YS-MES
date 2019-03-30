@@ -28,7 +28,8 @@ $.fn.dataTable.TableTools.buttons.add_rows1 = $
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].diverttoysid"   id="orderDevertLines'+rowIndex+'.diverttoysid" class="short" /></td>';
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].divertfromysid" id="orderDevertLines'+rowIndex+'.divertfromysid" class="short attributeList1" /></td>';
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].materialid"     id="orderDevertLines'+rowIndex+'.materialid" class="attributeList1" /></td>';
-			trHtml+='<td class="td-center"><span id=""></span></td>';
+			trHtml+='<td class="td-center"><span id=""></span>';
+			trHtml+= '<input type="text" name="orderDevertLines['+rowIndex+'].divertfrompiid" id="orderDevertLines'+rowIndex+'.divertfrompiid" class="short" /></td>',
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].shortname"        id="orderDevertLines'+rowIndex+'.shortname" class="" /></td>',
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].divertquantity"   id="orderDevertLines'+rowIndex+'.divertquantity" class="short" /></td>',
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].thisreductionqty" id="orderDevertLines'+rowIndex+'.thisreductionqty" class="short" /></td>',
@@ -252,6 +253,77 @@ function documentaryAjax(PIId) {//挪用订单
 	
 };//挪用订单
 
+
+function divertFromListAjax(PIId) {//挪用详情
+
+	var table = $('#divertFromList').dataTable();
+	if(table) {
+		table.fnDestroy();
+	}
+
+	var actionUrl = "${ctx}/business/order?methodtype=getDivertOrderFrom&PIId="+PIId;
+
+	var t = $('#divertFromList').DataTable({
+		
+		"processing" : false,
+		"retrieve"   : true,
+		"stateSave"  : true,
+		"pagingType" : "full_numbers",
+        "paging"    : false,
+        "pageLength": 50,
+		"async"		: false,
+        "ordering"  : false,
+		"sAjaxSource" : actionUrl,
+		dom : '<"clear">lt',
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			$.ajax({
+				"type" : "POST",
+				"contentType": "application/json; charset=utf-8",
+				"dataType" : 'json',
+				"url" : sSource,
+				"data" : JSON.stringify($('#bomForm').serializeArray()),// 要提交的表单
+				success : function(data) {
+
+					counter1 = data['recordsTotal'];//记录总件数
+					
+					fnCallback(data);
+					//$(".DTTT_container").css('float','left');
+				},
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					alert(textStatus)
+				}
+			})
+		},
+    	"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},
+		
+		"columns" : [
+		    {"data": null,"className" : 'td-center'},
+		    {"data": "divertFromYsid", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "diverToYsid", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "materialId", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "materialName", "defaultContent" : '',"className" : ''},
+		    {"data": "shortName", "className" : 'td-center'},
+		    {"data": "divertQuantity", "className" : 'td-center'},
+		    {"data": "thisReductionQty", "className" : 'td-center'},
+		    
+		],
+		"columnDefs":[
+		      		{"targets":0,"render":function(data, type, row){		
+		  				var status = row["status"];
+		      			var rownum = row["rownum"];
+		  				var checkbox = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />";
+
+		      			return rownum ;
+		      		}}       
+		  	           
+		  	     ] ,
+			
+	})
+	
+};//挪用详情
+
 	function ajax() {
 
 		var t = $('#example').DataTable({
@@ -404,6 +476,8 @@ function documentaryAjax(PIId) {//挪用订单
 		var PIId = '${order.PIId}';
 		documentaryAjax(PIId);	//挪用订单
 		
+		divertFromListAjax(PIId);//挪用详情
+		
 		autocomplete();//
 		
 		//$('#example').DataTable().columns.adjust().draw();
@@ -555,6 +629,7 @@ function autocomplete(){
 									value : item.YSId,
 									id : item.materialId,
 									name : item.materialName,
+									piid : item.PIId,
 									materialId : item.materialId
 								}
 							}));
@@ -570,17 +645,13 @@ function autocomplete(){
 			});
 		},
 
-		select : function(event, ui) {
-			
+		select : function(event, ui) {			
 			//产品名称
 			$(this).parent().parent().find("td").eq(4).find("span").html(ui.item.name);
+			$(this).parent().parent().find("td").eq(4).find("input").val(ui.item.piid);
 			//产品编号
-			$(this).parent().parent().find("td").eq(3).find("input").val(ui.item.materialId);
-
-			//$(this).parent().parent().find("td").eq(2).find("input").val(ui.item.YSId);
-			
+			$(this).parent().parent().find("td").eq(3).find("input").val(ui.item.materialId);			
 		},
-
 		
 	});
 
@@ -772,6 +843,25 @@ function autocomplete(){
 	</div>
 	</fieldset>
 		
+	<fieldset>
+		<span class="tablename"> 挪用详情</span>
+			<div class="list">
+				<table id="divertFromList" class="display" >
+					<thead>				
+						<tr>
+							<th width="20px">No</th>
+							<th class="dt-center" width="100px">被挪用订单</th>
+							<th class="dt-center" width="100px">当前利用订单</th>
+							<th class="dt-center" width="200px">产品编号</th>
+							<th class="dt-center" >产品名称</th>
+							<th class="dt-center" width="100px">挪用品名</th>
+							<th class="dt-center" width="100px">挪用数量</th>
+							<th class="dt-center" width="150px">本次减少数</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+	</fieldset>		
 	<fieldset>
 		<span class="tablename"> 订单挪用</span>
 			<div class="list">

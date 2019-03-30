@@ -255,6 +255,10 @@ public class OrderAction extends BaseAction {
 				dataMap = deleteDivertOrder(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "getDivertOrderFrom"://显示挪用订单
+				dataMap = getDivertOrderFrom();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -981,6 +985,22 @@ public class OrderAction extends BaseAction {
 		
 		try {
 			modelMap = orderService.getDivertOrder();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> getDivertOrderFrom(){	
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		try {
+			modelMap = orderService.getDivertOrderFrom();
 			
 		}
 		catch(Exception e) {
