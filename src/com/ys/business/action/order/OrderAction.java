@@ -948,9 +948,8 @@ public class OrderAction extends BaseAction {
 		
 		try {
 			
-			String PIId = orderService.insertDivertOrder(data);
+			modelMap = orderService.insertDivertOrder(data);
 			
-			modelMap.put("PIId", PIId);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

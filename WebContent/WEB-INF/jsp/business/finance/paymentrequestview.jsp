@@ -166,6 +166,8 @@
 	};
 	$(document).ready(function() {
 		
+		invoiceAjax();//发票信息
+		
 		$(".goBack").click(
 				function() {
 					var paymentTypeId=$("#paymentTypeId").val();
@@ -429,6 +431,96 @@ function uploadPhoto(tableId,tdTable, id) {
 	});
 }
 
+
+function invoiceAjax() {
+	
+	var table = $('#invoice').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
+	var paymentId = $('#payment\\.paymentid').val();
+
+	var t = $('#invoice').DataTable({			
+		"paging": false,
+		"lengthChange":false,
+		"lengthMenu":[50,100,200],//设置一页展示20条记录
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"ordering "	:true,
+		"searching" : false,
+		"retrieve" : true,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/payment?methodtype=paymentInvoiceList&paymentId="+paymentId,
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#condition").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
+
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){							
+					fnCallback(data);					
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+    	"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},		
+		"columns" : [
+		        	{"data": null,"className":"dt-body-center"
+				}, {"data": "invoiceDate","className":"td-center"
+				}, {"data": "invoiceAmount","className":"td-right"
+				}, {"data": "invoiceType","className":"td-center"
+				}, {"data": "invoiceNumber", "defaultContent" : '',// 4
+				}, {"data": null,"className":"td-center"
+				}, {"data": null,
+				}
+			],
+		"columnDefs":[
+    		{"targets":5,"render":function(data, type, row){
+    			return "";
+    		}},
+    		{"targets":6,"render":function(data, type, row){
+    			return "";
+    		}}
+    	]
+		
+	}).draw();
+					
+	t.on('click', 'tr', function() {
+		
+		var rowIndex = $(this).context._DT_RowIndex; //行号			
+		//alert(rowIndex);
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }		
+	});
+	
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			cell.innerHTML = i + 1;
+		});
+	}).draw();
+
+};
 </script>
 </head>
 <body>
@@ -493,18 +585,32 @@ function uploadPhoto(tableId,tdTable, id) {
 	 	<a class="DTTT_button DTTT_button_text" id="doDelete" >删除申请</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
+	
 	<fieldset>
 		<legend> 发票信息</legend>
-		<table class="form" id="table_form2">
-			<tr>
-				<td width="100px" class="label">发票类型：</td>
-				<td width="100px">${payment.invoiceType }</td>
-				<td width="100px" class="label">发票编号：</td>
-				<td width="150px">${payment.invoiceNumber }</td>
-				<td width="100px" class="label">发票日期：</td>
-				<td width="100px" >${payment.invoiceDate }</td>
-				<td></td>
-			</tr>				
+		<table class="display" id="invoice">
+			<thead>
+				<tr> 
+					<th width="30px">No</th>				
+					<th width="100px">发票日期</th>				
+					<th width="150px">发票金额</th>
+					<th width="100px">发票类型</th>					
+					<th width="180px">发票编号</th>		
+					<th width="50px">操作</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tfoot>
 		</table>
 	</fieldset>
 	<fieldset>

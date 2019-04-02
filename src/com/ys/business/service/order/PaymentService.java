@@ -19,11 +19,13 @@ import com.ys.business.action.model.order.PaymentModel;
 import com.ys.business.db.dao.B_PaymentDao;
 import com.ys.business.db.dao.B_PaymentDetailDao;
 import com.ys.business.db.dao.B_PaymentHistoryDao;
+import com.ys.business.db.dao.B_PaymentInvoiceDetailDao;
 import com.ys.business.db.dao.B_PurchaseOrderDao;
 import com.ys.business.db.dao.B_StockOutDao;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PaymentDetailData;
 import com.ys.business.db.data.B_PaymentHistoryData;
+import com.ys.business.db.data.B_PaymentInvoiceDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.CommFieldsData;
@@ -1053,20 +1055,20 @@ public class PaymentService extends CommonService {
 			
 			insertPayment(reqData);			
 
-			//检查关联合同是否存在
-			//String where = " paymentid='" + paymentid +"' AND deleteFlag='0' ";
-			//if ( checkPaymentExsit(where) == null){
-
-				//关联合同
-				for(B_PaymentDetailData data:reqDataList ){				
-					
-					data.setPaymentid(paymentid);
-					insertPaymentDetail(data);					
-				}				
-			//}
+			//关联合同
+			for(B_PaymentDetailData data:reqDataList ){				
+				
+				data.setPaymentid(paymentid);
+				insertPaymentDetail(data);					
+			}			
+				
+			//新增发票信息
+			B_PaymentInvoiceDetailData invoice = reqModel.getInvoice();
+			invoice.setPaymentid(paymentid);
+			insertInvoiceDetail(invoice);
 			
 			//保存退税率
-			for(B_PurchaseOrderData data:contractList ){				
+			for(B_PurchaseOrderData data:contractList ){
 				
 				updateContractTaxRate(data);
 			}
@@ -1086,6 +1088,46 @@ public class PaymentService extends CommonService {
 		return paymentid;
 	}
 		
+	
+	@SuppressWarnings("unchecked")
+	private void insertInvoiceDetail(
+			B_PaymentInvoiceDetailData invoice) throws Exception {
+		
+		B_PaymentInvoiceDetailData db = null;
+		List<B_PaymentInvoiceDetailData> list = null;
+		try {
+			String where = " paymentId ='" + invoice.getPaymentid() +  "'" +
+					" AND invoiceNumber ='" + invoice.getInvoicenumber() + "'" +
+					" AND deleteFlag='0'";
+			list = new B_PaymentInvoiceDetailDao().Find(where);
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		if(list == null || list.size() == 0){
+			//插入新数据
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"paymentRequestInsert",userInfo);
+			copyProperties(invoice,commData);
+			guid = BaseDAO.getGuId();
+			invoice.setRecordid(guid);
+			invoice.setInvoiceuser(userInfo.getUserId());//发票填写人：默认为登陆者
+			new B_PaymentInvoiceDetailDao().Create(invoice);
+		}else{
+			//更新
+			db = list.get(0);		
+			copyProperties(db,invoice);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"paymentRequestUpdate",userInfo);
+			copyProperties(db,commData);
+			db.setInvoiceuser(userInfo.getUserId());//默认为登陆者
+
+			new B_PaymentInvoiceDetailDao().Store(db);
+		}
+		
+	}
+	
 	//付款完成
 	private String insertFinish(){
 		String paymentid = "";
@@ -1161,9 +1203,7 @@ public class PaymentService extends CommonService {
 			copyProperties(payment,commData);
 			guid = BaseDAO.getGuId();
 			payment.setRecordid(guid);
-			//payment.setApprovalstatus("010");//未审核
 			payment.setApplicant(userInfo.getUserId());//申请人：默认为登陆者
-			payment.setInvoiceuser(userInfo.getUserId());//发票填写人：默认为登陆者
 			System.out.println("付款Insert前："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 			new B_PaymentDao().Create(payment);
 			System.out.println("付款Insert后："+payment.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
@@ -1175,7 +1215,6 @@ public class PaymentService extends CommonService {
 					"paymentRequestUpdate",userInfo);
 			copyProperties(db,commData);
 			db.setApplicant(userInfo.getUserId());//默认为登陆者
-			db.setInvoiceuser(userInfo.getUserId());//默认为登陆者
 
 			System.out.println("付款Update前："+db.getPaymentid()+"，时间："+CalendarUtil.getSystemDate());
 			new B_PaymentDao().Store(db);
@@ -1183,6 +1222,8 @@ public class PaymentService extends CommonService {
 		}
 		
 	}
+	
+	
 	
 	@SuppressWarnings("unchecked")
 	private void insertPaymentDetail(
@@ -1625,6 +1666,35 @@ public class PaymentService extends CommonService {
 		
 	}
 	
+
+	public HashMap<String, Object> getPaymentInvoiceList() throws Exception {
+		
+		String paymentId = request.getParameter("paymentId");
+		
+		dataModel.setQueryName("InvoiceListByPaymentId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("paymentId", paymentId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() == 1 ){
+			//对应发票Table新增之前的数据
+			HashMap<String,String> map = dataModel.getYsViewData().get(0);
+			String newPaymentId = map.get("newPaymentId");
+			String oldInvoiceNumber = map.get("oldInvoiceNumber");
+			if(isNullOrEmpty(newPaymentId) && isNullOrEmpty(oldInvoiceNumber)){
+				//没有发票
+				modelMap.put("data", "");
+			}else{
+				modelMap.put("data", dataModel.getYsViewData());					
+			}
+		}else{
+			modelMap.put("data", dataModel.getYsViewData());			
+		}
+		
+		return modelMap;
+		
+	}
 	
 	public HashMap<String, Object> getStockoutDetail() throws Exception {
 		String stockOutId = request.getParameter("stockOutId");

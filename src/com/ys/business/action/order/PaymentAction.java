@@ -239,6 +239,10 @@ public class PaymentAction extends BaseAction {
 				dataMap = doPaymentSearchMain(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "paymentInvoiceList"://发票明细
+				dataMap = paymentInvoiceList();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -473,6 +477,7 @@ public class PaymentAction extends BaseAction {
 		
 		return dataMap;
 	}
+	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSearchBySupplierId(@RequestBody String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -933,5 +938,27 @@ public class PaymentAction extends BaseAction {
 		}
 		
 		return modelMap;
+	}
+	
+
+	public HashMap<String, Object> paymentInvoiceList(){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
+		
+		try {
+			dataMap = service.getPaymentInvoiceList();
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
 	}
 }

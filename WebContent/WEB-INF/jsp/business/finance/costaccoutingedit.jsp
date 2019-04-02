@@ -243,9 +243,9 @@
 				rmbprice = actualSales;
 				
 				$('#costBom\\.exchangerate').val('1');
-				$('#costBom\\.exchangerate').addClass('read-only');	
+				//$('#costBom\\.exchangerate').addClass('read-only');	
 				$('#costBom\\.rebaterate').val('0')
-				$('#costBom\\.rebaterate').addClass('read-only')
+				//$('#costBom\\.rebaterate').addClass('read-only')
 				
 			}else{
 				//人民币外销
@@ -255,7 +255,7 @@
 				gross = rmbprice - cost + rebate;
 				
 				$('#costBom\\.exchangerate').val('1');
-				$('#costBom\\.exchangerate').addClass('read-only');						
+				//$('#costBom\\.exchangerate').addClass('read-only');						
 			}
 					
 		}else{

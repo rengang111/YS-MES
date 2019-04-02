@@ -572,12 +572,12 @@ $(".attributeList1").autocomplete({
 		var $oTotalQuty = $td.eq(8).find("span");
 		var $oStock     = $td.eq(9).find("span");
 		var $oPurchase  = $td.eq(10).find("input");
-		var $oSupplier  = $td.eq(11).find("input");
-		var $oThisPrice = $td.eq(12).find("input");
-		var $oTotPriceS = $td.eq(13).find("span");
-		var $oTotPriceI = $td.eq(13).find("input");
-		var $oSourPrice = $td.eq(14).find("span");
-		var $oShortName = $td.eq(14).find("input");
+		var $oSupplier  = $td.eq(12).find("input");
+		var $oThisPrice = $td.eq(13).find("input");
+		var $oTotPriceS = $td.eq(14).find("span");
+		var $oTotPriceI = $td.eq(14).find("input");
+		var $oSourPrice = $td.eq(15).find("span");
+		var $oShortName = $td.eq(15).find("input");
 	
 		//开始计算
 		//var fPrice    = currencyToFloat(ui.item.price);//计算用单价

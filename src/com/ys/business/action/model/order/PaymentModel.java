@@ -9,6 +9,7 @@ import com.ys.business.action.model.common.ListOption;
 import com.ys.business.db.data.B_PaymentData;
 import com.ys.business.db.data.B_PaymentDetailData;
 import com.ys.business.db.data.B_PaymentHistoryData;
+import com.ys.business.db.data.B_PaymentInvoiceDetailData;
 import com.ys.business.db.data.B_PurchaseOrderData;
 import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.B_StockOutDetailData;
@@ -24,9 +25,25 @@ public class PaymentModel extends BaseModel {
 	private List<B_PaymentDetailData> paymentList;
 	private List<B_PaymentHistoryData> historyList;
 	private List<B_PurchaseOrderData> contractList;//采购合同
+	private List<B_PaymentInvoiceDetailData> invoiceList;
+	private B_PaymentInvoiceDetailData invoice;
 	private ArrayList<ListOption> approvalOption = new ArrayList<ListOption>();
 	private ArrayList<ListOption> invoiceTypeOption = new ArrayList<ListOption>();
 		
+	public B_PaymentInvoiceDetailData getInvoice() {
+		return this.invoice;
+	}
+	public void setInvoice(B_PaymentInvoiceDetailData invoice) {
+		this.invoice = invoice;
+	}
+	
+	public List<B_PaymentInvoiceDetailData> getInvoiceList() {
+		return this.invoiceList;
+	}
+	public void setInvoiceList(List<B_PaymentInvoiceDetailData> invoiceList) {
+		this.invoiceList = invoiceList;
+	}
+	
 	public List<B_PurchaseOrderData> getContractList() {
 		return this.contractList;
 	}

@@ -144,8 +144,9 @@
     <from>
     	v_orderlist AS A 
     	LEFT JOIN b_OrderMergeDetail b ON a.YSId=b.ysid AND b.deleteFlag = '0'
+		LEFT JOIN b_orderproducehide c ON a.ysid=c.ysid AND c.deleteFlag = '0'
     	
-    	WHERE A.deleteFlag = '0' AND a.status+0 &lt; 40    	
+    	WHERE A.deleteFlag = '0' AND a.status+0 &lt; 40  AND c.ysid IS  NULL
     </from>
     <orderby>IFNULL(b.mergeId,'0')  DESC,IFNULL(b.YSId,a.YSId)</orderby>
     <groupby>IFNULL(b.mergeId,a.YSId)</groupby>

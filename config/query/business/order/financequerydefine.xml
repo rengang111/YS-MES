@@ -1536,5 +1536,33 @@
     <groupby>a.paymentId</groupby>
     <having></having>
 	<power></power>
+  </query>   
+  <query>
+    <pool></pool>    
+    <name value="InvoiceListByPaymentId" />
+     <where>
+		<w name="A.paymentId" des="" reqName="paymentId" dtype="ch" oper="in" lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="b.paymentId" alias="newPaymentId" ctype="" />
+      <f name="a.invoiceDate" alias="oldInvoiceDate" ctype="" />
+      <f name="a.totalPayable" alias="" ctype="" />
+      <f name="IFNULL(b.paymentId,a.paymentId)" alias="paymentId" ctype="" />
+      <f name="IFNULL(b.invoiceAmount,a.totalPayable)" alias="invoiceAmount" ctype="" />
+      <f name="IFNULL(b.invoiceUser,a.invoiceUser)" alias="invoiceUser" ctype="" />
+      <f name="IFNULL(b.invoiceDate,a.invoiceDate)" alias="invoiceDate" ctype="" />
+      <f name="IFNULL(b.invoiceType,a.invoiceType)" alias="invoiceType" ctype="发票类型" />
+      <f name="IFNULL(b.invoiceType,a.invoiceType)" alias="invoiceTypeId" ctype="" />
+      <f name="IFNULL(b.invoiceNumber,a.invoiceNumber)" alias="invoiceNumber" ctype="" />
+  </select>
+    <from>
+		 b_Payment a
+		LEFT JOIN b_PaymentInvoiceDetail b ON b.paymentId=a.paymentId AND b.deleteFlag='0'
+		WHERE a.deleteFlag='0'
+	</from>
+    <orderby>b.invoiceDate</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
   </query>
 </root>

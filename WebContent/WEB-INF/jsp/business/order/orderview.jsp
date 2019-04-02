@@ -29,7 +29,7 @@ $.fn.dataTable.TableTools.buttons.add_rows1 = $
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].divertfromysid" id="orderDevertLines'+rowIndex+'.divertfromysid" class="short attributeList1" /></td>';
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].materialid"     id="orderDevertLines'+rowIndex+'.materialid" class="attributeList1" /></td>';
 			trHtml+='<td class="td-center"><span id=""></span>';
-			trHtml+= '<input type="text" name="orderDevertLines['+rowIndex+'].divertfrompiid" id="orderDevertLines'+rowIndex+'.divertfrompiid" class="short" /></td>',
+			trHtml+= '<input type="hidden" name="orderDevertLines['+rowIndex+'].divertfrompiid" id="orderDevertLines'+rowIndex+'.divertfrompiid" class="short" /></td>',
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].shortname"        id="orderDevertLines'+rowIndex+'.shortname" class="" /></td>',
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].divertquantity"   id="orderDevertLines'+rowIndex+'.divertquantity" class="short" /></td>',
 			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].thisreductionqty" id="orderDevertLines'+rowIndex+'.thisreductionqty" class="short" /></td>',
@@ -147,11 +147,14 @@ function doSave(type) {
 		data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
 		success : function(data) {
 
-								
-			var PIId = data['PIId'];
-			documentaryAjax(PIId);	//挪用订单
+			var rtnValue = data['returnValue'];
+			if(rtnValue == 'SUCCESS'){
+				$().toastmessage('showWarningToast', "保存成功!");	
+				documentaryAjax(PIId);	//挪用订单				
+			}else{
+				$().toastmessage('showWarningToast', "挪用失败，请检查被挪用订单数量。");	
+			}
 			
-			$().toastmessage('showWarningToast', "保存成功!");		
 			
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {				

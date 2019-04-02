@@ -633,7 +633,6 @@ $(".attributeList1").autocomplete({
 		var $oTotalQuty = $td.eq(8).find("span");
 		var $oStock     = $td.eq(9).find("span");
 		var $oPurchase  = $td.eq(10).find("input:text");
-		var $oRequition = $td.eq(11).find("input:text");//领料数量
 		var $oSupplier  = $td.eq(12).find("input");
 		var $oThisPrice = $td.eq(13).find("input");
 		var $oTotPriceS = $td.eq(14).find("span");

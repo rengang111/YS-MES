@@ -145,7 +145,7 @@
 		
 		//日期
 			
-		$("#payment\\.invoicedate").datepicker({
+		$("#invoice\\.invoicedate").datepicker({
 			dateFormat:"yy-mm-dd",
 			changeYear: true,
 			changeMonth: true,
@@ -193,10 +193,15 @@
 		$("#insert").click(
 				function() {
 
-					var num  = $('#payment\\.invoicenumber').val();
-					var date = $('#payment\\.invoicedate').val();
-					var type = $('#payment\\.invoicetype').val();
+					var num    = $('#invoice\\.invoicenumber').val();
+					var date   = $('#invoice\\.invoicedate').val();
+					var type   = $('#invoice\\.invoicetype').val();
+					var amount = $('#invoice\\.invoiceamount').val();
 					
+					if($.trim(amount) ==''){
+						$().toastmessage('showWarningToast', "请输入发票金额。");
+						return;				
+					}
 					if( type !='030' ){//选择有发票
 						if($.trim(num) =='' ){
 							$().toastmessage('showWarningToast', "请输入发票编号。");
@@ -224,7 +229,7 @@
 					if(paymentId == '（保存后自动生成）')
 						$('#payment\\.paymentid').val('');//清除非正常ID
 
-					$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert"+"&paymentTypeId="+paymentTypeId);
+					$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert"+"&paymentId="+paymentId);
 					$('#formModel').submit();
 		});
 		
@@ -499,7 +504,7 @@ function uploadPhoto(tableId,tdTable, id) {
 				<td>&nbsp;${supplier.supplierName }</td>
 			</tr>
 			<tr>			
-				<td class="label" width="100px">付款金额：</td>					
+				<td class="label" width="100px">付款总额：</td>					
 				<td width="150px">
 					<form:input path="payment.totalpayable" class="read-only num"  style="width: 130px;"/></td>
 								
@@ -518,20 +523,23 @@ function uploadPhoto(tableId,tdTable, id) {
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset>
-		<legend> 发票内容</legend>
+		<legend> 发票信息</legend>
 		<table class="form" id="table_form2">
 			<tr>
+				<td class="label" width="100px">发票金额：</td> 
+				<td width="200px"><form:input path="invoice.invoiceamount"  class="num"  value=""/></td>
+	
 				<td class="label" width="100px">发票类型： </td>
 				<td width="150px">
-					<form:select path="payment.invoicetype" style="width: 120px;" value="">							
+					<form:select path="invoice.invoicetype" style="width: 120px;" value="">							
 					<form:options items="${invoiceTypeOption}" 
 						itemValue="key" itemLabel="value" /></form:select> </td>
 			
 				<td class="label" width="100px">发票编号：</td> 
-				<td width="200px"><form:input path="payment.invoicenumber"  class="middle"  value=""/></td>
+				<td width="200px"><form:input path="invoice.invoicenumber"  class="middle"  value=""/></td>
 				
 				<td class="label" width="100px">发票日期：</td> 
-				<td width="200px"><form:input path="payment.invoicedate"  class="short"  value=""/></td>
+				<td width="200px"><form:input path="invoice.invoicedate"  class="short"  value=""/></td>
 			</tr>												
 		</table>
 	</fieldset>

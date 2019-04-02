@@ -1435,6 +1435,10 @@ public class OrderService extends CommonService  {
 			float fnewTotal = flotTotal -fdiver;//销售总数
 			float fnewtotalPrice = fnewQty * fprice;//新的销售总计
 			
+			if(fnewQty < 0){
+				throw new Exception("被挪用订单数不够。");
+			}
+			
 			dbData.setDiverflag("1");//1：被挪用
 			if(isNullOrEmpty(oldDiverQty)){//如果已存在挪用前的订单数，就不更新，保留最初的订单数
 				dbData.setDivertquantity(oldQty);//被挪用前的订单数量,
@@ -2330,16 +2334,16 @@ public class OrderService extends CommonService  {
 		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 	
-	public String insertDivertOrder(String data) throws Exception {
+	public HashMap<String, Object> insertDivertOrder(String data) throws Exception {
 
-		String piid = "";
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
 		ts = new BaseTransaction();
 
 		try {			
 			ts.begin();
 					
 			//处理订单详情数据			
-			piid = request.getParameter("PIId");
+			String piid = request.getParameter("PIId");
 			String counter = getJsonData(data, "keyBackup");
 			
 			int counterInt = 0;
@@ -2377,14 +2381,16 @@ public class OrderService extends CommonService  {
 		    } 
 
 			ts.commit();
+			modelMap.put("returnValue", "SUCCESS");
 			
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 			ts.rollback();
+			modelMap.put("returnValue", "ERROR");
 		}	
 		
-		return piid;
+		return modelMap;
 	}
 	
 	public String deleteDivertOrder(String data) throws Exception {

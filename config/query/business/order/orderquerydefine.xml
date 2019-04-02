@@ -756,7 +756,7 @@
     <from>
     	b_OrderDivert AS a
     	LEFT JOIN v_orderlist AS b ON b.PIId = a.divertToPIid
-    	WHERE a.deleteFlag = '0'
+    	WHERE a.deleteFlag = '0' AND a.diverToYsid = b.YSId
     </from>
     <orderby>a.divertFromYsid</orderby>
     <groupby></groupby>
@@ -785,7 +785,7 @@
     <from>
     	b_OrderDivert AS a
     	LEFT JOIN v_orderlist AS b ON b.PIId = a.divertFromPIid
-    	WHERE a.deleteFlag = '0'
+    	WHERE a.deleteFlag = '0' AND a.divertFromPIid = b.YSId
     </from>
     <orderby>a.divertFromYsid</orderby>
     <groupby></groupby>
