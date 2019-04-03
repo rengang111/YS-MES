@@ -2566,7 +2566,7 @@ public class OrderService extends CommonService  {
 			modelMap.put("recordsTotal", "0");
 			return modelMap;
 		}
-		userDefinedSearchCase.put("divertFromPIid", piid);
+		userDefinedSearchCase.put("piid", piid);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 		

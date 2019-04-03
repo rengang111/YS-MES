@@ -767,8 +767,7 @@
     <pool></pool>     
     <name value="getOrderFromDevertList" />
     <where>
-   	  <w name="A.divertToPIid"      des=""  reqName="divertToPIid"      dtype="ch" oper="="  lg="AND" bt="" />
-   	  <w name="A.divertFromPIid"    des=""  reqName="divertFromPIid"    dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="b.PIid"      des=""  reqName="piid"      dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -783,11 +782,11 @@
       <f name="A.thisReductionQty" alias="" ctype="" />
     </select>
     <from>
-    	b_OrderDivert AS a
-    	LEFT JOIN v_orderlist AS b ON b.PIId = a.divertFromPIid
-    	WHERE a.deleteFlag = '0' AND a.divertFromPIid = b.YSId
+    	v_orderlist AS b 
+    	JOIN b_OrderDivert AS a ON b.PIId = a.divertFromPIid
+    	WHERE a.deleteFlag = '0' AND a.divertFromPIid = b.PIId
     </from>
-    <orderby>a.divertFromYsid</orderby>
+    <orderby>a.diverToYsid</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    

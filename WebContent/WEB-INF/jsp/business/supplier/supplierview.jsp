@@ -135,7 +135,7 @@ function unStockinListAjax(active) {
 				success: function(data){
 					fnCallback(data);
 					
-					contractSum();
+					//contractSum();
 					
 					inputDateInit();
 
@@ -251,7 +251,7 @@ $(document).ready(function() {
 	
 	initEvent();
 	// getUnStockinContractList  //unStockinListForRetract
-	unStockinListAjax('getUnStockinContractList');//
+	unStockinListAjax('unStockinListForRetract');//
 
 	buttonSelectedEvent();//按钮选择式样
 	

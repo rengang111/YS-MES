@@ -1663,7 +1663,7 @@ public class PurchasePlanService extends CommonService {
 		
 		String YSId = request.getParameter("YSId");	
 
-		return getPurchaseDetail(YSId);
+		return getPurchaseDetailForPlanView(YSId);
 		
 	}
 	
@@ -1679,8 +1679,11 @@ public class PurchasePlanService extends CommonService {
 
 		userDefinedSearchCase.put("YSId", YSId);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		System.out.println("采购方案编辑详情："+sql);
 		
-		baseQuery.getYsFullData();
+		baseQuery.getYsFullData(sql,YSId);
 		
 		if(dataModel.getRecordCount() > 0){
 			HashMap.put("data", dataModel.getYsViewData());
@@ -1690,6 +1693,31 @@ public class PurchasePlanService extends CommonService {
 		return HashMap;
 	}
 	
+	public HashMap<String, Object> getPurchaseDetailForPlanView(
+			String YSId) throws Exception {
+
+		HashMap<String, Object> HashMap = new HashMap<String, Object>();
+		dataModel = new BaseModel();		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("getPurchaseDetailForPlanView");
+		
+		baseQuery = new BaseQuery(request, dataModel);
+
+		userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		System.out.println("采购方案详情："+sql);
+		
+		baseQuery.getYsFullData(sql,YSId);
+		
+		if(dataModel.getRecordCount() > 0){
+			HashMap.put("data", dataModel.getYsViewData());
+			model.addAttribute("purchasePlan",dataModel.getYsViewData().get(0));
+			model.addAttribute("planDetail",dataModel.getYsViewData());
+		}
+		return HashMap;
+	}
 	public void getPurchasePlanByMaterialId() throws Exception {
 
 		String materialId = request.getParameter("materialId");

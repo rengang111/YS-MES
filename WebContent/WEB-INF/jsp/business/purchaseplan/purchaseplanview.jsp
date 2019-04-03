@@ -521,12 +521,6 @@ function initEvent(){
 	    			var stock =  row["availabelToPromise"] ;
 	    			var fstock = currencyToFloat( stock );
 					var rtn = "";
-					//if(fstock < 0){
-					//	rtn = '<div style="color:red">' + stock + '</div>';
-					//}else {
-						//price = '<div style="font-weight:bold;color:green">' + price + '</div>';
-					//	rtn = stock;
-					//}
 	    			return stock;
 	    		}},
 	    		{"targets":7,"render":function(data, type, row){
@@ -537,7 +531,6 @@ function initEvent(){
 					if(fstock > 0){
 						rtn = '<div style="font-weight:bold;">' + stock + '</div>';
 					}else {
-						//price = '<div style="font-weight:bold;color:green">' + price + '</div>';
 						rtn = stock;
 					}
 	    			return rtn;
@@ -1132,7 +1125,7 @@ function ZZmaterialView() {
 
 		<div id="tabs-1" style="padding: 5px;">
 
-			<div id="DTTT_container"  style="float:left;height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
+			<div style="float:left;height:40px;margin-right: 30px;width: 50%;margin: 5px 0px -10px 10px;">
 				<a class="DTTT_button DTTT_button_text box" id="all" data-id="4">显示全部</a>
 				<a class="DTTT_button DTTT_button_text box" id="yz" data-id="0">自制品</a>
 				<a class="DTTT_button DTTT_button_text box" id="dg" data-id="1">订购件</a>
@@ -1140,7 +1133,7 @@ function ZZmaterialView() {
 				<a class="DTTT_button DTTT_button_text box" id="ty" data-id="2">通用件</a>
 				<input type="hidden" id="selectedPurchaseType" />
 			</div>
-			<div id="DTTT_container" style="float:right;height:40px;margin: 5px 0px -10px 10px;">
+			<div style="float:right;height:40px;margin: 5px 0px -10px 10px;">
 				<b>合同交期：<input type="text" id="contractDelivery"  value=""  class=short/></b>&nbsp;&nbsp;&nbsp;&nbsp;
 				<button type="button" id="createPurchaseOrder" class="DTTT_button">选中并生成采购合同</button>
 			</div>
