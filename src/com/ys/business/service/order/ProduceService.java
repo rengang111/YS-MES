@@ -130,6 +130,19 @@ public class ProduceService extends CommonService  {
 		String searchFlag = request.getParameter("searchFlag");
 		String orderType = request.getParameter("orderType");//订单类型
 		
+		String where = " 1=1 ";
+		//*** 关键字
+		if(notEmpty(key1) && notEmpty(key2)){
+			where = " full_field like '%"+key1+"%' AND full_field like '%"+key2+"%' ";
+		}else{
+			if(notEmpty(key1)){
+				where = " full_field like '%"+key1+"%' ";
+			}
+			if(notEmpty(key2)){
+				where = " full_field like '%"+key2+"%' ";
+			}
+		}
+		
 		if(("S").equals(searchFlag)){
 			//收起
 			dataModel.setQueryName("getOrderListForTaskGroup");
@@ -141,12 +154,7 @@ public class ProduceService extends CommonService  {
 		}else{
 			userDefinedSearchCase.put("orderType", orderType);			
 		}
-		
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		if(notEmpty(key1) || notEmpty(key2))
-			userDefinedSearchCase.put("status", "");
-		
+				
 		String having =" hideFlag='F' ";//false：不显示隐藏
 		if(("Y").equals(searchFlag)){
 			//隐藏
@@ -156,10 +164,15 @@ public class ProduceService extends CommonService  {
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		sql = sql.replace("#",having);
+		sql = sql.replace("#0",where );
+		sql = sql.replace("#1",having);
+
+		List<String> list = new ArrayList<String>();
+		list.add(where);
+		list.add(having);
 		
 		System.out.println("生产任务合并查询："+sql);
-		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			

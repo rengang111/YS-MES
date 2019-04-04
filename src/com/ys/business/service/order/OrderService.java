@@ -126,31 +126,68 @@ public class OrderService extends CommonService  {
 		String key2 = keyArr[1];		
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderList");	
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		if(notEmpty(key1) || notEmpty(key2))
-			userDefinedSearchCase.put("status", "");
+		dataModel.setQueryName("getOrderListForOrderSearch");	
+		//userDefinedSearchCase.put("keyword1", key1);
+		//userDefinedSearchCase.put("keyword2", key2);
+		//if(notEmpty(key1) || notEmpty(key2))
+		//	userDefinedSearchCase.put("status", "");
 		
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		
+		String where = " 1=1 ";
+		//*** 关键字
+		if(notEmpty(key1) && notEmpty(key2)){
+			where = " full_field like '%"+key1+"%' AND full_field like '%"+key2+"%' ";
+		}else{
+			if(notEmpty(key1)){
+				where = " full_field like '%"+key1+"%' ";
+			}
+			if(notEmpty(key2)){
+				where = " full_field like '%"+key2+"%' ";
+			}
+		}
+		
+		//*** 入库状态
+		String having = " 1=1 ";
+		String searchType = request.getParameter("searchType"); 
+		if(("U").equals(searchType)){
+			//未入库
+			having = " computeStockinQty < orderQty  ";//入库数 小于 订单数 
+		}else if(("Y").equals(searchType)){
+			//已入库
+			having = " computeStockinQty >= orderQty  ";//入库数 大于等于 订单数 
+		}
+		
+		//*** 被挪用完全的订单 a.divertYsid='0'
+		String divertKey = " 1=1 ";
+		if(("N").equals(searchType)){
+			divertKey = " a.diverFlag='1' AND a.quantity+0 = 0 ";
+		}
+		
+		List<String> list = new ArrayList<String>();
+		list.add(where);
+		list.add(divertKey);
+		list.add(having);
+		
+		sql = sql.replace("#0",where );
+		sql = sql.replace("#1",divertKey );
+		sql = sql.replace("#2",having );
+		System.out.println("订单查询SQL："+sql);
+		
+		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
 		}		
 		
-		//HashMap<String, String> listSort = getAndSetSortKey(data);
 		modelMap.put("sEcho", sEcho);
 		modelMap.put("recordsTotal", dataModel.getRecordCount());
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
 		modelMap.put("data", dataModel.getYsViewData());	
 		modelMap.put("keyword1",key1);	
-		modelMap.put("keyword2",key2);	
-		//modelMap.put("iSortCol_0", listSort.get("iSortCol_0"));
-		//modelMap.put("sSortDir_0", listSort.get("sSortDir_0"));
-		
+		modelMap.put("keyword2",key2);
 		
 		return modelMap;
 	}
@@ -450,9 +487,9 @@ public class OrderService extends CommonService  {
 		
 		baseQuery = new BaseQuery(request, dataModel);
 		
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		userDefinedSearchCase.put("keyword1", "");
+		userDefinedSearchCase.put("keyword2", "");
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
 		baseQuery.getYsQueryData(iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){
@@ -1429,7 +1466,6 @@ public class OrderService extends CommonService  {
 			float foldQty = stringToFloat(oldQty);//销售数量
 			float flotTotal = stringToFloat(dbData.getTotalquantity());//销售数量+额外订单
 			float fprice = stringToFloat(dbData.getPrice());
-			//float foldTotalPrice = stringToFloat(dbData.getTotalprice());
 			
 			float fnewQty = foldQty - fdiver;//新的销售数量=原订单数 - 挪走的
 			float fnewTotal = flotTotal -fdiver;//销售总数
@@ -1449,11 +1485,34 @@ public class OrderService extends CommonService  {
 			
 			new B_OrderDetailDao().Store(dbData);
 			
-			//更新整个PI的销售总价
-			//updataOrderTotalPrice(dbData.getPiid(),fnewtotalPrice,foldTotalPrice);
 		}
 		
 		return dbData;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void updateDivertOrderDetail(
+			String divertysid) throws Exception{
+		
+		B_OrderDetailData dbData = new B_OrderDetailData();
+		String where = " YSId ='" + divertysid + "' AND deleteFlag='0' ";
+		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
+			
+		if(list == null || list.size() == 0){
+			return ;
+		}else{
+			//处理共通信息
+			dbData = list.get(0);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderCancelUpdate",userInfo);
+			copyProperties(dbData,commData);
+									
+			dbData.setDivertysid("1");//1：挪用
+			
+			new B_OrderDetailDao().Store(dbData);
+			
+		}
+		
 	}
 	
 	public Model delete(String delData){
@@ -2362,8 +2421,11 @@ public class OrderService extends CommonService  {
 			    if (isNullOrEmpty(diverttoysid))
 			    	continue;
 		      
-				//更新原订单
+				//更新被挪用的订单
 			    updateParentOrderDetail(divertfromysid,thisreductionqty);
+			    
+			    //更新挪用的订单
+			    updateDivertOrderDetail(diverttoysid);
 					
 				B_OrderDivertData newDt = new B_OrderDivertData();
 				newDt.setDivertfrompiid(divertfrompiid);

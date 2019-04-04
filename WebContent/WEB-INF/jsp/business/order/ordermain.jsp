@@ -42,17 +42,18 @@
 
 //var sortc = 0;
 
-	function ajax(orderNature,status,sessionFlag,col_no) {
+	function searchAjax(sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var url = "${ctx}/business/order?methodtype=search&sessionFlag="+sessionFlag
-				+"&status="+status+"&orderNature="+orderNature;
 		
-		//$(".addselect").remove();
-		//var scrollHeight = $(document).height() - 197; 
+		var searchType = $('#searchType').val();
+		
+		var url = "${ctx}/business/order?methodtype=search&sessionFlag="+sessionFlag
+				+"&searchType="+searchType;
+		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				"lengthChange":false,
@@ -90,8 +91,6 @@
 						"data" : JSON.stringify(aoData),
 						success: function(data){							
 							fnCallback(data);
-							//sortc = 5;//data["iSortCol_0"];
-							//alert(sortc)
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
 						},
@@ -107,47 +106,51 @@
 					{"data": "YSId", "defaultContent" : ''},
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},
 					{"data": "materialName", "defaultContent" : ''},//3
-					{"data": "orderDate", "defaultContent" : ''},
-					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},
-					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},
-					{"data": "team", "className" : 'td-left'},//7
-					{"data": "statusName", "className" : 'td-center'},//8
-					{"data": "storageDate", "className" : 'td-center'},//9
+					{"data": "shortName", "className" : 'td-center'},//4
+					{"data": "orderDate", "defaultContent" : '', "className" : 'td-center'}, //5
+					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-center'},//6
+					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},//7
+					{"data": null, "className" : 'td-right'},//8入库
+					{"data": null, "className" : 'td-center', "defaultContent" : '***'},//9业务组
+										
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 		    			return row["rownum"];
-		    			//return row["rownum"] + "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />"
                     }},
 		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
 		    			rtn= "<a href=\"###\" onClick=\"doShow('"+ row["PIId"] + "')\">"+row["YSId"]+"</a>";
 		    			return rtn;
 		    		}},
-		    		{"targets":6,"render":function(data, type, row){
-		    			
-		    			return floatToCurrency(data);
-		    		}},
 		    		{"targets":3,"render":function(data, type, row){
-		    			var name = row["materialName"],id = row["YSId"], zzFlag = "";
-		    			name = jQuery.fixedWidth(name,40);//true:两边截取,左边从汉字开始
-		    			var zzFlag = "";
-		    			//if(id != ''){
-		    			//	zzFlag = id.substr(2,3);
-		    			//}
-		    			//if(zzFlag == 'YSK') name = '库存订单';//库存订单不显示明细内容
-		    			
+		    			var name = row["materialName"];
+		    			name = jQuery.fixedWidth(name,40);//true:两边截取,左边从汉字开始		    			
 		    			return name;
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
+		    			return floatToNumber(data);
+		    		}},
+		    		{"targets":9,"render":function(data, type, row){
 		    			return jQuery.fixedWidth(row["team"],10);
+		    		}},
+		    		{"targets":8,"render":function(data, type, row){
+		    			var orderQty   = currencyToFloat(row['orderQty']);
+		    			var stockinQty = currencyToFloat(row['stockinQty']);
+		    			var checkInDate= row['checkInDate'];
+		    			
+		    			var viewDate = floatToNumber(stockinQty);
+		    			if(stockinQty >= orderQty){
+		    				viewDate = checkInDate;
+		    			}
+		    			return viewDate;
 		    		}},
 		    		{
 		    			"orderable":false,"targets":[0]
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : [col_no]
+						"targets" : []
 					},
 					{
 						//"order": [[ 2, 'asc' ]]
@@ -193,20 +196,9 @@
 
 	}
 	
-	
-	function YSKcheck(v,id){
-		var zzFlag = "";
-		if(id != null && id != ''){
-			zzFlag = id.substr(2,3);
-		}
-		if(zzFlag == 'YSK') v = 0;//库存订单不显示明细内容
-		return v;
-		
-	}
-	
 	function initEvent(){
 
-		ajax("","010","true",9);
+		searchAjax("true");
 	
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -238,13 +230,15 @@
 		
 
 		buttonSelectedEvent();//按钮选择式样
-		
-		$('#defutBtn').removeClass("start").addClass("end");
+		var searchType = $('#searchType').val();
+		$('#defutBtn'+searchType).removeClass("start").addClass("end");
 	})	
 	
 	function doSearch() {	
 
-		ajax('','','false',9);
+		$('#searchType').val('');//关键字查询，忽略其状态
+		
+		searchAjax('false');
 		
 		var collection = $(".box");
 	    $.each(collection, function () {
@@ -258,25 +252,18 @@
 		location.href = url;
 	}
 	//订单状态
-	function doSearchCustomer(type,col_no){
-		ajax('',type,'false',col_no);
+	function doSearchCustomer(type){
+		
+		$('#searchType').val(type);
+		
+		searchAjax('false');
 	}
+	
 	//常规订单OR库存
 	function doSearchCustomer2(orderNature,col_no){
 		ajax(orderNature,'','false',col_no);
 	}	
-	
-	function doCreateZZ() {
-		
-		var url = '${ctx}/business/zzorder?methodtype=create';
-		location.href = url;
-	}
-	
-	function doCreateZP() {
-		
-		var url = '${ctx}/business/zporder?methodtype=create';
-		location.href = url;
-	}
+
 	
 	function doShow(PIId) {
 
@@ -284,12 +271,6 @@
 
 		callWindowFullView("订单详情",url);
 	}
-
-	function doEdit(recordId,parentId) {
-		var url = '${ctx}/business/order?methodtype=edit&parentId=' + parentId+'&recordId='+recordId;
-
-		location.href = url;
-	}	
 
 	function doTransfer() {
 		var url = '${ctx}/business/order?methodtype=orderTransfer';
@@ -315,6 +296,7 @@
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 			<input type="hidden" id="keyBackup" value="${keyBackup }" />
+			<input type="hidden" id="searchType" value="U" /><!-- U:未入库；Y:已入库；N:被挪用 -->
 			<table>
 				<tr>
 					<td width="10%"></td> 
@@ -387,18 +369,21 @@
 
 	<div class="list">
 
-		<div id="TSupplier_wrapper" class="dataTables_wrapper">
-			<div id="DTTT_container2" style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCustomer('010',9);" id="defutBtn"><span>待合同</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('020',9);"><span>待到料</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('030',9);"><span>待交货</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer('040',7);"><span>已入库</span></a>&nbsp;&nbsp;
-			<!--	<a  class="DTTT_button box" onclick="doSearchCustomer2('010',9);"><span>常规订单</span></a> -->
-				<a  class="DTTT_button box" onclick="doSearchCustomer2('020',9);"><span>库存订单</span></a>
+			<div style="height:40px;float: left">
+				<a  class="DTTT_button box" onclick="doSearchCustomer('U');" id="defutBtnU"><span>未入库</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('Y');" id="defutBtnY"><span>已入库</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer('N');" id="defutBtnN"><span>全挪用</span></a>
+				<!-- 
+				<a  class="DTTT_button box" onclick="doSearchCustomer3('010',9);" id="defutBtn"><span>待合同</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer3('020',9);"><span>待到料</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer3('030',9);"><span>待交货</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer3('040',7);"><span>已入库</span></a>&nbsp;&nbsp;
+				<!-- a  class="DTTT_button box" onclick="doSearchCustomer2('010',9);"><span>常规订单</span></a> -->
+				<!-- a  class="DTTT_button box" onclick="doSearchCustomer2('020',9);"><span>库存订单</span></a -->
 			</div>
-			<div id="DTTT_container" style="height:40px;float: right">
+			<div style="height:40px;float: right">
 				<a  class="DTTT_button " onclick="doCreate(1);"><span>订单录入</span></a>
-			 	<a  class="DTTT_button " onclick="doTransfer();"><span>订单转移</span></a> 
+			 	<!-- a  class="DTTT_button " onclick="doTransfer();"><span>订单转移</span></a --> 
 			</div>
 			<div id="clear"></div>
 			<table id="TMaterial" class="display" >
@@ -408,16 +393,15 @@
 						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 150px;">产品编号</th>
 						<th>产品名称</th>
+						<th style="width: 50px;">客户</th>
 						<th style="width: 50px;">下单日期</th>
 						<th style="width: 50px;">订单交期</th>
-						<th style="width: 60px;">数量</th>
+						<th style="width: 60px;">订单数</th>
+						<th style="width: 50px;">入库</th>
 						<th style="width: 40px;">业务组</th>
-						<th style="width: 60px;">订单状态</th>
-						<th style="width: 50px;">入库时间</th>
 					</tr>
 				</thead>
 			</table>
-		</div>
 	</div>
 </div>
 </div>

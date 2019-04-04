@@ -75,11 +75,12 @@
 					{"data": "YSId", "defaultContent" : ''}, //2
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//3
 					{"data": "materialName", "defaultContent" : ''},//4
-					{"data": "quantity", "defaultContent" : '0', "className" : 'td-right'},//5
-					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},//6
-					{"data": "MaxDeliveryDate", "defaultContent" : '', "className" : 'td-left'},//7
-					{"data": "team", "className" : 'td-center'},//8
-					{"data": "statusName", "className" : 'td-center'},//9
+					{"data": "shortName", "className" : 'td-center'},//5
+					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},//6
+					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},//7
+					{"data": "MaxDeliveryDate", "defaultContent" : '', "className" : 'td-left'},//8
+					{"data": "team", "className" : 'td-center'},//9
+					{"data": "team", "className" : 'td-center'},//10
 					
 				],
 				"columnDefs":[
@@ -129,11 +130,11 @@
 		    			
 		    			return name + lastCheceked;
 		    		}},
-		    		{"targets":5,"render":function(data, type, row){
+		    		{"targets":6,"render":function(data, type, row){
 		    			
-		    			return floatToCurrency(data);
+		    			return floatToNumber(data);
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){
 		    			if(data == '' || data == null )
 		    				data = '***';
 		    			return data;
@@ -143,7 +144,7 @@
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : []
+						"targets" : [10]
 					},
 					{
 						//"order": [[ 2, 'asc' ]]
@@ -576,10 +577,11 @@
 				<thead>						
 					<tr>
 						<th style="width: 10px;">No</th>
-						<th style="width: 50px;">型号</th>
+						<th style="width: 40px;">型号</th>
 						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 150px;">产品编号</th>
 						<th>产品名称</th>
+						<th style="width: 40px;">客户</th>
 						<th style="width: 60px;">订单数量</th>
 						<th style="width: 50px;">订单交期</th>
 						<th style="width: 50px;">最晚交期</th>
