@@ -198,6 +198,7 @@
 					var type   = $('#invoice\\.invoicetype').val();
 					var amount = $('#invoice\\.invoiceamount').val();
 					
+					/*
 					if($.trim(amount) ==''){
 						$().toastmessage('showWarningToast', "请输入发票金额。");
 						return;				
@@ -221,6 +222,7 @@
 							return;				
 						}
 					}
+					*/
 					
 					$("#insert").attr("disabled", "disabled");
 					
@@ -522,6 +524,7 @@ function uploadPhoto(tableId,tdTable, id) {
 		<a class="DTTT_button DTTT_button_text" onclick="doPrintReceiptList();return false;">批量打印入库单</a>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
+	<!-- 
 	<fieldset>
 		<legend> 发票信息</legend>
 		<table class="form" id="table_form2">
@@ -543,6 +546,7 @@ function uploadPhoto(tableId,tdTable, id) {
 			</tr>												
 		</table>
 	</fieldset>
+	 -->
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">

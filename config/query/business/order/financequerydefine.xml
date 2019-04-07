@@ -509,9 +509,99 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_paymentlistfromcontract a LEFT JOIN b_purchasestockin b ON b.contractId=a.contractId AND b.deleteFlag='0' where a.deleteFlag='0' AND a.supplierId != '0574YZ00'</from>
+    <from>v_paymentlistfromcontract a 
+    	LEFT JOIN b_purchasestockin b ON b.contractId=a.contractId AND b.deleteFlag='0' 
+    	where a.deleteFlag='0' AND a.supplierId != '0574YZ00'</from>
     <orderby>A.YSId </orderby>
     <groupby>a.contractId</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="contractListForPaymenByContractId" />
+     <where>
+    </where>
+  <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="a.totalPrice" alias="" ctype="" />
+      <f name="a.stockinQty" alias="" ctype="" />
+      <f name="a.chargeback" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="IFNULL(a.paymentId,'')" alias="paymentId" ctype="" />
+      <f name="a.payable" alias="" ctype="" />
+      <f name="a.receiptId" alias="" ctype="" />
+      <f name="a.taxExcluded" alias="" ctype="" />
+      <f name="a.taxes" alias="" ctype="" />
+      <f name="concat( a.taxRate*100/100,'%')" alias="taxRate" ctype="" />
+      <f name="a.chargeType" alias="" ctype="扣款方式" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.supplierName" alias="" ctype="" />
+  </select>
+    <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
+    <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
+    <from>
+      (
+		SELECT
+			a.paymentId,
+			a.payable,
+			a.chargeType,
+			b.taxExcluded,
+			b.taxes,
+			b.taxRate,
+			SUM(REPLACE (b.price, ',', '') * REPLACE (b.quantity, ',', ''))  AS totalPrice,
+			a.stockinQty,
+			SUM(b.quantity) contractQty,
+			b.YSId AS YSId,
+			b.deduct chargeback,
+			b.contractId AS contractId,
+			b.supplierId AS supplierId,b.supplierName AS supplierName,b.shortName,
+			a.receiptId
+		FROM
+		(
+			SELECT
+				a.paymentId,
+				a.payable,
+				a.chargeType,
+				a.contractId AS contractId,
+				SUM(REPLACE(b.stockinQty,',','')) stockinQty,	
+				group_concat(b.receiptId SEPARATOR ',') receiptId
+			FROM
+			(
+				SELECT
+					ifnull(b.paymentId, '') AS paymentId,
+					b.contractId,
+					b.payable,
+					b.chargeType
+				FROM
+					v_paymentdetail b 
+				WHERE  b.paymentId='#'
+			) a
+			LEFT JOIN
+			(
+				SELECT
+					b.YSId,
+					b.receiptId,
+					b.contractId,
+					a.materialId,
+					a.quantity stockinQty,
+					b.checkInDate,
+					b.storageFinish
+				FROM
+					b_purchasestockindetail a
+					JOIN b_purchaseStockIn b ON a.receiptId = b.receiptId AND b.deleteFlag='0'
+				WHERE a.deleteFlag='0'  
+			) b ON a.contractId=b.contractId
+			
+		  	GROUP BY a.contractId 
+		)a 	
+		LEFT JOIN v_purchaseorderdetail b ON a.contractId = b.contractId AND (b.deleteFlag = '0')
+		GROUP BY a.contractid
+	  ) a
+	</from>
+    <orderby>a.contractId </orderby>
+    <groupby></groupby>
     <having></having>
 	<power>
 	</power>    
@@ -1441,7 +1531,7 @@
 			LEFT JOIN b_paymentdetail b ON b.paymentId=a.paymentId AND (b.deleteFlag = '0') 
 		) a
 		
-		LEFT JOIN b_purchaseorder b ON a.contractId=b.contractId
+		LEFT JOIN b_purchaseorder b ON a.contractId=b.contractId AND b.deleteFlag='0'
 		where 1=1
 		
 	</from>
@@ -1529,7 +1619,7 @@
 			LEFT JOIN b_paymentdetail b ON b.paymentId=a.paymentId AND (b.deleteFlag = '0') 
 		) a
 		
-		LEFT JOIN b_purchaseorder b ON a.contractId=b.contractId
+		LEFT JOIN b_purchaseorder b ON a.contractId=b.contractId AND b.deleteFlag='0'
 		where 1=1
 	</from>
     <orderby>a.finishStatus,a.paymentId,a.contractId</orderby>
@@ -1547,6 +1637,7 @@
       <f name="b.paymentId" alias="newPaymentId" ctype="" />
       <f name="a.invoiceDate" alias="oldInvoiceDate" ctype="" />
       <f name="a.totalPayable" alias="" ctype="" />
+      <f name="b.recordId" alias="" ctype="" />
       <f name="IFNULL(b.paymentId,a.paymentId)" alias="paymentId" ctype="" />
       <f name="IFNULL(b.invoiceAmount,a.totalPayable)" alias="invoiceAmount" ctype="" />
       <f name="IFNULL(b.invoiceUser,a.invoiceUser)" alias="invoiceUser" ctype="" />

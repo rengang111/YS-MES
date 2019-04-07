@@ -22,6 +22,7 @@ import com.ys.business.service.order.PaymentService;
 import com.ys.system.action.common.BaseAction;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.DicUtil;
 import com.ys.util.basequery.common.Constants;
 /**
  * 应付款管理
@@ -243,7 +244,26 @@ public class PaymentAction extends BaseAction {
 				dataMap = paymentInvoiceList();
 				printOutJsonObj(response, dataMap);
 				break;
-				
+			case "addPyamentInvoice"://新增发票
+				addPyamentInvoice();
+				//printOutJsonObj(response, dataMap);
+				rtnUrl = "/business/finance/paymentinvoiceadd";
+				break;
+			case "insertPyamentInvoice"://保存新增发票
+				insertPyamentInvoice();
+				break;
+			case "editPyamentInvoice"://编辑发票
+				editPyamentInvoice();
+				rtnUrl = "/business/finance/paymentinvoiceadd";
+				break;
+			case "deletePyamentInvoice"://删除发票
+				dataMap = deletePyamentInvoice();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "paymentContractList"://合同明细
+				dataMap = paymentContractList();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;
@@ -941,6 +961,7 @@ public class PaymentAction extends BaseAction {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	public HashMap<String, Object> paymentInvoiceList(){
 		
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
@@ -961,4 +982,99 @@ public class PaymentAction extends BaseAction {
 		
 		return dataMap;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> paymentContractList(){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
+		
+		try {
+			dataMap = service.getPaymentContractList();
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	
+	public HashMap<String, Object> getPyamentInvoice(){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
+		
+		try {
+			dataMap = service.getPaymentInvoiceList();
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public void addPyamentInvoice(){
+		try{
+			String paymentId = request.getParameter("paymentId");
+			
+			model.addAttribute("paymentId",paymentId);
+			//发票类型
+			model.addAttribute("invoiceTypeOption",
+				new DicUtil().getListOption(DicUtil.DIC_INVOICETYPE,
+						""));
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void insertPyamentInvoice(){
+		try{
+			service.insertPyamentInvoice();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public HashMap<String, Object> deletePyamentInvoice(){
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();	
+		try{
+			service.deletePyamentInvoice();
+			dataMap.put(INFO, SUCCESSMSG);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		return dataMap;
+	}
+	
+	public void editPyamentInvoice(){
+		try{
+			
+			service.editPyamentInvoiceInit();
+
+			String paymentId = request.getParameter("paymentId");
+			//发票类型
+			model.addAttribute("invoiceTypeOption",
+				new DicUtil().getListOption(DicUtil.DIC_INVOICETYPE,
+						""));
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
 }

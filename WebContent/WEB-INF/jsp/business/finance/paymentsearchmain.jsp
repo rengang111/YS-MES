@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
-<title>应付款--付款查询管理</title>
+<title>应付款--付款申请2</title>
 <style>
 body{
 	font-size:11px;
@@ -153,21 +153,22 @@ body{
 		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 
+		    			//供应商编号
 		    			var groupFlag = $('#groupFlag').val();
-		    			if(groupFlag == 'S'){
-		    				return  '<div style="text-align: center;">***</div>';
-		    			}else{
+		    			//if(groupFlag == 'S'){
+		    			//	return  '<div style="text-align: center;">***</div>';
+		    			//}else{
 			    			return jQuery.fixedWidth(data,12);
-		    			}
+		    			//}
 		    		}},
 		    		{"targets":5,"render":function(data, type, row){
-
+						//供应商名称
 		    			var groupFlag = $('#groupFlag').val();
-		    			if(groupFlag == 'S'){
-		    				return  '<div style="text-align: center;">***</div>';
-		    			}else{
+		    			//if(groupFlag == 'S'){
+		    			//	return  '<div style="text-align: center;">***</div>';
+		    			//}else{
 			    			return jQuery.fixedWidth(data,32);
-		    			}
+		    			//}
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
 		    			

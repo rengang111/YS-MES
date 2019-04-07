@@ -1020,11 +1020,11 @@ public class PaymentService extends CommonService {
 
 		//付款申请详情
 		HashMap<String, String> map = getPaymentDetail(paymentid);
-		if(!(map == null)){
-			String contractId = map.get("contractIds");
+		//if(!(map == null)){
+			//String contractId = map.get("contractIds");
 			//供应商
-			getContractDetail(contractId);				
-		}	
+			//getContractDetail(contractId);				
+		//}	
 
 	}	
 		
@@ -1087,25 +1087,23 @@ public class PaymentService extends CommonService {
 		
 		return paymentid;
 	}
-		
-	
-	@SuppressWarnings("unchecked")
+			
 	private void insertInvoiceDetail(
 			B_PaymentInvoiceDetailData invoice) throws Exception {
 		
-		B_PaymentInvoiceDetailData db = null;
-		List<B_PaymentInvoiceDetailData> list = null;
+		B_PaymentInvoiceDetailData db = new B_PaymentInvoiceDetailData();
+		//List<B_PaymentInvoiceDetailData> list = null;
 		try {
-			String where = " paymentId ='" + invoice.getPaymentid() +  "'" +
-					" AND invoiceNumber ='" + invoice.getInvoicenumber() + "'" +
-					" AND deleteFlag='0'";
-			list = new B_PaymentInvoiceDetailDao().Find(where);
+			//String where = " paymentId ='" + invoice.getPaymentid() +  "'" +
+			//		" AND invoiceNumber ='" + invoice.getInvoicenumber() + "'" +
+			//		" AND deleteFlag='0'";
+			db = new B_PaymentInvoiceDetailDao(invoice).beanData;
 
 		} catch (Exception e) {
 			// nothing
 		}		
 		
-		if(list == null || list.size() == 0){
+		if(db.getRecordid() == null || ("").equals(db.getRecordid())){
 			//插入新数据
 			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 					"paymentRequestInsert",userInfo);
@@ -1113,15 +1111,18 @@ public class PaymentService extends CommonService {
 			guid = BaseDAO.getGuId();
 			invoice.setRecordid(guid);
 			invoice.setInvoiceuser(userInfo.getUserId());//发票填写人：默认为登陆者
+			
 			new B_PaymentInvoiceDetailDao().Create(invoice);
 		}else{
 			//更新
-			db = list.get(0);		
-			copyProperties(db,invoice);
+			db.setInvoiceamount(invoice.getInvoiceamount());
+			db.setInvoicetype(invoice.getInvoicetype());
+			db.setInvoicedate(invoice.getInvoicedate());
+			db.setInvoicenumber(invoice.getInvoicenumber());
+			
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"paymentRequestUpdate",userInfo);
 			copyProperties(db,commData);
-			db.setInvoiceuser(userInfo.getUserId());//默认为登陆者
 
 			new B_PaymentInvoiceDetailDao().Store(db);
 		}
@@ -1684,7 +1685,9 @@ public class PaymentService extends CommonService {
 			String oldInvoiceNumber = map.get("oldInvoiceNumber");
 			if(isNullOrEmpty(newPaymentId) && isNullOrEmpty(oldInvoiceNumber)){
 				//没有发票
-				modelMap.put("data", "");
+				ArrayList<HashMap<String, String>> tmp = 
+						new ArrayList<>();
+				modelMap.put("data", tmp);
 			}else{
 				modelMap.put("data", dataModel.getYsViewData());					
 			}
@@ -1692,6 +1695,30 @@ public class PaymentService extends CommonService {
 			modelMap.put("data", dataModel.getYsViewData());			
 		}
 		
+		return modelMap;
+		
+	}
+	
+	public HashMap<String, Object> getPaymentContractList() throws Exception {
+		
+		String paymentId = request.getParameter("paymentId");
+		
+		dataModel.setQueryName("contractListForPaymenByContractId");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("paymentId", paymentId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", paymentId);
+		System.out.println("付款单的合同明细："+sql);
+		
+		baseQuery.getYsFullData(sql,paymentId);
+		
+		if(baseQuery.getRecodCount() > 0){
+
+			modelMap.put("supplier", dataModel.getYsViewData().get(0));
+		}
+		modelMap.put("data", dataModel.getYsViewData());
 		return modelMap;
 		
 	}
@@ -2012,4 +2039,81 @@ public class PaymentService extends CommonService {
 		model.addAttribute("yearList",year);
 		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
+	
+	/**
+	 * 新增发票
+	 * @return
+	 */
+	public void insertPyamentInvoice(){
+		String paymentid = "";
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			B_PaymentInvoiceDetailData invoice = reqModel.getInvoice();
+
+			//取得付款编号
+			paymentid = invoice.getPaymentid();
+			if(isNullOrEmpty(paymentid)){
+				return;
+			}
+			
+			//新增发票信息
+			insertInvoiceDetail(invoice);
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * 删除发票
+	 * @return
+	 */
+	public void deletePyamentInvoice(){
+		
+		try {
+			String recordid = request.getParameter("recordId");			
+			B_PaymentInvoiceDetailData invoice = new B_PaymentInvoiceDetailData();			
+			invoice.setRecordid(recordid);
+			
+			new B_PaymentInvoiceDetailDao().Remove(invoice);				
+			
+		}
+		catch(Exception e) {			
+			e.printStackTrace();
+			
+		}
+	}
+	
+	/**
+	 * 删除发票
+	 * @return
+	 */
+	public void editPyamentInvoiceInit(){
+		
+		try {
+			String recordid = request.getParameter("recordId");			
+			B_PaymentInvoiceDetailData invoice = new B_PaymentInvoiceDetailData();			
+			invoice.setRecordid(recordid);
+			
+			invoice = new B_PaymentInvoiceDetailDao(invoice).beanData;				
+			
+			reqModel.setInvoice(invoice);
+		}
+		catch(Exception e) {			
+			e.printStackTrace();
+			
+		}
+	}
+	
 }
