@@ -99,21 +99,16 @@ body{
 					{"data": "supplierName", "defaultContent" : ''},//5	供应商名称
 					{"data": "YSId", "defaultContent" : '***', "className" : 'td-center'},//6 采购员
 					{"data": "totalPayable", "defaultContent" : '0', "className" : 'td-right'},//7应付款总金额
-					{"data": "paymentAmount", "defaultContent" : '0', "className" : 'td-right'},//8 已付款
-					{"data": "", "className" : 'td-center'},//9 剩余金额
-					{"data": "requestDate", "defaultContent" : '***',"className" : 'td-center'},//10 申请日期
-					{"data": "finishStatus", "className" : 'td-center'},//11 付款状态
+					{"data": "invoiceAmount", "defaultContent" : '0', "className" : 'td-right'},//8 发票金额合计
+					{"data": "paymentAmount", "defaultContent" : '0', "className" : 'td-right'},//9 已付款
+					{"data": "", "className" : 'td-center'},//10 剩余金额
+					{"data": "requestDate", "defaultContent" : '***',"className" : 'td-center'},//11 申请日期
+					{"data": "finishStatus", "className" : 'td-center'},//12 付款状态
 					
 				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-		    			var key1 = $('#keyword1').val();
-		    			var key2 = $('#keyword2').val();
-		    			var paymentId = row["paymentId"];
-		    			var stockinQty = currencyToFloat(row['stockinQty']);
-		    			var contractQty = currencyToFloat(row['contractQty']);
-		    			var text = row["rownum"];
-		    			
+		    			var text = row["rownum"];		    			
 		    			return text;		    			
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
@@ -121,14 +116,8 @@ body{
 		    			var rtn = "待申请";
 		    			var stockinQty = currencyToFloat(row['stockinQty']);
 		    			var contractQty = currencyToFloat(row['contractQty']);
-		    			//if(paymentId ==  "" || paymentId == null){
-		    			//	if(stockinQty >= contractQty){
-			    		//		rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["contractId"] +"')\">" + "待申请" + "</a>";
-			    		//	}
-		    			//}else{
-		    				rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["contractId"] + "','"+ row["paymentId"] + "')\">" + row["paymentId"] + "</a>";
-		    			//}
-		    					    			
+		    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["contractId"] + "','"+ row["paymentId"] + "')\">" + row["paymentId"] + "</a>";
+		    					    					    			
 		    			return rtn;
 		    		}},
 		    		{"targets":2,"render":function(data, type, row){
@@ -177,7 +166,11 @@ body{
 		    			else
 		    				return data;
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
+		    		{"targets":8,"render":function(data, type, row){
+		    			
+		    			return floatToCurrency(data);
+		    		}},
+		    		{"targets":10,"render":function(data, type, row){
 		    			
 		    			var total   = currencyToFloat(row['totalPayable']);
 		    			var payment = currencyToFloat(row['paymentAmount']);		    			
@@ -185,7 +178,7 @@ body{
 		    			
 		    			return floatToCurrency(tmp);
 		    		}},
-		    		{"targets":11,"render":function(data, type, row){
+		    		{"targets":12,"render":function(data, type, row){
 		    			
 		    			var staN = row['finishStatus'];
 		    			var sts  = row['finishStatusId'];
@@ -757,6 +750,7 @@ body{
 					<th>供应商名称</th>
 					<th width="30px">采购</th>
 					<th width="50px">应付款</th>
+					<th width="50px">发票金额</th>
 					<th width="50px">已付款</th>
 					<th width="50px">剩余金额</th>
 					<th width="50px">申请日期</th>

@@ -725,7 +725,7 @@ public class PaymentService extends CommonService {
 		boolean  record = getPaymentHistory(paymentid);
 		if(record){			
 			rtnFlg = "查看";
-			getPaymentHistoryList(paymentid);
+			//getPaymentHistoryList(paymentid);
 		}else{
 			B_PaymentHistoryData history = getPaymentHistoryId(paymentid);
 			reqModel.setHistory(history);
@@ -749,12 +749,13 @@ public class PaymentService extends CommonService {
 		return rtnFlg;
 	}
 	
+	
 	public void finishView() throws Exception {
 		
 		String paymentid = request.getParameter("paymentId");
 		
 		//付款记录
-		getPaymentHistoryList(paymentid);
+		//getPaymentHistoryList(paymentid);
 		
 				
 		//付款申请详情
@@ -1002,7 +1003,7 @@ public class PaymentService extends CommonService {
 		String paymentid = insertFinish();
 		
 
-		getPaymentHistoryList(paymentid);
+		//getPaymentHistoryList(paymentid);
 		
 		//付款申请详情
 		HashMap<String, String> map = getPaymentDetail(paymentid);
@@ -1063,9 +1064,9 @@ public class PaymentService extends CommonService {
 			}			
 				
 			//新增发票信息
-			B_PaymentInvoiceDetailData invoice = reqModel.getInvoice();
-			invoice.setPaymentid(paymentid);
-			insertInvoiceDetail(invoice);
+			//B_PaymentInvoiceDetailData invoice = reqModel.getInvoice();
+			//invoice.setPaymentid(paymentid);
+			//insertInvoiceDetail(invoice);
 			
 			//保存退税率
 			for(B_PurchaseOrderData data:contractList ){
@@ -1507,6 +1508,7 @@ public class PaymentService extends CommonService {
 		}
 		
 	}
+	
 	public HashMap<String, String>  getPaymentDetail(String paymentid) throws Exception{
 
 		HashMap<String, String> payment = null;
@@ -1543,15 +1545,19 @@ public class PaymentService extends CommonService {
 		return payment;
 	}
 	
-	public void  getPaymentHistoryList(String paymentid) throws Exception{
-
+	public HashMap<String, Object> getPaymentHistoryList() throws Exception{
+		
+		String paymentId = request.getParameter("paymentId");
+		
 		dataModel.setQueryName("paymentHistoryList");
-		userDefinedSearchCase.put("paymentId", paymentid);
+		userDefinedSearchCase.put("paymentId", paymentId);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		baseQuery.getYsFullData();
 
-		model.addAttribute("history",dataModel.getYsViewData());
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
 		
 	}
 	
@@ -2096,7 +2102,7 @@ public class PaymentService extends CommonService {
 	}
 	
 	/**
-	 * 删除发票
+	 * 编辑发票
 	 * @return
 	 */
 	public void editPyamentInvoiceInit(){
@@ -2113,6 +2119,47 @@ public class PaymentService extends CommonService {
 		catch(Exception e) {			
 			e.printStackTrace();
 			
+		}
+	}
+	
+	/**
+	 * 删除付款记录
+	 * @return
+	 * @throws Exception 
+	 */
+	@SuppressWarnings("unchecked")
+	public void deletePyamentRecord() throws Exception{
+		
+			
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+			
+			String paymentId = request.getParameter("paymentId");
+			String recordid = request.getParameter("recordId");	
+			
+			B_PaymentHistoryData invoice = new B_PaymentHistoryData();			
+			invoice.setRecordid(recordid);
+			
+			new B_PaymentHistoryDao().Remove(invoice);		
+		
+			//更新付款状态
+			String where = " paymentId='" + paymentId +"' AND deleteFlag='0' ";
+			List<B_PaymentData>  list = new B_PaymentDao().Find(where);
+			if(list.size() > 0 ){
+				B_PaymentData payment = list.get(0);
+				payment.setFinishstatus(Constants.payment_030);//待付款
+				
+				updatePaymentFinishSts(payment);
+			}
+			
+			
+			ts.commit();
+		
+		}catch(Exception e){
+			ts.rollback();
+			e.printStackTrace();
 		}
 	}
 	

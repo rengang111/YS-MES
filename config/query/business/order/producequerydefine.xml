@@ -101,7 +101,7 @@
       <f name="b.viewFlag" alias="" ctype="" />
       <f name="b.mergeId" alias="" ctype="" />
       <f name="A.PIId" alias="" ctype="" />
-      <f name="A.orderQty" alias="" ctype="" />
+      <f name="SUM(REPLACE(A.orderQty,',',''))" alias="orderQty" ctype="" />
       <f name="A.totalQuantity" alias="" ctype="" />
       <f name="A.orderDate" alias="" ctype="" />
       <f name="MIN(A.deliveryDate)" alias="deliveryDate" ctype="" />

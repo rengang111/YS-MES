@@ -10,7 +10,10 @@
 <script type="text/javascript">
 
 	function checkNumber(str) { 
-	    var reg = /^\d+(,\d\d\d)*.\d+$/; 
+	   // var reg = /^\d+(,\d\d\d)*.\d+$/; 
+	    //var reg = /^(\d+,?)+$/;
+	    var reg = /^\d+(,\d\d\d)*.\d+$/;
+	    str = $.trim(str)
 	    if (str != "") { 
 	        if (!reg.test(str)) {            
 	            return false;
@@ -37,13 +40,25 @@
 		
 		$("#invoice\\.invoiceamount") .blur(function(){
 			
-			var num = $(this).val();// 			
+			var num = $(this).val();// 		
+			var contractPrice = currencyToFloat('${contractPrice}');// 		
+			var invoiceCnt = currencyToFloat('${invoiceCnt}');// 	invoiceCnt	
+			
 			var checkedNum = checkNumber(num);			
 			if(checkedNum == false){
-				$().toastmessage('showWarningToast', "请输入有效数字。"); 				
-			}else{
-				$(this).val(floatToCurrency(num));
-			}			
+				$().toastmessage('showWarningToast', "请输入有效数字。");
+				return;
+			}
+
+			thisNum = currencyToFloat(num);
+			var maxNum = contractPrice - invoiceCnt;
+			if(thisNum > maxNum){
+				$().toastmessage('showWarningToast', "发票金额不能超过付款总额。");
+				return;
+			}
+			
+			$(this).val(floatToCurrency(num));
+					
 		});
 		
 		$("#return").click(function() {
@@ -142,6 +157,13 @@
 		<fieldset>
 			<legend> 发票信息</legend>
 			<table class="form" id="table_form2">
+				<tr>
+					<td class="label" width="100px">付款总金额：</td> 
+					<td width="200px"><span id="contractPrice" class="font16">${contractPrice }</span></td>
+						
+					<td class="label" width="100px">已申请付款金额：</td> 
+					<td width="200px"><span id="invoiceCnt" class="font16">${invoiceCnt }</span></td>
+				</tr>
 				<tr>
 					<td class="label" width="100px">发票金额：</td> 
 					<td width="200px"><form:input path="invoice.invoiceamount"  class="num"  value=""/></td>

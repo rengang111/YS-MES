@@ -346,6 +346,8 @@
       <f name="a.finishStatus" alias="" ctype="应付款状态" />
       <f name="a.finishStatus" alias="finishStatusId" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
+      <f name="f.shortName" alias="" ctype="" />
+      <f name="f.supplierName" alias="" ctype="" />
       <f name="a.contractIds" alias="" ctype="" />
       <f name="a.invoiceDate" alias="" ctype="" />
       <f name="a.invoiceType" alias="" ctype="发票类型" />
@@ -373,6 +375,7 @@
 	   		LEFT JOIN s_user c ON a.applicant=c.userId AND c.deleteFlag='0' 
 	   		LEFT JOIN s_user d ON a.invoiceCheckUser=d.userId AND d.deleteFlag='0' 
 	   		LEFT JOIN s_user e ON a.approvalUser=e.userId AND e.deleteFlag='0' 
+	   		LEFT JOIN b_supplier f ON f.supplierId=a.supplierId AND  f.deleteFlag='0' 
    		WHERE a.deleteFlag='0'</from>
     <groupby></groupby>
     <having></having>    
@@ -460,14 +463,15 @@
       <f name="a.paymentHistoryId" alias="" ctype="" />
       <f name="a.paymentId" alias="" ctype="" />
       <f name="a.paymentMethod" alias="" ctype="付款方式" />
-      <f name="IFNULL(format(REPLACE(a.paymentAmount,',',''),2),0)" alias="paymentAmount" ctype="" />
+      <f name="format(REPLACE(a.paymentAmount,',',''),2)" alias="paymentAmount" ctype="" />
       <f name="a.finishDate" alias="" ctype="" />
       <f name="a.currency" alias="" ctype="币种" />
       <f name="c.loginName" alias="finishUser" ctype="" />
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-   <from>b_paymenthistory a  LEFT JOIN s_user c ON a.finishUser=c.userId AND c.deleteFlag='0' WHERE a.deleteFlag='0'</from>
+   <from>b_paymenthistory a  
+   		LEFT JOIN s_user c ON a.finishUser=c.userId AND c.deleteFlag='0' WHERE a.deleteFlag='0'</from>
     <groupby></groupby>
     <having></having>    
     <orderby>a.paymentHistoryId</orderby>
@@ -1464,6 +1468,8 @@
     </where>
   <select>
       <f name="a.paymentId" alias="" ctype="" />
+      <f name="a.invoiceAmount" alias="" ctype="" />
+      <f name="a.invoiceDate" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.supplierName" alias="" ctype="" />
       <f name="a.totalPayable" alias="" ctype="" />
@@ -1497,6 +1503,8 @@
 			a.finishDate,
 			a.finishStatus,
 			b.contractId,
+			c.invoiceAmount,
+			c.invoiceDate,
 			ucase(
 				concat_ws(
 					',',
@@ -1529,6 +1537,14 @@
 			GROUP BY a.paymentId
 			)a
 			LEFT JOIN b_paymentdetail b ON b.paymentId=a.paymentId AND (b.deleteFlag = '0') 
+			LEFT JOIN 
+				(SELECT c.paymentId,
+					SUM(REPLACE(c.invoiceAmount,',','')) invoiceAmount,
+					MAX(c.invoiceDate) invoiceDate 
+				 FROM b_paymentinvoicedetail c
+				 WHERE c.deleteFlag='0' 
+				 GROUP BY c.paymentId 
+				 ) c ON c.paymentId=a.paymentId  
 		) a
 		
 		LEFT JOIN b_purchaseorder b ON a.contractId=b.contractId AND b.deleteFlag='0'
@@ -1554,6 +1570,8 @@
     </where>
   <select>
       <f name="a.paymentId" alias="" ctype="" />
+      <f name="a.invoiceAmount" alias="" ctype="" />
+      <f name="a.invoiceDate" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.supplierName" alias="" ctype="" />
       <f name="a.totalPayable" alias="" ctype="" />
@@ -1585,6 +1603,8 @@
 			a.finishDate,
 			a.finishStatus,
 			b.contractId,
+			c.invoiceAmount,
+			c.invoiceDate,
 			ucase(
 				concat_ws(
 					',',
@@ -1617,6 +1637,14 @@
 			GROUP BY a.paymentId
 			)a
 			LEFT JOIN b_paymentdetail b ON b.paymentId=a.paymentId AND (b.deleteFlag = '0') 
+			LEFT JOIN 
+				(SELECT c.paymentId,
+					SUM(REPLACE(c.invoiceAmount,',','')) invoiceAmount,
+					MAX(c.invoiceDate) invoiceDate 
+				 FROM b_paymentinvoicedetail c
+				 WHERE c.deleteFlag='0' 
+				 GROUP BY c.paymentId 
+				 ) c ON c.paymentId=a.paymentId  
 		) a
 		
 		LEFT JOIN b_purchaseorder b ON a.contractId=b.contractId AND b.deleteFlag='0'

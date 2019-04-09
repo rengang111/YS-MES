@@ -51,6 +51,8 @@ function ContractListAjax() {
 					$('#supplierId').text(supplierId);
 					$('#supplierName').text(supplierName);
 				//	$('#shortName').text(shortName);
+
+					productPhotoView();//图片需要供应商编号
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	             }
@@ -68,7 +70,7 @@ function ContractListAjax() {
 				}, {"data": "totalPrice","className":"td-right"//合同金额
 				}, {"data": "chargeback","className":"td-right","defaultContent" : '0'//增减项
 				}, {"data": "chargeType","className":"td-center"//扣款方式
-				}, {"data": "payable","className":"td-center"//应付款
+				}, {"data": "payable","className":"td-center"//应付款 8
 				}, {"data": "taxRate","className":"td-center"//退税率
 				}, {"data": "taxes","className":"td-center"//税
 				}, {"data": "taxExcluded","className":"td-center"//价
@@ -90,15 +92,24 @@ function ContractListAjax() {
 				return txt;
     		}},
     		{"targets":4,"render":function(data, type, row){
-    			var totalPrice  = currencyToFloat(row['totalPrice']);
+    			var contractQty  = currencyToFloat(row['contractQty']);
     			var stockinQty  = currencyToFloat(row['stockinQty']);
     			var rtn = '待入库';
-    			if(stockinQty >= totalPrice){
-    				rtn = '已入库';
-    			}else if(stockinQty > 0){
-    				rtn = '部分入库';    				
+    			if(stockinQty > 0){ 
+    				if(stockinQty >= contractQty){
+        				rtn = '已入库';
+    				}else{
+        				rtn = '部分入库';  
+    				}
     			}
     			return rtn;
+    		}},
+    		{"targets":5,"render":function(data, type, row){
+    			return floatToCurrency(data);
+    		}},
+    		{"targets":8,"render":function(data, type, row){
+    			    			
+    			return floatToCurrency(data);
     		}},
     		{"targets":12,"render":function(data, type, row){
     			var delet = "<a href=\"###\" onClick=\"doPrintContract(\"'"+row["contractId"]+"')\">打印合同</a>";
@@ -184,7 +195,11 @@ function doDeleteInvoice(recordId){
 //新增供应商
 function doCreatePrice() {
 	var paymentId = $("#payment\\.paymentid").val();
+	var invoiceCnt = $("#invoiceCnt").text();
+	var contractPrice = '${payment.totalPayable }';
 	var url = "${ctx}/business/payment?methodtype=addPyamentInvoice&paymentId="+paymentId;
+	url += "&invoiceCnt=" + invoiceCnt;
+	url += "&contractPrice=" + contractPrice;
 	//alert('url：'+url)
 	layer.open({
 		offset :[100,''],
@@ -348,7 +363,7 @@ function doCreatePrice() {
 		});
 		
 		materialzzAjax();
-		productPhotoView();
+		//productPhotoView();
 		
 		//产品图片添加位置,                                                                                                                                                                                        
 		var productIndex = 1;
@@ -447,7 +462,7 @@ function doCreatePrice() {
 function productPhotoView() {
 
 	var paymentId = $("#payment\\.paymentid").val();
-	var supplierId = '${supplier.supplierId }';
+	var supplierId =$("#supplierId").text();;
 
 	$.ajax({
 		"url" :"${ctx}/business/payment?methodtype=getProductPhoto&paymentId="+paymentId+"&supplierId="+supplierId,	
@@ -700,7 +715,7 @@ function invoiceCountFn(){
 	<form:hidden path="payment.recordid"     value="${payment.recordId }"/>
 	<form:hidden path="payment.contractids"  value="${payment.contractIds }"/>
 	<form:hidden path="payment.paymentid"    value="${payment.paymentId }"/>
-	<form:hidden path="payment.supplierid"    value="${supplier.supplierId }"/>
+	<form:hidden path="payment.supplierid"    value=""/>
 	<input type="hidden" id="paymentTypeId"  value="${paymentTypeId }"/><!-- 1:正常；2：预付 -->
 	
 	<fieldset>

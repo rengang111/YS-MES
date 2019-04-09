@@ -264,6 +264,14 @@ public class PaymentAction extends BaseAction {
 				dataMap = paymentContractList();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "paymentHistoryList"://付款记录明细
+				dataMap = paymentHistoryList();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "deletePyamentRecord"://删除付款记录
+				dataMap = deletePyamentRecord();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;
@@ -1005,6 +1013,28 @@ public class PaymentAction extends BaseAction {
 		return dataMap;
 	}
 	
+
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> paymentHistoryList(){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();		
+		
+		try {
+			dataMap = service.getPaymentHistoryList();
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
 	
 	public HashMap<String, Object> getPyamentInvoice(){
 		
@@ -1029,9 +1059,13 @@ public class PaymentAction extends BaseAction {
 	
 	public void addPyamentInvoice(){
 		try{
-			String paymentId = request.getParameter("paymentId");
-			
+			String paymentId     = request.getParameter("paymentId");
+			String contractPrice = request.getParameter("contractPrice");
+			String invoiceCnt    = request.getParameter("invoiceCnt");
+						
 			model.addAttribute("paymentId",paymentId);
+			model.addAttribute("contractPrice",contractPrice);
+			model.addAttribute("invoiceCnt",invoiceCnt);
 			//发票类型
 			model.addAttribute("invoiceTypeOption",
 				new DicUtil().getListOption(DicUtil.DIC_INVOICETYPE,
@@ -1054,6 +1088,20 @@ public class PaymentAction extends BaseAction {
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();	
 		try{
 			service.deletePyamentInvoice();
+			dataMap.put(INFO, SUCCESSMSG);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		return dataMap;
+	}
+	
+
+	public HashMap<String, Object> deletePyamentRecord(){
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();	
+		try{
+			service.deletePyamentRecord();
 			dataMap.put(INFO, SUCCESSMSG);
 		}catch(Exception e){
 			System.out.println(e.getMessage());

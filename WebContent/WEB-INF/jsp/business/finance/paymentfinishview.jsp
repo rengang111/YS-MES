@@ -59,48 +59,94 @@
 
 	};
 	
-	function history() {
-
+	function paymentHistoryAjax() {
 		
-		var t = $('#history').DataTable({
+		var table = $('#history').dataTable();
+		if(table) {
+			table.fnClearTable(false);
+			table.fnDestroy();
+		}
+		var paymentId = $('#payment\\.paymentid').val();
+
+		var t = $('#history').DataTable({			
 			"paging": false,
+			"lengthChange":false,
+			"lengthMenu":[50,100,200],//设置一页展示20条记录
 			"processing" : false,
-			"retrieve"   : true,
-			"stateSave"  : false,
-			"pagingType" : "full_numbers",
-			//"scrollY"    : scrollHeight,
-	       // "scrollCollapse": false,
-	        "paging"    : false,
-	        //"pageLength": 50,
-	        "ordering"  : false,
-		    "autoWidth":false,
-			"dom"		: '<"clear">rt',
-        	"language": {
-        		"url":"${ctx}/plugins/datatables/chinese.json"
-        	},
-        	"columns": [
-  					{"className" : 'td-center'},//
-  					{"className" : 'td-left'},//
-  					{"className" : 'td-center'},//
-  					{"className" : 'td-center'},//
-  					{"className" : 'td-center'},//
-  					{"className" : 'td-right'},//
-  					{"className" : 'td-right'},//
-  					{},//			
-  					
-  				],	
+			"serverSide" : false,
+			"stateSave" : false,
+			"ordering "	:true,
+			"searching" : false,
+			"retrieve" : true,
+			dom : '<"clear">rt',
+			"sAjaxSource" : "${ctx}/business/payment?methodtype=paymentHistoryList&paymentId="+paymentId,
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				var param = {};
+				var formData = $("#condition").serializeArray();
+				formData.forEach(function(e) {
+					aoData.push({"name":e.name, "value":e.value});
+				});
+
+				$.ajax({
+					"url" : sSource,
+					"datatype": "json", 
+					"contentType": "application/json; charset=utf-8",
+					"type" : "POST",
+					"data" : JSON.stringify(aoData),
+					success: function(data){							
+						fnCallback(data);		
+						
+						paymentSum();//已付款合计
+					},
+					 error:function(XMLHttpRequest, textStatus, errorThrown){
+		             }
+				})
+			},
+	    	"language": {
+	    		"url":"${ctx}/plugins/datatables/chinese.json"
+	    	},		
+			"columns" : [
+			        	{"data": null,"className":"dt-body-center"
+					}, {"data": "paymentId","className":"td-left"
+					}, {"data": "finishDate","className":"td-center"
+					}, {"data": "finishUser","className":"td-center"
+					}, {"data": "currency", "className":"td-center",// 4
+					}, {"data": "paymentMethod","className":"td-center"
+					}, {"data": "paymentAmount","className":"td-right"
+					}, {"data": null,
+					}, {"data": null,
+					}
+				
+				],
+			"columnDefs":[
+	    		{"targets":0,"render":function(data, type, row){
+	    			return row['rownum'];
+	    		}},
+	    		{"targets":7,"render":function(data, type, row){
+	    			//var edit    = "<a href=\"#\" onClick=\"doUpdateInvoice('" + row["recordId"] + "')\">编辑</a>";
+	    			var delet   = "<a href=\"#\" onClick=\"deletePayment('" + row["paymentId"] + "','" + row["recordId"] + "')\">删除</a>";
+	    			
+	    			return delet;
+	            }},
+	            {"targets":8,"render":function(data, type, row){
+	    			return "";
+	    		}},
+	    	]
 			
-			
-		});		
+		}).draw();
 						
 		t.on('click', 'tr', function() {
+			
+			var rowIndex = $(this).context._DT_RowIndex; //行号			
+			//alert(rowIndex);
+
 			if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
 	        }
 	        else {
 	            t.$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
-	        }			
+	        }		
 		});
 		
 		t.on('order.dt search.dt draw.dt', function() {
@@ -130,10 +176,10 @@
 			location.href = url;		
 		});
 
-		ajax();
-		history();
+		//ajax();
+		invoiceAjax();//发票信息
+		paymentHistoryAjax();//付款明细
 		productPhotoView();//付款单据
-		paymentSum();//已付款合计
 		
 		var contract = contractSum(4);
 		var minis = contractSum(5);
@@ -145,11 +191,7 @@
 		
 	});
 	
-	function doEdit(contractId,arrivalId) {
-		
-		var url = '${ctx}/business/requisition?methodtype=edit&contractId='+contractId+'&arrivalId='+arrivalId;
-		location.href = url;
-	}
+
 
 	//列合计
 	function contractSum(col){
@@ -187,13 +229,154 @@
 		
 		callProductDesignView("采购合同",url);
 	}
+	
+	function deletePayment(paymentId,recordId){
+		
+		if (confirm("删除后不能恢复，确定要删除吗？")){ //
+			$.ajax({
+				type : "post",
+				url : "${ctx}/business/payment?methodtype=deletePyamentRecord&recordId="+recordId+"&paymentId="+paymentId,
+				async : false,
+				data : 'key=' + recordId,
+				dataType : "json",
+				success : function(data) {
+					paymentHistoryAjax();
+				},
+				error : function(
+						XMLHttpRequest,
+						textStatus,
+						errorThrown) {
+					
+					
+				}
+			});
+		}else{
+			//
+		}
+	}
+	
+	function invoiceCountFn(){
+		
+		var cost = 0;
+		$('#invoice tbody tr').each (function (){
+			
+			var temp = $(this).find("td").eq(2).text();//发票金额	
+			
+			temp = currencyToFloat(temp);
+			cost = cost + temp;
+						
+		});	
+		
+		$('#invoiceCnt').text(floatToCurrency(cost));
+		
+	}
+	
+	function invoiceAjax() {
+		
+		var table = $('#invoice').dataTable();
+		if(table) {
+			table.fnClearTable(false);
+			table.fnDestroy();
+		}
+		var paymentId = $('#payment\\.paymentid').val();
+
+		var t = $('#invoice').DataTable({			
+			"paging": false,
+			"lengthChange":false,
+			"lengthMenu":[50,100,200],//设置一页展示20条记录
+			"processing" : false,
+			"serverSide" : false,
+			"stateSave" : false,
+			"ordering "	:true,
+			"searching" : false,
+			"retrieve" : true,
+			dom : '<"clear">rt',
+			"sAjaxSource" : "${ctx}/business/payment?methodtype=paymentInvoiceList&paymentId="+paymentId,
+			"fnServerData" : function(sSource, aoData, fnCallback) {
+				var param = {};
+				var formData = $("#condition").serializeArray();
+				formData.forEach(function(e) {
+					aoData.push({"name":e.name, "value":e.value});
+				});
+
+				$.ajax({
+					"url" : sSource,
+					"datatype": "json", 
+					"contentType": "application/json; charset=utf-8",
+					"type" : "POST",
+					"data" : JSON.stringify(aoData),
+					success: function(data){							
+						fnCallback(data);		
+						invoiceCountFn();
+					},
+					 error:function(XMLHttpRequest, textStatus, errorThrown){
+		             }
+				})
+			},
+	    	"language": {
+	    		"url":"${ctx}/plugins/datatables/chinese.json"
+	    	},		
+			"columns" : [
+			        	{"data": null,"className":"dt-body-center"
+					}, {"data": "invoiceDate","className":"td-center"
+					}, {"data": "invoiceAmount","className":"td-right"
+					}, {"data": "invoiceType","className":"td-center"
+					}, {"data": "invoiceNumber", "defaultContent" : '',// 4
+					}, {"data": null,"className":"td-center"
+					}, {"data": null,
+					}
+				],
+			"columnDefs":[
+	    		{"targets":0,"render":function(data, type, row){
+	    			return row['rownum'];
+	    		}},
+	    		{"targets":2,"render":function(data, type, row){
+	    			return floatToCurrency(data);
+	    		}},
+	    		{"targets":6,"render":function(data, type, row){
+	    			return "";
+	    		}},
+	    		{"targets":5,"render":function(data, type, row){
+	    			var edit    = "<a href=\"#\" onClick=\"doUpdateInvoice('" + row["recordId"] + "')\">编辑</a>";
+	    			var delet   = "<a href=\"#\" onClick=\"doDeleteInvoice('" + row["recordId"] + "')\">删除</a>";
+	    			
+	    			return "";
+	            }}
+	    	]
+			
+		}).draw();
+						
+		t.on('click', 'tr', function() {
+			
+			var rowIndex = $(this).context._DT_RowIndex; //行号			
+			//alert(rowIndex);
+
+			if ( $(this).hasClass('selected') ) {
+	            $(this).removeClass('selected');
+	        }
+	        else {
+	            t.$('tr.selected').removeClass('selected');
+	            $(this).addClass('selected');
+	        }		
+		});
+		
+		t.on('order.dt search.dt draw.dt', function() {
+			t.column(0, {
+				search : 'applied',
+				order : 'applied'
+			}).nodes().each(function(cell, i) {
+				cell.innerHTML = i + 1;
+			});
+		}).draw();
+
+	};
 </script>
 <script type="text/javascript">
 
 function productPhotoView() {
 
 	var paymentId = $("#history\\.paymentid").val();
-	var supplierId = '${supplier.supplierId }';
+	var supplierId = '${payment.supplierId }';
 
 	$.ajax({
 		"url" :"${ctx}/business/payment?methodtype=getProductPhoto&paymentId="+paymentId+"&supplierId="+supplierId,	
@@ -277,9 +460,6 @@ function photoView(id, tdTable, count, data) {
 <form:form modelAttribute="formModel" method="POST"
 	id="formModel" name="formModel"  autocomplete="off">
 
-	<form:hidden path="history.paymentid" value="${payment.paymentId }"/>
-	<form:hidden path="history.parentid"  />
-	<form:hidden path="history.subid"  />
 	<form:hidden path="payment.recordid"  value="${payment.recordId }" />
 	<form:hidden path="payment.paymentid"  value="${payment.paymentId }" />
 	<form:hidden path="payment.totalpayable"  value="${payment.totalPayable }" />
@@ -302,13 +482,13 @@ function photoView(id, tdTable, count, data) {
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">供应商编号：</td>					
-				<td width="150px">${supplier.supplierId }</td>
+				<td width="150px">${payment.supplierId }</td>
 														
 				<td width="100px" class="label">供应商简称：</td>
-				<td width="150px">${supplier.shortName }</td>
+				<td width="150px">${payment.shortName }</td>
 														
 				<td width="100px" class="label">供应商名称：</td>
-				<td colspan="3">${supplier.supplierName }</td>
+				<td colspan="3">${payment.supplierName }</td>
 			</tr>
 			<tr>	
 				<td width="100px" class="label">已付款合计：</td>
@@ -318,7 +498,7 @@ function photoView(id, tdTable, count, data) {
 				<td class="font16" width="150px">${payment.totalPayable }</td>
 								
 				<td class="label" width="100px">付款条件：</td>					
-				<td width="150px">发票后&nbsp;${supplier.paymentTerm }&nbsp;天</td>
+				<td width="150px">发票后&nbsp;${payment.paymentTerm }&nbsp;天</td>
 														
 				
 				<td width="100px" class="label">付款状态：</td>
@@ -332,21 +512,34 @@ function photoView(id, tdTable, count, data) {
 		<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a>
 	</div>
 	<fieldset>
-		<legend> 发票信息</legend>
-		<table class="form" id="table_form2">
-			<tr>
-				<td width="100px" class="label">发票类型：</td>
-				<td width="100px">${payment.invoiceType }</td>
-				<td width="100px" class="label">发票编号：</td>
-				<td width="150px">${payment.invoiceNumber }</td>
-				<td width="100px" class="label">发票日期：</td>
-				<td width="100px" >${payment.invoiceDate }</td>
-				<td></td>
-			</tr>				
+		<span class="tablename" style="">  发票信息</span>		
+		<table class="display" id="invoice">
+			<thead>
+				<tr> 
+					<th width="30px">No</th>				
+					<th width="100px">发票日期</th>				
+					<th width="150px">发票金额</th>
+					<th width="100px">发票类型</th>					
+					<th width="180px">发票编号</th>		
+					<th width="80px">操作</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td><span id="invoiceCnt"></span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tfoot>
 		</table>
 	</fieldset>
 	<fieldset>
-		<legend> 付款信息</legend>
+		<legend> 付款明细</legend>
 		<table class="display" id="history">
 			<thead>
 				<tr> 
@@ -357,23 +550,10 @@ function photoView(id, tdTable, count, data) {
 					<th width="100px">币种</th>					
 					<th width="100px" >付款方式</th>
 					<th width="100px">付款金额</th>	
-					<th>备注</th>
+					<th></th>
+					<th></th>
 				</tr>
 			</thead>
-			<tbody>
-			<c:forEach var="detail" items="${history}" varStatus='status' >		
-				<tr>
-					<td>${status.index + 1}</td>
-					<td>${detail.paymentHistoryId}</td>
-					<td>${detail.finishDate}</td>
-					<td>${detail.finishUser}</td>
-					<td>${detail.currency}</td>
-					<td>${detail.paymentMethod}</td>
-					<td>${detail.paymentAmount}</td>
-					<td></td>
-				</tr>
-			</c:forEach>
-			</tbody>
 			<tfoot>
 				<tr>
 					<td></td>
@@ -384,10 +564,12 @@ function photoView(id, tdTable, count, data) {
 					<td>合计：</td>
 					<td><span id="paymentCount2" style="font-weight: bold;"></span></td>
 					<td></td>
+					<td></td>
 				</tr>
 			</tfoot>										
 		</table>
 	</fieldset>
+	<!-- 
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">
@@ -429,7 +611,7 @@ function photoView(id, tdTable, count, data) {
 					</script>
 				</c:forEach>
 			</tbody>
-			<!--  -->
+			
 			<tfoot>
 				<tr>
 					<td></td>
@@ -445,6 +627,7 @@ function photoView(id, tdTable, count, data) {
 		</table>
 		</div>
 	</fieldset>
+	 -->
 	<fieldset>
 		<legend>收据清单</legend>
 		<div class="list">
@@ -455,32 +638,7 @@ function photoView(id, tdTable, count, data) {
 			</div>
 		</div>	
 	</fieldset>
-	<!-- 
-	<fieldset>
-		<legend> 审核结果</legend>
-		<table class="form" id="table_form2">
-			<tr>
-				<td width="100px" class="label">审核人：</td>
-				<td width="100px" >${payment.approvalUser }</td>
-				<td width="100px" class="label">审核结果：</td>
-				<td width="100px" >${payment.approvalStatus }</td>
-				<td width="100px" class="label">审核日期：</td>
-				<td width="100px" >${payment.approvalDate }</td>
-				<td width="100px" class="label">发票类型：</td>
-				<td width="100px">${payment.invoiceType }</td>
-				<td width="100px" class="label">发票编号：</td>
-				<td>${payment.invoiceNumber }</td>
-			</tr>
-				
-			<tr>	
-				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
-				<td colspan="7" >
-					<pre>${payment.approvalFeedback }</pre></td>
-			</tr>	
-								
-		</table>
-	</fieldset>
-	 -->
+	
 </form:form>
 
 </div>
