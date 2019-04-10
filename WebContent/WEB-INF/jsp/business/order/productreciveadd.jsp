@@ -1,29 +1,23 @@
 <%@ page language="java" pageEncoding="UTF-8"
 	contentType="text/html; charset=UTF-8"%>
-
 <!DOCTYPE HTML>
 <html>
-
 <head>
 <%@ include file="../../common/common2.jsp"%>
 <title>成品领料</title>
 <script type="text/javascript">
 
-function checkNumber(str) { 
-   var reg = /^([1-9]([0-9,])*(\.[0-9]+)?)$/;
-    //var reg = /^\d+(,\d\d\d)*.\d+$/;
-    str = $.trim(str);
-    if (str != "") { 
-        if (!reg.test(str)) {
-            return false;
-        } else{
-        	return true;
-        }
-    }
-}
+var thisCount = 0;
+
 	$(document).ready(function() {
 		
-		//设置光标项目
+		//设置允许领料最大数
+		var dbThisQty = $('#recive\\.receivequantity').val();
+		var orderQty = '${order.quantity}';
+		dbThisQty = currencyToFloat(dbThisQty);
+		orderQty = currencyToFloat(orderQty);
+		
+		thisCount = dbThisQty + orderQty;
 		
 		//设置选择项目的选中项	
 		$("#recive\\.receivedate").val(shortToday());
@@ -45,7 +39,8 @@ function checkNumber(str) {
 		$("#recive\\.receivequantity") .blur(function(){
 			
 			var num = $(this).val();// 		
-			var oldQty = currencyToFloat('${order.quantity}');// 		
+			//var oldQty = currencyToFloat('${order.quantity}');// 	
+			var oldQty = thisCount;
 			
 			var checkedNum = checkNumber(num);			
 			if(checkedNum == false){
@@ -93,7 +88,7 @@ function checkNumber(str) {
 
 
 			$("#submit").attr("disabled", true);
-
+						
 			$.ajax({
 				async:false,
 				type : "POST",
@@ -153,7 +148,7 @@ function checkNumber(str) {
 	 id="orderForm" name="orderForm"  autocomplete="off">
 
 		<form:hidden path="recive.recordid" />
-		
+		<input type="hidden" id="oldQuantity" />		
 
 		<fieldset>
 			<legend> 成品领料</legend>

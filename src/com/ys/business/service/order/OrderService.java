@@ -2682,11 +2682,14 @@ public class OrderService extends CommonService  {
 				return;
 			
 			//新增成品领料
-			insertProductReceive(invoice);
+			String dbQuantity = insertProductReceive(invoice);
 			
 			//更新原订单数量
 			String ysid = invoice.getYsid();
-			updateOrderDetail(ysid,quantity);
+			String updataQty = String.valueOf(
+					stringToFloat(quantity) - stringToFloat(dbQuantity)
+					);//如果是修改已有领料，需要先扣除之前的领料数
+			updateOrderDetail(ysid,updataQty);
 			
 			
 			ts.commit();			
@@ -2702,9 +2705,10 @@ public class OrderService extends CommonService  {
 		}
 	}
 	
-	private void insertProductReceive(
+	private String insertProductReceive(
 			B_ProductReceiveData receive) throws Exception {
 		
+		String dbQuantity = "0";
 		B_ProductReceiveData db = new B_ProductReceiveData();
 		try {
 			db = new B_ProductReceiveDao(receive).beanData;
@@ -2723,6 +2727,8 @@ public class OrderService extends CommonService  {
 			
 			new B_ProductReceiveDao().Create(receive);
 		}else{
+			
+			dbQuantity = db.getReceivequantity();//更新前的值
 			//更新
 			db.setReceivequantity(receive.getReceivequantity());
 			db.setReceivedate(receive.getReceivedate());
@@ -2735,6 +2741,8 @@ public class OrderService extends CommonService  {
 
 			new B_ProductReceiveDao().Store(db);
 		}
+		
+		return dbQuantity;
 		
 	}
 	
@@ -2799,6 +2807,12 @@ public class OrderService extends CommonService  {
 	public void editProductInvoiceInit(){
 		
 		try {
+			
+			//原订单明细
+			String YSId = request.getParameter("YSId");
+			getOrderDetailByYSId(YSId);	
+			
+			//取得领料明细
 			String recordid = request.getParameter("recordId");			
 			B_ProductReceiveData invoice = new B_ProductReceiveData();			
 			invoice.setRecordid(recordid);

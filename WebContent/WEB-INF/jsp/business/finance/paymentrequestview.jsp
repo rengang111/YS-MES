@@ -49,6 +49,7 @@ function ContractListAjax() {
 				//	var shortName    = data['data'][0]['shortName'];
 
 					$('#supplierId').text(supplierId);
+					$('#payment\\.supplierid').val(supplierId);
 					$('#supplierName').text(supplierName);
 				//	$('#shortName').text(shortName);
 

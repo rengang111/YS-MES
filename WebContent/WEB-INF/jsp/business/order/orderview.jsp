@@ -750,7 +750,7 @@ function productReciveAjax() {
     			return floatToCurrency(data);
     		}},
     		{"targets":9,"render":function(data, type, row){
-    			var edit    = "<a href=\"#\" onClick=\"doUpdateInvoice('" + row["recordId"] + "')\">编辑</a>";
+    			var edit    = "<a href=\"#\" onClick=\"doUpdateInvoice('" + row["recordId"] + "','" + row["YSId"] + "')\">编辑</a>";
     			var delet   = "<a href=\"#\" onClick=\"doDeleteInvoice('" + row["recordId"] + "','" + row["receiveQuantity"] + "','" + row["YSId"] + "')\">删除</a>";
     			
     			return edit+"&nbsp;"+"&nbsp;"+delet;
@@ -784,11 +784,11 @@ function productReciveAjax() {
 
 };
 
-function doUpdateInvoice(recordId) {
+function doUpdateInvoice(recordId,YSId) {
 
 	layerWidth  = '900px';
-	layerHeight = '260px';
-	var url = "${ctx}/business/order?methodtype=editProductInvoice&recordId=" + recordId;		
+	layerHeight = '360px';
+	var url = "${ctx}/business/order?methodtype=editProductInvoice&recordId=" + recordId+"&YSId="+YSId;		
 
 	layer.open({
 		offset :[50,''],
