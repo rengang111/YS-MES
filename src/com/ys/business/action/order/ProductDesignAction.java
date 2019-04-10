@@ -22,6 +22,11 @@ import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.basequery.common.Constants;
 
+/**
+ * 做单资料
+ * @author rengang
+ *
+ */
 @Controller
 @RequestMapping("/business")
 public class ProductDesignAction extends BaseAction {

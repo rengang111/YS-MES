@@ -84,7 +84,8 @@ function ContractListAjax() {
     		}},
     		{"targets":1,"render":function(data, type, row){
     			var txt = "<a href=\"###\" onClick=\"doShowContract('"+row['contractId']+"')\">"+row['contractId']+"</a>";
-    			return txt;
+    			var hidden = '<input type="hidden" id=contract" name="contract"  value="'+row['contractId']+'"   class="contractid" />';
+    			return txt +hidden;
     		}},
     		{"targets":2,"render":function(data, type, row){
     			var receipt = jQuery.fixedWidth(data,12)

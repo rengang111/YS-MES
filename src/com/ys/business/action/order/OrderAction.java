@@ -22,6 +22,7 @@ import com.ys.business.action.model.order.OrderModel;
 import com.ys.business.action.model.order.OrderReviewModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.CalendarUtil;
+import com.ys.util.DicUtil;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.service.order.OrderReviewService;
 import com.ys.business.service.order.OrderService;
@@ -259,9 +260,28 @@ public class OrderAction extends BaseAction {
 				dataMap = getDivertOrderFrom();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "addProductReciveInit"://成品领料
+				addProductReciveInit();
+				rtnUrl = "/business/order/productreciveadd";
+				break;
+			case "addProductRecive"://保存成品领料
+				addProductRecive();
+				break;
+			case "getProductReceiveList"://显示成品领料
+				dataMap = getProductReceiveList();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "editProductInvoice"://编辑成品领料
+				editProductInvoice();
+				rtnUrl = "/business/order/productreciveadd";
+				break;
+			case "deleteProductInvoice"://删除成品领料
+				dataMap = deletePyamentRecord();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
-		return rtnUrl;		
+		return rtnUrl;
 	}
 	
 	/*
@@ -1010,6 +1030,22 @@ public class OrderAction extends BaseAction {
 		return modelMap;
 	}
 	
+	public HashMap<String, Object> getProductReceiveList(){	
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		try {
+			modelMap = orderService.getProductReceiveList();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
 	public HashMap<String, Object> deletePhoto(
 			String folderName,String fileList,String fileCount){	
 
@@ -1093,4 +1129,51 @@ public class OrderAction extends BaseAction {
 			e.printStackTrace();
 		}
 	}
+	
+	public void addProductReciveInit(){
+		try {
+			orderService.addProductReciveInit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void addProductRecive(){
+		try {
+			orderService.addProductRecive();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void editProductInvoice(){
+		try{
+			
+			orderService.editProductInvoiceInit();
+
+			//发票类型
+			model.addAttribute("invoiceTypeOption",
+				new DicUtil().getListOption(DicUtil.DIC_INVOICETYPE,
+						""));
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public HashMap<String, Object> deletePyamentRecord(){
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();	
+		try{
+			orderService.deletePyamentRecord();
+			dataMap.put(INFO, SUCCESSMSG);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		return dataMap;
+	}
+	
+	
 }

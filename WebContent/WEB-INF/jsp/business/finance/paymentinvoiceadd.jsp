@@ -9,20 +9,6 @@
 <title>新增发票</title>
 <script type="text/javascript">
 
-	function checkNumber(str) { 
-	   // var reg = /^\d+(,\d\d\d)*.\d+$/; 
-	    //var reg = /^(\d+,?)+$/;
-	    var reg = /^\d+(,\d\d\d)*.\d+$/;
-	    str = $.trim(str)
-	    if (str != "") { 
-	        if (!reg.test(str)) {            
-	            return false;
-	        } else{
-	        	return true;
-	        }
-	    }
-	}
-	
 	$(document).ready(function() {
 		
 		$("#invoice\\.invoicedate").datepicker({

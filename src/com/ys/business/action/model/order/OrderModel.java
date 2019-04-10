@@ -8,6 +8,7 @@ import com.ys.business.db.data.B_CustomerData;
 import com.ys.business.db.data.B_OrderCancelData;
 import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
+import com.ys.business.db.data.B_ProductReceiveData;
 import com.ys.util.basequery.common.BaseModel;
 
 public class OrderModel extends BaseModel {
@@ -30,6 +31,7 @@ public class OrderModel extends BaseModel {
 	private B_OrderDetailData orderTransfer = new B_OrderDetailData();
 	private B_CustomerData customer = new B_CustomerData();
 	private B_OrderCancelData orderCancel = new B_OrderCancelData();
+	private B_ProductReceiveData receive = new B_ProductReceiveData();
 	private List<B_OrderDetailData> orderDetailLines;
 	private String shortName;
 	private String fullName;
@@ -43,7 +45,13 @@ public class OrderModel extends BaseModel {
 	private String currency;
 	private String rebateRate;//退税率
 
-
+	public B_ProductReceiveData getRecive() {
+		return this.receive;
+	}
+	public void setRecive(B_ProductReceiveData recive) {
+		this.receive = recive;
+	}
+	
 	public String getRebateRate() {
 		return this.rebateRate;
 	}

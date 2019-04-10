@@ -33,6 +33,10 @@ import com.ys.business.db.dao.B_OrderCancelDao;
 import com.ys.business.db.dao.B_OrderDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_OrderDivertDao;
+import com.ys.business.db.dao.B_PaymentDao;
+import com.ys.business.db.dao.B_PaymentHistoryDao;
+import com.ys.business.db.dao.B_PaymentInvoiceDetailDao;
+import com.ys.business.db.dao.B_ProductReceiveDao;
 import com.ys.business.db.dao.B_PurchasePlanDetailDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
 import com.ys.business.db.dao.B_StockOutDao;
@@ -44,6 +48,9 @@ import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderDivertData;
 import com.ys.business.db.data.B_PaymentData;
+import com.ys.business.db.data.B_PaymentHistoryData;
+import com.ys.business.db.data.B_PaymentInvoiceDetailData;
+import com.ys.business.db.data.B_ProductReceiveData;
 import com.ys.business.db.data.B_PurchasePlanDetailData;
 import com.ys.business.db.data.B_RequisitionDetailData;
 import com.ys.business.db.data.B_StockOutData;
@@ -2544,6 +2551,8 @@ public class OrderService extends CommonService  {
 					"OrderCancelUpdate",userInfo);
 			copyProperties(dbData,commData);
 			
+			String oldQty = dbData.getQuantity();
+			
 			float fcancel = stringToFloat(quantity);
 			float foldQty = stringToFloat(dbData.getQuantity());//销售数量
 			float flotTotal = stringToFloat(dbData.getTotalquantity());//销售数量+额外订单
@@ -2554,6 +2563,9 @@ public class OrderService extends CommonService  {
 			float fnewTotal = flotTotal -fcancel;//销售数量+额外订单
 			float fnewtotalPrice = fnewQty * fprice;//新的销售总计
 			
+			if(isNullOrEmpty(dbData.getDivertquantity())){
+				dbData.setDivertquantity(oldQty);//保留原始订单数
+			}			
 			dbData.setQuantity(floatToString(fnewQty));
 			dbData.setTotalquantity(floatToString(fnewTotal));
 			dbData.setTotalprice(floatToString(fnewtotalPrice));
@@ -2636,5 +2648,168 @@ public class OrderService extends CommonService  {
 		modelMap.put("recordsTotal", dataModel.getRecordCount());
 		
 		return modelMap;
+	}
+	
+	public void addProductReciveInit() throws Exception{
+		
+		String YSId = request.getParameter("YSId");
+
+		getOrderDetailByYSId(YSId);		
+
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
+	}
+	
+	/**
+	 * 新增成品领料
+	 * @return
+	 */
+	public void addProductRecive(){
+
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+			
+			B_ProductReceiveData invoice = reqModel.getRecive();
+
+			//取得耀升编号
+			String quantity = invoice.getReceivequantity();
+			if(isNullOrEmpty(quantity)){
+				return;
+			}
+			float fqty = stringToFloat(quantity);
+			if(fqty <= 0 )
+				return;
+			
+			//新增成品领料
+			insertProductReceive(invoice);
+			
+			//更新原订单数量
+			String ysid = invoice.getYsid();
+			updateOrderDetail(ysid,quantity);
+			
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	private void insertProductReceive(
+			B_ProductReceiveData receive) throws Exception {
+		
+		B_ProductReceiveData db = new B_ProductReceiveData();
+		try {
+			db = new B_ProductReceiveDao(receive).beanData;
+
+		} catch (Exception e) {
+			// nothing
+		}		
+		
+		if(db.getRecordid() == null || ("").equals(db.getRecordid())){
+			//插入新数据
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"requestInsert",userInfo);
+			copyProperties(receive,commData);
+			guid = BaseDAO.getGuId();
+			receive.setRecordid(guid);
+			
+			new B_ProductReceiveDao().Create(receive);
+		}else{
+			//更新
+			db.setReceivequantity(receive.getReceivequantity());
+			db.setReceivedate(receive.getReceivedate());
+			db.setRequester(receive.getRequester());
+			db.setReceiveunit(receive.getReceiveunit());
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"requestUpdate",userInfo);
+			copyProperties(db,commData);
+
+			new B_ProductReceiveDao().Store(db);
+		}
+		
+	}
+	
+	public HashMap<String, Object> getProductReceiveList() throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryName("productReceiveList");
+		baseQuery = new BaseQuery(request, dataModel);
+
+		String piid = request.getParameter("PIId");
+		userDefinedSearchCase.put("piid", piid);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+		
+		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		
+		return modelMap;
+	}
+	
+
+	/**
+	 * 删除成品领料
+	 * @return
+	 * @throws Exception 
+	 */
+	public void deletePyamentRecord() throws Exception{
+		
+			
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+			
+			String recordid = request.getParameter("recordId");	
+			String quantity = request.getParameter("quantity");	
+			String ysid = request.getParameter("YSId");	
+			
+			B_ProductReceiveData invoice = new B_ProductReceiveData();			
+			invoice.setRecordid(recordid);
+			
+			new B_ProductReceiveDao().Remove(invoice);		
+		
+			//更新订单信息			
+			updateOrderDetail(ysid,
+					String.valueOf(stringToFloat(quantity)*(-1)));
+			
+			ts.commit();
+		
+		}catch(Exception e){
+			ts.rollback();
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 编辑成品领料
+	 * @return
+	 */
+	public void editProductInvoiceInit(){
+		
+		try {
+			String recordid = request.getParameter("recordId");			
+			B_ProductReceiveData invoice = new B_ProductReceiveData();			
+			invoice.setRecordid(recordid);
+			
+			invoice = new B_ProductReceiveDao(invoice).beanData;				
+			
+			reqModel.setRecive(invoice);
+		}
+		catch(Exception e) {			
+			e.printStackTrace();
+			
+		}
 	}
 }

@@ -11,6 +11,20 @@
 	    return intLength; 
 	}
 	
+	//数字，逗号，小数点输入check
+	function checkNumber(str) { 
+	    //var reg = /^\d+(,\d\d\d)*.\d+$/;	    
+	  	var reg = /^([1-9]([0-9,])*(\.[0-9]+)?)$/;
+	    str = $.trim(str)
+	    if (str != "") { 
+	        if (!reg.test(str)) {            
+	            return false;
+	        } else{
+	        	return true;
+	        }
+	    }
+	}
+	
 	//日期格式检查
 	function checkDate(str) {
 		if (str.length > 10) {
@@ -309,3 +323,5 @@
 		} 
 		return format; 
 	} 	
+	
+	

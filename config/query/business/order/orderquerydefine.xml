@@ -755,8 +755,8 @@
     </select>
     <from>
     	b_OrderDivert AS a
-    	LEFT JOIN v_orderlist AS b ON b.PIId = a.divertToPIid
-    	WHERE a.deleteFlag = '0' AND a.diverToYsid = b.YSId
+    	LEFT JOIN v_orderlist AS b ON b.PIId = a.divertToPIid AND a.diverToYsid = b.YSId
+    	WHERE a.deleteFlag = '0' 
     </from>
     <orderby>a.divertFromYsid</orderby>
     <groupby></groupby>
@@ -783,8 +783,8 @@
     </select>
     <from>
     	v_orderlist AS b 
-    	JOIN b_OrderDivert AS a ON b.PIId = a.divertFromPIid
-    	WHERE a.deleteFlag = '0' AND a.divertFromPIid = b.PIId
+    	JOIN b_OrderDivert AS a ON b.PIId = a.divertFromPIid AND a.divertFromYsid = b.YSId
+    	WHERE a.deleteFlag = '0'
     </from>
     <orderby>a.diverToYsid</orderby>
     <groupby></groupby>
@@ -859,6 +859,33 @@
 	) AS a
 	</from>
     <orderby>left(A.YSId,8) DESC,mid(A.YSId,LOCATE('-',A.YSId)+1,2)+0</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="productReceiveList" />
+    <where>
+   	  <w name="a.YSId"      des=""  reqName="YSId"      dtype="ch" oper="in"  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="b.materialId" alias="" ctype="" />
+      <f name="b.materialName" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.receiveQuantity" alias="" ctype="" />
+      <f name="A.receiveUnit" alias="" ctype="" />
+      <f name="A.requester" alias="" ctype="" />
+      <f name="A.receiveDate" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+    </select>
+    <from>
+    	b_ProductReceive AS a
+    	JOIN v_orderlist AS b ON a.YSId=b.YSId
+    	WHERE a.deleteFlag = '0' 
+    </from>
+    <orderby>a.YSId,a.receiveDate</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    

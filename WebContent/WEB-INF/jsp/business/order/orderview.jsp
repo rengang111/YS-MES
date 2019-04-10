@@ -9,6 +9,7 @@
 <script type="text/javascript">
 
 var counter1  = 0;
+var ysids = "";
 
 $.fn.dataTable.TableTools.buttons.add_rows1 = $
 .extend(
@@ -303,13 +304,13 @@ function divertFromListAjax(PIId) {//挪用详情
 		
 		"columns" : [
 		    {"data": null,"className" : 'td-center'},
-		    {"data": "divertFromYsid", "defaultContent" : '',"className" : 'td-center'},
-		    {"data": "diverToYsid", "defaultContent" : '',"className" : 'td-center'},
-		    {"data": "materialId", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "divertFromYsid", "defaultContent" : '',"className" : 'td-left'},
+		    {"data": "diverToYsid", "defaultContent" : '',"className" : 'td-left'},
+		    {"data": "materialId", "defaultContent" : '',"className" : 'td-left'},
 		    {"data": "materialName", "defaultContent" : '',"className" : ''},
 		    {"data": "shortName", "className" : 'td-center'},
-		    {"data": "divertQuantity", "className" : 'td-center'},
-		    {"data": "thisReductionQty", "className" : 'td-center'},
+		    {"data": "divertQuantity", "className" : 'td-right'},
+		    {"data": "thisReductionQty", "className" : 'td-right'},
 		    
 		],
 		"columnDefs":[
@@ -480,11 +481,11 @@ function divertFromListAjax(PIId) {//挪用详情
 		documentaryAjax(PIId);	//挪用订单
 		
 		divertFromListAjax(PIId);//挪用详情
+
+		productReciveAjax();//成品领料
 		
-		autocomplete();//
-		
-		//$('#example').DataTable().columns.adjust().draw();
-		
+		autocomplete();//		
+				
 		$("#goBack").click(
 				function() {
 
@@ -659,6 +660,181 @@ function autocomplete(){
 	});
 
 }
+
+
+//新增领料
+function doCreateProductRecive(YSId) {
+	var url = "${ctx}/business/order?methodtype=addProductReciveInit"+"&YSId="+YSId;
+	//alert('url：'+url)
+	layer.open({
+		offset :[100,''],
+		type : 2,
+		title : false,
+		area : [ '800px', '360px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		cancel: function(index){ 
+		  layer.close(index)
+		  productReciveAjax();
+		  document.getElementById('dingwei').scrollIntoView();
+		  return false; 
+		}
+	});
+}
+
+function productReciveAjax() {
+	
+	var table = $('#productReceive').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
+	var YSId = ysids;
+
+	var t = $('#productReceive').DataTable({			
+		"paging": false,
+		"lengthChange":false,
+		"lengthMenu":[50,100,200],//设置一页展示20条记录
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"ordering "	:true,
+		"searching" : false,
+		"retrieve" : true,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/order?methodtype=getProductReceiveList&YSId="+YSId,
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#condition").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
+
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){							
+					fnCallback(data);		
+					//invoiceCountFn();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+    	"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},		
+		"columns" : [
+		        	{"data": null,"className":"dt-body-center"
+				}, {"data": "YSId","className":"td-left"
+				}, {"data": "materialId","className":"td-left"
+				}, {"data": "materialName", "defaultContent" : '',// 4
+				}, {"data": "receiveQuantity","className":"td-right"
+				}, {"data": "receiveUnit","className":"td-center"
+				}, {"data": "requester","className":"td-center"
+				}, {"data": "receiveDate","className":"td-center"
+				}, {"data": "remarks","className":""
+				}, {"data": null,//9
+				}
+				
+			],
+		"columnDefs":[
+    		{"targets":0,"render":function(data, type, row){
+    			return row['rownum'];
+    		}},
+    		{"targets":4,"render":function(data, type, row){
+    			return floatToCurrency(data);
+    		}},
+    		{"targets":9,"render":function(data, type, row){
+    			var edit    = "<a href=\"#\" onClick=\"doUpdateInvoice('" + row["recordId"] + "')\">编辑</a>";
+    			var delet   = "<a href=\"#\" onClick=\"doDeleteInvoice('" + row["recordId"] + "','" + row["receiveQuantity"] + "','" + row["YSId"] + "')\">删除</a>";
+    			
+    			return edit+"&nbsp;"+"&nbsp;"+delet;
+            }}
+    	]
+		
+	}).draw();
+					
+	t.on('click', 'tr', function() {
+		
+		var rowIndex = $(this).context._DT_RowIndex; //行号			
+		//alert(rowIndex);
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }		
+	});
+	
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			cell.innerHTML = i + 1;
+		});
+	}).draw();
+
+};
+
+function doUpdateInvoice(recordId) {
+
+	layerWidth  = '900px';
+	layerHeight = '260px';
+	var url = "${ctx}/business/order?methodtype=editProductInvoice&recordId=" + recordId;		
+
+	layer.open({
+		offset :[50,''],
+		type : 2,
+		title : false,
+		area : [ layerWidth, layerHeight ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		cancel: function(index){ 
+			  layer.close(index)
+			  productReciveAjax();
+			  document.getElementById('dingwei').scrollIntoView();
+			  return false; 
+		}    
+	});
+}
+
+function doDeleteInvoice(recordId,quantity,YSId){
+	
+	
+	if (confirm("删除后不能恢复，确定要删除吗？")){ //
+		$.ajax({
+			type : "post",
+			url : "${ctx}/business/order?methodtype=deleteProductInvoice&recordId="+recordId+"&quantity="+quantity+"&YSId="+YSId,
+			async : false,
+			data : 'key=' + recordId,
+			dataType : "json",
+			success : function(data) {
+				document.getElementById('dingwei').scrollIntoView();
+				productReciveAjax();
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+				
+				
+			}
+		});
+	}else{
+		//
+	}
+}
+
+
 </script>
 </head>
 <body>
@@ -727,9 +903,8 @@ function autocomplete(){
 	</fieldset>
 		
 	<fieldset  style="text-align: right;margin-top: -20px;">
-		<button type="button" id="edit" class="DTTT_button">编辑</button>
-	 <!-- 	<button type="button" id="doDelete" class="DTTT_button">删除</button> -->
-		<button type="button" id="goBack" class="DTTT_button">返回</button>
+		<button type="button" id="edit" class="DTTT_button">编辑订单</button>
+		<!-- button type="button" id="goBack" class="DTTT_button">返回</button -->
 	</fieldset>	
 	<fieldset style="margin-top: -30px;">
 		<legend>正常订单详情</legend>
@@ -747,8 +922,8 @@ function autocomplete(){
 				<th class="dt-center" width="30px">返还<BR>数量</th>
 				<th class="dt-center" width="50px">销售单价<span class="order"><br />下单价格</span></th>
 				<th class="dt-center" width="80px">销售总价<span class="order"><br />下单总价</span></th>
-				<th class="dt-center" width="50px">订单状态</th>
 				<th class="dt-center" width="50px">操作</th>
+				<th class="dt-center" width="50px"></th>
 			</tr>
 			</thead>
 		<tbody>
@@ -767,15 +942,15 @@ function autocomplete(){
 						</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalPrice}
 						<span class="order"><br />${order.orderCost}</span></td>
-					<td>${order.statusName}</td>
 					<td>
-					<!-- 	<a href="###" onClick="doEditOrder('${order.PIId}','${order.YSId}','${order.materialId}','${order.productClassify}')">编辑</a>&nbsp; -->
 						<a href="###" onClick="doDeleteOrder('${order.PIId}','${order.YSId}')">删除</a><br>		
 						<a href="###" onClick="ShowProductDesign('${order.PIId}','${order.YSId}','${order.materialId}','${order.productClassify}')">做单资料</a><br>						
-						<a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">采购方案</a></td>										
+						<a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">采购方案</a></td>	
+					<td>						
+						<a href="###" onClick="doCreateProductRecive('${order.YSId}')">成品领料</a></td>										
 				</tr>
 				<script type="text/javascript" >
-	
+					ysids = ysids + ","+ '${order.YSId}';//取得所有耀升编号
 
 				</script>
 			</c:if>
@@ -867,24 +1042,47 @@ function autocomplete(){
 	</fieldset>		
 	<fieldset>
 		<span class="tablename"> 订单挪用</span>
-			<div class="list">
-				<table id="documentary" class="display" >
-					<thead>				
-						<tr>
-							<th width="20px">No</th>
-							<th class="dt-center" width="100px">当前利用订单</th>
-							<th class="dt-center" width="100px">被挪用订单编号</th>
-							<th class="dt-center" width="200px">产品编号</th>
-							<th class="dt-center" >产品名称</th>
-							<th class="dt-center" width="100px">挪用品名</th>
-							<th class="dt-center" width="100px">挪用数量</th>
-							<th class="dt-center" width="150px">本次减少数</th>
-						</tr>
-					</thead>
-				</table>
-			</div>
-	</fieldset>	
-</form:form>		
+		<div class="list">
+			<table id="documentary" class="display" >
+				<thead>				
+					<tr>
+						<th width="20px">No</th>
+						<th class="dt-center" width="100px">当前利用订单</th>
+						<th class="dt-center" width="100px">被挪用订单编号</th>
+						<th class="dt-center" width="200px">产品编号</th>
+						<th class="dt-center" >产品名称</th>
+						<th class="dt-center" width="100px">挪用品名</th>
+						<th class="dt-center" width="100px">挪用数量</th>
+						<th class="dt-center" width="150px">本次减少数</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</fieldset>		
+	<fieldset>
+		<span class="tablename" style="">  成品领料</span>	
+		<!--a class="DTTT_button" onclick="doCreatePrice();" style="">新增领料</a -->
+		<div class="list">
+			<table id="productReceive" class="display" >
+				<thead>				
+					<tr>
+						<th width="20px">No</th>
+						<th class="dt-center" width="80px">耀升编号</th>
+						<th class="dt-center" width="120px">产品编号</th>
+						<th class="dt-center" >产品名称</th>
+						<th class="dt-center" width="60px">领料数量</th>
+						<th class="dt-center" width="70px">领料部门</th>
+						<th class="dt-center" width="60px">领料人</th>
+						<th class="dt-center" width="80px">领料日期</th>
+						<th class="dt-center" width="80px">备注</th>
+						<th class="dt-center" width="50px">操作</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		<div id="dingwei"></div>
+	</fieldset>
+</form:form>
 
 </div>
 </div>

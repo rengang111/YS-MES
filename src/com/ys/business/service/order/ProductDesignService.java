@@ -57,6 +57,11 @@ import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
 
+/**
+ * 做单资料
+ * @author rengang
+ *
+ */
 @Service
 public class ProductDesignService extends CommonService  {
  
