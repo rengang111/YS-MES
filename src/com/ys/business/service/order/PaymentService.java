@@ -356,10 +356,112 @@ public class PaymentService extends CommonService {
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);
-		
+		String having = " 1=1 ";
+		sql = sql.replace("#", having);
 		System.out.println("付款查询："+sql);
 		
-		baseQuery.getYsQueryData(sql,iStart, iEnd);	 
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+				
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		modelMap.put("sEcho", sEcho); 		
+		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());		
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);		
+		
+		return modelMap;		
+
+	}
+	
+
+	public HashMap<String, Object> paymentAbnormalMain(
+			String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = "";
+		String start = "";
+		String length = "";
+		
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		String[] keyArr = getSearchKey(Constants.FORM_PAYMENTSEARCH,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+		
+		sEcho = getJsonData(data, "sEcho");	
+		start = getJsonData(data, "iDisplayStart");		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}
+		dataModel.setQueryName("PaymenListForSearch");//
+						
+		baseQuery = new BaseQuery(request, dataModel);
+		
+		String finishStatus = request.getParameter("finishStatus");
+		String year     = request.getParameter("year");
+		String monthday = request.getParameter("monthday");
+		String userId   = request.getParameter("userId");
+		String searchType = request.getParameter("searchType");
+		
+		//*** 关键字查询
+		userDefinedSearchCase.put("keyword1", key1);
+		userDefinedSearchCase.put("keyword2", key2);
+		
+		
+		//if(isNullOrEmpty(year)){//年份选择
+		//	year =  CalendarUtil.getYear();//当前年
+		//}
+		
+		//*** 采购员选择
+		//if(("999").equals(userId)){
+		//	userDefinedSearchCase.put("purchaser", "");
+		//}else{
+		//	userDefinedSearchCase.put("purchaser", userId);
+		//}
+		
+		//*** 付款状态	
+		//if(("0").equals(finishStatus)){			
+		//	userDefinedSearchCase.put("finishStatus", "");//全部
+		//	userDefinedSearchCase.put("year", "");
+		//	userDefinedSearchCase.put("monthday", "");
+			
+		//}else if((Constants.payment_050).equals(finishStatus)){
+			//已付款
+		//	userDefinedSearchCase.put("finishStatus", finishStatus);//
+		//	userDefinedSearchCase.put("year", year);
+		//	if(isNullOrEmpty(monthday)){
+		//		userDefinedSearchCase.put("monthday", "");
+		//	}else{
+		//		userDefinedSearchCase.put("monthday", monthday);
+		//	}
+		//}else{
+		String statusList = "020,021,030,040,060";
+		userDefinedSearchCase.put("finishStatus", statusList);	
+		userDefinedSearchCase.put("year", "");
+		//}
+			
+		//*** 区分 合同未入库 ，或者，发票不齐
+		String having = " IFNULL(a.invoiceAmount,0)+0 < a.totalPayable+0 ";
+		if(("H").equals(searchType)){
+			having = " IFNULL(b.stockInStatus,'N') ='"+ Constants.STOCKIN_STS_N +"'";
+		}
+		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);
+		sql = sql.replace("#", having);
+		System.out.println("异常付款查询："+sql);
+		
+		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
 				
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			

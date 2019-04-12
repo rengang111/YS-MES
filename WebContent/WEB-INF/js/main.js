@@ -442,6 +442,51 @@ function float5ToCurrency(value){
 }
 
 
+function float3ToCurrency(value){
+
+	var toFloat = '';
+	
+	if(typeof value == 'number'){
+		toFloat = value;
+	}else{
+		toFloat = currencyToFloat(value);
+	}
+	
+	//转换成float出错的情况,返回原值
+	if(toFloat == 0)
+		return value;
+		
+	var numString = toFloat.toFixed(3);
+	var parts = numString.split('.');
+	var outParts = [];
+	var beforeDecimal = '0';
+	var afterDecimal = '000';
+	var currSegment;
+
+	beforeDecimal = parts[0];
+	afterDecimal = parts[1];
+	
+	while (beforeDecimal.length > 3) {
+		
+		currSegment = beforeDecimal.substring(
+				beforeDecimal.length - 3,
+				beforeDecimal.length);
+		
+		beforeDecimal = beforeDecimal.substring(
+				0,
+				beforeDecimal.length -3);
+		outParts.unshift(currSegment);
+	}
+	
+	if(beforeDecimal.length > 0) {
+		
+		outParts.unshift(beforeDecimal);
+	}
+	
+	return outParts.join(',') + '.' + afterDecimal;
+	
+}
+
 function float6ToCurrency(value){
 
 	var toFloat = '';
@@ -673,7 +718,7 @@ function GetRandomNum(Min,Max){
 }
 
 function floatToSymbol(v,s){
-	var curr = floatToCurrency(v);
+	var curr = float3ToCurrency(v);
 	var symbol = getCurrencySymbol(s);
 	
 	return symbol + '  ' + curr;

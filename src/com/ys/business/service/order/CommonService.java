@@ -568,12 +568,131 @@ public class CommonService extends BaseService {
 		
 		return null;
 	}
+	
+	/**
+	 * 取得合同明细
+	 */
+	@SuppressWarnings("unchecked")
+	public B_PurchaseOrderDetailData getContractDetail(
+			String contractId,String materialId) throws Exception{
+		
+		B_PurchaseOrderDetailData rtnQty = new B_PurchaseOrderDetailData();
+		
+		String where = "contractId ='"+ contractId + 
+				"' AND materialId ='"+ materialId + 
+				"' AND deleteFlag='0' ";
+		
+		List<B_PurchaseOrderDetailData> list = 
+				(List<B_PurchaseOrderDetailData>) 
+				new B_PurchaseOrderDetailDao().Find(where);
+		
+		if(list.size() > 0){
+			rtnQty = list.get(0);//合同数量
+		}
+		
+		return rtnQty;	
+	}
+	
+	/**
+	 * 更新合同的累计入库数量
+	 * @param contractId
+	 * @param materialId
+	 * @param quantity
+	 * @throws Exception
+	 */
+	public void updateContractStorage(
+			String contractId,
+			String materialId) throws Exception{
+		
+		//取得合同数量
+		B_PurchaseOrderDetailData data = 
+				getContractDetail(contractId,materialId);
+		
+		//取得合同数量,集计合同的有效入库数和退货数
+		HashMap<String, String> map = 
+				getStockinAndReturnByMaterialId(contractId,materialId);
+
+		float netArrivalQty = 0;
+		float stockinRtnQty = 0;
+		float netStockinQty = 0;
+		if(map.size()>0){
+			netArrivalQty = stringToFloat(map.get("netArrivalQty"));//净收货数
+			netStockinQty = stringToFloat(map.get("netStockinQty"));//净入库数
+			stockinRtnQty = stringToFloat(map.get("stockinRtnQty"));//累计退货数
+		}
+
+		float iContrat = stringToFloat(data.getQuantity());//合同数量
+		
+		//更新合同*** 入库状态
+		if(netStockinQty >= iContrat){
+			data.setStatus(Constants.CONTRACT_STS_3);//入库完毕		
+		}else{
+			data.setStatus(Constants.CONTRACT_STS_2);//收货中			
+		}
+		
+		//更新合同*** 净入库，累计退货
+		data.setAccumulated(String.valueOf(netArrivalQty));
+		data.setContractstorage(String.valueOf(netStockinQty));
+		data.setReturngoods(String.valueOf(stockinRtnQty));
+		
+		updateContractDetailStatus(data);		
+		
+	}
+	
+	/**
+	 * 更新合同的净入库数量,净收货数
+	 * @param contractId
+	 * @param materialId
+	 * @param quantity
+	 * @throws Exception
+	 */
+	public void updateContractStorageAndArrival(
+			String contractId,
+			String materialId) throws Exception{
+		
+		//取得合同数量
+		B_PurchaseOrderDetailData data = 
+				getContractDetail(contractId,materialId);
+		
+		//时时集计合同的有效入库数和退货数
+		HashMap<String, String> map = 
+				getStockinAndArrivalByMaterialId(contractId,materialId);
+		
+		float netStockinQty = 0;
+		float stockinRtnQty = 0;
+		float netArrivalQty = 0;
+		if(map.size()>0){
+			netStockinQty = stringToFloat(map.get("netStockinQty"));//净入库数
+			stockinRtnQty = stringToFloat(map.get("stockinRtnQty"));//累计入库退货数
+			netArrivalQty = stringToFloat(map.get("netArrivalQty"));//净收货数
+		}
+
+		float iContrat = stringToFloat(data.getQuantity());//合同数量
+		
+		//更新合同*** 入库状态
+		if(netStockinQty >= iContrat){
+			data.setStatus(Constants.CONTRACT_STS_3);//入库完毕		
+		}else{
+			data.setStatus(Constants.CONTRACT_STS_2);//收货中			
+		}
+		
+		//更新合同*** 净入库，累计退货
+		data.setContractstorage(String.valueOf(netStockinQty));
+		data.setReturngoods(String.valueOf(stockinRtnQty));
+		data.setAccumulated(String.valueOf(netArrivalQty));//净收货数
+		
+		updateContractDetailStatus(data);		
+		
+	}
 
 	/**
 	 * 更新合同状态
 	 */
 	@SuppressWarnings("unchecked")
-	public void updateContractStatus(String contractId,String status) throws Exception{
+	public void updateContractStatus(
+			String contractId,
+			String stockinStatus,
+			String status) throws Exception{
 		
 		//更新合同状态
 		String where = "contractId ='"+contractId + "' AND deleteFlag='0' ";
@@ -586,6 +705,7 @@ public class CommonService extends BaseService {
 		}		
 		d = l.get(0);
 		d.setStatus(status);//状态
+		d.setStockinstatus(stockinStatus);//入库状态
 		d.setStockindate(CalendarUtil.fmtYmdDate());//入库日期
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
@@ -600,20 +720,76 @@ public class CommonService extends BaseService {
 	 */
 	public void updateContractDetailStatus(B_PurchaseOrderDetailData d) throws Exception{
 		
-		//更新合同状态
-		//B_PurchaseOrderDetailData d = new B_PurchaseOrderData();	
-		//List<B_PurchaseOrderData> l = 
-		//		(List<B_PurchaseOrderData>)new B_PurchaseOrderDao().Find(where);
-		
-		//if(l ==null || l.size() == 0){
-		//	return ;
-		//}		
-		//d = l.get(0);
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"purchaseOrderDetailUpdate",userInfo);
 		copyProperties(d,commData);	
 		
 		new B_PurchaseOrderDetailDao().Store(d);
+
+	}
+	
+	/**
+	 * 取得累计入库数
+	 */
+	public HashMap<String, String> getStockinAndReturnByMaterialId(
+			String contractId,
+			String materialId) throws Exception{
+		
+		HashMap<String, String> modelMap = new HashMap<String, String>();
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("arrivalAndStockinByMaterialId");
+
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#0", contractId);
+		sql = sql.replace("#1", materialId);
+		List<String> list= new ArrayList<String>();
+		list.add(contractId);
+		list.add(materialId);
+		System.out.println("合同的净入库数："+sql);
+		
+		baseQuery.getYsQueryData(sql, list, 0, 0);
+
+		if(dataModel.getRecordCount() > 0 ){
+			modelMap = dataModel.getYsViewData().get(0);	
+		}	
+		return modelMap;
+
+	}
+	
+
+	/**
+	 * 取得累计入库数,累计收货数
+	 */
+	public HashMap<String, String> getStockinAndArrivalByMaterialId(
+			String contractId,
+			String materialId) throws Exception{
+		
+		HashMap<String, String> modelMap = new HashMap<String, String>();
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("stockinAndReturnByMaterialId2");
+
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#0", contractId);
+		sql = sql.replace("#1", materialId);
+		List<String> list= new ArrayList<String>();
+		list.add(contractId);
+		list.add(materialId);
+		System.out.println("合同的净入库数："+sql);
+		
+		baseQuery.getYsQueryData(sql, list, 0, 0);
+
+		if(dataModel.getRecordCount() > 0 ){
+			modelMap = dataModel.getYsViewData().get(0);	
+		}	
+		return modelMap;
 
 	}
 	//更新虚拟库存
@@ -1216,6 +1392,29 @@ public class CommonService extends BaseService {
 
 		return list;
 		
+	}
+	
+	public boolean  checkPurchaseOrderStatus(String contractId) throws Exception{
+		
+		boolean rtnValue = false;
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("contractStatusFromStockin");
+		//userDefinedSearchCase.put("YSId", YSId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", contractId);		
+		System.out.println("合同的入库状态查询："+sql);
+		
+		baseQuery.getYsFullData(sql,contractId);
+
+		if(dataModel.getRecordCount() > 0 ){
+			String sts = dataModel.getYsViewData().get(0).get("stockinSts");
+			if(Integer.valueOf(sts) == 0 )
+				rtnValue = true;
+		}	
+		
+		return rtnValue;
 	}
 
 }

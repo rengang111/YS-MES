@@ -199,6 +199,13 @@ public class Constants {
 	public static final String CONTRACT_STS_4 = "040";//强制结束
 	
 	/**
+	 *@category 合同入库状态
+	 *
+	 */
+	public static final String STOCKIN_STS_N = "N";//未入库
+	public static final String STOCKIN_STS_Y = "Y";//已入库
+	
+	/**
 	 * 合同执行流程状态
 	 */
 	public static final String CONTRACT_PROCESS_1 = "010";//待报检

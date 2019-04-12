@@ -295,11 +295,16 @@ public class ArrivalService extends CommonService {
 				//到货登记
 				insertArrival(data);
 				
+				//***********************//
+				//** 更新合同的收货数量 **//
+				//***********************//
+				updateContractStorage(data.getContractid(),data.getMaterialid());
+				
 				//更新累计到货数量,合同状态
-				updateContractArraival(
-						contractId,
-						data.getMaterialid(),
-						data.getQuantity());	
+				//updateContractArraival(
+				//		contractId,
+				//		data.getMaterialid(),
+				//		data.getQuantity());	
 								
 			}
 			

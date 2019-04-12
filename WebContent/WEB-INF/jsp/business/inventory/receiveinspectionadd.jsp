@@ -67,32 +67,27 @@
 			}
 			
 			$oArrival.val(quantity);
-			//var fArrival  = currencyToFloat($oArrival.val());
-			//var fRecorde  = currencyToFloat($oRecorde.html());
-			//var fquantity = currencyToFloat($oQuantity.html());	
-			
-			
-			
-			//剩余数量
-			//var fsurplus = floatToCurrency(fquantity - fRecorde - fArrival);	
-			//$oSurplus.html(fsurplus);
-			//$oArrival.val(floatToCurrency(fArrival))
 
 		});
 		
-		/*				
-		t.on('click', 'tr', function() {			
+		t.on('change', 'tr td:nth-child(8)',function() {
 
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
+			var $td = $(this).parent().find("td");
+
+			var $oArrival = $td.eq(7).find("input");
+			var $oQuantity= $td.eq(5).find("span");
 			
-		});
-		*/
+			var fArrival  = currencyToFloat($oArrival.val());
+			var fquantity = currencyToFloat($oQuantity.text());	
+						
+			if(fArrival > fquantity){
+				$().toastmessage('showWarningToast', "合格数量不能大于收货数。");
+				fArrival = fquantity;//最大收货数量
+			}
+			$oArrival.val(floatToCurrency(fArrival))
+
+		});		
+		
 		t.on('order.dt search.dt draw.dt', function() {
 			t.column(0, {
 				search : 'applied',
@@ -116,9 +111,6 @@
 		shortYear = String(number).substr(2); 
 		
 		ajax();
-
-		
-		//$('#example').DataTable().columns.adjust().draw();
 		
 		$("#arrival\\.arrivedate").datepicker({
 				dateFormat:"yy-mm-dd",

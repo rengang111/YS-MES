@@ -1215,12 +1215,12 @@
       <f name="A.materialParentId" alias="" ctype="" />
       <f name="A.materialRecordId" alias="" ctype="" />
       <f name="A.quantity" alias="contractQty" ctype="" />
-      <f name="IFNULL(b.refundQty,0)" alias="refundQty" ctype="" />
+      <f name="IFNULL(b.refundQty,0) + IFNULL(e.stockinRtnQty,0)" alias="refundQty" ctype="" />
       <f name="IFNULL(b.quantityInspection,0)" alias="quantityInspection" ctype="" />
       <f name="IFNULL(b.quantityQualified,0)" alias="quantityQualified" ctype="" />
       <f name="IFNULL(d.arrivalQty,0)" alias="arrivalQty" ctype="" />
-      <f name="IFNULL(d.arrivalQty,0) - IFNULL(b.refundQty,0)" alias="netArrivalQty" ctype="" />
-      <f name="IFNULL(a.quantity,0) - IFNULL(d.arrivalQty,0) + IFNULL(b.refundQty,0)" alias="surplusQty" ctype="" />
+      <f name="IFNULL(d.arrivalQty,0) - IFNULL(b.refundQty,0) - IFNULL(e.stockinRtnQty,0)" alias="netArrivalQty" ctype="" />
+      <f name="IFNULL(a.quantity,0) - IFNULL(d.arrivalQty,0) + IFNULL(b.refundQty,0) + IFNULL(e.stockinRtnQty,0)" alias="surplusQty" ctype="" />
       <f name="a.purchaser" alias="" ctype="采购员" />
     </select>
     <from>
@@ -1244,9 +1244,22 @@
 						f.materialId,
 						SUM(REPLACE(f.quantity,',','')) arrivalQty
 					FROM 
-						b_arrival f WHERE f.contractId = '#'  AND f.deleteFlag='0'
+						b_arrival f WHERE f.deleteFlag='0' AND f.contractId = '#'
 						GROUP BY f.contractId,f.materialId					
 				) d ON  d.contractId = a.contractId AND  d.materialId = a.materialId
+			LEFT JOIN
+				(	
+					SELECT
+						a.contractId,
+						a.materialId,
+						COUNT(a.materialId) matcnt,
+						SUM( if(a.reverse = '1', REPLACE(a.quantity, ',', ''), 0)) stockinRtnQty,
+						SUM( if(IFNULL(a.reverse,'0') = '0', REPLACE(a.quantity, ',', ''),0)) stockinQty,
+						SUM( if(a.reverse = '1', (-1)*REPLACE(a.quantity, ',', ''), REPLACE(a.quantity, ',', ''))) netStockinQty
+					FROM v_purchasestockindetail a
+					WHERE a.deleteFlag = '0' AND a.contractId='#'
+					GROUP BY a.contractId,a.materialId
+				) e ON a.contractId=e.contractId AND a.materialId=e.materialId
 			LEFT JOIN s_user c ON  c.UserID = a.purchaser AND (c.DeleteFlag = '0') 
 			WHERE 1=1
 	</from>
@@ -1255,5 +1268,136 @@
     <having></having>
 	<power>
 	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="stockinAndReturnByMaterialId" /><!--暂时不用-->
+    <where>
+       <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.stockinRtnQty" alias="" ctype="" />
+      <f name="A.stockinQty" alias="" ctype="" />
+      <f name="A.netStockinQty" alias="" ctype="" />
+    </select>
+    <from>
+      (
+		SELECT
+			a.contractId,
+			a.materialId,
+			SUM( if(a.reverse = '1', REPLACE(a.quantity, ',', ''), 0)) stockinRtnQty,
+			SUM( if(IFNULL(a.reverse,0) = '0', REPLACE(a.quantity, ',', ''),0)) stockinQty,
+			SUM( if(a.reverse = '1', (-1)*REPLACE(a.quantity, ',', ''), REPLACE(a.quantity, ',', ''))) netStockinQty
+		FROM v_purchasestockindetail a
+		WHERE a.deleteFlag = '0' AND a.contractId='#0' AND a.materialid='#1'
+		GROUP BY a.contractId,a.materialId
+	  ) a
+	</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>  
+  <query>
+    <pool></pool>     
+    <name value="contractStatusFromStockin" />
+    <where>
+     </where>
+    <select>
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="sum(a.stockinSts)" alias="stockinSts" ctype="" />
+    </select>
+    <from>
+		(
+		SELECT
+			a.contractId,
+			a.materialId,
+			replace(a.quantity,',','')+0 contractQty,
+			b.netStockinQty,
+			IF( IFNULL(b.netStockinQty,0) >= replace(a.quantity,',',''),0,1) stockinSts
+		FROM v_purchaseorderdetail a
+		LEFT JOIN
+			(	
+			SELECT
+				a.contractId,
+				a.materialId,
+				COUNT(a.materialId) matcnt,
+				SUM( if(a.reverse = '1', REPLACE(a.quantity, ',', ''), 0)) stockinRtnQty,
+				SUM( if(IFNULL(a.reverse,'0') = '0', REPLACE(a.quantity, ',', ''),0)) stockinQty,
+				SUM( if(a.reverse = '1', (-1)*REPLACE(a.quantity, ',', ''), REPLACE(a.quantity, ',', ''))) netStockinQty
+			FROM v_purchasestockindetail a
+			WHERE a.deleteFlag = '0' AND a.contractId='#'
+			GROUP BY a.contractId,a.materialId
+			) b ON a.contractId=b.contractId AND a.materialId=b.materialId
+		WHERE a.deleteFlag = '0' AND a.contractId='#'
+		ORDER BY a.materialId
+		) a
+	</from>
+    <orderby></orderby>
+    <groupby>a.contractId</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="arrivalAndStockinByMaterialId" />
+    <where>
+       <w name="A.contractId" des=""  reqName="contractId" dtype="ch" oper="="  lg="AND" bt="" />
+       <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.contractId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.quantity" alias="contractQty" ctype="" />
+      <f name="IFNULL(c.netArrivalQty,0) - IFNULL(b.stockinRtnQty,0)" alias="netArrivalQty" ctype="" />
+      <f name="IFNULL(b.netStockinQty,0)" alias="netStockinQty" ctype="" />
+      <f name="IFNULL(b.stockinRtnQty,0)" alias="stockinRtnQty" ctype="" />
+    </select>
+    <from>
+		v_purchaseorderdetail a
+		LEFT JOIN
+		  (
+			SELECT
+				a.contractId,
+				a.materialId,
+				SUM(
+				  REPLACE(a.quantity, ',', '') - 
+					( REPLACE(IFNULL(b.quantityInspection,0),',', '') - 
+						REPLACE(IFNULL(b.quantityQualified,0),',',''))
+				  ) netArrivalQty
+			FROM
+				b_arrival a
+			LEFT JOIN v_receiveinspection b ON a.arrivalId=b.arrivalId  AND a.contractid=b.contractId 
+												AND a.materialId=b.materialId AND b.deleteFlag='0'
+			WHERE (a.deleteFlag = '0')  AND a.contractId='#0' AND a.materialId='#1'
+			GROUP BY a.contractId,	a.materialId 
+		  ) c ON a.contractId=c.contractId AND a.materialId=c.materialId
+
+		LEFT JOIN
+		  (	
+			SELECT
+				a.contractId,
+				a.materialId,
+				SUM( if(a.reverse = '1', REPLACE(a.quantity, ',', ''), 0)) stockinRtnQty,
+				SUM( if(a.reverse = '1', 
+						(-1)*REPLACE(a.quantity, ',', ''), 
+						REPLACE(a.quantity, ',', ''))
+				   ) netStockinQty
+			FROM v_purchasestockindetail a
+			WHERE a.deleteFlag = '0' AND a.contractId='#0' AND a.materialId='#1'
+			GROUP BY a.contractId,a.materialId
+		  ) b ON a.contractId=b.contractId AND a.materialId=b.materialId
+			
+		WHERE a.deleteFlag = '0' AND a.contractId='#0' AND a.materialId='#1'
+	</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
   </query>
 </root>

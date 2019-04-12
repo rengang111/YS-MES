@@ -1476,6 +1476,7 @@
       <f name="b.deliveryDate" alias="" ctype="" />
       <f name="a.contractId" alias="" ctype="" />
       <f name="b.YSId" alias="" ctype="" />
+      <f name="b.stockInStatus" alias="" ctype="" />
       <f name="a.finishDate" alias="" ctype="" />
       <f name="format(IFNULL(a.paymentAmount,0),2)" alias="paymentAmount" ctype="" />
       <f name="a.paymentMethod" alias="" ctype="" />
@@ -1553,7 +1554,7 @@
 	</from>
     <orderby>a.finishStatus,a.paymentId,a.contractId</orderby>
     <groupby></groupby>
-    <having></having>
+    <having>#</having>
 	<power></power>
   </query>
   <query>

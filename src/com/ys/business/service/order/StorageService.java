@@ -795,10 +795,16 @@ public class StorageService extends CommonService {
 			}
 			
 			//确认合同状态:是否全部入库
-			boolean flag = checkPurchaseOrderDetailStatus(reqData.getYsid(),contractId);
+			boolean flag = checkPurchaseOrderStatus(contractId);
 			if(flag){			
 				////更新合同状态
-				updateContractStatus(contractId,Constants.CONTRACT_STS_3);//入库完毕			
+				updateContractStatus(contractId,
+						Constants.STOCKIN_STS_Y,//已入库
+						Constants.CONTRACT_STS_3);//入库完毕			
+			}else{
+				updateContractStatus(contractId,
+						Constants.STOCKIN_STS_N,//未入库
+						Constants.CONTRACT_STS_2);//入库中				
 			}
 			
 			
@@ -855,16 +861,24 @@ public class StorageService extends CommonService {
 									
 				updateMaterial("采购件入库",contractId,materialid,quantity,data.getPrice());//更新库存
 				
-				//更新合同的累计入库数量,收货状态
-				updateContractStorage(reqData.getContractid(),materialid,quantity);					
+				//***********************//
+				//** 更新合同的入库数量 **//
+				//***********************//
+				updateContractStorage(reqData.getContractid(),materialid);					
 						
 			}			
 
 			//确认合同状态:是否全部入库
-			boolean flag = checkPurchaseOrderDetailStatus(reqData.getYsid(),contractId);
+			boolean flag = checkPurchaseOrderStatus(contractId);		
 			if(flag){			
 				////更新合同状态
-				updateContractStatus(contractId,Constants.CONTRACT_STS_3);//入库完毕			
+				updateContractStatus(contractId,
+						Constants.STOCKIN_STS_Y,//已入库
+						Constants.CONTRACT_STS_3);//入库完毕			
+			}else{
+				updateContractStatus(contractId,
+						Constants.STOCKIN_STS_N,//未入库
+						Constants.CONTRACT_STS_2);//入库中				
 			}
 			
 			ts.commit();			
@@ -1111,62 +1125,6 @@ public class StorageService extends CommonService {
 		copyProperties(data,commData);
 		
 		dao.Store(data);
-		
-	}
-	
-	
-	
-	//更新合同的累计入库数量
-	@SuppressWarnings("unchecked")
-	private void updateContractStorage(
-			String contractId,
-			String materialId,
-			String quantity) throws Exception{
-		
-		String where = "contractId ='"+ contractId + 
-				"' AND materialId ='"+ materialId + 
-				"' AND deleteFlag='0' ";
-		
-		List<B_PurchaseOrderDetailData> list = 
-				(List<B_PurchaseOrderDetailData>) 
-				new B_PurchaseOrderDetailDao().Find(where);
-		
-		if(list ==null || list.size() == 0)
-			return ;		
-		B_PurchaseOrderDetailData data = list.get(0);
-		//String ysid = data.getYsid();
-		String SContrat = list.get(0).getQuantity();//合同数量
-		String SQuantyDB = list.get(0).getContractstorage();//累计入库
-		float iContrat = stringToFloat(SContrat);//合同数量
-		float iQuantity = stringToFloat(SQuantyDB);//累计入库
-		float inewQuantity = stringToFloat(quantity);//本次入库
-		
-		float iNew = iQuantity + inewQuantity;
-		if(iNew >= iContrat){
-			data.setStatus(Constants.CONTRACT_STS_3);//入库完毕		
-		}else{
-			data.setStatus(Constants.CONTRACT_STS_2);//收货中			
-		}
-		
-		//更新DB
-		data.setContractstorage(String.valueOf(iNew));
-		updateContractDetailStatus(data);		
-		
-	}
-		
-	@SuppressWarnings("unchecked")
-	private boolean  checkPurchaseOrderDetailStatus(
-			String ysid,String contractId) throws Exception{
-		String where = "YSId = '" + ysid  +"'"
-				+ " AND contractId = '" + contractId  +"' "
-				+ " AND status <> '" + Constants.CONTRACT_STS_3  +"' "
-				+ " AND deleteFlag = '0' ";
-		List<B_PurchaseOrderDetailData> list  = new B_PurchaseOrderDetailDao().Find(where);
-		if(list ==null || list.size() == 0){
-			return true;	
-		}else{
-			return false;	
-		}
 		
 	}
 	

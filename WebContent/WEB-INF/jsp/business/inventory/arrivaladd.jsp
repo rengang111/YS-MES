@@ -43,7 +43,9 @@
 		t.on('change', 'tr td:nth-child(5)',function() {
 
 			var $td = $(this).parent().find("td");
-
+			
+			$td.eq(4).find("input").removeClass('error')
+			
 			var $oArrival = $td.eq(4).find("input");//本次收货
 			var $oQuantity= $td.eq(5).find("span");//合同
 			var $oSumArra = $td.eq(6).find("span");//累计收货
@@ -57,10 +59,19 @@
 			
 			var surplus = fquantity - foSumArra;
 			
+			if( fArrival <=0 ){
+
+				$().toastmessage('showWarningToast', "注意,收货数量必须大于零。");
+				fArrival = 0;//最大收货数量
+				$td.eq(4).find("input").addClass('error');
+
+			}
+			
 			if( fArrival > surplus ){
 
 				$().toastmessage('showWarningToast', "注意,收货数量不能大于合同。");
 				fArrival = surplus;//最大收货数量
+				$td.eq(4).find("input").addClass('error');
 
 			}
 			

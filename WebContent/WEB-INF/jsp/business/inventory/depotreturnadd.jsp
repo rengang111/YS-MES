@@ -2,7 +2,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>仓库退货-新建</title>
+<title>入库退货-新建</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 
@@ -109,12 +109,12 @@ function materialAjax(sessionFlag) {
 			contractQty = currencyToFloat(contractQty);
 			
 			if(quantity<=0){
-				$().toastmessage('showWarningToast', "取消数量必须大于零。");
+				$().toastmessage('showWarningToast', "退货数量必须大于零。");
 				return;
 			}
 
 			if(contractQty < quantity){
-				$().toastmessage('showWarningToast', "取消数量不能大于合同数。");
+				$().toastmessage('showWarningToast', "退货数量不能大于合同数。");
 				return;
 			}
 			

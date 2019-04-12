@@ -216,26 +216,27 @@ public class ReceiveInspectionService extends CommonService  {
 			contractId = reqData.getContractid();
 			
 			//删除历史数据		
-			deleteReceivInspectionDetail(inspectionid);
+			deleteReceivInspectionDetail(contractId,inspectionid);
 			
 			//新增进料报检明细
 			for(B_ReceiveInspectionDetailData data:reqList){
 				
 				data.setInspectionid(inspectionid);
 				insertReceivInspectionDetail(data);
-				
-				//更新有效收货
-				//updateContract(contractId,
-				//		data.getMaterialid(),
-				//		data.getQuantityinspection());
+
+				float inspection = stringToFloat(data.getQuantityinspection());//报检数
+				float qualified  = stringToFloat(data.getQuantityqualified());//合格数
+				float newRtnQty = inspection - qualified;//本次退货
 				
 				//更新执行状态
-				updateContractStatusById(
+				if( newRtnQty> 0 ){
+					updateContractStatusById(
 						contractId,
 						data.getMaterialid(),
 						data.getCheckresult(),
-						data.getQuantityinspection(),
-						data.getQuantityqualified());
+						newRtnQty);
+				}
+			
 			}
 	
 			ts.commit();			
@@ -297,8 +298,7 @@ public class ReceiveInspectionService extends CommonService  {
 			String contractId,
 			String materialId,
 			String result,
-			String quantityInspection,
-			String quantityQualified) throws Exception{
+			float returnQty) throws Exception{
 	
 		String where = "contractId ='"+contractId +
 				"' AND materialId ='"+ materialId +
@@ -315,19 +315,10 @@ public class ReceiveInspectionService extends CommonService  {
 				
 		//更新DB
 		data = list.get(0);
-		float iaccumtd = stringToFloat(data.getAccumulated());//收货数
-		float inspection = stringToFloat(quantityInspection);//报检数
-		float qualified  = stringToFloat(quantityQualified);//合格数
+		float iaccumtd = stringToFloat(data.getAccumulated());//有效收货数
 
 		//有效收货数
-		float iNewAccumtd = iaccumtd - (inspection - qualified);
-
-		if(result != null && (Constants.ARRIVERECORD_3).equals(result)){
-
-			data.setStatus(Constants.CONTRACT_PROCESS_4);//完成(退货)
-		}else{
-			data.setStatus(Constants.CONTRACT_PROCESS_2);//待入库
-		}
+		float iNewAccumtd = iaccumtd - returnQty;
 
 		data.setAccumulated(String.valueOf(iNewAccumtd));
 		
@@ -390,9 +381,11 @@ public class ReceiveInspectionService extends CommonService  {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void insertReceivInspectionDetail(
+	private float insertReceivInspectionDetail(
 			B_ReceiveInspectionDetailData data) throws Exception{
 
+		float oldQuantity = 0;
+		
 		String where = " inspectionid = '"+data.getInspectionid()
 			+"' AND  materialId='" + data.getMaterialid() + "'";
 			
@@ -401,6 +394,9 @@ public class ReceiveInspectionService extends CommonService  {
 		
 		if(list.size() > 0 ){
 			B_ReceiveInspectionDetailData db = list.get(0);
+			oldQuantity = stringToFloat(db.getQuantityinspection()) - 
+					stringToFloat(db.getQuantityqualified());//退货数
+			
 			copyProperties(db,data);
 			
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
@@ -419,11 +415,14 @@ public class ReceiveInspectionService extends CommonService  {
 			
 			new B_ReceiveInspectionDetailDao().Create(data);
 		}
+		
+		return oldQuantity;
 	}
 	
 
 	@SuppressWarnings("unchecked")
 	private void deleteReceivInspectionDetail(
+			String contractId,
 			String inspectionid) throws Exception{
 
 		String where = " inspectionid = '"+inspectionid+"'";	
@@ -431,18 +430,51 @@ public class ReceiveInspectionService extends CommonService  {
 				new B_ReceiveInspectionDetailDao().Find(where);
 		
 		if(list.size() > 0 ){
-			for(B_ReceiveInspectionDetailData dt:list){
+			for(B_ReceiveInspectionDetailData data:list){
+
+				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+						"ReceiveInspctionDetailInsert",userInfo);
+				copyProperties(data,commData);
+				
+				new B_ReceiveInspectionDetailDao().Store(data);
+				
+				//恢复有效收货
+				float inspection = stringToFloat(data.getQuantityinspection());//报检数
+				float qualified  = stringToFloat(data.getQuantityqualified());//合格数
+				float newRtnQty = inspection - qualified;//本次退货				
+
+				//更新执行状态
+				if(newRtnQty > 0 ){
+					newRtnQty = (-1) * newRtnQty;
+					updateContractStatusById(
+							contractId,
+							data.getMaterialid(),
+							data.getCheckresult(),
+							newRtnQty);
+				}
+			}
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void deleteReceivInspection(
+			String inspectionid) throws Exception{
+
+		String where = " inspectionid = '"+inspectionid+"'";	
+		List<B_ReceiveInspectionData> list = 
+				new B_ReceiveInspectionDao().Find(where);
+		
+		if(list.size() > 0 ){
+			for(B_ReceiveInspectionData dt:list){
 
 				commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
 						"ReceiveInspctionDetailInsert",userInfo);
 				copyProperties(dt,commData);
 				
-				new B_ReceiveInspectionDetailDao().Store(dt);
+				new B_ReceiveInspectionDao().Store(dt);
 			}
 		}
 	}
-	
-	
 	
 	private void getArrivaRecord(String arrivalId){
 		
@@ -473,14 +505,15 @@ public class ReceiveInspectionService extends CommonService  {
 			ts.begin();									
 
 			String inspectionId = reqModel.getInspect().getInspectionid() ;
-			String astr_Where = " inspectionId= '"+inspectionId+"' ";
+			String contractId = reqModel.getInspect().getContractid();
 			
 			//删除头部信息
-			new B_ReceiveInspectionDao().RemoveByWhere(astr_Where);
+			deleteReceivInspection(inspectionId);
 			
-			//删除明细
-			new B_ReceiveInspectionDetailDao().RemoveByWhere(astr_Where);
-						
+			//删除明细	
+			deleteReceivInspectionDetail(contractId,inspectionId);
+				
+			
 			ts.commit();
 		}
 		catch(Exception e) {

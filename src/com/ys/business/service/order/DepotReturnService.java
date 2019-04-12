@@ -166,12 +166,30 @@ public class DepotReturnService extends CommonService {
 
 					//更新合同的有效入库，有点冗余，优先考虑性能
 					if(notEmpty(contractId)){
-						String quantity = String.valueOf(stringToFloat(detail.getQuantity()) * (-1));
-						updateContract("入库退货更新处理",
-								detail.getMaterialid(),
-								quantity,
-								contractId,
-								-1);
+
+						//***********************//
+						//** 更新合同的入库数量 **//
+						//***********************//
+						updateContractStorage(contractId,detail.getMaterialid());
+						
+						//确认合同状态:是否全部入库
+						boolean flag = checkPurchaseOrderStatus(contractId);		
+						if(flag){			
+							////更新合同状态
+							updateContractStatus(contractId,
+									Constants.STOCKIN_STS_Y,//已入库
+									Constants.CONTRACT_STS_3);//入库完毕			
+						}else{
+							updateContractStatus(contractId,
+									Constants.STOCKIN_STS_N,//未入库
+									Constants.CONTRACT_STS_2);//入库中				
+						}
+						//String quantity = String.valueOf(stringToFloat(detail.getQuantity()) * (-1));
+						//updateContract("入库退货更新处理",
+						//		detail.getMaterialid(),
+						//		quantity,
+						//		contractId,
+						//		-1);
 					}
 				}
 			}
@@ -264,7 +282,26 @@ public class DepotReturnService extends CommonService {
 			
 			//更新合同的有效入库，有点冗余，优先考虑性能
 			String contractId = reqData.getContractid();
-			updateContract("入库退货更新处理",materialId,newQty,contractId,0);
+
+			//***********************//
+			//** 更新合同的入库数量 **//
+			//***********************//
+			updateContractStorageAndArrival(contractId,materialId);
+			
+			//确认合同状态:是否全部入库
+			boolean flag = checkPurchaseOrderStatus(contractId);		
+			if(flag){			
+				////更新合同状态
+				updateContractStatus(contractId,
+						Constants.STOCKIN_STS_Y,//已入库
+						Constants.CONTRACT_STS_3);//入库完毕			
+			}else{
+				updateContractStatus(contractId,
+						Constants.STOCKIN_STS_N,//未入库
+						Constants.CONTRACT_STS_2);//入库中				
+			}
+			
+			//updateContract("入库退货更新处理",materialId,newQty,contractId,0);
 			
 			ts.commit();
 			
@@ -371,7 +408,24 @@ public class DepotReturnService extends CommonService {
 			
 			//更新合同有效收货
 			if(notEmpty(contractId)){
-				updateContract("入库退货更新处理",materialId,quantity,contractId,1);
+				//***********************//
+				//** 更新合同的入库数量 **//
+				//***********************//
+				updateContractStorage(contractId,materialId);
+				//updateContract("入库退货更新处理",materialId,quantity,contractId,1);
+				
+				//确认合同状态:是否全部入库
+				boolean flag = checkPurchaseOrderStatus(contractId);		
+				if(flag){			
+					////更新合同状态
+					updateContractStatus(contractId,
+							Constants.STOCKIN_STS_Y,//已入库
+							Constants.CONTRACT_STS_3);//入库完毕			
+				}else{
+					updateContractStatus(contractId,
+							Constants.STOCKIN_STS_N,//未入库
+							Constants.CONTRACT_STS_2);//入库中				
+				}
 			}
 			
 			ts.commit();
@@ -630,7 +684,7 @@ public class DepotReturnService extends CommonService {
 	
 	//更新有效收货
 	@SuppressWarnings("unchecked")
-	private void updateContract(
+	private void updateContract2(
 			String action,
 			String materialId,
 			String newQuantity,
