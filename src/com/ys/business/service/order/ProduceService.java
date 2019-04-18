@@ -155,21 +155,31 @@ public class ProduceService extends CommonService  {
 			userDefinedSearchCase.put("orderType", orderType);			
 		}
 				
-		String having =" hideFlag='F' ";//false：不显示隐藏
+		String having1 =" hideFlag='F' ";//false：不显示隐藏
 		if(("Y").equals(searchFlag)){
 			//隐藏
-			having = " hideFlag='T' ";//True:显示隐藏
+			having1 = " hideFlag='T' ";//True:显示隐藏
 		}	
+		
+		//*** 全挪用
+		String having2 = "computeStockinQty+0 < orderQty+0";
+		if(("N").equals(searchFlag)){
+			where = " a.diverFlag='1' AND a.quantity+0 = 0 ";
+			having1 = " 1=1 ";
+			having2 = " 1=1 ";
+		}
 		
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		sql = sql.replace("#0",where );
-		sql = sql.replace("#1",having);
+		sql = sql.replace("#1",having1);
+		sql = sql.replace("#2",having2);
 
 		List<String> list = new ArrayList<String>();
 		list.add(where);
-		list.add(having);
+		list.add(having1);
+		list.add(having2);
 		
 		System.out.println("生产任务合并查询："+sql);
 		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 

@@ -73,6 +73,7 @@ public class Constants {
 	public static final String FORM_BEGINNINGINVENTROY3= "reportForDaybook3";//收发存总表
 	public static final String FORM_DEPOTRETURN= "depotReturn";//仓库退货
 	public static final String FORM_COSTACCOUTING= "costaccouting";//财务成本核算
+	public static final String FORM_WAREHOUSECODE = "warehouseCode";//仓库编码
 	
 	
 	/*

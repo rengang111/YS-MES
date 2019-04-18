@@ -479,6 +479,21 @@
 		
 	}
 	
+	//全挪用
+	function doSearchCustomer4(){
+
+		$('#merge').show();//显示展开，合并按钮
+		$('#searchFlag').val('N');//全挪用
+		$('#peijianFlag').val('');//配件订单不用合并
+		//按钮显示规则
+		$('#merge').show();//显示展开.合并按钮
+		$('#defutBtnH').hide();
+		$('#defutBtnY').show();
+		
+		ajaxSearch('010','false');
+		
+	}
+	
 	//查看隐藏订单
 	function doSearchViewHide(){
 
@@ -561,9 +576,10 @@
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 			<div id="" style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCustomer();" id="defutBtn1"><span>常规订单</span></a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer2();"id="defutBtn2"><span>配件订单</span></a>
-				<a  class="DTTT_button box" onclick="doSearchViewHide();" id="defutBtn3"><span>查看隐藏</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer();"  id="defutBtn1"><span>常规订单</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer2();" id="defutBtn2"><span>配件订单</span></a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer4();" id="defutBtn4"><span>全挪用</span></a>
+				<a  class="DTTT_button box" onclick="doSearchViewHide();"  id="defutBtn3"><span>查看隐藏</span></a>
 			</div>
 			<div id="" style="height:40px;float: right">
 					<a  class="DTTT_button box2" onclick="doCreateY();" id="defutBtnY">&nbsp;隐藏&nbsp;</a>

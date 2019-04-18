@@ -6,6 +6,104 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
+function invoiceAjax() {
+	
+	var table = $('#invoice').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
+	var paymentId = $('#payment\\.paymentid').val();
+
+	var t = $('#invoice').DataTable({			
+		"paging": false,
+		"lengthChange":false,
+		"lengthMenu":[50,100,200],//设置一页展示20条记录
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"ordering "	:true,
+		"searching" : false,
+		"retrieve" : true,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/payment?methodtype=paymentInvoiceList&paymentId="+paymentId,
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#condition").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
+
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){							
+					fnCallback(data);		
+					invoiceCountFn();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+    	"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},		
+		"columns" : [
+		        	{"data": null,"className":"dt-body-center"
+				}, {"data": "invoiceDate","className":"td-center"
+				}, {"data": "invoiceAmount","className":"td-right"
+				}, {"data": "invoiceType","className":"td-center"
+				}, {"data": "invoiceNumber", "defaultContent" : '',// 4
+				}, {"data": null,"className":"td-center"
+				}, {"data": null,
+				}
+			],
+		"columnDefs":[
+    		{"targets":0,"render":function(data, type, row){
+    			return row['rownum'];
+    		}},
+    		{"targets":2,"render":function(data, type, row){
+    			return floatToCurrency(data);
+    		}},
+    		{"targets":6,"render":function(data, type, row){
+    			return "";
+    		}},
+    		{"targets":5,"render":function(data, type, row){
+    			
+    			return "";
+            }}
+    	]
+		
+	}).draw();
+					
+	t.on('click', 'tr', function() {
+		
+		var rowIndex = $(this).context._DT_RowIndex; //行号			
+		//alert(rowIndex);
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }		
+	});
+	
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			cell.innerHTML = i + 1;
+		});
+	}).draw();
+
+};
+
 	function ajax(scrollHeight) {
 		
 		var t = $('#example').DataTable({
@@ -201,6 +299,7 @@
 		ajax();
 		materialzzAjax();
 		productPhotoView();
+		invoiceAjax();
 		
 		//产品图片添加位置                                                                                                                                                                                    
 		var productIndex = 1;
@@ -444,14 +543,6 @@ function photoView1(id, tdTable, count, data) {
 				<td width="100px" class="label">审核日期：</td>
 				<td width="100px" >${payment.approvalDate }</td>
 			</tr>
-			<tr>
-				<td width="100px" class="label">发票类型：</td>
-				<td width="100px">${payment.invoiceType }</td>
-				<td width="100px" class="label">发票编号：</td>
-				<td>${payment.invoiceNumber }</td>
-				<td width="100px" class="label">发票日期：</td>
-				<td width="100px" >${payment.invoiceDate }</td>
-			</tr>
 			<!-- 	
 			<tr>	
 				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
@@ -459,6 +550,33 @@ function photoView1(id, tdTable, count, data) {
 					<pre>${payment.approvalFeedback }</pre></td>
 			</tr>	
 			 -->					
+		</table>
+	</fieldset>
+	<fieldset>
+		<span class="tablename" style="">  发票信息</span>		
+		<table class="display" id="invoice">
+			<thead>
+				<tr> 
+					<th width="30px">No</th>				
+					<th width="100px">发票日期</th>				
+					<th width="150px">发票金额</th>
+					<th width="100px">发票类型</th>					
+					<th width="180px">发票编号</th>		
+					<th width="80px">操作</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td><span id="invoiceCnt"></span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tfoot>
 		</table>
 	</fieldset>
 	

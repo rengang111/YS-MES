@@ -70,7 +70,7 @@
 					  AND  #0 
 			) a
 			GROUP BY a.YSId,a.materialId
-		 	HAVING computeStockinQty+0 &lt; orderQty+0
+		 	HAVING #2
 		 
       ) AS A  
     	LEFT JOIN b_OrderMergeDetail b ON a.YSId=b.ysid AND b.deleteFlag = '0'

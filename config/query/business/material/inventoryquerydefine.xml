@@ -462,7 +462,7 @@
       <f name="format((replace(A.contractPrice,',','') / (a.taxRate/100+1)),6)" alias="taxPrice" ctype="" />
       <f name="format((replace(A.contractPrice,',','') / (a.taxRate/100+1)) * replace(A.quantity,',',''),2)" alias="taxTotal" ctype="" />
     </select>
-    <from>v_purchaseStockInById a  WHERE a.deleteFlag = '0' AND REPLACE(a.quantity,',','')+0 > 0  </from>
+    <from>v_purchaseStockInById a  WHERE a.deleteFlag = '0'  </from>
     <orderby>A.contractId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>
@@ -1400,4 +1400,51 @@
     <having></having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="getMAXParentCode" />
+     <where>
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="IFNULL(subId,'0')" alias="MaxSubId" ctype="" />
+      <f name="codeName" alias="" ctype="" />
+      <f name="parentId" alias="" ctype="" />
+      <f name="codeId" alias="" ctype="" />
+      <f name="sortNo" alias="" ctype="" />
+  </select>
+    <from> s_WarehouseCode a </from>
+    <orderby> a.sortNo DESC</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getWarehouseCodeList" />
+    <where>
+   		<w name="A.codeId" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  	<w name="A.codeId" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.codeId" alias="" ctype="" />
+      <f name="A.codeType" alias="" ctype="" />
+      <f name="A.codeName" alias="" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="A.multiLevel" alias="" ctype="" />
+      <f name="A.sortNo" alias="" ctype="" />
+      <f name="A.effectiveFlag" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+    </select>
+    <from>s_WarehouseCode a where a.deleteFlag='0' </from>
+    <orderby>a.sortNo</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>  
+  
 </root>
