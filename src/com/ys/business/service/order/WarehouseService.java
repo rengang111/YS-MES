@@ -220,12 +220,23 @@ public class WarehouseService extends CommonService  {
 		}else{
 			if(isNullOrEmpty(parentSortNo)){
 				//第N条 一级编码
-				newSortNo = String.valueOf(Integer.parseInt(subSortNo)+100);					
+				int oldSubNo = Integer.parseInt(subSortNo);
+				int newSubNo = oldSubNo + 100;
+				newSortNo = String.valueOf(newSubNo);
+				if (newSortNo.length() > subSortNo.length()){
+					newSortNo = String.valueOf( oldSubNo * 10 + 100 );
+				}
+					
 			}else{					
 				//第N条 子编码
 				String[] split = subSortNo.split("-");
 				String maxNo = split[split.length-1];
-				newSortNo = parentSortNo + "-" + String.valueOf(Integer.parseInt(maxNo)+100);				
+				int oldSubNo = Integer.parseInt(maxNo);
+				int newSubNo = oldSubNo + 100;
+				newSortNo = String.valueOf(newSubNo);
+				if (newSortNo.length() > maxNo.length()){
+					newSortNo = parentSortNo + "-" + String.valueOf(oldSubNo * 10 + 100);	
+				}
 				
 			}
 		}

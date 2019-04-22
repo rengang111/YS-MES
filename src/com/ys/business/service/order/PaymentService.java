@@ -1457,6 +1457,10 @@ public class PaymentService extends CommonService {
 		
 		if( ("insert").equals(insertFlag)){
 			db.setApprovaldate(CalendarUtil.fmtYmdDate());			
+		}else{
+			if(isNullOrEmpty(db.getApprovaldate())){
+				db.setApprovaldate(CalendarUtil.fmtYmdDate());
+			}
 		}
 		
 		new B_PaymentDao().Store(db);
