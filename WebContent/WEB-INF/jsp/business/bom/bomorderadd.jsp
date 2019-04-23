@@ -261,7 +261,8 @@
 					location.href = url;		
 				});
 		
-		$("#update").click(function() {			
+		$("#update").click(function() {	
+			$('#update').attr("disabled","true").removeClass("DTTT_button");		
 			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=baseBomInsert");
 			$('#bomForm').submit();
 		});

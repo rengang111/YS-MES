@@ -154,7 +154,8 @@
 					location.href = url;		
 				});
 		
-		$("#update").click(function() {			
+		$("#update").click(function() {		
+			$('#update').attr("disabled","true").removeClass("DTTT_button");	
 			$('#bomForm').attr("action", "${ctx}/business/quotation?methodtype=insertQuotation");
 			$('#bomForm').submit();
 		});

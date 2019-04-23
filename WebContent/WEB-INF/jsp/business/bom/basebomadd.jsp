@@ -308,6 +308,7 @@
 				});
 		
 		$("#update").click(function() {	
+			$('#update').attr("disabled","true").removeClass("DTTT_button");
 			var keyBackup = $("#keyBackup").val();		
 			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=baseBomInsert&keyBackup="+keyBackup);
 			$('#bomForm').submit();

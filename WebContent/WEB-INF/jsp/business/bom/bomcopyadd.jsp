@@ -268,7 +268,8 @@
 		
 		$("#insert").click(
 				function() {
-			
+
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=insert");
 			$('#bomForm').submit();
 		});

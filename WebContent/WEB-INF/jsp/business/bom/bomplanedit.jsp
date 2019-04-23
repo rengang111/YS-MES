@@ -267,7 +267,8 @@
 				});
 		
 		$("#update").click(
-				function() {			
+				function() {	
+					$('#update').attr("disabled","true").removeClass("DTTT_button");		
 			$('#bomForm').attr("action", "${ctx}/business/bom?methodtype=update");
 			$('#bomForm').submit();
 		});
