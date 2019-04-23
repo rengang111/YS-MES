@@ -471,6 +471,8 @@ function inputCheck(){
 function doSubmitReturn(){
 		
 	var keyBackup = $('#keyBackup').val();
+
+	$('#submitReturn').attr("disabled","true").removeClass("DTTT_button");
 	
 	$('#material').attr("action", "${ctx}/business/material?methodtype=insertReturn"+"&keyBackup="+keyBackup);
 	$('#material').submit();

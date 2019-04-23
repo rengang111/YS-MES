@@ -94,6 +94,7 @@
 				function() {
 				var receiptId = $("#receiptid").val();	
 				var makeType=$('#makeType').val();
+				$('#insert').attr("disabled","true").removeClass("DTTT_button");
 				if (validator.form()) {
 					$('#form').attr("action", "${ctx}/business/storage?methodtype=update&receiptId="+receiptId+"&receiptId="+receiptId);
 					$('#form').submit();

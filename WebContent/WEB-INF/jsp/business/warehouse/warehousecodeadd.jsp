@@ -47,7 +47,7 @@ var thisCount = 0;
 				return;
 			}
 
-			$("#submit").attr("disabled", true);
+			$('#submit').attr("disabled","true").removeClass("DTTT_button");
 						
 			var parentCodeId = '${formModel.warehouse.codeid}';
 			

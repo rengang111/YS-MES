@@ -192,6 +192,7 @@
 				$().toastmessage('showWarningToast', "请选择要退还的耀升编号。");
 				return;
 			}
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");	
 			$('#formModel').attr("action",
 					"${ctx}/business/requisition?methodtype=stockoutReturnInsert");
 			$('#formModel').submit();

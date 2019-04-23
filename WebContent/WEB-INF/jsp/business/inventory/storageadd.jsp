@@ -121,6 +121,7 @@
 					
 					if (validator.form()) {
 						checkDisable();
+						$('#insert').attr("disabled","true").removeClass("DTTT_button");
 						var makeType=$('#makeType').val();
 						$('#form').attr("action", "${ctx}/business/storage?methodtype=insert"+"&makeType="+makeType);
 						$('#form').submit();

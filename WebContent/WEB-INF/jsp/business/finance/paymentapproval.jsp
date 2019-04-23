@@ -332,7 +332,7 @@ function invoiceAjax() {
 		$('#payment\\.invoicecheckstatus').val(sts);//审核结果
 		var insertFlag = $("#insertFlag").val();	
 		
-		$("#submit12").attr("disabled", "disabled");
+		$('#submit12').attr("disabled","true").removeClass("DTTT_button");
 		
 		$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalInsert"+"&insertFlag="+insertFlag);
 		$('#formModel').submit();

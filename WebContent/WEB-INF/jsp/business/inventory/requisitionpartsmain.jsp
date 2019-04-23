@@ -95,11 +95,11 @@
 		    			return name;
 		    		}},
 		    		{"targets":7,"render":function(data, type, row){
-		    			return parseInt(data);
+		    			return floatToNumber(data);
 		    		}},
 		    		{"targets":8,"render":function(data, type, row){
 		    			
-		    			return parseInt(data);
+		    			return floatToNumber(data);
 		    		}},
 		    		{
 		    			"orderable":false,"targets":[0]

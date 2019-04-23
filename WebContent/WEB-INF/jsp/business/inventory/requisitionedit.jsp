@@ -242,6 +242,7 @@
 		$("#insert").click(
 				function() {
 
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			var virtualType = $('#virtualType').val();
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=update"+"&virtualType="+virtualType);
 			$('#formModel').submit();

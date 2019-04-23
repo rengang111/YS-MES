@@ -187,7 +187,7 @@
 		
 		$("#insert").click(
 				function() {
-					$("#insert").attr("disabled", "disabled");
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");
 					var beforeFlag=$("#beforeFlag").val();		
 			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=applyInsert"+"&paymentTypeId="+paymentTypeId);
 			$('#formModel').submit();

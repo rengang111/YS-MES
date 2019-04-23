@@ -188,7 +188,8 @@
 		
 		$("#insert").click(
 				function() {
-					
+
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");
 
 						$('#formModel').attr("action",
 								"${ctx}/business/stockinapply?methodtype=stockInDirectInsert");

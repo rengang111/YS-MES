@@ -366,6 +366,7 @@
 				return;				
 			}
 
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");	
 			var goBackFlag = $('#goBackFlag').val();
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=update"+"&goBackFlag="+goBackFlag);
 			$('#orderForm').submit();

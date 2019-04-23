@@ -86,7 +86,6 @@
 		
 		$("#insert").click(
 				function() {
-					$("#insert").attr("disabled", "disabled");
 			var suplus = $('#suplus').val();
 			var paymentamount = $('#history\\.paymentamount').val();
 			paymentamount = currencyToFloat(paymentamount);
@@ -100,6 +99,7 @@
 				$('#history\\.paymentamount').val(suplus);
 				return;				
 			}
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
 					
 			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=finishInsert");
 			$('#formModel').submit();

@@ -245,6 +245,8 @@
 						$().toastmessage('showWarningToast', "请修正输入错误再提交。");
 						return;				
 					}
+
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");	
 			$('#attrForm').attr("action",
 					"${ctx}/business/contract?methodtype=createRoutineContract");
 			$('#attrForm').submit();

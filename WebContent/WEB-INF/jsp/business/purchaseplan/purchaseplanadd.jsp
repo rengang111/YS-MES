@@ -144,6 +144,8 @@
 							+"&materialId="+materialId
 							+"&materialFlag="+materialFlag
 							+"&quantity="+quantity);
+
+			$('#createOrderBom').attr("disabled","true").removeClass("DTTT_button");
 			
 			$('#attrForm').submit();
 		});

@@ -128,6 +128,7 @@ function doSave() {
 		$().toastmessage('showWarningToast', "请输入客户编号。");		
 		return;
 	}
+	$('#insert').attr("disabled","true").removeClass("DTTT_button");
 	if (validator.form()) {					
 		$('#customer').attr("action", "${ctx}/business/customer?methodtype=insert");
 		$('#customer').submit();	
@@ -226,7 +227,7 @@ function goBack() {
 		<div style="clear: both"></div>
 
 		<fieldset class="action" style="text-align: right;">
-			<button type="button" class="DTTT_button" onClick="doSave()">保存</button>
+			<button type="button" class="DTTT_button" onClick="doSave()" id="insert">保存</button>
 			<button type="button" class="DTTT_button" onClick="goBack()">返回</button>
 		</fieldset>	
 

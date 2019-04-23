@@ -223,8 +223,8 @@
 						}
 					}
 					*/
-					
-					$("#insert").attr("disabled", "disabled");
+
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");
 					
 					var paymentId = $('#payment\\.paymentid').val();
 					var paymentTypeId =$("#paymentTypeId").val();

@@ -130,6 +130,7 @@
 		
 		$("#insert").click(
 				function() {
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");
 					var keyBackup = $('#keyBackup').val();				
 					$('#formModel').attr("action", "${ctx}/business/receiveinspection?methodtype=insert"+"&keyBackup="+keyBackup);
 					$('#formModel').submit();

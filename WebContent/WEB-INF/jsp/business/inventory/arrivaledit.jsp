@@ -99,6 +99,8 @@
 		
 		$("#insert").click(
 				function() {
+
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			var makeType=$('#makeType').val();
 			$('#formModel').attr("action", "${ctx}/business/arrival?methodtype=insert"+ "&makeType="+makeType);
 			$('#formModel').submit();

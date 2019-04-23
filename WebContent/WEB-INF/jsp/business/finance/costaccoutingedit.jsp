@@ -135,6 +135,7 @@
 		$("#doCreate").click(
 				function() {
 
+					$('#doCreate').attr("disabled","true").removeClass("DTTT_button");
 				$('#formModel').attr("action", "${ctx}/business/financereport?methodtype=costAccountingUpdate");
 				$('#formModel').submit();
 	

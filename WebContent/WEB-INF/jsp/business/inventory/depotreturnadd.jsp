@@ -117,7 +117,8 @@ function materialAjax(sessionFlag) {
 				$().toastmessage('showWarningToast', "退货数量不能大于合同数。");
 				return;
 			}
-			
+
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			$('#formModel').attr("action", "${ctx}/business/depotReturn?methodtype=materialRequisitionInsert");
 			$('#formModel').submit();
 		});	

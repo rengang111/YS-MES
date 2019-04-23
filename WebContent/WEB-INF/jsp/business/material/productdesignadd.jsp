@@ -1199,6 +1199,9 @@ $(document).ready(function() {
 	$("#doSave").click(function() {
 		var PIId=$('#PIId').val();
 		var goBackFlag = $('#goBackFlag').val();
+
+		$('#doSave').attr("disabled","true").removeClass("DTTT_button");
+		
 		$('#form').attr("action", 
 				"${ctx}/business/productDesign?methodtype=insert"+
 				"&PIId=" + PIId+"&goBackFlag="+goBackFlag);

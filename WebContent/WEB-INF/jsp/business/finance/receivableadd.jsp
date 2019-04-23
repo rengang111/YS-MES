@@ -215,7 +215,6 @@ function orderSum(){
 		$("#insert").click(
 				function() {
 
-					$("#insert").attr("disabled", "disabled");
  			var YSId = '${order.YSId}';
 			var bankdeduction =	$('#receivableDetail\\.bankdeduction').val();
 			var actualamount  =	$('#receivableDetail\\.actualamount').val();
@@ -229,7 +228,8 @@ function orderSum(){
 			}
 			$('#receivableDetail\\.bankdeduction').val(bankdeduction);
 			$('#receivableDetail\\.actualamount').val(actualamount);
-			
+
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=receivableInsert"+"&YSId="+YSId);
 			$('#formModel').submit();
 		});

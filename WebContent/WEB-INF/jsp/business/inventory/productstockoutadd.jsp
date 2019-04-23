@@ -57,9 +57,11 @@
 					//提交表单
 				}else{
 					return;
-				}
-				
+				}				
 			}
+
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
+			
 			$('#formModel').attr("action", "${ctx}/business/stockout?methodtype=productStockoutAdd");
 			$('#formModel').submit();
 		});

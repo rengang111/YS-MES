@@ -113,7 +113,6 @@ function historyAjax() {
 		
 		$("#insert").click(
 				function() {
-					$("#insert").attr("disabled", "disabled");
  			var YSId = '${order.YSId}';
 			var bankdeduction =	$('#receivableDetail\\.bankdeduction').val();
 			var actualamount  =	$('#receivableDetail\\.actualamount').val();
@@ -127,7 +126,8 @@ function historyAjax() {
 			}
 			$('#receivableDetail\\.bankdeduction').val(bankdeduction);
 			$('#receivableDetail\\.actualamount').val(actualamount);
-			
+
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			$('#formModel').attr("action", "${ctx}/business/receivable?methodtype=receivableUpdate"+"&YSId="+YSId);
 			$('#formModel').submit();
 		});

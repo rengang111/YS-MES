@@ -179,7 +179,8 @@
 		
 		$("#insert").click(
 				function() {
-					
+
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			$('#formModel').attr("action", "${ctx}/business/workshopReturn?methodtype=createWorkshopRentun");
 			$('#formModel').submit();
 		});

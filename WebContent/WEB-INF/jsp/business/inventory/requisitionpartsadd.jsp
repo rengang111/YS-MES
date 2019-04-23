@@ -214,7 +214,8 @@
 				$().toastmessage('showWarningToast', "选择的配件没有领料数量。");
 				return;				
 			}
-			
+
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insertParts");
 			$('#formModel').submit();
 		});

@@ -212,7 +212,7 @@
 		$("#doCreate").click(
 				function() {
 
-					$("#doCreate").attr("disabled", "disabled");
+					$('#doCreate').attr("disabled","true").removeClass("DTTT_button");
 				$('#formModel').attr("action", "${ctx}/business/financereport?methodtype=costAccountingSave");
 				$('#formModel').submit();
 	

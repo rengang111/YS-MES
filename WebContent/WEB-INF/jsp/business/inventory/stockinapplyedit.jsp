@@ -188,6 +188,7 @@
 		
 		$("#update").click(
 				function() {
+					$('#update').attr("disabled","true").removeClass("DTTT_button");
 			$('#formModel').attr("action",
 					"${ctx}/business/stockinapply?methodtype=stockInApplyUpdate");
 			$('#formModel').submit();

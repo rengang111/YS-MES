@@ -236,6 +236,8 @@ public class WarehouseService extends CommonService  {
 				newSortNo = String.valueOf(newSubNo);
 				if (newSortNo.length() > maxNo.length()){
 					newSortNo = parentSortNo + "-" + String.valueOf(oldSubNo * 10 + 100);	
+				}else{
+					newSortNo = parentSortNo + "-" + String.valueOf(oldSubNo + 100);	
 				}
 				
 			}

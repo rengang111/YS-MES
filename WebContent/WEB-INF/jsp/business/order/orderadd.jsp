@@ -367,6 +367,9 @@
 				return;				
 			}
 			
+
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
+			
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=insert");
 			$('#orderForm').submit();
 		});

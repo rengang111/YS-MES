@@ -310,6 +310,7 @@
 				$().toastmessage('showWarningToast', "至少保留一个产品信息。");		
 				return;				
 			}
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");	
 			
 			$('#orderForm').attr("action", "${ctx}/business/order?methodtype=update");
 			$('#orderForm').submit();

@@ -322,7 +322,7 @@ function invoiceAjax() {
 			$("#payment\\.approvalstatus").val(status);	
 			//alert($("#payment\\.approvalstatus").val())
 			//return;
-			$("#submit12").attr("disabled", "disabled");
+			$('#submit12').attr("disabled","true").removeClass("DTTT_button");
 		$('#formModel').attr("action", "${ctx}/business/payment?methodtype=approvalInsert2"+"&insertFlag="+insertFlag);
 		$('#formModel').submit();
 	};

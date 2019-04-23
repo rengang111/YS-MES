@@ -183,6 +183,8 @@ $(document).ready( function () {
 		} else {
 			$('#form').attr("action", "${ctx}/business/matcategory?methodtype=update");
 		}
+
+		$('#save').attr("disabled","true").removeClass("DTTT_button");
 		
 		$('#form').submit();
 		

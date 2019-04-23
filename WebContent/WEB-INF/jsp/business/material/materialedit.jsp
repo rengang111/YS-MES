@@ -557,6 +557,8 @@ function inputCheck(){
 }
 
 function doSubmit(){
+
+	$('#submitReturn').attr("disabled","true").removeClass("DTTT_button");
 	
 	var keyBackup = $("#keyBackup").val();
 	$('#material').attr("action", "${ctx}/business/material?methodtype=update"+"&keyBackup="+keyBackup);

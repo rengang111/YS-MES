@@ -86,7 +86,7 @@
 				}
 			}
 
-			$("#insert").attr("disabled", "disabled");
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
 
 			$.ajax({
 				async:false,

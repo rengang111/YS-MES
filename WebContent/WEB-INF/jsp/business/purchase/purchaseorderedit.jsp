@@ -133,7 +133,8 @@
 				});
 		
 		$("#insert").click(
-				function() {			
+				function() {		
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");	
 			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=update");
 			$('#attrForm').submit();
 		});		

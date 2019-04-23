@@ -166,7 +166,7 @@
 				return
 			}
 
-			$("#insert").attr("disabled", "disabled");
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			var makeType=$('#makeType').val();	
 			var purchaser = $('#purchaserList').val();
 			var url = "${ctx}/business/arrival?methodtype=insert"+ "&makeType="+makeType+'&purchaser='+purchaser;

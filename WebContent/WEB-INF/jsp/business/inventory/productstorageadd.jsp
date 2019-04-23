@@ -122,6 +122,8 @@
 							//return;
 						}
 					}
+
+					$('#insert').attr("disabled","true").removeClass("DTTT_button");
 					
 					if (validator.form()) {
 						$('#formModel').attr("action", "${ctx}/business/storage?methodtype=insertProduct");

@@ -122,7 +122,8 @@
 				});
 		
 		$("#create").click(
-				function() {			
+				function() {	
+					$('#create').attr("disabled","true").removeClass("DTTT_button");			
 			$('#purchaseForm').attr("action", "${ctx}/business/purchase?methodtype=insert");
 			$('#purchaseForm').submit();
 		});		

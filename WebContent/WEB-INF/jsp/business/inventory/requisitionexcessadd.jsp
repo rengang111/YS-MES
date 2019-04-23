@@ -229,7 +229,8 @@ $.fn.dataTable.TableTools.buttons.reset = $.extend(true, {},
 				$().toastmessage('showWarningToast', "请输入物料编码。");
 				return;				
 			}
-			
+
+			$('#insert').attr("disabled","true").removeClass("DTTT_button");
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=excessAdd");
 			$('#formModel').submit();
 		});
