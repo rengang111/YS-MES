@@ -31,9 +31,9 @@
 				function() {
 
 			var quantity = 	$('#stockDetail\\.quantity').val();
-			var orderQty = currencyToFloat('${stockin.orderQty }');
-			var outQty = currencyToFloat('${stockin.stockoutQty }');
-			var stockinQty = currencyToFloat('${stockin.stockinQty }');
+			var orderQty = currencyToFloat('${order.orderQty }');
+			var outQty = currencyToFloat('${order.stockOutQty }');
+			var stockinQty = currencyToFloat('${order.stockinQty }');
 			
 			quantity = currencyToFloat(quantity);
 			
@@ -69,9 +69,10 @@
 		foucsInit();
 		
 		//计算剩余出库数量
-		var orderQty = currencyToFloat('${stockin.stockinQty }');
-		var stockoutCnt = currencyToFloat('${stockin.stockoutQty }');
+		var orderQty = currencyToFloat('${order.orderQty }');
+		var stockoutCnt = currencyToFloat('${order.stockOutQty }');
 		var stockout = orderQty - stockoutCnt;
+		
 		$('#stockDetail\\.quantity').val(floatToCurrency(stockout));
 
 	});
@@ -231,16 +232,16 @@
 			</tr>
 			<tr> 		
 				<td class="label">本次出库：</td>
-				<td><form:input path="stockDetail.quantity"  value="${stockin.orderQty }" class="num short quantity" /></td>				
-					<form:hidden path="stockDetail.materialid" value="${stockin.materialId }"/>
+				<td><form:input path="stockDetail.quantity"  value="0" class="num short quantity" /></td>				
+					<form:hidden path="stockDetail.materialid" value="${order.materialId }"/>
 				<td class="label">已出库数量：</td>
-				<td>&nbsp;${stockin.stockoutQty }</td>	
+				<td>&nbsp;${order.stockOutQty }</td>	
 					
 				<td class="label">订单数量：</td>
-				<td style="width:150px">&nbsp;${stockin.orderQty }</td>
+				<td style="width:150px">&nbsp;${order.orderQty }</td>
 					
 				<td class="label" style="width:100px">入库数量：</td>					
-				<td>${stockin.stockinQty }</td>						
+				<td>${order.stockinQty }</td>						
 
 			</tr>
 										

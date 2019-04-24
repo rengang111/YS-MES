@@ -358,7 +358,7 @@ body{
 	
 	function doCreate3(contractId) {
 
-		var name=prompt("请输入校验码：","aaaa"); //在页面上弹出提示对话框，
+		var name=prompt("请输入校验码：","******"); //在页面上弹出提示对话框，
 
 		if(name != '123456'){
 			$().toastmessage('showWarningToast', "确认码有误，请重新输入！");	

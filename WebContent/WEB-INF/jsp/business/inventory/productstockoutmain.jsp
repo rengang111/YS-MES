@@ -63,7 +63,7 @@
 				{"data": "materialName"},
 				{"data": "orderQty","className" : 'td-right'},
 				{"data": "stockinQty","className" : 'td-right'},
-				{"data": "stockoutQty","className" : 'td-right',"defaultContent" : '0'},
+				{"data": "stockOutQty","className" : 'td-right',"defaultContent" : '0'},
 				{"data": "stockoutDate","className" : 'td-center',"defaultContent" : '（未出库）'},
 								
 			],
@@ -83,6 +83,16 @@
 	    			var name = row["materialName"];				    			
 	    			name = jQuery.fixedWidth(name,40);				    			
 	    			return name;
+	    		}},
+	    		{"targets":7,"render":function(data, type, row){
+
+	    			var stockoutDate = row["stockoutDate"];	
+	    			var deliveryDate = row["deliveryDate"];	
+	    			var rtn = stockoutDate;
+	    			if(stockoutDate == '' || stockoutDate == null){
+	    				rtn = deliveryDate;
+	    			}
+	    			return rtn;
 	    		}}
 	           
 	         ] 
@@ -170,9 +180,9 @@
 
 	<div class="list">
 		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<a class="DTTT_button box" onclick="selectContractByDate('030');">未入库</a>
-			<a class="DTTT_button box" onclick="selectContractByDate('040');" id="defutBtn">未出库(已入库)</a>
-			<a class="DTTT_button box" onclick="selectContractByDate('051');">部分出库中</a>
+			<!-- a class="DTTT_button box" onclick="selectContractByDate('030');"  >未入库</a -->
+			<a class="DTTT_button box" onclick="selectContractByDate('040');" id="defutBtn" >未出库</a>
+			<!--a class="DTTT_button box" onclick="selectContractByDate('051');">部分出库中</a -->
 			<a class="DTTT_button box" onclick="selectContractByDate('050');">已出库</a>
 		</div>
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">

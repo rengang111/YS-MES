@@ -815,7 +815,12 @@ public class RequisitionZZService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		System.out.println("订单查询："+sql);
+		
+		baseQuery.getYsFullData(sql,YSId);
+		
 		model.addAttribute("order",dataModel.getYsViewData().get(0));
 		
 		return modelMap;		

@@ -529,7 +529,12 @@ public class OrderService extends CommonService  {
 		String key = request.getParameter("key").toUpperCase();
 		userDefinedSearchCase.put("key", key);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+		
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", key);
+		System.out.println("订单查询："+sql);
+		
+		baseQuery.getYsFullData(sql,key);
 		
 		modelMap.put("data", dataModel.getYsViewData());
 		
@@ -553,7 +558,12 @@ public class OrderService extends CommonService  {
 			userDefinedSearchCase.put("keywords1", PIId);
 		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		modelMap = baseQuery.getYsQueryData(0, 0);
+
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		System.out.println("订单查询："+sql);
+				
+		modelMap = baseQuery.getYsFullData(sql,YSId);
 		
 		return modelMap;
 	}

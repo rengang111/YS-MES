@@ -783,7 +783,7 @@ public class BomService extends CommonService {
 			List<B_BomDetailData> reqDataList = reqModel.getBomDetailLines();
 
 			bomid = reqData.getBomid();
-			String where = " bomId = '"+bomid +"'";			
+			String where = " bomId = '"+bomid +"' AND deleteFlag ='0' ";			
 
 			//首先删除DB中的BOM详情
 			deleteBomDetail(where);
@@ -920,23 +920,42 @@ public class BomService extends CommonService {
 	 * 
 	 * accessFlg:true 基础BOM做成
 	 */
+	@SuppressWarnings("unchecked")
 	private void insertBomDetail(
-			B_BomDetailData detailData,
+			B_BomDetailData detail,
 			boolean accessFlg) throws Exception{
 			
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"BomDetailInsert",userInfo);
+		String where = " bomId = '" + detail.getBomid()+"' "
+				+ " AND materialId ='"+detail.getMaterialid()+"' "
+				+ " AND subBomNo ='"+detail.getSubbomno()+"' ";
+		
+		List<B_BomDetailData> list = new B_BomDetailDao().Find(where);
+		
+		if(list.size() > 0 ){
+			B_BomDetailData db = list.get(0);
+			copyProperties(db,detail);
 
-		copyProperties(detailData,commData);
-		guid = BaseDAO.getGuId();
-		detailData.setRecordid(guid);
-		
-		if(accessFlg){
-			detailData.setPrice(null);//基础BOM不存单价
-			detailData.setTotalprice(null);//基础BOM不存单价
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"BomDetailUpdate",userInfo);
+			copyProperties(db,commData);
+			
+			new B_BomDetailDao().Store(db);
+			
+		}else{
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"BomDetailInsert",userInfo);
+			copyProperties(detail,commData);
+			guid = BaseDAO.getGuId();
+			detail.setRecordid(guid);
+			
+			if(accessFlg){
+				detail.setPrice(null);//基础BOM不存单价
+				detail.setTotalprice(null);//基础BOM不存单价
+			}
+			
+			new B_BomDetailDao().Create(detail);
 		}
-		
-		bomDetailDao.Create(detailData);
 
 	}	
 	
@@ -964,7 +983,7 @@ public class BomService extends CommonService {
 			
 			//订单详情更新处理
 			//首先删除DB中的BOM详情
-			String where = " bomId = '"+bomId +"'";
+			String where = " bomId = '"+bomId +"' AND deleteFlag='0' ";
 			deleteBomDetail(where);
 			
 			//新增页面的BOM详情		
@@ -1033,7 +1052,7 @@ public class BomService extends CommonService {
 	 * BOM详情删除处理
 	 */
 	private void deleteBomPlan(String where) {
-		
+			
 		try{
 			bomPlanDao.RemoveByWhere(where);
 		}catch(Exception e){
@@ -1044,13 +1063,22 @@ public class BomService extends CommonService {
 	/*
 	 * BOM详情删除处理
 	 */
-	private void deleteBomDetail(String where) {
+	@SuppressWarnings("unchecked")
+	private void deleteBomDetail(String where) throws Exception {
 		
-		try{
-			bomDetailDao.RemoveByWhere(where);
-		}catch(Exception e){
-			//nothing
-		}		
+		
+		List<B_BomDetailData> list = new B_BomDetailDao().Find(where);
+			
+
+		for(B_BomDetailData db:list){
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"BomPlanDelete",userInfo);
+			copyProperties(db,commData);
+						
+			new B_BomDetailDao().Store(db);
+		}
+		
 	}
 
 	/*

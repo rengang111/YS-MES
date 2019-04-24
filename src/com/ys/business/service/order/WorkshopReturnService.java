@@ -223,7 +223,12 @@ public class WorkshopReturnService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		System.out.println("订单查询："+sql);
+		
+		baseQuery.getYsFullData(sql,YSId);
+		
 		if(dataModel.getRecordCount() > 0){
 			model.addAttribute("order",dataModel.getYsViewData().get(0));
 			status = dataModel.getYsViewData().get(0).get("status");

@@ -264,7 +264,12 @@ function deductAjax() {
 		
 		$("#doEdit").click(
 				function() {
-					
+					var name=prompt("请输入校验码：","******"); //在页面上弹出提示对话框，
+
+					if(name != 'ys171208'){
+						$().toastmessage('showWarningToast', "确认码有误，请重新输入！");	
+						return;
+					}	
 			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=edit");
 			$('#attrForm').submit();
 		});	

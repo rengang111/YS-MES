@@ -171,6 +171,12 @@
 		
 	function doDelete() {
 
+		var name=prompt("请输入校验码：","******"); //在页面上弹出提示对话框，
+
+		if(name != 'ys171208'){
+			$().toastmessage('showWarningToast', "确认码有误，请重新输入！");	
+			return;
+		}
 		var str = '';
 		$("input[name='numCheck']").each(function(){
 			if ($(this).prop('checked')) {

@@ -476,10 +476,7 @@ public class StockOutService extends CommonService {
 			//出库记录
 			reqData.setStockouttype(Constants.STOCKOUTTYPE_2);
 			insertStockOut(reqData);
-			
-		
-			float quantity = stringToFloat(detail.getQuantity());
-			
+							
 			detail.setStockoutid(id);
 			insertStockOutDetail(detail);								
 			
@@ -487,7 +484,7 @@ public class StockOutService extends CommonService {
 			updateBaseBom(detail.getMaterialid(),reqData.getYsid());			
 			
 			//更新订单状态->出库
-			updateOrderDetail(YSId,quantity);
+			updateOrderDetail(YSId,detail.getMaterialid());
 			
 			ts.commit();			
 			
@@ -507,7 +504,7 @@ public class StockOutService extends CommonService {
 	@SuppressWarnings("unchecked")
 	private void updateOrderDetail(
 			String ysid,
-			float quantity) throws Exception{
+			String materialId) throws Exception{
 		String where = "YSId = '" + ysid  +"' AND deleteFlag = '0' ";
 		List<B_OrderDetailData> list  = new B_OrderDetailDao().Find(where);
 		if(list ==null || list.size() == 0)
@@ -515,25 +512,53 @@ public class StockOutService extends CommonService {
 		
 		//更新DB
 		B_OrderDetailData data = list.get(0);
+		float quantity = stringToFloat(data.getQuantity());
 	
-		float orderQty = stringToFloat(data.getQuantity());//订单数量
-		float oldQuan = stringToFloat(data.getStockoutqty());//已出库数量		
-		
-		float totalQuan = oldQuan + quantity;//累计出库
+		//重新计算已出库数
+		HashMap<String,String> stockoutMap = getStockouQtyByYsid(ysid,materialId);
+		String newStockoutQty = "0";
+		String stockoutDate = "";
+		if(stockoutMap.size() > 0){
+			newStockoutQty = stockoutMap.get("stockoutQty");
+			stockoutDate = stockoutMap.get("stockoutDate");
+		}else{
+			
+		}
 		
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"ProductStockOutUpdate",userInfo);
 		copyProperties(data,commData);
-	
-		if(totalQuan >= orderQty){
+		
+		float totalQuan = stringToFloat(newStockoutQty);
+		if(totalQuan >= quantity){
 			data.setStatus(Constants.ORDER_STS_5);//已出库
 		}else{
 			data.setStatus(Constants.ORDER_STS_51);//出库中			
 		}
 		
-		data.setStockoutqty(String.valueOf(totalQuan));
-		data.setStockoutdate(CalendarUtil.fmtYmdDate());//出库时间
+		data.setStockoutqty(newStockoutQty);
+		data.setStockoutdate(stockoutDate);//出库时间
+		
 		new B_OrderDetailDao().Store(data);
+	}
+	
+	private HashMap<String,String> getStockouQtyByYsid(
+			String YSId,String materialId) throws Exception{
+		
+		HashMap<String,String> map = new HashMap<String,String>();
+		
+		dataModel.setQueryName("getProductStockoutQtyById");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("YSId", YSId);
+		userDefinedSearchCase.put("materialId", materialId);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0){
+			map = dataModel.getYsViewData().get(0);
+		}
+		
+		return map;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -828,7 +853,11 @@ public class StockOutService extends CommonService {
 		baseQuery = new BaseQuery(request, dataModel);		
 		userDefinedSearchCase.put("YSId", YSId);		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsFullData();
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		System.out.println("订单查询："+sql);
+		
+		baseQuery.getYsFullData(sql,YSId);
 
 		if(dataModel.getRecordCount() >0){
 			model.addAttribute("order",dataModel.getYsViewData().get(0));
@@ -1128,6 +1157,32 @@ public class StockOutService extends CommonService {
 		}		
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void deleteStockoutDetailForProduct(
+			String stockoutId,
+			String ysid,
+			String requisitionType) throws Exception{
+		
+		B_StockOutDetailDao dao = new B_StockOutDetailDao();
+		//
+		String where = "stockoutId = '" + stockoutId  +"' AND deleteFlag = '0' ";
+		List<B_StockOutDetailData> list  = dao.Find(where);
+		if(list ==null || list.size() == 0)
+			return ;
+		
+		for(B_StockOutDetailData dt:list){
+			//更新DB
+			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+					"PurchaseStockInDelete",userInfo);
+			copyProperties(dt,commData);
+			
+			dao.Store(dt);
+
+			//更新库存(恢复)
+			updateOrderDetail(ysid,dt.getMaterialid());		
+
+		}		
+	}
 	public void stockoutDownloadExcelForfinance() throws Exception{
 		
 		//设置响应头，控制浏览器下载该文件
@@ -1300,22 +1355,22 @@ public class StockOutService extends CommonService {
 		sb.append(" AND ");;
 		if(("030").equals(status)){
 			//未入库
-			sb.append(" a.stockinQty+0 <= 0 ");
-			userDefinedSearchCase.put("status", "050");
-			key1 = "";key2="";//清空关键字
+			//sb.append(" a.stockinQty+0 <= 0 ");
+			//userDefinedSearchCase.put("status", "050");
+			//key1 = "";key2="";//清空关键字
 		}else if(("040").equals(status)){
 			//未出库(已入库)
-			sb.append(" a.stockoutQty+0 <= 0 AND a.stockinQty+0 > 0  ");
-			userDefinedSearchCase.put("status", "050");
+			sb.append(" REPLACE(IFNULL(a.stockoutQty,0),',','')+0 <= 0 AND REPLACE(IFNULL(a.completedQuantity,0),',','')+0 > 0  ");
+			//userDefinedSearchCase.put("status", "050");
 			key1 = "";key2="";//清空关键字
 		}else if(("050").equals(status)){
 			//已出库
-			sb.append(" a.stockoutQty+0 = a.orderQty+0 ");
+			sb.append(" REPLACE(IFNULL(a.stockoutQty,0),',','')+0 >= REPLACE(IFNULL(a.quantity,0),',','')+0 ");
 			key1 = "";key2="";//清空关键字		
 		}else if(("051").equals(status)){
 			//部分出库
-			sb.append(" a.stockoutQty+0 > 0 AND a.stockoutQty+0 < a.orderQty+0 ");
-			key1 = "";key2="";//清空关键字		
+			//sb.append(" a.stockoutQty+0 > 0 AND a.stockoutQty+0 < a.orderQty+0 ");
+			//key1 = "";key2="";//清空关键字		
 		}else{
 			//普通查询
 			sb.append(" 1=1 ");
@@ -1348,9 +1403,7 @@ public class StockOutService extends CommonService {
 		//取得订单信息
 		getOrderDetail(YSId);
 		//取得入库信息
-		getStockinDetail(YSId,"");//入库明细
-
-	
+		//getStockinDetail(YSId,"");//入库明细	
 	}
 	
 
@@ -1360,7 +1413,7 @@ public class StockOutService extends CommonService {
 		String stockOutId = request.getParameter("stockOutId");
 
 		//删除成品入库数据
-		deleteStockoutData(stockOutId);
+		deleteStockoutDataForProduct(stockOutId);
 
 		//取得订单信息
 		getOrderDetail(YSId);
@@ -1368,6 +1421,30 @@ public class StockOutService extends CommonService {
 		getStockinDetail(YSId,"");//入库明细
 
 	
+	}
+	
+	private void deleteStockoutDataForProduct(String stockOutId) throws Exception{
+		
+		ts = new BaseTransaction();		
+		
+		try {
+			ts.begin();
+
+			String ysid = request.getParameter("YSId");
+			String requisitionType = request.getParameter("requisitionType");
+			String where = " stockOutId='" + stockOutId +"' AND deleteFlag='0'";
+			
+			deleteStockout(where);
+			
+			deleteStockoutDetailForProduct(stockOutId,ysid,requisitionType);
+					
+			
+			ts.commit();
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			ts.rollback();
+		}
 	}
 	private void deleteStockoutData(String stockOutId) throws Exception{
 		

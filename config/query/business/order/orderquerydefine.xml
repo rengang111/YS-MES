@@ -305,6 +305,7 @@
       <f name="A.loadingPort" alias="loadingPort" ctype="出运港" />
       <f name="A.deliveryPort" alias="deliveryPort" ctype="目的港" />
       <f name="A.quantity" alias="" ctype="" />
+      <f name="A.quantity" alias="orderQty" ctype="" />
       <f name="A.completedQuantity" alias="" ctype="" />
       <f name="A.totalQuantity" alias="" ctype="" />
       <f name="A.completedNumber" alias="" ctype="" />
@@ -333,6 +334,7 @@
       <f name="replace(a.totalQuantity,',','') - IFNULL(replace(b.quantity,',',''),0)" alias="surplus" ctype="" />
       <f name="A.peiYsid" alias="" ctype="" />
       <f name="concat( a.rebateRate*100/100,'%')" alias="rebateRate" ctype="" />
+      <f name="IFNULL(a.stockOutQty,'0')" alias="stockOutQty" ctype="" />
       <f name="IFNULL(b.quantity,'0')" alias="stockinQty" ctype="" />
       <f name="IFNULL(a.divertYsid,'')" alias="divertYsid" ctype="" />
       <f name="IFNULL(a.divertQuantity,'0')" alias="divertQuantity" ctype="" />
@@ -343,12 +345,30 @@
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_orderlist AS A LEFT JOIN v_purchasestockin_groupby_ysid_materialid b ON a.YSId=b.YSId AND a.materialId=b.materialId WHERE A.deleteFlag = '0' </from>
+    <from>
+    	v_orderlist AS A 
+    	LEFT JOIN 
+    	(
+			SELECT
+				c.materialId,
+				c.ysid,
+				SUM(REPLACE(c.quantity, ',', '')) quantity,
+				max(c.checkInDate) AS checkInDate,
+				max(c.storageFinish) storageFinish,
+				group_concat( c.areaNumber SEPARATOR ',' ) AS areaNumber
+			FROM
+				v_purchasestockindetail c
+			WHERE
+				c.deleteFlag = '0' AND c.YSId = '#'
+			GROUP BY
+				c.ysid,
+				c.materialId 
+		) b ON a.YSId=b.YSId AND a.materialId=b.materialId 
+		WHERE A.deleteFlag = '0' </from>
     <orderby>left(A.YSId,8),mid(A.YSId,LOCATE('-',A.YSId)+1,2)+0</orderby>
     <groupby></groupby>
     <having></having>
-	<power>
-	</power>    
+	<power></power>    
   </query>
   <query>
     <pool></pool>     
