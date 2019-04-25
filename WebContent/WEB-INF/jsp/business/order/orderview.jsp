@@ -355,6 +355,7 @@ function divertFromListAjax(PIId) {//挪用详情
 			             {"className" : 'td-right'},
 			             {"className" : 'td-right'},
 			             {"className" : 'td-right'},
+			             {"className" : 'td-right'},
 			             {"className" : "dt-body-center"},
 			             {"className" : "dt-body-center"},
 			            
@@ -916,14 +917,15 @@ function doDeleteInvoice(recordId,quantity,YSId){
 				<th class="dt-center" width="65px">耀升编号</th>
 				<th class="dt-center" width="120px">产品编号</th>
 				<th class="dt-center" >产品名称</th>
-				<th class="dt-center" width="50px">型号</th>
+				<th class="dt-center" width="30px">型号</th>
+				<th class="dt-center" width="55px">初始订单</th>
 				<th class="dt-center" width="55px">销售数量</th>
 				<th class="dt-center" width="60px">生产数量</th>
 				<th class="dt-center" width="30px">返还<BR>数量</th>
 				<th class="dt-center" width="50px">销售单价<span class="order"><br />下单价格</span></th>
 				<th class="dt-center" width="80px">销售总价<span class="order"><br />下单总价</span></th>
 				<th class="dt-center" width="50px">操作</th>
-				<th class="dt-center" width="50px"></th>
+				<th class="dt-center" width="20px"></th>
 			</tr>
 			</thead>
 		<tbody>
@@ -934,7 +936,8 @@ function doDeleteInvoice(recordId,quantity,YSId){
 					<td><a href="###" onClick="doShow('${order.materialId}')">${order.materialId}</a></td>								
 					<td>${order.materialName}</td>
 					<td>${order.machineModel}</td>
-					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>	
+					<td class="cash" style="padding-right: 20px;">${order.divertQuantity}</td>
+					<td class="cash" style="padding-right: 20px;">${order.quantity}</td>
 					<td class="cash" style="padding-right: 20px;">${order.totalQuantity}</td>
 					<td class="cash" style="padding-right: 20px;">${order.returnQuantity}</td>					
 					<td class="cash" style="padding-right: 20px;">${order.price}

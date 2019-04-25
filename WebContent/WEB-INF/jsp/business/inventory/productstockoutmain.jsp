@@ -102,6 +102,10 @@
 
 	$(document).ready(function() {
 		
+
+		hideAllSearch();
+		setYearList();
+		
 		//
 		ajax("040","true");
 	
@@ -145,6 +149,85 @@
 	
 		ajax(status,'false');
 	}
+	
+	function hideAllSearch(){
+
+		$('#yearFlag').hide();
+		//$('#userFlag').hide();
+	}
+
+	function setYearList(){
+		var i = 0;	
+		var options = "";
+		<c:forEach var="list" items="${year}">
+			i++;
+			options += '<option value="${list.key}">${list.value}</option>';
+		</c:forEach>
+		
+		var curYear = getYear();
+		$('#yearList').html(options);
+		$('#yearList').val(curYear);//默认显示当前年
+	}
+	
+	//年度选择
+	function doSelectYear(year) {
+		
+		var searchType = $('#searchType').val();
+		
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    var month = $('#month').val();
+	    var monthday = year + '-' + month;
+
+	    $('#year').val(year); 
+	    $('#monthday').val(monthday);
+	 	$('#defutBtn'+month).removeClass("start").addClass("end"); 
+	    
+	 	searchAjax('','false');
+
+	};
+	//月份选择
+	function doSearchCustomer(month){
+				
+		var year = $('#yearList').val();
+		var monthday = '';		
+
+		if(month == '12'){
+			var crrMonth = getMonth();
+			if(month == crrMonth){
+				//当前就是12月				
+			}else{
+				var CurrYear = getYear();
+				if(year == CurrYear){
+					
+					var tmpYear = CurrYear - 1;
+					monthday = tmpYear +"-"+month; 
+					$('#year').val(tmpYear);
+					$('#yearList').val(getYear());					
+				}
+				
+				var collection = $(".box4");
+			    $.each(collection, function () {
+			    	$(this).removeClass("end");
+			    });
+				$('#defutBtny'+CurrYear).removeClass("start").addClass("end");
+			}
+			
+			
+		}else{
+			if(month != 'ALL'){
+				monthday = year +"-"+month; 
+			}
+			$('#year').val(year);
+		}
+
+		$('#monthday').val(monthday);
+		$('#month').val(month);
+		
+		searchAjax('false','');
+	}
 		
 </script>
 </head>
@@ -173,18 +256,54 @@
 					</td>
 					<td width="10%"></td> 
 				</tr>
+				<tr style="height: 25px;">
+					<td width=""></td> 
+					<td class="label">快捷查询：</td>
+					<td colspan="4">
+						<!-- a class="DTTT_button box" onclick="selectContractByDate('030');"  >未入库</a -->
+						<a class="DTTT_button box" onclick="selectContractByDate('040');" id="defutBtn" >未出库</a>
+						<!--a class="DTTT_button box" onclick="selectContractByDate('051');">部分出库中</a -->
+						<a class="DTTT_button box" onclick="selectContractByDate('050');">已出库</a>
+						
+						<span id="yearFlag">			
+							<select id="yearList" name="yearList"  style="width: 100px;vertical-align: bottom;height: 25px;"></select>
+						
+							<a id="defutBtn12"  class="DTTT_button box" onclick="doSearchCustomer('12');">
+								12</a>
+							<a id="defutBtn01"  class="DTTT_button box" onclick="doSearchCustomer('01');">
+								1</a>
+							<a id="defutBtn02"  class="DTTT_button box" onclick="doSearchCustomer('02');">
+								2</a>
+							<a id="defutBtn03"  class="DTTT_button box" onclick="doSearchCustomer('03');">
+								3</a>
+							<a id="defutBtn04"  class="DTTT_button box" onclick="doSearchCustomer('04');">
+								4</a>
+							<a id="defutBtn05"  class="DTTT_button box" onclick="doSearchCustomer('05');">
+								5</a>
+							<a id="defutBtn06"  class="DTTT_button box" onclick="doSearchCustomer('06');">
+								6</a>
+							<a id="defutBtn07"  class="DTTT_button box" onclick="doSearchCustomer('07');">
+								7</a>
+							<a id="defutBtn08"  class="DTTT_button box" onclick="doSearchCustomer('08');">
+								8</a>
+							<a id="defutBtn09"  class="DTTT_button box" onclick="doSearchCustomer('09');">
+								9</a>
+							<a id="defutBtn10"  class="DTTT_button box" onclick="doSearchCustomer('10');">
+								10</a>
+							<a id="defutBtn11"  class="DTTT_button box" onclick="doSearchCustomer('11');">
+								11</a>
+							<a id="defutBtnALL"  class="DTTT_button box" onclick="doSearchCustomer('ALL');">
+								ALL</a>
+						</span> 
+					</td>
+				</tr>
 			</table>
 		</form>
 	</div>
 	<div  style="height:10px"></div>
 
 	<div class="list">
-		<div id="DTTT_container" align="left" style="height:40px;width:50%">
-			<!-- a class="DTTT_button box" onclick="selectContractByDate('030');"  >未入库</a -->
-			<a class="DTTT_button box" onclick="selectContractByDate('040');" id="defutBtn" >未出库</a>
-			<!--a class="DTTT_button box" onclick="selectContractByDate('051');">部分出库中</a -->
-			<a class="DTTT_button box" onclick="selectContractByDate('050');">已出库</a>
-		</div>
+		
 		<table id="TMaterial" class="display dataTable" style="width: 100%;">
 			<thead>						
 				<tr>

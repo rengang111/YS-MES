@@ -546,7 +546,7 @@ public class OrderService extends CommonService  {
 			String PIId ) throws Exception {
 
 		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getOrderViewByPIId");
+		dataModel.setQueryName("getOrderViewByPIIdForOrder");
 		
 		baseQuery = new BaseQuery(request, dataModel);
 
@@ -560,10 +560,10 @@ public class OrderService extends CommonService  {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 
 		String sql = baseQuery.getSql();
-		sql = sql.replace("#", YSId);
+		//sql = sql.replace("#", YSId);
 		System.out.println("订单查询："+sql);
 				
-		modelMap = baseQuery.getYsFullData(sql,YSId);
+		modelMap = baseQuery.getYsFullData(sql);
 		
 		return modelMap;
 	}
