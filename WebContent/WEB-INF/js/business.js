@@ -79,3 +79,23 @@ function showPhotoRow(id,tdTable,path,pathDel,index) {
 
 	return trHtml;
 }
+
+function showPhotoRowOnlyView(id,tdTable,path,pathDel,index) {
+	var trHtml='';
+	trHtml += '<td class="photo" style="text-align:center;padding: 10px;">';
+	trHtml += '<table style="width:400px;margin: auto;" class="form" id="tb'+index+'">';
+	trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
+	trHtml += '<td></td>';
+	trHtml += '<td width="50px"></td>';
+	trHtml += "</tr>";
+	trHtml += '<tr><td colspan="2"  style="height:300px;">';
+	trHtml += '<a id=linkFile'+tdTable+index+'" href="'+path+'" target="_blank">';
+	trHtml += '<img id="imgFile'+tdTable+index+'" src="'+path+'" style="max-width: 400px;max-height:300px"  />';
+	trHtml += '</a>';
+	trHtml += '</td>';
+	trHtml += '</tr>';
+	trHtml += '</table>';
+	trHtml += '</td>';
+
+	return trHtml;
+}

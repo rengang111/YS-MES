@@ -417,8 +417,9 @@ function photoView1(id, tdTable, count, data) {
 		
 		trHtml += '<tr style="background: #d4d0d0;height: 35px;">';
 		trHtml += '<td></td>';
-		trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
-				'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+		//trHtml += '<td width="50px"><a id="uploadFile' + index + '" href="###" '+
+		//'onclick="deletePhoto(' + '\'' + id + '\'' + ',' + '\'' + tdTable + '\''+ ',' + '\'' + pathDel + '\'' + ');">删除</a></td>';
+		trHtml += '<td width="50px"></td>';
 		trHtml += "</tr>";
 
 		trHtml += '<tr><td colspan="2"  style="height:300px;">';

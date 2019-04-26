@@ -239,7 +239,7 @@ body{
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		var scrollHeight = $(document).height() - 200; 
 		
-		searchAjax("",scrollHeight,"false");
+		searchAjax("","false","");
 
 	}
 	

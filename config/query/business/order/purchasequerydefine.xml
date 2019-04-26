@@ -503,8 +503,8 @@
   	<select>
   	  <f name="a.YSId" alias="" ctype="" />
       <f name="a.materialId" alias="" ctype="" />
-      <f name="g.purchaser" alias="" ctype="采购人员" />
-      <f name="g.purchaser" alias="purchaserId" ctype="" />
+      <f name="IFNULL(f.purchaser,g.purchaser)" alias="purchaser" ctype="采购人员" />
+      <f name="IFNULL(f.purchaser,g.purchaser)" alias="purchaserId" ctype="" />
       <f name="a.recordId" alias="" ctype="" />
       <f name="a.contractId" alias="" ctype="" />
       <f name="a.quantity" alias="" ctype="" />

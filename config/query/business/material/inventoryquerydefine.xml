@@ -350,7 +350,60 @@
       <f name="format((replace(A.price,',','') / 1.17),2)" alias="taxPrice" ctype="" />
       <f name="format((replace(A.price,',','') / 1.17) * replace(A.contractQuantity,',',''),2)" alias="total" ctype="" />
     </select>
-    <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
+    <from>
+		(		
+		SELECT
+			a.recordId AS recordId,
+			a.YSId AS YSId,
+			a.contractId AS contractId,
+			a.materialId AS materialId,
+			c.materialName AS materialName,
+			c.unit AS unit,
+			c.purchaseType AS purchaseType,
+			a.supplierId AS supplierId,
+			concat(e.supplierId,'（',e.shortName,'）',e.supplierName	) AS supplierName,
+			a.arrivalId AS arrivalId,
+			date_format(a.inspectTime,'%Y-%m-%d') AS inspectTime,
+			a.quantityQualified AS quantityQualified,
+			d.quantity AS contractQuantity,
+			ifnull(d.contractStorage, '0') AS contractStorage,
+			a.deleteFlag AS deleteFlag,
+			d.status AS status,
+			d.price AS price,
+			d.deliveryDate,
+			a.checkerId AS checkerId,
+			a.checkResult,
+			f.reverse,
+			f.quantity AS stockinQty,
+			f.depotId,
+			date_format(a.checkDate, '%Y-%m-%d') AS checkDate,
+			ifnull(date_format(f.checkInDate,'%Y-%m-%d'),'待入库') AS checkInDate,
+			ifnull(f.receiptId, '') AS receiptId,
+			ucase(
+				concat_ws(
+					',',
+					f.receiptId,
+					a.materialId,
+					c.materialName,
+					e.supplierId,
+					a.contractId,
+					f.checkInDate,
+					a.arrivalId,
+					a.YSId
+				)
+			) AS fullField
+		FROM
+				v_receiveinspection a
+					LEFT JOIN b_material c ON  a.materialId = c.materialId AND (c.deleteFlag = '0')
+		 
+					LEFT JOIN b_supplier e ON  e.supplierId = a.supplierId AND (e.deleteFlag = '0')
+		 
+					LEFT JOIN v_purchaseorderdetail d ON  d.contractId = a.contractId AND ( d.materialId = a.materialId ) AND (d.deleteFlag = '0')
+		 
+					LEFT JOIN v_purchasestockindetail f ON f.arrivelId = a.arrivalId AND a.materialId = f.materialId AND  (f.deleteFlag = '0') 
+		WHERE a.checkResult='020' OR a.checkResult='030'
+		)
+ 		a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
     <orderby>a.YSId,a.contractId,a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having>#</having>
@@ -837,7 +890,72 @@
       <f name="format((replace(A.price,',','') / 1.17),2)" alias="taxPrice" ctype="" />
       <f name="format((replace(A.price,',','') / 1.17) * replace(A.contractQuantity,',',''),2)" alias="total" ctype="" />
     </select>
-    <from>v_materialcheckinlist a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
+    <from>
+		(
+		SELECT
+			a.recordId AS recordId,
+			a.YSId AS YSId,
+			a.contractId AS contractId,
+			a.materialId AS materialId,
+			c.materialName AS materialName,
+			c.unit AS unit,
+			c.purchaseType AS purchaseType,
+			a.supplierId AS supplierId,
+			concat(
+				e.supplierId,
+				'（',
+				e.shortName,
+				'）',
+				e.supplierName
+			) AS supplierName,
+			a.arrivalId AS arrivalId,
+			date_format(
+				a.inspectTime,
+				'%Y-%m-%d'
+			) AS inspectTime,
+			a.quantityQualified AS quantityQualified,
+			d.quantity AS contractQuantity,
+			ifnull(d.contractStorage, '0') AS contractStorage,
+			a.deleteFlag AS deleteFlag,
+			d.status AS status,
+			d.price AS price,
+			d.deliveryDate,
+			a.checkerId AS checkerId,
+			a.checkResult,
+			f.reverse,
+			f.quantity AS stockinQty,
+			f.depotId,
+			date_format(a.checkDate, '%Y-%m-%d') AS checkDate,
+			ifnull(
+				date_format(
+					f.checkInDate,
+					'%Y-%m-%d'
+				),
+				'待入库'
+			) AS checkInDate,
+			ifnull(f.receiptId, '') AS receiptId,
+			ucase(
+				concat_ws(
+					',',
+					f.receiptId,
+					a.materialId,
+					c.materialName,
+					e.supplierId,
+					a.contractId,
+					f.checkInDate,
+					a.arrivalId,
+					a.YSId
+				)
+			) AS fullField
+		FROM
+			v_receiveinspection a
+				LEFT JOIN b_material c ON  a.materialId = c.materialId AND (c.deleteFlag = '0')		 
+				LEFT JOIN b_supplier e ON  e.supplierId = a.supplierId AND (e.deleteFlag = '0')		 
+				LEFT JOIN v_purchaseorderdetail d ON  d.contractId = a.contractId AND ( d.materialId = a.materialId ) AND (d.deleteFlag = '0')		 
+				LEFT JOIN v_purchasestockindetail f ON f.arrivelId = a.arrivalId AND a.materialId = f.materialId AND  (f.deleteFlag = '0') 
+		WHERE a.checkResult='020' OR a.checkResult='030'
+		)
+ 		a  WHERE a.deleteFlag = '0' and A.quantityQualified > '0' </from>
     <orderby>a.YSId,a.contractId,a.arrivalId,a.materialId</orderby>
     <groupby></groupby>
     <having></having>

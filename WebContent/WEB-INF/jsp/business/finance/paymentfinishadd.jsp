@@ -198,7 +198,7 @@ function photoView(id, tdTable, count, data) {
 	for (var index = 0; index < count; index++) {
 		var path = '${ctx}' + data[index];
 		var pathDel = data[index];		
-		var trHtml = showPhotoRow(id,tdTable,path,pathDel,index);		
+		var trHtml = showPhotoRowOnlyView(id,tdTable,path,pathDel,index);		
 		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
 		row++;
 	}

@@ -88,7 +88,9 @@
 	};//ajaxRawGroup()
 	
 	$(document).ready(function() {
-
+		
+		$('#contract\\.purchaser').val('${contract.purchaserId}');
+		
 		var productid = '${ contract.productId }';
 		if(productid == null || productid == ""){
 			$('#ysid00').attr("style","display:none");			
@@ -133,7 +135,11 @@
 				});
 		
 		$("#insert").click(
-				function() {		
+				function() {	
+					var purchaser = $('#contract\\.purchaser').val();
+					if(purchaser == '' || purchaser == null){
+						return;
+					}
 					$('#insert').attr("disabled","true").removeClass("DTTT_button");	
 			$('#attrForm').attr("action", "${ctx}/business/contract?methodtype=update");
 			$('#attrForm').submit();
@@ -251,7 +257,7 @@
 			<table class="form" id="table_form">
 				<tr id="ysid00">		
 					<td class="label" width="100px"><label>耀升编号：</label></td>					
-					<td width="100px">${contract.YSId }
+					<td width="150px">${contract.YSId }
 						<form:hidden path="contract.recordid" value="${contract.contractRecordId }"/>
 						<form:hidden path="contract.ysid" value="${contract.YSId }"/></td>
 									
@@ -261,25 +267,26 @@
 					<td class="label" width="100px"><label>产品名称：</label></td>
 					<td>&nbsp;${ contract.productName } </td>
 				</tr>	
-				<tr> 		
-					<td class="label"><label>供应商编号：</label></td>					
-					<td>${ contract.supplierId }
+				<tr>
+					<td class="label"><label>供应商：</label></td>					
+					<td colspan="5">${ contract.supplierId }（${ contract.shortName }）${ contract.fullName }
 						<form:hidden path="contract.supplierid" value="${contract.supplierId }"/></td>
 									
-					<td class="label"><label>供应商简称：</label></td>					
-					<td>&nbsp;${ contract.shortName }</td>
-						
-					<td class="label"><label>供应商名称：</label></td>
-					<td>&nbsp;${ contract.fullName }</td>
+					<td class="label"><label>采购员：</label></td>
+					<td>
+						<form:select path="contract.purchaser" style="width: 100px;">
+							<form:options items="${purchaserList}" 
+							  itemValue="key" itemLabel="value" />
+						</form:select></td>
 				</tr>	
 				<tr> 		
 					<td class="label" width="100px"><label>采购合同编号：</label></td>					
-					<td width="100px">${ contract.contractId }
+					<td width="150px">${ contract.contractId }
 						<form:hidden path="contract.contractid" value="${contract.contractId }"/></td>
-					<td class="label"><label>下单日期：</label></td>
+					<td class="label" width="100px"><label>下单日期：</label></td>
 					<td width="100px">
 						<form:input path="contract.purchasedate" value="${ contract.purchaseDate }"/></td>
-					<td class="label"><label>合同交期：</label></td>
+					<td class="label" width="100px"><label>合同交期：</label></td>
 					<td width="100px">
 						<form:input path="contract.deliverydate" value="${ contract.deliveryDate }"/></td>
 					<td class="label" width="100px"><label>退税率：</label></td>

@@ -42,7 +42,7 @@ function invoiceAjax() {
 				"data" : JSON.stringify(aoData),
 				success: function(data){							
 					fnCallback(data);		
-					invoiceCountFn();
+					//invoiceCountFn();
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
 	             }
@@ -402,7 +402,7 @@ function photoView(id, tdTable, count, data) {
 	for (var index = 0; index < count; index++) {
 		var path = '${ctx}' + data[index];
 		var pathDel = data[index];		
-		var trHtml = showPhotoRow(id,tdTable,path,pathDel,index);		
+		var trHtml = showPhotoRowOnlyView(id,tdTable,path,pathDel,index);		
 		$('#' + id + ' td.photo:eq(' + row + ')').after(trHtml);
 		row++;
 	}
@@ -648,7 +648,7 @@ function uploadPhoto(tableId,tdTable, id) {
 		</div>
 	</fieldset>
 	<fieldset>
-		<span class="tablename">发票收据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加发票</button>
+		<span class="tablename">发票收据</span>&nbsp;<!-- button type="button" id="addProductPhoto" class="DTTT_button">添加发票</button -->
 		<div class="list">
 			<div class="showPhotoDiv" style="overflow: auto;">
 				<table id="productPhoto" style="width:100%;height:335px">

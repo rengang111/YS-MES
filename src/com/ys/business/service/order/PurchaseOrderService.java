@@ -1314,6 +1314,8 @@ public class PurchaseOrderService extends CommonService {
 		model.addAttribute("YSId",YSId);
 		model.addAttribute("rebateRateList",
 				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
+		model.addAttribute("purchaserList",
+				util.getListOption(DicUtil.PURCHASE_USER,""));//采购员
 	}
 	
 
@@ -1675,6 +1677,8 @@ public class PurchaseOrderService extends CommonService {
 
 		model.addAttribute("rebateRateList",
 				util.getListOption(DicUtil.TAXREBATERATE,""));//退税率
+		model.addAttribute("purchaserList",
+				util.getListOption(DicUtil.PURCHASE_USER,""));//采购员
 	}
 	
 	
