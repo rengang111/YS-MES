@@ -138,6 +138,7 @@
 				function() {	
 					var purchaser = $('#contract\\.purchaser').val();
 					if(purchaser == '' || purchaser == null){
+						$().toastmessage('showWarningToast', "请选择采购员。");	
 						return;
 					}
 					$('#insert').attr("disabled","true").removeClass("DTTT_button");	

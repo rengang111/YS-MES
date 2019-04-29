@@ -148,7 +148,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 		        .append(",browser="+browserInfo)
 		        ;
 		        
-		        RequestLog.requestLog(logger, bf);
+		       // RequestLog.requestLog(logger, bf);
 		        //System.out.println(bf.toString());
 		       // Enumeration rnames=request.getParameterNames();		        
 		       // for (Enumeration e = rnames ; e.hasMoreElements() ;) {

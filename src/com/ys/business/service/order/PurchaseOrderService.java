@@ -490,11 +490,18 @@ public class PurchaseOrderService extends CommonService {
 					//没有收货记录
 					if(arrivalFlag){
 						deletePurchaseOrderDetail(db.get(i));
-						updateMaterial(
-								"合同抵消处理",
-								materialdb,
-								String.valueOf( (-1) * stringToFloat(quantity) ),
-								"0");//更新虚拟库存
+						
+
+						//***********************//
+						//** 更新合同的库存数量 **//
+						//***********************//
+						updateContractStorage(contractId,materialdb);
+						
+						//updateMaterial(
+						//		"合同抵消处理",
+						//		materialdb,
+						//		String.valueOf( (-1) * stringToFloat(quantity) ),
+						//		"0");//更新虚拟库存
 						
 						deleteCnt++;//处理件数
 					}
@@ -599,7 +606,12 @@ public class PurchaseOrderService extends CommonService {
 						
 						insertPurchaseOrderDetail(d);
 
-						updateMaterial("合同新建处理",materialId1,quantity,"0");//更新虚拟库存
+						//***********************//
+						//** 更新合同的库存数量 **//
+						//***********************//
+						updateContractStorage(contractId,materialId1);
+						
+						//updateMaterial("合同新建处理",materialId1,quantity,"0");//更新虚拟库存
 						
 					}else{//update
 						//
@@ -611,7 +623,13 @@ public class PurchaseOrderService extends CommonService {
 							//float quantity2 = stringToFloat(quantity) - stringToFloat(oldDb1Qty);									
 							//if(quantity2 != 0)
 							
-							updateMaterial("合同更新处理",materialId1,quantity,"0");//更新虚拟库存
+
+							//***********************//
+							//** 更新合同的库存数量 **//
+							//***********************//
+							updateContractStorage(contractId,materialId1);	
+							
+							//updateMaterial("合同更新处理",materialId1,quantity,"0");//更新虚拟库存
 							
 							oldDb1.setPrice(dt.get("price"));
 							oldDb1.setQuantity(quantity);
@@ -657,6 +675,8 @@ public class PurchaseOrderService extends CommonService {
 		data = list.get(0);
 		
 		insertStorageHistory(data,action,purchaseIn);//保留更新前的数据
+		
+
 		
 		//当前库存数量
 		float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
@@ -766,8 +786,14 @@ public class PurchaseOrderService extends CommonService {
 			new B_PurchaseOrderDetailDao().Store(db);
 						
 			//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面
-			String newQty = String.valueOf(-1 * stringToFloat(db.getQuantity()));
-			updateMaterial("合同删除处理",db.getMaterialid(),newQty,"0");
+			//String newQty = String.valueOf(-1 * stringToFloat(db.getQuantity()));
+
+			//***********************//
+			//** 更新合同的库存数量 **//
+			//***********************//
+			updateContractStorage(contractId,db.getMaterialid());	
+			
+			//updateMaterial("合同删除处理",db.getMaterialid(),newQty,"0");
 		}
 
 	}
@@ -906,7 +932,13 @@ public class PurchaseOrderService extends CommonService {
 						//*** 合同数量
 						if(fnewqty != oldQty){//合同数量有变化
 							planUpdateFlag = true;
-							updateMaterial("合同更新处理",data.getMaterialid(),newQty,"0");	
+							
+							//***********************//
+							//** 更新合同的库存数量 **//
+							//***********************//
+							updateContractStorage(data.getContractid(),data.getMaterialid());	
+							
+							//updateMaterial("合同更新处理",data.getMaterialid(),newQty,"0");	
 						}
 						
 
@@ -1282,12 +1314,17 @@ public class PurchaseOrderService extends CommonService {
 				//删除处理
 				deletePurchaseOrderDetail(data);
 				
+				//***********************//
+				//** 更新合同的库存数量 **//
+				//***********************//
+				updateContractStorage(data.getContractid(),data.getMaterialid());	
+				
 				//恢复库存"待入数量"
-				updateMaterial(
-						"合同删除处理",
-						data.getMaterialid(),
-						String.valueOf(-1 * stringToFloat(data.getQuantity())),
-						"0");//合同只处理待入数量,待出在采购方案里面
+				//updateMaterial(
+				//		"合同删除处理",
+				//		data.getMaterialid(),
+				//		String.valueOf(-1 * stringToFloat(data.getQuantity())),
+				//		"0");//合同只处理待入数量,待出在采购方案里面
 			}
 			
 			ts.commit();
@@ -1404,9 +1441,13 @@ public class PurchaseOrderService extends CommonService {
 				d.setContractid(contractId);				
 				insertPurchaseOrderDetail(d);	
 				
-				//更新虚拟库存
-				String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
-				updateMaterial("常规采购合同新建处理",materilid,purchase,requirement);
+				//***********************//
+				//** 更新合同的库存数量 **//
+				//***********************//
+				updateContractStorage(contractId,materilid);
+				
+				//String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
+				//updateMaterial("常规采购合同新建处理",materilid,purchase,requirement);
 			}		
 			
 
@@ -1499,10 +1540,17 @@ public class PurchaseOrderService extends CommonService {
 				insertPurchaseOrderDetail(d);	
 				
 				//更新虚拟库存
-				String purchase = d.getQuantity();//采购量
+				//String purchase = d.getQuantity();//采购量
 				String materilid = d.getMaterialid();
-				String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
-				updateMaterial("单独采购合同新建处理",materilid,purchase,requirement);
+				//String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
+				
+
+				//***********************//
+				//** 更新合同的库存数量 **//
+				//***********************//
+				updateContractStorage(contractId,materilid);	
+				
+				//updateMaterial("单独采购合同新建处理",materilid,purchase,requirement);
 			}	
 
 			ts.commit();

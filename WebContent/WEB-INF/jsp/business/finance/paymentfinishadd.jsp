@@ -6,60 +6,267 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
-	function contractAjax() {
-
-		var t = $('#example').DataTable({
-			"paging": false,
-			"processing" : false,
-			"retrieve"   : true,
-			"stateSave"  : false,
-			"pagingType" : "full_numbers",
-			//"scrollY"    : scrollHeight,
-	       // "scrollCollapse": false,
-	        "paging"    : false,
-	        //"pageLength": 50,
-	        "ordering"  : false,
-		    "autoWidth":false,
-			"dom"		: '<"clear">rt',
-        	"language": {
-        		"url":"${ctx}/plugins/datatables/chinese.json"
-        	},	
-			"columns": [
-				{"className" : 'td-center'},//
-				{"className" : 'td-left'},//
-				{"className" : 'td-left'},//
-				{"className" : 'td-center'},//
-				{"className" : 'td-right'},//
-				{"className" : 'td-right'},//
-				{"className" : 'td-right'},//
-				{"className" : 'td-right'},//			
-				
-			],	
-			
-		});		
-						
-		t.on('click', 'tr', function() {
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }			
-		});
+function invoiceCountFn(){
+	
+	var cost = 0;
+	$('#invoice tbody tr').each (function (){
 		
-		t.on('order.dt search.dt draw.dt', function() {
-			t.column(0, {
-				search : 'applied',
-				order : 'applied'
-			}).nodes().each(function(cell, i) {
-				cell.innerHTML = i + 1;
-			});
-		}).draw();
+		var temp = $(this).find("td").eq(2).text();//发票金额	
+		
+		temp = currencyToFloat(temp);
+		cost = cost + temp;
+					
+	});	
+	
+	$('#invoiceCnt').text(floatToCurrency(cost));
+	
+}
 
-	};
+function invoiceAjax() {
+	
+	var table = $('#invoice').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
+	var paymentId = $('#payment\\.paymentid').val();
+
+	var t = $('#invoice').DataTable({			
+		"paging": false,
+		"lengthChange":false,
+		"lengthMenu":[50,100,200],//设置一页展示20条记录
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"ordering "	:true,
+		"searching" : false,
+		"retrieve" : true,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/payment?methodtype=paymentInvoiceList&paymentId="+paymentId,
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#condition").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
+
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){							
+					fnCallback(data);		
+					invoiceCountFn();
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+    	"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},		
+		"columns" : [
+		        	{"data": null,"className":"dt-body-center"
+				}, {"data": "invoiceDate","className":"td-center"
+				}, {"data": "invoiceAmount","className":"td-right"
+				}, {"data": "invoiceType","className":"td-center"
+				}, {"data": "invoiceNumber", "defaultContent" : '',// 4
+				}, {"data": null,"className":"td-center"
+				}, {"data": null,
+				}
+			],
+		"columnDefs":[
+    		{"targets":0,"render":function(data, type, row){
+    			return row['rownum'];
+    		}},
+    		{"targets":2,"render":function(data, type, row){
+    			return floatToCurrency(data);
+    		}},
+    		{"targets":6,"render":function(data, type, row){
+    			return "";
+    		}},
+    		{"targets":5,"render":function(data, type, row){
+    			var edit    = "<a href=\"#\" onClick=\"doUpdateInvoice('" + row["recordId"] + "')\">编辑</a>";
+    			var delet   = "<a href=\"#\" onClick=\"doDeleteInvoice('" + row["recordId"] + "')\">删除</a>";
+    			
+    			return "";
+            }}
+    	]
+		
+	}).draw();
+					
+	t.on('click', 'tr', function() {
+		
+		var rowIndex = $(this).context._DT_RowIndex; //行号			
+		//alert(rowIndex);
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }		
+	});
+	
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			cell.innerHTML = i + 1;
+		});
+	}).draw();
+
+};
+
+function ContractListAjax() {
+	
+	var table = $('#example').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
+	var paymentId = $('#payment\\.paymentid').val();
+
+	var t = $('#example').DataTable({			
+		"paging": false,
+		"lengthChange":false,
+		"lengthMenu":[50,100,200],//设置一页展示20条记录
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"ordering "	:true,
+		"searching" : false,
+		"retrieve" : true,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/payment?methodtype=paymentContractList&paymentId="+paymentId,
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#condition").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
+
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){							
+					fnCallback(data);	
+
+					doComputeTax();//合同集计
+					var supplierId   = data['data'][0]['supplierId'];
+					var supplierName = data['data'][0]['supplierName'];
+				//	var shortName    = data['data'][0]['shortName'];
+
+					$('#supplierId').text(supplierId);
+					$('#payment\\.supplierid').val(supplierId);
+					$('#supplierName').text(supplierName);
+				//	$('#shortName').text(shortName);
+
+					productPhotoView();//图片需要供应商编号
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+    	"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},		
+		"columns" : [
+		        	{"data": null,"className":"dt-body-center"//
+				}, {"data": "contractId","className":"td-center"//合同编号
+				}, {"data": "receiptId","className":"td-right"//入库单号
+				}, {"data": "YSId","className":"td-center"//耀升编号
+				}, {"data": null, "className":"td-center",// 4//入库状态
+				}, {"data": "totalPrice","className":"td-right"//合同金额
+				}, {"data": "chargeback","className":"td-right","defaultContent" : '0'//增减项
+				}, {"data": "chargeType","className":"td-center"//扣款方式
+				}, {"data": "payable","className":"td-center"//应付款 8
+				}, {"data": "taxRate","className":"td-center"//退税率
+				}, {"data": "taxes","className":"td-center"//税
+				}, {"data": "taxExcluded","className":"td-center"//价
+				}, {"data": null,"className":"td-center" // 12  
+				}
+				
+			],
+		"columnDefs":[
+    		{"targets":0,"render":function(data, type, row){
+    			return row['rownum'];
+    		}},
+    		{"targets":1,"render":function(data, type, row){
+    			var txt = "<a href=\"###\" onClick=\"doShowContract('"+row['contractId']+"')\">"+row['contractId']+"</a>";
+    			var hidden = '<input type="hidden" id=contract" name="contract"  value="'+row['contractId']+'"   class="contractid" />';
+    			return txt +hidden;
+    		}},
+    		{"targets":2,"render":function(data, type, row){
+    			var receipt = jQuery.fixedWidth(data,12)
+    			var txt = "<a href=\"###\" onClick=\"receiptView('"+row['contractId']+"')\">"+receipt+"</a>";
+				return txt;
+    		}},
+    		{"targets":4,"render":function(data, type, row){
+    			var contractQty  = currencyToFloat(row['contractQty']);
+    			var stockinQty  = currencyToFloat(row['stockinQty']);
+    			var rtn = '待入库';
+    			if(stockinQty > 0){ 
+    				if(stockinQty >= contractQty){
+        				rtn = '已入库';
+    				}else{
+        				rtn = '部分入库';  
+    				}
+    			}
+    			return rtn;
+    		}},
+    		{"targets":5,"render":function(data, type, row){
+    			return floatToCurrency(data);
+    		}},
+    		{"targets":8,"render":function(data, type, row){
+    			    			
+    			return floatToCurrency(data);
+    		}},
+    		{"targets":12,"render":function(data, type, row){
+    			var delet = "<a href=\"###\" onClick=\"doPrintContract(\"'"+row["contractId"]+"')\">打印合同</a>";
+    			
+    			return delet;
+            }}
+    	]
+		
+	}).draw();
+					
+	t.on('click', 'tr', function() {
+		
+		var rowIndex = $(this).context._DT_RowIndex; //行号			
+		//alert(rowIndex);
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }		
+	});
+	
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			cell.innerHTML = i + 1;
+		});
+	}).draw();
+
+};//合同明细
 	
 	$(document).ready(function() {
+		
+		invoiceAjax();//发票明细
+		ContractListAjax();//合同明细
 		
 		//日期
 		$("#history\\.finishdate").val(shortToday());
@@ -104,9 +311,6 @@
 			$('#formModel').attr("action", "${ctx}/business/payment?methodtype=finishInsert");
 			$('#formModel').submit();
 		});
-
-		contractAjax();//合同明细
-		productPhotoView();//付款单
 		
 		//产品图片添加位置,                                                                                                                                                                                        
 		var productIndex = 1;
@@ -122,13 +326,8 @@
 			//alert("row:"+row+"-----"+"::productIndex:"+productIndex)
 		});
 		
-		var contract = contractSum(4);
-		var minis = contractSum(5);
 		var payment = currencyToFloat('${payment.totalPayable}');
 		
-		$('#contractTotal').html(floatToCurrency(contract));
-		$('#minisTotal').html(floatToCurrency(minis));
-		$('#paymentTotal').html(floatToCurrency(payment));		
 		$('#payment\\.totalpayable').val(floatToCurrency(payment));
 		
 		//剩余应付款
@@ -171,7 +370,7 @@
 function productPhotoView() {
 
 	var paymentId = $("#history\\.paymentid").val();
-	var supplierId = '${supplier.supplierId }';
+	var supplierId = $('#supplierId').text();//'${supplier.supplierId }';
 
 	$.ajax({
 		"url" :"${ctx}/business/payment?methodtype=getProductPhoto&paymentId="+paymentId+"&supplierId="+supplierId,	
@@ -284,6 +483,20 @@ function uploadPhoto(tableId,tdTable, id) {
 	});
 }
 
+function doComputeTax(){
+	
+	var contract = contractSum(5);//合同总金额
+	var minis = contractSum(6);//增加项
+	var payment = contractSum(8);//应付款
+	var taxes = contractSum(10);//税
+	var taxExcluded = contractSum(11);//价
+	$('#contractTotal').html(floatToCurrency(contract));
+	$('#minisTotal').html(floatToCurrency(minis));
+	$('#paymentTotal').html(floatToCurrency(payment));
+	$('#taxesTotal').html(floatToCurrency(taxes));
+	$('#taxExcludedTotal').html(floatToCurrency(taxExcluded));
+	$('#payment\\.totalpayable').val(floatToCurrency(payment));
+}
 </script>
 </head>
 <body>
@@ -300,7 +513,7 @@ function uploadPhoto(tableId,tdTable, id) {
 	<form:hidden path="payment.recordid"  value="${payment.recordId }" />
 	<form:hidden path="payment.paymentid"  value="${payment.paymentId }" />
 	<form:hidden path="payment.totalpayable"  value="${payment.totalPayable }" />
-	<form:hidden path="payment.supplierid"  value="${supplier.supplierId }" />
+	<form:hidden path="payment.supplierid"  value="" />
 	<input type="hidden" id="suplus" />
 	
 	<fieldset>
@@ -318,13 +531,10 @@ function uploadPhoto(tableId,tdTable, id) {
 			</tr>
 			<tr> 				
 				<td class="label" width="100px">供应商编号：</td>					
-				<td width="150px">${supplier.supplierId }</td>
-														
-				<td width="100px" class="label">供应商简称：</td>
-				<td width="150px">${supplier.shortName }</td>
+				<td width="150px"><span id="supplierId"></span></td>
 														
 				<td width="100px" class="label">供应商名称：</td>
-				<td>${supplier.supplierName }</td>
+				<td colspan="5"><span id="supplierName"></span></td>
 			</tr>
 			<tr>			
 				<td class="label" width="100px">申请付款总额：</td>					
@@ -348,20 +558,6 @@ function uploadPhoto(tableId,tdTable, id) {
 		<a class="DTTT_button DTTT_button_text" id="goBack" >返回</a>
 	</div>
 	<fieldset>
-		<legend> 发票信息</legend>
-		<table class="form" id="table_form2">
-			<tr>
-				<td width="100px" class="label">发票类型：</td>
-				<td width="100px">${payment.invoiceType }</td>
-				<td width="100px" class="label">发票编号：</td>
-				<td width="150px">${payment.invoiceNumber }</td>
-				<td width="100px" class="label">发票日期：</td>
-				<td width="100px" >${payment.invoiceDate }</td>
-				<td></td>
-			</tr>				
-		</table>
-	</fieldset>
-	<fieldset>
 		<legend> 付款信息</legend>
 		<table class="form" id="table_form">
 			<tr> 				
@@ -379,8 +575,8 @@ function uploadPhoto(tableId,tdTable, id) {
 			</tr>
 			<tr>			
 				<td class="label" width="100px">本次付款金额：</td>					
-				<td class="font16" width="150px">
-					<form:input path="history.paymentamount" class="num short"  /></td>
+				<td class="" width="150px">
+					<form:input path="history.paymentamount" class="num  font16 "  /></td>
 
 				<td class="label" width="100px">已付款总额：</td>					
 				<td class="font16" width="150px">&nbsp;<span id="paymentAmount"></span></td>
@@ -400,6 +596,74 @@ function uploadPhoto(tableId,tdTable, id) {
 		</table>
 	</fieldset>
 	<fieldset>
+		<span class="tablename" style="">  发票信息</span>		
+		<table class="display" id="invoice">
+			<thead>
+				<tr> 
+					<th width="30px">No</th>				
+					<th width="100px">发票日期</th>				
+					<th width="150px">发票金额</th>
+					<th width="100px">发票类型</th>					
+					<th width="180px">发票编号</th>		
+					<th width="80px">操作</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td><span id="invoiceCnt"></span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tfoot>
+		</table>
+	</fieldset>	
+	<fieldset>
+		<legend> 合同明细</legend>
+		<div class="list">
+		<table id="example" class="display" >
+			<thead>				
+				<tr>
+					<th width="10px">No</th>
+					<th width="100px">合同编号</th>
+					<th width="80px">入库单号</th>
+					<th width="80px">耀升编号</th>
+					<th width="50px">入库状态</th>
+					<th width="60px">合同金额</th>
+					<th width="50px">增减项</th>
+					<th width="50px">扣款方式</th>
+					<th width="60px">应付款</th>
+					<th width="50px">退税率</th>
+					<th width="50px">税</th>
+					<th width="60px">价</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>合计：</td>
+					<td><span id="contractTotal" style="font-weight: bold;"></span></td>
+					<td><span id="minisTotal" style="font-weight: bold;"></span></td>
+					<td></td>
+					<td><span id="paymentTotal" style="font-weight: bold;"></span></td>
+					<td></td>
+					<td><span id="taxesTotal" style="font-weight: bold;"></span></td>
+					<td><span id="taxExcludedTotal" style="font-weight: bold;"></span></td>
+					<td></td>
+				</tr>
+			</tfoot>
+		</table>
+		</div>
+	</fieldset>
+	<fieldset>
 		<span class="tablename">付款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
 		<div class="list">
 			<div class="showPhotoDiv" style="overflow: auto;">
@@ -409,30 +673,7 @@ function uploadPhoto(tableId,tdTable, id) {
 			</div>
 		</div>	
 	</fieldset>
-	<!-- 
-	<fieldset>
-		<legend> 审核结果</legend>
-		<table class="form" id="table_form2">
-			<tr>
-				<td width="100px" class="label">审核人：</td>
-				<td width="100px" >${payment.approvalUser }</td>
-				<td width="100px" class="label">审核日期：</td>
-				<td width="100px">${payment.approvalDate }</td>
-				<td width="100px" class="label">审核结果：</td>
-				<td width="100px" >${payment.approvalStatus }</td>
-				<td width="100px" class="label">发票类型：</td>
-				<td width="100px">${payment.invoiceType }</td>
-				<td width="100px" class="label">发票编号：</td>
-				<td>${payment.invoiceNumber }</td>
-			</tr>	
-			<tr>	
-				<td class="label" width="100" style="vertical-align: baseline;">审核意见：</td>			
-				<td colspan="7" >
-					<pre>${payment.approvalFeedback }</pre></td>
-			</tr>						
-		</table>
-	</fieldset>
-	 -->
+<!-- 
 	<fieldset>
 		<legend> 合同明细</legend>
 		<div class="list">
@@ -474,7 +715,7 @@ function uploadPhoto(tableId,tdTable, id) {
 					</script>
 				</c:forEach>
 			</tbody>
-			<!--  -->
+			
 			<tfoot>
 				<tr>
 					<td></td>
@@ -490,6 +731,8 @@ function uploadPhoto(tableId,tdTable, id) {
 		</table>
 		</div>
 	</fieldset>
+	
+	 -->
 </form:form>
 
 </div>

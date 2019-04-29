@@ -120,7 +120,8 @@ body{
 		    			if(paymentId ==  "" || paymentId == null){
 		    				if(stockinQty >= contractQty){
 			    				rtn= "<a href=\"###\" onClick=\"doCreate2('" + row["contractId"] +"')\">" + "待申请" + "</a>";
-			    			}else if(stockinQty > 0) {
+			    			//}else if(stockinQty > 0) {
+			    			}else {
 			    				var loginId = '${loginId}';
 			    				if(loginId == '000000'){
 				    				rtn= "<a href=\"###\" onClick=\"doCreate3('" + row["contractId"] +"')\">" + "待申请" + "</a>";

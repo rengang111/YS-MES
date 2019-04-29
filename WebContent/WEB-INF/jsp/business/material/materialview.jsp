@@ -269,12 +269,12 @@ function doSubDetail(recordid , parentid,materialId) {
 
 function doPurchasePlan(supplierId , materialId) {
 	//goBackFlag:区别采购入口是物料还是供应商
-	var name=prompt("请输入校验码：","******"); //在页面上弹出提示对话框，
+	//var name=prompt("请输入校验码：","******"); //在页面上弹出提示对话框，
 
-	if(name != 'ys171208'){
-		$().toastmessage('showWarningToast', "确认码有误，请重新输入！");	
-		return;
-	}
+	//if(name != 'ys171208'){
+	//	$().toastmessage('showWarningToast', "确认码有误，请重新输入！");	
+	//	return;
+	//}
 	var url = '${ctx}/business/contract?methodtype=createRoutineContractInit&goBackFlag=1';
 	url = url + '&supplierId=' + supplierId+'&materialId='+materialId;
 	callProductDesignView("物料采购",url);

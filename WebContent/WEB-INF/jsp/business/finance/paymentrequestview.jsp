@@ -365,8 +365,7 @@ function doCreatePrice() {
 		});
 		
 		materialzzAjax();
-		//productPhotoView();
-		
+				
 		//产品图片添加位置,                                                                                                                                                                                        
 		var productIndex = 1;
 		$("#addProductPhoto").click(function() {

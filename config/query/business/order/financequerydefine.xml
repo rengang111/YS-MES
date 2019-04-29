@@ -1437,7 +1437,7 @@
       <f name="b.customerFullName" alias="" ctype="" />
       <f name="if(b.ordercost > 0,b.ordercost,b.totalPrice)" alias="totalPrice" ctype="" />
       <f name="if(b.ordercost > 0,'RMB',b.currency)" alias="currency" ctype="" />
-      <f name="if(b.ordercost > 0,'RMB',b.currency)" alias="currency" ctype="币种" />
+      <f name="if(b.ordercost > 0,'RMB',b.currency)" alias="currencyName" ctype="币种" />
   </select>
     <from>
 		 v_orderlist b

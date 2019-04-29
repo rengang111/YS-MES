@@ -446,6 +446,7 @@ public class PaymentService extends CommonService {
 		//	}
 		//}else{
 		String statusList = "020,021,030,040,060";
+		statusList = "";//暂不考虑状态
 		userDefinedSearchCase.put("finishStatus", statusList);	
 		userDefinedSearchCase.put("year", "");
 		//}
@@ -836,9 +837,9 @@ public class PaymentService extends CommonService {
 		//付款申请详情
 		HashMap<String, String> map = getPaymentDetail(paymentid);
 		if(!(map == null)){
-			String contractId = map.get("contractIds");
+			//String contractId = map.get("contractIds");
 			//供应商
-			getContractDetail(contractId);
+			//getContractDetail(contractId);
 			
 			//取得已付款信息
 			String amount = getPaymentSumAmount(paymentid);
