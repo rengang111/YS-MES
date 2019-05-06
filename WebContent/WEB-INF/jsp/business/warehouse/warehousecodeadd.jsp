@@ -30,6 +30,9 @@ var thisCount = 0;
 		   	$(this).select();
 		});
 		
+
+		autoCompleteUser();
+		
 		$("#return").click(function() {
 					//alert(999);
 					var index = parent.layer
@@ -82,6 +85,87 @@ var thisCount = 0;
 	});
 	
 </script>
+<script type="text/javascript">
+function autoCompleteUser() { 
+		$("#warehouse\\.codetype").autocomplete({
+			
+			source : function(request, response) {
+				//alert(111);
+				$.ajax({
+					type : "POST",
+					url : "${ctx}/business/warehouse?methodtype=materialCategorySearch",
+					dataType : "json",
+					data : {
+						parentId : request.term,
+						key : request.term
+					},
+					success : function(data) {
+						response($.map(
+							data.data,
+							function(item) {
+								return {
+									label : item.categoryId + " | " + item.categoryName,
+									value : item.categoryId,
+									id 	  : item.categoryId,
+								}
+							}));
+					},
+					error : function(XMLHttpRequest,
+							textStatus, errorThrown) {
+					}
+				});
+			},
+			focus: function() {
+                // 按上下键时不做选择操作
+                return false;
+            },
+			select : function(event, ui) {
+								
+	        	var terms = split(this.value);
+                // 移除当前所有的内容
+                terms.pop();
+                // 将选中的添加到input中
+                terms.push( ui.item.value );
+                // 在最后添加分隔符
+                terms.push( "" );
+                this.value = terms.join( "," );
+                
+                /*
+                terms = split($("#warehouse\\.codeid").val());
+                // 移除当前所有的内容
+                terms.pop();
+                // 将选中的添加到input中
+                terms.push( ui.item.id );
+                // 在最后添加分隔符
+                terms.push( "" );
+                $("#warehouse\\.codeid").val(terms.join( "," ));
+                */
+                return false;
+                
+				
+			},
+
+            change: function(event, ui) {
+                // provide must match checking if what is in the input
+                // is in the list of results. HACK!
+                if(ui.item == null) {
+                    $(this).val('');
+                    $('#warehouse\\.codetype').val('');
+                }
+            },
+			
+			minLength : 1,
+			//autoFocus : false,
+			width: 200,
+			//mustMatch:true,
+		});
+	}
+	
+function split( val ) {
+    return val.split( /,\s*/ );
+}
+
+</script>
 
 </head>
 <body class="noscroll">
@@ -107,11 +191,12 @@ var thisCount = 0;
 				<tr>		
 					<td width="80px" class="label"><label>子分类编号：</label></td>
 					<td><span id="parentId2"></span><form:input path="warehouse.codeid" class="required short" value=""/>
-						<span style="color: blue">（编码规则：子分类编码=父级分类+输入内容,"-"符号需要手动输入）</span></td>
+						<span style="color: blue">（编码规则：子分类编码=父级分类+输入内容）</span></td>
 				</tr>
 				<tr>		
 					<td class="label">产品类别：</td>
-					<td><form:input path="warehouse.codetype" class="" style=""/></td>
+					<td><form:input path="warehouse.codetype" class="middle read-only" style=""/>
+						<span style="color: blue">（输入字母，或者空格，会自动提示）</span></td>
 				</tr>
 				<tr>		
 					<td width="80px" class="label">名称：</td>

@@ -76,10 +76,10 @@
 
 	function saveUpdate() {
 		if (inputCheck()) {
-			if (confirm("确定要保存吗？")) {
+			//if (confirm("确定要保存吗？")) {
 				$('#form').attr("action", "${ctx}/user?methodtype=resetpwd");
 				$('#form').submit();
-			}
+			//}
 		}	
 	}
 

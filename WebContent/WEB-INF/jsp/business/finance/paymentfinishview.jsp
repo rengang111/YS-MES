@@ -462,7 +462,7 @@ function productPhotoView() {
 
 	var paymentId = $("#payment\\.paymentid").val();
 	var supplierId = $('#supplierId').text();//'${payment.supplierId }';
-alert('supplierId:'+supplierId+":::"+paymentId)
+
 	$.ajax({
 		"url" :"${ctx}/business/payment?methodtype=getProductPhoto&paymentId="+paymentId+"&supplierId="+supplierId,	
 		"datatype": "json", 

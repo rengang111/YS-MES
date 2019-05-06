@@ -70,11 +70,23 @@
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 		    			var multiLevel = Number(row['multiLevel']);//层级序号
+		    			var codeId = row['codeId'];
 		    			var space = "";
 		    			for(var i=0;i<multiLevel;i++){
 		    				space += "&nbsp;&nbsp;"
 		    			}
-						return space + row['codeId'];
+		    			if(multiLevel == 3){
+		    				codeId = codeId.substring(0,4)+"-"+codeId.substring(4,6)
+		    			}
+						return space +codeId;
+                    }},
+                    {"targets":1,"render":function(data, type, row){
+		    			var codeType = row['codeType'];//层级序号
+		    			
+		    			if(!codeType == ""){
+		    				codeType = codeType.substr(0,codeType.length-1);
+		    			}
+						return codeType;
                     }},
 		    		{"targets":4,"render":function(data, type, row){
 		    			var imgName = 'arrow_down';

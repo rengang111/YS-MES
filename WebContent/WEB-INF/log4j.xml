@@ -11,8 +11,7 @@
         <layout class="org.apache.log4j.PatternLayout">  
             <param name="ConversionPattern" value="%d [%p] %c{1} - %m%n" />  
         </layout>  
-        <!--过滤器设置输出的级别 -->  
-        <!--
+       
         <filter class="com.ys.util.RequestLogFilter">  
             <param name="levelMin" value="REQUEST" />  
             <param name="levelMax" value="REQUEST" />  
@@ -29,8 +28,7 @@
         </layout>  
     </appender>
     
-      <!-- 根logger的设置 -->  
-      <!--
+    
     <root>  
         <priority value ="REQUEST"/>  
         <appender-ref ref="LOG.REQUEST"/>  

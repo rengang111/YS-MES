@@ -103,6 +103,10 @@ public class WarehouseAction extends BaseAction {
 				dataMap = updateSortNo();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "materialCategorySearch":
+				dataMap = materialCategorySearch();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
@@ -196,6 +200,21 @@ public class WarehouseAction extends BaseAction {
 		
 	}
 
+	public HashMap<String, Object> materialCategorySearch(){
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		try{
+			dataMap = service.getMaterialCategory();
+			dataMap.put(INFO, "SUCCESSMSG");
+		}catch(Exception e){
+			dataMap.put(INFO, "ERRMSG");
+			e.printStackTrace();
+		}
+		
+		return  dataMap;
+		
+	}
+	
 	public void addAgainInit(){
 
 		try{

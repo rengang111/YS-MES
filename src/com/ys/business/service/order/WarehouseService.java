@@ -320,4 +320,46 @@ public class WarehouseService extends CommonService  {
 		new S_WarehouseCodeDao().Store(dt);
 	}
 		
+	public HashMap<String, Object> getMaterialCategory() throws Exception{
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String codeId = request.getParameter("key").trim().toUpperCase();
+		String parentId = request.getParameter("parentId");
+
+		String where = "";
+		dataModel.setQueryFileName("/business/material/matclassquerydefine");
+		if(("0").equals(parentId)){
+			//第一层从物料分类中查找
+			if(notEmpty(codeId)){
+				String endStr = codeId.substring(codeId.length()-1, codeId.length());//最后一个字符
+			
+				if((",").equals(endStr)){
+					codeId = "";
+				}else{
+	
+					String keyArray[] = codeId.split(",");
+					if (keyArray.length > 0) {
+						codeId = keyArray[keyArray.length - 1].trim();
+					}
+				}
+			}
+			dataModel.setQueryName("materialCategoryById");
+			userDefinedSearchCase.put("key1", codeId);
+		}else{
+			//一层以外从上一层中查找
+			dataModel.setQueryName("materialCategoryById2");
+			where = parentId;
+		}
+		
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", where);
+		baseQuery.getYsFullData(sql,where);
+		
+		//
+		modelMap.put("data", dataModel.getYsViewData());
+		
+		return modelMap;
+	}
 }

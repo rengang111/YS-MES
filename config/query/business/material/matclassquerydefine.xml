@@ -136,4 +136,53 @@
     <groupby></groupby>
     <having></having>
   </query>
+  <query>
+    <pool></pool>     
+    <name value="materialCategoryById" />
+    <where>
+      <w name="A.categoryId" des=""  reqName="key1" dtype="ch" oper="like"  lg="AND" bt="" />
+     </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.categoryId" alias="" ctype="" />
+      <f name="A.categoryName" alias="" ctype="" />
+    </select>
+    <from>
+    	b_materialcategory a
+		WHERE
+		(a.deleteFlag = '0') AND LENGTH(a.parentId) = 1
+	</from>
+    <orderby>a.categoryId,a.parentId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="materialCategoryById2" />
+    <where>
+    </where>
+    <select>
+      <f name="A.codeType" alias="categoryId" ctype="" />
+      <f name="B.categoryName" alias="" ctype="" />
+    </select>
+    <from>
+    	(
+			SELECT 
+				a.codeId,
+				substring_index( substring_index( a.codeType, ',', b.help_topic_id + 1 ), ',',-1 ) codeType
+			FROM s_warehousecode a
+			JOIN mysql.help_topic b ON b.help_topic_id &lt; ( length( a.codeType ) - length( REPLACE ( a.codeType, ',', '' ) ) + 1 ) 
+			WHERE a.codeId='#'
+			
+		) a
+		JOIN  b_materialcategory b ON a.codeType=b.categoryId 
+	</from>
+    <orderby>a.codeType</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>
