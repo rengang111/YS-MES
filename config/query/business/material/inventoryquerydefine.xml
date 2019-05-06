@@ -1548,8 +1548,8 @@
     <select>
       <f name="A.recordId" alias="" ctype="" />
       <f name="A.codeId" alias="" ctype="" />
-      <f name="A.codeType" alias="" ctype="" />
-      <f name="A.codeName" alias="" ctype="" />
+      <f name="GROUP_CONCAT(a.codeType ORDER BY codeType)" alias="codeType" ctype="" />
+      <f name="GROUP_CONCAT(b.categoryName ORDER BY categoryName separator ';  ')" alias="codeName" ctype="" />
       <f name="A.parentId" alias="" ctype="" />
       <f name="A.subId" alias="" ctype="" />
       <f name="A.multiLevel" alias="" ctype="" />
@@ -1557,9 +1557,28 @@
       <f name="A.effectiveFlag" alias="" ctype="" />
       <f name="A.remarks" alias="" ctype="" />
     </select>
-    <from>s_WarehouseCode a where a.deleteFlag='0' </from>
+    <from>
+		(
+			SELECT 
+			a.codeId,
+			a.codeName,
+			a.recordId,
+			a.parentId,
+			a.subId,
+			a.multiLevel,
+			a.sortNo,
+			a.effectiveFlag,
+			a.remarks,
+			substring_index( substring_index( a.codeType, ',', b.help_topic_id + 1 ), ',',-1 ) codeType
+			FROM s_warehousecode a
+			LEFT JOIN mysql.help_topic b ON b.help_topic_id &lt; ( length( a.codeType ) - length( REPLACE ( a.codeType, ',', '' ) ) + 1 ) 
+			
+			ORDER BY codeType
+		) a
+	 	LEFT JOIN  b_materialcategory b ON a.codeType=b.categoryId 
+	</from>
     <orderby>a.sortNo</orderby>
-    <groupby></groupby>
+    <groupby>a.codeId</groupby>
     <having></having>
 	<power>
 	</power>    

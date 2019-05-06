@@ -198,10 +198,12 @@ function split( val ) {
 					<td><form:input path="warehouse.codetype" class="middle read-only" style=""/>
 						<span style="color: blue">（输入字母，或者空格，会自动提示）</span></td>
 				</tr>
+				<!--  
 				<tr>		
 					<td width="80px" class="label">名称：</td>
 					<td width="120px"><form:input path="warehouse.codename" class="middle" style=""/></td>
 				</tr>
+				-->
 				<tr>		
 					<td class="label">备注：</td>
 					<td><form:input path="warehouse.remarks" class="long" style=""/></td>

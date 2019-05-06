@@ -84,7 +84,14 @@
 		    			var codeType = row['codeType'];//层级序号
 		    			
 		    			if(!codeType == ""){
-		    				codeType = codeType.substr(0,codeType.length-1);
+		    				var s_str = codeType.substr(0,1);
+		    				var e_str = codeType.substr(codeType.length,codeType.length-1);
+		    				if(s_str == ','){
+		    					codeType = codeType.substr(1,codeType.length);
+		    				}
+		    				if(e_str == ','){
+		    					codeType = codeType.substr(0,codeType.length-1);
+		    				}
 		    			}
 						return codeType;
                     }},
@@ -312,8 +319,8 @@
 					<tr>
 						<th style="width:200px;">库位区分</th>
 						<th style="width:200px;">产品类别</th>
-						<th style="width:200px;" >名称</th>
-						<th>备注</th>
+						<th>名称</th>
+						<th style="width:100px;">备注</th>
 						<th style="width:100px;">操作</th>
 					</tr>
 				</thead>
