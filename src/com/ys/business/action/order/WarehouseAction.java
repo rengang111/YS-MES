@@ -120,7 +120,7 @@ public class WarehouseAction extends BaseAction {
 		model.addAttribute("searchSts",searchSts);
 		
 		try {
-			//service.contractArrivalSearchInit();
+			service.warehouseCodeSearchInit();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

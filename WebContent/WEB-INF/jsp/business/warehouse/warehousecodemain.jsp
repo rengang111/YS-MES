@@ -8,14 +8,14 @@
 <title>仓库编码</title>
 <script type="text/javascript">
 
-	function ajax(type,sessionFlag) {
+	function searchAjax(codeId,sessionFlag) {
 		var table = $('#warehouse').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
 		var t = $('#warehouse').DataTable({
-				"paging": true,
+				"paging": false,
 				"lengthChange":false,
 				 "iDisplayLength" : 50,
 				//"lengthMenu":[50,100,200],//设置一页展示20条记录
@@ -28,7 +28,7 @@
 				//"scrollY":scrollHeight,
 				//"scrollCollapse":true,
 				//"retrieve" : true,
-				"sAjaxSource" : "${ctx}/business/warehouse?methodtype=warehouseCodeSearch&type="+type+"&sessionFlag="+sessionFlag,
+				"sAjaxSource" : "${ctx}/business/warehouse?methodtype=warehouseCodeSearch&codeId="+codeId+"&sessionFlag="+sessionFlag,
 				//"dom" : 'T<"clear">rt',				
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
@@ -76,7 +76,7 @@
 		    				space += "&nbsp;&nbsp;"
 		    			}
 		    			if(multiLevel == 3){
-		    				codeId = codeId.substring(0,4)+"-"+codeId.substring(4,6)
+		    				codeId = row['parentId']+"-"+row['subId'];
 		    			}
 						return space +codeId;
                     }},
@@ -122,7 +122,7 @@
 	
 	function initEvent(){
 
-		ajax('','true');
+		searchAjax('01','true');//01：默认库位
 	
 		$('#warehouse').DataTable().on(
 				'click', 
@@ -141,17 +141,18 @@
 
 	$(document).ready(function() {
 		initEvent();
+
+		buttonSelectedEvent();//按钮选择式样
+
+	 	$('#defutBtn01').removeClass("start").addClass("end");
 		
 	})	
 	
 	function doSearch() {
 	
-		ajax('','false');
+		searchAjax('','false');
 	}
 	
-	function SelectSupplier(type){
-		ajax(type,'false');
-	}
 	
 	function doCreate() {
 		var codeId = '0';//一级编码的父类
@@ -280,6 +281,17 @@
 		return true;
 	}
 	
+	//库位区分
+	function doSearchCustomer(codeId){
+		
+		//$('#keyword1').val('');
+		//$('#keyword2').val('');
+		
+		$('#codeId').val(codeId);		
+	    
+		searchAjax(codeId,'false');
+	}
+	
 </script>
 
 </head>
@@ -287,7 +299,10 @@
 <body>
 <div id="container">
 
+	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
+		
+			<input type="hidden" id="codeId" value="01" />
 <!-- 
 			<table>
 				<tr>
@@ -307,7 +322,22 @@
 				</tr>
 			</table>
  -->
+ 			<table>
+				<tr>
+					<td width="50px"></td> 
+					<td class="label" style="width: 100px;">库为区分：</td> 
+					<td colspan="2">
+						<c:forEach var='list' items='${category}' varStatus='status'>
+							<a id="defutBtn${list.codeId }" style="height: 15px;margin-top: 5px;" 
+								class="DTTT_button box" onclick="doSearchCustomer('${list.codeId }');">
+								<span>${list.codeId }</span></a>
+						</c:forEach>
+					</td> 
+					<td width="100px"></td>
+				</tr>
+			</table>
 		</form>
+		</div>
 	<div class="list">
 
 			<div id="DTTT_container" align="right" style="">

@@ -132,8 +132,13 @@ public class WarehouseService extends CommonService  {
 		baseQuery = new BaseQuery(request, dataModel);
 		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
 		dataModel.setQueryName("getWarehouseCodeList");
-				
-		baseQuery.getYsQueryData(iStart, iEnd);	 
+		
+		String key = request.getParameter("codeId");
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", key);
+		System.out.println("仓库编码："+sql);
+		
+		baseQuery.getYsQueryData(sql,key,iStart, iEnd);	 
 		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
@@ -361,5 +366,21 @@ public class WarehouseService extends CommonService  {
 		modelMap.put("data", dataModel.getYsViewData());
 		
 		return modelMap;
+	}
+	
+	public void warehouseCodeSearchInit() throws Exception{
+		
+		getCategoryId();//仓库一级分类
+	}
+	
+	private void getCategoryId() throws Exception{
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("wareHouseTopCodeIdList");
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		model.addAttribute("category",dataModel.getYsViewData());
+		
 	}
 }

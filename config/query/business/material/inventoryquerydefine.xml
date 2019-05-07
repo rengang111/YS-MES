@@ -1542,8 +1542,6 @@
     <pool></pool>     
     <name value="getWarehouseCodeList" />
     <where>
-   		<w name="A.codeId" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
-   	  	<w name="A.codeId" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
     </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -1570,7 +1568,23 @@
 			a.effectiveFlag,
 			a.remarks,
 			substring_index( substring_index( a.codeType, ',', b.help_topic_id + 1 ), ',',-1 ) codeType
-			FROM s_warehousecode a
+			FROM 
+				(
+				SELECT 					
+					a.codeId,
+					a.codeName,
+					a.codeType,
+					a.recordId,
+					a.parentId,
+					a.subId,
+					a.multiLevel,
+					a.sortNo,
+					a.effectiveFlag,
+					a.remarks
+				FROM s_warehousecode s 
+				JOIN s_warehousecode a ON s.sortNo = SUBSTR(a.sortNo FROM 1 FOR LENGTH(s.sortNo))
+				WHERE s.codeId='#'
+				) a
 			LEFT JOIN mysql.help_topic b ON b.help_topic_id &lt; ( length( a.codeType ) - length( REPLACE ( a.codeType, ',', '' ) ) + 1 ) 
 			
 			ORDER BY codeType
@@ -1583,5 +1597,31 @@
 	<power>
 	</power>    
   </query>  
+  <query>
+    <pool></pool>     
+    <name value="wareHouseTopCodeIdList" />
+    <where>
+   		<w name="A.codeId" des=""  reqName="codeId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.codeId" alias="" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="A.multiLevel" alias="" ctype="" />
+      <f name="A.sortNo" alias="" ctype="" />
+      <f name="A.effectiveFlag" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+    </select>
+    <from>
+		s_warehousecode a
+		where a.parentId='0'
+	</from>
+    <orderby>a.sortNo</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query> 
   
 </root>
