@@ -716,11 +716,30 @@ public class PaymentService extends CommonService {
 		
 		dataModel.setQueryName("paymenApprovalList");//申请单一览:审核通过
 		baseQuery = new BaseQuery(request, dataModel);
+		
+		String searchType = request.getParameter("searchType");
+		String finishStatus = ""
+				;
+		// ***快捷查询按钮
+		if(("D").equals(searchType)){
+			//待付款
+			finishStatus = "030,040";
+		}else if(("Y").equals(searchType)){
+			//已付款
+			finishStatus = "050";
+		}else{
+			//查询全部
+			finishStatus = "030,040,050";
+		}
+		
 		userDefinedSearchCase.put("keyword1", key1);
 		userDefinedSearchCase.put("keyword2", key2);
-		if(notEmpty(key1) || notEmpty(key2)){
-			userDefinedSearchCase.put("finishStatus", "");
-		}
+		userDefinedSearchCase.put("finishStatus", finishStatus);
+		
+		//if(notEmpty(key1) || notEmpty(key2)){
+		//	userDefinedSearchCase.put("finishStatus", "");
+		//}
+		
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		baseQuery.getYsQueryData(sql,iStart, iEnd);	 

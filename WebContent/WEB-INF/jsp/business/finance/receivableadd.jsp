@@ -6,25 +6,26 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
+function ajaxProductStockout() {
 
-function historyAjax() {
+	var ysids = '${ysids}';
+	var actionUrl = "${ctx}/business/stockout?methodtype=getProductStockoutDetail";
+	actionUrl = actionUrl + "&ysids="+ysids;
 	
-	var YSId = '${order.YSId }';
-
-	var t = $('#history').DataTable({			
-		"paging": false,
+	var t = $('#stockout').DataTable({
+		
+		"paging": true,
 		"lengthChange":false,
 		"lengthMenu":[50,100,200],//设置一页展示20条记录
 		"processing" : false,
 		"serverSide" : false,
 		"stateSave" : false,
 		"ordering "	:true,
+		"autoWidth"	:false,
 		"searching" : false,
-		"retrieve" : true,
-		//"scrollY":scrollHeight,
-		//"scrollCollapse":true,
-		dom : '<"clear">rt',
-		"sAjaxSource" : "${ctx}/business/receivable?methodtype=getReceivableDetail&YSId="+YSId,
+		"retrieve"  : true,
+		"dom"		: '<"clear">rt',
+		"sAjaxSource" : actionUrl,
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			var param = {};
 			var formData = $("#condition").serializeArray();
@@ -38,56 +39,40 @@ function historyAjax() {
 				"contentType": "application/json; charset=utf-8",
 				"type" : "POST",
 				"data" : JSON.stringify(aoData),
-				success: function(data){							
+				success: function(data){
 					fnCallback(data);
-					
-					
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					 alert(errorThrown)
 	             }
 			})
-		},
-    	"language": {
-    		"url":"${ctx}/plugins/datatables/chinese.json"
-    	},
-		
-		"columns" : [
-		           {"data": "receivableSerialId","className":"td-center"
-					}, {"data": "collectionDate","className":"td-center"
-					}, {"data": "LoginName","className":"td-center"
-					}, {"data": "bankDeduction","className":"td-right"
-					}, {"data": "actualAmount","className":"td-right"
-					}, {"data": "remarks","className":""
-					}
-				
-			],
-			"columnDefs":[
-				
-	    		{"targets":3,"render":function(data, type, row){
-	    			return floatToCurrency(data);
-	    		}},
-	    		{"targets":4,"render":function(data, type, row){
-	    			return floatToCurrency(data);
-	    		}}
-	    	] 
-		
-	}).draw();
-					
-	t.on('click', 'tr', function() {
-		
-		var rowIndex = $(this).context._DT_RowIndex; //行号			
-		//alert(rowIndex);
+		},	
+			"columns" : [
+	        	{"data": null,"className":"dt-body-center"
+			}, {"data": "YSId","className":"td-left"
+			}, {"data": "orderQty","className":"td-right"
+			}, {"data": "stockOutId","className":"td-left"
+			}, {"data": "checkOutDate","className":"td-center"
+			}, {"data": "quantity","className":"td-right"
+			}, {"data": null,"className":"dt-body-center"
+			}
+		],
+		"columnDefs":[
+    		{"targets":6,"render":function(data, type, row){
+				return "";
+            }}
+		]
 
-		if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-            t.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-		
-	});
-	
+	}).draw();
+						
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			cell.innerHTML = i + 1;
+		});
+	}).draw();
 
 };
 
@@ -236,6 +221,7 @@ function orderSum(){
 		
 		orderDetailAjax();//订单明细
 		//historyAjax();//历史收款单
+		ajaxProductStockout();//出库记录
 				
 		//银行扣款		
 		$("#receivableDetail\\.bankdeduction") .blur(function(){
@@ -391,37 +377,28 @@ function orderSum(){
 			</tfoot>			
 		</table>
 	</fieldset>	
-	<!-- 
+	
 	<fieldset>
-		<legend> 历史收款记录</legend>
-		<table class="display" id="history">
-			<thead>
-				<tr> 		
-					<th width="100px">收款单编号</th>				
-					<th width="100px">收款日期</th>
-					<th width="100px">收款人</th>				
-					<th width="100px">银行扣款</th>
-					<th width="100px">收款金额</th>	
-					<th>备注</th>
-				</tr>
-			</thead>
-			
-			
-		</table>
-	</fieldset>		
-	 -->
-	 <!-- 
-	<fieldset>
-		<span class="tablename">收款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
+		<legend> 出库记录</legend>
 		<div class="list">
-			<div class="showPhotoDiv" style="overflow: auto;">
-				<table id="productPhoto" style="width:100%;height:335px">
-					<tbody><tr><td class="photo"></td></tr></tbody>
-				</table>
-			</div>
-		</div>	
+			<table class="display" id="stockout" >	
+				<thead>		
+					<tr>
+						<th style="width:15px">No</th>
+						<th style="width:120px">耀升编号</th>
+						<th style="width:80px">订单数量</th>
+						<th style="width:120px">出库单</th>
+						<th style="width:80px">出库时间</th>
+						<th style="width:80px">出库数量</th>
+						<th></th>	
+					</tr>
+				</thead>		
+										
+			</table>
+		</div>
 	</fieldset>
-	  -->
+	
+
 </form:form>
 
 </div>

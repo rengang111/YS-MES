@@ -184,6 +184,7 @@ public class PaymentAction extends BaseAction {
 				printOutJsonObj(response, dataMap);
 				break;
 			case "finishMain"://付款完成
+				finishMainInit();
 				rtnUrl = "/business/finance/paymentfinishmain";
 				break;
 			case "finishSearch":
@@ -303,6 +304,17 @@ public class PaymentAction extends BaseAction {
 		}
 		model.addAttribute("searchType",searchType);
 		model.addAttribute("userId",userId);		
+		
+	}
+	
+	public void finishMainInit(){	
+		
+		String searchType = (String) session.getAttribute("searchType");
+		
+		if(searchType == null || ("").equals(searchType))
+			searchType = "D";//设置默认值：待付款
+		
+		model.addAttribute("searchType",searchType);
 		
 	}	
 	
@@ -809,6 +821,10 @@ public class PaymentAction extends BaseAction {
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
+		
+		String searchType = request.getParameter("searchType");
+		model.addAttribute("searchType",searchType);
+		session.setAttribute("searchType", searchType);
 		
 		return rtnUrl;
 	}

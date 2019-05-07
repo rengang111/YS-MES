@@ -583,7 +583,7 @@ body{
 		<table style="width: 100%;" id="TMaterial" class="display">
 			<thead>						
 				<tr>					
-					<th width="50px">
+					<th width="55px">
 						<input type="checkbox" name="selectall" id="selectall" onclick="fnselectall()"/><label for="selectall">全选</label><br>
 						<input type="checkbox" name="reverse" id="reverse" onclick="fnreverse()" /><label for="reverse">反选</label></th>
 					<th width="60px">收款编号</th>

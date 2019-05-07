@@ -6,6 +6,77 @@
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
 	
+
+function ajaxProductStockout() {
+
+	var receivableId = '${receivableId }';
+	var actionUrl = "${ctx}/business/receivable?methodtype=getProductStockoutDetail";
+	actionUrl = actionUrl + "&receivableId="+receivableId;
+	
+	var t = $('#stockout').DataTable({
+		
+		"paging": true,
+		"lengthChange":false,
+		"lengthMenu":[50,100,200],//设置一页展示20条记录
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"ordering "	:true,
+		"autoWidth"	:false,
+		"searching" : false,
+		"retrieve"  : true,
+		"dom"		: '<"clear">rt',
+		"sAjaxSource" : actionUrl,
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#condition").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
+
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){
+					fnCallback(data);
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+					 alert(errorThrown)
+	             }
+			})
+		},	
+			"columns" : [
+	        	{"data": null,"className":"dt-body-center"
+			}, {"data": "YSId","className":"td-left"
+			}, {"data": "orderQty","className":"td-right"
+			}, {"data": "stockOutId","className":"td-left"
+			}, {"data": "checkOutDate","className":"td-center"
+			}, {"data": "quantity","className":"td-right"
+			}, {"data": null,"className":"dt-body-center"
+			}
+		],
+		"columnDefs":[
+    		{"targets":6,"render":function(data, type, row){
+				return "";
+            }}
+		]
+
+	}).draw();
+						
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			cell.innerHTML = i + 1;
+		});
+	}).draw();
+
+};
+
 function historyAjax() {
 	
 	var table = $('#history').dataTable();
@@ -197,6 +268,7 @@ function orderDetailAjax() {
 		
 		historyAjax();
 		orderDetailAjax();
+		ajaxProductStockout();
 		
 		//var currency = '${order.currency}';//币种
 		//var orderPrice = currencyToFloat('${order.orderPrice }');
@@ -520,6 +592,26 @@ function uploadPhoto(tableId,tdTable, id) {
 			</tfoot>			
 		</table>
 	</fieldset>	
+	
+	<fieldset>
+		<legend> 出库记录</legend>
+		<div class="list">
+			<table class="display" id="stockout" >	
+				<thead>		
+					<tr>
+						<th style="width:15px">No</th>
+						<th style="width:120px">耀升编号</th>
+						<th style="width:80px">订单数量</th>
+						<th style="width:120px">出库单</th>
+						<th style="width:80px">出库时间</th>
+						<th style="width:80px">出库数量</th>
+						<th></th>	
+					</tr>
+				</thead>		
+										
+			</table>
+		</div>
+	</fieldset>
 	<fieldset>
 		<span class="tablename">收款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
 		<div class="list">

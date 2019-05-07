@@ -271,7 +271,7 @@
      <where>
         <w name="A.fullField" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
    	    <w name="A.fullField" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
-    	<w name="A.finishStatus" des="" reqName="finishStatus" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="A.finishStatus" des="" reqName="finishStatus" dtype="ch" oper="in" lg="AND" bt="" />
     </where>
   <select>
       <f name="a.recordId" alias="" ctype="" />
@@ -297,7 +297,7 @@
   </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_paymenthistorylist a where a.deleteFlag='0'</from>
+    <from>v_paymenthistorylist a where a.deleteFlag='0' </from>
     <orderby>finishStatus,a.paymentId,a.paymentHistoryId</orderby>
     <groupby></groupby>
     <having></having>
@@ -1240,7 +1240,7 @@
     				   FROM b_receivable c,v_receivabledetailgroup c1 ,b_receivableorder c2
     				   WHERE  c.deleteFlag='0' AND c.receivableId=c1.receivableId AND c.receivableId=c2.receivableId
     			)b ON a.YSId=b.YSId 
-    	WHERE a.payment is NULL 
+    	WHERE a.payment is NULL AND REPLACE(a.quantity,',','')+0 > 0
     </from>
     <orderby>a.ysid </orderby>
     <groupby></groupby>
@@ -1681,6 +1681,42 @@
 		WHERE a.deleteFlag='0'
 	</from>
     <orderby>b.invoiceDate</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>
+  </query>   
+  <query>
+    <pool></pool>    
+    <name value="orderStockoutForReceivabelById" />
+     <where>
+    </where>
+  <select>
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="a.quantity" alias="orderQty" ctype="" />
+      <f name="c.stockOutId" alias="" ctype="" />
+      <f name="c.checkOutDate" alias="" ctype="" />
+      <f name="c.quantity" alias="" ctype="" />
+  </select>
+    <from>
+		(
+			SELECT
+				b.YSId,
+				b.materialId,
+				b.quantity
+			FROM 
+				v_orderlist b
+			JOIN
+				(
+					SELECT
+					a.ysid
+					FROM b_ReceivableOrder a
+					WHERE a.receivableId='#' AND a.deleteFlag='0' 
+				) b1 ON b.YSId=b1.ysid
+		) a
+		JOIN v_stockout c ON a.ysid=c.YSId AND a.materialId=c.materialId
+	</from>
+    <orderby>a.YSId,c.stockOutId</orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>

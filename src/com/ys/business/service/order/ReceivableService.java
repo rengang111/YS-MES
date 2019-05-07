@@ -748,6 +748,25 @@ public class ReceivableService extends CommonService {
 		return payment;
 	}
 	
+
+	public HashMap<String, Object> getProductStockoutDetail() throws Exception{
+
+		HashMap<String, Object> payment = new HashMap<String, Object>();
+		String receivableId = request.getParameter("receivableId");
+		
+		dataModel.setQueryName("orderStockoutForReceivabelById");
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", receivableId);
+		System.out.println("订单出库详情："+sql);
+		baseQuery.getYsFullData(sql,receivableId);
+		
+		payment.put("data", dataModel.getYsViewData());
+	
+		return payment;
+	}
 	
 	public String  getPaymentSumAmount(String paymentid) throws Exception{
 

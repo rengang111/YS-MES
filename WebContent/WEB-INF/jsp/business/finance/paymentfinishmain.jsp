@@ -7,16 +7,18 @@
 <title>应付款--完成一览</title>
 <script type="text/javascript">
 
-	function ajax(type,sessionFlag) {
+	function ajax(sessionFlag) {
 		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		var searchType = $("#searchType").val();
 		var url = "${ctx}/business/payment?methodtype=finishSearch";
 		url = url + "&sessionFlag="+sessionFlag;
-		url = url + "&finishStatus="+type;
+		//url = url + "&finishStatus="+type;
+		url = url + "&searchType="+searchType;
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -113,7 +115,13 @@
 	}
 
 	$(document).ready(function() {
-		ajax("030","true");
+		
+		ajax("true");		
+
+		buttonSelectedEvent();//按钮选择式样
+
+		var searchType = $('#searchType').val();
+		$('#defutBtn'+searchType).removeClass("start").addClass("end");	
 		
 		$('#TMaterial').DataTable().on('click', 'tr', function() {
 			
@@ -131,13 +139,40 @@
 
 	function doSearch() {	
 		
-		ajax("","false");
+		var key1 = $("#keyword1").val();		
+		var key2 = $("#keyword2").val();
+		if($.trim(key1) == '' && $.trim(key2) == ''){
+
+			$().toastmessage('showWarningToast', "请输入查询关键字。");
+			return false;
+		}
+		
+		ajax("false");
 
 	}
 	
 	function doSearch2(type) {	
+
+		$("#searchType").val(type);
 		
-		ajax(type,"false");
+		ajax("false");
+
+	}
+	
+	function doSearch3(type) {	
+
+		$("#searchType").val(type);
+		
+		var key1 = $("#keyword1").val();		
+		var key2 = $("#keyword2").val();
+		if($.trim(key1) == '' && $.trim(key2) == ''){
+
+			$().toastmessage('showWarningToast', "请输入查询关键字。");
+			return false;
+		}
+		
+		
+		ajax("false");
 
 	}
 	
@@ -151,8 +186,10 @@
 	
 	function doShowDetail(paymentId) {
 
-		var url = '${ctx}/business/payment?methodtype=finishAddOrView' + '&paymentId='+ paymentId;
+		var searchType = $("#searchType").val();
+		var url = '${ctx}/business/payment?methodtype=finishAddOrView' + '&paymentId='+ paymentId+"&searchType="+searchType;
 		
+		//callWindowFullView("付款完成",url);
 		location.href = url;
 	}
 
@@ -175,7 +212,7 @@
 
 				<form id="condition"  style='padding: 0px; margin: 10px;' >
 					
-					<input type="hidden" id="makeType" value="${makeType }" />
+					<input type="hidden" id="searchType" value="${searchType }" />
 
 					<table>
 						<tr>
@@ -202,9 +239,10 @@
 		
 			<div class="list">					
 				<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('030');"><span>待付款</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('040');"><span>分批付款中</span></a>
-					<a class="DTTT_button DTTT_button_text" onclick="doSearch2('050');"><span>已完成</span></a>
+					<a class="DTTT_button box" onclick="doSearch2('D');" id="defutBtnD" ><span>待付款</span></a>
+					<a class="DTTT_button box" onclick="doSearch2('Y');" id="defutBtnY"><span>已付款</span></a>
+					<a class="DTTT_button box" onclick="doSearch3('A');" id="defutBtnA"><span>ALL</span></a>
+					<!-- a class="DTTT_button box" onclick="doSearch2('040');"><span>分批付款中</span></a-->
 				</div>
 				<table style="width: 100%;" id="TMaterial" class="display">
 					<thead>						

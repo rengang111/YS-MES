@@ -149,6 +149,10 @@ public class ReceivableAction extends BaseAction {
 				dataMap = doGetOrderDetailByYsids();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "getProductStockoutDetail"://订单出库明细
+				dataMap = doGetOrderStockoutDetail();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;
@@ -307,6 +311,11 @@ public class ReceivableAction extends BaseAction {
 		
 	}	
 	
+	public HashMap<String, Object> doGetOrderStockoutDetail() throws Exception{	
+		
+		return service.getProductStockoutDetail();
+		
+	}
 	public HashMap<String, Object> doGetOrderDetailByYsids() throws Exception{	
 		
 		return service.getOrderDetailByYsids();
