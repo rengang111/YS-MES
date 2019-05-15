@@ -29,6 +29,7 @@ import com.ys.util.basequery.QueryInfoBean;
 import com.ys.util.basequery.QueryPageSumBean;
 import com.ys.util.basequery.QuerySelectBean;
 import com.ys.util.basequery.QuerySelectSubBean;
+import com.ys.util.basequery.common.BaseModel;
 
 public class BaseDAO {
 	
@@ -39,6 +40,8 @@ public class BaseDAO {
 	private static HashMap<String, SysBaseDaoDefineBean> dataDefineMap = new HashMap<String, SysBaseDaoDefineBean>();
 	
 	private final static ThreadLocal dsLocal = new ThreadLocal();
+
+	private BaseModel commonModel = new BaseModel();
 	
 	public static DataSource getDataSource() throws Exception {
 		//default
@@ -510,11 +513,6 @@ public class BaseDAO {
 			    		}
 			    	}
 			    }
-			    /*
-			    if (pageSumResult != null) {
-			    	resultList.add(pageSumResult);
-			    }
-			    */
 			}
 			catch(Exception e) {
 				SysException = e;
@@ -540,6 +538,154 @@ public class BaseDAO {
 	    return resultList;
 	}	
 	
+	public static HashMap<String, Object> execYsSQL(String sql, String dataSourceName, int iStart, int iEnd,
+			QueryInfoBean queryInfo, 
+			boolean appendNoFlg,
+			boolean sumFlag) throws Exception {
+		HashMap<String, Object> returnList = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> resultList = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> resultSumList = new ArrayList<HashMap<String, String>>();
+		int fieldCount = 0;
+		int recordFetchCount = 0;
+		Connection connection = null;
+		Exception SysException = null;
+		Statement stm = null;
+		ResultSet rs = null;
+		int count = 0;
+		
+		QuerySelectBean querySelect = queryInfo==null?null:queryInfo.getDefinedSelect();
+		QueryPageSumBean queryPageSum = queryInfo==null?null:queryInfo.getPageSum();
+		
+		ArrayList<QuerySelectSubBean> subSelect = null;
+		List<String> dataIndex = null;
+		ArrayList<String> pageSumResult = null;
+		
+		if(!(sql == null || sql.equals(""))) {
+			try {
+				if (dataSourceName.equals("")) {
+					connection = getConnection();
+				} else {
+					connection = getConnection(dataSourceName);
+				}
+				
+			    stm = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);  
+			    rs = stm.executeQuery(sql);
+			    
+			    fieldCount = rs.getMetaData().getColumnCount();
+			    if (iStart >= 0 && iEnd > 0) {
+			    	if (iStart > 1) {
+			    		rs.absolute(iStart);
+			    	}
+			    	recordFetchCount = iStart;
+			    	
+			    }
+			    if (iStart > 0) {
+			    	count = iStart + 1;
+			    } else {
+			    	count = 1;
+			    }
+			    
+				if (querySelect != null) {
+					subSelect = querySelect.getSelectList();
+				}
+
+				//取得页合计基础信息
+				if (queryPageSum != null && queryPageSum.getIsView().equals("T")) {
+					dataIndex = Arrays.asList(queryPageSum.getDataIndex().split(","));
+					pageSumResult = new ArrayList<String>();
+					
+					//取得页合计初始化
+					for(int i = 0; i < fieldCount; i++) {
+						pageSumResult.add("");
+					}
+					if (appendNoFlg) {
+						pageSumResult.add("");
+					}
+				}
+				
+				ResultSetMetaData md = rs.getMetaData();
+				
+				boolean recordCntFlag = true;
+			    while(rs.next()) {
+			    	if(recordCntFlag){
+			    		HashMap<String, String> rowData = new HashMap<String, String>();
+				    	for (int i = 1; i <= fieldCount; i++) {
+				    		//字典取得
+							String cType = "";
+							if (subSelect != null) {
+								cType = subSelect.get(i - 1).getCType();
+							}
+							if (!cType.equals("")) {
+								String codeValue = DicUtil.getCodeValue(cType + rs.getString(i));
+								rowData.put(md.getColumnLabel(i), codeValue);
+							} else {
+								rowData.put(md.getColumnLabel(i), rs.getString(i));
+							}
+							
+							//取得页合计
+							if (pageSumResult != null) {
+								if (dataIndex.contains(i)) {
+									float pageSumColResult = parseFloat(pageSumResult.get(i)) + parseFloat(rs.getString(i));
+									pageSumResult.set(i, String.valueOf(pageSumColResult));
+								}
+							}
+				    	}
+				 
+						if (appendNoFlg) {
+							rowData.put("rownum", String.valueOf(count++));
+						}
+				
+				    	resultList.add(rowData);
+				    	if (iEnd > 0) {
+				    		recordFetchCount++;
+				    		if (recordFetchCount >= iEnd) {
+				    			recordCntFlag = false;
+				    			//break;
+				    		}
+				    	}
+				    	
+			    	}//recordCntFlag
+			    	
+			    	 if(sumFlag){
+				    	HashMap<String, String> rowData2 = new HashMap<String, String>();
+				    	for (int i = 1; i <= fieldCount; i++) {
+				    		rowData2.put(md.getColumnLabel(i), rs.getString(i));					
+				    	}
+				    	resultSumList.add(rowData2);
+
+					 }//if sumFlag
+			    	
+			    }//while
+			    
+			    returnList.put("resultList",resultList);
+			    
+				returnList.put("resultSumList",resultSumList);
+			    
+			   
+			}
+			catch(Exception e) {
+				SysException = e;
+			}
+			finally {
+				if (rs != null) {
+					rs.close();
+				}
+				if (stm != null) {
+					stm.close();
+				}
+				//connection.close();
+				if (connection != null) {
+					DataSource dataSource = BaseDAO.getDataSource(null);
+					DataSourceUtils.releaseConnection(connection, dataSource);
+				}
+				if (SysException != null) {
+					throw SysException;
+				}
+			}
+		}
+		
+	    return returnList;
+	}
 	public static HashMap<String, SysBaseDaoDefineBean> getPrivateDaoConfig(String xmlFileName, String dataBaseName) {
 		try {
 			Element element = XmlUtil.getRootElement(xmlFileName);

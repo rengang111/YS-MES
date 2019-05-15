@@ -82,6 +82,15 @@ body{
 						    */
 							$('#defutBtnF'+groupFlag).removeClass("start").addClass("end");
 
+							$("#rmbOrderSum").text('');
+							$("#rmbActuaSum").text('');
+							$("#rmbSurplSum").text('');
+							
+							
+							$("#rmbOrderSum").text(floatToCurrency(data['mapSum']['rmbOrderSum']));
+							$("#rmbActuaSum").text(floatToCurrency(data['mapSum']['rmbActuaSum']));
+							$("#rmbSurplSum").text(floatToCurrency(data['mapSum']['rmbSurplSum']));
+						
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -734,6 +743,15 @@ body{
 	</table>
 	<div class="list">
 	
+		  <div id="" align="left" style="height:40px;width:70%;float: left;">
+			<table>
+				<tr style="font-size: 13px;font-weight: bold;">
+					<td width="200px">应付款合计:<span id="rmbOrderSum"></span></td>
+					<td width="200px">已付款合计:<span id="rmbActuaSum" ></span></td>
+					<td width="200px">剩余金额合计:<span id="rmbSurplSum" ></span></td>
+				</tr>
+			</table>
+		</div>	
 		<div style="height: 40px;margin-bottom: -10px;float:right">
 			<a class="DTTT_button box3" onclick="doGroupByContract('Z');" id="defutBtnFZ">&nbsp;展开&nbsp;</a>
 			<a class="DTTT_button box3" onclick="doGroupByContract('S');" id="defutBtnFS">&nbsp;收起&nbsp;</a>

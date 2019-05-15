@@ -63,10 +63,25 @@ body{
 						"contentType": "application/json; charset=utf-8",
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
-						success: function(data){							
+						success: function(data){		
+
+							$("#rmbOrderSum").text('');
+							$("#usdOrderSum").text('');
+							$("#rmbActuaSum").text('');
+							$("#usdActuaSum").text('');
+							$("#rmbSurplSum").text('');
+							$("#usdSurplSum").text('');
+							
 							fnCallback(data);
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
+							
+							$("#rmbOrderSum").text(floatToCurrency(data['mapSum']['rmbOrderSum']));
+							$("#usdOrderSum").text(floatToCurrency(data['mapSum']['usdOrderSum']));
+							$("#rmbActuaSum").text(floatToCurrency(data['mapSum']['rmbActuaSum']));
+							$("#usdActuaSum").text(floatToCurrency(data['mapSum']['usdActuaSum']));
+							$("#rmbSurplSum").text(floatToCurrency(data['mapSum']['rmbSurplSum']));
+							$("#usdSurplSum").text(floatToCurrency(data['mapSum']['usdSurplSum']));
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -81,8 +96,8 @@ body{
 					{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},//2
 					{"data": "productId", "defaultContent" : '', "className" : 'td-left'},//3				
 					{"data": "productName", "defaultContent" : '', "className" : ''},//4		
-					{"data": "customerId", "defaultContent" : '0', "className" : 'td-right'},//6客户编号
-					{"data": "orderPrice", "defaultContent" : '0', "className" : 'td-right'},//5 应收金额
+					{"data": "customerId", "defaultContent" : '0', "className" : 'td-right'},//5客户编号
+					{"data": "orderPrice", "defaultContent" : '0', "className" : 'td-right'},//6 应收金额
 					{"data": "actualAmountCnt", "defaultContent" : '0', "className" : 'td-right'},//7实收金额
 					{"data": "reserveDate", "className" : 'td-center', "defaultContent" : '***'},//8 约定收款日
 					{"data": "teamName", "className" : 'td-center', "defaultContent" : '***'},//9 业务组
@@ -122,7 +137,7 @@ body{
 		    					    			
 		    			return floatToSymbol(data,row["currency"]);
 		    		}},
-		    		{"targets":7,"render":function(data, type, row){
+		    		{"targets":7,"render":function(data, type, row){//实收金额
 		    			var rtn = "0";
 		    			if(row['statusId'] == '030'){
 		    				rtn = floatToSymbol(row['totalPrice'],row["currency"]);
@@ -238,7 +253,7 @@ body{
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		var scrollHeight = $(document).height() - 200; 
-		
+			
 		searchAjax("","false","");
 
 	}
@@ -576,7 +591,21 @@ body{
 			<a class="DTTT_button DTTT_button_text box" onclick="doSearch22(8,'070');" id="defutBtn070"><span>逾期未收款</span></a>
 			<a class="DTTT_button DTTT_button_text" onclick="downloadExcel('080');" ><span>EXCEL导出</span></a>
 		</div>
-		  -->		
+		  -->
+		  <div id="" align="left" style="height:40px;width:70%;float: left;">
+			<table>
+				<tr style="font-size: 13px;font-weight: bold;">
+					<td width="200px">USD 应收合计:<span id="usdOrderSum" ></span></td>
+					<td width="200px">USD 已收合计:<span id="usdActuaSum" ></span></td>
+					<td width="200px">USD 剩余合计:<span id="usdSurplSum" ></span></td>
+				</tr>
+				<tr style="font-size: 13px;font-weight: bold;">
+					<td width="">RMB 应收合计:<span id="rmbOrderSum"></span></td>
+					<td width="">RMB 已收合计:<span id="rmbActuaSum" ></span></td>
+					<td width="">RMB 剩余合计:<span id="rmbSurplSum" ></span></td>
+				</tr>
+			</table>
+		</div>	
 		<div style="height: 40px;margin-bottom: -15px;float:right">
 			<a class="DTTT_button DTTT_button_text" onclick="doCreate();">合并收款</a>
 		</div>

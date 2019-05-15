@@ -257,6 +257,24 @@ public class BaseQuery {
 
 	}
 	
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> getYsQueryDataAndSumRecord(
+			String sql,String where,boolean sumFlag,int iStart, int iEnd) throws Exception {
+
+		HashMap<String, Object> ysViewData = null;
+		this.sql = sql;
+		
+		int recordCount = getRecodCount(where);
+		
+		ysViewData = getYsTurnPageData(sql, getQueryConnectionDefine(commonModel.getQueryName()), iStart, iEnd, true,sumFlag);
+		
+		commonModel.setYsViewData((ArrayList<HashMap<String, String>>) ysViewData.get("resultList"));
+		commonModel.setRecordCount(recordCount);
+
+		return ysViewData;
+
+	}
+	
 
 	public ArrayList<HashMap<String, String>> getYsQueryDataNoPage(
 			String sql) throws Exception {
@@ -468,6 +486,20 @@ public class BaseQuery {
 		
 		return viewData;
 	}	
+	
+	
+	private HashMap<String, Object> getYsTurnPageData(String sql, String dataSourceName, int iStart, int iEnd,
+			boolean appendNoFlg,
+			boolean sumFlag) throws Exception {
+		
+		HashMap<String, Object> viewData = null;
+		QueryInfoBean queryInfo = queryInfoMap.get(commonModel.getQueryName());
+		
+		viewData = BaseDAO.execYsSQL(sql, dataSourceName, iStart, iEnd, queryInfo, appendNoFlg,sumFlag);
+		
+		return viewData;
+	}	
+		
 	
 	private int getRecordCount(String sqlCount, String dataSourceName) throws Exception {
 		int recordCount = 0;

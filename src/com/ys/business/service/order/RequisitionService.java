@@ -11,11 +11,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.business.action.model.common.FilePath;
 import com.ys.business.action.model.order.RequisitionModel;
+import com.ys.business.db.dao.B_FollowDao;
 import com.ys.business.db.dao.B_MaterialDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_PurchaseOrderdDeductDao;
 import com.ys.business.db.dao.B_RequisitionDao;
 import com.ys.business.db.dao.B_RequisitionDetailDao;
+import com.ys.business.db.data.B_FollowData;
 import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_PurchaseOrderdDeductData;
@@ -154,6 +156,121 @@ public class RequisitionService extends CommonService {
 
 	}
 	
+	public HashMap<String, Object> doRequisitionMainSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");	
+		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];		
+
+		dataModel.setQueryName("getProduceTaskForRequisition");
+		String searchFlag = request.getParameter("searchFlag");
+		String orderType = request.getParameter("orderType");//订单类型
+		
+		String where = " 1=1 ";
+		//*** 关键字
+		if(notEmpty(key1) && notEmpty(key2)){
+			where = " full_field like '%"+key1+"%' AND full_field like '%"+key2+"%' ";
+		}else{
+			if(notEmpty(key1)){
+				where = " full_field like '%"+key1+"%' ";
+			}
+			if(notEmpty(key2)){
+				where = " full_field like '%"+key2+"%' ";
+			}
+		}
+		/*
+		if(("S").equals(searchFlag)){
+			//收起
+			dataModel.setQueryName("getOrderListForTaskGroup");
+		}	
+		
+		if(("030").equals(orderType)){
+			//查看隐藏数据
+			userDefinedSearchCase.put("orderType", "");
+		}else{
+			userDefinedSearchCase.put("orderType", orderType);			
+		}
+				
+		String having1 =" hideFlag='F' ";//false：不显示隐藏
+		if(("Y").equals(searchFlag)){
+			//隐藏
+			having1 = " hideFlag='T' ";//True:显示隐藏
+		}	
+		
+		//*** 全挪用
+		String having2 = "computeStockinQty+0 < orderQty+0";
+		if(("N").equals(searchFlag)){
+			where = " a.diverFlag='1' AND a.quantity+0 = 0 ";
+			having1 = " 1=1 ";
+			having2 = " 1=1 ";
+		}
+		*/
+		//*** 快捷查询
+		String having11 = "";
+		String having2 = " computeStockinQty+0 < orderQty+0 ";//成品未全部入库
+		if(("U").equals(searchFlag)){
+			//未领料
+			having11 = " AND currentSts IS NULL ";//过滤掉当前任务
+		}else if(("C").equals(searchFlag)){
+			//当前任务
+			having11 = " AND currentSts = '0' ";//只显示当前任务
+		}else if(("F").equals(searchFlag)){
+			having2 = " computeStockinQty+0 >= orderQty+0 ";//成品全部入库			
+		}
+		
+		userDefinedSearchCase.put("orderType", orderType);	
+		
+		String having1 =" hideFlag='F' ";//false：不显示隐藏
+		
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
+		having1 = having1 + having11;
+		
+		sql = sql.replace("#0",where );
+		sql = sql.replace("#1",having1);
+		sql = sql.replace("#2",having2);
+
+		List<String> list = new ArrayList<String>();
+		list.add(where);
+		list.add(having1);
+		list.add(having2);
+		
+		System.out.println("生产任务合并查询："+sql);
+		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);	
+		
+		return modelMap;	
+
+	}
 	
 	public HashMap<String, Object> doPartsSearch( String data) throws Exception {
 
@@ -1744,5 +1861,57 @@ public class RequisitionService extends CommonService {
 				);	
 		
 		return filePath;
+	}
+	
+	public  HashMap<String, Object> selectedOrderListForTask() throws Exception{
+		
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		setCurrentTaskFromOrder();
+						
+		return modelMap;
+	}
+	 
+	public void setCurrentTaskFromOrder() throws Exception{
+		
+		String checked = request.getParameter("checkedList");
+		
+		ts = new BaseTransaction();
+
+		try {			
+			ts.begin();
+			
+			String[] checkedList = checked.split(",");
+			
+			//
+			for(String ysid:checkedList){
+				
+				insertFollow(ysid);										
+			}
+			
+			ts.commit();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			ts.rollback();
+		}
+	}
+	
+	private void insertFollow(String ysid) throws Exception{
+		
+		B_FollowData fllow = new B_FollowData();
+		//插入新数据
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"RequisitionInsert",userInfo);
+		copyProperties(fllow,commData);
+
+		guid = BaseDAO.getGuId();
+		fllow.setRecordid(guid);
+		fllow.setYsid(ysid);
+		fllow.setFollowtype("3");//领料申请的当前任务
+		fllow.setStatus("0");
+		
+		new B_FollowDao().Create(fllow);
 	}
 }

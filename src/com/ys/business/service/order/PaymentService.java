@@ -360,8 +360,17 @@ public class PaymentService extends CommonService {
 		sql = sql.replace("#", having);
 		System.out.println("付款查询："+sql);
 		
-		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
+		HashMap<String,Object> hashmap = 
+				baseQuery.getYsQueryDataAndSumRecord(sql,having,true,iStart, iEnd);	 
 				
+		ArrayList<HashMap<String, String>> list =
+				(ArrayList<HashMap<String, String>>) hashmap.get("resultSumList");
+		
+		if(list.size() > 0){
+			HashMap<String, Object>  mapSum = getRecordSumDate(list);
+			modelMap.put("mapSum", mapSum); 		
+		}
+		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
 		}		
@@ -376,6 +385,29 @@ public class PaymentService extends CommonService {
 
 	}
 	
+	private HashMap<String, Object> getRecordSumDate(ArrayList<HashMap<String, String>> list){
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		float rmbOrderSum = 0;//应付 人民币
+		float rmbActuaSum = 0;//实付 人民币
+		float rmbSurplSum = 0;//剩余 人民币
+		
+		for(HashMap<String, String> record:list){
+			float orderPrice   = stringToFloat(record.get("totalPayable"));//应付款 
+			float actualAmount = stringToFloat(record.get("paymentAmount"));//已付款
+			String currencyId = record.get("currencyId");
+			
+			rmbOrderSum = rmbOrderSum + orderPrice;
+			rmbActuaSum = rmbActuaSum + actualAmount;
+			rmbSurplSum = rmbSurplSum + (orderPrice - actualAmount);//剩余金额
+			
+		}
+		map.put("rmbOrderSum", rmbOrderSum);
+		map.put("rmbActuaSum", rmbActuaSum);
+		map.put("rmbSurplSum", rmbSurplSum);
+		
+		return map;
+	}
 
 	public HashMap<String, Object> paymentAbnormalMain(
 			String data) throws Exception {

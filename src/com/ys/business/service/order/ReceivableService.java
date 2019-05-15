@@ -177,8 +177,17 @@ public class ReceivableService extends CommonService {
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		sql = sql.replace("#", having);
 		System.out.println("收款查询："+sql);
-		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	 
-				
+		HashMap<String,Object> hashmap = baseQuery.getYsQueryDataAndSumRecord(
+				sql,having,true,iStart, iEnd);	 
+			
+		ArrayList<HashMap<String, String>> list =
+				(ArrayList<HashMap<String, String>>) hashmap.get("resultSumList");
+		
+		if(list.size() > 0){
+			HashMap<String, Object>  mapSum = getRecordSumDate(list);
+			modelMap.put("mapSum", mapSum); 		
+		}
+		
 		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
 		}		
@@ -191,6 +200,41 @@ public class ReceivableService extends CommonService {
 		
 		return modelMap;		
 
+	}
+	
+	private HashMap<String, Object> getRecordSumDate(ArrayList<HashMap<String, String>> list){
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		float rmbOrderSum = 0;//应收 人民币
+		float usdOrderSum = 0;//应收 美元
+		float rmbActuaSum = 0;//实收 人民币
+		float usdActuaSum = 0;//实收 美元
+		float rmbSurplSum = 0;//剩余 人民币
+		float usdSurplSum = 0;//剩余 美元
+		
+		for(HashMap<String, String> record:list){
+			float orderPrice   = stringToFloat(record.get("orderPrice"));//应收款 
+			float actualAmount = stringToFloat(record.get("actualCnt"));//实收
+			String currencyId = record.get("currencyId");
+						
+			if(("USD").equals(currencyId)){
+				usdOrderSum = usdOrderSum + orderPrice;
+				usdActuaSum = usdActuaSum + actualAmount;
+				usdSurplSum = usdSurplSum + (orderPrice - actualAmount);
+			}else {
+				rmbOrderSum = rmbOrderSum + orderPrice;
+				rmbActuaSum = rmbActuaSum + actualAmount;
+				rmbSurplSum = rmbSurplSum + (orderPrice - actualAmount);
+			}
+		}
+		map.put("rmbOrderSum", rmbOrderSum);
+		map.put("usdOrderSum", usdOrderSum);
+		map.put("rmbActuaSum", rmbActuaSum);
+		map.put("usdActuaSum", usdActuaSum);
+		map.put("rmbSurplSum", rmbSurplSum);
+		map.put("usdSurplSum", usdSurplSum);
+		
+		return map;
 	}
 	
 	public void getRecivableFromOrder(String YSId) throws Exception{

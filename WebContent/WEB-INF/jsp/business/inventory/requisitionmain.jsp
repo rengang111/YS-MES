@@ -1,42 +1,40 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
-
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <%@ include file="../../common/common.jsp"%>
 
 <title>领料申请--订单一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,sessionFlag,requisitionSts) {
-		
+    var hideCnt = 0;
+
+	function ajaxSearch(sessionFlag,searchFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		var searchFlag = $('#searchFlag').val();
+		
+		var url = "${ctx}/business/requisition?methodtype=requisitionMainSearch&sessionFlag="+sessionFlag
+				+"&orderType=010"+"&searchFlag="+searchFlag;
 
-		var actionUrl = "${ctx}/business/requisition?methodtype=search";
-		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
-		actionUrl = actionUrl + "&requisitionSts=" + requisitionSts;
-		
-		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				"lengthChange":false,
-				"lengthMenu":[50,100,200],//设置一页展示20条记录
+				"lengthMenu":[50,100,200],//每页显示条数设置
 				"processing" : true,
 				"serverSide" : true,
 				"stateSave" : false,
-				"ordering "	:true,
+	         	"bAutoWidth":false,
+				"bSort":true,
+				"ordering"	:true,
 				"searching" : false,
-				"autoWidth"	:false,
-				"pagingType" : "full_numbers",
-	         	//"aaSorting": [[ 1, "DESC" ]],
-				//"scrollY":scrollHeight,
-				//"scrollCollapse":true,
-				"retrieve" : true,
-				"sAjaxSource" : actionUrl,
+				"pagingType" : "full_numbers",        
+	         	"aaSorting": [[ 1, "ASC" ]],
+				"sAjaxSource" : url,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
 					var formData = $("#condition").serializeArray();
@@ -50,10 +48,15 @@
 						"contentType": "application/json; charset=utf-8",
 						"type" : "POST",
 						"data" : JSON.stringify(aoData),
-						success: function(data){	
-							$("#keyword1").val(data["keyword1"]);
-							$("#keyword2").val(data["keyword2"]);						
+						success: function(data){							
 							fnCallback(data);
+
+							$("#keyword1").val(data["keyword1"]);
+							$("#keyword2").val(data["keyword2"]);
+							
+							var flag = $('#searchFlag').val();
+							$('#defutBtn'+flag).removeClass("start").addClass("end");
+							
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -63,111 +66,144 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "requisitionId", "defaultContent" : '', "className" : 'td-left'},
-							{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
-							{"data": "materialId", "defaultContent" : '***', "className" : 'td-left'},
-							{"data": "materialName", "defaultContent" : '***'},//3
-							{"data": "deliveryDate", "defaultContent" : '***', "className" : 'td-center'},
-							{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},
-							{"data": "requisitionDate", "defaultContent" : '-', "className" : 'td-center'},
-							{"data": null, "className" : 'td-center'},//8
-						],
+					{"data": null, "defaultContent" : '',"className" : 'td-center'},//0
+					{"data": "machineModel", "className" : 'td-center'},// 1
+					{"data": "YSId", "defaultContent" : ''}, //2
+					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//3
+					{"data": "materialName", "defaultContent" : ''},//4
+					{"data": "shortName", "className" : 'td-center'},//5
+					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},//6
+					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},//7
+					{"data": "MaxDeliveryDate", "defaultContent" : '', "className" : 'td-left'},//8
+					{"data": "team", "className" : 'td-center'},//9
+					{"data": "team", "className" : 'td-center'},//10
+					
+				],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
-		    			return row["rownum"] ;				    			 
+
+		    			var mergeYsid = row["lastCheceked"];
+		    			var stockinQty = currencyToFloat(row['stockinQty']);
+		    			var contractQty = currencyToFloat(row['contractQty']);
+		    			var peijianFlag = $('#peijianFlag').val();
+		    			var text = row["rownum"];
+		    		/*
+		    			if(searchFlag == 'Z' && peijianFlag == ''){//展开才有复选框
+		    				var checkedFlag = 'checked';
+			    			if(mergeYsid == '0'){
+			    				checkedFlag = ''
+			    			}			    				
+			    			text = "<input "+checkedFlag+" type='checkbox' class='checkbox' name='numCheck' id='numCheck' value='" + row["rownum"] + "' />";	
+		    			}
+					*/
+		    			return text;	
+		    			
                     }},
+		    		{"targets":1,"render":function(data, type, row){
+
+						var lastCheceked = '<span id=""  style="display:none" class="orderHide"><input type="checkbox"  name="orderHide" id="orderHide" value="" /></span';
+
+		    			return data + lastCheceked;
+		    		}},
 		    		{"targets":2,"render":function(data, type, row){
-		    			var manufactureQty = currencyToFloat( row["manufactureQty"] );
-		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
+		    			var rtn = "";
+		    			var orderQty   = currencyToFloat( row["orderQty"] );
+		    			var stockinQty = currencyToFloat( row["computeStockinQty"] );
 		    			var rtn="";
-		    			if(requisitionQty == manufactureQty){//已出库
+		    			if(stockinQty >= orderQty){//已入库
 			    			rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "')\">"+data+"</a>";		    				
 		    			}else {
 			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+data+"</a>";
 		    				
-		    			}		    			
+		    			}	
 		    			
 		    			return rtn;
 		    		}},
+		    		{"targets":3,"render":function(data, type, row){
+
+						var lastHide = '<input type="hidden"  name="lastHide" id="lastHide" value="' + row["hideFlag"] + '" /></span';
+
+		    			//var rtn= "<a href=\"###\" onClick=\"doShow('"+ row["PIId"] + "')\">"+data+"</a>";
+		    			
+		    			return data + lastHide;
+		    		}},
 		    		{"targets":4,"render":function(data, type, row){
 		    			var name = row["materialName"];
-		    			name = jQuery.fixedWidth(name,50);//true:两边截取,左边从汉字开始
-		    			return name;
+		    			name = jQuery.fixedWidth(name,38);//true:两边截取,左边从汉字开始
+		    			
+		    			var lastCheceked = '<input type="hidden"  name="lastCheceked" id="lastCheceked" value="' + row["lastCheceked"] + '" />';
+		    			
+		    			return name + lastCheceked;
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
+		    			
+		    			return floatToNumber(data);
+		    		}},
+		    		{"targets":9,"render":function(data, type, row){
+		    			if(data == '' || data == null )
+		    				data = '***';
 		    			return data;
-		    			//return floatToCurrency(data);
 		    		}},
 		    		{
 		    			"orderable":false,"targets":[0]
 		    		},
-		    		{"targets":8,"render":function(data, type, row){
-		    			//var manufactureQty = currencyToFloat( row["manufactureQty"] );
-		    			var totalRequisition = currencyToFloat( row["totalRequisition"] );
-		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
-		    			var rtn="";
-		    			if(requisitionQty >= totalRequisition){
-		    				rtn = "已出库";
-		    				
-		    			}else if(requisitionQty == '0'){
-		    				rtn = "待申请";
-		    				
-		    			}else {
-		    				rtn = "出库中";
-		    				
-		    			}		    			
-		    			return rtn;
-		    		}},
 		    		{
 						"visible" : false,
-						"targets" : [1]
+						"targets" : [10]
+					},
+					{
+						//"order": [[ 2, 'asc' ]]
 					}
-	         	]
-			}
-		);
-		
-
-		t.on('click', 'tr', function() {
-
-			if ( $(this).hasClass('selected') ) {
-	            $(this).removeClass('selected');
-	        }
-	        else {
-	            t.$('tr.selected').removeClass('selected');
-	            $(this).addClass('selected');
-	        }
-		});
-
+	         	],
+	         		         	
+			});
 	}
+	
+		
+	function initEvent(){
 
+		//$('#defutBtnH').hide();
+
+		//$('#peijianFlag').val('');//配件订单不用合并
+
+		ajaxSearch("010","true");
+	
+		$('#TMaterial').DataTable().on('click', 'tr td:nth-child(2)', function() {
+
+			$(this).parent().toggleClass("selected");
+
+		    var checkbox  = $(this).find("input[type='checkbox']");
+		    var isChecked = checkbox.is(":checked");		    
+
+		    if (isChecked) {
+		    	hideCnt--;
+		        checkbox.prop("checked", false)
+		        checkbox.removeAttr("checked");
+		    } else {
+		    	hideCnt++;
+		        checkbox.prop("checked", true)
+		        checkbox.attr("checked","true");
+		    }
+		});	
+		
+	}
 
 	$(document).ready(function() {
 
-		var requisitionSts = $('#requisitionSts').val();
+		$('#createCurrent').show();
 		
-		ajax("","true",requisitionSts);
+		initEvent();
 		
 		buttonSelectedEvent();//按钮选择式样
-
-		$('#defutBtn'+requisitionSts).removeClass("start").addClass("end");
 		
+		$('#defutBtn1').removeClass("start").addClass("end");
 	})	
 	
-	function doSearch() {	
-
-		ajax("purchaseplan","false","");
-
-	}
-	function doSearch2(colNum,type) {	
-		
-		$("#keyword1").val("");
-		$("#keyword2").val("");
-		
-		ajax("","false",type);
-
-	}
-	
+	function showHistory(YSId) {
+		var virtualClass = $('#virtualClass').val();
+		var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
+		callWindowFullView('出库详情',url);		
+	};
 	
 	function doShowDetail(YSId) {
 		var virtualClass = $('#virtualClass').val();
@@ -180,16 +216,126 @@
 			methodtype =  "peiAddinit";
 		}
 		var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&YSId="+YSId+"&virtualClass="+virtualClass;
-		location.href = url;
+		callWindowFullView('装配领料',url)
+		//location.href = url;
 	}
 	
+	function doSearch() {	
 
-	function showHistory(YSId) {
-		var virtualClass = $('#virtualClass').val();
-		var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
-		location.href = url;		
-	};
+		$('#merge').show();//显示展开，合并按钮
+		$('#peijianFlag').val('');//配件订单不用合并
+		$('#searchFlag').val('Z');
+		
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
+		ajaxSearch('','false');
 
+		
+		
+	}
+			
+	//添加到当前任务
+	function doCreateY() {
+		
+		if(hideCnt <= 0){
+			$().toastmessage('showWarningToast', "请选择数据。");		
+			return;
+		}
+		
+		//按钮显示规则
+			
+		var checkedList = "";
+		var firstFlag = true;
+		
+		$('#TMaterial tbody tr').each (function (){
+
+			var $newsts = $(this).find("td").eq(1).find("input");
+			var ysid    = $(this).find("td").eq(2).text();			
+
+			var checkFlag = false;
+			
+			if( $newsts.prop('checked')){//本次被选中
+				checkFlag = true;
+			}
+			if( checkFlag == true ){
+				if(firstFlag){
+					checkedList += ysid;
+					firstFlag = false;
+				}else{
+					checkedList += ',';
+					checkedList += ysid;
+				}			
+			}		
+		});
+		
+		var actionUrl = "${ctx}/business/requisition?methodtype=setCurrentTask&checkedList="+checkedList;
+
+		$.ajax({
+			type : "POST",
+			contentType : 'application/json',
+			dataType : 'json',
+			url : actionUrl,
+			data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
+			success : function(data) {
+				//alert(d)				
+				ajaxSearch('010','false',"Y");	//刷新页面
+				
+				//$().toastmessage('showWarningToast', "保存成功!");		
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {				
+				//alert(textStatus);
+			}
+		});
+	}
+	
+	//未领料
+	function doSearchCustomer(type,searchFlag){
+
+		$('#searchFlag').val('U');//未领料
+		$('#createCurrent').show();
+		
+		ajaxSearch('010','false');
+	}
+
+	//已领料
+	function doSearchCustomer2(){
+
+		$('#searchFlag').val('F');//已领料
+		$('#createCurrent').hide();
+		
+		ajaxSearch('020','false');
+		
+	}
+			
+	//查看当前任务
+	function doSearchCurrentTask(){
+
+		$('#searchFlag').val('C');//Current:当前任务
+		$('#createCurrent').hide();
+		//按钮显示规则
+		
+		ajaxSearch('030','false');
+	}
+
+
+	
+	function doShow(PIId) {
+
+		var url = '${ctx}/business/order?methodtype=detailView&PIId=' + PIId;
+
+		callWindowFullView("订单详情",url);
+	}
+	
+	function reload() {
+		
+		$('#TMaterial').DataTable().ajax.reload(null,false);
+		
+		return true;
+	}
+	
 	
 </script>
 </head>
@@ -200,55 +346,60 @@
 		
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
-			<!-- 虚拟领料区分 -->
-			<input type="hidden" id="virtualClass" value="${virtualClass }" />
-			<input type="hidden" id="requisitionSts" value="${requisitionSts }" />
-			
+			<input type="hidden" id="searchFlag" value="U" />
+			<input type="hidden" id="peijianFlag" value="" />
 			<table>
 				<tr>
 					<td width="10%"></td> 
-					<td class="label">关键字1：</td>
+					<td class="label" style="width:100px">关键字1：</td>
 					<td class="condition">
-						<input type="text" id="keyword1" name="keyword1" class="middle"/>
-					</td>
-					<td class="label">关键字2：</td> 
+						<input type="text" id="keyword1" name="keyword1" class="middle"/></td>
+					<td class="label" style="width:100px">关键字2：</td> 
 					<td class="condition">
-						<input type="text" id="keyword2" name="keyword2" class="middle"/>
-					</td>
+						<input type="text" id="keyword2" name="keyword2" class="middle"/></td>
 					<td>
 						<button type="button" id="retrieve" class="DTTT_button" 
-							style="width:50px" onclick="doSearch();">查询</button>
-					</td>
+							style="width:50px" value="查询" onclick="doSearch();"/>查询</td>
+					<td style="vertical-align: bottom;width: 150px;">
+					</td> 
 					<td width="10%"></td> 
 				</tr>
+			
 			</table>
 
 		</form>
 	</div>
 	<div  style="height:10px"></div>
 
-	<div class="list">					
-		<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(1,'010');" id="defutBtn010"><span>待申请</span></a>
-			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'020');" id="defutBtn020"><span>出库中</span></a>
-			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>已出库</span></a>
-			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'040');" id="defutBtn040"><span>成品已入库但未领料</span></a>
-		</div>
-		<table id="TMaterial" class="display">
-			<thead>						
-				<tr>
+	<div class="list">
+
+		<div id="TSupplier_wrapper" class="dataTables_wrapper">
+			<div id="" style="height:40px;float: left">
+				<a  class="DTTT_button box" onclick="doSearchCurrentTask();"  id="defutBtn3">当前任务</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer();"  id="defutBtn1">未领料</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer2();"  id="defutBtn1">已领料</a>
+			</div>
+			<div id="createCurrent" style="height:40px;float: right">
+				<a  class="DTTT_button " onclick="doCreateY();" id="">添加到当前任务</a>				
+			</div>
+			<table id="TMaterial" class="display" >
+				<thead>						
+					<tr>
 						<th style="width: 10px;">No</th>
-						<th style="width: 70px;">领料单编号</th>
+						<th style="width: 40px;">型号</th>
 						<th style="width: 70px;">耀升编号</th>
-						<th style="width: 120px;">产品编号</th>
+						<th style="width: 150px;">产品编号</th>
 						<th>产品名称</th>
-						<th style="width: 50px;">订单交期</th>
+						<th style="width: 40px;">客户</th>
 						<th style="width: 60px;">订单数量</th>
-						<th style="width: 60px;">申请时间</th>
-						<th style="width: 60px;">领料状态</th>
-				</tr>
-			</thead>
-		</table>
+						<th style="width: 50px;">订单交期</th>
+						<th style="width: 50px;">最晚交期</th>
+						<th style="width: 40px;">业务组</th>
+						<th style="width: 60px;">订单状态</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
 	</div>
 </div>
 </div>

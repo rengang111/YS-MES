@@ -28,6 +28,7 @@
 		var total = Arabia_to_Chinese(total2);
 		$('#total').html(total);
 		
+		$('#expense').hide();
 		expenseAjax3();//订单过程扣款明细
 		
 	});
@@ -45,14 +46,14 @@
 	<form:form modelAttribute="attrForm" method="POST"
 		id="attrForm" name="attrForm"  autocomplete="off">
 
-	<c:forEach var="detail" items="${contractList}" varStatus='status' step="5">
+	<c:forEach var="detail" items="${contractList}" varStatus='status' step="4">
 	
 		<table class="" id="table_form"  style="margin-top: -10px;">
 			<tr> 				
 				<td class="td-center" colspan="6" style="font-size: 24px;">采购订单</td>
 			</tr>
 			<tr> 				
-				<td class="label" style="width:100px;">耀升编号：</td>					
+				<td class="label" style="width:100px;">耀升编号11：</td>					
 				<td style="width:400px;">${contract.YSId}</td>
 								
 				<td class="label" style="width:100px;">合同编号：</td>					
@@ -96,19 +97,19 @@
 			<table id="orderBomTable" class="display orderBomTable" >
 				<thead>				
 					<tr>
-						<th style="width:10px">No</th>
+						<th style="width:1px">No</th>
 						<th style="width:100px">ERP编码</th>
 						<th>物料名称</th>
-						<th style="width:60px">数量</th>
-						<th style="width:60px">单价</th>
-						<th style="width:40px">单位</th>
+						<th style="width:50px">数量</th>
+						<th style="width:40px">单价</th>
+						<th style="width:30px">单位</th>
 						<th style="width:60px">金额</th>
-						<th style="width:80px">交货日期</th>
+						<th style="width:70px">交货日期</th>
 					</tr>
 				</thead>
 				<tbody>
 				<c:set var="start" value="${status.index }" />
-				<c:set var="end" value="${status.index +4}" />
+				<c:set var="end" value="${status.index +3}" />
 				<c:forEach begin="${start }" end="${end }"  var="i" >  		
 					<c:if test="${not empty  contractList[i] }">
 						<tr>
@@ -128,7 +129,7 @@
 						
 						if (lengthB(name) > 50){
 							
-							name = '<span style="font-size:11px">' + name + '</sapn>'
+							name = '<span style="font-size:10px">' + name + '</sapn>'
 						}
 						$('#name'+index).html(name);
 					</script>
@@ -137,17 +138,23 @@
 				
 				<tfoot>
 					<tr>
-						<th></th>
-						<th></th>
-						<th colspan="2" style="text-align: right;">金额总计：<span id="total2" class="total"></span></th>
-						
-						<th colspan="4" style="text-align: left;"><span id="total" class="total"></span></th>
+						<th colspan="8">
+							<table style="width: 100%;">
+								<tr>
+									<td style="text-align:left ;"><span  class="font16">不经需方允许不得变动制作方案</span></td>
+									<td style="text-align:center ;">
+										金额总计：<span id="total2" class="total"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+										<span id="total" class="total"></span></td>
+								</tr>
+							</table>						
+						</th>
 					</tr>
 				</tfoot>			
 			</table>
+			
 		</div>
 		<pre>
-		<span style="font-weight:bold">备注：以上配件具体要求为：需符合ROHS(2016最新标准),PAHS(多环芳烃),REACH(SVHC高关注度物质),NP(壬基酚)，SCCP(锻炼氯化石蜡)等环保要求！</span><br>
+		<span style="">备注：以上配件具体要求为：需符合ROHS(2016最新标准),PAHS(多环芳烃),REACH(SVHC高关注度物质),NP(壬基酚)，SCCP(锻炼氯化石蜡)等环保要求！</span><br>
 一、包装要求：内保装要保证单件产品不刮划擦伤，外包装要注意坚固不破损，必须在外箱上写明耀升编号，品名，数量及总箱数，以及联系人和电话，<br>
 并能及时把发货清单传真给我司采购员。 <br>
 二、合同履行地：需方仓库 特别注意：合同要双方盖章，严格履行交货期，延时10天以上将扣该10%的货款。<br>

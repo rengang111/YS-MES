@@ -2303,7 +2303,7 @@ public class PurchasePlanService extends CommonService {
 				}//物料是否存在
 			}
 			
-			//删除DB中的记录：web端已被删除			
+			//web端新增的物料：i n s e r t			
 			if(exflg){
 				addPurchasePlan(YSId,purchaseId,web);
 				
@@ -2415,7 +2415,7 @@ public class PurchasePlanService extends CommonService {
 			String materialId = db.getMaterialid();
 			float purchase = 0;//采购量
 			float requisition = -1 * stringToFloat(db.getTotalrequisition());
-			updateMaterial2(db.getYsid(),"D","采购方案（旧数据删除）",materialId,purchase,requisition);
+			updateMaterial2(db.getYsid(),"I","采购方案（旧数据删除）",materialId,purchase,requisition);
 		}
 		
 	}
