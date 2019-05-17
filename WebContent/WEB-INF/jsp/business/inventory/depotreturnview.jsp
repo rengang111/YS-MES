@@ -63,6 +63,7 @@
 		id="formModel" name="formModel"  autocomplete="off">
 			
 		<form:hidden path="stockin.receiptid" value="${depot.receiptId }"/>
+		<form:hidden path="stockin.ysid"      value="${depot.YSId }"/>
 		
 		<fieldset>
 			<legend> 采购合同</legend>
@@ -124,25 +125,13 @@
 </body>	
 <script type="text/javascript">
 
-function doPrint(stockOutId) {
-	var YSId 		= '${order.YSId }';
-	var stockOutId  = '${order.stockOutId }';
-	
-	var url = '${ctx}/business/stockout?methodtype=print';
-	url = url +'&YSId='+YSId;
-	url = url +'&stockOutId='+stockOutId;
-		
-	callWindowFullView("print",url);
-
-};
-
 function productPhotoView() {
 
-	var YSId = '${order.YSId }';
-	var requisitionId = '${order.requisitionId }';
+	var YSId = '${depot.YSId }';
+	var receiptId = $('#stockin\\.receiptid').val();
 	
 	$.ajax({
-		"url" :"${ctx}/business/stockout?methodtype=getProductPhoto&YSId="+YSId+"&requisitionId="+requisitionId,	
+		"url" :"${ctx}/business/depotReturn?methodtype=getProductPhoto&YSId="+YSId+"&receiptId="+receiptId,	
 		"datatype": "json", 
 		"contentType": "application/json; charset=utf-8",
 		"type" : "POST",
@@ -180,7 +169,7 @@ function photoView(id, tdTable, count, data) {
 
 function deletePhoto(tableId,tdTable,path) {
 	
-	var url = '${ctx}/business/stockout?methodtype='+tableId+'Delete';
+	var url = '${ctx}/business/depotReturn?methodtype='+tableId+'Delete';
 	url+='&tabelId='+tableId+"&path="+path;
 	    
 	if(!(confirm("确定要删除该图片吗？"))){
@@ -218,7 +207,7 @@ function deletePhoto(tableId,tdTable,path) {
 
 function uploadPhoto(tableId,tdTable, id) {
 
-	var url = '${ctx}/business/ODOUpload?methodtype=uploadPhoto';
+	var url = '${ctx}/business/depotReturnFileUpload?methodtype=uploadPhoto';
 	
 	$("#formModel").ajaxSubmit({
 		type : "POST",

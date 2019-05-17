@@ -35,12 +35,23 @@ $.fn.serializeObject = function() {
 };
 $(document).ready(function() {
 	
+	//设置停用标识background-repeat: no-repeat;
+			//background-position: center;"
+	var flag = '${material.material.useflag}'
+	
+	if(flag == '1'){
+		$('#baseInfo').css('background','url(${ctx}/images/stop.png) no-repeat center')
+		$('#doStop').text('恢复使用')
+	}else{
+		$('#baseInfo').css('background','url(${ctx}/images/pixel.png)')
+	}		
+		 
 	//通用型号 初始化时,5 个输入框,注意:编号从 0 开始
 	autoAddShareModel();
 	//子编码 初始化时,5 个输入框,注意:编号从 0 开始
 	autoAddSubid();
 		
-	$("#return").click(
+	$("#goBack").click(
 		function() {
 			var materialId='${material.material.materialid}';
 			var url = "${ctx}/business/material?keyBackup="+materialId;
@@ -56,7 +67,20 @@ $(document).ready(function() {
 				url = url + '&parentId=' + parentid+'&recordId='+recordid+"&keyBackup="+keyBackup;
 				location.href = url;			
 	});
-;
+	
+
+	$("#doStop").click(
+			function() {	
+				if(confirm('确定要停用该物料吗？')){
+
+					var recordid = $('#material\\.recordid').val();
+					var parentid = $('#material\\.parentid').val();
+					var keyBackup = $('#keyBackup').val();
+					var url = '${ctx}/business/material?methodtype=doStopOrRecovery';
+					url = url + '&parentId=' + parentid+'&recordId='+recordid+"&keyBackup="+keyBackup;
+					location.href = url;	
+				}		
+	});
 	
 	$("#storageHistory").click(
 			function() {				
@@ -477,7 +501,10 @@ function doCostUpdate(){
 <fieldset style="float: left;width: 63%;">
 	<legend>物料基本信息</legend>
 
-	<table class="form" >		
+	<table class="form"  id="baseInfo"
+		style="
+			background-repeat: no-repeat;
+			background-position: center;">		
 		<tr>
 			<td class="label" style="width: 60px;"><label>物料编码：</label></td>
 			<td style="width: 120px;">
@@ -530,8 +557,10 @@ function doCostUpdate(){
 			<td colspan="7" style="vertical-align: text-top;"><pre>${material.material.description}</pre></td></tr>	
 	</table>
 	<div class="action" style="text-align: right;">			
-		<button type="button" id="return" class="DTTT_button">返回</button>
+		<button type="button" id="goBack" class="DTTT_button">返回</button>
 		<button type="button" id="doEdit" class="DTTT_button" >编辑</button>
+		<button type="button" id="doStop" class="DTTT_button" >停用</button>
+		<!-- button type="button" id="doDelete" class="DTTT_button" >删除</button -->
 		<button type="button" id="storageHistory" class="DTTT_button" >出入库历史</button>
 		<button type="button" id="doCreate" class="DTTT_button" onclick="doCreateBOMZZ()">新建二级BOM</button>
 	</div>

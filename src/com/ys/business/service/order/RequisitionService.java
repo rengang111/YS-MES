@@ -223,14 +223,17 @@ public class RequisitionService extends CommonService {
 		}
 		*/
 		//*** 快捷查询
-		String having11 = "";
+		String havingCurrent = "";
 		String having2 = " computeStockinQty+0 < orderQty+0 ";//成品未全部入库
 		if(("U").equals(searchFlag)){
 			//未领料
-			having11 = " AND currentSts IS NULL ";//过滤掉当前任务
+			havingCurrent = " AND currentSts IS NULL ";//过滤掉当前任务
 		}else if(("C").equals(searchFlag)){
 			//当前任务
-			having11 = " AND currentSts = '0' ";//只显示当前任务
+			havingCurrent = " AND currentSts = '0' AND currentType='31' ";//只显示当前任务
+		}else if(("L").equals(searchFlag)){
+			//中长期生产计划
+			havingCurrent = " AND currentSts = '0' AND currentType='32' ";//中长期生产计划
 		}else if(("F").equals(searchFlag)){
 			having2 = " computeStockinQty+0 >= orderQty+0 ";//成品全部入库			
 		}
@@ -243,7 +246,7 @@ public class RequisitionService extends CommonService {
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
 		
-		having1 = having1 + having11;
+		having1 = having1 + havingCurrent;
 		
 		sql = sql.replace("#0",where );
 		sql = sql.replace("#1",having1);
@@ -1875,7 +1878,8 @@ public class RequisitionService extends CommonService {
 	 
 	public void setCurrentTaskFromOrder() throws Exception{
 		
-		String checked = request.getParameter("checkedList");
+		String checked  = request.getParameter("checkedList");
+		String taskType = request.getParameter("currentyType");//31:当前任务;32：中长期
 		
 		ts = new BaseTransaction();
 
@@ -1887,7 +1891,7 @@ public class RequisitionService extends CommonService {
 			//
 			for(String ysid:checkedList){
 				
-				insertFollow(ysid);										
+				insertFollow(ysid,taskType);										
 			}
 			
 			ts.commit();
@@ -1898,7 +1902,7 @@ public class RequisitionService extends CommonService {
 		}
 	}
 	
-	private void insertFollow(String ysid) throws Exception{
+	private void insertFollow(String ysid,String taskType) throws Exception{
 		
 		B_FollowData fllow = new B_FollowData();
 		//插入新数据
@@ -1909,7 +1913,7 @@ public class RequisitionService extends CommonService {
 		guid = BaseDAO.getGuId();
 		fllow.setRecordid(guid);
 		fllow.setYsid(ysid);
-		fllow.setFollowtype("3");//领料申请的当前任务
+		fllow.setFollowtype(taskType);//领料申请的当前任务
 		fllow.setStatus("0");
 		
 		new B_FollowDao().Create(fllow);

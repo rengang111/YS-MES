@@ -530,6 +530,44 @@ public class MaterialService extends CommonService implements I_BaseService{
 		
 	}
 	
+	private void updateMaterialForUseFlag(String recordId) throws Exception{
+
+		B_MaterialData detail = new B_MaterialData();
+		
+		detail.setRecordid(recordId);
+		
+		detail = new B_MaterialDao(detail).beanData;
+		
+		String useFlag = detail.getUseflag();
+		
+		if(("0").equals(useFlag) || isNullOrEmpty(useFlag))
+			detail.setUseflag("1");
+		else
+			detail.setUseflag("0");
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"MaterialUpdate",userInfo);
+
+		copyProperties(detail,commData);
+		
+		new B_MaterialDao().Store(detail);
+
+		
+	}
+	public Model stopOrRecovery(
+			String recordId,
+			String parentId,
+			String materialId) throws Exception{
+		
+
+		updateMaterialForUseFlag(recordId);
+
+		MaterailDetail(recordId,parentId,materialId);
+				
+		return model;
+		
+	}
+	
 	public Model MaterailDetail(
 			String recordId,
 			String parentId,
@@ -613,6 +651,7 @@ public class MaterialService extends CommonService implements I_BaseService{
 						FormDetail.setOriginalid(map.get("originalId"));
 						FormDetail.setMaterialcost(map.get("materialCost"));
 						FormDetail.setPurchaser(map.get("purchaser"));
+						FormDetail.setUseflag(map.get("useFlag"));
 						
 						Matmodel.setAttribute1(map.get("categoryId"));
 						Matmodel.setAttribute2(map.get("categoryName"));

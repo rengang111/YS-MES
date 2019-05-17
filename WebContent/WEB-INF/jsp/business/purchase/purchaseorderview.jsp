@@ -82,6 +82,7 @@ function deductAjax() {
 	    			return rtn;
 	    		}},
 	    		{"targets":3,"render":function(data, type, row){
+	    			data = replaceTextarea(data);
 	    			var name = jQuery.fixedWidth(data,46);//true:两边截取,左边从汉字开始
 	    			return name;
 	    		}},

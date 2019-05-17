@@ -219,6 +219,10 @@ public class MaterialAction extends BaseAction {
 				doDetailViewForPack();
 				rtnUrl = "/business/material/materialpackview";
 				break;
+			case "doStopOrRecovery":// 停止/恢复 使用该物料
+				doStopOrRecovery();
+				rtnUrl = "/business/material/materialview";
+				break;
 		
 		}
 		
@@ -679,6 +683,28 @@ public class MaterialAction extends BaseAction {
 
 	}
 	
+	public void doStopOrRecovery(){
+
+		String recordId = request.getParameter("recordId");
+		String parentId = request.getParameter("parentId");
+		String materialId = request.getParameter("materialId");
+		String keyBackup = this.request.getParameter("keyBackup");
+		try {
+			model = materialService.stopOrRecovery(recordId,parentId,materialId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		MaterialModel.setKeyBackup(recordId);
+		model.addAttribute("DisplayData",MaterialModel);
+		model.addAttribute("keyBackup", keyBackup);
+		
+		//图片路径等信息:文件夹名称 + 物料编号 + Class名
+		String albumInfo = "material" +"," + materialId +","  + MaterialModel.className;
+		model.addAttribute("albumInfo",albumInfo);
+
+	}
 	public void doDetailViewForPack(){
 
 		String recordId = request.getParameter("recordId");

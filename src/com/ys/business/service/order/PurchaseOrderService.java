@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import com.ys.system.action.model.login.UserInfo;
+import com.ys.system.common.BusinessConstants;
 import com.ys.util.CalendarUtil;
 import com.ys.util.DicUtil;
 import com.ys.util.basedao.BaseDAO;
@@ -495,13 +496,14 @@ public class PurchaseOrderService extends CommonService {
 						//***********************//
 						//** 更新合同的库存数量 **//
 						//***********************//
-						updateContractStorage(contractId,materialdb);
+						//updateContractStorage(contractId,materialdb);
 						
-						//updateMaterial(
-						//		"合同抵消处理",
-						//		materialdb,
-						//		String.valueOf( (-1) * stringToFloat(quantity) ),
-						//		"0");//更新虚拟库存
+						updateMaterial(
+								"合同抵消处理",
+								materialdb,
+								0,
+								String.valueOf( (-1) * stringToFloat(quantity) )
+								);//更新虚拟库存
 						
 						deleteCnt++;//处理件数
 					}
@@ -541,10 +543,7 @@ public class PurchaseOrderService extends CommonService {
 				if(oldDb == null){//insert
 					
 					//取得供应商的合同流水号
-					//父编号:年份+供应商简称
-					//String type = getContractType(purchaseType);					
-					//String typeParentId = BusinessService.getshortYearcode()+type;			
-					//String typeSubId = getContractTypeCode(typeParentId);				
+					//父编号:年份+供应商简称			
 					String supplierParentId = BusinessService.getshortYearcode() + shortName;	
 					String suplierSubId = getContractSupplierCode(supplierParentId);
 
@@ -558,8 +557,6 @@ public class PurchaseOrderService extends CommonService {
 					data.setYsid(YSId);
 					data.setMaterialid(materialId);
 					data.setContractid(contractId);
-					//data.setTypeparentid(typeParentId);
-					//data.setTypeserial(typeSubId);
 					data.setSupplierparentid(supplierParentId);
 					data.setSupplierserial(suplierSubId);
 					data.setSupplierid(supplierId);
@@ -580,28 +577,28 @@ public class PurchaseOrderService extends CommonService {
 				}
 				
 				//新增合同明细*************
-				List<HashMap<String, String>> dbList = getMaterialGroupList(YSId,supplierId);
+				List<HashMap<String, String>> planList = getMaterialGroupList(YSId,supplierId);
 				
-				for(HashMap<String, String> dt:dbList){					
+				for(HashMap<String, String> plan:planList){					
 					
-					String materialId1 = dt.get("materialId");
-					B_PurchaseOrderDetailData oldDb1 = getOldContractDetailInfo(contractId,materialId1);
+					String newMaterialId = plan.get("materialId");
+					B_PurchaseOrderDetailData oldDb1 = getOldContractDetailInfo(contractId,newMaterialId);
 					
 					//判断个别物料是否有采购数量
-					String quantity = dt.get("purchaseQuantity");
-					if(stringToFloat(quantity) == 0)
+					String newPlanQty = plan.get("purchaseQuantity");
+					if(stringToFloat(newPlanQty) == 0)
 						continue;
 					
 					if(oldDb1 == null){//insert
 						B_PurchaseOrderDetailData d = new B_PurchaseOrderDetailData();				
 						d.setYsid(YSId);
 						d.setContractid(contractId);
-						d.setMaterialid(dt.get("materialId"));
-						d.setDescription(dt.get("description"));
-						d.setQuantity(quantity);
-						d.setPrice(dt.get("price"));					
-						d.setTotalprice(dt.get("totalPrice"));
-						d.setUnitquantity(dt.get("unitQuantity"));
+						d.setMaterialid(plan.get("materialId"));
+						d.setDescription(plan.get("description"));
+						d.setQuantity(newPlanQty);
+						d.setPrice(plan.get("price"));					
+						d.setTotalprice(plan.get("totalPrice"));
+						d.setUnitquantity(plan.get("unitQuantity"));
 						d.setVersion(1);//默认为1
 						
 						insertPurchaseOrderDetail(d);
@@ -609,32 +606,31 @@ public class PurchaseOrderService extends CommonService {
 						//***********************//
 						//** 更新合同的库存数量 **//
 						//***********************//
-						updateContractStorage(contractId,materialId1);
+						//updateContractStorage(contractId,materialId1);
 						
-						//updateMaterial("合同新建处理",materialId1,quantity,"0");//更新虚拟库存
+						updateMaterial("合同新建处理",newMaterialId,stringToFloat(newPlanQty),newPlanQty);//更新虚拟库存
 						
 					}else{//update
 						//
-						boolean arrivalFlag = checkContractArrival(contractId,materialId1);						
+						boolean arrivalFlag = checkContractArrival(contractId,newMaterialId);						
 						//没有收货记录
 						if(arrivalFlag){
-							
-							//String oldDb1Qty = oldDb1.getQuantity();
-							//float quantity2 = stringToFloat(quantity) - stringToFloat(oldDb1Qty);									
-							//if(quantity2 != 0)
-							
-
+														
+							updateMaterial("合同更新处理",
+									newMaterialId,
+									stringToFloat(newPlanQty),
+									newPlanQty);//更新虚拟库存
+														
 							//***********************//
 							//** 更新合同的库存数量 **//
 							//***********************//
-							updateContractStorage(contractId,materialId1);	
+							//updateContractStorage(contractId,materialId1);
 							
-							//updateMaterial("合同更新处理",materialId1,quantity,"0");//更新虚拟库存
 							
-							oldDb1.setPrice(dt.get("price"));
-							oldDb1.setQuantity(quantity);
-							oldDb1.setTotalprice(dt.get("totalPrice"));
-							oldDb1.setUnitquantity(dt.get("unitQuantity"));
+							oldDb1.setPrice(plan.get("price"));
+							oldDb1.setQuantity(newPlanQty);
+							oldDb1.setTotalprice(plan.get("totalPrice"));
+							oldDb1.setUnitquantity(plan.get("unitQuantity"));
 							updatePurchaseOrderDetail(oldDb1);
 						}
 					}										
@@ -657,8 +653,8 @@ public class PurchaseOrderService extends CommonService {
 	private void updateMaterial(
 			String action,
 			String materialId,
-			String purchaseIn,
-			String requirementOut) throws Exception{
+			float contractQty,
+			String diff) throws Exception{
 	
 		B_MaterialData data = new B_MaterialData();
 		B_MaterialDao dao = new B_MaterialDao();
@@ -674,17 +670,21 @@ public class PurchaseOrderService extends CommonService {
 
 		data = list.get(0);
 		
-		insertStorageHistory(data,action,purchaseIn);//保留更新前的数据
-		
-
-		
+		insertStorageHistory(data,action,String.valueOf(contractQty));//保留更新前的数据
+				
 		//当前库存数量
 		float iOnhand  = stringToFloat(data.getQuantityonhand());//实际库存
 		float iWaitOut = stringToFloat(data.getWaitstockout());//待出库
 		float iWaitIn  = stringToFloat(data.getWaitstockin());//待入库
 		
-		//iWaitOut = iWaitOut + stringToFloat(requirementOut);
-		iWaitIn = iWaitIn + stringToFloat(purchaseIn);
+		if(iWaitIn < 0 ){
+			iWaitIn = contractQty;
+		}else{
+			iWaitIn = iWaitIn + stringToFloat(diff);
+		}
+		if(iWaitOut < 0 )
+			iWaitOut = 0;
+		
 		
 		//虚拟库存 = 当前库存 + 待入库 - 待出库
 		float availabeltopromise = iOnhand + iWaitIn - iWaitOut;		
@@ -771,30 +771,30 @@ public class PurchaseOrderService extends CommonService {
 	
 
 	@SuppressWarnings("unchecked")
-	private void deletePurchaseOrderDetail(String contractId) throws Exception{
-		
-		String where = " contractId = '"+contractId +"'" +
-				" AND deleteFlag = '0' ";
+	private void deletePurchaseOrderDetailById(
+			String contractId,
+			String materialId) throws Exception{
+			
+		String where = " contractId = '"+contractId +"'" 
+				+ " AND materialId='" + materialId +"'" 
+				+ " AND deleteFlag = '0' ";
 		List<B_PurchaseOrderDetailData> dbList = new B_PurchaseOrderDetailDao().Find(where);
 		
-		for(int i=0; i < dbList.size();i++){
-			B_PurchaseOrderDetailData db = dbList.get(i);
-			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-					"purchaseOrderDetaildelete",userInfo);			
-			copyProperties(db,commData);
-
-			new B_PurchaseOrderDetailDao().Store(db);
-						
+		if(dbList.size() > 0 ){
+			
+			B_PurchaseOrderDetailData db = dbList.get(0);
+			
 			//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面
-			//String newQty = String.valueOf(-1 * stringToFloat(db.getQuantity()));
+			String newQty = floatToString(-1 * stringToFloat(db.getQuantity()));
 
 			//***********************//
 			//** 更新合同的库存数量 **//
 			//***********************//
-			updateContractStorage(contractId,db.getMaterialid());	
+			//updateContractStorage(contractId,db.getMaterialid());	
 			
-			//updateMaterial("合同删除处理",db.getMaterialid(),newQty,"0");
+			updateMaterial("合同删除处理",materialId,0,newQty);
 		}
+		
 
 	}
 	
@@ -899,79 +899,78 @@ public class PurchaseOrderService extends CommonService {
 			String contractid = orderData.getContractid();
 			
 			//删除明细
-			deletePurchaseOrderDetail(orderData.getContractid());
+			//deletePurchaseOrderDetail(orderData.getContractid());
 			
-			if(newDetailList == null){
-				//删除合同头信息		
-				deletePurchaseOrder(orderData);		
-			}else{				
+			//if(newDetailList == null){
+			//	//删除合同头信息		
+			//	deletePurchaseOrder(orderData);		
+			//}else{				
 						
-				//更新明细
-				for(B_PurchaseOrderDetailData data:newDetailList ){
+			//更新明细
+			for(B_PurchaseOrderDetailData data:newDetailList ){
+				
+				String materId = data.getMaterialid();
+				data.setContractid(contractid);
+				//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面			
+				String newQty = data.getQuantity();
+				float fnewqty = 0;
+				if(notEmpty(newQty))
+					fnewqty = stringToFloat(newQty.trim());
+				
+				if(fnewqty == 0){
+					data.setQuantity(newQty);
+					deletePurchaseOrderDetailById(contractid,materId);
+				}else{
+					//取得原合同的数量，单价
+					B_PurchaseOrderDetailData oldDetail = 
+							getOldContractDetailInfo(contractid,materId);
 					
-					data.setContractid(contractid);
-					//恢复库存"待入数量",合同只处理待入数量,待出在采购方案里面			
-					String newQty = data.getQuantity();
-					float fnewqty = 0;
-					if(notEmpty(newQty))
-						fnewqty = stringToFloat(newQty.trim());
-					
-					if(fnewqty == 0){
-						data.setQuantity(newQty);
-						deletePurchaseOrderDetail(data);
-					}else{
-						//取得原合同的数量，单价
-						B_PurchaseOrderDetailData oldDetail = 
-								getOldContractDetailInfo(data.getContractid(),data.getMaterialid());
-						
-						float oldQty   = stringToFloat(oldDetail.getQuantity());
-						float oldPrice = stringToFloat(oldDetail.getPrice());
-						float newPrice = stringToFloat(data.getPrice());
+					float oldQty   = stringToFloat(oldDetail.getQuantity());
+					float oldPrice = stringToFloat(oldDetail.getPrice());
+					float newPrice = stringToFloat(data.getPrice());
 
-						boolean planUpdateFlag = false;
-						//*** 合同数量
-						if(fnewqty != oldQty){//合同数量有变化
-							planUpdateFlag = true;
-							
-							//***********************//
-							//** 更新合同的库存数量 **//
-							//***********************//
-							updateContractStorage(data.getContractid(),data.getMaterialid());	
-							
-							//updateMaterial("合同更新处理",data.getMaterialid(),newQty,"0");	
-						}
+					boolean planUpdateFlag = false;
+					//*** 合同数量
+					if(fnewqty != oldQty){//合同数量有变化
+						planUpdateFlag = true;
 						
-
-						//*** 合同单价
-						if(newPrice != oldPrice){//单价有变化
-							planUpdateFlag = true;
-							updateStockinByMaterialId(data.getMaterialid(),data);
-						}
-						
-						//更新采购方案：此更新是单向的，方案有变化时，不会自动更新合同
-						if(planUpdateFlag){
-							updatePlanDetailByMaterialId(ysid,data);
-						}
-
-						updateOrderDetail(data);
+						//***********************//
+						//** 更新合同的库存数量 **//
+						//***********************//
+						//updateContractStorage(data.getContractid(),data.getMaterialid());	
+						String diff = floatToString(fnewqty - oldQty);
+						updateMaterial("合同更新处理",materId,fnewqty,diff);	
 					}
 					
-					
-				}				
 
-				//计算退税
-				float total = stringToFloat(orderData.getTotal());//合同总金额
-				float taxRate = stringToFloat(orderData.getTaxrate());//税率
-				float taxExcluded = total / (taxRate / 100 + 1 );//价=合同 / 税率
-				float taxes = total - taxExcluded;//税= 合同 - 价
-				
-				orderData.setTaxes(floatToString(taxes));
-				orderData.setTaxrate(floatToString(taxRate));
-				orderData.setTaxexcluded(floatToString(taxExcluded));
-				
-				//更新合同头信息
-				updateOrder(orderData);
-			}
+					//*** 合同单价
+					if(newPrice != oldPrice){//单价有变化
+						planUpdateFlag = true;
+						updateStockinByMaterialId(materId,data);
+					}
+					
+					//更新采购方案：此更新是单向的，方案有变化时，不会自动更新合同
+					if(planUpdateFlag){
+						updatePlanDetailByMaterialId(ysid,data);
+					}
+
+					updateOrderDetail(data);
+				}				
+			}				
+
+			//计算退税
+			float total = stringToFloat(orderData.getTotal());//合同总金额
+			float taxRate = stringToFloat(orderData.getTaxrate());//税率
+			float taxExcluded = total / (taxRate / 100 + 1 );//价=合同 / 税率
+			float taxes = total - taxExcluded;//税= 合同 - 价
+			
+			orderData.setTaxes(floatToString(taxes));
+			orderData.setTaxrate(floatToString(taxRate));
+			orderData.setTaxexcluded(floatToString(taxExcluded));
+			
+			//更新合同头信息
+			updateOrder(orderData);
+			
 			
 			ts.commit();
 		}
@@ -1107,7 +1106,7 @@ public class PurchaseOrderService extends CommonService {
 			db.setQuantity(data.getQuantity());
 			db.setPrice(data.getPrice());
 			db.setTotalprice(data.getTotalprice());
-			db.setDescription(data.getDescription());
+			db.setDescription(replaceTextArea(data.getDescription()));
 			
 			detailDao.Store(db);
 			
@@ -1117,40 +1116,6 @@ public class PurchaseOrderService extends CommonService {
 		
 	}
 	
-	
-	/**
-	 * 合同删除处理
-	 * @throws Exception 
-	 */
-	@SuppressWarnings("unchecked")
-	private void deleteContract(String where) throws Exception {
-		
-		B_PurchaseOrderDao dao = new B_PurchaseOrderDao();
-		
-		//确认数据是否存在		
-		List<B_PurchaseOrderData> list = dao.Find(where);
-		
-		for(B_PurchaseOrderData data:list){
-
-			commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-					"purchasePlanUpdate",userInfo);			
-			copyProperties(data,commData);
-			dao.Store(data);
-		}		
-	}
-	
-	
-	
-	private String getContractTypeCode(String parentId) throws Exception {
-
-		dataModel.setQueryName("getContractTypeCode");		
-		baseQuery = new BaseQuery(request, dataModel);		
-		userDefinedSearchCase.put("typeParentId", parentId);		
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(0, 0);		
-		String code =dataModel.getYsViewData().get(0).get("MaxSubId");		
-		return code;		
-	}	
 
 	private String getContractSupplierCode(String parentId) throws Exception {
 
@@ -1317,14 +1282,15 @@ public class PurchaseOrderService extends CommonService {
 				//***********************//
 				//** 更新合同的库存数量 **//
 				//***********************//
-				updateContractStorage(data.getContractid(),data.getMaterialid());	
+				//updateContractStorage(data.getContractid(),data.getMaterialid());	
 				
 				//恢复库存"待入数量"
-				//updateMaterial(
-				//		"合同删除处理",
-				//		data.getMaterialid(),
-				//		String.valueOf(-1 * stringToFloat(data.getQuantity())),
-				//		"0");//合同只处理待入数量,待出在采购方案里面
+				updateMaterial(
+						"合同删除处理",
+						data.getMaterialid(),
+						0,
+						String.valueOf(-1 * stringToFloat(data.getQuantity()))
+						);//合同只处理待入数量,待出在采购方案里面
 			}
 			
 			ts.commit();
@@ -1444,10 +1410,10 @@ public class PurchaseOrderService extends CommonService {
 				//***********************//
 				//** 更新合同的库存数量 **//
 				//***********************//
-				updateContractStorage(contractId,materilid);
+				//updateContractStorage(contractId,materilid);
 				
-				//String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
-				//updateMaterial("常规采购合同新建处理",materilid,purchase,requirement);
+				updateMaterial("常规采购合同新建处理",materilid,
+						stringToFloat(purchase),purchase);
 			}		
 			
 
@@ -1540,17 +1506,18 @@ public class PurchaseOrderService extends CommonService {
 				insertPurchaseOrderDetail(d);	
 				
 				//更新虚拟库存
-				//String purchase = d.getQuantity();//采购量
-				String materilid = d.getMaterialid();
-				//String requirement = "0";//需求量:真实的需求量在订单采购时已经计算过
-				
+				String purchase = d.getQuantity();//采购量
+				String materilid = d.getMaterialid();				
 
 				//***********************//
 				//** 更新合同的库存数量 **//
 				//***********************//
-				updateContractStorage(contractId,materilid);	
+				//updateContractStorage(contractId,materilid);	
 				
-				//updateMaterial("单独采购合同新建处理",materilid,purchase,requirement);
+				updateMaterial("单独采购合同新建处理",
+						materilid,
+						stringToFloat(purchase),
+						purchase);
 			}	
 
 			ts.commit();

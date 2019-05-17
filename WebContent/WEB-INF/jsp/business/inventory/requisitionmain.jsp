@@ -10,7 +10,7 @@
 
     var hideCnt = 0;
 
-	function ajaxSearch(sessionFlag,searchFlag) {
+	function ajaxSearch(sessionFlag) {
 		var table = $('#TMaterial').dataTable();
 		if(table) {
 			table.fnClearTable(false);
@@ -166,7 +166,7 @@
 
 		//$('#peijianFlag').val('');//配件订单不用合并
 
-		ajaxSearch("010","true");
+		ajaxSearch("false");
 	
 		$('#TMaterial').DataTable().on('click', 'tr td:nth-child(2)', function() {
 
@@ -196,7 +196,7 @@
 		
 		buttonSelectedEvent();//按钮选择式样
 		
-		$('#defutBtn1').removeClass("start").addClass("end");
+		$('#defutBtnU').removeClass("start").addClass("end");
 	})	
 	
 	function showHistory(YSId) {
@@ -222,23 +222,26 @@
 	
 	function doSearch() {	
 
-		$('#merge').show();//显示展开，合并按钮
-		$('#peijianFlag').val('');//配件订单不用合并
-		$('#searchFlag').val('Z');
-		
+		var searchFlag = $('#searchFlag').val();
+		if(searchFlag == 'C' || searchFlag == 'L'){
+			searchFlag = "U";//未领料
+		}
+		$('#searchFlag').val(searchFlag);		
+	    
+		ajaxSearch('false');
+
 		var collection = $(".box");
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });
 	    
-		ajaxSearch('','false');
-
+		$('#defutBtn'+searchFlag).removeClass("start").addClass("end");
 		
 		
 	}
 			
 	//添加到当前任务
-	function doCreateY() {
+	function doCreateY(taskType,currentyType) {
 		
 		if(hideCnt <= 0){
 			$().toastmessage('showWarningToast', "请选择数据。");		
@@ -271,7 +274,9 @@
 			}		
 		});
 		
-		var actionUrl = "${ctx}/business/requisition?methodtype=setCurrentTask&checkedList="+checkedList;
+		var actionUrl = "${ctx}/business/requisition?methodtype=setCurrentTask"
+				+"&checkedList="+checkedList
+				+"&currentyType="+currentyType;
 
 		$.ajax({
 			type : "POST",
@@ -281,7 +286,7 @@
 			data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
 			success : function(data) {
 				//alert(d)				
-				ajaxSearch('010','false',"Y");	//刷新页面
+				ajaxSearch('false');	//刷新页面
 				
 				//$().toastmessage('showWarningToast', "保存成功!");		
 			},
@@ -295,31 +300,29 @@
 	function doSearchCustomer(type,searchFlag){
 
 		$('#searchFlag').val('U');//未领料
-		$('#createCurrent').show();
+		//$('#createCurrent').show();
 		
-		ajaxSearch('010','false');
+		ajaxSearch('false');
 	}
 
 	//已领料
 	function doSearchCustomer2(){
 
 		$('#searchFlag').val('F');//已领料
-		$('#createCurrent').hide();
+		//$('#createCurrent').hide();
 		
-		ajaxSearch('020','false');
+		ajaxSearch('false');
 		
 	}
 			
 	//查看当前任务
-	function doSearchCurrentTask(){
-
-		$('#searchFlag').val('C');//Current:当前任务
-		$('#createCurrent').hide();
-		//按钮显示规则
+	function doSearchCurrentTask(taskType){
+		$('#keyword1').val('');
+		$('#keyword2').val('');
+		$('#searchFlag').val(taskType);//Current:当前任务
 		
-		ajaxSearch('030','false');
+		ajaxSearch('false');
 	}
-
 
 	
 	function doShow(PIId) {
@@ -375,12 +378,14 @@
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 			<div id="" style="height:40px;float: left">
-				<a  class="DTTT_button box" onclick="doSearchCurrentTask();"  id="defutBtn3">当前任务</a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer();"  id="defutBtn1">未领料</a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer2();"  id="defutBtn1">已领料</a>
+				<a  class="DTTT_button box" onclick="doSearchCurrentTask('C');"  id="defutBtnC">当前任务</a>
+				<a  class="DTTT_button box" onclick="doSearchCurrentTask('L');"  id="defutBtnL">中长期生产计划</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer();"  id="defutBtnU">未领料</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer2();"  id="defutBtnF">已领料</a>
 			</div>
 			<div id="createCurrent" style="height:40px;float: right">
-				<a  class="DTTT_button " onclick="doCreateY();" id="">添加到当前任务</a>				
+				<a  class="DTTT_button " onclick="doCreateY('C','31');" id="">添加到当前任务</a>	
+				<a  class="DTTT_button " onclick="doCreateY('L','32');" id="">添加到中长期生产计划</a>				
 			</div>
 			<table id="TMaterial" class="display" >
 				<thead>						

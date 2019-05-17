@@ -120,6 +120,7 @@
     </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
+      <f name="A.useFlag" alias="" ctype="" />
       <f name="A.materialId" alias="" ctype="" />
       <f name="A.materialName" alias="" ctype="" />
       <f name="A.categoryId" alias="" ctype="" />

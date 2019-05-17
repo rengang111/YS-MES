@@ -33,6 +33,8 @@ public class BusinessConstants {
 	public static final String PATH_ORDEREXPENSEFILE = "/file/orderexpense/";//订单过程
 	public static final String PATH_STOCKOUTVIEW = "/img/ODO/";
 	public static final String PATH_STOCKOUTFILE = "/file/ODO/";
+	public static final String PATH_DEPOTRETURNVIEW = "/img/depotreturn/";//入库退货单保存路径
+	public static final String PATH_DEPOTRETURNFILE = "/file/depotreturn/";//
 	public static final String PATH_PRODUCTDESIGNFILE = "/file/productDesign/";
 	public static final String PATH_EXCELTEMPLATE = "/file/excel/template/";
 	public static final String PATH_MATERIALREQUISITIONVIEW = "/img/materialRequisition/";

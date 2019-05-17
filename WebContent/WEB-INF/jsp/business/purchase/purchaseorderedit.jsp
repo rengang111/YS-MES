@@ -332,7 +332,7 @@
 						
 						<td>
 							<textarea id="detailList${status.index}.description" name="detailList[${status.index}].description" 
-								style="width: 300px; height: 40px;font-size: 12px;">${detail.description}</textarea></td>					
+								style="width: 500px; height: 150px;font-size: 11px;">${detail.description}</textarea></td>					
 						
 						<td>${ detail.unit }</td>
 						
@@ -360,6 +360,7 @@
 						
 						var arrivalQty = '${detail.arrivalQty}';//收货数量
 						var ReturnQty = '${detail.contractReturnQty}';//退货数量
+						var description = '${detail.description}';
 						
 						if(arrivalQty > '0'){
 							if(ReturnQty > '0'){
@@ -375,6 +376,7 @@
 						var totalPrice = floatToCurrency( price * quantity );
 						$('#totalPrice'+index).html(totalPrice);
 						$('#detailList'+index+'\\.totalprice').val(totalPrice);
+						$('#detailList'+index+'\\.description').val(replaceTextarea(description));
 
 					</script>	
 						

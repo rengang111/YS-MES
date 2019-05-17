@@ -129,7 +129,7 @@
 						
 						if (lengthB(name) > 50){
 							
-							name = '<span style="font-size:10px">' + name + '</sapn>'
+							name = '<span style="font-size:9px">' + name + '</sapn>'
 						}
 						$('#name'+index).html(name);
 					</script>
@@ -330,7 +330,7 @@ function baseBomView() {
 
 function doPrint(){
 	
-	var headstr = "<html><head><title></title></head><body>";  
+	var headstr = '<html><head><title></title></head><body style="margin: 0px 0px 0px 0px;">';  
 	var footstr = "</body>";
 	var newstr = document.getElementById("main").innerHTML;
 	//var cont = document.body.innerHTML;    

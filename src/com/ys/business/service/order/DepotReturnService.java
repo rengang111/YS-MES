@@ -1,9 +1,11 @@
 package com.ys.business.service.order;
 
+import java.io.File;
 /**
  * 仓库退货
  */
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
@@ -34,6 +37,7 @@ import com.ys.business.db.data.B_MaterialData;
 import com.ys.business.db.data.B_PurchaseOrderDetailData;
 import com.ys.business.db.data.B_PurchaseStockInData;
 import com.ys.business.db.data.B_PurchaseStockInDetailData;
+import com.ys.business.db.data.B_StockOutData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 
@@ -784,6 +788,73 @@ public class DepotReturnService extends CommonService {
 		
 
 		modelMap.put("returnCode", "SUCCESS");
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> uploadPhotoAndReload(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		B_PurchaseStockInData reqDt = reqModel.getStockin();
+		String YSId = reqDt.getYsid();
+		String receiptid = reqDt.getReceiptid();
+					
+		String viewPath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_DEPOTRETURNVIEW)+"/"+YSId+"/"+receiptid;	
+
+		String savePath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_DEPOTRETURNFILE)+"/"+YSId+"/"+receiptid;	
+						
+		String webPath = BusinessConstants.PATH_DEPOTRETURNVIEW +YSId+"/"+receiptid;
+		
+		String photoName  = YSId  +"_"+receiptid+ "_" + CalendarUtil.timeStempDate(); 
+		
+		uploadPhoto(headPhotoFile,photoName,viewPath,savePath,webPath);		
+
+		ArrayList<String> list = getFiles(savePath,webPath);
+		modelMap.put(fileList, list);
+		modelMap.put(fileCount, list.size());
+	
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> deletePhotoAndReload(
+			String folderName,String fileList,String fileCount) throws Exception {
+
+		String path = request.getParameter("path");
+		B_PurchaseStockInData reqDt = reqModel.getStockin();
+		String YSId = reqDt.getYsid();		
+		String receiptid = reqDt.getReceiptid();
+		
+		String savePath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_DEPOTRETURNFILE)+"/"+YSId+"/"+receiptid;							
+		String webPath = BusinessConstants.PATH_DEPOTRETURNVIEW +YSId+"/"+receiptid;
+
+		deletePhoto(path);//删除图片
+		
+		ArrayList<String> list = getFiles(savePath,webPath);//重新获取图片
+		
+		modelMap.put(fileList, list);
+		modelMap.put(fileCount, list.size());
+		
+		return modelMap;
+	}
+	
+	
+	public HashMap<String, Object> getProductPhoto() throws Exception {
+		
+		String YSId = request.getParameter("YSId");
+		String receiptId = request.getParameter("receiptId");
+		
+		String savePath = session.getServletContext().
+				getRealPath(BusinessConstants.PATH_DEPOTRETURNFILE)+"/"+YSId+"/"+receiptId;							
+		String webPath = BusinessConstants.PATH_DEPOTRETURNVIEW +YSId+"/"+receiptId;
+				
+		ArrayList<String> list = getFiles(savePath,webPath);//获取图片
+
+		modelMap.put("productFileList", list);
+		modelMap.put("productFileCount", list.size());
 		
 		return modelMap;
 	}

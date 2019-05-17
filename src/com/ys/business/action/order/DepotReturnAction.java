@@ -22,12 +22,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.order.DepotReturnModel;
 import com.ys.business.action.model.order.PaymentModel;
+import com.ys.business.action.model.order.StockOutModel;
 import com.ys.system.common.BusinessConstants;
 import com.ys.util.DicUtil;
 import com.ys.util.basequery.common.Constants;
 import com.ys.business.service.order.DepotReturnService;
 import com.ys.business.service.order.FinanceReportService;
 import com.ys.business.service.order.PaymentService;
+import com.ys.business.service.order.StockOutService;
 import com.ys.system.action.model.login.UserInfo;
 
 @Controller
@@ -118,6 +120,14 @@ public class DepotReturnAction extends BaseAction {
 				break;
 			case "CansolDepotReturnByStockinId":
 				dataMap = CansolDepotReturnByStockinId();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getProductPhoto"://显示附件
+				dataMap = getProductPhoto();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "productPhotoDelete"://删除出库单附件
+				dataMap = deletePhoto("product","productFileList","productFileCount");
 				printOutJsonObj(response, dataMap);
 				break;
 		}
@@ -252,40 +262,82 @@ public class DepotReturnAction extends BaseAction {
 
 		return service.CansolDepotReturnByStockinId();
 	}
-	/*
-	//付款单上传
-		@RequestMapping(value="paymentBillUpload")
-		public String doInit(
-				@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
-				@RequestBody String data,
-				@ModelAttribute("formModel")PaymentModel dataModel,
-				BindingResult result, Model model, HttpSession session, 
-				HttpServletRequest request, HttpServletResponse response){
+	
+	//入库退货单上传
+	@RequestMapping(value="depotReturnFileUpload")
+	public String doInit(
+			@RequestParam(value = "photoFile", required = false) MultipartFile[] headPhotoFile,
+			@RequestBody String data,
+			@ModelAttribute("formModel")DepotReturnModel dataModel,
+			BindingResult result, Model model, HttpSession session, 
+			HttpServletRequest request, HttpServletResponse response){
 
-			this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
-			this.service = new DepotReturnService(model,request,response,session,dataModel,userInfo);;
-			this.reqModel = dataModel;
-			this.model = model;
-			this.response = response;
-			this.session = session;
-			HashMap<String, Object> dataMap = null;
+		this.userInfo = (UserInfo)session.getAttribute(BusinessConstants.SESSION_USERINFO);
+		this.service = new DepotReturnService(model,request,response,session,dataModel,userInfo);
+		this.reqModel = dataModel;
+		this.model = model;
+		this.response = response;
+		this.session = session;
+		HashMap<String, Object> dataMap = null;
 
-			String type = request.getParameter("methodtype");
-			
-			switch(type) {
-			case "":
-				break;
-			case "uploadPhoto":
-				dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
-				printOutJsonObj(response, dataMap);
-				break;
+		String type = request.getParameter("methodtype");
 		
-			}
-			
-			
-			return null;
+		switch(type) {
+		case "":
+			break;
+		case "uploadPhoto":
+			dataMap = uploadPhoto(headPhotoFile,"product","productFileList","productFileCount");
+			printOutJsonObj(response, dataMap);
+			break;
 		}
-		*/
+		return null;
+	}
+	
+	private HashMap<String, Object> uploadPhoto(
+			MultipartFile[] headPhotoFile,
+			String folderName,String fileList,String fileCount) {
 		
+		HashMap<String, Object> map = null;
+		
+		try {
+			 map = service.uploadPhotoAndReload(headPhotoFile,folderName,fileList,fileCount);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+		return map;
+	}
+		
+	public HashMap<String, Object> getProductPhoto(){	
+
+		HashMap<String, Object> modelMap = null;
+		try {
+			modelMap = service.getProductPhoto();
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> deletePhoto(
+			String folderName,String fileList,String fileCount){	
+
+		HashMap<String, Object> modelMap = null;
+		try {
+			modelMap = service.deletePhotoAndReload(folderName,fileList,fileCount);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			modelMap.put(INFO, ERRMSG);
+		}
+		
+		return modelMap;
+	}
 	
 }

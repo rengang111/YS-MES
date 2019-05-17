@@ -1526,6 +1526,7 @@
       <f name="A.divertYsid" alias="" ctype="" />
       <f name="A.diverFlag" alias="" ctype="" />
       <f name="d.status" alias="currentSts" ctype="" />
+      <f name="d.followType" alias="currentType" ctype="" />
     </select>
     <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
     <from>
@@ -1567,7 +1568,7 @@
       ) AS A  
     	LEFT JOIN b_OrderMergeDetail b ON a.YSId=b.ysid AND b.deleteFlag = '0'
     	LEFT JOIN b_OrderProduceHide c ON a.YSId=c.ysid AND c.deleteFlag = '0'
-		LEFT JOIN b_follow  d ON a.YSId=d.YSId AND d.followType='3' AND d.deleteFlag = '0'
+		LEFT JOIN b_follow  d ON a.YSId=d.YSId AND LEFT(d.followType,1)='3' AND d.deleteFlag = '0'
       WHERE 1=1 
     </from>
     <orderby>IFNULL(b.mergeId,'0')  DESC,IFNULL(b.YSId,a.YSId),mid(A.YSId,LOCATE('-',A.YSId)+1,2)+0</orderby>
