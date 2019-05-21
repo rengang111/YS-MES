@@ -131,28 +131,25 @@ public class ReceivableService extends CommonService {
 
 		String having = "1=1 ";
 		String year   = request.getParameter("year");
-		String status = request.getParameter("status");
-		String yewuzuId = request.getParameter("yewuzuId");
-		String monthday = request.getParameter("monthday");
+		String searchSts = request.getParameter("searchSts");
+		String yewuzuId  = request.getParameter("yewuzuId");
+		String monthday  = request.getParameter("monthday");
 						
 		//*** 收汇状态
-		if(("070").equals(status)){
+		if(("070").equals(searchSts)){
+			//逾期未收款
 			userDefinedSearchCase.put("reserveDate", CalendarUtil.fmtYmdDate());
 			having = " REPLACE(actualAndBankCnt,',','')+0 <= 0 ";
-		}else if(("010").equals(status)){
-			//未收款
-		//	having = " REPLACE(actualAndBankCnt,',','')+0 <= 0 ";
-		//}else if(("020").equals(status)){
-			//部分收款
-			having = " REPLACE(actualAndBankCnt,',','')+0 < REPLACE(format(orderPrice,2),',','')+0";
-			//having = " REPLACE(actualAndBankCnt,',','')+0 > 0 AND REPLACE(actualAndBankCnt,',','')+0 < REPLACE(format(orderPrice,2),',','')+0";
-		}else if(("030").equals(status)){
+		}else if(("010").equals(searchSts)){
+			//待收款,部分收款:小于订单1%的收款也算正常
+			having = " (REPLACE(actualAndBankCnt,',','')+ orderPrice*0.1) < REPLACE(format(orderPrice,2),',','')+0";
+		}else if(("030").equals(searchSts)){
 			//已收款
-			having = "REPLACE(actualAndBankCnt,',','')+0 > 0 AND REPLACE(actualAndBankCnt,',','')+0 >= REPLACE(format(orderPrice,2),',','')+0 ";			
+			having = "REPLACE(actualAndBankCnt,',','')+0 > 0 AND (REPLACE(actualAndBankCnt,',','')+ orderPrice*0.1) >= REPLACE(format(orderPrice,2),',','')+0 ";			
 		}
 		
 		//*** 月份筛选
-		if(("030").equals(status)){
+		if(("030").equals(searchSts)){//已收款
 			if(isNullOrEmpty(monthday)){//ALL
 				monthday = "";
 				if(isNullOrEmpty(year)){//年份选择

@@ -12,7 +12,7 @@ body{
 </style>
 <script type="text/javascript">
 
-	function searchAjax(type,sessionFlag,monthday) {
+	function searchAjax(sessionFlag) {
 		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -22,9 +22,12 @@ body{
 
 		var yewuzuId   = $("#yewuzuId").val();
 		var year       = $("#year").val();
+		var searchSts = $('#searchSts').val();
+		var monthday = $('#monthday').val();
+		
 		var url = "${ctx}/business/receivable?methodtype=search";
 		url = url + "&sessionFlag="+sessionFlag;
-		url = url + "&status="+type;
+		url = url + "&searchSts="+searchSts;
 		url = url + "&year=" + year;
 		url = url + "&yewuzuId=" + yewuzuId;
 		url = url + "&monthday="+monthday;
@@ -173,9 +176,9 @@ body{
 		var searchSts = $('#searchSts').val();
 		var yewuzuId    = $('#yewuzuId').val();
 		var month     = $('#month').val();
-		var monthday  = $('#monthday').val();
+		//var monthday  = $('#monthday').val();
 		
-		searchAjax(searchSts,"true",monthday);
+		searchAjax("true");
 		
 		buttonSelectedEvent();//按钮选择式样
 		buttonSelectedEvent2();//按钮选择式样
@@ -211,7 +214,7 @@ body{
 		    
 		 	$('#defutBtn'+month).removeClass("start").addClass("end");
 		 	
-		 	searchAjax('','false',monthday);
+		 	searchAjax('false');
 	
 		});
 
@@ -252,15 +255,16 @@ body{
 	function doSearch() {	
 
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
-		var scrollHeight = $(document).height() - 200; 
 			
-		searchAjax("","false","");
+		searchAjax("false");
 
 	}
 	
-	function doSearch2(type) {	
+	//快速查询按钮
+	function doSearch2(searchSts) {	
 
 		hideAllSearch();
+		
 		
 		var collection = $(".box2");
 	    $.each(collection, function () {
@@ -268,12 +272,16 @@ body{
 	    });
 	    
 	 	$('#defutBtm'+type).removeClass("start").addClass("end");
-	 	
+
+		$('#searchSts').val(searchSts);//
+		$('#year').val('');//
+		$('#monthday').val('');//
 		
-		searchAjax(type,"false","");
+		searchAjax("false");
 
 	}
 	
+	//合并收款
 	function doCreate() {
 		var str = '';
 		var supplierId = '';
@@ -316,6 +324,7 @@ body{
 		
 	}
 	
+	//单独收款
 	function doCreate2(YSId) {
 
 		var url = '${ctx}/business/receivable?methodtype=addInit';
@@ -324,20 +333,13 @@ body{
 		
 	}
 	
+	//收款明细
 	function doShowDetail(YSId,receivableId) {
 
 		var url = '${ctx}/business/receivable?methodtype=receivableDetailInit&receivableId=' + receivableId+'&YSId='+YSId;
 
 		callWindowFullView("收汇明细",url);
 	}
-
-	function doShowContract(contractId) {
-
-		var url = '${ctx}/business/contract?methodtype=detailView&openFlag=newWindow&contractId=' + contractId;
-		
-		callWindowFullView("采购合同",url);
-	}	
-	
 
 	function fnselectall() { 
 		if($("#selectall").prop("checked")){
@@ -412,21 +414,17 @@ body{
 		$("#monthday").val(monthday);	
 		$("#month").val(monthonly);	
 		
-	 	searchAjax(searchSts,'false',monthday);		
+	 	searchAjax('false');		
 	}
 	
-	//采购员选择
+	//业务组选择
 	function doSelectUserId(userId){
-
-		var monthday  = $('#monthday').val();
-		var searchSts = $('#searchSts').val();
 		
 	 	$('#defutBtnu'+userId).removeClass("start").addClass("end");
-	 	//$('#defutBtnm'+searchSts).removeClass("start").addClass("end");
 	 	
 		$('#yewuzuId').val(userId);
 
-		searchAjax(searchSts,'false','',monthday);
+		searchAjax('false');
 	}
 	
 	//月份选择
@@ -465,7 +463,7 @@ body{
 		$('#monthday').val(monthday);
 		$('#month').val(month);
 		
-		searchAjax('030','false','',monthday);
+		searchAjax('false');
 	}
 	
 
