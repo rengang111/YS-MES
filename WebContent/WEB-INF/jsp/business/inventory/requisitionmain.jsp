@@ -223,7 +223,7 @@
 	function doSearch() {	
 
 		var searchFlag = $('#searchFlag').val();
-		if(searchFlag == 'C' || searchFlag == 'L'){
+		if(searchFlag == 'C' || searchFlag == 'L'|| searchFlag == 'N'){
 			searchFlag = "U";//未领料
 		}
 		$('#searchFlag').val(searchFlag);		
@@ -379,13 +379,15 @@
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
 			<div id="" style="height:40px;float: left">
 				<a  class="DTTT_button box" onclick="doSearchCurrentTask('C');"  id="defutBtnC">当前任务</a>
-				<a  class="DTTT_button box" onclick="doSearchCurrentTask('L');"  id="defutBtnL">中长期生产计划</a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer();"  id="defutBtnU">未领料</a>
-				<a  class="DTTT_button box" onclick="doSearchCustomer2();"  id="defutBtnF">已领料</a>
+				<a  class="DTTT_button box" onclick="doSearchCurrentTask('L');"  id="defutBtnL">中长期计划</a>
+				<a  class="DTTT_button box" onclick="doSearchCurrentTask('N');"  id="defutBtnN">未领料</a>&nbsp;&nbsp;
+				<a  class="DTTT_button box" onclick="doSearchCustomer();"  		 id="defutBtnU">未安排</a>
+				<a  class="DTTT_button box" onclick="doSearchCustomer2();"  	 id="defutBtnF">已领料</a>
 			</div>
 			<div id="createCurrent" style="height:40px;float: right">
 				<a  class="DTTT_button " onclick="doCreateY('C','31');" id="">添加到当前任务</a>	
-				<a  class="DTTT_button " onclick="doCreateY('L','32');" id="">添加到中长期生产计划</a>				
+				<a  class="DTTT_button " onclick="doCreateY('L','32');" id="">添加到中长期</a>
+				<a  class="DTTT_button " onclick="doCreateY('N','33');" id="">添加到未领料</a>
 			</div>
 			<table id="TMaterial" class="display" >
 				<thead>						

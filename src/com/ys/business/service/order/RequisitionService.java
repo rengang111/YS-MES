@@ -226,7 +226,7 @@ public class RequisitionService extends CommonService {
 		String havingCurrent = "";
 		String having2 = " computeStockinQty+0 < orderQty+0 ";//成品未全部入库
 		if(("U").equals(searchFlag)){
-			//未领料
+			//未安排
 			havingCurrent = " AND currentSts IS NULL ";//过滤掉当前任务
 		}else if(("C").equals(searchFlag)){
 			//当前任务
@@ -234,6 +234,9 @@ public class RequisitionService extends CommonService {
 		}else if(("L").equals(searchFlag)){
 			//中长期生产计划
 			havingCurrent = " AND currentSts = '0' AND currentType='32' ";//中长期生产计划
+		}else if(("N").equals(searchFlag)){
+			//未领料
+			havingCurrent = " AND currentSts = '0' AND currentType='33' ";
 		}else if(("F").equals(searchFlag)){
 			having2 = " computeStockinQty+0 >= orderQty+0 ";//成品全部入库			
 		}
@@ -1891,7 +1894,9 @@ public class RequisitionService extends CommonService {
 			//
 			for(String ysid:checkedList){
 				
-				insertFollow(ysid,taskType);										
+				deleteOldFollow(ysid,taskType);
+				
+				insertNewFollow(ysid,taskType);										
 			}
 			
 			ts.commit();
@@ -1902,7 +1907,21 @@ public class RequisitionService extends CommonService {
 		}
 	}
 	
-	private void insertFollow(String ysid,String taskType) throws Exception{
+	private void deleteOldFollow(String ysid,String followType) throws Exception{
+				
+		if(followType.length() > 1){
+			followType = followType.substring(0,1);
+		}
+		StringBuffer sql = new StringBuffer("");
+		sql.append(" DELETE FROM b_follow ");
+		sql.append(" WHERE YSId = '" + ysid + "'");
+		sql.append(" AND left(followType,1) = '" + followType + "'");
+		
+		BaseDAO.execUpdate(sql.toString());		
+		
+	}
+
+	private void insertNewFollow(String ysid,String taskType) throws Exception{
 		
 		B_FollowData fllow = new B_FollowData();
 		//插入新数据
