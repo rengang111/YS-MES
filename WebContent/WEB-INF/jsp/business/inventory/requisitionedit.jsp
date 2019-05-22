@@ -314,8 +314,8 @@
 <div style="clear: both"></div>
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >编辑保存</a>
-		<a class="DTTT_button DTTT_button_text" id="showHistory" >取消编辑</a>
+		<button type="button" id="insert"       class="DTTT_button">编辑保存</button>
+		<button type="button" id="showHistory"  class="DTTT_button" >取消编辑</button>
 		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
 	</div>
 

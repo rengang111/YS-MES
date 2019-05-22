@@ -134,6 +134,15 @@
 	
 		});
 		
+		$("#doDelete").click(
+				function() {
+			
+				var YSId = '${order.YSId }';
+				var url = "${ctx}/business/financereport?methodtype=costAccountingDelete"+"&YSId="+YSId;
+				location.href = url;	
+	
+		});
+		
 		
 		
 	});
@@ -285,6 +294,7 @@
 	</fieldset>
 	<fieldset class="action" style="text-align: right;right;margin-top: -20px;">
 		<button type="button" id="doCreate" class="DTTT_button">编辑</button>
+		<button type="button" id="doDelete" class="DTTT_button">取消核算</button>
 		<button type="button" id=goBack class="DTTT_button">返回</button>
 	</fieldset>
 	<fieldset>

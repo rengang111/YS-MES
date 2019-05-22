@@ -12,6 +12,8 @@
 	function historyAjax(scrollHeight) {
 		
 		var YSId = '${order.YSId }';
+		if(YSId == '')
+			return false;
 
 		var t = $('#example2').DataTable({			
 			"paging": false,

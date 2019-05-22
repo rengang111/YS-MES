@@ -169,7 +169,12 @@
 			lirunjisuan();
 		});
 		
-		lirunjisuan();//自动计算
+		//
+		$(".num").change(function() {
+			
+			lirunjisuan();
+		});
+		//lirunjisuan();//自动计算
 		
 	});
 	
@@ -266,8 +271,12 @@
 			rmbprice = actualSales * exchange;
 			gross = rmbprice - cost + rebate;
 		}
-		profit = gross - deductCost;//毛利-跟单费用
-		profitrate = profit / cost * 100
+		profit = gross + deductCost;//毛利-跟单费用
+		
+		if(rmbprice == '0')
+			profitrate = 0;//利润率
+		else
+			profitrate = profit / rmbprice * 100;//利润率
 		
 		$(".read-only").attr('readonly', "true");
 
@@ -389,11 +398,11 @@
 				<td class="td-center">
 					<form:input path="costBom.rebate"  class="num short read-only"   value="${cost.rebate }" /></td>
 				<td class="td-center">
-					<form:input path="costBom.vat"  class="num short read-only"   value="${cost.vat }" /></td>
+					<form:input path="costBom.vat"  class="num short "   value="${cost.vat }" /></td>
 				<td class="td-center">
 					<form:input path="costBom.gross"  class="num short read-only" value="${cost.gross }" /></td>
 				<td class="td-center">
-					<form:input path="costBom.deduct"  class="num short read-only" value="${deductCost }" /></td>
+					<form:input path="costBom.deduct"  class="num short " value="${deductCost }" /></td>
 				<td class="td-center">
 					<form:input path="costBom.profit"  class="num short read-only"   value="${cost.profit }" /></td>
 				<td class="td-center" >

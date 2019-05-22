@@ -646,7 +646,7 @@ public class FinanceReportService extends CommonService {
 	public void getOrderDetailByYSId(
 		String YSId	) throws Exception{
 
-		//dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryFileName("/business/order/orderquerydefine");
 		dataModel.setQueryName("getOrderList");		
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("YSId", YSId);
@@ -712,8 +712,13 @@ public class FinanceReportService extends CommonService {
 		dataModel.setQueryName("planBomDetailById");		
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("YSId", YSId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
-		baseQuery.getYsFullData();
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);	
+		
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		System.out.println("领料统计查询："+sql);
+		
+		baseQuery.getYsFullData(sql,YSId);
 		
 		HashMap.put("data", dataModel.getYsViewData());
 		
