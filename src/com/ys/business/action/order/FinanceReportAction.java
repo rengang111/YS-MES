@@ -141,7 +141,11 @@ public class FinanceReportAction extends BaseAction {
 			case "costAccountingUpdate"://财务核算：编辑
 				costAccountingUpdate();
 				rtnUrl = "/business/finance/costaccoutingview";
-				break;		
+				break;	
+			case "costAccountingDelete"://财务核算：重新核算
+				costAccountingDelete();
+				rtnUrl = "/business/finance/costaccoutingadd";
+				break;	
 			case "updateExchangeRate":
 				dataMap = updateExchangeRate();
 				printOutJsonObj(response, dataMap);
@@ -410,6 +414,20 @@ public class FinanceReportAction extends BaseAction {
 		
 	}
 	
+	private void costAccountingDelete() {		
+		
+		try {			
+
+			service.deleteCostBom();
+			
+			service.costAccountingAdd();
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
 	
 	private void costAccountingPeiAdd() {		
 		

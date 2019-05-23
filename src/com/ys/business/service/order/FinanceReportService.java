@@ -812,6 +812,39 @@ public class FinanceReportService extends CommonService {
 		return YSId;
 	}
 	
+	public void deleteCostBom(){
+		
+		String YSId = request.getParameter("YSId");
+		
+		ts = new BaseTransaction();
+				
+		try {
+			ts.begin();
+			
+
+			StringBuffer sql = new StringBuffer("");	
+			sql.append("DELETE FROM b_costbom ");									
+			sql.append(" WHERE YSId = '" + YSId + "'");									
+			BaseDAO.execUpdate(sql.toString());			
+			
+			sql.setLength(0);
+			sql.append("DELETE FROM b_costbomdetail	 ");									
+			sql.append(" WHERE bomId = '" + YSId + "'");									
+			BaseDAO.execUpdate(sql.toString());	
+			
+			ts.commit();			
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			try {
+				ts.rollback();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
 	private String insertCostBomData(){
 		
 		String YSId = "";

@@ -1060,7 +1060,8 @@ public class PurchasePlanService extends CommonService {
 		if(list.size() > 0 ){
 			//update
 			B_PurchasePlanDetailData db = list.get(0);
-
+			
+			data.setRecordid(null);//物料的更换是在原有物料的基础上操作的，所以，RecordId是原物料的，必须清空
 			copyProperties(db,data);
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"更新采购方案物料",userInfo);
