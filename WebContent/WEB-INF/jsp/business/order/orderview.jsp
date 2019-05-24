@@ -11,91 +11,6 @@
 var counter1  = 0;
 var ysids = "";
 
-$.fn.dataTable.TableTools.buttons.add_rows1 = $
-.extend(
-	true,
-	{},
-	$.fn.dataTable.TableTools.buttonBase,
-	{
-		"fnClick" : function(button) {
-			var rowIndex = counter1  ;
-			var trHtml = "";
-			
-			//rowIndex++;
-			var rownum = rowIndex+1;
-			var checkbox = "<input type=checkbox name='numCheck' id='numCheck' value='" + rowIndex + "' />";
-			trHtml+="<tr>";	
-			trHtml+='<td class="td-left">' + checkbox +'</td>';
-			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].diverttoysid"   id="orderDevertLines'+rowIndex+'.diverttoysid" class="short" /></td>';
-			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].divertfromysid" id="orderDevertLines'+rowIndex+'.divertfromysid" class="short attributeList1" /></td>';
-			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].materialid"     id="orderDevertLines'+rowIndex+'.materialid" class="attributeList1" /></td>';
-			trHtml+='<td class="td-center"><span id=""></span>';
-			trHtml+= '<input type="hidden" name="orderDevertLines['+rowIndex+'].divertfrompiid" id="orderDevertLines'+rowIndex+'.divertfrompiid" class="short" /></td>',
-			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].shortname"        id="orderDevertLines'+rowIndex+'.shortname" class="" /></td>',
-			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].divertquantity"   id="orderDevertLines'+rowIndex+'.divertquantity" class="short" /></td>',
-			trHtml+='<td class="td-center"><input type="text" name="orderDevertLines['+rowIndex+'].thisreductionqty" id="orderDevertLines'+rowIndex+'.thisreductionqty" class="short" /></td>',
-			trHtml+="</tr>";	
-
-			$('#documentary tbody tr:last').after(trHtml);
-			if(counter1 == 0){
-				$('#documentary tbody tr:eq(0)').hide();//删除无效行
-			}
-			counter1 += 1;//记录费用总行数
-			//alert(counter1+'::counter1')
-			autocomplete();
-				
-			foucsInit();
-			
-		}
-	});
-
-$.fn.dataTable.TableTools.buttons.reset1 = $.extend(true, {},
-		$.fn.dataTable.TableTools.buttonBase, {
-		"fnClick" : function(button) {
-			
-			if(confirm('删除后不能恢复，确定要删除吗？')){
-				
-			}else{
-				return;
-			}
-			var t=$('#documentary').DataTable();
-			
-			rowIndex = t.row('.selected').index();
-			
-			var str = true;
-			var ysidList = '';
-			$("input[name='numCheck']").each(function(){
-				if ($(this).prop('checked')) {
-					var n = $(this).parents("tr").index();  // 获取checkbox所在行的顺序
-					$('#documentary tbody').find("tr:eq("+n+")").remove();
-					
-					var fromysid = $(this).parents("tr").find('td').eq(1).text();
-					var toysid   = $(this).parents("tr").find('td').eq(2).text();
-					if(!fromysid == '')
-						ysidList += fromysid +','+toysid+';'
-					str = false;
-				}
-			});
-			
-			if(str){
-				$().toastmessage('showWarningToast', "请选择要 删除 的数据。");
-				return;
-			}else{
-				//$().toastmessage('showWarningToast', "删除后,请保存");					
-			}
-			var rowCont = true;
-			$("input[name='numCheck']").each(function(){
-				rowCont = false;
-			});			
-			if(rowCont == true){
-				$('#documentary tbody tr:eq(0)').show();//显示无效行
-				counter1 = 0;
-			}
-			
-			doDelete(ysidList);
-		}
-	});
-
 function doDelete(ysidList) {
 	
 	var PIId = '${order.PIId}';
@@ -111,8 +26,7 @@ function doDelete(ysidList) {
 		url : actionUrl,
 		data : ysidList,//
 		success : function(data) {
-
-								
+							
 			var PIId = data['PIId'];
 			documentaryAjax(PIId);	//挪用订单
 			
@@ -184,7 +98,7 @@ function documentaryAjax(PIId) {//挪用订单
 		"async"		: false,
         "ordering"  : false,
 		"sAjaxSource" : actionUrl,
-		dom : 'T<"clear">lt',
+		"dom"		: '<"clear">lt',
 		"fnServerData" : function(sSource, aoData, fnCallback) {
 			$.ajax({
 				"type" : "POST",
@@ -203,55 +117,26 @@ function documentaryAjax(PIId) {//挪用订单
 					alert(textStatus)
 				}
 			})
-		},
-		"tableTools" : {
-			"sSwfPath" : "${ctx}/plugins/datatablesTools/swf/copy_csv_xls_pdf.swf",
-			"aButtons" : [ {
-				"sExtends" : "add_rows1",
-				"sButtonText" : "追加新行"
-			},
-			{
-				"sExtends" : "reset1",
-				"sButtonText" : "删除行"
-			},
-			{
-				"sExtends" : "save1",
-				"sButtonText" : "保存"
-			}],
-		},
-    	"language": {
-    		"url":"${ctx}/plugins/datatables/chinese.json"
-    	},
-		
+		},		
 		"columns" : [
-		    {"data": null,"className" : 'td-center'},
 		    {"data": "diverToYsid", "defaultContent" : '',"className" : 'td-center'},
 		    {"data": "divertFromYsid", "defaultContent" : '',"className" : 'td-center'},
-		    {"data": "materialId", "defaultContent" : '',"className" : 'td-center'},
+		    {"data": "materialId", "defaultContent" : '',"className" : 'td-left'},
 		    {"data": "materialName", "defaultContent" : '',"className" : ''},
-		    {"data": "shortName", "className" : 'td-center'},
-		    {"data": "divertQuantity", "className" : 'td-center'},
-		    {"data": "thisReductionQty", "className" : 'td-center'},
+		    {"data": "shortName", "className" : 'td-left'},
+		    {"data": "divertQuantity", "className" : 'td-right'},
+		    {"data": "thisReductionQty", "className" : 'td-right'},
+		    {"data": null, "className" : 'td-center'},
 		    
 		],
 		"columnDefs":[
-    		{"targets":0,"render":function(data, type, row){		
-				var status = row["status"];
-    			var rownum = row["rownum"];
-				var checkbox = "<input type=checkbox name='numCheck' id='numCheck' value='" + row["recordId"] + "' />";
-
-    			return checkbox ;
-    		}},
-    		{"targets":2,"render":function(data, type, row){
-    			var status = row["status"];
-    			var rownum = row["rownum"] - 1;
-    			var rtnVal = data;
-   				rtnVal += "<input type='hidden' name='orderDevertLines["+ rownum +"].divertfromysid' id='orderDevertLines"+ rownum +".divertfromysid'  value='" + row["divertFromYsid"] + "' />"
-   				rtnVal += "<input type='hidden' name='orderDevertLines["+ rownum +"].divertoysid'    id='orderDevertLines"+ rownum +".divertoysid'     value='" + row["diverToYsid"] + "' />"
-     			
-      			return rtnVal;
-            }}         
-	           
+    		{"targets":7,"render":function(data, type, row){
+    			var edit="";
+    			//	var edit    = "<a href=\"#\" onClick=\"doUpdateDivert('" + row["recordId"] + "','" + row["YSId"] + "')\">编辑</a>";
+    			var delet   = "<a href=\"#\" onClick=\"doDeleteDivert('" + row["divertFromYsid"] + "','" + row["diverToYsid"] + "')\">删除</a>";
+    			
+    			return edit+"&nbsp;"+"&nbsp;"+delet;
+            }}
 	     ] ,			
 	})
 	
@@ -662,6 +547,26 @@ function autocomplete(){
 
 }
 
+//新增领料
+function doCreateOrderDivert(YSId) {
+	var url = "${ctx}/business/order?methodtype=addOrderDivertInit"+"&YSId="+YSId;
+	//alert('url：'+url)
+	layer.open({
+		offset :[100,''],
+		type : 2,
+		title : false,
+		area : [ '800px', '360px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		cancel: function(index){ 
+		  layer.close(index)
+		  productReciveAjax();
+		  document.getElementById('dingwei').scrollIntoView();
+		  return false; 
+		}
+	});
+}
 
 //新增领料
 function doCreateProductRecive(YSId) {
@@ -835,6 +740,56 @@ function doDeleteInvoice(recordId,quantity,YSId){
 	}
 }
 
+function doUpdateDivert(recordId,YSId) {
+
+	layerWidth  = '900px';
+	layerHeight = '360px';
+	var url = "${ctx}/business/order?methodtype=editProductInvoice&recordId=" + recordId+"&YSId="+YSId;		
+
+	layer.open({
+		offset :[50,''],
+		type : 2,
+		title : false,
+		area : [ layerWidth, layerHeight ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		cancel: function(index){ 
+			  layer.close(index)
+			  productReciveAjax();
+			  document.getElementById('dingwei').scrollIntoView();
+			  return false; 
+		}    
+	});
+}
+
+function doDeleteDivert(divertFromYsid,diverToYsid){
+
+	var PIId = '${order.PIId}';
+	
+	if (confirm("删除后不能恢复，确定要删除吗？")){ //
+		$.ajax({
+			type : "post",
+			url : "${ctx}/business/order?methodtype=deleteDivertOrder&divertFromYsid="+divertFromYsid+"&diverToYsid="+diverToYsid,
+			async : false,
+			data : 'key=',
+			dataType : "json",
+			success : function(data) {
+				document.getElementById('dingwei').scrollIntoView();
+				documentaryAjax(PIId);
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+				
+				
+			}
+		});
+	}else{
+		//
+	}
+}
 
 </script>
 </head>
@@ -925,7 +880,7 @@ function doDeleteInvoice(recordId,quantity,YSId){
 				<th class="dt-center" width="50px">销售单价<span class="order"><br />下单价格</span></th>
 				<th class="dt-center" width="80px">销售总价<span class="order"><br />下单总价</span></th>
 				<th class="dt-center" width="50px">操作</th>
-				<th class="dt-center" width="20px"></th>
+				<th class="dt-center" width="30px"></th>
 			</tr>
 			</thead>
 		<tbody>
@@ -950,7 +905,8 @@ function doDeleteInvoice(recordId,quantity,YSId){
 						<a href="###" onClick="ShowProductDesign('${order.PIId}','${order.YSId}','${order.materialId}','${order.productClassify}')">做单资料</a><br>						
 						<a href="###" onClick="ShowBomPlan('${order.YSId}','${order.materialId}')">采购方案</a></td>	
 					<td>						
-						<a href="###" onClick="doCreateProductRecive('${order.YSId}')">成品领料</a></td>										
+						<a href="###" onClick="doCreateProductRecive('${order.YSId}')">成品领料</a><br>
+						<a href="###" onClick="doCreateOrderDivert('${order.YSId}')">订单挪用</a></td>										
 				</tr>
 				<script type="text/javascript" >
 					ysids = ysids + ","+ '${order.YSId}';//取得所有耀升编号
@@ -1049,14 +1005,14 @@ function doDeleteInvoice(recordId,quantity,YSId){
 			<table id="documentary" class="display" >
 				<thead>				
 					<tr>
-						<th width="20px">No</th>
 						<th class="dt-center" width="100px">当前利用订单</th>
 						<th class="dt-center" width="100px">被挪用订单编号</th>
 						<th class="dt-center" width="200px">产品编号</th>
 						<th class="dt-center" >产品名称</th>
 						<th class="dt-center" width="100px">挪用品名</th>
 						<th class="dt-center" width="100px">挪用数量</th>
-						<th class="dt-center" width="150px">本次减少数</th>
+						<th class="dt-center" width="100px">本次减少数</th>
+						<th class="dt-center" width="50px">操作</th>
 					</tr>
 				</thead>
 			</table>

@@ -1489,9 +1489,12 @@ public class OrderService extends CommonService  {
 			float fnewtotalPrice = fnewQty * fprice;//新的销售总计
 			
 			if(fnewQty < 0){
+
+				System.out.print("divertysid:"+divertysid+",list.size():"+list.size());
+				System.out.print(dbData.toString());
 				throw new Exception("被挪用订单数不够。");
 			}
-			
+
 			dbData.setDiverflag("1");//1：被挪用
 			if(isNullOrEmpty(oldDiverQty)){//如果已存在挪用前的订单数，就不更新，保留最初的订单数
 				dbData.setDivertquantity(oldQty);//被挪用前的订单数量,
@@ -2418,8 +2421,14 @@ public class OrderService extends CommonService  {
 		try {			
 			ts.begin();
 					
-			//处理订单详情数据			
-			String piid = request.getParameter("PIId");
+			//处理订单详情数据	
+			B_OrderDivertData divert = reqModel.getDivert();
+
+			//挪用订单
+			insertOrderDivert(divert);
+			
+			/*
+			String piid = divert.getDivertfrompiid();
 			String counter = getJsonData(data, "keyBackup");
 			
 			int counterInt = 0;
@@ -2458,6 +2467,8 @@ public class OrderService extends CommonService  {
 				insertOrderDivert(newDt);
 			  
 		    } 
+		    
+		    */
 
 			ts.commit();
 			modelMap.put("returnValue", "SUCCESS");
@@ -2472,30 +2483,21 @@ public class OrderService extends CommonService  {
 		return modelMap;
 	}
 	
-	public String deleteDivertOrder(String data) throws Exception {
+	public void deleteDivertOrder(String data) throws Exception {
 
-		String piid = "";
-		String ysidList = request.getParameter("ysidList");
 		
-		if(isNullOrEmpty(ysidList)){
-			return piid;
-		}
-		String[] list = ysidList.split(";");
 		try {	
 			ts = new BaseTransaction();		
 			ts.begin();
 					
-			//处理订单详情数据			
-			piid = request.getParameter("PIId");
-			
-		
-		    for (int i = 0; i < list.length; ++i) {
+			//处理订单详情数据
+		    //for (int i = 0; i < list.length; ++i) {
 
-		    	String divertoysid    = list[i].split(",")[0];
-		    	String divertfromysid = list[i].split(",")[1];
+		    	String divertoysid    = request.getParameter("diverToYsid");
+		    	String divertfromysid = request.getParameter("divertFromYsid");
 
 			    if (isNullOrEmpty(divertoysid))
-			    	continue;
+			    	return;
 		      
 			    //取得被删除订单的挪用数量
 			    B_OrderDivertData db = deleteDivertOrderDetail(divertfromysid,divertoysid);
@@ -2510,7 +2512,7 @@ public class OrderService extends CommonService  {
 			    	foldQty = foldQty * (-1);//删除处理，扣回订单数
 				    updateParentOrderDetail(divertfromysid,floatToString(foldQty));
 			    }
-		    } 
+		   // } 
 
 			ts.commit();
 			
@@ -2518,9 +2520,7 @@ public class OrderService extends CommonService  {
 		catch(Exception e) {
 			e.printStackTrace();
 			ts.rollback();
-		}	
-		
-		return piid;
+		}
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -240,32 +240,13 @@ public class OrderAction extends BaseAction {
 				getOrderDetailByYSId();
 				rtnUrl = "/business/order/orderview";
 				break;
-			case "insertDivertOrder"://保存挪用订单
-				dataMap = insertDivertOrder(data);
-				printOutJsonObj(response, dataMap);
-				break;
-			case "getDivertOrder"://显示挪用订单
-				dataMap = getDivertOrder();
-				printOutJsonObj(response, dataMap);
-				break;
-			case "getOrderDetailForDivert"://挪用订单录入用
-				dataMap = getOrderDetailForDivert();
-				printOutJsonObj(response, dataMap);
-				break;
-			case "deleteDivertOrder"://删除挪用订单
-				dataMap = deleteDivertOrder(data);
-				printOutJsonObj(response, dataMap);
-				break;
-			case "getDivertOrderFrom"://显示挪用订单
-				dataMap = getDivertOrderFrom();
-				printOutJsonObj(response, dataMap);
-				break;
 			case "addProductReciveInit"://成品领料
 				addProductReciveInit();
 				rtnUrl = "/business/order/productreciveadd";
 				break;
-			case "addProductRecive"://保存成品领料
-				addProductRecive();
+			case "insertDivertOrder"://保存挪用订单
+				dataMap = insertDivertOrder(data);
+				printOutJsonObj(response, dataMap);
 				break;
 			case "getProductReceiveList"://显示成品领料
 				dataMap = getProductReceiveList();
@@ -277,6 +258,33 @@ public class OrderAction extends BaseAction {
 				break;
 			case "deleteProductInvoice"://删除成品领料
 				dataMap = deletePyamentRecord();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "addOrderDivertInit"://订单挪用初始化
+				addProductReciveInit();
+				rtnUrl = "/business/order/orderdivertadd";
+				break;
+			case "addProductRecive"://保存成品领料
+				addProductRecive();
+				break;
+			case "getDivertOrder"://显示挪用订单
+				dataMap = getDivertOrder();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "editOrderDivert"://编辑挪用订单
+				editProductInvoice();
+				rtnUrl = "/business/order/productreciveadd";
+				break;
+			case "getOrderDetailForDivert"://挪用订单录入用：查询订单
+				dataMap = getOrderDetailForDivert();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "deleteDivertOrder"://删除挪用订单
+				dataMap = deleteDivertOrder(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getDivertOrderFrom"://挪用详情
+				dataMap = getDivertOrderFrom();
 				printOutJsonObj(response, dataMap);
 				break;
 		}
@@ -986,9 +994,8 @@ public class OrderAction extends BaseAction {
 		
 		try {
 			
-			String PIId = orderService.deleteDivertOrder(data);
+			orderService.deleteDivertOrder(data);
 			
-			modelMap.put("PIId", PIId);
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());

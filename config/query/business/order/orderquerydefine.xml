@@ -775,7 +775,7 @@
     </select>
     <from>
     	b_OrderDivert AS a
-    	LEFT JOIN v_orderlist AS b ON b.PIId = a.divertToPIid AND a.diverToYsid = b.YSId
+    	LEFT JOIN v_orderlist AS b ON b.PIId = a.divertFromPIid AND a.divertFromYsid = b.YSId
     	WHERE a.deleteFlag = '0' 
     </from>
     <orderby>a.divertFromYsid</orderby>

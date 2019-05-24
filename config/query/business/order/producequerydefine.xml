@@ -67,6 +67,7 @@
 					v_orderlist AS a
 					LEFT JOIN v_purchasestockindetail AS b ON b.YSId = a.YSId AND b.materialId=a.materialId
 				WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) NOT IN ('BTR','BNC','CGR','PJ')
+					  AND 	REPLACE(IFNULL(a.completedQuantity,0),',','')+0 &lt; REPLACE(a.quantity,',','')+0
 					  AND  #0 
 			) a
 			GROUP BY a.YSId,a.materialId
