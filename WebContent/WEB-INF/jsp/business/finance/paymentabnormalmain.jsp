@@ -179,7 +179,7 @@ body{
 		    			var stockInStatus   = row['stockInStatus'];
 
 		    			var rtn = '已入库';
-						if(stockInStatus == 'N'){
+						if(stockInStatus == 'N' || stockInStatus == ''|| stockInStatus == null){
 							rtn = '<span class="error">未入库</span>';
 						}
 		    			

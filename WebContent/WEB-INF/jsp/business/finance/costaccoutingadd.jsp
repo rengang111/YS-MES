@@ -373,7 +373,7 @@
 			
 			if(rebaterate == 0){
 				//纯内销
-				//增值税
+				//增值税=(销售额*（1-客户折扣）*（1-客户佣金）- 材料成本）/1.16 * 0.16
 				zeng = (actualSales - mateCost) / 1.16 * 0.16 ;
 				gross = actualSales - cost - zeng;
 				rmbprice = actualSales;
@@ -396,7 +396,7 @@
 					
 		}else{
 			//纯外销			
-			//退税
+			//退税=材料成本 * 退税率 / (1+退税率)
 			rebate = mateCost * rebaterate / (1 + rebaterate);
 			rmbprice = actualSales * exchange;
 			gross = rmbprice - cost + rebate;
@@ -406,7 +406,7 @@
 		if(rmbprice == '0')
 			profitrate = 0;//利润率
 		else
-			profitrate = profit / rmbprice * 100;//利润率
+			profitrate = profit / rmbprice * 100;//利润率=(销售额-(材料+人工)-跟单费用)/销售额
 				
 		$(".read-only").attr('readonly', "true");
 
