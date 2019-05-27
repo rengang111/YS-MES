@@ -82,20 +82,30 @@
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 
-		    			var mergeYsid = row["lastCheceked"];
-		    			var stockinQty = currencyToFloat(row['stockinQty']);
-		    			var contractQty = currencyToFloat(row['contractQty']);
-		    			var peijianFlag = $('#peijianFlag').val();
+		    			var currentSts  = row["currentSts"];
+		    			var currentType = row["currentType"];
+		    			var stockinQty  = currencyToFloat(row['computeStockinQty']);
+		    			var orderQty    = currencyToFloat(row['orderQty']);
 		    			var text = row["rownum"];
-		    		/*
-		    			if(searchFlag == 'Z' && peijianFlag == ''){//展开才有复选框
-		    				var checkedFlag = 'checked';
-			    			if(mergeYsid == '0'){
-			    				checkedFlag = ''
-			    			}			    				
-			    			text = "<input "+checkedFlag+" type='checkbox' class='checkbox' name='numCheck' id='numCheck' value='" + row["rownum"] + "' />";	
+		    		
+		    			if(currentSts == '0'){
+		    				
+		    				if(currentType == '31'){
+		    					text = '当前';
+		    				}else if(currentType == '32'){
+		    					text = '中长期';
+		    					
+		    				}else if(currentType == '33'){
+		    					text = '未领料';		    					
+		    				}		    				    		
+		    			}else{
+		    				if(stockinQty >= orderQty){
+		    					text = '已领料';
+		    				}else{
+		    					text = '未安排';
+		    				}
 		    			}
-					*/
+					
 		    			return text;	
 		    			
                     }},
@@ -222,10 +232,17 @@
 	
 	function doSearch() {	
 
+		var numCheck = $("#numCheck").is(":checked");
 		var searchFlag = $('#searchFlag').val();
-		if(searchFlag == 'C' || searchFlag == 'L'|| searchFlag == 'N'){
-			searchFlag = "U";//未领料
+		if(numCheck){
+			searchFlag = '';
+			
+		}else{
+			if(searchFlag == 'C' || searchFlag == 'L'|| searchFlag == 'N'){
+				searchFlag = "U";//未领料
+			}
 		}
+		
 		$('#searchFlag').val(searchFlag);		
 	    
 		ajaxSearch('false');
@@ -353,19 +370,19 @@
 			<input type="hidden" id="peijianFlag" value="" />
 			<table>
 				<tr>
-					<td width="10%"></td> 
+					<td width="50px"></td> 
 					<td class="label" style="width:100px">关键字1：</td>
 					<td class="condition">
 						<input type="text" id="keyword1" name="keyword1" class="middle"/></td>
 					<td class="label" style="width:100px">关键字2：</td> 
 					<td class="condition">
 						<input type="text" id="keyword2" name="keyword2" class="middle"/></td>
-					<td>
-						<button type="button" id="retrieve" class="DTTT_button" 
+					<td  width="150px">
+						<label><input type="checkbox"  name="numCheck" id="numCheck" value="1"  />全状态</label>
+						<button type="button" id="retrieve2" class="DTTT_button" 
 							style="width:50px" value="查询" onclick="doSearch();"/>查询</td>
-					<td style="vertical-align: bottom;width: 150px;">
-					</td> 
-					<td width="10%"></td> 
+					
+					<td width="10px"></td> 
 				</tr>
 			
 			</table>

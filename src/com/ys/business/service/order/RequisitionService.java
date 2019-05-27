@@ -195,61 +195,35 @@ public class RequisitionService extends CommonService {
 				where = " full_field like '%"+key2+"%' ";
 			}
 		}
-		/*
-		if(("S").equals(searchFlag)){
-			//收起
-			dataModel.setQueryName("getOrderListForTaskGroup");
-		}	
 		
-		if(("030").equals(orderType)){
-			//查看隐藏数据
-			userDefinedSearchCase.put("orderType", "");
-		}else{
-			userDefinedSearchCase.put("orderType", orderType);			
-		}
-				
-		String having1 =" hideFlag='F' ";//false：不显示隐藏
-		if(("Y").equals(searchFlag)){
-			//隐藏
-			having1 = " hideFlag='T' ";//True:显示隐藏
-		}	
-		
-		//*** 全挪用
-		String having2 = "computeStockinQty+0 < orderQty+0";
-		if(("N").equals(searchFlag)){
-			where = " a.diverFlag='1' AND a.quantity+0 = 0 ";
-			having1 = " 1=1 ";
-			having2 = " 1=1 ";
-		}
-		*/
 		//*** 快捷查询
-		String havingCurrent = "";
+		String having1 =" hideFlag='F' ";//false：不显示隐藏
 		String having2 = " computeStockinQty+0 < orderQty+0 ";//成品未全部入库
 		if(("U").equals(searchFlag)){
 			//未安排
-			havingCurrent = " AND currentSts IS NULL ";//过滤掉当前任务
+			having1 += " AND currentSts IS NULL ";//过滤掉当前任务
 		}else if(("C").equals(searchFlag)){
 			//当前任务
-			havingCurrent = " AND currentSts = '0' AND currentType='31' ";//只显示当前任务
+			having1 += " AND currentSts = '0' AND currentType='31' ";//只显示当前任务
 		}else if(("L").equals(searchFlag)){
 			//中长期生产计划
-			havingCurrent = " AND currentSts = '0' AND currentType='32' ";//中长期生产计划
+			having1 += " AND currentSts = '0' AND currentType='32' ";//中长期生产计划
 		}else if(("N").equals(searchFlag)){
 			//未领料
-			havingCurrent = " AND currentSts = '0' AND currentType='33' ";
+			having1 += " AND currentSts = '0' AND currentType='33' ";
 		}else if(("F").equals(searchFlag)){
-			having2 = " computeStockinQty+0 >= orderQty+0 ";//成品全部入库			
+			//成品全部入库	
+			having2 = " computeStockinQty+0 >= orderQty+0 ";		
+		}else{
+			//全状态查询
+			having1 = " 1=1 ";
+			having2 = " 1=1 ";
 		}
 		
 		userDefinedSearchCase.put("orderType", orderType);	
-		
-		String having1 =" hideFlag='F' ";//false：不显示隐藏
-		
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
 		String sql = getSortKeyFormWeb(data,baseQuery);	
-		
-		having1 = having1 + havingCurrent;
 		
 		sql = sql.replace("#0",where );
 		sql = sql.replace("#1",having1);
