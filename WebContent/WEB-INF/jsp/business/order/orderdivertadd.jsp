@@ -19,7 +19,7 @@ var thisCount = 0;
 		$("#divert\\.divertquantity") .blur(function(){
 			
 			var num = $(this).val();// 		
-			var oldQty = currencyToFloat('${order.quantity}');
+			var oldQty = currencyToFloat('${order.totalQuantity}');
 			
 			var checkedNum = checkNumber(num);			
 			if(checkedNum == false){
@@ -142,7 +142,7 @@ var thisCount = 0;
 					<td width="80px" class="label"><label>产品编号：</label></td>
 					<td width="120px">${order.materialId}</td>
 					<td width="100px" class="label"><label>订单数量：</label></td>
-					<td width=""><span class="font16">${order.quantity}</span></td>
+					<td width=""><span class="font16">${order.totalQuantity}</span></td>
 				</tr>
 				<tr>
 					<td class="label"><label>产品名称：</label></td>

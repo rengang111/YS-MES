@@ -2427,6 +2427,13 @@ public class OrderService extends CommonService  {
 			//挪用订单
 			insertOrderDivert(divert);
 			
+			//更新被挪用的订单
+		    updateParentOrderDetail(divert.getDivertfromysid(),divert.getThisreductionqty());
+		    
+		    //更新挪用的订单
+		    updateDivertOrderDetail(divert.getDivertoysid());
+		    
+			
 			/*
 			String piid = divert.getDivertfrompiid();
 			String counter = getJsonData(data, "keyBackup");
