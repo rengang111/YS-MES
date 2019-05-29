@@ -328,7 +328,7 @@ function ContractListAjax() {
 		
 		var payment = currencyToFloat('${payment.totalPayable}');
 		
-		$('#payment\\.totalpayable').val(floatToCurrency(payment));
+		//$('#payment\\.totalpayable').val(floatToCurrency(payment));
 		
 		//剩余应付款
 		var paymentAmount = '${paymentAmount}';				
@@ -495,7 +495,7 @@ function doComputeTax(){
 	$('#paymentTotal').html(floatToCurrency(payment));
 	$('#taxesTotal').html(floatToCurrency(taxes));
 	$('#taxExcludedTotal').html(floatToCurrency(taxExcluded));
-	$('#payment\\.totalpayable').val(floatToCurrency(payment));
+	//$('#payment\\.totalpayable').val(floatToCurrency(payment));
 }
 </script>
 </head>

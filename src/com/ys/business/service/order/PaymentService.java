@@ -1593,11 +1593,12 @@ public class PaymentService extends CommonService {
 			return;
 		
 		//更新
-		copyProperties(db,payment);
+		//copyProperties(db,payment);
 		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 				"paymentRequestUpdate",userInfo);
 		copyProperties(db,commData);
 		
+		db.setFinishstatus(payment.getFinishstatus());
 		db.setFinishdate(CalendarUtil.fmtYmdDate());		
 
 		new B_PaymentDao().Store(db);

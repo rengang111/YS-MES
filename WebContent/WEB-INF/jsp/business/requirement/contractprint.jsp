@@ -129,7 +129,7 @@
 						
 						if (lengthB(name) > 50){
 							
-							name = '<span style="font-size:9px">' + name + '</sapn>'
+							name = '<span style="font-size:11px">' + name + '</sapn>'
 						}
 						$('#name'+index).html(name);
 					</script>

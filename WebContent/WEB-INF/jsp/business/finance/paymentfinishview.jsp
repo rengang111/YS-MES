@@ -197,7 +197,7 @@ function ContractListAjax() {
 	    	},		
 			"columns" : [
 			        	{"data": null,"className":"dt-body-center"
-					}, {"data": "paymentId","className":"td-left"
+					}, {"data": "paymentHistoryId","className":"td-left"
 					}, {"data": "finishDate","className":"td-center"
 					}, {"data": "finishUser","className":"td-center"
 					}, {"data": "currency", "className":"td-center",// 4
