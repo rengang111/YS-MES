@@ -399,6 +399,7 @@ function deductAjax() {
 			deduct = deduct + contractValue;
 						
 		});	
+		var dbdect = currencyToFloat($('#costDeduct').val());
 		
 		var contract = currencyToFloat($('#contractCount').text());
 		var stockin = currencyToFloat(stockinSum());
@@ -407,7 +408,12 @@ function deductAjax() {
 		var taxRate = '${ contract.taxRate }';
 		taxRate = currencyToFloat(taxRate)/100;
 		orderExpanseQty = currencyToFloat(orderExpanseQty);
-		var deductCnt = Math.abs(deduct) + Math.abs(orderExpanseQty) + Math.abs(stockin);
+		if(dbdect != 0){
+			var deductCnt = dbdect;
+		}else{
+			var deductCnt = Math.abs(deduct) + Math.abs(orderExpanseQty) + Math.abs(stockin);
+		}
+			
 		payment = contract - deductCnt;//应付款
 		taxExcluded = payment * (1 - taxRate);
 		taxes = payment - taxExcluded;
@@ -420,7 +426,7 @@ function deductAjax() {
 		$('#payment').html(floatToCurrency(payment));
 		$('#taxExcluded').html(floatToCurrency(taxExcluded));
 		$('#taxes').html(floatToCurrency(taxes));
-		$('#costDeduct').val(floatToCurrency(deductCnt));
+		//$('#costDeduct').val(floatToCurrency(deductCnt));
 		$('#oldDeduct').val(floatToCurrency(deductCnt));
 	
 	}

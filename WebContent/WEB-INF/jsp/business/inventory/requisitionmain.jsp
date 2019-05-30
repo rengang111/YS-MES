@@ -17,9 +17,11 @@
 			table.fnDestroy();
 		}
 		var searchFlag = $('#searchFlag').val();
+		var partsType = $('#partsType').val();
 		
 		var url = "${ctx}/business/requisition?methodtype=requisitionMainSearch&sessionFlag="+sessionFlag
-				+"&orderType=010"+"&searchFlag="+searchFlag;
+				+"&orderType=010"+"&searchFlag="+searchFlag
+				+"&partsType="+partsType;
 
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -205,8 +207,10 @@
 		initEvent();
 		
 		buttonSelectedEvent();//按钮选择式样
+		buttonSelectedEvent2();//按钮选择式样
 		
 		$('#defutBtnU').removeClass("start").addClass("end");
+		$('#defutBtnmP').removeClass("start").addClass("end");
 	})	
 	
 	function showHistory(YSId) {
@@ -357,6 +361,19 @@
 	}
 	
 	
+	//普通，成品
+	function doSearch3(type) {	
+		
+		//$("#keyword1").val("");
+		//$("#keyword2").val("");
+
+		$('#partsType').val(type);
+		
+		ajaxSearch("false");
+
+	}
+	
+	
 </script>
 </head>
 
@@ -368,6 +385,7 @@
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 			<input type="hidden" id="searchFlag" value="U" />
 			<input type="hidden" id="peijianFlag" value="" />
+			<input type="hidden" id="partsType"   value="C" />
 			<table>
 				<tr>
 					<td width="50px"></td> 
@@ -384,6 +402,33 @@
 					
 					<td width="10px"></td> 
 				</tr>
+				<tr>
+					<td width="50px"></td> 
+					<td class="label"> 快捷查询：</td>
+					<td class="">
+						<a id="defutBtnmP" class="DTTT_button box2" onclick="doSearch3('C');">常规订单</a>
+						<a id="defutBtnmC" class="DTTT_button box2" onclick="doSearch3('P');">配件单</a>
+					</td>
+					<td class="label"></td> 
+					<td class="">&nbsp;
+					</td>
+					<td></td>
+					<td width=""></td> 
+				</tr>
+				<tr>
+					<td width="50px"></td> 
+					<td class="label"> 快捷查询：</td>
+					<td colspan="3">
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('C');"  id="defutBtnC">当前任务</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('L');"  id="defutBtnL">中长期计划</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('N');"  id="defutBtnN">未领料</a>&nbsp;
+						<a  class="DTTT_button box" onclick="doSearchCustomer();"  		 id="defutBtnU">未安排</a>
+						<a  class="DTTT_button box" onclick="doSearchCustomer2();"  	 id="defutBtnF">已领料</a>
+					</td>
+					
+					<td></td>
+					<td width=""></td> 
+				</tr>
 			
 			</table>
 
@@ -394,13 +439,13 @@
 	<div class="list">
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
-			<div id="" style="height:40px;float: left">
+			<!-- div id="" style="height:40px;float: left">
 				<a  class="DTTT_button box" onclick="doSearchCurrentTask('C');"  id="defutBtnC">当前任务</a>
 				<a  class="DTTT_button box" onclick="doSearchCurrentTask('L');"  id="defutBtnL">中长期计划</a>
 				<a  class="DTTT_button box" onclick="doSearchCurrentTask('N');"  id="defutBtnN">未领料</a>&nbsp;&nbsp;
 				<a  class="DTTT_button box" onclick="doSearchCustomer();"  		 id="defutBtnU">未安排</a>
 				<a  class="DTTT_button box" onclick="doSearchCustomer2();"  	 id="defutBtnF">已领料</a>
-			</div>
+			</div -->
 			<div id="createCurrent" style="height:40px;float: right">
 				<a  class="DTTT_button " onclick="doCreateY('C','31');" id="">添加到当前任务</a>	
 				<a  class="DTTT_button " onclick="doCreateY('L','32');" id="">添加到中长期</a>

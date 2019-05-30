@@ -182,6 +182,7 @@ public class RequisitionService extends CommonService {
 		dataModel.setQueryName("getProduceTaskForRequisition");
 		String searchFlag = request.getParameter("searchFlag");
 		String orderType = request.getParameter("orderType");//订单类型
+		String partsType = request.getParameter("partsType");//常规订单，配件单
 		
 		String where = " 1=1 ";
 		//*** 关键字
@@ -220,6 +221,13 @@ public class RequisitionService extends CommonService {
 			having2 = " 1=1 ";
 		}
 		
+		//*** 常规订单，配件单
+		String where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) NOT IN ('BTR','BNC','CGR','PJ') ";
+		if(("P").equals(partsType)){
+			//配件单
+			where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) IN ('BTR','BNC','CGR','PJ') ";
+		}
+		
 		userDefinedSearchCase.put("orderType", orderType);	
 		baseQuery = new BaseQuery(request, dataModel);	
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -228,11 +236,13 @@ public class RequisitionService extends CommonService {
 		sql = sql.replace("#0",where );
 		sql = sql.replace("#1",having1);
 		sql = sql.replace("#2",having2);
+		sql = sql.replace("#3",where3);
 
 		List<String> list = new ArrayList<String>();
 		list.add(where);
 		list.add(having1);
 		list.add(having2);
+		list.add(where3);
 		
 		System.out.println("生产任务合并查询："+sql);
 		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
@@ -281,8 +291,8 @@ public class RequisitionService extends CommonService {
 		dataModel.setQueryName("getOrderListForRequisitionParts");	
 		
 		String requisitionSts = request.getParameter("requisitionSts");
-		if(notEmpty(key1) || notEmpty(key2))
-			requisitionSts = "";//有查询条件,不再限定其状态
+		//if(notEmpty(key1) || notEmpty(key2))
+		//	requisitionSts = "";//有查询条件,不再限定其状态
 		String having = "1=1";
 		if(("010").equals(requisitionSts)){
 			//待申请
@@ -292,7 +302,7 @@ public class RequisitionService extends CommonService {
 			having = " REPLACE(stockoutQty,',','')+0 >= REPLACE(totalQuantity,',','')+0 ";
 		}else if(("020").equals(requisitionSts)){
 			//待出库
-			dataModel.setQueryName("getRequisitionPartsAndWaitOut");	
+			//dataModel.setQueryName("getRequisitionPartsAndWaitOut");	
 			//having = " requisitionQty > 0 AND REPLACE(stockoutQty,',','')+0 < REPLACE(totalQuantity,',','')+0 ";
 		}
 
@@ -322,6 +332,88 @@ public class RequisitionService extends CommonService {
 
 	}
 	
+
+	public HashMap<String, Object> doProductPartsSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");	
+		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];		
+
+		dataModel.setQueryName("getProducePartsForRequisition");
+		String searchFlag = request.getParameter("searchFlag");
+		String orderType = request.getParameter("orderType");//订单类型
+		//010:待申请 030：已领料
+		String requisitionSts = request.getParameter("requisitionSts");
+		
+		String where = " 1=1 ";
+		//*** 关键字
+		if(notEmpty(key1) && notEmpty(key2)){
+			where = " full_field like '%"+key1+"%' AND full_field like '%"+key2+"%' ";
+		}else{
+			if(notEmpty(key1)){
+				where = " full_field like '%"+key1+"%' ";
+			}
+			if(notEmpty(key2)){
+				where = " full_field like '%"+key2+"%' ";
+			}
+		}
+		
+		//*** 快捷查询
+		String having2 = " 1=1 ";//成品未全部入库
+		if(("010").equals(requisitionSts)){
+			//未领料
+			having2 = " computeStockinQty+0 < orderQty+0 ";//成品 未 全部 入库
+		}else if(("030").equals(requisitionSts)){
+			//成品全部入库	
+			having2 = " computeStockinQty+0 >= orderQty+0 ";		
+		}
+		
+		userDefinedSearchCase.put("orderType", orderType);	
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
+		sql = sql.replace("#0",where );
+		sql = sql.replace("#1",having2);
+
+		List<String> list = new ArrayList<String>();
+		list.add(where);
+		list.add(having2);
+		
+		System.out.println("成品配件领料申请查询："+sql);
+		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);	
+		
+		return modelMap;	
+
+	}
 	
 	public HashMap<String, Object> doVirtualSearch( String data) throws Exception {
 

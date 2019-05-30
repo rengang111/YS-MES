@@ -216,6 +216,7 @@
 			}
 
 			$('#insert').attr("disabled","true").removeClass("DTTT_button");
+			
 			$('#formModel').attr("action", "${ctx}/business/requisition?methodtype=insertParts");
 			$('#formModel').submit();
 		});
@@ -311,9 +312,9 @@
 <div style="clear: both"></div>
 	
 	<div id="DTTT_container" align="right" style="height:40px;margin-right: 30px;margin-top: -15px;">
-		<a class="DTTT_button DTTT_button_text" id="insert" >确认领料</a>
-		<!-- a class="DTTT_button DTTT_button_text" id="showHistory" >查看领料记录</a -->
-		<a class="DTTT_button DTTT_button_text goBack" id="goBack" >返回</a>
+		<button type="button"class="DTTT_button " id="insert" >确认领料</button>
+		<!-- a class="DTTT_button " id="showHistory" >查看领料记录</a -->
+		<a class="DTTT_button  goBack" id="goBack" >返回</a>
 	</div>
 	<fieldset style="margin-top: -15px;">
 		<div class="list">

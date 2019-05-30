@@ -424,7 +424,14 @@ public class RequisitionAction extends BaseAction {
 		}
 		
 		try {
-			dataMap = service.doPartsSearch(data);
+			String partsType = request.getParameter("partsType");
+			if(("P").equals(partsType)){
+				//普通配件订单
+				dataMap = service.doPartsSearch(data);
+			}else{
+				//成品配件订单
+				dataMap = service.doProductPartsSearch(data);				
+			}
 			
 			ArrayList<HashMap<String, String>> dbData = 
 					(ArrayList<HashMap<String, String>>)dataMap.get("data");

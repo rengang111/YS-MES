@@ -8,7 +8,7 @@
 <title>配件订单领料申请--订单一览</title>
 <script type="text/javascript">
 
-	function ajax(pageFlg,sessionFlag,requisitionSts) {
+	function ajaxSearch(sessionFlag) {
 		
 		var table = $('#TMaterial').dataTable();
 		if(table) {
@@ -16,9 +16,12 @@
 			table.fnDestroy();
 		}
 
+		var requisitionSts = $('#requisitionSts').val();
+		var partsType = $('#partsType').val();
 		var actionUrl = "${ctx}/business/requisition?methodtype=partsMainSearch";
 		actionUrl = actionUrl + "&sessionFlag=" + sessionFlag;
 		actionUrl = actionUrl + "&requisitionSts=" + requisitionSts;
+		actionUrl = actionUrl + "&partsType=" + partsType;
 		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
@@ -63,29 +66,40 @@
 	        	},
 				"columns": [
 							{"data": null, "defaultContent" : '',"className" : 'td-center'},
-							{"data": "requisitionId", "defaultContent" : '', "className" : 'td-left'},
+							{"data": "", "defaultContent" : '', "className" : 'td-left'},
 							{"data": "YSId", "defaultContent" : '', "className" : 'td-left'},
 							{"data": "materialId", "defaultContent" : '***', "className" : 'td-left'},//3
 							{"data": "materialName", "defaultContent" : '***'},//4
 							{"data": "deliveryDate",   "defaultContent" : '***', "className" : 'td-center'},
 							{"data": "requisitionDate","defaultContent" : '-', "className" : 'td-center'},
 							{"data": "totalQuantity", "defaultContent" : '0', "className" : 'td-right'},
-							{"data": "requisitionQty", "defaultContent" : '0', "className" : 'td-right'},
-							{"data": null, "className" : 'td-center'},//10
+							{"data": "requisitionQty", "defaultContent" : '0', "className" : 'td-right'},//8
+							{"data": null, "className" : 'td-center'},//9
 						],
 				"columnDefs":[
 		    		{"targets":0,"render":function(data, type, row){
 		    			return row["rownum"] ;				    			 
                     }},
 		    		{"targets":2,"render":function(data, type, row){
-		    			var status = currencyToFloat( row["status"] );
 		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
-		    			var stockoutQty    = currencyToFloat( row["stockoutQty"] );
+		    			var orderQty   = currencyToFloat( row["orderQty"] );
+		    			var stockinQty = currencyToFloat( row["computeStockinQty"] );
+		    			var partsType  = $('#partsType').val();
 		    			var rtn="";
-		    			if(requisitionQty > 0 ){//已申请
-			    			rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["peiYsid"] + "')\">"+data+"</a>";		    				
-		    			}else {
-			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["peiYsid"] + "')\">"+data+"</a>";
+		    			if(partsType == 'P'){
+
+			    			if(requisitionQty > 0 ){//已申请
+				    			rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["peiYsid"] + "')\">"+data+"</a>";		    				
+			    			}else {
+				    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["peiYsid"] + "')\">"+data+"</a>";
+			    			}
+		    			}else{
+			    			if(stockinQty >= orderQty){//已入库
+				    			rtn= "<a href=\"###\" onClick=\"showHistoryProduct('"+ row["YSId"] + "')\">"+data+"</a>";		    				
+			    			}else {
+				    			rtn= "<a href=\"###\" onClick=\"doShowDetailProduct('"+ row["YSId"] + "')\">"+data+"</a>";
+			    			}	
+			    			
 		    			}
 		    			return rtn;
 		    		}},
@@ -108,18 +122,18 @@
 		    			var manufactureQty = currencyToFloat( row["totalQuantity"] );
 		    			var requisitionQty = currencyToFloat( row["requisitionQty"] );
 		    			var stockoutQty    = currencyToFloat( row["stockoutQty"] );
-		    			var rtn="已出库";
-		    			if(requisitionQty == '0'){
-		    				rtn = "待申请";
+		    			var rtn="";
+		    			if(stockoutQty > 0){
+		    				rtn = "已出库";
+		    			}else{
+		    				rtn = "待领料";
 		    				
-		    			} else if(stockoutQty == '0'){
-		    				rtn = "待出库";
 		    			}	    			
 		    			return rtn;
 		    		}},
 		    		{
 						"visible" : false,
-						"targets" : [1]
+						"targets" : [1,6,8]
 					}
 	         	]
 			}
@@ -143,26 +157,56 @@
 	$(document).ready(function() {
 
 		var requisitionSts = $('#requisitionSts').val();
+		var partsType = $('#partsType').val();
 		
-		ajax("","true",requisitionSts);
+		ajaxSearch("true");
 		
 		buttonSelectedEvent();//按钮选择式样
+		buttonSelectedEvent2();//按钮选择式样
 
 		$('#defutBtn'+requisitionSts).removeClass("start").addClass("end");
+		$('#defutBtnm'+partsType).removeClass("start").addClass("end");
 		
 	})	
 	
 	function doSearch() {	
 
-		ajax("purchaseplan","false","");
+		/*
+		$('#requisitionSts').val('');
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+		var collection = $(".box2");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    */
+	    
+		ajaxSearch("false");
 
 	}
-	function doSearch2(colNum,type) {	
+	
+	function doSearch2(type) {	
 		
-		$("#keyword1").val("");
-		$("#keyword2").val("");
+		//$("#keyword1").val("");
+		//$("#keyword2").val("");
+
+		$('#requisitionSts').val(type);
+
+		ajaxSearch("false");
+
+	}
+	
+	//普通，成品
+	function doSearch3(type) {	
 		
-		ajax("","false",type);
+		//$("#keyword1").val("");
+		//$("#keyword2").val("");
+
+		$('#partsType').val(type);
+		
+		ajaxSearch("false");
 
 	}
 	
@@ -170,17 +214,30 @@
 	function doShowDetail(YSId) {
 
 		var url =  "${ctx}/business/requisition?methodtype=peiAddinit&YSId="+YSId;
-		location.href = url;
+		callWindowFullView('装配领料',url);	
 	}
 	
 
 	function showHistory(YSId) {
 
 		var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInitParts&YSId="+YSId;
-		location.href = url;		
+		callWindowFullView('装配领料',url);	
 	};
 
+	function showHistoryProduct(YSId) {
+		var virtualClass = $('#virtualClass').val();
+		var url = "${ctx}/business/requisition?methodtype=getRequisitionHistoryInit&YSId="+YSId+"&virtualClass="+virtualClass;
+		callWindowFullView('出库详情',url);		
+	};
 	
+	function doShowDetailProduct(YSId) {
+		
+		var methodtype = "addinit"
+		
+		var url =  "${ctx}/business/requisition?methodtype="+methodtype+"&YSId="+YSId;
+		callWindowFullView('装配领料',url)
+		
+	}
 </script>
 </head>
 
@@ -191,12 +248,13 @@
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
 			<!-- 虚拟领料区分 -->
-			<input type="hidden" id="virtualClass" value="${virtualClass }" />
+			<input type="hidden" id="virtualClass"   value="${virtualClass }" />
 			<input type="hidden" id="requisitionSts" value="${requisitionSts }" />
+			<input type="hidden" id="partsType"      value="P" />
 			
 			<table>
 				<tr>
-					<td width="10%"></td> 
+					<td width="50px"></td> 
 					<td class="label">关键字1：</td>
 					<td class="condition">
 						<input type="text" id="keyword1" name="keyword1" class="middle"/>
@@ -209,7 +267,25 @@
 						<button type="button" id="retrieve" class="DTTT_button" 
 							style="width:50px" onclick="doSearch();">查询</button>
 					</td>
-					<td width="10%"></td> 
+					<td width=""></td> 
+				</tr>
+				
+				<tr>
+					<td width="50px"></td> 
+					<td class="label"> 快捷查询：</td>
+					<td class="">&nbsp;
+						<a id="defutBtn010" class="DTTT_button box2" onclick="doSearch2('010');">未领料</a>
+						<a id="defutBtn030" class="DTTT_button box2" onclick="doSearch2('030');" >已领料</a>
+					</td>
+					<td class="label"></td> 
+					<td class="">&nbsp;
+					<!--  
+						<a id="defutBtnmP" class="DTTT_button box" onclick="doSearch3('P');">普通配件</a>
+						<a id="defutBtnmC" class="DTTT_button box" onclick="doSearch3('C');">成品配件</a>
+					-->
+					</td>
+					<td></td>
+					<td width=""></td> 
 				</tr>
 			</table>
 
@@ -219,11 +295,11 @@
 
 	<div class="list">					
 		<div id="DTTT_container" style="height:40px;margin-bottom: -10px;float:left">
-			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(1,'010');" id="defutBtn010"><span>未申请</span></a>
-			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'020');" id="defutBtn020"><span>待出库</span></a>
-			<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'030');" id="defutBtn030"><span>已出库</span></a -->
+			<!--a class="DTTT_button DTTT_button_text box" onclick="doSearch32(1,'010');" id="defutBtn010"><span>未申请</span></a>
+			<!--a class="DTTT_button DTTT_button_text box" onclick="doSearch32(8,'020');" id="defutBtn020"><span>待出库</span></a>
+			<!-- a class="DTTT_button DTTT_button_text box" onclick="doSearch32(8,'030');" id="defutBtn030"><span>已出库</span></a -->
 			<!-- 
-			<a class="DTTT_button DTTT_button_text box" onclick="doSearch2(8,'040');" id="defutBtn040"><span>成品已入库但未领料</span></a> -->
+			<a class="DTTT_button DTTT_button_text box" onclick="doSearch32(8,'040');" id="defutBtn040"><span>成品已入库但未领料</span></a> -->
 		</div>
 		<table id="TMaterial" class="display">
 			<thead>						

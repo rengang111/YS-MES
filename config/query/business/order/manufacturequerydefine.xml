@@ -1559,9 +1559,10 @@
 				FROM 
 					v_orderlist AS a
 					LEFT JOIN v_purchasestockindetail AS b ON b.YSId = a.YSId AND b.materialId=a.materialId
-				WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) NOT IN ('BTR','BNC','CGR','PJ')
-					 -- AND 	REPLACE(IFNULL(a.completedQuantity,0),',','')+0 &lt; REPLACE(a.quantity,',','')+0
-					  AND  #0 
+				WHERE 
+					#3
+					AND
+				  	#0 
 			) a
 			GROUP BY a.YSId,a.materialId
 		 	HAVING #2
@@ -1578,5 +1579,84 @@
     <having>#1</having>
 	<power>
 	</power>    
+  </query>
+  <!-- 配件单的领料申请 -->
+  <query>
+    <pool></pool>     
+    <name value="getProducePartsForRequisition" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="IFNULL(A.machineModel,'')" alias="machineModel" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.computeStockinQty" alias="" ctype="" />
+      <f name="A.orderQty" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="MaxDeliveryDate" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.team" alias="" ctype="业务组" />
+      <f name="A.orderType" alias="" ctype="" />
+      <f name="A.completedQuantity" alias="" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.divertYsid" alias="" ctype="" />
+      <f name="A.diverFlag" alias="" ctype="" />
+      <f name="A.stockinQty" alias="" ctype="" />
+      <f name="A.checkInDate" alias="requisitionQty" ctype="" />
+      <f name="A.checkInDate" alias="" ctype="" />
+    </select>
+    <from>
+      (
+		SELECT
+			COUNT(a.stockinQty) stockinCnt,
+			SUM(a.stockinQty) stockinQty,
+			a.completedQuantity,
+			IF(SUM(a.stockinQty) &lt;=0,a.completedQuantity,SUM(a.stockinQty)) computeStockinQty,
+			MAX(a.checkInDate) checkInDate,
+			a.PIId,
+			a.YSId,A.machineModel,
+			a.materialId,A.materialName,
+			a.orderQty,a.totalQuantity,
+			a.divertYsid,A.diverFlag,A.customerId,A.shortName,A.orderType,A.team,A.currency,A.deliveryDate,A.orderDate,A.totalprice,
+			a.full_field
+		FROM
+			(
+				SELECT 
+					a.PIId,
+					a.YSId,A.machineModel,
+					a.materialId,A.materialName,
+					REPLACE(a.quantity,',','') orderQty,
+					REPLACE(a.totalQuantity,',','') totalQuantity,
+					REPLACE(IFNULL(a.completedQuantity,0),',','') completedQuantity,
+					REPLACE(IFNULL(b.quantity,0),',','') stockinQty,
+					b.checkInDate,
+					a.full_field,
+					a.divertYsid,A.diverFlag,A.customerId,A.shortName,A.orderType,A.team,A.currency,A.deliveryDate,A.orderDate,A.totalprice
+				FROM 
+					v_orderlist AS a
+					LEFT JOIN v_purchasestockindetail AS b ON b.YSId = a.YSId AND b.materialId=a.materialId
+				WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) IN ('BTR','BNC','CGR','PJ')
+					  AND  #0 
+			) a
+			GROUP BY a.YSId,a.materialId
+		 	HAVING #1
+		 
+      ) AS A 
+      WHERE 1=1 
+    </from>
+    <orderby>a.YSId,mid(A.YSId,LOCATE('-',A.YSId)+1,2)+0</orderby>
+    <groupby></groupby>
+    <!-- hideFlag='F 不显示隐藏数据   -->
+    <having></having>
+	<power></power>    
   </query>
 </root>
