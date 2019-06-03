@@ -2268,7 +2268,10 @@ public class PurchasePlanService extends CommonService {
 			String webPlanId = web.getPurchaseid();
 			String webMateId = web.getMaterialid();
 			String webSubId  = web.getSubbomno();
-			float webPlanQty = stringToFloat(web.getTotalrequisition());//领料数量
+			String webTolReqQty = web.getTotalrequisition();
+			float webPlanQty = stringToFloat(webTolReqQty);//领料数量
+			if(isNullOrEmpty(webTolReqQty))//领料数量为空时，去生产数量（领料数量是后追加的字段，有些旧数据为空）
+				webPlanQty = stringToFloat(web.getManufacturequantity());
 			
 			boolean exflg = true;
 			for(B_PurchasePlanDetailData db:dbList){
@@ -2276,8 +2279,11 @@ public class PurchasePlanService extends CommonService {
 				String dbPlanId = db.getPurchaseid();  
 				String dbMateId = db.getMaterialid();
 				String dbSubId = db.getSubbomno();
-				float dbPlanQty = stringToFloat(db.getTotalrequisition());//领料数量
-				
+				String totalReqQty = db.getTotalrequisition();
+				float dbPlanQty = stringToFloat(totalReqQty);//领料数量
+				if(isNullOrEmpty(totalReqQty))//领料数量为空时，去生产数量（领料数量是后追加的字段，有些旧数据为空）
+					dbPlanQty = stringToFloat(db.getManufacturequantity());
+								
 				if(isNullOrEmpty(webPlanId))
 					break;
 				

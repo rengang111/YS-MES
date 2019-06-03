@@ -17,18 +17,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.ys.system.action.common.BaseAction;
-import com.ys.business.action.model.order.OrderModel;
-import com.ys.business.action.model.order.OrderReviewModel;
 import com.ys.business.action.model.order.ProduceModel;
 import com.ys.system.common.BusinessConstants;
-import com.ys.util.CalendarUtil;
 import com.ys.util.basequery.common.Constants;
-import com.ys.business.service.order.OrderReviewService;
-import com.ys.business.service.order.OrderService;
 import com.ys.business.service.order.ProduceService;
 import com.ys.system.action.model.login.UserInfo;
 
@@ -97,6 +89,34 @@ public class ProduceAction extends BaseAction {
 				break;
 			case "productTaskOrderShow"://订单显示
 				dataMap = productTaskOrderShow();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "produceLineCodeInit":
+				doProduceLineCodeInit();
+				rtnUrl = "/business/produce/producelinemain";
+				break;
+			case "produceLineCodeSearch":
+				dataMap = doProduceLineCodeSearch(Constants.FORM_PRODUCELINECODE,data);
+				printOutJsonObj(response, dataMap);
+				break;	
+			case "addTopInit":
+				addTopInit();
+				rtnUrl = "/business/produce/producelineadd";
+				break;	
+			case "addWarehouseCode":
+				dataMap = addWarehouseCode();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "editWarehouseCode":
+				doEdit();
+				rtnUrl = "/business/produce/producelineedit";
+				break;
+			case "updateWarehouseCode":
+				dataMap = updateWarehouseCode();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "deleteWarehouseCode":
+				dataMap = deleteWarehouseCode();
 				printOutJsonObj(response, dataMap);
 				break;
 		}
@@ -196,6 +216,111 @@ public class ProduceAction extends BaseAction {
 		}
 		
 		return modelMap;
+	}
+
+	
+	public void doProduceLineCodeInit(){	
+		
+		try {
+			orderService.produceLineCodeSearchInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doProduceLineCodeSearch(String formId, String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);			
+		}
+				
+		try {
+			dataMap = orderService.produceLineCodeSearch(formId,data);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> deleteWarehouseCode() throws Exception{
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		try{
+			orderService.deleteWarehouseCode();
+			dataMap.put(INFO, "SUCCESSMSG");
+		}catch(Exception e){
+			dataMap.put(INFO, "ERRMSG");
+			e.printStackTrace();
+		}
+
+		return dataMap;
+	}
+	
+
+	public HashMap<String, Object> updateWarehouseCode(){
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		try{
+			orderService.updateWarehouseCode();
+			dataMap.put(INFO, "SUCCESSMSG");
+		}catch(Exception e){
+			dataMap.put(INFO, "ERRMSG");
+			e.printStackTrace();
+		}
+		
+		return  dataMap;
+		
+	}
+	
+
+	public void addTopInit(){
+
+		try{
+			orderService.getParentCodeDetail();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	
+	public HashMap<String, Object> addWarehouseCode(){
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		try{
+			orderService.insertWarehouseCode();
+			dataMap.put(INFO, "SUCCESSMSG");
+		}catch(Exception e){
+			dataMap.put(INFO, "ERRMSG");
+			e.printStackTrace();
+		}
+		
+		return  dataMap;
+		
+	}
+	
+
+	public void doEdit(){
+		try{
+			orderService.getParentCodeDetail();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
 	}
 	
 }

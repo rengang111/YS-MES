@@ -1208,7 +1208,17 @@
       <f name="IFNULL(REPLACE (b.quantity, ',', ''),0)" alias="stockoutQty" ctype="" />
 
     </select>
-    <from>  ( SELECT 	a.YSId AS YSId, 	a.materialId AS materialId, 	b.materialName AS materialName, 	a.deleteFlag, a.unitQuantity,	format(sum(	REPLACE (a.manufactureQuantity,	',',''	)),2) AS manufactureQuantity  FROM  		b_purchaseplandetail a 		JOIN b_material b ON  b.materialId = a.materialId AND (b.deleteFlag = '0')  WHERE a.deleteFlag='0' AND A.materialId = '#'  GROUP BY 	a.YSId )	  a LEFT JOIN  ( SELECT 	b.YSId AS YSId, 	a.materialId AS materialId, 	COUNT(a.materialId) countQty, 	sum( 		REPLACE ( 			ifnull(a.quantity, 0), 			',', 			'' 		) 	) AS quantity FROM  		b_stockoutdetail a 		LEFT JOIN b_stockout b ON a.stockOutId = b.stockOutId AND b.deleteFlag = '0'    WHERE (a.deleteFlag = '0') AND a.materialId = '#' GROUP BY 	b.YSId )  b ON a.materialId = b.materialId AND instr(b.ysid, LEFT(a.ysid, 8)) > 0 LEFT JOIN  ( SELECT a.YSId, a.materialId, b.materialName,a.completedQuantity, if(IFNULL(c.quantity,0)&lt;=0,ifNULL(a.completedQuantity,0),IFNULL(c.quantity,0)) stockinQty,  a.quantity FROM b_orderdetail a JOIN b_material b ON a.materialId=b.materialId LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.ysid=c.ysid AND  a.materialId = c.materialId WHERE a.deleteFlag='0')  e ON e.ysid=a.ysid   WHERE 	A.deleteFlag = '0' AND LEFT(a.YSId,2) > 17 </from>
+    <from>
+    	( SELECT 	
+    		a.YSId AS YSId, 	a.materialId AS materialId, 
+    		b.materialName AS materialName, 	a.deleteFlag, a.unitQuantity,	format(sum(	REPLACE (a.totalRequisition,	',',''	)),2) AS manufactureQuantity  
+    	  FROM
+    	  	b_purchaseplandetail a
+			JOIN b_material b ON  b.materialId = a.materialId AND (b.deleteFlag = '0')  
+		  WHERE a.deleteFlag='0' AND A.materialId = '#'  
+		  GROUP BY 	a.YSId 
+		 )  a 
+		 LEFT JOIN  ( SELECT 	b.YSId AS YSId, 	a.materialId AS materialId, 	COUNT(a.materialId) countQty, 	sum( 		REPLACE ( 			ifnull(a.quantity, 0), 			',', 			'' 		) 	) AS quantity FROM  		b_stockoutdetail a 		LEFT JOIN b_stockout b ON a.stockOutId = b.stockOutId AND b.deleteFlag = '0'    WHERE (a.deleteFlag = '0') AND a.materialId = '#' GROUP BY 	b.YSId )  b ON a.materialId = b.materialId AND instr(b.ysid, LEFT(a.ysid, 8)) > 0 LEFT JOIN  ( SELECT a.YSId, a.materialId, b.materialName,a.completedQuantity, if(IFNULL(c.quantity,0)&lt;=0,ifNULL(a.completedQuantity,0),IFNULL(c.quantity,0)) stockinQty,  a.quantity FROM b_orderdetail a JOIN b_material b ON a.materialId=b.materialId LEFT JOIN v_purchasestockin_groupby_ysid_materialid c ON a.ysid=c.ysid AND  a.materialId = c.materialId WHERE a.deleteFlag='0')  e ON e.ysid=a.ysid   WHERE 	A.deleteFlag = '0' AND LEFT(a.YSId,2) > 17 </from>
     <orderby>A.YSId</orderby>
     <groupby></groupby>
     <having>waitout + 0 > 0 </having>

@@ -161,4 +161,107 @@
     <having></having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="produceLineTopCodeIdList" />
+    <where>
+   		<w name="A.codeId" des=""  reqName="codeId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.codeId" alias="" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="A.multiLevel" alias="" ctype="" />
+      <f name="A.sortNo" alias="" ctype="" />
+      <f name="A.effectiveFlag" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+    </select>
+    <from>
+		s_produceLineCode a
+		where a.parentId='0'
+	</from>
+    <orderby>a.sortNo</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getMAXParentCode" />
+     <where>
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="IFNULL(subId,'0')" alias="MaxSubId" ctype="" />
+      <f name="codeName" alias="" ctype="" />
+      <f name="parentId" alias="" ctype="" />
+      <f name="codeId" alias="" ctype="" />
+      <f name="sortNo" alias="" ctype="" />
+  </select>
+    <from> s_produceLineCode a </from>
+    <orderby> a.sortNo DESC</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getProduceLineCodeList" />
+    <where>
+    </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.codeId" alias="" ctype="" />
+      <f name="a.codeType" alias="" ctype="" />
+      <f name="a.codeName" alias="" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="A.multiLevel" alias="" ctype="" />
+      <f name="A.sortNo" alias="" ctype="" />
+      <f name="A.effectiveFlag" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+    </select>
+    <from>
+		(
+			SELECT 
+			a.codeId,
+			a.codeName,
+			a.recordId,
+			a.parentId,
+			a.subId,
+			a.multiLevel,
+			a.sortNo,
+			a.effectiveFlag,
+			a.remarks,
+			substring_index( substring_index( a.codeType, ',', b.help_topic_id + 1 ), ',',-1 ) codeType
+			FROM 
+				(
+				SELECT 					
+					a.codeId,
+					a.codeName,
+					a.codeType,
+					a.recordId,
+					a.parentId,
+					a.subId,
+					a.multiLevel,
+					a.sortNo,
+					a.effectiveFlag,
+					a.remarks
+				FROM s_produceLineCode s 
+				JOIN s_produceLineCode a ON s.sortNo = SUBSTR(a.sortNo FROM 1 FOR LENGTH(s.sortNo)) AND a.deleteFlag='0'
+				WHERE s.deleteFlag='0'
+				) a
+			LEFT JOIN mysql.help_topic b ON b.help_topic_id &lt; ( length( a.codeType ) - length( REPLACE ( a.codeType, ',', '' ) ) + 1 ) 
+			
+			ORDER BY codeType
+		) a
+	</from>
+    <orderby>a.sortNo</orderby>
+    <groupby>a.codeId</groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>  
 </root>
