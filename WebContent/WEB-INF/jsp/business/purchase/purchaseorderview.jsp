@@ -326,7 +326,7 @@ function deductAjax() {
 		
 		contractSum();//合同计算
 		
-		//expenseAjax3();//订单过程扣款明细
+		expenseAjax3();//合同扣款明细
 		
 		stockinAjax();//入库退货
 		
@@ -493,7 +493,7 @@ function expenseAjax3() {//工厂（供应商）增减费用
 						
 						fnCallback(data);
 
-						//supplierSum();
+						supplierSum();
 						
 					},
 					error : function(XMLHttpRequest, textStatus, errorThrown) {
@@ -507,26 +507,26 @@ function expenseAjax3() {//工厂（供应商）增减费用
 			
 			"columns" : [
 			    {"data": null,"className" : 'td-center'},
-			    {"data": "supplierId", "defaultContent" : '',"className" : 'td-center'},//供应商
-			    {"data": "contractId", "defaultContent" : '',"className" : 'td-center'},//合同编号
-			    {"data": "costName", "defaultContent" : '',"className" : 'td-left'},//增减内容3
-			    {"data": "cost", "defaultContent" : '',"className" : 'td-right'},//金额4
-			    {"data": "remarks", "defaultContent" : ''},//备注5
+			    {"data": "YSId", "defaultContent" : '',"className" : 'td-center'},//
+			    {"data": "cost", "defaultContent" : '',"className" : 'td-center'},//合同编号
+			    {"data": "costName", "defaultContent" : '',"className" : 'td-center'},//增减内容3
+			    {"data": "createTime", "defaultContent" : '',"className" : 'td-center'},//
+			    {"data": null, "defaultContent" : '',"className" : 'td-center'},//
 			],
 			"columnDefs":[
 	    		{"targets":0,"render":function(data, type, row){	
 	    			var rownum = row["rownum"];
 	    			return rownum;
+	    		}},
+	    		{"targets":5,"render":function(data, type, row){	
+	    			var edit    = "<a href=\"###\" onClick=\"doUpdateInvoice('" + row["recordId"] + "')\">编辑</a>";
+	    			var delet   = "<a href=\"###\" onClick=\"doDeleteInvoice('" + row["recordId"] + "')\">删除</a>";
+	    			
+	    			return edit+"&nbsp;"+"&nbsp;"+delet;
 	    		}}
 		     ] ,
 		})
 		
-		t.on('change', 'tr td:nth-child(5)',function() {
-			
-			var $tds = $(this).parent().find("td");
-			var $cost = $tds.eq(4).find("input");//金额			
-			$cost.val(floatToCurrency($cost.val()));
-		});
 	
 };//供应商
 
@@ -534,7 +534,7 @@ function expenseAjax3() {//工厂（供应商）增减费用
 function supplierSum(){	
 	var contract = 0;	
 	$('#supplier tbody tr').each (function (){
-		var contractValue = $(this).find("td").eq(4).text();//
+		var contractValue = $(this).find("td").eq(2).text();//
 		contractValue= currencyToFloat(contractValue);
 		contract = contract + contractValue;
 	});	
@@ -775,16 +775,6 @@ function stockinList() {//收货记录
 	
 };//收货
 
-//
-function supplierSum2(){	
-	var contract = 0;	
-	$('#supplier tbody tr').each (function (){
-		var contractValue = $(this).find("td").eq(4).text();//
-		contractValue= currencyToFloat(contractValue);
-		contract = contract + contractValue;
-	});	
-	$('#supplierSum').html(floatToCurrency(contract));
-}
 
 function doShowDetail2(requisitionId) {
 	var virtualClass = $('#virtualClass').val();
@@ -864,7 +854,84 @@ function contractPayment() {//付款记录
 	
 };//
 
+//新增扣款
+function doCreateDeduction() {
+	var YSId = $('#contract\\.ysid').val();
+	var contractId = $('#contract\\.contractid').val();
+	var url = "${ctx}/business/bom?methodtype=addContractDeductionInit";
+	url += "&YSId="+YSId;
+	url += "&contractId="+contractId;
+	
+	layer.open({
+		offset :[100,''],
+		type : 2,
+		title : false,
+		area : [ '800px', '260px' ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		cancel: function(index){ 
+		  layer.close(index)
+		  expenseAjax3();
+			document.getElementById('dingwei').scrollIntoView();
+		  return false; 
+		}
+	});
+}
 
+function doUpdateInvoice(recordId) {
+
+	layerWidth  = '900px';
+	layerHeight = '260px';
+	var YSId = $('#contract\\.ysid').val();
+	var contractId = $('#contract\\.contractid').val();
+	var url = "${ctx}/business/bom?methodtype=editProductInvoice&recordId=" + recordId;		
+	url += "&YSId="+YSId;
+	url += "&contractId="+contractId;
+
+	layer.open({
+		offset :[50,''],
+		type : 2,
+		title : false,
+		area : [ layerWidth, layerHeight ], 
+		scrollbar : false,
+		title : false,
+		content : url,
+		cancel: function(index){ 
+			  layer.close(index)
+			  expenseAjax3();
+			  document.getElementById('dingwei').scrollIntoView();
+			  return false; 
+		}    
+	});
+}
+
+function doDeleteInvoice(recordId){
+	
+	
+	if (confirm("删除后不能恢复，确定要删除吗？")){ //
+		$.ajax({
+			type : "post",
+			url : "${ctx}/business/bom?methodtype=deleteProductInvoice&recordId="+recordId,
+			async : false,
+			data : 'key=' + recordId,
+			dataType : "json",
+			success : function(data) {
+				expenseAjax3();
+				document.getElementById('dingwei').scrollIntoView();
+			},
+			error : function(
+					XMLHttpRequest,
+					textStatus,
+					errorThrown) {
+				
+				
+			}
+		});
+	}else{
+		//
+	}
+}
 </script>
 </head>
 <body>
@@ -1096,35 +1163,37 @@ function contractPayment() {//付款记录
 			</table>
 		</div>
 	</fieldset>
-	<!-- 
+	
 	<fieldset>
-		<span class="tablename"> 订单过程扣款明细</span>
+		<span class="tablename"> 合同扣款</span>
+		<a id="doCreateDeduction" href="###" onClick="doCreateDeduction();return false;">新增扣款</a>
 		<div class="list">		
 		<table id="supplier" class="display" >
 			<thead>				
 				<tr>
 					<th width="20px">No</th>
-					<th class="dt-center" width="100px">供应商</th>
-					<th class="dt-center" width="150px">合同编号</th>
-					<th class="dt-center" width="200px">增减内容</th>
-					<th class="dt-center" width="100px">金额</th>
-					<th class="dt-center">备注</th>
+					<th class="dt-center" width="100px">耀升编号</th>
+					<th class="dt-center" width="150px">扣款金额</th>
+					<th class="dt-center" width="">扣款原因</th>
+					<th class="dt-center" width="100px">填写时间</th>
+					<th class="dt-center" width="100px"></th>
 				</tr>
 				</thead>	
 				<tfoot>
 					<tr>
 						<td></td>
 						<td></td>
+						<td><div id="supplierSum"></div></td>
 						<td></td>
-						<td style="text-align: right;">扣款合计：</td>
-						<td ><div id="supplierSum"></div></td>
-						<td ></td>
+						<td></td>
+						<td></td>
 					</tr>
 				</tfoot>					
 			</table>
+			<div id="dingwei"></div>
 		</div>
 	</fieldset>
-	 -->
+	 
 	<fieldset>
 		<span class="tablename"> 合同入库扣款明细</span>（点击【取消】，该条记录可以修改为“不扣款”）
 		<div class="list">		

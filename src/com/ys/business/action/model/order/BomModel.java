@@ -10,6 +10,7 @@ import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderExpenseData;
+import com.ys.business.db.data.B_OrderExpenseDetailData;
 import com.ys.util.basequery.common.BaseModel;
 
 public class BomModel extends BaseModel {
@@ -40,6 +41,16 @@ public class BomModel extends BaseModel {
 	private List<B_OrderExpenseData> documentaryLines2;
 	private List<B_OrderExpenseData> documentaryLines3;
 	private List<B_OrderExpenseData> documentaryLines4;
+	private B_OrderExpenseDetailData expense;
+
+	
+	public void setExpense(B_OrderExpenseDetailData expense) {
+		this.expense = expense;
+	}
+	
+	public B_OrderExpenseDetailData getExpense() {
+		return this.expense;
+	}
 
 	
 	public void seOrderDetail(B_OrderDetailData orderDetail) {

@@ -326,6 +326,8 @@ function doCreatePrice() {
 		
 		ContractListAjax();//合同明细
 		
+		paymentHistoryAjax();//付款明细
+		
 		$(".goBack").click(
 				function() {
 					var paymentTypeId=$("#paymentTypeId").val();
@@ -700,6 +702,123 @@ function invoiceCountFn(){
 	$('#invoiceCnt').text(floatToCurrency(cost));
 	
 }
+
+function paymentHistoryAjax() {
+	
+	var table = $('#history').dataTable();
+	if(table) {
+		table.fnClearTable(false);
+		table.fnDestroy();
+	}
+	var paymentId = $('#payment\\.paymentid').val();
+
+	var t = $('#history').DataTable({			
+		"paging": false,
+		"lengthChange":false,
+		"lengthMenu":[50,100,200],//设置一页展示20条记录
+		"processing" : false,
+		"serverSide" : false,
+		"stateSave" : false,
+		"ordering "	:true,
+		"searching" : false,
+		"retrieve" : true,
+		dom : '<"clear">rt',
+		"sAjaxSource" : "${ctx}/business/payment?methodtype=paymentHistoryList&paymentId="+paymentId,
+		"fnServerData" : function(sSource, aoData, fnCallback) {
+			var param = {};
+			var formData = $("#condition").serializeArray();
+			formData.forEach(function(e) {
+				aoData.push({"name":e.name, "value":e.value});
+			});
+
+			$.ajax({
+				"url" : sSource,
+				"datatype": "json", 
+				"contentType": "application/json; charset=utf-8",
+				"type" : "POST",
+				"data" : JSON.stringify(aoData),
+				success: function(data){							
+					fnCallback(data);		
+					
+					paymentSum();//已付款合计
+				},
+				 error:function(XMLHttpRequest, textStatus, errorThrown){
+	             }
+			})
+		},
+    	"language": {
+    		"url":"${ctx}/plugins/datatables/chinese.json"
+    	},		
+		"columns" : [
+		        	{"data": null,"className":"dt-body-center"
+				}, {"data": "paymentHistoryId","className":"td-left"
+				}, {"data": "finishDate","className":"td-center"
+				}, {"data": "finishUser","className":"td-center"
+				}, {"data": "currency", "className":"td-center",// 4
+				}, {"data": "paymentMethod","className":"td-center"
+				}, {"data": "paymentAmount","className":"td-right"
+				}, {"data": null,
+				}, {"data": null,
+				}
+			
+			],
+		"columnDefs":[
+    		{"targets":0,"render":function(data, type, row){
+    			return row['rownum'];
+    		}},
+    		{"targets":7,"render":function(data, type, row){
+    			
+    			//var delet   = "<a href=\"#\" onClick=\"deletePayment('" + row["paymentId"] + "','" + row["recordId"] + "')\">删除</a>";
+    			
+    			return "";
+            }},
+            {"targets":8,"render":function(data, type, row){
+    			return "";
+    		}},
+    	]
+		
+	}).draw();
+					
+	t.on('click', 'tr', function() {
+		
+		var rowIndex = $(this).context._DT_RowIndex; //行号			
+		//alert(rowIndex);
+
+		if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }		
+	});
+	
+	t.on('order.dt search.dt draw.dt', function() {
+		t.column(0, {
+			search : 'applied',
+			order : 'applied'
+		}).nodes().each(function(cell, i) {
+			cell.innerHTML = i + 1;
+		});
+	}).draw();
+
+};
+
+//列合计
+function paymentSum(){
+
+	var sum = 0;
+	$('#history tbody tr').each (function (){
+		
+		var vtotal = $(this).find("td").eq(6).text();
+		var ftotal = currencyToFloat(vtotal);
+		
+		sum = currencyToFloat(sum) + ftotal;			
+	})
+
+	$('#paymentCount').html(floatToCurrency(sum));	
+	$('#paymentCount2').html(floatToCurrency(sum));		
+}
 </script>
 </head>
 <body>
@@ -792,6 +911,39 @@ function invoiceCountFn(){
 			</tfoot>
 		</table>
 	</fieldset>
+	
+	<fieldset>
+		<legend> 付款明细</legend>
+		<table class="display" id="history">
+			<thead>
+				<tr> 
+					<th width="30px">No</th>				
+					<th width="100px">付款单编号</th>				
+					<th width="100px">付款日期</th>
+					<th width="100px">付款人</th>					
+					<th width="100px">币种</th>					
+					<th width="100px" >付款方式</th>
+					<th width="100px">付款金额</th>	
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td><span id="paymentCount2" style="font-weight: bold;"></span></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tfoot>										
+		</table>
+	</fieldset>
+	
 	<fieldset>
 		<span class="tablename">付款票据</span>&nbsp;<button type="button" id="addProductPhoto" class="DTTT_button">添加图片</button>
 		<div class="list">

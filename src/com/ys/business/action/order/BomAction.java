@@ -20,6 +20,7 @@ import com.ys.business.action.model.order.BomModel;
 import com.ys.business.service.order.BomService;
 import com.ys.system.action.model.login.UserInfo;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.DicUtil;
 
 
 @Controller
@@ -224,12 +225,40 @@ public class BomAction extends BaseAction {
 			case "downloadExcelForBaseBom":
 				downloadExcelForBaseBom();
 				break;
+			case "addContractDeductionInit":
+				addContractDeductionInit();
+				rtnUrl = "/business/purchase/contractdeductionadd";
+				break;
+			case "insertContractDeduction"://保存合同扣款，来自于合同详情
+				dataMap = insertContractDeduction(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "editProductInvoice"://编辑合同扣款
+				editProductInvoice();
+				rtnUrl = "/business/purchase/contractdeductionadd";
+				break;
+			case "deleteProductInvoice"://删除合同扣款
+				dataMap = deletePyamentRecord();
+				printOutJsonObj(response, dataMap);
+				break;
 				
 		}
 		
 		return rtnUrl;		
 	}
 	
+	public HashMap<String, Object> deletePyamentRecord(){
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();	
+		try{
+			bomService.deletePyamentRecord();
+			dataMap.put(INFO, SUCCESSMSG);
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		return dataMap;
+	}
 	public void doSearchProductModel(){
 		
 		
@@ -573,11 +602,30 @@ public class BomAction extends BaseAction {
 		return dataMap;
 	}
 	
+	public HashMap<String, Object> insertContractDeduction(String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try{
+		    boolean rtnFlag = bomService.insertContractDeduction();
+	
+		    if (rtnFlag)
+		    	dataMap.put(INFO, SUCCESSMSG);
+		    else
+		    	dataMap.put(INFO, ERRMSG);
+		    	
+		}catch (Exception e){
+		    System.out.println(e.getMessage());
+		    dataMap.put("INFO", ERRMSG);
+		}
+
+		return dataMap;
+	}
+
 	public void insertOrderCost1(String data) throws Exception
 	{
 	  this.bomService.insertOrderCost1(data);
 	}
-
+	
 	public void CheckOrderCost1(String data) throws Exception
 	{
 	  this.bomService.CheckOrderCost1(data);
@@ -615,7 +663,15 @@ public class BomAction extends BaseAction {
 		
 		  this.model = this.bomService.getOrderInfo();
 	}
-
+	
+	public void addContractDeductionInit(){
+		String ysid = request.getParameter("YSId");
+		String contractId = request.getParameter("contractId");
+		model.addAttribute("YSId",ysid);
+		model.addAttribute("contractId",contractId);
+		
+		//bomService.getContractDetail(contractId, materialId)
+	}
 	
 	public void orderExpenseView() throws Exception {
 
@@ -638,6 +694,17 @@ public class BomAction extends BaseAction {
 			//System.out.println(e.getMessage());
 		}
 		
+	}
+
+	public void editProductInvoice(){
+		try{
+			
+			bomService.editProductInvoiceInit();
+
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
 	}
 	
 }

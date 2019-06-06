@@ -498,6 +498,7 @@
       <f name="a.remarks" alias="" ctype="" />
       <f name="a.supplierId" alias="" ctype="" />
       <f name="a.recordId" alias="" ctype="" />
+      <f name="DATE_FORMAT(a.createTime,'%Y-%d-%m')" alias="createTime" ctype="" />
   	</select>
     <!-- 获取所有报价BOM信息 -->
     <!-- B:基础BOM Q:报价BOM O:订单BOM -->

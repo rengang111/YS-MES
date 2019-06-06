@@ -34,12 +34,14 @@ import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_OrderExpenseDao;
 import com.ys.business.db.dao.B_OrderExpenseDetailDao;
+import com.ys.business.db.dao.B_ProductReceiveDao;
 import com.ys.business.db.data.B_BomData;
 import com.ys.business.db.data.B_BomDetailData;
 import com.ys.business.db.data.B_BomPlanData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderExpenseData;
 import com.ys.business.db.data.B_OrderExpenseDetailData;
+import com.ys.business.db.data.B_ProductReceiveData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.service.common.BusinessService;
 import com.ys.business.service.order.CommonService;
@@ -496,7 +498,6 @@ public class BomService extends CommonService {
 	  {
 	    this.ts.begin();
 
-	    B_OrderExpenseDetailData order = new B_OrderExpenseDetailData();
 
 	    ysid = getJsonData(data, "bomPlan.ysid");
 	   // materialId = getJsonData(data, "bomPlan.materialid");
@@ -524,7 +525,8 @@ public class BomService extends CommonService {
 	      
 		    float fcost = stringToFloat(cost);
 		    //fcost = Math.abs(fcost);//防止页面输入负数，方便计算，统一成正数。
-		    
+
+		      B_OrderExpenseDetailData order = new B_OrderExpenseDetailData();    
 			  order.setYsid(ysid);
 			  order.setSupplierid(supplierid);
 			  order.setContractid(contractid);
@@ -548,17 +550,65 @@ public class BomService extends CommonService {
 	  return ysid;
 	}
 
+	public boolean insertContractDeduction()throws Exception{
+		
+	  boolean returnValue = true;
+	  this.ts = new BaseTransaction();
+	  try
+	  {
+		  this.ts.begin();
+
+		  B_OrderExpenseDetailData order = reqModel.getExpense();
+	 	      
+		  float fcost = stringToFloat(order.getCost());
+		  order.setCost(floatToString(fcost));
+		  order.setStatus("0");
+			
+		  insertDocumentary(order);
+	  
+		  this.ts.commit();
+	  }
+	  catch (Exception e) {
+		  returnValue = false;
+		  e.printStackTrace();
+		  this.ts.rollback();
+	  }
+
+	  return returnValue;
+	}
+
 
 	private void insertDocumentary(
 			B_OrderExpenseDetailData detailData)throws Exception{
 
-		this.commData = commFiledEdit(Constants.ACCESSTYPE_INS, 
-				"DocumentaryInsert", userInfo);
-		copyProperties(detailData, commData);
-		guid = BaseDAO.getGuId();
-		detailData.setRecordid(guid);
+		B_OrderExpenseDetailData db = new B_OrderExpenseDetailData();
+		try {
+			db = new B_OrderExpenseDetailDao(detailData).beanData;
 
-		new B_OrderExpenseDetailDao().Create(detailData);
+		} catch (Exception e) {
+			// nothing
+		}	
+		
+		if(db.getRecordid() == null || ("").equals(db.getRecordid())){
+			//插入新数据
+			this.commData = commFiledEdit(Constants.ACCESSTYPE_INS, 
+					"DocumentaryInsert", userInfo);
+			copyProperties(detailData, commData);
+			guid = BaseDAO.getGuId();
+			detailData.setRecordid(guid);
+
+			new B_OrderExpenseDetailDao().Create(detailData);
+		}else{
+			db.setCost(detailData.getCost());
+			db.setCostname(detailData.getCostname());
+			
+			this.commData = commFiledEdit(Constants.ACCESSTYPE_UPD, 
+					"DocumentaryUpdate", userInfo);
+			copyProperties(detailData, commData);
+
+			new B_OrderExpenseDetailDao().Store(detailData);
+		}
+		
 	}
 		
 	private void deleteDocumentary(String where){
@@ -1710,4 +1760,61 @@ public class BomService extends CommonService {
         excel.downloadFile(dest,fileName);
 	}
 	
+
+	/**
+	 * 删除合同扣款
+	 * @return
+	 * @throws Exception 
+	 */
+	public void deletePyamentRecord() throws Exception{
+					
+		ts = new BaseTransaction();
+		
+		try {
+			ts.begin();
+			
+			String recordid = request.getParameter("recordId");
+			
+			B_OrderExpenseDetailData invoice = new B_OrderExpenseDetailData();			
+			invoice.setRecordid(recordid);
+			
+			new B_OrderExpenseDetailDao().Remove(invoice);		
+					
+			ts.commit();
+		
+		}catch(Exception e){
+			ts.rollback();
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 编辑合同扣款
+	 * @return
+	 */
+	public void editProductInvoiceInit(){
+		
+		try {
+			
+			//原订单明细
+			String YSId = request.getParameter("YSId");
+			String contractId = request.getParameter("contractId");
+			//getOrderDetailByYSId(YSId);	
+			
+			//
+			String recordid = request.getParameter("recordId");			
+			B_OrderExpenseDetailData invoice = new B_OrderExpenseDetailData();			
+			invoice.setRecordid(recordid);
+			
+			invoice = new B_OrderExpenseDetailDao(invoice).beanData;				
+			
+			reqModel.setExpense(invoice);
+			model.addAttribute("YSId",YSId);
+			model.addAttribute("contractId",contractId);
+		}
+		catch(Exception e) {			
+			e.printStackTrace();
+			
+		}
+	}
 }
