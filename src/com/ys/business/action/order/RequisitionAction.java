@@ -345,7 +345,7 @@ public class RequisitionAction extends BaseAction {
 		if(searchFlag == null || ("").equals(searchFlag))
 			searchFlag = "U";//设置默认值：未领料
 		model.addAttribute("searchFlag",searchFlag);
-
+		
 	}	
 	
 	@SuppressWarnings({ "unchecked" })

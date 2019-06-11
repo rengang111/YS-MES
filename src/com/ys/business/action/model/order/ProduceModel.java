@@ -10,6 +10,7 @@ import com.ys.business.db.data.B_OrderData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderMergeData;
 import com.ys.business.db.data.B_OrderMergeDetailData;
+import com.ys.business.db.data.B_ProducePlanData;
 import com.ys.business.db.data.B_ProductDesignDetailData;
 import com.ys.business.db.data.S_ProduceLineCodeData;
 import com.ys.business.db.data.S_WarehouseCodeData;
@@ -26,6 +27,7 @@ public class ProduceModel extends BaseModel {
 	private List<B_OrderMergeDetailData> mergeList = new ArrayList<B_OrderMergeDetailData>();
 	private B_OrderMergeData merge = new B_OrderMergeData();
 	private S_ProduceLineCodeData produceLine;
+	private B_ProducePlanData plan;
 
 	public List<B_OrderMergeDetailData> getPackageList() {
 		return this.mergeList;
@@ -46,4 +48,12 @@ public class ProduceModel extends BaseModel {
 	public void setProduceLine(S_ProduceLineCodeData produceLine) {
 		this.produceLine = produceLine;
 	}
+
+	public B_ProducePlanData getPlan() {
+		return this.plan;
+	}
+	public void setPlan(B_ProducePlanData plan) {
+		this.plan = plan;
+	}
+	
 }

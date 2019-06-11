@@ -119,11 +119,55 @@ public class ProduceAction extends BaseAction {
 				dataMap = deleteWarehouseCode();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "producePlanMainSearchInit":
+				doProducePlanSearchInit();
+				rtnUrl = "/business/produce/produceplanmain";
+				break;
+			case "producePlanMainSearch":
+				dataMap = doProducePlanMainSearchSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
+			case "setProduceLineById":
+				dataMap = doSetProduceLineById();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
 	}
 	
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doProducePlanMainSearchSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_REQUISITION+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_REQUISITION+Constants.FORM_KEYWORD2);
+			
+		}
+		
+		try {
+			dataMap = orderService.producePlanSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+
+		String requisitionSts = request.getParameter("requisitionSts");
+		session.setAttribute("requisitionSts", requisitionSts);
+		
+		return dataMap;
+	}
 	
 	public void doInit(String formId,HttpSession session){	
 			/*
@@ -321,6 +365,38 @@ public class ProduceAction extends BaseAction {
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
+	}
+	
+	public void doProducePlanSearchInit(){	
+		
+		String searchFlag = (String) session.getAttribute("searchFlag");
+		if(searchFlag == null || ("").equals(searchFlag))
+			searchFlag = "U";//设置默认值：未领料
+		model.addAttribute("searchFlag",searchFlag);
+		
+
+		try {
+			orderService.producePlanSearchInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doSetProduceLineById(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			boolean rtnFlag = orderService.setProduceLineById();
+		
+			dataMap.put(INFO, SUCCESSMSG);			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}		
+		
+		return dataMap;
 	}
 	
 }

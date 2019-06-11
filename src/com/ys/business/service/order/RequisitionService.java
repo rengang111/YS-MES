@@ -2003,4 +2003,5 @@ public class RequisitionService extends CommonService {
 		
 		new B_FollowDao().Create(fllow);
 	}
+	
 }

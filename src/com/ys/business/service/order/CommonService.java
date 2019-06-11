@@ -38,6 +38,7 @@ import com.ys.util.basequery.common.Constants;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.MaterialModel;
 import com.ys.business.db.dao.B_MaterialStorageHistoryDao;
 import com.ys.business.db.dao.B_OrderDetailDao;
@@ -1366,11 +1367,7 @@ public class CommonService extends BaseService {
 			map.put("dicName", "ALL");
 			map.put("dicId", "999");
 			map.put("SortNo", "999");
-			//list.add(map);
-			list.add(0, map);
-			//model.addAttribute("purchaser",list);
-			//model.addAttribute("defUser",map);
-		
+			list.add(0, map);		
 		}
 
 		return list;
@@ -1392,6 +1389,27 @@ public class CommonService extends BaseService {
 
 		return list;
 		
+	}
+	
+	public ArrayList<HashMap<String, String>> getProduceLineCode() throws Exception{
+		ArrayList<HashMap<String, String>> list = null;
+		dataModel.setQueryFileName("/business/order/producequerydefine");
+		dataModel.setQueryName("getProduceLineCode");		
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			list = dataModel.getYsViewData();
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("rownum", String.valueOf(list.size()+1));
+			map.put("codeId", "999");
+			map.put("codeName", "ALL");
+			map.put("SortNo", "999");
+			
+			list.add(0, map);
+		}
+		return list;		
 	}
 	
 	public boolean  checkPurchaseOrderStatus(String contractId) throws Exception{
@@ -1417,4 +1435,20 @@ public class CommonService extends BaseService {
 		return rtnValue;
 	}
 
+	
+	public ArrayList<ListOption> getListOptionFromXml(
+			ArrayList<ArrayList<String>> dicList) throws Exception {
+		
+		ArrayList<ListOption> rtnData = new ArrayList<ListOption>();
+		
+		ListOption option = new ListOption("0", "未选择");
+		rtnData.add(option);
+		
+		for(int i=0;i<dicList.size();i++ ) {
+			option = new ListOption(String.valueOf(i+1), dicList.get(i).get(1));
+			rtnData.add(option);
+		}		
+		return rtnData;
+		
+	}
 }

@@ -24,11 +24,13 @@ import com.ys.business.action.model.order.ProduceModel;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_OrderMergeDetailDao;
 import com.ys.business.db.dao.B_OrderProduceHideDao;
+import com.ys.business.db.dao.B_ProducePlanDao;
 import com.ys.business.db.dao.S_ProduceLineCodeDao;
 import com.ys.business.db.dao.S_WarehouseCodeDao;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderMergeDetailData;
 import com.ys.business.db.data.B_OrderProduceHideData;
+import com.ys.business.db.data.B_ProducePlanData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.db.data.S_ProduceLineCodeData;
 import com.ys.business.db.data.S_WarehouseCodeData;
@@ -127,6 +129,122 @@ public class ProduceService extends CommonService  {
 		
 		return modelMap;
 	}
+	
+
+	public HashMap<String, Object> producePlanSearch( String data) throws Exception {
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");	
+		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		String[] keyArr = getSearchKey(Constants.FORM_REQUISITION,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];		
+
+		dataModel.setQueryFileName("/business/order/producequerydefine");
+		dataModel.setQueryName("getProduceTaskForPlan");
+		String searchFlag = request.getParameter("searchFlag");
+		String orderType = request.getParameter("orderType");//订单类型
+		String partsType = request.getParameter("partsType");//常规订单，配件单
+		String produceLine = URLDecoder.decode(request.getParameter("produceLine"),"UTF-8");
+		
+		String where = " 1=1 ";
+		//*** 关键字
+		if(notEmpty(key1) && notEmpty(key2)){
+			where = " full_field like '%"+key1+"%' AND full_field like '%"+key2+"%' ";
+		}else{
+			if(notEmpty(key1)){
+				where = " full_field like '%"+key1+"%' ";
+			}
+			if(notEmpty(key2)){
+				where = " full_field like '%"+key2+"%' ";
+			}
+		}
+		
+		//*** 快捷查询
+		String having1 =" hideFlag='F' ";//false：不显示隐藏
+		String having2 = " computeStockinQty+0 < orderQty+0 ";//成品未全部入库
+		if(("U").equals(searchFlag)){
+			//未安排
+			having1 += " AND currentSts IS NULL ";//过滤掉当前任务
+		}else if(("C").equals(searchFlag)){
+			//当前任务
+			having1 += " AND currentSts = '0' AND currentType='31' ";//只显示当前任务
+		}else if(("L").equals(searchFlag)){
+			//中长期生产计划
+			having1 += " AND currentSts = '0' AND currentType='32' ";//中长期生产计划
+		}else if(("N").equals(searchFlag)){
+			//未领料
+			having1 += " AND currentSts = '0' AND currentType='33' ";
+		}else if(("F").equals(searchFlag)){
+			//成品全部入库	
+			having2 = " computeStockinQty+0 >= orderQty+0 ";		
+		}else{
+			//全状态查询
+			having1 = " 1=1 ";
+			having2 = " 1=1 ";
+		}
+		
+		//*** 常规订单，配件单
+		String where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) NOT IN ('BTR','BNC','CGR','PJ') ";
+		if(("P").equals(partsType)){
+			//配件单
+			where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) IN ('BTR','BNC','CGR','PJ') ";
+		}
+		
+		//*** 生产线
+		if(("999").equals(produceLine)){
+			produceLine = "";
+		}
+
+		userDefinedSearchCase.put("produceLine", produceLine);	
+		userDefinedSearchCase.put("orderType", orderType);	
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
+		sql = sql.replace("#0",where );
+		sql = sql.replace("#1",having1);
+		sql = sql.replace("#2",having2);
+		sql = sql.replace("#3",where3);
+
+		List<String> list = new ArrayList<String>();
+		list.add(where);
+		list.add(having1);
+		list.add(having2);
+		list.add(where3);
+		
+		System.out.println("生产计划查询："+sql);
+		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);	
+		
+		return modelMap;	
+
+	}
+	
 	public HashMap<String, Object> getOrderList(String formId,String data) throws Exception {
 		
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
@@ -1051,5 +1169,65 @@ public class ProduceService extends CommonService  {
 		copyProperties(dt,commData);
 				
 		new S_WarehouseCodeDao().Store(dt);
+	}
+	
+
+	public void producePlanSearchInit() throws Exception{
+
+		model.addAttribute("produceLineOption",
+				getListOptionFromXml(getProduceLineList()));
+		
+		model.addAttribute("produceLine",getProduceLineCode());
+	}
+	
+	public ArrayList<ArrayList<String>> getProduceLineList() throws Exception{
+		
+		dataModel.setQueryFileName("/business/order/producequerydefine");
+		dataModel.setQueryName("getProduceLineCode");		
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		return baseQuery.getQueryData();
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean setProduceLineById() throws Exception{
+
+		boolean returnValue = true;
+		String YSId = request.getParameter("YSId");
+		String produceLine = URLDecoder.decode(request.getParameter("produceLine"),"UTF-8");
+		
+		try{
+			String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+			List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+			if(list.size() > 0){
+				B_ProducePlanData plan = list.get(0); 
+				plan.setProduceline(produceLine);
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"update",userInfo);
+				copyProperties(plan,commData);	
+				
+				new B_ProducePlanDao().Store(plan);
+				
+			}else{
+				B_ProducePlanData plan = new B_ProducePlanData();
+				plan.setProduceline(produceLine);
+				plan.setYsid(YSId);
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+						"insert",userInfo);
+				copyProperties(plan,commData);	
+				guid = BaseDAO.getGuId();				
+				plan.setRecordid(guid);
+				
+				new B_ProducePlanDao().Create(plan);
+			}
+		}catch(Exception e){
+			returnValue = false;
+		}
+		
+		
+		return returnValue;
 	}
 }
