@@ -370,4 +370,25 @@
     <having>#1</having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="geProduceLineByKey" />
+    <where>
+      <w name="A.codeName" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="recordId" alias="" ctype="" />
+      <f name="codeId" alias="" ctype="" />
+      <f name="codeName" alias="" ctype="" />
+      <f name="parentId" alias="" ctype="" />
+      <f name="subId" alias="" ctype="" />
+    </select>
+    <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
+    <from> s_producelinecode a where a.multiLevel='2' AND a.deleteFlag='0'
+    </from>
+    <orderby>a.codeId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>

@@ -56,14 +56,14 @@
 						success: function(data){							
 							fnCallback(data);
 
-							setOptons();
+							//setOptons();
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
 							
 							var flag = $('#searchFlag').val();
 							$('#defutBtn'+flag).removeClass("start").addClass("end");
 							
-							
+							autocomplete();//调用自动填充功能
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -161,10 +161,12 @@
 		    			var rowIndex = row["rownum"] - 1;
 		    			var produceLine = row['produceLine'];
 		    			var YSId = row['YSId'];
-		    			var txt = '<select  name="lines['+rowIndex+'].produceLine"  '+
+		    			
+		    			var txt = ' <input type="text"   '+
 		    				' id="lines'+rowIndex+'.produceLine" '+
-		    				' onchange="setProduceLine(this.value,\''+YSId+'\')"   '+
-		    				' class="short option"></select>'
+		    				' onfocus= removeErrorClass(\''+rowIndex+'\');return false;"   '+
+		    				' onblur ="setProduceLine(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
+		    				' class="short attributeList1" style="width:50px;"/>'
 		    			
 		    			if(produceLine == '')
 			    			rtn= txt;
@@ -220,6 +222,8 @@
 
 	$(document).ready(function() {
 
+		foucsInit();
+		
 		$('#createCurrent').show();
 		
 		var i = 0;	
@@ -239,10 +243,25 @@
 		
 		
 	})	
-	
-	//下单公司选择
-	function setProduceLine(produceLine,YSId) {
 
+	function removeErrorClass(rowIndex){
+		$('#lines'+rowIndex+'\\.produceLine').removeClass("error");
+	}
+	
+	//生产线选择
+	function setProduceLine($obj,YSId,rowIndex) {
+
+		var produceLine = $obj.value;
+
+		if($.trim(produceLine) == '' ){
+			return;
+		}
+		if(produceLine.length<3){
+			$().toastmessage('showWarningToast', "请输入正确的生产线编码");	
+			$('#lines'+rowIndex+'\\.produceLine').addClass("error");
+			return;
+		}
+		
 		produceLine = encodeURI(encodeURI(produceLine));
 		var actionUrl = "${ctx}/business/produce?methodtype=setProduceLineById"
 			+"&YSId="+YSId
@@ -258,7 +277,8 @@
 			
 				var rtnValue = data['message'];
 				//alert(rtnValue)
-				$().toastmessage('showWarningToast', "保存成功!");		
+				$().toastmessage('showWarningToast', "生产线设置成功!");		
+				$('#lines'+rowIndex+'\\.produceLine').addClass("finished");
 			},
 			error : function(XMLHttpRequest, textStatus, errorThrown) {				
 				//alert(textStatus);
@@ -438,6 +458,49 @@
 
 	}
 	
+	
+	function autocomplete(){
+		
+		$(".attributeList1").autocomplete({
+			minLength : 1,
+			autoFocus : false,
+			source : function(request, response) {
+				//alert(888);
+				$
+				.ajax({
+					type : "POST",
+					url : "${ctx}/business/produce?methodtype=getProduceLineList",
+					dataType : "json",
+					data : {
+						key : request.term
+					},
+					success : function(data) {
+						//alert(777);
+						response($
+							.map(
+								data.data,
+								function(item) {
+
+									return {
+										label : item.parentId +" | "+item.subId,
+										value : item.codeName,
+										id 	  : item.codeName,
+									}
+								}));
+					},
+					error : function(XMLHttpRequest,
+							textStatus, errorThrown) {
+						//alert(XMLHttpRequest.status);
+						//alert(XMLHttpRequest.readyState);
+						//alert(textStatus);
+						//alert(errorThrown);
+						alert("系统异常，请再试或和系统管理员联系。");
+					}
+				});
+			},
+			
+		});
+	}
 	
 </script>
 </head>

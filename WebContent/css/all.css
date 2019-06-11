@@ -650,3 +650,6 @@ pre{
 .box {
 	height: 15px;
 }
+.finished {
+	background: #d8d8d8;
+}

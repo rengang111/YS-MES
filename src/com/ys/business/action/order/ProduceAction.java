@@ -131,6 +131,10 @@ public class ProduceAction extends BaseAction {
 				dataMap = doSetProduceLineById();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "getProduceLineList":
+				dataMap = doGetProduceLineList();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -382,7 +386,6 @@ public class ProduceAction extends BaseAction {
 		}
 	}	
 	
-	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doSetProduceLineById(){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 	
@@ -395,6 +398,22 @@ public class ProduceAction extends BaseAction {
 			System.out.println(e.getMessage());
 			dataMap.put(INFO, ERRMSG);
 		}		
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> doGetProduceLineList(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			dataMap = orderService.getProduceLineByKey();
+		
+			dataMap.put(INFO, SUCCESSMSG);			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
 		
 		return dataMap;
 	}

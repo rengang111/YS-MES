@@ -1230,4 +1230,24 @@ public class ProduceService extends CommonService  {
 		
 		return returnValue;
 	}
+	
+	public HashMap<String, Object> getProduceLineByKey() throws Exception{
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		String key = request.getParameter("key").trim().toUpperCase();
+		
+		dataModel.setQueryFileName("/business/order/producequerydefine");
+		dataModel.setQueryName("geProduceLineByKey");	
+		baseQuery = new BaseQuery(request, dataModel);	
+		userDefinedSearchCase.put("keyword1", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());		
+		modelMap.put("retValue", "success");			
+		
+		return modelMap;
+	}
 }
