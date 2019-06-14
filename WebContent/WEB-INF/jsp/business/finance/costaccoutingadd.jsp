@@ -194,12 +194,10 @@
 
 		$(".read-only").attr('readonly', "true");
 
-		//人工成本计算
-		//var labolCost = currencyToFloat('${LaborCost}');
-		//var orderQty = currencyToFloat('${order.totalQuantity}');
-		//var labol = labolCost * orderQty;
-		//alert('labol'+labol)
-		//$('#costBom\\.labolcost').val(floatToCurrency(labol));
+		//跟单费用
+		var deductCost = '${deductCost}';
+		//$('#costBom\\.deduct').val(deductCost);
+		$('#costBom\\.deduct').val(floatToCurrency(deductCost));
 		
 		var scrollHeight = $(document).height() - 275; 
 		historyAjax(scrollHeight);//领料统计

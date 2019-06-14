@@ -1697,6 +1697,7 @@
       <f name="a.invoiceDate" alias="oldInvoiceDate" ctype="" />
       <f name="a.totalPayable" alias="" ctype="" />
       <f name="b.recordId" alias="" ctype="" />
+      <f name="b.remarks" alias="" ctype="" />
       <f name="IFNULL(b.paymentId,a.paymentId)" alias="paymentId" ctype="" />
       <f name="IFNULL(b.invoiceAmount,a.totalPayable)" alias="invoiceAmount" ctype="" />
       <f name="IFNULL(b.invoiceUser,a.invoiceUser)" alias="invoiceUser" ctype="" />

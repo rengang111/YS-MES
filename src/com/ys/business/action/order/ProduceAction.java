@@ -135,6 +135,10 @@ public class ProduceAction extends BaseAction {
 				dataMap = doGetProduceLineList();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "setProducePlanSortNo":
+				dataMap = doSetProducePlanSortNo();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -375,7 +379,7 @@ public class ProduceAction extends BaseAction {
 		
 		String searchFlag = (String) session.getAttribute("searchFlag");
 		if(searchFlag == null || ("").equals(searchFlag))
-			searchFlag = "U";//设置默认值：未领料
+			searchFlag = "C";//设置默认值：未领料
 		model.addAttribute("searchFlag",searchFlag);
 		
 
@@ -413,6 +417,26 @@ public class ProduceAction extends BaseAction {
 		catch(Exception e) {
 			System.out.println(e.getMessage());
 			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> doSetProducePlanSortNo(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			boolean val = orderService.SetProducePlanSortNo();
+		
+			if(val){
+				dataMap.put(INFO, "S");	
+			}else{
+				dataMap.put(INFO, "N");					
+			}		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, "E");
 		}
 		
 		return dataMap;

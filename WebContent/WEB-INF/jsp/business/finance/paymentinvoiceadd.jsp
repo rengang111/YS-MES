@@ -11,6 +11,11 @@
 
 	$(document).ready(function() {
 		
+
+		var remarks = '${formModel.invoice.remarks }';
+
+		$("#invoice\\.remarks").val(replaceTextarea(remarks));
+		
 		$("#invoice\\.invoicedate").datepicker({
 			dateFormat:"yy-mm-dd",
 			changeYear: true,
@@ -166,7 +171,12 @@
 				
 					<td class="label" width="100px">发票编号：</td> 
 					<td width="200px"><form:input path="invoice.invoicenumber"  class="middle"  value=""/></td>
-				</tr>												
+				</tr>
+				<tr>				
+					<td class="label" width="100px">备注：</td> 
+					<td colspan="3">
+						<form:textarea path="invoice.remarks"  rows="4" cols="60"  /></td>
+				</tr>											
 			</table>
 		</fieldset>
 

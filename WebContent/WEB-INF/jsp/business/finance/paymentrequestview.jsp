@@ -150,7 +150,7 @@ function ContractListAjax() {
 function doUpdateInvoice(recordId) {
 
 	layerWidth  = '900px';
-	layerHeight = '260px';
+	layerHeight = '360px';
 	var url = "${ctx}/business/payment?methodtype=editPyamentInvoice&recordId=" + recordId;		
 
 	layer.open({
@@ -207,7 +207,7 @@ function doCreatePrice() {
 		offset :[100,''],
 		type : 2,
 		title : false,
-		area : [ '900px', '260px' ], 
+		area : [ '900px', '360px' ], 
 		scrollbar : false,
 		title : false,
 		content : url,
@@ -638,8 +638,9 @@ function invoiceAjax() {
 				}, {"data": "invoiceAmount","className":"td-right"
 				}, {"data": "invoiceType","className":"td-center"
 				}, {"data": "invoiceNumber", "defaultContent" : '',// 4
-				}, {"data": null,"className":"td-center"
-				}, {"data": null,
+				}, {"data": "remarks","className":""
+				}, {"data": null,"className":"td-center",// 6
+				}, {"data": null, "defaultContent" : '',
 				}
 			],
 		"columnDefs":[
@@ -649,10 +650,10 @@ function invoiceAjax() {
     		{"targets":2,"render":function(data, type, row){
     			return floatToCurrency(data);
     		}},
-    		{"targets":6,"render":function(data, type, row){
-    			return "";
-    		}},
     		{"targets":5,"render":function(data, type, row){
+    			return data;
+    		}},
+    		{"targets":6,"render":function(data, type, row){
     			var edit    = "<a href=\"#\" onClick=\"doUpdateInvoice('" + row["recordId"] + "')\">编辑</a>";
     			var delet   = "<a href=\"#\" onClick=\"doDeleteInvoice('" + row["recordId"] + "')\">删除</a>";
     			
@@ -893,9 +894,10 @@ function paymentSum(){
 					<th width="100px">发票日期</th>				
 					<th width="150px">发票金额</th>
 					<th width="100px">发票类型</th>					
-					<th width="180px">发票编号</th>		
+					<th width="180px">发票编号</th>					
+					<th width="">备注信息</th>		
 					<th width="80px">操作</th>
-					<th></th>
+					<th width="20px"></th>
 				</tr>
 			</thead>
 			<tfoot>
@@ -903,6 +905,7 @@ function paymentSum(){
 					<td></td>
 					<td></td>
 					<td><span id="invoiceCnt"></span></td>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>

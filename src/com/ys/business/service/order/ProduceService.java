@@ -177,38 +177,38 @@ public class ProduceService extends CommonService  {
 		//*** 快捷查询
 		String having1 =" hideFlag='F' ";//false：不显示隐藏
 		String having2 = " computeStockinQty+0 < orderQty+0 ";//成品未全部入库
+		String orderby = " A.deliveryDate ";
+		
 		if(("U").equals(searchFlag)){
 			//未安排
-			having1 += " AND currentSts IS NULL ";//过滤掉当前任务
+			having1 += " AND produceLineFlag = '0' ";//过滤掉当前任务
 		}else if(("C").equals(searchFlag)){
 			//当前任务
-			having1 += " AND currentSts = '0' AND currentType='31' ";//只显示当前任务
-		}else if(("L").equals(searchFlag)){
+			having1 += " AND produceLineFlag = '1' ";//只显示当前任务
+			orderby = " e.produceLine,e.sortNo ";
+			
+		//}else if(("L").equals(searchFlag)){
 			//中长期生产计划
-			having1 += " AND currentSts = '0' AND currentType='32' ";//中长期生产计划
-		}else if(("N").equals(searchFlag)){
+			//having1 += " AND currentSts = '0' AND currentType='32' ";//中长期生产计划
+		//}else if(("N").equals(searchFlag)){
 			//未领料
-			having1 += " AND currentSts = '0' AND currentType='33' ";
-		}else if(("F").equals(searchFlag)){
+			//having1 += " AND currentSts = '0' AND currentType='33' ";
+		//}else if(("F").equals(searchFlag)){
 			//成品全部入库	
-			having2 = " computeStockinQty+0 >= orderQty+0 ";		
-		}else{
-			//全状态查询
-			having1 = " 1=1 ";
-			having2 = " 1=1 ";
+			//having2 = " computeStockinQty+0 >= orderQty+0 ";		
 		}
 		
 		//*** 常规订单，配件单
 		String where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) NOT IN ('BTR','BNC','CGR','PJ') ";
-		if(("P").equals(partsType)){
+		//if(("P").equals(partsType)){
 			//配件单
-			where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) IN ('BTR','BNC','CGR','PJ') ";
-		}
+		//	where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) IN ('BTR','BNC','CGR','PJ') ";
+		//}
 		
 		//*** 生产线
-		if(("999").equals(produceLine)){
+		//if(("999").equals(produceLine)){
 			produceLine = "";
-		}
+		//}
 
 		userDefinedSearchCase.put("produceLine", produceLine);	
 		userDefinedSearchCase.put("orderType", orderType);	
@@ -220,12 +220,14 @@ public class ProduceService extends CommonService  {
 		sql = sql.replace("#1",having1);
 		sql = sql.replace("#2",having2);
 		sql = sql.replace("#3",where3);
+		sql = sql.replace("#4",orderby);
 
 		List<String> list = new ArrayList<String>();
 		list.add(where);
 		list.add(having1);
 		list.add(having2);
 		list.add(where3);
+		list.add(orderby);
 		
 		System.out.println("生产计划查询："+sql);
 		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
@@ -914,34 +916,19 @@ public class ProduceService extends CommonService  {
 			}
 			
 			B_OrderMergeDetailData merge = new B_OrderMergeDetailData();					
-			
-			//List<B_OrderMergeDetailData> listm = new B_OrderMergeDetailDao().Find(where);
-			
-			//if(listm.size() > 0 ){
 
-			//	merge.setYsid(ysid);
-			//	merge.setMergeid(order.getMachinemodel());
-			//	merge.setMachinemodel(order.getMachinemodel());
-			//	merge.setViewflag("T");//显示
-				
-			//	commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-			//			"订单合并update",userInfo);
-			//	copyProperties(merge,commData);
-			//	new B_OrderMergeDetailDao().Store(merge);
-			//}else{
-
-				merge.setYsid(ysid);
-				merge.setMergeid(order.getMachinemodel());
-				merge.setMachinemodel(order.getMachinemodel());
-				merge.setViewflag("T");//显示
-				
-				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-						"订单合并insert",userInfo);
-				copyProperties(merge,commData);	
-				guid = BaseDAO.getGuId();				
-				merge.setRecordid(guid);
-				new B_OrderMergeDetailDao().Create(merge);
-			//}
+			merge.setYsid(ysid);
+			merge.setMergeid(order.getMachinemodel());
+			merge.setMachinemodel(order.getMachinemodel());
+			merge.setViewflag("T");//显示
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"订单合并insert",userInfo);
+			copyProperties(merge,commData);	
+			guid = BaseDAO.getGuId();				
+			merge.setRecordid(guid);
+			new B_OrderMergeDetailDao().Create(merge);
+			
 				
 			
 		} catch (Exception e) {
@@ -1152,23 +1139,72 @@ public class ProduceService extends CommonService  {
 		new S_ProduceLineCodeDao().Store(dt);
 	}
 	
-	public void updateSortNo() throws Exception {
+	@SuppressWarnings("unchecked")
+	public boolean SetProducePlanSortNo() throws Exception {
 
-		String recordId = request.getParameter("recordId");
-		String sortFlag = request.getParameter("sortFlag");
+		boolean rtnValue = true;
 		
-		//D:向下移；U：向上移
-		//原则上在同一层次内改变顺序号
+		String produceLine = URLDecoder.decode(request.getParameter("produceLine"),"UTF-8");
+		String sortFlag    = request.getParameter("sortFlag");
+		String ScursortOld = request.getParameter("sortNo");
 		
-		S_WarehouseCodeData dt = new S_WarehouseCodeData();
-		dt.setRecordid(recordId);
-		dt = new S_WarehouseCodeDao(dt).beanData;
-							
-		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-				"insert",userInfo);
-		copyProperties(dt,commData);
-				
-		new S_WarehouseCodeDao().Store(dt);
+		int IcursortOld = Integer.parseInt(ScursortOld);//当前订单顺序：调整前
+		int IcusSortNew = 0;
+		int IchgsortOld = 0;
+		int IchgsortNew = 0;
+		if(("D").equals(sortFlag)){
+			//D:向下移
+			IcusSortNew = IcursortOld + 1;//当前订单顺序：调整后
+			IchgsortOld = IcursortOld + 1;
+			IchgsortNew = IcursortOld;//与之交换顺序的订单：调整后
+			
+		}
+		if(("U").equals(sortFlag)){
+			//U：向上移 
+			IcusSortNew = IcursortOld - 1;//当前订单顺序：调整后
+			IchgsortOld = IcursortOld - 1;
+			IchgsortNew = IcursortOld;//与之交换顺序的订单：调整后
+		}		
+		
+		String SchgsortOld = String.valueOf(IchgsortOld);
+		
+		String SchgsortNew = String.valueOf(IchgsortNew);
+		String ScusSortNew = String.valueOf(IcusSortNew);
+		
+		String where = " produceLine='" + produceLine +"' AND sortNo in('"+SchgsortOld+"','"+ScursortOld+"')";
+		
+		List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+
+		if(list.size() == 1){
+			return false;//只有一条数据，说明是第一条往上移，或者最后一条往下移；都不处理
+		}
+		
+		for(int i=0;i<list.size();i++){
+			B_ProducePlanData dt = list.get(i);
+			String dbSortNo = dt.getSortno();
+			
+			if((dbSortNo).equals(ScursortOld)){
+				//当前订单顺序		
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"update",userInfo);
+				copyProperties(dt,commData);
+				dt.setSortno(ScusSortNew);
+						
+				new B_ProducePlanDao().Store(dt);
+			}
+			
+			if((dbSortNo).equals(SchgsortOld)){
+				//与之交换顺序的订单	
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"update",userInfo);
+				copyProperties(dt,commData);
+				dt.setSortno(SchgsortNew);
+						
+				new B_ProducePlanDao().Store(dt);				
+			}			
+		}
+		
+		return rtnValue;
 	}
 	
 
@@ -1214,6 +1250,7 @@ public class ProduceService extends CommonService  {
 				B_ProducePlanData plan = new B_ProducePlanData();
 				plan.setProduceline(produceLine);
 				plan.setYsid(YSId);
+				plan.setSortno(getMaxSortNo(produceLine));
 				
 				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 						"insert",userInfo);
@@ -1229,6 +1266,22 @@ public class ProduceService extends CommonService  {
 		
 		
 		return returnValue;
+	}
+	
+	private String getMaxSortNo(String produceLine) throws Exception{
+		String rtnValue = "0";
+				
+		dataModel.setQueryFileName("/business/order/producequerydefine");
+		dataModel.setQueryName("getProducePlanMaxSortNo");	
+		baseQuery = new BaseQuery(request, dataModel);	
+		userDefinedSearchCase.put("produceLine", produceLine);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		baseQuery.getYsFullData();
+
+		rtnValue = dataModel.getYsViewData().get(0).get("sortNo");	
+		
+		return rtnValue;
 	}
 	
 	public HashMap<String, Object> getProduceLineByKey() throws Exception{

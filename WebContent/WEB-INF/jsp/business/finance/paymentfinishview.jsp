@@ -46,13 +46,11 @@ function ContractListAjax() {
 					doComputeTax();//合同集计
 					var supplierId   = data['data'][0]['supplierId'];
 					var supplierName = data['data'][0]['supplierName'];
-				//	var shortName    = data['data'][0]['shortName'];
 
 					$('#supplierId').text(supplierId);
 					$('#payment\\.supplierid').val(supplierId);
 					$('#supplierName').text(supplierName);
-				//	$('#shortName').text(shortName);
-
+				
 					productPhotoView();//图片需要供应商编号
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -267,12 +265,10 @@ function ContractListAjax() {
 		});
 
 		invoiceAjax();//发票信息
+		
 		paymentHistoryAjax();//付款明细
 
-		ContractListAjax();//合同明细
-		
-		var payment = contractSum(6);	
-		$('#payment\\.totalpayable').val(floatToCurrency(payment));
+		ContractListAjax();//合同明细		
 		
 	});
 	
@@ -706,65 +702,6 @@ function doComputeTax(){
 		</table>
 		</div>
 	</fieldset>
-	<!-- 
-	<fieldset>
-		<legend> 合同明细</legend>
-		<div class="list">
-		<table id="example" class="display" >
-			<thead>				
-				<tr>
-					<th width="30px">No</th>
-					<th width="120px">合同编号</th>
-					<th width="80px">耀升编号</th>
-					<th width="80px">约定付款日</th>
-					<th width="100px">合同金额</th>
-					<th width="100px">增减项总额</th>
-					<th width="100px">应付款金额</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach var='list' items='${contract}' varStatus='status'>	
-					<tr>
-						<td>${status.index+1 }</td>
-						<td><a href="###" onClick="doShowContract('${list.contractId }')">${list.contractId }</a></td>
-						<td>${list.YSId }</td>
-						<td>${list.agreementDate }</td>
-						<td>${list.totalPrice }</td>
-						<td class="td-right"><span id="chargeback${status.index }"></span></td>
-						<td class="td-right"><span id="payment${status.index }">${list.payable }</span></td>
-						<td class="td-center">
-							<form:hidden path="paymentList[${status.index }].contractid"  value="${list.contractId }" />
-							<form:hidden path="paymentList[${status.index }].payable"  value="${list.total }" />
-					</tr>
-					<script type="text/javascript">
-						//var contract = currencyToFloat('${list.totalPrice }');
-						var chargeback = currencyToFloat('${list.chargeback }');
-						//var payment = floatToCurrency( contract + chargeback );
-						var index = ${status.index }
-						//alert('payment--chargeback:'+chargeback+'---'+payment)
-						//$('#payment'+index).html(payment);
-						$('#chargeback'+index).html(floatToCurrency(chargeback));
-					</script>
-				</c:forEach>
-			</tbody>
-			
-			<tfoot>
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td>合计：</td>
-					<td><span id="contractTotal" style="font-weight: bold;"></span></td>
-					<td><span id="minisTotal" style="font-weight: bold;"></span></td>
-					<td><span id="paymentTotal" style="font-weight: bold;"></span></td>
-					<td></td>
-				</tr>
-			</tfoot>
-		</table>
-		</div>
-	</fieldset>
-	 -->
 	<fieldset>
 		<legend>收据清单</legend>
 		<div class="list">

@@ -26,6 +26,8 @@
 				+"&partsType="+partsType
 				+"&produceLine="+encodeURI(encodeURI(produceLine));
 
+		var sortCode = $('#sortCode').val();
+		
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
 				"lengthChange":false,
@@ -38,7 +40,7 @@
 				"ordering"	:true,
 				"searching" : false,
 				"pagingType" : "full_numbers",        
-	         	"aaSorting": [[ 1, "ASC" ]],
+	         	//"aaSorting": [[ sortCode, "ASC" ]],
 				"sAjaxSource" : url,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
 					var param = {};
@@ -59,10 +61,7 @@
 							//setOptons();
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
-							
-							var flag = $('#searchFlag').val();
-							$('#defutBtn'+flag).removeClass("start").addClass("end");
-							
+														
 							autocomplete();//调用自动填充功能
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -73,56 +72,28 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-					{"data": null, "defaultContent" : '',"className" : 'td-center'},//0
-					{"data": "machineModel", "className" : 'td-center'},// 1
-					{"data": "YSId", "defaultContent" : ''}, //2
-					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//3
-					{"data": "materialName", "defaultContent" : ''},//4
-					{"data": "shortName", "className" : 'td-center'},//5
-					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},//6
-					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},//7
-					{"data": "MaxDeliveryDate", "defaultContent" : '', "className" : 'td-left'},//8
-					{"data": "team", "className" : 'td-center'},//9
-					{"data": null, "className" : 'td-center'},//10
+					{"data": "machineModel", "className" : 'td-center'},// 0
+					{"data": "YSId", "defaultContent" : ''}, //1
+					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//2
+					{"data": "materialName", "defaultContent" : ''},//3
+					{"data": "shortName", "className" : 'td-center'},//4
+					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},//5
+					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},//6
+					//{"data": "MaxDeliveryDate", "defaultContent" : '', "className" : 'td-left'},//7
+					{"data": "produceLine", "className" : 'td-center'},//7
+					{"data": "sortNo", "className" : 'td-center'},//8
+					{"data": "sortNo", "className" : 'td-center'},//9
 					
 				],
 				"columnDefs":[
-		    		{"targets":0,"render":function(data, type, row){
-
-		    			var currentSts  = row["currentSts"];
-		    			var currentType = row["currentType"];
-		    			var stockinQty  = currencyToFloat(row['computeStockinQty']);
-		    			var orderQty    = currencyToFloat(row['orderQty']);
-		    			var text = row["rownum"];
 		    		
-		    			if(currentSts == '0'){
-		    				
-		    				if(currentType == '31'){
-		    					text = '当前';
-		    				}else if(currentType == '32'){
-		    					text = '中长期';
-		    					
-		    				}else if(currentType == '33'){
-		    					text = '未领料';		    					
-		    				}		    				    		
-		    			}else{
-		    				if(stockinQty >= orderQty){
-		    					text = '已领料';
-		    				}else{
-		    					text = '未安排';
-		    				}
-		    			}
-					
-		    			return text;	
-		    			
-                    }},
-		    		{"targets":1,"render":function(data, type, row){
+		    		{"targets":0,"render":function(data, type, row){
 
 						var lastCheceked = '<span id=""  style="display:none" class="orderHide"><input type="checkbox"  name="orderHide" id="orderHide" value="" /></span';
 
 		    			return data + lastCheceked;
 		    		}},
-		    		{"targets":2,"render":function(data, type, row){
+		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var orderQty   = currencyToFloat( row["orderQty"] );
 		    			var stockinQty = currencyToFloat( row["computeStockinQty"] );
@@ -136,7 +107,7 @@
 		    			
 		    			return rtn;
 		    		}},
-		    		{"targets":3,"render":function(data, type, row){
+		    		{"targets":2,"render":function(data, type, row){
 
 						var lastHide = '<input type="hidden"  name="lastHide" id="lastHide" value="' + row["hideFlag"] + '" /></span';
 
@@ -144,7 +115,7 @@
 		    			
 		    			return data + lastHide;
 		    		}},
-		    		{"targets":4,"render":function(data, type, row){
+		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["materialName"];
 		    			name = jQuery.fixedWidth(name,38);//true:两边截取,左边从汉字开始
 		    			
@@ -152,11 +123,11 @@
 		    			
 		    			return name + lastCheceked;
 		    		}},
-		    		{"targets":6,"render":function(data, type, row){
+		    		{"targets":5,"render":function(data, type, row){
 		    			
 		    			return floatToNumber(data);
 		    		}},
-		    		{"targets":10,"render":function(data, type, row){
+		    		{"targets":7,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var rowIndex = row["rownum"] - 1;
 		    			var produceLine = row['produceLine'];
@@ -175,15 +146,28 @@
 		    			
 		    			return rtn;
 		    		}},
+		    		{"targets":9,"render":function(data, type, row){
+		    			var imgName = 'arrow_down';
+		    			var rtn = "",down='D',up='U';
+		    			var produceLine = row['produceLine'];
+		    			var rowIndex = row["rownum"];
+		    			
+		    				rtn += '<input onClick="doUpdateSortNo(\''+ row["produceLine"] + '\',\'' + row["sortNo"] + '\',\'' + down + '\')" type="image" title="向下移" style="border: 0px;" src="${ctx}/images/'+imgName+'.png" />';
+		    			//if(rowIndex >1){
+			    			rtn += '<input onClick="doUpdateSortNo(\''+ row["produceLine"] + '\',\'' + row["sortNo"] + '\',\'' + up   + '\')" type="image" title="向上移" style="border: 0px;" src="${ctx}/images/arrow_top.png" />';
+		    			//}
+		    			
+		    			if(produceLine =='' || produceLine == null){
+		    				rtn = '';	
+		    			}
+		    			return rtn;
+                    }},
 		    		{
 		    			"orderable":false,"targets":[0]
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : [9]
-					},
-					{
-						//"order": [[ 2, 'asc' ]]
+						"targets" : []
 					}
 	         	],
 	         		         	
@@ -238,7 +222,7 @@
 		buttonSelectedEvent2();//按钮选择式样
 		buttonSelectedEvent3();//按钮选择式样
 		
-		$('#defutBtnU').removeClass("start").addClass("end");
+		$('#defutBtnC').removeClass("start").addClass("end");
 		$('#defutBtnmP').removeClass("start").addClass("end");
 		
 		
@@ -310,18 +294,8 @@
 	
 	function doSearch() {	
 
-		var numCheck = $("#numCheck").is(":checked");
-		var searchFlag = $('#searchFlag').val();
-		if(numCheck){
-			searchFlag = '';
 			
-		}else{
-			if(searchFlag == 'C' || searchFlag == 'L'|| searchFlag == 'N'){
-				searchFlag = "U";//未领料
-			}
-		}
-		
-		$('#searchFlag').val(searchFlag);		
+		var searchFlag = $('#searchFlag').val();		
 	    
 		ajaxSearch('false');
 
@@ -421,14 +395,25 @@
 		
 	}
 			
-	//查看当前任务
+	//ALL
 	function doSearchCurrentTask(taskType){
-		$('#keyword1').val('');
-		$('#keyword2').val('');
+		//$('#keyword1').val('');
+		//$('#keyword2').val('');
 		$('#searchFlag').val(taskType);//Current:当前任务
 		
 		ajaxSearch('false');
 	}
+	
+	//查看当前任务
+	function doSearchCurrentTask2(taskType){
+		//$('#keyword1').val('');
+		//$('#keyword2').val('');
+		$('#searchFlag').val(taskType);//Current:当前任务
+		$('#sortCode').val(7);//生产线排序		
+		
+		ajaxSearch('false');
+	}
+
 
 	
 	function doShow(PIId) {
@@ -502,6 +487,38 @@
 		});
 	}
 	
+	
+	function doUpdateSortNo(produceLine,sortNo,sortFlag) {
+		
+		produceLine = encodeURI(encodeURI(produceLine));
+		//if(confirm("删除后不能恢复，确定要删除数据吗？")) {
+			jQuery.ajax({
+				type : 'POST',
+				async: false,
+				contentType : 'application/json',
+				dataType : 'json',
+				data : '',
+				url : "${ctx}/business/produce?methodtype=setProducePlanSortNo"+"&produceLine="+produceLine+"&sortFlag="+sortFlag+"&sortNo="+sortNo,
+				success : function(data) {
+					var message = data['message'];
+					if(message == 'S'){
+						$().toastmessage('showWarningToast', "顺序已调整。");	
+						reload();
+					}
+					if(message == 'N'){
+						$().toastmessage('showWarningToast', "不能调整该订单的生产顺序。");	
+					}
+					if(message == 'E'){
+						$().toastmessage('showWarningToast', "生产顺序调整失败，请联系管理员。");	
+					}
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+					$().toastmessage('showWarningToast', "生产顺序调整失败，请联系管理员。");	
+	             }
+			});
+		//}
+	}
+	
 </script>
 </head>
 
@@ -511,10 +528,11 @@
 		
 	<div id="search">
 		<form id="condition"  style='padding: 0px; margin: 10px;' >
-			<input type="hidden" id="searchFlag" value="U" />
+			<input type="hidden" id="searchFlag" value="C" />
 			<input type="hidden" id="peijianFlag" value="" />
 			<input type="hidden" id="partsType"   value="C" />
 			<input type="hidden" id="produceLine"   value="" />
+			<input type="hidden" id="sortCode"   value="6" />
 			<table>
 				<tr>
 					<td width="50px"></td> 
@@ -525,12 +543,15 @@
 					<td class="condition">
 						<input type="text" id="keyword2" name="keyword2" class="middle"/></td>
 					<td  width="150px">
+						<!-- 
 						<label><input type="checkbox"  name="numCheck" id="numCheck" value="1"  />全状态</label>
+						 -->
 						<button type="button" id="retrieve2" class="DTTT_button" 
 							style="width:50px" value="查询" onclick="doSearch();"/>查询</td>
 					
 					<td width="10px"></td> 
 				</tr>
+				<!-- 
 				<tr>
 					<td width=""></td> 
 					<td class="label"> 快捷查询：</td>
@@ -544,20 +565,23 @@
 					<td></td>
 					<td width=""></td> 
 				</tr>
+				 -->
 				<tr>
 					<td width=""></td> 
 					<td class="label"> 快捷查询：</td>
 					<td colspan="3">
-						<a  class="DTTT_button box" onclick="doSearchCurrentTask('C');"  id="defutBtnC">当前任务</a>
-						<a  class="DTTT_button box" onclick="doSearchCurrentTask('L');"  id="defutBtnL">中长期计划</a>
-						<a  class="DTTT_button box" onclick="doSearchCurrentTask('N');"  id="defutBtnN">未领料</a>&nbsp;
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('A');"   id="defutBtnA">ALL</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('C');"  id="defutBtnC">当前任务</a>
+						<!-- a  class="DTTT_button box" onclick="doSearchCurrentTask('L');"  id="defutBtnL">中长期计划</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask('N');"  id="defutBtnN">未领料</a>&nbsp;-->
 						<a  class="DTTT_button box" onclick="doSearchCustomer();"  		 id="defutBtnU">未安排</a>
-						<a  class="DTTT_button box" onclick="doSearchCustomer2();"  	 id="defutBtnF">已领料</a>
+						<!-- a  class="DTTT_button box" onclick="doSearchCustomer2();"  	 id="defutBtnF">已领料</a -->
 					</td>
 					
 					<td></td>
 					<td width=""></td> 
 				</tr>
+				<!-- 
 				<tr>
 					<td width=""></td>
 					<td width="" class="label">生产线：</td>
@@ -571,7 +595,7 @@
 						</span>			
 					</td>
 				</tr>
-			
+			 -->
 			</table>
 
 		</form>
@@ -581,15 +605,16 @@
 	<div class="list">
 
 		<div id="TSupplier_wrapper" class="dataTables_wrapper">
+			<!-- 
 			<div id="createCurrent" style="height:40px;float: right">
 				<a  class="DTTT_button " onclick="doCreateY('C','31');" id="">添加到当前任务</a>	
 				<a  class="DTTT_button " onclick="doCreateY('L','32');" id="">添加到中长期</a>
 				<a  class="DTTT_button " onclick="doCreateY('N','33');" id="">添加到未领料</a>
 			</div>
+			 -->
 			<table id="TMaterial" class="display" >
 				<thead>						
 					<tr>
-						<th style="width: 10px;">No</th>
 						<th style="width: 40px;">型号</th>
 						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 150px;">产品编号</th>
@@ -597,9 +622,9 @@
 						<th style="width: 40px;">客户</th>
 						<th style="width: 60px;">订单数量</th>
 						<th style="width: 50px;">订单交期</th>
-						<th style="width: 50px;">最晚交期</th>
-						<th style="width: 40px;">业务组</th>
 						<th style="width: 60px;">生产线</th>
+						<th style="width: 40px;">生产<br/>序号</th>
+						<th style="width: 40px;">调整</th>
 					</tr>
 				</thead>
 			</table>

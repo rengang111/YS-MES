@@ -314,9 +314,9 @@
       <f name="A.shortName" alias="" ctype="" />
       <f name="A.divertYsid" alias="" ctype="" />
       <f name="A.diverFlag" alias="" ctype="" />
-      <f name="d.status" alias="currentSts" ctype="" />
-      <f name="d.followType" alias="currentType" ctype="" />
+      <f name="IF(e.produceLine IS NULL,'0','1')" alias="produceLineFlag" ctype="" />
       <f name="IFNULL(e.produceLine,'')" alias="produceLine" ctype="" />
+      <f name="e.sortNo" alias="" ctype="" />
     </select>
     <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
     <from>
@@ -360,11 +360,10 @@
       ) AS A  
     	LEFT JOIN b_OrderMergeDetail b ON a.YSId=b.ysid AND b.deleteFlag = '0'
     	LEFT JOIN b_OrderProduceHide c ON a.YSId=c.ysid AND c.deleteFlag = '0'
-		LEFT JOIN b_follow       d ON a.YSId=d.YSId AND LEFT(d.followType,1)='3' AND d.deleteFlag = '0'
 		LEFT JOIN b_ProducePlan  e ON a.YSId=e.YSId AND e.deleteFlag = '0'
       WHERE 1=1 
     </from>
-    <orderby>IFNULL(b.mergeId,'0')  DESC,IFNULL(b.YSId,a.YSId),mid(A.YSId,LOCATE('-',A.YSId)+1,2)+0</orderby>
+    <orderby>#4</orderby>
     <groupby></groupby>
     <!-- hideFlag='F 不显示隐藏数据   -->
     <having>#1</having>
@@ -387,6 +386,21 @@
     <from> s_producelinecode a where a.multiLevel='2' AND a.deleteFlag='0'
     </from>
     <orderby>a.codeId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="getProducePlanMaxSortNo" />
+    <where>
+      <w name="A.produceLine" des=""  reqName="produceLine" dtype="ch" oper="="  lg="AND" bt="" />
+     </where>
+  	<select>
+      <f name=" IFNULL(max(sortNo+1),'1')" alias="sortNo" ctype="" />
+  </select>
+    <from>b_ProducePlan AS A  WHERE a.deleteFlag='0' </from>
+    <orderby></orderby>
     <groupby></groupby>
     <having></having>
 	<power></power>    

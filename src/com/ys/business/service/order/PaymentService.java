@@ -1266,6 +1266,7 @@ public class PaymentService extends CommonService {
 			guid = BaseDAO.getGuId();
 			invoice.setRecordid(guid);
 			invoice.setInvoiceuser(userInfo.getUserId());//发票填写人：默认为登陆者
+			invoice.setRemarks(replaceTextArea(invoice.getRemarks()));
 			
 			new B_PaymentInvoiceDetailDao().Create(invoice);
 		}else{
@@ -1274,6 +1275,7 @@ public class PaymentService extends CommonService {
 			db.setInvoicetype(invoice.getInvoicetype());
 			db.setInvoicedate(invoice.getInvoicedate());
 			db.setInvoicenumber(invoice.getInvoicenumber());
+			db.setRemarks(replaceTextArea(invoice.getRemarks()));
 			
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"paymentRequestUpdate",userInfo);

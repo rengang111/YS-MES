@@ -112,6 +112,19 @@ public class B_PaymentInvoiceDetailData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String remarks;
+	public String getRemarks()
+	{
+		return this.remarks;
+	}
+	public void setRemarks(String remarks)
+	{
+		this.remarks=remarks;
+	}
+
+	/**
+	*
+	*/
 	private String deptguid;
 	public String getDeptguid()
 	{
@@ -241,13 +254,13 @@ public class B_PaymentInvoiceDetailData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("paymentid = "+(paymentid == null ? "null" : paymentid)+"\n");		sb.append("invoiceamount = "+(invoiceamount == null ? "null" : invoiceamount)+"\n");		sb.append("invoiceuser = "+(invoiceuser == null ? "null" : invoiceuser)+"\n");		sb.append("invoicedate = "+(invoicedate == null ? "null" : invoicedate)+"\n");		sb.append("invoicetype = "+(invoicetype == null ? "null" : invoicetype)+"\n");		sb.append("invoicenumber = "+(invoicenumber == null ? "null" : invoicenumber)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("paymentid = "+(paymentid == null ? "null" : paymentid)+"\n");		sb.append("invoiceamount = "+(invoiceamount == null ? "null" : invoiceamount)+"\n");		sb.append("invoiceuser = "+(invoiceuser == null ? "null" : invoiceuser)+"\n");		sb.append("invoicedate = "+(invoicedate == null ? "null" : invoicedate)+"\n");		sb.append("invoicetype = "+(invoicetype == null ? "null" : invoicetype)+"\n");		sb.append("invoicenumber = "+(invoicenumber == null ? "null" : invoicenumber)+"\n");		sb.append("remarks = "+(remarks == null ? "null" : remarks)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		paymentid= (paymentid == null ?null : paymentid.trim());		invoiceamount= (invoiceamount == null ?null : invoiceamount.trim());		invoiceuser= (invoiceuser == null ?null : invoiceuser.trim());		invoicedate= (invoicedate == null ?null : invoicedate.trim());		invoicetype= (invoicetype == null ?null : invoicetype.trim());		invoicenumber= (invoicenumber == null ?null : invoicenumber.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		paymentid= (paymentid == null ?null : paymentid.trim());		invoiceamount= (invoiceamount == null ?null : invoiceamount.trim());		invoiceuser= (invoiceuser == null ?null : invoiceuser.trim());		invoicedate= (invoicedate == null ?null : invoicedate.trim());		invoicetype= (invoicetype == null ?null : invoicetype.trim());		invoicenumber= (invoicenumber == null ?null : invoicenumber.trim());		remarks= (remarks == null ?null : remarks.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }
