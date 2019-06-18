@@ -11,6 +11,9 @@
     <select>
       <f name="A.recordId" alias="" ctype="" />
       <f name="A.supplierID" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+      <f name="A.normalDelivery" alias="" ctype="" />
+      <f name="A.maxDelivery" alias="" ctype="" />
       <f name="A.shortName" alias="" ctype="" />
       <f name="A.supplierName" alias="" ctype="" />
       <f name="A.categoryId" alias="" ctype="" />

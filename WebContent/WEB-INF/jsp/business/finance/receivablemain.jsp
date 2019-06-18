@@ -271,7 +271,7 @@ body{
 	    	$(this).removeClass("end");
 	    });
 	    
-	 	$('#defutBtm'+type).removeClass("start").addClass("end");
+	 	$('#defutBtm'+searchSts).removeClass("start").addClass("end");
 
 		$('#searchSts').val(searchSts);//
 		$('#year').val('');//
@@ -518,7 +518,7 @@ body{
 			<td colspan="5">
 				<a id="defutBtnm0"   class="DTTT_button box2" onclick="doSearch2('0');">ALL</a>
 				<a id="defutBtnm010" class="DTTT_button box2" onclick="doSearch2('010');">待收款</a>
-				<a id="defutBtnm020" class="DTTT_button box2" onclick="doSearch2('070');" >逾期未收款</a>
+				<a id="defutBtnm070" class="DTTT_button box2" onclick="doSearch2('070');" >逾期未收款</a>
 				<a id="defutBtnm030" class="DTTT_button box2" onclick="doSearchCustomer3('030');">已收款</a>
 				
 				<span id="yearFlag">			

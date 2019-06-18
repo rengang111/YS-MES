@@ -461,6 +461,7 @@
       <f name="b.lastPrice" alias="price" ctype="" />  
       <f name="A.contractTotalPrice" alias="" ctype="" />
       <f name="A.contractPrice" alias="" ctype="" />
+      <f name="replace(A.contractPrice,',','') * replace(A.quantity,',','')" alias="stockinPrice" ctype="" />
       <f name="A.depotId" alias="depotName" ctype="仓库分类" />
       <f name="IFNULL(A.depotId,'')" alias="depotId" ctype="" />
       <f name="IFNULL(A.reverse,'')" alias="reverse" ctype="" />

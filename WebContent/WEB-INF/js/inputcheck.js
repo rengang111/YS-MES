@@ -324,4 +324,20 @@
 		return format; 
 	} 	
 	
-	
+	//比较日前大小  
+	function compareDate(checkStartDate, checkEndDate) {     
+		var rtnValue = true;
+	    var arys1= new Array();      
+	    var arys2= new Array();      
+		if(checkStartDate != null && checkEndDate != null) {      
+		    arys1=checkStartDate.split('-');      
+		    var sdate=new Date(arys1[0],parseInt(arys1[1]-1),arys1[2]);      
+		    arys2=checkEndDate.split('-');      
+		    var edate=new Date(arys2[0],parseInt(arys2[1]-1),arys2[2]);      
+			if(sdate > edate) {      
+				rtnValue =  false;         
+			}  
+	    } 
+		
+		return rtnValue;
+	} 

@@ -342,6 +342,27 @@ function deductAjax() {
 		location.href = url;
 	}
 	
+	function doShowSuppper(supplierId) {
+		//var height = setScrollTop();
+		//keyBackup:1 在新窗口打开时,隐藏"返回"按钮	
+		var url = '${ctx}/business/supplier?methodtype=detailView';
+		url = url + '&parentId=' + parentid+'&recordId='+recordid+'&keyBackup=1';
+		
+		layer.open({
+			offset :[10,''],
+			type : 2,
+			title : false,
+			area : [ '1100px', '520px' ], 
+			scrollbar : false,
+			title : false,
+			content : url,
+			cancel: function(index){ 
+			    layer.close(index)
+				return false; 
+			}    
+		});		
+
+	};
 
 	function doEditMaterial(recordid,parentid) {
 		//var height = setScrollTop();
@@ -433,6 +454,13 @@ function deductAjax() {
 	
 
 	function showContract() {
+		var normalDelivery = $('#normalDelivery').text();
+		if(normalDelivery == '' || normalDelivery == '0'){
+
+			$().toastmessage('showWarningToast', "请录入供应商的正常交期。");	
+			return;
+		}
+		
 		var contractId = '${ contract.contractId }';
 		var url = '${ctx}/business/requirement?methodtype=contractPrint';
 		url = url +'&contractId='+contractId;
@@ -958,14 +986,13 @@ function doDeleteInvoice(recordId){
 				</tr>
 				<tr> 		
 					<td class="label"><label>供应商编号：</label></td>					
-					<td width="150px">${ contract.supplierId }
-						<form:hidden path="contract.supplierid" value="${contract.supplierId }"/></td>
-									
-					<td class="label" width="100px"><label>供应商简称：</label></td>					
-					<td width="100px">${ contract.shortName }</td>
+					<td colspan="5">
+						<form:hidden path="contract.supplierid" value="${contract.supplierId }"/>
+						<a href="#" id="ysidLink" onClick="doShowSuppper('${contract.supplierId}')">${ contract.supplierId }</a>
+						（${ contract.shortName }）${ contract.fullName }</td>
 						
-					<td class="label" width="100px"><label>供应商名称：</label></td>
-					<td colspan="5">${ contract.fullName }</td>
+					<td class="label" width="100px">正常交期：</td>
+					<td colspan="2"  ><span id="normalDelivery">${ contract.normalDelivery }</span>&nbsp;天</td>
 				</tr>	
 				<tr> 		
 					<td class="label"><label>合同编号：</label></td>					
@@ -977,8 +1004,8 @@ function doDeleteInvoice(recordId){
 					<td width="100px">${ contract.purchaseDate }</td>
 					<td class="label" width="100px"><label>合同交期：</label></td>
 					<td width="100px">${ contract.deliveryDate }</td>
-					<td class="label" width="100px">采购员：${ contract.purchaser }</td>
-					<td></td>
+					<td class="label" width="100px">采购员：</td>
+					<td>${ contract.purchaser }</td>
 				</tr>									
 			</table>
 			

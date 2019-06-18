@@ -58,7 +58,7 @@
 						success: function(data){							
 							fnCallback(data);
 
-							//setOptons();
+							setOptons();
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
 														
@@ -83,6 +83,7 @@
 					{"data": "produceLine", "className" : 'td-center'},//7
 					{"data": "sortNo", "className" : 'td-center'},//8
 					{"data": "sortNo", "className" : 'td-center'},//9
+					{"data": "sortNo", "className" : 'td-center'},//10
 					
 				],
 				"columnDefs":[
@@ -162,14 +163,63 @@
 		    			}
 		    			return rtn;
                     }},
+		    		{"targets":10,"render":function(data, type, row){
+		    			var rtn = "";
+		    			var rowIndex = row["rownum"] - 1;
+		    			var produceLine = row['produceLine'];
+		    			var YSId = row['YSId'];
+		    			var txt = '<select  name="lines['+rowIndex+'].produceFilter"  '+
+		    				' id="lines'+rowIndex+'.produceFilter" '+
+		    				' onchange="setProduceLineForOption(this.value,\''+YSId+'\',\''+rowIndex+'\')"   '+
+		    				' class="short option" style="text-align: center;"></select>'
+		    			
+		    
+			    			rtn = txt;
+		    			
+		    			return rtn;
+		    		}},
 		    		{
-		    			"orderable":false,"targets":[0]
+		    			"orderable":false,"targets":[0,7]
 		    		},
 		    		{
 						"visible" : false,
 						"targets" : []
 					}
 	         	],
+	         	
+	         	/*
+	         	"fnInitComplete": function () {//列筛选
+	                   var api = this.api();
+	                   api.columns().indexes().flatten().each(function (i) {
+	                       if (i == 7 ) {//删除第一列与第二列的筛选框
+	                           var column = api.column(i);
+	                           var $span = $('<span class="addselect">▼</span>').appendTo($(column.header()))
+	                           var select = $('<select><option value="">All</option></select>')
+	                                   .appendTo($(column.header()))
+	                                   .on('click', function (evt) {
+	                                       evt.stopPropagation();
+	                                       var val = $.fn.dataTable.util.escapeRegex(
+	                                               $(this).val()
+	                                       );
+	                                       column
+	                                               .search(val ? '^' + val + '$' : '', true, false)
+	                                               .draw();
+	                                   });
+	                           column.data().unique().sort().each(function (d, j) {
+	                               function delHtmlTag(str) {
+	                                   return str.replace(/<[^>]+>/g, "");//去掉html标签
+	                               }
+	 
+	                               d = delHtmlTag(d)
+	                               select.append('<option value="' + d + '">' + d + '</option>')
+	                               $span.append(select)
+	                           });
+	 
+	                       }
+	                   });
+	 
+	               }
+	        	*/
 	         		         	
 			});
 	}
@@ -184,7 +234,7 @@
 
 		ajaxSearch("false");
 	
-		$('#TMaterial').DataTable().on('click', 'tr td:nth-child(2)', function() {
+		$('#TMaterial').DataTable().on('click', 'tr td:nth-child(1)', function() {
 
 			$(this).parent().toggleClass("selected");
 
@@ -211,9 +261,9 @@
 		$('#createCurrent').show();
 		
 		var i = 0;	
-		<c:forEach var="list" items="${produceLineOption}">
+		<c:forEach var="list" items="${producePlanMenu}">
 			i++;
-			options += '<option value="${list.value}">${list.value}</option>';
+			options += '<option value="${list.key}">${list.value}</option>';
 		</c:forEach>
 		
 		initEvent();
@@ -270,6 +320,39 @@
 		});			
 			
 	};
+	
+	//生产线选择
+	function setProduceLineForOption(followType,YSId,rowIndex) {
+		
+		var name=prompt("请输入校验码：","******"); //在页面上弹出提示对话框，
+
+		if(name != '123456'){
+			$().toastmessage('showWarningToast', "确认码有误，请重新输入！");	
+			$('#lines'+rowIndex+'\\.produceFilter').val('N');
+			return;
+		}	
+
+		var actionUrl = "${ctx}/business/produce?methodtype=setOrderForProduce"
+			+"&YSId="+YSId+"&followType="+followType;
+
+		$.ajax({
+			type : "POST",
+			contentType : 'application/json',
+			dataType : 'json',
+			url : actionUrl,
+			data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
+			success : function(data) {
+			
+				var rtnValue = data['message'];
+				$().toastmessage('showWarningToast', "数据保存成功!");
+				reload();
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {				
+				//alert(textStatus);
+			}
+		});			
+			
+	};
 		
 	function showHistory(YSId) {
 		var virtualClass = $('#virtualClass').val();
@@ -309,16 +392,14 @@
 		
 	}
 			
-	//添加到当前任务
+	//添加到：装配完成菜单
 	function doCreateY(taskType,currentyType) {
 		
 		if(hideCnt <= 0){
 			$().toastmessage('showWarningToast', "请选择数据。");		
 			return;
 		}
-		
-		//按钮显示规则
-			
+					
 		var checkedList = "";
 		var firstFlag = true;
 		
@@ -374,10 +455,10 @@
 		ajaxSearch('false');
 	}
 
-	//已领料
-	function doSearchCustomer2(){
+	//装配完成
+	function doSearchCustomer2(type){
 
-		$('#searchFlag').val('F');//已领料
+		$('#searchFlag').val(type);//已领料
 		//$('#createCurrent').hide();
 		
 		ajaxSearch('false');
@@ -574,8 +655,9 @@
 						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('C');"  id="defutBtnC">当前任务</a>
 						<!-- a  class="DTTT_button box" onclick="doSearchCurrentTask('L');"  id="defutBtnL">中长期计划</a>
 						<a  class="DTTT_button box" onclick="doSearchCurrentTask('N');"  id="defutBtnN">未领料</a>&nbsp;-->
-						<a  class="DTTT_button box" onclick="doSearchCustomer();"  		 id="defutBtnU">未安排</a>
-						<!-- a  class="DTTT_button box" onclick="doSearchCustomer2();"  	 id="defutBtnF">已领料</a -->
+						<a  class="DTTT_button box" onclick="doSearchCustomer();"  		 id="defutBtnU">未安排</a>&nbsp;&nbsp;
+						<a  class="DTTT_button box" onclick="doSearchCustomer2('F');"  	 id="defutBtnF">装配完成</a>
+						<a  class="DTTT_button box" onclick="doSearchCustomer2('E');"  	 id="defutBtnE">异常数据</a>
 					</td>
 					
 					<td></td>
@@ -604,14 +686,14 @@
 
 	<div class="list">
 
-		<div id="TSupplier_wrapper" class="dataTables_wrapper">
-			<!-- 
+		<div id="" class="dataTables_wrapper">
+			 <!-- 
 			<div id="createCurrent" style="height:40px;float: right">
-				<a  class="DTTT_button " onclick="doCreateY('C','31');" id="">添加到当前任务</a>	
-				<a  class="DTTT_button " onclick="doCreateY('L','32');" id="">添加到中长期</a>
-				<a  class="DTTT_button " onclick="doCreateY('N','33');" id="">添加到未领料</a>
+				<a  class="DTTT_button " onclick="doCreateY('C','31');" id="">添加到完成菜单</a>	
+				<a  class="DTTT_button " onclick="doCreateN('L','32');" id="">添加到中长期</a>
+				<a  class="DTTT_button " onclick="doCreateN('N','33');" id="">添加到未领料</a>
 			</div>
-			 -->
+			  -->
 			<table id="TMaterial" class="display" >
 				<thead>						
 					<tr>
@@ -625,6 +707,7 @@
 						<th style="width: 60px;">生产线</th>
 						<th style="width: 40px;">生产<br/>序号</th>
 						<th style="width: 40px;">调整</th>
+						<th style="width: 40px;"></th>
 					</tr>
 				</thead>
 			</table>

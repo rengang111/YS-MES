@@ -67,6 +67,7 @@
 					{"data": "categoryId", "defaultContent" : ''},
 					{"data": "categoryDes", "defaultContent" : ''},
 					{"data": "paymentTerm", "defaultContent" : '',"className" : 'td-center'},
+					{"data": "normalDelivery", "defaultContent" : '',"className" : 'td-center'},
 					{"data": null, "defaultContent" : '',"className" : 'td-center'}
 				],
 				"columnDefs":[
@@ -81,9 +82,15 @@
 		    			return jQuery.fixedWidth(name,25);
                     }},
 		    		{"targets":7,"render":function(data, type, row){
+		    			var dn = row["normalDelivery"];	
+		    			if(dn == '' || dn == null)
+		    				dn = '***';
+		    			return dn;
+                    }},
+		    		{"targets":8,"render":function(data, type, row){
 		    			return "<a href=\"#\" onClick=\"doPurchasePlan('" + row["supplierID"] + "')\">采购下单</a>";
                     }},
-                    {"bSortable": false, "aTargets": [ 0,7 ] 
+                    {"bSortable": false, "aTargets": [ 0,8 ] 
                     }
 			           
 			     ] ,
@@ -241,6 +248,7 @@
 						<th style="width:50px;">物料分类</th>
 						<th style="width:150px;">分类解释</th>
 						<th style="width:50px;">付款条件</th>
+						<th style="width:50px;">正常交期</th>
 						<th style="width:50px;">操作</th>
 					</tr>
 				</thead>

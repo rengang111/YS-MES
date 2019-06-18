@@ -317,6 +317,9 @@
       <f name="IF(e.produceLine IS NULL,'0','1')" alias="produceLineFlag" ctype="" />
       <f name="IFNULL(e.produceLine,'')" alias="produceLine" ctype="" />
       <f name="e.sortNo" alias="" ctype="" />
+      <f name="IFNULL(f.filterType,'')" alias="filterType" ctype="" />
+      <f name="IF(f.filterType IS NULL,'0','1')" alias="filterFlag" ctype="" />
+      <f name="IFNULL(e.finishFlag,'0')" alias="finishFlag" ctype="" />
     </select>
     <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
     <from>
@@ -358,9 +361,10 @@
 		 	HAVING #2
 		 
       ) AS A  
-    	LEFT JOIN b_OrderMergeDetail b ON a.YSId=b.ysid AND b.deleteFlag = '0'
-    	LEFT JOIN b_OrderProduceHide c ON a.YSId=c.ysid AND c.deleteFlag = '0'
-		LEFT JOIN b_ProducePlan  e ON a.YSId=e.YSId AND e.deleteFlag = '0'
+    	LEFT JOIN b_OrderMergeDetail 	b ON a.YSId=b.ysid AND b.deleteFlag = '0'
+    	LEFT JOIN b_OrderProduceHide 	c ON a.YSId=c.ysid AND c.deleteFlag = '0'
+		LEFT JOIN b_ProducePlan  		e ON a.YSId=e.YSId AND e.deleteFlag = '0'
+		LEFT JOIN b_ProducePlanFilter 	f ON a.YSId=f.YSId AND f.deleteFlag = '0'
       WHERE 1=1 
     </from>
     <orderby>#4</orderby>

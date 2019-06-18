@@ -10,7 +10,8 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-
+	
+	
 	$("#supplier\\.supplierid").attr('readonly', "true");
 	$("#supplier\\.supplierid").addClass('read-only');
 	
@@ -126,17 +127,14 @@ $(document).ready(function() {
 	
 	$("#doSave").click(function() {
 	
-		var i=0;
-		$(".error").each(function () {  
-	       i++;  
-	    });
-		
-		if(i>0){
-			$().toastmessage('showWarningToast', "请先修正页面中的错误输入，再保存。");
+		var rt = checkDeliveryDate();
+		if(rt == false){
 			return;
-		}	
+		}
 		
 		$('#supplier\\.shortname').val($('#supplier\\.shortname').val().toUpperCase());
+
+		$('#doSave').attr("disabled","true").removeClass("DTTT_button");
 		
 		$('#supplierBasicInfo').attr("action", "${ctx}/business/supplier?methodtype=insert");
 		$('#supplierBasicInfo').submit();
@@ -159,6 +157,28 @@ function doDelete() {
 
 	var url = "${ctx}/business/supplier";
 	location.href = url;
+}
+
+
+function checkDeliveryDate(){
+	var rtnValue = true;
+	var dn = $("#supplier\\.normaldelivery").val();
+	var dm = $("#supplier\\.maxdelivery").val();
+	if(dn == ''){
+		$().toastmessage('showWarningToast', "请输入正常交期。");
+		rtnValue = false;
+	}else{
+		if(dm == ''){
+			$("#supplier\\.maxdelivery").val(dn);
+		}else{
+			
+			if(currencyToFloat(dm) < currencyToFloat(dn)){
+				$().toastmessage('showWarningToast', "最长交期不能小于正常交期。");				
+			}
+		}
+	}
+	
+	return rtnValue;
 }
 
 </script>
@@ -206,17 +226,26 @@ function doDelete() {
 			<tr>
 			
 				<td class="label" width="100px">供应商名称：</td> 
-				<td>
-					<form:input path="supplier.suppliername" class="middle" /></td>
+				<td colspan="5">
+					<form:input path="supplier.suppliername" class="long" /></td>
+				
+			</tr>
+			<tr>
+				<td class="label">详细地址： </td>
+				<td colspan="5">
+					<form:input path="supplier.address" class="long" /></td>
+			</tr>	
+			<tr>
 				<td class="label" width="100px">供应商类别：</td>
-				<td>
+				<td colspan="5">
 					<form:select path="supplier.type" style="width:120px">
 						<form:options items="${formModel.typeList}" itemValue="key"
 							itemLabel="value" />
 					</form:select></td>
-					
+			</tr>	
+			<tr>					
 				<td class="label" width="100px">付款条件：</td>
-				<td>&nbsp;发票后<form:input path="supplier.paymentterm" class="small num" />天</td>
+				<td colspan="5">&nbsp;发票后<form:input path="supplier.paymentterm" class="small num" />天</td>
 			</tr>
 			<tr>	
 				<td class="label" width="100px">物料分类：</td> 
@@ -228,9 +257,12 @@ function doDelete() {
 
 			</tr>
 			<tr>
-				<td class="label">详细地址： </td>
-				<td colspan="5">
-					<form:input path="supplier.address" class="long" /></td>
+				<td class="label" width="100px">正常交期：</td>
+				<td>
+					<form:input path="supplier.normaldelivery"  class="short num"/>天</td>
+				<td class="label" width="100px">最长交期：</td> 
+				<td colspan="3">
+					<form:input path="supplier.maxdelivery"  class="short num"/>天</td>
 			</tr>
 		</table>
 

@@ -517,6 +517,9 @@
       <f name="f.supplierName" alias="fullName" ctype="" />
       <f name="f.purchaseDate" alias="" ctype="" />
       <f name="f.deliveryDate" alias="" ctype="" />
+      <f name="f.remarks" alias="" ctype="" />
+      <f name="f.normalDelivery" alias="" ctype="" />
+      <f name="f.maxDelivery" alias="" ctype="" />
       <f name="f.total" alias="" ctype="" />
       <f name="f.memo" alias="" ctype="" />
       <f name="f.paymentTerm" alias="" ctype="" />

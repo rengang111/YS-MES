@@ -25,15 +25,16 @@ import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_OrderMergeDetailDao;
 import com.ys.business.db.dao.B_OrderProduceHideDao;
 import com.ys.business.db.dao.B_ProducePlanDao;
+import com.ys.business.db.dao.B_ProducePlanFilterDao;
 import com.ys.business.db.dao.S_ProduceLineCodeDao;
-import com.ys.business.db.dao.S_WarehouseCodeDao;
+import com.ys.business.db.data.B_FollowData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderMergeDetailData;
 import com.ys.business.db.data.B_OrderProduceHideData;
 import com.ys.business.db.data.B_ProducePlanData;
+import com.ys.business.db.data.B_ProducePlanFilterData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.db.data.S_ProduceLineCodeData;
-import com.ys.business.db.data.S_WarehouseCodeData;
 
 @Service
 public class ProduceService extends CommonService  {
@@ -181,34 +182,24 @@ public class ProduceService extends CommonService  {
 		
 		if(("U").equals(searchFlag)){
 			//未安排
-			having1 += " AND produceLineFlag = '0' ";//过滤掉当前任务
+			having1 += " AND produceLineFlag = '0' AND filterFlag='0' ";//过滤掉当前任务
 		}else if(("C").equals(searchFlag)){
 			//当前任务
-			having1 += " AND produceLineFlag = '1' ";//只显示当前任务
-			orderby = " e.produceLine,e.sortNo ";
+			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' ";//只显示当前任务
+			orderby = " e.produceLine,e.sortNo+0 ";
 			
-		//}else if(("L").equals(searchFlag)){
-			//中长期生产计划
-			//having1 += " AND currentSts = '0' AND currentType='32' ";//中长期生产计划
-		//}else if(("N").equals(searchFlag)){
-			//未领料
-			//having1 += " AND currentSts = '0' AND currentType='33' ";
-		//}else if(("F").equals(searchFlag)){
-			//成品全部入库	
-			//having2 = " computeStockinQty+0 >= orderQty+0 ";		
+		}else if(("F").equals(searchFlag)){
+			//装配完成
+			having1 += " AND produceLineFlag = '1' AND finishFlag = '1' ";//中长期生产计划
+		}else if(("E").equals(searchFlag)){
+			//异常数据
+			having1 += " AND filterFlag='1' ";
 		}
 		
 		//*** 常规订单，配件单
 		String where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) NOT IN ('BTR','BNC','CGR','PJ') ";
-		//if(("P").equals(partsType)){
-			//配件单
-		//	where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) IN ('BTR','BNC','CGR','PJ') ";
-		//}
 		
-		//*** 生产线
-		//if(("999").equals(produceLine)){
-			produceLine = "";
-		//}
+		produceLine = "";
 
 		userDefinedSearchCase.put("produceLine", produceLine);	
 		userDefinedSearchCase.put("orderType", orderType);	
@@ -1214,6 +1205,9 @@ public class ProduceService extends CommonService  {
 				getListOptionFromXml(getProduceLineList()));
 		
 		model.addAttribute("produceLine",getProduceLineCode());
+		
+		model.addAttribute("producePlanMenu",
+				util.getListOption(DicUtil.PRODUCEPLANMENU,""));//订单设置菜单
 	}
 	
 	public ArrayList<ArrayList<String>> getProduceLineList() throws Exception{
@@ -1268,6 +1262,115 @@ public class ProduceService extends CommonService  {
 		return returnValue;
 	}
 	
+
+	/**
+	 * 将生产任务中的订单筛选出来：装配完成，异常数据等。
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean setProducePlanFilter() throws Exception{
+
+		boolean returnValue = true;
+		String YSId = request.getParameter("YSId");
+		String followType = request.getParameter("followType");
+		
+		if(("E").equals(followType)){			
+			returnValue = setOrderAbnormal(YSId,followType);
+		}else{
+
+			returnValue = setOrderFinished(YSId);
+		}
+		
+		return returnValue;
+	}
+	
+	/**
+	 * 将生产任务中的订单筛选出来：异常数据等。
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	private boolean setOrderAbnormal(String YSId,String followType) throws Exception{
+
+		boolean returnValue = true;
+		
+		try{
+			String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+			List<B_ProducePlanFilterData> list = new B_ProducePlanFilterDao().Find(where);
+			if(list.size() > 0){
+				B_ProducePlanFilterData plan = list.get(0); 
+				plan.setStatus("0");
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"update",userInfo);
+				copyProperties(plan,commData);	
+				
+				new B_ProducePlanFilterDao().Store(plan);
+				
+			}else{
+				B_ProducePlanFilterData plan = new B_ProducePlanFilterData();
+				plan.setStatus("0");//有效
+				plan.setYsid(YSId);
+				plan.setFiltertype(followType);
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+						"insert",userInfo);
+				copyProperties(plan,commData);	
+				guid = BaseDAO.getGuId();				
+				plan.setRecordid(guid);
+				
+				new B_ProducePlanFilterDao().Create(plan);
+			}
+		}catch(Exception e){
+			returnValue = false;
+		}		
+		
+		return returnValue;
+	}
+	
+	/**
+	 * 将生产任务中的订单筛选出来：装配完成
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	private boolean setOrderFinished(String YSId) throws Exception{
+
+		boolean returnValue = true;
+		
+		try{
+			String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+			List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+			if(list.size() > 0){
+				B_ProducePlanData plan = list.get(0); 
+				plan.setFinishflag("1");//1:装配完成
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"update",userInfo);
+				copyProperties(plan,commData);	
+				
+				new B_ProducePlanDao().Store(plan);
+				
+			}else{
+				B_ProducePlanData plan = new B_ProducePlanData();
+				plan.setFinishflag("1");//1:装配完成
+				plan.setYsid(YSId);
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+						"insert",userInfo);
+				copyProperties(plan,commData);	
+				guid = BaseDAO.getGuId();				
+				plan.setRecordid(guid);
+				
+				new B_ProducePlanDao().Create(plan);
+			}
+		}catch(Exception e){
+			returnValue = false;
+		}
+		
+		
+		return returnValue;
+	}
 	private String getMaxSortNo(String produceLine) throws Exception{
 		String rtnValue = "0";
 				

@@ -139,6 +139,10 @@ public class ProduceAction extends BaseAction {
 				dataMap = doSetProducePlanSortNo();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "setOrderForProduce"://设置生产计划过滤数据
+				dataMap = doSetOrderForProduce();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -395,6 +399,22 @@ public class ProduceAction extends BaseAction {
 	
 		try {
 			boolean rtnFlag = orderService.setProduceLineById();
+		
+			dataMap.put(INFO, SUCCESSMSG);			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}		
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> doSetOrderForProduce(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			orderService.setProducePlanFilter();
 		
 			dataMap.put(INFO, SUCCESSMSG);			
 		}

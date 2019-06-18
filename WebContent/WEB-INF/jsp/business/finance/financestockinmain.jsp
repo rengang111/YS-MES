@@ -121,7 +121,7 @@
 	    		{"targets":9,"render":function(data, type, row){
 	    			
 	    			var contractId = row["taxPrice"];		
-	    			var supplierId = row["taxTotal"];				    			
+	    			var supplierId = row["stockinPrice"];				    			
 	    			return contractId + "<br />" + supplierId;
 	    		}},
 	    		{
