@@ -120,7 +120,7 @@
 			var bomId = $('#bomId').text();
 			//alert(bomId)
 
-			var url = "${ctx}/business/bom?methodtype=updateRebaterate";
+			var url = "${ctx}/business/bom?methodtype=";
 			url = url + "&bomId="+bomId+"&rate="+rate;
 
 			$.ajax({

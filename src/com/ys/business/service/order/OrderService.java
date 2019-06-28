@@ -1077,6 +1077,8 @@ public class OrderService extends CommonService  {
 			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 					"OrderDetailInsert",userInfo);
 			copyProperties(db,commData);
+			guid = BaseDAO.getGuId();
+			divert.setRecordid(guid);
 			
 			dao.Store(db);
 			
@@ -1085,15 +1087,9 @@ public class OrderService extends CommonService  {
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"OrderDetailUpdate",userInfo);
 			copyProperties(divert,commData);
-			guid = BaseDAO.getGuId();
-			divert.setRecordid(guid);
 			
 			dao.Create(divert);
 		}
-		
-	
-	
-		
 
 	}	
 	/*

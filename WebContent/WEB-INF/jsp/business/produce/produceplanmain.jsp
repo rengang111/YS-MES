@@ -133,19 +133,32 @@
 		    			var rowIndex = row["rownum"] - 1;
 		    			var produceLine = row['produceLine'];
 		    			var YSId = row['YSId'];
+		    			var showDisFlag = true;
+		    			var editDisFlag = 'none';
+		    			var txt = '';
+		    			if(produceLine == ''){//未安排
+		    				editDisFlag = true;
+		    				showDisFlag = 'none';
+		    			}
+			    		else{//当前任务
+			    			editDisFlag = 'none';
+			    			showDisFlag = true;
+			    		}
 		    			
-		    			var txt = ' <input type="text"   '+
-		    				' id="lines'+rowIndex+'.produceLine" '+
-		    				' onfocus= removeErrorClass(\''+rowIndex+'\');return false;"   '+
-		    				' onblur ="setProduceLine(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
-		    				' class="short attributeList1" style="width:50px;"/>'
+		    			var txtShow = '<div id="lineShow'+rowIndex+'"  style="display:'+showDisFlag+';">';
+
+		    			txtShow += "<a href=\"###\" onClick=\"doEditLine('"+ rowIndex + "')\">"+produceLine+"</a></div>";
 		    			
-		    			if(produceLine == '')
-			    			rtn= txt;
-			    		else
-			    			rtn = produceLine;
+		    			var txtEdit = '<div id="lineEdit'+rowIndex+'" class="lineEdit"  style="display:'+editDisFlag+';">';
+		    			txtEdit += ' <input type="text"   '+
+			    				' id="lines'+rowIndex+'.produceLine" '+
+			    				' onfocus= removeErrorClass(\''+rowIndex+'\');return false;"   '+
+			    				' onblur ="setProduceLine(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
+			    				' class="short attributeList1" style="width:50px;"/>'
+		    			txtEdit += '</div>';
+		    						     		    			
+		    			return txtShow + txtEdit;
 		    			
-		    			return rtn;
 		    		}},
 		    		{"targets":9,"render":function(data, type, row){
 		    			var imgName = 'arrow_down';
@@ -179,11 +192,11 @@
 		    			return rtn;
 		    		}},
 		    		{
-		    			"orderable":false,"targets":[0,7]
+		    			"orderable":false,"targets":[7,8,9,10]
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : []
+						"targets" : [8]
 					}
 	         	],
 	         	
@@ -230,6 +243,11 @@
 		$(".option").html(options);	
 	}
 	
+	function doEditLine(index){
+		
+		$('#lineEdit'+index).show();
+		$('#lineShow'+index).css('display','none');
+	}
 	function initEvent(){
 
 		ajaxSearch("false");

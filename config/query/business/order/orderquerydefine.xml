@@ -985,4 +985,99 @@
     <having></having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>    
+    <name value="orderTrackingForStorage" />
+    <where>
+    	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="LEFT(a.materialId,1)" des="" reqName="materialH" dtype="ch" oper="&lt;&gt;" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.unit" alias="unitName" ctype="计量单位" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.quantityOnHand" alias="" ctype="" />
+      <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="a.subbomno" alias="" ctype="" />
+      <f name="a.waitStockIn" alias="" ctype="" />
+      <f name="a.waitStockOut" alias="" ctype="" />
+      <f name="a.availabelToPromise" alias="" ctype="" />
+  </select>
+   <from>v_purchaseplan a  		
+		where a.deleteFlag='0' 
+		</from>
+    <orderby>a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="contractListByYsid" />
+    <where>
+    	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="" ctype="" />
+      <f name="a.deliveryDate" alias="" ctype="" />
+      <f name="IFNULL(a.newDeliveryDate,'')" alias="newDeliveryDate" ctype="" />
+      <f name="IFNULL(c.newUpdateDate,'')" alias="newUpdateDate" ctype="" />
+      <f name="a.quantity" alias="contractQty" ctype="" />
+      <f name="IFNULL(b.stockinQty,0)" alias="stockinQty" ctype="" />
+  </select>
+   <from>
+		v_purchaseorderdetail  a
+		LEFT JOIN 
+			( SELECT b4.ysid,b4.materialId,b4.contractId,
+			  	sum(replace(b4.quantity,',','')) stockinQty
+			  FROM v_purchasestockindetail b4,v_orderdetail ord  
+			  WHERE b4.ysid = ord.ysid AND
+					ord.YSId = '#0'
+					GROUP BY b4.ysid,b4.materialId
+			) b ON a.materialId = b.materialId AND b.ysid = a.ysid and a.contractId=b.contractId
+		LEFT JOIN b_PurchaseOrderDeliveryDateHistory c ON c.contractId = a.contractId AND c.newDeliveryDate = a.newDeliveryDate AND c.deleteFlag='0' 
+		where 1=1 
+	</from>
+    <orderby>a.contractId,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="UnStorageContractCount" />
+    <where>
+    	<w name="a.supplierId" des="" reqName="supplierId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="a.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="" ctype="" />
+      <f name="a.newDeliveryDate" alias="" ctype="" />
+      <f name="MAX(A.deliveryDate)" alias="deliveryDateMax" ctype="" />
+      <f name="MIN(A.deliveryDate)" alias="deliveryDateMin" ctype="" />
+      <f name="sum(A.quantity)" alias="contractQty" ctype="" />
+      <f name="sum(A.contractStorage)" alias="contractStorage" ctype="" />
+      <f name="sum(A.quantity) - sum(A.contractStorage)" alias="suplus" ctype="" />
+  </select>
+   <from>		
+		v_purchaseorderdetail a
+		WHERE a.quantity+0 > a.contractStorage+0 
+	</from>
+    <orderby>a.contractId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
 </root>
