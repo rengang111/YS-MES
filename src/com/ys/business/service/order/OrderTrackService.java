@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import com.sun.istack.internal.NotNull;
 import com.ys.business.action.model.order.OrderTrackModel;
 import com.ys.business.db.dao.B_BomPlanDao;
 import com.ys.business.db.dao.B_OrderDao;
@@ -225,8 +226,9 @@ public class OrderTrackService extends CommonService {
 			B_PurchaseOrderDeliveryDateHistoryData date = reqModel.getDeliveryDate();
 
 			//挪用订单
-			String contractId = request.getParameter("contractId");
-			String materialId = request.getParameter("materialId");
+			String YSId 		= request.getParameter("YSId");
+			String contractId 	= request.getParameter("contractId");
+			String materialId 	= request.getParameter("materialId");
 			String deliveryDate = request.getParameter("deliveryDate");
 			String newDeliveryDate = request.getParameter("newDeliveryDate");
 			
@@ -241,7 +243,12 @@ public class OrderTrackService extends CommonService {
 			
 			//更新合同的最新交期
 		    updatePurchaseOrderDetail(contractId,newDeliveryDate);
-		        
+		    
+		    String maxDeliverDate = getZPTimeFromContract(YSId);
+		    
+		    if(notEmpty(maxDeliverDate)){
+		    	updateProducePlan(YSId,maxDeliverDate);
+		    }		        
 
 			ts.commit();
 			modelMap.put("returnValue", "SUCCESS");
@@ -334,24 +341,26 @@ public class OrderTrackService extends CommonService {
 		}
 		
 	}
+	@SuppressWarnings("unchecked")
+	public void updateProducePlan(
+			String YSId,
+			String zpTime) throws Exception{
 	
-	private String getReadydateFromContract(String ysid) throws Exception{
-		String rtnValue = "";
-		
-		dataModel = new BaseModel();		
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("getMaxStrockinDateFromContract");		
-		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("YSId", ysid);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		
-		baseQuery.getYsFullData();
-		
-		if(baseQuery.getRecodCount() > 0 ){
-			rtnValue = dataModel.getYsViewData().get(0).get("checkInDate");
-		}
-		
-		return rtnValue;
+		String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+		List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+		if(list.size() > 0){
+			B_ProducePlanData plan = list.get(0); 
+			//plan.setFinishflag(finishFlag);//
+			//plan.setReadydate(getReadydateFromContract(YSId));
+			plan.setReadydate(zpTime);
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"update",userInfo);
+			copyProperties(plan,commData);	
+			
+			new B_ProducePlanDao().Store(plan);
+			
+		}		
 	}
 	
 	public void orderTrackDetailInit() throws Exception{

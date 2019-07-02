@@ -41,7 +41,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
     		
     		if(tmp == 'B02' || tmp == 'B03' ||tmp == 'B04' ||tmp == 'B11' || 
     			tmp == 'B12' || tmp == 'B13' ||tmp == 'B14' ||tmp == 'B15' ||
-    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19' || tmp2 == 'E' ){
+    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19' || tmp2 == 'E' ||  tmp2 == 'H'){
     			return true;
     		}
     		
@@ -391,7 +391,8 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
     	 	var date = $(this).find("td").eq(9).find('input[name=deliveryDate]').val();
     	 	var flag = $(this).find("td").eq(9).find('input[name=stockinFlag]').val();//是否入库标识
 
-    		var tmp = val.substring(0,3);			
+    		var tmp  = val.substring(0,3);	
+    		var tmp1 = val.substring(0,1);			
 		
 	    	if(tmp == 'B05' || tmp == 'B06' ||tmp == 'B07' || tmp == 'B08' ||
 	    		   tmp == 'B09' || tmp == 'B10' ||tmp == 'B16'){
@@ -405,7 +406,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    		
     		}else if(tmp == 'B02' || tmp == 'B03' ||tmp == 'B04' ||tmp == 'B11' || 
 	    			tmp == 'B12' || tmp == 'B13' ||tmp == 'B14' ||tmp == 'B15' ||
-	    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19'  ){
+	    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19' || tmp1 == 'E' ||  tmp1 == 'H'){
 				//五金
 				if(flag == '0'){//未入库
 	    			wjList[wjindex] = date;
@@ -627,6 +628,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 		$("#cancel"+index).hide();
 		$("#edit"+index).show();
 
+		var YSId = '${order.YSId}';
 		var newDelivery  = $("#deliveryInput"+index).val();
 		var materialId   = $("#materialId"+index).val();
 		var contractId   = $("#contractId"+index).val();
@@ -636,6 +638,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 		var par = "&deliveryDate=" + deliveryDate+
 					"&materialId=" + materialId+
 					"&contractId=" + contractId+
+					"&YSId=" 	   + YSId+
 					"&newDeliveryDate=" + newDelivery;
 		
 		

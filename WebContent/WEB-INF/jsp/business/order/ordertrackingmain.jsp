@@ -113,20 +113,26 @@
 		    		{"targets":5,"render":function(data, type, row){
 		    			var ready = row['readyDate'];
 		    			var flag = row['finishFlag'];
+		    			var rtnValue = ''
 		    			if(ready == ''){
 		    				if(flag == 'B'){
 
-			    				return '已入库';	
+		    					rtnValue = '已入库';	
 		    				}else{
-			    				return '未知';			    					
+		    					rtnValue = '未知';			    					
 		    				}
 		    			}else{
-		    				return ready;
+		    				var today = shortToday();
+		    				if(ready < today)
+		    					rtnValue = '<span class="error">'+ready+'</span>';
+		    				else
+		    					rtnValue = 	ready;
 		    				
 		    			}
+		    			
+		    			return rtnValue;
 		    		}},
 		    		{"targets":6,"render":function(data, type, row){
-		    			
 		    			return floatToNumber(data);
 		    		}},
 		    		{
