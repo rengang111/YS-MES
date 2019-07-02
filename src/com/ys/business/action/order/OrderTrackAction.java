@@ -91,6 +91,14 @@ public class OrderTrackAction extends BaseAction {
 				dataMap = updateContracDeliveryDate();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "setMaterialFinished"://设置当然任务为：料已备齐
+				dataMap = setMaterialFinished();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "orderTrackingShow"://订单跟踪详情
+				 doShowOrderTracking();
+				rtnUrl = "/business/order/ordertrackingview";
+				break;
 				
 				
 		}
@@ -216,5 +224,29 @@ public class OrderTrackAction extends BaseAction {
 		return dataMap;
 	}
 	
+
+	private HashMap<String, Object> setMaterialFinished(){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		
+		try {
+			//reviewService.setMaterialFinished();			
+
+			dataMap.put(INFO, NODATAMSG);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public void doShowOrderTracking() throws Exception
+	{
+	    reviewService.orderTrackDetailInit();
+	 
+	}
 
 }

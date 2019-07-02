@@ -188,9 +188,9 @@ public class ProduceService extends CommonService  {
 			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' ";//只显示当前任务
 			orderby = " e.produceLine,e.sortNo+0 ";
 			
-		}else if(("F").equals(searchFlag)){
-			//装配完成
-			having1 += " AND produceLineFlag = '1' AND finishFlag = '1' ";//中长期生产计划
+		}else if(("B").equals(searchFlag)){
+			//料已备齐
+			having1 += " AND produceLineFlag = '1' AND finishFlag = 'B' ";//中长期生产计划
 		}else if(("E").equals(searchFlag)){
 			//异常数据
 			having1 += " AND filterFlag='1' ";

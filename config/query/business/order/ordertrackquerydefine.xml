@@ -2,26 +2,17 @@
 <root>
   <query>
     <pool></pool>    
-    <name value="orderTrackingForStorage" />
+    <name value="getMaxStokcinDate" />
     <where>
     	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
-    	<w name="LEFT(a.materialId,1)" des="" reqName="materialH" dtype="ch" oper="&lt;&gt;" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.YSId" alias="" ctype="" />
-      <f name="a.materialId" alias="" ctype="" />
-      <f name="a.materialName" alias="" ctype="" />
-      <f name="a.unit" alias="unitName" ctype="计量单位" />
-      <f name="a.supplierId" alias="" ctype="" />
-      <f name="a.quantityOnHand" alias="" ctype="" />
-      <f name="a.manufactureQuantity" alias="" ctype="" />
-      <f name="a.subbomno" alias="" ctype="" />
-      <f name="a.waitStockIn" alias="" ctype="" />
-      <f name="a.waitStockOut" alias="" ctype="" />
-      <f name="a.availabelToPromise" alias="" ctype="" />
+      <f name="MAX(IFNULL(a.newDeliveryDate,a.deliveryDate))" alias="deliveryDate" ctype="" />
   </select>
-   <from>v_purchaseplan a  		
-		where a.deleteFlag='0' 
+   <from>v_purchaseorderdetail a
+		WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
+			AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
 		</from>
     <orderby>a.materialId</orderby>
     <groupby></groupby>

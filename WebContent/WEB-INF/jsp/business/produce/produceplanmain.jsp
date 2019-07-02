@@ -409,60 +409,6 @@
 		
 		
 	}
-			
-	//添加到：装配完成菜单
-	function doCreateY(taskType,currentyType) {
-		
-		if(hideCnt <= 0){
-			$().toastmessage('showWarningToast', "请选择数据。");		
-			return;
-		}
-					
-		var checkedList = "";
-		var firstFlag = true;
-		
-		$('#TMaterial tbody tr').each (function (){
-
-			var $newsts = $(this).find("td").eq(1).find("input");
-			var ysid    = $(this).find("td").eq(2).text();			
-
-			var checkFlag = false;
-			
-			if( $newsts.prop('checked')){//本次被选中
-				checkFlag = true;
-			}
-			if( checkFlag == true ){
-				if(firstFlag){
-					checkedList += ysid;
-					firstFlag = false;
-				}else{
-					checkedList += ',';
-					checkedList += ysid;
-				}			
-			}		
-		});
-		
-		var actionUrl = "${ctx}/business/requisition?methodtype=setCurrentTask"
-				+"&checkedList="+checkedList
-				+"&currentyType="+currentyType;
-
-		$.ajax({
-			type : "POST",
-			contentType : 'application/json',
-			dataType : 'json',
-			url : actionUrl,
-			data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
-			success : function(data) {
-				//alert(d)				
-				ajaxSearch('false');	//刷新页面
-				
-				//$().toastmessage('showWarningToast', "保存成功!");		
-			},
-			error : function(XMLHttpRequest, textStatus, errorThrown) {				
-				//alert(textStatus);
-			}
-		});
-	}
 	
 	//未领料
 	function doSearchCustomer(type,searchFlag){

@@ -5,6 +5,23 @@
 <title>应付款审核-一级审核查看</title>
 <%@ include file="../../common/common2.jsp"%>
 <script type="text/javascript">
+
+
+function invoiceCountFn(){
+	
+	var cost = 0;
+	$('#invoice tbody tr').each (function (){
+		
+		var temp = $(this).find("td").eq(2).text();//发票金额	
+		
+		temp = currencyToFloat(temp);
+		cost = cost + temp;
+					
+	});	
+	$('#invoiceCnt').text(floatToCurrency(cost));
+	
+}
+
 function invoiceAjax() {
 	
 	var table = $('#invoice').dataTable();
@@ -469,7 +486,6 @@ function photoView1(id, tdTable, count, data) {
 
 	}
 }
-
 
 
 

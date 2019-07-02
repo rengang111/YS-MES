@@ -1031,6 +1031,7 @@
       <f name="IFNULL(c.newUpdateDate,'')" alias="newUpdateDate" ctype="" />
       <f name="a.quantity" alias="contractQty" ctype="" />
       <f name="IFNULL(b.stockinQty,0)" alias="stockinQty" ctype="" />
+      <f name="IFNULL(a.supplierRecordId,'')" alias="supplierRecordId" ctype="" />
   </select>
    <from>
 		v_purchaseorderdetail  a
@@ -1080,4 +1081,26 @@
     <having></having>
 	<power></power>    
   </query>
+  
+  <query>
+    <pool></pool>    
+    <name value="getMaxStrockinDateFromContract" />
+    <where>
+    	<w name="c.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="c.YSId" alias="" ctype="" />
+      <f name="max(c.checkInDate)" alias="checkInDate" ctype="" />
+  </select>
+   <from>
+		v_purchasestockindetail c
+		WHERE
+			c.deleteFlag = '0'
+	</from>
+    <orderby></orderby>
+    <groupby>c.ysid</groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  
 </root>

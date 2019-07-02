@@ -622,7 +622,8 @@ function invoiceAjax() {
 				"type" : "POST",
 				"data" : JSON.stringify(aoData),
 				success: function(data){							
-					fnCallback(data);		
+					fnCallback(data);
+					alert(1111)
 					invoiceCountFn();
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -699,7 +700,6 @@ function invoiceCountFn(){
 		cost = cost + temp;
 					
 	});	
-	
 	$('#invoiceCnt').text(floatToCurrency(cost));
 	
 }

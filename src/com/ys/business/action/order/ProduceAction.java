@@ -124,7 +124,7 @@ public class ProduceAction extends BaseAction {
 				rtnUrl = "/business/produce/produceplanmain";
 				break;
 			case "producePlanMainSearch":
-				dataMap = doProducePlanMainSearchSearch(data);
+				dataMap = doProducePlanMainSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
 			case "setProduceLineById":
@@ -150,7 +150,7 @@ public class ProduceAction extends BaseAction {
 	
 
 	@SuppressWarnings({ "unchecked" })
-	public HashMap<String, Object> doProducePlanMainSearchSearch(@RequestBody String data){
+	public HashMap<String, Object> doProducePlanMainSearch(@RequestBody String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 		//优先执行查询按钮事件,清空session中的查询条件
 		String sessionFlag = request.getParameter("sessionFlag");

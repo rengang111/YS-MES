@@ -37,10 +37,11 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
     	}else if(type=='wj'){//五金
     		var val=data[2];
     		var tmp = val.substring(0,3);
+    		var tmp2= val.substring(0,1);
     		
     		if(tmp == 'B02' || tmp == 'B03' ||tmp == 'B04' ||tmp == 'B11' || 
     			tmp == 'B12' || tmp == 'B13' ||tmp == 'B14' ||tmp == 'B15' ||
-    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19'  ){
+    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19' || tmp2 == 'E' ){
     			return true;
     		}
     		
@@ -48,7 +49,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
     		var val=data[2];
     		var tmp = val.substring(0,1);
     		
-    		if(tmp == 'C' || tmp == 'E' ||tmp == 'F' ||tmp == 'G' ){
+    		if(tmp == 'C' || tmp == 'F' ||tmp == 'G' ){
     			return true;
     		}
     		
@@ -252,7 +253,10 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 						
 						foucsInit();//input格式化
 						
+						errorCheckAndCostCount();
+						
 						setContractCount();//计算数量汇总
+						
 					},
 					 error:function(XMLHttpRequest, textStatus, errorThrown){
 		            	alert(errorThrown)
@@ -278,15 +282,22 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 				{"data": null,"className" : 'td-right', "defaultContent" : ''},//10.更新时间			
 			],
 			"columnDefs":[
+	    		
+	    		{"targets":0,"render":function(data, type, row){
+	    			
+	    			return "<a href=\"###\" onClick=\"doShowControct('" + row["contractId"] + "','" + row["quantity"] + "','" + row["arrivalQty"] + "','" + row["contractStorage"] + "')\">"+row["contractId"]+"</a>";			    			
+	    		}},
+	    		{"targets":1,"render":function(data, type, row){
+	    			
+	    			return "<a href=\"###\" onClick=\"doShowSupplier('" + row["supplierRecordId"] + "')\">"+row["shortName"]+"</a>";			    			
+	    		}},
 	    		{"targets":3,"render":function(data, type, row){	 			
 	    			return jQuery.fixedWidth(row["materialName"],48);	
 	    		}},
-	    		{"targets":1,"render":function(data, type, row){
-	    			var index = row["rownum"] - 1;
-	    			var shortName = row['shortName'];
-		    		var supplierId = '<input type="hidden" id="supplierId'+index+'" name="supplierId" value='+row['supplierId']+' >';
-		    		
-		    		return shortName + supplierId;
+	    		{"targets":6,"render":function(data, type, row){
+	    			
+	    			return floatToNumber(data)
+	    			//return "<a href=\"###\" onClick=\"doShowStockin('" + row["contractId"] + "','" + row["materialId"] + "')\">"+row["shortName"]+"</a>";			    			
 					
 	    		}},
 	    		{"targets":9,"render":function(data, type, row){
@@ -301,7 +312,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 					if(stockinQty >= contractQty){
 						var hidden = "";
 						hidden += '<input type="hidden" id="stockinFlag'+index+'" name="stockinFlag" value="1" >';
-						return hidden + "***";
+						return hidden + "已入库";
 					}else{
 						if(newDeliveryDate == '' || newDeliveryDate == null)
 							newDeliveryDate = deliveryDate;
@@ -370,9 +381,9 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 		var wjList = new Array(); 
 		var dzList = new Array(); 
 		var zzList = new Array(); 
-		var wjindex = 0,wjFlag = -1;
-		var dzindex = 0,dzFlag = -1;
-		var zzindex = 0,zzFlag = -1;
+		var wjindex = 0,wjFlag = false;
+		var dzindex = 0,dzFlag = false;
+		var zzindex = 0,zzFlag = false;
 		
 		$('#contract tbody tr').each (function (){
 
@@ -380,8 +391,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
     	 	var date = $(this).find("td").eq(9).find('input[name=deliveryDate]').val();
     	 	var flag = $(this).find("td").eq(9).find('input[name=stockinFlag]').val();//是否入库标识
 
-    		var tmp = val.substring(0,3);
-			
+    		var tmp = val.substring(0,3);			
 		
 	    	if(tmp == 'B05' || tmp == 'B06' ||tmp == 'B07' || tmp == 'B08' ||
 	    		   tmp == 'B09' || tmp == 'B10' ||tmp == 'B16'){
@@ -389,10 +399,9 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 				if(flag == '0'){//未入库
 		    		dzList[dzindex] = date;
 		    		dzindex ++;
-					dzFlag += 2;
-				}else{
-					dzFlag = 0;					
 				}
+				dzFlag = true;					
+				
 	    		
     		}else if(tmp == 'B02' || tmp == 'B03' ||tmp == 'B04' ||tmp == 'B11' || 
 	    			tmp == 'B12' || tmp == 'B13' ||tmp == 'B14' ||tmp == 'B15' ||
@@ -401,73 +410,95 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 				if(flag == '0'){//未入库
 	    			wjList[wjindex] = date;
 		    		wjindex ++;
-					wjFlag += 2;
-				}else{
-					wjFlag = 0;				
 				}
+				wjFlag = true;				
+				
   	    		
-	    	}else if(tmp == 'B01'){
+	    	}else if(tmp == 'B01'){//**********************自制件
 
 				if(flag == '0'){//未入库
 		    		zzList[zzindex] = date;
 		    		zzindex ++;
-					zzFlag += 2;
-				}else{
-					zzFlag = 0;					
 				}
+				zzFlag = true;
 	    	}
 						
 		});	
-
-		var maxwj = '';
-		if(wjFlag == -1){//该类型的物料不存在
-			maxwj = '***';
+		//**********************五金件********************
+		var wjmax = '***';
+		if(wjFlag == true){
+			if(wjList.length > 0){
+				wjList.sort();
+				wjmax = wjList[wjList.length -1];
+				var today = shortToday();
+				if(wjmax < today)
+					$('#wjmax').addClass('error');
+			}else{
+				wjmax = '已入库';				
+			}
 				
-		}else if(wjFlag == 0){//全部已入库
-			
-			maxwj = '已入库';
-		}else{//部分入库，或者，未入库
-			wjList.sort();
-			maxwj = wjList[wjList.length -1];				
 		}
+		//**********************电子件********************
+		var dzmax = '***';
+		if(dzFlag == true){
+			if(dzList.length > 0){
 
-		var maxdz = '';
-		if(dzFlag == -1){
-			maxdz = '***';
-				
-		}else if(dzFlag == 0){
-			
-			maxdz = '已入库';
-		}else{
-			dzList.sort();
-			maxdz = dzList[dzList.length -1];				
+				dzList.sort();
+				dzmax = dzList[dzList.length -1];
+				var today = shortToday();
+				if(dzmax < today)
+					$('#dzmax').addClass('error');	
+			}else{
+				dzmax = '已入库';
+			}
+	
 		}
-
-		var maxzz = '';
-		if(zzFlag == -1){
-			maxzz = '***';
-				
-		}else if(zzFlag == 0){
-			
-			maxzz = '已入库';
-		}else{
-			zzList.sort();
-			maxzz = zzList[zzList.length -1];				
+		//**********************自制件********************
+		var zzmax = '***';		
+		if(zzFlag == true){
+			if(zzList.length > 0){
+				zzList.sort();
+				zzmax = zzList[zzList.length -1];
+				var today = shortToday();
+				if(zzmax < today)
+					$('#zzmax').addClass('error');	
+			}else{
+				zzmax = '已入库';
+			}			
 		}
-
-		$('#wjmax').text(maxwj);
-		$('#dzmax').text(maxdz);
-		$('#zzmax').text(maxzz);
+		
+		$('#wjmax').text(wjmax);
+		$('#dzmax').text(dzmax);
+		$('#zzmax').text(zzmax);
 			
 		//装配物料时间
 		var zpmax = '';
 		var zpList =  new Array();
-		zpList[0] = maxwj;
-		zpList[1] = maxdz;
-		zpList[2] = maxzz;
-		zpList.sort();
-		zpmax = zpList[zpList.length -1];	
-		$('#zpmax').text(maxzz);
+		var index = 0;
+
+		if(wjmax != '***' && wjmax != '已入库'){
+			zpList[index] = wjmax;
+			index++;
+		}
+		if(zzmax != '***' && zzmax != '已入库'){
+			zpList[index] = zzmax;
+			index++;
+		}
+		if(dzmax != '***' && dzmax != '已入库'){
+			zpList[index] = dzmax;
+			index++;
+		}
+		if(zpList.length>0){
+			zpList.sort();
+			zpmax = zpList[zpList.length -1];	
+			var today = shortToday();
+			if(zpmax < today)
+				$('#zpmax').addClass('error');	
+		}else{
+			zpmax = '已入库';
+		}
+
+		$('#zpmax').text(zpmax);
 	}
 	
 	function deleteRow(){
@@ -645,6 +676,79 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 			showOtherMonths:true,
 		}); 
 	}
+	
+	function doShowControct(contractId,quantity,arrivalQty,stockinQty) {
+
+		var deleteFlag = '0';
+		//var editFlag = '1';
+		//if(currencyToFloat(arrivalQty) > 0){
+		//	deleteFlag = '0';//已经在执行中,不能删除
+		//}
+		var url = '${ctx}/business/contract?methodtype=detailView&contractId=' + contractId+'&deleteFlag=' + deleteFlag;
+		
+		callWindowFullView("合同详情",url);
+	}	
+	
+	function doShowSupplier(key) {
+
+		var url = "${ctx}/business/supplier?methodtype=show&key=" + key;
+		callWindowFullView("合同详情",url);
+	}
+	
+	
+	function doShowStockin(contractId,materialId) {
+
+		var url = "${ctx}/business/supplier?methodtype=show&key=" + key;
+		callWindowFullView("合同详情",url);
+	}	
+	
+	function setMaterialFinished(){
+
+		var YSId  = '${order.YSId}';
+		
+		var zpmax =$('#zpmax').text();
+		if(zpmax != '已入库'){
+			$().toastmessage('showWarningToast', "物料未备齐。");
+			return;
+		}
+
+		var par = "&YSId=" + YSId;
+		$.ajax({
+			contentType : 'application/json',
+			dataType : 'json',						
+			type : "POST",
+			data : "",// 要提交的表单						
+			url : "${ctx}/business/orderTrack?methodtype=setMaterialFinished"+par,
+			success : function(d) {	
+				
+				$().toastmessage('showWarningToast', "选入成功。");
+				
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {
+				
+				//发生系统异常，请再试或者联系管理员。
+				alert("发生系统异常，，请再试或者联系管理员。");
+			}
+		});
+	}
+	
+	function errorCheckAndCostCount(){
+		
+		var cost = 0;
+		$('#contract tbody tr').each (function (){
+			
+    	 	var deliveryDate  = $(this).find("td").eq(9).find('input[name=deliveryDate]').val();
+						
+			var today = shortToday();
+			
+			if( deliveryDate < today){
+				
+				$(this).addClass('error');
+			}
+						
+		});	
+	}
+		
 </script>
 
 
@@ -688,22 +792,23 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 					<td class="label"><label>实际交期：</label></td>
 					<td><span id="quantity"></span></td>
 
-				</tr>	
+				</tr>
+			</table>
+			<table style="width: 100%;">	
 				<tr>
-					<td class="label">装配时间：</td>
-					<td><span id="zpmax"></span></td>
+					<td class="label" style="width: 150px;">装配物料备齐时间：</td>
+					<td style="width: 100px;"><span id="zpmax"></span></td>
 
-					<td class="label">自制件时间：</td>
-					<td><span id="zzmax"></span></td>
+					<td class="label" style="width: 150px;">自制件备齐时间：</td>
+					<td style="width: 100px;"><span id="zzmax"></span></td>
 						
-					<td class="label">电子时间：</td>
+					<td class="label" style="width: 150px;">电子件备齐时间：</td>
 					<td style="width:100px;"><span id="dzmax"></span></td>
 
-					<td class="label" style="width:100px;">五金时间：</td>
-					<td><span id="wjmax"></span></td>
-					
-					<td></td>
-					<td></td>
+					<td class="label" style="width:150px;">五金件备齐时间：</td>
+					<td style="width: 100px;"><span id="wjmax"></span></td>
+
+					<td><!-- a class="DTTT_button" id="" onclick="setMaterialFinished();return false;">选入料已备齐</a --></td>
 
 				</tr>							
 			</table>

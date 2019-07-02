@@ -89,10 +89,6 @@ public class OrderAction extends BaseAction {
 				dataMap = doSearchOrderTrackingList(Constants.FORM_ORDERTRACKING,data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "orderTrackingShow"://订单跟踪详情
-				 doShowOrderTracking();
-				rtnUrl = "/business/order/ordertrackingview";
-				break;
 			case "orderTrackingDetail"://订单跟踪详情
 				dataMap = purchasePlanView();
 				printOutJsonObj(response, dataMap);
@@ -799,11 +795,7 @@ public class OrderAction extends BaseAction {
 	  return dataMap;
 	}
 	
-	public void doShowOrderTracking() throws Exception
-	{
-	    this.orderService.getOrderDetail();
-	 
-	}	
+	
 	
 	public HashMap<String, Object> getOrderDetailForDivert() throws Exception
 	{
