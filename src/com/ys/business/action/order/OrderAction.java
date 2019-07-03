@@ -81,18 +81,6 @@ public class OrderAction extends BaseAction {
 				dataMap = doSearchOrderList(Constants.FORM_ORDER,data);
 				printOutJsonObj(response, dataMap);
 				break;
-			case "orderTrackingSearchInit"://订单跟踪查询
-				orderTrackingSearchInit();
-				rtnUrl = "/business/order/ordertrackingmain";
-				break;
-			case "orderTrackingSearch"://订单跟踪查询
-				dataMap = doSearchOrderTrackingList(Constants.FORM_ORDERTRACKING,data);
-				printOutJsonObj(response, dataMap);
-				break;
-			case "orderTrackingDetail"://订单跟踪详情
-				dataMap = purchasePlanView();
-				printOutJsonObj(response, dataMap);
-				break;
 			case "create":
 				doCreate(request,reqModel,model);
 				rtnUrl = "/business/order/orderadd";
@@ -807,11 +795,6 @@ public class OrderAction extends BaseAction {
 	    return this.orderService.getOrderDetailByYSId(ysid,"");	 
 	}	
 	
-	public HashMap<String, Object> purchasePlanView() throws Exception {
-		
-		return orderService.getOrderTrackingDetail();		
-		
-	}
 	
 	public HashMap<String, Object> setOrderFollow() throws Exception {
 		
@@ -1117,21 +1100,12 @@ public class OrderAction extends BaseAction {
 		model.addAttribute("order",  dbData.get(0));
 		model.addAttribute("detail", dbData);
 	}
-	
-	public void orderTrackingSearchInit(){
-		try {
-			orderService.orderTrackingSearchInit();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 	
 	public void addProductReciveInit(){
 		try {
 			orderService.addProductReciveInit();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

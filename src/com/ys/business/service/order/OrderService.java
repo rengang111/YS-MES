@@ -1955,27 +1955,7 @@ public class OrderService extends CommonService  {
 		
 	}
 	
-	
-	
-	public HashMap<String, Object> getOrderTrackingDetail() throws Exception {
 
-		String YSId = request.getParameter("YSId");
-		
-		HashMap<String, Object> HashMap = new HashMap<String, Object>();
-		dataModel = new BaseModel();		
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
-		dataModel.setQueryName("orderTrackingDetail");		
-		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("YSId", YSId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
-		String sql = baseQuery.getSql();
-		sql = sql.replace("#1", YSId);
-		baseQuery.getYsQueryData(sql,YSId,0,0);
-		
-		HashMap.put("data", dataModel.getYsViewData());
-		
-		return HashMap;
-	}
 	/**
 	 * 订单关注
 	 * @return
@@ -2402,12 +2382,8 @@ public class OrderService extends CommonService  {
 				);	
 		
 		return filePath;
-	}
+	}	
 	
-	public void orderTrackingSearchInit() throws Exception{
-
-		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
-	}
 	
 	public HashMap<String, Object> insertDivertOrder(String data) throws Exception {
 

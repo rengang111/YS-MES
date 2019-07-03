@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -63,6 +65,7 @@ public class OrderTrackService extends CommonService {
 	private HashMap<String, String> userDefinedSearchCase;
 	private BaseQuery baseQuery;
 	ArrayList<HashMap<String, String>> modelMap = null;	
+	HttpSession session;
 
 	public OrderTrackService(){
 		
@@ -70,6 +73,8 @@ public class OrderTrackService extends CommonService {
 
 	public OrderTrackService(Model model,
 			HttpServletRequest request,
+			HttpServletResponse response,
+			HttpSession session,			
 			OrderTrackModel reqModel,
 			UserInfo userInfo){
 		
@@ -77,24 +82,28 @@ public class OrderTrackService extends CommonService {
 		this.model = model;
 		this.reqModel = reqModel;
 		this.request = request;
+		this.session = session;
 		this.userInfo = userInfo;
 		this.dataModel = new BaseModel();
 		this.userDefinedSearchCase = new HashMap<String, String>();
-		dataModel.setQueryFileName("/business/order/orderreviewquerydefine");
+		this.dataModel.setQueryFileName("/business/order/orderreviewquerydefine");
+		super.request = request;
+		super.userInfo = userInfo;
+		super.session = session;
 		
 	}
-	public HashMap<String, Object> getReviewList( 
-			String data) throws Exception {
-		
+	
+	public HashMap<String, Object> orderTrackingSearch( String data) throws Exception {
+
 		HashMap<String, Object> modelMap = new HashMap<String, Object>();
-		dataModel = new BaseModel();
 
 		data = URLDecoder.decode(data, "UTF-8");
 		
 		int iStart = 0;
 		int iEnd =0;
 		String sEcho = getJsonData(data, "sEcho");	
-		String start = getJsonData(data, "iDisplayStart");		
+		String start = getJsonData(data, "iDisplayStart");	
+		
 		if (start != null && !start.equals("")){
 			iStart = Integer.parseInt(start);			
 		}
@@ -103,31 +112,96 @@ public class OrderTrackService extends CommonService {
 		if (length != null && !length.equals("")){			
 			iEnd = iStart + Integer.parseInt(length);			
 		}		
+		String[] keyArr = getSearchKey(Constants.FORM_ORDERTRACKING,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];		
+
+		dataModel.setQueryFileName("/business/order/ordertrackquerydefine");
+		dataModel.setQueryName("orderTrackingFromPlan");
+		String searchFlag = request.getParameter("searchFlag");
+		String orderType = request.getParameter("orderType");//订单类型
+		//String produceLine = URLDecoder.decode(request.getParameter("produceLine"),"UTF-8");
+		String team = request.getParameter("team");//业务组
 		
-		String key1 = getJsonData(data, "keyword1").toUpperCase();
-		String key2 = getJsonData(data, "keyword2").toUpperCase();
+		String where = " 1=1 ";
+		//*** 关键字
+		if(notEmpty(key1) && notEmpty(key2)){
+			where = " full_field like '%"+key1+"%' AND full_field like '%"+key2+"%' ";
+		}else{
+			if(notEmpty(key1)){
+				where = " full_field like '%"+key1+"%' ";
+			}
+			if(notEmpty(key2)){
+				where = " full_field like '%"+key2+"%' ";
+			}
+		}
 		
-		dataModel.setQueryName("getreviewlist");
+		//*** 快捷查询
+		String having1 =" hideFlag='F' ";//false：不显示隐藏
+		String having2 = " computeStockinQty+0 < orderQty+0 ";//成品未全部入库
+		String orderby = " A.deliveryDate ";
 		
-		baseQuery = new BaseQuery(request, dataModel);
-		
-		userDefinedSearchCase.put("keyword1", key1);
-		userDefinedSearchCase.put("keyword2", key2);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
-		baseQuery.getYsQueryData(iStart, iEnd);	 
-		
-		if ( iEnd > dataModel.getYsViewData().size()){
+		if(("U").equals(searchFlag)){
+			//未安排
+			having1 += " AND produceLineFlag = '0' AND filterFlag='0' ";//过滤掉当前任务
+		}else if(("C").equals(searchFlag)){
+			//当前任务
+			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' ";//只显示当前任务
+			orderby = " e.produceLine,e.sortNo+0 ";
 			
+		}else if(("B").equals(searchFlag)){
+			//料已备齐
+			having1 += " AND produceLineFlag = '1' AND finishFlag = 'B' ";//中长期生产计划
+		}else if(("E").equals(searchFlag)){
+			//异常数据
+			having1 += " AND filterFlag='1' ";
+		}
+		
+		//*** 常规订单，配件单
+		String where3 = " SUBSTRING_INDEX(SUBSTRING_INDEX(A.materialId,'.',2),'.',-1) NOT IN ('BTR','BNC','CGR','PJ') ";
+		
+		//***业务组
+		if(("999").equals(team)){
+			team = "";
+		}
+		
+		userDefinedSearchCase.put("team", team);	
+		userDefinedSearchCase.put("orderType", orderType);	
+		baseQuery = new BaseQuery(request, dataModel);	
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		String sql = getSortKeyFormWeb(data,baseQuery);	
+		
+		sql = sql.replace("#0",where );
+		sql = sql.replace("#1",having1);
+		sql = sql.replace("#2",having2);
+		sql = sql.replace("#3",where3);
+		sql = sql.replace("#4",orderby);
+
+		List<String> list = new ArrayList<String>();
+		list.add(where);
+		list.add(having1);
+		list.add(having2);
+		list.add(where3);
+		list.add(orderby);
+		
+		System.out.println("订单跟踪查询："+sql);
+		baseQuery.getYsQueryData(sql,list,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
 			iEnd = dataModel.getYsViewData().size();			
 		}		
 		
-		modelMap.put("sEcho", sEcho);		
-		modelMap.put("recordsTotal", dataModel.getRecordCount()); 		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
 		modelMap.put("recordsFiltered", dataModel.getRecordCount());
-		modelMap.put("data", dataModel.getYsViewData());
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);	
 		
-		return modelMap;
+		return modelMap;	
+
 	}
+	
 	
 	
 
@@ -156,7 +230,7 @@ public class OrderTrackService extends CommonService {
 		
 		HashMap<String, Object> HashMap = new HashMap<String, Object>();
 		dataModel = new BaseModel();		
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryFileName("/business/order/ordertrackquerydefine");
 		dataModel.setQueryName("orderTrackingForStorage");		
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("YSId", YSId);
@@ -176,7 +250,7 @@ public class OrderTrackService extends CommonService {
 		
 		HashMap<String, Object> HashMap = new HashMap<String, Object>();
 		dataModel = new BaseModel();		
-		dataModel.setQueryFileName("/business/order/orderquerydefine");
+		dataModel.setQueryFileName("/business/order/ordertrackquerydefine");
 		dataModel.setQueryName("contractListByYsid");		
 		baseQuery = new BaseQuery(request, dataModel);
 		userDefinedSearchCase.put("YSId", YSId);
@@ -242,13 +316,11 @@ public class OrderTrackService extends CommonService {
 			insertNewDeliveryDate(date);
 			
 			//更新合同的最新交期
-		    updatePurchaseOrderDetail(contractId,newDeliveryDate);
+		    updatePurchaseOrderDetail(contractId,materialId,newDeliveryDate);
 		    
-		    String maxDeliverDate = getZPTimeFromContract(YSId);
-		    
-		    if(notEmpty(maxDeliverDate)){
-		    	updateProducePlan(YSId,maxDeliverDate);
-		    }		        
+		    ArrayList<HashMap<String, String>> deliverDate = getZPTimeFromContract(YSId);		    
+		
+		    updateProducePlan(YSId,deliverDate);		    		        
 
 			ts.commit();
 			modelMap.put("returnValue", "SUCCESS");
@@ -266,20 +338,23 @@ public class OrderTrackService extends CommonService {
 	@SuppressWarnings("unchecked")
 	private void updatePurchaseOrderDetail(
 			String contractId,
+			String materialId,
 			String newDeliveryDate) throws Exception{
 		
-		String where = " contractId='" + contractId +"'  AND deleteFlag='0' ";
+		String where = " contractId='" + contractId +
+				"' AND materialId='" + materialId +
+				"' AND deleteFlag='0' ";
 		
-		List<B_PurchaseOrderData> list = new B_PurchaseOrderDao().Find(where);
+		List<B_PurchaseOrderDetailData> list = new B_PurchaseOrderDetailDao().Find(where);
 		
 		if(list.size() > 0){
-			B_PurchaseOrderData db = list.get(0);
+			B_PurchaseOrderDetailData db = list.get(0);
 			db.setNewdeliverydate(newDeliveryDate);
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"newDeliveryDate",userInfo);
 			copyProperties(db,commData);
 			
-			new B_PurchaseOrderDao().Store(db);
+			new B_PurchaseOrderDetailDao().Store(db);
 			
 		}
 	}
@@ -344,15 +419,39 @@ public class OrderTrackService extends CommonService {
 	@SuppressWarnings("unchecked")
 	public void updateProducePlan(
 			String YSId,
-			String zpTime) throws Exception{
+			ArrayList<HashMap<String, String>> times) throws Exception{
 	
 		String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
 		List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+		String zzTime = "";
+		String dzTime = "";
+		String wjTime = "";
+		String zpTime = "";
+		
+		for(HashMap<String, String> map:times){
+			String type = map.get("mateType");
+			String date = map.get("deliveryDate");
+			if(("Z").equals(type)){
+				zzTime = date;
+			}
+			if(("D").equals(type)){
+				dzTime = date;
+			}
+			if(("W").equals(type)){
+				wjTime = date;
+			}
+			if(("A").equals(type)){
+				zpTime = date;
+			}
+			
+		}
+		
 		if(list.size() > 0){
 			B_ProducePlanData plan = list.get(0); 
-			//plan.setFinishflag(finishFlag);//
-			//plan.setReadydate(getReadydateFromContract(YSId));
 			plan.setReadydate(zpTime);
+			plan.setZzdate(zzTime);
+			plan.setDzdate(dzTime);
+			plan.setWjdate(wjTime);
 			
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"update",userInfo);
@@ -367,30 +466,33 @@ public class OrderTrackService extends CommonService {
 
 		String YSId = request.getParameter("YSId");	
 		
-		String zpTime = getZPTimeFromContract(YSId);
+		//String zpTime = getZPTimeFromContract(YSId);
 		
-		if( isNullOrEmpty(zpTime) ){
-			setMaterialFinished(YSId,"B","");//料已备齐
-		}else{
-			setMaterialFinished(YSId,"0",zpTime);//当前跟踪	
-		}
+		//if( isNullOrEmpty(zpTime) ){
+		//	setMaterialFinished(YSId,"B","");//料已备齐
+		//}else{
+		//	setMaterialFinished(YSId,"0",zpTime);//当前跟踪	
+		//}
 		
 		getOrderDetailByYSId(YSId);
 	}
 	
 	
-	private String getZPTimeFromContract(String YSId) throws Exception{
+	private ArrayList<HashMap<String, String>> getZPTimeFromContract(String YSId) throws Exception{
 		
-		String zptime = "";
+		ArrayList<HashMap<String, String>> zptime = new ArrayList<HashMap<String, String>>();
 		dataModel.setQueryFileName("/business/order/ordertrackquerydefine");
 		dataModel.setQueryName("getMaxStokcinDate");		
 		baseQuery = new BaseQuery(request, dataModel);
-		userDefinedSearchCase.put("YSId", YSId);
-		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);		
-		baseQuery.getYsFullData();
+		//userDefinedSearchCase.put("YSId", YSId);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);	
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", YSId);
+		
+		baseQuery.getYsFullData(sql,YSId);
 		
 		if(baseQuery.getRecodCount()> 0){
-			zptime = dataModel.getYsViewData().get(0).get("deliveryDate");
+			zptime = dataModel.getYsViewData();
 		}
 		
 		return zptime;	
@@ -411,6 +513,14 @@ public class OrderTrackService extends CommonService {
 		model.addAttribute("order", dataModel.getYsViewData().get(0));	
 
 		
+	}
+	
+	public void orderTrackingSearchInit() throws Exception{
+
+		ArrayList<HashMap<String, String>> list = getYewuzurById();
+
+		model.addAttribute("yewuzu",list);
+		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
 	}
 	
 }

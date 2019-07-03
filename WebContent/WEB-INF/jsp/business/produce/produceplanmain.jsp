@@ -72,29 +72,22 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
-					{"data": "machineModel", "className" : 'td-center'},// 0
 					{"data": "YSId", "defaultContent" : ''}, //1
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//2
 					{"data": "materialName", "defaultContent" : ''},//3
 					{"data": "shortName", "className" : 'td-center'},//4
 					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},//5
 					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},//6
-					//{"data": "MaxDeliveryDate", "defaultContent" : '', "className" : 'td-left'},//7
-					{"data": "produceLine", "className" : 'td-center'},//7
-					{"data": "sortNo", "className" : 'td-center'},//8
+					{"data": null, "defaultContent" : '', "className" : 'td-center'},//7
+					{"data": "produceLine", "className" : 'td-center'},//8
 					{"data": "sortNo", "className" : 'td-center'},//9
 					{"data": "sortNo", "className" : 'td-center'},//10
 					
 				],
 				"columnDefs":[
 		    		
+		    		
 		    		{"targets":0,"render":function(data, type, row){
-
-						var lastCheceked = '<span id=""  style="display:none" class="orderHide"><input type="checkbox"  name="orderHide" id="orderHide" value="" /></span';
-
-		    			return data + lastCheceked;
-		    		}},
-		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var orderQty   = currencyToFloat( row["orderQty"] );
 		    			var stockinQty = currencyToFloat( row["computeStockinQty"] );
@@ -108,7 +101,7 @@
 		    			
 		    			return rtn;
 		    		}},
-		    		{"targets":2,"render":function(data, type, row){
+		    		{"targets":1,"render":function(data, type, row){
 
 						var lastHide = '<input type="hidden"  name="lastHide" id="lastHide" value="' + row["hideFlag"] + '" /></span';
 
@@ -116,7 +109,7 @@
 		    			
 		    			return data + lastHide;
 		    		}},
-		    		{"targets":3,"render":function(data, type, row){
+		    		{"targets":2,"render":function(data, type, row){
 		    			var name = row["materialName"];
 		    			name = jQuery.fixedWidth(name,38);//true:两边截取,左边从汉字开始
 		    			
@@ -124,7 +117,7 @@
 		    			
 		    			return name + lastCheceked;
 		    		}},
-		    		{"targets":5,"render":function(data, type, row){
+		    		{"targets":4,"render":function(data, type, row){
 		    			
 		    			return floatToNumber(data);
 		    		}},
@@ -160,7 +153,29 @@
 		    			return txtShow + txtEdit;
 		    			
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){
+		    		{"targets":6,"render":function(data, type, row){//备齐时间
+		    			var ready = row['readyDate'];
+		    			var flag = row['finishFlag'];
+		    			var rtnValue = ''
+		    			if(ready == ''){
+		    				if(flag == 'B'){
+
+		    					rtnValue = '已入库';	
+		    				}else{
+		    					rtnValue = '未知';			    					
+		    				}
+		    			}else{
+		    				var today = shortToday();
+		    				if(ready < today)
+		    					rtnValue = '<span class="error">'+ready+'</span>';
+		    				else
+		    					rtnValue = 	ready;
+		    				
+		    			}
+		    			
+		    			return rtnValue;
+		    		}},
+		    		{"targets":8,"render":function(data, type, row){
 		    			var imgName = 'arrow_down';
 		    			var rtn = "",down='D',up='U';
 		    			var produceLine = row['produceLine'];
@@ -176,7 +191,7 @@
 		    			}
 		    			return rtn;
                     }},
-		    		{"targets":10,"render":function(data, type, row){
+		    		{"targets":9,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var rowIndex = row["rownum"] - 1;
 		    			var produceLine = row['produceLine'];
@@ -192,11 +207,11 @@
 		    			return rtn;
 		    		}},
 		    		{
-		    			"orderable":false,"targets":[7,8,9,10]
+		    			"orderable":false,"targets":[6,7,8,9]
 		    		},
 		    		{
 						"visible" : false,
-						"targets" : [8]
+						"targets" : []
 					}
 	         	],
 	         	
@@ -251,24 +266,7 @@
 	function initEvent(){
 
 		ajaxSearch("false");
-	
-		$('#TMaterial').DataTable().on('click', 'tr td:nth-child(1)', function() {
 
-			$(this).parent().toggleClass("selected");
-
-		    var checkbox  = $(this).find("input[type='checkbox']");
-		    var isChecked = checkbox.is(":checked");		    
-
-		    if (isChecked) {
-		    	hideCnt--;
-		        checkbox.prop("checked", false)
-		        checkbox.removeAttr("checked");
-		    } else {
-		    	hideCnt++;
-		        checkbox.prop("checked", true)
-		        checkbox.attr("checked","true");
-		    }
-		});	
 		
 	}
 
@@ -587,10 +585,7 @@
 					<td class="label" style="width:100px">关键字2：</td> 
 					<td class="condition">
 						<input type="text" id="keyword2" name="keyword2" class="middle"/></td>
-					<td  width="150px">
-						<!-- 
-						<label><input type="checkbox"  name="numCheck" id="numCheck" value="1"  />全状态</label>
-						 -->
+					<td  width="150px">						
 						<button type="button" id="retrieve2" class="DTTT_button" 
 							style="width:50px" value="查询" onclick="doSearch();"/>查询</td>
 					
@@ -661,14 +656,13 @@
 			<table id="TMaterial" class="display" >
 				<thead>						
 					<tr>
-						<th style="width: 40px;">型号</th>
 						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 150px;">产品编号</th>
 						<th>产品名称</th>
 						<th style="width: 40px;">客户</th>
 						<th style="width: 60px;">订单数量</th>
 						<th style="width: 50px;">订单交期</th>
-						<th style="width: 60px;">生产线</th>
+						<th style="width: 60px;">装配物料<br/>备齐时间</th>
 						<th style="width: 40px;">生产<br/>序号</th>
 						<th style="width: 40px;">调整</th>
 						<th style="width: 40px;"></th>

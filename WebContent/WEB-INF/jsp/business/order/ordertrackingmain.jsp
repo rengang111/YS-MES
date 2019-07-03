@@ -19,12 +19,12 @@
 		}
 		var searchFlag  = $('#searchFlag').val();
 		var partsType   = $('#partsType').val();
-		var produceLine = $('#produceLine').val();
+		var team		= $('#team').val();
 		
-		var url = "${ctx}/business/produce?methodtype=producePlanMainSearch&sessionFlag="+sessionFlag
+		var url = "${ctx}/business/orderTrack?methodtype=orderTrackingSearch&sessionFlag="+sessionFlag
 				+"&orderType=010"+"&searchFlag="+searchFlag
 				+"&partsType="+partsType
-				+"&produceLine="+encodeURI(encodeURI(produceLine));
+				+"&team="+team;
 
 		var sortCode = $('#sortCode').val();
 		
@@ -60,8 +60,7 @@
 
 							$("#keyword1").val(data["keyword1"]);
 							$("#keyword2").val(data["keyword2"]);
-														
-							autocomplete();//调用自动填充功能
+						
 						},
 						 error:function(XMLHttpRequest, textStatus, errorThrown){
 			             }
@@ -79,6 +78,7 @@
 					{"data": null, "className" : 'td-center'},//5:备齐时间
 					{"data": "orderQty", "defaultContent" : '0', "className" : 'td-right'},//6
 					{"data": "deliveryDate", "defaultContent" : '', "className" : 'td-left'},//7
+					{"data": "team", "defaultContent" : '', "className" : 'td-center'},//8
 					
 				],
 				"columnDefs":[
@@ -187,12 +187,15 @@
 		
 		initEvent();
 		
+		$('#mateFlag').hide();//
+		
 		buttonSelectedEvent();//按钮选择式样
 		buttonSelectedEvent2();//按钮选择式样
 		buttonSelectedEvent3();//按钮选择式样
 		
 		$('#defutBtnC').removeClass("start").addClass("end");
 		$('#defutBtnmP').removeClass("start").addClass("end");
+		$('#defutBtnu999').removeClass("start").addClass("end");
 		
 		
 	})	
@@ -246,6 +249,7 @@
 	//料已备齐
 	function doSearchCustomer(){
 
+		$('#mateFlag').hide();
 		$('#searchFlag').val('B');
 		
 		ajaxSearch('false');
@@ -256,8 +260,8 @@
 			
 	//ALL
 	function doSearchCurrentTask(taskType){
-		//$('#keyword1').val('');
-		//$('#keyword2').val('');
+
+		$('#mateFlag').hide();
 		$('#searchFlag').val(taskType);//Current:当前任务
 		
 		ajaxSearch('false');
@@ -265,14 +269,24 @@
 	
 	//查看当前任务
 	function doSearchCurrentTask2(taskType){
-		//$('#keyword1').val('');
-		//$('#keyword2').val('');
+
+		$('#mateFlag').show();
+		
 		$('#searchFlag').val(taskType);//Current:当前任务
 		$('#sortCode').val(7);//生产线排序		
 		
 		ajaxSearch('false');
 	}
 
+	
+
+	//业务组
+	function doSelectUserId(teamId){
+
+		$('#team').val(teamId);
+		
+		ajaxSearch('false');
+	}
 	
 	function reload() {
 		
@@ -298,6 +312,7 @@
 			<input type="hidden" id="partsType"   value="C" />
 			<input type="hidden" id="produceLine"   value="" />
 			<input type="hidden" id="sortCode"   value="6" />
+			<input type="hidden" id="team"   value="999" />
 			<table>
 				<tr>
 					<td width="50px"></td> 
@@ -320,14 +335,45 @@
 					<td class="label"> 快捷查询：</td>
 					<td colspan="3">
 						<a  class="DTTT_button box" onclick="doSearchCurrentTask('A');"   id="defutBtnA">ALL</a>
-						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('C');"  id="defutBtnC">当前跟踪</a>
-						<a  class="DTTT_button box" onclick="doSearchCustomer();"  		 id="defutBtnU">料已备齐</a>
+						<a  class="DTTT_button box" onclick="doSearchCustomer();"  		  id="defutBtnU">料已备齐</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('C');"  id="defutBtnC">当前跟踪</a>&nbsp;
+						
+						<span id="mateFlag">
+							<!-- a id="defutBtnmA"  class="DTTT_button box" onclick="doSearchMateType('A');">
+								ALL</a -->		
+							<a id="defutBtnmZ"  class="DTTT_button box" onclick="doSearchMateType('Z');">
+								自制件</a>	
+							<a id="defutBtnmW"  class="DTTT_button box" onclick="doSearchMateType('W');">
+								五金件</a>	
+							<a id="defutBtnmD"  class="DTTT_button box" onclick="doSearchMateType('D');">
+								电子件</a>
+						</span>
 					</td>
 					
 					<td></td>
 					<td width=""></td> 
 				</tr>
 				
+			</table>
+			<table>
+				<tr>
+					<td width="50px"></td>
+					<td width="100px" class="label">业务组：</td>
+					<td colspan="">
+						<span id="userFlag2">
+							<c:forEach var='list' items='${yewuzu}' varStatus='status'>
+								<a id="defutBtnu${list.dicId }" style="height: 15px;margin-top: 5px;" 
+									class="DTTT_button box3" onclick="doSelectUserId('${list.dicId }');">
+									<span>${list.dicName }</span></a>
+							</c:forEach>
+						</span>			
+					</td> 
+					<td width="100px"></td>
+					<td class="label"></td>
+					<td colspan="">
+												 
+					</td>
+				</tr>
 			</table>
 
 		</form>
@@ -349,6 +395,7 @@
 						<th style="width: 60px;">装配物料<br/>备齐时间</th>
 						<th style="width: 60px;">订单数量</th>
 						<th style="width: 50px;">订单交期</th>
+						<th style="width: 50px;">业务组</th>
 					</tr>
 				</thead>
 			</table>

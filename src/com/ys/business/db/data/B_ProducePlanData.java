@@ -99,6 +99,58 @@ public class B_ProducePlanData implements java.io.Serializable
 	/**
 	*
 	*/
+	private String wjdate;
+	public String getWjdate()
+	{
+		return this.wjdate;
+	}
+	public void setWjdate(String wjdate)
+	{
+		this.wjdate=wjdate;
+	}
+
+	/**
+	*
+	*/
+	private String dzdate;
+	public String getDzdate()
+	{
+		return this.dzdate;
+	}
+	public void setDzdate(String dzdate)
+	{
+		this.dzdate=dzdate;
+	}
+
+	/**
+	*
+	*/
+	private String zzdate;
+	public String getZzdate()
+	{
+		return this.zzdate;
+	}
+	public void setZzdate(String zzdate)
+	{
+		this.zzdate=zzdate;
+	}
+
+	/**
+	*
+	*/
+	private String bzdate;
+	public String getBzdate()
+	{
+		return this.bzdate;
+	}
+	public void setBzdate(String bzdate)
+	{
+		this.bzdate=bzdate;
+	}
+
+	/**
+	*
+	*/
 	private String remarks;
 	public String getRemarks()
 	{
@@ -241,13 +293,13 @@ public class B_ProducePlanData implements java.io.Serializable
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
-		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("produceline = "+(produceline == null ? "null" : produceline)+"\n");		sb.append("sortno = "+(sortno == null ? "null" : sortno)+"\n");		sb.append("finishflag = "+(finishflag == null ? "null" : finishflag)+"\n");		sb.append("readydate = "+(readydate == null ? "null" : readydate)+"\n");		sb.append("remarks = "+(remarks == null ? "null" : remarks)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
+		sb.append("***** DataObject list begin *****\n");		sb.append("recordid = "+(recordid == null ? "null" : recordid)+"\n");		sb.append("ysid = "+(ysid == null ? "null" : ysid)+"\n");		sb.append("produceline = "+(produceline == null ? "null" : produceline)+"\n");		sb.append("sortno = "+(sortno == null ? "null" : sortno)+"\n");		sb.append("finishflag = "+(finishflag == null ? "null" : finishflag)+"\n");		sb.append("readydate = "+(readydate == null ? "null" : readydate)+"\n");		sb.append("wjdate = "+(wjdate == null ? "null" : wjdate)+"\n");		sb.append("dzdate = "+(dzdate == null ? "null" : dzdate)+"\n");		sb.append("zzdate = "+(zzdate == null ? "null" : zzdate)+"\n");		sb.append("bzdate = "+(bzdate == null ? "null" : bzdate)+"\n");		sb.append("remarks = "+(remarks == null ? "null" : remarks)+"\n");		sb.append("deptguid = "+(deptguid == null ? "null" : deptguid)+"\n");		sb.append("createtime = "+(createtime == null ? "null" : createtime)+"\n");		sb.append("createperson = "+(createperson == null ? "null" : createperson)+"\n");		sb.append("createunitid = "+(createunitid == null ? "null" : createunitid)+"\n");		sb.append("modifytime = "+(modifytime == null ? "null" : modifytime)+"\n");		sb.append("modifyperson = "+(modifyperson == null ? "null" : modifyperson)+"\n");		sb.append("deleteflag = "+(deleteflag == null ? "null" : deleteflag)+"\n");		sb.append("formid = "+(formid == null ? "null" : formid)+"\n");		sb.append("returnvalue = "+(returnvalue == null ? "null" : returnvalue)+"\n");		sb.append("returnsql = "+(returnsql == null ? "null" : returnsql)+"\n");		sb.append("***** DataObject list end *****\n");
 		return sb.toString() ;
 	}
 
 
 	public void toTrim() {
-		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		produceline= (produceline == null ?null : produceline.trim());		sortno= (sortno == null ?null : sortno.trim());		finishflag= (finishflag == null ?null : finishflag.trim());		readydate= (readydate == null ?null : readydate.trim());		remarks= (remarks == null ?null : remarks.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
+		recordid= (recordid == null ?null : recordid.trim());		ysid= (ysid == null ?null : ysid.trim());		produceline= (produceline == null ?null : produceline.trim());		sortno= (sortno == null ?null : sortno.trim());		finishflag= (finishflag == null ?null : finishflag.trim());		readydate= (readydate == null ?null : readydate.trim());		wjdate= (wjdate == null ?null : wjdate.trim());		dzdate= (dzdate == null ?null : dzdate.trim());		zzdate= (zzdate == null ?null : zzdate.trim());		bzdate= (bzdate == null ?null : bzdate.trim());		remarks= (remarks == null ?null : remarks.trim());		deptguid= (deptguid == null ?null : deptguid.trim());		createtime= (createtime == null ?null : createtime.trim());		createperson= (createperson == null ?null : createperson.trim());		createunitid= (createunitid == null ?null : createunitid.trim());		modifytime= (modifytime == null ?null : modifytime.trim());		modifyperson= (modifyperson == null ?null : modifyperson.trim());		deleteflag= (deleteflag == null ?null : deleteflag.trim());		formid= (formid == null ?null : formid.trim());		returnvalue= (returnvalue == null ?null : returnvalue.trim());		returnsql= (returnsql == null ?null : returnsql.trim());
 	}
 
 }

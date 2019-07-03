@@ -4,15 +4,201 @@
     <pool></pool>    
     <name value="getMaxStokcinDate" />
     <where>
+    </where>
+  	<select>
+      <f name="a.mateType" alias="" ctype="" />
+      <f name="YSId" alias="" ctype="" />
+      <f name="deliveryDate" alias="" ctype="" />
+  </select>
+   <from>
+   	(
+		SELECT 'A' mateType,a.YSId ,MAX(IFNULL(a.newDeliveryDate,a.deliveryDate)) deliveryDate   FROM v_purchaseorderdetail a
+				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
+					AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
+				  AND a.YSId =  '#'    
+		UNION
+		SELECT 'Z' mateType,a.YSId ,MAX(IFNULL(a.newDeliveryDate,a.deliveryDate)) deliveryDate   FROM v_purchaseorderdetail a
+				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
+					AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
+				  AND a.YSId =  '#'    AND left(a.materialId,3) ='B01'
+		UNION
+		SELECT 'D' mateType,a.YSId ,MAX(IFNULL(a.newDeliveryDate,a.deliveryDate)) deliveryDate   FROM v_purchaseorderdetail a
+				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
+					AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
+				  AND a.YSId =  '#'    AND left(a.materialId,3) in ('B05','B06','B07','B08','B09','B10','B16','B01')
+		UNION
+		SELECT 'W' mateType,a.YSId ,MAX(IFNULL(a.newDeliveryDate,a.deliveryDate)) deliveryDate   FROM v_purchaseorderdetail a
+				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
+					AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
+				  AND a.YSId =  '#'    
+					AND
+					 ( left(a.materialId,3) in ('B02','B03','B04','B11','B12','B13','B14','B15','B17','B18','B19')
+						OR left(a.materialId,1) in ('C','E', 'H') )
+		) a
+	</from>
+    <orderby></orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <!-- 该查询结果同步 生产计划 getProduceTaskForPlan-->
+  <query>
+    <pool></pool>     
+    <name value="orderTrackingFromPlan" />
+    <where>
+      <w name="A.full_field" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.full_field" des=""  reqName="keyword2" dtype="ch" oper="like"  lg="AND" bt="" />
+   	  <w name="A.orderType"  des=""  reqName="orderType" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="a.team"  	 des=""  reqName="team" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="IFNULL(A.machineModel,'')" alias="machineModel" ctype="" />
+      <f name="IFNULL(b.YSId,'')" alias="mergeYsid" ctype="" />
+      <f name="IF(b.mergeId IS NULL,'0','1')" alias="lastCheceked" ctype="" />
+      <f name="b.viewFlag" alias="" ctype="" />
+      <f name="b.mergeId" alias="" ctype="" />
+      <f name="IFNULL(c.YSId,'')" alias="hideYsid" ctype="" />
+      <f name="IFNULL(c.hideFlag,'F')" alias="hideFlag" ctype="" />
+      <f name="A.materialId" alias="" ctype="" />
+      <f name="A.materialName" alias="" ctype="" />
+      <f name="A.PIId" alias="" ctype="" />
+      <f name="A.YSId" alias="" ctype="" />
+      <f name="A.computeStockinQty" alias="" ctype="" />
+      <f name="A.orderQty" alias="" ctype="" />
+      <f name="A.totalQuantity" alias="" ctype="" />
+      <f name="A.orderDate" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="" ctype="" />
+      <f name="A.deliveryDate" alias="MaxDeliveryDate" ctype="" />
+      <f name="A.currency" alias="" ctype="币种" />
+      <f name="A.currency" alias="currencyId" ctype="" />
+      <f name="A.team" alias="" ctype="业务组" />
+      <f name="A.orderType" alias="" ctype="" />
+      <f name="A.completedQuantity" alias="" ctype="" />
+      <f name="A.customerId" alias="" ctype="" />
+      <f name="A.shortName" alias="" ctype="" />
+      <f name="A.divertYsid" alias="" ctype="" />
+      <f name="A.diverFlag" alias="" ctype="" />
+      <f name="IF(e.produceLine IS NULL,'0','1')" alias="produceLineFlag" ctype="" />
+      <f name="IFNULL(e.produceLine,'')" alias="produceLine" ctype="" />
+      <f name="e.sortNo" alias="" ctype="" />
+      <f name="IFNULL(f.filterType,'')" alias="filterType" ctype="" />
+      <f name="IF(f.filterType IS NULL,'0','1')" alias="filterFlag" ctype="" />
+      <f name="IFNULL(e.finishFlag,'0')" alias="finishFlag" ctype="" />
+      <f name="IFNULL(e.readyDate,'')" alias="readyDate" ctype="" />
+      <f name="IFNULL(e.remarks,'')" alias="remarks" ctype="" />
+    </select>
+    <from>
+      (
+		SELECT
+			COUNT(a.stockinQty) stockinCnt,
+			SUM(a.stockinQty) stockinQty,
+			a.completedQuantity,
+			IF(SUM(a.stockinQty) &lt;=0,a.completedQuantity,SUM(a.stockinQty)) computeStockinQty,
+			MAX(a.checkInDate) checkInDate,
+			a.PIId,
+			a.YSId,A.machineModel,
+			a.materialId,A.materialName,
+			a.orderQty,a.totalQuantity,
+			a.divertYsid,A.diverFlag,A.customerId,A.shortName,A.orderType,A.team,A.currency,A.deliveryDate,A.orderDate,A.totalprice,
+			a.full_field
+		FROM
+			(
+				SELECT 
+					a.PIId,
+					a.YSId,A.machineModel,
+					a.materialId,A.materialName,
+					REPLACE(a.quantity,',','') orderQty,
+					REPLACE(a.totalQuantity,',','') totalQuantity,
+					REPLACE(IFNULL(a.completedQuantity,0),',','') completedQuantity,
+					REPLACE(IFNULL(b.quantity,0),',','') stockinQty,
+					b.checkInDate,
+					a.full_field,
+					a.divertYsid,A.diverFlag,A.customerId,A.shortName,A.orderType,A.team,A.currency,A.deliveryDate,A.orderDate,A.totalprice
+				FROM 
+					v_orderlist AS a
+					LEFT JOIN v_purchasestockindetail AS b ON b.YSId = a.YSId AND b.materialId=a.materialId
+				WHERE 
+					#3
+					AND
+				  	#0 
+			) a
+			GROUP BY a.YSId,a.materialId
+		 	HAVING #2
+		 
+      ) AS A  
+    	LEFT JOIN b_OrderMergeDetail 	b ON a.YSId=b.ysid AND b.deleteFlag = '0'
+    	LEFT JOIN b_OrderProduceHide 	c ON a.YSId=c.ysid AND c.deleteFlag = '0'
+		LEFT JOIN b_ProducePlan  		e ON a.YSId=e.YSId AND e.deleteFlag = '0'
+		LEFT JOIN b_ProducePlanFilter 	f ON a.YSId=f.YSId AND f.deleteFlag = '0'
+      WHERE 1=1 
+    </from>
+    <orderby>#4</orderby>
+    <groupby></groupby>
+    <!-- hideFlag='F 不显示隐藏数据   -->
+    <having>#1</having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="contractListByYsid" />
+    <where>
     	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.YSId" alias="" ctype="" />
-      <f name="MAX(IFNULL(a.newDeliveryDate,a.deliveryDate))" alias="deliveryDate" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.contractId" alias="" ctype="" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.shortName" alias="" ctype="" />
+      <f name="a.deliveryDate" alias="" ctype="" />
+      <f name="IFNULL(a.materialDeliveryDate,'')" alias="materialDeliveryDate" ctype="" />
+      <f name="IFNULL(a.newDeliveryDate,'')" alias="newDeliveryDate" ctype="" />
+      <f name="IFNULL(c.newUpdateDate,'')" alias="newUpdateDate" ctype="" />
+      <f name="a.quantity" alias="contractQty" ctype="" />
+      <f name="IFNULL(b.stockinQty,0)" alias="stockinQty" ctype="" />
+      <f name="IFNULL(a.supplierRecordId,'')" alias="supplierRecordId" ctype="" />
   </select>
-   <from>v_purchaseorderdetail a
-		WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
-			AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
+   <from>
+		v_purchaseorderdetail  a
+		LEFT JOIN 
+			( SELECT b4.ysid,b4.materialId,b4.contractId,
+			  	sum(replace(b4.quantity,',','')) stockinQty
+			  FROM v_purchasestockindetail b4,v_orderdetail ord  
+			  WHERE b4.ysid = ord.ysid AND
+					ord.YSId = '#0'
+					GROUP BY b4.ysid,b4.materialId
+			) b ON a.materialId = b.materialId AND b.ysid = a.ysid and a.contractId=b.contractId
+		LEFT JOIN b_PurchaseOrderDeliveryDateHistory c ON c.contractId = a.contractId AND c.newDeliveryDate = a.newDeliveryDate AND c.deleteFlag='0' 
+		where 1=1 
+	</from>
+    <orderby>a.contractId,a.materialId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>    
+    <name value="orderTrackingForStorage" />
+    <where>
+    	<w name="a.YSId" des="" reqName="YSId" dtype="ch" oper="=" lg="AND" bt="" />
+    	<w name="LEFT(a.materialId,1)" des="" reqName="materialH" dtype="ch" oper="&lt;&gt;" lg="AND" bt="" />
+    </where>
+  	<select>
+      <f name="a.YSId" alias="" ctype="" />
+      <f name="a.materialId" alias="" ctype="" />
+      <f name="a.materialName" alias="" ctype="" />
+      <f name="a.unit" alias="unitName" ctype="计量单位" />
+      <f name="a.supplierId" alias="" ctype="" />
+      <f name="a.quantityOnHand" alias="" ctype="" />
+      <f name="a.manufactureQuantity" alias="" ctype="" />
+      <f name="a.subbomno" alias="" ctype="" />
+      <f name="a.waitStockIn" alias="" ctype="" />
+      <f name="a.waitStockOut" alias="" ctype="" />
+      <f name="a.availabelToPromise" alias="" ctype="" />
+  </select>
+   <from>v_purchaseplan a  		
+		where a.deleteFlag='0' 
 		</from>
     <orderby>a.materialId</orderby>
     <groupby></groupby>

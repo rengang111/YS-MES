@@ -41,7 +41,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
     		
     		if(tmp == 'B02' || tmp == 'B03' ||tmp == 'B04' ||tmp == 'B11' || 
     			tmp == 'B12' || tmp == 'B13' ||tmp == 'B14' ||tmp == 'B15' ||
-    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19' || tmp2 == 'E' ||  tmp2 == 'H'){
+    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19' || tmp2 == 'C'|| tmp2 == 'E' ||  tmp2 == 'H'){
     			return true;
     		}
     		
@@ -304,6 +304,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    			var index = row["rownum"] - 1;
 					var deliveryDate    = row["deliveryDate"];
 					var newDeliveryDate = row["newDeliveryDate"];
+					var materialDelivery = row["materialDeliveryDate"];
 					var materialId   = row["materialId"];
 					var contractId   = row["contractId"];
 					var stockinQty   = currencyToFloat(row["stockinQty"]);
@@ -314,8 +315,13 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 						hidden += '<input type="hidden" id="stockinFlag'+index+'" name="stockinFlag" value="1" >';
 						return hidden + "已入库";
 					}else{
-						if(newDeliveryDate == '' || newDeliveryDate == null)
-							newDeliveryDate = deliveryDate;
+						if(materialDelivery == ''){
+							if(newDeliveryDate == ''){
+								newDeliveryDate = deliveryDate;		
+							}
+						}else{
+							newDeliveryDate = materialDelivery;							
+						}
 						
 						var hidden = "";
 						hidden += '<input type="hidden" id="stockinFlag'+index+'"   value="0" name="stockinFlag">';
@@ -406,7 +412,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    		
     		}else if(tmp == 'B02' || tmp == 'B03' ||tmp == 'B04' ||tmp == 'B11' || 
 	    			tmp == 'B12' || tmp == 'B13' ||tmp == 'B14' ||tmp == 'B15' ||
-	    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19' || tmp1 == 'E' ||  tmp1 == 'H'){
+	    			tmp == 'B17' || tmp == 'B18' ||tmp == 'B19' || tmp1== 'C'|| tmp1 == 'E' ||  tmp1 == 'H'){
 				//五金
 				if(flag == '0'){//未入库
 	    			wjList[wjindex] = date;

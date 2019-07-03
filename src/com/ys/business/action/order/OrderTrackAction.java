@@ -22,6 +22,7 @@ import com.ys.system.action.common.BaseAction;
 import com.ys.business.action.model.order.OrderTrackModel;
 import com.ys.business.service.order.OrderTrackService;
 import com.ys.system.common.BusinessConstants;
+import com.ys.util.basequery.common.Constants;
 import com.ys.system.action.model.login.UserInfo;
 
 
@@ -31,6 +32,7 @@ public class OrderTrackAction extends BaseAction {
 	
 	@Autowired OrderTrackService reviewService;
 	@Autowired HttpServletRequest request;
+	HttpSession session;
 	
 	UserInfo userInfo = new UserInfo();
 	OrderTrackModel reqModel = new OrderTrackModel();
@@ -50,9 +52,10 @@ public class OrderTrackAction extends BaseAction {
 		userInfo = (UserInfo)session.getAttribute(
 				BusinessConstants.SESSION_USERINFO);
 		
-		reviewService = new OrderTrackService(model,request,review,userInfo);
+		reviewService = new OrderTrackService(model,request,response,session,review,userInfo);
 		reqModel = review;
 		this.model = model;
+		this.session = session;
 		
 		String rtnUrl = null;
 		HashMap<String, Object> dataMap = null;
@@ -69,10 +72,10 @@ public class OrderTrackAction extends BaseAction {
 		switch(type) {
 			case "":
 			case "init":
-				rtnUrl = "/business/order/orderreviewmain";
+				//rtnUrl = "/business/order/orderreviewmain";
 				break;				
 			case "search":
-				dataMap = doSearch(data);
+				//dataMap = doSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;	
 			case "orderTrackingForStorage":
@@ -99,6 +102,14 @@ public class OrderTrackAction extends BaseAction {
 				 doShowOrderTracking();
 				rtnUrl = "/business/order/ordertrackingview";
 				break;
+			case "orderTrackingSearchInit"://订单跟踪查询
+				orderTrackingSearchInit();
+				rtnUrl = "/business/order/ordertrackingmain";
+				break;
+			case "orderTrackingSearch":
+				dataMap = doOrderTrackingSearch(data);
+				printOutJsonObj(response, dataMap);
+				break;
 				
 				
 		}
@@ -106,29 +117,7 @@ public class OrderTrackAction extends BaseAction {
 		return rtnUrl;		
 	}	
 	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> doSearch(
-			@RequestBody String data){
-		
-		HashMap<String, Object> dataMap = new HashMap<String, Object>();
-		ArrayList<HashMap<String, String>> dbData = 
-				new ArrayList<HashMap<String, String>>();
-		
-		try {
-			dataMap = reviewService.getReviewList(data);
-			
-			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
-			if (dbData.size() == 0) {
-				dataMap.put(INFO, NODATAMSG);
-			}
-		}
-		catch(Exception e) {
-			System.out.println(e.getMessage());
-			dataMap.put(INFO, ERRMSG);
-		}
-		
-		return dataMap;
-	}
+
 	
 	@SuppressWarnings("unchecked")
 	private HashMap<String, Object> orderTrackingForStorage(){
@@ -247,6 +236,47 @@ public class OrderTrackAction extends BaseAction {
 	{
 	    reviewService.orderTrackDetailInit();
 	 
+	}
+	
+	public void orderTrackingSearchInit(){
+		try {
+			reviewService.orderTrackingSearchInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doOrderTrackingSearch(@RequestBody String data){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(Constants.FORM_ORDERTRACKING+Constants.FORM_KEYWORD1);
+			session.removeAttribute(Constants.FORM_ORDERTRACKING+Constants.FORM_KEYWORD2);
+			
+		}
+		
+		try {
+			dataMap = reviewService.orderTrackingSearch(data);
+			
+			ArrayList<HashMap<String, String>> dbData = 
+					(ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+
+		String requisitionSts = request.getParameter("requisitionSts");
+		session.setAttribute("requisitionSts", requisitionSts);
+		
+		return dataMap;
 	}
 
 }
