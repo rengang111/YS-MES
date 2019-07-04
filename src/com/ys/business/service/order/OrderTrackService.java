@@ -121,7 +121,8 @@ public class OrderTrackService extends CommonService {
 		String searchFlag = request.getParameter("searchFlag");
 		String orderType = request.getParameter("orderType");//订单类型
 		//String produceLine = URLDecoder.decode(request.getParameter("produceLine"),"UTF-8");
-		String team = request.getParameter("team");//业务组
+		String team     = request.getParameter("team");//业务组
+		String mateType = request.getParameter("mateType");//三大件
 		
 		String where = " 1=1 ";
 		//*** 关键字
@@ -163,6 +164,17 @@ public class OrderTrackService extends CommonService {
 		//***业务组
 		if(("999").equals(team)){
 			team = "";
+		}
+		
+		//***五金，电子，自制件分类
+		if(("A").equals(mateType)){//全部
+			having1 += "";
+		}else if(("W").equals(mateType)){
+			having1 += " AND wjDate <'"+CalendarUtil.getToDay()+"'";
+		}else if(("D").equals(mateType)){
+			having1 += " AND dzDate <'"+CalendarUtil.getToDay()+"'";		
+		}else if(("Z").equals(mateType)){
+			having1 += " AND zzDate <'"+CalendarUtil.getToDay()+"'";	
 		}
 		
 		userDefinedSearchCase.put("team", team);	
@@ -382,6 +394,75 @@ public class OrderTrackService extends CommonService {
 	public void setMaterialFinished(
 			String YSId,
 			String finishFlag,
+			ArrayList<HashMap<String, String>> times) throws Exception{
+
+		String zzTime = "";
+		String dzTime = "";
+		String wjTime = "";
+		String zpTime = "";
+		
+		for(HashMap<String, String> map:times){
+			String type = map.get("mateType");
+			String date = map.get("deliveryDate");
+			if(("Z").equals(type)){
+				zzTime = date;
+			}
+			if(("D").equals(type)){
+				dzTime = date;
+			}
+			if(("W").equals(type)){
+				wjTime = date;
+			}
+			if(("A").equals(type)){
+				zpTime = date;
+			}			
+		}
+	
+		String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+		List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+		if(list.size() > 0){
+			B_ProducePlanData plan = list.get(0); 
+			plan.setFinishflag(finishFlag);
+			plan.setReadydate(zpTime);
+			plan.setZzdate(zzTime);
+			plan.setDzdate(dzTime);
+			plan.setWjdate(wjTime);
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"update",userInfo);
+			copyProperties(plan,commData);	
+			
+			new B_ProducePlanDao().Store(plan);
+			
+		}else{
+			B_ProducePlanData plan = new B_ProducePlanData();
+			plan.setFinishflag(finishFlag);
+			plan.setYsid(YSId);
+			plan.setReadydate(zpTime);
+			plan.setZzdate(zzTime);
+			plan.setDzdate(dzTime);
+			plan.setWjdate(wjTime);
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"insert",userInfo);
+			copyProperties(plan,commData);	
+			guid = BaseDAO.getGuId();				
+			plan.setRecordid(guid);
+			
+			new B_ProducePlanDao().Create(plan);
+		}
+		
+	}
+	
+	/**
+	 * 将生产任务中的订单筛选出来：料已备齐
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public void setMaterialFinished(
+			String YSId,
+			String finishFlag,
 			String zpTime) throws Exception{
 
 	
@@ -466,13 +547,13 @@ public class OrderTrackService extends CommonService {
 
 		String YSId = request.getParameter("YSId");	
 		
-		//String zpTime = getZPTimeFromContract(YSId);
+		ArrayList<HashMap<String, String>> zpTime = getZPTimeFromContract(YSId);
 		
-		//if( isNullOrEmpty(zpTime) ){
-		//	setMaterialFinished(YSId,"B","");//料已备齐
-		//}else{
-		//	setMaterialFinished(YSId,"0",zpTime);//当前跟踪	
-		//}
+		if( zpTime.size() == 0 ){
+			setMaterialFinished(YSId,"B","");//料已备齐
+		}else{
+			setMaterialFinished(YSId,"0",zpTime);//当前跟踪	
+		}
 		
 		getOrderDetailByYSId(YSId);
 	}
@@ -491,7 +572,15 @@ public class OrderTrackService extends CommonService {
 		
 		baseQuery.getYsFullData(sql,YSId);
 		
-		if(baseQuery.getRecodCount()> 0){
+		boolean timeFlag = false;
+		for(int i=0;i<dataModel.getYsViewData().size();i++){
+			String deliveryDate = dataModel.getYsViewData().get(i).get("deliveryDate");
+			if(notEmpty(deliveryDate)){
+				timeFlag = true;
+				break;
+			}
+		}
+		if(timeFlag){
 			zptime = dataModel.getYsViewData();
 		}
 		

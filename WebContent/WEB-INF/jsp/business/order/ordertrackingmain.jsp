@@ -20,11 +20,13 @@
 		var searchFlag  = $('#searchFlag').val();
 		var partsType   = $('#partsType').val();
 		var team		= $('#team').val();
+		var mateType	= $('#mateType').val();
 		
 		var url = "${ctx}/business/orderTrack?methodtype=orderTrackingSearch&sessionFlag="+sessionFlag
 				+"&orderType=010"+"&searchFlag="+searchFlag
 				+"&partsType="+partsType
-				+"&team="+team;
+				+"&team="+team
+				+"&mateType="+mateType;
 
 		var sortCode = $('#sortCode').val();
 		
@@ -187,14 +189,14 @@
 		
 		initEvent();
 		
-		$('#mateFlag').hide();//
+		//$('#mateFlag').hide();//
 		
 		buttonSelectedEvent();//按钮选择式样
 		buttonSelectedEvent2();//按钮选择式样
 		buttonSelectedEvent3();//按钮选择式样
 		
 		$('#defutBtnC').removeClass("start").addClass("end");
-		$('#defutBtnmP').removeClass("start").addClass("end");
+		$('#defutBtnmA').removeClass("start").addClass("end");
 		$('#defutBtnu999').removeClass("start").addClass("end");
 		
 		
@@ -240,40 +242,67 @@
 	    });
 	    
 		$('#defutBtn'+searchFlag).removeClass("start").addClass("end");
-		
-		
-	}
-			
+				
+	}		
 
 	
 	//料已备齐
-	function doSearchCustomer(){
+	function doSearchCustomer(type){
 
-		$('#mateFlag').hide();
-		$('#searchFlag').val('B');
+		var collection = $(".box2");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
+		$('#searchFlag').val(type);
+		$('#mateType').val('A');//包含所有异常数据
 		
 		ajaxSearch('false');
 	}
-
-	
-
 			
 	//ALL
 	function doSearchCurrentTask(taskType){
-
-		$('#mateFlag').hide();
+		var collection = $(".box2");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
 		$('#searchFlag').val(taskType);//Current:当前任务
+		$('#mateType').val('A');	
 		
 		ajaxSearch('false');
 	}
 	
 	//查看当前任务
 	function doSearchCurrentTask2(taskType){
-
-		$('#mateFlag').show();
+		
+		var collection = $(".box2");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
 		
 		$('#searchFlag').val(taskType);//Current:当前任务
-		$('#sortCode').val(7);//生产线排序		
+		$('#mateType').val('A');//包含所有异常数据
+		$('#sortCode').val(7);//生产线排序	
+		
+		
+		ajaxSearch('false');
+	}
+
+
+	//异常数据：自制件，五金，电子
+	function doSearchMateType(type){
+
+		var collection = $(".box3");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+		$('#defutBtnu999').removeClass("start").addClass("end");
+	    
+	    
+		$('#team').val('999');		
+		$('#searchFlag').val('C');//Current:当前任务
+		$('#mateType').val(type);		
 		
 		ajaxSearch('false');
 	}
@@ -313,6 +342,7 @@
 			<input type="hidden" id="produceLine"   value="" />
 			<input type="hidden" id="sortCode"   value="6" />
 			<input type="hidden" id="team"   value="999" />
+			<input type="hidden" id="mateType"   value="A" />
 			<table>
 				<tr>
 					<td width="50px"></td> 
@@ -332,26 +362,27 @@
 				
 				<tr>
 					<td width=""></td> 
-					<td class="label"> 快捷查询：</td>
-					<td colspan="3">
+					<td class="label"> 快捷查询11：</td>
+					<td>
 						<a  class="DTTT_button box" onclick="doSearchCurrentTask('A');"   id="defutBtnA">ALL</a>
-						<a  class="DTTT_button box" onclick="doSearchCustomer();"  		  id="defutBtnU">料已备齐</a>
+						<a  class="DTTT_button box" onclick="doSearchCustomer('B');"  		  id="defutBtnU">料已备齐</a>
 						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('C');"  id="defutBtnC">当前跟踪</a>&nbsp;
 						
-						<span id="mateFlag">
-							<!-- a id="defutBtnmA"  class="DTTT_button box" onclick="doSearchMateType('A');">
-								ALL</a -->		
+					</td>
+					
+					<td class="label">异常数据：</td>
+					<td width="">
 							<a id="defutBtnmZ"  class="DTTT_button box" onclick="doSearchMateType('Z');">
 								自制件</a>	
 							<a id="defutBtnmW"  class="DTTT_button box" onclick="doSearchMateType('W');">
 								五金件</a>	
 							<a id="defutBtnmD"  class="DTTT_button box" onclick="doSearchMateType('D');">
 								电子件</a>
-						</span>
-					</td>
-					
+							<!-- a id="defutBtnmA"  class="DTTT_button box2" onclick="doSearchMateType2('A');">
+								ALL</a -->	
+						</td> 
+					<td></td> 
 					<td></td>
-					<td width=""></td> 
 				</tr>
 				
 			</table>

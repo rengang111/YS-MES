@@ -1080,7 +1080,7 @@ public class OrderService extends CommonService  {
 			guid = BaseDAO.getGuId();
 			divert.setRecordid(guid);
 			
-			dao.Store(db);
+			dao.Create(db);
 			
 		}else{
 			
@@ -1088,7 +1088,7 @@ public class OrderService extends CommonService  {
 					"OrderDetailUpdate",userInfo);
 			copyProperties(divert,commData);
 			
-			dao.Create(divert);
+			dao.Store(divert);
 		}
 
 	}	

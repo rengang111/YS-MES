@@ -10,7 +10,7 @@
 		var YSId = '${order.YSId }';
 		var t = $('#example2').DataTable({
 			
-			"paging": true,
+			"paging": false,
 			"lengthChange":false,
 			"lengthMenu":[50,100,200],//设置一页展示20条记录
 			"processing" : false,
@@ -19,6 +19,8 @@
 			"ordering "	:true,
 			"searching" : false,
 			"retrieve" : true,
+			"scrollY":'200px',
+			"scrollCollapse":true,
 			dom : '<"clear">rt',
 			"sAjaxSource" : "${ctx}/business/requisition?methodtype=getRequisitionHistory&YSId="+YSId,
 			"fnServerData" : function(sSource, aoData, fnCallback) {

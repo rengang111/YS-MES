@@ -12,22 +12,22 @@
   </select>
    <from>
    	(
-		SELECT 'A' mateType,a.YSId ,MAX(IFNULL(a.newDeliveryDate,a.deliveryDate)) deliveryDate   FROM v_purchaseorderdetail a
+		SELECT 'A' mateType,a.YSId ,MAX(IFNULL(a.materialDeliveryDate,IFNULL( a.newDeliveryDate,a.deliveryDate))) deliveryDate   FROM v_purchaseorderdetail a
 				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
 					AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
 				  AND a.YSId =  '#'    
 		UNION
-		SELECT 'Z' mateType,a.YSId ,MAX(IFNULL(a.newDeliveryDate,a.deliveryDate)) deliveryDate   FROM v_purchaseorderdetail a
+		SELECT 'Z' mateType,a.YSId ,MAX(IFNULL(a.materialDeliveryDate,IFNULL( a.newDeliveryDate,a.deliveryDate))) deliveryDate   FROM v_purchaseorderdetail a
 				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
 					AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
 				  AND a.YSId =  '#'    AND left(a.materialId,3) ='B01'
 		UNION
-		SELECT 'D' mateType,a.YSId ,MAX(IFNULL(a.newDeliveryDate,a.deliveryDate)) deliveryDate   FROM v_purchaseorderdetail a
+		SELECT 'D' mateType,a.YSId ,MAX(IFNULL(a.materialDeliveryDate,IFNULL( a.newDeliveryDate,a.deliveryDate))) deliveryDate   FROM v_purchaseorderdetail a
 				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
 					AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
 				  AND a.YSId =  '#'    AND left(a.materialId,3) in ('B05','B06','B07','B08','B09','B10','B16','B01')
 		UNION
-		SELECT 'W' mateType,a.YSId ,MAX(IFNULL(a.newDeliveryDate,a.deliveryDate)) deliveryDate   FROM v_purchaseorderdetail a
+		SELECT 'W' mateType,a.YSId ,MAX(IFNULL(a.materialDeliveryDate,IFNULL( a.newDeliveryDate,a.deliveryDate))) deliveryDate   FROM v_purchaseorderdetail a
 				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
 					AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
 				  AND a.YSId =  '#'    
@@ -86,6 +86,10 @@
       <f name="IFNULL(e.finishFlag,'0')" alias="finishFlag" ctype="" />
       <f name="IFNULL(e.readyDate,'')" alias="readyDate" ctype="" />
       <f name="IFNULL(e.remarks,'')" alias="remarks" ctype="" />
+      <f name="e.wjDate" alias="" ctype="" />
+      <f name="e.dzDate" alias="" ctype="" />
+      <f name="e.zzDate" alias="" ctype="" />
+      <f name="e.bzDate" alias="" ctype="" />
     </select>
     <from>
       (

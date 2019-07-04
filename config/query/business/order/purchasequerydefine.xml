@@ -373,7 +373,9 @@
 				WHERE c1.paymentId=c2.paymentId AND c1.deleteFlag='0' AND c2.deleteFlag='0' 
 			)c ON c.contractId = a. contractId
 		LEFT JOIN b_follow d ON d.ysid=a.ysid AND d.contractId=a.contractId AND d.followType = '2' AND d.deleteFlag = '0'
-    	WHERE a.deleteFlag = '0' AND left(A.materialId,1) &lt;&gt; 'H' </from>
+    	WHERE a.deleteFlag = '0' 
+    	 -- AND left(A.materialId,1) &lt;&gt; 'H' 
+    	 </from>
     <orderby>d.modifyTime DESC,A.YSId,A.contractId,a.materialId</orderby>
     <groupby></groupby>
     <having>#</having>

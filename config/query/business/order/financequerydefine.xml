@@ -1269,7 +1269,7 @@
     			)b ON a.YSId=b.YSId 
     	WHERE a.payment is NULL 
     		AND REPLACE(a.quantity,',','')+0 > 0
-    		AND a.stockOutQty > 0  
+    	--	AND a.stockOutQty > 0  
     		AND IFNULL(a.divertYsid,0)=0
     </from>
     <orderby>a.ysid </orderby>
