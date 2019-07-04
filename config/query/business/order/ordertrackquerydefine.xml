@@ -25,7 +25,7 @@
 		SELECT 'D' mateType,a.YSId ,MAX(IFNULL(a.materialDeliveryDate,IFNULL( a.newDeliveryDate,a.deliveryDate))) deliveryDate   FROM v_purchaseorderdetail a
 				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  
 					AND IFNULL(REPLACE(a.contractStorage,',',''),0)+0 &lt; REPLACE(a.quantity,',','')+0
-				  AND a.YSId =  '#'    AND left(a.materialId,3) in ('B05','B06','B07','B08','B09','B10','B16','B01')
+				  AND a.YSId =  '#'    AND left(a.materialId,3) in ('B05','B06','B07','B08','B09','B10','B16')
 		UNION
 		SELECT 'W' mateType,a.YSId ,MAX(IFNULL(a.materialDeliveryDate,IFNULL( a.newDeliveryDate,a.deliveryDate))) deliveryDate   FROM v_purchaseorderdetail a
 				WHERE LEFT(a.materialId,1) &lt;&gt; 'G'  

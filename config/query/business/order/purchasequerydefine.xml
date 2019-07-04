@@ -1216,6 +1216,7 @@
     <name value="unStockinContractListById" />
     <where>
    	  <w name="A.supplierId" des=""  reqName="supplierId" dtype="ch" oper="="  lg="AND" bt="" />
+   	  <w name="A.materialId" des=""  reqName="materialId" dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="a.materialId" alias="" ctype="" />

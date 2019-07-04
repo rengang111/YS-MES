@@ -284,8 +284,10 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 			"columnDefs":[
 	    		
 	    		{"targets":0,"render":function(data, type, row){
-	    			
-	    			return "<a href=\"###\" onClick=\"doShowControct('" + row["contractId"] + "','" + row["quantity"] + "','" + row["arrivalQty"] + "','" + row["contractStorage"] + "')\">"+row["contractId"]+"</a>";			    			
+	    			var index = row["rownum"] - 1;
+	    			var hidden = '<input type="hidden" id="supplierId'+index+'" name="supplierId" value="'+row['supplierId']+'" >';
+					
+	    			return hidden + "<a href=\"###\" onClick=\"doShowControct('" + row["contractId"] + "','" + row["quantity"] + "','" + row["arrivalQty"] + "','" + row["contractStorage"] + "')\">"+row["contractId"]+"</a>";			    			
 	    		}},
 	    		{"targets":1,"render":function(data, type, row){
 	    			
@@ -296,8 +298,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    		}},
 	    		{"targets":6,"render":function(data, type, row){
 	    			
-	    			return floatToNumber(data)
-	    			//return "<a href=\"###\" onClick=\"doShowStockin('" + row["contractId"] + "','" + row["materialId"] + "')\">"+row["shortName"]+"</a>";			    			
+	    			return "<a href=\"###\" onClick=\"doShowStockin('" + row["contractId"] + "')\">"+floatToNumber(data)+"</a>";			    			
 					
 	    		}},
 	    		{"targets":9,"render":function(data, type, row){
@@ -541,7 +542,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 		$('#contract tbody tr').each (function (){
 
 			var materialId   = $(this).find("td").eq(2).text();//物料
-    	 	var supplierId = $(this).find("td").eq(1).find('input[name=supplierId]').val();
+    	 	var supplierId = $(this).find("td").eq(0).find('input[name=supplierId]').val();
 			
 			var list = ajaxContractByMaterialId(supplierId,materialId);
 			//alert('list'+list)
@@ -551,7 +552,9 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 			}else{
 				$(this).find("td").eq(8).html(list[1]+'<br>' +list[2]);
 			}
-			$(this).find("td").eq(7).html(list[0]);
+			var text = "<a href=\"###\" onClick=\"doShowUnStockinList('" + materialId + "')\">"+list[0]+"</a>";			    			
+			
+			$(this).find("td").eq(7).html(text);
 					
 						
 		});	
@@ -704,11 +707,17 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 		callWindowFullView("合同详情",url);
 	}
 	
-	
-	function doShowStockin(contractId,materialId) {
+	function doShowStockin(contractId) {
 
-		var url = "${ctx}/business/supplier?methodtype=show&key=" + key;
-		callWindowFullView("合同详情",url);
+		var url = "${ctx}/business/orderTrack?methodtype=showStorageListInit&contractId=" + contractId;
+		callWindowFullView("入库详情",url);
+	}
+	
+	
+	function doShowUnStockinList(materialId) {
+
+		var url = "${ctx}/business/orderTrack?methodtype=getUnStockinContractListInit&contractId="+"&materialId="+materialId;
+		callWindowFullView("未入库明细",url);
 	}	
 	
 	function setMaterialFinished(){

@@ -371,16 +371,27 @@ public class OrderTrackService extends CommonService {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void insertNewDeliveryDate(
 			B_PurchaseOrderDeliveryDateHistoryData db) throws Exception{
 			
-		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
-				"Insert",userInfo);
-		copyProperties(db,commData);
-		guid = BaseDAO.getGuId();
-		db.setRecordid(guid);
+		String where = " contractId='" + db.getContractid() +"' "+
+				"AND materialId='"+ db.getMaterialid() +"'" +
+				"AND newDeliveryDate='" + db.getNewdeliverydate() +"' AND deleteFlag='0' ";
+				
+		List<B_PurchaseOrderDeliveryDateHistoryData> list = 
+				new B_PurchaseOrderDeliveryDateHistoryDao().Find(where);
 		
-		new B_PurchaseOrderDeliveryDateHistoryDao().Create(db);
+		if(list.size() == 0){
+
+			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+					"Insert",userInfo);
+			copyProperties(db,commData);
+			guid = BaseDAO.getGuId();
+			db.setRecordid(guid);
+			
+			new B_PurchaseOrderDeliveryDateHistoryDao().Create(db);
+		}
 		
 
 	}	
@@ -431,7 +442,7 @@ public class OrderTrackService extends CommonService {
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"update",userInfo);
 			copyProperties(plan,commData);	
-			
+			System.out.println("update:"+plan.toString());
 			new B_ProducePlanDao().Store(plan);
 			
 		}else{
@@ -448,7 +459,8 @@ public class OrderTrackService extends CommonService {
 			copyProperties(plan,commData);	
 			guid = BaseDAO.getGuId();				
 			plan.setRecordid(guid);
-			
+
+			System.out.println("insert:"+plan.toString());
 			new B_ProducePlanDao().Create(plan);
 		}
 		
@@ -473,6 +485,9 @@ public class OrderTrackService extends CommonService {
 			plan.setFinishflag(finishFlag);//
 			//plan.setReadydate(getReadydateFromContract(YSId));
 			plan.setReadydate(zpTime);
+			plan.setZzdate("");
+			plan.setDzdate("");
+			plan.setWjdate("");
 			
 			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
 					"update",userInfo);
@@ -610,6 +625,79 @@ public class OrderTrackService extends CommonService {
 
 		model.addAttribute("yewuzu",list);
 		model.addAttribute("year",util.getListOption(DicUtil.BUSINESSYEAR, ""));
+	}
+	
+
+	public void getContractDetail() throws Exception {
+
+		String contractId = request.getParameter("contractId");
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");		
+		dataModel.setQueryName("getContractById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contractId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));	
+		}		
+	}
+	
+	public void getContractDetailByMaterailId() throws Exception {
+
+		String contractId = request.getParameter("contractId");
+		String materialId = request.getParameter("materialId");
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");		
+		dataModel.setQueryName("getContractById");		
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("contractId", contractId);	
+		userDefinedSearchCase.put("materialId", materialId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() >0){
+			model.addAttribute("contract",dataModel.getYsViewData().get(0));	
+		}		
+	}
+	
+	public HashMap<String, Object> getStockinByContract() throws Exception{
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		String contractId = request.getParameter("contractId");
+		
+		dataModel.setQueryFileName("/business/material/inventoryquerydefine");
+		dataModel.setQueryName("stockInByContractId");
+		userDefinedSearchCase.put("contractId", contractId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		if(dataModel.getRecordCount() > 0 ){
+			modelMap.put("data", dataModel.getYsViewData());		
+		}	
+		return modelMap;
+	}
+	
+
+	public HashMap<String, Object> getUnStockinContractListById() throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		String materialId = request.getParameter("materialId");
+		
+		dataModel.setQueryFileName("/business/order/purchasequerydefine");
+		dataModel.setQueryName("unStockinContractListById");
+		baseQuery = new BaseQuery(request, dataModel);		
+		userDefinedSearchCase.put("materialId", materialId);		
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsFullData();
+
+		modelMap.put("recordCount", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		
+		return modelMap;
 	}
 	
 }

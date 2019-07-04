@@ -157,6 +157,7 @@
     <where>
     	<w name="a.contractId" des="" reqName="contractId" dtype="ch" oper="=" lg="AND" bt="" />
     	<w name="a.contractId" des="" reqName="contractIds" dtype="ch" oper="in" lg="AND" bt="" />
+    	<w name="a.materialId" des="" reqName="materialId" dtype="ch" oper="=" lg="AND" bt="" />
     </where>
   	<select>
       <f name="a.recordId" alias="productRecordId" ctype="" />

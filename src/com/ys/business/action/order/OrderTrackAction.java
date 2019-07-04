@@ -110,6 +110,23 @@ public class OrderTrackAction extends BaseAction {
 				dataMap = doOrderTrackingSearch(data);
 				printOutJsonObj(response, dataMap);
 				break;
+			case "showStorageListInit"://入库明细初始化
+				showStorageListInit();
+				rtnUrl = "/business/order/ordertrackstorag";
+				break;
+			case "showStorageList"://入库明细
+				dataMap = doShowStorageList();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getUnStockinContractListInit"://物料别未到货合同查询
+				getUnStockinContractListInit();
+				rtnUrl = "/business/order/ordertrackunstockin";
+				break;
+			case "getUnStockinContractList"://物料别未到货合同查询
+				dataMap = getUnStockinContractList();
+				printOutJsonObj(response, dataMap);
+				break;
+				
 				
 				
 		}
@@ -247,6 +264,25 @@ public class OrderTrackAction extends BaseAction {
 	}
 	
 
+	public void showStorageListInit(){
+		try {
+			reviewService.getContractDetail();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void getUnStockinContractListInit(){
+		try {
+			reviewService.getContractDetailByMaterailId();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doOrderTrackingSearch(@RequestBody String data){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -278,5 +314,29 @@ public class OrderTrackAction extends BaseAction {
 		
 		return dataMap;
 	}
+
+	public HashMap<String, Object> doShowStorageList(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+
+		
+		try {
+			dataMap = reviewService.getStockinByContract();			
+			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> getUnStockinContractList() throws Exception {
+		
+		return reviewService.getUnStockinContractListById();		
+		
+	}
+	
 
 }
