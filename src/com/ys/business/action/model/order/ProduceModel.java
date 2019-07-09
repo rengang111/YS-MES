@@ -13,6 +13,7 @@ import com.ys.business.db.data.B_OrderMergeDetailData;
 import com.ys.business.db.data.B_ProducePlanData;
 import com.ys.business.db.data.B_ProductDesignDetailData;
 import com.ys.business.db.data.S_ProduceLineCodeData;
+import com.ys.business.db.data.S_ProductionTeamCodeData;
 import com.ys.business.db.data.S_WarehouseCodeData;
 import com.ys.util.basequery.common.BaseModel;
 
@@ -28,7 +29,23 @@ public class ProduceModel extends BaseModel {
 	private B_OrderMergeData merge = new B_OrderMergeData();
 	private S_ProduceLineCodeData produceLine;
 	private B_ProducePlanData plan;
+	private S_ProductionTeamCodeData productionTeam;
+	private String[] produceList;
 
+	public String[] getProduceList() {
+        return produceList;
+    }
+    public void setProduceList(String[] produceList) {
+        this.produceList = produceList;
+    }
+    
+	public S_ProductionTeamCodeData getProductionTeam() {
+		return this.productionTeam;
+	}
+	public void setProductionTeam(S_ProductionTeamCodeData team) {
+		this.productionTeam = team;
+	}
+	
 	public List<B_OrderMergeDetailData> getPackageList() {
 		return this.mergeList;
 	}

@@ -1073,22 +1073,23 @@ public class OrderService extends CommonService  {
 		if(list.size() > 0 ){
 
 			B_OrderDivertData db = list.get(0);
+
+			copyProperties(db,divert);
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"OrderDetailUpdate",userInfo);
+			copyProperties(db,commData);
 			
+			dao.Store(db);
+			
+		}else{
 			commData = commFiledEdit(Constants.ACCESSTYPE_INS,
 					"OrderDetailInsert",userInfo);
-			copyProperties(db,commData);
+			copyProperties(divert,commData);
 			guid = BaseDAO.getGuId();
 			divert.setRecordid(guid);
 			
-			dao.Create(db);
+			dao.Create(divert);
 			
-		}else{
-			
-			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
-					"OrderDetailUpdate",userInfo);
-			copyProperties(divert,commData);
-			
-			dao.Store(divert);
 		}
 
 	}	

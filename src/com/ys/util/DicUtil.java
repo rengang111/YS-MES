@@ -39,6 +39,8 @@ public class DicUtil {
 	public static final String PRODUCEPLANMENU = "生产计划订单设置";
 	public static final String CHARGETYPE = "扣款方式";
 	public static final String BUSINESSYEAR = "年度";
+	public static final String DIC_PRODUCE = "生产组技能";
+	public static final String DIC_PERSONNEL = "员工技能";
 
 	public static final String PRODUCTMODEL = "产品型号";
 	public static final String CONFIRMRESULT = "确认结果";//合格/不合格

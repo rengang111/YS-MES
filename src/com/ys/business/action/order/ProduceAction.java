@@ -143,6 +143,34 @@ public class ProduceAction extends BaseAction {
 				dataMap = doSetOrderForProduce();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "produceGroupCodeInit"://生产组
+				doProduceGroupCodeInit();
+				rtnUrl = "/business/produce/producegroupmain";
+				break;
+			case "produceGroupCodeSearch":
+				dataMap = doProduceGroupCodeSearch(Constants.FORM_PRODUCELINECODE,data);
+				printOutJsonObj(response, dataMap);
+				break;		
+			case "addGroupTopInit":
+				addGroupTopInit();
+				rtnUrl = "/business/produce/producegroupadd";
+				break;	
+			case "addGroupCode":
+				dataMap = addGroupCode();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "editGroupCode":
+				doGroupEdit();
+				rtnUrl = "/business/produce/producegroupedit";
+				break;
+			case "updateGroupCode":
+				dataMap = updateGroupCode();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "deleteGroupCode":
+				dataMap = deleteGroupCode();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -284,6 +312,16 @@ public class ProduceAction extends BaseAction {
 		}
 	}
 	
+
+	public void doProduceGroupCodeInit(){	
+		
+		try {
+			//orderService.produceLineCodeSearchInit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@SuppressWarnings({ "unchecked" })
 	public HashMap<String, Object> doProduceLineCodeSearch(String formId, String data){
 		
@@ -314,6 +352,36 @@ public class ProduceAction extends BaseAction {
 		return dataMap;
 	}
 	
+	@SuppressWarnings({ "unchecked" })
+	public HashMap<String, Object> doProduceGroupCodeSearch(String formId, String data){
+		
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		ArrayList<HashMap<String, String>> dbData = 
+				new ArrayList<HashMap<String, String>>();
+		
+		//优先执行查询按钮事件,清空session中的查询条件
+		String sessionFlag = request.getParameter("sessionFlag");
+		if(("false").equals(sessionFlag)){
+			session.removeAttribute(formId+Constants.FORM_KEYWORD1);
+			session.removeAttribute(formId+Constants.FORM_KEYWORD2);			
+		}
+				
+		try {
+			dataMap = orderService.produceGroupCodeSearch(formId,data);
+			
+			dbData = (ArrayList<HashMap<String, String>>)dataMap.get("data");
+			if (dbData.size() == 0) {
+				dataMap.put(INFO, NODATAMSG);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
 	public HashMap<String, Object> deleteWarehouseCode() throws Exception{
 
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
@@ -328,6 +396,20 @@ public class ProduceAction extends BaseAction {
 		return dataMap;
 	}
 	
+
+	public HashMap<String, Object> deleteGroupCode() throws Exception{
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		try{
+			orderService.deleteGroupCode();
+			dataMap.put(INFO, "SUCCESSMSG");
+		}catch(Exception e){
+			dataMap.put(INFO, "ERRMSG");
+			e.printStackTrace();
+		}
+
+		return dataMap;
+	}
 
 	public HashMap<String, Object> updateWarehouseCode(){
 
@@ -345,10 +427,40 @@ public class ProduceAction extends BaseAction {
 	}
 	
 
+	public HashMap<String, Object> updateGroupCode(){
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		try{
+			orderService.updateGroupCode();
+			dataMap.put(INFO, "SUCCESSMSG");
+		}catch(Exception e){
+			dataMap.put(INFO, "ERRMSG");
+			e.printStackTrace();
+		}
+		
+		return  dataMap;
+		
+	}
+	
+
 	public void addTopInit(){
 
 		try{
 			orderService.getParentCodeDetail();
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+	public void addGroupTopInit(){
+
+		try{
+			String multiLevel = request.getParameter("multiLevel");
+			
+			orderService.addGroupTopInit();
+			model.addAttribute("multiLevel",multiLevel);
+			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -370,10 +482,39 @@ public class ProduceAction extends BaseAction {
 		
 	}
 	
+	public HashMap<String, Object> addGroupCode(){
+
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+		try{
+			orderService.insertGroupCode();
+			dataMap.put(INFO, "SUCCESSMSG");
+		}catch(Exception e){
+			dataMap.put(INFO, "ERRMSG");
+			e.printStackTrace();
+		}
+		
+		return  dataMap;
+		
+	}
+	
 
 	public void doEdit(){
-		try{
+		try{			
 			orderService.getParentCodeDetail();
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+	}
+	
+
+	public void doGroupEdit(){
+		try{
+			String multiLevel = request.getParameter("multiLevel");
+			
+			orderService.edutGroupTopInit();
+			model.addAttribute("multiLevel",multiLevel);
+			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 		}

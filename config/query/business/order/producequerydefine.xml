@@ -410,4 +410,51 @@
     <having></having>
 	<power></power>    
   </query>
+  <query>
+    <pool></pool>     
+    <name value="getProduceGroupCodeList" />
+    <where>
+    </where>
+    <select>
+      <f name="A.recordId" alias="" ctype="" />
+      <f name="A.codeId" alias="" ctype="" />
+      <f name="a.productionTechnical" alias="production" ctype="生产组技能" />
+      <f name="a.productionTechnical" alias="productionList" ctype="" />
+      <f name="a.productionTechnical" alias="personnel" ctype="员工技能" />
+      <f name="a.productionTechnical" alias="" ctype="" />
+      <f name="a.groupLeader" alias="" ctype="" />
+      <f name="A.parentId" alias="" ctype="" />
+      <f name="A.subId" alias="" ctype="" />
+      <f name="A.multiLevel" alias="" ctype="" />
+      <f name="A.sortNo" alias="" ctype="" />
+      <f name="A.effectiveFlag" alias="" ctype="" />
+      <f name="A.remarks" alias="" ctype="" />
+    </select>
+    <from>
+		 s_ProductionTeamCode a where a.deleteFlag='0'
+	</from>
+    <orderby>a.sortNo</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query> 
+  <query>
+    <pool></pool>    
+    <name value="getGroupMAXParentCode" />
+     <where>
+       <w name="A.parentId" des=""  reqName="parentId" dtype="ch" oper="="  lg="AND" bt="" />
+    </where>
+  <select>
+      <f name="IFNULL(subId,'0')" alias="MaxSubId" ctype="" />
+      <f name="parentId" alias="" ctype="" />
+      <f name="codeId" alias="" ctype="" />
+      <f name="sortNo" alias="" ctype="" />
+  </select>
+    <from> s_ProductionTeamCode a </from>
+    <orderby> a.sortNo DESC</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power>
+	</power>    
+  </query>
 </root>

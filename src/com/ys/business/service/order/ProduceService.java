@@ -20,6 +20,7 @@ import com.ys.util.basedao.BaseTransaction;
 import com.ys.util.basequery.BaseQuery;
 import com.ys.util.basequery.common.BaseModel;
 import com.ys.util.basequery.common.Constants;
+import com.ys.business.action.model.common.ListOption;
 import com.ys.business.action.model.order.ProduceModel;
 import com.ys.business.db.dao.B_OrderDetailDao;
 import com.ys.business.db.dao.B_OrderMergeDetailDao;
@@ -27,6 +28,7 @@ import com.ys.business.db.dao.B_OrderProduceHideDao;
 import com.ys.business.db.dao.B_ProducePlanDao;
 import com.ys.business.db.dao.B_ProducePlanFilterDao;
 import com.ys.business.db.dao.S_ProduceLineCodeDao;
+import com.ys.business.db.dao.S_ProductionTeamCodeDao;
 import com.ys.business.db.data.B_FollowData;
 import com.ys.business.db.data.B_OrderDetailData;
 import com.ys.business.db.data.B_OrderMergeDetailData;
@@ -35,6 +37,7 @@ import com.ys.business.db.data.B_ProducePlanData;
 import com.ys.business.db.data.B_ProducePlanFilterData;
 import com.ys.business.db.data.CommFieldsData;
 import com.ys.business.db.data.S_ProduceLineCodeData;
+import com.ys.business.db.data.S_ProductionTeamCodeData;
 
 @Service
 public class ProduceService extends CommonService  {
@@ -114,6 +117,55 @@ public class ProduceService extends CommonService  {
 		String sql = baseQuery.getSql();
 		sql = sql.replace("#", key);
 		System.out.println("生产线编码："+sql);
+		
+		baseQuery.getYsQueryData(sql,key,iStart, iEnd);	 
+		
+		if ( iEnd > dataModel.getYsViewData().size()){			
+			iEnd = dataModel.getYsViewData().size();			
+		}		
+		
+		modelMap.put("sEcho", sEcho);
+		modelMap.put("recordsTotal", dataModel.getRecordCount());
+		modelMap.put("recordsFiltered", dataModel.getRecordCount());
+		modelMap.put("data", dataModel.getYsViewData());	
+		modelMap.put("keyword1",key1);	
+		modelMap.put("keyword2",key2);	
+		
+		return modelMap;
+	}
+	
+
+	public HashMap<String, Object> produceGroupCodeSearch(String formId,String data) throws Exception {
+		
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+
+		data = URLDecoder.decode(data, "UTF-8");
+		
+		int iStart = 0;
+		int iEnd =0;
+		String sEcho = getJsonData(data, "sEcho");	
+		String start = getJsonData(data, "iDisplayStart");	
+		
+		if (start != null && !start.equals("")){
+			iStart = Integer.parseInt(start);			
+		}
+		
+		String length = getJsonData(data, "iDisplayLength");
+		if (length != null && !length.equals("")){			
+			iEnd = iStart + Integer.parseInt(length);			
+		}		
+		String[] keyArr = getSearchKey(formId,data,session);
+		String key1 = keyArr[0];
+		String key2 = keyArr[1];
+
+		baseQuery = new BaseQuery(request, dataModel);
+		dataModel.setQueryFileName("/business/order/producequerydefine");
+		dataModel.setQueryName("getProduceGroupCodeList");
+		
+		String key = request.getParameter("codeId");
+		String sql = baseQuery.getSql();
+		sql = sql.replace("#", key);
+		System.out.println("生产组编码："+sql);
 		
 		baseQuery.getYsQueryData(sql,key,iStart, iEnd);	 
 		
@@ -993,10 +1045,89 @@ public class ProduceService extends CommonService  {
 		}
 	}
 	
+	
+	public void addGroupTopInit() throws Exception{
+		
+		String[] produceList = getGroupParentCodeDetail();
+		
+		reqModel.setProduceList(produceList);
+		model.addAttribute("produceList",getListString(DicUtil.DIC_PRODUCE, ""));
+
+		model.addAttribute("produce",util.getListOption(DicUtil.DIC_PRODUCE, ""));
+		model.addAttribute("personnel",util.getListOption(DicUtil.DIC_PERSONNEL, ""));
+				
+	}
+	
+	public List<String> getListString(String type, String parentCode) throws Exception {
+		DicUtil util = new DicUtil();
+		ArrayList<ArrayList<String>> dicList = null;
+		List<String> rtnData = new ArrayList<String>();
+		
+		dicList = util.getSameParentGroupValue(type, parentCode, false);
+		for(ArrayList<String>rowData:dicList) {
+			//ListOption option = new ListOption(rowData.get(0), rowData.get(1));
+			rtnData.add(rowData.get(1));
+		}
+		
+		return rtnData;
+	}
+
+	public void edutGroupTopInit() throws Exception{
+		
+		String[] produceList = getGroupParentCodeDetail();
+		
+		reqModel.setProduceList(produceList);
+		model.addAttribute("produceList",getListString(DicUtil.DIC_PRODUCE, ""));		
+
+		model.addAttribute("produce",util.getListOption(DicUtil.DIC_PRODUCE, ""));
+		model.addAttribute("personnel",util.getListOption(DicUtil.DIC_PERSONNEL, ""));
+		
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String[] getGroupParentCodeDetail() throws Exception {
+
+		String[] produceList = new String[]{};
+		String codeId = URLDecoder.decode(request.getParameter("codeId"),"UTF-8");
+		String where = " codeId ='"+codeId+"' AND deleteFlag='0' ";
+	
+		List<S_ProductionTeamCodeData> dbData = 
+			(List<S_ProductionTeamCodeData>)new S_ProductionTeamCodeDao().Find(where);
+			
+		if(dbData.size() >0){
+			reqModel.setProductionTeam(dbData.get(0));
+			String produceCode = dbData.get(0).getProductiontechnical();//生产技能
+			if(notEmpty(produceCode))
+					produceList =produceCode.split(",");
+		}
+		
+		return produceList;
+	}
+	
 	public String getMAXParentCode(String codeId) throws Exception{
 
 		dataModel.setQueryFileName("/business/order/producequerydefine");
 		dataModel.setQueryName("getMAXParentCode");
+		userDefinedSearchCase.put("parentId", codeId);
+		baseQuery = new BaseQuery(request, dataModel);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		baseQuery.getYsQueryData(0, 0);
+		
+		//取得已有的最大流水号
+		String code ="";
+		if(dataModel.getRecordCount() > 0 ){
+			code =dataModel.getYsViewData().get(0).get("sortNo");
+		}
+		
+		return code;
+	}
+	
+	
+	public String getGroupMAXParentCode(String codeId) throws Exception{
+
+		dataModel.setQueryFileName("/business/order/producequerydefine");
+		dataModel.setQueryName("getGroupMAXParentCode");
 		userDefinedSearchCase.put("parentId", codeId);
 		baseQuery = new BaseQuery(request, dataModel);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
@@ -1097,6 +1228,93 @@ public class ProduceService extends CommonService  {
 		
 	}	
 	
+
+	public void insertGroupCode() throws Exception {
+		
+		String parentCodeId = request.getParameter("parentCodeId");
+		S_ProductionTeamCodeData reqData = reqModel.getProductionTeam();
+
+		String parentLevel = reqData.getMultilevel();
+		String parentSortNo = reqData.getSortno();
+		String codeId = reqData.getCodeid();
+
+		//层次编号
+		int iLevel = 1;
+		if(notEmpty(parentLevel)){
+			iLevel = Integer.parseInt(parentLevel)+1;
+		}
+		
+		//取得最新的子编码
+		//设置编码Code
+		String newCodeId = parentCodeId + codeId;
+		if(isNullOrEmpty(parentCodeId)){
+			parentCodeId = "0";//
+			newCodeId = codeId;//新建一级编码时，没有父级编码
+			
+		}
+		String subSortNo = getGroupMAXParentCode(parentCodeId);
+						
+		//设置排序编号，有点复杂
+		String newSortNo = "";
+		if(isNullOrEmpty(subSortNo)){
+			if(isNullOrEmpty(parentSortNo)){
+				//第一条 一级编码
+				newSortNo = "100";
+			}else{
+				//第一条 子编码
+				newSortNo = parentSortNo + "-" + "100";
+			}
+		}else{
+			if(isNullOrEmpty(parentSortNo)){
+				//第N条 一级编码
+				int oldSubNo = Integer.parseInt(subSortNo);
+				int newSubNo = oldSubNo + 100;
+				newSortNo = String.valueOf(newSubNo);
+				if (newSortNo.length() > subSortNo.length()){
+					newSortNo = String.valueOf( oldSubNo * 10 + 100 );
+				}
+					
+			}else{					
+				//第N条 子编码
+				String[] split = subSortNo.split("-");
+				String maxNo = split[split.length-1];
+				int oldSubNo = Integer.parseInt(maxNo);
+				int newSubNo = oldSubNo + 100;
+				newSortNo = String.valueOf(newSubNo);
+				if (newSortNo.length() > maxNo.length()){
+					newSortNo = parentSortNo + "-" + String.valueOf(oldSubNo * 10 + 100);	
+				}else{
+					newSortNo = parentSortNo + "-" + String.valueOf(oldSubNo + 100);	
+				}
+				
+			}
+		}
+						
+		//新增处理
+		S_ProductionTeamCodeData newDt = new S_ProductionTeamCodeData();
+
+		newDt.setCodeid(newCodeId);
+		newDt.setSortno(newSortNo);
+		newDt.setParentid(parentCodeId);
+		newDt.setSubid(codeId);
+		newDt.setGroupleader(reqData.getGroupleader());
+		newDt.setProductiontechnical(reqData.getProductiontechnical());
+		newDt.setRemarks(reqData.getRemarks());
+		newDt.setMultilevel(String.valueOf(iLevel));
+		newDt.setEffectiveflag("Y");//使用标识
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+				"insert",userInfo);
+		copyProperties(newDt,commData);
+
+		guid = BaseDAO.getGuId();
+		newDt.setRecordid(guid);
+		
+		new S_ProductionTeamCodeDao().Create(newDt);
+				
+		
+	}	
+	
 	public void updateWarehouseCode() throws Exception {
 		
 		S_ProduceLineCodeData reqData = reqModel.getProduceLine();
@@ -1114,6 +1332,24 @@ public class ProduceService extends CommonService  {
 				
 		
 	}	
+		
+	public void updateGroupCode() throws Exception {
+		
+		S_ProductionTeamCodeData reqData = reqModel.getProductionTeam();
+
+		S_ProductionTeamCodeData db = new S_ProductionTeamCodeDao(reqData).beanData;
+		
+		copyProperties(db,reqData);
+		db.setEffectiveflag("Y");//使用标识
+		
+		commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+				"update",userInfo);
+		copyProperties(db,commData);
+
+		new S_ProductionTeamCodeDao().Store(db);
+				
+		
+	}	
 
 	public void deleteWarehouseCode() throws Exception {
 
@@ -1124,10 +1360,26 @@ public class ProduceService extends CommonService  {
 		dt = new S_ProduceLineCodeDao(dt).beanData;
 							
 		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
-				"insert",userInfo);
+				"delete",userInfo);
 		copyProperties(dt,commData);
 				
 		new S_ProduceLineCodeDao().Store(dt);
+	}
+	
+
+	public void deleteGroupCode() throws Exception {
+
+		String recordId = request.getParameter("recordId");
+			
+		S_ProductionTeamCodeData dt = new S_ProductionTeamCodeData();
+		dt.setRecordid(recordId);
+		dt = new S_ProductionTeamCodeDao(dt).beanData;
+							
+		commData = commFiledEdit(Constants.ACCESSTYPE_DEL,
+				"delete",userInfo);
+		copyProperties(dt,commData);
+				
+		new S_ProductionTeamCodeDao().Store(dt);
 	}
 	
 	@SuppressWarnings("unchecked")
