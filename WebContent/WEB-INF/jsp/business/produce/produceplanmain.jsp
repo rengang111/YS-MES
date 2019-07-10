@@ -84,9 +84,7 @@
 					{"data": "sortNo", "className" : 'td-center'},//10
 					
 				],
-				"columnDefs":[
-		    		
-		    		
+				"columnDefs":[		    		
 		    		{"targets":0,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var orderQty   = currencyToFloat( row["orderQty"] );
@@ -96,16 +94,12 @@
 			    			rtn= "<a href=\"###\" onClick=\"showHistory('"+ row["YSId"] + "')\">"+data+"</a>";		    				
 		    			}else {
 			    			rtn= "<a href=\"###\" onClick=\"doShowDetail('"+ row["YSId"] + "')\">"+data+"</a>";
-		    				
-		    			}	
-		    			
+		    			}		    			
 		    			return rtn;
 		    		}},
 		    		{"targets":1,"render":function(data, type, row){
 
 						var lastHide = '<input type="hidden"  name="lastHide" id="lastHide" value="' + row["hideFlag"] + '" /></span';
-
-		    			//var rtn= "<a href=\"###\" onClick=\"doShow('"+ row["PIId"] + "')\">"+data+"</a>";
 		    			
 		    			return data + lastHide;
 		    		}},
@@ -121,7 +115,7 @@
 		    			
 		    			return floatToNumber(data);
 		    		}},
-		    		{"targets":7,"render":function(data, type, row){
+		    		{"targets":7,"render":function(data, type, row){//生产序号
 		    			var rtn = "";
 		    			var rowIndex = row["rownum"] - 1;
 		    			var produceLine = row['produceLine'];
@@ -146,7 +140,7 @@
 		    			txtEdit += ' <input type="text"   '+
 			    				' id="lines'+rowIndex+'.produceLine" '+
 			    				' onfocus= removeErrorClass(\''+rowIndex+'\');return false;"   '+
-			    				' onblur ="setProduceLine(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
+			    				' onblur ="setProduceTeam(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
 			    				' class="short attributeList1" style="width:50px;"/>'
 		    			txtEdit += '</div>';
 		    						     		    			
@@ -175,7 +169,39 @@
 		    			
 		    			return rtnValue;
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){
+		    		{"targets":8,"render":function(data, type, row){//生产小组
+		    			var rtn = "";
+		    			var rowIndex = row["rownum"] - 1;
+		    			var produceTeam = row['produceTeam'];
+		    			var YSId = row['YSId'];
+		    			var showDisFlag = true;
+		    			var editDisFlag = 'none';
+		    			var txt = '';
+		    			if(produceTeam == ''){//未安排
+		    				editDisFlag = true;
+		    				showDisFlag = 'none';
+		    			}
+			    		else{//当前任务
+			    			editDisFlag = 'none';
+			    			showDisFlag = true;
+			    		}
+		    			
+		    			var txtShow = '<div id="teamShow'+rowIndex+'"  style="display:'+showDisFlag+';">';
+
+		    			txtShow += "<a href=\"###\" onClick=\"doEditTeam('"+ rowIndex + "')\">"+produceTeam+"</a></div>";
+		    			
+		    			var txtEdit = '<div id="teamEdit'+rowIndex+'" class="teamEdit"  style="display:'+editDisFlag+';">';
+		    			txtEdit += ' <input type="text"   '+
+			    				' id="lines'+rowIndex+'.produceTeam" '+
+			    				' onfocus= removeErrorClass(\''+rowIndex+'\');return false;"   '+
+			    				' onblur ="setProduceLine(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
+			    				' class="short attributeList2" style="width:50px;"/>'
+		    			txtEdit += '</div>';
+		    						     		    			
+		    			return txtShow + txtEdit;
+		    			
+		    		}},
+		    		{"targets":9,"render":function(data, type, row){//上下调整
 		    			var imgName = 'arrow_down';
 		    			var rtn = "",down='D',up='U';
 		    			var produceLine = row['produceLine'];
@@ -191,7 +217,7 @@
 		    			}
 		    			return rtn;
                     }},
-		    		{"targets":9,"render":function(data, type, row){
+		    		{"targets":10,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var rowIndex = row["rownum"] - 1;
 		    			var produceLine = row['produceLine'];
@@ -207,7 +233,7 @@
 		    			return rtn;
 		    		}},
 		    		{
-		    			"orderable":false,"targets":[6,7,8,9]
+		    			"orderable":false,"targets":[6,7,8,9,10]
 		    		},
 		    		{
 						"visible" : false,
@@ -215,39 +241,7 @@
 					}
 	         	],
 	         	
-	         	/*
-	         	"fnInitComplete": function () {//列筛选
-	                   var api = this.api();
-	                   api.columns().indexes().flatten().each(function (i) {
-	                       if (i == 7 ) {//删除第一列与第二列的筛选框
-	                           var column = api.column(i);
-	                           var $span = $('<span class="addselect">▼</span>').appendTo($(column.header()))
-	                           var select = $('<select><option value="">All</option></select>')
-	                                   .appendTo($(column.header()))
-	                                   .on('click', function (evt) {
-	                                       evt.stopPropagation();
-	                                       var val = $.fn.dataTable.util.escapeRegex(
-	                                               $(this).val()
-	                                       );
-	                                       column
-	                                               .search(val ? '^' + val + '$' : '', true, false)
-	                                               .draw();
-	                                   });
-	                           column.data().unique().sort().each(function (d, j) {
-	                               function delHtmlTag(str) {
-	                                   return str.replace(/<[^>]+>/g, "");//去掉html标签
-	                               }
-	 
-	                               d = delHtmlTag(d)
-	                               select.append('<option value="' + d + '">' + d + '</option>')
-	                               $span.append(select)
-	                           });
-	 
-	                       }
-	                   });
-	 
-	               }
-	        	*/
+	         
 	         		         	
 			});
 	}
@@ -664,6 +658,7 @@
 						<th style="width: 50px;">订单交期</th>
 						<th style="width: 60px;">装配物料<br/>备齐时间</th>
 						<th style="width: 40px;">生产<br/>序号</th>
+						<th style="width: 40px;">生产<br/>小组</th>
 						<th style="width: 40px;">调整</th>
 						<th style="width: 40px;"></th>
 					</tr>

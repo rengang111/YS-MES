@@ -82,9 +82,8 @@
                     }},
                     {"targets":1,"render":function(data, type, row){
 		    			var multiLevel = Number(row['multiLevel']);//层级序号
-		    			var production     = row['production'];
 		    			var productionList = row['productionList'];
-		    			var personnel      = row['personnel'];
+		    			var personnel      = row['employeeSkills'];
 		    			var rtnValue = '';
 		    			if(multiLevel == 2){
 		    				rtnValue = productionList;

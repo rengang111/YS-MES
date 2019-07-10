@@ -70,9 +70,12 @@ var thisCount = 0;
 					collection =false;
 		    	 }
 		    });
-		    
 		    $('#productionTeam\\.productiontechnical').val(str);
-	
+		    
+		    var emp = $('#employeeSkills option:checked').val();// 选中值
+		    if (typeof(emp) != "undefined"){
+			    $('#productionTeam\\.employeeskills').val(emp);
+		    }
 			$('#submit').attr("disabled","true").removeClass("DTTT_button");
 						
 			var parentCodeId = '${produceForm.productionTeam.codeid}';
@@ -201,7 +204,7 @@ function split( val ) {
 		<form:hidden path="productionTeam.multilevel" />
 		<form:hidden path="productionTeam.sortno" />
 		<form:hidden path="productionTeam.productiontechnical" />
-		<input type="hidden" id="oldQuantity" />		
+		<form:hidden path="productionTeam.employeeskills" />
 
 		<fieldset>
 			<legend> 生产组编码</legend>
@@ -236,7 +239,7 @@ function split( val ) {
 				<tr>		
 					<td width="80px" class="label">员工技能：</td>
 					<td width="120px">						
-						<form:select path="productionTeam.productiontechnical">
+						<form:select path="employeeSkills">
 								<form:options items="${personnel}" 
 								 itemValue="key" itemLabel="value" />
 						</form:select>

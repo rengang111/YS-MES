@@ -1097,6 +1097,7 @@ public class ProduceService extends CommonService  {
 			
 		if(dbData.size() >0){
 			reqModel.setProductionTeam(dbData.get(0));
+			reqModel.setEmployeeSkills(dbData.get(0).getEmployeeskills());//员工技能
 			String produceCode = dbData.get(0).getProductiontechnical();//生产技能
 			if(notEmpty(produceCode))
 					produceList =produceCode.split(",");
@@ -1299,6 +1300,7 @@ public class ProduceService extends CommonService  {
 		newDt.setSubid(codeId);
 		newDt.setGroupleader(reqData.getGroupleader());
 		newDt.setProductiontechnical(reqData.getProductiontechnical());
+		newDt.setEmployeeskills(reqData.getEmployeeskills());
 		newDt.setRemarks(reqData.getRemarks());
 		newDt.setMultilevel(String.valueOf(iLevel));
 		newDt.setEffectiveflag("Y");//使用标识

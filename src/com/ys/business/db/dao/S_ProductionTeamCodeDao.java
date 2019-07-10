@@ -45,8 +45,8 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCodeid());			statement.setString( 3,beanData.getProductiontechnical());			statement.setString( 4,beanData.getGroupleader());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getMultilevel());			statement.setString( 8,beanData.getSortno());			statement.setString( 9,beanData.getEffectiveflag());			statement.setString( 10,beanData.getRemarks());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
+			statement = connection.prepareStatement("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,employeeskills,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCodeid());			statement.setString( 3,beanData.getProductiontechnical());			statement.setString( 4,beanData.getEmployeeskills());			statement.setString( 5,beanData.getGroupleader());			statement.setString( 6,beanData.getParentid());			statement.setString( 7,beanData.getSubid());			statement.setString( 8,beanData.getMultilevel());			statement.setString( 9,beanData.getSortno());			statement.setString( 10,beanData.getEffectiveflag());			statement.setString( 11,beanData.getRemarks());			statement.setString( 12,beanData.getDeptguid());			statement.setString( 13,beanData.getCreatetime());			statement.setString( 14,beanData.getCreateperson());			statement.setString( 15,beanData.getCreateunitid());			statement.setString( 16,beanData.getModifytime());			statement.setString( 17,beanData.getModifyperson());			statement.setString( 18,beanData.getDeleteflag());			statement.setString( 19,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -54,7 +54,7 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,employeeskills,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -72,8 +72,8 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 		StringBuffer bufSQL = new StringBuffer();
 		try
 		{
-			bufSQL.append("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
-			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getCodeid()) + "',");			bufSQL.append("'" + nullString(beanData.getProductiontechnical()) + "',");			bufSQL.append("'" + nullString(beanData.getGroupleader()) + "',");			bufSQL.append("'" + nullString(beanData.getParentid()) + "',");			bufSQL.append("'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("'" + nullString(beanData.getMultilevel()) + "',");			bufSQL.append("'" + nullString(beanData.getSortno()) + "',");			bufSQL.append("'" + nullString(beanData.getEffectiveflag()) + "',");			bufSQL.append("'" + nullString(beanData.getRemarks()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,employeeskills,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(");
+			bufSQL.append("'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("'" + nullString(beanData.getCodeid()) + "',");			bufSQL.append("'" + nullString(beanData.getProductiontechnical()) + "',");			bufSQL.append("'" + nullString(beanData.getEmployeeskills()) + "',");			bufSQL.append("'" + nullString(beanData.getGroupleader()) + "',");			bufSQL.append("'" + nullString(beanData.getParentid()) + "',");			bufSQL.append("'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("'" + nullString(beanData.getMultilevel()) + "',");			bufSQL.append("'" + nullString(beanData.getSortno()) + "',");			bufSQL.append("'" + nullString(beanData.getEffectiveflag()) + "',");			bufSQL.append("'" + nullString(beanData.getRemarks()) + "',");			bufSQL.append("'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(")");
 
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -101,8 +101,8 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCodeid());			statement.setString( 3,beanData.getProductiontechnical());			statement.setString( 4,beanData.getGroupleader());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getMultilevel());			statement.setString( 8,beanData.getSortno());			statement.setString( 9,beanData.getEffectiveflag());			statement.setString( 10,beanData.getRemarks());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
+			statement = connection.prepareStatement("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,employeeskills,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCodeid());			statement.setString( 3,beanData.getProductiontechnical());			statement.setString( 4,beanData.getEmployeeskills());			statement.setString( 5,beanData.getGroupleader());			statement.setString( 6,beanData.getParentid());			statement.setString( 7,beanData.getSubid());			statement.setString( 8,beanData.getMultilevel());			statement.setString( 9,beanData.getSortno());			statement.setString( 10,beanData.getEffectiveflag());			statement.setString( 11,beanData.getRemarks());			statement.setString( 12,beanData.getDeptguid());			statement.setString( 13,beanData.getCreatetime());			statement.setString( 14,beanData.getCreateperson());			statement.setString( 15,beanData.getCreateunitid());			statement.setString( 16,beanData.getModifytime());			statement.setString( 17,beanData.getModifyperson());			statement.setString( 18,beanData.getDeleteflag());			statement.setString( 19,beanData.getFormid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Can't Insert Row ");
 			else
@@ -110,7 +110,7 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 		}
 		catch(Exception e)
 		{
-			throw new Exception("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
+			throw new Exception("INSERT INTO S_ProductionTeamCode( recordid,codeid,productiontechnical,employeeskills,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)��"+ e.toString());
 		}
 		finally
 		{
@@ -213,19 +213,19 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("SELECT recordid,codeid,productiontechnical,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM S_ProductionTeamCode WHERE  recordid =?");
+			statement = connection.prepareStatement("SELECT recordid,codeid,productiontechnical,employeeskills,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM S_ProductionTeamCode WHERE  recordid =?");
 			statement.setString( 1,beanData.getRecordid());
 			ResultSet resultSet = statement.executeQuery();
 			if (!resultSet.next())
 			{
 				throw new Exception(" Row Not does;");
 			}
-			returnData.setRecordid( resultSet.getString( 1));			returnData.setCodeid( resultSet.getString( 2));			returnData.setProductiontechnical( resultSet.getString( 3));			returnData.setGroupleader( resultSet.getString( 4));			returnData.setParentid( resultSet.getString( 5));			returnData.setSubid( resultSet.getString( 6));			returnData.setMultilevel( resultSet.getString( 7));			returnData.setSortno( resultSet.getString( 8));			returnData.setEffectiveflag( resultSet.getString( 9));			returnData.setRemarks( resultSet.getString( 10));			returnData.setDeptguid( resultSet.getString( 11));			returnData.setCreatetime( resultSet.getString( 12));			returnData.setCreateperson( resultSet.getString( 13));			returnData.setCreateunitid( resultSet.getString( 14));			returnData.setModifytime( resultSet.getString( 15));			returnData.setModifyperson( resultSet.getString( 16));			returnData.setDeleteflag( resultSet.getString( 17));			returnData.setFormid( resultSet.getString( 18));
+			returnData.setRecordid( resultSet.getString( 1));			returnData.setCodeid( resultSet.getString( 2));			returnData.setProductiontechnical( resultSet.getString( 3));			returnData.setEmployeeskills( resultSet.getString( 4));			returnData.setGroupleader( resultSet.getString( 5));			returnData.setParentid( resultSet.getString( 6));			returnData.setSubid( resultSet.getString( 7));			returnData.setMultilevel( resultSet.getString( 8));			returnData.setSortno( resultSet.getString( 9));			returnData.setEffectiveflag( resultSet.getString( 10));			returnData.setRemarks( resultSet.getString( 11));			returnData.setDeptguid( resultSet.getString( 12));			returnData.setCreatetime( resultSet.getString( 13));			returnData.setCreateperson( resultSet.getString( 14));			returnData.setCreateunitid( resultSet.getString( 15));			returnData.setModifytime( resultSet.getString( 16));			returnData.setModifyperson( resultSet.getString( 17));			returnData.setDeleteflag( resultSet.getString( 18));			returnData.setFormid( resultSet.getString( 19));
 			return returnData;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT recordid,codeid,productiontechnical,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM S_ProductionTeamCode  WHERE  "+e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,codeid,productiontechnical,employeeskills,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM S_ProductionTeamCode  WHERE  "+e.toString());
 		}
 		finally
 		{
@@ -251,19 +251,19 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 			str_Where=str_Where.trim(); 
 			if(!str_Where.equals(""))
 				str_Where=" WHERE " + str_Where ; 
-			statement = connection.prepareStatement("SELECT recordid,codeid,productiontechnical,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM S_ProductionTeamCode"+str_Where);
+			statement = connection.prepareStatement("SELECT recordid,codeid,productiontechnical,employeeskills,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM S_ProductionTeamCode"+str_Where);
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next())
 			{
 				S_ProductionTeamCodeData returnData=new S_ProductionTeamCodeData();
-				returnData.setRecordid( resultSet.getString( 1));				returnData.setCodeid( resultSet.getString( 2));				returnData.setProductiontechnical( resultSet.getString( 3));				returnData.setGroupleader( resultSet.getString( 4));				returnData.setParentid( resultSet.getString( 5));				returnData.setSubid( resultSet.getString( 6));				returnData.setMultilevel( resultSet.getString( 7));				returnData.setSortno( resultSet.getString( 8));				returnData.setEffectiveflag( resultSet.getString( 9));				returnData.setRemarks( resultSet.getString( 10));				returnData.setDeptguid( resultSet.getString( 11));				returnData.setCreatetime( resultSet.getString( 12));				returnData.setCreateperson( resultSet.getString( 13));				returnData.setCreateunitid( resultSet.getString( 14));				returnData.setModifytime( resultSet.getString( 15));				returnData.setModifyperson( resultSet.getString( 16));				returnData.setDeleteflag( resultSet.getString( 17));				returnData.setFormid( resultSet.getString( 18));
+				returnData.setRecordid( resultSet.getString( 1));				returnData.setCodeid( resultSet.getString( 2));				returnData.setProductiontechnical( resultSet.getString( 3));				returnData.setEmployeeskills( resultSet.getString( 4));				returnData.setGroupleader( resultSet.getString( 5));				returnData.setParentid( resultSet.getString( 6));				returnData.setSubid( resultSet.getString( 7));				returnData.setMultilevel( resultSet.getString( 8));				returnData.setSortno( resultSet.getString( 9));				returnData.setEffectiveflag( resultSet.getString( 10));				returnData.setRemarks( resultSet.getString( 11));				returnData.setDeptguid( resultSet.getString( 12));				returnData.setCreatetime( resultSet.getString( 13));				returnData.setCreateperson( resultSet.getString( 14));				returnData.setCreateunitid( resultSet.getString( 15));				returnData.setModifytime( resultSet.getString( 16));				returnData.setModifyperson( resultSet.getString( 17));				returnData.setDeleteflag( resultSet.getString( 18));				returnData.setFormid( resultSet.getString( 19));
 				v_1.add(returnData);
 			}
 			return v_1;
 		}
 		catch(Exception e)
 		{
-			throw new Exception("Error executing SQL SELECT recordid,codeid,productiontechnical,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM S_ProductionTeamCode" + astr_Where +e.toString());
+			throw new Exception("Error executing SQL SELECT recordid,codeid,productiontechnical,employeeskills,groupleader,parentid,subid,multilevel,sortno,effectiveflag,remarks,deptguid,createtime,createperson,createunitid,modifytime,modifyperson,deleteflag,formid FROM S_ProductionTeamCode" + astr_Where +e.toString());
 		}
 		finally
 		{
@@ -282,15 +282,15 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE S_ProductionTeamCode SET recordid= ? , codeid= ? , productiontechnical= ? , groupleader= ? , parentid= ? , subid= ? , multilevel= ? , sortno= ? , effectiveflag= ? , remarks= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCodeid());			statement.setString( 3,beanData.getProductiontechnical());			statement.setString( 4,beanData.getGroupleader());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getMultilevel());			statement.setString( 8,beanData.getSortno());			statement.setString( 9,beanData.getEffectiveflag());			statement.setString( 10,beanData.getRemarks());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
-			statement.setString( 19,beanData.getRecordid());
+			statement = connection.prepareStatement("UPDATE S_ProductionTeamCode SET recordid= ? , codeid= ? , productiontechnical= ? , employeeskills= ? , groupleader= ? , parentid= ? , subid= ? , multilevel= ? , sortno= ? , effectiveflag= ? , remarks= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCodeid());			statement.setString( 3,beanData.getProductiontechnical());			statement.setString( 4,beanData.getEmployeeskills());			statement.setString( 5,beanData.getGroupleader());			statement.setString( 6,beanData.getParentid());			statement.setString( 7,beanData.getSubid());			statement.setString( 8,beanData.getMultilevel());			statement.setString( 9,beanData.getSortno());			statement.setString( 10,beanData.getEffectiveflag());			statement.setString( 11,beanData.getRemarks());			statement.setString( 12,beanData.getDeptguid());			statement.setString( 13,beanData.getCreatetime());			statement.setString( 14,beanData.getCreateperson());			statement.setString( 15,beanData.getCreateunitid());			statement.setString( 16,beanData.getModifytime());			statement.setString( 17,beanData.getModifyperson());			statement.setString( 18,beanData.getDeleteflag());			statement.setString( 19,beanData.getFormid());
+			statement.setString( 20,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE S_ProductionTeamCode SET recordid= ? , codeid= ? , productiontechnical= ? , groupleader= ? , parentid= ? , subid= ? , multilevel= ? , sortno= ? , effectiveflag= ? , remarks= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE S_ProductionTeamCode SET recordid= ? , codeid= ? , productiontechnical= ? , employeeskills= ? , groupleader= ? , parentid= ? , subid= ? , multilevel= ? , sortno= ? , effectiveflag= ? , remarks= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{
@@ -308,7 +308,7 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 		try
 		{
 			bufSQL.append("UPDATE S_ProductionTeamCode SET ");
-			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Codeid = " + "'" + nullString(beanData.getCodeid()) + "',");			bufSQL.append("Productiontechnical = " + "'" + nullString(beanData.getProductiontechnical()) + "',");			bufSQL.append("Groupleader = " + "'" + nullString(beanData.getGroupleader()) + "',");			bufSQL.append("Parentid = " + "'" + nullString(beanData.getParentid()) + "',");			bufSQL.append("Subid = " + "'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("Multilevel = " + "'" + nullString(beanData.getMultilevel()) + "',");			bufSQL.append("Sortno = " + "'" + nullString(beanData.getSortno()) + "',");			bufSQL.append("Effectiveflag = " + "'" + nullString(beanData.getEffectiveflag()) + "',");			bufSQL.append("Remarks = " + "'" + nullString(beanData.getRemarks()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
+			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "',");			bufSQL.append("Codeid = " + "'" + nullString(beanData.getCodeid()) + "',");			bufSQL.append("Productiontechnical = " + "'" + nullString(beanData.getProductiontechnical()) + "',");			bufSQL.append("Employeeskills = " + "'" + nullString(beanData.getEmployeeskills()) + "',");			bufSQL.append("Groupleader = " + "'" + nullString(beanData.getGroupleader()) + "',");			bufSQL.append("Parentid = " + "'" + nullString(beanData.getParentid()) + "',");			bufSQL.append("Subid = " + "'" + nullString(beanData.getSubid()) + "',");			bufSQL.append("Multilevel = " + "'" + nullString(beanData.getMultilevel()) + "',");			bufSQL.append("Sortno = " + "'" + nullString(beanData.getSortno()) + "',");			bufSQL.append("Effectiveflag = " + "'" + nullString(beanData.getEffectiveflag()) + "',");			bufSQL.append("Remarks = " + "'" + nullString(beanData.getRemarks()) + "',");			bufSQL.append("Deptguid = " + "'" + nullString(beanData.getDeptguid()) + "',");			bufSQL.append("Createtime = " + "'" + nullString(beanData.getCreatetime()) + "',");			bufSQL.append("Createperson = " + "'" + nullString(beanData.getCreateperson()) + "',");			bufSQL.append("Createunitid = " + "'" + nullString(beanData.getCreateunitid()) + "',");			bufSQL.append("Modifytime = " + "'" + nullString(beanData.getModifytime()) + "',");			bufSQL.append("Modifyperson = " + "'" + nullString(beanData.getModifyperson()) + "',");			bufSQL.append("Deleteflag = " + "'" + nullString(beanData.getDeleteflag()) + "',");			bufSQL.append("Formid = " + "'" + nullString(beanData.getFormid()) + "'");
 			bufSQL.append(" WHERE ");
 			bufSQL.append("Recordid = " + "'" + nullString(beanData.getRecordid()) + "'");
 			beanData.setReturnsql(bufSQL.toString()); 
@@ -335,15 +335,15 @@ public class S_ProductionTeamCodeDao extends BaseAbstractDao
 		try
 		{
 			connection = getConnection();
-			statement = connection.prepareStatement("UPDATE S_ProductionTeamCode SET recordid= ? , codeid= ? , productiontechnical= ? , groupleader= ? , parentid= ? , subid= ? , multilevel= ? , sortno= ? , effectiveflag= ? , remarks= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
-			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCodeid());			statement.setString( 3,beanData.getProductiontechnical());			statement.setString( 4,beanData.getGroupleader());			statement.setString( 5,beanData.getParentid());			statement.setString( 6,beanData.getSubid());			statement.setString( 7,beanData.getMultilevel());			statement.setString( 8,beanData.getSortno());			statement.setString( 9,beanData.getEffectiveflag());			statement.setString( 10,beanData.getRemarks());			statement.setString( 11,beanData.getDeptguid());			statement.setString( 12,beanData.getCreatetime());			statement.setString( 13,beanData.getCreateperson());			statement.setString( 14,beanData.getCreateunitid());			statement.setString( 15,beanData.getModifytime());			statement.setString( 16,beanData.getModifyperson());			statement.setString( 17,beanData.getDeleteflag());			statement.setString( 18,beanData.getFormid());
-			statement.setString( 19,beanData.getRecordid());
+			statement = connection.prepareStatement("UPDATE S_ProductionTeamCode SET recordid= ? , codeid= ? , productiontechnical= ? , employeeskills= ? , groupleader= ? , parentid= ? , subid= ? , multilevel= ? , sortno= ? , effectiveflag= ? , remarks= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?");
+			statement.setString( 1,beanData.getRecordid());			statement.setString( 2,beanData.getCodeid());			statement.setString( 3,beanData.getProductiontechnical());			statement.setString( 4,beanData.getEmployeeskills());			statement.setString( 5,beanData.getGroupleader());			statement.setString( 6,beanData.getParentid());			statement.setString( 7,beanData.getSubid());			statement.setString( 8,beanData.getMultilevel());			statement.setString( 9,beanData.getSortno());			statement.setString( 10,beanData.getEffectiveflag());			statement.setString( 11,beanData.getRemarks());			statement.setString( 12,beanData.getDeptguid());			statement.setString( 13,beanData.getCreatetime());			statement.setString( 14,beanData.getCreateperson());			statement.setString( 15,beanData.getCreateunitid());			statement.setString( 16,beanData.getModifytime());			statement.setString( 17,beanData.getModifyperson());			statement.setString( 18,beanData.getDeleteflag());			statement.setString( 19,beanData.getFormid());
+			statement.setString( 20,beanData.getRecordid());
 			if (statement.executeUpdate() < 1)
 				throw new Exception(" Row Not does; ");
 		}
 		catch(Exception e)
 		{
-			throw new Exception("UPDATE S_ProductionTeamCode SET recordid= ? , codeid= ? , productiontechnical= ? , groupleader= ? , parentid= ? , subid= ? , multilevel= ? , sortno= ? , effectiveflag= ? , remarks= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
+			throw new Exception("UPDATE S_ProductionTeamCode SET recordid= ? , codeid= ? , productiontechnical= ? , employeeskills= ? , groupleader= ? , parentid= ? , subid= ? , multilevel= ? , sortno= ? , effectiveflag= ? , remarks= ? , deptguid= ? , createtime= ? , createperson= ? , createunitid= ? , modifytime= ? , modifyperson= ? , deleteflag= ? , formid=? WHERE  recordid  = ?"+ e.toString());
 		}
 		finally
 		{

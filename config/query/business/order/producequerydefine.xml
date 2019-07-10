@@ -418,9 +418,8 @@
     <select>
       <f name="A.recordId" alias="" ctype="" />
       <f name="A.codeId" alias="" ctype="" />
-      <f name="a.productionTechnical" alias="production" ctype="生产组技能" />
       <f name="a.productionTechnical" alias="productionList" ctype="" />
-      <f name="a.productionTechnical" alias="personnel" ctype="员工技能" />
+      <f name="a.employeeSkills" alias="" ctype="员工技能" />
       <f name="a.productionTechnical" alias="" ctype="" />
       <f name="a.groupLeader" alias="" ctype="" />
       <f name="A.parentId" alias="" ctype="" />

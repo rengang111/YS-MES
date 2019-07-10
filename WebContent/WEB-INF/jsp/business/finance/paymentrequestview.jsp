@@ -23,6 +23,7 @@ function ContractListAjax() {
 		"serverSide" : false,
 		"stateSave" : false,
 		"ordering "	:true,
+		"async" : false,  
 		"searching" : false,
 		"retrieve" : true,
 		dom : '<"clear">rt',
@@ -604,6 +605,7 @@ function invoiceAjax() {
 		"serverSide" : false,
 		"stateSave" : false,
 		"ordering "	:true,
+		"async" : false,  
 		"searching" : false,
 		"retrieve" : true,
 		dom : '<"clear">rt',
@@ -623,7 +625,6 @@ function invoiceAjax() {
 				"data" : JSON.stringify(aoData),
 				success: function(data){							
 					fnCallback(data);
-					alert(1111)
 					invoiceCountFn();
 				},
 				 error:function(XMLHttpRequest, textStatus, errorThrown){
@@ -720,6 +721,7 @@ function paymentHistoryAjax() {
 		"processing" : false,
 		"serverSide" : false,
 		"stateSave" : false,
+		"async" : false,  
 		"ordering "	:true,
 		"searching" : false,
 		"retrieve" : true,
@@ -763,14 +765,17 @@ function paymentHistoryAjax() {
 				}
 			
 			],
+			
+			               
 		"columnDefs":[
+             {
+		       "sDefaultContent" : '',
+		       "aTargets" : [ '_all' ]
+		  	 },
     		{"targets":0,"render":function(data, type, row){
     			return row['rownum'];
     		}},
     		{"targets":7,"render":function(data, type, row){
-    			
-    			//var delet   = "<a href=\"#\" onClick=\"deletePayment('" + row["paymentId"] + "','" + row["recordId"] + "')\">删除</a>";
-    			
     			return "";
             }},
             {"targets":8,"render":function(data, type, row){

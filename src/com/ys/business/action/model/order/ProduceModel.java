@@ -31,7 +31,15 @@ public class ProduceModel extends BaseModel {
 	private B_ProducePlanData plan;
 	private S_ProductionTeamCodeData productionTeam;
 	private String[] produceList;
+	private String employeeSkills;
 
+	public String getEmployeeSkills() {
+        return employeeSkills;
+    }
+    public void setEmployeeSkills(String employeeSkills) {
+        this.employeeSkills = employeeSkills;
+    }
+    
 	public String[] getProduceList() {
         return produceList;
     }
