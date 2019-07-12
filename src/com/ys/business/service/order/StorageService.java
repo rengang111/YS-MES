@@ -199,6 +199,8 @@ public class StorageService extends CommonService {
 		String searchType = request.getParameter("searchType");
 		String categoryId = request.getParameter("categoryId");
 		String inventoryId = request.getParameter("inventoryId");
+		String generalType = request.getParameter("generalType");//重要通用件
+		String stockType   = request.getParameter("stockType");//物料分类
 		String having ="1=1";
 		
 		if(("999").equals(inventoryId)){
@@ -207,6 +209,16 @@ public class StorageService extends CommonService {
 		}
 
 		userDefinedSearchCase.put("inventoryId", inventoryId);
+		
+		//*** 重要通用件
+		String userFlag = "";
+		if(("Y").equals(generalType)){
+			userFlag = "0";
+			categoryId = "";
+			stockType = "";
+		}
+		userDefinedSearchCase.put("userFlag", userFlag);
+		userDefinedSearchCase.put("stockType", stockType);
 		
 		if(notEmpty(categoryId)){
 			if(categoryId.length() > 1)
@@ -240,6 +252,8 @@ public class StorageService extends CommonService {
 		//String sql = getSortKeyFormWeb(data,baseQuery);
 		String sql =baseQuery.getSql(); 
 		sql = sql.replace("#", having);
+		System.out.println("库存管理-采购件："+sql);
+		
 		baseQuery.getYsQueryData(sql,having,iStart, iEnd);	
 		
 		if ( iEnd > dataModel.getYsViewData().size()){

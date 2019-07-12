@@ -322,6 +322,7 @@
       <f name="IFNULL(e.finishFlag,'0')" alias="finishFlag" ctype="" />
       <f name="IFNULL(e.readyDate,'')" alias="readyDate" ctype="" />
       <f name="IFNULL(e.remarks,'')" alias="remarks" ctype="" />
+      <f name="IFNULL(e.produceTeam,'')" alias="produceTeam" ctype="" />
     </select>
     <from>
       (
@@ -387,8 +388,27 @@
       <f name="parentId" alias="" ctype="" />
       <f name="subId" alias="" ctype="" />
     </select>
-    <!-- status = '0' 表示 订单状态为 "新建"  A.status = '0' AND   -->
     <from> s_producelinecode a where a.multiLevel='2' AND a.deleteFlag='0'
+    </from>
+    <orderby>a.codeId</orderby>
+    <groupby></groupby>
+    <having></having>
+	<power></power>    
+  </query>
+  <query>
+    <pool></pool>     
+    <name value="getProduceTeamByKey" />
+    <where>
+      <w name="A.codeId" des=""  reqName="keyword1" dtype="ch" oper="like"  lg="AND" bt="" />
+    </where>
+    <select>
+      <f name="recordId" alias="" ctype="" />
+      <f name="codeId" alias="" ctype="" />
+      <f name="productionTechnical" alias="" ctype="" />
+      <f name="groupLeader" alias="" ctype="" />
+      <f name="employeeSkills" alias="" ctype="" />
+    </select>
+    <from> s_ProductionTeamCode a where a.multiLevel='2' AND a.deleteFlag='0'
     </from>
     <orderby>a.codeId</orderby>
     <groupby></groupby>

@@ -654,6 +654,7 @@
   	  <w name="LEFT(A.materialId,3)"    des=""  reqName="materialId_B"     dtype="ch" oper="="  lg="AND" bt="" />
   	  <w name="LEFT(A.materialId,1)"    des=""  reqName="materialId_Other" dtype="ch" oper="="  lg="AND" bt="" />
   	  <w name="A.inventoryId"     des=""  reqName="inventoryId"  dtype="ch" oper="="  lg="AND" bt="" />
+  	  <w name="b.userFlag"     des=""  reqName="userFlag"  dtype="ch" oper="="  lg="AND" bt="" />
      </where>
     <select>
       <f name="A.recordId" alias="" ctype="" />
@@ -664,28 +665,34 @@
       <f name="A.parentId" alias="" ctype="" />
       <f name="A.viewList" alias="" ctype="" />
       <f name="A.shareModel" alias="" ctype="" />>
-      <f name="price" alias="price" ctype="" />
+      <f name="a.price" alias="price" ctype="" />
       <f name="A.supplierId" alias="" ctype="" />
-      <f name="quantityOnHand" alias="" ctype="" />
-      <f name="waitStockIn" alias="" ctype="" />
-      <f name="waitStockOut" alias="" ctype="" />
-      <f name="availabelToPromise" alias="" ctype="" />
-      <f name="MAPrice" alias="" ctype="" />
-      <f name="beginningInventory" alias="" ctype="" />
-      <f name="beginningPrice" alias="" ctype="" />
-      <f name="safetyInventory" alias="" ctype="" />
-      <f name="reviseDate" alias="" ctype="" />
+      <f name="a.quantityOnHand" alias="" ctype="" />
+      <f name="a.waitStockIn" alias="" ctype="" />
+      <f name="a.waitStockOut" alias="" ctype="" />
+      <f name="a.availabelToPromise" alias="" ctype="" />
+      <f name="a.MAPrice" alias="" ctype="" />
+      <f name="a.beginningInventory" alias="" ctype="" />
+      <f name="a.beginningPrice" alias="" ctype="" />
+      <f name="a.safetyInventory" alias="" ctype="" />
+      <f name="a.reviseDate" alias="" ctype="" />
       <f name="IFNULL(reviseQty,'0')" alias="reviseQty" ctype="" />
       <f name="A.unit" alias="" ctype="" />
       <f name="A.unit" alias="dicName" ctype="计量单位" />
       <f name="A.purchaseType" alias="" ctype="" />
-      <f name="quantityEditFlag" alias="" ctype="" />
-      <f name="qualityId" alias="" ctype="" />
-      <f name="inventoryId" alias="" ctype="" />
+      <f name="a.quantityEditFlag" alias="" ctype="" />
+      <f name="a.qualityId" alias="" ctype="" />
+      <f name="a.inventoryId" alias="" ctype="" />
+      <f name="IFNULL(b.userFlag,'1')" alias="userFlag" ctype="" />
+      <f name="IFNULL(b.materialId,'')" alias="generalMaterialId" ctype="" />
     </select>
     <!-- 条件可以获得系统变量值 '@:来源session,#来源 2016/1/8未实现' -->
     <!-- $：由程序根据where句的情况追加where关键字' 无$：程序不负责追加where关键字，在from句中需写入where关键字 -->
-    <from>v_beginninginventorysearchForNormal AS A  where a.deleteFlag = '0' </from>
+    <from>
+    	v_beginninginventorysearchForNormal AS A  
+    	LEFT JOIN b_MaterialGeneral b ON a.materialId=b.materialId AND b.deleteFlag='0'
+    	where a.deleteFlag = '0' 
+    </from>
     <orderby>A.materialId</orderby>
     <groupby></groupby>
     <having>#</having>

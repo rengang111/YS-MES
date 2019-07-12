@@ -1516,6 +1516,51 @@ public class ProduceService extends CommonService  {
 		return returnValue;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public boolean setProduceTeamById() throws Exception{
+
+		boolean returnValue = true;
+		String YSId = request.getParameter("YSId");
+		String produceTeam = request.getParameter("produceTeam");
+		//String produceLine = URLDecoder.decode(request.getParameter("produceLine"),"UTF-8");
+		//String codeId = URLDecoder.decode(request.getParameter("codeId"),"UTF-8");
+		
+		try{
+			String where = "YSId ='" + YSId +"' AND deleteFlag='0' ";
+			List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+			if(list.size() > 0){
+				B_ProducePlanData plan = list.get(0); 
+				//plan.setProduceline(produceLine);
+				plan.setProduceteam(produceTeam);
+				commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+						"update",userInfo);
+				copyProperties(plan,commData);	
+				
+				new B_ProducePlanDao().Store(plan);
+				
+			}else{
+				B_ProducePlanData plan = new B_ProducePlanData();
+				//plan.setProduceline(produceLine);
+				plan.setYsid(YSId);
+				plan.setProduceteam(produceTeam);
+				//plan.setSortno(getMaxSortNo(produceLine));
+				
+				commData = commFiledEdit(Constants.ACCESSTYPE_INS,
+						"insert",userInfo);
+				copyProperties(plan,commData);	
+				guid = BaseDAO.getGuId();				
+				plan.setRecordid(guid);
+				
+				new B_ProducePlanDao().Create(plan);
+			}
+		}catch(Exception e){
+			returnValue = false;
+		}
+		
+		
+		return returnValue;
+	}
+	
 
 	/**
 	 * 将生产任务中的订单筛选出来：装配完成，异常数据等。
@@ -1649,6 +1694,26 @@ public class ProduceService extends CommonService  {
 		
 		dataModel.setQueryFileName("/business/order/producequerydefine");
 		dataModel.setQueryName("geProduceLineByKey");	
+		baseQuery = new BaseQuery(request, dataModel);	
+		userDefinedSearchCase.put("keyword1", key);
+		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);
+		
+		baseQuery.getYsFullData();
+
+		modelMap.put("data", dataModel.getYsViewData());		
+		modelMap.put("retValue", "success");			
+		
+		return modelMap;
+	}
+	
+	public HashMap<String, Object> getProduceTeamByKey() throws Exception{
+
+		HashMap<String, Object> modelMap = new HashMap<String, Object>();
+		
+		String key = request.getParameter("key").trim().toUpperCase();
+		
+		dataModel.setQueryFileName("/business/order/producequerydefine");
+		dataModel.setQueryName("getProduceTeamByKey");	
 		baseQuery = new BaseQuery(request, dataModel);	
 		userDefinedSearchCase.put("keyword1", key);
 		baseQuery.setUserDefinedSearchCase(userDefinedSearchCase);

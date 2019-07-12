@@ -162,6 +162,8 @@
       <f name="a.quantity" alias="contractQty" ctype="" />
       <f name="IFNULL(b.stockinQty,0)" alias="stockinQty" ctype="" />
       <f name="IFNULL(a.supplierRecordId,'')" alias="supplierRecordId" ctype="" />
+      <f name="IFNULL(e.userFlag,'1')" alias="generalFlag" ctype="" />
+      <f name="IFNULL(e.materialId,'')" alias="generalMaterialId" ctype="" />
   </select>
    <from>
 		v_purchaseorderdetail  a
@@ -173,7 +175,8 @@
 					ord.YSId = '#0'
 					GROUP BY b4.ysid,b4.materialId
 			) b ON a.materialId = b.materialId AND b.ysid = a.ysid and a.contractId=b.contractId
-		LEFT JOIN b_PurchaseOrderDeliveryDateHistory c ON c.contractId = a.contractId AND c.newDeliveryDate = a.newDeliveryDate AND c.deleteFlag='0' 
+		LEFT JOIN b_PurchaseOrderDeliveryDateHistory c 	ON c.contractId=a.contractId AND c.newDeliveryDate = a.newDeliveryDate AND c.deleteFlag='0'
+		LEFT JOIN b_MaterialGeneral e 					ON a.materialId=e.materialId AND e.deleteFlag='0' 
 		where 1=1 
 	</from>
     <orderby>a.contractId,a.materialId</orderby>

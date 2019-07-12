@@ -140,7 +140,7 @@
 		    			txtEdit += ' <input type="text"   '+
 			    				' id="lines'+rowIndex+'.produceLine" '+
 			    				' onfocus= removeErrorClass(\''+rowIndex+'\');return false;"   '+
-			    				' onblur ="setProduceTeam(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
+			    				' onblur ="setProduceLine(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
 			    				' class="short attributeList1" style="width:50px;"/>'
 		    			txtEdit += '</div>';
 		    						     		    			
@@ -193,8 +193,8 @@
 		    			var txtEdit = '<div id="teamEdit'+rowIndex+'" class="teamEdit"  style="display:'+editDisFlag+';">';
 		    			txtEdit += ' <input type="text"   '+
 			    				' id="lines'+rowIndex+'.produceTeam" '+
-			    				' onfocus= removeErrorClass(\''+rowIndex+'\');return false;"   '+
-			    				' onblur ="setProduceLine(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
+			    				' onfocus= removeErrorClass2(\''+rowIndex+'\');return false;"   '+
+			    				' onblur ="setProduceTeam(this,\''+YSId+'\',\''+rowIndex+'\')"   '+
 			    				' class="short attributeList2" style="width:50px;"/>'
 		    			txtEdit += '</div>';
 		    						     		    			
@@ -257,6 +257,14 @@
 		$('#lineEdit'+index).show();
 		$('#lineShow'+index).css('display','none');
 	}
+	
+	function doEditTeam(index){
+		
+		$('#teamEdit'+index).show();
+		$('#teamShow'+index).css('display','none');
+	}
+	
+	
 	function initEvent(){
 
 		ajaxSearch("false");
@@ -291,8 +299,12 @@
 	function removeErrorClass(rowIndex){
 		$('#lines'+rowIndex+'\\.produceLine').removeClass("error");
 	}
+
+	function removeErrorClass2(rowIndex){
+		$('#lines'+rowIndex+'\\.produceTeam').removeClass("error");
+	}
 	
-	//生产线选择
+	//设置生产线
 	function setProduceLine($obj,YSId,rowIndex) {
 
 		var produceLine = $obj.value;
@@ -330,6 +342,46 @@
 		});			
 			
 	};
+	
+	//设置生产组
+	function setProduceTeam($obj,YSId,rowIndex) {
+
+		var produceTeam = $obj.value;
+
+		if($.trim(produceTeam) == '' ){
+			return;
+		}
+		if(produceTeam.length<3){
+			$().toastmessage('showWarningToast', "请输入正确的生产组编码");	
+			$('#lines'+rowIndex+'\\.produceTeam').addClass("error");
+			return;
+		}
+		
+		//produceLine = encodeURI(encodeURI(produceLine));
+		var actionUrl = "${ctx}/business/produce?methodtype=setProduceTeamById"
+			+"&YSId="+YSId
+			+"&produceTeam="+produceTeam;
+
+		$.ajax({
+			type : "POST",
+			contentType : 'application/json',
+			dataType : 'json',
+			url : actionUrl,
+			data : JSON.stringify($('#orderForm').serializeArray()),// 要提交的表单
+			success : function(data) {
+			
+				var rtnValue = data['message'];
+				//alert(rtnValue)
+				$().toastmessage('showWarningToast', "生产组设置成功!");		
+				$('#lines'+rowIndex+'\\.produceTeam').addClass("finished");
+			},
+			error : function(XMLHttpRequest, textStatus, errorThrown) {				
+				alert(textStatus);
+			}
+		});			
+			
+	};
+	
 	
 	//生产线选择
 	function setProduceLineForOption(followType,YSId,rowIndex) {
@@ -522,6 +574,44 @@
 			},
 			
 		});
+		
+		//生产小组选择
+		$(".attributeList2").autocomplete({
+			minLength : 1,
+			autoFocus : false,
+			source : function(request, response) {
+				//alert(888);
+				$
+				.ajax({
+					type : "POST",
+					url : "${ctx}/business/produce?methodtype=getProduceTeamList",
+					dataType : "json",
+					data : {
+						key : request.term
+					},
+					success : function(data) {
+						//alert(777);
+						response($
+							.map(
+								data.data,
+								function(item) {
+
+									return {
+										label : item.codeId +" | "+item.productionTechnical,
+										value : item.codeId,
+										id 	  : item.codeId,
+									}
+								}));
+					},
+					error : function(XMLHttpRequest,
+							textStatus, errorThrown) {
+						alert("系统异常，请再试或和系统管理员联系。");
+					}
+				});
+			},
+			
+		});
+		
 	}
 	
 	

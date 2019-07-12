@@ -171,6 +171,14 @@ public class ProduceAction extends BaseAction {
 				dataMap = deleteGroupCode();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "setProduceTeamById"://生产小组设置
+				dataMap = doSetProduceTeamById();
+				printOutJsonObj(response, dataMap);
+				break;
+			case "getProduceTeamList"://取得生产小组一览
+				dataMap = doGetProduceTeamList();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -551,6 +559,23 @@ public class ProduceAction extends BaseAction {
 		return dataMap;
 	}
 	
+	
+	public HashMap<String, Object> doSetProduceTeamById(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			boolean rtnFlag = orderService.setProduceTeamById();
+		
+			dataMap.put(INFO, SUCCESSMSG);			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}		
+		
+		return dataMap;
+	}
+	
 	public HashMap<String, Object> doSetOrderForProduce(){
 		HashMap<String, Object> dataMap = new HashMap<String, Object>();
 	
@@ -572,6 +597,22 @@ public class ProduceAction extends BaseAction {
 	
 		try {
 			dataMap = orderService.getProduceLineByKey();
+		
+			dataMap.put(INFO, SUCCESSMSG);			
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, ERRMSG);
+		}
+		
+		return dataMap;
+	}
+	
+	public HashMap<String, Object> doGetProduceTeamList(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			dataMap = orderService.getProduceTeamByKey();
 		
 			dataMap.put(INFO, SUCCESSMSG);			
 		}

@@ -18,12 +18,14 @@ body{
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
-		var stockType    = $("#stockType").val();
+		var stockType   = $("#stockType").val();
+		var generalType = $("#generalType").val();
 		var url = "${ctx}/business/storage?methodtype=beginningInventorySearch&sessionFlag="+sessionFlag;
 		url = url + "&stockType="+stockType;
 		url = url + "&searchType="+searchType;
 		url = url + "&categoryId="+categoryId;
 		url = url + "&inventoryId="+userId;
+		url = url + "&generalType="+generalType;
 		
 		
 		
@@ -236,6 +238,7 @@ body{
 		});			
 
 		buttonSelectedEvent();//按钮选择式样
+		buttonSelectedEvent2();//按钮选择式样
 		buttonSelectedEvent3();//按钮选择式样
 		
 	 	$('#defutBtnB02').removeClass("start").addClass("end");
@@ -271,6 +274,7 @@ body{
 	    $.each(collection, function () {
 	    	$(this).removeClass("end");
 	    });
+		$('#generalType').val('N');
 		//S:点击查询按钮所的Search事件,对应的有初始化和他页面返回事件
 		searchAjax("false","","","","999");
 
@@ -469,7 +473,8 @@ body{
 	function doSearchCustomer(categoryId){
 		$('#keyword1').val('');
 		$('#keyword2').val('');
-		
+
+		$('#generalType').val('N');
 		$('#categoryId').val(categoryId);
 		var userId = $('#userId').val();
 		
@@ -485,7 +490,8 @@ body{
 	function doSearchCustomer2(userId){
 		$('#keyword1').val('');
 		$('#keyword2').val('');
-		
+
+		$('#generalType').val('N');
 		$('#userId').val(userId);
 		var categoryId = $('#categoryId').val();
 		
@@ -495,6 +501,24 @@ body{
 	    });
 	    
 		searchAjax('false','','','',userId);
+	}
+	
+	//仓库重要通用件
+	function doSearchCustomer3(){
+		$('#keyword1').val('');
+		$('#keyword2').val('');
+	
+		$('#generalType').val('Y');
+		var collection = $(".box");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    var collection = $(".box3");
+	    $.each(collection, function () {
+	    	$(this).removeClass("end");
+	    });
+	    
+		searchAjax('false','','','','999');
 	}
 	
 </script>
@@ -510,6 +534,7 @@ body{
 			<input type="hidden" id="stockType" value="${stockType }" />
 			<input type="hidden" id="searchType" value="${searchType }" />
 			<input type="hidden" id="categoryId" value="" />
+			<input type="hidden" id="generalType" value="N" />
 			
 			<table>
 				<tr>
@@ -551,6 +576,16 @@ body{
 							class="DTTT_button box3" onclick="doSearchCustomer2('${list.dicId }');">
 							<span>${list.dicName }</span></a>
 					</c:forEach>
+					</td> 
+					<td width="100px"></td>
+				</tr>
+				<tr>
+					<td></td> 
+					<td class="label">快捷查询1：</td> 
+					<td colspan="2">
+					<a id="defutBtn" style="height: 15px;margin-top: 5px;" 
+								class="DTTT_button box2" onclick="doSearchCustomer3();">
+								<span>重要通用件</span></a>
 					</td> 
 					<td width="100px"></td>
 				</tr>

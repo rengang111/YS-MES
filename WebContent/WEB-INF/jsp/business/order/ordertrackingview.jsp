@@ -15,12 +15,9 @@
 $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	       
 	var type =  $('#selectedPurchaseType').val();
-	       	
-    	//return true;
     	
     	var data11=data[2];//物料编码	   
-	    		
- 		
+	     		
     	if (type =='' || type == 'all')		    		
     	{		    		
     		return true;
@@ -61,21 +58,10 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
     			return true;
     		}
     		
-    	}else if(type=='ycl'){//原材料
-    		var val=data[9];
-    		var tmp = val.substring(3,0);
+    	}else if(type=='ty'){//重要通用件
+    		var val=data[11];
     		
-    		if(tmp == '040'){
-    			return true;
-    		}
-    		
-    	}else if(type=='wll'){//未领物料
-    		var val5=data[5];//已领数量
-    		var val4=data[4];//计划用量
-    		var jihua = currencyToFloat(val4);
-    		var yiling = currencyToFloat(val5);
-    		
-    		if(yiling < jihua){
+    		if(val == '0'){
     			return true;
     		}
     		
@@ -105,7 +91,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 		
 		var table = $('#contract').DataTable();
 		// Event listener to the two range filtering inputs to redraw on input
-	    $('#wj, #zz, #bz, #dz, #all').click( function() {
+	    $('#wj, #zz, #bz, #dz, #all, #ty').click( function() {
 	    	
 	    	 $('#selectedPurchaseType').val($(this).attr('id'));
     		 table.draw();
@@ -279,7 +265,8 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 				{"data": null,"className" : 'td-right'},//7.数量总汇
 				{"data": null,"className" : 'td-center'},//8.交期总汇
 				{"data": "deliveryDate","className" : 'td-right'},//9.最新交期
-				{"data": null,"className" : 'td-right', "defaultContent" : ''},//10.更新时间			
+				{"data": null,"className" : 'td-right', "defaultContent" : ''},//10.更新时间
+				{"data": "generalFlag","className" : 'td-right', "defaultContent" : ''},//11.重要通用件			
 			],
 			"columnDefs":[
 	    		
@@ -360,7 +347,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 	    		}},
 	    		{
 					"visible" : false,
-					"targets" : []
+					"targets" : [11]
 				},
 	    		//{ "bSortable": false, "aTargets": [0] }
 	          
@@ -841,7 +828,8 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 					<a class="DTTT_button  box" id="zz"  data-id="4">自制件</a>
 					<a class="DTTT_button  box" id="dz"  data-id="1">电子</a>
 					<a class="DTTT_button  box" id="wj"  data-id="0">五金</a>
-				 	<a class="DTTT_button  box" id="bz"  data-id="3">包装</a>
+				 	<a class="DTTT_button  box" id="bz"  data-id="3">包装</a>&nbsp;&nbsp;
+				 	<a class="DTTT_button  box" id="ty"  data-id="2">重要通用件</a>
 					<input type="hidden" id="selectedPurchaseType" />
 				</div>
 				<table id="contract" class="display" >
@@ -858,6 +846,7 @@ $('#contract').dataTable.ext.search.push(function( settings, data, dataIndex ) {
 							<th width="60px">交期汇总</th>
 							<th width="60px">最新交期</th>
 							<th width="60px">更新时间</th>
+							<th width="1px">通用件</th>
 						</tr>
 					</thead>
 				</table>
