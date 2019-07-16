@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<%@ include file="../../common/common.jsp"%>
+<%@ include file="../../common/common2.jsp"%>
 
 <title>生产计划</title>
 <script type="text/javascript">
@@ -17,6 +17,7 @@
 			table.fnClearTable(false);
 			table.fnDestroy();
 		}
+		var scrollHeight =  $('#scrollHeight').val();
 		var searchFlag  = $('#searchFlag').val();
 		var partsType   = $('#partsType').val();
 		var produceLine = $('#produceLine').val();
@@ -27,19 +28,24 @@
 				+"&produceLine="+encodeURI(encodeURI(produceLine));
 
 		var sortCode = $('#sortCode').val();
-		
+		//alert(scrollHeight)
 		var t = $('#TMaterial').DataTable({
 				"paging": true,
+				"iDisplayLength" : 50,
 				"lengthChange":false,
-				"lengthMenu":[50,100,200],//每页显示条数设置
+				//"lengthMenu":[10,150,200],//设置一页展示20条记录
 				"processing" : true,
 				"serverSide" : true,
-				"stateSave" : false,
+				"ordering "	:false,
+				"searching" :false,
+				"stateSave" :false,
 	         	"bAutoWidth":false,
-				"bSort":true,
-				"ordering"	:true,
-				"searching" : false,
-				"pagingType" : "full_numbers",        
+				"pagingType" : "full_numbers",
+		       	"sScrollY"	: "300px",
+		        "sScrollX": "100%",
+		        "sScrollXInner": "110%",
+		        "bScrollCollapse": true,		        
+		       	"fixedColumns":   { leftColumns: 2 },
 	         	//"aaSorting": [[ sortCode, "ASC" ]],
 				"sAjaxSource" : url,
 				"fnServerData" : function(sSource, aoData, fnCallback) {
@@ -72,6 +78,7 @@
 	        		"url":"${ctx}/plugins/datatables/chinese.json"
 	        	},
 				"columns": [
+					{"data": null, "className" : 'td-center'},//0
 					{"data": "YSId", "defaultContent" : ''}, //1
 					{"data": "materialId", "defaultContent" : '', "className" : 'td-left'},//2
 					{"data": "materialName", "defaultContent" : ''},//3
@@ -81,11 +88,19 @@
 					{"data": null, "defaultContent" : '', "className" : 'td-center'},//7
 					{"data": "produceLine", "className" : 'td-center'},//8
 					{"data": "sortNo", "className" : 'td-center'},//9
-					{"data": "sortNo", "className" : 'td-center'},//10
+					{"data": null, "className" : 'td-center'},//10
+					{"data": "sortNo", "className" : 'td-center'},//11
+					{"data": "sortNo", "className" : 'td-center'},//12
+					
 					
 				],
-				"columnDefs":[		    		
-		    		{"targets":0,"render":function(data, type, row){
+				"columnDefs":[	
+
+		    		{"targets":0,"render":function(data, type, row,meta){
+	                    var startIndex = meta.settings._iDisplayStart; 
+	                    return startIndex + meta.row + 1 ;			
+					}},
+		    		{"targets":1,"render":function(data, type, row){
 		    			var rtn = "";
 		    			var orderQty   = currencyToFloat( row["orderQty"] );
 		    			var stockinQty = currencyToFloat( row["computeStockinQty"] );
@@ -97,13 +112,13 @@
 		    			}		    			
 		    			return rtn;
 		    		}},
-		    		{"targets":1,"render":function(data, type, row){
+		    		{"targets":2,"render":function(data, type, row){
 
 						var lastHide = '<input type="hidden"  name="lastHide" id="lastHide" value="' + row["hideFlag"] + '" /></span';
 		    			
 		    			return data + lastHide;
 		    		}},
-		    		{"targets":2,"render":function(data, type, row){
+		    		{"targets":3,"render":function(data, type, row){
 		    			var name = row["materialName"];
 		    			name = jQuery.fixedWidth(name,38);//true:两边截取,左边从汉字开始
 		    			
@@ -111,11 +126,11 @@
 		    			
 		    			return name + lastCheceked;
 		    		}},
-		    		{"targets":4,"render":function(data, type, row){
+		    		{"targets":5,"render":function(data, type, row){
 		    			
 		    			return floatToNumber(data);
 		    		}},
-		    		{"targets":7,"render":function(data, type, row){//生产序号
+		    		{"targets":8,"render":function(data, type, row){//生产序号
 		    			var rtn = "";
 		    			var rowIndex = row["rownum"] - 1;
 		    			var produceLine = row['produceLine'];
@@ -147,7 +162,7 @@
 		    			return txtShow + txtEdit;
 		    			
 		    		}},
-		    		{"targets":6,"render":function(data, type, row){//备齐时间
+		    		{"targets":7,"render":function(data, type, row){//备齐时间
 		    			var ready = row['readyDate'];
 		    			var flag = row['finishFlag'];
 		    			var rtnValue = ''
@@ -169,7 +184,7 @@
 		    			
 		    			return rtnValue;
 		    		}},
-		    		{"targets":8,"render":function(data, type, row){//生产小组
+		    		{"targets":9,"render":function(data, type, row){//生产小组
 		    			var rtn = "";
 		    			var rowIndex = row["rownum"] - 1;
 		    			var produceTeam = row['produceTeam'];
@@ -201,7 +216,7 @@
 		    			return txtShow + txtEdit;
 		    			
 		    		}},
-		    		{"targets":9,"render":function(data, type, row){//上下调整
+		    		{"targets":10,"render":function(data, type, row){//上下调整
 		    			var imgName = 'arrow_down';
 		    			var rtn = "",down='D',up='U';
 		    			var produceLine = row['produceLine'];
@@ -217,10 +232,30 @@
 		    			}
 		    			return rtn;
                     }},
-		    		{"targets":10,"render":function(data, type, row){
+		    		{"targets":12,"render":function(data, type, row){//ON,OFF
 		    			var rtn = "";
 		    			var rowIndex = row["rownum"] - 1;
-		    			var produceLine = row['produceLine'];
+		    			var startFlag = row['startFlag'];
+		    			var YSId = row['YSId'];
+		    			
+		    			if(startFlag == 'Y'){
+		    				rtn += '<input  type="image" title="ON"  style="border: 0px;width: 20px;" src="${ctx}/images/action_on_1.png" />';
+	    					rtn += '<input  type="image" title="OFF" style="border: 0px;width: 30px;" src="${ctx}/images/action_off_0.png" onClick="doUpdateStartFlag(\''+ YSId + '\',\'' + 'N' + '\')"/>';
+	    				}else if(startFlag == 'N'){
+	    					rtn += '<input  type="image" title="ON"  style="border: 0px;width: 20px;" src="${ctx}/images/action_on_0.png"  onClick="doUpdateStartFlag(\''+ YSId + '\',\'' + 'Y' + '\')"/>';
+	    					rtn += '<input  type="image" title="OFF" style="border: 0px;width: 30px;" src="${ctx}/images/action_off_1.png" />';	    	    					
+	    				}else{
+	    					rtn += '<input  type="image" title="ON"  style="border: 0px;width: 20px;" src="${ctx}/images/action_on_0.png"  onClick="doUpdateStartFlag(\''+ YSId + '\',\'' + 'Y' + '\')"/>';
+	    					rtn += '<input  type="image" title="OFF" style="border: 0px;width: 30px;" src="${ctx}/images/action_off_0.png" onClick="doUpdateStartFlag(\''+ YSId + '\',\'' + 'N' + '\')"/>';
+	    	    					
+	    				}
+		    			
+		    			return rtn;
+		    		}},
+		    		{"targets":11,"render":function(data, type, row){
+		    			var rtn = "";
+		    			var rowIndex = row["rownum"] - 1;
+		    			var produceLine = row['startFlag'];
 		    			var YSId = row['YSId'];
 		    			var txt = '<select  name="lines['+rowIndex+'].produceFilter"  '+
 		    				' id="lines'+rowIndex+'.produceFilter" '+
@@ -228,10 +263,10 @@
 		    				' class="short option" style="text-align: center;"></select>'
 		    			
 		    
-			    			rtn = txt;
-		    			
+			    		rtn = txt;
+		    				
 		    			return rtn;
-		    		}},
+                    }},
 		    		{
 		    			"orderable":false,"targets":[6,7,8,9,10]
 		    		},
@@ -267,9 +302,10 @@
 	
 	function initEvent(){
 
-		ajaxSearch("false");
-
+		var scrollHeight = $(document).height() - 200; 
+		$('#scrollHeight').val(scrollHeight);
 		
+		ajaxSearch("false");		
 	}
 
 	$(document).ready(function() {
@@ -618,32 +654,54 @@
 	function doUpdateSortNo(produceLine,sortNo,sortFlag) {
 		
 		produceLine = encodeURI(encodeURI(produceLine));
-		//if(confirm("删除后不能恢复，确定要删除数据吗？")) {
-			jQuery.ajax({
-				type : 'POST',
-				async: false,
-				contentType : 'application/json',
-				dataType : 'json',
-				data : '',
-				url : "${ctx}/business/produce?methodtype=setProducePlanSortNo"+"&produceLine="+produceLine+"&sortFlag="+sortFlag+"&sortNo="+sortNo,
-				success : function(data) {
-					var message = data['message'];
-					if(message == 'S'){
-						$().toastmessage('showWarningToast', "顺序已调整。");	
-						reload();
-					}
-					if(message == 'N'){
-						$().toastmessage('showWarningToast', "不能调整该订单的生产顺序。");	
-					}
-					if(message == 'E'){
-						$().toastmessage('showWarningToast', "生产顺序调整失败，请联系管理员。");	
-					}
-				},
-				error:function(XMLHttpRequest, textStatus, errorThrown){
+		jQuery.ajax({
+			type : 'POST',
+			async: false,
+			contentType : 'application/json',
+			dataType : 'json',
+			data : '',
+			url : "${ctx}/business/produce?methodtype=setProducePlanSortNo"+"&produceLine="+produceLine+"&sortFlag="+sortFlag+"&sortNo="+sortNo,
+			success : function(data) {
+				var message = data['message'];
+				if(message == 'S'){
+					$().toastmessage('showWarningToast', "顺序已调整。");	
+					reload();
+				}
+				if(message == 'N'){
+					$().toastmessage('showWarningToast', "不能调整该订单的生产顺序。");	
+				}
+				if(message == 'E'){
 					$().toastmessage('showWarningToast', "生产顺序调整失败，请联系管理员。");	
-	             }
-			});
-		//}
+				}
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrown){
+				$().toastmessage('showWarningToast', "生产顺序调整失败，请联系管理员。");	
+             }
+		});
+	}
+	
+	function doUpdateStartFlag(YSId,startFlag) {
+		
+		produceLine = encodeURI(encodeURI(produceLine));
+		jQuery.ajax({
+			type : 'POST',
+			async: false,
+			contentType : 'application/json',
+			dataType : 'json',
+			data : '',
+			url : "${ctx}/business/produce?methodtype=setProduceStartFlag"+"&YSId="+YSId+"&startFlag="+startFlag,
+			success : function(data) {
+				var message = data['message'];
+				if(message == 'S'){
+					$().toastmessage('showWarningToast', "设置成功。");	
+					reload();
+				}
+				
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrown){
+				$().toastmessage('showWarningToast', "设置失败，请联系管理员。");	
+             }
+		});
 	}
 	
 </script>
@@ -660,11 +718,12 @@
 			<input type="hidden" id="partsType"   value="C" />
 			<input type="hidden" id="produceLine"   value="" />
 			<input type="hidden" id="sortCode"   value="6" />
+			<input type="hidden" id="scrollHeight" value="" />
 			<table>
 				<tr>
 					<td width="50px"></td> 
 					<td class="label" style="width:100px">关键字1：</td>
-					<td class="condition">
+					<td style="width:300px">
 						<input type="text" id="keyword1" name="keyword1" class="middle"/></td>
 					<td class="label" style="width:100px">关键字2：</td> 
 					<td class="condition">
@@ -675,35 +734,23 @@
 					
 					<td width="10px"></td> 
 				</tr>
-				<!-- 
 				<tr>
 					<td width=""></td> 
 					<td class="label"> 快捷查询：</td>
-					<td class="">
-						<a id="defutBtnmP" class="DTTT_button box2" onclick="doSearch3('C');">常规订单</a>
-						<a id="defutBtnmC" class="DTTT_button box2" onclick="doSearch3('P');">配件单</a>
-					</td>
-					<td class="label"></td> 
-					<td class="">&nbsp;
-					</td>
-					<td></td>
-					<td width=""></td> 
-				</tr>
-				 -->
-				<tr>
-					<td width=""></td> 
-					<td class="label"> 快捷查询：</td>
-					<td colspan="3">
+					<td>
 						<a  class="DTTT_button box" onclick="doSearchCurrentTask('A');"   id="defutBtnA">ALL</a>
-						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('C');"  id="defutBtnC">当前任务</a>
-						<!-- a  class="DTTT_button box" onclick="doSearchCurrentTask('L');"  id="defutBtnL">中长期计划</a>
-						<a  class="DTTT_button box" onclick="doSearchCurrentTask('N');"  id="defutBtnN">未领料</a>&nbsp;-->
-						<a  class="DTTT_button box" onclick="doSearchCustomer();"  		 id="defutBtnU">未安排</a>&nbsp;&nbsp;
+						<a  class="DTTT_button box" onclick="doSearchCustomer();"  		 id="defutBtnU">未安排</a>
 						<a  class="DTTT_button box" onclick="doSearchCustomer2('F');"  	 id="defutBtnF">装配完成</a>
 						<a  class="DTTT_button box" onclick="doSearchCustomer2('E');"  	 id="defutBtnE">异常数据</a>
 					</td>
 					
-					<td></td>
+					<td class="label">当前任务：</td>
+					<td width=""> 
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('C');"   id="defutBtnC">ALL</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('CN');"  id="defutBtnCN">ON</a>
+						<a  class="DTTT_button box" onclick="doSearchCurrentTask2('CF');"  id="defutBtnCF">OFF</a>
+					</td> 
+					<td width=""></td> 
 					<td width=""></td> 
 				</tr>
 				<!-- 
@@ -730,27 +777,22 @@
 	<div class="list">
 
 		<div id="" class="dataTables_wrapper">
-			 <!-- 
-			<div id="createCurrent" style="height:40px;float: right">
-				<a  class="DTTT_button " onclick="doCreateY('C','31');" id="">添加到完成菜单</a>	
-				<a  class="DTTT_button " onclick="doCreateN('L','32');" id="">添加到中长期</a>
-				<a  class="DTTT_button " onclick="doCreateN('N','33');" id="">添加到未领料</a>
-			</div>
-			  -->
-			<table id="TMaterial" class="display" >
+			<table id="TMaterial" class="display" style="width:100%">
 				<thead>						
 					<tr>
+						<th style="width: 1px;">No</th>
 						<th style="width: 70px;">耀升编号</th>
 						<th style="width: 150px;">产品编号</th>
 						<th>产品名称</th>
 						<th style="width: 40px;">客户</th>
-						<th style="width: 60px;">订单数量</th>
-						<th style="width: 50px;">订单交期</th>
+						<th style="width: 70px;">订单数量</th>
+						<th style="width: 60px;">订单交期</th>
 						<th style="width: 60px;">装配物料<br/>备齐时间</th>
-						<th style="width: 40px;">生产<br/>序号</th>
-						<th style="width: 40px;">生产<br/>小组</th>
-						<th style="width: 40px;">调整</th>
-						<th style="width: 40px;"></th>
+						<th style="width: 50px;">生产<br/>序号</th>
+						<th style="width: 50px;">生产<br/>小组</th>
+						<th style="width: 70px;">调整</th>
+						<th style="width: 60px;">完成/异常</th>
+						<th style="width: 40px;">ON/OFF</th>
 					</tr>
 				</thead>
 			</table>

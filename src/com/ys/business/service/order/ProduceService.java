@@ -236,8 +236,18 @@ public class ProduceService extends CommonService  {
 			//未安排
 			having1 += " AND produceLineFlag = '0' AND filterFlag='0' ";//过滤掉当前任务
 		}else if(("C").equals(searchFlag)){
-			//当前任务
+			//当前任务:ALL
 			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' ";//只显示当前任务
+			orderby = " e.produceLine,e.sortNo+0 ";
+			
+		}else if(("CN").equals(searchFlag)){
+			//当前任务:ON
+			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' AND startFlag='Y' ";//只显示当前任务
+			orderby = " e.produceLine,e.sortNo+0 ";
+			
+		}else if(("CF").equals(searchFlag)){
+			//当前任务:OFF
+			having1 += " AND produceLineFlag = '1' AND finishFlag = '0' AND filterFlag='0' AND startFlag='N' ";//只显示当前任务
 			orderby = " e.produceLine,e.sortNo+0 ";
 			
 		}else if(("B").equals(searchFlag)){
@@ -1447,6 +1457,34 @@ public class ProduceService extends CommonService  {
 						
 				new B_ProducePlanDao().Store(dt);				
 			}			
+		}
+		
+		return rtnValue;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean setProduceStartFlag() throws Exception {
+
+		boolean rtnValue = true;
+		
+		String YSId      = request.getParameter("YSId");
+		String startflag = request.getParameter("startFlag");
+		
+		String where = " YSId='" + YSId +"' AND deleteFlag='0' ";
+		
+		List<B_ProducePlanData> list = new B_ProducePlanDao().Find(where);
+
+		if(list.size() > 0){
+			B_ProducePlanData plan = list.get(0);
+			plan.setStartflag(startflag);
+			
+			commData = commFiledEdit(Constants.ACCESSTYPE_UPD,
+					"update",userInfo);
+			copyProperties(plan,commData);
+					
+			new B_ProducePlanDao().Store(plan);
+		}else{
+			rtnValue = false;
 		}
 		
 		return rtnValue;

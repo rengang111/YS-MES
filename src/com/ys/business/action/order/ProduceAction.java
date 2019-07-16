@@ -179,6 +179,10 @@ public class ProduceAction extends BaseAction {
 				dataMap = doGetProduceTeamList();
 				printOutJsonObj(response, dataMap);
 				break;
+			case "setProduceStartFlag":
+				dataMap = doSetProduceStartFlag();
+				printOutJsonObj(response, dataMap);
+				break;
 		}
 		
 		return rtnUrl;		
@@ -643,5 +647,26 @@ public class ProduceAction extends BaseAction {
 		
 		return dataMap;
 	}
+	
+	public HashMap<String, Object> doSetProduceStartFlag(){
+		HashMap<String, Object> dataMap = new HashMap<String, Object>();
+	
+		try {
+			boolean val = orderService.setProduceStartFlag();
+		
+			if(val){
+				dataMap.put(INFO, "S");	
+			}else{
+				dataMap.put(INFO, "N");					
+			}		
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			dataMap.put(INFO, "E");
+		}
+		
+		return dataMap;
+	}
+	
 	
 }
